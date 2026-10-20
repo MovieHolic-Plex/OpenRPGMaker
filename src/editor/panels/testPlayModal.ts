@@ -121,8 +121,8 @@ export async function openTestPlayModal(
       onExit: closeTestPlayModal,
       trackGlobalGame: false,
       startOverride,
-      // 전체 테스트 플레이 창은 창을 가득 채운다(정수 배율이면 1214x640 창에서 27% 만 그렸다).
-      surfaceScaleMode: "fit",
+      // 배율은 내보낸 게임과 같은 규칙(resolvePlaySurfaceScaleMode)을 따른다 — 테스트 화면과 출하 화면의 도트 굵기가 같아야 한다.
+      // 옛 320×240 프로젝트는 fit 이라 1214x640 창에서 27% 만 그리던 문제(2026-08-25)는 되살아나지 않는다.
       autoStartRun: readTestPlayAutoStart(),
       // 런이 시작될 때마다 다시 읽는다 — 창을 열어둔 채 체크박스를 바꿔도 다음 런부터 바로 먹는다.
       shouldPlayOpening: () => !readTestPlaySkipOpening(),

@@ -1,0 +1,361 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "10795e6b0e8b1b992afc08457bd1e811d627c5bb0f5cb83b1f97c89a39c8cab2",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "karaoke sofa segment (faces west)",
+ "label": "seats34/jp_city_interior/kr-sofa-w",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 맨 위의 큰 부분(16행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 0행 < 4 (2/4)",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "맨 위의 큰 부분(16행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 0행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 26,
+  "nearBlackEdge": 0.25,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "base/front apron",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-9 form a tall red cushion band with a highlight corner and tufting dots, so it reads as a seat surface seen from above. It ends in a 1-row pink front-edge line at row 10, followed by a very dark shadow row at 11. Below that, a dark maroon base (rows 11-15) forms a front face of about 5 rows. The dark vertical strip at the right is the backrest or end panel and is drawn as the normal south profile. The fit is uncertain: the tufting could also be read as a vertical front panel."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a single-tile red sofa block. It uses about 8 colours: a highlight, light, mid and dark red ramp plus a dark red-brown outline. That is about 5 steps, close to the hedge reference (about 5 greens, 11 colours, 10 per tile). The measured facts support this. Flat-fill coverage is 0%, so no 5x5 area is a single flat colour. 0% of dark edge pixels are neutral, so the outline leans red-brown rather than black, with no sticker look. The seat and back are separated by value, and some cushion shading is visible. Density is slightly below the hedge (8 vs 10 colours per tile) and well below the larger stall and well. For a small one-tile furniture piece this is acceptable next to the hedge, so I pass it, with modest texture and fewer colours than the richer references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20769
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion block",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "backrest strip at east edge",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main cushion body at x=4, 8 and 11 is a 10-row red band (rows 0-9) with a highlight on row 0. The band ends in a lighter pink front-edge line at row 10 (x=4 and x=8), followed by a dark shadow row 11. Below that is a darker front face or base on rows 12-13, with dark feet on rows 14-15. This gives a top band, an edge line with shadow, and a front face of about 5 rows. The dark vertical strip at the east side is the backrest or armrest edge, drawn narrow. The row 5-6 dots are tufting details, not a top surface. Silhouette width is a constant 16, so no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a single roughly 16x16 red sofa block. It has 8 distinct colours, and its one-tile median of 8 is close to the hedge reference's 10 (11 colours in total). It has 0% flat-fill coverage and 0% neutral dark edge pixels, so the outline is a dark red-brown that leans toward the red upholstery rather than a black sticker line. The red ramp shows about 4 steps (highlight, light, mid, dark, plus the outline tone), with cushion highlights and seam shading. That is a bit shallower than the 5-6 steps on the richer references such as the stall and well, and the colour count is well below those two (38-40). The piece is small and simple, though, and it is not a flat fill with a uniform black line. It would sit acceptably next to the hedge and bench references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "맨 위의 큰 부분(16행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "맨 위의 큰 부분(16행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26069
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest/cushion panel",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat base/apron",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "right armrest strip",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Every part is drawn as a vertical face. Rows 0-9 are a flat red panel with a 1-row highlight at row 0 and small button details at rows 5-6, which reads as a face-on backrest or cushion. Row 10 is a 1-row pink line, then dark red base rows 11-15. The right strip at x=11-15 (rows 0-8) is a plain lighter vertical face. The width is constant at 16 for all rows, so there is no ellipse and no widening or narrowing. No horizontal seat surface is visible from above. The sprite also shows no west-facing profile, since it is a flat face-on elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small red sofa block with a tinted dark red-brown outline. The measured 0% neutral dark edge pixels confirms the outline carries colour, so it is not a sticker line. It has no 5x5 flat fills (0%) and 8 colours per tile, close to the hedge's 10. Overall it has only 8 distinct colours, the lowest on the board (bench 14, hedge 11, well 38, stall 40). By eye it reads as a rounded slab with a highlight edge, a mid face and a dark base, about 4 lightness steps. The references use 5-6 steps with per-element grain, such as the hedge leaf clumps and the bench slat shading. The seat, backrest and armrest are not clearly separated by value, and there are no cushion seams or upholstery grain dots. It looks flatter and thinner than the references, so I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20761
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion block (red, with button dots)",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pink lip and dark base",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-13"
+     },
+     {
+      "part": "right strip (backrest or side panel)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a full 16-wide rectangle for all 16 rows, with no widening or narrowing, so there is no ellipse. The cushion (rows 0-9) is one flat red face with a highlight in the top-left corner and two button dots, so it reads as a face-on cushion. It has no top-surface band, and no edge line sits between a top and a front. The only lighter line is the pink lip at row 10, which closes the cushion bottom and is followed by the dark base (rows 11-15) rather than by a front face below a top. The right-hand strip (x about 11-15) is also a vertical face with a dark outline. No seat surface is seen from above, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_flls": false,
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a single roughly 16x16 red sofa block with only 8 distinct colours. The references have 11 (hedge), 14 (bench, lamp) and 38-40 (well, stall), and the hedge reaches 10 per tile. The dark edge pixels are 0% neutral, so the outline is a tinted dark red, matching the Beodeul approach rather than a black sticker line. Flat-fill coverage is 0%, so there are no large flat areas. By eye, though, the form reads as a plain rounded red box: a lighter top edge, a mid red body and a dark edge, with only a few highlight dots. That gives about 4 lightness steps against Beodeul's 5-6, and there is no visible cushion seam, stitching, fabric grain or per-part shading like the bench slats or hedge clumps. Next to the references it looks thinner and flatter, and when in doubt this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22125
+  }
+ ],
+ "decidedAt": "2026-10-20T07:00:39.784Z",
+ "cells": {
+  "16": [
+   "cc407f5bf629f829"
+  ],
+  "24": [
+   "4d7161a805d33597",
+   "689210d524a01a28",
+   "6d59e5dd0b0cff9b",
+   "75a489d2c5550aef",
+   "a90968c7374eacc8",
+   "d68da56db8ed3371"
+  ],
+  "32": [
+   "0f292fb33b1da005",
+   "254c27448e59a773",
+   "3044eb4a38d9bedf",
+   "58a6203ae91de39b",
+   "5f4dc1547362aafc",
+   "b0c649fd37e3458a"
+  ],
+  "48": [
+   "068bea3736ae5180",
+   "0f5169fa0eb0c870",
+   "1803c4b47820e4ec",
+   "1d15151fd07fa785",
+   "445b9a9006d51b4f",
+   "5f78782d2d9d8a8e"
+  ]
+ }
+}

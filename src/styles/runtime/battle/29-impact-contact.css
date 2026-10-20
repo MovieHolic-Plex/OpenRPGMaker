@@ -157,3 +157,120 @@
   animation: none;
   opacity: 0;
 }
+
+/* 배틀러 도트 정수 배율(battle-feel r2, battleStageScale.calculateBattleAssetZoom).
+   필드 전체에 zoom 을 걸면 배틀러·연출 칸·데미지 숫자가 같은 배율로 함께 커지고, 백분율 좌표와
+   rect/offsetWidth 로 재는 걸음·연출 위치는 그대로 맞는다. px 로 적힌 무대 위 여백은 01-scene-base 의
+   `--battle-stage-inset-top` 선언에서 zoom 으로 되나눈다(필드 밖에서는 zoom 변수가 없어 1). */
+.battle-scene[data-battle-motion="retro"] .battle-field {
+  zoom: var(--battle-asset-zoom, 1);
+}
+
+/* ── 보스 존재감(battle-feel r2) ───────────────────────────────────────────────
+   보스 = 쓰러짐 연출을 「보스 가라앉기」로 저작한 적(data-collapse="bossSink"). 녹화 실측: 커버가 걷히면
+   용이 이미 서 있었고 잡몹과 같은 등장·같은 무대였다. 세 가지만 다르게 한다.
+   인트로 홀드는 보스일 때 2초(battleDom BATTLE_BOSS_INTRO_MS) — 커버(--battle-reveal-ms)가 걷힌 뒤 다 보인다.
+   1) 등장: 검은 실루엣이 무겁게 내려앉고(0.9→1) 땅이 두 번 울린 뒤 번쩍이며 색을 입는다.
+   2) 등장 동안 위아래 검은 띠(레터박스)가 들어왔다 빠진다.
+   3) 살아 있는 동안 무대 가장자리가 어둡고 붉게 천천히 숨 쉰다(배경 위·배틀러 아래). */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-director-step="intro"] .battle-enemy[data-collapse="bossSink"] {
+  animation: bf-boss-entry 1400ms cubic-bezier(0.3, 0.7, 0.3, 1) calc(var(--battle-reveal-ms, 300ms) + 100ms) both;
+}
+@keyframes bf-boss-entry {
+  0% { filter: brightness(0); opacity: 0; transform: translate(-50%, -100%) translateY(-28px) scale(0.9); }
+  30% { filter: brightness(0); opacity: 1; transform: translate(-50%, -100%) translateY(-28px) scale(0.9); }
+  52% { filter: brightness(0); opacity: 1; transform: translate(-50%, -100%) translateY(0) scale(1); }
+  60% { filter: brightness(0) drop-shadow(0 0 10px rgb(255 60 40 / 0.9)); transform: translate(-50%, -100%) translateY(0) scale(1); }
+  70% { filter: brightness(3) saturate(0); transform: translate(-50%, -100%) translateY(0) scale(1.03); }
+  80% { filter: brightness(1.4); transform: translate(-50%, -100%) translateY(0) scale(1); }
+  100% { filter: none; opacity: 1; transform: translate(-50%, -100%) translateY(0) scale(1); }
+}
+.battle-scene[data-battle-motion="retro"][data-battle-director-step="intro"]:has(.battle-enemy[data-collapse="bossSink"]) .battle-field {
+  animation: bf-boss-quake 520ms linear calc(var(--battle-reveal-ms, 300ms) + 830ms) both;
+}
+@keyframes bf-boss-quake {
+  0%, 100% { translate: 0 0; }
+  8% { translate: 0 6px; } 16% { translate: 0 -4px; } 24% { translate: 0 3px; } 32% { translate: 0 0; }
+  48% { translate: 0 5px; } 56% { translate: 0 -3px; } 64% { translate: 0 2px; } 72% { translate: 0 0; }
+}
+.battle-scene[data-battle-motion="retro"]:has(.battle-enemy[data-collapse="bossSink"]:not(.defeated)) .battle-backdrop::after {
+  animation: bf-boss-aura 2600ms ease-in-out infinite alternate;
+  background: radial-gradient(ellipse 70% 80% at 30% 55%, transparent 45%, rgb(30 0 6 / 0.55) 100%);
+  content: "";
+  display: block;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 5;
+}
+@keyframes bf-boss-aura {
+  from { opacity: 0.65; }
+  to { opacity: 1; }
+}
+.battle-scene[data-battle-motion="retro"][data-battle-director-step="intro"]:has(.battle-enemy[data-collapse="bossSink"])::after {
+  animation: bf-boss-letterbox 1950ms cubic-bezier(0.3, 0.7, 0.3, 1) both;
+  background: linear-gradient(#000 0 0) top / 100% 40px no-repeat, linear-gradient(#000 0 0) bottom / 100% 40px no-repeat;
+  bottom: var(--battle-hud-height, 152px);
+  content: "";
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  /* 메시지 창(「붉은 용이 나타났다!」)과 HUD 아래, 무대 위. 30 이면 띠가 등장 문장을 가렸다(녹화 실측). */
+  z-index: 5;
+}
+@keyframes bf-boss-letterbox {
+  0% { background-size: 100% 0, 100% 0; }
+  20%, 78% { background-size: 100% 40px, 100% 40px; }
+  100% { background-size: 100% 0, 100% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-motion="retro"] .battle-enemy[data-collapse="bossSink"],
+  .battle-scene[data-battle-motion="retro"] .battle-field,
+  .battle-scene[data-battle-motion="retro"]::after { animation: none !important; }
+}
+
+/* ── 결과 화면 전환(battle-feel r2) ─────────────────────────────────────────────
+   녹화 실측: 「승리!」 도장 0.7초 뒤 불투명 남색 판이 한 프레임에 무대를 통째로 덮었다(전장이 사라진 표).
+   판은 왼쪽 기둥의 반투명 막으로 두어 오른쪽의 이긴 파티가 그대로 보이고, 창 셋은 위에서부터 차례로 내려앉는다. */
+.battle-scene[data-battle-motion="retro"]:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel {
+  animation: bf-result-dim 420ms ease-out both;
+  background: rgb(6 8 30 / 0.5);
+  /* r3: 창이 무대를 다 덮어 이긴 파티(승리 포즈)가 창 뒤에 숨었다. 창은 왼쪽 58% 기둥에만 두고 — 적이 서던 자리 —
+     오른쪽은 비워 승리 포즈를 그대로 보인다(아군 발 x 222~294/320 = 무대의 69~92%). */
+  right: auto;
+  width: 58%;
+}
+.battle-scene[data-battle-motion="retro"]:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel > :is(.battle-result-summary, .battle-result-party, .battle-result-cards, .battle-result-next-prompt, .battle-result-confirm) {
+  animation: bf-result-window 340ms cubic-bezier(0.2, 0.9, 0.3, 1.12) both;
+}
+.battle-scene[data-battle-motion="retro"]:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel > .battle-result-summary { animation-delay: 120ms; }
+.battle-scene[data-battle-motion="retro"]:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel > .battle-result-party { animation-delay: 260ms; }
+.battle-scene[data-battle-motion="retro"]:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel > .battle-result-cards { animation-delay: 400ms; }
+.battle-scene[data-battle-motion="retro"]:is([data-battle-ui-style])[data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel > :is(.battle-result-next-prompt, .battle-result-confirm) { animation-delay: 540ms; }
+@keyframes bf-result-dim {
+  from { background-color: rgb(6 8 30 / 0); }
+}
+@keyframes bf-result-window {
+  from { opacity: 0; translate: 0 -18px; }
+  to { opacity: 1; translate: 0 0; }
+}
+/* 전멸: 표만 툭 뜨던 것을, 무대가 먼저 잿빛으로 식고 그 위로 창이 천천히 떠오르게. */
+.battle-scene[data-battle-motion="retro"][data-battle-director-step="result"]:has(.battle-result-panel[data-battle-result="defeat"]) .battle-field {
+  animation: bf-defeat-ash 900ms ease-out both;
+}
+@keyframes bf-defeat-ash {
+  to { filter: grayscale(0.85) brightness(0.55) sepia(0.25); }
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-result-panel[data-battle-result="defeat"]:not(.battle-result-pixel) {
+  animation: bf-defeat-window 700ms cubic-bezier(0.3, 0.6, 0.3, 1) 300ms both;
+}
+@keyframes bf-defeat-window {
+  from { opacity: 0; translate: 0 22px; }
+  to { opacity: 1; translate: 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-motion="retro"] .battle-result-panel,
+  .battle-scene[data-battle-motion="retro"] .battle-result-panel > * { animation: none !important; }
+}

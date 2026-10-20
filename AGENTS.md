@@ -55,14 +55,14 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `modern-chipset` · 시드 `harness-data/modern-chipset/seed.json`
   → `npm run harness -- modern-chipset <단계>` · 문서 `openwiki/harnesses/modern-chipset.md`
   → 기준 = 프로젝트의 modern-city-atlas 경찰차. 후보는 Sonnet 5명이 pxgrid 로 찍고 사람이 고른다. 직접 그리지 말 것.
-- **jp_city 번들(일본 도시, modern3)의 주택가·역·공원·신사 그림(건물 외형·소품·바닥 타일·키트)을 그릴 때** (3/4 시점, 사람·글자·상표 금지)
+- **jp_city 번들(일본 도시, modern3)의 주택가·역·공원·신사 그림(건물 외형·소품·바닥 타일·키트)을 그릴 때** (3/4 시점, 사람·상표 금지 · 일본어 간판 글자는 허용)
   → `jp-city` · 시드 `harness-data/jp-city/seed.json`(항목 40, wave houses/station/park/shrine)
   → `npm run harness -- jp-city <단계>` · 문서 `openwiki/harnesses/jp-city.md`
   → 후보는 Sonnet 5명이 pxgrid 로 찍고 **사람이 고른다**(시트 `~/claude-viz/jp-<판>.html`). 직접 그리거나 감독이 고르지 말 것. 웨이브 구동 `src/harnesses/jp-city/waves.py`.
 - **던전·동굴 공용 칩셋 beodeul_dungeon(버들항과 같은 oprn-atlas 계열)의 불규칙 벽·바닥 오토타일·물/용암/얼음 가장자리·계단·문·함정·상자·횃불 조각을 그릴 때**
   → `dungeon-chipset` · 시드 `harness-data/dungeon-chipset/seed.json` · `npm run harness -- dungeon-chipset palette|validate|list|draw|gate|sheet|pick|reject|status` · 문서 `openwiki/harnesses/dungeon-chipset.md`
   → 코드 손 도트(행 문자열), 버들항 실제 색 잠금 팔레트. 후보는 사람이 시트(`~/claude-viz/dungeon-<판>.html`)에서 고르고 pick 은 그림 해시에 묶인다. 관문 통과는 합격이 아니며 번들 굽기는 별도.
-- **새 기물(오브젝트) 그림을 번들·공용 DB·스토어·공방 칩셋에 굽거나 올리기 전 / 굽기·게시 스크립트에 3/4 시점 관문을 붙일 때** → `object-gate` · 시드 `harness-data/object-gate/seed.json` · `npm run harness -- object-gate review|calibrate|check|status|audit|preview` · 문서 `openwiki/harnesses/object-gate.md`. 판정자 Claude Sonnet 5.5 high(`claude -p`, 사용자 결정 2026-10-14; 신원·effort 는 프로필 해시, 안 되면 다른 모델로 안 넘어가고 멈춤) 하나×네 번(과반) 한 번의 판정이 **3/4 시점 + 버들항 화풍(같은 종류 버들항 기준 그림과 같은 배율 비교)** 둘을 함께 정하고, 영수증은 두 판정을 그림 화소 해시·프로필 해시에 묶는다(둘 다 통과해야 통과, 화풍은 영수증의 별도 칸). 위반 표본을 다 잡는 보정 프로필만 효력이 있다(현재 미보정 — 2026-10-20 프로필 `ee216f0de5822996`(규칙 v8) **rejected**: 확실 위반 자동통과 0/84·적대 0/144·화풍 강한 라벨 8/8·14/14 이지만 새 숨김 정상 29/42(69%) < 80%. 옛 영수증 5,300장은 무효, `rereview` 는 보정 통과 전엔 거절). 번들·공용·스토어는 예외 없이 막고 공방 로컬만 사람이 「그래도 넣기」.
+- **새 기물(오브젝트) 그림을 번들·공용 DB·스토어·공방 칩셋에 굽거나 올리기 전 / 굽기·게시 스크립트에 3/4 시점 관문을 붙일 때** → `object-gate` · 시드 `harness-data/object-gate/seed.json` · `npm run harness -- object-gate final-review|final-queue|final-calibrate|final-status|check|serve-holds|enqueue|review|status|preview` · 문서 `openwiki/harnesses/object-gate.md`. **최종 판정은 Opus 5.5 medium 적대적 VQA 다(사용자 결정 2026-10-21, 옵션 A 「사람 허용이 최종」을 대체).** 검사관 지시문으로 그 종류의 올바른 3/4 탑뷰(윗면 보임·옆면/아이소 없음·정면 입면도 아님·버들항 화풍)가 아닌 이유를 찾고, 한 호출 6장, 3표 만장일치, 애매하면 불합격. 기록(`final/<해시>.json`)은 그림 화소 해시·종류·프로필에 묶이고 **보정된 최종 프로필**(확실 위반을 하나도 놓치지 않은 것)의 기록만 출구에서 효력이 있다. Opus fail = 다시 그린다. 서명된 사람 거절(18323 검토 화면)은 Opus 통과도 막는 최종 차단이고, 사람 허용은 선택이며 Opus 판정이 없는 그림에만 효력이 있다. 옛 Sonnet·gemini 영수증은 조언이다. 감독·에이전트는 이 판정자 밖에서 그림을 통과시키지 않는다. **2026-10-21 현재 보정된 Opus 프로필 없음**(조건: 위반 100% + 칩셋 원본 90% 이상, v6 원본 70.3%) — 그때까지 Opus 기록은 효력이 없다.
 - **조선(바람의나라풍) 칩셋 joseon_baram 의 조각·지도를 만지거나 번들을 재생성할 때** (팔레트 잠금·게이트 P/E/T/L/S/A/K/TR/V·판정·지도 관문·16구역 적대 검수)
   → `joseon-baram` · 시드 `harness-data/joseon-baram/seed.json`(지도 15장·관문·쓰지 말 것)
   → `npm run harness -- joseon-baram <단계>` (palette·validate·list·gate·verdict·build·map·review·status) · 문서 `openwiki/harnesses/joseon-baram.md`
@@ -151,7 +151,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - `openwiki/editor-workflows.md` is now a slim index linking to the above topic pages.
    - Runtime pre-edit routing & cautions: `openwiki/runtime-pre-edit-routing.md` (read first for any runtime change)
    - 타이틀 오프닝 효과 (WebGL 빛내림·칼날 반사·물결·안개, AI 키아트 + 비전 좌표 맞춤): `openwiki/title-opening-effects.md`
-   - 세계 지도 지형 편집 (조수가 대륙·해협·섬·산맥·강·숲·바닥을 ops 로 다시 그림, 월드맵 키트 빌드 경로·저장 형태): `openwiki/worldmap-terrain-editing.md`
+   - 세계 지도 지형 편집 (조수가 대륙·해협·섬·산맥·강·숲·바닥을 ops 로 다시 그림, 월드맵 키트 빌드 경로·저장 형태 — 키트 정본은 공개 저장소 oprn-worldmap-kit, `npm run worldmap-kit:sync` 로 고정 커밋을 받는다): `openwiki/worldmap-terrain-editing.md`
    - Runtime battle: `openwiki/runtime-battle.md`
    - 픽셀을 직접 찍는 자산·전투 효과 저작: `openwiki/pixel-dot-authoring.md` → `assistant-skills/pixel-dot-authoring/SKILL.md` · `assistant-skills/pixel-fx-animation/SKILL.md` (전용 하네스가 있으면 그 경로 우선, 반려된 도형 시안을 기준작으로 쓰지 않는다).
    - 배틀러 idle 애니메이션을 **새로 추가하는 절차**(표시 상자 실측 → 클립 → 창 탐색 → 패킹 → 검증, 네 계약과 함정): `openwiki/battler-idle-playbook.md`
@@ -211,10 +211,17 @@ index 에서 제거하고 `.gitignore` 에 `.qoder/` `.qwen/` `.senpi/` `.agents
 **손 도트·코드 도트로 새로 그린 그림(jp_city 키트·건물 정면·소품, 칩셋 조각, 실내 기물, 월드맵 아이콘, 스토어 팩 그림 등 종류 불문)은
 3/4 탑뷰 검증을 통과한 뒤에만 번들·공용 DB·맵·스토어에 들어간다.** 「눈으로 봤다」「기계 지표 통과」「서브에이전트 QA 점수」는 이 관문을 대신하지 못한다.
 
-- 관문의 정본은 `object-gate` 하나다: `npm run harness -- object-gate review|check|status` · 문서 `openwiki/harnesses/object-gate.md`.
-  판정자 Claude Sonnet 5.5 high(`claude-cli/claude-sonnet-5-5` effort=high) 하나×네 번(중앙값·과반 + 독립 눈 3번 거부권)이고, 3/4 와 버들항 화풍을 따로 호출해 둘 다 통과해야 통과한다(영수증에 칸 둘; 숫자 지표는 보조). 결과는 pass·fail·refer(사람 확인) 3상태다. 영수증은 그림 화소 해시에 묶인다. 그림이 한 화소라도 바뀌면 다시 받는다.
-- **지금 상태(2026-10-20 실측): 현재 프로필 `ee216f0de5822996`(규칙 v8) 보정 rejected.** 확실 위반 자동통과 0/84 · 적대 시험 0/144 · 화풍 강한 라벨 8/8·14/14 이지만 새 숨김 정상 통과 29/42(69%) < 80% (버들항 원본 U 는 판정 결과를 가린 화소 규칙으로만 정함 — `calibration/review-2026-10-20.json`; 결과를 보고 고른 첫 분류의 81.6%·calibrated 는 선택 편향이라 철회). 그래서 영수증은 효력이 없고 굽기 스크립트(`theme_bake` 계열·modern-city·murim-chipset·jp-city 등, `refusal`/`require_pass`)는 새 그림을 **거절한다**(우회 `JP_GATE=skip`·`--no-gate`·`--dev` 는 제거됨, 배선 표는 `openwiki/harnesses/object-gate.md`). 정면형 소품(간판·건조 틀)은 종류 `front_prop` — **사람이 터미널에서 `approve-front-prop` 로 그림 해시에 승인한 것만** 3/4 면제(화풍은 그대로 pass), 승인 전엔 보류이며 감독·에이전트는 승인하지 않는다. 「관문이 있다」·「통과했다」고 쓰지 마라.
-- 새 그림을 만든 에이전트는 완료 보고에 `object-gate review` 영수증(또는 `status` 출력)을 붙인다. 없으면 「3/4 관문 미통과」라고 쓴다.
+**최종 판정 = Opus 5.5 medium 적대적 VQA (사용자 결정 2026-10-21 — 옵션 A 「서명된 사람 허용이 최종」(2026-10-20)을 대체).** 18323 에서 불합격인 그림은 다시 그린다.
+- 판정기 `npm run harness -- object-gate final-review --batch items.jsonl`(또는 `--png --kind`) — `claude -p --model claude-opus-5-5 --effort medium`(로컬 Claude 경로, Argon 아님), 검사관 지시문, 한 호출 6장, 3표 만장일치, 애매하면 불합격. 기록 `final/<해시>.json` 은 그림 화소 해시·종류·프로필에 묶인다. 한 화소라도 바뀌면 다시 받는다.
+- **보정된 최종 프로필의 기록만 효력이 있다**(`final-calibrate`: 숨김 표본 포함 확실 위반을 하나도 놓치지 않아야 calibrated). 현황은 `object-gate final-status`. 보정 기준을 풀지 마라 — 놓치면 지시문을 더 엄하게 한다.
+- 출구(`require_pass`·`check`·시트 칸 관문·스토어·공방, TS·Python 같은 규칙): ① 서명된 사람 **거절**은 최종 차단(Opus 통과도 막는다) ② Opus 기록이 있으면 그 판정이 최종(fail = 차단, 공방 로컬만 사람 「그래도 넣기」) ③ Opus 기록이 없을 때만 옛 규칙(서명된 사람 허용 — 이제 선택 — 또는 보정된 옛 프로필의 PASS).
+- 검토 화면 `serve-holds`(http://mdc-server:18323/)는 Opus 판정·이유를 보이고 「Opus 불합격」으로 거른다. 대기열 일괄 판정은 `final-queue`, 불합격 목록(`~/.cache/opus-gate/fails.json`)이 다시 그리기 작업 목록이다.
+- **감독·에이전트는 이 판정자 밖에서 그림을 통과시키지 않는다.** 기록 파일을 손으로 쓰거나, 사람 화면을 흉내 내 POST 하거나, 서명 키를 읽지 않는다.
+- 새 그림을 만든 에이전트는 완료 보고에 `object-gate final-review` 결과(또는 `final-status`)를 붙인다. Opus pass 가 없으면 「3/4 관문 미통과」라고 쓴다.
+
+- 관문의 정본은 `object-gate` 하나다: `npm run harness -- object-gate final-review|check|final-status` · 문서 `openwiki/harnesses/object-gate.md`.
+- **개별 저장소(2026-10-20 분리):** 관문 코드·데이터의 공유 정본은 비공개 저장소 `MovieHolic-Plex/object-gate`(로컬 `~/z-project/object-gate`)다. 이 저장소의 네 경로(`src/harnesses/object-gate`·`src/harnesses/_core/objectGate`·`src/harnesses/_core/object_gate`·`harness-data/object-gate`)는 같은 경로·같은 바이트의 **사본**이라 모든 호출자는 그대로 쓴다. 여기서 관문을 바꾸면 평소처럼 PR 로 병합한 뒤 `npm run object-gate:sync -- export --push` 로 그 저장소에 올린다. 그 저장소에서 바뀐 것은 `import` 해서 PR 로 들인다. `status` 가 충돌을 보이면 손으로 맞추고, 영수증·승인·최종 기록 파일은 내용을 고치지 않는다.
+- 옛 판정자(Claude Sonnet 5.5 high ×4 + 독립 눈, 프로필 `4d8774b517f41638` rejected) 영수증(`review`·`enqueue`)은 조언으로만 남는다. 정면형 소품(간판·건조 틀)은 종류 `front_prop` — Opus 도 종류가 맞을 때만 면제한다.
 - 굽기·게시 스크립트에는 `src/harnesses/_core/object_gate` 의 `require_pass(img, kind=, context=, label=)` 를 붙인다(Python). 새 굽기 스크립트를 만들 때 이것부터 건다.
 - 관문을 건너뛰거나 점수·기준을 완화하지 마라. 막히면 그림을 고치거나 사용자에게 묻는다.
 - 시점 규칙 면제 종류(`flat`·`terrain`·`organic`·`debris`·`wall_mounted`)도 판정자 과반이 「종류가 맞다」고 해야 한다.

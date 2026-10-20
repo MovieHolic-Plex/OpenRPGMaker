@@ -1,0 +1,327 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "910c23b132c967a2536671efc3c298494a8f78261fb43375da287bf9c2f38b53",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "round wooden lab stool",
+ "label": "seats34/jp_city_interior/sc-lab-stool",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 51,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "round seat",
+      "rows": "2-8",
+      "evidence": "b",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "legs with crossbar",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is an ellipse-like disc. The width profile goes 8 at row 2, then 12 for rows 3-7, then 8 at row 8, so it widens and narrows again. It has a dark outline at the top and bottom, and the tan fill in rows 3-7 has a lighter highlight at row 6 and a darker front-edge row at row 7. Below the seat, two legs 4px wide run through rows 9-15 with a crossbar at row 12 (width 10), which gives a front/leg face of about 7 rows. This matches the green 'seat: top 5 + legs' and barrel ellipse references, not a flat band or a side elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny stool with only 7 distinct colours, against 11-40 for the references (14 for the bench and the lamp, the closest in size). Its seat is a pale cream top with a lighter highlight, and the legs are one or two browns. That is about 3 shading steps on the wood, where Beodeul wood has 5-6. The outline is a tinted dark brown (0% near-neutral), so it is not a sticker line, and flat-fill coverage is 0% only because the piece is small. At this size the surface still has no grain, no plank or seat texture dots, and no per-part shading on the legs. Next to the bench, which has slat highlights and shadowed undersides, the stool looks thinner and flatter. Density is judged by eye since the per-tile median is 0. A careful artist would not accept it beside the references without more ramp steps and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13500
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "round seat",
+      "rows": "2-8",
+      "evidence": "b",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile runs 8, 12 (rows 3-7), 8, so the seat widens and narrows again, which is an ellipse from the back rim at row 2 to the front rim at row 8. The columns show light top rows 3-5, a lighter front-edge line at row 6, and a darker shadow or thickness row at row 7. Below the seat, four-pixel-wide legs with a crossbar at row 12 form a front face over rows 9-15, which is 7 rows. This matches the green 'seat: top 5 + legs' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small round stool with a pale seat top and a brown body, and it has only 7 distinct colours against 14 for the bench and lamp and 38-40 for the well and stall. The seat has about 2-3 lightness steps (a light top, a mid edge and a shadow), and the legs are 2 tones plus an outline. The 0% near-neutral share of dark edge pixels means the outline is tinted, a brownish dark tone, so it is not a sticker-style black line. The 5x5 flat-fill coverage is 0%, but only because the piece is tiny. By eye there is no visible grain, wood-ring detail or per-plank highlight, so texture is flat, and the stool looks thinner and simpler than the bench, which has slat highlights, shadow and several wood tones. The tile density fact is 0 because the piece is smaller than a tile, so I judged by eye. It reads as a clean but shallow piece beside the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14618
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "round seat top",
+      "rows": "2-7",
+      "evidence": "b",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "legs with crossbar",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a rounded plate. Its width profile goes 8, 12 (rows 3-7), then 8 at row 8, so it widens and narrows like an ellipse. Rows 3-5 are the tan top surface. Row 6 is a lighter front-edge line (L=200). Row 7 is a darker shadow or thickness band (L=131). Row 8 is the outline. Below the seat, two thin legs (width 4) run through rows 9-15 with a crossbar at row 12, so the front face reads as 3+ rows. This matches the green 'seat: top 5 + legs' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The stool is tiny, with only 7 distinct colours against 14 for the bench and lamp and 38-40 for the well and stall. Its seat has a light top and a mid-tone side, and the legs are one brown with a dark edge, so the wood ramp has about 3 steps against the reference's 5-6. The outline is a tinted dark brown (0% near-neutral), which is correct and not a sticker line. The 5x5 flat-fill measure is 0%, but only because the piece is so small. By eye the surfaces carry no wood grain, no per-plank highlights and no texture dots, whereas the bench and well show grain and per-stone shading. Placed next to the references it looks thinner and flatter. The outline is the only part that meets the standard; shading depth and texture fall short.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14913
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "round seat",
+      "rows": "2-8",
+      "evidence": "b",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is an ellipse. The width profile runs 8 at row 2, 12 at rows 3-7 and 8 at row 8, so it widens and narrows again. Inside the outline, rows 3-5 are the lighter seat surface. Row 6 is a lighter front-edge line (L=200), and row 7 is a darker shadow or thickness row (L=131). Below the seat, rows 9-15 show open legs (width 4) with a crossbar at row 12 (width 10), which is the front face. The ellipse and legs match the green 'seat: top 5 + legs' reference, not the 'band 2' one."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The stool is a small, sparse prop, so the per-tile median of 0 says nothing against it. Its outline is tinted (0% neutral dark edge pixels), so it is not a black sticker line, which is a point in its favour. The problem is depth: only 7 distinct colours against 14 for the bench and the lamp, which are the closest sparse references. By eye, the cushion seat has about 3 lightness steps (light top, mid, dark edge), and the legs and rungs look like one flat brown plus an outline. There is no visible grain, wood texture or per-part highlight, which the bench's slats do carry. No 5x5 flat-fill block is flagged, but that is only because the piece is tiny. Next to the references it looks thinner and flatter. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13946
+  }
+ ],
+ "decidedAt": "2026-10-20T09:02:37.244Z",
+ "cells": {
+  "16": [
+   "ca24a8afe0edaa86"
+  ],
+  "24": [
+   "20e4e8c88b551585",
+   "53faa0f83866581e",
+   "a5b2a28ab4ac3014",
+   "b67bade9589e534d",
+   "deac3cf15a299811",
+   "dfd8fc2863bea3b0"
+  ],
+  "32": [
+   "61d9102aadab1db3",
+   "66a96608a326b3fa",
+   "74bc949e15c3c785",
+   "d2747b220d4c807c",
+   "e6bb785d6b51256f",
+   "f0e59e80846ea723"
+  ],
+  "48": [
+   "2a5df5f251a90180",
+   "43ad28e9af0f7c99",
+   "50bd82a39fad5236",
+   "5f65b1e92723fa84",
+   "89244f0b5e0ec3df",
+   "d1de9bb7e387d44e"
+  ]
+ }
+}

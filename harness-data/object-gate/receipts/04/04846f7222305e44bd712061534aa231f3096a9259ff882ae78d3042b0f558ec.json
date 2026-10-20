@@ -1,0 +1,360 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04846f7222305e44bd712061534aa231f3096a9259ff882ae78d3042b0f558ec",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "konbini magazine rack",
+ "label": "modern_city_interior/konbini-magazine-rack",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 30,
+  "tileColorsP90": 30,
+  "darkV5": 33,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top band of rack",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "shelf compartments with magazines",
+      "rows": "7-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band spans rows 1-6: cream rows 1-5 end in a lighter gray front-edge line at row 6, followed by dark shadow at rows 7-8, so it reads as a top surface. Below it is a front face of about 25 rows: a shelf unit seen face-on, with magazines on three shelves divided by 1-row shelf lines at rows 13, 20 and 27, and a base at rows 27-31. No side face is drawn. The object is a shelf unit, not an open container whose inside is seen from above, so the supplied kind fits poorly. The top band alone makes the structure read as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 29 visible tones per 16x16 tile, above the stall (17), well (20) and hedge (9). Near-flat coverage is 0%, so there are no flat fills. 0% of dark edge pixels are neutral, so the outline is tinted, a dark brownish version of the frame, and not a near-black sticker line. By eye, the cream and beige frame shows about 5 lightness steps with an inner shadow. The shelves are separated by value, and the rows of magazine spines carry varied colour dots and highlights. It is a little more regular and less grainy than the stall or well, but at the same scale it holds up next to them and does not look thinner or flatter. A careful artist would accept it beside the references."
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 29574
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top panel of rack",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "magazines on shelves",
+      "rows": "8-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a cream band, darker at row 1 and lighter at rows 2-5. It ends in a grey front-edge line at row 6, followed by dark shadow at rows 7-8, so it reads as a top surface. Below it is a front face about 24 rows tall, drawn as a dark open-front interior with three shelves of face-on magazines and a plinth band at the bottom. The object is a shelving rack, not a container with an opening seen from above, so the kind does not match well. The structure still reads as three-quarter view, like the cabinet reference (top, edge line, eave shadow)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts favour the candidate. It has 29 visible tones per 16x16 tile, against 17-20 for the cheese stall and roofed well and 9 for the hedge. Near-flat coverage is 0%, so no 5x5 area is one flat colour. Dark edge pixels are 0% near-neutral, so the outline carries a tint. By eye it reads as a warm dark-brown frame rather than a black sticker line. The cream frame has about 4-5 lightness steps, and the shelf rows are broken up by many small magazine spines in varied tones with highlights, which gives clustered detail like the stall's goods. It is slightly less textured than the well or stall (the frame's cream has little grain), but it is not shallow or flat next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21995
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top board of rack",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "magazines on shelves",
+      "rows": "8-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top is a tan band at rows 1-5 (a darker row 1, lighter rows 2-5). It ends in a pale-grey front-edge line at row 6, and dark shadow follows at rows 7-8. This matches the cabinet and bookshelf 'top + edge + eave' references. The front face is the shelving with face-out magazines, rows 7-30, which is well over 3 rows. The object is a front-facing shelf rack, not an open container seen from above, so the container kind only loosely fits. The magazines are vertical faces and count as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 29 visible tones per 16x16 tile, above prop-well-roofed (20) and prop-stall-cheese (17). Near-flat coverage is 0%, against 13% for the cheese stall. 0% of its dark edge pixels are neutral, so the outline is a tinted dark brown-grey rather than a black sticker line. By eye, the frame has a light face, a mid tone, a shadow edge and a dark outline, and the shelves hold rows of magazine spines with small highlights and label dots. Some of the tone count comes from the variety of magazine colours rather than from deep shading ramps, so the frame shading (about 4 steps) is a little shallower than the references' 5-6. There are no large flat fills, and it would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20493
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top board of rack",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     },
+     {
+      "part": "magazines on shelves",
+      "rows": "8-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a tan top band, getting lighter from row 1 to rows 3-5. Row 6 is a pale grey front-edge line, and the dark row 7 acts as eave shadow. Below that is a front face of about 24 rows with three shelves of face-on magazines and a base band at rows 27-30. This matches the 'cabinet: top 5 + edge + eave' reference. The rack is an open-front shelf unit, not a container with an opening seen from above, so kind_matches is false. The top board is not an opening, and the magazines are seen face-on, not from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 29 visible tones per 16x16 tile, above the cheese stall (17) and the roofed well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. Dark edge pixels are 0% neutral, so the outline is tinted (a dark warm tone beside the pale frame) and not a black sticker line. The frame has about 4 lightness steps (highlight, light, mid, dark), slightly under the 5-6 on the references. The shelves carry many small magazine spines with their own highlights and shadows, which gives the grain and clustering the references have. It is a small, simple piece, but at the same scale it holds up next to the references and does not look thinner or flatter. Some of the tone count comes from the varied magazine colours rather than from shading depth, so the score is moderate.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19143
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.018Z",
+ "cells": {
+  "16": [
+   "522629fdf97c0d08",
+   "9941946737dec130",
+   "b529035505da250a",
+   "c0cb0746d784e201"
+  ],
+  "24": [
+   "13d8659811e25a3b",
+   "25ad22c460440afd",
+   "25fb4005dd93ad51",
+   "275d25123fc71a5e",
+   "3d709d271431a306",
+   "42524e2af0fe0335",
+   "42be307dfbfc3736",
+   "43bb57cfb3e5ec3e",
+   "4e18994f8b211bfe",
+   "576ceb524060c51e",
+   "6bc17daab229d882",
+   "88caf136836f6002",
+   "90f27798cb46dabe",
+   "935167d52b40aae1",
+   "bc851309365f745b",
+   "cbd08d1d204b05d7",
+   "cef4690f7b5d8f2a",
+   "d2ce48fceb8b6375",
+   "d3438aaeda1f0a16",
+   "e4fe3581a062886e",
+   "f057496d7175cd0f",
+   "f32845c674299f3e",
+   "f9e32e42292387c1",
+   "fb555c8b69e0e1b6"
+  ],
+  "32": [
+   "ce5749c5ebb35812"
+  ],
+  "48": [
+   "0f80b3fd653f451a",
+   "21d3b56c1dbe3072",
+   "3aa04ba2e508fbb2",
+   "4753276275014746",
+   "7499222b134b5a8c",
+   "7c43868c44f5aedb"
+  ]
+ }
+}

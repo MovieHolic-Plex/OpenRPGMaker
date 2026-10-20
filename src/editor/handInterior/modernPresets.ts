@@ -4,6 +4,7 @@ import type { InteriorRoomTemplate } from "./templates";
 import { DAILY_VENUE_PROGRAMS, DAILY_VENUE_TEMPLATES, DAILY_VENUE_VARIATION } from "./dailyVenues";
 import { MODERN_VENUE_PROGRAMS, MODERN_VENUE_TEMPLATES, MODERN_VENUE_VARIATION } from "./modernVenues";
 import { FACILITY_PROGRAMS, FACILITY_TEMPLATES, FACILITY_VARIATION } from "./facilityVenues";
+import { JP_CITY_PROGRAMS, JP_CITY_TEMPLATES, JP_CITY_VARIATION } from "./jpCityPresets";
 
 export interface ModernPresetData {
   readonly templates: Readonly<Record<string, readonly InteriorRoomTemplate[]>>;
@@ -33,6 +34,8 @@ export interface ModernProgramVariation {
   readonly open?: readonly (readonly [string, string])[];
   /** 줄 사이에 깔린 복도(arch-hall) - rows 에 복도 줄(`arch-hall`)이 있을 때 그 복도의 꾸밈 묶음(archHall.ts). */
   readonly hall?: "school" | "hospital" | "office" | "hotel" | "public";
+  /** 참이면 남쪽 외벽 출구 틈을 열지 않는다(2층·3층처럼 계단·엘리베이터로만 오가는 상층). */
+  readonly noExteriorExit?: boolean;
 }
 
 export const MODERN_PROGRAM_VARIATION: Readonly<Record<string, Readonly<Record<string, ModernProgramVariation>>>> = {
@@ -81,6 +84,97 @@ export const MODERN_PROGRAM_VARIATION: Readonly<Record<string, Readonly<Record<s
     ] },
     ...DAILY_VENUE_VARIATION,
     ...FACILITY_VARIATION,
+  },
+  jp_city: {
+    ...JP_CITY_VARIATION,
+  },
+  modern_campus: {
+    "dorm-1f": {
+      rows: [
+        ["lounge", "dorm-room", "dorm-room", "void:3"],
+        ["corridor"],
+      ],
+      entrance: "corridor",
+      hubs: ["corridor", "lounge"],
+      open: [["lounge", "corridor"]],
+      above: [["lounge", "corridor"], ["dorm-room", "corridor"]],
+      left: [["lounge", "dorm-room"]],
+      palettes: [
+        { lounge: ["mc-floor-parquet", "mc-wall-dorm"], "dorm-room": ["mc-floor-dorm", "mc-wall-dorm"], corridor: ["mc-floor-corridor", "mc-wall-corridor"] },
+        { lounge: ["mc-floor-lino", "mc-wall-class"], "dorm-room": ["mc-floor-parquet", "mc-wall-dorm"], corridor: ["mc-floor-lino", "mc-wall-corridor"] },
+      ],
+    },
+    "dorm-2f": {
+      rows: [
+        ["dorm-room", "dorm-room", "bath", "dorm-room", "void:3"],
+        ["corridor"],
+      ],
+      entrance: "corridor",
+      noExteriorExit: true,
+      hubs: ["corridor"],
+      above: [["dorm-room", "corridor"], ["bath", "corridor"]],
+      palettes: [
+        { "dorm-room": ["mc-floor-dorm", "mc-wall-dorm"], bath: ["mc-floor-tile", "mc-wall-tile"], corridor: ["mc-floor-corridor", "mc-wall-corridor"] },
+        { "dorm-room": ["mc-floor-parquet", "mc-wall-dorm"], bath: ["mc-floor-tile", "mc-wall-tile"], corridor: ["mc-floor-lino", "mc-wall-corridor"] },
+      ],
+    },
+    "school-special-wing": {
+      rows: [
+        ["library", "infirmary", "staffroom", "void:3"],
+        ["corridor"],
+      ],
+      entrance: "corridor",
+      hubs: ["corridor"],
+      above: [["library", "corridor"], ["infirmary", "corridor"], ["staffroom", "corridor"]],
+      left: [["library", "infirmary"], ["infirmary", "staffroom"]],
+      palettes: [
+        { library: ["mc-floor-parquet", "mc-wall-class"], infirmary: ["mc-floor-lino", "mc-wall-corridor"], staffroom: ["mc-floor-parquet", "mc-wall-class"], corridor: ["mc-floor-corridor", "mc-wall-corridor"] },
+        { library: ["mc-floor-dorm", "mc-wall-dorm"], infirmary: ["mc-floor-lino", "mc-wall-corridor"], staffroom: ["mc-floor-lino", "mc-wall-class"], corridor: ["mc-floor-corridor", "mc-wall-corridor"] },
+      ],
+    },
+    "school-cafeteria-club-wing": {
+      rows: [
+        ["cafeteria", "toilet", "club"],
+        ["corridor", "void:4"],
+      ],
+      entrance: "corridor",
+      hubs: ["corridor", "cafeteria"],
+      open: [["cafeteria", "corridor"]],
+      above: [["cafeteria", "corridor"], ["toilet", "corridor"], ["club", "corridor"]],
+      left: [["cafeteria", "toilet"], ["toilet", "club"]],
+      palettes: [
+        { cafeteria: ["mc-floor-cafe", "mc-wall-cafe"], toilet: ["mc-floor-tile", "mc-wall-tile"], club: ["mc-floor-parquet", "mc-wall-class"], corridor: ["mc-floor-corridor", "mc-wall-corridor"] },
+        { cafeteria: ["mc-floor-lino", "mc-wall-cafe"], toilet: ["mc-floor-tile", "mc-wall-tile"], club: ["mc-floor-dorm", "mc-wall-dorm"], corridor: ["mc-floor-corridor", "mc-wall-corridor"] },
+      ],
+    },
+    "lecture-hall": {
+      rows: [
+        ["lecture", "seminar"],
+        ["corridor", "void:4"],
+      ],
+      entrance: "corridor",
+      hubs: ["corridor"],
+      above: [["lecture", "corridor"], ["seminar", "corridor"]],
+      left: [["lecture", "seminar"]],
+      palettes: [
+        { lecture: ["mc-floor-parquet", "mc-wall-class"], seminar: ["mc-floor-lino", "mc-wall-class"], corridor: ["mc-floor-corridor", "mc-wall-corridor"] },
+        { lecture: ["mc-floor-lino", "mc-wall-class"], seminar: ["mc-floor-parquet", "mc-wall-dorm"], corridor: ["mc-floor-corridor", "mc-wall-corridor"] },
+      ],
+    },
+    "university-lecture-wing": {
+      rows: [
+        ["lecture", "seminar"],
+        ["corridor", "void:4"],
+      ],
+      entrance: "corridor",
+      hubs: ["corridor"],
+      above: [["lecture", "corridor"], ["seminar", "corridor"]],
+      left: [["lecture", "seminar"]],
+      palettes: [
+        { lecture: ["mc-floor-parquet", "mc-wall-class"], seminar: ["mc-floor-lino", "mc-wall-class"], corridor: ["mc-floor-corridor", "mc-wall-corridor"] },
+        { lecture: ["mc-floor-lino", "mc-wall-class"], seminar: ["mc-floor-parquet", "mc-wall-dorm"], corridor: ["mc-floor-corridor", "mc-wall-corridor"] },
+      ],
+    },
   },
 };
 
@@ -133,6 +227,7 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
       jp_museum: [
         { map: "museum-gallery", kinds: ["gallery-paintings", "gallery-sculpture", "gallery-lobby", "gallery-shop"] },
       ],
+      ...JP_CITY_PROGRAMS,
     },
     atlas_biome_interior: {
       museum: [
@@ -577,16 +672,114 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
           { t: "o", id: "mc-screen-proj", x: 7, y: 0 },
           { t: "o", id: "mc-wall-clock", x: 11, y: 0 },
           { t: "o", id: "mc-cork-board", x: 13, y: 0 },
-          { t: "o", id: "mc-lectern", x: 4, y: 2 },
-          { t: "o", id: "mc-pc-cart", x: 8, y: 2 },
+          { t: "o", id: "mc-cabinet-glass", x: 0, y: 2 },
+          { t: "o", id: "mc-lectern", x: 5, y: 2 },
+          { t: "o", id: "mc-pc-cart", x: 9, y: 2 },
           { t: "o", id: "mc-cabinet-glass", x: 13, y: 2 },
-          { t: "o", id: "mc-lecture-bench", x: 2, y: 4 },
-          { t: "o", id: "mc-lecture-bench", x: 9, y: 4 },
-          { t: "o", id: "mc-lecture-bench", x: 2, y: 6 },
-          { t: "o", id: "mc-lecture-bench", x: 9, y: 6 },
-          { t: "o", id: "mc-lecture-bench", x: 2, y: 8 },
-          { t: "o", id: "mc-lecture-bench", x: 9, y: 8 },
-          { t: "o", id: "mc-bin-wide", x: 14, y: 8 },
+          { t: "o", id: "mc-lecture-bench", x: 1, y: 4 },
+          { t: "o", id: "mc-lecture-bench", x: 6, y: 4 },
+          { t: "o", id: "mc-lecture-bench", x: 11, y: 4 },
+          { t: "o", id: "mc-lecture-bench", x: 1, y: 6 },
+          { t: "o", id: "mc-lecture-bench", x: 6, y: 6 },
+          { t: "o", id: "mc-lecture-bench", x: 11, y: 6 },
+          { t: "o", id: "mc-lecture-bench", x: 1, y: 8 },
+          { t: "o", id: "mc-lecture-bench", x: 6, y: 8 },
+          { t: "o", id: "mc-lecture-bench", x: 11, y: 8 },
+          { t: "o", id: "mc-bin-wide", x: 15, y: 8 },
+        ],
+      },
+      {
+        id: "dorm-1f:lounge#0",
+        map: "dorm-1f",
+        building: "dorm",
+        kind: "lounge",
+        w: 10,
+        h: 8,
+        floor: "mc-floor-dorm",
+        wall: "mc-wall-dorm",
+        items: [
+          { t: "o", id: "mc-cork-board", x: 0, y: 0 },
+          { t: "o", id: "mc-wall-clock", x: 5, y: 0 },
+          { t: "o", id: "mc-window-class", x: 7, y: 0 },
+          { t: "o", id: "mc-lounge-sofa", x: 1, y: 2 },
+          { t: "o", id: "mc-lounge-sofa", x: 4, y: 2 },
+          { t: "o", id: "sc-bookshelf", x: 7, y: 2 },
+          { t: "o", id: "sc-tv-stand", x: 9, y: 2 },
+          { t: "o", id: "mc-low-table", x: 2, y: 4 },
+          { t: "o", id: "mc-club-table", x: 5, y: 4 },
+          { t: "o", id: "mc-bean-bag", x: 8, y: 4 },
+          { t: "o", id: "mc-bean-bag", x: 8, y: 6 },
+          { t: "o", id: "mc-fridge-counter", x: 0, y: 6 },
+          { t: "o", id: "pb-water-dispenser", x: 3, y: 6 },
+        ],
+      },
+      {
+        id: "dorm-1f:corridor#3",
+        map: "dorm-1f",
+        building: "dorm",
+        kind: "corridor",
+        w: 22,
+        h: 5,
+        floor: "mc-floor-corridor",
+        wall: "mc-wall-corridor",
+        items: [
+          { t: "o", id: "mc-window-class", x: 2, y: 0 },
+          { t: "o", id: "mc-wall-clock", x: 9, y: 0 },
+          { t: "o", id: "mc-cork-board", x: 14, y: 0 },
+          { t: "o", id: "mc-shoe-rack-low", x: 0, y: 2 },
+          { t: "o", id: "mc-umbrella-stand", x: 3, y: 2 },
+          { t: "o", id: "mc-water-fountain", x: 6, y: 2 },
+          { t: "o", id: "mc-hall-locker", x: 9, y: 2 },
+          { t: "o", id: "mc-hall-locker", x: 13, y: 2 },
+          { t: "o", id: "mc-vending-low", x: 17, y: 2 },
+          { t: "o", id: "sc-stairs-up", x: 20, y: 2 },
+          { t: "o", id: "mc-bulletin-stand", x: 4, y: 4 },
+          { t: "o", id: "mc-lounge-sofa", x: 10, y: 4 },
+          { t: "o", id: "mc-bin-wide", x: 16, y: 4 },
+        ],
+      },
+      {
+        id: "dorm-2f:bath#2",
+        map: "dorm-2f",
+        building: "dorm",
+        kind: "bath",
+        w: 5,
+        h: 8,
+        floor: "mc-floor-tile-wc",
+        wall: "mc-wall-tile",
+        items: [
+          { t: "o", id: "toilet", x: 0, y: 2 },
+          { t: "o", id: "sc-urinal", x: 1, y: 2 },
+          { t: "o", id: "sc-sink", x: 2, y: 2 },
+          { t: "o", id: "washing-machine", x: 3, y: 2 },
+          { t: "o", id: "laundry-basket", x: 4, y: 2 },
+          { t: "o", id: "washing-machine", x: 0, y: 5 },
+          { t: "o", id: "laundry-basket", x: 1, y: 5 },
+          { t: "o", id: "mc-bin-wide", x: 4, y: 6 },
+        ],
+      },
+      {
+        id: "dorm-2f:corridor#4",
+        map: "dorm-2f",
+        building: "dorm",
+        kind: "corridor",
+        w: 22,
+        h: 5,
+        floor: "mc-floor-corridor",
+        wall: "mc-wall-corridor",
+        items: [
+          { t: "o", id: "mc-window-class", x: 4, y: 0 },
+          { t: "o", id: "mc-cork-board", x: 10, y: 0 },
+          { t: "o", id: "mc-wall-clock", x: 15, y: 0 },
+          { t: "o", id: "mc-fridge-counter", x: 0, y: 2 },
+          { t: "o", id: "mc-hall-locker", x: 5, y: 2 },
+          { t: "o", id: "mc-hall-locker", x: 10, y: 2 },
+          { t: "o", id: "mc-water-fountain", x: 15, y: 2 },
+          { t: "o", id: "sc-stairwell-down", x: 20, y: 2 },
+          { t: "o", id: "mc-lounge-sofa", x: 3, y: 4 },
+          { t: "o", id: "mc-low-table", x: 6, y: 4 },
+          { t: "o", id: "mc-bulletin-stand", x: 12, y: 4 },
+          { t: "o", id: "mc-bin-wide", x: 17, y: 4 },
         ],
       },
       {
@@ -1366,6 +1559,7 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
           { t: "o", id: "sh-register", x: 7, y: 5 },
         ],
       },
+      ...JP_CITY_TEMPLATES,
     ],
     atlas_biome_interior: [
       // ── 7. 미술관 · 박물관 전시실 (museum-gallery, 32×20, atlas_biome_interior) ──

@@ -1,0 +1,337 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "42758aa23da04be7733a971555ade8f05a763be88392b3785dc84c963a2d9c99",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "mart basket stacker",
+ "label": "modern_city_interior/mart-basket-stacker",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 36,
+  "nearBlackEdge": 0.91,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top basket opening (interior seen from above)",
+      "rows": "3-8",
+      "evidence": "d",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "stacked basket front faces (orange and blue bands)",
+      "rows": "9-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base platform/foot",
+      "rows": "24-27",
+      "evidence": "none",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-8 form a distinct top opening. Row 3 is an orange back rim, rows 4-7 are dark brown interior with contents shading, and row 8 is a light orange front-rim line (#fad278). Dark rows 9-10 follow as shadow. Below that, rows 9-22 are a vertical front face of alternating orange and blue basket bands, about 15 rows. A base slab at rows 24-27 has a light front edge at row 25. The silhouette is a constant 14 wide with no receding side face. The interior of the open top is visible, so it reads as a 3/4 container and not a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small stacker of blue and orange baskets in a brown frame. It has 14 visible tones per tile, which sits between prop-hedge (9) and prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outline is tinted brown or blue and follows the neighbouring material instead of being a black sticker line. Each material ramp (blue, orange, wood) has about 3-4 steps, a little fewer than the 5-6 on the references. The stripes and rungs give some texture, though less grain than the stall or well. It is slightly lower than the references but would be accepted next to them, and the measured facts support that.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19621
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top basket opening with interior/contents",
+      "rows": "2-7",
+      "evidence": "d",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "10"
+     },
+     {
+      "part": "stacked basket front bands (orange/blue)",
+      "rows": "8-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base platform/shelf",
+      "rows": "23-27",
+      "evidence": "none",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top basket shows an orange rim at rows 2-3 and a darker dithered interior at rows 4-7. This reads as contents seen from above in an open container. A light front-edge line at row 8 (#fad278) and a dark band at row 10 follow, with the front face below. Alternating orange and blue basket bands run through rows 8-22, a front face of about 15 rows. The base at rows 23-27 is a wider platform with a light front strip. The silhouette is 14 wide for rows 2-23 and 16 wide for rows 24-27, with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a narrow stack of blue and orange baskets in a brown frame. It carries 14 visible tones per 16x16 tile, above the hedge (9) and close to the cheese stall (17) and roofed well (20). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline is a tinted dark brown or blue rather than a black sticker line. Each material ramp (blue basket, orange basket, wood frame) has only about 3-4 steps, against about 5-6 on the references. The slat and rim rhythm gives some texture, but less grain than the stall or well. It is slightly thinner than the richest references, yet an artist would accept it beside the bench and hedge. Overall it matches the Beodeul structural standard on the measured facts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17620
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top basket opening with visible interior",
+      "rows": "3-8",
+      "evidence": "d",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "stacked basket front (orange and blue stripes)",
+      "rows": "9-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base platform / pallet",
+      "rows": "23-27",
+      "evidence": "none",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a constant 14 px wide rectangle in rows 2-23, so there is no ellipse. At the top, row 3 is an orange back rim and rows 4-7 are dark brown with lighter flecks, which reads as the inside of the opening with contents seen from above. Row 8 is a light front-rim line (#fad278) with an orange row 9 and a dark row 10 below it. That gives about 6 rows of opening and top, which is weak but real. Rows 9-22 are the striped front face of the stacked baskets, about 14 rows. Rows 23-27 are a darker base with a light edge line at row 25. Lower stacked baskets show only front stripes, but the main top opening is visible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 14 visible tones per 16x16 tile. That sits inside the reference range (hedge 9, cheese stall 17, roofed well 20) and above the hedge. Near-flat coverage is 0%, so there are no large single-colour fills, and the stripes and slats are broken up by value changes. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the frame rather than a black sticker line, as in the hedge and cheese stall. Shading is a little shallower than the best references, at about 4 steps per material (blue, orange and wood) against 5-6. The piece is small and narrow, and it reads as a crafted stack of baskets with highlights and shadow bands. A careful artist would accept it next to the references without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20737
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top basket opening (interior seen from above)",
+      "rows": "2-7",
+      "evidence": "d",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "10-10"
+     },
+     {
+      "part": "stacked basket front faces (alternating orange and blue bands)",
+      "rows": "8-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base rail",
+      "rows": "24-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-7 show a dark brown, textured interior framed by an orange back rim at row 3. The interior ends in a light front-edge line at row 8 (#fad278), followed by an orange band at row 9 and a dark shadow row at row 10. That reads as contents inside an open top, seen from above. Below it, rows 8-22 form a vertical front face of alternating blue and orange bands, and rows 24-27 form a wider base rail. The silhouette is a constant 14 wide, so there is no ellipse. The top reads as a 6-row opening, not just a 1-2 row rim, and the front face is well over 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small stack of baskets in a brown frame, drawn at the same scale as the references. It shows 14 visible tones per 16x16 tile, which is above the hedge (9) and within range of the cheese stall (17) and roofed well (20). Near-flat coverage is 0%, so there are no flat 5x5 fills. The dark edge pixels are 0% neutral, so the outline is tinted: dark brown beside the frame and a darker shade of each basket colour beside the baskets. The outline is not a uniform black sticker line. Each material ramp (basket stripes, frame wood) has about 3-4 steps, with highlight and shadow bands and slat or weave variation. That is slightly shallower than the richest references but comparable to the hedge, which has only 11 total colours. Next to the references it does not look thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 증거가 안쪽 내용물뿐이고 앞면/윗면 20/6 — 정면 단면 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "윗면 증거가 안쪽 내용물뿐이고 앞면/윗면 20/6 — 정면 단면 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19053
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.053Z",
+ "cells": {
+  "16": [
+   "7505b2a967c5701f",
+   "99d76e642cb79630"
+  ],
+  "24": [
+   "372e8077f7f4a128",
+   "3b8d3fb15d9d0c3c",
+   "486d24c17ceca061",
+   "4b132d4a034844e9",
+   "6f24bcc73eacd569",
+   "7aa066721f61b4a1",
+   "826452f991fcefc6",
+   "976a333fe57b6f2d",
+   "9ce571bd718b9bfa",
+   "add92254df959f2b",
+   "c3ee4a75dc85cb69",
+   "decac1425d07eb77"
+  ],
+  "32": [
+   "209c64290e7b0ede",
+   "26084ef17bdb3c6a",
+   "e719118d5d7df3ef"
+  ],
+  "48": [
+   "132a5065edba2f09",
+   "47fa62d4b430f3d0",
+   "73e72e32dfb93df4",
+   "d3825172dd2a1df2",
+   "e46f94fbe3c37eb3",
+   "e4ab74944466ebf5"
+  ]
+ }
+}

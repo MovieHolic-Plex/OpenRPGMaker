@@ -402,3 +402,45 @@ def curule_seat(c):
     c.hl(1, 14, 12, K('gold', 5)); c.hl(1, 14, 13, K('gold', 2))   # 금 틀
     c.p(7, 7, K('purple', 4)); c.p(8, 7, K('purple', 4))      # 방석 단추
     c.outline()
+
+# ══ seats34 ══ 대기 후보(굽지 않음): 방석 윗면을 왼쪽 위에서 밝게, 단추 두 점(눈처럼 읽힘) 제거.
+def curule_seat_seats34(c):
+    c.shadow(1, 21, 15, 23)
+    line(c, 2, 22, 13, 13, K('gold', 4)); line(c, 13, 22, 2, 13, K('gold', 3))
+    line(c, 3, 22, 14, 13, K('gold', 2)); line(c, 12, 22, 1, 13, K('gold', 5))
+    c.hl(1, 3, 22, K('gold', 4)); c.hl(12, 14, 22, K('gold', 3))
+    for j in range(5):                                    # 방석 윗면 5줄: 위·왼쪽 밝게 → 아래·오른쪽 어둡게
+        for i in range(14):
+            t = 6 - (j >= 2) - (j >= 4) - (i >= 10) - (i >= 13)
+            c.p(1 + i, 5 + j, K('purple', max(3, t)))
+    c.hl(1, 14, 10, K('purple', 3)); c.hl(1, 14, 11, K('purple', 2))   # 방석 앞면 2줄
+    c.p(14, 10, K('purple', 2)); c.p(14, 11, K('purple', 1))
+    c.hl(1, 14, 4, K('purple', 1)); c.vl(0, 5, 11, K('purple', 0)); c.vl(15, 5, 11, K('purple', 0))
+    c.hl(1, 14, 12, K('gold', 5)); c.hl(1, 14, 13, K('gold', 2))   # 금 틀
+    c.outline()
+# ══ seats34 ══
+
+# ══ seats study2 ══ 대기 후보(굽지 않음, 등록 안 함): 방석 윗면 4행(뒤 두 줄 가장 밝게)·앞면 2행 어둡게, 금 틀 윗면 1행+앞면,
+# X 다리는 2px 금 대각 둘(아랫면에만 짙은 금 한 칸 — 안쪽 검은 벽 없음), 발 받침 둘. 무늬는 넣지 않는다(두 점 눈 금지).
+def curule_seat_s2(c):
+    c.shadow(1, 21, 15, 23)
+    pal = {str(i): K('purple', i) for i in range(7)}
+    pal.update({ch: K('gold', i) for i, ch in enumerate('abcdefg')})
+    c.sprite(0, 8, [
+        "..000000000000..",            # 방석 윗면 3행(y=9~11): 뒤 줄 가장 밝게 → 앞으로 한 단씩
+        ".06666666666650.",
+        ".05555555555440.",
+        ".04444444444330.",
+        ".02222222222110.",            # 방석 앞면 1행(두 단 어둡게)
+        "affffffffffffeea",            # 금 틀 윗면 1행 + 앞면 1행
+        "adddddddddddccba",
+        ".aaaaaaaaaaaaaa.",
+        ".aec........dba.",            # X 다리: 2px 금 대각, 아래쪽에만 짙은 금 한 칸
+        "...aec....dba...",
+        ".....aeffba.....",            # 가운데 금 못(2x2)
+        "......dffc......",
+        "....dba..aec....",
+        "..dba......aec..",
+        ".adca......aeca.",            # 발 받침
+        ".abba......abba."], pal)
+# ══ seats study2 ══

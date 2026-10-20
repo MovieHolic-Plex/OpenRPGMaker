@@ -6,7 +6,7 @@ import type Phaser from "phaser";
 import type { Project } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import { DbConnectionRequiredError, setDevProjectFactory, store } from "@/project/store";
-import { createDevShowcaseProjectForLocation } from "@/editor/devShowcaseProjects";
+import { prepareDevShowcaseProjectFactory } from "@/editor/devShowcaseProjects";
 import { setAiConfigProvider } from "@/project/editorIdentity";
 import { setAiActivityRecorder } from "@/project/tileMetadataDb";
 import { loadAiConfig } from "@/ai/llmClient";
@@ -114,7 +114,7 @@ export async function bootApp(root: HTMLElement): Promise<void> {
   }
 
   try {
-    setDevProjectFactory(createDevShowcaseProjectForLocation);
+    setDevProjectFactory(await prepareDevShowcaseProjectFactory());
     setAiConfigProvider(loadAiConfig);
     setAiActivityRecorder(recordAiActivity as (input: unknown) => Promise<unknown>);
     // AI 표면의 프론트 액션 수집. 수집기는 순수하게 모으고, «어디로 보낼지» 는 여기서 정한다

@@ -1,0 +1,291 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e072f87ed44ca4e1977c609e1ad3e09bae659270edf06ac3a2ed85a6d0e59604",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "식빵 진열장 (cabinet:loaf)",
+ "label": "atlas_biome_interior/props34/cabinet:loaf",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 26,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of cabinet",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "front face with open shelves and loaves",
+      "rows": "6-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a plank-textured band across the full width. Row 5 is a lighter front-edge line (#d59147), and rows 6-8 are a dark eave shadow above the first shelf opening. Below that, rows 6-31 show the front face, with shelf rails at rows 13, 22 and 30 and loaves in the openings. No receding side face is drawn. This matches the green 'cabinet: top + edge + eave' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow wooden bread shelf, about 14x30 source pixels. Its outline is a dark brown tint (0% neutral dark edge pixels, like the hedge and cheese stall), so it is not a black sticker line. Flat-fill coverage is 0%. The loaves show highlight/mid/dark dots and the frame has some wood grain. It has 15 distinct colours and a median of 15 per tile. That is above the hedge (10 per tile, 11 colours) and close to the cheese stall (17 per tile). It is also at or above the bench and lamp (14 colours each). Wood and bread ramps have about 3-4 steps each, a little under Beodeul's 5-6 but not shallow for a prop this small. A careful artist would accept it beside the references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22302
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "shelf interiors with loaves",
+      "rows": "9-12",
+      "evidence": "d",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a brown top band (rows 2-4) that ends in a lighter front-edge line at row 5 (#d59147). Rows 6-8 are a dark eave shadow, and the open front face runs from row 6 to row 31 (about 26 rows). The shelves show loaf contents (rows 9-12, 18-21, 26-29) with thin shelf-edge lines at rows 13, 22 and 30. The structure matches the green 'cabinet: top 5 + edge + eave' reference. No receding side face is drawn; the silhouette is a constant 16 px wide from row 1 to row 31."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, tall wooden shelf with bread loaves on three shelves. Measured facts support it: 15 distinct colours, a median of 15 colours per full tile (the references range from 10 to 20), 0% flat-fill coverage, and 0% neutral dark edge pixels. The outline is therefore a tinted dark brown, not a black sticker line. The frame has about 4 wood steps (highlight, mid, dark, deep). The loaves have their own highlight and shadow dots, and the shelf boards are separated by value. Total colours (15) are well below the stall (40) and the well (38), but this is a much smaller and simpler object. Its per-tile density is comparable to the hedge and the stall. It looks a little less ornate than the roofed prop references but would sit acceptably beside them without looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20848
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a top band: a dark outline at row 1, brown rows 2-4, and a lighter front-edge line at row 5 (#d59147). Rows 6-8 are dark eave shadow, and below them the open front face runs from rows 6-31 (26 rows). The front face holds shelves with loaves, and the shelf fronts at rows 12-13, 20-22 and 28-30 have their own edge lines. The width is a constant 16 with no receding side face. The top band is similar to the green 'cabinet: top 5 + edge + eave' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden shelf cabinet holding bread loaves, so it matches the prop kind. Measured facts support a pass: median 15 colours per 16x16 tile (hedge 10, stall 17, well 20), 0% 5x5 flat-fill coverage, and 0% neutral dark edge pixels. By eye, the outline is a dark brown tinted to match the wood rather than a black sticker line. The wood frame shows about 4 lightness steps, and the shelves and loaves carry highlight and shadow dots with no large flat areas. The candidate has only 15 distinct colours against 38-40 for the stall and well, but it is a small single-tile-width piece. Its per-tile density is on par with the references, so it would not look thinner or flatter beside them. Shading is slightly shallower than the 5-6 step references, but this is not enough to fail it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17158
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 are a brown top band (L about 125-135) that ends in a lighter front-edge line at row 5 (#d59147). Rows 6-8 below it are dark eave shadow (L about 31). The front face runs from row 6 to row 31 (26 rows) and shows open shelves holding loaves, with shelf boards at rows 11-13, 19-22 and 27-30. The top band has the same structure as the green bookshelf and cabinet references: a top band, an edge line, shadow, then the front face. The width is a constant 16 px, so no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small shelf cabinet, about 16x32 source pixels, with loaves on three shelves. Its dark edge pixels are 0% neutral, so the outline is a brown-tinted dark tone of the wood rather than a black sticker line. Flat-fill coverage is 0%. It has a median of 15 colours per tile, above prop-hedge (10) and close to prop-stall-cheese (17). Its 15 total colours match the small props (bench 14, lamp 14, hedge 11); only the large stall and well have 38-40. Wood shows about 4 steps (frame highlight, mid, dark, deep shelf shadow), and the loaves have their own highlight and shade dots, so texture is present but modest. That is a little shallower than the 5-6 steps in the references. The picture is small, with no large flat areas, and a careful artist would accept it next to the bench and hedge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17753
+  }
+ ],
+ "decidedAt": "2026-10-20T07:22:59.446Z",
+ "cells": {
+  "16": [
+   "19a794410829dfb8",
+   "3b1e8a7501c095ed"
+  ],
+  "24": [
+   "027c777c61712fa1",
+   "13de3e97c2a48773",
+   "371cf31498b5743e",
+   "37a0d792d9069f0d",
+   "5e91be8f35987bc2",
+   "6e28d66209a7fad9",
+   "9d1a051bd7c9d712",
+   "a2a1fc5dc979e27c",
+   "b5d867e1dd982a6c",
+   "c1fe26897836b5a3",
+   "e80318b5a93c7abb",
+   "f9d53f29fe2370bf"
+  ],
+  "32": [
+   "bae427f18552d57b",
+   "dfdc48a4123e9a0e",
+   "ee7941e6c9c65942"
+  ],
+  "48": [
+   "0788d0e552aff667",
+   "4608ca28bd4998e2",
+   "5c81f813bd2bdb3b",
+   "6aa8d30095171161",
+   "b0ec30f033aaf85f",
+   "f115203e15730564"
+  ]
+ }
+}

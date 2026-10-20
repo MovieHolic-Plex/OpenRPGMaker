@@ -1,0 +1,365 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "720114d95dc1ee10d72acc8475e07abdeaef976a05b0ef8a44e05cedba7b0dd3",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "dept handbag vitrine",
+ "label": "modern_city_interior/dept-handbag-vitrine",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 21,
+  "darkV5": 30,
+  "nearBlackEdge": 0.26,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "vitrine top / cornice band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "handbags displayed in glass compartments",
+      "rows": "7-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower drawers",
+      "rows": "24-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a brown top band that brightens downward (L 99, 147, 167, 201). Row 5 is the lightest, so it acts as the front-edge line. Row 6 is a dark eave-shadow row (L=75). Below it is a front face of about 25 rows with shelves, handbags and drawers. This matches the green cabinet reference (top 5 + edge + eave). The object is a display cabinet with a glazed front, not an open container, so the container kind does not fit well. The bags in the compartments are seen face-on, not from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden-framed display case with shelves and bags. It measures 19 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, which are the closest references. Near-flat coverage is 0%, so there are no flat fills. The share of neutral dark edge pixels is 0%, so the outline is tinted. It reads as dark brown frame edges, not a uniform black sticker line. The wood frame shows about 4-5 lightness steps and the bags carry highlight and shadow, so shading is close to the references, though slightly shallower than the 5-6 steps Beodeul uses. Texture is moderate: the bags and shelves have some grain and variation, but the interior backing is plainer than the stall's goods. At the same scale, a careful artist would accept it next to the stall and well without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20564
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "wooden top band of vitrine",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "handbags on shelves (display goods)",
+      "rows": "8-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front glass case with shelves",
+      "rows": "6-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base drawers",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top has a wood band in rows 1-5 that shades from dark brown (rows 1-2) through orange and tan to a light front-edge line at row 5. Row 6 is a dark eave-shadow line, and the front face continues below it through rows 6-31. This matches the 'cabinet: top 5 + edge + eave' reference. The front face is a glass case with six shelf compartments holding handbags (drawn as decor) and a two-drawer base. The object is a front-facing display cabinet whose contents are seen through the glass, not through an opening seen from above. The container kind (pot, jar, open coffin) therefore fits poorly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden-framed display case with three shelves of handbags. Measured facts: 19 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no 5x5 flat fills. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the frame, not a black sticker line. The frame has about 4 wood steps, with highlight edges and a darker inner bevel. The glass-back interior and the individual bags (body, handle and clasp highlights in different colours) add varied grain. It is slightly less rich than the stall and well on wood grain and roof-like detail, but it holds its own beside them and does not look thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25575
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "handbags on display shelves",
+      "rows": "8-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "drawers below",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a wooden top band that gets lighter toward the front (L 99, 147, 167, 201), and row 6 is a dark edge/eave line, like the cabinet reference with top 5 + edge + eave. Below it the front face runs from row 6 to row 31: a glazed display with three shelves of handbags, then two drawers. The handbags are seen face-on and count as decor. There is no opening seen from above, so this is a display cabinet and not a pot-like container. That is why kind_matches is false."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wooden display cabinet with shelves holding handbags in several colours. It shows 19 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outline is a tinted dark brown frame and not a black sticker line. The wood frame has several steps, from a light top edge to a dark inner recess. The bags carry their own highlights and shadows, and the shelf dividers add grain-like variation. It matches the stall and well in density and shading depth. Texture is somewhat less rich than the stall's tiled awning and goods, so I rate it 'some' and not 'rich'. It would sit comfortably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16594
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top board of vitrine",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "handbags on shelves",
+      "rows": "8-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a wood top band that shades from dark brown to light tan. Row 5 is a lighter front-edge line, and row 6 is a dark shadow row. Below it the front face runs from about row 6 to row 31, with glass shelves, handbags and two drawers. This matches the cabinet reference with a top, an edge and an eave. The object is a display cabinet, not an open container. The bags are seen face-on through the glass, not from above, so the container rule 'contents seen from above' does not apply and kind_matches is false."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate measures 19 visible tones per 16x16 tile, level with the stall (17) and well (20) references. Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, and by eye the outline is a dark brown matching the wooden frame, not a black sticker line. The wood frame has about 4 steps (highlight, mid, dark, deep). The shelves and handbags are shaded individually in several tones, with small highlights and straps. This is slightly shallower than the 5-6 step references, but a careful artist would accept it beside the stall and well without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17900
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.823Z",
+ "cells": {
+  "16": [
+   "291f287a1cbef493",
+   "323ab21f28425ccc",
+   "dac205e749110460",
+   "f65c006216a0cac6"
+  ],
+  "24": [
+   "139468a2deb9c92e",
+   "1a0a2a21ec70aa7a",
+   "23fa20b3731e2e31",
+   "3ef074cf490623d3",
+   "446336393f8f8050",
+   "44a738223fd6e27a",
+   "498403c3ae625336",
+   "4d390cb0fb0f7fc8",
+   "52b59df868e997b0",
+   "61bc0f719066082e",
+   "74c3fa2ffb059a7e",
+   "75d4038826ba7fcf",
+   "7fa7cbe21626db0d",
+   "84aaedfbf9dd1a69",
+   "9f21a4565054962a",
+   "aa6ba22afa27d44c",
+   "b32518e498d9b2ae",
+   "bced45edda62e1c7",
+   "bf9b9995c40efe55",
+   "c4e0ae71e38650d8",
+   "d54e2a94a137a887",
+   "e9139004427ab959",
+   "f29819efdb049792",
+   "f32e2af7dba0b9ea"
+  ],
+  "32": [
+   "eaa0a522b0296a28"
+  ],
+  "48": [
+   "08d1b6c49ac2eb9a",
+   "20f33459f03c6a92",
+   "66ec70c7d3f4b61f",
+   "8ffab8a4fae76339",
+   "b13c0bd38adba316",
+   "ee9bb99584516c85"
+  ]
+ }
+}

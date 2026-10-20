@@ -1,0 +1,325 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aa4d06c186f2610979a74d431e52139f5dc65593c38db4bcfeac1307b8657f1f",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "저울 추 받침(빈 것) (weight stand)",
+ "label": "atlas_biome_interior/plus/weight stand",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 66,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tray top with recessed empty interior",
+      "rows": "4-8",
+      "evidence": "d",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face of the stand body",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body is 14 px wide, spanning rows 3-13, with outline rows at 3 and 13. Rows 4-7 hold a darker recessed interior (L about 107-138) framed by a light rim at row 4 and sides. This is an empty open tray seen from above. Row 8 is a bright 1-row front-edge line (L251) across the columns scanned (x=4, 8, 11). Below it, rows 9-12 are a lighter, vertical front face with a gradient, ending in a dark base row 13. This gives a top surface of about 5 rows over a 4-row front face, so it reads as three-quarter view. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey slab with a lighter inset panel. It has only 8 distinct colours in total, against 11 for the hedge and 14 to 40 for the other references. Its per-tile median of 8 is close to the hedge's 10, but the hedge is a full leaf-clump material. By eye, the candidate's stone or metal ramp has only about 3 clear lightness steps (dark edge, mid grey, light grey), where the references carry 5 to 6 per material. The outline is tinted (0% neutral dark edge pixels), so it is not the near-black sticker look. There are no flat fills (0% coverage), but the surface has little grain, per-stone shading or highlight variation. Beside the roofed well and the cheese stall, the piece reads as a thin, flat, icon-like object, so I fail it because of the shallow shading ramp and sparse detail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21250
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tray/stand top with recessed opening (empty)",
+      "rows": "4-8",
+      "evidence": "d",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face of the box body",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a 14px-wide box in rows 3-13. In the column scans, rows 4-7 (x=4, 8, 11) show a rim that is bright at row 4 and then darker, mid-gray interior values (L=107-138). This is the recessed inside of an open container, seen from above. Row 8 is a very bright L=251 line across all three columns, which is the front rim edge line. Rows 9-12 below it are a graded front face (L=170, 196, 170, 138) and row 13 is the dark outline. That gives about 5 rows of top surface (rows 4-8), ending in a front-edge line, over a front face of 4-5 rows. This matches the open-container top plus front face pattern, not a flat slab or a plain front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small grey slab with a pale top face. It has about 4 lightness steps (pale top, light, mid, dark) where the references carry 5-6. Its dark edge pixels are 0% neutral, so the outline is tinted and reads as a dark material tone rather than a black sticker line. It has no 5x5 flat fills (0%) and shows some speckle. Its 8 distinct colours and 8 colours per tile are below the bench and lamp (14 colours each), the hedge (11 colours, 10 per tile) and the much richer stall and well (38-40 colours). At this scale the flat grey body and the pale top edge read as somewhat thin and icon-like next to the grain and per-element shading of the references. It is clean but shallower than a careful artist would accept beside them, so with the doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 24607
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tray opening (empty recess of the stand)",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "5-7"
+     },
+     {
+      "part": "front face of the stand body",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is 14 px wide for rows 3-12, which makes it a box. Column x=8 shows a bright back rim at row 4, then darker recess rows 5-7 (L=107 and 138), the interior of an empty open top. Row 8 is a bright front-edge line (L=251) in all three scanned columns. Below it, rows 9-12 form a lighter front face of 4 rows, and row 13 is a dark base outline. This has a top opening of about 4 rows, a front-edge line, and a front face of 3+ rows, so it reads as three-quarter view, like the tub/barrel opening pairs and unlike a flat top-down slab or a rim-only front elevation. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny grey slab-like stand with a pale top plate. It has 8 distinct colours against 11-40 on the references, and its shading is only about 3-4 steps on the main material against the references' 5-6. The 0% near-neutral share of dark edge pixels and the visible tint mean the outline is a tinted dark tone, not a black sticker line. Flat-fill coverage is 0%, so there are no large flat areas. The median of 8 colours per tile is close to the hedge's 10 and below the stall's 17 and the well's 20. By eye, the piece looks thin and flat next to the bench, lamp, stall and well. It has no clear per-part shading, grain, edge highlights or material texture, and it reads as a plain grey box rather than a crafted weight stand. A careful artist would not accept it next to the references without it looking flatter and more simplified, so it fails on the rule to fail when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21177
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tray top / open recessed surface",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "front face",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The body is 14 px wide over rows 3-13. Rows 4-7 show a darker recessed interior with a lighter rim, and row 8 is a bright front-edge line (L=251 in all three scanned columns). Below it, row 9 is darker (L=170) and reads as shadow. Rows 9-12 are a front face of about 4 rows, with a dark outline on row 13. This gives a top surface of about 5 rows above a front face, so it reads as a 3/4 view and not a flat slab or a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a very small grey box-like prop, noticeably smaller than every reference. It has 8 distinct colours in total, against 11-14 for the simplest references (hedge, bench, lamp) and 38-40 for the stall and well. Its tile median of 8 is close to the hedge's 10, and there are no 5x5 flat fills. The outline is tinted: 0% of its dark edge pixels are neutral, so it is a dark version of the grey material and not a black sticker line. The main weaknesses are structural. The grey body has about 4 lightness steps (light top, mid face, dark edge, a few speckle dots) where Beodeul uses 5-6 per material. The few dots on the face read as a small detail, not the per-element shading seen on the bench slats or the well stones. Next to the references it looks thinner and flatter, closer to an icon than a shaded prop. Because that is a judgement call, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 29917
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:38.686Z",
+ "cells": {
+  "16": [
+   "fd4df55f7016aaa5"
+  ],
+  "24": [
+   "2edadac6064721a3",
+   "67997e43f4e4e5fd",
+   "92562930f3651b8b",
+   "9e837340411c1b13",
+   "b0d837f3876b0cd1",
+   "d358847cd5f2d545"
+  ],
+  "32": [
+   "1a065a763606c664",
+   "1df77436aa14da09",
+   "26212f483f528595",
+   "2a9dd7a6d164215f",
+   "33a291c7e6d92f15",
+   "c2270c980565a74c"
+  ],
+  "48": [
+   "81f3445b099fdbc8",
+   "93ddb4489a4f79dd",
+   "bb1c56523a5b0be0",
+   "c29f59edaef1e58a",
+   "d283fd5bcd9b9f3c",
+   "df8b80ae97d81ff1"
+  ]
+ }
+}

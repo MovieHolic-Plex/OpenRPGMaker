@@ -1,0 +1,178 @@
+[
+ {
+  "id": "s003",
+  "kind": "column",
+  "top_rows": 1,
+  "front_rows": 4,
+  "label": "bad",
+  "why": "Hydrant head is a dome rounded only on its upper edge (rows 1-5); no elliptical cap, under 4 top rows."
+ },
+ {
+  "id": "s007",
+  "kind": "tall_furniture",
+  "top_rows": 1,
+  "front_rows": 24,
+  "label": "bad",
+  "why": "Front-elevation display window: 1-row highlight at row 1, then straight frame and panes, no top surface."
+ },
+ {
+  "id": "s011",
+  "kind": "low_furniture",
+  "top_rows": 2,
+  "front_rows": 17,
+  "label": "bad",
+  "why": "Operating table is a front elevation: only rows 29-30 light edge, front rows 31-46 plus pedestal."
+ },
+ {
+  "id": "s015",
+  "kind": "seat",
+  "top_rows": 5,
+  "front_rows": 2,
+  "label": "bad",
+  "why": "Pew seat band rows 9-13 then only 2 dark front rows 14-15; reads as front elevation."
+ },
+ {
+  "id": "s019",
+  "kind": "seat",
+  "top_rows": 4,
+  "front_rows": 3,
+  "label": "good",
+  "why": "Round cushion ellipse rows 1-4 lit top, cushion side rows 5-7, then pole and base."
+ },
+ {
+  "id": "s023",
+  "kind": "low_furniture",
+  "top_rows": 8,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Dough bench top rows 2-9 with dough lumps, edge line row 10, drawer front rows 11-15."
+ },
+ {
+  "id": "s027",
+  "kind": "low_furniture",
+  "top_rows": 8,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Lab bench top rows 2-8 with edge line row 9, front rows 10-14."
+ },
+ {
+  "id": "s031",
+  "kind": "seat",
+  "top_rows": 9,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Dental chair light top rows 11-19, edge at row 20, front rows 20-24."
+ },
+ {
+  "id": "s035",
+  "kind": "box",
+  "top_rows": 5,
+  "front_rows": 11,
+  "label": "unsure",
+  "why": "Stacked slatted traps: lid rows 0-4 and 9-11, fronts rows 5-8 and 12-15; each front only 4 rows, hard to read."
+ },
+ {
+  "id": "s039",
+  "kind": "structure",
+  "top_rows": 40,
+  "front_rows": 25,
+  "label": "good",
+  "why": "Large sloped teal roof about 40 rows over a wall front of about 25 rows with door."
+ },
+ {
+  "id": "s043",
+  "kind": "seat",
+  "top_rows": 2,
+  "front_rows": 1,
+  "label": "bad",
+  "why": "Bench seat only rows 6-7 top and 1-row front row 8, backrest face-on; front elevation."
+ },
+ {
+  "id": "s047",
+  "kind": "seat",
+  "top_rows": 3,
+  "front_rows": 6,
+  "label": "bad",
+  "why": "Barber chair seat top only rows 11-13 (3 rows) with front rows 14-19; backrest block mirrors it, front elevation."
+ },
+ {
+  "id": "s051",
+  "kind": "seat",
+  "top_rows": 2,
+  "front_rows": 3,
+  "label": "bad",
+  "why": "Chair seat is rows 9-11 (about 2 top rows), legs below; backrest face-on."
+ },
+ {
+  "id": "s055",
+  "kind": "seat",
+  "top_rows": 6,
+  "front_rows": 3,
+  "label": "good",
+  "why": "Tufted bench top rows 2-7, front rows 8-10 plus 2 leg rows."
+ },
+ {
+  "id": "s059",
+  "kind": "seat",
+  "top_rows": 12,
+  "front_rows": 5,
+  "label": "good",
+  "why": "Dais top with fur oval rows 9-20, stone front rows 21-25."
+ },
+ {
+  "id": "s063",
+  "kind": "seat",
+  "top_rows": 5,
+  "front_rows": 4,
+  "label": "good",
+  "why": "Wooden bench plank top rows 2-6 with edge highlight row 6, front rows 7-10, legs."
+ },
+ {
+  "id": "s067",
+  "kind": "organic",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Rock."
+ },
+ {
+  "id": "s071",
+  "kind": "low_furniture",
+  "top_rows": 5,
+  "front_rows": 4,
+  "label": "good",
+  "why": "Desk top rows 3-7 with items, front rows 8-11, chair back above."
+ },
+ {
+  "id": "s075",
+  "kind": "front_prop",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "Cloth hanging rack, front-facing banners on frame."
+ },
+ {
+  "id": "s079",
+  "kind": "structure",
+  "top_rows": 40,
+  "front_rows": 50,
+  "label": "good",
+  "why": "Big tiled roof slope about 40 rows above two-storey front wall."
+ },
+ {
+  "id": "s083",
+  "kind": "column",
+  "top_rows": 0,
+  "front_rows": 22,
+  "label": "bad",
+  "why": "Standing stone with rounded top only, no elliptical cap plate."
+ },
+ {
+  "id": "s087",
+  "kind": "seat",
+  "top_rows": 1,
+  "front_rows": 11,
+  "label": "bad",
+  "why": "Reclining seat body rows 12-22 is uniform dark front elevation; only row 7 highlight on top."
+ }
+]

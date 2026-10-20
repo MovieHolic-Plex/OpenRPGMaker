@@ -1,0 +1,325 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8d1774e6a348b2aea49238db98b22972a27ae0ace3199425e1ef77bfe8d64fb0",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "toppled waiting-room chair",
+ "label": "seats34/jp_city_interior/hp-chair-fallen",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 38,
+  "nearBlackEdge": 0.79,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper block (backrest or seat side)",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower block (seat or frame)",
+      "rows": "10-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is two stacked horizontal slabs, rows 4-9 and rows 9-15, each with a light 2-row band at the top and a darker face below. The bands (rows 5-6 and rows 10-11) are only rim-sized. There is no distinct front-edge line, no eave shadow and no ellipse. No seat surface is visible from above. It resembles the 'seat band 2' wrong reference more than a seat with a 5-row top. The rows 0-3 pixels are stray noise."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a very small prop, roughly 14x10 source pixels. It still carries 11 distinct colours and a median of 11 per full tile, level with prop-hedge (10 median, 11 colours). Flat-fill coverage is 0%. The dark edge pixels are 0% neutral, so the outline leans dark navy beside the blue body rather than black. The body shows about 4 lightness steps (highlight, light, mid, dark navy) plus small grey and light accents on the legs and backrest. That is slightly shallower than the 5-6 steps of the bigger references, but it fits the scale and nothing reads as a flat sticker. The tiny size makes the toppled-chair read hard to confirm, but the silhouette is plausible. A careful artist would accept it next to the hedge and bench.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16636
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper slab (back panel or seat edge)",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "lower slab (seat or body)",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is two stacked horizontal blue slabs, rows 4-9 and rows 10-15, with a dark outline between them. Each slab has a 2-row lighter blue band at its top (rows 5-6 and rows 10-11) and then a darker face. In the lower slab the face is only rows 12-13, 2 rows plus the outline, with no front-edge line or eave shadow. The upper slab has a possible edge line at row 7 (tan spots, 1 row) and dark rows 8-9, but this is too thin and ambiguous to read as a real top surface. The light bands read as 2-row rims, not a seat seen from above. The silhouette is nearly rectangular (width 14-16), with no ellipse, no legs, and no readable seat or backrest. It reads as flat front-facing blocks, not a chair seen in 3/4 view with a visible seat surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small piece, about 14x10 source pixels, and it is drawn at the same scale as the references. Its measured facts match the hedge reference: 11 colours per tile against 10, 11 distinct colours in total against 11, and 0% flat-fill coverage. Its dark edge pixels are 0% neutral, so the outline is a tinted dark navy/blue-grey, not a neutral black sticker line. The blue ramp shows roughly 4 lightness steps, with lighter edge highlights on the seat and back and darker shaded undersides, against about 5 for the references. Its colour count is below the 14-40 of the bench, lamp, stall and well, but that is proportionate to its small size. It has no large flat areas and carries some highlight and dot variation. It sits slightly below the references in richness, but a careful artist would accept it as a small prop next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21110
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper bar (backrest or seat edge)",
+      "rows": "5-6",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "lower bar (seat or panel)",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is two stacked horizontal blue bars with dark outlines. The upper bar has a 2-row lighter band (rows 5-6), an edge-line row 7 with tan flecks, and dark rows 8-9. That band is only rim-sized, like the 'seat band 2' bad reference. The lower bar (rows 10-13) is a flat light-blue panel seen face-on, with a mid-tone row 12 and a dark row 13 and no distinct top band or edge line. No ellipse, no visible seat plane and no legs read as a seat seen from above. Overall it reads as a front elevation of flat panels, not a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a very small prop of about 14x10 source pixels, so it is judged by eye as well as by the numbers. It has 11 distinct colours in a single tile, matching prop-hedge (11 colours, median 10) and close to prop-bench-wood (14 colours). Flat-fill coverage is 0%. Dark edge pixels are 0% near-neutral, so the outline carries a blue-ish tint rather than being a black sticker line. The ramp reads as roughly 4 steps, with a dark base, mid blue and lighter highlight on the seat and legs, slightly below the 5-6 of the references. At this scale it is not visibly thinner or flatter than the bench or hedge, and a careful artist would accept it beside them. It is simpler than the stall and well, but those are far larger pieces.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21506
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper blue panel (backrest or seat side)",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "lower light-blue panel (seat or leg slab)",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is two stacked flat rectangles, 14-16 px wide, with a dark gap at rows 8-9. The upper one has a 2-row blue band (rows 5-6), a line at row 7 and a dark strip at rows 8-9, but no real front face below it. The lower one is a light-blue field (rows 10-12) closed by a dark row 13 and the outline at rows 14-15, so the only front face is about 1-2 rows. There is no ellipse, no seat plane above a front face, and no legs or apron. Both panels look like flat slabs seen from above, similar to the 'top-down slab (no front)' reference, so the seat surface is not readable as a seat with a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a very small prop of about 16x12 source pixels. Its 11 distinct colours and median of 11 per tile match prop-hedge (11 and 10) and come close to prop-bench-wood (14). Flat-fill coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline is tinted, a dark blue toned to the blue seat material rather than a black sticker line. It has roughly 4 lightness steps on the blue ramp plus grey accents, against about 5-6 on the richer references. That is a little shallower than the best references, but it is in line with the simple wood and hedge props. There are no large flat blocks, and the small size explains the lower density against the stall and well. A careful artist would accept it next to the bench and hedge without it looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20270
+  }
+ ],
+ "decidedAt": "2026-10-20T06:47:26.145Z",
+ "cells": {
+  "16": [
+   "8c4486854aaee8f2"
+  ],
+  "24": [
+   "4f7105f900eacf61",
+   "a27bcd5fdd5f4b7d",
+   "a96686e1b541a357",
+   "aa15999970977ded",
+   "ab24a98d39731486",
+   "c4c09c1e83f7b0cd"
+  ],
+  "32": [
+   "12344f10dd7f7a56",
+   "21fe4b799ca38340",
+   "2d7f8dd433a6c15c",
+   "a96768ce016f47c0",
+   "b627e463added628",
+   "f3ec3cb130747efb"
+  ],
+  "48": [
+   "137bb294ab45b80e",
+   "2191f94fbc80df39",
+   "41a31c2c95a847b1",
+   "4c071338e6d5c81e",
+   "850beb17973c190d",
+   "98bfb65a8afe09c9"
+  ]
+ }
+}

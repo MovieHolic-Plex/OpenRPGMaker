@@ -72,6 +72,10 @@ def main():
         sys.exit('redraw paints unregistered cells (would be lost):\n  ' + '\n  '.join(lost))
     if not check: sheet.save(PNG, optimize=True)
     print(('would change' if check else 'changed'), changed, 'tiles')
+    # r16 (2026-10-20): 3/4 + 화풍으로 다시 그린 격자가 정본이다 — 코드 그림이 그것을 되돌리지 않게 끝에서 다시 붙인다.
+    sys.path.insert(0, os.path.join(HERE, '..', 'r16'))
+    import rebake as r16
+    r16.apply(check)
 
 
 if __name__ == '__main__':

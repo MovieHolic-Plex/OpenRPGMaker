@@ -24,6 +24,9 @@ export default {
     "!**/*.d.mts",
   ],
   asar: true,
+  // 스토어 웹사이트의 「에디터에서 열기」(oprn://store/install?…). macOS Info.plist·Linux .desktop MimeType 에 들어간다.
+  // Windows 는 앱이 처음 켜질 때 app.setAsDefaultProtocolClient 로 등록한다(electron/main/main.ts).
+  protocols: [{ name: "OPRN Store link", schemes: ["oprn"] }],
   // 조수 워커는 bun 으로 컴파일한 별도 실행 파일이라 asar 안을 읽지 못한다. 모델에게 보내는 번들 참고 그림
   // (read_tileset_reference)은 풀어 둔 사본에서 읽는다(src/project/bundledReferenceImages.ts, OPRN_RENDERER_DIR).
   // 2026-10-07 Windows 실측: 워커가 「B:\public\assets\hand-interior-references\…」를 찾다 ENOENT.

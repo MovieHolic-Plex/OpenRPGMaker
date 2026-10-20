@@ -216,12 +216,17 @@ export function sharedContentResponse(method: string, url: URL, ifNoneMatch?: st
   const requested = url.searchParams.get('scope');
   const scope: SharedContentScope = requested === 'defaults' || requested === 'rest' ? requested : 'all';
   try {
-    // `dedup=1`: 같은 긴 글을 한 번만 싣는 전송 형식(src/project/sharedContentDedup.ts). 없으면 예전 형식이다.
-    const { revision, gzip } = encodedSharedContentWithRevision(scope, sharedContentFile(), url.searchParams.get('dedup') === '1');
-    const etag = sharedContentEtag(scope, revision);
+    const file = sharedContentFile();
     // 판본이 같으면 본문 없이 304 — 부팅마다 73MB(gzip) 를 다시 받던 것을 없앤다(2026-09-27 실측).
-    if (ifNoneMatch && ifNoneMatch.split(',').some(tag => tag.trim() === etag)) return { status: 304, etag };
-    return {status:200,gzip,etag};
+    // 판본 확인(본문 없는 SELECT)을 본문 만들기보다 **먼저** 한다. 호스트 프로세스를 새로 띄운 첫 요청은 압축본 캐시가 비어 있어서,
+    // 304 로 끝날 요청인데도 SQLite 읽기·파싱·gzip(약 3초)을 다 하고 버렸다 — 데스크톱 앱은 실행할 때마다였다(2026-10-20 실측).
+    if (ifNoneMatch) {
+      const etag = sharedContentEtag(scope, currentSharedContentRevision(file));
+      if (ifNoneMatch.split(',').some(tag => tag.trim() === etag)) return { status: 304, etag };
+    }
+    // `dedup=1`: 같은 긴 글을 한 번만 싣는 전송 형식(src/project/sharedContentDedup.ts). 없으면 예전 형식이다.
+    const { revision, gzip } = encodedSharedContentWithRevision(scope, file, url.searchParams.get('dedup') === '1');
+    return {status:200,gzip,etag:sharedContentEtag(scope, revision)};
   }
   catch {return {status:500,body:{error:'공용 SQLite 자료를 읽지 못했습니다.'}};}
 }
@@ -238,11 +243,14 @@ const encodedCache = new Map<string, { revision: string; gzip: Buffer }>();
 export function encodedSharedContent(scope: SharedContentScope, file = sharedContentFile()): Buffer {
   return encodedSharedContentWithRevision(scope, file).gzip;
 }
-export function encodedSharedContentWithRevision(scope: SharedContentScope, file = sharedContentFile(), dedup = false): { revision: string; gzip: Buffer } {
+/** 카탈로그 판본(전체 라이브러리 id·판본 요약). 본문(payload)을 읽지 않는다. */
+function currentSharedContentRevision(file: string): string {
   const db = open(file);
-  let revision: string;
-  try { revision = snapshotRevision(db.prepare('SELECT id, revision FROM content_libraries ORDER BY id').all() as { id: string; revision: string }[]); }
+  try { return snapshotRevision(db.prepare('SELECT id, revision FROM content_libraries ORDER BY id').all() as { id: string; revision: string }[]); }
   finally { db.close(); }
+}
+export function encodedSharedContentWithRevision(scope: SharedContentScope, file = sharedContentFile(), dedup = false): { revision: string; gzip: Buffer } {
+  const revision = currentSharedContentRevision(file);
   const key = file + '\n' + scope + (dedup ? '\ndedup' : ''), cached = encodedCache.get(key);
   if (cached?.revision === revision) return cached;
   const snapshot = readSharedContentForEditor(scope, file);

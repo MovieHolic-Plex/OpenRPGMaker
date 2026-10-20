@@ -1,0 +1,401 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "105dde5a7b95ba05c87457f784c282c52d016f50f2590d64697deb40a40784b4",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "food drink bar",
+ "label": "modern_city_interior/food-drink-bar",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 20,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top glass/panel band",
+      "rows": "3-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottle shelf with coloured bottles",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark compartment",
+      "rows": "16-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower drawer/door panel",
+      "rows": "21-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole silhouette is a flat 14px-wide rectangle (rows 2-29) with a dark outline. The top rows 3-9 repeat the same highlight pattern as rows 21-25: light bands, a darker line at row 7 (L=124), then 208 and 166 shading. This matches the lower panel and reads as a vertical glass or panel face with a reflection, not a horizontal surface seen from above. There is no ellipse, no roof, and no visible contents inside an open container. The bottles in rows 10-15 sit in the vertical front face. The dark compartment (rows 16-20) and the lower panel (rows 21-28) are also vertical faces. Only the 1-row outline and a rim of about 2 rows could count as a top, so this is a front elevation like the 'front elevation: top 1' and 'rim only: top 2' reference cabinets."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small fridge-like drink cabinet with a glass door and coloured bottles on shelves. It is about one tile wide and a little over one tile tall. On the measured facts it matches the same-kind references. It has 19 visible tones per 16x16 tile, against 17 for prop-stall-cheese, 20 for prop-well-roofed and 9 for prop-hedge. Near-flat coverage is 0%, so there are no flat fills (stall-cheese has 13%). The dark edge pixels are 0% near-neutral, so the outline is tinted and not a black sticker line. By eye, the body shows several steps from highlight through mid to dark, plus shelf and bottle detail that breaks up the surface. It is not thinner or flatter than the references, though its shading is slightly simpler than the stall and well. Texture is moderate and comes mainly from the bottle rows and glass highlights, not from grain.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22223
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice strip",
+      "rows": "3-9",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottle shelf with colored bottles",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark compartment/opening",
+      "rows": "16-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower counter/drawer panel",
+      "rows": "21-28",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is a flat front elevation: a light gray strip at the top (rows 3-9), colored bottles (10-15), a dark opening (16-20), and a lower panel (21-28). The strip at rows 5-9 repeats exactly at rows 22-28 (bright row, dark line at row 7 or 23, then 208 and 166 rows). That repetition shows both are front-facing panel trim, not a horizontal surface. The top has no ellipse, no sloped plane, and no visible contents. It shows only a 1-row dark line at row 7 with no eave shadow. At most a 2-row rim reads as top. The silhouette is a constant 14 px wide. No side face is visible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small drink cooler with a glass door and a shelf of coloured bottles, so it fits the prop kind. Measured facts: 19 visible tones per full tile, close to prop-stall-cheese (17) and prop-well-roofed (20) and well above prop-hedge (9). Near-flat coverage is 0%, with no 5x5 flat fills. Dark edge pixels are 0% near-neutral, so the outline is tinted rather than a uniform black sticker line. By eye, the body has about 5 steps, covering highlight, light grey, mid, shadow and a dark frame. The bottle rows add varied small detail. It is a little simpler than the stall and well, but it is at or above the references on the primary facts and does not look flatter or thinner next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20358
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice band",
+      "rows": "3-9",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottle shelf with coloured bottles",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark glass or door panel",
+      "rows": "16-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower drawer or panel",
+      "rows": "21-29",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is a flat front-facing stack of horizontal bands with a dark outline. Rows 3-6 are a light gradient with a highlight at rows 5-6, and row 7 is a darker line. This is more likely a face-on cornice or glass-door highlight than a receding top. Row 8 is the same lightness as the face below, so there is no eave shadow. The band is not an ellipse and has no clear shadow row. Below it come the bottle row (10-15), the dark panel (16-20) and the drawer panel (21-28), all vertical faces. No top surface is visible, so at most a 1-2 row cap exists."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small drinks-cooler prop, about one tile wide and two tall. It carries 19 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, so it is at reference level. Near-flat coverage is 0%, so there are no flat fills. The body shows a few lightness steps (white, light grey, mid grey, dark) and the glass door has rows of coloured bottles with highlights. The dark edge pixels are 0% neutral, so the outline carries a tint, as in the hedge and stall references, and is not a uniform black sticker line. It is simpler than the stall and has fewer shading steps on the body panel, but at this small size a careful artist would likely accept it beside the references. This is a moderate-confidence pass, and the shallow body shading is the weak point.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22028
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice panel",
+      "rows": "3-9",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottle shelf with colored bottles",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark recess or opening",
+      "rows": "16-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower drawer or panel",
+      "rows": "21-28",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is a face-on elevation. The top band (rows 3-9) is a bright strip with a mid-tone line at row 7 and light rows below it, with no darker eave shadow. The same light, bright, line, light pattern repeats at rows 21-25 on the lower panel, so it is a vertical panel or cornice strip, not a horizontal top. Below it are the bottle row (10-15), a dark opening (16-20) and the lower panel (24-28). There is no ellipse, no sloped roof, no visible contents from above and no receding side face, so at most a 1-2 row rim reads as top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small drink-cooler or display case with a light body, a dark tinted frame and rows of coloured bottles inside. It measures 19 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge, so density is on par with the richer references. Near-flat coverage is 0%, below the stall's 13%, so there are no flat fills. Dark edge pixels are 0% near-neutral, so the outline carries a tint rather than being a black sticker line, similar to the hedge and stall. The body shows about 5 lightness steps and the bottles give varied clusters. Texture is less grainy than the stall's tiles and scallops, so it counts as 'some' rather than 'rich', but a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22044
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.858Z",
+ "cells": {
+  "16": [
+   "a94c64b55296974a",
+   "c10258f37713e3c1"
+  ],
+  "24": [
+   "04f5ea2412595f29",
+   "0508c4cac030d368",
+   "32839eb0e98b1ec7",
+   "366e536efe15f314",
+   "afb2be7c81d9df28",
+   "c17669698d517032",
+   "c2c50da263a6d02f",
+   "d11694c147f0a58c",
+   "e800c81a6775221b",
+   "f30c54f95a527574",
+   "f8677a7a5cbf5ec3",
+   "fc5d154fcb328663"
+  ],
+  "32": [
+   "2aa1cbc075a4e852",
+   "8724a71167526067",
+   "a3ddfe8b3c1ef132"
+  ],
+  "48": [
+   "703721f306599daf",
+   "72c1541bd31ae677",
+   "7613ffda6154ff88",
+   "89b5908ef1beac0d",
+   "de4786d63bc3dd42",
+   "e095404f3033523c"
+  ]
+ }
+}

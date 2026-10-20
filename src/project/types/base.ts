@@ -1,6 +1,7 @@
 import type { ConceptBundleRecord } from "./conceptBundle";
 import type { InteriorFurnitureSnap, InteriorRoomKindRecord } from "./interior";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
+import type { ObjectSpecV1 } from "../objectSpec";
 
 export type MapId = string;
 export type TilesetId = string;
@@ -466,6 +467,11 @@ export interface SectionStructureKitDef {
   cellHints?: StructureKitCellHint[];
   /** AI 어휘 메타데이터. 없으면 AI 는 이름과 크기만 본다. */
   ai?: StructureKitAiMeta;
+  /**
+   * 기물 설명서(ObjectSpec v1, 2026-10-20) — tile-gen·스토어·에디터가 같이 읽는 단일 정본.
+   * 있으면 크기·발밑·놓는 곳·쓰임·3/4 영수증을 여기서 읽는다(공방의 옛 `hand:`·`foot:` 태그보다 우선). src/project/objectSpec.ts
+   */
+  spec?: ObjectSpecV1;
   learnedFrom: StructureKitLearnedFrom;
   createdAt?: string;
 }

@@ -75,5 +75,6 @@ export function defineBuildingBundle(cfg:BuildingBundleConfig){
   ts.referenceDocuments=structuredClone(cfg.references) as TilesetDef['referenceDocuments'];
   return ts;
  }
- return{TEXTURE:cfg.texture,createTileset,createStandalone,ensureTileset,ensureHost};
+ const hostReferences=():readonly TilesetReferenceCategory[]=>cfg.references as unknown as TilesetReferenceCategory[];
+ return{TEXTURE:cfg.texture,createTileset,createStandalone,ensureTileset,ensureHost,hostReferences};
 }

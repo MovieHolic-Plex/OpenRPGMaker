@@ -22,6 +22,7 @@ import { DEFAULT_BATTLE_SKIN_ID, resolveSkinId, retiredSkinLookWindow } from "@/
 import { isPokemonMoveMotion } from "@/battle/pokemonMoveMotion";
 import { DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { normalizeDisplayFilter } from "@/project/displayFilter";
+import { normalizePlaySurfaceScale } from "@/project/playSurfaceScaleMode";
 import { normalizeBattleLook } from "@/project/battleLook";
 import { DEFAULT_MENU_SKIN_ID, isMenuSkinId } from "@/player/menuSkins/registry";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
@@ -80,7 +81,7 @@ import { normalizeCaptureCondition } from "@/battle/captureBalls";
 import { isStatStageKey, STAT_STAGE_MAX, STAT_STAGE_MIN } from "@/battle/statStages";
 import { normalizeSkillWeather } from "@/battle/weather";
 import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
-import { normalizePlayResolution } from "@/project/playResolution";
+import { keepsExplicitDefaultResolution, normalizePlayResolution } from "@/project/playResolution";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
 import { normalizeWorldGenRulesForStorage } from "@/project/worldGenRules";
 import { normalizeCinematicSequence, normalizeGameOverSettings } from "@/project/cinematicSettings";
@@ -250,9 +251,12 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   const actionCombat = normalizeActionCombatConfig(system.actionCombat);
   const playerFootprint = normalizeCharacterFootprint(system.playerFootprint);
   const genreLock = normalizeGenreLock(system.genreLock);
-  const playResolution = normalizePlayResolution(system.playResolution);
-  const cameraZoom = normalizeCameraZoom(system.cameraZoom);
+  // 양쪽 전신 대화창이면 생략이 1024×768·3.2배를 뜻하므로 작가가 고른 기본값(320×240·1배)도 값으로 남긴다.
+  const keepDefaults = keepsExplicitDefaultResolution(system);
+  const playResolution = normalizePlayResolution(system.playResolution, { keepDefault: keepDefaults });
+  const cameraZoom = normalizeCameraZoom(system.cameraZoom, { keepDefault: keepDefaults });
   const displayFilter = normalizeDisplayFilter(system.displayFilter);
+  const playSurfaceScale = normalizePlaySurfaceScale(system.playSurfaceScale);
   const battleLook = normalizeBattleLook(battleLookWithRetiredSkinWindow(system));
   const fullPortrait = normalizeDialogueFullPortraitSettings(system.dialogueFullPortrait);
   const battleTeams = normalizeBattleTeams(system.battleTeams);
@@ -318,6 +322,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   // 타격감도 같은 계약 — 기본(impact)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
   if (isBattleHitFeel(system.battleHitFeel) && system.battleHitFeel !== DEFAULT_BATTLE_HIT_FEEL) records.battleHitFeel = system.battleHitFeel;
   if (displayFilter) records.displayFilter = displayFilter;
+  if (playSurfaceScale) records.playSurfaceScale = playSurfaceScale;
   // 전투 화면 꾸미기도 같은 계약 — 프리셋과 같은 칸·미등록 값은 저장하지 않는다(project/battleLook.ts).
   if (battleLook) records.battleLook = battleLook;
   // ESC 메뉴 스킨도 같은 계약 — 기본(workbench)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.

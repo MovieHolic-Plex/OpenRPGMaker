@@ -9,13 +9,40 @@ import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
 import { readOAuthClientsFromPiAi } from "./lib/oauthClients.mjs";
 
+/**
+ * 큰 JSON 을 `module.exports = JSON.parse("…")` 로 싣는다(Node 번들 전용) — vite 쪽 scripts/lib/jsonParseModules.mjs 와 같은 이유.
+ * esbuild 의 json 로더는 JSON 을 객체 리터럴로 펼친다. 메인 번들이 번들 타일셋·참고문서 약 80MB 를 품어서, 앱을 켤 때마다
+ * V8 이 그 리터럴을 스크립트로 훑느라 첫 모듈 평가까지 2.6초가 걸렸다(2026-10-20 실측, load≈40). 문자열 리터럴은 훑기만 하고
+ * JSON.parse 는 전용 파서라 같은 데이터가 훨씬 빨리 객체가 된다. 기본·이름 가져오기 모두 CommonJS 상호운용으로 그대로다.
+ */
+const jsonParseModules = {
+  name: "oprn-json-parse-modules",
+  setup(pluginBuild) {
+    pluginBuild.onLoad({ filter: /\.json$/ }, (args) => {
+      const text = readFileSync(args.path, "utf8");
+      if (text.length < 20_000) return undefined;
+      return { contents: `module.exports = JSON.parse(${JSON.stringify(text)});\n`, loader: "js" };
+    });
+  },
+};
+
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_DIR = resolve(REPO_ROOT, "dist-electron");
 
 const ENTRIES = [
   {
-    entry: resolve(REPO_ROOT, "electron/main/main.ts"),
+    // 시작 입구(package.json main). 스플래시를 띄우고 본체(app.cjs)를 읽는다 — 가볍게 둔다(크기 상한을 아래에서 검사).
+    entry: resolve(REPO_ROOT, "electron/main/boot.ts"),
     outfile: resolve(OUT_DIR, "main.cjs"),
+    maxBytes: 200_000,
+    format: "cjs",
+    platform: "node",
+    target: "node22",
+    external: ["electron", "node:*"],
+  },
+  {
+    entry: resolve(REPO_ROOT, "electron/main/main.ts"),
+    outfile: resolve(OUT_DIR, "app.cjs"),
     injectOAuth: true,
     format: "cjs",
     platform: "node",
@@ -70,12 +97,74 @@ for (const [key, name] of Object.entries(OAUTH_ENV)) if (process.env[name]?.trim
 const missingOAuth = Object.keys(OAUTH_ENV).filter((key) => !oauthClients[key]);
 if (missingOAuth.length) process.stderr.write(`warning: OAuth 클라이언트 값 없음 — ${missingOAuth.join(", ")} (해당 로그인은 패키지 앱에서 실패한다)\n`);
 
+/**
+ * 메인 번들의 «프로젝트 코어 지연 읽기»(electron/main/projectCore.ts 머리말).
+ * loadRepair·io/serialize 를 가리키는 모든 import 를 대역 모듈로 바꾼다. 대역은 내보내는 이름마다 getter 를 두고,
+ * 처음 읽힐 때 dist-electron/project-core.cjs 를 require 한다(esbuild 는 CJS 모듈의 이름 가져오기를 쓰는 자리에서 속성으로 읽는다).
+ * 이름 목록은 빌드한 코어 번들을 Node 로 읽어 얻으므로 손으로 맞출 목록이 없다.
+ */
+const PROJECT_CORE_MODULES = {
+  loadRepair: resolve(REPO_ROOT, "src/project/persistence/core/loadRepair.ts"),
+  serialize: resolve(REPO_ROOT, "src/project/io/serialize.ts"),
+};
+function lazyProjectCorePlugin(exportNames) {
+  const byPath = new Map(Object.entries(PROJECT_CORE_MODULES).map(([namespace, path]) => [path, namespace]));
+  return {
+    name: "oprn-lazy-project-core",
+    setup(pluginBuild) {
+      pluginBuild.onResolve({ filter: /(?:loadRepair|serialize)$/ }, async (args) => {
+        if (args.pluginData?.lazyCoreSkip) return undefined;
+        const resolved = await pluginBuild.resolve(args.path, { resolveDir: args.resolveDir, kind: args.kind, importer: args.importer, pluginData: { lazyCoreSkip: true } });
+        const namespace = byPath.get(resolved.path);
+        return namespace ? { path: namespace, namespace: "oprn-lazy-project-core" } : undefined;
+      });
+      pluginBuild.onLoad({ filter: /.*/, namespace: "oprn-lazy-project-core" }, (args) => {
+        const names = exportNames[args.path];
+        if (!names?.length) throw new Error(`프로젝트 코어 ${args.path} 의 내보내기 목록이 비었다`);
+        return {
+          loader: "js",
+          resolveDir: REPO_ROOT,
+          contents: [
+            `const { join } = require("node:path");`,
+            `let core;`,
+            `const load = () => (core ??= require(join(__dirname, "project-core.cjs"))[${JSON.stringify(args.path)}]);`,
+            `for (const name of ${JSON.stringify(names)}) Object.defineProperty(module.exports, name, { enumerable: true, get: () => load()[name] });`,
+          ].join("\n"),
+        };
+      });
+    },
+  };
+}
+
 await mkdir(OUT_DIR, { recursive: true });
 // 자산 브라우저가 받은 RAR 팩(예: Rasak Modern)을 메인 프로세스에서 푼다 — node-unrar-js 는 wasm 을 따로 읽는다.
 // 번들(main.cjs) 옆에 두고 electron/main/rarPack.ts 가 __dirname 에서 읽는다.
 copyFileSync(resolve(REPO_ROOT, "node_modules/node-unrar-js/dist/js/unrar.wasm"), resolve(OUT_DIR, "unrar.wasm"));
 process.stdout.write("staged dist-electron/unrar.wasm\n");
-for (const { entry, outfile, format, platform, target, external, injectOAuth } of ENTRIES) {
+// 코어 번들을 먼저 만들고, 그 내보내기 이름으로 메인 번들의 대역을 만든다.
+const PROJECT_CORE_OUT = resolve(OUT_DIR, "project-core.cjs");
+await build({
+  absWorkingDir: REPO_ROOT,
+  bundle: true,
+  entryPoints: [resolve(REPO_ROOT, "electron/main/projectCore.ts")],
+  format: "cjs",
+  logLevel: "warning",
+  outfile: PROJECT_CORE_OUT,
+  platform: "node",
+  target: "node22",
+  external: ["electron", "node:*"],
+  plugins: [jsonParseModules],
+});
+assertNoTopLevelImportMeta(PROJECT_CORE_OUT);
+const projectCoreExports = JSON.parse(spawnSync(process.execPath, ["-e",
+  `const core = require(${JSON.stringify(PROJECT_CORE_OUT)}); console.log(JSON.stringify(Object.fromEntries(Object.entries(core).map(([k, v]) => [k, Object.keys(v)]))))`,
+], { encoding: "utf8", maxBuffer: 1 << 24 }).stdout || "{}");
+for (const namespace of Object.keys(PROJECT_CORE_MODULES)) {
+  if (!projectCoreExports[namespace]?.length) throw new Error(`project-core.cjs 를 읽지 못했거나 ${namespace} 내보내기가 없다`);
+}
+process.stdout.write(`built dist-electron/project-core.cjs (${Object.values(projectCoreExports).flat().length} exports)\n`);
+
+for (const { entry, outfile, format, platform, target, external, injectOAuth, maxBytes } of ENTRIES) {
   await build({
     absWorkingDir: REPO_ROOT,
     bundle: true,
@@ -87,11 +176,14 @@ for (const { entry, outfile, format, platform, target, external, injectOAuth } o
     target,
     external,
     // 남의 앱 OAuth 값은 Node 메인 번들에만 넣는다 — preload·브라우저 브리지(페이지에 주입되는 파일)로 새면 안 된다.
+    plugins: platform === "node" ? [jsonParseModules, ...(injectOAuth ? [lazyProjectCorePlugin(projectCoreExports)] : [])] : [],
     define: { __OPRN_OAUTH_CLIENTS__: injectOAuth ? JSON.stringify(oauthClients) : "undefined" },
   });
   process.stdout.write(`built ${outfile.replace(`${REPO_ROOT}/`, "")}\n`);
   if (format === "cjs") assertNoTopLevelImportMeta(outfile);
   if (!injectOAuth) assertNoOAuthSecrets(outfile);
+  // 입구가 무거워지면 아이콘을 누른 뒤 스플래시가 그만큼 늦게 뜬다(electron/main/boot.ts).
+  if (maxBytes && readFileSync(outfile).length > maxBytes) throw new Error(`${outfile}: ${readFileSync(outfile).length} bytes > ${maxBytes} — 시작 입구에 무거운 import 가 끌려 왔다`);
 }
 
 // 데스크톱 앱은 사용자 PC에 bun 이 없다. 리눅스·윈도우 워커를 실행 파일로 넣어 채팅이 그 파일을 띄운다.

@@ -3,39 +3,40 @@
  "verdict": "pass",
  "reviewerVerdict": "pass",
  "reviewer": "claude -p --model opus --effort medium",
- "rounds": 12,
- "seconds": 478,
- "focus": "11회차 지적 반영 확인: rowShift 해시를 murmur fmix32 로(사선 격자 없어야), 마루 광택은 널 한 장 안 짧은 줄(4~9px·점선 반)로, 이음새는 칸 줄 경계에서 x%16 3 이상 어긋나게(틱 쌍 없어야). preview.py 는 ikit.lay_x, 편집기·검사는 builder.ts floorLayX — 같은 값(test/roomKit.test.ts 고정).",
- "files": {},
+ "rounds": 18,
+ "seconds": 144,
+ "focus": "일본 2층 단독주택 실내 18회차. 17회차 지적 두 건을 고쳤다: (major) 2층 계단통을 1층 계단 바로 위로 옮겼다 — 1층 stairs-up-wood (10,8)(그림 y6~8), 2층 stairwell-down-wood (10,8) 2×2(아랫줄 (10,10)(11,10)이 1층 (11,9)로, 1층 (10,9)에서 오르면 2층 (11,11)), 옛 자리의 책장·화분은 치우고 화분을 복도 가운데로. (minor) 문서의 부엌 빈 바닥 수치를 실측 26%로 고쳤다(기준 30% 그대로). 15·16회차 고친 것(2층이 1층 바깥선 안, 탈의실 3×3·북쪽 복도 옆문, 방마다 빈 바닥 ≤30%)은 그대로. 의도된 것(결함 아님 — 사용자가 준 구조 참고 그림이 이렇다): 거실은 부엌과만 트여 복도와 직접 잇지 않는다, 화장실 문은 부엌과 트인 북쪽 복도에 열린다. 엔진 관례(결함 아님): 막힌 칸 아래 두 줄 = 벽면, 세로 칸막이 3줄 틈 + 옆문, 1칸 계단 조각과 2칸 계단통, sofa-n 은 북쪽(TV)을 보는 소파 그림, 걸이(창)는 북쪽 벽면만. 방 구성·동선·가구 앵커·문 위치·방별 빈 바닥·층 겹침(계단 포함)·문서와 그림 일치를 본다.",
+ "files": {
+  "verify-shots/jp-city/interior-house-1f-x2.png": "c028268924c261aed384080d7011af2f80c020f8bea66f1520c3558b685563b1",
+  "verify-shots/jp-city/interior-house-2f-x2.png": "3017fbd10c7c09f1f98131228eb533f52d0b5ad5d2676d74711275f9dcd264fa",
+  "public/assets/jp-city-references/interior-house-structure-1f.png": "2e62a1126bf3870cfa707952e93039adced74bd6803c84dcce19a0cb93d9792a",
+  "public/assets/jp-city-references/interior-house-structure-2f.png": "101d8927e2acc923fda5aadf25bc46734673aefaa4e4a1047215686bc173ffeb",
+  "tiledata/jp-city/refs/interior-house-structure.md": "799e8cd4c70ede27e613325def64a00579604efeb5725c8c854d1ed003a9da49",
+  "scripts/content/jp-city/maps/out/interior-house-1f.report.json": "34f6d12ce8fcc0f5b4d3ae93967d2708c92ddd2999da04b8633b2fa7696d2a7f",
+  "scripts/content/jp-city/maps/out/interior-house-2f.report.json": "2f16f20a3996fcd9ab79da53f1fc8a352c1ccb0dd44823e795fc3f7e2ae09072"
+ },
  "findings": [
   {
    "severity": "minor",
-   "file": "scripts/content/jp-city/interior/ikit.py, src/editor/handInterior/builder.ts",
-   "where": "lay_x / floorLayX, 칸 줄 y=5·9, 6·10, 7·11",
-   "problem": "fmix32 % cols 값이 y와 y+4에서 세 줄 연속 같다(0,4,3). 패턴 줄이 y%4라서 마루가 칸 줄 5~11을 덮는 방에서는 48px 높이 띠가 64px 아래에 픽셀까지 똑같이 반복된다. 현재 세 지도에서는 가구와 벽에 가려 드러나지 않아 잠재 결함이다.",
-   "fix": "같은 y%rows 줄끼리 shift가 겹치지 않게 한다. 예: shift = (h + (y // rows) * 3) % cols처럼 주기 블록 번호를 섞거나, y와 y-rows의 shift가 같으면 1을 더한다. test/roomKit.test.ts에 'y와 y+rows의 shift가 연속 2줄 이상 같지 않다' 단언을 추가한다."
+   "file": "src/editor/handInterior/jpHouseBlueprint.ts (jp-house-1f), verify-shots/jp-city/interior-house-1f-x2.png",
+   "where": "1F 화분 (11,7–8), 2F stairwell 동쪽 열 (11,8)–(11,9) 바로 아래",
+   "problem": "2층 계단 구멍의 동쪽 절반이 1층 계단이 아닌 복도 바닥과 화분 위에 뚫려 있어, 위에서 보면 구멍 아래가 화분이다.",
+   "fix": "1층 화분을 (11,8)에서 빼서 복도 남쪽 끝이나 신발장 옆으로 옮긴다."
   },
   {
    "severity": "minor",
-   "file": "scripts/content/jp-city/blocks/interior_shell.py",
-   "where": "_planks, flooring / flooring-dark (cols=8, 128px 주기)",
-   "problem": "한 칸 줄 안에서 광택 무리와 짙은 결 점이 정확히 128px마다 반복된다. 24×20칸 합성 바닥 x3 기준으로 y≈233에서 x≈130/515/900. 현재 가장 넓은 마루는 약 176px라 두 번만 보이지만 넓은 LDK에서는 기계 반복으로 읽힌다.",
-   "fix": "가로 주기를 cols=12 이상으로 늘리거나, 줄마다 광택과 결 점 배치를 두 주기 변형 중에서 hash로 고르게 한다."
+   "file": "scripts/content/jp-city/maps/out/interior-house-1f.report.json, interior-house-2f.report.json",
+   "where": "1F travel cell (10,9)·2F 도착 (11,11), 2F link (10,10)/(11,10) → 1F (11,9)",
+   "problem": "오르는 칸 (10,9)와 내려와 닿는 칸 (11,9)가 다르고, 2층 도착 칸도 x11이라 오르내릴 때마다 한 칸씩 옆으로 밀린다.",
+   "fix": "2F→1F 도착을 (10,9)로, 1F→2F 도착을 (10,10) 또는 (10,11)로 같은 열 x10에 맞춘다."
   },
   {
    "severity": "minor",
-   "file": "scripts/content/jp-city/blocks/interior_shell.py",
-   "where": "_planks 이음새 탐색 for k in range(200)",
-   "problem": "200회 안에 조건(같은 칸 줄 10px 이상, 경계 x%16 차이 3 이상, 마지막 줄과 첫 줄 이음 조건)을 못 맞추면 마지막 후보를 조용히 쓴다. 지금 seed 1·2에서는 실패 0건이지만 seed나 주기를 바꾸면 틱 쌍이 경고 없이 돌아온다.",
-   "fix": "for-else로 실패 시 AssertionError를 던지거나 bake-report에 기록한다."
-  },
-  {
-   "severity": "minor",
-   "file": "scripts/content/jp-city/maps/out/interior-house-1f.map.json (2f, apartment-1k 동일)",
-   "where": "1F 칸 (0..5, 14) 등 각 지도 왼쪽 아래 바깥 블록, lowerTiles 8126",
-   "problem": "건물 바깥 빈칸이 8126 (16,10,26)과 8740 계열 (44,37,56) 두 가지 색으로 칠해져, 바깥에 L자로 짙은 사각형이 떠 보인다.",
-   "fix": "바깥 빈칸을 한 가지 타일로 통일하거나, 의도한 것이면 경계 처리를 같은 명도로 맞춘다. 수정 뒤 verify-shots와 interior-runtime 캡처를 다시 찍고 gates/interior.json을 12회차로 갱신한다."
+   "file": "src/editor/handInterior/jpHouseBlueprint.ts (jp-house-2f), verify-shots/jp-city/interior-house-2f-x2.png",
+   "where": "2F 복도 화분 (10,11–12), (10,14–15)",
+   "problem": "3칸 폭 복도의 같은 열에 같은 그림의 화분이 두 번 반복되어 기계적 반복이고 통로를 두 번 좁힌다.",
+   "fix": "하나만 남기고 다른 하나는 빼거나 다른 바닥 기물로 바꾸며, 위치를 x10과 x12에 엇갈리게 둔다."
   }
  ],
- "report": "## 12회차 검수: 실내\n\n11회차의 major 두 건은 모두 해결됐다. 남은 결함은 minor 넷이라 판정은 pass다. 게이트와 vitest는 규칙에 따라 돌리지 않았다.\n\n### 11회차 지적 재확인\n- **rowShift 사선 격자**: 해결. Python `ikit.lay_x`와 TS `floorLayX`를 y=0..39로 재현해 보니 값이 같고, `test/roomKit.test.ts`의 기대값 `[7,6,7,5,5,0,4,3,3,0,4,3]`과도 맞는다. 줄 사이 차이도 일정하지 않아 등차 사선이 사라졌다.\n- **광택 띠가 이음새를 넘어 약 64px 이어짐**: 해결.\n  - 2F 침실(1x y≈84, x 22–64)을 6배로 확대해 보면 광택이 2~4점짜리 짧은 점선만 남았다.\n  - 1F LDK 의자 좌판 근처(1x y≈148, x 268–292)도 의자를 잇는 밝은 선이 사라졌다.\n- **칸 줄 경계의 짙은 틱 쌍**: 해결. `_planks` 이음새를 seed 1·2로 16줄씩 다시 계산했다. 200회 탐색은 모든 줄에서 성공했고, 경계 줄 사이의 x%16 차이는 모두 3 이상이었다.\n\n### 남은 결함 (모두 minor)\n1. **세로 반복 띠 (지금 지도에는 아직 안 보임)**: fmix32 결과가 y=5·9, 6·10, 7·11에서 같다(0, 4, 3). 패턴 줄은 y%4로 정해지므로, 마루가 칸 줄 5~11을 덮는 방이 생기면 48px 높이 띠가 64px 아래에 픽셀까지 똑같이 반복된다.\n   - 현재 세 지도에서 칸 줄 쌍을 모두 비교했다. 40px 넘게 같은 구간은 바깥 빈칸 타일에서만 나왔고 마루에서는 0건이다.\n2. **가로 128px 반복**: 한 줄 안에서 광택 무리와 짙은 결 점이 정확히 128px마다 다시 나온다. 24×20칸 합성 바닥에서 확인했다. 지금 가장 넓은 마루는 2F 복도(약 176px)라 눈에 덜 띈다.\n3. **이음새 탐색 실패를 그냥 넘어감**: 200회 안에 조건을 못 찾으면 마지막 후보를 조용히 쓴다. 지금 seed에서는 실패가 없지만 seed가 바뀌면 틱 쌍이 몰래 돌아올 수 있다.\n4. **바깥 빈칸 색이 두 가지**: 1F 왼쪽 아래 칸(0..5, 14)은 타일 8126이라 거의 검은 색 `(16,10,26)`이다. 그 위의 빈칸은 8740 계열 `(44,37,56)`이다. 2F 왼쪽 아래 블록과 원룸 왼쪽 아래도 같다.\n\n### 증거 상태\n- 런타임 캡처 `interior-runtime/*.png`는 10/7 17:44 것이라 이번 변경 전 그림이다.\n- `gates/interior.json`은 아직 11회차 fail을 담고 있다.\n\n```json\n{\"verdict\": \"pass\", \"findings\": [\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/interior/ikit.py, src/editor/handInterior/builder.ts\", \"where\": \"lay_x / floorLayX, 칸 줄 y=5·9, 6·10, 7·11\", \"problem\": \"fmix32 % cols 값이 y와 y+4에서 세 줄 연속 같다(0,4,3). 패턴 줄이 y%4라서 마루가 칸 줄 5~11을 덮는 방에서는 48px 높이 띠가 64px 아래에 픽셀까지 똑같이 반복된다. 현재 세 지도에서는 가구와 벽에 가려 드러나지 않아 잠재 결함이다.\", \"fix\": \"같은 y%rows 줄끼리 shift가 겹치지 않게 한다. 예: shift = (h + (y // rows) * 3) % cols처럼 주기 블록 번호를 섞거나, y와 y-rows의 shift가 같으면 1을 더한다. test/roomKit.test.ts에 'y와 y+rows의 shift가 연속 2줄 이상 같지 않다' 단언을 추가한다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/blocks/interior_shell.py\", \"where\": \"_planks, flooring / flooring-dark (cols=8, 128px 주기)\", \"problem\": \"한 칸 줄 안에서 광택 무리와 짙은 결 점이 정확히 128px마다 반복된다. 24×20칸 합성 바닥 x3 기준으로 y≈233에서 x≈130/515/900. 현재 가장 넓은 마루는 약 176px라 두 번만 보이지만 넓은 LDK에서는 기계 반복으로 읽힌다.\", \"fix\": \"가로 주기를 cols=12 이상으로 늘리거나, 줄마다 광택과 결 점 배치를 두 주기 변형 중에서 hash로 고르게 한다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/blocks/interior_shell.py\", \"where\": \"_planks 이음새 탐색 for k in range(200)\", \"problem\": \"200회 안에 조건(같은 칸 줄 10px 이상, 경계 x%16 차이 3 이상, 마지막 줄과 첫 줄 이음 조건)을 못 맞추면 마지막 후보를 조용히 쓴다. 지금 seed 1·2에서는 실패 0건이지만 seed나 주기를 바꾸면 틱 쌍이 경고 없이 돌아온다.\", \"fix\": \"for-else로 실패 시 AssertionError를 던지거나 bake-report에 기록한다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/out/interior-house-1f.map.json (2f, apartment-1k 동일)\", \"where\": \"1F 칸 (0..5, 14) 등 각 지도 왼쪽 아래 바깥 블록, lowerTiles 8126\", \"problem\": \"건물 바깥 빈칸이 8126 (16,10,26)과 8740 계열 (44,37,56) 두 가지 색으로 칠해져, 바깥에 L자로 짙은 사각형이 떠 보인다.\", \"fix\": \"바깥 빈칸을 한 가지 타일로 통일하거나, 의도한 것이면 경계 처리를 같은 명도로 맞춘다. 수정 뒤 verify-shots와 interior-runtime 캡처를 다시 찍고 gates/interior.json을 12회차로 갱신한다.\"}\n]}\n```"
+ "report": "**적대적 검수: jp 2층 단독주택 실내 18판**\n\n**지난 major 재확인 (1층 계단과 2층 계단 구멍이 겹치지 않음).** 이번 판에서는 해소됐다고 본다.\n- 1층 `stairs-up-wood`는 @(10,8)이다. 그림은 y6–8에 걸치지만 y6–7은 북쪽 벽면이고(오른쪽 시계·화장실 문과 같은 줄), 실제 바닥 칸은 (10,8)이다. 오르는 칸은 (10,9)이다.\n- 2층 `stairwell-down-wood`는 @(10,8)에 2×2(x10–11, y8–9)로 놓였다.\n- 따라서 같은 열 x10, 같은 줄 y8이 수직으로 겹친다. 1칸 계단 위에 2칸 구멍을 두는 것은 엔진 관례라 결함으로 보지 않는다.\n- 참고 구조 그림 `interior-house-structure-1f.png`·`interior-house-structure-2f.png`도 두 렌더와 같은 위치를 보인다.\n\n**남은 결함 (모두 minor)**\n1. **2층 구멍 동쪽 절반이 1층 화분 바로 위에 뚫려 있다.** 2층 (11,8)–(11,9)는 계단이 아닌 1층 복도 바닥 위이고, 그중 (11,8)에는 1층 화분이 있다. 위에서 내려다보면 계단이 아니라 화분과 바닥이 보이는 구멍이 된다.\n   - 고칠 것: 1층 화분을 (11,8)에서 빼서 복도 남쪽 끝이나 신발장 옆으로 옮긴다.\n2. **오르내리는 칸이 좌우로 맞지 않는다.** 1층에서는 (10,9)에서 오르는데 2층 도착은 (11,11)이다. 2층에서 내려오면 1층 (11,9)에 닿아, 계단 앞 칸(10,9)이 아니라 그 옆 칸에 선다. 오르고 내릴 때 한 칸씩 옆으로 밀린다.\n   - 고칠 것: 2층→1층 도착 칸을 (10,9)로, 1층→2층 도착 칸을 (10,10) 또는 (10,11)로 맞춘다.\n3. **2층 복도에 같은 화분이 두 번 반복된다.** 3칸 폭 복도의 같은 열 x10에 같은 그림의 화분이 (10,11–12)와 (10,14–15)에 있다. 기계적으로 반복된 것이고, 복도 서쪽 열을 두 번 막는다.\n   - 고칠 것: 하나만 남긴다. 다른 하나는 빼거나 서로 다른 기물(작은 장, 벽걸이 액자는 북벽에만 가능하므로 바닥 기물)로 바꾸고, 위치도 x10과 x12에 엇갈리게 둔다.\n\n```json\n{\"verdict\": \"pass\", \"findings\": [\n  {\"severity\": \"minor\", \"file\": \"src/editor/handInterior/jpHouseBlueprint.ts (jp-house-1f), verify-shots/jp-city/interior-house-1f-x2.png\", \"where\": \"1F 화분 (11,7–8), 2F stairwell 동쪽 열 (11,8)–(11,9) 바로 아래\", \"problem\": \"2층 계단 구멍의 동쪽 절반이 1층 계단이 아닌 복도 바닥과 화분 위에 뚫려 있어, 위에서 보면 구멍 아래가 화분이다.\", \"fix\": \"1층 화분을 (11,8)에서 빼서 복도 남쪽 끝이나 신발장 옆으로 옮긴다.\"},\n  {\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/out/interior-house-1f.report.json, interior-house-2f.report.json\", \"where\": \"1F travel cell (10,9)·2F 도착 (11,11), 2F link (10,10)/(11,10) → 1F (11,9)\", \"problem\": \"오르는 칸 (10,9)와 내려와 닿는 칸 (11,9)가 다르고, 2층 도착 칸도 x11이라 오르내릴 때마다 한 칸씩 옆으로 밀린다.\", \"fix\": \"2F→1F 도착을 (10,9)로, 1F→2F 도착을 (10,10) 또는 (10,11)로 같은 열 x10에 맞춘다.\"},\n  {\"severity\": \"minor\", \"file\": \"src/editor/handInterior/jpHouseBlueprint.ts (jp-house-2f), verify-shots/jp-city/interior-house-2f-x2.png\", \"where\": \"2F 복도 화분 (10,11–12), (10,14–15)\", \"problem\": \"3칸 폭 복도의 같은 열에 같은 그림의 화분이 두 번 반복되어 기계적 반복이고 통로를 두 번 좁힌다.\", \"fix\": \"하나만 남기고 다른 하나는 빼거나 다른 바닥 기물로 바꾸며, 위치를 x10과 x12에 엇갈리게 둔다.\"}\n]}\n```"
 }

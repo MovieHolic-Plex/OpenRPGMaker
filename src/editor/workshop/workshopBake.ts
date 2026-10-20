@@ -101,6 +101,9 @@ export function bakeWorkshopPick(item: WorkshopItem, grid: Grid, palette: Palett
       gridHash: workshopGridHash(grid),
       asset: { id: workshopAssetId(dataUrl), dataUrl, width: sheet.width, height: sheet.height },
       cells: tiles.map((tile, k) => ({ sourceTile: k, dx: tile.dx, dy: tile.dy })),
+      // 설명서(ObjectSpec): 공방 판에서 사람이 고른 후보다. 3/4 영수증은 아직 공방 굽기에 배선되지 않았다(object-gate 문서).
+      provenance: { aiGenerated: true, tool: `oprn-workshop/${item.tilesetId ? "map-objects" : "interior-props"}` },
+      review: { pick: { by: "human", at: new Date().toISOString() } },
     });
   }, { scope: "project", origin: "human", label: `공방 기물 칩셋에 넣기: ${item.title}` });
   const detail: WorkshopBakedDetail = { objectId, title: item.title, tilesetId, kind: item.kind, columns, rows };

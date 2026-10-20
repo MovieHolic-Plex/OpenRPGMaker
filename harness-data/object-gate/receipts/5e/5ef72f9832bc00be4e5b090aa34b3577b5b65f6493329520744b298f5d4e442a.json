@@ -1,0 +1,406 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5ef72f9832bc00be4e5b090aa34b3577b5b65f6493329520744b298f5d4e442a",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "izakaya beer server",
+ "label": "modern_city_interior/izakaya-beer-server",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (1/4)",
+  "3/4: 윗면 0행 < 4 (1/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)",
+   "투영이 3/4 아님(front_elevation) (1/4)",
+   "윗면 0행 < 4 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 28,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper tap tower/tank",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "6-9"
+     },
+     {
+      "part": "main cabinet top band",
+      "rows": "11-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16"
+     },
+     {
+      "part": "mug and beer in the window",
+      "rows": "17-23",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the 12px-wide cabinet at rows 10-30. Its rows 11-14 form a light band (L=208-242), with a darker front-edge line at row 15. The dark window interior at rows 16-23 follows as eave shadow, and below it the front face has a window, a mug and a grille, down to row 30. That gives a top band of about 4 rows over a front face of about 15 rows, similar to the green cabinet reference. The narrower upper tower (rows 1-9) has only a light gradient at rows 2-5 above a blue label and no clear front-edge line, so it is a weaker top. The evidence for a top surface is moderate, since the band could also be read as a front-facing cornice."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small white and grey body with a blue jug on top, about one tile wide and two tall. Measured density is fine: 11 visible tones per tile against 9 for the hedge, and 0% near-flat coverage. The problem is structure. Every material (jug, body, base) has only about 3 lightness steps, where the cheese stall and well use 5-6. The dark edge pixels are 100% near-neutral, so the shape is wrapped in a uniform black/grey outline rather than a darker tone of the neighbouring material. This is the 'sticker' look. Only the lamp reference is also neutral, and that is a metal pole. The stall and well references use tinted outlines (1% and 33% neutral). The surfaces are smooth with little grain, tile highlights or per-part shading, so the piece looks thinner and flatter than the stall and well beside it. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 23900
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lower main body top band",
+      "rows": "11-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "upper tap head cap band",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "upper head blue label (vertical face)",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower front face with beer window and lower grille",
+      "rows": "16-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wide lower body (rows 10-30, width 12) has a light band at rows 11-14 that ends in a darker edge line at row 15. Dark shadow rows follow at 16 onward, and the front face below runs rows 16-29 with a window showing a yellow beer glass and a grille. The narrower upper head (rows 1-9, width 8) has a light band at rows 2-5 with an edge line at row 6, then a blue label face. The top band is only about 4 rows and could be read as a front-facing cornice, but the edge line plus the shadow below favour a top surface. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small water-cooler-style server with a pale jug on top, a white body, a tap and a mug. Its measured density is acceptable: 11 visible tones per tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, so there are no large flat fills. The problem is the outline and the shading. 100% of its dark edge pixels are neutral, so it reads as a uniform black/grey sticker line around every shape. The references with rich material shading (hedge 0%, cheese stall 1%, well 33%) use tinted, material-toned darks instead. The body and jug show only about 3 lightness steps each (white, light grey, dark) with little grain, against 5-6 steps per material in Beodeul. Next to the stall and well it looks thinner and more sticker-like, so it fails on outline craft and shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20526
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper tap head / label block",
+      "rows": "1-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main body upper plate band",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main body front with window and contents",
+      "rows": "16-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a narrower upper block (rows 1-9, width 8) on a wider body (rows 10-30, width 12). Row 10 is a full dark outline that separates them. The upper block has a vertical light gradient (rows 2-5) and a blue label (rows 6-9), which read as a face-on front, not a horizontal surface. The body starts with a light plate (rows 11-14) bounded by a dark row 15, but it repeats in the bottom plate (rows 24-29) with the same light/dark pattern, so it is a front-facing panel, not a top with an edge line and eave shadow. No ellipse, roof, or visible contents from above. Below it the front shows a window with a yellow glass (rows 16-23) and the bottom panel. Nothing shows a receding top, so the drawing is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, narrow dispenser, about one tile wide, with a jug on top. The measured facts are 11 visible tones per tile and 0% near-flat coverage, which is acceptable next to the hedge (9) but well under the stall (17) and well (20). The 100% near-neutral dark edge share shows a neutral black/grey outline around the whole silhouette, the 'sticker' look. Beodeul pieces like the stall (1%), hedge (0%) and well (33%) use tinted, material-toned edges instead. The body is mostly white/grey with a blue jug, and each material has only about 3 lightness steps (highlight, mid, dark), compared with 5-6 on the references. Grain, speckle and per-material ramps are minimal. It is clean and not flat-filled, but it looks thinner and more outlined than the references, so it does not match the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20661
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper keg/tap head top band",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "6-9"
+     },
+     {
+      "part": "main body top band",
+      "rows": "11-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue label on upper head",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass/mug window and bottom grille",
+      "rows": "16-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body (rows 10-30, width 12) starts with a dark outline at row 10. Rows 11-14 form a light band (L about 208-242), and row 15 is a darker 1-row line (L=91) that reads as its front edge. Below that is a front face of about 15 rows (rows 16-30): a recessed window with a mug and a lower grille. The narrower upper head (rows 1-9, width 8) repeats the pattern with a light band at rows 2-5 and a dark line at row 6 above the blue label. The band is only moderately convincing as a top surface, since it could also be a front-facing header strip, but it has an edge line and sits above a darker face, so I read it as a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, roughly one-tile-wide, two-tile-tall water-cooler-style server with a pale body, a blue jug on top and a small tap. Its ramps are shallow: the white/grey body reads as about 3 steps, and the jug and tap as 2-3 each. The references use 5-6 steps per material. The measured dark edge pixels are 100% near-neutral, so the outline is a uniform black/grey line with no tint from the adjacent material. That is the sticker look, in contrast with the tinted outlines on the stall (1% neutral), the hedge (0%) and the well (33%). Tone count is 11 per tile with 0% near-flat coverage. That is comparable to the hedge (9) but below the stall (17) and well (20), which are the closest references for a furnished prop. By eye, the body has little grain or per-surface texture, and it looks flatter and thinner than the stall counter or well masonry. The lamp-crook reference also has a neutral outline, but it is a thin iron pole where that is natural. Here a neutral outline around a multi-material prop reads as shallow. Overall it is cleanly drawn but not at the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 25882
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.960Z",
+ "cells": {
+  "16": [
+   "40e97a7b0163e37a",
+   "833d47b5f5463ab3"
+  ],
+  "24": [
+   "29125ffe566b29d0",
+   "4a8575f6631181fe",
+   "65112c9dbce801bf",
+   "6ef51474e727a0c1",
+   "70b6c94647a35a51",
+   "81a5da392ed08267",
+   "8c7e5e0c0661175a",
+   "99e1aeeed6744fcb",
+   "a48fac277ffb41f0",
+   "c82c294e3416265b",
+   "db7f07c4b47607bd",
+   "e42ca11c377e478e"
+  ],
+  "32": [
+   "1894d294ad2259cb",
+   "657d07e51cd7da08",
+   "a8ddc1c4b8b6fe9b"
+  ],
+  "48": [
+   "5e88f6a5b2db17d7",
+   "770b57b43e0e39a1",
+   "7af23ba06f36a8c5",
+   "9cfa2825a5b17ac7",
+   "a1fd4e7374931786",
+   "db00330865820644"
+  ]
+ }
+}

@@ -11,8 +11,8 @@
         "block": 11,
         "pickedAt": "2026-10-16T10:40:08.570Z",
         "note": "v4 cute-first, Opus 5.5 judge: 가장 큰 동그란 눈에 흰 하이라이트가 선명하고 둥근 큰 머리라 친근하다. 꼬리 숯덩이 공도 크고 금이 또렷하다",
-        "previousAuthoredSha256": "bf1980ad4fb96700488f0e43829738aadc8f8ae71eb13fa10d82c9ba781002d0",
-        "authoredSha256": "65563ef4a73eba3cf8030c07ce5e254a97f672b9817d65aa9e47c59348b9de58"
+        "previousAuthoredSha256": "38f0e9a44a2a1a5370552ddb15495e3c87f5413c5dc8df0b1bbcaceb937f8549",
+        "authoredSha256": "e5fc9f843284887936555f3b8a66185653ebf79042e8b16bbfc63f42aa6d24e3"
       },
       "back": {
         "authored": "authored/sparkit-back.png",
@@ -22,7 +22,9 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (a huge round tail club - the short thick tail ends in a giant cracked-charcoal ball almost as big as its own head, with glowing orange cracks and one crisp pixel flame tuft on top (flat colors, dark outline, not glowing), so the tail looks like a smoldering mace it drags behind it) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Keep the chibi proportions: the head stays big and round, the body short and plump. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 14,
         "pickedAt": "2026-10-16T11:15:53.512Z",
-        "note": "v4 cute-first, Opus 5.5 judge: Same orange kit with striped back and a big cracked-charcoal tail ball nearly head-sized. Round head, plump body, no eyes, clean pixels."
+        "note": "v4 cute-first, Opus 5.5 judge: Same orange kit with striped back and a big cracked-charcoal tail ball nearly head-sized. Round head, plump body, no eyes, clean pixels.",
+        "previousAuthoredSha256": "ab57e19db56bf2ac6482ff9d16bc70e7e4f0d94f7258d0f2a73ad0b39dd2c976",
+        "authoredSha256": "ab57e19db56bf2ac6482ff9d16bc70e7e4f0d94f7258d0f2a73ad0b39dd2c976"
       }
     },
     "aqualing": {
@@ -34,7 +36,9 @@
         "prompt": "Draw on this flat magenta canvas. Original creature design for a monster-collecting RPG, finished pixel art battle sprite in the style of Pokemon Black and White (Nintendo DS, 2010) opponent sprites (cute, bold, instantly readable monsters). Designed by a professional monster designer: a strong readable silhouette and ONE exaggerated signature feature - NOT a realistic zoological animal drawing, NOT a flat well-balanced animal. PROPORTIONS (first-stage creature, must be genuinely adorable): chibi proportions - the head is 40-50% of the total body height, a round head, large round glossy sparkling eyes (each about a fifth of the head width, dark with a 2x2 white highlight), short plump rounded torso, stubby short limbs, a soft rounded overall silhouette, gentle sweet expression, smooth soft textures (no scaly, chitinous, insect-like or reptilian roughness on the face). The cuteness comes from the proportions and the big eyes, not from decoration: no blush marks, no hearts, no sparkles, no stickers, no wide mascot grin. SIGNATURE FEATURE (the most important thing in the picture): an enormous crown of feathery gills - three huge coral-pink fan-shaped gill fronds on each side of the head, spread wide like a flower ruff or frilled collar, each frond as long as the head is wide, so the head with its gills is wider than the whole body. Draw this ONE feature boldly exaggerated - much larger than a realistic animal would have, taking a big share of the whole silhouette and being the first thing the eye sees; keep every other part simple so the signature stands out. Silhouette test: if the picture is filled solid black, the outline alone must still be unique and recognizable from this feature - not a generic balanced animal outline. EYES (the most important part of cuteness, readable at 64 pixels): draw TWO clearly visible eyes on the face - three-quarter view, the near eye bigger, the far eye a little smaller, both on the same level on the head. BIG shiny round eyes (each pupil at least 6 art pixels wide and 6 tall, about a fifth of the head width - eyes are the biggest feature of the face): a solid dark round or oval pupil (dark brown or navy) with a pure-white shiny highlight made of a 2x2 block of art pixels in the upper-left of the pupil plus, when room allows, one more white pixel at the lower right - the highlight is MANDATORY, a dark bead eye without a white highlight is forbidden, sitting on a LIGHT skin area with at least one art pixel of light skin color between the eye and the dark outline - the pupil never touches or merges with the outline, and is never a single dot, a thin slit, a smudge or hidden under hair or leaves. Sweet, friendly, alive expression - sparkling eyes, a gentle face you want to befriend. NOT creepy: no compound or insect eyes, no slit or reptile pupils, no dead dark beads, no scowl, no bared teeth, no menacing glare. COLOR PLAN: only 3-4 body colors (main, secondary, light belly, dark) with 2-3 shading tones each, dark colored outline (a dark version of the local color, not pure black), plus ONE vivid accent color (coral pink (only the gills)) used only on the signature feature, so the eye lands there. Total at most 14 colors. Light from the upper left, flat clean shading areas, no dithering noise, no gradients, no anti-aliasing. Pose: three-quarter view turned to the LEFT, standing on its feet, head and chest facing left, tail on the right. NOT facing the viewer. Every art pixel is one clean square block of about 12x12 image pixels; the creature is about 80 art pixels wide. FRAMING: the entire creature including its signature feature (mane, tail, ears, horns, flames) stays inside the middle 70% of the canvas width and height with a wide empty magenta margin on every side - never larger, never touching the edges. The whole background stays flat solid pure magenta #FF00FF: absolutely NO glow, NO aura, NO halo, NO embers, NO smoke, NO light bloom around the creature, no ground, no shadow, no text. Creature (water type, evolution stage 1): A baby axolotl starter standing on four tiny stubby legs: a very big round head with big eyes and a tiny smiling mouth, a soft plump short blue body with a pale cream belly, a short thick paddle tail. Main colors: blue, pale cream, navy, coral pink. It must NOT resemble any existing official monster, especially: Bulbasaur, Ivysaur, Charmander, Charmeleon, Squirtle, Leafeon, Eevee, Pidgey, Pidove, Torchic, Rowlet, Weedle, Caterpie, Wurmple, Venipede, Pikachu, Geodude, Rhyhorn, Wooloo, Diglett, Krabby, Horsea, Seadra, Zigzagoon, Totodile, Marill, Zoroark, Gligar, Wooper, Quagsire, Fennekin, Skiddo, Sceptile.",
         "block": 12,
         "pickedAt": "2026-10-16T10:40:35.412Z",
-        "note": "v4 cute-first, Opus 5.5 judge: 큰 눈에 흰 하이라이트가 있고 웃는 입이라 다정하다. 분홍 아가미 깃이 머리 양옆으로 넓게 퍼져 바로 눈에 띈다"
+        "note": "v4 cute-first, Opus 5.5 judge: 큰 눈에 흰 하이라이트가 있고 웃는 입이라 다정하다. 분홍 아가미 깃이 머리 양옆으로 넓게 퍼져 바로 눈에 띈다",
+        "previousAuthoredSha256": "146eb8618bd6b76fa9341565e909b11571c358c566186b550b110e7c0d72f9ed",
+        "authoredSha256": "aef49b490c8b8a0610e5ba8df284a37a930c39bcddea9e83c68a4ef3e0e20dfa"
       },
       "back": {
         "authored": "authored/aqualing-back.png",
@@ -57,8 +61,8 @@
         "block": 12,
         "pickedAt": "2026-10-16T10:40:57.349Z",
         "note": "v4 cute-first, Opus 5.5 judge: 큰 동그란 갈색 눈에 흰 하이라이트가 또렷하고 머리가 크다. 잎사귀 귀 두 장이 크고 위로 높이 솟아 있다",
-        "previousAuthoredSha256": "56872ec997688983994a6d4a87c3a084eaaa1021c89b496716193ba885e192a8",
-        "authoredSha256": "993d1249b19a0262de64efd5998711ad09791c49205c75aaca76e44ab7a06911"
+        "previousAuthoredSha256": "9eafad8922fd238c634afee47214d885b7337a7e4f7b1edd8f53eafea9bf77f6",
+        "authoredSha256": "4c72e263a941f8c9dcc2246e7d5c62c6841d94bc45545590ee9f4c5c88019e69"
       },
       "back": {
         "authored": "authored/leafling-back.png",
@@ -68,7 +72,9 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (two gigantic leaf ears - broad pointed leaves growing from the head, each as tall as its entire body, tilted outward like wide antennas with a visible vein line) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Keep the chibi proportions: the head stays big and round, the body short and plump. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 12,
         "pickedAt": "2026-10-16T11:16:29.159Z",
-        "note": "v4 cute-first, Opus 5.5 judge: Same green leaf-eared creature with a brown tuft and two huge veined leaf ears. Compact, plump body, clean silhouette, no eyes."
+        "note": "v4 cute-first, Opus 5.5 judge: Same green leaf-eared creature with a brown tuft and two huge veined leaf ears. Compact, plump body, clean silhouette, no eyes.",
+        "previousAuthoredSha256": "840ab37d5eaa199d04c7e67ab71207cd133f0e462d499123744aa91f8f80c269",
+        "authoredSha256": "840ab37d5eaa199d04c7e67ab71207cd133f0e462d499123744aa91f8f80c269"
       }
     },
     "gustchick": {
@@ -81,8 +87,8 @@
         "pickedAt": "2026-10-16T10:41:20.318Z",
         "note": "v4 cute-first, Opus 5.5 judge: 크고 둥근 눈에 흰 하이라이트가 선명해 반짝이고, 통통한 몸에 하늘색 볏이 크게 솟았다",
         "authored": "authored/gustchick-front.png",
-        "previousAuthoredSha256": "77635aa59f4a52b6f50b80c1b6df3c6472a27857a3bd1c82a210f569b96fd55a",
-        "authoredSha256": "4033694c374bb855a1f30db129ad42d1ea3ec8b3cee2519c34417cfc2a7cfa30"
+        "previousAuthoredSha256": "1a9f1943b71144211c8a1dae8217f6f43e2962a62ef314c3598d9af2bfe9005a",
+        "authoredSha256": "1b0a6d609528b2e604891e7423169308178902b29751e752bef6725f55156ab0"
       },
       "back": {
         "grid": "grids/gustchick-back.png",
@@ -91,7 +97,10 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (a gigantic stiff sky-blue three-feather crest swept back like a wind vane, as tall as its whole body) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Keep the chibi proportions: the head stays big and round, the body short and plump. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 14,
         "pickedAt": "2026-10-16T11:16:46.022Z",
-        "note": "v4 cute-first, Opus 5.5 judge: Same grey chick with a sky-blue three-feather crest swept back. Round, plump body, no eyes, clean feet and tail."
+        "note": "v4 cute-first, Opus 5.5 judge: Same grey chick with a sky-blue three-feather crest swept back. Round, plump body, no eyes, clean feet and tail.",
+        "authored": "authored/gustchick-back.png",
+        "authoredSha256": "0a78d97b7c0fcaa9a1c7423a8b3209b548667ddae84832c655ba3391474661ec",
+        "previousAuthoredSha256": "46152f66bc923b8bcfbc1d95a66097bff87d9736ae5ff3c0430736461c2e8ab1"
       }
     },
     "pipbug": {
@@ -104,8 +113,8 @@
         "pickedAt": "2026-10-16T10:41:42.825Z",
         "note": "v4 cute-first, Opus 5.5 judge: 가장 크고 둥근 눈에 흰 하이라이트가 또렷하고, 큰 머리와 통통한 몸, 큰 두 잎 새싹이 선명하다",
         "authored": "authored/pipbug-front.png",
-        "previousAuthoredSha256": "ea87b6a4ebcca5f839d6721f8c1f56653e945efe0ee9c918d4ceb6f0f2dfc153",
-        "authoredSha256": "ba271dfffc7db9a799e8ccda3878538bc31495996e480fd62d854ba0030e062a"
+        "previousAuthoredSha256": "ba271dfffc7db9a799e8ccda3878538bc31495996e480fd62d854ba0030e062a",
+        "authoredSha256": "189175d43e6ae473547babde110fbbf26169b4b65be0daa572366d18e0812bec"
       },
       "back": {
         "grid": "grids/pipbug-back.png",
@@ -127,8 +136,8 @@
         "pickedAt": "2026-10-16T10:42:05.961Z",
         "note": "v4 cute-first, Opus 5.5 judge: 둥근 큰 머리에 흰 하이라이트가 반짝이는 큰 눈 두 개, 표정이 순하고 불꽃이 머리만큼 크다",
         "authored": "authored/wickworm-front.png",
-        "previousAuthoredSha256": "83abc7cf08ebc91b3d264fb5f18e3a69f6c249068257fcb8e3761a27a7d430c6",
-        "authoredSha256": "b3b4332fc22c4fda54062b115da1193f27f081fa2b2c476f313bb3ddb816076a"
+        "previousAuthoredSha256": "9bc56540f1b29d708c5d8ceac5f7effc6de72ee6be67b8a89947f6e1a1a845b0",
+        "authoredSha256": "ecc6a1fffce5a3851e559e801f126b9c8787e0572b05f5915e70087eba890159"
       },
       "back": {
         "grid": "grids/wickworm-back.png",
@@ -137,7 +146,10 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (an oversized candle flame - a short curly wick on its head carries a big bright pixel flame as big as its own head (flat colors, dark outline, not glowing)) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Keep the chibi proportions: the head stays big and round, the body short and plump. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 14,
         "pickedAt": "2026-10-16T11:17:15.807Z",
-        "note": "v4 cute-first, Opus 5.5 judge: Same yellow banded grub with a big flat candle flame. Round plump back with no eyes, tail at lower left and head facing away."
+        "note": "v4 cute-first, Opus 5.5 judge: Same yellow banded grub with a big flat candle flame. Round plump back with no eyes, tail at lower left and head facing away.",
+        "authored": "authored/wickworm-back.png",
+        "authoredSha256": "62ab1b1dbf516dcf29b01640cf13a9caf12b536adf98dbdc4be587ff9a087c54",
+        "previousAuthoredSha256": "62ab1b1dbf516dcf29b01640cf13a9caf12b536adf98dbdc4be587ff9a087c54"
       }
     },
     "rootpig": {
@@ -149,7 +161,9 @@
         "block": 11,
         "pickedAt": "2026-10-16T10:42:27.524Z",
         "note": "v4 cute-first, Opus 5.5 judge: 흰 하이라이트가 분명한 동그란 눈에 표정이 순하고, 새싹 달린 뿌리 엄니가 크게 휘어 한눈에 들어온다",
-        "authored": "authored/rootpig-front.png"
+        "authored": "authored/rootpig-front.png",
+        "previousAuthoredSha256": "e7bdf4db1c12e391b865e4b5b85f44ff21924269c5cb275fd7fff583a7af5a7e",
+        "authoredSha256": "de44cc3ce3224b04a703ea98ad535a80006af8170c0fb7adc80b73d119df9a6f"
       },
       "back": {
         "grid": "grids/rootpig-back.png",
@@ -170,7 +184,9 @@
         "block": 12,
         "pickedAt": "2026-10-16T10:57:02.397Z",
         "note": "v4 cute-first, Opus 5.5 judge: Big brown eyes with clear white highlights, round soft face, and the boldest, cleanest broad-leaf mane fanning out wider than the body",
-        "authored": "authored/frondhare-front.png"
+        "authored": "authored/frondhare-front.png",
+        "previousAuthoredSha256": "79fd142e30c47b5a601191355a08b931c45b63ba2568b067d7304241a4bed959",
+        "authoredSha256": "14c2e1fabecc381e4421ba808005efa3a1f406b693cca845dd1ef4ed1df4739e"
       },
       "back": {
         "grid": "grids/frondhare-back.png",
@@ -193,8 +209,8 @@
         "pickedAt": "2026-10-16T10:59:49.139Z",
         "note": "v4 cute-first, Opus 5.5 judge: 가장 큰 눈에 흰 하이라이트가 뚜렷하고, 머리가 둥글며 표정이 순하다. 금 간 숯 철퇴 꼬리가 크고 선명하며 도트도 가장 깔끔하다",
         "authored": "authored/kilnclaw-front.png",
-        "previousAuthoredSha256": "d0a266df4dfaeea5b54b5fa040c6b9cf16799c320ae5cb32b062c4019d5e919e",
-        "authoredSha256": "0199fc519e385f79c934b9a565e9bf4131110859711dc10ecad3f0ffa9df7578"
+        "previousAuthoredSha256": "0199fc519e385f79c934b9a565e9bf4131110859711dc10ecad3f0ffa9df7578",
+        "authoredSha256": "63b33b18037a13061aa2d5e3987f2c1cc5c5ae7c4be03c08361eb69eea130430"
       },
       "back": {
         "grid": "grids/kilnclaw-back.png",
@@ -215,7 +231,9 @@
         "block": 12,
         "pickedAt": "2026-10-16T10:57:17.754Z",
         "note": "v4 cute-first, Opus 5.5 judge: Largest, roundest sparkling eye with a bright white highlight, plump friendly head, clean pixels, and pink gill fronds flaring like a crown",
-        "authored": "authored/brookraft-front.png"
+        "authored": "authored/brookraft-front.png",
+        "previousAuthoredSha256": "e465ffae0e01ddff38ba00534cad8501e00497fcdbd9add8e7ad354f6e66ee89",
+        "authoredSha256": "0a01159753e167712c080a2a92645a9535e26ad0f7602c80d127e81542531ebd"
       },
       "back": {
         "grid": "grids/brookraft-back.png",
@@ -236,7 +254,9 @@
         "block": 14,
         "pickedAt": "2026-10-16T10:47:22.589Z",
         "note": "v4 cute-first, Opus 5.5 judge: 눈자루 위 두 눈이 크고 둥글며 흰 하이라이트가 또렷해 반짝이고, 웃는 입이 순하다. 집게도 큰 조개 모양 권투 장갑처럼 잘 읽힌다",
-        "authored": "authored/coralpin-front.png"
+        "authored": "authored/coralpin-front.png",
+        "previousAuthoredSha256": "4f9f67815d84190929fa2a10d55ae32106d25db6478d483005645765990abaff",
+        "authoredSha256": "09686e9aa6e50928cb6057aa16619d7e867e697d17c19fe11b72aa2856c4e482"
       },
       "back": {
         "grid": "grids/coralpin-back.png",
@@ -259,8 +279,8 @@
         "pickedAt": "2026-10-16T10:42:43.635Z",
         "note": "v4 cute-first, Opus 5.5 judge: 깨끗한 큰 눈에 흰 하이라이트가 또렷하고 얼굴이 순하며, 몸만 한 나선 꼬리와 조약돌이 깔끔하다",
         "authored": "authored/curlfin-front.png",
-        "previousAuthoredSha256": "f835736f65d4b4d1415ec8659db1f7570636c5584b7dc98257ee2aaeb10c09fc",
-        "authoredSha256": "90b49cf17eaeed8b1fc3c9bf0aba8ad9918516018e19b29b7521037a06674de6"
+        "previousAuthoredSha256": "90b49cf17eaeed8b1fc3c9bf0aba8ad9918516018e19b29b7521037a06674de6",
+        "authoredSha256": "118fe500bd47320643d6b41109c7fa216d892b71e19128520cb1b6d691af68a2"
       },
       "back": {
         "grid": "grids/curlfin-back.png",
@@ -283,8 +303,8 @@
         "pickedAt": "2026-10-16T10:43:01.808Z",
         "note": "v4 cute-first, Opus 5.5 judge: Biggest, roundest eye with clear white highlight squares; friendly smile; tall ridged coil with bright orb reads first",
         "authored": "authored/zaptoe-front.png",
-        "previousAuthoredSha256": "71c33c08e39093f302edae6962413ffb3380635f727a82fd8f6fdb9896d8fa94",
-        "authoredSha256": "22d5d28e017ca8b172f9ea460f5fc104885738edf80cbaa5689443f177377aed"
+        "previousAuthoredSha256": "e39e10078c77e32f021484a7eaf39c0428644efe5e1e5c157d3f9f20a86b0e64",
+        "authoredSha256": "c2e0c337b00b3689d3ddf5609922b70984ef33752268bc5fe9f4796244f04850"
       },
       "back": {
         "grid": "grids/zaptoe-back.png",
@@ -293,7 +313,10 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (a huge coiled-spring tail - the tail is a giant ridged coil like a stack of copper rings standing up behind it, taller than its whole body, ending in a bright glowing spark orb) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Keep the chibi proportions: the head stays big and round, the body short and plump. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 9,
         "pickedAt": "2026-10-16T11:18:15.217Z",
-        "note": "v4 cute-first, Opus 5.5 judge: Same yellow lizard with a tall copper coil tail and a spark orb. Round faceless head facing away, clean pixels."
+        "note": "v4 cute-first, Opus 5.5 judge: Same yellow lizard with a tall copper coil tail and a spark orb. Round faceless head facing away, clean pixels.",
+        "authored": "authored/zaptoe-back.png",
+        "authoredSha256": "67b3df1353534dcecd62362c72993a9b15fa9e6faae4d8307ab7900e24619755",
+        "previousAuthoredSha256": "67b3df1353534dcecd62362c72993a9b15fa9e6faae4d8307ab7900e24619755"
       }
     },
     "pebblekid": {
@@ -306,8 +329,8 @@
         "pickedAt": "2026-10-16T10:43:19.765Z",
         "note": "v4 cute-first, Opus 5.5 judge: Large round eye with a crisp white highlight, soft round face, big swirling stone horns frame the head cleanly",
         "authored": "authored/pebblekid-front.png",
-        "previousAuthoredSha256": "2006872dde8e188edd8bd0136eabf26c7835c06215692af7cf7bc9b8f085360d",
-        "authoredSha256": "2e5f56bab3d449bcd438c42b7bef818bd97443a4eac60ff26de033fe761cbb77"
+        "previousAuthoredSha256": "2e5f56bab3d449bcd438c42b7bef818bd97443a4eac60ff26de033fe761cbb77",
+        "authoredSha256": "699a568c484c4c84e31f9b083145a4eb8a9500b6fd1756e0e5b23e79fabb33e3"
       },
       "back": {
         "grid": "grids/pebblekid-back.png",
@@ -329,8 +352,8 @@
         "pickedAt": "2026-10-16T10:43:35.254Z",
         "note": "v4 cute-first, Opus 5.5 judge: Big round sparkling eye with a clear white highlight, plump body, huge speckled pink snout dominates",
         "authored": "authored/gritnose-front.png",
-        "previousAuthoredSha256": "ce939e68adb4a2b05a9d318284452353f8c9612fb7b4fe63eec6fdf2788ed246",
-        "authoredSha256": "49eb735940f1f52dc4eca27fc9ae61b131e730ff14decdd61d72f8a7e9724260"
+        "previousAuthoredSha256": "49eb735940f1f52dc4eca27fc9ae61b131e730ff14decdd61d72f8a7e9724260",
+        "authoredSha256": "b50d54b3df5951cc615db12ddfbfc32679ebe32b63e5c7b03ea9db4979a738b0"
       },
       "back": {
         "grid": "grids/gritnose-back.png",
@@ -352,8 +375,8 @@
         "pickedAt": "2026-10-18T09:11:43.168Z",
         "note": "2026-10-18-진화-몸집-단조-증가",
         "authored": "authored/podback-front.png",
-        "previousAuthoredSha256": "f28716e3228bfcc817f19c8ac41e5bbe2d2dbcc05b0a662a1a9dd1bfc0c2ff4c",
-        "authoredSha256": "aae252aabb5709059ad8cda0db96956e3db12f8c22db54a06a19482133be6e37"
+        "previousAuthoredSha256": "aae252aabb5709059ad8cda0db96956e3db12f8c22db54a06a19482133be6e37",
+        "authoredSha256": "8196027aca7dbdca8d734fb2ca91be5a0aae20ce97ca923b8702ad89de9e8a1b"
       },
       "back": {
         "grid": "grids/podback-back.png",
@@ -376,8 +399,8 @@
         "pickedAt": "2026-10-18T08:10:12.529Z",
         "note": "2026-10-18-진화계통-하네스-통일",
         "authored": "authored/coilcrest-front.png",
-        "previousAuthoredSha256": "5b5fbef525824d6c101fbd35b85a47d3137b93d494a94ac4d9b421d21742e6c2",
-        "authoredSha256": "ba09d31aef1a1230e21e373e05279b8dc04c17cb6fadeaaec2c8ccd485d9a913"
+        "previousAuthoredSha256": "ba09d31aef1a1230e21e373e05279b8dc04c17cb6fadeaaec2c8ccd485d9a913",
+        "authoredSha256": "6a28bc82ff0357901e534a9f39c3064f7417c9dd9096a1a42e79d1177a59d462"
       },
       "back": {
         "grid": "grids/coilcrest-back.png",
@@ -399,8 +422,8 @@
         "pickedAt": "2026-10-18T08:10:30.115Z",
         "note": "2026-10-18-진화계통-하네스-통일",
         "authored": "authored/lanternwing-front.png",
-        "previousAuthoredSha256": "64c8801ecb0ab8250ff6f70ade300c0c68552423c9baa94773b16b2942c8edf1",
-        "authoredSha256": "4316b63942f54d257e4a6a98499a8d6075c840c1464f9711471d482e8d78dbb3"
+        "previousAuthoredSha256": "2d7800d0d320295267fe61f466da53438c79047e0a4e21a35f6f8a05b9347307",
+        "authoredSha256": "09c75daa4b37097954706b7d1eaab9f2d278b181ebc2b6582abb7cd0c552d7d8"
       },
       "back": {
         "grid": "grids/lanternwing-back.png",
@@ -409,7 +432,10 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (two huge round paper-lantern wings - each wing is a big round warm-cream lantern panel with a bright orange flame-shaped window pattern in the middle, together much wider than its body (flat colors, dark outline, not glowing)) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 11,
         "pickedAt": "2026-10-18T08:38:27.834Z",
-        "note": "2026-10-18-진화계통-하네스-통일"
+        "note": "2026-10-18-진화계통-하네스-통일",
+        "authored": "authored/lanternwing-back.png",
+        "authoredSha256": "57954cd59daedf0ec2e5009d6d719dcb23c8cd8c97ad9776fa5bf101ab4b841b",
+        "previousAuthoredSha256": "57954cd59daedf0ec2e5009d6d719dcb23c8cd8c97ad9776fa5bf101ab4b841b"
       }
     },
     "brambleboar": {
@@ -422,8 +448,8 @@
         "pickedAt": "2026-10-18T09:16:48.614Z",
         "note": "2026-10-18-진화-몸집-단조-증가",
         "authored": "authored/brambleboar-front.png",
-        "previousAuthoredSha256": "23865b1aae5abc32441d117844389b79acf294b30d4d17b1232a0e6a02f15c88",
-        "authoredSha256": "1d499d840ab30d1c386e95b64dbe373fe1ad300a6c860e5efd37909594216cf8"
+        "previousAuthoredSha256": "1d499d840ab30d1c386e95b64dbe373fe1ad300a6c860e5efd37909594216cf8",
+        "authoredSha256": "89c27b104548eded2970ba5028c49aaef4366bcf120a61b56b2ecb50d7843eec"
       },
       "back": {
         "grid": "grids/brambleboar-back.png",
@@ -445,8 +471,8 @@
         "pickedAt": "2026-10-18T08:17:18.090Z",
         "note": "2026-10-18-진화계통-하네스-통일",
         "authored": "authored/tunnelpaw-front.png",
-        "previousAuthoredSha256": "979b5f058ae21c209a7da974cdb32fff82dbf8c66c11d777b3d545210294e9f2",
-        "authoredSha256": "c7e486bdb5b3bdf38bdd1a89ee5343adb131fa0d0d06cf2a09f145d4e6aa1a0c"
+        "previousAuthoredSha256": "c7e486bdb5b3bdf38bdd1a89ee5343adb131fa0d0d06cf2a09f145d4e6aa1a0c",
+        "authoredSha256": "fce6af836901533a69555e4d9d791445fd971caa086603601e0426b4e0f42ce7"
       },
       "back": {
         "grid": "grids/tunnelpaw-back.png",
@@ -467,7 +493,9 @@
         "block": 12,
         "pickedAt": "2026-10-18T09:17:48.313Z",
         "note": "2026-10-18-진화-몸집-단조-증가",
-        "authored": "authored/reefguard-front.png"
+        "authored": "authored/reefguard-front.png",
+        "previousAuthoredSha256": "7f2306c3de20daa91f006079578b99b137e2ec1dfe5454a1d5ad8b968e27b90c",
+        "authoredSha256": "0587171286a550f500d13f24515a5161d532cf9cba5f0c4c999c50231ce6e0b9"
       },
       "back": {
         "grid": "grids/reefguard-back.png",
@@ -491,7 +519,7 @@
         "note": "2026-10-18-눈규칙-통과-후보로-교체",
         "authored": "authored/brinewyrm-front.png",
         "previousAuthoredSha256": "c68ebc0ed00c3e09a746d2d1e8cd619cd7b4ec7a02e9935a668e08d543dec333",
-        "authoredSha256": "c68ebc0ed00c3e09a746d2d1e8cd619cd7b4ec7a02e9935a668e08d543dec333"
+        "authoredSha256": "b23a9de155d59656513666e0955f53295b81b6423acf75c297eef1a67b2ab73b"
       },
       "back": {
         "grid": "grids/brinewyrm-back.png",
@@ -514,8 +542,8 @@
         "pickedAt": "2026-10-18T08:44:25.071Z",
         "note": "2026-10-18-눈규칙-통과-후보로-교체",
         "authored": "authored/ribbonwing-front.png",
-        "previousAuthoredSha256": "4fca2b57c5f4ed5a00c301edd86cd018ae585212bd249a2feedbb760a4a4197b",
-        "authoredSha256": "9d348017bc54c632baf50ab321d0292215c75706b51f72ccb02187f596e0c8bd"
+        "previousAuthoredSha256": "9d348017bc54c632baf50ab321d0292215c75706b51f72ccb02187f596e0c8bd",
+        "authoredSha256": "73adc639ecc41743c3029d6eb54fd0efe9e620af109bc03f8e828e227b1f3273"
       },
       "back": {
         "grid": "grids/ribbonwing-back.png",
@@ -537,8 +565,8 @@
         "pickedAt": "2026-10-18T08:44:40.985Z",
         "note": "2026-10-18-눈규칙-통과-후보로-교체",
         "authored": "authored/craghoof-front.png",
-        "previousAuthoredSha256": "1b3e62ab7eecd6a8c2d55114b64cf49b98fc4ca0c7a433a3e324465bfbc32247",
-        "authoredSha256": "2f90a7dfc5ad591c3182f09cec45f11744a721e2f18adde547e96fd762b49a8a"
+        "previousAuthoredSha256": "2f90a7dfc5ad591c3182f09cec45f11744a721e2f18adde547e96fd762b49a8a",
+        "authoredSha256": "5d11f52175102467ba113f7cc23d6ca201498670e1382bbb6501e1fc78998cd6"
       },
       "back": {
         "grid": "grids/craghoof-back.png",
@@ -560,8 +588,8 @@
         "pickedAt": "2026-10-18T09:16:27.036Z",
         "note": "2026-10-18-진화-몸집-단조-증가",
         "authored": "authored/grovewarden-front.png",
-        "previousAuthoredSha256": "e5f3787e8c9888b0eee7cfcd9b425298e8bdffee99e45e65d77e3c49448bacd0",
-        "authoredSha256": "66147313e7a24c8a00e314f649be0188edf64eb823cf474ae71a5ccf3b2589c4"
+        "previousAuthoredSha256": "66147313e7a24c8a00e314f649be0188edf64eb823cf474ae71a5ccf3b2589c4",
+        "authoredSha256": "cdd7d34b4274843475cb05b21960546b223ed1770778e9393ae4af7d000e0e89"
       },
       "back": {
         "grid": "grids/grovewarden-back.png",
@@ -584,8 +612,8 @@
         "pickedAt": "2026-10-18T08:28:23.868Z",
         "note": "2026-10-18-진화계통-하네스-통일",
         "authored": "authored/furnscale-front.png",
-        "previousAuthoredSha256": "29e197dfd032cf4110e78d6baf7d294de19ce181b6d20df076e6f48dba545bb0",
-        "authoredSha256": "01d9758dbe77c44c9e028605d943036f97dd3e014af36c6506d3914e613f10f9"
+        "previousAuthoredSha256": "01d9758dbe77c44c9e028605d943036f97dd3e014af36c6506d3914e613f10f9",
+        "authoredSha256": "5b25e61ecd631b0a99f0a69557389938ab0a0f97640cdee67f6fba74b12d8d74"
       },
       "back": {
         "grid": "grids/furnscale-back.png",
@@ -607,8 +635,8 @@
         "pickedAt": "2026-10-18T09:03:42.341Z",
         "note": "2026-10-18-진화-몸집-증가-후보로-교체",
         "authored": "authored/tidekeeper-front.png",
-        "previousAuthoredSha256": "6a0fcac9615a5cf23f4c479347a6392e8d04e76b214e9209e1b65a046685415c",
-        "authoredSha256": "d9a28a9dbdddda9d603cf1ffe147f4426e96d982ed4aa1bdba11c0c17d6b73c5"
+        "previousAuthoredSha256": "d9a28a9dbdddda9d603cf1ffe147f4426e96d982ed4aa1bdba11c0c17d6b73c5",
+        "authoredSha256": "fd7c7adbb3b92268c7bc6ae1fa2e1a74c0f1d937f1ea7cda615415003129ea36"
       },
       "back": {
         "grid": "grids/tidekeeper-back.png",
@@ -630,8 +658,8 @@
         "pickedAt": "2026-10-18T09:12:11.196Z",
         "note": "2026-10-18-진화-몸집-단조-증가",
         "authored": "authored/orchardant-front.png",
-        "previousAuthoredSha256": "599e637a03d99d65e7851a067bcc7bf26b2fe2c453e312b51be869e6f10c2e89",
-        "authoredSha256": "157590a8ad15880581585d15899ce1302ba7a96e86a4d1cf15e0aa3ce5a99b84"
+        "previousAuthoredSha256": "157590a8ad15880581585d15899ce1302ba7a96e86a4d1cf15e0aa3ce5a99b84",
+        "authoredSha256": "20c0527dc48d37c18b0276fe0c3c0c9a6ebb9fa594dbbc1e4d3235a56a7af0ae"
       },
       "back": {
         "grid": "grids/orchardant-back.png",
@@ -653,8 +681,8 @@
         "pickedAt": "2026-10-18T09:17:28.410Z",
         "note": "2026-10-18-진화-몸집-단조-증가",
         "authored": "authored/stormskink-front.png",
-        "previousAuthoredSha256": "df2c2706872584f2b7f5d133a72d3cc8b9e6d06b4320a75c415c96075daf7a8c",
-        "authoredSha256": "42accc497b02f5d5bf4ffe05eec4cb300fe7f5dc31cb21e3bdfa57fec9f2523b"
+        "previousAuthoredSha256": "42accc497b02f5d5bf4ffe05eec4cb300fe7f5dc31cb21e3bdfa57fec9f2523b",
+        "authoredSha256": "83957269ae3b18ddde507f5259996400931b3e04b122a451cafe336cd457db3c"
       },
       "back": {
         "grid": "grids/stormskink-back.png",
@@ -676,8 +704,8 @@
         "pickedAt": "2026-10-18T08:29:20.526Z",
         "note": "2026-10-18-진화계통-하네스-통일",
         "authored": "authored/beaconmoth-front.png",
-        "previousAuthoredSha256": "5ff1f579746c55e25ff5e3aae6ead4c4c53f76bbcfc990d7b65eaa293c1be49b",
-        "authoredSha256": "4323d4e15f81b781a81df53ff0def6d4c5e2fa868a7d76f90905e050d9836807"
+        "previousAuthoredSha256": "4323d4e15f81b781a81df53ff0def6d4c5e2fa868a7d76f90905e050d9836807",
+        "authoredSha256": "4f3bcc01a63ffbf3892b789cd11f7b68b5d77265ea8f1814b632b1f3ed88078d"
       },
       "back": {
         "grid": "grids/beaconmoth-back.png",
@@ -699,8 +727,8 @@
         "pickedAt": "2026-10-18T08:30:37.353Z",
         "note": "2026-10-18-진화계통-하네스-통일",
         "authored": "authored/galecrest-front.png",
-        "previousAuthoredSha256": "b7f73d32498954a689aba504a874310a64f088ded9f77983e6d28f034648bd01",
-        "authoredSha256": "8ba0bab08aa54f1d910832d3faa70c6102f79b077923fc8524e9e3dc0a61ae27"
+        "previousAuthoredSha256": "8ba0bab08aa54f1d910832d3faa70c6102f79b077923fc8524e9e3dc0a61ae27",
+        "authoredSha256": "14457bb638d63d2d4f43b2f0f768f05f918f3a845934859696f2fd2bf5676709"
       },
       "back": {
         "grid": "grids/galecrest-back.png",
@@ -722,8 +750,8 @@
         "pickedAt": "2026-10-18T08:30:57.344Z",
         "note": "2026-10-18-진화계통-하네스-통일",
         "authored": "authored/ridgehorn-front.png",
-        "previousAuthoredSha256": "25fec68ed1e3714a647172576844c84589c5f180d35e4438cbb7a56b3bbecee9",
-        "authoredSha256": "1fdaf045dddac7754074399d2f87e162427e1c681da36645dd3accb532ae2d46"
+        "previousAuthoredSha256": "1fdaf045dddac7754074399d2f87e162427e1c681da36645dd3accb532ae2d46",
+        "authoredSha256": "faa22caa0e0ef6ff7e136c3e13a6b70dfbd15cd2bd803543eb966ac487969125"
       },
       "back": {
         "grid": "grids/ridgehorn-back.png",
@@ -745,8 +773,8 @@
         "pickedAt": "2026-10-18T09:17:08.640Z",
         "note": "2026-10-18-진화-몸집-단조-증가",
         "authored": "authored/briartusk-front.png",
-        "previousAuthoredSha256": "c9f535730bec4a7a017829643268754e678c0fda103c1307bfb84cee319cfd51",
-        "authoredSha256": "b6e7540779af32f7fcd614055d4f9b5a507529ea5362eaf478cfa3d71cf9efe2"
+        "previousAuthoredSha256": "b6e7540779af32f7fcd614055d4f9b5a507529ea5362eaf478cfa3d71cf9efe2",
+        "authoredSha256": "4b03dd287edabe9b0f872d7ec81fdf527ab9004fa0398dc4451edb9240da5584"
       },
       "back": {
         "grid": "grids/briartusk-back.png",
@@ -768,8 +796,8 @@
         "pickedAt": "2026-10-18T08:31:37.592Z",
         "note": "2026-10-18-진화계통-하네스-통일",
         "authored": "authored/faultdigger-front.png",
-        "previousAuthoredSha256": "a5e4514a9dcbe4fcb10537a3653cf01abe1152a79e119e04d2c452de1f4aa5f2",
-        "authoredSha256": "f496765c0a401cddebddd41b79f44e7794592b182598ccdd0affffc2bc693ee4"
+        "previousAuthoredSha256": "f496765c0a401cddebddd41b79f44e7794592b182598ccdd0affffc2bc693ee4",
+        "authoredSha256": "a87d5d8ba641924d885131c3a6d7f05e74ae83624ee9c93dd70d2e75b36778aa"
       },
       "back": {
         "grid": "grids/faultdigger-back.png",
@@ -790,7 +818,9 @@
         "block": 12,
         "pickedAt": "2026-10-18T09:21:16.072Z",
         "note": "2026-10-18-진화-몸집-단조-증가",
-        "authored": "authored/atollclamp-front.png"
+        "authored": "authored/atollclamp-front.png",
+        "previousAuthoredSha256": "2b3b8bde35654aab5d05dc8aa1d29a57ea9f28b97f32f4a0c2cffa91efd46768",
+        "authoredSha256": "04a4c0fab9331acf96db17ffe9ef3d4f39bd5efb107731620255816316a67a5b"
       },
       "back": {
         "grid": "grids/atollclamp-back.png",
@@ -813,8 +843,8 @@
         "pickedAt": "2026-10-18T08:32:17.355Z",
         "note": "2026-10-18-진화계통-하네스-통일",
         "authored": "authored/abyssail-front.png",
-        "previousAuthoredSha256": "ef5e689c536f479eded48f9766fce0f8ae6821b4c2656ec8445f93b3028cb73e",
-        "authoredSha256": "00bcc225e5573bd619ae4504a13daf76147d56df0366d2f29ff25114a67a7485"
+        "previousAuthoredSha256": "00bcc225e5573bd619ae4504a13daf76147d56df0366d2f29ff25114a67a7485",
+        "authoredSha256": "f792570d0f10084e2a99b126dcce68d1d1ae49864dd86e7a4420d4cd37ea6b48"
       },
       "back": {
         "grid": "grids/abyssail-back.png",
@@ -836,8 +866,8 @@
         "pickedAt": "2026-10-18T09:35:23.650Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/sandnip-front.png",
-        "previousAuthoredSha256": "e96958901be71619b089a2acde951c43f40d488f60e97c06d8e38425405a456b",
-        "authoredSha256": "00dc17c75f7101fbd8410b2442230b504b788ca3bba29dd5696238f9f7ff1ddd"
+        "previousAuthoredSha256": "d8d0a22597b0d47d096d6f41c42a27adfb9356d0a2b1f8ddf9f1a8b9b223f30c",
+        "authoredSha256": "5e4ba3ee3aaa87368ef6f4f1d17e8f41c2866945a09131bab9d59b0a7854d373"
       },
       "back": {
         "grid": "grids/sandnip-back.png",
@@ -846,7 +876,10 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (a short thick curled tail ending in a round pink crystal bulb almost as big as its head, held up over its back) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Keep the chibi proportions: the head stays big and round, the body short and plump. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 12,
         "pickedAt": "2026-10-18T10:03:35.012Z",
-        "note": "2026-10-18-캠페인-전종-하네스"
+        "note": "2026-10-18-캠페인-전종-하네스",
+        "authored": "authored/sandnip-back.png",
+        "authoredSha256": "5d891cde5bd095cf27f7f02a300dcd79492bbf9a2b8db587c3b20a50570a919b",
+        "previousAuthoredSha256": "81a961b442840cb8f3afdacc2acc35ecd8d51bb1705de3b2944dff9582215d0c"
       }
     },
     "flurrykit": {
@@ -859,8 +892,8 @@
         "pickedAt": "2026-10-18T09:35:42.689Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/flurrykit-front.png",
-        "previousAuthoredSha256": "c4fc1c5e1e473652b62b8f36d7cf526c6bb3c6b96ee8567aa678ce4158b24422",
-        "authoredSha256": "35605a2b37c00fc63b6f8b774288be32c6dc1efa44f19d30bbd7d69894bfa2c5"
+        "previousAuthoredSha256": "35605a2b37c00fc63b6f8b774288be32c6dc1efa44f19d30bbd7d69894bfa2c5",
+        "authoredSha256": "466dbe57646e7041e62fb2dbc5e7e629253b8dbae87a364fec604b13444b7142"
       },
       "back": {
         "grid": "grids/flurrykit-back.png",
@@ -882,8 +915,8 @@
         "pickedAt": "2026-10-18T09:36:04.770Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/miretail-front.png",
-        "previousAuthoredSha256": "3e41cb663ef8daede4fd66b1ffa64bd2470971292582a9fa0d108592614d318f",
-        "authoredSha256": "3122af8dde53c1d739112885c9b98ac3cff365e81deb536a24e617d719c541bb"
+        "previousAuthoredSha256": "3122af8dde53c1d739112885c9b98ac3cff365e81deb536a24e617d719c541bb",
+        "authoredSha256": "17cf7d9e7f374eda11a7fe7fb32c1bbb23587077a68e92d56dd744894d2db649"
       },
       "back": {
         "grid": "grids/miretail-back.png",
@@ -905,8 +938,8 @@
         "pickedAt": "2026-10-18T09:36:23.535Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/dozemite-front.png",
-        "previousAuthoredSha256": "473dbfbdb5d4fe5e4819cc939c223d6cf2387c69843875e098c2289a5ae36bb4",
-        "authoredSha256": "f37da038e4bbfdf049ed89ae1ba706f6c334729a8b2b5b213b1878197754b585"
+        "previousAuthoredSha256": "224b3dc7659596c2e7c63b481675db53a40cc373a45bcda9ef361d83a600532f",
+        "authoredSha256": "716a5c19941ff4743132679b338e62d97c67e8217cdfea911964829dd2a72fa0"
       },
       "back": {
         "grid": "grids/dozemite-back.png",
@@ -915,7 +948,10 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (two very long curly antennae rising from its head, each ending in a round mint-green dream bubble almost as big as its eye) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Keep the chibi proportions: the head stays big and round, the body short and plump. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 10,
         "pickedAt": "2026-10-18T10:04:16.785Z",
-        "note": "2026-10-18-캠페인-전종-하네스"
+        "note": "2026-10-18-캠페인-전종-하네스",
+        "authored": "authored/dozemite-back.png",
+        "authoredSha256": "d3069c593752f22a6f66c4b9367f3f0664e056636963d4e3b51687f82cd024a9",
+        "previousAuthoredSha256": "aba868fe4f8d23a7c22227925b3451f6a9709893bad283bb4c075c774119697a"
       }
     },
     "threadimp": {
@@ -928,8 +964,8 @@
         "pickedAt": "2026-10-18T09:36:45.202Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/threadimp-front.png",
-        "previousAuthoredSha256": "f176162ad9f17c09cd59eec902b4b6cc2c6e6495e33991e1df5bdcb480571a90",
-        "authoredSha256": "4c2776a2151e9e0b37846127a152b61323ab3e4ad52a44ea97016742924e576c"
+        "previousAuthoredSha256": "4c2776a2151e9e0b37846127a152b61323ab3e4ad52a44ea97016742924e576c",
+        "authoredSha256": "eb7075ac17acbb51c1841583e48732e2fa90bc223bdee6a9d4d1d224d40d2b3e"
       },
       "back": {
         "grid": "grids/threadimp-back.png",
@@ -951,8 +987,8 @@
         "pickedAt": "2026-10-18T09:37:03.546Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/reedpeep-front.png",
-        "previousAuthoredSha256": "ba123945c4b785cd08c199df4d2951482f681ea42230024b1304cd526e56cf82",
-        "authoredSha256": "0ad8f034c210aca1995f1baaaa99fc52494dad8367de40f0c3263d90c74e44f4"
+        "previousAuthoredSha256": "0ad8f034c210aca1995f1baaaa99fc52494dad8367de40f0c3263d90c74e44f4",
+        "authoredSha256": "c7ab54958845a5f62c23bbdd9668a56197d4a0b77ce6fa27c14aed5d9649059e"
       },
       "back": {
         "grid": "grids/reedpeep-back.png",
@@ -974,8 +1010,8 @@
         "pickedAt": "2026-10-18T09:37:21.031Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/thundercairn-front.png",
-        "previousAuthoredSha256": "ec02788d695cefc7b39aa4d0eb5e34079fe1103d4c6f242eb3fa097076291a79",
-        "authoredSha256": "fbe6e1f8f3d4c01f5c670ae68d1c0837642b600ae94909bc102cc67b23b784cf"
+        "previousAuthoredSha256": "fbe6e1f8f3d4c01f5c670ae68d1c0837642b600ae94909bc102cc67b23b784cf",
+        "authoredSha256": "4fc2e7e6ea85cb7f273698f01c9549cd5b918cb5fe23ba41a98c65e4d499306e"
       },
       "back": {
         "grid": "grids/thundercairn-back.png",
@@ -996,7 +1032,9 @@
         "block": 9,
         "pickedAt": "2026-10-18T09:59:34.311Z",
         "note": "2026-10-18-캠페인-전종-하네스",
-        "authored": "authored/winterquill-front.png"
+        "authored": "authored/winterquill-front.png",
+        "previousAuthoredSha256": "5622e473d0043fb9f03a2f55b868b53e0b1d982ef0b8dc345dc5d756e8a8ac51",
+        "authoredSha256": "0211b6e536f3ee021f15b30f663c45371cec30e1fb0e65206978043948d4a99a"
       },
       "back": {
         "grid": "grids/winterquill-back.png",
@@ -1018,8 +1056,8 @@
         "pickedAt": "2026-10-18T09:46:48.772Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/solmane-front.png",
-        "previousAuthoredSha256": "38d6753d42bfb2d8021ffbbae7d7272e1519639929a142659827056cc4e11f32",
-        "authoredSha256": "fba27cef2f2f37060dba54ee6b120fc720f48c598a9b91e52256cf44b6a2a769"
+        "previousAuthoredSha256": "761e4706a366934771eef7570c2bf8132d2360710996d5964b0e5ffc5953f69d",
+        "authoredSha256": "e90f9e0ce85ecfa469de9a3636500850a2584d52b60ea9b7a440abbd44bd4317"
       },
       "back": {
         "grid": "grids/solmane-back.png",
@@ -1028,7 +1066,10 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (a gigantic blazing sun mane around its whole head, shaped like a big round sunburst of pointed orange and gold flame spikes, wider than its body) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 9,
         "pickedAt": "2026-10-18T10:06:13.451Z",
-        "note": "2026-10-18-캠페인-전종-하네스"
+        "note": "2026-10-18-캠페인-전종-하네스",
+        "authored": "authored/solmane-back.png",
+        "authoredSha256": "aa6b96c0f5052ee955d0cae365ba939ac2e1baebada565a6fd7e58ccf9da1126",
+        "previousAuthoredSha256": "a39e431d45c3f7d5ec0dbc72c30f637112255f95955986d1798411d95f2b92fd"
       }
     },
     "lunavane": {
@@ -1041,8 +1082,8 @@
         "pickedAt": "2026-10-18T09:47:04.025Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/lunavane-front.png",
-        "previousAuthoredSha256": "b666b9ab6a7aa6c749fd5c0c156fa900c4476412b682e9d4421b04211bde26fa",
-        "authoredSha256": "f5a604b11ce9543b967d952f26a4918e30709d91c040000575e5b171dc2dd9dd"
+        "previousAuthoredSha256": "3eb2a71ea5bb73694be0503994035c3c0f8bbe3506bc8c0e437b956ac80373f8",
+        "authoredSha256": "30f643f70227ec32eb49bb8560703bb685911340923523e19c5997a21f8ab14a"
       },
       "back": {
         "grid": "grids/lunavane-back.png",
@@ -1051,7 +1092,10 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (two gigantic wide wing fins spread out to both sides like a moonlit kite, much wider than its body, with four bright mint-green star spots on them) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 10,
         "pickedAt": "2026-10-18T10:06:34.706Z",
-        "note": "2026-10-18-캠페인-전종-하네스"
+        "note": "2026-10-18-캠페인-전종-하네스",
+        "authored": "authored/lunavane-back.png",
+        "authoredSha256": "36edcf036462a3f772519557f95f80fc143ca34e9fa8d284f53547d5dd1b3878",
+        "previousAuthoredSha256": "0c04d5abdc5831ee1b98c43d69692b295fb23278176a5ba8a8165aa43ad0dc50"
       }
     },
     "relicarab": {
@@ -1064,8 +1108,8 @@
         "pickedAt": "2026-10-18T09:38:24.011Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/relicarab-front.png",
-        "previousAuthoredSha256": "8500da824dba98a3990c7869a827e2ae713622172700f206e13334d5dd4c2470",
-        "authoredSha256": "50175a051530a46f021eb0486d3442c18f85db1abc665732d662c191abee7c9a"
+        "previousAuthoredSha256": "50175a051530a46f021eb0486d3442c18f85db1abc665732d662c191abee7c9a",
+        "authoredSha256": "84a5c0df5ff52bd49b034a43948d09fe571149a7fb9ce2f820abcbd19d7add44"
       },
       "back": {
         "grid": "grids/relicarab-back.png",
@@ -1087,8 +1131,8 @@
         "pickedAt": "2026-10-18T09:38:37.978Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/astralhart-front.png",
-        "previousAuthoredSha256": "a8493a6796638939b5385aa38894ba362ccc2b33e5f45fa8dd93c6be028be0a7",
-        "authoredSha256": "7e43cbcb6f91e87debe4b1255f6f1ce0bfc9f3013d77d4173e7137feedc52a5e"
+        "previousAuthoredSha256": "ec8aae13040438f6b348d37dc02b48a1cc9ccefc1935614e11de6ab70e9a1bc1",
+        "authoredSha256": "f5d813fa287c3d43e1b7a33ca2f787a2ff23aff86f0fd28f44baa08530c77a56"
       },
       "back": {
         "grid": "grids/astralhart-back.png",
@@ -1097,7 +1141,10 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (a gigantic pair of glowing antlers branching like a starry tree, wider and taller than its body, with small pale-yellow star lights on every tip) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 12,
         "pickedAt": "2026-10-18T10:05:35.800Z",
-        "note": "2026-10-18-캠페인-전종-하네스"
+        "note": "2026-10-18-캠페인-전종-하네스",
+        "authored": "authored/astralhart-back.png",
+        "authoredSha256": "b073b7c8b41fec86b033508e97591cd6bbfd6b5ef93afb938d2aa6b07395fcd7",
+        "previousAuthoredSha256": "394b2f67e33349ee406d39e8cac7b9ece238d60c83fee6af128733b32fc62e7f"
       }
     },
     "dunestalk": {
@@ -1110,8 +1157,8 @@
         "pickedAt": "2026-10-18T10:02:33.712Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/dunestalk-front.png",
-        "previousAuthoredSha256": "7107c4068e968d40b9f04dfa5e38f8d90dd46d8b6ef975e2f6c8eba90858d471",
-        "authoredSha256": "b49d52999f1a64f4d7673082e6ea8f813a36e97f1483c8f8cc756796b6bf3046"
+        "previousAuthoredSha256": "b49d52999f1a64f4d7673082e6ea8f813a36e97f1483c8f8cc756796b6bf3046",
+        "authoredSha256": "186d31a1b4b5b20fe1455bda8512bb1b9eaf5a7f815ff4c13cdee1fca17172ab"
       },
       "back": {
         "grid": "grids/dunestalk-back.png",
@@ -1133,8 +1180,8 @@
         "pickedAt": "2026-10-18T10:02:54.626Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/venomfrill-front.png",
-        "previousAuthoredSha256": "80af81fa8815e334be48d1e9b517b060225f460adf9f672348936c557cb94e52",
-        "authoredSha256": "5c9dfba99b214bca34451c71c7c40a17a905feb6ea99710fa6bd776617464852"
+        "previousAuthoredSha256": "5c9dfba99b214bca34451c71c7c40a17a905feb6ea99710fa6bd776617464852",
+        "authoredSha256": "6e808553975054ea99dc2e9680715ff57217df0305eaf820082364f28dc1766b"
       },
       "back": {
         "grid": "grids/venomfrill-back.png",
@@ -1156,8 +1203,8 @@
         "pickedAt": "2026-10-18T10:03:08.659Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/hushdoll-front.png",
-        "previousAuthoredSha256": "422a9445d8105ec87d7692616a48d5868aca1b02a5c2be5578c415ed5cf6666c",
-        "authoredSha256": "a4e5be681a0ae58da90003721e107cf3b176405a0bbf705a216090d7efbcc27e"
+        "previousAuthoredSha256": "a4e5be681a0ae58da90003721e107cf3b176405a0bbf705a216090d7efbcc27e",
+        "authoredSha256": "aff4e7e10cb23ece0f34fa8e94d0920a093c0e902f3fee63f90161d2e2c6ff06"
       },
       "back": {
         "grid": "grids/hushdoll-back.png",
@@ -1179,8 +1226,8 @@
         "pickedAt": "2026-10-18T10:03:22.298Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/fenstrider-front.png",
-        "previousAuthoredSha256": "3ed9b318e770c3c4967c8bee8d430ee3fc27e6f1bd6a5457082ed8f6291322c3",
-        "authoredSha256": "92a32d85c6c19572d03ed27df187c8e9fdfed7ec26f37f7d6ffa7bca72c09e27"
+        "previousAuthoredSha256": "92a32d85c6c19572d03ed27df187c8e9fdfed7ec26f37f7d6ffa7bca72c09e27",
+        "authoredSha256": "6869de6cffaf65e614000eaddb1fb7579900423cdded442e567d622976e74e9a"
       },
       "back": {
         "grid": "grids/fenstrider-back.png",
@@ -1202,8 +1249,8 @@
         "pickedAt": "2026-10-18T10:07:59.448Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/rimepelt-front.png",
-        "previousAuthoredSha256": "7a0869ca63d96552d8fe643236f8c707e0163d6b6efb57dbae3b3f5f6a1f031c",
-        "authoredSha256": "8b2295439895d921c1484289626fa2588a3fcd0449629af81d8477476ce45cf6"
+        "previousAuthoredSha256": "8b2295439895d921c1484289626fa2588a3fcd0449629af81d8477476ce45cf6",
+        "authoredSha256": "2b62aa1cb596dd0cdb9d5d2627889c1425a64f2b6f093712458d50889c9ba655"
       },
       "back": {
         "grid": "grids/rimepelt-back.png",
@@ -1225,8 +1272,8 @@
         "pickedAt": "2026-10-18T10:08:15.378Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/trancescythe-front.png",
-        "previousAuthoredSha256": "62d01d78ef52d0e9edfc8ef062b3fc73b7d38803caeefe9317f6d546dc940c1d",
-        "authoredSha256": "960212ac3074a1477864aa5e0cfd3a164464484f3a613abf7684725d991464b2"
+        "previousAuthoredSha256": "797f24b79c506ee46594edfe1dfa7a9e4a08c96926f0da3bbde8689f63026394",
+        "authoredSha256": "d99bdedd4d07f8b7ed72d6878dc128c102a19a9ab6e48a3dc21721bb23d02ef4"
       },
       "back": {
         "grid": "grids/trancescythe-back.png",
@@ -1235,7 +1282,10 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (two huge curved scythe arms, each as long as its body, with thin glowing mint-green membranes along the blades) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 11,
         "pickedAt": "2026-10-18T10:19:09.229Z",
-        "note": "2026-10-18-캠페인-전종-하네스"
+        "note": "2026-10-18-캠페인-전종-하네스",
+        "authored": "authored/trancescythe-back.png",
+        "authoredSha256": "c46c486ea352ac3553facceefddb2c735f8dd079fb58dd7835153de003be6b80",
+        "previousAuthoredSha256": "9932b44319546c502ca2e514d5bc5459ea0c017f1c4d14b49341a8bc241a9efc"
       }
     },
     "miragespike": {
@@ -1248,8 +1298,8 @@
         "pickedAt": "2026-10-18T10:17:37.255Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/miragespike-front.png",
-        "previousAuthoredSha256": "1245d607cb71211b1f0e55360ebc9945b4cab9f96f9d9cf4aafd96818d1bb69b",
-        "authoredSha256": "4fd531bcf38af9065b8e5112c2679e0f692ec2839ebe85c369f18bf7cd6e4657"
+        "previousAuthoredSha256": "4fd531bcf38af9065b8e5112c2679e0f692ec2839ebe85c369f18bf7cd6e4657",
+        "authoredSha256": "d4578defb69b028b9af12917b1c4b25f14eb548af230f53ddb5718e7f1a66d4a"
       },
       "back": {
         "grid": "grids/miragespike-back.png",
@@ -1271,8 +1321,8 @@
         "pickedAt": "2026-10-18T10:17:57.676Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/glaciermane-front.png",
-        "previousAuthoredSha256": "a29763f52320c0e8c9667814c1293979750f6cc1acb714d2fec395ca6e1b6d66",
-        "authoredSha256": "c3f45b9527fbc82229a610606ae41a859a5cf431172a887a775beed83e8091c9"
+        "previousAuthoredSha256": "7f47ffbcd15d9dea93f6215c30fa9d4f2d48cc4f179ccc7061e320c291ccb399",
+        "authoredSha256": "1ff4265212f408c509a2fa6b1333235f0b2125fffa2e75ce5916dadbd9166ef9"
       },
       "back": {
         "grid": "grids/glaciermane-back.png",
@@ -1281,7 +1331,10 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (a gigantic mane of sharp lavender-blue ice crystals rising from its head and shoulders like a crown of glacier shards, taller than its head) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 8,
         "pickedAt": "2026-10-18T10:33:33.013Z",
-        "note": "2026-10-18-캠페인-전종-하네스"
+        "note": "2026-10-18-캠페인-전종-하네스",
+        "authored": "authored/glaciermane-back.png",
+        "authoredSha256": "203cda9cebe7f8042bf6f0729eded76687126db2ec449c9d0ef76b76b3ef556c",
+        "previousAuthoredSha256": "fc5fbea4ce6cb80b830eac87278edaef972ccace13e171bb6fcff371a62960d6"
       }
     },
     "marshcrown": {
@@ -1294,8 +1347,8 @@
         "pickedAt": "2026-10-18T10:18:15.341Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/marshcrown-front.png",
-        "previousAuthoredSha256": "5d2eeb9bdd870188bb46845aaa251bf87479e4b7617553c94123dfc0c3e481b4",
-        "authoredSha256": "74599f1c7815a00e2d2b27f5fca58ac1e732689fae2b7b2b4dcb89ab29f8250b"
+        "previousAuthoredSha256": "74599f1c7815a00e2d2b27f5fca58ac1e732689fae2b7b2b4dcb89ab29f8250b",
+        "authoredSha256": "91c3a690ebf33154d0b25f5839add64ed049476cde8166c14e4510ad18137ccd"
       },
       "back": {
         "grid": "grids/marshcrown-back.png",
@@ -1317,8 +1370,8 @@
         "pickedAt": "2026-10-18T10:32:42.925Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/oraclemantis-front.png",
-        "previousAuthoredSha256": "7f4d3e75322ea61bed394e173fde553730b3861ae3c6c9e9ca647b406d9c4ee5",
-        "authoredSha256": "03ed21519868a8cbf06b80127f79b144017afbd9f532e7d48bff2d9ea0de12ec"
+        "previousAuthoredSha256": "5524cf9d98335fb9487be86b84dab86bdd3fbceeb079a203f782cda11d979440",
+        "authoredSha256": "cb360dc7486bd31db79d8520ddf4a5bbda2ec293305da3bc70060c00de70c128"
       },
       "back": {
         "grid": "grids/oraclemantis-back.png",
@@ -1327,7 +1380,10 @@
         "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head); the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Keep the exaggerated signature feature (a gigantic diamond-shaped mint-green crystal on its forehead with two wide glowing wing-like sheets of light spreading behind its shoulders, wider than its body) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
         "block": 9,
         "pickedAt": "2026-10-18T10:39:12.904Z",
-        "note": "2026-10-18-캠페인-전종-하네스"
+        "note": "2026-10-18-캠페인-전종-하네스",
+        "authored": "authored/oraclemantis-back.png",
+        "authoredSha256": "339b837678febad09ac6cadbe3cadb3fbbfe082d03c10d02badedc750e97d4dc",
+        "previousAuthoredSha256": "86224e83e004929f8e49532e4335c85a17e699f1e4a7343d916e2b7e66d5ae27"
       }
     },
     "veilmaster": {
@@ -1340,8 +1396,8 @@
         "pickedAt": "2026-10-18T10:33:00.333Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/veilmaster-front.png",
-        "previousAuthoredSha256": "1cbc2b5d8ca20cefea93e9dd5789ec1241f866bcf65f81ace3bbc57aac16e3d6",
-        "authoredSha256": "dbd662ff696a21e2ef05cc2fb88b27e407716ea6f09666559e3eaa1ca1747de5"
+        "previousAuthoredSha256": "dbd662ff696a21e2ef05cc2fb88b27e407716ea6f09666559e3eaa1ca1747de5",
+        "authoredSha256": "90abcf91e532da3e00e101095618638a67c778077cde0e38545502180f2b8bf0"
       },
       "back": {
         "grid": "grids/veilmaster-back.png",
@@ -1363,8 +1419,8 @@
         "pickedAt": "2026-10-18T10:38:56.784Z",
         "note": "2026-10-18-캠페인-전종-하네스",
         "authored": "authored/mistralheron-front.png",
-        "previousAuthoredSha256": "68cc72cb09f7597129d6a27c5fd8e384f4291e4584d96aeee13edcab1e23ebe1",
-        "authoredSha256": "2de73a5fef7ab8f2aca495cda3770c49c951240428d2c91a1eb8d0853aa75114"
+        "previousAuthoredSha256": "2de73a5fef7ab8f2aca495cda3770c49c951240428d2c91a1eb8d0853aa75114",
+        "authoredSha256": "fa062971b3db2fd38eb73d8236ba484009f31bd33c45ab9bcf4852f2c9a5c975"
       },
       "back": {
         "grid": "grids/mistralheron-back.png",

@@ -8,7 +8,13 @@ export interface InstalledStoreItem {
   readonly slug: string; readonly version: number; readonly title: string; readonly kind: string; readonly grade: string;
   readonly license: string; readonly aiGenerated: boolean; readonly author: string; readonly cover: string | null;
   readonly installedAt: string; readonly storeUrl: string;
+  /** 주인 초안(D2): 받을 때 확인 대기였던 내 상품. 나만 보이고 공유되지 않는다. */
+  readonly draft?: boolean;
 }
+/** 「에디터에서 열기」 링크로 들어온 넣기 요청(메인이 출처·slug·판본을 검사한 뒤). */
+export interface StoreOpenLinkRequest { readonly slug: string; readonly version?: number }
+/** 메인 → 편집기 알림. request 는 「맡겨 둔 요청을 꺼내 가라」는 신호일 뿐이고, 요청 자체는 takeOpenLink 로 받는다. */
+export type StoreOpenLinkEvent = { readonly kind: "request" } | { readonly kind: "error"; readonly reason: string };
 export interface StorePackagePayload {
   readonly manifest: StorePackManifest; readonly blobs: Readonly<Record<string, Uint8Array>>; readonly slug: string;
   readonly version: number; readonly author: string; readonly storeUrl: string; readonly itemUrl: string;
@@ -47,4 +53,8 @@ export interface OprnStoreBridge {
   conceptMade(input: { slug: string }): Promise<boolean>;
   onProgress(callback: (event: StoreProgressEvent) => void): () => void;
   onChanged(callback: (event: StoreChangedEvent) => void): () => void;
+  /** 프로젝트가 열린 편집기가 부팅할 때, 그 전에 들어와 맡겨 둔 링크 요청을 한 번 꺼낸다. 없으면 null. */
+  takeOpenLink(): Promise<StoreOpenLinkRequest | null>;
+  /** 「에디터에서 열기」 링크가 들어왔다(이미 열린 편집기). */
+  onOpenLink(callback: (event: StoreOpenLinkEvent) => void): () => void;
 }

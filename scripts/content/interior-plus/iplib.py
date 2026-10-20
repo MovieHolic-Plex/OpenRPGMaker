@@ -185,13 +185,14 @@ def ring(c, cx, cy, rx, ry, col):
 # ───────────────────────── 등록 ─────────────────────────
 class Reg:
     def __init__(s):
-        s.pieces = {}; s.floors = {}; s.walls = {}; s.order = []
+        s.pieces = {}; s.floors = {}; s.walls = {}; s.pits = {}; s.order = []
 
-    def piece(s, id, ko, cat, kind, w, h, up, gate, desc, tags, place, pair=(), use=('block',), facing=None, surface=False, rows=None):
-        """kind = 사양 종류(floor·wall·hang·flat). up = 발밑 위로 솟은 px. rows = 걸이 줄 수(기본 2)."""
+    def piece(s, id, ko, cat, kind, w, h, up, gate, desc, tags, place, pair=(), use=('block',), facing=None, surface=False, rows=None, style=None):
+        """kind = 사양 종류(floor·wall·hang·flat). up = 발밑 위로 솟은 px. rows = 걸이 줄 수(기본 2).
+        style = object-gate 화풍 비교 종류(building·roof·wall·tree·ground·water·prop). 없으면 3/4 종류의 기본값."""
         def deco(fn):
             s.pieces[id] = dict(id=id, ko=ko, cat=cat, kind=kind, w=w, h=h, up=up, gate=gate, desc=desc, tags=list(tags), place=place,
-                                pair=list(pair), use=list(use), facing=facing, surface=surface, rows=rows, fn=fn, mod=fn.__module__)
+                                pair=list(pair), use=list(use), facing=facing, surface=surface, rows=rows, style=style, fn=fn, mod=fn.__module__)
             s.order.append(id)
             return fn
         return deco
@@ -202,6 +203,12 @@ class Reg:
 
     def wall(s, id, ko, cols):
         def deco(fn): s.walls[id] = dict(id=id, ko=ko, cols=cols, fn=fn); return fn
+        return deco
+
+    def pit(s, id, ko):
+        """구멍(심연) 오토타일: fn(mask) → Cv 16×16. mask = 8이웃(N=1 NE=2 E=4 SE=8 S=16 SW=32 W=64 NW=128, 켜짐 = 그 이웃도 구멍),
+        대각은 양옆 직교가 켜졌을 때만(47 블롭). 굽기는 47 마스크 칸을 덧붙이고 사양 pits[id] = {ko, masks, tiles}."""
+        def deco(fn): s.pits[id] = dict(id=id, ko=ko, fn=fn); return fn
         return deco
 
 
@@ -323,3 +330,25 @@ def barrel_side(c, x0, cy, L, r, m='dwood', hoop='iron', end='left'):
     c.ell(x0, cy, r * .45, r, None, only=lambda x, y: K(m, 5 if y < cy else 4))
     ring(c, x0, cy, r * .45, r, K(hoop, 4))
     c.p(x0, int(cy), K(m, 2))
+
+
+PIT_BITS = dict(N=1, NE=2, E=4, SE=8, S=16, SW=32, W=64, NW=128)
+
+
+def pit_reduce(m):
+    """대각 비트는 양옆 직교가 둘 다 켜졌을 때만 남긴다(47 블롭 정규형)."""
+    if not (m & 1 and m & 4): m &= ~2
+    if not (m & 16 and m & 4): m &= ~8
+    if not (m & 16 and m & 64): m &= ~32
+    if not (m & 1 and m & 64): m &= ~128
+    return m
+
+
+PIT_MASKS = sorted({pit_reduce(m) for m in range(256)})
+
+
+def pit_render(pd, mask):
+    """구멍 칸 그림(팔레트 v6 로 옮긴 것 — 시트에 들어가는 화소)."""
+    cache = pd.setdefault('_img', {})
+    if mask not in cache: cache[mask] = snap(pd['fn'](mask).img())
+    return cache[mask].copy()

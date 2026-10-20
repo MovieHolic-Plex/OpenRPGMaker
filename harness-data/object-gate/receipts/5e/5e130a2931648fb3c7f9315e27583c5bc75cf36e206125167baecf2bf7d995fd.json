@@ -1,0 +1,387 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5e130a2931648fb3c7f9315e27583c5bc75cf36e206125167baecf2bf7d995fd",
+ "width": 32,
+ "height": 32,
+ "kind": "seat",
+ "name": "hosp-wheelchair-bay",
+ "label": "seats34/modern_city_interior/hosp-wheelchair-bay",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wheelchair-access sign plate above the chairs",
+      "rows": "0-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion of both wheelchairs (top strip)",
+      "rows": "18-19",
+      "evidence": "none",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels and push handles at the sides",
+      "rows": "15-30",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Image 1 shows two wheelchairs drawn face-on, each a blue seat block between grey and black wheel columns. The only seat strip is rows 18-19 (a light row 18, a mid-blue row 19) directly under the outline, and it has no ellipse, no visible sitting surface and no eave shadow. Below it, rows 20-26 are a dark blue vertical face with a light-blue stripe at rows 24-25, which reads as front face. The wheel and handle columns are vertical, so they count as seat_back parts. The sign above (rows 0-9) is a separate decor part. Overall this is a front elevation: the seat shows only a 2-row strip rather than a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small blue wheelchair sign and two wheelchairs. Measured facts are at or above the references on the primary measures: 15 visible tones per full tile (hedge 9, cheese stall 17, roofed well 20), 0% near-flat coverage, and 0% neutral dark edge pixels. By eye, the outlines are a dark navy that leans blue, matching the adjacent material rather than a neutral black sticker line. Each chair shows a light-to-dark blue ramp with highlights on the seat and back, plus separate wheel and frame tones. The pieces are tiny, so texture is limited to value breaks and no large flat areas appear. That is comparable to the bench and lamp references, which are also thin or simple, and the candidate does not look thinner or flatter than them. The ramp is slightly shallower (about 4 steps) than Beodeul's 5-6, but the density facts and tinted outlines support a pass.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22509
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall sign with wheelchair icon (floating above, separated by a gap)",
+      "rows": "0-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion top strip between the wheels",
+      "rows": "18-19",
+      "evidence": "none",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest and side wheels, drawn as vertical faces",
+      "rows": "16-30",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The wheelchair is drawn face-on, with a wheel on each side. The blue seat between the wheels has only a 1-2 row lighter strip at the top (rows 18-19), which is a rim and not a seat plane. Below it come a dark face (rows 20-23), a light band (rows 24-25) and a dark base (row 26). The width stays at 22 for rows 17-19, so the seat never widens and narrows like an ellipse. The scan shows no front-edge line followed by eave shadow, and no sitting surface seen from above. The sign above is decor. The backrest and wheels are exempt as seat_back. The seat itself shows only about 2 top rows over a front face, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is two blue wheelchairs and a small blue sign with a wheelchair icon. The wheelchairs use a dark blue outline, a mid and light blue seat, highlights, and grey wheel and frame tones. That is about 4 steps on the main blue ramp against roughly 5 for the references. The measured facts support this: 15 visible tones per tile is within the reference range (hedge 9, stall 17, well 20), near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outline is tinted rather than near-black. The sign face is a little flat, but it is tiny and has the icon and a border on it. As a small prop, the candidate would not look thinner or more sticker-like than the lamp and bench next to it. It sits slightly below the stall and well on shading depth.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21560
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall sign with wheelchair symbol",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheelchair seat/backrest blue panel (front-facing)",
+      "rows": "17-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels and armrests (side columns)",
+      "rows": "15-30",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Each wheelchair is drawn face-on. Two tall gray and black wheel columns flank a blue panel at rows 17-27. In column x=8 and x=23, rows 18-19 are a 1-row light line plus a mid-blue row, which read as a rim, not a seat plane. Rows 20-23 are dark blue and rows 24-25 are a light band, followed by dark outline at 26-27. These are stacked vertical bands (front face and cushion front) with no ellipse and no foreshortened horizontal seat surface. The silhouette widens from 22 to 30 and then narrows at the wheel bottoms, which shows no seat top. The sitting surface has at most a 2-row strip, so this is a front elevation. The top sign is a separate flat plaque."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wheelchair sign plus two blue wheelchairs. The facts are at or above the references on the primary measures: 15 visible tones per tile (hedge 9, stall 17, well 20), 0% near-flat coverage, and 0% neutral dark edge pixels. Outlines are a dark blue tint beside the blue material, not a black sticker line. The blue ramps show about 4 steps with highlights on the seat and back, and the wheels and frame add dark and grey tones. It has only 15 colours in total, so its ramps are somewhat shallower than the stall and well (38-40 colours). It is comparable to the bench and lamp (14 colours each), which are also sparse props. No flat 5x5 fills are visible, and the sign is small with a clean glyph. A careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21878
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wheelchair sign plate on top (icon)",
+      "rows": "0-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue seat/backrest block between the wheels (face-on)",
+      "rows": "17-27",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat surface (light 1-2 row strip at the top of the blue block)",
+      "rows": "18-19",
+      "evidence": "none",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-23"
+     },
+     {
+      "part": "wheels / armrests (side discs, vertical)",
+      "rows": "16-30",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The wheelchair is drawn almost entirely as a face-on elevation. The blue block (rows 17-27) has a 1-row light edge at row 18, a slightly darker row 19, then dark blue rows 20-23 and a light stripe at rows 24-25. That looks like a vertical cushion or panel, not a seat seen from above. No ellipse or widening-narrowing top shape appears, and the top strip is only 1-2 rows, which counts as a rim. The wheels are vertical side discs. The sign on top (rows 0-9) is decor and detached. So the sitting surface shows no top, which gives front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small blue wheelchair-bay set: a wheelchair sign and two wheelchairs. The measured facts support it: 15 visible tones per tile, which sits between prop-hedge (9) and prop-well-roofed (20) and close to prop-stall-cheese (17). Near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outlines lean dark navy rather than black. By eye, the blue ramp shows about 4 steps (highlight, light, mid, dark navy) with dithered seat and back detail and no large flat areas. That is a little shallower than the 5-6 steps of the richer references, and the pieces are small and sparse, but a careful artist would accept them next to the references without them looking sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19245
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.691Z",
+ "cells": {
+  "16": [
+   "c48bcc498b338886",
+   "cdf5b340d03b807b",
+   "d445bb249dad2c9f"
+  ],
+  "24": [
+   "035b25ffc6edd84e",
+   "0b6259a6f82377ec",
+   "163cd7aee76acf03",
+   "1b0bc27b1db0eaa2",
+   "2a286edcf396947d",
+   "2acd7693bc60a707",
+   "3a243f62a4f768f6",
+   "40d032b39258ee78",
+   "4181b2d6962c62b2",
+   "463df553d114a8c3",
+   "4761d017075c6d9d",
+   "5ddc9b36e664ee02",
+   "7f0b03cce3f8d719",
+   "9084554fe8f64ad7",
+   "99ade4a795d91163",
+   "a0a56df08406eacc",
+   "aa8c8d428ad3f3fd",
+   "c1d215c6446d633f",
+   "d531126827e68607",
+   "e1ab71f85d1e3faf",
+   "f4de248c195c2978",
+   "fadf6625638f2dc6"
+  ],
+  "32": [
+   "236fa8b3f34b5bb5"
+  ],
+  "48": [
+   "1f0101dde4209d58",
+   "351401321512f4af",
+   "73da282b0ebe4f4c",
+   "7f3550fe13b9a771",
+   "b1d659b637b1029a",
+   "f16d65380213aae9"
+  ]
+ }
+}

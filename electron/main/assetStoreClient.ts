@@ -18,6 +18,8 @@ export interface StoreUser { id: number; email: string; displayName: string; rol
 export interface InstalledItem {
   slug: string; version: number; title: string; kind: string; grade: string; license: string;
   aiGenerated: boolean; author: string; cover: string | null; installedAt: string; storeUrl: string;
+  /** 주인 초안(D2): 받을 때 상품이 아직 확인 대기(status "pending")였다. 나만 보이고 공유되지 않는다. 옛 기록에는 없다. */
+  draft?: boolean;
 }
 export interface StorePackage {
   manifest: StorePackManifest; blobs: Record<string, Uint8Array>; slug: string; version: number;
@@ -38,7 +40,11 @@ interface TokenVault { load(): string | null; save(token: string | null): void; 
 export class AssetStoreClient {
   private token: string | null;
   private storeUrl: string;
-  /** 이 주소의 서버가 `/bundle` 을 모르면(404·405·501) 이번 실행 동안 다시 묻지 않는다. 주소를 바꾸면 다시 묻는다. */
+  /**
+   * 이 주소의 서버가 `/bundle` 을 모르면 이번 실행 동안 다시 묻지 않는다. 주소를 바꾸면 다시 묻는다.
+   * 405·501 이면 확실히 모르는 것이다. 404 는 공개된 상품(visible, 상태를 안 주는 옛 서버 포함)일 때만 「모른다」로 본다 —
+   * 주인의 확인 대기 초안은 서버가 404 를 줄 수 있고, 그것 때문에 다른 상품까지 번들을 끄면 안 된다.
+   */
   private bundleUnsupported = false;
 
   constructor(private readonly root: string, private readonly vault: TokenVault, envUrl?: string) {
@@ -162,6 +168,27 @@ export class AssetStoreClient {
   private manifestPath(slug: string, version: number): string { return join(this.root, "manifests", `${slug}@${version}.json`); }
   private indexPath(): string { return join(this.root, "installed.json"); }
 
+  /**
+   * 받아 둔 초안의 상태를 다시 본다(D2). 공개(visible)되면 초안 표시를 뗀다. 확인할 수 없으면(오프라인·로그아웃) 그대로 둔다.
+   * 바뀐 것이 있으면 true.
+   */
+  async refreshDrafts(): Promise<boolean> {
+    const drafts = this.installed().filter((item) => item.draft === true && item.storeUrl === this.storeUrl);
+    if (drafts.length === 0) return false;
+    const published = new Set<string>();
+    for (const item of drafts) {
+      const status = await this.item(item.slug).then((detail) => detail.status, () => null);
+      if (status !== null && status !== "pending") published.add(item.slug);
+    }
+    if (published.size === 0) return false;
+    this.writeInstalled(this.installed().map((item) => {
+      if (!published.has(item.slug)) return item;
+      const { draft: _draft, ...rest } = item;
+      return rest;
+    }));
+    return true;
+  }
+
   installed(): InstalledItem[] {
     try {
       const value = JSON.parse(readFileSync(this.indexPath(), "utf8")) as { items?: Record<string, InstalledItem> };
@@ -184,9 +211,10 @@ export class AssetStoreClient {
     let manifest: StorePackManifest | null = null;
     const bundleRes = this.bundleUnsupported ? null : await this.request(
       `/api/v1/items/${encodeURIComponent(slug)}/versions/${target}/bundle`,
-      { auth: false, headers: { accept: "application/vnd.oprn.store-pack, application/octet-stream" }, signal: AbortSignal.timeout(180_000) },
+      // 로그인했으면 토큰을 붙인다 — 주인의 확인 대기 초안은 작가 본인에게만 내려온다(D2).
+      { headers: { accept: "application/vnd.oprn.store-pack, application/octet-stream" }, signal: AbortSignal.timeout(180_000) },
     ).catch(() => null);
-    if (bundleRes && [404, 405, 501].includes(bundleRes.status)) this.bundleUnsupported = true;
+    if (bundleRes && bundleUnsupportedStatus(bundleRes.status, detail.status)) this.bundleUnsupported = true;
     if (bundleRes && bundleRes.ok) {
       // OPK1 = 8B 머리 + 매니페스트 + blob 전부. 압축이면 풀린 크기에도 같은 상한을 둔다(gzip 폭탄).
       const maxBundleBytes = 8 + STORE_LIMITS.manifestBytes + STORE_LIMITS.packBytes;
@@ -239,6 +267,7 @@ export class AssetStoreClient {
     const record: InstalledItem = {
       slug, version: target, title: detail.title, kind: detail.kind, grade: detail.grade, license: detail.license,
       aiGenerated: detail.aiGenerated, author: detail.author, cover: detail.cover, installedAt: new Date().toISOString(), storeUrl: this.storeUrl,
+      ...(detail.status === "pending" ? { draft: true } : {}),
     };
     this.writeInstalled([record, ...this.installed().filter((item) => item.slug !== slug)]);
     await this.request(`/api/v1/items/${encodeURIComponent(slug)}/downloads`, { method: "POST", json: {} }).catch(() => undefined);
@@ -354,6 +383,15 @@ export function isPrivateHost(host: string): boolean {
   const ip = (prefix: string, rest: number) => new RegExp(`^${prefix}(\\.${octet}){${rest}}$`).test(host);
   return host === "localhost" || host === "[::1]" || ip("127", 3) || ip("10", 3) || ip("192\\.168", 2) || ip("172\\.(1[6-9]|2\\d|3[01])", 2)
     || ip("100\\.(6[4-9]|[7-9]\\d|1[01]\\d|12[0-7])", 2) || /^[a-z0-9-]+$/i.test(host);
+}
+
+/**
+ * `/bundle` 응답 상태로 「이 서버는 번들을 모른다」고 볼지. 405·501 은 항상, 404 는 공개 상품일 때만이다
+ * (확인 대기·숨김·삭제 상품의 404 는 그 상품만의 사정이다). 상태를 안 알려 주는 옛 서버는 공개로 본다.
+ */
+export function bundleUnsupportedStatus(status: number, itemStatus: string | undefined): boolean {
+  if (status === 405 || status === 501) return true;
+  return status === 404 && (itemStatus === undefined || itemStatus === "visible");
 }
 
 /** 응답 본문을 max 바이트까지만 읽는다. 넘으면 끊는다(악의적인 서버가 메모리를 채우지 못하게). */

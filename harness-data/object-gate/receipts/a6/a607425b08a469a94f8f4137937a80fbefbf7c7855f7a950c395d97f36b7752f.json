@@ -1,0 +1,294 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a607425b08a469a94f8f4137937a80fbefbf7c7855f7a950c395d97f36b7752f",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "썩은 판자 다리(떨어짐 1) (plank bridge falling 1)",
+ "label": "atlas_biome_interior/plus/plank bridge falling 1",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 26,
+  "nearBlackEdge": 0.13,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken plank fragments",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a small, scattered cluster of broken plank pieces about 9px wide and 14 rows tall, with a diagonal silhouette. Plank surfaces are seen from above, with lighter tops fading to dark shadow, and no front-edge line, eave shadow, ellipse or vertical front face. This fits a flat decal-like debris piece lying on the ground, with no standing volume. The width profile widens from 2 to 9 and narrows again, but that follows the irregular shape of the fragments and is not an ellipse lid."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate should be a 4x3-tile ground patch, but it renders as one tiny brown plank fragment, smaller than a single 16x16 tile, on a plain dark background. It does not read as a ground surface like the grass or paving references. It has only 12 distinct colours against 80 for the grass reference, and I count about 3 brown steps on the wood against 5-6 on the references. The measured outline is tinted (only 7% of dark edge pixels are neutral), so the outline is dark_material_tone, which is acceptable. The plank shows little grain or per-plank shading, and there is no surrounding surface at all, so it is much thinner and more sticker-like than the references. The 0% flat-fill figure only reflects how small the sprite is. This is a sparse piece, but a ground patch is meant to carry continuous texture, and this one does not.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12556
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken plank fragments (scattered falling pieces)",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a sparse, irregular scatter of broken plank pieces. The planks are brown and read as flat debris seen from above, so the lit plank tops are the main surface. Rows 4-7 are lighter (#ba9262 to #7e5935) and darken into shadow at rows 7-9, but there is no front-edge line followed by a vertical face and no ellipse, roof or container contents. No front face of 3 or more rows exists; the dark rows are shading on the fragments. The silhouette widens from 2 to 9 px and narrows to 2 px, which is an irregular debris shape and not an ellipse cap. This matches the flat kind, so the drawing reads as a top-down flat decal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is meant to be a 4x3-tile ground patch but shows only a tiny brown plank fragment, about one tile or less, on a dark background. It does not read as a ground surface like the grass and paving references, so the kind does not match. The measured facts show 12 distinct colours against 80 for the grass reference. The per-tile median of 0 means the piece is smaller than a tile, so I judged by eye. The plank has roughly 3 brown steps with little grain or per-plank highlight, so it looks thinner and flatter than the references. Only 7% of dark edge pixels are neutral, so the outline leans toward a dark brown material tone, but the piece is too small and sparse to credit that. It would look sticker-like and much sparser beside the references. Fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 10804
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken plank fragments (falling debris)",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a few scattered, irregular wooden plank fragments with a diagonal silhouette (width 2-9 px over rows 1-14), sparse pixels, and gaps. There is no band ending in a front-edge line, no ellipse, no roof plane, and no contents. There is no vertical front face of 3+ rows, only shaded plank pieces seen from above. This matches a flat decal-like debris piece lying on the ground, so it reads as a top-down slab, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sprite of a few brown plank fragments on a dark backdrop, far smaller than a 4x3-tile ground patch, so it is not the same kind as the grass and paving references. The measured facts back this up: the median is 0 colours per tile because the piece is smaller than one tile, and it has only 12 distinct colours against 80 for the grass. Its dark edge pixels are only 7% neutral, so the outline leans brown and counts as dark_material_tone. Shading is about 3 steps (light plank, mid brown, dark brown), against 5-6 on the grass, and there is little grain or texture. Flat-fill coverage is 0%, but that is only because the object is small. The piece does not cover a ground area, has no surface variation and looks like a sticker next to the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11901
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken plank fragments (main body)",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a sparse scatter of broken plank pieces on a transparent background, about 9px wide and 14 rows tall. It is drawn as a flat decal seen from above. The width profile rises from 2 to 9 and falls back to 2 with no step or ledge. The column scans show brown gradients and dark shadow pixels, with no front-edge line followed by eave shadow, no ellipse, and no contents. No vertical south face of 3 or more rows is drawn. This fits the flat kind, so it reads as a top-down slab without volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is meant to be a 4x3-tile ground patch, but the board shows only a tiny brown plank fragment, about 8x10 source pixels and smaller than one tile, on an empty dark background. It does not read as a ground surface at all, so the grass and paving references are not a like-for-like match. The measured facts agree: 12 distinct colours against 80 for the grass and 26 colours per tile, and the per-tile median of 0 only confirms the piece is under one tile. The few visible pixels show about 3 brown steps and a small dark brown edge (only 7% near-neutral, so tinted). There is no grain, no per-plank shading and no surrounding ground, so it is far thinner and flatter than the references. 5x5 flat-fill coverage is 0%, but only because the shape is too small to hold a 5x5 block. A careful artist would not accept this beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12460
+  }
+ ],
+ "decidedAt": "2026-10-20T05:59:10.980Z",
+ "cells": {
+  "16": [
+   "13ea52c756443ae9"
+  ],
+  "24": [
+   "42d1f0de24a245ce",
+   "7e99216f347f2f10",
+   "8513294da7e945dc",
+   "b5c147d2f59a3fdc",
+   "c4160da51841eeb9",
+   "d22cd0fb86eafe3a"
+  ],
+  "32": [
+   "0ae4fc701b695722",
+   "0cbb1dd370c78079",
+   "39f08f22fb09a9cf",
+   "4da29ca3a7b1cecc",
+   "60583faa385ade8b",
+   "f15f29ed47cbbd77"
+  ],
+  "48": [
+   "52eedd402ede85f5",
+   "79252deb52d78a3d",
+   "8017939800d2d515",
+   "92cd1e0f93f972aa",
+   "ea1628a8374520ef",
+   "f699144ec73d4e4f"
+  ]
+ }
+}

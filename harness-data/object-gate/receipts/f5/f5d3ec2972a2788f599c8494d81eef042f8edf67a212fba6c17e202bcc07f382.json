@@ -1,0 +1,305 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f5d3ec2972a2788f599c8494d81eef042f8edf67a212fba6c17e202bcc07f382",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "파이 진열장 (cabinet:pie)",
+ "label": "atlas_biome_interior/props34/cabinet:pie",
+ "profileHash": "1db03a95223e5b0b",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 20,
+  "darkV5": 26,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "pies on shelves",
+      "rows": "8-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-1 are the dark outline and a darker top edge. Rows 2-4 form a wood-grain band, and row 5 is a lighter front-edge line (L=157 against about 130 above). Rows 6-8 below it are very dark (L about 32-37) and read as eave shadow over the shelf openings. That gives a top band of about 4 rows, like the green cabinet reference (top 5 + edge + eave). The front face runs from row 6 to row 31, about 26 rows. It holds three shelf compartments with shelf-edge strips at rows 13-14, 22-23 and 30. The pies are goods on the shelves, so they are decor. The silhouette is a constant 16 wide, with no side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden shelf cabinet with pies on three shelves. It measures 19 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, so it matches the closest references. Near-flat coverage is 0%, so there are no flat fills. 0% of its dark edge pixels are neutral, so the outline is tinted, a dark brown beside the wood, rather than a black sticker line. The wood frame shows about 4 steps with grain and plank variation, and the pies are shaded in warm tones with highlights. It is slightly shallower than the references in step count and has only 20 distinct colours in total, but the visible texture and density hold up next to the stall and well. A careful artist would accept it beside them without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16364
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "pies on shelves",
+      "rows": "8-12, 17-21, 25-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a wood-toned top band. Row 0 is the outline and row 1 is darker. Rows 2-4 are mid-tone (L about 125-135). Row 5 is a lighter front-edge line (L=157, #d59147). Directly below it, rows 6-8 drop to very dark (L about 32-37), which reads as eave shadow over the open shelf interior. This matches the green cabinet reference (top 5 + edge + eave). The front face runs from row 6 to row 31 (26 rows): open shelves with shelf-board strips at rows 13-14, 22-23 and 30-31. The pies on the shelves are goods, so they count as decor. No receding side face is drawn, and the silhouette is a constant 16 px wide."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a narrow wooden display cabinet with shelves of pies and breads. The facts put it level with the richer references: 19 visible tones per tile against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, with no 5x5 flat fills, so the wood frame and shelves are not flat. The pies carry dotted crust highlights and shade variation. Dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood, the same selective material-tone approach as the references, not a black sticker line. The frame shows about 4-5 wood steps, with the pie tones as extra ramps. It is slightly simpler than the cheese stall but sits within the reference range and would sit acceptably next to it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15384
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band / cornice",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "pies on shelves",
+      "rows": "8-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-4 form a lighter wood band across the top. Row 5 is a lighter front-edge line (#d59147), and rows 6-7 are dark eave shadow beneath it. Below that, rows 6-31 are the front face, with three shelf compartments holding pies. The shelf ledges at about rows 13-14 and 22-23 are thin rims. The silhouette is a constant 16 px wide with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a one-tile-wide wooden pie shelf holding rows of golden pies. It has 19 visible tones per 16x16 tile, level with the stall-cheese (17) and well-roofed (20) references and above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is a dark brown tinted to the wood rather than a black sticker line. The wood frame shows a light-to-dark brown ramp of about 5 steps. The pies carry highlight and shadow dots, and the shelf boards are separated by value. It is slightly simpler than the stall, but it is not thinner or flatter than the references and would sit acceptably beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13840
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "pies on shelves",
+      "rows": "8-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-4 form a wood band at the top, and row 5 is a lighter front-edge line (#d59147). Dark eave shadow follows in rows 6-7, then the front face with shelves and pies runs from row 6 to row 31, about 26 rows. This matches the green cabinet reference: a top of about 5 rows, an edge line and an eave. The silhouette is a constant 16 wide, with no receding side face. The pies are goods on the shelves and are listed as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow wooden display shelf with pies on three tiers. At the board's 2x scale it is small, but it reads as a built piece rather than a sticker. Measured facts: 19 visible tones per 16x16 tile, level with the stall (17) and well (20) references and well above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. 0% of dark edge pixels are neutral, so the outline leans brown, as in the Beodeul references, and it is not a black line. The wood frame shows about 4-5 lightness steps with a lit edge and shaded shelf undersides. Each pie has a lighter crust highlight and a darker underside, giving about 3-4 tones. Texture is moderate: pie dots and wood shading are present, but there is less grain than the stall's tiles and canopy. Overall it is a slightly simpler piece that a careful artist would accept next to the stall without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14347
+  }
+ ],
+ "decidedAt": "2026-10-20T10:14:44.654Z",
+ "cells": {
+  "16": [
+   "0ef7c8da8b37e880",
+   "f07ce5b1f24fd776"
+  ],
+  "24": [
+   "133ffa21769540b2",
+   "1d17080cd0e87cf6",
+   "27730991dea47fe3",
+   "37a0d792d9069f0d",
+   "60b125f50d617c0f",
+   "6f1356fd287aca44",
+   "87cf05c09575aaf2",
+   "bfb65d9ce25c40b1",
+   "c1fe26897836b5a3",
+   "d5352b1caab1c29f",
+   "e80318b5a93c7abb",
+   "fed49dec7cf6c507"
+  ],
+  "32": [
+   "4949119e59bd31c0",
+   "ab04d1f8f0c1cc1c",
+   "ed22b6bb7103f88f"
+  ],
+  "48": [
+   "b5606c60fb14addc",
+   "bcd12b054fba4af2",
+   "d5a9cb4131dbf653",
+   "e119540041be38d3",
+   "f99c49e21347e4b5",
+   "ff169cda5f4e6113"
+  ]
+ }
+}

@@ -1,0 +1,305 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cb81e0b272cc64ae79f474a2f4f0a4637f83fa665262924678b153edd0c13d02",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "파이 진열장 (cabinet:pie)",
+ "label": "atlas_biome_interior/props34/cabinet:pie",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 26,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "front face with shelves and pies",
+      "rows": "6-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-4 are a wood top band, and row 5 is a lighter front-edge line (#d59147). Rows 6-8 below it are a very dark band (L~31) that reads as eave shadow and the dark interior. Below that, rows 6-31 are a 26-row front face with open shelves holding pies, and shelf edges at rows 13, 22 and 30. The top band is like the green bookshelf reference: a top with an edge line, then the shadowed front. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a tall wooden shelf cabinet with pies on its shelves. Its outline is a dark brown tinted to the wood: 0% of its dark edge pixels are near-neutral, so it does not have the black 'sticker' line. Per-tile colour density is a median of 14. That is above prop-hedge (10) and in line with the stall (17) and well (20) tiles. Flat-fill coverage is 9%, below the stall's 13%, so there are no large dead areas. The total of 14 colours matches the bench and lamp, which are thin props. The much larger totals of the stall and well (40 and 38) come from far bigger, more detailed pieces. By eye the wood ramp has about 4 steps, with grain and per-pie highlights on the shelves, against roughly 5-6 steps in the references. That is slightly lower, but it is neither flat nor a sticker look, and it is acceptable next to the references for a simple furniture prop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21654
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "open shelves with pies",
+      "rows": "6-31",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a brown top band. Row 5 is a lighter front-edge line (#d59147), and rows 6-8 below it are very dark (L≈31), which acts as eave shadow. This matches the green 'cabinet: top 5 + edge + eave' reference. Rows 6-31 are the south front face, 26 rows tall. It shows open shelves with pies visible inside, and the shelf-board rows at 11-13, 21-22 and 29-30 are lighter edge lines. The width is a constant 16 with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden pie shelf. Its median of 14 colours per 16x16 tile is above the hedge (10) and close to the cheese stall (17). The 14 distinct colours match the bench and lamp and sit well below the stall (40) and well (38), which is acceptable for a small single-material prop. 0% of its dark edge pixels are neutral, so the outline is a tinted dark brown that follows the wood rather than a black sticker line. Flat-fill coverage is 9%, below the stall's 13%, and the shelf boards and pies show some grain and per-pie highlights. The wood ramp has roughly 4 steps against the references' 5-6, which is a little shallow. Overall it would sit acceptably beside the references without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18964
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice/cap",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "front face with open pie shelves",
+      "rows": "6-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a top band, with row 0 as the outline and row 1 slightly darker. The band ends in a lighter front-edge line at row 5 (#d59147), followed by dark eave shadow in rows 6-8. This matches the green cabinet reference: a top band of about 5 rows, an edge line and an eave. Below it is a tall front face of rows 6-31 holding the pie shelves. The shelf boards at rows 12-13, 21-22 and 29-30 are 2-row lips on the front face, and the pies on them show as contents. No receding side face is drawn, and the silhouette is a constant 16 px wide."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden pie cabinet, about 15x32 source pixels, with shelves of pies. It has 14 distinct colours and a median of 14 per full tile, which sits inside the reference range (hedge 10, stall 17, well 20). Flat-fill coverage is 9%, below the stall's 13%, so there are no large dead areas. 0% of its dark edge pixels are neutral, so the outline is a tinted dark brown against the wood rather than a black sticker line. The wood shows about 5 steps (highlight, light, mid, dark, deep), and the pies carry a few tones with crust highlights. It has less total variety than the stall or well (40 and 38 colours), but it is a much smaller single-purpose prop. Per tile it is as information-rich as the references, and a careful artist would accept it next to them. Texture is moderate rather than lavish: some grain and pie dots, but not per-tile scallop detail.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22278
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top board",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "open front with pie shelves",
+      "rows": "6-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a top band (L about 125-135). It ends in a lighter front-edge line at row 5 (#d59147, L=157), followed by dark rows 6-8 that act as eave shadow over the top shelf. This matches the green cabinet reference, which has a top of about 5 rows, an edge line and an eave. Below it the open front (rows 6-31) shows shelves with pies and shelf boards at rows 12-13, 21-22 and 30, which is a 26-row front face. No receding side face is drawn. The top band is somewhat flat, so the three-quarter reading is moderate rather than strong."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden shelf cabinet holding pies. Its median is 14 colours per full 16x16 tile, above prop-hedge (10) and close to prop-stall-cheese (17). Its 14 distinct colours match the bench and lamp, which are thin props, so a single small piece is not penalised. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood, as in Beodeul, not a black sticker line. Flat-fill coverage is 9%, below the cheese stall's 13%, and the shelf interiors and pies break up the fills with dots and highlights. The wood ramp has about 4 steps (outline-dark, mid, light, shelf shadow), slightly under the 5-6 in the references, and its grain is modest. Overall it would sit acceptably next to the stall and bench without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21931
+  }
+ ],
+ "decidedAt": "2026-10-20T07:22:59.447Z",
+ "cells": {
+  "16": [
+   "357e4408ba9bea9b",
+   "8cbbb6ff03e65f41"
+  ],
+  "24": [
+   "08151306f1b88c70",
+   "08b906cec3635251",
+   "37a0d792d9069f0d",
+   "578a58b4873baedd",
+   "7753d23adeadf6f3",
+   "91afcb9ae0399243",
+   "a434cbc173320961",
+   "bb70d50fcca97dbc",
+   "c1fe26897836b5a3",
+   "e80318b5a93c7abb",
+   "f0951377cb471242",
+   "fc53cb84972878fc"
+  ],
+  "32": [
+   "173597d67c3d8e99",
+   "d3c51bf970e9cc55",
+   "d65aca6ae517b438"
+  ],
+  "48": [
+   "445e942d78bcc496",
+   "6226271a78674b30",
+   "6b7e798c4af9e204",
+   "7acd021a8f7fd142",
+   "9302cf10e49e8778",
+   "c24494095e13af99"
+  ]
+ }
+}

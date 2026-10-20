@@ -87,11 +87,12 @@ describe("test play window run controls", () => {
     expect(unlock).toHaveBeenCalled();
     await opening;
   });
-  it("fills the window and skips the title screen by default", async () => {
+  it("lets the project decide the surface scale and skips the title screen by default", async () => {
     await openTestPlayModal();
 
     const options = lastRenderOptions();
-    expect(options.surfaceScaleMode).toBe("fit");
+    // 배율은 프로젝트 규칙(resolvePlaySurfaceScaleMode)이 정한다 — 테스트 창이 덮어쓰지 않는다.
+    expect(options.surfaceScaleMode).toBeUndefined();
     expect(options.autoStartRun).toBe(true);
     expect(button("test-play-restart")?.textContent).toBe("다시 시작");
     expect(button("test-play-title")?.textContent).toBe("타이틀부터");

@@ -1,0 +1,53 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/theater_seat/w135-A.pxg",
+ "id": "theater seat",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.019
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-seats-34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 16,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  1,
+  15,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "note": "꼭대기 윗면 3행(y=7~9) 양쪽 나무 팔걸이 윗면(밝음) + 등받이 둥근 윗날 2행(y=2~3); 뒤에서 본 등판 y=4~10(위 밝게·아래 한 단 어둡게, 가로 솔기 한 줄 y=5), 팔걸이 밑 쇠 받침 2px 둘 사이 바닥 열림",
+ "topClaim": {
+  "rows": 3,
+  "y": [
+   7,
+   9
+  ],
+  "need": 3
+ },
+ "topBand": {
+  "cover": 1.0,
+  "cuts": []
+ },
+ "lines": {
+  "o_thick": 0.034,
+  "o_melt": 0.138,
+  "o_none": 0.0,
+  "o_foreign": 0.0,
+  "light_inv": -0.016,
+  "l_thick": 0.0,
+  "n": 162,
+  "n_outline": 58,
+  "n_line": 14
+ },
+ "ok": true
+}

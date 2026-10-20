@@ -1,0 +1,142 @@
+[
+ {
+  "name": "v5l__bed-double-a",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-v5large",
+  "original": "oprn-interior-v5-large",
+  "note": "double bed A"
+ },
+ {
+  "name": "v5l__bed-double-b",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-v5large",
+  "original": "oprn-interior-v5-large",
+  "note": "double bed B"
+ },
+ {
+  "name": "v5l__wardrobe-2w-a",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-v5large",
+  "original": "oprn-interior-v5-large",
+  "note": "large wardrobe A"
+ },
+ {
+  "name": "v5l__wardrobe-2w-b",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-v5large",
+  "original": "oprn-interior-v5-large",
+  "note": "large wardrobe B"
+ },
+ {
+  "name": "v5l__dining-set-a",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-v5large",
+  "original": "oprn-interior-v5-large",
+  "note": "dining table with 4 chairs A"
+ },
+ {
+  "name": "v5l__dining-set-b",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-v5large",
+  "original": "oprn-interior-v5-large",
+  "note": "dining table with 4 chairs B"
+ },
+ {
+  "name": "v5l__cabinet-2w-a",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-v5large",
+  "original": "oprn-interior-v5-large",
+  "note": "china cabinet A"
+ },
+ {
+  "name": "v5l__cabinet-2w-b",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "originals-v5large",
+  "original": "oprn-interior-v5-large",
+  "note": "china cabinet B"
+ },
+ {
+  "name": "v5l__armchair",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "v5large-bad",
+  "note": "object-gen 견본 반려: flat slab: same red block everywhere, floating pink sticker highlights, heavy dark box outline on every block, no visible seat plane"
+ },
+ {
+  "name": "v5l__mci-chair-wood-e",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "v5large-bad",
+  "note": "object-gen 견본 반려: seat is a boxed flat square, back post is a thin line between black outlines, black walls inside the silhouette"
+ },
+ {
+  "name": "v5l__reject-potion-cabinet-r0",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "v5large-bad",
+  "note": "object-gen 견본 반려: front elevation, flat colour blocks on black"
+ },
+ {
+  "name": "v5l__reject-potion-cabinet-r1",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "v5large-bad",
+  "note": "object-gen 견본 반려: copied flat blocks on a flat black back",
+  "weak": true,
+  "auditOut": "2026-10-21 감사: user rejected for style (copied flat blocks), not view → style-bad, reported only"
+ },
+ {
+  "name": "v5l__reject-loaf-cabinet-r1",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "v5large-bad",
+  "note": "object-gen 견본 반려: the same loaf copied across every shelf on black",
+  "weak": true,
+  "auditOut": "2026-10-21 감사: user rejected for style (copied loaf on black), not a view defect → style-bad, reported only"
+ },
+ {
+  "name": "v5l__reject-book-cabinet-r1",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "v5large-bad",
+  "note": "object-gen 견본 반려: books read as nameplate rectangles",
+  "weak": true,
+  "auditOut": "2026-10-21 감사: user rejected for style (books as nameplates), not view → style-bad, reported only"
+ }
+]

@@ -1,0 +1,15 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "506755925c9ea93841c2c51cff5bf01c1824f59ae4a8fa24c2d9db3f1782be57",
+ "profileHash": "1db03a95223e5b0b",
+ "kind": "tall_furniture",
+ "decision": "allow",
+ "decidedBy": "오현석",
+ "decidedAt": "2026-10-20T10:50:35.865Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "sig": "97ac030e636513358fdc9ca0f2744aad3405921f71345994eb37d0fd3f8dfc6e"
+}

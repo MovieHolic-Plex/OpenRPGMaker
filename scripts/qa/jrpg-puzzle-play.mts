@@ -305,7 +305,7 @@ try {
         const before = await state();
         const moved = await page.evaluate(async (dirName) => {
           const b = window.__oprnDebug.readState();
-          const scene = window.__oprnHooksScene as { moving?: boolean; playerHop?: unknown } | undefined;
+          const scene = window.__oprnHooksScene as { moving?: boolean; playerHop?: unknown; playerSlide?: unknown } | undefined;
           window.__oprnInput.dir(dirName);
           const t0 = performance.now();
           let started = false;
@@ -320,8 +320,11 @@ try {
           window.__oprnInput.dir(null);
           if (started) {
             const t1 = performance.now();
-            while ((scene?.moving || scene?.playerHop) && performance.now() - t1 < 10_000) {
+            // 빙판 미끄럼은 칸마다 이동 트윈이 끝나고 다음 칸을 잇는다 — 미끄럼이 끝날 때까지(두 프레임 연속 정지) 기다린다.
+            let idle = 0;
+            while (idle < 3 && performance.now() - t1 < 10_000) {
               await new Promise<void>((r) => requestAnimationFrame(() => r()));
+              idle = scene?.moving || scene?.playerHop || scene?.playerSlide ? 0 : idle + 1;
             }
           }
           const after = window.__oprnDebug.readState();

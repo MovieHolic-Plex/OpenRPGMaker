@@ -690,6 +690,64 @@ def _origami(c):
     rc(c, 10, 6, 4, 2, kc('kii', 2)); px(c, 14, 5, kc('kii', 1)); px(c, 9, 7, kc('kii', 1)); hl(c, 10, 8, 4, kc('kii', -1))
 
 
+# ══ seats34 (3/4 다시 그리기) ══
+import seat34 as S34   # noqa: E402
+
+
+def _pipe_chair34(c):
+    """접이 의자 수레 3/4: 겹쳐 세운 의자들의 윗날이 하나의 판(갈색 등판 윗날 4행, 앞쪽 은색 파이프 테)으로 보이고,
+    그 앞에 맨 앞 의자 한 장(파이프 틀 안 등판 → 틈 → 접힌 좌판 → 두 다리), 아래 수레 바닥판."""
+    outline(c, 2, 4, 12, 6)                                                                          # 겹친 의자 윗날 판
+    rc(c, 3, 5, 10, 3, kc('ita', 1)); hl(c, 3, 5, 10, kc('ita', 2)); vl(c, 3, 5, 3, kc('ita', 2))
+    hl(c, 3, 8, 10, kc('tekko', 3))                                                                  # 앞 가장자리 = 맨 앞 의자 윗 파이프
+    vl(c, 3, 9, 18, kc('tekko', 3)); vl(c, 4, 9, 18, kc('tekko', 1))                                 # 파이프 틀(왼쪽 밝게)
+    vl(c, 11, 9, 18, kc('tekko', 1)); vl(c, 12, 9, 18, kc('tekko', -1))
+    vl(c, 2, 9, 18, OL); vl(c, 13, 9, 18, OL)
+    rc(c, 5, 9, 6, 5, kc('ita', 0)); hl(c, 5, 9, 6, kc('ita', 1)); vl(c, 5, 9, 5, kc('ita', 1)); hl(c, 5, 13, 6, kc('ita', -1))   # 등판
+    rc(c, 5, 14, 6, 3, kc('ita', -2))                                                                # 등판·좌판 사이 틈(뒤 의자 그늘)
+    rc(c, 5, 17, 6, 4, kc('ita', 0)); hl(c, 5, 17, 6, kc('ita', 1)); vl(c, 5, 17, 4, kc('ita', 1)); hl(c, 5, 20, 6, kc('ita', -1))   # 접힌 좌판
+    rc(c, 5, 21, 6, 6, kc('ita', -2)); hl(c, 5, 23, 6, kc('tekko', 0))                               # 다리 사이 그늘 + 가로대
+    rc(c, 0, 27, 16, 3, kc('tekko', 0)); hl(c, 0, 27, 16, kc('tekko', 3)); hl(c, 0, 28, 16, kc('tekko', 2)); hl(c, 0, 29, 16, OL)   # 수레 바닥판
+    for wx in (1, 13): rc(c, wx, 30, 2, 2, OL)
+
+
+def _kid_chair34(c, f):
+    """아이 의자 4방향(품질 다시 그리기): 노란 플라스틱 등받이(윗날 2행 밝음, 왼 테 밝게) + 나무 좌판(윗면 3행 + 앞날 2행) + 2px 다리.
+    남: 등받이가 좌판 뒤 끝에 붙어 솟는다. 북: 낮은 등받이 너머로 좌판 윗면이 보이고 등받이 뒷면이 앞. 동·서: L자, 빛은 둘 다 왼위."""
+    Y, M = 'kii', 'mado'
+    def seat(x, w, y=19):
+        S34.ol(c, x, y, w, 6, kc(M, -2))
+        S34.plane(c, x + 1, y + 1, w - 2, 3, M, 1); c.HL(x + 1, y + 4, w - 2, kc(M, 0)); c.VL(x + 1, y + 4, 1, kc(M, 1))   # 윗면 3행 + 앞날
+    def back(x, y, w, h):
+        S34.ol(c, x, y, w, h, kc(Y, -2))
+        S34.face(c, x + 1, y + 1, w - 2, h - 2, Y, 0)
+        c.HL(x + 1, y + 1, w - 2, kc(Y, 2)); c.HL(x + 1, y + 2, w - 2, kc(Y, 1))                        # 윗날 2행
+    if f == 's':
+        for x in (4, 10): S34.leg(c, x, 25, 4, M, 0)
+        back(4, 11, 8, 9); seat(3, 10)
+    elif f == 'n':
+        for x in (4, 10): S34.leg(c, x, 26, 4, M, 0)
+        S34.ol(c, 3, 15, 10, 5, kc(M, -2)); S34.plane(c, 4, 16, 8, 3, M, 1)                             # 등받이 너머 좌판 윗면
+        back(3, 18, 10, 8); c.HL(4, 23, 8, kc(Y, -1))                                                  # 등받이 뒷면
+    else:
+        e = f == 'e'
+        for x in (3, 11): S34.leg(c, x, 25, 4, M, 0)
+        seat(3, 10)
+        bx = 3 if e else 11
+        S34.ol(c, bx - 1, 10, 4, 14, kc(Y, -2))                                                        # 등받이(옆에서, 두께 2)
+        c.VL(bx, 11, 12, kc(Y, 1)); c.VL(bx + 1, 11, 12, kc(Y, -1)); c.HL(bx, 11, 2, kc(Y, 2)); c.HL(bx, 12, 2, kc(Y, 1))
+
+
+PENDING_SEATS34 = {'gy-pipe-chair': _pipe_chair34}
+for _f in 'snew': PENDING_SEATS34['gy-kid-chair-' + _f] = (lambda f: (lambda c: _kid_chair34(c, f)))(_f)
+SEATS34_PASS = set()          # object-gate PASS 영수증을 받은 id 만 — 이 id 들만 굽는 그림을 바꾼다
+for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
+# ══ /seats34 ══
+
+
+
+S34_STUDY2 = __import__('seat34').apply_study2(R)   # 사람 합격(2026-10-20) 앉는 기물 — 관문 pass 영수증 있는 것만 바꾼다
+
 def build(): return R.build()
 def selftest(): return R.selftest()
 

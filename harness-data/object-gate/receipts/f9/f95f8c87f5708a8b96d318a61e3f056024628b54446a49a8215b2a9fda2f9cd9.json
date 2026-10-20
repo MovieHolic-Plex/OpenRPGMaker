@@ -1,0 +1,394 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f95f8c87f5708a8b96d318a61e3f056024628b54446a49a8215b2a9fda2f9cd9",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "council trophy case",
+ "label": "modern_city_interior/council-trophy-case",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 윗면 2행 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+   "윗면 2행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 18,
+  "darkV5": 43,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice molding",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "glass display front with trophies",
+      "rows": "6-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle shelf edge",
+      "rows": "16-18",
+      "evidence": "none",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18"
+     },
+     {
+      "part": "base plinth molding",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole case is a flat, face-on elevation. Rows 1-5 form a cornice that shades from dark to light, with a light line at row 5 and a teal shadow at row 6. The base at rows 27-31 mirrors it exactly (light, then darker, down to the outline). That symmetry marks both as front-facing frame moldings, not a receding horizontal top. The shelf at rows 16-18 is a 2-row front edge with no depth. The glass area (rows 6-26) is a vertical face with trophies drawn face-on. The silhouette is a constant 30 px wide with no side face, no ellipse and no visible top plane, so at most a 2-row rim reads as top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a framed glass case with trophies on shelves. It reads clearly as a prop of the same kind as the references. Measured facts: 17 visible tones per tile, equal to the cheese stall (17) and close to the well (20), with 0% near-flat coverage and 0% neutral dark edge pixels. So the outline is tinted dark brown, not near-black, which matches the Beodeul approach. The wooden frame shows a light-to-dark ramp, and the shelf interior and trophies add variation. However, the case is small and compact. By eye, the frame and back panel are fairly smooth, with about 4 steps against the 5-6 of the stall and well. Its texture is less grainy than the stall awning, crates and well stones, and the trophy shapes are simple and lightly shaded. The numbers support equal richness, but by eye it is slightly thinner than the best references, so the shading is a bit shallow. It is acceptable next to the bench and hedge, yet not clearly equal to the stall and well.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 24999
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice/frame band",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle shelf front strip",
+      "rows": "16-17",
+      "evidence": "none",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18"
+     },
+     {
+      "part": "trophies and red cushion inside the case",
+      "rows": "7-25",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom plinth",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The case is a flat, face-on glass front in a wooden frame, 32 rows tall and full width. The top cornice (rows 1-5) is a front-facing strip. Its colour darkens toward the silhouette and lightens downward (L 77, 109, 143, 143, 180), like a bevel, so it does not read as a lit horizontal surface. Row 5 is a light line and row 6 is a blue-grey glass row, but there is no real eave shadow and no widening or receding plane. The middle shelf (rows 16-17) is a 2-row strip seen face-on. The bottom plinth (rows 27-31) is also a vertical strip. The trophies inside are items on shelves and are not structure. No part of the case shows a top surface deeper than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small wooden-framed case with a gold inner border, a cream back panel and trophies. Its 17 visible tones per tile equal the cheese stall (17) and are near the roofed well (20), and above the hedge (9). Near-flat coverage is 0%, so the back panel is not a flat fill. Dark edge pixels are 0% neutral, so the outline leans brown rather than black. That fits the dark-material-tone outline of the references and avoids the sticker look. Wood and gold each show about 4-5 steps (highlight, light, mid, dark, deep), slightly below the 5-6 in the references. Total distinct colours (23) are lower than the stall (40) and well (38), and the box form is simpler and less textured. That leaves it slightly lower than the references, but a careful artist would still accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 33263
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "middle shelf front",
+      "rows": "16-18",
+      "evidence": "none",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-18"
+     },
+     {
+      "part": "trophies inside glass",
+      "rows": "7-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The case is drawn as a flat front view. Rows 0-5 are a cornice that darkens-to-lightens as a molding, with a light line at row 5 and a blue glass row at row 6. It reads as a front-facing strip, not a receding horizontal plane, so I count it as a rim of about 2 rows. The glass front (rows 6-26) shows the trophies face-on, and the shelf at rows 16-18 is a front-facing board with no depth. The base at rows 27-31 is also a vertical strip. The side walls are thin vertical frame strips with no side face. No ellipse, roof or visible inner contents seen from above is present, so it matches the 'front elevation / rim only' reference examples."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate's measured facts match the richer references. It has 17 visible tones per tile, the same as prop-stall-cheese and close to prop-well-roofed at 20 and above prop-hedge at 9. Near-flat coverage is 0%, so no 5x5 areas are a single flat colour. Its dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood frame, not a sticker-style black line. By eye, the wooden frame has a highlight edge, mid tone and dark edge, and the cream interior panel has shelves and small trophies in different tones, which gives it a layered, non-flat look. It is slightly below the references in two places: the 23 total distinct colours are fewer than the 38-40 in the stall and well, and the frame and glass show about 4 shading steps against the references' 5-6. Texture is present but not rich, since there is little grain on the frame. Overall it would sit acceptably next to the stall and well at the same scale.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 27660
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "middle shelf divider",
+      "rows": "16-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-18"
+     },
+     {
+      "part": "trophies inside the case (cup, silver trophy, bronze trophy, medals, red cushion)",
+      "rows": "7-25",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The case is drawn facing south as a glass-fronted cabinet. Rows 1-4 form a wood band that darkens from rows 1-2 to a lighter orange in rows 3-4. Row 5 is a distinct light tan front-edge line, and row 6 is a darker blue-grey shadow row just under it. That matches the cabinet reference (top, edge line, eave). The band could instead be read as a front-facing cornice with a bevel gradient, so this reading is borderline. The middle shelf repeats the pattern in rows 16-18 (orange, light line at row 17, shadow at row 18). Below the top band the glass front runs from row 6 to about row 26, then a base plinth runs through rows 27-31. No receding side face is drawn. The trophies are goods placed inside the case and are listed as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 17 visible tones per 16x16 tile, equal to prop-stall-cheese (17) and close to prop-well-roofed (20). Its near-flat coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline is tinted. By eye, the dark brown frame sits next to the wood, with a bevelled inner edge. The cream back panel is shaded rather than a flat fill, and the shelves hold small trophies with highlights. Shading is a little shallower than the best references, with about 5 steps on the frame and back panel. Texture is moderate, with grain on the frame and detail on the trophies, but it holds up next to the stall and well. It would sit comfortably beside the references without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 29923
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.804Z",
+ "cells": {
+  "16": [
+   "392e982a72ba0750",
+   "55a3e24307c47924",
+   "9f17e921e6ae5023",
+   "c83b9c6fad4cf55b"
+  ],
+  "24": [
+   "021e67c285c1ef70",
+   "0b528edef23582ce",
+   "1cf6cd617140533a",
+   "27f4fb86233e06f4",
+   "3c31dac166c04ce7",
+   "3ca534f2abb01de2",
+   "3f9389948e8a016b",
+   "3ffa50a7ebd98e57",
+   "439c285774276c0b",
+   "59b57a032e4d639d",
+   "6b972f827628f570",
+   "70d06f1f25d8423a",
+   "73e3d0326d4f85c5",
+   "766c52bd3185eb56",
+   "7d109c5818d21c2a",
+   "8b0a39213abe352d",
+   "983ada301b02d893",
+   "a606173734d959af",
+   "a9764ca7a0152038",
+   "b1bd1f4db54bc9d4",
+   "c6e021a1933be476",
+   "cc71930c77c8ae1e",
+   "ccfb2146aa765218",
+   "f9dcacf8ac394925"
+  ],
+  "32": [
+   "9fb574091690779b"
+  ],
+  "48": [
+   "0a425a80f915eb08",
+   "574a09b9d5e3be14",
+   "8e4062d2077e2d56",
+   "b4a3e150b9853b4b",
+   "b6fc3657b370e00f",
+   "d3d850cd185325ad"
+  ]
+ }
+}

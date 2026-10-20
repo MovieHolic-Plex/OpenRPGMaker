@@ -1,0 +1,322 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "27d7aab526c9bf8a00cbc932b688a0467eceede750894bf9bf23e6ddcd45252c",
+ "width": 16,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "슬롯머신(움직임) (slot machine)",
+ "label": "atlas_biome_interior/props34/slot machine",
+ "profileHash": "1db03a95223e5b0b",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 24,
+  "darkV5": 32,
+  "nearBlackEdge": 0.02,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of cabinet body",
+      "rows": "7-11",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-12"
+     },
+     {
+      "part": "front face with reel window and lower panel",
+      "rows": "13-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side lever",
+      "rows": "14-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band at rows 7-11 is a lighter orange-brown (L about 130) and ends in a lighter front-edge line at row 11 (L=157). Row 12 is a dark eave-shadow line (L=38) directly below it. The front face runs from rows 13 to 47, with a reel window, a coin slot and a lower panel. This matches the green 'cabinet: top 5 + edge + eave' reference. The lever on the right is a small attached detail, and no receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a narrow, tall slot-machine cabinet, about one tile wide and two to three tiles tall. Its measured facts are close to the stronger references: 17 visible tones per tile against 17 for the cheese stall and 20 for the well, 0% near-flat coverage, and only 2% neutral dark edge pixels. This means the outline is tinted, a dark brown/red-brown beside the cabinet body, and not a black sticker line. The cabinet shows a lighter panel and a window with a reel and symbols, plus darker side shading. From the 2x board, though, the body looks like 3-4 steps on the main material ramp, below the 5-6 of the stall and well. The panel and window have little grain or per-surface speckle, so texture is only 'some'. There are no large flat fills. The candidate is thinner and simpler than the stall and well, but it holds up against the bench and lamp, so density is slightly lower. A careful artist would likely still accept it next to the references, but the shading is a little shallow. It is borderline, and since the brief says to fail when in doubt, I lean to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12844
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "7-11",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-12"
+     },
+     {
+      "part": "side lever and knob on the right",
+      "rows": "14-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 7-11 form a lighter orange band across the full width. It ends in a lighter front-edge line at row 11, and row 12 (#411e05) is a dark eave shadow. This matches the green 'cabinet: top + edge + eave' reference. The front face runs from row 13 to row 47 and holds the reel window, a coin slot, and upper and lower panels. The lever on the right is a small add-on and does not count as a side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 17 visible tones per tile, matching the cheese stall (17) and close to the well (20). Near-flat coverage is 0% and only 2% of dark edge pixels are neutral, so the outline is tinted dark brown/red-brown rather than a black sticker line. By eye, the cabinet is a narrow, tall slot machine with a brown wood body, a lighter panel and a small window with a reel. It shows some shading and a few detail dots, but the main material ramps are only about 3-4 steps (wood body, panel, highlight edge). Its surfaces are less textured than the stall's awning, produce and wood grain or the well's stones and tiles. It is also thin and small beside those references. It is clean and consistent, but it looks a little flatter and simpler than the best Beodeul props, so it is not clearly equal to them. In doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15797
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "7-11",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-12"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top is a lighter orange wood band at rows 7-11, with a dark outline at row 6. At x=4 and x=8, row 11 is a lighter front-edge line, and row 12 is a dark eave-shadow line (#411e05). Below it the front face runs from row 13 to row 47 and holds the reel window, coin slot and lower panel. The gray lever at the right is a small side detail and does not change the main body. The structure matches the green cabinet reference: a top band, an edge line, a shadow, then the face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts favour the candidate: 17 visible tones per tile (matching the cheese stall at 17, close to the well at 20), 0% near-flat coverage, and only 2% neutral dark edge pixels, so the outline is tinted (dark brown beside wood) and not a near-black sticker line. By eye, the candidate is a narrow upright cabinet with a brown wooden body, a small lit panel and a yellow-orange reel window. It is small and tall, and at 2x the shading looks like about 4 steps, a little shallower than the references' 5-6, and the cabinet face shows less grain and fewer per-material highlights than the stall or well. It reads as a coherent piece with no large flat fills, but it is a bit simpler and thinner than the best references. Because the picture shows it slightly under the reference level and the rule says to fail when in doubt, the verdict is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12639
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "7-11",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "side lever on right",
+      "rows": "14-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 7-11 form a lighter orange-brown top band. Row 11 is a lighter front-edge line, and row 12 is a dark eave-shadow line directly under it. The front face runs from row 13 to row 47 (about 35 rows) and holds the reel window, coin slot and lower panel. The silhouette is 14-16 px wide with no receding side face. This matches the 'cabinet: top 5 + edge + eave' reference. The lever on the right is a decor-like attachment, not the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a tall, narrow slot machine with a brown/orange body and a lit display window. It measures 17 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, so it sits at the level of the richer references. Near-flat coverage is 0%, so there are no large flat fills. Only 2% of its dark edge pixels are neutral, which means the outline is tinted dark brown and follows the material, not a near-black sticker line. The body shows about 5 lightness steps across the casing, the panel and the window, with some grain. At this tiny size the texture is modest, but it is on par with the references and not thinner or flatter than them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11746
+  }
+ ],
+ "decidedAt": "2026-10-20T10:14:44.679Z",
+ "cells": {
+  "16": [
+   "1016fdd8133a9196",
+   "572aa15a282fd8de",
+   "9717625f90c336b0"
+  ],
+  "24": [
+   "3cbe048aa2aaa71b",
+   "64af2ba48682361b",
+   "75edb0f0e300cb26",
+   "8bf3f7983be36d2c",
+   "dc405b2da056fb05",
+   "ff9f32f355b2f2be"
+  ],
+  "32": [
+   "010fd3bf1563b92d",
+   "212f86248d492945",
+   "355ce444dcd4a232",
+   "398fc2748500d1fa",
+   "3c66b1a0e484ca7c",
+   "6b70af8e499649f7",
+   "72e8a6a34175d63b",
+   "79db992b2a636361",
+   "7e77cc58151adff3",
+   "99f308e22ff9429e",
+   "a5caa6070aa31cb9",
+   "ae6f2caddee0ff8f"
+  ],
+  "48": [
+   "1995703bd2f8762e",
+   "809106cc6d20a2fd",
+   "9b6b1c70c71c893d"
+  ]
+ }
+}

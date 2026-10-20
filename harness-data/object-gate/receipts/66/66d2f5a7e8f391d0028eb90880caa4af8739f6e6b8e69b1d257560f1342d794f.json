@@ -1,0 +1,386 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "66d2f5a7e8f391d0028eb90880caa4af8739f6e6b8e69b1d257560f1342d794f",
+ "width": 48,
+ "height": 48,
+ "kind": "seat",
+ "name": "L-shaped corner sofa (seat opens south/east)",
+ "label": "seats34/modern_city_interior/karaoke-sofa",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 7,
+  "darkV5": 28,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 7
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion (top arm of the L)",
+      "rows": "13-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion (left arm going south)",
+      "rows": "21-41",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest top",
+      "rows": "3-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At x=24 and x=35 the seat is a lighter band at rows 13-19 (L=99) that ends in a bright front-edge line at row 20 (L=119). Below it is a darker front face at rows 21-23 (L=57), then the outline at row 24. The backrest above is a vertical face at rows 5-12 (L=72) with a 2-row highlight rim at rows 3-4. The south-running arm repeats the pattern: seat rows 21-40, edge line at row 41, front face at rows 42-44. The silhouette is an L (width 46 at rows 2-24, then 14 at rows 26-45). The seat surface is seen from above, so the object reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a purple L-shaped sofa with only 8 distinct colours, against 11-40 for the references. Its shading is shallow: roughly a light edge, a mid purple and a dark purple, with no per-cushion highlights or stitching. The 48% flat-fill coverage means large cushion areas are one flat colour with no grain or dots, while the references sit at 0-13%. All of its dark edge pixels are neutral (100%), so the outline is a uniform near-black line around the shape, the 'sticker' look, unlike the tinted dark-material outlines of the hedge, stall and well. Its median of 6 colours per tile is far below the hedge (10), stall (17) and well (20). Overall it is flatter and thinner than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 21285
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion, long south-facing arm (top)",
+      "rows": "13-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-23"
+     },
+     {
+      "part": "seat cushions, corner return running south on the left (top)",
+      "rows": "21-41",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "42-44"
+     },
+     {
+      "part": "backrest panel along the north edge",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat band at rows 13-19 is a lighter purple (#963caa) than the backrest above it. It ends in a lighter front-edge line at row 20 (#a850bc), followed by a darker front face at rows 21-23 (#5a1e6e, 3 rows) and the outline at row 24. The backrest at rows 5-12 (#78288c) is a vertical face seen face-on, and the seat sits in front of it. The left leg of the L has the same structure. Its cushion tops run rows 21-40 with seam lines at rows 26 and 33, a front-edge line at row 41, and a front face at rows 42-44. The thin lighter strip on the far left edge is a narrow arm edge, not a receding isometric side face. The seat surface is clearly visible from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is an L-shaped purple sofa with only 8 distinct colours, against 11 to 40 for the references. Its 5x5 flat-fill coverage is 48%, while the references sit at 0-13%. All of its dark edge pixels (100%) are neutral, and the picture shows a uniform near-black outline around the whole shape, which is the sticker look. The references use tinted or selective outlines (hedge 0%, cheese stall 1%). The sofa body is large flat purple planes with only a light top edge and a darker inner shade, so about 3 lightness steps. It has no cushion seams, fabric grain or speckle, and no per-cushion highlights. Its median of 6 colours per tile is well below the hedge (10), cheese stall (17) and well (20). The shape and perspective read clearly, but the shading and texture are much shallower than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18486
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion, horizontal arm of the L",
+      "rows": "13-19",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-23"
+     },
+     {
+      "part": "seat cushion, vertical arm of the L (south/east opening)",
+      "rows": "13-40",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "42-44"
+     },
+     {
+      "part": "backrest",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In columns x=24 and x=35 the backrest runs rows 3-12 (rows 3-4 are a top highlight, rows 5-12 the vertical face). The seat cushion top is rows 13-19 (7 rows) and ends in a lighter front-edge line at row 20. Below it is a darker front face of rows 21-23 (3 rows), then the outline at row 24. The vertical arm of the L has the same structure: seat from row 13 to row 40, edge line at row 41, front face rows 42-44. The seat is seen from above with a front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The L-shaped sofa is a purple form with only about 3 lightness steps: a light top edge, a mid-purple fill and a darker shade. It has a uniform near-black outline all the way round. The measured numbers agree: 100% of dark edge pixels are neutral, against 0-1% for the hedge and cheese stall, which carry tinted outlines. The candidate has only 8 distinct colours, against 38-40 for the stall and well. Flat-fill coverage is 48%, while the references are at 0-13%. The large seat and back areas are single flat colours with no fabric grain, cushion seams, stitching or speckle. This is the shallow 'sticker' look, well below the references' per-material ramps and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 12469
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion, horizontal arm",
+      "rows": "12-19",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "seat cushion, vertical arm (south-running)",
+      "rows": "26-40",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest",
+      "rows": "3-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In the column scan at x=24, rows 12-19 are the seat cushion top, seen from above. A lighter 1-row front-edge line at row 20 (#a850bc) follows, then a dark front face at rows 21-23 (3 rows, L=57), then the outline at row 24. The south-running arm repeats this: seat rows 26-40, edge line row 41, front face rows 42-44. The backrest at rows 5-11 is a face-on vertical panel with only a 1-2 row rim at rows 3-4, so it has no real top surface. The left armrest strip is drawn face-on, not as a receding side face. The seat top is clearly visible, so the object reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a purple L-shaped sofa with only 8 distinct colours, against 11-40 for the references. Its 5x5 flat-fill coverage is 48%, while the references sit at 0-13%. All of its dark edge pixels are neutral (100%), which matches the uniform dark sticker outline visible in the image rather than a tinted dark material tone. The seat, back and arm are mostly large flat purple planes with a simple highlight edge and no cushion seams, fabric grain or speckle. That gives about 3 lightness steps, where the references carry 5-6. The 6 colours per tile are well below the hedge (10), stall (17) and well (20). Placed next to the references it looks flatter and more sticker-like, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18217
+  }
+ ],
+ "decidedAt": "2026-10-20T06:55:38.658Z",
+ "cells": {
+  "16": [
+   "74fd90b74e2cb48e",
+   "7ea7da407fea6541",
+   "a867684a66891c8a",
+   "a968c0b685c43f25",
+   "ac4ced8d6896c2a5",
+   "d148bab9673b8453",
+   "e315cc641dd4a441"
+  ],
+  "24": [
+   "08f383180b556194",
+   "1366815aadc34b0b",
+   "64e98b3e13bcfed9",
+   "ce85e4c5783efacf"
+  ],
+  "32": [
+   "090b5919ef4fcc4f",
+   "18ad1a54caaa440a",
+   "21a019559f0f24bd",
+   "24a7280e6a351d84",
+   "29242fd1c064c2c9",
+   "2f84a457b43abaa4",
+   "45087771892cf942",
+   "46aacc33c4d8d4e1",
+   "4ffbdfa205cab93f",
+   "579c023e68cdf2f7",
+   "639e92801103ca2a",
+   "6bb3aeafe15297bd",
+   "8ff7444e4c8c0b17",
+   "9c73995ea1e6d830",
+   "b38b57b15e82ae2b",
+   "b3c09a4eab653258",
+   "be00a61f6c234880",
+   "ddbed0bd6ef8b5a9",
+   "e78c3d2c878e4826",
+   "f73799ec8b39fec4",
+   "ff806696f6ebafa6"
+  ],
+  "48": [
+   "b6abf0cc90e1a434"
+  ]
+ }
+}

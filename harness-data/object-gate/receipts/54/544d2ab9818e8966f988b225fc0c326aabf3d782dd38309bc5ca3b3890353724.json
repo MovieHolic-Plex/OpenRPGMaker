@@ -1,0 +1,448 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "544d2ab9818e8966f988b225fc0c326aabf3d782dd38309bc5ca3b3890353724",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "roof fence",
+ "label": "modern_city_interior/roof-fence",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 80,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top beam",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 1,
+      "eave_shadow_rows": "2-3"
+     },
+     {
+      "part": "lattice/mesh infill",
+      "rows": "4-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom beam",
+      "rows": "27-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "posts/legs",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The top beam (rows 0-3, full width 32) has only 2 light rows (0-1). Row 1 is a lighter front-edge line, followed by dark shadow in rows 2-3, so this is only a rim-sized top of 2 rows. The lattice infill (rows 4-26) is a vertical face. The bottom beam (rows 27-28) is a uniformly dark strip with no lighter top band and no edge line, so it shows no top face. The posts (rows 29-31, width 4) are vertical. For a frame, the horizontal beams must show top faces. Here the top is only a rim and the bottom beam has none, so the drawing reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a pale grey-green rectangular panel with a thin frame and a faint mesh. It has only 5 distinct colours in total, so it has about 2 lightness steps, against 5-6 on the references (hedge, well roof, stall awning). The frame is a single thin light line with no dark material-tone outline, so there is no selective dark edging as on the references. The interior is a flat translucent fill with only a faint diagonal grid and no grain, tile scallops, per-tile highlights or clumps. The measured facts show 0 visible tones per tile because the piece is thin and sparse, so I judged density by eye. Against the hedge, well and stall it looks much thinner, flatter and more sticker-like. It also does not read as a roof fence, with no roof tiles or wood. A careful artist would not accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 18011
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top beam",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": 1,
+      "eave_shadow_rows": "2-3"
+     },
+     {
+      "part": "lattice panel between posts",
+      "rows": "4-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom beam",
+      "rows": "27-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower posts/lattice",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a flat 32-wide frame seen face-on. The top beam (rows 0-3) has a 2-row light strip (rows 0-1, edge line at row 1) over 2 dark rows (2-3), which reads as a rim with its shadow, not a foreshortened top surface. The widths are 32 at rows 0-3, then lattice rows of 4-11 wide, with no widening and narrowing that would form an ellipse. The checker lattice in rows 4-26 is a vertical panel. The bottom beam (rows 27-28) is a uniformly dark 2-row strip with no lighter top band, so the horizontal members show no top faces and the whole drawing is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a pale grey-green mesh panel with a thin frame, built from only 5 distinct colours in total. It shows about 2-3 lightness steps, with no per-element shading on the posts, rails or mesh. There is no material-toned outline, only a thin frame line. The measured facts show 0 visible tones per tile, which is not informative for a thin object, so I judged by eye. The panel reads as a flat translucent grid and looks much thinner and more sticker-like than the references. The bench has about 14 colours and wood grain, the hedge has about 9 visible tones with leaf clumps, and the well and stall have 17-20 tones with per-element shading. The candidate also has no 'roof' structure such as tiles, scallops or highlights, so it does not read as a roof fence. A careful artist would not accept it next to these references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12829
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top beam",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": 1,
+      "eave_shadow_rows": "2-3"
+     },
+     {
+      "part": "checkered lattice panel",
+      "rows": "4-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom beam",
+      "rows": "27-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "posts/legs",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The top beam (rows 0-3, 32 wide) has only a 2-row light highlight (rows 0-1) over 2 dark rows. That is a rim, not a foreshortened top surface, and no ellipse or roof plane is present. The bottom beam (rows 27-28) is uniformly dark with no light top band or edge line, so it is a plain front-facing strip. The lattice in rows 4-26 is a flat vertical checkered panel with no side face and no visible top planes. The legs in rows 29-31 are 4 px wide. The whole piece is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a pale chain-link-style panel with a thin grey-green frame and a faint diagonal mesh. It has only 5 distinct colours in total, against 11-40 for the references. Shading is 2-3 flat steps with no per-element highlights or grain, whereas the hedge, well and stall show 5-6 steps per material with texture dots. The frame outline is thin and close to uniform. The measured tone and flat-fill figures are 0 because the piece is sparse, so I judged by eye. It looks thinner, flatter and more sticker-like than every reference, including the bench and lamp, which have visible wood grain, highlights and shaded forms. A careful artist would not accept it next to these references. It reads as a plain wire panel rather than a roof fence, with no tile or roof detail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12657
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top rail",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 1,
+      "eave_shadow_rows": "2-3"
+     },
+     {
+      "part": "lattice mesh panel",
+      "rows": "4-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom beam",
+      "rows": "27-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "posts below beam",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The top rail has only 2 light rows (0-1, with the lighter edge line at row 1) before 2 dark rows (2-3). That is a rim-sized top, not a real top surface. The main body is a checkered lattice panel (rows 4-26) drawn face-on between 4px side posts. The bottom beam (rows 27-28) is a uniform dark 2-row strip with no edge line and no top face, and the posts below it are plain verticals. The whole drawing is a front elevation, and the horizontal beams show no top faces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a pale grey-green mesh panel with a thin frame. It has only 5 distinct colours in total, which is about 2 lightness steps on the frame and mesh. The references use roughly 5-6 steps per material, and the hedge, stall and well show 9-20 visible tones per tile. The candidate's tone count is 0 because the piece is sparse and the tile measure doesn't apply, so I judged it by eye. By eye it looks thinner and flatter than the bench and lamp: the mesh is a uniform lattice with no per-cell shading, and the frame has no wood or metal grain, highlight or shadow ramp. The pale interior is a near-uniform fill. The outline is a thin, light, barely tinted line, not the dark material-tone edge the references use selectively. It reads as a flat sticker-like panel and is not at Beodeul craft level. Nothing reads as a roof either, so the name and the drawing don't clearly match.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15957
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.163Z",
+ "cells": {
+  "16": [
+   "9685d672eecc6ff9",
+   "b439e3962caa14fb",
+   "b69679eea4d5328a",
+   "e27048611795d135"
+  ],
+  "24": [
+   "247508b8232af42e",
+   "29f603cc07e7c14b",
+   "379559a1b299e63f",
+   "37fe99b0ea31224c",
+   "3ec7f657605a274c",
+   "4ad7a9c8f9944418",
+   "5879e5b40249b340",
+   "65c7bc15f92c8f1d",
+   "692c922178570d58",
+   "6da9ac4cd170b2eb",
+   "86fbcb58e95f7114",
+   "8f8fd3dd984bc8c1",
+   "9a79432221610eb6",
+   "9f9b02f688c3dc19",
+   "ad0a3cb67ad2bfde",
+   "af77ecbc6f6b16aa",
+   "b21b134d90624adc",
+   "cab3bf48ae4542f7",
+   "cea053914f236a86",
+   "e03c04c98511c936",
+   "e20031b400858460",
+   "eabc7f8c2f854aa5",
+   "f35585f89f15ef84",
+   "fce794434307263e"
+  ],
+  "32": [
+   "fbe6e00500ef4ff2"
+  ],
+  "48": [
+   "210dabf21c4635fe",
+   "23da54102dad1b8f",
+   "2ead9305dd2663e7",
+   "44628b2d9b70eed2",
+   "c7a1765bacd465c0",
+   "da0e89737dd1131a"
+  ]
+ }
+}

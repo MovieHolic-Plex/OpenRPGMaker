@@ -1,0 +1,405 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e7e6da43d9236b3a163adac168f82e86b12102fe996f5896bae34a976a6ff107",
+ "width": 48,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "hosp ct scanner",
+ "label": "modern_city_interior/hosp-ct-scanner",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 12,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "gantry housing (ring face-on with display strip)",
+      "rows": "1-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top strip of gantry",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "patient table slab",
+      "rows": "23-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base block under table",
+      "rows": "30-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 45,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the gantry, a tall face-on slab with a ring opening, a display strip at rows 5-6 and a base at rows 40-46. Its top (rows 1-4) is a flat front-facing strip with no front-edge line and no eave shadow, so it is not a top surface. The table at rows 22-28 reads as a thin side-profile slab, and the base block under it is a plain front face with only a 1-2 row light edge at rows 30-31. The silhouette widens from 22 to 47 px at rows 22-28 only because of the table. No major part shows a horizontal surface, so the drawing reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate's outline is a dark blue-grey that leans toward the neighbouring material, not neutral black. Measured neutral share of dark edge pixels is 0%, the same as the hedge and the cheese stall. Visible tones per 16x16 tile are 9, equal to the hedge and below the stall (17) and well (20). Near-flat coverage is 11%, close to the stall's 13%, so there is no large dead fill. By eye, the white housing has a highlight, a mid tone and a shadow edge. The blue gantry ring has a bright inner glow and darker bands, and the bed and panel are separated by value. A machine casing is naturally smoother than wood or tile, so the 4 shading steps are acceptable, but it is a little thinner than the richest references. It would sit next to the references without looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19636
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "gantry upper housing with display strip",
+      "rows": "1-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gantry ring (bore) seen face-on",
+      "rows": "10-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "patient table bed",
+      "rows": "23-26",
+      "evidence": "a",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "table pedestal",
+      "rows": "30-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 43,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is the gantry, rows 0-46 at width 22. It is a flat front panel with a ring drawn face-on. No horizontal top surface and no front-edge line with eave shadow appear at its top. Rows 1-4 are a plain light strip above the blue display on the same vertical face. The thin patient table (rows 22-28) has a narrow lit strip with a dark line below it, and the pedestal (rows 30-31) has a 2-row lighter band over a flat front. These are small parts, not the main volume. The whole object reads as a front elevation. It is also not a tall wall-standing furniture piece, so the kind fits poorly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 9 visible tones per tile, the same as the hedge and well below the stall (17) and well (20). Near-flat coverage is 11%, close to the stall's 13%. The dark edge pixels are tinted (0% neutral), so the outline is a dark blue-grey material tone rather than a black sticker line. The structure is still shallow: the white housing is only about 3-4 steps (white, light grey, mid grey, dark), with a large panel and side areas of near-uniform light fill. The bed/arm on the right is a flat grey slab with little grain. The blue gantry ring is the only part with real gradient, and it has no speckle, panel seams or per-surface texture like the references' tile scallops, plank grain or stone-by-stone shading. Next to the stall and well it looks thinner and flatter, with a smooth vector-like feel instead of the 5-6 step ramps and grain of Beodeul.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18042
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "gantry top strip",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gantry front panel with blue display",
+      "rows": "3-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gantry ring opening (drawn face-on, vertical)",
+      "rows": "12-39",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "patient bed (thin horizontal strip seen from the side)",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bed pedestal",
+      "rows": "30-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 44,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main gantry (x 0-21, rows 0-46) is a flat front-facing panel. Rows 1-2 are a light band at the silhouette with no front-edge line or eave shadow, and rows 3-11 are a vertical panel with a display. The ring is a face-on opening, not a horizontal ellipse. The bed (rows 22-28, width 47) is a side-on strip with a 3-4 row light face and no distinct receding top. The pedestal below it (rows 30-44) is a plain vertical face. No part shows a top surface, so the object is a front elevation. It is also a machine, not tall wall furniture."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 9 visible tones per 16x16 tile, equal to prop-hedge (9) and below the stall (17) and well (20). Its near-flat coverage is 11%, close to the stall's 13%, so there are no large dead fills. The dark edge pixels are 0% neutral, so the outline leans blue-grey against the white and blue casing. That is a material-tone outline, not a black sticker line. The white housing has about 4 lightness steps and the blue ring has a gradient with a highlight and shadow. The gantry, bore, panel and table are separated by value as well as line. It is a little simpler than the stall and well, with 27 total colours against about 40. That is reasonable for a smooth machine surface, and the primary facts sit within the reference range.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19167
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "gantry top strip",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gantry front face with ring bore and blue display",
+      "rows": "5-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "patient table (side profile bar)",
+      "rows": "22-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "table pedestal",
+      "rows": "30-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 43,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The gantry, the largest volume, is a flat face-on elevation. Rows 1-4 are a light strip with no front-edge line and no eave shadow, so they read as a front-facing band. Below it sit a blue display strip and a ring bore drawn face-on, which is a hole in the vertical face and not a top surface. The patient table (rows 22-28) is drawn as a side-profile bar with no horizontal top plane. The pedestal (rows 30-44) has only a 2-row light lip at rows 30-31 over a flat face. No part shows an ellipse, a roof or visible contents, so no top surface is present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 9 visible tones per 16x16 tile, level with prop-hedge (9) but below the stall (17) and the well (20). Near-flat coverage is 11%, close to the stall's 13%, so there are no big dead fills. 0% of its dark edge pixels are neutral, so the outline leans blue-grey/slate and follows the adjacent material rather than being a sticker line. By eye, the white casing carries about 4 value steps (white, light grey, mid grey, dark panel edge). The blue gantry ring has a bright inner rim, a mid blue and a dark bore, and the table and base are separated by value. The piece is somewhat smoother and simpler than the stall or well, with little grain or speckle, so density is slightly lower. It is not shallow, and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22750
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.918Z",
+ "cells": {
+  "16": [
+   "098a016295edf9c8",
+   "0b353233105aa440",
+   "54c0679cf188d757",
+   "86ffa38e1d5845df",
+   "97c0bde21bd10682",
+   "a6c869f70b339b47",
+   "c7db046e1370dd46",
+   "c8ac906050feb9b1"
+  ],
+  "24": [
+   "27b08d4b2b91ac06",
+   "4a4a61ead2ce5cdc",
+   "dc3ea99448974ac7",
+   "e49fa07f942a41fe"
+  ],
+  "32": [
+   "0114f3756599cff6",
+   "0379b1eff7d2cf99",
+   "2735e0dbb5dd3cb5",
+   "343ffa8edddb5a64",
+   "380d9389c72d381f",
+   "598c7c121913de39",
+   "617af307f9823064",
+   "6f71e185b6241a1d",
+   "778ef6faf41ac32b",
+   "8d77ecd6f44fd299",
+   "93f7b5a7ce830f90",
+   "a1de84f58c84048e",
+   "a3f17645e98bd6fe",
+   "ab397115cf9cf11c",
+   "ce95904885447130",
+   "ce9cfbb308d77bdc",
+   "d145d5af2edec711",
+   "d159b5f7bb764edd",
+   "d71f69eb89a75e65",
+   "e6f07184b5752126",
+   "efcf728d6f9092a6",
+   "fcf9bd76304a5ea6"
+  ],
+  "48": [
+   "28cc8c238b06c3f6"
+  ]
+ }
+}

@@ -2,19 +2,26 @@
 """Bake a complete reusable brush atlas. No finished continent is an input.
 
 Textures/forest/mountain quarters are reused from the current kit source; new
-boundary and bridge pixel rows live in authoring/pixels.json. Mask grammar has
+boundary and bridge pixel rows live in tiledata/worldmap-editor/authoring/pixels.json.
+The kit itself (terrain_v4 etc.) comes from the public oprn-worldmap-kit checkout (npm run worldmap-kit:sync). Mask grammar has
 all 47 legal blob states and all 16 path connections, not map coordinate crops.
 """
-import sys, json, hashlib
+import os, sys, json, hashlib
 from pathlib import Path
 import numpy as np
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / 'tiledata/worldmap-kit/kit/lib'))
+def _kit_dir(root):
+    # 정본 = 공개 저장소 oprn-worldmap-kit. `npm run worldmap-kit:sync` 또는 OPRN_WORLDMAP_KIT.
+    kit = Path(os.environ.get('OPRN_WORLDMAP_KIT') or root / '.worldmap-kit/tiledata/worldmap-kit')
+    if not (kit / 'kit/build_world.py').is_file():
+        sys.exit(f'월드맵 키트가 없다: {kit} — `npm run worldmap-kit:sync` 를 먼저 돌려라')
+    return kit
+sys.path.insert(0, str(_kit_dir(ROOT) / 'kit/lib'))
 import terrain_v4 as V
 import terrain_lib as T
-P = json.loads((ROOT / 'tiledata/worldmap-kit/authoring/pixels.json').read_text())
+P = json.loads((ROOT / 'tiledata/worldmap-editor/authoring/pixels.json').read_text())
 tiles, meta, brushes = [], [], []
 grounds = [('grass', '초원', V.GRASS), ('sand', '사막', V.SAND), ('snow', '설원', V.SNOW),
            ('dirt', '황무지', V.DIRT), ('swamp', '늪', V.SWAMP), ('tundra', '툰드라', V.TUNDRA),
@@ -169,5 +176,5 @@ data = dict(version=1,tileSize=16,tilesPerRow=cols,count=len(tiles),tiles=meta,b
 (ROOT/'src/assets/worldmapAuthoringSheet.json').write_text(json.dumps(data,ensure_ascii=False,separators=(',',':'))+'\n')
 preview = Image.new('RGBA', (8*64, ((len(brushes)+7)//8)*64), (28,36,44,255))
 for i,b in enumerate(brushes): preview.paste(tiles[b.get('variantMap',{}).get('0',b['tiles'][0])].resize((64,64),Image.Resampling.NEAREST),((i%8)*64,(i//8)*64))
-preview.save(ROOT/'tiledata/worldmap-kit/authoring/brushes.png')
+preview.save(ROOT/'public/assets/worldmap-icons-references/authoring/brushes.png')
 print(json.dumps(dict(count=len(tiles),brushes=len(brushes),output=str(out))))

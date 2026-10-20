@@ -1,0 +1,372 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1ed611cbfea838dbade52d7c7adb6c2b591c5aab338ad7db38b0235226cc92f0",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "roof stair hut",
+ "label": "modern_city_interior/roof-stair-hut",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 윗면 0행 < 3 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+   "윗면 0행 < 3 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 2
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 28,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top band / cornice strip across the full width",
+      "rows": "2-6",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wall face with door, windows",
+      "rows": "7-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a flat front elevation: a full-width light strip at rows 2-6 (grey, light blue-white, grey line at row 6) reads as a front-facing cornice and not a roof slope. There is no sloped roof plane, no stair, and no top surface with depth. Rows 7-28 are a vertical wall with a centered blue door (x about 20-36, with a lighter window rows 9-13), a green-framed window on the left and a yellow-lit window on the right. The width profile is a constant 46 from rows 1-29, so there is no roof overhang and no taper. The 1-row grey line at row 6 is not a true eave edge with shadow. The object does not read as a 'roof stair hut', and no top slopes or surfaces are visible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a small, flat grey-and-white box with a blue door and two tiny window patches. It has no visible roof, so it does not read as a roof stair hut or match the roof-and-wall references. Shading is shallow, about 2-3 steps per material against roughly 6 in the references. Its dark edge pixels are 100% near-neutral, against 7% and 9% in the references, which is the uniform black-line sticker look. Near-flat coverage is 54% against 0% in both references, so large areas are one flat colour with no tile scallops, plaster speckle or grain. It has 7 visible tones per tile against 12 and 10, and only 12 distinct colours in total against 185 and 66. Every primary fact points to a much shallower piece than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 12504
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice band",
+      "rows": "2-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wall with central door and two windows",
+      "rows": "7-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a flat face-on facade. Rows 2-5 are a thin light strip, a cornice or lintel, and row 6 is a single darker grey line. That strip has no receding roof slope, no tile or stripe rows, no ellipse and no visible contents. Rows 7-28 are a vertical wall with a blue door (x~20-35) and two small windows. No sloped roof plane or horizontal surface is shown, so the 'roof' reads as a front-facing band. Silhouette width is a constant 46 px for rows 1-29, with no widening or narrowing that would suggest a roof or eave."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a small, flat grey-and-blue box with a tiny door and two small windows. It has no visible roof, so it does not read as a building like the references, which show tiled roofs, timber framing and stone walls. It has only about 2-3 lightness steps per material, against 5-6 in the references. The outline is a uniform neutral dark line, and 100% of its dark edge pixels are near-neutral against 7-9% in the references, which is the sticker look. 54% of it is near-flat coverage against 0% in the references. It shows 7 visible tones per tile against 10-12, with no tile scallops, plaster speckle or stone shading. Large wall areas are single flat fills.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 20019
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice band across the full width",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "front wall with centre door, left window and right window",
+      "rows": "6-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a flat south-facing facade. Rows 2-5 are a full-width strip with a light gradient (L 150, 208, 208, 231) and a single dark row at row 6. It has no widening or narrowing, no roof tiles and no slope. The door's lighter top (row 6) runs straight up to it, so it reads as a front-facing cornice or lintel beam, not a roof plane. Below it, rows 6-28 are an unbroken vertical wall holding a door and two windows. There is no side face, no roof, no stair and no visible top surface. The only top-like cue is a 1-row lighter line and 1-row shadow, which I count as a rim of about 2 rows. The object is therefore a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a small, flat grey-white box with a pale blue door and two small coloured window patches. It has no visible roof tile structure, so the 'roof stair hut' reads as a wall block rather than a building with a roof. Main materials show only 2-3 lightness steps. Dark edge pixels are 100% neutral (references 7-9%), so the outline is a uniform near-black sticker line rather than a dark material tone. Near-flat coverage is 54% against 0% for both references, which means large areas are one flat colour with no grain or per-tile highlights. It carries 7 visible tones per tile against 10-12 in the references, and the references' scalloped roof tiles, plaster speckle and shaded stones are all missing. Shading, texture and density all fall well short of the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16083
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band / roof strip",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "wall with left and right windows",
+      "rows": "7-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central blue door with light panel",
+      "rows": "6-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-5 form a band at the top that gets lighter toward the bottom (L 150, 208, 208, 231). Row 5 is the lightest row and works as a front-edge line, and row 6 is a darker grey row (L 150) that works as eave shadow. Below it is a 22-row front face (rows 7-28) with a wall, a blue door and two windows. The band is only 4 rows and is not a sloped roof plane, so this reading is borderline: it could instead be a front-facing cornice strip. I report it as a top band because the edge line and eave shadow are both present. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a small, flat grey box with a pale roof strip, a blue door and two tiny window patches. It shows only 2-3 lightness steps per material, against about 6 on the references' tile roofs and plaster walls. 100% of its dark edge pixels are neutral, which reads as a sticker-like black outline, whereas the references are at 7-9% with tinted edges. Near-flat coverage is 54% against 0% for both references, so large areas are one flat colour with no tile scallops, plaster speckle or grain. At 7 visible tones per tile against 10-12, it is also lower in density. The piece does not look like a roof, stair or hut next to the references. It fails on shading steps, outline, texture and density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 17480
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.165Z",
+ "cells": {
+  "16": [
+   "03cc89bcafa3f579",
+   "20eed47b9a4a6ab4",
+   "83b606204afa29c5",
+   "d8c43f5dfc35b9ba",
+   "e5b7cb318466e05d",
+   "f2ce7288aa738f3b"
+  ],
+  "24": [
+   "20aec0c9350485cd",
+   "245cfd73d15f3840",
+   "5f5c1ed462667a78",
+   "69aa96f63de7d892",
+   "7af303620e6a829b",
+   "84e118c4d91dec2e",
+   "8e246d163ef27758",
+   "a6548097cd7c0b6c"
+  ],
+  "32": [
+   "2d8b421dbd493370",
+   "4b1d58b295243a85",
+   "95435ddb3515ea81",
+   "ac5f1630a91528b9",
+   "cc787b8dec688ee0",
+   "f498845ebc9c5495"
+  ],
+  "48": [
+   "037567bdf6db24f3",
+   "72df91906efc44be"
+  ]
+ }
+}

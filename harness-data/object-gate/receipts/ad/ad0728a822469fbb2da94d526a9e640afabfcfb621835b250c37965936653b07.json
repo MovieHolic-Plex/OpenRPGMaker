@@ -1,0 +1,323 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ad0728a822469fbb2da94d526a9e640afabfcfb621835b250c37965936653b07",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "술병 진열장 (cabinet:bottle+bottler+bottley)",
+ "label": "atlas_biome_interior/props34/cabinet:bottle+bottler+bottley",
+ "profileHash": "1db03a95223e5b0b",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 27,
+  "tileColorsP90": 27,
+  "darkV5": 26,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "bottles on shelves",
+      "rows": "9-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a wood top band, with a darker row 1 and lighter rows 2-4. Row 5 (L=157) is a lighter front-edge line. Below it, rows 6-8 are dark shelf interior that works as eave shadow. The south front face runs from row 6 to row 31 (26 rows). It has open shelf bays with bottles, separated by shelf boards at rows 13-14, 22-23 and 30-31, each with a light edge row above a dark row. The silhouette stays 16 wide with no receding side face. The top is only 5 rows, but it ends in an edge line and shadow, so it is more than a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a one-tile-wide, two-tile-tall wooden bottle cabinet with shelves. The frame uses about 4 wood tones, with a dark brown edge and a lighter top and side highlight. The bottles are red, green and yellow, each with its own light and dark pixels, so they are not flat blobs. The measured facts support this: 27 visible tones per tile is above the stall (17) and the well (20), near-flat coverage is 0%, and 0% of dark edge pixels are near-neutral. The outline is therefore a tinted dark brown, not a black sticker line. It is a little less textured than the stall and well, with less plank grain and speckle, but it is not flat and not thinner than the references. A careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16102
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "bottles on shelves",
+      "rows": "8-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottles on shelves",
+      "rows": "16-21",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottles on shelves",
+      "rows": "25-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-4 form a lighter top band (#bd764d). Row 5 is a lighter front-edge line (#d59147), and rows 6-7 below it are dark shadow (#2a180b). That gives a top surface of about 4 rows, comparable to the green bookshelf reference. The front face runs from row 6 to row 31 and shows an open shelf cavity with bottles. Shelf boards at rows 13-14, 22-23 and 30 each have a light edge row over a dark row. The silhouette is 16 wide with no side face. The bottles are decor sitting on the shelves."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden bottle cabinet, about one tile in size, with shelves holding red, green and pink bottles. The measured facts favour it. It shows 27 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% near-neutral, which means the outline is a tinted dark brown beside the wood rather than a black sticker line. The wood frame has about 5 steps (highlight, light, mid, dark, deep), close to the references' 5-6. The bottles are shaded individually, with highlights and different colours per shelf, which gives clustered detail like the stall's goods. The board is small and low-resolution, so grain on the frame is modest, but nothing reads as shallow or sticker-like next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16618
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "bottles on shelves",
+      "rows": "8-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a wood top band: row 1 is a dark outline, rows 2-4 are mid wood, and row 5 is a lighter front-edge line (#d59147). Dark interior follows in rows 6-8, which acts as eave shadow. Below that the south face runs from row 6 to row 31, about 26 rows. It is an open-fronted shelf unit with shelf-board front edges at rows 13-14, 22-23 and 30-31, which are front edges of boards and not top surfaces. The bottles are goods on the shelves, so they count as decor. The structure matches the green reference 'cabinet: top 5 + edge + eave' and the right-hand bookshelf. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small wooden bottle cabinet with three shelves of coloured bottles. Measured facts: 27 visible tones per tile (above the stall at 17 and the well at 20), 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted. The outline is dark brown beside the wood, not black. The numbers look good, but by eye the piece is small and mostly one wood frame with a few bright bottle dots. The wood frame shows about 3-4 steps, without the grain and per-plank highlights that the stall and well have. Bottles are shaded with only a highlight and a body tone. Compared with the references it is clean but a little simpler and flatter, with less texture on the frame. The tone count is inflated by the bottle colours and does not reflect the richness of the wood ramp.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13369
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "bottles on shelves",
+      "rows": "8-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a top band: row 1 is a darker outline row, rows 2-4 are a lighter orange plane, and row 5 is a lighter front-edge line (#d59147). Rows 6-7 below it are dark, which reads as eave shadow over the shelf cavity. The front face runs from row 6 to row 31 and is 26 rows tall. It holds three shelf compartments with bottles, separated by shelf boards at rows 13-14, 22-23 and 30-31, which are front-facing strips. The silhouette is a constant 16 px wide, with no receding side face. The structure matches the green 'cabinet: top 5 + edge + eave' and the green bookshelf reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden bottle cabinet with three shelves of red, green and amber bottles. The frame has a dark brown outline that leans toward the wood tone, and the measured near-neutral share of dark edge pixels is 0%, so it is not a near-black sticker line. The frame shows about 4-5 wood steps, with a lighter top edge and darker side and shelf lines. The bottles have their own highlights and dark tones. It measures 27 visible tones per tile, above the cheese stall (17) and the well (20), with 0% near-flat coverage. No large flat fills are visible. Texture is mostly in the bottle detail. The wood grain is modest, so I rate it 'some' rather than 'rich'. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15099
+  }
+ ],
+ "decidedAt": "2026-10-20T10:14:44.643Z",
+ "cells": {
+  "16": [
+   "5f57f91f849616e0",
+   "87f01e0aaf6fc186"
+  ],
+  "24": [
+   "37a0d792d9069f0d",
+   "382bc638f99f882d",
+   "3c47b58e63b9f986",
+   "4be08268833e94e8",
+   "543563267b828c92",
+   "559836c0c659cfdd",
+   "5a71c05eb1a79337",
+   "85058b6e2c590a34",
+   "b05b5a52a0dda47e",
+   "c1fe26897836b5a3",
+   "e399a0dca740add2",
+   "e80318b5a93c7abb"
+  ],
+  "32": [
+   "13797a40aebcf86a",
+   "814806504f1efa48",
+   "b8c0d057568e55c9"
+  ],
+  "48": [
+   "4393f1a775f36bed",
+   "58974bfac4399e1f",
+   "82489d1a517750a5",
+   "9c9ea52334bfebc5",
+   "d59657d6af9874e1",
+   "e56d5a3bdbc31c0b"
+  ]
+ }
+}

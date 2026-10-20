@@ -1,6 +1,6 @@
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
-import { findSharedPortrait, sharedPortraitId } from "@/assets/sharedPortraitAssets";
+import { dialogueFaceForEmotion, findSharedPortrait, sharedPortraitId } from "@/assets/sharedPortraitAssets";
 import { nestedCommandLists } from "./authoredCommandIndex";
 import type { ActorRecord, CharacterAppearanceRecord, Command, EventPageGraphic, FaceGraphic, Project } from "./types";
 
@@ -20,6 +20,44 @@ function pairedPortraitSlot(appearance: CharacterAppearanceRecord | undefined, m
   if (!paired) return undefined;
   const id = sharedPortraitId(paired.setId, mode, "base");
   return findSharedPortrait(id) ? { resourceId: id } : undefined;
+}
+
+/**
+ * 외형의 표정별 초상(portraitExpressions, 스토어 캐릭터 팩·업로드 그림). resourceId 가 어느 외형의 어느 모양(흉상·전신)
+ * 표정인지 찾아 같은 모양(또는 mode)의 emotion 그림을 돌려준다. 그 표정이 없으면 base, 짝이 없으면 undefined.
+ */
+export function appearancePortraitForEmotion(
+  project: Pick<Project, "database">,
+  resourceId: string | undefined,
+  emotion: string | undefined,
+  mode?: "bust" | "full",
+): string | undefined {
+  if (!resourceId) return undefined;
+  for (const record of project.database.characterAppearances ?? []) {
+    const sets = record.portraitExpressions;
+    if (!sets) continue;
+    for (const from of ["bust", "full"] as const) {
+      const map = sets[from];
+      if (!map || !Object.values(map).includes(resourceId)) continue;
+      const target = sets[mode ?? from] ?? map;
+      return (emotion ? target[emotion] : undefined) ?? target.base ?? resourceId;
+    }
+  }
+  return undefined;
+}
+
+/** 줄 표정 → 그림. 공용 초상은 세트 규칙(dialogueFaceForEmotion), 업로드 초상은 외형의 표정 짝을 따른다. */
+export function faceForDialogueEmotion(
+  project: Pick<Project, "database">,
+  baseResourceId: string | undefined,
+  emotion: string | undefined,
+  profileFace: string | undefined,
+): string | undefined {
+  if (!profileFace && !findSharedPortrait(baseResourceId)) {
+    const paired = appearancePortraitForEmotion(project, baseResourceId, emotion);
+    if (paired) return paired;
+  }
+  return dialogueFaceForEmotion(baseResourceId, emotion, profileFace);
 }
 
 export function resolveAppearancePortrait(

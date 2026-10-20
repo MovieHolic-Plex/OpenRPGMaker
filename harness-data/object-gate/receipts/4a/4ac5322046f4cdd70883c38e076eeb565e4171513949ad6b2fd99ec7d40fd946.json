@@ -1,0 +1,386 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4ac5322046f4cdd70883c38e076eeb565e4171513949ad6b2fd99ec7d40fd946",
+ "width": 48,
+ "height": 48,
+ "kind": "container",
+ "name": "svc washer row",
+ "label": "modern_city_interior/svc-washer-row",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 평면 채움 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "평면 채움 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 15,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 9
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top band / cornice strip above the machine fronts",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue display sign at top",
+      "rows": "0-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "machine fronts with control panels and round porthole doors",
+      "rows": "13-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a row of three front-loading washers seen face-on. Rows 8-11 are a plain light band, and row 12 is a single darker line (L=124) that works as a rim. No eave shadow follows it, because row 13 returns straight to the light control panel. The band has no depth, so I count it as a 2-row rim, not a top surface. The porthole doors (rows ~19-29) are drawn face-on as circles, so there is no opening seen from above and no contents visible. The blue sign in rows 0-6 is decor. The body from row 13 to row 44 is a flat vertical face with panel dividers, so the drawing is a front elevation without a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a row of washing machines with white and grey bodies, round blue doors and a blue sign band. Its outline is a dark navy that leans blue next to the white and blue materials, and 0% of its dark edge pixels are neutral, so it is not the black sticker line. On the numbers it is mid-pack: 10 visible tones per tile against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Its near-flat coverage of 11% is close to the stall's 13%. By eye it still reads flatter and cleaner than the stall and well. The white machine bodies are large, almost uniform panels with only about 3-4 lightness steps (white, light grey, mid grey, dark edge). They have no grain, speckle or per-element highlights like the references' wood, tile and stone. The doors and sign show a little ring shading but little texture. A careful artist would likely find it a step flatter than the best Beodeul props, so it fails on the 'when in doubt' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 21029
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "sign panel on top (blue display)",
+      "rows": "0-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "washer row top band",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "washer front faces with control strip and round doors",
+      "rows": "13-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 8-11 form a pale top band (L about 235 to 255). It ends in a grey front-edge line at row 12 (#767c88), and the control panel and front faces sit below it. The band has no eave shadow, but the edge line counts as evidence (a). The blue sign on rows 0-6 sits on top as decor. The front face runs from row 13 to row 46, about 34 rows, and contains the round porthole doors, which are drawn face-on. No side face is drawn. The object is a row of washing machines, not an open container, so the container kind does not fit well. The round doors are vertical faces, not openings seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's outline is tinted (0% near-neutral dark edge pixels), a navy/blue-grey line beside the white and blue bodies, so it avoids the black sticker look. Its shading is shallower than the references, though. The white and grey cabinet fronts and the blue sign band carry only about 3-4 steps each. The whole piece uses just 15 distinct colours, against 38-40 for the stall and the well. Visible tones per tile are 10, which is level with the simple hedge (9) but well under the stall (17) and the well (20). Near-flat coverage is 11%, close to the stall's 13%, and the cabinet panels and sign band read as large smooth fills. The three machines are near-identical repeats with little grain, per-part shading or wear. The porthole doors have only a small highlight. Next to the stall and the well, the piece looks thinner and flatter. Because it falls short of the Beodeul richness on shading depth and texture, the verdict is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18813
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "blue display sign on top",
+      "rows": "0-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top band of washer row",
+      "rows": "8-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with control panel and round porthole doors",
+      "rows": "13-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Three front-loading washers sit side by side. The blue display sign (rows 0-6) is decor on top. Rows 8-11 form a pale top band that ends in a darker front-edge line at row 12, with no distinct eave shadow, so the top surface is thin (4 rows). Below it, rows 13-44 are a tall vertical front face with control panels and round porthole doors, which are vertical details. The object has no open container mouth with visible contents, so the container kind fits poorly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The washer row is a clean, readable prop with tinted dark blue-grey edges (0% neutral dark edge pixels, so not a sticker-style black outline). It has 10 visible tones per tile, about the same as the hedge (9) but well below the comparable large props, the cheese stall (17) and the roofed well (20). Near-flat coverage is 11%, similar to the stall's 13%. By eye, the white machine bodies and the top sign are smooth panels with only about 3-4 lightness steps and almost no grain, speckle or per-element highlights. The round blue doors have some ramping, but the large body areas stay plain. Material craft is a notch shallower than the stall and well. It is not clearly equal to the references, so under the 'when in doubt, fail' rule it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 24178
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "blue sign/display panel above the machines",
+      "rows": "0-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top band of the machine row",
+      "rows": "8-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with control strip, round drum doors and base",
+      "rows": "13-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a row of three washing machines seen from the front. Rows 8-11 form a plain white band, and a 1-row gray line at row 12 (L=124) closes it, which counts as a weak top surface (evidence a). There is no eave shadow below the line. Rows 13-45 are the vertical front face: control strip, drum doors drawn face-on, and a base. The blue panel at rows 0-6 is a sign placed above the machines (decor). The drum doors are circles on the front face, not openings seen from above, and no contents are visible from above. The container kind therefore does not fit, since the object has no opening."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate shows 10 visible tones per tile, above prop-hedge (9) and below prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 11%, close to the cheese stall's 13%, so no large dead fills. 0% of its dark edge pixels are neutral, so the outline is a tinted dark blue and not a black sticker line. The machines have about 5 steps across the white body, the blue door rings and the top control strip, with detail in the dials, glass highlights and panel seams. It is somewhat cleaner and simpler than the stall and well, which is why density is slightly lower, but it holds up next to the hedge and bench and would be accepted beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17159
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.214Z",
+ "cells": {
+  "16": [
+   "0c80d55339bb7e78",
+   "1c09ae69ba885e98",
+   "3a2bfa486fcbc0e0",
+   "430254456460483f",
+   "535e2c91593e0d70",
+   "5b0118062649fbce",
+   "bb32c3d6b424638d",
+   "d25cc8c56a601491",
+   "e2bf975c18620d6f"
+  ],
+  "24": [
+   "0b1ef66243da10bb",
+   "2a9ec94689d2ef3e",
+   "c201e1ccb28f320b",
+   "f87d91898ea8f6e7"
+  ],
+  "32": [
+   "0491ee8acf32b378",
+   "06acd22dd06d768e",
+   "0bd44ddf4245548e",
+   "0daa5cabe78525ba",
+   "270f1d0af8713fd9",
+   "361eecbe6a863700",
+   "40509bf0066dd11c",
+   "4097fc27f172cf5d",
+   "421a133c99dee851",
+   "4232910c8c058518",
+   "4f525f262475f2b2",
+   "623da3e9cbcd2028",
+   "627a147261d70ae3",
+   "73fa0ba456397879",
+   "7de653f306046833",
+   "7ee9b694b2c40ba2",
+   "96a4cdd53afb8a13",
+   "9a2a33c137aee827",
+   "a086030b242484b5",
+   "b18f76c92ac423bb",
+   "c5a6518f1845044b",
+   "d1e4701d0c6795c5",
+   "de6d62fa50d2c4c9",
+   "eadd1df0f4699d6c"
+  ],
+  "48": [
+   "77cecabe87b8371e"
+  ]
+ }
+}

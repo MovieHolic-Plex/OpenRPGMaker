@@ -9,5 +9,5 @@ os.makedirs(out, exist_ok=True); reg = loader.load()
 with open(os.path.join(out, 'items.jsonl'), 'w') as f:
     for pid in ids:
         p = reg.pieces[pid]; path = os.path.join(out, pid.replace(' ', '_') + '.png'); iplib.render(p).save(path)
-        f.write(json.dumps(dict(png=path, kind=p['gate'], name=f"{p['ko']} ({pid})", label=f'atlas_biome_interior/plus/{pid}'), ensure_ascii=False) + '\n')
+        f.write(json.dumps(dict(png=path, kind=p['gate'], name=f"{p['ko']} ({pid})", label=f'atlas_biome_interior/plus/{pid}', **({'styleKind': p['style']} if p.get('style') else {})), ensure_ascii=False) + '\n')
 print(len(ids), out)

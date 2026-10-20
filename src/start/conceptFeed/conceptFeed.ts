@@ -11,44 +11,21 @@ import { NEW_PROJECT_CHOICES } from "@/editor/newProjectChoices";
 import type { GameDesignBrief } from "@/project/gameDesignBrief";
 import type { InterviewGenre } from "@/project/gameInterview";
 import { startIcon } from "../icons";
+import { BUILTIN_GAMES, type BuiltinGameId } from "../home/builtinGames";
+import { conceptStageArt } from "./stageArt";
 
 /** 덮는 창의 「골라서 만들기」 띠 — 인터뷰 첫 장면(cdn, src/editor/interviewSceneBank.ts)과 장르 바로가기. 띠 하나 때문에 장면 목록 JSON 을 피드에 싣지 않는다. */
 const QUICK_ART = "https://cdn.openrpgmaker.com/interview-scene-bank/full/opening-62062ac73a78.webp";
 const QUICK_GENRES: readonly (readonly [InterviewGenre, string])[] = [["romance", "관계·연애"], ["monster", "몬스터 수집"], ["adventure", "모험"], ["mystery", "추리"]];
 
-export type BuiltinDemoId = "chrono-bell" | "emerald-crown";
+export type BuiltinDemoId = BuiltinGameId;
 
-const BUILTIN_DEMO_CARDS: readonly {
-  readonly id: BuiltinDemoId;
-  readonly badge: string;
-  readonly title: string;
-  readonly subtitle: string;
-  readonly desc: string;
-  readonly thumb: string;
-  readonly playTestId: string;
-  readonly openTestId: string;
-}[] = [
-  {
-    id: "chrono-bell",
-    badge: "기본 JRPG 대표작",
-    title: "『폴른 스타: 추락한 별과 태엽의 성녀』",
-    subtitle: "중세 마법 판타지 JRPG · 6컷 픽셀 오프닝 · 안드로이드 귀환 여정 제1막 · 96px 보스전",
-    desc: "왕도 아스텔의 밤하늘에 추락한 별의 방주에서 깨어난 태엽 안드로이드 소녀 『이리스』와 별지기 기사 『카엘』이 성좌 심문관 발렌의 추격을 뚫고 천상 귀환 좌표를 찾는 정통 판타지 JRPG입니다.",
-    thumb: "/assets/generated/welcome/slide-04.png",
-    playTestId: "builtin-demo-play-chrono-bell",
-    openTestId: "builtin-demo-open-chrono-bell",
-  },
-  {
-    id: "emerald-crown",
-    badge: "기본 몬스터 수집 대표작",
-    title: "『아스트라 호라이즌: 다우닝 시티와 여명의 날개』",
-    subtitle: "몬스터 수집 RPG · 30×24 다우닝 시티 · 스타터 선택 · 실바나 체육관 퍼즐 · 성소 보스전",
-    desc: "다우닝 시티 내 방 2층에서 출발해 오르비스 천문 연구소에서 첫 파트너(토리프·파이린·아쿠링)를 고르고, 여명갈매기·창공제비가 나는 다우닝 시티와 실바나 체육관 덩굴문 기믹·아스트라 성소 결전까지 완성된 정본입니다.",
-    thumb: "/assets/generated/welcome/slide-01.png",
-    playTestId: "builtin-demo-play-emerald-crown",
-    openTestId: "builtin-demo-open-emerald-crown",
-  },
-];
+/** 덮는 창의 「기본 데모 게임」 카드 — 첫 화면 「기본 게임」 선반과 같은 표(src/start/home/builtinGames.ts)를 쓴다. */
+const BUILTIN_DEMO_CARDS = BUILTIN_GAMES.map((game) => ({
+  ...game,
+  playTestId: `builtin-demo-play-${game.id}`,
+  openTestId: `builtin-demo-open-${game.id}`,
+}));
 
 export const CONCEPT_FEED_TESTIDS = {
   root: "concept-feed",
@@ -107,6 +84,13 @@ export type ConceptFeed = {
   returnToFeed(): boolean;
   /** 만들기가 진행 중이면 true — 덮는 창은 이동안 닫지 않는다. */
   busy(): boolean;
+  /**
+   * 처음 상태로 — 상세·골라서 만들기 창을 닫고, 검색어·분류를 비우고, 맨 위로. 만들기 중이면 false(아무것도 바꾸지 않는다).
+   * 런처가 다른 칸으로 갔다가 돌아올 때 앞 칸의 검색·상세가 남지 않게 부른다(2026-10-21 상태 누수).
+   */
+  reset(): boolean;
+  /** 이 컨셉의 상세를 바로 연다(홈의 「지금 만들 수 있는 게임」 카드). */
+  openConcept(concept: GameConcept): void;
   dispose(): void;
 };
 
@@ -215,21 +199,8 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     class: className, attrs: { type: "button" }, text: label, dataset: { testid: CONCEPT_FEED_TESTIDS.quickGenre, genre: id },
     on: { click: () => void openQuick(id) },
   }));
-  // 덮는 창: 인터뷰 첫 장면을 깐 띠. 런처: 그림 없는 한 줄 — 위에 「이어서 만들기」 판이 이미 큰 그림을 쓴다.
-  const quickBand = !options.onInterview ? null : launcher
-    ? el("section", { class: "cf-newband", dataset: { testid: CONCEPT_FEED_TESTIDS.quick }, children: [
-      el("div", { class: "cf-newband-copy", children: [
-        el("h2", { text: "새로 만들기" }),
-        el("p", { text: "위 입력창에 적거나, 장르를 골라 질문 셋에 답하거나, 빈 프로젝트로." }),
-      ] }),
-      el("div", { class: "cf-newband-actions", children: [
-        ...genreButtons("cf-newband-genre"),
-        ...(options.onBlank ? [
-          el("span", { class: "cf-newband-sep", attrs: { "aria-hidden": "true" } }),
-          el("button", { class: "cf-newband-blank", attrs: { type: "button" }, text: "빈 프로젝트", dataset: { testid: CONCEPT_FEED_TESTIDS.blank }, on: { click: () => options.onBlank?.() } }),
-        ] : []),
-      ] }),
-    ] })
+  // 덮는 창만: 인터뷰 첫 장면을 깐 띠. 런처는 「컨셉에서 시작」 머리의 「골라서 만들기 ›」가 같은 창을 연다.
+  const quickBand = !options.onInterview || launcher ? null
     : el("section", { class: "cf-quick", dataset: { testid: CONCEPT_FEED_TESTIDS.quick }, children: [
       el("img", { class: "cf-quick-art", attrs: { src: QUICK_ART, alt: "", draggable: "false" } }),
       el("div", { class: "cf-quick-text", children: [
@@ -256,8 +227,8 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
       el("div", {
         class: "cf-builtin-head",
         children: [
-          el("span", { class: "cf-builtin-kicker", text: "OFFICIAL BUILT-IN GAMES" }),
-          el("h2", { class: "cf-builtin-title", text: "기본 데모 게임 (설치된 공식 대표작 · AI 연결 없이 즉시 실행)" }),
+          el("h2", { class: "cf-builtin-title", text: "기본 게임" }),
+          el("p", { class: "cf-builtin-sub", text: "설치되어 있어 AI 없이 바로 플레이할 수 있어요" }),
         ],
       }),
       el("div", {
@@ -270,16 +241,16 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
               el("div", {
                 class: "cf-builtin-thumb",
                 children: [
-                  el("img", { class: "cf-builtin-thumb-img", attrs: { src: demo.thumb, alt: "", decoding: "async", draggable: "false" } }),
-                  el("span", { class: "cf-builtin-badge", text: demo.badge }),
+                  el("img", { class: "cf-builtin-thumb-img", attrs: { src: demo.cover, alt: "", decoding: "async", draggable: "false" } }),
+                  el("span", { class: "cf-builtin-badge", text: "공식" }),
                 ],
               }),
               el("div", {
                 class: "cf-builtin-body",
                 children: [
                   el("h3", { class: "cf-builtin-card-title", text: demo.title, attrs: { translate: "no" } }),
-                  el("p", { class: "cf-builtin-card-sub", text: demo.subtitle }),
-                  el("p", { class: "cf-builtin-card-desc", text: demo.desc }),
+                  el("p", { class: "cf-builtin-card-sub", text: demo.genre }),
+                  el("p", { class: "cf-builtin-card-desc", text: demo.description }),
                   el("div", {
                     class: "cf-builtin-actions",
                     children: [
@@ -287,7 +258,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
                         class: "cf-builtin-btn cf-builtin-btn-play",
                         attrs: { type: "button" },
                         dataset: { testid: demo.playTestId },
-                        text: "▶ 바로 플레이",
+                        text: "▶ 플레이",
                         on: { click: () => runBuiltinDemo(demo.id, "play") },
                       }),
                       el("button", {
@@ -307,14 +278,21 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
       }),
     ],
   });
+  // 런처(첫 화면 「라이브러리 홈」)는 배너·내 게임·기본 게임 선반을 lead 로 받고, 여기서는 「컨셉에서 시작」 선반만 그린다.
+  // 장르 질문(골라서 만들기)과 빈 프로젝트는 선반 머리 오른쪽 글자 단추로 둔다.
+  const launcherHead = launcher ? el("div", { class: "cf-feed-head", dataset: { nav: "create" }, children: [
+    el("h2", { text: "컨셉에서 시작", attrs: { id: "cf-feed-h" } }),
+    el("p", { text: "고르면 이름·폴더·화면 크기는 자동으로 정해져요" }),
+    el("div", { class: "cf-feed-head-right", children: [
+      ...(options.onInterview ? [el("button", { class: "cf-head-link", attrs: { type: "button" }, dataset: { testid: CONCEPT_FEED_TESTIDS.quickStart }, text: "골라서 만들기 ›", on: { click: () => void openQuick() } })] : []),
+      ...(options.onBlank ? [el("button", { class: "cf-head-link", attrs: { type: "button" }, dataset: { testid: CONCEPT_FEED_TESTIDS.blank }, text: "빈 프로젝트 ›", on: { click: () => options.onBlank?.() } })] : []),
+    ] }),
+  ] }) : null;
   const feed = el("section", { class: "cf-feed", children: [
     ...(options.lead ? [options.lead] : []),
-    builtinDemosSection,
+    ...(launcher ? [] : [builtinDemosSection]),
     ...(quickBand ? [quickBand] : []),
-    ...(launcher ? [el("div", { class: "cf-feed-head", children: [
-      el("h2", { text: "컨셉에서 시작" }),
-      el("p", { text: "고르면 이름·폴더·화면 크기는 자동으로 정합니다." }),
-    ] })] : []),
+    ...(launcherHead ? [launcherHead] : []),
     chips,
     grid, more, offlineNote, ...(blank ? [blank] : []),
   ] });
@@ -347,6 +325,21 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     return image;
   };
 
+  /**
+   * 카드 그림. 런처에서는 그 컨셉이 실제로 지어질 무대(번들 칩셋의 등록 장소 그림)를 크게, 생성 일러스트는 오른쪽 아래 작은 창에 둔다 —
+   * 앱 화풍과 맞고 「이걸 고르면 이런 화면이 나온다」가 거짓이 아니게. 무대 그림이 없는 칩셋이면 일러스트 그대로.
+   */
+  const cardArt = (concept: GameConcept): HTMLElement[] => {
+    const badge = el("span", { class: "cf-badge", text: presetLabel(concept.presetId) });
+    const stage = launcher ? conceptStageArt(concept) : null;
+    if (!stage) return [thumbImage(concept, "card", "cf-thumb-img"), badge];
+    return [
+      el("img", { class: "cf-thumb-img cf-thumb-stage", attrs: { src: stage, alt: "", decoding: "async", loading: "lazy", draggable: "false" } }),
+      thumbImage(concept, "card", "cf-thumb-ill"),
+      badge,
+    ];
+  };
+
   const card = (concept: GameConcept): HTMLElement => {
     const local = localizedConcept(concept, locale);
     return el("article", {
@@ -358,7 +351,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
         keydown: (event) => { if ((event as KeyboardEvent).key === "Enter") openDetail(concept); },
       },
       children: [
-        el("div", { class: "cf-thumb", children: [thumbImage(concept, "card", "cf-thumb-img"), el("span", { class: "cf-badge", text: presetLabel(concept.presetId) })] }),
+        el("div", { class: "cf-thumb", children: cardArt(concept) }),
         el("div", { class: "cf-meta", children: [
           el("h3", { class: "cf-title", text: local.title, attrs: { translate: "no" } }),
           el("p", { class: "cf-hook", text: local.hook, attrs: { translate: "no" } }),
@@ -622,6 +615,26 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     escape,
     returnToFeed,
     busy: () => making,
+    reset() {
+      if (making) return false;
+      closeQuick();
+      showFeed();
+      clearTimeout(searchTimer);
+      const filtered = query.q.trim() !== "" || query.tag !== undefined;
+      search.value = "";
+      query.q = "";
+      query.tag = undefined;
+      feedScroll = 0;
+      body.scrollTop = 0;
+      if (filtered) { renderChips(); void reload(); }
+      return true;
+    },
+    openConcept(concept) {
+      if (making) return;
+      closeQuick();
+      feedScroll = 0;
+      openDetail(concept);
+    },
     dispose() {
       closeQuick();
       disposed = true;

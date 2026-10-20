@@ -1,0 +1,362 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "68693c4fc93b16ae0528827a41688fc819549a322638e3a96fc7bb24de2151c7",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "저울 추 받침(추 5 — 가장 무거운 납 덩이) (weight stand 5)",
+ "label": "atlas_biome_interior/plus/weight stand 5",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 윗면 0행 < 3 (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "윗면 0행 < 3 (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 16,
+  "darkV5": 48,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper pan/tray with bowl-like interior",
+      "rows": "11-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18"
+     },
+     {
+      "part": "lower dark panel front face",
+      "rows": "19-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light gray base plinth",
+      "rows": "25-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 11-17 form a light blue top band with a V-shaped bowl interior. It ends in a lighter front-edge line at row 17 (#c2d4df in all scanned columns), and row 18 is a dark shadow row. Below it, rows 19-24 are a dark patterned front panel and rows 25-29 are a gray base, giving about 11 rows of front face. The silhouette is a constant 14 px wide, so there is no ellipse. The top-surface reading rests on the row 17 edge line and the bowl shape, and it is not certain, since the band could also be a front-facing panel."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile prop (a lead weight stand: a grey-blue block with a lighter face panel and a small emblem). The measured facts support it. It has 16 distinct colours in its one full tile, against 10 for the hedge, 17 for the cheese stall and 20 for the well. Flat-fill coverage is 0%. None of its dark edge pixels are neutral (0%), so the outline is a tinted dark version of the adjacent material rather than a black sticker line, much like the hedge and cheese stall. With 18 colours overall, it is at the level you would expect for a one-tile prop. By eye I see about 5 lightness steps, with highlight edges, a mid body, a recessed panel and dark edge tones. There is some speckle and bevel variation and no large flat areas. It is a little simpler than the roofed well or cheese stall, but it does not look thinner or flatter than the bench or lamp. A careful artist would accept it next to the references. The image is small, so this judgement has some uncertainty.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25832
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper pan/bowl panel",
+      "rows": "11-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle dark panel with weight slots",
+      "rows": "18-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gray base plinth",
+      "rows": "25-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 14px-wide rectangle from rows 11-28, so there is no ellipse or widening and narrowing. The top rows 11-12 are a light band with a V-shaped bowl drawn face-on beneath, with no front-edge line followed by eave shadow. The middle is a dark vertical panel (rows 18-24). The base (rows 25-29) is a gray block with a 1-row highlight at row 26, which reads as a bevel on a front face, not a top plane. All parts are vertical faces seen head-on, so the drawing is a front elevation with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile-sized lead weight block. It has 18 distinct colours and a median of 16 colours per 16x16 tile, which is above the bench, hedge and lamp and close to the stall (17) and well (20). Flat-fill coverage is 0%, so there are no big flat areas. The dark edge pixels are 0% neutral, so the outline leans toward the tint of the stone/lead body rather than being a black sticker line. It reads as a top highlight, light face, mid, dark and deep steps, with an inset plate and symbol that add detail. It is simpler than the well or stall, but it is not thinner or flatter than the bench, hedge or lamp references. Its size is a limit on judging how deep the texture goes.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20160
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper pan/bowl panel",
+      "rows": "11-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle dark panel",
+      "rows": "18-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower grey base block",
+      "rows": "25-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 14 px wide from row 11 to row 28, with only the outline rows at 10 and 29 narrower. No ellipse width profile exists. The upper section (rows 11-17) has V-shaped dark lines that read as a bowl or pan seen face-on, with no back-rim-to-front-rim ellipse. Below it, rows 18-23 are a dark panel with a zigzag pattern, and rows 25-29 are a grey block with a highlight gradient (L 170, 196, 170, 138, 56) that reads as a vertical face. No part has a front-edge line followed by eave shadow, and no part shows a roof or awning plane or visible contents. Every part is drawn as a vertical face, so the whole object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small grey-blue lead block on a stand with a lighter inset panel. The measured facts back it up. It has 16 colours per tile, in line with the hedge (10), cheese stall (17) and roofed well (20). Its 18 distinct colours are above the bench (14), hedge (11) and lamp (14). Flat-fill coverage is 0%, so there are no 5x5 blocks of one colour. 0% of its dark edge pixels are neutral, so the outline leans toward the material's tint and is not a black sticker line, unlike the lamp (100%) and bench (44%). By eye I count about 5 lightness steps (highlight, light, mid, dark, deep), with grain and bevel variation on the face. It reads a little less detailed than the cheese stall and well, but the object is small and simple, and it would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20925
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper panel with bowl/pan motif",
+      "rows": "11-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle dark panel with zigzag detail",
+      "rows": "18-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey base block",
+      "rows": "25-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 14px-wide rectangle from rows 11-28, with only a 1-row outline at row 10. The three stacked parts (rows 11-17, 18-24, 25-29) are all vertical faces. The V-shaped bowl in rows 11-17 is a face-on motif, not an ellipse. Its width never widens and narrows. No part has a front-edge line followed by eave shadow. The dark band at rows 22-24 separates panels rather than sitting under a top plane. The grey block at rows 25-29 shades smoothly from light to dark, so it reads as a plinth front. There is no visible horizontal surface, so the object reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small grey-blue lead block on a stand, about 13x18 source pixels. It has 18 distinct colours and a median of 16 per full tile. That matches the richer references (stall 17, well 20) and beats the hedge (10). Flat-fill coverage is 0%, so there are no 5x5 single-colour blocks. The dark edge pixels are 0% neutral, so the outline leans toward the material's tone instead of being a black sticker line. By eye I see a highlight edge, light and mid faces, a dark side and a deep base, about 5 lightness steps. There is some speckle on the face and a bevel on the top. It is a little simpler than the well or stall, but for a single small prop it would sit acceptably next to the references and does not look thinner or flatter than the bench or lamp.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26212
+  }
+ ],
+ "decidedAt": "2026-10-20T06:37:20.797Z",
+ "cells": {
+  "16": [
+   "2147c5a34854bffb",
+   "35ff2a637cef97db"
+  ],
+  "24": [
+   "157721b40eee623d",
+   "25b912340eb14f63",
+   "2c8adc9511cc91ee",
+   "5547fc83ac978655",
+   "5eea852552f09922",
+   "7917585ec08c9288",
+   "897bc1fc69cc4bc2",
+   "e37ef307067d1201",
+   "f22a8f7c6a3b1824"
+  ],
+  "32": [
+   "7e2bfae55ed21ed0",
+   "9c5cae686e68a452",
+   "e96c5f3d4c857f03"
+  ],
+  "48": [
+   "05b5025da628c9a7",
+   "1c76e599fc874892",
+   "3610228adfaa45bb",
+   "43593adb9eb9d438",
+   "582146e77ee0be61",
+   "888f58fa00327209"
+  ]
+ }
+}

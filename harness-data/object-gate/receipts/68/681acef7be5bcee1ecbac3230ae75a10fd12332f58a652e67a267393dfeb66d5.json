@@ -1,0 +1,435 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "681acef7be5bcee1ecbac3230ae75a10fd12332f58a652e67a267393dfeb66d5",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "sh-barber-chair-w",
+ "label": "seats34/jp_city_interior/sh-barber-chair-w",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 질감 없음 (2/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)",
+   "질감 없음 (2/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 26,
+  "nearBlackEdge": 0.97,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headrest",
+      "rows": "3-6",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tall backrest column",
+      "rows": "7-19",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion top strip",
+      "rows": "15-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat front face",
+      "rows": "17-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal base disc",
+      "rows": "23-26",
+      "evidence": "b",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The seat is a red block at rows 15-19. Only rows 15-16 are lighter (#f78175), a 2-row strip at the top. Rows 17-19 are a darkening front face (#db4d4a, #b22430, #801223). That strip is too thin to count as a seat top, so it reads as a rim rather than a sitting surface seen from above. The tall backrest (rows 7-19) and the headrest (rows 3-6) are vertical faces, which are exempt as seat_back. The grey pole and base below (rows 21-26) are support only and do not count as the seat top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small red barber chair with a grey base, under one tile in size, so the per-tile facts read 0 and I judged by eye. It has only 11 distinct colours in total. The red body shows about 3 steps (highlight, mid, dark), where the references use 5-6 on a material. The upholstery is smooth with no grain, tufting or per-part texture, and the grey pedestal is nearly flat. Dark edges are a dark red and grey that look partly tinted and partly neutral, so I call the outline mixed. The 0% flat coverage is only because the piece is tiny. Next to the well, the stall and the hedge it looks thinner and more sticker-like, and the base, footrest and headrest have little form detail. A careful artist would not accept it beside those references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 22358
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest column",
+      "rows": "7-19",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "headrest",
+      "rows": "3-6",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrest (grey bar)",
+      "rows": "12-14",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion top",
+      "rows": "15-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plate",
+      "rows": "23-25",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The chair is a west-facing side profile. The seat is the red horizontal arm at rows 15-19, and only rows 15-16 are lighter (#f78175), which is a 1-2 row strip. Rows 17-19 darken from #db4d4a through #b22430 to #801223 and form the vertical front of the cushion, with no front-edge line or ellipse above them. The seat surface therefore shows only a thin strip, not a top of 3+ rows. The backrest, headrest and armrest are exempt as seat_back. The pole and base below have little depth."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a single small barber chair, smaller than one full tile, so the per-tile tone count of 0 is not evidence against it. The comparison is by eye against the bench and lamp references, which are also sparse and also measure 0. It has 11 distinct colours, close to the bench (14), lamp (14) and hedge (11). The red upholstery shows a highlight, light, mid and dark step, and the grey chrome base and footrest are shaded separately. The outline measures 0% neutral dark edge pixels and reads as dark red-brown beside the red and dark grey-blue beside the metal, so it is tinted by material and not a black sticker line. There are no 5x5 flat fills (0% near-flat). The shading is slightly shallower than the 5-6 steps of the richer references, but it holds up beside the bench and lamp of the same prop kind.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26049
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest and headrest column",
+      "rows": "3-19",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey footrest/armrest bar",
+      "rows": "12-14",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion",
+      "rows": "15-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal and base",
+      "rows": "20-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The chair is drawn in side profile facing west. The seat cushion is an L-shape beside the tall backrest. Its sitting surface is only the light pink band at rows 15-16 (2 rows, #f78175). Below it, rows 17-19 shade from #db4d4a to #b22430 to #801223 as a plain front face, and there is no front-edge line or ellipse. The grey pedestal and base (rows 20-26) are vertical supports. The seat shows no real top surface, only a 2-row strip. Backrest and armrests are exempt, so the seat reads as front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small red barber chair, under one tile in size, so the per-tile facts read 0 and I judged it by eye. It has only 11 distinct colours in total. The red body shows about 3 steps (a mid red, a lighter red highlight and a dark red shadow), and the grey base and footrest are flat. The reference props (well, stall, hedge) show 5-6 steps per material with per-tile highlights, grain and clustered texture. The dark edge pixels have no neutral share (0%), so the outline leans toward a dark red tone, but the chair's pixels read as a dark, near-uniform sticker-like silhouette around the shapes instead of selective material-tone separation. The surfaces are smooth with no leather grain, no highlight dots and no metal shading, so they look flat. Next to the well and stall references it looks thinner and simpler, and a careful artist would not accept it as equal.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 21602
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest column",
+      "rows": "7-19",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "headrest",
+      "rows": "3-6",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrest / footrest bar",
+      "rows": "12-14",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion",
+      "rows": "15-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal base",
+      "rows": "21-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a west-facing side profile of a barber chair. The seat is an L-shaped red block: rows 15-16 are a light pink strip (#f78175) and rows 17-19 step down through darker reds (#db4d4a, #b22430, #801223) to an outline at row 20. The light strip is only about 2 rows deep, with no ellipse, no clear front-edge line and no eave shadow, so it reads as a rim or band rather than a seat seen from above. The tall backrest column (rows 7-19) and headrest (rows 3-6) are vertical faces and exempt as seat_back. The gray pedestal and footrest below are also drawn in side elevation. The sitting surface shows only a 2-row strip, so it is front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small barber chair, under one tile in size, so the per-tile density facts are 0 and I judged it by eye. It has about 4 steps on the red upholstery (dark maroon, mid red, light red, pink highlight) and 2-3 on the grey chrome base and footrest. That is a little below the 5-6 steps on the references, but comparable to the small bench and lamp. The outline is a dark maroon beside the red and dark grey beside the metal, and the measured 0% neutral share of dark edge pixels confirms it is tinted rather than near-black. It has no flat 5x5 fills (0%) and shows a highlight on the headrest and seat. Its 11 distinct colours are close to the hedge (11), bench (14) and lamp (14). The silhouette is clear and readable, and it would not look thinner or more sticker-like next to the bench or lamp. It sits slightly under the richest references (well, stall) but within the range for a small single-object prop.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26837
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.447Z",
+ "cells": {
+  "16": [
+   "00195e029825389f",
+   "22d099ff640a6850"
+  ],
+  "24": [
+   "0093e063ecf49d8c",
+   "0e0a4041438babc1",
+   "15412bf5cd8fbd14",
+   "1ad754023ddab465",
+   "3b95535bfc1a5b66",
+   "4c26f8003db31034",
+   "8745348cf8f1d67a",
+   "b0f34b4cfc1503e8",
+   "bd89b768f3a329ef",
+   "bdce78d374ed5965",
+   "c4a8867dd397d657",
+   "ef59115b21d6c8bd"
+  ],
+  "32": [
+   "234b7edd9ab849dd",
+   "737c9d0284622429",
+   "b268cd96978d61d1"
+  ],
+  "48": [
+   "13a67160bc02fc41",
+   "34943fb8155cc4ab",
+   "6d2123f054ba5e14",
+   "6d5b4151a0585ce9",
+   "e44af4b629585a23",
+   "f44ddf08dbda32a5"
+  ]
+ }
+}

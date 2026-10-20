@@ -26,22 +26,19 @@ import {
   newProjectChoiceByLabel,
   type NewProjectChoiceId,
 } from "@/editor/newProjectChoices";
+// 대표 데모 «만들기»(createFlagshipDemoProject)는 예제 그림 수십 MB 를 끌고 온다 — 이 모듈은 편집기 첫 화면 경로에 있으므로
+// 가벼운 줄거리 목록(beats)만 가져온다. 데모가 필요한 곳은 "@/project/flagship" 를 동적으로 import 한다(2026-10-20).
 import {
   FLAGSHIP_BEAT_MANIFESTS,
   FLAGSHIP_DEMO_ID_BY_CHOICE,
-  createFlagshipDemoForChoice,
-  createFlagshipDemoProject,
   flagshipBeatManifestForChoice,
   formatFlagshipExemplarPrompt,
-  type FlagshipBeatManifest,
-  type FlagshipDemoId,
-} from "@/project/flagship";
+} from "@/project/flagship/beats";
+import type { FlagshipBeatManifest, FlagshipDemoId } from "@/project/flagship/types";
 
 export {
   FLAGSHIP_BEAT_MANIFESTS,
   FLAGSHIP_DEMO_ID_BY_CHOICE,
-  createFlagshipDemoForChoice,
-  createFlagshipDemoProject,
   flagshipBeatManifestForChoice,
   formatFlagshipExemplarPrompt,
   type FlagshipBeatManifest,

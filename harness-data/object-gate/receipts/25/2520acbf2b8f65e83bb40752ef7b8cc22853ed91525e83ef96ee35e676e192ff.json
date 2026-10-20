@@ -1,0 +1,310 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2520acbf2b8f65e83bb40752ef7b8cc22853ed91525e83ef96ee35e676e192ff",
+ "width": 16,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "선원 3층 침상 (ship bunk)",
+ "label": "atlas_biome_interior/plus/ship bunk",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 19,
+  "darkV5": 26,
+  "nearBlackEdge": 0.51,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "right",
+   "wrong",
+   "wrong",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of bunk frame",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 41,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-3 form a brown top band, and row 4 (#d59147) is a lighter front-edge line. Rows 5-6 are dark eave shadow, and the open bunk bays with mattresses and bedding fill rows 5-45 below. Width is a constant 16 for rows 1-45, with no receding side face. Rows 20-22 are a lighter plank with an edge line (row 20) and shadow below it, a ledge between bays. The top band is 4 rows, thicker than a 1-2 row rim, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a tall wooden bunk frame with bedding and items on three levels, the same kind as the prop references. Measured facts: 18 colours per 16x16 tile, level with the roofed well (20) and the cheese stall (17), and above the hedge (10). It has 30 distinct colours, 0% flat-fill coverage, and 0% neutral dark edge pixels, so its outline is tinted dark brown rather than black. By eye, the wood frame has several brown steps with grain, and the blue and white bedding and shelf items add varied small detail. It is not a flat sticker, and a careful artist would accept it beside the stall and well. Texture is rated 'some' rather than 'rich' because it is a small, sparse piece, but it is not thinner than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13818
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice/roof band of the bunk frame",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 41,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-3 form a wood band at the top, ending in a lighter front-edge line at row 4 (#d59147). Rows 5-7 are dark eave shadow beneath it, so this is a top surface with an edge line and shadow rather than a bare front-facing strip. The front face runs from rows 5 to 45 and shows the bunk openings with mattresses and bedding, and the divider bars at rows 20-22 and 38-40 read as front-facing frame strips. The silhouette is a constant 16 px wide with no receding side face, so it is a south-facing view with a modest 4-row top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a tall wooden three-tier bunk with blue and white bedding. It measures 18 distinct colours per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well. It has 30 distinct colours overall, which is more than the bench, hedge and lamp and a little below the stall and well. Flat-fill coverage is 0%. Dark edge pixels are 0% neutral, so the outline leans dark brown beside the wood and is not a black sticker line. The wood frame shows about 5 lightness steps with grain and highlights on the posts. The bedding has its own light and shadow steps. It is slightly less textured than the best references, but a careful artist would accept it beside the stall and well without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15415
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top plank of the bunk frame",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "middle tier divider plank",
+      "rows": "20-22",
+      "evidence": "none",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "lower tier divider plank",
+      "rows": "38-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 41,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-3 form a lighter wood band at the top. Row 4 (#d59147) is a brighter front-edge line, and rows 5-6 (#4a2c16) are dark eave shadow beneath it. That is a top surface about 4 rows tall. Below it the front face runs from row 5 to row 45 (about 41 rows), drawn as three open bunk bays with mattresses and bedding seen face-on. The silhouette is a constant 16 px wide, with no receding side face. The tier divider planks at rows 20-22 and 38-40 are mostly vertical front strips with only a faint highlight line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a tall wooden three-tier bunk with blue and white bedding on each tier. The measured facts are at or above the references: 18 colours per 16x16 tile against 17 for the cheese stall and 20 for the well, 0% flat-fill coverage, and 30 distinct colours. Its dark edge pixels are 0% neutral, so the outline is a dark brown wood tone, not a black sticker line. Hedge and cheese stall also sit near 0-1%. The frame shows several wood steps (highlight, mid, dark, deep) plus grain, and the bedding has light and shadow variation. It is small and fairly simple next to the stall and well, but it is not thinner, flatter or more sticker-like than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16123
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of bunk frame",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "middle tier with bedding (open sleeping bay)",
+      "rows": "12-19",
+      "evidence": "d",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-22"
+     },
+     {
+      "part": "lower tier with blue blanket",
+      "rows": "30-37",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 40,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-3 form a lighter top band that ends in a lighter front-edge line at row 4 (#d59147). Dark eave shadow follows in rows 5-6, and the tall front face runs below it to about row 45. The bays show bedding and blanket contents (rows 12-19, 30-37), and the tier dividers at rows 20-22 show a lit edge fading into shadow. The top surface is thin, but it has an edge line and shadow, so it is more than a rim or a flat front strip. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts put the candidate at or above the references. It has 18 distinct colours per 16x16 tile against 17 for the stall and 20 for the well. It has 30 distinct colours overall, more than the bench, hedge and lamp. Flat-fill coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline carries a tint. By eye, the outline is a dark brown that follows the wood frame, not a uniform black line. The frame shows several wood tones with grain. The three bunk levels carry bedding in blue and white with fold and pillow variation, and the shelf and rail details add small texture dots. The ramps are slightly shallower than the stall or well, at about 5 steps against 5-6. Even so, it would sit next to the stall and well without looking thinner or more sticker-like, and it matches the same kind of tall furniture prop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15880
+  }
+ ],
+ "decidedAt": "2026-10-20T09:51:22.679Z",
+ "cells": {
+  "16": [
+   "1d7cd3bc114fa9a5",
+   "37ca0374b195c815",
+   "49879c5f39c51fbc"
+  ],
+  "24": [
+   "2545d51426580e61",
+   "6a007f7525ad6ece",
+   "70ab9072d959ce31",
+   "96671aa1841f815d",
+   "ac6778faaf3f58b8",
+   "fe6c7f8713e31c93"
+  ],
+  "32": [
+   "0c63e75d7b0edc63",
+   "19f01f07db31bfdb",
+   "1c68135c39042d97",
+   "4a2f6e5ceb8edb9d",
+   "5cf7aefa6fd756eb",
+   "75b1b8669eff3ae3",
+   "76c8aea74cd2eb4b",
+   "7aec131f25fd165d",
+   "861ff1c8fa942cd6",
+   "cc569340287d2098",
+   "d91a77d96f58791d",
+   "f14a2dd2eee8b3e9"
+  ],
+  "48": [
+   "0ab0a6182af4cd2a",
+   "c95f1f9b23da5306",
+   "cfcfeb88ae300dba"
+  ]
+ }
+}

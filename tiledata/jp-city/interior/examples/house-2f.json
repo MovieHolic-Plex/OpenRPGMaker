@@ -1,275 +1,397 @@
 {
- "name": "2층 단독주택 2층",
  "plan": [
-  "######################",
-  "#........#..#........#",
-  "#........#..#........#",
-  "#........#..#........#",
-  "#........#..#........#",
-  "#........#..#........#",
-  "#######.###.####.#####",
-  "#######..............#",
-  "#######..............#",
-  "#######..............#",
-  "#######..............#",
-  "######################"
+  "##################",
+  "###########..#####",
+  "###########..#####",
+  "###########..#####",
+  "###########..#####",
+  "############.#####",
+  "#........#...#...#",
+  "#........#...#...#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "##########...#####",
+  "#........#...#...#",
+  "#........#...#...#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "##################"
  ],
  "floor": "flooring",
  "wall": "cloth-beige",
+ "name": "2층 단독주택 2층",
  "zones": [
   {
-   "x0": 0,
-   "y0": 6,
-   "x1": 21,
-   "y1": 11,
-   "floor": "flooring-dark"
-  },
-  {
-   "x0": 9,
+   "x0": 11,
    "y0": 0,
    "x1": 12,
-   "y1": 5,
+   "y1": 4,
    "floor": "cushion",
    "wall": "cloth"
   },
   {
-   "x0": 13,
-   "y0": 0,
-   "x1": 21,
-   "y1": 5,
-   "floor": "carpet"
+   "x0": 1,
+   "y0": 5,
+   "x1": 8,
+   "y1": 10,
+   "floor": "flooring",
+   "wall": "cloth-beige"
+  },
+  {
+   "x0": 10,
+   "y0": 5,
+   "x1": 12,
+   "y1": 16,
+   "floor": "flooring",
+   "wall": "cloth-beige"
+  },
+  {
+   "x0": 14,
+   "y0": 5,
+   "x1": 16,
+   "y1": 10,
+   "floor": "tatami",
+   "wall": "juraku"
+  },
+  {
+   "x0": 1,
+   "y0": 11,
+   "x1": 8,
+   "y1": 16,
+   "floor": "flooring-dark",
+   "wall": "cloth-beige"
+  },
+  {
+   "x0": 14,
+   "y0": 11,
+   "x1": 16,
+   "y1": 16,
+   "floor": "flooring",
+   "wall": "cloth-beige"
   }
  ],
  "objects": [
   {
-   "id": "bed-double",
-   "x": 1,
-   "y": 3
+   "id": "door-side-western",
+   "x": 9,
+   "y": 10
   },
   {
-   "id": "bed-side-table",
-   "x": 3,
-   "y": 3
+   "id": "door-side-sliding",
+   "x": 13,
+   "y": 10
   },
   {
-   "id": "dresser-low",
-   "x": 5,
-   "y": 3
+   "id": "door-side-western",
+   "x": 9,
+   "y": 16
   },
   {
-   "id": "wardrobe",
-   "x": 7,
-   "y": 3
+   "id": "door-side-western",
+   "x": 13,
+   "y": 16
   },
   {
-   "id": "mirror-stand",
-   "x": 8,
+   "id": "door-open-toilet",
+   "x": 12,
    "y": 5
   },
   {
-   "id": "curtain-window",
-   "x": 3,
-   "y": 1
-  },
-  {
-   "id": "ac-unit",
-   "x": 5,
-   "y": 1
-  },
-  {
    "id": "toilet",
-   "x": 10,
+   "x": 11,
    "y": 3
   },
   {
+   "id": "window-sash-small",
+   "x": 11,
+   "y": 1
+  },
+  {
+   "id": "toilet-paper",
+   "x": 12,
+   "y": 1
+  },
+  {
    "id": "toilet-mat",
-   "x": 10,
+   "x": 11,
    "y": 4
   },
   {
    "id": "toilet-slippers",
-   "x": 11,
+   "x": 12,
    "y": 4
-  },
-  {
-   "id": "toilet-paper",
-   "x": 10,
-   "y": 1
-  },
-  {
-   "id": "toilet-handwash",
-   "x": 11,
-   "y": 1
-  },
-  {
-   "id": "bunk-bed",
-   "x": 13,
-   "y": 3
-  },
-  {
-   "id": "desk-study",
-   "x": 14,
-   "y": 3
-  },
-  {
-   "id": "desk-chair-n",
-   "x": 14,
-   "y": 4
-  },
-  {
-   "id": "bookshelf",
-   "x": 20,
-   "y": 3
-  },
-  {
-   "id": "window-sash",
-   "x": 16,
-   "y": 1
-  },
-  {
-   "id": "closet-doors",
-   "x": 18,
-   "y": 1
-  },
-  {
-   "id": "light-switch",
-   "x": 17,
-   "y": 7
   },
   {
    "id": "stairwell-down-wood",
-   "x": 19,
-   "y": 9
+   "x": 10,
+   "y": 8
   },
   {
    "id": "houseplant",
-   "x": 17,
+   "x": 10,
+   "y": 12
+  },
+  {
+   "id": "houseplant",
+   "x": 10,
+   "y": 15
+  },
+  {
+   "id": "bunk-bed",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "desk-study",
+   "x": 2,
+   "y": 8
+  },
+  {
+   "id": "desk-chair-n",
+   "x": 2,
    "y": 9
   },
   {
-   "id": "door-open-toilet",
-   "x": 11,
-   "y": 6
+   "id": "bookshelf",
+   "x": 4,
+   "y": 8
   },
   {
-   "id": "door-open-western",
+   "id": "hs-toy-shelf",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "wardrobe",
    "x": 7,
-   "y": 6
+   "y": 8
   },
   {
-   "id": "door-open-western",
-   "x": 16,
+   "id": "window-sash",
+   "x": 2,
    "y": 6
   },
   {
    "id": "window-sash",
-   "x": 9,
-   "y": 7
+   "x": 5,
+   "y": 6
   },
   {
-   "id": "laundry-rack",
+   "id": "hs-kids-mat",
+   "x": 5,
+   "y": 9
+  },
+  {
+   "id": "floor-lamp",
    "x": 8,
    "y": 9
   },
   {
-   "id": "rug",
+   "id": "cushion-floor",
+   "x": 1,
+   "y": 10
+  },
+  {
+   "id": "cushion-floor",
+   "x": 2,
+   "y": 10
+  },
+  {
+   "id": "tansu",
+   "x": 14,
+   "y": 8
+  },
+  {
+   "id": "tokonoma",
+   "x": 15,
+   "y": 8
+  },
+  {
+   "id": "zabuton",
+   "x": 14,
+   "y": 9
+  },
+  {
+   "id": "zabuton",
+   "x": 15,
+   "y": 9
+  },
+  {
+   "id": "zabuton",
+   "x": 16,
+   "y": 9
+  },
+  {
+   "id": "zataku",
+   "x": 15,
+   "y": 10
+  },
+  {
+   "id": "wardrobe",
+   "x": 1,
+   "y": 14
+  },
+  {
+   "id": "bed-side-table",
+   "x": 3,
+   "y": 14
+  },
+  {
+   "id": "bed-double",
    "x": 4,
-   "y": 4
+   "y": 14
   },
   {
-   "id": "low-table",
+   "id": "bed-side-table",
+   "x": 6,
+   "y": 14
+  },
+  {
+   "id": "dresser-low",
+   "x": 7,
+   "y": 14
+  },
+  {
+   "id": "ac-unit",
+   "x": 4,
+   "y": 12
+  },
+  {
+   "id": "rug",
+   "x": 1,
+   "y": 15
+  },
+  {
+   "id": "slippers",
+   "x": 4,
+   "y": 16
+  },
+  {
+   "id": "floor-lamp",
+   "x": 8,
+   "y": 15
+  },
+  {
+   "id": "desk-study",
+   "x": 14,
+   "y": 14
+  },
+  {
+   "id": "bookshelf",
    "x": 16,
-   "y": 4
+   "y": 14
   },
   {
-   "id": "cushion-floor",
-   "x": 16,
-   "y": 5
-  },
-  {
-   "id": "cushion-floor",
-   "x": 17,
-   "y": 5
+   "id": "desk-chair-n",
+   "x": 15,
+   "y": 15
   },
   {
    "id": "wall-clock",
-   "x": 12,
-   "y": 7
+   "x": 16,
+   "y": 12
   },
   {
-   "id": "calendar",
-   "x": 14,
-   "y": 7
+   "id": "cushion-floor",
+   "x": 15,
+   "y": 16
+  },
+  {
+   "id": "houseplant",
+   "x": 16,
+   "y": 16
   }
  ],
  "tables": [],
  "goods": [
   {
+   "id": "desk-lamp",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "tea-set",
+   "x": 15,
+   "y": 10
+  },
+  {
    "id": "alarm-clock",
    "x": 3,
-   "y": 3
+   "y": 14
   },
   {
-   "id": "desk-lamp",
+   "id": "laptop",
    "x": 15,
-   "y": 3
-  },
-  {
-   "id": "books-stack",
-   "x": 14,
-   "y": 3
-  }
- ],
- "start": [
-  18,
-  10
- ],
- "links": [
-  {
-   "x": 19,
-   "y": 10,
-   "toMapId": "jp-city-house-1f",
-   "toX": 11,
-   "toY": 10,
-   "direction": "down"
-  },
-  {
-   "x": 20,
-   "y": 10,
-   "toMapId": "jp-city-house-1f",
-   "toX": 11,
-   "toY": 10,
-   "direction": "down"
+   "y": 14
   }
  ],
  "rooms": [
   {
-   "room": "bedroom",
-   "x0": 0,
-   "y0": 0,
-   "x1": 8,
-   "y1": 5
-  },
-  {
    "room": "toilet",
-   "x0": 9,
+   "x0": 10,
    "y0": 0,
    "x1": 12,
-   "y1": 5
+   "y1": 4
   },
   {
    "room": "kids",
-   "x0": 13,
-   "y0": 0,
-   "x1": 21,
-   "y1": 5
+   "x0": 0,
+   "y0": 5,
+   "x1": 8,
+   "y1": 10
   },
   {
    "room": "hall",
+   "x0": 9,
+   "y0": 5,
+   "x1": 12,
+   "y1": 16
+  },
+  {
+   "room": "washitsu",
+   "x0": 13,
+   "y0": 5,
+   "x1": 16,
+   "y1": 10
+  },
+  {
+   "room": "bedroom",
    "x0": 0,
-   "y0": 6,
-   "x1": 21,
-   "y1": 11
+   "y0": 11,
+   "x1": 8,
+   "y1": 16
+  },
+  {
+   "room": "study",
+   "x0": 13,
+   "y0": 11,
+   "x1": 16,
+   "y1": 16
+  }
+ ],
+ "start": [
+  11,
+  11
+ ],
+ "inner": true,
+ "links": [
+  {
+   "x": 10,
+   "y": 10,
+   "toMapId": "jp-city-house-1f",
+   "toX": 11,
+   "toY": 9,
+   "direction": "down"
+  },
+  {
+   "x": 11,
+   "y": 10,
+   "toMapId": "jp-city-house-1f",
+   "toX": 11,
+   "toY": 9,
+   "direction": "down"
   }
  ]
 }

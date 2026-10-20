@@ -1,0 +1,291 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "jp-roof-47",
+ "title": "jp 지붕 47 — 사용자 눈 OK 2026-10-20",
+ "note": "#3098(563991ca8) 3/4 깊이 다시 그림 건물 단품 47. 그림은 사용자가 본 비교판(claude-viz/jp-depth-pilot-1/*-new.png). 상점가 줄 키트 8개(row_*)는 이 단품을 화소 그대로 합친 것이라 이 묶음에 없다.",
+ "createdAt": "2026-10-20T13:58:06.110Z",
+ "items": [
+  {
+   "sha": "cdf7791e18951e72e17908e52719f9ee38845efcda7811cbddf24f3742f74190",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-post-office",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/post_office-new.png"
+  },
+  {
+   "sha": "aca3ed84482a26f59c8c859b2ba65e3b9a422cf9475a3d2f873947f1f52e3175",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-hip2",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/house_hip2-new.png"
+  },
+  {
+   "sha": "e51a67e39eb8dd338f1300c3eee2671ac4522ffb3db87bf99acdd7f5240d4e2d",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-koban",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/koban-new.png"
+  },
+  {
+   "sha": "9180db68d02e33ececc26f14bf324af0c932e43500ad164067732320d95a9d5a",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-warehouse",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/warehouse-new.png"
+  },
+  {
+   "sha": "25c21993b13e5b69d2aeece2508e7e067d23959e34fd39c9e76fff9b49bc4e38",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-station-small",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/station_small-new.png"
+  },
+  {
+   "sha": "635a1eba5e3d95d24aa88b2ad5c733b45d229504f08cf30f931885ca5b503220",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-gable-garage",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/house_gable_garage-new.png"
+  },
+  {
+   "sha": "93fd54305e4bcc8204e820f6d5d976117848f9239ab47dfc5c065ccef29fbf1f",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-hiraya",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/house_hiraya-new.png"
+  },
+  {
+   "sha": "b34fd096cbaf787a1ea5ea26af0cb7312eab57cf520fcf5cecb4d4f993fa5bbd",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-shed-modern",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/house_shed_modern-new.png"
+  },
+  {
+   "sha": "3c98bc8c53b9f02798ea645378070ed291d2555d6068a046a0fee4a74027e553",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-flat3",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/house_flat3-new.png"
+  },
+  {
+   "sha": "b555b45b61d44430b3bd0d7010a8a4517315902d1f09aa7753f7f52ceb035434",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-hip2-wide",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/house_hip2_wide-new.png"
+  },
+  {
+   "sha": "bcce7810a12816fadfb17335af0fbae1fb68edc4d047efeb0c959c414cc1b8c9",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-machiya",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/house_machiya-new.png"
+  },
+  {
+   "sha": "ddf211d91497c163973ba11d5dc774837c68e61908706efcfbfa9a5e7cca7706",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-nagaya",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/house_nagaya-new.png"
+  },
+  {
+   "sha": "2460065d5fcbcbd9ddd3427e18f2e550317c1692d91f646a3865b460fef36bd2",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-western",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/house_western-new.png"
+  },
+  {
+   "sha": "e6d92b9a329fd2a81da981548e7da4240b31aaab998cd7115c327fd4daafa67e",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-nisetai",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/house_nisetai-new.png"
+  },
+  {
+   "sha": "1b34b633594506ec284372a68f30a638a7300bff08c17c275162b2523aa14334",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-tile3",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/house_tile3-new.png"
+  },
+  {
+   "sha": "6d8ca892cc953596b262d33d775b51662f6c4da323834ced4c99fd3507bfacea",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-terrace",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/house_terrace-new.png"
+  },
+  {
+   "sha": "1a19a8dd49bfb1077736d4e084c7c69646eb551a6ced46564c4149d30aaf514c",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-house-hiraya-gable",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/house_hiraya_gable-new.png"
+  },
+  {
+   "sha": "d8b87b847f46f7de1956a7eff5622d3ab133366830320adf8255489e11c2c80a",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-garage-carport-house",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/garage_carport_house-new.png"
+  },
+  {
+   "sha": "c1f033bcbab74a1a9da6bbd5736f62a536efe8aa47e92509f1e4dc2c24b14ab8",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-greengrocer",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_greengrocer-new.png"
+  },
+  {
+   "sha": "b10c837a873794fe7f98708187e00108fd7fce5e80261fe6f718360f77e9d0a5",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-fish",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_fish-new.png"
+  },
+  {
+   "sha": "6864fe4edebe5d3974eedabc765ccfebb47234831a756a9063a6c6bb73297e92",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-butcher",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_butcher-new.png"
+  },
+  {
+   "sha": "486ad5795864a28a2208465acd3393f6982a319c036a8292948b59f2a647cc7a",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-bakery",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_bakery-new.png"
+  },
+  {
+   "sha": "f7529c98133adab2662e28085c64af96bd87dfef246be2cdfb0b5aaa6e512f72",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-flower",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_flower-new.png"
+  },
+  {
+   "sha": "d39f515d604a63944b7724f38c152026006955fb9e8c455f9ab13df326127d1b",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-books",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_books-new.png"
+  },
+  {
+   "sha": "a51bf7460ccc9e2138b4c2dc5e3b89bebc37f4957ce55c2b30c0455cd645a536",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-pharmacy",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_pharmacy-new.png"
+  },
+  {
+   "sha": "7c27618590c36568c7b08bf6a4f4ae1b5b905f1f7fa5c440c99d1a747cd6c118",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-cleaning",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_cleaning-new.png"
+  },
+  {
+   "sha": "07f02a87e605d963024e8a4584d109353c1d59365ed9b535330af2865e429770",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-ramen",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_ramen-new.png"
+  },
+  {
+   "sha": "0aac2d380fb54e38c70ced349841ef0bec14c937fbdd0bcc864a25ea72d9ee41",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-izakaya",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_izakaya-new.png"
+  },
+  {
+   "sha": "ef6ebd0915a1d8a440800584264d92ab11388352c7a4eb46f933ecb09c395d42",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-cafe",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_cafe-new.png"
+  },
+  {
+   "sha": "a087afc25a379e4179d0174521157bb8e20deb5ed874ce1d90205a752b4a6cb6",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-barber",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_barber-new.png"
+  },
+  {
+   "sha": "5761e7dbd94a023e5719b4892b592303203d170f44fc705550779253ed61a11a",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-tabako",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_tabako-new.png"
+  },
+  {
+   "sha": "efd671469d90cbeacb2d66897b7219e1c1b59d9a309d2950bbd1fe29440ef77b",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-sushi",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_sushi-new.png"
+  },
+  {
+   "sha": "194d060047a0081888dd063f8bd044ed7cb11c3e5468bfb3526255bf3d067c94",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-teishoku",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_teishoku-new.png"
+  },
+  {
+   "sha": "d2fdd8553769902c2833d526b59db0dda38b68f2a9f4cd28d7ea16291c3746a2",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-dagashi",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_dagashi-new.png"
+  },
+  {
+   "sha": "e6ccf9aab074f9c3e00d40c70f30be7f86d2fc820e7326137535f97183a43979",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-sake",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_sake-new.png"
+  },
+  {
+   "sha": "109b6890522c67de94f5012848f5efa9562ee53ca081aa534cec28363eaf1789",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-bicycle",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_bicycle-new.png"
+  },
+  {
+   "sha": "8bd6fd1a451fbc5dd425a05a3defd1eb10644e7838c87f83e836f7cab1c7cbcc",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-realestate",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_realestate-new.png"
+  },
+  {
+   "sha": "0f291c32556a90b832e667420ac688aeb5d8475a71fbbe77fddbcfe7291089d1",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-salon",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_salon-new.png"
+  },
+  {
+   "sha": "f5e09bb2e771ac191d0e4dd7cbb643d4de4e4af97aa34cb2143e9f49ebe588d3",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-fish-shut",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_fish_shut-new.png"
+  },
+  {
+   "sha": "52610b0dc7681f47238902170a15697310fcd286735b301f52a5dfded58e9a50",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-butcher-shut",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_butcher_shut-new.png"
+  },
+  {
+   "sha": "2fd1f3251b48d9c38236bb0ee9c66d1374bba3da394fd689a3b1c22a5f0a1db5",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-books-shut",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_books_shut-new.png"
+  },
+  {
+   "sha": "09886ed47269980f25e12a41d515ab9f2ee1ca7fd1ea601b574f22db99223f11",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-cleaning-shut",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_cleaning_shut-new.png"
+  },
+  {
+   "sha": "c512fbed9897dd22f0a7664aeb0064dbc943c3aa0dba270a25e13b815b1e4acb",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-bicycle-shut",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_bicycle_shut-new.png"
+  },
+  {
+   "sha": "159665f485b3038b64d939b64274ad4ee042e593928206f1552de4be63ec6b37",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-sake-shut",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_sake_shut-new.png"
+  },
+  {
+   "sha": "3a1b77a6d78aae4d15854014e6ca60624c652e2cdbc7c8e73d7b26558d8418ca",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-flower-shut",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_flower_shut-new.png"
+  },
+  {
+   "sha": "a201e7a7aef746b4865220dcfe03f6898cfbbc5f115dd0ec673e890a73455586",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-realestate-shut",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_realestate_shut-new.png"
+  },
+  {
+   "sha": "a39275138003f86e351474102a079b31b7c83f4016888d4103c3559f0644d6a8",
+   "kind": "structure",
+   "label": "jp_city/jp-bldg-shop-vacant",
+   "source": "/home/main/claude-viz/jp-depth-pilot-1/shop_vacant-new.png"
+  }
+ ]
+}

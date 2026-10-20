@@ -1,0 +1,437 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6c5c2ed00f9f3e43821fca964502ad813ea5a05ff8c3cfebeef1aef2d0b2fc79",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "mart cold case",
+ "label": "modern_city_interior/mart-cold-case",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 3 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 3 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 31,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header sign panel (gray, white and blue strip with cyan lights)",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass door front with shelves and goods",
+      "rows": "9-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole case is a flat, face-on elevation. Rows 1-2 are a gray rim, rows 3-7 are a front-facing header sign, and row 8 is a dark outline. None of these has a front-edge line with eave shadow, an ellipse, or visible contents seen from above. Rows 9-28 are the glass doors with shelf lines and goods drawn face-on, and rows 29-30 are the base. The width is a constant 30 across rows 0-31, so there is no receding top and no side face. The only top-like part is the 2-row gray rim, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small cold case (fridge-like display) with a light frame and a glass front showing coloured shelf items. It has about 12 visible tones per tile, similar to the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so the shelf items and glass give some variation. But the frame and body use only about 3 lightness steps, against 5-6 on Beodeul materials. The dark edge pixels are 100% near-neutral, so the outline is a uniform dark grey/black line, the sticker look. The references with comparable structure (stall 1%, hedge 0%, well 33%) use tinted material-tone edges. The result reads clean but flatter and more sticker-like than the same-kind references, and it has no grain or per-surface texture on the frame.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14456
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top rim (gray strip)",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "header sign band (white and blue with cyan lights)",
+      "rows": "3-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass front with shelves and goods, drawn face-on",
+      "rows": "9-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is a flat front view with a constant width of 30 px from row 0 to row 31. Rows 1-2 are a thin gray rim. Rows 3-8 are a sign strip facing the viewer, with white and blue bands and cyan lights, and it has no front-edge line or eave shadow. Rows 9-28 are a glass door front with a shelf grid and goods drawn face-on. No horizontal top surface, ellipse, roof or visible interior from above is drawn, so the object is a front elevation with no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a white and pale-blue glass-front cooler with small coloured product dots. The measured facts put its dark edge pixels at 100% near-neutral, and the picture agrees: the frame is outlined in a grey-black line with no tint toward the neighbouring material. The Beodeul stall, well and hedge references use tinted dark-material outlines (0-33% neutral). The cabinet body and frame have only about 3 lightness steps (white, pale blue-grey, dark outline), against 5-6 on the references. The shelves and glass are drawn as evenly spaced rows of identical dots, which reads as a flat, mechanical pattern rather than grain, shading or per-object shading. It has 12 visible tones per tile, which is between the hedge (9) and the stall (17) but well below the well (20). Much of that count comes from the small product dots, not from material shading. The sticker-like outline and shallow shading make it weaker than the references, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15890
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white and blue sign header (vertical face)",
+      "rows": "3-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass door front with shelves and goods",
+      "rows": "9-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is a flat front view. Rows 1-2 are a grey strip about 2 rows tall, the same width as the body, with no front-edge line and no eave shadow below it. Rows 3-7 are a white band and a blue sign band with cyan lamps, both vertical faces, and row 8 is a dark outline. Rows 9-28 are the glass door front with shelf lines, a center divider and goods, and rows 29-30 are the base. No ellipse, roof plane or visible contents inside an open container is present, so there is at most a 2-row rim and no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The cold case reads as a clean but shallow piece. The frame and body use about 4 steps (white, light grey, mid grey, dark line), where the stall and well references use 5-6 per material. The outline is a uniform dark grey line around the whole cabinet and each shelf, and 100% of its dark edge pixels are near-neutral, so it is the 'sticker' look rather than the dark-material-tone edges of the stall and well. Nothing on the body is grain, speckle or per-element highlight; the shelf items are tiny coloured dots on pale glass. It has 12 visible tones per tile against 17 for the stall and 20 for the well, and only 14 colours in total against 38-40 for those two. No 5x5 area is flat, so it avoids flat fills, but its structure and outline are plainly flatter than the stall and well references of the same kind.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18696
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top rim strip",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "header sign panel (white band and blue lit strip), front-facing",
+      "rows": "3-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass door front with shelves and goods",
+      "rows": "9-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is a flat front view. Rows 1-2 are a thin gray rim. Rows 3-7 are a white band and a blue sign strip with cyan lights, which are vertical header panel faces. Row 8 is only a dark outline, with no front-edge line followed by eave shadow, so it does not mark a top plane. Rows 9-28 are a glass door seen face-on, with shelves and goods in front view. Rows 29-30 are the base. No ellipse, roof or canopy plane, and no visible interior contents seen from above. The best reading is a rim of about 2 rows over a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The cold case reads as a white/grey cabinet with a pale blue glass front and small coloured product dots on the shelves. Its measured edge pixels are 100% near-neutral, and by eye the outline is an even dark grey line around the whole shape with no tint toward the neighbouring material. The stall-cheese and well-roofed references have 1% and 33% neutral edge pixels and use darker tones of each material for separation. The candidate has 12 visible tones per tile, below the 17 and 20 of the two comparable references, though close to the hedge's 9. Near-flat coverage is 0%, so there are no flat fills. The product dots add some texture. The frame and glass have only about 3-4 lightness steps, against 5-6 on the references' main materials. The even grey contour gives a sticker-like cabinet and is the main fault. Overall it is slightly thinner and flatter than the stall and well.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17099
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.061Z",
+ "cells": {
+  "16": [
+   "775e9a15733bd612",
+   "8ed510db7970c51e",
+   "a79bd196a3293ace",
+   "bbaa8122f3983800"
+  ],
+  "24": [
+   "015d6ed23e895327",
+   "0303184583841efc",
+   "117a1df2126e8c56",
+   "3a2306944fde817b",
+   "4a54d769c9e0ad29",
+   "5961351e4718113e",
+   "5fc2e9c1794f2a31",
+   "6ee2bf02e296fc22",
+   "7ce02a6d477707fc",
+   "86c2d9819f1f8453",
+   "8a2058b01503cc29",
+   "8b1ccb151e3bce27",
+   "916482c238f8a836",
+   "ad208828ca1e6f4e",
+   "b8b5cb8befe471eb",
+   "be191eae29913889",
+   "cca624fc05b50c81",
+   "cfd191697ce287d5",
+   "d7dca0bb1f7a6645",
+   "e4fa51fbb81823c8",
+   "eeed94a95b5764dc",
+   "f69df9f7f50fc631",
+   "fa65124c49c3d901",
+   "fb10215fd6a9952f"
+  ],
+  "32": [
+   "2a73f77f8f6e1d02"
+  ],
+  "48": [
+   "1a64ade56bb555be",
+   "2676b462491f81e6",
+   "79f4337b5d06b899",
+   "d5d6bbea11bb28dc",
+   "decc8119f08947fd",
+   "ea2f5a75a658f7cc"
+  ]
+ }
+}

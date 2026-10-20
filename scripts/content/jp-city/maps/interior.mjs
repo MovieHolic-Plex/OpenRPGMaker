@@ -111,8 +111,8 @@ if (process.argv.includes("--publish")) {
   // 집은 1층·2층을 한 다운로드에(계단 이동이 이어지게), 원룸은 혼자.
   const groups = [
     { file: "house", placeId: "jp-city-house-interior-21x15", name: "일본 2층 단독주택 실내(1층·2층)", maps: [HOUSE_1F, HOUSE_2F], main: HOUSE_1F,
-      set: 1, rules: ["1층: 현관(타타키+아가리카마치 띠·신발장·문턱) → 동서 복도(북쪽 벽 계단) — 북쪽 화실(후스마)·화장실(문)·부엌, 남서 욕실·탈의실(미닫이 옆문), 동쪽 LDK(옆문·대면 카운터·식탁·TV).",
-        "2층: 남쪽 복도(계단통 — 아랫줄 밟으면 1층·실내 건조대) · 부부 침실(더블 침대·화장대·옷장) · 화장실 · 아이방(이층침대·공부 책상·벽장) — 방마다 가로 칸막이 1칸 틈에 열린 문.",
+      set: 1, rules: ["1층: 남쪽 가운데 현관(타타키+아가리카마치·신발장·문턱) → 가운데 남북 복도(북쪽 벽 앞 계단) — 서쪽 LDK(남쪽 거실·식당, 북쪽 부엌과 2칸 트임), 부엌과 트인 북쪽 복도 끝 독립 화장실, 동쪽 물 쓰는 곳 덩이(탈의·세면 → 욕실).",
+        "2층: 가운데 남북 복도(계단통 — 아랫줄 밟으면 1층·실내 건조대) · 네 귀퉁이 방(아이방·화실·부부 침실·서재, 복도 옆문) · 복도 남쪽 끝 화장실. 구조 규칙 jp-interior-house-structure, 새로 짓기 layout:{program:\"jp-house-1f\"|\"jp-house-2f\"}.",
         "평면 문자열과 가구 id 는 tiledata/jp-city/interior/examples/house-1f.json·house-2f.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로."],
       limitations: "실내만이다 — 현관 밖 이동은 비어 있다(거리 맵에 붙일 때 1층 맨 아래 틈 칸에 links 를 단다). 가족 NPC·이벤트 없음." },
     { file: "apartment-1k", placeId: "jp-city-apartment-1k-12x13", name: "일본 원룸 아파트(1K) 실내", maps: [APT], main: APT, set: 1,

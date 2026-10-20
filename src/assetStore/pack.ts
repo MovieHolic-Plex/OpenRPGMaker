@@ -2,7 +2,7 @@
  * 팩 만들기(프로젝트 → 매니페스트 + blob)와 넣기(매니페스트 + blob → 프로젝트), 크레딧.
  * 순수 함수다. 바이트 읽기·해시는 호출하는 쪽이 넘긴다(렌더러는 crypto.subtle, 서버는 node:crypto).
  */
-import type { CharsetLabelOverride, PassFlag, Project, TilesetDef, UploadedAsset } from "../project/types";
+import type { CharacterAppearanceRecord, CharsetLabelOverride, PassFlag, Project, TilesetDef, UploadedAsset } from "../project/types";
 import {
   STORE_ASSET_KINDS,
   STORE_BLOB_MIMES,
@@ -25,7 +25,9 @@ import {
   type StorePackAsset,
   type StorePackCharacter,
   type StorePackManifest,
+  type StorePackObject,
 } from "./format";
+import { validateObjectSpec } from "../project/objectSpec";
 import { base64ToBytes, bytesToBase64, dataUrlParts, pngSize, sniffMime } from "./sniff";
 import { WORKSHOP_ASSET_PREFIX } from "../project/workshopTiles";
 
@@ -186,6 +188,7 @@ export async function buildPack(project: Project, selection: PackSelection, meta
     tilesets[id] = mapStrings(tileset, (text) => replacements.get(text) ?? text) as TilesetDef;
   }
   const characters = packCharacters(project, assets);
+  const objects = packObjects(tilesets);
   const previewShas: string[] = [];
   for (const bytes of previews) previewShas.push((await addBlob(bytes, "미리보기")).sha);
   if (previewShas.length === 0) {
@@ -202,11 +205,27 @@ export async function buildPack(project: Project, selection: PackSelection, meta
     license: meta.license,
     aiGenerated: meta.aiGenerated || closed.assetIds.some((id) => aiMaker(project.assets.uploaded[id]!) !== null),
     credits: meta.credits.trim(),
-    content: { assets, tilesets, ...(characters.length > 0 ? { characters } : {}) },
+    content: { assets, tilesets, ...(characters.length > 0 ? { characters } : {}), ...(objects.length > 0 ? { objects } : {}) },
     previews: previewShas.slice(0, 6),
     blobs: [...blobs].map(([sha256, blob]) => ({ sha256, mime: blob.mime, bytes: blob.bytes.byteLength })),
   };
   return { manifest, blobs };
+}
+
+/**
+ * 팩 타일셋들의 구조 킷 중 설명서(spec, ObjectSpec v1)가 있는 것 → content.objects. 정본은 킷의 spec 이고 이건 사본이다.
+ * 설명서 검사를 통과한 것만 넣는다. 옛 공방 태그 킷은 불러올 때 설명서로 옮겨지므로(attachWorkshopTiles) 여기서 다시 짐작하지 않는다.
+ */
+export function packObjects(tilesets: Readonly<Record<string, TilesetDef>>): StorePackObject[] {
+  const out: StorePackObject[] = [];
+  for (const [key, tileset] of Object.entries(tilesets)) {
+    for (const kit of tileset.structureKits ?? []) {
+      if (!kit.spec || kit.spec.id !== kit.id || !validateObjectSpec(kit.spec).ok) continue;
+      out.push({ tileset: key, kit: kit.id, spec: structuredClone(kit.spec) });
+      if (out.length >= STORE_LIMITS.objects) return out;
+    }
+  }
+  return out;
 }
 
 /** 팩에 넣는 캐릭터 시트의 칸 설명(프로젝트 charsetLabels 중 그 시트 것). */
@@ -350,6 +369,14 @@ export function applyPackToProject(project: Project, manifest: StorePackManifest
     };
     project.charsetLabels = at >= 0 ? labels.map((old, i) => (i === at ? entry : old)) : [...labels, entry];
   }
+  // 캐릭터 칸의 짝 초상 → 캐릭터 외형(칩·얼굴·흉상·전신 + 표정 짝). 같은 상품을 다시 넣으면 그 외형을 새 그림으로 바꾼다.
+  for (const c of manifest.content.characters ?? []) {
+    const record = storeAppearanceRecord(slug, c, assetIdMap);
+    if (!record) continue;
+    const list = project.database.characterAppearances ?? [];
+    const at = list.findIndex((entry) => entry.id === record.id);
+    project.database.characterAppearances = at >= 0 ? list.map((old, i) => (i === at ? { ...record, name: old.name, description: old.description } : old)) : [...list, record];
+  }
   for (const [id, source] of Object.entries(manifest.content.tilesets)) {
     const existingBundled = Object.hasOwn(project.tilesets, id) ? project.tilesets[id] : undefined;
     const bundledRefUrls = new Map<string, string>();
@@ -383,9 +410,43 @@ export function applyPackToProject(project: Project, manifest: StorePackManifest
     if (tileset.image.type === "uploaded") tileset.image = { type: "uploaded", id: assetIdMap.get(tileset.image.id) ?? tileset.image.id };
     if (tileset.tileGrafts) tileset.tileGrafts = tileset.tileGrafts.map((graft) => ({ ...graft, sourceChipset: assetIdMap.get(graft.sourceChipset) ?? graft.sourceChipset }));
     if (tileset.referenceSourceTilesetId) tileset.referenceSourceTilesetId = tilesetIdMap.get(tileset.referenceSourceTilesetId) ?? tileset.referenceSourceTilesetId;
+    // 기물 설명서: 킷에 spec 이 없고 팩 목록(content.objects)에만 있으면 킷에 붙인다(tile-gen 이 목록만 채운 팩).
+    for (const object of manifest.content.objects ?? []) {
+      if (object.tileset !== id) continue;
+      const kit = tileset.structureKits?.find((k) => k.id === object.kit);
+      if (kit && !kit.spec && validateObjectSpec(object.spec).ok) kit.spec = structuredClone(object.spec);
+    }
     project.tilesets[tileset.id] = tileset;
   }
   return { assetIds: [...assetIdMap.values()], tilesetIds: [...tilesetIdMap.values()], replaced };
+}
+
+/** 스토어 캐릭터 칸이 만드는 외형 id. */
+export const storeAppearanceId = (slug: string, asset: string, characterIndex: number): string => storeProjectId(slug, `appearance-${asset}-${characterIndex}`);
+
+/** 짝 초상이 있는 캐릭터 칸 → 외형 레코드(없으면 null). 프로젝트 id 로 바꾼 에셋만 가리킨다. */
+export function storeAppearanceRecord(slug: string, c: StorePackCharacter, assetIdMap: ReadonlyMap<string, string>): CharacterAppearanceRecord | null {
+  const por = c.portraits;
+  const charset = assetIdMap.get(c.asset);
+  if (!por || !charset) return null;
+  const mapOf = (raw: Partial<Record<string, string>> | undefined): Partial<Record<string, string>> | undefined => {
+    const entries = Object.entries(raw ?? {}).flatMap(([name, id]) => (id && assetIdMap.has(id) ? [[name, assetIdMap.get(id)!] as const] : []));
+    return entries.length > 0 ? Object.fromEntries(entries) : undefined;
+  };
+  const bust = mapOf(por.bust);
+  const full = mapOf(por.full);
+  const face = por.face ? assetIdMap.get(por.face) : undefined;
+  if (!bust && !full && !face) return null;
+  return {
+    id: storeAppearanceId(slug, c.asset, c.characterIndex),
+    name: c.label,
+    description: c.appearance ?? "",
+    charset: { resourceId: charset, characterIndex: c.characterIndex },
+    ...(face ? { face: { resourceId: face } } : {}),
+    ...(bust?.base ? { bust: { resourceId: bust.base } } : {}),
+    ...(full?.base ? { full: { resourceId: full.base } } : {}),
+    ...(bust || full ? { portraitExpressions: { ...(bust ? { bust } : {}), ...(full ? { full } : {}) } } : {}),
+  };
 }
 
 /** 팩 에셋이 프로젝트에서 받을 id(넣기 전에 저장소에 미리 넣을 때 쓴다). */

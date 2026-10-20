@@ -1,0 +1,301 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "17241b4ddfe3c20444b76f310bade8f23617c98e8e55b69d9afb13ca56b0efb8",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "저울 추 받침(빈 것) (weight stand)",
+ "label": "atlas_biome_interior/plus/weight stand",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 66,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "open tray/box top with interior (brown and gold) seen from above",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face of grey body",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a 14px-wide box over rows 3-12, with a dark outline on row 13. Rows 3-7 form a recessed interior with dark rim rows 3-4, then brown and gold interior rows 5-7. This reads as an open top surface seen from above. Row 8 is the brightest row (L=251) and acts as a 1-row front-edge line. Rows 9-12 (4 rows) are a grey vertical south face with lighter and darker banding, and row 13 is the dark base outline. There is no separate eave shadow row, but the top band with its edge line and the 4-row front face meet the three-quarter structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile prop, a pale stone/wood weight stand with a recessed empty top. The facts back it up. It has 13 distinct colours, about the same as the bench (14), lamp (14) and hedge (11). Its median of 13 colours per tile is above the hedge's 10 and close to the stall's 17. Flat-fill coverage is 0%, so there are no large single-colour areas. None of its dark edge pixels are neutral (0%), so the outline is a tinted darker version of the material rather than a black sticker line. By eye it shows a lit top face, a mid-tone body and a darker base, giving roughly 4 shading steps, a little fewer than the larger references, with some grain on the surface. This is acceptable for a small simple prop. It does not look thinner or flatter than the bench or lamp beside it, though it is less elaborate than the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16510
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tray/box body (open top with brown and gold interior)",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-9"
+     },
+     {
+      "part": "front face of the box",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-13 form a 14px-wide box. Rows 4-7 hold the open top: a brown back rim and gold interior at x=4 and x=11, with grey at x=8. The bright white row 8 (L=251) is a clear front-edge line. Row 9 (L=170) is a darker band just below it, which reads as eave shadow. Rows 9-12 are the light grey front face (4 rows), and row 13 is the dark base outline. The top surface is about 4 rows and the front face is 4 rows, so the box shows both a top and a front, like the green cabinet/barrel references. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile prop, a stand with a tray holding a light top surface. It has 13 distinct colours and a median of 13 per tile, which matches or beats the small references (hedge 10 per tile with 11 colours, bench 14 colours, lamp 14 colours). Flat-fill coverage is 0%. None of its dark edge pixels are neutral, so the outline carries a material tint rather than the near-black sticker look. The picture is very small, so I count about 4 lightness steps on the body, with some rim and speckle variation. That is slightly below the references' 5-6 steps but not shallow for a prop this size. Next to the bench and hedge it looks as dense and no flatter, so I accept it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17534
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "open tray/box interior (main body top)",
+      "rows": "4-7",
+      "evidence": "d",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face of the stand",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-4 are the dark back outline. Rows 5-7 show the inside of an open container, with gold and brown tones and lighter slots. Row 8 is a bright (#fbfbff) front-edge line. Rows 9-12 are a gray front face, 4 rows tall, with a dark base outline on row 13. The interior is seen from above and the front face sits below the edge line, so the main body has a top and a front face. There is no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, simple weight stand, so I judged it against the bench and lamp, which are similarly small. It has 13 distinct colours, the same as the bench and lamp (14 each). Its median of 13 colours per full tile is above the hedge (10) and not far below the stall (17) and well (20). Flat-fill coverage is 0%. None of its dark edge pixels are neutral (0%), so the outline leans brown or grey-brown toward the adjacent material rather than being a black sticker line. By eye, the wood base and the tray rim each have a few value steps, and there is some grain and speckle on the tray. It has fewer ramp steps than the large stall and well, but it is not thinner or flatter than the bench or lamp, and a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16108
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "weight stand tray (open top with interior)",
+      "rows": "3-7",
+      "evidence": "d",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face of the body",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a 14px-wide box from rows 3-12 (12px at row 13). Rows 3-7 show the open top: a dark rim at rows 3-4, then brown and gold interior at rows 4-7 (the back wall and the tray floor seen from above). Row 8 is a bright 1-row front-edge line (#fbfbff, L=251) across all scanned columns. Rows 9-12 are the gray front face, with shading running from L=170 to L=138, and row 13 is the dark base outline. The top is about 5 rows and the front face 4-5 rows, so it matches the 'cabinet: top + edge' and 'barrel: ellipse top' green examples rather than the rim-only or front-elevation red ones. The object is empty, but the visible interior still counts as top-surface evidence."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small open stone/wood weight-stand box with an empty tray on top. It has 13 distinct colours and a median of 13 colours per 16x16 tile, which is above the hedge (10) and in line with the bench, lamp and hedge totals (11-14 colours). Flat-fill coverage is 0%, so there are no large single-colour areas. Dark edge pixels are 0% neutral, so the outline is tinted, a dark version of the neighbouring material, not a black sticker line. The shading ramps look like about 4 steps, with a light top rim, mid body and darker underside, against about 5 on the references. It is a simple single-tile prop, so lower totals than the stall or well are expected. A careful artist would accept it next to the thin-prop references (bench, lamp, hedge) without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17101
+  }
+ ],
+ "decidedAt": "2026-10-20T06:28:15.438Z",
+ "cells": {
+  "16": [
+   "c4d3a3bc25193fa3"
+  ],
+  "24": [
+   "11ccc88a1284440d",
+   "18d1030045f2c032",
+   "57ccd98733bb1787",
+   "7020ac4f63936b5e",
+   "d8ff533c8098f1e8",
+   "ebc229f490f03ae5"
+  ],
+  "32": [
+   "2189180a1ac5329b",
+   "76f6c0cfb166ebc1",
+   "987c3deb11b4940c",
+   "bcd3924d7a6845a4",
+   "c3fe1728a2705140",
+   "fe7c4ca4356347f9"
+  ],
+  "48": [
+   "2c5a9739e30f0151",
+   "6da935dbe471a256",
+   "957ecf769112791c",
+   "9c49447f0c302b51",
+   "ace75f199db693eb",
+   "b5578e6ee364d29c"
+  ]
+ }
+}

@@ -419,14 +419,18 @@ def preview(frames, sheet, out: Path, S=64, idle_ms=170):
         imgs[0].save(out / f"{tag}.gif", save_all=True, append_images=imgs[1:], duration=dur, loop=0, disposal=2)
 
 
-def run(slug, draw, argv, S=64, idle_ms=170):
-    """시트·초상 저장 + 검사. argv 에 --preview DIR 이 있으면 DIR 에 4배 시트·GIF."""
+def run(slug, draw, argv, S=64, idle_ms=170, idle_islands=1, min_island=10):
+    """시트·초상 저장 + 검사. argv 에 --preview DIR 이 있으면 DIR 에 4배 시트·GIF.
+
+    idle_islands: 대기 칸 덩어리 수 상한. 기본 1(떨어진 픽셀 없이 한 덩어리). 줄기 없이 조각이 자유롭게 떠도는
+    종(룬 조각돌)만 늘린다 — 그때도 min_island 픽셀보다 작은 떨어진 점은 여전히 막는다."""
     sheet_path = ROOT / f"public/assets/generated/pixel-enemies/{slug}.png"
     portrait_path = ROOT / f"public/assets/generated/pixel-enemy-portraits/{slug}.png"
     frames, sheet, ncol = build(draw, S)
     for i, f in enumerate(frames[:3]):
         parts = islands(f)
-        assert len(parts) == 1, (slug, POSES[i], parts)  # 대기 칸은 떨어진 픽셀 없이 한 덩어리
+        assert len(parts) <= idle_islands, (slug, POSES[i], parts)  # 대기 칸은 떨어진 픽셀 없이 한 덩어리(기본)
+        assert len(parts) == 1 or min(parts) >= min_island, (slug, POSES[i], parts)
     sheet.save(sheet_path)
     portrait = frames[0]  # 초상은 시트와 같은 칸 크기(96 칸 종은 96 초상)
     portrait.save(portrait_path)

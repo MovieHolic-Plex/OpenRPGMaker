@@ -1,0 +1,4 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"cabinet.bolt+boltg+boltr","view34":"PASS","quality":"FAIL","reason":"The cabinet top plane reads in 3/4 view, but the cloth bolts are drawn as flat 6x6 front-facing circular discs that plug the entire shelf height like colorful buttons/targets with no cylindrical body or shelf recess."}
+{"id":"cabinet.candle","view34":"PASS","quality":"FAIL","reason":"The cabinet frame has a valid 3/4 top plane, but the shelf contents are solid horizontal blocks with a noisy 1px dark/light checkerboard pattern that reads as perforated bricks rather than distinct candles with wicks."}

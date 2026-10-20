@@ -1,0 +1,422 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7885626032edfb09436f19a578f5f1f51691b38ec26fc8cc5599c6cda76df1bd",
+ "width": 32,
+ "height": 32,
+ "kind": "seat",
+ "name": "of-lobby-sofa-n",
+ "label": "seats34/jp_city_interior/of-lobby-sofa-n",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 0행 < 4 (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 0행 < 4 (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 26,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "11-16",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests",
+      "rows": "15-28",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat front / cushions",
+      "rows": "17-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sofa is a flat front view. Rows 12-16 are the backrest, a light 2-row top strip over a mid-tone face, which is exempt. Rows 17-28 are one uniform dark cushion/front face with vertical seams at the cushion divisions. No seat surface is visible from above: there is no lighter band, front-edge line or shadow row between the backrest and the front face, and the seat is not an ellipse. Rows 30-31 are small feet. With no seat top, it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey-blue sofa with only 10 distinct colours in total. Its main ramp has about 4 steps: a dark outline, a body tone, a cushion tone and a highlight. The references use about 5-6 steps per material. The dark edge pixels are 0% neutral, so the outline leans blue-grey and counts as dark_material_tone, not a near-black sticker line. The weakness is flat fill. Near-flat coverage is 35%, against 0% for the hedge, well and bench and 13% for the cheese stall. The seat cushions and backrest are large areas of one colour with no grain, stitching dots or per-cushion highlights. Visible tones per tile (8) are close to the hedge (9) but far below the stall (17) and well (20). The sofa is a large furniture piece that should carry more surface detail than this, so it reads flatter than the references. Flat fills plus the shallower ramp fail it against the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 21288
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest top band",
+      "rows": "12-13",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest face",
+      "rows": "14-16",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right armrests",
+      "rows": "16-28",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat front face (cushions)",
+      "rows": "17-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sofa is drawn face-on. Rows 11-16 are the backrest, with a light band at rows 12-13 and a mid-tone face at rows 14-16, so it is exempt as seat_back. The armrests at both sides are also exempt. The seat itself is the dark block at rows 17-28 (L about 43-56), split by vertical dividers. It has no band of rows ending in a front-edge line, no eave shadow and no ellipse, and no seat surface is visible from above. The seat is therefore a plain front face of 12 rows with no top, which matches the red reference 'seat: band 2'."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a dark grey-blue sofa seen from the front. It has a darker outline, a mid body, and lighter highlights on the back top and the armrests. I count about 3 to 4 lightness steps on the body, against about 5 to 6 on the hedge, stall and well. The measured 35% near-flat coverage is well above the references (0% for hedge and well, 13% for the cheese stall). The seat cushions and backrest show large areas of one colour with no grain, stitching or speckle, so this is a flat fill. It has 8 visible tones per tile, close to the hedge's 9 but far below the stall's 17 and the well's 20. The outline is tinted (0% neutral dark edge pixels), so it is not a black sticker line, which is a point in its favour. Even so, the shading is shallow and the surface flat, and a careful artist would not accept it beside the stall or the well.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 14940
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "11-16",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left armrest",
+      "rows": "15-28",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right armrest",
+      "rows": "15-28",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion front",
+      "rows": "17-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The column scan at x=16 shows rows 12-13 as a light band, rows 14-16 as a mid-tone band and rows 17-28 as one dark face. The light band and mid-tone band (rows 11-16) are the top edge and face of the backrest, which is exempt. Below them the seat is a flat vertical face of 12 rows split by dark vertical cushion seams. There is no seat surface seen from above: no ellipse, no front-edge line followed by eave shadow, and no contents. The armrests are drawn as vertical blocks at the sides. Only the backrest rim is lighter, so the seat reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a dark grey-blue sofa with a body, a slightly lighter top edge and a dark outline, which reads as about 3 lightness steps. The references use about 5-6 steps (the hedge has clumps in several greens, the well has per-stone shading and a tiled roof). The measured near-flat coverage is 35%, against 0-13% for the references, so the cushions and back are large flat fills with no grain, stitching or speckle. The outline pixels are tinted (0% near-neutral), so they are a dark blue-grey material tone and not a black sticker line. The candidate has 8 visible tones per tile, which is near the hedge's 9 but far below the stall's 17 and the well's 20. Those references are more complex objects, but the sofa still reads flatter and more sticker-like beside them, with no highlights on the cushions and no fabric texture. A careful artist would not accept it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16712
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "11-16",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right armrests",
+      "rows": "15-28",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushions (front face)",
+      "rows": "17-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The column scan at x=16 shows a light band at rows 12-13 and a mid-tone band at rows 14-16. Together these form the top edge of the backrest, a vertical face seen head-on. Below it, rows 17-28 are a uniform dark front face with vertical cushion dividers. No separate seat surface is visible between the backrest and the cushion front. At most a 1-3 row strip could be a seat, with no front-edge line and no eave shadow. The armrests have small lighter caps at rows 15-18 but are exempt. The seat therefore shows no top surface, so the sofa is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The sofa is a dark blue-grey form with about 4 lightness steps: a dark edge, a mid body, a lighter top rim and a slightly lighter cushion. The references use about 5-6 steps per material. The dark edge pixels are 0% neutral, so the outline leans blue-grey and reads as a tinted material tone rather than a black sticker line. Texture is the weak point. The backrest and the seat cushions are large smooth blocks with no grain, stitching dots, fabric speckle or per-cushion highlights. Near-flat coverage is 35%, against 0-13% on the references that have measurable tiles (hedge 0%, stall 13%, well 0%). Visible tones per tile are 8, close to the hedge at 9 but well under the stall at 17 and the well at 20. At the same scale it looks flatter and simpler than the references, and with this much flat fill and the shallow ramp a careful artist would not accept it beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 18328
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.423Z",
+ "cells": {
+  "16": [
+   "5c33b1b3345f7a99",
+   "60daf2a2913fa949",
+   "80f0ab787fffccd7",
+   "d276445c80c5d3d1"
+  ],
+  "24": [
+   "01a2dfe7ea82ad36",
+   "1615a18b0167c003",
+   "1ed3f288d3524ccd",
+   "4143776244663ce5",
+   "56c872f24d0eb7a9",
+   "646b03024d2705f4",
+   "69342de780662cea",
+   "7fb3c9ed0a649ebe",
+   "85117d1de70d2f5c",
+   "86a7ce9d37bf32b9",
+   "8eb1a4b656a7e4eb",
+   "958e10c463c6fbf7",
+   "9a792692a50db290",
+   "9d2cd00e4083f9a3",
+   "ca395745ed01a7a2",
+   "d2d9f2d88f631fdc",
+   "d6af0a519a61d849",
+   "f8a466e0d162a926"
+  ],
+  "32": [
+   "7fa48eacb50a24c0"
+  ],
+  "48": [
+   "49e4dfa06408f012",
+   "9124f56c6505d1d7",
+   "a0bc057e3ad7703c",
+   "d93679848330aa49",
+   "e0821ea5b671bc77",
+   "e8adf8bd92c83508"
+  ]
+ }
+}

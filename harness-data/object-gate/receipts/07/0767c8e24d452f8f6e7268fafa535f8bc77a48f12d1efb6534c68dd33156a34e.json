@@ -1,0 +1,362 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0767c8e24d452f8f6e7268fafa535f8bc77a48f12d1efb6534c68dd33156a34e",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "wheelchair (faces south)",
+ "label": "seats34/modern_city_interior/hospital-wheelchair",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 28,
+  "nearBlackEdge": 0.8,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "14-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "backrest",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a blue band at rows 14-17. Row 14 is a darker edge, rows 15-16 are mid-blue, and row 17 is a lighter front-edge line. Dark shadow at rows 18-19 sits below it, so the seat reads as a horizontal surface seen from above. Below the shadow, the frame, wheels and footrest supports run to about row 25 and form the front face. The backrest at rows 6-13 is a face-on vertical panel, which is not expected to show a top surface. The gray wheel strips at the sides are vertical, not receding side faces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The wheelchair is a small blue-and-grey piece with about 12 distinct colours. Its blue seat and back have only about 3 lightness steps (light, mid, dark), against 5-6 steps on the Beodeul materials. The measured near-neutral share of dark edge pixels is 100%, and by eye the dark line around the frame, wheels and seat is near-black with no brown or blue lean. The references with tinted outlines (hedge 0%, cheese stall 1%) show the dark-material-tone craft that this piece lacks. Flat-fill coverage is low at 8%, and the colours-per-tile median of 11 is comparable to the hedge (10), so density is not far off. But with the neutral outline, shallow ramps and few distinct colours (12 against 38-40 on the richer props), it reads as a sticker-style outlined shape and not as Beodeul-quality shading. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17880
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "14-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "backrest",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels and footrest",
+      "rows": "20-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a lighter blue band at rows 14-17. At x=8, row 17 (#7aa2dc) is a lighter front-edge line, and rows 18-19 (#1c3c74) are dark eave shadow below it. Below that the front is open, with wheels, legs and footrest down to row 27, about 10 rows of front structure. The backrest at rows 6-13 is a face-on vertical panel, which is a normal backrest and not a missing top. The seat surface is visible from above, so this reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The wheelchair is a small blue seat and back with a dark outline. It uses only 12 distinct colours in total, against 38-40 for the stall and well. It reads as about 3 blue steps (light, mid, dark) with no grain or per-part variation, where the references carry 5-6 steps per material. The measured 100% near-neutral share of dark edge pixels confirms a neutral black/grey outline, which is the sticker look. The 11-colour per-tile median and 8% flat-fill coverage are not poor, but they come from a tiny object that is nearly all outline and a few shades. The thin wheels, handles and frame carry little material detail, and the piece looks flatter and thinner than the stall or well. Next to the references it would be read as a simple outlined icon, not as a shaded prop.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13785
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion",
+      "rows": "14-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "backrest panel",
+      "rows": "5-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a lighter blue band at rows 14-17 (L about 130). Row 17 is a lighter front-edge line (#7aa2dc), and rows 18-19 are dark eave shadow (L=49). Below that, the frame, footrest and wheel supports run through rows 20-27, so the front face is about 10 rows. The backrest at rows 5-13 is a darker, face-on vertical panel with only a thin 1-2 row rim at its top (rows 6-7). It is a normal backrest and not a missing top. The grey wheels on both sides are drawn as flat side strips. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small blue wheelchair with 12 distinct colours. Its dark edge pixels are 100% near-neutral, so the outline is a uniform near-black line around the shapes, unlike the tinted dark-material outlines of the hedge, stall and well. The blue seat and back show only about 2-3 lightness steps, against about 5-6 on the references' main materials. Surface texture is minimal: the seat and back are smooth blue panels with no grain or dots. The 8% flat-fill coverage and 11 colours per tile are comparable to the references, so density is not far off, but the shading is shallow and the look is sticker-like next to the bench, well and stall.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17303
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "14-17",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "backrest",
+      "rows": "5-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels/side frame",
+      "rows": "4-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a lighter blue band at rows 14-17. Row 14 is a darker edge and row 17 is a lighter front-edge highlight (L=157). Rows 18-19 are dark eave shadow or front face (L=49), and the frame, legs and footrest continue below to row 27. The seat top is 4 rows with a front face of 3+ rows, so the seat is seen from above. The backrest (rows 5-13) is a flat face-on blue panel with no top surface, and the wheels at the sides are drawn face-on. The seat top is still clearly visible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The wheelchair is a small blue-and-grey sprite with only 12 distinct colours, against 38-40 for the stall and well. The blue seat and back use about 3 lightness steps (a light blue, a mid blue and a dark blue), where Beodeul materials use 5-6. The measured near-neutral share of dark edge pixels is 100%, and by eye the outline is a uniform dark line around the whole shape with no material-tinted dark tone, which is the sticker look. The hedge and stall references use tinted outlines (0-1% neutral). The 11 colours per tile look decent, but that is only because the sprite is small and packed into one tile, and it carries no grain, speckle or per-part highlights. The metal wheels and frame are thin and flat, with no stepped shading. The 8% flat-fill coverage is low, but only because the piece is tiny. Overall it looks flatter and more sticker-like than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15172
+  }
+ ],
+ "decidedAt": "2026-10-20T06:55:38.658Z",
+ "cells": {
+  "16": [
+   "6f68120c2a8f8d56",
+   "8667284b73143f86"
+  ],
+  "24": [
+   "0e70cf04376dc2d5",
+   "169c404bf04f5174",
+   "2d48d559dcf8493b",
+   "405e22df598527ab",
+   "9f0247d60950af5e",
+   "c3bc71aca31299ca",
+   "c3df3c7db0e4ad74",
+   "c42c5da5a30902e9",
+   "cd4eaedeb6be1ce6",
+   "ddf0be97c498762b",
+   "fdc159c109293585",
+   "ff8cdc900cd1487b"
+  ],
+  "32": [
+   "1c834c11a1747c6c",
+   "38e688d76c315b48",
+   "923f12a95d6e89e6"
+  ],
+  "48": [
+   "7dba1c0f79dd4d83",
+   "b78a16caa77a293d",
+   "c1a0810e9a9335a3",
+   "c691a538ea2f19da",
+   "c88cd4d8d52aabf0",
+   "e72f9d00f11709c5"
+  ]
+ }
+}

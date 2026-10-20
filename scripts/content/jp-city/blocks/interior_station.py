@@ -612,6 +612,36 @@ def _ekiben(c):
     hl(c, 3, 2, 12, K('yuka', 2)); hl(c, 3, 3, 12, K('yuka', 1)); px(c, 15, 2, OL)
 
 
+# ══ seats34 (3/4 다시 그리기) ══
+def _seat_s34(c, ramp):
+    """남쪽 줄 롱시트(북쪽을 보고 앉음) 48×16, 뒤에서 본 모습:
+    등받이 너머 앉는 판 끝 2행(그늘) → 두툼한 등받이 윗면 판 5행(가장 밝음) → 앞 가장자리 선 → 처마 그늘 → 등받이 뒤판(자리 이음) → 스테인리스 밑 테.
+    양 끝 소매 칸막이는 윗면 3행이 밝은 판."""
+    W = 48
+    rc(c, 3, 1, W - 6, 2, K(ramp, 0)); hl(c, 3, 1, W - 6, K(ramp, 1))                               # 등받이 너머 앉는 판 끝
+    hl(c, 3, 3, W - 6, K(ramp, -2))                                                                  # 골
+    rc(c, 3, 4, W - 6, 5, K(ramp, 1)); hl(c, 3, 4, W - 6, K(ramp, 2))                               # 등받이 윗면 판
+    for i in range(1, 7): vl(c, 3 + i * 6, 4, 5, K(ramp, 0))                                          # 자리 이음
+    hl(c, 3, 9, W - 6, K(ramp, 2))                                                                   # 앞 가장자리 선
+    hl(c, 3, 10, W - 6, K(ramp, -2))                                                                 # 처마 그늘
+    rc(c, 3, 11, W - 6, 2, K(ramp, -1))                                                              # 등받이 뒤판
+    for i in range(1, 7): vl(c, 3 + i * 6, 11, 2, K(ramp, -2))
+    hl(c, 3, 13, W - 6, K('tekko', 2)); hl(c, 3, 14, W - 6, K('tekko', -1))                           # 스테인리스 밑 테
+    outline(c, 2, 0, W - 4, 16, OL)
+    for sx in (0, W - 3):                                                                            # 소매 칸막이: 윗면 3행 + 옆판
+        rc(c, sx, 0, 3, 16, K('tekko', 0)); rc(c, sx, 1, 3, 3, K('tekko', 2)); hl(c, sx, 1, 3, K('tekko', 3))
+        vl(c, sx + 1, 4, 11, K('tekko', 1)); outline(c, sx, 0, 3, 16, OL)
+
+
+PENDING_SEATS34 = {'st-long-seat-s': lambda c: _seat_s34(c, 'kon'), 'st-priority-seat-s': lambda c: _seat_s34(c, 'daidai')}
+SEATS34_PASS = set()          # object-gate PASS 영수증을 받은 id 만 — 이 id 들만 굽는 그림을 바꾼다
+for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
+# ══ /seats34 ══
+
+
+
+S34_STUDY2 = __import__('seat34').apply_study2(R)   # 사람 합격(2026-10-20) 앉는 기물 — 관문 pass 영수증 있는 것만 바꾼다
+
 def build(): return R.build()
 def selftest(): return R.selftest()
 

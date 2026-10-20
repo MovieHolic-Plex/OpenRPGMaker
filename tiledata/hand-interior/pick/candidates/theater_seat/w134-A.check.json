@@ -1,0 +1,53 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/theater_seat/w134-A.pxg",
+ "id": "theater seat",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.064
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-seats-34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 10,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "note": "꼭대기 윗면 4행(y=7~10) 접힌 좌판 윗면(등받이 면보다 밝게) + 등받이 머리 1행(y=2), 팔걸이 윗면 y=7~9, 앞날 y=11, 앞치마 y=12",
+ "topClaim": {
+  "rows": 4,
+  "y": [
+   7,
+   10
+  ],
+  "need": 3
+ },
+ "topBand": {
+  "cover": 1.0,
+  "cuts": []
+ },
+ "lines": {
+  "o_thick": 0.08,
+  "o_melt": 0.16,
+  "o_none": 0.0,
+  "o_foreign": 0.4,
+  "light_inv": -0.005,
+  "l_thick": 0.45,
+  "n": 170,
+  "n_outline": 50,
+  "n_line": 20
+ },
+ "ok": true
+}

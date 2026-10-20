@@ -1,0 +1,346 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5e10749c8c17779eb44ff28866b81d1a9a517ee189dd960848b215e28d149610",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "mart gondola detergent",
+ "label": "modern_city_interior/mart-gondola-detergent",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 8/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 8/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 25,
+  "tileColorsP90": 25,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of gondola",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "detergent bottles on the three shelves",
+      "rows": "8-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a light band across the full width (L=218). Row 5 is a brighter front-edge line (L=246), and row 6 is a blue shadow strip directly below it. This is a top surface by evidence (a), similar to the 'cabinet: top 5 + edge + eave' reference. Below it the front face runs from about row 6 to row 29. It holds three shelf interiors separated by 1-row shelf-edge lines at rows 13, 19 and 25, and a base strip at rows 26-29. The bottles on the shelves are goods, so they count as decor. No side face is drawn. The band is not strongly distinct from a header strip, but the edge line and shadow support reading it as a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 21 visible tones per 16x16 tile, level with prop-well-roofed (20) and prop-stall-cheese (17) and well above prop-hedge (9). Near-flat coverage is 0%, and no 5x5 area is a flat fill. The dark edge pixels are 0% neutral, so the outline is a tinted dark version of the neighbouring material rather than a black sticker line. The frame and body carry about 4 lightness steps, slightly fewer than the 5-6 on the references. The shelves hold rows of small multicoloured product dots that give texture and variation. The prop reads as a finished, detailed piece beside the stall and well, and I see no sign of a thin, flat or sticker-like look. The one small shortfall is the shallow ramp on the grey frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20920
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of gondola unit",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "detergent bottles on top shelf",
+      "rows": "8-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "detergent bottles on middle shelf",
+      "rows": "14-18",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "detergent bottles on bottom shelf",
+      "rows": "20-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a light band (L 166, then 218 for rows 2-4, then 246 at row 5). The brightest row 5 acts as the front-edge line. A blue label strip at row 6 and the dark interior at rows 7-8 follow as shadow. The band is about 5 rows tall, so it reads as a top surface, though it could also be a header strip. Below it is an open front face of about 22 rows (rows 7-28). The shelf boards at rows 13, 19 and 25 are 1-row lines, and the bottles between them are decor. The frame's side posts are flat, so no receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 21 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, and the stall reference is at 13%. None of its dark edge pixels are neutral, so the outline is a tinted dark tone of the grey-blue frame rather than a black sticker line. The frame has about 4-5 lightness steps. The shelves carry rows of small product pieces, each with its own highlight and shade, plus a header band and shelf lips, so there is no large flat fill. Surface grain on the frame is a little lighter than on the best references, but density sits at the level of the stall and well, so it is acceptable next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21673
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of gondola",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "detergent bottles on shelves",
+      "rows": "9-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a light top band that gets lighter toward the front (L 166, then 218, then 246). Row 5 is the brightest line and works as the front-edge line. Row 6 is a blue price strip, and rows 7-8 are dark shadow at the top of the shelf opening. The front face runs from row 6 to row 29 and has three shelves, with shelf edge lines at rows 13, 19 and 25. Bottles stand on the shelves as decor. The top band is 5 rows deep, more than a 1-2 row rim, so this is a three-quarter view. The risk is that the band is a flat header panel seen face-on, but the brightness gradient and the edge line favour a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 21 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, so it is at or above the references on density. Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is a tinted dark blue-grey of the frame material rather than a black sticker line. The frame has a highlight, mid and dark step, and the shelf interior shows a light-to-shadow gradient. Each shelf row carries small product items in several tones, which gives texture and clusters comparable to the stall goods. It is slightly more regular and graphic than the hand-worked stall, but it does not look thinner or flatter next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17817
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band / cap",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "shelf interior with three shelf rows of detergent products",
+      "rows": "7-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "detergent products on shelves",
+      "rows": "9-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 are a light band that ends in a bright 1-row line at row 5. Row 6 is a blue strip and rows 7-8 are dark, which read as eave shadow, so this is a top band of about 5 rows. The front face below runs from row 7 to about row 29: a dark shelf interior with light shelf-edge lines at rows 13, 19 and 25, and face-on products. No receding side face is drawn. The top reading is borderline, because the band could also be a front-facing header sign."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a shelf unit with a pale frame and rows of coloured product dots. It measures 21 visible tones per tile, 0% near-flat coverage and 0% neutral dark edges. That is on par with the well (20) and the cheese stall (17), and well above the hedge (9), so the numbers do not mark it as shallow. By eye, the frame and shelf backing are close to flat, with only 3-4 lightness steps on the main material, where the references carry 5-6 on theirs. Most of the tone count comes from the product dots, which are uniform and repeated. They are tiny, evenly spaced and regular, without the per-item shading, grain or clumping that the stall's goods and the well's stones show. The outline is a dark bluish-grey frame edge with a visible tint, so I read it as dark material tone, not sticker black. There are no large flat fills. Overall it is clean and readable, but its shading is shallower and its material texture thinner than the references, and I am not confident a careful artist would accept it next to them without it looking flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18342
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.079Z",
+ "cells": {
+  "16": [
+   "07340f700e0d282a",
+   "33055288aa4167b2",
+   "7a42cbe3a14578cf",
+   "9decc05ba332c4f3"
+  ],
+  "24": [
+   "01e6eb2a583f606f",
+   "2deafab66a440233",
+   "2e3154c5f028df1a",
+   "34d36592dc38d417",
+   "3e56267fcf687f0f",
+   "422a7c0927096bce",
+   "49c58811d6077caa",
+   "4c3e30190ec3699e",
+   "6744c6fe68f43ed0",
+   "732312df56e07c19",
+   "753b66a2daed00ed",
+   "78c29a39388f1e1e",
+   "94679c53a40dd326",
+   "9cea3c4d39e39d4f",
+   "a775f3ad754b18dc",
+   "b2787d979be38a78",
+   "b8ae95aa86940e54",
+   "bcfc00d25215ae61",
+   "cdec41d9f6e43824",
+   "cf04b87305ec3b0c",
+   "d08f4f94cd83ad7e",
+   "d3ac0245e23f2848",
+   "d3e437f01abf60df",
+   "daf4de154a8f65d9"
+  ],
+  "32": [
+   "f8eb5e4b27a5109f"
+  ],
+  "48": [
+   "178383f457885c8e",
+   "2607cabf86b594e4",
+   "2697221ac9d2ffc6",
+   "4d8f984fb0573b8e",
+   "5fba5b0a40e5e4a7",
+   "d7c2a164eb977ab1"
+  ]
+ }
+}

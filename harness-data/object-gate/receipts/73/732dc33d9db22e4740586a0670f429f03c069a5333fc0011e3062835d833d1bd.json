@@ -1,0 +1,371 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "732dc33d9db22e4740586a0670f429f03c069a5333fc0011e3062835d833d1bd",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "sc-lab-stool",
+ "label": "seats34/jp_city_interior/sc-lab-stool",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+  "3/4: 윗면 3행 < 4 (4/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 질감 없음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+   "윗면 3행 < 4 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "질감 없음 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 26,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat top",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "legs and crossbar",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column scan: row 2 is the outline. Rows 3-4 are a light tan top (L=200), and row 5 is a mid-tone front-edge line (L=166). Row 6 is a darker eave shadow (L=131), and row 7 is the dark bottom outline. The silhouette widens from 6 to 8 to 10 px over rows 2-4, so the seat reads as a small rounded plate seen from above, with a front rim below it. Two legs run from row 8 to row 15, joined by a crossbar at rows 10-12 (accent line at row 11). The top is thin, at 3 rows, but it has an edge line and shadow, so it is more than a bare 1-2 row rim. There is no backrest."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny stool with a backrest, smaller than one tile, so the per-tile facts read 0 and I judged by eye. It uses only 5 distinct colours in total. The nearest same-kind reference, prop-bench-wood, has 14, and the other props have 38-40. The wood shows about 2-3 lightness steps: a light seat, a mid-tone frame and a dark leg and outline tone. The bench shows more steps, with plank highlights, grain and a shaded underside. The candidate has no visible grain, no per-plank highlights and no texture dots. The outline looks like a dark brown-grey that is only slightly tinted, and it wraps most of the shapes. That is closer to the uniform sticker line than to Beodeul's selective dark-material tone, so I rate it mixed. The 0% neutral share of dark edge pixels does speak for a tinted outline, but the piece is still shallower than the reference, thinner and flatter. A careful artist would not accept it next to the bench without adding more shading steps and wood grain.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17590
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat top",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "legs and crossbar",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a rounded cushion. Its width profile grows 6, 8, 10 over rows 2-4, which suggests a back rim. Rows 3-4 are the lightest (L=200) and read as the top surface. Row 5 (L=166) is a mid-tone front-edge line, and row 6 (L=131) is a darker eave or apron shadow. Row 7 is the outline. Below the seat, the legs (rows 8-15, width 6 then 10 at the crossbar) and the crossbar at row 11 form the front face. The top is only about 3 rows deep, so the call is borderline, but it is more than a 1-2 row rim and is followed by a shaded apron and open legs. There is no backrest and no side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The stool is a small, sparse prop, so the per-tile facts (0 visible tones, 0% flat) cannot be used for or against it. I judged by eye against prop-bench-wood, the closest reference. The stool has only 5 distinct colours in total, against 14 for the bench. That gives roughly 3 wood steps (light seat top, mid, dark) where the bench shows about 5, with visible plank highlights and grain. The outline is tinted (0% near-neutral dark edge pixels), so it reads as dark brown rather than a black sticker line, which is a point in its favour. The seat and legs are mostly one or two flat tones with no grain dots, no per-plank highlight and no wear marks. Next to the bench it looks thinner and flatter. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21508
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-6"
+     },
+     {
+      "part": "legs and crossbar",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat spans rows 2-7, with outline rows 2 and 7. Rows 3-4 are the light top (L=200), and row 5 is a mid-tone transition (L=166) that acts as the front-edge line. Row 6 is a darker band (L=131) that serves as eave shadow or the seat's front edge. The silhouette widens from 6 to 8 to 10 at the seat's back, which gives a slightly rounded top. Below the seat, two legs run through rows 8-15 with a crossbar at row 11, so the front face is 9 rows including the seat edge. The top is only about 3 rows, which is thin, but it is more than a 1-2 row rim and it ends in a front-edge line followed by a shadow row. It therefore reads as three_quarter, though it is borderline."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The stool is a small, thin prop with only 5 distinct colours in total, against 14 for the wood bench and lamp and 38-40 for the stall and well. Its seat and legs show about 3 lightness steps, where the bench shows 5-6 with plank highlights and grain. The outline pixels are tinted (0% near-neutral), so it reads as a dark wood tone and not a black sticker line. No large flat fills were measured (0% near-flat), but the surfaces are tiny and carry little grain or per-part shading. The per-tile tone facts are 0 for the candidate and for the bench, so they do not decide this. By eye, the stool still looks thinner and flatter than the bench reference, with a shallow ramp and almost no texture dots. A careful artist would likely ask for more wood-grain and highlight steps before placing it next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17041
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion top",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "seat front band/apron",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs and crossbar",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is a stool cushion. Row 2 is the outline. Rows 3-4 are light (L=200) and form the top surface. Row 5 (L=166) is a lighter-to-mid transition that works as the front-edge line. Row 6 (L=131) is a darker band, read as eave shadow and front band, and row 7 is the outline. The width profile widens from 6 to 8 to 10 over rows 2-4, which gives a softly rounded back edge. Rows 8-15 show open legs (width 6 at rows 13-15, and 10 at rows 10-12 including the crossbar at row 11) standing under the seat. The seat top is about 3 rows, deeper than a 1-2 row rim, and it has a front edge line and a darker band below it. The front face and legs span roughly 10 rows. There is no backrest, and no isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small wooden stool with only 5 distinct colours in total, against 14 for the bench and lamp and 38-40 for the stall and well. That gives about 3 usable wood steps (light seat, mid body, dark outline/shadow) where Beodeul uses 5-6. The measured facts show 0% near-neutral dark edge pixels, and by eye the outline is a dark brown, so it reads as a material-tone outline rather than a black sticker line. Per-tile tone counts are 0 because the piece is smaller than one tile, so I judged by eye. Next to the bench, which also has seat planks, slats and per-plank highlights, the stool looks thinner and flatter. It has little grain or highlight variation, so the seat and legs read as flat, uniform fills. It is acceptable and cleanly drawn, but a careful artist would not accept it beside the references without more ramp steps and wood grain.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18629
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.545Z",
+ "cells": {
+  "16": [
+   "0d84a05cc128deb8"
+  ],
+  "24": [
+   "64f60003ef125241",
+   "c673a736672f2e1c",
+   "e3de4d1557f74bb9",
+   "f08220235ee0fa5c",
+   "f27e2e45fd39f220",
+   "fea76d27ae7d6e28"
+  ],
+  "32": [
+   "5e0125e5c2471186",
+   "816f5d63038dfae0",
+   "8715a0b9be234109",
+   "a5ba0586763e4796",
+   "b9a8ebcc961ce49a",
+   "f17f33c5ef1d01ea"
+  ],
+  "48": [
+   "08c9c496ef75cbf7",
+   "0c985641b64f1662",
+   "2a7597331b69bd27",
+   "4b84b7a5ecbecf15",
+   "98f149a51d02ca29",
+   "b5a497b4b9522b8d"
+  ]
+ }
+}

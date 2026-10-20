@@ -1,0 +1,258 @@
+[
+ {
+  "id": "q033",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "wall-hung life buoy ring, not a standing object"
+ },
+ {
+  "id": "q034",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "wall-mounted air conditioner"
+ },
+ {
+  "id": "q035",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "hanging ham rack, wall/ceiling mounted"
+ },
+ {
+  "id": "q036",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "wall stained glass window"
+ },
+ {
+  "id": "q037",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "tower wall tile"
+ },
+ {
+  "id": "q038",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "wall fragment with arched opening, not a standing object"
+ },
+ {
+  "id": "q039",
+  "kind": "container",
+  "top_rows": 2,
+  "front_rows": 6,
+  "label": "bad",
+  "why": "weapons stick up rows 0-7; barrel rim only rows 8-9 dark, no opening seen, body rows 10-15."
+ },
+ {
+  "id": "q040",
+  "kind": "other",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "bad",
+  "why": "front-facing arcade elevation (screens, pedals, seats) with no readable top surface."
+ },
+ {
+  "id": "q041",
+  "kind": "container",
+  "top_rows": 7,
+  "front_rows": 5,
+  "label": "good",
+  "why": "back rim rows 0-2, ice water rows 3-6 (4 rows), wood front rows 7-11."
+ },
+ {
+  "id": "q042",
+  "kind": "seat",
+  "top_rows": 7,
+  "front_rows": 8,
+  "label": "good",
+  "why": "lighter seat cushions rows 14-21 end in dark edge row 21, base front rows 22-29; backrest rows 6-12 face-on."
+ },
+ {
+  "id": "q043",
+  "kind": "box",
+  "top_rows": 5,
+  "front_rows": 6,
+  "label": "bad",
+  "why": "top contents rows 1-5, front striped rows 6-11 only 6 rows, below box front minimum 8."
+ },
+ {
+  "id": "q044",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "potted plant, organic"
+ },
+ {
+  "id": "q045",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "fence section"
+ },
+ {
+  "id": "q046",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "snow rock, organic"
+ },
+ {
+  "id": "q047",
+  "kind": "other",
+  "top_rows": 9,
+  "front_rows": 15,
+  "label": "good",
+  "why": "wide top plate rows 1-9 ending in dark edge row 10, ring body front rows 11-25, bed below."
+ },
+ {
+  "id": "q048",
+  "kind": "low_furniture",
+  "top_rows": 8,
+  "front_rows": 6,
+  "label": "good",
+  "why": "mattress/pillow/blanket top rows 12-19, frame front rows 20-26 with posts."
+ },
+ {
+  "id": "q049",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "rope pile on floor, debris"
+ },
+ {
+  "id": "q050",
+  "kind": "low_furniture",
+  "top_rows": 11,
+  "front_rows": 13,
+  "label": "unsure",
+  "why": "upper bunk light surface rows 2-12 but pillow and lower bunk read like front elevation; cannot decide."
+ },
+ {
+  "id": "q051",
+  "kind": "round_body",
+  "top_rows": 7,
+  "front_rows": 8,
+  "label": "good",
+  "why": "white tilted elliptical head rows 1-8, red striped shell rows 9-16, legs below."
+ },
+ {
+  "id": "q052",
+  "kind": "structure",
+  "top_rows": 28,
+  "front_rows": 30,
+  "label": "good",
+  "why": "tile roof slope plane rows ~2-31 plus lower roof, shopfront rows ~48-79."
+ },
+ {
+  "id": "q053",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "timber wall tile"
+ },
+ {
+  "id": "q054",
+  "kind": "column",
+  "top_rows": 6,
+  "front_rows": 14,
+  "label": "good",
+  "why": "capital cap rows 0-6 wider than shaft with shadow row 7, shaft rows 7-20, base 21-26."
+ },
+ {
+  "id": "q055",
+  "kind": "low_furniture",
+  "top_rows": 5,
+  "front_rows": 3,
+  "label": "good",
+  "why": "seat top rows 0-4 ending in highlight edge, front apron rows 5-7, legs rows 8-10."
+ },
+ {
+  "id": "q056",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "tar puddle on ground, flat"
+ },
+ {
+  "id": "q057",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 5,
+  "label": "good",
+  "why": "plank top rows 1-9 with edge row 9, front/drawer rows 10-14."
+ },
+ {
+  "id": "q058",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "key ring hanging on wall/prop, not standing"
+ },
+ {
+  "id": "q059",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "scattered ice-fishing scene with hole, flat/debris"
+ },
+ {
+  "id": "q060",
+  "kind": "figure",
+  "top_rows": 0,
+  "front_rows": 32,
+  "label": "bad",
+  "why": "bust on pedestal drawn as front elevation; no plinth top surface, shaft rows 20-27 flares at 28-31."
+ },
+ {
+  "id": "q061",
+  "kind": "low_furniture",
+  "top_rows": 10,
+  "front_rows": 2,
+  "label": "bad",
+  "why": "table top rows 7-16 with plan-like benches rows 0-4 and 19-23; front face only rows 17-18."
+ },
+ {
+  "id": "q062",
+  "kind": "container",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "bad",
+  "why": "full-tile plan view of sunken hearth on floor, no front face."
+ },
+ {
+  "id": "q063",
+  "kind": "low_furniture",
+  "top_rows": 12,
+  "front_rows": 8,
+  "label": "good",
+  "why": "cloth-covered top rows 2-13, draping cloth rows 14-17, legs rows 18-22."
+ },
+ {
+  "id": "q064",
+  "kind": "skip",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "curtained window, wall-mounted"
+ }
+]

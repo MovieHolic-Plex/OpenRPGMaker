@@ -1,0 +1,6 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"P1","view34":"PASS","quality":"FAIL","reason":"Top plane reads in 3/4 view, but all three shelves repeat the exact same two-loaf pixels identically against a flat unshaded back wall with pure-black outer side outlines."}
+{"id":"P2","view34":"PASS","quality":"FAIL","reason":"Cabinet has a valid 5px top plane, but the top-shelf buns merge into an unbroken striped bar and the remaining buns are flat 3x3 squares without rounded form."}
+{"id":"P3","view34":"PASS","quality":"FAIL","reason":"Cabinet top plane reads from above, but the shelves reuse flat bread-loaf sprites instead of readable pies with crust or filling and leave the middle shelf half-empty."}
+{"id":"P4","view34":"PASS","quality":"FAIL","reason":"Cabinet top plane is visible, but the top-row bottles touch edge-to-edge without gaps and every bottle is a flat rectangle with a 2x2 sticker-like highlight."}

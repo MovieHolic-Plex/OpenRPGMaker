@@ -332,6 +332,7 @@ export interface FacilitySpec {
   readonly cat: Category;
   readonly p: string;
   readonly map: string;
+  readonly aliases?: readonly string[];
   readonly ko: string;
   /** 외곽 모양 태그(L자형·ㄷ자형·ㅗ자형·계단형·중정형…) */
   readonly shape: string;
@@ -533,7 +534,7 @@ export function facility(s: FacilitySpec): FacilityVenue {
     ...(hallable && hallDress ? { hall: hallDress } : {}),
     palettes,
   };
-  return { program: s.p, map: s.map, aliases: [s.ko], variation, rooms: adjustedRooms, cat: s.cat, ko: s.ko, shape: s.shape };
+  return { program: s.p, map: s.map, aliases: [s.ko, ...(s.aliases ?? [])], variation, rooms: adjustedRooms, cat: s.cat, ko: s.ko, shape: s.shape };
 }
 
 export function facilityExports(list: readonly FacilityVenue[]) {

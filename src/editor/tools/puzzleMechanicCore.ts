@@ -146,6 +146,11 @@ export interface MechanicResult<S = unknown> {
   readonly toPlaytest: (solution: readonly string[]) => PuzzlePlayStep[];
   /** 해 앞에 넣는 오답·리셋 시연(되돌림이 실제로 되는지 플레이 QA 가 확인한다). */
   readonly mistakeDemo?: (analysis: PuzzleAnalysis) => PuzzlePlayStep[];
+  /**
+   * 처음 지도에서는 닫힌 창살·심연 너머라 걸어서 못 닿고, 퍼즐을 풀어 가며 열리는 칸의 이벤트 id(레버 회랑 안쪽 레버, 과거에만 건너는 다리 너머
+   * 모래시계). 정적 도달성 검사에서 빼는 대신 시공기가 상태 공간 모형에서 그 칸을 실제로 밟는 수를 둬야 한다(모형 BFS 가 도달을 증명한다).
+   */
+  readonly stagedReach?: readonly string[];
 }
 
 export interface MechanicDef {

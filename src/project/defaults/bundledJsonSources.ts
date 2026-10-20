@@ -1,0 +1,56 @@
+// 번들 타일셋 정의 JSON(통행·층·칸 메타·킷, 합쳐 약 43MB)의 **기본 출처 = 정적 import**.
+//
+// 편집기 빌드(vite.config.ts)만 이 모듈을 `bundledJsonSources.lazy.ts`(파일 URL → 처음 쓸 때 fetch)로 바꿔 끼운다.
+// 그 밖의 모든 실행(테스트·tsx 스크립트·헤드리스·Electron 메인·플레이어 빌드)은 이 파일 그대로라 예전과 똑같이 동기로 갖는다.
+// 왜(2026-10-20 실측, 편집기 웜 부팅): 이 JSON 이 편집기 진입 청크 63MB 의 대부분이었고, 열린 프로젝트는 보통 그중 몇 개만 쓴다.
+// 읽는 곳은 bundledJson.ts 하나다 — 다른 곳에서 이 모듈을 직접 가져오지 말 것(바꿔 끼우기가 빗나간다).
+import jpCityTileset from "@/assets/jpCityTileset.json";
+import beodeulCityTileset from "@/assets/beodeulCityTileset.json";
+import modernCityTileset from "@/assets/modernCityTileset.json";
+import joseonBaramTileset from "@/assets/joseonBaramTileset.json";
+import atlasBiomeInteriorTileset from "@/assets/atlasBiomeInteriorTileset.json";
+import wizardingWorldTileset from "@/assets/wizardingWorldTileset.json";
+import gothicManorTileset from "@/assets/gothicManorTileset.json";
+import pirateIslesTileset from "@/assets/pirateIslesTileset.json";
+import sfStationTileset from "@/assets/sfStationTileset.json";
+import sengokuEdoTileset from "@/assets/sengokuEdoTileset.json";
+import modernCampusTileset from "@/assets/modernCampusTileset.json";
+import steampunkCityTileset from "@/assets/steampunkCityTileset.json";
+import snowNorthTileset from "@/assets/snowNorthTileset.json";
+import desertEastTileset from "@/assets/desertEastTileset.json";
+import prehistoricTileset from "@/assets/prehistoricTileset.json";
+import skyIslandTileset from "@/assets/skyIslandTileset.json";
+
+const ALL = {
+  jpCityTileset,
+  beodeulCityTileset,
+  modernCityTileset,
+  joseonBaramTileset,
+  atlasBiomeInteriorTileset,
+  wizardingWorldTileset,
+  gothicManorTileset,
+  pirateIslesTileset,
+  sfStationTileset,
+  sengokuEdoTileset,
+  modernCampusTileset,
+  steampunkCityTileset,
+  snowNorthTileset,
+  desertEastTileset,
+  prehistoricTileset,
+  skyIslandTileset,
+};
+
+export type BundledJsonData = typeof ALL;
+export type BundledJsonKey = keyof BundledJsonData;
+export const BUNDLED_JSON_KEYS = Object.keys(ALL) as BundledJsonKey[];
+/** 이 출처가 지연인가(편집기 빌드만 true). */
+export const BUNDLED_JSON_LAZY = false;
+
+/** 동기로 바로 준다. */
+export function bundledJsonSync<K extends BundledJsonKey>(key: K): BundledJsonData[K] {
+  return ALL[key];
+}
+
+export async function loadBundledJsonEntry<K extends BundledJsonKey>(key: K): Promise<BundledJsonData[K]> {
+  return ALL[key];
+}

@@ -1,0 +1,387 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "49fbbb60684157baebbcea4f997bbcccfcc1a0748c2d6ee5eaec8bb44feb730d",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "armchair",
+ "label": "seats34/atlas_biome_interior/armchair",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 58,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "1-6",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests (left and right)",
+      "rows": "5-12",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion top strip",
+      "rows": "7-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a red armchair seen face-on. The backrest (rows 1-6) and armrests are vertical faces, which are exempt for a seat. The seat surface is only a light 2-row strip at rows 7-8 (L=152 in column x=8), followed by a 1-row edge line at row 9. Below that is a front face at rows 10-12, with brown feet at row 13. The sitting surface is therefore a thin 1-3 row strip with no ellipse or deep top plane, so it counts as front_elevation under the seat rule."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small red armchair of about one tile with only 8 distinct colours in total, which gives roughly 4 red lightness steps (highlight, light, mid, dark) plus a dark outline. The bench reference has 14 colours and the hedge reference has about 9-10 visible tones in a tile. The outline is a tinted dark red with 0% neutral edge pixels, so it avoids the black sticker look. Near-flat coverage is 0%, but the surfaces are smooth: the back, seat and arms are separated by a few value bands with no cushion grain, stitching or fabric speckle. The measured 8 tones per tile sits at the low end of the references that fill a tile (hedge 9, stall 17, well 20). It reads as a clean, icon-like silhouette, thinner and flatter than the Beodeul pieces. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19859
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "1-6",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests (left and right sides)",
+      "rows": "3-11",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion top",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face of seat and legs",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The center column (x=8) shows the seat surface as a light strip on rows 7-8 (L=152). Row 9 is a lighter front-edge line (L=106), and rows 10-11 are the darker front face, with legs on rows 12-13. The sitting surface is therefore only a 2-row strip, which the seat rule treats as front_elevation. The backrest (rows 1-6) and armrests (columns x=4 and x=11, rows 3-11) are exempt as seat_back. The silhouette has no receding side face, and no ellipse or deep top plane is visible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The armchair is a small red piece with a dark red-brown outline. The measured 0% neutral share of dark edge pixels agrees with that: the outline is tinted, not a black sticker line. Shading is limited, though. I count about 4 red steps (highlight, mid, shadow, deep) against the 5-6 steps Beodeul uses per material. The whole piece has only 8 distinct colours, while the references have 11 (hedge), 14 (bench), 38 (well) and 40 (stall). The 8 visible tones per tile are close to the hedge (9) but well below the well (20) and stall (17). No flat 5x5 areas were measured, but the upholstery reads as smooth cushion blocks with no fabric grain, stitching or speckle, and the wooden feet have no wood grain. Next to the references, especially the bench, well and stall, it looks thinner and flatter. The ramp depth and texture fall short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19568
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "1-6",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests (left and right sides)",
+      "rows": "3-12",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion top strip",
+      "rows": "7-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat front face and feet",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The seat surface (the light cushion band at x=8, rows 7-8) is only a 2-row strip. It ends in a front-edge line at row 9, and the front face is rows 10-12 plus feet at row 13. That strip is too thin to read as a seat seen from above. The backrest (rows 2-6) and armrests (rows 3-12 at the sides) are drawn as vertical faces, which is allowed for a seat. The whole piece looks like a front elevation, not a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The armchair is a small red piece with only 8 distinct colours in total. The references use 11 to 40, and the similarly small bench and lamp use 14. Its outline is a dark red-brown (0% neutral dark edge pixels), so it is not a black sticker line, and no 5x5 block is flat (0%). But the red ramp has only about 4 steps: a highlight on the backrest top, a mid body, a lighter seat cushion and a dark shadow edge. There is no fabric grain, stitching dots or per-part shading on the arms and legs. At 8 visible tones per tile it is just under the hedge (9), and well below the stall (17) and well (20). By eye it reads as a clean, simple icon, thinner and flatter than the Beodeul pieces, which have 5-6 steps and visible grain. Because of that, it fails."
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18879
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "1-6",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests",
+      "rows": "2-11",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The armchair is drawn face-on. The seat is only a light strip at rows 7-8 (L=152 at x=8), with a front-edge line at row 9 (#d73a42). Below it, rows 10-12 are the dark front face of the seat base, about 4 rows in total including the edge line. This strip is 2 rows deep and does not widen into an ellipse or a deeper horizontal plane, so the seat shows only a thin band. The backrest (rows 1-6) and armrests (rows 2-11) are vertical faces, which the seat rule exempts. With no real seat top, it reads as front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The armchair is a small red chair with a darker red-brown outline. The outline is tinted, with 0% neutral dark edge pixels, so it is not a black sticker line. The measured facts are 8 visible tones per tile and 0% near-flat coverage, which is on par with the hedge (9 tones) but well below the stall (17) and the well (20). The whole piece uses only 8 distinct colours, against 14 for the bench and lamp references and 38-40 for the stall and well. By eye, the upholstery has about 4 red steps (highlight, light, mid, dark) with little grain, stitching or cushion texture. The seat, back and arms read as smooth, glossy blocks, whereas the references show per-plank, per-stone and per-tile shading. It is clean and readable but thinner and flatter than a Beodeul piece, so with doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21290
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.750Z",
+ "cells": {
+  "16": [
+   "33d63b74486a62dd"
+  ],
+  "24": [
+   "2b0dd75362f5a6ec",
+   "353ebcb07be97296",
+   "4a945de2be9813df",
+   "a5acd91c60d72527",
+   "eb388dc6d8a1e8e9",
+   "f7e2841b80bab658"
+  ],
+  "32": [
+   "3ce2b22756da67ad",
+   "99aa535c3f5425a9",
+   "d7a02273523e4800",
+   "d82e67646250cf0d",
+   "de7a493ac3dd7a4c",
+   "f2f1e146bda88da8"
+  ],
+  "48": [
+   "1c6acba93dbad5fb",
+   "54d2cb3bea2d3d0a",
+   "75428f57e6645501",
+   "79c96eef6333c841",
+   "a63b9a857bd61eef",
+   "de0743a2e38cae11"
+  ]
+ }
+}

@@ -1,0 +1,9 @@
+{
+  "turns": [
+    { "say": "먼저 길을 깔아 보겠습니다(참고문서를 읽기 전 — 관문이 막아야 한다).", "tools": [ { "name": "paint_road", "args": { "mapId": "map_blank_start", "style": "dirt", "points": [{ "x": 0, "y": 7 }, { "x": 19, "y": 7 }], "naturalness": 0.1, "referencePurpose": "beodeul-city-water" } } ] },
+    { "say": "참고문서를 읽겠습니다.", "tools": [ { "name": "get_project_summary", "args": {} }, { "name": "read_tileset_reference", "args": { "tilesetId": "beodeul_city", "categoryId": "beodeul-city-water", "mapId": "map_blank_start" } } ] },
+    { "say": "이제 길을 깝니다.", "tools": [ { "name": "paint_road", "args": { "mapId": "map_blank_start", "style": "dirt", "points": [{ "x": 0, "y": 7 }, { "x": 19, "y": 7 }], "naturalness": 0.1, "referencePurpose": "beodeul-city-water" } } ] },
+    { "tools": [ { "name": "show_map_region", "args": { "mapId": "map_blank_start", "x": 0, "y": 0, "w": 20, "h": 15 } } ] },
+    { "say": "맵 가운데에 흙길을 깔았습니다." }
+  ]
+}

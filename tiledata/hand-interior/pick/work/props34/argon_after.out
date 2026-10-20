@@ -1,0 +1,9 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+Wrote 11 verdicts to `/home/main/z-project/rpg-zzu-v5-interior-props-34/tiledata/hand-interior/pick/work/props34/argon_after.jsonl`.
+
+### List of Fails (1 of 11)
+- **`ship bunk`** (`v34: "pass"`, `quality: "fail"`, `worse_than_before: false`):
+  - While the upper crown (`rows 1–5`) now has a 4-row lit tan horizontal top plane with a 1px bright front lip (passing `v34`), the interior below row 6 was left completely untouched: each of the three beds is still a 10px-wide block (`4×4` flat single-tone white square + `6×4` blue rectangle) that stops 2–3px short of the right wooden stile over a pure-black void (`x=12..13`), so at 1x and 6x it still reads as three white-and-blue boxes sitting on open shelves rather than full-width recessed bunk beds (failing `Q1-silhouette` and `Q2-light`/`Q5-material`).
+
+All other 10 items (`cabinet:loaf`, `cabinet:book+bookb+bookg`, `cabinet:candle` + the remaining 10 stock variants in `after_cabinets.png`, `helmet shelf`, `orrery` across all 12 frames, `control console`, `slot machine`, `confessional`, `relic cabinet`, and `wide cabinet`) pass both `v34` and `quality` with `worse_than_before: false`.

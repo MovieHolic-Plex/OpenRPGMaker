@@ -1,0 +1,6 @@
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+[claude-code:unrecognized_model] {"model":"gemini-4-argon-high","query_source":"sdk"}
+{"id":"P1","view34":"PASS","quality":"PASS","reason":"Clear 4px lit wooden top plane and recessed shelf surfaces with well-shaded 3-4 tone wood and readable miniature toys."}
+{"id":"P2","view34":"PASS","quality":"PASS","reason":"Readable 4px wooden top plane and shelf depths framing three distinct, well-shaded medieval helmets with clean upper-left lighting."}
+{"id":"P3","view34":"PASS","quality":"PASS","reason":"Foreshortened elliptical brass orbital ring and 3/4 cylindrical wooden plinth read clearly from above with globe-anchor-level shading."}
+{"id":"P4","view34":"PASS","quality":"FAIL","reason":"Control deck relies on a flat grey slab with floating 2x1 sticker buttons, unbroken full-width bright horizontal lip bands, and thick pillar-like right levers."}

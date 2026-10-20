@@ -1,0 +1,7 @@
+{
+  "repo": "https://github.com/MovieHolic-Plex/oprn-worldmap-kit.git",
+  "commit": "e597bf8ff73416621d276c3b7f3c7cb062c3c010",
+  "checkout": ".worldmap-kit",
+  "kitPath": "tiledata/worldmap-kit",
+  "note": "월드맵 키트 정본 = 공개 저장소. `npm run worldmap-kit:sync` 가 이 커밋을 .worldmap-kit 에 받는다. 키트를 바꾸면 공개 저장소에 먼저 머지하고 이 커밋을 올린다."
+}

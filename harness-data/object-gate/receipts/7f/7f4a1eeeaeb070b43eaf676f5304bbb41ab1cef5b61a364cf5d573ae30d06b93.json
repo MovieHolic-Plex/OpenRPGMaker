@@ -1,0 +1,355 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7f4a1eeeaeb070b43eaf676f5304bbb41ab1cef5b61a364cf5d573ae30d06b93",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "am-pachinko-stool",
+ "label": "seats34/jp_city_interior/am-pachinko-stool",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 26,
+  "nearBlackEdge": 0.94,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "round cushion seat (ellipse lid)",
+      "rows": "6-11",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "pedestal stem and base",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is an ellipse. Its width profile runs 6, 8, 10, 10, 8, 6 over rows 6-11, widening and then narrowing again. The light lilac rows 7-8 are the seat top, and the darker rows 9-10 with the dark outline on row 11 are the cushion's front edge and shadow. Below it a narrow stem (rows 12-13, width 4) and a wider base (rows 14-15, width 8) form the front support. The seat surface is seen from above and the front face is 3 or more rows, so this reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny purple stool with only 7 distinct colours in total. The seat shows a highlight, a mid tone and a dark tone, and the base and legs are a flat dark shape. The dark edge pixels are only 4% neutral, so the outline is tinted (a dark purple) rather than near-black. That part is acceptable. The piece is much smaller than the references and carries little texture: no grain, no dots, no per-part shading on the stem or legs. Visible tones per tile cannot be measured (0), so I judged by eye. Next to the bench (14 colours), the lamp (14) and the well (38), the candidate has about half the colours of the simplest references and looks thinner and flatter. Its shading is shallow at about 3 steps against the 5-6 steps of the references. A careful artist would not accept it next to them without it looking like a flat sticker.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 19825
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "round cushion seat",
+      "rows": "6-11",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal stem",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base foot",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is an ellipse. Its width profile goes 6, 8, 10, 10, 8, 6 over rows 6-11, widening and then narrowing again. Rows 7-8 are the light purple top surface, row 9 is a mid-tone transition, and rows 10-11 are the darker blue front thickness and outline. Below it, the narrow 4px stem (rows 12-14) and the 8px foot (rows 14-15) form the front support, about 4 rows. This matches the green ellipse examples (barrel and column cap), not a flat band or a rim only."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny purple stool, roughly 10x12 px, with only 7 distinct colours in total. It reads as a flat seat cushion, a thin stem and a base, with about 3 lightness steps and no visible grain, speckle or per-part shading. Its dark edge pixels are only 4% neutral, so the outline is tinted (dark purple) rather than a black sticker line. That is the one point in its favour. The references are much richer: the bench has 14 colours, the lamp 14, the well 38 and the stall 40. The well and stall show 17-20 visible tones per tile, with wood grain, stone-by-stone shading and cloth folds. The candidate is a small, sparse object, so the missing per-tile figures (0) are not held against it. Judged by eye, though, it still looks flatter and thinner than even the simplest reference, the bench. The cushion top has little highlight or texture and the stem and base carry almost no ramp. A careful artist would not accept it beside the references without it looking like a simple icon.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 18857
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "round cushion seat (ellipse)",
+      "rows": "6-11",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central stem and base foot",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile for rows 6-11 is 6,8,10,10,8,6, so the silhouette widens and narrows again. That is an ellipse seat counted from the back rim at row 6 to the front rim at row 11. Rows 7-8 are a light top plane, and rows 9-10 step darker as the cushion's front edge. Below it a 4-wide stem (rows 12-13) and an 8-wide base (rows 14-15) form the support, which is at least 3 rows. The seat surface is seen from above, so it reads as three-quarter view, similar to the green barrel and column ellipse references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny purple stool with only 7 distinct colours in total. It is much smaller than the references and its seat and base are drawn with about 2-3 tones each (a lighter top, a mid body and a dark base). It shows no grain, dots or per-part highlights. The dark edge pixels are tinted (4% neutral), so the outline leans toward a dark material tone rather than a black sticker line. The tile facts are 0 because the piece is under one tile, so I judged by eye. Next to the bench (14 colours, several wood steps and slat detail) and the richer props (well, stall, hedge), it looks thinner and flatter, with fewer shading steps and no surface texture. It is a small, simple object, but it falls short of the reference quality at this scale. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17555
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "round cushion seat",
+      "rows": "6-11",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central post",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base foot",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat is an ellipse. The width profile runs 6, 8, 10, 10, 8, 6 over rows 6-11, so it widens and then narrows again. The light lilac rows 7-8 form the sitting surface, and the darker rows 9-10 are the cushion's front edge, with outline rows at 6 and 11. Below the seat is a 4-row support: a narrow post (rows 12-13, width 4) on a wider foot (rows 14-15, width 8). The seat surface is seen from above, with a front face and support below, so it reads as three_quarter. The lens-shaped seat is partly a squat cushion side, but the ellipse outline still counts as a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny purple stool, smaller than one 16x16 tile, with only 7 distinct colours in total. Visible shading is a light top cushion, a mid body and a dark base, about 3 steps. The references use 5-6 steps with per-material highlights, grain and clustered texture. The candidate has no grain, no cushion texture and no wood detail, so it reads as a simple sticker-like icon. The dark edge pixels are only 4% neutral, so the outline is tinted and reads as dark material tone, which is acceptable. Compared with the bench (14 colours) and the lamp (14 colours), which are also thin props, the candidate is still visibly thinner and flatter, with fewer shapes and less internal detail. A careful artist would not accept it beside the references at this level of richness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 18901
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.464Z",
+ "cells": {
+  "16": [
+   "da578062909e14f8"
+  ],
+  "24": [
+   "053731088ebdf153",
+   "0cbb65ed2f2db6e3",
+   "8363b24252cdbc22",
+   "83956aa4ed054a74",
+   "b44b7cb94f107c8b",
+   "d5142e63cae65560"
+  ],
+  "32": [
+   "2e66759ddf4977b8",
+   "5a75c138d729f49d",
+   "bb2a96bbab1af1da",
+   "c31526fc10fa92ad",
+   "e5890f7ba7410be5",
+   "f80b65baab1f7fb4"
+  ],
+  "48": [
+   "0e648acf42813b5e",
+   "1b4f7ebf229529c9",
+   "4717bc2b4bb54bfa",
+   "6da080d4a10ddd64",
+   "83f87b826c7b2402",
+   "d9089835578b6888"
+  ]
+ }
+}

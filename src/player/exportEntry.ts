@@ -140,8 +140,8 @@ function startPlayer(
     installDesktopShellBridge(root, boot.desktopShell);
     const probe = boot.qaInstrumentation === true ? boot.actionCombatProbe : undefined;
     renderPlayer(root, {
-      // 픽셀 격자 계약: 에메랄드 몬스터 게임은 정수 배율만 쓰고 남는 창은 여백(letterbox)으로 둔다 — 비정수 배율은 도트 크기가 섞인다.
-      surfaceScaleMode: isEmeraldMonsterStyle(project) ? 'integer' : 'fit',
+      // 배율은 프로젝트가 정한다(resolvePlaySurfaceScaleMode): 해상도를 저장한 프로젝트·몬스터 수집 게임은 정수 배율+여백,
+      // 해상도를 안 정한 옛 320×240 프로젝트는 창에 맞춤. 저작자는 DB 시스템 「화면 맞춤」으로 바꾼다.
       // 마우스·터치로도 메뉴·전투를 연다(D15). 몬스터 수집 게임만 — 다른 게임은 기존 키보드 전용 계약을 지킨다.
       pointerInput: isEmeraldMonsterStyle(project),
       saveIsolationScope: resolveCommunitySaveScope(window.location.pathname),

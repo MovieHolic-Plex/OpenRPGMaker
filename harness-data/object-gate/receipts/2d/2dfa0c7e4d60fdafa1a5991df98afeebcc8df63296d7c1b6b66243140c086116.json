@@ -1,0 +1,416 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2dfa0c7e4d60fdafa1a5991df98afeebcc8df63296d7c1b6b66243140c086116",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "subway trash bins",
+ "label": "modern_city_interior/subway-trash-bins",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 4 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 4 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 13,
+  "darkV5": 28,
+  "nearBlackEdge": 0.75,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header sign panel with colored labels",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lid band with dark slot openings",
+      "rows": "13-17",
+      "evidence": "none",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "colored bin fronts (green, blue, yellow) with symbols",
+      "rows": "18-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole drawing is a flat face-on elevation. A header panel (rows 3-10) holds the labels. Below it, rows 13-17 are lid bands, each with a dark slot (rows 14-15) in a light frame, and these read as letterbox slits drawn face-on. The slots show no ellipse, no contents and no interior seen from above. Rows 18-29 are the colored front faces with face-on symbols. The bins have no foreshortened horizontal top surface, only a 1-2 row rim/slot band, so the drawing is front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a row of four small colour-coded bins with white recycling icons. Measured facts: 12 visible tones per tile, 0% near-flat coverage, and 100% of dark edge pixels near-neutral. The tone count is in line with the hedge (9) and below the stall (17) and well (20), so density is acceptable. The outline is the problem. By the numbers it is a neutral black/grey line, and by eye it is a uniform dark frame around every bin. It is not the dark tint of each neighbouring material, which is the Beodeul approach (hedge 0%, stall 1% neutral). Each bin body reads as a flat colour with a lid and a light highlight, so about 3 steps per material against Beodeul's 5-6. There is little grain, dent, rust or per-surface texture. The result looks like a sticker-style icon, shallower than the references, so it fails on outline and shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15884
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top sign panel with light header strip and colored labels",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lid band with slot openings drawn face-on (light frame, dark slot)",
+      "rows": "13-17",
+      "evidence": "none",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "colored bin fronts with recycling icons",
+      "rows": "18-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is a flat face-on elevation. Rows 3-10 are a vertical sign panel. Rows 13-17 are a lid strip whose slots are dark rectangles in light frames, so they read as vertical slots rather than openings seen from above. There is no ellipse, no interior or contents visible from above, and no receding surface. Rows 18-29 are flat colored bin fronts with icons. At most a 1-2 row rim (rows 13 and 16-17) could count as a top, which is the 'rim only' case in the reference pairs."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a row of three coloured bins (green, yellow, blue) under a dark grey header strip. Each bin body has only about 2-3 lightness steps, which is a flat body with one shade and an outline. The references use about 5-6 steps per material (the hedge's several greens, the well's stones shaded one by one). The dark edge pixels are 100% near-neutral, so the outline is a uniform black/grey line around every shape. That is the sticker look, not the dark tone of the adjacent material that the hedge (0% neutral) and the cheese stall (1%) use. The tile measures look acceptable: 12 visible tones against 9 for the hedge, and 0% flat coverage. But much of that comes from small recycling icons and the header strip, not from material shading or grain. The bin panels read as flat colour blocks with little grain or per-surface highlight. Overall it is cleanly drawn but shallower and more sticker-like than the Beodeul props.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16774
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top sign panel with three colour tags",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bin lid slots (face-on dark slots with grey frames)",
+      "rows": "13-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green, blue and yellow bin fronts",
+      "rows": "18-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat face-on elevation. Rows 3-10 are a dark sign panel with a light strip at rows 5-6 that is an outline or highlight, not a top surface. Rows 13-17 are the three lid slots: a grey frame at rows 13 and 16-17 around a dark 2-row interior (rows 14-15). They are drawn face-on and show no ellipse and no contents seen from above. Rows 18-29 are the coloured bin fronts with a recycling, thumbs-up or letter icon, all vertical faces. No row band ends in a front-edge line followed by eave shadow, and no ellipse or visible contents appear anywhere. The silhouette is a constant 30 px wide from rows 3-30, so there is no top surface and the drawing matches the 'front elevation' red references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a front-on box with three coloured bins (green, yellow, blue) under a dark header strip. The measured facts are mixed. It has 12 visible tones per tile, between the hedge (9) and the stall (17) and well (20). Near-flat coverage is 0%, so the numbers do not show flat fills. The numbers do not settle the verdict, so it rests on the picture. Each bin reads as one main colour plus a lighter icon and a dark edge, about 3 steps, against roughly 5-6 on the reference stall, well and hedge. There is no grain, no per-surface highlight ramp and no wear. The dark edge pixels are 100% near-neutral, so the frame and bin edges are a uniform black-grey line, not a tinted dark version of each neighbouring material. The stall and well references have 1% and 33% neutral edges, and only the thin lamp pole matches the candidate's 100%. This gives the flat, sticker-like look. The candidate is clean and readable but shallower than the stall and well references, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17294
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top sign panel with labels",
+      "rows": "3-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lid slot frames",
+      "rows": "13-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bin front faces (green, blue, yellow)",
+      "rows": "18-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is drawn face-on. Rows 3-10 are a dark sign panel with a light strip and labels, which is a vertical face. Rows 13-17 are three slot openings drawn as flat dark rectangles with a light frame (rim rows 13 and 16-17, dark slot rows 14-15). The silhouette never widens and narrows, so there is no ellipse. No contents, heap or water are visible inside, and no eave shadow follows an edge line. Rows 18-29 are the flat colored bin fronts with icons. There is no horizontal top surface, only a rim-like frame of about 2 rows, so the bins read as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a row of three coloured bins (green, yellow, blue) under a dark top panel, drawn in the same prop scale as the references. It has 12 visible tones per tile, which is within the reference range (hedge 9, cheese stall 17, well 20), and 0% near-flat coverage, so it has no large flat fills. The weaknesses are structural. The dark edge pixels are 100% near-neutral, so the outline is a neutral near-black line around every bin. The references that carry coloured material (hedge 0%, cheese stall 1%, well 33%) use tinted dark tones instead. Each bin body reads as only about 3 steps: a base colour, one shade and a white icon. That is shallow next to the 5-6 step ramps on the references. The bins have little grain, wear or per-material highlight work, and the top panel is a flat dark block with a few small marks. The result looks like a clean sticker, not Beodeul-level shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20093
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.197Z",
+ "cells": {
+  "16": [
+   "09ca0f3af5a1f784",
+   "50b0e1d496021d0f",
+   "993a7a2dec27f0ed",
+   "bb96ec31018d4e56"
+  ],
+  "24": [
+   "068fe73a72af1cce",
+   "0febcd00a4ea2215",
+   "247c09541e296fe4",
+   "25230a9813cb0c9d",
+   "2fef5f0809326ab6",
+   "4a41996f780fd7dc",
+   "4eef308b7570cc04",
+   "5ac6b328e491a856",
+   "5b1f08df18e6f5f7",
+   "6629067c2cd33d61",
+   "6ce1dc02f15b5b94",
+   "884948f6eb3c613b",
+   "9ba5f9882d236cbe",
+   "9dbd94685fbb9714",
+   "a6595167513118b3",
+   "afbefdc92012a534",
+   "b3d904b81678c694",
+   "b43168c78eabb228",
+   "b7224e58b95da3db",
+   "ba847bdc1098c6e3",
+   "c1e577f79336b9bc",
+   "c53a0004c0aee481",
+   "cb97e389d73daa3a",
+   "d38c6d6353890fa6"
+  ],
+  "32": [
+   "40c841b06405caf2"
+  ],
+  "48": [
+   "18a246386508fbea",
+   "4eb6e279bd9aaf92",
+   "53a6cae40e190735",
+   "551728421d3f0896",
+   "5ebcbdd1fc6e9b6d",
+   "6b0153776875f67c"
+  ]
+ }
+}

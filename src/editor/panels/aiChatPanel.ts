@@ -58,6 +58,7 @@ import { createLlmIntentDeclarer, type IntentDeclarer } from "@/ai/intentDeclara
 import type { SessionTurnScope } from "@/ai/assistantSession";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel, type AutonomyResolution } from "@/ai/autonomyLevels";
 import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
+import { isLocalCliProviderId } from "@/ai/localCliEngine";
 import { GOAL_MAX_TURNS, GOAL_TIMEOUT_MS } from "@/ai/piAgent/goalCommand";
 import { store } from "@/project/store";
 import { parsePiCommand, plainPiCommand, runPiCommand, type ParsedPiCommand, type PiChangeReceipt, type PiRunOptions } from "./aiPiAgentCommand";
@@ -1103,7 +1104,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    * 안내(toast)를 하지 않는다: 사용자가 누른 새 대화와 프로젝트 전환은 같은 정리를 하지만
    * 사용자에게 할 말이 다르다.
    */
-  let conversationSpend = { turns: 0, tokens: 0 };
+  let conversationSpend: { turns: number; tokens: number; costUsd?: number; billing?: "subscription" | "api" | "unknown" } = { turns: 0, tokens: 0 };
   /**
    * 이 대화에서 사용자가 질문 카드(aiTilesetChangeCard)로 승인한 칩셋 계열. 새 대화면 비운다.
    * Pi 요청의 approvedTilesetFamilies·채팅 세션 도구 ctx 로 간다.
@@ -2167,9 +2168,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         // (2026-09-16 실측). 세션 항목과 같은 자리에 누적해 bridge·내보내기가 같은 원천을 본다.
         onRunAudit: (rows) => { controller.auditHistory.push(...rows); },
         onSpend: (spend) => {
+          const costUsd = spend.costUsd !== undefined ? (conversationSpend.costUsd ?? 0) + spend.costUsd : conversationSpend.costUsd;
+          const billing = spend.billing ?? conversationSpend.billing;
           conversationSpend = {
             turns: conversationSpend.turns + spend.turns,
             tokens: conversationSpend.tokens + spend.tokens,
+            ...(costUsd !== undefined ? { costUsd } : {}),
+            ...(billing ? { billing } : {}),
           };
           paintConversationSpend();
         },
@@ -2222,7 +2227,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // do 레벨의 질문 발화를 읽기 전용으로 승격하는 분류 호출 — 세션 경로의 mode=question→ask 자동
   // 승격이 Pi 이관(2026-09-11)에서 빠져 「균형」 질문 턴에 쓰기 툴이 달려 갔다(2026-09-12 실측).
   // 분류가 지연·실패하면 다이얼 그대로 두는 쪽이 안전하므로 타임아웃을 짧게 둔다.
-  let piIntentDeclarer: IntentDeclarer | null = null;
+  let piIntentDeclarer: { declarer: IntentDeclarer; timeoutMs: number } | null = null;
   /** 평문 한 줄 → Pi 명령 + 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */
   type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null; readonly timing: TurnTimingRecorder };
   const plainPiTurn = async (text: string, turnOptions?: {
@@ -2249,7 +2254,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         selectedEvent: selectedEventFact(store.getCurrent(), turnMapId, editorState.get().selectedEventId, editorState.get().selectedEventPageId),
         hasActivePlan: workPlanSurfaceState?.active === true,
         autonomy: currentAutonomy(),
-        declarer: () => (piIntentDeclarer ??= createLlmIntentDeclarer({ timeoutMs: 30_000, coverageAudit: false })),
+        // 로컬 CLI 엔진은 차례마다 CLI 프로세스를 새로 띄운다(실측 2026-10-20: codex exec 한 줄 답도 약 17초) — 30초 벽이면 의도 선언이 자주 잘린다.
+        declarer: () => {
+          const timeoutMs = isLocalCliProviderId(loadAiConfig().providerId) ? 120_000 : 30_000;
+          if (piIntentDeclarer?.timeoutMs !== timeoutMs) piIntentDeclarer = { timeoutMs, declarer: createLlmIntentDeclarer({ timeoutMs, coverageAudit: false }) };
+          return piIntentDeclarer.declarer;
+        },
         // 프리셋 첫 생성은 설정과 무관하게 팀이다 — 읽기 전용 다이얼이면 classifyPlainPiTurn 이 여전히 단독으로 내린다.
         piTeam: turnOptions?.team === true || (loadAiConfig().piTeam ?? DEFAULT_PI_TEAM),
         onDeclaring: turnOptions?.onDeclaring ?? (() => setStatus("의도 읽는 중…")),
@@ -3339,7 +3349,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   }
   paintConversationSpend = (): void => {
     const quiet = conversationSpend.turns === 0 && conversationSpend.tokens === 0;
-    composerShell.setSpend(quiet ? null : `${formatTokenCount(conversationSpend.turns)}턴 · ${formatTokenCount(conversationSpend.tokens)}토큰`);
+    // 로컬 CLI 엔진(D8): 대화 누적에 「구독 한도 사용 · 환산 $」를 붙인다. 구독이면 청구가 아니다.
+    const cost = conversationSpend.billing === "subscription"
+      ? ` · 구독 한도 사용${conversationSpend.costUsd !== undefined ? ` · 환산 $${conversationSpend.costUsd.toFixed(2)}` : ""}`
+      : conversationSpend.costUsd !== undefined ? ` · $${conversationSpend.costUsd.toFixed(2)}` : "";
+    composerShell.setSpend(quiet ? null : `${formatTokenCount(conversationSpend.turns)}턴 · ${formatTokenCount(conversationSpend.tokens)}토큰${cost}`);
   };
   const commandBar = composerShell.commandBar;
   const commandMenu = composerShell.commandMenu;

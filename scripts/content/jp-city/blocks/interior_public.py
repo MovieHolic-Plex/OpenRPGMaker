@@ -762,6 +762,104 @@ def _stethoscope(c):
     vl(c, 8, 8, 2, kc('tekko', 0))
 
 
+# ══ seats34 (3/4 다시 그리기) ══
+import seat34 as S34   # noqa: E402
+
+
+def _ell34(cx, cy, rx, ry):
+    return {(x, y) for y in range(16) for x in range(16) if ((x + .5 - cx) / rx) ** 2 + ((y + .5 - cy) / ry) ** 2 <= 1}
+
+
+def _wash_stool34(c):
+    """목욕 의자·세숫대야 3/4(품질 다시 그리기): 노란 의자는 둥근 윗면(가장 밝음) + 아치 뚫린 앞판, 하늘색 대야는 밝은 테 + 물 + 몸통.
+    윤곽은 재질의 가장 어두운 단(검은 상자 테 없음), 빛은 왼위."""
+    Y = lambda t: kc('kii', t)
+    B = lambda t: kc('sora', t)
+    hl(c, 2, 14, 9, kc('conc', -1)); hl(c, 9, 14, 6, kc('conc', -1))                               # 바닥 그늘
+    rc(c, 1, 9, 10, 5, Y(-2)); rc(c, 2, 9, 8, 4, Y(0)); vl(c, 2, 9, 4, Y(1)); vl(c, 9, 9, 4, Y(-1))   # 의자 앞판(둥근 몸통 앞면)
+    rc(c, 4, 11, 4, 3, Y(-1)); hl(c, 4, 11, 4, Y(-2)); vl(c, 4, 11, 3, Y(-2)); vl(c, 7, 11, 3, Y(-2))   # 아치 뚫림
+    top = _ell34(6, 6.5, 5, 3.5)
+    for (x, y) in top:
+        edge = any((x + dx, y + dy) not in top for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+        px(c, x, y, Y(-2) if edge else (Y(2) if (x - 6) * .6 + (y - 6.5) < -1.2 else Y(1)))
+    for x in range(2, 10): px(c, x, 9, Y(2) if x < 7 else Y(1))                                   # 앞 가장자리 선(둥근 입술)
+    px(c, 1, 9, Y(-2)); px(c, 10, 9, Y(-2)); hl(c, 2, 10, 8, Y(-1))                                 # 처마 그늘
+    hl(c, 5, 6, 3, Y(-1))                                                                           # 손잡이 구멍(가는 홈 하나)
+    bowl = ("..oooo..",                                                                               # 대야 8×8: o 윤곽 · R 테(위 밝음) · r 테(오른·앞 그늘) · w 물 · s 물빛 · b 몸통
+            ".oRRRRo.",
+            "oRwwwwro",
+            "oRwwwwro",
+            "oRRRRRro",
+            "obbbbbbo",
+            ".obbbbo.",
+            "..oooo..")
+    col = {'o': B(-2), 'R': B(2), 'r': B(1), 'w': B(-1), 's': kc('shiro', 1), 'b': B(0), 'd': B(-1)}
+    for y, row in enumerate(bowl):
+        for x, ch in enumerate(row):
+            if ch != '.': px(c, 8 + x, 7 + y, col[ch])
+
+
+
+def _waiting_sofa_n34(c):
+    """대기실 소파 3인 북향(3/4 다시 그리기): 남향과 같은 비닐 램프(등받이 = sora 0 단)·팔걸이·다리.
+    등받이 뒷면 위에 두툼한 윗면 판 3행(밝은 맨 윗줄 + 앞 가장자리 선), 뒷면은 한 단 어둡게, 안쪽 검은 줄 없음. 팔걸이 윗면 2행."""
+    m = 'sora'
+    outline(c, 1, 11, 46, 16)
+    rc(c, 2, 12, 44, 3, kc(m, 0)); hl(c, 2, 12, 44, kc(m, 1)); vl(c, 2, 12, 3, kc(m, 1))               # 등받이 윗면 판
+    hl(c, 2, 15, 44, kc(m, 1))                                                                       # 앞 가장자리 선
+    rc(c, 2, 16, 44, 10, kc(m, -1)); vl(c, 2, 16, 10, kc(m, 0)); hl(c, 2, 25, 44, kc(m, -2))          # 등 뒷면
+    for x in (16, 31):                                                                               # 자리 이음(재질 어두운 단 1px)
+        vl(c, x, 12, 4, kc(m, -1)); vl(c, x, 16, 9, kc(m, -2))
+    for ax, t in ((0, 0), (44, -1)):                                                                 # 팔걸이: 윗면 2행 + 옆
+        outline(c, ax, 8, 4, 19)
+        rc(c, ax + 1, 9, 2, 2, kc(m, t + 1)); hl(c, ax + 1, 9, 2, kc(m, t + 2))
+        rc(c, ax + 1, 11, 2, 15, kc(m, t - 1)); vl(c, ax + 1, 11, 15, kc(m, t))
+    for x in (2, 44): rc(c, x, 28, 2, 4, kc('tekko', 1)); hl(c, x - 1, 31, 4, OL)
+
+
+def _massage34(c):
+    """안마 의자(품질 다시 그리기): 붉은 갈색 비닐 — 두툼한 등받이(윗날 2행 밝음, 안마 롤 이음 둘), 팔걸이 윗면 3행, 좌석 윗면 4행 + 앞날,
+    철제 받침 윗면 + 2px 다리. 부품 사이는 재질 단으로만 나누고 윤곽은 바깥 실루엣에만."""
+    m = 'renga'
+    S34.face(c, 3, 2, 10, 16, m, 0); c.HL(3, 2, 10, kc(m, 2)); c.HL(3, 3, 10, kc(m, 1))               # 등받이 + 윗날 2행
+    for y in (8, 12): c.HL(4, y, 8, kc(m, -1)); c.HL(4, y + 1, 8, kc(m, 1))                           # 안마 롤 이음
+    S34.plane(c, 4, 17, 8, 4, m, 2); S34.face(c, 4, 21, 8, 3, m, -1)                                  # 좌석 윗면 4행 + 앞날
+    for ax, t in ((1, 0), (12, -1)):                                                                 # 팔걸이: 윗면 3행 + 앞면
+        S34.plane(c, ax, 11, 3, 3, m, t + 2); S34.face(c, ax, 14, 3, 10, m, t - 1)
+        c.VL(ax + 2 if ax == 1 else ax, 11, 13, kc(m, -2))                                          # 팔걸이 안쪽 이음
+    S34.plane(c, 3, 24, 10, 1, 'tekko', 2); S34.face(c, 3, 25, 10, 2, 'tekko', 0)                     # 철제 받침
+    for x in (3, 11): S34.leg(c, x, 27, 4, 'tekko', 1)
+    S34.silhouette(c, kc(m, -3), 0, 0, 16, 24); S34.silhouette(c, kc('tekko', -3), 0, 24, 16, 27)
+
+
+def _office_chair34(c, d):
+    """파출소 사무 의자 남·북(품질 다시 그리기): 남색 — 남: 등받이(윗날 2행, 허리 받침)가 좌판 뒤 끝에 붙어 솟고 좌판 윗면 3행 + 앞날.
+    북: 등받이 뒷면(윗날 2행)이 좌판을 가린다. 2px 기둥 + 별 다리. 윤곽은 바깥에만."""
+    m = 'kon'
+    if d == 's':
+        S34.face(c, 4, 4, 8, 13, m, -1); c.HL(4, 4, 8, kc(m, 2)); c.HL(4, 5, 8, kc(m, 1))               # 등받이 + 윗날
+        c.R(5, 10, 6, 3, kc(m, 0)); c.HL(5, 10, 6, kc(m, 1))                                          # 허리 받침(한 단 밝은 띠)
+        S34.plane(c, 3, 17, 10, 3, m, 1); c.HL(3, 20, 10, kc(m, 2)); S34.face(c, 3, 21, 10, 2, m, -1)   # 좌판 윗면 3행 + 선 + 앞날
+    else:
+        S34.plane(c, 3, 17, 10, 2, m, 0)                                                              # 등받이 양옆 좌판 끝
+        S34.face(c, 4, 10, 8, 13, m, -1); c.HL(4, 10, 8, kc(m, 2)); c.HL(4, 11, 8, kc(m, 1))           # 등받이 뒷면 + 윗날
+        c.HL(5, 17, 6, kc(m, -2))                                                                     # 뒤판 이음
+    S34.silhouette(c, OL, 0, 0, 16, 23)
+    c.VL(7, 23, 5, kc('tekko', 3)); c.VL(8, 23, 5, kc('tekko', -1))                                   # 기둥
+    hl(c, 2, 28, 12, kc('tekko', 2)); hl(c, 2, 29, 12, kc('tekko', 0))                                # 별 다리
+    for x in (2, 7, 12): px(c, x, 30, kc('tekko', 1)); px(c, x + 1, 30, kc('tekko', -2)); hl(c, x, 31, 2, kc('tekko', -3))
+
+
+PENDING_SEATS34 = {'pb-wash-stool': _wash_stool34, 'pb-waiting-sofa-n': _waiting_sofa_n34,
+                   'pb-massage-chair': _massage34, 'pb-office-chair-s': lambda c: _office_chair34(c, 's'), 'pb-office-chair-n': lambda c: _office_chair34(c, 'n')}
+SEATS34_PASS = set()          # object-gate PASS 영수증을 받은 id 만 — 이 id 들만 굽는 그림을 바꾼다
+for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
+# ══ /seats34 ══
+
+
+
+S34_STUDY2 = __import__('seat34').apply_study2(R)   # 사람 합격(2026-10-20) 앉는 기물 — 관문 pass 영수증 있는 것만 바꾼다
+
 def build(): return R.build()
 def selftest(): return R.selftest()
 

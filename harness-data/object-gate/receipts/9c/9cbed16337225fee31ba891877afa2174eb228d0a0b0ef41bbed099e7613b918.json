@@ -1,0 +1,368 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9cbed16337225fee31ba891877afa2174eb228d0a0b0ef41bbed099e7613b918",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "arcade prize counter",
+ "label": "modern_city_interior/arcade-prize-counter",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (3/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (3/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 24,
+  "tileColorsP90": 25,
+  "darkV5": 28,
+  "nearBlackEdge": 0.64,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "teddy bear, bunny, toy box and duck goods on counter",
+      "rows": "3-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass counter top",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "front face with display case and drawer band",
+      "rows": "17-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The light-blue counter top spans rows 11-16, about 6 rows. It ends in a white front-edge line at row 16, followed by dark purple eave shadow at rows 17-19 (x=24 and x=35). Below that is a 15-row front face with display windows, a gold stripe and drawers. The plush toys and other goods on top at rows 3-13 are decor and are not counted as the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's numbers look good: 24 visible tones per tile (references 9-20), 0% near-flat coverage, and no 5x5 flat fills. But 80% of its dark edge pixels are near-neutral, while the same-kind references with real bodies are tinted (stall-cheese 1%, hedge 0%, well-roofed 33%). That matches the picture: a uniform dark outline around the whole counter and toys, which reads as the 'sticker' look rather than dark-material-tone edges. The main counter body has a shallow ramp, with about 3 steps on the purple/pink front and the glass band. It is mostly flat bands with small dots of toys and prizes. The tone count is inflated by the small colourful toys and trinkets, not by shaded material ramps like the stall's cloth, wood and awning. Next to the stall and well it looks thinner and flatter, so it fails on outline and shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 25127
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "glass counter top",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-19"
+     },
+     {
+      "part": "plush toys and prizes on the counter (bear, bunny, gumball/toy box, duck)",
+      "rows": "3-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front display case with prizes and lower drawer panels",
+      "rows": "20-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The counter top is a light-blue glass band at rows 11-16 with highlights, ending in a bright white front-edge line at row 16. Rows 17-19 are dark purple eave shadow beneath it. Below that the front face runs rows 17-31 and holds the lit prize display window (rows 20-23) and the yellow and purple drawer panels. The plush toys and prizes on top (rows 3-13) are decor and not the main body. The silhouette is 46 px wide from row 11 down."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "On the measured facts the candidate matches or beats the references on density: 24 visible tones per tile against 17 for the cheese stall and 20 for the roofed well, with 0% near-flat coverage, so there are no flat fills. Its main weakness is the outline. 80% of its dark edge pixels are near-neutral, against 0-1% on the hedge and stall and 33% on the well. The dark line around the counter body and glass case reads as a uniform near-black contour, not the dark tone of the adjacent material, which is the 'sticker' look. The purple front panel and trim carry only about 3-4 lightness steps, and the prize case and plush toys are small clusters with little internal shading. The references show 5-6 steps with tinted edges. Density is good, but the neutral outline and the shallower ramps keep it below the Beodeul bar, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21181
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "prizes on counter (bear, rabbit, capsule machine, duck)",
+      "rows": "3-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass counter top",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-19"
+     },
+     {
+      "part": "front display case with prize windows and lower purple/gold panels",
+      "rows": "17-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The full-width body (46 px) starts at row 11 with a light-blue glass top. Rows 11-15 are light blue with white glints, and row 16 is a near-white front-edge line (#f4f6f8). Rows 17-19 are dark purple eave shadow, below which the front face runs to row 31 with prize windows, a gold stripe and lower panels. That gives a top of about 6 rows and a front face of about 15 rows. The toys on top (rows 3-13) are decor and are not counted as the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "On the primary facts the candidate holds up: 24 visible tones per tile against 17-20 for the stall and well, and 0% near-flat coverage. But 80% of its dark edge pixels are near-neutral, while the stall (1%), hedge (0%) and well (33%) use tinted outlines. In the image, a dark uniform line wraps the whole counter and the toppers, which gives the 'sticker' look instead of dark-material-tone outlines or separation by value. The main masses, a pink/purple front band, a pale top and a dark base, read as only about 3 lightness steps each, against roughly 5-6 on the reference roof tiles and wood. The tone count mostly comes from small colourful toys and trinkets, not from shaded material ramps. The counter body lacks the per-plank grain and per-tile highlights the stall and well have. Rich detail on the small objects does not make up for the near-black outline and shallow ramps on the body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21085
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "toy goods on counter top (bear, bunny, gumball machine, duck)",
+      "rows": "3-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass counter top",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-19"
+     },
+     {
+      "part": "front face with display window, gold stripe and drawer base",
+      "rows": "17-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a counter with a light-blue glass top in rows 11-16, full width 46. It is foreshortened and ends in a white front-edge line at row 16 (L=246), followed by dark purple eave shadow in rows 17-19. Below that is a 15-row front face (rows 17-31) with a display window of prizes, a gold stripe and purple drawers. The toys on top (rows 3-13) are decor placed on the counter top, so they do not count as the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "The candidate's density is not the problem. It has 24 visible tones per tile against 17-20 for the stall and well, and 0% near-flat coverage. The problems are structural. 80% of its dark edge pixels are near-neutral, so the outline is a uniform near-black line around the counter and the plush toys. That is the sticker look. The references use tinted outlines: the hedge and cheese stall are at 0-1% neutral and the well is at 33%. The counter body reads as a few bands (light top, a pink/purple stripe, a dark base), and the toys and items on top are small and flat. That is about 3 steps per material, against 5-6 for the stall awning, wood and well roof. Most of the tone count comes from many small colourful items rather than from graded ramps on the main surfaces. A careful artist would not accept it next to the stall and well without it looking flatter and more outlined.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18147
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.756Z",
+ "cells": {
+  "16": [
+   "30860b06dea30809",
+   "576904f103476f1b",
+   "6b68ef84de1d88b2",
+   "8bbd5de23e51e7ab",
+   "8cdc3ebc32a6e3c0",
+   "b6f63c87f7335a6f"
+  ],
+  "24": [
+   "0535df23137de9b4",
+   "1b4dffc5c2b90fa0",
+   "5f5f74392dec4db4",
+   "630ad9aea63493ef",
+   "6bbc3003a64af58e",
+   "bc582d57f7baa151",
+   "c39c0a5561565798",
+   "f7d6d4ef77efebe4"
+  ],
+  "32": [
+   "02e4a7049c4a9336",
+   "1a6bfea3975b17e7",
+   "77a89ab5bb0f184f",
+   "ab158d7b236087df",
+   "e701a407354bef04",
+   "f1bceabae5e3d979"
+  ],
+  "48": [
+   "0f060f361fd99b3b",
+   "23cc392a6e44fc21"
+  ]
+ }
+}

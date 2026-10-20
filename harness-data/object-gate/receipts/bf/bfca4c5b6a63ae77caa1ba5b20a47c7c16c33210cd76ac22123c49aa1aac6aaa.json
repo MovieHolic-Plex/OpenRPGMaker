@@ -1,0 +1,387 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bfca4c5b6a63ae77caa1ba5b20a47c7c16c33210cd76ac22123c49aa1aac6aaa",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "mci shelf office",
+ "label": "modern_city_interior/mci-shelf-office",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 22,
+  "tileColorsP90": 24,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "header panel with two framed pictures, a face-on vertical strip",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top cornice strip, a cream 2-row rim with dark shadow below",
+      "rows": "5-8",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "shelf boards, 1-row lines with no depth",
+      "rows": "14, 21, 28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "books and dark back panel, all vertical faces",
+      "rows": "7-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a full-width bookshelf seen straight on, 32 px wide for rows 0-30. The top is a header strip with pictures (rows 1-4) over a 2-row cream cornice (rows 5-6) and shadow (rows 7-8). That cornice is only a rim with no depth, not a roof or a top surface of 3+ rows. Every shelf board (rows 14, 21, 28) is a single flat line, and the books and back panel are vertical faces. No horizontal top and no ellipse is visible anywhere, so it matches the red 'front elevation / rim only' references, not the green cabinet with a 5-row top. Also, kind_matches is false: the caller kind is a large structure (gate, pavilion, building), but this is a bookshelf/furniture piece."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 4,
+    "evidence": "The candidate is a small bookshelf (a wooden frame with rows of coloured books), not a whole building. It has no roof, no walls and no door, so it does not match the building references (timber-frame house and stone house with tiled roofs). Measured facts are fine: 21 visible tones per tile against 12 and 10 for the references, 6% near-flat coverage, and 0% neutral dark edges. The outline is a tinted dark brown. However, the wood frame ramp is only about 3 steps against roughly 6 on the reference roofs and walls. The object also fails the brief for 'shelf office' as a building. The kind mismatch means it cannot be judged as a Beodeul-standard building, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19876
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of shelf unit",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "white and blue items on top board",
+      "rows": "1-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with shelves and books",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cream band at rows 1-6 ends in a lighter front-edge line at row 6 (#e4cfae). Dark eave shadow follows at rows 7-8 (#533020), and the shelf front face with books runs below it from row 9 to row 30. The white and blue shapes in rows 1-5 are read as items sitting on the top board, so they count as decor. The top is only about 6 rows, and the case is otherwise drawn flat on the front. Shelf boards at rows 14, 21 and 28 are thin 1-row lines, not top surfaces. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small framed bookshelf, about 1.5 tiles wide. It has no roof, walls, door or windows, so it is not a whole building and does not match the building references. On the measured facts it is not shallow: 21 visible tones per tile against 12 and 10 for the references, 6% near-flat coverage, and 0% neutral dark edge pixels, which means the outline is tinted brown. The wood frame and the book spines show some variation, but each material has only about 3-4 lightness steps, with none of the per-tile roof scallops, plaster speckle or stone-by-stone shading of the references. The piece is also far smaller and simpler than a full house, so it cannot be judged as equal in richness. Because it fails as a building and is somewhat flatter per material, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16946
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top cornice strip above shelves (tan band)",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "books and items on shelves",
+      "rows": "9-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards (front-facing strips)",
+      "rows": "14-14, 21-21, 28-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a face-on bookshelf: a 32px wide silhouette from rows 0-30 with a uniform width and no narrowing. The top at rows 1-6 is a flat front-facing tan cornice with a window-like panel, with no edge line, eave shadow, ellipse or roof slope. The shelf boards at rows 14, 21 and 28 are 1-row strips seen face-on. There is no visible horizontal top surface, so it reads as a flat front elevation, and it is also a bookcase rather than a gate, pavilion or building."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tiny bookshelf-like prop, about 1.5 tiles wide, in a wooden frame with rows of coloured books. It has no roof, no walls and no door, so it is not a whole building like the two references, which have scalloped tile roofs with per-tile highlights, plaster or stone walls, timber framing and doors. The measured facts favour it: 21 visible tones per tile against 12 and 10, 6% near-flat coverage, and 0% neutral dark edges, which means the outline is tinted (dark brown beside wood). But the tones come from the multicoloured book spines, not from material ramps. The wood frame has only about 3-4 lightness steps against the references' 5-6, and the shelf backing is flat. At building scale it would look thin and sticker-like beside the references. It reads as an interior prop, not a building, so the kind does not match and it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15553
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "bookshelf frame top with cream header band and picture/window decor",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "books on shelves",
+      "rows": "9-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards (front edges)",
+      "rows": "14,21,28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a bookshelf seen straight on. The rows 1-6 band at the top is a cream/tan header with a picture panel and a window panel, which is a vertical face. It has no front-edge line and no eave shadow, and it is not an ellipse. Shelf boards at rows 14, 21 and 28 are 1-row lines, so they count as rims. The width is a constant 32 across rows 0-30, with no roof or top slope. The books and shelves are open compartments facing the viewer. The reference bookshelf marked RIGHT shows a top surface, and this candidate has none. The kind is also questionable, since this is furniture and not a large structure such as a gate or building."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny bookshelf-like prop, about one tile in size, not a whole building. It has no roof, no walls and no door, so it does not match the building references. The measured facts look good: 21 visible tones per tile against 12 and 10 for the references, 6% near-flat coverage, and 0% neutral dark edges, so the outline is tinted brown. By eye the wood frame has only about 3 shading steps, while the references have 5-6 per material. The books are small clusters of varied colour, but the piece has no roof tile scallops, plaster speckle or stone shading. Because the piece is not a building and has far less structure than the references, it fails the building standard regardless of the tile statistics.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14315
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.123Z",
+ "cells": {
+  "16": [
+   "1d698290ecc86225",
+   "1f3b976c783b784d",
+   "2f58f9a3a990de3a",
+   "7e3416fbc70ee505"
+  ],
+  "24": [
+   "01c8e548781688f6",
+   "031be2d25c130ac9",
+   "12f553eef4a2b780",
+   "152a10430acbb199",
+   "181de6b760269ef1",
+   "1cdfb8cb0092c3a4",
+   "34c24231598ca400",
+   "3b7d0652d8facb04",
+   "443ef10bb5b24dbb",
+   "969fa3791d2c00b4",
+   "c4b5c058a3503590",
+   "c5f4866e251fc346",
+   "c85dd86ec9f4168b",
+   "ca8abfa83a531dcb",
+   "cb2f9af31301a035",
+   "cf2962f731ccaf4d",
+   "d80071441515f30f",
+   "d9d5e54035d754d8",
+   "dd0277875db98385",
+   "ea2e02a99482fca1",
+   "ecf33d84de8c96f1",
+   "f70ce41b561acfb6",
+   "fab5b4576b836d09",
+   "ff9246b7e8713d11"
+  ],
+  "32": [
+   "5cfbb1abd44f3ee1"
+  ],
+  "48": [
+   "1cf02fd185c9edfd",
+   "585963d5af9b5b6f",
+   "69227a1298d45bed",
+   "adb5513aba4e604e",
+   "baa88ff6a2ef9668",
+   "de698770dbf76dfb"
+  ]
+ }
+}

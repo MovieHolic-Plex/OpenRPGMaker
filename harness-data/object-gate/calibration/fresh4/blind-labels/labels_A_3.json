@@ -1,0 +1,258 @@
+[
+ {
+  "id": "q065",
+  "kind": "low_furniture",
+  "top_rows": 5,
+  "front_rows": 4,
+  "label": "unsure",
+  "why": "desk top rows 1-6, front only rows 7-10 with chair tucked under; hard to read"
+ },
+ {
+  "id": "q066",
+  "kind": "structure",
+  "top_rows": 21,
+  "front_rows": 38,
+  "label": "good",
+  "why": "sloped roof plane rows 0-20, facade rows 22-59"
+ },
+ {
+  "id": "q067",
+  "kind": "flat",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "floor arrow plate"
+ },
+ {
+  "id": "q068",
+  "kind": "structure",
+  "top_rows": 0,
+  "front_rows": 26,
+  "label": "bad",
+  "why": "front elevation of oven with chimney; no top surface"
+ },
+ {
+  "id": "q069",
+  "kind": "seat",
+  "top_rows": 3,
+  "front_rows": 6,
+  "label": "bad",
+  "why": "chair backrest face-on, seat only ~3 rows (7-9)"
+ },
+ {
+  "id": "q070",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "window panel"
+ },
+ {
+  "id": "q071",
+  "kind": "front_prop",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "front-facing cloth hanging frame (exempt)"
+ },
+ {
+  "id": "q072",
+  "kind": "tall_furniture",
+  "top_rows": 0,
+  "front_rows": 24,
+  "label": "bad",
+  "why": "front elevation of glass cabinet; no readable top"
+ },
+ {
+  "id": "q073",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 5,
+  "label": "good",
+  "why": "table top rows 1-9, apron/legs rows 10-14"
+ },
+ {
+  "id": "q074",
+  "kind": "terrain",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "crop field tile"
+ },
+ {
+  "id": "q075",
+  "kind": "frame",
+  "top_rows": 1,
+  "front_rows": 28,
+  "label": "bad",
+  "why": "front elevation meat rack, top beam only 1-2 rows"
+ },
+ {
+  "id": "q076",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "wall antlers"
+ },
+ {
+  "id": "q077",
+  "kind": "low_furniture",
+  "top_rows": 10,
+  "front_rows": 10,
+  "label": "good",
+  "why": "bench top rows 5-14 with items, front drawers rows 15-24"
+ },
+ {
+  "id": "q078",
+  "kind": "low_furniture",
+  "top_rows": 9,
+  "front_rows": 5,
+  "label": "good",
+  "why": "desk top rows 1-9 with edge line, front/legs rows 10-14"
+ },
+ {
+  "id": "q079",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "flat gear face-on decoration"
+ },
+ {
+  "id": "q080",
+  "kind": "seat",
+  "top_rows": 3,
+  "front_rows": 3,
+  "label": "bad",
+  "why": "bench seat only rows 8-10 (3), backrest face-on"
+ },
+ {
+  "id": "q081",
+  "kind": "container",
+  "top_rows": 4,
+  "front_rows": 6,
+  "label": "unsure",
+  "why": "flowers rows 0-5 over soil, front rows 6-11; opening hidden by plants"
+ },
+ {
+  "id": "q082",
+  "kind": "round_body",
+  "top_rows": 0,
+  "front_rows": 9,
+  "label": "bad",
+  "why": "bale shows round face front-on; top only dome rows 0-4 rounded on upper edge"
+ },
+ {
+  "id": "q083",
+  "kind": "terrain",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "castle wall segment"
+ },
+ {
+  "id": "q084",
+  "kind": "figure",
+  "top_rows": 5,
+  "front_rows": 9,
+  "label": "good",
+  "why": "scarecrow on round base ellipse rows 23-27 top, 28-31 front"
+ },
+ {
+  "id": "q085",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "hanging flag"
+ },
+ {
+  "id": "q086",
+  "kind": "column",
+  "top_rows": 4,
+  "front_rows": 40,
+  "label": "unsure",
+  "why": "capital slab rows 7-10 flat rectangular, no elliptical cap"
+ },
+ {
+  "id": "q087",
+  "kind": "terrain",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "wall/door fragment of tower"
+ },
+ {
+  "id": "q088",
+  "kind": "structure",
+  "top_rows": 17,
+  "front_rows": 16,
+  "label": "good",
+  "why": "sloped roof plane rows 5-21, wall on stilts rows 22-37"
+ },
+ {
+  "id": "q089",
+  "kind": "container",
+  "top_rows": 8,
+  "front_rows": 17,
+  "label": "good",
+  "why": "cauldron opening ellipse rows 1-11 with liquid, front rows 14-30"
+ },
+ {
+  "id": "q090",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "wall pipe"
+ },
+ {
+  "id": "q091",
+  "kind": "terrain",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "wall top tile"
+ },
+ {
+  "id": "q092",
+  "kind": "seat",
+  "top_rows": 5,
+  "front_rows": 2,
+  "label": "good",
+  "why": "round cushion top ellipse rows 0-4 on thin pole"
+ },
+ {
+  "id": "q093",
+  "kind": "container",
+  "top_rows": 3,
+  "front_rows": 0,
+  "label": "unsure",
+  "why": "bowl rim ~rows 3-5 with flame rising, opening shallow"
+ },
+ {
+  "id": "q094",
+  "kind": "wall_mounted",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "backdrop panel"
+ },
+ {
+  "id": "q095",
+  "kind": "other",
+  "top_rows": 0,
+  "front_rows": 35,
+  "label": "bad",
+  "why": "car side elevation; no top surface"
+ },
+ {
+  "id": "q096",
+  "kind": "flat",
+  "top_rows": 0,
+  "front_rows": 0,
+  "label": "skip",
+  "why": "platform braille strip"
+ }
+]

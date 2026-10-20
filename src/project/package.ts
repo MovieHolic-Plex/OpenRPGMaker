@@ -11,10 +11,9 @@ import {
   type ZipEntry,
 } from "./packageZip";
 
-export const OPRN_EXTENSION = ".oprn";
-export const OPRN_MIME = "application/vnd.openrpg.project+zip";
-export const LEGACY_RPGZZU_EXTENSION = ".rpgzzu";
-export const LEGACY_RPGZZU_MIME = "application/vnd.rpgzzu.project+zip";
+import { LEGACY_RPGZZU_EXTENSION, LEGACY_RPGZZU_MIME, OPRN_EXTENSION, OPRN_MIME } from "./packageFormat";
+
+export { LEGACY_RPGZZU_EXTENSION, LEGACY_RPGZZU_MIME, OPRN_EXTENSION, OPRN_MIME };
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();

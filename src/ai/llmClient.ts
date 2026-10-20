@@ -1,4 +1,5 @@
 import { inspectPromptPayload, publishPromptInspection, inspectionEpoch } from "./authoring/promptInspection";
+import { applyAssistantEngine, loadAssistantEngine } from "./localCliEngine";
 import { DEFAULT_PI_APPLY, normalizePiApplyMode, type PiApplyMode } from "./piAgent/applyMode";
 import { configForRole, parseRoleModels, type RoleModel, type SpecialistModels } from "./modelRoles";
 import { DEFAULT_PIXEL_MODEL, parsePixelModel } from "./pixelModel";
@@ -21,6 +22,7 @@ import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, RECOMMENDED_IMAGE_MODEL
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 import { getKnownOpenAiCompatEndpoint } from "@/ai/openAiCompat";
 import { companionTokenHeaders } from "@/ai/companionToken";
+import { describeCompanionFailure, fetchCompanion } from "@/ai/companionConnection";
 
 // OpenAI 메시지 규약(우리가 쓰는 필드만).
 export interface ToolCall { id: string; type: "function"; function: { name: string; arguments: string } }
@@ -329,6 +331,11 @@ function withoutLegacySeededDeepRole(roles: SpecialistModels, providerId: string
 // 게이트웨이를 저장한 브라우저는 env 를 고쳐도 계속 죽은 경로를 쳤다 — 이번 장애의 절반이
 // 이것이다(실측: 저장된 baseUrl `/api/cliproxy` 가 POST 404).
 export function loadAiConfig(): AiConfig {
+  // 조수 엔진을 사용자 PC 의 CLI 로 고른 사람(opt-in, src/ai/localCliEngine.ts)은 모든 대화 역할이 그 CLI 로 간다.
+  return applyAssistantEngine(loadStoredAiConfig(), loadAssistantEngine());
+}
+
+function loadStoredAiConfig(): AiConfig {
   if (typeof localStorage === "undefined") return defaultAiConfig();
   const base = legacyStoredAiConfigBase();
   try {
@@ -439,7 +446,14 @@ export function saveAiConfig(config: AiConfig): void {
   // 제공자는 저장 시점에도 레지스트리 값으로 정규화한다. 프로그램 경로(설정 저장·마이그레이션)가
   // 레지스트리 밖 id 를 디스크에 남기면 다음 판독이 흔들리기 때문 — 두 제공자 중 하나로 못박되,
   // 사용자가 고른 Codex 를 Antigravity 로 되돌리지는 않는다.
-  const normalized: AiConfig = { ...config, piApplyPolicyVersion: 1, roleModelsPolicyVersion: 1, providerId: parseOhMyPiProvider(config.providerId) };
+  // 로컬 CLI 엔진을 고른 동안 loadAiConfig 가 입힌 역할·제공자 칸은 저장하지 않는다 — 엔진을 끄면 원래 계정 설정으로 돌아가야 한다.
+  const stored = loadAssistantEngine() ? loadStoredAiConfig() : undefined;
+  const owned = stored ? {
+    providerId: stored.providerId, model: stored.model, liteModel: stored.liteModel, roleModels: stored.roleModels, pixelModel: stored.pixelModel,
+    ultrabrainProviderId: stored.ultrabrainProviderId, ultrabrainModel: stored.ultrabrainModel, ultrabrainReasoningEffort: stored.ultrabrainReasoningEffort,
+  } : {};
+  const merged: AiConfig = { ...config, ...owned };
+  const normalized: AiConfig = { ...merged, piApplyPolicyVersion: 1, roleModelsPolicyVersion: 1, providerId: parseOhMyPiProvider(merged.providerId) };
   localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(normalized));
   if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
     window.dispatchEvent(new CustomEvent(AI_CONFIG_CHANGED_EVENT));
@@ -1084,12 +1098,14 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest, captureEpo
     const onCallerAbort = () => controller.abort();
     req.signal?.addEventListener("abort", onCallerAbort, { once: true });
     try {
-      response = await fetch(endpoint(config), {
+      const init: RequestInit = {
         method: "POST",
         headers: headers(config),
         body: requestBody(config, req, stream, captureEpoch),
         signal: controller.signal,
-      });
+      };
+      // 동반 서비스는 한 입구로 — 서버 재시작 뒤 옛 토큰(403)을 한 번 다시 맺어 고친다.
+      response = usesOhMyPiCompanion(config) ? await fetchCompanion(endpoint(config), init) : await fetch(endpoint(config), init);
     } finally {
       clearTimeout(timeoutTimer);
       req.signal?.removeEventListener("abort", onCallerAbort);
@@ -1115,11 +1131,16 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest, captureEpo
     } catch {
       /* ignore */
     }
+    // 동반 서비스의 401/403/404 는 연결 문제다 — 알림과 같은 한국어 문장(경로·「다시 연결」)으로 보인다.
+    let detail = body;
+    try { const parsed = JSON.parse(body) as { error?: unknown }; if (typeof parsed?.error === "string") detail = parsed.error; } catch { /* 평문 */ }
+    const message = (usesOhMyPiCompanion(config) ? describeCompanionFailure(response, "/v1/chat/completions", detail.trim().slice(0, 160)) : null)
+      ?? humanizeLlmStatus(response.status, body, config.authMode);
     // 429(사용량 제한)는 연결 문제 아님 — 칩까지 붉히지 않는다.
     if (response.status !== 429) {
-      reportTransportHealth(false, response.status, humanizeLlmStatus(response.status, body, config.authMode));
+      reportTransportHealth(false, response.status, message);
     }
-    throw new LlmError(humanizeLlmStatus(response.status, body, config.authMode), response.status);
+    throw new LlmError(message, response.status);
   }
   reportTransportHealth(true, response.status);
 

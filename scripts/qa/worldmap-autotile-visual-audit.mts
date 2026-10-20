@@ -33,7 +33,7 @@ const beforeIcons=[...iconTiles].map(i=>({i,pass:t.passability[i],meta:t.tileMet
 const copy=structuredClone(t);attachWorldmapAuthoringBrushes(copy);const second=attachWorldmapAuthoringBrushes(copy);
 const afterIcons=[...iconTiles].map(i=>({i,pass:copy.passability[i],meta:copy.tileMeta![i],graft:copy.tileGrafts!.find(g=>g.targetTile===i)}));
 const fresh=createWorldmapAuthoringTileset();const freshIdempotent=!attachWorldmapAuthoringBrushes(fresh);
-const q=JSON.parse(fs.readFileSync(process.argv[4]??'tiledata/worldmap-kit/authoring/pixels.json','utf8')).quarters;
+const q=JSON.parse(fs.readFileSync(process.argv[4]??'tiledata/worldmap-editor/authoring/pixels.json','utf8')).quarters;
 const ports=[q.outer.map((r:string)=>r[7]),q.outer[7].split(''),q.north.map((r:string)=>r[0])];
 const portMismatches=ports[0].filter((c:string,i:number)=>c!==ports[2][i]).length+ports[1].filter((c:string,i:number)=>c!==ports[2][i]).length;
 const report={projectId:info.projectId,revision:snapshot.revision,examined,mismatches,portMismatches,bridgeConnections:mismatches.filter(m=>m.group.startsWith('worldmap-brush-river')).length,iconTilesPreserved:isDeepStrictEqual(beforeIcons,afterIcons),existingIdempotent:!second,freshIdempotent};

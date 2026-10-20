@@ -311,6 +311,8 @@ function endingBadge(endingId: string | undefined, hasPartner: boolean, presenta
   if (hasPartner) return "CHARACTER ENDING";
   if (/bad/iu.test(endingId ?? "")) return "BAD ENDING";
   if (/normal|segment/iu.test(endingId ?? "")) return "NORMAL ENDING";
+  // 막·장 끝(end_fs_act1 등)은 이야기가 이어진다 — 「해피 엔딩」이라 부르지 않는다(폴른 스타 감사 2차).
+  if (/(?:^|_)(?:act|chapter)\d/iu.test(endingId ?? "")) return "TO BE CONTINUED";
   return presentation?.tone === "dark" ? "ENDING" : "HAPPY ENDING";
 }
 
@@ -369,7 +371,12 @@ function buildEndingCg(terminal: TerminalScene, project: Project, presentation: 
   }
   layer.append(textNode("div", "ending-cg-frame", ""));
   const epilogue = (ending?.epilogue ?? [])
-    .map((beat) => (typeof beat.text === "string" ? beat.text.trim() : ""))
+    // 말한 사람이 있는 줄은 이름을 붙인다 — 이름 없이 존댓말·반말 두 줄이 붙으면 누가 한 말인지 모른다.
+    .map((beat) => {
+      const text = typeof beat.text === "string" ? beat.text.trim() : "";
+      const speaker = "speaker" in beat && typeof beat.speaker === "string" ? beat.speaker.trim() : "";
+      return text && speaker ? `${speaker}: ${text}` : text;
+    })
     .filter(Boolean)
     .join("\n");
   return { layer, mode: partnerFigure ? "couple" : "scene", badge: endingBadge(endingId, Boolean(partnerFigure), presentation), epilogue };

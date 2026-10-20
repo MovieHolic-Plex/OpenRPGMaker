@@ -323,6 +323,7 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
           const comma = image.dataUrl.indexOf(",");
           content.push({ type: "image", mimeType: image.dataUrl.slice(5, image.dataUrl.indexOf(";")), data: image.dataUrl.slice(comma + 1) });
         }
+        if (referenceGate.skippedImages.length) content.push({ type: "text", text: `이 실행에서 이미 받은 참고 그림이라 다시 싣지 않았습니다(앞의 도구 결과를 보세요): ${referenceGate.skippedImages.join(", ")}` });
       }
       if (tool.name === 'show_title_opening') {
         for (const image of presentationArtImages(ctx.project)) {

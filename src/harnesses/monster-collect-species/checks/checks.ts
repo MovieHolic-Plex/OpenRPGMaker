@@ -2,7 +2,7 @@
 import { isOpaque, opaqueBounds, pixelAt, rgbKey, type Rgba, type RgbaImage } from "../pixel/image";
 import { isMagentaCast, labDistance, oklabCached } from "../pixel/oklab";
 import { MAX_INK_SIDE, SPRITE_CANVAS, type SpriteSide } from "../pixel/fit";
-import { checkEyes } from "./eyes";
+import { checkEyes, type StalkBox } from "./eyes";
 
 export type CheckIssue = { level: "error" | "warn"; message: string };
 
@@ -62,7 +62,8 @@ export function spriteStats(image: RgbaImage): SpriteStats {
   };
 }
 
-export function checkSprite(image: RgbaImage, maxColors: number, side?: SpriteSide, stage: 1 | 2 | 3 = 1): { stats: SpriteStats; issues: CheckIssue[] } {
+/** stalkBoxes: eyes.json anatomy "stalk" 종(게 계통)의 눈알 상자 — 넘기면 앞모습 눈은 눈자루 규칙으로 본다 */
+export function checkSprite(image: RgbaImage, maxColors: number, side?: SpriteSide, stage: 1 | 2 | 3 = 1, stalkBoxes?: readonly StalkBox[]): { stats: SpriteStats; issues: CheckIssue[] } {
   const stats = spriteStats(image);
   const issues: CheckIssue[] = [];
   if (image.width !== SPRITE_CANVAS || image.height !== SPRITE_CANVAS) issues.push({ level: "error", message: `캔버스가 ${SPRITE_CANVAS}x${SPRITE_CANVAS} 가 아니다 (${image.width}x${image.height})` });
@@ -77,7 +78,7 @@ export function checkSprite(image: RgbaImage, maxColors: number, side?: SpriteSi
   if (stats.orphanRatio > 0.12) issues.push({ level: "warn", message: `외톨이 점 ${(stats.orphanRatio * 100).toFixed(1)}% — 색이 잘게 갈라졌다` });
   if (Math.sqrt(stats.ink.width * stats.ink.height) < 30) issues.push({ level: "warn", message: `몸집이 작다 (${stats.ink.width}x${stats.ink.height})` });
   // 눈 규칙(판본 3): 면을 알 때만. 앞모습 주 눈 탈락은 error(후보 탈락), 뒷모습 눈 비침은 warn
-  if (side && stats.ink.width > 0) issues.push(...checkEyes(image, side, stage).issues);
+  if (side && stats.ink.width > 0) issues.push(...checkEyes(image, side, stage, stalkBoxes).issues);
   return { stats, issues };
 }
 

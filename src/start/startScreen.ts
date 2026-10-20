@@ -1,44 +1,43 @@
 // start/startScreen.ts
-// 데스크톱 앱 첫 화면(start-screen.html) — 「플레이」·「만들기」 두 갈래 런처(2026-10-17).
+// 데스크톱 앱 첫 화면(start-screen.html) — 「라이브러리 홈」(2026-10-20, 설계 http://mdc-server:18301/home-redesign-1.html A안).
 //
-// 왜 바꿨나: 2026-10-07 판은 화면 전체가 새 게임 컨셉 피드였다(레일 「홈·탐색·내 프로젝트·템플릿」, 위 막대 「새 게임」).
-// 이 앱은 만든 게임을 하는 샌드박스로 간다. 첫 화면이 「만드는 홈」 하나면 플레이를 끼울 자리가 없어서, 지금 두 갈래로 나눈다.
-//   - 플레이: 이어서 플레이(시작 화면에서 마지막으로 플레이한 월드) + 내 월드 + 게임 파일(.oprn) 열기.
-//   - 만들기: 이어서 만들기(최근 편집한 월드) + 새로 만들기(장르 인터뷰·빈 프로젝트) + 컨셉 피드(src/start/conceptFeed).
-// 두 갈래는 같은 월드 카드(src/start/playFeed)를 쓰고 주 단추만 바꾼다. 공유 월드(store.openrpgmaker.com)는 아직 잇지 않는다.
-// 「플레이」는 그 폴더를 열고 편집기 문서를 플레이 모드로 부팅한다(startIntent 의 START_PLAY_URL).
+// 2026-10-21: 레일 단추 하나 = 본문 칸 하나(홈 · 내 게임 · 기본 게임 · 새로 만들기, 위 막대의 팀에 참여).
+//   홈 = 할 수 있는 것만 — 이어서 만들기 배너 · 최근 게임 몇 개 · 지금 만들 수 있는 게임(컨셉 8개) · 기본 게임(작은 카드).
+//   검색·분류·상세·골라서 만들기·빈 프로젝트는 「새로 만들기」, 전체 목록·숨김·게임 파일 열기는 「내 게임」 칸으로 옮겼다.
+// 지금 칸의 주인은 state.section 하나(go/mount/leave/refresh). 칸마다 #해시 기록이 남아 마우스 뒤로 단추가 앞 칸으로 간다.
+// 바닥에 AI 상태 줄과 「설정」(AI 엔진·모델, 언어)이 있다. 「플레이」는 그 폴더를 열고 편집기 문서를 플레이 모드로 부팅한다(START_PLAY_URL).
+//
+// 첫 화면은 가볍게 뜬다(agent/fast-start 와 같은 원칙): 게임 파일 읽기·카드 그림 굽기·설정 창은 누르거나 한가할 때만 받는다.
+// 카드 그림은 첫 그림이 뜬 뒤 한가할 때 한 장씩 굽고, 호스트가 프로젝트 해시로 디스크에 남긴다(electron/main/recent.ts).
 
 import "./startScreen.css";
+// 창 단추의 지연 툴팁 모양. 편집기는 지도 스타일 층에서 싣지만 시작 화면에는 그 층이 없다 — 없으면 「닫기」가 맨글자로 레일 위에 남았다.
+import "@/styles/map/delayed-tooltip.css";
 import { mountWindowControls } from "./windowControls";
 import { APP_VERSION } from "@/brand";
 import type { RecentProjectEntry, RecentTeamEntry } from "../../electron/shared/start";
 import type { OprnBridgeStart } from "@/project/persistence/electronRepository";
 import { el } from "@/util/dom";
-import { getLocale, initI18n, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES, t, type SupportedLocale } from "@/i18n";
+import { getLocale, initI18n, LOCALE_NATIVE_NAMES, t } from "@/i18n";
 import { START_PLAY_URL, writeStartScreenIntent } from "./startIntent";
 import { createConceptFeed, type ConceptFeed } from "./conceptFeed/conceptFeed";
 import { launcherBriefHandler, launcherMakeHandler } from "./conceptFeed/launcherMake";
 import { createConceptSource } from "@/concepts/source";
-import { OPRN_GAME_FILE_ACCEPT, readOprnGameFile } from "@/player/oprnGameFile";
-import { serialize } from "@/project/io";
-import { createLauncherShell, readLauncherMode, topButton, writeLauncherMode, type LauncherMode } from "./launcherShell";
-import { readPlayedLog, recordPlayed, worldGrid, worldLead, worldsByLastPlayed, type PlayedLog, type WorldAction, type WorldListOptions } from "./playFeed/playFeed";
+// 게임 파일 읽기·직렬화는 번들 타일셋(80MB)을 끌고 오므로 «게임 파일 열기» 를 누를 때만 받는다 — 첫 화면 번들에 넣지 않는다.
+import { OPRN_GAME_FILE_ACCEPT } from "@/project/packageFormat";
+import { createLauncherShell, topButton, type LauncherNav } from "./launcherShell";
+import { recordPlayed } from "./playFeed/playFeed";
 import { startIcon } from "./icons";
+import { builtinGameEditUrl, builtinGamePlayUrl } from "./home/builtinGames";
+import { aiNotice, builtinHomeShelf, builtinShelf, conceptShelf, continueHero, displayTitles, fillCover, firstRunHero, firstRunShelf, myGamesShelf, recentShelf, type HomeActions } from "./home/homeView";
+import type { GameConcept } from "@/concepts/format";
+import { loadEngineChoice, localAgentsEnabled } from "./settings/localAgents";
+import type { AiStatusSummary, SettingsTab } from "./settings/settingsDialog";
 
 export const START_SCREEN_TESTIDS = {
   root: "start-screen",
   openFolder: "start-open-folder",
-  openGameFile: "start-open-game-file",
   joinTeam: "start-join-team",
-  continueMaking: "start-continue",
-  playHome: "start-play-home",
-  worldSearch: "start-world-search",
-  world: "start-world",
-  worldPlay: "start-world-play",
-  worldEdit: "start-world-edit",
-  worldMake: "start-world-make",
-  showAll: "start-show-all",
-  hiddenToggle: "start-hidden-toggle",
   back: "start-back",
   error: "start-error",
   joinInput: "start-join-input",
@@ -47,23 +46,25 @@ export const START_SCREEN_TESTIDS = {
 } as const;
 
 const BLANK_TITLE = "새 게임";
-/** 「이어서 만들기」·「이어서 플레이」 판 오른쪽 줄에 놓는 수. 나머지는 「모두 보기」·「내 월드」 격자. */
-const SIDE_ROWS = 4;
+/** 카드 그림 굽기를 시작하기 전 기다림 — 첫 그림·프로젝트 코어 미리 읽기(fast-start, 1.5초)와 겹치지 않게. */
+const COVER_IDLE_DELAY_MS = 2_500;
 
-type View = "home" | "join";
+/** 지금 본문 칸. 레일 단추 넷 + 팀에 참여. */
+export type StartSection = Exclude<LauncherNav, "store"> | "join";
 
 type State = {
-  mode: LauncherMode;
-  view: View;
+  section: StartSection;
+  /** 칸을 바꿀 때마다 1 오른다 — 늦게 온 비동기 결과가 지금 칸 것인지 가린다. */
+  sectionSeq: number;
   entries: readonly RecentProjectEntry[];
-  played: PlayedLog;
   loaded: boolean;
+  /** 홈의 「지금 만들 수 있는 게임」. null = 아직 안 옴. */
+  lineup: readonly GameConcept[] | null;
   showHidden: boolean;
-  showAllMaking: boolean;
-  worldQuery: string;
   busy: boolean;
   joinUrl: string;
   teams: readonly RecentTeamEntry[];
+  aiReady: boolean;
 };
 
 export function formatRelativeTime(iso: string | null | undefined, now = Date.now()): string {
@@ -139,11 +140,6 @@ function makingMeta(entry: RecentProjectEntry): string {
   return parts.join(" · ");
 }
 
-/** 플레이 쪽 한 줄 — 시작 화면에서 마지막으로 플레이한 시각. 플레이한 적이 없으면 만들기 쪽과 같은 줄. */
-function playingMeta(entry: RecentProjectEntry, played: PlayedLog): string {
-  return activityLabel(played[entry.projectDir], "played") || makingMeta(entry);
-}
-
 /** 숨긴 항목 안내. 문장을 조각으로 이어 붙이면 번역 카탈로그가 찾지 못하므로 경우마다 한 문장으로 쓴다. */
 function hiddenEntriesNote(temporary: number, missing: number, showing: boolean): string {
   if (temporary > 0 && missing > 0) {
@@ -157,52 +153,36 @@ function hiddenEntriesNote(temporary: number, missing: number, showing: boolean)
   return showing ? `찾을 수 없는 폴더 ${missing}개를 함께 보여 주는 중입니다.` : `찾을 수 없는 폴더 ${missing}개를 숨겼습니다.`;
 }
 
-/**
- * 레일 아래 언어 고르기. 데스크톱 앱은 이 화면에서 시작하므로 편집기의 「보기 → 언어」까지 가지 않고도 바꿀 수 있어야 한다.
- * 고른 값은 편집기와 같은 localStorage(oprn:locale)에 남는다. 언어 이름은 그 언어로 쓴다(translate="no").
- */
-function localePicker(): HTMLElement {
-  const select = el("select", {
-    class: "ln-locale",
-    attrs: { "aria-label": "언어", translate: "no" },
-    dataset: { testid: "start-locale-select" },
-    children: SUPPORTED_LOCALES.map((locale) => el("option", { text: LOCALE_NATIVE_NAMES[locale], attrs: { value: locale, lang: locale } })),
-  });
-  select.value = getLocale();
-  select.addEventListener("change", () => void setLocale(select.value as SupportedLocale));
-  return select;
-}
-
-/** 시작 화면이 그림을 다시 구울 항목 — 그림이 없거나 낡았고, 숨김(임시·사라진 폴더)이 아닌 것. */
+/** 시작 화면이 그림을 다시 구울 항목 — 그림이 없거나(빈 맵 표식도 없다) 낡았고, 숨김(임시·사라진 폴더)이 아닌 것. */
 export function entriesNeedingCover(entries: readonly RecentProjectEntry[]): readonly RecentProjectEntry[] {
-  return entries.filter((entry) => !entry.hiddenReason && (!entry.cover || entry.coverStale === true));
+  return entries.filter((entry) => !entry.hiddenReason && (entry.coverStale === true || (!entry.cover && entry.coverEmpty !== true)));
 }
 
 function localStore(): Storage | null {
   try { return window.localStorage; } catch { return null; }
 }
 
-function section(testid: string | null, head: readonly HTMLElement[], body: readonly HTMLElement[]): HTMLElement {
-  return el("section", {
-    class: "ln-sec",
-    ...(testid ? { dataset: { testid } } : {}),
-    children: [el("div", { class: "ln-sec-head", children: [...head] }), ...body],
-  });
+/** 첫 화면을 다 그린 뒤 한가할 때. requestIdleCallback 이 없는 곳(사파리)은 시간만 기다린다. */
+function whenIdle(delayMs: number, work: () => void): void {
+  setTimeout(() => {
+    const idle = (window as { requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number }).requestIdleCallback;
+    if (idle) idle(work, { timeout: 2_000 });
+    else work();
+  }, delayMs);
 }
 
 export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | undefined): void {
   const state: State = {
-    mode: readLauncherMode(localStore()) ?? "make",
-    view: "home",
+    section: "home",
+    sectionSeq: 0,
     entries: [],
-    played: readPlayedLog(localStore()),
     loaded: false,
+    lineup: null,
     showHidden: false,
-    showAllMaking: false,
-    worldQuery: "",
     busy: false,
     joinUrl: "",
     teams: [],
+    aiReady: loadEngineChoice() !== null,
   };
   host.dataset.testid = START_SCREEN_TESTIDS.root;
   const errorBox = el("p", { class: "ln-error", attrs: { role: "alert" }, dataset: { testid: START_SCREEN_TESTIDS.error } });
@@ -215,7 +195,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   const goEditor = (): void => {
     window.location.href = "/index.html";
   };
-  /** 열어 둔 폴더를 플레이 모드로 부팅한다. 플레이 기록은 「이어서 플레이」 순서가 된다. */
+  /** 열어 둔 폴더를 플레이 모드로 부팅한다. */
   const goPlay = (projectDir: string): void => {
     recordPlayed(localStore(), projectDir);
     window.location.href = START_PLAY_URL;
@@ -248,21 +228,13 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     const opened = await bridge.openRecent({ projectDir: entry.projectDir });
     if (opened) return;
     state.entries = state.entries.map((candidate) => candidate.projectDir === entry.projectDir ? { ...candidate, hiddenReason: "missing" } : candidate);
-    renderWorlds();
+    refresh("entries");
     throw new Error("「" + entry.title + "」 폴더를 찾을 수 없습니다: " + entry.projectDir);
   };
-  const editEntry = (entry: RecentProjectEntry): void => void run(async () => {
-    await openRecentFolder(entry);
-    goEditor();
-  });
-  const playEntry = (entry: RecentProjectEntry): void => void run(async () => {
-    await openRecentFolder(entry);
-    goPlay(entry.projectDir);
-  });
 
   /**
    * 받은 게임 파일(.oprn)을 플레이한다. 플레이는 폴더 단위라 기본 위치에 그 게임의 폴더를 하나 만들어 풀고 연다 —
-   * 그 뒤로는 「내 월드」에 남아 다시 플레이하거나 고쳐 볼 수 있다.
+   * 그 뒤로는 「내 게임」에 남아 다시 플레이하거나 고쳐 볼 수 있다.
    */
   const openGameFile = (): void => {
     if (state.busy) return;
@@ -272,6 +244,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       if (!file) return;
       void run(async () => {
         if (!bridge) throw new Error("데스크톱 앱에서만 게임 파일을 열 수 있습니다.");
+        const [{ readOprnGameFile }, { serialize }] = await Promise.all([import("@/player/oprnGameFile"), import("@/project/io")]);
         const read = await readOprnGameFile(file);
         if (!read.ok) throw new Error(read.message);
         // 받은 게임을 그대로 새 폴더의 시드로 심는다 — 직렬화 형식은 편집기 저장과 같다.
@@ -305,17 +278,68 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     if (!result.ok) throw new Error(result.error);
     state.joinUrl = "";
     if (bridge.recentTeams) state.teams = await bridge.recentTeams();
-    if (state.view === "join") renderJoinView();
+    if (state.section === "join") renderJoinView();
   });
 
-  // ── 월드 카드: 두 갈래가 같은 카드를 쓰고 주 단추만 바꾼다 ─────────────
-  const playAside: WorldAction = { label: "플레이", testid: START_SCREEN_TESTIDS.worldPlay, run: playEntry };
-  const play: WorldAction = { ...playAside, icon: "play" };
-  const edit: WorldAction = { label: "편집", testid: START_SCREEN_TESTIDS.worldEdit, run: editEntry };
-  const makeOn: WorldAction = { label: "이어서 만들기", testid: START_SCREEN_TESTIDS.worldMake, run: editEntry };
-  const playOptions = (): WorldListOptions => ({ meta: (entry) => playingMeta(entry, state.played), open: play, aside: edit, cardTestid: START_SCREEN_TESTIDS.world });
-  const makeOptions: WorldListOptions = { meta: makingMeta, open: makeOn, aside: playAside, cardTestid: START_SCREEN_TESTIDS.world };
+  // ── 설정 · AI 상태 줄 ─────────────────────────────────────────────────
+  let settingsOpen = false;
+  const applyAiStatus = (summary: AiStatusSummary): void => {
+    shell.setAiStatus(summary);
+    const ready = summary.tone === "ok";
+    if (ready !== state.aiReady) { state.aiReady = ready; refresh("ai"); }
+  };
+  const openSettings = (tab: SettingsTab = "ai"): void => {
+    if (settingsOpen) return;
+    settingsOpen = true;
+    // 설정 창은 누를 때만 받는다(첫 화면 번들을 키우지 않게).
+    void import("./settings/settingsDialog").then(({ openSettingsDialog }) => {
+      const dialog = openSettingsDialog({ tab, onEngineChange: (summary) => { if (summary.tone === "off") refreshAiStatus(); else applyAiStatus(summary); } });
+      const observer = new MutationObserver(() => {
+        if (document.querySelector("[data-testid='start-settings']")) return;
+        settingsOpen = false;
+        observer.disconnect();
+      });
+      observer.observe(document.body, { childList: true });
+      void dialog;
+    }).catch((error: unknown) => {
+      settingsOpen = false;
+      setError(error instanceof Error ? error.message : String(error));
+    });
+  };
+  /** 레일 AI 상태 줄 — 고른 엔진이 있으면 그 이름, 깃발이 켜져 있으면 한가할 때 한 번 찾아본다. */
+  const refreshAiStatus = (): void => {
+    void import("./settings/settingsDialog").then(async ({ summarizeAiStatus }) => {
+      const choice = loadEngineChoice();
+      if (!choice) {
+        // 이 PC 의 AI 프로그램을 고르지 않았으면 조수는 편집기의 「AI 연결」(Google·ChatGPT 로그인·API 키)을 그대로 쓴다.
+        // 그 연결이 살아 있으면 «AI 엔진이 아직 없어요» 라고 하지 않는다 — 로그인을 마쳐도 첫 화면이 계속 «없음» 이었다.
+        const { getAiConnectionStatus, refreshAiConnectionStatus } = await import("@/editor/panels/aiConnectionStatus");
+        await refreshAiConnectionStatus().catch(() => {});
+        const status = getAiConnectionStatus();
+        if (status.kind === "ready") { applyAiStatus({ tone: "ok", text: status.label }); return; }
+      }
+      if (!localAgentsEnabled()) { applyAiStatus(summarizeAiStatus(choice, null)); return; }
+      const { createLocalAgentsApi } = await import("./settings/localAgents");
+      const report = await createLocalAgentsApi().detect(false).catch(() => null);
+      applyAiStatus(summarizeAiStatus(choice, report));
+    }).catch(() => {});
+  };
 
+  // ── 칸(section) — 지금 보이는 본문의 주인은 이것 하나다 ─────────────────
+  // 2026-10-21: 레일 단추가 한 긴 본문을 스크롤하던 판은 스크롤 위치가 레일 표시를 다시 정했고(누른 것과 표시가 어긋남),
+  // 앞에서 연 컨셉 상세·검색어가 다른 단추를 눌러도 남았다. 이제 단추 하나 = 칸 하나이고, 칸을 바꿀 때마다
+  // 떠나는 칸을 정리(leave)하고 새 칸을 상태에서 다시 그린다(render). 늦게 온 비동기 결과는 상태에만 넣고
+  // 지금 칸이 그 데이터를 쓰면 그 칸만 다시 그린다 — 앞 칸의 요청이 새 칸을 덮지 않는다.
+  const listed = (): readonly RecentProjectEntry[] => state.showHidden ? state.entries : partitionRecentEntries(state.entries).visible;
+  const actions: HomeActions = {
+    edit: (entry) => void run(async () => { await openRecentFolder(entry); goEditor(); }),
+    play: (entry) => void run(async () => { await openRecentFolder(entry); goPlay(entry.projectDir); }),
+    newGame: () => go("create"),
+    openGameFile,
+    builtinPlay: (id) => { if (!state.busy) window.location.href = builtinGamePlayUrl(id); },
+    builtinEdit: (id) => { if (!state.busy) window.location.href = builtinGameEditUrl(id); },
+    openSettings: () => openSettings("ai"),
+  };
   const hiddenNote = (): HTMLElement | null => {
     const { temporary, missing } = partitionRecentEntries(state.entries);
     if (temporary + missing === 0) return null;
@@ -323,172 +347,33 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       el("span", { text: hiddenEntriesNote(temporary, missing, state.showHidden) }), " ",
       el("button", {
         class: "ln-link", attrs: { type: "button", "aria-pressed": String(state.showHidden) },
-        dataset: { testid: START_SCREEN_TESTIDS.hiddenToggle },
+        dataset: { testid: "start-hidden-toggle" },
         text: state.showHidden ? "다시 숨기기" : "보기",
-        on: { click: () => { state.showHidden = !state.showHidden; renderWorlds(); } },
+        on: { click: () => { state.showHidden = !state.showHidden; refresh("entries"); } },
       }),
     ] });
   };
-  const listed = (): readonly RecentProjectEntry[] => state.showHidden ? state.entries : partitionRecentEntries(state.entries).visible;
 
-  /** 만들기 갈래 맨 위 「이어서 만들기」 — 컨셉 피드의 lead 칸에 얹는다. 월드가 없으면 비워 두고 「새로 만들기」가 맨 위가 된다. */
-  const makingLead = el("div", { class: "ln-making" });
-  const renderMakingLead = (): void => {
-    const worlds = listed();
-    const [first, ...rest] = worlds;
-    if (!state.loaded || !first) {
-      makingLead.replaceChildren(...(state.loaded ? [hiddenNote()].filter((node): node is HTMLElement => node !== null) : []));
-      return;
-    }
-    const more = rest.length > SIDE_ROWS;
-    makingLead.replaceChildren(section(START_SCREEN_TESTIDS.continueMaking, [
-      el("h2", { text: "이어서 만들기" }),
-      ...(more ? [el("button", {
-        class: "ln-link", attrs: { type: "button", "aria-expanded": String(state.showAllMaking) }, dataset: { testid: START_SCREEN_TESTIDS.showAll },
-        text: state.showAllMaking ? "접기" : "모두 보기",
-        on: { click: () => { state.showAllMaking = !state.showAllMaking; renderMakingLead(); } },
-      })] : []),
-    ], [
-      worldLead(first, { ...makeOptions, side: { title: "내 월드", entries: rest.slice(0, SIDE_ROWS) } }),
-      ...(more && state.showAllMaking ? [worldGrid(rest.slice(SIDE_ROWS), { ...makeOptions, firstIndex: SIDE_ROWS + 1 })] : []),
-      ...[hiddenNote()].filter((node): node is HTMLElement => node !== null),
-    ]));
-  };
-
-  /** 플레이 갈래 본문. */
-  const playPage = el("div", { class: "ln-page" });
-  const playBody = el("div", { class: "ln-scroll", dataset: { testid: START_SCREEN_TESTIDS.playHome }, children: [playPage] });
-  const worldSearchInput = el("input", {
-    attrs: { type: "search", maxlength: "80", autocomplete: "off", "aria-label": "월드 검색", placeholder: t("월드 검색") },
-    dataset: { testid: START_SCREEN_TESTIDS.worldSearch },
-    on: { input: (event) => { state.worldQuery = (event.currentTarget as HTMLInputElement).value; renderPlayPage(); } },
-  });
-  const worldSearch = el("div", { class: "ln-search", children: [startIcon("search", "ln-icon"), worldSearchInput] });
-  const builtinDemoSection = (): HTMLElement => {
-    const demos = [
-      {
-        id: "chrono-bell",
-        title: "폴른 스타: 추락한 별과 태엽의 성녀",
-        meta: "중세 마법 판타지 JRPG · 안드로이드 이리스의 귀환 여정 제1막 · 6컷 오프닝",
-        thumb: "/assets/generated/welcome/slide-04.png",
-      },
-      {
-        id: "emerald-crown",
-        title: "아스트라 호라이즌: 다우닝 시티와 여명의 날개",
-        meta: "몬스터 수집 RPG · 30×24 다우닝 시티 · 스타터 선택 · 아스트라 성소 결전",
-        thumb: "/assets/generated/welcome/slide-01.png",
-      },
-    ] as const;
-    return section("start-builtin-demos", [
-      el("h2", { text: "기본 데모 게임" }),
-      el("p", { text: "설치된 공식 대표작 · AI 연결 없이 즉시 실행" }),
-    ], [
-      el("div", {
-        class: "ln-grid",
-        children: demos.map((demo) => el("article", {
-          class: "ln-card",
-          dataset: { testid: `start-builtin-demo-${demo.id}` },
-          children: [
-            el("button", {
-              class: "ln-card-hit",
-              attrs: { type: "button", title: demo.title },
-              dataset: { testid: `start-builtin-play-${demo.id}` },
-              on: { click: () => { window.location.href = `/index.html?demo=${demo.id}&play=1`; } },
-              children: [
-                el("span", {
-                  class: "ln-art",
-                  attrs: { "aria-hidden": "true" },
-                  children: [el("img", { attrs: { src: demo.thumb, alt: "", decoding: "async", draggable: "false" } })],
-                }),
-                el("span", { class: "ln-world-title", text: demo.title, attrs: { translate: "no" } }),
-              ],
-            }),
-            el("div", {
-              class: "ln-card-meta",
-              children: [
-                el("span", { text: demo.meta }),
-                el("button", {
-                  class: "ln-link",
-                  attrs: { type: "button" },
-                  dataset: { testid: `start-builtin-play-btn-${demo.id}` },
-                  text: "플레이",
-                  on: { click: () => { window.location.href = `/index.html?demo=${demo.id}&play=1`; } },
-                }),
-                el("button", {
-                  class: "ln-link",
-                  attrs: { type: "button" },
-                  dataset: { testid: `start-builtin-edit-${demo.id}` },
-                  text: "편집",
-                  on: { click: () => { window.location.href = `/index.html?demo=${demo.id}`; } },
-                }),
-              ],
-            }),
-          ],
-        })),
-      }),
-    ]);
-  };
-
-  const renderPlayPage = (): void => {
-    if (!state.loaded) {
-      playPage.replaceChildren(el("p", { class: "ln-loading", text: "월드를 불러오는 중…" }));
-      return;
-    }
-    const worlds = listed();
-    const query = state.worldQuery.trim().toLocaleLowerCase();
-    if (query) {
-      const found = worlds.filter((entry) => entry.title.toLocaleLowerCase().includes(query));
-      playPage.replaceChildren(section(null, [el("h2", { text: "검색 결과" })], [
-        found.length > 0 ? worldGrid(found, { ...playOptions(), firstIndex: 0 }) : el("p", { class: "ln-loading", text: "맞는 월드가 없어요." }),
-      ]));
-      return;
-    }
-    if (worlds.length === 0) {
-      playPage.replaceChildren(
-        builtinDemoSection(),
-        el("div", { class: "ln-empty", children: [
-          el("h1", { text: "아직 플레이할 월드가 없어요" }),
-          el("p", { text: "만든 게임은 여기에 모입니다. 받은 .oprn 게임 파일도 바로 열 수 있어요." }),
-          el("div", { class: "ln-lead-actions", children: [
-            el("button", { class: "ln-btn ln-btn-primary", attrs: { type: "button" }, text: "게임 파일 열기", on: { click: openGameFile } }),
-            el("button", { class: "ln-btn ln-btn-secondary", attrs: { type: "button" }, text: "만들기로 가기", on: { click: () => setMode("make") } }),
-          ] }),
-          ...[hiddenNote()].filter((node): node is HTMLElement => node !== null),
-        ] }),
-      );
-      return;
-    }
-    const played = worldsByLastPlayed(worlds, state.played);
-    const [lead, ...recent] = played;
-    playPage.replaceChildren(
-      builtinDemoSection(),
-      ...(lead ? [section(null, [el("h2", { text: "이어서 플레이" })], [
-        worldLead(lead, { ...playOptions(), side: { title: "최근 플레이", entries: recent.slice(0, SIDE_ROWS) } }),
-      ])] : []),
-      section(null, [el("h2", { text: "내 월드" }), el("p", { text: "이 컴퓨터에 있는 게임" })], [
-        worldGrid(worlds, { ...playOptions(), firstIndex: lead ? Math.min(recent.length, SIDE_ROWS) + 1 : 0 }),
-        ...[hiddenNote()].filter((node): node is HTMLElement => node !== null),
-      ]),
-    );
-  };
-
-  const renderWorlds = (): void => {
-    renderMakingLead();
-    renderPlayPage();
-  };
-
-  // ── 만들기 갈래: 컨셉 피드 ────────────────────────────────────────────
+  // ── 새로 만들기(컨셉 피드) ─────────────────────────────────────────────
   const source = createConceptSource();
   const ensureAiConnected = async (label: string): Promise<boolean> => {
     // AI 연결 창은 편집기 UI 를 끌고 온다 — 만들기를 누를 때만 받는다(코드 분할, 첫 화면 번들을 키우지 않게).
-    const { ensureAiConnectedForPreset } = await import("@/editor/ui/aiConnectGate");
-    return ensureAiConnectedForPreset({ presetLabel: label });
+    // 시작 화면에는 편집기 셸 CSS 가 없다 — AI 설정 창 스타일을 같이 받지 않으면 창이 위치 없이 문서 끝에 붙어
+    // 첫 화면 뒤로 숨는다(「AI 연결하기」를 눌러도 아무것도 안 보였다).
+    const [{ ensureAiConnectedForPreset }] = await Promise.all([import("@/editor/ui/aiConnectGate"), import("./aiModalStyles")]);
+    try {
+      return await ensureAiConnectedForPreset({ presetLabel: label });
+    } finally {
+      refreshAiStatus();
+    }
   };
-  let feed: ConceptFeed | null = null;
-  const makeFeed = (): ConceptFeed => feed ??= createConceptFeed({
+  /** 「새로 만들기」 칸 맨 위 — AI 엔진이 없을 때만 안내가 들어간다. */
+  const createLead = el("div", { class: "hm-create-lead" });
+  const renderCreateLead = (): void => { createLead.replaceChildren(...(state.aiReady ? [] : [aiNotice(actions)])); };
+  const feed: ConceptFeed = createConceptFeed({
     mode: "launcher",
     source,
-    lead: makingLead,
+    lead: createLead,
     onBlank: createBlank,
     onInterview: async (brief, title) => {
       if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");
@@ -519,43 +404,130 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   });
 
   // ── 틀 ────────────────────────────────────────────────────────────────
-  const shell = createLauncherShell({
-    mode: state.mode,
-    onMode: (mode) => setMode(mode),
-    foot: [localePicker(), el("span", { class: "ln-version", text: APP_VERSION, attrs: { translate: "no" } })],
+  const localeButton = el("button", {
+    class: "ln-foot-locale", attrs: { type: "button", translate: "no", "aria-label": "언어" }, dataset: { testid: "start-locale-open" },
+    text: LOCALE_NATIVE_NAMES[getLocale()], on: { click: () => openSettings("general") },
   });
-  const playActions = [topButton("게임 파일 열기", START_SCREEN_TESTIDS.openGameFile, "file", openGameFile)];
-  const makeActions = [
+  const shell = createLauncherShell({
+    onNav: (nav) => {
+      // 스토어는 웹 스토어를 브라우저로 연다(프로젝트를 연 편집기 안에서 넣는다) — 지금 칸은 그대로 둔다.
+      if (nav === "store") { window.open("https://store.openrpgmaker.com", "_blank", "noopener"); return; }
+      go(nav);
+    },
+    onSettings: () => openSettings("ai"),
+    foot: [el("span", { class: "ln-version", text: APP_VERSION, attrs: { translate: "no" } }), el("span", { class: "ln-foot-dot", text: "·", attrs: { "aria-hidden": "true" } }), localeButton],
+  });
+  const topActions = [
     topButton("폴더 열기", START_SCREEN_TESTIDS.openFolder, "folder", openFolder),
-    topButton("팀에 참여", START_SCREEN_TESTIDS.joinTeam, "team", () => showJoin()),
+    topButton("팀에 참여", START_SCREEN_TESTIDS.joinTeam, "team", () => go("join")),
   ];
 
-  const showHome = (): void => {
-    state.view = "home";
-    host.dataset.view = "home";
-    if (state.mode === "play") {
-      shell.show({ search: worldSearch, actions: playActions }, playBody);
+  /** 칸마다 스크롤 상자 하나. 칸을 바꾸면 맨 위에서 시작한다. 같은 칸 안의 다시 그리기는 스크롤을 지킨다. */
+  const page = (): { scroll: HTMLElement; inner: HTMLElement } => {
+    const inner = el("div", { class: "ln-page" });
+    return { scroll: el("div", { class: "ln-scroll", children: [inner] }), inner };
+  };
+  const homePage = page();
+  const gamesPage = page();
+  const builtinPage = page();
+  const joinPage = page();
+  joinPage.inner.classList.add("ln-join");
+
+  const renderHomeSection = (): void => {
+    const lead = !state.loaded
+      ? el("div", { class: "hm-hero is-loading", attrs: { "aria-hidden": "true" } })
+      : null;
+    const worlds = listed();
+    const titles = displayTitles(worlds, getLocale());
+    const [first] = worlds;
+    homePage.inner.replaceChildren(el("div", { class: "hm-home", children: [
+      lead ?? (first ? continueHero(first, titles.get(first.projectDir) ?? first.title, makingMeta(first), actions) : firstRunHero(actions)),
+      // 배너에 올린 게임은 빼고 그다음 몇 개 — 같은 게임을 두 번 보이지 않는다.
+      ...(state.loaded && worlds.length > 1 ? [recentShelf({ entries: worlds.slice(1), total: worlds.length, titles, meta: makingMeta, actions, onMore: () => go("games") })] : []),
+      conceptShelf({
+        concepts: state.lineup,
+        onOpen: (concept) => { if (go("create")) feed.openConcept(concept); },
+        onMore: () => go("create"),
+        thumb: (concept) => source.thumbUrl(concept, "card"),
+      }),
+      builtinHomeShelf(actions, () => go("builtin")),
+    ] }));
+  };
+  const renderGamesSection = (): void => {
+    if (!state.loaded) { gamesPage.inner.replaceChildren(el("p", { class: "ln-loading", text: "불러오는 중…" })); return; }
+    const worlds = listed();
+    gamesPage.inner.replaceChildren(worlds.length > 0
+      ? myGamesShelf({ entries: worlds, titles: displayTitles(worlds, getLocale()), meta: makingMeta, showAll: true, onToggleAll: () => undefined, note: hiddenNote(), actions })
+      : el("div", { children: [firstRunShelf(actions), ...(hiddenNote() ? [hiddenNote()!] : [])] }));
+  };
+  const renderBuiltinSection = (): void => { builtinPage.inner.replaceChildren(builtinShelf(actions)); };
+
+  /** 칸을 상태에서 그려 틀에 꽂는다. */
+  const mount = (section: StartSection): void => {
+    host.dataset.view = section;
+    shell.setActive(section === "join" ? null : section);
+    if (section === "create") {
+      renderCreateLead();
+      shell.show({ search: feed.searchBox, actions: topActions }, feed.element);
       return;
     }
-    const concepts = makeFeed();
-    shell.show({ search: concepts.searchBox, actions: makeActions }, concepts.element);
+    if (section === "home") renderHomeSection();
+    else if (section === "games") renderGamesSection();
+    else if (section === "builtin") renderBuiltinSection();
+    else renderJoinView();
+    const target = section === "home" ? homePage : section === "games" ? gamesPage : section === "builtin" ? builtinPage : joinPage;
+    shell.show({ search: null, actions: topActions }, target.scroll);
+    target.scroll.scrollTop = 0;
   };
-
-  const setMode = (mode: LauncherMode): void => {
-    if (state.busy) return;
-    if (feed?.busy()) return;
-    state.mode = mode;
-    writeLauncherMode(localStore(), mode);
-    shell.setMode(mode);
-    setError("");
-    renderWorlds();
-    showHome();
+  /** 떠나는 칸의 잠깐 상태를 비운다 — 다음에 돌아오면 처음 화면이다. */
+  const leave = (section: StartSection): void => {
+    if (section === "create") feed.reset();
+    if (section === "join") setError("");
   };
+  /**
+   * 칸 바꾸기. 만드는 중·여는 중이면 바꾸지 않는다(false). 같은 칸을 다시 누르면 그 칸을 처음 상태로 되돌린다
+   * (새로 만들기 상세에서 「새로 만들기」를 다시 누르면 피드 맨 위).
+   */
+  function go(next: StartSection, how: { readonly history?: "push" | "none" } = {}): boolean {
+    if (state.busy || feed.busy()) return false;
+    leave(state.section);
+    state.section = next;
+    state.sectionSeq += 1;
+    mount(next);
+    if (how.history !== "none") {
+      try { if (history.state?.section !== next) history.pushState({ section: next }, "", `#${next}`); } catch { /* file:// 등 */ }
+    }
+    if (next === "join") {
+      joinPage.inner.querySelector<HTMLInputElement>("#start-join-url")?.focus();
+      if (bridge?.recentTeams) {
+        const mine = state.sectionSeq;
+        void bridge.recentTeams().then((teams) => {
+          state.teams = teams;
+          // 늦게 온 목록 — 그동안 다른 칸으로 갔으면 상태에만 넣는다.
+          if (mine === state.sectionSeq && !state.busy) renderJoinView();
+        }).catch(() => {});
+      }
+    }
+    return true;
+  }
+  /** 데이터가 바뀌었다 — 지금 칸이 그 데이터를 쓰면 그 칸만 다시 그린다(스크롤은 그대로). */
+  function refresh(what: "entries" | "lineup" | "ai"): void {
+    const section = state.section;
+    if (what === "ai") { if (section === "create") renderCreateLead(); return; }
+    if (section === "home") renderHomeSection();
+    else if (section === "games" && what === "entries") renderGamesSection();
+  }
+  // 마우스 뒤로 단추·Alt+← — 칸 기록을 따라간다. 바꿀 수 없는 때(만드는 중)면 지금 칸을 다시 기록에 둔다.
+  window.addEventListener("popstate", (event) => {
+    const wanted = (event.state as { section?: StartSection } | null)?.section ?? sectionFromHash() ?? "home";
+    if (wanted === state.section) return;
+    if (!go(wanted, { history: "none" })) {
+      try { history.pushState({ section: state.section }, "", `#${state.section}`); } catch { /* 무시 */ }
+    }
+  });
 
-  // ── 팀에 참여 — 만들기 갈래 본문을 잠시 대신한다 ───────────────────────
-  const joinPage = el("div", { class: "ln-page ln-join" });
-  const joinBody = el("div", { class: "ln-scroll", children: [joinPage] });
-  const renderJoinView = (): void => {
+  // ── 팀에 참여 ─────────────────────────────────────────────────────────
+  function renderJoinView(): void {
     const urlInput = el("input", {
       class: "ln-input",
       value: state.joinUrl,
@@ -569,10 +541,10 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         keydown: (event) => { if ((event as KeyboardEvent).key === "Enter") { event.preventDefault(); joinTeam(state.joinUrl); } },
       },
     });
-    joinPage.replaceChildren(
+    joinPage.inner.replaceChildren(
       el("button", {
         class: "ln-link", attrs: { type: "button" }, dataset: { testid: START_SCREEN_TESTIDS.back },
-        children: [startIcon("back", "ln-icon"), "만들기로 돌아가기"], on: { click: () => showHome() },
+        children: [startIcon("back", "ln-icon"), "홈으로 돌아가기"], on: { click: () => go("home") },
       }),
       el("h1", { text: "팀에 참여" }),
       el("label", { attrs: { for: "start-join-url" }, text: "호스트 주소 또는 초대 링크" }),
@@ -592,43 +564,29 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         })) }),
       ] : []),
     );
-  };
-  const showJoin = (): void => {
-    if (state.busy) return;
-    state.view = "join";
-    host.dataset.view = "join";
-    setError("");
-    renderJoinView();
-    shell.show({ search: null, actions: makeActions }, joinBody);
-    joinPage.querySelector<HTMLInputElement>("#start-join-url")?.focus();
-    if (bridge?.recentTeams) {
-      void bridge.recentTeams().then((teams) => {
-        state.teams = teams;
-        if (state.view === "join" && !state.busy) renderJoinView();
-      }).catch(() => {});
-    }
-  };
+  }
 
-  /** 구운 그림을 상태에 넣고, 화면에 있는 그 카드의 그림 칸만 바꾼다(전체를 다시 그리면 포커스가 튄다). */
-  const applyCover = (projectDir: string, cover: string): void => {
+  /** 구운 그림을 상태에 넣고, 화면에 있는 그 게임의 그림 칸만 바꾼다(전체를 다시 그리면 포커스가 튄다). */
+  const applyCover = (projectDir: string, cover: string | null): void => {
     state.entries = state.entries.map((entry) => entry.projectDir === projectDir ? { ...entry, cover, coverStale: false } : entry);
-    for (const art of [...makingLead.querySelectorAll<HTMLElement>("[data-cover-for]"), ...playPage.querySelectorAll<HTMLElement>("[data-cover-for]")]) {
-      if (art.dataset.coverFor !== projectDir) continue;
-      art.classList.remove("is-empty");
-      art.replaceChildren(el("img", { attrs: { src: cover, alt: "", decoding: "async", draggable: "false" } }));
+    const entry = state.entries.find((candidate) => candidate.projectDir === projectDir);
+    for (const art of host.querySelectorAll<HTMLElement>("[data-cover-for]")) {
+      if (art.dataset.coverFor === projectDir) fillCover(art, cover, entry?.title ?? "");
+    }
+    for (const bg of host.querySelectorAll<HTMLElement>("[data-cover-bg-for]")) {
+      if (bg.dataset.coverBgFor === projectDir) bg.style.backgroundImage = cover ? `url("${cover}")` : "";
     }
   };
 
   /**
-   * 그림이 없거나 낡은 프로젝트의 시작 맵을 여기서 굽는다. 한 장씩 차례로 — 프로젝트마다 타일셋 그림을 읽으므로
-   * 한꺼번에 돌리면 첫 화면이 버벅인다. 굽는 모듈은 필요할 때만 받는다(번들 칩셋 목록이 첫 화면 번들을 키운다).
+   * 그림이 없거나 낡은 게임의 대표 장면을 한 장씩 굽는다. 첫 화면이 다 뜬 뒤 한가할 때만 — 굽는 모듈(번들 칩셋 목록)과
+   * 맵 그리기는 시작 경로에 두지 않는다. 결과는 호스트가 프로젝트 해시로 디스크에 남겨 다음 실행에는 굽지 않는다.
    */
   const refreshCovers = async (): Promise<void> => {
     const start = bridge;
     if (!start?.coverSource || !start.saveCover) return;
     const targets = entriesNeedingCover(state.entries);
     if (targets.length === 0) return;
-    // 굽는 모듈은 번들 칩셋 목록을 끌고 와 첫 화면 번들을 키운다 — 구울 항목이 있을 때만 받는다(코드 분할).
     const coverModule = await import("./startCover").catch((error: unknown) => {
       console.warn("[start] 카드 그림 모듈을 받지 못했습니다:", error);
       return null;
@@ -639,27 +597,36 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       try {
         const source = await start.coverSource({ projectDir: entry.projectDir });
         if (!source) continue;
-        const cover = await renderProjectCover(source);
-        if (!cover) continue;
-        applyCover(entry.projectDir, cover);
-        await start.saveCover({ projectDir: entry.projectDir, dataUrl: cover });
+        const result = await renderProjectCover(source);
+        if (result.kind === "failed") continue;
+        const dataUrl = result.kind === "cover" ? result.dataUrl : null;
+        applyCover(entry.projectDir, dataUrl);
+        await start.saveCover({ projectDir: entry.projectDir, dataUrl: dataUrl ?? "empty" });
       } catch (error) {
         console.warn("[start] 카드 그림을 굽지 못했습니다:", entry.projectDir, error);
       }
+      // 한 장 굽고 한 번 쉰다 — 첫 화면 입력이 굽기에 막히지 않게.
+      await new Promise((resolve) => setTimeout(resolve, 50));
     }
   };
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && state.view === "join" && !state.busy) showHome();
+    if (event.key === "Escape" && !event.defaultPrevented && state.section === "join" && !state.busy) go("home");
   });
 
   host.replaceChildren(shell.element, errorBox);
-  renderWorlds();
-  showHome();
+  const initial = sectionFromHash() ?? "home";
+  state.section = initial;
+  mount(initial);
+  try { history.replaceState({ section: initial }, "", `#${initial}`); } catch { /* 무시 */ }
+  whenIdle(600, refreshAiStatus);
+
+  // 홈의 「지금 만들 수 있는 게임」 — 피드와 같은 출처의 첫 쪽(지금 칩셋으로 지을 수 있는 컨셉만 온다).
+  void source.page({}, null).then((result) => { state.lineup = result.items; }, () => { state.lineup = []; }).finally(() => refresh("lineup"));
 
   if (!bridge) {
     state.loaded = true;
-    renderWorlds();
+    refresh("entries");
     setError("시작 화면은 데스크톱 앱에서만 동작합니다.");
     return;
   }
@@ -671,9 +638,19 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     })
     .finally(() => {
       state.loaded = true;
-      renderWorlds();
-      void refreshCovers();
+      refresh("entries");
+      // 데스크톱: 카드를 그렸다 — 메인이 숨겨 둔 창을 보이고 스플래시를 닫는다(electron/main/splash.ts).
+      // requestAnimationFrame 은 쓰지 않는다: 숨은 창에서는 프레임이 돌지 않아 0.5s 넘게 늦었다.
+      window.oprn?.startScreenReady?.();
+      whenIdle(COVER_IDLE_DELAY_MS, () => void refreshCovers());
     });
+}
+
+const START_SECTIONS: readonly StartSection[] = ["home", "games", "builtin", "create", "join"];
+function sectionFromHash(): StartSection | null {
+  if (typeof location === "undefined") return null;
+  const hash = location.hash.replace(/^#/, "");
+  return (START_SECTIONS as readonly string[]).includes(hash) ? hash as StartSection : null;
 }
 
 const host = typeof document !== "undefined" ? document.getElementById("start-app") : null;

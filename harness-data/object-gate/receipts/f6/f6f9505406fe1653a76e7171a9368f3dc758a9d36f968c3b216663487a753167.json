@@ -1,0 +1,257 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f6f9505406fe1653a76e7171a9368f3dc758a9d36f968c3b216663487a753167",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "썩은 판자 다리(떨어짐 1) (plank bridge falling 1)",
+ "label": "atlas_biome_interior/plus/plank bridge falling 1",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered falling plank fragments",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a sparse, irregular scatter of brown plank fragments (width profile 2-11 px, ragged diagonal shape) with no box-like body. There is no front-edge line with eave shadow, no ellipse, and no roof plane. There is also no vertical front face of 3 or more rows. It reads as flat debris lying on the ground, which fits the flat kind, so it is a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small cluster of broken brown planks, roughly 11x10 source pixels. It uses 14 distinct colours, the same as the bench and lamp references, so it is well above them for its size. Only 4% of its dark edge pixels are neutral, so the outlines lean brown, as they do beside wood in the references, rather than the black sticker look. Flat-fill coverage is 0%. The planks show several wood steps, with lighter faces and darker undersides or edges, plus grain breaks. It is a thin, sparse piece, so the per-tile median of 0 is not held against it. By eye it looks no flatter than the bench reference. It is a little less textured than the well and stall, but those are much larger pieces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12057
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken plank fragments (diagonal scattered pieces)",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a sparse, irregular scatter of broken plank pieces on a transparent ground. It runs diagonally from the upper left to the lower right, with the width profile swelling to 11 at row 6 and tapering to 1 at row 15. There is no front-edge line with eave shadow, no ellipse, and no roof. There is also no vertical south face of 3 or more rows. The shapes are flat debris seen from above, which fits the flat kind. Column x=7 has the dark rows 13-15 at its end, which looks like a shadow or a hanging splinter and not a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, sparse prop: a few broken planks, less than one tile in size, so the per-tile median of 0 is not used against it. Its 14 distinct colours match prop-bench-wood and prop-lamp-crook, which are also thin single-material props. Only 4% of its dark edge pixels are neutral, so the outlines lean brown and follow the wood, unlike the 44% and 100% neutral outlines on the bench and lamp references. Flat-fill coverage is 0%. By eye the planks show a light-to-dark brown ramp with highlight edges and a few grain or break dots, about 4 steps against the bench's 5. It is slightly simpler than the richer references (stall, well), but it does not look flatter or more sticker-like than the bench next to it, so a careful artist would accept it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17165
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken plank fragments (diagonal scattered pieces)",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a sparse scatter of plank fragments, about 16 rows tall and at most 11 px wide, lying flat on the ground. Rows 3-7 have light plank tops (#f0d098, #ba9262) with darker edges below. There is no vertical front face of 3 or more rows, no eave or edge-line structure, and no ellipse. The width profile (2, 3, 5, 6, 8, 11, 10, 8, 7...) shows diagonal fragments, not a standing body. This fits a flat decal-like debris piece, consistent with the 'flat' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, sparse piece of broken, tilted planks, under one tile in size, so the per-tile median of 0 says nothing about it. Its 14 distinct colours match the bench and lamp references (14 each). Flat-fill coverage is 0%, so there are no large single-colour areas. Only 4% of its dark edge pixels are neutral, so the outline leans dark brown beside the wood instead of the black sticker line (the lamp reference is 100% neutral). By eye, the planks carry highlight, mid and dark wood steps plus split ends and grain. That is slightly fewer steps and less detail than the richer references, but a careful artist would accept it next to the bench as an equally crafted small wooden prop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17883
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken plank fragments (diagonal scatter)",
+      "rows": "3-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a sparse, irregular scatter of broken plank pieces about 11 px wide on a transparent background, with a few stray debris pixels at rows 0-2 and 14-15. The width profile (2,3,3,5,6,8,11,10,8,7,6,5,5,6,3,1) is diagonal and ragged, with no ellipse and no stacked front-edge-line and eave-shadow structure. The lighter pixels at rows 3, 4 and 7 are plank highlights, not front-edge lines. Nothing shows a vertical front face of 3 or more rows. This matches a flat fallen-plank decal seen from above, which fits the 'flat' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, sparse prop (broken, falling planks), under one 16x16 tile, so the per-tile median of 0 says nothing against it. It has 14 distinct colours, the same as the bench and lamp references, and 0% 5x5 flat-fill coverage. Only 4% of its dark edge pixels are neutral, so the outline carries a brown tint matching the wood, not a black sticker line. By eye, the planks show several brown steps (light, mid, dark, deep) with splintered ends and grain breaks. That is slightly fewer steps than the bench, but it is not thinner or flatter than the bench, so a careful artist would accept it beside it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19086
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:38.684Z",
+ "cells": {
+  "16": [
+   "9f973dd2763d5b6d"
+  ],
+  "24": [
+   "08c45698f5aed2d3",
+   "3c60d95d80a45580",
+   "429ee4146257164c",
+   "56545350063de2f5",
+   "a3471a914af3dbc2",
+   "b1ec8a74b99f8044"
+  ],
+  "32": [
+   "2a27fb871e230c49",
+   "2fd752ff68e74b97",
+   "3c33b31a950e9765",
+   "507da54e6cdf5868",
+   "a3e62ae312c91f66",
+   "cc7dc8c1a9532840"
+  ],
+  "48": [
+   "279cb7a38310ebcc",
+   "282281d494692a66",
+   "30550ef7e144b399",
+   "b94b2f9d3c4b8b46",
+   "be33e55446075ce4",
+   "d168304f854b6a93"
+  ]
+ }
+}

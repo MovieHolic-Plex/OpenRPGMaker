@@ -1,5 +1,5 @@
-import { charsetFrameIndex } from "@/assets/easyrpgRtp";
-import { configureEmeraldMonsterOpening } from "@/project/emeraldMonsterOpening";
+import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
+import { configureEmeraldMonsterOpening, type EmeraldOpeningPage } from "@/project/emeraldMonsterOpening";
 import { createMonsterExpedition } from "@/project/examples/monsterExpedition";
 import mapTemplates from "@/project/examples/monsterExpedition/mapTemplates.json";
 import { composeTown, type TownSketch, type TownTemplate } from "@/project/examples/monsterExpedition/townLayouts";
@@ -9,7 +9,15 @@ import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import { DAWNING_SKYBIRDS_CHARSET_ID } from "./dawningSkybirdsAsset";
 import type { FlagshipDemoBuildResult } from "./types";
 
-const STARTER_NAME_REMAP: Readonly<Record<string, string>> = {
+/**
+ * 대표 데모 #2 『아스트라 호라이즌: 다우닝 시티와 여명의 날개』.
+ *
+ * 몬스터 원정 생성기(체육관 1관)의 실제 캠페인을 그대로 쓴다 — 내 방 2층 → 연구소 첫 동료·라이벌 → 1번 도로 풀숲·포획·트레이너
+ * → 실바나 마을 → 체육관 장치 퍼즐 → 관장 → 별모래 신전 보스 → 챔피언 전당 → 엔딩. 지름길(광장에서 말 두 번으로 엔딩)은 두지 않는다.
+ * 여기서 하는 일은 이름·이야기·대사를 이 세계에 맞게 다시 쓰고, 첫 마을을 30×24 다우닝 시티로 다시 짓고, 여명의 날개 새를 띄우는 것이다.
+ */
+
+const SPECIES_NAMES: Readonly<Record<string, string>> = {
   mx_species_spriglet: "토리프",
   mx_species_bramblet: "실바리온",
   mx_species_canopine: "벨데로드",
@@ -21,16 +29,184 @@ const STARTER_NAME_REMAP: Readonly<Record<string, string>> = {
   mx_species_abyssal: "네레이드",
 };
 
-const OLD_TO_NEW_TEXT: ReadonlyArray<readonly [string, string]> = [
+const PLACE = {
+  region: "아스트라 군도",
+  home: "다우닝 시티",
+  route1: "1번 도로 · 여명 해안길",
+  town2: "실바나 마을",
+  gym: "실바나 체육관",
+  route2: "2번 도로 · 솔방울 언덕",
+  temple: "별모래 신전",
+  league: "챔피언 전당",
+} as const;
+
+/** 생성기 고유명 → 이 세계 고유명. 긴 것부터 바꾼다(「새벽섬 마을」이 「새벽섬」보다 먼저). */
+const NAME_SWAPS: ReadonlyArray<readonly [string, string]> = [
   ["꼬마초", "토리프"],
   ["불씨점", "파이린"],
   ["물방울", "아쿠링"],
-  ["별싹 마을", "다우닝 시티"],
-  ["새벽섬 마을", "다우닝 시티"],
-  ["별빛섬", "아스트라 군도"],
-  ["새벽섬", "오르비스 해안"],
-  ["새순 마을", "실바나 마을"],
-  ["새순 체육관", "실바나 체육관"],
+  ["1번길 · 별싹 들판", PLACE.route1],
+  ["별빛 리그 · 챔피언", PLACE.league],
+  ["별빛 리그", "아스트라 리그"],
+  ["옛 별 관측탑", PLACE.temple],
+  ["도감 정원", "솔방울 언덕"],
+  ["별싹 마을", PLACE.home],
+  ["새벽섬 마을", PLACE.home],
+  ["별빛섬", PLACE.region],
+  ["새벽섬", PLACE.region],
+  ["새순 마을", PLACE.town2],
+  ["새순 체육관", PLACE.gym],
+  ["프렌들리숍", "도구점"],
+  ["이상한 사탕", "성장 사탕"],
+];
+
+/** 받침 있는 말 뒤 조사 바로잡기 — 이름을 바꾼 뒤 「군도을」「언덕로」 같은 어긋남을 고친다. */
+function hasFinal(word: string): boolean {
+  const code = word.charCodeAt(word.length - 1);
+  return code >= 0xac00 && code <= 0xd7a3 && (code - 0xac00) % 28 !== 0;
+}
+function finalIsRieul(word: string): boolean {
+  const code = word.charCodeAt(word.length - 1);
+  return code >= 0xac00 && code <= 0xd7a3 && (code - 0xac00) % 28 === 8;
+}
+function fixJosa(text: string, names: readonly string[]): string {
+  let next = text;
+  for (const name of names) {
+    const esc = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const final = hasFinal(name);
+    next = next
+      .replace(new RegExp(`${esc}(을|를)(?![가-힣])`, "g"), `${name}${final ? "을" : "를"}`)
+      .replace(new RegExp(`${esc}(은|는)(?![가-힣])`, "g"), `${name}${final ? "은" : "는"}`)
+      .replace(new RegExp(`${esc}(이|가)(?=[\\s!?.,])`, "g"), `${name}${final ? "이" : "가"}`)
+      .replace(new RegExp(`${esc}(와|과)(?=[\\s!?.,])`, "g"), `${name}${final ? "과" : "와"}`)
+      .replace(new RegExp(`${esc}(으로|로)(?=[\\s!?.,])`, "g"), `${name}${final && !finalIsRieul(name) ? "으로" : "로"}`);
+  }
+  return next;
+}
+
+const JOSA_NAMES = [...new Set(NAME_SWAPS.map(([, to]) => to)), "토리프", "파이린", "아쿠링"];
+
+function rewriteStrings(value: unknown, rewrite: (text: string) => string): void {
+  if (Array.isArray(value)) {
+    for (let i = 0; i < value.length; i++) {
+      if (typeof value[i] === "string") value[i] = rewrite(value[i] as string);
+      else rewriteStrings(value[i], rewrite);
+    }
+    return;
+  }
+  if (!value || typeof value !== "object") return;
+  const rec = value as Record<string, unknown>;
+  for (const [key, child] of Object.entries(rec)) {
+    if (typeof child === "string") rec[key] = rewrite(child);
+    else rewriteStrings(child, rewrite);
+  }
+}
+
+function swapNames(text: string): string {
+  let next = text;
+  for (const [from, to] of NAME_SWAPS) if (next.includes(from)) next = next.split(from).join(to);
+  return next === text ? text : fixJosa(next, JOSA_NAMES);
+}
+
+/** 생성기 문장 중 이 세계에서 어색하거나 틀린 것 — 문장 그대로 찾아 바꾼다(맵 전체). */
+const LINE_REWRITES: Readonly<Record<string, string>> = {
+  "다우닝 시티에 온 걸 환영해요. 북동쪽 집이 천문박사의 연구소예요. 북쪽의 안내원이 다음 길을 알려 줍니다.":
+    "다우닝 시티에 온 걸 환영해요. 광장 오른쪽 위 회색 지붕 건물이 오르비스 천문 연구소예요. 북쪽 길로 나가면 1번 도로예요.",
+  "새벽이면 언덕의 등대와 몬스터들이 함께 눈을 뜬다.":
+    "요즘 새벽마다 등대 불빛이 깜빡여. 그래서인지 여명의 날개 새들이 바다 위에서 자꾸 길을 잃는대.",
+  "연구소 친구가 기다릴 거예요.\n북동쪽 파란 지붕을 찾아보세요.":
+    "나루가 아침부터 연구소 앞을 서성이던데요.\n광장 오른쪽 위 회색 지붕 건물이에요.",
+  "실바나 마을에 온 걸 환영해요. 북동쪽 건물에서 지역의 관장에게 도전할 수 있어요. 북쪽의 안내원이 다음 길을 알려 줍니다.":
+    "실바나 마을에 온 걸 환영해요. 오른쪽 위 유리 지붕 건물이 실바나 체육관이에요. 관장 유림 님은 풀 타입 몬스터를 써요.",
+  "숲을 돌보는 사람과 몬스터가 매년 새 나무를 심는다.":
+    "이 마을 사람들은 해마다 몬스터들과 함께 새 나무를 심어요. 체육관 덩굴도 그렇게 자란 거래요.",
+  "장치를 조작하면 관장에게 가는 길이 열립니다. 밸브, 문양, 수련판, 바위 앞에서 확인 버튼을 누르세요.":
+    "관장님께 가는 길은 덩굴 문과 가시 덤불로 막혀 있어요. 입구의 새싹 돌 받침과 안쪽 덤불을 직접 살펴보세요.",
+  "배지 케이스에 1/1번째 배지가 채워졌다.": "배지 케이스의 첫 칸이 반짝이기 시작했다.",
+  "부활의 깃털도 건네받았다. 다음 길이 열렸다.":
+    "부활의 깃털도 건네받았다. 이제 마을 북쪽 별모래 신전으로 가는 길이 열렸다!",
+  "몬스터들은 오래전부터 아스트라 군도의 한 등불을 지켜 왔단다. 밤막회사가 빛을 가져가면서 섬의 균형이 무너지고 있어.":
+    "어서 오렴. 아스트라 군도의 몬스터들은 오래전부터 등대 불빛을 따라 살아왔단다. 그런데 밤막회사가 별모래 신전의 별빛을 가져가면서 등대가 꺼져 가고 있어.",
+  "메뉴의 「도감」에서 만난 동료를, 「배지」에서 현재 목표를 볼 수 있단다. 한 관장의 약속을 모아 보렴.":
+    "메뉴의 「도감」에서 만난 몬스터를, 「배지」에서 다음 목표를 볼 수 있단다. 먼저 실바나 마을의 관장 유림을 찾아가 보렴.",
+  "한 지역의 약속을 모아, 빛을 잃어 가는 별의 등대를 다시 밝혀 주었으면 한단다.":
+    "실바나 체육관의 배지를 받으면 별모래 신전으로 가는 길이 열린단다. 등대의 빛을 되찾아 주렴.",
+  "세상이 흔들려도 빛만 모으면 내가 질서를 만들 수 있어. 그 한 약속으로 나를 막아 보아라!":
+    "별빛을 한곳에 모으면 누구도 길을 잃지 않는 질서가 생긴다. 배지 하나로 나를 막을 수 있을 것 같으냐!",
+  "한 배지의 빛과 동료들의 울음이 하나로 모였다. 오래된 등대가 다시 아스트라 군도를 비추기 시작했다.":
+    "배지의 빛과 동료들의 울음이 하나로 모였다. 꺼져 가던 등대가 다시 아스트라 군도를 비추기 시작했다.",
+  "빛은 누군가의 소유가 아니었어. 이제… 나도 섬을 다시 배워야겠군.":
+    "빛은 누군가 가둬 둘 수 있는 게 아니었군. 이제… 나도 이 군도를 처음부터 다시 걸어 봐야겠어.",
+  "아스트라 리그의 문이 열렸다. 실바나 마을에서 마지막 도전을 시작하자.":
+    "새벽 하늘로 여명의 날개 새떼가 다시 날아올랐다. 실바나 마을 북쪽 끝, 챔피언 전당의 문이 열렸다.",
+  "1번 도로 · 여명 해안길. 야생 몬스터는 포획할 수 있지만 조련사의 몬스터는 포획할 수 없습니다. 길을 걷기 전에 체력과 기술 PP를 확인하세요.":
+    "1번 도로 · 여명 해안길. 키 큰 풀숲에는 야생 몬스터가 숨어 있다. 다른 트레이너의 몬스터는 잡을 수 없다.",
+  "솔방울 언덕에는 길에서 만나기 힘든 몬스터가 살아요. 도감에 빈칸이 있다면 천천히 탐색해 보세요.":
+    "솔방울 언덕에는 1번 도로에서 보기 힘든 몬스터가 살아요. 체육관에 가기 전에 여기서 동료를 단련해도 좋아요.",
+  "북쪽 길: 1번 도로 · 여명 해안길": "북쪽: 1번 도로 · 여명 해안길",
+  "북쪽 길: 솔방울 언덕": "북쪽: 2번 도로 · 솔방울 언덕",
+  "북쪽 길: 실바나 마을": "북쪽: 실바나 마을",
+  "다우닝 시티 북동쪽 연구소에서 천문박사와 첫 동료를 만나라.": "다우닝 시티의 오르비스 천문 연구소에서 첫 동료를 만나라.",
+  "실바나 마을의 별모래 신전에서 밤막회사를 막고 등대를 복구하라.": "별모래 신전에서 밤막회사를 막고 등대의 빛을 되찾아라.",
+  "아스트라 리그의 사천왕과 챔피언 나루에게 도전하라.": "챔피언 전당에서 나루와 마지막 승부를 겨뤄라.",
+  "포획구슬 세 개와 고급 회복약, 성장 사탕 하나를 찾았다!": "포획 구슬 세 개와 상급 회복약, 성장 사탕 하나를 찾았다!",
+  "몬스터 센터에 어서 오세요! 동료들을 건강하게 해 드릴까요?": "회복 센터에 어서 오세요! 동료들을 건강하게 해 드릴까요?",
+  "리그에서 다시 만나자. 서로 끝까지 동료들을 지키는 거야.": "챔피언 전당에서 다시 만나자. 그때는 내가 이길 거야!",
+  "희귀 몬스터가 당신을 기다리고 있다.": "별빛 속으로 사라졌다. 언젠가 다시 나타날 것이다.",
+  "빛을 잃은 별무늬가 새겨져 있다. 섬의 등불이 모두 돌아온 뒤 다시 와 보자.": "빛을 잃은 별무늬가 새겨져 있다. 챔피언이 된 뒤에 다시 와 보자.",
+  "첫 동료와 만났다! 야생 전투에서는 「가방」의 포획구슬을 사용해 보렴.": "첫 동료와 만났구나! 야생 몬스터를 만나면 「가방」의 포획 구슬을 던져 보렴. 체력을 깎아 두면 잘 잡힌단다.",
+  "포획구슬과 회복 도구를 챙겨 가세요. 약은 메뉴에서 몬스터를 골라 사용할 수 있어요.": "포획 구슬과 회복 도구를 챙겨 가세요. 약은 메뉴에서 몬스터를 골라 쓸 수 있어요.",
+  "체력이 노란색이 되면 포획구슬이 잘 듣는대요.": "체력이 노란색이 되면 포획 구슬이 잘 듣는대요.",
+};
+
+/** 같은 문장이 맵마다 다른 뜻으로 쓰이는 곳 — 이벤트 하나 안에서만 바꾼다. */
+const EVENT_LINE_REWRITES: ReadonlyArray<readonly [mapId: string, eventId: string, from: string, to: string]> = [
+  ["mx_map_lab", "mx_map_lab_rival", "먼저 이곳의 장치와 이전 약속을 마쳐야 한다.", "어? 너 아직 동료가 없잖아. 박사님께 먼저 가 봐!"],
+  ["mx_map_lab", "mx_map_lab_rival", "챔피언 전당에서 다시 만나자. 그때는 내가 이길 거야!", "역시 만만치 않네! 난 먼저 실바나 마을로 간다. 챔피언 전당에서 다시 만나자!"],
+  ["mx_map_grove", "mx_map_grove_rival", "먼저 이곳의 장치와 이전 약속을 마쳐야 한다.", "유림 관장님 배지는 받았어? 배지를 받고 오면 그때 한판 붙자!"],
+  ["mx_map_observatory", "mx_map_observatory_boss", "먼저 이곳의 장치와 이전 약속을 마쳐야 한다.", "배지 하나 없는 꼬마로군. 돌아가라."],
+  ["mx_map_league_0", "mx_map_league_0_league_challenge", "먼저 이곳의 장치와 이전 약속을 마쳐야 한다.", "신전의 일을 끝내고 와. 여기서 기다릴게."],
+  ["mx_map_grove_gym", "mx_map_grove_gym_leader", "먼저 이곳의 장치와 이전 약속을 마쳐야 한다.", "내게 오는 길은 덩굴과 덤불이 지키고 있어. 길을 직접 열고 와 줘."],
+  ["mx_map_grove_gym", "mx_map_grove_gym_leader", "먼저 앞 지역 관장의 약속을 받아 와 주세요.", "동료도 없이 체육관에 왔구나. 먼저 천문 연구소에서 파트너를 만나고 와."],
+];
+
+/** 잠긴 길 문장 — 왜 막혔고 무엇을 하면 열리는지 말한다. */
+const LOCKED_ROUTE_LINES: Readonly<Record<string, string>> = {
+  mx_map_home_to_mx_map_meadow: "동료 없이 풀숲에 들어가면 위험하다. 먼저 오르비스 천문 연구소에 들르자.",
+  mx_map_grove_to_mx_map_garden: "동료 없이 언덕을 넘기는 무리다. 먼저 천문 연구소에서 첫 동료를 만나자.",
+  mx_map_grove_to_mx_map_observatory: "신전으로 가는 다리 앞을 체육관 수련생이 지키고 있다. 실바나 체육관의 배지가 있어야 지나갈 수 있다.",
+  mx_map_grove_to_mx_map_league_0: "챔피언 전당의 문은 굳게 닫혀 있다. 별모래 신전의 일을 먼저 해결하자.",
+};
+
+const MAP_TITLES: Readonly<Record<string, string>> = {
+  mx_map_home_house_2f: "다우닝 시티 · 내 방",
+  mx_map_home_house: "다우닝 시티 · 우리 집",
+  mx_map_home: PLACE.home,
+  mx_map_home_center: "다우닝 시티 · 회복 센터",
+  mx_map_home_center_2f: "다우닝 시티 · 회복 센터 2층",
+  mx_map_home_mart: "다우닝 시티 · 도구점",
+  mx_map_school: "다우닝 트레이너 학교",
+  mx_map_lab: "오르비스 천문 연구소",
+  mx_map_meadow: PLACE.route1,
+  mx_map_grove: PLACE.town2,
+  mx_map_grove_center: "실바나 마을 · 회복 센터",
+  mx_map_grove_center_2f: "실바나 마을 · 회복 센터 2층",
+  mx_map_grove_mart: "실바나 마을 · 도구점",
+  mx_map_grove_house: "실바나 마을 · 주민의 집",
+  mx_map_grove_house_2f: "실바나 마을 · 주민의 집 2층",
+  mx_map_grove_gym: PLACE.gym,
+  mx_map_garden: PLACE.route2,
+  mx_map_observatory: PLACE.temple,
+  mx_map_league_0: PLACE.league,
+};
+
+const OPENING_PAGES: EmeraldOpeningPage[] = [
+  { id: "emerald_intro_welcome", shot: "dawn", text: "안녕! 만나서 반갑구나.\n나는 오르비스 천문 연구소의 천문박사란다." },
+  { id: "emerald_intro_world", shot: "route", text: "아스트라 군도의 새벽 하늘에는 「여명의 날개」 새떼가\n등대 불빛을 따라 섬과 섬을 건넌단다." },
+  { id: "emerald_intro_lab", shot: "lab", text: "그런데 요즘 등대가 자꾸 꺼져 가는구나.\n밤막회사가 별모래 신전의 별빛을 모으고 있다더군." },
+  { id: "emerald_intro_companions", shot: "stage", text: "풀의 토리프, 불의 파이린, 물의 아쿠링.\n첫 동료는 네가 직접 고르렴." },
+  { id: "emerald_intro_rival", shot: "gym", text: "실바나 체육관의 관장 유림, 그리고 네 소꿉친구 나루도\n너를 기다리고 있단다." },
+  { id: "emerald_intro_departure", shot: "town", text: "다우닝 시티의 네 방에서 모험이 시작된다.\n준비가 되면 연구소로 오렴!" },
 ];
 
 const DAWNING_CITY_SKETCH: TownSketch = {
@@ -82,358 +258,151 @@ const DAWNING_CITY_SKETCH: TownSketch = {
   ],
 };
 
-function replaceTextDeep(value: unknown): void {
-  if (Array.isArray(value)) {
-    value.forEach(replaceTextDeep);
-    return;
-  }
-  if (!value || typeof value !== "object") return;
-  const rec = value as Record<string, unknown>;
-  for (const [k, v] of Object.entries(rec)) {
-    if (typeof v === "string") {
-      let next = v;
-      for (const [from, to] of OLD_TO_NEW_TEXT) {
-        if (next.includes(from)) next = next.split(from).join(to);
-      }
-      if (next === "mx_badge_8") next = "mx_badge_1";
-      rec[k] = next;
-    } else {
-      replaceTextDeep(v);
-    }
+function forEachCommandList(map: GameMap, visit: (commands: Command[]) => void): void {
+  for (const ev of map.events) {
+    visit(ev.commands);
+    for (const page of ev.pages ?? []) visit(page.commands);
   }
 }
 
 function retargetReturnPortal(map: GameMap | undefined, toMapId: string, x: number, y: number): void {
   if (!map) return;
-  for (const ev of map.events) {
-    for (const cmd of ev.commands) {
+  forEachCommandList(map, (commands) => {
+    for (const cmd of commands) {
       if (cmd.kind === "transfer" && cmd.mapId === toMapId) {
         cmd.x = x;
         cmd.y = y;
       }
     }
-    for (const page of ev.pages ?? []) {
-      for (const cmd of page.commands) {
-        if (cmd.kind === "transfer" && cmd.mapId === toMapId) {
-          cmd.x = x;
-          cmd.y = y;
-        }
-      }
-    }
-  }
+  });
 }
 
-function createSkybirdEvent(
-  id: string,
-  name: string,
-  x: number,
-  y: number,
-  characterIndex: number,
-  direction: "up" | "right" | "down" | "left",
-  speaker: string,
-  body: string,
-  priority: "below" | "same" | "above" = "same",
-  patrol: boolean = false,
-): GameEvent {
-  const graphic = {
-    sprite: { type: "bundled" as const, id: DAWNING_SKYBIRDS_CHARSET_ID },
-    direction,
-    pattern: charsetFrameIndex({ characterIndex, direction, pattern: 1 }),
-    transparent: false,
+/** 하늘을 나는 장식 새 — 위층(above)이라 길을 막지 않고, 두 칸을 오가며 난다. */
+function createSkybirdEvent(id: string, name: string, x: number, y: number, characterIndex: number, direction: "up" | "right" | "down" | "left"): GameEvent {
+  const opposite = { up: "down", down: "up", left: "right", right: "left" } as const;
+  const movement: EventPageMovement = {
+    type: "custom",
+    speed: 3,
+    frequency: 5,
+    route: { repeat: true, skippable: true, moves: [{ kind: "move", dir: direction }, { kind: "move", dir: opposite[direction] }] },
   };
-  const oppositeDir: Record<"up" | "right" | "down" | "left", "up" | "right" | "down" | "left"> = {
-    up: "down",
-    down: "up",
-    left: "right",
-    right: "left",
-  };
-  const movement: EventPageMovement = patrol
-    ? {
-        type: "custom",
-        speed: 3,
-        frequency: 5,
-        route: {
-          repeat: true,
-          skippable: true,
-          moves: [
-            { kind: "move", dir: direction },
-            { kind: "move", dir: oppositeDir[direction] },
-          ],
-        },
-      }
-    : { type: "fixed", speed: 3, frequency: 4 };
-  const commands: Command[] = [{ kind: "text", speaker, body }];
   return {
     id,
     name,
     x,
     y,
     trigger: { kind: "action" },
-    commands,
+    commands: [],
     pages: [
       {
         id: `${id}_p1`,
         name: "여명의 날개",
         conditions: [],
-        graphic,
-        movement,
-        priority,
-        overlapForbidden: priority === "same",
-        trigger: { kind: "action" },
-        commands,
-      },
-    ],
-  };
-}
-
-function createBelowTouchEvent(id: string, name: string, x: number, y: number, commands: Command[]): GameEvent {
-  return {
-    id,
-    name,
-    x,
-    y,
-    trigger: { kind: "playerTouch" },
-    commands,
-    pages: [
-      {
-        id: `${id}_p1`,
-        name,
-        conditions: [],
         graphic: {
-          sprite: { type: "bundled", id: "tex_oprn_charset_scarloxy_people1" },
-          direction: "down",
-          pattern: 0,
-          transparent: true,
+          sprite: { type: "bundled", id: DAWNING_SKYBIRDS_CHARSET_ID },
+          direction,
+          pattern: charsetFrameIndex({ characterIndex, direction, pattern: 1 }),
+          transparent: false,
         },
-        movement: { type: "fixed", speed: 3, frequency: 3 },
-        priority: "below",
+        movement,
+        priority: "above",
         overlapForbidden: false,
-        trigger: { kind: "playerTouch" },
-        commands,
+        trigger: { kind: "action" },
+        commands: [],
       },
     ],
   };
 }
 
-function installInteriorStairsAndLab2F(project: Project): void {
-  const house1F = project.maps["mx_map_home_house"];
-  const house2F = project.maps["mx_map_home_house_2f"];
-  if (house1F) {
-    for (const ev of house1F.events) {
-      if (ev.id.includes("_stairs_")) {
-        ev.name = "2층 내 방으로 올라가는 계단 (stairs_up)";
-      }
-    }
-  }
-  if (house2F) {
-    for (const ev of house2F.events) {
-      if (ev.id.includes("_stairs_")) {
-        ev.name = "1층 거실로 내려가는 계단 (stairs_down)";
-      }
-    }
-  }
-
-  const lab1F = project.maps["mx_map_lab"];
-  const center2FTemplate = project.maps["mx_map_home_center_2f"];
-  if (!lab1F || !center2FTemplate) return;
-
-  // Stamp 2F stairs (`c_escalator` tiles 119..124 in `monster_rooms`) on the upper-right wall of `mx_map_lab` (x=12..13, y=1..3)
-  const w = lab1F.width;
-  lab1F.upperTiles[1 * w + 11] = 117;
-  lab1F.upperTiles[2 * w + 11] = 118;
-  lab1F.upperTiles[1 * w + 12] = 119;
-  lab1F.upperTiles[1 * w + 13] = 120;
-  lab1F.upperTiles[2 * w + 12] = 121;
-  lab1F.upperTiles[2 * w + 13] = 122;
-  lab1F.upperTiles[3 * w + 12] = 123;
-  lab1F.upperTiles[3 * w + 13] = 124;
-
-  // Keep the landing at (12,4)..(13,4) open by shifting the rival slightly left
-  const labRival = lab1F.events.find((e) => e.id === "mx_map_lab_rival");
-  if (labRival) {
-    labRival.x = 10;
-    labRival.y = 6;
-  }
-
-  const lab2FId = "mx_map_lab_2f";
-  const lab2F: GameMap = {
-    ...structuredClone(center2FTemplate),
-    id: lab2FId,
-    name: "오르비스 천문 연구소 · 2층 관측실",
-    events: [
-      createBelowTouchEvent(
-        "mx_map_lab_2f_stairs_down_0",
-        "1층 연구소로 내려가는 계단 (stairs_down)",
-        1,
-        3,
-        [{ kind: "transfer", mapId: lab1F.id, x: 12, y: 4 }],
-      ),
-      createBelowTouchEvent(
-        "mx_map_lab_2f_stairs_down_1",
-        "1층 연구소로 내려가는 계단 (stairs_down)",
-        2,
-        3,
-        [{ kind: "transfer", mapId: lab1F.id, x: 13, y: 4 }],
-      ),
-      createSkybirdEvent(
-        "ev_lab_2f_skybird",
-        "관측실 아스트라별새",
-        6,
-        4,
-        7,
-        "down",
-        "아스트라별새",
-        "끼르륵—! (2층 천문 관측실 창가에서 아스트라별새가 별빛 날개를 반짝이며 다우닝 시티의 하늘을 살피고 있다.)",
-      ),
-    ],
-  };
-  project.maps[lab2FId] = lab2F;
-
-  lab1F.events.push(
-    createBelowTouchEvent(
-      "mx_map_lab_stairs_up_0",
-      "2층 천문 관측실로 올라가는 계단 (stairs_up)",
-      12,
-      3,
-      [{ kind: "transfer", mapId: lab2FId, x: 1, y: 4 }],
-    ),
-    createBelowTouchEvent(
-      "mx_map_lab_stairs_up_1",
-      "2층 천문 관측실로 올라가는 계단 (stairs_up)",
-      13,
-      3,
-      [{ kind: "transfer", mapId: lab2FId, x: 2, y: 4 }],
-    ),
-    createSkybirdEvent(
-      "ev_lab_1f_skybird",
-      "연구소 별빛방울새",
-      4,
-      6,
-      2,
-      "down",
-      "별빛방울새",
-      "포르릉! (천문박사님의 관측기를 돕는 별빛방울새가 2층 계단 쪽을 가리키며 경쾌하게 지저귄다.)",
-    ),
-  );
+function textCommand(body: string, speaker?: string): Command {
+  return speaker ? { kind: "text", speaker, body } : { kind: "text", body };
 }
 
-export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
-  const { project } = createMonsterExpedition({
-    firstGymType: "grass",
-    gymCount: 1,
-  });
+function findEvent(project: Project, mapId: string, eventId: string): GameEvent | undefined {
+  return project.maps[mapId]?.events.find((e) => e.id === eventId);
+}
 
-  project.meta.title = "아스트라 호라이즌: 다우닝 시티와 여명의 날개";
-  project.meta.author = "OPRN Flagship Studio";
-  if (project.system.titleScreen) {
-    project.system.titleScreen.title = "아스트라 호라이즌: 다우닝 시티와 여명의 날개";
-    project.system.titleScreen.logoSubtitle = "다우닝 시티에서 시작하는 몬스터 수집·진화·체육관 원정 RPG";
-  }
+function rewriteEventLine(event: GameEvent | undefined, from: string, to: string): void {
+  if (!event) return;
+  rewriteStrings(event, (text) => (text === from ? to : text));
+}
 
-  // Remap starter evolution line names to canonical Flagship #2 names
-  for (const sp of project.database.monsterSpecies ?? []) {
-    const renamed = STARTER_NAME_REMAP[sp.id];
-    if (renamed) {
-      sp.name = renamed;
+/** 「X로 가는 길은 아직 열리지 않았다…」 를 이유와 할 일을 말하는 문장으로. */
+function rewriteLockedRoutes(project: Project): void {
+  for (const map of Object.values(project.maps)) {
+    for (const ev of map.events) {
+      const line = LOCKED_ROUTE_LINES[ev.id];
+      if (line) rewriteStrings(ev, (text) => (/가는 길은 아직 열리지 않았다/.test(text) ? line : text));
     }
   }
-  for (const enemy of project.database.enemies) {
-    const renamed = STARTER_NAME_REMAP[enemy.id];
-    if (renamed) {
-      enemy.name = renamed;
-    }
-  }
-  replaceTextDeep(project.maps);
-  replaceTextDeep(project.system.monsterCampaign);
+}
 
-  const mapTitleRemap: Readonly<Record<string, string>> = {
-    mx_map_home_house_2f: "다우닝 시티 · 내 방 2층",
-    mx_map_home_house: "다우닝 시티 · 우리 집 1층",
-    mx_map_home: "다우닝 시티",
-    mx_map_home_center: "다우닝 시티 · 회복 센터 1층",
-    mx_map_home_center_2f: "다우닝 시티 · 회복 센터 2층",
-    mx_map_home_mart: "다우닝 시티 · 프렌들리숍",
-    mx_map_school: "다우닝 트레이너 아카데미",
-    mx_map_lab: "오르비스 천문 연구소 · 1층",
-    mx_map_meadow: "1번 도로 · 여명 해안길",
-    mx_map_grove: "실바나 숲 마을",
-    mx_map_grove_center: "실바나 회복 센터 1층",
-    mx_map_grove_center_2f: "실바나 회복 센터 2층",
-    mx_map_grove_mart: "실바나 프렌들리숍",
-    mx_map_grove_gym: "실바나 체육관",
-    mx_map_garden: "2번 도로 · 솔방울 언덕",
-    mx_map_observatory: "아스트라 천문대 · 창공 성소",
-    mx_map_league_0: "아스트라 호라이즌 · 챔피언 전당",
+/** 시작을 내 방 2층으로 옮긴다 — 생성기가 광장에 둔 첫 안내 이벤트를 방으로 가져오고 글을 이 세계에 맞춘다. */
+function startInBedroom(project: Project, introEvent: GameEvent | undefined): void {
+  const bedroom = project.maps["mx_map_home_house_2f"];
+  if (!bedroom) return;
+  const start = { x: 5, y: 5 };
+  project.startMapId = bedroom.id;
+  project.startPos = start;
+  const intro: GameEvent = introEvent ?? {
+    id: "mx_map_home_opening",
+    name: "여행의 시작",
+    x: start.x,
+    y: start.y,
+    trigger: { kind: "auto" },
+    commands: [],
+    pages: [],
   };
-  for (const [mapId, title] of Object.entries(mapTitleRemap)) {
-    const m = project.maps[mapId];
-    if (m) m.name = title;
-  }
+  intro.x = start.x;
+  intro.y = start.y;
+  intro.id = "mx_map_home_house_2f_opening";
+  const commands: Command[] = [
+    textCommand("오늘은 천문박사님께 첫 동료를 받기로 한 날이다. 창밖에서 여명의 날개 새들이 길을 잃은 듯 빙빙 돌고 있다."),
+    textCommand("방향키로 걷고, Z/Enter로 말을 걸고, X/Esc로 메뉴를 연다. 계단은 방 오른쪽 위에 있다."),
+    { kind: "setSwitch", switchId: "mx_intro", value: true },
+  ];
+  for (const page of intro.pages ?? []) page.commands = commands;
+  bedroom.events.push(intro);
+}
 
-  // Rebuild the 6-shot opening animatic after title/map remapping so subtitles & Dawning Skybird sprites match
-  configureEmeraldMonsterOpening(project);
-  if (project.system.titleScreen) {
-    project.system.titleScreen.logoSubtitle = "다우닝 시티에서 시작하는 몬스터 수집·진화·체육관 원정 RPG";
-  }
+/** 엄마 — 첫 동료를 받기 전에는 연구소로 가라고 한다(회복은 그대로). */
+function retellMom(project: Project): void {
+  const mom = findEvent(project, "mx_map_home_house", "mx_map_home_house_resident");
+  const page = mom?.pages?.[0];
+  if (!page) return;
+  page.commands = [
+    {
+      kind: "fork",
+      condition: { kind: "switch", switchId: "mx_starter", value: true },
+      then: [textCommand("모험에서 가장 중요한 건 무사히 돌아오는 일이야. 힘들면 언제든 쉬어 가렴.", "엄마")],
+      else: [textCommand("박사님이 아침부터 기다리셔. 연구소는 광장 오른쪽 위 회색 지붕 건물이야. 나루는 벌써 나갔단다!", "엄마")],
+    },
+    ...page.commands.filter((c) => c.kind !== "text"),
+  ];
+}
 
-  // Install 2F stairs (`stairs_up` / `stairs_down`) in player's home and Orbis Astronomical Lab
-  installInteriorStairsAndLab2F(project);
-
-  // Add a companion actor so Follower Companion (`changeParty`) works visibly alongside the monster party
-  const followerActorId = "actor_emerald_companion_naru";
-  const baseActor = project.database.actors[0]!;
-  const trainerCharsetId = baseActor.characterResourceId || "oprn-charset-scarloxy-people1";
-  if (!project.database.actors.some((a) => a.id === followerActorId)) {
-    project.database.actors.push({
-      ...structuredClone(baseActor),
-      id: followerActorId,
-      name: "나루",
-      nickname: "다우닝 시티의 동료 트레이너",
-      characterResourceId: trainerCharsetId,
-      characterIndex: 1,
-      initialLevel: 12,
+/** 체육관 관장 앞 수련생 셋은 대사가 같은 틀이라 이름과 말을 다르게 준다. */
+function retellGymTrainers(project: Project): void {
+  const lines: Record<string, [string, string]> = {
+    mx_map_grove_gym_grunt_0: ["덩굴지기 하람", "덩굴 문을 연 건 너구나? 그럼 이번엔 내 동료를 넘어 봐!"],
+    mx_map_grove_gym_grunt_1: ["정원사 소이", "가시 덤불을 정리한 솜씨는 봤어. 승부 솜씨도 보여 줄래?"],
+    mx_map_grove_gym_grunt_2: ["수련생 도윤", "관장님 앞까지 그냥 보낼 순 없지. 풀 타입의 끈기를 맛봐!"],
+  };
+  for (const [eventId, [speaker, line]] of Object.entries(lines)) {
+    const ev = findEvent(project, "mx_map_grove_gym", eventId);
+    if (!ev) continue;
+    rewriteStrings(ev, (text) => (/^(관장님께 가려면|여기 장치를 푼 실력|관장님의 제자로서)/.test(text) ? line : text));
+    forEachCommandList({ events: [ev] } as unknown as GameMap, (commands) => {
+      for (const c of commands) if (c.kind === "text" && c.body === line) c.speaker = speaker;
     });
   }
+}
 
-  // Ensure canonical endings exist (Hall of Fame + Complete Pokedex)
-  project.endings = [
-    {
-      id: "mx_ending_starlight",
-      name: "아스트라 호라이즌 · 다우닝 시티 명예의 전당",
-      conditions: [{ kind: "switch", switchId: "mx_ending", value: true }],
-      priority: 100,
-      presentation: {
-        tone: "warm",
-        credits:
-          "아스트라 호라이즌: 다우닝 시티와 여명의 날개\n토리프 · 아쿠링 · 파이린과 함께한 다우닝 시티의 여정\n기획·도트·연출: OPRN Flagship Studio",
-      },
-    },
-    {
-      id: "mx_ending_pokedex",
-      name: "아스트라 도감 마스터 · 여명의 날개 수호자",
-      conditions: [{ kind: "switch", switchId: "mx_ending_dex", value: true }],
-      priority: 90,
-      presentation: {
-        tone: "warm",
-        credits:
-          "아스트라 호라이즌: 도감 마스터\n다우닝 시티와 아스트라 천문대의 모든 서식지를 밝혔습니다.",
-      },
-    },
-  ];
-  if (!project.switches.some((s) => s.id === "mx_ending_dex")) {
-    project.switches.push({ id: "mx_ending_dex", name: "도감 마스터 엔딩" });
-  }
-  if (!project.switches.some((s) => s.id === "sw_emerald_vine_gate")) {
-    project.switches.push({ id: "sw_emerald_vine_gate", name: "다우닝 시티 덩굴 수문 개방" });
-  }
-
-  // Overhaul `mx_map_home` into the 30x24 Dawning City (다우닝 시티) metropolitan hub
-  const homeMap = project.maps[project.startMapId]!;
+/** 다우닝 시티를 30×24 로 다시 짓고 문·NPC 를 새 자리로 옮긴다. */
+function rebuildDawningCity(project: Project): GameMap {
+  const homeMap = project.maps["mx_map_home"]!;
   const overworldTemplate = (mapTemplates as unknown as Record<string, TownTemplate>)["overworld/map"]!;
   composeTown(project, homeMap, overworldTemplate, DAWNING_CITY_SKETCH);
-  homeMap.events = homeMap.events.filter((e) => e.id !== "mx_map_home_opening");
-
-  // Retarget building doorways and northern Route 1 gate to match the 30x24 Dawning City layout
   const portalCoords: Readonly<Record<string, { readonly x: number; readonly y: number; readonly returnMapId?: string; readonly returnX?: number; readonly returnY?: number }>> = {
     mx_map_home_to_mx_map_home_house: { x: 9, y: 9, returnMapId: "mx_map_home_house", returnX: 9, returnY: 10 },
     mx_map_home_to_mx_map_lab: { x: 18, y: 9, returnMapId: "mx_map_lab", returnX: 18, returnY: 10 },
@@ -450,159 +419,32 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   };
   for (const ev of homeMap.events) {
     const next = portalCoords[ev.id];
-    if (next) {
-      ev.x = next.x;
-      ev.y = next.y;
-      if (next.returnMapId && next.returnX !== undefined && next.returnY !== undefined) {
-        retargetReturnPortal(project.maps[next.returnMapId], homeMap.id, next.returnX, next.returnY);
-      }
+    if (!next) continue;
+    ev.x = next.x;
+    ev.y = next.y;
+    if (next.returnMapId && next.returnX !== undefined && next.returnY !== undefined) {
+      retargetReturnPortal(project.maps[next.returnMapId], homeMap.id, next.returnX, next.returnY);
     }
   }
-
-  // Add Dawning Coast Cafe doorway (`shop_a` at (25, 16))
-  homeMap.events.push(
-    createBelowTouchEvent("ev_dawning_cafe_door", "다우닝 해안 전망 카페", 25, 16, [
-      {
-        kind: "text",
-        speaker: "전망 카페 바리스타",
-        body: "다우닝 해안 전망 카페에 어서 오세요! 여명갈매기가 나는 바다를 보며 허브차 한잔 드시고 동료들의 체력도 모두 회복하세요!",
-      },
-      { kind: "recoverAll" },
-    ]),
-  );
-
-  // Place player spawn at the heart of Dawning City Plaza (14, 10)
-  const spawn = { x: 14, y: 10 };
-  project.startPos = spawn;
-
-  // North of spawn (14, 9): Professor's Outdoor Starter & Vine Gate Switch (`changeTile` + Starter + Follower Companion `changeParty`)
-  const profPos = { x: spawn.x, y: spawn.y - 1 };
-  const openTile = homeMap.lowerTiles[spawn.y * homeMap.width + (spawn.x - 2)] ?? 0;
-
-  const giveStarterBranch = (speciesId: string, label: string): Command[] => [
-    { kind: "giveMonster", speciesId, level: 18, nickname: label },
-    { kind: "changeParty", action: "add", actorId: followerActorId },
-    { kind: "changeTile", mapId: homeMap.id, layer: "lower", x: profPos.x, y: profPos.y, tile: openTile },
-    { kind: "changeItem", itemId: "item_capture_orb", op: "+=", amount: 10 },
-    { kind: "changeItem", itemId: "item_hi_potion", op: "+=", amount: 5 },
-    { kind: "setSwitch", switchId: "mx_starter", value: true },
-    { kind: "setSwitch", switchId: `mx_starter_${speciesId}`, value: true },
-    { kind: "setSwitch", switchId: "sw_emerald_vine_gate", value: true },
-    {
-      kind: "text",
-      speaker: "천문박사",
-      body: `좋아! 첫 파트너 『${label}』와 동료 트레이너 『나루』가 합류하고, 1번 도로로 향하는 여명의 수문이 열렸다! 포획구슬 10개도 챙겨 주마!`,
-    },
-  ];
-
-  const profEvent: GameEvent = {
-    id: "ev_emerald_prof_starter",
-    name: "천문박사 · 파트너 선택 & 여명 수문",
-    x: profPos.x,
-    y: profPos.y,
-    trigger: { kind: "action" },
-    commands: [],
-    pages: [
-      {
-        id: "ev_emerald_prof_starter_p1",
-        name: "파트너 선택 전",
-        conditions: [],
-        graphic: {
-          sprite: { type: "bundled", id: "tex_oprn_charset_scarloxy_people1" },
-          direction: "down",
-          pattern: charsetFrameIndex({ characterIndex: 4, direction: "down", pattern: 1 }),
-          transparent: false,
-        },
-        movement: { type: "fixed", speed: 3, frequency: 3 },
-        priority: "same",
-        overlapForbidden: true,
-        trigger: { kind: "action" },
-        commands: [
-          {
-            kind: "text",
-            speaker: "천문박사",
-            body: "다우닝 시티의 하늘에 여명의 날개 새떼가 모여들고 있단다! 세 몬스터볼 중 너와 함께 걸을 첫 파트너를 골라 여명 수문을 열어 보렴!",
-          },
-          {
-            kind: "choices",
-            prompt: "함께 모험을 떠날 첫 파트너를 선택하세요",
-            options: [
-              { text: "풀 타입 『토리프』 (토리프 → 실바리온 → 벨데로드)", branch: giveStarterBranch("mx_species_spriglet", "토리프") },
-              { text: "물 타입 『아쿠링』 (아쿠링 → 마린웨이 → 네레이드)", branch: giveStarterBranch("mx_species_rivulet", "아쿠링") },
-              { text: "불·격투 타입 『파이린』 (파이린 → 볼케이건 → 마그렉스)", branch: giveStarterBranch("mx_species_coalbit", "파이린") },
-            ],
-          },
-        ],
-      },
-      {
-        id: "ev_emerald_prof_starter_p2",
-        name: "파트너 선택 후",
-        conditions: [{ kind: "switch", switchId: "mx_starter", value: true }],
-        graphic: {
-          sprite: { type: "bundled", id: "tex_oprn_charset_scarloxy_people1" },
-          direction: "down",
-          pattern: charsetFrameIndex({ characterIndex: 4, direction: "down", pattern: 1 }),
-          transparent: false,
-        },
-        movement: { type: "fixed", speed: 3, frequency: 3 },
-        priority: "same",
-        overlapForbidden: true,
-        trigger: { kind: "action" },
-        commands: [
-          {
-            kind: "text",
-            speaker: "천문박사",
-            body: "여명 수문이 열렸단다! 바로 오른쪽의 『관장 유림』에게 말을 걸어 실바나 체육관과 아스트라 천문대 원정에 나서거나, 우리 집·연구소 2층 계단도 둘러보렴!",
-          },
-        ],
-      },
-    ],
-  };
-  homeMap.events.push(profEvent);
-
-  // East of spawn (15, 10): Gym Leader Yoorim + Astra Observatory Guardian Battle & Hall of Fame Ending
-  const guidePos = { x: spawn.x + 1, y: spawn.y };
-  const gymMap = project.maps["mx_map_grove_gym"];
-  const caveMap = project.maps["mx_map_observatory"];
-  const labMap = project.maps["mx_map_lab"];
-  const gymTroopId =
-    project.database.troops.find((t) => t.id.includes("grove_gym_leader"))?.id ??
-    project.database.troops.find((t) => t.id.includes("leader"))?.id ??
-    project.database.troops[0]!.id;
-
-  // Lower the first gym troop's enemy HP slightly so a single starter wins cleanly in showcase & play
-  const gymTroop = project.database.troops.find((t) => t.id === gymTroopId);
-  if (gymTroop?.members) {
-    for (const member of gymTroop.members) {
-      const enemy = project.database.enemies.find((e) => e.id === member.enemyId);
-      if (enemy) {
-        enemy.stats = {
-          ...enemy.stats,
-          maxHp: 22,
-          attack: 5,
-          defense: 3,
-          agility: 4,
-        };
-      }
-    }
-  }
-
+  // 리그에서 집으로 돌아오는 길도 새 광장으로.
+  retargetReturnPortal(project.maps["mx_map_league_0"], homeMap.id, 14, 11);
+  // 카페 앞 바리스타 — 문은 열리지 않으니 문 옆에 서서 이 마을 이야기를 한다.
   homeMap.events.push({
-    id: "ev_emerald_expedition_hub",
-    name: "실바나 체육관 관장 유림 & 아스트라 천문대 결전",
-    x: guidePos.x,
-    y: guidePos.y,
+    id: "ev_dawning_cafe_barista",
+    name: "전망 카페 바리스타",
+    x: 24,
+    y: 17,
     trigger: { kind: "action" },
     commands: [],
     pages: [
       {
-        id: "ev_emerald_expedition_hub_p1",
-        name: "원정 도전",
+        id: "ev_dawning_cafe_barista_p1",
+        name: "바리스타",
         conditions: [],
         graphic: {
           sprite: { type: "bundled", id: "tex_oprn_charset_scarloxy_people1" },
-          direction: "left",
-          pattern: charsetFrameIndex({ characterIndex: 2, direction: "left", pattern: 1 }),
+          direction: "down",
+          pattern: charsetFrameIndex({ characterIndex: 6, direction: "down", pattern: 1 }),
           transparent: false,
         },
         movement: { type: "fixed", speed: 3, frequency: 3 },
@@ -610,165 +452,295 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
         overlapForbidden: true,
         trigger: { kind: "action" },
         commands: [
-          {
-            kind: "text",
-            speaker: "관장 유림",
-            body: "안녕! 실바나 체육관 관장 유림이야. 다우닝 시티에서 출발하는 8개 구역 탐험이나 새잎 배지 시합, 아스트라 천문대 정상 결전으로 안내해 줄게!",
-          },
-          {
-            kind: "choices",
-            prompt: "어느 여정을 진행할까요?",
-            options: [
-              {
-                text: "관장 유림 & 아스트라 천문대 수호자 연속 시합 (배지 수여 → 전당 등록 엔딩)",
-                branch: [
-                  {
-                    kind: "text",
-                    speaker: "관장 유림",
-                    body: "여명의 날개와 함께 여기까지 왔구나! 실바나 체육관의 새잎 배지를 걸고 정정당당하게 승부하자!",
-                  },
-                  {
-                    kind: "battleProcessing",
-                    troopId: gymTroopId,
-                    canEscape: true,
-                    canLose: true,
-                    branchOnResult: true,
-                    victoryBranch: [
-                      { kind: "setSwitch", switchId: "mx_badge_1", value: true },
-                      { kind: "setSwitch", switchId: "mx_story_beacon", value: true },
-                      { kind: "setSwitch", switchId: "mx_ending", value: true },
-                      {
-                        kind: "text",
-                        speaker: "관장 유림",
-                        body: "대단해! 너와 파트너의 호흡이 아스트라 천문대의 등불을 다시 밝혔어! 『새잎 배지』와 다우닝 시티 명예의 전당 자격을 수여할게!",
-                      },
-                      { kind: "triggerEnding", endingId: "mx_ending_starlight" },
-                    ],
-                    defeatBranch: [
-                      { kind: "recoverAll" },
-                      { kind: "setSwitch", switchId: "mx_badge_1", value: true },
-                      { kind: "setSwitch", switchId: "mx_ending", value: true },
-                      { kind: "text", speaker: "관장 유림", body: "끝까지 포기하지 않는 마음, 정말 멋졌어! 다우닝 시티 명예의 전당으로 가자!" },
-                      { kind: "triggerEnding", endingId: "mx_ending_starlight" },
-                    ],
-                    escapeBranch: [],
-                  },
-                ],
-              },
-              ...(gymMap
-                ? [
-                    {
-                      text: "실바나 체육관 내부로 이동 (덩굴 스위치 퍼즐 직접 조작)",
-                      branch: [{ kind: "transfer" as const, mapId: gymMap.id, x: 8, y: 18 }],
-                    },
-                  ]
-                : []),
-              ...(labMap
-                ? [
-                    {
-                      text: "오르비스 천문 연구소 실내로 이동 (1층 · 2층 계단 연결)",
-                      branch: [{ kind: "transfer" as const, mapId: labMap.id, x: 7, y: 8 }],
-                    },
-                  ]
-                : []),
-              ...(caveMap
-                ? [
-                    {
-                      text: "아스트라 천문대 · 창공 성소로 이동",
-                      branch: [{ kind: "transfer" as const, mapId: caveMap.id, x: Math.floor(caveMap.width / 2), y: Math.floor(caveMap.height / 2) }],
-                    },
-                  ]
-                : []),
-            ],
-          },
+          textCommand("오늘은 준비 중이에요. 등대가 다시 밝아지면 새벽 바다를 보며 문을 열 거예요.", "전망 카페 바리스타"),
+          textCommand("여명의 날개 새들은 등대 불빛을 보고 섬을 건너요. 불빛이 흐려지니 다들 이 광장 위만 맴돌고 있죠.", "전망 카페 바리스타"),
         ],
       },
     ],
   });
-
-  // Populate Dawning Skybirds (`oprn-charset-dawning-skybirds`) across Dawning City, Route 1, and Astra Observatory
   homeMap.events.push(
-    createSkybirdEvent(
-      "ev_dawning_skybird_gull",
-      "다우닝 연못 여명갈매기",
-      16,
-      11,
-      0,
-      "left",
-      "여명갈매기",
-      "끼룩— 끼르륵! (여명갈매기가 다우닝 시티 광장 연못 위에서 푸른 날개를 활짝 펴고 바람을 탄다.)",
-      "same",
-      true,
-    ),
-    createSkybirdEvent(
-      "ev_dawning_skybird_swallow",
-      "다우닝 광장 창공제비",
-      12,
-      8,
-      1,
-      "right",
-      "창공제비",
-      "지지배배—! (창공제비가 우리 집과 오르비스 천문 연구소 지붕 사이를 날렵하게 스쳐 날아간다.)",
-      "same",
-      true,
-    ),
-    createSkybirdEvent(
-      "ev_dawning_skybird_flock",
-      "여명의 날개 새떼 편대",
-      13,
-      7,
-      3,
-      "right",
-      "여명의 새떼",
-      "푸드득—! (새벽빛을 머금은 제비 편대가 다우닝 시티 상공을 가로지르며 1번 도로 쪽을 가리킨다.)",
-      "above",
-      true,
-    ),
+    createSkybirdEvent("ev_dawning_skybird_gull", "광장 연못 여명갈매기", 18, 13, 0, "left"),
+    createSkybirdEvent("ev_dawning_skybird_swallow", "광장 창공제비", 11, 7, 1, "right"),
+    createSkybirdEvent("ev_dawning_skybird_flock", "여명의 날개 새떼", 20, 5, 3, "left"),
   );
+  return homeMap;
+}
 
-  const meadowMap = project.maps["mx_map_meadow"];
-  if (meadowMap) {
-    meadowMap.events.push(
-      createSkybirdEvent(
-        "ev_meadow_skybird_finch",
-        "1번 도로 별빛방울새",
-        11,
-        11,
-        2,
-        "left",
-        "별빛방울새",
-        "뾰로롱—! (별빛방울새가 1번 도로 풀숲 위를 맴돌며 야생 몬스터의 기척을 알려 준다.)",
-        "same",
-        true,
-      ),
-      createSkybirdEvent(
-        "ev_meadow_skybird_kingfisher",
-        "1번 도로 황혼물총새",
-        8,
-        13,
-        6,
-        "right",
-        "황혼물총새",
-        "키르르—! (청록빛 날개의 황혼물총새가 해안 바람을 타고 낮게 활공한다.)",
-        "same",
-        true,
-      ),
-    );
+function rescaleEnemy(enemy: Project["database"]["enemies"][number], level: number): void {
+  if (!enemy.level || level === enemy.level) return;
+  const ratio = level / enemy.level;
+  enemy.level = level;
+  const stats = { ...enemy.stats };
+  for (const key of Object.keys(stats) as (keyof typeof stats)[]) stats[key] = Math.max(1, Math.round(stats[key] * ratio));
+  enemy.stats = stats;
+}
+
+/**
+ * 생성기 기본값 위에서 난도·속도를 맞춘다 — 트레이너와 거의 다 싸우는 보통 플레이어가 15~20분에 엔딩.
+ * - 연구소 라이벌의 포포비는 첫 턴부터 풀 스타터에 두 배인 벌레 기술을 써서 2턴에 졌다(2026-10-20 실측) → 몸통 기술만.
+ * - 실바나 체육관은 수련생 셋·관장 모두 플레이어 스타터 토리프였다 → 같은 풀 계열 다른 종(베르카부·브램보어·헤라크론).
+ * - 신전 보스 4마리·챔피언 6마리는 배지 하나짜리 데모에 길다 → 3마리·4마리.
+ */
+function tunePacing(project: Project): void {
+  const enemies = project.database.enemies;
+  const byId = (id: string) => enemies.find((e) => e.id === id);
+  const reskin: Record<string, { species: string; level?: number }> = {
+    // 다 싸운 플레이어가 Lv6 일 때 수련생 Lv6~7 에게 6턴 만에, 관장 Lv8·10 에게 2턴 만에 졌다(2026-10-20 실플레이) → 수련생 5·5·6, 관장 7·8. 다시 재니 Lv7 스타터가 수련생 Lv6 개미(벌레)·관장 7·8 에게 6턴 만에 두 번 졌다 → 수련생 5·5·5, 관장 6·7.
+    mx_enemy_mx_map_grove_gym_grunt_0_0: { species: "mx_enemy_podback", level: 5 },
+    mx_enemy_mx_map_grove_gym_grunt_1_0: { species: "mx_enemy_brambleboar", level: 5 },
+    mx_enemy_mx_map_grove_gym_grunt_2_0: { species: "mx_enemy_orchardant", level: 5 },
+    mx_enemy_mx_map_grove_gym_leader_0: { species: "mx_enemy_podback", level: 6 },
+    mx_enemy_mx_map_grove_gym_leader_1: { species: "mx_enemy_brambleboar", level: 7 },
+  };
+  for (const [enemyId, { species, level }] of Object.entries(reskin)) {
+    const enemy = byId(enemyId), template = byId(species);
+    if (!enemy || !template) continue;
+    // 모습·종·상성만 갈아입히고 기술·능력치는 이 레벨에 맞는 원래 것을 쓴다(템플릿은 Lv22 라 기술이 너무 세다).
+    enemy.name = template.name;
+    enemy.speciesId = template.speciesId;
+    enemy.monsterResourceId = template.monsterResourceId;
+    enemy.graphicHue = template.graphicHue;
+    enemy.elementRates = structuredClone(template.elementRates);
+    enemy.stateRates = structuredClone(template.stateRates);
+    if (level !== undefined) rescaleEnemy(enemy, level);
+  }
+  const rival = byId("mx_enemy_mx_map_lab_rival_0");
+  if (rival) {
+    // 풀 스타터는 벌레에게 기술이 반감이라 같은 Lv5 로는 7턴 싸우다 졌다(2026-10-20 실측) → Lv4·몸통 기술만.
+    const bug = new Set(project.database.skills.filter((s) => /더듬이/.test(s.name)).map((s) => s.id));
+    rival.actions = rival.actions.filter((a) => !a.skillId || !bug.has(a.skillId));
+    rescaleEnemy(rival, 4);
+    // 1번 도로 트레이너의 포포비도 같은 벌레 기술로 Lv5 스타터를 3턴에 쓰러뜨렸다(2026-10-20 실플레이) — 첫 도로에서는 몸통 기술만.
+    const routeBug = byId("mx_enemy_mx_map_meadow_trainer_1_0");
+    if (routeBug) routeBug.actions = routeBug.actions.filter((a) => !a.skillId || !bug.has(a.skillId));
+    // 관장의 베르카부가 원래 기술 그대로 더듬이쏘기(벌레)를 써서 풀 스타터를 매번 2~3방에 눕혔다(2026-10-20 실입력 여정, Lv7 로 세 번 패배).
+    // 풀 체육관이니 그 자리를 새싹치기(풀)로 바꾼다 — 스타터와 서로 반감이라 어깨툭 싸움이 되고, 잡은 동료가 힘을 쓸 자리가 생긴다.
+    const sprout = project.database.skills.find((s) => s.name === "새싹치기")?.id;
+    const leaderBug = byId("mx_enemy_mx_map_grove_gym_leader_0");
+    if (leaderBug && sprout) leaderBug.actions = leaderBug.actions.map((a) => (a.skillId && bug.has(a.skillId) ? { ...a, skillId: sprout } : a));
+    // 신전 보스 선봉도 같은 베르카부라 Lv8 로 내려도 Lv10 풀 스타터가 두 번 졌다(2026-10-20 실입력 여정).
+    // 리그 선봉 베르카부도 같다 — 디버그로 Lv20 까지 올린 파티도 한 번 졌다(journey12). 둘 다 같은 자리 바꿈.
+    for (const id of ["mx_enemy_mx_map_observatory_boss_0", "mx_enemy_mx_map_league_0_league_challenge_0"]) {
+      const lead = byId(id);
+      if (lead && sprout) lead.actions = lead.actions.map((a) => (a.skillId && bug.has(a.skillId) ? { ...a, skillId: sprout } : a));
+    }
+  }
+  // 배지 하나짜리 데모라 초반 경험치를 두 배로 — 라이벌·도로 트레이너·수련생을 다 이기면 관장 앞에서 Lv8 안팎이 되게 한다.
+  // (rescaleEnemy 가 레벨을 바꾸기 전 보상이 그대로라 레벨을 내린 수련생도 보상은 원래 레벨 몫이다.)
+  for (const enemy of enemies) {
+    if (enemy.level && enemy.level <= 10 && /^mx_enemy_mx_map_(meadow|lab|grove_gym)_/.test(enemy.id)) {
+      enemy.rewards = { ...enemy.rewards, exp: enemy.rewards.exp * 2 };
+    }
+  }
+  // 신전 보스는 배지 하나 직후라 Lv8 셋(Lv9 셋에는 관장을 막 이긴 Lv9+Lv5 파티가 두 번 졌다, 2026-10-20), 챔피언 나루는 Lv10 넷(마지막 승부라 높게).
+  for (const enemy of enemies) if (/^mx_enemy_mx_map_observatory_boss_\d+$/.test(enemy.id)) rescaleEnemy(enemy, 8);
+  const trim: Record<string, number> = { mx_troop_mx_map_observatory_boss: 3, mx_troop_mx_map_league_0_league_challenge: 4 };
+  for (const troop of project.database.troops) {
+    const keep = trim[troop.id];
+    if (keep !== undefined && troop.members && troop.members.length > keep) troop.members = troop.members.slice(0, keep);
+  }
+}
+
+/**
+ * 사람 칩 다시 입히기 — 생성기는 Scarloxy 원본 두 장의 10명을 돌려 써서 라이벌 나루 = 회복 센터 직원 = 1번 도로 조련사,
+ * 엄마 = 도로 연구원 트레이너, 챔피언 나루 = 체육관 관장 유림이 같은 그림이었다(2026-10-20 실플레이 검수). 이미 설치된
+ * ScarloxyPeople 변형 칩(시트, 칸)에서 역할에 맞는 사람을 골라 한 사람 한 그림으로 맞춘다. 새로 그린 그림은 없다.
+ */
+const PEOPLE_CAST: Record<string, readonly [sheet: number, index: number]> = {
+  mx_map_home_center_nurse: [1, 2], mx_map_grove_center_nurse: [1, 2], // 센터 직원 — 간호사
+  mx_map_home_house_resident: [6, 3], // 엄마 — 머릿수건 앞치마
+  mx_map_home_mart_shop: [5, 0], mx_map_grove_mart_shop: [5, 1], // 도구점 점원
+  mx_map_home_guide: [12, 5], mx_map_grove_guide: [2, 1], // 여행 안내원 · 숲 마을 숲지기
+  mx_map_home_local: [6, 2], mx_map_home_ambient_resident_1: [6, 0], mx_map_home_ambient_resident_2: [6, 4],
+  mx_map_grove_local: [11, 4], mx_map_grove_house_resident: [6, 1], mx_map_grove_house_2f_kid: [6, 6],
+  mx_map_home_center_2f_traveler: [9, 3], mx_map_grove_center_2f_traveler: [2, 2],
+  mx_map_home_sign_meadow: [13, 3], mx_map_meadow_sign_grove: [12, 3], mx_map_meadow_trail_sign: [12, 0], mx_map_grove_sign_garden: [13, 4],
+  // 길 트레이너·수련생은 전투 초상(boy·scientist·hiker·girl)과 같은 사람으로 읽히게 고른다.
+  mx_map_meadow_trainer_0: [10, 0], mx_map_meadow_trainer_1: [9, 2], mx_map_meadow_trainer_2: [1, 7], // 산책 소년 · 연구원 · 조련사(등산 차림)
+  mx_map_garden_researcher: [9, 1],
+  mx_map_grove_gym_grunt_0: [12, 6], mx_map_grove_gym_grunt_1: [2, 4], mx_map_grove_gym_grunt_2: [4, 0], // 덩굴지기 하람 · 정원사 소이 · 수련생 도윤
+  mx_map_grove_gym_gym_guide: [13, 2],
+  mx_map_league_0_return_home: [8, 4], // 리그 안내원 — 제복
+};
+
+function recastPeople(project: Project): void {
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      const cast = PEOPLE_CAST[event.id];
+      if (!cast) continue;
+      const [sheet, characterIndex] = cast;
+      for (const page of event.pages ?? []) {
+        if (!page.graphic) continue;
+        const direction = page.graphic.direction ?? "down";
+        page.graphic = { ...page.graphic, sprite: { type: "bundled", id: `tex_oprn_charset_scarloxy_people${sheet}` }, pattern: charsetFrameIndex({ characterIndex, direction, pattern: 1 }) };
+      }
+    }
+  }
+  // 나루는 전투 초상(hero_f_front: 짙은 남보라 긴 머리)과 같은 원래 칩(People1 3번, 보라 긴 머리)을 그대로 쓴다 — 같은 칩을 쓰던 센터 직원 쪽을 바꿨다.
+  // 전투 초상: 관장 유림(초록 머리·초록 후드)은 소녀 초상이었다 → 초록 옷 bug_catcher, 밤막회사 무영(불꽃 머리·검은 마스크)은 과학자 → punk.
+  const portrait: Record<string, "bug_catcher" | "punk"> = { mx_troop_mx_map_grove_gym_leader: "bug_catcher", mx_troop_mx_map_observatory_boss: "punk" };
+  for (const troop of project.database.troops) {
+    const front = portrait[troop.id];
+    if (front && troop.trainerSprite) troop.trainerSprite = { ...troop.trainerSprite, front };
+  }
+  // 챔피언 나루는 관장 유림과 같은 초록 칩이었다 — 연구소 나루의 칩을 그대로 입힌다.
+  const naru = project.maps.mx_map_lab?.events.find((e) => e.id === "mx_map_lab_rival")?.pages?.[0]?.graphic;
+  const champion = project.maps.mx_map_league_0?.events.find((e) => e.id === "mx_map_league_0_league_challenge");
+  if (naru && champion) for (const page of champion.pages ?? []) if (page.graphic) page.graphic = { ...page.graphic, sprite: naru.sprite, pattern: charsetFrameIndex({ characterIndex: decodeCharsetFrameIndex(naru.pattern ?? 0).characterIndex, direction: page.graphic.direction ?? "down", pattern: 1 }) };
+  // 리그 안내원이 결투장 한복판(4,9)에 서 있었다 — 계단 올라온 옆자리로.
+  const leagueGuide = project.maps.mx_map_league_0?.events.find((e) => e.id === "mx_map_league_0_return_home");
+  if (leagueGuide) { leagueGuide.x = 5; leagueGuide.y = 10; }
+}
+
+/**
+ * 1번 도로 꽃밭 세 곳은 나무 밑동 위에 숲 수관 가운데 조각(위층 616·617)을 덮고, 꽃밭에 몬스터 볼처럼 생긴 장식(640)을 얹었다.
+ * 밑동 없는 네모 수관이 떠 보이고(2026-10-20 검수), 볼은 주울 수도 없는 장식이었다 → 위층 세 칸씩 비운다(아래층 나무·꽃은 그대로).
+ */
+function tidyMeadowDecor(project: Project): void {
+  const meadow = project.maps.mx_map_meadow;
+  if (!meadow) return;
+  for (let i = 0; i < meadow.upperTiles.length; i++) {
+    const tile = meadow.upperTiles[i];
+    if (tile === 616 || tile === 617 || tile === 640) meadow.upperTiles[i] = -1;
+  }
+}
+
+/** 명령 나무의 모든 하위 목록(분기·선택지·전투 결과)을 돈다. */
+function forEachNestedCommandList(commands: Command[], visit: (list: Command[]) => void): void {
+  visit(commands);
+  for (const command of commands) {
+    const node = command as unknown as Record<string, unknown>;
+    for (const key of ["then", "else", "branch", "victoryBranch", "defeatBranch", "escapeBranch", "cancelBranch"]) {
+      const child = node[key];
+      if (Array.isArray(child)) forEachNestedCommandList(child as Command[], visit);
+    }
+    if (Array.isArray(node.options)) for (const option of node.options as { branch?: Command[] }[]) if (option.branch) forEachNestedCommandList(option.branch, visit);
+  }
+}
+
+/**
+ * 트레이너에게 지면 생성기 기본은 곧바로 게임 오버였다 — 1번 도로 트레이너 한 번 지면 타이틀로 돌아갔다(2026-10-20 실플레이).
+ * 포켓몬류 관례대로 「눈앞이 캄캄해졌다 → 가까운 회복 센터에서 깨어난다」로 바꾼다. 트레이너는 이긴 표시가 없으니 다시 도전할 수 있다.
+ * 연구소 첫 라이벌전은 져도 이야기가 이어진다(라이벌이 이기고 먼저 떠난다).
+ */
+function softenTrainerDefeats(project: Project): void {
+  const centerFor = (mapId: string) => (/^mx_map_(meadow|lab|home)/.test(mapId) ? "mx_map_home_center" : "mx_map_grove_center");
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      for (const page of event.pages ?? []) {
+        forEachNestedCommandList(page.commands, (list) => {
+          for (const command of list) {
+            if (command.kind !== "battleProcessing") continue;
+            const battle = command as Extract<Command, { kind: "battleProcessing" }>;
+            const defeat = battle.defeatBranch ?? [];
+            const over = defeat.findIndex((c) => c.kind === "gameOver");
+            if (over < 0) continue;
+            const firstRival = (battle.victoryBranch ?? []).some((c) => c.kind === "setSwitch" && c.switchId === "mx_rival_lab");
+            if (firstRival) {
+              battle.defeatBranch = [
+                ...defeat.slice(0, over).filter((c) => c.kind !== "text"),
+                { kind: "text", body: "내가 이겼다! 그래도 너, 처음치고는 꽤 하는데?", speaker: "나루" },
+                { kind: "recoverAll" },
+                ...(battle.victoryBranch ?? []).filter((c) => c.kind !== "m2Command" && c.kind !== "text"),
+                { kind: "text", body: "난 먼저 실바나 마을로 간다. 챔피언 전당에서 다시 만나자!", speaker: "나루" },
+              ];
+              continue;
+            }
+            const center = project.maps[centerFor(map.id)];
+            if (!center) continue;
+            battle.defeatBranch = [
+              ...defeat.slice(0, over),
+              { kind: "text", body: "…정신을 차려 보니 회복 센터였다. 동료들도 기운을 되찾았다." },
+              { kind: "recoverAll" },
+              { kind: "transfer", mapId: center.id, x: 7, y: 7, direction: "up", fade: "black" },
+            ];
+          }
+        });
+      }
+    }
+  }
+  // 라이벌 재대결 선택지가 첫 만남 대사(「우리도 같은 날 출발하는구나!」)를 그대로 다시 말했다.
+  const rival = project.maps.mx_map_lab?.events.find((e) => e.id === "mx_map_lab_rival");
+  for (const page of rival?.pages ?? []) {
+    forEachNestedCommandList(page.commands, (list) => {
+      if (!list.some((c) => c.kind === "battleProcessing")) return;
+      const battle = list.find((c) => c.kind === "battleProcessing") as Extract<Command, { kind: "battleProcessing" }>;
+      if ((battle.victoryBranch ?? []).some((c) => c.kind === "setSwitch")) return;
+      for (const c of list) if (c.kind === "text" && /같은 날 출발/.test(c.body)) c.body = "좋아, 한 번 더 붙어 보자!";
+    });
+  }
+}
+
+export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
+  const { project } = createMonsterExpedition({ firstGymType: "grass", gymCount: 1 });
+
+  const title = "아스트라 호라이즌: 다우닝 시티와 여명의 날개";
+  project.meta.title = title;
+  project.meta.author = "OPRN Flagship Studio";
+
+  for (const sp of project.database.monsterSpecies ?? []) {
+    const renamed = SPECIES_NAMES[sp.id];
+    if (renamed) sp.name = renamed;
+  }
+  for (const enemy of project.database.enemies) {
+    const renamed = SPECIES_NAMES[enemy.id];
+    if (renamed) enemy.name = renamed;
+  }
+  const candy = project.database.items.find((item) => item.id === "mx_candy");
+  if (candy) candy.name = "성장 사탕";
+
+  // 생성기가 광장에 둔 첫 안내 이벤트는 내 방으로 옮긴다(아래 startInBedroom).
+  const homeBefore = project.maps["mx_map_home"]!;
+  const introEvent = homeBefore.events.find((e) => e.id === "mx_map_home_opening");
+  homeBefore.events = homeBefore.events.filter((e) => e.id !== "mx_map_home_opening");
+
+  // 이름 → 문장 → 이벤트 단위 문장 순서로 다시 쓴다.
+  const rewrite = (text: string): string => LINE_REWRITES[swapNames(text)] ?? swapNames(text);
+  rewriteStrings(project.maps, rewrite);
+  rewriteStrings(project.system.monsterCampaign, rewrite);
+  if (project.system.gameOver) rewriteStrings(project.system.gameOver, rewrite);
+  for (const [mapId, eventId, from, to] of EVENT_LINE_REWRITES) rewriteEventLine(findEvent(project, mapId, eventId), from, to);
+  rewriteLockedRoutes(project);
+  retellMom(project);
+  retellGymTrainers(project);
+
+  for (const [mapId, name] of Object.entries(MAP_TITLES)) {
+    const m = project.maps[mapId];
+    if (m) m.name = name;
   }
 
-  if (caveMap) {
-    caveMap.events.push(
-      createSkybirdEvent(
-        "ev_observatory_skybird_astra",
-        "창공 성소 아스트라별새",
-        9,
-        7,
-        7,
-        "down",
-        "아스트라별새",
-        "아아— 끼르륵! (전설로 전해지는 아스트라별새가 창공 성소 제단 위에서 황금빛 깃털을 흩날린다.)",
-      ),
-    );
+  rebuildDawningCity(project);
+  startInBedroom(project, introEvent);
+  tunePacing(project);
+  softenTrainerDefeats(project);
+  recastPeople(project);
+  tidyMeadowDecor(project);
+
+  // 1번 도로와 신전에도 여명의 날개 — 길 위를 날 뿐 막지 않는다.
+  project.maps["mx_map_meadow"]?.events.push(
+    createSkybirdEvent("ev_meadow_skybird_finch", "1번 도로 별빛방울새", 14, 9, 2, "left"),
+    createSkybirdEvent("ev_meadow_skybird_kingfisher", "1번 도로 황혼물총새", 6, 18, 6, "right"),
+  );
+  project.maps["mx_map_observatory"]?.events.push(createSkybirdEvent("ev_temple_skybird_astra", "신전 위 아스트라별새", 5, 6, 7, "right"));
+
+  project.endings = [
+    {
+      id: "mx_ending_starlight",
+      name: "아스트라 호라이즌 · 여명의 날개",
+      conditions: [{ kind: "switch", switchId: "mx_ending", value: true }],
+      priority: 100,
+      presentation: {
+        tone: "warm",
+        credits: "아스트라 호라이즌: 다우닝 시티와 여명의 날개\n등대가 다시 밝아지고, 여명의 날개 새떼가 군도를 건넌다.\n기획·도트·연출: OPRN Flagship Studio",
+      },
+    },
+  ];
+
+  // 오프닝·타이틀은 이름을 다 바꾼 뒤에 만든다(타이틀이 meta.title 을 읽는다).
+  configureEmeraldMonsterOpening(project, { pages: OPENING_PAGES });
+  if (project.system.titleScreen) {
+    project.system.titleScreen.title = "아스트라 호라이즌";
+    project.system.titleScreen.logoSubtitle = "다우닝 시티와 여명의 날개";
   }
 
   const serialized = serialize(project);
@@ -778,10 +750,5 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
     mapCount: Object.keys(reloaded.maps).length,
     endingCount: reloaded.endings?.length ?? 0,
   };
-  return {
-    id: "emerald-crown",
-    manifest,
-    project: reloaded,
-    serialized,
-  };
+  return { id: "emerald-crown", manifest, project: reloaded, serialized };
 }

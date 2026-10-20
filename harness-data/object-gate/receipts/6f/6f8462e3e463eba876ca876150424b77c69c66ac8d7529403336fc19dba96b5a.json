@@ -1,0 +1,448 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6f8462e3e463eba876ca876150424b77c69c66ac8d7529403336fc19dba96b5a",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "home drying rack",
+ "label": "modern_city_interior/home-drying-rack",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 3 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 3 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 43,
+  "nearBlackEdge": 0.08,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top crossbeam",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging laundry (blue towel, white cloth, pink cloth)",
+      "rows": "10-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "splayed legs and feet",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The top crossbeam spans rows 7-9 as dark outline, light row 8 and dark outline. That is a thin front-facing strip with a single highlight row, no front-edge line below a band and no eave shadow, so it reads as a rim and not a top surface. The legs (rows 17-29) are drawn as vertical splayed posts with no top faces or ellipses. The hanging cloths are decor. The whole rack is a flat front elevation, like the red 'rim only' and 'front elevation' references, not the green references with a 5-row top band."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small grey-white drying rack with hanging cloths. It has about 3 lightness steps on the frame and cloth, and the cloths are mostly one light tone and one shade, with small blue and pink accents. The measured dark edge pixels are 90% near-neutral, so the outline reads as a neutral dark line around the shapes. That matches the sticker look, not Beodeul's tinted dark material tones (hedge 0%, stall 1%). Its 11 visible tones per tile is in the range of the hedge (9), but well below the stall (17) and well (20). It has no grain, tile speckle or per-material clusters, and the thin frame has no wood grain or highlight. A careful artist would find it flatter and more sticker-like next to the stall and well, so it fails on shallow shading and the neutral outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15435
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top beam",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging laundry (blue cloth, white cloth, pink cloth)",
+      "rows": "10-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs and feet",
+      "rows": "10-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The top beam covers rows 7-9 and is 28 px wide. It is a dark outline on row 7, a light line on row 8 and a dark outline on row 9. This is a front-facing strip with no separate front-edge line below a top band and no eave shadow, so it works as a rim and not as a top surface. No ellipse, roof, or contents are visible. The legs (rows 10-29, width 16-22) are drawn as flat vertical elevations, and the base has no top faces. The hanging cloths are decor. Overall this is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey-and-blue frame with hanging cloths. Its density is fine on the numbers: 11 visible tones per tile against 9 for the hedge, 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, so there are no flat fills. The weak point is the outline. 90% of its dark edge pixels are near-neutral, and by eye the dark line around the frame and cloths is a uniform grey-black with no tint from the neighbouring material. That is the sticker look, where Beodeul outlines lean toward the dark tone of the material beside them (hedge 0%, stall 1% neutral). The shading is also shallow. The frame is a metal grey with about 2-3 steps, and each cloth is about 2-3 steps (white, light blue, one shadow), against 5-6 steps per material in the references. The cloths have little texture or fold detail, so the small piece reads flatter and more graphic than the references. The near-black outline and the shallow ramps outweigh the adequate tone count, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16655
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top rail/beam",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging blue cloth",
+      "rows": "10-23",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging pink cloth",
+      "rows": "10-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging white cloth",
+      "rows": "13-21",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "splayed legs and feet",
+      "rows": "17-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The top rail in rows 7-9 is a dark outline, a light line (row 8) and a dark outline, so it reads as a thin front-facing bar. It has no band ending in a front-edge line, no eave shadow and no ellipse. The side posts and splayed legs in rows 10-29 are vertical strips with no horizontal top faces or base. The cloths are hanging goods (decor). The whole frame is a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small rack with a grey frame and blue and white cloth. Its dark edge pixels are 90% near-neutral, which is the uniform dark-grey 'sticker' outline. The references with real material outlines (hedge 0%, stall 1%) are tinted. Each material (frame, cloth, bucket-like blue pieces) has only about 2-3 lightness steps, against 5-6 on the stall and well. The measured facts are not the problem: 11 visible tones per tile is within the reference range of 9-20, and flat coverage is 0%. But the total of 19 colours is low, and the cloth panels read as simple flat shapes with little grain or per-item highlights. Next to the stall and well it looks thinner and flatter, so a careful artist would not accept it beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15970
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top crossbeam",
+      "rows": "7-9",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side posts and legs",
+      "rows": "10-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging blue cloth",
+      "rows": "10-23",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging white towel",
+      "rows": "11-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging pink item",
+      "rows": "10-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The rack is a thin outlined frame. The crossbeam at rows 7-9 is a dark outline (row 7), a light line (row 8) and a dark line (row 9), 3 rows across the full width of 28. It reads as a front-facing strip or rim of about 2 rows, with no eave shadow and no band of top surface behind it. The posts and legs (rows 10-29, widths 22 then 16) are vertical faces with no horizontal top. The legs end in flat feet at rows 27-29. No beam or base shows a top face. The hanging cloths are decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate's tile density is fine on paper: 11 visible tones per tile against 9 for the hedge, and 0% near-flat coverage. The structure is shallower than the references, though. 90% of its dark edge pixels are near-neutral, so the frame and cloths carry a grey-black outline with no brown, blue or red lean. That is the sticker look, and it contrasts with the tinted outlines on the hedge (0% neutral), the cheese stall (1%) and the roofed well (33%). The frame and the blue and white cloths show only about 3 lightness steps each, against the 5-6 the references use on wood, roof and stone. The cloths read as flat blocks with a single fold highlight, and there is no grain on the posts. The piece is small and cleanly drawn, but placed next to the stall and the well it would look flatter and more outlined. Since the outline and shading depth fall short, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16832
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.879Z",
+ "cells": {
+  "16": [
+   "0ef78381a098f934",
+   "5677bf7fbc5bab6e",
+   "c2268b03d6a8a82b",
+   "f610720d674134ca"
+  ],
+  "24": [
+   "1b5e2591b002545f",
+   "308277fd89bcc9a9",
+   "3ad3843996440ea0",
+   "4c856823d2b01365",
+   "51d5d789080d48df",
+   "54447012fd0e3ce2",
+   "5eac310ede92060b",
+   "78eeaa0e5d238290",
+   "78fd17a7a7afd22d",
+   "7e36c3798f3a64d4",
+   "898474d6093962b1",
+   "90447b60df8d2d86",
+   "923604c9f217de40",
+   "95192065cdf287c3",
+   "a3ad830957d880f1",
+   "abec7361c3e71f60",
+   "ac8d67a91eb89819",
+   "c33e7ff2c3644d11",
+   "c5d770e6fac7842c",
+   "c694c81b44a92357",
+   "cd92290b191d9f30",
+   "d6c9036c1e326153",
+   "e7bfc3f6cb08b2d6",
+   "ecc752ff9d42f5bc"
+  ],
+  "32": [
+   "214486487082dc3e"
+  ],
+  "48": [
+   "6f6ec20ddf8cd6c3",
+   "769af03f03ad410b",
+   "a2d420c6a7be470d",
+   "ac2851b1a6b2ed2b",
+   "ad33d2f728c51162",
+   "e054cc18d99a9194"
+  ]
+ }
+}

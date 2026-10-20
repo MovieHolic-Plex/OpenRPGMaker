@@ -2,12 +2,16 @@
  * 코딩 에이전트의 스토어 제출 명령 — `npm run -s store -- <명령>`. 문서: openwiki/store-agent-contribution.md
  *
  *   npm run -s store -- whoami                                   # 토큰 파일·계정·에이전트 이름 확인(토큰은 찍지 않는다)
- *   npm run -s store -- init <폴더> --kind character --title "…" --license CC-BY-4.0 --file a.png [--file b.png]
+ *   npm run -s store -- init <폴더> --kind character --title "…" --license CC-BY-4.0 --method generative-model --engine <도구> --model <모델> --file a.png [--file b.png]
+ *                         # --method: generative-model·mixed(--model 필수)|procedural(생성 모델 없음, --model 없음). 실제로 돌린 그대로
  *                         [--summary "…"] [--description "…"] [--tags a,b] [--credits "…"]   # 그림·소리 파일로 팩 폴더 만들기
  *   npm run -s store -- check <폴더>                             # 올리기 전 검사만(형식·규격·타사 이름·AI 표시·3/4 관문)
  *   npm run -s store -- publish <폴더> [--draft]                  # 검사 → 파일 올리기 → 새 상품 제출(항상 확인 대기)
  *   npm run -s store -- version <slug> <폴더>                     # 에이전트가 제출한 내 상품에 새 판본(다시 확인 대기)
  *   npm run -s store -- mine                                     # 내 계정 상품과 상태
+ *   npm run -s store -- preview <폴더> [--scene out.png]          # 제출 전 비공개 일회용 미리보기(나만, 24시간). 관문 없이 내용 검사만
+ *   npm run -s store -- submit <폴더> [--slug <내 상품>]           # 그 미리보기를 제출(검사+3/4 관문 다시) — 새 상품 또는 새 판본
+ *   npm run -s store -- discard <폴더>                            # 미리보기 버리기
  *
  * 팩 폴더 = manifest.json(oprn-store-pack/1) + blobs/<sha256>. 스토어 명령줄 `pull` 과 같은 모양이다.
  * 공통 옵션: --base <스토어 주소>(기본 OPRN_STORE_URL 또는 https://store.openrpgmaker.com), --agent "<모델·도구>"(기본 OPRN_AGENT).
@@ -16,13 +20,13 @@
  * 마지막 줄은 한 줄 JSON 결과다(에이전트가 읽는다). 종료 코드: 0 성공, 1 검사·서버 거절, 2 사용법·설정 오류.
  */
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { basename, join, resolve } from "node:path";
 import { PNG } from "pngjs";
 import {
-  STORE_ITEM_KINDS, STORE_LICENSES, STORE_PACK_SCHEMA, STORE_TILE_SIZE, storeImageSizeProblem, storeThirdPartyName, validateManifest,
-  type StoreAssetKind, type StoreBlobMime, type StoreItemKind, type StoreLicense, type StorePackManifest,
+  STORE_GENERATION_METHODS, STORE_ITEM_KINDS, STORE_LICENSES, STORE_PACK_SCHEMA, storePackGeneration, STORE_TILE_SIZE, storeImageSizeProblem, storeThirdPartyName, validateManifest,
+  type StoreAssetKind, type StoreBlobMime, type StoreGeneration, type StoreGenerationMethod, type StoreItemKind, type StoreLicense, type StorePackManifest,
 } from "../../src/assetStore/format";
 import { basicTilesetFor } from "../../src/assetStore/pack";
 import { pngSize, sniffMime } from "../../src/assetStore/sniff";
@@ -62,7 +66,7 @@ const base = (opt("--base") ?? process.env.OPRN_STORE_URL ?? DEFAULT_BASE).repla
 const agentName = (opt("--agent") ?? process.env.OPRN_AGENT ?? "").trim();
 
 function usage(message: string): CliError {
-  return new CliError(`${message}\n명령: whoami · init <폴더> · check <폴더> · publish <폴더> [--draft] · version <slug> <폴더> · mine (openwiki/store-agent-contribution.md)`, 2);
+  return new CliError(`${message}\n명령: whoami · init <폴더> · check <폴더> · publish <폴더> [--draft] · version <slug> <폴더> · mine · preview <폴더> · submit <폴더> [--slug s] · discard <폴더> (openwiki/store-agent-contribution.md)`, 2);
 }
 
 // ── 토큰 ─────────────────────────────────────────────────────────────
@@ -117,13 +121,14 @@ function readPack(dir: string): Pack {
 const sha256 = (bytes: Uint8Array): string => createHash("sha256").update(bytes).digest("hex");
 
 /** 올리기 전 검사. 문제 목록(빈 배열 = 통과)과, 3/4 관문을 거친 시트 수. */
-function checkPack(pack: Pack): { problems: string[]; notes: string[] } {
+function checkPack(pack: Pack, { gate = true }: { gate?: boolean } = {}): { problems: string[]; notes: string[] } {
   const { manifest, blobs } = pack;
   const problems: string[] = [];
   const notes: string[] = [];
   const valid = validateManifest(manifest);
   if (!valid.ok) problems.push(...valid.errors);
-  if (manifest.aiGenerated !== true) problems.push("에이전트 제출은 aiGenerated: true 여야 합니다(서버도 거절한다).");
+  // 만든 방법(generation)을 밝히면 그대로 표시한다(procedural 만 AI 생성 아님). 밝히지 않으면 에이전트 제출은 AI 생성이어야 한다(서버도 같다).
+  if (!storePackGeneration(manifest) && manifest.aiGenerated !== true) problems.push("만든 방법(에셋 generation)을 밝히지 않은 에이전트 제출은 aiGenerated: true 여야 합니다 — 생성 모델 없이 스크립트로만 만들었으면 에셋마다 generation: {method: \"procedural\", engine} 을 적으세요(서버도 거절한다).");
   if (!manifest.credits?.trim()) problems.push("credits 가 비었습니다 — 만든 에이전트·모델과 원작 출처(없으면 「직접 생성」)를 적으세요.");
   // 타사 소재(Rasak·REFMAP·PAW·RPG Maker MV/MZ·RTP) 이름은 서버가 누구에게서나 거절한다. 같은 판정을 먼저 돌린다.
   const named: [string, string][] = [["제목", manifest.title ?? ""], ["크레딧", manifest.credits ?? ""], ...(manifest.tags ?? []).map((tag): [string, string] => ["태그", tag])];
@@ -156,6 +161,7 @@ function checkPack(pack: Pack): { problems: string[]; notes: string[] } {
     const sizeProblem = size ? storeImageSizeProblem(asset.kind, size.width, size.height) : "PNG 크기를 읽지 못했습니다.";
     if (sizeProblem) { problems.push(`${asset.name}: ${sizeProblem}`); continue; }
     if (!GATED_KINDS.has(asset.kind)) continue;
+    if (!gate) { notes.push(`${asset.name}: 미리보기라 3/4 관문은 아직 보지 않았다 — submit 할 때 본다.`); continue; }
     passing ??= passingCellIndex("store");
     const image = PNG.sync.read(Buffer.from(bytes));
     const data = new Uint8Array(image.data.buffer, image.data.byteOffset, image.data.length);
@@ -180,6 +186,14 @@ function init(dir: string): Pack {
   if (!license || !(STORE_LICENSES as readonly string[]).includes(license)) throw usage(`--license 는 ${STORE_LICENSES.join("|")} 중 하나여야 합니다.`);
   if (files.length === 0) throw usage("--file <그림·소리 파일> 이 하나 이상 필요합니다.");
   if (existsSync(join(dir, "manifest.json"))) throw usage(`이미 팩 폴더입니다: ${dir} (덮어쓰지 않는다)`);
+  const method = opt("--method") as StoreGenerationMethod | undefined;
+  if (!method || !(STORE_GENERATION_METHODS as readonly string[]).includes(method)) {
+    throw usage(`--method 는 ${STORE_GENERATION_METHODS.join("|")} 중 하나여야 합니다(실제로 돌린 것 그대로: 생성 모델이 그렸으면 generative-model + --model, 스크립트만이면 procedural).`);
+  }
+  const engine = opt("--engine");
+  const model = opt("--model");
+  if (!engine) throw usage("--engine <실제로 돌린 도구>(예 \"char-gen compose\")가 필요합니다.");
+  const generation: StoreGeneration = { method, engine, ...(model ? { model } : {}) };
   const audio = kind === "music" || kind === "sound";
   const assets: StorePackManifest["content"]["assets"] = {};
   const tilesets: StorePackManifest["content"]["tilesets"] = {};
@@ -207,7 +221,7 @@ function init(dir: string): Pack {
         tilesets[tileset.id] = tileset;
       }
     }
-    assets[id] = { id, name, kind: assetKind, blob: sha, mime, meta };
+    assets[id] = { id, name, kind: assetKind, blob: sha, mime, meta, generation };
   }
   const manifest: StorePackManifest = {
     schema: STORE_PACK_SCHEMA,
@@ -217,7 +231,7 @@ function init(dir: string): Pack {
     tags: (opt("--tags") ?? "").split(",").map((tag) => tag.trim()).filter(Boolean),
     kind: (STORE_ITEM_KINDS as readonly string[]).includes(kind) ? kind : "pack",
     license,
-    aiGenerated: true,
+    aiGenerated: generation.method !== "procedural",
     credits: opt("--credits") ?? (agentName ? `AI 생성: ${agentName}` : ""),
     content: { assets, tilesets },
     previews: audio ? [] : refs.filter((ref) => ref.mime.startsWith("image/")).slice(0, 8).map((ref) => ref.sha256),
@@ -245,7 +259,21 @@ function requireClean(pack: Pack): void {
   if (problems.length > 0) throw new CliError("올리기 전 검사 실패 — 아무것도 보내지 않았다.", 1, problems);
 }
 
-const reviewNote = "에이전트 제출은 항상 확인 대기(pending)다. 주인이 스토어 운영 화면(/admin)에서 「공개」해야 보인다 — 에이전트가 공개·승인할 길은 없다.";
+const reviewNote = "에이전트 제출은 항상 확인 대기(pending)다. 주인이 스토어 「내 에이전트 제출」(/me/agent)에서 고르고 승인해야 한다(3/4 관문 보정 전에는 운영자 확인도 한 번 더) — 에이전트가 공개·승인할 길은 없다.";
+
+// ── 일회용 미리보기(스토어 /scratch) ─────────────────────────────────
+/** 팩 폴더 안 .scratch.json: 미리보기 id(비밀 주소이므로 권한 600)와 만들 때의 manifest.json 해시. */
+interface ScratchState { base: string; id: string; previewUrl: string; sceneUrl: string; expiresAt: string; manifestSha256: string }
+const scratchFile = (dir: string): string => join(dir, ".scratch.json");
+const manifestFileSha = (dir: string): string => sha256(new Uint8Array(readFileSync(join(dir, "manifest.json"))));
+
+function readScratch(dir: string): ScratchState {
+  const file = scratchFile(dir);
+  if (!existsSync(file)) throw usage(`미리보기가 없습니다: ${dir} — 먼저 preview ${dir}`);
+  const state = JSON.parse(readFileSync(file, "utf8")) as ScratchState;
+  if (state.base !== base) throw usage(`이 미리보기는 다른 스토어(${state.base})에 있습니다. --base ${state.base}`);
+  return state;
+}
 
 const commands: Record<string, () => Promise<object>> = {
   async whoami() {
@@ -287,6 +315,52 @@ const commands: Record<string, () => Promise<object>> = {
     const created = await api<{ status: string; version: number }>(`/api/v1/items/${encodeURIComponent(slug)}/versions`, { json: { manifest: pack.manifest } });
     return { ok: true, slug, status: created.status, version: created.version, uploaded, url: `${base}/items/${slug}`, note: reviewNote };
   },
+  async preview() {
+    const [dir] = positional;
+    if (!dir) throw usage("preview <폴더> 가 필요합니다.");
+    const path = resolve(dir);
+    const pack = readPack(path);
+    const { problems, notes } = checkPack(pack, { gate: false });
+    for (const note of notes) console.error(`  ${note}`);
+    if (problems.length > 0) throw new CliError("미리보기 전 검사 실패 — 아무것도 보내지 않았다.", 1, problems);
+    const uploaded = await uploadBlobs(pack);
+    const view = await api<{ id: string; previewUrl: string; sceneUrl: string; expiresAt: string; summary: { wouldHold: string[]; warnings: string[] } }>("/api/v1/scratches", { json: { manifest: pack.manifest } });
+    const state: ScratchState = { base, id: view.id, previewUrl: view.previewUrl, sceneUrl: view.sceneUrl, expiresAt: view.expiresAt, manifestSha256: manifestFileSha(path) };
+    writeFileSync(scratchFile(path), JSON.stringify(state, null, 2), { mode: 0o600 });
+    let scene: string | null = null;
+    const out = opt("--scene");
+    if (out) {
+      const response = await fetch(`${base}/api/v1/scratches/${view.id}/scene.png?scale=2`, { headers: { authorization: `Bearer ${readToken()}` } });
+      if (!response.ok) throw new CliError(`장면 그림을 받지 못했다: ${response.status}`);
+      writeFileSync(resolve(out), new Uint8Array(await response.arrayBuffer()));
+      scene = resolve(out);
+    }
+    return {
+      ok: true, previewUrl: view.previewUrl, sceneUrl: view.sceneUrl, scene, expiresAt: view.expiresAt, uploaded, wouldHold: view.summary.wouldHold, warnings: view.summary.warnings,
+      note: "나만 보는 미리보기다(제출 아님). 주소는 주인이 브라우저에서 로그인해 같이 볼 수 있다. 정하면 submit 또는 discard.",
+    };
+  },
+  async submit() {
+    const [dir] = positional;
+    if (!dir) throw usage("submit <폴더> [--slug <내 상품>] 가 필요합니다.");
+    const path = resolve(dir);
+    const state = readScratch(path);
+    if (manifestFileSha(path) !== state.manifestSha256) throw usage("미리보기 뒤에 manifest.json 이 바뀌었다 — 바뀐 것을 다시 preview 해서 보고 내라.");
+    requireClean(readPack(path));
+    const slug = opt("--slug");
+    const created = await api<{ slug: string; status: string; version: number }>(`/api/v1/scratches/${state.id}/submit`, { json: slug ? { slug } : {} });
+    rmSync(scratchFile(path), { force: true });
+    return { ok: true, slug: created.slug, status: created.status, version: created.version, url: `${base}/items/${created.slug}`, review: `${base}/me/agent`, note: reviewNote };
+  },
+  async discard() {
+    const [dir] = positional;
+    if (!dir) throw usage("discard <폴더> 가 필요합니다.");
+    const path = resolve(dir);
+    const state = readScratch(path);
+    await api(`/api/v1/scratches/${state.id}/discard`, { json: {} });
+    rmSync(scratchFile(path), { force: true });
+    return { ok: true, discarded: true };
+  },
   async mine() {
     const me = await api<{ items: { slug: string; title: string; status: string; kind: string; latestVersion: number; submittedVia: string | null }[] }>("/api/v1/me");
     for (const item of me.items) console.error(`${item.status.padEnd(8)} ${item.kind.padEnd(10)} v${item.latestVersion} ${item.slug}  ${item.title}${item.submittedVia ? `  [${item.submittedVia}]` : ""}`);
@@ -299,6 +373,8 @@ const run = command ? commands[command] : undefined;
 try {
   if (parseError) throw usage(parseError);
   if (!run) throw usage(command ? `모르는 명령: ${command}` : "명령이 필요합니다.");
+  if (options.has("--slug") && command !== "submit") throw usage("--slug 는 submit 에만 쓴다.");
+  if (options.has("--scene") && command !== "preview") throw usage("--scene 는 preview 에만 쓴다.");
   if (options.has("--draft") && command !== "publish") throw usage("--draft 는 publish 에만 쓴다(제출은 어차피 항상 확인 대기다).");
   console.log(JSON.stringify(await run()));
 } catch (error) {

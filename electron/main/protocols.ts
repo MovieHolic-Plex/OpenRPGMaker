@@ -4,12 +4,14 @@ import { SHARED_REFERENCE_IMAGE_PREFIX } from '../../src/project/bundledReferenc
 import { existsSync, readFileSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { extname, normalize, resolve, sep } from "node:path";
-import { protocol } from "electron";
+import { pathToFileURL } from "node:url";
+import { net, protocol } from "electron";
 import { ASSET_RESPONSE_CSP, assetCacheControl, safeAssetContentType } from "../shared/assetMime";
 import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME } from "../shared/channels";
 import { handleActivityMirror, isActivityMirrorPath } from "../../scripts/lib/activityMirror.mjs";
 import { isCompanionPath } from "../../scripts/lib/ohMyPiHttp.mjs";
 import type { SessionRegistry } from "./sessions";
+import { noteMainActivity } from "./projectCorePreload";
 import { sharedCharacterGraphicsResponse } from "../../scripts/lib/sharedCharacterGraphics";
 import { SHARED_CHARACTER_GRAPHICS_ENDPOINT } from "../../src/project/sharedCharacterGraphicsSchema";
 
@@ -50,9 +52,38 @@ function fileResponse(target: string): Response {
   });
 }
 
+/**
+ * 문서가 아닌 정적 파일(번들 JS·CSS·그림)은 Electron 의 file: 처리기로 바로 흘린다. 메인 프로세스가 파일을 통째로 읽어
+ * Response 로 다시 싸던 길(readFileSync)은 편집기 첫 부팅의 번들 약 65MB 를 메인 스레드에 올려 두 배 느렸다
+ * (2026-10-20 실측, 같은 세 덩이 병렬: 410ms → 220ms). CSP 는 문서(HTML) 응답에만 의미가 있어 HTML 은 예전 길을 그대로 쓴다
+ * (앱에는 워커 스크립트가 없다). file: 로 못 받으면(asar 등 예외) 예전 길로 돌아간다.
+ */
+async function staticFileResponse(target: string): Promise<Response> {
+  const extension = extname(target);
+  if (extension === ".html" || !MIME_BY_EXTENSION[extension]) return fileResponse(target);
+  try {
+    const response = await net.fetch(pathToFileURL(target).href);
+    if (response.ok) return response;
+  } catch {
+    // 아래 예전 길로.
+  }
+  return fileResponse(target);
+}
+
 export function registerAppProtocol(rendererDir: string, activityLogBaseDir: () => string, companionOrigin: () => string | null = () => null): void {
   const root = resolve(rendererDir);
-  protocol.handle(OPRN_APP_SCHEME, async (request) => {
+  // OPRN_IPC_TIMING=1 이면 느린(30ms+) 요청을 stderr 에 남긴다 — 시작 속도 측정기용.
+  const timing = process.env.OPRN_IPC_TIMING === "1";
+  protocol.handle(OPRN_APP_SCHEME, !timing ? (request) => handleAppRequest(request) : async (request) => {
+    const started = performance.now();
+    try { return await handleAppRequest(request); }
+    finally {
+      const elapsed = performance.now() - started;
+      if (elapsed >= 30) process.stderr.write(`[ipc-timing] app:${new URL(request.url).pathname} ${Math.round(elapsed)}ms at ${Math.round(started)}\n`);
+    }
+  });
+  async function handleAppRequest(request: Request): Promise<Response> {
+    noteMainActivity();
     const url = new URL(request.url);
     const origin = companionOrigin();
     if (origin && isCompanionPath(url.pathname)) {
@@ -112,8 +143,8 @@ export function registerAppProtocol(rendererDir: string, activityLogBaseDir: () 
       return new Response("forbidden", { status: 403 });
     }
     if (!existsSync(target)) return new Response("not found", { status: 404 });
-    return fileResponse(target);
-  });
+    return staticFileResponse(target);
+  }
 }
 
 export function registerAssetProtocol(sessions: SessionRegistry): void {

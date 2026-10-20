@@ -1,0 +1,23 @@
+{
+ "cabinet:bolt+boltg+boltr": "object-gate(미보정 프로필 1db03a95) PASS · 3/4 ok · 화풍 ok",
+ "cabinet:book+bookb+bookg": "object-gate(미보정 프로필 1db03a95) PASS · 3/4 ok · 화풍 ok",
+ "cabinet:bottle+bottler+bottley": "object-gate(미보정 프로필 1db03a95) PASS · 3/4 ok · 화풍 ok",
+ "cabinet:bun": "object-gate(미보정 프로필 1db03a95) PASS · 3/4 ok · 화풍 ok",
+ "cabinet:candle": "object-gate(미보정 프로필 1db03a95) PASS · 3/4 ok · 화풍 ok",
+ "cabinet:cheese": "object-gate(미보정 프로필 1db03a95) PASS · 3/4 ok · 화풍 ok",
+ "cabinet:gem+gemr": "object-gate(미보정 프로필 1db03a95) PASS · 3/4 ok · 화풍 ok",
+ "cabinet:jar+jarb+jarg": "object-gate(미보정 프로필 1db03a95) PASS · 3/4 ok · 화풍 ok",
+ "cabinet:loaf": "object-gate(미보정 프로필 1db03a95) PASS · 3/4 ok · 화풍 ok",
+ "cabinet:pie": "object-gate(미보정 프로필 1db03a95) PASS · 3/4 ok · 화풍 ok",
+ "cabinet:potion+potionb+potiong": "object-gate(미보정 프로필 1db03a95) PASS · 3/4 ok · 화풍 ok",
+ "cabinet:toy": "object-gate(미보정 프로필 1db03a95) PASS · 3/4 ok · 화풍 ok",
+ "cabinet:vial+flask": "object-gate(미보정 프로필 1db03a95) PASS · 3/4 ok · 화풍 ok",
+ "confessional": "object-gate(미보정 프로필 1db03a95) FAIL · 3/4 ok · 화풍 NO",
+ "control console": "object-gate(미보정 프로필 1db03a95) REFER · 3/4 ?? · 화풍 ok",
+ "helmet shelf": "object-gate(미보정 프로필 1db03a95) REFER · 3/4 ?? · 화풍 ok",
+ "orrery": "object-gate(미보정 프로필 1db03a95) PASS · 3/4 ok · 화풍 ok",
+ "slot machine": "object-gate(미보정 프로필 1db03a95) FAIL · 3/4 ok · 화풍 NO",
+ "relic cabinet": "object-gate(미보정 프로필 1db03a95) REFER · 3/4 ?? · 화풍 ok",
+ "ship bunk": "object-gate(미보정 프로필 1db03a95) PASS · 3/4 ok · 화풍 ok",
+ "wide cabinet": "object-gate(미보정 프로필 1db03a95) PASS · 3/4 ok · 화풍 ok"
+}

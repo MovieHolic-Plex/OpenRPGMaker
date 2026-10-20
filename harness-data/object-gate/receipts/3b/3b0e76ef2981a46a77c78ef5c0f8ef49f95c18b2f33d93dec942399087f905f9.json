@@ -1,0 +1,397 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3b0e76ef2981a46a77c78ef5c0f8ef49f95c18b2f33d93dec942399087f905f9",
+ "width": 16,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "lecture podium",
+ "label": "modern_city_interior/lecture-podium",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 8/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 8/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 28,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top object (dark screen or lamp with blue gem and knob)",
+      "rows": "2-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "podium top slab",
+      "rows": "10-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "front panel body with framed inner panels",
+      "rows": "16-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "28-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 10-14 form a top band that brightens from L=77 to L=139 and ends in a dark front-edge line at row 15 (#3c1200). This matches the green cabinet reference (top 5 + edge + eave). Below it, rows 16-27 are a 12-row front face with a framed panel, and rows 28-30 are a wider base. Rows 2-9 are a dark object sitting on the top, so it is decor. The top band could be read as a shaded cornice, but the gradient and the dark edge line favour a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate podium is a small brown body with a lighter top and a dark outline. Its dark edge pixels are 100% near-neutral, so the outline is a near-black line around the shapes, which is the 'sticker' look. The references with real bodies (stall, well, hedge) have tinted outlines at 0-33% neutral. It has about 3 shading steps on the wood and 8 visible tones per tile, against 17-20 for the stall and well and 9 for the hedge. Flat coverage is 0%, so there are no big flat fills, but the shading is shallow and there is little grain or per-plank texture. It sits well below the stall and well in richness and would look flatter beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18959
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "device or lamp on top of the podium (dark housing with a blue light and an antenna)",
+      "rows": "2-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "podium top slab",
+      "rows": "10-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "base plinth",
+      "rows": "28-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is 12 px wide. Rows 10-14 form a top band that shifts from dark brown at row 10 to mid brown at rows 11-12 to light brown at rows 13-14, so it brightens toward the front. A dark 1-row line at row 15 (#3c1200) ends the band as a front-edge line with eave shadow. Below it, rows 16-27 are a vertical front face with a panel and a gold plaque, and rows 28-30 are a wider base plinth. The result looks like the cabinet reference (top 5 + edge + eave), not a rim-only drawing. The dark object on rows 2-9 is placed on top of the podium, so it counts as decor and not as the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The podium is a small dark-outlined wooden box with a lectern top and one inset panel. The wood body has only about 3 lightness steps (light, mid, dark), against 5-6 on the well roof, the cheese stall and the hedge. The dark edge pixels are 100% near-neutral, so the outline is a uniform near-black line around every shape. That is the 'sticker' look, and the references (hedge 0%, stall 1%, well 33%) use tinted, material-toned edges instead. The lamp-crook reference is also 100% neutral, but it is a thin pole, so it is not a good comparison. The candidate has 8 visible tones per tile, close to the hedge's 9 but well under the stall's 17 and the well's 20. It has no flat fills, but it shows little grain, no per-plank highlights and no wood texture dots. It is cleanly drawn but thinner and flatter than the comparable wooden props, and the outline fails the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17869
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top ornament/lamp-like fixture above the body (rows 2-9, dark grey with a blue gem)",
+      "rows": "2-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "podium top band (brown, lightening toward the front)",
+      "rows": "10-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "front face with panel and gold plaque",
+      "rows": "16-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wider base plinth strip",
+      "rows": "28-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 10-14 form a 5-row top band that darkens toward the back and lightens toward the front (L 77, 109, 139). It ends in a dark front-edge line at row 15, which also acts as a 1-row eave shadow. Below it the front face runs rows 16-27 (12 rows) with a framed panel and a gold plaque, and a wider base strip sits at rows 28-29. The grey fixture at rows 2-9 sits on top of the body, so it is decor. The top band is wider than a 1-2 row rim and matches the 'cabinet: top 5 + edge + eave' reference, so the body reads as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate podium is a small, narrow wooden lectern with a lamp-like top. Its dark edge pixels are 100% near-neutral, so the outline reads as a neutral near-black line around the shape rather than a dark brown beside the wood. That is the sticker look. The body has only about 3 wood steps (light face, mid, dark side) and little visible grain or per-plank texture. It has 8 visible tones per tile, below the richer references (stall 17, well 20, hedge 9). Its sparse form is not held against it, but compared with the bench, lamp and stall it looks flatter and thinner. The references use tinted outlines and 5-6 shade steps. A careful artist would not accept it beside them without more shading and tinted outlines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16088
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top ornament (dark gray cap with blue gem and ring on top)",
+      "rows": "2-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "podium top slab",
+      "rows": "10-14",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-15"
+     },
+     {
+      "part": "front panel with book/gold plate",
+      "rows": "16-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "28-30",
+      "evidence": "none",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 10-14 form a 5-row wood band at the top of the body. It brightens from row 10 (L=77) to rows 13-14 (L=139, the lightest), which acts as the front-edge line. Row 15 is a dark line (#3c1200) that acts as eave shadow, and the front face continues below it through rows 16-27. This matches the cabinet 'top 5 + edge + eave' reference, not the 'rim only' one. The gray cap and ring on rows 2-9 sit on top of the body and are decor. The base on rows 28-30 is wider (14 px against 12 px) and has a light top edge on row 28."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small podium with a lectern top and a lantern-like head. It shows about 3 lightness steps on the wooden body (light, mid, dark), against roughly 5-6 on the well and stall references. The measured dark edge pixels are 100% near-neutral, so the outline is a neutral black line around the shapes rather than a dark brown tone beside the wood. That is the sticker look, unlike the tinted outlines on the hedge (0%), stall (1%) and well (33%). The candidate has 8 visible tones per tile, below the stall (17) and well (20) and slightly under the hedge (9). The 0% flat coverage only means no 5x5 block is flat, because the piece is small and narrow. By eye the wood has no grain, plank detail or texture dots, and the body is a simple panel with a stripe. Next to the stall and well it looks thinner, flatter and more sticker-like, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 18982
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.026Z",
+ "cells": {
+  "16": [
+   "5dd381804566d2b6",
+   "c3d60368fd9b41a1"
+  ],
+  "24": [
+   "013899f8f78691a7",
+   "0aac262069a998a3",
+   "3e75fdc36e7783bf",
+   "58607cb05d3cd3f0",
+   "6532ccfc750717e7",
+   "7a1b462130e7b4a4",
+   "85ff8c0406ef3628",
+   "8b568c4461f344b6",
+   "91505497cbcc4028",
+   "94b91b42d97bdfd6",
+   "f7aa7ddd6a860273",
+   "fd3d4b2989a1521d"
+  ],
+  "32": [
+   "45401d9b0301f835",
+   "80a472f8715fd22d",
+   "dc51e0e995808d6d"
+  ],
+  "48": [
+   "17f2e12f8c930093",
+   "19793aa6fa338dcc",
+   "25b17b1246c04fcd",
+   "a7539a6ea15992d4",
+   "b9a137a11857c44c",
+   "ca52783fd8731462"
+  ]
+ }
+}

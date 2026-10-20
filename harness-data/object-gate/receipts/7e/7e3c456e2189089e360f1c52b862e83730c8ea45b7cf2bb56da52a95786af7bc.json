@@ -1,0 +1,294 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7e3c456e2189089e360f1c52b862e83730c8ea45b7cf2bb56da52a95786af7bc",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "썩은 판자 다리(떨어짐 2) (plank bridge falling 2)",
+ "label": "atlas_biome_interior/plus/plank bridge falling 2",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 2
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 26,
+  "nearBlackEdge": 0.13,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered plank debris fragments",
+      "rows": "4-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a few scattered brown pixels, at most 4 px wide and spanning rows 4-11. These are broken plank fragments lying on the ground. No front face of 3 or more rows, no front-edge line, no eave shadow, no ellipse and no roof plane is drawn. It reads as a flat decal or debris, which fits the flat kind, so it is a top-down slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate renders as a tiny sprite (a few brownish pixels) on a dark grey background. It does not show a 4x3-tile ground patch at all. It has only 6 distinct colours against 80 for the grass reference and 7 for the paving reference. The per-tile median is 0, so the piece is smaller than one tile and I judged by eye. It carries no visible plank structure, no grain, no multi-step shading and no tile coverage. It is far below the references in content and does not read as a ground surface. The 0% flat-fill figure only reflects how little is drawn, and the 0% neutral edge share is not meaningful with so few pixels. Fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9104
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered plank fragments",
+      "rows": "4-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a few scattered dark-brown pixels, at most 4 px wide, in rows 4-11. They look like debris from a falling plank. No top band, front-edge line, ellipse, roof or visible contents show up in the column scan or width profile. There is no front face of 3 or more rows either, so it reads as flat debris on the ground, which fits the 'flat' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sprite, roughly one small object on a mostly empty dark-grey field, not a 4x3-tile ground patch like the references. It has only 6 distinct colours against 80 for the grass reference. Its per-tile median is 0 because the piece is smaller than one tile, so I judged by eye. By eye it shows no plank-bridge surface, no grain or texture, and no tile-scale shading ramp, whereas the references show 5+ steps and clear texture (grass tufts, per-stone shading). Flat-fill coverage is 0% only because the piece is so small. The dark edge pixels are not neutral (0%), but there is too little outline to judge it as a material tone. The piece is far thinner and flatter than both references and would not sit next to them as a ground patch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9792
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered plank fragments",
+      "rows": "4-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a tiny sparse cluster of dark brown pixels (max width 4 px, rows 4-11) with gaps between rows, which reads as scattered debris or fragments of a fallen plank lying on the ground. There is no standing body, no front-edge line with eave shadow, no ellipse, and no front face of 3+ rows. It is a flat decal-like shape seen from above, consistent with the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny sprite, roughly 10x10 px, on a plain grey-blue background. It does not fill a 4x3-tile ground patch the way the grass and paving references do. It has only 6 distinct colours, against 80 for the grass and 7 for the paving. The median per full tile is 0 because the piece is smaller than one tile. By eye it shows 2-3 brownish shading steps with no visible plank grain, no bridge structure and no ground texture. The references show clustered grass texture and per-stone shading. The candidate looks like a small sticker-like object, not a laid ground patch. The 0% flat-fill figure only reflects how small the piece is. It is far below both references in richness and does not match the expected plank-bridge ground patch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9927
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered plank fragments",
+      "rows": "4-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a tiny sparse cluster of dark brown pixels, at most 4 px wide, spanning rows 4-11. It looks like debris from a falling plank bridge lying flat on the ground. There is no front-edge line, eave shadow, ellipse, or contents, and no front face of 3+ rows. It has no vertical volume, so it reads as a flat decal-like piece, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is not a 4x3 ground patch. On the board it shows only a tiny sprite, about 10px wide, on a dark grey background. It has 6 distinct colours and no full 16x16 tile, so the per-tile median of 0 says nothing here and I judged by eye. The reference grass has 80 colours and 26 per tile, and the paving has 7 colours with clear stone shading. The candidate has no visible ground surface, no plank-bridge texture and no tile-filling structure. About 2 brown tone steps are visible on the small object, with no outline tint to judge. A 4x3 tile ground patch should fill the whole area with grain and shading. This is far thinner than both references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9751
+  }
+ ],
+ "decidedAt": "2026-10-20T05:59:10.981Z",
+ "cells": {
+  "16": [
+   "020f752a98d220d2"
+  ],
+  "24": [
+   "2cd601da48f056b7",
+   "50676aca4162cf26",
+   "5c06336bbee7c082",
+   "5cec6192562e9834",
+   "b5e124b3605ef848",
+   "fc191bb431869352"
+  ],
+  "32": [
+   "1254b73617ce5393",
+   "2060f4dac7a79890",
+   "3d1a2fa2cc00a3c4",
+   "5972a9f53bc2d618",
+   "69cfc06e422cb341",
+   "c36ef5e906e9f4d6"
+  ],
+  "48": [
+   "13182bc7017ab39c",
+   "1f0c0a426d533f77",
+   "666ce128c3629954",
+   "8c7902b537e49857",
+   "ce7c679c6fc511bf",
+   "fa89c4582e8e8886"
+  ]
+ }
+}

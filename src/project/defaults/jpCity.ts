@@ -7,7 +7,10 @@
 // 사본은 같은 시트의 옛 굽기로 보고, 번들 소유 칸 표(통행·층·그룹·오토타일·움직임·조립 부품)만 새 굽기로 바꾼다. 맵은 건드리지 않는다.
 // 번들 소유 = id 가 `jp-` 로 시작하는 조립 부품·오토타일 그룹·참고문서. 저자가 더한 것(다른 id)은 갱신 때 보존한다.
 // 시트 칸 수·열 수는 하드코딩하지 않고 정의 JSON 에서 읽는다.
-import data from "@/assets/jpCityTileset.json";
+import sheet from "@/assets/jpCitySheet.json";
+import { bundledJson } from "./bundledJson";
+/** 번들 정의 JSON — 처음 쓸 때 읽는다(bundledJson.ts). 칸 수·한 줄 폭은 같은 굽기가 쓰는 작은 시트 메타(`jpCitySheet.json`)에서 읽는다. */
+const data = () => bundledJson("jpCityTileset");
 import references from "@/assets/jpCityReferences.json";
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
@@ -16,34 +19,39 @@ export const JP_CITY_ID = "jp_city";
 export const JP_CITY_TEXTURE = "tex_jp_city";
 /** 일본 도시 칩셋 계열. 버들항(oprn-atlas)·현대 도시(oprn-modern)와 칸 번호 체계가 달라, 맵이 있는 채로 말없이 바꾸면 깨진다. */
 export const JP_CITY_FAMILY = "oprn-jp";
-export const JP_CITY_COUNT: number = data.count;
-export const JP_CITY_TILES_PER_ROW: number = data.tilesPerRow;
+export const JP_CITY_COUNT: number = sheet.count;
+export const JP_CITY_TILES_PER_ROW: number = sheet.tilesPerRow;
 /** 조립 부품·오토타일 그룹·참고문서 id 머리. 번들이 소유한다(기존 사본에서 같은 id 는 번들 것으로 바꾼다). */
 export const JP_CITY_PREFIX = "jp-";
 const REFERENCES = references as unknown as TilesetReferenceCategory[];
 
 const isOwned = (id: string): boolean => id.startsWith(JP_CITY_PREFIX);
 
+/** 새 사본이 들고 태어나는 참고문서 — 정의 JSON 없이 만든다(로드가 저장본에서 뺀 번들 참고문서를 되돌릴 때 쓴다, installReferenceOwners.ts). */
+export function jpCityBundledReferenceDocuments(): TilesetReferenceCategory[] {
+  return structuredClone(REFERENCES);
+}
+
 /** 번들 정의의 독립 사본 — 참고문서를 들고 태어난다. */
 export function createJpCityTileset(): TilesetDef {
   return {
     id: JP_CITY_ID,
-    name: data.name,
+    name: data().name,
     image: { type: "bundled", id: JP_CITY_TEXTURE },
     kind: "custom",
     family: JP_CITY_FAMILY,
-    tileSize: data.tileSize,
-    tilesPerRow: data.tilesPerRow,
-    count: data.count,
-    passability: structuredClone(data.passability) as PassFlag[],
-    priority: [...data.priority] as ("lower" | "upper")[],
-    terrain: [...data.terrain],
-    tileMeta: structuredClone(data.tileMeta) as TileAiMetadata[],
-    tileGroups: structuredClone(data.tileGroups) as unknown as TileGroupMetadata[],
-    autotileGroups: structuredClone(data.autotileGroups) as unknown as AutotileGroup[],
-    animationStrips: structuredClone(data.animationStrips),
-    structureKits: structuredClone(data.structureKits) as unknown as StructureKitDef[],
-    referenceDocuments: structuredClone(REFERENCES),
+    tileSize: data().tileSize,
+    tilesPerRow: sheet.tilesPerRow,
+    count: sheet.count,
+    passability: structuredClone(data().passability) as PassFlag[],
+    priority: [...data().priority] as ("lower" | "upper")[],
+    terrain: [...data().terrain],
+    tileMeta: structuredClone(data().tileMeta) as TileAiMetadata[],
+    tileGroups: structuredClone(data().tileGroups) as unknown as TileGroupMetadata[],
+    autotileGroups: structuredClone(data().autotileGroups) as unknown as AutotileGroup[],
+    animationStrips: structuredClone(data().animationStrips),
+    structureKits: structuredClone(data().structureKits) as unknown as StructureKitDef[],
+    referenceDocuments: jpCityBundledReferenceDocuments(),
     roomKit: { builtin: JP_CITY_ID },
   };
 }
@@ -103,13 +111,13 @@ function shapeSignature(t: Pick<TilesetDef, "priority" | "passability" | "tileMe
 let bundledShape: string | undefined;
 function bundleShape(): string {
   return bundledShape ??= shapeSignature({
-    priority: data.priority as ("lower" | "upper")[],
-    passability: data.passability as PassFlag[],
-    tileMeta: data.tileMeta as TileAiMetadata[],
-    tileGroups: data.tileGroups as unknown as TileGroupMetadata[],
-    autotileGroups: data.autotileGroups as unknown as AutotileGroup[],
-    animationStrips: data.animationStrips,
-    structureKits: data.structureKits as unknown as StructureKitDef[],
+    priority: data().priority as ("lower" | "upper")[],
+    passability: data().passability as PassFlag[],
+    tileMeta: data().tileMeta as TileAiMetadata[],
+    tileGroups: data().tileGroups as unknown as TileGroupMetadata[],
+    autotileGroups: data().autotileGroups as unknown as AutotileGroup[],
+    animationStrips: data().animationStrips,
+    structureKits: data().structureKits as unknown as StructureKitDef[],
   });
 }
 
@@ -130,10 +138,10 @@ export function ensureJpCityTileset(tileset: TilesetDef): boolean {
   if (tileset.family !== JP_CITY_FAMILY) { tileset.family = JP_CITY_FAMILY; changed = true; }
   if (!tileset.roomKit) { tileset.roomKit = { builtin: JP_CITY_ID }; changed = true; }
   // 같은 시트를 열 수만 바꿔 다시 놓은 판(칸 번호 = 시트 위 순서라 번호는 그대로) — 옛 열 수 사본은 같은 시트로 본다(저자 항목 보존).
-  if (tileset.tilesPerRow !== data.tilesPerRow && JP_CITY_RELAYOUT_FROM.includes(tileset.tilesPerRow)) { tileset.tilesPerRow = data.tilesPerRow; changed = true; }
-  if (tileset.tilesPerRow === data.tilesPerRow) {
-    if (tileset.count > data.count) return changed;
-    if (tileset.count === data.count && shapeSignature(tileset) === bundleShape()) return changed;
+  if (tileset.tilesPerRow !== sheet.tilesPerRow && JP_CITY_RELAYOUT_FROM.includes(tileset.tilesPerRow)) { tileset.tilesPerRow = sheet.tilesPerRow; changed = true; }
+  if (tileset.tilesPerRow === sheet.tilesPerRow) {
+    if (tileset.count > sheet.count) return changed;
+    if (tileset.count === sheet.count && shapeSignature(tileset) === bundleShape()) return changed;
     const fresh = createJpCityTileset();
     const authoredKits = (tileset.structureKits ?? []).filter((kit) => !isOwned(kit.id));
     const authoredAutotiles = (tileset.autotileGroups ?? []).filter((group) => !isOwned(group.id));

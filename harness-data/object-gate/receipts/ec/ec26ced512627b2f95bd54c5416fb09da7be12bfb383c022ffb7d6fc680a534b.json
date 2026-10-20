@@ -1,0 +1,302 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ec26ced512627b2f95bd54c5416fb09da7be12bfb383c022ffb7d6fc680a534b",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "썩은 판자 다리(멀쩡) (plank bridge)",
+ "label": "atlas_biome_interior/plus/plank bridge",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 51,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper plank segment (planks with nail heads)",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "lower plank segment",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-13"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is two 14px-wide plank segments (rows 0-5 and 8-13) joined by 4px-wide connector rows (6-7, 14-15). Each segment is mostly a light plank surface (L 124-182) in rows 0-3 or 8-11. Below that is only a thin 1-2 row dark edge (rows 4-5 and 12-13, L 39-68). That is fewer than 3 rows of front face, so the bridge reads as a flat plate seen from above, which fits the 'flat' kind. There is no ellipse, no roof and no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is two stacked planks with a light top edge, a mid body, a darker lower edge and small nail dots, outlined in dark brown. The measured 0% neutral edge share confirms the outline is tinted, so it reads as a material tone rather than black. Flat-fill coverage is 0%, so there are no large flat areas. The ramp is shallow, though, at about 4 steps against 5-6 for Beodeul. Each plank is a clean rounded block with little grain, knots or per-plank variation, which gives it a sticker look. The piece is a small object rather than a full ground patch, so it does not show the broad surface variation of the grass reference. At 14 colours per tile and 14 colours in total, it is above the paving reference (7) but well below the grass reference (26 per tile, 80 in total). Overall it is clean but thinner and flatter than the Beodeul standard, and I fail it on doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20184
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper plank segment",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-5"
+     },
+     {
+      "part": "lower plank segment",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-13"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The bridge is two stacked 14px-wide plank segments (rows 0-5 and 8-13) with 4px-wide gaps between them (rows 6-7, 14-15). Each segment is a wood-grain plate with nail dots in the top corners. Its bottom 1-2 rows (rows 4-5 and 12-13) are a dark outline or edge, which is too thin to be a 3+ row front face. The planks are seen from above as flat plates, which matches the flat kind, so this is a top-down slab with no real vertical front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small piece of two stacked brown planks, not a 4x3-tile ground patch, and it reads as a boxed object next to the full-tile references. Its dark edge pixels are 0% neutral, so the outline leans dark brown and is a material tone rather than a near-black sticker line. Flat-fill coverage is 0%, but it has only 14 distinct colours against the grass reference's 80. Its 14 colours per tile is below the grass reference's 26, though above the paving reference's 7. The planks show about 4 lightness steps: a light top edge, a mid tone, a dark underside and the outline. That is fewer than Beodeul's 5-6, and the grain and nail detail is sparse. Each plank is a smooth gradient with little per-plank wood grain, knots or wear, so the piece looks thinner and flatter than the grass reference. Because the shading is shallow and the density is lower than the best same-kind reference, it fails on doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20524
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper plank segment",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "lower plank segment",
+      "rows": "8-10",
+      "evidence": "none",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "11-13"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "Two stacked 14px-wide plank slabs (rows 0-5 and 8-13) separated by narrow 4px gaps at rows 6-7 and 14-15, which look like rails or ropes. Each slab is mostly wood-grain plank surface seen from above (a light top row, then mid-brown rows). Each ends in only a 1-2 row dark brown edge and a 1-row outline, so there is no real front face of 3+ rows. That matches a flat plate lying on the ground, which fits the flat kind, and it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate renders as two small stacked brown planks, far smaller than a 4x3-tile ground patch, so it reads as an isolated sticker-like sprite and not a seamless ground surface like the grass and paving references. Measured facts are not the problem: 14 colours per tile is above the paving reference (7) but below the grass reference (26), flat-fill coverage is 0%, and the dark edge pixels are tinted (0% neutral), so the outline is dark brown beside wood and not black. By eye, each plank has only about 4 lightness steps (highlight, mid, shadow, dark edge), with little wood grain and few nail or knot details. The grass reference has many more steps and clumps. Each plank is also outlined all the way around, which makes it look cut out. A careful artist would not accept this beside the reference without it looking thinner and flatter, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20498
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper plank segment",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower plank segment",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is two 14px-wide plank segments (rows 0-5 and 8-13) joined by a 4px-wide connector (rows 6-7 and 14-15). Each segment is a wood-grain plank surface (rows 0-3, or 8-11 in the lower one) with a dark 1-2 row bottom edge (rows 4-5 and 12-13, L about 39-68). That is an outline or edge, not a real front face of 3+ rows. Nothing shows an eave, an ellipse or a receding side face. It reads as a flat plate seen from above, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate renders as two stacked plank slabs, each with a light top edge, a mid face and a dark underside. That is about 4 lightness steps, against 5-6 in the Beodeul grass. The outline is a dark brown, visibly tinted (0% neutral edge pixels), so it is not the near-black sticker line. The measured facts are mixed: 14 colours per tile sits above the paving reference (7) but well below the grass (26), and 14 distinct colours in total is far below the grass's 80. Flat-fill coverage is 0%, so there are no big flat areas. Still, the plank faces show little grain, no knots, wood-fibre variation or per-plank highlights. They read as clean, slightly sticker-like slabs, not the grain-rich texture of the references. The piece is also shown much smaller than a 4x3-tile ground patch and looks like an isolated icon. A careful artist would find it thinner and flatter than the reference next to it, so it fails when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18953
+  }
+ ],
+ "decidedAt": "2026-10-20T05:59:10.979Z",
+ "cells": {
+  "16": [
+   "8e2a283698e7c04a"
+  ],
+  "24": [
+   "08092110717323a6",
+   "1487029864e91c06",
+   "3424cb5171e881e9",
+   "477e674dddd4fcf1",
+   "851c74c5b30d694f",
+   "f59cbb93165cfad7"
+  ],
+  "32": [
+   "0b3d6db4744cae63",
+   "10e3a3dba61efe44",
+   "6e7b53a324a774ec",
+   "c9fff799afc2213d",
+   "d2acb5c57eb88399",
+   "d9f54f2957e0a030"
+  ],
+  "48": [
+   "2050693006147108",
+   "66bc356b0c5caccc",
+   "7d1820030831e322",
+   "9aa34dbea9ba67c5",
+   "bf40c6cfc9e2500c",
+   "e8a05399babef980"
+  ]
+ }
+}

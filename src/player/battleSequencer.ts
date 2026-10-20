@@ -124,6 +124,11 @@ export interface BattleSequencerHooks {
   readonly onResultPending?: (result: NonNullable<BattleSnapshot["result"]>) => void;
   /** 결판 막타 뒤 남은 적 쓰러짐 연출 시간(ms, EnemyRecord.collapseEffect). 결과 도장·패널을 그만큼 미뤄 보스 가라앉기가 가려지지 않게 한다. */
   readonly collapseHoldMs?: () => number;
+  /** 행동 사이 쉼(적 차례 정리 BATTLE_RESOLVE_MS · 격파 대사 BATTLE_KILL_LINE_MS)에 곱하는 배율. undefined 면 1.
+   *  도트 측면 전투가 0.6 을 쓴다(battle-feel r2: 행동 사이 빈 화면이 녹화에서 0.4~0.9초). */
+  readonly interludeScale?: () => number | undefined;
+  /** 첫 인트로 홀드 길이(ms). undefined 면 BATTLE_INTRO_MS. 도트 측면 보스 등장(battle-feel r2)이 쓴다. */
+  readonly introHoldMs?: (snapshot: BattleSnapshot) => number | undefined;
   /** 아군 행동의 접근(approach) 비트 길이를 표시 계층이 정한다(도트 측면 전투: 적 앞까지 걷는 거리에 비례).
    *  undefined 를 돌려주면 BATTLE_ACTING_MS 그대로 — 이 훅이 없는 스킨의 시간은 바뀌지 않는다. */
   readonly actorApproachMs?: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => number | undefined;
@@ -630,7 +635,7 @@ export function createBattleSequencer(
         const hold = decisive ? Math.min(BATTLE_COLLAPSE_HOLD_MAX_MS, Math.max(0, hooks.collapseHoldMs?.() ?? 0)) : 0;
         const stampAndContinue = (): void => {
           if (decisive && snapshot.result) hooks.onResultPending?.(snapshot.result);
-          delay(continueNext, decisive ? BATTLE_DECISIVE_KILL_LINE_MS : BATTLE_KILL_LINE_MS);
+          delay(continueNext, decisive ? BATTLE_DECISIVE_KILL_LINE_MS : Math.round(BATTLE_KILL_LINE_MS * (hooks.interludeScale?.() ?? 1)));
         };
         if (hold > 0) delay(stampAndContinue, hold);
         else stampAndContinue();
@@ -826,7 +831,7 @@ export function createBattleSequencer(
       const entries = after.timeline.slice(consumedTimeline);
       consumedTimeline = after.timeline.length;
       playTimelineEntries(entries, after, () => finishTurn(previous));
-    }, BATTLE_RESOLVE_MS);
+    }, Math.round(BATTLE_RESOLVE_MS * (hooks.interludeScale?.() ?? 1)));
   }
 
   function resumeEvents(_before: BattleSnapshot, after: BattleSnapshot): void {
@@ -887,7 +892,7 @@ export function createBattleSequencer(
         hooks.onDirectorState({ step: "intro", trainerSendOut: "foe", lines: [foeSendOut], activeActorRecordId: snapshot.activeActorId });
         hooks.onSyncView();
         delay(playSendOut, BATTLE_INTRO_MS);
-      }, BATTLE_INTRO_MS);
+      }, hooks.introHoldMs?.(snapshot) ?? BATTLE_INTRO_MS);
     },
     runAfterActorCommand(command: ActorCommand, before: BattleSnapshot, after: BattleSnapshot): void {
       clearTimers();

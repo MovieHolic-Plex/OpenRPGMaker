@@ -1,0 +1,405 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9bd762ff57d56ad2daffa76712f1a46f724ba86a371b21a7f617725a2b8abf7c",
+ "width": 64,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "amuse pachinko island",
+ "label": "modern_city_interior/amuse-pachinko-island",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 평면 채움 (3/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "평면 채움 (3/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 18,
+  "darkV5": 35,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 8
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band (grey gradient strip)",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "cabinet front with four screens",
+      "rows": "5-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red buttons and stems on the lower base",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The grey header band (rows 1-4) brightens from #8d9095 to #f3f4f7, so row 4 is the lightest row and works as a front-edge line. It is followed by two dark eave-shadow rows (5-6), and below that comes the dark front face with the four screens (rows 7-21) and base (22-23). The band is a gradient and could also be read as a front-facing marquee strip, so it is borderline. It meets the edge-line plus shadow pattern of evidence (a), so I count it as a 4-row top. The front face is about 19 rows tall. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are near the references: 15 visible tones per tile against 17 for the cheese stall and 20 for the well, 13% near-flat coverage (same as the stall), and 0% neutral dark edge pixels, so the outline leans navy rather than pure black. By eye the piece is shallower than those references. The large dark body panel and the white top band are close to flat, with only about 2-3 lightness steps each and no grain, speckle or per-element shading. The detail sits only in four small screens and three-tone red stools. The cheese stall and the well have 5-6 steps per material (shaded tiles, wood grain, stone by stone). The candidate reads more like a clean graphic sticker than a Beodeul-grade prop.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 23539
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top header band of the machine island",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "front face with pachinko screens",
+      "rows": "7-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stools below with red seats",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-4 form a light-grey band whose lightness rises from L=144 to L=244. Row 4 is the lightest row and acts as a front-edge line. Rows 5-6 are very dark (L=20) and read as eave shadow. Below that, rows 7-21 are a 15-row dark front face holding the four screens, with a base at rows 22-23. This matches the cabinet 'top 5 + edge + eave' reference. The stools under the machine are separate small props with red seat tops. The object is a wide game-machine island, not tall wall furniture, so the kind only loosely fits."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are close to the references: 15 visible tones per tile against 17 for the cheese stall and 20 for the well, 13% near-flat coverage (the same as the cheese stall), and 0% neutral dark edges, so the outlines are tinted rather than black. By eye, though, the structure is shallow. The white top counter and the large dark body panel are broad, mostly flat areas with only 2-3 lightness steps each and no grain, speckle or per-element highlights. The four framed screens and the red stools carry the detail, but each is only a couple of tones. The Beodeul stall and well show 5-6 steps per material with texture on the roof, wood and stone. The candidate reads as a clean but flatter, sticker-like object next to them, and the verdict is fail on the benefit of the doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20999
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "top marquee band",
+      "rows": "0-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "front face with four game screens",
+      "rows": "5-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stool seats and pedestals",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-4 form a 5-row band that brightens toward the bottom. Row 4 is the lightest row (L=244) and works as a front-edge line, and rows 5-6 (L=20) are dark eave shadow. This matches the cabinet 'top 5 + edge + eave' reference, though the smooth gradient could also be read as a face-on sign strip. Below it, rows 5-23 are the vertical front face, with four face-on screens in a dark cabinet, so the front face is well over 3 rows. Rows 24-31 are four small stools on pedestals, 16-24 px wide, which act as legs. The object is a wide arcade machine row rather than a tall wall-standing piece of furniture, so kind_matches is false."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 15 visible tones per 16x16 tile, close to the cheese stall (17) and the roofed well (20), and well above the hedge (9). Its near-flat coverage is 13%, the same as the cheese stall. Its dark edge pixels are 0% neutral, so the outline leans in a tint rather than being a black sticker line. By eye, the white top panel carries a grey underside step, and the dark cabinet has tinted value variation instead of one flat black. The four framed displays each have a bright frame, an inner glow and spark pixels. The red stools show a highlight, a mid tone and a dark tone. The weakest area is the large plain panel at the top, which keeps it slightly below the best references on texture. Overall it would sit acceptably next to the cheese stall and the well without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 29314
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top marquee band",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "front face with four screen windows",
+      "rows": "7-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red knobs with stems below the cabinet",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band at rows 1-4 darkens to light gray and ends in a bright front-edge line at row 4 (#f3f4f7). Dark eave shadow follows at rows 5-6, then the front face runs from row 7 to row 23 with four framed screens. This is a borderline reading, since the band could also be a face-on gradient sign strip. I counted it as a top because it has an edge line and shadow. Rows 24-31 are small knobs on stems, 16-24 px wide, and are minor details."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts are close to the references: 15 visible tones per tile against 17 for the cheese stall and 20 for the well, 13% near-flat coverage (the same as the stall), and 0% neutral dark edge pixels. So the outline is tinted and not a black sticker line. By eye, though, the piece is shallower than the references. The dark navy top slab and the pale counter band are broad, mostly flat areas with only about 3-4 lightness steps, where the stall awning, wood and roof carry 5-6 with per-element grain and highlights. The four screens and red stools hold most of the detail, and the stools have only 2-3 tones. The body lacks the speckle, grain and per-part highlights of the references, so it reads as cleaner and flatter. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 25355
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.721Z",
+ "cells": {
+  "16": [
+   "4c04f3fe999653b6",
+   "72fbb5d183ee0b9f",
+   "7599947450f87caa",
+   "83f54848aafce9ad",
+   "b14d718e85b16001",
+   "c6cb1e1e3b20932e",
+   "d1bcd4d0b6bc4b73",
+   "e1d9ab90843b644b"
+  ],
+  "24": [
+   "06f7a485c2486437",
+   "0a5c608157d73251",
+   "1ab626c23b9d88f9",
+   "383956afe4ef097f",
+   "43517734044a56b3",
+   "490bc891d7a36bd3",
+   "51a27396e74747ad",
+   "5397ca6c83e8795d",
+   "57f1db980d198e41",
+   "5b4b1170d2994d69",
+   "5b9d1290019d8a55",
+   "6964b279d5a4ce9c",
+   "71137740148efe9d",
+   "73ddebda214a4f71",
+   "74a5c8d58e4a56aa",
+   "8817742be529f18f",
+   "892eb11b0adf95c6",
+   "9a8d4bc7f515fd81",
+   "a659de53e7ac7c25",
+   "b0a36083934de08a",
+   "b0df77dd85105164",
+   "b67aa8b306cda690",
+   "be9ffd122b357067",
+   "c0d4c9e19f3da44f",
+   "c67387f38bbbfc67",
+   "c82f053941439c46",
+   "c8b6cd31c137762c",
+   "d4825caaa7fc13b4",
+   "d9b3988aee113f0e",
+   "e2139ffc00b50756",
+   "ef2d689b947b0d42",
+   "f099dec0e500afc4",
+   "fee607c7872bc593"
+  ],
+  "32": [
+   "172429800286a26b",
+   "4c031f14ae1900ea"
+  ],
+  "48": [
+   "21f3246335fa777c",
+   "26558578c1dc711e",
+   "2e9142ac872a9cfa",
+   "3e6d4b3858c1b3fa",
+   "3ed5910962773310",
+   "58ae11efa080d796",
+   "5ee663ffc11818b3",
+   "61e765dd77fba05d",
+   "7a8e580665978346",
+   "881786f7bc3a2ddd",
+   "e8141710d03865f5",
+   "f76b9e57a1864ea2"
+  ]
+ }
+}

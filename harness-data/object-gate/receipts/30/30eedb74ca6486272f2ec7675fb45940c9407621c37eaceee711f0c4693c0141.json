@@ -1,0 +1,305 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "30eedb74ca6486272f2ec7675fb45940c9407621c37eaceee711f0c4693c0141",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "약병·플라스크 진열장 (cabinet:vial+flask)",
+ "label": "atlas_biome_interior/props34/cabinet:vial+flask",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 18,
+  "darkV5": 0,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a brown top band (row 1 darker, rows 2-4 orange-brown) that ends in a lighter front-edge line at row 5 (#d59147). Rows 6-7 are black eave shadow, and the open shelf face with vials and flasks runs below from row 8 to row 31 (about 26 rows of front face). The shelf boards at rows 12-13, 21-22 and 29-30 are thin ledges, not top surfaces. The silhouette is a constant 16 wide, so no side face is drawn. The structure matches the green cabinet and bookshelf references (top about 5 rows, edge line, eave shadow)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "Per-tile density is fine: 18 colours per tile against 17 for the stall and 20 for the well, with 0% flat-fill coverage. But the whole piece has only 19 distinct colours across wood, glass and potions, against 38-40 for the stall and well. That leaves each material ramp at about 3 steps (frame, shelf, dark gap) instead of Beodeul's 5-6. 68% of the dark edge pixels are neutral, so the outline leans near-black rather than carrying a dark brown tint like the stall (1%) and hedge (0%). It reads as a dark sticker-style frame around the shelving. The vials and flasks are small blobs with little per-item highlighting, and the wood has no real grain or per-plank shading. It is tidy and not flat-filled, but it is shallower in shading and outline craft than the references, and in doubt this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17371
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of cabinet",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-4 form a lighter brown top band that ends in a lighter 1-row front-edge line at row 5 (#d59147). Rows 6-7 are black eave shadow under it. Below is a front face from rows 6 to 31, with three open shelves holding vials and flasks and shelf boards at rows 12-13, 21-22 and 29-30. Row 1 is a dark outline and row 0 is the narrower top silhouette row. No receding side face is drawn. The top band is similar to the green cabinet reference (top band, edge line, eave shadow), though a little shallower."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "The cabinet is a small, narrow prop. On the numbers it holds up: 18 colours per tile against 10-20 for the hedge, stall and well, 19 distinct colours in total, and 0% flat-fill coverage. The weakness is the outline and the wood ramp. 68% of its dark edge pixels are near-neutral, well above the well (33%), the stall (1%) and the hedge (0%). That reads as a dark, nearly colourless frame line around the whole cabinet, the 'sticker' look, rather than a dark brown tied to the wood. The wooden frame looks like only about 3 lightness steps (dark edge, mid brown, one light), against the 5-6 steps Beodeul gives its wood and roof materials. Most of the colour count comes from the small bottles and flasks on the shelves, not from shading the cabinet body. The shelf contents add some texture, but the frame and sides are fairly plain. It is not flat or sparse, yet the outline and the shallow material ramp keep it below the reference craft, so it fails when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17583
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column scan shows a top band at rows 1-5: a darker back row at row 1 and a brown plane at rows 2-4. Row 5 is a lighter front-edge line (#d59147), followed by 2 rows of black eave shadow at rows 6-7. Below that is a front face of about 26 rows (rows 6-31), an open shelf front with three shelves, shelf-edge lines at rows 12-13, 21-22 and 29-30, and vials and flasks inside. The width is a constant 16 with no side face. This matches the green cabinet reference (top 5 + edge + eave), not the rim-only or flat front-elevation cases."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small shelf cabinet whose 19 colours are split between the wood frame, the glass and the bottles. Per-tile density is fine at a median of 18 colours against 17-20 for the stall and well, and flat-fill coverage is 0%, so there are no big flat areas. The weaknesses are structural. 68% of the dark edge pixels are near-neutral, so the dark frame reads as a near-black sticker outline, not the tinted dark-brown wood edge the stall and hedge use (1% and 0% neutral). The wood ramp looks like only about 3 steps (dark frame, mid brown, a light shelf edge) against 5-6 on the references' wood and roof materials. The bottles are tiny, simple 2-3 colour blobs, with none of the per-item shading of the stall's goods. The total colour count is about half that of the stall and well (38-40). It is clean and readable but shallower than the Beodeul bar, and it would look flatter next to the stall and well references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17499
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a top band: row 1 is a darker back edge, rows 2-4 are orange, and row 5 (#d59147) is a lighter front-edge line. Rows 6-7 are black eave shadow, and below them the front face runs rows 6-31. The front face shows open shelves with vials and flasks, and shelf boards at rows 12-13, 21-22 and 29-30. The silhouette is a constant 16 wide with no receding side face. The structure matches the green cabinet reference (top 5 + edge + eave)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate is a small shelf cabinet with vials and flasks. Per tile it is as rich as the references (18 colours against 17-20 for the stall and well) and has 0% flat-fill coverage, so it is not a flat fill. Its 19 distinct colours are well below the stall (40) and well (38), though close to the bench (14) and hedge (11). The frame and shelves show only about 4 lightness steps, against 5-6 on the roofed well and the cheese stall. Within the shelf grid the dark lines separating the compartments look closer to neutral dark than to a tinted dark brown. This matches the measurement: 68% of dark edge pixels are near-neutral, higher than the bench (44%) and the well (33%) and far above the tinted stall (1%) and hedge (0%). That leans toward the sticker-style uniform dark line rather than the dark-material-tone edges Beodeul uses. The outline is mostly neutral and the wood ramp is shallower than the best references, so it falls short of the bar. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18312
+  }
+ ],
+ "decidedAt": "2026-10-20T07:04:17.692Z",
+ "cells": {
+  "16": [
+   "58c239453714283e",
+   "a7182344f80b0245"
+  ],
+  "24": [
+   "0f66ffb6ad5f0e79",
+   "32699eb1557a6527",
+   "3b4af775694ac069",
+   "41e8bcfaa1e69a26",
+   "6509405ba1e5e84c",
+   "6dc84df79cf6f0e8",
+   "93bda65e524f0e56",
+   "a499c31d32b355fd",
+   "c82191d0266f1250",
+   "d0a6a0571583e954",
+   "d45c0a66ce4ce16e",
+   "f8ab314c0d5d6fd2"
+  ],
+  "32": [
+   "32846037f5e9e3d3",
+   "83ec8a1b18efe443",
+   "c62270f7e606189c"
+  ],
+  "48": [
+   "152b3985d091c388",
+   "2b2aa2fc97fd9026",
+   "4cf436c88bf63120",
+   "96f79674db0ca874",
+   "b243f57d87c3ec16",
+   "c540375e432f4bb7"
+  ]
+ }
+}

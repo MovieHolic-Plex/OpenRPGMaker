@@ -1,0 +1,17 @@
+// bar_stool w135-A palette (ramp colours only)
+~ #1c1418 110
+- #1c1418 58
+# #e040c0
+
+A #3a0508   // = red:0
+B #67030c   // = red:1
+C #950110   // = red:2
+D #c30014   // = red:3
+E #d73a42   // = red:4
+F #eb7571   // = red:5
+G #0e1216   // = iron:0
+H #22282e   // = iron:1
+I #363e47   // = iron:2
+J #4a5460   // = iron:3
+K #76808a   // = iron:4
+L #a3acb5   // = iron:5

@@ -1,0 +1,367 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "abd8f821e39a1598d609af48b2ec240384da27ec92ec32b49aa071ccee136ff2",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "kids high chair (faces north)",
+ "label": "seats34/jp_city_interior/fr-kids-chair",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 윗면 2행 < 4 (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "윗면 2행 < 4 (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 26,
+  "nearBlackEdge": 0.61,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "right",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "white top band (tray or backrest top)",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cream backrest or seat panel inside dark frame",
+      "rows": "3-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown seat front band",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The body is seen face-on. Rows 0-1 are a narrow white band, 10 wide, with no front-edge line or eave shadow below it, so it reads as a rim or top strip. Rows 3-7 are a cream panel face-on inside a dark frame that is 14 wide (rows 3-11). Rows 9-10 are a brown 2-row band like the 'seat: band 2' bad reference. Rows 12-15 are the legs with a crossbar at row 13. No ellipse, no sloped plane and no visible contents show a horizontal seat surface seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small single-tile prop, roughly 14x16 source pixels. It has 11 distinct colours and a median of 11 per full tile, which matches the hedge (10) and is close to the bench (14 colours) and lamp (14 colours). It is far below the stall (40) and well (38), but those are much larger pieces. Flat-fill coverage is 0%, so there are no large single-colour areas. Dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood and cream, not a sticker-style black line. By eye, the seat, tray and legs show about 3-4 lightness steps with some highlight and shadow separation, a little shallower than the 5-6 steps in the references. For a piece this small it holds up next to the bench and hedge without looking flatter or more sticker-like, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19536
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat/cushion with arms",
+      "rows": "3-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "white top piece (backrest/tray top)",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main seat is a cream band at rows 3-7 across x=8. Row 3 is a light highlight and row 5 is a slightly darker line. Row 8 is dark brown (#5c302a), which reads as the front-edge line and eave shadow. Below it are a brown apron at rows 9-10, a dark row 11, and legs with a crossbar at rows 12-15, so the front face is about 8 rows. The body is 14 wide at rows 3-11 with dark arm outlines at the sides. The white piece at rows 0-1 is a thin separate part with no top surface of its own, but the cream seat is the main volume. This resembles the reference 'seat: top 5 + legs' rather than a rim-only band."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile prop. It has 11 distinct colours and a median of 11 per full tile, matching prop-hedge (11 colours, median 10) and within the range of the other references (14-40 colours). Flat-fill coverage is 0%. The dark edge pixels carry a colour tint (0% neutral), so the outline is a dark brown tone of the adjacent wood and cushion rather than a black sticker line. The frame and seat have roughly 3-4 steps per material, slightly fewer than the 5-6 on the bench or hedge. There is still some grain and variation on the cushion and frame, and no large flat areas. For a simple furniture piece at this scale it would sit acceptably next to the references without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23065
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "white top band (tray or backrest top)",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest panel and arm panels",
+      "rows": "2-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wood bar or seat edge",
+      "rows": "8-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs with crossbar",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The chair faces north, so it is drawn as a back view. Rows 0-1 are a 2-row white band at the top and are too thin to count as a top surface. Rows 2-9 are a cream backrest panel inside dark side panels, which is a vertical face seen face-on. Rows 8-10 are a thin wood strip with no edge line or eave shadow, and no seat is visible from above. Rows 12-15 are narrow legs joined by a crossbar. There is no ellipse, no sloped plane and no visible contents, so the seat surface is not seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a single small prop of about one tile. It has 11 distinct colours and a per-tile median of 11, which matches the hedge reference (11 colours, median 10) and the Beodeul median of about 10. Flat-fill coverage is 0%, so no 5x5 block is a single flat colour. 0% of its dark edge pixels are neutral, so the outline is tinted. By eye it reads as dark brown beside the wood and cream parts rather than a black sticker line. The cream seat and tray show about 4 lightness steps with some highlight and shadow variation, and the wooden legs have a couple of tones. That is a little shallower than the 5-6 steps on the larger props, and the texture is modest, but this is a small piece and it sits acceptably next to the bench and hedge. I would accept it beside them, though it is not as rich as the stall or well.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20709
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "white tray/top strip",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest/seat panel and arm blocks",
+      "rows": "2-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat/footrest wood band",
+      "rows": "9-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The chair is seen from behind. The cream backrest (rows 3-7) and the dark-outlined arm blocks (rows 2-9) are vertical faces drawn face-on. The only light strip on top (rows 0-1, 10 px wide) is a 2-row rim, with no front-edge line, no eave shadow and no widen-then-narrow ellipse profile. The wood band in rows 9-10 reads as a front apron, not a seat surface seen from above. Legs and a crossbar fill rows 12-15. No seat surface is visible from above, so it matches the red 'seat: band 2' reference rather than the green 'top 5 + legs' one."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, roughly one-tile prop. It has 11 distinct colours and a median of 11 per tile, matching prop-hedge (11 colours, median 10) and just under prop-bench-wood (14 colours). Flat-fill coverage is 0%, so no 5x5 block is a single colour. None of its dark edge pixels are neutral, so the outline leans brown, in the dark tone of the wood and cushion rather than a black sticker line. The cream seat and back and the wood frame each get about 4 lightness steps, a little fewer than Beodeul's 5-6, but this is a tiny piece. The seat and frame carry some dot and shade variation. It would sit acceptably next to the bench and hedge, though it is simpler than the stall and well. It is borderline on step count, but it passes on the measured facts and the tinted outline.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20546
+  }
+ ],
+ "decidedAt": "2026-10-20T07:00:39.773Z",
+ "cells": {
+  "16": [
+   "66875c598cefa0b3"
+  ],
+  "24": [
+   "2837066ce33687e9",
+   "69010cec900f4081",
+   "70c227048919d3bf",
+   "926943549d216135",
+   "92c8e657eda75ea2",
+   "f70f1b55dc7d3560"
+  ],
+  "32": [
+   "000abfe052766871",
+   "3e28ed1ee3bf4fec",
+   "426f535d464b6886",
+   "cb4bd151ebd7e87c",
+   "e3a489711999c654",
+   "e6dbe74e0dacca4c"
+  ],
+  "48": [
+   "0546dcab32a30f5e",
+   "0c24c4f57e6657ec",
+   "1680f49938b3bbdb",
+   "58fbb44c81c92828",
+   "a37290e92f300799",
+   "c644dc8bf1f3c79f"
+  ]
+ }
+}

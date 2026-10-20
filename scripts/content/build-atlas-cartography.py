@@ -4,11 +4,18 @@
 Terrain is code native pixel art; no RTP terrain is copied or recoloured.
 Run from the repository root. Deterministic source for the shared sheet and dictionary.
 """
-import json, math, random, hashlib
+import json, math, random, hashlib, os, sys
 from pathlib import Path
 from PIL import Image, ImageDraw
 
 root = Path(__file__).resolve().parents[2]
+def _kit_dir(root):
+    # 정본 = 공개 저장소 oprn-worldmap-kit. `npm run worldmap-kit:sync` 또는 OPRN_WORLDMAP_KIT.
+    kit = Path(os.environ.get('OPRN_WORLDMAP_KIT') or root / '.worldmap-kit/tiledata/worldmap-kit')
+    if not (kit / 'kit/build_world.py').is_file():
+        sys.exit(f'월드맵 키트가 없다: {kit} — `npm run worldmap-kit:sync` 를 먼저 돌려라')
+    return kit
+kit = _kit_dir(root)
 out = root / 'public/assets/atlas-cartography'
 out.mkdir(parents=True, exist_ok=True)
 source = root / 'tiledata/atlas-cartography'
@@ -100,13 +107,13 @@ while len(tiles)<64:
         for x,y in [(5,7),(18,23),(26,11)]:d.line((x,y,x+2,y),fill='#91ab7a')
 
 # Reuse seven HUMAN approved fantasy landmarks. Preserve original pixels with nearest 2x only.
-selected=json.loads((root/'tiledata/worldmap-kit/selected/selected.json').read_text())['icons']
+selected=json.loads((kit/'selected/selected.json').read_text())['icons']
 names=['촌락','큰 마을','항구 마을','대성','덩굴 유적 동굴','거대한 탑','관문 요새','고대 돌원']
 icons=[]
 for prefix in names:
     a=next(i for i in selected if i['theme']=='fantasy' and i['name'].startswith(prefix))
     assert a['decision'] in ['accept','pick']
-    file=root/'tiledata/worldmap-kit/selected'/a['source'];raw=file.read_bytes()
+    file=kit/'selected'/a['source'];raw=file.read_bytes()
     assert hashlib.sha256(raw).hexdigest()==a['sha256']
     im=Image.open(file).convert('RGBA').resize((a['width']*32,a['height']*32),Image.Resampling.NEAREST)
     rows=[]

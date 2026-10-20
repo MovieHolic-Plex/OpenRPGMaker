@@ -1,0 +1,335 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b187c41b7bb98f958af2d90553c0a13256fb5acfae680bdbfbd9887dafd4a83d",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "mart gondola cans",
+ "label": "modern_city_interior/mart-gondola-cans",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 21,
+  "tileColorsP90": 22,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gondola top cap",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "cans on shelves",
+      "rows": "9-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a light top band (L 166 at row 1, 218 at rows 2-4) that ends in a bright front-edge line at row 5 (L 246). Dark eave shadow follows at rows 6-8 (L 51-129), like the cabinet 'top 5 + edge + eave' reference. Below it the front face runs from about row 6 to row 29, with shelf ledges at rows 12-13, 18-19 and 24-25 and cans standing on them. The cans are goods on shelves, so they count as decor. The shelf ledges are thin front strips. The whole piece is 32 px wide and faces south, with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate measures 19 visible tones per 16x16 tile. That is level with the stall (17) and well (20) references and well above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is a tinted dark blue-grey, not a black sticker line. By eye, the frame has a highlight, a body tone and a shadow edge, and the shelves have separate rows of small cans in several colours with per-can variation. That is about 4 steps on the frame against roughly 5 on the references, and the candidate is a little simpler in material ramps but not shallow. A careful artist would accept it beside the stall prop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18047
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of gondola unit (pale cap band)",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "cans on shelves (three rows of tinned goods)",
+      "rows": "9-23",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf ledges (front lips)",
+      "rows": "12-13, 18-19, 24-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan at x=16 and x=23 shows a pale top band at rows 1-5 (L=166, then 218, then a 246 highlight at row 5). Row 5 is a lighter front-edge line. Row 6 and the dark rows 7-8 (L=51) follow as eave shadow, and below them is the front face with the shelf bays. That is a 5-row top plus an edge line and shadow, like the green 'cabinet: top 5 + edge + eave' reference, and it is not a 1-2 row rim. The front face runs from about row 6 to row 29 (24 rows) and holds three shelf bays. Their lips are 1-2 row light strips at rows 12-13, 18-19 and 24-25, with a dark base at rows 28-31. The cans are goods on shelves and count as decor. The silhouette is a constant 32 wide, so there is no side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate measures 19 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, and its near-flat coverage is 0%. The picture agrees: the shelf back, the frame and the rows of cans each carry several lightness steps and per-can highlights, with no large flat areas. Its dark edge pixels are 0% neutral, so the outline leans toward a dark bluish-grey frame tone, not a uniform black sticker line, and some forms are separated by value alone. It is somewhat simpler than the stall because the cans repeat in small rows and the frame has about 4-5 steps against the references' 5-6. That is still within the Beodeul bar for a prop of this kind and scale, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20223
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gondola top cap",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "cans on shelves",
+      "rows": "10-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a pale top band (L≈218). Row 5 is a brighter front-edge line (L=246). Rows 6-8 are darker eave shadow (L≈129, then 51). Below that is a front face about 24 rows tall (rows 6-29) with three shelf ledges (rows 13, 19, 25) holding cans, and a dark base at rows 29-31. This matches the 'cabinet: top 5 + edge + eave' reference, not the 1-2 row rim failures."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts put the candidate level with the richer references. It has 19 visible tones per tile against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline is tinted. By eye the frame is a dark blue-grey rim, not a black sticker line. The shelf backing and rows of cans carry small highlight, shade and colour variation, with no large flat fills. The weak points are that the candidate has about 4 lightness steps on the frame and backing, against 5-6 on the stall and well, and that the form is boxy with little grain. It is slightly lower than the best references in richness but would sit acceptably beside them, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20607
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gondola top cap",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "can shelves and cans (front face with shelf ledges)",
+      "rows": "9-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cans on shelves",
+      "rows": "9-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a pale top band. Row 5 is a brighter front-edge line (L=246 in all three scanned columns), and rows 6-8 are dark eave shadow (L=51). Below that the front face runs from about row 6 to row 28 with a base at rows 28-31, which is well over 3 rows. The shelf ledges at rows 12-13, 18-19 and 24-25 and the cans on them belong to the front face and the decor. The silhouette is a constant 32 wide, with no side face. The top band is about 5 rows, like the green cabinet reference with a top of 5 plus an edge line and eave shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 19 visible tones per 16x16 tile, against 17 for prop-stall-cheese and 20 for prop-well-roofed, so it is level with the richer references. Near-flat coverage is 0% (the stall has 13%), so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is a tinted dark blue-grey that follows the frame and shelf material rather than a black sticker line. By eye, the frame has about 4 lightness steps (highlight, light, mid, dark). The shelf interiors and the cans are varied, with per-can highlights and shadow rows in separate colours. The cans are small and carry fewer steps than the stall's awning and wood, so shading is a little shallower than the best references. Still, a careful artist would accept it next to the stall and well without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18633
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:57.072Z",
+ "cells": {
+  "16": [
+   "904cb758abfb0e33",
+   "9eb2af1c814ff324",
+   "a30db0fa1afd2f23",
+   "de19f36ddefd71ea"
+  ],
+  "24": [
+   "05759cc3e6cd05b7",
+   "187970c4a3a83d1e",
+   "1bc85947df490c1d",
+   "28cfb4e1e5306c6b",
+   "28cfd079dfa60cad",
+   "34bb7f9b81f1bb4c",
+   "4126f8f9609262e1",
+   "5d15dee198930628",
+   "62d2e2ac251d3bc1",
+   "632d73f4b037f4b4",
+   "694dad38a0f26fd3",
+   "6ee009f3f41e6628",
+   "80ee0437a98d5124",
+   "8a9aa6614423208a",
+   "9c4a34165a476ff5",
+   "9e81dc86ff8591d8",
+   "a9ab6a6291905440",
+   "b9d4d8bf7d2a8c7d",
+   "bbf32b21bb3d8ab1",
+   "cfb7d762c70c538f",
+   "defeb7110b226bc0",
+   "e73df97b939a5394",
+   "ef726c36a52b7cbc",
+   "f4700d588f264590"
+  ],
+  "32": [
+   "a856ed8e127a3ea9"
+  ],
+  "48": [
+   "4553c62680d9b6c0",
+   "8be253773ae5121c",
+   "8ec98d5d342b951f",
+   "b7818b36295b0285",
+   "b8aa4348ea600c5b",
+   "e74214ed1903b4b0"
+  ]
+ }
+}

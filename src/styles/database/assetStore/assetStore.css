@@ -49,6 +49,10 @@
 .store-badge.pack { background: var(--s-teal-soft); color: var(--s-teal); }
 .store-badge.pack::before { content: ""; width: 9px; height: 9px; background: currentColor; clip-path: polygon(40% 0, 60% 0, 60% 40%, 100% 40%, 100% 60%, 60% 60%, 60% 100%, 40% 100%, 40% 60%, 0 60%, 0 40%, 40% 40%); }
 .store-badge.ai { background: var(--s-plum-soft); color: var(--s-plum); }
+/* 주인 초안(D2): 확인 대기 중인 내 상품. 나만 보이고 공유되지 않는다. */
+.store-badge.draft { background: var(--s-gold-soft); color: var(--s-gold); }
+/* 「에디터에서 열기」 링크 확인 카드. */
+.store-link-confirm { display: grid; gap: 8px; padding: 12px; border-radius: var(--s-r-sm); background: var(--s-gold-soft); border-left: 3px solid var(--s-gold); font-size: 13px; }
 .store-price { font-weight: 800; color: var(--s-gold); font-size: 13px; }
 
 .store-error { display: grid; gap: 4px; padding: 10px 20px; background: #3a1d1a; color: #ffd9d2; font-size: 13px; border-bottom: 1px solid var(--s-red); }

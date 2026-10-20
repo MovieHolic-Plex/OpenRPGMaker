@@ -566,6 +566,7 @@ export function renderAiAuthSettings(
     // 이전 연산이 버튼을 비활성화한 채로 남았어도(대기 중 로그인/연결 해제) 새 선택에서
     // 되살린다 — 오래된 finally 는 세대 가드 때문에 이걸 덮지 못한다.
     loginButton.disabled = false;
+    loginButton.removeAttribute("title");
     disconnectButton.disabled = false;
   }
 
@@ -602,6 +603,9 @@ export function renderAiAuthSettings(
     if (isHostAiDisabledMessage(detail)) {
       setStatus("서버에서 AI가 꺼져 있음", "offline");
       serverError.textContent = HOST_AI_DISABLED_GUIDANCE;
+      // 서버가 AI 를 꺼 둔 상태에서는 「로그인」을 눌러도 같은 503 이라 막다른 길이다 — 비활성화하고 이유를 붙인다.
+      loginButton.disabled = true;
+      loginButton.title = HOST_AI_DISABLED_GUIDANCE;
       cardAuth.set(providerId, "error");
       renderCardPill(providerId);
       return;

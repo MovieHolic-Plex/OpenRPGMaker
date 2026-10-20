@@ -1,0 +1,305 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "90ac954379059eeb994324de4c04fc390d9f829b68f4dc8f79310fd8689baf0d",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "치즈 진열장 (cabinet:cheese)",
+ "label": "atlas_biome_interior/props34/cabinet:cheese",
+ "profileHash": "1db03a95223e5b0b",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 20,
+  "darkV5": 26,
+  "nearBlackEdge": 0.71,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "cheese goods on shelves",
+      "rows": "9-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column x=8 shows row 0 as the outline and row 1 as a darker line. Rows 2-4 are a lighter wood band (L about 130), and row 5 (#d59147) is a lighter front-edge line. Rows 6-8 are dark (L about 32), which reads as eave shadow before the open shelf interior. This matches the green 'cabinet: top 5 + edge + eave' reference: a top band of about 5 rows ending in an edge line, then shadow, then the front face. Below it, rows 6-31 form the front face (about 26 rows). It is a shelved cabinet with cheese on the shelves, and the shelf boards at rows 13-14 and 22-23 are face-on strips. The silhouette is 16 wide and constant, with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow wooden cheese cabinet with shelves holding yellow cheese wedges and red items. Its measured density matches the richer references: 20 visible tones per 16x16 tile, against 17 for prop-stall-cheese and 20 for prop-well-roofed. Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood rather than a black sticker line. The wood has about 4 lightness steps (highlight, mid, dark, deep) against about 6 in the references, and the cheese and shelf contents show grain and shading. It has fewer total distinct colours (23) than the stall reference (40), which fits a smaller prop on a locked palette. A careful artist would accept it next to the references, so it passes, though only just on shading steps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15318
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top / cornice band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "cheese goods on shelves",
+      "rows": "9-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Column scan shows row 0 as a dark outline and row 1 as a darker row. Rows 2-4 form a lighter wood band (L about 125-135). Row 5 is a lighter 1-row front-edge line (L=157, #d59147). Rows 6-8 are dark (L about 32), reading as eave shadow, and the open shelf front face continues below. This matches the green 'cabinet: top 5 + edge + eave' reference. The top band is about 5 rows (1-5) and the front face is rows 6-31, about 26 rows. Shelf boards at rows 13-14, 22-23 and 30 are 1-2 row rims, not top surfaces. Cheese wedges are contents or decor. The silhouette is 16 wide with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow wooden cabinet with shelves holding cheese wedges and red items. It is about one tile wide, so it is simpler than the cheese stall, but it carries 20 visible tones per full tile against 17 for prop-stall-cheese and 20 for prop-well-roofed. Near-flat coverage is 0%, so there are no large flat fills, and the shelves, wood frame and cheese wedges are each shaded with several steps. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood, not a near-black sticker line. The wood ramp is a little shallower (about 4 steps) than the references' 5-6, but the piece would sit next to the stall and well without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18493
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "cheese goods on shelves",
+      "rows": "9-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a brown top band (L~130). Row 5 is a lighter front-edge line (#d59147), followed by dark eave shadow in rows 6-8 above the first shelf opening. Below that is a front face of about 26 rows (rows 6-31) with open shelf compartments. Shelf boards at rows 13-14, 22-23 and 30-31 are front-facing strips, and the cheese pieces on them are decor. The silhouette is a constant 16 wide, with no side face. The top band matches the green bookshelf and cabinet references (top about 5 rows, edge line, then shadow)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow wooden cheese cabinet with shelves holding yellow cheese wheels and red items. It is the same kind as the references (a furniture prop). Measured facts support it: 20 visible tones per 16x16 tile, level with prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood, not near-black, which matches Beodeul's practice. By eye, the frame has a lit edge, a mid tone and a dark shelf recess, and the cheese items carry highlight and shade. Wood grain is lighter than in the stall reference, so I count about 4 steps against the reference's 5. That is a minor shortfall, not a sticker look, and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17914
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "cheese on shelves",
+      "rows": "9-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-4 are a mid-brown band at the top (L~130). Row 5 is a lighter 1-row front-edge line (#d59147). Rows 6-8 below it are dark (L~32), which reads as eave shadow, then the open shelf interior with the front face continues down to row 31. Row 1 and row 0 are the dark outline. The top band is about 4 rows, similar to the green bookshelf reference with its top band and edge line. The front face runs rows 6-31 (26 rows) with shelf ledges at rows 13-14, 22-23 and 30. No side face is drawn. The cheese pieces are goods on the shelves, so they count as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow wooden cheese cabinet with shelves holding yellow cheese wedges and red goods. It is drawn at the same scale as the cheese stall and well references, and the board is small, so the visual read is limited. The measured facts back the eye: 20 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is a tinted dark brown beside the wood rather than a black sticker line. The wood frame shows about 4-5 value steps, and the shelf contents are separated by value with small highlight and shadow dots. It is slightly simpler than the stall's striped awning, but it is not thinner or flatter than the references of its kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16942
+  }
+ ],
+ "decidedAt": "2026-10-20T10:14:44.647Z",
+ "cells": {
+  "16": [
+   "4ababaa47e16d476",
+   "4c05114806e468f9"
+  ],
+  "24": [
+   "0bdabb78d745f7ae",
+   "1e7aaa5098827b72",
+   "2b2c6995531bd474",
+   "37a0d792d9069f0d",
+   "8e9e517247c365d0",
+   "9d414ade28e89367",
+   "a14ce11fe718b6e1",
+   "b39408d3499c9840",
+   "beee8d8b4461d8b8",
+   "c1fe26897836b5a3",
+   "dffba14f19be68e7",
+   "e80318b5a93c7abb"
+  ],
+  "32": [
+   "18edea2ffd2898d9",
+   "68a5e9355c132970",
+   "ad940495cf23bab7"
+  ],
+  "48": [
+   "50f7d510ceb72bd2",
+   "aead38f9580b51df",
+   "e2c9bbe9245fcd6d",
+   "ed3b608d50580016",
+   "ee85c533f928cfd1",
+   "f592d8ad867f44cd"
+  ]
+ }
+}

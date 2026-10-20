@@ -1,0 +1,317 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "db8db16e26196f8563699c82afaf436ac2b4c9c206e8c9231872bb6d76ae03b7",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "저울 추 받침(추 2 — 놋쇠) (weight stand 2)",
+ "label": "atlas_biome_interior/plus/weight stand 2",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 30,
+  "nearBlackEdge": 0.46,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stand tray (dark recessed top holding the brass weight)",
+      "rows": "3-7",
+      "evidence": "d",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brass weight on the stand (front-facing trapezoid with two holes)",
+      "rows": "0-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stand's body is 14 px wide from row 3 to row 12. Rows 3-7 are a dark top opening with the brass weight sitting in it, which counts as contents visible inside an open container. Row 8 is a lighter 1-row front-edge line (#ac9067 at x=11). Rows 9-12 are the 4-row darker south face, and row 13 is the base outline. The brass weight above (rows 0-7, 8 px wide at the top) is a small detail drawn as a front-facing shape. The stand has both a top band and a front face of 3+ rows, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "The candidate is a small brass block on a base, about one tile in size. Its 15 colours per tile and 0% flat-fill coverage match the references (stall 17, well 20, bench and lamp 14 colours in total), and I see no large flat areas. The brass ramp looks like about 4 steps with a few highlight dots, against roughly 5-6 on the references. The outline is the weak point. 78% of the dark edge pixels are near-neutral, much closer to the lamp (100%) than to the tinted hedge (0%) or stall (1%) and well (33%). So the piece reads as a dark, mostly untinted outline around the shape rather than a dark brass or brown tone beside the metal. That gives it a sticker-like edge next to the tinted references. Density and texture are acceptable, but the shallower ramp and the neutral outline leave doubt, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22608
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brass weight (top cap)",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "stand tray / base top holding the weight",
+      "rows": "3-8",
+      "evidence": "d",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A narrower brass weight (width 8, rows 0-2) sits on a wider dark stand (width 14, rows 3-12). The weight's top is a lit band, rows 0-2, that ends in a light front-edge line at row 3. Its front face with the two dark marks is rows 4-7, with dark shadow rows 5 and 8. The stand shows a lighter edge line at row 8, then a front face of 4 rows (9-12) and a dark bottom outline at row 13. The weight reads as an object sitting inside or on the stand. There is a top surface and a front face of 3+ rows, with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate is a tiny brass weight stand, about 12x14 source pixels. It carries 15 colours per tile and has 0% flat-fill coverage, so density is at or above the small references (hedge 10, bench and lamp 0 because they are thin). It does not look flat. However, 78% of its dark edge pixels are near-neutral, so the outline reads mostly as a dark grey/black line wrapped around the whole shape. The Beodeul references with tinted outlines (hedge 0%, cheese stall 1%, roofed well 33%) use dark material tones instead. Only the lamp is fully neutral, and it is a thin pole. The brass ramp shows about 4 steps, with a highlight and mid tone and then a quick drop to the dark line, rather than the 5-6 steps with a tinted dark of the material. The overall look is a slightly sticker-like outlined object, so I fail it on outline craft and slightly shallow ramps, even though density is good.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22174
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stand/tray (open top with brass weight inside)",
+      "rows": "3-7",
+      "evidence": "d",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brass weight (narrower block on top of the stand)",
+      "rows": "0-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stand is the widest body (width 14, rows 3-12). Rows 3-7 are a dark recessed area holding the brass weight, so contents are visible inside an open container. Row 8 is a lighter 1-row front-edge line, visible at x=11 as #ac9067. Rows 9-12 are a darker front face of 4 rows, and row 13 is the outline. The brass weight (rows 0-7, width 8 narrowing to the stand) is drawn mostly face-on, with highlight rows and two dark dots. It has no ellipse top of its own, but it is a small part sitting inside the stand. The stand's top, edge line and front face together read as three-quarter view, though the top evidence is moderate because the edge-line row is partly dark at x=4 and x=8."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, roughly single-tile brass weight stand. The measured facts are at or above the references: 15 colours per tile against 10-20 for the references with a tile median, and 15 distinct colours against 14 for the bench and lamp. Flat-fill coverage is 0%, so there are no large flat areas. By eye, the brass body has about 4-5 lightness steps (highlight, light, mid, dark, deep) with small dots and grain on the top weight and base. The outline is the weak point. 78% of the dark edge pixels are near-neutral, so it leans toward a black line, but the Beodeul lamp-crook reference is 100% neutral and the bench is 44%, so this is within the reference range. Dark-brown shading also appears inside the form, which keeps the outline from being a uniform sticker line. For a thin or small prop, a careful artist would accept it next to the references without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19126
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dark stand/plinth top (tray around the weight)",
+      "rows": "3-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brass weight on the stand",
+      "rows": "0-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stand is 14 px wide over rows 3-12. Rows 3-7 are a dark brown top plate seen at the sides of the weight. Row 8 is a lighter front-edge line (#ac9067 at x=11). Rows 9-12 are a darker gray front face of 4 rows, with an outline at row 13. The brass weight (8 px wide at rows 0-2, widening below) sits on the plate and has its own highlight rows and face. The main top is about 5 rows and the front face is 4 rows, so it reads as three-quarter, though the front face is thin."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small brass weight stand, roughly one tile in size. It has 15 distinct colours and a per-tile median of 15, which matches the hedge, bench and lamp references (11-14 colours) and is not far below the stall and well. Flat-fill coverage is 0%, so there are no large flat areas. The brass block shows a highlight, a mid tone and a dark tone, plus a darker base, which I count as about 4 steps against 5-6 on the references. The weak point is the outline: 78% of the dark edge pixels are near-neutral, against 0-1% on the hedge and stall and 33-44% on the well and bench. The dark rim around the piece reads as a uniform dark line rather than a darker version of the brass or wood beside it, which gives a slightly sticker-like look. The lamp reference also has a neutral outline, but it is a thin pole, and the candidate is a solid object where the outline matters more. With the shallower ramp and the mostly neutral outline, a careful artist would likely call it a little thinner than the references, and I fail it on the benefit of the doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 26754
+  }
+ ],
+ "decidedAt": "2026-10-20T05:59:10.983Z",
+ "cells": {
+  "16": [
+   "1d0db50b073e2c56"
+  ],
+  "24": [
+   "0150696c22c2d91f",
+   "589e2fa28e546c5f",
+   "66295d418b4e4f83",
+   "9834a101bec42999",
+   "bda9a68c906285b6",
+   "d52ee1744aab0ef2"
+  ],
+  "32": [
+   "330ab6547c0ae80c",
+   "3c31655578b09683",
+   "3c8c80133dcc291d",
+   "84a4d998f366d5e8",
+   "a026101fa01b0fa4",
+   "e8f60e2e62b7275a"
+  ],
+  "48": [
+   "2c74402f7312f5d5",
+   "2fa022c85802fbf4",
+   "3c6dd282a88c2f26",
+   "816755067baccf9c",
+   "e2ea097750611d3c",
+   "f8ca02cb77f25618"
+  ]
+ }
+}

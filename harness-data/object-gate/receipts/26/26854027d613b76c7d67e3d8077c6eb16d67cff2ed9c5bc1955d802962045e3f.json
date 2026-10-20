@@ -1,0 +1,376 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "26854027d613b76c7d67e3d8077c6eb16d67cff2ed9c5bc1955d802962045e3f",
+ "width": 32,
+ "height": 32,
+ "kind": "seat",
+ "name": "ht-engawa-chairs",
+ "label": "seats34/jp_city_interior/ht-engawa-chairs",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 26,
+  "nearBlackEdge": 0.76,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left chair seat top",
+      "rows": "10-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "right chair seat top (mirror)",
+      "rows": "10-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "side armrest/backrest strips on the outer sides",
+      "rows": "12-26",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "center pedestal table top",
+      "rows": "15-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Two mirrored chairs. In the column scan at x=8 and x=23, rows 10-12 are a light gold top band and the silhouette widens from 20 to 28 over rows 10-13, which suggests a receding top plane. Row 13 is a darker stripe, row 14 is lighter again, and row 15 is a dark edge line. Below that, rows 16-24 are a vertical front face made of a grey-beige and cream cushion with a brown lower border, about 10 rows. The side strips at x=5-7 and x=15-17 are armrests or backrest, which are exempt. The center pedestal table is a small decor-like fixture and is not the main body. The seat top is only moderately clear because the stripe pattern in rows 13-15 is ambiguous, but it reads as a top plane with a front-edge line followed by a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is two small chairs with cream/tan woven backs and brown frames. The board is small, so I judged mostly from the measured facts. It has 14 visible tones per tile, above the hedge (9) and close to the cheese stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline carries a brown tint rather than being a black sticker line. The seat backs show a light-to-dark ramp of about 5 steps with slat and grain variation, similar to the bench and stall wood. The pieces are simple and a little small, but they would sit next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21162
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left and right seat cushions, top band",
+      "rows": "10-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "outer and inner side strips (backrest/armrest posts)",
+      "rows": "13-27",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central pedestal table top",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Two cushion seats face each other across a small pedestal table. Each seat's top is a gold band at rows 10-14. The silhouette steps wider from 16 to 28 px over rows 9-14, and the band is crossed by alternating dark and light lines (dark at rows 13 and 15, light at row 14). Dark row 15 acts as the front-edge line. Below it the front face runs rows 16-24 with cream and tan horizontal bands, so the front face is about 10 rows. The side strips at x=5-7 and x=15-17 are vertical posts, exempt as seat_back. The table between them has a lighter top plane at rows 15-18 above a narrow stem and foot. The seat surface is about 5 rows, enough for a top surface over a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is two cushioned floor chairs (zaisu style) in cream and tan with brown-tinted edges. It reads as a small prop of the same kind as the bench, hedge and lamp references. Measured facts: 14 visible tones per 16x16 tile, above the hedge (9) and close to the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% near-neutral, so the outline is a tinted dark material tone rather than a black sticker line. I estimate about 5 lightness steps on the cushion and wood ramps, against about 6 in the references. The chairs show slats, cushion shading and grain variation, so texture is present but modest. At this size I would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24007
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left chair seat top band",
+      "rows": "10-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "right chair seat top band",
+      "rows": "10-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "chair side backrest/armrest posts",
+      "rows": "13-26",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central T-shaped post/table",
+      "rows": "15-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Two mirrored chairs sit either side of a small T-shaped post. In the column scan at x=8 and x=23, each seat has a light gold band at rows 10-12. The silhouette widens from 20 to 28 px over rows 10-14, and row 13 is a darker line (L=105) that works as the front-edge line. Below it, rows 14-24 form the front face with striped cushion bands, so the front face is about 11 rows. The side posts at x 5-7 and 15-17 are exempt as backrest/armrests (seat_back). The top band is short and the edge line is weak, so this is a borderline three_quarter read."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a pair of chairs with cream cushions or backs and a brown frame, and it reads as the same kind as the bench and stall references. Measured: 14 visible tones per 16x16 tile, which is above the hedge (9) and within range of the stall (17) and well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. The dark edge pixels are 0% neutral, so the outline is tinted brown, a dark version of the adjacent material rather than a black sticker line. The back slats and cushions show banded light/mid/dark steps, about 5 against the references' 5-6. It is a small prop and slightly simpler than the stall and well, but it is not thinner or flatter than the bench or hedge. It would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24745
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "seat cushion top (left and right seat, mirrored)",
+      "rows": "10-14",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "armrests / side panels on both seats",
+      "rows": "13-26",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat front face with striped cushion",
+      "rows": "16-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small central pedestal table top",
+      "rows": "15-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each seat has a gold top band at rows 10-14. It widens from 20 to 28 px and ends in a dark front-edge line at row 13, with a darker shadow row at 15. Below it, rows 16-24 form the front cushion face, so the top band is a seat surface of about 5 rows above a front face of 9-10 rows. The armrests at x=5-7 and x=15-17 are vertical faces, which the seat exemption allows. The central pedestal table is a small T-shaped piece (head rows 15-18, post rows 19-26, foot rows 25-27)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 14 visible tones per 16x16 tile, which sits between prop-hedge (9) and prop-well-roofed (20) and above the sparse bench and lamp. Near-flat coverage is 0%, so there are no flat fills. 0% of its dark edge pixels are neutral, which means the outline is a tinted dark brown beside the cream and tan wood or wicker, not a black sticker line. Both chairs show a cream-to-tan-to-brown ramp of about 5 steps, with slat or weave highlights and shadowed seat and back parts. The material is a bit simpler than the stall or well, but a careful artist would accept it next to the bench and hedge without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22617
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.565Z",
+ "cells": {
+  "16": [
+   "5d3bff2dc0c0fff7",
+   "7561e886a2f32175",
+   "b7ddd11f2af5c744",
+   "d3720690fcca5479"
+  ],
+  "24": [
+   "00bba712f65e411f",
+   "17126d860ae03aea",
+   "1c63cad28db9f20d",
+   "2233afca791eedc3",
+   "2ff6ea6535954c97",
+   "45fd67b830cc454c",
+   "4bbb65d1ed8d1a00",
+   "4da15f7b204d2808",
+   "6561d6fc3e8c442f",
+   "696900f138a236f7",
+   "69c11dc7cd06887d",
+   "9321c06a51230df1",
+   "9802a6fb4e0290c3",
+   "c903b511dc1bf519",
+   "ca36ec504dddab22",
+   "caf98c19c2f3b4a6",
+   "d042a93509c981af",
+   "ecb338d66423c9cf"
+  ],
+  "32": [
+   "ead781023a75db0a"
+  ],
+  "48": [
+   "19aba5f28da6aed4",
+   "6af5545ec36eabe2",
+   "71306bcc3b35624e",
+   "8e221c3d9355156e",
+   "a43fbc6c55696d94",
+   "c4df7964e1711bb7"
+  ]
+ }
+}

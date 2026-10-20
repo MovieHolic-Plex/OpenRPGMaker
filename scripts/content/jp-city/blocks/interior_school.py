@@ -908,6 +908,75 @@ def _attendance(c):
     hl(c, 9, 13, 5, K('aka', 1)); px(c, 14, 13, K('aka', 3))
 
 
+# ══ seats34 (3/4 다시 그리기) ══
+import seat34 as S34   # noqa: E402
+
+
+def _staff_chair34(c, d):
+    """교무실 사무 의자 1칸(16×16) 3/4 — 남: 등받이(윗날 2행 밝음·왼 테 밝게)가 좌판 뒤에 붙어 솟고 좌판 윗면 3행 + 앞날 2행.
+    북: 좌판 윗면 3행이 위로 보이고, 그 앞을 등받이 뒷면(윗날 2행)이 가린다. 아래 가스 기둥(2px)·별 다리·바퀴 셋."""
+    m = 'kon'
+    if d == 's':
+        rc(c, 4, 0, 8, 7, kc(m, -1)); hl(c, 4, 0, 8, kc(m, 2)); hl(c, 4, 1, 8, kc(m, 1))               # 등받이 윗날 2행
+        vl(c, 4, 2, 5, kc(m, 0)); vl(c, 11, 1, 6, kc(m, -2)); hl(c, 6, 4, 4, kc(m, 0))                  # 왼 테·오른 테·허리 받침
+        S34.plane(c, 3, 7, 10, 3, m, 1); hl(c, 3, 7, 10, kc(m, 2))                                      # 좌판 윗면 3행
+        rc(c, 3, 10, 10, 2, kc(m, -1)); hl(c, 3, 11, 10, kc(m, -2))                                     # 앞날
+        S34.silhouette(c, kc(m, -3), 0, 0, 16, 12)
+    else:
+        S34.plane(c, 3, 3, 10, 3, m, 1); hl(c, 3, 3, 10, kc(m, 2))                                      # 등받이 너머 좌판 윗면 3행
+        rc(c, 4, 5, 8, 7, kc(m, -1)); hl(c, 4, 5, 8, kc(m, 1)); hl(c, 4, 6, 8, kc(m, 0))                # 등받이 뒷면 윗날 2행
+        vl(c, 4, 7, 5, kc(m, 0)); vl(c, 11, 6, 6, kc(m, -2)); hl(c, 5, 9, 6, kc(m, -2))                 # 테·뒤판 이음
+        S34.silhouette(c, kc(m, -3), 0, 0, 16, 12)
+    vl(c, 7, 12, 2, kc('tekko', 2)); vl(c, 8, 12, 2, kc('tekko', -1))                                   # 가스 기둥
+    hl(c, 3, 13, 10, kc('yoru', 1)); hl(c, 2, 14, 12, kc('yoru', -1))                                   # 별 다리
+    for x in (2, 7, 12): hl(c, x, 15, 2, kc('yoru', -3))                                                # 바퀴
+
+
+def _pipe_chair34(c, back):
+    """쇠 파이프 학교 의자 1칸 3/4: 나무 등받이 판(윗날 2행 밝음) + 밝은 합판 좌판 윗면 3행 + 앞날 2행, 2px 쇠 다리.
+    back='n' 남향(등받이 위·좌판 아래) · 's' 북향(좌판 윗면이 위, 등받이 뒷면이 앞을 가림)."""
+    W = 'yuka'
+    if back == 'n':
+        rc(c, 3, 0, 10, 4, kc(W, 0)); hl(c, 3, 0, 10, kc(W, 2)); hl(c, 3, 1, 10, kc(W, 1))              # 등받이 판 윗날 2행
+        vl(c, 3, 2, 2, kc(W, 1)); vl(c, 12, 1, 3, kc(W, -1)); hl(c, 4, 3, 8, kc(W, -1))
+        S34.plane(c, 3, 6, 10, 3, 'kinari', 1); hl(c, 3, 6, 10, kc('kinari', 2))                        # 좌판 윗면 3행
+        rc(c, 3, 9, 10, 2, kc(W, -1)); hl(c, 3, 10, 10, kc(W, -2))                                      # 앞날
+        S34.silhouette(c, kc('ita', -3), 0, 0, 16, 11)
+        vl(c, 3, 4, 2, kc('tekko', 2)); vl(c, 12, 4, 2, kc('tekko', -1))                                # 등받이 쇠 기둥(틈 사이로 바닥이 보인다)
+    else:
+        S34.plane(c, 3, 1, 10, 3, 'kinari', 1); hl(c, 3, 1, 10, kc('kinari', 2))                        # 좌판 윗면 3행
+        hl(c, 3, 4, 10, kc('ita', -2))                                                                  # 좌판 뒤끝 그늘(등받이와 갈림)
+        vl(c, 3, 5, 6, kc('tekko', 2)); vl(c, 12, 5, 6, kc('tekko', -1))                               # 쇠 파이프 테
+        rc(c, 4, 5, 8, 6, kc(W, -1)); hl(c, 4, 5, 8, kc(W, 1)); hl(c, 4, 6, 8, kc(W, 0))                # 등받이 뒷면 윗날 2행
+        vl(c, 4, 7, 4, kc(W, 0)); vl(c, 11, 6, 5, kc(W, -2))
+        S34.silhouette(c, kc('ita', -3), 0, 0, 16, 11)
+        vl(c, 3, 5, 6, kc('tekko', 2)); vl(c, 12, 5, 6, kc('tekko', -2))                               # 파이프 테는 윤곽 위에 다시(쇠 색)
+    hl(c, 5, 13, 6, kc('tekko', -1))                                                                    # 가로대
+    for x in (3, 11): S34.leg(c, x, 11, 5, 'tekko', 2)
+
+
+def _lab_stool34(c):
+    """이과실 나무 둥근 의자 3/4: 둥근 좌판 윗면(왼위 밝음) + 두께 2행, 앞 다리 둘(2px)·가로대."""
+    hl(c, 5, 12, 6, kc('ita', -1))                                                                      # 가로대(뒤 다리는 좌판 그늘에 숨는다)
+    for x in (3, 11): S34.leg(c, x, 9, 7, 'yuka', 1)
+    S34.round_seat(c, 8, 4.5, 6, 3, 2, 'yuka', 1, kc('ita', -3))
+
+
+PENDING_SEATS34 = {
+    'sc-staff-chair-s': lambda c: _staff_chair34(c, 's'),
+    'sc-staff-chair-n': lambda c: _staff_chair34(c, 'n'),
+    'sc-chair-s': lambda c: _pipe_chair34(c, 'n'),
+    'sc-music-chair-n': lambda c: _pipe_chair34(c, 's'),
+    'sc-lab-stool': _lab_stool34,
+}
+SEATS34_PASS = set()          # object-gate PASS 영수증을 받은 id 만 — 이 id 들만 굽는 그림을 바꾼다
+for _k in SEATS34_PASS: R.objs[_k]['draw'] = PENDING_SEATS34[_k]
+# ══ /seats34 ══
+
+
+
+S34_STUDY2 = __import__('seat34').apply_study2(R)   # 사람 합격(2026-10-20) 앉는 기물 — 관문 pass 영수증 있는 것만 바꾼다
+
 def build(): return R.build()
 def selftest(): return R.selftest()
 

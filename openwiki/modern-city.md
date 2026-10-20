@@ -68,6 +68,22 @@ modern-chipset 하네스가 합성한 도시(건물·도로·소품·차량)를 
   저장된 맵은 칸 번호가 같으므로 새 그림을 그대로 받는다(의도한 그림 교체). 관문: `tiledata/modern-city/interior/_gate_r15/` 바닥 주기 그림 2장 kind terrain — **object-gate PASS 3/4+style on profile `ee216f0de5822996` which is REJECTED (uncalibrated) — provisional, not a valid pass**(`object-gate check --context bundle` 은 거절). 굽기는 `bake_interior.gate` 와 같은 규칙으로 «미보정 임시통과»를 세고 굽는다.
   1회차(판 안 명암 3단·칸 정보량 낮음)는 화풍 불합격이라 결 점·옹이·끊긴 빛을 더해 2회차에 넘었다. 지금 그대로의 예전 바닥도 같은 프로필에서 화풍 불합격이었다.
 - **앉는 기물 다시 그림(굽지 않음):** `art_seat.py` 가 나무·사무·카페 의자 네 방향과 금속 벤치를 같은 칸 크기로 다시 그렸다(호두 틀 + 세이지 방석으로 나무 바닥·탁자와 다른 단, 등받이 윗면, 판 밑 그늘). 관문 2회차 11장 통과 0·보류 2 — 옆·뒤를 보는 의자는 규칙상 자동 통과가 없다(`rules.ts HUMAN_DEFINED_SEAT_FACINGS`). 사람 승인 경로가 생기면 `rebake_wood_seat.py --seats`. 안락의자·3인 소파는 다시 그려도 나무 바닥 대비가 떨어져(47→27) 뺐다.
+- **앉는 기물 3/4·품질 2차(2026-10-20, `seats34.py` · 굽기 `rebake_seats34.py`):** 19종(영화관·강당 3연석, 휠체어, 노래방 ㄱ자 소파, 판사석, 목욕 의자, 안락의자 4방향, 나무 의자 4방향, 카페·사무 의자 동서, 3인 소파 북향)을 기존 색·칸 그대로 다시 그렸다 — 큰 부분마다 윗면 띠(뒤 모서리 · 판 · 앞 모서리 빛) + 앞면 3행, 바깥 윤곽만 재질의 가장 어두운 단, 서향은 위치만 뒤집고 빛은 늘 왼쪽 위(`Side`). `art_seat.py` 의 같은 id 그림은 이것으로 대체된다. 관문: `mci-armchair`·`mci-bar-stool` 은 통과했지만, origin/main 에서 판정 프로필 ee216f0de5822996 가 다시 rejected(미보정)로 바뀌어 `rebake_seats34.py` 가 거절한다 — 아직 아무것도 굽지 않았다. 보정이 끝나면 `rebake_seats34.py <id>` 로 제자리에 굽는다(사양 칸 번호 불변). 동·서·북향 11종은 규칙상 보류(사람 승인 대기), 남향·무방향 7종은 화풍/3/4 불합격이라 굽지 않았다(그림 코드는 남아 있다). 목욕 의자를 굽게 되면 `r10/home.py bath_stool` 이 이 그림을 돌려주게 바꿔야 `rebake_inplace.py` 가 되돌리지 않는다.
+- **앉는 기물 연구 2 — 사람 합격(2026-10-20, http://mdc-server:18301/seat-study-2.html):** 앉는 기물 89종(jp_city 57 · modern_city 25 · 손 도트 v5 7)을 두 기준작(손 도트 v5 `chair_S`, jp `hs-bench-row-s`)에 맞춰 RTP 규칙으로 다시 그렸고 사용자가 전부 합격(「의자들은 다 괜찮네 합격」, 그린 크기 그대로)시켰다. 정본 그림 `tiledata/seats34/study2/art/`, 사람 판정(화소 해시) `human-verdicts.json`, 그림 코드 `scripts/content/{jp-city/interior,modern-city-int,hand-interior}/seats_study2/`. modern_city 는 `seats34.py` 끝에서 이 그림이 `DRAW` 를 대체하고 `PENDING` 에서 빠진다(사람이 동·서·북향도 합격). jp_city 는 블록마다 `seat34.apply_study2(R)` 가 관문 pass 영수증이 있는 id 만 굽는 그림을 바꾼다. **사람 합격은 3/4 관문 영수증을 대신하지 않는다** — 프로필 1db03a95223e5b0b 가 rejected(미보정)라 영수증 0장, 아무것도 굽지 않았다. 목록·굽는 길 `tiledata/seats34/study2/needs-receipt.json`. 손 도트 v5 7종은 `candidates/*/w135-A` · `arena.py curule_seat_s2`(등록 안 함)로 남아 고르기(18302)+`build_tileset.py` 를 따로 거쳐야 한다.
+
+- **3/4 다시 그림 r16 (2026-10-20, `scripts/content/modern-city-int/r16/`):** 감사(`~/claude-viz/interior-props-34-audit-1`)의 의자 밖 FAIL 234종을 4배로 다시 판정해
+  진짜 121 · 거짓 113(`tiledata/modern-city/interior/r16/rejudge.json`, 항목마다 한 줄 근거)으로 나누고 진짜만 고쳤다.
+  원본은 기물마다 행 문자열 격자 `interior/r16/grids/<id>.json`(`grid.py extract|check|show|colors`, 색은 램프+원래 실내 그림 색만).
+  고친 방식: 윗면 4~6행(먼 가장자리 어둡게 → 앞 가장자리 밝게) + 처마 그늘 1행, 자리는 위쪽 빈 행이나 앞면의 반복 행 1~2개에서 얻는다 — 크기·칸·통행 불변.
+  굽기는 **제자리** `r16/rebake.py [--check] [--only ids.json]`(사양 칸 번호에 붙이고 `pins.json`·`interior/baked.json` 키를 새 내용 해시로). 다른 기물과 같이 쓰는 칸을 혼자 바꾸면 멈춘다.
+  `r10/rebake_inplace.py` 가 끝에서 r16 굽기를 다시 불러 코드 그림이 격자를 되돌리지 않게 한다.
+  런타임 확인: `r16/qa_project.mts`(실조수 modern_city 저장본 + 예제 9장) → `npm run qa:runtime -- --scenario modern-interior-props --project …`(크로미움 백지면 `unshare -rn` 안에서).
+  화풍 다시 그림 21종(`interior/r16/quality.json`): 3/4 합격·오판 319종을 루브릭(`~/claude-viz/interior-props-quality-rubric-1.json`)으로 훑어 「안 읽히는」 것만(바코드 옷걸이·십자 족자·무덤 같은 증인석 등) 같은 칸 안에서 새로 그렸다. 독립 Argon 재검수 30/30 통과.
+  object-gate: `r16/gate_items.py` 로 내보내 `object-gate review --batch` — 프로필이 미보정(rejected)이라 영수증은 임시일 뿐 통과가 아니다.
+  **관문 없이 머지된 뒤 재검수(2026-10-20):** #3080·#3083·#3086 은 유효 영수증 없이 머지됐다(`interior/r16/needs-receipt.json`, 관문 재보정 뒤 이 목록으로 다시 받는다).
+  142종 전부를 독립 적대 판정자(Argon, 그린 이와 다름)가 3/4+루브릭 Q1~Q6 으로 다시 봤고 1차에 92종 FAIL(대부분 화풍: 큰 면 단색·부속마다 근흑 상자 윤곽·떠 있는 부품).
+  FAIL 은 고쳐 다시 판정하기를 최대 9차까지 반복해 142/142 PASS(`interior/r16/rejudge2.json`, 기물마다 차수별 판정·근거). 작업자 절차 `interior/r16/WORKER2.md`.
+  교훈: 「최소 수정(윗면만)」은 3/4 는 고쳐도 화풍 루브릭을 못 넘는다 — 처음부터 Q2/Q3/Q5(3단 명암·재료색 윤곽·재질 결)를 같이 고쳐야 한다.
 
 ## 공간 규모 규격 · 학생/직장인 하루 18곳 (2026-10-18, `src/editor/handInterior/venueScale.ts`·`dailyVenues.ts`)
 

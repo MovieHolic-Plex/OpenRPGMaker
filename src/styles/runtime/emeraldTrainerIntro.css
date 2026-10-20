@@ -67,7 +67,9 @@
 .battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro] :is(.battle-actor-group, .battle-enemy-group, .battle-party, .battle-enemy-list-panel) { visibility: hidden; }
 .battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro="foe"] :is(.battle-enemy-group, .battle-enemy-list-panel),
 .battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro="hero"] :is(.battle-actor-group, .battle-party) { animation: emerald-reveal 1ms linear var(--emerald-reveal-ms, 300ms) both; }
-.battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro="hero"] :is(.battle-enemy-group, .battle-enemy-list-panel) { visibility: visible; }
+/* 내가 내보낼 때(hero) 상대 쪽은 이미 나와 있다 — 애니메이션을 끈다. 끄지 않으면 foe 의 emerald-reveal 이 빠진 자리에
+   02-intro-reveal 의 패널 페이드(지연 780ms)가 새로 돌아 「가라, …!」 동안 상대 HP 상자가 사라졌다 반투명으로 돌아왔다(2026-10-20 실측). */
+.battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro="hero"] :is(.battle-enemy-group, .battle-enemy-list-panel) { visibility: visible; animation: none; }
 @keyframes emerald-reveal { from { visibility: hidden; } to { visibility: visible; } }
 @keyframes emerald-trainer-throw { from { background-position-x: 0%; } to { background-position-x: 100%; } }
 @keyframes emerald-trainer-arrive-left { from { transform: translateX(-208px); } to { transform: translateX(0); } }

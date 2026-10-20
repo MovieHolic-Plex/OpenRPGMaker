@@ -1,0 +1,402 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e852fb802b229ff047eab5ffc1211914a7fc0a735124cd4f1b7525e1c2ece678",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "pb-wash-stool",
+ "label": "seats34/jp_city_interior/pb-wash-stool",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4)",
+  "3/4: 윗면 3행 < 4 (2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 2행 < 4 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4)",
+   "윗면 3행 < 4 (2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 2행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 26,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stool seat (yellow top)",
+      "rows": "6-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "stool legs / apron",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue wash basin beside the stool",
+      "rows": "8-12",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stool seat in column x=4 has bright yellow rows 6-7 (L=221), a mid-tone row 8 (L=160) that works as the front-edge line, and a dark row 9 (L=101) that works as eave shadow. Below that, row 10 onward shows legs with a transparent-looking gap between them. In column x=8, rows 6-13 are all outline, so it is not a seat surface. The seat top is shallow at about 3 rows, which makes it borderline, but it ends in an edge line and shadow, and the front face below it is 5 rows. The blue basin at the right shows an elliptical water surface (rows 8-12) with a narrowing bowl body (widths 13, 11, 9)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny stool, roughly 14x12 px, in yellow with a blue basin. It has only 10 distinct colours in total, and I count about 2 tones per material (yellow body plus a darker edge, blue basin plus a lighter blue). Measured facts are 0 for visible tones per tile because the piece is smaller than one tile, so I judged by eye. By eye the surfaces are flat fills with no grain, no highlights per plank and no texture dots. The dark edge pixels are tinted, not neutral (0% near-neutral), so the outline is not a pure black sticker line, but it is thin and the same dark tone is used everywhere around the shapes. The Beodeul references, such as the bench with its wood grain and the well with its stones shaded one by one, show 5+ steps and clear texture. Even the simple bench is richer than this stool. A careful artist would see this as thinner and flatter than the reference, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 20644
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stool seat",
+      "rows": "6-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-9"
+     },
+     {
+      "part": "stool legs/front",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue wash bucket beside stool",
+      "rows": "7-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In the stool column (x=4), row 5 is the outline. Rows 6-7 are a light yellow seat top (L=221), and row 8 is a mid-tone edge line (L=160). Row 9 is a darker front shadow or apron (L=101), and row 10 is outline. Below the seat are open legs with a gap between them down to row 13, so the front face is about 5 rows. The seat top is thin at about 3 rows, but it has a front-edge line and shadow below it. The blue bucket on the right is a separate small prop (x=11 column, rows 8-12), listed as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny yellow stool with a blue basin, under one tile in size, so the per-tile facts read 0 and I judged by eye. It has only 10 distinct colours in total, split across two materials. That gives about 3 lightness steps each, against the bench's 14 colours and 5-6 steps per material. The yellow stool reads as a flat body with a single highlight and shade. The blue basin is a nearly flat blob with one highlight dot, and there is no grain, plank detail or texture. The outline is tinted (0% neutral dark edges), so that part is acceptable. Next to the bench, well and stall references it looks thinner, flatter and more sticker-like. A careful artist would not accept it beside them without more shading steps and surface texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "윗면 3행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "윗면 3행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 22874
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stool seat (yellow block)",
+      "rows": "5-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stool legs",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue wash tub beside stool",
+      "rows": "7-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "In column x=4 the seat is a light yellow band on rows 6-7 (L=221). Below it, row 8 is mid yellow (L=160) and row 9 is dark (L=101). Row 10 is the outline, and the legs run to row 13. The silhouette widens only from 7 to 9 px over rows 5-7 and has no ellipse. There is no distinct front-edge line and no eave shadow. The seat therefore reads as a 2-row lighter top strip over a graded front face, like the 'seat: band 2' reference. It does not have the 5-row top surface of the correct seat reference. The blue tub next to it is a separate item, listed as decor and not measured as the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny stool (under one tile, about 14x12 px at 2x) with only 10 distinct colours. It reads as a yellow seat and legs with a blue bucket or basin, each in roughly 2 tones, with little visible shading or grain. The measured facts are 0 per tile because the piece is small, so I judged by eye. Next to prop-bench-wood, which has wood grain, highlights and several plank steps, the stool looks flatter and more sticker-like. The 0% near-neutral edge share suggests tinted outlines, which is fine, but the outline is thin and uniform around the shapes. The references (bench, well, stall) carry 5-6 steps per material and per-element texture, and the candidate does not.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 20928
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stool seat",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "stool legs/front",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue wash bowl beside stool",
+      "rows": "7-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The stool seat spans rows 5-10 and its yellow shading runs light to dark: bright rows 6-7, a mid-yellow line at row 8, and a darker band at row 9 before the outline at row 10. That is only about 2 rows of lighter top over a 2-3 row front band. The silhouette does not widen and narrow like an ellipse, and the seat shows no depth in plan. The legs below are plain vertical supports on rows 10-13, with a dark gap between them. This matches the 'seat band 2' wrong reference, not the 'top 5 + legs' right one. The blue bowl to the right is a separate item and does not change the stool reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny yellow stool with a blue basin, about 14x12 px at the board's scale. It has only 10 distinct colours in total. It shows about 2 tones per material: a yellow body and a blue bowl, each with a dark edge and little or no highlight/shadow ramp. There is no visible grain, texture dots or per-part shading. The references, such as the bench, well and stall, carry 5-6 steps with grain and clustered detail. Most of the stool is flat fills with a sticker-like outline. The tile-based facts are 0 because the piece is smaller than one tile, so I judged by eye. Next to the bench, the nearest reference of similar simplicity, it looks thinner and flatter, with no wood grain or plank separation. The 0% neutral edge share suggests the outline is tinted, but with so few colours it reads as a uniform dark line rather than a selective material tone. Overall it is much shallower than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 19351
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.461Z",
+ "cells": {
+  "16": [
+   "8dd96b7dc82b534a"
+  ],
+  "24": [
+   "060f6b17f377034f",
+   "202b9ce08897b400",
+   "463efe354822a6c5",
+   "777a0c26445049fd",
+   "830b29f4517a35d1",
+   "ab76d09ad9c8866e"
+  ],
+  "32": [
+   "2f5c7ea56f6c19cb",
+   "5494b98e4ac19f34",
+   "9e22142675b70656",
+   "ab81d956211a3082",
+   "cc483e61213d3253",
+   "d6e341958f3a8dc1"
+  ],
+  "48": [
+   "241afd350971fae4",
+   "2ea5a3156b898d1d",
+   "2f5c14fe776ecf5e",
+   "8b78daf38a4c242d",
+   "996b15a856665465",
+   "9bea44bae132cd5f"
+  ]
+ }
+}

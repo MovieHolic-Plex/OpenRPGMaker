@@ -1,0 +1,435 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1facc84b2a5c08b0596216bd25280b75da6d27157477decaf43c5dd55ae37b75",
+ "width": 16,
+ "height": 32,
+ "kind": "seat",
+ "name": "sh-barber-chair-n",
+ "label": "seats34/jp_city_interior/sh-barber-chair-n",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (3/4)",
+  "3/4: 윗면 0행 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (3/4)",
+   "윗면 0행 < 4 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 26,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 0
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headrest",
+      "rows": "3-6",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest and seat mass seen from behind",
+      "rows": "7-19",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests",
+      "rows": "13-18",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal pole",
+      "rows": "20-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round base plate",
+      "rows": "23-26",
+      "evidence": "b",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The chair is seen from behind. The red mass at rows 8-19 is a vertical backrest face, and the seat surface is hidden behind it, so no seat top shows. Rows 8-9 are a 2-row lighter cushion highlight at the top of the backrest, not a seat. The armrests at rows 13-18 are flat gray side blocks, which are exempt. The pole at rows 20-22 is 4 wide. The base at rows 23-26 is a small ellipse (widths 8, 10, 10, 8), but it is not the main body. With no visible seat top, the chair reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small red barber chair on a pale chrome pedestal, under one tile in size. The per-tile tone count is 0, so I judged density by eye against the bench and lamp, which are equally small. It has 13 distinct colours against 14 for the bench and lamp. The dark edge pixels are 0% neutral, and the outline reads as a dark red-brown beside the red upholstery, which is material-toned and not a black sticker line. The red upholstery shows about 4 steps (highlight, light, mid, dark/deep) with a lit top edge and darker sides. The chrome base and footrest add 2-3 grey/white steps. Near-flat coverage is 11%, close to the cheese stall (13%) and well below a real flat-fill problem, so there are no big flat areas. It is slightly simpler than the multi-material references like the well or stall, but a careful artist would accept it next to the bench and lamp.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26685
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headrest",
+      "rows": "3-6",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest",
+      "rows": "7-12",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests",
+      "rows": "13-18",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat cushion front face",
+      "rows": "13-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal post",
+      "rows": "20-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round base plate",
+      "rows": "23-26",
+      "evidence": "b",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The chair is drawn face-on. The red backrest and cushion are one vertical block (rows 8-19). Its only top-like feature is a 1-2 row highlight at rows 8-9, which is a rim, not a surface. Row 12 is a thin dark line, and below it the dark red seat face runs rows 13-19 with no front-edge line and no eave shadow. The light grey armrests (rows 13-18) are exempt as seat_back. The post (rows 20-22, width 4) and the small oval base (rows 23-26, widths 8-10-10-8) do not change the reading of the seat. The sitting surface shows no top and only a front face, so this reads as front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small red barber chair on a grey chrome base, under one tile in size. That is why the per-tile tone count is 0, so I judged density by eye against the bench and lamp. The red upholstery shows about 4 steps (highlight, light, mid, dark red) and the chrome base about 3. Its 13 distinct colours are close to the bench (14) and lamp (14). The outline is a dark red-brown beside the red and a dark grey-blue beside the chrome. This matches the 0% near-neutral edge share and is not a sticker-style black line. Near-flat coverage is 11%, in line with the cheese stall (13%), and the cushion and base show highlights and form shading rather than large blank areas. It is slightly simpler than the 5-6 step references, but a careful artist would accept it beside the bench and lamp without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 35511
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headrest",
+      "rows": "3-6",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest/seat block (red cushion body)",
+      "rows": "8-19",
+      "evidence": "none",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests (grey)",
+      "rows": "13-19",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal post",
+      "rows": "20-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round base plate",
+      "rows": "23-26",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main red block (rows 8-19) has only a 2-row light highlight at rows 8-9 (#f78175, then #db4d4a) at the top. This reads as a rim or lip, not a seat surface seen from above. Below it, rows 10-19 are a dark red vertical face with no front-edge line or eave shadow. The width profile is 10 wide on rows 8-12, then 14-16 with the grey armrests, so there is no ellipse or widen-and-narrow top. The headrest and armrests are exempt as seat_back. The round base (rows 23-26, widths 8-10-10-8) does show an ellipse, but it is not the sitting surface. The seat itself shows no top, so this is front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small red barber chair with a grey pedestal base, about the size of the bench and lamp references. Per-tile facts are 0 for the candidate and for those thin references, so I judged density by eye. The red upholstery shows about 4 steps (highlight, light, mid, dark red-brown), and the base has a few grey steps with specular dots. The outline pixels are 0% neutral, so they carry a dark red or brown tint that blends into the material rather than a black sticker line. Flat coverage is 11%, close to the cheese stall's 13%, and the flat areas are small, mostly the seat back. With 13 distinct colours it matches the bench (14) and lamp (14) and has similar shape separation by value. It is slightly less textured than the richer stall and well references, but acceptable next to the bench and lamp of the same scale and complexity.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 28700
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headrest",
+      "rows": "3-6",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "backrest/seat cushion seen from behind",
+      "rows": "7-19",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "armrests (grey)",
+      "rows": "13-18",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole",
+      "rows": "20-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round base plate",
+      "rows": "23-26",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The chair is seen from behind (north). The large red backrest (rows 7-19) hides the seat, so no sitting surface appears. The only light band on the red body is rows 8-9, a 2-row rim at the top of the backrest, which is exempt as seat_back but is not a seat top. The armrests (rows 13-18) are vertical grey faces. The pole (rows 20-22) is 4 wide. The base plate (rows 23-26, widths 8-10-10-8) is a small ellipse on the pedestal, not the main body. The main body is a vertical face with no seat top seen from above, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is smaller than one tile, so the per-tile tone count of 0 is not usable and I judged by eye. Its outline is a tinted dark red with 0% neutral dark edge pixels, so it avoids the black sticker look. It has only 13 colours, about the same as the bench (14) and lamp (14), but its red cushion and back read as roughly 3-4 steps (base red, highlight, dark red, deep outline). The grey/white chrome pedestal and base look similar. Near-flat coverage is 11%, so the seat and back have some flat fills, close to the cheese stall's 13% and above the other references' 0%. It has no grain, speckle or per-part shading like the bench slats or well stones. Next to the references it looks a little thinner and flatter, and since there is doubt, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 28034
+  }
+ ],
+ "decidedAt": "2026-10-20T14:09:20.435Z",
+ "cells": {
+  "16": [
+   "3a660ee6807e2b19",
+   "3def3c29a629feea"
+  ],
+  "24": [
+   "6682072d5761aa8c",
+   "888a2f1a0d0307c1",
+   "9b877e437741d745",
+   "a1f99436381ef42d",
+   "aa73ddb65cd94923",
+   "c128a60a8d3eac53",
+   "d04408c60a20f602",
+   "d09b511b0ccd0d79",
+   "d76b195fa8e37ed1",
+   "e65ae79d09adc3b2",
+   "f917c60fa31a9161",
+   "fb1a3677c4cf63a7"
+  ],
+  "32": [
+   "692f805edae159dd",
+   "6a56996055749c7e",
+   "a0cf7049ffbeabbc"
+  ],
+  "48": [
+   "27930ee2e8b1c377",
+   "5f1865ce80fcb416",
+   "7a6d4ddc5b198659",
+   "b1101487d08661a5",
+   "b35511147274407b",
+   "f34558851da46513"
+  ]
+ }
+}

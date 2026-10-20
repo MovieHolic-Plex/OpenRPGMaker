@@ -105,6 +105,23 @@ class Pins:
         return tid
 
 
+def base_pin_problems(cells, root, rev='origin/main'):
+    """cells(자리 키 → 번호)가 기준 커밋의 pins.json 을 그대로 품는지. 어긋난 목록(최대 12개)과 기준 키 수를 돌려준다.
+    2026-10-14~18 에 낡은 pins.json 으로 구운 PR 들이 머지되며 번호가 밀렸다(#2899 에서 11,329칸) — 게시한 장소·사용자 맵이 엉뚱한 칸을 그렸다.
+    기준을 git 에서 못 읽으면(얕은 체크아웃·임시 폴더) None."""
+    import subprocess
+    r = subprocess.run(['git', 'show', f'{rev}:tiledata/jp-city/pins.json'], cwd=root, capture_output=True, text=True)
+    if r.returncode != 0: return None
+    base = json.loads(r.stdout)['cells']
+    bad = []
+    owner = {v: k for k, v in cells.items()}
+    for k, v in base.items():
+        if cells.get(k) != v: bad.append(f'{k}: 기준 {v} → 여기 {cells.get(k)}')
+        elif owner.get(v) != k: bad.append(f'{v}번: 기준 {k} · 여기 {owner.get(v)}')
+        if len(bad) >= 12: break
+    return bad, len(base)
+
+
 def load_pins(path):
     if os.path.exists(path): return json.load(open(path, encoding='utf-8'))
     return {'version': 1, 'tilesPerRow': TPR, 'count': 0, 'cells': {}}

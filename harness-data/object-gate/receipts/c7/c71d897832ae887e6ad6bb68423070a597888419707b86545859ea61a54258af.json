@@ -1,0 +1,398 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c71d897832ae887e6ad6bb68423070a597888419707b86545859ea61a54258af",
+ "width": 32,
+ "height": 32,
+ "kind": "seat",
+ "name": "reclined dental chair lying east-west with overhead lamp and rinse bowl",
+ "label": "seats34/modern_city_interior/clinic-dental-chair",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 3/4, 분명한 위반 1/4)",
+  "3/4: 옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+  "3/4: 투영이 3/4 아님(side_profile_no_top) (1/4)",
+  "3/4: 윗면 1행 < 4 (1/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/4)",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 3/4, 분명한 위반 1/4)",
+   "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+   "투영이 3/4 아님(side_profile_no_top) (1/4)",
+   "윗면 1행 < 4 (1/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main reclined cushion body",
+      "rows": "13-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "headrest block (upper left)",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "overhead lamp arm and head",
+      "rows": "3-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rinse bowl (right)",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The main body spans rows 13-22 at a constant width of 28. Its column scan is a vertical shading gradient: row 14 mid-teal, rows 15-17 light, row 18 brightest highlight, rows 19-22 progressively darker. That reads as one side face of a cushion seen face-on, not a horizontal seat seen from above. Row 13 is only the outline plus a 1-row rim, with no band ending in a front-edge line, no eave shadow, no ellipse, and no visible contents. The headrest block (rows 11-13) is likewise a flat face. The lamp and rinse bowl are thin vertical details. The pedestal below (rows 23-29) is a narrow stem and base. The seat surface cannot be seen from above, so this is a side elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a compact two-tile prop. Its measured facts sit at or above the simpler Beodeul references: 12 colours per tile against 10 for the hedge, 0% flat-fill coverage, and 0% neutral dark edge pixels. That means the outline is tinted (dark blue-teal beside the cushion, dark grey-blue beside the metal), not a black sticker line. The teal cushion shows a highlight, a mid tone and a dark underside with a darker shadow, about 4 steps. The grey lamp and base have light, mid and dark steps. No large area is one flat colour. The 17 total colours are well below the stall (40) and well (38). The shading is a little smoother and less speckled than the richest references, so density is slightly lower. For its size and simplicity it would sit acceptably next to the hedge and bench without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 34709
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main reclined chair body (cyan cushion)",
+      "rows": "14-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-21"
+     },
+     {
+      "part": "headrest block at left",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "overhead lamp and rinse bowl",
+      "rows": "2-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main cyan body spans rows 13-22 and is 28 px wide. Rows 14-17 form a mid and light teal band at the top (L=117, then 183). Row 18 is a lighter 1-row front-edge line (#90fcf7, L=219). Rows 19-22 step darker (162, 117, 94, 75), which reads as eave shadow over the front face. Below that, a pedestal with a base occupies rows 23-29. The top band is about 5 rows, not just a 1-2 row rim, and the front face is 4 rows plus the supports. The lamp, bowl and headrest are small details. The lamp's yellow shade and the bowl are drawn mostly face-on, so I did not count them as major parts."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 17 distinct colours and a median of 12 per 16x16 tile. That is above the hedge (11 colours, 10 per tile) and in the range of the richer references. Flat-fill coverage is 0%, so there are no 5x5 blocks of one colour. Dark edge pixels are 0% neutral, so the outline is tinted: dark teal next to the cushion and dark blue-grey next to the lamp arm, not a uniform black sticker line. The teal upholstery shows about 4 steps (pale highlight on top, light, mid, dark underside). The grey lamp and arm show 3-4 steps. This is slightly fewer than the 5-6 on the larger references, but the piece is small and the shading is built from value separation rather than a single outline. Texture is modest, with some highlight dots and panel breaks but no rich grain. Overall it would sit acceptably beside the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 33138
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cushion body (seat/bed)",
+      "rows": "14-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-21"
+     },
+     {
+      "part": "raised head/back end",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "overhead lamp and rinse bowl",
+      "rows": "2-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The long teal cushion has a lighter top band at rows 14-18 (light fill at rows 14-17). A bright 1-row front-edge line at row 18 ends that band. Darker teal at rows 19-21 reads as eave shadow and front face, and the face continues to the outline at row 22. A pedestal and base at rows 23-29 support it, so the front/support height is 3+ rows. The body is a long horizontal cushion with a visible top plane, so it is not a flat slab or a bare front elevation. The lamp, arm and rinse bowl are small details and do not change the main body reading. The head-end block at rows 11-13 is minor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, clean-edged chair with a teal body, pale grey-blue lamp arm and a white or grey bowl. It has 17 distinct colours in total, against 38-40 for the stall and well. Its per-tile median of 12 is above the hedge (10) and below the stall (17) and well (20). Flat-fill coverage is 0%, and the dark edge pixels are 0% neutral, so the outline has a colour tint rather than being black. Structurally, though, each material has only about 3 steps (highlight, mid, dark), where Beodeul uses 5-6 per material. The teal seat and backrest are mostly smooth bands with a single highlight line. They have no grain, speckle or per-element shading like the stall's awning stripes and goods or the well's stones. The overhead lamp and rinse bowl are simple shapes with minimal shading. The measured numbers are acceptable, but the shading is shallower and the texture sparser than the best references. Because of that thin ramp depth, I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21610
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "reclined chair cushion/body",
+      "rows": "14-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-21"
+     },
+     {
+      "part": "headrest raised block at left",
+      "rows": "11-16",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wide teal body spans rows 13-22 with width 28. Rows 14-17 are a lighter top band, row 18 is a bright front-edge line (#90fcf7), and rows 19-22 step down through darker teal as the front face and shadow. A pedestal and base follow in rows 23-29 as support. The overhead lamp and rinse bowl are small details. The cushion top is only about 4 rows, but it has a clear edge line and a front face of 4 or more rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small teal and grey dental chair with a lamp arm. Measured facts: 12 colours per tile (the references range from 10 to 20), 0% flat-fill coverage, and 0% neutral dark edge pixels, so the outline is tinted rather than a black sticker line. Its 17 distinct colours is well below the rich references (38-40) and only slightly above the hedge (11) and the bench (14). By eye, the teal seat has about 3 lightness steps (highlight, mid, dark) and the grey lamp arm has 2-3. The reference props carry 5-6 steps per material, with per-tile texture dots, grain and scallops. The candidate is smooth and clean, with little grain or speckle on the cushion or the base. It is not a flat sticker, but it is thinner on shading and texture than the stall and well. A careful artist would likely see it as a bit shallower next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+    "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 1/1, 분명한 위반 0/1)",
+     "옆·뒤를 보는 의자는 사용자 정의 영역이라 자동 통과시키지 않는다"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21632
+  }
+ ],
+ "decidedAt": "2026-10-20T08:30:15.554Z",
+ "cells": {
+  "16": [
+   "38248aaa889aa268",
+   "947fa9fd46a20266",
+   "a26f5dcb4782bb7f",
+   "bf328843f2771603"
+  ],
+  "24": [
+   "008a34fd32dd09cc",
+   "047d0c8e516c916c",
+   "095a42ccf0cb4019",
+   "13114a403d6de096",
+   "1c26d30b4157acf2",
+   "1fe62f186c27b155",
+   "315e711d4304227e",
+   "3433ec4f155d1b8c",
+   "385c8d04327e99b6",
+   "445007e1674b4057",
+   "495346a7c3142adb",
+   "5f9d3c710fe56b51",
+   "67c64a610c8304cd",
+   "69597cbe75aaac5a",
+   "843422b83ac79382",
+   "8c662197958f9182",
+   "9bda20b2cb59c17f",
+   "a17313f37c014cb5",
+   "a96d1692f51ff7e8",
+   "ad63b1778288ecb3",
+   "d056f09bb8b2ecde",
+   "f795d1a220dd6420"
+  ],
+  "32": [
+   "6048995c591e1aef"
+  ],
+  "48": [
+   "0039bdaa06c86fff",
+   "483d151b58a7d53c",
+   "6c6e657e71300fd0",
+   "b66ebf695aa0bbb2",
+   "dcb2863f466bf93e",
+   "efe577c1fdb9171b"
+  ]
+ }
+}

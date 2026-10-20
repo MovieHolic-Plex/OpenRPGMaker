@@ -1,0 +1,53 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bar_stool/w134-A.pxg",
+ "id": "bar stool",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-seats-34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  3,
+  2,
+  12,
+  15
+ ],
+ "v5_bbox": [
+  4,
+  2,
+  12,
+  15
+ ],
+ "note": "꼭대기 윗면 3행(y=3~5) 둥근 방석 윗면 왼쪽 위 밝게 + 앞 띠 y=6, 가는 쇠다리 2px·발걸이 y=11",
+ "topClaim": {
+  "rows": 3,
+  "y": [
+   3,
+   5
+  ],
+  "need": 3
+ },
+ "topBand": {
+  "cover": 0.93,
+  "cuts": []
+ },
+ "lines": {
+  "o_thick": 0.05,
+  "o_melt": 0.1,
+  "o_none": 0.075,
+  "o_foreign": 0.0,
+  "light_inv": -0.131,
+  "l_thick": 0.0,
+  "n": 86,
+  "n_outline": 40,
+  "n_line": 4
+ },
+ "ok": true
+}

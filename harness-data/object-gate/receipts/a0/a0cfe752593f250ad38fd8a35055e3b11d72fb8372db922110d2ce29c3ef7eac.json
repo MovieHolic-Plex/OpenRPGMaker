@@ -1,0 +1,391 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a0cfe752593f250ad38fd8a35055e3b11d72fb8372db922110d2ce29c3ef7eac",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "dept rack pastel",
+ "label": "modern_city_interior/dept-rack-pastel",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 명암 3단 < 4 (2/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "명암 3단 < 4 (2/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 15,
+  "darkV5": 62,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top hanging ring (ellipse rim)",
+      "rows": "1-10",
+      "evidence": "b",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "hanging shirts (pink, green, lilac) and the two dark shirts inside the ring",
+      "rows": "5-23",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round base plate (ellipse)",
+      "rows": "26-31",
+      "evidence": "b",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-30"
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top ring is an ellipse. The width profile goes 14,20,24 at the back rim, widens to 28 at row 9, then narrows through 26 and 22. It has a bright front-rim line at row 10 with a shadow row below it. The base is also an ellipse: widths 10,16,18,18,16,12 over rows 26-31, with a light highlight line at row 28. The central pole is visible in rows 24-27 and the hanging garments fill rows 12-23. Both the horizontal ring and the base therefore show top faces above a front face of well over 3 rows. The garments count as hanging goods (decor)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are fine: 14 visible tones per tile sits between the hedge (9) and the stall (17) and the well (20), and near-flat coverage is 0%. The problem is craft. 78% of the dark edge pixels are near-neutral, so the grey-black outline around the ring top and pole reads as a sticker line. Beodeul's props with material-tinted outlines (hedge 0%, stall 1%) don't look like that; only the metal lamp pole is fully neutral. The garments and the glass-like top ring have only about 3 lightness steps each (base, a light tone and a shadow), against 5-6 on the references. They have little grain or per-item highlight work. The piece is clean and readable but flatter and thinner than the stall and well beside it, and with this much doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 23936
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top ring (display hoop)",
+      "rows": "1-11",
+      "evidence": "b",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-11"
+     },
+     {
+      "part": "hats/caps seen inside the ring",
+      "rows": "4-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging shirts (goods)",
+      "rows": "12-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round base plate",
+      "rows": "26-31",
+      "evidence": "b",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-30"
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a round clothing rack. The top ring widens from 14 to 28 px and narrows again, with a light front-edge line at row 10 (#f3f4f7) and a shadow row at 11, so it reads as an ellipse seen from above. The base is also an ellipse: widths go 10, 16, 18, 18, 16, 12 over rows 26-31, with a light front-edge line at row 28. The central pole between them (rows 12-25) is the vertical front face. The hats in the ring and the shirts on the rack are goods and count as decor. Both horizontal frame parts show top faces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per 16x16 tile, inside the reference range (hedge 9, stall 17, well 20), and 0% near-flat coverage, so there are no flat fills. The garments show about 3-4 lightness steps each, with fold shading and highlights, and the glass top and rack have a few grey steps. That is slightly fewer than Beodeul's 5-6, but it is a small, sparse prop. The dark edges are 78% near-neutral, which leans towards a grey outline. The prop-lamp-crook reference is 100% neutral on a metal pole, and on the picture the garment edges look like darker pastel tones rather than a uniform black sticker line, so I call the outline mixed. Texture is moderate: fold and highlight dots but little grain. A careful artist would likely accept it next to the references, since it does not look noticeably thinner or flatter than the bench or lamp.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 30364
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top hanger ring (elliptical ring with bright front rim)",
+      "rows": "1-10",
+      "evidence": "b",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "hanging shirts (goods)",
+      "rows": "11-23",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central pole",
+      "rows": "24-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round base plate (ellipse)",
+      "rows": "26-31",
+      "evidence": "b",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "30"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The rack has an elliptical hanger ring at the top. Its width profile goes 14, 20, 24, then 28, with a bright front rim at row 10 and shadow below. The base is an ellipse of rows 26-31 with widths 10, 16, 18, 18, 16, 12, and a bright front-rim row at 28. Both horizontal frame parts therefore show top surfaces. The shirts hang between them as decor goods, and the pole at rows 24-26 is a vertical support. The front face and legs together span about 15 rows, so the object reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small clothes rack with a round top and pastel garments. Its density is decent: 14 visible tones per tile against 17 for the stall and 20 for the well, with 0% near-flat coverage. The problems are outline and shading. 78% of its dark edge pixels are near-neutral, much closer to the lamp (100%) than to the hedge (0%), stall (1%) or well (33%), which carry material-tinted edges. The dark grey/black line around the rack and garments reads as a sticker outline, not a dark tone of the neighbouring material. Each material ramp is shallow: the garments and grey metal frame show about 3 steps each, against 5-6 on the references. Only 19 distinct colours in total, against 38-40 for the stall and well, leaves little per-material grain or per-item highlighting. The garments are simple blocks with little fold texture. It is clean and readable, but a careful artist would see it as flatter and more sticker-like than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20533
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top hanging ring (elliptical rail)",
+      "rows": "1-10",
+      "evidence": "b",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging shirts (goods)",
+      "rows": "12-23",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "round base plate",
+      "rows": "26-31",
+      "evidence": "b",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central pole",
+      "rows": "11-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top ring is an ellipse about 10 rows tall. Width runs 14, 20, 24, then a narrower row 4 for the hole, then 22, 24, 26, 28 and back to 26 and 22. A bright front rim sits at row 10 (#f3f4f7) with a darker row beneath. The base is also an ellipse, rows 26-31, with widths 10, 16, 18, 18, 16, 12 and a light front rim at row 28. Between them the pole and hanging shirts form the open front face, about rows 11-26. The shirts are goods on the frame, so I counted them as decor. Both horizontal members, the ring and the base, show top faces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small round-topped clothes rack with pastel garments. Its measured density is fine: 14 visible tones per tile, between the hedge (9) and the stall (17) and well (20), with 0% near-flat coverage. The weak points are shading and outline. 78% of its dark edge pixels are near-neutral, against 0-1% for the hedge and stall and 33% for the well. That reads as a grey/black sticker-style outline rather than a dark tone of each neighbouring material. The garments look like only about 3 steps each (base, light, dark), with little grain or per-item highlight, and the rack top and stand look like a flat grey with a thin highlight. At this size it holds up next to the bench and lamp, but not next to the richer stall and well, which have tinted outlines and 5-6 steps per material. The neutral outline plus shallow ramps tips it to fail; metal, as on the lamp, might partly justify the grey edges, but the garments do not."
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21323
+  }
+ ],
+ "decidedAt": "2026-10-20T14:36:56.842Z",
+ "cells": {
+  "16": [
+   "5a4540cb35388788",
+   "731c4daa8500f2c1",
+   "7601bf871df926dd",
+   "dbbfef57a24f87d9"
+  ],
+  "24": [
+   "027f9e7c3e810adc",
+   "04ae6219baf671aa",
+   "095e34a453d558ab",
+   "1024f125dd10c208",
+   "17cb0c7318237be0",
+   "2abc976adc633a95",
+   "33c9d7792de03524",
+   "3abdd1b99da4293c",
+   "3d3419d9dc54494f",
+   "4035594dbe6a3485",
+   "479b25c3506dacb2",
+   "4c029e0e6a378273",
+   "6637c2f6a29a8225",
+   "79ce65a9033acd44",
+   "7ccc2fd12852604c",
+   "8640b78a5b1e4a6d",
+   "aff6ec347d77315e",
+   "b5a6b9611103e297",
+   "cccb278fc708a90d",
+   "d602c13299cd9bfd",
+   "de3e0afcdbbfc583",
+   "f44853ef6888b68d",
+   "fa1323ab59bee0be",
+   "fecadfc3d0406fb2"
+  ],
+  "32": [
+   "e4e424c45636ae3e"
+  ],
+  "48": [
+   "0832540c583c39bf",
+   "1349484d61b1e049",
+   "40ab3300ba9a75ff",
+   "a10dbd094ef75d57",
+   "a4529ad0a5febcad",
+   "f8e99b038f2451b7"
+  ]
+ }
+}

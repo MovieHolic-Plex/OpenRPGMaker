@@ -12,6 +12,8 @@
  * 번호가 바뀌면 그 칩셋을 쓰는 맵의 네 층을 함께 고쳐 쓴다.
  */
 import type { PassFlag, SectionStructureKitDef, StructureKitLearnedFrom, TileAiMetadata, TileGraft, TilesetDef } from "./types";
+import { OBJECT_SPEC_SCHEMA, type ObjectSpecV1 } from "./objectSpec";
+import { handKindCategory, migrateLegacyWorkshopKit, objectSpecHandKind, objectSpecOfKit } from "./objectSpecKits";
 
 export const WORKSHOP_ASSET_PREFIX = "workshop_";
 export const WORKSHOP_OBJECT_PREFIX = "workshop:";
@@ -45,6 +47,11 @@ export interface WorkshopObjectInput {
   readonly asset: { readonly id: string; readonly dataUrl: string; readonly width: number; readonly height: number };
   /** 빈 칸이 아닌 그림 칸. sourceTile = 시트 칸 번호, (dx, dy) = 그림 안 칸 좌표(왼쪽 위 0,0). */
   readonly cells: readonly { readonly sourceTile: number; readonly dx: number; readonly dy: number }[];
+  /** 설명서(ObjectSpec)에 남길 출처. 없으면 「공방, AI 생성」. */
+  readonly provenance?: ObjectSpecV1["provenance"];
+  /** 3/4 관문 영수증 요약·사람 선택 기록(있으면 설명서에 그대로). */
+  readonly gate?: ObjectSpecV1["gate"];
+  readonly review?: ObjectSpecV1["review"];
 }
 
 type ProjectLike = {
@@ -78,11 +85,11 @@ function tagValue(kit: SectionStructureKitDef, prefix: string): string | undefin
   return kit.ai?.tags?.find((tag) => tag.startsWith(prefix))?.slice(prefix.length);
 }
 
-/** 이 격자 해시로 이미 구운 물체가 있으면 그 킷. */
+/** 이 격자 해시로 이미 구운 물체가 있으면 그 킷. 격자 해시는 설명서 art.gridHash(옛 킷은 `grid:` 태그). */
 export function bakedWorkshopKit(tileset: TilesetDef | undefined, objectId: string, gridHash?: string): SectionStructureKitDef | undefined {
   const kit = (tileset?.structureKits ?? []).find((k) => k.id === objectId && isWorkshopKit(k));
   if (!kit) return undefined;
-  return gridHash === undefined || tagValue(kit, "grid:") === gridHash ? kit : undefined;
+  return gridHash === undefined || (kit.spec?.art?.gridHash ?? tagValue(kit, "grid:")) === gridHash ? kit : undefined;
 }
 
 function padTo(tileset: TilesetDef, length: number): void {
@@ -163,6 +170,28 @@ export function bakeWorkshopObject(project: ProjectLike, tilesetId: string, inpu
   tileset.count = base + input.cells.length;
 
   const stampKind = input.kind === "hang" ? "wallmount" : input.kind === "flat" ? "decal" : input.rows > foot ? "tall" : "prop";
+  const placementRules = input.kind === "hang" ? "벽면 윗줄에 건다." : input.kind === "wall" ? "북쪽 벽면 바로 아래 첫 바닥 줄에 붙인다." : input.kind === "flat" ? "바닥에 깐다(밟고 지나감)." : "바닥에 둔다. 발밑 줄은 막힌다.";
+  const clip = (text: string, max: number) => [...text].slice(0, max).join("");
+  const { category, layer } = handKindCategory(input.kind);
+  // 설명서가 정본이다(2026-10-20). 옛 `hand:`·`foot:`·`rise:`·`grid:`·`use:` 태그는 더 쓰지 않는다 — 읽는 쪽은 옛 저장본을 위해 둘 다 본다.
+  const spec: ObjectSpecV1 = {
+    schema: OBJECT_SPEC_SCHEMA,
+    id: input.objectId,
+    name: clip(input.title, 80) || input.objectId,
+    ...(input.description ? { summary: clip(input.description, 160) } : {}),
+    category,
+    tags: [stampKind, "workshop"],
+    tileSize: tileset.tileSize,
+    size: { w: input.columns, h: input.rows },
+    view: { footRows: foot, risePx: Math.max(0, Math.round(input.risePx)) },
+    layer,
+    passage: matrix.map((row, y) => row.map((tile) => (tile < 0 ? " " : input.kind === "flat" ? "." : foot > 0 && y >= input.rows - foot ? "X" : "*")).join("")),
+    placement: { anchor: input.kind, ...(input.use.length ? { use: input.use.slice(0, 8).map((u) => clip(u, 24)) } : {}), rule: placementRules, repeat: "fixed" },
+    art: { gridHash: clip(input.gridHash, 160), tilesetId: clip(tileset.id, 160) },
+    ...(input.gate ? { gate: input.gate } : {}),
+    ...(input.review ? { review: input.review } : {}),
+    provenance: input.provenance ?? { aiGenerated: true, tool: "oprn-workshop" },
+  };
   const kit: SectionStructureKitDef = {
     id: input.objectId,
     kind: "section",
@@ -173,12 +202,13 @@ export function bakeWorkshopObject(project: ProjectLike, tilesetId: string, inpu
     rows: matrix.map((row) => ({ tiles: row.map(() => -1), upperTiles: row })),
     ai: {
       description: input.description,
-      placementRules: input.kind === "hang" ? "벽면 윗줄에 건다." : input.kind === "wall" ? "북쪽 벽면 바로 아래 첫 바닥 줄에 붙인다." : input.kind === "flat" ? "바닥에 깐다(밟고 지나감)." : "바닥에 둔다. 발밑 줄은 막힌다.",
-      tags: [stampKind, "workshop", `hand:${input.kind}`, `foot:${foot}`, `rise:${input.risePx}`, `grid:${input.gridHash}`, ...input.use.map((u) => `use:${u}`)],
+      placementRules,
+      tags: [stampKind, "workshop"],
       role: "prop",
       layerHome: "upper",
       repeatability: "fixed",
     },
+    spec,
     learnedFrom: WORKSHOP_LEARNED_FROM,
     createdAt: new Date().toISOString(),
   };
@@ -247,7 +277,9 @@ export function attachWorkshopTiles(project: ProjectLike, tilesetId: string, par
   const re = (tile: number): number => (tile >= 0 ? remap.get(tile) ?? tile : tile);
   const kits = parked.kits.map((kit) => (moved
     ? { ...kit, rows: kit.rows.map((row) => ({ tiles: row.tiles.map(re), ...(row.upperTiles ? { upperTiles: row.upperTiles.map(re) } : {}) })) }
-    : kit));
+    : { ...kit }));
+  // 다시 붙이는 김에 옛 태그 킷을 설명서로 옮긴다(불러올 때마다 ensureBundledTilesets 가 지나가는 자리).
+  for (const kit of kits) migrateLegacyWorkshopKit(kit, tileset.tileSize);
   tileset.structureKits = [...(tileset.structureKits ?? []), ...kits];
   if (moved) {
     for (const map of Object.values(project.maps ?? {})) {
@@ -274,9 +306,11 @@ export function workshopHandObjects(tileset: TilesetDef | undefined): Record<str
   const out: Record<string, WorkshopHandObject> = {};
   for (const kit of tileset?.structureKits ?? []) {
     if (!isWorkshopKit(kit)) continue;
-    const kind = (tagValue(kit, "hand:") ?? "floor") as WorkshopHandKind;
-    if (!HAND_KINDS.includes(kind)) continue;
-    const foot = Number(tagValue(kit, "foot:") ?? 0);
+    // 설명서가 먼저, 없으면 옛 태그(objectSpecOfKit 이 옛 태그를 설명서 꼴로 읽어 준다).
+    const spec = objectSpecOfKit(kit, tileset);
+    const kind = (objectSpecHandKind(spec) ?? (spec ? null : "floor")) as WorkshopHandKind | null;
+    if (!kind || !HAND_KINDS.includes(kind)) continue;
+    const foot = spec?.view.footRows ?? 0;
     // 손 도트 사양의 칸 좌표: floor·wall 은 발밑 첫 줄이 dy 0(솟은 칸은 음수), hang·flat 은 맨 윗줄이 dy 0
     const top = kind === "floor" || kind === "wall" ? kit.height - foot : 0;
     const cells: [number, number, number, number][] = [];
@@ -285,9 +319,9 @@ export function workshopHandObjects(tileset: TilesetDef | undefined): Record<str
     }));
     out[kit.id] = {
       ko: kit.name ?? kit.id, category: "workshop", category_ko: "공방", kind,
-      w: kit.width, h: kind === "hang" ? 0 : kind === "flat" ? kit.height : foot, up: Number(tagValue(kit, "rise:") ?? 0),
-      cells, desc: kit.ai?.description ?? "", tags: ["공방"], place: kit.ai?.placementRules ?? "", pair: [],
-      use: (kit.ai?.tags ?? []).filter((tag) => tag.startsWith("use:")).map((tag) => tag.slice(4)),
+      w: kit.width, h: kind === "hang" ? 0 : kind === "flat" ? kit.height : foot, up: spec?.view.risePx ?? 0,
+      cells, desc: kit.ai?.description ?? spec?.summary ?? "", tags: ["공방"], place: kit.ai?.placementRules ?? spec?.placement.rule ?? "", pair: [],
+      use: spec?.placement.use ?? [],
     };
   }
   return out;

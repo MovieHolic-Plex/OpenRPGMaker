@@ -1,7 +1,7 @@
 /**
  * 월드맵 키트 빌드 클라이언트 — 조수의 지형 편집 도구(edit_world_terrain·read_world_terrain)가 쓴다.
  *
- * 실제 빌드는 Python 키트(tiledata/worldmap-kit/kit/build_world.py)라서 호스트에서만 돈다:
+ * 실제 빌드는 Python 키트(oprn-worldmap-kit 저장소 tiledata/worldmap-kit/kit/build_world.py)라서 호스트에서만 돈다:
  * - 브라우저: 동반 서비스 `POST /v1/worldmap/build`(scripts/lib/ohMyPiHttp.mjs → scripts/lib/worldmapBuild.mjs)
  * - Pi 워커·헤드리스: 시작할 때 `setWorldmapBuilder(buildWorldmap)` 로 노드 구현을 직접 꽂는다.
  */
@@ -129,14 +129,14 @@ const REQUEST_TIMEOUT_MS = 7 * 60 * 1000;
 export async function buildWorldmap(request: WorldmapBuildRequest): Promise<WorldmapBuildResult> {
   if (builderOverride) return builderOverride(request);
   // LLM 클라이언트는 도구 레지스트리를 다시 읽는다. 빌드 도구 초기화와 순환하지 않게 HTTP 경로에서만 불러온다.
-  const [{ companionTokenHeaders }, { companionRequestBaseUrl }] = await Promise.all([
-    import("@/ai/companionToken"), import("@/ai/llmClient"),
+  const [{ fetchCompanion }, { companionRequestBaseUrl }] = await Promise.all([
+    import("@/ai/companionConnection"), import("@/ai/llmClient"),
   ]);
   let response: Response;
   try {
-    response = await fetch(`${companionRequestBaseUrl().replace(/\/$/, "")}/worldmap/build`, {
+    response = await fetchCompanion(`${companionRequestBaseUrl().replace(/\/$/, "")}/worldmap/build`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", ...companionTokenHeaders() },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(request),
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });

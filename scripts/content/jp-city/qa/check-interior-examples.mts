@@ -10,7 +10,8 @@ import { BUILD_HAND_INTERIOR_ROOM_TOOL } from "@/editor/tools/handInteriorTools"
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { isPassable } from "@/project/collision";
 const EX = "tiledata/jp-city/interior/examples";
-const HOME_KINDS = new Set(["mansion", "mokuchin", "hiraya"]);
+// house = 2층 단독주택 예제(house-1f·house-2f, 표 밖 — --places 로 준다).
+const HOME_KINDS = new Set(["mansion", "mokuchin", "hiraya", "house"]);
 const SPEC = JSON.parse(readFileSync("src/assets/jpInteriorSpec.json", "utf8")).objects as Record<string, { w?: number; h?: number; up?: number; kind?: string }>;
 const GRID = process.argv.includes("--grid");
 // --places <파일> = 예제 표 하나만(작업자는 자기 표 places3-<블록>.json). 기본 = places2.json + places3*.json 전부.

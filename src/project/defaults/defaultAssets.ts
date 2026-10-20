@@ -1,7 +1,7 @@
 import {ATLAS_CARTOGRAPHY_TEXTURE, createAtlasCartographyTileset, ensureAtlasCartographyReferences} from "./atlasCartography";
 import { WORLDMAP_SELECTED_TEXTURE, createWorldmapSelectedTileset, ensureWorldmapSelectedTileset } from "./worldmapSelected";
 import { WORLDMAP_AUTHORING_TEXTURE, WORLDMAP_AUTHORING_ID, createWorldmapAuthoringTileset, ensureWorldmapAuthoringBrushes } from './worldmapAuthoring';
-import { BEODEUL_CITY_TEXTURE, createBeodeulCityTileset, ensureBeodeulCityReferences, ensureBeodeulCityTileset } from "./beodeulCity";
+import { BEODEUL_CITY_TEXTURE, createBeodeulCityTileset, ensureBeodeulCityReferences, ensureBeodeulCityTileset, beodeulCityBundledReferenceDocuments } from "./beodeulCity";
 import {ensureBeodeulFacilityKits} from './beodeulFacilities';
 import {BEODEUL_FORMS_TEXTURE,createBeodeulFormsTileset,ensureBeodeulFormsTileset,ensureBeodeulForms} from './beodeulForms';
 import {BEODEUL_REVIEWED_TEXTURE,createBeodeulReviewedTileset,ensureBeodeulReviewedTileset,ensureBeodeulReviewed} from './beodeulReviewed';
@@ -10,24 +10,26 @@ import { BEODEUL_GROUND_TEXTURE, createBeodeulGroundTileset, ensureBeodeulGround
 import { BEODEUL_NATURE_TEXTURE, createBeodeulNatureTileset } from "./beodeulNature";
 import { BEODEUL_WARM_TREES_TEXTURE, createBeodeulWarmTreesTileset } from './beodeulWarmTrees';
 import { BEODEUL_ARCHITECTURE_TEXTURE, createBeodeulArchitectureTileset, ensureBeodeulArchitectureTileset } from './beodeulArchitecture';
-import { JOSEON_BARAM_TEXTURE, createJoseonBaramTileset, ensureJoseonBaramReferences, ensureJoseonBaramTileset } from "./joseonBaram";
-import { MODERN_CITY_TEXTURE, createModernCityTileset, ensureModernCityReferences, ensureModernCityTileset } from "./modernCity";
-import { JP_CITY_TEXTURE, createJpCityTileset, ensureJpCityReferences, ensureJpCityTileset } from "./jpCity";
-import { WIZARDING_WORLD_TEXTURE, createWizardingWorldTileset, ensureWizardingWorldReferences, ensureWizardingWorldTileset } from "./wizardingWorld";
-import { PIRATE_ISLES_TEXTURE, createPirateIslesTileset, ensurePirateIslesReferences, ensurePirateIslesTileset } from "./pirateIsles";
-import { SENGOKU_EDO_TEXTURE, createSengokuEdoTileset, ensureSengokuEdoReferences, ensureSengokuEdoTileset } from "./sengokuEdo";
-import { SKY_ISLAND_TEXTURE, createSkyIslandTileset, ensureSkyIslandReferences, ensureSkyIslandTileset } from "./skyIsland";
-import { STEAMPUNK_CITY_TEXTURE, createSteampunkCityTileset, ensureSteampunkCityReferences, ensureSteampunkCityTileset } from "./steampunkCity";
-import { MODERN_CAMPUS_TEXTURE, createModernCampusTileset, ensureModernCampusReferences, ensureModernCampusTileset } from "./modernCampus";
-import { SF_STATION_TEXTURE, createSfStationTileset, ensureSfStationReferences, ensureSfStationTileset } from "./sfStation";
-import { GOTHIC_MANOR_TEXTURE, createGothicManorTileset, ensureGothicManorReferences, ensureGothicManorTileset } from "./gothicManor";
-import { PREHISTORIC_TEXTURE, createPrehistoricTileset, ensurePrehistoricReferences, ensurePrehistoricTileset } from "./prehistoric";
-import { DESERT_EAST_TEXTURE, createDesertEastTileset, ensureDesertEastReferences, ensureDesertEastTileset } from "./desertEast";
-import { SNOW_NORTH_TEXTURE, createSnowNorthTileset, ensureSnowNorthReferences, ensureSnowNorthTileset } from "./snowNorth";
-import { createEmeraldMonsterKitTileset, ensureEmeraldMonsterKitTileset, isEmeraldMonsterKitTexture } from "./emeraldMonsterKit";
-import { createMonsterKitTileset, ensureMonsterKitTileset, isMonsterKitTexture } from "./monsterKit";
+import { JOSEON_BARAM_TEXTURE, createJoseonBaramTileset, ensureJoseonBaramReferences, ensureJoseonBaramTileset, joseonBaramBundledReferenceDocuments } from "./joseonBaram";
+import { MODERN_CITY_TEXTURE, createModernCityTileset, ensureModernCityReferences, ensureModernCityTileset, modernCityBundledReferenceDocuments } from "./modernCity";
+import { JP_CITY_TEXTURE, createJpCityTileset, ensureJpCityReferences, ensureJpCityTileset, jpCityBundledReferenceDocuments } from "./jpCity";
+import { WIZARDING_WORLD_TEXTURE, createWizardingWorldTileset, ensureWizardingWorldReferences, ensureWizardingWorldTileset, wizardingWorldBundledReferenceDocuments } from "./wizardingWorld";
+import { PIRATE_ISLES_TEXTURE, createPirateIslesTileset, ensurePirateIslesReferences, ensurePirateIslesTileset, pirateIslesBundledReferenceDocuments } from "./pirateIsles";
+import { SENGOKU_EDO_TEXTURE, createSengokuEdoTileset, ensureSengokuEdoReferences, ensureSengokuEdoTileset, sengokuEdoBundledReferenceDocuments } from "./sengokuEdo";
+import { SKY_ISLAND_TEXTURE, createSkyIslandTileset, ensureSkyIslandReferences, ensureSkyIslandTileset, skyIslandBundledReferenceDocuments } from "./skyIsland";
+import { STEAMPUNK_CITY_TEXTURE, createSteampunkCityTileset, ensureSteampunkCityReferences, ensureSteampunkCityTileset, steampunkCityBundledReferenceDocuments } from "./steampunkCity";
+import { MODERN_CAMPUS_TEXTURE, createModernCampusTileset, ensureModernCampusReferences, ensureModernCampusTileset, modernCampusBundledReferenceDocuments } from "./modernCampus";
+import { SF_STATION_TEXTURE, createSfStationTileset, ensureSfStationReferences, ensureSfStationTileset, sfStationBundledReferenceDocuments } from "./sfStation";
+import { GOTHIC_MANOR_TEXTURE, createGothicManorTileset, ensureGothicManorReferences, ensureGothicManorTileset, gothicManorBundledReferenceDocuments } from "./gothicManor";
+import { PREHISTORIC_TEXTURE, createPrehistoricTileset, ensurePrehistoricReferences, ensurePrehistoricTileset, prehistoricBundledReferenceDocuments } from "./prehistoric";
+import { DESERT_EAST_TEXTURE, createDesertEastTileset, ensureDesertEastReferences, ensureDesertEastTileset, desertEastBundledReferenceDocuments } from "./desertEast";
+import { SNOW_NORTH_TEXTURE, createSnowNorthTileset, ensureSnowNorthReferences, ensureSnowNorthTileset, snowNorthBundledReferenceDocuments } from "./snowNorth";
+import { createEmeraldMonsterKitTileset, emeraldMonsterKitBundledReferenceDocuments, ensureEmeraldMonsterKitTileset, isEmeraldMonsterKitTexture } from "./emeraldMonsterKit";
+import { createMonsterKitTileset, ensureMonsterKitTileset, isMonsterKitTexture, monsterKitBundledReferenceDocuments } from "./monsterKit";
 import { ATLAS_VEHICLES_TEXTURE, createAtlasVehiclesTileset, ensureAtlasVehiclesReferences } from "./atlasVehicles";
-import { ATLAS_BIOME_INTERIOR_TEXTURE, createAtlasBiomeInteriorTileset, ensureAtlasBiomeInteriorCurrent } from "./atlasBiomeInterior";
+import { ATLAS_BIOME_INTERIOR_TEXTURE, createAtlasBiomeInteriorTileset, ensureAtlasBiomeInteriorCurrent, atlasBiomeInteriorBundledReferenceDocuments } from "./atlasBiomeInterior";
+import { bundledJsonKeyForTexture, bundledJsonLoaded, preloadBundledJson, type BundledJsonKey } from "./bundledJson";
+import type { TilesetReferenceCategory } from "../tilesetReferences";
 import type { AssetSet, GameMap, PassFlag, ResourceKind, ResourceProfile, SpriteDef, TilesetDef } from "../types";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CC0_AUDIO_ASSETS } from "@/assets/cc0AudioAssets";
@@ -137,6 +139,53 @@ export function bundledTilesetById(id: string): TilesetDef | undefined {
     if (bundledTilesetIdForAsset(asset) === id) return bundledEasyRpgTileset(asset);
   }
   return undefined;
+}
+
+/** 정의 JSON 을 지연으로 읽는 번들 칩셋 → 정의 없이 참고문서만 만드는 함수(새 사본의 referenceDocuments 와 같은 값). */
+const REFERENCE_DOCS_WITHOUT_DEFINITION: Readonly<Record<string, () => TilesetReferenceCategory[]>> = {
+  [JP_CITY_TEXTURE]: jpCityBundledReferenceDocuments,
+  [BEODEUL_CITY_TEXTURE]: beodeulCityBundledReferenceDocuments,
+  [MODERN_CITY_TEXTURE]: modernCityBundledReferenceDocuments,
+  [JOSEON_BARAM_TEXTURE]: joseonBaramBundledReferenceDocuments,
+  [ATLAS_BIOME_INTERIOR_TEXTURE]: atlasBiomeInteriorBundledReferenceDocuments,
+  [WIZARDING_WORLD_TEXTURE]: wizardingWorldBundledReferenceDocuments,
+  [GOTHIC_MANOR_TEXTURE]: gothicManorBundledReferenceDocuments,
+  [PIRATE_ISLES_TEXTURE]: pirateIslesBundledReferenceDocuments,
+  [SF_STATION_TEXTURE]: sfStationBundledReferenceDocuments,
+  [SENGOKU_EDO_TEXTURE]: sengokuEdoBundledReferenceDocuments,
+  [MODERN_CAMPUS_TEXTURE]: modernCampusBundledReferenceDocuments,
+  [STEAMPUNK_CITY_TEXTURE]: steampunkCityBundledReferenceDocuments,
+  [SNOW_NORTH_TEXTURE]: snowNorthBundledReferenceDocuments,
+  [DESERT_EAST_TEXTURE]: desertEastBundledReferenceDocuments,
+  [PREHISTORIC_TEXTURE]: prehistoricBundledReferenceDocuments,
+  [SKY_ISLAND_TEXTURE]: skyIslandBundledReferenceDocuments,
+};
+
+/**
+ * 번들 타일셋 id 의 «새 사본이 들고 태어나는» 참고문서 — `bundledTilesetById(id)?.referenceDocuments` 와 같은 값이다.
+ * 로드는 저장본에서 뺀 번들 참고문서를 이것으로 되돌린다(installReferenceOwners.ts). 정의 JSON 이 큰 칩셋은 정의를 읽지 않고 만든다 —
+ * 그래야 프로젝트를 여는 데 번들 정의 43MB 가 필요 없다(2026-10-20).
+ */
+export function bundledReferenceDocumentsById(id: string): TilesetDef["referenceDocuments"] | undefined {
+  const asset = id === DEFAULT_TILESET_ID
+    ? bundledAssetForTextureKey(DEFAULT_TILESET_TEXTURE_KEY)
+    : BUNDLED_EASYRPG_CHIPSET_ASSETS.find((candidate) => bundledTilesetIdForAsset(candidate) === id);
+  if (!asset) return undefined;
+  const docs = REFERENCE_DOCS_WITHOUT_DEFINITION[asset.textureKey];
+  if (docs) return docs();
+  // 몬스터 수집 시트는 정의가 정적이지만 칸 표 복제가 로드마다 약 0.1s 였다(2026-10-20 프로파일) — 문서만 만든다.
+  if (isMonsterKitTexture(asset.textureKey)) return monsterKitBundledReferenceDocuments(asset.textureKey);
+  if (isEmeraldMonsterKitTexture(asset.textureKey)) return emeraldMonsterKitBundledReferenceDocuments(asset.textureKey);
+  return bundledEasyRpgTileset(asset).referenceDocuments;
+}
+
+/**
+ * 번들 타일셋 전부를 만들거나 맞추는 데 필요한 정의 JSON 을 읽어 둔다(편집기에서 새 프로젝트·첫 부팅 정규화 전에 await).
+ * 이미 다 있으면(정적 출처 = 테스트·헤드리스·Electron 메인, 또는 읽기 끝) null 이다 — 그때는 await 하지 않아 로드 경로의 순서가 예전 그대로다.
+ */
+export function preloadAllBundledTilesetDefinitions(): Promise<void> | null {
+  const keys = BUNDLED_EASYRPG_CHIPSET_ASSETS.map((asset) => bundledJsonKeyForTexture(asset.textureKey)).filter((key): key is BundledJsonKey => key !== undefined);
+  return keys.every(bundledJsonLoaded) ? null : preloadBundledJson(keys);
 }
 
 // 숲마을·기후 마을·선별 소품·Tibo 실내·합본 마을+레트로 월드 시트의 보강 단계는 2026-10-07 저작권 정리로 그 칩셋과 함께 지웠다.
