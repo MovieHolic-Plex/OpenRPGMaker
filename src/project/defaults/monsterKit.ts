@@ -22,6 +22,12 @@ export function isMonsterKitTexture(textureKey: string): boolean {
   return textureKey in MONSTER_KIT_SHEET_DATA;
 }
 
+/** 새 사본의 참고문서만(`createMonsterKitTileset(textureKey).referenceDocuments` 와 같은 값) — 칸 표를 복제하지 않는다. */
+export function monsterKitBundledReferenceDocuments(textureKey: string): TilesetReferenceCategory[] | undefined {
+  const data = MONSTER_KIT_SHEET_DATA[textureKey] as SheetData | undefined;
+  return data?.referenceDocuments?.length ? structuredClone(data.referenceDocuments) : undefined;
+}
+
 /** 번들 정의의 독립 사본. */
 export function createMonsterKitTileset(textureKey: string): TilesetDef {
   const data = MONSTER_KIT_SHEET_DATA[textureKey] as SheetData | undefined;

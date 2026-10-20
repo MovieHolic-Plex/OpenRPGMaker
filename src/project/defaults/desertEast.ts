@@ -6,7 +6,10 @@
 // 참고문서 src/assets/desertEastReferences.json(scripts/content/desert-east/bake_refs_de.py) — 그림은 public/assets/desert-east-references/ 경로만(바이트 없음). 위키 openwiki/desert-east.md.
 //
 // 칸 번호는 덧붙이기 전용이다(자리 키 핀 tiledata/desert-east/bake-pins.json). 번들 소유 = id 가 `de-` 로 시작하는 조립 부품·참고문서. 구조는 modernCampus.ts·jpCity.ts 와 같다.
-import data from "@/assets/desertEastTileset.json";
+import sheet from "@/assets/desertEastSheet.json";
+import { bundledJson } from "./bundledJson";
+/** 번들 정의 JSON — 처음 쓸 때 읽는다(bundledJson.ts). 칸 수·한 줄 폭은 같은 굽기가 쓰는 작은 시트 메타(`desertEastSheet.json`)에서 읽는다. */
+const data = () => bundledJson("desertEastTileset");
 import references from "@/assets/desertEastReferences.json";
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
@@ -15,34 +18,39 @@ export const DESERT_EAST_ID = "desert_east";
 export const DESERT_EAST_TEXTURE = "tex_desert_east";
 /** 사막·동양풍 칩셋 계열. 다른 번들과 칸 번호 체계가 달라, 맵이 있는 채로 말없이 바꾸면 깨진다. */
 export const DESERT_EAST_FAMILY = "oprn-desert-east";
-export const DESERT_EAST_COUNT: number = data.count;
-export const DESERT_EAST_TILES_PER_ROW: number = data.tilesPerRow;
+export const DESERT_EAST_COUNT: number = sheet.count;
+export const DESERT_EAST_TILES_PER_ROW: number = sheet.tilesPerRow;
 /** 조립 부품·참고문서 id 머리(`de-` 야외·실내 키트·참고문서). 번들이 소유한다(기존 사본에서 같은 id 는 번들 것으로 바꾼다). */
 export const DESERT_EAST_PREFIX = "de-";
 const REFERENCES = references as unknown as TilesetReferenceCategory[];
 
 const isOwned = (id: string): boolean => id.startsWith(DESERT_EAST_PREFIX);
 
+/** 새 사본이 들고 태어나는 참고문서 — 정의 JSON 없이 만든다(로드가 저장본에서 뺀 번들 참고문서를 되돌릴 때 쓴다, installReferenceOwners.ts). */
+export function desertEastBundledReferenceDocuments(): TilesetReferenceCategory[] {
+  return structuredClone(REFERENCES);
+}
+
 /** 번들 정의의 독립 사본 — 참고문서를 들고 태어난다. */
 export function createDesertEastTileset(): TilesetDef {
   return {
     id: DESERT_EAST_ID,
-    name: data.name,
+    name: data().name,
     image: { type: "bundled", id: DESERT_EAST_TEXTURE },
     kind: "custom",
     family: DESERT_EAST_FAMILY,
-    tileSize: data.tileSize,
-    tilesPerRow: data.tilesPerRow,
-    count: data.count,
-    passability: structuredClone(data.passability) as PassFlag[],
-    priority: [...data.priority] as ("lower" | "upper")[],
-    terrain: [...data.terrain],
-    tileMeta: structuredClone(data.tileMeta) as TileAiMetadata[],
-    tileGroups: structuredClone(data.tileGroups) as unknown as TileGroupMetadata[],
-    autotileGroups: structuredClone(data.autotileGroups) as unknown as AutotileGroup[],
-    animationStrips: structuredClone(data.animationStrips),
-    structureKits: structuredClone(data.structureKits) as unknown as StructureKitDef[],
-    referenceDocuments: structuredClone(REFERENCES),
+    tileSize: data().tileSize,
+    tilesPerRow: sheet.tilesPerRow,
+    count: sheet.count,
+    passability: structuredClone(data().passability) as PassFlag[],
+    priority: [...data().priority] as ("lower" | "upper")[],
+    terrain: [...data().terrain],
+    tileMeta: structuredClone(data().tileMeta) as TileAiMetadata[],
+    tileGroups: structuredClone(data().tileGroups) as unknown as TileGroupMetadata[],
+    autotileGroups: structuredClone(data().autotileGroups) as unknown as AutotileGroup[],
+    animationStrips: structuredClone(data().animationStrips),
+    structureKits: structuredClone(data().structureKits) as unknown as StructureKitDef[],
+    referenceDocuments: desertEastBundledReferenceDocuments(),
   };
 }
 
@@ -99,13 +107,13 @@ function shapeSignature(t: Pick<TilesetDef, "priority" | "passability" | "tileMe
 let bundledShape: string | undefined;
 function bundleShape(): string {
   return bundledShape ??= shapeSignature({
-    priority: data.priority as ("lower" | "upper")[],
-    passability: data.passability as PassFlag[],
-    tileMeta: data.tileMeta as TileAiMetadata[],
-    tileGroups: data.tileGroups as unknown as TileGroupMetadata[],
-    autotileGroups: data.autotileGroups as unknown as AutotileGroup[],
-    animationStrips: data.animationStrips,
-    structureKits: data.structureKits as unknown as StructureKitDef[],
+    priority: data().priority as ("lower" | "upper")[],
+    passability: data().passability as PassFlag[],
+    tileMeta: data().tileMeta as TileAiMetadata[],
+    tileGroups: data().tileGroups as unknown as TileGroupMetadata[],
+    autotileGroups: data().autotileGroups as unknown as AutotileGroup[],
+    animationStrips: data().animationStrips,
+    structureKits: data().structureKits as unknown as StructureKitDef[],
   });
 }
 
@@ -120,9 +128,9 @@ export function ensureDesertEastTileset(tileset: TilesetDef): boolean {
   if (tileset.id !== DESERT_EAST_ID || !isDesertEastTileset(tileset)) return false;
   let changed = false;
   if (tileset.family !== DESERT_EAST_FAMILY) { tileset.family = DESERT_EAST_FAMILY; changed = true; }
-  if (tileset.tilesPerRow === data.tilesPerRow) {
-    if (tileset.count > data.count) return changed;
-    if (tileset.count === data.count && shapeSignature(tileset) === bundleShape()) return changed;
+  if (tileset.tilesPerRow === sheet.tilesPerRow) {
+    if (tileset.count > sheet.count) return changed;
+    if (tileset.count === sheet.count && shapeSignature(tileset) === bundleShape()) return changed;
     const fresh = createDesertEastTileset();
     const authoredKits = (tileset.structureKits ?? []).filter((kit) => !isOwned(kit.id));
     const authoredAutotiles = (tileset.autotileGroups ?? []).filter((group) => !isOwned(group.id));

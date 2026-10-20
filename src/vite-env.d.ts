@@ -3,6 +3,12 @@
 // 빨간불이 됐다. `vite/client` 를 types 에 넣으면 ImportMetaEnv 선언과 겹치므로 모양만 선언한다.
 declare module "*.css";
 
+// `?url` 자산 주소(편집기 빌드가 번들 타일셋 정의 JSON 을 지연으로 읽는다, src/project/defaults/bundledJsonSources.lazy.ts).
+declare module "*.json?url" {
+  const url: string;
+  export default url;
+}
+
 interface ImportMetaEnv {
   readonly DEV: boolean;
   readonly PROD: boolean;

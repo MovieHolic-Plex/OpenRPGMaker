@@ -247,9 +247,12 @@ export default defineConfig(({ mode }) => {
   // 이건 디버깅 불가를 뜻한다. dev 전용이라 프로덕션 번들에는 영향이 없다.
   css: { devSourcemap: true },
   resolve: {
-    alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-    },
+    alias: [
+      { find: "@", replacement: fileURLToPath(new URL("./src", import.meta.url)) },
+      // 번들 타일셋 정의 JSON(약 43MB)을 편집기 진입 청크에서 빼고 처음 쓸 때 fetch 한다(src/project/defaults/bundledJson.ts).
+      // 이 설정(편집기·시작 화면 빌드, dev 서버)만 바꿔 끼운다 — 테스트·스크립트·Electron 메인·플레이어는 정적 출처 그대로다.
+      { find: /^\.\/bundledJsonSources$/, replacement: fileURLToPath(new URL("./src/project/defaults/bundledJsonSources.lazy.ts", import.meta.url)) },
+    ],
     extensions: [".ts", ".js"],
   },
   server: {
@@ -336,6 +339,8 @@ export default defineConfig(({ mode }) => {
         // 읽는 시점을 늦추는 지연 로드는 동기 소비자가 많고 JSON 해석이 합쳐 약 0.4초라 넣지 않았다(openwiki/runtime-project-schema.md 편집기 렉 F).
         manualChunks(id) {
           const file = id.split("?")[0]!.replace(/\\/g, "/");
+          // `?url` 자산 참조(번들 타일셋 정의 JSON 의 주소 한 줄)는 묶음에 넣지 않는다 — 묶음 청크를 끌고 오면 안 된다.
+          if (id.includes("?url")) return undefined;
           // 데스크톱 시작 화면이 쓰는 작은 JSON 은 묶음에 넣지 않는다 — 묶음 청크(44MB)가 통째로 시작 화면에 실려
           // 첫 화면이 2초 넘게 늦었다(2026-10-20 실측). 이 파일은 자기를 import 하는 청크로 간다.
           if (HOME_SCREEN_JSON.some((suffix) => file.endsWith(suffix))) return undefined;

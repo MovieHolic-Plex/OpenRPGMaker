@@ -7,7 +7,10 @@
 // 사본은 같은 시트의 옛 굽기로 보고, 번들 소유 칸 표(통행·층·그룹·오토타일·움직임·조립 부품)만 새 굽기로 바꾼다. 맵은 건드리지 않는다.
 // 번들 소유 = id 가 `wz-` 로 시작하는 조립 부품·오토타일 그룹·참고문서. 저자가 더한 것(다른 id)은 갱신 때 보존한다.
 // 구조는 jpCity.ts 와 같다(같은 갱신 규약). 시트 칸 수·열 수는 하드코딩하지 않고 정의 JSON 에서 읽는다.
-import data from "@/assets/wizardingWorldTileset.json";
+import sheet from "@/assets/wizardingWorldSheet.json";
+import { bundledJson } from "./bundledJson";
+/** 번들 정의 JSON — 처음 쓸 때 읽는다(bundledJson.ts). 칸 수·한 줄 폭은 같은 굽기가 쓰는 작은 시트 메타(`wizardingWorldSheet.json`)에서 읽는다. */
+const data = () => bundledJson("wizardingWorldTileset");
 import references from "@/assets/wizardingWorldReferences.json";
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
@@ -16,34 +19,39 @@ export const WIZARDING_WORLD_ID = "wizarding_world";
 export const WIZARDING_WORLD_TEXTURE = "tex_wizarding_world";
 /** 마법 학교 칩셋 계열. 다른 번들과 칸 번호 체계가 달라, 맵이 있는 채로 말없이 바꾸면 깨진다. */
 export const WIZARDING_WORLD_FAMILY = "oprn-wizard";
-export const WIZARDING_WORLD_COUNT: number = data.count;
-export const WIZARDING_WORLD_TILES_PER_ROW: number = data.tilesPerRow;
+export const WIZARDING_WORLD_COUNT: number = sheet.count;
+export const WIZARDING_WORLD_TILES_PER_ROW: number = sheet.tilesPerRow;
 /** 조립 부품·오토타일 그룹·참고문서 id 머리. 번들이 소유한다(기존 사본에서 같은 id 는 번들 것으로 바꾼다). */
 export const WIZARDING_WORLD_PREFIX = "wz-";
 const REFERENCES = references as unknown as TilesetReferenceCategory[];
 
 const isOwned = (id: string): boolean => id.startsWith(WIZARDING_WORLD_PREFIX);
 
+/** 새 사본이 들고 태어나는 참고문서 — 정의 JSON 없이 만든다(로드가 저장본에서 뺀 번들 참고문서를 되돌릴 때 쓴다, installReferenceOwners.ts). */
+export function wizardingWorldBundledReferenceDocuments(): TilesetReferenceCategory[] {
+  return structuredClone(REFERENCES);
+}
+
 /** 번들 정의의 독립 사본 — 참고문서를 들고 태어난다. */
 export function createWizardingWorldTileset(): TilesetDef {
   return {
     id: WIZARDING_WORLD_ID,
-    name: data.name,
+    name: data().name,
     image: { type: "bundled", id: WIZARDING_WORLD_TEXTURE },
     kind: "custom",
     family: WIZARDING_WORLD_FAMILY,
-    tileSize: data.tileSize,
-    tilesPerRow: data.tilesPerRow,
-    count: data.count,
-    passability: structuredClone(data.passability) as PassFlag[],
-    priority: [...data.priority] as ("lower" | "upper")[],
-    terrain: [...data.terrain],
-    tileMeta: structuredClone(data.tileMeta) as TileAiMetadata[],
-    tileGroups: structuredClone(data.tileGroups) as unknown as TileGroupMetadata[],
-    autotileGroups: structuredClone(data.autotileGroups) as unknown as AutotileGroup[],
-    animationStrips: structuredClone(data.animationStrips),
-    structureKits: structuredClone(data.structureKits) as unknown as StructureKitDef[],
-    referenceDocuments: structuredClone(REFERENCES),
+    tileSize: data().tileSize,
+    tilesPerRow: sheet.tilesPerRow,
+    count: sheet.count,
+    passability: structuredClone(data().passability) as PassFlag[],
+    priority: [...data().priority] as ("lower" | "upper")[],
+    terrain: [...data().terrain],
+    tileMeta: structuredClone(data().tileMeta) as TileAiMetadata[],
+    tileGroups: structuredClone(data().tileGroups) as unknown as TileGroupMetadata[],
+    autotileGroups: structuredClone(data().autotileGroups) as unknown as AutotileGroup[],
+    animationStrips: structuredClone(data().animationStrips),
+    structureKits: structuredClone(data().structureKits) as unknown as StructureKitDef[],
+    referenceDocuments: wizardingWorldBundledReferenceDocuments(),
     // 방 짓기 역할표 — 사양은 편집기(src/assets/wizardingRoomSpec.json, HAND_INTERIOR_SPECS)가 들고 있다.
     roomKit: { builtin: WIZARDING_WORLD_ID },
   };
@@ -102,13 +110,13 @@ function shapeSignature(t: Pick<TilesetDef, "priority" | "passability" | "tileMe
 let bundledShape: string | undefined;
 function bundleShape(): string {
   return bundledShape ??= shapeSignature({
-    priority: data.priority as ("lower" | "upper")[],
-    passability: data.passability as PassFlag[],
-    tileMeta: data.tileMeta as TileAiMetadata[],
-    tileGroups: data.tileGroups as unknown as TileGroupMetadata[],
-    autotileGroups: data.autotileGroups as unknown as AutotileGroup[],
-    animationStrips: data.animationStrips,
-    structureKits: data.structureKits as unknown as StructureKitDef[],
+    priority: data().priority as ("lower" | "upper")[],
+    passability: data().passability as PassFlag[],
+    tileMeta: data().tileMeta as TileAiMetadata[],
+    tileGroups: data().tileGroups as unknown as TileGroupMetadata[],
+    autotileGroups: data().autotileGroups as unknown as AutotileGroup[],
+    animationStrips: data().animationStrips,
+    structureKits: data().structureKits as unknown as StructureKitDef[],
   });
 }
 
@@ -124,9 +132,9 @@ export function ensureWizardingWorldTileset(tileset: TilesetDef): boolean {
   let changed = false;
   if (tileset.family !== WIZARDING_WORLD_FAMILY) { tileset.family = WIZARDING_WORLD_FAMILY; changed = true; }
   if (!tileset.roomKit) { tileset.roomKit = { builtin: WIZARDING_WORLD_ID }; changed = true; }
-  if (tileset.tilesPerRow === data.tilesPerRow) {
-    if (tileset.count > data.count) return changed;
-    if (tileset.count === data.count && shapeSignature(tileset) === bundleShape()) return changed;
+  if (tileset.tilesPerRow === sheet.tilesPerRow) {
+    if (tileset.count > sheet.count) return changed;
+    if (tileset.count === sheet.count && shapeSignature(tileset) === bundleShape()) return changed;
     const fresh = createWizardingWorldTileset();
     const authoredKits = (tileset.structureKits ?? []).filter((kit) => !isOwned(kit.id));
     const authoredAutotiles = (tileset.autotileGroups ?? []).filter((group) => !isOwned(group.id));

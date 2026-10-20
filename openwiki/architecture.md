@@ -49,6 +49,13 @@
   ⑤ 공용 자료 304 는 본문을 만들기 전에 판본(SELECT)만으로 판정한다 — 새 호스트 프로세스(데스크톱은 매 실행)의 첫 요청이 304 로 끝날 일에 읽기·gzip 1s 를 쓰던 것.
   ⑥ 창 닫기는 창을 바로 숨기고 저장을 60s 까지 기다린다 — 예전 10s 상한이 새 빌드 첫 실행 뒤의 큰 자동 저장(71MB 프로젝트 13~16s)을 끊어, 다음 실행이 또 «첫 부팅»(+10~15s)이 됐다.
   남은 것: 편집기 진입은 여전히 번들 타일셋 JSON 67MB 를 동기로 싣는다(정규화·소유 참고문서 복원이 동기로 쓴다) — 지연 로드는 부팅 경로 비동기화가 필요하다. 웜 부팅 편집기 입력 가능까지 클릭 뒤 약 5~7s(부하 40).
+- **편집기 열기 2단계 (2026-10-20): 번들 타일셋 정의 JSON 지연 로드.** 카드 클릭 → 편집기 settled 5.3s → 4.3s, JS 실행 시작 1.4s → 0.7s, 프로젝트 읽기 끝 3.9s → 2.4s(6회 교대 중앙값, loadavg 약 31).
+  큰 칩셋 16종의 정의(`src/assets/*Tileset.json`, 약 43MB)는 `src/project/defaults/bundledJson.ts` 하나로만 읽는다(`bundledJson(key)` 동기 · `preloadBundledJson(keys)` 비동기).
+  출처는 기본이 정적(`bundledJsonSources.ts` — 테스트·tsx·헤드리스·Electron 메인·플레이어는 예전 그대로)이고, **`vite.config.ts` 의 alias 만** `bundledJsonSources.lazy.ts`(`?url` 원본 JSON 자산 → fetch, 못 읽어 둔 것을 동기로 물으면 동기 XHR + 콘솔 경고)로 바꿔 끼운다.
+  열기에는 정의가 필요 없다: 저장본에서 뺀 번들 참고문서를 되돌릴 때 `bundledReferenceDocumentsById`(defaultAssets.ts)가 정의 없이 참고문서만 만든다(`createX().referenceDocuments` 와 같은 값 — 44종 대조 `scripts/perf/bundled-definitions-check.mts`).
+  정의를 읽는 곳: 첫 부팅 정규화 직전(`store.normalizeCurrentProject` — 표식이 맞는 웜 부팅은 안 읽는다), 빈 폴더 새 프로젝트·전체 초기화 직전(`preloadAllBundledTilesetDefinitions`, 다 읽혀 있으면 null 이라 await 하지 않는다), 첫 화면 뒤 한가할 때 맵이 쓰는 칩셋 것만(`preloadBundledJsonForProject`, main.ts).
+  **새 번들 칩셋을 더할 때:** 정의 JSON 이 크면 `bundledJsonSources.ts`·`.lazy.ts`·`bundledJson.ts` 의 `TEXTURE_KEYS` 에 함께 넣고 모듈은 `const data = () => bundledJson("…")`, 칸 수·줄 폭은 `*Sheet.json` 에서 읽는다. 참고문서 전용 함수(`xBundledReferenceDocuments`)를 `REFERENCE_DOCS_WITHOUT_DEFINITION` 에 등록하지 않으면 열 때마다 동기 XHR 로 정의를 읽는다.
+  남은 진입 묶음 `bundled-data` 약 21MB = 참고문서 JSON(열기 때 복원에 필요)·몬스터 수집 시트·카탈로그.
 
 - Phaser app split:
   - `src/app/mode.ts` owns the single active mode (`edit` or `play`), the shared Phaser game handle, and the DOM shell for topbar/main.
