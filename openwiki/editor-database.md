@@ -43,9 +43,12 @@ world z9, 배경 물결을 z4로 배치한다. 앞 효과는 기존 z60 층이�
 - 「화면」 구획: 해상도·배율을 바꾸면 「보기 범위」·「화면 맞춤」 선택도 다시 맞춘다(예전엔 빠른 선택 뒤 「가깝게」가 남았다). 양쪽 전신이면 안내 `db-system-resolution-veil-note`.
 - 「시작 설정」 장르 칩셋 잠금: 설명 전체가 라벨(132px 칸)에 들어가 네 줄로 꺾이던 것을 짧은 라벨 + 화면용 안내 문장으로. 몬스터 자산 막힘 문장도 도구용(`monsterAssetStatus().reason`) 대신 화면용.
 - 시스템 폼 라벨이 옛 `.db-detail-form label { text-transform: uppercase }` 에 걸려 「(PX)」「(%P)」로 보이던 것을 `studio-refresh.css` 에서 끔.
+- 「초기 파티」: 같은 멤버를 두 칸에 고를 수 있었고 저장·재로드에서 말없이 하나로 줄었다 → 다른 칸에 있는 멤버는 선택지에서 잠근다.
+- 「시작 설정 › 감정 상성」: 형식이 틀린 줄이 말없이 사라졌다 → 버린 줄 수와 예시를 `db-field-system-emotion-cycle-dropped` 로 알린다.
+- 「팀 교대 전투 사용」(`databaseBattleTeamsSection.ts`)이 혼자 맨 체크박스였다 → 다른 칸과 같은 알약 스위치.
 - 증거·도구: `scripts/qa/db-system-audit.mjs`(구획별 컨트롤 목록·넘침 1280×800/1920×1080, 컨트롤마다 바꿔 store·serialize→deserialize 재로드·런타임이 키를 읽는지),
   `scripts/qa/db-system-veil-resolution.mjs`(재현·시연 실행 캔버스), 출하 플레이어 `npm run qa:runtime -- --scenario db-system-res`(픽스처 `res480-fixture.mts` 의 `RES_DIALOGUE`).
-  전후 `verify-shots/db-system-audit/`: 고치기 전 캔버스 1024×768·3.2배 → 고친 뒤 480×270·1배. 이 머신은 크로미움이 `ERR_NETWORK_CHANGED` 로 vite 모듈을 끊으므로 `unshare -rn` 격리 netns 에서 dev 서버와 같이 돌린다.
+  전후(로컬 `verify-shots/db-system-audit/`, gitignore): 출하 플레이어 캔버스 고치기 전 1024×768·3.2배 → 고친 뒤 480×270·1배, 시연 실행도 같음. 점검 표·전후 그림은 `~/claude-viz/db-system-audit-1.html`. 이 머신은 크로미움이 `ERR_NETWORK_CHANGED` 로 vite 모듈을 끊으므로 `unshare -rn` 격리 netns 에서 dev 서버와 같이 돌린다.
 - 그대로 둔 것(이 탭 밖 공용 부품): 리소스 칸 이름이 원시 id(`windowskin-warm`)로 보임, 숨은 시험 호환 id 칸(`.db-authoring-id`, aria-hidden)에 임의 글자를 넣으면 재로드가 참조 검사로 실패 — 사람 경로가 아니라 고치지 않았다.
 
 ## 시스템(게임 설정) 탭 구획 목록·폼 격자·스위치 통일 (2026-10-17, 메뉴 감사 PR-5)

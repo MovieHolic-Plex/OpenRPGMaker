@@ -12,7 +12,12 @@ await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expe
 await page.goto(`http://127.0.0.1:${PORT}/?freshProject=1`, { timeout: 180000, waitUntil: "commit" });
 await page.waitForFunction(() => !!window.__oprnEditorStore, null, { timeout: 180000 });
 await page.waitForTimeout(6000);
-await page.evaluate(() => window.__oprnEditorStore.update((d) => { d.system.dialogueStyle = "dual-fullbody-veil"; }, { scope: "system", label: "qa" }));
+// 새 프로젝트 비동기 로드가 늦게 끝나면 먼저 넣은 값이 덮인다 — 남을 때까지 다시 넣는다.
+for (let attempt = 0; attempt < 20; attempt += 1) {
+  await page.evaluate(() => { if (window.__oprnEditorStore.getCurrent().system.dialogueStyle !== "dual-fullbody-veil") window.__oprnEditorStore.update((d) => { d.system.dialogueStyle = "dual-fullbody-veil"; }, { scope: "system", label: "qa" }); });
+  await page.waitForTimeout(1500);
+  if (await page.evaluate(() => window.__oprnEditorStore.getCurrent().system.dialogueStyle === "dual-fullbody-veil")) break;
+}
 await page.evaluate(async () => { (await import("/src/editor/panels/databaseModal.ts")).openDatabaseModal("system"); });
 await page.getByTestId("database-modal").waitFor();
 await page.getByTestId("db-system-nav-display").click();
@@ -38,7 +43,9 @@ await page.getByTestId("database-modal").screenshot({ path: `${PREFIX}-display.p
 await page.keyboard.press("Escape");
 await page.waitForTimeout(500);
 await page.evaluate(async () => { (await import("/src/editor/panels/testPlayModal.ts")).openTestPlayModal(); });
-await page.waitForTimeout(12000);
+// 게임 캔버스(Phaser)는 맵 굽기 뒤에 붙는다 — 편집기 캔버스 말고 하나 더 생길 때까지 기다린다.
+await page.waitForFunction(() => document.querySelectorAll("canvas").length >= 2, null, { timeout: 90000 }).catch(() => {});
+await page.waitForTimeout(3000);
 const canvases = await page.evaluate(() => [...document.querySelectorAll("canvas")].map((c) => `${c.width}x${c.height}`).join(" | "));
 console.log("test-play canvases", canvases);
 await page.screenshot({ path: `${PREFIX}-testplay.png` });
