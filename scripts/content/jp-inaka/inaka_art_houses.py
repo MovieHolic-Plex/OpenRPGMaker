@@ -985,10 +985,11 @@ def _straw_ticks(ex0, ex1, k):
     return out
 
 
-def jp_roof(c, ex0, ex1, ytop, ybot, mat, hip=True, inset=None, hw=None, box=None, lo2=None):
+def jp_roof(c, ex0, ex1, ytop, ybot, mat, hip=True, inset=None, hw=None, box=None, lo2=None, jk=None, breaks=0):
     """R12/R13 jp_city 문법 지붕. ytop = 윗 윤곽 행, ybot = 처마 밑 윤곽 행(벽은 ybot+1 부터, 그 1행은 벽 그림자).
     inset: 윗변이 처마보다 안으로 들어간 폭(기본 높이×0.28). hw: 위에서 본 귀마루 삼각면 윗변 폭(寄棟만).
     box: 초가·함석 용마루 상자 색 행들(앞면 폭에만). lo2: 마지막 기왓줄 단(더 어둡게). 반환: 앞면 윗변 (xa, xb).
+    jk: 4px 줄눈을 넣을 위 줄 수(그 아래 줄은 드문 3px 틱만, さくら駅). breaks: 초가 띠 사이 어두운 줄을 끊는 곳 수.
     R13 기와: 줄마다 몸 2행에 4px 줄눈(몸 −1) + 44px 간격으로 줄마다 엇갈린 3px 틱(몸 +1). 寄棟 끝은 세로 줄 삼각면,
     서쪽 경계 밝은 1px + 앞면 첫 열 짙게, 동쪽 경계 짙은 1px. 용마루 상자 양 끝에 鬼瓦 블록."""
     cfg = _JP_ROOF[mat]
@@ -1003,6 +1004,11 @@ def jp_roof(c, ex0, ex1, ytop, ybot, mat, hip=True, inset=None, hw=None, box=Non
     xa0, xb0 = ex0 + ins, ex1 - ins
     tile = mat in ('tairu', 'kawara')
     straw = {}
+    gaps = []                                                             # 초가 띠 줄 끊김 (줄 k, x0, x1)
+    for g in range(breaks):
+        kg = 1 + (g * 2) % max(1, ncrs - 1)
+        gx = round(lerp(xa0 + hw + 4, xb0 - hw - 12, (g + 0.35 + 0.3 * H(g, 3, 75)) / max(1, breaks)))
+        gaps.append((kg, gx, gx + 5 + int(H(g, 4, 76) * 4)))
     for y in range(ytop, ybot + 1):
         f = (y - ytop) / max(1, Hh)
         xl = round(lerp(xa0, ex0, f)); xr = round(lerp(xb0, ex1, f))
@@ -1028,6 +1034,8 @@ def jp_roof(c, ex0, ex1, ytop, ybot, mat, hip=True, inset=None, hw=None, box=Non
                 if mat == 'thatch':
                     seq = _THATCH_SIDE[side] if side else (cfg['lo'] if lower else cfg['up'])
                     t = seq[r]
+                    if r == 3 and side == 0 and any(kg == k and g0 <= x <= g1 for kg, g0, g1 in gaps):
+                        t = seq[2]                                        # 띠 사이 줄을 군데군데 끊음
                     if r in (1, 2):
                         if k not in straw:
                             straw[k] = _straw_ticks(ex0, ex1, k)
@@ -1060,9 +1068,9 @@ def jp_roof(c, ex0, ex1, ytop, ybot, mat, hip=True, inset=None, hw=None, box=Non
                     t = seq[r]
                     if r in (1, 2):
                         u = x - ex0
-                        if u % 4 == 3:
+                        if u % 4 == 3 and (jk is None or k < jk):
                             t -= 1                                        # 4px 줄눈
-                        elif (u // 4 + 3 * k) % 11 == 0:
+                        elif u % 4 != 3 and (u // 4 + 3 * k) % 11 == 0:
                             t += 1                                        # 드문 3px 기와 끝(줄마다 엇갈림)
                     if hip and x == bl and r != 0:
                         t = -3                                            # 서쪽 경계 밑 앞면 첫 열 짙게
@@ -1279,7 +1287,7 @@ def _kominka_draw(c):
     c.VL(X0 - 1, UW, WB - UW, OL); c.VL(X1 + 1, UW, WB - UW, OL)
     _shade(c, X0, UW, W, 1, 0.6)                                           # 처마 밑 벽 그림자 1행
     # 지붕(R12 jp 문법): 윤곽 · 箱棟 4행 · 이엉 4행 띠 5줄 · 처마 립+짙은 2 · 윤곽 = 31행
-    jp_roof(c, EX0, EX1, 29, UW - 1, 'thatch', hip=True, hw=10,
+    jp_roof(c, EX0, EX1, 29, UW - 1, 'thatch', hip=True, hw=10, breaks=3,
             box=(K('ita', 2), K('ita', 0), K('ita', -1), K('ita', -2)))
     stone_base(c, X0, WB, W, 5)
     engawa(c, 40, WB - 4, 48, depth=5, front=3)
@@ -1637,7 +1645,7 @@ def station(c, base):
     c0.HL(CX0, CL, CX1 - CX0 + 1, K('conc', 0)); c0.HL(CX0 - 1, CL + 1, CX1 - CX0 + 3, K('conc', -2))
     c0.HL(CX0 - 1, CT - 1, CX1 - CX0 + 3, K('conc', -1)); c0.VL(CX0 - 1, CT, CL - CT + 1, OL); c0.VL(CX1 + 1, CT, CL - CT + 1, OL)
     # 지붕(테라코타 기와 寄棟, 얕은 띠) + 가운데 시계 박공(破風이 처마선을 넘어 y38 까지)
-    jp_roof(c0, 3, 108, 19, 44, 'kawara', hip=True, hw=12)               # R12 jp 문법(さくら駅 결) 26행   # R10 寄棟 윗면 36줄(7칸 폭)
+    jp_roof(c0, 3, 108, 19, 44, 'kawara', hip=True, hw=12, jk=2)               # R12 jp 문법(さくら駅 결) 26행   # R10 寄棟 윗면 36줄(7칸 폭)
     AX, AY, BY, SL = 56, 22, 46, 0.95
     for y in range(AY + 2, BY):                                            # 박공 면: 세로 판(빛 왼쪽) — 흰 시계가 서도록
         half = (y - AY) * SL
