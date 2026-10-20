@@ -1,7 +1,7 @@
 import { companionRequestBaseUrl, loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, RECOMMENDED_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 import { companionCredentialMissing } from "@/ai/chatgptOAuthClient";
-import { companionTokenHeaders } from "@/ai/companionToken";
+import { fetchCompanion } from "@/ai/companionConnection";
 import { parseImageReferences, type ImageReference } from "@/ai/imageReferences";
 import { imageRouteRefusal, resolveImageRoute, type ImagePurpose } from "@/ai/imageRoute";
 
@@ -104,12 +104,11 @@ export async function generateAiImage(
 
   let response: Response;
   try {
-    response = await doFetch(imageGenerationEndpoint(), {
+    response = await fetchCompanion(imageGenerationEndpoint(), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-Oprn-Provider": providerId,
-        ...companionTokenHeaders(),
       },
       body: JSON.stringify({
         prompt,
@@ -117,7 +116,7 @@ export async function generateAiImage(
         ...(referenceImages.length > 0 ? { referenceImages } : {}),
       }),
       signal,
-    });
+    }, { fetchImpl: doFetch });
   } catch (cause) {
     if (cause instanceof DOMException && cause.name === "AbortError") {
       throw new ImageGenerationError(

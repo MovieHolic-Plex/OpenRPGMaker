@@ -22,6 +22,7 @@ import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, RECOMMENDED_IMAGE_MODEL
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 import { getKnownOpenAiCompatEndpoint } from "@/ai/openAiCompat";
 import { companionTokenHeaders } from "@/ai/companionToken";
+import { fetchCompanion } from "@/ai/companionConnection";
 
 // OpenAI 메시지 규약(우리가 쓰는 필드만).
 export interface ToolCall { id: string; type: "function"; function: { name: string; arguments: string } }
@@ -1097,12 +1098,14 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest, captureEpo
     const onCallerAbort = () => controller.abort();
     req.signal?.addEventListener("abort", onCallerAbort, { once: true });
     try {
-      response = await fetch(endpoint(config), {
+      const init: RequestInit = {
         method: "POST",
         headers: headers(config),
         body: requestBody(config, req, stream, captureEpoch),
         signal: controller.signal,
-      });
+      };
+      // 동반 서비스는 한 입구로 — 서버 재시작 뒤 옛 토큰(403)을 한 번 다시 맺어 고친다.
+      response = usesOhMyPiCompanion(config) ? await fetchCompanion(endpoint(config), init) : await fetch(endpoint(config), init);
     } finally {
       clearTimeout(timeoutTimer);
       req.signal?.removeEventListener("abort", onCallerAbort);
