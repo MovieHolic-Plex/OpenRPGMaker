@@ -25,6 +25,32 @@ const stepInto = (mapId, x, y, dir) => [
   { kind: "hold", dir, ms: 700 },
   { kind: "hold", dir: null, ms: 1500 },
 ];
+/**
+ * 결전 한 수 — 보스는 공격만으로는 거의 못 이긴다(심판의 빛). 화면의 전투 명령 단추를 직접 누른다:
+ * 명령 창이면 「스킬」, 스킬 목록이면 쓸 수 있는 첫 기술(없으면 뒤로 → 다음 수는 공격), 대상 창이면 첫 대상, 결과 창이면 확인.
+ */
+const BOSS_STEP_FN = `() => {
+  const q = (t) => document.querySelector('[data-testid="' + t + '"]');
+  const confirm = q("battle-result-confirm"); if (confirm) { confirm.click(); return "confirm"; }
+  const all = [...document.querySelectorAll("button.battle-command")].filter((n) => n.dataset.previewOnly !== "true");
+  const live = all.filter((n) => !n.disabled);
+  const ids = live.map((n) => n.dataset.testid || "");
+  const click = (id) => { const b = live.find((n) => n.dataset.testid === id); if (!b) return null; b.click(); return id; };
+  if (ids.includes("actor-command-attack")) {
+    if (window.__fsNoSkill || !ids.includes("actor-command-skill")) { window.__fsNoSkill = false; return click("actor-command-attack"); }
+    return click("actor-command-skill");
+  }
+  if (all.some((n) => (n.dataset.testid || "").startsWith("actor-skill-"))) {
+    const skills = ids.filter((id) => id.startsWith("actor-skill-"));
+    const skill = skills.find((id) => id !== "actor-skill-skill_attack") ?? skills[0];
+    if (skill) return click(skill);
+    window.__fsNoSkill = true; return click("actor-command-back");
+  }
+  const target = live.find((n) => (n.dataset.testid || "").startsWith("battle-target-") && n.dataset.testid !== "battle-target-cancel");
+  if (target) { target.click(); return "target:" + target.dataset.testid; }
+  return null;
+}`;
+const bossStep = [{ kind: "evalToFile", fn: BOSS_STEP_FN, out: "/tmp/fs-audit-boss-step.json" }, { kind: "hold", dir: null, ms: 450 }];
 /** 걷다가 풀숲 조우가 나면 끝까지 싸운다(Enter = 공격). */
 const walkFighting = (dir, ms) => [
   { kind: "hold", dir, ms },
@@ -117,10 +143,10 @@ export default {
       { kind: "hold", dir: null, ms: 2500 },
     ], shot: true },
     // 전투 한가운데 한 장 — 예전엔 「Enter 25번 안에 끝나야」 하는 조각 여섯 개라 끝나지 않은 조각이 실패로 찍혔다.
-    { id: "battle-mid", note: "전투 중간(Enter 12번, 공격만)", ops: Array.from({ length: 12 }, () => [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 350 }]).flat(), shot: true },
+    { id: "battle-mid", note: "전투 중간(기술 위주 12수)", ops: Array.from({ length: 12 }, () => bossStep).flat(), shot: true },
 
     { id: "battle-end", note: "전투 끝", ops: [
-      { kind: "repeatUntil", testid: "battle-scene", state: "absent", maxRounds: 260, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 350 }] },
+      { kind: "repeatUntil", testid: "battle-scene", state: "absent", maxRounds: 400, ops: bossStep },
       { kind: "hold", dir: null, ms: 1000 }, dumpState("boss"),
     ], shot: true },
     { id: "signal", note: "렌즈 신호", ops: [{ kind: "pressUntilText", key: "Enter", testid: "dialogue-box", text: "답이 왔어요", maxPresses: 20 }], shot: true },
