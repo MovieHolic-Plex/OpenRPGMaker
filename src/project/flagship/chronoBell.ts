@@ -389,14 +389,16 @@ function stageTalk(event: GameEvent | undefined): void {
  * 서술은 내레이션 창, 얻음·동료 합류·화로 진행은 시스템 안내, 석판은 표지판, 정해 둔 외침 두 줄은 외침.
  */
 const SYSTEM_LINE = /(얻었다|받았다|손에 넣었다|동료가 되었다|\(\d\/\d\)|상자는 비어 있다)/u;
-const SHOUT_LINES = new Set(["그렇다면 여기서 부서져라. 깨어나라, 별지기의 수호상!", "일단 물러서! 숨 고르고 다시 붙자."]);
 function tagLineContext(cmd: Command): void {
   const line = cmd as Command & { speaker?: string; body?: string; context?: string };
-  if (line.kind !== "text" || line.context || typeof line.body !== "string") return;
+  if (line.kind !== "text" || typeof line.body !== "string") return;
+  // 가혹 검수 r12: 외침(굵은 붉은 테두리·이름판이 상자 밖)과 내레이션(테두리 없는 검정 띠)만 다른 창이라 한 게임에 창이 셋이었다.
+  // 서술·외침도 같은 패널에 싣는다 — 서술은 이름·얼굴이 없는 것으로 구별된다.
+  if (line.context === "narration" || line.context === "shout") delete line.context;
+  if (line.context) return;
   const speaker = line.speaker?.trim();
   if (speaker === "석판") line.context = "sign";
-  else if (!speaker) line.context = SYSTEM_LINE.test(line.body) ? "system" : "narration";
-  else if (SHOUT_LINES.has(line.body)) line.context = "shout";
+  else if (!speaker && SYSTEM_LINE.test(line.body)) line.context = "system";
 }
 
 /**
@@ -464,6 +466,65 @@ function vanishWhen(map: GameMap | undefined, eventId: string, switchId: string)
     trigger: { kind: "action" },
     commands: [],
   } as EventPage);
+}
+
+const SW_VALEN_MARCHED = "sw_fs_valen_marched";
+type Step = "up" | "down" | "left" | "right";
+/** from → to 걸음(통행 칸·다른 이벤트 칸을 피하는 BFS). 못 가면 null. */
+function walkPath(project: Project, map: GameMap, from: { x: number; y: number }, to: { x: number; y: number }, selfId: string): Step[] | null {
+  const occupied = new Set(map.events.filter((e) => e.id !== selfId && !String(e.id).startsWith("ev_gate_")).map((e) => `${e.x},${e.y}`));
+  const prev = new Map<string, { key: string; dir: Step }>();
+  const start = `${from.x},${from.y}`, goal = `${to.x},${to.y}`;
+  const seen = new Set([start]);
+  let frontier = [from];
+  const steps: Record<Step, [number, number]> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+  while (frontier.length && !seen.has(goal)) {
+    const next: { x: number; y: number }[] = [];
+    for (const cell of frontier) {
+      for (const dir of ["right", "up", "down", "left"] as const) {
+        const x = cell.x + steps[dir][0], y = cell.y + steps[dir][1], key = `${x},${y}`;
+        if (seen.has(key) || x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+        if (occupied.has(key) || !isPassable(project, map, x, y)) continue;
+        seen.add(key); prev.set(key, { key: `${cell.x},${cell.y}`, dir }); next.push({ x, y });
+      }
+    }
+    frontier = next;
+  }
+  if (!seen.has(goal)) return null;
+  const path: Step[] = [];
+  for (let key = goal; key !== start;) { const p = prev.get(key)!; path.unshift(p.dir); key = p.key; }
+  return path;
+}
+
+/**
+ * 포고가 끝나면 발렌과 기사가 동문으로 걸어 나간다 — 예전에는 이리스 합류 때 제자리에서 페이지 전환으로 사라졌다
+ * (가혹 검수 r12 major 「NPC 가 문까지 걷지 않는다」). 대사가 이어지는 동안(기다리지 않음) 걷고, 문 앞에 닿으면
+ * 루트 끝의 스위치로 지운다(떠남 페이지).
+ */
+function marchOffAfterProclamation(project: Project, hub: GameMap): void {
+  const gate = hub.events.find((e) => String(e.id).startsWith("ev_gate_") && e.x >= hub.width - 2);
+  const proclamation = hub.events.find((e) => e.id === `ev_${FS_PREFIX}_event`);
+  const list = proclamation?.pages?.[0]?.commands;
+  const after = list?.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("교단보다 먼저"));
+  if (!gate || !list || after === undefined || after < 0) throw new Error("[fallen-star] 포고·동문을 찾지 못했다");
+  const exit = { x: gate.x - 1, y: gate.y };
+  const marches: Command[] = [];
+  for (const [id, delay] of [[`ev_${FS_PREFIX}_knight`, 0], [`ev_${FS_PREFIX}_valen`, 1]] as const) {
+    const npc = hub.events.find((e) => e.id === id);
+    if (!npc) continue;
+    const path = walkPath(project, hub, { x: npc.x, y: npc.y }, exit, id);
+    if (!path) throw new Error(`[fallen-star] ${id} 가 동문까지 걸어갈 길이 없다`);
+    const moves = [
+      ...Array.from({ length: delay }, () => ({ kind: "wait" })),
+      ...path.map((dir) => ({ kind: "move", dir })),
+      { kind: "changeOpacity", delta: -255 },
+      ...(id.endsWith("valen") ? [{ kind: "setSwitch", switchId: SW_VALEN_MARCHED, value: true }] : []),
+    ];
+    marches.push({ kind: "moveEvent", eventId: id, route: { moves, repeat: false, wait: false, skippable: true } } as unknown as Command);
+  }
+  list.splice(after + 1, 0, ...marches);
+  vanishWhen(hub, `ev_${FS_PREFIX}_valen`, SW_VALEN_MARCHED);
+  vanishWhen(hub, `ev_${FS_PREFIX}_knight`, SW_VALEN_MARCHED);
 }
 
 /** origin 에서 가장 가까운, 걸을 수 있고 다른 이벤트와 붙지 않은 빈 칸. */
@@ -700,6 +761,9 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 이리스가 합류하면 광장의 발렌 일행은 숲으로 떠난다(지하에서 다시 만난다).
   vanishWhen(M(ids.hub), `ev_${FS_PREFIX}_valen`, SW_IRIS_JOINED);
   vanishWhen(M(ids.hub), `ev_${FS_PREFIX}_knight`, SW_IRIS_JOINED);
+  marchOffAfterProclamation(project, M(ids.hub));
+  // 가혹 검수 r12: 천문대에만 곡이 없어 광장 곡이 이어지거나 무음이었다 — 잠든 종탑(차분한 수수께끼 실내 곡).
+  M(ids.observatory).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" } as GameMap["bgm"];
 
   // 보스 — 발렌 혼자가 아니라 깨운 수호상과 함께. 지면 엔딩 대신 숨을 고르고 다시 도전한다.
   if (bossEvent) {
