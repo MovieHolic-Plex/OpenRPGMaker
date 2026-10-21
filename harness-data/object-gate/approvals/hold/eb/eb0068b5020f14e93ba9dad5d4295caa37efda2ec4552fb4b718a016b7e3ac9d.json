@@ -1,0 +1,14 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "eb0068b5020f14e93ba9dad5d4295caa37efda2ec4552fb4b718a016b7e3ac9d",
+ "profileHash": "4d8774b517f41638",
+ "kind": "other",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T07:05:27.329Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [],
+ "note": "묶음 허용: fallen-observatory-r3 great telescope — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/fallen-observatory-r3.opus-vqa-r1-pass.json",
+ "sig": "7278ee77ff9a8d1ad8ad189a36c7684876a81716acfa407e8261608e800adf7d"
+}

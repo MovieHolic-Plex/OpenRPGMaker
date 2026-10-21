@@ -309,3 +309,21 @@ Gemini 4 Argon(`claude -p --model gemini-4-argon-high`, 8319/cc)으로 3번씩 �
   **통과한 그림의 마스크 합집합**으로만 덮인다. 칸을 한 화소라도 다시 그리면 그림 해시가 바뀌어 다시 받아야 한다.
 - **재보정 후 영수증 필요(통과 아님)**: 옛 판정 프로필 영수증은 무효다. 현재 프로필 영수증이 없지만 핀 칸의 main 시트 화소와 지금 그림이 같은 조각은 「재보정 후 영수증 필요」 묶음으로 따로 센다(`gate_rooms._shipped_unchanged`). 이미 main 에 실려 있어 굽기는 그 칸을 화소 그대로 다시 쓰고 목록을 `!!` 줄로 크게 찍는다 — 통과·면제로 세지 않고, 다른 그림을 「덮는」 근거로도 쓰지 않는다. 새 것·바뀐 것은 이 묶음에 들 수 없다(현재 프로필 PASS 필요). 2026-10-20 폐지 전에는 「소급 면제」로 셌다.
 - 모의 장면·GIF: `python3 scripts/content/interior-plus/puzzle_scene.py <out>` → scene.png · plank.gif · pit47.png · abyss-*.png.
+
+## 천문대 조각 — interior-plus `observatory` (2026-10-21, 사람 허용 대기)
+
+『폴른 스타』 천문대 큰 방(`fs_observatory`)이 「싸구려 방」으로 읽힌다는 사용자 머지 차단 지적으로 그렸다. `scripts/content/interior-plus/pieces/observatory.py`(카테고리 `observatory` = 「천문대」).
+v5 의 작은 삼각대 망원경·천체 모형·지구본·1칸 별자리표·서고 사다리는 그대로 쓰고 새로 그리지 않는다.
+
+- `great telescope` 큰 굴절 망원경 5×6(발밑 5×2 막힘, 위 4줄 ★) — 둥근 나무 단·벽돌 돌기둥·놋쇠 집게·나무 경통·놋쇠 띠·이슬막이·파인더. 접안경은 왼쪽 아래 (발밑 왼쪽 칸 바로 위). kind `other`.
+- `dome slit` 관측 틈 2칸 걸이(벽면 두 줄) — 돌 문설주 머리가 벽 머리 갓돌을 받아 끝내고, 덧문·별 하늘·초승달·돌 창턱. `wall_mounted`.
+- `celestial chart` 별자리 원판 도표 2칸 걸이 · `lens bench` 렌즈 작업대(발밑 3×2) · `observing platform` 관측 발판(발밑 2×2, 다리 틀 위 높은 단 + 기둥 놋쇠 난간 + 앞 사다리, kind `other`).
+- 관문: 그림 `tiledata/hand-interior/plus/gate-observatory/*.png`(시트에 들어가는 화소, 팔레트 v6). 묶음 `harness-data/object-gate/queue/fallen-observatory-r3.json`(r1·r2 는 대체됨).
+  독립 Opus VQA r1 FAIL 3/5 영수증 `harness-data/object-gate/vqa/fallen-observatory-r1.opus-vqa-r1-fail.json` — 망원경 잔선·떨어진 토막·검정 접안경·`#000` 윤곽, 관측 틈이 한 칸 높아 갓돌·천장 띠를 덮음·바둑 무늬 하늘, 발판이 1배에서 상자로 읽힘·접안경과 4칸 떨어짐, 작업대 실제 발밑 3×2. r2 에서 모두 고쳤다. VQA r2(`vqa/fallen-observatory-r2.opus-vqa-r1-fail.json`)는 망원경·관측 틈·도표·작업대 PASS(화소 고정), 발판만 FAIL(앞면 8px = 무릎 높이 상자, 윤곽 없는 얇은 난간·사다리, 회색 못) → r3 발판: 윗면 10줄 + 다리 틀 앞면 24줄(기둥 셋·X 버팀·밑 그늘), 기둥 박은 난간(윤곽 뒤에 그려 가로대 사이가 빈다), 짙은 윤곽 사다리.
+  사람 허용 전에는 `bake.py` 가 막는다. AI 조언은 판마다 갈렸다(발판: 남북 널+못 → 「정면 입면」, 윤곽 기본값 wood 0단 = 거의 검정 → 화풍 NO, 높은 난간 → 「윗끝이 세로 면뿐」).
+- 윤곽: `Cv.outline()` 기본은 재질 램프 0단이고 wood·black 0단은 `#000000` 이다. v5 가구 윤곽은 짙은 갈색(`#411e05` = `K('wood',1)`) — `outline(dark=K('wood', 1))` 로 준다.
+- 칸(미리보기 굽기에서 잰 값, 핀 덧붙이기 전용): 망원경 7410~7434 · 관측 틈 7435~7438 · 도표 7439~7442 · 작업대 7443~7448 · 발판 7449~7454. 그 앞 7410칸은 화소·정의 변화 0.
+- 지도: `chronoBell.ts` 의 「천문대 큰 방」 블록이 킷이 있을 때만 홀의 창·별자리표·작은 망원경·마법진·마법서 받침·두루마리 선반을 걷고 새 조각을 찍는다(관측 틈 (17,4), 망원경 (14,6), 발판 (12,9) = 접안경 바로 왼쪽, 작업대 (20,9)).
+  「망원경」 조사 이벤트(`ev_fs_scope`)는 접안 칸 (15,11)·priority same 으로 옮긴다 — `fallen-audit` 의 scope 단계는 (15,12)에서 위로 말을 건다. 굽기 전에는 이 블록이 아무것도 바꾸지 않는다(옛 홀 그대로).
+- **굽기를 지금 막는 다른 것**: `abyss-b`·`abyss-c` 구멍 조립 그림이 옛 프로필 영수증이라 `gate_rooms.check` 가 `pit:abyss` 를 막는다(2026-10-21 실측, 이 조각과 무관). 그 둘도 다시 받거나 사람이 허용해야 `bake.py` 가 돈다.
+- 함정: `execTool` 은 맵 객체를 새로 만든다 — 찍은 뒤에 앞에서 잡은 맵의 이벤트를 고치면 버려진 사본을 고친다(`M(ids.…)` 로 다시 잡는다).

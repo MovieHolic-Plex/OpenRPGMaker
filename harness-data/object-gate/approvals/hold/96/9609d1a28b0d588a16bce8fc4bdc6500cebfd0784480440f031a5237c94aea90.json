@@ -1,0 +1,14 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "9609d1a28b0d588a16bce8fc4bdc6500cebfd0784480440f031a5237c94aea90",
+ "profileHash": "4d8774b517f41638",
+ "kind": "wall_mounted",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T07:05:27.595Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [],
+ "note": "묶음 허용: fallen-observatory-r3 celestial chart — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/fallen-observatory-r3.opus-vqa-r1-pass.json",
+ "sig": "188c1922a137c105c0ec5fb8c0cf9024ca72db19ecd3f8577720a10d7528d118"
+}

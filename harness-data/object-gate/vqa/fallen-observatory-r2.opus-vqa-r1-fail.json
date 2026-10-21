@@ -1,0 +1,57 @@
+{
+ "schema": "bdg-vqa/1",
+ "judge": "claude-opus-5-5",
+ "date": "2026-10-21",
+ "batch": "fallen-observatory-r2",
+ "commit": "04d6ca53b9",
+ "overall": "FAIL",
+ "criteriaNotes": {
+  "1_topdown_view": "Telescope: the pier has an elliptical light cap over a darker brick drum, the base is a floor ellipse with a gold ring and a shadow, the objective shows a tilted lens ellipse, and the tube is lit upper-left. This is a good 3/4 read. Lens bench: light top face with lens, pieces and a magnifier over a darker drawer front, with legs and shadow. Platform: the plank top face (rows about 12-31) is deep and the front face (rows about 32-41) is only about 8px, so the deck reads as a shallow open box. The gold rail runs only along the back and the two sides, as thin flat lines. Dome slit and chart both read as hung on, or set into, the wall.",
+  "2_style_fit": "No pure-black or near-black blobs remain. The darkest colour is the v5-style dark brown #1a0e06 used as outline on the wall pieces, and #411e05 on the telescope. The r1 checker dither in the slit sky is gone. The sky now uses two stepped blue bands, which is acceptable. The telescope tube wood is clean, with no hnoise mottle. In the side-by-side v5 strip, brass and wood ramps match the orrery, desk, alchemy table and bookcase. Off-style: the platform ladder rails (#f0d098/#ba9262) have no dark outline, unlike the v5 library ladder next to it in the strip, which is fully outlined in dark brown. The platform also keeps four single grey #a3acb5 'nail' pixels on the plank top, at (17,29), (25,30) and two more, which r1 already flagged as noise flecks. The chart still has a grey 1px 'text' squiggle row.",
+  "3_readability_1x": "At 1x the great telescope is clearly a big brass refractor on a stone pier and is the room's centrepiece. It is impressive and no longer cheap. The slit reads as a shuttered night window with a moon and stars, which works as an observing opening. The chart reads as a star map. The lens bench reads as an instrument workbench. The observing platform at 1x (and in the 4x room crop) reads as an open wooden crate or crib with a gold frame and a small pale ladder leaning on it, not as a raised observing deck. The rail looks like a bed or crate rim, and the front face is too short to suggest height.",
+  "4_placement": "The slit now sits inside the two wall-face rows. The cap rail runs unbroken above it, and the stone sill meets the floor edge. The slit is directly above and ahead of the telescope objective. Both charts sit on the wall rows. The telescope base ellipse sits on the floor with a shadow. The platform is now adjacent to the eyepiece (about 10px gap at 1x, with the eyepiece level with its top-right corner), which fixes the r1 distance problem. The area beyond the room walls is a dark ceiling band. The rocky surround further out is pre-existing map context and is unchanged from 'before'.",
+  "5_silhouette_outline": "Every piece is a single connected component, with no detached stubs. The r1 telescope slate diagonal line and the pure-black stub are gone, and the eyepiece now has a brass rim with a small dark lens and highlight. The only low-neighbour pixels on the telescope are outline tips at (13,45), (6,57) and (16,59), which are intentional. Platform: the gold rail posts and bars carry no dark outline on their outer side, and the ladder rails are unoutlined, so the platform's silhouette edges are soft compared with the rest of the set."
+ },
+ "items": [
+  {
+   "id": "great_telescope",
+   "name": "큰 굴절 망원경(5×6 — 천문대 중심) (great telescope)",
+   "kind": "other",
+   "pixelSha256": "eb0068b5020f14e93ba9dad5d4295caa37efda2ec4552fb4b718a016b7e3ac9d",
+   "verdict": "PASS",
+   "reasons": "All r1 defects are fixed: no stray diagonal line, no black or orange stub, no near-black eyepiece blob (now a brass rim with a dark-brown lens), and the wood tube is clean. 3/4 reading is strong: pier cap ellipse, floor ellipse with gold ring and shadow, tilted objective lens. It is one clean component with v5-matching brass and wood ramps. At 1x it is a convincing, impressive centrepiece."
+  },
+  {
+   "id": "dome_slit",
+   "name": "관측 틈(별 하늘 창, 2칸) (dome slit)",
+   "kind": "wall_mounted",
+   "pixelSha256": "b22ba20ddd8eb3e16607d596c8f3e193a3083344418f0b63c725775b317ce190",
+   "verdict": "PASS",
+   "reasons": "It now fits the two wall-face rows, with the cap rail unbroken above and the stone sill at the floor edge. The checker dither is replaced by stepped blue bands. It has a stone frame, banded wooden shutters, a moon and stars. It sits above and ahead of the telescope objective. Note: it reads as a shuttered night window rather than a narrow dome slit, but it is clearly the observing opening."
+  },
+  {
+   "id": "celestial_chart",
+   "name": "별자리 원판 도표(2칸) (celestial chart)",
+   "kind": "wall_mounted",
+   "pixelSha256": "9609d1a28b0d588a16bce8fc4bdc6500cebfd0784480440f031a5237c94aea90",
+   "verdict": "PASS",
+   "reasons": "Unchanged from r1 (same sha). A hanging parchment scroll with dark-brown rods and a blue star disc with a constellation. It reads as a star chart at 1x, both placements sit on the wall rows, and the palette matches v5. Minor: the grey 1px 'text' squiggles on the bottom row are slightly noisy."
+  },
+  {
+   "id": "lens_bench",
+   "name": "렌즈 작업대(3×2) (lens bench)",
+   "kind": "low_furniture",
+   "pixelSha256": "17f0d7ef4a7094e3f69db90a5104270a6b9e2506ecb4db139904c1ee53802e16",
+   "verdict": "PASS",
+   "reasons": "Unchanged from r1 (same sha), and it passes again on a fresh check. Clean 3/4: light top face with framed lens, lens pieces and a standing magnifier, over a darker two-drawer front with legs and shadow. Outline and wood ramp match the v5 alchemy and chart tables. The brief now says 3×2, which matches the 48×32 art. Minor: the right-hand tools (gold rod, grey clamp, red bar) are still muddy at 1x."
+  },
+  {
+   "id": "observing_platform",
+   "name": "관측 발판(난간 두른 높은 단과 사다리, 2×2) (observing platform)",
+   "kind": "other",
+   "pixelSha256": "870dfff4f2e986a31939c2a89a3e5cba4dcfd557eaaa6ff393744b5f9a79b73c",
+   "verdict": "FAIL",
+   "reasons": "Improved (it now has a ladder and sits by the eyepiece), but it still does not read as a raised observing platform at 1x. In the room render it reads as an open crate or crib with a gold rim and a small ladder (criterion 3). Pixel-level: (a) the front face is only about 8px (rows 32-41) under a 20px plank top, so the deck looks knee-high, not like a stand that needs a ladder; (b) the gold rail (#bfa045/#7e5c10) runs only along the back and sides as thin flat lines with no outer dark outline, so it reads as a box rim or bed headboard rather than a railing with posts; (c) the ladder rails (#f0d098/#ba9262) have no dark outline, unlike the v5 library ladder in the comparison strip, and lose contrast against the orange planks at rows 29-31 (criterion 2); (d) the four single grey #a3acb5 nail pixels on the plank top are still there, the same noise flagged in r1 (criteria 2 and 5). Note: the art is 32×48 (2 wide × 3 tall including rail and ladder overhang), while the brief says 2×2. Fix: make the front face taller (one full tile or more) with visible posts or a bracing front, outline the rail and the ladder in dark brown as on the v5 ladder, and drop the grey flecks."
+  }
+ ]
+}

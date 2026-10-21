@@ -120,7 +120,7 @@ export default {
     ], shot: true },
     { id: "hanel-accept", note: "수락", ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 400 }], shot: true },
     { id: "hanel-accept-close", note: "", ops: [...closeDialogue(), dumpState("quest")], shot: false },
-    { id: "scope", note: "큰 망원경", ops: [{ kind: "teleport", mapId: "fs_observatory", x: 12, y: 10 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
+    { id: "scope", note: "큰 망원경", ops: [{ kind: "teleport", mapId: "fs_observatory", x: 15, y: 12 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "scope-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "out-to-hub", note: "천문대 문 → 광장", ops: [...stepInto("fs_observatory", 11, 20, "down")], shot: true },
     { id: "gate-guard", note: "동문 문지기", ops: [{ kind: "teleport", mapId: "fs_hub", x: 53, y: 21 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },

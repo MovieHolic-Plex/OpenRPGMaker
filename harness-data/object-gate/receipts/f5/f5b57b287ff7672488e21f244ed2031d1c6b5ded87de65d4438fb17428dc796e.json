@@ -1,0 +1,319 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f5b57b287ff7672488e21f244ed2031d1c6b5ded87de65d4438fb17428dc796e",
+ "width": 32,
+ "height": 48,
+ "kind": "wall_mounted",
+ "name": "지붕 관측 틈(별 하늘, 2칸) (dome slit)",
+ "label": "atlas_biome_interior/plus/dome slit",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 21,
+  "darkV5": 23,
+  "nearBlackEdge": 0.63,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "night-sky window opening (flat glass panel)",
+      "rows": "0-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden side panels with iron bands",
+      "rows": "0-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone sill ledge",
+      "rows": "41-47",
+      "evidence": "none",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 48,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a tall vertical slit showing a starry sky and water-like blue gradient, flanked by brown wooden panels with iron bands, and a stone sill at the bottom (rows 41-47). The main body, the sky opening and side panels, is drawn face-on with no horizontal top surface. The sill has a light 1-row line at row 41 followed by gray shading, but it is a small detail with a flat front-facing look, not an ellipse or a roof plane. As a wall-mounted piece it is flat, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate matches the cheese stall on the measured facts: 17 visible tones per tile against 17, and 13% near-flat coverage against 13%. It is above the hedge at 9 tones and close to the well at 20. Only 25% of its dark edge pixels are near-neutral, so the outlines lean toward a dark blue-grey tint (the dark tone of the adjacent material) rather than a uniform black sticker line. By eye, the night sky has several blue steps with a gradient, scattered stars and a crescent moon. The frame has a lighter edge, a dark inner edge and small rivet-like details. The stone sill is shaded in a few grey steps with some variation. The ramps are a little shallower than the reference's 5-6 steps, and the sill is the plainest area, but no large flat fill stands out. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19767
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "night-sky slit opening (flat painted panel with stars and moon)",
+      "rows": "0-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone sill ledge at bottom",
+      "rows": "41-47",
+      "evidence": "none",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden side panels/pillars with iron bands",
+      "rows": "0-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 48,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat, front-facing wall-mounted slit: a night-sky panel (rows 0-40) between two brown wooden columns with iron bands, a gold trim strip on each side, and a grey stone sill at rows 41-47. The sill has a light 1-row top edge at row 41 followed by progressively darker rows, which reads as a shaded ledge face rather than a foreshortened horizontal top. The sky is a painted vertical image, not a top surface. There is no top band with an edge line or eave shadow, no ellipse and no roof plane, and the object is flat-mounted as the wall_mounted kind allows. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts put the candidate level with the references. It has 17 visible tones per tile, matching prop-stall-cheese (17) and close to prop-well-roofed (20). Near-flat coverage is 13%, the same as the cheese stall. Only 25% of its dark edge pixels are near-neutral, so the edges lean toward tinted dark navy and blue-grey beside the sky and stone rather than a uniform black sticker line. By eye, the night-sky pane has a graded blue ramp with star and moon pixels, and the dark frame has lighter edge highlights. The stone sill and lintel carry a few stepped greys with block separations. The ramps are slightly shallower than Beodeul's 5-6 steps, with about 4 per material, and the stone sill is a little plain. The piece is still not flat or sticker-like, and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24969
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "night sky window slit (flat panel of starry sky)",
+      "rows": "0-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown wooden pillars/panels on left and right with metal bands",
+      "rows": "0-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone sill at bottom",
+      "rows": "41-47",
+      "evidence": "none",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 48,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat, wall-mounted window slit seen face-on. The sky panel (rows 0-40) is a vertical face, and the flanking wooden pillars are plain vertical strips with iron bands and no top surface. The only horizontal-looking element is the stone sill at rows 41-47, which has a light edge line at row 41 and graduated shading below it. That is only about 7 rows with no clear back rim, so it reads as a front-facing sill and not as a real top plane. Since the kind is wall_mounted, a flat front elevation is acceptable, but no main top surface is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate matches the stall-cheese and well-roofed references on the primary facts: 17 visible tones per tile against 17 and 20, and 13% near-flat coverage against 13% and 0%. Only 25% of its dark edge pixels are near-neutral, so the outline is mostly tinted. By eye, the frame edges lean dark navy or slate beside the sky and stone rather than using a uniform black line. The starry sky is graded in several blue steps and carries dotted stars and a crescent moon. The stone frame and sill have light, mid and dark steps with some grain. It is less textured than the roofed well, but it has no large flat fills and does not look like a sticker next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18096
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "night-sky slit opening with moon, stars and water-like band",
+      "rows": "0-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden wall panels left and right with metal bands",
+      "rows": "0-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone sill ledge at the bottom",
+      "rows": "41-47",
+      "evidence": "none",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 48,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat, front-facing vertical slit showing a night sky, framed by wooden wall panels, with a stone sill at the bottom (rows 41-47). The sky and frame are vertical faces with no horizontal top surface and no eave shadow. The sill has a light edge row at 41 but is a front-facing strip rather than a distinct top plane. This is a flat wall-mounted element, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate matches the stall-cheese reference on the primary facts: 17 visible tones per tile against 17, and 13% near-flat coverage against 13%. It is well above the hedge (9 tones) and close to the roofed well (20). Only 25% of its dark edge pixels are near-neutral, so the outline leans tinted, as the references' does. The frame is dark blue-brown beside the sky and stone rather than a uniform black sticker line. The sky has a gradient with scattered stars and a crescent moon, which gives it variation instead of a flat fill. The stone frame has studs and highlights, and the sill has several grey steps. The ramps are slightly shallower than the references' 5-6 steps, with about 4 on the sky, frame and sill. The large dark sky area is mostly broken up by the stars and gradient, so I do not count it as a flat fill. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17510
+  }
+ ],
+ "decidedAt": "2026-10-21T06:02:00.384Z",
+ "cells": {
+  "16": [
+   "20e073fa2eb29b9a",
+   "41b050cdcd9629f9",
+   "4579cd29635c9858",
+   "9e6ae4b877f43869",
+   "e231b93b1a7ba343",
+   "fc71aff16a1506b7"
+  ],
+  "24": [
+   "0888fa652d4eaf48",
+   "08f907b97718f07d",
+   "0ef1f3bf451bd12d",
+   "118eacef73dec283",
+   "343e96be11f2c8e6",
+   "8bf34a5e6f570465",
+   "af5f08f3a4a260bc",
+   "cee77c1efb4b1fd0",
+   "da77b9f67adab930",
+   "de9dd040e3b27395",
+   "e1ca6110d4eb1b5e",
+   "e5f3ac9407c81863"
+  ],
+  "32": [
+   "037d88a3c6ff3b2e",
+   "242ac2475066571d",
+   "b64fdb659ab497a8",
+   "e4c672829f1c0ba3"
+  ],
+  "48": [
+   "2bebcac88f8a3b26",
+   "325acdca57e07f05",
+   "b2b01a5de908ab92"
+  ]
+ }
+}

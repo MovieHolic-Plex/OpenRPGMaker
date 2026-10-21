@@ -1,0 +1,39 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "fallen-observatory-r2",
+ "title": "[대체됨 → fallen-observatory-r3] 폴른 스타 천문대 r2 — 큰 망원경·관측 틈·별자리 원판·렌즈 작업대·관측 발판 (interior-plus observatory 5)",
+ "note": "독립 Opus VQA r2(vqa/fallen-observatory-r2.opus-vqa-r1-fail.json): 망원경·관측 틈·도표·작업대 PASS, 관측 발판 FAIL → r3 로 대체. 이 묶음은 허용하지 않는다. r1(독립 Opus VQA r1 FAIL 3/5, harness-data/object-gate/vqa/fallen-observatory-r1.opus-vqa-r1-fail.json)을 다시 그린 판. atlas_biome_interior 시트 끝 7410~7454 에 덧붙인다(브랜치 agent/fallen-telescope). 허용 전에는 굽지 않는다.",
+ "createdAt": "2026-10-21T06:29:30.698Z",
+ "items": [
+  {
+   "sha": "eb0068b5020f14e93ba9dad5d4295caa37efda2ec4552fb4b718a016b7e3ac9d",
+   "kind": "other",
+   "label": "atlas_biome_interior/plus/great telescope",
+   "source": "tiledata/hand-interior/plus/gate-observatory/great_telescope.png"
+  },
+  {
+   "sha": "b22ba20ddd8eb3e16607d596c8f3e193a3083344418f0b63c725775b317ce190",
+   "kind": "wall_mounted",
+   "label": "atlas_biome_interior/plus/dome slit",
+   "source": "tiledata/hand-interior/plus/gate-observatory/dome_slit.png"
+  },
+  {
+   "sha": "9609d1a28b0d588a16bce8fc4bdc6500cebfd0784480440f031a5237c94aea90",
+   "kind": "wall_mounted",
+   "label": "atlas_biome_interior/plus/celestial chart",
+   "source": "tiledata/hand-interior/plus/gate-observatory/celestial_chart.png"
+  },
+  {
+   "sha": "17f0d7ef4a7094e3f69db90a5104270a6b9e2506ecb4db139904c1ee53802e16",
+   "kind": "low_furniture",
+   "label": "atlas_biome_interior/plus/lens bench",
+   "source": "tiledata/hand-interior/plus/gate-observatory/lens_bench.png"
+  },
+  {
+   "sha": "870dfff4f2e986a31939c2a89a3e5cba4dcfd557eaaa6ff393744b5f9a79b73c",
+   "kind": "other",
+   "label": "atlas_biome_interior/plus/observing platform",
+   "source": "tiledata/hand-interior/plus/gate-observatory/observing_platform.png"
+  }
+ ]
+}
