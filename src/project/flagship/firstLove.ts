@@ -20,7 +20,7 @@ import { deserialize, serialize } from "@/project/io";
 import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
-  bgm, caption, CAST, choices, m2, clearTint, emote, event, face, fadeIn, fadeOut, flash, hidePlayer, ifCond, letterbox, page,
+  bgm, caption, CAST, choices, m2, clearTintKeepBlack, emote, event, face, fadeIn, fadeOut, flash, hidePlayer, ifCond, letterbox, page,
   playSe, say, setSw, textAtBottom, faceHero, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk,
 } from "./firstLoveKit";
 import { buildFirstLoveMaps, FL_MAP, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
@@ -771,7 +771,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
     ...fadeOut(1200),
     stopBgm(),
     setSw("sw_fl_flashback", false),
-    clearTint(0),
+    clearTintKeepBlack(),
     ...letterbox(false, 0),
     showPlayer(),
     stage(S.FLASH),

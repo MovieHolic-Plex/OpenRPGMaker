@@ -20,6 +20,7 @@
 //  - scene-speaker-faces-away      대사 줄의 화자가 곁(3칸 안)의 대화 상대 누구도 보지 않는다(걸어 온 쪽·벽·카메라를 본다)
 //  - scene-bust-faces-away        원래 시선을 아는 흉상·전신(현대 연애 → 그림)에 flipHorizontally 를 줘서 대화 상대가 아니라 화면 바깥을 본다
 //  - scene-seated-cannot-stand     의자·소품 칸(나가는 방향이 막힌 칸)에 앉힌 인물의 첫걸음이 통과 없이 그 칸을 나가려 한다 — 엔진이 첫걸음부터 막아 건너뛰기 경로가 통째로 사라지고 인물이 제자리에서 사라진다
+//  - scene-tint-clears-fade        화면을 검게 덮은(fadeOut) 뒤 fadeIn 전에 「Tint Screen」 으로 색조를 바꾼다 — 페이드도 같은 색조 칸이라 검은 덮개가 걷혀 다음 장면 전에 화면이 드러난다
 //  - scene-route-interrupted       기다리지 않는 긴 경로(퇴장 등)가 도는 인물에게 같은 장면이 다시 이동·돌기를 시킨다 — 뒤 명령이 앞 경로를 갈아 끼워 인물이 길 한가운데 멈춘다
 
 import { nestedCommandLists } from "../authoredCommandIndex";
@@ -1154,6 +1155,41 @@ function checkSeatedCannotStand(project: Project, issues: LintIssue[]): void {
   }
 }
 
+// ---------------------------------------------------------------------------- 검은 화면 위 색조
+
+const FADE_BLACK = "0,0,0,1";
+/**
+ * 「화면 효과」 fadeOut 은 색조 칸에 검정(0,0,0,1)을 칠하는 것이고 「Tint Screen」 도 같은 칸을 덮어쓴다. 검게 덮은 채로
+ * 회상 세피아를 걷으려고 neutral 색조를 주면 덮개까지 걷혀, 옮기기 전 한 장면이 원색으로 드러난다(첫사랑 r6: 10년 전 복도에 어른 서하).
+ * 페이지를 차례로 읽어 덮인 동안의 색조 명령을 잡는다. 검정 그대로 칠하는 색조(value 0,0,0,1)는 덮개를 지키므로 통과.
+ */
+function checkTintClearsFade(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    for (const host of map.events ?? []) {
+      for (const page of pagesOf(host)) {
+        let covered = false;
+        for (const command of walk(page.commands)) {
+          if (command.kind !== "m2Command") continue;
+          const id = command.commandId ?? "";
+          if (id === "m2-202-screen-effect" || m2Title(command) === "Screen Effect") {
+            const effect = fieldStr(command, "effect");
+            if (effect === "fadeOut") covered = true;
+            else if (effect === "fadeIn") covered = false;
+            continue;
+          }
+          if (!covered || !(id === "m2-046-tint-screen" || m2Title(command) === "Tint Screen")) continue;
+          if (fieldStr(command, "value").replace(/\s+/g, "") === FADE_BLACK) continue;
+          issues.push({
+            severity: "warning", code: "scene-tint-clears-fade", mapId: map.id, eventId: host.id, x: host.x, y: host.y,
+            message: `이벤트 ${host.id} 가 화면을 검게 덮은(fadeOut) 채 「Tint Screen」(${fieldStr(command, "value") || fieldStr(command, "color") || "neutral"}) 을 준다 — 페이드도 같은 색조라 검은 덮개가 걷혀 다음 장면 전에 화면(감춰 둔 인물 포함)이 드러난다. 색조는 fadeIn 뒤 새 장면에서 걷거나, 덮인 동안엔 value "0,0,0,1"(검정 그대로)로 필터만 걷는다.`,
+          });
+          break;
+        }
+      }
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------- 흉상 시선
 
 /**
@@ -1201,6 +1237,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkRouteInterrupted);
   guard(checkBustFacing);
   guard(checkSeatedCannotStand);
+  guard(checkTintClearsFade);
   return issues;
 }
 

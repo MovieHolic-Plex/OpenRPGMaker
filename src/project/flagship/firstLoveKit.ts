@@ -89,6 +89,9 @@ export const tint = (value: string, ms = 0): Command => m2("Tint Screen", { colo
 /** 회상 색 — 화면 색 필터(세피아·채도 낮춤). 색 덮개가 아니라 아래 그림의 색을 바꾼다. */
 export const memoryTint = (ms = 0): Command => m2("Tint Screen", { color: "neutral", value: "", sepia: 70, saturation: 70, durationMs: ms });
 export const clearTint = (ms = 0): Command => m2("Tint Screen", { color: "neutral", value: "", durationMs: ms });
+/** 검게 덮인(fadeOut) 화면에서 회상 세피아만 걷는다. 「Tint Screen」은 페이드와 같은 색조 칸을 쓰므로 neutral 로 걷으면
+ *  검은 덮개까지 걷혀 옮기기 전 한 장면이 원색으로 드러난다(VQA r6: 10년 전 복도에 어른 서하). 검정을 그대로 다시 칠한다. */
+export const clearTintKeepBlack = (): Command => m2("Tint Screen", { color: "neutral", value: "0,0,0,1", durationMs: 0 });
 export const shake = (ms = 300): Command => m2("Shake Screen", { value: 1, intensity: "1", durationMs: ms, direction: "horizontal" });
 export const flash = (color = "white", ms = 300): Command => m2("Flash Screen", { color, durationMs: ms, value: "flash" });
 /** 회상 그림 겹침 — 10년 전 교복의 두 사람을 화면 가득 반투명으로 띄웠다 거둔다(고백 정점). 그림은 앱에 든 연애 타이틀 그림. */
