@@ -74,7 +74,7 @@ function relay(surface, raw) {
   });
 }
 
-const browser = await chromium.launch({ headless: true, args: ["--disable-background-networking", "--disable-features=NetworkChangeNotifier", "--use-gl=swiftshader"] });
+const browser = await chromium.launch({ headless: true, args: ["--disable-background-networking", "--disable-features=NetworkChangeNotifier", "--use-gl=swiftshader", "--js-flags=--max-old-space-size=8192"] });
 const page = await browser.newPage({ viewport: { width: 1440, height: 960 } });
 page.setDefaultTimeout(180_000);
 const pageErrors = [];
@@ -92,7 +92,7 @@ await page.addInitScript(() => {
 });
 await page.route("**/rest/v1/**", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
 await page.goto(`${base}/?blankProject=1`, { waitUntil: "domcontentloaded" });
-await page.waitForFunction(() => Boolean(window.__oprnEditorStore), null, { timeout: 240_000 });
+await page.waitForFunction(() => Boolean(window.__oprnEditorStore), null, { timeout: 900_000 }).catch((error) => { console.log("boot errors:", pageErrors.join(" | ")); throw error; });
 console.log("editor ready");
 
 const body = (req) => new Promise((resolveBody) => { let s = ""; req.on("data", (d) => { s += d; }); req.on("end", () => resolveBody(s ? JSON.parse(s) : {})); });
@@ -134,8 +134,11 @@ const handlers = {
       host.style.cssText = "position:fixed;right:16px;top:16px;width:440px;max-height:92vh;overflow:auto;z-index:99999;background:var(--bg-base,#17151d);padding:4px;border-radius:14px;box-shadow:0 8px 40px #0008";
       document.body.append(host);
       window.__ogFollowUp = null;
+      // 앞 카드는 화면에서 떼어도 판이 끝까지 돌아 후속 요청을 낸다(실제 편집기에서도 카드는 대화에 남는다) — 지금 카드의 것만 받는다.
+      const token = {};
+      window.__ogCardToken = token;
       const { createObjectGenCard } = await import("/src/editor/panels/aiObjectGenCard.ts");
-      host.append(createObjectGenCard(request, (text) => { window.__ogFollowUp = text; }));
+      host.append(createObjectGenCard(request, (text) => { if (window.__ogCardToken === token) window.__ogFollowUp = text; }));
       return { ok: true };
     }, { request, autopick, noReference });
   },
@@ -152,7 +155,9 @@ const handlers = {
   },
   async "POST /click"({ testid, letter }) {
     const selector = letter ? `.ai-objectgen-candidate[data-letter="${letter}"] [data-testid="${testid}"]` : `[data-testid="${testid}"]`;
-    await page.locator(selector).first().click();
+    // 무거운 판에서 카드가 화면 밖·덮임으로 잡혀 click 이 30초 넘게 멈춘 적이 있다 — 실패하면 DOM click 으로.
+    try { await page.locator(selector).first().click({ timeout: 10000 }); }
+    catch { await page.locator(selector).first().evaluate((el) => el.click()); return { clicked: selector, via: "dom" }; }
     return { clicked: selector };
   },
   async "POST /shot"({ out: file, selector }) {

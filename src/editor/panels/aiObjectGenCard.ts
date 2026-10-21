@@ -114,7 +114,7 @@ export function createObjectGenCard(request: ObjectGenRequest, followUp: ObjectG
     if (settled || baking) return;
     if (!glue.roundSettled(round)) {
       const done = round.runs.filter((r) => r.status === "done").length;
-      status.textContent = `후보를 그리는 중이에요(${done}/${round.runs.length}). 한 판에 1~3분 걸려요. 다른 일을 해도 계속 그려요.`;
+      status.textContent = `후보를 그리는 중이에요(${done}/${round.runs.length}). 한 판에 4~8분 걸려요(참고 그림·고치기·검수 3번). 다른 일을 해도 계속 그려요.`;
       return;
     }
     if (choosing) return;

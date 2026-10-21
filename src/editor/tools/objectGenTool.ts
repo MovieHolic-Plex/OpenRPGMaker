@@ -2,7 +2,7 @@
 // generate_missing_object — 지금 맵 칩셋에 없는 기물 하나를 공방(object-gen 실행기)으로 그려 달라고 요청한다(2026-10-21).
 // 위키: openwiki/editor-ai-tools.md 「없는 기물 그리기」, openwiki/editor-workshop.md, openwiki/harnesses/map-objects.md.
 //
-// 도구는 그리지 않는다 — 요청 카드만 돌려준다(Pi 워커에는 화면·IndexedDB 가 없고, 그림 한 판은 1~3분 걸린다).
+// 도구는 그리지 않는다 — 요청 카드만 돌려준다(Pi 워커에는 화면·IndexedDB 가 없고, 그림 한 판은 4~8분 걸린다).
 // 편집기 카드(aiObjectGenCard.ts)가 사용자 자기 AI 계정으로 후보를 그리고, 사용자가 고르거나 사용자가 켠 「알아서 고르기」가
 // 검수 통과 후보를 그 맵 칩셋 끝에 굽는다(공방 칸, 이 게임에만 — 스토어·공용 DB 로는 못 나간다). 놓기는 후속 턴의 조수가 한다.
 //
@@ -118,7 +118,7 @@ const generateMissingObject: ToolDefinition = {
     properties: {
       mapId: { type: "string", description: "놓을 맵(비우면 지금 보는 맵)" },
       title: { type: "string", description: "기물 이름, 짧은 한국어 명사구(예: 나무 벌통, 공중전화 부스, 놋쇠 혼천의). 사람·지형이면 거부된다" },
-      description: { type: "string", description: "어떻게 생겼는지 한두 문장(재료·색·특징). 칩셋 화풍에 맞춰 그린다" },
+      description: { type: "string", description: "어떻게 생겼는지 한두 문장(재료·색·특징). 그 맵 배경(나라·시대)에서 실제로 보는 모양으로 쓴다 — 예: 조선 마을의 우물은 돌을 두른 우물이지 서양식 지붕 달린 우물이 아니다. 사용자가 다른 나라 모양을 떠올리게 하는 말을 써도 그 배경의 모양으로 바꿔 쓴다. 1배에서 그 물건임을 알아보게 하는 특징 2~3개를 적는다. 칩셋 화풍에 맞춰 그린다" },
       objectKind: { type: "string", enum: OBJECT_GEN_KINDS as unknown as string[], description: "놓는 방식: floor 바닥에 세움(발밑 막힘) · wall 북쪽 벽 앞 가구 · hang 벽에 거는 것 · flat 밟고 지나가는 바닥 무늬(깔개)" },
       tilesW: { type: "integer", minimum: 1, maximum: 4, description: "가로 칸 수(실내 가구는 3까지)" },
       tilesH: { type: "integer", minimum: 1, maximum: 3, description: "발밑(막히는) 세로 칸 수(실내 가구는 2까지). 위로 솟은 부분은 rise" },

@@ -85,5 +85,6 @@ export const REF_DRAW_NOTE = "「참고 그림」은 이 물건이 이 시점에
 export function workshopRefDescribe(item: { readonly kind: string; readonly title: string; readonly description: string; readonly setting?: string; readonly width: number; readonly height: number; readonly padTop: number }): string | null {
   if (item.kind === "flat" || item.kind === "hang") return null;
   const w = item.width, h = item.height - item.padTop;
-  return `${item.title} — ${item.description}${item.setting ? ` Setting: ${item.setting}.` : ""} One single object; in the game it is drawn about ${w} by ${h} pixels (width by height), so keep that proportion.`;
+  // 배경(나라·시대)의 실제 모양으로 — 설명이 다른 나라 모양(영국식 빨간 부스 등)을 적었어도 배경을 따른다(object-gen rules 와 같은 뜻).
+  return `${item.title} — ${item.description}${item.setting ? ` Setting: ${item.setting}. Show the form this object really has in that setting (its country and era), not a form from another country.` : ""} One single object; in the game it is drawn about ${w} by ${h} pixels (width by height), so keep that proportion.`;
 }

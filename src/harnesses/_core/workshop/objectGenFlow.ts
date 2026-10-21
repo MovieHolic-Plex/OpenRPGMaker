@@ -250,6 +250,20 @@ export const describeCheck = (check: OgCheck): string => [
 
 // --- 그리기 지시문(원본 prompts.draw_brief) ---------------------------------------------------------------------------
 
+/**
+ * object-gen 의 job `rules`(「Drawing rules for this set」 — 그리기 지시문과 고르기가 읽는 입력)로 맵 배경을 넘긴다.
+ * 시험 2(2026-10-21): 조수가 jp_city 공중전화 부스를 영국식 빨간 부스로 적어, 원본·공방 둘 다 영국식을 그렸다(VQA FAIL).
+ */
+export function ogRules(item: WorkshopItem): string {
+  if (!item.setting) return "";
+  return [
+    `- Setting of the map this object goes into: ${item.setting}.`,
+    "- Draw the form this object really has in that setting (its country, era and culture). If the brief describes a form from another",
+    "  place (for example a Western roofed well with a crank in a Joseon-era Korean village), draw the setting's own form instead and keep the brief's colours only where they fit.",
+    "- It must read as that object, in that setting, at 1x.",
+  ].join("\n");
+}
+
 export type OgStyle = { readonly name: string; readonly floor: Rgba; readonly refs: readonly { readonly label: string; readonly url: string }[] };
 
 export function ogDrawBrief(ctx: DrawContext, opts: { readonly hasReference: boolean; readonly chipset: string }): string {
@@ -274,6 +288,8 @@ export function ogDrawBrief(ctx: DrawContext, opts: { readonly hasReference: boo
   ];
   const note = [ctx.roundNote, ctx.redrawNote].filter(Boolean).join("\n");
   if (note) lines.push("## Note from the person (follow first)", note, "");
+  const rules = ogRules(item);
+  if (rules) lines.push("## Drawing rules for this set (follow them; the picker checks them as well as readability)", rules, "");
   const v = ctx.lastVerdict;
   if (v && v.verdict === "FAIL") {
     lines.push("## Your last attempt failed the blind review - the judges said (fix these, keep what passed)",
@@ -502,6 +518,12 @@ export async function ogReview(ctx: ReviewContext, env: WorkshopEnv, style: OgSt
 
 export function ogPickerPrompt(item: WorkshopItem): string {
   const brief = `${item.description}${item.setting ? ` Setting: ${item.setting}` : ""}`;
+  const rules = ogRules(item);
+  // 원본 picker.prepare 의 rules_part 문장(모듈 상수가 아니라 함수 안 글이라 여기 옮겨 적는다).
+  const rulesPart = !rules ? "" : "This set has explicit DRAWING RULES. Weigh rule compliance as heavily as readability: check every candidate "
+    + "against each rule on the 8x board (outline ink, roof/top proportions, joint and tick patterns, margins ...). "
+    + "A candidate that breaks a rule the others keep loses, even if it reads well at 1x. Name the rules that decided "
+    + `it in your reason.\nRULES:\n${rules.slice(0, 4000)}\n`;
   return kitValue("picker", "PROMPT").replace("{name}", item.title).replace("{brief}", brief).replace("{earlier_line}", "")
-    .replace("{rules_part}", "").replace("{earlier_rule}", "Pick a number.\n").replaceAll("{{", "{").replaceAll("}}", "}");
+    .replace("{rules_part}", rulesPart).replace("{earlier_rule}", "Pick a number.\n").replaceAll("{{", "{").replaceAll("}}", "}");
 }
