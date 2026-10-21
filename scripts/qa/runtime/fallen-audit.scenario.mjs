@@ -32,6 +32,9 @@ const valenWalksIn = [
   { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 10000 },
   { kind: "hold", dir: null, ms: 1200 },
 ];
+/** 발렌이 등불 앞에 다 설 때까지(장면이 도는 동안 말을 걸면 입력이 씹힌다). */
+const untilValenArrived = { kind: "evalToFile", out: "/tmp/fs-valen-arrived.json",
+  fn: `async () => { for (let i = 0; i < 160; i++) { if (window.__oprnDebug.readState().switches.sw_fs_valen_arrived) return true; await new Promise((r) => setTimeout(r, 250)); } return false; }` };
 const talk = (dir) => [{ kind: "face", dir }, { kind: "action" }, { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 8000 }, { kind: "hold", dir: null, ms: 1800 }];
 /** 출입구 칸 바로 앞에 서서 그쪽으로 걸어 밟는다. */
 const stepInto = (mapId, x, y, dir) => [
@@ -163,7 +166,7 @@ export default {
     { id: "save-crystal", note: "세이브 결정", ops: [{ kind: "teleport", mapId: "fs_vault", x: 33, y: 20 }, { kind: "hold", dir: null, ms: 400 }, ...talk("right")], shot: true },
     { id: "save-crystal-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "valen-enters", note: "발렌이 북쪽 통로에서 걸어 내려온다", ops: [...closeDialogue(), ...valenWalksIn, { kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 1500 }], shot: true },
-    { id: "valen", note: "발렌", ops: [{ kind: "hold", dir: null, ms: 2500 }, ...closeDialogue(), ...approachUp("fs_vault", 25, 25), ...talk("up")], shot: true },
+    { id: "valen", note: "발렌", ops: [untilValenArrived, { kind: "hold", dir: null, ms: 800 }, ...closeDialogue(), ...approachUp("fs_vault", 25, 25), ...talk("up")], shot: true },
     { id: "battle", note: "결전 시작", ops: [
       { kind: "pressUntil", key: "Enter", testid: "battle-scene", state: "present", maxPresses: 20, timeoutMs: 900 },
       { kind: "hold", dir: null, ms: 2500 },
