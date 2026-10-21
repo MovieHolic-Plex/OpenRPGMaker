@@ -475,6 +475,8 @@ function vanishWhen(map: GameMap | undefined, eventId: string, switchId: string)
 }
 
 const SW_VALEN_MARCHED = "sw_fs_valen_marched";
+/** 기사는 발렌보다 먼저 성문 통로에 닿는다 — 자기 스위치로 바로 지워야 투명한 채 통로 칸을 막지 않는다. */
+const SW_KNIGHT_MARCHED = "sw_fs_knight_marched";
 type Step = "up" | "down" | "left" | "right";
 /** from → to 걸음(통행 칸·다른 이벤트 칸을 피하는 BFS). 못 가면 null. */
 function walkPath(project: Project, map: GameMap, from: { x: number; y: number }, to: { x: number; y: number }, selfId: string): Step[] | null {
@@ -522,19 +524,21 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     const path = walkPath(project, hub, { x: npc.x, y: npc.y }, exit, id);
     if (!path) throw new Error(`[fallen-star] ${id} 가 동문까지 걸어갈 길이 없다`);
     const moves = [
+      // 처음부터 지나갈 수 있게: 주인공이 성문 통로 앞에 서 있으면 발렌이 막혀 스위치가 안 켜지고, 그동안 투명한 기사가
+      // 통로 칸을 막아 숲으로 못 나갔다(QA fallen-town to-forest). 길은 걸을 수 있는 칸으로만 짜였으니 건물은 안 뚫는다.
+      { kind: "setThrough", enabled: true },
       ...Array.from({ length: delay }, () => ({ kind: "wait" })),
       ...path.map((dir) => ({ kind: "move", dir })),
       { kind: "changeOpacity", delta: -255 },
-      // 사라진 뒤에도 칸을 막으면 뒤따르던 발렌이 마지막 걸음에서 멈췄다 — 지나갈 수 있게 한다.
-      { kind: "setThrough", enabled: true },
-      ...(id.endsWith("valen") ? [{ kind: "setSwitch", switchId: SW_VALEN_MARCHED, value: true }] : []),
+      { kind: "setSwitch", switchId: id.endsWith("valen") ? SW_VALEN_MARCHED : SW_KNIGHT_MARCHED, value: true },
     ];
     marches.push({ kind: "moveEvent", eventId: id, route: { moves, repeat: false, wait: false, skippable: true } } as unknown as Command);
   }
   if (!project.switches.some((s) => s.id === SW_VALEN_MARCHED)) project.switches.push({ id: SW_VALEN_MARCHED, name: "발렌 일행 동문으로 떠남" });
+  if (!project.switches.some((s) => s.id === SW_KNIGHT_MARCHED)) project.switches.push({ id: SW_KNIGHT_MARCHED, name: "심문회 기사 동문으로 떠남" });
   list.splice(after + 1, 0, ...marches);
   vanishWhen(hub, `ev_${FS_PREFIX}_valen`, SW_VALEN_MARCHED);
-  vanishWhen(hub, `ev_${FS_PREFIX}_knight`, SW_VALEN_MARCHED);
+  vanishWhen(hub, `ev_${FS_PREFIX}_knight`, SW_KNIGHT_MARCHED);
 }
 
 export const SW_VALEN_ARRIVED = "sw_fs_valen_arrived";
