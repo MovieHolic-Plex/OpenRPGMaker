@@ -7,7 +7,7 @@
 //  - scene-transfer-pair           착지 칸이 돌아오는 문 앞(체비쇼프 1칸 안)이 아니다 / 착지 방향이 문을 향한다
 //  - scene-transfer-facing         transfer 에 도착 방향이 없다
 //  - scene-stair-direction         내려가는 계단 그림이 위층으로(또는 반대로) 이어진다
-//  - scene-npc-vanish              NPC 가 출구까지 걷지 않고 제자리에서 사라진다(Erase Event·투명 «떠남» 페이지·경로 속 불투명도 0)
+//  - scene-npc-vanish              NPC 가 출구까지 걷지 않고 제자리에서 사라진다(Erase Event·투명 «떠남» 페이지·경로 속 불투명도 0·단계 변수를 바꿔 보이던 페이지가 빈 페이지로)
 //  - scene-dialogue-position-mixed 대사 위치(top·center·bottom·auto)가 한 게임 안에서 섞였다
 //  - scene-dialogue-position-jump  이어지는 두 대사(사이에 창을 닫는 명령 없이)가 서로 다른 자리를 못박아 창이 위↔아래로 뛴다
 //  - scene-dialogue-context-mixed  sign·system·letter 밖의 특수 대화창 모양을 둘 이상 섞거나 말풍선을 쓴다
@@ -363,11 +363,53 @@ function switchesThatHide(map: GameMap, strict: boolean): Map<string, GameEvent[
   return out;
 }
 
+type VarCondition = { kind: string; variableId?: string; op?: string; value?: unknown; switchId?: string };
+function varConditions(page: EventPage, variableId: string): VarCondition[] {
+  return ((page.conditions ?? []) as unknown as VarCondition[]).filter((c) => c?.kind === "variable" && c.variableId === variableId && typeof c.value === "number");
+}
+function holds(c: VarCondition, v: number): boolean {
+  const x = c.value as number;
+  switch (c.op) {
+    case "==": case "=": return v === x;
+    case "!=": return v !== x;
+    case ">=": return v >= x;
+    case ">": return v > x;
+    case "<=": return v <= x;
+    case "<": return v < x;
+    default: return true;
+  }
+}
+/** 이 페이지가 도는 동안 그 변수가 가질 수 있는 값 하나(== 이면 그 값, >= 이면 아래 끝). 모르면 null. */
+function valueFromConditions(page: EventPage, variableId: string): number | null {
+  const cs = varConditions(page, variableId);
+  const eq = cs.find((c) => c.op === "==" || c.op === "=");
+  if (eq) return eq.value as number;
+  const lo = cs.find((c) => c.op === ">=");
+  if (lo && cs.every((c) => holds(c, lo.value as number))) return lo.value as number;
+  return null;
+}
+/**
+ * 그 변수 값에서 켜질 페이지(뒤 페이지 우선). 그 변수를 조건으로 쓰지 않는 페이지·켜짐 스위치를 요구하는 페이지는
+ * 판단 밖이라 건너뛴다(스위치는 꺼짐으로 본다). 결과 null = 맞는 페이지 없음.
+ */
+function activePageFor(event: GameEvent, variableId: string, value: number): EventPage | null {
+  const pages = pagesOf(event);
+  if (!pages.some((pg) => varConditions(pg, variableId).length > 0)) return null;
+  for (let i = pages.length - 1; i >= 0; i--) {
+    const pg = pages[i]!;
+    const conds = (pg.conditions ?? []) as unknown as VarCondition[];
+    if (conds.some((c) => c?.kind === "switch" && (c as { value?: unknown }).value === true)) continue;
+    if (varConditions(pg, variableId).every((c) => holds(c, value))) return pg;
+  }
+  return null;
+}
+
 function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly Gate[]): void {
   for (const map of Object.values(project.maps)) {
     const isExit = exitCells(project, map, gates);
     const byId = new Map((map.events ?? []).map((e) => [e.id, e] as const));
     const routedToExit = new Set<string>();
+    const routeEnd = new Map<string, Cell>();
     const reported = new Set<string>();
     const report = (event: GameEvent, why: string): void => {
       if (reported.has(event.id)) return;
@@ -378,14 +420,16 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
       });
     };
     // 1) 경로 끝이 출구인 NPC 를 모은다. 경로 안에서 불투명도 0 이면 그 자리에서 사라지는 것이다.
-    const lists: Array<{ host: GameEvent; commands: readonly Command[] }> = [];
-    for (const host of map.events ?? []) for (const page of pagesOf(host)) lists.push({ host, commands: page.commands ?? [] });
+    const lists: Array<{ host: GameEvent; page: EventPage; commands: readonly Command[] }> = [];
+    for (const host of map.events ?? []) for (const page of pagesOf(host)) lists.push({ host, page, commands: page.commands ?? [] });
     for (const { host, commands } of lists) {
       for (const command of walk(commands)) {
         const id = routeTarget(command, host);
         const npc = id ? byId.get(id) : undefined;
         if (!npc || command.kind !== "moveEvent") continue;
-        const { end, fades } = simulateRoute(npc, command.route?.moves, map);
+        // 한 인물이 여러 번 걸으면 앞 걸음이 끝난 칸에서 이어 걷는다(옆자리로 갔다가 탕비실로 가는 지후).
+        const { end, fades } = simulateRoute(routeEnd.get(npc.id) ?? npc, command.route?.moves, map);
+        routeEnd.set(npc.id, end);
         if (isExit(end)) routedToExit.add(npc.id);
         else if (fades) report(npc, `경로 끝 (${end.x},${end.y}) 에서 불투명도를 0 으로 내려 출구가 아닌 자리에서 사라진다`);
       }
@@ -395,7 +439,7 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
     const goneSwitch = switchesThatHide(map, true);
     type Stage = { black: boolean; joined: boolean; battle: boolean; talkedSinceBattle: boolean; lastRouteTo: string | null; lastRouteWaits: boolean };
     const excused = (st: Stage): boolean => st.black || st.joined || (st.battle && !st.talkedSinceBattle);
-    for (const { host, commands } of lists) {
+    for (const { host, page, commands } of lists) {
       const visitList = (list: readonly Command[], inherited: Stage): void => {
         const st: Stage = { ...inherited };
         for (const command of list) {
@@ -431,6 +475,22 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
           if (command.kind === "setSwitch" && command.value === true) {
             for (const npc of goneSwitch.get(command.switchId) ?? []) {
               if (!routedToExit.has(npc.id) && !excused(st)) report(npc, "스위치로 보이는 페이지가 꺼져 방 안에서 사라진다");
+            }
+          }
+          // 3) 장면 진행 변수(stage 등)를 바꾸는 순간, 그 값에 맞는 페이지가 빈(투명·그림 없음) 페이지라서 같은 맵의 인물이 눈앞에서 꺼진다.
+          //    (첫사랑 r3: 탕비실 대화가 단계를 넘기자 책상 앞 지후가 페이드 없이 빈 자리 페이지로 바뀌었다.)
+          if (command.kind === "setVariable" && command.op === "=" && typeof command.value === "number" && !excused(st)) {
+            const before = valueFromConditions(page, command.variableId);
+            if (before !== null && before !== command.value) {
+              for (const npc of map.events ?? []) {
+                if (npc.id === host.id || routedToExit.has(npc.id)) continue;
+                const was = activePageFor(npc, command.variableId, before), now = activePageFor(npc, command.variableId, command.value);
+                // 바꿔 끼우기는 사라짐이 아니다 — 그 인물이 걸어가 선 칸에 같은 순간 다른 이벤트(같은 인물의 다음 장면 판)가 나타난다.
+                const at = routeEnd.get(npc.id) ?? npc;
+                const handoff = (map.events ?? []).some((o) => o.id !== npc.id && o.x === at.x && o.y === at.y
+                  && !visibleGraphic(activePageFor(o, command.variableId, before) ?? undefined) && visibleGraphic(activePageFor(o, command.variableId, command.value as number) ?? undefined));
+                if (!handoff && was && visibleGraphic(was) && (!now || !visibleGraphic(now))) report(npc, `${command.variableId} 를 ${command.value} 로 바꾸는 순간 보이던 페이지가 빈 페이지로 바뀌어 방 안에서 꺼진다(바꾸기 전 화면을 어둡게 하거나 먼저 출구로 걸려 내보낸다)`);
+              }
             }
           }
           if (command.kind === "battleProcessing") {
