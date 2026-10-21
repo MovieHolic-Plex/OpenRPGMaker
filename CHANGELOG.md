@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.302.0 — 2026-10-21
+
+### 기능
+
+- **first-love** — 첫사랑 built-in office-romance demo (3 endings) + choice confirm grace, relationship pulse (#3173) (`a0cafb7`)
+- **modern-city** — redraw 1 interior objects (m142-h2) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3172) (`5d9d8d7`)
+
+### 수정
+
+- **i18n** — 첫사랑 home card genre and description in en/ja/zh (#3174) (`a64ad74`)
+
 ## 0.301.0 — 2026-10-21
 
 ### 기능
