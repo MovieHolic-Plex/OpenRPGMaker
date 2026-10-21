@@ -5,6 +5,26 @@
 
 <!-- releases -->
 
+## 0.300.0 — 2026-10-21
+
+### 기능
+
+- **modern-city** — redraw 15 interior objects (m142-b4) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3166) (`a99cdaa`)
+- **modern-city** — redraw 13 interior objects (m142-b3) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3165) (`10fa766`)
+- **modern-city** — redraw 13 interior objects (m142-b2) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3164) (`a09fe6c`)
+- **modern-city** — redraw 15 interior objects (m142-b1) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3163) (`f23df26`)
+- **jp-inaka** — countryside R12-R14 — jp_city roof grammar hand pixels, Opus VQA gate (50/50), bake (#3071) (`e45d411`)
+
+### 수정
+
+- **inaka** — park the map 4 kei truck on the open dirt field instead of across the N-S farm lane (#3162) (`5914650`)
+- delegated gate holds, jp interior 'study' kind, inaka map 3 truck (#3160) (`8d2a4d8`)
+- **editor** — UI/UX 적대적 VQA 2차 (슬림 시작·AI 도크·공방·진행 창·타일 탭) (#3159) (`03c7061`)
+
+### 성능
+
+- **db** — fast 타일 tab (windowed chipset cells) + fix Fallen Star browser crash (#3167) (`ca8cb3f`)
+
 ## 0.299.0 — 2026-10-21
 
 ### 기능
