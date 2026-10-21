@@ -237,8 +237,8 @@ function importStep(generator: LocalGenerator, n: number): HTMLElement {
           ? previews.map((preview) => el("figure", {
             children: [el("img", {
               attrs: { src: preview.url, alt: preview.name },
-              // 도트 그림은 정수 배율로만 키운다(최대 360px 폭, 6배까지)
-              on: { load: (event) => { const img = event.target as HTMLImageElement; const k = Math.max(1, Math.min(6, Math.floor(360 / Math.max(1, img.naturalWidth)))); img.style.width = `${img.naturalWidth * k}px`; } },
+              // 도트 그림은 정수 배율로만 키운다(최대 720px 폭, 6배까지)
+              on: { load: (event) => { const img = event.target as HTMLImageElement; const k = Math.max(1, Math.min(6, Math.floor(720 / Math.max(1, img.naturalWidth)))); img.style.width = `${img.naturalWidth * k}px`; } },
             }), el("figcaption", { attrs: { translate: "no" }, text: preview.name })],
           }))
           : [el("p", { class: "workshop-item-meta", text: "미리 볼 그림이 없어요." })],

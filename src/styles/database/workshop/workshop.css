@@ -95,3 +95,6 @@
 .workshop-gen-previews figure { margin: 0; display: grid; gap: 4px; justify-items: center; color: #1b1d22; font-size: 11px; }
 .workshop-gen-previews img { image-rendering: pixelated; }
 .workshop-form-row label { min-width: 0; }
+.workshop-gen-step button:not(.workshop-gen-primary) { padding: 6px 12px; border: 1px solid var(--border-default, rgba(15,23,42,0.127)); border-radius: var(--radius-s, 6px); background: var(--bg-raised, #fff); color: var(--text-1); font: inherit; font-size: 12.5px; cursor: pointer; }
+.workshop-gen-step button:not(.workshop-gen-primary):hover { background: var(--bg-active, rgba(15,23,42,0.06)); }
+.workshop-gen-step input[type="text"], .workshop-gen-step input[type="number"], .workshop-gen-step select { padding: 4px 6px; border: 1px solid var(--border-default, rgba(15,23,42,0.2)); border-radius: 4px; font: inherit; }
