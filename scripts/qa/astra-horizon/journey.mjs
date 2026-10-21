@@ -726,6 +726,8 @@ try {
     if (r !== "arrived") { try { await teleport(gym.id, at.x, at.y); } catch { continue; } }
     if (await talk(dir)) { talked = true; break; }
   }
+  // 고정 칸 네 곳에서 다 못 걸면(r37 풀: 관장 0턴) 지금 위치(eventPositions)를 보고 한 번 더 다가간다.
+  if (!talked) { await waitIdle(); talked = await approachAndTalk(gym.id, leader); }
   const started = talked && await pressEnterUntil(() => present("battle-scene"), 40);
   if (started) { await page.waitForTimeout(2500); await shot("21-leader-battle"); }
   const log = started ? await fight("21b-leader") : [];
