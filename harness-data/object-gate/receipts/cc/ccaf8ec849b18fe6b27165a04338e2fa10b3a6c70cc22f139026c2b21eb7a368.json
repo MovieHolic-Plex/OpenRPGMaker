@@ -1,0 +1,324 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ccaf8ec849b18fe6b27165a04338e2fa10b3a6c70cc22f139026c2b21eb7a368",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "rest wine rack",
+ "label": "modern_city_interior/rest-wine-rack",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 16,
+  "darkV5": 40,
+  "nearBlackEdge": 0.25,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of rack",
+      "rows": "2-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "wine bottle cubbies and front frame",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-8 form a light tan top band, 7 rows deep. It ends in a lighter front-edge line at row 8 (#ddbf91), followed by darker shadow rows 9-10 (#8a6128, then #a67a37). Below it, rows 9-30 are the vertical front face with the bottle cubbies and the frame uprights and shelves, 22 rows. The silhouette is a constant 30 px wide. This matches the cabinet 'top + edge + eave' reference, not the rim-only or front-elevation cases. The bottom row 31 is a dark base outline."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a one-tile wooden wine rack with a light wood frame, a 4x4 grid of dark cubbies and small red bottle ends. Measured facts support the look. It has 16 visible tones per tile against 17 for the cheese stall, 20 for the well and 9 for the hedge, so it sits within the reference range. Near-flat coverage is 0%, and 0% of its dark edge pixels are neutral, so the outlines lean brown rather than black. The frame shows several wood steps (highlight, light, mid, dark, deep cubby shadow). The bottles carry 2-3 tones each, with a highlight on each bottle end. No large flat fills are visible. Its total of 17 distinct colours is lower than the 38-40 of the richer references, but most of those are near-identical shades. It is slightly simpler than the stall and well, yet a careful artist would accept it next to the bench and hedge without it looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19795
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of rack",
+      "rows": "2-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "wine bottle cubbies and frame front",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-8 form a light tan plank band with a lighter front-edge line at row 8 (L=195). Row 9 is a darker shadow row (L=103) and row 10 is a mid-tone transition. Below is the front face, rows 9-30 (about 22 rows), with the 4x3 bottle cubbies, the dividers, and a dark base at row 31. The band is about 7 rows, so it is more than a rim. There is no receding side face. The object is drawn from the south, like the green cabinet reference with a top and an edge line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts support the candidate. It has 16 visible tones per tile, against 17 for the cheese stall, 20 for the well and 9 for the hedge. Near-flat coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline is tinted dark brown beside the wood rather than a black sticker line. By eye, the light wood frame, the shaded slat panel and the 4x4 grid of dark cubbies each hold a bottle end in a different tone. The wood and panel show grain and value steps, and the bottle ends vary in tone. It is a flat front view with less depth than the well or stall, and its wood ramp is a little shorter than theirs. It still would not look thinner or flatter next to the references, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18539
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of the rack",
+      "rows": "2-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-9"
+     },
+     {
+      "part": "bottle ends in cubbies",
+      "rows": "11-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-8 form a light tan top board about 7 rows tall. Row 8 (#ddbf91) is a lighter front-edge line, and row 9 (#8a6128) is a darker eave-shadow row below it. Below that, rows 9-30 show the front face as a 4x3 grid of cubbies with bottle ends seen head-on. The interior shelf dividers at rows 16 and 22 are thin 1-row lines. The silhouette is 30 wide on every row and no side face is drawn. The top board meets evidence (a), so the object reads as three-quarter rather than a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a wooden frame with a 4x4 grid of cubbies, each holding a bottle end with a rim highlight. The same-kind references are the stall and the well. The measured facts match them: 16 visible tones per tile against 17 for the cheese stall and 20 for the roofed well, 0% near-flat coverage, and 0% neutral dark edges, so the outline is tinted. By eye, the outline is a dark brown-red tone beside the wood and bottles, not a uniform black sticker line. The frame has a light-to-dark ramp with grain dots, and the bottles carry 3 tones each, with highlights. It is somewhat simpler than the stall and well, which have more material ramps, and the wood ramp is a little shallower than Beodeul's 5-6 steps. It has no flat fills and no sticker look, and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20616
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of the wine rack",
+      "rows": "2-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "bottle cubbies with bottles (front face)",
+      "rows": "9-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base strip",
+      "rows": "29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-8 form a 7-row tan plank band across the full width, with a lighter front-edge line at row 8 (#ddbf91) and a darker eave-shadow row at row 9 (#8a6128). That reads as a horizontal top surface seen from above. Below it, rows 9-30 give a 22-row front face of the cubby grid with bottles, and the base is at rows 29-30. The reference cabinet with top 5 + edge + eave is the same structure. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The rack is a single-tile front-on prop. The wood frame has a light top edge, a mid body and a dark inner edge, with some grain. Each bottle slot is a dark recess holding a round bottle end with a highlight, so there is no large flat area. Outlines lean brown/wine-tinted rather than neutral, and the measured near-neutral share of dark edge pixels is 0%, like the hedge and stall references. Measured facts are at reference level: 16 visible tones per tile against 17 for the stall, 20 for the well and 9 for the hedge, with 0% near-flat coverage. It has fewer total colours (17 against 38-40) and a slightly shallower ramp (about 4 steps against 5-6) than the richest references, but it is not sticker-like or flat, so a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18450
+  }
+ ],
+ "decidedAt": "2026-10-21T01:08:32.861Z",
+ "cells": {
+  "16": [
+   "47ef3788e891f1c6",
+   "4ffee36a42145294",
+   "69678c366b8d4ed4",
+   "a1ee75f72a6e33ce"
+  ],
+  "24": [
+   "081d9f2361935bae",
+   "2cc0a89a7cffc61a",
+   "2d1f13917f6703cb",
+   "2eb6e5fa195f6c65",
+   "3020c99b64539d29",
+   "39d4ca182ed91850",
+   "4af2da403493855e",
+   "66c18b09f0fc8a13",
+   "69dddc1fbab2da0d",
+   "6c83d664508d3984",
+   "6fd20f850cd8f184",
+   "75825b7568572931",
+   "824dd2f1f059a6ff",
+   "8a1a717b475439c8",
+   "8b1cfb55f4af84ee",
+   "93e7830c6251f318",
+   "9aad7100ec626121",
+   "a6447171584ef014",
+   "b85041756a198ce3",
+   "c9058445f6d633b4",
+   "dabb3d21472c9e62",
+   "e9d78fdee08682d2",
+   "ebd856d74b7a1c73",
+   "ff9092225eaeb980"
+  ],
+  "32": [
+   "cbbb3274cf78fa6a"
+  ],
+  "48": [
+   "0248ba818a0e7bc7",
+   "0bbbb972d52e916a",
+   "90b56069e8df0273",
+   "9559f72685db4139",
+   "a06c313ad7e23126",
+   "b9219545154f7224"
+  ]
+ }
+}
