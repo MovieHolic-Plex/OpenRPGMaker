@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.314.0 — 2026-10-22
+
+### 기능
+
+- **gen-kits** — workshop runners read object-gen prompts/rubrics from the pinned sync output; CI drift check (#3216) (`8ff0a05`)
+- **qa** — runtime QA checkpoints — start any demo stage directly in the shipped player (#3192) (`b249d68`)
+
+### 수정
+
+- **ci** — stop hosted ci-fast from cloning private object-gen (`14fb65e`)
+- **first-love** — platform exit gap is found on the lowest open row — the demo stopped building after #3182 honoured the explicit platform plan (#3218) (`2503cc5`)
+
 ## 0.313.0 — 2026-10-22
 
 ### 기능
