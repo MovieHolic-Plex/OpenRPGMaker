@@ -1,0 +1,15 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "fallen-town-r8",
+ "title": "폴른 스타 떨어진 별의 관 v9",
+ "note": "VQA v8 지적(곧은 두 끝) 반영: 끝 세로 5칸 둥근 끝, 앞면 8행",
+ "createdAt": "2026-10-21T20:33:24.047Z",
+ "items": [
+  {
+   "sha": "3799bf79e52579e3a3185cc85b2369a71d8f26998f9ff3107eb021160976247c",
+   "kind": "box",
+   "label": "beodeul_city/workshop/fallen-star-vessel",
+   "source": "/tmp/vessel/gate/fallen_star_vessel.png"
+  }
+ ]
+}

@@ -1,0 +1,15 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "fallen-town-r6",
+ "title": "폴른 스타 숲 r6 — 그을린 구덩이에 누운 별의 관",
+ "note": "chronoBell.ts/fallenStarVessel.ts 손 도트 1장(48×32, 동서로 누운 관). 허용 전에는 3/4 관문 미통과로 보고.",
+ "createdAt": "2026-10-21T19:17:24.449Z",
+ "items": [
+  {
+   "sha": "ace63a59bf4ad273134ad2d23f254dc11f57935412e4a4b03012aa1b08f4f93c",
+   "kind": "box",
+   "label": "beodeul_city/workshop/fallen-star-vessel",
+   "source": "/tmp/vessel/gate/fallen_star_vessel.png"
+  }
+ ]
+}

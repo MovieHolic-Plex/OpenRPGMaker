@@ -1,0 +1,337 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bd1c4a36dd031690488360898b435c93587b0cf340f218fb567f0c10672714cd",
+ "width": 48,
+ "height": 32,
+ "kind": "box",
+ "name": "떨어진 별의 관",
+ "label": "beodeul_city/workshop/fallen-star-vessel",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+  "3/4: 앞면 7행 < 8 (3/4)",
+  "3/4: 앞면 6행 < 8 (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+   "앞면 7행 < 8 (3/4)",
+   "앞면 6행 < 8 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 10,
+  "darkV5": 43,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pod lid / upper shell with highlight and cyan window",
+      "rows": "10-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "front face of pod hull",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At x=23 the lid runs from row 11 to about row 21. It has a bright highlight at rows 13-15 and grey rows 16-21. A light front-edge line sits at row 22, with a dark shadow row at 23. Below it, a front face of about 6 rows (24-29) steps down to the darkest tone. The silhouette widens from 9 to 47 px over rows 9-15 and narrows again over rows 25-30, which matches an ellipse-like lid on a body. The top plane is much taller than a rim, and a front face is present, so it is a three-quarter box."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a pod-shaped silver-blue coffin. It has about 4 lightness steps: a highlight rim, light panel, mid body and dark underside. Its outline is a dark blue-grey that leans toward the material, and the measured 0% neutral edge share backs this up, so it is not a sticker-style black line. It has 9 visible tones per tile, matching the hedge reference (9) but well below the stall (17) and well (20). There is no flat fill (0% near-flat). Texture is limited to a few panel lines and a small oval inset, with no grain, speckle or per-surface dots. The large smooth hull has little variation and is thinner than the stall and well, which carry many small details. It is clean but a little shallower than the Beodeul standard, so the verdict is fail when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "앞면 6행 < 8 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "앞면 6행 < 8 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15190
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lid / top of the capsule coffin",
+      "rows": "10-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "front (south) hull face",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The columns show a lid band starting at the top outline (row 9-12) with a bright highlight (rows 13-15) and mid-grey lid rows. It ends in a light front-edge line that follows the curve: row 20 at x=35, row 22 at x=23 and row 23 at x=12. A 1-row dark eave shadow (L=51) comes right after it (rows 21, 23 and 24). Below that, a darker grey front hull face runs about rows 24-30, 7 rows tall. The silhouette width grows from 9 to 47 and shrinks again, which makes a rounded pod shape. The top plane and the front face are both drawn, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a silver-blue capsule pod with a bevelled oval lid, a highlight rim, and a body that shades from light to dark. I count about 5 lightness steps on the metal ramp, against about 5-6 per material on the Beodeul references. Its outline is a dark blue-grey that leans toward the material, not a neutral black line, and the measured near-neutral share of dark edge pixels is 0%. Near-flat coverage is 0%, so no large areas are single flat fills. Its 9 visible tones per tile match prop-hedge (9) but fall short of prop-stall-cheese (17) and prop-well-roofed (20). The total of 13 distinct colours is low next to those two references (40 and 38), and the metal surface is fairly smooth, with only a few highlight accents and little grain or per-panel texture. That makes it slightly lower in density than the richer references. The structure and shading are still clean, tinted and layered, so I judge a careful artist would accept it next to the hedge and bench.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "앞면 7행 < 8 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "앞면 7행 < 8 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19289
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "capsule lid / upper shell",
+      "rows": "10-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-23"
+     },
+     {
+      "part": "lower hull front face",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The coffin is a lozenge-shaped pod. Its silhouette widens from 9 px at row 9 to 47 px by row 15, then narrows again from row 25 to row 30. The upper shell, rows 10-22, has bright highlights at rows 13-15 and a light front-edge line at row 22 (x=23, x=35). A dark shadow line follows at row 23, with another at row 21 in the x=35 column. Below that, the lower hull (rows 24-29, dark at the bottom) forms a front face of about 6-7 rows. The lid is therefore seen from above with a front face beneath it, like the green cabinet and barrel references and unlike a front elevation. The object is drawn as a tilted, tapered pod rather than a rectangular box, but the structure still reads as a coffin box with a visible top and front."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a silver-blue capsule coffin. It has about 5 lightness steps on the metal: a bright rim highlight, light and mid hull, a darker underside, and a lid panel with a glassy highlight. The dark edge pixels are 0% neutral, so the outline is a tinted dark blue-grey that follows the hull rather than a black sticker line. Near-flat coverage is 0%, so there are no flat fills. It has 9 visible tones per tile, equal to the hedge reference (9) but below the stall (17) and well (20). It has only 13 distinct colours overall, against 38-40 for the richer references, so the surface grain is sparse. A smooth metallic hull justifies some of that. It is at the hedge's level on the primary facts, with tinted outlines and no flat areas, so it is borderline but acceptable.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "앞면 7행 < 8 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "앞면 7행 < 8 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18262
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "capsule lid / top shell (with cyan window and highlights)",
+      "rows": "10-22",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-23"
+     },
+     {
+      "part": "lower hull front face",
+      "rows": "24-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a lens-shaped capsule. Its width grows from 9 px at row 9 to 47 px at row 15 and shrinks again from row 25 to row 30. The upper hull (rows 10-21) carries the top shell: a bright highlight band at rows 12-15 (L up to 248), then mid-tone panel rows. A light front-edge line sits at row 22 (L=221 in columns x=23 and x=35, plus x=12 at row 23). A dark eave-shadow row follows at row 23 (L=51). Below it, a darker front hull face spans rows 24-29 and fades to L~43 at the bottom. The top surface is therefore about 12 rows against a front face of about 6-7 rows, so it reads as a top plus a front face, not a flat slab or a pure elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a smooth silver pod with a bright top rim, light and mid steel, a darker lower body, a deep underside and a recessed lid panel with a cool-tinted highlight. That reads as about 5 lightness steps, close to the Beodeul 5-6. The outline is a dark blue-grey that leans toward the material, not a black sticker line, and the measured 0% near-neutral edge pixels supports this. Near-flat coverage is 0%, so there are no flat fills. At 9 visible tones per tile it matches the hedge (9), though it is below the stall (17) and the roofed well (20). The surface is glossy and fairly smooth, with only a few grain or rivet dots, so texture is 'some' and not 'rich'. Overall it sits at hedge level, a little lighter than the most detailed references but not shallow or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "앞면 7행 < 8 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "앞면 7행 < 8 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18756
+  }
+ ],
+ "decidedAt": "2026-10-21T20:30:13.351Z",
+ "cells": {
+  "16": [
+   "00510eac7b45607c",
+   "07a1b67a6aa50c32",
+   "61b0f3bf4345a7ac",
+   "64fdbacf5152c1c7",
+   "79eb25518c9084a2",
+   "a652d210486ceee3"
+  ],
+  "24": [
+   "23400beb0b2b9f9d",
+   "815209b6f32c0c48",
+   "8bb087660692f9b5",
+   "a8457969c067209f",
+   "aea580c9bd03dae6",
+   "e965b5b6df35cc7e"
+  ],
+  "32": [
+   "08e7184c15aa97f1",
+   "0a32bbe57b9c8c98",
+   "1de7344855c28111",
+   "23cf6d4245decb55",
+   "d2c5266fec7a67e1",
+   "fec2a9225a52eecb"
+  ],
+  "48": [
+   "3e708dba8a1f2911",
+   "ef1156b16105bfe4"
+  ]
+ }
+}

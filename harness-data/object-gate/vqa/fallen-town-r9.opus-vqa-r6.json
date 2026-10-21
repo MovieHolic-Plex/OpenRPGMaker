@@ -1,0 +1,14 @@
+{"schema":"bdg-vqa/1","judge":"claude-opus-5-5","date":"2026-10-22","batch":"fallen-town-r9","overall":"PASS",
+"criteriaNotes":{
+"1_topdown_view":"Pass. Diffed against v9: 40 pixels changed, all inside the window block (x=2-13, rows 11-18) and the bottom-left shadow; the outline and every other pixel are identical. The lid/top face (rows 7-17) and the ~10-row south front band (rows 18-28, darkening k -> m -> i) are unchanged. No iso sides, no plan flatness.",
+"2_style_fit":"Pass. 13 opaque colours + 1 flat shadow (12,10,8,a110), the same palette as v9 with no new colours. Dark outline consistent with context; the soft shadow is the only semi-alpha.",
+"3_readability_1x":"Pass. At 1x and in context_x3 it reads as a crashed silver pod/coffin with a framed glass window at the head, a long lid highlight, a cyan crack and emblem, regular rivets and a soot mark at the foot.",
+"4_placement":"Pass. Sits inside the crater floor; shadow now falls only S/SE (bottom row 31 shadow at x=14-19, none west of x=14); scale vs hero plausible.",
+"5_silhouette_outline":"Pass. Outline unchanged from v9: straight end runs are 5 px at x=0 and x=46 (rows 16-20), with stepped-in neighbour columns; the body tapers from the head shoulder to rounded tips. No orphan pixels, no opaque fringe, no square ends."
+},
+"nitChecks":{
+"window_left_frame":"FIXED - window shifted 1 px east; rows 12-14 now have b/c lid pixels (x=4-5 on row 12, x=4 on row 13, x=2-3 on row 14) between the outline and the e glass; the f glint moved with it.",
+"stray_bottom_left_shadow":"FIXED - (6,29), (8,30) and (10-13,31) are now transparent; the remaining shadow is S/SE only."
+},
+"items":[{"id":"fallen_star_vessel","name":"떨어진 별의 관","kind":"box","pixelSha256":"9555f67a83b41b8754e79d105688ffe3d8fb2309e98f4101873a24d6439223bc","verdict":"PASS",
+"reasons":"All five criteria pass on the final pixels. The v10 diff against v9 is confined to the window shift and the shadow trim (40 px). Both v9 cosmetic nits are fixed and nothing regressed. Note: this is a visual-QA verdict only. It is not an object-gate receipt; the separate 3/4 gate is still required before the art goes into a bundle, map or store."}]}

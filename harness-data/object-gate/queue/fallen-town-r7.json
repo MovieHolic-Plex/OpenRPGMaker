@@ -1,0 +1,15 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "fallen-town-r7",
+ "title": "폴른 스타 떨어진 별의 관 v8",
+ "note": "VQA r3 지적(돌판·네모 끝) 반영: 관 테이퍼·둥근 끝·크롬 음영·연속 테·별 문양",
+ "createdAt": "2026-10-21T20:29:48.167Z",
+ "items": [
+  {
+   "sha": "bd1c4a36dd031690488360898b435c93587b0cf340f218fb567f0c10672714cd",
+   "kind": "box",
+   "label": "beodeul_city/workshop/fallen-star-vessel",
+   "source": "/tmp/vessel/gate/fallen_star_vessel.png"
+  }
+ ]
+}

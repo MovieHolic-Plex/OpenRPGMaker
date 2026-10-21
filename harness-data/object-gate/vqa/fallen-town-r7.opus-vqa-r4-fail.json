@@ -1,0 +1,19 @@
+{"schema":"bdg-vqa/1","judge":"claude-opus-5-5","date":"2026-10-22","batch":"fallen-town-r7","overall":"FAIL",
+"criteriaNotes":{
+"1_topdown_view":"Pass. Lid/top face rows 9-17 (bright d streak row 13-14), darker south front band rows 18-29 separated by the k groove on row 18. No isometric side faces, no flat plan view.",
+"2_style_fit":"Pass. 13 opaque colours + 1 flat shadow (12,10,8,a110). Ramps are spaced; a(26,36,46) and i(40,54,64) are close darks but used in different roles (outline vs inner shade), tolerable. Dark outline matches context tiles. No semi-alpha other than the shadow.",
+"3_readability_1x":"Pass. In context_x3 it now reads clearly as a sleek silver capsule/pod with a glass window at the head, not a stone slab or a screen. The coffin cue is weaker than the pod cue, and that weakness comes from the blunt foot (see 5).",
+"4_placement":"Pass. Sits in the crater with SE shadow; 48x32 vs ~16x24 hero is plausible.",
+"5_silhouette_outline":"FAIL. Head-to-foot taper exists (about 22 px tall at x~10, 11-13 px at the foot), but both ends are still flat vertical walls: foot column x=46 is outline for rows 14-24 (11 px straight), head column x=0 for rows 15-24 (10 px straight). Only 1-px corner bevels. Requested max straight run was about 5 px. No orphan pixels and no opaque fringe."
+},
+"fixChecklist":{
+"1_coffin_outline_no_long_straight_runs":"NOT MET - taper and head shoulder are good, but foot (x=46, 11 rows) and head (x=0, 10 rows) are still long straight verticals.",
+"2_lid_rim_and_shadow_line":"MET - bright lid with d streak, k groove row 18 divides lid from front band.",
+"3_metal_not_stone":"MET - scattered stone dashes gone; long d specular streak, smooth g/k banding.",
+"4_regular_rivets":"MET - evenly spaced c rivets with m below along the front band (rows 21-25, ~4 px pitch).",
+"5_visible_crack":"MET (marginal) - h/i zig-zag x=36-39 rows 15-21 is visible at x2 and x10; faint at 1x in context but present.",
+"6_glass_window":"MET - e/f glass with a 3-px f glint, light frame, at the head shoulder.",
+"7_scorch":"MET - ~9 px warm-dark n smudge at x=38-42 rows 23-26 on the foot end of the front band."
+},
+"items":[{"id":"fallen_star_vessel","name":"떨어진 별의 관","kind":"box","pixelSha256":"bd1c4a36dd031690488360898b435c93587b0cf340f218fb567f0c10672714cd","verdict":"FAIL",
+"reasons":"Big improvement: 6 of the 7 fixes are met and it now reads as a silver pod. It still fails only on silhouette, because both ends are long flat verticals (foot x=46 rows 14-24, head x=0 rows 15-24), so 'no square ends' and fix 1 are not met. Pixel fixes: FOOT - keep the outline at x=46 only on rows 17-21. Rows 15-16 and 22-23: move outline to x=45 and clear x=46. Rows 14 and 24: outline at x=44, clear x=45-46. Row 13: end the top outline at x=42 (clear 43-44). Rows 25-26: pull the bottom outline in by the same 1-2 px so the foot becomes a rounded point about 5 rows tall. Refill the vacated interior pixels with the adjacent body colours (b/c on top rows, k/i on bottom rows). HEAD - keep the outline at x=0 only on rows 17-22. Rows 15-16 and 23-24: outline at x=1, clear x=0. Shift the row-14 and row-25 outline starts in by 1 as well. SHADOW - move the l column on the right to follow the new rounded foot (1 px outside the new outline, rows 17-27). Everything else (palette, window, streak, rivets, crack, scorch) should stay unchanged."}]}

@@ -1,0 +1,15 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "fallen-town-r9",
+ "title": "폴른 스타 떨어진 별의 관 v10",
+ "note": "VQA v9 PASS 뒤 잔손질: 유리창 왼쪽 테, 남서 그림자 점 제거",
+ "createdAt": "2026-10-21T20:37:13.040Z",
+ "items": [
+  {
+   "sha": "9555f67a83b41b8754e79d105688ffe3d8fb2309e98f4101873a24d6439223bc",
+   "kind": "box",
+   "label": "beodeul_city/workshop/fallen-star-vessel",
+   "source": "/tmp/vessel/gate/fallen_star_vessel.png"
+  }
+ ]
+}

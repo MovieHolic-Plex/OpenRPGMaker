@@ -299,6 +299,10 @@ function periodKitchen(map: GameMap): void {
   // 저장고의 「무너진 벽돌」 벽면(3228~3243)은 붉고 보랏빛 얼룩이 번진 낮은 해상도처럼 보였다(VQA r6 major) — 같은 짜임(16칸)의
   // 「짙은 통나무」 벽면(3098~3113)으로 바꾼다.
   for (let t = 3228; t <= 3243; t += 1) swap[t] = t - 3228 + 3098;
+  // 부엌의 흰 「부엌 타일」 바닥·벽(1126~1189, 3030~3033)은 현대 주방처럼 보였다(VQA r6 minor) — 같은 짜임의
+  // 「자갈」 바닥(454~517)과 「통나무」 벽면(3094~3097)으로 바꿔 옛 시골 부엌으로 맞춘다.
+  for (let t = 1126; t <= 1189; t += 1) swap[t] = t - 1126 + 454;
+  for (let t = 3030; t <= 3033; t += 1) swap[t] = t - 3030 + 3094;
   for (const layer of [map.lowerTiles, map.lowerOverlayTiles, map.upperTiles, map.upperOverlayTiles]) {
     if (!layer) continue;
     for (let i = 0; i < layer.length; i += 1) { const to = swap[layer[i]!]; if (to !== undefined) layer[i] = to; }
