@@ -324,7 +324,7 @@ async function applyOp(page, op, runState) {
       await page.evaluate((dir) => window.__oprnInput.dir(dir), op.dir ?? null);
       await page.waitForTimeout(op.ms);
       await page.evaluate(() => window.__oprnInput.dir(null));
-      await page.waitForFunction(() => true);
+      await page.waitForFunction(() => true, null, { timeout: 120_000 });
       return;
     case "face":
       await page.evaluate((dir) => window.__oprnInput.face(dir), op.dir);

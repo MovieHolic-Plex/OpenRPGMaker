@@ -1618,6 +1618,9 @@ npm run qa:runtime -- --scenario checkpoints --checkpoint-set astra-horizon --ch
   일 때만 읽힌다(`src/player/exportEntry.ts` `qaCheckpointStart`). 출하 빌드·호스트 셸은 둘 다 넣지 않는다. URL 인자
   `qaCheckpoint` 는 `import.meta.env.DEV` 분기 안이라 출하 빌드에서 통째로 빠진다. 프로젝트 데이터는 건드리지 않고 세션만 만든다
   (새 게임 세션 또는 저장 → 선언 값). 오프닝 시네마틱은 세션이 주어진 부팅이라 건너뛴다.
+- 크로미움이 백지·«QA scene did not become ready» 로 끝나면 이 머신의 `net::ERR_NETWORK_CHANGED` 다. 실행기가 이미
+  `--disable-features=NetworkChangeNotifier` 를 주지만 부하 중엔 그래도 끊긴다(2026-10-21 실측) — 네트워크 이름 공간 안에서 돌린다:
+  `unshare -rn bash -c 'ip link set lo up; npm run qa:runtime -- --scenario checkpoints --checkpoint-set astra-horizon'`.
 - 수집 훅: 계측 씬의 `__oprnDebug.captureSave()` 가 지금 세션을 실제 저장 모양(`createSaveSnapshot`)으로 돌려준다.
 - 데모 시나리오가 자기 세트를 쓰게 하려면 시나리오에 `checkpointSet: "<세트>"` 를 두고 `checkpointBeats`(체크포인트 id →
   비트, 또는 `(checkpoint) => beats` 함수)를 준다. 그러면 `--scenario <그 시나리오> --checkpoint all` 만으로 돈다.
