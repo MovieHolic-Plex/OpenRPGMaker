@@ -107,6 +107,8 @@ const textOverflow = () => page.evaluate(() => {
   }
   return out;
 });
+/** 트레이너 소개(앞모습이 미끄러져 들어와 서 있는 동안)를 몇 장 — 2.5초 뒤 한 장만 찍으면 이미 물러난 뒤였다(Opus VQA r1). */
+const introBurst = async (label) => { for (const [i, ms] of [[0, 300], [1, 500], [2, 500]]) { await page.waitForTimeout(ms); await shot(`${label}-intro-${i}`); } };
 const shot = async (name) => {
   await page.screenshot({ path: join(out, `${name}.png`) });
   const overflow = await textOverflow().catch(() => null);
@@ -590,7 +592,7 @@ try {
   if (rival) {
     await approachAndTalk(lab.id, rival);
     const started = await pressEnterUntil(() => present("battle-scene"), 30);
-    if (started) { await page.waitForTimeout(2500); await shot("09-rival-battle"); }
+    if (started) { await introBurst("09a-rival"); await page.waitForTimeout(1000); await shot("09-rival-battle"); }
     const log = started ? await fight("09b-rival") : [];
     const st = await state();
     step("rival", started && st.battleResult === "victory", `${log.length}턴 → ${st.battleResult}`, await shot("10-after-rival"));
@@ -738,7 +740,7 @@ try {
     for (const key of ["z", "Enter", "Space"]) { await page.keyboard.press(key); await page.waitForTimeout(900); if (await present("dialogue-box") || await present("battle-scene")) { talked = true; report.leaderProbe.key = key; break; } }
   }
   const started = talked && await pressEnterUntil(() => present("battle-scene"), 40);
-  if (started) { await page.waitForTimeout(2500); await shot("21-leader-battle"); }
+  if (started) { await introBurst("21a-leader"); await page.waitForTimeout(1000); await shot("21-leader-battle"); }
   const log = started ? await fight("21b-leader") : [];
   await waitIdle();
   const afterLeader = await state();
@@ -777,7 +779,7 @@ try {
     await approachAndTalk(map.id, ev);
     const st = await pressEnterUntil(() => present("battle-scene") || present("ending-screen"), 40);
     const fought = Boolean(st && await present("battle-scene"));
-    if (fought) { await page.waitForTimeout(2000); await shot(`24-${key}-battle`); await fight(`24b-${key}`); }
+    if (fought) { await introBurst(`24a-${key}`); await page.waitForTimeout(500); await shot(`24-${key}-battle`); await fight(`24b-${key}`); }
     await waitIdle();
     // 싸우지 않았으면 battleResult 는 앞 전투 값이 남아 있다 — 전투가 실제로 열렸을 때만 결과로 친다.
     const res = fought ? (await state()).battleResult : "no-battle";
