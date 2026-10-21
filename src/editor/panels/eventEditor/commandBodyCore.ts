@@ -263,10 +263,13 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
     const overLines = lines.length > 4;
     const overChars = maxLine > maxChars;
     if (overLines || overChars) {
-      limitHint.textContent = `권장 길이를 넘김: ${lines.length}줄 / 최대 ${maxLine}자 (권장 4×${maxChars}${faceAware ? "; 얼굴" : ""})`;
+      limitHint.textContent = faceAware
+        ? `권장 길이를 넘김: ${lines.length}줄 / 최대 ${maxLine}자 (권장 4×${maxChars}, 얼굴 포함)`
+        : `권장 길이를 넘김: ${lines.length}줄 / 최대 ${maxLine}자 (권장 4×${maxChars})`;
       limitHint.dataset.over = "1";
     } else {
-      limitHint.textContent = `최대 4줄 / ${maxChars}자 권장${faceAware ? " (얼굴 포함)" : ""}`;
+      // 경우마다 한 문장으로 쓴다. 빈 꼬리(`{1}`)는 번역 템플릿이 못 잡아 영어 UI 에 한국어로 남았다.
+      limitHint.textContent = faceAware ? `최대 4줄 / ${maxChars}자 권장 (얼굴 포함)` : `최대 4줄 / ${maxChars}자 권장`;
       delete limitHint.dataset.over;
     }
   };
