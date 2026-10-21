@@ -30,6 +30,8 @@
 | `scene-seated-cannot-stand` | 장면 순서대로 각 인물 칸을 따라가며(`setThrough` 포함) 첫 «막힌 칸에서 열린 칸으로» 걸음이 `canMove` 에 막히는지 본다 — 의자·소품 칸(나가는 방향 비트가 닫힌 칸)에 앉힌 인물. 건너뛰기 경로는 막힌 걸음을 다 버려 인물이 제자리에 서고 퇴장 연출만 다른 곳에서 돈다. 첫사랑 r5 본부장 |
 | `scene-tint-clears-fade` | 페이지를 차례로 읽어 「화면 효과」 fadeOut 뒤 fadeIn 전의 「Tint Screen」(value 가 검정 `0,0,0,1` 이 아닌 것)을 잡는다. 페이드(`screenEffectPlan.ts` FADE_OUT_TINT)와 Tint Screen 은 같은 `runtime.screen.tint` 칸을 쓰므로 덮인 동안 neutral 을 주면 검은 덮개가 걷힌다. 첫사랑 r6 회상→수요일 |
 | `scene-actor-under-furniture` | 보이는 그림이 있는 이벤트 칸의 `upperTiles` 타일이 `tileset.priority` 로 `upper` 이고 그 칸이 지나갈 수 없으면(가구) 경고. upper 는 인물보다 앞에 그려지므로 의자 등받이가 얼굴을 덮는다. 첫사랑 r7 회의실 |
+| `scene-map-smaller-than-screen` | 이벤트가 있는 맵마다 `system.playResolution` ÷ `tileSize` 와 맵 크기를 비교해 둘레 검정 비율이 15% 를 넘으면 경고(루브릭 축 1 기준). `background` 를 둔 맵은 건너뛴다. 첫사랑 옥상 24칸 폭(20%) |
+| `scene-letterbox-dialogue` | 페이지를 차례로 읽어 「Screen Effect」 letterbox 와 clearLetterbox 사이의 `text` 를 잡는다. 레터박스가 대화창을 위로 올려(y192→158) 창이 뛰고 화면을 가린다. 첫사랑 r9 회상·막차 |
 | `scene-arrival-faces-exit` | 짝 없는 한쪽 이동(문형 왕복 짝은 `scene-transfer-pair` 몫)의 도착 방향 1~2칸 앞에 이동 칸이나 문·계단 그림이 있다 — 막 지나온 문을 보고 선다 |
 
 데모 검증(2026-10-21, `scripts/qa/scene-polish-lint.mts`): Fallen Star polish2 13건(방향 없는 이동 4·착지 2칸 3·문 아닌 칸 5·대사 뒤 사라짐 1), Astra fv 15건(문을 보는 착지 10 — 이후 손으로 고친 7fa8b2f3c2 와 같은 곳·한 칸 어긋난 출입 매트 2·표시 없는 출구 2·제자리 지우는 라이벌 1),

@@ -1241,6 +1241,64 @@ function checkBustFacing(project: Project, issues: LintIssue[]): void {
   }
 }
 
+// ---------------------------------------------------------------------------- 화면보다 작은 맵
+
+/** 화면 둘레 검정이 이만큼을 넘으면 «반쯤 빈 화면»(루브릭 축 1: 빈 바닥·검정 ≤ 15%). */
+const MAX_VOID_SHARE = 0.15;
+
+/**
+ * 맵이 화면(playResolution ÷ 칸 크기)보다 좁거나 낮으면 카메라가 맵을 가운데 두고 둘레를 검게 비운다(첫사랑: 아침 승강장 18×10,
+ * 옥상 24칸 폭 = 화면 20% 검정). 장면이 있는 맵(이벤트가 있는 맵)만 본다. 배경 그림을 둔 맵은 건너뛴다.
+ * 고치기: 바깥 풍경·벽 줄을 덧대 맵을 화면 크기까지 넓힌다(좌표가 박힌 앵커는 덧댄 만큼 민다).
+ */
+function checkMapSmallerThanScreen(project: Project, issues: LintIssue[]): void {
+  const res = (project.system as { playResolution?: { width?: number; height?: number } } | undefined)?.playResolution;
+  const sw = res?.width ?? 0, sh = res?.height ?? 0;
+  if (sw <= 0 || sh <= 0) return;
+  for (const map of Object.values(project.maps)) {
+    if (!(map.events ?? []).length) continue;
+    if ((map as { background?: unknown }).background) continue;
+    const ts = map.tileSize ?? 16;
+    const covered = Math.min(1, (map.width * ts) / sw) * Math.min(1, (map.height * ts) / sh);
+    const voidShare = 1 - covered;
+    if (voidShare <= MAX_VOID_SHARE) continue;
+    issues.push({
+      severity: "warning", code: "scene-map-smaller-than-screen", mapId: map.id,
+      message: `맵 ${map.id}(${map.width}×${map.height}칸) 이 화면 ${sw}×${sh}(${Math.ceil(sw / ts)}×${Math.ceil(sh / ts)}칸) 보다 작아 화면의 ${Math.round(voidShare * 100)}% 가 검은 둘레다 — 바깥 풍경·벽 줄을 덧대 화면 크기까지 넓힌다.`,
+    });
+  }
+}
+
+// ---------------------------------------------------------------------------- 레터박스 속 대사
+
+/**
+ * 「화면 효과」 letterbox 를 켠 채 대사를 띄우면 대화창이 띠를 피해 위로 올라가(첫사랑 r9: y192→158) 장면 사이에 창이 뛰고,
+ * 띠와 올라간 창이 함께 화면 대부분(회상 복도의 두 사람)을 가린다. 레터박스는 대사 없는 연출 컷에만 쓰고, 대사 전에 걷는다.
+ */
+function checkLetterboxDialogue(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    for (const host of map.events ?? []) {
+      for (const page of pagesOf(host)) {
+        let boxed = false;
+        for (const command of walk(page.commands)) {
+          if (command.kind === "m2Command" && (command.commandId === "m2-202-screen-effect" || m2Title(command) === "Screen Effect")) {
+            const effect = fieldStr(command, "effect");
+            if (effect === "letterbox") boxed = true;
+            else if (effect === "clearLetterbox") boxed = false;
+            continue;
+          }
+          if (!boxed || command.kind !== "text") continue;
+          issues.push({
+            severity: "warning", code: "scene-letterbox-dialogue", mapId: map.id, eventId: host.id, x: host.x, y: host.y,
+            message: `이벤트 ${host.id} 가 레터박스를 켠 채 대사를 띄운다 — 대화창이 띠를 피해 위로 올라가 앞뒤 장면과 창 자리가 달라지고, 띠와 창이 함께 화면 대부분을 가린다. 대사 전에 clearLetterbox 하거나 레터박스를 빼고 페이드·자막으로 장면을 연다.`,
+          });
+          break;
+        }
+      }
+    }
+  }
+}
+
 export function lintScenePolish(project: Project): LintIssue[] {
   const issues: LintIssue[] = [];
   let gates: Gate[] = [];
@@ -1264,6 +1322,8 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkSeatedCannotStand);
   guard(checkTintClearsFade);
   guard(checkActorUnderFurniture);
+  guard(checkMapSmallerThanScreen);
+  guard(checkLetterboxDialogue);
   return issues;
 }
 
