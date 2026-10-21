@@ -595,7 +595,8 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     walkRoute(project, FL_MAP.rooftop, "@player", r.railHero, r.doorOut),
     face("@player", dirToward(r.doorOut, r.door)),
     quiet(SE_DOOR, 0.7), ...doorFx(roofDoor, true, 500),
-    wait(200),
+    // 열린 문 안으로 한 걸음 들어서며 어두워진다(VQA r4: 문만 열고 서 있다가 암전).
+    { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "setThrough", enabled: true }, { kind: "move", dir: "up" }, { kind: "setThrough", enabled: false }], repeat: false, wait: false, skippable: true } } as unknown as Command,
     ...fadeOut(800),
     stopBgm(),
     ...caption("그날 오후는 계정 신청서와 회의와, 처음 듣는 줄임말로 지나갔다."),
@@ -639,7 +640,8 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
   const jihuStop = nearestFree(project, kon, { x: k.cooler.x + 1, y: k.cooler.y + 1 }, 3, [k.cooler, clerkSpot, coolerFront]);
   // 계산대 손님 쪽(점원 두 칸 아래) — 계산은 거기 가서 한다(VQA r3: 매장 건너 10칸에서 점원과 말함).
   const registerFront = nearestFree(project, kon, { x: clerkSpot.x, y: clerkSpot.y + 2 }, 1, [clerkSpot, jihuStop, coolerFront]);
-  const jihuRegister = nearestFree(project, kon, { x: registerFront.x + 1, y: registerFront.y }, 1, [clerkSpot, registerFront, jihuStop, coolerFront]);
+  // 지후는 계산대 바로 앞 줄이 아니라 서하 오른쪽 뒤 칸 — 계산대 위 소품(상층 그림)이 머리를 덮지 않는다(VQA r4 M1).
+  const jihuRegister = nearestFree(project, kon, { x: registerFront.x + 1, y: registerFront.y + 1 }, 1, [clerkSpot, registerFront, jihuStop, coolerFront]);
   add(kon,
     event("ev_fl_clerk", "편의점 점원", clerkSpot, [page("c", [], [
       ...voice("점원", "어서 오세요~ 바나나우유 원 플러스 원이에요."),
@@ -714,8 +716,10 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
   // ── 회상: 10년 전 방송실 ──
   const b = a.broadcast;
   // 두 사람은 복도 한 줄(사연함 줄)에 나란히 선다 — 아래 줄은 대사창에 가리고, 위아래로 서면 한 덩이로 겹쳐 보인다(VQA r1).
-  const youngSeoha = nearestFree(project, bc, { x: b.mailbox.x - 2, y: b.mailbox.y }, 3, [b.start]);
-  const youngJihuStop = nearestFree(project, bc, { x: youngSeoha.x - 1, y: youngSeoha.y }, 1, [youngSeoha, b.start, b.mailbox]);
+  // 서하는 방송실 문에서 내려오는 줄(x=11)의 왼쪽 칸에 서고, 지후는 그 줄을 따라 내려와 서하 오른쪽에 선다 —
+  // 서하 머리 위로 지나가지 않고, 화면 자리(서하 왼쪽·지후 오른쪽)가 흉상 자리와 같다(VQA r4).
+  const youngSeoha = nearestFree(project, bc, { x: b.mailbox.x - 3, y: b.mailbox.y }, 3, [b.start]);
+  const youngJihuStop = nearestFree(project, bc, { x: youngSeoha.x + 1, y: youngSeoha.y }, 1, [youngSeoha, b.start, b.mailbox]);
   const youngJihu = b.booth;
   add(bc,
     event("ev_fl_y_seoha", "열일곱의 서하", youngSeoha, [page("ys", [], [], { who: "seohaYoung", dir: "up" })]),
@@ -967,7 +971,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
 function buildFriday(project: Project, a: FirstLoveAnchors): void {
   const fri = project.maps[FL_MAP.officeFri]!;
   const o = a.office;
-  // 탁자 둘레 빈 바닥(시각 담당 meetSeats): [0]=주인공(동쪽 아래) [1]=지후(동쪽 위) [2]=민호(서쪽 위) [3]=팀장(서쪽 아래) [4]=본부장(북쪽 머리 — 먼저 나가는 손님이 의자 뒤·민호 머리 위를 지나지 않고 바로 옆 유리문으로 나간다).
+  // 탁자 둘레(meetSeats): [0]=주인공(동쪽 끝) [1]=지후(주인공 오른쪽 옆 — 발표자 둘이 나란히) [2]=민호(남쪽 의자에 앉음) [3]=팀장(서쪽 끝) [4]=본부장(북쪽 의자에 앉음 — 먼저 나가는 손님이 바로 옆 유리문으로 나간다).
   const seats = o.meetSeats;
   const jihuSpot = seats[1]!; const clientSpot = seats[4]!; const leadSpot = seats[3]!; const minhoSpot = seats[2]!;
   // 손님·지후는 두 번째 엘리베이터(주인공이 내린 칸이 아닌 문)로 나간다 — 엘리베이터 문 바로 앞에서 사라진다.
@@ -980,7 +984,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     event("ev_fl_f_client", "박 본부장", clientSpot, [page("fc", [swOff("sw_fl_client_left")], [], { who: "client", dir: "down" })]),
     event("ev_fl_f_lead", "오정민 팀장", leadSpot, [page("fl", [], [], { who: "lead", dir: "right" })]),
     event("ev_fl_f_jihu", "강지후", jihuSpot, [page("fj", [swOff("sw_fl_jihu_left")], [], { who: "jihu", dir: "left" })]),
-    event("ev_fl_f_minho", "차민호", minhoSpot, [page("fm", [], [], { who: "minho", dir: "right" })]),
+    event("ev_fl_f_minho", "차민호", minhoSpot, [page("fm", [], [], { who: "minho", dir: "up" })]),
     door("ev_fl_f_elev2", o.npcExit, [stageIs(V_STAGE, 999)], [], think("…"), "down"),
   );
   add(fri, scene("ev_fl_fri", { x: 1, y: 1 }, S.WED_TALK, [
@@ -993,6 +997,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     // 탁자 머리의 본부장이 말을 열면 발표자 둘(서하·지후)이 그쪽을 본다.
     face("@player", dirToward(o.meetingSeat, clientSpot)),
     face("ev_fl_f_jihu", dirToward(jihuSpot, clientSpot)),
+    face("ev_fl_f_client", dirToward(clientSpot, o.meetingSeat)),
     ...say("client", "base", "그럼 시작하시죠. 이번 리뉴얼, 핵심이 뭡니까?"),
     ...say("jihu", "base", "재생 엔진을 새로 짜서, 하루끝 방송이 1초 안에 시작됩니다. 그리고 화면은—"),
     // 발표를 넘길 땐 옆자리 서하를 본다(왼쪽 고정이면 본부장에게 서하를 소개하는 꼴).
@@ -1347,6 +1352,9 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
   const meetingDoor: MapDoorDef = { x: 10, y: 13, w: 1, h: 2, style: "swing", hinge: "right", interior: "none", frame: { l: 3, r: 1, t: 4, b: 3 }, auto: true, openSe: SE_GLASS_OPEN, closeSe: SE_GLASS_SHUT };
   for (const id of [FL_MAP.office, FL_MAP.officePm, FL_MAP.officeFri]) { const m = project.maps[id]; if (m) m.doors = [meetingDoor]; }
   const konbiniMap = project.maps[FL_MAP.konbini];
+  // 회상 방송실 문(복도로 나오는 유리 여닫이) — 어린 지후가 지나갈 때 열린다(VQA r4 M2: 닫힌 문을 뚫고 지나갔다).
+  const bcMap = project.maps[FL_MAP.broadcast];
+  if (bcMap) bcMap.doors = [{ x: 11, y: 10, w: 1, h: 2, style: "swing", hinge: "right", interior: "none", frame: { l: 3, r: 3, t: 4, b: 3 }, auto: true, openSe: SE_GLASS_OPEN, closeSe: SE_GLASS_SHUT }];
   if (konbiniMap) konbiniMap.doors = [{ x: anchors.konbini.door.x, y: anchors.konbini.door.y, w: 2, h: 1, style: "slide", hinge: "left", interior: "none", frame: { l: 0, r: 0, t: 1, b: 10 }, auto: true, openSe: SE_CHIME }];
 
   resolveRoutes(project);

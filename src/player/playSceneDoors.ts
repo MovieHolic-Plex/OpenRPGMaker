@@ -124,8 +124,9 @@ function createView(scene: PlaySceneContext, key: string, state: RuntimeDoorStat
       const frame = `tile_${tile}`;
       // 겹침이 대신 그리는 원래 그림은 숨긴다(바닥 1층은 안쪽 판이 덮거나 그대로 보여야 하므로 숨기지 않는다).
       if (layer >= 2) artFrames.add(frame);
-      // 바닥에 깔린 문(2층 이하)은 바닥 높이, 벽에 선 문은 문 줄 인물 위.
-      const depth = layer <= 2 ? 1 + layer * 0.001 : base + 0.5 + layer * 0.001;
+      // 바닥에 깔린 문(2층 이하)과 사람이 지나다니는 문간(interior none)은 바닥 높이 — 지나가는 사람 위에 문짝·문설주가
+      // 그려져 몸이 잘려 보이지 않게(VQA r4: 회상 복도 문). 벽에 박힌 문(승강기·철문)은 문 줄 인물 위(닫히면 안의 사람을 가린다).
+      const depth = layer <= 2 || kind === "none" ? 1 + layer * 0.001 : base + 0.5 + layer * 0.001;
       // 문틀: 타일에서 구멍 밖 띠(위·아래·왼·오른)를 제자리에 그린다.
       const bands: [number, number, number, number][] = [
         [tx, ty, tx + S, Math.min(ty + S, hole.t)],
