@@ -11,6 +11,8 @@ import assemble as AS  # noqa: E402
 import dot  # noqa: E402
 import gate as G  # noqa: E402
 import helpers as H  # noqa: E402
+from PIL import Image  # noqa: E402
+import numpy as np  # noqa: E402
 
 PAL = dot.palette(H.THEME)
 
@@ -78,6 +80,47 @@ class AssemblyTest(unittest.TestCase):
         res = AS.assemble(H.buildings()['cottage'], parts, PAL, H.THEME)
         self.assertIsNone(res['img'])
         self.assertEqual([c['code'] for c in AS.run_checks(res)], ['A0'])
+
+    def test_seed_recipes_use_zero_cell_overhang(self):
+        for theme in dot.THEMES:
+            for b in dot.seed(theme)['buildings']:
+                with self.subTest(theme=theme, building=b['id']):
+                    self.assertEqual(b.get('overhang', 0), 0)
+
+    def test_zero_overhang_assembly_has_no_a2_gap_and_roof_width_equals_walls(self):
+        for bid, recipe in H.buildings().items():
+            res = AS.assemble(recipe, self.parts, PAL, H.THEME)
+            codes_ = {c['code'] for c in AS.run_checks(res)}
+            with self.subTest(building=bid):
+                self.assertNotIn('A2', codes_, [c['msg'] for c in AS.run_checks(res)])
+                self.assertNotIn('A3', codes_)
+                self.assertEqual(res['width'], recipe['cols'])
+                self.assertEqual(res['wall_x'], 0)
+
+    def test_declared_eave_inset_allows_a_transparent_wall_edge(self):
+        wall = H.compose('wall.storey', 'A')
+        a = np.array(wall.convert('RGBA'))
+        a[:, 0:2, 3] = 0
+        im = Image.fromarray(a, 'RGBA')
+        item = H.items()['wall.storey']
+        self.assertEqual(fails(G.check_item(item, im, PAL, {})), [],
+                         [r['msg'] for r in fails(G.check_item(item, im, PAL, {}))])
+        parts = H.parts('A', overrides={'wall.storey': im})
+        for bid, recipe in H.buildings().items():
+            res = AS.assemble(recipe, parts, PAL, H.THEME)
+            codes_ = {c['code'] for c in AS.run_checks(res)}
+            with self.subTest(building=bid):
+                self.assertNotIn('A2', codes_, [c['msg'] for c in AS.run_checks(res)])
+
+    def test_undeclared_wall_hole_fails_q_and_a2(self):
+        wall = H.compose('wall.storey', 'A')
+        a = np.array(wall.convert('RGBA'))
+        a[:, 5:7, 3] = 0
+        im = Image.fromarray(a, 'RGBA')
+        self.assertIn('Q', {r['code'] for r in fails(G.check_item(H.items()['wall.storey'], im, PAL, {}))})
+        parts = H.parts('A', overrides={'wall.storey': im})
+        res = AS.assemble(H.buildings()['cottage'], parts, PAL, H.THEME)
+        self.assertIn('A2', {c['code'] for c in AS.run_checks(res)})
 
 
 if __name__ == '__main__':

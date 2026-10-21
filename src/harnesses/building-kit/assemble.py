@@ -4,13 +4,16 @@
   - roof/wall/band/base = 부품 세트 항목 id. 조각은 role 로 찾는다(roof: l·m·r, wall: l·m·w·d·r, band/base: l·m·r).
   - walls[층] 의 글자: L 왼끝 · M 가운데 · W 창 · D 문 · R 오른끝. 문은 1층(맨 아래 층)에만.
   - extras: [{part: 항목 id, at: [칸 x, 칸 y]}] — 지붕·벽 위 고정 좌표에 얹는다.
+  - overhang 은 0 이어야 한다(처마 0칸). 처마는 지붕 l·r 조각 안쪽 바깥 2~3px 에 그리고, 벽 l·r 조각은
+    바깥 2~3px 을 투명(조각의 inset)으로 두어 지붕이 벽보다 튀어나와 보인다.
 
 세로 순서(위→아래): 지붕 → (층마다 벽 → 층 띠) → 기단.
 
 조립 관문(FAIL)
   A1 문 정확히 하나(맨 아래 층) — 쌍문은 시드가 doorTwice 를 명시한 레시피만 예외
-  A2 지붕과 벽 사이 투명·바탕색 틈 없음(벽 모든 열)
-  A3 지붕이 벽 폭을 덮음(처마 0~1칸 돌출)
+  A2 지붕과 벽 사이 투명·바탕색 틈 없음(벽 모든 열). 지붕 맨 아래 행은 벽 열 위에서 전부 불투명해야 하고,
+     벽 맨 윗행은 조각이 선언한 inset(처마 자리, 벽 l·r 바깥 2~3px)만 비어 있을 수 있다
+  A3 지붕 폭 = 벽 폭(처마 0칸 — 처마는 지붕 l·r 조각 안쪽에 그린다)
   A4 기단 맨 아래 행 = 그림 맨 아래 칸 경계
   A5 모든 맞닿은 조각 쌍의 이음(위 조각 아래 열 ↔ 아래 조각 윗 열, gate.check_join)
   A6 지붕 윗면 높이 비율 0.30~0.50(지붕 행 / 건물 전체 행 — object-gen --min-top 30 --max-top 50 과 같은 범위)
@@ -43,6 +46,13 @@ def _piece_crop(sheet_img, pc):
     return sheet_img.crop((x, y, x + w, y + h))
 
 
+def _eave_px(role, inset, w=dot.T):
+    """조각이 선언한 inset(바깥 가장자리에서 처마 자리로 비워 두는 화소). l 은 왼쪽, r 은 오른쪽."""
+    n = int(inset or 0)
+    if n <= 0 or role not in ('l', 'r'):
+        return ()
+    return tuple(range(0, min(n, w))) if role == 'l' else tuple(range(max(0, w - n), w))
+
 def assemble(recipe, items, pal, theme):
     """items = {항목 id: {'item': 시드 항목, 'img': PIL}}. 반환 {img, kit, checks, pieces, door, height, width}."""
     checks = []
@@ -58,7 +68,7 @@ def assemble(recipe, items, pal, theme):
     roof, wall, base = items[recipe['roof']]['img'], items[recipe['wall']]['img'], items[recipe['base']]['img']
     band = items[recipe['band']]['img'] if recipe.get('band') else None
     cols, storeys = int(recipe['cols']), int(recipe['storeys'])
-    overhang = int(recipe.get('overhang', 1))
+    overhang = int(recipe.get('overhang', 0))
     roof_pc = _role(items[recipe['roof']]['item'], 'l')
     rh = roof_pc['size'][1]
     wall_pc = _role(items[recipe['wall']]['item'], 'l')
@@ -77,7 +87,7 @@ def assemble(recipe, items, pal, theme):
         crop = _piece_crop(sheet_img, pc)
         cv.paste(crop, cx * dot.T, cy * dot.T)
         placed.append({'item': item_id, 'piece': pc['id'], 'role': pc.get('role'), 'kind': kind,
-                       'at': [cx, cy], 'size': pc['size'], 'crop': crop})
+                       'at': [cx, cy], 'size': pc['size'], 'crop': crop, 'inset': int(pc.get('inset') or 0)})
 
     y = 0
     roof_roles = ['l'] + ['m'] * max(0, roof_w - 2) + ['r']
@@ -142,12 +152,22 @@ def assemble(recipe, items, pal, theme):
     else:
         checks.append(_r('A1', 'FAIL', len(door_at) == 1, f'문 {len(door_at)}개' + ('' if len(door_at) == 1 else ' — 건물 하나에 문은 정확히 하나')))
 
-    gaps = [x for x in wall_cols if not op[wall_top_px - 1, x * dot.T:x * dot.T + dot.T].all()]
-    gaps += [x for x in wall_cols if not op[wall_top_px, x * dot.T:x * dot.T + dot.T].all()]
-    checks.append(_r('A2', 'FAIL', not gaps, '지붕과 벽 사이 틈 없음' if not gaps else f'지붕/벽 사이 틈 열 {sorted(set(gaps))[:6]}'))
+    gaps = []
+    for p in placed:
+        if p['kind'] != 'wall' or p['at'][1] != rh:
+            continue
+        x0 = p['at'][0]
+        x = x0 * dot.T
+        if not op[wall_top_px - 1, x:x + dot.T].all():
+            gaps.append(f'{x0}열 지붕 아래')
+            continue
+        eave = _eave_px(p['role'], p['inset'])
+        if any(not op[wall_top_px, x + i] for i in range(dot.T) if i not in eave):
+            gaps.append(f'{x0}열 벽 위')
+    checks.append(_r('A2', 'FAIL', not gaps, '지붕과 벽 사이 틈 없음' if not gaps else f'지붕/벽 사이 틈 {gaps[:6]}'))
 
-    ok3 = 0 <= roof_w - cols <= 2 and wall_x >= 0
-    checks.append(_r('A3', 'FAIL', ok3, f'지붕 {roof_w}칸 vs 벽 {cols}칸 (처마 {roof_w - cols}칸, 0~2 이어야)'))
+    ok3 = roof_w == cols and wall_x == 0
+    checks.append(_r('A3', 'FAIL', ok3, f'지붕 {roof_w}칸 vs 벽 {cols}칸 (처마 {roof_w - cols}칸 — 0 이어야: 처마는 지붕 l·r 조각 안쪽에 그린다)'))
 
     last_px = height * dot.T - 1
     on_ground = all(op[last_px, x * dot.T:x * dot.T + dot.T].all() for x in wall_cols)

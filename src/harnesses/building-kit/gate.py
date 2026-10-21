@@ -4,7 +4,8 @@
   P 팔레트 잠금   불투명 화소는 palette.json 색만, 반투명은 그림자 (12,14,20,α88) 하나만            FAIL
   Z 크기          조각이 선언한 at/size 칸과 화소가 정확히 같고, 세트 그림이 시드 size 와 같다          FAIL
   Q 불투명 계약    roof: 윗줄 불투명(조각이 qTopRow:false 면 안 봄)·불투명 비율 ≥ qMin(기본 0.90)
-                  wall·band·base: 발자국 안이 전부 불투명 / extra: 위 귀퉁이 투명·채움 0.15~0.95     FAIL
+                  wall·band·base: 발자국 안이 전부 불투명(조각이 inset 을 선언하면 그 바깥 화소만 처마 자리로 빼고 본다)
+                  / extra: 위 귀퉁이 투명·채움 0.15~0.95                                                   FAIL
   F 윗면 띠       윗면이 있는 조각(roof, top 을 선언한 extra)의 선언 띠가 2행 이상·폭 50% 이상이고
                   바로 아래(앞 모서리) 줄보다 밝다. 벽에는 윗면이 없다 — 벽의 지붕 비율은 조립 A6 이 본다 FAIL
   S 반복 이음      tileable 조각의 감은 이음(마지막 열→첫 열)이 안쪽 열 경계 중 가장 큰 차 + 8(0~255 밝기) 이하    FAIL
@@ -140,6 +141,13 @@ def open_sides(item, pid):
     return sides
 
 
+def _eave_px(pc, w):
+    n = int(pc.get('inset') or 0)
+    role = pc.get('role')
+    if n <= 0 or role not in ('l', 'r'):
+        return ()
+    return tuple(range(0, min(n, w))) if role == 'l' else tuple(range(max(0, w - n), w))
+
 def check_piece(pc, im, pal, open_sides_=None):
     a = arr(im)
     h, w = a.shape[:2]
@@ -159,8 +167,11 @@ def check_piece(pc, im, pal, open_sides_=None):
         ok = (bool(op[0].all()) or not need_top) and op.mean() >= qmin
         res.append(_r('Q', 'FAIL', ok, f'{pc["id"]} 윗줄 불투명 {bool(op[0].all())}{"" if need_top else "(안 봄)"}, 불투명 {op.mean():.0%} (하한 {qmin:.0%})'))
     elif kind in ('wall', 'band', 'base'):
-        ok = bool(op.all())
-        res.append(_r('Q', 'FAIL', ok, f'{pc["id"]} ' + ('전부 불투명' if ok else f'투명·반투명 화소 {int((~op).sum())}')))
+        eave = _eave_px(pc, w)
+        body = [i for i in range(w) if i not in eave]
+        ok = bool(op[:, body].all())
+        msg = '전부 불투명' if not eave else f'안쪽 불투명, 바깥 {len(eave)}px 은 처마 자리(선언 inset)'
+        res.append(_r('Q', 'FAIL', ok, f'{pc["id"]} ' + (msg if ok else f'투명·반투명 화소 {int((~op).sum())} — 처마 자리 밖')))
     else:
         corners = [a[0, 0, 3], a[0, w - 1, 3]]
         fill = op.mean()
