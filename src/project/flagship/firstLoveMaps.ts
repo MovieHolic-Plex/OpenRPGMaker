@@ -49,6 +49,8 @@ export interface FirstLoveAnchors {
     readonly meetLead: Cell; readonly meetJihu: Cell;
     readonly heroDesk: Cell; readonly jihuDesk: Cell; readonly leadDesk: Cell;
     readonly pantry: Cell; readonly meeting: Cell; readonly meetingSeat: Cell; readonly whiteboard: Cell;
+    /** 회의 탁자 둘레의 빈 바닥 다섯 칸(서하·고객·팀장·지후·민호). */
+    readonly meetSeats: readonly Cell[];
   };
   readonly rooftop: { readonly door: Cell; readonly doorOut: Cell; readonly rail: Cell; readonly railHero: Cell; readonly bench: Cell };
   readonly konbini: { readonly door: Cell; readonly doorOut: Cell; readonly npcExit: Cell; readonly cooler: Cell; readonly counter: Cell };
@@ -132,7 +134,6 @@ function paintRoofView(map: GameMap, view: NonNullable<RoomSpec["view"]>): void 
 /** 옥상 한 판 = 위 18줄 도시 풍경 + 아래 옥상(24×12). 난간 줄의 y. */
 const ROOF_FENCE_Y = 18;
 // 사무층(34x20)·편의점·방송실(30x17)은 원래 방을 더 큰 평면 가운데에 놓았다 — 카메라가 맵 밖(검정)을 비추지 않게.
-const BC_OX = 8, BC_OY = 2;
 export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveAnchors {
   project.tilesets[JP_CITY_ID] = createJpCityTileset();
 
@@ -201,17 +202,20 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       stairs: { x: 10, y: 3 }, stairsOut: { x: 10, y: 4 },
       // 엘리베이터 앞 첫 만남: 서하는 elevatorOut, 팀장은 두 칸 아래(트인 사무실 쪽), 지후는 그 옆 — 전부 석재 로비 바닥 위, 벽·엘리베이터 그림에 안 가린다.
       meetLead: { x: 16, y: 6 }, meetJihu: { x: 17, y: 6 },
-      heroDesk: nearestFree(project, officeRoom, { x: 7, y: 10 }),
-      jihuDesk: nearestFree(project, officeRoom, { x: 11, y: 10 }),
-      leadDesk: nearestFree(project, officeRoom, { x: 20, y: 11 }),
-      pantry: nearestFree(project, officeRoom, { x: 5, y: 4 }),
-      meeting: nearestFree(project, officeRoom, { x: 8, y: 14 }),
-      meetingSeat: nearestFree(project, officeRoom, { x: 8, y: 17 }),
+      // 한 팀 책상 무리(3열 6자리) 옆에 서하·지후, 팀장 책상은 그 동쪽.
+      heroDesk: nearestFree(project, officeRoom, { x: 13, y: 9 }),
+      jihuDesk: nearestFree(project, officeRoom, { x: 17, y: 9 }),
+      leadDesk: nearestFree(project, officeRoom, { x: 20, y: 10 }),
+      pantry: nearestFree(project, officeRoom, { x: 6, y: 4 }),
+      // 회의실: 유리문(10,12) 바로 안쪽이 meeting, 탁자(4×2) 둘레의 빈 바닥 다섯 칸이 meetSeats(의자·탁자 위가 아니다).
+      meeting: nearestFree(project, officeRoom, { x: 10, y: 14 }),
+      meetingSeat: { x: 8, y: 18 },
+      meetSeats: [{ x: 8, y: 18 }, { x: 8, y: 17 }, { x: 3, y: 17 }, { x: 3, y: 18 }, { x: 7, y: 16 }],
       whiteboard: nearestFree(project, officeRoom, { x: 23, y: 10 }),
     },
     rooftop: {
-      // 탑옥(계단탑) 철문은 북쪽 벽면에 박혀 있다 — 문 앞 첫 바닥 칸이 밟는 칸, 그 한 칸 아래가 들어서는 칸.
-      door: nearestFree(project, roofRoom, { x: 3, y: ROOF_FENCE_Y + 4 }), doorOut: nearestFree(project, roofRoom, { x: 3, y: ROOF_FENCE_Y + 5 }),
+      // 탑옥(계단탑) 철문 그림은 북쪽 벽면에 박혀 있다(두 칸 높이, 막힘 — 부딪히면 이동) — door = 문 그림 맨 아랫칸, doorOut = 그 바로 아래(안쪽) 바닥 칸.
+      door: { x: 3, y: ROOF_FENCE_Y + 3 }, doorOut: nearestFree(project, roofRoom, { x: 3, y: ROOF_FENCE_Y + 4 }),
       // 난간(철망 펜스) 바로 아래 줄 가운데 — 북쪽을 보고 선다. 옆 칸은 서하 자리.
       rail: nearestFree(project, roofRoom, { x: 14, y: ROOF_FENCE_Y + 1 }), railHero: nearestFree(project, roofRoom, { x: 13, y: ROOF_FENCE_Y + 1 }),
       bench: nearestFree(project, roofRoom, { x: 11, y: ROOF_FENCE_Y + 8 }),
@@ -223,9 +227,10 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       cooler: nearestFree(project, konbiniRoom, { x: 7, y: 7 }), counter: nearestFree(project, konbiniRoom, { x: 17, y: 8 }),
     },
     broadcast: {
-      start: nearestFree(project, broadcast, { x: 6 + BC_OX, y: 11 + BC_OY }),
-      mailbox: nearestFree(project, broadcast, { x: 7 + BC_OX, y: 10 + BC_OY }),
-      booth: nearestFree(project, broadcast, { x: 6 + BC_OX, y: 6 + BC_OY }),
+      // 방송실(왼쪽 위, 흡음벽) 문(11,9)에서 복도로 나오는 세로 한 줄(x=11)이 비어 있다 — 부스 칸에서 문을 지나 복도 아래까지 곧장 걸어 내려온다.
+      start: nearestFree(project, broadcast, { x: 16, y: 13 }),
+      mailbox: nearestFree(project, broadcast, { x: 13, y: 13 }),
+      booth: nearestFree(project, broadcast, { x: 11, y: 5 }),
     },
   };
 
@@ -265,12 +270,15 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       light("fl_plat_a", { x: 6, y: 8 }, 5, "#e8f0ff", 0.6), light("fl_plat_b", { x: 16, y: 8 }, 5, "#e8f0ff", 0.6), light("fl_plat_c", { x: 26, y: 8 }, 5, "#e8f0ff", 0.6),
     ],
   };
-  // 편의점은 밤에도 형광등이 켜진 밝은 가게 — 거리의 어두운 조명을 물려받지 않게 따로 건다.
+  // 편의점은 밤에만 들른다 — 바깥 광장은 어두운 밤, 가게 안은 형광등이 켜진 밝은 바닥. 거리의 어두운 조명을 물려받지 않게 따로 건다.
   konbiniRoom.defaultLighting = {
-    ambient: 0.04, color: "#f0f6ff",
+    ambient: 0.5, color: "#0f1a3c",
     sources: [
-      light("fl_kb_a", { x: 8, y: 7 }, 6, "#f4fbff", 0.7), light("fl_kb_b", { x: 16, y: 7 }, 6, "#f4fbff", 0.7),
-      light("fl_kb_c", { x: 8, y: 11 }, 6, "#f4fbff", 0.7), light("fl_kb_d", { x: 16, y: 11 }, 6, "#f4fbff", 0.7),
+      light("fl_kb_a", { x: 8, y: 7 }, 7, "#f4fbff", 1), light("fl_kb_b", { x: 16, y: 7 }, 7, "#f4fbff", 1),
+      light("fl_kb_c", { x: 8, y: 11 }, 7, "#f4fbff", 1), light("fl_kb_d", { x: 16, y: 11 }, 7, "#f4fbff", 1),
+      light("fl_kb_door", { x: 12, y: 13 }, 5, "#f4fbff", 0.9),
+      // 문 앞 보도에 새어 나오는 가게 불빛(희미하게).
+      light("fl_kb_glow", { x: 12, y: 16 }, 4, "#dfeeff", 0.45),
     ],
   };
   roofRoom.defaultLighting = { ambient: 0.06, color: "#ffd9a8", sources: [] };
