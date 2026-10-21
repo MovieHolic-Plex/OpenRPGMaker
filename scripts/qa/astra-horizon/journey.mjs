@@ -300,7 +300,7 @@ async function fight(label, { capture = false, run = false } = {}) {
       await page.waitForTimeout(1500); continue;
     }
     const ready = await page.locator('[data-testid="actor-command-fight"]').count();
-    if (!ready) { await page.keyboard.press("Enter"); await page.waitForTimeout(300); continue; }
+    if (!ready) { await page.keyboard.press(await nextKey()); await page.waitForTimeout(300); continue; }
     // 플레이어처럼: 체력이 바닥이면 회복약, 상성이 크게 불리하면 더 나은 동료로 교체(적 한 마리당 한 번).
     {
       // 잡으려는 싸움에서도 체력이 바닥이면 회복약은 쓴다(교체는 안 한다).

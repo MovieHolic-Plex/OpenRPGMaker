@@ -27,7 +27,7 @@ export const ROUTE: readonly Fight[] = [
 ];
 
 /** 적 레벨·기술 덮어쓰기(탐색용). 값은 enemyId → { level?, skills? (기술 이름) }. */
-export type Overrides = Readonly<Record<string, { readonly level?: number; readonly skills?: readonly string[]; readonly statScale?: number; readonly cloneOf?: string; readonly troop?: string }>>;
+export type Overrides = Readonly<Record<string, { readonly level?: number; readonly skills?: readonly string[]; readonly statScale?: number; readonly statDelta?: Readonly<Record<string, number>>; readonly cloneOf?: string; readonly troop?: string }>>;
 
 function mon(project: Project, speciesId: string, level: number, tag: string): MonsterInstance {
   const species = monsterSpeciesById(project, speciesId)!;
@@ -65,6 +65,11 @@ function applyOverrides(project: Project, overrides: Overrides): void {
       const stats = { ...enemy.stats };
       for (const key of Object.keys(stats) as (keyof typeof stats)[]) stats[key] = Math.max(1, Math.round(stats[key] * ratio));
       enemy.stats = stats;
+    }
+    if (o.statDelta) {
+      const stats = { ...enemy.stats } as Record<string, number>;
+      for (const [key, d] of Object.entries(o.statDelta)) if (key in stats) stats[key] = Math.max(1, stats[key]! + d);
+      enemy.stats = stats as typeof enemy.stats;
     }
     if (o.skills) {
       const base = enemy.actions.find((a) => a.skillId) ?? enemy.actions[0];
