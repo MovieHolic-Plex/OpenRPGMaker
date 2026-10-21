@@ -384,6 +384,8 @@ async function bestSkill(skills) {
   const myTypes = (project.database.monsterSpecies ?? []).find((sp) => sp.id === mine?.speciesId)?.types ?? [];
   let best = skills.last(), bestScore = -1;
   for (let i = 0; i < await skills.count(); i++) {
+    // 횟수(PP)가 다 된 기술은 회색으로 잠겨 있다 — 고르면 아무 일도 없이 멈췄다(r35 풀: 햇살쉼 0/10 에서 리그 중 멈춤).
+    if (await skills.nth(i).isDisabled().catch(() => false)) continue;
     const id = (await skills.nth(i).getAttribute("data-testid") ?? "").replace("actor-skill-", "");
     const sk = skillById.get(id);
     const el = sk?.elementId ?? "normal";
