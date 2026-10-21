@@ -479,8 +479,11 @@ const SW_VALEN_MARCHED = "sw_fs_valen_marched";
 const SW_KNIGHT_MARCHED = "sw_fs_knight_marched";
 type Step = "up" | "down" | "left" | "right";
 /** from → to 걸음(통행 칸·다른 이벤트 칸을 피하는 BFS). 못 가면 null. */
-function walkPath(project: Project, map: GameMap, from: { x: number; y: number }, to: { x: number; y: number }, selfId: string): Step[] | null {
-  const occupied = new Set(map.events.filter((e) => e.id !== selfId && !String(e.id).startsWith("ev_gate_")).map((e) => `${e.x},${e.y}`));
+function walkPath(
+  project: Project, map: GameMap, from: { x: number; y: number }, to: { x: number; y: number }, selfId: string,
+  opt: { allow?: (x: number, y: number) => boolean; ignore?: ReadonlySet<string> } = {},
+): Step[] | null {
+  const occupied = new Set(map.events.filter((e) => e.id !== selfId && !opt.ignore?.has(e.id) && !String(e.id).startsWith("ev_gate_")).map((e) => `${e.x},${e.y}`));
   const prev = new Map<string, { key: string; dir: Step }>();
   const start = `${from.x},${from.y}`, goal = `${to.x},${to.y}`;
   const seen = new Set([start]);
@@ -492,7 +495,7 @@ function walkPath(project: Project, map: GameMap, from: { x: number; y: number }
       for (const dir of ["right", "up", "down", "left"] as const) {
         const x = cell.x + steps[dir][0], y = cell.y + steps[dir][1], key = `${x},${y}`;
         if (seen.has(key) || x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
-        if (occupied.has(key) || !isPassable(project, map, x, y)) continue;
+        if (occupied.has(key) || !isPassable(project, map, x, y) || (opt.allow && key !== goal && !opt.allow(x, y))) continue;
         seen.add(key); prev.set(key, { key: `${cell.x},${cell.y}`, dir }); next.push({ x, y });
       }
     }
@@ -505,9 +508,10 @@ function walkPath(project: Project, map: GameMap, from: { x: number; y: number }
 }
 
 /**
- * 포고가 끝나면 발렌과 기사가 동문으로 걸어 나간다 — 예전에는 이리스 합류 때 제자리에서 페이지 전환으로 사라졌다
- * (가혹 검수 r12 major 「NPC 가 문까지 걷지 않는다」). 대사가 이어지는 동안(기다리지 않음) 걷고, 문 앞에 닿으면
- * 루트 끝의 스위치로 지운다(떠남 페이지).
+ * 포고가 끝나면 교단 행렬(발렌·기사·호위 둘)이 큰길을 따라 동문으로 걸어 나간다 — 예전에는 이리스 합류 때 제자리에서
+ * 페이지 전환으로 사라졌다(가혹 검수 r12 major 「NPC 가 문까지 걷지 않는다」). 오프닝 아침 컷의 행렬처럼 셋 이상이 줄지어
+ * 걷고(적대 VQA r2: 혼자 풀밭을 가로질렀다), 길은 포석(큰길·광장)만 밟는다. 대사가 이어지는 동안(기다리지 않음) 걷고,
+ * 성문 통로에 닿으면 루트 끝의 각자 스위치로 지운다(떠남 페이지).
  */
 function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   // 동문 = 숲으로 나가는 성문 통로 가운데 칸(reworkFallenTown). 일행은 통로 안까지 걸어 들어가 사라진다.
@@ -517,28 +521,72 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   const after = list?.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("교단보다 먼저"));
   if (!gate || !list || after === undefined || after < 0) throw new Error("[fallen-star] 포고·동문을 찾지 못했다");
   const exit = { x: gate.x, y: gate.y };
+  const knight = hub.events.find((e) => e.id === `ev_${FS_PREFIX}_knight`);
+  const valen = hub.events.find((e) => e.id === `ev_${FS_PREFIX}_valen`);
+  if (!knight || !valen) throw new Error("[fallen-star] 발렌·기사가 없다");
+
+  // 호위 둘 — 기사 이벤트를 그대로 본떠 RTP 칩만 바꾼다(붉은 투구 기사 · 검은 수녀복 사제).
+  const escorts: [string, string, number][] = [[`ev_${FS_PREFIX}_escort_a`, "tex_easyrpg_charset_actor1", 3], [`ev_${FS_PREFIX}_escort_b`, "tex_easyrpg_charset_people2", 1]];
+  hub.events = hub.events.filter((e) => !escorts.some(([id]) => id === e.id));
+  for (const [id, tex, index] of escorts) {
+    const clone = JSON.parse(JSON.stringify(knight)) as GameEvent;
+    clone.id = id; clone.name = index === 3 ? "심문회 기사" : "교단 사제";
+    for (const page of clone.pages ?? []) page.id = `${page.id}__${id.slice(-1)}`;
+    hub.events.push(clone);
+    setEventChip(hub, id, tex, index);
+  }
+
+  // 무대 — 천문대 문 앞 큰길 두 줄(문 바로 아래 줄부터). 주인공(시작 칸) 동쪽에 발렌이 앞장서 서쪽을 보고,
+  // 뒤로 기사·호위가 두 줄로 선다. 행렬은 앞(동쪽)부터 걷는다.
+  const door = hub.events.find((e) => String(e.id).startsWith("ev_gate_") && JSON.stringify(e).includes('"mapId":"fs_observatory"'));
+  const roadTop = (door?.y ?? 20);
+  const lead = { x: (project.startPos?.x ?? 24) + 3, y: roadTop + 1 };
+  const byId = (id: string): GameEvent => hub.events.find((e) => e.id === id)!;
+  const formation: [GameEvent, number, number, string, number][] = [
+    [valen, 0, 0, "tex_easyrpg_charset_actor1", 4], [knight, 1, -1, "tex_easyrpg_charset_actor1", 2],
+    [byId(escorts[0]![0]), 2, 0, escorts[0]![1], escorts[0]![2]], [byId(escorts[1]![0]), 3, -1, escorts[1]![1], escorts[1]![2]],
+  ];
+  const marchers = new Set(formation.map(([e]) => e.id));
+  for (const [event, dx, dy, tex, index] of formation) {
+    event.x = lead.x + dx; event.y = lead.y + dy;
+    for (const page of event.pages ?? []) if (page.graphic?.sprite) page.graphic.direction = "left";
+    setEventChip(hub, event.id, tex, index); // 방향이 바뀌면 칩 프레임 번호도 다시 고른다
+  }
+
+  const ts = project.tilesets[hub.tilesetId] as unknown as { autotileGroups?: { id: string; memberTileIds: number[] }[]; tileGroups?: { id: string; tileIds: number[] }[] };
+  const pavedIds = new Set<number>([
+    ...(ts.autotileGroups?.find((g) => g.id === "beodeul_road_autotile")?.memberTileIds ?? []),
+    ...(ts.tileGroups?.find((g) => g.id === "beodeul:plaza")?.tileIds ?? []),
+  ]);
+  const allow = (x: number, y: number): boolean => pavedIds.has(hub.lowerTiles[y * hub.width + x]!) || (Math.abs(x - exit.x) <= 1 && y <= exit.y + 1);
+
+  const switches: Record<string, string> = { [valen.id]: SW_VALEN_MARCHED, [knight.id]: SW_KNIGHT_MARCHED };
+  for (const [id] of escorts) switches[id] = `sw_${id.slice(3)}_marched`;
+  const order = [...formation].sort((a, b) => b[1] - a[1]); // 동쪽(앞)부터
   const marches: Command[] = [];
-  for (const [id, delay] of [[`ev_${FS_PREFIX}_knight`, 0], [`ev_${FS_PREFIX}_valen`, 1]] as const) {
-    const npc = hub.events.find((e) => e.id === id);
-    if (!npc) continue;
-    const path = walkPath(project, hub, { x: npc.x, y: npc.y }, exit, id);
-    if (!path) throw new Error(`[fallen-star] ${id} 가 동문까지 걸어갈 길이 없다`);
+  order.forEach(([npc], rank) => {
+    const path = walkPath(project, hub, { x: npc.x, y: npc.y }, exit, npc.id, { allow, ignore: marchers })
+      ?? walkPath(project, hub, { x: npc.x, y: npc.y }, exit, npc.id, { ignore: marchers });
+    if (!path) throw new Error(`[fallen-star] ${npc.id} 가 동문까지 걸어갈 길이 없다`);
     const moves = [
-      // 처음부터 지나갈 수 있게: 주인공이 성문 통로 앞에 서 있으면 발렌이 막혀 스위치가 안 켜지고, 그동안 투명한 기사가
+      // 처음부터 지나갈 수 있게: 주인공이 성문 통로 앞에 서 있으면 행렬이 막혀 스위치가 안 켜지고, 그동안 투명한 기사가
       // 통로 칸을 막아 숲으로 못 나갔다(QA fallen-town to-forest). 길은 걸을 수 있는 칸으로만 짜였으니 건물은 안 뚫는다.
       { kind: "setThrough", enabled: true },
-      ...Array.from({ length: delay }, () => ({ kind: "wait" })),
+      // 행진 걸음 — 기본(느림·드묾)으로는 30칸 길에 30초가 넘게 걸려 대사가 끝난 뒤에도 광장에 남았다.
+      { kind: "changeSpeed", delta: 1 }, { kind: "changeFrequency", delta: 2 },
+      ...Array.from({ length: rank }, () => ({ kind: "wait" })),
       ...path.map((dir) => ({ kind: "move", dir })),
       { kind: "changeOpacity", delta: -255 },
-      { kind: "setSwitch", switchId: id.endsWith("valen") ? SW_VALEN_MARCHED : SW_KNIGHT_MARCHED, value: true },
+      { kind: "setSwitch", switchId: switches[npc.id]!, value: true },
     ];
-    marches.push({ kind: "moveEvent", eventId: id, route: { moves, repeat: false, wait: false, skippable: true } } as unknown as Command);
+    marches.push({ kind: "moveEvent", eventId: npc.id, route: { moves, repeat: false, wait: false, skippable: true } } as unknown as Command);
+  });
+  const names: Record<string, string> = { [SW_VALEN_MARCHED]: "발렌 일행 동문으로 떠남", [SW_KNIGHT_MARCHED]: "심문회 기사 동문으로 떠남" };
+  for (const [id, sw] of Object.entries(switches)) {
+    if (!project.switches.some((s) => s.id === sw)) project.switches.push({ id: sw, name: names[sw] ?? `${hub.events.find((e) => e.id === id)?.name ?? id} 동문으로 떠남` });
+    vanishWhen(hub, id, sw);
   }
-  if (!project.switches.some((s) => s.id === SW_VALEN_MARCHED)) project.switches.push({ id: SW_VALEN_MARCHED, name: "발렌 일행 동문으로 떠남" });
-  if (!project.switches.some((s) => s.id === SW_KNIGHT_MARCHED)) project.switches.push({ id: SW_KNIGHT_MARCHED, name: "심문회 기사 동문으로 떠남" });
   list.splice(after + 1, 0, ...marches);
-  vanishWhen(hub, `ev_${FS_PREFIX}_valen`, SW_VALEN_MARCHED);
-  vanishWhen(hub, `ev_${FS_PREFIX}_knight`, SW_KNIGHT_MARCHED);
 }
 
 export const SW_VALEN_ARRIVED = "sw_fs_valen_arrived";

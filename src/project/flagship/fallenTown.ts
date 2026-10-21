@@ -13,6 +13,14 @@
 import catalog from "@/assets/beodeulNatureCatalog.json";
 import { isPassable } from "@/project/collision";
 import type { GameEvent, Project } from "@/project/types";
+import { bakeWorkshopObject, workshopAssetId } from "@/project/workshopTiles";
+
+/**
+ * 성문 창살을 걷어 올린 그림 — 왕성 키트 성문 아래 줄 세 칸(3277·3278·3279)에서 창살 아랫부분을 지우고 창살 끝(가로대·뾰족 끝)을
+ * 칸 맨 위로 올렸다(손 도트, 다른 색 없음). 닫힌 창살 사이로 드나드는 것처럼 보였다(적대 VQA r2 M2).
+ * 공방 칸(tileGrafts, 업로드 그림판)으로 버들항 칩셋에 덧붙인다 — 번들 시트는 그대로.
+ */
+const RAISED_GATE_PNG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAQCAYAAABQrvyxAAABSElEQVR4nNWWsUrDUBSGv1sudXWoCEqJQnVxq9N9hrq5GFw6ODTPkLlv4CP0FZz6ABccHKRKC1ETWhepcXBKljgkwXSqrbcp+eAM9yT8/znJOXDFq/+SADg9h85FB601RZRSK+VOrHMARo+nC8+9tzsAbpyzf3sUz7XiC+12m8l4shCr5pZhwiMPAGFfXyUAvu8vNf8Le7vpl5ficiF//3ALQPP424gPgG3byH6/j9NziOPYiOj7xwiAJD7gqKkA8Kea/cNPAAzZUBPp8Mg8IRBmlHO9+hB/mpnVh2BYH0Br/dvABvSp7QzNixZQSiFd1yX8ChFiAx2UgARotVrGlrhMtNaI5/FT0u12t13LWgwGA2QYhsYXuCyiKMqWuJr1M5/P0waqusCNRiNroKq/AKo9QgByNptVdoQ8z0svc0EQbLuWtbAsix9fUbM2e2tIGQAAAABJRU5ErkJggg==";
 
 type KitRow = { tiles: number[]; upperTiles?: number[] };
 type Kit = { id: string; width: number; height: number; rows: KitRow[] };
@@ -195,10 +203,19 @@ export function reworkFallenTown(project: Project, hubId: string, ids: { observa
   setLo(W - 1, G + 1, 5565); nsWall(W - 1, G + 2, SWALL);    // 동쪽 성벽 — 성문루 끝 밑에서 남쪽 끝까지
   // 운하 수문 — 성벽 앞면의 밑 줄을 강 위 아치 다리 키트의 아치 줄(4줄: 돌 벽에 뚫린 아치 둘, 물 위)로 바꾼다.
   //   북 성벽은 아치로 운하가 마을에 흘러들고, 남 성벽은 아치로 빠져나간다(위 통로·윗 앞면 줄은 성벽 그대로).
+  //   오프닝 그림의 수문은 성벽 앞면에 뚫린 돌테 쌍아치다 — 앞면 두 줄 위에 하수도 수로 아치(2×2, 물 위 돌테 아치) 둘을 나란히.
+  //   다리 키트 아치 줄을 끼웠을 때는 벽면이 잘린 구멍처럼 읽혔다(적대 VQA r2 M4).
   const archKit = kit("bd-bridge-arch");
-  const ARCH_LOW = archKit.rows[4]!.tiles;
-  for (let i = 0; i < 4; i += 1) { setLo(riverX + i, 2, ARCH_LOW[i]!); setLo(riverX + i, SWALL + 2, ARCH_LOW[i]!); }
-  for (const t of ARCH_LOW) waterLink.add(t);
+  const waterArch = kit("bd-pick-aqueduct-sewer-arch-water");
+  for (const top of [1, SWALL + 1]) for (const ox of [0, 2]) {
+    for (let dy = 0; dy < 2; dy += 1) for (let dx = 0; dx < 2; dx += 1) {
+      const x = riverX + ox + dx, y = top + dy, i = at(x, y);
+      const r = waterArch.rows[dy]!;
+      const t = r.upperTiles?.[dx] ?? -1, l = r.tiles[dx] ?? -1;
+      if (t >= 0) up[i] = t; else if (l >= 0) up[i] = l;
+      if (dy === 1) waterLink.add(lo[i]!); // 아치 밑 줄 성벽 앞면은 운하 물과 이어진 것으로(둑 테두리가 생기지 않게)
+    }
+  }
   retile(waterSet, waterLink, WATER_BY_MASK);
   // 성문루: 왕성 키트 앞 성벽 줄을 동쪽 끝에(키트 15~18줄은 성 안마당 — 원탑 지붕(윗층)만 옮긴다).
   const gateX0 = W - 13;
@@ -209,6 +226,25 @@ export function reworkFallenTown(project: Project, hubId: string, ids: { observa
     upper: (kx, ky) => ky >= 19 || towerCol(kx),
   });
   const gate = { x: gateX0 + 5, y: G };
+  // 왼쪽 원탑이 성문루 벽에 드리운 푸른 그림자 띠(키트 14열)가 이음매로 읽혔다(적대 VQA r2 M1) — 오른쪽 짝(18열, 방패 같은 자리)으로.
+  for (let ky = 19; ky <= 22; ky += 1) { const i = at(gateX0 + 3, G - 22 + ky); lo[i] = castle.rows[ky]!.tiles[18]!; lo2[i] = -1; }
+  // 성문 아래 줄 = 창살을 걷어 올린 손 도트 세 칸(막힘, 아래층).
+  {
+    const before = (project.tilesets[map.tilesetId]!.tileGrafts ?? []).length;
+    const raised = bakeWorkshopObject(project as unknown as Parameters<typeof bakeWorkshopObject>[0], map.tilesetId, {
+      objectId: "workshop:fallen-town-gate-raised", title: "걷어 올린 성문 창살", description: "왕성 성문 아래 줄 — 창살을 걷어 올린 열린 성문(폴른 스타 왕도)",
+      kind: "floor", columns: 3, rows: 1, footRows: 1, risePx: 0, use: ["성문"], gridHash: "fallen-town-gate-raised-v1",
+      asset: { id: workshopAssetId(RAISED_GATE_PNG), dataUrl: RAISED_GATE_PNG, width: 48, height: 16 },
+      cells: [0, 1, 2].map((dx) => ({ sourceTile: dx, dx, dy: 0 })),
+      provenance: { aiGenerated: false, tool: "hand-pixel (derived from bd-castle 3277-3279)" },
+    });
+    const tsDef = project.tilesets[map.tilesetId]!;
+    for (const g of (tsDef.tileGrafts ?? []).slice(before)) { g.sourceTileSize = 16; g.sourceTilesPerRow = 3; }
+    raised.rows[0]!.upperTiles!.forEach((id, dx) => {
+      tsDef.priority[id] = "lower";
+      const i = at(gate.x - 1 + dx, G - 1); lo[i] = id; lo2[i] = -1;
+    });
+  }
   // 원탑: 성벽이 꺾이는 곳·남쪽 두 모서리(밑동 = 그 자리 성벽 앞면 밑 줄).
   const towerAt = (xc: number, base: number): void => copyKit(castle, xc - 1, base - 7, { cols: [11, 13], rows: [15, 22], lower: (_kx, ky) => ky >= 19 });
   towerAt(WX, ringNE + 2);
@@ -348,6 +384,14 @@ export function reworkFallenTown(project: Project, hubId: string, ids: { observa
   plant(0, G + 1, W - 1, H - 1, ["bd-prop-planter_round", "bd-prop-bench_wood", "bd-prop-crate_apple", "bd-prop-flower_cart", "bd-pick-walled-market-sack-pile", "bd-prop-goods_pile", "bd-prop-veg_cart", "bd-prop-tree_planter", "bd-prop-stall_herb_flower"], 41,
     (x, y) => !nearEvent(x, y, 2) && Math.abs(x - gate.x) > 1 && !(y >= ROAD_Y && y <= ROAD_Y + 1 && x < gate.x), 1, 15);
   plazaMode = false;
+
+  // 길·광장 위에 남은 덧그림 그림자 — 바로 위 칸에 그림자를 드리울 물체가 없으면 떠 있는 갈색 줄로 읽혔다(적대 VQA r2 M3, (2~6,33)).
+  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+    const i = at(x, y);
+    if (lo2[i]! < 30000 || !paved(x, y) || up[i]! >= 0) continue;
+    const caster = inside(x, y - 1) && (up[at(x, y - 1)]! >= 0 || !isPassable(project, map, x, y - 1));
+    if (!caster) lo2[i] = -1;
+  }
 
   // ── 11. 사람 자리 — 새 담·나무·소품에 갇히거나 올라선 사람은 천문대 문 앞에서 걸어 닿는 가장 가까운 빈 칸으로. ──
   const reach = new Set<number>();
