@@ -154,11 +154,12 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
       act("skill_fs_judgment", 10, { kind: "turn", start: 3, interval: 3 }),
       act("skill_sword_slash", 6), act("skill_weaken", 4),
     ];
-    valen.stats = { ...valen.stats, maxHp: 700 };
+    // r6 탐침: 스킬 섞어 이겼지만 부하 머신에서 11분 — 체력을 20% 줄여 스킬 섞기 결정 ~15번(헤드리스 100%), 공격만도 98% 이긴다.
+    valen.stats = { ...valen.stats, maxHp: 560 };
   }
   if (guardian) {
     guardian.actions = [act("skill_fs_maul", 9, { kind: "turn", start: 2, interval: 2 }), act("skill_earth", 7), act("skill_attack", 6)];
-    guardian.stats = { ...guardian.stats, maxHp: 480 };
+    guardian.stats = { ...guardian.stats, maxHp: 380 };
   }
   // 표시 레벨 — 견본 몬스터에서 복제한 레벨(발렌 33·수호상 27)이 Lv6 파티 앞에 그대로 떠 이야기와 어긋났다(감사 VQA).
   // 보상은 위에서 직접 정했으므로 레벨은 표시와 레벨 차 경험치 보정에만 쓰인다.

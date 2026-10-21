@@ -19,10 +19,14 @@
 .battle-scene[data-battle-motion="retro"] .battle-scenery-camera:is([data-layers="loading"], [data-layers-fade="in"]) {
   background: #0b0f1a;
 }
+/* 동굴은 늦게 와도 별밤처럼 보이지 않게 동굴 어둠 색으로 기다린다(가혹 검수 r6 「첫 턴 별밤 → 동굴」). */
+.battle-scene[data-battle-motion="retro"] .battle-scenery-camera[data-biome="cave"]:is([data-layers="loading"], [data-layers-fade="in"]) {
+  background: linear-gradient(180deg, #1a2230 0%, #222c3a 55%, #2c3442 100%);
+}
 
 /* 늦게 도착한 경우에만 페이드인. 미리 읽어 둔 경우는 첫 프레임부터 그대로 깐다. */
 .battle-scene[data-battle-motion="retro"] .battle-scenery-camera[data-layers-fade="in"] .battle-scenery-layer {
-  animation: retro-scenery-layer-in 180ms ease-out both;
+  animation: retro-scenery-layer-in 600ms ease-out both;
 }
 
 @keyframes retro-scenery-layer-in {

@@ -1430,18 +1430,21 @@
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"]:not([data-look-names="on"]) .battle-enemy .battle-enemy-chrome > .battle-enemy-name { display: none; }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"] .battle-enemy .battle-enemy-chrome > .battle-enemy-hud {
   display: block;
-  width: 56px;
+  width: 64px;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"] .battle-enemy .battle-enemy-hud > :not(.battle-enemy-hp-bar):not(.battle-enemy-hp-text) { display: none; }
 /* 막대 위에 작은 수치 — 「바만 있고 수치가 없다」(가혹 검수 r4·r5). */
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"] .battle-enemy .battle-enemy-hud > .battle-enemy-hp-text {
   display: block;
   color: #f4f6ff;
-  font-size: 10px;
+  /* r6: 10px 는 1배 화면에서 흐렸다 — 12px 굵게, 사방 그림자로 배경 위에서도 읽히게. */
+  font-size: 12px;
+  font-weight: 700;
   line-height: 1;
-  margin-bottom: 1px;
+  margin-bottom: 2px;
   text-align: center;
-  text-shadow: 1px 1px 0 #000;
+  text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -1px 0 #000, 1px 1px 0 #000;
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"] .battle-enemy .battle-enemy-hud > .battle-enemy-hp-bar {

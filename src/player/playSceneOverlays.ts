@@ -454,10 +454,12 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     const viewport = textNode("div", "ending-credits", "");
     const roll = textNode("div", "ending-credits-roll", copy);
     viewport.append(roll); terminal.root.append(viewport);
-    const distance = viewport.clientHeight + roll.scrollHeight;
+    // 첫 줄이 화면 아래 절반에서 바로 보이게 시작한다 — 아래 끝에서 올라오면 처음 몇 초가 빈 화면이었다(폴른 스타 가혹 검수 r6).
+    const start = Math.round(viewport.clientHeight * 0.55);
+    const distance = start + roll.scrollHeight;
     const duration = Math.max(12000, distance / 12 * 1000);
     terminal.root.style.setProperty("--credits-duration", `${duration}ms`);
-    terminal.root.style.setProperty("--credits-start", `${viewport.clientHeight}px`);
+    terminal.root.style.setProperty("--credits-start", `${start}px`);
     terminal.root.style.setProperty("--credits-end", `${-roll.scrollHeight}px`);
     const hint = textNode("div", "game-over-hint", terminal.reducedMotion ? "PgUp/PgDn 읽기   ·   Z / Enter 마침" : "Z / Enter 크레딧 건너뛰기");
     terminal.root.append(hint);
