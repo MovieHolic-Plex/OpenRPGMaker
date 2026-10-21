@@ -158,7 +158,9 @@ export function createObjectGenCard(request: ObjectGenRequest, followUp: ObjectG
   });
   footer.append(redraw, workshop, existing);
 
-  const size = `${request.tilesW}×${request.tilesH}칸 · ${KIND_LABELS[request.objectKind] ?? request.objectKind}`;
+  // 그림 높이 = 발밑 칸 + 위로 솟는 칸(rise). 발밑만 적으면 「1×1」이라 해 놓고 두 칸 높이로 그려져 사용자가 놀란다(2026-10-21 VQA).
+  const riseRows = Math.ceil(Math.max(0, request.rise) / 16);
+  const size = `발밑 ${request.tilesW}×${request.tilesH}칸${riseRows ? ` · 그림은 ${request.tilesW}×${request.tilesH + riseRows}칸 높이` : ""} · ${KIND_LABELS[request.objectKind] ?? request.objectKind}`;
   const root = el("section", {
     class: "ai-tileset-change-card ai-store-card ai-objectgen-card",
     dataset: { testid: "ai-objectgen-card", harness: request.harnessId, tileset: request.tilesetId },

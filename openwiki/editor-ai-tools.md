@@ -14,7 +14,9 @@
 - **굽기**: `bakeWorkshopPick(item, grid, palette, env, { autoPicked })` — 알아서 고른 것은 설명서 `review.pick`(사람 선택) 을 비우고 출처 도구 문자열 끝에 `/auto-pick` 을 붙인다. 시트 자르기는 순수 모듈 `src/harnesses/_core/workshop/bakeSheet.ts`(`workshopBakeSheet`·`workshopGridHash`).
 - **관문**: 공방 칸은 이 게임에만 들어간다. 스토어 올리기·공용 DB 는 막힌다(`storePublishBlockReason`). object-gate 영수증은 공방 굽기에 아직 배선되지 않았다 — 「3/4 관문 미통과」 상태의 로컬 그림이다.
 - **그리지 않는 것**: 「분위기 있는 거 하나」처럼 무엇인지 안 정한 요청(있는 것에서 고른다), 사람·동물(캐릭터 칩), 칸 타일(나중 tile-gen · 지금은 `ask_missing_tiles`), 16px 아닌 칩셋.
-- **QA**: `scripts/qa/objectgen-assistant/` — `dump-system-prompt.mjs`(실제 Pi 시스템 프롬프트), `assistant-tool.sh`(헤드리스 `oprn-tools --assistant` 로 조수 도구 호출 기록), `driver.mjs`(dev 빌드 한 장에 실제 카드를 붙이고 공방 채팅을 `claude -p` 로 잇는다). 결과는 아래 「시험 결과」.
+- **QA**: `scripts/qa/objectgen-assistant/` — `dump-system-prompt.mjs`(실제 Pi 시스템 프롬프트), `assistant-tool.sh`(헤드리스 `oprn-tools --assistant` 로 조수 도구 호출 기록), `driver.mjs`(dev 빌드 한 장에 실제 카드를 붙이고 공방 채팅을 `claude -p` 로 잇는다). 결과는 아래.
+- **시험 결과(2026-10-21, 조수 대용: Sonnet 5.5 역할극 — Argon 쿼터 소진 · 공방 그리기·검수도 Sonnet 5.5 `claude -p` 중계)**: 8건 판단 8/8 맞음 — 없는 것 3건(버들항 벌통 · jp_city 빨간 공중전화 부스 · 손 도트 실내 금붕어 어항)만 그렸고, 있는 것 2건(벤치·자판기)·모호 1건(「분위기 있는 거」→ 있는 우물)·이름은 다르지만 있는 것 1건(혼천의)·사람 1건(→ 있는 NPC)은 그리지 않았다. 그린 판은 한 판 104~158초, 알아서 고르기 2건·사람 고르기 1건, 세 건 모두 SQLite 저장 → 다른 프로세스 재로드 뒤 킷·이식·자산·맵 칸이 남고 렌더가 화소까지 같다.
+  독립 Opus 적대 VQA: 통과 2(벤치·자판기) · 약함 5 · 실패 1(혼천의 2×4 킷을 방 사이 벽 위에 찍음 — 여러 칸 킷의 바닥·벽 확인이 없다). 그린 기물은 앞면 위주라 윗면이 얇고(3/4 약함), 벌통은 「1×1」이라 해 놓고 두 칸 높이(rise 기본 16)로 그려져 읽히지 않았다 → 카드에 그림 높이를 함께 적고 스킬에 `rise: 0` 안내를 넣었다. 증거·그림: `~/claude-viz/objectgen-assistant-1.html`.
 
 ## 조수 스킬 읽기 `read_assistant_skill` · 장면 다듬기 `game-scene-polish` (2026-10-21)
 

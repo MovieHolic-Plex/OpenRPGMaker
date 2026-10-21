@@ -16,6 +16,7 @@ description: "When the in-editor assistant is asked to place one object (prop, f
 3. **사용자가 콕 집은 물건이 정말 없을 때만** `generate_missing_object({mapId, title, description, objectKind, tilesW, tilesH, rise, base:{x,y}, need})`.
    - `objectKind` 는 `floor`(바닥에 세움) · `wall`(북쪽 벽 앞) · `hang`(벽에 걸기) · `flat`(밟는 깔개) 넷뿐이다. `prop` 같은 말은 거부된다.
    - 실내 가구는 3×2칸, 맵 기물은 4×3칸까지. 키 큰 것(부스·가로등)은 발밑 1칸 + `rise` 32.
+   - 그림 높이 = 발밑 칸 + `rise`/16 칸. `rise` 를 빼면 서는 것은 16(한 칸 더 높게)이다 — 벌통·어항처럼 키가 낮은 물건은 `rise: 0` 으로 발밑 칸 높이 그대로 그린다.
    - 이름이 맞는 기물이 이미 있으면 도구가 그 id 를 돌려주며 거부한다. 그 id 들을 **실제로 보고** 다른 물건일 때만 `notThese` 에 적어 다시 부른다.
    - 부른 뒤에는 칠하지 말고 턴을 끝낸다. 「그렸다·놓았다」고 말하지 않는다 — 카드가 사용자 AI 계정으로 후보를 그리고, 사용자가 고르거나 사용자가 켠 「알아서 고르기」가 검수 통과 후보를 고른다.
 4. 「[공방에서 그려 넣음] … 물체 id workshop:…」 후속 요청이 오면 **다시 그리지 말고** `stamp_tileset_object({mapId, objectId, base})` 로 적힌 자리에 놓고 `show_map_region` 으로 본다. 막히면 가까운 빈 바닥으로 옮긴다.
