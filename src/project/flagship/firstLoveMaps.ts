@@ -272,6 +272,23 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   const officePm = cloneMap(project, FL_MAP.office, FL_MAP.officePm, "스튜디오 늘봄 · 야근");
   cloneMap(project, FL_MAP.office, FL_MAP.officeFri, "스튜디오 늘봄 · 금요일");
   const platformPm = cloneMap(project, FL_MAP.platformAm, FL_MAP.platformPm, "한결역 승강장 · 막차");
+  // 열차가 실제로 들어와 서고 떠난다(VQA r8: 「열차가 들어오고 있습니다」 안내만 있고 열차가 없다).
+  // 탈것 도구는 1층 jp-subway-track(2줄) 선로를 찾는다 — 방 키트가 그린 아래 두 줄 선로를 같은 계열의 그 선로 칸으로 바꾼다.
+  const TRACK_TOP = 8597, TRACK_BOTTOM = 8598;
+  for (const id of [FL_MAP.platformAm, FL_MAP.platformPm]) {
+    const m = project.maps[id]!;
+    for (let x = 0; x < m.width; x++) {
+      m.lowerTiles[(m.height - 2) * m.width + x] = TRACK_TOP;
+      m.lowerTiles[(m.height - 1) * m.width + x] = TRACK_BOTTOM;
+    }
+  }
+  for (const id of [FL_MAP.platformAm, FL_MAP.platformPm]) {
+    try {
+      exec("set_map_transit", { mapId: id, auto: { subway: { vehicle: "jp-subway", name: "한결선", stopName: "한결역", headwaySec: 50, waitSec: 10 } } });
+    } catch (error) {
+      console.warn(`[first-love] ${id} 열차를 깔지 못했다: ${(error as Error).message}`);
+    }
+  }
 
   // 밤 거리: 푸른 어둠 + 실제 가로등(3칸 기둥의 머리 높이)·공원 가로등·간판 빛.
   // 좌표는 거리 맵(modern_city, 시드 5)에 찍힌 mc-prop-lamp-a 기둥 윗칸 + 1 이다.

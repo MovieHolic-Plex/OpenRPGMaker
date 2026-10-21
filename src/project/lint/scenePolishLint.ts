@@ -667,7 +667,9 @@ function checkMapBgm(project: Project, issues: LintIssue[], gates: readonly Gate
 
 function checkVehicles(project: Project, issues: LintIssue[]): void {
   for (const map of Object.values(project.maps)) {
-    const routes = (map.transit?.routes ?? []).filter((r) => r.enabled !== false && (r.vehicles?.length ?? 0) > 0);
+    // 승강장에 서는 열차(지하철·전철 노선에 정차역이 있다)는 역 장면의 요점이다 — 열차가 오지 않는 역이 더 어색하다(첫사랑 VQA r8).
+    const stationTrain = (r: { kind?: string; stops?: readonly unknown[] }): boolean => (r.kind === "subway" || r.kind === "train") && (r.stops?.length ?? 0) > 0;
+    const routes = (map.transit?.routes ?? []).filter((r) => r.enabled !== false && (r.vehicles?.length ?? 0) > 0 && !stationTrain(r));
     if (routes.length > 0) {
       issues.push({
         severity: "warning", code: "scene-moving-vehicle", mapId: map.id,
