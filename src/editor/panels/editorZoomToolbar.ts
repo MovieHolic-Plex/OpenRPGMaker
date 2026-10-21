@@ -33,7 +33,8 @@ const toolbarRenderMemo = new WeakMap<HTMLElement, { readonly key: string; reado
 
 export function renderCanvasToolbar(container: HTMLElement): void {
   const currentZoom = editorState.get().zoom;
-  const key = `${currentZoom}|${locationLayerState().enabled ? 1 : 0}|${mapBackgroundPreviewEnabled() ? 1 : 0}|${readCanvasToolbarExpanded() ? 1 : 0}`;
+  const showGrid = editorState.get().showGrid;
+  const key = `${currentZoom}|${locationLayerState().enabled ? 1 : 0}|${mapBackgroundPreviewEnabled() ? 1 : 0}|${readCanvasToolbarExpanded() ? 1 : 0}|${showGrid ? 1 : 0}`;
   const memo = toolbarRenderMemo.get(container);
   if (memo && memo.key === key && memo.first !== null && container.firstElementChild === memo.first && memo.first.isConnected) return;
   clearChildren(container);
@@ -132,12 +133,25 @@ export function renderCanvasToolbar(container: HTMLElement): void {
     dataset: { testid: "map-background-preview-toggle" },
     on: { click: () => toggleMapBackgroundPreview() },
   }));
-  // 배율 · ⋯ 펼치기 · AI 빠른 작업 · 맵 저장.
+  // 배율 · ⋯ 펼치기 · AI 빠른 작업 · 격자 · 맵 저장.
+  // 격자는 잘 안 끄는 보기 옵션이라 ⋯ 펼침 안에 둔다. 상태는 editorState.showGrid(기본 켜짐) 하나다.
   const saveAction = el("div", {
     class: "canvas-toolbar-save-group",
-    attrs: { "aria-label": "맵 이미지 저장", role: "group" },
+    attrs: { "aria-label": "맵 보기 · 이미지 저장", role: "group" },
     dataset: { testid: "editor-map-save-group", uiDensity: "expert" },
     children: [
+      el("button", {
+        class: "oprn-tool-button map-grid-toggle",
+        children: [makeSvgIcon("grid")],
+        attrs: {
+          type: "button",
+          title: showGrid ? "격자 숨기기" : "격자 보이기",
+          "aria-label": "격자 보이기/숨기기",
+          "aria-pressed": String(showGrid),
+        },
+        dataset: { testid: "editor-grid-toggle" },
+        on: { click: () => editorState.set({ showGrid: !editorState.get().showGrid }) },
+      }),
       el("button", {
         class: "oprn-tool-button map-save-button",
         children: [makeSvgIcon("save")],
