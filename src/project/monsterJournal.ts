@@ -11,7 +11,7 @@ export type MonsterCampaignDefinition = {
   speciesNotes: Record<string, string>;
   badges: { id: string; name: string; switchId: string; cityMapId: string; iconResourceId?: string }[];
   locations: { mapId: string; name: string; x: number; y: number; kind: 'town' | 'route' | 'dungeon' | 'league' }[];
-  objectives: { id: string; title: string; switchId: string; requiresSwitchId?: string }[];
+  objectives: { id: string; title: string; summary?: string; switchId: string; requiresSwitchId?: string }[];
   obedienceLevelCaps?: import('@/project/types/database').ObedienceLevelCaps;
 };
 
