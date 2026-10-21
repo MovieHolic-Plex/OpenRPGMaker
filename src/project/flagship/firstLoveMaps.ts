@@ -33,7 +33,7 @@ export type Cell = { x: number; y: number };
 
 export interface FirstLoveAnchors {
   /** 승강장: 내린 자리 · 계단(거리로) · 막차 장면의 지후 자리. */
-  readonly platform: { readonly arrive: Cell; readonly exit: Cell; readonly jihu: Cell; readonly heroMeet: Cell };
+  readonly platform: { readonly arrive: Cell; readonly exit: Cell; readonly exitOut: Cell; readonly jihu: Cell; readonly heroMeet: Cell };
   /** 거리: 회사 문 · 편의점 문 · 지하철 입구, 각 문 앞에서 다시 나오는 칸. */
   readonly street: {
     readonly officeDoor: Cell; readonly officeOut: Cell;
@@ -43,19 +43,25 @@ export interface FirstLoveAnchors {
   };
   /** 사무층: 엘리베이터(거리로) · 계단(옥상으로) · 서하 자리 · 지후 자리 · 팀장 자리 · 탕비실 · 회의실. */
   readonly office: {
-    readonly elevator: Cell; readonly elevatorOut: Cell;
+    readonly elevator: Cell; readonly elevatorOut: Cell; readonly npcExit: Cell;
     readonly stairs: Cell; readonly stairsOut: Cell;
+    /** 엘리베이터 앞 첫 만남 자리(팀장·지후) — 트인 바닥. */
+    readonly meetLead: Cell; readonly meetJihu: Cell;
     readonly heroDesk: Cell; readonly jihuDesk: Cell; readonly leadDesk: Cell;
     readonly pantry: Cell; readonly meeting: Cell; readonly meetingSeat: Cell; readonly whiteboard: Cell;
+    /** 회의 탁자 둘레의 빈 바닥 다섯 칸(서하·고객·팀장·지후·민호). */
+    readonly meetSeats: readonly Cell[];
   };
-  readonly rooftop: { readonly door: Cell; readonly doorOut: Cell; readonly rail: Cell; readonly bench: Cell };
-  readonly konbini: { readonly door: Cell; readonly doorOut: Cell; readonly cooler: Cell; readonly counter: Cell };
+  readonly rooftop: { readonly door: Cell; readonly doorOut: Cell; readonly rail: Cell; readonly railHero: Cell; readonly bench: Cell };
+  readonly konbini: { readonly door: Cell; readonly doorOut: Cell; readonly npcExit: Cell; readonly cooler: Cell; readonly counter: Cell };
   readonly broadcast: { readonly start: Cell; readonly mailbox: Cell; readonly booth: Cell };
 }
 
 type RoomSpec = {
   name: string; plan: string[]; floor: string; wall: string; zones?: unknown[]; objects?: unknown[]; tables?: unknown[]; goods?: unknown[];
   rooms?: unknown[]; narrow?: unknown[]; exitWidth?: number; start: [number, number];
+  /** 옥상: 난간 너머로 보이는 도시(칸 번호 줄 — 쉼표로 이은 숫자 줄들). */
+  view?: { w: number; h: number; lower: string[]; upper: string[]; upper2: string[] };
 };
 const ROOMS = roomsJson as unknown as Record<"office" | "konbini" | "rooftop" | "platform" | "broadcast", RoomSpec>;
 
@@ -66,15 +72,6 @@ function buildRoom(exec: ExecTool, mapId: string, name: string, spec: RoomSpec):
     ...(spec.exitWidth ? { exitWidth: spec.exitWidth } : {}),
     start: [{ x: spec.start[0], y: spec.start[1] }], links: [], replace: true,
   });
-}
-
-/** 맨 아래 줄 틈(출입구) 중 가운데 칸. */
-function bottomGap(map: GameMap, project: Project): Cell {
-  const y = map.height - 1;
-  const xs: number[] = [];
-  for (let x = 0; x < map.width; x++) if (isPassable(project, map, x, y)) xs.push(x);
-  if (xs.length === 0) throw new Error(`[first-love] ${map.id}: 아래 출입구 틈이 없다`);
-  return { x: xs[Math.floor((xs.length - 1) / 2)]!, y };
 }
 
 /** origin 에서 가장 가까운, 걸어 들어갈 수 있는 빈 칸(이벤트 없는 칸). */
@@ -115,46 +112,28 @@ function light(id: string, at: Cell, radius: number, color: string, intensity = 
 }
 
 /**
- * 옥상 좌상단 계단탑 윗면 — 평면의 '#' 덩이는 빌더가 검은 허공으로 두므로, 그 윗면(x0..5, y0..2)을
- * 옥상 바닥과 같은 콘크리트 판 + 난간 모서리 띠로 덮는다. 전부 막힌 칸(문 위 벽·좌우 가장자리)에 둘러싸여 못 걷는 칸이라
- * 통행·앵커에는 영향이 없다(데모 전용 후처리).
+ * 옥상 난간 너머의 도시 — 맵 위쪽 줄(0..view.h-1)을 jp_city 거리 구성기가 짠 운하 거리(건물·보도·옹벽·운하·다리)의 한 토막으로 덮는다.
+ * 새 그림이 아니라 같은 칩셋의 기존 칸 번호이고, 칸마다 걷기 막힘은 난간 줄(y = view.h)이 막는다(데모 전용 후처리).
  */
-/** 옥상 한 판 = 이웃 건물 낮은 옥상(둘레) + 우리 옥상 블록(20×14). 블록의 왼쪽 위 좌표. */
-const ROOF_OX = 6, ROOF_OY = 4;
-// 사무층(34x20)·편의점·방송실(30x17)은 원래 방을 더 큰 평면 가운데에 놓았다 — 카메라가 맵 밖(검정)을 비추지 않게.
-const OFC_OX = 5;
-const KB_OX = 8, KB_OY = 2, KB_W = 14, KB_H = 12;
-const BC_OX = 8, BC_OY = 2;
-function paintStairwellRoof(map: GameMap): void {
+function paintRoofView(map: GameMap, view: NonNullable<RoomSpec["view"]>): void {
   const W = map.width;
-  const CAP_TOP = 9347, EDGE_LEFT = 9338;
-  for (let y = 0; y <= 2; y++) {
-    for (let x = 0; x <= 5; x++) {
-      const i = (y + ROOF_OY) * W + (x + ROOF_OX);
-      if (y === 0) map.lowerTiles[i] = CAP_TOP;
-      else if (x === 0) map.lowerTiles[i] = EDGE_LEFT;
-      else map.lowerTiles[i] = map.lowerTiles[(y + 4 + ROOF_OY) * W + (x + 7 + ROOF_OX)]!;
-    }
-  }
-}
-
-/**
- * 역 운임표(st-fare-map, 3×2) — 글자 없이 흰 판에 점만 있어 「0000000」 플레이스홀더처럼 읽힌다.
- * 승강장 프리셋이 깔아 주는 두 장을 걷어 내고, 승강장 쪽은 벽시계 한 칸으로 바꾼다(데모 전용 후처리).
- */
-function removeFareMapBoards(map: GameMap): void {
-  const W = map.width, H = map.height;
-  const CLOCK = 9409;
-  for (let y = 0; y < H; y++) {
-    for (let x = 0; x < W; x++) {
+  const parse = (rows: string[]): number[][] => rows.map((r) => r.split(",").map(Number));
+  const lower = parse(view.lower), upper = parse(view.upper), upper2 = parse(view.upper2);
+  for (let y = 0; y < view.h; y++) {
+    for (let x = 0; x < view.w && x < W; x++) {
       const i = y * W + x;
-      const id = map.upperTiles[i]!;
-      if (id < 11457 || id > 11462) continue;
-      map.upperTiles[i] = id === 11458 && y >= H / 2 ? CLOCK : -1;
+      map.lowerTiles[i] = lower[y]![x]!;
+      map.upperTiles[i] = upper[y]![x]!;
+      if (map.lowerOverlayTiles) map.lowerOverlayTiles[i] = -1;
+      if (map.upperOverlayTiles) map.upperOverlayTiles[i] = upper2[y]![x]!;
+      if (map.shadowBits) map.shadowBits[i] = 0;
     }
   }
 }
 
+/** 옥상 한 판 = 위 18줄 도시 풍경 + 아래 옥상(24×12). 난간 줄의 y. */
+const ROOF_FENCE_Y = 18;
+// 사무층(34x20)·편의점·방송실(30x17)은 원래 방을 더 큰 평면 가운데에 놓았다 — 카메라가 맵 밖(검정)을 비추지 않게.
 export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveAnchors {
   project.tilesets[JP_CITY_ID] = createJpCityTileset();
 
@@ -162,7 +141,9 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   buildRoom(exec, FL_MAP.office, "스튜디오 늘봄 · 7층 사무실", ROOMS.office);
   buildRoom(exec, FL_MAP.konbini, "회사 앞 편의점", ROOMS.konbini);
   buildRoom(exec, FL_MAP.rooftop, "늘봄 빌딩 옥상", ROOMS.rooftop);
-  buildRoom(exec, FL_MAP.platformAm, "한결역 승강장 · 아침", ROOMS.platform);
+  // 도구가 맵 이름에서 「승강장」 같은 낱말을 보면 평면을 버리고 무작위 씨앗의 역 구성으로 바꾼다 — 짓는 동안은 낱말 없는 이름으로 짓고 뒤에 이름을 붙인다.
+  buildRoom(exec, FL_MAP.platformAm, "한결 플랫폼", ROOMS.platform);
+  project.maps[FL_MAP.platformAm]!.name = "한결역 승강장 · 아침";
   buildRoom(exec, FL_MAP.broadcast, "성하고 방송실 · 10년 전", ROOMS.broadcast);
 
   // ── 거리 (modern_city 구성기) ──
@@ -195,48 +176,61 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   const konbiniRoom = project.maps[FL_MAP.konbini]!;
   const roofRoom = project.maps[FL_MAP.rooftop]!;
   const platform = project.maps[FL_MAP.platformAm]!;
-  paintStairwellRoof(roofRoom);
-  removeFareMapBoards(platform);
+  if (ROOMS.rooftop.view) paintRoofView(roofRoom, ROOMS.rooftop.view);
   const broadcast = project.maps[FL_MAP.broadcast]!;
 
   // 사무층 좌표(예제 office-floor 평면 기준): 위 큰 방 = 자리, 아래 왼쪽 = 회의실, 가운데 = 탕비실, 계단실, 엘리베이터 홀.
   const anchors: FirstLoveAnchors = {
     platform: {
-      arrive: nearestFree(project, platform, { x: 8, y: 7 }),
-      exit: nearestFree(project, platform, bottomGap(platform, project), 2),
-      jihu: nearestFree(project, platform, { x: 12, y: 6 }),
-      heroMeet: nearestFree(project, platform, { x: 10, y: 6 }),
+      // 내린 자리: 아침 승강장 가운데쯤 — 한 화면에 노란 점자 끝선과 선로가 같이 보인다(끝선은 아래 두 줄).
+      arrive: nearestFree(project, platform, { x: 8, y: 8 }),
+      // 나가는 계단은 승강장 동쪽 끝 북쪽 벽에 박혀 있다(나무 계단 2칸 폭 그림, 그림 칸을 밟을 수 있다) — 왼 칸이 계단 칸, 바로 아래가 나오는 칸.
+      exit: { x: 28, y: 3 }, exitOut: { x: 28, y: 4 },
+      jihu: nearestFree(project, platform, { x: 12, y: 8 }),
+      heroMeet: nearestFree(project, platform, { x: 10, y: 8 }),
     },
     street: {
-      // 문 칸 자체는 막혀 있다(건물 정면) — 밟는 발판은 문 바로 아래 접근칸, 나오는 칸은 그 한 칸 아래.
-      officeDoor: office.access[0]!, officeOut: below(office.access[0]!),
-      konbiniDoor: conv.access[1] ?? conv.access[0]!, konbiniOut: below(conv.access[1] ?? conv.access[0]!),
-      subway: subwayStep, subwayOut: below(subwayStep),
+      // 문 칸 = 건물 정면의 문 그림 칸(막혀 있다 — 부딪히면 이동이 발동한다), 나오는 칸 = 그 바로 아래(바깥) 접근칸.
+      officeDoor: office.doors[0]!, officeOut: office.access[0]!,
+      konbiniDoor: conv.doors[1] ?? conv.doors[0]!, konbiniOut: conv.access[1] ?? conv.access[0]!,
+      subway: { x: subwayStep.x, y: subwayStep.y - 1 }, subwayOut: subwayStep,
       arrive: below(subwayStep),
     },
     office: {
-      elevator: { x: 18 + OFC_OX, y: 14 }, elevatorOut: nearestFree(project, officeRoom, { x: 19 + OFC_OX, y: 15 }),
-      stairs: { x: 14 + OFC_OX, y: 15 }, stairsOut: nearestFree(project, officeRoom, { x: 14 + OFC_OX, y: 13 }),
-      heroDesk: nearestFree(project, officeRoom, { x: 9 + OFC_OX, y: 8 }),
-      jihuDesk: nearestFree(project, officeRoom, { x: 10 + OFC_OX, y: 4 }),
-      leadDesk: nearestFree(project, officeRoom, { x: 20 + OFC_OX, y: 8 }),
-      pantry: nearestFree(project, officeRoom, { x: 10 + OFC_OX, y: 15 }),
-      meeting: nearestFree(project, officeRoom, { x: 5 + OFC_OX, y: 15 }),
-      meetingSeat: nearestFree(project, officeRoom, { x: 3 + OFC_OX, y: 15 }),
-      whiteboard: nearestFree(project, officeRoom, { x: 21 + OFC_OX, y: 9 }),
+      // 엘리베이터·계단 그림은 북쪽 벽면에 박혀 있고 그림 칸 자체를 밟을 수 있다 — 문 칸 = 그림 칸, 나오는 칸 = 바로 아래(안쪽) 칸.
+      elevator: { x: 16, y: 3 }, elevatorOut: { x: 16, y: 4 }, npcExit: { x: 21, y: 3 },
+      stairs: { x: 10, y: 3 }, stairsOut: { x: 10, y: 4 },
+      // 엘리베이터 앞 첫 만남: 서하는 elevatorOut, 팀장은 두 칸 아래(트인 사무실 쪽), 지후는 그 옆 — 전부 석재 로비 바닥 위, 벽·엘리베이터 그림에 안 가린다.
+      meetLead: { x: 16, y: 6 }, meetJihu: { x: 17, y: 6 },
+      // 한 팀 책상 무리(3열 6자리) 옆에 서하·지후, 팀장 책상은 그 동쪽.
+      heroDesk: nearestFree(project, officeRoom, { x: 13, y: 9 }),
+      jihuDesk: nearestFree(project, officeRoom, { x: 17, y: 9 }),
+      leadDesk: nearestFree(project, officeRoom, { x: 20, y: 10 }),
+      pantry: nearestFree(project, officeRoom, { x: 6, y: 4 }),
+      // 회의실: 유리문(10,12) 바로 안쪽이 meeting, 탁자(4×2) 둘레의 빈 바닥 다섯 칸이 meetSeats(의자·탁자 위가 아니다).
+      meeting: nearestFree(project, officeRoom, { x: 10, y: 14 }),
+      meetingSeat: { x: 8, y: 18 },
+      meetSeats: [{ x: 8, y: 18 }, { x: 8, y: 17 }, { x: 3, y: 17 }, { x: 3, y: 18 }, { x: 7, y: 16 }],
+      whiteboard: nearestFree(project, officeRoom, { x: 23, y: 10 }),
     },
     rooftop: {
-      door: nearestFree(project, roofRoom, { x: 3 + ROOF_OX, y: 6 + ROOF_OY }), doorOut: nearestFree(project, roofRoom, { x: 3 + ROOF_OX, y: 7 + ROOF_OY }),
-      rail: nearestFree(project, roofRoom, { x: 10 + ROOF_OX, y: 4 + ROOF_OY }), bench: nearestFree(project, roofRoom, { x: 6 + ROOF_OX, y: 10 + ROOF_OY }),
+      // 탑옥(계단탑) 철문 그림은 북쪽 벽면에 박혀 있다(두 칸 높이, 막힘 — 부딪히면 이동) — door = 문 그림 맨 아랫칸, doorOut = 그 바로 아래(안쪽) 바닥 칸.
+      door: { x: 3, y: ROOF_FENCE_Y + 3 }, doorOut: nearestFree(project, roofRoom, { x: 3, y: ROOF_FENCE_Y + 4 }),
+      // 난간(철망 펜스) 바로 아래 줄 가운데 — 북쪽을 보고 선다. 옆 칸은 서하 자리.
+      rail: nearestFree(project, roofRoom, { x: 14, y: ROOF_FENCE_Y + 1 }), railHero: nearestFree(project, roofRoom, { x: 13, y: ROOF_FENCE_Y + 1 }),
+      bench: nearestFree(project, roofRoom, { x: 11, y: ROOF_FENCE_Y + 8 }),
     },
     konbini: {
-      door: { x: 6 + KB_OX, y: 11 + KB_OY }, doorOut: nearestFree(project, konbiniRoom, { x: 6 + KB_OX, y: 9 + KB_OY }),
-      cooler: nearestFree(project, konbiniRoom, { x: 3 + KB_OX, y: 4 + KB_OY }), counter: nearestFree(project, konbiniRoom, { x: 9 + KB_OX, y: 8 + KB_OY }),
+      // 자동문 그림 두 칸(12,14)(13,14)이 남쪽 벽 틈에 박혀 있고 밟을 수 있다 — 왼 칸이 문 칸, 오른 칸이 점원·손님이 사라지는 문 칸, 나오는 칸 = 바로 위(안쪽) 칸.
+      door: { x: 12, y: 14 }, doorOut: { x: 12, y: 13 }, npcExit: { x: 13, y: 14 },
+      // 음료 쿨러(북쪽 벽, 두 줄 높이) 바로 앞 통로 칸 — 양옆이 비어 있다. 계산대는 점원 쪽(계산대 줄 뒤).
+      cooler: nearestFree(project, konbiniRoom, { x: 7, y: 7 }), counter: nearestFree(project, konbiniRoom, { x: 17, y: 8 }),
     },
     broadcast: {
-      start: nearestFree(project, broadcast, { x: 6 + BC_OX, y: 11 + BC_OY }),
-      mailbox: nearestFree(project, broadcast, { x: 7 + BC_OX, y: 10 + BC_OY }),
-      booth: nearestFree(project, broadcast, { x: 6 + BC_OX, y: 6 + BC_OY }),
+      // 방송실(왼쪽 위, 흡음벽) 문(11,9)에서 복도로 나오는 세로 한 줄(x=11)이 비어 있다 — 부스 칸에서 문을 지나 복도 아래까지 곧장 걸어 내려온다.
+      start: nearestFree(project, broadcast, { x: 16, y: 13 }),
+      mailbox: nearestFree(project, broadcast, { x: 13, y: 13 }),
+      booth: nearestFree(project, broadcast, { x: 11, y: 5 }),
     },
   };
 
@@ -269,27 +263,24 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
     ambient: 0.48, color: "#121a36",
     // 승강장에는 가로등이 없다 — 실제로 빛나는 것(발차 LED 판·자판기·매표기·벽시계·역명 간판)만 켠다.
     sources: [
-      light("fl_led_a", { x: 7, y: 3 }, 4, "#bfe0ff", 0.8), light("fl_led_b", { x: 26, y: 3 }, 4, "#bfe0ff", 0.8),
-      light("fl_led_c", { x: 2, y: 12 }, 4, "#bfe0ff", 0.8), light("fl_led_d", { x: 25, y: 12 }, 4, "#bfe0ff", 0.8),
-      light("fl_vend_a", { x: 12, y: 4 }, 3, "#d9f4ff", 0.85), light("fl_vend_b", { x: 24, y: 4 }, 3, "#d9f4ff", 0.85),
-      light("fl_ticket_a", { x: 1, y: 4 }, 3, "#c8ffe0", 0.7), light("fl_ticket_b", { x: 5, y: 4 }, 3, "#c8ffe0", 0.7),
-      light("fl_sign_a", { x: 8, y: 14 }, 4, "#fff0c8", 0.8), light("fl_sign_b", { x: 24, y: 14 }, 4, "#fff0c8", 0.8),
-      light("fl_plat_a", { x: 4, y: 12 }, 4, "#e8f0ff", 0.6), light("fl_plat_b", { x: 13, y: 12 }, 4, "#e8f0ff", 0.6), light("fl_plat_c", { x: 29, y: 12 }, 4, "#e8f0ff", 0.6),
+      light("fl_led_a", { x: 6, y: 3 }, 4, "#bfe0ff", 0.8), light("fl_led_b", { x: 20, y: 3 }, 4, "#bfe0ff", 0.8),
+      light("fl_vend_a", { x: 3, y: 4 }, 3, "#d9f4ff", 0.85), light("fl_vend_b", { x: 4, y: 4 }, 3, "#d9f4ff", 0.85),
+      light("fl_kiosk", { x: 16, y: 4 }, 4, "#fff0c8", 0.8),
+      light("fl_sign_a", { x: 10, y: 8 }, 4, "#fff0c8", 0.8), light("fl_sign_b", { x: 24, y: 8 }, 4, "#fff0c8", 0.8),
+      light("fl_plat_a", { x: 6, y: 8 }, 5, "#e8f0ff", 0.6), light("fl_plat_b", { x: 16, y: 8 }, 5, "#e8f0ff", 0.6), light("fl_plat_c", { x: 26, y: 8 }, 5, "#e8f0ff", 0.6),
     ],
   };
-  // 편의점은 밤에도 형광등이 켜진 밝은 가게 — 거리의 어두운 조명을 물려받지 않게 따로 건다.
-  {
-    const w = KB_W, h = KB_H;
-    konbiniRoom.defaultLighting = {
-      ambient: 0.04, color: "#f0f6ff",
-      sources: [
-        light("fl_kb_a", { x: KB_OX + Math.round(w * 0.25), y: KB_OY + Math.round(h * 0.3) }, 6, "#f4fbff", 0.7),
-        light("fl_kb_b", { x: KB_OX + Math.round(w * 0.7), y: KB_OY + Math.round(h * 0.3) }, 6, "#f4fbff", 0.7),
-        light("fl_kb_c", { x: KB_OX + Math.round(w * 0.3), y: KB_OY + Math.round(h * 0.75) }, 6, "#f4fbff", 0.7),
-        light("fl_kb_d", { x: KB_OX + Math.round(w * 0.7), y: KB_OY + Math.round(h * 0.75) }, 6, "#f4fbff", 0.7),
-      ],
-    };
-  }
+  // 편의점은 밤에만 들른다 — 바깥 광장은 어두운 밤, 가게 안은 형광등이 켜진 밝은 바닥. 거리의 어두운 조명을 물려받지 않게 따로 건다.
+  konbiniRoom.defaultLighting = {
+    ambient: 0.5, color: "#0f1a3c",
+    sources: [
+      light("fl_kb_a", { x: 8, y: 7 }, 7, "#f4fbff", 1), light("fl_kb_b", { x: 16, y: 7 }, 7, "#f4fbff", 1),
+      light("fl_kb_c", { x: 8, y: 11 }, 7, "#f4fbff", 1), light("fl_kb_d", { x: 16, y: 11 }, 7, "#f4fbff", 1),
+      light("fl_kb_door", { x: 12, y: 13 }, 5, "#f4fbff", 0.9),
+      // 문 앞 보도에 새어 나오는 가게 불빛(희미하게).
+      light("fl_kb_glow", { x: 12, y: 16 }, 4, "#dfeeff", 0.45),
+    ],
+  };
   roofRoom.defaultLighting = { ambient: 0.06, color: "#ffd9a8", sources: [] };
   roofRoom.atmosphereEffects = normalizeAtmosphereEffects([{ kind: "sunrays", amount: 0.5, speed: 0.4, size: 1, opacity: 0.5 }]);
 
