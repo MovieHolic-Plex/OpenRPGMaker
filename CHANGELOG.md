@@ -5,6 +5,14 @@
 
 <!-- releases -->
 
+## 0.301.0 — 2026-10-21
+
+### 기능
+
+- **modern-city** — redraw 15 interior objects (m142-h1) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3171) (`de37eb1`)
+- **modern-city** — redraw 17 interior objects (m142-b5) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3170) (`b327231`)
+- **modern-city** — redraw 2 interior objects (m142-b6) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3168) (`0d4c8a8`)
+
 ## 0.300.0 — 2026-10-21
 
 ### 기능
