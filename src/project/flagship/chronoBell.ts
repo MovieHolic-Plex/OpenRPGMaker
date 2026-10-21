@@ -20,7 +20,8 @@ import { buildJrpgChapter } from "@/editor/tools/jrpgChapterTools";
 import { pickSpot, placeRoamer } from "@/editor/tools/jrpgVolumeTools";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import { buildFallenStarOpening, FALLEN_STAR_TITLE_BACKGROUND } from "./fallenStarOpening";
-import { clearOrphanShadows, clearUpperByLabel, dressVaultRock, padMapCentered, varyVaultFloor, rimPit, scatterVaultFloorPatches } from "./fallenStarMapPolish";
+import { clearOrphanShadows, rimPit } from "./fallenStarMapPolish";
+import { FS_VALEN_START, FS_VAULT_LENS, rebuildFallenRooms } from "./fallenStarRooms";
 import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./fallenStarStory";
 import type { FlagshipDemoBuildResult } from "./types";
 
@@ -322,7 +323,7 @@ function polishLines(observatory: GameMap, forest: GameMap, vault: GameMap): voi
   const hints = [
     "동문 밖이 숲이다. 숲에 들면 숲지기 브람부터 찾거라.",
     "브람이 말한 북쪽 끝 공터로 가 보거라.",
-    "그 별 무늬 열쇠, 바닥 뚜껑문 홈에 맞을 게다. 조심해 내려가거라.",
+    "그 별 무늬 열쇠, 서고 바닥 봉인석 사이 돌뚜껑 홈에 맞을 게다. 조심해 내려가거라.",
   ];
   let fork = progressPage.commands.find((c) => c.kind === "fork") as ForkCommand | undefined;
   for (const hint of hints) {
@@ -440,9 +441,6 @@ function applySpeakerFaces(project: Project, faces: Readonly<Record<string, stri
 
 // ── 그림 ────────────────────────────────────────────────────────────────
 
-/** 푸른 별빛 결정 자리(금고 안 통로 옆 빈 바닥) — fallen-audit 시나리오 save-crystal 비트와 같이 바꾼다. */
-const FS_CRYSTAL = { x: 34, y: 20 };
-
 function setEventChip(map: GameMap | undefined, eventId: string, texture: string, characterIndex: number): void {
   const event = map?.events.find((e) => e.id === eventId);
   if (!event) return;
@@ -543,7 +541,7 @@ export const SW_VALEN_ARRIVED = "sw_fs_valen_arrived";
  * 바꿔 세운다 — 보스 이벤트의 칸이 고정이라 불러오기·재도전·지도 재진입에서도 자리가 어긋나지 않는다.
  * 남쪽 통로 한 줄(보스 아래 5칸)에 밟는 칸을 깔고, 스위치가 켜지면 그 칸들은 사라진다.
  */
-function valenWalksIn(project: Project, vault: GameMap, bossId: string): void {
+function valenWalksIn(project: Project, vault: GameMap, bossId: string, from?: { x: number; y: number }): void {
   const boss = vault.events.find((e) => e.id === bossId);
   if (!boss?.pages?.length) return;
   if (!project.switches.some((s) => s.id === SW_VALEN_ARRIVED)) project.switches.push({ id: SW_VALEN_ARRIVED, name: "발렌이 등불 앞에 섰다" });
@@ -558,15 +556,21 @@ function valenWalksIn(project: Project, vault: GameMap, bossId: string): void {
   // 북쪽 통로에서 출발: 보스 위로 6~8칸, 좌우 2칸 안의 걸을 수 있는 칸 중 보스까지 길이 가장 긴(가장 깊은) 곳.
   let start: { x: number; y: number } | undefined;
   let path: Step[] | null = null;
+  // 출발 칸을 정해 주면(옛 별지기의 방: 성소 북서 돌 계단 발치) 그 칸에서 보스까지 걷는다.
+  if (from && isPassable(project, vault, from.x, from.y)) {
+    path = walkPath(project, vault, from, { x: boss.x, y: boss.y }, bossId);
+    if (path) start = { ...from };
+  }
   for (let dy = 8; dy >= 6 && !path; dy -= 1) {
     for (const dx of [0, 1, -1, 2, -2]) {
       const cell = { x: boss.x + dx, y: boss.y - dy };
-      if (cell.y < 0 || !isPassable(project, vault, cell.x, cell.y)) continue;
+      // 머리 칸(바로 위)도 걸을 수 있어야 한다 — 쇠창살 문 바로 아래 칸에 세우면 창살 그림(위층)이 머리를 덮었다(VQA r2).
+      if (cell.y < 1 || !isPassable(project, vault, cell.x, cell.y) || !isPassable(project, vault, cell.x, cell.y - 1)) continue;
       const found = walkPath(project, vault, cell, { x: boss.x, y: boss.y }, bossId);
       if (found) { start = cell; path = found; break; }
     }
   }
-  if (!start || !path) throw new Error("[fallen-star] 발렌이 걸어 들어올 북쪽 통로를 찾지 못했다");
+  if (!start || !path) throw new Error("[fallen-star] 발렌이 걸어 들어올 길을 찾지 못했다");
   const walkerId = `ev_${FS_PREFIX}_valen_walk_in`;
   vault.events = vault.events.filter((e) => e.id !== walkerId && !String(e.id).startsWith(`ev_${FS_PREFIX}_valen_cue_`));
   vault.events.push({
@@ -750,28 +754,13 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   for (const event of M(ids.vault).events) if (event.name === "기억의 세이브 결정") {
     event.name = "푸른 별빛 결정";
     for (const page of event.pages ?? []) page.name = "푸른 별빛 결정";
-    // 결정이 파티 행렬(x32 열) 바로 북쪽에 서서 플레이어 머리 뒤 보라 투구처럼 읽혔다(가혹 검수 r7) —
-    // 통로 옆 빈 바닥 구석으로 옮기고, 흰 룬 판 위에 얹어 「받침 위 보석」으로 읽히게 한다.
-    event.x = FS_CRYSTAL.x; event.y = FS_CRYSTAL.y;
-    M(ids.vault).events.push({
-      id: `ev_${FS_PREFIX}_vault_crystal_plate`, name: "룬 판", x: FS_CRYSTAL.x, y: FS_CRYSTAL.y, trigger: { kind: "action" }, commands: [],
-      pages: [{
-        id: `ev_${FS_PREFIX}_vault_crystal_plate_p1`, name: "룬 판", conditions: [],
-        graphic: { sprite: { type: "bundled", id: "tex_easyrpg_charset_object2" }, direction: "down", pattern: charsetFrameIndex({ characterIndex: 3, direction: "down", pattern: 1 }) },
-        trigger: { kind: "action" }, priority: "below", overlapForbidden: false,
-        movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [],
-      }],
-    } as unknown as GameEvent);
   }
   replaceLineAnywhere(M(ids.vault), "푸른 기억의 결정이 은은하게 공명하며 파티 전원의 체력과 마력을 완전히 회복시켰다!", [narrate("푸른 결정에 손을 대자, 지친 몸에 힘이 차올랐다.")]);
   const bossEvent = M(ids.vault).events.find((e) => (e.pages ?? []).some((p) => JSON.stringify(p.commands).includes("battleProcessing")) && e.id.includes("kill"));
   if (bossEvent) {
     setEventChip(M(ids.vault), bossEvent.id, "tex_easyrpg_charset_actor1", 4);
-    // 보스 자리에는 옛 렌즈가 서 있어 발렌이 렌즈 그림 속에 묻혔다(감사 2차) — 렌즈 앞(남쪽) 빈 바닥으로 내려 세운다.
-    const lens = { x: bossEvent.x, y: bossEvent.y };
-    const front = nearFree(project, M(ids.vault), { x: bossEvent.x, y: bossEvent.y + 3 }, 3, bossEvent.id);
-    if (front) { bossEvent.x = front.x; bossEvent.y = front.y; }
-    stageBossVictory(M(ids.vault), lens);
+    // 결전 자리는 별 렌즈 바로 앞(rebuildFallenRooms 가 세운다) — 별빛·연기는 렌즈 칸 기준이다.
+    stageBossVictory(M(ids.vault), FS_VAULT_LENS);
   }
 
   // 떨어진 별을 열면 이리스가 깨어나 동료가 된다. 별빛 열쇠는 알 안에 있다 — 뚜껑이 열린 뒤 이리스가 건넨다.
@@ -796,7 +785,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     say("이리스", "이것도 드릴게요. 배 안에 박혀 있던 거예요."),
     keyGain,
     narrate("「별빛 열쇠」를 얻었다."),
-    say("엘레나", "이 별 무늬… 천문대 바닥 뚜껑문의 홈이랑 똑같아!"),
+    say("엘레나", "이 별 무늬… 천문대 서고 바닥 돌뚜껑의 홈이랑 똑같아!"),
     say("카엘", "천문대로 돌아가자. 심문관이 여길 찾기 전에."),
     { kind: "changeParty", actorId: IRIS_ID, action: "add" } as Command,
     { kind: "setSwitch", switchId: SW_IRIS_JOINED, value: true } as Command,
@@ -965,8 +954,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   const PUZZLE_ROOM = "fs_vault_gate";
   execTool(project, "create_map", { id: PUZZLE_ROOM, name: "천문대 지하 · 네 화로의 방", width: 20, height: 15, tilesetId: "atlas_biome_interior" });
   execTool(project, "author_map_puzzle", { mapId: PUZZLE_ROOM, presetId: "brazier_ignition_order", puzzleId: "fs_braziers", title: "네 화로의 방" });
-  M(PUZZLE_ROOM).atmosphereEffects = M(ids.vault).atmosphereEffects;
-  replaceLineAnywhere(M(PUZZLE_ROOM), "퍼즐 해독 보상! 「태양의 불씨 보관함」과(와) 250G를 획득했다!", [narrate("화로 사이 바닥이 열리고, 「태양의 불씨 보관함」과 250G가 나왔다.")]);
+  replaceLineAnywhere(M(PUZZLE_ROOM), "퍼즐 해독 보상! 「태양의 불씨 보관함」과(와) 250G를 획득했다!", [narrate("철컥— 북쪽 쇠창살이 끌려 올라갔다."), narrate("화로 사이 바닥 홈에서 「태양의 불씨 보관함」과 250G가 나왔다.")]);
   // 석판의 「동쪽 화로」는 동쪽에 화로가 둘(북동·남동)이라 어느 쪽인지 헷갈렸다 — 둘 중 하나임을 밝혀 추론 문제로 남긴다.
   // 가혹 검수 r3: 석판 글이 「석판: 「…」」 한 상자에 몰려 이름표가 없고 길었다 — 이름표 「석판」으로 세 줄에 나눈다.
   // 틀렸을 때도 한 줄로 끝나 무엇을 다시 볼지 몰랐다 — 석판을 떠올리게 하는 둘째 줄을 붙인다.
@@ -985,37 +973,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       }
     }
   }
-  const retarget = (map: GameMap, fromMapId: string, to: { mapId: string; x: number; y: number; direction?: "up" | "down" | "left" | "right" }): GameEvent | undefined => {
-    const event = map.events.find((e) => eventCommandLists(e).some((l) => l.some((c) => c.kind === "transfer" && (c as { mapId?: string }).mapId === fromMapId)));
-    if (!event) return undefined;
-    for (const list of eventCommandLists(event)) for (const cmd of list) {
-      const rec = cmd as unknown as Record<string, unknown>;
-      if (rec.kind === "transfer" && rec.mapId === fromMapId) Object.assign(rec, to);
-    }
-    return event;
-  };
-  const touchTransfer = (map: GameMap, id: string, x: number, y: number, to: { mapId: string; x: number; y: number; direction: "up" | "down" | "left" | "right" }): void => {
-    map.events.push({
-      id, name: "출입구", x, y, trigger: { kind: "playerTouch" }, commands: [],
-      pages: [{
-        id: `${id}_p`, name: "출입구", conditions: [], graphic: { transparent: true }, trigger: { kind: "playerTouch" },
-        priority: "below", overlapForbidden: false, movement: { type: "fixed", speed: 3, frequency: 3 },
-        commands: [{ kind: "transfer", ...to, fade: "black" } as Command],
-      }],
-    } as GameEvent);
-  };
-  const hatch = retarget(M(ids.observatory), M(ids.vault).id, { mapId: PUZZLE_ROOM, x: 10, y: 13, direction: "up" });
-  if (!hatch) throw new Error("[fallen-star] 천문대 뚜껑문을 찾지 못했다");
-  // 장 구성기는 뚜껑문을 벽 밑 찬장 사이에 두어 찬장 문처럼 보였다(감사 3차) — 방 가운데 빈 바닥으로 옮긴다.
-  const hatchOpen = nearFree(project, M(ids.observatory), { x: hatch.x, y: hatch.y + 3 }, 2, hatch.id);
-  if (hatchOpen) { hatch.x = hatchOpen.x; hatch.y = hatchOpen.y; }
-  // 뚜껑문이 보이게 — 투명 출입구 칸에 바닥 뚜껑문 그림을 찍는다.
-  execTool(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:trapdoor", mapId: M(ids.observatory).id, x: hatch.x, y: hatch.y });
-  const hatchFront = pickSpot(project, M(ids.observatory), { x: hatch.x, y: hatch.y }, new Set([`${hatch.x},${hatch.y}`]), 0.01, 1) ?? { x: hatch.x, y: hatch.y + 1 };
-  touchTransfer(M(PUZZLE_ROOM), "ev_fs_vault_gate_down", 10, 14, { mapId: M(ids.observatory).id, x: hatchFront.x, y: hatchFront.y, direction: "down" });
-  const vaultStairs = retarget(M(ids.vault), M(ids.observatory).id, { mapId: PUZZLE_ROOM, x: 10, y: 3, direction: "down" });
-  const vaultEntry = vaultStairs ? { x: vaultStairs.x, y: vaultStairs.y + 2 } : { x: 30, y: 58 };
-  for (const gx of [9, 10]) touchTransfer(M(PUZZLE_ROOM), `ev_fs_vault_gate_up${gx}`, gx, 2, { mapId: M(ids.vault).id, x: vaultEntry.x, y: vaultEntry.y, direction: "up" });
+  // 천문대 세 방(천문대 · 네 화로의 방 · 옛 별지기의 방)을 손 도트 실내로 다시 짓고 이벤트 자리·이동을 맞춘다(fallenStarRooms.ts).
+  rebuildFallenRooms(project, execTool, { hub: ids.hub, observatory: ids.observatory, gate: PUZZLE_ROOM, vault: ids.vault });
 
   // 동문 문지기는 숲으로 나가는 출입구 곁에 세운다.
   const forestGate = M(ids.hub).events.find((e) => JSON.stringify(e).includes(`"mapId":"${M(ids.forest).id}"`));
@@ -1098,75 +1057,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   }
   // 풀숲 가장자리에 풀 둑 덧그림을 얹던 마감은 걷어 냈다 — 흙 입술(진흙 못 가장자리)로 읽혔다(감사 라운드 2).
   // 맵 마감(감사 3차) — 주인 없는 그림자, 화로의 방 긴 화덕 띠.
-  for (const map of [M(ids.hub), M(ids.forest), M(ids.vault)]) clearOrphanShadows(project, map);
-  // 지하 묘소 — 방 사이 균일한 남색 허공을 방 가까이에서 바위 덩어리로 바꿔 화면이 비어 보이지 않게 한다(VQA).
-  dressVaultRock(M(ids.vault), new Set([28462, 28509]), { edge: [28462, 28509], vein: [28462, 28509], mid: [28462, 28509], deep: [28462, 28509] }, 3, 2); // 천장 칸만 — 바닥 값(25276~25288, 통행 가능) 암반을 방 밖에 깔면 천장 띠가 회색 바닥으로 읽힌다.
-  varyVaultFloor(M(ids.vault), new Set([26817, 26818, 26819]), [26815, 26816], [26819, 26819, 26818, 26817], 90);
-  // 세이브 결정의 방(x18~34, y18~28)은 같은 회색 포석이 한 면이라 평평했다 — 가운데 길을 빼고 흙·이끼 얼룩을 흩뿌린다(VQA).
-  scatterVaultFloorPatches(M(ids.vault), { x0: 18, y0: 18, x1: 34, y1: 28 }, new Set([26817, 26818, 26819]), [26809, 26810, 26811], [26815, 26816, 26812], [25, 27]);
-  clearUpperByLabel(project, M(PUZZLE_ROOM), /^긴 화덕/);
-  // 화로의 방(20×15)은 화면보다 작아 바깥이 검은 허공 + 먼지 입자(별밭)로 보였다 — 사방에 바위 둘레를 덧붙이고 들어오는 이동 좌표를 같은 만큼 민다(VQA r4).
-  {
-    const padX = 6, padY = 3;
-    // 이 방은 atlas_biome_interior 라 번들 실내처럼 방 바깥 패딩 전체를 어두운 천장·공허 칸(1번)으로 채운다(갈색 바위는 바닥처럼 읽힘).
-    padMapCentered(M(PUZZLE_ROOM), padX, padY, () => 1);
-    for (const from of [M(ids.observatory), M(ids.vault)]) {
-      for (const event of from.events) for (const list of eventCommandLists(event)) for (const cmd of list) {
-        const rec = cmd as unknown as Record<string, unknown>;
-        if (rec.kind === "transfer" && rec.mapId === PUZZLE_ROOM && typeof rec.x === "number" && typeof rec.y === "number") { rec.x += padX; rec.y += padY; }
-      }
-    }
-  }
-  // 천문대 윗 홀의 나선 계단은 어디로도 이어지지 않는 장식이었다(감사 라운드 2) — 걷어 낸다. 내려가는 길은 바닥 뚜껑문 하나다.
-  {
-    const obs = M(ids.observatory);
-    for (let y = 4; y <= 7; y += 1) for (let x = 8; x <= 9; x += 1) {
-      const i = y * obs.width + x, t = obs.upperTiles[i] ?? -1;
-      if (t >= 4516 && t <= 4523) obs.upperTiles[i] = -1;
-    }
-    // 아래 왼쪽 돌 홀과 오른쪽 방 사이 벽 틈(9,15)은 문틀 없이 뚫려 있었다 — 열린 철문 틀을 세운다(바닥 칸은 그대로 통행).
-    // 쇠창살 문틀: 앵커가 발밑 칸(dy1)이라 (9,14)에 찍으면 아래 줄이 문 칸(9,15) 위에 선다(tryStamp 는 위 칸이 벽이라 거절해 직접 호출).
-        try { execTool(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:iron gate open", mapId: obs.id, x: 9, y: 14 }); } catch { /* 문틀은 장식이라 실패해도 통행은 그대로 */ }
-        // 아래 줄(문틀 옆기둥 6424)은 통행을 막으므로 걷어 낸다 — 위 줄(상인방 6423)만 벽 칸에 남아 문 위를 두른다.
-        { const om = M(ids.observatory); const door = om.upperTiles; const di = 15 * om.width + 9; if (door[di] === 6424) door[di] = -1; }
-  }
-  // 하넬이 서 있는 아래 오른쪽 방은 책장·탁자뿐이라 작은 집처럼 읽혔다(VQA r6 05-hanel-ask) — 천문대답게 별 보는 도구를 놓는다.
-  // 패딩 전 좌표다(방 x10~16·y11~17). 놓일 자리가 막혀 있으면 다음 후보로 간다.
-  {
-    const obs = M(ids.observatory);
-    const kitOf = (n: string): string => `kit:atlas_biome_interior/hand-interior:${n}`;
-    for (const [n, spots] of [
-      ["orrery", [[16, 15], [16, 14], [10, 15]]],
-      ["telescope", [[10, 16], [10, 17], [16, 17], [10, 15]]],
-      ["globe", [[16, 12], [10, 12], [16, 16]]],
-    ] as const) for (const [x, y] of spots) if (tryStamp(project, obs, kitOf(n), x, y)) break;
-  }
-  // 천문대(18×19)도 화면(30×17)보다 좁아 양옆·위아래가 검은 허공으로 40% 가량 비었다 — 화로의 방과 같이 암반 벽 둘레를 덧붙이고
-  // 이 맵으로 들어오는 모든 이동 좌표를 같은 만큼 민다(VQA r5). 위 계단·철문·뚜껑문 좌표 작업은 모두 끝난 뒤여야 한다.
-  {
-    const padX = 6, padY = 3;
-    // 패딩 전체(맵 가장자리까지)를 interior 시트의 어두운 천장·공허 칸(1번)으로 채운다 — 번들 실내는 방 바깥이 모두 어두운 천장이다.
-    // 갈색 암반 벽면 조각을 섞으면 480×270 화면에서 벽 위쪽이 바닥처럼 읽힌다(사용자 지적).
-    padMapCentered(M(ids.observatory), padX, padY, () => 1);
-    for (const from of Object.values(project.maps)) {
-      for (const event of from.events) for (const list of eventCommandLists(event)) for (const cmd of list) {
-        const rec = cmd as unknown as Record<string, unknown>;
-        if (rec.kind === "transfer" && rec.mapId === M(ids.observatory).id && typeof rec.x === "number" && typeof rec.y === "number") { rec.x += padX; rec.y += padY; }
-      }
-    }
-  }
-  // 천장 띠는 어두운 천장(dark) 칸으로 — default(회색 디더)·rock(갈회색 디더) 천장은 1배 화면에서 방 사이 회색 바닥 띠로 읽혔다(사용자 지적).
-  // atlas_biome_interior 천장 칸 2~257 = 32칸(이웃 00~31) × 8 재질(default·rock·dark·wood·leaf·gold·steel·velvet). 같은 이웃 번호의 dark(66~97)로 바꾼다.
-  for (const map of [M(ids.observatory), M(PUZZLE_ROOM)]) {
-    for (const key of ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"] as const) {
-      const layer = (map as unknown as Record<string, number[] | undefined>)[key];
-      if (!layer) continue;
-      for (let i = 0; i < layer.length; i += 1) {
-        const t = layer[i] ?? -1;
-        if (t >= 2 && t <= 257) layer[i] = 66 + ((t - 2) % 32);
-      }
-    }
-  }
+  for (const map of [M(ids.hub), M(ids.forest)]) clearOrphanShadows(project, map);
   // 모든 이동은 맞은편 문 바로 앞 칸에 내리고, 문을 등진 방향(direction)을 명시한다(VQA r12).
   // 패딩이 끝난 최종 좌표 기준이라 여기서 한 번에 맞춘다.
   {
@@ -1186,15 +1077,11 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       const d = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[front];
       for (const { rec } of transfersTo(from, to.id)) { rec.x = door.x + d[0]; rec.y = door.y + d[1]; rec.direction = dir; }
     };
-    const hub = M(ids.hub), obs = M(ids.observatory), forest = M(ids.forest), gate = M(PUZZLE_ROOM), vault = M(ids.vault);
+    const hub = M(ids.hub), obs = M(ids.observatory), forest = M(ids.forest);
     land(hub, obs, "up", "up");
     land(obs, hub, "down", "down");
     land(hub, forest, "up", "up");
     land(forest, hub, "left", "left");
-    land(obs, gate, "up", "up");
-    land(gate, obs, "down", "down");
-    land(gate, vault, "down", "down");
-    land(vault, gate, "down", "down", "last");
 
     // 보이지 않는 터치 칸이던 두 출구에 문 그림을 세운다(VQA r12). 터치 칸과 도착 칸은 비워 둔다(발자국이 겹쳐도 통행 칸은 그림에 안 막힌다).
     const stampKit = (map: GameMap, kitId: string, x: number, y: number): void => {
@@ -1239,77 +1126,6 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       if (tryStamp(project, M(ids.forest), `kit:beodeul_city/bd-pick-deep-forest-path-${kits[(x * 7 + y * 3) % kits.length]}`, x, y)) placed.push([x, y]);
     }
   }
-  // 화로의 방 밀도(VQA r7 맵) — 같은 모자이크 바닥이 화면 가득이라 가장자리·모서리에 버려진 소품을 흩는다. 가운데 세 열(15~17)·화로·석판·출구 곁은 비운다.
-  {
-    const room = M(PUZZLE_ROOM);
-    const hi = (n: string) => `kit:atlas_biome_interior/hand-interior:${n}`;
-    const props: Array<[string, number, number]> = [
-      ["cobweb", 8, 9], ["cobweb", 23, 9], ["drip puddle", 10, 9], ["candle stubs", 21, 9], ["book pile", 9, 12], ["scroll pile", 22, 12],
-      ["coin pile", 10, 15], ["bone pillar", 8, 15], ["drip puddle", 21, 15], ["candle stubs", 13, 12], ["book pile", 20, 12],
-      ["coin pile", 22, 10], ["scroll pile", 10, 11], ["candle stubs", 13, 16], ["drip puddle", 19, 16], ["bone pillar", 23, 15],
-    ];
-    for (const [name, x, y] of props) {
-      if (x >= 15 && x <= 17) continue;
-      tryStamp(project, room, hi(name), x, y);
-    }
-  }
-
-  // 천문대 입구 홀(VQA r9 맵) — 1층 왼쪽 회색 돌방에 책장·두루마리 선반·카펫·망원경·지구본·화분을 둔다.
-  // 계단 통로(11열)·하넬 방으로 이어지는 14열 가운데 칸·입구 문 곁은 비워 둔다. 발자국이 막히면 tryStamp 가 알아서 건너뛴다.
-  {
-    const hall = M(ids.observatory);
-    const hi = (n: string) => `kit:atlas_biome_interior/hand-interior:${n}`;
-    const props: Array<[string, number, number]> = [
-      ["bookshelf 2w", 12, 16], ["bookshelf 1w", 12, 16], ["bookshelf 1w", 13, 16], ["potted fern", 9, 16], ["scroll rack", 10, 16], ["round rug", 12, 19],
-      ["telescope", 14, 20], ["globe", 9, 20], ["potted fern", 14, 19], ["map rolls", 9, 19], ["candle", 10, 18],
-    ];
-    for (const [name, x, y] of props) {
-      if (x === 11) continue;
-      tryStamp(project, hall, hi(name), x, y);
-    }
-  }
-
-  // 천문대 큰 방(위층 홀, 패딩 뒤 좌표 x7~22·y6~12) — 작은 삼각대 망원경 둘·바닥에 선 별자리표·마법진만 있어 「싸구려 방」으로 읽혔다
-  // (사용자 머지 차단 지적 2026-10-21). 가운데에 큰 굴절 망원경, 그 위 북벽에 지붕 관측 틈, 벽에 별자리 원판 도표, 옆에 관측 발판·렌즈 작업대를 둔다.
-  // 새 조각(interior-plus observatory)은 object-gate 사람 허용 뒤에만 시트에 구워진다 — 굽기 전에는 킷이 없어 이 블록은 아무것도 바꾸지 않는다.
-  {
-    const obs = M(ids.observatory);
-    const ts = project.tilesets.atlas_biome_interior;
-    const kitName = (n: string): string => `hand-interior:${n}`;
-    const newKits = ["great telescope", "dome slit", "celestial chart", "lens bench", "observing platform"];
-    if (ts && newKits.every((n) => ts.structureKits?.some((k) => k.id === kitName(n)))) {
-      const W = obs.width;
-      const labelOf = (t: number): string => (t >= 0 ? (ts.tileMeta?.[t]?.label ?? "") : "").replace(/\s*\(.*$/u, "");
-      // 홀 안의 옛 소품 중 새 배치와 겹치거나 천문대답지 않은 것만 걷는다(책장·부엉이 횃대·책상·왼쪽 천체 모형은 둔다).
-      const drop = new Set(["창", "별자리표", "망원경", "마법진", "마법서 받침", "두루마리 선반"]);
-      for (const layer of [obs.upperTiles, obs.lowerOverlayTiles, obs.upperOverlayTiles]) {
-        if (!layer) continue;
-        for (let y = 3; y <= 12; y += 1) for (let x = 7; x <= 22; x += 1) {
-          const i = y * W + x, label = labelOf(layer[i] ?? -1);
-          if (drop.has(label) || (label === "천체 모형" && x >= 12)) layer[i] = -1;
-        }
-      }
-      const stamp = (n: string, x: number, y: number): void => {
-        execTool(project, "stamp_object", { objectId: `kit:atlas_biome_interior/${kitName(n)}`, mapId: obs.id, x, y });
-      };
-      stamp("dome slit", 17, 4);            // 벽면 두 줄(갓돌은 문설주 머리에서 끝난다) — 망원경 대물 끝 바로 위
-      stamp("celestial chart", 8, 4);
-      stamp("celestial chart", 20, 4);
-      stamp("great telescope", 14, 6);      // 발밑 14~18 × 10~11(막힘), 위 4줄은 플레이어 위에 그린다
-      stamp("observing platform", 12, 9);   // 발밑 12~13 × 10~11(2×2), 접안경(14,9) 바로 왼쪽
-      stamp("lens bench", 20, 9);           // 발밑 20~22 × 9~10(3×2)
-      // execTool 은 맵 객체를 새로 만든다 — 찍은 뒤에는 늘 M() 으로 다시 잡는다.
-      tryStamp(project, M(ids.observatory), `kit:atlas_biome_interior/${kitName("orrery")}`, 21, 6);
-      tryStamp(project, M(ids.observatory), `kit:atlas_biome_interior/${kitName("globe")}`, 8, 6);
-      // 「망원경」 조사 이벤트는 큰 망원경 접안경 칸(발밑)으로 옮긴다 — 바로 아래 (15,12) 에서 위를 보고 말을 건다.
-      const scope = M(ids.observatory).events.find((e) => e.id === `ev_${FS_PREFIX}_scope`);
-      if (scope) {
-        scope.x = 15; scope.y = 11;
-        for (const page of scope.pages ?? []) page.priority = "same";
-      }
-    }
-  }
-
   // 시작 — 광장, 천문대 문이 보이는 곳.
   const observatoryDoor = M(ids.hub).events.find((e) => JSON.stringify(e).includes(`"mapId":"${M(ids.observatory).id}"`));
   let start = observatoryDoor ? { x: observatoryDoor.x, y: observatoryDoor.y + 3 } : { x: Math.floor(M(ids.hub).width / 2), y: Math.floor(M(ids.hub).height / 2) };
@@ -1367,7 +1183,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   stageTalk(M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_bram`));
   // bossEvent 는 앞에서 잡은 옛 맵 객체일 수 있다(도구를 부를 때마다 맵이 새로 만들어진다) — id 로 다시 찾는다.
   stageTalk(bossEvent ? M(ids.vault).events.find((e) => e.id === bossEvent.id) : undefined);
-  if (bossEvent) valenWalksIn(project, M(ids.vault), bossEvent.id);
+  if (bossEvent) valenWalksIn(project, M(ids.vault), bossEvent.id, FS_VALEN_START);
   applyFallenSoundtrack(project, { hub: M(ids.hub), observatory: M(ids.observatory), forest: M(ids.forest), vault: M(ids.vault) }, bossEvent?.id);
   // 길은 모든 소품·표지를 찍은 뒤에 잰다 — 앞에서 재면 뒤에 선 표지·자리 옮김이 길을 막았다.
   marchOffAfterProclamation(project, M(ids.hub));

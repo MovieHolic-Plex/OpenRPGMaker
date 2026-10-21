@@ -6,21 +6,21 @@ import audit from "./fallen-audit.scenario.mjs";
 const keep = new Set(["title", "boot", "proclamation"]);
 const tp = (id, mapId, x, y) => ({ id, note: id, ops: [{ kind: "teleport", mapId, x, y }, { kind: "hold", dir: null, ms: 1200 }], shot: true });
 const full = [
-  tp("ceil-observatory", "fs_observatory", 17, 17),
-  tp("ceil-vault-gate", "fs_vault_gate", 16, 9),
-  tp("ceil-vault", "fs_vault", 30, 57),
+  tp("ceil-observatory", "fs_observatory", 25, 17),
+  tp("ceil-vault-gate", "fs_vault_gate", 15, 14),
+  tp("ceil-vault", "fs_vault", 15, 23),
 ];
 const spots = [
-  tp("obs-lower", "fs_observatory", 17, 17),
-  tp("obs-upper", "fs_observatory", 15, 9),
-  tp("gate-top", "fs_vault_gate", 16, 8),
-  tp("gate-bottom", "fs_vault_gate", 16, 15),
-  tp("vault-north", "fs_vault", 33, 6),
-  tp("vault-lantern", "fs_vault", 25, 20),
-  tp("vault-west", "fs_vault", 8, 42),
-  tp("vault-hall", "fs_vault", 26, 40),
-  tp("vault-east", "fs_vault", 45, 42),
-  tp("vault-south", "fs_vault", 30, 60),
+  tp("obs-lower", "fs_observatory", 25, 17),
+  tp("obs-upper", "fs_observatory", 15, 8),
+  tp("gate-top", "fs_vault_gate", 15, 4),
+  tp("gate-bottom", "fs_vault_gate", 15, 14),
+  tp("vault-north", "fs_vault", 15, 10),
+  tp("vault-lantern", "fs_vault", 15, 16),
+  tp("vault-west", "fs_vault", 2, 15),
+  tp("vault-hall", "fs_vault", 20, 17),
+  tp("vault-east", "fs_vault", 26, 18),
+  tp("vault-south", "fs_vault", 15, 23),
 ];
 export default { ...audit, id: "fallen-ceil", beats: [
   ...audit.beats.filter((b) => keep.has(b.id)),

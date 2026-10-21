@@ -1,5 +1,5 @@
 // 『폴른 스타』 제1막 통짜 플레이: 타이틀 → 오프닝 건너뛰기 → 포고 → 하넬 의뢰 → 숲(풀숲 조우·브람) →
-// 은빛 관 세 단계(한 번 틀리고 다시) → 이리스 합류 → 천문대 뚜껑문 → 화로 순서(한 번 틀리고 다시) → 지하 → 발렌 결전 → 보고 → 엔딩.
+// 은빛 관 세 단계(한 번 틀리고 다시) → 이리스 합류 → 천문대 서고 계단 → 화로 순서(한 번 틀리고 다시) → 지하 → 발렌 결전 → 보고 → 엔딩.
 // 맵 사이는 실제 출입구를 밟아 넘어간다. 같은 맵 안의 긴 이동만 순간이동으로 줄인다(걸어서 닿는지는 .omo/fs/reach.mts 가 따로 본다).
 // 픽스처: RES_WHICH=fallen res480-fixture.mts. 창 크기 RES_VP(기본 480x270).
 const [vw, vh] = (process.env.RES_VP ?? "480x270").split("x").map(Number);
@@ -25,9 +25,9 @@ const approachUp = (mapId, x, y) => [
   { kind: "evalToFile", fn: `() => { window.__oprnDebug.playerRoute([{ kind: "move", dir: "up" }, { kind: "move", dir: "up" }]); return true; }`, out: "/tmp/fs-audit-approach.json" },
   { kind: "hold", dir: null, ms: 1200 },
 ];
-/** 지하 등불 방: 남쪽 통로로 걸어 들어가면 발렌이 북쪽 통로에서 걸어 내려온다(chronoBell valenWalksIn). */
+/** 지하 렌즈 성소: 홀 북쪽 통로로 걸어 들어가면 발렌이 북서 돌 계단에서 걸어 나온다(chronoBell valenWalksIn). */
 const valenWalksIn = [
-  { kind: "face", dir: "up" }, { kind: "teleport", mapId: "fs_vault", x: 25, y: 31 }, { kind: "hold", dir: null, ms: 500 },
+  { kind: "face", dir: "up" }, { kind: "teleport", mapId: "fs_vault", x: 15, y: 15 }, { kind: "hold", dir: null, ms: 500 },
   { kind: "evalToFile", fn: `() => { window.__oprnDebug.playerRoute([{ kind: "move", dir: "up" }, { kind: "move", dir: "up" }]); return true; }`, out: "/tmp/fs-walkin.json" },
   { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 10000 },
   { kind: "hold", dir: null, ms: 1200 },
@@ -114,15 +114,15 @@ export default {
     ], shot: true },
     { id: "to-observatory", note: "천문대 문을 밟는다", ops: [...stepInto("fs_hub", 26, 21, "up")], shot: true },
     { id: "hanel-ask", note: "하넬의 부탁 → 선택지", ops: [
-      ...approachUp("fs_observatory", 17, 17),
+      ...approachUp("fs_observatory", 24, 15),
       ...talk("up"),
       { kind: "pressUntil", key: "Enter", testid: "runtime-choices", state: "present", maxPresses: 20, timeoutMs: 900 },
     ], shot: true },
     { id: "hanel-accept", note: "수락", ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 400 }], shot: true },
     { id: "hanel-accept-close", note: "", ops: [...closeDialogue(), dumpState("quest")], shot: false },
-    { id: "scope", note: "큰 망원경", ops: [{ kind: "teleport", mapId: "fs_observatory", x: 15, y: 12 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
+    { id: "scope", note: "큰 망원경", ops: [{ kind: "teleport", mapId: "fs_observatory", x: 15, y: 8 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "scope-close", note: "", ops: [...closeDialogue()], shot: false },
-    { id: "out-to-hub", note: "천문대 문 → 광장", ops: [...stepInto("fs_observatory", 11, 20, "down")], shot: true },
+    { id: "out-to-hub", note: "천문대 문 → 광장", ops: [...stepInto("fs_observatory", 15, 17, "down")], shot: true },
     { id: "gate-guard", note: "동문 문지기", ops: [{ kind: "teleport", mapId: "fs_hub", x: 53, y: 21 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "gate-guard-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "to-forest", note: "동문 → 숲", ops: [...stepInto("fs_hub", 54, 22, "right")], shot: true },
@@ -151,22 +151,22 @@ export default {
     { id: "back-to-hub", note: "숲 → 광장", ops: [...stepInto("fs_forest", 15, 38, "down")], shot: true },
     { id: "plaza-after", note: "광장 — 발렌 일행이 떠났는가", ops: [{ kind: "teleport", mapId: "fs_hub", x: 36, y: 27 }, { kind: "hold", dir: null, ms: 1200 }], shot: true },
     { id: "back-to-obs", note: "천문대", ops: [...stepInto("fs_hub", 26, 21, "up")], shot: false },
-    { id: "hanel-hint", note: "하넬 — 다음 갈 곳", ops: [...approachUp("fs_observatory", 17, 17), ...talk("up")], shot: true },
+    { id: "hanel-hint", note: "하넬 — 다음 갈 곳", ops: [...approachUp("fs_observatory", 24, 15), ...talk("up")], shot: true },
     { id: "hanel-hint-close", note: "", ops: [...closeDialogue()], shot: false },
-    { id: "hatch", note: "바닥 뚜껑문 → 화로의 방", ops: [...stepInto("fs_observatory", 19, 20, "up"), ...closeDialogue(10), { kind: "hold", dir: null, ms: 1200 }], shot: true },
-    { id: "tablet", note: "단서 석판", ops: [{ kind: "teleport", mapId: "fs_vault_gate", x: 16, y: 13 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
+    { id: "hatch", note: "서고 계단 → 화로의 방", ops: [...stepInto("fs_observatory", 3, 16, "up"), ...closeDialogue(10), { kind: "hold", dir: null, ms: 1200 }], shot: true },
+    { id: "tablet", note: "단서 석판", ops: [{ kind: "teleport", mapId: "fs_vault_gate", x: 15, y: 10 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "tablet-close", note: "", ops: [...closeDialogue()], shot: false },
-    { id: "brazier-wrong", note: "북동부터 — 틀린다", ops: [{ kind: "teleport", mapId: "fs_vault_gate", x: 19, y: 11 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
+    { id: "brazier-wrong", note: "북동부터 — 틀린다", ops: [{ kind: "teleport", mapId: "fs_vault_gate", x: 19, y: 9 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "brazier-wrong-close", note: "", ops: [...closeDialogue()], shot: false },
-    ...[["se", 19, 15], ["nw", 12, 11], ["ne", 19, 11], ["sw", 12, 15]].map(([name, x, y]) => ({
+    ...[["se", 19, 12], ["nw", 11, 9], ["ne", 19, 9], ["sw", 11, 12]].map(([name, x, y]) => ({
       id: `brazier-${name}`, note: `화로 ${name}`, ops: [{ kind: "teleport", mapId: "fs_vault_gate", x, y }, { kind: "hold", dir: null, ms: 400 }, ...talk("up"), ...closeDialogue()], shot: name === "sw",
     })),
-    { id: "gate-open", note: "창살이 녹은 문", ops: [{ kind: "hold", dir: null, ms: 1500 }, ...closeDialogue(), { kind: "hold", dir: null, ms: 1500 }, ...closeDialogue(),{ kind: "teleport", mapId: "fs_vault_gate", x: 16, y: 8 }, { kind: "hold", dir: null, ms: 800 }], shot: true },
+    { id: "gate-open", note: "쇠창살이 올라간 문", ops: [{ kind: "hold", dir: null, ms: 1500 }, ...closeDialogue(), { kind: "hold", dir: null, ms: 1500 }, ...closeDialogue(),{ kind: "teleport", mapId: "fs_vault_gate", x: 15, y: 4 }, { kind: "hold", dir: null, ms: 800 }], shot: true },
     { id: "to-vault", note: "지하로", ops: [{ kind: "hold", dir: "up", ms: 1200 }, { kind: "hold", dir: null, ms: 1500 }, dumpState("vault")], shot: true },
-    { id: "save-crystal", note: "세이브 결정", ops: [{ kind: "teleport", mapId: "fs_vault", x: 33, y: 20 }, { kind: "hold", dir: null, ms: 400 }, ...talk("right")], shot: true },
+    { id: "save-crystal", note: "세이브 결정", ops: [{ kind: "teleport", mapId: "fs_vault", x: 11, y: 16 }, { kind: "hold", dir: null, ms: 400 }, ...talk("left")], shot: true },
     { id: "save-crystal-close", note: "", ops: [...closeDialogue()], shot: false },
-    { id: "valen-enters", note: "발렌이 북쪽 통로에서 걸어 내려온다", ops: [...closeDialogue(), ...valenWalksIn, ...closeDialogue(10), { kind: "hold", dir: null, ms: 1800 }], shot: true },
-    { id: "valen", note: "발렌", ops: [untilValenArrived, { kind: "hold", dir: null, ms: 800 }, ...closeDialogue(), ...approachUp("fs_vault", 25, 25), ...talk("up")], shot: true },
+    { id: "valen-enters", note: "발렌이 북서 돌 계단에서 걸어 나온다", ops: [...closeDialogue(), ...valenWalksIn, ...closeDialogue(10), { kind: "hold", dir: null, ms: 1800 }], shot: true },
+    { id: "valen", note: "발렌", ops: [untilValenArrived, { kind: "hold", dir: null, ms: 800 }, ...closeDialogue(), ...approachUp("fs_vault", 15, 9), ...talk("up")], shot: true },
     { id: "battle", note: "결전 시작", ops: [
       { kind: "pressUntil", key: "Enter", testid: "battle-scene", state: "present", maxPresses: 20, timeoutMs: 900 },
       { kind: "hold", dir: null, ms: 2500 },
@@ -181,10 +181,10 @@ export default {
     { id: "signal", note: "렌즈 신호", ops: [{ kind: "pressUntilText", key: "Enter", testid: "dialogue-box", text: "답이 왔어요", maxPresses: 20 }], shot: true },
     { id: "signal-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "vault-out", note: "지하 → 화로의 방 → 천문대", ops: [
-      ...stepInto("fs_vault", 30, 57, "up"),
-      ...stepInto("fs_vault_gate", 16, 16, "down"),
+      ...stepInto("fs_vault", 15, 25, "down"),
+      ...stepInto("fs_vault_gate", 26, 4, "up"),
     ], shot: true },
-    { id: "report", note: "하넬에게 보고", ops: [...closeDialogue(), ...approachUp("fs_observatory", 17, 17), ...talk("up")], shot: true },
+    { id: "report", note: "하넬에게 보고", ops: [...closeDialogue(), ...approachUp("fs_observatory", 24, 15), ...talk("up")], shot: true },
     { id: "ending", note: "엔딩까지", ops: [
       { kind: "repeatUntil", testid: "ending-screen", state: "present", maxRounds: 40, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 400 }] },
       { kind: "hold", dir: null, ms: 2500 },

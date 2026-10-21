@@ -35,7 +35,7 @@ const approachUp = (mapId, x, y) => [
 ];
 /** 지하 등불 방: 남쪽 통로로 걸어 들어가면 발렌이 북쪽 통로에서 걸어 내려온다(chronoBell valenWalksIn). */
 const valenWalksIn = [
-  { kind: "face", dir: "up" }, { kind: "teleport", mapId: "fs_vault", x: 25, y: 31 }, { kind: "hold", dir: null, ms: 500 },
+  { kind: "face", dir: "up" }, { kind: "teleport", mapId: "fs_vault", x: 15, y: 15 }, { kind: "hold", dir: null, ms: 500 },
   { kind: "evalToFile", fn: `() => { window.__oprnDebug.playerRoute([{ kind: "move", dir: "up" }, { kind: "move", dir: "up" }]); return true; }`, out: "/tmp/fs-walkin.json" },
   { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 10000 },
   { kind: "hold", dir: null, ms: 1200 },
@@ -75,7 +75,7 @@ const leaveBattle = (name) => [
   { kind: "hold", dir: null, ms: 1200 },
 ];
 const startBoss = [
-  ...approachUp("fs_vault", 25, 25), ...talk("up"),
+  ...approachUp("fs_vault", 15, 9), ...talk("up"),
   { kind: "pressUntil", key: "Enter", testid: "battle-scene", state: "present", maxPresses: 30, timeoutMs: 900 },
   { kind: "hold", dir: null, ms: 2500 },
 ];
@@ -112,7 +112,7 @@ export default {
     { id: "valen-enters-close", note: "", ops: [...closeDialogue(10)], shot: false },
     // 걸어 내려오는 모습을 0.4초 간격으로(채점 규칙: 움직임은 연속 캡처).
     ...[1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({ id: `valen-walk-${n}`, note: n === 1 ? "발렌이 북쪽 통로에서 걸어 내려온다(0.4초 간격)" : "", ops: [{ kind: "hold", dir: null, ms: 400 }], shot: true })),
-    { id: "valen", note: "발렌 앞 — 대열", ops: [untilValenArrived, { kind: "hold", dir: null, ms: 800 }, ...closeDialogue(), ...approachUp("fs_vault", 25, 25), ...talk("up")], shot: true },
+    { id: "valen", note: "발렌 앞 — 대열", ops: [untilValenArrived, { kind: "hold", dir: null, ms: 800 }, ...closeDialogue(), ...approachUp("fs_vault", 15, 9), ...talk("up")], shot: true },
     { id: "lose-start", note: "결전(일부러 체력 1로)", ops: [
       evalOp("weak", `() => { for (const id of window.__oprnDebug.readState().partyActorIds) window.__oprnSetActorVitals(id, 1, 999); return true; }`),
       { kind: "pressUntil", key: "Enter", testid: "battle-scene", state: "present", maxPresses: 30, timeoutMs: 900 },
@@ -126,10 +126,10 @@ export default {
     { id: "signal", note: "렌즈 신호", ops: [{ kind: "pressUntilText", key: "Enter", testid: "dialogue-box", text: "답이 왔어요", maxPresses: 30 }], shot: true },
     { id: "signal-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "vault-out", note: "지하 → 화로의 방 → 천문대", ops: [
-      ...stepInto("fs_vault", 30, 57, "up"),
-      ...stepInto("fs_vault_gate", 16, 16, "down"),
+      ...stepInto("fs_vault", 15, 25, "down"),
+      ...stepInto("fs_vault_gate", 26, 4, "up"),
     ], shot: true },
-    { id: "report", note: "하넬에게 보고", ops: [...closeDialogue(), ...approachUp("fs_observatory", 17, 17), ...talk("up")], shot: true },
+    { id: "report", note: "하넬에게 보고", ops: [...closeDialogue(), ...approachUp("fs_observatory", 24, 15), ...talk("up")], shot: true },
     { id: "ending", note: "엔딩 카드", ops: [
       { kind: "repeatUntil", testid: "ending-screen", state: "present", maxRounds: 40, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 400 }] },
       { kind: "hold", dir: null, ms: 2500 },

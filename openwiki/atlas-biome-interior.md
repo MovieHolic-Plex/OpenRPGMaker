@@ -343,9 +343,16 @@ v5 의 작은 삼각대 망원경·천체 모형·지구본·1칸 별자리표·
   손으로 그린 계단(r4~r6)은 1배에서 환기 창살·화덕으로 읽혀 세 번 FAIL. 별빛 열쇠 갈래(fork item) 끝에서 `rebuildFallenRooms` 가 네 칸 upper 를 열림으로 바꿔 낀다(세션 덮어쓰기).
   Opus VQA r4·r5·r6 FAIL → r7 PASS `vqa/fallen-rooms-r7.opus-vqa-r1-pass.json`, 묶음 `queue/fallen-rooms-r7.json`, 18323 위임 허용 뒤 `bake.py`(7482 앞 칸 화소 변화 0).
   object-gate AI 판정(미보정·조언)은 두 장 모두 「윤곽이 근흑」 FAIL — 뚜껑 재질이 검은 돌이라 생기는 지적이고, 최종 통과는 사람(위임) 허용이다.
+- `great brazier`(2×1 발밑 + 위 1줄, 7490~7493) / `great brazier lit`(2×1 발밑 + 위 2줄, 7494~7499): 네 화로의 방 퍼즐 화로. 1칸 `cold brazier` 는 1배에서
+  「작은 검은 삼각대·모루」로 읽혀 방 VQA r3·r4 에서 두 번 major — 밝은 마름돌 받침 위 놋쇠 띠 쇠 사발(2칸 폭)로 키웠다. 켜짐은 아래 32px 이 꺼짐과 같고 사발 속만 달아오른 숯,
+  위로 높이가 다른 불꽃 혀 셋(v5 lava brazier 불꽃 결). Opus 그림 VQA r8 FAIL(빗살 불꽃·붉은 점) → r9 PASS `vqa/fallen-rooms-r9.opus-vqa-r1-pass.json`,
+  묶음 `queue/fallen-rooms-r9.json`, 18323 위임 허용 뒤 `bake.py`(7490 앞 칸 화소 변화 0). object-gate AI: 3/4 둘 다 ok, 켜짐 화풍만 「윤곽 근흑」 조언 FAIL.
 - 독립 Opus VQA: r2 FAIL(재 없는 뚜껑 냄비, 천장 위로 삐져나온 틈, 그림자 속 돌결 점 10개) → r3 PASS `harness-data/object-gate/vqa/fallen-rooms-r3.opus-vqa-r1-pass.json`. 묶음 `queue/fallen-rooms-r3.json`, 18323 위임 허용(supervisor, delegated by user 2026-10-21) 뒤 `bake.py`. 7455 앞 칸 화소 변화 0.
 - 방: `fallenStarRooms.ts` 의 `rebuildFallenRooms` 가 `build_hand_interior_room`(replace) 로 세 방을 짓고 이벤트 자리·이동 도착 칸을 정한다(좌표는 지어진 맵 기준, 평면 첫 줄 = 맵 0줄).
-  천문대 30×22(관측 홀 + 서고·현관·서재, 지하 입구 = 서고 내려가는 계단 2×2 네 칸), 네 화로의 방 30×17(북벽 돌 계단·쇠창살, 화로 (11,6)(18,6)(11,12)(18,12)), 옛 별지기의 방 30×32(렌즈 발밑 (13~16,7~8), 보스 (14,10), 결정 (10,17), 출구 (14,31)).
+  천문대 32×19(관측 홀 + 칸막이 아래 서고·현관·서재, 지하 입구 = 서고 바닥 별 봉인 (3~4,14~15), 망원경 말 거는 칸 (15,8), 하넬 (24,14), 남문 (15,18)),
+  네 화로의 방 32×19(북벽 쇠창살 (15~16,1~2), 동쪽 벽감 돌 계단 (25~27,3)→천문대, 큰 화로 발밑 왼쪽 (11,8)(19,8)(11,11)(19,11) — 2칸 폭이라 오른쪽 칸에 이벤트 복제, 룬 비석 (15~16,9), 남쪽 불씨 사당),
+  옛 별지기의 방 32×27(렌즈 (14~17,5~6), 렌즈 칸 (15,5), 보스 (15,8), 발렌 출발 = 북서 돌 계단 (2~4,4) 발치 (3,5) `FS_VALEN_START`, 결정 (10,16), 출구 (15,26)). 북쪽 쇠창살은 없앴다 — 막힌 문으로 읽혔다(VQA r3).
+  폭 32·높이 19 이상인 까닭: 화면이 30×16.9칸이라 30×17 맵은 사방 테두리(천장)가 다 보여 허공이 27~45% 로 재졌다(VQA r3). 넓힌 바닥은 1줄 천장 + 2줄 벽면 칸막이로 나눈다.
   예전 판의 패딩(padMapCentered)·바위 덧칠·먼지 입자·옛 묘소(버들항 칩셋)는 걷었다. 퍼즐 changeTile 은 `rewirePuzzleTiles` 가 화로 두 칸(켜짐 6441/6442 · 꺼짐 -1/7455)과 쇠창살 열림(벽면 칸 바닥으로 + 7116~7119)으로 바꾼다.
   시나리오 `fallen-rooms`(방 자리별 1배 캡처)·`fallen-audit`·`fallen-late`·`fallen-ceil` 좌표가 이 판을 따른다.
 - 함정: `c.shadow()` 를 먼저 깔면 그 칸이 4-튜플로 차서 `c.get(x,y) is not None` 검사가 통과한다 — 몸에만 결을 넣으려면 `len(c.get(x,y) or ()) == 3`.

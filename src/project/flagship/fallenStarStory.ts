@@ -166,7 +166,7 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
     wrongFx: ["shake:1"],
     solvedFx: ["shake:3", "flash:white", "particles:sparkle"],
     reward: {
-      item: { id: FS_STAR_KEY_ITEM, name: "별빛 열쇠", description: "은빛 관 안쪽에 박혀 있던 별 모양 조각. 천문대 바닥 뚜껑문의 홈과 꼭 맞는다." },
+      item: { id: FS_STAR_KEY_ITEM, name: "별빛 열쇠", description: "은빛 관 안쪽에 박혀 있던 별 모양 조각. 천문대 서고 바닥, 봉인석 사이 돌뚜껑의 별 모양 홈과 꼭 맞는다." },
       line: "「별빛 열쇠」를 얻었다.",
     },
   },
@@ -182,8 +182,8 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
   lock: {
     site: "vault",
     item: FS_STAR_KEY_ITEM,
-    locked: ["바닥 뚜껑문 한가운데 별 모양 홈이 파여 있다. 꿈쩍도 하지 않는다."],
-    opened: ["별빛 열쇠를 홈에 대자, 딸깍— 뚜껑문이 열렸다."],
+    locked: ["봉인석 사이 바닥 돌뚜껑에 별 모양 홈이 파여 있다. 꿈쩍도 하지 않는다."],
+    opened: ["별빛 열쇠를 홈에 대자, 딸깍— 돌뚜껑이 가라앉고 아래로 내려가는 돌계단이 드러났다."],
     fx: ["se:key", "shake:3"],
   },
   event: {
