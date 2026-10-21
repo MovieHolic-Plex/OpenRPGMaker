@@ -679,7 +679,8 @@
 /* 흉상(changeFace presentation bust)은 보인다 — 상자 위(위쪽 상자면 아래)에 서고, 글은 상자 전체 폭을 그대로 쓴다.
    작은 얼굴·이름표는 3세대 상자처럼 계속 숨긴다(2026-10-21 아스트라 인물 흉상).
    일러스트는 표시 시점에 44x46 도트 격자로 줄여(색 16개·윤곽 1화소, src/player/bustPixelate.ts) 정수 2배로 키운다 —
-   맵·상자와 화소 크기가 같다. 원본 그림은 그대로 두고, 변환이 실패하면 원본이 부드럽게 보이는 대신 그대로 나온다. */
+   맵·상자와 화소 크기가 같다. 원본 그림은 그대로 두고, 변환이 실패하면 원본이 부드럽게 보이는 대신 그대로 나온다.
+   단 이미 88x92 로 구운 흉상(아스트라 인물)은 줄이지 않고 1:1 로 쓴다 — 44x46 에서는 얼굴이 뭉개진다. */
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] {
   --runtime-dialogue-bust-height: 108px;
   --runtime-dialogue-bust-width: 104px;
@@ -698,13 +699,14 @@
   background-color: #e8f0d8;
   background-repeat: no-repeat;
   background-size: 88px 92px;
-  background-position: center;
+  /* 그림 아래끝이 상자 윗선에 붙게(칸 안쪽 높이 96 - 그림 92 = 4px 를 위로 둔다). */
+  background-position: center bottom;
   image-rendering: pixelated;
 }
 /* 3세대 상자는 초상이 하나다 — 앞 화자(듣는 쪽)를 같은 자리에 겹쳐 그리지 않는다. */
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-portrait-listener { display: none; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box.bust-right .dialogue-face.dialogue-face-bust { left: auto; right: 12px; }
-.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].position-top .dialogue-face.dialogue-face-bust { bottom: auto; top: 100%; border-bottom-width: 4px; border-top-width: 0; box-shadow: -4px 0 0 #487068, 4px 0 0 #487068, 0 4px 0 #487068; }
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].position-top .dialogue-face.dialogue-face-bust { bottom: auto; top: 100%; border-bottom-width: 4px; border-top-width: 0; box-shadow: -4px 0 0 #487068, 4px 0 0 #487068, 0 4px 0 #487068; background-position: center top; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-content.has-bust { padding-inline: 0; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-page-cursor { right: 12px; bottom: 12px; color: #c85048; font: 18px/20px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; text-shadow: none; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active { box-sizing: border-box; height: auto; min-height: 0; padding: 0 8px 8px; max-height: 240px; }

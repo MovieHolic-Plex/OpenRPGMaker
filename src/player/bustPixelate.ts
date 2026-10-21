@@ -84,6 +84,9 @@ async function render(url: string): Promise<string | null> {
   const w = image.naturalWidth;
   const h = image.naturalHeight;
   if (!w || !h) return null;
+  // 이미 상자 크기(88x92)로 구운 도트 흉상(아스트라 인물, scripts/content/monsters/bake_astra_cast.py)은 다시 줄이지 않는다 —
+  // 44x46 으로 줄이면 눈·입이 한두 화소로 뭉개진다(2026-10-21 사용자 지적). null 이면 원본이 1:1 로 그대로 나온다.
+  if (w === BUST_ART_WIDTH * BUST_PIXEL_SCALE && h === BUST_ART_HEIGHT * BUST_PIXEL_SCALE) return null;
   const fit = Math.min(BUST_ART_WIDTH / w, BUST_ART_HEIGHT / h);
   const dw = Math.max(1, Math.round(w * fit));
   const dh = Math.max(1, Math.round(h * fit));

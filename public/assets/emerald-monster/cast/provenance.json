@@ -1,713 +1,673 @@
 {
- "judge": "char-gen 눈가림 표정 판정(Codex CLI) 통과분만 — KEEP 참고",
- "source": "char-gen (OPRN 자체 생성기, 우리 산출물) · 후보는 감독이 골랐다(by: supervisor) · 유료 대체 경로·스토어 크레딧 사용 없음",
+ "judge": "char-gen 품질 관문(초상마다 PASS) + 눈가림 정체성·표정 판정(set judge): 표정 칸은 통과, 기본(base) 칸은 고른 그림이 옅은 미소라 smile/content 로 읽혀 표정 항목만 FAIL(정체성 7~9, 무영 base 도 content) + 독립 Opus 5.5 적대 VQA 2회차 PASS(주요 결함 0). 판정 원본: /home/main/astra-qa/cast3/<job>/judge*.log, VQA: /home/main/astra-qa/cast3/vqa/r1.txt·r2.txt",
+ "source": "char-gen main(MovieHolic-Plex/char-gen) 고해상 초상, 이미지 엔진 codex(로그인, 유료 대체 경로 없음) · 후보는 감독이 골랐다(by: supervisor, 사용자 위임)",
  "cast": {
   "hero": {
-   "from": "/home/main/astra-qa/cast/hero/job2/out",
+   "from": "/home/main/astra-qa/cast3/hero/out",
+   "charGen": "ff92358 (char-gen main #6; portrait/quality/judge code unchanged through 6a660df)",
    "pictures": {
     "bust-base.png": {
      "size": [
-      98,
-      111
+      88,
+      92
      ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "1600f15025d3b9c63055a020188a1b480e08640cad04052060be89590d1edbff",
-     "pixelSha256": "2d0183b27df6e189ce1d24e9490839bf5a82b5711a0cdd02c7e784c6a3ad56ca"
-    },
-    "bust-happy.png": {
-     "size": [
-      98,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "9ab4bd00b32ca82cd103d3b18c315a22ead8ff0d967782c7e2b7c8815815a50d",
-     "pixelSha256": "be6006b0f5ab20c46ce10f3074af596cabe20b6480060c0c5152bbeab1ab58e8"
-    },
-    "bust-surprised.png": {
-     "size": [
-      98,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "5e05f34aacf7e1d00e76aecf40d38c6e197808e978dc4baf1efea5661c9a647c",
-     "pixelSha256": "894b733844f98a0eede5db5791c3655939a35e3cf52c48dfec0a29476002efcd"
+     "sourceSha256": "25e1e2b2e2e6f530e269f233c3405f0c35588f94eea04f35c73df671975d3f0f",
+     "pixelSha256": "44b56119814392bdbe803fd1e26996945807a211df2beb9d1219ef446f58733d"
     },
     "full-base.png": {
      "size": [
-      59,
+      61,
       168
      ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "84a6151777ca1ab136853a127b7dd4ee04d8e8ff81d078476d83e281102e4b16",
-     "pixelSha256": "e4774f126cc4c6ee14a0c9fbaceeba564f87ee91adba0cfbaa585df1e89eea82"
-    },
-    "full-happy.png": {
-     "size": [
-      59,
-      168
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "287c175be98467b52116958b6125d74434b4c1e366d82f153c92b8dd055fb8f1",
-     "pixelSha256": "ccf3401816cf564fe9b2403281173d11ce2ab99f12140b607b9ea490e8ed2eb9"
-    },
-    "full-surprised.png": {
-     "size": [
-      59,
-      168
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "16a3a3d9b993ca68192e9e6b7fbb07d4c0a59c7609a75ad3e244be06c0aa9696",
-     "pixelSha256": "dd0e513ddc5a523de152b2b13bf39bd54769cd8450e9394a6676fdebf5a535e7"
-    },
-    "card-base.png": {
-     "size": [
-      83,
-      188
-     ],
-     "pixelSha256": "63573e5b5a29caeaec0929a5b1c701c55c87b4c8fc20134a56c33314fa3bc0f1"
-    }
-   }
-  },
-  "mom": {
-   "from": "/home/main/astra-qa/cast/mom/job/out",
-   "pictures": {
-    "bust-angry.png": {
-     "size": [
-      93,
-      108
-     ],
-     "cell": 7,
-     "uniform": 1.0,
-     "sourceSha256": "542fd57a162629495abd9481cb317db91106c791fa232f96927efd5dcc0340d8",
-     "pixelSha256": "21c41814a4a1c415c4b75864ed717297341f74a06f725713884eb1fcb45838bc"
-    },
-    "bust-base.png": {
-     "size": [
-      93,
-      108
-     ],
-     "cell": 7,
-     "uniform": 1.0,
-     "sourceSha256": "abf4164185ad15f6724c460aa5a57fae74eb700417f7a775a9b0867ef068fcc3",
-     "pixelSha256": "5a40d0237d7b559b0869560918d5975d958cfbb6f46d5f590bb89a91c17d151e"
+     "sourceSha256": "ae900dd2209c550519fe4b2b1b691572b255afd8c85f1bd0c541c4839b7909f2",
+     "pixelSha256": "c352dca3bde1ac50889f9f369b8d1ff812c24c73621de8cf3e40bfe54d13ec69"
     },
     "bust-happy.png": {
      "size": [
-      93,
-      108
+      88,
+      92
      ],
-     "cell": 7,
-     "uniform": 1.0,
-     "sourceSha256": "66cc853c7e09195903898c601af78113451a51e1e7463031dbbb7484f833a0b3",
-     "pixelSha256": "e9b840f697d9f7f7dff8f3d74577b2645504bee4f5e430d59ee18310f0ab0d31"
-    },
-    "bust-surprised.png": {
-     "size": [
-      93,
-      108
-     ],
-     "cell": 7,
-     "uniform": 1.0,
-     "sourceSha256": "076d554daea648b774db5941763e3ef70489729fa2781fb16d6600d1a4b80745",
-     "pixelSha256": "86452642d08ca9aaadc71a8a2b19eb113bdc0da4e0798a1ea5c7f491ee0252ec"
-    },
-    "full-angry.png": {
-     "size": [
-      58,
-      167
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "94e4d2f7016cfcfdc0367cfb8f85ab8d1d0c8eb4f9e6aac78539b30a548725d3",
-     "pixelSha256": "5e3974d99e3d2a777f64f6e057f6d3d7184a3510683e81f5b09f1d5c33aeea41"
-    },
-    "full-base.png": {
-     "size": [
-      58,
-      167
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "4a3960e84dd461f39a53b295a7170d8b4154d3a69073359e0526c8d5f4225cdb",
-     "pixelSha256": "4341315cd3b84068af23b8ef4b55eae5d01fa6b63a3ba50d80c838df1a45e05a"
+     "sourceSha256": "9c60fea99e8bf9d242ce8a35f2a11f01a3151b40630fb3d2f8e701e63222679c",
+     "pixelSha256": "2cf1ddc1a45b4943945b645c4ac71eca158abafafdbf8e707c870b055bbc465f"
     },
     "full-happy.png": {
      "size": [
-      58,
-      167
+      61,
+      168
      ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "a5eeb29fd0d054584bf86a8acdf365186d92f5e535f36d349e12bebab4165ec0",
-     "pixelSha256": "a76a35c7119805cdf77d5c8dc47b5c991e9fa5cbb68246d9fdba06d4e3a19d5b"
+     "sourceSha256": "5d46717d5fb437c3a521cd04bf19f4dd7e8749672aff8e007784d27f495887af",
+     "pixelSha256": "0707c7b543532303dd5683080f4b54af77db19dc9717cc7fc0fa414dfe9ce4c0"
     },
-    "full-surprised.png": {
+    "bust-sad.png": {
      "size": [
-      66,
-      167
+      88,
+      92
      ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "c4441e0283e4bd8232b19c28ac6e8fe5a8ef679cb7533663883c66d06fbd7d9d",
-     "pixelSha256": "08e020fda58bae74aaa8a48d8bc7565f544ed6de89f86ef21b06e7495b2aab02"
+     "sourceSha256": "6e723af1e0dad01f3933dbe68aeac16ea73d114ffbabf67653bd0f139e8d589e",
+     "pixelSha256": "d4f1be81067f3ff850b265439456657d7e3e5a5206908d39e441fe50c4e36c6c"
     },
-    "card-base.png": {
+    "full-sad.png": {
      "size": [
-      82,
-      187
+      61,
+      168
      ],
-     "pixelSha256": "9e7228d8c32d0eaebcc4402a0c4b13438ed22cbba927b28672e56d8b2e02d5ef"
-    }
-   }
-  },
-  "professor": {
-   "from": "/home/main/astra-qa/cast/professor/job2/out",
-   "pictures": {
+     "sourceSha256": "6f87f30e799da6f6f68e9f27b4b82406b84daf9ddd62f87c656112a310459681",
+     "pixelSha256": "6758cb1025eb960d37fe6fe9bde865566d4ff0e2e0f9aba1dad65d95879e0c1a"
+    },
     "bust-angry.png": {
      "size": [
-      107,
-      111
+      88,
+      92
      ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "1e28adbd11a8cd5494c284fa1af7d371827f9342e1ba1e2fe480412e044c645b",
-     "pixelSha256": "27036a38ae0f5b881493773409c6fe18877a0c2337448b1ed1a3338af9b43acf"
-    },
-    "bust-base.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "a1a6b113429d6088efcf8c76c01cf763411a194e6d3ad9fe4ce9f46c12037e43",
-     "pixelSha256": "138668caf648631f418acedbc9bf159ac1c0416099aac4ee8a60a512708eb53c"
-    },
-    "bust-happy.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "e415df0ff0f2561bdf817edd20a493a9d104c550d14d27438839f14c26a1e2a0",
-     "pixelSha256": "049da644fc8c83cf52d37d017aac493cb7c938f99841c1c42b85bf5522bf8dda"
-    },
-    "bust-surprised.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "19f72dc5c285907c0bea3c7caa165b0470a15bf10e2a94c236d0e602a69c4293",
-     "pixelSha256": "de08a94d6e6dce43fdbb4754888439f7c9111612842c62244a685af4705d5ddf"
+     "sourceSha256": "6285a8a0945e66c1d235badcd6f4be7c3225efb070af1b1942d5c7a5e974fbca",
+     "pixelSha256": "4b29b926145dde871db763caa7f0a661e1b5692a2b06c7a6fc3ddba474807154"
     },
     "full-angry.png": {
      "size": [
       61,
-      166
+      168
      ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "7f932b1c321ae35fce0eb3a0491499cc4511b44dadb277c1d3c75d70e15fe638",
-     "pixelSha256": "ee243e190fa8c53a0147e62d1dd7571de9088ac1cc793b7b9a54c2be11c33d72"
+     "sourceSha256": "292752d2342b55497c3a827c90ba95da4ab1d7286c0d9502f447b655dbde8dda",
+     "pixelSha256": "6c61ed0d29f8e0e0e76e9fca0f7bd46354ce47fec319913b385bb30968cc1d05"
     },
-    "full-base.png": {
+    "bust-surprised.png": {
      "size": [
-      61,
-      166
+      88,
+      92
      ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "2baf6fc932fcae8418ffd879958270907b9a185b6fc361b30765dc464e9c2659",
-     "pixelSha256": "963d64afc4f0d0ece0916fd7176ca30f57c92e5a53faa1763e4fe2949e0f66a6"
-    },
-    "full-happy.png": {
-     "size": [
-      61,
-      166
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "15d8926898050fa72d4fb6ea3fd4de4a30bf921d406cc6947147007268a7dad8",
-     "pixelSha256": "30303393e2af47575188da8b95ba91f1644710e23bafed79922d04a574972e9c"
+     "sourceSha256": "978c8ad0cb614e7b3b49b54d9bf032209a3c582cd62d2808a68e99e6090dbdfd",
+     "pixelSha256": "ab0e237d8e92fbe84cbdaee79876ad494eaee9448121bf4fc2543dd6ec04d78a"
     },
     "full-surprised.png": {
      "size": [
-      62,
-      166
+      61,
+      168
      ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "bd14291a3d249b8cb61cf87a80457505855e9f296c2ed723c403d5571f2629ad",
-     "pixelSha256": "2f4eed3d9c20b2a31fdea1a0b59a176221282dfcbbbe8f27d5512dbdf23b1d04"
+     "sourceSha256": "90ed350b9086e70e767cd68fe2f778bba2c01335015d348545aa7a14915ca2ca",
+     "pixelSha256": "f6e7030ccfcb55afd719236cb193a31253727a46a49c8b157e64db3e5df0a7ba"
     },
     "card-base.png": {
      "size": [
       85,
-      186
+      188
      ],
-     "pixelSha256": "2204dd8e8a10cd016279806cfdb58997d218b024531aaaec19dcf02532dd0d5a"
+     "pixelSha256": "4faeb52bbdd021480330faa1e6673ed48ab0e7a4a37e89474fe5f339f6ecb95c"
     }
    }
   },
-  "naru": {
-   "from": "/home/main/astra-qa/cast/naru/job/out",
+  "mom": {
+   "from": "/home/main/astra-qa/cast3/mom4/out",
+   "charGen": "ff92358 (char-gen main #6; portrait/quality/judge code unchanged through 6a660df)",
    "pictures": {
-    "bust-angry.png": {
-     "size": [
-      103,
-      116
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "a77ff5969f0aaabc95eafb7fcfa20e9437dac22024e0701bd00b6d7273699b4f",
-     "pixelSha256": "b2580da81020854cca8ab1f6b5397f2fba4b345fdd8e0bfadf45e6ad8083aead"
-    },
     "bust-base.png": {
      "size": [
-      103,
-      116
+      88,
+      92
      ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "098e0834636d3a280805f2e5b9febb725cb1352730777828192ee42eb3cdbf21",
-     "pixelSha256": "74b4e0217d03d771813514b7067b8900db0492035c8267edbd45ee936f9eb759"
+     "sourceSha256": "d504306882de6a857e9b24cc2b2882b4089406d0f21c41dd0c0e503d7904c5da",
+     "pixelSha256": "4c93dc936075e5e49fc37e45d38fb7c3014b552dc3fc112bc86a21d54309c1bf"
+    },
+    "full-base.png": {
+     "size": [
+      46,
+      168
+     ],
+     "sourceSha256": "785375b44306b393d8a42059e4cf10b3ca25e8979dec3880183f89e01c8ecac1",
+     "pixelSha256": "898e8c3106bd9c17b560a253e8d95043fa478e627d996683071363599433da1c"
     },
     "bust-happy.png": {
      "size": [
-      103,
-      116
+      88,
+      92
      ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "bb9b41fe0db07bc3bed2e26165ad8b206a28d7edc00f06fba58c42f0a31e4d98",
-     "pixelSha256": "ffc9fc30da71e6c7e222159f07d918c3ce5499b31b048e12550c4ccbdcc6bad5"
+     "sourceSha256": "74c5f6523ed974ec7a38ee199745e5d517242a1497c9a4daa679b98d82d52b4a",
+     "pixelSha256": "0b510f3b83d12db3d298944436a245ec7aa1a111f2d0fdd304c70779cd21cb1d"
+    },
+    "full-happy.png": {
+     "size": [
+      46,
+      168
+     ],
+     "sourceSha256": "58da9a3158c2f285944c60fd65453e81fa1ab4a5d804fa5b9ac0be61c43b3f53",
+     "pixelSha256": "e703091f0b8e569489187a70a6266e7750b58f8d965a32256bee56a03346192e"
     },
     "bust-sad.png": {
      "size": [
-      103,
-      116
+      88,
+      92
      ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "13487c862483ae82b61ecfd73b4f3295c3076a9072ae4d42429c0d89c55ac662",
-     "pixelSha256": "0cf3e3703ebac2da0fc7712b13f479e9bafb54c0c93d02913cb4d49392b270a2"
+     "sourceSha256": "ff3b1fbc4516120bb238006fbda2f8238ef6cdfde91a13d03f614252f763f639",
+     "pixelSha256": "a9bf1b3df7ca7eff70061b7e74994454906c0e96f6d7f5630586787204913dc4"
     },
-    "bust-surprised.png": {
+    "full-sad.png": {
      "size": [
-      103,
-      116
+      46,
+      168
      ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "359aa82f00111ec3d045785260344e2f5395f9594885d91023c3238a3b3627bc",
-     "pixelSha256": "5ed4b6684b38c9fdacec260294c5fcfe4e032c933f2676e4c4cf732585ca0656"
+     "sourceSha256": "be84e9df0bd3cc7ce9c0505eefdcd5ada94436b73101f758d1f0ba3703284b7a",
+     "pixelSha256": "308189fbd0f596d8dcdf3cbf903c25e1ab5e49916e6674440b5356b45f5cdc45"
+    },
+    "bust-angry.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "0f602bbf90a89cd7cc5a19392c8744526f01e1d8751ffd95c6f52be1053debd5",
+     "pixelSha256": "43af371c9b95567c5c3fe393c91cee78037c30a4dd61f491c2efddb993327a89"
     },
     "full-angry.png": {
      "size": [
-      62,
-      166
+      46,
+      168
      ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "46889fbffc08d6479a2d7c032a33c3213f27e55ea2aec0a530d554634a4c514d",
-     "pixelSha256": "2ee5ef20c61e01c826d5afac3e9ef1b6e7a1f816d6b0e5410d37c31574c0ece8"
-    },
-    "full-base.png": {
-     "size": [
-      62,
-      166
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "4f9026f1f08bd209fa4113ab2e59800a0d51611ba43daa1c1f40f8d47e69e80f",
-     "pixelSha256": "e78acea127940222e15f60d6cc39c5b366519132b002dde5eb7e47eca4b81e9e"
-    },
-    "full-happy.png": {
-     "size": [
-      62,
-      166
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "db45fc6cfbac002fcd6cdadb87fff437c665486d78fa570cf1d6d3982aadecaa",
-     "pixelSha256": "343e16870cd11dfb94a2a87987aa69f827c763c152a0f7cacd9ca7a2291d8050"
-    },
-    "full-sad.png": {
-     "size": [
-      62,
-      166
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "5140c23a9b2877cb22d5accdf6082ae0125a886c4d640d7144d328ada25f3e8d",
-     "pixelSha256": "aab8398013bb3e95b071f4992b4508be26c17eee260f2e205826b2a0c9c51ca1"
-    },
-    "full-surprised.png": {
-     "size": [
-      64,
-      166
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "487cff347d077feb9117503c15e46eea7e214fe0dd5afb1beb44fda03cbff33d",
-     "pixelSha256": "15fd4961ec2e0e143cf8ba18ce74769a0fb1fcf4190fa5481fdd4bd3c7d9234f"
-    },
-    "card-base.png": {
-     "size": [
-      86,
-      186
-     ],
-     "pixelSha256": "56807c7194382c3dc76967ee8893885d3b35118323ae99c64398f9fce2c8eabb"
-    }
-   },
-   "trainerFront": "battle-trainers/astra_naru/front.png"
-  },
-  "nurse": {
-   "from": "/home/main/astra-qa/cast/nurse2/job/out",
-   "pictures": {
-    "bust-base.png": {
-     "size": [
-      88,
-      107
-     ],
-     "cell": 7,
-     "uniform": 1.0,
-     "sourceSha256": "7bd17390bddaed8ba35a653528ec92f776d9487c394388943448a8b74be842f3",
-     "pixelSha256": "6e6ba1b5aa4d75aab7e46ccf2611b75e38367f9774a68a56112ed038b0f82f98"
-    },
-    "bust-happy.png": {
-     "size": [
-      88,
-      107
-     ],
-     "cell": 7,
-     "uniform": 1.0,
-     "sourceSha256": "efef24ae8a7cbd43f7b82e3d7a0ee10ba4273faecdfaa573db2f8e16770d1568",
-     "pixelSha256": "3809b6ac00cf1e619a790050c18cf22dfa6bef6b44bfa6e738c6633c1f754183"
-    },
-    "bust-sad.png": {
-     "size": [
-      88,
-      107
-     ],
-     "cell": 7,
-     "uniform": 1.0,
-     "sourceSha256": "ded29567afc6cd8640ed56d22d7165c228defd61ad58947a6dbec3b2234fb2f6",
-     "pixelSha256": "0f50acde517c59fb98e492c58d103e12ab371a2d73e38d1fdd94ff422ec2fbcf"
+     "sourceSha256": "ce5613b134b394788139c84123753b734f8d3fcfd1414ccabcc0e5d92769f7d7",
+     "pixelSha256": "43a04f7fb88301f3c809f8485808725334038d58c66a7b134d133955dab5d1df"
     },
     "bust-surprised.png": {
      "size": [
       88,
-      107
+      92
      ],
-     "cell": 7,
-     "uniform": 1.0,
-     "sourceSha256": "5387a2dd607d21d0d16024e1581099ec0a508281cb7d7bf9263ec51a8f9aa2fb",
-     "pixelSha256": "02d70c02fa4d41a29ea8df60d3bdff2544359993f356eba98c95df201251c13f"
-    },
-    "full-base.png": {
-     "size": [
-      46,
-      164
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "fe9ff913d81cf46dc67fd30945ee7a91ad1b04a48d59e7ebb0e3899b4ed8e3dd",
-     "pixelSha256": "fa14e541e51d4cc1daeac9f7b44ccacc388e4f98d6557816df8ded13c22670a1"
-    },
-    "full-happy.png": {
-     "size": [
-      46,
-      164
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "37fa9d50ed698f3e2c72ffbbd82dc025abe5fe8b11a99a7694784d89c0211d5a",
-     "pixelSha256": "04e0b0e3910be9401d54d7cc4445291e4ebae9aa4edc851a18136475a7f829cc"
-    },
-    "full-sad.png": {
-     "size": [
-      43,
-      164
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "38029f7225fe0aba69e5bc86d4cf3fffb55345cce1a064d8311bbda7172ef2d4",
-     "pixelSha256": "b1cee3d71e7184a67b3a250d207b87d7bcd766e0f5ecd7f864cfbb799f89777b"
+     "sourceSha256": "8b3d875b00fc805bc2fba15919674e898a00a645afa56d051041c1a04d563f14",
+     "pixelSha256": "25f598432895b546346a7a30cc243de7a2cf394ee42683ff50f4566e76e20f68"
     },
     "full-surprised.png": {
      "size": [
-      52,
-      164
+      46,
+      168
      ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "f03cf710ee69001de270d1f924ee40f8e28c0844a50fb527f002b30117e63fae",
-     "pixelSha256": "782553d58d48bf474e0e340b7224647b7044bc3f3459045eb0ee9fcaccad8252"
+     "sourceSha256": "e10431fec6aa987dc7187b48833159d2ef03a8e89157d7bd36c3de734397c7d9",
+     "pixelSha256": "896668c852d8ffa0a003912e1e03d829ecfc65e64b93075a5cc249b248ee7503"
     },
     "card-base.png": {
      "size": [
       70,
-      184
+      188
      ],
-     "pixelSha256": "3ea74319116b87b27a307d62044f5e85f03d2a854cef9197e270bc48e7f41585"
+     "pixelSha256": "147166fbcda718dd62e9740b6e7c101fba11a0bb80a1bd64e8731071d13c8c84"
     }
    }
   },
-  "yurim": {
-   "from": "/home/main/astra-qa/cast/yurim/job/out",
+  "professor": {
+   "from": "/home/main/astra-qa/cast3/professor3/out",
+   "charGen": "ff92358 (char-gen main #6; portrait/quality/judge code unchanged through 6a660df)",
    "pictures": {
-    "bust-angry.png": {
-     "size": [
-      97,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "f74419ac3bf8bc8ec7c4454b9fd0f0677aa9f68eb50b18d52c95cc794af922c1",
-     "pixelSha256": "0197302f034553c723dd6e3467c06772d88814cf3b008bfbc99f70fe8bfbe9bb"
-    },
     "bust-base.png": {
      "size": [
-      97,
-      111
+      88,
+      92
      ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "d7e130d4be7865972eb6da52db41aa9f10e3ccf863a16cac259a3ec9fbe5326a",
-     "pixelSha256": "f6c7b6900e525f59c1aadfeebc473b514b7eae1125f21ba2a84d4582f2947bfb"
+     "sourceSha256": "066f59904c4d639b1be6792cf0e1a3a2899aa1e90fb4b53156a3e78770e1d36f",
+     "pixelSha256": "46a9f2d3d09d30bb4de59d8715c02c89f4ff0825b33a36403dbeee7fbcb48108"
+    },
+    "full-base.png": {
+     "size": [
+      57,
+      168
+     ],
+     "sourceSha256": "8edc7721da6273c11d25b2667869b0d9383f62891aac05bac26e854e18f4f285",
+     "pixelSha256": "89e4f85560074bd9923128c2c010ed69be3c7f3abdbbc514bdaf0457070ef634"
     },
     "bust-happy.png": {
      "size": [
-      97,
-      111
+      88,
+      92
      ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "0323dc0682bb4373f3a8d0c3ee14895a951522d404c31203ed25038f1ce89834",
-     "pixelSha256": "a9d07155567b125991f821f13ad712b80a271e953101a9d8f0a0da1c64b44333"
+     "sourceSha256": "71137ddf4e984e8fa474c493e4e83d4501722435c6b053557342fd034d33cdea",
+     "pixelSha256": "81517ca5fe27c0adc59ebb40785cb3f683157c657f2efb89ec16f3bd45c6eced"
+    },
+    "full-happy.png": {
+     "size": [
+      57,
+      168
+     ],
+     "sourceSha256": "5bd88783e913d6584270b669ecbc092b975e7ca47d9aef2480cd7a06025a5631",
+     "pixelSha256": "f1c091785d897597a1bcb9bbacfc8380b05f059437f07ef34679436a606d2385"
     },
     "bust-sad.png": {
      "size": [
-      97,
-      111
+      88,
+      92
      ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "314f7eea219efb713d89d34a71aa8c70c41b1cae031b2f5066be5307bf1b8e7d",
-     "pixelSha256": "c63dacffed1219243dd661133feed69455c1443f07ac07ecea3c7495f8ddc027"
+     "sourceSha256": "78015cda3d1563d5097fa41c4b3a1ebf26e34ecc0c7f473343f1ce1dfcb3cc59",
+     "pixelSha256": "632681dc3f60ef96b5c8d2d2446381057d88cfd0b27fddb4e9df9a59676164ac"
     },
-    "bust-surprised.png": {
+    "full-sad.png": {
      "size": [
-      97,
-      111
+      57,
+      168
      ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "9de6e7ed371a33faeb07c015f2d7e68c81f2172cf3b8340a7d59f4b0744e8791",
-     "pixelSha256": "6196dda75740baf34f70fa27dc1b81dfb7bc720854d57f102b07eba1ba9a7cb7"
+     "sourceSha256": "d767acbadc622d284e226ec620c8dd088f8f5788c29fd1ddde175e0bb5780931",
+     "pixelSha256": "181555b1c0325aeca68f6ad9ef1f3c703c1fb3e3af87a983185ad174db8f28d4"
+    },
+    "bust-angry.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "15a6e09272fbbf19c607084a9431a7a61723599d94c5c14afc2b7291a2261428",
+     "pixelSha256": "220454dbb50fad1a37cddf8a66acf23e530c409fe3c2f430d8a865880f3d77c8"
     },
     "full-angry.png": {
      "size": [
-      54,
-      166
+      57,
+      168
      ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "86c05f70382a4978de54bbe753fa2cc066592c67f5e3c654177e792f2267abe2",
-     "pixelSha256": "630c89774c067edbda39bdc01f2d4772dd5df70737e87486603455874722d857"
+     "sourceSha256": "27476323be3e9a7274a362bedd86b5d440a4f022a1db23f03ed275990e489691",
+     "pixelSha256": "1b35f9f3ff2d89a7440f56776175c8fce7824acec54b000cac4752d861872a3e"
+    },
+    "bust-surprised.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "6f056d04b2e55466128448a8742862695bde320dabd8ff5db9dda8d8f71f1862",
+     "pixelSha256": "70ad505dbf90c4c1498e6a5e5d2191ccc4657a871b497f8cd9b4eb3ea38bf7d6"
+    },
+    "full-surprised.png": {
+     "size": [
+      57,
+      168
+     ],
+     "sourceSha256": "cac5526d44d9e0a0564980cac1afb6fd3739ccde2598bc8b61d96f0774397ba9",
+     "pixelSha256": "5aaec455a4bd73f3c0acd10c02006567f0288aa65a4e37a62a4a1a645247e82b"
+    },
+    "card-base.png": {
+     "size": [
+      81,
+      188
+     ],
+     "pixelSha256": "371de6637dda6f25f03b1c237e0cc431acc7866ecb53272b20a2c0780f0837d6"
+    }
+   }
+  },
+  "naru": {
+   "from": "/home/main/astra-qa/cast3/naru/out",
+   "charGen": "ff92358 (char-gen main #6; portrait/quality/judge code unchanged through 6a660df)",
+   "pictures": {
+    "bust-base.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "f04bf792c86200fa64519ef5e0df1e4df333fc9d6adec6594fa3dfc4a93be049",
+     "pixelSha256": "60e6a28eb4cbfeff680868729d03d7526963cea154ed7fa2c42558ba96aec303"
+    },
+    "full-base.png": {
+     "size": [
+      65,
+      168
+     ],
+     "sourceSha256": "049b123b8a3965ecd506287c6d64a3a15954b694280b2352efb881540cdee36a",
+     "pixelSha256": "f8e4ea6d5ba7175c0cd14194cabe4997d9e3493e20d694d5c3036e9ec5f9610c"
+    },
+    "bust-happy.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "446669b4c34ec9fd4f3a71ee17f3061e5e0ca253e9298d6b7e3b7ccd337bde3d",
+     "pixelSha256": "448e38c4c78ccb04ce1fbb97a697fd8d6ea7cff399844bd3dfdbe5b3dc5d55fd"
+    },
+    "full-happy.png": {
+     "size": [
+      65,
+      168
+     ],
+     "sourceSha256": "6dd1be56eaa4fd0c120e43526f496fe74bfaefa150c51f1c607e52511fceaa4c",
+     "pixelSha256": "d8ae240c4c1b4c789fbf32bc9e1d3226ca0ad2b3d5edbef61928061b29bd7e05"
+    },
+    "bust-sad.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "f0bd4c9981904d4ace1dcef177b0196c6cbd91312ec90003e944576dfe195047",
+     "pixelSha256": "9fc1fed99e118f706c6ac3f6cc60f906e530beaec3c1ed22e302f5a3d24bd7fa"
+    },
+    "full-sad.png": {
+     "size": [
+      65,
+      168
+     ],
+     "sourceSha256": "3c720fc1bbbd7b6a663d6f75c01749518346f3276ae64ef4fbbc3d252ef843d7",
+     "pixelSha256": "2edda37eb2a4b15a1ee546c9d73ef5f0685913d30d298afd3e95d86bf64f1820"
+    },
+    "bust-angry.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "2d51d4d69218d408eaec70a3e6036d28e667156df04b7f81379c6d2a08614a81",
+     "pixelSha256": "6750ff973454a06ea85a6507df6530bab0dd2e07219952d4550d53a96e05979c"
+    },
+    "full-angry.png": {
+     "size": [
+      65,
+      168
+     ],
+     "sourceSha256": "1f070b6b4f539d9e674b60759a40be9b5128e13da7cb77a09b9aceb7e0ed48e7",
+     "pixelSha256": "56913d93adc265c97ae298fc1920b79dea296bf7a48d4604da6f1409c8271e9d"
+    },
+    "bust-surprised.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "fea58f8837806d0831d19eb34df49841fbb3742ab39027b67a4b7ce6801e8767",
+     "pixelSha256": "2fe2a4aacd8ead96d6a4be1b0f42eed4cff6591599a3c38eb950e23770f46056"
+    },
+    "full-surprised.png": {
+     "size": [
+      65,
+      168
+     ],
+     "sourceSha256": "8c3f79f2b5356ebd9231a9ed341440c068b231042ca4e0d19d336b57bd3db411",
+     "pixelSha256": "53aabd9bb6c409839ce01a9a7fe286a5867d73ef788595c3777129e28acf2161"
+    },
+    "card-base.png": {
+     "size": [
+      89,
+      188
+     ],
+     "pixelSha256": "c7c8eb8d824f1d3c05fcdb31e495450a65d4b226156fa5d96e1634bd44b7bb19"
+    }
+   }
+  },
+  "nurse": {
+   "from": "/home/main/astra-qa/cast3/nurse/out",
+   "charGen": "ff92358 (char-gen main #6; portrait/quality/judge code unchanged through 6a660df)",
+   "pictures": {
+    "bust-base.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "ed58158f0df2d8005a1ba60b2745c32fcf58739f51e20792b797529607b93132",
+     "pixelSha256": "b26df5896c63cfb9fa20808ab4eaf629331c201d7748b5ee613e08d553bc8c94"
     },
     "full-base.png": {
      "size": [
       54,
-      166
+      168
      ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "c366b0a5f9f61e24a86653bdf646f0b948511df74b5eeeb1a6947e649ffc0f2b",
-     "pixelSha256": "787ccd2a86973a4b2e355c64340c4b6d1efd89b7b47d73113df14511579f867e"
+     "sourceSha256": "7e6421daf6ce7c011a5c7bfc62ab200157b85aec5b9b97facbf0cc207ec871d6",
+     "pixelSha256": "1dc4028112cb51213f7c8deec858d8d7d37a17efd10cd5ef0cafefbb39453ee6"
+    },
+    "bust-happy.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "c4266602540184779f7377cd7976e02ac53394c4c3c6c7a93b076a58ed1c08d4",
+     "pixelSha256": "fdefa10b93239e8f19ddba039d01fc7aed161701badcce8569536d0cbbbcf233"
     },
     "full-happy.png": {
      "size": [
       54,
-      166
+      168
      ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "ca9a3640817e9cf284020400fb909f19325fe12058d5da66472e07a74a869f19",
-     "pixelSha256": "cc153640c26ec4e1f58079deca586a21e196f687aef26ea37be0963f047e3ada"
+     "sourceSha256": "143d942defc338ad8eddd940bfb682488e4c1bf2ccddacf8d2656a20b1dd17bb",
+     "pixelSha256": "29b75f32245d582b60fc17e10bb81d80e2cdc4efd08cb2ff52b5576ca9280189"
+    },
+    "bust-sad.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "d475773ffd8954b06ce604dfcc3ae210376ae7937918c0159570b316fea063c1",
+     "pixelSha256": "d00bb4f94123de900a8575084d0e96ad737765947bc2676458a1dee182f88347"
     },
     "full-sad.png": {
      "size": [
       54,
-      166
+      168
      ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "f32d0011477b969ad78f5c242b43deb9f823103bbee47885e2b81e4d76e3e8d8",
-     "pixelSha256": "9e279fad290a865606563a482552ca8817cd467bcffea20318aa29be23f15d65"
+     "sourceSha256": "e7fd25b9c10bb360189f2a05dc9b6cd3f06d87687f9e34a3e8bf820c6ddc5a27",
+     "pixelSha256": "34e2a5518a8f54f25040f3c27398ed8898d63e18191d86e241d19555fc16783a"
+    },
+    "bust-angry.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "cd8152e1f2ccca8c924901a4a2479432a265b8716a4ed89cba0d51b23f117369",
+     "pixelSha256": "582b00401b52eb559a6e369d3061d02e0211c5952d26eeeb650aa2fece101981"
+    },
+    "full-angry.png": {
+     "size": [
+      54,
+      168
+     ],
+     "sourceSha256": "d85ee3b7e92aab8f8b2d0e997126d718e466b31acaeb3ed0b6db5de165595aaf",
+     "pixelSha256": "5c2d6c76e867db888c4baa3ed293e09191c2ebccabd8706207f221c23154f876"
+    },
+    "bust-surprised.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "12972efc2c9609c83641404f813b51364eddc42bbff8ee2dca8eed8f9d6bee48",
+     "pixelSha256": "7d9d5688f5d69c9ddcd4ca391a8023c9b4ecb8d2c7a1b8f7f4d54473ff836d03"
     },
     "full-surprised.png": {
      "size": [
       54,
-      166
+      168
      ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "16d1ccac50faf2aff6098ac19765ad7c00a641b1af7c66d03809705409d154c0",
-     "pixelSha256": "9905995f528efeba948be845474e3eae20980c909ceeaa149125ae0a99365793"
+     "sourceSha256": "4069b895c6d60834d33912adc2ef573565b2cd2ddcb164860ceec332ffee355d",
+     "pixelSha256": "4ea9fb373d5852fb6fb76d9d7eda23c65aabfdf3cee1032bff2539cbaccdf711"
     },
     "card-base.png": {
      "size": [
       78,
-      186
+      188
      ],
-     "pixelSha256": "09993d957832c535a03bf63fc5610743656f35607db52e19fd7dcd62f2a71353"
+     "pixelSha256": "674b70b38d782a8af4a214b7eaeaa7d10635209e112f207c669c43cef7618b40"
     }
-   },
-   "trainerFront": "battle-trainers/astra_yurim/front.png"
+   }
   },
-  "muyeong": {
-   "from": "/home/main/astra-qa/cast/muyeong/job/out",
+  "yurim": {
+   "from": "/home/main/astra-qa/cast3/yurim2/out",
+   "charGen": "ff92358 (char-gen main #6; portrait/quality/judge code unchanged through 6a660df)",
    "pictures": {
-    "bust-angry.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "64c873f9b12b94027b305c327915d1736a111b4d87d2df6dda6f640db8f8eb69",
-     "pixelSha256": "57cbbdf486de22b26d783d0c72a19a91dbd7fdc56e76bc5497d127275ec4ab93"
-    },
     "bust-base.png": {
      "size": [
-      107,
-      111
+      88,
+      92
      ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "c1a46c92915e88cac7e51a550bc9ae6996efc5d760bb4777e6e8bd9aa70abbaa",
-     "pixelSha256": "74e50d630f03c9364561752d699c65b43758a9cccf96e5ad23266ac6e1e5b192"
-    },
-    "bust-happy.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "1cbd06591811f53e77112fb6993e6436b11bcd8644a1a57e656471619657070a",
-     "pixelSha256": "6311df8bd0c457e2e0fdc835e009b8db94bea06962b5201364292f12ea808cf1"
-    },
-    "bust-sad.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "4126aae1fb9f140c2dd4b4e3088d93422472d45ed507477f174879a1c1e70e3b",
-     "pixelSha256": "cd5c8bebfe44ece259bb5538098dd104fa889a174c40d617ad85a39285513c0a"
-    },
-    "bust-serious.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "20986d1ddf9608cc7cec431f02b87377f3e94e54256ae47b6e5a5f9acea2c2e1",
-     "pixelSha256": "c2bcda417f3ba6f500e2d12e0c57596d04cac40bc728157bda9ff7d8e2e6fd5c"
-    },
-    "bust-surprised.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "94799ae8d3060c8d7570224d2d3c5931048c44c670dadc373067238ce2919970",
-     "pixelSha256": "76d23bd9b4ce35ed1f4586c6cdd4c976ae10305987e531665a0f512279946232"
-    },
-    "full-angry.png": {
-     "size": [
-      62,
-      166
-     ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "3895540d0d811021bc59f111a3fbf5f46af9b65b9e7c09eabc07ec12fd583f47",
-     "pixelSha256": "118f75caa30c8816ab5783048db62638ee02a0cbd939f14c0026590ca9f403c7"
+     "sourceSha256": "1cfe1869f0d99a94cb5f8765ea73ca13fc9a31c50220a6663bda21a049e40e05",
+     "pixelSha256": "f8eb9e481e216917fc53f43be2a69c2f85f3fcf7817e9485f6d864ad0323e4a1"
     },
     "full-base.png": {
      "size": [
-      62,
-      166
+      55,
+      168
      ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "d145867385f5809f1adadef937c64c2b8b4cbb37d9e544acb0aea3cf07c6aa89",
-     "pixelSha256": "224ca336219f7a0187def29a0a956b362e624e3e44db94ae514357c14d9c3025"
+     "sourceSha256": "4a76a4b914d65d23088041037f2f66da3e72fa87666053828d378c642674404a",
+     "pixelSha256": "3a5e7384a3b237bbadaa9d59667038d3cdfec491afd17fe33f22b4fc6ec1d8c4"
+    },
+    "bust-happy.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "265e25df7713c8cc9bec248a5a7a746cff6ce368a3cd6cfd2b947cd2ac0617d4",
+     "pixelSha256": "313d5d2a325f2e4ae9ff2086bb0e7ae775d510e7b966c713d08e5de673054182"
     },
     "full-happy.png": {
      "size": [
-      62,
-      166
+      55,
+      168
      ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "885c3ab732f62d17e85befd5bcfec57adae742e7954909b24ef8e7206ac5eccd",
-     "pixelSha256": "a53ac8bf9aa41aaf0c2912b47f11df311daa8a45578c4eb7dca72ae57ce7d3d3"
+     "sourceSha256": "9c4e9886eab7a09fdf7069aac8e6939e9611d78369418c1f438534eab6e87d00",
+     "pixelSha256": "73c2e000e5609cf99f13455b8885b5146d0f074b07f59cc1a7514eeccf0f9cd8"
+    },
+    "bust-sad.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "f70a432caa405e7de9ffa7ce9a620fd1a2ad7d0c7bc8bf4708eb6b583cf05f08",
+     "pixelSha256": "62d68e580a97fc5f05789c5cdc41ba6a89841c9a2a08c63a9af5441d1a4a13be"
     },
     "full-sad.png": {
      "size": [
-      62,
-      166
+      55,
+      168
      ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "9cee88c6ee5fdda67841e9418808c703ffb9bf0750437e0ff6ff1be9986b3ae8",
-     "pixelSha256": "20210b253db90dc7e9d958c6aa40914982079a6c5a64fad365986dfd2ab6a2fe"
+     "sourceSha256": "cea0f5701dd598c60fa12c325b8fa0ff27d1b902333769c33aec17db8127cf78",
+     "pixelSha256": "282580518c6ae22dc333a2bb4ef4b0128dbb14ef3fa61a69b09ba70b8deaad22"
     },
-    "full-serious.png": {
+    "bust-angry.png": {
      "size": [
-      62,
-      166
+      88,
+      92
      ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "a13ee8ee9dba9149000b16f289be5f890f05311000dc5e141711d89e87e254f8",
-     "pixelSha256": "cfcdf253db5ebb6d392ba44fced23ee8363c78357da458f280293d5c8e73b8ad"
+     "sourceSha256": "29a16807c567abd146654569de99a169da44067aa7e564edf3f18d58a87fd729",
+     "pixelSha256": "810837c9e48fb1742b7e40288ba252bd435364dfc569468d900a3e5409ace667"
+    },
+    "full-angry.png": {
+     "size": [
+      55,
+      168
+     ],
+     "sourceSha256": "4b5753e0d7e81b8b109d6332c90b2ef4edb746b61a9b5087ea67d04aba8e73dd",
+     "pixelSha256": "63140ef08d78f227a27a29c3441d20f5624df1e38150ead9e224afd8441fd4a9"
+    },
+    "bust-surprised.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "bc9b87752e7f9fed70d8bba18ff2f8e22a4a116dd042a7f8c11f12dfdac73af7",
+     "pixelSha256": "4471b6a9c47b6349390b4f4f9ab4befcfb9c66f027f4e2d30af29dbd14af6b2d"
     },
     "full-surprised.png": {
      "size": [
-      63,
-      166
+      55,
+      168
      ],
-     "cell": 5,
-     "uniform": 1.0,
-     "sourceSha256": "cc9ea1d089e9b4dfa1b23ed761d0de79b646c98d37a56dfa730c9675b696c0ea",
-     "pixelSha256": "3ad97a3d83b662cdb17e4f4049f31d2d596c111f7ade5a5dfe5b21a1ef9df723"
+     "sourceSha256": "cda972297ff413518cc9a45fbde3d97b4d9a84072eff47ea045a5c9300a87257",
+     "pixelSha256": "ad166a1c99d43d5d34b6524adf70176ad11d496c3ccdd623eabde99a55f7c2f2"
     },
     "card-base.png": {
      "size": [
-      86,
-      186
+      79,
+      188
      ],
-     "pixelSha256": "bed65b216e7f8b4a0c1b5a13d8dd98dd1d559eacbe5d4895f3904d1b770cea3c"
+     "pixelSha256": "ccdb604e9a22243c17c1448c1cda39e89477729daebfb4c3e94a91ef895be292"
     }
-   },
-   "trainerFront": "battle-trainers/astra_muyeong/front.png"
+   }
+  },
+  "muyeong": {
+   "from": "/home/main/astra-qa/cast3/muyeong/out",
+   "charGen": "ff92358 (char-gen main #6; portrait/quality/judge code unchanged through 6a660df)",
+   "pictures": {
+    "bust-base.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "2dfb4df96ff6e80287a7f945eb8b2268793200375dd01f35a9f4364dc55b7f52",
+     "pixelSha256": "0aeb03623c05781b05c1fe5f7572bc9abc7d00faececf7ee67aa7aaa9773a464"
+    },
+    "full-base.png": {
+     "size": [
+      81,
+      168
+     ],
+     "sourceSha256": "a3bde45b74b40a294f91e38cf4588c9c9b4627addfc7a80744b57a21243f028c",
+     "pixelSha256": "f8a9cfe826241104b517de86971aa1cb012d6c3b27f407d44650bd441b43c039"
+    },
+    "bust-happy.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "0c1668c3d8874b61da650c3652dcacdf87269bde14e26ff8299f6026f3485d43",
+     "pixelSha256": "f03e6ed53ca8d1f8b6c386a379fa2d2a4ee86887612cf0a8294919dae4a95995"
+    },
+    "full-happy.png": {
+     "size": [
+      81,
+      168
+     ],
+     "sourceSha256": "91dbd4e59679b82507078e09950c33e9f2530dfdffd0d80d6d103ce3bbdda718",
+     "pixelSha256": "0193bd3e1b1f2ce7ec6859dcb584677fe2b0c7782db18a7c4bad08a412c4abd7"
+    },
+    "bust-sad.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "d2c838b0a95bcc7ee00bab0ae116ac7e6e2e4169b6dfb9d7fca530b2c31230a0",
+     "pixelSha256": "ee88e18333c637d4f4a13bf4468c16c7a21c45d8379707af7d3375e39f2c2523"
+    },
+    "full-sad.png": {
+     "size": [
+      81,
+      168
+     ],
+     "sourceSha256": "b8f55a0d48682e8b07a68e812e7400f76cc9bd4952a901127b9ad02a51223307",
+     "pixelSha256": "429d1337cb11fcdb94ee05bd69160db8a5a682cf317e223071581785c8389ab1"
+    },
+    "bust-angry.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "766c2d4ee62c296007f0849845d7d60587312edabb613c900d43e1b7f3cae923",
+     "pixelSha256": "d25b4fa2a6db1d00b9f292e3fa8e6ea545993acbb8f81665febb03d5afebd097"
+    },
+    "full-angry.png": {
+     "size": [
+      81,
+      168
+     ],
+     "sourceSha256": "94b6cfb48b6ecbf29a3ffaa4ba33db15bd60f2d6a4e58b75e22455efce41cc43",
+     "pixelSha256": "aec445be49af1c39ff23daae7200fe469628d1e12c93d933872477146f045731"
+    },
+    "bust-surprised.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "86e2e7fca30f773ca211fb55efd2ae1f4d15eaf648644f1176f3c18f732e20bc",
+     "pixelSha256": "ba4847305f91ca73ae3e61d418ec470712523c23b170a69576507dc2244d4f09"
+    },
+    "full-surprised.png": {
+     "size": [
+      86,
+      168
+     ],
+     "sourceSha256": "14e71bbac7874d3e76a47c8f1b8f74a915cd95491d63a89ccb03ecc0d0d25ad3",
+     "pixelSha256": "c005897fe14386b2b89e8acf33c57cd80babd4288393f623e7931af0f7ec9dd3"
+    },
+    "bust-serious.png": {
+     "size": [
+      88,
+      92
+     ],
+     "sourceSha256": "60541579968759735c9da04d4bbc786ace0510cd5b28160de8916b2b92493a71",
+     "pixelSha256": "6c892f9f1cbf0257ee8c8bb7ae5e98bf3d4fd80feefd65f7fcb37474846ecac0"
+    },
+    "full-serious.png": {
+     "size": [
+      81,
+      168
+     ],
+     "sourceSha256": "6c36219a2275c55bbffbcebd37f234394a5dfebd634a900d90b7fa2b79462d78",
+     "pixelSha256": "6d338318b817439d21286d4b8d556b2679ab51306bf9cb79eade26511c095241"
+    },
+    "card-base.png": {
+     "size": [
+      105,
+      188
+     ],
+     "pixelSha256": "d1aee267e048675def0e0830b3476df684eddcf1b81b1286d6ac81afd1d9f38d"
+    }
+   }
   }
  },
  "trainerFronts": {
@@ -734,6 +694,80 @@
     128
    ],
    "pixelSha256": "79e4f57ecb2efad63b5c19fc746b0ac113ceb240ddb6ffe41e928716b94dc94b"
+  }
+ },
+ "judgeSummary": {
+  "hero": "4/5 (base reads smile)",
+  "mom": "4/5 (base reads content)",
+  "professor": "4/5 (base reads content)",
+  "nurse": "4/5 (base reads content)",
+  "naru": "4/5 (base reads smile)",
+  "yurim": "4/5 (base reads content)",
+  "muyeong": "5/6 (base reads content)"
+ },
+ "picks": {
+  "hero": {
+   "letter": "C",
+   "pixelSha256": "e9b353672dd2a8c820401efc20b8fa6a5c0874828aec3ce73b3183873293f888:9cfe905895176ceaced2e34b0a4790cdc55760a6084012824d67c0ff30a4a7ef",
+   "at": "2026-10-21T19:52:08+09:00",
+   "via": "supervisor review of base/*/sheet.png",
+   "by": "supervisor",
+   "delegatedBy": "user (2026-10-16/10-21: generated-image candidates are picked by the supervisor)",
+   "reason": "teal cap with gold star on white front panel and red brim, navy jacket with teal trim, dark navy shirt, orange backpack, green trousers, red sneakers - matches the chip; B/D failed the gate"
+  },
+  "mom": {
+   "letter": "C",
+   "pixelSha256": "5fb8603412d6aa1535cc19c8809fa7eb3e5d3cc3d949e43af1c0f411bd4d968d:69acc9ee34241ae89527d783448d0b834b1daee4684449a214d437ad4f059b86",
+   "at": "2026-10-21T21:52:50+09:00",
+   "via": "supervisor review of base/*/sheet.png",
+   "by": "supervisor",
+   "delegatedBy": "user (2026-10-16/10-21: generated-image candidates are picked by the supervisor)",
+   "reason": "teal eyes that stay teal at 88x92, purple hair band and purple earrings, chestnut bun with long locks, ochre blouse, white apron - only passing candidate"
+  },
+  "professor": {
+   "letter": "A",
+   "pixelSha256": "e2880cf11dae2ecf3817cd4c9b20d84e509e66a88a4a6f8ad760aa22d6d52479:61b47ec23fa5bd492aa83e6780e8f0b602bb5826dcf0aa770aab6a0b8ae537e4",
+   "at": "2026-10-21T21:35:06+09:00",
+   "via": "supervisor review of base/*/sheet.png",
+   "by": "supervisor",
+   "delegatedBy": "user (2026-10-16/10-21: generated-image candidates are picked by the supervisor)",
+   "reason": "clear gold five-pointed star badge, teal eyes, purple round glasses, grey-streaked brown hair, white lab coat - fixes the VQA major (professor2 badge read as a cross)"
+  },
+  "nurse": {
+   "letter": "P",
+   "pixelSha256": "821e317759eae7c0354ab6e1649bcf36befc33359777cde01f29bb6a8d02ab9c:8f40eb62e6a5fa5b1db43c23dcbcffc5b4f129e9deddcdcab2ef88910989f85b",
+   "at": "2026-10-21T19:52:08+09:00",
+   "via": "supervisor review of base/*/sheet.png",
+   "by": "supervisor",
+   "delegatedBy": "user (2026-10-16/10-21: generated-image candidates are picked by the supervisor)",
+   "reason": "dark teal bob, mint-white clinic jacket with navy collar and gold star, navy trousers, white shoes; crisper than M"
+  },
+  "naru": {
+   "letter": "C",
+   "pixelSha256": "b30cb88828cb326651e68a7205c7e78b80921d9209fcb18823cd08102131eb1b:a7a091c658e58513f448338e52c77fee972c6bde256fc0c4236a97ee30894ef3",
+   "at": "2026-10-21T18:45:48+09:00",
+   "via": "supervisor review of base/*/sheet.png",
+   "by": "supervisor",
+   "delegatedBy": "user (2026-10-16/10-21: generated-image candidates are picked by the supervisor)",
+   "reason": "confident grin, ONE pink five-pointed star on the chest, short sleeves with pink cuffs, pink side stripes, teal eyes kept after the char-gen eye-colour fix; A/B read older and softer"
+  },
+  "yurim": {
+   "letter": "D",
+   "pixelSha256": "4d7ea0eee6085e90eddf53593e6b60b4db83f8998aa77ea0c121ae27ea545933:ab02c524ead0831b04c54485063dbb09f2cf4470380e8d699891d9a14226184c",
+   "at": "2026-10-21T20:10:52+09:00",
+   "via": "supervisor review of base/*/sheet.png",
+   "by": "supervisor",
+   "delegatedBy": "user (2026-10-16/10-21: generated-image candidates are picked by the supervisor)",
+   "reason": "only passing candidate; short bushy leafy green hair, cyan eyes, green hoodie with cream band and cream shirt, khaki trousers - closer to the chip than the first yurim job"
+  },
+  "muyeong": {
+   "letter": "B",
+   "pixelSha256": "d7e0aa9eb361a4546d29d809ad924cb8a41eaf245fc7c3b5b715bb971aab7d12:8cb8c16137f9ea8db94dbb51f62f3ab950b1785bbde74f0300633f32c98b9491",
+   "at": "2026-10-21T18:59:10+09:00",
+   "via": "supervisor review of base/*/sheet.png",
+   "by": "supervisor",
+   "delegatedBy": "user (2026-10-16/10-21: generated-image candidates are picked by the supervisor)",
+   "reason": "only candidate that passed; red flame hair, black eye mask, red long coat with yellow bands and shoulder flaps match the chip (re-recorded after char-gen ff92358 re-finish)"
   }
  }
 }
