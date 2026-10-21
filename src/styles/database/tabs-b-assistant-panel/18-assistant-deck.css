@@ -740,6 +740,8 @@ html[data-ai-render="off"] {
   content: ""; position: absolute; left: -4px; top: 10px; bottom: 10px; width: 3px; border-radius: 2px; background: var(--accent);
 }
 .ai-chat-sidebar.has-activity-bar .left-activity-bar .ai-chat-sidebar-tab-label { display: block; font-size: 11px; line-height: 1; }
+/* 영어 「Workshop」 은 48px 막대보다 넓어 잘린다 — 영어에서 공방 이름표만 글자를 조금 줄인다. */
+html[lang="en"] .ai-chat-sidebar.has-activity-bar .left-activity-bar [data-testid="sidebar-workshop"] .ai-chat-sidebar-tab-label { font-size: 9.5px; letter-spacing: -0.2px; }
 .left-activity-badge {
   position: absolute; top: 2px; right: 0; min-width: 16px; height: 14px; padding: 0 4px; border-radius: 7px;
   background: var(--warning, var(--accent)); color: var(--on-accent); font: 700 10px/14px var(--font-ui); text-align: center;

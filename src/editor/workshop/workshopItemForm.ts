@@ -94,7 +94,7 @@ export function renderItemForm(session: WorkshopSession, onSaved: (key: string) 
     class: "workshop-form", dataset: { testid: "workshop-item-form" },
     on: { submit: (event) => { event.preventDefault(); runAction(save, (message) => { error.textContent = `만들지 못했어요: ${message}`; }); } },
     children: [
-      el("h3", { text: "무엇을 만들까요?" }),
+      el("h3", { text: "무엇을 그릴까요?" }),
       el("p", { class: target && target.harnessId !== "map-objects" ? "workshop-blocked" : "workshop-item-meta", dataset: { testid: "workshop-form-target" }, text: destination }),
       field("무엇", title),
       field("어떻게 생겼나요", description),
@@ -103,7 +103,7 @@ export function renderItemForm(session: WorkshopSession, onSaved: (key: string) 
       el("div", {
         class: "workshop-form-actions",
         children: [
-          el("button", { class: "workshop-gen-primary", text: "만들기", attrs: { type: "submit" }, dataset: { testid: "workshop-item-save" } }),
+          el("button", { class: "workshop-primary", text: "후보 그리기", attrs: { type: "submit" }, dataset: { testid: "workshop-item-save" } }),
           el("button", { text: "취소", attrs: { type: "button" }, on: { click: onCancel } }),
         ],
       }),

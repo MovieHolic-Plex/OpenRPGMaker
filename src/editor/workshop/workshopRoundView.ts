@@ -7,9 +7,8 @@
 import type { WorkshopItem, WorkshopRun } from "@/harnesses/_core/workshop/types";
 import { REJECT_REASONS } from "@/harnesses/interior-props/editor/prompts";
 import { el } from "@/util/dom";
-import { workshopObjectId } from "@/project/workshopTiles";
 import { gridDataUrl } from "./pixels";
-import { bakeWorkshopPick, isWorkshopPickBaked, workshopTargetTileset } from "./workshopBake";
+import { armWorkshopStamp, bakeWorkshopPick, isWorkshopPickBaked, workshopTargetTileset } from "./workshopBake";
 import { store as projectStore } from "@/project/store";
 import type { WorkshopSession } from "./workshopSession";
 import { latestRound, roundProgress } from "./workshopStatus";
@@ -34,7 +33,8 @@ function keyButton(action: string, text: string, onClick: () => void, extra: Rec
   return el("button", { text, attrs: { type: "button", ...extra }, dataset: { keyAction: action }, on: { click: onClick } }) as HTMLButtonElement;
 }
 
-export function renderRoundView(session: WorkshopSession, item: WorkshopItem, state: RoundViewState, rerender: () => void): HTMLElement {
+/** close = 공방 화면을 닫는다(「맵에 놓기」 뒤 맵을 바로 클릭할 수 있게). */
+export function renderRoundView(session: WorkshopSession, item: WorkshopItem, state: RoundViewState, rerender: () => void, close: () => void = () => {}): HTMLElement {
   const round = latestRound(item.key, session.rounds);
   const palette = session.runner.palette(item);
   const current = session.runner.currentGrid(item);
@@ -84,7 +84,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     children: [
       note,
       el("button", {
-        attrs: { type: "button" }, dataset: { testid: "workshop-start-round" },
+        class: round ? "" : "workshop-primary", attrs: { type: "button" }, dataset: { testid: "workshop-start-round" },
         text: round ? `후보 ${session.runner.candidates}장 다시 그리기` : `후보 ${session.runner.candidates}장 그리기`,
         on: { click: () => act(() => startRound(noteText())) },
       }),
@@ -97,25 +97,35 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     const grid = pickedRun?.grid;
     if (!grid) return [];
     const baked = isWorkshopPickBaked(item, grid);
-    const objectId = workshopObjectId(item.key);
     const sheetName = item.tilesetId ? `「${projectStore.getCurrent().tilesets[workshopTargetTileset(item)]?.name ?? item.tilesetId}」 칩셋` : "손 도트 실내 칩셋";
+    const placeNote = el("span", { class: "workshop-blocked", attrs: { role: "status" }, dataset: { testid: "workshop-place-note" } });
+    const action = baked
+      ? el("button", {
+        class: "workshop-primary", text: "맵에 놓기", attrs: { type: "button" }, dataset: { testid: "workshop-place" },
+        on: { click: () => { const reason = armWorkshopStamp(item, grid); if (reason) placeNote.textContent = reason; else close(); } },
+      })
+      : el("button", {
+        class: "workshop-primary", text: `고른 ${pick!.letter} 를 프로젝트 칩셋에 넣기`, attrs: { type: "button" }, dataset: { testid: "workshop-bake" },
+        on: { click: () => act(async () => { bakeWorkshopPick(item, grid, palette, session.env); rerender(); }) },
+      });
     return [el("div", {
-      class: "workshop-bake",
+      class: "workshop-bake" + (baked ? " is-baked" : ""), dataset: { testid: "workshop-bake-row", baked: String(baked) },
       children: [
-        el("button", {
-          text: baked ? `칩셋에 넣음 ✓ (${pick!.letter})` : `고른 ${pick!.letter} 를 프로젝트 칩셋에 넣기`,
-          attrs: { type: "button", ...(baked ? { disabled: "" } : {}) },
-          dataset: { testid: "workshop-bake" },
-          on: { click: () => act(async () => { bakeWorkshopPick(item, grid, palette, session.env); rerender(); }) },
+        action,
+        el("div", {
+          class: "workshop-bake-text",
+          children: [
+            el("span", {
+              class: "workshop-item-meta",
+              text: baked
+                ? `${sheetName}에 들어갔어요. 「맵에 놓기」를 누르고 맵을 클릭하면 놓여요. 조수에게 「${item.title} 놓아 줘」라고 해도 돼요.`
+                : `넣으면 이 프로젝트의 ${sheetName} 끝에 칸이 붙고, 조수와 스탬프가 이 기물을 쓸 수 있어요. 되돌리기로 뺄 수 있어요.`,
+            }),
+            // 공용(번들·공용 묶음·스토어)은 3/4 시점 관문을 통과한 그림만 — 공방 그림은 아직 그 영수증이 없어 스토어 올리기에서 막힌다(storePublishBlockReason).
+            el("span", { class: "workshop-item-meta", dataset: { testid: "workshop-shared-note" }, text: "이 게임에만 들어가요. 공용(스토어)에 올리려면 3/4 시점 검사를 통과해야 해요." }),
+            placeNote,
+          ],
         }),
-        el("span", {
-          class: "workshop-item-meta",
-          text: baked
-            ? `${sheetName}에 ${objectId} 로 들어갔어요. 조수에게 「${item.title} 놓아 줘」라고 하면 맵에 놓아요.`
-            : `넣으면 이 프로젝트의 ${sheetName} 끝에 칸이 붙고, 조수와 스탬프가 이 기물을 쓸 수 있어요. 되돌리기로 뺄 수 있어요.`,
-        }),
-        // 공용(번들·공용 묶음·스토어)은 3/4 시점 관문을 통과한 그림만 — 공방 그림은 아직 그 영수증이 없어 스토어 올리기에서 막힌다(storePublishBlockReason).
-        el("span", { class: "workshop-item-meta", dataset: { testid: "workshop-shared-note" }, text: "이 게임에만 들어가요. 공용(스토어)에 올리려면 3/4 시점 검사를 통과해야 해요." }),
       ],
     })];
   };
@@ -132,7 +142,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     ],
   });
 
-  if (!round) return el("div", { children: [...errorLine(), head, ...bakeRow(), startBlock, ...(current ? [compare(null)] : [])] });
+  if (!round) return el("div", { class: "workshop-round", children: [...errorLine(), head, ...bakeRow(), startBlock, ...(current ? [compare(null)] : [])] });
 
   const runs = round.runs;
   state.selected = Math.max(0, Math.min(runs.length - 1, state.selected));
@@ -155,14 +165,15 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
       children: [
         el("div", {
           class: "workshop-card-art",
-          children: run.grid ? [el("img", { attrs: { src: gridDataUrl(run.grid, palette, scale, BACKGROUND), alt: `후보 ${run.letter}` } })] : [el("span", { text: RUN_STATUS[run.status] })],
+          children: run.grid ? [el("img", { attrs: { src: gridDataUrl(run.grid, palette, scale, BACKGROUND), alt: `후보 ${run.letter}` } })]
+            : [el("span", { class: "workshop-card-wait" + (run.status === "drawing" || run.status === "reviewing" || run.status === "queued" ? " is-busy" : ""), text: RUN_STATUS[run.status] })],
         }),
         el("div", { class: "workshop-card-facts", children: facts }),
         ...(run.note ? [el("div", { class: "workshop-item-meta", text: run.note })] : []),
         el("div", {
           class: "workshop-card-actions",
           children: run.grid ? [
-            el("button", { text: picked ? "고름 ✓" : "고르기", attrs: { type: "button" }, dataset: { testid: "workshop-pick" }, on: { click: (e) => { e.stopPropagation(); act(() => choose(run)); } } }),
+            el("button", { class: picked ? "workshop-pick is-picked" : "workshop-pick", text: picked ? "고름 ✓" : "고르기", attrs: { type: "button" }, dataset: { testid: "workshop-pick" }, on: { click: (e) => { e.stopPropagation(); act(() => choose(run)); } } }),
             el("button", { text: "버리기", attrs: { type: "button" }, dataset: { testid: "workshop-reject" }, on: { click: (e) => { e.stopPropagation(); state.rejectFor = run.letter; rerender(); } } }),
             el("button", { text: "이 장 다시", attrs: { type: "button" }, on: { click: (e) => { e.stopPropagation(); act(() => session.engine.redrawRun(round!.id, run.letter, noteText())); } } }),
           ] : [],
@@ -198,15 +209,16 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
 
   const pending = runs.some((run) => run.status === "queued" || run.status === "drawing" || run.status === "reviewing");
   return el("div", {
+    class: "workshop-round",
     children: [
       ...errorLine(),
       head,
       ...bakeRow(),
-      el("p", { class: "workshop-item-meta", text: `1~${runs.length} 카드 · Enter 고르기 · X 버리기 · 0 지금 것이 낫다 · R 이 장 다시 · F 확대 · ↑↓ 기물. 「검수 통과」는 AI 판정일 뿐입니다 — 직접 보고 고르세요.` }),
+      el("p", { class: "workshop-keys", text: `「검수 통과」는 AI 판정일 뿐이에요. 직접 보고 고르세요. 단축키: 1~${runs.length} 카드, Enter 고르기, X 버리기, R 이 장 다시, F 확대.` }),
       el("div", { class: "workshop-cards" + (state.zoom === "big" ? " is-big" : ""), children: runs.map(card) }),
-      compare(selectedRun ?? null),
+      ...(current ? [compare(selectedRun ?? null)] : []),
       pending
-        ? el("button", { attrs: { type: "button" }, text: "이 판 그만 그리기", on: { click: () => act(() => session.engine.cancelRound(round.id)) } })
+        ? el("div", { class: "workshop-start", children: [el("button", { attrs: { type: "button" }, text: "이 판 그만 그리기", on: { click: () => act(() => session.engine.cancelRound(round.id)) } })] })
         : startBlock,
       hidden,
     ],

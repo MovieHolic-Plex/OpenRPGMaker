@@ -83,7 +83,7 @@ async function errorText(response: Response): Promise<string> {
   } catch { return ""; }
 }
 
-export type CompanionProblemKind = "token" | "denied" | "route" | "provider-route";
+export type CompanionProblemKind = "token" | "login" | "denied" | "route" | "provider-route";
 
 export interface CompanionProblem {
   readonly kind: CompanionProblemKind;
@@ -97,6 +97,8 @@ export function describeCompanionProblem(problem: CompanionProblem): string {
   switch (problem.kind) {
     case "token":
       return `AI 연결이 끊겼습니다(${problem.status}, ${problem.route}). 로컬 서버가 다시 시작돼 연결 정보가 바뀐 것 같습니다. 「다시 연결」을 눌러 주세요.`;
+    case "login":
+      return `AI 계정 로그인이 만료됐거나 취소됐습니다(${problem.status}): ${problem.detail}. AI 설정에서 그 계정으로 다시 로그인해 주세요.`;
     case "denied":
       return `AI 요청이 거절됐습니다(${problem.status}, ${problem.route})${problem.detail ? `: ${problem.detail}` : ""}`;
     case "route":
@@ -106,7 +108,16 @@ export function describeCompanionProblem(problem: CompanionProblem): string {
   }
 }
 
+/**
+ * 공급자가 사용자 로그인(OAuth)을 거절한 401 — 동반 서비스 토큰 문제가 아니라 다시 로그인해야 풀린다.
+ * 실측(2026-10-21, ChatGPT 계정): `{"error":"Encountered invalidated oauth token for user, failing request"}` 를 「로컬 서버가 다시 시작돼…」로 잘못 안내했다.
+ */
+const PROVIDER_LOGIN_REJECTED = /invalidated oauth|oauth token|invalid_grant|refresh token|token (?:has )?expired|re-?authenticate|unauthenticated/iu;
+
 function classify(status: number, route: string, detail: string, json: boolean): CompanionProblem | null {
+  if ((status === 401 || status === 403) && json && PROVIDER_LOGIN_REJECTED.test(detail) && !/companion token/iu.test(detail)) {
+    return { kind: "login", status, route, detail };
+  }
   if (status === 401 || status === 403) {
     const kind: CompanionProblemKind = /token|origin|로그인/iu.test(detail) || status === 401 ? "token" : "denied";
     return { kind, status, route, detail };
