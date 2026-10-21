@@ -2226,6 +2226,16 @@ function captureThrowerUrl(): string {
   return /^[a-z][a-z0-9_]*$/u.test(id) ? `/assets/battle-trainers/${id}/back.png` : "/assets/battle-trainers/hero_m/back.png";
 }
 
+/** 던지는 사람의 던지기 시트(troop.trainerSprite.backThrow, 정사각 칸 × N, 마지막 칸 = 빈손 마무리). 없으면 undefined.
+ *  뒷모습 그림이 손에 구슬을 그려 두었으면 엔진 구슬이 손을 떠날 때 마지막 칸으로 바꿔 구슬이 두 개 보이지 않게 한다. */
+function captureThrowerSheetUrl(): string | undefined {
+  const project = store.getCurrent();
+  const id = project.database.troops.find((troop) => troop.trainerSprite?.back)?.trainerSprite?.backThrow;
+  if (!id) return undefined;
+  if (project.assets.uploaded[id]) return resolveAssetResourceUrl(id, { project }) ?? undefined;
+  return /^[a-z][a-z0-9_]*$/u.test(id) ? `/assets/battle-trainers/${id}/throw.png` : undefined;
+}
+
 /** 던지는 사람이 미끄러져 들어와 손을 휘두를 때까지(ms). 구슬은 이 뒤에 손에서 떠난다. */
 export const CAPTURE_THROWER_LEAD_MS = 320;
 
@@ -2283,11 +2293,28 @@ export function playCaptureCinematic(field: HTMLElement, targetId: string, succe
       thrower.style.top = `${box.y.toFixed(1)}px`;
       thrower.style.bottom = "auto";
       thrower.style.width = `${(mineRect.width / fieldScale).toFixed(1)}px`;
-      // 손: 그림의 오른쪽 위 3/4 지점(뒷모습이 손을 들고 있다) — 구슬은 여기서 떠난다.
-      const hand = local(mineRect, 0.78, 0.4);
+      // 손: 뒷모습이 들고 있는 구슬 자리(그림 상자의 0.80, 0.36) — 엔진 구슬은 여기서 떠난다.
+      const hand = local(mineRect, 0.8, 0.36);
       orbFrom = { x: `${hand.x.toFixed(1)}px`, y: `${hand.y.toFixed(1)}px` };
     }
     field.append(thrower);
+    // 구슬이 손을 떠나는 순간 그림 속 구슬을 지운다: 던지기 시트의 마지막 칸(빈손 마무리)으로 바꾼다. 미리 불러 두고, 못 불러오면 뒷모습 그대로 둔다.
+    const sheetUrl = captureThrowerSheetUrl();
+    if (sheetUrl) {
+      const sheet = new Image();
+      const startedAt = performance.now();
+      sheet.onload = () => {
+        if (sheet.naturalHeight <= 0 || sheet.naturalWidth < sheet.naturalHeight * 2) return;
+        at(() => {
+          if (!thrower) return;
+          thrower.src = sheet.src;
+          thrower.style.objectFit = "cover";
+          thrower.style.objectPosition = "100% 100%";
+          thrower.dataset.throwFrame = "last";
+        }, Math.max(0, lead - (performance.now() - startedAt)));
+      };
+      sheet.src = sheetUrl;
+    }
     // 내 몬스터는 던지는 동안 자리를 비켜 준다(같은 자리에 주인공이 선다).
     field.classList.add("battle-capture-thrower-active");
     // 구슬이 손을 떠나 날아가는 동안 주인공이 팔을 거둬 나간다 — 흔들림 내내 서 있지 않는다.

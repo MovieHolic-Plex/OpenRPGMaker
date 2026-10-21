@@ -45,6 +45,9 @@
   z-index: 1;
 }
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-throw-hero { left: 46px; bottom: 10px; }
+/* 허리에서 잘린 뒷모습(아랫줄이 불투명, emeraldTrainerIntro.isBottomCut): 잘린 아랫변을 글상자 윗변(소개 층 아래 끝)에 붙인다.
+   받침 위 10px 에 세우면 잘린 허리 밑으로 받침이 비쳐 몸이 공중에 떠 보였다(r5b 설치, 2026-10-22). 던지기 칸도 같은 자리. */
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-hero-cut="true"] :is(.emerald-trainer-intro-hero, .emerald-trainer-throw-hero) { bottom: 0; }
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-throw-opponent { right: 61px; bottom: 105px; }
 /* 1) 소개: 두 사람이 화면 밖에서 미끄러져 들어온다(오른쪽 상대, 왼쪽 나). */
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="intro"] .emerald-trainer-intro-hero { animation: emerald-trainer-arrive-left 560ms steps(14, end) both; }
@@ -74,6 +77,16 @@
 /* 소개 장면은 자기 받침(::before/::after)을 갖고 있고 전투 받침과 좌표가 같다. 몬스터가 나오는 동안 전투 받침까지 켜 두면
    크기가 변하는 몇 프레임 동안 두 타원이 겹쳐 보인다(VQA R9-1). 소개가 끝나 속성이 빠지면 같은 자리의 전투 받침이 이어받는다. */
 .battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro] :is(.battle-enemy, .battle-actor-group .battle-actor)::before { visibility: hidden; }
+/* 단, 몬스터가 나온 뒤에는 받침을 전투 쪽으로 넘긴다. 소개 층(z 3)은 전투 필드보다 위라 소개 받침이 남아 있으면
+   막 나온 몬스터의 발을 덮었다(관장전 「가라!」 1.2초 동안 상대 몬스터 다리가 잘림, r5b 설치 2026-10-22). 던진 뒤(--emerald-reveal-ms)
+   소개 받침은 사라지고 같은 자리의 전투 받침이 켜진다 — 같은 때 하나만 보인다. foe 는 상대 쪽만, hero 는 상대 쪽은 이미 넘겼고 내 쪽을 넘긴다. */
+.battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro="foe"] .emerald-trainer-intro::after,
+.battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro="hero"] .emerald-trainer-intro::before { animation: emerald-unreveal 1ms linear var(--emerald-reveal-ms, 300ms) both; }
+.battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro="hero"] .emerald-trainer-intro::after { visibility: hidden; }
+.battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro="foe"] .battle-enemy-group .battle-enemy::before,
+.battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro="hero"] .battle-actor-group .battle-actor::before { animation: emerald-reveal 1ms linear var(--emerald-reveal-ms, 300ms) both; }
+.battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro="hero"] .battle-enemy-group .battle-enemy::before { visibility: visible; }
+@keyframes emerald-unreveal { from { visibility: visible; } to { visibility: hidden; } }
 @keyframes emerald-reveal { from { visibility: hidden; } to { visibility: visible; } }
 @keyframes emerald-trainer-throw { from { background-position-x: 0%; } to { background-position-x: 100%; } }
 @keyframes emerald-trainer-arrive-left { from { transform: translateX(-208px); } to { transform: translateX(0); } }

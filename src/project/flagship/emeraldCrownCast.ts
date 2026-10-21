@@ -162,9 +162,20 @@ export function castTheAstraHorizon(project: Project): void {
     mx_troop_mx_map_observatory_boss: "muyeong",
     mx_troop_mx_map_league_0_league_challenge: "naru",
   };
+  // 이름 있는 인물이 아닌 트레이너도 이 게임 전용 앞모습으로(공용 boy·hiker 등은 매끈한 그림이라 새 그림과 어긋났다, 2026-10-21 Opus 검수).
+  const genericFront: Readonly<Record<string, string>> = {
+    mx_troop_mx_map_meadow_trainer_0: "astra_stroll_boy",
+    mx_troop_mx_map_meadow_trainer_1: "astra_researcher",
+    mx_troop_mx_map_meadow_trainer_2: "astra_tamer",
+    mx_troop_mx_map_grove_gym_grunt_0: "astra_vine_keeper",
+    mx_troop_mx_map_grove_gym_grunt_1: "astra_gardener",
+    mx_troop_mx_map_grove_gym_grunt_2: "astra_trainee",
+  };
   for (const troop of project.database.troops) {
     const cid = troopFor[troop.id];
     if (cid && troop.trainerBattle) troop.trainerSprite = { ...(troop.trainerSprite ?? {}), front: TRAINER_FRONTS[cid]! };
+    const generic = genericFront[troop.id];
+    if (generic && troop.trainerBattle) troop.trainerSprite = { ...(troop.trainerSprite ?? {}), front: generic };
     // 주인공 전투 뒷모습: 옛 그림(머리띠·조끼)은 우리 주인공이 아니었다 — char-gen 으로 그린 별 모자·남색 재킷 뒷모습과 던지기 4칸(public/assets/battle-trainers/astra_hero).
     if (troop.trainerBattle && troop.trainerSprite) troop.trainerSprite = { ...troop.trainerSprite, back: "astra_hero", backThrow: "astra_hero" };
   }

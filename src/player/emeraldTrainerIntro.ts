@@ -88,6 +88,28 @@ export function resolveEmeraldTrainerIntro(project: Project, session: PlaySessio
   return opponent && hero ? { role, opponent, hero, opponentThrow, heroThrow } : undefined;
 }
 
+/** 허리에서 잘린 뒷모습(GBA 주인공처럼 아랫변이 글상자에 닿는 그림)인가: 맨 아랫줄의 40% 이상이 불투명하다.
+ *  발이 보이는 전신 그림은 아랫줄이 비었거나 발 몇 칸뿐이라 받침 위에 서고, 잘린 그림은 아랫변을 글상자 윗변에 붙인다. */
+function isBottomCut(image: HTMLImageElement): boolean {
+  const width = image.naturalWidth;
+  const height = image.naturalHeight;
+  if (!width || !height) return false;
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = 1;
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    if (!context) return false;
+    context.drawImage(image, 0, height - 1, width, 1, 0, 0, width, 1);
+    const row = context.getImageData(0, 0, width, 1).data;
+    let opaque = 0;
+    for (let x = 0; x < width; x++) if (row[x * 4 + 3]! > 0) opaque++;
+    return opaque >= width * 0.4;
+  } catch {
+    return false;
+  }
+}
+
 /** One pair per battle, outside field roster reconciliation. Loading/error never hides the real battlers.
  *  단계(BattleDirectorState): intro(둘이 양쪽에서 미끄러져 들어온다) → foe(상대가 볼을 던지고 나간다, 상대 몬스터 등장)
  *  → hero(내가 볼을 던지고 나간다, 내 몬스터 등장). 그림이 계약대로 없으면 마운트하지 않아 연출 없이 지금처럼 시작한다. */
@@ -105,7 +127,9 @@ export function mountEmeraldTrainerIntro(root: HTMLElement, project: Project, se
   let destroyed = false;
   let failed = false;
   let ready = 0;
-  const revealMs = (sheet: TrainerSheet | undefined): number => sheet ? sheet.frames * THROW_FRAME_MS + 120 : 250;
+  // 던지기 시트가 없으면 인물이 걸어 나간 뒤(지연 200ms + 퇴장 380ms)에 몬스터가 나온다 — 250ms 에 내보내면 나가는 인물과 막 나온 몬스터가
+  // 330ms 동안 한 받침 위에 겹쳐 섰다(r5b 설치 정지 화면, 2026-10-22).
+  const revealMs = (sheet: TrainerSheet | undefined): number => sheet ? sheet.frames * THROW_FRAME_MS + 120 : 600;
   const update = (): void => {
     if (destroyed) return;
     const visible = phase !== undefined && !failed && ready === 2;
@@ -116,7 +140,10 @@ export function mountEmeraldTrainerIntro(root: HTMLElement, project: Project, se
       root.style.setProperty('--emerald-reveal-ms', `${revealMs(phase === 'foe' ? pair.opponentThrow : pair.heroThrow)}ms`);
     } else {
       delete layer.dataset.phase;
-      delete root.dataset.emeraldTrainerIntro;
+      // 그림을 아직 불러오는 중이면(소개 단계인데 ready < 2) 몬스터·HUD 를 숨긴 채 기다린다 — 비워 두면 전환 막 사이로
+      // 내 몬스터가 먼저 서 있다가 사라지고 트레이너가 들어왔다(r5b 설치 영상, 2026-10-22). 불러오기에 실패하면 지금처럼 바로 보인다.
+      if (!failed && ready < 2 && phase !== undefined) root.dataset.emeraldTrainerIntro = 'pending';
+      else delete root.dataset.emeraldTrainerIntro;
     }
   };
   for (const [side, picture, sheet] of [['hero', pair.hero, pair.heroThrow], ['opponent', pair.opponent, pair.opponentThrow]] as const) {
@@ -136,6 +163,7 @@ export function mountEmeraldTrainerIntro(root: HTMLElement, project: Project, se
     else applySize(64, 64);
     image.onload = () => {
       if (destroyed) return;
+      if (side === 'hero' && isBottomCut(image)) layer.dataset.heroCut = 'true';
       if (picture.width > 0) {
         if (image.naturalWidth !== picture.width || image.naturalHeight !== picture.height) failed = true;
       } else if (isTrainerPictureSize(image.naturalWidth, image.naturalHeight)) applySize(image.naturalWidth, image.naturalHeight);
@@ -174,6 +202,7 @@ export function mountEmeraldTrainerIntro(root: HTMLElement, project: Project, se
     }
   }
   root.append(layer);
+  root.dataset.emeraldTrainerIntro = 'pending';
   return {
     sync(state) {
       phase = state.step === 'intro' ? (state.trainerIntroduction === true ? 'intro' : state.trainerSendOut) : undefined;
