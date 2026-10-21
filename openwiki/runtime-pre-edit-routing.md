@@ -825,8 +825,16 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
   결과 PNG 를 모델에게 첨부한다(보고는 그림에 보이는 것만). 맵 한정 실행에서는 거부. 헤드리스 도구 run 은 `image-generation-unavailable`. 배경 그림은 object-gate 대상이 아니다.
 - **`decodeImage`(`cutsceneArt/imageProcess.ts`)가 `fetch(dataURL)` 을 썼다** → 출하·팀 호스트 CSP `connect-src 'self'` 가 막아 「NetworkError」. data: 는 직접 Blob 으로 푼다(컷신 그림 처리도 같은 함수).
 - **Claude Code MCP 도구 시간 제한**: 그림 2장 생성(약 60초)이 기본 제한에 끊겨 모델이 「시간 초과」 로 받았다 → `MCP_TOOL_TIMEOUT=900000`(codex 의 tool_timeout_sec=900 과 같게, `localCliAgent/claude.ts`).
+- **보이는 띠에 맞춤(Opus 적대 검수 뒤):** 지평선 배경은 위쪽 빈 줄(비울 사각형 포함, 기본 7줄=112px)만 비친다 — 생성 그림 아래쪽(반영·땅)과
+  그림 가운데에 있던 가까운 층은 타일에 가려 한 번도 안 보였다. 이제 실행기가 그 높이(`panoramaVisibleTop`)를 넘기고, 가까운 층은
+  `seatSilhouetteBand` 가 띠 바닥을 맵 바닥선에 세운다(아래는 띠 마지막 줄로 채움). 윗선이 평평한 띠(하늘까지 통째로 그린 그림)는 거절하고
+  **먼 층만 연결한 뒤 그 사실을 결과에 적는다.** 먼 층 지시는 「달·해·지평선을 그림 위 40% 안」. 모델에게는 `composeVisiblePanorama`
+  (플레이어 첫 화면 = 가운데 320px 폭 × 보이는 높이, 가까운 층 겹침)만 첨부한다 — 전체 그림을 주면 가려진 반영까지 보고했다.
+- **반복하지 않는 축은 카메라를 따라가지 않는다**(`playSceneMapBackground.placeMapBackgroundLayer`): `cameraFollow` 는 두 축에 같이 걸리는데,
+  그림 한 장짜리 축(지평선 loopY:false)이 따라가면 위로 걸을 때 그림이 내려가 위쪽에 검은 띠가 생기고, 실루엣 층은 맵 바닥선을 떠나 아래 채움 줄이 드러났다
+  (출하 플레이어 실측). 이제 깊이는 반복하는 축에만 적용 — 지평선은 가로 시차만, 세로는 화면 고정. 편집기 탭 미리보기는 원래 가로로만 흔든다.
 - **남은 한계:** `show_map_region` 은 배경을 그리지 못해(설계상 거부) 조수가 배경을 눈으로 검수하지 못한다 — 생성 도구는 그림을 첨부해 대신한다.
-  Pi 경로는 되묻기를 건너뛰므로(`executionRoute.ts clarifyBypassed`) 「배경 좀 예쁘게」 는 묻지 않고 해석한다. 칸을 비운 가장자리는 여전히 각지다.
+  Pi 경로는 되묻기를 건너뛰므로(`executionRoute.ts clarifyBypassed`) 「배경 좀 예쁘게」 는 묻지 않고 해석한다. 칸을 비운 가장자리는 여전히 각지다. 견본 바다·구름 바다는 흐릿한 얼룩 질감이고 노을 견본의 해는 7줄 바닥선에 반쯤 잘린다(견본 그림 문제, 이번 변경 밖). 다리 상판 타일(버들항 3640)은 자기 그림에 물이 있어 다리 밑으로 배경이 비치지 않는다.
 
 ## 8차 맵 진입 (2026-09-28)
 

@@ -83,6 +83,9 @@ import type { GameMap, Project } from "../../src/project/types.ts";
 import type { ToolContext, ToolResult } from "../../src/editor/tools/types.ts";
 import { runTool } from '../../src/editor/tools/index.ts';
 import { prepareMapBackgroundGeneration } from '../../src/editor/tools/mapBackgroundGenerationTool.ts';
+import { emptyTopRows } from '../../src/project/mapBackgroundVisibility.ts';
+import { mapTileSize } from '../../src/project/tileGeometry.ts';
+import { composeVisiblePanorama } from '../../src/editor/mapPanoramaGeneration.ts';
 import { prepareOpeningImageRequest, prepareOpeningLayerRequest } from '../../src/editor/tools/cinematicTools.ts';
 import type { CinematicStillResult } from '../../src/editor/openingImageGeneration.ts';
 import { runFfmpegHost, type FfmpegRequest } from './piFfmpegTool.ts';
@@ -552,14 +555,24 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           const args = prepareMapBackgroundGeneration(ctx.project, params as Record<string, unknown>);
           if (scopeGuard.scopeMapIds?.length && !scopeGuard.scopeAllowsSystem) throw new Error('맵 한정 실행에서는 새 배경 그림 리소스를 등록할 수 없습니다. 프로젝트 범위로 실행하세요.');
           if (!options.generateOpeningImage) throw new Error('그림 생성 경로가 없습니다(편집기 연결 필요). 새 배경 그림을 만들지 못했습니다 — 생성 성공으로 보고하지 마세요.');
-          // 층들은 동시에 만든다(한 장 수십 초 — 순서대로면 두 배). 하나라도 실패하면 아무것도 등록하지 않는다.
+          // 플레이어 첫 화면에서 비칠 하늘 높이(px) — 위쪽 빈 줄(비울 사각형 포함) × 칸 크기. 가까운 층 띠를 그 바닥선에 세운다.
+          const bgMap = ctx.project.maps[args.mapId]!;
+          const tileSize = mapTileSize(bgMap, ctx.project.tilesets[bgMap.tilesetId]);
+          const clearRect = args.clearForBackground as { x?: number; y?: number; height?: number } | undefined;
+          const clearedTopRows = clearRect && clearRect.y === 0 && typeof clearRect.height === 'number' ? clearRect.height : 0;
+          const skyRows = Math.max(emptyTopRows(bgMap), clearedTopRows) || Math.ceil(112 / tileSize);
+          const visibleTop = Math.max(32, Math.min(240, skyRows * tileSize));
+          // 층들은 동시에 만든다(한 장 수십 초 — 순서대로면 두 배). 먼 층이 실패하면 아무것도 등록하지 않는다.
+          // 가까운 층만 실패하면(실루엣이 아닌 그림 등) 먼 층만 연결하고 그 사실을 그대로 알린다.
           emit({ type: 'execution_status', name: 'map.background.progress', ok: true, summary: `맵 배경 그림 ${args.layers.length}장(${args.layers.map(layer => layer === 'far' ? '먼 층' : '가까운 실루엣 층').join('·')})을 만드는 중`, data: { toolCallId: id } });
-          const stills = await Promise.all(args.layers.map(layer => options.generateOpeningImage!(openingImageProject(ctx.project, []), { prompt: args.prompt, name: `${args.name}${layer === 'near' ? ' — 가까운 층' : ''}`, panoramaLayer: layer, panoramaView: args.view }, signal ?? options.signal)));
+          const stills = await Promise.all(args.layers.map(layer => options.generateOpeningImage!(openingImageProject(ctx.project, []), { prompt: args.prompt, name: `${args.name}${layer === 'near' ? ' — 가까운 층' : ''}`, panoramaLayer: layer, panoramaView: args.view, panoramaVisibleTop: visibleTop }, signal ?? options.signal)));
           signal?.throwIfAborted();
           const made: { layer: 'far' | 'near'; still: Extract<CinematicStillResult, { ok: true }> }[] = [];
+          const dropped: string[] = [];
           for (const [index, layer] of args.layers.entries()) {
             const still = stills[index]!;
             if (!still.ok) {
+              if (layer === 'near') { dropped.push(`가까운 실루엣 층은 쓸 수 없어 뺐습니다(${still.summary})`); continue; }
               const failure = { ok: false, summary: `맵 배경 그림 생성 실패(${layer}): ${still.summary} 아무것도 등록·연결하지 않았습니다. 견본(set_map_properties background.preset)으로 대신할지 사용자에게 묻고, 생성 성공으로 보고하지 마세요.` };
               recordCall({ toolCallId: id, name: tool.name, args, result: failure });
               throw new Error(failure.summary);
@@ -580,7 +593,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           };
           const connected = runTool(ctx, 'set_map_properties', { mapId: args.mapId, background, ...(args.clearForBackground ? { clearForBackground: args.clearForBackground } : {}) });
           if (!connected.ok) throw new Error(`그림은 만들어 등록했지만(${made.map(entry => entry.still.resourceId).join(', ')}) 맵 배경 연결에 실패했습니다: ${connected.summary}`);
-          const execution = { ...connected, summary: `맵 배경 그림 ${made.length}장(${made.map(entry => `${entry.layer === 'far' ? '먼 층' : '가까운 층'} ${entry.still.resourceId}`).join(', ')})을 실제 생성·등록하고 ${args.mapId} 배경에 연결했습니다 — ${connected.summary}. 첨부한 그림을 보고 사용자에게 실제로 보이는 것만 설명하세요.`,
+          const seen = horizon ? `플레이어 첫 화면에는 그림의 위쪽 ${visibleTop}px(빈 줄 ${Math.round(visibleTop / tileSize)}줄)만 비칩니다. 첨부 그림이 바로 그 첫 화면(가운데 320px 폭, 가까운 층을 겹친 것)이니 이 그림에 보이는 것만 설명하세요 — 그 아래(물·반영·땅)는 타일에 가려 보이지 않습니다.` : '첨부 그림이 첫 화면에 비치는 면입니다. 이 그림에 보이는 것만 설명하세요.';
+          const execution = { ...connected, summary: `맵 배경 그림 ${made.length}장(${made.map(entry => `${entry.layer === 'far' ? '먼 층' : '가까운 층'} ${entry.still.resourceId}`).join(', ')})을 실제 생성·등록하고 ${args.mapId} 배경에 연결했습니다 — ${connected.summary}. ${dropped.length ? `${dropped.join(' ')} ` : ''}${seen}`,
             data: { status: 'generated', mapId: args.mapId, resourceIds: made.map(entry => entry.still.resourceId), view: args.view } };
           const visuals: ActivityVisual[] = [];
           for (const { still, layer } of made) {
@@ -589,11 +603,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           }
           recordCall({ toolCallId: id, name: tool.name, args, result: execution, visuals });
           result = { content: [{ type: 'text', text: JSON.stringify(execution) }], details: execution };
-          // 모델이 실제 그림을 보고 보고하게 한다(브로커 PNG 계약과 같은 PNG 바이트).
-          for (const { still } of made) {
-            const png = /^data:image\/png;base64,/u.test(still.dataUrl) ? still.dataUrl.slice(still.dataUrl.indexOf(',') + 1) : undefined;
-            if (png) result.content.push({ type: 'image', mimeType: 'image/png', data: png });
-          }
+          // 모델에게는 플레이어 첫 화면에 실제로 비치는 부분만 보여 준다 — 전체 그림을 주면 가려진 아래쪽(반영·땅)까지 보고했다(2026-10-22 검수).
+          const visible = await composeVisiblePanorama(far.dataUrl, near?.dataUrl, args.view, visibleTop).catch(() => undefined);
+          if (visible?.startsWith('data:image/png;base64,')) result.content.push({ type: 'image', mimeType: 'image/png', data: visible.slice(visible.indexOf(',') + 1) });
           emit({ type: 'execution_status', name: 'map.background.delivered', ok: true, summary: '생성한 맵 배경 그림을 모델에게 전달했습니다.', data: { resourceIds: made.map(entry => entry.still.resourceId), toolCallId: id } });
         } else result = await tool.execute(id, params, signal);
       }

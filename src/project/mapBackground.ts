@@ -221,9 +221,6 @@ function withMotion<T extends MotionLayer>(layer: T, motion: MapBackgroundMotion
       clear("scrollX"); clear("scrollY"); clear("cameraFollow");
       break;
     case "slowParallax": {
-      // 맨 아래(불투명) 층이 반복하지 않는 축을 가지면 깊이를 주지 않는다 — 한 장짜리 축은 카메라를 따라 밀리면
-      // 그 가장자리가 화면에 들어와 검은 띠가 생긴다(지평선 그림 + 위로 걷기, 2026-10-22 실측). 먼 하늘은 화면 고정(RM2K3)이 맞다.
-      if (index === 0 && (layer.loopX === false || layer.loopY === false)) { clear("cameraFollow"); break; }
       const follow = count <= 1 ? 0.3 : Math.round((0.1 + (0.4 * index) / (count - 1)) * 20) / 20;
       next.cameraFollow = follow;
       break;
