@@ -44,6 +44,8 @@ const SW_STORY = "sw_fl_story";
 const S = {
   START: 0, ARRIVED: 1, STREET: 2, MET: 3, PANTRY: 4, ROOF: 5, EVENING: 6, KONBINI: 7, FLASH: 8,
   WED: 9, WED_TALK: 10, FRI: 11, RUN: 12, PLATFORM: 13,
+  /** 엔딩 C: 회식으로 — 밤거리 비 한 장면 뒤 엔딩. */
+  DINNER: 20,
 } as const;
 
 /** 엔딩 A 문턱 — 호감은 선택 아홉 번에서 최대 12, 정직하게 가면 6~7 이 자연스럽게 닿는다. */
@@ -1091,19 +1093,11 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
         ...emote("ev_fl_f_minho", "sweat"),
         face("@player", dirToward(o.meetingSeat, leadSpot)),
         ...sayAt("lead", "left", "base", "서하 씨, 첫 주 수고했어요. 가요, 다 같이."),
-        // 엔딩 C 의 비(VQA r8: 「비가 오기 시작했다」는 말뿐 비가 없다) — 검은 화면에서 빌딩 앞 밤거리로 옮겨 비를 내린다.
-        // 실내에 비를 뿌리지 않는다. 밤거리의 장면 이벤트는 모두 단계 「==」 조건이라 없는 단계(90)로 두면 아무것도 돌지 않는다.
+        // 엔딩 C 의 비(VQA r8: 「비가 오기 시작했다」는 말뿐 비가 없다) — 검은 화면에서 빌딩 앞 밤거리로 옮기고, 비는 거기 장면이 내린다.
+        // 실내에 비를 뿌리지 않는다. 옮긴 뒤의 명령은 이 맵 이벤트에서 돌지 않으므로 이어지는 연출은 밤거리의 ev_fl_dinner_rain 이 한다.
         ...fadeOut(700),
-        stage(90),
+        stage(S.DINNER),
         transfer(FL_MAP.streetPm, a.street.officeOut.x, a.street.officeOut.y, "down", "none"),
-        { kind: "setWeather", weather: "rain", intensity: 0.6, transitionMs: 0 } as Command,
-        bgm(BGM_RAIN, 1200),
-        ...fadeIn(700),
-        ...think("회사 앞, 비가 오기 시작했다. 9시 40분까지, 아직 시간은 있었다.", "…있었는데."),
-        ...fadeOut(900),
-        stopBgm(),
-        { kind: "setWeather", weather: "none", transitionMs: 0 } as Command,
-        { kind: "triggerEnding", endingId: END_C } as Command,
       ] },
     ]),
   ]));
@@ -1117,6 +1111,17 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   const plat = project.maps[FL_MAP.platformPm]!;
   const p = a.platform;
 
+  add(street, scene("ev_fl_dinner_rain", { x: 3, y: 1 }, S.DINNER, [
+    { kind: "setWeather", weather: "rain", intensity: 0.6, transitionMs: 0 } as Command,
+    bgm(BGM_RAIN, 1200),
+    ...fadeIn(700),
+    ...think("회사 앞, 비가 오기 시작했다. 9시 40분까지, 아직 시간은 있었다.", "…있었는데."),
+    ...fadeOut(900),
+    stopBgm(),
+    { kind: "setWeather", weather: "none", transitionMs: 0 } as Command,
+    stage(S.PLATFORM + 100),
+    { kind: "triggerEnding", endingId: END_C } as Command,
+  ]));
   add(street, scene("ev_fl_run", { x: 2, y: 1 }, S.FRI, [
     // 밤거리 맵 BGM(라운지 피아노)이 질주에 깔리지 않게 — 화면이 검을 때 끊고, 비와 함께 단조 바이올린이 들어온다(r4 「비 오는 밤 쓸쓸하게」).
     stopBgm(),
