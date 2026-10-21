@@ -172,9 +172,10 @@ async function saveThroughUi(page) {
 export async function execute(entry, dir, timeoutMs, config, diagnostics={}) {
   const projectDir=resolve(dir,'project'), host=await startHost(projectDir,dir);
   let browser,context,bootPage,phase='editor-start';const errors=[],requests=[]; const evidence=[];
-  const captureOptions={onPage(page) {
+  const captureOptions={async onPage(page,context) {
     bootPage=page;
     page.on('pageerror',error=>errors.push(error.message));
+    await diagnostics.onPage?.(page,context);
   }};
   try {
     browser=await firefox.launch({firefoxUserPrefs:{'network.notify.changed':false,'network.notify.IPv6':false,'network.captive-portal-service.enabled':false,'network.connectivity-service.enabled':false}});

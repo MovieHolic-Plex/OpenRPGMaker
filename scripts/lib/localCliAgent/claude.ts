@@ -86,7 +86,8 @@ function openClaudeSession(options: LocalCliSessionOptions, toolsEnabled = true)
     binary: options.binary ?? "claude",
     args: buildClaudeArgs(configPath, systemPromptPath, { tools: toolsEnabled, ...(options.model ? { model: options.model } : {}), ...(options.effort ? { effort: options.effort } : {}) }),
     cwd: work.dir,
-    env: { ...process.env, [MCP_TOKEN_ENV]: options.mcpToken },
+    // 그림 생성 같은 긴 도구(한 장 수십 초)가 Claude Code 기본 MCP 도구 시간 제한에 끊기지 않게 — codex 의 tool_timeout_sec=900 과 같은 값.
+    env: { MCP_TOOL_TIMEOUT: "900000", ...process.env, [MCP_TOKEN_ENV]: options.mcpToken },
     stdin: "keep-open",
     onJson: (line) => {
       options.onRaw?.(line);

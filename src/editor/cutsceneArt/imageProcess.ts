@@ -25,10 +25,21 @@ const bytesToBase64 = (bytes: Uint8Array): string => nodeBuffer().from(bytes).to
 
 const hasCanvas = (): boolean => typeof document !== "undefined" && typeof createImageBitmap === "function";
 
+function dataUrlToBlob(dataUrl: string): Blob | undefined {
+  const match = /^data:([^;,]*)(;base64)?,/u.exec(dataUrl);
+  if (!match) return undefined;
+  const body = dataUrl.slice(match[0].length);
+  if (!match[2]) return new Blob([decodeURIComponent(body)], { type: match[1] || "text/plain" });
+  const binary = atob(body), bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+  return new Blob([bytes], { type: match[1] || "application/octet-stream" });
+}
+
 /** dataURL → RGBA. 브라우저는 캔버스, 노드는 pngjs(PNG 한정). */
 export async function decodeImage(dataUrl: string): Promise<RgbaImage> {
   if (hasCanvas()) {
-    const blob = await (await fetch(dataUrl)).blob();
+    // fetch(dataURL) 은 Electron·팀 호스트 CSP(connect-src 'self')가 막는다 — data: 는 직접 풀어 Blob 으로 만든다.
+    const blob = dataUrlToBlob(dataUrl) ?? await (await fetch(dataUrl)).blob();
     const bitmap = await createImageBitmap(blob);
     const canvas = document.createElement("canvas");
     canvas.width = bitmap.width;
