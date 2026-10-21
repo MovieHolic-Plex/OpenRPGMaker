@@ -1,0 +1,15 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "modern-city-interior-m142-h2",
+ "title": "modern_city 실내 기물 m142-h2 (1) — object-gen 다시 그림, 사용자 위임·Opus 적대 VQA 통과 2026-10-21",
+ "note": "delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/m142-h2.opus-vqa-r*.json",
+ "createdAt": "2026-10-21T01:45:55.641Z",
+ "items": [
+  {
+   "sha": "a6bbb84ba6bb1efe63073edacfe01ccc704179fb45c4b8f7cb4c9439b71b97d8",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/mart-sale-endcap",
+   "source": "/home/main/.cache/ogm142/ship/m142-h2/mart-sale-endcap.png"
+  }
+ ]
+}
