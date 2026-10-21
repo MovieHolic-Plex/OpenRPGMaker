@@ -11,11 +11,13 @@
 //   node scripts/runtime-qa.mjs --scenario checkpoints --checkpoint-set fallen-star --checkpoint all --parallel 2
 //                                                        # 타이틀을 거치지 않고 단계마다 바로 시작(체크포인트)
 //   … --checkpoint boss,ending                           # 고른 것만 / 접두사는 boss*
+//   … --netns                                            # 루프백만 있는 네트워크 이름 공간에서(ERR_NETWORK_CHANGED 회피)
 //   … --save-checkpoints                                 # captureCheckpoint op 이 뜬 실제 저장을 세트 파일에 넣는다
 //
 // 게이트가 실패하면 비영점으로 종료한다. 결과는 SUMMARY.md 를 **먼저** 읽어라.
 // 설계: docs/superpowers/specs/2026-08-28-runtime-vision-qa-design.md
 import { chromium, firefox } from "@playwright/test";
+import { spawnSync } from "node:child_process";
 import { join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { runRuntimeQa, startPlayerQaServer } from "./lib/runtimeQaRun.mjs";
@@ -62,7 +64,18 @@ async function loadScenario(name) {
   return scenario;
 }
 
-const args = parseArgs(process.argv.slice(2));
+// --netns: 서버와 브라우저를 빈 네트워크 이름 공간(루프백만)에서 돌린다. 이 머신의 tailscale·docker 인터페이스가
+// 크로미움에 «네트워크 바뀜» 을 계속 알려 vite 모듈 요청이 net::ERR_NETWORK_CHANGED 로 끊기는데, 런치 플래그로는
+// 부하 중에 다 못 막는다(2026-10-21 실측). 바깥 네트워크가 필요한 시나리오에는 쓰지 마라.
+if (process.argv.includes("--netns") && process.env.OPRN_QA_IN_NETNS !== "1") {
+  const inner = process.argv.slice(1).filter((arg) => arg !== "--netns").map((arg) => `'${arg.replaceAll("'", "'\\''")}'`).join(" ");
+  const result = spawnSync("unshare", ["-rn", "bash", "-c", `ip link set lo up && exec ${JSON.stringify(process.execPath)} ${inner}`], {
+    stdio: "inherit",
+    env: { ...process.env, OPRN_QA_IN_NETNS: "1" },
+  });
+  process.exit(result.status ?? 1);
+}
+const args = parseArgs(process.argv.slice(2).filter((arg) => arg !== "--netns"));
 const scenario = await loadScenario(args.scenario);
 // --project 는 픽스처를 갈아끼운다. 시나리오의 기대 좌표/맵은 그 프로젝트에 맞아야 한다.
 const effective = args.project ? { ...scenario, projectFixture: args.project } : scenario;

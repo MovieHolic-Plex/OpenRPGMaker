@@ -145,7 +145,8 @@ async function waitForCheckpointBoot(page) {
       if (error) { finish(); reject(new Error(`체크포인트 부팅 실패: ${error.textContent}`)); }
     };
     const observer = new MutationObserver(check);
-    const deadline = setTimeout(() => { finish(); reject(new Error("QA scene did not become ready")); }, 180_000);
+    // 부하(load 150+) 중 실측 부팅 112~219초 — 체크포인트 부팅은 넉넉히 기다린다.
+    const deadline = setTimeout(() => { finish(); reject(new Error("QA scene did not become ready")); }, 360_000);
     observer.observe(document.documentElement, { childList: true, subtree: true });
     check();
   }));
@@ -1026,7 +1027,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   const startedAt = Date.now();
   let bootMs = null;
   try {
-    await page.goto(playerUrl, { waitUntil: "domcontentloaded", timeout: 180_000 });
+    await page.goto(playerUrl, { waitUntil: "domcontentloaded", timeout: checkpoint ? 360_000 : 180_000 });
     // 체크포인트는 타이틀을 거치지 않는다 — 플레이 씬 훅이 서면 그 상태에 들어온 것이다.
     if (checkpoint) await waitForCheckpointBoot(page);
     else await page.waitForSelector("[data-testid='title-screen']", { timeout: 120_000 });
