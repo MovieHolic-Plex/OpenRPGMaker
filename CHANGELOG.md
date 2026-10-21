@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.303.0 — 2026-10-21
+
+### 기능
+
+- **modern-city** — redraw 1 interior objects (m142-h3) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3177) (`3d9406d`)
+- **modern-city** — redraw 1 interior objects (m142-b7) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3176) (`f0df402`)
+
+### 수정
+
+- **first-love** — konbini plaza props + compact top caption (#3178) (`e41f159`)
+
 ## 0.302.0 — 2026-10-21
 
 ### 기능
