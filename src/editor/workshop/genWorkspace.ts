@@ -281,6 +281,8 @@ function importStep(generator: LocalGenerator, n: number): HTMLElement {
                 : generator === "tile-gen"
                   ? `「${added.title}」을(를) 넣었어요. 타일셋 목록에 새 지형 칩셋으로 들어갔어요(자동 타일 ${autotileCount(added.tilesetIds)}벌). 그 칩셋을 쓰는 맵에서 칠할 수 있어요. 되돌리기로 뺄 수 있어요.`
                   : `「${added.title}」을(를) 넣었어요. 타일셋 목록에 새 칩셋으로 들어갔고 조수도 쓸 수 있어요. 되돌리기로 뺄 수 있어요.`;
+              // 미리 보기 아래라 화면 밖일 수 있다 — 결과 글이 보이게 내린다.
+              status.scrollIntoView({ block: "nearest" });
             },
             (error: unknown) => { add.disabled = false; status.classList.add("is-error"); status.textContent = `넣지 못했어요: ${error instanceof Error ? error.message : String(error)}`; },
           );

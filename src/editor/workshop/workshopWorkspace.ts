@@ -109,8 +109,8 @@ function targetSwitch(s: WorkshopSession): HTMLElement {
     children: [
       el("span", { class: "workshop-item-meta", text: "넣을 곳" }),
       ...options.map((id) => el("button", {
-        class: "workshop-filter" + (id === s.harnessId ? " is-active" : ""),
-        attrs: { type: "button", "aria-pressed": String(id === s.harnessId) }, dataset: { testid: `workshop-target-${id}` },
+        class: "workshop-filter" + (id === s.harnessId ? " is-active" : "") + (id !== "interior-props" && mapName ? " is-map" : ""),
+        attrs: { type: "button", "aria-pressed": String(id === s.harnessId), ...(id !== "interior-props" && mapName ? { title: mapName } : {}) }, dataset: { testid: `workshop-target-${id}` },
         // 칩셋 이름은 데이터라 번역하지 않는 조각으로 따로 둔다(번역기가 이름 속 「·」로 문장을 쪼개지 않게)
         children: id === "interior-props" ? ["실내 가구"] : mapName ? [el("span", { text: "지금 맵 칩셋" }), " ", el("span", { text: mapName, attrs: { translate: "no" } })] : ["맵 물건"],
         on: { click: () => { if (id !== s.harnessId) void openWorkshop(id); } },

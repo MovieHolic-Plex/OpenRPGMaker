@@ -161,7 +161,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     const picked = pick?.roundId === round!.id && pick.letter === run.letter;
     const rejected = state.rejectFor === run.letter;
     const facts = [
-      el("span", { class: "workshop-chip", text: `${run.letter} · ${RUN_STATUS[run.status]}${run.status === "drawing" || run.status === "reviewing" ? ` ${run.attempt}/3` : ""}` }),
+      el("span", { class: "workshop-chip", text: `${run.letter} · ${RUN_STATUS[run.status]}${(run.status === "drawing" || run.status === "reviewing") && run.attempt > 1 ? ` ${run.attempt}/3` : ""}` }),
       ...(run.topRows !== null ? [el("span", { class: "workshop-chip", text: `꼭대기 ${run.topRows}행` })] : []),
       ...(run.verdict ? [el("span", { class: `workshop-chip ${run.verdict.verdict === "PASS" ? "is-pass" : "is-fail"}`, text: run.verdict.verdict === "PASS" ? "검수 통과" : `검수 불통과 ${run.verdict.codes.join(",")}`, attrs: { title: run.verdict.reasons } })] : []),
       ...(run.attempt > 1 ? [el("span", { class: "workshop-chip", text: `다시 그림 ${run.attempt - 1}번` })] : []),
@@ -223,7 +223,8 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
       ...errorLine(),
       head,
       ...bakeRow(),
-      el("p", { class: "workshop-keys", text: `「검수 통과」는 AI 판정일 뿐이에요. 직접 보고 고르세요. 단축키: 1~${runs.length} 카드, Enter 고르기, X 버리기, R 이 장 다시, F 확대.` }),
+      // 그린 장이 하나도 없으면(그리는 중·막힘) 검수·단축키 안내는 소음이다.
+      ...(!runs.some((r) => r.grid) ? [] : [el("p", { class: "workshop-keys", text: `「검수 통과」는 AI 판정일 뿐이에요. 직접 보고 고르세요. 단축키: 1~${runs.length} 카드, Enter 고르기, X 버리기, R 이 장 다시, F 확대.` })]),
       el("div", { class: "workshop-cards" + (state.zoom === "big" ? " is-big" : ""), children: runs.map(card) }),
       ...(current ? [compare(selectedRun ?? null)] : []),
       pending
