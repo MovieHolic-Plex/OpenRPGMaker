@@ -379,8 +379,8 @@ def cmd_validate(theme):
             if k not in info:
                 errs.append(f'줄 {ln}: {k} 없음')
         o = info.get('origin', {})
-        if o.get('round') not in s.get('rounds', {}):
-            errs.append(f'줄 {ln}: origin.round {o.get("round")} 가 rounds 에 없다')
+        if o.get('round') not in s.get('rounds', {}) and o.get('round') not in s.get('plan', {}):
+            errs.append(f'줄 {ln}: origin.round {o.get("round")} 가 rounds 에도 plan 에도 없다')
         for item, why in info.get('skip', {}).items():
             if item not in ids:
                 errs.append(f'줄 {ln} skip: 모르는 항목 {item}')
@@ -407,11 +407,17 @@ def cmd_validate(theme):
         doors = sum(r.replace(' ', '').count('D') for r in b.get('walls', []))
         if doors != 1 and not b.get('doorTwice'):
             errs.append(f'건물 {b["id"]}: 문 {doors}개 — 건물 하나에 문은 정확히 하나')
-        if b.get('walls') and 'D' in b['walls'][-1].replace(' ', '') is False:
+        if b.get('walls') and not b.get('doorTwice') and 'D' not in b['walls'][-1].replace(' ', ''):
             errs.append(f'건물 {b["id"]}: 문은 맨 아래 층에 있어야 한다')
         for ex in b.get('extras') or []:
             if ex.get('part') not in ids:
                 errs.append(f'건물 {b["id"]}: extra {ex.get("part")} 가 items 에 없다')
+    kit_ids = {k['id'] for k in dot.tileset()['structureKits']}
+    for ref in s.get('refs', []):
+        if ref.get('kit') not in kit_ids:
+            errs.append(f'기준 그림 {ref.get("kit")} 가 버들항 structureKits 에 없다')
+    if not s.get('rounds') and not s.get('plan'):
+        errs.append('rounds 도 plan 도 없다 — 첫 판을 적는다')
 
     for rid, rd in s.get('rounds', {}).items():
         path = os.path.join(REPO, rd.get('module', ''))

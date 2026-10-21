@@ -10,7 +10,8 @@
      - hex: [...] 손으로 지은 램프(사막 흙벽·돔, 북방 통나무·눈 지붕처럼 버들항에 없는 재료).
        단마다 밝기가 공유 7단 램프의 같은 단 범위 ±0.04 안이어야 한다(무림·조선 호환 규칙과 같은 검사). 벗어나면 실패.
   3. 출처의 불투명 화소를 밝기순으로 세우고 화소 수 기준 k 등분 → 칸마다 **가장 많이 쓰인 실제 색 하나**(평균을 내지 않는다).
-  4. 모든 색이 공용 시트에 실제로 있는지 대조한다(손 램프도 시트 색이어야 한다 — oprn-atlas 한 계열로 섞이게).
+  4. 버들항 출처 램프(공유·from beodeul)의 모든 색이 공용 시트에 실제로 있는지 대조한다.
+     손 램프(hex)는 버들항에 없는 재료라 시트 대조 대신 7단 밝기 범위 검사를 받는다(7단이 아니면 실패).
   그림자는 버들항 시트에 실제로 있는 반투명 (12,14,20,α88) 하나만 허용한다(던전·무림과 같은 규칙).
 
   python3 src/harnesses/building-kit/palette.py --theme fantasy-kingdom          # palette.json 다시 쓰기
@@ -56,7 +57,40 @@ def dark(c):
     return lum(c) < 110
 
 
-PRED = {'grey': grey, 'warm': warm, 'cream': cream, 'cool': cool, 'dark': dark}
+def darkwarm(c):
+    return warm(c) and lum(c) < 120
+
+
+def green(c):
+    return c[1] > c[0] + 6 and c[1] >= c[2]
+
+
+def ironish(c):
+    return max(c) - min(c) <= 40 and c[2] >= c[0]
+
+
+def teal(c):
+    return c[1] > c[0] + 20 and c[2] > c[0] + 20
+
+
+def red(c):
+    return c[0] > c[1] + 60 and c[0] > c[2] + 60
+
+
+def light(c):
+    return lum(c) > 150
+
+
+def snowy(c):
+    return lum(c) > 140 and c[2] >= c[0] - 4
+
+
+def warmcream(c):
+    return cream(c) and c[0] >= c[2]
+
+
+PRED = {'grey': grey, 'warm': warm, 'cream': cream, 'cool': cool, 'dark': dark, 'darkwarm': darkwarm, 'green': green,
+        'ironish': ironish, 'teal': teal, 'red': red, 'light': light, 'snowy': snowy, 'warmcream': warmcream}
 
 
 # 공유 램프 — 테마 넷이 같은 출처를 쓴다. cells: {'tile': 칸 번호} 또는 {'kit': 키트 id, 'rows': [줄]} 또는 {'group': 타일 그룹 id}
@@ -69,8 +103,8 @@ SHARED = {
               'k': 7, 'pred': 'grey', 'why': '버들항 살림집 기단(맨 아래 줄 회색 주춧돌 — 문기둥 나무색은 뺀다)'},
     'wood': {'cells': [{'kit': 'bd-out-log-wall'}, {'kit': 'bd-out-plank-wall'}, {'kit': 'bd-out-plank-door'}],
              'k': 7, 'why': '버들항 외곽 통나무·널벽·널문 나무'},
-    'iron': {'cells': [{'kit': 'bd-out-log-door'}, {'kit': 'bd-out-log-window'}, {'kit': 'bd-out-log-window-box'}],
-             'k': 5, 'pred': 'cool', 'why': '버들항 문·창의 쇠못·경첩(푸른 회색)'},
+    'iron': {'cells': [{'kit': 'bd-prop-lamp_double'}, {'kit': 'bd-prop-lamp_crook'}, {'kit': 'bd-out-hanging-sign'}],
+             'k': 6, 'pred': 'ironish', 'why': '버들항 가로등 기둥·간판 걸이 쇠(푸른 회색 — 유리·등불 색은 뺀다)'},
 }
 
 
@@ -186,16 +220,24 @@ def build(theme):
         srcs[name] = {'kind': 'beodeul', 'from': spec['cells'], 'pixels': npx, 'pred': spec.get('pred'), 'why': spec.get('why', '')}
 
     for name, cols in ramps.items():
+        if srcs[name]['kind'] == 'hex':
+            continue
         for c in cols:
             if tuple(int(c[i:i + 2], 16) for i in (1, 3, 5)) not in sheet_cols:
                 fail.append(f'{name}: 공용 시트에 없는 색 {c}')
 
-    env = envelope({k: [hx(c) for c in v] for k, v in ramps.items() if len(v) == 7})
+    shared7 = {k: v for k, v in ramps.items() if srcs[k]['kind'] == 'shared' and len(v) == 7}
+    if not shared7:
+        fail.append('공유 7단 램프가 없어 손 램프 밝기 범위를 잴 수 없다')
+    env = envelope({k: [tuple(int(c[i:i + 2], 16) for i in (1, 3, 5)) for c in v] for k, v in shared7.items()}) if shared7 else []
     for name, cols in ramps.items():
-        if len(cols) != 7 or srcs[name]['kind'] != 'hex':
+        if srcs[name]['kind'] != 'hex':
+            continue
+        if len(cols) != 7:
+            fail.append(f'{name}: 손 램프는 7단이어야 한다({len(cols)}단) — 버들항 7단 램프와 단마다 밝기를 맞춘다')
             continue
         for t, c in enumerate(cols):
-            l = lum(hx(c)) / 255.0
+            l = lum(tuple(int(c[i:i + 2], 16) for i in (1, 3, 5))) / 255.0
             if not env[t][0] <= l <= env[t][1]:
                 fail.append(f'{name}: {t}단 {c} 밝기 {l:.2f} 가 버들항 같은 단 범위 {env[t][0]:.2f}~{env[t][1]:.2f} 밖')
     if fail:
