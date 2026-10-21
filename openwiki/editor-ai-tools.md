@@ -1,5 +1,21 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 없는 기물 그리기 `generate_missing_object` (2026-10-21)
+
+조수가 기물 하나를 놓아 달라는 요청을 받았는데 칩셋에 그 물건이 없을 때, 공방 object-gen 실행기를 사용자 자기 AI 계정으로 돌려 후보를 그리고 고른 것을 **그 맵 칩셋의 공방 칸**으로 구워 놓는다. 스킬 `assistant-skills/missing-object-generation/SKILL.md`, 정책 한 줄 `OBJECT_GEN_POLICY_LINE`(`src/ai/promptPolicies.ts`, Pi 시스템 프롬프트 공간 작업에 실린다).
+
+- **순서(조수)**: 찾기 → 있으면 `stamp_object`/`build_hand_interior_room` → 사용자가 콕 집은 물건이 정말 없을 때만 `generate_missing_object` → 턴 끝 → 카드가 그림 → 후속 요청 `[공방에서 그려 넣음] … 물체 id workshop:…` → `stamp_tileset_object({mapId, objectId, base})`.
+  `list_tileset_objects` 는 팩·공방·mc 킷만 본다 — 결과가 비면 요약이 `list_spatial_designs({kind:"object", query})`(칩셋 소품 킷 `kit:…`·공용 `obj:…`)를 가리킨다.
+- **도구**(`src/editor/tools/objectGenTool.ts`, read 도구·`fillsCurrentMapId`): 인자 title·description·objectKind(`floor|wall|hang|flat`)·tilesW(1~4)·tilesH(1~3)·rise(0~48)·base `{x,y}`·need·notThese(string[]). 자유 키 객체·빈 enum 없음(CCA 400 함정).
+  거절: 16px 아닌 칩셋 `unsupported-tileset` · 머리 낱말이 사람·동물 `people-not-generated`(→ `place_npc`) · 바닥·벽·물·길 `terrain-not-object`(→ `ask_missing_tiles`) · 이름이 맞는 킷/손 도트 부품이 이미 있음 `object-exists`(그 id 를 돌려준다. 실제로 다른 물건이면 `notThese` 로 다시) · 크기 한도(실내 3×2·rise≤32, 맵 4×3·rise≤48).
+  성공하면 data = `ObjectGenRequest`(`src/editor/workshop/objectRequest.ts`) 이고 요약이 턴을 끝내라고 한다.
+- **카드**(`src/editor/panels/aiObjectGenCard.ts`, 스토어 카드와 같은 길 — `STORE_CARD_TOOLS`·`createStoreCard`): 붙자마자 판을 시작한다(`assistantObjectGen.ts` `startObjectGenRound` — 공방 세션에 새 기물 정의를 넣고 `engine.startRound`, 실내는 `interior-props`, 그 밖 16px 은 `map-objects` + `mapObjectPalette`). 후보 그림·검수 결과·「이걸로 넣기」, 「알아서 고르기」(기본 꺼짐, `oprn:assistant-objectgen-autopick`, 검수 PASS 첫 후보만), 「다시 그리기」(실패·불통과만), 「공방에서 보기」, 「있는 것으로 해 줘」(판 취소 + 대안 후속 요청). AI 미연결이면 「AI 연결하기」.
+  판은 공방 「물건·가구」 화면에도 그대로 보인다(같은 IndexedDB 세션).
+- **굽기**: `bakeWorkshopPick(item, grid, palette, env, { autoPicked })` — 알아서 고른 것은 설명서 `review.pick`(사람 선택) 을 비우고 출처 도구 문자열 끝에 `/auto-pick` 을 붙인다. 시트 자르기는 순수 모듈 `src/harnesses/_core/workshop/bakeSheet.ts`(`workshopBakeSheet`·`workshopGridHash`).
+- **관문**: 공방 칸은 이 게임에만 들어간다. 스토어 올리기·공용 DB 는 막힌다(`storePublishBlockReason`). object-gate 영수증은 공방 굽기에 아직 배선되지 않았다 — 「3/4 관문 미통과」 상태의 로컬 그림이다.
+- **그리지 않는 것**: 「분위기 있는 거 하나」처럼 무엇인지 안 정한 요청(있는 것에서 고른다), 사람·동물(캐릭터 칩), 칸 타일(나중 tile-gen · 지금은 `ask_missing_tiles`), 16px 아닌 칩셋.
+- **QA**: `scripts/qa/objectgen-assistant/` — `dump-system-prompt.mjs`(실제 Pi 시스템 프롬프트), `assistant-tool.sh`(헤드리스 `oprn-tools --assistant` 로 조수 도구 호출 기록), `driver.mjs`(dev 빌드 한 장에 실제 카드를 붙이고 공방 채팅을 `claude -p` 로 잇는다). 결과는 아래 「시험 결과」.
+
 ## 조수 스킬 읽기 `read_assistant_skill` · 장면 다듬기 `game-scene-polish` (2026-10-21)
 
 데모 세 편(「첫사랑」·Fallen Star·Astra Horizon)을 사람이 손으로 고친 결함을 조수가 같은 실수로 되풀이했다(사용자: 「생각보다 멍청하다」). 교훈을 조수가 실제로 읽는 스킬과 자동 경고 둘로 만들었다.
