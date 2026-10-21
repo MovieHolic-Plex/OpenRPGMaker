@@ -1,5 +1,16 @@
 # 버들항 v6·v7 — 로마풍 항구 도시를 편집기 맵·공용 타일셋으로 (beodeul_city)
 
+## 출처 정정 (2026-10-22) — RTP 파생 칸은 크레딧, 나무는 다시 그린다
+
+버들항 v6 는 「손 도트 원본」만으로 이루어진 시트가 아니다. 파이프라인(`scripts/content/lib/city_v6/` 의 city6·terrain·pz·pn·pj·pk)이
+`assets/jungle-chipset-v6.png`(옛 숲마을 시트를 다시 칠한 것)에서 벽돌·기와·판자·포석길·광장·흙·나무를 잘라 썼다.
+- **EasyRPG RTP retro_Exterior(CC BY 4.0) 파생**은 `beodeul_city` 784칸, architecture 94, forms 86, reviewed 54칸이다. 길 오토타일 16변형, 광장, 벽돌, 기와, 판자가 여기에 든다.
+  크레딧은 `public/assets/ATTRIBUTION.md` 의 `rtp-derived-sheets` 목록에 있다. 굽기 스크립트는 `scripts/content/rtp-attribution/rtp_check.py` 의 `require_credit` 를 부른다.
+  목록에 없는 시트에 RTP 화소가 들어가면 굽기가 멈춘다. 새 버들항 시트를 만들면 목록에 한 줄을 더한다.
+- **RTP 가 아니고 출처가 불명확한 것**은 활엽수 다섯(oakA·oakB·bushC·bushD·bushE → `bd-tree-*`), 수관·밑동, `beodeul_ground` 나무 칸, `beodeul_warm_trees`, `beodeul_nature` 활엽 수관 윤곽,
+  jungle 땅 칸 7·129·160·302·363·365·393·394·423(`lawn16.png` 포함)이다. 숲마을의 Tibo 편집 식생에서 나왔다. 새 손 도트로 칸 번호를 지키며 제자리 교체한다(진행 중).
+  자세한 감사 결과는 `openwiki/copyright-purge.md` 「정정 (2026-10-22)」에 있다.
+
 ## 2026-10-05 건물 반려와 사람의 허용/거절 대기열
 
 사용자는 아래 `beodeul_forms`의 ㄱ자집·여관·대장간·창고 4종을 반려했다. 검사 통과를 미적 승인으로 쓰지 않는다. `beodeulForms.ts`는 새/기존 공용 선택 목록에서 이 4종의 본체·그림자·기초 키트를 제거하며, 기존 저장 지도의 칸·그림·통행은 보존한다. 관련 공용 참고문서는 반려를 명시한 과거 기록이다. 긴 민가와 좁은 이층집의 키트만 남긴다.

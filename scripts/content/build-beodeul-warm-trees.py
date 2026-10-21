@@ -42,6 +42,7 @@ count=(len(cells)+7)//8*8
 atlas=Image.new('RGBA',(128,count//8*16))
 for n,im in enumerate(cells):atlas.paste(im,(n%8*16,n//8*16))
 atlas.save(out/'chipset.png')
+import sys as _s, pathlib as _pl; _s.path.insert(0, str(_pl.Path(__file__).resolve().parents[2] / 'scripts/content/rtp-attribution')); from rtp_check import require_credit; require_credit(out/'chipset.png')  # EasyRPG RTP CC BY credit check (public/assets/ATTRIBUTION.md)
 catalog=dict(id='beodeul_warm_trees',texture='tex_beodeul_warm_trees',tileSize=16,tilesPerRow=8,count=count,selection='warm',recipes=recipes)
 (R/'src/assets/beodeulWarmTreesCatalog.json').write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+'\n')
 (R/'tiledata/beodeul-ground/warm-trees-catalog.json').write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+'\n')

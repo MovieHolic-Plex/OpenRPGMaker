@@ -5,6 +5,7 @@ World / EasyRPG RTP를 바탕으로 만든 OPRN 월드맵 아이콘의 사람 �
 
 - 앞 480칸: EasyRPG RTP World(`easyrpg-chipset-world-transparent.png`, 공개 키트 저장소에 있다)의 변경 없는 RGBA 사본.
 - 뒤 칸: fantasy·desert-east·modern-sf 중 사람이 받은 원본72개와 고른 후보7개.
+  이 아이콘들도 EasyRPG RTP `Exterior`·`Dungeon`·`Interior`(JasonPerry, CC0) 칸의 화소를 쓴다(2026-10-22 RTP 출처 검사, `scripts/content/rtp-attribution/rtp_check.py`). 크레딧은 `../easyrpg/AUTHORS.md`, 라이선스 원문은 `../easyrpg/COPYING`.
 - 원본 PNG·선택 판/시도·원본 해시·현재 SHA256: 공개 키트 `tiledata/worldmap-kit/selected/selected.json`.
 - 처리: 16px 고정 칸 배치, 분홍 키 제거, 그림자 키를 검정 alpha80로 변환. 리샘플링·새 픽셀 저작 없음.
 - 굽기 코드: `src/harnesses/worldmap-icons/bake.py` (저장소 코드 라이선스).
