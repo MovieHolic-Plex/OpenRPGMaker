@@ -67,3 +67,36 @@ export function detourAroundPlayer(input: DetourInput): MoveCommand[] | null {
   }
   return [...moves.slice(0, blockedIndex), ...path, ...moves.slice(k)];
 }
+
+/**
+ * 비켜 갈 길이 아예 없을 때(인물이 통·선반 사이 한 칸 틈에 서 있고 그 틈 앞이 말을 건 주인공 자리) 주인공이 한 칸 비켜 설 방향.
+ * 왜(2026-10-22 r3 npc-walk-out): 여관 주인이 술통 진열대와 통 사이 틈에 섰고, 유일한 출구 칸에 주인공이 서 있었다. 경로는
+ * 기다리기(wait)라 이벤트가 30초 멈췄고 주인공도 움직일 수 없었다. 주인공을 인물의 남은 경로 밖 빈 칸으로 한 칸 옮기면 둘 다 풀린다.
+ * 인물의 남은 걸음 칸을 피하고, 인물이 처음 가려는 방향과 직각인 쪽을 먼저 고른다.
+ */
+export function sidestepForPlayer(input: {
+  readonly moves: readonly MoveCommand[];
+  readonly blockedIndex: number;
+  readonly from: { readonly x: number; readonly y: number };
+  readonly player: { readonly x: number; readonly y: number };
+  readonly canPlayerStand: (x: number, y: number) => boolean;
+}): Dir | null {
+  const path = new Set<string>([`${input.from.x},${input.from.y}`]);
+  let cur = { x: input.from.x, y: input.from.y };
+  let first: Dir | null = null;
+  for (let k = input.blockedIndex; k < input.moves.length; k++) {
+    const m = input.moves[k];
+    if (!m || m.kind !== "move" || !DELTA[m.dir]) break;
+    first ??= m.dir;
+    cur = { x: cur.x + DELTA[m.dir].x, y: cur.y + DELTA[m.dir].y };
+    path.add(`${cur.x},${cur.y}`);
+  }
+  const vertical = first === "up" || first === "down";
+  const order: Dir[] = vertical ? ["left", "right", "down", "up"] : ["down", "up", "left", "right"];
+  for (const dir of order) {
+    const x = input.player.x + DELTA[dir].x, y = input.player.y + DELTA[dir].y;
+    if (path.has(`${x},${y}`) || !input.canPlayerStand(x, y)) continue;
+    return dir;
+  }
+  return null;
+}

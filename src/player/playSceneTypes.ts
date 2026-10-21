@@ -83,6 +83,8 @@ export type AutonomousMover = {
    * playSceneAutonomous §retryBlockedStep 참조.
    */
   blockedSteps?: number;
+  /** 명령 경로가 막혀 주인공을 한 칸 비켜 세웠다(commandRouteDetour.sidestepForPlayer) — 한 번만. */
+  playerSidestepped?: boolean;
   /** 페이지 생활 경로만 막힌 걸음을 보존하고 이벤트 점유를 피해 재탐색한다. */
   livingRoute?: boolean;
   /** 재탐색 사이의 시뮬레이션 시간. 표면 갱신/성공한 걸음에서 초기화하지 않는다. */
