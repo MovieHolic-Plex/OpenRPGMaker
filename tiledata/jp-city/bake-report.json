@@ -1,17 +1,17 @@
 {
  "tiles": {
-  "count": 20040,
+  "count": 20071,
   "tilesPerRow": 96,
-  "rows": 209,
+  "rows": 210,
   "sheetPx": [
    1536,
-   3344
+   3360
   ],
   "height_ok": true,
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 15013,
+  "block_cells": 15044,
   "legacy": 1890,
   "legacy_ids": [
    3747,
@@ -110,40 +110,40 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 15013
+   "block": 15044
   }
  },
  "pc_counts": {
-  "star": 7535,
-  "solid": 4351,
+  "star": 7550,
+  "solid": 4357,
   "floor": 3990,
-  "solidfloor": 1308,
+  "solidfloor": 1318,
   "flat": 811,
   "blank": 155
  },
  "kits": {
-  "total": 1560,
+  "total": 1566,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 1384
+   "block-kit": 1390
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 1384
+  "block_kit": 1390
  },
  "groups": {
-  "total": 375,
+  "total": 376,
   "by_kind": {
    "street": 9,
    "band": 60,
    "deco": 73,
    "prop": 11,
-   "block": 222
+   "block": 223
   }
  },
  "autotiles": {
@@ -219,7 +219,8 @@
    "shitamachi_pack",
    "jp_regions_pack",
    "jp_inaka_pack",
-   "jp_forest_r4"
+   "jp_forest_r4",
+   "interior_house3"
   ],
   "merged": [
    "autotiles_ground",
@@ -263,7 +264,8 @@
    "shitamachi_pack",
    "jp_regions_pack",
    "jp_inaka_pack",
-   "jp_forest_r4"
+   "jp_forest_r4",
+   "interior_house3"
   ],
   "missing": [],
   "on_disk_not_in_order": [
@@ -609,11 +611,19 @@
     "groups": 2,
     "kits": 0,
     "notes": "나무 composer 숲 r4(활엽): 1층 숲 바닥 오토타일 + 나무 그림 조각(2~4층, 칸마다 깊이 순)."
+   },
+   {
+    "name": "interior_house3",
+    "cells": 31,
+    "autotiles": 0,
+    "groups": 1,
+    "kits": 6,
+    "notes": "일본 집 보강(object-gen) — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 0 · 벽면 1 · 천장 0 · 가구 6 · 탁자 0 · 탁상 1"
    }
   ]
  },
  "reassembly": {
-  "kits_checked": 1560,
+  "kits_checked": 1566,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -685,7 +695,7 @@
    "pool": 1,
    "tram": 15,
    "subway": 37,
-   "in": 775,
+   "in": 781,
    "gnd": 25,
    "utility": 1,
    "postbox": 1,
@@ -711,9 +721,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 20040,
-  "kits_checked": 1560,
-  "groups_checked": 375,
+  "tiles_checked": 20071,
+  "kits_checked": 1566,
+  "groups_checked": 376,
   "autotiles_checked": 25
  },
  "relayout_identical": {
@@ -775,10 +785,10 @@
    }
   }
  },
- "sheet_hash": "8a8de9d178d30d91f448f5c8bf3729a1680fbd0f",
+ "sheet_hash": "c0b83981f013f6aa69e4681fc3ff073f15d18d6f",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 1560,
+  "kits_checked": 1566,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -850,7 +860,7 @@
    "pool": 1,
    "tram": 15,
    "subway": 37,
-   "in": 775,
+   "in": 781,
    "gnd": 25,
    "utility": 1,
    "postbox": 1,
@@ -876,9 +886,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 20040,
-  "kits_checked": 1560,
-  "groups_checked": 375,
+  "tiles_checked": 20071,
+  "kits_checked": 1566,
+  "groups_checked": 376,
   "autotiles_checked": 25
  },
  "files": {
