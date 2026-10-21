@@ -795,6 +795,32 @@ function recastPeople(project: Project): void {
   // 챔피언은 단 위 4번째 줄이라, 문으로 들어서면 카메라가 아래쪽에 붙어 머리·상체가 화면 위로 잘렸다 — 한 칸 내려 바닥(324) 위 5번째 줄에 세운다.
   if (champion) champion.y = 5;
   closeVoidEdges(project);
+  fixArrivalFacing(project);
+}
+
+/**
+ * 문·가장자리 이동 도착 방향이 전부 「아래」였다 — 1번 도로에서 북쪽으로 걸어 실바나에 들어서는데 카메라를 보고 서 있었다(2026-10-21 검수).
+ * 야외에서 나가는 문은 도착 칸이 도착 맵 아래쪽 절반이면 위로 걸어 들어온 것이고(건물 안·북쪽 맵 끝), 건물 안에서 나오는 문은 언제나 아래다.
+ */
+function fixArrivalFacing(project: Project): void {
+  const outdoors = new Set(["mx_map_home", "mx_map_grove", "mx_map_meadow", "mx_map_garden"]);
+  const visit = (node: unknown, apply: (command: { mapId: string; x: number; y: number; direction?: string }) => void): void => {
+    if (Array.isArray(node)) { for (const item of node) visit(item, apply); return; }
+    if (!node || typeof node !== "object") return;
+    const record = node as Record<string, unknown>;
+    if (record.kind === "transfer" && typeof record.mapId === "string" && typeof record.x === "number" && typeof record.y === "number") apply(record as { mapId: string; x: number; y: number; direction?: string });
+    for (const value of Object.values(record)) visit(value, apply);
+  };
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      if (!event.id.includes("_to_")) continue;
+      visit(event.pages, (command) => {
+        const dest = project.maps[command.mapId];
+        if (!dest) return;
+        command.direction = outdoors.has(map.id) && command.y > dest.height / 2 ? "up" : "down";
+      });
+    }
+  }
 }
 
 /**
