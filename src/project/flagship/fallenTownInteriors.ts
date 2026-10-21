@@ -125,7 +125,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       dress: [["orrery", 15, 15], ["globe", 13, 12], ["book pile", 18, 12], ["desk 3x1", 22, 16], ["owl perch", 27, 16], ["scroll rack", 13, 16],
         ["desk 2x2", 14, 4], ["book pile", 12, 3],
         // 서고 가운데·거실 아랫단이 빈 마루로 남았다(VQA r7 minor) — 읽는 탁자와 의자, 거실 찻상.
-        ["tea 2x2", 17, 14], ["chair E", 16, 14], ["chair W", 19, 14], ["book pile", 22, 14],
+        ["tea 2x2", 17, 15], ["chair E", 16, 15], ["chair W", 19, 15], ["book pile", 22, 14],
         ["tea 2x2", 6, 15], ["chair E", 5, 15], ["chair W", 8, 15]],
       people: [
         {

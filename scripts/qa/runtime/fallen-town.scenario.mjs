@@ -14,7 +14,7 @@ const look = (id, note, x, y, dir = "down") => ({
 
 export default {
   id: "fallen-town",
-  projectFixture: process.env.RES_FIXTURE ?? "/tmp/fs-town42.json",
+  projectFixture: process.env.RES_FIXTURE ?? "/tmp/fs-town45.json",
   viewport: { width: vw, height: vh },
   beats: [
     { id: "title", note: "타이틀", ops: [
@@ -62,6 +62,9 @@ export default {
     { id: "to-forest", note: "성문 통로 → 숲", ops: [
       { kind: "teleport", mapId: "fs_hub", x: 48, y: 16 }, { kind: "hold", dir: null, ms: 500 },
       { kind: "hold", dir: "up", ms: 700 }, { kind: "hold", dir: null, ms: 1500 },
+    ], shot: true },
+    { id: "crash-site", note: "숲 추락지 — 구덩이·관·연기", ops: [
+      { kind: "teleport", mapId: "fs_forest", x: 15, y: 9 }, { kind: "face", dir: "up" }, { kind: "hold", dir: null, ms: 2200 },
     ], shot: true },
     { id: "back-to-town", note: "숲 → 성문 앞 도착(성문을 등지고)", ops: [
       { kind: "teleport", mapId: "fs_forest", x: 15, y: 38 }, { kind: "hold", dir: null, ms: 500 },

@@ -576,7 +576,9 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   }
   for (const [event, dx, dy, tex, index] of formation) {
     event.x = lead.x + dx; event.y = lead.y + dy;
-    for (const page of event.pages ?? []) if (page.graphic?.sprite) page.graphic.direction = "left";
+    // 포고는 남쪽(길 아래 풀밭)에 모인 백성에게 한다 — 발렌과 호위 모두 남쪽을 보고 선다. 서쪽(일행 쪽)을 보던 옆모습은
+    // 백성 쪽이 아니라 카메라를 보는 것처럼 읽혔다(VQA r8 major).
+    for (const page of event.pages ?? []) if (page.graphic?.sprite) page.graphic.direction = "down";
     setEventChip(hub, event.id, tex, index); // 방향이 바뀌면 칩 프레임 번호도 다시 고른다
   }
 
@@ -592,10 +594,11 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   const near = (x: number, y: number, r: number, c: { x: number; y: number }) => Math.abs(x - c.x) <= r && Math.abs(y - c.y) <= r;
   const spots: { x: number; y: number }[] = [];
   const candidates: { x: number; y: number; d: number }[] = [];
-  for (let y = valen.y - 1; y <= valen.y + 4; y += 1) for (let x = valen.x - 6; x <= valen.x + 1; x += 1) {
+  // 백성은 발렌 남쪽(길 아래 풀밭)에 모여 위를 본다.
+  for (let y = valen.y + 2; y <= valen.y + 5; y += 1) for (let x = valen.x - 5; x <= valen.x + 4; x += 1) {
     if (Math.abs(x - start.x) <= 1 || near(x, y, 1, valen) || !free(x, y)) continue;
     if ([...doorCells].some((k) => { const [dx, dy] = k.split(",").map(Number); return Math.abs(x - dx!) <= 2 && Math.abs(y - dy!) <= 2; })) continue;
-    candidates.push({ x, y, d: Math.hypot(x - (valen.x - 2), y - (valen.y + 2)) });
+    candidates.push({ x, y, d: Math.hypot(x - valen.x, y - (valen.y + 3)) });
   }
   candidates.sort((p, q) => p.d - q.d);
   for (const c of candidates) {
@@ -1411,25 +1414,30 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       ["bd-pick-deep-forest-path-stump", 3.3], ["bd-pick-deep-forest-path-log-fallen", 3.9], ["bd-pick-deep-forest-path-heath-a", 1.6],
       ["bd-pick-deep-forest-path-heath-b", 4.6], ["bd-pick-deep-forest-path-fern-c", 5.4], ["bd-pick-deep-forest-path-stump", 5.9],
       ["bd-pick-deep-forest-path-heath-c", 2.2],
+      // 충격에 넘어간 나무 — 바깥을 향해 누운 통나무를 더(VQA r8 「쓰러진 나무 3~5」).
+      ["bd-pick-deep-forest-path-log-fallen", 0.65], ["bd-pick-deep-forest-path-log-fallen", 3.45], ["bd-pick-deep-forest-path-log-fallen", 5.6],
     ];
     // 흙길 오토타일이 오목한 모서리 칸을 스스로 채운다 — 실제로 바뀐 칸을 다시 모아 둑을 얹는다.
     const live = M(ids.forest);
     for (let c = 0; c < live.lowerTiles.length; c += 1) if (live.lowerTiles[c] !== fm.lowerTiles[c] && fm.lowerTiles[c] === 737) pit.add(c);
+    // 남쪽에서 이어지는 숲길 칸도 「안쪽」으로 쳐서 구덩이와 숲길 사이에 둑이 가로막지 않게 한다(숲길 자기 둑이 있는 칸은 rimPit 이 건너뛴다).
+    const rimCells = new Set(pit);
+    for (const c of pit) for (const k of [c - 1, c + 1, c - live.width, c + live.width]) {
+      if (!pit.has(k) && (metaPit[live.lowerTiles[k]!]?.label ?? "").startsWith("버들항 · 모랫길")) rimCells.add(k);
+    }
+    // 구덩이에 닿는 숲길 칸은 몸통 흙으로 — 숲길 오토타일 가장자리 칸이 제 윗변에 풀 띠를 그려 구덩이 바닥을 가로질렀다(VQA r8).
+    for (const k of rimCells) live.lowerTiles[k] = body >= 0 ? body : 23175;
     // 앞선 마감이 남긴 둑 덧그림(이름표 없는 덧붙임 칸)을 구덩이 안·윗단에서 걷는다 — 안쪽에 남으면 흙 위에 검은 테 조각이,
-    // 되돌린 풀 위에 남으면 풀밭 한가운데 네모 테가 보였다. 남쪽 숲길 둑(아랫단)은 그대로 둔다.
+    // 되돌린 풀 위에 남으면 풀밭 한가운데 네모 테가 보였다. 구덩이에 닿는 숲길 칸의 풀 둑도 걷는다 — 들머리에 풀 띠가 구덩이 바닥을
+    // 가로질렀다(VQA r8). 그 밖의 남쪽 숲길 둑은 그대로 둔다.
     if (live.lowerOverlayTiles) {
       const metaL = (project.tilesets[live.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
       const yTop = Math.floor(cy + ry * 0.6);
       for (let i = 0; i < live.lowerOverlayTiles.length; i += 1) {
         const t = live.lowerOverlayTiles[i]!, x = i % live.width, y = Math.floor(i / live.width);
         if (t < 0 || metaL[t]?.label) continue;
-        if (pit.has(i) || (y <= yTop && Math.abs(x - cx) <= rx * 2)) live.lowerOverlayTiles[i] = -1;
+        if (rimCells.has(i) || (y <= yTop && Math.abs(x - cx) <= rx * 2)) live.lowerOverlayTiles[i] = -1;
       }
-    }
-    // 남쪽에서 이어지는 숲길 칸도 「안쪽」으로 쳐서 구덩이와 숲길 사이에 둑이 가로막지 않게 한다(숲길 자기 둑이 있는 칸은 rimPit 이 건너뛴다).
-    const rimCells = new Set(pit);
-    for (const c of pit) for (const k of [c - 1, c + 1, c - live.width, c + live.width]) {
-      if (!pit.has(k) && (metaPit[live.lowerTiles[k]!]?.label ?? "").startsWith("버들항 · 모랫길")) rimCells.add(k);
     }
     rimPit(project, live, rimCells, "bankLava"); // fill_region 이 맵 객체를 바꿔 끼우므로 fm 이 아니라 지금 맵에 얹는다.
     // 평평한 돌 관(버들항 하수도 관 2×2)을 걷고, 오프닝 crash 컷의 누운 은빛 관(손 도트 3×2, 동서로 누움)을 조사 칸 바로 위에 눕힌다.
@@ -1446,8 +1454,12 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         pages: [{
           id: `ev_${FS_PREFIX}_crash_smoke_page`, name: "연기", conditions: [], graphic: { transparent: true },
           movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "below", trigger: { kind: "parallel" },
-          commands: [smoke(pod.x - 1, pod.y - 2, 1400), { kind: "wait", ms: 700 }, smoke(pod.x + 1, pod.y - 2, 1400), { kind: "wait", ms: 900 },
-            smoke(pod.x, pod.y - 3, 1200), { kind: "wait", ms: 1100 }] as unknown as Command[],
+          // 관 발치의 금에서 희미한 별빛이 새고(반짝임), 둘레 불씨에서 불티가 오른다.
+          commands: [smoke(pod.x - 1, pod.y - 2, 1400), { kind: "wait", ms: 700 }, smoke(pod.x + 1, pod.y - 2, 1400),
+            { ...smoke(pod.x + 1, pod.y - 2, 900), fields: { preset: "sparkle", target: "tile", x: pod.x + 1, y: pod.y - 2, durationMs: 900, wait: false } },
+            { kind: "wait", ms: 900 }, smoke(pod.x, pod.y - 3, 1200),
+            { ...smoke(pod.x - 2, pod.y, 800), fields: { preset: "fire", target: "tile", x: pod.x - 2, y: pod.y, durationMs: 800, wait: false } },
+            { kind: "wait", ms: 1100 }] as unknown as Command[],
         }, {
           id: `ev_${FS_PREFIX}_crash_smoke_done`, name: "연기 걷힘", conditions: [{ kind: "switch", switchId: SW_IRIS_JOINED, value: true }], graphic: { transparent: true },
           movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "below", trigger: { kind: "action" }, commands: [],
@@ -1467,6 +1479,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       for (let r = 1; r < 10; r += 0.25) {
         const x = Math.round(cx + Math.cos(angle) * rx * r * 0.75), y = Math.round(cy + Math.sin(angle) * ry * r * 0.75);
         if (pit.has(y * live.width + x) || pit.has(y * live.width + x + 1)) continue;
+        // 숲길(흙 칸) 위에는 통나무·덤불을 두지 않는다 — 길을 막았다.
+        if (live.lowerTiles[y * live.width + x] !== 737 || live.lowerTiles[y * live.width + x + 1] !== 737) continue;
         if (tryStamp(project, M(ids.forest), `kit:beodeul_city/${kit}`, x, y)) break;
         if (r > 3.2) break;
       }
@@ -1605,8 +1619,9 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     // 숲 남쪽 입구: 길 양옆에 이정표를 세운다(마을 문 kit 는 숲 지도에서 거절된다 — settlement-prop-on-route).
     const forestDoor = transfersTo(forest, hub.id)[0]?.event;
     if (forestDoor) {
-      stampKit(M(ids.forest), "bd-pick-mountain-pass-brazier", forestDoor.x - 2, forestDoor.y - 2);
-      stampKit(M(ids.forest), "bd-pick-mountain-pass-brazier", forestDoor.x + 2, forestDoor.y - 2);
+      // 화로는 길에서 세 칸 — 두 칸이면 숲에 들어선 동료가 화로 바로 아래 칸에 서 모자가 화로 받침을 덮었다(VQA r7).
+      stampKit(M(ids.forest), "bd-pick-mountain-pass-brazier", forestDoor.x - 3, forestDoor.y - 2);
+      stampKit(M(ids.forest), "bd-pick-mountain-pass-brazier", forestDoor.x + 3, forestDoor.y - 2);
       stampKit(M(ids.forest), "bd-pick-mountain-pass-wayside-cross", forestDoor.x - 2, forestDoor.y - 4);
     }
     // 마을 쪽 숲 출구는 성벽 성문 통로다(성문루·깃발·통행세 초소가 이미 문으로 읽힌다) — 이정표를 따로 세우지 않는다.
