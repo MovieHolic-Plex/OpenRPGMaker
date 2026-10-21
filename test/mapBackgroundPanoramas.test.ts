@@ -95,14 +95,22 @@ describe("비칠 칸 판정", () => {
 });
 
 describe("배경 자리 비우기와 시작 위치", () => {
-  const map = { width: 4, height: 4, lowerTiles: Array.from({ length: 16 }, () => 1) };
+  const map = { id: "m", width: 4, height: 4, lowerTiles: Array.from({ length: 16 }, () => 1), upperTiles: Array.from({ length: 16 }, () => -1), events: [] } as never;
   const topTwoRows = new Set([0, 1, 2, 3, 4, 5, 6, 7]);
+  const standOnTiles = (m: { width: number; lowerTiles: number[] }, x: number, y: number): boolean => (m.lowerTiles[y * m.width + x] ?? -1) >= 0;
 
-  it("시작 칸이 비울 자리면 남는 칸 중 가장 가까운 곳으로 옮긴다", () => {
-    expect(startPosAfterBackgroundClear(map, { x: 1, y: 0 }, topTwoRows)).toEqual({ x: 1, y: 2 });
+  it("시작 칸이 비울 자리면 설 수 있는 가장 가까운 칸으로 옮긴다", () => {
+    expect(startPosAfterBackgroundClear(map, { x: 1, y: 0 }, topTwoRows, standOnTiles as never)).toEqual({ kind: "moved", x: 1, y: 2 });
   });
 
-  it("시작 칸이 비울 자리 밖이면 그대로(null)", () => {
-    expect(startPosAfterBackgroundClear(map, { x: 1, y: 3 }, topTwoRows)).toBeNull();
+  it("타일이 남아도 설 수 없는 칸(벽 줄)은 건너뛴다", () => {
+    const wallRow = (m: { width: number; lowerTiles: number[] }, x: number, y: number): boolean => y !== 2 && standOnTiles(m, x, y);
+    expect(startPosAfterBackgroundClear(map, { x: 1, y: 0 }, topTwoRows, wallRow as never)).toEqual({ kind: "moved", x: 1, y: 3 });
+  });
+
+  it("시작 칸이 비울 자리 밖이면 그대로, 설 칸이 하나도 안 남으면 stuck", () => {
+    expect(startPosAfterBackgroundClear(map, { x: 1, y: 3 }, topTwoRows, standOnTiles as never)).toEqual({ kind: "unaffected" });
+    const all = new Set(Array.from({ length: 16 }, (_, index) => index));
+    expect(startPosAfterBackgroundClear(map, { x: 1, y: 3 }, all, standOnTiles as never)).toEqual({ kind: "stuck" });
   });
 });

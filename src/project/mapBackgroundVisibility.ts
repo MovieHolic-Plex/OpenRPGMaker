@@ -72,25 +72,38 @@ export function emptyTopRows(map: Pick<GameMap, "width" | "height" | "lowerTiles
 /** 지평선 견본의 볼거리(해·구름·실루엣)가 들어 있는 화면 위쪽 높이(논리 px). 그림 생성기와 같은 값. */
 export const HORIZON_PRESET_FEATURE_HEIGHT = 112;
 
+/** 배경 자리를 비운 뒤 시작 위치를 어떻게 할지. */
+export type StartAfterBackgroundClear =
+  | { readonly kind: "unaffected" }
+  | { readonly kind: "moved"; readonly x: number; readonly y: number }
+  | { readonly kind: "stuck" };
+
 /**
- * 배경 자리로 비울 칸에 시작 위치가 있으면, 비우지 않는 칸 중 하층 타일이 있는 가장 가까운 칸을 돌려준다.
- * 시작 위치가 비울 칸 밖이면 null. 2026-10-21 적대 검수: 윗줄을 비우면 시작 칸도 빈 칸(통행 불가)이 되어
- * 주인공이 첫 칸에서 한 걸음도 못 움직였다 — 편집기 「비우기」 단추와 조수 `clearForBackground` 가 같이 쓴다.
+ * 배경 자리로 칸을 비운 뒤에도 주인공이 시작 칸에 서서 움직일 수 있는지 보고, 아니면 옮길 칸을 고른다.
+ * `canStand(비운 뒤 맵, x, y)` 는 런타임 착지 판정(`isPassableLanding`)을 넘긴다 — 타일이 남아 있다고 설 수 있는 게
+ * 아니다(벽 줄). 옮길 칸은 비우지 않는 칸·이벤트가 없는 칸 중 시작 위치에서 가장 가까운 곳. 없으면 stuck.
+ * 2026-10-21 적대 검수: 윗줄을 비우면 시작 칸도 빈 칸(통행 불가)이 되어 주인공이 첫 칸에서 한 걸음도 못 움직였다 —
+ * 편집기 「비우기」 단추와 조수 `clearForBackground` 가 같이 쓴다.
  */
 export function startPosAfterBackgroundClear(
-  map: Pick<GameMap, "width" | "height" | "lowerTiles">,
+  map: GameMap,
   start: { readonly x: number; readonly y: number },
   cleared: ReadonlySet<number>,
-): { x: number; y: number } | null {
-  if (!cleared.has(start.y * map.width + start.x)) return null;
-  let best: { x: number; y: number; d: number } | null = null;
+  canStand: (clearedMap: GameMap, x: number, y: number) => boolean,
+): StartAfterBackgroundClear {
+  const after = structuredClone(map);
+  for (const index of cleared) clearMapCellForBackground(after, index);
+  if (canStand(after, start.x, start.y)) return { kind: "unaffected" };
+  const occupied = new Set(map.events.map((event) => event.y * map.width + event.x));
+  const candidates: { x: number; y: number; d: number }[] = [];
   for (let y = 0; y < map.height; y += 1) {
     for (let x = 0; x < map.width; x += 1) {
       const index = y * map.width + x;
-      if (cleared.has(index) || (map.lowerTiles[index] ?? -1) < 0) continue;
-      const d = Math.abs(x - start.x) + Math.abs(y - start.y);
-      if (!best || d < best.d) best = { x, y, d };
+      if (cleared.has(index) || occupied.has(index) || (after.lowerTiles[index] ?? -1) < 0) continue;
+      candidates.push({ x, y, d: Math.abs(x - start.x) + Math.abs(y - start.y) });
     }
   }
-  return best ? { x: best.x, y: best.y } : null;
+  candidates.sort((a, b) => a.d - b.d || a.y - b.y || a.x - b.x);
+  for (const cell of candidates) if (canStand(after, cell.x, cell.y)) return { kind: "moved", x: cell.x, y: cell.y };
+  return { kind: "stuck" };
 }

@@ -12,7 +12,7 @@ import { sanitizeRiversidePromenade } from "@/project/startRoutePaint";
 // editor/tools/mapTools.ts
 // 맵 생성/타일 페인팅/도로/구조물/시작위치 쓰기 툴.
 
-import { isPassable } from "@/project/collision";
+import { isPassable, isPassableLanding } from "@/project/collision";
 import { normalizeCloudShadowParams } from "@/player/cloudShadows";
 import { TILE } from "@/project/defaults/constants";
 import { clearMapCellForBackground, emptyTopRows, HORIZON_PRESET_FEATURE_HEIGHT, mapBackgroundVisibility, startPosAfterBackgroundClear } from "@/project/mapBackgroundVisibility";
@@ -2213,10 +2213,15 @@ const setMapProperties: ToolDefinition = {
         throw new ToolError("clearForBackground 는 {x,y,width,height} 또는 {water:true} 여야 합니다.", { code: "invalid-args", mapId: map.id });
       }
       // 시작 칸을 비우면 주인공이 첫 칸에서 못 움직인다 — 가장 가까운 남는 칸으로 옮긴다.
-      const moved = draft.startMapId === map.id ? startPosAfterBackgroundClear(map, draft.startPos, new Set(clearedCells)) : null;
-      if (moved) {
-        backgroundWarnings.push(`시작 위치(${draft.startPos.x},${draft.startPos.y})가 비운 칸이라 가장 가까운 남는 칸(${moved.x},${moved.y})으로 옮겼습니다 — 다른 자리를 원하면 set_start_position.`);
-        draft.startPos = moved;
+      // 시작 칸에 설 수 없게 됐으면(빈 칸·둘러싸임) 가장 가까운 설 수 있는 칸으로 옮긴다. 없으면 이 호출 전체를 되돌린다.
+      const startPlan = draft.startMapId === map.id
+        ? startPosAfterBackgroundClear(map, draft.startPos, new Set(clearedCells), (cleared, x, y) => isPassableLanding(draft, cleared, x, y))
+        : null;
+      if (startPlan?.kind === "moved") {
+        backgroundWarnings.push(`시작 위치(${draft.startPos.x},${draft.startPos.y})가 비운 칸이라 가장 가까운 설 수 있는 칸(${startPlan.x},${startPlan.y})으로 옮겼습니다 — 다른 자리를 원하면 set_start_position.`);
+        draft.startPos = { x: startPlan.x, y: startPlan.y };
+      } else if (startPlan?.kind === "stuck") {
+        throw new ToolError("이렇게 비우면 주인공이 설 수 있는 칸이 남지 않아 시작 칸에서 움직이지 못합니다 — 비울 자리를 줄이거나 시작 위치를 다른 맵으로 옮기세요.", { code: "start-buried", mapId: map.id });
       }
     }
     if (map.background && (args.background || args.clearForBackground)) {

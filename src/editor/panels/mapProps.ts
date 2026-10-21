@@ -25,6 +25,7 @@ import {
   normalizeMapBackgroundCameraFollow,
   normalizeMapBackgroundScroll,
 } from "@/project/mapBackground";
+import { isPassableLanding } from "@/project/collision";
 import { clearMapCellForBackground, emptyTopRows, HORIZON_PRESET_FEATURE_HEIGHT, mapBackgroundCellVisible, mapBackgroundVisibility, startPosAfterBackgroundClear } from "@/project/mapBackgroundVisibility";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { tileCategoriesForTile } from "@/project/tilesetPalette";
@@ -634,7 +635,12 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
         class: "btn btn-small", text: plan.label, attrs: { type: "button" },
         dataset: { testid: plan.testid },
         on: { click: () => confirmClearForBackground(map, plan.cells, plan.label, () => {
-          recordProjectSnapshot(`맵 배경: ${plan.label}`, map.id, { kind: "map" });
+          // 시작 위치를 옮기면 프로젝트 스냅숏 — Ctrl+Z 한 번에 타일과 시작 위치가 같이 돌아온다.
+          const live = store.getCurrent();
+          const liveMap = live.maps[map.id];
+          const startMoves = live.startMapId === map.id && liveMap !== undefined
+            && startPosAfterBackgroundClear(liveMap, live.startPos, new Set(plan.cells), (cleared, x, y) => isPassableLanding(live, cleared, x, y)).kind === "moved";
+          recordProjectSnapshot(`맵 배경: ${plan.label}`, map.id, startMoves ? undefined : { kind: "map" });
           clearMapCellsForBackground(map.id, plan.cells);
           setMapBackground(map.id, { ...current()!, showInEmptyCells: true });
           rerender(host, plan.testid);
@@ -885,9 +891,11 @@ function clearMapCellsForBackground(mapId: string, cells: readonly number[]): vo
   store.update((project) => {
     const target = project.maps[mapId];
     if (!target) return;
-    const moved = project.startMapId === mapId ? startPosAfterBackgroundClear(target, project.startPos, new Set(cells)) : null;
+    const plan = project.startMapId === mapId
+      ? startPosAfterBackgroundClear(target, project.startPos, new Set(cells), (cleared, x, y) => isPassableLanding(project, cleared, x, y))
+      : null;
     for (const index of cells) clearMapCellForBackground(target, index);
-    if (moved) project.startPos = moved;
+    if (plan?.kind === "moved") project.startPos = { x: plan.x, y: plan.y };
   }, { scope: "map", mapId });
 }
 
@@ -903,12 +911,20 @@ function confirmClearForBackground(
   const events = map.events.filter((event) => cellSet.has(event.y * map.width + event.x));
   const body = [el("p", { text: `타일 ${tiles}칸을 지워 배경이 보이는 자리로 만듭니다. 지운 칸은 걸을 수 없습니다. Ctrl+Z 로 되돌릴 수 있습니다.` })];
   const project = store.getCurrent();
-  const moved = project.startMapId === map.id ? startPosAfterBackgroundClear(map, project.startPos, cellSet) : null;
-  if (moved) {
+  const startPlan = project.startMapId === map.id
+    ? startPosAfterBackgroundClear(map, project.startPos, cellSet, (cleared, x, y) => isPassableLanding(project, cleared, x, y))
+    : null;
+  if (startPlan?.kind === "moved") {
     body.push(el("p", {
       class: "is-warn",
       dataset: { testid: "map-bg-clear-start-moved" },
-      text: `시작 위치(${project.startPos.x},${project.startPos.y})가 지울 자리에 있어 가장 가까운 남는 칸(${moved.x},${moved.y})으로 옮깁니다 — 그대로 두면 주인공이 첫 칸에서 움직이지 못합니다.`,
+      text: `시작 위치(${project.startPos.x},${project.startPos.y})가 지울 자리에 있어 가장 가까운 남는 칸(${startPlan.x},${startPlan.y})으로 옮깁니다 — 그대로 두면 주인공이 첫 칸에서 움직이지 못합니다.`,
+    }));
+  } else if (startPlan?.kind === "stuck") {
+    body.push(el("p", {
+      class: "is-warn",
+      dataset: { testid: "map-bg-clear-start-stuck" },
+      text: "지우고 나면 주인공이 설 수 있는 칸이 남지 않아 시작 위치를 옮기지 못합니다 — 이대로 지우면 주인공이 첫 칸에서 움직이지 못합니다.",
     }));
   }
   if (events.length > 0) {

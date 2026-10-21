@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **180쪽 / 6592KB / 약 1,929,085 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **180쪽 / 6593KB / 약 1,929,180 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -35,7 +35,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
 | `openwiki/jp-city.md` | 104KB | 14KB | 492 | ~30,744 |
 | `openwiki/runtime-battle.md` | 398KB | 32KB | 2211 | ~116,882 |
-| `openwiki/runtime-pre-edit-routing.md` | 141KB | 79KB ⚠상한 초과 — 절을 더 쪼개라 | 955 | ~42,361 |
+| `openwiki/runtime-pre-edit-routing.md` | 141KB | 79KB ⚠상한 초과 — 절을 더 쪼개라 | 955 | ~42,456 |
 | `openwiki/runtime-project-schema.md` | 247KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1765 | ~69,598 |
 | `openwiki/runtime-sessions.md` | 143KB | 53KB ⚠상한 초과 — 절을 더 쪼개라 | 850 | ~38,573 |
 | `openwiki/testing.md` | 236KB | 47KB | 2202 | ~66,062 |
@@ -2616,7 +2616,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L306` 그림 컷 준비와 direction (2026-10-04)
 - `L314` 글자·장면 오프닝 연출 (2026-10-04)
 
-### `openwiki/runtime-pre-edit-routing.md` — 141KB · 955줄 · ~42,361 토큰 · 통째읽기 잘림
+### `openwiki/runtime-pre-edit-routing.md` — 141KB · 955줄 · ~42,456 토큰 · 통째읽기 잘림
 
 - `L1` 지상 격자 위로 돌출한 원본 구조 (2026-10-06)
 - `L10` 태양 지형 그림자 (2026-10-04)
