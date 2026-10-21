@@ -5,6 +5,27 @@
 
 <!-- releases -->
 
+## 0.305.0 — 2026-10-21
+
+### 기능
+
+- **ai** — scene-hang-on-floor — wall-hang kits standing on floor cells (#3187) (`5dd2a4e`)
+- **jp-city** — jp house furniture 8 (interior_house3) — Opus VQA 8/8, delegated allow, baked into the house blueprint (#3146) (`1285886`)
+- **jp-city** — forest r7 — tree composer forest, moss-floor sibling, always-on ground shade, paint_jp_forest; street/vehicle redraws; Opus VQA 107/107, delegated allow (#3058) (`7efb883`)
+
+### 수정
+
+- **jp-city** — house blueprint QA no longer counts the alias name-match hint as a failure (#3188) (`c8efb75`)
+- **ai** — create_transfer_pair puts the trigger on the door cell; bump doors count as reachable (#3186) (`bcacb86`)
+- **ai** — scene-actors-stacked replays visibility in order; more balance/backdrop lessons (#3183) (`4c4663e`)
+
+### 문서
+
+- **ai** — scene-polish §11-6 — interior padding is dark void only, no floor-valued or speck tiles (#3191) (`32e0ee1`)
+- **ai** — scene-polish §11 map touch-ups (canal jogs, partial kit copies, reachability after stamping, relief offset, bridge footprint, dark interior pad) + QA timing lessons (#3190) (`331df3c`)
+- **ai** — scene-polish §5-2 — pick BGM by ear; 3-run listening judge drops tracks flagged cheap 2/3 (#3189) (`13110c8`)
+- **ai** — game-scene-polish only points at what exists on main (#3184) (`ffffbac`)
+
 ## 0.304.0 — 2026-10-21
 
 ### 기능
