@@ -111,6 +111,11 @@ export default {
     ], shot: true },
     { id: "proclamation", note: "심문관의 포고", ops: [
       ...[0, 1, 2, 3].flatMap(() => closeDialogue(20)),
+      // 포고 뒤 행렬이 성문으로 행진하고 화면이 따라간다 — 발렌(맨 뒤)이 통로로 사라질 때까지 기다린 뒤 엘레나의 대사를 닫는다.
+      { kind: "evalToFile", out: "/tmp/fs-marched.json",
+        fn: `async () => { for (let i = 0; i < 240; i++) { if (window.__oprnDebug.readState().switches.sw_fs_valen_marched) return true; await new Promise((r) => setTimeout(r, 250)); } return false; }` },
+      { kind: "hold", dir: null, ms: 1500 },
+      ...closeDialogue(20),
     ], shot: true },
     { id: "to-observatory", note: "천문대 문을 밟는다", ops: [...stepInto("fs_hub", 24, 21, "up")], shot: true },
     { id: "hanel-ask", note: "하넬의 부탁 → 선택지", ops: [
