@@ -1,0 +1,321 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "827bef042181661cad44b4c0f98069316589592e622223e697eb125b165e0859",
+ "width": 32,
+ "height": 48,
+ "kind": "low_furniture",
+ "name": "shop flower cooler",
+ "label": "modern_city_interior/shop-flower-cooler",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 21,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cooler top panel",
+      "rows": "7-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "flowers and pots seen through glass doors",
+      "rows": "19-37",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 7-13 form a light top band, about 7 rows tall, with faint highlight streaks. It ends in the brightest line at row 13 (L=244), and rows 14-15 below are a darker shadow and rim. Below that is a front face of about 33 rows (rows 14-46) with a glass door, a center divider, and a dark base plinth at rows 44-46. The flowers in pots are visible through the glass and count as decor. The top is more than a 1-2 row rim and the front face is clearly drawn, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a glass-fronted flower cooler with a metal cabinet, shelves and flower bunches visible inside. It measures 20 visible tones per 16x16 tile, matching prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% near-neutral, meaning the outline leans toward the cool tint of the cabinet and glass rather than being a neutral black sticker line, and it is used selectively. The body shows about 5 steps across the frame, glass highlights, shelf shading and flower clumps in several tones. Texture is moderate rather than rich, since the cabinet panels are fairly smooth, but it reads as a careful, layered piece that would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15539
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cooler top panel",
+      "rows": "7-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-14"
+     },
+     {
+      "part": "glass front with flower buckets, header sign band and dark base",
+      "rows": "15-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 7-13 form a pale top band with light streaks. It ends in a bright 1-row front-edge line at row 13 (#f3f4f7), followed by a darker shadow row at 14 (L=144). Below it is a front face of about 32 rows (rows 15-46): a teal header at 16-18, a glass front with flower buckets at 19-43, and a dark base at 44-46. The silhouette is a constant 32 px wide with no side face. The top band is thick enough, and has an edge line and shadow, so it is not just a rim. This is borderline, since the band could also be read as a front-facing cornice."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 20 visible tones per 16x16 tile, equal to prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so the cabinet body, glass door and shelves carry variation rather than large flat fills. 0% of its dark edge pixels are neutral, so the outline leans toward the tint of the adjacent material (a bluish-grey metal edge) rather than a black sticker line. The body shows about 5 steps (highlight, light, mid, dark, deep) with glass reflections, and the flowers sit on shelves in several tones. It is slightly less textured than the roofed well's tile scallops, but a careful artist would accept it next to the references. The board is small, so this is a moderate-confidence read of the structure, backed mainly by the measured facts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14965
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cooler top lid",
+      "rows": "7-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "teal header band",
+      "rows": "16-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flowers and pots behind glass",
+      "rows": "19-41",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 7-13 form a pale top band. Its brightest row (13, L=244) is followed by the darker row 14 (L=144) and the row 15 shadow (L=169), which together act as the front-edge line and eave shadow. Below that, the glass front with the teal header and flower display runs from row 15 to the dark base at rows 44-46. That gives a front face of about 32 rows. The column scan shows no side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 20 visible tones per 16x16 tile, level with prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline is a tinted dark tone of the neighbouring material, not a black sticker line. The cabinet body shows a roughly 5-step ramp of frame, glass highlight, glass panel and shadowed shelves. The flowers in the shelves add small clustered detail. Texture is a little less rich than the stall or well, but the piece is not thinner, flatter or more sticker-like than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15538
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cooler top lid/panel",
+      "rows": "7-13",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-15"
+     },
+     {
+      "part": "glass front with flower buckets",
+      "rows": "16-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base plinth",
+      "rows": "44-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 7-13 form a light top band with sheen streaks. It ends in a bright front-edge line at row 13 (#f3f4f7), followed by darker rows 14-15 (#8d9095, #a6a9ad) as eave shadow. Below it a front face runs from about row 16 to 46: a teal header at rows 16-18, a glass front with flowers at rows 19-43, and a dark base at rows 44-46. The silhouette is a constant 32 px wide with no side face. The top band is a plausible but not certain top surface, since it could also be read as a front-facing header."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a glass-fronted cooler with a pale grey frame, shelves and small flower clusters in pots. Its measured density matches the richest references: 20 visible tones per tile, against 20 for the roofed well and 17 for the cheese stall. Near-flat coverage is 0%, so no large flat fills. None of the dark edge pixels are neutral (0%), so the outline leans toward the tint of the neighbouring material rather than being a black sticker line. The frame and glass show about 4 lightness steps, slightly fewer than the 5-6 on the reference roof and wood. Even so, the glass reflections, shelf edges and flower clusters give grain and variation across the whole sprite. A careful artist would accept it beside the stall and well without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16463
+  }
+ ],
+ "decidedAt": "2026-10-21T08:22:08.628Z",
+ "cells": {
+  "16": [
+   "1631647dc26c77ed",
+   "563dedf97dd9c0b6",
+   "6eaa99a8162da2f1",
+   "7344d87598f85644",
+   "8c68003db8acf300",
+   "fafdb550e82fac48"
+  ],
+  "24": [
+   "0c2a13ab9b7015a6",
+   "3329e2895cd66f6f",
+   "4dbf35ad7dd97be5",
+   "63dd73083cb87432",
+   "6a2221a25fa955b6",
+   "6e0e1f899ddbe2ee",
+   "71f1a5c3e544020c",
+   "adc0ee1d5087b518",
+   "af4bfeca491a1208",
+   "c8dedf56ee884694",
+   "cde07d24ec01ba2c",
+   "fd8f9c6aa0d48da1"
+  ],
+  "32": [
+   "4f257ed02dc6d6dd",
+   "75254bbb4a63b84c",
+   "9086fbd62115c76b",
+   "c1ba74edcae7b145"
+  ],
+  "48": [
+   "3a4498095b9d6df9",
+   "4c6116184172d4d8",
+   "9cbaa67e0bf1c61b"
+  ]
+ }
+}

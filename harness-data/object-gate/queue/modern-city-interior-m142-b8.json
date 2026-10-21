@@ -1,0 +1,75 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "modern-city-interior-m142-b8",
+ "title": "modern_city 실내 기물 m142-b8 (11) — object-gen 다시 그림, 사용자 위임·Opus 적대 VQA 통과 2026-10-21",
+ "note": "delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/m142-b8.opus-vqa-r*.json",
+ "createdAt": "2026-10-21T08:17:40.895Z",
+ "items": [
+  {
+   "sha": "0d541a263e4a321a5063c8d825515c2da89e975b0c30ff2957eddf03464f2a50",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/arcade-claw-machine",
+   "source": "/home/main/.cache/ogm142/ship/m142-b8/arcade-claw-machine.png"
+  },
+  {
+   "sha": "c7d28f71d567c96726a735e6285862842a2d5b6d17c3668a4a2f0ed01e56ddec",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/sento-shoe-locker",
+   "source": "/home/main/.cache/ogm142/ship/m142-b8/sento-shoe-locker.png"
+  },
+  {
+   "sha": "eacf65a2241e499c714f97b3d69418798090765f1586c5c47bec6283242feca6",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/shop-drug-gondola",
+   "source": "/home/main/.cache/ogm142/ship/m142-b8/shop-drug-gondola.png"
+  },
+  {
+   "sha": "827bef042181661cad44b4c0f98069316589592e622223e697eb125b165e0859",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/shop-flower-cooler",
+   "source": "/home/main/.cache/ogm142/ship/m142-b8/shop-flower-cooler.png"
+  },
+  {
+   "sha": "97417a746a0b552ee252db0a8b1c424264be987c7a6b218c789e6aa62c0142cc",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/shop-used-shelf",
+   "source": "/home/main/.cache/ogm142/ship/m142-b8/shop-used-shelf.png"
+  },
+  {
+   "sha": "1ebf4ce6a32ad10d6daaa3d9a9644be3b97af064b739959196a461d7828b3353",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/station-coin-lockers",
+   "source": "/home/main/.cache/ogm142/ship/m142-b8/station-coin-lockers.png"
+  },
+  {
+   "sha": "b064b08a61ea4cfeedd1448d9a2d484ae80941c8d81df5fb3483cc1e1e676b8d",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/station-ic-charger",
+   "source": "/home/main/.cache/ogm142/ship/m142-b8/station-ic-charger.png"
+  },
+  {
+   "sha": "459e42d4a6f74e299737c6bbcb0d76c28c1ec0707d3b73ac2925f2022f1b5739",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/subway-ticket-machine",
+   "source": "/home/main/.cache/ogm142/ship/m142-b8/subway-ticket-machine.png"
+  },
+  {
+   "sha": "6be499b899c407af6d86fc1b6592fa0c2f135c8eb87caf841fc3adb1c8374e34",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/subway-vending-machine",
+   "source": "/home/main/.cache/ogm142/ship/m142-b8/subway-vending-machine.png"
+  },
+  {
+   "sha": "ba3e2865b214d28516b74a2ebb94ec7a85ac551b1ea7526b4e641571c3005157",
+   "kind": "container",
+   "label": "modern_city_interior/svc-dryer-stack",
+   "source": "/home/main/.cache/ogm142/ship/m142-b8/svc-dryer-stack.png"
+  },
+  {
+   "sha": "914e6e20491776808a5ad49dc3b9df01bde99133197dfd067fbf87a3a5513bf9",
+   "kind": "container",
+   "label": "modern_city_interior/svc-washer-row",
+   "source": "/home/main/.cache/ogm142/ship/m142-b8/svc-washer-row.png"
+  }
+ ]
+}
