@@ -63,8 +63,8 @@ const OBS_ROOM: RoomSpec = {
     "#..............................#",
     "#..............................#",
     "#..............................#",
-    "#####......................#####",
-    "########................########",
+    "######....................######",
+    "##########............##########",
     "###############.################",
     "#........#............#........#",
     "#........#............#........#",
@@ -97,18 +97,17 @@ const OBS_ROOM: RoomSpec = {
     {id: "bookshelf 2w", x: 28, y: 10},
     {id: "wall sconce", x: 5, y: 7},
     {id: "wall sconce", x: 26, y: 7},
-    {id: "war map table", x: 5, y: 11},
-    {id: "orrery", x: 8, y: 11},
+    {id: "war map table", x: 6, y: 11},
+    {id: "orrery", x: 9, y: 11},
     {id: "paschal candle", x: 9, y: 9},
-    {id: "chart table", x: 18, y: 9},
-    {id: "globe", x: 17, y: 10},
+    {id: "chart table", x: 18, y: 10},
+    {id: "globe", x: 21, y: 10},
     {id: "stool", x: 10, y: 10},
-    {id: "paschal candle", x: 1, y: 10},
     {id: "desk 2x1", x: 17, y: 12},
     {id: "chair N", x: 17, y: 13},
     {id: "chair N", x: 18, y: 13},
-    {id: "orrery", x: 23, y: 11},
-    {id: "desk 2x1", x: 25, y: 11},
+    {id: "orrery", x: 22, y: 9},
+    {id: "desk 2x1", x: 24, y: 11},
     {id: "paschal candle", x: 21, y: 9},
     {id: "catalog drawers", x: 3, y: 17},
     {id: "scroll rack", x: 4, y: 17},
@@ -136,8 +135,8 @@ const OBS_ROOM: RoomSpec = {
     {id: "doormat", x: 15, y: 21},
     {id: "column marble", x: 13, y: 18},
     {id: "column marble", x: 17, y: 18},
-    {id: "column marble", x: 13, y: 20},
-    {id: "column marble", x: 17, y: 20},
+    {id: "potted fern", x: 14, y: 21},
+    {id: "potted fern", x: 16, y: 21},
     {id: "banner blue", x: 12, y: 15},
     {id: "banner blue", x: 18, y: 15},
     {id: "bookshelf 2w", x: 23, y: 17},
@@ -153,9 +152,10 @@ const OBS_ROOM: RoomSpec = {
     {id: "globe", x: 29, y: 17},
   ],
   lines: [
-    {id: "rug red", rect: {"x0": 12, "y0": 12, "x1": 19, "y1": 13}},
-    {id: "rug blue", rect: {"x0": 5, "y0": 11, "x1": 8, "y1": 12}},
-    {id: "rug brown", rect: {"x0": 24, "y0": 11, "x1": 26, "y1": 12}},
+    {id: "rug red", rect: {"x0": 12, "y0": 12, "x1": 15, "y1": 13}},
+    {id: "rug blue", rect: {"x0": 6, "y0": 11, "x1": 9, "y1": 12}},
+    {id: "rug brown", rect: {"x0": 23, "y0": 11, "x1": 25, "y1": 12}},
+    {id: "rug red", rect: {"x0": 16, "y0": 10, "x1": 21, "y1": 13}},
     {id: "rug green", rect: {"x0": 5, "y0": 20, "x1": 8, "y1": 20}},
     {id: "rug red", rect: {"x0": 24, "y0": 18, "x1": 27, "y1": 20}},
     {id: "rug blue", rect: {"x0": 15, "y0": 16, "x1": 15, "y1": 20}},
@@ -163,10 +163,10 @@ const OBS_ROOM: RoomSpec = {
   goods: [
     {id: "openbook", x: 17, y: 12},
     {id: "candlestick", x: 18, y: 12},
-    {id: "papers", x: 18, y: 9},
-    {id: "candlestick", x: 19, y: 9},
-    {id: "papers", x: 25, y: 11},
-    {id: "candlestick", x: 26, y: 11},
+    {id: "papers", x: 18, y: 10},
+    {id: "candlestick", x: 19, y: 10},
+    {id: "papers", x: 24, y: 11},
+    {id: "candlestick", x: 25, y: 11},
     {id: "papers", x: 27, y: 20},
     {id: "openbook", x: 28, y: 20},
     {id: "candlestick", x: 29, y: 20},
@@ -211,7 +211,7 @@ const GATE_ROOM: RoomSpec = {
     {x0: 9, y0: 1, x1: 22, y1: 17, floor: "grey"},
   ],
   daises: [
-    {id: "dais stone", x: 12, y: 8, w: 8, h: 4},
+    {id: "dais stone", x: 11, y: 7, w: 10, h: 6},
   ],
   objects: [
     {id: "portcullis", x: 15, y: 1},
@@ -222,9 +222,7 @@ const GATE_ROOM: RoomSpec = {
     {id: "lion statue", x: 13, y: 3},
     {id: "lion statue", x: 17, y: 3},
     {id: "column stone", x: 11, y: 4},
-    {id: "column stone", x: 11, y: 6},
     {id: "column stone", x: 20, y: 4},
-    {id: "column stone", x: 20, y: 6},
     {id: "paschal candle", x: 12, y: 5},
     {id: "paschal candle", x: 19, y: 5},
     {id: "column stone", x: 10, y: 8},
@@ -285,8 +283,7 @@ const GATE_ROOM: RoomSpec = {
   ],
   lines: [
     {id: "rug royal", rect: {"x0": 12, "y0": 4, "x1": 19, "y1": 6}},
-    {id: "rug blue", rect: {"x0": 15, "y0": 7, "x1": 16, "y1": 7}},
-    {id: "rug blue", rect: {"x0": 15, "y0": 12, "x1": 16, "y1": 15}},
+    {id: "rug blue", rect: {"x0": 15, "y0": 13, "x1": 16, "y1": 15}},
     {id: "rug blue", rect: {"x0": 25, "y0": 4, "x1": 27, "y1": 5}},
   ],
   goods: [
@@ -380,6 +377,8 @@ const VAULT_ROOM: RoomSpec = {
     {id: "column stone", x: 12, y: 18},
     {id: "column stone", x: 19, y: 15},
     {id: "column stone", x: 19, y: 18},
+    {id: "bench 2", x: 13, y: 15},
+    {id: "bench 2", x: 17, y: 15},
     {id: "bench 2", x: 13, y: 17},
     {id: "bench 2", x: 17, y: 17},
     {id: "statue", x: 9, y: 17},
@@ -409,14 +408,16 @@ const VAULT_ROOM: RoomSpec = {
     {id: "water jar", x: 7, y: 22},
     {id: "alchemy table", x: 8, y: 22},
     {id: "geode stand", x: 11, y: 22},
+    {id: "stool", x: 9, y: 24},
     {id: "dish rack", x: 20, y: 20},
     {id: "pot rack", x: 24, y: 20},
     {id: "banner blue", x: 29, y: 20},
     {id: "wall torch", x: 22, y: 20},
     {id: "cupboard", x: 19, y: 22},
-    {id: "bread oven", x: 20, y: 22},
-    {id: "sideboard 2x1", x: 27, y: 22},
+    {id: "sideboard 2x1", x: 20, y: 22},
+    {id: "bread oven", x: 27, y: 22},
     {id: "water jar", x: 29, y: 22},
+    {id: "crate:loaf", x: 29, y: 24},
     {id: "dining 3x1", x: 23, y: 22},
     {id: "bench 3", x: 23, y: 23},
     {id: "chair W", x: 26, y: 22},
@@ -509,11 +510,12 @@ function build(project: Project, exec: Exec, mapId: string, spec: RoomSpec): Gam
 
 /** 불빛 가구마다 빛 웅덩이(VQA r2: 불은 켜져 있는데 방이 고르게 밝다). 벽 횃불·걸이 등은 한 칸 아래 바닥을 비춘다. */
 // 벽 횃불은 작고 흐리게 — 크게 겹친 웅덩이가 지하에서 햇살 줄기처럼 읽혔다(VQA r7).
-const LIGHTS: Record<string, { radius: number; dy: number; flicker?: boolean; color?: string; intensity?: number }> = {
+const LIGHTS: Record<string, { radius: number; dy: number; w?: number; flicker?: boolean; color?: string; intensity?: number }> = {
   "wall torch": { radius: 1.8, dy: 1, flicker: true, intensity: 0.7 },
   "brazier": { radius: 2.8, dy: 0, flicker: true },
   "lava brazier": { radius: 2.6, dy: 0, flicker: true },
   "stone brazier lit": { radius: 2.8, dy: 0, flicker: true },
+  "great stone brazier lit": { radius: 3, dy: 0, w: 2, flicker: true, intensity: 1 },   // 2칸 폭 — 칸마다 빛 하나(조명 좌표는 정수 칸, VQA r15: 사당 불빛이 약했다)
   "wall sconce": { radius: 1.6, dy: 1, flicker: true },
   "votive stand": { radius: 1.3, dy: 0, flicker: true },
   "fireplace": { radius: 3.2, dy: 1, flicker: true },
@@ -525,7 +527,9 @@ function lightRoom(project: Project, exec: Exec, mapId: string, spec: RoomSpec, 
   spec.objects.forEach((o, i) => {
     const l = LIGHTS[o.id];
     if (!l) return;
-    sources.push({ id: `l${i}`, at: { x: o.x, y: o.y + l.dy }, radius: l.radius, intensity: l.intensity ?? 0.9, color: l.color ?? "#ffcf8a", ...(l.flicker ? { flicker: true } : {}) });
+    for (let dx = 0; dx < (l.w ?? 1); dx += 1) {
+      sources.push({ id: `l${i}${dx ? `_${dx}` : ""}`, at: { x: o.x + dx, y: o.y + l.dy }, radius: l.radius, intensity: l.intensity ?? 0.9, color: l.color ?? "#ffcf8a", ...(l.flicker ? { flicker: true } : {}) });
+    }
   });
   extra.forEach((e, i) => sources.push({ id: `x${i}`, at: { x: e.x, y: e.y }, radius: e.radius, intensity: 0.8, color: e.color }));
   exec(project, "set_lighting_volume", { mapId, ambient, color, sources, applyMode: "map" });
