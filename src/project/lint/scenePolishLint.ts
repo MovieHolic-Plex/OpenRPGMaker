@@ -186,6 +186,11 @@ function cellIs(project: Project, map: GameMap, x: number, y: number, kind: "doo
   return set.size > 0 && tilesAt(map, x, y).some((t) => set.has(t));
 }
 
+/** 문·계단·엘리베이터 그림 칸인가(이름표 낱말 + 건물 키트 entrance 부품). create_transfer_pair 가 트리거를 문 칸에 둘 때 쓴다. */
+export function isDoorArtCell(project: Project, map: GameMap, x: number, y: number): boolean {
+  return x >= 0 && y >= 0 && x < map.width && y < map.height && cellIs(project, map, x, y, "door");
+}
+
 // ---------------------------------------------------------------------------- 이동(transfer)
 
 interface Gate {

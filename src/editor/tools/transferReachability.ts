@@ -102,11 +102,19 @@ export function largestWalkGroup(project: Project, map: GameMap, blocked: Readon
   return new Set(best);
 }
 
-function gateTouchesGroup(project: Project, map: GameMap, gate: Point, group: ReadonlySet<number>): boolean {
+/** 막힌 칸 위의 같은 층(priority same) 접촉 문 — 이웃 칸에서 부딪혀 연다. */
+function isBumpGate(project: Project, map: GameMap, gate: Point | GameEvent): boolean {
+  const pages = (gate as GameEvent).pages;
+  if (!pages || isPassable(project, map, gate.x, gate.y)) return false;
+  return pages.some((page) => TOUCH_TRIGGERS.has(triggerKind(page.trigger)) && (page.priority ?? "same") === "same" && page.overlapForbidden !== false);
+}
+
+function gateTouchesGroup(project: Project, map: GameMap, gate: Point | GameEvent, group: ReadonlySet<number>): boolean {
+  const bump = isBumpGate(project, map, gate);
   return CARDINAL_STEPS.some(([dx, dy]) => {
     const x = gate.x + dx, y = gate.y + dy;
     return inMapBounds(map, x, y) && group.has(y * map.width + x)
-      && canMove(project, map, x, y, gate.x, gate.y);
+      && (bump || canMove(project, map, x, y, gate.x, gate.y));
   });
 }
 
