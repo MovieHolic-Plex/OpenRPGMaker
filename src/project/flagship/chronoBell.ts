@@ -111,7 +111,8 @@ function makeEnemy(project: Project, id: string, name: string, monster: string, 
 function makeTroop(project: Project, id: string, name: string, enemyIds: readonly string[]): void {
   const troop: Troop = {
     id, name, enemyIds: [...enemyIds],
-    members: enemyIds.map((enemyId, i) => ({ enemyId, x: 80 + i * 56, y: 96, hidden: false })),
+    // 수호상은 발이 이름표에 가리지 않게 한 줄 위에 선다(가혹 검수 r13: attack-b-mid).
+    members: enemyIds.map((enemyId, i) => ({ enemyId, x: 80 + i * 56, y: enemyId === "enemy_fs_guardian" ? 84 : 96, hidden: false })),
     autoAlign: true, uncapturable: false, battleEventPages: [],
   } as Troop;
   const troops = project.database.troops;
