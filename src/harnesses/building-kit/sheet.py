@@ -157,7 +157,6 @@ def write(theme, rid, show_failed=False):
     s = dot.seed(theme)
     mod, rendered = harness.render_round(theme, rid)
     rd = s['rounds'][rid]
-    style = rd.get('wave') == 'style'
     man_p = os.path.join(dot.RUNS, theme, rid, 'manifest.json')
     if not os.path.exists(man_p):
         raise SystemExit(f'{theme} {rid}: manifest 가 없다 — sheet 는 draw 뒤에 쓴다(사람이 본 그림의 해시가 있어야 고를 수 있다)')
@@ -189,7 +188,7 @@ def write(theme, rid, show_failed=False):
         + '</b></div>')
     H.append('<div class="stat">독립 검수 <b>' + (
         f'유효 {agg["valid"]}/{agg["need"]}회 · 무효 {agg["void"]}' if agg else '없음 — review 를 돌린다')
-        + f'</b></div>')
+        + '</b></div>')
     H.append(f'<div class="stat">검수 PASS 부품 번호 <b>{", ".join(passed_keys) or "없음"}</b>'
              f' · 숨긴 실패·미검수 <b>{len(failed_keys)}</b></div>')
     H.append('</div>')
