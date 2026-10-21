@@ -1,0 +1,325 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bd93f1da9bab4fa56a7c7c383aea5f1cd101c3748c3bb3bedb775534e1e40d12",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "별 봉인 돌뚜껑(닫힘, 2×2) (star seal)",
+ "label": "atlas_biome_interior/plus/star seal",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 질감 없음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "질감 없음 (1/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 14,
+  "darkV5": 23,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone slab frame (beige border, rows 2-4 top and rows 27-30 bottom)",
+      "rows": "2-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark recessed interior with star seal and rune ring",
+      "rows": "5-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a 30-px-wide square filling rows 2-30 with a constant width. The column scans show a light beige border (row 3 L~174) and a dark recessed field. Inside it is a symmetric star and a rune circle, seen straight down. The bottom border (rows 27-30) is a thin 1-2 row lip, not a vertical front face of 3+ rows. There is no front-edge line with eave shadow, no ellipse, and no separate front face. It is a flat plate seen from above, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small framed square icon with a star emblem, not a ground patch laid over several tiles, so it only loosely matches the grass and paving references. The measured facts say 100% of its dark edge pixels are neutral, and the picture agrees: a uniform near-black border sits around the whole piece, which is the sticker look. The Beodeul paving reference has tinted, selective edges (80% neutral, but with value-separated stones). The candidate has only 15 distinct colours in total, and the frame and slab read as about 3 lightness steps against 5-6 in the references. Its 12 visible tones per tile beat the grass reference's 3, but most of them come from the star emblem and not from the stone material. The stone surface has no per-stone shading, grain or speckle like the cobble paving, so the slab reads as a smooth shape. The reference paving is built from individually shaded stones with light seams. Overall it is shallower and more sticker-like than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15762
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone lid slab with beveled frame and inlaid star seal",
+      "rows": "2-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 30px-wide square from rows 2-30. It is a flat plate seen from directly above: a light beveled frame (rows 2-4 on top, rows 27-30 on the bottom, with matching light columns on the left and right), around a dark recessed field holding a purple and gold star inside a ring of runes. The bottom frame is only a few rows thicker than the top frame and has no eave shadow or separate vertical face. There is no front face of 3+ rows, no legs and no receding side face. The object is a flat decal or plate, which fits the 'flat' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small framed star badge, closer to a UI icon than a ground patch with paving-style stone shading. It sits in a near-black rounded square, and the measured near-neutral share of dark edge pixels is 100%. The paving reference is 80% and the grass reference 0%, so this is the uniform black 'sticker' outline, not a dark tone of the neighbouring material. Shading is shallow: the frame has about 3-4 grey steps (dark fill, mid bevel, light rim) and the star has gold and purple with a highlight. Beodeul paving uses about 6 steps with stones shaded one by one. The 12 visible tones per tile beat paving's 7, but they come from the small star and rim. The dark lid body is mostly a smooth gradient with no stone grain or speckle, so it lacks the per-stone texture of the references. Near-flat coverage is 0%, so there are no big flat fills. Overall it reads as a flatter, more sticker-like piece than the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 20624
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone lid slab with star seal inlay",
+      "rows": "2-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "star and rune circle engraving",
+      "rows": "7-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a 30px-wide square across rows 2-30 with no change in width. It is a stone frame with a light bevel at the top (rows 3-4) and left, and a thin matching bevel at the bottom (rows 27-29). Inside is a dark plate with a rune circle and a purple and gold star seen straight down. The bottom border (rows 27-30) is a 1-3 row rim like the other three sides, not a vertical south face. No front face of 3 or more rows, no eave shadow and no receding side face are drawn. This is a flat plate seen from above, which suits the flat kind, and it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small framed icon, not a ground patch. It reads as a sticker: a dark neutral frame around a grey plate with a purple/gold star medallion. The measured facts back this up, with 100% of its dark edge pixels near-neutral, so the outline is near-black rather than a dark tone of the adjacent material. The paving reference also has 80% neutral edges, but its grey stone reads as the material's own dark tone and it separates forms by value alone. The candidate's 12 visible tones per tile and 0% near-flat coverage are good, and they come mostly from the star and medallion. The stone lid itself has only about 3-4 lightness steps and little per-stone shading or grain. That is shallower than the paving reference's cobble-by-cobble shading, so a careful artist would not accept it next to the references. With the black frame and thin material ramps, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 19512
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone frame border",
+      "rows": "2-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark inner floor panel with star seal and rune circle (painted on flat plate)",
+      "rows": "5-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a 30px-wide square spanning rows 2-30, and the whole thing is seen straight down. A beveled stone frame (light top edge at row 3, darker bottom edge at rows 27-30) surrounds a dark inset panel with a star and a ring of runes. There is no vertical south face of 3+ rows, no eave shadow, and no front-edge line separating a top from a front face. The bottom frame rows (27-30) are just the frame's lower border, not a front face. This is a flat plate seen from above, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small framed icon, a dark stone slab with a gold and purple star, and it reads like a sticker. The measured facts back this up: 100% of its dark edge pixels are neutral, so the outline is a black or grey line with no brown or material tint. The reference grass has 0% neutral edges, and the paving reference has 80%, but that is stone-grey paving whose joints are shaded by value. The candidate uses 12 visible tones per tile against 7 for the paving and 3 for the grass, with 0% flat coverage, so it is not a flat fill. Those tones come mostly from the star and the frame bevel. The slab surface has little per-stone grain or speckle, only about 4 lightness steps against the paving's cobbles shaded one by one. Next to the references it looks flatter and more outlined, and it is not a ground patch with joined texture. Because of the near-black outline and the thin surface texture, I fail it under the 'when in doubt, fail' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18453
+  }
+ ],
+ "decidedAt": "2026-10-21T13:15:53.064Z",
+ "cells": {
+  "16": [
+   "28e466ddfa9c6128",
+   "4d1dcb1774b3c958",
+   "e723fda591fbcb15",
+   "fbc25b9fd33077e0"
+  ],
+  "24": [
+   "2929781c875dc3e5",
+   "2d154a3ee7427cd7",
+   "31994a99ff167aac",
+   "3b81cfd4f6ab8103",
+   "430100344e76034d",
+   "4604e8fcfc25d2f5",
+   "4f6a671c99461bf9",
+   "5448b5e6a2be43a2",
+   "6f7c6739908d3cdc",
+   "70f4eee2c9ec967b",
+   "73b5f4b3dc08ef17",
+   "93c07b4e8706ef94",
+   "9802fe26e95ba98a",
+   "9945bb193f68166a",
+   "9b798f87a0066bd0",
+   "aa74864ca487fa3f",
+   "ac851b4d334c02c4",
+   "b6808ff5034b0ca2",
+   "b79df2032dc78aa7",
+   "be53f1f3c32cb3e3",
+   "cea21f92f49f56d7",
+   "df4d09d8ace98816",
+   "f155c29cbb583b03",
+   "f956bef4b2eea4c7"
+  ],
+  "32": [
+   "3134224adf5ab24f"
+  ],
+  "48": [
+   "1499bce77d463492",
+   "1d3c4341c779cefd",
+   "40f70b8f02862e72",
+   "47d7786d1269db12",
+   "935601830b8f6f2c",
+   "b0eb13325eaf9c01"
+  ]
+ }
+}

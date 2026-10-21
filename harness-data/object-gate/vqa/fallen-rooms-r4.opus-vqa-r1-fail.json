@@ -1,0 +1,44 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-21",
+  "batch": "fallen-rooms-r4",
+  "commit": "2dadaef22b",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed with src/harnesses/_core/object_gate on the 32x32 PNGs in /tmp/fsrooms/gate-r4. The two states differ only inside x4-27, y6-27. The kerb (cols 0-3 and 28-31, rows 0-4 and 28-31) is identical in both, so the frame matches exactly.",
+    "1_topdown_view": "The lid and the stair opening are drawn as planes, which is right. The kerb is not lit as one flat top face. It is lit like a bevelled button: a near-white edge on the top and left (200,208,208), light bands on the left (165,173,178), dark bands on the right (cols 28-29, 96,104,120) and a dark outer column 30. The darker east band reads as a side face. For a flush floor piece, only the 2px south lip (rows 29-30) should be a front face. The open stairs have no foreshortening: six identical 3px courses, so there is no depth cue as the stairs go north.",
+    "2_style_fit": "The lid uses the seal-stele ramp exactly (19/30/42/65 near-blacks, gold 192,144,32 and 234,210,133, purple 106,56,176 and 145,103,202), so the material matches. The kerb is a cool blue-grey ramp up to 200,208,208 that is not in the room. Brick is 108,92,102 / 118,110,116 and the floor is warm wood. The kerb has no dark outline on its top and left edges, while every v5 object around it (steles, shelves, cabinets) has a dark outline.",
+    "3_readability_1x": "Closed state: the star and rune ring read well at 1x, but the light bevelled kerb is the brightest thing in the room and makes the piece read as a framed panel or button rather than a stone lid set into the floor. Open state: at 1x and x4 the evenly spaced grey slats with brick-like seams read as a vent grille or roller shutter, not as stairs going down. Compare v5 stair8, where the steps are wide slabs with seamless treads that get taller toward the viewer, inset between dark side walls.",
+    "4_placement": "The piece fills 30x29 of its 32x32 with a 1px transparent margin and sits flush between the two steles. Nothing clips or floats. Note: the two isolated gold pixels just below the kerb in the mockup at (54,111) and (70,111) are not part of either piece. They come from the underlay or another layer, so check what puts them there.",
+    "5_silhouette_outline": "Clean rectangle with no stray pixels in either piece. The star is centred on col 15 while the lid and ring are centred on 15.5. That is acceptable for an odd-width star. The outline problem is the kerb's light top and left edges (row 2 and col 1), which have no dark border against the floor."
+  },
+  "items": [
+    {
+      "id": "star seal",
+      "name": "별 봉인 돌뚜껑(닫힘, 2×2) (star seal)",
+      "kind": "flat",
+      "pixelSha256": "c0a9d09e7b4cdfbe7bdb96c1f344263c024ba5371a39a69afc41aa008d94de9c",
+      "verdict": "FAIL",
+      "reasons": [
+        "Lid passes: it uses the exact stele palette, has a clean 1px black edge (rows 5 and 27, cols 4 and 27), the star groove and 8 rune dots are symmetric, and it reads at 1x.",
+        "Kerb fails on 3/4 view and style. It is lit as a bevelled button (light top and left, dark right). Fix: make the top face one tone all round. Change cols 28-29 rows 3-28 (96,104,120) and rows 27-28 cols 2-29 (130,138,149) to the same tone as the left and top band. Keep only rows 29-30 as the south front lip.",
+        "Kerb outline: row 2 cols 1-29 and col 1 rows 2-29 are near-white 200,208,208 with no dark border. Replace them with a dark outline (51,57,66 or the stele's 19,19,23) so the top and left edges match col 30 and row 30 and the v5 outline convention.",
+        "Kerb value and hue: lower the whole kerb ramp by one step (base about 130, highlight at most 165, no 200) and warm it toward the brick ramp (108,92,102 / 118,110,116) so it stops being the brightest object in the room and reads as stone set into the floor, not a light grey frame."
+      ]
+    },
+    {
+      "id": "star seal open",
+      "name": "별 봉인 돌계단(열림, 2×2) (star seal open)",
+      "kind": "flat",
+      "pixelSha256": "dc0d6f0ea5a1f0b3586b735d0fb0523580af945ca0c76738c3d823d0b2feef85",
+      "verdict": "FAIL",
+      "reasons": [
+        "The frame matches the closed state exactly, and dark north (rows 5-8) with lighter south is the correct descending convention. However, it shares the kerb faults above and needs the same kerb fixes so both states stay pixel-identical outside x4-27, y6-27.",
+        "Reads as a vent grille or roller shutter, not stairs. Rows 9-26 are six identical 3-row courses (light row, mid row, 29,34,40 gap). Fix: foreshorten. Use about 5 treads whose heights grow toward the south, e.g. rows 9-10, 11-13, 14-17, 18-21, 22-26. Make the far treads darker and let the top one fade into the black at rows 7-9.",
+        "Remove the brick seams on the treads: the single dark or light joint pixels at cols 6, 10, 13, 16, 18-19, 24-25 in rows 9-25 (for example row 10 col 13 and col 16 'r', row 9 cols 5, 7, 13, 16 'b'). Each tread should be one slab with a bright front edge row and a 1px dark shadow under it, like v5 stair8.",
+        "Add depth at the sides. The opening walls are full height at cols 4-5 and 26-27, so the steps span the full width at every depth. Inset the far treads by 1-2px on each side (e.g. rows 9-14 start at col 6-7 and end at col 24-25), with darker wall pixels in the gap. Or cast a 1-2px shadow from the north kerb lip across the top tread, as v5 stair8 does, so the eye reads 'going down'."
+      ]
+    }
+  ]
+}

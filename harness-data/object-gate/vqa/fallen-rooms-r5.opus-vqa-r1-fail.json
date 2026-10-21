@@ -1,0 +1,45 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-21",
+  "batch": "fallen-rooms-r5",
+  "commit": "2dadaef22b",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed with src/harnesses/_core/object_gate on both 32x32 PNGs: star_seal 92cdb125...a01cd6, star_seal_open c537cc10...5729584. Kerb frame is pixel-identical between states (all 504 differing pixels lie inside x4-27, y6-27); same alpha bbox (1,2)-(30,30).",
+    "1_topdown_view": "Both are flat floor pieces seen from above with no side/iso faces. Closed: flush lid, bevel lit from the top (rim row 6 = 65,65,76, row 26 = 19,19,23), correct. Open: treads descend north with the nosing highlight on each tread's north edge (rows 22/17/13/10) and tread width narrowing toward the north (x5-26 -> x6-24). This matches the convergence in the existing v5 stairs-down art. Acceptable.",
+    "2_style_fit": "Closed lid reuses the stele ramp exactly (19/30/42/65 neutral black, purple 145,103,202, gold 192,144,32 / 234,210,133), so the material matches its neighbours. The warm stone kerb (58/100/142/185) is a 4-step ramp with speckle texture and is fine. Open stairs use a separate cool slate ramp (51/73/96/130/165/200) that appears nowhere else in the room and does not match the warm kerb around it. The nearest tread (200,208,208) is brighter than the floor-level kerb highlight (185,171,157), and the treads are long flat runs: rows 23-25 are 22 px of 165,173,178 with 3 dots, row 22 is a solid 200,208,208 line, row 13 is a solid 130,138,149 line.",
+    "3_readability_1x": "Closed reads as a dark stone lid in a stone kerb with a gold-rimmed purple star keyhole and a rune-dot ring, and it clearly belongs with the two steles. Open reads immediately as stairs going down. At 1x, though, it is the palest, coolest object in the room and pops out of the warm wood floor more than the v5 stairs-down does.",
+    "4_placement": "2x2 footprint is flush on the floor between the steles in both mockups. No floating or clipping. Swapping states keeps the kerb in place.",
+    "5_silhouette_outline": "Clean rectangular outer outline (58,53,48) on both, no stray pixels outside the kerb. The kerb speckle (single 185 pixels at (2,10),(2,11),(28,7),(28,22),(27-28,25-26)) is texture, not noise."
+  },
+  "items": [
+    {
+      "id": "star seal",
+      "name": "별 봉인 돌뚜껑(닫힘, 2×2) (star seal)",
+      "kind": "flat",
+      "pixelSha256": "92cdb12596452ce967c0d9f41d47ffd100b3981ca47a5e3d615fba566ba01cd6",
+      "verdict": "PASS",
+      "reasons": [
+        "Correct top-down flat piece: a flush lid with a top-lit bevel (light rim row 6 / col 4, dark rim row 26 / col 26), no side faces.",
+        "The lid shares the stele material exactly (same black ramp, purple 145,103,202, gold pair), so it sits naturally between the two seal steles.",
+        "Reads at 1x as a sealed stone floor door with a star keyhole: a gold-rimmed five-point star with a purple inside and a light core (224,200,255), plus a ring of purple rune dots.",
+        "Clean outline and a 4-tone warm stone kerb with texture. No flat fills, and the frame matches the open state exactly.",
+        "Minor, not blocking: the faint dark circle (42,42,50) around the rune ring barely shows at 1x. It could take one step lighter (65,65,76) on its upper arc."
+      ]
+    },
+    {
+      "id": "star seal open",
+      "name": "별 봉인 돌계단(열림, 2×2) (star seal open)",
+      "kind": "flat",
+      "pixelSha256": "c537cc106d1bbcb5ff89cbf2b41fcc82d92e0822707c73fe9594337eb5729584",
+      "verdict": "FAIL",
+      "reasons": [
+        "Material mismatch: the steps use a cool slate ramp (51,57,66 / 73,80,93 / 96,104,120 / 130,138,149 / 165,173,178 / 200,208,208) that appears nowhere in the warm kerb that frames them, the closed lid, or the steles. The stair looks pasted in rather than cut from the same stone. Fix: redraw the treads from the kerb's warm stone ramp (58,53,48 / 100,92,84 / 142,131,120 / 185,171,157), or from the stele black ramp darkening to 8,8,10, so both states read as the same stonework.",
+        "Lighting is wrong for a pit: the nearest tread nosing at row 22 (200,208,208) and the tread at rows 23-25 (165,173,178) are brighter than the floor-level kerb highlight (185,171,157 at row 3). Fix: cap the nearest nosing (row 22) at the kerb mid-light 142,131,120, use 100,92,84 for its tread (rows 23-25), and step one tone darker per tread going north (rows 17-20, then 13-15, then 10-11), ending in 19,19,23 and 8,8,10 by rows 8-9.",
+        "Flat fills: rows 23-25 x5-26 are 22-px runs of one colour with only 3 dots, and rows 22, 17, 13 and 16 are solid single-colour lines across the full width. Fix: give each tread a 2-tone top (nosing row plus body), with 1 px vertical slab joints in the shadow tone (e.g. x11 and x19 on rows 23-25, x13 on rows 18-20, alternating like the brick bond), and break each nosing line with 2-3 darker chips.",
+        "Because of the above, at 1x the open stair is the palest, coolest object in the room and stands out against the warm floor, unlike the v5 stairs-down art, which uses the surrounding material. The 3/4 tread logic (north-edge nosing, narrowing toward the north, black depth rows 5-9) and the identical kerb frame are correct and should be kept."
+      ]
+    }
+  ]
+}

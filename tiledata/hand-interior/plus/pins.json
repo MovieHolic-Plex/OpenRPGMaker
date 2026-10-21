@@ -925,7 +925,15 @@
 "obj:star lens:0,1": 7478,
 "obj:star lens:1,1": 7479,
 "obj:star lens:2,1": 7480,
-"obj:star lens:3,1": 7481
+"obj:star lens:3,1": 7481,
+"obj:star seal:0,0": 7482,
+"obj:star seal:1,0": 7483,
+"obj:star seal:0,1": 7484,
+"obj:star seal:1,1": 7485,
+"obj:star seal open:0,0": 7486,
+"obj:star seal open:1,0": 7487,
+"obj:star seal open:0,1": 7488,
+"obj:star seal open:1,1": 7489
 },
 "ids": [
 "plinth",
@@ -1015,6 +1023,8 @@
 "observing platform",
 "cold brazier",
 "dome slit tall",
-"star lens"
+"star lens",
+"star seal",
+"star seal open"
 ]
 }

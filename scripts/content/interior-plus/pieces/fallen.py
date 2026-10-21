@@ -169,3 +169,93 @@ def star_lens(c):
     for x in (10, 54):
         c.rect(x - 2, 18, x + 2, 22, K('brass', 4)); c.hl(x - 2, x + 1, 18, K('brass', 6)); c.vl(x - 2, 18, 21, K('brass', 5)); c.p(x, 20, K('brass', 1))
     c.outline()
+
+
+def _seal_frame(c):
+    """바닥에 박힌 돌 테두리(2×2 칸, 위에서 본 3/4) — 바깥 윤곽 · 한 톤 윗면 3줄 · 앞(남) 턱 2줄. 닫힘/열림이 같은 테두리를 쓴다.
+    따뜻한 잿빛(linen 램프)으로 바닥보다 한 단 밝게만 — 버튼처럼 빛을 나누지 않는다(VQA r4)."""
+    x0, y0, x1, y1 = 1, 2, 30, 30
+    for y in range(y0, y1 + 1):
+        for x in range(x0, x1 + 1):
+            if min(x - x0, y - y0, x1 - x, y1 - y) > 3: continue
+            k = 2
+            if y1 - y <= 1: k = 1                               # 앞 턱(남쪽 면)
+            elif hnoise(x, y, 41) > .86: k = 1
+            elif hnoise(x, y, 43) > .9: k = 3
+            c.p(x, y, K('linen', k))
+    for (x, y) in ((9, 3), (9, 4), (21, 3), (21, 4), (2, 14), (3, 14), (28, 17), (29, 17), (13, 27), (13, 28), (24, 27), (24, 28)):
+        c.p(x, y, K('linen', 1))                                # 마름돌 이음
+    c.hl(x0 + 1, x1 - 1, y0 + 1, K('linen', 3))                 # 바깥 모서리에 걸린 얇은 빛 한 줄(위)
+    c.hl(x0, x1, y0, K('linen', 0)); c.vl(x0, y0, y1, K('linen', 0)); c.vl(x1, y0, y1, K('linen', 0)); c.hl(x0, x1, y1, K('linen', 0))
+
+
+@REG.piece('star seal', '별 봉인 돌뚜껑(닫힘, 2×2)', 'gimmick', 'flat', 2, 2, 0, 'flat',
+           '바닥에 박힌 돌 테두리 속 내려가는 돌계단을 검은 돌 뚜껑이 덮었다 — 뚜껑 한가운데 다섯 갈래 별 모양 홈(금테, 속은 보랏빛), 둘레에 룬 점.',
+           ['던전', '유적', '천문대', '봉인'],
+           '서고·지하 입구 바닥. 양옆에 봉인석(seal stone) 한 쌍. 열쇠로 열면 같은 칸을 star seal open 으로 바꿔 낀다.', ['seal stone', 'star seal open'], use=('seal',))
+def star_seal(c):
+    _seal_frame(c)
+    # 검은 돌 뚜껑(봉인석과 같은 black 램프) — 테두리 안쪽에 딱 맞게, 이음 한 줄
+    for y in range(6, 27):
+        for x in range(5, 27):
+            k = 2 if hnoise(x, y, 19) < .86 else 3
+            c.p(x, y, K('black', k))
+    c.hl(5, 26, 6, K('black', 4)); c.vl(5, 6, 25, K('black', 4))
+    c.hl(5, 26, 26, K('black', 1)); c.vl(26, 6, 26, K('black', 1))
+    c.hl(4, 27, 5, K('black', 1)); c.vl(4, 5, 27, K('black', 1)); c.hl(4, 27, 27, K('linen', 0)); c.vl(27, 5, 27, K('black', 1))
+    # 둥근 홈 테(룬 둘레)
+    cx, cy = 15.5, 16
+    ring(c, cx, cy, 9, 8, K('black', 1))
+    ring(c, cx, cy - .6, 9, 8, K('black', 5))
+    for a in range(0, 360, 45):                      # 룬 점 여덟
+        r = math.radians(a + 22)
+        c.p(int(round(cx + 9 * math.cos(r))), int(round(cy + 8 * math.sin(r))), K('purple', 4))
+    # 다섯 갈래 별 홈 — 속은 보랏빛, 가장자리 금테(왼쪽 위 밝음)
+    pts = []
+    for i in range(10):
+        r = 7.4 if i % 2 == 0 else 3.1
+        a = math.radians(-90 + 36 * i)
+        pts.append((cx + r * math.cos(a), cy + .4 + r * math.sin(a) * .92))
+    def inside(px, py):
+        n = False
+        for i in range(10):
+            (xa, ya), (xb, yb) = pts[i], pts[(i + 1) % 10]
+            if (ya > py) != (yb > py) and px < xa + (py - ya) * (xb - xa) / (yb - ya): n = not n
+        return n
+    fill = set((x, y) for y in range(6, 27) for x in range(5, 27) if inside(x + .5, y + .5))
+    for (x, y) in fill:
+        border = any((x + dx, y + dy) not in fill for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+        if border:
+            c.p(x, y, K('gold', 5 if (x < cx and y < cy + 1) else 3))
+        else:
+            c.p(x, y, K('purple', 3 if (x + y) % 3 else 4))
+    c.p(15, 16, K('purple', 6)); c.p(16, 16, K('purple', 5)); c.p(15, 17, K('purple', 5))
+
+
+@REG.piece('star seal open', '별 봉인 돌계단(열림, 2×2)', 'gimmick', 'flat', 2, 2, 0, 'flat',
+           '돌 뚜껑이 걷힌 바닥 돌계단 입구 — star seal 과 같은 돌 테두리 속으로 마름돌 계단이 북쪽 어둠 아래로 내려간다.',
+           ['던전', '유적', '천문대', '계단'],
+           'star seal 이 열린 뒤 같은 칸. 이동 이벤트는 이 칸 위에.', ['star seal', 'seal stone'], use=('travel',))
+def star_seal_open(c):
+    """v5 「stairs down」(3960~3963) 구멍 속 계단을 화소 그대로 옮겨 나무 램프를 테두리와 같은 따뜻한 돌(linen)로 바꿔 칠한다 —
+    v5 계단과 같은 디딤판 구조(밝은 앞 모서리·디딤판·그늘 줄, 안쪽 좌우 벽)라 1배에서 「내려가는 계단」으로 읽힌다(VQA r6: 손으로 그린 판은 화덕·창살로 읽혔다)."""
+    _seal_frame(c)
+    src = Image.new('RGBA', (32, 32))
+    for i, (x, y) in zip((3960, 3961, 3962, 3963), ((0, 0), (16, 0), (0, 16), (16, 16))): src.paste(_sheet_tile(i), (x, y))
+    remap = {(8, 8, 10): K('black', 0), (42, 24, 11): K('black', 1), (58, 34, 16): K('black', 2), (65, 30, 5): K('linen', 0),
+             (99, 49, 11): K('linen', 1), (109, 59, 21): K('linen', 1), (154, 84, 53): K('linen', 2), (158, 104, 75): K('linen', 2),
+             (183, 114, 70): K('linen', 3)}
+    for y in range(5, 28):
+        for x in range(4, 28): c.p(x, y, K('black', 0))
+    # 먼 단 둘(어둠에 잠김) — v5 계단 위에 이어 붙인다
+    for x in range(6, 26):
+        c.p(x, 8, K('black', 3)); c.p(x, 9, K('black', 1))
+        c.p(x, 10, K('linen', 0)); c.p(x, 11, K('black', 3)); c.p(x, 12, K('black', 1))
+    c.hl(4, 27, 5, K('linen', 0))
+    for sy in range(14, 28):                                   # v5 구멍 14~27줄 → 13~26줄
+        for sx in range(5, 27):
+            r, g, b, a = src.getpixel((sx, sy))
+            if a: c.p(sx, sy - 1, remap.get((r, g, b), K('linen', 1)))
+    for y in range(6, 27):                                     # 바깥 한 칸 안벽
+        c.p(4, y, K('black', 1)); c.p(27, y, K('black', 0))
+    for y in range(8, 13): c.p(5, y, K('black', 2)); c.p(26, y, K('black', 1))
