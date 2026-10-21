@@ -659,6 +659,18 @@ function scaleStats(enemy: Project["database"]["enemies"][number] | undefined, f
   enemy.stats = stats;
 }
 
+/** 모의전(balanceSim 덮어쓰기)과 같은 순서로 다듬는다: 능력치 배율 → 레벨(비율로 능력치도) → 능력치 하나씩 더하기. */
+function nudgeEnemy(enemy: Project["database"]["enemies"][number] | undefined, tune: { readonly scale?: number; readonly level?: number; readonly delta?: Readonly<Partial<Record<keyof Project["database"]["enemies"][number]["stats"], number>>> }): void {
+  if (!enemy) return;
+  if (tune.scale) scaleStats(enemy, tune.scale);
+  if (tune.level && enemy.level) { const ratio = tune.level / enemy.level; enemy.level = tune.level; scaleStats(enemy, ratio); }
+  if (tune.delta) {
+    const stats = { ...enemy.stats };
+    for (const [key, d] of Object.entries(tune.delta) as [keyof typeof stats, number][]) stats[key] = Math.max(1, stats[key] + d);
+    enemy.stats = stats;
+  }
+}
+
 function retuneLeaderAndChampion(project: Project): void {
   const enemies = project.database.enemies;
   const byId = (id: string) => enemies.find((e) => e.id === id);
@@ -666,7 +678,8 @@ function retuneLeaderAndChampion(project: Project): void {
   const moves = (enemy: Project["database"]["enemies"][number] | undefined, ...names: string[]) => {
     const base = enemy?.actions.find((a) => a.skillId);
     const ids = names.map(skillOf).filter((id): id is string => Boolean(id));
-    if (enemy && base && ids.length === names.length) enemy.actions = ids.map((skillId) => ({ ...structuredClone(base), skillId }));
+    if (ids.length !== names.length) throw new Error(`retuneLeaderAndChampion: 없는 기술 이름 ${names.filter((n) => !skillOf(n)).join(", ")}`);
+    if (enemy && base) enemy.actions = ids.map((skillId) => ({ ...structuredClone(base), skillId }));
   };
   // 관장
   const gym = project.database.troops.find((t) => t.id === "mx_troop_mx_map_grove_gym_leader");
@@ -684,10 +697,16 @@ function retuneLeaderAndChampion(project: Project): void {
   moves(reskinEnemy(project, "mx_enemy_mx_map_grove_gym_leader_0", "mx_enemy_orchardant", LEADER_LEVELS.middle), "더듬이쏘기");
   const gymAce = reskinEnemy(project, "mx_enemy_mx_map_grove_gym_leader_1", "mx_enemy_briartusk", LEADER_LEVELS.ace);
   scaleStats(gymAce, LEADER_STAT_SCALE.ace);
-  moves(gymAce, "흙먼지", "흙발톡");
+  moves(gymAce, "흙먼지", "어깨툭"); // 어깨툭 → varyTackle 이 땅 타입 「흙발톡」으로 바꾼다
+  // 풀 관장전 93%(띠 70~90 밖) → 에이스 민첩 +1(모의전 풀 86% · 불 82% · 물 89%, 턴 중앙값 9·6·7).
+  nudgeEnemy(gymAce, { delta: { agility: 1 } });
   // 신전
   TEMPLE_LEVELS.forEach((level, i) => { const e = byId(`mx_enemy_mx_map_observatory_boss_${i}`); if (e) { rescaleEnemy(e, level); scaleStats(e, TEMPLE_STAT_SCALE[i] ?? 1); } });
-  moves(byId("mx_enemy_mx_map_observatory_boss_2"), "꿈방울", "톡번개");
+  // 물 위협을 전기(톡번개)에서 풀(잎귀베기)로 — 전기는 1번 도로 새(비행) 동료까지 두 배로 때려 물 + 새 조합이 24%였다(모의전 동료별).
+  moves(byId("mx_enemy_mx_map_observatory_boss_2"), "꿈방울", "잎귀베기");
+  nudgeEnemy(byId("mx_enemy_mx_map_observatory_boss_2"), { delta: { mind: 1 } });
+  // 불 + 새 동료가 마리오네에게 막혀 34% → 민첩 -1(모의전 불 77%, 새 동료 44%).
+  nudgeEnemy(byId("mx_enemy_mx_map_observatory_boss_0"), { delta: { agility: -1 } });
   // 챔피언
   const league = project.database.troops.find((t) => t.id === "mx_troop_mx_map_league_0_league_challenge");
   if (!league?.members) return;
@@ -700,7 +719,14 @@ function retuneLeaderAndChampion(project: Project): void {
   scaleStats(rockEnemy, CHAMPION_ROCK_STAT_SCALE);
   const ace = reskinEnemy(project, spark.enemyId, "mx_enemy_coilcrest", CHAMPION_LEVELS.ace, true);
   scaleStats(ace, CHAMPION_ACE_STAT_SCALE);
-  moves(ace, "발끝톡", "톡번개");
+  // 물 위협을 전기(톡번개)에서 풀(잎귀베기)로 — 전기는 물 스타터와 1번 도로 새(비행) 동료를 둘 다 두 배로 때려
+  // 물 + 비행 동료 조합이 챔피언에게 21%였다(2026-10-21 모의전 동료별, 실플레이 물 두 판 연속 패배).
+  // 「발끝톡」은 varyTackle 이 나중에 어깨툭에서 만든다 — 여기서는 어깨툭으로 둔다(없는 이름이면 moves 가 통째로 무시된다).
+  moves(ace, "어깨툭", "잎귀베기");
+  // 리그 첫 둘이 Lv8 이라 플레이어 Lv12 앞에서 어색했다(VQA r13) → Lv11 로 올리고 능력치를 깎아 강도는 띠 안에.
+  // 1 단위 능력치 하나가 승률 90% ↔ 10% 벼랑이라(모의전) 배율 뒤에 한 점씩 더한다.
+  nudgeEnemy(byId(bug.enemyId), CHAMPION_BUG_TUNE);
+  nudgeEnemy(rockEnemy, CHAMPION_ROCK_TUNE);
   league.members = [bug, rock, spark];
   league.enemyIds = league.members.map((m) => m.enemyId);
 }
@@ -713,6 +739,9 @@ const TEMPLE_STAT_SCALE = [1, 1.04, 1] as const;
 const CHAMPION_LEVELS = { bug: 8, rock: 8, ace: 12 } as const;
 const CHAMPION_ACE_STAT_SCALE = 0.76;
 const CHAMPION_ROCK_STAT_SCALE = 1.06;
+/** 모의전 n=150: 풀 74% · 불 67% · 물 67%, 가장 불리한 동료와도 50% 이상. */
+const CHAMPION_BUG_TUNE = { scale: 0.88, level: 11, delta: { attack: 1, maxHp: 2 } } as const;
+const CHAMPION_ROCK_TUNE = { scale: 0.75, level: 11, delta: { maxHp: 2 } } as const;
 
 /**
  * 사람 칩 다시 입히기 — 생성기는 Scarloxy 원본 두 장의 10명을 돌려 써서 라이벌 나루 = 회복 센터 직원 = 1번 도로 조련사,

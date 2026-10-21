@@ -280,6 +280,8 @@ async function walkThroughDoor(fromMapId, toMapId) {
 async function fight(label, { capture = false, run = false } = {}) {
   const log = [];
   const switchedFor = new Set();
+  // 쓰러진 뒤 다음 동료를 내는 것은 차례를 쓰지 않는다 — 턴 수(log 길이)에 넣지 않는다(모의전 avgTurns 와 같은 셈).
+  const forcedSwitches = [];
   for (let turn = 0; turn < 40; turn++) {
     if (!(await present("battle-scene"))) break;
     if (await present("battle-result-panel")) {
@@ -289,7 +291,7 @@ async function fight(label, { capture = false, run = false } = {}) {
     // 앞 동료가 쓰러지면 「교체 필요」 — 남은 동료를 낸다(이 칸을 Enter 로만 누르면 1분 가까이 멈춰 있었다, 2026-10-07 영상).
     const forced = page.locator('[data-testid^="actor-switch-"]');
     if (!(await page.locator('[data-testid="actor-command-fight"]').count())) {
-      if (await forced.count()) { log.push(`turn ${turn}: switch`); await forced.first().focus(); await page.keyboard.press("Enter"); await page.waitForTimeout(800); continue; }
+      if (await forced.count()) { forcedSwitches.push(turn); await forced.first().focus(); await page.keyboard.press("Enter"); await page.waitForTimeout(800); continue; }
       const pkmn = page.locator('[data-testid="actor-command-pkmn"]');
       if (await pkmn.count()) { await pkmn.focus(); await page.keyboard.press("Enter"); await page.waitForTimeout(500); continue; }
     }

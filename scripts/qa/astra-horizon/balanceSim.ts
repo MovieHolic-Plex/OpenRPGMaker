@@ -79,50 +79,78 @@ function applyOverrides(project: Project, overrides: Overrides): void {
   }
 }
 
-export type Cell = { readonly fight: string; readonly starter: string; readonly win: number; readonly turns: number; readonly hpPct: number; readonly enemyTop: number; readonly playerLevel: number };
+export type Cell = {
+  readonly fight: string; readonly starter: string; readonly win: number; readonly turns: number; readonly medianTurns: number;
+  readonly hpPct: number; readonly enemyTop: number; readonly playerLevel: number;
+  /** 동료별 승률 — 가장 낮은 동료(예: 물 + 비행 동료가 둘 다 전기 에이스에 두 배로 맞는다). */
+  readonly byPartner: Readonly<Record<string, number>>; readonly worstPartner: number;
+};
+
+const median = (xs: number[]): number => { const a = [...xs].sort((x, y) => x - y); const m = a.length >> 1; return a.length ? (a.length % 2 ? a[m]! : (a[m - 1]! + a[m]!) / 2) : 0; };
+
+/** 한 칸: 판마다 따로 돌려(n=1) 턴 중앙값과 동료별 승률을 낸다. */
+function cellFor(project: Project, fight: Fight, starter: string, n: number): Cell {
+  const troop = project.database.troops.find((t) => t.id === fight.troopId);
+  const enemyTop = Math.max(...(troop?.members ?? []).map((m) => project.database.enemies.find((e) => e.id === m.enemyId)?.level ?? 0));
+  let wins = 0, hp = 0, max = 0;
+  const turns: number[] = [];
+  const byPartner: Record<string, number> = {};
+  const partners = fight.partnerLevel ? PARTNERS : [undefined];
+  const per = Math.max(1, Math.round(n / partners.length));
+  partners.forEach((partner, k) => {
+    const party = [mon(project, starter, fight.level, "a")];
+    if (partner && fight.partnerLevel) party.push(mon(project, partner, fight.partnerLevel, "b"));
+    const partyMax = party.reduce((sum, m) => sum + maxHp(project, m), 0);
+    let pw = 0;
+    for (let i = 0; i < per; i++) {
+      const r = simulateBattle({ project, troopId: fight.troopId, heroLevel: fight.level, monsterParty: party, n: 1, seed: 11 + k * 1000 + i, useSkills: true });
+      wins += r.winRate; pw += r.winRate; hp += r.avgHpRemaining; max += partyMax; turns.push(r.avgTurns);
+    }
+    byPartner[(partner ?? "solo").replace("mx_species_", "")] = pw / per;
+  });
+  const runs = turns.length;
+  return {
+    fight: fight.id, starter: starter.replace("mx_species_", ""), win: wins / runs, turns: turns.reduce((a, b) => a + b, 0) / runs, medianTurns: median(turns),
+    hpPct: max ? hp / max : 0, enemyTop, playerLevel: fight.level, byPartner, worstPartner: Math.min(...Object.values(byPartner)),
+  };
+}
 
 export function sweep(n = 30, overrides: Overrides = {}): Cell[] {
   const { project } = createEmeraldCrownFlagshipDemo();
   applyOverrides(project, overrides);
-  const cells: Cell[] = [];
-  for (const fight of ROUTE) {
-    const troop = project.database.troops.find((t) => t.id === fight.troopId);
-    const enemyTop = Math.max(...(troop?.members ?? []).map((m) => project.database.enemies.find((e) => e.id === m.enemyId)?.level ?? 0));
-    for (const starter of STARTERS) {
-      let wins = 0, turns = 0, hp = 0, max = 0, runs = 0;
-      const partners = fight.partnerLevel ? PARTNERS : [undefined];
-      const per = Math.max(1, Math.round(n / partners.length));
-      partners.forEach((partner, k) => {
-        const party = [mon(project, starter, fight.level, "a")];
-        if (partner && fight.partnerLevel) party.push(mon(project, partner, fight.partnerLevel, "b"));
-        const r = simulateBattle({ project, troopId: fight.troopId, heroLevel: fight.level, monsterParty: party, n: per, seed: 11 + k, useSkills: true });
-        wins += r.winRate * per; turns += r.avgTurns * per; hp += r.avgHpRemaining * per; runs += per;
-        max += party.reduce((sum, m) => sum + maxHp(project, m), 0) * per;
-      });
-      cells.push({ fight: fight.id, starter: starter.replace("mx_species_", ""), win: wins / runs, turns: turns / runs, hpPct: max ? hp / max : 0, enemyTop, playerLevel: fight.level });
-    }
-  }
-  return cells;
+  return ROUTE.flatMap((fight) => STARTERS.map((starter) => cellFor(project, fight, starter, n)));
 }
 
-/** 관장 70~90%·5~9턴(스타터 무관)·체력 70% 이하, 신전·챔피언 55~80%, 챔피언 최고 레벨 ≥ 플레이어. */
+/**
+ * 관장: 승률 70~90%, 턴 중앙값 5~9, 남은 체력 70% 이하, 스타터 사이 턴 중앙값 차 3 이하(spread, 표 아래 줄).
+ * 신전·챔피언: 승률 55~80%, 가장 불리한 동료와도 40% 이상. 챔피언 최고 레벨 ≥ 플레이어.
+ */
 export function verdict(cell: Cell): string {
   const bad: string[] = [];
   if (cell.fight === "gym") {
     if (cell.win < 0.7 || cell.win > 0.9) bad.push("win");
-    if (cell.turns < 5 || cell.turns > 9) bad.push("turns");
+    if (cell.medianTurns < 5 || cell.medianTurns > 9) bad.push("turns");
     if (cell.hpPct > 0.7) bad.push("hp");
   }
   if (cell.fight === "temple" || cell.fight === "champion") {
     if (cell.win < 0.55 || cell.win > 0.8) bad.push("win");
+    if (cell.worstPartner < 0.4) bad.push("partner");
   }
   if (cell.fight === "champion" && cell.enemyTop < cell.playerLevel) bad.push("level");
   return bad.length ? `✗ ${bad.join(",")}` : "✓";
 }
 
+/** 관장 턴 중앙값의 스타터 사이 차(≤3). */
+export function gymSpread(cells: readonly Cell[]): number {
+  const gym = cells.filter((c) => c.fight === "gym").map((c) => c.medianTurns);
+  return gym.length ? Math.max(...gym) - Math.min(...gym) : 0;
+}
+
 export function table(cells: readonly Cell[]): string {
-  const rows = cells.map((c) => `| ${c.fight} | ${c.starter} | ${(c.win * 100).toFixed(0)}% | ${c.turns.toFixed(1)} | ${(c.hpPct * 100).toFixed(0)}% | Lv${c.playerLevel} vs ${c.enemyTop} | ${verdict(c)} |`);
-  return ["| 승부 | 스타터 | 승률 | 턴 | 남은 체력 | 레벨 | 목표 |", "|---|---|---|---|---|---|---|", ...rows].join("\n");
+  const pct = (x: number) => `${(x * 100).toFixed(0)}%`;
+  const rows = cells.map((c) => `| ${c.fight} | ${c.starter} | ${pct(c.win)} | ${c.medianTurns.toFixed(1)} (평균 ${c.turns.toFixed(1)}) | ${pct(c.hpPct)} | ${Object.entries(c.byPartner).map(([p, w]) => `${p} ${pct(w)}`).join(" · ")} | Lv${c.playerLevel} vs ${c.enemyTop} | ${verdict(c)} |`);
+  const spread = gymSpread(cells);
+  return ["| 승부 | 스타터 | 승률 | 턴 중앙값 | 남은 체력 | 동료별 승률 | 레벨 | 목표 |", "|---|---|---|---|---|---|---|---|", ...rows, "", `관장 턴 중앙값 스타터 간 차: ${spread.toFixed(1)} ${spread <= 3 ? "✓" : "✗ (≤3)"}`].join("\n");
 }
 
 let cached: Project | undefined;
@@ -136,21 +164,7 @@ export function evalFight(fightId: string, overrides: Overrides, n = 30): Cell[]
   try {
     applyOverrides(project, overrides);
     const fight = ROUTE.find((f) => f.id === fightId)!;
-    const troop = project.database.troops.find((t) => t.id === fight.troopId);
-    const enemyTop = Math.max(...(troop?.members ?? []).map((m) => project.database.enemies.find((e) => e.id === m.enemyId)?.level ?? 0));
-    return STARTERS.map((starter) => {
-      let wins = 0, turns = 0, hp = 0, max = 0, runs = 0;
-      const partners = fight.partnerLevel ? PARTNERS : [undefined];
-      const per = Math.max(1, Math.round(n / partners.length));
-      partners.forEach((partner, k) => {
-        const party = [mon(project, starter, fight.level, "a")];
-        if (partner && fight.partnerLevel) party.push(mon(project, partner, fight.partnerLevel, "b"));
-        const r = simulateBattle({ project, troopId: fight.troopId, heroLevel: fight.level, monsterParty: party, n: per, seed: 11 + k, useSkills: true });
-        wins += r.winRate * per; turns += r.avgTurns * per; hp += r.avgHpRemaining * per; runs += per;
-        max += party.reduce((sum, m) => sum + maxHp(project, m), 0) * per;
-      });
-      return { fight: fightId, starter: starter.replace("mx_species_", ""), win: wins / runs, turns: turns / runs, hpPct: max ? hp / max : 0, enemyTop, playerLevel: fight.level };
-    });
+    return STARTERS.map((starter) => cellFor(project, fight, starter, n));
   } finally {
     project.database.enemies = saved;
     project.database.troops = savedTroops;
