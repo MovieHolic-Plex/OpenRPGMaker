@@ -48,7 +48,9 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 2. **창 모양도 하나.** 한 장면만 다른 테두리·띠·이름표 위치를 쓰지 않는다. 자막·내레이션은 같은 아래 자리에 `context:"narration"`(이름·얼굴 없음) 하나로. 특수 모양은 표지판(sign)·편지(letter)·시스템 알림(system)에만. 즉시 닫히는 system 을 자막에 쓰지 않는다(눌러 둔 Enter 가 닫는다). 확인: `scene-dialogue-context-mixed` 0.
 3. **말풍선(balloon·bark)과 머리 위 감정 아이콘(showEmote)은 장르가 원할 때만.** 비주얼 노벨·드라마는 흉상 표정과 대사로 감정을 보인다. 확인: VN 풍 게임에 showEmote 0.
 4. **창은 작게, 테두리는 얇게.** 줄 수에 맞는 높이, 화면 아래 1/4 안, 외곽선 1px. 한 단어 대사(「석판」)·이름 없는 창을 남기지 않는다. 화자에게는 얼굴/흉상을.
-5. **예/아니오는 진행하는 쪽이 기본 커서.** 「기술을 잊고 새 기술을 배울까?」 기본이 «아니오» 면 Enter 연타로 중요한 강화를 놓친다.
+5. **창은 고정 틀이다 — 줄마다 자리를 못박지 않는다.** 엔진(2026-10-22)은 열린 대화 세션 동안 창의 위·아래 줄을 지킨다: 이름표 줄·내레이션·초상 있는/없는 줄이 같은 높이, 주인공 가림 피하기는 세션 첫 창에서 한 번만 정하고, 선택지는 대사 상자를 그대로 둔 채(질문 또는 앞 대사가 틀에 남는다) 그 위에 따로 뜬다. 그래도 줄에 적은 `position` 은 저자의 뜻으로 보고 따른다 — 이어지는 두 줄이 top·bottom 을 서로 다르게 적으면 창이 대화 도중 뛴다(데모 「대사창이 위로 갔다 아래로 갔다」). 자리를 옮길 장면이면 사이에 화면 전환·기다림을 둔다. 확인: `scene-dialogue-position-jump` 0, 코딩 에이전트는 `npm run qa:runtime -- --scenario dialogue-frame`(rAF 기록 `*-rects.json` 의 상자 위·아래가 줄 사이 0px).
+6. **엔딩 화면 글자는 게임 언어를 따른다.** 배지(HAPPY ENDING·다음 이야기에 계속)·마지막 장(끝·제1막 끝)·안내는 대사 시스템 언어(ko·en·ja·zh)로 나온다. 엔딩마다 바꾸려면 엔딩 presentation 의 `badge`·`finalTitle`·`kicker` 에 그 게임 언어로 적는다. 막·장 끝 엔딩 id 에는 act1·chapter2 를 넣어 「다음 이야기에 계속」·「제1막 끝」이 나오게 한다.
+7. **예/아니오는 진행하는 쪽이 기본 커서.** 「기술을 잊고 새 기술을 배울까?」 기본이 «아니오» 면 Enter 연타로 중요한 강화를 놓친다.
 
 ## 5. 맵마다 음악
 
@@ -118,6 +120,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 | `scene-stair-direction` | 내려가는 계단 그림이 위층으로(또는 반대) 이어진다 |
 | `scene-npc-vanish` | 출구까지 걷지 않고 지워지거나 «떠남» 페이지로 사라진다 |
 | `scene-dialogue-position-mixed` | 대사 위치(top·center·bottom·auto)가 섞였다 |
+| `scene-dialogue-position-jump` | 이어지는 두 대사가 서로 다른 자리를 못박아 대화 도중 창이 뛴다 → 그 줄의 position 을 지우거나, 사이에 화면 전환·기다림 |
 | `scene-dialogue-context-mixed` | sign·system·letter 밖의 특수 창 모양을 둘 이상 섞거나 말풍선을 쓴다 |
 | `scene-map-no-bgm` | 이야기가 들르는 맵에 BGM 이 없다 |
 | `scene-moving-vehicle` | 움직이는 교통·탈것 |

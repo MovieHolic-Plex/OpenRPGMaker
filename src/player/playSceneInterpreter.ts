@@ -448,6 +448,8 @@ async function consumeBlockingStep(
           textContext: { session: scene.session, project: store.getCurrent() },
           playerTileY: scene.tileY,
           mapHeight: scene.map.height,
+          // 대사와 같은 화면 속 높이로 가림을 판정한다(타일 높이만 보면 카메라가 맵 끝에 걸릴 때 대사와 다른 쪽을 고른다).
+          ...playerScreenYOf(scene),
         });
         const skipped = skipController.takeResult();
         if (skipped) return skipped;
@@ -929,6 +931,11 @@ function playerScreenYOf(scene: PlaySceneContext): { playerScreenY?: number } {
   const sprite = scene.player;
   if (!camera || !sprite || !(camera.height > 0)) return {};
   const centerY = sprite.y - (sprite.displayHeight > 0 ? sprite.displayHeight : 0) * (sprite.originY ?? 1) + (sprite.displayHeight > 0 ? sprite.displayHeight : 0) / 2;
-  const ratio = ((centerY - camera.scrollY) * camera.zoom) / camera.height;
+  // 보이는 세계 사각(worldView)으로 잰다. Phaser 카메라는 가운데를 기준으로 확대하므로 (y - scrollY) * zoom 은 배율 ≠ 1 에서
+  // 화면 높이의 절반만큼 어긋난다 — 아스트라 호라이즌(배율 2)에서 화면 가운데 주인공이 1.00(맨 아래)으로 읽혀 창이 위로 갔다.
+  const view = camera.worldView;
+  const ratio = view && view.height > 0
+    ? (centerY - view.y) / view.height
+    : ((centerY - camera.scrollY) * camera.zoom) / camera.height;
   return Number.isFinite(ratio) ? { playerScreenY: Math.max(0, Math.min(1, ratio)) } : {};
 }

@@ -108,6 +108,13 @@
   min-height: min(var(--runtime-choice-panel-height, 26%), var(--play-visible-height));
   max-height: calc(var(--play-visible-height) - 8px);
 }
+/* 고정 틀 선택지(dialogue.css 끝): 대사 상자와 같은 높이를 지키고, 선택지 칸만 그 위에 뜬다. */
+.player-layout .play-stage > .dialogue-overlay.choices-active.choices-framed.position-bottom,
+.player-layout .play-stage > .dialogue-overlay.choices-active.choices-framed.position-top {
+  height: min(var(--runtime-dialogue-panel-height, 27%), var(--play-visible-height));
+  max-height: none;
+  min-height: 63px;
+}
 .player-layout .play-stage > .runtime-overlay:not(.game-over-panel):not(.runtime-commerce-overlay):not([data-testid="runtime-error"]) {
   inset: calc(var(--play-crop-top) + 12px) calc(var(--play-crop-right) + 12px)
     calc(var(--play-crop-bottom) + 12px) calc(var(--play-crop-left) + 12px);
@@ -492,7 +499,7 @@
 
 /* 위쪽의 이름·얼굴 없는 한 줄(장소·시간 자막, 위 내레이션)은 대사 칸 높이를 통째로 쓰지 않고 내용 높이만 차지한다.
    선택지·말풍선은 자기 규칙을 따른다. */
-.player-layout .play-stage > .dialogue-overlay.position-top:not(.choices-active):not(.balloon-active):has(.dialogue-box:not(.has-speaker):not(.has-bust-face):not(.has-face)) {
+.player-layout .play-stage > .dialogue-overlay.position-top:not(.choices-active):not(.balloon-active):not(.dialogue-continued):has(.dialogue-box:not(.has-speaker):not(.has-bust-face):not(.has-face)) {
   height: auto;
   min-height: 0;
 }

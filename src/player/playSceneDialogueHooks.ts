@@ -44,9 +44,13 @@ export function dialogueSceneHooks(
       const camera = scene.cameras.main;
       const height = host.displayHeight > 0 ? host.displayHeight : TILE_SIZE;
       const worldY = host.y - height * host.originY - HEAD_GAP_PX - spriteReliefLiftPx(scene.map, host);
+      // 보이는 세계 사각 기준(배율 ≠ 1 에서 scrollX/Y 는 화면 왼쪽 위가 아니다 — 카메라는 가운데를 기준으로 확대한다).
+      const view = camera.worldView;
+      const left = view && view.width > 0 ? view.x : camera.scrollX;
+      const top = view && view.height > 0 ? view.y : camera.scrollY;
       return {
-        x: (host.x - camera.scrollX) * camera.zoom,
-        y: (worldY - camera.scrollY) * camera.zoom,
+        x: (host.x - left) * camera.zoom,
+        y: (worldY - top) * camera.zoom,
       };
     },
     onSound: (soundId) => {

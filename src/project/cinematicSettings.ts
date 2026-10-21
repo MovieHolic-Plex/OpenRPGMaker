@@ -36,6 +36,10 @@ export type EndingPresentation = {
   credits?: string;
   /** Small line above the ending heading. Absent: romance projects say "두 사람의 이야기", others "우리의 여정". */
   kicker?: string;
+  /** 엔딩 CG 위 배지(예: 「진 엔딩」). 비우면 엔딩 id·상대·분위기로 고른 글을 게임 언어로 쓴다(HAPPY ENDING·다음 이야기에 계속 …). */
+  badge?: string;
+  /** 마지막 장의 큰 글자. 비우면 「끝」, 막·장 끝 엔딩(id 에 act1·chapter2)이면 「제1막 끝」 — 게임 언어. */
+  finalTitle?: string;
 };
 
 export type GameOverOutcome = "menu" | "recover" | "title";
