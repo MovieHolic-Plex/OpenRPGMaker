@@ -207,7 +207,9 @@ A. view34 - the 3/4 top-down building convention: the roof TOP SURFACE reads as 
    roof and wall, or a flat plan view.
 B. quality vs the REFERENCE buildings:
    Q1 silhouette - reads as a building at 1x, one body, roof covers the walls, foundation sits on the ground line, exactly
-      ONE door on the ground floor.
+      ONE door on the ground floor. A PITCHED roof must show its form the way the reference roofs do (hip end slopes cut
+      back at the top corners, or a gable triangle); a pitched roof drawn as a plain rectangle slab with a cap line fails
+      Q1. Flat roofs with a parapet (desert style) are exempt from this.
    Q2 light - 3-4 tones per material lit from the upper left: roof top lightest, front wall mid, under-eave/foundation
       darkest; no highlights on the shadow side, no random bright blocks.
    Q3 craft - outline in the material's own darkest tone (not a black box around every part), even weight; roof tiles and

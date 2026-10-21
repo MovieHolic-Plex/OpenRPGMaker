@@ -143,7 +143,7 @@
   "note": "줄 = 화풍 하나. 첫 판 style-r1 의 후보 글자가 곧 줄이다.",
   "A": {
    "name": "흙벽돌 평지붕",
-   "concept": "모래색 흙벽돌 벽(adobe) + 평지붕 난간 + 나무 보 끝(wood).",
+   "concept": "햇볕에 구운 흙벽돌(adobe) 벽과 다진 흙 평지붕, 낮은 흙 난간, 나무 들보 끝(wood)이 벽 위로 튀어나온다. 오아시스 민가의 기본 줄.",
    "materials": [
     "adobe",
     "wood",
@@ -156,7 +156,7 @@
   },
   "B": {
    "name": "사암 돔",
-   "concept": "사암 마름돌 벽(sandstone) + 청록 돔(dome).",
+   "concept": "다듬은 사암(sandstone) 벽과 아치 창·문, 평지붕 위 난간과 작은 돔. 사원·여관·부잣집 줄.",
    "materials": [
     "sandstone",
     "dome",
@@ -169,7 +169,7 @@
   },
   "C": {
    "name": "흰 회칠",
-   "concept": "흰 회칠 벽(whitewash) + 붉은 차양(awning).",
+   "concept": "흰 회칠(whitewash) 벽, 파란·주황 천 차양(awning), 평지붕 난간. 시장 거리 줄.",
    "materials": [
     "whitewash",
     "awning",
@@ -597,9 +597,38 @@
    "walls": [
     "L D R"
    ]
+  },
+  {
+   "id": "longhouse",
+   "title": "긴 집",
+   "use": "home",
+   "cols": 5,
+   "storeys": 2,
+   "overhang": 0,
+   "roof": "roof.flat",
+   "wall": "wall.storey",
+   "base": "base.stone",
+   "walls": [
+    "L W M W R",
+    "L W D W R"
+   ],
+   "note": "style-r1 조립 둘 — 5칸 폭 2층, 창 넷·문 하나"
   }
  ],
- "rounds": {},
+ "rounds": {
+  "style-r1": {
+   "wave": "style",
+   "title": "화풍 판 — 줄 A·B·C × 부품 최소 세트 + 조립 건물 둘",
+   "module": "src/harnesses/building-kit/rounds/desert-oasis/style_r1.py",
+   "keys": "letter",
+   "items": [
+    "roof.flat",
+    "wall.storey",
+    "base.stone"
+   ],
+   "lead": "줄마다 지붕 1변형·벽 1층(창·문)·기단을 그리고 작은 집·긴 집으로 조립해 본다. 사람이 줄을 고르거나 여럿 남긴다."
+  }
+ },
  "plan": {
   "style-r1": "줄 A·B·C × 평지붕·벽 한 층·기단 + 흙벽돌 집",
   "civic-r1": "시장 차양·돔 사원·우물집"

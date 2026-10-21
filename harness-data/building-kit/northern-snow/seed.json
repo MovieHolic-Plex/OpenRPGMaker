@@ -137,11 +137,11 @@
   "note": "줄 = 화풍 하나. 첫 판 style-r1 의 후보 글자가 곧 줄이다.",
   "A": {
    "name": "눈 지붕 통나무",
-   "concept": "가파른 눈 지붕(snow·shake) + 통나무 벽(log).",
+   "concept": "굵은 통나무(log) 벽과 마구리, 너와(shake) 위에 두껍게 쌓인 눈(snow) 지붕, 고드름 처마. 북방 마을 민가 줄.",
    "materials": [
-    "snow",
-    "shake",
     "log",
+    "shake",
+    "snow",
     "stone"
    ],
    "origin": {
@@ -151,12 +151,11 @@
   },
   "B": {
    "name": "눈 지붕 반목조",
-   "concept": "눈 지붕 + 반목조 회벽(hplaster)·짙은 기둥(wood).",
+   "concept": "반목조 회벽(hplaster) + 나무 기둥(wood), 가파른 눈 지붕. 북방 도시 줄.",
    "materials": [
-    "snow",
-    "shake",
     "hplaster",
     "wood",
+    "snow",
     "stone"
    ],
    "origin": {
@@ -166,11 +165,11 @@
   },
   "C": {
    "name": "돌 장벽 집",
-   "concept": "눈 지붕 + 회색 돌벽(stone)·쇠(iron).",
+   "concept": "두꺼운 돌(stone) 벽과 작은 창, 눈 덮인 낮고 넓은 지붕. 성채·장벽 마을 줄.",
    "materials": [
+    "stone",
     "snow",
     "shake",
-    "stone",
     "iron"
    ],
    "origin": {
@@ -198,11 +197,12 @@
    ],
    "layer": "upper",
    "walk": "★ 사람 뒤로 지나감(그림이 사람 위)",
-   "brief": "눈이 쌓인 가파른 지붕. 3행: 눈 덮인 용마루·눈 사면·고드름 처마(널 끝이 보인다). 지붕 맨 아래 2행은 칸 경계까지 불투명하게, 처마는 l·r 조각 바깥 2~3px 에 그린다.",
+   "brief": "눈이 쌓인 가파른 지붕. 3행: 눈 덮인 용마루·눈 사면·고드름 처마(널 끝이 보인다). 지붕 맨 아래 2행은 칸 경계까지 불투명하게, 처마는 l·r 조각 바깥 2~3px 에 그린다. 실루엣(필수): 버들항 기준 집처럼 지붕이 네모 판으로 읽히면 안 된다 — l·r 끝 조각은 위쪽 모서리를 사선으로 비워(모임지붕 끝 경사면, 어두운 단으로 그늘) 용마루가 처마보다 짧아 보이게 하거나, 남향 박공 삼각벽(밝은 회벽·널 + 삼각 지붕선)으로 닫는다. 비운 모서리 아래 경사면은 l 쪽 밝게·r 쪽 어둡게.",
    "accept": [
     "눈 윗면이 면으로 보인다",
     "처마의 널 끝·고드름이 가운데 반복으로 이어진다",
-    "맨 아래 2행이 불투명하고 처마가 l·r 조각 바깥 2~3px 에 있다"
+    "맨 아래 2행이 불투명하고 처마가 l·r 조각 바깥 2~3px 에 있다",
+    "버들항 기준 지붕처럼 모임지붕 끝 경사 또는 박공 삼각형이 보인다(네모 판 아님)"
    ],
    "pieces": [
     {
@@ -217,7 +217,9 @@
       1,
       3
      ],
-     "kind": "roof"
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
     },
     {
      "id": "m",
@@ -246,7 +248,9 @@
       1,
       3
      ],
-     "kind": "roof"
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
     }
    ],
    "joins": [
@@ -560,9 +564,38 @@
    "walls": [
     "L D R"
    ]
+  },
+  {
+   "id": "longhouse",
+   "title": "긴 집",
+   "use": "home",
+   "cols": 5,
+   "storeys": 2,
+   "overhang": 0,
+   "roof": "roof.steep",
+   "wall": "wall.log",
+   "base": "base.stone",
+   "walls": [
+    "L W M W R",
+    "L W D W R"
+   ],
+   "note": "style-r1 조립 둘 — 5칸 폭 2층, 창 넷·문 하나"
   }
  ],
- "rounds": {},
+ "rounds": {
+  "style-r1": {
+   "wave": "style",
+   "title": "화풍 판 — 줄 A·B·C × 부품 최소 세트 + 조립 건물 둘",
+   "module": "src/harnesses/building-kit/rounds/northern-snow/style_r1.py",
+   "keys": "letter",
+   "items": [
+    "roof.steep",
+    "wall.log",
+    "base.stone"
+   ],
+   "lead": "줄마다 지붕 1변형·벽 1층(창·문)·기단을 그리고 작은 집·긴 집으로 조립해 본다. 사람이 줄을 고르거나 여럿 남긴다."
+  }
+ },
  "plan": {
   "style-r1": "줄 A·B·C × 눈 지붕·통나무 벽 한 층·기단 + 통나무 오두막",
   "civic-r1": "장작 헛간·롱하우스·망루"

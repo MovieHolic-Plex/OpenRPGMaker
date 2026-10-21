@@ -25,40 +25,213 @@
   "seam": "가운데 조각은 가로로 1~6번 반복된다 — 기와 줄·줄눈·기둥 박자가 조각 경계를 넘어 이어져야 한다(16 주기 바탕).",
   "eave": "처마는 지붕 l·r 조각의 바깥 2~3px 에 그린다 — 지붕 폭 = 벽 폭(overhang 0칸). 지붕 맨 아래 2행은 칸 경계까지 불투명하게 찍는다('~' 반투명을 쓰면 바닥이 비쳐 지붕·벽 사이가 벌어진다).",
   "eaveShadow": "처마 그늘은 벽 조각 맨 위 1~2행에 벽 재질의 어두운 단으로 불투명하게 그린다. 벽 l·r 조각은 바깥 2~3px 을 투명(inset 2)으로 두어 처마가 벽보다 튀어나와 보이게 한다. '~' 는 건물 발치 바닥 그림자에만.",
-  "forbidden": ["생성 이미지·트레이스", "사람(캐릭터) 그리기 — 크기 비교는 Actor1", "글자·상표가 있는 간판", "원·다각형 마스크로 본체 만들기·잡음 채우기·난수", "먹 윤곽"]
+  "forbidden": [
+   "생성 이미지·트레이스",
+   "사람(캐릭터) 그리기 — 크기 비교는 Actor1",
+   "글자·상표가 있는 간판",
+   "원·다각형 마스크로 본체 만들기·잡음 채우기·난수",
+   "먹 윤곽"
+  ]
  },
  "palette": {
   "note": "공유 램프(grass·cobble·stone·wood·iron)는 palette.py 가 모든 테마에 똑같이 뽑는다. 여기는 테마 램프만 — 전부 버들항 실제 칸에서 뽑는다.",
   "ramps": {
-   "roof": {"from": "beodeul", "cells": [{"kit": "bd-house-h101_0", "rows": [1, 2, 3]}, {"kit": "bd-house-manor", "rows": [2, 3]}], "k": 7, "pred": "warm",
-            "why": "붉은 기와 — 버들항 살림집·저택 지붕 줄(테라코타, 노란 용마루 빛)"},
-   "slate": {"from": "beodeul", "cells": [{"kit": "bd-house-smithy", "rows": [1, 2]}, {"kit": "bd-house-cathedral", "rows": [1, 2, 3, 4, 5, 6, 7, 8, 9]}], "k": 7, "pred": "cool",
-             "why": "청석 슬레이트 — 버들항 대장간·대성당 지붕(푸른 보라)"},
-   "shingle": {"from": "beodeul", "cells": [{"kit": "bd-out-roof-l"}, {"kit": "bd-out-roof-m"}, {"kit": "bd-out-roof-r"}], "k": 7, "pred": "warm",
-               "why": "너와(나무 널 지붕) — 버들항 외곽 나무집 지붕 부품"},
-   "plaster": {"from": "beodeul", "cells": [{"kit": "bd-house-manor", "rows": [4, 5, 6, 7, 8, 9]}, {"kit": "bd-house-h101_0", "rows": [4]}], "k": 7, "pred": "cream",
-               "why": "회벽 — 버들항 저택 벽·살림집 반목조 칸(크림)"},
-   "timber": {"from": "beodeul", "cells": [{"kit": "bd-house-h101_0", "rows": [4, 5]}], "k": 7, "pred": "darkwarm",
-              "why": "반목조 기둥·가새 — 버들항 살림집 벽 줄의 짙은 나무"},
-   "ashlar": {"from": "beodeul", "cells": [{"kit": "bd-house-smithy", "rows": [3, 4, 5]}], "k": 7, "pred": "grey",
-              "why": "다듬은 석재 벽 — 버들항 대장간 벽(밝은 회색 마름돌)"}
+   "roof": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "kit": "bd-house-h101_0",
+      "rows": [
+       1,
+       2,
+       3
+      ]
+     },
+     {
+      "kit": "bd-house-manor",
+      "rows": [
+       2,
+       3
+      ]
+     }
+    ],
+    "k": 7,
+    "pred": "warm",
+    "why": "붉은 기와 — 버들항 살림집·저택 지붕 줄(테라코타, 노란 용마루 빛)"
+   },
+   "slate": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "kit": "bd-house-smithy",
+      "rows": [
+       1,
+       2
+      ]
+     },
+     {
+      "kit": "bd-house-cathedral",
+      "rows": [
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8,
+       9
+      ]
+     }
+    ],
+    "k": 7,
+    "pred": "cool",
+    "why": "청석 슬레이트 — 버들항 대장간·대성당 지붕(푸른 보라)"
+   },
+   "shingle": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "kit": "bd-out-roof-l"
+     },
+     {
+      "kit": "bd-out-roof-m"
+     },
+     {
+      "kit": "bd-out-roof-r"
+     }
+    ],
+    "k": 7,
+    "pred": "warm",
+    "why": "너와(나무 널 지붕) — 버들항 외곽 나무집 지붕 부품"
+   },
+   "plaster": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "kit": "bd-house-manor",
+      "rows": [
+       4,
+       5,
+       6,
+       7,
+       8,
+       9
+      ]
+     },
+     {
+      "kit": "bd-house-h101_0",
+      "rows": [
+       4
+      ]
+     }
+    ],
+    "k": 7,
+    "pred": "cream",
+    "why": "회벽 — 버들항 저택 벽·살림집 반목조 칸(크림)"
+   },
+   "timber": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "kit": "bd-house-h101_0",
+      "rows": [
+       4,
+       5
+      ]
+     }
+    ],
+    "k": 7,
+    "pred": "darkwarm",
+    "why": "반목조 기둥·가새 — 버들항 살림집 벽 줄의 짙은 나무"
+   },
+   "ashlar": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "kit": "bd-house-smithy",
+      "rows": [
+       3,
+       4,
+       5
+      ]
+     }
+    ],
+    "k": 7,
+    "pred": "grey",
+    "why": "다듬은 석재 벽 — 버들항 대장간 벽(밝은 회색 마름돌)"
+   }
   }
  },
- "characters": {"sheet": "public/assets/easyrpg/charset/Actor1.png", "note": "크기 비교 전용. 그리지 않는다."},
+ "characters": {
+  "sheet": "public/assets/easyrpg/charset/Actor1.png",
+  "note": "크기 비교 전용. 그리지 않는다."
+ },
  "refs": [
-  {"kit": "bd-house-h101_0", "label": "버들항 살림집 7×6 — 붉은 기와·반목조 회벽", "use": "home"},
-  {"kit": "bd-house-inn", "label": "버들항 광장 여관 8×8 — 기와·반목조 2층·석조 1층", "use": "inn"},
-  {"kit": "bd-house-smithy", "label": "버들항 대장간 3×6 — 청석 지붕·마름돌 벽", "use": "smithy"},
-  {"kit": "bd-out-cabin", "label": "버들항 외곽 나무집 — 너와 지붕·통나무 벽", "use": "home"}
+  {
+   "kit": "bd-house-h101_0",
+   "label": "버들항 살림집 7×6 — 붉은 기와·반목조 회벽",
+   "use": "home"
+  },
+  {
+   "kit": "bd-house-inn",
+   "label": "버들항 광장 여관 8×8 — 기와·반목조 2층·석조 1층",
+   "use": "inn"
+  },
+  {
+   "kit": "bd-house-smithy",
+   "label": "버들항 대장간 3×6 — 청석 지붕·마름돌 벽",
+   "use": "smithy"
+  },
+  {
+   "kit": "bd-out-cabin",
+   "label": "버들항 외곽 나무집 — 너와 지붕·통나무 벽",
+   "use": "home"
+  }
  ],
  "lines": {
   "note": "줄 = 화풍 하나. style-r1 의 후보 글자가 곧 줄이고, 이후 판은 줄마다 <줄><번호> 후보를 그 줄 style-r1 조각과 같은 색·결로 그린다.",
-  "A": {"name": "붉은 기와 반목조", "concept": "테라코타 기와 지붕(roof) + 크림 회벽(plaster)에 짙은 나무 기둥·가새(timber) + 회색 주춧돌 기단(stone). 버들항 살림집과 가장 가까운 줄.",
-        "materials": ["roof", "plaster", "timber", "stone"], "origin": {"round": "style-r1", "key": "A"}},
-  "B": {"name": "청석 석조", "concept": "푸른 청석 슬레이트 지붕(slate) + 밝은 마름돌 벽(ashlar) + 쇠 장식(iron) + 기단(stone). 관청·대장간·길드의 단단한 줄.",
-        "materials": ["slate", "ashlar", "iron", "stone"], "origin": {"round": "style-r1", "key": "B"}},
-  "C": {"name": "너와 통나무", "concept": "나무 널 지붕(shingle) + 통나무·널벽(wood) + 기단(stone). 성 밖 마을·헛간의 소박한 줄.",
-        "materials": ["shingle", "wood", "stone"], "origin": {"round": "style-r1", "key": "C"}}
+  "A": {
+   "name": "붉은 기와 반목조",
+   "concept": "테라코타 기와 지붕(roof) + 크림 회벽(plaster)에 짙은 나무 기둥·가새(timber) + 회색 주춧돌 기단(stone). 버들항 살림집과 가장 가까운 줄.",
+   "materials": [
+    "roof",
+    "plaster",
+    "timber",
+    "stone"
+   ],
+   "origin": {
+    "round": "style-r1",
+    "key": "A"
+   }
+  },
+  "B": {
+   "name": "청석 석조",
+   "concept": "푸른 청석 슬레이트 지붕(slate) + 밝은 마름돌 벽(ashlar) + 쇠 장식(iron) + 기단(stone). 관청·대장간·길드의 단단한 줄.",
+   "materials": [
+    "slate",
+    "ashlar",
+    "iron",
+    "stone"
+   ],
+   "origin": {
+    "round": "style-r1",
+    "key": "B"
+   }
+  },
+  "C": {
+   "name": "너와 통나무",
+   "concept": "나무 널 지붕(shingle) + 통나무·널벽(wood) + 기단(stone). 성 밖 마을·헛간의 소박한 줄.",
+   "materials": [
+    "shingle",
+    "wood",
+    "stone"
+   ],
+   "origin": {
+    "round": "style-r1",
+    "key": "C"
+   }
+  }
  },
  "waves": {
   "roof": "지붕 세트 — 왼끝·가운데(가로 반복)·오른끝, 3행(용마루·사면·처마)",
@@ -68,70 +241,503 @@
   "extra": "굴뚝·지붕창·옆 탑·현관·간판 걸이(글자 없음) — anchor 좌표에 얹는다"
  },
  "items": [
-  {"id": "roof.gable", "wave": "roof", "kind": "set", "title": "박공 지붕 세트", "size": [3, 3], "layer": "upper",
-   "walk": "★ 사람 뒤로 지나감(그림이 사람 위)",
-   "brief": "용마루·사면·처마 3행 × 왼끝·가운데·오른끝. 3/4 탑뷰: 용마루는 위쪽 가까이 밝은 선, 그 아래 사면 2행이 면으로 보이고 기와 줄이 가로로 흐르고, 맨 아래 처마는 더 어둡다. l·r 끝은 박공 삼각벽·널 끝으로 닫고, 처마는 l·r 조각 바깥 2~3px 에 그린다. 맨 아래 2행은 칸 경계까지 불투명.",
-   "accept": ["용마루·사면·처마 세 띠의 밝기·줄 방향이 달라 평평한 사각형(벽돌 담)으로 안 읽힌다", "사면이 2행 이상 면으로 보인다", "가운데 6번 반복해도 기와 줄이 이어진다", "끝 조각이 박공(삼각벽 또는 널 끝)으로 닫힌다", "맨 아래 2행이 불투명하고 처마가 l·r 조각 바깥 2~3px 에 있다", "버들항 지붕 옆에 놓아 같은 게임으로 보인다"],
-   "pieces": [
-    {"id": "l", "role": "l", "title": "왼끝", "at": [0, 0], "size": [1, 3], "kind": "roof", "qMin": 0.6, "qTopRow": false},
-    {"id": "m", "role": "m", "title": "가운데(반복)", "at": [1, 0], "size": [1, 3], "kind": "roof", "tileable": "x"},
-    {"id": "r", "role": "r", "title": "오른끝", "at": [2, 0], "size": [1, 3], "kind": "roof", "qMin": 0.6, "qTopRow": false}
+  {
+   "id": "roof.gable",
+   "wave": "roof",
+   "kind": "set",
+   "title": "박공 지붕 세트",
+   "size": [
+    3,
+    3
    ],
-   "joins": [["l", "m", "x"], ["m", "m", "x"], ["m", "r", "x"]]},
-  {"id": "wall.storey", "wave": "wall", "kind": "set", "title": "벽 한 층 세트", "size": [5, 2], "layer": "lower",
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감(그림이 사람 위)",
+   "brief": "용마루·사면·처마 3행 × 왼끝·가운데·오른끝. 3/4 탑뷰: 용마루는 위쪽 가까이 밝은 선, 그 아래 사면 2행이 면으로 보이고 기와 줄이 가로로 흐르고, 맨 아래 처마는 더 어둡다. l·r 끝은 박공 삼각벽·널 끝으로 닫고, 처마는 l·r 조각 바깥 2~3px 에 그린다. 맨 아래 2행은 칸 경계까지 불투명. 실루엣(필수): 버들항 기준 집처럼 지붕이 네모 판으로 읽히면 안 된다 — l·r 끝 조각은 위쪽 모서리를 사선으로 비워(모임지붕 끝 경사면, 어두운 단으로 그늘) 용마루가 처마보다 짧아 보이게 하거나, 남향 박공 삼각벽(밝은 회벽·널 + 삼각 지붕선)으로 닫는다. 비운 모서리 아래 경사면은 l 쪽 밝게·r 쪽 어둡게.",
+   "accept": [
+    "용마루·사면·처마 세 띠의 밝기·줄 방향이 달라 평평한 사각형(벽돌 담)으로 안 읽힌다",
+    "사면이 2행 이상 면으로 보인다",
+    "가운데 6번 반복해도 기와 줄이 이어진다",
+    "끝 조각이 박공(삼각벽 또는 널 끝)으로 닫힌다",
+    "맨 아래 2행이 불투명하고 처마가 l·r 조각 바깥 2~3px 에 있다",
+    "버들항 지붕 옆에 놓아 같은 게임으로 보인다",
+    "버들항 기준 지붕처럼 모임지붕 끝 경사 또는 박공 삼각형이 보인다(네모 판 아님)"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      3
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      3
+     ],
+     "kind": "roof",
+     "tileable": "x"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      3
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ]
+   ]
+  },
+  {
+   "id": "wall.storey",
+   "wave": "wall",
+   "kind": "set",
+   "title": "벽 한 층 세트",
+   "size": [
+    5,
+    2
+   ],
+   "layer": "lower",
    "walk": "X 막힘 · 문 칸만 o",
    "brief": "한 층 = 2행. 왼끝·가운데(반복)·창·문·오른끝. 기둥·줄눈 박자가 조각 경계를 넘어 이어진다. 문 칸은 아래 행이 칸 아래 경계에 닿는다. 처마 그늘은 맨 위 1~2행에 벽 재질 어두운 단으로 불투명하게. 왼끝·오른끝 조각은 바깥 2~3px 을 투명(inset 2)으로 둔다.",
-   "accept": ["가운데·창·문을 어떤 순서로 이어도 이음이 안 보인다", "문은 32px 높이로 Actor1 과 맞는다", "창은 같은 높이 줄에 선다", "처마 그늘이 맨 위 1~2행에 불투명하게 있고, 왼끝·오른끝 바깥 2~3px 은 투명이다", "버들항 벽 옆에 놓아 같은 게임으로 보인다"],
-   "pieces": [
-    {"id": "l", "role": "l", "title": "왼끝", "at": [0, 0], "size": [1, 2], "kind": "wall", "inset": 2},
-    {"id": "m", "role": "m", "title": "가운데(반복)", "at": [1, 0], "size": [1, 2], "kind": "wall", "tileable": "x"},
-    {"id": "w", "role": "w", "title": "창 칸", "at": [2, 0], "size": [1, 2], "kind": "wall"},
-    {"id": "d", "role": "d", "title": "문 칸", "at": [3, 0], "size": [1, 2], "kind": "wall"},
-    {"id": "r", "role": "r", "title": "오른끝", "at": [4, 0], "size": [1, 2], "kind": "wall", "inset": 2}
+   "accept": [
+    "가운데·창·문을 어떤 순서로 이어도 이음이 안 보인다",
+    "문은 32px 높이로 Actor1 과 맞는다",
+    "창은 같은 높이 줄에 선다",
+    "처마 그늘이 맨 위 1~2행에 불투명하게 있고, 왼끝·오른끝 바깥 2~3px 은 투명이다",
+    "버들항 벽 옆에 놓아 같은 게임으로 보인다"
    ],
-   "joins": [["l", "m", "x"], ["m", "m", "x"], ["m", "w", "x"], ["w", "m", "x"], ["m", "d", "x"], ["d", "m", "x"], ["w", "d", "x"], ["d", "w", "x"], ["l", "w", "x"], ["w", "r", "x"], ["m", "r", "x"], ["l", "d", "x"], ["d", "r", "x"]]},
-  {"id": "band.trim", "wave": "band", "kind": "set", "title": "층 띠 세트", "size": [3, 1], "layer": "lower",
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall",
+     "inset": 2
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall",
+     "tileable": "x"
+    },
+    {
+     "id": "w",
+     "role": "w",
+     "title": "창 칸",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall"
+    },
+    {
+     "id": "d",
+     "role": "d",
+     "title": "문 칸",
+     "at": [
+      3,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝",
+     "at": [
+      4,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall",
+     "inset": 2
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "w",
+     "x"
+    ],
+    [
+     "w",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "d",
+     "x"
+    ],
+    [
+     "d",
+     "m",
+     "x"
+    ],
+    [
+     "w",
+     "d",
+     "x"
+    ],
+    [
+     "d",
+     "w",
+     "x"
+    ],
+    [
+     "l",
+     "w",
+     "x"
+    ],
+    [
+     "w",
+     "r",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "d",
+     "x"
+    ],
+    [
+     "d",
+     "r",
+     "x"
+    ]
+   ]
+  },
+  {
+   "id": "band.trim",
+   "wave": "band",
+   "kind": "set",
+   "title": "층 띠 세트",
+   "size": [
+    3,
+    1
+   ],
+   "layer": "lower",
    "walk": "X 막힘",
    "brief": "2층 이상에서 층 사이에 두르는 처마돌림 선반. 왼끝·가운데(반복)·오른끝 1행.",
-   "accept": ["윗층 벽과 아랫층 벽 사이를 끊김 없이 나눈다", "가운데 반복 이음이 안 보인다"],
-   "pieces": [
-    {"id": "l", "role": "l", "title": "왼끝", "at": [0, 0], "size": [1, 1], "kind": "band"},
-    {"id": "m", "role": "m", "title": "가운데(반복)", "at": [1, 0], "size": [1, 1], "kind": "band", "tileable": "x"},
-    {"id": "r", "role": "r", "title": "오른끝", "at": [2, 0], "size": [1, 1], "kind": "band"}
+   "accept": [
+    "윗층 벽과 아랫층 벽 사이를 끊김 없이 나눈다",
+    "가운데 반복 이음이 안 보인다"
    ],
-   "joins": [["l", "m", "x"], ["m", "m", "x"], ["m", "r", "x"]]},
-  {"id": "base.stone", "wave": "base", "kind": "set", "title": "기단 세트", "size": [3, 1], "layer": "lower",
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "band"
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "band",
+     "tileable": "x"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "band"
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ]
+   ]
+  },
+  {
+   "id": "base.stone",
+   "wave": "base",
+   "kind": "set",
+   "title": "기단 세트",
+   "size": [
+    3,
+    1
+   ],
+   "layer": "lower",
    "walk": "X 막힘",
    "brief": "주춧돌 줄. 맨 아래 행이 칸 아래 경계 — 버들항 잔디·포석 위에 앉는다(장면으로 본다).",
-   "accept": ["건물이 땅에 앉아 보인다(뜨지 않는다)", "가운데 반복 이음이 안 보인다", "잔디·포석 위에서 묻히지 않는다"],
-   "pieces": [
-    {"id": "l", "role": "l", "title": "왼끝", "at": [0, 0], "size": [1, 1], "kind": "base", "foot": true},
-    {"id": "m", "role": "m", "title": "가운데(반복)", "at": [1, 0], "size": [1, 1], "kind": "base", "foot": true, "tileable": "x"},
-    {"id": "r", "role": "r", "title": "오른끝", "at": [2, 0], "size": [1, 1], "kind": "base", "foot": true}
+   "accept": [
+    "건물이 땅에 앉아 보인다(뜨지 않는다)",
+    "가운데 반복 이음이 안 보인다",
+    "잔디·포석 위에서 묻히지 않는다"
    ],
-   "joins": [["l", "m", "x"], ["m", "m", "x"], ["m", "r", "x"]]},
-  {"id": "extra.chimney", "wave": "extra", "kind": "set", "title": "굴뚝", "size": [1, 2], "layer": "upper",
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "base",
+     "foot": true
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "base",
+     "foot": true,
+     "tileable": "x"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "base",
+     "foot": true
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ]
+   ]
+  },
+  {
+   "id": "extra.chimney",
+   "wave": "extra",
+   "kind": "set",
+   "title": "굴뚝",
+   "size": [
+    1,
+    2
+   ],
+   "layer": "upper",
    "walk": "★",
    "brief": "지붕 위에 얹는 굴뚝(1칸 폭 2행). 윗면(갓돌)이 보인다. 지붕 사면 위 anchor 에 둔다.",
-   "accept": ["갓돌 윗면이 면으로 보인다", "지붕 기와 위에 떠 보이지 않는다"],
-   "pieces": [
-    {"id": "c", "role": "c", "title": "굴뚝", "at": [0, 0], "size": [1, 2], "kind": "extra", "top": [0, 1]}
+   "accept": [
+    "갓돌 윗면이 면으로 보인다",
+    "지붕 기와 위에 떠 보이지 않는다"
    ],
-   "joins": []}
+   "pieces": [
+    {
+     "id": "c",
+     "role": "c",
+     "title": "굴뚝",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "extra",
+     "top": [
+      0,
+      1
+     ]
+    }
+   ],
+   "joins": []
+  }
  ],
  "buildings": [
-  {"id": "cottage", "title": "작은 집", "use": "home", "cols": 3, "storeys": 1, "overhang": 0,
-   "roof": "roof.gable", "wall": "wall.storey", "base": "base.stone", "walls": ["L D R"],
-   "note": "style-r1 조립 하나 — 3칸 폭 1층, 문 하나"},
-  {"id": "longhouse", "title": "긴 집", "use": "home", "cols": 5, "storeys": 2, "overhang": 0,
-   "roof": "roof.gable", "wall": "wall.storey", "base": "base.stone", "walls": ["L W M W R", "L W D W R"],
-   "note": "style-r1 조립 둘 — 5칸 폭 2층(층 띠 없이 벽을 쌓는다; 층 띠는 frame-r1), 창 넷·문 하나"}
+  {
+   "id": "cottage",
+   "title": "작은 집",
+   "use": "home",
+   "cols": 3,
+   "storeys": 1,
+   "overhang": 0,
+   "roof": "roof.gable",
+   "wall": "wall.storey",
+   "base": "base.stone",
+   "walls": [
+    "L D R"
+   ],
+   "note": "style-r1 조립 하나 — 3칸 폭 1층, 문 하나"
+  },
+  {
+   "id": "longhouse",
+   "title": "긴 집",
+   "use": "home",
+   "cols": 5,
+   "storeys": 2,
+   "overhang": 0,
+   "roof": "roof.gable",
+   "wall": "wall.storey",
+   "base": "base.stone",
+   "walls": [
+    "L W M W R",
+    "L W D W R"
+   ],
+   "note": "style-r1 조립 둘 — 5칸 폭 2층(층 띠 없이 벽을 쌓는다; 층 띠는 frame-r1), 창 넷·문 하나"
+  }
  ],
  "rounds": {
-  "style-r1": {"wave": "style", "title": "화풍 판 — 줄 A·B·C × 부품 최소 세트 + 조립 건물 둘",
-               "module": "src/harnesses/building-kit/rounds/fantasy-kingdom/style_r1.py", "keys": "letter",
-               "items": ["roof.gable", "wall.storey", "base.stone"],
-               "lead": "줄마다 지붕 1변형·벽 1층(창·문)·기단을 그리고 작은 집·긴 집으로 조립해 본다. 사람이 줄을 고르거나 여럿 남긴다."}
+  "style-r1": {
+   "wave": "style",
+   "title": "화풍 판 — 줄 A·B·C × 부품 최소 세트 + 조립 건물 둘",
+   "module": "src/harnesses/building-kit/rounds/fantasy-kingdom/style_r1.py",
+   "keys": "letter",
+   "items": [
+    "roof.gable",
+    "wall.storey",
+    "base.stone"
+   ],
+   "lead": "줄마다 지붕 1변형·벽 1층(창·문)·기단을 그리고 작은 집·긴 집으로 조립해 본다. 사람이 줄을 고르거나 여럿 남긴다."
+  }
  },
  "plan": {
   "frame-r1": "남긴 줄마다 후보 2: 지붕 변형 전부(모임 포함)·벽 층·층 띠(band.trim)·기단 끝·굴뚝·지붕창",
