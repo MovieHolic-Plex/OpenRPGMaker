@@ -641,38 +641,78 @@ function reskinEnemy(project: Project, enemyId: string, templateId: string, leve
 }
 
 /**
- * 관장·챔피언 다시 짜기(2026-10-21 적대 검수 r7).
- * - 관장 유림: 수련생과 같은 베르카부·브램보어 Lv6 둘이라 세 스타터 모두 2~3턴(「효과가 굉장했다」 세 번)이었다 → 과수뿔 Lv6 + 에이스 가이아돈(브램보어 진화) Lv7,
- *   기술 둘씩(과수뿔 더듬이쏘기·새싹치기, 가이아돈 흙먼지·흙발톡) — 풀 ← 벌레, 불 ← 땅, 물 ← 풀로 스타터마다 두 배 위협이 하나씩.
- *   모의전(scripts/qa/astra-horizon/balance-sim.mjs, 60판): Lv7 혼자 풀 85%·불 92%·물 100%(남은 체력 4·2·10), 7·7 은 불 12% 라 6·7.
- * - 챔피언 나루: 라이벌·연구원·관장과 같은 볼트온·로키온·베르카부를 돌려 썼다 → 나루의 첫 동료 볼트온은 진화한 코일라군(에이스),
- *   로키온 자리는 크래그혼(바위·격투). 두 배 위협은 그대로 물 ← 전기, 불 ← 바위, 풀 ← 벌레.
+ * 관장·신전·챔피언 다시 짜기(2026-10-21 적대 검수 r7·r8 — 손으로 맞추다 세 판 내리 major 였다).
+ * 값은 모의전 탐색으로 골랐다: scripts/qa/astra-horizon/balance-sim.mjs(스타터 3종 × 정직 여정 실측 레벨·동료 포포비/피오르/루미링, 30판).
+ * 목표 띠: 관장 승률 70~90%·4턴 이상·남은 체력 70% 이하, 신전·챔피언 55~80%, 챔피언 최고 레벨 ≥ 플레이어 레벨(12).
+ * 스타터마다 두 배 위협이 한 마리씩 따로 있어(풀 ← 벌레, 불 ← 땅·바위, 물 ← 풀·전기) 그 한 마리 레벨로 그 스타터의 승률을 따로 맞춘다.
+ * - 관장 유림(Lv9+동료 Lv6 상대): 베르카부 Lv6(새싹치기 — 물 위협) · 과수뿔 Lv7(더듬이쏘기 — 풀 위협) · 에이스 가이아돈 Lv10(흙먼지·흙발톡 — 불 위협).
+ *   모의전 표는 scripts/qa/astra-horizon/balance-sim.mjs 를 돌려 본다(값을 바꾸면 다시 돌릴 것).
+ *   (둘만 둔 6·7 은 세 스타터 모두 100%·2~3턴이었다.)
+ * - 신전 무영(Lv11+Lv8): 마리오네 Lv7 · 미르핀 Lv6 · 몽환아 Lv8(꿈방울·톡번개 — 물 위협). (6·6·7 은 셋 모두 100%.)
+ * - 챔피언 나루(Lv12+Lv9): 베르카부 Lv8 · 크래그혼 Lv8(로키온 자리) · 에이스 코일라군 Lv12(볼트온 진화, 진화형 능력치의 8할, 발끝톡·톡번개).
+ *   크래그혼은 능력치 1.06배. 모의전 아래 표. 라이벌·연구원·관장과 같은 종을 돌려 쓰던 것(r7-2)도 풀린다.
  */
+function scaleStats(enemy: Project["database"]["enemies"][number] | undefined, factor: number): void {
+  if (!enemy || factor === 1) return;
+  const stats = { ...enemy.stats };
+  for (const key of Object.keys(stats) as (keyof typeof stats)[]) stats[key] = Math.max(1, Math.round(stats[key] * factor));
+  enemy.stats = stats;
+}
+
 function retuneLeaderAndChampion(project: Project): void {
+  const enemies = project.database.enemies;
+  const byId = (id: string) => enemies.find((e) => e.id === id);
   const skillOf = (name: string) => project.database.skills.find((s) => s.name === name)?.id;
-  const sprout = skillOf("새싹치기");
-  const twoMoves = (enemy: Project["database"]["enemies"][number] | undefined, first: string | undefined, second: string | undefined) => {
+  const moves = (enemy: Project["database"]["enemies"][number] | undefined, ...names: string[]) => {
     const base = enemy?.actions.find((a) => a.skillId);
-    if (!enemy || !base || !first || !second) return;
-    enemy.actions = [first, second].map((skillId) => ({ ...structuredClone(base), skillId }));
+    const ids = names.map(skillOf).filter((id): id is string => Boolean(id));
+    if (enemy && base && ids.length === names.length) enemy.actions = ids.map((skillId) => ({ ...structuredClone(base), skillId }));
   };
-  // 새싹치기는 선봉에만 — 둘 다 들면 물만 두 배 위협이 둘이라 모의전 승률이 물 58%·풀 98% 로 갈렸다.
-  twoMoves(reskinEnemy(project, "mx_enemy_mx_map_grove_gym_leader_0", "mx_enemy_orchardant", LEADER_LEVELS[0]), skillOf("더듬이쏘기"), sprout);
-  twoMoves(reskinEnemy(project, "mx_enemy_mx_map_grove_gym_leader_1", "mx_enemy_briartusk", LEADER_LEVELS[1]), skillOf("흙먼지"), skillOf("흙발톡"));
+  // 관장
+  const gym = project.database.troops.find((t) => t.id === "mx_troop_mx_map_grove_gym_leader");
+  const vanguardSource = byId("mx_enemy_mx_map_grove_gym_grunt_0_0");
+  const vanguardId = "mx_enemy_mx_map_grove_gym_leader_2";
+  if (gym?.members?.length && vanguardSource && !byId(vanguardId)) {
+    const vanguard = { ...structuredClone(vanguardSource), id: vanguardId };
+    enemies.push(vanguard);
+    rescaleEnemy(vanguard, LEADER_LEVELS.vanguard);
+    scaleStats(vanguard, LEADER_STAT_SCALE.vanguard);
+    moves(vanguard, "새싹치기");
+    gym.members = [{ ...structuredClone(gym.members[0]!), enemyId: vanguardId }, ...gym.members];
+    gym.enemyIds = gym.members.map((m) => m.enemyId);
+  }
+  moves(reskinEnemy(project, "mx_enemy_mx_map_grove_gym_leader_0", "mx_enemy_orchardant", LEADER_LEVELS.middle), "더듬이쏘기");
+  const gymAce = reskinEnemy(project, "mx_enemy_mx_map_grove_gym_leader_1", "mx_enemy_briartusk", LEADER_LEVELS.ace);
+  scaleStats(gymAce, LEADER_STAT_SCALE.ace);
+  moves(gymAce, "흙먼지", "흙발톡");
+  // 신전
+  TEMPLE_LEVELS.forEach((level, i) => { const e = byId(`mx_enemy_mx_map_observatory_boss_${i}`); if (e) { rescaleEnemy(e, level); scaleStats(e, TEMPLE_STAT_SCALE[i] ?? 1); } });
+  moves(byId("mx_enemy_mx_map_observatory_boss_2"), "꿈방울", "톡번개");
+  // 챔피언
   const league = project.database.troops.find((t) => t.id === "mx_troop_mx_map_league_0_league_challenge");
-  const byId = (id: string) => project.database.enemies.find((e) => e.id === id);
   if (!league?.members) return;
   const find = (species: string) => league.members!.find((m) => byId(m.enemyId)?.speciesId === species);
   const bug = find("mx_species_podback"), rock = find("mx_species_pebblekid"), spark = find("mx_species_zaptoe");
   if (!bug || !rock || !spark) return;
-  rescaleEnemy(byId(bug.enemyId)!, CHAMPION_LEVELS[0]);
-  reskinEnemy(project, rock.enemyId, "mx_enemy_craghoof", CHAMPION_LEVELS[1]);
-  reskinEnemy(project, spark.enemyId, "mx_enemy_coilcrest", CHAMPION_LEVELS[2], true);
+  rescaleEnemy(byId(bug.enemyId)!, CHAMPION_LEVELS.bug);
+  const rockEnemy = reskinEnemy(project, rock.enemyId, "mx_enemy_craghoof", CHAMPION_LEVELS.rock);
+  // 크래그혼은 불의 두 배 위협 — Lv8 그대로는 불 승률 82~84%, Lv9 는 12%(벼랑)라 Lv8 에 능력치 1.06배(모의전 불 61%).
+  scaleStats(rockEnemy, CHAMPION_ROCK_STAT_SCALE);
+  const ace = reskinEnemy(project, spark.enemyId, "mx_enemy_coilcrest", CHAMPION_LEVELS.ace, true);
+  scaleStats(ace, CHAMPION_ACE_STAT_SCALE);
+  moves(ace, "발끝톡", "톡번개");
   league.members = [bug, rock, spark];
   league.enemyIds = league.members.map((m) => m.enemyId);
 }
-const LEADER_LEVELS = [6, 7] as const;
-const CHAMPION_LEVELS = [8, 8, 9] as const;
+const LEADER_LEVELS = { vanguard: 6, middle: 7, ace: 10 } as const;
+// 레벨 하나 차이가 승률 100% ↔ 10% 벼랑이라(모의전) 능력치를 몇 %씩 더 깎거나 얹어 띠 안에 맞춘다 — 선봉(물 위협) 1.07배, 에이스 0.95배.
+const LEADER_STAT_SCALE = { vanguard: 1.07, ace: 0.95 } as const;
+const TEMPLE_LEVELS = [7, 6, 8] as const;
+/** 미르핀(독 — 풀 위협) 1.04배: 그대로면 풀 82%, 1.08배면 45%. */
+const TEMPLE_STAT_SCALE = [1, 1.04, 1] as const;
+const CHAMPION_LEVELS = { bug: 8, rock: 8, ace: 12 } as const;
+const CHAMPION_ACE_STAT_SCALE = 0.8;
+const CHAMPION_ROCK_STAT_SCALE = 1.06;
 
 /**
  * 사람 칩 다시 입히기 — 생성기는 Scarloxy 원본 두 장의 10명을 돌려 써서 라이벌 나루 = 회복 센터 직원 = 1번 도로 조련사,
