@@ -943,6 +943,40 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   if (bram && !M(ids.forest).events.some((e) => e !== bram && e.x === 14 && e.y === 18) && isPassable(project, M(ids.forest), 14, 18) && isPassable(project, M(ids.forest), 14, 19)) { bram.x = 14; bram.y = 18; }
   if (bram) for (const [dx, dy] of [[1, 1], [-1, 1], [1, -1], [-1, -1]] as const) if (tryStamp(project, M(ids.forest), "kit:beodeul_city/bd-pick-deep-forest-path-campfire", bram.x + dx, bram.y + dy)) break;
 
+  // 숲길 밀도(VQA r7 맵) — 흙길 둘레 풀밭에 덤불·고사리·돌·버섯을 성기게 흩는다. 길(흙 칸)과 이벤트 곁 3칸은 건드리지 않는다.
+  {
+    const fm = M(ids.forest);
+    const kits = ["heath-a", "fern-a", "stones-a", "fern-b", "heath-b", "toadstools-a", "wild-a", "heath-c", "stones-b", "fern-c", "wild-b", "toadstools-b"];
+    const placed: Array<[number, number]> = [];
+    for (let y = 3; y < fm.height - 3; y += 1) for (let x = 2; x < fm.width - 2; x += 1) {
+      if (fm.lowerTiles[y * fm.width + x] === 737) continue;
+      let nearPath = false;
+      for (let dy = -2; dy <= 2 && !nearPath; dy += 1) for (let dx = -2; dx <= 2; dx += 1) {
+        if (fm.lowerTiles[(y + dy) * fm.width + (x + dx)] === 737) { nearPath = true; break; }
+      }
+      if (!nearPath) continue;
+      const h = (((x * 73856093) ^ (y * 19349663) ^ 0x51ed) >>> 0) % 100;
+      if (h >= 22) continue;
+      if (fm.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 3)) continue;
+      if (placed.some(([px, py]) => Math.abs(px - x) <= 1 && Math.abs(py - y) <= 1)) continue;
+      if (tryStamp(project, M(ids.forest), `kit:beodeul_city/bd-pick-deep-forest-path-${kits[(x * 7 + y * 3) % kits.length]}`, x, y)) placed.push([x, y]);
+    }
+  }
+  // 화로의 방 밀도(VQA r7 맵) — 같은 모자이크 바닥이 화면 가득이라 가장자리·모서리에 버려진 소품을 흩는다. 가운데 세 열(15~17)·화로·석판·출구 곁은 비운다.
+  {
+    const room = M(PUZZLE_ROOM);
+    const hi = (n: string) => `kit:atlas_biome_interior/hand-interior:${n}`;
+    const props: Array<[string, number, number]> = [
+      ["cobweb", 8, 9], ["cobweb", 23, 9], ["drip puddle", 10, 9], ["candle stubs", 21, 9], ["book pile", 9, 12], ["scroll pile", 22, 12],
+      ["coin pile", 10, 15], ["bone pillar", 8, 15], ["drip puddle", 21, 15], ["candle stubs", 13, 12], ["book pile", 20, 12],
+      ["coin pile", 22, 10], ["scroll pile", 10, 11], ["candle stubs", 13, 16], ["drip puddle", 19, 16], ["bone pillar", 23, 15],
+    ];
+    for (const [name, x, y] of props) {
+      if (x >= 15 && x <= 17) continue;
+      tryStamp(project, room, hi(name), x, y);
+    }
+  }
+
   // 시작 — 광장, 천문대 문이 보이는 곳.
   const observatoryDoor = M(ids.hub).events.find((e) => JSON.stringify(e).includes(`"mapId":"${M(ids.observatory).id}"`));
   let start = observatoryDoor ? { x: observatoryDoor.x, y: observatoryDoor.y + 3 } : { x: Math.floor(M(ids.hub).width / 2), y: Math.floor(M(ids.hub).height / 2) };
