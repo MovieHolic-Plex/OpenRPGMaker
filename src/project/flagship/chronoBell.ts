@@ -1005,6 +1005,21 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     }
   }
 
+  // 천문대 입구 홀(VQA r9 맵) — 1층 왼쪽 회색 돌방에 책장·두루마리 선반·카펫·망원경·지구본·화분을 둔다.
+  // 계단 통로(11열)·하넬 방으로 이어지는 14열 가운데 칸·입구 문 곁은 비워 둔다. 발자국이 막히면 tryStamp 가 알아서 건너뛴다.
+  {
+    const hall = M(ids.observatory);
+    const hi = (n: string) => `kit:atlas_biome_interior/hand-interior:${n}`;
+    const props: Array<[string, number, number]> = [
+      ["bookshelf 2w", 12, 16], ["bookshelf 1w", 12, 16], ["bookshelf 1w", 13, 16], ["potted fern", 9, 16], ["scroll rack", 10, 16], ["round rug", 12, 19],
+      ["telescope", 14, 20], ["globe", 9, 20], ["potted fern", 14, 19], ["map rolls", 9, 19], ["candle", 10, 18],
+    ];
+    for (const [name, x, y] of props) {
+      if (x === 11) continue;
+      tryStamp(project, hall, hi(name), x, y);
+    }
+  }
+
   // 시작 — 광장, 천문대 문이 보이는 곳.
   const observatoryDoor = M(ids.hub).events.find((e) => JSON.stringify(e).includes(`"mapId":"${M(ids.observatory).id}"`));
   let start = observatoryDoor ? { x: observatoryDoor.x, y: observatoryDoor.y + 3 } : { x: Math.floor(M(ids.hub).width / 2), y: Math.floor(M(ids.hub).height / 2) };
