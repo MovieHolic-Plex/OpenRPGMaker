@@ -692,7 +692,9 @@
   bottom: 100%;
   left: 12px;
   border: 4px solid #a8c0a0;
-  box-shadow: 0 0 0 4px #487068;
+  /* 상자와 맞닿는 변은 테두리를 그리지 않는다 — 흉상이 상자 윗선 뒤에 서서 상자 테두리가 몸을 자른다(탭처럼 이어짐). */
+  border-bottom-width: 0;
+  box-shadow: -4px 0 0 #487068, 4px 0 0 #487068, 0 -4px 0 #487068;
   background-color: #e8f0d8;
   background-repeat: no-repeat;
   background-size: 88px 92px;
@@ -702,7 +704,7 @@
 /* 3세대 상자는 초상이 하나다 — 앞 화자(듣는 쪽)를 같은 자리에 겹쳐 그리지 않는다. */
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-portrait-listener { display: none; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-box.bust-right .dialogue-face.dialogue-face-bust { left: auto; right: 12px; }
-.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].position-top .dialogue-face.dialogue-face-bust { bottom: auto; top: 100%; }
+.dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].position-top .dialogue-face.dialogue-face-bust { bottom: auto; top: 100%; border-bottom-width: 4px; border-top-width: 0; box-shadow: -4px 0 0 #487068, 4px 0 0 #487068, 0 4px 0 #487068; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-content.has-bust { padding-inline: 0; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] .dialogue-page-cursor { right: 12px; bottom: 12px; color: #c85048; font: 18px/20px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; text-shadow: none; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"].choices-active { box-sizing: border-box; height: auto; min-height: 0; padding: 0 8px 8px; max-height: 240px; }
