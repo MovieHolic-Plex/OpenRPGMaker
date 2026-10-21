@@ -53,8 +53,9 @@ function talkTo(mapId, cell, dir = "up") {
     { kind: "teleport", mapId, x: from.x, y: from.y },
     { kind: "hold", dir: null, ms: 300 },
     { kind: "face", dir },
-    { kind: "action" },
-    { kind: "hold", dir: null, ms: 600 },
+    // 순간이동 직후 한 번의 조사는 이벤트 갱신 중이라 삼켜질 수 있다 — 대사가 열릴 때까지 Z 를 다시 누른다.
+    { kind: "pressUntilJs", key: "z", fn: "() => !!document.querySelector(\"[data-testid='dialogue-box']\") || !!document.querySelector(\"[data-testid='runtime-choices']\")", maxPresses: 4, settleMs: 500 },
+    { kind: "hold", dir: null, ms: 300 },
   ];
 }
 /** 콘솔 오류·경고와 페이지 재적재를 모은다(마지막 state 비트가 함께 적는다). */
@@ -104,7 +105,7 @@ export default {
     ], shot: true },
     { id: "intro-bust", note: "서하 흉상 대사", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /할 수 있어/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 10 }, shotPause(900)], shot: true },
     { id: "platform", note: "승강장 — 조작 가능", ops: [untilStage(1), shotPause(600)], shot: true },
-    { id: "street", note: "역 밖 거리(낮)", ops: [...stepInto("fl_platform_am", exitCell, "down"), untilStage(2), shotPause(600)], shot: true },
+    { id: "street", note: "역 밖 거리(낮)", ops: [...stepInto("fl_platform_am", exitCell, "up"), untilStage(2), shotPause(600)], shot: true },
     { id: "office-arrive", note: "사무실 도착 — 팀장 인사", ops: [...stepInto("fl_street", officeDoor, "up"), { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 20000 }, shotPause(1200)], shot: true },
     { id: "meet", note: "처음 뵙겠습니다", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /강지후입니다/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 40, settleMs: 500 }, shotPause(1200)], shot: true },
     { id: "c1", note: "선택 1", ops: [toChoice(), shotPause(500)], shot: true },

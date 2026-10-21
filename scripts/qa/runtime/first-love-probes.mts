@@ -228,7 +228,7 @@ for (const [mapId, map] of Object.entries(project.maps)) {
 // 건물 출입은 실제 문 그림 칸을 밟거나(부딪혀) 들어갈 때만 — 옆 칸·넓은 발판 금지. 문 그림 타일 번호(시각 담당 표, 2026-10-21):
 const DOOR_ART: Record<string, Record<number, string>> = {
   jp_city: { 11630: "of-elevator", 11037: "sc-stairs-up", 9380: "stairs-up-wood-wide", 9792: "cv-autodoor 왼쪽", 9793: "cv-autodoor 오른쪽", 11055: "sc-roof-door 왼쪽", 11056: "sc-roof-door" },
-  modern_city: { 1332: "사무실 유리문", 970: "편의점 문", 7620: "지하철 입구 계단" },
+  modern_city: { 1332: "사무실 유리문", 970: "편의점 문", 7621: "지하철 입구 계단" },
 };
 for (const [mapId, map] of Object.entries(project.maps)) {
   const art = DOOR_ART[(map as { tilesetId?: string }).tilesetId ?? ""] ?? {};
