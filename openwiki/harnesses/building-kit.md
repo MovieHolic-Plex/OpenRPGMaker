@@ -102,10 +102,21 @@ seed `buildings` = 조립 레시피 목록: `{id, title, use, cols, storeys, roo
 
 ## 시트·고르기 (사람)
 
-`sheet <테마> <판>` → `~/claude-viz/bk-<테마>-<판>.html`(자체완결) → `http://mdc-server:18301/bk-<테마>-<판>.html`.
-독립 검수 PASS 한 후보만 올린다(`--show-failed` 는 실패 사유와 함께 회색으로). 항목마다: 버들항 기준 건물 · Actor1 · 후보 1배·3배 ·
-조립 건물 · 같은 번호 부품으로 깐 거리 장면(버들항 잔디·포석 위, 건물 3~4채 + Actor1) · 검수 판정 요약 · 해시 앞 8자리 · pick/reject 명령 복사.
-`pick <테마> <판> <항목> <후보> --sha <앞 8자리>` / `reject … --why`. **감독·에이전트는 고르지 않는다.**
+`sheet <테마> <판> [--show-failed]` → `~/claude-viz/bk-<테마>-<판>.html`(자체완결, 그림은 data URI) → `http://mdc-server:18301/bk-<테마>-<판>.html`.
+경로는 `dot.VIZ`(기본 `~/claude-viz`)이고 시험은 그 값을 임시 폴더로 바꾼다.
+
+- **검수 PASS 만 올린다.** 판정 단위는 조립 건물(`<부품 번호>.<레시피>`, 예 `A.cottage`)이므로, 영수증이 지금 그림 화소 해시에 대해
+  `complete` + `PASS` 인 부품 번호만 카드가 된다(`review.passed`). 같은 번호의 부품은 그 조립 영수증으로 덮인다.
+- `--show-failed` 는 PASS 가 아닌 번호(검수 FAIL·미검수·영수증 해시 불일치·조립 불가)를 사유와 함께 회색 카드로 보여 준다.
+  기본 실행은 그 개수만 알리고 숨긴다.
+- 항목 카드: 버들항 기준 건물(그 항목을 쓰는 레시피의 `use` 와 같은 기준) · Actor1 정면 · 후보 1배·3배 · 조립 건물(레시피마다) ·
+  같은 번호 부품으로 깐 거리 장면(버들항 잔디·포석 위 건물 3~4채 + Actor1, 1배·3배) · 검수 두 축 표수와 판정자 · 해시 앞 8자리 ·
+  복사 버튼이 붙은 pick/reject 명령.
+- 시트 머리에는 테마·판, 마지막 기계 관문, 검수 유효 회차, PASS/실패 번호, 잠금 팔레트 램프 견본이 들어간다.
+- 시트는 **아무것도 고르지 않는다** — 명령 글자만 적는다. 버튼은 글자만 클립보드로 복사한다.
+  `pick <테마> <판> <항목> <후보> --sha <앞 8자리>` / `reject … --why`. **감독·에이전트는 고르지 않는다.**
+- 시트를 쓴 기록은 `ledger.json` 의 `sheets` 에 남는다(파일·PASS/실패 번호). pick 은 manifest 가 있어야 하고(시트를 먼저),
+  시트에 보인 해시와 현재 그림 해시가 다르면 거절한다 — 그래서 시트를 다시 만들어 다시 보여야 한다.
 
 ## 3/4 관문 (object-gate)
 
@@ -118,10 +129,77 @@ seed `buildings` = 조립 레시피 목록: `{id, title, use, cols, storeys, roo
 2. `frame-r1` — 남긴 줄마다 후보 2: 지붕 변형 전부·벽 층·층 띠·기단 끝·굴뚝·지붕창.
 3. `civic-r1` — 테마 용도 건물(판타지: 여관·대장간·길드·교회·성문탑 / 사막: 시장 차양·돔 사원·우물집 / 북방: 장작 헛간·롱하우스·망루 / 귀족: 저택·탑·현관·덩굴 변형).
 
+## 구현된 것 (2026-10-22, 이 PR)
+
+### 파일
+
+`src/harnesses/building-kit/` — `harness.ts`(매니페스트, 레지스트리 등록) · `node/cli.ts`(입구 → python) · `harness.py`(단계 입구) ·
+`palette.py` · `dot.py`(캔버스·`grid`·해시·버들항 키트/Actor1/장면) · `assemble.py`(조립 + A1~A6) · `gate.py`(기계 관문) ·
+`review.py`(독립 검수) · `drawer.py`(그리기 에이전트) · `sheet.py`(고르기 시트) · `rounds/<테마>/`(후보 화소 원본, 그리기 전) · `tests/`.
+
+### 명령
+
+`npm run harness -- building-kit palette|validate|list|draw|dry|gate|assemble|review|sheet|pick|reject|objgate|status`
+
+| 단계 | 하는 일 |
+|---|---|
+| `palette <테마> [--check]` | 테마 잠금 팔레트를 다시 뽑거나 비교만 한다 |
+| `validate [<테마>]` | 시드·팔레트·부품 세트·조립 레시피·판 모듈 후보 키·기준 그림·Actor1 점검 |
+| `list <테마>` | 부품 세트와 조립 레시피, 줄마다 ★(사람이 고름)·-(뺌) |
+| `draw <테마> <판> [--agent]` | 판 후보를 그려 `qa-runs/.../<테마>/<판>/` 에 1배·4배 PNG·`manifest.json` |
+| `dry <테마> <판> <후보>` | 후보 하나의 관문·조립 미리보기(그리기 에이전트의 자체 점검 입구) |
+| `gate <테마> <판>` | 기계 관문. FAIL 이면 종료코드 1 |
+| `assemble <테마> <판> [--line A] [--key A1]` | 부품을 레시피대로 붙이고 조립 관문 A1~A6 |
+| `review <테마> <판> [--runs 3]` | 독립 Opus 검수(숨긴 함정·무효 회차·다수결·영수증) |
+| `sheet <테마> <판> [--show-failed]` | 검수 PASS 후보만 자체완결 고르기 시트 |
+| `pick` / `reject` | 사람만 — 시트 해시와 현재 그림 해시가 맞을 때만 기록 |
+| `objgate <테마>` | 사람이 고른 부품으로 조립한 건물의 object-gate 영수증(kind `structure`) |
+| `status [<테마>]` | 판·관문·검수·시트·고른 것·영수증 현황 |
+
+### 관문
+
+- 부품(`gate.py`): **P** 팔레트 잠금 · **Z** 크기 · **Q** 불투명 계약 · **F** 윗면 띠(2행 이상·폭 50% 이상·앞 모서리보다 밝음) ·
+  **S** 반복 이음 · **J** 세트 이음 · **G** 바닥 닿음 · **Y** 줄 재료 · **R** 색만 바꾼 후보 — 모두 FAIL.
+  WARN: **OUTLINE** 먹 윤곽 · **CONTRAST** 묻힘 · **T** 가는 줄 · **L** 빛 방향 · **N** 1px 잡티.
+- 조립(`assemble.py`): **A1** 문 정확히 하나 · **A2** 지붕/벽 틈 없음 · **A3** 지붕이 벽을 덮음 · **A4** 기단이 바닥에 닿음 ·
+  **A5** 맞닿은 조각 이음 · **A6** 지붕 윗면 비율 0.30~0.50.
+- 검수(`review.py`): 함정 6종(지붕·벽 틈, 문 두 개, 평면 채우기, 잡음, 얇은 지붕 입면, 색만 바꾼 원본)을 하나라도 통과시키거나
+  표본을 빠뜨리면 그 회차는 무효. 유효 3회 다수결, 영수증은 그림 화소 해시 + 판정 원문 해시에 묶인다.
+- 3/4(`objgate`): 사람이 고른 부품의 조립 건물마다 object-gate 영수증. 영수증이 없으면 「3/4 관문 미통과」.
+
+### 팔레트 (실측)
+
+| 테마 | 불투명 색 | 램프 |
+|---|---|---|
+| `fantasy-kingdom` | 51 | 11 (공유 grass·cobble·stone·wood·iron + roof·slate·shingle·plaster·timber·ashlar) |
+| `desert-oasis` | 55 | 10 |
+| `northern-snow` | 47 | 9 |
+| `beodeul-noble` | 48 | 10 |
+
+`validate` 는 테마 넷 모두 통과하고, `palette --theme <테마> --check` 도 넷 모두 통과한다.
+판 모듈(`rounds/fantasy-kingdom/style_r1.py`)은 아직 없다 — 그리기 전이므로 `validate` 가 「그리기 전」 안내로 보고한다.
+
+### 시험
+
+`python3 -m unittest discover -s src/harnesses/building-kit/tests -p 'test_*.py'` → **57 tests, OK** (모델 호출 없음).
+
+| 파일 | 수 | 범위 |
+|---|---|---|
+| `test_gates.py` | 19 | 관문 P Z Q F S J G Y R + 조립 A1~A6, 깨뜨린 표본이 각 관문에서 FAIL |
+| `test_review.py` | 11 | 함정 6종·무효 처리·표본 누락·3회 다수결(1/3 FAIL, 2/3 PASS)·영수증 해시·재시도 예산·판정 실패는 기록 없음 |
+| `test_pick.py` | 9 | 해시 불일치·manifest 없음·재그리기·picked 파일 변조·에이전트 대리 선택 거절 |
+| `test_fixtures.py` | 7 | 고정 후보 행 문자열이 조립까지 가는지 |
+| `test_harness_path.py` | 6 | draw → gate → dry → assemble → review → sheet → pick → status, 테마 넷 validate |
+| `test_drawer.py` | 5 | 샌드박스 사본·자기 함수 블록만 되돌리기·모델 호출 주입·기본 타임아웃 |
+
+`tests/fixtures.py` 의 고정 후보는 시트에 나오지 않는다(시험 전용). 판 모듈이 없을 때 시험은 `tests/helpers.py` 가 임시 폴더에
+쓰는 판 모듈을 seed 의 `rounds.<판>.module` 에 끼워 돌린다.
+
 ## 이 PR 의 완료 조건
 
-- `npm run harness -- building-kit validate` 가 테마 넷 seed 를 통과, `palette --theme fantasy-kingdom --check` 통과.
-- 행 문자열로 손으로 쓴 **시험용 고정 후보**(tests/fixtures, 시트에는 안 나옴)로 draw→gate→assemble 이 돌고, 깨뜨린 표본(팔레트 밖 색·문 둘·지붕/벽 틈·이음 어긋남)이 각각 해당 관문에서 FAIL.
-- review 의 함정 생성·무효 처리·다수결이 모델 없이(가짜 판정 파일로) 단위 시험됨.
-- pick 이 해시 불일치·에이전트 대리 선택 경로 없음.
-- 문서 `openwiki/harnesses/building-kit.md`, 레지스트리 등록, `npm run harness -- list` 로 INDEX 재생성, AGENTS.md 하네스 목록 한 줄.
+- `npm run harness -- building-kit validate` 가 테마 넷 seed 를 통과, `palette --theme <테마> --check` 넷 다 통과. ✔
+- 행 문자열로 손으로 쓴 **시험용 고정 후보**(tests/fixtures, 시트에는 안 나옴)로 draw→gate→assemble 이 돌고, 깨뜨린 표본(팔레트 밖 색·문 둘·지붕/벽 틈·이음 어긋남)이 각각 해당 관문에서 FAIL. ✔
+- review 의 함정 생성·무효 처리·다수결이 모델 없이(가짜 판정 파일로) 단위 시험됨. ✔
+- pick 이 해시 불일치·에이전트 대리 선택 경로 없음. ✔
+- 문서 `openwiki/harnesses/building-kit.md`, 레지스트리 등록, `npm run harness -- list` 로 INDEX 재생성, AGENTS.md 하네스 목록 한 줄. ✔
+
