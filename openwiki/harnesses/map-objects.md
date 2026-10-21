@@ -13,6 +13,8 @@
 5. **굽기** — `workshopBake.ts` `workshopTargetTileset(item)` = 정의의 칩셋. `project/workshopTiles.ts` `bakeWorkshopObject` 그대로(번들 끝 뒤 이식 + 구조 킷 `workshop:<이름>`). 16px 이 아닌 칩셋이면 거절.
 6. **조수가 놓기** — 카드가 `[사용자가 공방에서 그려 넣음] … 물체 id workshop:…` 후속 요청을 보내고, 조수는 `stamp_tileset_object` 의 `objectId` 로 놓는다(`list_tileset_objects` 에도 나온다).
 
+7. **조수 도구 경로**(2026-10-21) — 조수가 `generate_missing_object` 를 부르면 카드가 폼 없이 같은 정의(팔레트 `mapObjectPalette`)로 판을 돌린다. `openwiki/editor-ai-tools.md` 「없는 기물 그리기」.
+
 ## 번호 이주
 
 번들 칩셋은 판이 바뀌면 칸이 끝에 덧붙는다. 공방 칸이 그 자리를 먼저 차지하면 겹치므로

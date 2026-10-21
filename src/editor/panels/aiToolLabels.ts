@@ -55,6 +55,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   create_map: build("새 맵", "map"),
   ask_tileset_change: inspect("타일 느낌 바꿀지 묻기", "grid"),
   ask_missing_tiles: inspect("없는 타일 묻기", "grid"),
+  generate_missing_object: inspect("없는 기물 그리기 요청", "box"),
   store_search: inspect("스토어 찾기"),
   store_install: build("스토어에서 넣기", "box"),
   store_my_items: inspect("내 스토어 상품 보기"),
