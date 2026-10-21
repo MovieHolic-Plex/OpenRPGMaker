@@ -107,8 +107,9 @@ function leave(project: Project, mapId: string, eventId: string, from: Cell, exi
 /** 문 칸: 밟으면 단계에 따라 옮기거나 막는다. */
 function door(id: string, at: Cell, conditionsToGo: Parameters<typeof page>[1], go: Command[], blocked: Command[], back: Dir = "up"): GameEvent {
   return event(id, id, at, [
-    page(`${id}_blocked`, [], [...blocked, walk("@player", [back])], { trigger: "playerTouch", priority: "below" }),
-    page(`${id}_go`, conditionsToGo, go, { trigger: "playerTouch", priority: "below" }),
+    // 「같은 층」: 문 그림 칸이 막힌 칸이어도 부딪히면 열린다(엔진이 지형에 막힌 걸음에서도 같은 층 접촉 이벤트를 발동).
+    page(`${id}_blocked`, [], [...blocked, walk("@player", [back])], { trigger: "playerTouch", priority: "same" }),
+    page(`${id}_go`, conditionsToGo, go, { trigger: "playerTouch", priority: "same" }),
   ]);
 }
 
