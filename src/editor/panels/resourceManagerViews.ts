@@ -610,6 +610,15 @@ function renderCharsetRowCard(profile: ResourceProfile, isSelected: boolean, onS
   card.append(header, charactersStrip);
   return card;
 }
+/**
+ * 내장 프로필의 그림을 찾지 못했을 때 빈 칸 문구. EasyRPG 그림(전투 배경·칩셋·시스템·타이틀…)은 2026-10-07
+ * 저작권 정리로 번들에서 지웠지만, 그 전에 저장한 프로젝트에는 프로필과 참조가 남아 있다. 프로필을 지우면
+ * 그 id 를 참조하는 지형·시스템 설정이 저장 검증(존재하지 않는 리소스)에서 막히므로, 목록에 두되 사라진 이유를 드러낸다.
+ */
+function missingProfilePreviewText(assetId: string | undefined, fallback: string): string {
+  return assetId?.startsWith("easyrpg-") ? "그림 파일 없음 · 번들에서 제거됨" : fallback;
+}
+
 function renderProfileCard(profile: ResourceProfile, isSelected: boolean, onSelect: () => void): HTMLElement {
   const project = store.getCurrent();
   const spec = getResourceProfileSpec(profile.kind);
@@ -633,7 +642,7 @@ function renderProfileCard(profile: ResourceProfile, isSelected: boolean, onSele
   } else if (isAudio) {
     previewBox.append(el("div", { class: "rm-card-audio-icon", text: profile.kind === "music" ? "🎵" : "🔊" }));
   } else {
-    previewBox.append(el("div", { class: "rm-card-no-img", text: "미리보기 없음" }));
+    previewBox.append(el("div", { class: "rm-card-no-img", text: missingProfilePreviewText(profile.assetId, "미리보기 없음") }));
   }
 
   const infoBox = el("div", {
@@ -958,7 +967,7 @@ function renderInspector(
     });
     previewContainer.append(img);
   } else {
-    previewContainer.append(el("div", { class: "rm-inspector-no-img", text: "미리보기 이미지 없음" }));
+    previewContainer.append(el("div", { class: "rm-inspector-no-img", text: isUploaded ? "미리보기 이미지 없음" : missingProfilePreviewText(item.profile.assetId, "미리보기 이미지 없음") }));
   }
 
   const metaList = el("div", {
