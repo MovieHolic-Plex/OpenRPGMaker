@@ -239,9 +239,15 @@ src/harnesses/assistant-capability/node/scenePostLoop.sh $R 1 &   # 채점 → �
   `machinePass` 는 실행·변경·저장·lint0·막힘 없음 전부다. **시각 합격이 아니다.**
 - `scene-film`(sceneFilm.mjs): 저장본을 출하 `player.html` 에서 실제 방향키로 한 칸씩 걷고 결정 키로 말을 건다(순간이동·상태 주입 없음).
   대화 이벤트 먼저, 이동 이벤트는 마지막. 편집기 슬롯 잠금을 같이 써서 브라우저는 동시에 둘까지만 뜬다.
+  키는 **짧게 톡** 누른다(누르고 있으면 두 칸 가서 길 위를 오락가락했다). 걸음마다 `step`, 콘솔 경고는 `console`, 녹화 끝은 `closing` 으로
+  `film-log.json` 에 남는다. `sceneDenseFrames.mjs <attempt>` 는 도착한 상호작용마다 0.5초 간격 근접 프레임(`film/dense`)을 뽑는다 —
+  2초 간격으로는 「말하고 걸어 나가 사라짐」이 한 칸 사이에 묻힌다. 출하 플레이어는 `dist/export-player`(= `build:player`)다. 런타임을 고쳤으면 그것부터 다시 굽는다.
 - `scene-judge-input`(sceneJudgePrompt.mjs): **새 Opus 판정자**(읽기 전용 서브에이전트)에게 줄 지시문과 그림 해시. 조수의 완료 보고는 주지 않는다.
   판정 JSON 은 `sceneSaveVisual.py <attempt 폴더>` 로 그림 sha256 과 함께 `visual.json` 에 남긴다. 그림이 바뀌면 다시 판정한다.
 - 판정 보정: 3/4 실내 벽 문·엘리베이터·계단 아래 **문턱 칸**의 이벤트는 문 위 이벤트다. 템플릿의 빈 맵·오프닝 슬라이드는 조수 결함이 아니다.
+  칸막이 출입구(천장색 상인방 아래 통행 칸)는 구멍이 아니다. 관찰자가 결정 키를 0.5초마다 눌러 선택지가 두 프레임 사이에 기본값으로 골라질 수 있다 —
+  뒤따른 갈래가 기본값이다. 겹침·그리는 순서는 잘라 확대해 보고 말한다(r2 예/아니오 판정자가 둘 다 오판했다).
+- 되묻기 건(`lessons` 에 `clarify-ambiguous-request`): 기계 합격 = 턴이 묻고 멈춤(`clarifyAsked`) + 변경 없음. 판정자는 턴 직후 패널(`after.png`)을 본다.
 - 합격 = `machinePass` + 판정 `pass`(MAJOR 없음).
 
 **연속 규칙(AGENTS.md hard rule):** 데모 게임을 손으로 고칠 때마다 (a) 이 시드에 그 교훈의 건을 하나 더하고
@@ -255,3 +261,18 @@ src/harnesses/assistant-capability/node/scenePostLoop.sh $R 1 &   # 채점 → �
 - 시작 위치가 빈 시드 맵에 남음(지은 장소에 갈 수 없음) → 조수 쓰기 도구 뒤 `adoptBuiltMapAsStart`(`startOnBuiltMap.ts`).
 - `list_hand_interior_parts` 모르는 방 → 그 방을 가진 실내 칩셋을 알려 줌.
 - `run_scene_test` 의 `lastTransfer.eventId` UUID 오타로 맞는 문을 실패로 읽음 → eventId 선택, 없는 id 는 오타라고 말함.
+- 「배경 좀 예쁘게」 같은 모호한 말에서 의도 선언의 되묻기를 Pi 입력 경로가 버리고 맵 꾸미기 56회 → 되묻기를 그대로 보이고 멈춘다.
+  답은 원래 요청과 묶여 다음 전송으로 간다(`clarifyFollowUpText`). 선택지는 날것 `[선택지]` 대신 읽히는 한 줄.
+- `show_map_region` 미리보기가 맵 배경(파노라마)을 그리지 않아 조수가 배경을 눈으로 검수 못 함 → 배경 층을 타일 아래에 그린다.
+- 로컬 Claude CLI 엔진이 첫 도구 호출에 접두사를 틀리고 「도구 이름에 mcp__oprn__ 접두사가…」를 답에 흘림 → 시스템 지시에 도구 이름 규칙을 미리 준다.
+- 실내 층 이동 트리거가 계단·엘리베이터 그림 아래 바닥에 섬 → 그림 칸으로 올리고 앞 바닥을 착지로(`build_hand_interior_room`, `create_transfer_pair`).
+  새 실내는 BGM 을 받는다.
+- `furnish_outdoor_area` 를 버들항 맵에 부르면 모르는 바닥 오류 → `dress_beodeul_ground`·키트 `stamp_object` 로 안내.
+- 저절로 그래픽을 고르는 도구(세이브 포인트·상자·필드 적)가 캐릭터 칩 선택 관문에 막혀 되돌려짐 → `choosesOwnGraphic`.
+- 문자열 `"true"`/`"false"` 불리언, `changeFace` 중첩 `face:{}`, `camera {from,to}` 를 받아 들인다.
+- 「연애 이야기의 첫 만남 장면에 쓸 골목 맵」이 새 게임 오프닝 6샷·타이틀·연애 엔딩 3개 완료 검사를 끌고 옴 → 「연애」 낱말 하나는 게임 제작 요청이 아니다.
+- NPC 가 말하고 걸어 나가지 않고 제자리에서 사라짐: (1) `moveEvent` 의 `wait` 를 route 밖에 둬 걸음을 기다리지 않음 → route 안으로 옮김,
+  `scene-npc-vanish` 가 「기다리지 않는 퇴장」을 잡음 (2) 말을 건 주인공이 첫 걸음 칸에 서 있어 걸음이 버려짐 → 명령 경로가 주인공에 막히면
+  같은 끝 칸으로 비켜 감(`src/player/commandRouteDetour.ts`, 출하 런타임).
+- 빈 맵을 만들어 두고 나중에 칠하면 시작이 빈 시드 맵에 남음 → 처음 칠할 때도 시작을 옮김. 템플릿 빈 풀밭에 이벤트만 놓으면 경고.
+- 판정 그림(`qa-game render`)이 업로드(공용) 캐릭터 칩을 그리지 않아 보스가 「보이지 않음」으로 판정 → 저장본 옆 자산 폴더에서 그린다.
