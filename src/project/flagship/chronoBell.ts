@@ -358,6 +358,9 @@ function setEventFace(map: GameMap, eventId: string, faceId: string | undefined)
 
 // ── 그림 ────────────────────────────────────────────────────────────────
 
+/** 푸른 별빛 결정 자리(금고 안 통로 옆 빈 바닥) — fallen-audit 시나리오 save-crystal 비트와 같이 바꾼다. */
+const FS_CRYSTAL = { x: 34, y: 20 };
+
 function setEventChip(map: GameMap | undefined, eventId: string, texture: string, characterIndex: number): void {
   const event = map?.events.find((e) => e.id === eventId);
   if (!event) return;
@@ -492,6 +495,18 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   for (const event of M(ids.vault).events) if (event.name === "기억의 세이브 결정") {
     event.name = "푸른 별빛 결정";
     for (const page of event.pages ?? []) page.name = "푸른 별빛 결정";
+    // 결정이 파티 행렬(x32 열) 바로 북쪽에 서서 플레이어 머리 뒤 보라 투구처럼 읽혔다(가혹 검수 r7) —
+    // 통로 옆 빈 바닥 구석으로 옮기고, 흰 룬 판 위에 얹어 「받침 위 보석」으로 읽히게 한다.
+    event.x = FS_CRYSTAL.x; event.y = FS_CRYSTAL.y;
+    M(ids.vault).events.push({
+      id: `ev_${FS_PREFIX}_vault_crystal_plate`, name: "룬 판", x: FS_CRYSTAL.x, y: FS_CRYSTAL.y, trigger: { kind: "action" }, commands: [],
+      pages: [{
+        id: `ev_${FS_PREFIX}_vault_crystal_plate_p1`, name: "룬 판", conditions: [],
+        graphic: { sprite: { type: "bundled", id: "tex_easyrpg_charset_object2" }, direction: "down", pattern: charsetFrameIndex({ characterIndex: 3, direction: "down", pattern: 1 }) },
+        trigger: { kind: "action" }, priority: "below", overlapForbidden: false,
+        movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [],
+      }],
+    } as unknown as GameEvent);
   }
   replaceLineAnywhere(M(ids.vault), "푸른 기억의 결정이 은은하게 공명하며 파티 전원의 체력과 마력을 완전히 회복시켰다!", [narrate("푸른 결정에 손을 대자, 지친 몸에 힘이 차올랐다.")]);
   const bossEvent = M(ids.vault).events.find((e) => (e.pages ?? []).some((p) => JSON.stringify(p.commands).includes("battleProcessing")) && e.id.includes("kill"));
