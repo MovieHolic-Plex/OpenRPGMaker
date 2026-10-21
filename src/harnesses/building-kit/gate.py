@@ -7,8 +7,8 @@
                   wall·band·base: 발자국 안이 전부 불투명 / extra: 위 귀퉁이 투명·채움 0.15~0.95     FAIL
   F 윗면 띠       윗면이 있는 조각(roof, top 을 선언한 extra)의 선언 띠가 2행 이상·폭 50% 이상이고
                   바로 아래(앞 모서리) 줄보다 밝다. 벽에는 윗면이 없다 — 벽의 지붕 비율은 조립 A6 이 본다 FAIL
-  S 반복 이음      tileable 조각의 감은 이음(마지막 열→첫 열)이 안쪽 열 경계 중 가장 큰 차 + 0.02 이하    FAIL
-  J 세트 이음      시드 joins 로 맞닿는 두 조각의 맞닿는 열(줄) 밝기 차가 두 조각 안쪽 경계 최대 차 + 0.02 이하 FAIL
+  S 반복 이음      tileable 조각의 감은 이음(마지막 열→첫 열)이 안쪽 열 경계 중 가장 큰 차 + 8(0~255 밝기) 이하    FAIL
+  J 세트 이음      시드 joins 로 맞닿는 두 조각의 맞닿는 열(줄) 밝기 차가 두 조각 안쪽 경계 최대 차 + 8 이하 FAIL
   G 바닥 닿음      foot:true 조각(기단)의 불투명 맨 아래 행이 칸 아래 경계다                          FAIL
   Y 줄 재료       후보 불투명 화소의 8% 이상을 차지하는 램프가 그 줄 style-r1 조각에 쓰인 램프 ∪ extraRamps 안  FAIL
   R 색만 바꾼 후보  같은 항목 후보끼리 실루엣이 같고(IoU>0.97) 밝기 배치 상관이 0.92 초과             FAIL
@@ -113,7 +113,7 @@ def check_join(a_im, b_im, axis):
     if both.sum() < 4:
         return True, 0.0, 0.0
     seam_v = float(np.abs(la[both, -1] - lb[both, 0]).mean())
-    lim = max(_inner_max(la, oa), _inner_max(lb, ob)) + 0.02
+    lim = max(_inner_max(la, oa), _inner_max(lb, ob)) + 8.0
     return seam_v <= lim, seam_v, lim
 
 
@@ -314,9 +314,27 @@ def tone_of(pal):
     return out
 
 
-def is_ink(c, tones):
+def dominant_ramp(a, pal, share=0.2):
+    op = a[:, :, 3] == 255
+    if not op.any():
+        return None
+    tones = tone_of(pal)
+    cnt = {}
+    for y, x in zip(*np.nonzero(op)):
+        r = tones.get(tuple(int(v) for v in a[y, x, :3]))
+        if r:
+            cnt[r[0]] = cnt.get(r[0], 0) + 1
+    if not cnt:
+        return None
+    name = max(cnt, key=cnt.get)
+    return name if cnt[name] / int(op.sum()) >= share else None
+
+
+def is_ink(c, tones, own=None):
+    """먹 = 밝기 ≤ INK_LUMA 이면서 그 조각의 주 재질(20% 이상) 램프가 아닌 색.
+    재질 자신의 가장 어두운 단은 명암이지 먹이 아니다(외곽선 규칙)."""
     r = tones.get(c)
-    if r and r[0] != 'stone':
+    if r and own and r[0] == own:
         return False
     return float(np.dot(c, LUM)) / 255.0 <= INK_LUMA
 
@@ -352,7 +370,8 @@ def check_outline(kind, a, tileable, open_sides_, pal, lit_check=True):
     if n == 0:
         return _r('OUTLINE', 'WARN', True, '바깥 변 없음(반복·맞물림 변뿐)')
     tones = tone_of(pal)
-    ink = sum(is_ink(tuple(int(v) for v in rgb[y, x]), tones) for y, x in zip(*np.nonzero(edge)))
+    own = dominant_ramp(a, pal)
+    ink = sum(is_ink(tuple(int(v) for v in rgb[y, x]), tones, own) for y, x in zip(*np.nonzero(edge)))
     fi = ink / n
     ok = fi <= OUTLINE_INK_MAX
     msg = f'가장자리 {n}화소 중 먹 {fi:.0%}(상한 {OUTLINE_INK_MAX:.0%})'
@@ -363,7 +382,7 @@ def check_outline(kind, a, tileable, open_sides_, pal, lit_check=True):
         for y, x in zip(*np.nonzero(lit)):
             c = tuple(int(v) for v in rgb[y, x])
             r = tones.get(c)
-            if is_ink(c, tones) or (r and r[1] <= LIT_DARK_STEP):
+            if is_ink(c, tones, own) or (r and r[1] <= LIT_DARK_STEP):
                 dark += 1
         fl = dark / max(nl, 1)
         msg += f', 빛 쪽(위·왼) {nl}화소 중 먹·0~{LIT_DARK_STEP}단 {fl:.0%}(상한 {OUTLINE_LIT_MAX:.0%})'

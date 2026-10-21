@@ -134,7 +134,7 @@ def assemble(recipe, items, pal, theme):
 
     a = cv.a
     op = a[:, :, 3] == 255
-    wall_top = rh
+    wall_top_px = rh * dot.T
     wall_cols = range(wall_x, wall_x + cols)
 
     if recipe.get('doorTwice'):
@@ -142,20 +142,22 @@ def assemble(recipe, items, pal, theme):
     else:
         checks.append(_r('A1', 'FAIL', len(door_at) == 1, f'문 {len(door_at)}개' + ('' if len(door_at) == 1 else ' — 건물 하나에 문은 정확히 하나')))
 
-    gaps = [x for x in wall_cols if not op[wall_top - 1, x * dot.T:x * dot.T + dot.T].all()]
-    checks.append(_r('A2', 'FAIL', not gaps, '지붕과 벽 사이 틈 없음' if not gaps else f'지붕/벽 사이 틈 열 {gaps[:6]}'))
+    gaps = [x for x in wall_cols if not op[wall_top_px - 1, x * dot.T:x * dot.T + dot.T].all()]
+    gaps += [x for x in wall_cols if not op[wall_top_px, x * dot.T:x * dot.T + dot.T].all()]
+    checks.append(_r('A2', 'FAIL', not gaps, '지붕과 벽 사이 틈 없음' if not gaps else f'지붕/벽 사이 틈 열 {sorted(set(gaps))[:6]}'))
 
     ok3 = 0 <= roof_w - cols <= 2 and wall_x >= 0
     checks.append(_r('A3', 'FAIL', ok3, f'지붕 {roof_w}칸 vs 벽 {cols}칸 (처마 {roof_w - cols}칸, 0~2 이어야)'))
 
-    last = height - 1
-    ok4 = bool(op[last].any()) and op[last].all()
-    checks.append(_r('A4', 'FAIL', ok4, f'기단 맨 아래 행 {last} 이 그림 맨 아래 칸 경계' if ok4 else '기단 아래에 빈 행이 있다(건물이 뜬다)'))
+    last_px = height * dot.T - 1
+    on_ground = all(op[last_px, x * dot.T:x * dot.T + dot.T].all() for x in wall_cols)
+    checks.append(_r('A4', 'FAIL', on_ground,
+                     '기단 맨 아래 행이 그림 맨 아래 칸 경계' if on_ground else '기단 아래에 빈 행이 있다(건물이 뜬다)'))
 
     checks.append(_a5(placed))
 
     ratio = rh / height
-    checks.append(_r('A6', 'FAIL', TOP_MIN <= ratio <= TOP_MAX, f'지붕 {rh}행 / 건물 {height}행 = {ratio:.2f} (0.30~0.50)'))
+    checks.append(_r('A6', 'FAIL', TOP_MIN <= ratio <= TOP_MAX, f'지붕 {rh}칸 / 건물 {height}칸 = {ratio:.2f} (0.30~0.50)'))
 
     kit = _kit(recipe, placed, roof_w, height, rh, storeys, wh, band_h, base_h, wall_x, cols, door_at)
     return {'img': cv, 'kit': kit, 'checks': checks, 'pieces': placed, 'door': door_at[0] if door_at else None,
