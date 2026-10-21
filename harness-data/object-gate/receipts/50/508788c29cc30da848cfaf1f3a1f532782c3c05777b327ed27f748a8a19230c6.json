@@ -1,0 +1,394 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "508788c29cc30da848cfaf1f3a1f532782c3c05777b327ed27f748a8a19230c6",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "mart gondola household",
+ "label": "modern_city_interior/mart-gondola-household",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 20,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band / cabinet top",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "upper shelf board with goods above it",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "goods on the upper shelf (blue and red packs)",
+      "rows": "8-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "goods on the lower shelf (bottles and cans)",
+      "rows": "19-25",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom shelf board",
+      "rows": "26-28",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-30"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan shows a 4-row light band at rows 2-5, a teal front-edge line at row 6 and a dark eave shadow at row 7, so evidence (a) applies. Below it the front face with the shelves and goods runs from about row 8 to row 30, which is far more than 3 rows. The shelf boards at rows 15-18 and 26-28 have the same pattern of light band, edge line and shadow. The body is 30 px wide with no receding side face. The top band is a plausible but not certain top surface: it could instead be read as a flat header panel. Under the evidence rules it counts."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 18 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well, and 9 for the hedge. Near-flat coverage is 0%, so the fill is not flat. Dark edge pixels are 0% near-neutral, so the outline carries a tint (dark blue-grey beside the pale frame) rather than a black sticker line. The shelf frame has a highlight, a mid tone and a dark edge. Each shelf row carries small product clusters in several tones, and a striped header band adds more variation. It is a little less textured than the stall and well, since the frame is fairly smooth, but it is not shallow next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17263
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gondola top band",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "upper shelf goods (blue and red boxes)",
+      "rows": "8-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle shelf deck",
+      "rows": "15-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "lower shelf goods (jars and bottles)",
+      "rows": "20-25",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom shelf and base",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band in rows 2-5 has a gradient and ends in a darker teal front-edge line at row 6. Row 7 is dark eave shadow, and the front face with shelves and goods runs below it to the base at row 30. The light bands at rows 15-17 and 26-28 read as shelf decks seen from above. No side face is drawn. The goods are decor, and the main body is the gondola shelving."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 18 visible tones per 16x16 tile, level with the stall-cheese (17) and well (20) references and above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is a tinted dark blue-grey that follows the adjacent material rather than a black sticker line. The frame and glass have about 5 steps, and the shelves show rows of small product dots in red, blue and white. Texture is more orderly and less organic than the stall or well, which keeps it at 'some' rather than 'rich'. A careful artist would still accept it beside the references, since it is no thinner or flatter than the stall at the same scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15959
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of the shelf unit",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "middle shelf board seen from above",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "goods on upper shelf",
+      "rows": "8-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "goods on lower shelf",
+      "rows": "20-25",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-5 form a light top band that ends in a darker front-edge line at row 6 (#326c72), followed by a dark shadow at row 7 (#2a3539). This matches the top-surface pattern of the cabinet reference. Below it the front face runs from row 7 to row 30 and holds two shelf bays with goods. The middle shelf board (rows 15-17) is a light band with an edge line at row 18 and shadow at row 19, so it also reads as a horizontal surface. The bottom plinth is rows 29-30. The goods are decor. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 18 visible tones per 16x16 tile, level with the cheese stall (17) and the roofed well (20) and well above the hedge (9). Near-flat coverage is 0%, so the picture shows no large single-colour areas. The pale shelf body has a light, mid and dark ramp with a highlighted top rim. The shelf rows carry many small product dots in red, blue and white, which gives clustered detail comparable to the stall's goods. The 0% near-neutral share of dark edge pixels means the outline is tinted (a dark blue-grey beside the pale body) rather than a neutral black sticker line. It is slightly less textured than the roofed well, but a careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15974
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band / header of gondola",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "upper shelf board",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "lower shelf board",
+      "rows": "26-28",
+      "evidence": "a",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "30"
+     },
+     {
+      "part": "goods on shelves (boxes)",
+      "rows": "8-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "goods on lower shelf (jars/bottles)",
+      "rows": "20-25",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-5 form a light top band (4 rows) with a distinct darker teal front-edge line at row 6 and a dark eave shadow at row 7. The front face with shelves and goods follows below, rows 7-31 (about 24 rows). Each shelf board (rows 15-18 and 26-28) is a light band ending in an edge line followed by a dark shadow row, so the shelves also read as horizontal surfaces. The object has no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate measures 18 visible tones per 16x16 tile, which matches prop-stall-cheese (17) and is close to prop-well-roofed (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. The dark edge pixels are 0% neutral, so the outline is tinted, a darker version of the adjacent body and shelf material rather than a black sticker line. The picture agrees: the grey-white body, top band and shelf rows each carry a few lightness steps, and the product clusters add varied small shapes. It has fewer shading steps than the 5-6 on Beodeul materials, and the body is simpler than the stall or well. Even so, it does not read as thinner or flatter than the references of the same kind, so I judge it acceptable next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16860
+  }
+ ],
+ "decidedAt": "2026-10-21T02:27:55.230Z",
+ "cells": {
+  "16": [
+   "327a9e821dd9c782",
+   "34c8b038e3565710",
+   "3a415e38487b6c83",
+   "62cf98e24a2eef88"
+  ],
+  "24": [
+   "02f9d268032f1374",
+   "06981ced2174c0c3",
+   "07f51359124bdf61",
+   "112a4b90c6cac37d",
+   "13ea811d3789ff28",
+   "17ce96f383d18591",
+   "23f69f1625dac8db",
+   "2496aba11e3859ef",
+   "28075943cbe95052",
+   "2d12c50ae7f87547",
+   "3128a3d73372cdc8",
+   "35b544203ad50f06",
+   "41781ffd7546fca5",
+   "428a895473a0ee6e",
+   "46cc90c736905bba",
+   "4946304088ae72b3",
+   "4a7d22356b5e39a9",
+   "55989e7fddc8e6d9",
+   "6617e9386b648b83",
+   "9f1a4b18d11c35ce",
+   "aa60c2ddfeceb6ce",
+   "ad5bad6eb9239286",
+   "b53e0e33a3febe32",
+   "eee11a9da9efb3a3"
+  ],
+  "32": [
+   "56825fa8459db554"
+  ],
+  "48": [
+   "36195b301a452523",
+   "5d36309afef4107e",
+   "6c3d2551a9c9b039",
+   "a26a783948af4fed",
+   "aa67c599a01a20ec",
+   "fc25181a952bf9d9"
+  ]
+ }
+}
