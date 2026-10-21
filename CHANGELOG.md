@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.308.0 — 2026-10-21
+
+### 기능
+
+- **workshop** — generator hub redesign, object stepper with place-on-map, terrain import, honest account-block states, char pack import fix (#3199) (`34193ea`)
+
 ## 0.307.0 — 2026-10-21
 
 ### 기능
