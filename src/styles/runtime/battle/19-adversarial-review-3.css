@@ -10,9 +10,11 @@
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor.defeated .battle-skin-actor-image {
   animation: pkmn-battler-faint 0.55s ease-in forwards;
 }
+/* 쓰러짐은 그림이 발밑으로 가라앉는다: 옮긴 만큼(translateY) 아래를 잘라(clip-path) 발 높이가 그대로 남는다.
+   예전엔 26px 를 그냥 내려 쓰러진 상대의 발이 아군 HP 상자 위로 번졌다(VQA R10-1). 둘 다 자기 높이 백분율이라 어떤 그림 크기에도 맞는다. */
 @keyframes pkmn-battler-faint {
-  0% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(26px); filter: saturate(0) brightness(1.4); }
+  0% { opacity: 1; transform: translateY(0); clip-path: inset(0 0 0 0); }
+  100% { opacity: 1; transform: translateY(100%); clip-path: inset(0 0 100% 0); filter: saturate(0) brightness(1.4); }
 }
 
 /* 아군 정보 카드의 strict 대기열 텍스트("대기 1"/"입력 완료")는 카드 바닥에 반쯤 잘려
