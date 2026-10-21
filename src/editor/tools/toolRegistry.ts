@@ -48,6 +48,7 @@ import { BEODEUL_LIGHT_TOOLS } from './beodeulLightTools';
 import { BEODEUL_GROUND_TOOLS } from './beodeulGroundTools';
 import { BEODEUL_ARCHITECTURE_TOOLS } from './beodeulArchitectureTools';
 import { DIRECTING_GUIDE_TOOLS } from "./directingGuideTools";
+import { ASSISTANT_SKILL_TOOLS } from "./assistantSkillTools";
 import { NPC_CAST_TOOLS } from "./npcCastTools";
 import { EXPORT_TOOLS } from "./exportTools";
 import { MAP_GEN_TOOLS } from "./generateMapTool";
@@ -338,6 +339,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(PIXEL_ART_TOOLS, "event"),
   ...withDomain(CUTSCENE_PREVIEW_TOOLS, "event"),
   ...withDomain(DIRECTING_GUIDE_TOOLS, "event"),
+  // 조수 스킬(assistant-skills/*/SKILL.md 번들) — 장면 다듬기 교훈 등. 장면·이벤트 작업에서 읽는다.
+  ...withDomain(ASSISTANT_SKILL_TOOLS, "event"),
   ...withDomain(LIFE_FLOWER_TOOLS, "event"),
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),

@@ -669,15 +669,15 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       const isSchool = /교실|학생회|고등학교|중학교|학급/u.test(mapName);
       const isUniversity = !isSchool && /대강의실|강의실|전공|세미나|대학|캠퍼스/u.test(`${mapName}\n${briefText}`);
       const campusProgram = isUniversity ? "university-lecture-wing" : isSchool ? "school-class-wing" : undefined;
+      // 맵 이름은 «제안» 만 한다 — 명시한 layout.program·plan 을 이름으로 갈아끼우지 않는다(2026-10-21 「첫사랑」:
+      // 이름의 「승강장」이 계획한 평면을 무작위 씨앗 청사진으로 바꿔 버렸다). 이름이 표준 구성과 맞으면 알리기만 한다.
       if (args.layout && typeof args.layout === "object") {
         const lbag = args.layout as Record<string, unknown>;
         if (lbag.program === "school-class-wing" && isUniversity) {
-          args = { ...args, layout: { ...lbag, program: "university-lecture-wing" } };
+          fitNotes.push(`이름이 대학 강의동과 맞는다 — 대학 표준 구성을 원하면 layout:{program:"university-lecture-wing"} 로 다시 부른다(요청한 "school-class-wing" 으로 지었다)`);
         }
-      } else if (campusProgram && Array.isArray(args.plan) && args.plan.length === 15 && typeof args.plan[0] === "string" && args.plan[0].length === 26) {
-        const { plan: _p, zones: _z, objects: _o, tables: _t, goods: _g, lines: _l, daises: _d, ...rest } = args as Record<string, unknown>;
-        args = { ...rest, layout: { program: campusProgram } } as typeof args;
-        fitNotes.push(`예제 평면(26×15) 대신 "${campusProgram}" 다구역 표준 배치로 지었다`);
+      } else if (campusProgram && Array.isArray(args.plan) && args.plan.length > 0) {
+        fitNotes.push(`이름이 "${campusProgram}" 표준 구성과 맞는다 — 준 평면대로 지었다. 다구역 표준 배치를 원하면 plan 을 빼고 layout:{program:"${campusProgram}"} 로 부른다`);
       }
     } else if (tilesetId === "modern_city" || tilesetId === "jp_city") {
       const matchedProgram =
@@ -702,19 +702,14 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         : tilesetId === "modern_city" && /로비|1층\s*홀/u.test(mapName) ? "lobby"
         : tilesetId === "modern_city" && /오피스|사무실|사무층|마케팅|디자인팀|개발팀|기획팀|본사\s*[2-9]층/u.test(mapName) ? "office-floor"
         : undefined;
+      // 명시한 layout.program·plan 은 이름이 무엇이든 그대로 짓는다(위 캠퍼스와 같은 규칙). 이름이 다른 표준 구성과 맞으면 알리기만 한다.
       if (args.layout && typeof args.layout === "object") {
         const lbag = args.layout as Record<string, unknown>;
-        if (matchedProgram && typeof lbag.program === "string" && ["lobby", "konbini", "cafe", "mall-1f", "supermarket", "station", "hospital-1f", "cinema", "game-center", "famires", "bank", "clinic"].includes(lbag.program) && lbag.program !== matchedProgram) {
-          args = { ...args, layout: { ...lbag, program: matchedProgram } };
+        if (matchedProgram && typeof lbag.program === "string" && lbag.program !== matchedProgram && !lbag.rooms) {
+          fitNotes.push(`이름이 "${matchedProgram}" 표준 구성과 맞는다 — 요청한 "${lbag.program}" 으로 지었다. 바꾸려면 layout:{program:"${matchedProgram}"} 로 다시 부른다`);
         }
-      } else if (matchedProgram && Array.isArray(args.plan) && args.plan.length > 0 && typeof args.plan[0] === "string"
-        // 일본 집 층(house-1f·2f)은 가구까지 다 준 평면(예제·참고문서 재현)을 청사진으로 바꾸지 않는다 — 바꾸면 씨앗이 매번 달라 예제가 다른 집이 된다(2026-10-20).
-        && !(/^house-[12]f$/u.test(matchedProgram) && Array.isArray(args.objects) && args.objects.length > 0)) {
-        const planH = args.plan.length, planW = args.plan[0].length;
-        if (planW < 28 || planH < 18) {
-          const { plan: _p, zones: _z, objects: _o, tables: _t, goods: _g, lines: _l, daises: _d, start: _s, exits: _e, ...rest } = args as Record<string, unknown>;
-          args = { ...rest, layout: { program: matchedProgram } } as typeof args;
-        }
+      } else if (matchedProgram && Array.isArray(args.plan) && args.plan.length > 0 && typeof args.plan[0] === "string") {
+        fitNotes.push(`이름이 "${matchedProgram}" 표준 구성과 맞는다 — 준 평면대로 지었다. 표준 다구역 배치를 원하면 plan 을 빼고 layout:{program:"${matchedProgram}"} 로 부른다`);
       }
       // 공공시설 짧은 이름(library·city-hall·bank·clinic, 한국어 이름)은 두 칩셋 모두 같은 표준 구성으로 맞춘다 — 2026-10-19 RCA r2: jp_city 에서 "library" 가
       // 「방 구성이 없다」로 거부돼 조수가 수백 줄 plan 을 손으로 짰다.

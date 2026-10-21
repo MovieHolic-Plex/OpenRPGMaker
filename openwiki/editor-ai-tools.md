@@ -1,5 +1,17 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 조수 스킬 읽기 `read_assistant_skill` · 장면 다듬기 `game-scene-polish` (2026-10-21)
+
+데모 세 편(「첫사랑」·Fallen Star·Astra Horizon)을 사람이 손으로 고친 결함을 조수가 같은 실수로 되풀이했다(사용자: 「생각보다 멍청하다」). 교훈을 조수가 실제로 읽는 스킬과 자동 경고 둘로 만들었다.
+
+- **원본은 하나**: `assistant-skills/<id>/SKILL.md`(Claude 스킬과 같은 글). `npm run assistant-skills:bundle` 이 `src/assets/assistantSkills.json` 으로 굽고,
+  `src/editor/tools/assistantSkillTools.ts` 의 `list_assistant_skills`·`read_assistant_skill`(6000자 쪽 읽기, domain event)이 그 번들을 돌려준다. `test/assistantSkillTools.test.ts` 가 번들 어긋남을 막는다.
+  (옛 위키의 「스킬 기능 제거(2026-08-27)」는 입력창 `/` 스킬 서랍 얘기다 — 이 도구는 읽기 전용 지침이다.)
+- **읽게 하는 길**: Pi 시스템 프롬프트(`src/ai/piAgent/systemPrompt.ts`)의 「장면 다듬기」 한 줄, 작업 레시피 `scene-polish`(`toolCapabilityIndex.ts`), find_tools 별칭(「장면 다듬기」「조수 스킬」「교훈」).
+- **경고**: 쓰기 도구 결과 issues 에 `scene-*` 가 이번 변경이 새로 만든 것만 앞쪽에 실린다(모델에는 issues 앞 8건만 간다). `run_lint` 는 전체 목록. 규칙은 `openwiki/editor-validation.md` 「장면 다듬기 경고」.
+- **새 교훈**: SKILL.md 에 «실수 → 규칙 → 확인» 한 줄 → 기계로 잡히면 `src/project/lint/scenePolishLint.ts` 에 경고 → `npx tsx scripts/qa/scene-polish-lint.mts <project.json>` 로 데모에 돌려 거짓 경고를 본다 → 번들 다시 굽기.
+- `build_hand_interior_room`: 맵 이름(승강장·백화점·병원…)이 준 `plan`·`layout.program` 을 더 이상 무작위 씨앗 청사진으로 갈아끼우지 않는다. 이름이 표준 구성과 맞으면 warnings 에 «표준 구성과 맞는다 — 원하면 layout:{program}» 만 남긴다.
+
 ## 장르 칩셋 잠금 `system.genreLock` — 조수·도구 경로 강제 (2026-10-15)
 
 권고(`monsterGameRequest` 지시문 · `openBlankStartOnMonsterKit` · 「칩셋 계열 지키기」)만으로는 조수가 버들항·사막·jp_city 등 다른 계열이나 비몬스터 파이프라인으로
