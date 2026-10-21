@@ -1,0 +1,55 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b7",
+ "round": 5,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "food-drink-bar",
+   "pixelSha256": "bfeb2b5d336853777543437050344937301deadd3627f3cfa981ffc98e172ac9",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    3
+   ],
+   "reasons": "The top is only a 1–2 row grey strip, so the piece reads as a flat front elevation of a tall, narrow cabinet. It is a cramped 1-tile-wide column mixing a bottle shelf and a wooden drawer base, and at 1x it is an unreadable smear that doesn't read as a drink bar next to the counter-register or the cooler."
+  },
+  {
+   "id": "mart-drink-open",
+   "pixelSha256": "e610d308a532d9880c712b50bda7a88acfad4fa60e62a8353140b89e2d624c69",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The top plane is a pale grey band streaked with stray lighter dashes rather than a clean lit surface, and it sits right on the red header, so the depth is ambiguous. The bottle rows are noisy single-colour columns with uneven gaps compared with the orderly bottle rows in mci-cooler."
+  },
+  {
+   "id": "mart-gondola-snack",
+   "pixelSha256": "315e54e2622a32c7d65eda2372bda59eb30e784f99dee6374a0364dbf75149bb",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "It is basically a flat front elevation: the top is only a thin 1–2 row grey rim, with no visible shelf top plane. The snack packs are saturated yellow/orange blobs with bright sticker-like highlights on a navy backing, which looks muddy and outside the chipset's restrained palette."
+  }
+ ]
+}
