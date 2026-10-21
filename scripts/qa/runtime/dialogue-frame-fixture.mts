@@ -100,6 +100,39 @@ if (process.env.DFRAME_STYLE) {
   if (m) delete m.oprnVnLook;
 }
 if (process.env.DFRAME_VN) ((project as { meta?: Record<string, unknown> }).meta ??= {}).oprnVnLook = { version: 1, preset: process.env.DFRAME_VN };
+// DFRAME_SCENE=door — 폴른 스타 천문대의 잠긴 철문 앞(주인공이 문을 밟는 바로 그 칸)에서 화자 → 잠긴 문 안내(내레이션) → 화자.
+// DFRAME_SCENE=letterbox — 마을 광장의 실제 컷신(ev_fs_event: 레터박스 띠 + 발렌·엘레나 대사)을 그대로 자동 실행.
+const scene = process.env.DFRAME_SCENE;
+if (scene === "door" || scene === "letterbox") {
+  const findEvent = (mapId: string, id: string) => project.maps[mapId]?.events.find((e) => e.id === id);
+  const run = (qaEvent.pages ?? [])[0]!;
+  if (scene === "door") {
+    const gate = findEvent("fs_observatory", "ev_world_gate_y0wah3");
+    const fork = gate?.pages?.[0]?.commands.find((c) => c.kind === "fork") as AnyCmd | undefined;
+    const locked = (fork?.else as AnyCmd[] | undefined)?.find((c) => c.kind === "text");
+    if (!gate || !locked) throw new Error("천문대 철문 이벤트 없음");
+    const obs = project.maps.fs_observatory!;
+    for (const ev of obs.events) for (const p of ev.pages ?? []) if (p.trigger?.kind === "auto") p.trigger = { kind: "action" };
+    map.events.splice(map.events.indexOf(qaEvent), 1);
+    obs.events.push(qaEvent);
+    project.startMapId = "fs_observatory";
+    (project as { startPos: { x: number; y: number } }).startPos = { x: gate.x, y: gate.y - 1 };
+    const lines: AnyCmd[] = [];
+    if (settings) lines.push(structuredClone(settings));
+    if (facedLine) lines.push(structuredClone(facedLine[0]));
+    lines.push(pick(said, said), clearFace, structuredClone(locked));
+    if (facedLine) lines.push(structuredClone(facedLine[0]));
+    lines.push(pick(said, said), structuredClone(locked));
+    lines.push({ kind: "setSwitch", switchId: "sw_dframe_done", value: true } as AnyCmd);
+    run.commands = lines;
+  } else {
+    const cut = findEvent("fs_hub", "ev_fs_event");
+    const cmds = (cut?.pages?.[0]?.commands ?? []) as AnyCmd[];
+    if (!cmds.length) throw new Error("광장 컷신 없음");
+    run.commands = [...structuredClone(cmds), { kind: "setSwitch", switchId: "sw_dframe_done", value: true } as AnyCmd];
+    (project as { startPos: { x: number; y: number } }).startPos = { x: cut!.x, y: cut!.y + 2 };
+  }
+}
 const badgeOverride = process.env.DFRAME_ENDING_BADGE;
 // DFRAME_LANG=ko|en|ja|zh — 게임 언어(대사 시스템 language). 읽기 보조 기능은 켜지 않는다.
 const lang = process.env.DFRAME_LANG;

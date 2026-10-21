@@ -1736,7 +1736,7 @@ export function createDialogueUI(
       const choicesEl = el("div", { class: "choice-list", dataset: { testid: "runtime-choices" } });
       // 고정 틀: 대사 상자 크기·자리는 그대로 두고, 선택지 칸은 그 위(창이 위에 있으면 아래)에 따로 뜬다.
       // 틀에는 질문(prompt)이, 질문이 없으면 바로 앞 대사가 그대로 남는다. 둘 다 없으면 빈 틀이다.
-      const frame = isDualFullbodyVeil ? undefined : choiceFrame(request, framePrevious, choiceLook);
+      const frame = choiceFrame(request, framePrevious, choiceLook);
       if (frame) {
         overlay.classList.add("choices-framed");
         applyTextSettings(overlay, frame, request, position);

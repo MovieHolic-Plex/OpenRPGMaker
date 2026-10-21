@@ -1448,3 +1448,16 @@
 .dialogue-overlay:not([data-dialogue-stage]).position-top {
   min-height: 63px;
 }
+/* 두 전신 무대(dual-fullbody-veil)는 화면 아래 띠(여백 0, 높이 22%)가 대사 상자다 — 틀도 같은 띠, 선택지 칸은 띠 위에 진한 판으로. */
+.dialogue-overlay[data-dialogue-stage].choices-active.choices-framed.position-bottom {
+  min-height: 0;
+  padding: 0;
+}
+.dialogue-overlay[data-dialogue-stage].choices-active.choices-framed > .dialogue-box.choices {
+  background: rgba(12, 10, 18, 0.86);
+  border: 1px solid rgba(243, 210, 140, 0.42);
+  left: 10px;
+  margin-inline: auto;
+  right: 10px;
+  width: fit-content;
+}

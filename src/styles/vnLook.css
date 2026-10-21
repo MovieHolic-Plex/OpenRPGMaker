@@ -205,6 +205,30 @@
   min-height: 100%;
 }
 
+/* 고정 틀(2026-10-22): 선택지 동안에도 글 페이지는 화면 전체 그대로 남고, 선택지 칸은 페이지 아래쪽 안에 가운데로 뜬다. */
+.dialogue-overlay[data-vn-layout="page"][data-vn-look][data-vn-look][data-vn-look].choices-active.choices-framed {
+  bottom: 0;
+  box-sizing: border-box;
+  height: 100%;
+  max-height: none;
+  min-height: 0;
+  padding: 12px 14px;
+  top: 0;
+  transform: none;
+}
+
+.dialogue-overlay[data-vn-layout="page"][data-vn-look][data-vn-look].choices-active.choices-framed > .dialogue-box.choices-frame:not(.transparent) {
+  border-width: 0;
+  flex: 1 1 auto;
+  min-height: 100%;
+}
+
+.dialogue-overlay[data-vn-layout="page"][data-vn-look][data-vn-look][data-vn-look].choices-active.choices-framed > .dialogue-box.choices {
+  bottom: 24px;
+  max-height: 60%;
+  top: auto;
+}
+
 .dialogue-overlay[data-vn-layout="page"][data-vn-look] .dialogue-face,
 .dialogue-overlay[data-vn-layout="page"][data-vn-look] .dialogue-face-behind {
   display: none;

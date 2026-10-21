@@ -39,6 +39,7 @@ import { characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { waitForEventKey } from "@/player/eventInput";
 import { abortHop, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
 import { applyCameraControl } from "@/player/playSceneCamera";
+import { cameraViewOrigin } from "@/player/cameraScreen";
 import { applyLightingStep } from "@/player/playSceneLighting";
 import { playMapAnimation } from "@/player/playSceneMapAnimations";
 import { playPathfindMove } from "@/player/playScenePathfinding";
@@ -931,11 +932,8 @@ function playerScreenYOf(scene: PlaySceneContext): { playerScreenY?: number } {
   const sprite = scene.player;
   if (!camera || !sprite || !(camera.height > 0)) return {};
   const centerY = sprite.y - (sprite.displayHeight > 0 ? sprite.displayHeight : 0) * (sprite.originY ?? 1) + (sprite.displayHeight > 0 ? sprite.displayHeight : 0) / 2;
-  // 보이는 세계 사각(worldView)으로 잰다. Phaser 카메라는 가운데를 기준으로 확대하므로 (y - scrollY) * zoom 은 배율 ≠ 1 에서
-  // 화면 높이의 절반만큼 어긋난다 — 아스트라 호라이즌(배율 2)에서 화면 가운데 주인공이 1.00(맨 아래)으로 읽혀 창이 위로 갔다.
-  const view = camera.worldView;
-  const ratio = view && view.height > 0
-    ? (centerY - view.y) / view.height
-    : ((centerY - camera.scrollY) * camera.zoom) / camera.height;
+  // 카메라 origin 기준 확대를 반영한다(cameraScreen.ts). 예전 (y - scrollY) * zoom 은 배율 2(아스트라 호라이즌)에서
+  // 화면 가운데 주인공을 1.00(맨 아래)으로 읽어 창을 위로 보냈다.
+  const ratio = ((centerY - cameraViewOrigin(camera).top) * camera.zoom) / camera.height;
   return Number.isFinite(ratio) ? { playerScreenY: Math.max(0, Math.min(1, ratio)) } : {};
 }

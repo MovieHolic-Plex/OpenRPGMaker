@@ -12,7 +12,7 @@ const installRecorder = `() => {
   const log = [];
   const ids = new WeakMap(); let serial = 0;
   window.__dframeLog = log;
-  const t0 = performance.now();
+  const t0 = performance.now(); window.__dframeT0 = t0;
   const tick = () => {
     const overlay = document.querySelector('.dialogue-overlay');
     const boxes = [...document.querySelectorAll('.dialogue-overlay .dialogue-box')]
@@ -61,6 +61,9 @@ const waitReady = `async () => {
 
 const frame = (id) => ({ id, note: id, ops: [{ kind: "hold", dir: null, ms: 200 }], shot: true });
 const STEPS = Number(process.env.DFRAME_STEPS ?? 11);
+// DFRAME_VIDEO=1: 영상용(QA_RECORD_VIDEO 와 함께) — 스크린샷 없이 창마다 읽는 시간만 두고 넘긴다.
+const VIDEO = process.env.DFRAME_VIDEO === "1";
+const VIDEO_READ_MS = Number(process.env.DFRAME_READ_MS ?? 900);
 // DFRAME_FAST=1: 스타일 행렬용 — 창마다 준비 한 장 + Enter 만(숫자는 rAF 기록이 다 잰다).
 const FAST = process.env.DFRAME_FAST === "1";
 const fixture = process.env.DFRAME_FIXTURE ?? which;
@@ -73,7 +76,11 @@ const beats = [
 ];
 for (let s = 1; s <= STEPS; s += 1) {
   const p = String(s).padStart(2, "0");
-  beats.push({ id: `s${p}-ready`, note: `${s}번째 창 준비`, ops: [{ kind: "evalToFile", fn: waitReady, out: `/tmp/dframe-ready-${s}.json` }], shot: true });
+  beats.push({ id: `s${p}-ready`, note: `${s}번째 창 준비`, ops: [{ kind: "evalToFile", fn: waitReady, out: `/tmp/dframe-ready-${s}.json` }], shot: !VIDEO });
+  if (VIDEO) {
+    beats.push({ id: `s${p}-advance`, note: "읽고 Enter", ops: [{ kind: "hold", dir: null, ms: VIDEO_READ_MS }, { kind: "key", key: "Enter" }], shot: false });
+    continue;
+  }
   if (FAST) {
     beats.push({ id: `s${p}-advance`, note: "Enter", ops: [{ kind: "hold", dir: null, ms: 300 }, { kind: "key", key: "Enter" }], shot: false });
     continue;
@@ -82,7 +89,11 @@ for (let s = 1; s <= STEPS; s += 1) {
   beats.push({ id: `s${p}-advance`, note: "Enter", ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 200 }], shot: true });
   beats.push(frame(`s${p}-f3`));
 }
-beats.push({ id: "dump", note: "프레임 기록 저장", ops: [{ kind: "evalToFile", fn: "() => window.__dframeLog ?? []", out: `${outDir}-rects.json` }], shot: false });
+beats.push({ id: "dump", note: "프레임 기록 저장", ops: [
+  { kind: "evalToFile", fn: "() => window.__dframeLog ?? []", out: `${outDir}-rects.json` },
+  // 영상 자르기용: 기록기 0초가 페이지 시계(navigation 기준)로 몇 ms 인가.
+  { kind: "evalToFile", fn: "() => ({ t0: window.__dframeT0 ?? null, now: performance.now() })", out: `${outDir}-t0.json` },
+], shot: false });
 
 export default {
   id: `dialogue-frame-${fixture}`,
