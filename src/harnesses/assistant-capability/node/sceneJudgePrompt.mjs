@@ -16,6 +16,7 @@ const images = [];
 const add = (file, role) => { if (existsSync(file)) images.push({ file, role, sha256: sha(file) }); };
 const renderDir = resolve(dir, 'render', 'render');
 if (existsSync(renderDir)) for (const name of readdirSync(renderDir).filter(n => n.endsWith('.png')).sort()) add(resolve(renderDir, name), `1x map render ${name.replace('.png', '')} (event markers: coloured boxes; green = start)`);
+add(resolve(dir, 'after.png'), 'editor screenshot right after the assistant turn (assistant panel with its last answer)');
 add(resolve(dir, 'reloaded.png'), 'editor screenshot after canonical reload');
 const frames = resolve(dir, 'film', 'frames');
 if (existsSync(frames)) for (const name of readdirSync(frames).filter(n => n.endsWith('.png')).sort()) add(resolve(frames, name), `shipped player.html frame ${name} (one every 2 s)`);

@@ -419,6 +419,20 @@
     "boss level >= player-1"
    ],
    "lint0": []
+  },
+  {
+   "id": "background-ambiguous-clarify",
+   "label": "모호한 「배경」 요청은 먼저 되묻기",
+   "port": 19521,
+   "lessons": [
+    "clarify-ambiguous-request"
+   ],
+   "prompt": "배경 좀 예쁘게 해 줘.",
+   "requirements": [
+    "the assistant asks one short question (map background picture vs. decorating the map) before changing anything",
+    "no map content changes before the answer"
+   ],
+   "lint0": []
   }
  ]
 }

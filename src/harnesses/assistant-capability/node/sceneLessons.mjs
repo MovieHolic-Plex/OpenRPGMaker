@@ -89,8 +89,12 @@ export function scoreAttempt(root, entry, dir) {
   }
   const lintOk = score.sceneLint && !score.sceneLint.error && score.sceneLint.requiredZeroViolations.length === 0;
   const saveOk = score.persistence?.sameStoredDocument === true && score.persistence?.rendererMapsAndDatabaseEqual === true;
-  score.machine = { executed: Boolean(score.modelDone && score.turnSettled), changed: score.contentChanged, saved: saveOk,
-    sceneLintZero: Boolean(lintOk), noBlockers: Boolean(score.gameCheck && !score.gameCheck.error && score.gameCheck.blockers.length === 0) };
+  score.clarifyAsked = result.clarifyAsked ?? false;
+  // 되묻기 건: 조수가 먼저 짧게 묻고 아무것도 바꾸지 않아야 합격이다(변경·저장·막힘 검사 대신).
+  score.machine = (entry.lessons ?? []).includes('clarify-ambiguous-request')
+    ? { executed: Boolean(score.turnSettled), asked: score.clarifyAsked === true, unchanged: score.contentChanged === false }
+    : { executed: Boolean(score.modelDone && score.turnSettled), changed: score.contentChanged, saved: saveOk,
+      sceneLintZero: Boolean(lintOk), noBlockers: Boolean(score.gameCheck && !score.gameCheck.error && score.gameCheck.blockers.length === 0) };
   score.machinePass = Object.values(score.machine).every(Boolean);
   const visualFile = resolve(dir, 'visual.json');
   score.visual = existsSync(visualFile) ? read(visualFile) : { verdict: 'pending' };
