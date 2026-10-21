@@ -923,6 +923,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
       ...say("lead", "happy", "서하 씨, 수요일에 바로 말해 준 거. 그거 잘한 거예요. 그게 팀이에요."),
     ]),
     face("@player", dirToward(o.meetingSeat, jihuSpot)),
+    face("ev_fl_f_client", dirToward(clientSpot, jihuSpot)),
     ...say("jihu", "base", "…먼저 일어나 보겠습니다. 수고하셨습니다."),
     jihuOut.begin,
     stopBgm(),
