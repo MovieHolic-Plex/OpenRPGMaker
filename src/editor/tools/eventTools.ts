@@ -15,6 +15,7 @@ import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsa
 import { ACTION_CONTROLS_GUIDE } from "@/player/keyBindings";
 import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
 import { canMove, isPassable, tileAt } from "@/project/collision";
+import { isDoorArtCell } from "@/project/lint/scenePolishLint";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
@@ -2760,7 +2761,9 @@ const createTransferPair: ToolDefinition = {
   description:
     "두 맵 사이 양방향 출입구를 원자적으로 생성한다. 이미 있는 왕복 출입구의 「방향을 맞춰줘」는 patch_event_page 로 **두 문 모두**의 transfer.direction 을 바꾼다(가는 문은 도착해서 바라볼 쪽, 돌아오는 문은 그 반대쪽 — 한쪽만 바꾸면 안 맞는다). 「이 맵을 월드맵의 북쪽에 연결」은 월드맵의 **북쪽 가장자리(y 가 작은 쪽)** 에 이 맵으로 가는 출입구를 놓는다는 뜻이다(남쪽 가장자리가 아니다). 출입구는 벽·맵 가장자리에 바짝 붙인 통행 가능 칸에 놓는다 인자 {a:{mapId,x,y}, b:{mapId,x,y}} — 문·계단·텔레포트의 왕복 쌍을 한 번에 만든다. 좌표는 벽·맵 끝에 바짝 붙인 통행 칸(1칸 띄우지 말 것). 문의 시각 배치는 place_door."
     + "(1칸 안쪽 좌표는 자동으로 당기고, 벽 칸 위 요청은 바로 앞 통행 칸으로 옮긴다 — playerTouch는 벽 위에서 발동하지 않음)."
-    + " 착지점은 상대 출입구에 인접한 실제 왕복 통행 가능 칸으로 자동 선정(즉시 재전이 방지). 닿지 않는 출입구·봉쇄는 실패한다. 문 그림을 연결할 때는 place_door 결과의 transferEndpoint(x,y,doorAt)를 a/b에 넣는다. doorAt이 있으면 문앞을 옆 칸으로 옮기지 않는다.",
+    + " 착지점은 상대 출입구에 인접한 실제 왕복 통행 가능 칸으로 자동 선정(즉시 재전이 방지). 닿지 않는 출입구·봉쇄는 실패한다. 문 그림을 연결할 때는 place_door 결과의 transferEndpoint(x,y,doorAt)를 a/b에 넣는다. doorAt이 있으면 문앞을 옆 칸으로 옮기지 않는다."
+    + " 문이 있으면(doorAt, 또는 x,y 가 문·계단 그림 칸) 트리거는 **문 그림 칸 그 칸**에 선다 — 통행 칸이면 밟기, 막힌 칸이면 부딪힘(priority same). 반대쪽 착지는 문 바로 앞 칸, 도착 방향은 문을 등진 쪽(모든 transfer 에 direction 이 붙는다)."
+    + " 옛 동작(문앞 칸 트리거)은 trigger:\"front\" — 문 그림이 트리거 칸이 될 수 없는 특수한 경우에만.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2778,6 +2781,7 @@ const createTransferPair: ToolDefinition = {
         required: ["mapId", "x", "y"],
       },
       fade: { type: "string", enum: ["black", "white", "none"] },
+      trigger: { type: "string", enum: ["door", "front"], description: "기본 door: 문이 있으면 트리거를 문 그림 칸에. front: 옛 동작(문앞 칸) — 특수한 경우에만." },
     },
     required: ["a", "b"],
   },
@@ -2785,6 +2789,7 @@ const createTransferPair: ToolDefinition = {
     const a = args.a as { mapId: string; x: number; y: number; doorAt?: Point };
     const b = args.b as { mapId: string; x: number; y: number; doorAt?: Point };
     const fade = (args.fade as TransferFade | undefined) ?? "black";
+    const onDoor = args.trigger !== "front";
     const mapA = requireMap(draft, a.mapId);
     const mapB = requireMap(draft, b.mapId);
     const reachNotes: string[] = [];
@@ -2805,14 +2810,30 @@ const createTransferPair: ToolDefinition = {
       ].filter((entry): entry is string => entry !== null);
       throw new ToolError(`출입구 자리를 찾지 못했습니다. ${failures.join(" / ")}`, { code: "transfer-no-landing" });
     }
-    const { gate: gateA, landing: landingA } = endpointA;
-    const { gate: gateB, landing: landingB } = endpointB;
-    assertDoorExitWidths(draft, mapA, gateA, mapB, gateB, a.doorAt, b.doorAt);
+    assertDoorExitWidths(draft, mapA, endpointA.gate, mapB, endpointB.gate, a.doorAt, b.doorAt);
+    // 문 그림 칸이 트리거 칸이다(장면 다듬기 교훈: 문앞 보도에서 발동하면 «문에 닿기 전에 들어간다»).
+    // 문앞 칸(원래 출입구 자리)은 반대쪽에서 오는 착지가 된다 — 문을 등지고 선다.
+    const onDoorCell = (map: GameMap, req: { x: number; y: number; doorAt?: Point }, endpoint: { gate: Point; landing: Point }): { gate: Point; landing: Point; bump: boolean } => {
+      if (!onDoor) return { ...endpoint, bump: false };
+      const door = req.doorAt
+        ?? (isDoorArtCell(draft, map, req.x, req.y) && Math.abs(req.x - endpoint.gate.x) + Math.abs(req.y - endpoint.gate.y) === 1 ? { x: req.x, y: req.y } : null);
+      if (!door || (door.x === endpoint.gate.x && door.y === endpoint.gate.y)) return { ...endpoint, bump: false };
+      if (map.events.some((event) => event.x === door.x && event.y === door.y)) return { ...endpoint, bump: false };
+      return { gate: door, landing: endpoint.gate, bump: !isPassable(draft, map, door.x, door.y) };
+    };
+    const { gate: gateA, landing: landingA, bump: bumpA } = onDoorCell(mapA, a, endpointA);
+    const { gate: gateB, landing: landingB, bump: bumpB } = onDoorCell(mapB, b, endpointB);
+    const awayFrom = (gate: Point, landing: Point): Dir => {
+      const dx = landing.x - gate.x, dy = landing.y - gate.y;
+      if (Math.abs(dy) >= Math.abs(dx) && dy !== 0) return dy > 0 ? "down" : "up";
+      if (dx !== 0) return dx > 0 ? "right" : "left";
+      return "down";
+    };
 
     const idA = genId("ev_gate");
     const idB = genId("ev_gate");
-    const transferTo = (mapId: string, x: number, y: number): Command => ({ kind: "transfer", mapId, x, y, fade });
-    const gate = (id: string, x: number, y: number, target: Command): GameEvent => ({
+    const transferTo = (mapId: string, x: number, y: number, direction: Dir): Command => ({ kind: "transfer", mapId, x, y, direction, fade });
+    const gate = (id: string, x: number, y: number, target: Command, bump = false): GameEvent => ({
       id,
       x,
       y,
@@ -2825,8 +2846,9 @@ const createTransferPair: ToolDefinition = {
           conditions: [],
           graphic: { transparent: true },
           trigger: { kind: "playerTouch" },
-          priority: "below",
-          overlapForbidden: false,
+          // 막힌 문 그림 칸은 부딪힘으로 연다(같은 층 접촉 이벤트 — 런타임이 막힌 칸으로 걸어도 발동시킨다).
+          priority: bump ? "same" : "below",
+          overlapForbidden: bump, // 런타임 부딪힘 판정(findBlockingEventOverlappingRect)은 same + overlapForbidden 만 막는 이벤트로 본다.
           movement: PASSIVE,
           commands: [target],
         },
@@ -2837,8 +2859,8 @@ const createTransferPair: ToolDefinition = {
     for (const map of a.mapId === b.mapId ? [mapA] : [mapA, mapB]) {
       for (const entry of transferGatesStayApproachable(draft, map).sealed) sealedBefore.add(`${map.id}:${entry.replace(/\(.*$/u, "")}`);
     }
-    upsertEventIntoMap(mapA, gate(idA, gateA.x, gateA.y, transferTo(b.mapId, landingB.x, landingB.y)));
-    upsertEventIntoMap(mapB, gate(idB, gateB.x, gateB.y, transferTo(a.mapId, landingA.x, landingA.y)));
+    upsertEventIntoMap(mapA, gate(idA, gateA.x, gateA.y, transferTo(b.mapId, landingB.x, landingB.y, awayFrom(gateB, landingB)), bumpA));
+    upsertEventIntoMap(mapB, gate(idB, gateB.x, gateB.y, transferTo(a.mapId, landingA.x, landingA.y, awayFrom(gateA, landingA)), bumpB));
     // 배치가 끝난 뒤 두 맵의 모든 transfer 문이 방 바닥으로 열리는지 최종 점검(같은 맵 쌍·후보가
     // 없어 원자리를 쓴 경우 포함). 실패하면 toolRunner가 초안을 버려 두 맵 모두 보존한다.
     const sealedAfter: string[] = [];
@@ -2860,7 +2882,7 @@ const createTransferPair: ToolDefinition = {
     ];
     return {
       summary: `출입구 쌍 생성: ${mapA.name}(${gateA.x},${gateA.y}) ↔ ${mapB.name}(${gateB.x},${gateB.y})`,
-      data: { eventIdA: idA, eventIdB: idB, gateA, gateB, landingA, landingB, adjustedA, adjustedB },
+      data: { eventIdA: idA, eventIdB: idB, gateA, gateB, landingA, landingB, adjustedA, adjustedB, ...(bumpA || bumpB ? { bumpDoor: { a: bumpA, b: bumpB } } : {}) },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },

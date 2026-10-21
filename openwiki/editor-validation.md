@@ -23,7 +23,7 @@
 
 데모 검증(2026-10-21, `scripts/qa/scene-polish-lint.mts`): Fallen Star polish2 13건(방향 없는 이동 4·착지 2칸 3·문 아닌 칸 5·대사 뒤 사라짐 1), Astra fv 15건(문을 보는 착지 10 — 이후 손으로 고친 7fa8b2f3c2 와 같은 곳·한 칸 어긋난 출입 매트 2·표시 없는 출구 2·제자리 지우는 라이벌 1),
 「첫사랑」 수정 전 4건(움직이는 교통 2·내려가는 계단으로 옥상 1·맨바닥 출구 1) → 수정 뒤 r2 최신 2건(같은 칸으로 걷는 두 인물). 거짓 경고로 고친 것: 키트 문 부품의 풀밭 칸, 필드 길 출구(끝 2칸 안), 쓰러진 필드 적·합류 동료.
-알려진 한계: `create_transfer_pair` 는 doorAt 이 있으면 문 아래 문앞 칸에 트리거를 둔다 — 이 경고는 그 칸을 «문 정면 앞 보도» 로 잡는다. 문 칸으로 옮기는 것(막힌 칸이면 priority same)이 사용자 판정이다. 도구 기본을 바꾸는 것은 별도 작업.
+`create_transfer_pair`(2026-10-21 뒤)는 doorAt·문 그림 칸이 있으면 트리거를 문 칸에 두고(막힌 칸이면 priority same + overlapForbidden true 부딪힘 문), 문앞 칸을 반대쪽 착지로, 모든 transfer 에 문을 등진 direction 을 붙인다 — 도구 출력이 off-door·pair·facing 을 내지 않는다(`test/transferPairDoorCell.test.ts`). 옛 동작은 `trigger:"front"`. `event-unreachable`(eventPlacementRecovery `hasInteractionPosition`)과 출입구 봉쇄 검사(`transferGatesStayApproachable`)는 막힌 칸의 부딪힘 문을 이웃 통행 칸에서 닿는 것으로 본다. 런타임 `tryStartMove` 가 막힌 칸으로 걷는 입력에서 그 문을 발동한다(첫사랑 r2 9cfb889150 을 main 으로).
 
 ## 규칙 감사 배지는 UI 선택만으로 재검사하지 않는다 (2026-09-18)
 
