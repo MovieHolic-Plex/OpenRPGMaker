@@ -16,6 +16,8 @@
 //  - scene-actors-stacked          한 페이지가 두 인물을 같은 칸에 세운다
 //  - scene-hang-on-floor           벽 걸이(액자·별자리표·시계…) 키트가 바닥 칸에 서 있다
 //  - scene-ceiling-tile            천장 구역(방 밖·벽면도 벽 윗면도 아닌 칸)에 천장이 아닌 칸이 있다 — 바닥·소품이 얹혔거나, 방 밖에 고립 통행 바닥이 깔렸다
+//  - scene-arrival-faces-exit      도착 방향이 막 지나온 문·계단(또는 다른 이동 칸)을 본다 — 들어서면 문을 등진다
+//  - scene-speaker-faces-away      대사 줄의 화자가 곁(3칸 안)의 대화 상대 누구도 보지 않는다(걸어 온 쪽·벽·카메라를 본다)
 
 import { nestedCommandLists } from "../authoredCommandIndex";
 import type { Command, Dir, EventPage, GameEvent, GameMap, MoveCommand, Project, TilesetDef } from "../types";
@@ -310,12 +312,13 @@ function checkTransfers(project: Project, issues: LintIssue[], gates: readonly G
 function simulateRoute(start: Cell, moves: readonly MoveCommand[] | undefined, map: GameMap): { end: Cell; fades: boolean } {
   let cur = { ...start };
   let fades = false;
+  let opacity = 0; // 여러 번 나눠 흐려지는 퇴장(−64 ×4)도 끝에는 사라진다.
   for (const m of moves ?? []) {
     if (!m || typeof m !== "object") continue;
     if (m.kind === "move") cur = { x: cur.x + STEP[m.dir].x, y: cur.y + STEP[m.dir].y };
     else if (m.kind === "moveDiagonal") cur = { x: cur.x + (m.horizontal === "left" ? -1 : 1), y: cur.y + (m.vertical === "up" ? -1 : 1) };
     else if (m.kind === "jump") cur = { x: cur.x + (m.dx || 0), y: cur.y + (m.dy || 0) };
-    else if (m.kind === "changeOpacity" && m.delta <= -200) fades = true;
+    else if (m.kind === "changeOpacity") { opacity += m.delta; if (m.delta <= -200 || opacity <= -200) fades = true; }
     else if (m.kind === "npcTransfer") return { end: cur, fades: true };
   }
   cur = { x: Math.max(0, Math.min(map.width - 1, cur.x)), y: Math.max(0, Math.min(map.height - 1, cur.y)) };
@@ -816,6 +819,192 @@ function checkCeilingTiles(project: Project, issues: LintIssue[]): void {
   }
 }
 
+
+// ---------------------------------------------------------------------------- 바라보는 방향
+
+const FACE_RADIUS = 3;
+
+/** from 에서 to 를 «보는» 방향들 — 주축이 하나면 그것, 대각선 같은 거리면 둘 다. */
+function facingToward(from: Cell, to: Cell): Dir[] {
+  const dx = to.x - from.x, dy = to.y - from.y;
+  if (Math.abs(dx) > Math.abs(dy)) return [dx > 0 ? "right" : "left"];
+  if (Math.abs(dy) > Math.abs(dx)) return [dy > 0 ? "down" : "up"];
+  const out: Dir[] = [];
+  if (dx) out.push(dx > 0 ? "right" : "left");
+  if (dy) out.push(dy > 0 ? "down" : "up");
+  return out;
+}
+
+/**
+ * 도착 방향이 막 지나온 문을 본다. 문형 왕복 짝은 scene-transfer-pair 가 따지므로, 여기서는 짝 없는 한쪽 이동
+ * (지하철 입구 → 승강장, 장면 전환)의 착지 앞 1~2칸에 문·계단 그림이나 이동 칸이 있는지만 본다.
+ * 실측(첫사랑 r2): 밤 승강장에 «up» 으로 내려 계단 벽을 보고 선 서하 — 아침 승강장은 «down» 이었다.
+ */
+function checkArrivalFacing(project: Project, issues: LintIssue[], gates: readonly Gate[]): void {
+  const seen = new Set<string>();
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events ?? []) {
+      for (const page of pagesOf(event)) {
+        for (const command of walk(page.commands)) {
+          if (command.kind !== "transfer" || !command.direction) continue;
+          const dest = project.maps[command.mapId];
+          if (!dest) continue;
+          const pairedDoor = gates.some((g) => g.doorLike && g.event === event)
+            && gates.some((g) => g.doorLike && g.map.id === dest.id && g.transfer.mapId === map.id);
+          if (pairedDoor) continue;
+          const step = STEP[command.direction as Dir];
+          if (!step) continue;
+          for (let i = 1; i <= 2; i += 1) {
+            const cx = command.x + step.x * i, cy = command.y + step.y * i;
+            const gate = gates.find((g) => g.map.id === dest.id && g.event.x === cx && g.event.y === cy);
+            const art = cellIs(project, dest, cx, cy, "door") || cellIs(project, dest, cx, cy, "up") || cellIs(project, dest, cx, cy, "down");
+            if (!gate && !art) continue;
+            const key = `${dest.id}|${command.x}|${command.y}|${command.direction}`;
+            if (seen.has(key)) break;
+            seen.add(key);
+            issues.push({
+              severity: "warning", code: "scene-arrival-faces-exit", mapId: map.id, eventId: event.id, x: event.x, y: event.y,
+              message: `이동 ${event.id} 이(가) ${dest.name || dest.id} (${command.x},${command.y}) 에 «${command.direction}» 로 내려 ${gate ? `이동 칸 ${gate.event.id}` : "문·계단 그림"} (${cx},${cy}) 을 보고 선다 — 들어서면 지나온 문을 등진다(문 → 착지 칸 방향).`,
+            });
+            break;
+          }
+        }
+      }
+    }
+  }
+}
+
+type Stage = Map<string, { at: Cell; dir: Dir | null }>;
+
+function pageDirection(event: GameEvent): Dir | null {
+  const page = pagesOf(event).find((p) => visibleGraphic(p));
+  const d = page?.graphic?.direction as Dir | undefined;
+  return d && STEP[d] ? d : null;
+}
+
+/** 이 맵에 내리는 모든 이동이 같은 칸·방향이면 그곳이 자동 장면의 주인공 자리다. 여러 곳이면 모른다. */
+function knownArrivals(project: Project): Map<string, { at: Cell; dir: Dir | null } | null> {
+  const out = new Map<string, { at: Cell; dir: Dir | null } | null>();
+  for (const map of Object.values(project.maps)) for (const event of map.events ?? []) for (const page of pagesOf(event)) {
+    for (const c of walk(page.commands)) {
+      if (c.kind !== "transfer") continue;
+      const here = { at: { x: c.x, y: c.y }, dir: (c.direction as Dir | undefined) ?? null };
+      if (!out.has(c.mapId)) { out.set(c.mapId, here); continue; }
+      const prev = out.get(c.mapId);
+      if (prev && (prev.at.x !== here.at.x || prev.at.y !== here.at.y)) out.set(c.mapId, null);
+    }
+  }
+  if (project.startMapId && project.startPos) {
+    const prev = out.get(project.startMapId);
+    const start = { at: { x: project.startPos.x, y: project.startPos.y }, dir: null };
+    if (!out.has(project.startMapId)) out.set(project.startMapId, start);
+    else if (prev && (prev.at.x !== start.at.x || prev.at.y !== start.at.y)) out.set(project.startMapId, null);
+  }
+  return out;
+}
+
+/**
+ * 대사 줄의 화자가 곁의 대화 상대 누구도 보지 않는다. 장면이 직접 다루는 인물(경로·돌기·화자)과 주인공만 무대에 둔다.
+ * 경로를 걸은 인물은 마지막 걸음 쪽을, 돌기는 그 쪽을 본다고 따라간다. 분기는 첫 갈래를 따라 이어 간다.
+ * 실측(첫사랑 r2): 「나 먼저 가요!」 민호가 옆 책상을, 발표를 넘기는 지후가 본부장 쪽을 본 채 서하에게 말했다.
+ */
+function checkSpeakerFacing(project: Project, issues: LintIssue[]): void {
+  const arrivals = knownArrivals(project);
+  const heroId = project.system?.startActorIds?.[0];
+  const heroName = project.database?.actors?.find((a) => a.id === heroId)?.name?.trim() ?? "";
+  for (const map of Object.values(project.maps)) {
+    const byId = new Map((map.events ?? []).map((e) => [e.id, e] as const));
+    const hiddenBySwitch = switchesThatHide(map, false);
+    const actorEvents = (map.events ?? []).filter((e) => pagesOf(e).some((p) => visibleGraphic(p)));
+    for (const host of map.events ?? []) {
+      for (const page of pagesOf(host)) {
+        const trig = page.trigger?.kind;
+        if (trig !== "auto" && trig !== "parallel") continue;
+        const arrival = arrivals.get(map.id);
+        const stage: Stage = new Map();
+        if (arrival) stage.set("@player", { at: { ...arrival.at }, dir: arrival.dir });
+        const touched = new Set<string>();
+        for (const c of walk(page.commands)) { const id = routeTarget(c, host); if (id && byId.has(id)) touched.add(id); }
+        const join = (id: string, into: Stage = stage): void => {
+          if (into.has(id) || !byId.has(id)) return;
+          const e = byId.get(id)!;
+          if (!actorEvents.includes(e)) return;
+          into.set(id, { at: { x: e.x, y: e.y }, dir: pageDirection(e) });
+        };
+        for (const id of touched) join(id);
+        const speakerActor = (speaker: string, stage: Stage): string | null => {
+          const name = speaker.trim();
+          if (!name) return null;
+          // 이름표 «오 팀장» ↔ 이벤트 «오정민 팀장»: 낱말이 모두 들어 있으면 같은 사람. 정확히 같은 이름이 먼저, 주인공이 그다음.
+          const tokens = name.split(/\s+/u).filter(Boolean);
+          const exact = actorEvents.find((e) => (e.name ?? "").trim() === name);
+          const pick = (e: GameEvent | undefined): string | null => { if (!e) return null; join(e.id, stage); return stage.has(e.id) ? e.id : null; };
+          if (exact) return pick(exact);
+          if (heroName && (heroName === name || heroName.includes(name)) && stage.has("@player")) return "@player";
+          const hits = actorEvents.filter((e) => { const n = (e.name ?? "").trim(); return n.length >= 2 && tokens.every((t) => n.includes(t)); });
+          return pick(hits.find((e) => touched.has(e.id)) ?? (hits.length === 1 ? hits[0] : undefined));
+        };
+        const reported = new Set<string>();
+        const clone = (st: Stage): Stage => new Map([...st].map(([k, v]) => [k, { at: { ...v.at }, dir: v.dir }]));
+        // 분기(선택지·조건)는 갈래마다 갈라 진 무대로 따로 따라간다. 갈래 뒤는 첫 갈래의 무대로 잇는다.
+        const run = (commands: readonly Command[] | undefined, st: Stage): Stage | "transfer" => {
+          for (const command of commands ?? []) {
+            if (!command || typeof command !== "object") continue;
+            if (command.kind === "transfer") return "transfer";
+            const branches = nestedCommandLists(command);
+            if (branches.length) {
+              let next: Stage | null = null;
+              for (const b of branches) { const out = run(b, clone(st)); if (next === null && out !== "transfer") next = out; }
+              if (next) { st.clear(); for (const [k, v] of next) st.set(k, v); }
+              continue;
+            }
+            step(command, st);
+          }
+          return st;
+        };
+        const step = (command: Command, st: Stage): void => {
+          if (command.kind === "setSwitch" && command.value === true) { for (const npc of hiddenBySwitch.get(command.switchId) ?? []) st.delete(npc.id); return; }
+          if (m2Title(command) === "Erase Event") { st.delete(fieldStr(command, "eventId") || host.id); return; }
+          if (command.kind === "moveEvent") {
+            const id = command.eventId?.trim?.() === "@player" ? "@player" : routeTarget(command, host);
+            const cur = id ? st.get(id) : undefined;
+            if (!id || !cur) return;
+            let faded = 0;
+            for (const m of command.route?.moves ?? []) {
+              if (!m || typeof m !== "object") continue;
+              if (m.kind === "move") { cur.at = { x: cur.at.x + STEP[m.dir].x, y: cur.at.y + STEP[m.dir].y }; cur.dir = m.dir; }
+              else if (m.kind === "turn") cur.dir = m.dir;
+              else if (m.kind === "turnTowardPlayer" || m.kind === "turnAwayFromPlayer") {
+                const hero = st.get("@player");
+                const toward = hero && id !== "@player" ? facingToward(cur.at, hero.at)[0] ?? null : null;
+                cur.dir = toward && m.kind === "turnAwayFromPlayer" ? ({ up: "down", down: "up", left: "right", right: "left" } as const)[toward] : toward;
+              } else if (m.kind === "turnRelative" || m.kind === "turnRandom") cur.dir = null;
+              else if (m.kind === "changeOpacity") { faded += m.delta; if (faded <= -200) { st.delete(id); break; } }
+            }
+            return;
+          }
+          if (command.kind !== "text" || !command.speaker) return;
+          const sid = speakerActor(command.speaker, st);
+          const me = sid ? st.get(sid) : undefined;
+          if (!sid || !me || !me.dir) return;
+          const near = [...st.entries()].filter(([id, v]) => id !== sid && chebyshev(v.at, me.at) <= FACE_RADIUS && chebyshev(v.at, me.at) > 0);
+          // 방 건너편 상대를 보고 말해도 된다(팀장에게 보고) — 무대의 누구도 보지 않을 때만 문제.
+          if (!near.length || [...st.entries()].some(([id, v]) => id !== sid && facingToward(me.at, v.at).includes(me.dir!))) return;
+          const key = `${sid}|${me.at.x},${me.at.y}|${me.dir}`;
+          if (reported.has(key)) return;
+          reported.add(key);
+          const [nid, nv] = near.find(([id]) => id === "@player") ?? near.sort((a, b) => chebyshev(a[1].at, me.at) - chebyshev(b[1].at, me.at))[0]!;
+          issues.push({
+            severity: "warning", code: "scene-speaker-faces-away", mapId: map.id, eventId: host.id, x: me.at.x, y: me.at.y,
+            message: `이벤트 ${host.id} 의 대사 «${String(command.body ?? "").slice(0, 24)}» 에서 화자 ${command.speaker}(${sid}) 가 «${me.dir}» 를 보며 말한다 — 곁의 ${nid === "@player" ? "주인공" : nid} (${nv.at.x},${nv.at.y}) 쪽(${facingToward(me.at, nv.at).join("/")})으로 먼저 돌린다(걸어 온 끝 방향이 아니라 상대를 본다).`,
+          });
+        };
+        run(page.commands, stage);
+      }
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------- 진입점
 
 export function lintScenePolish(project: Project): LintIssue[] {
@@ -834,6 +1023,8 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkStacking);
   guard(checkHangOnFloor);
   guard(checkCeilingTiles);
+  guard(checkArrivalFacing);
+  guard(checkSpeakerFacing);
   return issues;
 }
 

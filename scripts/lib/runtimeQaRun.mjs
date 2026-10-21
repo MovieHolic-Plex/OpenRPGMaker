@@ -598,6 +598,80 @@ async function applyOp(page, op, runState) {
       if (!(await ok())) throw new Error(`pressUntilJs: ${max}회 뒤에도 조건이 참이 아니다: ${op.fn}`);
       return;
     }
+    case "recordUntilJs": {
+      // 장면 기록기 — 조건식(fn)이 참이 될 때까지 대사를 넘기며, 대사가 바뀔 때마다 한 장, 인물이 걷는 동안은
+      // frameMs(기본 200ms)마다 한 장을 찍고 그 순간의 배우 배치(칸·바라보는 방향·보임)를 actors.jsonl 에 적는다.
+      // 바라보는 방향 검사(scripts/qa/runtime/facing-audit.mjs)가 이 기록을 읽는다.
+      const dir = join(runState.outDir, op.dir ?? "record");
+      await mkdir(dir, { recursive: true });
+      const frameMs = op.frameMs ?? 200;
+      const max = op.maxPresses ?? 120;
+      const read = () => page.evaluate(() => {
+        const s = window.__oprnHooksScene;
+        if (!s || !s.map) return null;
+        const box = document.querySelector("[data-testid='dialogue-box']");
+        const choices = document.querySelector("[data-testid='runtime-choices']");
+        const DIRS = ["up", "right", "down", "left"];
+        const frameDir = (sp) => { const f = Number(sp?.frame?.name); return Number.isFinite(f) ? DIRS[Math.floor(f / 12) % 4] : undefined; };
+        const events = {};
+        for (const ev of s.map.events ?? []) {
+          const sp = s.eventSprites?.get(ev.id);
+          if (!sp || !sp.visible || sp.alpha < 0.05) continue;
+          const p = s.eventPositions?.[ev.id];
+          events[ev.id] = { name: ev.name, x: p?.x ?? ev.x, y: p?.y ?? ev.y, dir: frameDir(sp) ?? p?.direction, alpha: Math.round(sp.alpha * 100) / 100, px: Math.round(sp.x), py: Math.round(sp.y) };
+        }
+        const speaker = box?.querySelector("[data-testid='dialogue-speaker'], .dialogue-speaker, [data-role='speaker']")?.textContent?.trim() ?? null;
+        return {
+          map: s.map.id,
+          cam: (() => { const c = s.cameras?.main; return c ? { sx: Math.round(c.worldView.x), sy: Math.round(c.worldView.y), zoom: c.zoom, w: c.width, h: c.height } : null; })(),
+          text: (box?.textContent ?? "").replace(/\s+/g, " ").trim(),
+          speaker,
+          choices: choices ? (choices.textContent ?? "").replace(/\s+/g, " ").trim() : null,
+          player: { x: s.tileX, y: s.tileY, dir: s.facing, visible: s.player?.visible !== false && (s.player?.alpha ?? 1) > 0.05, moving: !!s.moving, px: Math.round(s.player?.x ?? 0), py: Math.round(s.player?.y ?? 0) },
+          events,
+        };
+      }).catch(() => null);
+      const sig = (st) => st ? JSON.stringify([st.map, st.player.px, st.player.py, st.player.dir, st.player.visible, Object.entries(st.events).map(([k, v]) => [k, v.px, v.py, v.dir])]) : "";
+      const ok = () => page.evaluate(`(${op.fn})()`).catch(() => false);
+      runState.recordSeq ??= 0;
+      const log = [];
+      let lastText = null, lastSig = null, presses = 0, still = 0;
+      const snap = async (st, why) => {
+        const n = String(runState.recordSeq++).padStart(4, "0");
+        const file = `${n}.png`;
+        await page.screenshot({ path: join(dir, file) }).catch(() => {});
+        log.push(JSON.stringify({ seq: n, file, why, beat: op.dir ?? "record", t: Date.now(), ...st }));
+      };
+      for (let guard = 0; guard < (max + 20) * 30; guard += 1) {
+        let st = await read();
+        // 글자가 흘러나오는 동안은 기다린다 — 다 나온 대사에서 한 장.
+        for (let k = 0; k < 20 && st?.text && st.text !== lastText?.split("|")[0]; k += 1) {
+          await page.waitForTimeout(150);
+          const again = await read();
+          if (again?.text === st.text) break;
+          st = again;
+        }
+        const s = sig(st);
+        const textNow = st ? `${st.text}|${st.choices ?? ""}` : "";
+        if (st && (textNow !== lastText || s !== lastSig)) {
+          await snap(st, textNow !== lastText ? "text" : "move");
+          const moved = s !== lastSig && lastSig !== null;
+          lastText = textNow; lastSig = s;
+          if (moved) { still = 0; await page.waitForTimeout(frameMs); continue; }
+        }
+        if (await ok()) break;
+        if (st?.choices) break; // 선택지는 부른 쪽이 고른다
+        // 대사가 없고 아무도 안 움직이면 잠깐 기다려 본다(걷기 시작·암전) — 그래도 그대로면 누른다.
+        if (!st?.text && still < 4) { still += 1; await page.waitForTimeout(frameMs); continue; }
+        if (presses >= max) { await page.waitForTimeout(frameMs); continue; }
+        still = 0;
+        await page.keyboard.press(op.key ?? "Enter");
+        presses += 1;
+        await page.waitForTimeout(frameMs);
+      }
+      await writeFile(join(dir, "actors.jsonl"), log.join("\n") + "\n", { flag: "a" });
+      return;
+    }
     case "captureCheckpoint": {
       // 지금 이 순간의 실제 저장을 체크포인트로 뜬다(scripts/qa/runtime/checkpoints). 손으로 적은 상태보다 정직하다.
       const snapshot = await page.evaluate(() => window.__oprnDebug?.captureSave?.() ?? null);
@@ -1072,7 +1146,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   let hooksReady = Boolean(checkpoint);
   const beats = [];
   // op 들 사이에 살아 있는 런 상태(그림자 픽셀 측정용 표본 프레임).
-  const runState = {};
+  const runState = { outDir };
   for (const [index, beat] of scenario.beats.entries()) {
     runState.audio = [];
     // op 이 던져도 런을 죽이지 않는다. 던진 사유를 그 비트의 실패로 기록하고

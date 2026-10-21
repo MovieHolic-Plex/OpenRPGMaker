@@ -124,6 +124,11 @@ export function face(eventId: string, dir: Dir): Command {
   return { kind: "moveEvent", eventId, route: { moves: [{ kind: "turn", dir }], repeat: false, wait: true, skippable: true } } as Command;
 }
 
+/** 그 인물이 주인공을 보게 돌린다(주인공이 어느 칸에서 말을 걸었든). */
+export function faceHero(eventId: string): Command {
+  return { kind: "moveEvent", eventId, route: { moves: [{ kind: "turnTowardPlayer" }], repeat: false, wait: true, skippable: true } } as Command;
+}
+
 export function playSe(resourceId: string): Command {
   return { kind: "playAudio", resourceId, loop: false, channel: "se" } as Command;
 }
