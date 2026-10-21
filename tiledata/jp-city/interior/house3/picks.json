@@ -94,7 +94,7 @@
    "reason": "A's even row of framed, bevelled panels, lit chair rail and dark baseboard read right away as a wainscot and match the clean framed-panel style of the getabako exemplar, while B's boards vary in width, carry sticker-like highlights and sit under noisier, brick-like wallpaper.",
    "pickedAt": "2026-10-20T18:07:35Z",
    "pixelSha256": "bfe9a1add79d1cd697950f048874ca26fe4a92bc79e6eb94eba90f576eb78f3c",
-   "gateSha256": "bfe9a1add79d1cd697950f048874ca26fe4a92bc79e6eb94eba90f576eb78f3c",
+   "gateSha256": "713275dffe0fe8a7fb06736aa39d227912e0a18bcbe17421af69d1a6c81b4f1e",
    "review": {
     "judge": "claude:opus",
     "verdict": "PASS",
@@ -102,7 +102,13 @@
     "view34": "3/3",
     "quality": "3/3"
    },
-   "file": "wainscot.png"
+   "file": "wainscot.png",
+   "redrawn": {
+    "at": "2026-10-21",
+    "by": "supervisor-delegated worker (Claude Opus 5.5)",
+    "why": "independent Opus 5.5 adversarial VQA r1 (~/.cache/jpf/h3vqa/r1/verdict-house3.json): cloth area read as brick/tile (staggered white dashes); upper cloth redrawn as irregular speckle like the shipped wall:cloth originals, wainscot panel unchanged",
+    "previousSha256": "bfe9a1add79d1cd697950f048874ca26fe4a92bc79e6eb94eba90f576eb78f3c"
+   }
   },
   "wood-post": {
    "job": "wood-post",

@@ -1,0 +1,59 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "jp-house3-8",
+ "title": "jp 집 실내 보강 8 (house3) — 사용자 위임·Opus 적대 VQA 통과 2026-10-21",
+ "note": "PR #3146. 독립 Opus 5.5 medium 적대 VQA r1 불합격(허리벽 벽지가 벽돌처럼 읽힘) → 다시 그림 → r2 8/8 통과. 영수증 harness-data/object-gate/vqa/jp-house3-8.opus-vqa-r2.json",
+ "explainImage": "jp-house3-8.explain.png",
+ "explainText": "일본 2층 집 실내에 넣을 조각 8개(유리 식기장·세면화장대·유닛 배스·배식 창·나무 기둥·화장실 선반·허리벽 벽지·현관 꽃병). 허용하면 jp_city 칩셋에 구워지고 집 청사진이 옛 대역 대신 쓴다. 거절하면 굽지 않고 옛 대역을 그대로 쓴다.",
+ "createdAt": "2026-10-21T03:36:58.419Z",
+ "items": [
+  {
+   "sha": "8c242a07b25253ff75c89c389095e5029e7a2f14a33601f0cf0c5541d4e6f77b",
+   "kind": "tall_furniture",
+   "label": "jp_city/interior_house3/glass-cupboard",
+   "source": "/home/main/z-project/rpg-zzu-jp-house-furniture/tiledata/jp-city/interior/house3/glass-cupboard.png"
+  },
+  {
+   "sha": "1ccccc88ae10a83b4aaa2f92f6656fb50c666caec0f1dddde67e821c6915a65a",
+   "kind": "tall_furniture",
+   "label": "jp_city/interior_house3/vanity-mirror",
+   "source": "/home/main/z-project/rpg-zzu-jp-house-furniture/tiledata/jp-city/interior/house3/vanity-mirror.png"
+  },
+  {
+   "sha": "7253b3ee11234dd5d6cb5b0058385540f5652f98344d98e9dface84da98c8a18",
+   "kind": "container",
+   "label": "jp_city/interior_house3/unit-bath",
+   "source": "/home/main/z-project/rpg-zzu-jp-house-furniture/tiledata/jp-city/interior/house3/unit-bath.png"
+  },
+  {
+   "sha": "099079e54e7f045d29492c810d7974068564350f0066af130a449c32ae8a71f1",
+   "kind": "container",
+   "label": "jp_city/interior_house3/genkan-vase",
+   "source": "/home/main/z-project/rpg-zzu-jp-house-furniture/tiledata/jp-city/interior/house3/genkan-vase.png"
+  },
+  {
+   "sha": "713275dffe0fe8a7fb06736aa39d227912e0a18bcbe17421af69d1a6c81b4f1e",
+   "kind": "terrain",
+   "label": "jp_city/interior_house3/cloth-wainscot",
+   "source": "/home/main/z-project/rpg-zzu-jp-house-furniture/tiledata/jp-city/interior/house3/wainscot.png"
+  },
+  {
+   "sha": "daa2698c14d62ca978f3e881f89f0935a00172cf198d07c9cd13760a2d98f0ac",
+   "kind": "wall_mounted",
+   "label": "jp_city/interior_house3/wood-post",
+   "source": "/home/main/z-project/rpg-zzu-jp-house-furniture/tiledata/jp-city/interior/house3/wood-post.png"
+  },
+  {
+   "sha": "c71f433806aefd47b508dd550a798b22a46e6f1d065a8d25d4d53d6c400ab303",
+   "kind": "other",
+   "label": "jp_city/interior_house3/toilet-shelf",
+   "source": "/home/main/z-project/rpg-zzu-jp-house-furniture/tiledata/jp-city/interior/house3/toilet-shelf.png"
+  },
+  {
+   "sha": "8e4a83950ea1e81f1f867f6dd8b3d4082224766af25e950c13a35a174c25b91a",
+   "kind": "terrain",
+   "label": "jp_city/interior_house3/serving-hatch",
+   "source": "/home/main/z-project/rpg-zzu-jp-house-furniture/tiledata/jp-city/interior/house3/serving-hatch.png"
+  }
+ ]
+}
