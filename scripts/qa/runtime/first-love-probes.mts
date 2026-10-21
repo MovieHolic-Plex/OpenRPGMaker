@@ -98,7 +98,9 @@ for (const [mapId, map] of Object.entries(project.maps)) {
   }
   for (const ev of map.events) {
     const touches = (ev.pages ?? []).some((p) => (p.trigger as { kind?: string })?.kind === "playerTouch");
-    if (touches && !seen.has(key(ev)) && ev.x > 1) fail("transfer", `${mapId}/${ev.id} 문 칸 ${key(ev)} 에 걸어서 닿지 못한다(벽·허공 문)`);
+    // 막힌 문 그림 칸은 부딪혀 들어간다 — 걸어서 닿는 칸이 그 문 칸에 바로 붙어 있으면 된다(대각선 아님).
+    const bump = !isPassable(project, map, ev.x, ev.y) && Object.values(DELTA).some((d) => seen.has(key({ x: ev.x + d.x, y: ev.y + d.y })));
+    if (touches && !seen.has(key(ev)) && !bump && ev.x > 1) fail("transfer", `${mapId}/${ev.id} 문 칸 ${key(ev)} 에 걸어서 닿지 못한다(벽·허공 문)`);
   }
 }
 
@@ -219,6 +221,23 @@ for (const [mapId, map] of Object.entries(project.maps)) {
   for (const ev of map.events) for (const p of ev.pages ?? []) {
     const mv = (p.movement as { type?: string } | undefined)?.type;
     if (mv && mv !== "fixed" && /veh|car|bike|scooter|bus|truck|택시|오토바이|차/.test(ev.name + JSON.stringify(p.graphic))) fail("vehicle", `${mapId}/${ev.id}: 스스로 움직이는 탈것 이벤트`);
+  }
+}
+
+// ── 5. 문 그림 칸 = 옮기기 칸 ──
+// 건물 출입은 실제 문 그림 칸을 밟거나(부딪혀) 들어갈 때만 — 옆 칸·넓은 발판 금지. 문 그림 타일 번호(시각 담당 표, 2026-10-21):
+const DOOR_ART: Record<string, Record<number, string>> = {
+  jp_city: { 11630: "of-elevator", 11037: "sc-stairs-up", 9380: "stairs-up-wood-wide", 9792: "cv-autodoor 왼쪽", 9793: "cv-autodoor 오른쪽", 11055: "sc-roof-door 왼쪽", 11056: "sc-roof-door" },
+  modern_city: { 1332: "사무실 유리문", 970: "편의점 문", 7620: "지하철 입구 계단" },
+};
+for (const [mapId, map] of Object.entries(project.maps)) {
+  const art = DOOR_ART[(map as { tilesetId?: string }).tilesetId ?? ""] ?? {};
+  const W = map.width;
+  for (const ev of map.events) {
+    if (!(ev.pages ?? []).some((p) => (p.trigger as { kind?: string })?.kind === "playerTouch")) continue;
+    const i = ev.y * W + ev.x;
+    const tiles = (["lowerTiles", "lowerOverlayTiles", "upperTiles"] as const).map((k) => ((map as unknown as Record<string, number[] | undefined>)[k] ?? [])[i]);
+    if (!tiles.some((t) => t !== undefined && art[t])) fail("door", `${mapId}/${ev.id}: 밟는 칸 ${ev.x},${ev.y} 에 문 그림이 없다(타일 ${tiles.join("/")}) — 옮기기는 문 그림 칸 위에`);
   }
 }
 
