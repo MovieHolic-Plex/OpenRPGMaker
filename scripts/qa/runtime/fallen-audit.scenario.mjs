@@ -123,9 +123,9 @@ export default {
     { id: "scope", note: "큰 망원경", ops: [{ kind: "teleport", mapId: "fs_observatory", x: 12, y: 10 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "scope-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "out-to-hub", note: "천문대 문 → 광장", ops: [...stepInto("fs_observatory", 11, 20, "down")], shot: true },
-    { id: "gate-guard", note: "동문 문지기", ops: [{ kind: "teleport", mapId: "fs_hub", x: 50, y: 21 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
+    { id: "gate-guard", note: "동문 문지기", ops: [{ kind: "teleport", mapId: "fs_hub", x: 50, y: 17 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "gate-guard-close", note: "", ops: [...closeDialogue()], shot: false },
-    { id: "to-forest", note: "동문(성문 통로) → 숲", ops: [...stepInto("fs_hub", 48, 20, "up")], shot: true },
+    { id: "to-forest", note: "동문(성문 통로) → 숲", ops: [...stepInto("fs_hub", 48, 16, "up")], shot: true },
     { id: "forest-walk", note: "숲길을 걷는다(풀숲 조우)", ops: [
       ...walkFighting("up", 2200), ...walkFighting("up", 2200), ...walkFighting("up", 2200),
       dumpState("forest-walk"),

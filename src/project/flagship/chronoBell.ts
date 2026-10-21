@@ -707,6 +707,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   polishLines(M(ids.observatory), M(ids.forest), M(ids.vault));
   // 왕도를 오프닝 그림과 같은 곳으로 — 운하·아치 돌다리·둥근 돌 천문대 탑·성벽 동문·성문 광장(fallenTown.ts).
   // 문지기는 성문 곁에 세운다. 문·출구 좌표는 여기서 정해지고, 뒤 단계(도착 칸·포고 행진)가 이 자리를 쓴다.
+  // 성벽 고리의 남 성벽(위 통로 + 앞면 두 줄)이 들어갈 자리 — 마을 남쪽 거리 밑으로 세 줄 늘린다.
+  execTool(project, "resize_map", { mapId: ids.hub, width: M(ids.hub).width, height: M(ids.hub).height + 3 });
   reworkFallenTown(project, ids.hub, { observatory: ids.observatory, forest: ids.forest });
   // 장 구성기의 「기억의 세이브 결정」은 시스템 말투다 — 세계 안의 이름과 문장으로(감사 3차).
   for (const event of M(ids.vault).events) if (event.name === "기억의 세이브 결정") {

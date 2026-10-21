@@ -6,10 +6,10 @@ export default {
   projectFixture: process.env.RES_FIXTURE ?? ".omo/fs/v9.json",
   viewport: { width: vw, height: vh },
   beats: [
-    { id: "title", note: "타이틀", ops: [{ kind: "waitFor", testid: "title-screen", state: "present", timeoutMs: 60000 }], expect: { testidPresent: ["title-screen"] }, shot: true },
+    { id: "title", note: "타이틀", ops: [{ kind: "waitFor", testid: "title-screen", state: "present", timeoutMs: 60000 }, { kind: "waitForAttr", testid: "title-screen", attr: "data-seq-state", value: "done", timeoutMs: 30000 }], expect: { testidPresent: ["title-screen"] }, shot: true },
     { id: "op1a", note: "새 게임 → 컷 1", ops: [
-      { kind: "key", key: "Enter" },
-      { kind: "waitFor", testid: "cinematic-sequence", state: "present", timeoutMs: 30000 },
+      // 타이틀 입장 연출 중의 첫 Enter 는 연출만 건너뛴다 — 오프닝이 뜰 때까지 누른다(fallen-audit 과 같다).
+      { kind: "pressUntil", key: "Enter", testid: "cinematic-sequence", state: "present", maxPresses: 4, timeoutMs: 12000 },
       { kind: "hold", dir: null, ms: 2600 },
     ], shot: true },
     ...[1, 2, 3, 4, 5].flatMap((n) => [

@@ -164,33 +164,64 @@ export function reworkFallenTown(project: Project, hubId: string, ids: { observa
   // 탑 곁(운하 쪽 둑) 삼각대 놋쇠 망원경.
   stamp("bd-pick-headland-lighthouse-telescope", riverX + 4, doorY - 4);
 
-  // ── 4. 동문: 왕성 앞 성벽 줄(원탑 11~13 · 성문루 14~18 · 원탑 19~21 · 성벽 22~)을 동쪽 끝에 세운다 ──
+  // ── 4. 성벽 고리 — 마을 전체를 성벽이 두른다(오프닝: 성문루가 광장 북쪽을 막고 성벽이 마을을 감싼다).
+  //    성벽 조각은 버들항 도시 성벽(pn.townwall 을 자른 칸 — tiledata/beodeul-city/map.json)을 그대로 쓴다:
+  //    동서 성벽 = 위 통로 1줄(2) + 앞면 2줄(219.. / 377..), 남북 성벽 = 통로 띠(78), 꼭대기 모서리 1·77, 띠 머리 5565,
+  //    운하가 지나는 수문 = 도시 북벽 수문 6×3. 성벽 꺾이는 곳·남쪽 모서리는 왕성 키트 원탑(11~13열)이 덮는다.
+  //    성문루 = 왕성 키트 앞 성벽 줄(원탑·창살 성문·원탑) — 광장 북쪽, 성문 밖은 동쪽 숲.
   const castle = kit("bd-castle");
-  const gateX0 = W - 13;          // 키트 11열이 놓이는 맵 x
-  const wallBase = BRIDGE_ROW;    // 성벽 밑 줄 = 키트 22줄
-  const top = wallBase - 7;       // 키트 15줄(원탑 지붕 끝)
-  // 성문 둘레의 집 두 채(큰 반목조 집·좁은 집)·언덕길·집 밑줄을 걷는다. 높은 단(언덕) 칸은 그대로.
-  clearRect(36, 9, W - 1, wallBase + 1, (x, y) => level(x, y) > 0);
+  const G = 15;               // 성문 통로 줄(왕성 키트 22줄)
+  const ringNE = G - 2;       // 동북 성벽 위 통로 줄(성문루 성벽보다 한 줄 낮다 — 원탑이 이음매를 덮는다)
+  const WX = 30;              // 서북 성벽(맵 위 끝) ↔ 동북 성벽을 잇는 남북 성벽 열
+  const SWALL = H - 3;        // 남 성벽 위 통로 줄(앞면 = 맵 아래 두 줄)
+  const STREET = SWALL - 1;   // 남 성벽 안쪽 거리
+  // 동북 언덕 단은 성벽 밖 숲이 된다 — 단·경사로를 없앤다(성벽이 단을 가로지르지 않게).
+  const relief = map.relief as { levels?: number[]; ramps?: number[] } | undefined;
+  relief?.levels?.fill(0); relief?.ramps?.fill(0);
+  clearRect(WX - 1, 0, 35, G);
+  clearRect(36, 0, W - 1, 20);
+  clearRect(0, SWALL, W - 1, H - 1);
+  const setLo = (x: number, y: number, t: number): void => { if (inside(x, y)) { const i = at(x, y); lo[i] = t; up[i] = -1; lo2[i] = -1; up2[i] = -1; } };
+  const ewWall = (x0: number, x1: number, y: number): void => {
+    for (let x = x0; x <= x1; x += 1) { setLo(x, y, 2); setLo(x, y + 1, 219 + (x % 31)); setLo(x, y + 2, 377 + (x % 31)); }
+  };
+  const nsWall = (x: number, y0: number, y1: number): void => { for (let y = y0; y <= y1; y += 1) setLo(x, y, 78); };
+  ewWall(1, WX - 1, 0); setLo(0, 0, 1); setLo(WX, 0, 77);   // 서북 성벽 — 맵 위 끝
+  nsWall(0, 1, SWALL);                                       // 서쪽 성벽
+  nsWall(WX, 1, ringNE);                                     // 꺾이는 남북 성벽
+  ewWall(WX, W - 14, ringNE);                                // 동북 성벽 → 성문루 왼쪽 원탑까지
+  ewWall(0, W - 1, SWALL);                                   // 남 성벽
+  setLo(W - 1, G + 1, 5565); nsWall(W - 1, G + 2, SWALL);    // 동쪽 성벽 — 성문루 끝 밑에서 남쪽 끝까지
+  // 운하 수문(도시 북벽 수문 6×3 — 둑 1 + 물 4 + 둑 1): 북 성벽·남 성벽.
+  const WATER_GATE = [[7, 8, 16, 24, 32, 40], [116, 117, 128, 136, 144, 152], [289, 290, 298, 306, 314, 322]];
+  for (const [gx, gy] of [[canalX(0) - 1, 0], [canalX(SWALL) - 1, SWALL]] as const) {
+    WATER_GATE.forEach((row, j) => row.forEach((t, i) => setLo(gx + i, gy + j, t)));
+  }
+  for (const t of [8, 16, 24, 32, 117, 128, 136, 144, 290, 298, 306, 314]) waterLink.add(t);
+  retile(waterSet, waterLink, WATER_BY_MASK);
+  // 성문루: 왕성 키트 앞 성벽 줄을 동쪽 끝에(키트 15~18줄은 성 안마당 — 원탑 지붕(윗층)만 옮긴다).
+  const gateX0 = W - 13;
   const towerCol = (kx: number): boolean => (kx >= 11 && kx <= 13) || (kx >= 19 && kx <= 21) || (kx >= 29 && kx <= 31);
-  copyKit(castle, gateX0, top, {
+  copyKit(castle, gateX0, G - 7, {
     cols: [11, 11 + (W - 1 - gateX0)], rows: [15, 22],
-    // 키트 15~18줄은 성 안마당이다 — 원탑 지붕(윗층)만 옮기고 바닥·가로등·석상은 두지 않는다.
     lower: (_kx, ky) => ky >= 19,
     upper: (kx, ky) => ky >= 19 || towerCol(kx),
   });
-  const gate = { x: gateX0 + 5, y: wallBase };
+  const gate = { x: gateX0 + 5, y: G };
+  // 원탑: 성벽이 꺾이는 곳·남쪽 두 모서리(밑동 = 그 자리 성벽 앞면 밑 줄).
+  const towerAt = (xc: number, base: number): void => copyKit(castle, xc - 1, base - 7, { cols: [11, 13], rows: [15, 22], lower: (_kx, ky) => ky >= 19 });
+  towerAt(WX, ringNE + 2);
 
-  // ── 5. 성문 앞 포석 광장 — 옛 광장(우물·노점)과 이어 붙인다. 성문 통로 밑 줄부터 큰길까지. ──
-  for (let y = wallBase + 1; y <= wallBase + 2; y += 1) for (let x = riverX + 4; x < 42; x += 1) {
-    if (up[at(x, y)]! < 0 && !isWater(lo[at(x, y)]!)) clear(x, y, 3221); // 다리 → 성문 광장 큰길
+  // ── 5. 성문 앞 포석 광장 — 성문 통로 밑 줄부터 옛 광장(우물·노점)까지. 다리에서 오는 큰길(20·21줄)이 광장에 닿는다. ──
+  const ROAD_Y = BRIDGE_ROW + 1;
+  for (let y = ROAD_Y; y <= ROAD_Y + 1; y += 1) for (let x = riverX + 4; x < 42; x += 1) {
+    if (up[at(x, y)]! < 0 && !isWater(lo[at(x, y)]!)) clear(x, y, 3221);
   }
-  for (let y = wallBase + 1; y <= wallBase + 4; y += 1) for (let x = 42; x < W; x += 1) {
+  for (let y = G + 1; y <= ROAD_Y + 3; y += 1) for (let x = 42; x < W - 1; x += 1) {
     const i = at(x, y);
-    if (up[i]! >= 0 && y > wallBase + 2) continue; // 아래쪽 집·소품은 그대로
+    if (up[i]! >= 0 && y > ROAD_Y + 1) continue; // 아래쪽 집·소품은 그대로
     clear(x, y, PLAZA);
   }
-  // 성문 서쪽 원탑 곁 빈 자리(옛 집터)에 반목조 집 한 채 — 문은 광장(밑 줄 아래)으로.
-  stamp("bd-house-h131_0", 36, wallBase - 5);
 
   // ── 6. 숲으로 나가는 출구를 성문 통로로 옮긴다(통로 세 칸 모두 밟으면 나간다). 가운데 칸이 첫 출구다. ──
   const exit = transferTo(ids.forest);
@@ -205,14 +236,7 @@ export function reworkFallenTown(project: Project, hubId: string, ids: { observa
     events.splice(exitIdx + 1, 0, side);
   }
 
-  // ── 7. 성벽 밖·언덕은 숲(동쪽 숲이 성문 바로 밖이다). 언덕 위 집·길도 걷어 숲으로. ──
-  clearRect(28, 0, W - 1, 8, (x, y) => level(x, y) === 0);
-  // 언덕으로 오르던 길 끝·경사로 표시도 걷는다(오를 길이 없어졌다).
-  const ramps = (map.relief as { ramps?: number[] } | undefined)?.ramps;
-  for (let y = 0; y <= wallBase; y += 1) for (let x = 28; x < W; x += 1) {
-    if (ramps) ramps[at(x, y)] = 0;
-    if (level(x, y) > 0 && !grassSet.has(lo[at(x, y)]!)) clear(x, y);
-  }
+  // ── 7. 성벽 밖(동북)은 숲. ──
   const TREES = ["bd-tree-d43edd", "bd-tree-1a786c", "bd-tree-03a8f7", "bd-tree-5844f6", "bd-tree-d61d7e", "bd-tree-3e8732", "bd-tree-b1d104", "bd-tree-1e09f0", "bd-tree-a80c85", "bd-tree-bdd36e", "bd-tree-7ecdb8"];
   const SMALL = ["bd-tree-f4f319", "bd-tree-e9d9b3", "bd-tree-37f48b", "bd-tree-47e17a", "bd-tree-d105b2", "bd-tree-0f7ed1", "bd-tree-cc0fcb", "bd-tree-132848"];
   const hash = (x: number, y: number, salt: number): number => (((x * 73856093) ^ (y * 19349663) ^ (salt * 83492791)) >>> 0);
@@ -249,33 +273,40 @@ export function reworkFallenTown(project: Project, hubId: string, ids: { observa
     return count;
   };
   const outside = (x: number, y: number): boolean => !nearEvent(x, y, 2);
-  plant(36, 0, W - 1, wallBase - 4, TREES, 3, outside);
-  plant(28, 0, W - 1, wallBase - 4, SMALL, 5, outside);
+  plant(WX + 1, 0, W - 1, ringNE - 1, TREES, 3, outside);
+  plant(WX + 1, 0, W - 1, ringNE - 1, SMALL, 5, outside);
 
-  // 성문 광장 마감 — 성문 통로(가운데 세 줄)는 비우고 양옆에 깃발 기둥·통행세 초소·말 물통·가로등.
-  stamp("bd-pick-walled-market-banner-red", gate.x - 3, wallBase + 1);
-  stamp("bd-pick-walled-market-banner-red", gate.x + 3, wallBase + 1);
-  stamp("bd-pick-walled-market-toll-booth", gate.x + 5, wallBase + 1);
-  stamp("bd-pick-walled-market-trough", gate.x - 6, wallBase + 3);
-  stamp("bd-pick-walled-market-hitching-rail", gate.x - 6, wallBase + 1);
+  // 성문 광장 마감 — 성문 통로(가운데 세 줄)는 비우고 양옆에 깃발 기둥·통행세 초소·말 물통·말 매는 가로대.
+  stamp("bd-pick-walled-market-banner-red", gate.x - 3, G + 1);
+  stamp("bd-pick-walled-market-banner-red", gate.x + 3, G + 1);
+  stamp("bd-pick-walled-market-toll-booth", gate.x + 5, G + 1);
+  stamp("bd-pick-walled-market-trough", gate.x - 6, G + 3);
+  stamp("bd-pick-walled-market-hitching-rail", gate.x - 6, G + 1);
+  stamp("bd-prop-stall_cheese_meat", gate.x + 4, ROAD_Y);
   const guardSpot = { x: gate.x + 2, y: gate.y + 1 };
 
-  // ── 8. 서쪽 주택가 — 흩어진 집 두 채 자리를 반목조 집 블록으로(문은 아래 거리로). ──
-  clearRect(0, 23, 12, 31);
-  for (let x = 0; x <= 13; x += 1) clear(x, 32, 3221);
+  // ── 8. 서북 밭 → 반목조 집 블록(문 앞 골목 12줄이 방앗간 옆 남북 골목에 닿는다). 서쪽 주택가도 블록으로. ──
+  clearRect(1, 3, 10, 14); clearRect(11, 3, 12, 5);
+  stamp("bd-block-res-10x8", 1, 4);
+  for (let x = 1; x <= 13; x += 1) if (up[at(x, 12)]! < 0) clear(x, 12, 3221);
+  clearRect(1, 23, 12, 31);
+  for (let x = 1; x <= 13; x += 1) clear(x, 32, 3221);
   stamp("bd-block-res-10x8-b", 2, 24);
 
-  // ── 9. 남쪽 밭 셋 → 주택 블록 둘 + 과수원. 블록 문 앞은 맵 남쪽 끝 거리, 블록 사이·양 끝 골목이 북쪽 큰길(34줄)에 닿는다. ──
-  clearRect(riverX + 7, 35, W - 1, H - 1);
+  // ── 9. 남쪽 밭 셋 → 주택 블록 둘 + 과수원. 블록 문 앞은 남 성벽 안쪽 거리, 블록 사이·양 끝 골목이 북쪽 큰길(34줄)에 닿는다. ──
+  clearRect(riverX + 7, 35, W - 2, STREET);
   const south = riverX + 8; // 운하(남쪽 들판 x+3..+6) 동쪽 둑 다음 칸
   stamp("bd-block-res-14x8-c", south + 2, 35);
-  stamp("bd-block-res-14x8-b", south + 19, 35);
-  for (let x = south; x < W; x += 1) clear(x, H - 1, 3221);
-  for (const lane of [south, south + 1, south + 16, south + 17]) for (let y = 34; y < H; y += 1) clear(lane, y, 3221);
+  stamp("bd-block-res-10x8", south + 18, 35);
+  for (let x = south; x <= W - 4; x += 1) clear(x, STREET, 3221);
+  for (const lane of [south, south + 1, south + 16, south + 17]) for (let y = 34; y <= STREET; y += 1) clear(lane, y, 3221);
   for (let x = south; x <= south + 17; x += 1) if (lo[at(x, 34)] === GRASS && up[at(x, 34)]! < 0) clear(x, 34, 3221);
-  clearRect(10, 35, riverX + 2, H - 1);
-  plant(10, 35, riverX + 2, H - 1, TREES, 11);
-  plant(10, 35, riverX + 2, H - 1, SMALL, 13);
+  clearRect(4, 35, riverX + 2, STREET);
+  plant(4, 35, riverX + 2, STREET, TREES, 11);
+  plant(4, 35, riverX + 2, STREET, SMALL, 13);
+  // 남쪽 두 모서리 원탑(남 성벽 앞면 밑 줄이 밑동).
+  clearRect(1, SWALL - 7, 3, STREET); clearRect(W - 3, SWALL - 7, W - 2, STREET);
+  towerAt(1, H - 1); towerAt(W - 2, H - 1);
 
   // 운하 산책길 — 다리 남쪽 양 둑에 한 칸 포석 길(큰길 ↔ 남쪽 거리), 둑길 가로등.
   for (let y = BRIDGE_ROW + 3; y <= 33; y += 1) for (const x of [riverX - 1, riverX + 4]) {
@@ -309,8 +340,8 @@ export function reworkFallenTown(project: Project, hubId: string, ids: { observa
 
   // 광장 가장자리 소품 — 판석이 한 면으로 비지 않게. 성문 통로 앞 다섯 줄(행진 길)과 사람·출입구 둘레는 비운다.
   plazaMode = true;
-  plant(0, wallBase + 1, W - 1, H - 1, ["bd-prop-planter_round", "bd-prop-bench_wood", "bd-prop-crate_apple", "bd-prop-flower_cart", "bd-pick-walled-market-sack-pile", "bd-prop-goods_pile"], 41,
-    (x, y) => !nearEvent(x, y, 2) && Math.abs(x - gate.x) > 2, 1, 55);
+  plant(0, G + 1, W - 1, H - 1, ["bd-prop-planter_round", "bd-prop-bench_wood", "bd-prop-crate_apple", "bd-prop-flower_cart", "bd-pick-walled-market-sack-pile", "bd-prop-goods_pile", "bd-prop-veg_cart", "bd-prop-tree_planter", "bd-prop-stall_herb_flower"], 41,
+    (x, y) => !nearEvent(x, y, 2) && Math.abs(x - gate.x) > 1 && !(y >= ROAD_Y && y <= ROAD_Y + 1 && x < gate.x), 1, 15);
   plazaMode = false;
 
   // ── 11. 사람 자리 — 새 담·나무·소품에 갇히거나 올라선 사람은 천문대 문 앞에서 걸어 닿는 가장 가까운 빈 칸으로. ──
