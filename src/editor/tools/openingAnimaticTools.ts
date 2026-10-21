@@ -359,7 +359,8 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     return commit(p, s, '동작 키를 저장했습니다. 실제 시간 표본을 검토하세요.');
   }),
   definition('animate_opening_camera', '카메라 위치·줌·회전·키·흔들기 변경. 기존 속성 유지.', 'write', schema({ shotId: str, camera: obj }), (p, args) => {
-    const s = shot(p, args.shotId), camera = args.camera as OpeningAnimatic['camera'];
+    const s = shot(p, args.shotId);
+    const camera = cameraFromTo(args.camera, s.durationMs) as OpeningAnimatic['camera'];
     s.composition.camera = { ...s.composition.camera, ...structuredClone(camera), keys: { ...s.composition.camera?.keys, ...camera?.keys } };
     return commit(p, s, '카메라 타임라인을 저장했습니다.');
   }),
@@ -544,3 +545,23 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     return commit(p, s, `픽셀 스프라이트 상태 ${entries.map(([name]) => name).join('/') }를 연결했습니다. 실제 frame strip으로 전환됩니다.`);
   }),
 ];
+
+/**
+ * camera:{from:{x,y,zoom},to:{x,y,zoom}} 를 정본 모양(시작 값 + 샷 길이에 걸친 keys)으로 옮긴다.
+ * 실측(2026-10-22 조용한 현대 거리, Sonnet 5.5): from/to 로 보내 「camera.from: unsupported field」로 거부됐다 — 뜻이 하나뿐인 모양이다.
+ */
+function cameraFromTo(raw: unknown, durationMs: number): unknown {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return raw;
+  const { from, to, ...rest } = raw as Record<string, unknown>;
+  if (!from || typeof from !== 'object' || !to || typeof to !== 'object') return raw;
+  const a = from as Record<string, unknown>, b = to as Record<string, unknown>;
+  const camera: Record<string, unknown> = { ...rest };
+  const keys: Record<string, { atMs: number; value: number; ease?: 'ease-in-out' }[]> = { ...((rest.keys as Record<string, never>) ?? {}) };
+  for (const k of ['x', 'y', 'zoom', 'rotation']) {
+    const start = typeof a[k] === 'number' ? a[k] as number : undefined, end = typeof b[k] === 'number' ? b[k] as number : undefined;
+    if (start !== undefined) camera[k] = start;
+    if (start !== undefined && end !== undefined && start !== end) keys[k] = [{ atMs: 0, value: start }, { atMs: Math.max(1, durationMs), value: end, ease: 'ease-in-out' }];
+  }
+  if (Object.keys(keys).length) camera.keys = keys;
+  return camera;
+}
