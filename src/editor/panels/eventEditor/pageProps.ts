@@ -4,6 +4,8 @@ import { difficultyDisplayName } from "@/project/difficulty";
 import { renderObjectInteraction } from "./pageHorror";
 import { hasRecursivePageCondition, type EventDraftValidation } from "@/editor/eventDraftValidator";
 import { el } from "@/util/dom";
+import { t } from "@/i18n";
+import { isAutoPageName } from "@/project/eventDisplayName";
 import { renderEditorIcon } from "./editorIcons";
 import {
   addEventPage,
@@ -83,9 +85,12 @@ export function renderPageNameControl(
   page: EventPage,
   pageIndex: number,
 ): HTMLElement {
+  const autoName = autoPageNameOf(page);
   const name = el("input", {
-    attrs: { type: "text", placeholder: `페이지 ${pageIndex + 1}`, "aria-label": `페이지 ${pageIndex + 1} 이름` },
-    value: page.name,
+    attrs: { type: "text", placeholder: autoName || `페이지 ${pageIndex + 1}`, "aria-label": `페이지 ${pageIndex + 1} 이름` },
+    // 자동 이름(`페이지 N`)은 값이 아니라 placeholder 로 보인다. 입력칸 값은 번역되지 않아 영어 UI 에서
+    // 탭은 「Page 2」, 이 칸은 「페이지 2」로 갈렸다(UI 감사 06-eventwin-02). 저장된 이름은 그대로 둔다.
+    value: autoName ? "" : page.name,
     dataset: { testid: "event-page-name-input" },
   }) as HTMLInputElement;
   name.addEventListener("change", () => {
@@ -113,15 +118,15 @@ export function beginPageTabRename(tab: HTMLElement, mapId: MapId, eventId: stri
   if (!title || tab.querySelector(".evt-page-segment-rename")) return;
   const input = el("input", {
     class: "evt-page-segment-rename",
-    value: (page.name ?? "").trim(),
-    attrs: { type: "text", "aria-label": `페이지 ${index + 1} 이름`, placeholder: `페이지 ${index + 1}` },
+    value: autoPageNameOf(page) ? "" : (page.name ?? "").trim(),
+    attrs: { type: "text", "aria-label": `페이지 ${index + 1} 이름`, placeholder: autoPageNameOf(page) || `페이지 ${index + 1}` },
     dataset: { testid: `evt-page-rename-${index + 1}` },
   }) as HTMLInputElement;
   let settled = false;
   const finish = (commit: boolean) => {
     if (settled) return;
     settled = true;
-    const next = input.value.trim() || `페이지 ${index + 1}`;
+    const next = input.value.trim() || autoPageNameOf(page) || `페이지 ${index + 1}`;
     input.replaceWith(title);
     tab.removeAttribute("draggable");
     if (commit && next !== (page.name ?? "").trim()) {
@@ -477,12 +482,23 @@ function pageTabConditionText(page: EventPage): string {
   return conditions.length === 1 ? first : `${first} 외 ${conditions.length - 1}`;
 }
 
+/** 저장된 이름이 자동 이름(`페이지 N`)이면 그 이름, 아니면 빈 문자열. */
+function autoPageNameOf(page: EventPage): string {
+  return isAutoPageName(page.name) ? (page.name ?? "").trim() : "";
+}
+
+// 줄마다 따로 번역해 잇는다. 네 줄을 한 문자열로 넘기면 DOM 번역기가 줄바꿈을 공백으로 접어
+// 조각만 바꿔 「Page 1 — 페이지 2 조건 없음 … Rename」 처럼 섞였다(UI 감사 06-eventwin-04).
 function pageTabTooltip(page: EventPage, index: number, canDrag: boolean): string {
   const name = (page.name ?? "").trim() || "(이름 없음)";
   const conditions = page.conditions ?? [];
-  const summary = conditions.length > 0 ? conditions.map(pageConditionSummary).join(" / ") : "조건 없음";
-  const dragHint = canDrag ? "\n끌어다 놓아 순서를 바꿉니다 (뒤에 있을수록 조건이 맞을 때 이깁니다)" : "";
-  return `페이지 ${index + 1} — ${name}\n${summary}${dragHint}\n더블클릭·F2: 이름 바꾸기`;
+  const summary = conditions.length > 0
+    ? conditions.map((condition) => t(pageConditionSummary(condition))).join(" / ")
+    : t("조건 없음");
+  const lines = [t(`페이지 ${index + 1} — ${name}`), summary];
+  if (canDrag) lines.push(t("끌어다 놓아 순서를 바꿉니다 (뒤에 있을수록 조건이 맞을 때 이깁니다)"));
+  lines.push(t("더블클릭·F2: 이름 바꾸기"));
+  return lines.join("\n");
 }
 
 function pageConditionSummary(condition: EventPageCondition): string {
