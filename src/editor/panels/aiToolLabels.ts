@@ -148,6 +148,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   plan_world: world("세계 계획", "map"),
   manage_map_tree: world("맵 트리 정리", "map"),
   set_map_properties: world("맵 속성", "gear"),
+  generate_map_background: build("맵 배경 그림 만들기", "spark"),
   set_start_position: world("시작 위치", "pin"),
   define_ending: world("엔딩 정의", "flag"),
   set_deadline_ending: world("기한 엔딩", "flag"),

@@ -809,6 +809,25 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
   배경 흐름·깊이는 플레이에서만 움직이고 편집기 캔버스는 정지 화면이다(움직임은 탭 미리보기에서 본다). 칸을 비운 가장자리는 해안·절벽 타일 없이 각지게 잘린다(조수·편집기 모두 가장자리 마감은 하지 않는다). 지평선 세트는 화면 고정이라 맵 아래쪽에서 하늘을 보이게 하면 지평선 아래(물) 부분이 보인다.
   `map-parallax.capture.mjs` 는 아직 빈 CraftPix 세트를 쓴다.
 
+## 맵 배경 조수 경로 — 견본 고르기 정확도·새 배경 생성 generate_map_background (2026-10-22)
+
+실조수 시험(Sonnet 5.5 high, 실제 입력창 Pi 경로 `local-cli:claude`, 9장면, `~/claude-viz/panorama-assistant-1.html`)에서 고친 것:
+- **의도 분류**(`intentDeclaration.ts`): 맵 배경(하늘·섬 바깥 바다·창밖 별)은 `set_map_properties`, 견본에 없는 새 배경은 `generate_map_background`. 다시 칠하거나 맵을 새로 짓지 않는다.
+  도구 색인 레시피 `map-background`(`toolCapabilityIndex.ts`)·별칭(파노라마·맵 배경·창밖·시차 배경, `toolAliases.ts`).
+- **배치 품질 재촉 오판**(`piAgent/layoutQuality.ts`): `paintedShare` 가 비운 칸(-1)을 칠한 칸으로 셌다 → 하늘 7줄을 비우면 「맵이 비었다」 재촉이 붙어 지붕 위를 다시 칠했다. 이제 새 타일이 ≥0 인 칸만 센다.
+- **`set_map_properties.background.speed`**(0.1–4): 모든 층 흐름 배율. 움직임 프리셋 뒤에 곱하고, 명시한 scrollX/Y·cameraFollow 는 프리셋 뒤에 다시 얹는다(전에는 「느리게」 가 프리셋에 덮였다).
+  요약 줄에 층별 흐름 px/프레임. **한 화면 맵**(맵 ≤ 뷰포트)이면 시차가 안 보인다는 주의를 요약·경고 둘 다에, 위에서 본 면 견본을 하늘 띠(윗줄만 비움)에 쓰면 지평선 견본을 권하는 경고.
+- **Pi 경로의 `generate_image_asset`** 은 그림을 만들지 않고 「ui-required」 를 성공처럼 돌려줬다 → 정직한 실패로 바꾸고 맞는 도구(배경이면 generate_map_background)를 가리킨다.
+- **새 도구 `generate_map_background`**(`src/editor/tools/mapBackgroundGenerationTool.ts` 스키마·검사, 실행은 `scripts/lib/piAgentRuntime.ts`):
+  렌더 브로커(`generateOpeningImage`, `panoramaLayer` 표시) → 브라우저 `src/editor/mapPanoramaGeneration.ts` 가 사용자 이미지 계정(용도 backdrop)으로 생성 →
+  지평선은 먼 층 640×240·40색 + 가까운 실루엣 층(마젠타 바탕 분리, 24색), 위에서 본 면은 320×256 사방 이음 → 이음 띠(12%) 교차 섞기로 가로(면은 세로도) 반복 이음 →
+  `upsert_resource`(kind backdrop) → `set_map_properties`(cover·loopX·showInEmptyCells, 가까운 층 cameraFollow 0.2) + clearForBackground. 층들은 동시에 만든다. 하나라도 실패하면 아무것도 연결하지 않고 견본으로 몰래 대신하지 않는다.
+  결과 PNG 를 모델에게 첨부한다(보고는 그림에 보이는 것만). 맵 한정 실행에서는 거부. 헤드리스 도구 run 은 `image-generation-unavailable`. 배경 그림은 object-gate 대상이 아니다.
+- **`decodeImage`(`cutsceneArt/imageProcess.ts`)가 `fetch(dataURL)` 을 썼다** → 출하·팀 호스트 CSP `connect-src 'self'` 가 막아 「NetworkError」. data: 는 직접 Blob 으로 푼다(컷신 그림 처리도 같은 함수).
+- **Claude Code MCP 도구 시간 제한**: 그림 2장 생성(약 60초)이 기본 제한에 끊겨 모델이 「시간 초과」 로 받았다 → `MCP_TOOL_TIMEOUT=900000`(codex 의 tool_timeout_sec=900 과 같게, `localCliAgent/claude.ts`).
+- **남은 한계:** `show_map_region` 은 배경을 그리지 못해(설계상 거부) 조수가 배경을 눈으로 검수하지 못한다 — 생성 도구는 그림을 첨부해 대신한다.
+  Pi 경로는 되묻기를 건너뛰므로(`executionRoute.ts clarifyBypassed`) 「배경 좀 예쁘게」 는 묻지 않고 해석한다. 칸을 비운 가장자리는 여전히 각지다.
+
 ## 8차 맵 진입 (2026-09-28)
 
 `playSceneMapRuntime.renderTiles`의 **한 번의 동기 패스**가 `TileRenderPass`를 소유한다.

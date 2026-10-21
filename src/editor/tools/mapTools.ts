@@ -57,6 +57,7 @@ import {
   applyMapBackgroundMotion,
   MAP_BACKGROUND_MOTIONS,
   MAP_BACKGROUND_MOTION_LABELS,
+  mapBackgroundGameViewport,
   type MapBackgroundMotion,
 } from "@/project/mapBackground";
 import { craftpixDefaultLayers, OGA_CRAFTPIX_BACKDROP_SETS } from "@/assets/ogaCraftpixBackgrounds";
@@ -1896,6 +1897,12 @@ const backgroundSchema: JsonSchema = {
       enum: [...MAP_BACKGROUND_MOTIONS],
       description: `움직임 프리셋(생략하면 세트 권장값). ${MAP_BACKGROUND_MOTIONS.map((motion) => `${motion}=${MAP_BACKGROUND_MOTION_LABELS[motion].name}(${MAP_BACKGROUND_MOTION_LABELS[motion].hint})`).join(", ")}`,
     },
+    speed: {
+      type: "number",
+      minimum: 0.1,
+      maximum: 4,
+      description: "흐름 속도 배율 — 모든 층의 scrollX·scrollY 에 곱한다(1=세트·프리셋 기본). 「느리게」 0.4~0.6, 「아주 느리게」 0.2~0.3, 「빠르게」 1.5~2. 층마다 빠르기 차이(먼 층이 느림)는 그대로 남는다.",
+    },
     // CraftPix 세트가 하나라도 남아 있을 때만 보인다(2026-10-07 정리 뒤 0개 — 빈 선택지는 조수를 헷갈리게 한다).
     ...(OGA_CRAFTPIX_BACKDROP_SETS.length > 0 ? {
       cloudDrift: {
@@ -1999,7 +2006,7 @@ const sunlightSchema: JsonSchema = {
  * 개별 값(scrollX·fit·showInEmptyCells 등)은 첫 장에 덮어쓴다. 없으면 예전처럼 그대로 정규화한다.
  */
 function resolveBackgroundArgs(raw: Record<string, unknown>, mapId: string): MapBackground {
-  const { layerSet, preset, motion, cloudDrift, ...rest } = raw;
+  const { layerSet, preset, motion, speed, cloudDrift, ...rest } = raw;
   const setId = preset ?? layerSet;
   let candidate: Record<string, unknown> = rest;
   if (setId !== undefined) {
@@ -2032,8 +2039,24 @@ function resolveBackgroundArgs(raw: Record<string, unknown>, mapId: string): Map
   if (candidate.showInEmptyCells === undefined) candidate = { ...candidate, showInEmptyCells: true };
   let normalized = normalizeMapBackground(candidate);
   if (!normalized) throw new ToolError("background 는 { preset } 또는 { imageId, scrollX?, layers? … } 여야 합니다.", { code: "invalid-args", mapId });
-  if (typeof motion === "string" && (MAP_BACKGROUND_MOTIONS as readonly string[]).includes(motion)) {
-    normalized = applyMapBackgroundMotion(normalized, motion as MapBackgroundMotion);
+  const hasMotion = typeof motion === "string" && (MAP_BACKGROUND_MOTIONS as readonly string[]).includes(motion);
+  if (hasMotion) normalized = applyMapBackgroundMotion(normalized, motion as MapBackgroundMotion);
+  if (typeof speed === "number" && Number.isFinite(speed) && speed > 0 && speed !== 1) {
+    const scale = (value: number | undefined): number | undefined => value === undefined || value === 0 ? value
+      : Math.max(-MAP_BACKGROUND_SCROLL_LIMIT, Math.min(MAP_BACKGROUND_SCROLL_LIMIT, Math.round(value * speed * 100) / 100));
+    const scaled = <T extends { scrollX?: number; scrollY?: number }>(layer: T): T => ({
+      ...layer,
+      ...(layer.scrollX !== undefined ? { scrollX: scale(layer.scrollX) } : {}),
+      ...(layer.scrollY !== undefined ? { scrollY: scale(layer.scrollY) } : {}),
+    });
+    normalized = { ...scaled(normalized), ...(normalized.layers ? { layers: normalized.layers.map(scaled) } : {}) };
+  }
+  if (hasMotion) {
+    // 움직임 프리셋(과 speed)이 층 속도를 다시 쓴다 — 같이 준 첫 장의 scrollX·scrollY·cameraFollow 는 그 위에 그대로 다시 얹는다.
+    // 2026-10-22 조수 시험: 「느리게」 에 scrollX:0.2 + motion:flowX 를 보냈는데 프리셋이 0.25/0.5/0.75 로 덮어 더 빨라졌고, 조수는 「0.2 로 느리게」 라고 보고했다.
+    for (const key of ["scrollX", "scrollY", "cameraFollow"] as const) {
+      if (typeof rest[key] === "number") normalized = { ...normalized, [key]: rest[key] as number };
+    }
   }
   return normalized;
 }
@@ -2189,11 +2212,12 @@ const setMapProperties: ToolDefinition = {
       // 조수가 결과만 보고 시차가 걸렸는지 알 수 있게 층별 깊이·흐름·맞춤을 요약한다(2026-09-27 조수 시험: 「레이어 6장」 만으로는 확인 불가).
       const stack = [map.background, ...(map.background.layers ?? [])];
       const depths = stack.map((layer) => Math.round((layer.cameraFollow ?? 0) * 100));
-      const drifting = stack.filter((layer) => (layer.scrollX ?? 0) !== 0 || (layer.scrollY ?? 0) !== 0).length;
+      const flows = stack.map((layer) => Math.hypot(layer.scrollX ?? 0, layer.scrollY ?? 0));
+      const drifting = flows.filter((flow) => flow !== 0).length;
       const covered = stack.filter((layer) => layer.fit === "cover").length;
       changed.push(
         `배경=${typeof setId === "string" ? `세트 ${setId}` : map.background.imageId}${layerCount > 0 ? ` + 레이어 ${layerCount}장` : ""}`
-        + ` (층별 깊이 ${depths.join("/")}%${drifting > 0 ? `, 흐르는 층 ${drifting}` : ""}${covered > 0 ? `, cover ${covered}/${stack.length}` : ""}`
+        + ` (층별 깊이 ${depths.join("/")}%${drifting > 0 ? `, 흐르는 층 ${drifting}(층별 흐름 ${flows.map((flow) => Math.round(flow * 100) / 100).join("/")}px/프레임)` : ""}${covered > 0 ? `, cover ${covered}/${stack.length}` : ""}`
         + `${map.background.showInEmptyCells ? ", 빈 칸에도 보임" : ""})`,
       );
     }
@@ -2236,7 +2260,28 @@ const setMapProperties: ToolDefinition = {
       } else {
         changed.push(`배경이 보이는 칸 ${visible}`);
         // 지평선 견본은 화면 위쪽 약 112px 안에 해·구름·실루엣이 있다 — 위쪽 빈 줄이 모자라면 하늘 위쪽 색만 보인다.
+        // 한 화면에 들어가는 맵은 카메라가 움직이지 않는다 — 층별 깊이(cameraFollow)는 보이지 않고 흐르는 층만 움직인다.
+        // 2026-10-22 조수 시험: 20×15 맵에서 「걸을 때 깊이가 달라 시차로 움직입니다」 라고 보고했다(편집기 배경 탭은 같은 경고를 띄운다).
+        const viewport = mapBackgroundGameViewport(draft.system);
+        const tile = mapTileSize(map, draft.tilesets[map.tilesetId]);
+        const depthLayers = [map.background, ...(map.background.layers ?? [])].filter((layer) => (layer.cameraFollow ?? 0) > 0 && (layer.cameraFollow ?? 0) < 1);
+        if (depthLayers.length > 0 && map.width * tile <= viewport.width && map.height * tile <= viewport.height) {
+          changed.push("주의: 한 화면 맵이라 시차(깊이) 안 보임 — 흐르는 층만 움직임");
+          backgroundWarnings.push(
+            `이 맵(${map.width}×${map.height}칸)은 게임 화면(${viewport.width}×${viewport.height}px) 한 장에 다 들어가 걸어도 카메라가 움직이지 않습니다 — `
+            + "층별 깊이(시차)는 보이지 않고 흐르는 층(scrollX)만 움직입니다. 사용자에게 그대로 알리고, 시차를 보이려면 맵을 화면보다 크게 해야 합니다.",
+          );
+        }
         const horizonSet = oprnPanoramaSetOfImage(map.background.imageId);
+        // 위에서 본 면(구름 바다·바다)을 지붕·절벽 뒤 «하늘 줄» 에만 비추면 옆에서 본 하늘이 아니라 바닥 무늬처럼 보인다.
+        // 2026-10-22 조수 시험: 「흐르는 구름으로」 에 옥상 맵 위 7줄 하늘을 구름 바다(oprn-clouds)로 바꿨다.
+        const topRowsOnly = emptyTopRows(map) > 0 && emptyTopRows(map) * map.width === visible;
+        if (horizonSet?.view === "surface" && topRowsOnly && horizonSet.id !== "oprn-night-stars") {
+          backgroundWarnings.push(
+            `${horizonSet.name} 견본은 위에서 내려다본 면입니다 — 이 맵은 위쪽 줄만 비어 있어(지붕·절벽 뒤 하늘 자리) 옆에서 본 하늘이 어울립니다. `
+            + "구름이 흐르는 하늘이면 preset oprn-sky-day(+ speed), 저녁이면 oprn-sunset 을 쓰세요.",
+          );
+        }
         const needRows = Math.ceil(HORIZON_PRESET_FEATURE_HEIGHT / mapTileSize(map, draft.tilesets[map.tilesetId]));
         const topRows = emptyTopRows(map);
         if (horizonSet?.view === "horizon" && topRows > 0 && topRows < needRows) {

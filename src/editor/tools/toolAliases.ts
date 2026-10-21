@@ -108,6 +108,7 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["세계관", "설정", "world canon", "lore", "worldbuilding"], tools: ["set_world_canon", "upsert_character_profile", "plan_world"], label: "세계관" },
   { terms: ["시작 아이템", "시작 골드", "초기 자금", "starting gold", "starting items"], tools: ["set_session_start"], label: "시작 소지품" },
   { terms: ["이미지 생성", "그림 생성", "일러스트", "generate image", "illustration"], tools: ["generate_image_asset", "generate_cutscene_art"], label: "이미지 생성" },
+  { terms: ["파노라마", "맵 배경", "배경 하늘", "창밖", "시차 배경", "panorama", "parallax background", "map background"], tools: ["set_map_properties", "generate_map_background"], label: "맵 배경(파노라마)" },
   { terms: ["보관함", "pc", "컴퓨터", "상자", "box", "storage", "파티 가득", "맡기기", "놓아주기"], tools: ["place_monster_pc", "configure_monster_system", "read_monster_game"], label: "몬스터 보관함(PC)" },
   { terms: ["되돌리", "undo", "revert", "롤백"], tools: ["revert_last_edit", "list_edit_history"], label: "되돌리기" },
   { terms: ["도감", "pokedex", "dex", "몬스터 도감", "생태 설명", "dex note"], tools: ["define_monster_species", "define_monster_families", "read_monster_game"], label: "몬스터 도감" },

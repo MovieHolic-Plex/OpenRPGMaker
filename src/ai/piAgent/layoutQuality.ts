@@ -188,12 +188,17 @@ function layoutProblems(stats: LayoutQualityStats): string[] {
   return problems;
 }
 
-/** 이번 실행이 1층을 크게 칠한 맵(새 맵 포함)만 본다. 작은 수정·이미 있던 맵의 소품 추가는 묻지 않는다. */
+/**
+ * 이번 실행이 1층을 크게 칠한 맵(새 맵 포함)만 본다. 작은 수정·이미 있던 맵의 소품 추가는 묻지 않는다.
+ * 빈 칸으로 «비운» 칸은 칠한 것으로 세지 않는다 — 맵 배경(파노라마)이 비칠 하늘·바다 자리를 비우는 일(clearForBackground)이다.
+ * 2026-10-22 조수 시험: 「옥상 뒤에 노을 하늘」 요청에서 위 7줄을 비우자 이 검사가 원래부터 빈 옥상 바닥을 「빈 바닥 50%」로 잡아
+ * 조수가 사용자가 청하지 않은 벤치·가로등 11개를 깔았다.
+ */
 function paintedShare(map: GameMap, before: GameMap | undefined): number {
   const n = map.width * map.height;
   if (!before || before.width !== map.width || before.height !== map.height) return 1;
   let changed = 0;
-  for (let i = 0; i < n; i++) if (map.lowerTiles[i] !== before.lowerTiles[i]) changed++;
+  for (let i = 0; i < n; i++) if (map.lowerTiles[i] !== before.lowerTiles[i] && (map.lowerTiles[i] ?? -1) >= 0) changed++;
   return changed / n;
 }
 

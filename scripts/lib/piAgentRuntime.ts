@@ -82,6 +82,7 @@ import { buildWorldmap } from "./worldmapBuild.mjs";
 import type { GameMap, Project } from "../../src/project/types.ts";
 import type { ToolContext, ToolResult } from "../../src/editor/tools/types.ts";
 import { runTool } from '../../src/editor/tools/index.ts';
+import { prepareMapBackgroundGeneration } from '../../src/editor/tools/mapBackgroundGenerationTool.ts';
 import { prepareOpeningImageRequest, prepareOpeningLayerRequest } from '../../src/editor/tools/cinematicTools.ts';
 import type { CinematicStillResult } from '../../src/editor/openingImageGeneration.ts';
 import { runFfmpegHost, type FfmpegRequest } from './piFfmpegTool.ts';
@@ -483,7 +484,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       finally { if (--liveDepth === 0) ctx.project = ownProject; }
     } } : wrapped;
   };
-  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !['show_map_region', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'run_ffmpeg', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources'].includes(tool.name) ? tool : ({ ...tool,
+  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !['show_map_region', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'generate_map_background', 'generate_image_asset', 'run_ffmpeg', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources'].includes(tool.name) ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
@@ -535,6 +536,65 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           recordCall({ toolCallId: id, name: tool.name, args, result: execution, visuals });
           if (!execution.ok) throw new Error(execution.summary);
           result = { content: [{ type: 'text', text: JSON.stringify(execution) }], details: execution };
+        } else if (tool.name === 'generate_image_asset') {
+          // 레지스트리 run 은 «편집기가 생성한다» 는 ui-required 핸드오프만 만든다 — 옛 브라우저 세션(assistantSession.ts)만 그 핸드오프를 실행한다.
+          // Pi 실행에서는 아무도 실행하지 않아, 조수가 「생성 요청이 편집기로 넘어갔다, 등록되면 연결하겠다」 고 보고했다(2026-10-22 조수 시험 2건).
+          // 그림이 영영 오지 않는다는 사실을 바로 알리고 실제로 만드는 도구로 보낸다.
+          const kind = (params as { kind?: unknown }).kind;
+          const failure = { ok: false, summary: 'generate_image_asset 은 이 조수 실행에서 그림을 만들지 않습니다(아무것도 생성·등록되지 않았고 나중에 도착하지도 않습니다). '
+            + (kind === 'backdrop' ? '맵 뒤 하늘·지평선 배경은 generate_map_background 로 만들어 바로 연결하세요. ' : '')
+            + '타이틀 화면은 generate_title_art, 오프닝 그림은 generate_opening_image, 도트 아이콘·소품은 author_pixel_art 를 쓰세요. 그림이 없으면 없다고 보고하세요.' };
+          recordCall({ toolCallId: id, name: tool.name, args: params, result: failure });
+          throw new Error(failure.summary);
+        } else if (tool.name === 'generate_map_background') {
+          // 맵 배경(파노라마) 그림 생성 — 브라우저의 이미지 계정으로 먼 층(+가까운 실루엣 층)을 만들고, 도트·가로 이음매 처리는
+          // 브라우저(src/editor/mapPanoramaGeneration.ts)가 한다. 등록·연결은 여기서 실제 도구(upsert_resource·set_map_properties)로 한다.
+          const args = prepareMapBackgroundGeneration(ctx.project, params as Record<string, unknown>);
+          if (scopeGuard.scopeMapIds?.length && !scopeGuard.scopeAllowsSystem) throw new Error('맵 한정 실행에서는 새 배경 그림 리소스를 등록할 수 없습니다. 프로젝트 범위로 실행하세요.');
+          if (!options.generateOpeningImage) throw new Error('그림 생성 경로가 없습니다(편집기 연결 필요). 새 배경 그림을 만들지 못했습니다 — 생성 성공으로 보고하지 마세요.');
+          // 층들은 동시에 만든다(한 장 수십 초 — 순서대로면 두 배). 하나라도 실패하면 아무것도 등록하지 않는다.
+          emit({ type: 'execution_status', name: 'map.background.progress', ok: true, summary: `맵 배경 그림 ${args.layers.length}장(${args.layers.map(layer => layer === 'far' ? '먼 층' : '가까운 실루엣 층').join('·')})을 만드는 중`, data: { toolCallId: id } });
+          const stills = await Promise.all(args.layers.map(layer => options.generateOpeningImage!(openingImageProject(ctx.project, []), { prompt: args.prompt, name: `${args.name}${layer === 'near' ? ' — 가까운 층' : ''}`, panoramaLayer: layer, panoramaView: args.view }, signal ?? options.signal)));
+          signal?.throwIfAborted();
+          const made: { layer: 'far' | 'near'; still: Extract<CinematicStillResult, { ok: true }> }[] = [];
+          for (const [index, layer] of args.layers.entries()) {
+            const still = stills[index]!;
+            if (!still.ok) {
+              const failure = { ok: false, summary: `맵 배경 그림 생성 실패(${layer}): ${still.summary} 아무것도 등록·연결하지 않았습니다. 견본(set_map_properties background.preset)으로 대신할지 사용자에게 묻고, 생성 성공으로 보고하지 마세요.` };
+              recordCall({ toolCallId: id, name: tool.name, args, result: failure });
+              throw new Error(failure.summary);
+            }
+            made.push({ layer, still });
+          }
+          for (const { still } of made) {
+            const applied = runTool(ctx, 'upsert_resource', { resource: { id: still.resourceId, name: still.name, kind: 'backdrop', dataUrl: still.dataUrl } });
+            if (!applied.ok) throw new Error(applied.summary);
+          }
+          const far = made.find(entry => entry.layer === 'far')!.still, near = made.find(entry => entry.layer === 'near')?.still;
+          const horizon = args.view === 'horizon';
+          const background = {
+            imageId: far.resourceId, fit: 'cover', loopX: true, loopY: !horizon, showInEmptyCells: true,
+            ...(horizon ? { scrollX: 0.1 } : { cameraFollow: 0.5 }),
+            ...(near ? { layers: [{ imageId: near.resourceId, fit: 'cover', loopX: true, loopY: false, cameraFollow: 0.2 }] } : {}),
+            ...(args.motion ? { motion: args.motion } : {}), ...(args.speed !== undefined ? { speed: args.speed } : {}),
+          };
+          const connected = runTool(ctx, 'set_map_properties', { mapId: args.mapId, background, ...(args.clearForBackground ? { clearForBackground: args.clearForBackground } : {}) });
+          if (!connected.ok) throw new Error(`그림은 만들어 등록했지만(${made.map(entry => entry.still.resourceId).join(', ')}) 맵 배경 연결에 실패했습니다: ${connected.summary}`);
+          const execution = { ...connected, summary: `맵 배경 그림 ${made.length}장(${made.map(entry => `${entry.layer === 'far' ? '먼 층' : '가까운 층'} ${entry.still.resourceId}`).join(', ')})을 실제 생성·등록하고 ${args.mapId} 배경에 연결했습니다 — ${connected.summary}. 첨부한 그림을 보고 사용자에게 실제로 보이는 것만 설명하세요.`,
+            data: { status: 'generated', mapId: args.mapId, resourceIds: made.map(entry => entry.still.resourceId), view: args.view } };
+          const visuals: ActivityVisual[] = [];
+          for (const { still, layer } of made) {
+            const uploaded = await activityThumbnail(still.dataUrl).catch(() => undefined);
+            if (uploaded) visuals.push({ kind: 'asset', title: still.name, caption: layer === 'far' ? '먼 층' : '가까운 층', phase: 'read', target: `resource:${still.resourceId}`, resourceId: still.resourceId, uploaded });
+          }
+          recordCall({ toolCallId: id, name: tool.name, args, result: execution, visuals });
+          result = { content: [{ type: 'text', text: JSON.stringify(execution) }], details: execution };
+          // 모델이 실제 그림을 보고 보고하게 한다(브로커 PNG 계약과 같은 PNG 바이트).
+          for (const { still } of made) {
+            const png = /^data:image\/png;base64,/u.test(still.dataUrl) ? still.dataUrl.slice(still.dataUrl.indexOf(',') + 1) : undefined;
+            if (png) result.content.push({ type: 'image', mimeType: 'image/png', data: png });
+          }
+          emit({ type: 'execution_status', name: 'map.background.delivered', ok: true, summary: '생성한 맵 배경 그림을 모델에게 전달했습니다.', data: { resourceIds: made.map(entry => entry.still.resourceId), toolCallId: id } });
         } else result = await tool.execute(id, params, signal);
       }
       if (tool.name === 'show_opening_image' || tool.name === 'generate_opening_image' || tool.name === 'generate_opening_layer') {
