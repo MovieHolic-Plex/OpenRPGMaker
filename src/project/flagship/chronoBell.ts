@@ -1155,6 +1155,18 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       }
     }
   }
+  // 천장 띠는 어두운 천장(dark) 칸으로 — default(회색 디더)·rock(갈회색 디더) 천장은 1배 화면에서 방 사이 회색 바닥 띠로 읽혔다(사용자 지적).
+  // atlas_biome_interior 천장 칸 2~257 = 32칸(이웃 00~31) × 8 재질(default·rock·dark·wood·leaf·gold·steel·velvet). 같은 이웃 번호의 dark(66~97)로 바꾼다.
+  for (const map of [M(ids.observatory), M(PUZZLE_ROOM)]) {
+    for (const key of ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"] as const) {
+      const layer = (map as unknown as Record<string, number[] | undefined>)[key];
+      if (!layer) continue;
+      for (let i = 0; i < layer.length; i += 1) {
+        const t = layer[i] ?? -1;
+        if (t >= 2 && t <= 257) layer[i] = 66 + ((t - 2) % 32);
+      }
+    }
+  }
   // 모든 이동은 맞은편 문 바로 앞 칸에 내리고, 문을 등진 방향(direction)을 명시한다(VQA r12).
   // 패딩이 끝난 최종 좌표 기준이라 여기서 한 번에 맞춘다.
   {
