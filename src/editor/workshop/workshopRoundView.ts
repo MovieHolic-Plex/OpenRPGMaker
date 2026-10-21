@@ -4,12 +4,10 @@
  * 「검수 통과」는 보증이 아니다 — 사람이 본다. 고르기는 사람만 한다.
  * 버린 이유는 다음 판 지시문의 「하지 말 것」이 된다(engine.contextFor → rejected).
  */
-import { CALLS_PER_CANDIDATE_ESTIMATE } from "@/harnesses/_core/workshop/engine";
 import type { WorkshopItem, WorkshopRun } from "@/harnesses/_core/workshop/types";
 import { REJECT_REASONS } from "@/harnesses/interior-props/editor/prompts";
 import { el } from "@/util/dom";
 import { workshopObjectId } from "@/project/workshopTiles";
-import { WORKSHOP_MODEL_ADVICE } from "./chat";
 import { gridDataUrl } from "./pixels";
 import { bakeWorkshopPick, isWorkshopPickBaked, workshopTargetTileset } from "./workshopBake";
 import { store as projectStore } from "@/project/store";
@@ -78,7 +76,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     rerender();
   }
 
-  const note = el("textarea", { class: "workshop-note", attrs: { placeholder: "그릴 때 지킬 말(선택) — 예: 나무를 더 밝게, 윗판을 두껍게", "aria-label": "판 메모" } }) as HTMLTextAreaElement;
+  const note = el("textarea", { class: "workshop-note", attrs: { placeholder: "더 바라는 점(선택) — 예: 나무를 더 밝게, 윗판을 두껍게", "aria-label": "더 바라는 점" } }) as HTMLTextAreaElement;
   note.value = notes.get(item.key) ?? "";
   note.addEventListener("input", () => { notes.set(item.key, note.value); });
   const startBlock = el("div", {
@@ -87,10 +85,9 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
       note,
       el("button", {
         attrs: { type: "button" }, dataset: { testid: "workshop-start-round" },
-        text: `후보 ${session.runner.candidates}장 뽑기 (모델 호출 약 ${session.runner.candidates * CALLS_PER_CANDIDATE_ESTIMATE}번)`,
+        text: round ? `후보 ${session.runner.candidates}장 다시 그리기` : `후보 ${session.runner.candidates}장 그리기`,
         on: { click: () => act(() => startRound(noteText())) },
       }),
-      el("p", { class: "workshop-item-meta", dataset: { testid: "workshop-model-advice" }, text: WORKSHOP_MODEL_ADVICE }),
     ],
   });
 
@@ -117,6 +114,8 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
             ? `${sheetName}에 ${objectId} 로 들어갔어요. 조수에게 「${item.title} 놓아 줘」라고 하면 맵에 놓아요.`
             : `넣으면 이 프로젝트의 ${sheetName} 끝에 칸이 붙고, 조수와 스탬프가 이 기물을 쓸 수 있어요. 되돌리기로 뺄 수 있어요.`,
         }),
+        // 공용(번들·공용 묶음·스토어)은 3/4 시점 관문을 통과한 그림만 — 공방 그림은 아직 그 영수증이 없어 스토어 올리기에서 막힌다(storePublishBlockReason).
+        el("span", { class: "workshop-item-meta", dataset: { testid: "workshop-shared-note" }, text: "이 게임에만 들어가요. 공용(스토어)에 올리려면 3/4 시점 검사를 통과해야 해요." }),
       ],
     })];
   };

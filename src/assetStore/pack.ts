@@ -111,7 +111,12 @@ export class StorePackBlockedError extends Error {
  * 막는 이유 문장, 괜찮으면 null. 올리기 화면 후보와 buildPack 이 같은 판정을 쓴다.
  */
 export function storePublishBlockReason(id: string, name: string, origin: unknown): string | null {
+  // 공방이 가져온 생성기 묶음(출처 store = local:<생성기>) — 생성기 자신의 검사·올리기(3/4 관문 포함)로 올린다.
+  const originStore = (origin as { store?: unknown } | null | undefined)?.store;
+  if (typeof originStore === "string" && originStore.startsWith("local:")) return "생성기에서 가져온 묶음은 그 생성기에서 검사를 거쳐 올려 주세요.";
   if (origin) return "스토어에서 받은 것은 다시 올릴 수 없습니다(원작자·라이선스는 그 상품에 남습니다).";
+  // 공방 그림은 3/4 시점 관문 영수증이 아직 배선되지 않았다 — 번들·공용·스토어 출구는 예외 없이 막는다(AGENTS.md, object-gate).
+  if (id.startsWith(WORKSHOP_ASSET_PREFIX)) return "공방에서 그린 그림은 3/4 시점 검사를 통과해야 공용에 올릴 수 있어요. 지금은 이 게임에서만 써요.";
   if (id.startsWith("shared_")) return "공용 자료집에서 온 것은 올릴 수 없습니다. 직접 만든 것만 올립니다.";
   const word = storeThirdPartyName(id) ?? storeThirdPartyName(name);
   return word ? `제3자 팩(PAW·Rasak·REFMAP·RPG Maker 계열 「${word}」)은 올릴 수 없습니다.` : null;

@@ -1,8 +1,31 @@
-# 에디터 「공방」 — 하네스를 에디터 안에서 돌린다
+# 에디터 「공방」 — 생성기 넷(char-gen·object-gen·tile-gen·item-gen)을 에디터에서 쓴다
 
-- 들어오는 길: 왼쪽 활동 막대 렌치 「공방」(`src/editor/panels/leftWorkshopPane.ts`) → 큰 화면(`src/editor/workshop/workshopWorkspace.ts`, body 오버레이).
-- 첫 화면은 「만들기 → 고르기 → 넣기」 3단계와 만들 수 있는 대상을 먼저 설명한다. 하네스 버튼에는 제목뿐 아니라 매니페스트 summary를 보여 주고, 아직 판이 없으면 「후보 만들기 시작」으로 다음 행동을 명시한다(2026-10-12).
-- 어떤 하네스가 보이나: `workshopHarnesses(genre)` — 매니페스트 `entrypoints.editorUi` 가 true 이고 `workshop` 로더가 있고 장르가 맞는 것. 에디터는 하네스 폴더를 직접 import 하지 않는다.
+- 들어오는 길: 왼쪽 활동 막대 렌치 「공방」(`src/editor/panels/leftWorkshopPane.ts`).
+- **2026-10-21 개편(사용자 결정):** 하네스 목록 카드(「실내 가구·소품 그리기」·「맵 소품 그리기」, 매니페스트 summary·모델 권장 문구)를 뺐다.
+  첫 화면은 생성기 카드 넷이다 — 정의·상태는 `src/editor/workshop/generators.ts`. 화면 글은 쉬운 말만, 모델 이름 금지.
+
+| 카드 | 생성기 | 상태 | 하는 일 |
+|---|---|---|---|
+| 캐릭터 | char-gen (공개, `MovieHolic-Plex/char-gen`) | 내 컴퓨터에서 만들어 가져오기 | 파이썬 도구라 브라우저에서 못 돈다. 「만드는 법·가져오기」(`genWorkspace.ts`)가 ① 무엇·몇 명 → 사용자 AI 에이전트에 붙여 넣을 부탁 글(언어별, `charGenRequest`) ② `char-gen pack` 폴더 가져오기 → 미리 보기 → 이 프로젝트에 넣기 |
+| 물건·가구 | object-gen | 여기서 만들기 | 「만들기」= 아래 공방 실행기(사용자 자기 AI 계정). 넣을 곳 전환: 실내 가구(`interior-props`, 손 도트 실내 칩셋) · 지금 맵 칩셋(`map-objects`). 「만든 묶음 가져오기」= object-gen `pack` 폴더 가져오기 |
+| 타일 | tile-gen | 준비 중 | 저장소 `tile-gen` 은 이름과 달리 물건 생성기(object-gen 의 앞 판)라 칸 타일(바닥·벽·길)을 만드는 것이 없다. 가짜로 채우지 않았다 |
+| 아이템·아이콘 | item-gen | 준비 중 | 저장소가 없다. `scripts/asset-gen/generate.mjs`(agy CLI, 사람 고르기 없음)만 있다 |
+
+- AI 미연결: 물건 카드에 「AI 연결하기」. 호스트가 AI 를 껐으면 안내 글만(죽은 버튼 없음). 묶음 가져오기는 AI 없이 된다.
+- **묶음 가져오기**(`src/editor/workshop/genPackImport.ts`): `<input webkitdirectory>` 로 `oprn-store-pack/1` 폴더(manifest.json + blobs/<sha256>)를 고른다.
+  `validateManifest` · blob 은 sha256 을 다시 재서 이름과 맞는 것만 · 스토어 넣기와 같은 `prepareManifestItem`(storeApply.ts 에서 떼어 냄) + `applyPreparedStoreItem`.
+  slug 는 `local-<생성기>-<blob 해시 12>`(같은 묶음을 다시 넣으면 덮어쓴다), 출처 `store = local:<생성기>`. 되돌리기 한 번으로 뺀다. 크레딧(CC BY 바탕 등)은 출처에 남는다.
+- **공용 출구는 막는다:** `storePublishBlockReason` 이 `workshop_` 그림(3/4 관문 영수증이 아직 공방에 배선되지 않음)과 `local:` 출처 묶음을 스토어 올리기에서 막는다.
+  공용에 올리는 길은 생성기 자신의 검사·submit(3/4 관문 포함)이다. 공방 그림은 이 프로젝트에만 들어간다(판 화면 「공용에 올리려면 3/4 시점 검사…」 안내).
+- 물건 화면(`workshopWorkspace.ts`): 목록은 내가 만든 물건 + 판·고른 것이 남은 번들 기물(옛 다시 그리기 기록)만. 손대지 않은 번들 기물 목록은 뺐다 — 저장소(`oprn-workshop`)는 그대로라 옛 판·고른 것은 계속 열린다.
+  목록이 비면 폼부터 연다. 폼(`workshopItemForm.ts`) = 무엇 · 어떻게 생겼나 · 가로/세로 칸 · 놓는 방식 · 후보 수(1~3, `engine.startRound({count})`) → 「만들기」가 저장하고 바로 판을 시작한다.
+  분류·쓰임·닮은 기물·솟는 px 칸은 화면에서 뺐다(기본값: 솟는 높이 세우는 것 16px · 거는 것·무늬 0).
+- 「없는 타일」 카드 「직접 그려 줘」는 그대로 `openWorkshop(harnessId, { newItem })` 로 이 폼을 채워 연다.
+- 그림 생성은 전부 사용자 계정: 편집기 안은 조수와 같은 엔드포인트(`chat.ts`), char-gen·object-gen 은 사용자 컴퓨터의 CLI 로그인. 우리 키·스토어 크레딧·유료 대체 경로 없음.
+- 남은 일: 데스크톱(Electron)에서 char-gen/object-gen 을 직접 띄우기, tile-gen(칸 타일)·item-gen(아이콘) 실체, 공방 굽기에 3/4 관문 영수증 배선.
+
+## 공방 실행기(물건·가구 카드 안)
+
 - 실행기: `src/harnesses/_core/workshop/engine.ts`. 한 판 = 후보 3장(방향 앞에서부터 3개, 2026-10-07 에 5장→3장). 한 장 = 그리기 → 깨지면 고치기 ≤2 → (실행기가 `selfCheckMessage` 를 주면 자기 점검 1 — 실내 기물은 2026-10-07 에 뺐다, 「너무 오래 걸린다」) → 독립 검수(vision) → `runner.gate` → 불통과면 다시(시도 ≤3). 3번 다 불통과여도 사람이 볼 수 있게 「검수 불통과」로 남긴다. 동시 기본 3(1~6, `oprn:workshop-concurrency`), 429 면 하나 줄이고 기다린다, 401·403 이면 멈추고 AI 설정으로 안내.
 - 모델: 표면 `workshop-draw`(AI 설정 「도트 저작 모델」(`pixelModel`)이 저장돼 있으면 그 텍스트 모델, 없으면 옛 그대로 감독 티어 — 2026-10-16, 16384 토큰) · `workshop-review`(vision 역할, 4096). `src/ai/assistantEndpoint.ts` 표 한 줄씩. 사용자 자기 계정·조수와 같은 엔드포인트. 권장 모델은 이름을 박지 않고 「성능이 높은 AI 모델일수록 결과가 좋아요」 한 줄로만 화면에 표시한다(`WORKSHOP_MODEL_ADVICE`, 2026-10-21 UX 2차 F30). 왼쪽 공방 창(`leftWorkshopPane.ts`)은 매니페스트의 문서용 title/summary 를 건드리지 않고 `WORKSHOP_DISPLAY` 로 쉬운 말 제목·요약을 덮어 보여 주고, 목록 위에 AI 연결 안내 블록(`left-workshop-no-ai`, 「AI 연결하기」 버튼)을 둔다. 서버가 AI 를 껐으면(`hostAiDisabled`) 버튼 없이 관리자에게 요청하라는 문구만 보인다. `AI_CONNECTION_STATUS_CHANGED_EVENT` 로 다시 그린다.
 - 속도(2026-10-07, 실제 Claude Sonnet 5.5·옷장·동시 3): 옛 설정(5장·자기 점검) 한 판 6.8분·호출 35번 → 3장·자기 점검 뺌 4.9분·15번 → 아래 헛걸음 셋을 고친 뒤 1.8분·8번(두 번 재서 112초·108초, 고치기 호출 0). 호출 하나가 30~60초라 시간은 호출 수가 정한다. 잰 스크립트는 저장소에 없다 — 엔진+실행기를 esbuild 로 묶어 node 에서 프록시(`ANTHROPIC_BASE_URL`)로 부르고 `onChange` 로 판을 받는다.

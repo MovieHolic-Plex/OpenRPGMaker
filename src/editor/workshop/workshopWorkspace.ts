@@ -1,12 +1,16 @@
 // src/editor/workshop/workshopWorkspace.ts
 /**
- * 공방 큰 화면 — tilesetAiWorkspaceModal 처럼 document.body 위 오버레이.
- * 왼쪽: 기물 목록(고를 차례·그리는 중·고름·전체 + 검색, 새 기물). 오른쪽: 판 화면(workshopRoundView).
+ * 공방 「물건·가구」 큰 화면 — tilesetAiWorkspaceModal 처럼 document.body 위 오버레이.
+ * 머리: 넣을 곳(실내 가구 = 손 도트 실내 칩셋 · 지금 맵 칩셋) 전환. 실행기는 interior-props·map-objects 그대로다.
+ * 왼쪽: 내가 만든 물건 목록(고를 차례·그리는 중·고름·전체 + 찾기, 새로 만들기). 오른쪽: 판 화면(workshopRoundView).
+ * 번들 기물 다시 그리기 목록은 2026-10-21 에 뺐다 — 판·고른 것이 저장된 번들 기물만 계속 보인다(옛 기록 보존).
  * 화면을 닫아도 엔진은 계속 돈다. 다시 그리기는 세션 변경 알림 때 서명(signature)이 바뀐 경우에만 — 깜빡임 방지.
  */
 import "@/styles/database/workshop/index.css";
 import type { WorkshopItem } from "@/harnesses/_core/workshop/types";
 import { clearChildren, el } from "@/util/dom";
+import { closeGenWorkspace, isGenWorkspaceOpen } from "./genWorkspace";
+import { currentDrawTarget, OBJECT_WORKSHOP_HARNESSES } from "./mapObjectTarget";
 import { renderItemForm } from "./workshopItemForm";
 import { renderRoundView, type RoundViewState } from "./workshopRoundView";
 import { getWorkshopSession, saveConcurrency, type WorkshopSession } from "./workshopSession";
@@ -27,8 +31,9 @@ let formDraft: { title: string; description: string } | null = null;
 let lastSignature = "";
 const view: RoundViewState = { selected: 0, zoom: "fit", rejectFor: null };
 
+/** 물건 화면이나 생성기 화면(genWorkspace) 중 하나라도 열려 있는가 — 왼쪽 막대가 같은 단추로 닫는다. */
 export function isWorkshopOpen(): boolean {
-  return host !== null;
+  return host !== null || isGenWorkspaceOpen();
 }
 
 export type OpenWorkshopOptions = { readonly newItem?: { readonly title: string; readonly description: string } };
@@ -62,11 +67,14 @@ export async function openWorkshop(harnessId: string, options: OpenWorkshopOptio
   }
   if (host !== myHost) return;
   session = opened;
+  // 처음 쓰는 사람에게는 빈 목록 대신 「무엇을 만들까요」 폼부터 보여 준다
+  if (visibleItems(opened, "all").length === 0) showForm = true;
   unsubscribe = opened.subscribe(() => render(false));
   render(true);
 }
 
 export function closeWorkshop(): void {
+  closeGenWorkspace();
   document.removeEventListener("keydown", onKeydown);
   unsubscribe?.();
   unsubscribe = null;
@@ -77,11 +85,35 @@ export function closeWorkshop(): void {
   formDraft = null;
 }
 
-function visibleItems(s: WorkshopSession): WorkshopItem[] {
+/** 내가 만든 물건 + 판·고른 것이 남아 있는 번들 기물(옛 다시 그리기 기록). 손대지 않은 번들 기물 목록은 보이지 않는다. */
+function ownItems(s: WorkshopSession): WorkshopItem[] {
+  return s.items().filter((item) => item.isNew || s.rounds.some((round) => round.itemKey === item.key) || s.picks.some((pick) => pick.itemKey === item.key));
+}
+
+function visibleItems(s: WorkshopSession, only: Filter = filter): WorkshopItem[] {
   const needle = query.trim().toLowerCase();
-  return s.items().filter((item) => {
+  return ownItems(s).filter((item) => {
     if (needle && !`${item.title} ${item.key} ${item.category}`.toLowerCase().includes(needle)) return false;
-    return filter === "all" || itemState(item.key, s.rounds, s.picks) === filter;
+    return only === "all" || itemState(item.key, s.rounds, s.picks) === only;
+  });
+}
+
+/** 넣을 곳 전환 — 실내 가구(손 도트 실내 칩셋) · 지금 맵 칩셋. 지금 맵이 16px 일반 칩셋일 때만 둘째가 보인다. */
+function targetSwitch(s: WorkshopSession): HTMLElement {
+  const target = currentDrawTarget();
+  const mapName = target.harnessId === "map-objects" ? target.name : null;
+  const options = OBJECT_WORKSHOP_HARNESSES.filter((id) => id === "interior-props" || mapName !== null || s.harnessId === id);
+  return el("div", {
+    class: "workshop-target", attrs: { role: "group", "aria-label": "넣을 곳" },
+    children: [
+      el("span", { class: "workshop-item-meta", text: "넣을 곳" }),
+      ...options.map((id) => el("button", {
+        class: "workshop-filter" + (id === s.harnessId ? " is-active" : ""),
+        attrs: { type: "button", "aria-pressed": String(id === s.harnessId) }, dataset: { testid: `workshop-target-${id}` },
+        text: id === "interior-props" ? "실내 가구" : mapName ? `지금 맵: ${mapName}` : "맵 물건",
+        on: { click: () => { if (id !== s.harnessId) void openWorkshop(id); } },
+      })),
+    ],
   });
 }
 
@@ -122,7 +154,8 @@ function render(force: boolean): void {
       el("header", {
         class: "workshop-head",
         children: [
-          el("h2", { text: `공방 · ${s.runner.label ?? "손 도트 실내 기물"}` }),
+          el("h2", { text: "공방 · 물건·가구" }),
+          targetSwitch(s),
           el("span", {
             class: "workshop-progress", dataset: { testid: "workshop-progress" },
             text: status.running + status.queued > 0 ? `그리는 중 ${status.running} · 대기 ${status.queued} · 약 ${eta}분 남음` : "쉬는 중",
@@ -151,15 +184,15 @@ function render(force: boolean): void {
                 children: FILTERS.map((f) => el("button", {
                   class: "workshop-filter" + (f === filter ? " is-active" : ""), attrs: { type: "button", role: "tab", "aria-selected": String(f === filter) },
                   dataset: { testid: `workshop-filter-${f}` },
-                  text: `${f === "all" ? "전체" : ITEM_STATE_LABELS[f]} ${f === "all" ? s.items().length : s.items().filter((item) => itemState(item.key, s.rounds, s.picks) === f).length}`,
+                  text: `${f === "all" ? "전체" : ITEM_STATE_LABELS[f]} ${visibleItems(s, f).length}`,
                   on: { click: () => { filter = f; selectedKey = null; render(true); } },
                 })),
               }),
               el("input", {
-                class: "workshop-search", value: query, attrs: { type: "search", placeholder: "기물 찾기", "aria-label": "기물 찾기" },
+                class: "workshop-search", value: query, attrs: { type: "search", placeholder: "찾기", "aria-label": "찾기" },
                 on: { input: (event) => { query = (event.target as HTMLInputElement).value; render(true); } },
               }),
-              el("button", { class: "workshop-new", text: "+ 새 기물 정의", attrs: { type: "button" }, dataset: { testid: "workshop-new-item" }, on: { click: () => { showForm = true; render(true); } } }),
+              el("button", { class: "workshop-new", text: "+ 새로 만들기", attrs: { type: "button" }, dataset: { testid: "workshop-new-item" }, on: { click: () => { showForm = true; render(true); } } }),
               el("ul", {
                 class: "workshop-items",
                 children: items.map((item) => el("li", {
@@ -178,7 +211,7 @@ function render(force: boolean): void {
             children: [showForm
               ? renderItemForm(s, (key) => { showForm = false; formDraft = null; selectedKey = key; filter = "all"; render(true); }, () => { showForm = false; formDraft = null; render(true); }, formDraft ?? undefined)
               : selected ? renderRoundView(s, selected, view, () => render(true))
-              : el("p", { class: "workshop-empty", text: filter === "choose" ? "고를 차례인 기물이 없습니다. 다 그리면 여기 나타납니다." : "기물이 없습니다." })],
+              : el("p", { class: "workshop-empty", text: filter === "choose" ? "고를 차례인 물건이 없어요. 다 그리면 여기 나타나요." : "아직 만든 물건이 없어요. 「+ 새로 만들기」를 눌러 주세요." })],
           }),
         ],
       }),
