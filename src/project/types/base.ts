@@ -468,7 +468,7 @@ export interface SectionStructureKitDef {
   /** AI 어휘 메타데이터. 없으면 AI 는 이름과 크기만 본다. */
   ai?: StructureKitAiMeta;
   /**
-   * 기물 설명서(ObjectSpec v1, 2026-10-20) — tile-gen·스토어·에디터가 같이 읽는 단일 정본.
+   * 기물 설명서(ObjectSpec v1, 2026-10-20) — object-gen·스토어·에디터가 같이 읽는 단일 정본(2026-10-21 부터 tile-gen 은 지형 전용).
    * 있으면 크기·발밑·놓는 곳·쓰임·3/4 영수증을 여기서 읽는다(공방의 옛 `hand:`·`foot:` 태그보다 우선). src/project/objectSpec.ts
    */
   spec?: ObjectSpecV1;

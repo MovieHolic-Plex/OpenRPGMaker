@@ -4,6 +4,8 @@
  * 격자를 16px 칸으로 잘라(빈 칸은 뺀다) 30칸 폭 시트 PNG 한 장을 만들고, 굽기 자체는 project/workshopTiles.ts 가 한다.
  * 다 구우면 window 에 WORKSHOP_BAKED_EVENT 를 낸다 — 조수의 「없는 타일」 카드(aiStoreCard.ts)가 듣고 후속 요청을 보낸다.
  */
+import { editorState } from "@/editor/editorState";
+import { paletteStampFromKit } from "@/editor/harnessSuggestion/structureKitModel";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { workshopBakeSheet, workshopGridHash } from "@/harnesses/_core/workshop/bakeSheet";
 import type { Grid, Palette, WorkshopEnv, WorkshopItem } from "@/harnesses/_core/workshop/types";
@@ -26,6 +28,22 @@ export function workshopTargetTileset(item: WorkshopItem): string {
 /** 이 후보 그림이 지금 프로젝트 칩셋에 이미 들어갔는가. */
 export function isWorkshopPickBaked(item: WorkshopItem, grid: Grid): boolean {
   return bakedWorkshopKit(store.getCurrent().tilesets[workshopTargetTileset(item)], workshopObjectId(item.key), workshopGridHash(grid)) !== undefined;
+}
+
+/**
+ * 칩셋에 들어간 기물을 지금 맵에 놓을 수 있게 붓에 담는다(기물 탭의 「맵에 놓기」와 같은 길: activePaletteStamp + 칠하기 도구).
+ * 지금 맵이 그 칩셋을 쓰지 않으면 놓을 수 없다 — 사람이 읽는 이유를 돌려준다. 담았으면 null.
+ */
+export function armWorkshopStamp(item: WorkshopItem, grid: Grid): string | null {
+  const project = store.getCurrent();
+  const tilesetId = workshopTargetTileset(item);
+  const kit = bakedWorkshopKit(project.tilesets[tilesetId], workshopObjectId(item.key), workshopGridHash(grid));
+  if (!kit || kit.kind !== "section") return "아직 칩셋에 들어가지 않았어요.";
+  const mapId = editorState.get().currentMapId;
+  const map = mapId ? project.maps[mapId] : undefined;
+  if (!map || map.tilesetId !== tilesetId) return `지금 맵은 「${project.tilesets[tilesetId]?.name ?? tilesetId}」 칩셋을 쓰지 않아요. 그 칩셋을 쓰는 맵을 열면 놓을 수 있어요.`;
+  editorState.set({ activePaletteStamp: paletteStampFromKit(kit), tool: "paint" });
+  return null;
 }
 
 /**

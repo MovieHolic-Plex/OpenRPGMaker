@@ -14,7 +14,8 @@ import { currentDrawTarget, OBJECT_WORKSHOP_HARNESSES } from "./mapObjectTarget"
 import { renderItemForm } from "./workshopItemForm";
 import { renderRoundView, type RoundViewState } from "./workshopRoundView";
 import { getWorkshopSession, saveConcurrency, type WorkshopSession } from "./workshopSession";
-import { etaMinutes, ITEM_STATE_LABELS, itemState, type ItemState } from "./workshopStatus";
+import { etaMinutes, ITEM_STATE_LABELS, itemState, latestRound, roundProgress, type ItemState } from "./workshopStatus";
+import { isWorkshopPickBaked } from "./workshopBake";
 
 type Filter = ItemState | "all";
 const FILTERS: Filter[] = ["choose", "drawing", "picked", "all"];
@@ -108,8 +109,8 @@ function targetSwitch(s: WorkshopSession): HTMLElement {
     children: [
       el("span", { class: "workshop-item-meta", text: "넣을 곳" }),
       ...options.map((id) => el("button", {
-        class: "workshop-filter" + (id === s.harnessId ? " is-active" : ""),
-        attrs: { type: "button", "aria-pressed": String(id === s.harnessId) }, dataset: { testid: `workshop-target-${id}` },
+        class: "workshop-filter" + (id === s.harnessId ? " is-active" : "") + (id !== "interior-props" && mapName ? " is-map" : ""),
+        attrs: { type: "button", "aria-pressed": String(id === s.harnessId), ...(id !== "interior-props" && mapName ? { title: mapName } : {}) }, dataset: { testid: `workshop-target-${id}` },
         // 칩셋 이름은 데이터라 번역하지 않는 조각으로 따로 둔다(번역기가 이름 속 「·」로 문장을 쪼개지 않게)
         children: id === "interior-props" ? ["실내 가구"] : mapName ? [el("span", { text: "지금 맵 칩셋" }), " ", el("span", { text: mapName, attrs: { translate: "no" } })] : ["맵 물건"],
         on: { click: () => { if (id !== s.harnessId) void openWorkshop(id); } },
@@ -121,6 +122,70 @@ function targetSwitch(s: WorkshopSession): HTMLElement {
 function signature(s: WorkshopSession): string {
   return JSON.stringify([filter, query, selectedKey, showForm, view, s.picks.map((p) => `${p.itemKey}|${p.roundId}|${p.letter}`), s.defs.length,
     s.rounds.map((r) => [r.id, r.runs.map((run) => [run.status, run.attempt, run.verdict?.verdict, run.grid?.cells.length])]), s.engine.status()]);
+}
+
+const STEPS = ["무엇을 그릴지 적기", "후보 그리기", "한 장 고르기", "칩셋에 넣기", "맵에 놓기"] as const;
+
+/** 지금 단계(1~5) — 폼·기물 상태·고른 그림이 칩셋에 들어갔는지로 정한다. 칩셋에 넣었으면 5(맵에 놓기)가 지금 할 일이다. */
+function currentStep(s: WorkshopSession, item: WorkshopItem | null): number {
+  if (showForm || !item) return 1;
+  const state = itemState(item.key, s.rounds, s.picks);
+  // 한 장도 못 그린 판(계정 한도·로그인 막힘)은 「후보 그리기」에서 멈춘다 — 고를 것이 없다.
+  if (state === "idle" || state === "drawing" || state === "stopped") return 2;
+  if (state === "choose") return 3;
+  const pick = s.picks.find((p) => p.itemKey === item.key);
+  const grid = pick ? s.rounds.find((r) => r.id === pick.roundId)?.runs.find((r) => r.letter === pick.letter)?.grid : undefined;
+  return grid && isWorkshopPickBaked(item, grid) ? 5 : 4;
+}
+
+/** 줄 목록의 상태 글 — 고른 그림이 이미 칩셋에 들어갔으면 「칩셋에 넣음」. */
+function queueLabel(s: WorkshopSession, item: WorkshopItem): string {
+  const state = itemState(item.key, s.rounds, s.picks);
+  if (state === "picked") {
+    const pick = s.picks.find((p) => p.itemKey === item.key);
+    const grid = pick ? s.rounds.find((r) => r.id === pick.roundId)?.runs.find((r) => r.letter === pick.letter)?.grid : undefined;
+    if (grid && isWorkshopPickBaked(item, grid)) return "칩셋에 넣음";
+  }
+  return ITEM_STATE_LABELS[state];
+}
+
+/** 단계 띠 + 그리는 동안의 진행 막대. 사람이 지금 무엇을 기다리는지·무엇을 할 차례인지 한눈에. */
+function stepper(s: WorkshopSession, item: WorkshopItem | null, eta: number): HTMLElement {
+  const step = currentStep(s, item);
+  const stopped = !!item && !showForm && itemState(item.key, s.rounds, s.picks) === "stopped";
+  const round = item && !showForm ? latestRound(item.key, s.rounds) : null;
+  const drawing = item && !showForm && itemState(item.key, s.rounds, s.picks) === "drawing" && round;
+  const progress = drawing ? roundProgress(drawing) : null;
+  return el("div", {
+    class: "workshop-stepper-wrap",
+    children: [
+      el("ol", {
+        class: "workshop-stepper", attrs: { "aria-label": "만드는 순서" }, dataset: { testid: "workshop-stepper", step: String(step) },
+        children: STEPS.map((label, index) => {
+          const n = index + 1;
+          const state = n < step ? "is-done" : n === step ? (stopped ? "is-current is-blocked" : "is-current") : "is-todo";
+          return el("li", {
+            class: `workshop-step ${state}`, attrs: n === step ? { "aria-current": "step" } : {},
+            children: [
+              el("span", { class: "workshop-step-no", text: n < step ? "✓" : n === step && stopped ? "!" : String(n), attrs: { "aria-hidden": "true" } }),
+              el("span", { class: "workshop-step-label", text: label }),
+              ...(n === step && stopped ? [el("span", { class: "workshop-step-flag", text: "멈춤" })] : []),
+            ],
+          });
+        }),
+      }),
+      ...(progress ? [el("div", {
+        class: "workshop-drawing", dataset: { testid: "workshop-drawing" },
+        children: [
+          el("div", {
+            class: "workshop-bar", attrs: { role: "progressbar", "aria-valuemin": "0", "aria-valuemax": String(progress.total), "aria-valuenow": String(progress.done), "aria-label": "후보 그리기" },
+            children: [el("span", { attrs: { style: `width: ${Math.max(6, Math.round((progress.done / Math.max(1, progress.total)) * 100))}%` } })],
+          }),
+          el("span", { class: "workshop-drawing-text", text: `후보 ${progress.done}/${progress.total}장 다 그림 · 약 ${Math.max(1, eta)}분 남음. 창을 닫아도 계속 그려요.` }),
+        ],
+      })] : []),
+    ],
+  });
 }
 
 function render(force: boolean): void {
@@ -159,10 +224,8 @@ function render(force: boolean): void {
           targetSwitch(s),
           el("span", {
             class: "workshop-progress", dataset: { testid: "workshop-progress" },
-            text: status.running + status.queued > 0 ? `그리는 중 ${status.running} · 대기 ${status.queued} · 약 ${eta}분 남음` : "쉬는 중",
+            text: status.running + status.queued > 0 ? `후보 ${status.running}장 그리는 중 · ${status.queued}장 대기 · 약 ${eta}분 남음` : "쉬는 중",
           }),
-          ...(status.blocked ? [el("span", { class: "workshop-blocked", text: status.blocked })] : []),
-          ...(s.store.backend === "memory" ? [el("span", { class: "workshop-blocked", text: "이 브라우저는 저장소를 못 열어 새로 고침하면 후보가 사라집니다." })] : []),
           el("label", {
             class: "workshop-concurrency",
             children: ["동시에", el("select", {
@@ -174,6 +237,14 @@ function render(force: boolean): void {
           el("button", { class: "workshop-close", text: "닫기", attrs: { type: "button", "aria-label": "공방 닫기" }, on: { click: closeWorkshop } }),
         ],
       }),
+      // 막힘·경고는 머리줄 밖 한 줄 띠로 — 긴 문구가 머리줄을 밀어 「닫기」가 아래로 떨어지지 않게(2026-10-21 실화면).
+      ...(status.blocked || s.store.backend === "memory" ? [el("div", {
+        class: "workshop-alert", attrs: { role: "status" }, dataset: { testid: "workshop-alert" },
+        children: [
+          ...(status.blocked ? [el("p", { class: "workshop-blocked", text: status.blocked })] : []),
+          ...(s.store.backend === "memory" ? [el("p", { class: "workshop-blocked", text: "이 브라우저는 저장소를 못 열어 새로 고침하면 후보가 사라집니다." })] : []),
+        ],
+      })] : []),
       el("div", {
         class: "workshop-body",
         children: [
@@ -201,7 +272,7 @@ function render(force: boolean): void {
                     class: "workshop-item" + (item.key === selectedKey ? " is-selected" : ""), attrs: { type: "button" },
                     dataset: { testid: "workshop-item", key: item.key, state: itemState(item.key, s.rounds, s.picks) },
                     on: { click: () => { selectedKey = item.key; showForm = false; view.selected = 0; view.rejectFor = null; render(true); } },
-                    children: [el("span", { class: "workshop-item-title", text: item.title }), el("span", { class: "workshop-item-meta", text: `${item.category} · ${ITEM_STATE_LABELS[itemState(item.key, s.rounds, s.picks)]}` })],
+                    children: [el("span", { class: "workshop-item-title", text: item.title }), el("span", { class: "workshop-item-meta", text: `${item.category} · ${queueLabel(s, item)}` })],
                   })],
                 })),
               }),
@@ -209,9 +280,9 @@ function render(force: boolean): void {
           }),
           el("main", {
             class: "workshop-main",
-            children: [showForm
+            children: [stepper(s, showForm ? null : selected, eta), showForm
               ? renderItemForm(s, (key) => { showForm = false; formDraft = null; selectedKey = key; filter = "all"; render(true); }, () => { showForm = false; formDraft = null; render(true); }, formDraft ?? undefined)
-              : selected ? renderRoundView(s, selected, view, () => render(true))
+              : selected ? renderRoundView(s, selected, view, () => render(true), closeWorkshop)
               : el("p", { class: "workshop-empty", text: filter === "choose" ? "고를 차례인 물건이 없어요. 다 그리면 여기 나타나요." : "아직 만든 물건이 없어요. 「+ 새로 만들기」를 눌러 주세요." })],
           }),
         ],

@@ -1,33 +1,43 @@
-# 에디터 「공방」 — 생성기 넷(char-gen·object-gen·tile-gen·item-gen)을 에디터에서 쓴다
+# 에디터 「공방」 — 생성기 넷(object-gen·char-gen·tile-gen·item-gen)을 에디터에서 쓴다
 
 - 들어오는 길: 왼쪽 활동 막대 렌치 「공방」(`src/editor/panels/leftWorkshopPane.ts`).
 - **2026-10-21 개편(사용자 결정):** 하네스 목록 카드(「실내 가구·소품 그리기」·「맵 소품 그리기」, 매니페스트 summary·모델 권장 문구)를 뺐다.
-  첫 화면은 생성기 카드 넷이다 — 정의·상태는 `src/editor/workshop/generators.ts`. 화면 글은 쉬운 말만, 모델 이름 금지.
+  첫 화면은 생성기 카드다 — 정의·상태·견본은 `src/editor/workshop/generators.ts`. 화면 글은 쉬운 말만, 모델 이름 금지.
+- **같은 날 2차(「허접하다」 지적 → 상용 수준 재디자인, PR workshop-gens-2):** 쓸 수 있는 카드(물건·캐릭터)는 위에 크게 —
+  **실제 견본 도트 띠**(원래 크기 PNG 124×58 를 2배 정수 배율, 견본 바탕 #181b22) + 제목·상태 + 한 줄 소개 + **주 단추 하나**(보조는 글자 단추).
+  곧 들어올 카드(아이템)는 「곧 들어올 생성기」 아래 작게, 단추 없음. 지형(tile-gen)은 견본이 아직 없어 그림 띠 대신 「견본은 첫 결과가 나오면 올라와요」 빈 띠를 쓴다. 색·간격·모서리는 편집기 토큰(`--accent`·`--success-muted`·`--radius-m` …)만 쓴다.
+  견본 출처: object-gen 저장소 `docs/images/hero.png` 에서 고른 기물 3개(같은 조직 1차 그림) · char-gen 저장소 자체 더미 칩 `examples/bases/dummy_a/b` 와 그 편집 결과
+  (`public/assets/workshop/*-sample.png`). char-gen 갤러리 그림은 Scarloxy(제3자) 바탕이라 쓰지 않았다.
 
 | 카드 | 생성기 | 상태 | 하는 일 |
 |---|---|---|---|
-| 캐릭터 | char-gen (공개, `MovieHolic-Plex/char-gen`) | 내 컴퓨터에서 만들어 가져오기 | 파이썬 도구라 브라우저에서 못 돈다. 「만드는 법·가져오기」(`genWorkspace.ts`)가 ① 무엇·몇 명 → 사용자 AI 에이전트에 붙여 넣을 부탁 글(언어별, `charGenRequest`) ② `char-gen pack` 폴더 가져오기 → 미리 보기 → 이 프로젝트에 넣기 |
-| 물건·가구 | object-gen | 여기서 만들기 | 「만들기」= 아래 공방 실행기(사용자 자기 AI 계정). 넣을 곳 전환: 실내 가구(`interior-props`, 손 도트 실내 칩셋) · 지금 맵 칩셋(`map-objects`). 「만든 묶음 가져오기」= object-gen `pack` 폴더 가져오기 |
-| 타일 조각 | tile-gen (비공개, `MovieHolic-Plex/tile-gen`) | 내 컴퓨터에서 만들어 가져오기 | 이름과 달리 칸 타일(바닥·벽)이 아니라 사용자 타일셋 색에 맞춘 맵 조각(우물·노점 같은 물체)을 그린다. 사람이 로컬 페이지에서 고르고 `tile-gen pack`. 화면: ① 무엇·크기 + 「지금 맵 칩셋 그림 받기」(`WorkshopEnv.tilesetSource` 바탕 시트 PNG — tile-gen 이 색을 잠글 파일) → 부탁 글(`tileGenRequest`) ② 묶음 가져오기 |
-| 아이템·아이콘 | item-gen | 준비 중 | 저장소가 없다(2026-10-21 조직·홈 확인). `scripts/asset-gen/generate.mjs`(agy CLI, 사람 고르기 없음)만 있어 가짜로 채우지 않았다 |
+| 물건·가구 | object-gen | 여기서 바로 | 「새 물건 그리기」= 아래 공방 실행기(사용자 자기 AI 계정). 넣을 곳 전환: 실내 가구(`interior-props`, 손 도트 실내 칩셋) · 지금 맵 칩셋(`map-objects`). 「만든 묶음 가져오기」= object-gen `pack` 폴더 가져오기 |
+| 캐릭터 | char-gen (공개, `MovieHolic-Plex/char-gen`) | 내 컴퓨터에서 | 파이썬 도구라 브라우저에서 못 돈다. 「부탁하고 가져오기」(`genWorkspace.ts`)가 ① 무엇·몇 명 → 사용자 AI 에이전트에 붙여 넣을 부탁 글(언어별, `charGenRequest`) ② `char-gen pack` 폴더 가져오기 → 미리 보기 → 이 게임에 넣기 |
+| 지형·바닥 | tile-gen (비공개, `MovieHolic-Plex/tile-gen`) | 내 컴퓨터에서 | **지형 생성기**(2026-10-21 다시 만듦): 이음매 없는 바닥 채우기, 47칸 자동 타일 가장자리(풀↔흙·길·카펫), 물가·움직이는 물, 숲 덩어리, 절벽·단. 물건·기물·건물은 object-gen 만 — tile-gen 을 물건 생성기로 소개하지 않는다(`tile-gen new --mode prop` 은 거절하고 object-gen 을 가리킨다). 화면: ① 종류(`TERRAIN_MODES`: floor·autotile·water·forest·cliff)·어떤 지형·참고 칸 `x,y`(선택) + 「지금 맵 칩셋 그림 받기」 → 부탁 글(`tileGenRequest`: `tile-gen auto` → 로컬 `tile-gen pick` → `tile-gen pack`) ② 묶음 가져오기. 묶음 = `oprn-store-pack/1` tileset 하나 + `autotileGroups`(256 이웃 키 `variantMap`, 바닥은 `interiorVariants`) + 물은 `animationStrips`. `content.objects`·ObjectSpec 킷은 없다. 가져오기는 타일셋을 통째로 옮겨(`applyPackToProject` 의 `mapStrings`) 두 칸을 그대로 둔다 — 넣은 뒤 안내에 자동 타일 벌 수를 보인다. 견본 그림은 첫 실제 결과가 나오면 단다(지금 카드는 「견본은 첫 결과가 나오면 올라와요」). 한계: 새 지형은 **새 칩셋**으로 들어가 그 칩셋을 쓰는 맵에서만 칠한다(지금 맵 칩셋에 합치기는 아직 없다), 숲 줄기·절벽 면 줄은 붓이 아직 안 놓는다 |
+| 아이템 아이콘 | item-gen | 준비 중 | 저장소가 없다(2026-10-21 조직·홈 확인). `scripts/asset-gen/generate.mjs`(agy CLI, 사람 고르기 없음)만 있어 가짜로 채우지 않았다 |
 
-- AI 미연결: 물건 카드에 「AI 연결하기」. 호스트가 AI 를 껐으면 안내 글만(죽은 버튼 없음). 묶음 가져오기는 AI 없이 된다.
-- **묶음 가져오기**(`src/editor/workshop/genPackImport.ts`): `<input webkitdirectory>` 로 `oprn-store-pack/1` 폴더(manifest.json + blobs/<sha256>)를 고른다.
-  `validateManifest` · blob 은 sha256 을 다시 재서 이름과 맞는 것만 · 스토어 넣기와 같은 `prepareManifestItem`(storeApply.ts 에서 떼어 냄) + `applyPreparedStoreItem`.
+- AI 미연결: 물건 카드 주 단추가 「내 AI 연결하기」, 가져오기는 글자 단추. 호스트가 AI 를 껐으면 안내 글 + 가져오기가 주 단추(죽은 버튼 없음).
+- **물건 화면 단계 띠**(`workshopWorkspace.ts` `stepper`): ① 무엇을 그릴지 적기 ② 후보 그리기 ③ 한 장 고르기 ④ 칩셋에 넣기 ⑤ 맵에 놓기 — 지금 단계는 폼·`itemState`·`isWorkshopPickBaked` 로 정한다(칩셋에 넣으면 data-step=5 가 지금 할 일). 한 장도 못 그린 판(`itemState` = `stopped`, 「멈춤」 — 계정 한도·로그인 막힘)은 ②에 노란 「멈춤」 표로 머문다(고를 차례로 보이지 않는다). 막힘·경고 문구는 머리줄이 아니라 그 아래 한 줄 띠(`workshop-alert`)에 — 긴 문구가 「닫기」를 밀어내던 것(실화면). 카드 오류는 짧게: 한도 = 「계정 사용 한도 소진 · 약 N시간 뒤 풀림」(`quotaRunError`, 공급자 「Resets in 61h28m」에서), 401·403 = 「로그인 만료 · AI 설정에서 다시 로그인」. 다시 그리기 장 수 = 지난 판 장 수(폼에서 2장이면 2장). 「맵에 놓기」는 붓을 들고 창을 닫으며 토스트로 「맵에서 놓을 곳을 누르세요」.
+  그리는 동안 진행 막대(`roundProgress`, 「후보 n/m장 다 그림 · 약 k분 남음. 창을 닫아도 계속 그려요」). 칩셋에 넣은 뒤 주 단추는 **「맵에 놓기」**(`armWorkshopStamp`: 기물 탭과 같은 `activePaletteStamp` + 칠하기 도구, 공방을 닫는다 → 맵을 클릭하면 놓인다). 지금 맵이 그 칩셋을 안 쓰면 이유를 보인다.
+  안의 단추·입력은 `.workshop button` 한 모양, 주 단추는 `.workshop-primary`. 비교 띠(지금 그림 vs 후보)는 지금 그림이 있을 때만.
+- **묶음 가져오기**(`src/editor/workshop/genPackImport.ts`, 화면 `genWorkspace.ts` `importStep`): 큰 **끌어 놓기 칸**(폴더를 놓으면 `webkitGetAsEntry` 로 하위 폴더까지 읽는다, 누르면 `<input webkitdirectory>`). 묶음을 읽으면 칸이 한 줄(「다른 묶음 폴더…」)로 줄고 미리 보기·「이 게임에 넣기」가 나온다.
+  미리 보기: 한두 장이면 크게(정수 배율 ≤4배, 360×220 상자), 그보다 많으면 같은 칸(128×104) 격자에 통째로 — 12장 넘으면 11장 + 「나머지 N장도 같이 들어가요」(캐릭터 묶음 38장이 높이 제한 상자에 잘려 보이던 것). 큰 그림은 칸에 맞게 줄인다. 단계가 하나뿐이면 번호를 달지 않는다.
+  **캐릭터 묶음 가져오기 오류(2026-10-21 고침):** 짝 초상이 든 char-gen 묶음이 「reading 'characterAppearances'」로 죽었다 — `prepareStoreItem` 의 미리 돌려 보기 빈 문서에 `database` 가 없었다(`openwiki/asset-store.md`).
+  `oprn-store-pack/1` 폴더(manifest.json + blobs/<sha256>): `validateManifest` · blob 은 sha256 을 다시 재서 이름과 맞는 것만 · 스토어 넣기와 같은 `prepareManifestItem`(storeApply.ts 에서 떼어 냄) + `applyPreparedStoreItem`.
   slug 는 `local-<생성기>-<blob 해시 12>`(같은 묶음을 다시 넣으면 덮어쓴다), 출처 `store = local:<생성기>`. 되돌리기 한 번으로 뺀다. 크레딧(CC BY 바탕 등)은 출처에 남는다.
 - **공용 출구는 막는다:** `storePublishBlockReason` 이 `workshop_` 그림(3/4 관문 영수증이 아직 공방에 배선되지 않음)과 `local:` 출처 묶음을 스토어 올리기에서 막는다.
   공용에 올리는 길은 생성기 자신의 검사·submit(3/4 관문 포함)이다. 공방 그림은 이 프로젝트에만 들어간다(판 화면 「공용에 올리려면 3/4 시점 검사…」 안내).
-- 물건 화면(`workshopWorkspace.ts`): 목록은 내가 만든 물건 + 판·고른 것이 남은 번들 기물(옛 다시 그리기 기록)만. 손대지 않은 번들 기물 목록은 뺐다 — 저장소(`oprn-workshop`)는 그대로라 옛 판·고른 것은 계속 열린다.
-  목록이 비면 폼부터 연다. 폼(`workshopItemForm.ts`) = 무엇 · 어떻게 생겼나 · 가로/세로 칸 · 놓는 방식 · 후보 수(1~3, `engine.startRound({count})`) → 「만들기」가 저장하고 바로 판을 시작한다.
-  분류·쓰임·닮은 기물·솟는 px 칸은 화면에서 뺐다(기본값: 솟는 높이 세우는 것 16px · 거는 것·무늬 0).
+- 물건 목록은 내가 만든 물건 + 판·고른 것이 남은 번들 기물(옛 다시 그리기 기록)만. 손대지 않은 번들 기물 목록은 뺐다 — 저장소(`oprn-workshop`)는 그대로라 옛 판·고른 것은 계속 열린다.
+  목록이 비면 폼부터 연다. 폼(`workshopItemForm.ts`) = 무엇 · 어떻게 생겼나 · 가로/세로 칸 · 놓는 방식 · 후보 수(1~3, `engine.startRound({count})`) → 「후보 그리기」가 저장하고 바로 판을 시작한다.
 - 「없는 타일」 카드 「직접 그려 줘」는 그대로 `openWorkshop(harnessId, { newItem })` 로 이 폼을 채워 연다.
-- 그림 생성은 전부 사용자 계정: 편집기 안은 조수와 같은 엔드포인트(`chat.ts`), char-gen·tile-gen·object-gen 은 사용자 컴퓨터의 CLI 로그인. 우리 키·스토어 크레딧·유료 대체 경로 없음.
-- 남은 일: 데스크톱(Electron)에서 char-gen·tile-gen·object-gen 을 직접 띄우기(지금은 부탁 글 + 묶음 가져오기), item-gen 실체, 칸 타일(바닥·벽) 생성기, 공방 굽기에 3/4 관문 영수증 배선.
+- 영어 활동 막대에서 「Workshop」 이 48px 막대보다 넓어 잘리던 것 → 영어에서만 그 이름표 9.5px(`18-assistant-deck.css`).
+- 그림 생성은 전부 사용자 계정: 편집기 안은 조수와 같은 동반 서비스 경로(`chat.ts`, OAuth — 편집기 AI 설정은 apiKey 저장값을 OAuth 로 승격한다), char-gen·object-gen 은 사용자 컴퓨터의 CLI 로그인. 우리 키·스토어 크레딧·유료 대체 경로 없음.
+- 남은 일: 지형 묶음을 지금 맵 칩셋에 합치기(지금은 새 칩셋), tile-gen 견본 그림, 데스크톱(Electron)에서 char-gen·object-gen 을 직접 띄우기(지금은 부탁 글 + 묶음 가져오기), item-gen 실체, 공방 굽기에 3/4 관문 영수증 배선.
 
 ## 공방 실행기(물건·가구 카드 안)
 
-- 실행기: `src/harnesses/_core/workshop/engine.ts`. 한 판 = 후보 3장(방향 앞에서부터 3개, 2026-10-07 에 5장→3장). 한 장 = 그리기 → 깨지면 고치기 ≤2 → (실행기가 `selfCheckMessage` 를 주면 자기 점검 1 — 실내 기물은 2026-10-07 에 뺐다, 「너무 오래 걸린다」) → 독립 검수(vision) → `runner.gate` → 불통과면 다시(시도 ≤3). 3번 다 불통과여도 사람이 볼 수 있게 「검수 불통과」로 남긴다. 동시 기본 3(1~6, `oprn:workshop-concurrency`), 429 면 하나 줄이고 기다린다, 401·403 이면 멈추고 AI 설정으로 안내.
-- 모델: 표면 `workshop-draw`(AI 설정 「도트 저작 모델」(`pixelModel`)이 저장돼 있으면 그 텍스트 모델, 없으면 옛 그대로 감독 티어 — 2026-10-16, 16384 토큰) · `workshop-review`(vision 역할, 4096). `src/ai/assistantEndpoint.ts` 표 한 줄씩. 사용자 자기 계정·조수와 같은 엔드포인트. 권장 모델은 이름을 박지 않고 「성능이 높은 AI 모델일수록 결과가 좋아요」 한 줄로만 화면에 표시한다(`WORKSHOP_MODEL_ADVICE`, 2026-10-21 UX 2차 F30). 왼쪽 공방 창(`leftWorkshopPane.ts`)은 매니페스트의 문서용 title/summary 를 건드리지 않고 `WORKSHOP_DISPLAY` 로 쉬운 말 제목·요약을 덮어 보여 주고, 목록 위에 AI 연결 안내 블록(`left-workshop-no-ai`, 「AI 연결하기」 버튼)을 둔다. 서버가 AI 를 껐으면(`hostAiDisabled`) 버튼 없이 관리자에게 요청하라는 문구만 보인다. `AI_CONNECTION_STATUS_CHANGED_EVENT` 로 다시 그린다.
+- 실행기: `src/harnesses/_core/workshop/engine.ts`. 한 판 = 후보 3장(방향 앞에서부터 3개, 2026-10-07 에 5장→3장). 한 장 = 그리기 → 깨지면 고치기 ≤2 → (실행기가 `selfCheckMessage` 를 주면 자기 점검 1 — 실내 기물은 2026-10-07 에 뺐다, 「너무 오래 걸린다」) → 독립 검수(vision) → `runner.gate` → 불통과면 다시(시도 ≤3). 3번 다 불통과여도 사람이 볼 수 있게 「검수 불통과」로 남긴다. 동시 기본 3(1~6, `oprn:workshop-concurrency`), 429 면 하나 줄이고 기다린다(≤5번, 20·40·…초). **계정 한도 소진 429**(공급자 문구 quota·RESOURCE_EXHAUSTED·upgrade your plan)는 기다려도 안 풀리므로 다시 시도하지 않고, 429 로 끝난 장이 있으면 `blocked` = 「내 AI 계정의 사용 한도에 걸렸어요…」로 줄을 멈춘다(2026-10-21 실측: Google 계정 「Individual quota reached … Resets in 101h」 에 카드가 몇 분씩 「그리는 중」으로 남았다). 401·403 이면 멈추고 AI 설정으로 안내. 「다시 그리기」가 멈춤을 푼다.
+- 모델: 표면 `workshop-draw`(AI 설정 「도트 저작 모델」(`pixelModel`)이 저장돼 있으면 그 텍스트 모델, 없으면 옛 그대로 감독 티어 — 2026-10-16, 16384 토큰) · `workshop-review`(vision 역할, 4096). `src/ai/assistantEndpoint.ts` 표 한 줄씩. 사용자 자기 계정·조수와 같은 엔드포인트. 화면에 모델 이름·권장 문구는 없다(1차 개편에서 `WORKSHOP_MODEL_ADVICE`·`WORKSHOP_DISPLAY` 를 지웠다). 왼쪽 공방 창은 `AI_CONNECTION_STATUS_CHANGED_EVENT` 로 연결 안내를 다시 그린다.
 - 속도(2026-10-07, 실제 Claude Sonnet 5.5·옷장·동시 3): 옛 설정(5장·자기 점검) 한 판 6.8분·호출 35번 → 3장·자기 점검 뺌 4.9분·15번 → 아래 헛걸음 셋을 고친 뒤 1.8분·8번(두 번 재서 112초·108초, 고치기 호출 0). 호출 하나가 30~60초라 시간은 호출 수가 정한다. 잰 스크립트는 저장소에 없다 — 엔진+실행기를 esbuild 로 묶어 node 에서 프록시(`ANTHROPIC_BASE_URL`)로 부르고 `onChange` 로 판을 받는다.
   - 헛걸음 1 귀퉁이 검사: 「칠한 귀퉁이 ≥2 = 배경」이 번들 91종(옷장 포함)을 틀리게 막았다 → 지금 그림에서 비어 있던 귀퉁이가 칠해졌을 때만(새 기물은 네 귀퉁이 다).
   - 헛걸음 2 줄 폭: 모델이 16칸 줄을 17칸으로 세고, 고치려고 JSON 안에 `"…"[0:16]`·`.replace(…)`·`"A" if False else "B"` 를 남긴다 → `repairStringExpressions` 가 값으로 풀고, 그래도 폭이 틀린 줄이 8개 이하면 그 줄만 `{"rows":{"7":"…"}}` 로 다시 받는다(`rowsNeedingFix`·`applyRowFix`).

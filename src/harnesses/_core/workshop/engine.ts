@@ -22,6 +22,8 @@ export const CALLS_PER_CANDIDATE_ESTIMATE = 3;
 const MAX_RATE_RETRIES = 5;
 const RATE_WAIT_MS = 20_000;
 const BLOCKED_AUTH = "AI 연결이 끊겼습니다. AI 설정에서 다시 연결하세요.";
+/** 계정 사용 한도(429) — 기다려도 풀리지 않는 한도면 다시 시도하지 않고 바로 멈춘다(실측 2026-10-21: 「Individual quota reached … Resets in 101h」). */
+const BLOCKED_QUOTA = "내 AI 계정의 사용 한도에 걸렸어요. 한도가 풀리거나 AI 설정에서 다른 계정·모델로 바꾼 뒤 「다시 그리기」를 누르세요.";
 const PENDING = new Set(["queued", "drawing", "reviewing"]);
 
 export type WorkshopEngineOptions = {
@@ -57,6 +59,22 @@ const statusOf = (error: unknown): number | undefined => {
   const status = (error as { status?: unknown } | null)?.status;
   return typeof status === "number" ? status : undefined;
 };
+/** 다시 시도해도 소용없는 한도 소진 429 인가(공급자 문구로 가린다). 잠깐 몰린 429 는 아니다. */
+const isQuotaExhausted = (error: unknown): boolean =>
+  statusOf(error) === 429 && /quota|RESOURCE_EXHAUSTED|usage limit|upgrade your (plan|subscription)/i.test(error instanceof Error ? error.message : String(error));
+/**
+ * 카드에 보일 한도 소진 문구 — 공급자 원문(JSON 덩어리)을 그대로 보이지 않고, 원문에 「Resets in 61h28m」이 있으면 풀리는 때만 짧게 붙인다.
+ * 원문은 개발자 도구 로그(동반 서비스 응답)에 남는다.
+ */
+export function quotaRunError(error: unknown): string {
+  const text = error instanceof Error ? error.message : String(error);
+  const m = /Resets in (?:(\d+)h)?\s*(?:(\d+)m)?/i.exec(text);
+  const hours = m?.[1] ? Number(m[1]) : 0;
+  const minutes = m?.[2] ? Number(m[2]) : 0;
+  if (hours > 0) return `계정 사용 한도 소진 · 약 ${hours + (minutes >= 30 ? 1 : 0)}시간 뒤 풀림`;
+  if (minutes > 0) return `계정 사용 한도 소진 · 약 ${minutes}분 뒤 풀림`;
+  return "계정 사용 한도 소진";
+}
 const isAbort = (error: unknown): boolean => error instanceof Cancelled || (error as { name?: string } | null)?.name === "AbortError";
 const clampConcurrency = (n: number): number => Math.max(1, Math.min(6, Math.round(n)));
 
@@ -126,7 +144,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
         return await chat(surface, { messages, response_format: { type: "json_object" }, temperature: surface === "workshop-draw" ? 0.6 : 0.1, signal, disableTransientRetry: true });
       } catch (error) {
         if (isAbort(error)) throw new Cancelled();
-        if (statusOf(error) === 429 && retry < MAX_RATE_RETRIES) {
+        if (statusOf(error) === 429 && retry < MAX_RATE_RETRIES && !isQuotaExhausted(error)) {
           concurrency = Math.max(1, concurrency - 1);
           await sleep(RATE_WAIT_MS * (retry + 1));
           continue;
@@ -268,8 +286,11 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       }
       const status = statusOf(error);
       if (status === 401 || status === 403) blocked = BLOCKED_AUTH;
+      else if (status === 429) blocked = BLOCKED_QUOTA;
       run.status = "failed";
-      run.error = error instanceof Error ? error.message : String(error);
+      run.error = isQuotaExhausted(error) ? quotaRunError(error)
+        : status === 401 || status === 403 ? "로그인 만료 · AI 설정에서 다시 로그인"
+          : error instanceof Error ? error.message : String(error);
     } finally {
       run.finishedAt = now();
       await save(round);
