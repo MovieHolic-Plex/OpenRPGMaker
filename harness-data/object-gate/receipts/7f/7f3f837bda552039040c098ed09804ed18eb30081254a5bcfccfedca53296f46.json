@@ -1,0 +1,336 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7f3f837bda552039040c098ed09804ed18eb30081254a5bcfccfedca53296f46",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "mart meat showcase",
+ "label": "modern_city_interior/mart-meat-showcase",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 20,
+  "darkV5": 37,
+  "nearBlackEdge": 0.96,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "glass case top / lid band",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "glass front window with meat trays",
+      "rows": "7-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white refrigerated base with red stripe",
+      "rows": "18-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a lighter, graded glass-top band that ends in a light front-edge line at row 4. Rows 5-6 are darker eave shadow beneath it. Below that is a tall south face: the glass front showing meat trays (rows 7-16), a ledge at rows 16-17, and the white base with a red stripe (rows 18-31), about 25 rows in all. No side face is drawn. The top band is thin but has an edge line and shadow, so it counts as a top surface rather than a bare rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 19 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no big flat fills. Dark edge pixels are 0% near-neutral, so the outlines lean toward the material (dark blue-grey beside the glass and chrome, dark red beside the meat) rather than a black sticker line. The case has a layered build: a grey-blue lid, a glass top with several individually shaded red meat cuts, a pale body with a dotted vent strip, and a dark base. The body ramp is about 5 steps, close to the references' 5-6. The pale body is a little simpler than the stall's wood and awning detail, but it reads at the same craft level beside the stall and well, and the primary facts are at or above the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17871
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "glass top lid",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "glass window with meat in four compartments",
+      "rows": "7-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white front panel with red stripe",
+      "rows": "18-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a lighter greenish-grey top band. It ends in a lighter front-edge line at row 4 and is followed by dark eave shadow in rows 5-6. Below that, the glass window (rows 7-16, meat shown face-on) and the white front panel with a red stripe (rows 18-31) make a front face of about 25 rows. The top band is thin at 4 rows, but it has an edge line and shadow, so it is more than a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 19 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well, which are the comparable multi-material props. Near-flat coverage is 0%, so there are no 5x5 flat fills. None of its dark edge pixels are neutral (0%), so the outline is tinted, a dark bluish-grey tone of the case body rather than a black sticker line. The case shows several steps: a glass-top highlight, light and mid grey on the body, a dark base, and red meat pieces with their own light and dark tones. The lower white panel is a little plain, but its dash details and shading keep it from reading as a flat fill. Overall it sits at the level of the stall and well references and does not look thinner or flatter beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15830
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "glass lid / top of showcase",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "meat trays seen through the glass front",
+      "rows": "7-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white front cabinet panel with red stripe",
+      "rows": "18-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The columns show a gradient band at rows 1-4 that ends in a lighter front-edge line at row 4 (L=190). Dark eave shadow follows at rows 5-6 (L=71 and 94). That band is a thin top surface of about 4 rows. Below it is a tall front face of about 25 rows: the glass window with meat trays at rows 7-16, a ledge at rows 16-17, and the white panel with a red stripe at rows 18-31. No side face is drawn. The top is thin but it has an edge line and shadow, so it is more than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 19 visible tones per 16x16 tile, against 17 for prop-stall-cheese and 20 for prop-well-roofed, so it is level with the richest references. Near-flat coverage is 0%, and none of the 5x5 blocks are flat. The dark edge pixels are 0% neutral, so the outline leans toward the material tone (a tinted grey-blue or red-brown) and is not a black sticker line. The glass top, white cabinet body, red meat cuts and dotted lower row are separated by value. The body and glass show about 5 lightness steps, close to the references' 5-6. The cabinet is a little cleaner and smoother than the wood and tile references, which is why texture is rated 'some' and not 'rich'. It is a standing furniture piece at the same scale as the references, so the kind matches.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16060
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "glass top / lid band",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
+     },
+     {
+      "part": "glass display window with meat visible inside",
+      "rows": "7-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "white front base panel with red stripe",
+      "rows": "18-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a band at the top that gets lighter toward the front and ends in a light front-edge line at row 4 (L=190). Rows 5-6 are darker eave shadow (L=71 and 94), so this is a top surface of about 4 rows. Below it the vertical front face runs from row 7 to row 31. It consists of the glass window with meat in rows 7-17 and the white panel with a red stripe in rows 18-31. This is more than the 1-2 row rim of the red 'front elevation' references. It resembles the green cabinet reference with a thinner top, so the top is thin but present and the drawing reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts favour the candidate. It has 19 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, so density matches the closest references. Near-flat coverage is 0%, so there are no 5x5 flat fills. Dark edge pixels are 0% near-neutral, so the outlines carry a tint, like the hedge and cheese stall, and are not a uniform black sticker line. By eye, the case has a glass lid with highlights, a pale body with shaded bands and a dotted detail strip, and meat cuts in several reds and pinks. That gives about 4 steps per material against the references' 5-6. Total distinct colours are 26 against 38-40 for the larger references. This is slightly leaner but still at reference level for a small prop. It would sit acceptably next to the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16526
+  }
+ ],
+ "decidedAt": "2026-10-21T00:04:54.273Z",
+ "cells": {
+  "16": [
+   "33c4c2fefeb1ff21",
+   "46970fa66855764f",
+   "677d252864199fe1",
+   "9dabe8cc6ea6dee0",
+   "9f6846caa2123f7c",
+   "eb51534df0cac685"
+  ],
+  "24": [
+   "0328eb45ea032af1",
+   "19e36ee6e584861d",
+   "2e8af416a6989b68",
+   "3ae788d88a76c268",
+   "79f844379b9b1c5a",
+   "7d31ec21e0b2d5d1",
+   "dabc6a80121148fb",
+   "f0abbf394ee2f668"
+  ],
+  "32": [
+   "302702eafe9c7428",
+   "9feffbb6c57ea3b0",
+   "d7300ff55d42ca28",
+   "d83cdcfcadae3bcb",
+   "fbcf1c2d5a3e4b63",
+   "fc69ba468e7012c8"
+  ],
+  "48": [
+   "739f257f8737df21",
+   "ceae08356dadb271"
+  ]
+ }
+}

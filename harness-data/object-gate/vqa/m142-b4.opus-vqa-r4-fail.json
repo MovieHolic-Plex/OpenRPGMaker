@@ -1,0 +1,60 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b4",
+ "round": 4,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "mart-dairy-open",
+   "pixelSha256": "05df67891858793b9c067fb3d1f6972f64fff2cd7f20e6036ccf82ec4d327973",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "It reads as a flat front view. The top is only a thin blue band with no lit top surface seen from above, unlike the cooler original, which shows a top plane with boxes on it. At 4x there are detached tan pixel columns along the left and right edges outside the body."
+  },
+  {
+   "id": "mart-gondola-cereal",
+   "pixelSha256": "5dcc335ecdabc505d6dbce001b5094cd5693fe5033bb5b8ba4bfb6ec3b5aae00",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The light grey top shows about 3 rows as a top surface, and the front face is short with a full dark outline. The purple and orange cereal boxes on two shelves read clearly at 1x, the scale matches the cooler original, and it stands on the floor cleanly in the room."
+  },
+  {
+   "id": "mart-gondola-detergent",
+   "pixelSha256": "2e3eccd0c5aeac748b8ce9e3dc14b493f1ccbc22bd11f5fb7854072ddef3405d",
+   "verdict": "FAIL",
+   "failed": [
+    2
+   ],
+   "reasons": "The outer edge at 4x is a light grey frame instead of the dark navy outline the originals use, so the outline weight and colour don't match. The bottle highlights are high-contrast white flecks that are noisier than the originals' shading."
+  },
+  {
+   "id": "mart-gondola-tea",
+   "pixelSha256": "8677d55b0863471b92fc5edecdb2dfcdf5267b16f8b4b37430d547ec17d84540",
+   "verdict": "FAIL",
+   "failed": [
+    4,
+    5
+   ],
+   "reasons": "The top-left box and the green sign on top are drawn as black-outlined boxes, and the box pokes up past the unit's top outline, outside the object's footprint. The pale green and beige lower shelf is muddy and low-contrast, so the tea items run together."
+  }
+ ]
+}
