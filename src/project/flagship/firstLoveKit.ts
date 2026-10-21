@@ -52,6 +52,18 @@ export function say(who: Who, expr: Expr, ...lines: string[]): Command[] {
   ];
 }
 
+/** 자리를 바꿔 말한다 — NPC 끼리 마주 말하는 장면에서 한쪽을 왼쪽에 앉혀 두 흉상이 서로를 보게 한다(VQA r8: 둘 다 오른쪽).
+ *  한 장면 안에서는 그 인물의 모든 대사에 같은 자리를 쓴다. */
+export function sayAt(who: Who, side: "left" | "right", expr: Expr, ...lines: string[]): Command[] {
+  const [face, ...rest] = say(who, expr, ...lines);
+  return [{ ...(face as Extract<Command, { kind: "changeFace" }>), position: side } as Command, ...rest];
+}
+
+/** 듣는 사람 흉상만 바꾼다 — 말하는 쪽이 다른 상대에게 말을 돌릴 때 반대편에 앞 상대(예: 점원)가 남아 있지 않게(VQA r9). */
+export function listenTo(who: Who, expr: Expr = "base", side: "left" | "right" = CAST[who].side): Command {
+  return { kind: "changeFace", resourceId: bustId(who, expr), presentation: "bust", position: side, flipHorizontally: false };
+}
+
 /** 서하의 속마음 — 얼굴 없이 괄호 대신 흐린 독백으로. */
 export function think(...lines: string[]): Command[] {
   return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", body, position: "bottom" }))];

@@ -131,8 +131,32 @@ function paintRoofView(map: GameMap, view: NonNullable<RoomSpec["view"]>): void 
   }
 }
 
+/**
+ * 맵 폭이 화면(30칸)보다 좁으면 카메라 둘레가 검다(옥상 24칸 = 화면 20% 검정, 전체 VQA 축 1). 왼쪽 left·오른쪽 right 칸을 덧대고
+ * 모든 칸 배열·이벤트를 left 만큼 민다. 덧댄 칸은 pick(y, side) 가 고른 원래 열을 그대로 복사한다.
+ */
+function padMapX(map: GameMap, left: number, right: number, pick: (y: number, side: "left" | "right") => number): void {
+  const W = map.width, H = map.height, NW = W + left + right;
+  const bag = map as unknown as Record<string, unknown>;
+  for (const [key, value] of Object.entries(bag)) {
+    if (!Array.isArray(value) || value.length !== W * H || !value.every((v) => v === null || typeof v === "number")) continue;
+    const src = value as number[];
+    const out = new Array<number>(NW * H);
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < NW; x++) {
+        const sx = x < left ? pick(y, "left") : x >= left + W ? pick(y, "right") : x - left;
+        out[y * NW + x] = src[y * W + sx]!;
+      }
+    }
+    bag[key] = out;
+  }
+  map.width = NW;
+  for (const e of map.events) e.x += left;
+}
+
 /** 옥상 한 판 = 위 18줄 도시 풍경 + 아래 옥상(24×12). 난간 줄의 y. */
 const ROOF_FENCE_Y = 18;
+const ROOF_PAD = 3;
 // 사무층(34x20)·편의점·방송실(30x17)은 원래 방을 더 큰 평면 가운데에 놓았다 — 카메라가 맵 밖(검정)을 비추지 않게.
 export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveAnchors {
   project.tilesets[JP_CITY_ID] = createJpCityTileset();
@@ -181,6 +205,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   const roofRoom = project.maps[FL_MAP.rooftop]!;
   const platform = project.maps[FL_MAP.platformAm]!;
   if (ROOMS.rooftop.view) paintRoofView(roofRoom, ROOMS.rooftop.view);
+  // 옥상(24칸)을 화면 폭 30칸으로: 도시 풍경 줄은 빈 하늘·길 열(21)을, 옥상 줄은 바깥 벽 열을 복사한다. 아래 옥상 좌표는 모두 +ROOF_PAD.
+  padMapX(roofRoom, ROOF_PAD, ROOF_PAD, (y, side) => (y < ROOF_FENCE_Y ? 21 : side === "left" ? 0 : 23));
   const broadcast = project.maps[FL_MAP.broadcast]!;
 
   // 사무층 좌표(예제 office-floor 평면 기준): 위 큰 방 = 자리, 아래 왼쪽 = 회의실, 가운데 = 탕비실, 계단실, 엘리베이터 홀.
@@ -222,10 +248,10 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
     },
     rooftop: {
       // 탑옥(계단탑) 철문 그림은 북쪽 벽면에 박혀 있다(두 칸 높이, 막힘 — 부딪히면 이동) — door = 문 그림 맨 아랫칸, doorOut = 그 바로 아래(안쪽) 바닥 칸.
-      door: { x: 3, y: ROOF_FENCE_Y + 3 }, doorOut: nearestFree(project, roofRoom, { x: 3, y: ROOF_FENCE_Y + 4 }),
+      door: { x: ROOF_PAD + 3, y: ROOF_FENCE_Y + 3 }, doorOut: nearestFree(project, roofRoom, { x: ROOF_PAD + 3, y: ROOF_FENCE_Y + 4 }),
       // 난간(철망 펜스) 바로 아래 줄 가운데 — 북쪽을 보고 선다. 옆 칸은 서하 자리.
-      rail: nearestFree(project, roofRoom, { x: 14, y: ROOF_FENCE_Y + 1 }), railHero: nearestFree(project, roofRoom, { x: 13, y: ROOF_FENCE_Y + 1 }),
-      bench: nearestFree(project, roofRoom, { x: 11, y: ROOF_FENCE_Y + 8 }),
+      rail: nearestFree(project, roofRoom, { x: ROOF_PAD + 14, y: ROOF_FENCE_Y + 1 }), railHero: nearestFree(project, roofRoom, { x: ROOF_PAD + 13, y: ROOF_FENCE_Y + 1 }),
+      bench: nearestFree(project, roofRoom, { x: ROOF_PAD + 11, y: ROOF_FENCE_Y + 8 }),
     },
     konbini: {
       // 자동문 그림 두 칸(12,14)(13,14)이 남쪽 벽 틈에 박혀 있고 밟을 수 있다 — 왼 칸이 문 칸, 오른 칸이 점원·손님이 사라지는 문 칸, 나오는 칸 = 바로 위(안쪽) 칸.

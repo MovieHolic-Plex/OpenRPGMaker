@@ -20,8 +20,8 @@ import { deserialize, serialize } from "@/project/io";
 import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
-  bgm, caption, CAST, choices, m2, clearTintKeepBlack, emote, event, face, fadeIn, fadeOut, flash, hidePlayer, ifCond, letterbox, page,
-  playSe, say, setSw, textAtBottom, faceHero, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk,
+  bgm, caption, CAST, choices, m2, clearTintKeepBlack, emote, event, face, fadeIn, fadeOut, flash, hidePlayer, ifCond, page,
+  playSe, say, sayAt, listenTo, setSw, textAtBottom, faceHero, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk,
 } from "./firstLoveKit";
 import { buildFirstLoveMaps, FL_MAP, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
 import { buildFirstLoveOpening } from "./firstLoveOpening";
@@ -298,14 +298,12 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
   add(plat, scene("ev_fl_intro", { x: 1, y: 1 }, S.START, [
     textAtBottom(),
     bgm(BGM_OFFICE),
-    ...letterbox(true, 400),
     ...caption("월요일 오전 8시 41분, 한결역."),
     ...think(
       "첫 출근. 지각은 아니다. 아직은.",
       "스튜디오 늘봄. 서른 명 남짓한 앱 회사. 면접 날 본 사무실엔 햇빛이 잘 들었다.",
     ),
     ...say("seoha", "happy", "…할 수 있어, 윤서하."),
-    ...letterbox(false, 400),
     ...think("(계단을 올라 역 밖으로 나가자.)"),
     stage(S.ARRIVED),
   ]));
@@ -704,8 +702,10 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
           waitMoves(),
           faceHero("ev_fl_clerk"),
           ...say("clerk", "happy", "원 플러스 원이라 두 개 맞으시죠?"),
+          ...say("seoha", "happy", "네."),
           face("@player", dirToward(registerFront, jihuRegister)),
-          ...say("seoha", "happy", "네. …선임님, 하나 드세요. 모르는 사이끼리도 우유 정도는 사 줄 수 있잖아요."),
+          listenTo("jihu"),
+          ...say("seoha", "happy", "…선임님, 하나 드세요. 모르는 사이끼리도 우유 정도는 사 줄 수 있잖아요."),
           ...say("jihu", "happy", "…그 논리, 좀 이상한데요."),
           ...say("jihu", "embarrassed", "잘 마실게요, 윤서하 씨."),
           ...like(2, "ev_fl_jihu_kon"),
@@ -741,7 +741,6 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
   add(bc, event("ev_fl_flashback", "회상", { x: 1, y: 1 }, [page("fb", [swOn("sw_fl_flashback"), stageIs(V_STAGE, S.KONBINI)], [
     hidePlayer(),
     memoryTint(0),
-    ...letterbox(true, 0),
     ...fadeIn(1200),
     { kind: "playAudio", resourceId: BGM_MEMORY, loop: true, channel: "bgm", fadeInMs: 1500 } as Command,
     ...caption("10년 전. 성하고등학교 방송실."),
@@ -772,7 +771,6 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
     stopBgm(),
     setSw("sw_fl_flashback", false),
     clearTintKeepBlack(),
-    ...letterbox(false, 0),
     showPlayer(),
     stage(S.FLASH),
     transfer(FL_MAP.officePm, a.office.heroDesk.x, a.office.heroDesk.y, "up"),
@@ -804,8 +802,10 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     face("@player", dirToward(o.heroDesk, jihuBeside)),
   ];
   const exit = { stand: { x: o.npcExit.x, y: o.npcExit.y + 1 }, door: o.npcExit };
-  const minhoOut = leave(project, FL_MAP.officePm, "ev_fl_w_minho", minhoStart, exit, "sw_fl_minho_left", o.heroDesk);
-  const leadOut = leave(project, FL_MAP.officePm, "ev_fl_w_lead", leadSeat, exit, "sw_fl_lead_left", o.heroDesk, [jihuBeside]);
+  // 승강기 문(위 두 줄)이 화면 위에 잘리지 않게 퇴장 동안 카메라를 승강기 홀 쪽으로 올린다(VQA r8: 수요일 카메라가 승강기 윗부분을 자름).
+  const liftView = { x: 13, y: 8 };
+  const minhoOut = leave(project, FL_MAP.officePm, "ev_fl_w_minho", minhoStart, exit, "sw_fl_minho_left", o.heroDesk, [], liftView);
+  const leadOut = leave(project, FL_MAP.officePm, "ev_fl_w_lead", leadSeat, exit, "sw_fl_lead_left", o.heroDesk, [jihuBeside], liftView);
 
   add(off,
     event("ev_fl_w_lead", "오정민 팀장", leadSeat, [
@@ -1004,7 +1004,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     ...fadeIn(800),
     bgm(BGM_OFFICE),
     ...caption("금요일 오후 3시. 회의실."),
-    ...say("lead", "base", "지후 씨, 본부장님 앞인데 오늘도 후드예요?"),
+    ...sayAt("lead", "left", "base", "지후 씨, 본부장님 앞인데 오늘도 후드예요?"),
     ...say("jihu", "embarrassed", "…재킷은 가방에 있어요. 이게 머리가 더 잘 돌아가서요."),
     ...emote("ev_fl_f_minho", "sweat"),
     // 탁자 머리의 본부장이 말을 열면 발표자 둘(서하·지후)이 그쪽을 본다.
@@ -1013,7 +1013,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     face("ev_fl_f_client", dirToward(clientSpot, o.meetingSeat)),
     // 민호는 본부장 옆자리 — 팀장의 농담(서쪽) 뒤엔 본부장·발표자 쪽(동쪽)을 본다.
     face("ev_fl_f_minho", dirToward(minhoSpot, clientSpot)),
-    ...say("client", "base", "그럼 시작하시죠. 이번 리뉴얼, 핵심이 뭡니까?"),
+    ...sayAt("client", "left", "base", "그럼 시작하시죠. 이번 리뉴얼, 핵심이 뭡니까?"),
     ...say("jihu", "base", "재생 엔진을 새로 짜서, 하루끝 방송이 1초 안에 시작됩니다. 그리고 화면은—"),
     // 발표를 넘길 땐 옆자리 서하를 본다(왼쪽 고정이면 본부장에게 서하를 소개하는 꼴).
     face("ev_fl_f_jihu", dirToward(jihuSpot, o.meetingSeat)),
@@ -1025,21 +1025,21 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     choices([
       { text: "내 이야기로 시작한다", then: [
         setSw(SW_STORY, true),
-        ...say("seoha", "base", "고등학교 때, 방송부 점심 방송에 매주 사연을 보냈어요. 익명으로요."),
-        ...say("seoha", "sad", "마지막 사연은 끝내 방송되지 못했어요. 그 사람이 먼저 떠났거든요."),
-        ...say("seoha", "base", "그래서 이걸 만들었습니다. ‘늦은 답장’. 지난 사연에, 언제든 답장을 보낼 수 있는 기능입니다."),
+        ...sayAt("seoha", "right", "base", "고등학교 때, 방송부 점심 방송에 매주 사연을 보냈어요. 익명으로요."),
+        ...sayAt("seoha", "right", "sad", "마지막 사연은 끝내 방송되지 못했어요. 그 사람이 먼저 떠났거든요."),
+        ...sayAt("seoha", "right", "base", "그래서 이걸 만들었습니다. ‘늦은 답장’. 지난 사연에, 언제든 답장을 보낼 수 있는 기능입니다."),
         ...emote("ev_fl_f_jihu", "exclamation", 1300),
-        ...say("client", "base", "…"),
-        ...say("client", "happy", "좋네요. 라디오가 원래 그런 거죠. 늦게라도, 닿는 거."),
+        ...sayAt("client", "left", "base", "…"),
+        ...sayAt("client", "left", "happy", "좋네요. 라디오가 원래 그런 거죠. 늦게라도, 닿는 거."),
         ...like(2, "ev_fl_f_jihu"),
       ] },
       { text: "데이터로 설명한다", then: [
-        ...say("seoha", "base", "사연을 들은 사람의 63%가 일주일 안에 같은 방송을 다시 찾습니다. 하지만 지금은 답할 방법이 없어요."),
-        ...say("seoha", "base", "그래서 ‘늦은 답장’을 넣었습니다. 지난 사연에 언제든 답장을 보낼 수 있는 기능입니다."),
-        ...say("client", "happy", "숫자가 탄탄하네요. 좋습니다. 이대로 가시죠."),
+        ...sayAt("seoha", "right", "base", "사연을 들은 사람의 63%가 일주일 안에 같은 방송을 다시 찾습니다. 하지만 지금은 답할 방법이 없어요."),
+        ...sayAt("seoha", "right", "base", "그래서 ‘늦은 답장’을 넣었습니다. 지난 사연에 언제든 답장을 보낼 수 있는 기능입니다."),
+        ...sayAt("client", "left", "happy", "숫자가 탄탄하네요. 좋습니다. 이대로 가시죠."),
       ] },
     ]),
-    ...say("lead", "happy", "그럼 다음 주부터 2차 개발 들어가겠습니다. 감사합니다, 본부장님."),
+    ...sayAt("lead", "left", "happy", "그럼 다음 주부터 2차 개발 들어가겠습니다. 감사합니다, 본부장님."),
     clientOut.begin,
     face("@player", dirToward(o.meetingSeat, minhoSpot)),
     face("ev_fl_f_minho", dirToward(minhoSpot, o.meetingSeat)),
@@ -1047,26 +1047,26 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     ...clientOut.end,
     face("@player", dirToward(o.meetingSeat, leadSpot)),
     ifCond(swOff(SW_HONEST), [
-      ...say("lead", "base", "서하 씨. 수요일 일, 본부장님한테 들었어요."),
-      ...say("seoha", "sad", "…죄송합니다."),
-      ...say("lead", "base", "실수는 괜찮아요. 다음엔 나한테 먼저 말해요. 그게 팀이에요."),
+      ...sayAt("lead", "left", "base", "서하 씨. 수요일 일, 본부장님한테 들었어요."),
+      ...sayAt("seoha", "right", "sad", "…죄송합니다."),
+      ...sayAt("lead", "left", "base", "실수는 괜찮아요. 다음엔 나한테 먼저 말해요. 그게 팀이에요."),
     ], [
-      ...say("lead", "happy", "서하 씨, 수요일에 바로 말해 준 거. 그거 잘한 거예요. 그게 팀이에요."),
+      ...sayAt("lead", "left", "happy", "서하 씨, 수요일에 바로 말해 준 거. 그거 잘한 거예요. 그게 팀이에요."),
     ]),
     face("@player", dirToward(o.meetingSeat, jihuSpot)),
     ...say("jihu", "base", "…먼저 일어나 보겠습니다. 수고하셨습니다."),
     jihuOut.begin,
     stopBgm(),
     face("@player", dirToward(o.meetingSeat, leadSpot)),
-    ...say("lead", "base", "그리고… 다들 알다시피, 오늘이 지후 씨 마지막 날이에요."),
+    ...sayAt("lead", "left", "base", "그리고… 다들 알다시피, 오늘이 지후 씨 마지막 날이에요."),
     ...emote("player", "exclamation"),
-    ...say("seoha", "surprised", "…네?"),
+    ...sayAt("seoha", "right", "surprised", "…네?"),
     bgm(BGM_MEMORY, 2000),
-    ...say("lead", "base", "다음 주부터 부산 지사예요. 아버님 곁에 있고 싶다고 몇 달 전에 신청했었죠."),
+    ...sayAt("lead", "left", "base", "다음 주부터 부산 지사예요. 아버님 곁에 있고 싶다고 몇 달 전에 신청했었죠."),
     face("@player", dirToward(o.meetingSeat, minhoSpot)),
     ...say("minho", "base", "회식이 송별회 겸인데… 선임님은 오늘 밤 서울역에서 부산 가는 마지막 KTX 탄대요. 한결역에서 9시 40분 열차를 타야 맞춘다고요. 짐은 아침에 벌써 다 부치셨고요."),
     ...jihuOut.end,
-    ...say("lead", "sad", "인사는… 따로 못 했나 보네요."),
+    ...sayAt("lead", "left", "sad", "인사는… 따로 못 했나 보네요."),
     ...think("또.", "또, 인사도 없이."),
     ifCond({ kind: "variable", variableId: V_JIHU, op: ">=", value: TRUE_END_AT } as never, [
       playSe(SE_PAPER),
@@ -1078,7 +1078,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     ),
     choices([
       { text: "역으로 간다", then: [
-        ...say("seoha", "base", "죄송해요, 먼저 가 볼게요!"),
+        ...sayAt("seoha", "right", "base", "죄송해요, 먼저 가 볼게요!"),
         ...fadeOut(600),
         stopBgm(),
         stage(S.FRI),
@@ -1087,13 +1087,22 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
       { text: "회식에 간다", then: [
         ...think("발을 떼지 못했다. 10년 전에도, 오늘도."),
         ...say("minho", "happy", "좋아요! 오늘은 내가 쏩니다. …아, 법카로요."),
-        ...say("lead", "happy", "민호 씨."),
+        ...sayAt("lead", "left", "happy", "민호 씨."),
         ...emote("ev_fl_f_minho", "sweat"),
         face("@player", dirToward(o.meetingSeat, leadSpot)),
-        ...say("lead", "base", "서하 씨, 첫 주 수고했어요. 가요, 다 같이."),
-        ...think("창밖으로 비가 오기 시작했다. 9시 40분까지, 아직 시간은 있었다.", "…있었는데."),
+        ...sayAt("lead", "left", "base", "서하 씨, 첫 주 수고했어요. 가요, 다 같이."),
+        // 엔딩 C 의 비(VQA r8: 「비가 오기 시작했다」는 말뿐 비가 없다) — 검은 화면에서 빌딩 앞 밤거리로 옮겨 비를 내린다.
+        // 실내에 비를 뿌리지 않는다. 밤거리의 장면 이벤트는 모두 단계 「==」 조건이라 없는 단계(90)로 두면 아무것도 돌지 않는다.
+        ...fadeOut(700),
+        stage(90),
+        transfer(FL_MAP.streetPm, a.street.officeOut.x, a.street.officeOut.y, "down", "none"),
+        { kind: "setWeather", weather: "rain", intensity: 0.6, transitionMs: 0 } as Command,
+        bgm(BGM_RAIN, 1200),
+        ...fadeIn(700),
+        ...think("회사 앞, 비가 오기 시작했다. 9시 40분까지, 아직 시간은 있었다.", "…있었는데."),
         ...fadeOut(900),
         stopBgm(),
+        { kind: "setWeather", weather: "none", transitionMs: 0 } as Command,
         { kind: "triggerEnding", endingId: END_C } as Command,
       ] },
     ]),
@@ -1135,7 +1144,6 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
     ...say("seoha", "sad", "또… 인사도 없이 가려고 했죠."),
     ...say("jihu", "sad", "…인사하면, 못 갈 것 같아서."),
     { kind: "playAudio", resourceId: BGM_CONFESS, loop: true, channel: "bgm", fadeInMs: 2000 } as Command,
-    ...letterbox(true, 600),
     ifCond(swOn(SW_SAW_LETTER),
       say("seoha", "sad", "수요일에, 선배 수첩 봤어요. 미안해요. …연두색 편지지."),
       say("seoha", "base", "선배. 하나만 물어볼게요. 그 금요일, 사연함에 있던 편지. 읽었어요?"),
@@ -1158,7 +1166,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...say("seoha", "embarrassed", "선배. 나 아직도, 금요일마다 급식 줄 늦게 서는 사람이에요."),
           ...say("jihu", "embarrassed", "…그건, 내 대사였어야 하는데."),
           flash("white", 700),
-          ...memoryPictureIn(150, 1800),
+          ...memoryPictureIn(255, 1800),
           ...say("jihu", "happy", "윤서하. 10년 늦은 답장이에요.", "나도 좋아했어. 그 금요일에도. 지금도."),
           ...memoryPictureOut(1600),
           ...emote("ev_fl_p_jihu", "heart", 1600),
@@ -1170,7 +1178,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           stopBgm(),
           { kind: "triggerEnding", endingId: END_A } as Command,
         ], [
-          ...memoryPictureIn(110, 1600),
+          ...memoryPictureIn(255, 1600),
           ...say("seoha", "sad", "좋아했어요. 그 금요일에도. 지금도."),
           ...memoryPictureOut(1400),
           ...say("jihu", "sad", "…고마워요. 정말로."),
