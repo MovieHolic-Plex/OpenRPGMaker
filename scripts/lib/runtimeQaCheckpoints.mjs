@@ -11,6 +11,7 @@
 // 체크포인트마다 새 브라우저 컨텍스트에서 돈다 — 하나가 죽어도 나머지는 계속 간다.
 // 문서: openwiki/testing.md 「런타임 QA 체크포인트」.
 import { existsSync } from "node:fs";
+import { availableParallelism, loadavg } from "node:os";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -84,9 +85,22 @@ export function checkpointBootState(checkpoint) {
  * 체크포인트들을 서로 독립된 페이지에서 돌린다. parallel 개의 일꾼이 각자 브라우저 하나를 쓰고,
  * 브라우저가 죽으면 다음 체크포인트 전에 다시 띄운다.
  */
+/**
+ * 부하 상한: 1분 load 가 코어 수를 넘으면 일꾼을 1 로 줄인다. 실측(2026-10-21, load 200+/32코어):
+ * --parallel 2 에서 렌더러가 «Target crashed» 로 죽었고 1 에서는 통과했다.
+ */
+export function boundParallelByLoad(requested, load = loadavg()[0], cores = availableParallelism()) {
+  return load > cores ? 1 : requested;
+}
+
+const isCrash = (result) => result.failures.some((f) => /Target crashed|Target page, context or browser has been closed|Page crashed|did not become ready|Timeout \d+ms exceeded/.test(f));
+
 export async function runCheckpoints({ scenario, set, checkpoints, parallel = 2, launchBrowser, serverUrl, outRoot }) {
   await rm(outRoot, { recursive: true, force: true });
   await mkdir(outRoot, { recursive: true });
+  const effectiveParallel = boundParallelByLoad(parallel);
+  if (effectiveParallel !== parallel) console.log(JSON.stringify({ parallelBoundedByLoad: { requested: parallel, using: effectiveParallel, load1m: loadavg()[0] } }));
+  parallel = effectiveParallel;
   const queue = checkpoints.map((checkpoint, index) => ({ checkpoint, index }));
   const results = new Array(checkpoints.length);
   const worker = async () => {
@@ -142,6 +156,14 @@ export async function runCheckpoints({ scenario, set, checkpoints, parallel = 2,
   };
   const workers = Math.max(1, Math.min(parallel, checkpoints.length));
   await Promise.all(Array.from({ length: workers }, () => worker()));
+  // 렌더러가 죽은 체크포인트는 혼자 한 번 더 돌린다(내용 실패는 다시 돌리지 않는다).
+  const crashed = results.map((r, index) => ({ r, index })).filter(({ r }) => !r.ok && isCrash(r));
+  if (crashed.length > 0) {
+    console.log(JSON.stringify({ retryCrashed: crashed.map(({ r }) => r.id) }));
+    for (const { index } of crashed) queue.push({ checkpoint: checkpoints[index], index });
+    await worker();
+    for (const { index } of crashed) results[index].retried = true;
+  }
   await writeFile(join(outRoot, "checkpoints.json"), `${JSON.stringify({ scenario: scenario.id, set: set.set, results }, null, 2)}\n`);
   await writeFile(join(outRoot, "SUMMARY.md"), renderCheckpointSummary(scenario.id, set, results));
   return results;

@@ -1602,7 +1602,8 @@ npm run qa:runtime -- --scenario checkpoints --checkpoint-set astra-horizon --ch
 
 - 결과: `verify-shots/runtime-qa/<시나리오>--checkpoints/SUMMARY.md` 가 체크포인트별 통과·부팅 ms·샷을 표로 준다.
   체크포인트마다 하위 폴더에 보통 시나리오와 같은 SUMMARY/manifest/PNG 가 있다. `--out` 으로 바꾼다.
-- `--parallel` 기본 2, 최대 4. 일꾼 하나가 브라우저 하나다 — 공유 머신이므로 올리기 전에 부하를 본다.
+- `--parallel` 기본 2, 최대 4. 일꾼 하나가 브라우저 하나다. 1분 load 가 코어 수를 넘으면 스스로 1 로 줄인다(실측: load 200+/32코어에서
+  parallel 2 는 렌더러 «Target crashed», 1 은 통과). 렌더러가 죽은(크래시·부팅 시간 초과) 체크포인트는 끝에 혼자 한 번 더 돈다.
 - 세트 파일: `scripts/qa/runtime/checkpoints/<세트>.json` (데모마다 하나). 부팅은 세트의 `query`(예 `{ "demo": "fallen-star" }`,
   소스에서 데모를 만드니 늘 현재 분기 내용) 또는 `projectFixture`. 체크포인트 하나의 필드:
   `mapId x y facing`, `switches variables selfSwitches`, `party: [{ actorId, level }]`(그 레벨 최대 HP/MP 로 채움),
