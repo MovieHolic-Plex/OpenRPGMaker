@@ -20,6 +20,8 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `assistant-capability` · 시드 `harness-data/assistant-capability/seed.json`
   → `npm run harness -- assistant-capability <단계>` · 문서 `openwiki/harnesses/assistant-capability.md`
   → 실제 입력창의 Pi 경로를 쓴다. 필수 검수 누락은 미검증이며, 조수의 완료 선언이나 캡처만으로 합격시키지 않는다.
+  → **데모 게임을 손으로 고칠 때마다(hard rule, 2026-10-22):** 같은 변경에서 (a) `harness-data/assistant-capability/scene-lessons-seed.json` 에 조수 과제 한 줄을 더하고,
+    (b) 조수가 혼자 못 하는 결함이면 도구·스키마·스킬(`game-scene-polish`)·`scene-*` 경고를 고친다. 데모만 고치고 끝내지 않는다 — 절차는 문서 「장면 교훈 묶음」.
 
 - **버들항 새 건물 후보를 사람이 하나씩 허용/거절할 때** → `beodeul-building-review` · 시드 `harness-data/beodeul-building-review/seed.json` · `npm run harness -- beodeul-building-review produce|build|validate|gate|publish|serve|status|export` · 문서 `openwiki/harnesses/beodeul-building-review.md`. 사용자가 새 지붕·창문·벽 질감 저작을 명시 허용한 후보 경로다. 원본 도트 질감을 보존하고, 독립적인 질감·구조 Visual QA와 숨긴 반려 표본 검사를 모두 통과한 후보만 공개한다. build는 비공개 초안이다. 검사 생략·강제 PASS·점수 완화 금지. 사람이 현재 그림 해시에 대해 허용하기 전에는 번들·지도에 설치하지 않는다. 이전 form-wing/inn/smithy/warehouse는 사용자 반려이며 기준작으로 쓰지 않는다. 기존 원본 보존 보정은 아래 beodeul-architecture 경로를 따른다.
 

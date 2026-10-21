@@ -214,3 +214,44 @@ npm run harness -- assistant-capability review --out <실행> --case npc-line \
 5/5 통과. 앞 3문장은 첫 시험, 뒤 2문장은 같은 날 재시험(8319 Argon `gemini-4-argon-high` medium, 시드 `seed-novn.json`, `--no-check`)이다. 모두 `read_game_systems` → `set_vn_extras` → `review_game_systems` 순서와 인자·보존이 맞았고 인자는 바꿀 칸 하나뿐이었다.
 
 **재시험 시도 기록(정직하게):** 「안 연 그림 칸」 2번 시도 중 1번 실패·2번째 통과, 「일본어」 4번 시도 중 3번 실패·4번째 통과. 실패는 전부 `classifyPlainPiTurn` 30초 한도(재시도 1회 포함)의 `시간 초과(30000ms)` 로, 도구 인자·내용 때문이 아니라 제공자 지연이다 — 처음 시험에서 「미검증」으로 둔 이유와 같다. 같은 문장·같은 설정으로 다시 돌린 것이고 통과분의 저장본(`project.json` 의 `meta.oprnVnExtras`)을 직접 읽어 확인했다. 분류 호출이 막히는 동안은 모델 품질이 아니라 한도가 병목이므로, 시간 초과 한 번을 실패로, 통과 한 번을 만능으로 읽지 말 것(각 문장 표본 1개).
+
+## 장면 교훈 묶음 (2026-10-22)
+
+데모 게임(낙성·아스트라·첫사랑 등)을 손으로 고치며 얻은 교훈을 **조수가 혼자 하는지** 재는 묶음이다.
+시드 `harness-data/assistant-capability/scene-lessons-seed.json` — 20건(엘리베이터 왕복·NPC 걸어 나가기·성벽 마을 북동문·
+어두운 천장 지하·흉상 마주보기·없는 기물(자판기)·보스 체크포인트·여관/상점 문·아래 서술창·모든 맵 BGM·벽걸이 서재·밤 마을·
+집 계단·파티 입장 컷신·조용한 현대 거리·꾸미되 통행 유지·예/아니오 기본값·보이는 출구·NPC 초상 짝·보스 밸런스). 각 건은
+요구(`requirements`)와 0이어야 할 `scene-*` 경고(`lint0`)를 미리 적는다. 배경 파노라마는 다른 묶음이 다루므로 넣지 않는다.
+
+**모델 표기:** Argon 쿼터가 없을 때는 `assistantEngine` = `local-cli:claude` + `claude-sonnet-5-5` high(**조수 대용**)로 돈다.
+실제 입력창 → companion → Bun 워커 → `claude -p`(MCP 도구 서버) 경로이며 요청 기록에 provider 가 남는다. Argon 점수와 섞지 않는다.
+
+```bash
+R=qa-runs/harnesses/assistant-capability/<날짜>-scene-lessons-rN
+mkdir -p $R && cp harness-data/assistant-capability/scene-lessons-seed.json $R/experiment.json   # 고칠 건만 남겨도 된다
+npm run harness -- assistant-capability genre-prepare --out $R
+jq -r '.cases[].id' $R/experiment.json > $R/queue.txt
+xargs -P 2 -I{} sh -c "npm run harness -- assistant-capability genre-run --out $R --case {} > $R/log-{}.txt 2>&1" < $R/queue.txt &
+src/harnesses/assistant-capability/node/scenePostLoop.sh $R 1 &   # 채점 → 출하 player 영상 → 2초 간격 프레임
+```
+
+- `scene-score`(sceneLessons.mjs): 도구 호출·실패 호출(이름별)·`scene-polish-lint`·`qa-game check` 막힘(엔딩 없음 류 제외)·저장 재로드·1배 렌더.
+  `machinePass` 는 실행·변경·저장·lint0·막힘 없음 전부다. **시각 합격이 아니다.**
+- `scene-film`(sceneFilm.mjs): 저장본을 출하 `player.html` 에서 실제 방향키로 한 칸씩 걷고 결정 키로 말을 건다(순간이동·상태 주입 없음).
+  대화 이벤트 먼저, 이동 이벤트는 마지막. 편집기 슬롯 잠금을 같이 써서 브라우저는 동시에 둘까지만 뜬다.
+- `scene-judge-input`(sceneJudgePrompt.mjs): **새 Opus 판정자**(읽기 전용 서브에이전트)에게 줄 지시문과 그림 해시. 조수의 완료 보고는 주지 않는다.
+  판정 JSON 은 `sceneSaveVisual.py <attempt 폴더>` 로 그림 sha256 과 함께 `visual.json` 에 남긴다. 그림이 바뀌면 다시 판정한다.
+- 판정 보정: 3/4 실내 벽 문·엘리베이터·계단 아래 **문턱 칸**의 이벤트는 문 위 이벤트다. 템플릿의 빈 맵·오프닝 슬라이드는 조수 결함이 아니다.
+- 합격 = `machinePass` + 판정 `pass`(MAJOR 없음).
+
+**연속 규칙(AGENTS.md hard rule):** 데모 게임을 손으로 고칠 때마다 (a) 이 시드에 그 교훈의 건을 하나 더하고
+(b) 조수가 혼자 못 한 원인을 도구·스키마·스킬·`scene-*` 경고에서 고친다. 프롬프트 한 줄 덧대기는 고침이 아니다.
+
+### 첫 판 결과 (r2 기준선 → r3 수정 후)
+
+결과·영상·못 하는 일 목록: http://mdc-server:18301/assistant-capability-loop-1.html
+기준선에서 고친 근본 원인:
+- `moveEvent` 경로를 방향 문자열 목록·JSON 문자열로 보내 거부 → `canonicalizeMoveEventRoute`, `displayTextSettings` 일부 생략 → 기본값 채움.
+- 시작 위치가 빈 시드 맵에 남음(지은 장소에 갈 수 없음) → 조수 쓰기 도구 뒤 `adoptBuiltMapAsStart`(`startOnBuiltMap.ts`).
+- `list_hand_interior_parts` 모르는 방 → 그 방을 가진 실내 칩셋을 알려 줌.
+- `run_scene_test` 의 `lastTransfer.eventId` UUID 오타로 맞는 문을 실패로 읽음 → eventId 선택, 없는 id 는 오타라고 말함.
