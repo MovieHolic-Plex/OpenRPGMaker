@@ -1,6 +1,7 @@
 import type { Command, GameEvent, Project } from "@/project/types";
 import { castTheAstraHorizon } from "./emeraldCrownCast";
 import { isLedgeCell } from "@/project/collision";
+import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 
 /**
  * 아스트라 호라이즌 첫 10분(타이틀 → 내 방 → 엄마 → 연구소 → 스타터 → 라이벌 → 1번 도로 → 실바나 체육관) 다듬기.
@@ -572,6 +573,49 @@ function gbaFeel(project: Project): void {
   for (const common of project.commonEvents ?? []) bottom(common.commands);
 }
 
+/**
+ * 1번 도로 가운데의 쉼터 — 도로 트레이너 셋을 잇달아 만나는 동안 쉴 곳이 없어 불 스타터가 체력 1·0 으로 셋째에게 졌다(2026-10-21 적대 검수 r8).
+ * 오른쪽 풀밭 가장자리(18,19)의 약초 아주머니가 말을 걸면 쉬게 해 준다. 칩은 아직 이 데모에 안 쓴 「마을 아주머니」(ScarloxyPeople6 칸 3).
+ */
+function meadowRestStop(project: Project): void {
+  const meadow = project.maps.mx_map_meadow;
+  const id = "mx_map_meadow_herb_lady";
+  if (!meadow || meadow.events.some((e) => e.id === id)) return;
+  const x = 18, y = 19;
+  if (meadow.events.some((e) => e.x === x && e.y === y) || isLedgeCell(project, meadow, x, y)) return;
+  const speaker = "약초 아주머니";
+  const commands: Command[] = [
+    text("트레이너가 셋이나 있는 길이지? 동료들이 지쳤으면 약초차 한 잔 하고 가렴.", speaker),
+    {
+      kind: "choices",
+      options: [
+        { text: "쉬어 갈래요", branch: [{ kind: "recoverAll" }, { kind: "playAudio", resourceId: "easyrpg-sound-chime2", channel: "se", loop: false }, text("동료들이 기운을 되찾았다!")] },
+        { text: "괜찮아요", branch: [text("그래, 조심해서 가렴.", speaker)] },
+      ],
+      cancelBehavior: "branch",
+      cancelBranch: [],
+    } as Command,
+  ];
+  meadow.events.push({
+    id,
+    name: speaker,
+    x,
+    y,
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [{
+      id: `${id}_p1`,
+      name: speaker,
+      conditions: [],
+      graphic: { sprite: { type: "bundled", id: "tex_oprn_charset_scarloxy_people6" }, direction: "left", pattern: charsetFrameIndex({ characterIndex: 3, direction: "left", pattern: 1 }) },
+      movement: { type: "fixed", speed: 3, frequency: 3 },
+      priority: "same",
+      trigger: { kind: "action" },
+      commands,
+    }],
+  } as GameEvent);
+}
+
 export function polishFirstTenMinutes(project: Project): void {
   polishBedroom(project);
   polishMom(project);
@@ -582,6 +626,7 @@ export function polishFirstTenMinutes(project: Project): void {
   quickerHealing(project);
   nameGymTrainers(project);
   firstWildOnRouteOne(project);
+  meadowRestStop(project);
   starterCoverage(project);
   gymBloomPuzzle(project);
   fairChampion(project);
