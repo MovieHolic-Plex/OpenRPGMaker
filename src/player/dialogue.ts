@@ -141,6 +141,8 @@ export type DialogueLogEntry = {
 };
 
 const DIALOGUE_LOG_LIMIT = 200;
+/** 선택지가 열린 직후 결정 키를 받지 않는 시간 — 앞 대사를 넘기던 연타가 선택을 대신하지 않게. */
+const CHOICE_CONFIRM_GRACE_MS = 300;
 /** 휠 위로 백로그 열기: 닫은 뒤 이 시간은 다시 안 열고, 이 시간 안에 문턱만큼 쌓여야 연다(관성 스크롤·핀치 오작동 방지). */
 const WHEEL_REOPEN_COOLDOWN_MS = 450;
 const WHEEL_OPEN_WINDOW_MS = 300;
@@ -1768,6 +1770,13 @@ export function createDialogueUI(
       };
       onKey = (e: KeyboardEvent) => {
         if (settled || e.isComposing) return;
+        // 열린 직후의 결정·숫자 키는 버린다 — 앞 대사를 넘기려고 연타한 Enter 가, 선택지가 그려진 바로 그 순간 닿아
+        // 플레이어가 읽지도 못한 0번이 골라지던 결함(첫사랑 r11·r8 재현: 선택지 등장과 Enter 가 같은 0.1초).
+        // 실제 키 입력(isTrusted)만 막는다. 단위 테스트의 합성 이벤트는 그대로 지나간다.
+        if (e.isTrusted && performance.now() - openedAt < CHOICE_CONFIRM_GRACE_MS && (isConfirmKey(e.key) || /^[1-9]$/.test(e.key))) {
+          e.preventDefault();
+          return;
+        }
         sawKeyDown = true;
         if (e.repeat && (isConfirmKey(e.key) || isCancelKey(e.key) || /^[1-9]$/.test(e.key))) {
           e.preventDefault();
