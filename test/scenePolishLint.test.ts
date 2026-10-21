@@ -144,6 +144,17 @@ describe("대화창·음악·탈것·겹침", () => {
     expect(found).toContain("scene-moving-vehicle");
     expect(found).toContain("scene-actors-stacked");
   });
+
+  it("같은 출구 칸으로 차례로 떠나면(앞 인물이 먼저 사라지면) 겹침이 아니다", () => {
+    const { project, out } = fixture();
+    const to = (eventId: string, moves: string[]) => ({ kind: "moveEvent", eventId, route: { moves: moves.map((dir) => ({ kind: "move", dir })), repeat: false, wait: true } }) as unknown as Command;
+    const hidden = page([], { conditions: [{ kind: "switch", switchId: "sw_a_left", value: true }] as EventPage["conditions"] });
+    out.events.push(ev("a", 4, 8, [npcPage(), hidden]), ev("b", 6, 8, [npcPage()]));
+    out.events.push(ev("scene", 1, 1, [page([
+      to("a", ["right"]), { kind: "setSwitch", switchId: "sw_a_left", value: true } as Command, to("b", ["left"]),
+    ], { trigger: { kind: "auto" } as EventPage["trigger"] })]));
+    expect(codes(project)).not.toContain("scene-actors-stacked");
+  });
 });
 
 describe("쓰기 도구용 새 경고만", () => {
