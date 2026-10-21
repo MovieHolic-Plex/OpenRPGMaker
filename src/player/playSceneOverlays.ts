@@ -7,7 +7,7 @@ import { store } from "@/project/store";
 import { gameOverOutcome, resolveGameOverSettings, type GameOverSettings, DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID } from "@/project/cinematicSettings";
 import { createTerminalScene, type TerminalScene } from "@/player/terminalScene";
 import type { EndingPresentation } from "@/project/cinematicSettings";
-import { isCinematicAdvanceKey, normalizeKey } from "@/player/keyBindings";
+import { isCancelKey, isCinematicAdvanceKey, normalizeKey } from "@/player/keyBindings";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
@@ -18,6 +18,10 @@ import { resolveEndingCouplePortraits } from "@/player/dialogue";
 import { ANY_FRIENDSHIP_KEY } from "@/project/session";
 import type { FaceGraphic } from "@/project/types";
 import { sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
+
+/** Credits read at roughly 24 px/s; holding a confirm key fast-forwards 4x. */
+const CREDITS_SPEED_PX_PER_SEC = 24;
+const CREDITS_FAST_RATE = 4;
 
 export function showRuntimeOverlay(
   scene: PlaySceneContext,
@@ -453,19 +457,27 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     const roll = textNode("div", "ending-credits-roll", copy);
     viewport.append(roll); terminal.root.append(viewport);
     const distance = viewport.clientHeight + roll.scrollHeight;
-    const duration = Math.max(12000, distance / 12 * 1000);
+    const duration = Math.max(8000, distance / CREDITS_SPEED_PX_PER_SEC * 1000);
     terminal.root.style.setProperty("--credits-duration", `${duration}ms`);
     terminal.root.style.setProperty("--credits-start", `${viewport.clientHeight}px`);
     terminal.root.style.setProperty("--credits-end", `${-roll.scrollHeight}px`);
-    const hint = textNode("div", "game-over-hint", terminal.reducedMotion ? "PgUp/PgDn 읽기   ·   Z / Enter 마침" : "Z / Enter 크레딧 건너뛰기");
+    const hint = textNode("div", "game-over-hint", terminal.reducedMotion ? "PgUp/PgDn 읽기   ·   Z / Enter 마침" : "Z / Enter 누르면 빠르게   ·   Esc 건너뛰기");
     terminal.root.append(hint);
     let finished = false;
     const finishOnce = (): void => { if (finished || terminal.signal.aborted) return; finished = true; terminal.keys(); finish(); };
-    if (!terminal.reducedMotion) void terminal.wait(duration).then(alive => { if (alive) finishOnce(); });
+    const rollAnimation = terminal.reducedMotion ? undefined : roll.getAnimations()[0];
+    if (rollAnimation) void rollAnimation.finished.then(() => finishOnce(), () => undefined);
+    else if (!terminal.reducedMotion) void terminal.wait(duration).then(alive => { if (alive) finishOnce(); });
+    // Holding a confirm key fast-forwards the roll; releasing it returns to reading speed.
+    const setFast = (fast: boolean): void => { if (rollAnimation && rollAnimation.playState === "running") rollAnimation.playbackRate = fast ? CREDITS_FAST_RATE : 1; };
+    terminal.root.ownerDocument.addEventListener("keyup", event => { if (isCinematicAdvanceKey(normalizeKey(event.key))) setFast(false); }, { signal: terminal.signal });
     if (!await terminal.wait(800)) return;
     terminal.keys(event => {
       if (["PageDown", "PageUp"].includes(event.key) && terminal.reducedMotion) viewport.scrollTop += (event.key === "PageUp" ? -1 : 1) * viewport.clientHeight * .9;
-      if (isCinematicAdvanceKey(normalizeKey(event.key))) finishOnce();
+      const key = normalizeKey(event.key);
+      if (terminal.reducedMotion) { if (isCinematicAdvanceKey(key)) finishOnce(); return; }
+      if (isCancelKey(key)) finishOnce();
+      else if (isCinematicAdvanceKey(key)) setFast(true);
     });
   };
   void run();

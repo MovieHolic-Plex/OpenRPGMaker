@@ -127,7 +127,7 @@ export function monsterInstanceDetail(options: StatusMenuDetailOptions, pendingC
   ];
   const stats: StatusMenuDetailEntry[] = [
     infoRow(paged, { label: "HP", value: `${entry.hp}/${entry.maxHp}`, testId: "status-menu-monster-current-hp", ...(paged ? { attributes: { "data-summary-half": "true" } } : {}) }),
-    ...(paged ? [infoRow(paged, { label: "다음 Lv", value: entry.nextLevel ? `${entry.nextLevel.remaining}` : "최대", testId: "status-menu-monster-next-level", attributes: { "data-summary-half": "true" } })] : []),
+    ...(paged ? [infoRow(paged, { label: "다음", value: entry.nextLevel ? String(entry.nextLevel.remaining) : "최대", testId: "status-menu-monster-next-level", attributes: { "data-summary-half": "true" } })] : []),
     infoRow(paged, { label: "공격", value: String(entry.stats.attack), testId: "status-menu-monster-current-stats", attributes: { "data-summary-half": "true" } }),
     infoRow(paged, { label: "방어", value: String(entry.stats.defense), attributes: { "data-summary-half": "true" } }),
     infoRow(paged, { label: "특공", value: String(entry.stats.mind), attributes: { "data-summary-half": "true" } }),

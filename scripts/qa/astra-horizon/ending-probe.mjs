@@ -28,11 +28,22 @@ try {
   await page.waitForSelector(".game-over-hint", { timeout: 20000 });
   for (let i = 0; i < 8 && !(await page.locator(".ending-credits").count()); i++) { await page.waitForTimeout(700); await page.keyboard.press("Enter"); await page.waitForTimeout(700); }
   await page.waitForSelector(".ending-credits", { timeout: 20000 });
+  const rollTop = () => page.evaluate(() => document.querySelector(".ending-credits-roll").getBoundingClientRect().top);
   const t0 = Date.now();
-  for (const t of [300, 1200, 2500, 4500, 7000, 10000]) {
+  for (const t of [300, 1200, 2500, 4500]) {
     await page.waitForTimeout(Math.max(0, t - (Date.now() - t0)));
     await shot(`1-credits-${t}`);
-    const info = await page.evaluate(() => { const v = document.querySelector(".ending-credits").getBoundingClientRect(), r = document.querySelector(".ending-credits-roll").getBoundingClientRect(); return { viewport: [v.top, v.bottom].map(Math.round), roll: [r.top, r.bottom].map(Math.round) }; });
-    console.log(t, JSON.stringify(info));
   }
+  // 속도: 1초 동안 읽기 속도, 1초 동안 Enter 를 누르고 있을 때, 뗀 뒤 다시 1초.
+  const measure = async (label) => { const a = await rollTop(), t = Date.now(); await page.waitForTimeout(1000); const b = await rollTop(); console.log(label, ((a - b) / ((Date.now() - t) / 1000)).toFixed(1), "px/s"); };
+  await measure("normal");
+  await page.keyboard.down("Enter"); await page.waitForTimeout(150);
+  await measure("held");
+  await shot("2-held");
+  await page.keyboard.up("Enter"); await page.waitForTimeout(150);
+  await measure("released");
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(1500);
+  console.log("after Escape: credits", await page.locator(".ending-credits").count(), "ending-screen", await page.locator("[data-testid='ending-screen']").count());
+  await shot("3-after-escape");
 } finally { await browser.close(); await server.close(); }
