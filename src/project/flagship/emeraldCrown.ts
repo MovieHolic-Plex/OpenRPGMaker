@@ -794,6 +794,31 @@ function recastPeople(project: Project): void {
   if (leagueGuide) { leagueGuide.x = 5; leagueGuide.y = 10; }
   // 챔피언은 단 위 4번째 줄이라, 문으로 들어서면 카메라가 아래쪽에 붙어 머리·상체가 화면 위로 잘렸다 — 한 칸 내려 바닥(324) 위 5번째 줄에 세운다.
   if (champion) champion.y = 5;
+  closeVoidEdges(project);
+}
+
+/**
+ * 체육관·연구소·학교·결투장·별모래 신전 가장자리 한 칸 고리는 흰 줄이 그어진 검은 빈 공간 칩(289~293·37, 49~54, 1821~1826)이라
+ * 화면 끝에 검은 띠로 남았다(2026-10-21 검수). 같은 칩셋의 통행 불가 벽·울타리 칩으로 갈아 끼운다(새 그림 없음, 통행 규칙 동일).
+ */
+function closeVoidEdges(project: Project): void {
+  const ring = (id: string, side: { left: number; right: number; bottom: number; topLeft?: number; topRight?: number }, rows?: number) => {
+    const m = project.maps[id];
+    if (!m) return;
+    const W = m.width;
+    const H = m.height;
+    const L = m.lowerTiles;
+    for (let y = 0; y < H; y++) {
+      L[y * W] = y < (rows ?? 0) ? (side.topLeft ?? side.left) : side.left;
+      L[y * W + W - 1] = y < (rows ?? 0) ? (side.topRight ?? side.right) : side.right;
+    }
+    for (let x = 0; x < W; x++) L[(H - 1) * W + x] = side.bottom;
+  };
+  ring("mx_map_grove_gym", { left: 1320, right: 1322, bottom: 1325, topLeft: 1232, topRight: 1232 }, 1);
+  const gym = project.maps.mx_map_grove_gym;
+  if (gym) { gym.lowerTiles[gym.width] = 1235; gym.lowerTiles[2 * gym.width - 1] = 1235; }
+  for (const id of ["mx_map_lab", "mx_map_school", "mx_map_league_0"]) ring(id, { left: 209, right: 210, bottom: 208 });
+  ring("mx_map_observatory", { left: 1811, right: 1811, bottom: 1811 });
 }
 
 /**
