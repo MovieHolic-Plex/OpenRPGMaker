@@ -1208,7 +1208,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   };
 
   // 타이틀·오프닝 — 게임 안 맵을 1:1 로 구운 그림 위에 같은 배우 칩을 1배로 세운다(fallenStarOpening.ts).
-  // 키아트는 생성 그림(타이틀 후보 3, by: supervisor)을 화면 1배 64색 도트로 누른 것. 효과 좌표는 그 그림의 비율 좌표다 —
+  // 키아트는 생성 그림(새 왕도 렌더를 참고로 다시 뽑은 후보 2, by: supervisor)을 화면 1배 64색 도트로 누른 것. 효과 좌표는 그 그림의 비율 좌표다 —
   // 별똥별 꼬리를 따라 흐르는 반사광, 별 머리·탑 등불·다리 등불의 빛, 운하 물결, 하늘의 빛 알갱이.
   execTool(project, "set_title_screen", {
     title: "폴른 스타",
@@ -1217,13 +1217,13 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     openingPreset: "moonlitCastle",
     effects: [
       { kind: "camera", intensity: 0.5 },
-      { kind: "glint", line: [[0.2, 0.03], [0.596, 0.263]], color: "#e8f4ff" },
-      { kind: "glow", source: [0.596, 0.263], spread: 0.06, color: "#d8f4ff" },
-      { kind: "glow", source: [0.883, 0.546], spread: 0.03, speed: 1.3 },
-      { kind: "glow", source: [0.352, 0.726], spread: 0.025, speed: 0.9 },
-      { kind: "glow", source: [0.538, 0.726], spread: 0.025, speed: 1.1 },
-      { kind: "water", region: [[0.29, 0.62], [0.58, 0.62], [0.62, 1], [0.27, 1]], color: "#cfe0ff" },
-      { kind: "motes", region: [[0, 0], [1, 0], [1, 0.36], [0, 0.36]], count: 24, color: "#e6eeff", intensity: 0.4, speed: 0.3 },
+      { kind: "glint", line: [[0.84, 0.03], [0.578, 0.176]], color: "#e8f4ff" },
+      { kind: "glow", source: [0.578, 0.176], spread: 0.06, color: "#d8f4ff" },
+      { kind: "glow", source: [0.655, 0.55], spread: 0.03, speed: 1.3 },
+      { kind: "glow", source: [0.41, 0.70], spread: 0.025, speed: 0.9 },
+      { kind: "glow", source: [0.53, 0.70], spread: 0.025, speed: 1.1 },
+      { kind: "water", region: [[0.45, 0.38], [0.54, 0.38], [0.56, 1], [0.40, 1]], color: "#cfe0ff" },
+      { kind: "motes", region: [[0, 0], [1, 0], [1, 0.3], [0, 0.3]], count: 24, color: "#e6eeff", intensity: 0.4, speed: 0.3 },
     ],
   });
   if (project.system.titleScreen) {
