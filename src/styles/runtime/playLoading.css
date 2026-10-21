@@ -70,6 +70,8 @@
   font: 500 11px/1.4 var(--font-ui, system-ui, sans-serif);
   max-width: 34ch;
   min-height: 2.8em;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
 }
 
 .play-loading-bar {
