@@ -1420,8 +1420,9 @@
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  top: auto;
-  bottom: calc(100% + 4px);
+  /* 판은 발밑에 단다 — 머리 위에 두면 피해 숫자가 판 위로 떠 이름을 가렸다(폴른 스타 가혹 검수 r7). */
+  top: calc(100% + 2px);
+  bottom: auto;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"]:not([data-look-names="on"]) .battle-enemy:not(.defeated) .battle-enemy-chrome {
   background: none;

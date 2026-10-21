@@ -255,7 +255,22 @@ function facingPrompt(scene: ZoneFeedbackScene): string | null {
   const events = scene.activeRuntimeEvents("action");
   const target = events.find((event) => footprintContains(event.x, event.y, event.footprint, targetX, targetY))
     ?? events.find((event) => footprintContains(event.x, event.y, event.footprint, scene.tileX, scene.tileY));
-  return promptForEvent(target);
+  const label = promptForEvent(target);
+  return rememberPrompt(scene.session, label && target ? `${(scene.session as { currentMapId?: string }).currentMapId ?? ""}:${target.event.id}:${target.pageId ?? ""}:${label}` : null) ? label : null;
+}
+
+/**
+ * 같은 대상(맵·이벤트·페이지·문구) 앞의 안내는 세션에 한 번만 보인다 — 한 번 등을 돌리면 다음부터는 띄우지 않는다.
+ * 후퇴 뒤 보스 앞·금고 문 앞에 「Z 전투」가 다시 떠 「상시 표시」로 읽혔다(폴른 스타 가혹 검수 r6·r7).
+ * 페이지가 바뀌면(새 상태) 키가 달라져 다시 한 번 보인다.
+ */
+const promptMemory = new WeakMap<object, { readonly seen: Set<string>; current: string | null }>();
+function rememberPrompt(session: object, key: string | null): boolean {
+  let memory = promptMemory.get(session);
+  if (!memory) { memory = { seen: new Set(), current: null }; promptMemory.set(session, memory); }
+  if (memory.current && memory.current !== key) memory.seen.add(memory.current);
+  memory.current = key;
+  return key !== null && !memory.seen.has(key);
 }
 
 function promptForEvent(event: RuntimeEventView | undefined): string | null {
