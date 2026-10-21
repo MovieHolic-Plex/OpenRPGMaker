@@ -256,7 +256,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   taken.push(jihuSeat, o.leadDesk);
   // 만남 자리: 팀장은 주인공 두 칸 앞, 지후는 팀장 옆(엘리베이터 벽 그림 밑이 아닌 트인 바닥 — 시각 담당 앵커가 있으면 그것).
   const named = o as typeof o & { meetLead?: Cell; meetJihu?: Cell };
-  const leadMeetStop = named.meetLead ?? spot(project, FL_MAP.office, { x: o.elevatorOut.x, y: o.elevatorOut.y - 2 }, taken);
+  const leadMeetStop = named.meetLead ?? spot(project, FL_MAP.office, { x: o.elevatorOut.x, y: o.elevatorOut.y + 2 }, taken);
   const jihuMeetStop = named.meetJihu ?? spot(project, FL_MAP.office, { x: leadMeetStop.x + 1, y: leadMeetStop.y }, taken);
   const minhoMeetStop = spot(project, FL_MAP.office, { x: leadMeetStop.x - 1, y: leadMeetStop.y }, taken);
   // 둘 다 자기 자리에서 걸어 나온다(빈 바닥에서 솟아나지 않는다).
@@ -334,20 +334,20 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   add(office, scene("ev_fl_meet", { x: 1, y: 1 }, S.STREET, [
     ...caption("스튜디오 늘봄, 7층."),
     walkRoute(project, FL_MAP.office, "ev_fl_lead", leadSpot, leadMeetStop, [o.elevatorOut]),
-    face("ev_fl_lead", "down"),
+    face("ev_fl_lead", dirToward(leadMeetStop, o.elevatorOut)),
     ...say("lead", "base", "윤서하 씨? 오정민이에요. 프로덕트팀 팀장."),
     ...say("seoha", "happy", "안녕하세요! 오늘부터 출근하는 윤서하입니다. 잘 부탁드립니다."),
     ...say("lead", "happy", "긴장 풀어요. 우리 팀 다섯 명이에요. 한 명은 휴가 중이고, 한 명은 벌써 탕비실에서 간식 먹고 있고."),
     // 민호는 탕비실에서 걸어 나와 인사한다(VQA2: 「탕비실 안에서 자기소개」).
     walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoSpot, minhoMeetStop, [o.elevatorOut, leadMeetStop]),
-    face("ev_fl_minho", "down"),
+    face("ev_fl_minho", dirToward(minhoMeetStop, o.elevatorOut)),
     ...say("minho", "happy", "아, 들켰다. 차민호예요! 지난주에 들어온 백엔드 신입. 동기라고 해도 되죠?"),
     ...say("seoha", "happy", "네, 그럼요. 반가워요."),
     { kind: "changeFriendship", npcKey: "lead", delta: 60 } as Command,
     { kind: "changeFriendship", npcKey: "minho", delta: 60 } as Command,
     ...say("lead", "base", "그리고 서하 씨 사수. 지후 씨, 잠깐 와 볼래요?"),
     walkRoute(project, FL_MAP.office, "ev_fl_jihu_meet", jihuMeet, jihuMeetStop, [o.elevatorOut, leadMeetStop, minhoMeetStop]),
-    face("ev_fl_jihu_meet", "down"),
+    face("ev_fl_jihu_meet", dirToward(jihuMeetStop, o.elevatorOut)),
     stopBgm(),
     ...emote("player", "exclamation", 1300),
     ...think("…어?", "회색 후드. 조금 길어진 앞머리. 목소리를 듣기도 전에 알았다."),
@@ -423,7 +423,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     face("ev_fl_jihu_roof", "up"),
     ...think("…있다."),
     ...think("난간에 기대 선 뒷모습. 바람에 후드 끈이 흔들린다."),
-    walk("@player", route(project, FL_MAP.rooftop, r.doorOut, nearestFree(project, roof, { x: jihuRail.x - 1, y: jihuRail.y }, 2, [jihuRail]))),
+    walkRoute(project, FL_MAP.rooftop, "@player", r.doorOut, r.railHero),
     face("@player", "right"),
     face("ev_fl_jihu_roof", "left"),
     ...emote("ev_fl_jihu_roof", "ellipsis"),
@@ -466,7 +466,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     ...caption("그날 오후는 계정 신청서와 회의와, 처음 듣는 줄임말로 지나갔다."),
     stage(S.ROOF),
     // 회사 문에서 편의점까지는 거리 맞은편 끝(60칸 남짓)이다 — 빈 밤길을 걷게 하지 않고 편의점 앞에서 연다(VQA r2).
-    transfer(FL_MAP.streetPm, a.street.konbiniOut.x, a.street.konbiniOut.y, "up"),
+    transfer(FL_MAP.streetPm, a.street.konbiniOut.x, a.street.konbiniOut.y, "down"),
   ]));
 }
 
@@ -621,7 +621,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
   const minhoStart = spot(project, FL_MAP.officePm, { x: o.heroDesk.x + 2, y: o.heroDesk.y }, taken);
   const jihuSeat = spot(project, FL_MAP.officePm, { x: o.heroDesk.x + 1, y: o.heroDesk.y - 2 }, taken);
   const jihuPantry = spot(project, FL_MAP.officePm, o.pantry, taken);
-  const exit = { stand: o.elevatorOut, door: o.elevator };
+  const exit = { stand: { x: o.npcExit.x, y: o.npcExit.y + 1 }, door: o.npcExit };
   const minhoOut = leave(project, FL_MAP.officePm, "ev_fl_w_minho", minhoStart, exit, "sw_fl_minho_left", o.heroDesk);
   const leadOut = leave(project, FL_MAP.officePm, "ev_fl_w_lead", leadSeat, exit, "sw_fl_lead_left", o.heroDesk);
 
@@ -675,7 +675,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
         stopBgm(),
         ...caption("그리고, 금요일."),
         stage(S.WED_TALK),
-        transfer(FL_MAP.officeFri, a.office.meetingSeat.x, a.office.meetingSeat.y, "up"),
+        transfer(FL_MAP.officeFri, a.office.meetingSeat.x, a.office.meetingSeat.y, "left"),
       ], { who: "jihu", dir: "up" }),
     ]),
   );
@@ -702,6 +702,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     page("nb3", [stageIs(V_STAGE, S.WED), swOn("sw_fl_closed_note")], think("덮어 둔 수첩. 그대로 둔다.")),
   ]));
   add(off,
+    door("ev_fl_w_elev2", o.npcExit, [stageIs(V_STAGE, 999)], [], think("지후 선배가 아직 탕비실에 있다. 이대로 가면… 안 될 것 같다."), "down"),
     door("ev_fl_w_elev", o.elevator, [stageIs(V_STAGE, 999)], [], think("지후 선배가 아직 탕비실에 있다. 이대로 가면… 안 될 것 같다."), "down"),
     door("ev_fl_w_stairs", o.stairs, [stageIs(V_STAGE, 999)], [], think("옥상 문은 밤엔 잠겨 있다.")),
     event("ev_fl_w_desk", "서하 자리", { x: o.heroDesk.x, y: o.heroDesk.y - 1 }, [
@@ -786,19 +787,19 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
 function buildFriday(project: Project, a: FirstLoveAnchors): void {
   const fri = project.maps[FL_MAP.officeFri]!;
   const o = a.office;
-  const taken: Cell[] = [o.meetingSeat];
-  const clientSpot = spot(project, FL_MAP.officeFri, { x: o.meetingSeat.x + 3, y: o.meetingSeat.y - 1 }, taken);
-  const leadSpot = spot(project, FL_MAP.officeFri, { x: o.meetingSeat.x + 2, y: o.meetingSeat.y + 1 }, taken);
-  const jihuSpot = spot(project, FL_MAP.officeFri, { x: o.meetingSeat.x + 1, y: o.meetingSeat.y }, taken);
-  const minhoSpot = spot(project, FL_MAP.officeFri, { x: o.meetingSeat.x, y: o.meetingSeat.y + 2 }, taken);
-  const exit = { stand: o.elevatorOut, door: o.elevator };
+  // 탁자 둘레 빈 바닥(시각 담당 meetSeats): [0]=주인공(동쪽 아래) [1]=지후(동쪽 위) [2]=본부장(서쪽 위) [3]=팀장(서쪽 아래) [4]=민호(북쪽).
+  const seats = o.meetSeats;
+  const jihuSpot = seats[1]!; const clientSpot = seats[2]!; const leadSpot = seats[3]!; const minhoSpot = seats[4]!;
+  // 손님·지후는 두 번째 엘리베이터(주인공이 내린 칸이 아닌 문)로 나간다 — 엘리베이터 문 바로 앞에서 사라진다.
+  const exit = { stand: { x: o.npcExit.x, y: o.npcExit.y + 1 }, door: o.npcExit };
   const clientOut = leave(project, FL_MAP.officeFri, "ev_fl_f_client", clientSpot, exit, "sw_fl_client_left", o.meetingSeat);
   const jihuOut = leave(project, FL_MAP.officeFri, "ev_fl_f_jihu", jihuSpot, exit, "sw_fl_jihu_left", o.meetingSeat);
   add(fri,
-    event("ev_fl_f_client", "박 본부장", clientSpot, [page("fc", [swOff("sw_fl_client_left")], [], { who: "client", dir: "left" })]),
-    event("ev_fl_f_lead", "오정민 팀장", leadSpot, [page("fl", [], [], { who: "lead", dir: "up" })]),
+    event("ev_fl_f_client", "박 본부장", clientSpot, [page("fc", [swOff("sw_fl_client_left")], [], { who: "client", dir: "right" })]),
+    event("ev_fl_f_lead", "오정민 팀장", leadSpot, [page("fl", [], [], { who: "lead", dir: "right" })]),
     event("ev_fl_f_jihu", "강지후", jihuSpot, [page("fj", [swOff("sw_fl_jihu_left")], [], { who: "jihu", dir: "left" })]),
-    event("ev_fl_f_minho", "차민호", minhoSpot, [page("fm", [], [], { who: "minho", dir: "up" })]),
+    event("ev_fl_f_minho", "차민호", minhoSpot, [page("fm", [], [], { who: "minho", dir: "down" })]),
+    door("ev_fl_f_elev2", o.npcExit, [stageIs(V_STAGE, 999)], [], think("…"), "down"),
   );
   add(fri, scene("ev_fl_fri", { x: 1, y: 1 }, S.WED_TALK, [
     ...fadeIn(800),
