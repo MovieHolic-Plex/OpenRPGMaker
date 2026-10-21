@@ -2201,6 +2201,11 @@ export interface CompanionConfig {
    * 동료가 사라지거나 한 칸에 겹쳐 보이던 문제(폴른 스타 가혹 검수 r8·r9). 생략 = 기존 동작(숨김).
    */
   spreadWhenBlocked?: boolean;
+  /**
+   * true 면 이벤트(대화·장면)가 도는 동안 둘째 동료부터 앞 동료 **옆**(몸 길이만큼 떨어진 칸)에 선다 — 한 줄 세로 대열 대신
+   * ㄴ자 두 줄 대형. 장면이 끝나고 주인공이 걸으면 궤적 자리로 돌아온다(폴른 스타 가혹 검수 r11). 생략 = 기존 동작.
+   */
+  fanOutInScenes?: boolean;
 }
 
 export interface MonsterCareConfig {

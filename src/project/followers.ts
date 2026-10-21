@@ -413,6 +413,8 @@ export type FollowerWorld = {
   readonly map: GameMap;
   /** 칸을 막는 런타임 이벤트(NPC·간판 등). 걷는 NPC 가 궤적 칸에 들어서도 동료를 그 위에 세우지 않는다. */
   readonly blocked?: (x: number, y: number) => boolean;
+  /** 이벤트(대화·장면)가 도는 중 — companions.fanOutInScenes 가 켜져 있으면 둘째 동료부터 옆 줄에 선다. */
+  readonly inScene?: boolean;
 };
 
 export function followerPositions(
@@ -452,7 +454,13 @@ export function followerPositions(
   }
   const previous = memo?.result;
   let cursor = -1;
+  const placed: { readonly x: number; readonly y: number; readonly direction?: Dir; readonly hidden?: boolean }[] = [];
   const result = followers.map((follower, index) => {
+    const entry = placeOne(follower, index);
+    placed.push(entry);
+    return entry;
+  });
+  function placeOne(follower: RuntimeFollower, index: number) {
     // 옆자리가 모자라면(인접 4칸 초과 인원, 또는 물·벽으로 막힌 칸) 그 동료는 일렬로 떨어진다.
     const slot = slots[index];
     if (slot && !blocked?.(slot.x, slot.y)) return { follower, x: slot.x, y: slot.y, direction: slot.direction };
@@ -472,6 +480,15 @@ export function followerPositions(
         while (at < trail.length && !clear(trail[at]!)) at += 1;
       }
     }
+    // 장면 중 ㄴ자 대형(companions.fanOutInScenes): 둘째 동료부터 앞 동료 옆 칸(몸 길이만큼)에 선다.
+    const front = index > 0 ? placed[index - 1] : undefined;
+    if (front && !front.hidden && config?.fanOutInScenes === true && world?.inScene) {
+      const side = besideOf(session, front, minDistance, world, clear);
+      if (side) {
+        taken.push(side);
+        return { follower, x: side.x, y: side.y, direction: front.direction ?? follower.graphic.direction };
+      }
+    }
     const point = trail[at];
     if (!point) {
       const spread = config?.spreadWhenBlocked === true && world ? nearestSpreadCell(session, world, clear) : null;
@@ -484,9 +501,32 @@ export function followerPositions(
     cursor = at;
     taken.push({ x: point.x, y: point.y });
     return { follower, x: point.x, y: point.y, direction: point.direction ?? follower.graphic.direction };
-  });
+  }
   followerPlacementMemo.set(session, { trail, x: session.x, y: session.y, followers, gap, minDistance, result });
   return result;
+}
+
+/**
+ * companions.fanOutInScenes: 앞 동료 옆(주인공→앞 동료 축에 수직으로 몸 길이만큼) 칸. 사이 칸까지 통행 가능해야 한다 —
+ * 벽 너머·기둥 위에 세우지 않는다. 왼쪽을 먼저 보고, 안 되면 오른쪽. 둘 다 안 되면 null(궤적 자리로 돌아간다).
+ */
+function besideOf(
+  hero: { readonly x: number; readonly y: number },
+  front: { readonly x: number; readonly y: number },
+  distance: number,
+  world: FollowerWorld,
+  clear: (point: { readonly x: number; readonly y: number }) => boolean,
+): { x: number; y: number } | null {
+  const vertical = front.x === hero.x;
+  for (const sign of [-1, 1]) {
+    const cells = Array.from({ length: distance }, (_, k) => vertical
+      ? { x: front.x + sign * (k + 1), y: front.y }
+      : { x: front.x, y: front.y + sign * (k + 1) });
+    const ok = cells.every((cell) => inBounds(world.map, cell.x, cell.y) && isPassable(world.project, world.map, cell.x, cell.y) && !world.blocked?.(cell.x, cell.y));
+    const target = cells[cells.length - 1]!;
+    if (ok && clear(target)) return target;
+  }
+  return null;
 }
 
 /**

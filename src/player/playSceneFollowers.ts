@@ -82,6 +82,7 @@ function followerWorldFor(scene: PlaySceneContext, project: Project): FollowerWo
     project,
     map: scene.map,
     blocked: (x, y) => findBlockingRuntimeEventAtInMap(project, map, scene.session, scene.eventPositions, x, y) !== undefined,
+    inScene: scene.running,
   };
 }
 
