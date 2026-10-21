@@ -69,7 +69,7 @@ export function createMonsterCampaignDetail(options: StatusMenuDetailOptions, co
         const complete = session.switches[objective.switchId] === true;
         const unlocked = !objective.requiresSwitchId || session.switches[objective.requiresSwitchId] === true;
         return {
-          label: objective.title,
+          label: objective.summary ?? objective.title,
           value: complete ? '완료' : unlocked ? '진행 중' : '대기',
           description: complete ? '이 목표를 완료했습니다.' : unlocked ? objective.title : '앞선 목표를 마치면 시작합니다.',
           testId: `campaign-objective-${objective.id}`,

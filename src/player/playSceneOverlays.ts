@@ -448,7 +448,13 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
       epilogue.append(badge);
     }
     epilogue.append(textNode("div", "ending-kicker", endingKicker(presentation)));
-    epilogue.append(textNode("h1", "ending-heading", title || endingText("ending.heading")));
+    // 「본제 · 부제」 이름은 구분점에서 줄을 나눈다 — 점이 줄 끝에 매달리지 않게 점은 빼고 부제를 둘째 줄로 보낸다.
+    const heading = textNode("h1", "ending-heading", "");
+    (title || endingText("ending.heading")).split(/\s+[·・•]\s+/).forEach((part, index) => {
+      if (index > 0) heading.append(document.createElement("br"));
+      heading.append(document.createTextNode(part));
+    });
+    epilogue.append(heading);
     const body = message || cg?.epilogue;
     if (body) epilogue.append(textNode("div", "ending-message", body));
     terminal.root.append(epilogue);
@@ -489,12 +495,12 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     const viewport = textNode("div", "ending-credits", "");
     const roll = textNode("div", "ending-credits-roll", copy);
     viewport.append(roll); terminal.root.append(viewport);
-    // 첫 줄이 화면 아래 절반에서 바로 보이게 시작한다 — 아래 끝에서 올라오면 처음 몇 초가 빈 화면이었다(폴른 스타 가혹 검수 r6).
-    const start = Math.round(viewport.clientHeight * 0.55);
-    const distance = start + roll.scrollHeight;
+    // 롤 첫 줄이 0초부터 마스크가 불투명한 구간 안에 보이게 아래 가장자리 밖이 아니라 위쪽 1/3 지점에서 출발한다(VQA R8).
+    const startOffset = Math.round(viewport.clientHeight * .3);
+    const distance = startOffset + roll.scrollHeight;
     const duration = Math.max(8000, distance / CREDITS_SPEED_PX_PER_SEC * 1000);
     terminal.root.style.setProperty("--credits-duration", `${duration}ms`);
-    terminal.root.style.setProperty("--credits-start", `${start}px`);
+    terminal.root.style.setProperty("--credits-start", `${startOffset}px`);
     terminal.root.style.setProperty("--credits-end", `${-roll.scrollHeight}px`);
     const hint = textNode("div", "game-over-hint", endingText(terminal.reducedMotion ? "ending.creditsRead" : "ending.creditsSkip"));
     terminal.root.append(hint);
