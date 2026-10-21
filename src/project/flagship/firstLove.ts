@@ -374,6 +374,10 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
         ...say("seoha", "surprised", "…지후 선배?"),
         ...say("lead", "surprised", "어머, 아는 사이예요?"),
         ...emote("ev_fl_jihu_meet", "ellipsis", 1200),
+        // 「대답하기 전에 눈을 피했다」 — 대답하기 전에 지후가 실제로 고개를 돌렸다가, 다시 보고 말한다.
+        face("ev_fl_jihu_meet", "right"),
+        wait(700),
+        face("ev_fl_jihu_meet", dirToward(jihuMeetStop, o.elevatorOut)),
         ...say("jihu", "base", "…아뇨. 사람을 잘못 보신 것 같습니다."),
         ...say("seoha", "embarrassed", "아… 죄송합니다. 닮은 사람이 있어서요."),
         ...think("잘못 봤을 리가 없다. 저 사람, 대답하기 전에 눈을 피했다."),
@@ -547,8 +551,11 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
       ifCond(swOn(SW_COFFEE), say("jihu", "happy", "…아, 점심 커피. 잘 마셨어요. 고맙다는 말을 못 해서.")),
       ifCond({ kind: "variable", variableId: V_JIHU, op: "<", value: 1 } as never, [
         ...emote("ev_fl_jihu_kon", "sweat"),
+        // 「계산대 쪽으로 반 걸음 물러섰다」 — 계산대(오른쪽)로 돌아선다.
+        face("ev_fl_jihu_kon", dirToward(jihuStop, clerkSpot)),
         ...think("그 사람은 계산대 쪽으로 반 걸음 물러섰다. 그냥 나가려는 걸까."),
       ]),
+      faceHero("ev_fl_jihu_kon"),
       ...say("jihu", "base", "…아직 그거 마셔요?"),
       ifCond(swOn("sw_fl_admitted"),
         say("seoha", "base", "회사에선 모르는 사이라면서요. 그런 건 기억하시네요."),
@@ -559,6 +566,8 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
       choices([
         { text: "(바나나우유 두 개를 계산한다)", then: [
           setSw(SW_MILK, true),
+          // 점원은 카메라가 아니라 계산하러 온 서하 쪽을 보고 묻는다.
+          faceHero("ev_fl_clerk"),
           ...say("clerk", "happy", "원 플러스 원이라 두 개 맞으시죠?"),
           ...say("seoha", "happy", "네. …선임님, 하나 드세요. 모르는 사이끼리도 우유 정도는 사 줄 수 있잖아요."),
           ...say("jihu", "happy", "…그 논리, 좀 이상한데요."),
@@ -581,7 +590,9 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
 
   // ── 회상: 10년 전 방송실 ──
   const b = a.broadcast;
-  const youngSeoha = nearestFree(project, bc, { x: b.mailbox.x - 2, y: b.mailbox.y + 1 }, 3, [b.start]);
+  // 두 사람은 복도 한 줄(사연함 줄)에 나란히 선다 — 아래 줄은 대사창에 가리고, 위아래로 서면 한 덩이로 겹쳐 보인다(VQA r1).
+  const youngSeoha = nearestFree(project, bc, { x: b.mailbox.x - 2, y: b.mailbox.y }, 3, [b.start]);
+  const youngJihuStop = nearestFree(project, bc, { x: youngSeoha.x - 1, y: youngSeoha.y }, 1, [youngSeoha, b.start, b.mailbox]);
   const youngJihu = b.booth;
   add(bc,
     event("ev_fl_y_seoha", "열일곱의 서하", youngSeoha, [page("ys", [], [], { who: "seohaYoung", dir: "up" })]),
@@ -599,8 +610,8 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
     ...voice("교내 방송", "‘선배, 금요일마다 선배 목소리 들으려고 급식 줄을 일부러 늦게 서요. 이건 비밀이에요.’"),
     ...voice("교내 방송", "…바나나우유 님. 비밀은 지켜 드릴게요. 대신 다음 주에도 사연 보내 주세요. 오늘의 노래는, ‘여름의 끝에서’."),
     ...say("seohaYoung", "embarrassed", "…바보. 진짜 읽으면 어떡해."),
-    walkRoute(project, FL_MAP.broadcast, "ev_fl_y_jihu", youngJihu, nearestFree(project, bc, { x: youngSeoha.x, y: youngSeoha.y - 1 }, 2, [youngSeoha, b.start])),
-    face("ev_fl_y_jihu", "down"),
+    walkRoute(project, FL_MAP.broadcast, "ev_fl_y_jihu", youngJihu, youngJihuStop, [youngSeoha], true, dirToward(youngJihuStop, youngSeoha)),
+    face("ev_fl_y_seoha", dirToward(youngSeoha, youngJihuStop)),
     ...say("jihuYoung", "base", "어, 2학년. 방송실 앞에서 뭐 해?"),
     ...say("seohaYoung", "surprised", "아, 아니요! 그냥 지나가다가요!"),
     ...say("jihuYoung", "happy", "바나나우유 들고?"),
