@@ -213,6 +213,11 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     page("lead_greet", [stageIs(V_STAGE, S.STREET)], [], { who: "lead", dir: "down" }),
     page("lead_after", [stageAtLeast(V_STAGE, S.MET)], [
       ...say("lead", "base", "오전엔 적응부터 해요. 계정은 점심 지나서 나와요."),
+      ifCond(stageIs(V_STAGE, S.MET), [
+        ...say("lead", "base", "‘하루끝’은 밤 열 시에 사연 하나랑 노래 한 곡을 보내 주는 앱이에요. 작지만, 오래 버틴 서비스죠."),
+        ...say("lead", "happy", "서하 씨 포트폴리오에 있던 라디오 화면 시안. 그거 보고 뽑았어요. 금요일 발표에 그 감성 그대로 가져와요."),
+        ...think("…라디오 화면. 방송부 시절 생각하면서 그린 거였다."),
+      ]),
       ifCond(stageIs(V_STAGE, S.PANTRY), say("lead", "happy", "점심은 자유예요. 옥상 가 봤어요? 우리 건물 유일한 자랑이에요.")),
     ], { who: "lead", dir: "down" }),
   ]));
@@ -264,6 +269,9 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     ], { who: "minho", dir: "up" }),
     page("minho_after", [stageAtLeast(V_STAGE, S.PANTRY)], [
       ...say("minho", "happy", "옥상 가 봐요. 진짜 좋다니까요."),
+      ifCond(swOn(SW_TOLD_MINHO),
+        [...say("minho", "base", "…아, 그리고. 선임님, 점심엔 꼭 옥상에 혼자 있어요. 이건 기밀 아니고 그냥 관찰이에요.")],
+        [...say("minho", "base", "라떼 버튼, 아무한테도 말하면 안 돼요. 그거 우리 팀 복지의 전부예요.")]),
     ], { who: "minho", dir: "up" }),
   ]));
 
@@ -428,7 +436,11 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
   const jihuEnter = k.doorOut;
   const jihuStop = nearestFree(project, kon, { x: k.cooler.x + 1, y: k.cooler.y + 1 }, 3, [k.cooler, clerkSpot]);
   add(kon,
-    event("ev_fl_clerk", "편의점 점원", clerkSpot, [page("c", [], voice("점원", "어서 오세요~ 바나나우유 원 플러스 원이에요."), { who: "clerk", dir: "down" })]),
+    event("ev_fl_clerk", "편의점 점원", clerkSpot, [page("c", [], [
+      ...voice("점원", "어서 오세요~ 바나나우유 원 플러스 원이에요."),
+      ...voice("점원", "요즘 그거 찾는 분 별로 없는데, 이 시간엔 꼭 하나씩 나가요. 신기하죠."),
+      ...think("…이 동네에도, 금요일 점심을 기억하는 사람이 있나 보다."),
+    ], { who: "clerk", dir: "down" })]),
     door("ev_fl_kon_door", k.door, [stageIs(V_STAGE, 999)], [], think("뭐라도 사서 나가자.")),
     event("ev_fl_jihu_kon", "강지후", jihuEnter, [page("jk", [swOn("sw_fl_jihu_in_konbini")], [], { who: "jihu", dir: "up" })]),
   );
@@ -549,6 +561,10 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     event("ev_fl_w_minho", "차민호", minhoStart, [page("wm", [swOff("sw_fl_minho_left")], [], { who: "minho", dir: "left" })]),
     event("ev_fl_w_jihu", "강지후", jihuSeat, [
       page("wj", [stageIs(V_STAGE, S.FLASH)], [], { who: "jihu", dir: "down" }),
+      page("wj_empty", [stageIs(V_STAGE, S.WED)], think(
+        "빈 의자 등받이에 회색 후드가 걸려 있다. 모니터에는 ‘하루끝’ 관리자 화면.",
+        "오늘의 사연 대기열 맨 위에 ‘보낸 사람: 익명’. …사연은, 아직도 누군가 보내는구나.",
+      ), {}),
     ]),
     event("ev_fl_w_jihu_pantry", "강지후", jihuPantry, [
       page("wjp", [stageIs(V_STAGE, S.WED)], [
