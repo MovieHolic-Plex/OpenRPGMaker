@@ -523,6 +523,8 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
       ...Array.from({ length: delay }, () => ({ kind: "wait" })),
       ...path.map((dir) => ({ kind: "move", dir })),
       { kind: "changeOpacity", delta: -255 },
+      // 사라진 뒤에도 칸을 막으면 뒤따르던 발렌이 마지막 걸음에서 멈췄다 — 지나갈 수 있게 한다.
+      { kind: "setThrough", enabled: true },
       ...(id.endsWith("valen") ? [{ kind: "setSwitch", switchId: SW_VALEN_MARCHED, value: true }] : []),
     ];
     marches.push({ kind: "moveEvent", eventId: id, route: { moves, repeat: false, wait: false, skippable: true } } as unknown as Command);
@@ -833,7 +835,6 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 이리스가 합류하면 광장의 발렌 일행은 숲으로 떠난다(지하에서 다시 만난다).
   vanishWhen(M(ids.hub), `ev_${FS_PREFIX}_valen`, SW_IRIS_JOINED);
   vanishWhen(M(ids.hub), `ev_${FS_PREFIX}_knight`, SW_IRIS_JOINED);
-  marchOffAfterProclamation(project, M(ids.hub));
   // 가혹 검수 r12: 천문대에만 곡이 없어 광장 곡이 이어지거나 무음이었다 — 잠든 종탑(차분한 수수께끼 실내 곡).
   M(ids.observatory).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" } as GameMap["bgm"];
 
@@ -1262,6 +1263,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // bossEvent 는 앞에서 잡은 옛 맵 객체일 수 있다(도구를 부를 때마다 맵이 새로 만들어진다) — id 로 다시 찾는다.
   stageTalk(bossEvent ? M(ids.vault).events.find((e) => e.id === bossEvent.id) : undefined);
   if (bossEvent) valenWalksIn(project, M(ids.vault), bossEvent.id);
+  // 길은 모든 소품·표지를 찍은 뒤에 잰다 — 앞에서 재면 뒤에 선 표지·자리 옮김이 길을 막았다.
+  marchOffAfterProclamation(project, M(ids.hub));
   applySpeakerFaces(project, {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),
