@@ -59,7 +59,7 @@ export const OPRN_PANORAMA_SETS: readonly OprnPanoramaSet[] = [
   {
     id: "oprn-sunset",
     name: "노을",
-    summary: "보라→주황 노을 하늘·지는 해·먼 도시 실루엣, 아래는 노을을 비추는 물(옆에서 본 지평선, 지평선은 화면 위쪽 절반) — 지붕 위·언덕·바닷가의 저녁. 윗줄 몇 칸만 비워도 해가 보인다",
+    summary: "보라→주황 노을 하늘·지는 해·먼 도시 실루엣(옆에서 본 지평선, 지평선은 화면 위쪽 절반 — 그 아래 물은 보통 맵 타일에 가려 안 보인다) — 지붕 위·언덕·바닷가의 저녁. 윗줄 몇 칸만 비워도 해가 보인다",
     view: "horizon",
     tags: ["노을", "저녁", "석양", "해질녘", "sunset", "evening"],
     layers: [

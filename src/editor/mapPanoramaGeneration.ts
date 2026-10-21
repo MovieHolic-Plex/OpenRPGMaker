@@ -115,6 +115,18 @@ export function seatSilhouetteBand(image: RgbaImage, visibleTop: number): RgbaIm
       if (y >= seat - 1 && fill >= 0) out.set(out.subarray(fill, fill + 4), k);
     }
   }
+  // 띠 사이 틈으로 끝까지 투명한 열은 바닥선 아래에서 가까운 옆 열 색으로 메운다(가로 반복이라 양끝은 이어진다).
+  for (let y = Math.max(0, seat - 1); y < height; y += 1) {
+    const row = y * width;
+    for (let x = 0; x < width; x += 1) {
+      if (out[(row + x) * 4 + 3]! > 127) continue;
+      for (let d = 1; d < width; d += 1) {
+        const left = (row + ((x - d + width) % width)) * 4, right = (row + ((x + d) % width)) * 4;
+        const from = out[left + 3]! > 127 ? left : out[right + 3]! > 127 ? right : -1;
+        if (from >= 0) { out.set(out.subarray(from, from + 4), (row + x) * 4); break; }
+      }
+    }
+  }
   return { width, height, data: out };
 }
 
