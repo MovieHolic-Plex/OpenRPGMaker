@@ -252,9 +252,13 @@
   flex-wrap: nowrap;
 }
 
+/* 도구 합(되돌리기 쌍 + 도구 + 스포이드)이 칸보다 길면 다음 줄로 내린다. nowrap 에 overflow:visible 이면
+   넘친 스포이드가 오른쪽 ⋯(검사·기록) 밑으로 흘러 그 절반을 누르면 ⋯ 메뉴가 열렸다.
+   overflow 를 auto 로 바꾸지 않는 이유: 되돌리기 기록·도구 메뉴 드롭다운이 이 줄의 자손이라 잘린다. */
 .editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-toolbar-scroll {
   flex: 1 1 auto;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  min-width: 0;
   overflow: visible;
 }
 
