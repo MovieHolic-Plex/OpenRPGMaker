@@ -3,7 +3,7 @@
 // 순간이동·상태 주입 없음. 길은 sceneRoute.mts(제품 canMove)로 찾고 __oprnDebug.playerRoute 로 걷는다(실제 걷기 경로).
 // 대상 순서: 시작 맵 이벤트를 가까운 순으로 — 말 걸기(action) 이벤트는 옆에서 보고 결정 키, 접촉 이벤트(문·출구)는 밟는다.
 import { spawnSync } from 'node:child_process';
-import { readFileSync, writeFileSync, existsSync, openSync, closeSync, unlinkSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, openSync, closeSync, unlinkSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { openGenrePlayer } from './genreExperiment.mjs';
 
@@ -57,17 +57,41 @@ const busy = () => page.evaluate(() => {
   try { const raw = JSON.parse(document.querySelector('[data-testid="runtime-state-json"]')?.textContent ?? 'null');
     return raw ? { running: raw.running === true, input: raw.inputEnabled !== false } : null; } catch { return null; }
 }).catch(() => null);
-async function drainDialogue(limit = 40) {
-  let idle = 0, stuckRounds = 0;
-  for (let i = 0; i < limit && idle < 3; i++) {
+// Which window is open: a dialogue box takes Enter; a shop/save/menu window takes Escape (Enter would buy or save again —
+// r3 boss-checkpoint sat 50 s in the save window); a running cutscene with no window takes no key at all.
+// 창 없이 이벤트만 도는 동안(동료가 걸어 들어오는 컷신) 키를 누르지 않고 기다린다 — 예전에는 그때 Escape 가 필드 메뉴를 열었고,
+// 40회 한도가 컷신 도중에 끝나 다음 대사 창을 아무도 넘기지 않았다(r3 party-enter-cutscene: 같은 대사 80초).
+const openWindow = () => page.evaluate(() => {
+  const q = id => document.querySelector(`[data-testid="${id}"]`);
+  const box = q('dialogue-box') ?? q('dialogue-choice-frame');
+  if (box) return `dialogue:${box.textContent ?? ''}`;
+  // battle: Enter picks the default command (attack) every round — Escape would cancel back to the command list forever
+  // (r3 boss-balance-sim: the fight never left its first command)
+  if (document.querySelector('[data-testid="battle-backdrop"], [data-testid="battle-actor-sprites"]')) return 'battle';
+  if (q('shop-scene') || q('shopkeeper-scene') || q('save-file-selection') || q('main-menu')) return 'window';
+  return null;
+}).catch(() => null);
+let battleShots = 0;
+async function drainDialogue(limitMs = 120000) {
+  const t0 = Date.now();
+  let idle = 0, sameText = 0, lastText = null;
+  while (Date.now() - t0 < limitMs && idle < 3) {
     await sleep(900);
     const b = await busy();
-    const box = await dialogueOpen();
-    if (b && !b.running && b.input && !box) { idle++; continue; }
-    idle = 0; stuckRounds++;
-    // Enter pages through text; a shop/inn window that Enter cannot close (or would buy from) gets Escape after a few rounds.
-    // 상점·저장 창은 Enter 가 다시 사거나 다시 저장한다(r3 boss-checkpoint: 저장 창에서 50초) — 다섯 번 뒤로는 Escape 만.
-    await page.keyboard.press(stuckRounds > 5 ? 'Escape' : 'Enter');
+    const win = await openWindow();
+    if (b && !b.running && b.input && !win) { idle++; continue; }
+    idle = 0;
+    if (!win) continue; // cutscene still moving actors — wait without pressing anything
+    const dialogue = win.startsWith('dialogue:');
+    sameText = dialogue && win === lastText ? sameText + 1 : 0; lastText = win;
+    // A box whose text Enter has not changed in 6 rounds is a list drawn inside it (shop, inn) — Escape out of it.
+    // The page video drops battle frames to black (screencast only repaints damaged areas of the battle layer), so battles
+    // also get real page screenshots — the judge reads these, not the black video frames.
+    if (win === 'battle' && battleShots < 60) {
+      const shotDir = resolve(player.evidenceDir, 'battle'); mkdirSync(shotDir, { recursive: true });
+      await page.screenshot({ path: resolve(shotDir, `b${String(++battleShots).padStart(2, '0')}.png`) }).catch(() => {});
+    }
+    await page.keyboard.press(win === 'battle' || (dialogue && sameText <= 6) ? 'Enter' : 'Escape');
   }
 }
 try {
@@ -116,6 +140,7 @@ try {
     let arrived = path.moves.length === 0, walked = 0;
     for (let guard = 0; guard < 200 && !arrived && path.reached && !deadline(); guard++) {
       const dir = path.moves[0];
+      { const b = await busy(); if ((b && (b.running || !b.input)) || await openWindow()) await drainDialogue(); }
       const before = await state(); if (!before || before.currentMapId !== map.id) break;
       // tap first (a held key carries the hero a second tile); hold only if the tap did not start a step
       let moved = false;
