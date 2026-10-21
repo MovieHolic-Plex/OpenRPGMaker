@@ -139,7 +139,7 @@ export const VN_UI_STRINGS: Readonly<Record<VnUiKey, Row>> = {
   "ending.kicker.journey": { ko: "우리의 여정", en: "Our journey", ja: "わたしたちの旅", zh: "我们的旅程" },
   "ending.hallOfFame": { ko: "전당 등록!", en: "Hall of Fame!", ja: "殿堂入り!", zh: "荣登殿堂!" },
   "ending.continue": { ko: "Z / Enter 계속", en: "Z / Enter  Continue", ja: "Z / Enter 次へ", zh: "Z / Enter 继续" },
-  "ending.creditsSkip": { ko: "Z / Enter 크레딧 건너뛰기", en: "Z / Enter  Skip credits", ja: "Z / Enter クレジットをとばす", zh: "Z / Enter 跳过字幕" },
+  "ending.creditsSkip": { ko: "Z / Enter 누르면 빠르게   ·   Esc 건너뛰기", en: "Hold Z / Enter  Fast   ·   Esc  Skip", ja: "Z / Enter 長押しで早送り   ·   Esc とばす", zh: "按住 Z / Enter 快进   ·   Esc 跳过" },
   "ending.creditsRead": { ko: "PgUp/PgDn 읽기   ·   Z / Enter 마침", en: "PgUp/PgDn  Read   ·   Z / Enter  Finish", ja: "PgUp/PgDn 読む   ·   Z / Enter 終わる", zh: "PgUp/PgDn 阅读   ·   Z / Enter 结束" },
   "ending.returnTitle": { ko: "타이틀로 돌아가기", en: "Return to title", ja: "タイトルへ戻る", zh: "返回标题" },
 };

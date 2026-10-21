@@ -142,6 +142,11 @@ type LabelBox = { x0: number; y0: number; x1: number; y1: number };
 
 const textWidth = (text: string): number => [...text].reduce((sum, ch) => sum + (/[\u1100-\u11ff\u3130-\u318f\uac00-\ud7af\u3040-\u30ff\u4e00-\u9fff]/.test(ch) ? LABEL_PX : ch === ' ' ? 6 : 9), 0);
 
+// 이름 상자 사이에 여백을 둔다 — 서로 붙은 두 줄이 한 덩어리 문구로 읽히지 않게, 다른 이름은 한 줄 이상 띄운다.
+const LABEL_GAP_X = 10, LABEL_GAP_Y = 6;
+// 가장자리와도 떨어뜨려 글자가 지도 틀에 붙어 잘려 보이지 않게 한다.
+const EDGE_X = 8, EDGE_Y = 4;
+const padBox = (box: LabelBox, dx: number, dy: number): LabelBox => ({ x0: box.x0 - dx, y0: box.y0 - dy, x1: box.x1 + dx, y1: box.y1 + dy });
 const overlaps = (a: LabelBox, b: LabelBox): boolean => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
 
 /** 지역 지도: 실제 장소 좌표와 연결선만 그린다. 이름은 16px 도트 글꼴로 노드 옆에 놓고, 겹치면 위·아래·옆으로 피한다. */
@@ -213,8 +218,8 @@ export function renderCampaignRegionMap(map: CampaignRegionMap): HTMLElement {
     extras.push(...candidates.splice(mark));
     extras.sort((a, b) => (Math.abs(a.x - point.x) + Math.abs(a.y - point.y)) - (Math.abs(b.x - point.x) + Math.abs(b.y - point.y)));
     candidates.push(...extras);
-    const inside = (c: (typeof candidates)[number]): boolean => c.box.x0 >= 2 && c.box.x1 <= MAP_W - 2 && c.box.y0 >= 1 && c.box.y1 <= MAP_H - 1;
-    const clearOf = (c: (typeof candidates)[number]): boolean => !placed.some((other) => overlaps(c.box, other)) && !nodeBoxes.some((other) => overlaps(c.box, other));
+    const inside = (c: (typeof candidates)[number]): boolean => c.box.x0 >= EDGE_X && c.box.x1 <= MAP_W - EDGE_X && c.box.y0 >= EDGE_Y && c.box.y1 <= MAP_H - EDGE_Y;
+    const clearOf = (c: (typeof candidates)[number]): boolean => !placed.some((other) => overlaps(c.box, padBox(other, LABEL_GAP_X, LABEL_GAP_Y))) && !nodeBoxes.some((other) => overlaps(c.box, other));
     const roadHits = (c: (typeof candidates)[number]): number => roadBoxes.filter((other) => overlaps(c.box, other)).length;
     const choice = candidates.find((c) => inside(c) && clearOf(c) && roadHits(c) === 0)
       ?? candidates.filter((c) => inside(c) && clearOf(c)).sort((a, b) => roadHits(a) - roadHits(b))[0]
