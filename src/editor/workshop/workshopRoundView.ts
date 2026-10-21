@@ -9,6 +9,7 @@ import { REJECT_REASONS } from "@/harnesses/interior-props/editor/prompts";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { gridDataUrl } from "./pixels";
+import { gateBadge } from "./gateBadge";
 import { armWorkshopStamp, bakeWorkshopPick, isWorkshopPickBaked, workshopTargetTileset } from "./workshopBake";
 import { store as projectStore } from "@/project/store";
 import type { WorkshopSession } from "./workshopSession";
@@ -116,7 +117,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
       })
       : el("button", {
         class: "workshop-primary", text: `고른 ${pick!.letter} 를 프로젝트 칩셋에 넣기`, attrs: { type: "button" }, dataset: { testid: "workshop-bake" },
-        on: { click: () => act(async () => { bakeWorkshopPick(item, grid, palette, session.env); rerender(); }) },
+        on: { click: () => act(async () => { bakeWorkshopPick(item, grid, palette, session.env, { gate: pickedRun?.gate ?? null }); rerender(); }) },
       });
     return [el("div", {
       class: "workshop-bake" + (baked ? " is-baked" : ""), dataset: { testid: "workshop-bake-row", baked: String(baked) },
@@ -164,6 +165,8 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
       el("span", { class: "workshop-chip", text: `${run.letter} · ${RUN_STATUS[run.status]}${(run.status === "drawing" || run.status === "reviewing") && run.attempt > 1 ? ` ${run.attempt}/3` : ""}` }),
       ...(run.topRows !== null ? [el("span", { class: "workshop-chip", text: `꼭대기 ${run.topRows}행` })] : []),
       ...(run.verdict ? [el("span", { class: `workshop-chip ${run.verdict.verdict === "PASS" ? "is-pass" : "is-fail"}`, text: run.verdict.verdict === "PASS" ? "검수 통과" : `검수 불통과 ${run.verdict.codes.join(",")}`, attrs: { title: run.verdict.reasons } })] : []),
+      // 3/4 관문 조언(판정 1번, 막지 않음) — 조수 카드와 같은 배지(gateBadge.ts)
+      ...(gateBadge(run) ? [gateBadge(run)!] : []),
       ...(run.attempt > 1 ? [el("span", { class: "workshop-chip", text: `다시 그림 ${run.attempt - 1}번` })] : []),
       ...(run.error ? [el("span", { class: "workshop-chip is-fail", text: run.error, attrs: { title: run.error } })] : []),
     ];
