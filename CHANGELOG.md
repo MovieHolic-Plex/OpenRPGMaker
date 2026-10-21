@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.304.0 — 2026-10-21
+
+### 기능
+
+- **ai** — game-scene-polish skill + scene-* lint warnings from the three demo fixes (#3182) (`b347fd4`)
+- **jp-city** — gate grandfathers already-shipped kits whose pixels are unchanged (#3180) (`d4e33d8`)
+
 ## 0.303.0 — 2026-10-21
 
 ### 기능
