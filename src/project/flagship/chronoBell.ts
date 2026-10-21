@@ -920,7 +920,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       }
     }
   }
-  const retarget = (map: GameMap, fromMapId: string, to: { mapId: string; x: number; y: number; facing?: string }): GameEvent | undefined => {
+  const retarget = (map: GameMap, fromMapId: string, to: { mapId: string; x: number; y: number; direction?: "up" | "down" | "left" | "right" }): GameEvent | undefined => {
     const event = map.events.find((e) => eventCommandLists(e).some((l) => l.some((c) => c.kind === "transfer" && (c as { mapId?: string }).mapId === fromMapId)));
     if (!event) return undefined;
     for (const list of eventCommandLists(event)) for (const cmd of list) {
@@ -929,7 +929,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     }
     return event;
   };
-  const touchTransfer = (map: GameMap, id: string, x: number, y: number, to: { mapId: string; x: number; y: number; facing: string }): void => {
+  const touchTransfer = (map: GameMap, id: string, x: number, y: number, to: { mapId: string; x: number; y: number; direction: "up" | "down" | "left" | "right" }): void => {
     map.events.push({
       id, name: "출입구", x, y, trigger: { kind: "playerTouch" }, commands: [],
       pages: [{
@@ -939,7 +939,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       }],
     } as GameEvent);
   };
-  const hatch = retarget(M(ids.observatory), M(ids.vault).id, { mapId: PUZZLE_ROOM, x: 10, y: 13, facing: "up" });
+  const hatch = retarget(M(ids.observatory), M(ids.vault).id, { mapId: PUZZLE_ROOM, x: 10, y: 13, direction: "up" });
   if (!hatch) throw new Error("[fallen-star] 천문대 뚜껑문을 찾지 못했다");
   // 장 구성기는 뚜껑문을 벽 밑 찬장 사이에 두어 찬장 문처럼 보였다(감사 3차) — 방 가운데 빈 바닥으로 옮긴다.
   const hatchOpen = nearFree(project, M(ids.observatory), { x: hatch.x, y: hatch.y + 3 }, 2, hatch.id);
@@ -947,10 +947,10 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 뚜껑문이 보이게 — 투명 출입구 칸에 바닥 뚜껑문 그림을 찍는다.
   execTool(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:trapdoor", mapId: M(ids.observatory).id, x: hatch.x, y: hatch.y });
   const hatchFront = pickSpot(project, M(ids.observatory), { x: hatch.x, y: hatch.y }, new Set([`${hatch.x},${hatch.y}`]), 0.01, 1) ?? { x: hatch.x, y: hatch.y + 1 };
-  touchTransfer(M(PUZZLE_ROOM), "ev_fs_vault_gate_down", 10, 14, { mapId: M(ids.observatory).id, x: hatchFront.x, y: hatchFront.y, facing: "down" });
-  const vaultStairs = retarget(M(ids.vault), M(ids.observatory).id, { mapId: PUZZLE_ROOM, x: 10, y: 3, facing: "down" });
+  touchTransfer(M(PUZZLE_ROOM), "ev_fs_vault_gate_down", 10, 14, { mapId: M(ids.observatory).id, x: hatchFront.x, y: hatchFront.y, direction: "down" });
+  const vaultStairs = retarget(M(ids.vault), M(ids.observatory).id, { mapId: PUZZLE_ROOM, x: 10, y: 3, direction: "down" });
   const vaultEntry = vaultStairs ? { x: vaultStairs.x, y: vaultStairs.y + 2 } : { x: 30, y: 58 };
-  for (const gx of [9, 10]) touchTransfer(M(PUZZLE_ROOM), `ev_fs_vault_gate_up${gx}`, gx, 2, { mapId: M(ids.vault).id, x: vaultEntry.x, y: vaultEntry.y, facing: "up" });
+  for (const gx of [9, 10]) touchTransfer(M(PUZZLE_ROOM), `ev_fs_vault_gate_up${gx}`, gx, 2, { mapId: M(ids.vault).id, x: vaultEntry.x, y: vaultEntry.y, direction: "up" });
 
   // 동문 문지기는 숲으로 나가는 출입구 곁에 세운다.
   const forestGate = M(ids.hub).events.find((e) => JSON.stringify(e).includes(`"mapId":"${M(ids.forest).id}"`));
@@ -1100,6 +1100,53 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         const rec = cmd as unknown as Record<string, unknown>;
         if (rec.kind === "transfer" && rec.mapId === M(ids.observatory).id && typeof rec.x === "number" && typeof rec.y === "number") { rec.x += padX; rec.y += padY; }
       }
+    }
+  }
+  // 모든 이동은 맞은편 문 바로 앞 칸에 내리고, 문을 등진 방향(direction)을 명시한다(VQA r12).
+  // 패딩이 끝난 최종 좌표 기준이라 여기서 한 번에 맞춘다.
+  {
+    type Dir = "up" | "down" | "left" | "right";
+    const transfersTo = (map: GameMap, target: string): { event: GameEvent; rec: Record<string, unknown> }[] => {
+      const out: { event: GameEvent; rec: Record<string, unknown> }[] = [];
+      for (const event of map.events) for (const list of eventCommandLists(event)) for (const cmd of list) {
+        const rec = cmd as unknown as Record<string, unknown>;
+        if (rec.kind === "transfer" && rec.mapId === target) out.push({ event, rec });
+      }
+      return out;
+    };
+    const land = (from: GameMap, to: GameMap, front: Dir, dir: Dir, pick: "first" | "last" = "first"): void => {
+      const doors = transfersTo(to, from.id);
+      const door = (pick === "first" ? doors[0] : doors[doors.length - 1])?.event;
+      if (!door) return;
+      const d = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[front];
+      for (const { rec } of transfersTo(from, to.id)) { rec.x = door.x + d[0]; rec.y = door.y + d[1]; rec.direction = dir; }
+    };
+    const hub = M(ids.hub), obs = M(ids.observatory), forest = M(ids.forest), gate = M(PUZZLE_ROOM), vault = M(ids.vault);
+    land(hub, obs, "up", "up");
+    land(obs, hub, "down", "down");
+    land(hub, forest, "up", "up");
+    land(forest, hub, "left", "left");
+    land(obs, gate, "up", "up");
+    land(gate, obs, "down", "down");
+    land(gate, vault, "down", "down");
+    land(vault, gate, "down", "down", "last");
+
+    // 보이지 않는 터치 칸이던 두 출구에 문 그림을 세운다(VQA r12). 터치 칸과 도착 칸은 비워 둔다(발자국이 겹쳐도 통행 칸은 그림에 안 막힌다).
+    const stampKit = (map: GameMap, kitId: string, x: number, y: number): void => {
+      try { execTool(project, "stamp_object", { objectId: `kit:beodeul_city/${kitId}`, mapId: map.id, x, y }); } catch { /* 문 그림은 장식이라 실패해도 통행은 그대로 */ }
+    };
+    // 숲 남쪽 입구: 길 양옆에 이정표를 세운다(마을 문 kit 는 숲 지도에서 거절된다 — settlement-prop-on-route).
+    const forestDoor = transfersTo(forest, hub.id)[0]?.event;
+    if (forestDoor) {
+      stampKit(M(ids.forest), "bd-pick-mountain-pass-brazier", forestDoor.x - 2, forestDoor.y - 2);
+      stampKit(M(ids.forest), "bd-pick-mountain-pass-brazier", forestDoor.x + 2, forestDoor.y - 2);
+      stampKit(M(ids.forest), "bd-pick-mountain-pass-wayside-cross", forestDoor.x - 2, forestDoor.y - 4);
+    }
+    const hubDoor = transfersTo(hub, forest.id)[0]?.event;
+    if (hubDoor) {
+      stampKit(M(ids.hub), "bd-pick-coast-cliff-road-milestone", hubDoor.x - 1, hubDoor.y - 2);
+      stampKit(M(ids.hub), "bd-pick-coast-cliff-road-milestone", hubDoor.x - 1, hubDoor.y + 1);
+      stampKit(M(ids.hub), "bd-mpart-lamp-post", hubDoor.x, hubDoor.y - 3);
     }
   }
   // 숲지기 곁 모닥불.
