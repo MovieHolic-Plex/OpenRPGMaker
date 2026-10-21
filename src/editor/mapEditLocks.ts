@@ -3,6 +3,7 @@ import { store } from "@/project/store";
 import { teamSessionStatus } from "./teamSession";
 import type { MapId } from "@/project/types";
 import { dismissToastsByKey, toast } from "@/util/toast";
+import { TEAM_COLLAB_ENABLED } from "../../electron/shared/teamCollab";
 
 export type MapEditLockStatus =
   | { readonly kind: "idle" }
@@ -83,7 +84,12 @@ export function statusForMap(mapId: MapId): MapEditLockStatus | null {
   return status.kind === "idle" || status.mapId !== mapId ? null : status;
 }
 
+/**
+ * 사람 팀 협업이 꺼져 있으면 언제나 true — 맵 임대·호스트 연결·역할이 편집을 막지 않는다(2026-10-21).
+ * 맵 하나에 조수 한 명 규칙(aiChatPanel 의 맵별 대기열)은 별개이며 여기와 무관하다.
+ */
 export function canEditMap(mapId: MapId): boolean {
+  if (!TEAM_COLLAB_ENABLED) return true;
   if (typeof window === 'undefined' || !window.oprn?.team) return true;
   if (teamSessionStatus()?.member.role === 'viewer') return false;
   return status.kind === 'held' && status.mapId === mapId && Date.parse(status.expiresAt) > Date.now();
@@ -94,6 +100,7 @@ export function lockOwnerPhrase(ownerLabel: string): string {
 }
 
 export function mapEditLockNotice(mapId: MapId): string {
+  if (!TEAM_COLLAB_ENABLED) return '';
   if (teamSessionStatus()?.member.role === 'viewer') return '이 프로젝트는 보기 전용으로 열려 있습니다.';
   const current = statusForMap(mapId);
   if (current?.kind === 'locked') return `${lockOwnerPhrase(current.ownerLabel)}님이 편집 중입니다.`;
@@ -137,7 +144,14 @@ let transition: Promise<void> = Promise.resolve();
 export async function checkoutMapForEditing(mapId: MapId, mapName: string, options: { takeover?: boolean } = {}): Promise<void> {
   let requestTakeover = options.takeover === true;
   const bridge = typeof window === 'undefined' ? undefined : window.oprn?.team;
-  if (!bridge) { publish({ kind: 'idle' }); return; }
+  // 팀 협업이 꺼져 있으면 맵 임대를 잡지 않는다 — 임대 실패·남은 잠금이 편집을 막을 일이 없다.
+  if (!bridge || !TEAM_COLLAB_ENABLED) {
+    ++requestId;
+    if (renewTimer) { clearInterval(renewTimer); renewTimer = undefined; }
+    heldMap = null;
+    publish({ kind: 'idle' });
+    return;
+  }
   const id = ++requestId;
   if (renewTimer) clearInterval(renewTimer);
   publish({ kind: 'checking', mapId, mapName });

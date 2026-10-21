@@ -12,17 +12,23 @@
 |---|---|---|
 | 숨김 | 파일 메뉴 「팀 협업 시작 / 관리」·「팀에 참여…」·「팀 호스트 중지」(`electron/main/main.ts`) | 메뉴에 없음 |
 | 숨김 | 시작 화면 위 막대 「팀에 참여」, 참여 칸·「최근 참여한 팀」(`src/start/startScreen.ts`, `#join` 은 홈으로) | 단추 없음 |
-| 숨김 | 편집기 팀 연결 막대(`.oprn-team-session-bar`, 팀 이름·팀원 이름·「팀 관리 ↗」, `src/editor/teamSession.ts`) | 호스트 연결이 끊겼을 때만 「호스트 연결 끊김 · 저장 상태를 확인하세요」로 뜬다 |
+| 숨김 | 편집기 팀 연결 막대(`.oprn-team-session-bar`, 팀 이름·팀원 이름·「팀 관리 ↗」, `src/editor/teamSession.ts`) | 호스트 연결이 끊겼을 때만 「호스트 연결 끊김 · 편집은 계속됩니다. 다시 연결되면 자동 저장합니다」로 뜬다(막지 않는 안내) |
 | 숨김 | 호스트 페이지 `/__oprn/team` 의 팀원 초대·팀 이름 바꾸기(`electron/serve/teamPage.ts`), 로그인 페이지의 「팀에 참여하기」 문구 | 초대 칸 숨김, 로그인은 「호스트에 접속하기」 |
 | 막힘 | IPC `oprn:start.joinTeam`·`oprn:start.recentTeams` | 「팀 협업은 아직 지원하지 않습니다」·빈 목록 |
 | @deprecated 표시만 | `teamWindow.ts`, `normalizeTeamUrl`, `listRecentTeams`·`rememberRecentTeam`, `JoinTeamResult`·`RecentTeamEntry`, 채널 `teamInvite`·`teamRevoke`·`teamRename`, `teamAccess.ts` 역할, `teamReadOnlyUi.ts`, QA `scripts/qa/electronTeamJoin*.mjs`·`team-*-shots.mjs` | 동작 그대로(스위치를 켜면 바로 쓴다) |
 | 유지 | 저장 호스트: Electron IPC·`npm run host`/`npm start` HTTP 의 `project.sqlite` + `assets/`, 공통 서비스 `createStoreHandlers` | 그대로 |
-| 유지 | 리비전 폴링·`refreshFromHost`, 3-way 저장 병합 `core/teamMerge.ts`, 맵 lease(같은 사람의 여러 탭·창), 접속 코드(소유자 로그인)·백업 | 그대로 |
+| 유지 | 리비전 폴링·`refreshFromHost`, 3-way 저장 병합 `core/teamMerge.ts`, 접속 코드(소유자 로그인)·백업 | 그대로 |
+| 꺼짐 | 맵 lease(`mapEditLocks.ts` `checkoutMapForEditing`·`canEditMap`, 호스트 `oprn:team.lock`, 저장 때 임대 충돌 검사) | 임대를 잡지 않고 편집·저장을 막지 않는다. 동시 저장은 기준 sha·3-way 병합이 맡는다 |
+| 꺼짐 | 역할 게이트 `canWriteTeamProject`(store·도구·자료집·스토어 넣기), 호스트의 「보기 전용」 쓰기 거절 | 언제나 쓸 수 있다. 호스트는 옛 viewer 를 editor 로 본다(`sessions.ts` `member`) |
 | 유지(범위 밖) | AI 조수 팀(팀장·팀원 에이전트, `/team`, teamBoardState, 맵 묶음 병합), 전투 파티, 팀·학교 스토어 주소 | 그대로 |
 
 예전에 팀 모드로 열었던 프로젝트도 평소처럼 열린다. 1인 팀의 owner 는 지금도 owner 라 아무것도 막히지 않는다.
-예전 초대로 들어온 **보기 전용 팀원**은 호스트(`dispatch.ts`)가 계속 쓰기를 거절하므로, 편집기도 같은 보기 전용
-상태(자료집 칸 비활성, 맵 「이 프로젝트는 보기 전용으로 열려 있습니다.」)를 유지한다 — 저장한 척하는 거짓 표시를 내지 않기 위해서다.
+**팀 관련 무엇도 편집을 막지 않는다(2026-10-21, 사용자 신고).** 예전엔 호스트가 재시작되거나 연결이 끊기면 역할 읽기가 실패해
+`role=null` → `canWriteTeamProject()` 가 false → store 의 모든 쓰기가 조용히 거절됐고, 맵은 임대를 못 잡아 「호스트 연결을 확인하세요」·
+「편집 권한을 확인하고 있습니다」로 칠하기가 막혔다. 남은 다른 탭의 90초 임대도 「호스트님이 편집 중입니다」로 막았다.
+스위치가 꺼져 있으면 `canWriteTeamProject`·`canEditMap` 은 언제나 true, 맵 임대는 잡지 않고, 호스트도 임대 충돌·보기 전용 거절을 하지 않는다.
+연결이 끊긴 동안의 편집은 메모리에 남고 자동 저장 재시도(10s→120s 백오프)가 다시 연결되면 저장한다.
+맵 하나에 조수 한 명 규칙(맵별 AI 대기열)은 이것과 별개라 그대로다. 잠든 팀 코드의 테스트는 `vi.mock` 으로 스위치를 켜고 검사한다.
 
 ## 소유와 실행 위치
 

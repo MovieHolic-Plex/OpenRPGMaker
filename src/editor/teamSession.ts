@@ -65,9 +65,11 @@ export function startTeamSession(): void {
       if (!TEAM_COLLAB_ENABLED) { showBar(false); return; }
       text.textContent = `${latest.team.name} · ${latest.member.label}${latest.member.role === 'viewer' ? ' · 보기 전용 — 변경할 수 없습니다' : ''}${seen >= 0 && latest.revision !== seen && store.hasUnsavedChanges() ? ' · 저장 후 팀 변경 반영' : ''}`;
     } catch {
-      setTeamRole(null); syncTeamReadOnlyUi(); latest = null;
+      // 팀 협업이 꺼져 있으면 연결이 끊겨도 역할을 지우지 않는다 — 편집은 계속되고, 저장은 자동 저장 재시도가 맡는다.
+      if (TEAM_COLLAB_ENABLED) { setTeamRole(null); syncTeamReadOnlyUi(); }
+      latest = null;
       showBar(true);
-      text.textContent = TEAM_COLLAB_ENABLED ? '팀 연결 끊김 · 저장 상태를 확인하세요' : '호스트 연결 끊김 · 저장 상태를 확인하세요';
+      text.textContent = TEAM_COLLAB_ENABLED ? '팀 연결 끊김 · 저장 상태를 확인하세요' : '호스트 연결 끊김 · 편집은 계속됩니다. 다시 연결되면 자동 저장합니다';
     }
     finally { running = false; }
   };
