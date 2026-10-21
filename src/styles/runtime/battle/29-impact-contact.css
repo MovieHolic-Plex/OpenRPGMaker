@@ -44,7 +44,7 @@
 .battle-scene[data-battle-motion="retro"].battle-hit-stop .battle-motion-knockback :is(.battle-enemy-image, .battle-actor-image, .battle-actor-sprite, .battle-skin-actor-image),
 .battle-scene[data-battle-motion="retro"] .battle-enemy.retro-skill-struck .battle-enemy-image,
 .battle-scene[data-battle-motion="retro"] .battle-actor.retro-skill-struck .battle-actor-sprite {
-  filter: brightness(2.1) saturate(0.55) !important;
+  filter: brightness(1.5) saturate(0.75) contrast(0.95) !important;
 }
 .battle-scene[data-battle-motion="retro"].battle-hit-stop-critical .battle-motion-knockback :is(.battle-enemy-image, .battle-actor-image, .battle-actor-sprite, .battle-skin-actor-image) {
   filter: brightness(2.4) saturate(0.4) drop-shadow(0 0 6px rgba(255, 214, 120, 0.9)) !important;

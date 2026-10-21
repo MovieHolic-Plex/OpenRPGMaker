@@ -175,6 +175,11 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
   const finale = project.database.troops.find((t) => t.id === "troop_fs_finale");
   // 가혹 검수 r5: 「배경이 평평하다」 — 안개 층을 하나 더 깔아 깊이를 준다.
   // 가혹 검수 r10: 「배경이 어둡고 단조롭다」 — 렌즈 빛에 떠오르는 별가루(눈 겹을 위로 천천히 띄움)를 하나 더 얹는다.
+  // 가혹 검수 r11: 「발렌과 수호상 이름판이 붙는다」 — 자동 진형(대각 50칸)은 이름판 폭(~70)보다 좁다. 수동 배치로 가로를 구역 끝까지 벌린다.
+  if (finale) {
+    finale.autoAlign = false;
+    finale.members = [{ enemyId: "enemy_fs_valen", x: 0, y: 0, hidden: false }, { enemyId: "enemy_fs_guardian", x: 200, y: 40, hidden: false }] as typeof finale.members;
+  }
   if (finale) finale.backdropLayers = [{ preset: "mist", opacity: 30 }, { preset: "lightRays", opacity: 50 }, { preset: "stars", opacity: 60 }, { preset: "snow", opacity: 32, scrollX: 6, scrollY: -18, blendMode: "screen" }];
   // 가혹 검수 r5: 「전투 스프라이트가 화면 대비 작다」 — 수호상을 1.5배로 세운다.
   // 발렌은 걷기 칩 전투 시트(사람 적)라 맞춤 대신 칸 그림을 발밑 기준으로 키운다(27-retro-motion.css) — 2.6배(2배는 수호상 옆에서 아직 작았다, r10).
