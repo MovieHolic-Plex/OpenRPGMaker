@@ -606,20 +606,21 @@ function valenWalksIn(project: Project, vault: GameMap, bossId: string): void {
 
 /**
  * 사운드트랙(사용자 검토 2026-10-21 「기본 곡처럼 들린다」). 광장 fld-003·전투 btl-001·타이틀 ttl-001 은 새 프로젝트 기본곡이었다.
- * 장면마다 카탈로그의 곡 설명(brief)으로 고르고, 이야기의 뼈대는 메인 테마 「첫빛」 변주(flt-*)로 묶는다 —
- * 타이틀·오프닝·마을·전투·보스·엔딩이 한 선율의 변주라 한 게임의 OST 로 들린다. 천문대·숲·지하는 장소 곡.
+ * 곡 설명만으로 고른 1차 배치는 귀 검수에서 절반이 「싸구려 MIDI」였다 — 장면마다 후보 3~10곡을 Gemini 4 Argon 에 소리째 붙여
+ * (30초 발췌, 3회 평균) 「장면 적합·제작 품질」을 매겨 가장 높은 곡을 쓴다. 점수표: 아래 각 줄 (적합/품질).
+ * 일반 전투에 맞는 곡은 카탈로그에 없다(btl-002 4.0/6.3 이 최고 — 무겁다). 보스와 같은 곡을 쓰는 임시 배치다.
  */
 const FS_MUSIC = {
-  title: "cc0-bgm-rtp-flt-002",        // 첫빛이 머무는 표지 — 타이틀 화면용 서정 변주
-  opening: "cc0-bgm-rtp-flt-001",      // 모험의 첫빛 — 메인 테마
-  hub: "cc0-bgm-rtp-flt-006",          // 햇살이 먼저 아는 마을 — 안전한 허브 마을 변주
-  observatory: "cc0-bgm-rtp-hlc-002",  // 별을 읽는 회랑의 밤 — 학문 도시의 밤
-  forest: "cc0-bgm-rtp-tcf-001",       // 소나무 길의 맑은 표식 — 온대 숲 탐험
-  vaultGate: "cc0-bgm-rtp-flt-020",    // 돌에 새겨진 첫 걸음 — 유적 탐사 변주(화로 퍼즐)
-  vault: "cc0-bgm-rtp-cav-001",        // 수정의 숨결 — 수정 동굴
-  battle: "cc0-bgm-rtp-flt-028",       // 첫빛을 지키는 발걸음 — 일반 전투 변주
-  boss: "cc0-bgm-rtp-flt-029",         // 검게 번진 첫빛 — 보스 변주
-  ending: "cc0-bgm-rtp-flt-023",       // 말이 멎은 뒤의 별 — 사건 뒤의 고요
+  title: "cc0-bgm-rtp-flt-016",        // 구름 사이의 첫 항로 7.0/6.0
+  opening: "cc0-bgm-rtp-flt-002",      // 첫빛이 머무는 표지 5.0/7.7
+  hub: "cc0-bgm-rtp-fld-001",          // 초원 길드 광장 8.0/6.7
+  observatory: "cc0-bgm-rtp-hlc-004",  // 고지대 학문 도시 — 하프 변주 6.0/6.7
+  forest: "cc0-bgm-rtp-fld-002",       // 바람길 숲 8.0/7.0
+  vaultGate: "cc0-bgm-rtp-rui-001",    // 가라앉은 천문대 8.0/7.0
+  vault: "cc0-bgm-rtp-dng-001",        // 이끼빛 회랑 8.0/7.0
+  battle: "cc0-bgm-rtp-btl-002",       // 재의 왕관 4.0/6.3 — 맞는 일반 전투곡 없음
+  boss: "cc0-bgm-rtp-btl-002",         // 재의 왕관 8.7/7.0
+  ending: "cc0-bgm-rtp-flt-023",       // 말이 멎은 뒤의 별 8.0/7.0
 } as const;
 function applyFallenSoundtrack(project: Project, maps: { hub: GameMap; observatory: GameMap; forest: GameMap; vault: GameMap }, bossId: string | undefined): void {
   const bgm = (resourceId: string) => ({ mode: "custom", resourceId }) as GameMap["bgm"];
