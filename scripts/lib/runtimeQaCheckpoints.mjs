@@ -115,9 +115,15 @@ export async function runCheckpoints({ scenario, set, checkpoints, parallel = 2,
         let context = null;
         try {
           if (!browser?.isConnected()) browser = await launchBrowser();
-          context = await browser.newContext();
+          const checkpointScenario = scenarioForCheckpoint(scenario, set, checkpoint);
+          // QA_RECORD_VIDEO=<폴더> — 체크포인트마다 <폴더>/<체크포인트 id>/ 에 webm 하나. 컨텍스트를 닫아야 파일로 끝난다.
+          const videoDir = process.env.QA_RECORD_VIDEO;
+          const size = checkpointScenario.viewport;
+          context = await browser.newContext(videoDir
+            ? { ...(size ? { viewport: size } : {}), recordVideo: { dir: resolve(REPO_ROOT, videoDir, checkpoint.id), ...(size ? { size } : {}) } }
+            : {});
           const page = await context.newPage();
-          const report = await runRuntimeQa(page, scenarioForCheckpoint(scenario, set, checkpoint), {
+          const report = await runRuntimeQa(page, checkpointScenario, {
             serverUrl,
             outDir,
             checkpoint: checkpointBootState(checkpoint),
