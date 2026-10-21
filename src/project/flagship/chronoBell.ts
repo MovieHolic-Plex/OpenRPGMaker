@@ -408,7 +408,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   if (!project.switches.some((s) => s.id === SW_IRIS_JOINED)) project.switches.push({ id: SW_IRIS_JOINED, name: "이리스 합류" });
 
   const built = buildJrpgChapter(project, FALLEN_STAR_ACT1, { chapterId: "fallen_star_act1", prefix: FS_PREFIX, seed: 7, troops });
-  if (process.env.FS_DEBUG) console.error("[fallen-star] chapter:", built.summary, JSON.stringify(built.warnings ?? [], null, 1));
+  if (typeof process !== "undefined" && process.env?.FS_DEBUG) console.error("[fallen-star] chapter:", built.summary, JSON.stringify(built.warnings ?? [], null, 1));
   const data = built.data as { hubMapId: string; maps: Array<{ key: string; mapId: string }> };
   const mapIdOf = (key: string): string => data.maps.find((m) => m.key === key)!.mapId;
   const ids = { hub: data.hubMapId, observatory: mapIdOf("observatory"), forest: mapIdOf("forest"), vault: mapIdOf("vault") };
