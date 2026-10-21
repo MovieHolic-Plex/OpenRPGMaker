@@ -252,6 +252,40 @@ def lens_bench(c):
     c.outline()
 
 
+def _ladder(c, D):
+    """관측 발판 앞 사다리(r4, 사용자 「사다리가 이상함」 2026-10-21) — v5 서고 사다리와 같은 짜임(재질은 틀과 갈리게 소나무): 곧은 기둥 둘(윤곽·빛·몸·그늘 4px)이
+    폭 그대로 내려오고(벌어지지 않는다), 디딤대는 6줄 간격 2줄(윗면 빛 + 아래 그늘)로 두 기둥 안쪽 윤곽에 꼭 물린다.
+    머리는 단 입술(y20) 위로 3줄 솟아 놋쇠 갈고리로 입술을 잡고, 발은 다리 틀 밑 가로대(y43)보다 3줄 앞 바닥에 선다(기대어 선 깊이).
+    빛은 왼쪽 위 — 오른쪽 기둥 옆 틀 앞면에 그늘 한 줄, 발밑 바닥 그림자."""
+    m = 'pine'                               # 틀(wood)보다 밝은 소나무 — 1배에서 틀 앞에 떠 보이게
+    L0, R0 = 9, 19                           # 기둥 왼쪽 끝 열(윤곽 열). 기둥 = 윤곽·빛·몸·윤곽
+    TOP, FOOT = 17, 46                       # 기둥 윗끝(갈고리 위)·발 끝 줄
+    # 틀 앞면에 지는 사다리 그늘(오른쪽 기둥 바로 오른쪽, 입술 밑부터 발 위까지)
+    for y in range(21, 43):
+        c.p(R0 + 4, y, K('dwood', 1))
+    # 발밑 바닥 그림자(발 둘 + 오른쪽으로 번짐)
+    for x in range(L0, R0 + 6):
+        c.p(x, FOOT + 1, (0x1c, 0x14, 0x18, 110))
+    # 디딤대 — 기둥 안쪽 윤곽 사이(열 L0+4 .. R0-1), 맨 위는 입술 밑 4줄, 6줄 간격
+    for y in range(25, FOOT - 1, 6):
+        c.hl(L0 + 3, R0, y - 1, D)
+        c.hl(L0 + 4, R0 - 1, y, K(m, 6)); c.hl(L0 + 4, R0 - 1, y + 1, K(m, 4))
+        c.hl(L0 + 3, R0, y + 2, D)
+    # 기둥 둘
+    for x0 in (L0, R0):
+        for y in range(TOP, FOOT + 1):
+            c.p(x0, y, D); c.p(x0 + 1, y, K(m, 6)); c.p(x0 + 2, y, K(m, 4)); c.p(x0 + 3, y, D)
+        c.hl(x0, x0 + 3, TOP - 1, D)                                       # 윗끝 윤곽
+        c.p(x0 + 1, FOOT, K(m, 3)); c.p(x0 + 2, FOOT, K(m, 2))           # 발 끝(바닥에 닿아 어둡다)
+        c.hl(x0, x0 + 3, FOOT + 1, D)
+        # 놋쇠 갈고리 — 입술(y20) 바로 위, 기둥 머리에서 단 위로 걸친다
+        c.p(x0 + 1, TOP, K('brass', 6)); c.p(x0 + 2, TOP, K('brass', 4))
+        c.p(x0 + 1, TOP + 1, K('brass', 4)); c.p(x0 + 2, TOP + 1, K('brass', 3))
+    # 입술 줄(y20) — 두 기둥 사이로 단 입술이 가로질러 보이게(사다리가 입술 앞에 기대 있다)
+    for x in range(L0 + 4, R0):
+        c.p(x, 20, K('wood', 7))
+
+
 @REG.piece('observing platform', '관측 발판(난간 두른 높은 단과 사다리, 2×2)', 'observatory', 'floor', 2, 2, 16, 'other',
            '망원경 접안경 곁에 세운 높은 나무 단 — 판자 윗면, 세 변에 놋쇠 난간, 앞에 가로대가 보이는 사다리.',
            TAGS + ['발판', '사다리'],
@@ -288,17 +322,8 @@ def observing_platform(c):
             if x >= 27: k -= 1
             c.p(x, y, K(m, k))
     c.hl(2, 29, 20, K(m, 7))
-    # 사다리 — 단 입술에 걸쳐 바닥으로 기댄다, 디딤대 4, 기둥 바깥에 짙은 윤곽
-    for y in range(18, 47):
-        f = (y - 18) / 28
-        xl = int(round(17 - 1.5 * f)); xr = int(round(25 + 1.5 * f))
-        c.p(xl - 1, y, D); c.p(xl, y, K('pine', 6)); c.p(xl + 1, y, K('pine', 4)); c.p(xl + 2, y, D)
-        c.p(xr - 1, y, D); c.p(xr, y, K('pine', 5)); c.p(xr + 1, y, K('pine', 3)); c.p(xr + 2, y, D)
-    for y in range(24, 46, 6):
-        f = (y - 18) / 28
-        x0 = int(round(19 - 1.5 * f)); x1 = int(round(23 + 1.5 * f))
-        c.hl(x0, x1, y - 1, D); c.hl(x0, x1, y, K('pine', 7)); c.hl(x0, x1, y + 1, K('pine', 4)); c.hl(x0, x1, y + 2, D)
     c.outline(dark=D)
+    _ladder(c, D)
     # 놋쇠 난간(윤곽 뒤에 그린다 — 가로대 사이는 비워 바닥이 보이게): 기둥 넷 + 손잡이 + 가운데 가로대, 바깥쪽에 짙은 윤곽 한 줄
     br = 'brass'
     c.hl(1, 30, 1, D)                                                      # 손잡이 위 윤곽
