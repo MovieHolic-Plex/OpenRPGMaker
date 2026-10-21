@@ -791,7 +791,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
   const minhoStart = spot(project, FL_MAP.officePm, { x: o.heroDesk.x + 2, y: o.heroDesk.y }, taken);
   const jihuSeat = spot(project, FL_MAP.officePm, { x: o.heroDesk.x + 1, y: o.heroDesk.y - 2 }, taken);
   const jihuPantry = spot(project, FL_MAP.officePm, o.pantry, taken);
-  // 「의자를 끌고 와 내 옆에 앉았다」 — 지후는 서하 왼쪽 옆 칸으로 와서 마주 본다(대사가 말하는 자리를 화면도 보인다).
+  // 「내 옆으로 와 모니터를 들여다봤다」(앉는 그림이 없어 의자 이야기는 뺐다, VQA r10) — 지후는 서하 왼쪽 옆 칸으로 와서 마주 본다(대사가 말하는 자리를 화면도 보인다).
   const jihuBeside = nearestFree(project, off, { x: o.heroDesk.x - 1, y: o.heroDesk.y }, 1, taken);
   taken.push(jihuBeside);
   // 정직 분기: 통화 중인 팀장에게 자리에서 소리쳐 말하지 않고, 팀장 책상 앞까지 걸어가서 말한다.
@@ -930,7 +930,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
         ...say("jihu", "base", "네."),
         walkRoute(project, FL_MAP.officePm, "@player", leadFront, o.heroDesk, [jihuBeside]),
         ...comeBeside(),
-        ...think("지후 선배가 의자를 끌고 와 내 옆에 앉았다. 아주 잠깐, 웃은 것 같았다."),
+        ...think("지후 선배가 내 옆으로 와 모니터를 들여다봤다. 아주 잠깐, 웃은 것 같았다."),
         ...like(1, "ev_fl_w_jihu"),
       ] },
       { text: "지후 선배에게만 조용히 도움을 청한다", then: [
