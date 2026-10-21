@@ -62,6 +62,19 @@ const statusOf = (error: unknown): number | undefined => {
 /** 다시 시도해도 소용없는 한도 소진 429 인가(공급자 문구로 가린다). 잠깐 몰린 429 는 아니다. */
 const isQuotaExhausted = (error: unknown): boolean =>
   statusOf(error) === 429 && /quota|RESOURCE_EXHAUSTED|usage limit|upgrade your (plan|subscription)/i.test(error instanceof Error ? error.message : String(error));
+/**
+ * 카드에 보일 한도 소진 문구 — 공급자 원문(JSON 덩어리)을 그대로 보이지 않고, 원문에 「Resets in 61h28m」이 있으면 풀리는 때만 짧게 붙인다.
+ * 원문은 개발자 도구 로그(동반 서비스 응답)에 남는다.
+ */
+export function quotaRunError(error: unknown): string {
+  const text = error instanceof Error ? error.message : String(error);
+  const m = /Resets in (?:(\d+)h)?\s*(?:(\d+)m)?/i.exec(text);
+  const hours = m?.[1] ? Number(m[1]) : 0;
+  const minutes = m?.[2] ? Number(m[2]) : 0;
+  if (hours > 0) return `계정 사용 한도 소진 · 약 ${hours + (minutes >= 30 ? 1 : 0)}시간 뒤 풀림`;
+  if (minutes > 0) return `계정 사용 한도 소진 · 약 ${minutes}분 뒤 풀림`;
+  return "계정 사용 한도 소진";
+}
 const isAbort = (error: unknown): boolean => error instanceof Cancelled || (error as { name?: string } | null)?.name === "AbortError";
 const clampConcurrency = (n: number): number => Math.max(1, Math.min(6, Math.round(n)));
 
@@ -275,7 +288,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       if (status === 401 || status === 403) blocked = BLOCKED_AUTH;
       else if (status === 429) blocked = BLOCKED_QUOTA;
       run.status = "failed";
-      run.error = error instanceof Error ? error.message : String(error);
+      run.error = isQuotaExhausted(error) ? quotaRunError(error) : error instanceof Error ? error.message : String(error);
     } finally {
       run.finishedAt = now();
       await save(round);

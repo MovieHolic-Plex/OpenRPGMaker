@@ -5,7 +5,7 @@
   첫 화면은 생성기 카드다 — 정의·상태·견본은 `src/editor/workshop/generators.ts`. 화면 글은 쉬운 말만, 모델 이름 금지.
 - **같은 날 2차(「허접하다」 지적 → 상용 수준 재디자인, PR workshop-gens-2):** 쓸 수 있는 카드(물건·캐릭터)는 위에 크게 —
   **실제 견본 도트 띠**(원래 크기 PNG 124×58 를 2배 정수 배율, 견본 바탕 #181b22) + 제목·상태 + 한 줄 소개 + **주 단추 하나**(보조는 글자 단추).
-  곧 들어올 카드(지형·아이템)는 「곧 들어올 생성기」 아래 작게, 단추 없음. 색·간격·모서리는 편집기 토큰(`--accent`·`--success-muted`·`--radius-m` …)만 쓴다.
+  곧 들어올 카드(아이템)는 「곧 들어올 생성기」 아래 작게, 단추 없음. 지형(tile-gen)은 견본이 아직 없어 그림 띠 대신 「견본은 첫 결과가 나오면 올라와요」 빈 띠를 쓴다. 색·간격·모서리는 편집기 토큰(`--accent`·`--success-muted`·`--radius-m` …)만 쓴다.
   견본 출처: object-gen 저장소 `docs/images/hero.png` 에서 고른 기물 3개(같은 조직 1차 그림) · char-gen 저장소 자체 더미 칩 `examples/bases/dummy_a/b` 와 그 편집 결과
   (`public/assets/workshop/*-sample.png`). char-gen 갤러리 그림은 Scarloxy(제3자) 바탕이라 쓰지 않았다.
 
@@ -13,7 +13,7 @@
 |---|---|---|---|
 | 물건·가구 | object-gen | 여기서 바로 | 「새 물건 그리기」= 아래 공방 실행기(사용자 자기 AI 계정). 넣을 곳 전환: 실내 가구(`interior-props`, 손 도트 실내 칩셋) · 지금 맵 칩셋(`map-objects`). 「만든 묶음 가져오기」= object-gen `pack` 폴더 가져오기 |
 | 캐릭터 | char-gen (공개, `MovieHolic-Plex/char-gen`) | 내 컴퓨터에서 | 파이썬 도구라 브라우저에서 못 돈다. 「만들고 가져오기」(`genWorkspace.ts`)가 ① 무엇·몇 명 → 사용자 AI 에이전트에 붙여 넣을 부탁 글(언어별, `charGenRequest`) ② `char-gen pack` 폴더 가져오기 → 미리 보기 → 이 게임에 넣기 |
-| 지형·바닥 | tile-gen (비공개, `MovieHolic-Plex/tile-gen`) | 곧 나와요 | **지형 생성기로 다시 만드는 중**(2026-10-21): 이음매 없는 바닥, 47칸 자동 타일 가장자리(물가·절벽·길), 칠해 넣는 숲 덩어리, 움직이는 물. 물건·기물은 object-gen 만 그린다 — tile-gen 을 물건 생성기로 소개하지 않는다. 묶음 형식이 정해지면 가져오기를 단다(그 전에는 카드만, 단추·부탁 글 없음). 1차의 「타일 조각」 부탁 글·칩셋 그림 받기 단계는 지웠다 |
+| 지형·바닥 | tile-gen (비공개, `MovieHolic-Plex/tile-gen`) | 내 컴퓨터에서 | **지형 생성기**(2026-10-21 다시 만듦): 이음매 없는 바닥 채우기, 47칸 자동 타일 가장자리(풀↔흙·길·카펫), 물가·움직이는 물, 숲 덩어리, 절벽·단. 물건·기물·건물은 object-gen 만 — tile-gen 을 물건 생성기로 소개하지 않는다(`tile-gen new --mode prop` 은 거절하고 object-gen 을 가리킨다). 화면: ① 종류(`TERRAIN_MODES`: floor·autotile·water·forest·cliff)·어떤 지형·참고 칸 `x,y`(선택) + 「지금 맵 칩셋 그림 받기」 → 부탁 글(`tileGenRequest`: `tile-gen auto` → 로컬 `tile-gen pick` → `tile-gen pack`) ② 묶음 가져오기. 묶음 = `oprn-store-pack/1` tileset 하나 + `autotileGroups`(256 이웃 키 `variantMap`, 바닥은 `interiorVariants`) + 물은 `animationStrips`. `content.objects`·ObjectSpec 킷은 없다. 가져오기는 타일셋을 통째로 옮겨(`applyPackToProject` 의 `mapStrings`) 두 칸을 그대로 둔다 — 넣은 뒤 안내에 자동 타일 벌 수를 보인다. 견본 그림은 첫 실제 결과가 나오면 단다(지금 카드는 「견본은 첫 결과가 나오면 올라와요」). 한계: 새 지형은 **새 칩셋**으로 들어가 그 칩셋을 쓰는 맵에서만 칠한다(지금 맵 칩셋에 합치기는 아직 없다), 숲 줄기·절벽 면 줄은 붓이 아직 안 놓는다 |
 | 아이템 아이콘 | item-gen | 준비 중 | 저장소가 없다(2026-10-21 조직·홈 확인). `scripts/asset-gen/generate.mjs`(agy CLI, 사람 고르기 없음)만 있어 가짜로 채우지 않았다 |
 
 - AI 미연결: 물건 카드 주 단추가 「내 AI 연결하기」, 가져오기는 글자 단추. 호스트가 AI 를 껐으면 안내 글 + 가져오기가 주 단추(죽은 버튼 없음).
@@ -31,7 +31,7 @@
 - 「없는 타일」 카드 「직접 그려 줘」는 그대로 `openWorkshop(harnessId, { newItem })` 로 이 폼을 채워 연다.
 - 영어 활동 막대에서 「Workshop」 이 48px 막대보다 넓어 잘리던 것 → 영어에서만 그 이름표 9.5px(`18-assistant-deck.css`).
 - 그림 생성은 전부 사용자 계정: 편집기 안은 조수와 같은 동반 서비스 경로(`chat.ts`, OAuth — 편집기 AI 설정은 apiKey 저장값을 OAuth 로 승격한다), char-gen·object-gen 은 사용자 컴퓨터의 CLI 로그인. 우리 키·스토어 크레딧·유료 대체 경로 없음.
-- 남은 일: tile-gen 지형 묶음 가져오기(형식 확정 뒤), 데스크톱(Electron)에서 char-gen·object-gen 을 직접 띄우기(지금은 부탁 글 + 묶음 가져오기), item-gen 실체, 공방 굽기에 3/4 관문 영수증 배선.
+- 남은 일: 지형 묶음을 지금 맵 칩셋에 합치기(지금은 새 칩셋), tile-gen 견본 그림, 데스크톱(Electron)에서 char-gen·object-gen 을 직접 띄우기(지금은 부탁 글 + 묶음 가져오기), item-gen 실체, 공방 굽기에 3/4 관문 영수증 배선.
 
 ## 공방 실행기(물건·가구 카드 안)
 

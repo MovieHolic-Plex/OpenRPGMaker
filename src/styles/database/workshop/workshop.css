@@ -18,6 +18,9 @@
 .workshop-head h2 { margin: 0; font-size: 15px; font-weight: var(--font-weight-semibold, 600); }
 .workshop-progress { font-size: 12px; color: var(--text-2); }
 .workshop-blocked { margin: 0; font-size: 12px; color: var(--warning); }
+.workshop:has(> .workshop-alert) { grid-template-rows: auto auto 1fr; }
+.workshop-alert { display: grid; gap: 2px; padding: 8px var(--space-4); border-bottom: 1px solid var(--border-default); background: color-mix(in srgb, var(--warning) 9%, transparent); }
+.workshop-alert .workshop-blocked { font-size: 12.5px; line-height: 1.45; }
 .workshop-concurrency { margin-left: auto; display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--text-2); }
 .workshop .workshop-concurrency select { min-height: 28px; padding: 2px 6px; font-size: 12px; }
 .workshop-target { display: flex; align-items: center; gap: var(--space-1); flex-wrap: wrap; padding: 2px; border-radius: var(--radius-s); background: var(--bg-inset); }

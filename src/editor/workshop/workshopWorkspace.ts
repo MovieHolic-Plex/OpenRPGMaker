@@ -131,7 +131,11 @@ function currentStep(s: WorkshopSession, item: WorkshopItem | null): number {
   if (showForm || !item) return 1;
   const state = itemState(item.key, s.rounds, s.picks);
   if (state === "idle" || state === "drawing") return 2;
-  if (state === "choose") return 3;
+  if (state === "choose") {
+    // 이번 판이 한 장도 못 그렸으면(한도·로그인 막힘 등) 고를 것이 없다 — 「후보 그리기」에 머문다.
+    const round = latestRound(item.key, s.rounds);
+    return round && round.runs.length > 0 && round.runs.every((r) => !r.grid) ? 2 : 3;
+  }
   const pick = s.picks.find((p) => p.itemKey === item.key);
   const grid = pick ? s.rounds.find((r) => r.id === pick.roundId)?.runs.find((r) => r.letter === pick.letter)?.grid : undefined;
   return grid && isWorkshopPickBaked(item, grid) ? 5 : 4;
@@ -209,8 +213,6 @@ function render(force: boolean): void {
             class: "workshop-progress", dataset: { testid: "workshop-progress" },
             text: status.running + status.queued > 0 ? `그리는 중 ${status.running} · 대기 ${status.queued} · 약 ${eta}분 남음` : "쉬는 중",
           }),
-          ...(status.blocked ? [el("span", { class: "workshop-blocked", text: status.blocked })] : []),
-          ...(s.store.backend === "memory" ? [el("span", { class: "workshop-blocked", text: "이 브라우저는 저장소를 못 열어 새로 고침하면 후보가 사라집니다." })] : []),
           el("label", {
             class: "workshop-concurrency",
             children: ["동시에", el("select", {
@@ -222,6 +224,14 @@ function render(force: boolean): void {
           el("button", { class: "workshop-close", text: "닫기", attrs: { type: "button", "aria-label": "공방 닫기" }, on: { click: closeWorkshop } }),
         ],
       }),
+      // 막힘·경고는 머리줄 밖 한 줄 띠로 — 긴 문구가 머리줄을 밀어 「닫기」가 아래로 떨어지지 않게(2026-10-21 실화면).
+      ...(status.blocked || s.store.backend === "memory" ? [el("div", {
+        class: "workshop-alert", attrs: { role: "status" }, dataset: { testid: "workshop-alert" },
+        children: [
+          ...(status.blocked ? [el("p", { class: "workshop-blocked", text: status.blocked })] : []),
+          ...(s.store.backend === "memory" ? [el("p", { class: "workshop-blocked", text: "이 브라우저는 저장소를 못 열어 새로 고침하면 후보가 사라집니다." })] : []),
+        ],
+      })] : []),
       el("div", {
         class: "workshop-body",
         children: [

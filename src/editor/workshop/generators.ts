@@ -94,10 +94,10 @@ export function tileGenRequest(mode: TerrainMode, brief: string, tilesetFile: st
   const what = brief.trim() || defaultTerrain(mode);
   const cell = /^\s*\d+\s*,\s*\d+\s*$/.test(ref) ? ref.replace(/\s+/g, "") : "";
   switch (getLocale()) {
-    case "en": return `Use tile-gen to make one ${mode} terrain set for my tileset ${tilesetFile}: "${what}". ${cell ? `Reference cell: ${cell}.` : "Pick the closest terrain cells of the tileset as references yourself."} Run tile-gen auto (draw and review), let me pick on the local page (tile-gen pick), then run tile-gen pack to make a pack folder I can import into the OPRN editor.`;
-    case "ja": return `tile-gen で私のタイルセット ${tilesetFile} に合う ${mode} 地形を1セット作って:「${what}」。${cell ? `参考マス: ${cell}。` : "参考マスはタイルセットの一番近い地面マスを選んで。"}tile-gen auto で描画とレビューまで進め、ローカルページ(tile-gen pick)で私が選んだら、tile-gen pack で OPRN エディターに取り込めるパックフォルダを作って。`;
-    case "zh": return `用 tile-gen 按我的图块集 ${tilesetFile} 做一组 ${mode} 地形:「${what}」。${cell ? `参考格:${cell}。` : "参考格请自己从图块集中挑最接近的地面格。"}用 tile-gen auto 完成绘制和审查,我在本地页面(tile-gen pick)挑选后,用 tile-gen pack 打包成可导入 OPRN 编辑器的文件夹。`;
-    default: return `tile-gen 으로 내 타일셋 ${tilesetFile} 에 맞는 ${mode} 지형을 한 벌 만들어 줘: 「${what}」. ${cell ? `참고 칸: ${cell}.` : "참고 칸은 타일셋에서 가장 비슷한 땅 칸을 네가 골라."} tile-gen auto 로 그리기와 검토까지 돌리고, 내가 로컬 페이지(tile-gen pick)에서 고르면 tile-gen pack 으로 OPRN 에디터에 가져올 묶음 폴더를 만들어 줘.`;
+    case "en": return `Use tile-gen to make one terrain set (--mode ${mode}) for my tileset ${tilesetFile}: "${what}". ${cell ? `Reference cell: ${cell}.` : "Pick the closest terrain cells of the tileset as references yourself."} Run tile-gen auto (draw and review), let me pick on the local page (tile-gen pick), then run tile-gen pack to make a pack folder I can import into the OPRN editor.`;
+    case "ja": return `tile-gen で私のタイルセット ${tilesetFile} に合う地形を1セット(--mode ${mode})作って:「${what}」。${cell ? `参考マス: ${cell}。` : "参考マスはタイルセットの一番近い地面マスを選んで。"}tile-gen auto で描画とレビューまで進め、ローカルページ(tile-gen pick)で私が選んだら、tile-gen pack で OPRN エディターに取り込めるパックフォルダを作って。`;
+    case "zh": return `用 tile-gen 按我的图块集 ${tilesetFile} 做一组地形(--mode ${mode}):「${what}」。${cell ? `参考格:${cell}。` : "参考格请自己从图块集中挑最接近的地面格。"}用 tile-gen auto 完成绘制和审查,我在本地页面(tile-gen pick)挑选后,用 tile-gen pack 打包成可导入 OPRN 编辑器的文件夹。`;
+    default: return `tile-gen 으로 내 타일셋 ${tilesetFile} 에 맞는 지형을 한 벌(--mode ${mode}) 만들어 줘: 「${what}」. ${cell ? `참고 칸: ${cell}.` : "참고 칸은 타일셋에서 가장 비슷한 땅 칸을 네가 골라."} tile-gen auto 로 그리기와 검토까지 돌리고, 내가 로컬 페이지(tile-gen pick)에서 고르면 tile-gen pack 으로 OPRN 에디터에 가져올 묶음 폴더를 만들어 줘.`;
   }
 }
 

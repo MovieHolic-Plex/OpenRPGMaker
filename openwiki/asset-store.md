@@ -71,6 +71,11 @@ faceset(48×48 얼굴)·picture(흉상·전신) 에셋을 가리킨다. 표정 �
 되돌리기·빼기(`storeUndo.ts`)는 그 외형도 같이 되돌리고, 쓰는 곳 검색에서 외형 자신은 세지 않는다(액터·이벤트가 그 외형을 쓰면 막는다).
 만드는 쪽은 공개 저장소 [char-gen](https://github.com/MovieHolic-Plex/char-gen) `set` 명령·MCP 도구. 양쪽 전신 베일(promoteFaceToFullPortrait)은 아직 공용 초상만 승격한다.
 
+**미리 돌려 보기 문서 주의 (2026-10-21):** `prepareStoreItem`(`src/editor/assetStore/storeApply.ts`)은 저장소 쓰기 전에
+`applyPackToProject` 를 빈 문서로 한 번 돌려 에셋 id 를 얻는다. 그 빈 문서에 `charsetLabels`·`database.characterAppearances` 가
+없으면 짝 초상이 든 캐릭터 팩(char-gen 묶음)이 `reading 'characterAppearances'` 로 죽는다 — 공방 가져오기·스토어 넣기 모두.
+`applyPackToProject` 가 새 문서 칸을 건드리게 되면 이 빈 문서에도 그 칸을 같이 둔다(`pack.ts` 는 계약 고정 파일이라 그쪽에서 막지 않는다).
+
 ## 게시기
 
 주소와 토큰은 코드·문서에 두지 않는다. 환경 변수로만 받고, 없으면 아무것도 보내지 않는다(plan 은 `configured:false`).

@@ -17044,4 +17044,7 @@
 "「{0}」을(를) 받았어요. 부탁 글의 파일 이름과 같아요.":"Downloaded \"{0}\". It matches the file name in the request.",
 "열린 맵이 없어요. 칩셋 그림을 받으려면 그릴 맵을 먼저 열어 주세요.":"No map is open. Open the map you want to draw for first, to download its chipset.",
 "처음이면 tile-gen 을 내 컴퓨터에 설치하고 내 AI 에이전트에 연결하세요. 그림은 내 계정으로만 만들고, 후보는 내가 직접 골라요.":"First time? Install tile-gen on your computer and connect it to your AI agent. Art is made only with your own account, and you pick the candidates yourself.",
-"「{0}」을(를) 넣었어요. 타일셋 목록에 새 지형 칩셋으로 들어갔어요(자동 타일 {1}벌). 그 칩셋을 쓰는 맵에서 칠할 수 있어요. 되돌리기로 뺄 수 있어요.":"Added \"{0}\" as a new terrain chipset in the tileset list ({1} autotile sets). Paint it on maps that use that chipset. Undo removes it."}
+"「{0}」을(를) 넣었어요. 타일셋 목록에 새 지형 칩셋으로 들어갔어요(자동 타일 {1}벌). 그 칩셋을 쓰는 맵에서 칠할 수 있어요. 되돌리기로 뺄 수 있어요.":"Added \"{0}\" as a new terrain chipset in the tileset list ({1} autotile sets). Paint it on maps that use that chipset. Undo removes it.",
+"계정 사용 한도 소진 · 약 {0}시간 뒤 풀림":"Account usage limit reached · resets in about {0} h",
+"계정 사용 한도 소진 · 약 {0}분 뒤 풀림":"Account usage limit reached · resets in about {0} min",
+"계정 사용 한도 소진":"Account usage limit reached"}

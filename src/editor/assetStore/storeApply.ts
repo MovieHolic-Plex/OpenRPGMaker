@@ -72,7 +72,11 @@ export async function prepareManifestItem(
     const existing = Object.hasOwn(currentTilesets, id) ? currentTilesets[id] : undefined;
     if (existing) probeTilesets[id] = existing;
   }
-  applyPackToProject({ tilesets: probeTilesets, assets: { uploaded: {} } } as unknown as Project, manifest, context);
+  // 미리 돌려 보기용 빈 문서 — applyPackToProject 가 건드리는 칸(캐릭터 칸 설명·캐릭터 외형 포함)을 다 둔다.
+  // database 를 빼면 짝 초상이 든 캐릭터 팩(char-gen 묶음 등)이 「characterAppearances」 읽기에서 죽는다(2026-10-21 실측).
+  applyPackToProject({
+    tilesets: probeTilesets, assets: { uploaded: {} }, charsetLabels: [], database: { characterAppearances: [] },
+  } as unknown as Project, manifest, context);
   if (repository.supportsAssetRefs) {
     for (const { id, asset } of packAssetTargets(manifest, slug)) {
       const bytes = blob(asset.blob);
