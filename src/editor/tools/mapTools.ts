@@ -2218,7 +2218,7 @@ const setMapProperties: ToolDefinition = {
         ? startPosAfterBackgroundClear(map, draft.startPos, new Set(clearedCells), (cleared, x, y) => isPassableLanding(draft, cleared, x, y))
         : null;
       if (startPlan?.kind === "moved") {
-        backgroundWarnings.push(`시작 위치(${draft.startPos.x},${draft.startPos.y})가 비운 칸이라 가장 가까운 설 수 있는 칸(${startPlan.x},${startPlan.y})으로 옮겼습니다 — 다른 자리를 원하면 set_start_position.`);
+        backgroundWarnings.push(`시작 위치(${draft.startPos.x},${draft.startPos.y})${startPlan.reason === "cleared" ? "가 비운 칸이라" : "에서 비운 뒤 나갈 길이 없어"} 가장 가까운 설 수 있는 칸(${startPlan.x},${startPlan.y})으로 옮겼습니다 — 다른 자리를 원하면 set_start_position.`);
         draft.startPos = { x: startPlan.x, y: startPlan.y };
       } else if (startPlan?.kind === "stuck") {
         throw new ToolError("이렇게 비우면 주인공이 설 수 있는 칸이 남지 않아 시작 칸에서 움직이지 못합니다 — 비울 자리를 줄이거나 시작 위치를 다른 맵으로 옮기세요.", { code: "start-buried", mapId: map.id });

@@ -918,7 +918,9 @@ function confirmClearForBackground(
     body.push(el("p", {
       class: "is-warn",
       dataset: { testid: "map-bg-clear-start-moved" },
-      text: `시작 위치(${project.startPos.x},${project.startPos.y})가 지울 자리에 있어 가장 가까운 남는 칸(${startPlan.x},${startPlan.y})으로 옮깁니다 — 그대로 두면 주인공이 첫 칸에서 움직이지 못합니다.`,
+      text: startPlan.reason === "cleared"
+        ? `시작 위치(${project.startPos.x},${project.startPos.y})가 지울 자리에 있어 가장 가까운 남는 칸(${startPlan.x},${startPlan.y})으로 옮깁니다 — 그대로 두면 주인공이 첫 칸에서 움직이지 못합니다.`
+        : `지우고 나면 시작 위치(${project.startPos.x},${project.startPos.y})에서 나갈 길이 없어 가장 가까운 설 수 있는 칸(${startPlan.x},${startPlan.y})으로 옮깁니다.`,
     }));
   } else if (startPlan?.kind === "stuck") {
     body.push(el("p", {

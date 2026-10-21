@@ -17114,4 +17114,5 @@
 "시작 화면 {0}×{1} 그대로 · 어두운 칸은 타일이 가리는 자리 · 카메라 고정(한 화면 맵)":"Start screen at {0}×{1} · dark cells are covered by tiles · camera fixed (one-screen map)",
 "이 맵은 한 화면 크기라 걸어도 카메라가 움직이지 않습니다 — 시차(깊이)는 화면보다 큰 맵에서만 보이고, 여기서는 흐름만 보입니다.":"This map fits one screen, so the camera does not move when walking — parallax (depth) only shows on maps larger than the screen; here only drift is visible.",
 "시작 위치({0},{1})가 지울 자리에 있어 가장 가까운 남는 칸({2},{3})으로 옮깁니다 — 그대로 두면 주인공이 첫 칸에서 움직이지 못합니다.":"The start position ({0},{1}) is in the area to clear, so it moves to the nearest remaining cell ({2},{3}) — otherwise the player could not move off the first cell.",
-"지우고 나면 주인공이 설 수 있는 칸이 남지 않아 시작 위치를 옮기지 못합니다 — 이대로 지우면 주인공이 첫 칸에서 움직이지 못합니다.":"After clearing, no cell is left where the hero can stand, so the start position cannot be moved — if you clear this, the hero cannot move off the first cell."}
+"지우고 나면 주인공이 설 수 있는 칸이 남지 않아 시작 위치를 옮기지 못합니다 — 이대로 지우면 주인공이 첫 칸에서 움직이지 못합니다.":"After clearing, no cell is left where the hero can stand, so the start position cannot be moved — if you clear this, the hero cannot move off the first cell.",
+"지우고 나면 시작 위치({0},{1})에서 나갈 길이 없어 가장 가까운 설 수 있는 칸({2},{3})으로 옮깁니다.":"After clearing there is no way out of the start position ({0},{1}), so it moves to the nearest standable cell ({2},{3})."}

@@ -75,7 +75,8 @@ export const HORIZON_PRESET_FEATURE_HEIGHT = 112;
 /** 배경 자리를 비운 뒤 시작 위치를 어떻게 할지. */
 export type StartAfterBackgroundClear =
   | { readonly kind: "unaffected" }
-  | { readonly kind: "moved"; readonly x: number; readonly y: number }
+  /** reason: cleared = 시작 칸 자체를 비움, enclosed = 시작 칸은 남지만 둘레를 비워 나갈 수 없음. */
+  | { readonly kind: "moved"; readonly x: number; readonly y: number; readonly reason: "cleared" | "enclosed" }
   | { readonly kind: "stuck" };
 
 /**
@@ -91,9 +92,13 @@ export function startPosAfterBackgroundClear(
   cleared: ReadonlySet<number>,
   canStand: (clearedMap: GameMap, x: number, y: number) => boolean,
 ): StartAfterBackgroundClear {
+  const startCleared = cleared.has(start.y * map.width + start.x);
+  // 비우기 전부터 설 수 없던 시작 칸은 이 비우기 탓이 아니다 — 건드리지 않는다.
+  if (!startCleared && !canStand(map, start.x, start.y)) return { kind: "unaffected" };
   const after = structuredClone(map);
   for (const index of cleared) clearMapCellForBackground(after, index);
   if (canStand(after, start.x, start.y)) return { kind: "unaffected" };
+  const reason = startCleared ? "cleared" : "enclosed";
   const occupied = new Set(map.events.map((event) => event.y * map.width + event.x));
   const candidates: { x: number; y: number; d: number }[] = [];
   for (let y = 0; y < map.height; y += 1) {
@@ -104,6 +109,6 @@ export function startPosAfterBackgroundClear(
     }
   }
   candidates.sort((a, b) => a.d - b.d || a.y - b.y || a.x - b.x);
-  for (const cell of candidates) if (canStand(after, cell.x, cell.y)) return { kind: "moved", x: cell.x, y: cell.y };
+  for (const cell of candidates) if (canStand(after, cell.x, cell.y)) return { kind: "moved", x: cell.x, y: cell.y, reason };
   return { kind: "stuck" };
 }
