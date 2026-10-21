@@ -196,6 +196,10 @@ export async function playBattle(
         session.audio.bgm = undefined;
       },
     });
+    // QA 계측 부트에서만: 실제 전투 런타임을 창에 걸어 둔다 — 모의전(balanceSim)을 실플레이 입력(파티·기술·상대 능력치)과 맞춰 보정할 때 쓴다.
+    if (typeof window !== "undefined" && (window as unknown as { __OPENRPG_BOOT__?: { qaInstrumentation?: boolean } }).__OPENRPG_BOOT__?.qaInstrumentation) {
+      (window as unknown as { __oprnBattleRuntime?: unknown }).__oprnBattleRuntime = runtime;
+    }
     initializedRuntime = runtime;
     return await new Promise<BattleResult | null>((resolve, reject) => {
       let battleScene: BattleDomController | undefined;

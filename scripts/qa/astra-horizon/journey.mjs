@@ -305,6 +305,17 @@ async function fight(label, { capture = false, run = false } = {}) {
     }
     const ready = await page.locator('[data-testid="actor-command-fight"]').count();
     if (!ready) { await page.keyboard.press(await nextKey()); await page.waitForTimeout(300); continue; }
+    // 모의전 보정용: 첫 명령 차례에 실제 전투 상태(아군·적 능력치·기술·PP)와 파티 개체를 남긴다.
+    if (!capture && !report.battleCaptures?.[label]) {
+      report.battleCaptures ??= {};
+      report.battleCaptures[label] = await page.evaluate(() => {
+        const rt = window.__oprnBattleRuntime; if (!rt) return null;
+        const snap = rt.snapshot();
+        const pick = (b) => ({ id: b.id, recordId: b.recordId, name: b.name, level: b.level, hp: b.hp, maxHp: b.maxHp, stats: b.stats ?? b.params ?? null, attack: b.attack, defense: b.defense, mind: b.mind, agility: b.agility, skillIds: b.skillIds, skillPp: b.skillPp, types: b.types ?? b.elementIds, stateIds: b.stateIds });
+        const s = window.__oprnHooksScene.session;
+        return { troopId: snap.troopId ?? null, actors: [...snap.actors, ...(snap.reserveActors ?? [])].map(pick), enemies: snap.enemies.map(pick), party: (s.monsterParty ?? []).map((id) => s.monsterInstances[id]), inventory: s.inventory, difficultyId: s.difficultyId ?? null };
+      }).catch((e) => ({ error: String(e) }));
+    }
     // 플레이어처럼: 체력이 바닥이면 회복약, 상성이 크게 불리하면 더 나은 동료로 교체(적 한 마리당 한 번).
     {
       // 잡으려는 싸움에서도 체력이 바닥이면 회복약은 쓴다(교체는 안 한다).
@@ -351,6 +362,7 @@ async function fight(label, { capture = false, run = false } = {}) {
   await page.waitForTimeout(600);
   // 승리 뒤 이어지는 대사(보상 안내)를 닫는다 — 열린 채 두면 이벤트가 끝나지 않아 다음 조사가 먹지 않는다.
   await waitIdle();
+  if (report.battleCaptures?.[label]) report.battleCaptures[label].log = [...log];
   return log;
 }
 
