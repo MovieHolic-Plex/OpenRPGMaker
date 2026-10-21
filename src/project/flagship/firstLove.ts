@@ -813,9 +813,10 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
         ...say("lead", "base", "…몇 시에 보냈어요?"),
         ...say("seoha", "sad", "여섯 시 반쯤이요. 죄송합니다."),
         ...say("lead", "happy", "좋아요. 숨기지 않고 바로 말해 줘서 다행이에요. 본부장님한텐 내가 지금 전화할게요."),
+        ...say("lead", "base", "서하 씨는 최종본 다시 정리하고."),
         face("ev_fl_w_lead", dirToward(leadSeat, jihuSeat)),
         face("ev_fl_w_jihu", dirToward(jihuSeat, leadSeat)),
-        ...say("lead", "base", "서하 씨는 최종본 다시 정리하고. 지후 씨, 서하 씨 좀 도와줄래요?"),
+        ...say("lead", "base", "지후 씨, 서하 씨 좀 도와줄래요?"),
         ...say("jihu", "base", "네."),
         walkRoute(project, FL_MAP.officePm, "@player", leadFront, o.heroDesk, [jihuBeside]),
         ...comeBeside(),
@@ -896,6 +897,9 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     ...say("lead", "base", "지후 씨, 본부장님 앞인데 오늘도 후드예요?"),
     ...say("jihu", "embarrassed", "…재킷은 가방에 있어요. 이게 머리가 더 잘 돌아가서요."),
     ...emote("ev_fl_f_minho", "sweat"),
+    // 탁자 머리의 본부장이 말을 열면 발표자 둘(서하·지후)이 그쪽을 본다.
+    face("@player", dirToward(o.meetingSeat, clientSpot)),
+    face("ev_fl_f_jihu", dirToward(jihuSpot, clientSpot)),
     ...say("client", "base", "그럼 시작하시죠. 이번 리뉴얼, 핵심이 뭡니까?"),
     ...say("jihu", "base", "재생 엔진을 새로 짜서, 하루끝 방송이 1초 안에 시작됩니다. 그리고 화면은—"),
     // 발표를 넘길 땐 옆자리 서하를 본다(왼쪽 고정이면 본부장에게 서하를 소개하는 꼴).
