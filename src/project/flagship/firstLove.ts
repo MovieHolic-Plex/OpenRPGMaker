@@ -932,6 +932,11 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
         ...comeBeside(),
         ...think("지후 선배가 내 옆으로 와 모니터를 들여다봤다. 아주 잠깐, 웃은 것 같았다."),
         ...like(1, "ev_fl_w_jihu"),
+        // 팀장은 화면 안에서 걸어 나간다 — 시간 건너뛰기(반쯤 어두운 화면)에 자리에서 사라지지 않는다(VQA r12).
+        faceHero("ev_fl_w_lead"),
+        ...say("lead", "base", "본부장님 전화는 가면서 할게요. 둘 다 너무 늦지 말아요."),
+        leadOut.begin,
+        ...leadOut.end,
       ] },
       { text: "지후 선배에게만 조용히 도움을 청한다", then: [
         face("@player", dirToward(o.heroDesk, jihuSeat)),
@@ -1085,6 +1090,9 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     choices([
       { text: "역으로 간다", then: [
         ...sayAt("seoha", "right", "base", "죄송해요, 먼저 가 볼게요!"),
+        // 자리에서 사라지지 않고 유리문 쪽으로 뛰어가며 화면이 어두워진다(VQA r12).
+        walkRoute(project, FL_MAP.officeFri, "@player", o.meetingSeat, o.meeting, [leadSpot, minhoSpot], false),
+        wait(500),
         ...fadeOut(600),
         stopBgm(),
         stage(S.FRI),
@@ -1283,7 +1291,7 @@ function defineEndings(project: Project): void {
     conditions: [],
     presentation: { musicResourceId: BGM_END_C, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-pano-night" },
     epilogue: [
-      { kind: "say", text: "회식 자리. 민호 씨가 건배사를 세 번째 하고 있다." },
+      { kind: "say", text: "회식 자리로 가는 길. 다들 앞서 걸어가고, 나는 회사 앞에서 우산을 폈다." },
       { kind: "say", text: "오후 9시 41분, 그 열차가 떠난 시각. 밤 열 시, ‘하루끝’ 오늘의 사연이 울렸다." },
       { kind: "say", text: "보낸 사람: 익명. 사연 제목은, ‘바나나우유 님께’." },
       { kind: "say", text: "‘10년 전 금요일의 사연, 이제야 답장해요. 이번에도 인사는 못 했네요.’" },
