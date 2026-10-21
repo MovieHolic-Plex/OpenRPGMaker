@@ -123,10 +123,27 @@ const settled = async (done) => {
   }
   return true;
 };
+// 기술 칸이 가득 차 「잊게 할까?」가 뜨면 사람처럼 「예」를 고르고 가장 약한 기술(위력이 가장 낮은 것)을 잊는다.
+// Enter 만 누르면 기본값 「아니오」라 위력 55 기술(Lv10)을 끝내 못 배우고 리그에 갔다(r33 물).
+async function nextKey() {
+  const menu = await page.evaluate(() => {
+    const node = document.querySelector('[data-testid="emerald-movelearn-menu"]');
+    if (!node || node.hidden) return null;
+    const rows = [...node.querySelectorAll(".emerald-movelearn-row")];
+    return { labels: rows.map((r) => r.querySelector(".emerald-movelearn-label")?.textContent ?? ""), cursor: rows.findIndex((r) => r.dataset.cursor === "true") };
+  }).catch(() => null);
+  if (!menu) return "Enter";
+  if (menu.labels.length === 2 && menu.labels[0] === "예") return menu.cursor === 0 ? "Enter" : "ArrowUp";
+  const power = (name) => project.database.skills.find((s) => s.name === name)?.power ?? 0;
+  let weakest = 0;
+  menu.labels.forEach((name, i) => { if (power(name) < power(menu.labels[weakest])) weakest = i; });
+  if (menu.cursor === weakest) return "Enter";
+  return menu.cursor < weakest ? "ArrowDown" : "ArrowUp";
+}
 const pressEnterUntil = async (done, max = 40) => {
   for (let i = 0; i < max; i++) {
     if (await settled(done)) return true;
-    await page.keyboard.press("Enter");
+    await page.keyboard.press(await nextKey());
     await page.waitForTimeout(250);
   }
   return settled(done);
