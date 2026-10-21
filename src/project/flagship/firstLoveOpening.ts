@@ -130,7 +130,7 @@ function officeShot(): OpeningAnimatic {
 /** 5. 월요일 아침 — 첫 출근. 게임 첫 장면(아침 승강장)으로 이어진다. */
 function mondayShot(): OpeningAnimatic {
   return shot([
-    backdrop("oprn-title-romance-office", { x: 0, y: 160, width: 1150, height: 647 }, [0.55, 0.85], SHOT_MS, 1.06),
+    backdrop("oprn-title-romance-office", { x: 0, y: 200, width: 1000, height: 563 }, [0.55, 0.85], SHOT_MS, 1.06),
     glow("dawn", "#ffd9a8", 240, 300, 560, { opacity: 0.35 }),
     centerText("title", "첫 출근, 월요일 아침.", 300, 5800, 15),
     caption([
