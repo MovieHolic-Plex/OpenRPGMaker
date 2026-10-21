@@ -94,7 +94,9 @@
   height: 40px;
   bottom: -12px;
 }
-.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-actor-group .battle-actor::before { width: 232px; height: 48px; bottom: -12px; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-actor-group .battle-actor::before { width: 208px; height: 40px; bottom: -8px; }
+/* 받침 위치는 소개 장면(emeraldTrainerIntro.css 의 ::before/::after)과 같은 좌표다 — 어긋나면 「가라!」 순간 두 타원이 겹쳐 보이고
+   아래쪽이 대사 창에 잘린다(VQA R9-1). 한쪽을 옮기면 다른 쪽도 같이. */
 /* 피격 번쩍임·hit 포즈 밝기는 노드(filter)가 아니라 그림에만 건다. 노드에 brightness 를 걸면 ::before 받침 타원까지 흰 덩어리로 날아간다
    (관장 브램보어 전투 21b 프레임, VQA R7-3) — 받침은 몬스터 크기·피격 상태와 무관하게 늘 같은 지형색 타원이어야 한다. */
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy, .battle-actor-group .battle-actor).battle-targeted { animation: none; }
