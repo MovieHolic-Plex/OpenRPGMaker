@@ -345,6 +345,15 @@ function starterCoverage(project: Project): void {
     if (entry) entry.level = Math.min(entry.level, 5); else list.push({ level: 5, skillId });
     list.sort((a, b) => a.level - b.level);
   }
+  // 신전 보스(Lv6·6·7 셋)는 Lv10 안팎에 만난다. 위력 35 기술 하나로 셋을 치던 불·풀이 첫 도전에 졌다(r29) — 세 스타터 모두 위력 55 제 타입 기술을 Lv11 → Lv10 에 배운다.
+  for (const species of project.database.monsterSpecies ?? []) {
+    if (!["mx_species_spriglet", "mx_species_coalbit", "mx_species_rivulet"].includes(species.id)) continue;
+    for (const entry of species.skillsByLevel ?? []) {
+      const skill = project.database.skills.find((s) => s.id === entry.skillId);
+      if (entry.level === 11 && skill && (skill.power ?? 0) >= 50 && species.types?.includes(skill.elementId ?? "")) entry.level = 10;
+    }
+    species.skillsByLevel?.sort((a, b) => a.level - b.level);
+  }
 }
 
 /**
