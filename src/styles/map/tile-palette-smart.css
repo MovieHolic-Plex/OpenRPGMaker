@@ -15,8 +15,10 @@
   border-radius: var(--radius-s);
 }
 
+/* 폭은 글자 길이에 먼저 나눠 준다(flex-basis auto). 0 이면 네 탭이 같은 폭이라
+   영어 「Individual tiles」 처럼 긴 라벨 하나만 잘렸다. */
 .palette-smart-tab {
-  flex: 1 1 0;
+  flex: 1 1 auto;
   min-width: 0;
   height: 24px;
   padding: 0 4px;
