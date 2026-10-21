@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.316.0 — 2026-10-22
+
+### 기능
+
+- **beodeul** — redraw the broadleaf trees, canopy and forest ground by hand (drop unknown-licence lineage) (#3223) (`431380e`)
+
 ## 0.315.0 — 2026-10-22
 
 ### 기능
