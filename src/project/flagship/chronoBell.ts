@@ -1107,9 +1107,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 화로의 방(20×15)은 화면보다 작아 바깥이 검은 허공 + 먼지 입자(별밭)로 보였다 — 사방에 바위 둘레를 덧붙이고 들어오는 이동 좌표를 같은 만큼 민다(VQA r4).
   {
     const padX = 6, padY = 3;
-    // 이 방은 atlas_biome_interior 라 지하실 바위 id(beodeul_city)가 없다 — 방 위쪽 벽면(3166~3176 두 줄)을 사방으로 이어 암반 덩이로 읽히게 한다.
-        const wallUpper = [3170, 3172, 3166, 3168], wallLower = [3134, 3176, 3174, 3132];
-        padMapCentered(M(PUZZLE_ROOM), padX, padY, (x, y) => ((y % 2 === 0 ? wallUpper : wallLower)[x % 4]!));
+    // 이 방은 atlas_biome_interior 라 번들 실내처럼 방 바깥 패딩 전체를 어두운 천장·공허 칸(1번)으로 채운다(갈색 바위는 바닥처럼 읽힘).
+    padMapCentered(M(PUZZLE_ROOM), padX, padY, () => 1);
     for (const from of [M(ids.observatory), M(ids.vault)]) {
       for (const event of from.events) for (const list of eventCommandLists(event)) for (const cmd of list) {
         const rec = cmd as unknown as Record<string, unknown>;
@@ -1145,20 +1144,9 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 이 맵으로 들어오는 모든 이동 좌표를 같은 만큼 민다(VQA r5). 위 계단·철문·뚜껑문 좌표 작업은 모두 끝난 뒤여야 한다.
   {
     const padX = 6, padY = 3;
-    const wallUpper = [3170, 3172, 3166, 3168], wallLower = [3134, 3176, 3174, 3132];
-    // 방 바로 바깥은 같은 지도 안의 어두운 벽 덩어리(1번 칸 — 방 사이 빈 곳과 같은 칸)로 이어 건물 속처럼 읽히게 하고,
-    // 멀어질수록 암반 벽면 조각을 섞어 가장자리로 갈수록 바위로 사그라지게 한다(VQA r6 — 균일한 갈색 바위 카펫 지적).
-    const obs = M(ids.observatory), ow = obs.width, oh = obs.height;
-    const dark = 1;
-    const hash = (x: number, y: number, salt: number): number => ((((x * 73856093) ^ (y * 19349663) ^ (salt * 83492791)) >>> 0) % 1000) / 1000;
-    padMapCentered(obs, padX, padY, (x, y) => {
-      const dx = Math.max(padX - x, x - (padX + ow - 1), 0), dy = Math.max(padY - y, y - (padY + oh - 1), 0);
-      const d = Math.max(dx, dy) + (dx > 0 && dy > 0 ? 1 : 0);
-      const rock = (y % 2 === 0 ? wallUpper : wallLower)[x % 4]!;
-      // 거리 1~2 는 전부 어두운 벽 덩어리, 3 이후로는 거리에 따라 바위가 섞이는 비율이 커진다.
-      const rockShare = d <= 2 ? 0 : d === 3 ? 0.35 : d === 4 ? 0.7 : 1;
-      return hash(x, y, 11) < rockShare ? rock : dark;
-    });
+    // 패딩 전체(맵 가장자리까지)를 interior 시트의 어두운 천장·공허 칸(1번)으로 채운다 — 번들 실내는 방 바깥이 모두 어두운 천장이다.
+    // 갈색 암반 벽면 조각을 섞으면 480×270 화면에서 벽 위쪽이 바닥처럼 읽힌다(사용자 지적).
+    padMapCentered(M(ids.observatory), padX, padY, () => 1);
     for (const from of Object.values(project.maps)) {
       for (const event of from.events) for (const list of eventCommandLists(event)) for (const cmd of list) {
         const rec = cmd as unknown as Record<string, unknown>;
