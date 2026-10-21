@@ -456,8 +456,22 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 
 - 숲은 1층 숲 바닥 오토타일 `jp-forest4-bl` + 나무 composer(`src/project/defaults/treeComposer.ts`, 그림 `scripts/content/jp-city/blocks/jp_forest_r4.py`). 나무·접지 그늘 칸은 composer 가 놓는다 — 낱칸·키트로 숲을 만들지 않는다.
 - **조수 입구 셋:** ① `compose_jp_region` 숲 구획(r4 가 구워졌으면 기본, `grounding` 인자; 대숲 등산로는 r3 가 없으면 옛 대숲·삼나무 키트) ② `compose_jp_city_street` 주택가 공원 구획 뒤쪽 55% 에 `parkForest` (`grove` 기본 | `dense` | `none`) + `grounding` ③ 이미 있는 맵에 `paint_jp_forest`(`src/editor/tools/jpForestTool.ts`: `rect` | `beside{x,y,w,h,side,depth}` | `besideLocation`+`side`·`depth`, `forestType` `dense|grove`, `grounding`, `seed` = grove 덩이 모양만).
-- 공용 함수 `paintJpForestArea`(`src/editor/jpCity/forestPainter.ts`): 요청 칸 ∩ 잔디(2~4층에 남의 칸 없음) → dense 는 2×2 열기, grove 는 값 잡음 분위수 55% + 3×3 열기 → 1층 숲 바닥 → `composeTreesAll(…, 0)`. **composer 씨앗은 늘 0** — 편집기 붓이 씨앗 0 으로 다시 짜므로 다른 씨앗으로 세우면 붓질 한 번에 둘레 나무가 바뀐다(지역 도구도 0 으로 바꿨다).
+- 공용 함수 `paintJpForestArea`(`src/editor/jpCity/forestPainter.ts`): 요청 칸 ∩ 잔디(2~4층에 남의 칸 없음) → dense 는 2×2 열기, grove 는 값 잡음 분위수 55% + 3×3 열기 → 1층 숲 바닥(바닥에 맞춰 잔디 위 `bl`·이끼 바닥 위 `bm`) → `composeR4Family(…, 0)`(형제 composer 를 두 번에 나눠 짠다 — 한 번씩 `composeTreesAll` 을 부르면 서로의 나무를 지웠다). **composer 씨앗은 늘 0** — 편집기 붓이 씨앗 0 으로 다시 짜므로 다른 씨앗으로 세우면 붓질 한 번에 둘레 나무가 바뀐다(지역 도구도 0 으로 바꿨다).
+- **판 r7 (2026-10-21, 독립 Opus 적대 VQA 7판 끝에 전부 통과):**
+  - 나무: 수관 v7.
+  - 숲 바닥 그늘: `forest_r6_ground.py` 의 매끈한 물결 흔들림 + 바깥 1px 성김. 곧은 칸 모서리 그늘이 보여 r2 에서 반려됐다.
+  - 이끼 바닥 형제 그룹 `jp-forest4-bm`: 바탕 칸은 지역 팩 이끼 16109.
+  - 접지(땅 그늘): 늘 켜진다. 도구의 `grounding` 인자는 옛 인자라 무시한다. 접지 없는 숲은 칸 격자 사각형으로 보여 반려됐다.
+  - 대숲 키트 `jp-rg-bamboo-*`: `bamboo_mass`·`bamboo_crown` 으로 다시 그렸다.
+  - 같은 판의 거리 그림 보정:
+    - 함석 지붕: 골이 Λ 박공을 따라 기운다.
+    - 단층·창고 지붕: 4단 + 4px 골.
+    - 간판 탁점: 두 2×2 점, 그림자 없음. 굵히면 だ·が·ご 가 한 덩이로 붙었다.
+    - 交: 1px 틈을 지킨다(文 으로 읽혔다).
+    - 역 문 높이: 간판과 겹치지 않게 잘랐다.
+  - 탈것: 동쪽(right) 버스는 `right_open` 이 없다(문이 반대쪽이다). 런타임이 닫힌 프레임으로 내린다.
+  - 판정 기준: `harness-data/object-gate/vqa/jp-forest-r1.*`. 허용은 사용자 위임 감독 허용이다(18323 묶음 `jp-forest-r1`).
 - 구조 검사 `checkJpForest`: `FOREST_TILE_ON_LAYER1`·`FOREST_ROOT_OFF_FOREST`(줄기 열 밑칸만)·`FOREST_OVER_FOREIGN`·`FOREST_TRUNK_MISSING`·`FOREST_APRON_OFF_LAWN`. 보기 좋은지는 판정하지 않는다.
-- 참고문서 용도 `jp-forest`(4쪽·그림 9장)는 **따로 굽는다** — `forest_refs_scenes.mts`(실제 도구 결과·변조 검출 JSON) → `bake_forest_refs.py` → `src/assets/jpForestReferences.json` + `public/assets/jp-city-references/forest-*.png`. `jpCity.ts` 가 `jpCityReferences.json` 뒤에 붙여 `ensureJpCityReferences` 로 기존 프로젝트에도 심는다(bake_refs.py 재굽기가 숲 문서를 지우지 않게 파일을 나눴다). 숲 칸이 구워진 시트로만 굽는다(시트 칸 수 확인).
+- 참고문서 용도 `jp-forest`(4쪽·그림 8장 — 접지 비교 그림은 접지가 늘 켜져 뺐다)는 **따로 굽는다** — `forest_refs_scenes.mts`(실제 도구 결과·변조 검출 JSON) → `bake_forest_refs.py` → `src/assets/jpForestReferences.json` + `public/assets/jp-city-references/forest-*.png`. `jpCity.ts` 가 `jpCityReferences.json` 뒤에 붙여 `ensureJpCityReferences` 로 기존 프로젝트에도 심는다(bake_refs.py 재굽기가 숲 문서를 지우지 않게 파일을 나눴다). 숲 칸이 구워진 시트로만 굽는다(시트 칸 수 확인).
 - 실조수 시험 `scripts/qa/jp-forest-assistant-run.mts`(Pi 실행기, `argonproxy/gemini-4-argon-high` 강도 medium, 새 SQLite 폴더 저장·재로드·1배 그림 → `verify-shots/jp-forest-assistant/<label>/`).
 - **옛 번호는 옛 그림을 지킨다 (2026-10-21):** 핀은 덧붙이기만이다. 같은 키로 그림만 바뀐 칸(예: #3098 깊은 지붕·차량 다시 그리기)이 옛 번호에 덮어써지면 이미 깔린 맵이 바뀐다. `bake_jp.py` 의 `Cells._frozen_key` 가 옛 시트(정의 count 미만 번호)의 화소와 새 그림(야외는 색 계약 적용 후)을 비교해 다르면 키를 `<키>@r<sha8>` 로 바꿔 새 번호를 받게 한다. 굽기 보고 `tiles.rekeyed_art`(바꾼 키 수)·`tiles.old_cells_changed`(옛 번호 중 화소가 바뀐 칸, 0 이 아니면 굽기 거절). 실측(origin/main 핀 기준 임시 굽기): 칸 19,614 · legacy 1,837 · 다시 키 344 · 옛 칸 화소 변경 0 · 핀 이동 0. 전에 적었던 「옛 칸 1,493」은 이동이 아니라 legacy(이번 굽기가 만들지 않는 번호)였고, 그중 344칸이 제자리에서 그림이 바뀌고 있었다 — 이 규칙으로 막았다.

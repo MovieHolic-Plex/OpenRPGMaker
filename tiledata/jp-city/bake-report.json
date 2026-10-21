@@ -1,40 +1,105 @@
 {
  "tiles": {
-  "count": 17400,
+  "count": 20040,
   "tilesPerRow": 96,
-  "rows": 182,
+  "rows": 209,
   "sheetPx": [
    1536,
-   2912
+   3344
   ],
   "height_ok": true,
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 14186,
-  "legacy": 77,
+  "block_cells": 15013,
+  "legacy": 1890,
   "legacy_ids": [
-   16642,
-   16643,
-   16644,
-   16645,
-   16646,
-   16647,
-   16675,
-   16704,
-   16718,
-   16719,
-   16720,
-   16721,
-   16722,
-   16725,
-   16726,
-   16751,
-   16752,
-   16753,
-   16754,
-   16755
+   3747,
+   3748,
+   3749,
+   3750,
+   3751,
+   3752,
+   3753,
+   3754,
+   3755,
+   3756,
+   3757,
+   3758,
+   3759,
+   3760,
+   3761,
+   3762,
+   3763,
+   3764,
+   3765,
+   3766
   ],
+  "rekeyed_art": 372,
+  "rekeyed_sample": [
+   [
+    "buildings/house_flat3/0.0",
+    3918,
+    "buildings/house_flat3/0.0@rd1b6d7ba"
+   ],
+   [
+    "buildings/house_flat3/1.0",
+    3919,
+    "buildings/house_flat3/1.0@r127b6f64"
+   ],
+   [
+    "buildings/house_flat3/2.0",
+    3920,
+    "buildings/house_flat3/2.0@rae68ce6d"
+   ],
+   [
+    "buildings/house_flat3/3.0",
+    3921,
+    "buildings/house_flat3/3.0@re65847af"
+   ],
+   [
+    "buildings/house_flat3/4.0",
+    3922,
+    "buildings/house_flat3/4.0@r1811bf32"
+   ],
+   [
+    "buildings/house_flat3/5.0",
+    3923,
+    "buildings/house_flat3/5.0@r95e030e4"
+   ],
+   [
+    "buildings/house_flat3/6.0",
+    3924,
+    "buildings/house_flat3/6.0@r33b13121"
+   ],
+   [
+    "buildings/house_flat3/1.1",
+    3925,
+    "buildings/house_flat3/1.1@r8771c66a"
+   ],
+   [
+    "buildings/house_flat3/2.1",
+    3926,
+    "buildings/house_flat3/2.1@r54d3e718"
+   ],
+   [
+    "buildings/house_flat3/3.1",
+    3927,
+    "buildings/house_flat3/3.1@rcd7e7488"
+   ],
+   [
+    "buildings/house_flat3/4.1",
+    3928,
+    "buildings/house_flat3/4.1@rce9b69b0"
+   ],
+   [
+    "buildings/house_flat3/5.1",
+    3929,
+    "buildings/house_flat3/5.1@rc6820e75"
+   ]
+  ],
+  "old_cells_changed": 0,
+  "old_cells_changed_ids": [],
   "unused_source": 110,
   "people_reserved": 155,
   "by_category": {
@@ -45,15 +110,15 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 14186
+   "block": 15013
   }
  },
  "pc_counts": {
-  "star": 6921,
-  "solid": 4348,
+  "star": 7535,
+  "solid": 4351,
   "floor": 3990,
-  "solidfloor": 1236,
-  "flat": 673,
+  "solidfloor": 1308,
+  "flat": 811,
   "blank": 155
  },
  "kits": {
@@ -72,17 +137,17 @@
   "block_kit": 1384
  },
  "groups": {
-  "total": 373,
+  "total": 375,
   "by_kind": {
    "street": 9,
    "band": 60,
    "deco": 73,
    "prop": 11,
-   "block": 220
+   "block": 222
   }
  },
  "autotiles": {
-  "total": 23,
+  "total": 25,
   "ids": [
    "jp-sidewalk-curb",
    "jp-lane-road",
@@ -106,7 +171,9 @@
    "jp-inaka-at-stream",
    "jp-inaka-at-paddy-water",
    "jp-inaka-at-paddy-summer",
-   "jp-inaka-at-paddy-golden"
+   "jp-inaka-at-paddy-golden",
+   "jp-forest4-bl",
+   "jp-forest4-bm"
   ]
  },
  "blocks": {
@@ -151,7 +218,8 @@
    "interior_office2",
    "shitamachi_pack",
    "jp_regions_pack",
-   "jp_inaka_pack"
+   "jp_inaka_pack",
+   "jp_forest_r4"
   ],
   "merged": [
    "autotiles_ground",
@@ -194,10 +262,13 @@
    "interior_office2",
    "shitamachi_pack",
    "jp_regions_pack",
-   "jp_inaka_pack"
+   "jp_inaka_pack",
+   "jp_forest_r4"
   ],
   "missing": [],
   "on_disk_not_in_order": [
+   "jp_forest_pack",
+   "jp_forest_r3",
    "lot_art",
    "rail_art",
    "shopfront_art"
@@ -229,7 +300,7 @@
    },
    {
     "name": "buildings",
-    "cells": 2777,
+    "cells": 3141,
     "autotiles": 0,
     "groups": 0,
     "kits": 77,
@@ -530,6 +601,14 @@
     "groups": 16,
     "kits": 31,
     "notes": "일본 시골(이나카 여름방학) 팩: 모내기 물논·여름 푸른 논·가을 황금 논·논두렁 흙길·농수로 물/석축·시골 자갈길·맑은 개울·여름 들꽃 풀밭·채소밭 이랑 바닥 10종 + 초가 고민가·기와 농가·토장 창고·막과자 가게·버스 정류장·무인 채소 판매대·목조 간이역·단량 디젤 동차(키하 40형 8×3)·붉은 철교·개울 징검다리·소방 망루·흰 경트럭(4×2)·붉은 트랙터(4×3)·함석 농기구 헛간·비닐하우스·해바라기 군락·수국 꽃덤불·지장보살 사당·나무 전봇대·둥근 우체통과 자판기·물레방아간·농수로 수문·하사기 볏단 건조대·허수아비 한 쌍·타케가키 대나무 울타리·이끼 돌담·커브길 볼록거울·시골 자전거·작두 우물 펌프·언덕 도리이 돌계단 키트 31종."
+   },
+   {
+    "name": "jp_forest_r4",
+    "cells": 463,
+    "autotiles": 2,
+    "groups": 2,
+    "kits": 0,
+    "notes": "나무 composer 숲 r4(활엽): 1층 숲 바닥 오토타일 + 나무 그림 조각(2~4층, 칸마다 깊이 순)."
    }
   ]
  },
@@ -632,10 +711,10 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 17400,
+  "tiles_checked": 20040,
   "kits_checked": 1560,
-  "groups_checked": 373,
-  "autotiles_checked": 23
+  "groups_checked": 375,
+  "autotiles_checked": 25
  },
  "relayout_identical": {
   "cells": 2880,
@@ -643,52 +722,52 @@
   "ids": []
  },
  "palette": {
-  "allowed_colors": 232,
+  "allowed_colors": 515,
   "cells_with_off_palette": 0,
   "off_palette_examples": {},
   "marker_pixels": 0,
   "partial_alpha_pixels": 0,
   "contract": {
    "source": "tiledata/jp-city/palette-contract.json",
-   "colors": 115,
+   "colors": 398,
    "normalized_colors": 46,
    "normalized_pixels": {
-    "#4f80d6 -> #627e9c": 55287,
-    "#287ea8 -> #456184": 29165,
-    "#b22430 -> #a9432f": 28792,
-    "#4c0717 -> #5a1d1a": 28108,
-    "#2e9963 -> #49804c": 27239,
-    "#164d75 -> #31486b": 24584,
-    "#db4d4a -> #bf6446": 20768,
-    "#801223 -> #862c22": 20158,
-    "#f0cd45 -> #e0c57a": 19532,
-    "#53c776 -> #689e63": 14209,
-    "#1b6b50 -> #34633c": 13439,
-    "#ffe26e -> #fae29f": 12013,
-    "#c7a51c -> #b89d53": 11819,
-    "#7b9cf7 -> #627e9c": 11594,
+    "#4f80d6 -> #627e9c": 55492,
+    "#4c0717 -> #5a1d1a": 28979,
+    "#287ea8 -> #456184": 28680,
+    "#b22430 -> #a9432f": 28555,
+    "#2e9963 -> #49804c": 26174,
+    "#164d75 -> #31486b": 24580,
+    "#db4d4a -> #bf6446": 20985,
+    "#801223 -> #862c22": 20138,
+    "#f0cd45 -> #e0c57a": 19525,
+    "#53c776 -> #689e63": 14475,
+    "#1b6b50 -> #34633c": 13487,
+    "#ffe26e -> #fae29f": 12108,
+    "#7b9cf7 -> #627e9c": 11753,
+    "#c7a51c -> #b89d53": 11526,
+    "#0a2847 -> #233352": 10446,
     "#c26027 -> #93492c": 9775,
-    "#f78175 -> #de8264": 9131,
-    "#0a2847 -> #233352": 9124,
-    "#0c3d35 -> #254a32": 6646,
-    "#81f093 -> #689e63": 6587,
-    "#eb8e4f -> #b06640": 5555,
+    "#f78175 -> #de8264": 9246,
+    "#0c3d35 -> #254a32": 9118,
+    "#81f093 -> #689e63": 6722,
+    "#eb8e4f -> #b06640": 5558,
     "#ffb278 -> #c88a62": 4291,
     "#bd6eb5 -> #7282b0": 4112,
-    "#8f610b -> #856437": 3516,
-    "#572c02 -> #52351e": 3049,
-    "#b24f81 -> #bf8c99": 2945,
+    "#8f610b -> #856437": 3505,
+    "#572c02 -> #52351e": 3256,
+    "#b24f81 -> #bf8c99": 2857,
     "#571108 -> #4a2418": 2606,
     "#8a3014 -> #6e3420": 2385,
-    "#fa9eb4 -> #f2d6d6": 1843,
+    "#fa9eb4 -> #f2d6d6": 1879,
     "#db7598 -> #ddb2b8": 1429,
     "#8a4a94 -> #4a5c94": 1323,
-    "#803360 -> #956373": 592,
+    "#803360 -> #956373": 589,
+    "#521e41 -> #6b4350": 400,
     "#62326b -> #2f3f78": 357,
-    "#521e41 -> #6b4350": 336,
     "#89f3ff -> #86b4aa": 323,
     "#3b1d42 -> #1f295c": 321,
-    "#e69ad2 -> #7282b0": 248,
+    "#e69ad2 -> #7282b0": 236,
     "#578f36 -> #5f6d3b": 131,
     "#2e6e25 -> #46532d": 22,
     "#43d1e0 -> #3c726f": 12,
@@ -696,7 +775,7 @@
    }
   }
  },
- "sheet_hash": "93cc0e414b9148e6f8e0d9676329b7e8806acd33",
+ "sheet_hash": "8a8de9d178d30d91f448f5c8bf3729a1680fbd0f",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
   "kits_checked": 1560,
@@ -797,10 +876,10 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 17400,
+  "tiles_checked": 20040,
   "kits_checked": 1560,
-  "groups_checked": 373,
-  "autotiles_checked": 23
+  "groups_checked": 375,
+  "autotiles_checked": 25
  },
  "files": {
   "png": "public/assets/jp-city/jp-city-chipset.png",

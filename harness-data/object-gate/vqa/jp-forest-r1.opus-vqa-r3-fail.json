@@ -1,0 +1,1055 @@
+{
+ "schema": "jp-vqa/1",
+ "batch": "jp-forest-r1",
+ "round": 3,
+ "judge": "claude-opus-5-5 (medium, fresh independent subagent per group per round; saw neither the author's opinion nor earlier verdicts)",
+ "date": "2026-10-21",
+ "overall": "FAIL",
+ "criteria": {
+  "path": "criteria.md",
+  "sha256": "61571cf0d8916cafa1346da6581f589175582c58dc00997904c08527f02f250a",
+  "text": "# jp_city new-pixel adversarial VQA — fixed criteria (do not change between rounds)\n\nYou are an adversarial visual QA judge for 16px pixel art in the `jp_city` chipset of a top-down JRPG drawn in **3/4 view**\n(camera south of the subject, looking down about 45 degrees). Your job is to find real defects. Do not be polite.\nYou have not seen any earlier verdicts and you get nobody's opinion about these pictures.\n\nEach candidate board shows every candidate at **1x** (true game size) and **4x**. Each `ref-*.png` board shows\n**original jp_city pieces of the same kind** (already in the shipped chipset) at 1x and 4x. The originals are the quality bar.\nJudge every candidate against those originals, at both 1x and 4x. Use the Read tool to open every image you are given.\n\nA candidate FAILS if any of these is clearly true:\n\n1. **View (3/4).** A standing object (building, vehicle, tree trunk/crown base, prop) must show its top surfaces seen from above\n   (roof planes, flat roofs with a visible top plane, car roof/hood/trunk tops, foreshortened) **and** its south front face.\n   Pure side or front elevation with no visible top plane, or pure plan view with almost no front face, fails.\n   Vehicles facing east/west show their side profile as the south face plus the roof/hood tops above it. Ground tiles must read as\n   flat ground seen from above.\n2. **Shading craft vs the originals.** Main materials have clearly fewer value steps than the same material in the originals,\n   or large single-colour areas (about 5x5 px or more) with no texture where the originals carry texture, or muddy/blurred/\n   noise-like clusters where the originals have clean readable pixel clusters.\n3. **Outline.** Outlines are neutral black/grey wrapped around everything where the originals use dark tones of the adjacent material.\n4. **Palette/coherence.** Colours or contrast clash with the originals so that the piece would look foreign next to them in one map.\n5. **Tiling (ground cells and scenes only).** Visible tile-grid artefacts in a composed map: square/rectangular blocks snapped to the\n   16px grid, hard straight seams, obviously repeated stamps, or a hard ruler-straight boundary between the new ground and the\n   neighbouring original ground that the originals do not have. Ground autotile cells are variants: judge the cell sheet for pixel\n   quality and the **scenes** for how they actually look when laid.\n6. **Readability at 1x.** At game size it does not read as what it is named.\n\nRelative rule (fixed): a trait that the originals share to the same degree is not a defect of the candidate.\nTree sprites are never seen alone in game; they overlap in forests — use the forest scenes for crown/trunk/ground judgement as well.\n\nOutput: JSON only, written to the file you are told, schema:\n```\n{\"schema\":\"jp-vqa/1\",\"judge\":\"claude-opus-5-5\",\"group\":\"<group>\",\"overall\":\"PASS|FAIL\",\n \"items\":[{\"label\":\"<label exactly as printed on the board>\",\"verdict\":\"PASS|FAIL\",\"criteria\":[<numbers violated>],\n           \"reasons\":\"<concrete: where (rows/area), what, compared with which original>\",\"fix\":\"<what to change if FAIL>\"}]}\n```\n`overall` is PASS only if every item is PASS. Every label on your boards must appear exactly once.\n"
+ },
+ "verdictFiles": [
+  "r3/verdict-trees.json",
+  "r3/verdict-ground.json",
+  "r3/verdict-buildings-a.json",
+  "r3/verdict-buildings-b.json",
+  "r3/verdict-vehicles.json"
+ ],
+ "boards": [
+  "r3/cand-buildings-01.png",
+  "r3/cand-buildings-02.png",
+  "r3/cand-buildings-03.png",
+  "r3/cand-buildings-04.png",
+  "r3/cand-buildings-05.png",
+  "r3/cand-buildings-06.png",
+  "r3/cand-buildings-07.png",
+  "r3/cand-buildings-08.png",
+  "r3/cand-buildings-09.png",
+  "r3/cand-buildings-10.png",
+  "r3/cand-buildings-11.png",
+  "r3/cand-buildings-12.png",
+  "r3/cand-buildings-13.png",
+  "r3/cand-buildings-14.png",
+  "r3/cand-buildings-15.png",
+  "r3/cand-buildings-16.png",
+  "r3/cand-buildings-17.png",
+  "r3/cand-buildings-18.png",
+  "r3/cand-buildings-19.png",
+  "r3/cand-ground-cells-apron-1x.png",
+  "r3/cand-ground-cells-apron.png",
+  "r3/cand-ground-cells-floor-1x.png",
+  "r3/cand-ground-cells-floor.png",
+  "r3/cand-trees-01.png",
+  "r3/cand-trees-02.png",
+  "r3/cand-trees-03.png",
+  "r3/cand-trees-04.png",
+  "r3/cand-trees-05.png",
+  "r3/cand-vehicles-01.png",
+  "r3/cand-vehicles-02.png",
+  "r3/cand-vehicles-03.png",
+  "r3/ref-buildings.png",
+  "r3/ref-ground.png",
+  "r3/ref-trees.png",
+  "r3/ref-vehicles.png",
+  "r3/scene-ex-1x.png",
+  "r3/scene-ex-4x.png",
+  "r3/scene-grove-1x.png",
+  "r3/scene-grove-4x.png",
+  "r3/scene-noground-1x.png",
+  "r3/scene-noground-4x.png",
+  "r3/scene-road-1x.png",
+  "r3/scene-road-4x.png",
+  "r3/scene-shrine-1x.png",
+  "r3/scene-shrine-4x.png",
+  "r3/scene-street-1x.png",
+  "r3/scene-street-4x.png",
+  "r3/scene-thin-1x.png",
+  "r3/scene-thin-4x.png"
+ ],
+ "counts": {
+  "items": 108,
+  "passed": 105
+ },
+ "items": [
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T40",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges.",
+   "fix": "",
+   "pixelSha256": "75e8c0bf07330a4597807a6a758891bf5538190ea9013ca2b0adffd84d0b7ee5"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T41",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges.",
+   "fix": "",
+   "pixelSha256": "2b8b0ab6fc28d3a31dc86d68ec1cca51262491a633697f34e3f24828dd2a784f"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T42",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges.",
+   "fix": "",
+   "pixelSha256": "42bb052e60ccfc8cef86245547328ca6a2ad94b9a147114c1be7f44c79e4965a"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T40d",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges. shade variant is darker overall but keeps the same step count and clean clusters.",
+   "fix": "",
+   "pixelSha256": "0752fa9eea5ee4d3c4b1a1e429ae2b395c0f3a0e396afeec32dbf4acf1abafd7"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T41d",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges. shade variant is darker overall but keeps the same step count and clean clusters.",
+   "fix": "",
+   "pixelSha256": "3f18bf810056b462e853d6205fc13a1570523e1e03ea167a6a064c7f6c392535"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T42d",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges. shade variant is darker overall but keeps the same step count and clean clusters.",
+   "fix": "",
+   "pixelSha256": "4f8213abf012ba5a292634e459feb6fbea7c0ae4f95d932b3ffe97ad9cf4ea6d"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T30",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges.",
+   "fix": "",
+   "pixelSha256": "9eb26f465ad314920c6b7833d27820cd0e2dc0a60bd76f3134cad25d22c62b38"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T31",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges.",
+   "fix": "",
+   "pixelSha256": "561d7def49229019ce98131e915ffd574ba79934fed0bc36af897ded9e3e125f"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T32",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges.",
+   "fix": "",
+   "pixelSha256": "b4ee1500420e50f9e4dd7e30942fc1b1c5b1c3406ce73365399ac654dbb7f2c9"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T33",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges.",
+   "fix": "",
+   "pixelSha256": "e7e39975531ae4ff9c1fc33c7b69cf09446ec1cd33db9e6d573fc44cdec3dc90"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T34",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges.",
+   "fix": "",
+   "pixelSha256": "c1fb776040b9a5ceda5e8a1659187b8e1fbed0d98892732a5b5199c82a6dede6"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T30d",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges. shade variant is darker overall but keeps the same step count and clean clusters.",
+   "fix": "",
+   "pixelSha256": "249e28d99ecc71eb515bd57f2ca9d487d33f8cd645ea409682439e78007ee602"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T31d",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges. shade variant is darker overall but keeps the same step count and clean clusters.",
+   "fix": "",
+   "pixelSha256": "c81408cad32a938d0dbf6676e1e48f9f3df53f021e5a12af49920ffc2b32f06d"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T32d",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges. shade variant is darker overall but keeps the same step count and clean clusters.",
+   "fix": "",
+   "pixelSha256": "40b01d44e516c831d9b106ee4555fc39811f67101b20a5fb550378f543976da3"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T33d",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges. shade variant is darker overall but keeps the same step count and clean clusters.",
+   "fix": "",
+   "pixelSha256": "4e28bb13d0b4bac8076305de2d79aeb711c88570d4dc68e06a5550435cdbc2f7"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T34d",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges. shade variant is darker overall but keeps the same step count and clean clusters.",
+   "fix": "",
+   "pixelSha256": "46d280867896f669c7d76bf3cdcf34c34687c67612307dc614e5e85e821ab577"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T20",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges.",
+   "fix": "",
+   "pixelSha256": "bdfaa2f8729894973420a6a84ad750fea5074c3932d15f2e578855e7f9ca659d"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T21",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges.",
+   "fix": "",
+   "pixelSha256": "3a93bcfacfc8b47b5255d26a32a4587fbe73a9e027698c9812e5a60c72acb15a"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T22",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges.",
+   "fix": "",
+   "pixelSha256": "2c30d72f10f5bb98e005f0f5ee04fabc09fecae791f07de08f50585508d9a37e"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T23",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges.",
+   "fix": "",
+   "pixelSha256": "58007825a5a24e7e2b132fd4a1333dd8c69c6e6e5045a7d830ed61f304d19ae4"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T20d",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges. shade variant is darker overall but keeps the same step count and clean clusters.",
+   "fix": "",
+   "pixelSha256": "fa106009dbf1697d4545de7c5c2a6a25ff7ba96bb5c6b7e8e8b857f5f120e326"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T21d",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges. shade variant is darker overall but keeps the same step count and clean clusters.",
+   "fix": "",
+   "pixelSha256": "564676a0a1a060870ddd97d138669a7a928988d8631024b2364d38a627b3fea8"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T22d",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges. shade variant is darker overall but keeps the same step count and clean clusters.",
+   "fix": "",
+   "pixelSha256": "f6a76941528f03e2a14a89734f5e5f79ca7a8e80086725b35815509d3602267e"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T23d",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Crown built from clean leaf clusters with 4-5 green value steps (top-lit highlights, dark undersides), more texture than original jp-prop-tree-zelkova; trunk 3 browns with root flare and grass tuft; crown seen from above with trunk/front below = valid 3/4. Edge uses dark green, not neutral black. Green hue sits with the zelkova original and the lawn 3281-3283. In forest scenes (ex/grove/thin/road/shrine) crowns overlap into a coherent canopy, trunks and soft cast shadows sit naturally on ground, no grid snapping in the sprites themselves; in the street scene it sits fine next to original hedges. shade variant is darker overall but keeps the same step count and clean clusters.",
+   "fix": "",
+   "pixelSha256": "0b851f8d10f60639c72715ecfbc2dcbfab475e1b70a69e9d1c7370b35e3fb93b"
+  },
+  {
+   "group": "trees",
+   "label": "jp_city/jp-rg-bamboo-grove",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Culms carry 3-4 value steps (light edge stripe, mid, dark side) with node marks; leaf masses have light/mid/dark clusters; dark outline matches the near-black outline of the original zelkova/ginkgo/sakura and pine; outlined olive ground blob matches jp-rg-pine base. Seen 3/4: leaf tops read from above, culm fronts and base visible. Reads as bamboo at 1x via the vertical striped culms. Minor: crown masses are rounder/blobbier than drooping sasa fans, but not enough to misread.",
+   "fix": "",
+   "pixelSha256": "a86b1cdfecfcd6484ea2a29ec569028919be402e17126f241c6a594aca59661d"
+  },
+  {
+   "group": "trees",
+   "label": "jp_city/jp-rg-bamboo-grove-b",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Culms carry 3-4 value steps (light edge stripe, mid, dark side) with node marks; leaf masses have light/mid/dark clusters; dark outline matches the near-black outline of the original zelkova/ginkgo/sakura and pine; outlined olive ground blob matches jp-rg-pine base. Seen 3/4: leaf tops read from above, culm fronts and base visible. Reads as bamboo at 1x via the vertical striped culms. Minor: crown masses are rounder/blobbier than drooping sasa fans, but not enough to misread.",
+   "fix": "",
+   "pixelSha256": "d6dec45328d6f953b697fe9948cc7069e739fd749bb878ee26f8643830ac653f"
+  },
+  {
+   "group": "trees",
+   "label": "jp_city/jp-rg-bamboo-clump",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Culms carry 3-4 value steps (light edge stripe, mid, dark side) with node marks; leaf masses have light/mid/dark clusters; dark outline matches the near-black outline of the original zelkova/ginkgo/sakura and pine; outlined olive ground blob matches jp-rg-pine base. Seen 3/4: leaf tops read from above, culm fronts and base visible. Reads as bamboo at 1x via the vertical striped culms. Minor: crown masses are rounder/blobbier than drooping sasa fans, but not enough to misread.",
+   "fix": "",
+   "pixelSha256": "9c8958739874a3753dac5f24d58fff47c61019f085819eb021c7299a569cc342"
+  },
+  {
+   "group": "ground",
+   "label": "floor-cells",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Lawn-based floor cells keep the original lawn 3281-3283 dot texture and value steps, adding only a darker lawn tone in organic blotches; moss-based cells match the speckled moss-and-leaf floor in the shrine scene (same olive/dark-green/pink-fleck clusters), with no seam visible against the original moss there. Read flat from above. On the cell sheet the blotches have stepped diagonal edges that look patchy when every variant sits side by side, but laid in ex/grove/thin/road/shrine (1x and 4x) the floor has no 16px block, ruler seam or repeated stamp, and it fades into the neighbouring original lawn without a hard boundary. Palette sits inside the lawn/moss ramps. Note: scene-noground shows hard grid-snapped dark rectangles (e.g. 4x x128-896,y192-576) when grounding is off. Pixel comparison shows they come from the dark tree-shade variants on bare lawn, not from these cells, so they are a tree/tool issue and not a defect of floor-cells.",
+   "fix": "",
+   "pixelSha256": "3423be6b2fd269b90124847eb42bb5c93ac4db51ec7a17732c02d20d71a7df54"
+  },
+  {
+   "group": "ground",
+   "label": "apron-cells",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "The shade overlay darkens the lawn while keeping its dot texture visible through the shade, so there are no flat untextured 5x5+ areas. It uses dark tones of the lawn itself, with no neutral black/grey. On the cell sheet the shade masks have stair-stepped triangular edges, but in the scenes (ex 4x around the trunks x130-900,y300-580; grove 4x along the south edge; road 4x above and below the road) the shade breaks up organically around the trunks and dies out into the original lawn without straight cell-aligned edges. The noground scene shows what hard rectangles would look like, and the apron is exactly what removes them. Readable at 1x as soft forest-edge shade. The moss-base apron variants match the moss floor in the shrine scene.",
+   "fix": "",
+   "pixelSha256": "f7b6726a2599e912f3276377af47448d584c9de072790cfe34d87b8783bba963"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-hip2",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Front-gable roof shows two foreshortened roof planes (light W / dark E) with 4-5 value steps per tile row, matching soba/sento tile craft; south face with siding lines, balcony, pent roof. Dark material-tinted outline like originals. Reads as a 2-storey house at 1x.",
+   "fix": "",
+   "pixelSha256": "a1a7e1d2bb1074ff0b3b4fa1b10d1d50b52bd88986b630675e778d5d7a4f77c7"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-gable-garage",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Two roof planes visible from above with stepped shingle shading; south face with siding, shutter garage, door. Grey palette sits with clinic/apart originals. Readable at 1x.",
+   "fix": "",
+   "pixelSha256": "635a1eba5e3d95d24aa88b2ad5c733b45d229504f08cf30f931885ca5b503220"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-hiraya",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Hip roof top plane and hip ends visible, terracotta tiles with row shading; textured plaster wall comparable to soba wall; lattice door. Reads as single-storey house.",
+   "fix": "",
+   "pixelSha256": "93fd54305e4bcc8204e820f6d5d976117848f9239ab47dfc5c065ccef29fbf1f"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-shed-modern",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Metal roof shown as a foreshortened top plane with seams and 3 value bands (comparable to apart-steel2 ribbed roof); vertical board siding upper, speckled plaster lower. Readable at 1x.",
+   "fix": "",
+   "pixelSha256": "b34fd096cbaf787a1ea5ea26af0cb7312eab57cf520fcf5cecb4d4f993fa5bbd"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-flat3",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Flat roof top plane visible with stair hut, AC unit, water tank (like clinic roof); speckled concrete south face with floor bands. Readable as narrow 3-storey house.",
+   "fix": "",
+   "pixelSha256": "beaa21ce4669228c14e39b601d7eb0ee30821770ac8b64c74231433b6bdb4948"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-greengrocer",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Front-gable roof planes visible; sign board with same flat-panel treatment as the dango sign; striped awning and produce racks at 1x read as a greengrocer.",
+   "fix": "",
+   "pixelSha256": "5ef329ee7a0aa313d3a3e75fcc7179a1ba070b7aca162997682b88020dd8b572"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-fish",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Roof planes from above with tile shading; speckled wall; blue sign, striped awning, fish counter. Matches originals in outline and palette. Readable.",
+   "fix": "",
+   "pixelSha256": "41069296b5173d526a8853a80992a37f9ea31b9d86ed48f9e955f00362f4e177"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-butcher",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Brown roof planes with row shading; siding upper floor; red sign, striped awning, glass case. Readable at 1x.",
+   "fix": "",
+   "pixelSha256": "af8f6822919d544cdccd45ee486e714c4f8ab50839cae99b20f504b4f6d36d82"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-bakery",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Roof planes visible; textured stucco; sign board with outlined lettering, awning, shelves of bread. Readable.",
+   "fix": "",
+   "pixelSha256": "bfbd4263512ceaddf846435f3536f6614da11c4735556ab275aafd61a6c64bb1"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-flower",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Roof planes with stepped shading; sign and 3-tone scalloped awning (flat bands comparable to dango/conbini sign panels); flower buckets read at 1x.",
+   "fix": "",
+   "pixelSha256": "8f20470f57bf381044839a6ad8ef356a93bd9be5c9f0977331862b71444a8493"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-books",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Flat roof top plane with rooftop garden/stair hut; block-wall 2F; book shelves visible behind glass, matching wagashi/conbini shelf treatment. Readable.",
+   "fix": "",
+   "pixelSha256": "d935578a2d69e9a3ef0089f609d889ef99155e5fcebb534bb4ef263bd2e5a452"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-pharmacy",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Flat roof top plane; tiled 2F like clinic; blue kusuri sign; shelf front. Readable as pharmacy.",
+   "fix": "",
+   "pixelSha256": "ebdb529166f59d79619fab8454046412da6e41880e69a8bee310e928fb4837d1"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-cleaning",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Roof planes visible; speckled wall; sign, awning, shelf glass front. Readable.",
+   "fix": "",
+   "pixelSha256": "2b29409544c449cea6643879137333cb7ea339396bae598fce2023d06ab58c9d"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-ramen",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Roof planes and pent roof band; red sign, noren, lantern. Lantern/noren read at 1x. Palette consistent.",
+   "fix": "",
+   "pixelSha256": "18fa3071d6399d99edc438c4c87376dcb9e4f5aa51a767d49fd553cc06484034"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-izakaya",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Roof planes and pent roof; wood front with noren, lanterns, crates; matches soba/sento wood and noren treatment. Readable.",
+   "fix": "",
+   "pixelSha256": "4063df550b8aa7da693f8314c08100cfc3c29cb7c39832db4ef0c2da3cf3504f"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-cafe",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Brown roof planes; brick 2F with mortar texture; sign, awning, glass front. Readable as kissaten.",
+   "fix": "",
+   "pixelSha256": "68c4d3bb556eaf94dd090772785cb833751b78e811213e562357c13edf373edc"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-barber",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Roof planes visible; block wall; sign and barber pole readable at 1x.",
+   "fix": "",
+   "pixelSha256": "d618270a17bcfe5e46bf171bee7ddf5acf9e884e18936c489e6d1a4ca9c35f61"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-tabako",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Roof planes, pent roof; red sign, tobacco window and vending machine. Readable.",
+   "fix": "",
+   "pixelSha256": "acfeba08d33a640c2cfe93eb5880f1f167fbfe439a330eaf2a4fcce57c50a25a"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-hip2-wide",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Hip roof top plane with hip ends, row shading; tiled wall with block texture; pent roof band; shutter garage. Readable.",
+   "fix": "",
+   "pixelSha256": "d517c74e9de2fe34de7a62df5910c8ccbbb532ff7dd26a692ca9ebd270b0cd13"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-machiya",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Tile roof bands with ridge cap seen from above as in soba/sento; mushiko lattice window, pent roof, koshi lattice front. Reads as machiya.",
+   "fix": "",
+   "pixelSha256": "bcce7810a12816fadfb17335af0fbae1fb68edc4d047efeb0c959c414cc1b8c9"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-nagaya",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Long tile roof plane with ridge cap visible; repeated units with lattice doors, windows, plants, bike. Reads as row house; repetition is by design.",
+   "fix": "",
+   "pixelSha256": "57f17dad54effc9203e0653c59c90d33ac746c81c9dc16b76ea3f6c33166d4a7"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-western",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable roof planes with shading; cream stucco upper, brick lower with mortar texture. Readable.",
+   "fix": "",
+   "pixelSha256": "2460065d5fcbcbd9ddd3427e18f2e550317c1692d91f646a3865b460fef36bd2"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-nisetai",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Flat roof top plane with stair hut and planters; two entrances, balcony, pent roofs. Readable as two-household house.",
+   "fix": "",
+   "pixelSha256": "7b9b955ff5308ab2a0076f9cff489d630383b5807cc4ee9a4a4b5673c37f338d"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-tile3",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Metal roof top plane with seams; blue tiled wall with joint texture; 3 floors and garage. Readable.",
+   "fix": "",
+   "pixelSha256": "1b34b633594506ec284372a68f30a638a7300bff08c17c275162b2523aa14334"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-terrace",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Flat roof top plane with AC units; balcony band with slat lines; three doors. Readable as terrace house.",
+   "fix": "",
+   "pixelSha256": "6d8ca892cc953596b262d33d775b51662f6c4da323834ced4c99fd3507bfacea"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-hiraya-gable",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Side-gable tile roof seen from above with ridge cap and gable-end caps; lattice door, wide glass doors, plaster wall. Readable.",
+   "fix": "",
+   "pixelSha256": "1a19a8dd49bfb1077736d4e084c7c69646eb551a6ced46564c4149d30aaf514c"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-sushi",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Roof planes and pent roof; plaster wall; sushi sign, noren, lattice. Matches soba original vocabulary.",
+   "fix": "",
+   "pixelSha256": "efd671469d90cbeacb2d66897b7219e1c1b59d9a309d2950bbd1fe29440ef77b"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-teishoku",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Roof planes; siding; sign plus 3-tone scalloped awning (flat band similar to original sign panels), noren and shelves. Readable.",
+   "fix": "",
+   "pixelSha256": "6b3a4e44dd81ba52f043cdf94de469a41705ded1be54f3ce8cc16c7b4c4a0221"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-dagashi",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Roof planes; vertical board wall; pent roof; sign, sweets racks, vending machine. Readable.",
+   "fix": "",
+   "pixelSha256": "aaec4b3f92cc5178bd26176e2d215a38db49484d05ce02bc394c988715691a9c"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-sake",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Roof planes; siding; sign, green awning, shelves, crates, vending machine. Readable.",
+   "fix": "",
+   "pixelSha256": "9cb4de52451c3d1561f032a0dfcfcb1d4acafa4affb1b794fa4eb2e470a239d4"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-bicycle",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "c27e11b85f9f4ea3de8c41bd83ef6a7e24ef02928544900f80bd7115b366b288"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-realestate",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "f41b3f071217c93c9b5e8e2dc0940a569f187cea33a6aab50a131d413b4a8f58"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-salon",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "0cb2aab527136c96c752385f45fcadc0c987e1481fe2dd48ee67f0c1216897ab"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-post-office",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "56d0f285531d2f89f47ff3a5c9eaf0a61155a7907b601204ac6a0bb4b721a059"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-koban",
+   "verdict": "FAIL",
+   "criteria": [
+    6
+   ],
+   "reasons": "Sign at 4x (rows ~ sign band under gable) reads 文番, not 交番: the 交 glyph lacks the ハ strokes under the 亠 and is drawn as 文. The building is identified only by this sign + small lamp, so at 1x/4x it reads as a misspelled sign, unlike the correctly lettered originals (湯, やま医院, だんご).",
+   "fix": "Redraw the first glyph as 交 (亠 + two short diagonal ハ strokes + 乂) within the sign band.",
+   "pixelSha256": "aeb0f9593e657d0c46dd42fe8d1ba494d47b308cd91d8bfc029c5c39ae924224"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-warehouse",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "4d49ee08dc7a049e876060ded3a964e89a6cc4f6831fb1e06ec76aa9276022c9"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-garage-carport-house",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "d8b87b847f46f7de1956a7eff5622d3ab133366830320adf8255489e11c2c80a"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-fish-shut",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "2a1a82eacd9144bf69916601b2975758e41c315d674fcdcb9b1136f3619ef49b"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-butcher-shut",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "0f159c101de40f5ed23f1d0cb8799e033d6e0cdcd468695d3f2154fa35fdc20d"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-books-shut",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "1e9f251596e742a2e73b39042cff7a20b81bafaf48df7770eef900766f697397"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-cleaning-shut",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "9a4384b2da1cbfa6f253918e2bf5ac1c01633b650ee031a4f3086089e0d6a8dd"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-bicycle-shut",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "c9cb8a6aeada2ef19ef9abc0adc46796b850f8e9f0d2bcd957fc76f4b9cd038c"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-sake-shut",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "aaedd05b2627adb88f14e3f6912794fb36fecbd61d4c177a551e4f634e7e47fa"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-flower-shut",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "bfb32447f5afa7cf8218a286ef92dc08e4e800081d76f43d0b04b2ac8337cded"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-realestate-shut",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "0768f574a0ef6c5a454e487142e9767d30c1ae591df079c1a743fffd692cc6cc"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-vacant",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "fdf24b5140808b7346437d5c3bfef6f5ae7d2eb0b6509bcb73807bcd9f4b5bdf"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-station-small",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "d85a705c92284c73fd3182852c2a3ab8d0c6ec5eaf7ef4f5a84ab82c6078db5f"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-row-shotengai-a",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "99aae6335babc53549ccefac5f295c8db14678f41376fe4ef3c9a0f427572ac7"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-row-shotengai-b",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "10f25f633c6f696e70a2748a2785d2e3d8a1c96b5fc66b32d920a406cf960dbb"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-row-shotengai-c",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "d17ab371518d51708dc1c9d9f79e9eba127744200a6946e8ef9c3bddca2f3c53"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-row-shotengai-d",
+   "verdict": "FAIL",
+   "criteria": [
+    6
+   ],
+   "reasons": "Signs lose their dakuten: leftmost sign reads たんこ instead of だんご (both だ and ご marks missing), so the dango shop reads as 'tanko'; the original jp-bldg-shop-wagashi sign renders だんご with clear dakuten at the same scale. Also たばこ sign is cramped against the right edge. Layering (wooden 2F gable over dango hip roof, tile eave strips) is otherwise acceptable.",
+   "fix": "Add the dakuten pixels on だ and ご (copy the wagashi original's sign lettering), and give たばこ a 1px margin from the sign edge.",
+   "pixelSha256": "425f3c72c51ceb5ff2498834b4fd375c89fd3a83efa696e465a06467f9972958"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-row-inshokugai",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "2f213599226d76d833b1e1982284e15174c52f481cfae6014af53b814f0c6e01"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-row-ekimae",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "da303a92d9d5542073ac086bb2b94d6a493fa090e17f8c0c385480fa62b5474c"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-row-shutter-a",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "d910efe303abe91f4927b596503440bde53f2ecd7bbe7fb230d88ab39c98a6a1"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-row-shutter-b",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "3/4 reads: gable/flat roof top planes visible above south facade; roof courses and wall materials (siding, stucco, brick, corrugated metal, shutters) carry multi-step shading comparable to sento/soba/clinic originals; outlines and palette match the originals; sign text and shop type legible at 1x.",
+   "fix": "",
+   "pixelSha256": "11fe509da39d7047d53dac42042bfd2ef32f803ae83d6fa913defd595ffd79a3"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-white/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "sedan: roof plane, slanted windshield/rear glass and hood/trunk tops visible above the south side profile (3/4 ok). Red tail lamp at left end, amber head lamp at right end, hood on right -> faces right. Body has 3-4 value steps plus highlight dither on roof/glass, comparable to tram/commuter train bodies; dark outline matches originals' near-black outline (relative rule). Reads as a car at 1x.",
+   "fix": "",
+   "pixelSha256": "0d18f36d65458bb7207e04c563844538c230c227f087fd00bbbda3668fae7886"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-white/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Mirror of the right frame: amber head lamp/hood at left end, red tail at right -> faces left. Same 3/4 roof+side construction and shading as the right frame; reads at 1x.",
+   "fix": "",
+   "pixelSha256": "599235368e01c47ae85f2af1bb45f7cfe1e0edd74b7c0cb0d179ec5aa97ebe44"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-silver/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "wagon/hatch: roof plane, slanted windshield/rear glass and hood/trunk tops visible above the south side profile (3/4 ok). Red tail lamp at left end, amber head lamp at right end, hood on right -> faces right. Body has 3-4 value steps plus highlight dither on roof/glass, comparable to tram/commuter train bodies; dark outline matches originals' near-black outline (relative rule). Reads as a car at 1x.",
+   "fix": "",
+   "pixelSha256": "aa90dbaaef87b8f6d19dbd8dc026956ac6c1427e926a8633d1a2e900708528b7"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-silver/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Mirror of the right frame: amber head lamp/hood at left end, red tail at right -> faces left. Same 3/4 roof+side construction and shading as the right frame; reads at 1x.",
+   "fix": "",
+   "pixelSha256": "46e8568bc332edcd84c6a66b325eeb383eeb8db95ff3610c5c181d3381101006"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-black/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "sedan: roof plane, slanted windshield/rear glass and hood/trunk tops visible above the south side profile (3/4 ok). Red tail lamp at left end, amber head lamp at right end, hood on right -> faces right. Body has 3-4 value steps plus highlight dither on roof/glass, comparable to tram/commuter train bodies; dark outline matches originals' near-black outline (relative rule). Reads as a car at 1x.",
+   "fix": "",
+   "pixelSha256": "b95207e5034207f93584c48dd9445d2f2bbc936c8668289bde8142ad9c424c53"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-black/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Mirror of the right frame: amber head lamp/hood at left end, red tail at right -> faces left. Same 3/4 roof+side construction and shading as the right frame; reads at 1x.",
+   "fix": "",
+   "pixelSha256": "6a845ac826b020efe7bda08626d488641fa03da3b7ba3a0fafe53db657ec8b24"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-red/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "hatch: roof plane, slanted windshield/rear glass and hood/trunk tops visible above the south side profile (3/4 ok). Red tail lamp at left end, amber head lamp at right end, hood on right -> faces right. Body has 3-4 value steps plus highlight dither on roof/glass, comparable to tram/commuter train bodies; dark outline matches originals' near-black outline (relative rule). Reads as a car at 1x.",
+   "fix": "",
+   "pixelSha256": "4d0783169e9ebfb1511ba3c68271daeb2dc57cbf4ed3999939eb388f88262362"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-red/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Mirror of the right frame: amber head lamp/hood at left end, red tail at right -> faces left. Same 3/4 roof+side construction and shading as the right frame; reads at 1x.",
+   "fix": "",
+   "pixelSha256": "1bb073c816128b3622b613cfb2f840f081cb10576a2c8645f4bcc83b8692cabf"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-blue/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "sedan: roof plane, slanted windshield/rear glass and hood/trunk tops visible above the south side profile (3/4 ok). Red tail lamp at left end, amber head lamp at right end, hood on right -> faces right. Body has 3-4 value steps plus highlight dither on roof/glass, comparable to tram/commuter train bodies; dark outline matches originals' near-black outline (relative rule). Reads as a car at 1x.",
+   "fix": "",
+   "pixelSha256": "af81887d43ab5d38e9137e3f0eaa2ea7bb571683f165fae44a3376274588322d"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-blue/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Mirror of the right frame: amber head lamp/hood at left end, red tail at right -> faces left. Same 3/4 roof+side construction and shading as the right frame; reads at 1x.",
+   "fix": "",
+   "pixelSha256": "a72056bff7f1dffcc0ae4bcfe1c49bd76fece72096877546322aa3822306f28c"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-kei-yellow/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "yellow kei van: large roof top plane with dithered highlight and front glass slant at the right end; tail lamp (red 178,36,48 for taxi) at left end -> faces right. Value steps and outline comparable to originals.",
+   "fix": "",
+   "pixelSha256": "47ea5bed8721cea0fa91dc031b191007f42c70de38fc8467cdc790e2567e6dcc"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-kei-yellow/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "yellow kei van: front glass slant/head lamp at the left end, red tail at right end -> faces left; same construction as the right frame.",
+   "fix": "",
+   "pixelSha256": "56609f743f46f26a7f54f537479eff49d31a3f935992e8fcbff8b0043fe42847"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-kei-mint/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "mint kei van: large roof top plane with dithered highlight and front glass slant at the right end; tail lamp (red 178,36,48 for taxi) at left end -> faces right. Value steps and outline comparable to originals.",
+   "fix": "",
+   "pixelSha256": "e566b59be42907af7b0857f91aae17f41344d8e016ca5e92c1a47bc3eb760464"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-kei-mint/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "mint kei van: front glass slant/head lamp at the left end, red tail at right end -> faces left; same construction as the right frame.",
+   "fix": "",
+   "pixelSha256": "26b0da4c67f00b03226376a38d29186f152d5af9fc5ce97379675f1a74425079"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-taxi/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "taxi: large roof top plane with dithered highlight and front glass slant at the right end; tail lamp (red 178,36,48 for taxi) at left end -> faces right. Value steps and outline comparable to originals. Roof sign (andon) is clear at 1x.",
+   "fix": "",
+   "pixelSha256": "12719d9f717a48b3126088f7229addaee26cb7516883df12c02378824f8ca854"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-taxi/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "taxi: front glass slant/head lamp at the left end, red tail at right end -> faces left; same construction as the right frame. Roof sign (andon) is clear at 1x.",
+   "fix": "",
+   "pixelSha256": "c37253fe6b9671caca909ed7b3ff1a0f816b79426ae2411047c8636a87e67ba9"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-truck-kei/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Kei truck: cab roof top and bed interior (slats) seen from above, side as south face; cab and amber lamp at right -> faces right. Reads at 1x.",
+   "fix": "",
+   "pixelSha256": "8b83bb9d31b67b35a9c6cb74640f4712ab09893f30ca7175a452c2d51f386e13"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-truck-kei/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Cab at left with amber lamp, bed to the right -> faces left; mirror of right frame, same quality.",
+   "fix": "",
+   "pixelSha256": "f09c9fcd30da73f5b0da8c60292bfd7a06bd22b7a89d4e493d3a063b769d9627"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-truck-box/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Box truck: box roof plane with light dither, ribbed box side, cab with roof top and windshield at right; tandem rear axle at left -> faces right. Box side flat areas are broken by ribs, comparable to commuter train flat body panels.",
+   "fix": "",
+   "pixelSha256": "9b4a85b915b8230d04d2499f982ff6b1d9282075250e39201d1b84f5ff327e52"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-truck-box/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Cab at left, tandem axle at right -> faces left; consistent with the right frame.",
+   "fix": "",
+   "pixelSha256": "0b08d7cd1fff3587a0a2f2d9935869d419f18fb0b10d040e28ac8fa947aaa2e9"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-bus-city/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "City bus: roof top plane with three AC/hatch units (like tram roof units) above the south side; teal front window and amber head lamp at right end, red tail at left -> faces right. Facing east the curb/door side (left side, Japan) is the hidden north side, so no doors on the visible side is consistent. White/green livery and value steps match the green tram.",
+   "fix": "",
+   "pixelSha256": "5e650f7271a6707df7d28b5c282132adaec150fc1455c5d3afbf042aeb22901a"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-bus-city/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Front window and amber lamp at left end -> faces left; visible south side correctly carries the front and middle doors (left side of a westbound Japanese bus). Same roof/livery as right frame.",
+   "fix": "",
+   "pixelSha256": "8cbb57441fd8a52f5863a9de8cfccdb0b65fe7ad241a1c7aa4857e29a840a96c"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-bus-city/right_open",
+   "verdict": "FAIL",
+   "criteria": [
+    6
+   ],
+   "reasons": "Same bus as the right frame, but the only changes are amber 'interior light' bars along the top of every side window and two tiny dark notches on the far (north) roof edge. No open door, step, or boarding opening is visible anywhere; at 1x it reads as 'bus with lights on', not 'stopped with doors open'. Compare left_open, where both doors clearly become dark open doorways with lit steps.",
+   "fix": "Make the boarding state readable from the south view: e.g. show the open far-side door leaves as clear panels protruding above the roof's north edge at the door positions (larger than 1-2px notches), plus a lit stair/doorway glimpse through the windows opposite the doors, or a kneeling/stopped cue (hazard/indicator lamp lit, slightly lowered body). The change must read at 1x as doors open, not just lights on.",
+   "pixelSha256": "290c2c2df8713ee48bc3d47d84a03a5e093c4dd735c90238dcdfff6f7a31ca28"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-bus-city/left_open",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Same bus as left frame with both visible doors replaced by dark open doorways with lit amber steps/handrail; clearly a stopped, boarding state and readable at 1x. Faces left like the closed frame.",
+   "fix": "",
+   "pixelSha256": "3c1dc0541690562817db83b7b39820b654d335207ba636234eac738e561fa500"
+  }
+ ]
+}

@@ -85,10 +85,18 @@ mutate("mut-layer", (m) => {   // 수관 칸을 1층에 칠함(잘못된 레이�
   return `(${p.x},${p.y}) ${p.L}층 칸 ${p.t} 을 1층으로 옮김`;
 });
 mutate("mut-trunk", (m) => {   // 밑동 줄 칸을 지움(빠진 줄기)
+  // 밑동 칸 중 지웠을 때 바로 위 줄기 칸이 「밑동 위에만 쓰이는 칸」이라 검사가 알아볼 수 있는 첫 칸(같은 그림 칸이 수관 여러 자리에 합쳐진 줄기는 구조만으로 못 가린다)
   const bottom = new Set(cp.sprites.flatMap((s) => s.tiles.slice((s.h - 1) * s.w)).filter((t) => t >= 0));
-  const p = firstTree(m, (x, y, t) => bottom.has(t) && y >= 5 && x >= 4);
-  for (const L of [2, 3, 4] as const) setLayerTileAt(m, L, p.y * m.width + p.x, -1);
-  return `(${p.x},${p.y}) 밑동 칸의 2~4층을 지움`;
+  const base = checkJpForest(m, ts).length;
+  for (let y = 5; y < m.height; y++) for (let x = 4; x < m.width; x++) {
+    const i = y * m.width + x;
+    if (!([2, 3, 4] as const).some((L) => bottom.has(layerTileAt(m, L, i)))) continue;
+    const keep = ([2, 3, 4] as const).map((L) => layerTileAt(m, L, i));
+    for (const L of [2, 3, 4] as const) setLayerTileAt(m, L, i, -1);
+    if (checkJpForest(m, ts).length > base) return `(${x},${y}) 밑동 칸의 2~4층을 지움`;
+    ([2, 3, 4] as const).forEach((L, k) => setLayerTileAt(m, L, i, keep[k]!));
+  }
+  throw new Error("mut-trunk: 검사가 알아볼 밑동 칸이 없다");
 });
 mutate("mut-road", (m) => {    // 수관이 넘친 숲 밖 잔디 칸을 길로 바꿈(넘친 수관이 길 위에 남는다)
   const forest = new Set(g.memberTileIds ?? []);
