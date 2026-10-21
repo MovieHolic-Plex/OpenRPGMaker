@@ -336,13 +336,23 @@ function starterCoverage(project: Project): void {
   }
   // 그래도 풀·벌레 체육관에서 불은 3턴 무패, 물은 수련생에게 전멸, 풀은 관장에게 10턴 끝에 졌다(2026-10-21 적대 검수 r3).
   // 처음부터(Lv5) 풀은 깃바람(비행 — 풀·벌레에 두 배), 물은 서리발(얼음 — 풀에 두 배)을 갖고 시작한다. 불은 숯불톡이 같은 몫이다.
-  const fromStart: Record<string, string> = { mx_species_spriglet: "mx_skill_flying_1", mx_species_rivulet: "mx_skill_ice_1" };
+  // 다시(r30): 같은 관장에게 불은 체력 18, 풀은 2 를 남기고 이겼다 — 깃바람(위력 30, 제 타입 아님)은 숯불톡(35, 제 타입 1.5배)의 6할 남짓이었다.
+  // 스타터 전용 사본을 위력 40 으로 둔다(풀 「잎새돌풍」 비행 · 물 「서리물보라」 얼음). 다른 종이 쓰는 깃바람·서리발은 그대로다.
+  const fromStart: Record<string, { readonly base: string; readonly name: string; readonly power: number }> = {
+    mx_species_spriglet: { base: "mx_skill_flying_1", name: "잎새돌풍", power: 40 },
+    mx_species_rivulet: { base: "mx_skill_ice_1", name: "서리물보라", power: 40 },
+  };
   for (const species of project.database.monsterSpecies ?? []) {
-    const skillId = fromStart[species.id];
-    if (!skillId || !project.database.skills.some((s) => s.id === skillId)) continue;
+    const plan = fromStart[species.id];
+    const base = plan && project.database.skills.find((s) => s.id === plan.base);
+    if (!plan || !base) continue;
+    const skillId = `${plan.base}_${species.id.replace("mx_species_", "")}`;
+    if (!project.database.skills.some((s) => s.id === skillId)) {
+      project.database.skills.push({ ...structuredClone(base), id: skillId, name: plan.name, power: plan.power, description: (base.description ?? "").replace(base.name, plan.name).replace(/위력 \d+/u, `위력 ${plan.power}`) });
+    }
     const list = (species.skillsByLevel ??= []);
-    const entry = list.find((s) => s.skillId === skillId);
-    if (entry) entry.level = Math.min(entry.level, 5); else list.push({ level: 5, skillId });
+    const entry = list.find((s) => s.skillId === plan.base || s.skillId === skillId);
+    if (entry) { entry.skillId = skillId; entry.level = Math.min(entry.level, 5); } else list.push({ level: 5, skillId });
     list.sort((a, b) => a.level - b.level);
   }
   // 신전 보스(Lv6·6·7 셋)는 Lv10 안팎에 만난다. 위력 35 기술 하나로 셋을 치던 불·풀이 첫 도전에 졌다(r29) — 세 스타터 모두 위력 55 제 타입 기술을 Lv11 → Lv10 에 배운다.
