@@ -123,7 +123,7 @@ export default {
     { id: "konbini-jihu", note: "편의점의 지후", ops: [...talkTo("fl_konbini", cooler, "up"), toChoice(), shotPause(500)], shot: true },
     { id: "flashback", note: "회상 — 방송실", ops: [...pick(pickC4), { kind: "pressUntilJs", key: "Enter", fn: "() => /성하고등학교/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 30, settleMs: 600 }, shotPause(1500)], shot: true },
     { id: "flashback-2", note: "회상 — 어린 지후", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /서성이는/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 30, settleMs: 600 }, shotPause(900)], shot: true },
-    { id: "wednesday", note: "수요일 야근 — 실수", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /지난주 버전/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 40, settleMs: 600 }, shotPause(900)], shot: true },
+    { id: "wednesday", note: "수요일 야근 — 실수", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /수정 전 버전/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 40, settleMs: 600 }, shotPause(900)], shot: true },
     { id: "c5", note: "선택 5", ops: [toChoice(), ...pick(pickC5), shotPause(600)], shot: true },
     { id: "c5b", note: "수요일 밤 — 시안 이야기(선택지)", ops: [toChoice(), shotPause(500)], shot: true },
     { id: "after-c5b", note: "시안 이야기 결과", ops: [...pick(A ? 0 : 1), untilStage(9), shotPause(600)], shot: true },
