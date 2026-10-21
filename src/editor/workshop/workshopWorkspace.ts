@@ -124,26 +124,35 @@ function signature(s: WorkshopSession): string {
     s.rounds.map((r) => [r.id, r.runs.map((run) => [run.status, run.attempt, run.verdict?.verdict, run.grid?.cells.length])]), s.engine.status()]);
 }
 
-const STEPS = ["무엇을 그릴지 적기", "후보 그리기", "한 장 고르기", "칩셋에 넣기"] as const;
+const STEPS = ["무엇을 그릴지 적기", "후보 그리기", "한 장 고르기", "칩셋에 넣기", "맵에 놓기"] as const;
 
-/** 지금 단계(1~4, 다 했으면 5) — 폼·기물 상태·고른 그림이 칩셋에 들어갔는지로 정한다. */
+/** 지금 단계(1~5) — 폼·기물 상태·고른 그림이 칩셋에 들어갔는지로 정한다. 칩셋에 넣었으면 5(맵에 놓기)가 지금 할 일이다. */
 function currentStep(s: WorkshopSession, item: WorkshopItem | null): number {
   if (showForm || !item) return 1;
   const state = itemState(item.key, s.rounds, s.picks);
-  if (state === "idle" || state === "drawing") return 2;
-  if (state === "choose") {
-    // 이번 판이 한 장도 못 그렸으면(한도·로그인 막힘 등) 고를 것이 없다 — 「후보 그리기」에 머문다.
-    const round = latestRound(item.key, s.rounds);
-    return round && round.runs.length > 0 && round.runs.every((r) => !r.grid) ? 2 : 3;
-  }
+  // 한 장도 못 그린 판(계정 한도·로그인 막힘)은 「후보 그리기」에서 멈춘다 — 고를 것이 없다.
+  if (state === "idle" || state === "drawing" || state === "stopped") return 2;
+  if (state === "choose") return 3;
   const pick = s.picks.find((p) => p.itemKey === item.key);
   const grid = pick ? s.rounds.find((r) => r.id === pick.roundId)?.runs.find((r) => r.letter === pick.letter)?.grid : undefined;
   return grid && isWorkshopPickBaked(item, grid) ? 5 : 4;
 }
 
+/** 줄 목록의 상태 글 — 고른 그림이 이미 칩셋에 들어갔으면 「칩셋에 넣음」. */
+function queueLabel(s: WorkshopSession, item: WorkshopItem): string {
+  const state = itemState(item.key, s.rounds, s.picks);
+  if (state === "picked") {
+    const pick = s.picks.find((p) => p.itemKey === item.key);
+    const grid = pick ? s.rounds.find((r) => r.id === pick.roundId)?.runs.find((r) => r.letter === pick.letter)?.grid : undefined;
+    if (grid && isWorkshopPickBaked(item, grid)) return "칩셋에 넣음";
+  }
+  return ITEM_STATE_LABELS[state];
+}
+
 /** 단계 띠 + 그리는 동안의 진행 막대. 사람이 지금 무엇을 기다리는지·무엇을 할 차례인지 한눈에. */
 function stepper(s: WorkshopSession, item: WorkshopItem | null, eta: number): HTMLElement {
   const step = currentStep(s, item);
+  const stopped = !!item && !showForm && itemState(item.key, s.rounds, s.picks) === "stopped";
   const round = item && !showForm ? latestRound(item.key, s.rounds) : null;
   const drawing = item && !showForm && itemState(item.key, s.rounds, s.picks) === "drawing" && round;
   const progress = drawing ? roundProgress(drawing) : null;
@@ -154,10 +163,14 @@ function stepper(s: WorkshopSession, item: WorkshopItem | null, eta: number): HT
         class: "workshop-stepper", attrs: { "aria-label": "만드는 순서" }, dataset: { testid: "workshop-stepper", step: String(step) },
         children: STEPS.map((label, index) => {
           const n = index + 1;
-          const state = n < step ? "is-done" : n === step ? "is-current" : "is-todo";
+          const state = n < step ? "is-done" : n === step ? (stopped ? "is-current is-blocked" : "is-current") : "is-todo";
           return el("li", {
             class: `workshop-step ${state}`, attrs: n === step ? { "aria-current": "step" } : {},
-            children: [el("span", { class: "workshop-step-no", text: n < step ? "✓" : String(n), attrs: { "aria-hidden": "true" } }), el("span", { class: "workshop-step-label", text: label })],
+            children: [
+              el("span", { class: "workshop-step-no", text: n < step ? "✓" : n === step && stopped ? "!" : String(n), attrs: { "aria-hidden": "true" } }),
+              el("span", { class: "workshop-step-label", text: label }),
+              ...(n === step && stopped ? [el("span", { class: "workshop-step-flag", text: "멈춤" })] : []),
+            ],
           });
         }),
       }),
@@ -211,7 +224,7 @@ function render(force: boolean): void {
           targetSwitch(s),
           el("span", {
             class: "workshop-progress", dataset: { testid: "workshop-progress" },
-            text: status.running + status.queued > 0 ? `그리는 중 ${status.running} · 대기 ${status.queued} · 약 ${eta}분 남음` : "쉬는 중",
+            text: status.running + status.queued > 0 ? `후보 ${status.running}장 그리는 중 · ${status.queued}장 대기 · 약 ${eta}분 남음` : "쉬는 중",
           }),
           el("label", {
             class: "workshop-concurrency",
@@ -259,7 +272,7 @@ function render(force: boolean): void {
                     class: "workshop-item" + (item.key === selectedKey ? " is-selected" : ""), attrs: { type: "button" },
                     dataset: { testid: "workshop-item", key: item.key, state: itemState(item.key, s.rounds, s.picks) },
                     on: { click: () => { selectedKey = item.key; showForm = false; view.selected = 0; view.rejectFor = null; render(true); } },
-                    children: [el("span", { class: "workshop-item-title", text: item.title }), el("span", { class: "workshop-item-meta", text: `${item.category} · ${ITEM_STATE_LABELS[itemState(item.key, s.rounds, s.picks)]}` })],
+                    children: [el("span", { class: "workshop-item-title", text: item.title }), el("span", { class: "workshop-item-meta", text: `${item.category} · ${queueLabel(s, item)}` })],
                   })],
                 })),
               }),

@@ -98,7 +98,8 @@ export function describeCompanionProblem(problem: CompanionProblem): string {
     case "token":
       return `AI 연결이 끊겼습니다(${problem.status}, ${problem.route}). 로컬 서버가 다시 시작돼 연결 정보가 바뀐 것 같습니다. 「다시 연결」을 눌러 주세요.`;
     case "login":
-      return `AI 계정 로그인이 만료됐거나 취소됐습니다(${problem.status}): ${problem.detail}. AI 설정에서 그 계정으로 다시 로그인해 주세요.`;
+      // 공급자 원문(영어 오류 문장)은 보이지 않는다 — 사람이 할 일만. 원문은 problem.detail 로 진단 화면에 남는다.
+      return "AI 계정 로그인이 만료됐거나 취소됐어요. AI 설정에서 그 계정으로 다시 로그인해 주세요.";
     case "denied":
       return `AI 요청이 거절됐습니다(${problem.status}, ${problem.route})${problem.detail ? `: ${problem.detail}` : ""}`;
     case "route":

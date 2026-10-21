@@ -211,10 +211,10 @@ function terrainRequestStep(): HTMLElement {
   ], "workshop-gen-step-request");
 }
 
-/** 미리 보기 크기: 작은 도트는 정수 배율(최대 4배, 360×220 상자 안), 상자보다 큰 그림은 상자에 맞게 줄인다. */
-function fitPreview(img: HTMLImageElement): void {
+/** 미리 보기 크기: 작은 도트는 정수 배율(최대 4배, 상자 안), 상자보다 큰 그림은 상자에 맞게 줄인다. 잘라 보이지 않는다. */
+function fitPreview(img: HTMLImageElement, boxW = 360, boxH = 220): void {
   const w = Math.max(1, img.naturalWidth), h = Math.max(1, img.naturalHeight);
-  const fit = Math.min(360 / w, 220 / h);
+  const fit = Math.min(boxW / w, boxH / h);
   if (fit >= 1) {
     const k = Math.min(4, Math.floor(fit));
     img.style.width = `${w * k}px`;
@@ -298,16 +298,23 @@ function importStep(generator: LocalGenerator, n: number): HTMLElement {
         ],
       }),
       ...(pack.manifest.credits ? [el("p", { class: "workshop-gen-credits", attrs: { translate: "no" }, text: pack.manifest.credits })] : []),
+      // 그림이 많으면(캐릭터 묶음 38장 등) 같은 크기 칸 11개 + 「나머지 N장」 — 칸 안에 통째로 보이고 잘리지 않는다.
+      // 한두 장이면 크게 한 장씩.
       el("div", {
-        class: "workshop-gen-previews",
+        class: "workshop-gen-previews" + (previews.length > 2 ? " is-grid" : ""),
         children: previews.length
-          ? previews.map((preview) => el("figure", {
-            children: [el("img", {
-              attrs: { src: preview.url, alt: preview.name },
-              // 도트 그림은 정수 배율로만 키운다(최대 360px 폭, 4배까지)
-              on: { load: (event) => fitPreview(event.target as HTMLImageElement) },
-            }), el("figcaption", { attrs: { translate: "no" }, text: preview.name })],
-          }))
+          ? [
+            ...(previews.length > 12 ? previews.slice(0, 11) : previews).map((preview) => el("figure", {
+              children: [el("div", {
+                class: "workshop-gen-preview-art",
+                children: [el("img", {
+                  attrs: { src: preview.url, alt: preview.name },
+                  on: { load: (event) => (previews.length > 2 ? fitPreview(event.target as HTMLImageElement, 128, 104) : fitPreview(event.target as HTMLImageElement)) },
+                })],
+              }), el("figcaption", { attrs: { translate: "no", title: preview.name }, text: preview.name })],
+            })),
+            ...(previews.length > 12 ? [el("figure", { class: "is-more", children: [el("div", { class: "workshop-gen-preview-art", text: `+${previews.length - 11}` }), el("figcaption", { text: `나머지 ${previews.length - 11}장도 같이 들어가요` })] })] : []),
+          ]
           : [el("p", { class: "workshop-item-meta", text: "미리 볼 그림이 없어요." })],
       }),
       el("div", { class: "workshop-gen-add-row", children: [add, el("span", { class: "workshop-item-meta", text: "이 게임에만 들어가요. 공용(스토어)에 올리려면 생성기에서 검사를 거쳐 올려 주세요." })] }),
@@ -337,7 +344,7 @@ function importStep(generator: LocalGenerator, n: number): HTMLElement {
     children: [
       el("strong", { text: "묶음 폴더를 여기에 끌어 놓으세요" }),
       el("span", { class: "workshop-drop-or", text: "또는 눌러서 폴더 고르기" }),
-      el("span", { class: "workshop-drop-hint", text: `${generator} pack 이 만든 폴더예요. 안에 manifest.json 과 blobs 폴더가 있어요.` }),
+      el("span", { class: "workshop-drop-hint", text: `${generator} 가 마지막에 만든 묶음 폴더를 통째로 넣어요.` }),
       el("span", { class: "workshop-drop-again", text: "다른 묶음 폴더를 끌어 놓거나 눌러서 고르기" }),
     ],
     on: {

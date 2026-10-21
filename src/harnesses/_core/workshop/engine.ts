@@ -288,7 +288,9 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       if (status === 401 || status === 403) blocked = BLOCKED_AUTH;
       else if (status === 429) blocked = BLOCKED_QUOTA;
       run.status = "failed";
-      run.error = isQuotaExhausted(error) ? quotaRunError(error) : error instanceof Error ? error.message : String(error);
+      run.error = isQuotaExhausted(error) ? quotaRunError(error)
+        : status === 401 || status === 403 ? "로그인 만료 · AI 설정에서 다시 로그인"
+          : error instanceof Error ? error.message : String(error);
     } finally {
       run.finishedAt = now();
       await save(round);

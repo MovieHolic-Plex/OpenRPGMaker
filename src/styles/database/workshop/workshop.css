@@ -45,7 +45,7 @@
 
 /* 단계 띠 — 지금 단계만 진하게. 숫자는 실제 순서라서 쓴다. */
 .workshop-stepper-wrap { display: grid; gap: var(--space-2); }
-.workshop-stepper { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-2); counter-reset: none; }
+.workshop-stepper { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-2); counter-reset: none; }
 .workshop-step { position: relative; display: flex; align-items: center; gap: var(--space-2); min-width: 0; padding: var(--space-2) 10px; border-radius: var(--radius-s); background: var(--bg-inset); color: var(--text-3); font-size: 12.5px; }
 .workshop-step-no { flex: none; display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: var(--radius-pill); background: var(--bg-raised); border: 1px solid var(--border-default); font-size: 11.5px; font-weight: var(--font-weight-semibold, 600); }
 .workshop-step-label { min-width: 0; overflow-wrap: anywhere; line-height: 1.3; }
@@ -53,6 +53,9 @@
 .workshop-step.is-done .workshop-step-no { background: var(--success); border-color: transparent; color: #fff; }
 .workshop-step.is-current { color: var(--text-1); background: var(--accent-muted); box-shadow: inset 0 0 0 1px var(--accent-border); font-weight: var(--font-weight-semibold, 600); }
 .workshop-step.is-current .workshop-step-no { background: var(--accent); border-color: transparent; color: #fff; }
+.workshop-step.is-blocked { background: color-mix(in srgb, var(--warning) 12%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--warning) 45%, transparent); }
+.workshop-step.is-blocked .workshop-step-no { background: var(--warning); }
+.workshop-step-flag { margin-left: auto; padding: 0 6px; border-radius: var(--radius-pill); background: var(--warning); color: #fff; font-size: 11px; }
 .workshop-drawing { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
 .workshop-bar { flex: 1 1 220px; max-width: 420px; height: 8px; border-radius: var(--radius-pill); background: var(--bg-active); overflow: hidden; }
 .workshop-bar span { display: block; height: 100%; border-radius: inherit; background: var(--accent); transition: width 0.4s ease; }
@@ -84,7 +87,7 @@
 .workshop-card-facts { display: flex; flex-wrap: wrap; gap: var(--space-1); font-size: 11px; }
 .workshop-chip { padding: 1px 8px; border-radius: var(--radius-pill); background: var(--bg-active); color: var(--text-2); font-size: 11.5px; white-space: nowrap; }
 .workshop-chip.is-pass { background: var(--success-muted); color: var(--success); }
-.workshop-chip.is-fail { background: var(--danger-muted); color: var(--danger); white-space: normal; }
+.workshop-chip.is-fail { background: var(--danger-muted); color: var(--danger); white-space: normal; border-radius: var(--radius-s); padding: 3px 8px; line-height: 1.4; }
 .workshop-card-actions { display: flex; gap: var(--space-1); flex-wrap: wrap; }
 .workshop .workshop-card-actions button { min-height: 28px; padding: 3px 10px; font-size: 12px; }
 .workshop .workshop-card-actions .workshop-pick { border-color: var(--accent-border); color: var(--accent-active); font-weight: var(--font-weight-semibold, 600); }
@@ -132,8 +135,13 @@
 .workshop-gen-pack-head { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
 .workshop-gen-pack-head strong { font-size: 14px; }
 .workshop-gen-credits { margin: 0; font-size: 11.5px; line-height: 1.45; color: var(--text-3); }
-.workshop-gen-previews { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-3); max-height: 360px; overflow: auto; padding: var(--space-3); border-radius: var(--radius-m); background: #967a5a; }
-.workshop-gen-previews figure { margin: 0; display: grid; gap: var(--space-1); justify-items: center; color: #1b1d22; font-size: 11px; }
+.workshop-gen-previews { display: flex; flex-wrap: wrap; justify-content: center; align-items: end; gap: var(--space-3); padding: var(--space-3); border-radius: var(--radius-m); background: #967a5a; }
+.workshop-gen-previews.is-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(136px, 1fr)); align-items: start; }
+.workshop-gen-previews figure { margin: 0; display: grid; gap: var(--space-1); justify-items: center; min-width: 0; color: #1b1d22; font-size: 11px; text-align: center; }
+.workshop-gen-previews figcaption { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.workshop-gen-previews.is-grid .workshop-gen-preview-art { display: grid; place-items: center; width: 128px; height: 104px; }
+.workshop-gen-previews .is-more .workshop-gen-preview-art { border: 1px dashed rgb(27 29 34 / 35%); border-radius: var(--radius-s); font-size: 20px; font-weight: 600; }
+.workshop-gen-previews figure.is-more figcaption { white-space: normal; }
 .workshop-gen-previews img { max-width: none; image-rendering: pixelated; }
 .workshop-gen-add-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
 .workshop-gen-add-row .workshop-item-meta { flex: 1 1 280px; }
@@ -174,3 +182,6 @@
 .left-workshop-art.is-empty { height: 56px; background: var(--bg-inset); border-bottom: 1px dashed var(--border-default); }
 .left-workshop-art.is-empty span { font-size: 11.5px; color: var(--text-3); }
 .workshop-gen-ref input { width: 96px; }
+
+/* 한국어는 낱말 중간에서 줄을 바꾸지 않는다(「그림 느|낌」 방지). 긴 영문·경로는 overflow-wrap 이 끊는다. */
+.workshop, .left-workshop-pane { word-break: keep-all; overflow-wrap: anywhere; }

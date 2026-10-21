@@ -7,11 +7,12 @@
 import type { WorkshopItem, WorkshopRun } from "@/harnesses/_core/workshop/types";
 import { REJECT_REASONS } from "@/harnesses/interior-props/editor/prompts";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 import { gridDataUrl } from "./pixels";
 import { armWorkshopStamp, bakeWorkshopPick, isWorkshopPickBaked, workshopTargetTileset } from "./workshopBake";
 import { store as projectStore } from "@/project/store";
 import type { WorkshopSession } from "./workshopSession";
-import { latestRound, roundProgress } from "./workshopStatus";
+import { latestRound } from "./workshopStatus";
 
 export type RoundViewState = { selected: number; zoom: "fit" | "big"; rejectFor: string | null };
 
@@ -55,7 +56,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     ? [el("p", { class: "workshop-blocked", attrs: { role: "alert" }, text: `작업이 실패했습니다: ${lastError.message}` })] : []);
 
   async function startRound(note: string): Promise<void> {
-    await session.engine.startRound(item, { note });
+    await session.engine.startRound(item, { note, count: drawCount });
     state.selected = 0;
     await session.reload();
   }
@@ -79,13 +80,15 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
   const note = el("textarea", { class: "workshop-note", attrs: { placeholder: "더 바라는 점(선택) — 예: 나무를 더 밝게, 윗판을 두껍게", "aria-label": "더 바라는 점" } }) as HTMLTextAreaElement;
   note.value = notes.get(item.key) ?? "";
   note.addEventListener("input", () => { notes.set(item.key, note.value); });
+  // 다시 그리기는 지난 판에서 고른 장 수 그대로(폼에서 2장을 골랐으면 2장) — 단추 글과 실제 장 수가 같아야 한다.
+  const drawCount = round ? Math.max(1, round.runs.length) : session.runner.candidates;
   const startBlock = el("div", {
     class: "workshop-start",
     children: [
       note,
       el("button", {
         class: round ? "" : "workshop-primary", attrs: { type: "button" }, dataset: { testid: "workshop-start-round" },
-        text: round ? `후보 ${session.runner.candidates}장 다시 그리기` : `후보 ${session.runner.candidates}장 그리기`,
+        text: round ? `후보 ${drawCount}장 다시 그리기` : `후보 ${drawCount}장 그리기`,
         on: { click: () => act(() => startRound(noteText())) },
       }),
     ],
@@ -102,7 +105,14 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     const action = baked
       ? el("button", {
         class: "workshop-primary", text: "맵에 놓기", attrs: { type: "button" }, dataset: { testid: "workshop-place" },
-        on: { click: () => { const reason = armWorkshopStamp(item, grid); if (reason) placeNote.textContent = reason; else close(); } },
+        on: {
+          click: () => {
+            const reason = armWorkshopStamp(item, grid);
+            if (reason) { placeNote.textContent = reason; return; }
+            close();
+            toast(`「${item.title}」 붓을 들었어요. 맵에서 놓을 곳을 누르세요. Esc 로 내려놓아요.`, "info");
+          },
+        },
       })
       : el("button", {
         class: "workshop-primary", text: `고른 ${pick!.letter} 를 프로젝트 칩셋에 넣기`, attrs: { type: "button" }, dataset: { testid: "workshop-bake" },
@@ -136,7 +146,6 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
       el("h3", { text: item.title }),
       el("span", { class: "workshop-chip", text: `${item.width}×${item.height}px` }),
       el("span", { class: "workshop-chip", text: item.category }),
-      ...(round ? [el("span", { class: "workshop-chip", text: `판 ${roundProgress(round).done}/${roundProgress(round).total}` })] : []),
       ...(pick ? [el("span", { class: "workshop-chip is-pass", text: `고름: ${pick.letter}` })] : []),
       el("span", { class: "workshop-round-desc", text: item.description }),
     ],
@@ -172,7 +181,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
         ...(run.note ? [el("div", { class: "workshop-item-meta", text: run.note })] : []),
         el("div", {
           class: "workshop-card-actions",
-          children: run.grid ? [
+          children: run.grid && (run.status === "done" || run.status === "failed") ? [
             el("button", { class: picked ? "workshop-pick is-picked" : "workshop-pick", text: picked ? "고름 ✓" : "고르기", attrs: { type: "button" }, dataset: { testid: "workshop-pick" }, on: { click: (e) => { e.stopPropagation(); act(() => choose(run)); } } }),
             el("button", { text: "버리기", attrs: { type: "button" }, dataset: { testid: "workshop-reject" }, on: { click: (e) => { e.stopPropagation(); state.rejectFor = run.letter; rerender(); } } }),
             el("button", { text: "이 장 다시", attrs: { type: "button" }, on: { click: (e) => { e.stopPropagation(); act(() => session.engine.redrawRun(round!.id, run.letter, noteText())); } } }),

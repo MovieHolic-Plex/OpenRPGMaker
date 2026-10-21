@@ -77,7 +77,7 @@ function generatorCard(generator: WorkshopGenerator, ai: { ready: boolean; hostO
     actions.push(button("만든 묶음 가져오기", "workshop-gen-import-object-gen", () => openGen("object-gen"), actions.length === 0));
   } else if (generator.id === "char-gen" || generator.id === "tile-gen") {
     const id = generator.id;
-    actions.push(button("만들고 가져오기", `workshop-gen-open-${id}`, () => openGen(id), true));
+    actions.push(button("부탁하고 가져오기", `workshop-gen-open-${id}`, () => openGen(id), true));
   }
   return el("li", {
     class: `left-workshop-card is-${generator.status}`,
