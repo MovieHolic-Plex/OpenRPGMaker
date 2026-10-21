@@ -53,6 +53,9 @@ export const IMAGE_PURPOSES = {
   "character-appearance": { kind: "generative", label: "캐릭터 외형 초상·흉상" },
   "interview-scene": { kind: "generative", label: "새 게임 인터뷰 배경" },
   "concept-thumb": { kind: "generative", label: "컨셉 카드 썸네일" },
+  // 공방 기물의 「참고 그림」(object-gen ref 단계, 2026-10-21): 그리는 모델이 모양만 보는 그림이다. 화소가 되지 않고 설치·저장되지 않는다
+  // (판 임시 기록에만). 도트 자체는 여전히 아래 map-object·interior-prop 용도로 텍스트 모델이 찍는다.
+  "object-form-reference": { kind: "generative", label: "기물 모양 참고 그림(설치 안 됨)" },
   // ── 텍스트 모델(도트 저작 모델): 격자 문자열로 찍는 도트 ───────────────────
   "tileset": { kind: "dot-text", label: "타일셋 조각" },
   "charset": { kind: "dot-text", label: "캐릭터셋(걷기 칩)" },

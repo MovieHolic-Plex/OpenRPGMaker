@@ -29,6 +29,10 @@ export interface ObjectGenRequest {
   readonly base: { readonly x: number; readonly y: number } | null;
   /** 원래 사용자 요청(후속 턴에 그대로 돌려준다) */
   readonly need: string;
+  /** 놓을 맵의 배경(나라·시대) 한 줄 — 칩셋에서 정한다. 검수가 「그 배경에서 그 물건으로 읽히나」를 본다. 옛 요청엔 없다. */
+  readonly setting?: string;
+  /** 3/4 관문 종류(조언 배지용, object-gate rules.ts). 옛 요청엔 없다. */
+  readonly gateKind?: string;
 }
 
 export function isObjectGenRequest(value: unknown): value is ObjectGenRequest {
@@ -40,8 +44,11 @@ export function objectGenLimits(harnessId: ObjectGenHarness): { readonly maxW: n
   return harnessId === "interior-props" ? { maxW: 3, maxH: 2, maxRise: 32 } : { maxW: 4, maxH: 3, maxRise: 48 };
 }
 
-/** 놓는 방식별 솟는 높이 기본값(px) — 공방 폼(workshopItemForm.ts)과 같다. */
-export const DEFAULT_RISE: Readonly<Record<ObjectGenKind, number>> = { floor: 16, wall: 16, hang: 0, flat: 0 };
+/**
+ * 조수 요청의 솟는 높이 기본값(px) = 0: 발밑 칸 안에 다 들어가는 크기. 1×1 을 부탁했으면 한 칸 높이다.
+ * 공방 폼(workshopItemForm.ts)은 사람이 칸을 보며 정하니 16 을 그대로 쓴다. 2026-10-21 VQA: 1×1 벌통이 기본 16 때문에 두 칸 높이로 나왔다.
+ */
+export const DEFAULT_RISE: Readonly<Record<ObjectGenKind, number>> = { floor: 0, wall: 0, hang: 0, flat: 0 };
 
 /** 요청 → 공방 새 기물 정의. 맵 기물이면 그 칩셋 id 와 칩셋에서 뽑은 팔레트(#rrggbb)를 넣는다. */
 export function objectGenDefinition(request: ObjectGenRequest, takenKeys: ReadonlySet<string>, palette: readonly string[]): ItemDefinition {
@@ -56,6 +63,8 @@ export function objectGenDefinition(request: ObjectGenRequest, takenKeys: Readon
     category: request.harnessId === "map-objects" ? request.tilesetName : "조수 요청",
     use: [],
     refs: [],
+    ...(request.setting ? { setting: request.setting } : {}),
+    ...(request.gateKind ? { gateKind: request.gateKind } : {}),
   };
   return request.harnessId === "map-objects" ? { ...base, tilesetId: request.tilesetId, palette } : base;
 }

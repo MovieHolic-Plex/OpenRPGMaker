@@ -56,8 +56,32 @@ async function tilesetSource(tilesetId: string): Promise<WorkshopTilesetSource |
   return { id: tileset.id, name: tileset.name, tileSize: tileset.tileSize, tilesPerRow: tileset.tilesPerRow, image, objects };
 }
 
+/** dev 빌드 QA 용: window.__oprnWorkshopImage(prompt) 가 있으면 참고 그림을 그것으로 만든다(시험 구동기가 자기 그림 경로로 잇는다 — 주소·키는 코드에 없다). */
+export const WORKSHOP_FAKE_IMAGE_KEY = "__oprnWorkshopImage";
+
+/**
+ * 참고 그림(object-gen ref 단계) — 사용자 자기 그림 계정(설정 「이미지」 칸, 용도 object-form-reference). 그림 계정이 없으면 null(참고 없이 그린다).
+ * 돌려준 그림은 판 기록에만 둔다. 칩셋·스토어·공용으로 가지 않는다.
+ */
+async function referenceImage(prompt: string, signal: AbortSignal): Promise<{ dataUrl: string; source: string } | null> {
+  if (import.meta.env.DEV) {
+    const fake = (window as unknown as Record<string, unknown>)[WORKSHOP_FAKE_IMAGE_KEY];
+    if (typeof fake === "function") {
+      const dataUrl = await (fake as (prompt: string) => Promise<string | null>)(prompt);
+      return dataUrl ? { dataUrl, source: "dev-hook" } : null;
+    }
+  }
+  const [{ generateAiImage }, { loadAiConfig }, { resolveImageRoute }, { companionCredentialMissing }] = await Promise.all([
+    import("@/ai/imageGenerationClient"), import("@/ai/llmClient"), import("@/ai/imageRoute"), import("@/ai/chatgptOAuthClient"),
+  ]);
+  const route = resolveImageRoute("object-form-reference", loadAiConfig());
+  if (route.kind !== "generative" || await companionCredentialMissing(route.providerId)) return null;
+  const image = await generateAiImage({ prompt, purpose: "object-form-reference", signal });
+  return { dataUrl: image.dataUrl, source: `${image.provider}/${image.model}` };
+}
+
 export function browserWorkshopEnv(): WorkshopEnv {
-  return { loadImage, encodePng, tilesetSource, assetUrl: (path) => `${import.meta.env.BASE_URL}${path}` };
+  return { loadImage, encodePng, tilesetSource, referenceImage, assetUrl: (path) => `${import.meta.env.BASE_URL}${path}` };
 }
 
 const cache = new Map<string, string>();
