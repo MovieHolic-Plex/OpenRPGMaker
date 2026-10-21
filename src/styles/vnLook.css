@@ -395,3 +395,15 @@
 .oprn-status-menu.main-menu[data-menu-skin="pixel"][data-vn-theme="match"] :is(.status-menu-party-overview, .status-menu-primary-dock, .status-menu-detail, .status-menu-party, .status-menu-footer, .status-menu-gold, .status-menu-time, .status-menu-location) {
   border-radius: var(--vn-radius);
 }
+
+/* 고정 틀 선택지(dialogue.css 끝)의 오버레이 여백이 bar·card 레이아웃 여백을 덮어 틀이 좌우 10px 줄던 것을 되돌린다 —
+   선택지 동안의 틀은 바로 앞 대사 상자와 같은 너비·바닥이어야 한다(2026-10-22, 첫사랑·bar-tab·night-glass·office-bar 실측). */
+.dialogue-overlay[data-vn-layout="bar"][data-vn-look][data-vn-look].choices-active.choices-framed {
+  padding-inline: 0;
+}
+.dialogue-overlay[data-vn-layout="bar"][data-vn-look][data-vn-look].choices-active.choices-framed.position-bottom {
+  padding-bottom: 0;
+}
+.dialogue-overlay[data-vn-layout="bar"][data-vn-look][data-vn-look].choices-active.choices-framed.position-top {
+  padding-top: 0;
+}

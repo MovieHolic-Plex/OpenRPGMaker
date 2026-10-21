@@ -461,7 +461,9 @@
   --dlg-select-bg: rgb(220, 20, 40);
 }
 
-.dialogue-overlay[data-dialogue-style="skew"] .dialogue-box:not(.transparent) {
+/* 선택지 칸만 사다리꼴로 자른다. 대사 상자는 이름표 유무와 관계없이 같은 기울임 — 화자 줄만 기울고 내레이션은
+   잘린 사다리꼴이던 때는 줄마다 창 오른쪽 끝이 6.5px 들락거렸다(2026-10-22 고정 틀 행렬). */
+.dialogue-overlay[data-dialogue-style="skew"] .dialogue-box.choices:not(.transparent) {
   clip-path: polygon(0 6%, 100% 0, 99% 100%, 1% 94%);
 }
 
@@ -470,13 +472,13 @@
   transform: skewX(-12deg) rotate(-3deg);
 }
 
-/* clip-path 는 위로 튀어나온 이름표까지 자른다 — 이름이 있을 때는 자르지 않는다. */
-.dialogue-overlay[data-dialogue-style="skew"] .dialogue-box.has-speaker:not(.transparent) {
+/* clip-path 는 위로 튀어나온 이름표까지 자르므로 대사 상자는 자르지 않고 기울인다. */
+.dialogue-overlay[data-dialogue-style="skew"] .dialogue-box:not(.transparent):not(.choices) {
   clip-path: none;
   transform: skewX(-4deg);
 }
 
-.dialogue-overlay[data-dialogue-style="skew"] .dialogue-box.has-speaker .dialogue-content {
+.dialogue-overlay[data-dialogue-style="skew"] .dialogue-box:not(.choices) .dialogue-content {
   transform: skewX(4deg);
 }
 

@@ -21,12 +21,12 @@ def summarize(path):
         last = s["frames"][-1]
         tops = {f["top"] for f in s["frames"] if f["phase"] in ("shown", "")}
         rows.append({"kind": last["kind"], "face": last["face"], "pos": last["pos"], "text": last["text"],
-                     "top": last["top"], "bottom": last["bottom"], "height": round(last["bottom"] - last["top"], 1),
+                     "top": last["top"], "bottom": last["bottom"], "left": last.get("left"), "right": last.get("right"), "height": round(last["bottom"] - last["top"], 1),
                      "plateTop": last["plateTop"], "reason": last.get("reason"), "panel": last.get("panel"), "framed": last.get("framed"), "frames": len(s["frames"]), "steadyTopsSeen": sorted(tops)})
     moves = []
     for a, b in zip(rows, rows[1:]):
         moves.append({"from": f'{a["kind"]}{"+face" if a["face"] else ""}', "to": f'{b["kind"]}{"+face" if b["face"] else ""}',
-                      "dTop": round(b["top"] - a["top"], 1), "dBottom": round(b["bottom"] - a["bottom"], 1), "toPos": b["pos"]})
+                      "dTop": round(b["top"] - a["top"], 1), "dBottom": round(b["bottom"] - a["bottom"], 1), "dLeft": round((b.get("left") or 0) - (a.get("left") or 0), 1), "dRight": round((b.get("right") or 0) - (a.get("right") or 0), 1), "toPos": b["pos"]})
     return {"frames": len(log), "lines": rows, "moves": moves}
 
 if __name__ == "__main__":
