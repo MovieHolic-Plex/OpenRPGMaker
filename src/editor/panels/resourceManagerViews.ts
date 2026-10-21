@@ -5,7 +5,7 @@ import { listMonsterResources, type MonsterResource } from "@/assets/monsterReso
 import { EASYRPG_MONSTER_ASSETS } from "@/assets/easyrpgRtp";
 import { SCARLOXY_MONSTER_ASSETS } from "@/assets/scarloxyPack";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
-import { hasOpenModalLayer, isTopModal } from "@/editor/ui/modalStack";
+import { hasOpenModalLayer, isTopModal, registerModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
@@ -707,6 +707,8 @@ function resourceCommandPanel(
       },
     }) as HTMLInputElement;
 
+    // 모달 스택에 올린 뒤에는 스택이 돌려준 close 로 닫는다 — 그래야 Escape 가 이 창만 닫고 부모 관리자는 남는다.
+    let closeUrlModal = (): void => backdrop.remove();
     const backdrop = el("div", {
       class: "database-modal-backdrop rm-url-backdrop",
       children: [
@@ -721,7 +723,7 @@ function resourceCommandPanel(
                   class: "database-modal-close",
                   text: "×",
                   attrs: { type: "button", title: "닫기" },
-                  on: { click: () => backdrop.remove() },
+                  on: { click: () => closeUrlModal() },
                 }),
               ],
             }),
@@ -735,7 +737,7 @@ function resourceCommandPanel(
                     class: "btn",
                     text: "취소",
                     attrs: { type: "button" },
-                    on: { click: () => backdrop.remove() },
+                    on: { click: () => closeUrlModal() },
                   }),
                   el("button", {
                     class: "btn primary",
@@ -746,7 +748,7 @@ function resourceCommandPanel(
                         const val = input.value.trim();
                         if (val && options.onImportUrl) {
                           options.onImportUrl(val);
-                          backdrop.remove();
+                          closeUrlModal();
                         }
                       },
                     },
@@ -760,6 +762,7 @@ function resourceCommandPanel(
     });
 
     document.body.append(backdrop);
+    closeUrlModal = registerModal(backdrop, () => backdrop.remove());
     input.focus();
   };
 
