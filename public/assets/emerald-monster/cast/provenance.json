@@ -5,36 +5,6 @@
   "hero": {
    "from": "/home/main/astra-qa/cast/hero/job2/out",
    "pictures": {
-    "bust-base.png": {
-     "size": [
-      98,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "1600f15025d3b9c63055a020188a1b480e08640cad04052060be89590d1edbff",
-     "pixelSha256": "2d0183b27df6e189ce1d24e9490839bf5a82b5711a0cdd02c7e784c6a3ad56ca"
-    },
-    "bust-happy.png": {
-     "size": [
-      98,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "9ab4bd00b32ca82cd103d3b18c315a22ead8ff0d967782c7e2b7c8815815a50d",
-     "pixelSha256": "be6006b0f5ab20c46ce10f3074af596cabe20b6480060c0c5152bbeab1ab58e8"
-    },
-    "bust-surprised.png": {
-     "size": [
-      98,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "5e05f34aacf7e1d00e76aecf40d38c6e197808e978dc4baf1efea5661c9a647c",
-     "pixelSha256": "894b733844f98a0eede5db5791c3655939a35e3cf52c48dfec0a29476002efcd"
-    },
     "full-base.png": {
      "size": [
       59,
@@ -77,46 +47,6 @@
   "mom": {
    "from": "/home/main/astra-qa/cast/mom/job/out",
    "pictures": {
-    "bust-angry.png": {
-     "size": [
-      93,
-      108
-     ],
-     "cell": 7,
-     "uniform": 1.0,
-     "sourceSha256": "542fd57a162629495abd9481cb317db91106c791fa232f96927efd5dcc0340d8",
-     "pixelSha256": "21c41814a4a1c415c4b75864ed717297341f74a06f725713884eb1fcb45838bc"
-    },
-    "bust-base.png": {
-     "size": [
-      93,
-      108
-     ],
-     "cell": 7,
-     "uniform": 1.0,
-     "sourceSha256": "abf4164185ad15f6724c460aa5a57fae74eb700417f7a775a9b0867ef068fcc3",
-     "pixelSha256": "5a40d0237d7b559b0869560918d5975d958cfbb6f46d5f590bb89a91c17d151e"
-    },
-    "bust-happy.png": {
-     "size": [
-      93,
-      108
-     ],
-     "cell": 7,
-     "uniform": 1.0,
-     "sourceSha256": "66cc853c7e09195903898c601af78113451a51e1e7463031dbbb7484f833a0b3",
-     "pixelSha256": "e9b840f697d9f7f7dff8f3d74577b2645504bee4f5e430d59ee18310f0ab0d31"
-    },
-    "bust-surprised.png": {
-     "size": [
-      93,
-      108
-     ],
-     "cell": 7,
-     "uniform": 1.0,
-     "sourceSha256": "076d554daea648b774db5941763e3ef70489729fa2781fb16d6600d1a4b80745",
-     "pixelSha256": "86452642d08ca9aaadc71a8a2b19eb113bdc0da4e0798a1ea5c7f491ee0252ec"
-    },
     "full-angry.png": {
      "size": [
       58,
@@ -169,46 +99,6 @@
   "professor": {
    "from": "/home/main/astra-qa/cast/professor/job2/out",
    "pictures": {
-    "bust-angry.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "1e28adbd11a8cd5494c284fa1af7d371827f9342e1ba1e2fe480412e044c645b",
-     "pixelSha256": "27036a38ae0f5b881493773409c6fe18877a0c2337448b1ed1a3338af9b43acf"
-    },
-    "bust-base.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "a1a6b113429d6088efcf8c76c01cf763411a194e6d3ad9fe4ce9f46c12037e43",
-     "pixelSha256": "138668caf648631f418acedbc9bf159ac1c0416099aac4ee8a60a512708eb53c"
-    },
-    "bust-happy.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "e415df0ff0f2561bdf817edd20a493a9d104c550d14d27438839f14c26a1e2a0",
-     "pixelSha256": "049da644fc8c83cf52d37d017aac493cb7c938f99841c1c42b85bf5522bf8dda"
-    },
-    "bust-surprised.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "19f72dc5c285907c0bea3c7caa165b0470a15bf10e2a94c236d0e602a69c4293",
-     "pixelSha256": "de08a94d6e6dce43fdbb4754888439f7c9111612842c62244a685af4705d5ddf"
-    },
     "full-angry.png": {
      "size": [
       61,
@@ -261,56 +151,6 @@
   "naru": {
    "from": "/home/main/astra-qa/cast/naru/job/out",
    "pictures": {
-    "bust-angry.png": {
-     "size": [
-      103,
-      116
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "a77ff5969f0aaabc95eafb7fcfa20e9437dac22024e0701bd00b6d7273699b4f",
-     "pixelSha256": "b2580da81020854cca8ab1f6b5397f2fba4b345fdd8e0bfadf45e6ad8083aead"
-    },
-    "bust-base.png": {
-     "size": [
-      103,
-      116
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "098e0834636d3a280805f2e5b9febb725cb1352730777828192ee42eb3cdbf21",
-     "pixelSha256": "74b4e0217d03d771813514b7067b8900db0492035c8267edbd45ee936f9eb759"
-    },
-    "bust-happy.png": {
-     "size": [
-      103,
-      116
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "bb9b41fe0db07bc3bed2e26165ad8b206a28d7edc00f06fba58c42f0a31e4d98",
-     "pixelSha256": "ffc9fc30da71e6c7e222159f07d918c3ce5499b31b048e12550c4ccbdcc6bad5"
-    },
-    "bust-sad.png": {
-     "size": [
-      103,
-      116
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "13487c862483ae82b61ecfd73b4f3295c3076a9072ae4d42429c0d89c55ac662",
-     "pixelSha256": "0cf3e3703ebac2da0fc7712b13f479e9bafb54c0c93d02913cb4d49392b270a2"
-    },
-    "bust-surprised.png": {
-     "size": [
-      103,
-      116
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "359aa82f00111ec3d045785260344e2f5395f9594885d91023c3238a3b3627bc",
-     "pixelSha256": "5ed4b6684b38c9fdacec260294c5fcfe4e032c933f2676e4c4cf732585ca0656"
-    },
     "full-angry.png": {
      "size": [
       62,
@@ -374,46 +214,6 @@
   "nurse": {
    "from": "/home/main/astra-qa/cast/nurse2/job/out",
    "pictures": {
-    "bust-base.png": {
-     "size": [
-      88,
-      107
-     ],
-     "cell": 7,
-     "uniform": 1.0,
-     "sourceSha256": "7bd17390bddaed8ba35a653528ec92f776d9487c394388943448a8b74be842f3",
-     "pixelSha256": "6e6ba1b5aa4d75aab7e46ccf2611b75e38367f9774a68a56112ed038b0f82f98"
-    },
-    "bust-happy.png": {
-     "size": [
-      88,
-      107
-     ],
-     "cell": 7,
-     "uniform": 1.0,
-     "sourceSha256": "efef24ae8a7cbd43f7b82e3d7a0ee10ba4273faecdfaa573db2f8e16770d1568",
-     "pixelSha256": "3809b6ac00cf1e619a790050c18cf22dfa6bef6b44bfa6e738c6633c1f754183"
-    },
-    "bust-sad.png": {
-     "size": [
-      88,
-      107
-     ],
-     "cell": 7,
-     "uniform": 1.0,
-     "sourceSha256": "ded29567afc6cd8640ed56d22d7165c228defd61ad58947a6dbec3b2234fb2f6",
-     "pixelSha256": "0f50acde517c59fb98e492c58d103e12ab371a2d73e38d1fdd94ff422ec2fbcf"
-    },
-    "bust-surprised.png": {
-     "size": [
-      88,
-      107
-     ],
-     "cell": 7,
-     "uniform": 1.0,
-     "sourceSha256": "5387a2dd607d21d0d16024e1581099ec0a508281cb7d7bf9263ec51a8f9aa2fb",
-     "pixelSha256": "02d70c02fa4d41a29ea8df60d3bdff2544359993f356eba98c95df201251c13f"
-    },
     "full-base.png": {
      "size": [
       46,
@@ -466,56 +266,6 @@
   "yurim": {
    "from": "/home/main/astra-qa/cast/yurim/job/out",
    "pictures": {
-    "bust-angry.png": {
-     "size": [
-      97,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "f74419ac3bf8bc8ec7c4454b9fd0f0677aa9f68eb50b18d52c95cc794af922c1",
-     "pixelSha256": "0197302f034553c723dd6e3467c06772d88814cf3b008bfbc99f70fe8bfbe9bb"
-    },
-    "bust-base.png": {
-     "size": [
-      97,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "d7e130d4be7865972eb6da52db41aa9f10e3ccf863a16cac259a3ec9fbe5326a",
-     "pixelSha256": "f6c7b6900e525f59c1aadfeebc473b514b7eae1125f21ba2a84d4582f2947bfb"
-    },
-    "bust-happy.png": {
-     "size": [
-      97,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "0323dc0682bb4373f3a8d0c3ee14895a951522d404c31203ed25038f1ce89834",
-     "pixelSha256": "a9d07155567b125991f821f13ad712b80a271e953101a9d8f0a0da1c64b44333"
-    },
-    "bust-sad.png": {
-     "size": [
-      97,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "314f7eea219efb713d89d34a71aa8c70c41b1cae031b2f5066be5307bf1b8e7d",
-     "pixelSha256": "c63dacffed1219243dd661133feed69455c1443f07ac07ecea3c7495f8ddc027"
-    },
-    "bust-surprised.png": {
-     "size": [
-      97,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "9de6e7ed371a33faeb07c015f2d7e68c81f2172cf3b8340a7d59f4b0744e8791",
-     "pixelSha256": "6196dda75740baf34f70fa27dc1b81dfb7bc720854d57f102b07eba1ba9a7cb7"
-    },
     "full-angry.png": {
      "size": [
       54,
@@ -579,66 +329,6 @@
   "muyeong": {
    "from": "/home/main/astra-qa/cast/muyeong/job/out",
    "pictures": {
-    "bust-angry.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "64c873f9b12b94027b305c327915d1736a111b4d87d2df6dda6f640db8f8eb69",
-     "pixelSha256": "57cbbdf486de22b26d783d0c72a19a91dbd7fdc56e76bc5497d127275ec4ab93"
-    },
-    "bust-base.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "c1a46c92915e88cac7e51a550bc9ae6996efc5d760bb4777e6e8bd9aa70abbaa",
-     "pixelSha256": "74e50d630f03c9364561752d699c65b43758a9cccf96e5ad23266ac6e1e5b192"
-    },
-    "bust-happy.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "1cbd06591811f53e77112fb6993e6436b11bcd8644a1a57e656471619657070a",
-     "pixelSha256": "6311df8bd0c457e2e0fdc835e009b8db94bea06962b5201364292f12ea808cf1"
-    },
-    "bust-sad.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "4126aae1fb9f140c2dd4b4e3088d93422472d45ed507477f174879a1c1e70e3b",
-     "pixelSha256": "cd5c8bebfe44ece259bb5538098dd104fa889a174c40d617ad85a39285513c0a"
-    },
-    "bust-serious.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "20986d1ddf9608cc7cec431f02b87377f3e94e54256ae47b6e5a5f9acea2c2e1",
-     "pixelSha256": "c2bcda417f3ba6f500e2d12e0c57596d04cac40bc728157bda9ff7d8e2e6fd5c"
-    },
-    "bust-surprised.png": {
-     "size": [
-      107,
-      111
-     ],
-     "cell": 6,
-     "uniform": 1.0,
-     "sourceSha256": "94799ae8d3060c8d7570224d2d3c5931048c44c670dadc373067238ce2919970",
-     "pixelSha256": "76d23bd9b4ce35ed1f4586c6cdd4c976ae10305987e531665a0f512279946232"
-    },
     "full-angry.png": {
      "size": [
       62,
@@ -734,6 +424,214 @@
     128
    ],
    "pixelSha256": "79e4f57ecb2efad63b5c19fc746b0ac113ceb240ddb6ffe41e928716b94dc94b"
+  }
+ },
+ "handpixel_2026_10_21": {
+  "note": "사용자 2026-10-21: char-gen 흉상·트레이너 전신이 칩·전투 화면과 안 맞음 → 흉상(bust-*)과 전투 트레이너(battle-trainers/astra_*)를 손 도트로 다시 찍음. 행 문자열 코드 도트, 생성 그림 없음. 원본: scripts/content/monsters/astra_handpixel/. full-*·card-base 는 장면에서 쓰지 않는 옛 char-gen 그림.",
+  "files": {
+   "emerald-monster/cast/hero/bust-base.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "fe0e0c61d313b05af8666b19ff2f7f470919a8fbbe271c2b6762826d8daef1b3"
+   },
+   "emerald-monster/cast/hero/bust-happy.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "1dea6261f1eaabe140f3ef83c5a46eccbe5bb6d184563e4cc91d4e77ad575c76"
+   },
+   "emerald-monster/cast/hero/bust-surprised.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "d8d39237621e952f7c581f7c4a9b17b6398f2c7c03027bc0512f04ceb87716af"
+   },
+   "emerald-monster/cast/mom/bust-base.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "2d5a9639c429386476c516b9aab22cc8771beff8d7b0d194b1c744c1f94a08b9"
+   },
+   "emerald-monster/cast/mom/bust-happy.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "91186ce2a0fb95144bf3e8550b60a4698dc13bd37cce4ce49bcb1ad3dc4370c7"
+   },
+   "emerald-monster/cast/mom/bust-surprised.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "34f6b0d732a78e34a12ffb71dc9bfaaf525f2bb8c50ac117d98dd3167f4b6253"
+   },
+   "emerald-monster/cast/muyeong/bust-angry.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "298d483f893cb49f9f3aa45910df0f3a4e3bc42dc26c38c8202b531971b85dc3"
+   },
+   "emerald-monster/cast/muyeong/bust-base.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "ba3a2db07d82b3af2f81ee53aa6cb22620255be9f457005d4a29062d4148c4e9"
+   },
+   "emerald-monster/cast/muyeong/bust-happy.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "fabbde26b30bf3be08cccd99cad1a8296b2a8b75ada9b9185041e8f0148d482f"
+   },
+   "emerald-monster/cast/muyeong/bust-surprised.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "89dc78bb16c35670e614a746763df9ab510ac991ea09aefb1101178d6257fa48"
+   },
+   "emerald-monster/cast/naru/bust-angry.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "818396d7ca04891ba91f38bc8fccc38f59ad769c8fa7f0f67ee14d87b528e066"
+   },
+   "emerald-monster/cast/naru/bust-base.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "946c0d55c7c1e2c65718aad82df021c4fd9ddba270655e514fdf31f4df4d5317"
+   },
+   "emerald-monster/cast/naru/bust-happy.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "2dbb6a78fa2c9346dcde7404dc97ccbad9c80a12b7af3beeea4d035f4af80563"
+   },
+   "emerald-monster/cast/naru/bust-surprised.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "b13d1e5b2f2c7448380d41bbc900afafdeb236fbc03222f4fb5f0382bb9caf9a"
+   },
+   "emerald-monster/cast/nurse/bust-base.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "add755971ad7e4db327a9ae6205591a2493b7b1e6d7f6115c8a1b7a813199ef1"
+   },
+   "emerald-monster/cast/nurse/bust-happy.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "6776b3e56698db74d62d0c53bd505188619fda4f1ec3a91f78d66f5c7471cf37"
+   },
+   "emerald-monster/cast/nurse/bust-surprised.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "b2ee86a760e87bb7e0661bbfb1ce01cb467e7c0256a3330e908f59e64c3f7f88"
+   },
+   "emerald-monster/cast/professor/bust-base.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "e1d171bced8f44183ba959828b7671273fb2e580078e47441c5955c8c3749ae3"
+   },
+   "emerald-monster/cast/professor/bust-happy.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "4fa36f7c575ebf6f56e04b335468af2ba7171576f3262f518e6ace2467021529"
+   },
+   "emerald-monster/cast/professor/bust-surprised.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "6f3cda440d10676bae340a7a1cb2797726826d2e63d6373afb7c80bd38c4236c"
+   },
+   "emerald-monster/cast/yurim/bust-angry.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "0c9a175370978b896bafd8dc6b06db92dfbe28f279d6d7e8d1a8471af932501e"
+   },
+   "emerald-monster/cast/yurim/bust-base.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "63af7f2fbcb9c978191171c45aeec64f2d92b0c138a194181cd0131cb426d96b"
+   },
+   "emerald-monster/cast/yurim/bust-happy.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "bc4a9cc2f6d6460e0fbc5c96a26f2dac92f2c0dbf57274e2744831f3754a20c8"
+   },
+   "emerald-monster/cast/yurim/bust-surprised.png": {
+    "size": [
+     88,
+     92
+    ],
+    "pixelSha256": "82522cb13f437995eb0f640580676a77fd6fe13b4116cfcf61f40709579fc913"
+   },
+   "battle-trainers/astra_hero/back.png": {
+    "size": [
+     128,
+     128
+    ],
+    "pixelSha256": "cff1ad1f460e8b75bd4619aba9ab5397e900de0d31debfd1f54e1bc334cd248b"
+   },
+   "battle-trainers/astra_hero/throw.png": {
+    "size": [
+     512,
+     128
+    ],
+    "pixelSha256": "f91ec2afe37a0196ee728f5030d9aa216353291246d5562ee8533ab074862ff4"
+   },
+   "battle-trainers/astra_muyeong/front.png": {
+    "size": [
+     128,
+     128
+    ],
+    "pixelSha256": "397a8ead20b476eeed35589036ae34031b46de1f691f61151abf2c1fbd52fbf6"
+   },
+   "battle-trainers/astra_naru/front.png": {
+    "size": [
+     128,
+     128
+    ],
+    "pixelSha256": "1901affe3e26ce6f854a9a54270f226fdced6b30d6a4c641dbe879d21e342dd4"
+   },
+   "battle-trainers/astra_yurim/front.png": {
+    "size": [
+     128,
+     128
+    ],
+    "pixelSha256": "5320572e165b022d81b3f2efde46792e52163d185438d08679762209c144c07d"
+   }
   }
  }
 }

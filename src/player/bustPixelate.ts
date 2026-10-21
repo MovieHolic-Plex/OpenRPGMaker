@@ -84,6 +84,8 @@ async function render(url: string): Promise<string | null> {
   const w = image.naturalWidth;
   const h = image.naturalHeight;
   if (!w || !h) return null;
+  // 이미 흉상 도트 격자(44×46 을 2배)로 손으로 찍은 그림은 그대로 쓴다 — 다시 줄이고 색을 깎고 윤곽을 두르면 손 도트가 뭉개지고 테두리가 두 겹이 됐다.
+  if (w === BUST_ART_WIDTH * BUST_PIXEL_SCALE && h === BUST_ART_HEIGHT * BUST_PIXEL_SCALE) return url;
   const fit = Math.min(BUST_ART_WIDTH / w, BUST_ART_HEIGHT / h);
   const dw = Math.max(1, Math.round(w * fit));
   const dh = Math.max(1, Math.round(h * fit));
