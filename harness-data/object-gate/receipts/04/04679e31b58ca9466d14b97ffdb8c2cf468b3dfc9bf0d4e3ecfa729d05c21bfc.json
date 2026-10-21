@@ -1,0 +1,445 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04679e31b58ca9466d14b97ffdb8c2cf468b3dfc9bf0d4e3ecfa729d05c21bfc",
+ "width": 80,
+ "height": 96,
+ "kind": "other",
+ "name": "큰 굴절 망원경(5×6 — 천문대 중심) (great telescope)",
+ "label": "atlas_biome_interior/plus/great telescope",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 17,
+  "darkV5": 11,
+  "nearBlackEdge": 0.39,
+  "opaqueTiles": 13
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal drum top (gray ellipse, partly covered by the mount)",
+      "rows": "46-55",
+      "evidence": "b",
+      "front_edge_line_row": 55,
+      "eave_shadow_rows": "55-56"
+     },
+     {
+      "part": "wooden round base platform (ellipse with gold inlay ring)",
+      "rows": "71-91",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brass mount and yoke on the pedestal",
+      "rows": "38-54",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "diagonal telescope tube with brass end cap and eyepiece (lens opening at the top end)",
+      "rows": "2-62",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the stone drum pedestal. Its top is a light-gray elliptical surface at rows 46-54, where the width grows from 31 to 40. A darker lip with a front-edge line sits at rows 54-56. Below it is a vertical brick front face at rows 56-88, about 33 rows. The pedestal stands on a wooden round platform drawn as a full ellipse at rows 71-91, with width 23 at the back rim, up to 71, and back to 23 at the front rim. The diagonal tube is a tilted cylinder with a visible lens opening, so it reads in 3/4 view. The object has a top surface and a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a prop of the same kind as the references. The wooden tube shows about 4-5 steps (highlight, light, mid, dark, deep) with brass bands and a lens cap. The stone pedestal has banded, shaded blocks, and the round wooden platform has ring grooves and plank lines. Measured facts: 11 visible tones per tile, which sits between the hedge (9) and the stall and well (17-20). Near-flat coverage is only 2%, close to the references' 0-13%, so there are no large flat fills. About half of the dark edge pixels are neutral (50%), which is within the reference range (0-100%). Visually the outlines look like a mix of dark brown beside wood and grey-dark beside stone, so they are not a uniform black sticker line. The piece is a little less dense than the well and stall, but a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18635
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden round base platform, drawn as an ellipse with a gold ring",
+      "rows": "71-91",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone drum pedestal top, an ellipse that widens from 31 to 40 px and ends in a front rim",
+      "rows": "46-58",
+      "evidence": "b",
+      "front_edge_line_row": 55,
+      "eave_shadow_rows": "56-58"
+     },
+     {
+      "part": "stone pedestal front face (brick) with a gold band at rows 73-74",
+      "rows": "59-88",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "diagonal telescope tube with brass collars and an open lens end",
+      "rows": "2-62",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a round stone pedestal on a wooden disc. The pedestal top widens from 31 px at row 46 to 40 px at row 53 and then closes with a lighter front rim near rows 54-55. Darker shadow rows 56-58 sit under it, and about 30 rows of brick front face run from row 59 to 88. The wooden base is a clear ellipse: width goes 35, 45, 51 ... 71 and back to 35 and 23 over rows 71-91, with a gold ring. The diagonal telescope is the mounted machine and its open lens end is drawn as an ellipse. Together these give a top surface and a front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 11 visible tones per tile, near-flat coverage of only 2% and 36 distinct colours. That sits between the hedge (9) and the stall and well (17-20), and is well above the bench and lamp. Shading is layered on each material. The wooden tube runs from highlight to deep brown, the brass bands and eyepiece have highlight and shadow, the stone pedestal has banded courses with light and dark faces, and the round wooden base has plank and ring detail. Outlines are partly tinted dark brown or dark grey-blue beside the wood and stone, and partly neutral dark (50% neutral share, in line with the bench at 44% and the well at 33%), so I call them mixed rather than a uniform near-black sticker line. There are no large flat fills. It is a little less dense than the well and stall at this size, mainly on the pedestal, but a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19409
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden oval base platform",
+      "rows": "71-91",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone drum pedestal top (ellipse mouth)",
+      "rows": "46-54",
+      "evidence": "b",
+      "front_edge_line_row": 54,
+      "eave_shadow_rows": "55"
+     },
+     {
+      "part": "stone pedestal front face",
+      "rows": "55-88",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brass mount and yoke",
+      "rows": "34-55",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "telescope tube with brass dew shield and lens cap end",
+      "rows": "2-62",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the round stone drum pedestal. Its top is a light-gray ellipse seen from above at rows 46-54. The front-edge line is at row 54 (L=171 at x=40), followed by darker eave shadow at row 55 (L=79). Below it the brick-patterned front face runs from about row 56 to row 88, which is 30+ rows. The wooden oval base platform also reads as a horizontal ellipse: its width grows from 35 to 71 and shrinks back to 23 across rows 71-91. The diagonal telescope tube sits on a brass yoke. Its open objective end at the top shows a blue lens opening, so it reads as a 3D cylinder. Overall the object shows top surfaces plus a clear front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 11 visible tones per 16x16 tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well, so it sits in the reference range. Near-flat coverage is 2%, which is low and in line with the references (0-13%), so there are no real flat fills. The brown wood tube shows about 5 steps (highlight, light, mid, dark, deep) with banding, and the brass fittings have highlights. The stone pedestal has stacked bands with vertical shading and the wooden base disc has plank rings. Outlines are mostly dark brown beside the wood and a dark blue-grey beside the stone. Some edge pixels lean neutral (50%, close to the bench at 44% and the well at 33%), so the outline reads as mixed and is not a uniform black sticker line. The structure is clearly volumetric and the piece would sit acceptably beside the well and the stall. The stone pedestal is slightly smoother than the well's stonework, but this is not enough to fail it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16533
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal top (gray ellipse with brass mount base on it)",
+      "rows": "46-54",
+      "evidence": "b",
+      "front_edge_line_row": 54,
+      "eave_shadow_rows": "55"
+     },
+     {
+      "part": "stone pedestal front face (brick drum)",
+      "rows": "56-88",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden round platform (ellipse floor disc)",
+      "rows": "71-91",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "diagonal telescope tube with brass objective end",
+      "rows": "2-52",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the stone pedestal drum. Its silhouette widens from 31 to 40 px over rows 46-53, which is an ellipse top. A light front-edge line sits at row 54 (#a5adb2), followed by a dark shadow row at 55 (#49505d). The brick front face runs from row 56 to 88, about 33 rows. The wooden platform under it is also an ellipse, with its width growing from 35 to 71 and shrinking to 23 over rows 71-91. The telescope tube is diagonal and rendered volumetrically as a cylinder with a brass end cap, mounted on a brass yoke. It is not a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 11 visible tones per 16x16 tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well. Near-flat coverage is 2%, which is far below the stall's 13%, so there are no big flat fills. The telescope tube shows about 5 steps (highlight, light, mid, dark, deep), with brass bands and a lens rim. The stone pedestal has banded brick shading, and the wooden platform has radial plank grain with several browns. The outline looks brown beside the wood and brass and blue-grey beside the stone, with value separation in places. The 50% neutral share on dark edge pixels sits in the range of the bench (44%) and well (33%) references, and the tint is visible by eye. The piece is somewhat smoother and simpler than the well and stall, but it is not thinner or more sticker-like than the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "맨 위의 큰 부분(51행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "맨 위의 큰 부분(51행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17996
+  }
+ ],
+ "decidedAt": "2026-10-21T05:58:00.872Z",
+ "cells": {
+  "16": [
+   "031b2193457a85d0",
+   "0e314b850178a3f2",
+   "25354b9ea7ccb261",
+   "2a0091a1f40cb22a",
+   "31726e85bba64908",
+   "3a5c8d6fe3aa5520",
+   "4641eeb6e6e0b155",
+   "51b40d2a34ba890e",
+   "53f00842f1451294",
+   "59cfac1a99f71eb1",
+   "63d008c44d795b62",
+   "68500218b1e640bd",
+   "6a98634b0a8d6ddc",
+   "7145141072bf92ad",
+   "8bcdb5a1f5ad1f0a",
+   "92ccc91447f15eaf",
+   "97b35b7acd28aca4",
+   "a9f1872113594936",
+   "aefdd046fe301d98",
+   "b07cc76862bbec31",
+   "bd5f5ed86cab35de",
+   "cdcdc5baf6ce8389",
+   "e783474c83d18ccb",
+   "e96d80c9b9230b8f"
+  ],
+  "24": [
+   "169664b98aa632a6",
+   "19d63b5db675abf4",
+   "1b9ff050b1624f01",
+   "220a6465327a8382",
+   "22ab3f934302b26e",
+   "23c186ba6abd6688",
+   "2e6aa1b36276da34",
+   "3af24be6ce3754e5",
+   "3bd9e63f25f19daf",
+   "43523b1fb7aa62ab",
+   "43a672d2fcbb01f0",
+   "482ce7b4e0779e26",
+   "4c757f1e351c297c",
+   "4ea789a679da5dc3",
+   "51b1a2bd77dc17f2",
+   "5779bd2e4aed029e",
+   "5e6eab854eacecbc",
+   "6a4a097cead86c3c",
+   "6fda6bb90873ee15",
+   "7748e3c423abb5f0",
+   "8a1ad6fc1f6dca45",
+   "8e4e7887a9cced19",
+   "974aea41e12f90c6",
+   "9a9b4d3966122574",
+   "a412f9f5ed8f1e79",
+   "ac995cb452a674f7",
+   "ae560371d69825d1",
+   "b15bd9469990637e",
+   "b1c5076e3bba1902",
+   "bd1db60b7f631b11",
+   "c1b8ef9568bb7be8",
+   "c6c4d6ad79a96a62",
+   "cc435e97d1d51129",
+   "d8daec248fc45223",
+   "e4f604ddf1adba9a",
+   "ec6acc1c82b7b629"
+  ],
+  "32": [
+   "0acdb916b129d6f3",
+   "0b976f47d56fc8a6",
+   "1840bc8fe658588e",
+   "1f0e248b42d6697e",
+   "228dc4f733d5da3e",
+   "26204706fa30e19b",
+   "28577728e85626cb",
+   "2b3578fbc05fdf39",
+   "43c3ad3e0e6b80a1",
+   "463a61a3bb1e6186",
+   "4a0410799febf0ba",
+   "51cd243e318ac7d9",
+   "6398ee1619d901b7",
+   "70972e7a43da6196",
+   "779f7018236109e1",
+   "7f3840f517feebbc",
+   "819d1d3c769ad8a3",
+   "92303e3cffb7377d",
+   "95a223ad1a77c359",
+   "a0cc43d4ee92e10a",
+   "b7dd9a4b29e32320",
+   "cffa93f14101dca3",
+   "e6f030aa6042983a",
+   "fb4e027d9f6f6b08"
+  ],
+  "48": [
+   "054e0092f0c7ed5b",
+   "07c605e8e3307ac4",
+   "1b6471dbb373d77d",
+   "40e42f4c12811856",
+   "4ede17b45f416477",
+   "5d252294a9921c28",
+   "6ceec599dd8a770b",
+   "7bbe054ecd14de66",
+   "90f02e1f07c9f389",
+   "b55222c7c8ce6cec",
+   "b558b9ce56441336",
+   "febce627530ee8a8"
+  ]
+ }
+}

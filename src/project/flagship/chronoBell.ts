@@ -1208,6 +1208,47 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     }
   }
 
+  // 천문대 큰 방(위층 홀, 패딩 뒤 좌표 x7~22·y6~12) — 작은 삼각대 망원경 둘·바닥에 선 별자리표·마법진만 있어 「싸구려 방」으로 읽혔다
+  // (사용자 머지 차단 지적 2026-10-21). 가운데에 큰 굴절 망원경, 그 위 북벽에 지붕 관측 틈, 벽에 별자리 원판 도표, 옆에 관측 발판·렌즈 작업대를 둔다.
+  // 새 조각(interior-plus observatory)은 object-gate 사람 허용 뒤에만 시트에 구워진다 — 굽기 전에는 킷이 없어 이 블록은 아무것도 바꾸지 않는다.
+  {
+    const obs = M(ids.observatory);
+    const ts = project.tilesets.atlas_biome_interior;
+    const kitName = (n: string): string => `hand-interior:${n}`;
+    const newKits = ["great telescope", "dome slit", "celestial chart", "lens bench", "observing platform"];
+    if (ts && newKits.every((n) => ts.structureKits?.some((k) => k.id === kitName(n)))) {
+      const W = obs.width;
+      const labelOf = (t: number): string => (t >= 0 ? (ts.tileMeta?.[t]?.label ?? "") : "").replace(/\s*\(.*$/u, "");
+      // 홀 안의 옛 소품 중 새 배치와 겹치거나 천문대답지 않은 것만 걷는다(책장·부엉이 횃대·책상·왼쪽 천체 모형은 둔다).
+      const drop = new Set(["창", "별자리표", "망원경", "마법진", "마법서 받침", "두루마리 선반"]);
+      for (const layer of [obs.upperTiles, obs.lowerOverlayTiles, obs.upperOverlayTiles]) {
+        if (!layer) continue;
+        for (let y = 3; y <= 12; y += 1) for (let x = 7; x <= 22; x += 1) {
+          const i = y * W + x, label = labelOf(layer[i] ?? -1);
+          if (drop.has(label) || (label === "천체 모형" && x >= 12)) layer[i] = -1;
+        }
+      }
+      const stamp = (n: string, x: number, y: number): void => {
+        execTool(project, "stamp_object", { objectId: `kit:atlas_biome_interior/${kitName(n)}`, mapId: obs.id, x, y });
+      };
+      stamp("dome slit", 17, 3);            // 천장 띠부터 벽면 두 줄 — 망원경 대물 끝 바로 위
+      stamp("celestial chart", 8, 4);
+      stamp("celestial chart", 20, 4);
+      stamp("great telescope", 14, 6);      // 발밑 14~18 × 10~11(막힘), 위 4줄은 플레이어 위에 그린다
+      stamp("observing platform", 12, 10);  // 발밑 12~13 × 11, 접안경 곁
+      stamp("lens bench", 20, 9);           // 발밑 20~22 × 10
+      // execTool 은 맵 객체를 새로 만든다 — 찍은 뒤에는 늘 M() 으로 다시 잡는다.
+      tryStamp(project, M(ids.observatory), `kit:atlas_biome_interior/${kitName("orrery")}`, 21, 6);
+      tryStamp(project, M(ids.observatory), `kit:atlas_biome_interior/${kitName("globe")}`, 8, 6);
+      // 「망원경」 조사 이벤트는 큰 망원경 접안경 칸(발밑)으로 옮긴다 — 바로 아래 (15,12) 에서 위를 보고 말을 건다.
+      const scope = M(ids.observatory).events.find((e) => e.id === `ev_${FS_PREFIX}_scope`);
+      if (scope) {
+        scope.x = 15; scope.y = 11;
+        for (const page of scope.pages ?? []) page.priority = "same";
+      }
+    }
+  }
+
   // 시작 — 광장, 천문대 문이 보이는 곳.
   const observatoryDoor = M(ids.hub).events.find((e) => JSON.stringify(e).includes(`"mapId":"${M(ids.observatory).id}"`));
   let start = observatoryDoor ? { x: observatoryDoor.x, y: observatoryDoor.y + 3 } : { x: Math.floor(M(ids.hub).width / 2), y: Math.floor(M(ids.hub).height / 2) };

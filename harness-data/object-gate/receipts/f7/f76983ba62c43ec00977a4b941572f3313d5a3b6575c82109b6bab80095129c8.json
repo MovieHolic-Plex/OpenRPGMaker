@@ -1,0 +1,349 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f76983ba62c43ec00977a4b941572f3313d5a3b6575c82109b6bab80095129c8",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "관측 발판(2칸 단과 계단) (observing platform)",
+ "label": "atlas_biome_interior/plus/observing platform",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 11,
+  "darkV5": 65,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back rail / upper yellow strip",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main platform top (2-tier step deck)",
+      "rows": "4-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-21"
+     },
+     {
+      "part": "side stair step",
+      "rows": "22-24",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body has a large horizontal deck at rows 4-17 (14 rows of textured plank/brick). It ends in a light front-edge line at row 18 (#d59147), followed by dark shadow at rows 19-21 and a dark front face down to row 26, so the front face is about 8 rows. The small stair block at the lower right repeats the pattern: top rows 22-23, edge line at row 24, front rows 25-27. The yellow strip at rows 0-3 is a minor back rail. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a wooden platform with a two-tile step and stairs, drawn at the same scale as the references. It has about 5 wood steps: a light plank top, a mid front face with grain dots, a darker underside and a dark edge. The outline is a dark brown tinted to the wood, with 0% near-neutral dark edge pixels, so it is not the near-black sticker look. Measured facts: 9 visible tones per full tile, which equals prop-hedge (9) and sits below stall-cheese (17) and well-roofed (20). Near-flat coverage is 0% and there are no large flat fills, so grain and plank variation cover the surface. It is somewhat simpler than the stall and well, but a careful artist would accept it next to the hedge and bench without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20634
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper platform deck (wood planks)",
+      "rows": "4-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-21"
+     },
+     {
+      "part": "lower step on right",
+      "rows": "22-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "back rail/beam at top (gold strip with posts)",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main deck is a wide plank surface in rows 4-17. A lighter front-edge line sits at row 18 (L=157, #d59147), followed by dark eave shadow in rows 19-21 and a dark front face in rows 19-25, so the front face is about 7 rows. The lower step at right has its own top in rows 22-23 and an edge line at row 24, then a front face in rows 25-27. The gold strip in rows 0-3 is a back rail drawn as a vertical face. It is minor next to the main deck."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a wooden platform with a stepped front. It reads as brown wood with a dark brown outline and a lighter top plank face, and the outline is visibly tinted (0% near-neutral dark edge pixels), so it is not a sticker-style black line. It has 9 visible tones per tile, equal to the hedge (9) but below the well (20) and stall (17), and 0% near-flat coverage, so there are no big flat fills. Shading is about 4 steps (highlight edge, light plank, mid, dark shadow). That is a little shallower than the 5-6 on the well and stall. Plank grain and a few nail or knot dots give some texture, but the wood surfaces look somewhat plain next to the richly shaded stall and well. Overall it is acceptable but a bit thinner than the best references, and with the doubt rule it is borderline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18713
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main platform top (plank surface)",
+      "rows": "5-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-21"
+     },
+     {
+      "part": "lower step top",
+      "rows": "22-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "back rail strip with posts at top",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main platform has a wide textured top band in rows 5-17. A light front-edge line at row 18 follows it, then dark eave shadow in rows 19-21 and a front face down to row 25, which gives about 7 front rows. The lower step on the right repeats the pattern: a 2-row top in rows 22-23, an edge line at row 24, and a front face in rows 25-27. The thin strip at rows 0-3 is a back rail or detail and does not change the reading of the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a wooden platform with a plank top, a speckled front face and a lower step. Its wood ramp shows about 5 lightness steps (highlight plank edge, light, mid, dark, deep brown). The outline is a dark brown tinted to the wood, not black. The measured near-neutral edge share is 0%, matching the tinted outlines of the hedge and stall references. Plank seams, nail dots and grain speckle cover the surfaces, so there are no flat fills (near-flat coverage 0%). Visible tones per tile are 9, equal to the hedge (9) and below the stall (17) and well (20). The total of 12 raw colours is also close to the hedge's 11 and the bench's 14. It is slightly less rich than the most detailed references, but it does not look thinner, flatter or more sticker-like than the bench or hedge, so it is acceptable beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19896
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back rail / top trim (yellow band with dark posts)",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "main platform deck (plank surface)",
+      "rows": "4-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-21"
+     },
+     {
+      "part": "lower step (second tier on right)",
+      "rows": "22-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main platform has a tall plank deck (rows 4-17, wide and foreshortened) that ends in a light front-edge line at row 18 (#d59147). Below it are 3 rows of dark eave shadow (19-21) and a dark front face down to row 25, so the front face is about 7 rows. The lower step on the right repeats this: a lighter top at rows 22-23, an edge line at row 24, and a front face at rows 25-27. The yellow band at rows 0-3 is a back rail or trim and is not counted as the main top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a wooden platform with a step. Its outline is a dark reddish-brown beside the wood, not neutral black, and the measured near-neutral share of dark edge pixels is 0%. It shows about 5 wood steps: a light top edge, a mid plank face, darker grain lines, a deep underside and a highlighted step tread. Plank grain and nail dots break up the surface, and near-flat coverage is 0%, so there are no flat fills. It has 9 visible tones per tile, equal to prop-hedge and below the richer stall (17) and well (20). Its 12 total colours are close to the simple bench (14) and hedge (11). It is a simple wood prop and is not thinner or more sticker-like than the bench or hedge, so it is acceptable next to them, though a little less rich than the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19306
+  }
+ ],
+ "decidedAt": "2026-10-21T06:04:46.075Z",
+ "cells": {
+  "16": [
+   "5e5184df32d1219e",
+   "8102d1230a274fb9",
+   "9fed4dcdea4a95e3",
+   "cfc5e207297070ff"
+  ],
+  "24": [
+   "02233053619b6fa6",
+   "1caac01c6ed6e41f",
+   "1d8c7b3f85a6d6e7",
+   "299db4dbcb4644f9",
+   "2b29f38067971c48",
+   "30b016d15e28de44",
+   "36f7a625ef3f434a",
+   "69db7a6ebb0d28d2",
+   "740e2c7871d987b6",
+   "794cbe3d6e9c5a7c",
+   "7f6940c161776b4e",
+   "8916b7179305374c",
+   "8b9a8b732d302616",
+   "8be12f7efd77be29",
+   "9ce7cea6395c736d",
+   "a941d5f392f5ba90",
+   "b4a469d4acc628d8",
+   "b71c28d181922128",
+   "bb49219c6623d7a2",
+   "cb1f9d4eafabed2e",
+   "d21b1ccbb55ae942",
+   "dc5f03354b81ba00",
+   "eec93274eac925a9",
+   "f13e2575168389c9"
+  ],
+  "32": [
+   "7390204b58ee3bb7"
+  ],
+  "48": [
+   "195d164c7dda52d3",
+   "5edcbcafaea96638",
+   "6c7de879f8542fe4",
+   "75d49bd94b427f69",
+   "7c6d80dc118bd8c7",
+   "b3ec8dfbcb6c4826"
+  ]
+ }
+}
