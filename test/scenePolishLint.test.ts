@@ -186,3 +186,39 @@ describe("scene-hang-on-floor", () => {
     expect(hangCodes()).toEqual(["scene-hang-on-floor"]);
   });
 });
+
+describe("scene-ceiling-tile", () => {
+  it("천장 칸에 바닥이 얹히거나 방 밖에 고립 바닥이 깔리면 잡고, 깨끗한 방은 조용하다", async () => {
+    const { runTool } = await import("@/editor/tools");
+    const ctx = { project: createBlankProject() };
+    const plan = ["##########", "#........#", "#........#", "#........#", "#........#", "####.#####"];
+    const built = runTool(ctx, "build_hand_interior_room", { name: "서재", plan, floor: "boards", wall: "grey" });
+    expect(built.ok, built.summary).toBe(true);
+    const map = ctx.project.maps[(built.data as { mapId: string }).mapId]!;
+    const grids = map as unknown as { lowerTiles: number[]; upperTiles: number[] };
+    const tileset = ctx.project.tilesets[map.tilesetId] as unknown as { tileMeta: Record<number, { tags?: string[] } | undefined> };
+    const codes = (): string[] => lintScenePolish(ctx.project).filter((i) => i.code === "scene-ceiling-tile").map((i) => i.code);
+    expect(codes()).toEqual([]);
+    const isCeil = (t: number): boolean => (tileset.tileMeta[t]?.tags ?? []).includes("천장");
+    const ceilCells = grids.lowerTiles.map((t, i) => (isCeil(t) ? i : -1)).filter((i) => i >= 0);
+    expect(ceilCells.length).toBeGreaterThan(0);
+    const floorTile = grids.lowerTiles[3 * map.width + 4]!;
+    // ① 천장 칸 위층에 바닥 조각
+    const c = ceilCells[0]!;
+    grids.upperTiles[c] = floorTile;
+    expect(codes()).toEqual(["scene-ceiling-tile"]);
+    grids.upperTiles[c] = -1;
+    expect(codes()).toEqual([]);
+    // ② 방 밖 천장 띠에 고립된 바닥 값 칸(이벤트 없음)
+    const lone = ceilCells.find((i) => {
+      const x = i % map.width, y = Math.floor(i / map.width);
+      return [[1, 0], [-1, 0], [0, 1], [0, -1]].every(([dx, dy]) => {
+        const nx = x + dx!, ny = y + dy!;
+        return nx < 0 || ny < 0 || nx >= map.width || ny >= map.height || isCeil(grids.lowerTiles[ny * map.width + nx]!);
+      });
+    });
+    expect(lone).toBeDefined();
+    grids.lowerTiles[lone!] = floorTile;
+    expect(codes()).toEqual(["scene-ceiling-tile"]);
+  });
+});

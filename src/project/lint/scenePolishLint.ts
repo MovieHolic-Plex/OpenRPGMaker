@@ -14,6 +14,7 @@
 //  - scene-moving-vehicle          움직이는 교통(map.transit)·움직이는 탈것 이벤트
 //  - scene-actors-stacked          한 페이지가 두 인물을 같은 칸에 세운다
 //  - scene-hang-on-floor           벽 걸이(액자·별자리표·시계…) 키트가 바닥 칸에 서 있다
+//  - scene-ceiling-tile            천장 구역(방 밖·벽면도 벽 윗면도 아닌 칸)에 천장이 아닌 칸이 있다 — 바닥·소품이 얹혔거나, 방 밖에 고립 통행 바닥이 깔렸다
 
 import { nestedCommandLists } from "../authoredCommandIndex";
 import type { Command, Dir, EventPage, GameEvent, GameMap, MoveCommand, Project, TilesetDef } from "../types";
@@ -636,6 +637,106 @@ function checkHangOnFloor(project: Project, issues: LintIssue[]): void {
   }
 }
 
+// ---------------------------------------------------------------------------- 천장 구역에 천장 아닌 칸
+
+const CEILING_WORDS = /천장|ceiling|공허|\bvoid\b/iu;
+const ceilingTileCache = new Map<string, Set<number>>();
+
+/** 이 타일셋에서 천장·공허(막힌 칸)로 이름 붙은 칸 번호. */
+function ceilingTiles(tileset: TilesetDef | undefined): Set<number> {
+  if (!tileset) return new Set();
+  const key = doorCacheKey(tileset);
+  let out = ceilingTileCache.get(key);
+  if (out) return out;
+  out = new Set();
+  const meta = (tileset as { tileMeta?: unknown }).tileMeta;
+  const entries: Array<[number, (TileMetaLike & { passage?: string }) | undefined]> = Array.isArray(meta)
+    ? meta.map((m, i) => [i, m as TileMetaLike])
+    : meta && typeof meta === "object" ? Object.entries(meta as Record<string, TileMetaLike>).map(([k, m]) => [Number(k), m]) : [];
+  for (const [tile, m] of entries) {
+    if (!m || typeof m !== "object" || (m.passage && m.passage !== "solid")) continue;
+    if (CEILING_WORDS.test(`${m.label ?? ""} ${(m.tags ?? []).join(" ")}`)) out.add(tile);
+  }
+  if (ceilingTileCache.size > 64) ceilingTileCache.clear();
+  ceilingTileCache.set(key, out);
+  return out;
+}
+
+/**
+ * 천장 구역 = 방 안(걸을 수 있는 칸)도, 벽면·벽 윗면도 아닌 칸. 여기는 모든 층이 어두운 천장으로 보여야 한다.
+ * ① 아래층이 천장 칸인데 어느 층이든 천장이 아닌 칸(바닥·소품·벽면 조각)이 얹혔다.
+ * ② 천장 칸에 닿은 고립 통행 성분(이벤트도 시작 칸도 없음) — 방 밖에 바닥 값 칸을 깔아 천장 띠가 회색 바닥으로 읽힌다(Fallen fs_vault 암반).
+ */
+function checkCeilingTiles(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    const ceil = ceilingTiles(project.tilesets[map.tilesetId]);
+    if (ceil.size === 0) continue;
+    const W = map.width, H = map.height, n = W * H;
+    const grids = LAYERS.map((k) => (map as unknown as Record<string, number[] | undefined>)[k]);
+    const lower = grids[0];
+    if (!lower) continue;
+    const isCeilCell = (i: number): boolean => ceil.has(lower[i] ?? -1);
+    if (!lower.some((t) => ceil.has(t))) continue;
+    // ① 얹힌 칸
+    let first = -1, count = 0;
+    const ids = new Set<number>();
+    for (let i = 0; i < n; i += 1) {
+      if (!isCeilCell(i)) continue;
+      for (const g of grids) {
+        const t = g?.[i] ?? -1;
+        if (t >= 0 && !ceil.has(t)) { if (first < 0) first = i; count += 1; ids.add(t); break; }
+      }
+    }
+    // ② 고립 통행 성분
+    // 아래층 칸 자체의 통행만 본다 — 가구에 둘러싸인 방 안 칸은 아래층으로는 방 바닥과 이어져 있다.
+    const passTable = (project.tilesets[map.tilesetId] as { passability?: unknown } | undefined)?.passability as
+      Record<number, { up?: boolean; down?: boolean; left?: boolean; right?: boolean } | undefined> | undefined;
+    const pass = new Uint8Array(n);
+    for (let i = 0; i < n; i += 1) {
+      const p = passTable?.[lower[i] ?? -1];
+      pass[i] = p && (p.up || p.down || p.left || p.right) ? 1 : 0;
+    }
+    const anchors = new Set<number>((map.events ?? []).map((e) => e.y * W + e.x));
+    if (project.startMapId === map.id && project.startPos) anchors.add(project.startPos.y * W + project.startPos.x);
+    const seen = new Uint8Array(n);
+    const comps: number[][] = [];
+    for (let s = 0; s < n; s += 1) {
+      if (!pass[s] || seen[s]) continue;
+      const stack = [s]; seen[s] = 1; const cells: number[] = [];
+      while (stack.length) {
+        const i = stack.pop()!; cells.push(i);
+        const x = i % W, y = Math.floor(i / W);
+        for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as const) {
+          const j = ny * W + nx;
+          if (nx >= 0 && ny >= 0 && nx < W && ny < H && pass[j] && !seen[j]) { seen[j] = 1; stack.push(j); }
+        }
+      }
+      comps.push(cells);
+    }
+    const main = comps.reduce((a, c) => (c.length > a.length ? c : a), [] as number[]);
+    let orphanCells = 0, orphanFirst = -1;
+    for (const c of comps) {
+      if (c === main || c.some((i) => anchors.has(i))) continue;
+      const touchesCeiling = c.some((i) => {
+        const x = i % W, y = Math.floor(i / W);
+        return [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]].some(([nx, ny]) => nx! >= 0 && ny! >= 0 && nx! < W && ny! < H && isCeilCell(ny! * W + nx!));
+      });
+      if (!touchesCeiling) continue;
+      orphanCells += c.length;
+      if (orphanFirst < 0) orphanFirst = c[0]!;
+    }
+    if (count === 0 && orphanCells === 0) continue;
+    const at = first >= 0 ? first : orphanFirst;
+    const parts: string[] = [];
+    if (count > 0) parts.push(`천장 칸 ${count}곳에 천장이 아닌 칸(${[...ids].slice(0, 6).join(", ")}${ids.size > 6 ? "…" : ""})이 얹혔다`);
+    if (orphanCells > 0) parts.push(`방 밖 천장 띠에 걸을 수 있는 바닥 칸 ${orphanCells}곳이 고립되어 깔렸다`);
+    issues.push({
+      severity: "warning", code: "scene-ceiling-tile", mapId: map.id, x: at % W, y: Math.floor(at / W),
+      message: `맵 ${map.name || map.id} 의 천장 구역(방 밖, 벽면·벽 윗면이 아닌 칸) — ${parts.join(" · ")}. 1배 화면에서 방 사이가 회색 바닥 띠로 읽힌다. 그 칸의 모든 층을 지우고 어두운 천장 칸만 남긴다(바위 덩어리·바닥 값 칸으로 허공을 채우지 않는다).`,
+    });
+  }
+}
+
 // ---------------------------------------------------------------------------- 진입점
 
 export function lintScenePolish(project: Project): LintIssue[] {
@@ -652,6 +753,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkVehicles);
   guard(checkStacking);
   guard(checkHangOnFloor);
+  guard(checkCeilingTiles);
   return issues;
 }
 
