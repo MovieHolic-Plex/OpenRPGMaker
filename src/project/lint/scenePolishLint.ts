@@ -18,12 +18,14 @@
 //  - scene-ceiling-tile            천장 구역(방 밖·벽면도 벽 윗면도 아닌 칸)에 천장이 아닌 칸이 있다 — 바닥·소품이 얹혔거나, 방 밖에 고립 통행 바닥이 깔렸다
 //  - scene-arrival-faces-exit      도착 방향이 막 지나온 문·계단(또는 다른 이동 칸)을 본다 — 들어서면 문을 등진다
 //  - scene-speaker-faces-away      대사 줄의 화자가 곁(3칸 안)의 대화 상대 누구도 보지 않는다(걸어 온 쪽·벽·카메라를 본다)
+//  - scene-bust-faces-away        원래 시선을 아는 흉상·전신(현대 연애 → 그림)에 flipHorizontally 를 줘서 대화 상대가 아니라 화면 바깥을 본다
 //  - scene-route-interrupted       기다리지 않는 긴 경로(퇴장 등)가 도는 인물에게 같은 장면이 다시 이동·돌기를 시킨다 — 뒤 명령이 앞 경로를 갈아 끼워 인물이 길 한가운데 멈춘다
 
 import { nestedCommandLists } from "../authoredCommandIndex";
 import type { Command, Dir, EventPage, GameEvent, GameMap, MoveCommand, Project, TilesetDef } from "../types";
 import { isPassable } from "../collision";
 import handInteriorSpec from "@/assets/handInteriorSpec.json";
+import { sharedPortraitNativeGaze } from "@/assets/sharedPortraitAssets";
 import type { LintIssue } from "./projectLint";
 
 type Cell = { x: number; y: number };
@@ -94,6 +96,7 @@ function m2Title(command: Command): string {
   const id = command.commandId;
   if (id === "m2-086-erase-event") return "Erase Event";
   if (id === "m2-040-set-event-location") return "Set Event Location";
+  if (id === "m2-058-wait-for-all-movement") return "Wait for All Movement";
   return typeof (command as { title?: unknown }).title === "string" ? String((command as { title?: unknown }).title) : "";
 }
 
@@ -913,6 +916,8 @@ function checkArrivalFacing(project: Project, issues: LintIssue[], gates: readon
           const pairedDoor = gates.some((g) => g.doorLike && g.event === event)
             && gates.some((g) => g.doorLike && g.map.id === dest.id && g.transfer.mapId === map.id);
           if (pairedDoor) continue;
+          // 승강기 칸·탈것 안(막힌 그림 칸)에 내리는 이동 — 문을 보고 서 있다가 장면이 걸어 나오게 한다(도착 연출).
+          if (!isPassable(project, dest, command.x, command.y)) continue;
           const step = STEP[command.direction as Dir];
           if (!step) continue;
           for (let i = 1; i <= 2; i += 1) {
@@ -1102,6 +1107,32 @@ function checkRouteInterrupted(project: Project, issues: LintIssue[]): void {
   }
 }
 
+// ---------------------------------------------------------------------------- 흉상 시선
+
+/**
+ * 대화창은 원래 시선을 아는 초상을 자리에 맞춰 스스로 거울로 돌린다(왼쪽 자리 → 오른쪽을, 오른쪽 자리 → 왼쪽을 본다 —
+ * dialogue.ts portraitLooksOutward). 그 위에 저작으로 flipHorizontally 를 주면 다시 뒤집혀 상대가 아니라 화면 바깥을 본다.
+ */
+function checkBustFacing(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    for (const host of map.events ?? []) {
+      const seen = new Set<string>();
+      for (const page of pagesOf(host)) {
+        for (const command of walk(page.commands)) {
+          if (command.kind !== "changeFace" || !command.flipHorizontally) continue;
+          if (!sharedPortraitNativeGaze(command.resourceId)) continue;
+          if (seen.has(command.resourceId)) continue;
+          seen.add(command.resourceId);
+          issues.push({
+            severity: "warning", code: "scene-bust-faces-away", mapId: map.id, eventId: host.id, x: host.x, y: host.y,
+            message: `이벤트 ${host.id} 의 흉상 ${command.resourceId}(${command.position ?? "left"}) 에 flipHorizontally 가 있다 — 대화창이 자리에 맞춰 이미 상대 쪽으로 돌려 놓으므로, 뒤집으면 대화 상대가 아니라 화면 바깥을 본다. 뒤집기를 지우고 자리(left/right)만 정한다.`,
+          });
+        }
+      }
+    }
+  }
+}
+
 export function lintScenePolish(project: Project): LintIssue[] {
   const issues: LintIssue[] = [];
   let gates: Gate[] = [];
@@ -1121,6 +1152,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkArrivalFacing);
   guard(checkSpeakerFacing);
   guard(checkRouteInterrupted);
+  guard(checkBustFacing);
   return issues;
 }
 

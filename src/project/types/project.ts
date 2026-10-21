@@ -190,6 +190,11 @@ export interface GameMap {
    * 노선·칸 규약과 정규화는 `src/project/mapTransit.ts`, 달리기·막기·타기는 `src/player/playSceneTransit.ts`.
    */
   transit?: import("../mapTransit").MapTransit;
+  /**
+   * 타일 그림 문(엘리베이터·유리문·철문). optional — 없으면 문 연출 없음. auto 문은 사람이 다가오면 저절로 열고 닫힌다,
+   * 나머지는 「화면 효과」 doorOpen/doorClose 로 연다. 규약 `src/project/eventCommands/doorAnimation.ts`, 렌더러 `src/player/playSceneDoors.ts`.
+   */
+  doors?: import("../eventCommands/doorAnimation").MapDoorDef[];
   /** Fixed sun; absent/off preserves existing maps. Shared editor/player shadow projection. */
   sunlight?: import("../sunlight").MapSunlight;
   /** Optional map-wide decorative layers; independent of gameplay weather. */

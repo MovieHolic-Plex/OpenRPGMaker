@@ -629,9 +629,11 @@ async function applyOp(page, op, runState) {
           choices: choices ? (choices.textContent ?? "").replace(/\s+/g, " ").trim() : null,
           player: { x: s.tileX, y: s.tileY, dir: s.facing, visible: s.player?.visible !== false && (s.player?.alpha ?? 1) > 0.05, moving: !!s.moving, px: Math.round(s.player?.x ?? 0), py: Math.round(s.player?.y ?? 0) },
           events,
+          // 문 열림 정도(playSceneDoors) — 문이 움직이는 동안도 걷기처럼 frameMs 마다 찍는다.
+          doors: typeof s.__doorPose === "string" ? s.__doorPose : "",
         };
       }).catch(() => null);
-      const sig = (st) => st ? JSON.stringify([st.map, st.player.px, st.player.py, st.player.dir, st.player.visible, Object.entries(st.events).map(([k, v]) => [k, v.px, v.py, v.dir])]) : "";
+      const sig = (st) => st ? JSON.stringify([st.map, st.player.px, st.player.py, st.player.dir, st.player.visible, Object.entries(st.events).map(([k, v]) => [k, v.px, v.py, v.dir]), st.doors, st.cam?.sx, st.cam?.sy]) : "";
       const ok = () => page.evaluate(`(${op.fn})()`).catch(() => false);
       runState.recordSeq ??= 0;
       const log = [];

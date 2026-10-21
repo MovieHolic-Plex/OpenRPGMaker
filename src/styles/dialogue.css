@@ -644,6 +644,18 @@
   transform: scaleX(-1);
 }
 
+/* 원래 시선이 화면 바깥인 초상(오른쪽 자리의 → 그림)은 거울로 돌려 가운데를 보게 한다(dialogue.ts portraitLooksOutward).
+   저작된 flipped 와 겹치면 다시 원래대로. 양쪽 스탠딩(veil)은 위의 무대 규칙이 더 구체적이라 그쪽이 이긴다. */
+.dialogue-face.dialogue-face-bust.gaze-mirror {
+  --face-flip: -1;
+  transform: scaleX(var(--face-flip));
+}
+
+.dialogue-face.dialogue-face-bust.gaze-mirror.flipped {
+  --face-flip: 1;
+  transform: scaleX(var(--face-flip));
+}
+
 /* 위쪽 대사창(주인공이 화면 아래쪽이라 상자가 위로 간 경우): 흉상이 상자 **위**로 서면 화면 밖으로 잘려 머리가 안 보인다
    (romance-loop-1 실측: 카페 안 유진, 상자 위쪽 8px 패딩 위로 112px 흉상이 올라가 허리까지만 보임).
    위쪽 상자에서는 흉상을 상자 **아래**로 매달아 머리부터 전부 보이게 한다. */
