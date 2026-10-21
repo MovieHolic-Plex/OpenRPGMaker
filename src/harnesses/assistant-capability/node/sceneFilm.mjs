@@ -111,7 +111,7 @@ try {
     const DELTA = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
     const refused = [];
     let arrived = path.moves.length === 0, walked = 0;
-    for (let guard = 0; guard < 80 && !arrived && path.reached && !deadline(); guard++) {
+    for (let guard = 0; guard < 200 && !arrived && path.reached && !deadline(); guard++) {
       const dir = path.moves[0];
       const before = await state(); if (!before || before.currentMapId !== map.id) break;
       await page.keyboard.down(KEY[dir]);
@@ -126,6 +126,7 @@ try {
       for (let i = 0; i < 20 && stable < 4; i++) { await sleep(80); const now = await state(); if (now && here && now.x === here.x && now.y === here.y && now.currentMapId === here.currentMapId) stable++; else stable = 0; here = now; }
       if (!here || here.currentMapId !== map.id) break;
       const expected = { x: before.x + DELTA[dir][0], y: before.y + DELTA[dir][1] };
+      log.push({ t: Date.now(), kind: 'step', dir, from: [before.x, before.y], to: [here.x, here.y] });
       if (!moved) { refused.push(expected); note('blocked-step', { dir, at: [before.x, before.y] }); }
       else walked++;
       if (moved && here.x === expected.x && here.y === expected.y) {
