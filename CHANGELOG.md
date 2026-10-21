@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.315.0 — 2026-10-22
+
+### 기능
+
+- **ai** — map background assistant path — preset routing, generate_map_background, honest image handoff (#3221) (`843c6af`)
+
 ## 0.314.0 — 2026-10-22
 
 ### 기능
