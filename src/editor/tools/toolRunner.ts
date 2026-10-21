@@ -1,5 +1,5 @@
 import { stripResourceSearchIdPrefixes } from "./resourceSearchIdArgs";
-import { adoptBuiltMapAsStart } from "./startOnBuiltMap";
+import { adoptBuiltMapAsStart, seedMapPlacementNote } from "./startOnBuiltMap";
 import { syncHeroineDeadline } from "@/project/deadlineEnding";
 import { normalizePlaceToolArgs } from "./spatialPlaceContract";
 // editor/tools/toolRunner.ts
@@ -601,6 +601,8 @@ export function runToolDefinition(
     // 새 프로젝트의 빈 시드 맵에 시작이 남은 채 새 맵만 지었으면 시작을 그 맵으로 옮긴다(startOnBuiltMap.ts).
     const startNote = ctx.assistantRun && tool.mode === "write" && name !== "set_start_position" ? adoptBuiltMapAsStart(before, draft) : null;
     if (startNote) exec = { ...exec, warnings: [...(exec.warnings ?? []).filter((w) => !w.startsWith("게임 시작 위치가 아직 빈 시드 맵")), startNote] };
+    const seedNote = ctx.assistantRun && tool.mode === "write" ? seedMapPlacementNote(before, draft) : null;
+    if (seedNote) exec = { ...exec, warnings: [...(exec.warnings ?? []), seedNote] };
 
     // 지연 타일셋 사전을 확정한다 — 아래 비교·커밋은 모든 타일셋을 훑으므로, 확정 전이면 전부 복제된다.
     finishDraftTilesets(draft);

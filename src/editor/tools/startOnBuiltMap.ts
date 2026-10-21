@@ -69,3 +69,16 @@ export function adoptBuiltMapAsStart(before: Project, draft: Project): string | 
   draft.startPos = cell;
   return `게임 시작 위치를 빈 시드 맵 ${SEED_START_MAP_ID} 에서 새로 지은 ${map.name ?? map.id}(${map.id}) (${cell.x},${cell.y}) 로 옮겼습니다 — 빈 풀밭에서 시작하지 않게. 다른 칸·맵에서 시작하려면 set_start_position 으로 바꾸세요.`;
 }
+
+/**
+ * 템플릿의 빈 풀밭(시드 맵)에 인물·이벤트만 놓았을 때의 경고. 「작은 마을 맵에 NPC 세 명」을 받고 장소를 짓지 않은 채
+ * 빈 시드 맵 풀밭에 세 명을 세웠다(2026-10-22 r2 npc-portrait-match — 판정 「마을이 없다」). 바닥이 그대로인 시드 맵에
+ * 이벤트가 처음 생기면 알린다. 사용자가 그 빈 맵을 쓰라고 했으면 무시해도 된다.
+ */
+export function seedMapPlacementNote(before: Project, draft: Project): string | null {
+  const was = before.maps[SEED_START_MAP_ID], now = draft.maps[SEED_START_MAP_ID];
+  if (!was || !now || !isUntouchedMap(was) || now.events.length === 0) return null;
+  if (!isUntouchedMap({ ...now, events: [] })) return null;
+  return `${SEED_START_MAP_ID}(「${now.name ?? "빈 맵"}」)은 새 프로젝트 템플릿의 아무것도 없는 풀밭입니다 — 여기에 이벤트 ${now.events.length}개만 놓였습니다. `
+    + `사용자가 장소(마을·방·가게…)를 말했다면 그 장소를 먼저 지은 맵(author_beodeul_town·build_hand_interior_room 등)에 놓으세요. 이 빈 맵을 쓰라고 했다면 무시하세요.`;
+}
