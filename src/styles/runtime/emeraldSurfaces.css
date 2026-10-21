@@ -680,7 +680,7 @@
    작은 얼굴·이름표는 3세대 상자처럼 계속 숨긴다(2026-10-21 아스트라 인물 흉상).
    일러스트는 표시 시점에 44x46 도트 격자로 줄여(색 16개·윤곽 1화소, src/player/bustPixelate.ts) 정수 2배로 키운다 —
    맵·상자와 화소 크기가 같다. 원본 그림은 그대로 두고, 변환이 실패하면 원본이 부드럽게 보이는 대신 그대로 나온다.
-   단 이미 88x92 로 구운 흉상(아스트라 인물)은 줄이지 않고 1:1 로 쓴다 — 44x46 에서는 얼굴이 뭉개진다. */
+   이미 44x46 도트로 구운 흉상(아스트라 인물, 눈·입 손질)은 다시 줄이지 않고 2배로만 키운다. */
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] {
   --runtime-dialogue-bust-height: 108px;
   --runtime-dialogue-bust-width: 104px;

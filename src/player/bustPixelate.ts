@@ -84,9 +84,18 @@ async function render(url: string): Promise<string | null> {
   const w = image.naturalWidth;
   const h = image.naturalHeight;
   if (!w || !h) return null;
-  // 이미 상자 크기(88x92)로 구운 도트 흉상(아스트라 인물, scripts/content/monsters/bake_astra_cast.py)은 다시 줄이지 않는다 —
-  // 44x46 으로 줄이면 눈·입이 한두 화소로 뭉개진다(2026-10-21 사용자 지적). null 이면 원본이 1:1 로 그대로 나온다.
-  if (w === BUST_ART_WIDTH * BUST_PIXEL_SCALE && h === BUST_ART_HEIGHT * BUST_PIXEL_SCALE) return null;
+  const big = document.createElement("canvas");
+  big.width = BUST_ART_WIDTH * BUST_PIXEL_SCALE;
+  big.height = BUST_ART_HEIGHT * BUST_PIXEL_SCALE;
+  const bigCtx = big.getContext("2d");
+  if (!bigCtx) return null;
+  bigCtx.imageSmoothingEnabled = false;
+  // 이미 도트 격자 44x46 으로 구운 흉상(아스트라 인물, scripts/content/monsters/bake_astra_cast.py — 16색·윤곽·눈/입 손질)은
+  // 다시 줄이거나 색을 다시 고르지 않고 2배 최근접으로만 키운다. 다시 줄이면 손질한 눈·입이 뭉개진다.
+  if (w === BUST_ART_WIDTH && h === BUST_ART_HEIGHT) {
+    bigCtx.drawImage(image, 0, 0, big.width, big.height);
+    return big.toDataURL("image/png");
+  }
   const fit = Math.min(BUST_ART_WIDTH / w, BUST_ART_HEIGHT / h);
   const dw = Math.max(1, Math.round(w * fit));
   const dh = Math.max(1, Math.round(h * fit));
@@ -129,12 +138,6 @@ async function render(url: string): Promise<string | null> {
     }
   }
   ctx.putImageData(out, 0, 0);
-  const big = document.createElement("canvas");
-  big.width = BUST_ART_WIDTH * BUST_PIXEL_SCALE;
-  big.height = BUST_ART_HEIGHT * BUST_PIXEL_SCALE;
-  const bigCtx = big.getContext("2d");
-  if (!bigCtx) return null;
-  bigCtx.imageSmoothingEnabled = false;
   bigCtx.drawImage(art, 0, 0, big.width, big.height);
   return big.toDataURL("image/png");
 }
