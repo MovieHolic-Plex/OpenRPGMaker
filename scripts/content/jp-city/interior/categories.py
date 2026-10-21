@@ -10,8 +10,9 @@ CATEGORIES = [
     ('stairs', '계단', ['stairs-up-wood', 'stairs-up-wood-wide', 'stairwell-down-wood']),
     ('door', '문', ['door-open-western', 'door-open-toilet', 'fusuma-open', 'door-side-western', 'door-side-sliding', 'door-western']),
     ('window', '창', ['window-sash', 'window-sash-small', 'shoji-window', 'curtain-window']),
-    ('wallhang', '벽걸이', ['intercom', 'ac-unit', 'wall-clock', 'calendar', 'light-switch', 'kamidana']),
-    ('kitchen', '부엌', ['kitchen-sink', 'kitchen-worktop', 'kitchen-stove', 'fridge', 'microwave-rack', 'cupboard', 'trash-bins']),
+    ('wallhang', '벽걸이', ['intercom', 'ac-unit', 'wall-clock', 'calendar', 'light-switch', 'kamidana', 'wood-post']),
+    ('kitchen', '부엌', ['kitchen-sink', 'kitchen-worktop', 'kitchen-stove', 'fridge', 'microwave-rack', 'cupboard', 'trash-bins',
+                       'glass-cupboard', 'serving-hatch']),
     ('dining', '다이닝', ['chair-dining-s', 'chair-dining-n', 'chair-dining-e', 'chair-dining-w']),
     ('living', '거실', ['sofa-s', 'sofa-n', 'sofa-e', 'sofa-w', 'low-table', 'tv-board', 'rug', 'houseplant', 'bookshelf', 'floor-lamp',
                        'cushion-floor']),
@@ -19,9 +20,9 @@ CATEGORIES = [
                          'tokonoma', 'chigaidana', 'oshiire', 'futon', 'futon-folded', 'andon', 'ikebana', 'tv-old']),
     ('bedroom', '침실', ['bed-single', 'bed-double', 'wardrobe', 'closet-doors', 'dresser-low', 'mirror-stand', 'bed-side-table']),
     ('kids', '아이방·서재', ['bunk-bed', 'desk-study', 'desk-chair-s', 'desk-chair-n', 'desk-chair-e', 'desk-chair-w']),
-    ('bath', '욕실', ['bathtub', 'bathtub-lid', 'shower-faucet', 'bath-mirror', 'bath-stool', 'bath-bucket']),
-    ('dressing', '탈의실·세탁', ['bath-mat', 'washbasin', 'washing-machine', 'laundry-basket', 'towel-rack', 'laundry-rack']),
-    ('toilet', '화장실', ['toilet', 'toilet-handwash', 'toilet-paper', 'toilet-mat', 'toilet-slippers']),
+    ('bath', '욕실', ['bathtub', 'bathtub-lid', 'shower-faucet', 'bath-mirror', 'bath-stool', 'bath-bucket', 'unit-bath']),
+    ('dressing', '탈의실·세탁', ['bath-mat', 'washbasin', 'washing-machine', 'laundry-basket', 'towel-rack', 'laundry-rack', 'vanity-mirror']),
+    ('toilet', '화장실', ['toilet', 'toilet-handwash', 'toilet-paper', 'toilet-mat', 'toilet-slippers', 'toilet-shelf']),
     # ── 2묶음(2026-10-07): 가게·공공·집 보강 ──
     ('veranda', '베란다', ['h2-railing', 'h2-railing-metal', 'h2-laundry-pole', 'h2-ac-outdoor', 'h2-planter', 'h2-sandals', 'h2-sash-door']),
     ('apartment', '맨션·목조 아파트', ['h2-genkan-door-steel', 'h2-shoe-closet', 'h2-bed-side', 'h2-old-sink', 'h2-old-fridge', 'h2-cardboard',
@@ -203,7 +204,9 @@ CATEGORIES = [
 ]
 
 from gate_hold import HOLD   # noqa: E402 — 3/4 관문 불합격으로 번들에서 뺀 조각
-CATEGORIES = [(_c, _k, [_i for _i in _ids if _i not in HOLD]) for _c, _k, _ids in CATEGORIES]
+from house3_picks import held as _h3_held   # noqa: E402 — 집 보강 8종(object-gen) 중 관문을 아직 못 넘은 조각
+_H3 = set(_h3_held())
+CATEGORIES = [(_c, _k, [_i for _i in _ids if _i not in HOLD and _i not in _H3]) for _c, _k, _ids in CATEGORIES]
 
 BY_ID = {}
 for _cat, _ko, _ids in CATEGORIES:
