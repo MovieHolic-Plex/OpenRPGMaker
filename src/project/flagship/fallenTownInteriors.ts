@@ -20,6 +20,7 @@ type Home = {
   readonly program: string;
   readonly style: "A" | "B" | "C" | "D";
   readonly bgm: string;
+  readonly extra?: readonly (readonly [string, number, number])[];
   readonly people: readonly {
     readonly id: string; readonly name: string; readonly query: string;
     readonly lines: readonly string[]; readonly after: readonly string[];
@@ -54,13 +55,19 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
   const shopItems = (project.database.items ?? []).filter((i) => (i.price ?? 0) > 0 && i.type === "medicine").slice(0, 4).map((i) => i.id);
   const homes: Home[] = [
     {
-      door: { x: 50, y: 31 }, mapId: "fs_inn", name: "아스텔 · 별빛 여관", program: "inn", style: "B", bgm: "cc0-bgm-rtp-rst-001",
+      door: { x: 50, y: 31 }, mapId: "fs_inn", name: "아스텔 · 별빛 여관", program: "tavern", style: "A", bgm: "cc0-bgm-rtp-rst-001",
+      extra: [["roundtable", 4, 10], ["chair E", 3, 10], ["chair W", 5, 10], ["roundtable", 7, 12], ["chair E", 6, 12], ["chair W", 8, 12], ["keg rack", 2, 8]],
       people: [
         {
           id: "ev_fs_inn_keeper", name: "여관 주인 마르타", query: "젊은 여성",
           lines: ["어서 와요, 카엘. 어젯밤 별똥별 봤어요? 손님들이 밤새 창가에 붙어 있었다니까.", "하룻밤 30골드. 푹 쉬고 가요."],
           after: ["그 아이… 이리스라고 했죠? 방은 넉넉해요. 교단 사람들 눈에 안 띄게 안쪽 방을 써요.", "하룻밤 30골드. 푹 쉬고 가요."],
           commands: [{ kind: "inn", price: 30 }],
+        },
+        {
+          id: "ev_fs_inn_bard", name: "떠돌이 악사", query: "젊은 남성",
+          lines: ["별이 떨어진 밤의 노래를 짓는 중이오. 「동쪽 숲에 은빛 알이 내려앉았네」… 운이 안 맞는군."],
+          after: ["은빛 머리 아가씨라… 노래 속 별의 딸 같구려. 걱정 마시오, 교단 앞에선 이 노래 안 부르리다."],
         },
         {
           id: "ev_fs_inn_guest", name: "길손", query: "중년 남성 주민",
@@ -141,6 +148,14 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       if (t.kind === "transfer") { t.x = front.x; t.y = front.y; t.direction = "down"; }
     }
     run(project, "set_map_properties", { mapId: home.mapId, bgm: { mode: "custom", resourceId: home.bgm } });
+    // 선술집 홀 북서쪽이 맨 마루로 비었다(VQA r3) — 원탁과 의자 두 벌을 더 놓는다(놓일 수 없으면 건너뛴다).
+    for (const [kit, x, y] of home.extra ?? []) {
+      const ctx = { project, assistantRun: false };
+      try {
+        const res = runTool(ctx, "stamp_object", { objectId: `kit:atlas_biome_interior/hand-interior:${kit}`, mapId: home.mapId, x, y }, { dryRun: false }) as Run;
+        if (res.ok) Object.assign(project, ctx.project);
+      } catch { /* 장식 — 못 놓으면 건너뛴다 */ }
+    }
     const interior = project.maps[home.mapId]!;
     // 사람은 출구에서 걸어 닿는 방 안쪽 빈 칸에 — 출구·서로 3칸 이상 떨어지게.
     const taken: Cell[] = [exitCell];

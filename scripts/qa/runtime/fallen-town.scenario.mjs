@@ -14,7 +14,7 @@ const look = (id, note, x, y, dir = "down") => ({
 
 export default {
   id: "fallen-town",
-  projectFixture: process.env.RES_FIXTURE ?? "/tmp/fs-town14.json",
+  projectFixture: process.env.RES_FIXTURE ?? "/tmp/fs-town18.json",
   viewport: { width: vw, height: vh },
   beats: [
     { id: "title", note: "타이틀", ops: [
@@ -32,7 +32,7 @@ export default {
     { id: "procl-2", note: "포고 2", ops: [...closeDialogue()], shot: true },
     { id: "procl-3", note: "포고 3", ops: [...closeDialogue()], shot: true },
     { id: "procl-4", note: "포고 4 — 행진 시작", ops: [...closeDialogue()], shot: true },
-    ...Array.from({ length: 8 }, (_, i) => ({ id: `march-${i + 1}`, note: "발렌 일행이 성문으로", ops: [{ kind: "hold", dir: null, ms: 400 }], shot: true })),
+    ...Array.from({ length: 10 }, (_, i) => ({ id: `march-${i + 1}`, note: "발렌 일행이 성문으로(화면이 행렬을 따라간다)", ops: [{ kind: "hold", dir: null, ms: 1400 }], shot: true })),
     { id: "march-done", note: "행진 끝", ops: [{ kind: "hold", dir: null, ms: 4000 }, ...closeDialogue()], shot: true },
     look("v-bridge", "아치 돌다리 · 운하 · 천문대 탑", 22, 22),
     look("v-tower", "천문대 탑 문 앞", 24, 21, "up"),
