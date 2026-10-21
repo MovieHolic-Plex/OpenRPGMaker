@@ -25,6 +25,13 @@ const approachUp = (mapId, x, y) => [
   { kind: "evalToFile", fn: `() => { window.__oprnDebug.playerRoute([{ kind: "move", dir: "up" }, { kind: "move", dir: "up" }]); return true; }`, out: "/tmp/fs-audit-approach.json" },
   { kind: "hold", dir: null, ms: 1200 },
 ];
+/** 지하 등불 방: 남쪽 통로로 걸어 들어가면 발렌이 북쪽 통로에서 걸어 내려온다(chronoBell valenWalksIn). */
+const valenWalksIn = [
+  { kind: "face", dir: "up" }, { kind: "teleport", mapId: "fs_vault", x: 25, y: 31 }, { kind: "hold", dir: null, ms: 500 },
+  { kind: "evalToFile", fn: `() => { window.__oprnDebug.playerRoute([{ kind: "move", dir: "up" }, { kind: "move", dir: "up" }]); return true; }`, out: "/tmp/fs-walkin.json" },
+  { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 10000 },
+  { kind: "hold", dir: null, ms: 1200 },
+];
 const talk = (dir) => [{ kind: "face", dir }, { kind: "action" }, { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 8000 }, { kind: "hold", dir: null, ms: 1800 }];
 /** 출입구 칸 바로 앞에 서서 그쪽으로 걸어 밟는다. */
 const stepInto = (mapId, x, y, dir) => [
@@ -155,7 +162,8 @@ export default {
     { id: "to-vault", note: "지하로", ops: [{ kind: "hold", dir: "up", ms: 1200 }, { kind: "hold", dir: null, ms: 1500 }, dumpState("vault")], shot: true },
     { id: "save-crystal", note: "세이브 결정", ops: [{ kind: "teleport", mapId: "fs_vault", x: 33, y: 20 }, { kind: "hold", dir: null, ms: 400 }, ...talk("right")], shot: true },
     { id: "save-crystal-close", note: "", ops: [...closeDialogue()], shot: false },
-    { id: "valen", note: "발렌", ops: [...closeDialogue(), ...approachUp("fs_vault", 25, 25), ...talk("up")], shot: true },
+    { id: "valen-enters", note: "발렌이 북쪽 통로에서 걸어 내려온다", ops: [...closeDialogue(), ...valenWalksIn, { kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 1500 }], shot: true },
+    { id: "valen", note: "발렌", ops: [{ kind: "hold", dir: null, ms: 2500 }, ...closeDialogue(), ...approachUp("fs_vault", 25, 25), ...talk("up")], shot: true },
     { id: "battle", note: "결전 시작", ops: [
       { kind: "pressUntil", key: "Enter", testid: "battle-scene", state: "present", maxPresses: 20, timeoutMs: 900 },
       { kind: "hold", dir: null, ms: 2500 },

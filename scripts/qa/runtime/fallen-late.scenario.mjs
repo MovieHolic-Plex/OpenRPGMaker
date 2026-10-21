@@ -33,6 +33,13 @@ const approachUp = (mapId, x, y) => [
   { kind: "evalToFile", fn: `() => { window.__oprnDebug.playerRoute([{ kind: "move", dir: "up" }, { kind: "move", dir: "up" }]); return true; }`, out: "/tmp/fs-late-approach.json" },
   { kind: "hold", dir: null, ms: 1200 },
 ];
+/** 지하 등불 방: 남쪽 통로로 걸어 들어가면 발렌이 북쪽 통로에서 걸어 내려온다(chronoBell valenWalksIn). */
+const valenWalksIn = [
+  { kind: "face", dir: "up" }, { kind: "teleport", mapId: "fs_vault", x: 25, y: 31 }, { kind: "hold", dir: null, ms: 500 },
+  { kind: "evalToFile", fn: `() => { window.__oprnDebug.playerRoute([{ kind: "move", dir: "up" }, { kind: "move", dir: "up" }]); return true; }`, out: "/tmp/fs-walkin.json" },
+  { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 10000 },
+  { kind: "hold", dir: null, ms: 1200 },
+];
 const talk = (dir) => [{ kind: "face", dir }, { kind: "action" }, { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 8000 }, { kind: "hold", dir: null, ms: 1800 }];
 const stepInto = (mapId, x, y, dir) => [
   { kind: "teleport", mapId, x, y },
@@ -98,7 +105,8 @@ export default {
       ...[0, 1].flatMap(() => closeDialogue(20)),
       evalOp("switches", `() => { for (const id of ["sw_fs_main_started", "sw_fs_main_step0", "sw_fs_main_step1"]) window.__oprnDebug.setSwitch(id, true); return window.__oprnDebug.readState().partyActorIds; }`),
     ], shot: false },
-    { id: "valen", note: "발렌 앞 — 대열", ops: [...approachUp("fs_vault", 25, 25), ...talk("up")], shot: true },
+    { id: "valen-enters", note: "발렌이 북쪽 통로에서 걸어 내려온다", ops: [...valenWalksIn, { kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 1500 }], shot: true },
+    { id: "valen", note: "발렌 앞 — 대열", ops: [{ kind: "hold", dir: null, ms: 2500 }, ...closeDialogue(), ...approachUp("fs_vault", 25, 25), ...talk("up")], shot: true },
     { id: "lose-start", note: "결전(일부러 체력 1로)", ops: [
       evalOp("weak", `() => { for (const id of window.__oprnDebug.readState().partyActorIds) window.__oprnSetActorVitals(id, 1, 999); return true; }`),
       { kind: "pressUntil", key: "Enter", testid: "battle-scene", state: "present", maxPresses: 30, timeoutMs: 900 },

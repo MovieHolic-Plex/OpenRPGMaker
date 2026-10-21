@@ -533,6 +533,72 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   vanishWhen(hub, `ev_${FS_PREFIX}_knight`, SW_VALEN_MARCHED);
 }
 
+export const SW_VALEN_ARRIVED = "sw_fs_valen_arrived";
+/**
+ * 지하의 발렌은 처음부터 등불 앞에 서 있지 않고, 일행이 방에 들어서면 북쪽 통로에서 걸어 내려와 선다(가혹 검수 r12
+ * 「발렌 보스 등장도 입구에서 걸어 들어오게」). 걷는 그림은 따로 둔 이벤트가 맡고, 닿는 순간 스위치로 진짜 보스 이벤트와
+ * 바꿔 세운다 — 보스 이벤트의 칸이 고정이라 불러오기·재도전·지도 재진입에서도 자리가 어긋나지 않는다.
+ * 남쪽 통로 한 줄(보스 아래 5칸)에 밟는 칸을 깔고, 스위치가 켜지면 그 칸들은 사라진다.
+ */
+function valenWalksIn(project: Project, vault: GameMap, bossId: string): void {
+  const boss = vault.events.find((e) => e.id === bossId);
+  if (!boss?.pages?.length) return;
+  if (!project.switches.some((s) => s.id === SW_VALEN_ARRIVED)) project.switches.push({ id: SW_VALEN_ARRIVED, name: "발렌이 등불 앞에 섰다" });
+  const arrived = { kind: "switch", switchId: SW_VALEN_ARRIVED, value: true } as const;
+  // 보스의 모든 페이지는 도착 뒤에만. 그 전에는 맨 앞의 빈 페이지(조건 없음)가 남는다 — 나중 페이지가 이긴다.
+  for (const page of boss.pages) page.conditions = [...(page.conditions ?? []), arrived];
+  boss.pages.unshift({
+    id: `${bossId}_unseen`, name: "아직 오지 않음", conditions: [], graphic: { transparent: true },
+    movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "below", trigger: { kind: "action" }, commands: [],
+  } as EventPage);
+  const visible = boss.pages.find((p) => p.graphic?.sprite)?.graphic;
+  // 북쪽 통로에서 출발: 보스 위로 6~8칸, 좌우 2칸 안의 걸을 수 있는 칸 중 보스까지 길이 가장 긴(가장 깊은) 곳.
+  let start: { x: number; y: number } | undefined;
+  let path: Step[] | null = null;
+  for (let dy = 8; dy >= 6 && !path; dy -= 1) {
+    for (const dx of [0, 1, -1, 2, -2]) {
+      const cell = { x: boss.x + dx, y: boss.y - dy };
+      if (cell.y < 0 || !isPassable(project, vault, cell.x, cell.y)) continue;
+      const found = walkPath(project, vault, cell, { x: boss.x, y: boss.y }, bossId);
+      if (found) { start = cell; path = found; break; }
+    }
+  }
+  if (!start || !path) throw new Error("[fallen-star] 발렌이 걸어 들어올 북쪽 통로를 찾지 못했다");
+  const walkerId = `ev_${FS_PREFIX}_valen_walk_in`;
+  vault.events = vault.events.filter((e) => e.id !== walkerId && !String(e.id).startsWith(`ev_${FS_PREFIX}_valen_cue_`));
+  vault.events.push({
+    id: walkerId, name: "걸어 들어오는 발렌", x: start.x, y: start.y, trigger: { kind: "action" }, commands: [],
+    pages: [
+      { id: `${walkerId}_on`, name: "통로", conditions: [], graphic: { ...visible, direction: "down" }, movement: { type: "fixed", speed: 3, frequency: 3 },
+        priority: "same", trigger: { kind: "action" }, commands: [] },
+      { id: `${walkerId}_gone`, name: "섰다", conditions: [arrived], graphic: { transparent: true }, movement: { type: "fixed", speed: 3, frequency: 3 },
+        priority: "below", trigger: { kind: "action" }, commands: [] },
+    ],
+  } as unknown as GameEvent);
+  const cue: Command[] = [
+    { kind: "cutsceneControl", mode: "begin", skippable: true },
+    narrate("어둠 저편에서 발소리가 내려온다."),
+    { kind: "showEmote", target: "player", emote: "exclamation", durationMs: 700 },
+    { kind: "moveEvent", eventId: walkerId, route: { moves: [...path.map((dir) => ({ kind: "move", dir })), { kind: "turn", dir: "down" }], repeat: false, wait: true, skippable: true } },
+    { kind: "label", name: "cutscene_end" },
+    { kind: "setSwitch", switchId: SW_VALEN_ARRIVED, value: true },
+    { kind: "cutsceneControl", mode: "end" },
+  ] as unknown as Command[];
+  const row = boss.y + 5;
+  for (let x = boss.x - 3; x <= boss.x + 3; x += 1) {
+    if (!isPassable(project, vault, x, row)) continue;
+    vault.events.push({
+      id: `ev_${FS_PREFIX}_valen_cue_${x}`, name: "발렌 등장", x, y: row, trigger: { kind: "playerTouch" }, commands: [],
+      pages: [
+        { id: `ev_${FS_PREFIX}_valen_cue_${x}_on`, name: "밟으면", conditions: [{ kind: "switch", switchId: SW_VALEN_ARRIVED, value: false }],
+          graphic: { transparent: true }, movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "below", trigger: { kind: "playerTouch" }, commands: clone(cue) },
+        { id: `ev_${FS_PREFIX}_valen_cue_${x}_off`, name: "지남", conditions: [arrived],
+          graphic: { transparent: true }, movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "below", trigger: { kind: "action" }, commands: [] },
+      ],
+    } as unknown as GameEvent);
+  }
+}
+
 /** origin 에서 가장 가까운, 걸을 수 있고 다른 이벤트와 붙지 않은 빈 칸. */
 /**
  * 결전 승리 뒤 흐름(감사 2차): 장 구성기는 승리 즉시 단계 스위치를 켜 발렌이 「연기 속으로」 대사 전에 사라졌고,
@@ -1148,6 +1214,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   stageTalk(M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_bram`));
   // bossEvent 는 앞에서 잡은 옛 맵 객체일 수 있다(도구를 부를 때마다 맵이 새로 만들어진다) — id 로 다시 찾는다.
   stageTalk(bossEvent ? M(ids.vault).events.find((e) => e.id === bossEvent.id) : undefined);
+  if (bossEvent) valenWalksIn(project, M(ids.vault), bossEvent.id);
   applySpeakerFaces(project, {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),

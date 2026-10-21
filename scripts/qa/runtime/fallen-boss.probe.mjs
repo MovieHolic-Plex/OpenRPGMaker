@@ -180,7 +180,7 @@ async function playRun(browser, serverUrl, run) {
     await page.evaluate(() => { for (const id of ["sw_fs_main_started", "sw_fs_main_step0"]) window.__oprnDebug.setSwitch(id, true); });
     if (run.items) await page.evaluate((items) => { for (const [id, n] of Object.entries(items)) window.__oprnDebug.giveItem(id, n); }, run.items);
     // 발렌 앞(25,25)에는 두 칸 아래에서 걸어 올라와 선다 — 순간이동만 하면 동료가 직전 방향(옆)으로 깔려 기둥 위에 섰다(가혹 검수 r10).
-    await page.evaluate(() => { window.__oprnDebug.setSwitch("sw_fs_main_step1", true); window.__oprnInput.face("up"); window.__oprnDebug.teleport("fs_vault", 25, 27); });
+    await page.evaluate(() => { window.__oprnDebug.setSwitch("sw_fs_main_step1", true); window.__oprnDebug.setSwitch("sw_fs_valen_arrived", true); window.__oprnInput.face("up"); window.__oprnDebug.teleport("fs_vault", 25, 27); });
     await page.waitForTimeout(800);
     await page.evaluate(() => window.__oprnDebug.playerRoute([{ kind: "move", dir: "up" }, { kind: "move", dir: "up" }]));
     await page.waitForTimeout(1500);
