@@ -217,7 +217,7 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       // 발표 배치(VQA r4 M3): 발표자 둘은 탁자 동쪽 끝에 나란히 서서 서쪽(탁자)을 본다 — 한 열로 쌓이지 않는다.
       // 본부장은 유리문 가까운 북쪽 의자(6,16), 민호는 남쪽 의자(5,19)에 앉고, 팀장은 서쪽 끝(3,17)에 선다.
       meetingSeat: { x: 8, y: 17 },
-      meetSeats: [{ x: 8, y: 17 }, { x: 9, y: 17 }, { x: 5, y: 19 }, { x: 3, y: 17 }, { x: 6, y: 16 }],
+      meetSeats: [{ x: 8, y: 17 }, { x: 9, y: 17 }, { x: 5, y: 16 }, { x: 3, y: 17 }, { x: 6, y: 16 }],
       whiteboard: nearestFree(project, officeRoom, { x: 23, y: 10 }),
     },
     rooftop: {

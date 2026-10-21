@@ -13,7 +13,7 @@ import { runTool } from "@/editor/tools/toolRunner";
 import "@/editor/tools/toolRegistry";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
-import { isPassable } from "@/project/collision";
+import { canMove, isPassable } from "@/project/collision";
 import { enableGenreLock } from "@/project/genreLock";
 import { defaultVnLook } from "@/project/vnLook";
 import { deserialize, serialize } from "@/project/io";
@@ -191,10 +191,18 @@ function dirToward(from: Cell, to: Cell): Dir {
  * walkRoute 는 빈 길의 명령을 돌려주고, resolveRoutes() 가 데모를 다 지은 뒤 채운다.
  */
 // 도구 호출(define_ending 등)이 프로젝트를 복제해 맵을 갈아 끼우므로, 명령 객체를 붙잡지 않고 표식(routeKey)으로 나중에 찾는다.
-let pendingRoutes = new Map<string, () => Dir[]>();
+let pendingRoutes = new Map<string, { dirs: () => Dir[]; firstStepBlocked: (dir: Dir) => boolean }>();
 function walkRoute(project: Project, mapId: string, eventId: string, from: Cell, to: Cell, avoid: readonly Cell[] = [], waitDone = true, endFacing?: Dir): Command {
   const routeKey = `r${pendingRoutes.size}`;
-  pendingRoutes.set(routeKey, () => route(project, mapId, from, to, avoid));
+  // 의자·소품 칸(지나갈 수 없는 칸)에 앉은 사람은 그 칸에서 나가는 걸음이 엔진 통행 검사(canMove 의 출발 칸 비트)에 막힌다
+  // (VQA r5: 본부장이 의자에서 못 일어나 경로가 통째로 건너뛰어졌다). 첫걸음만 통과로 일어선다.
+  pendingRoutes.set(routeKey, {
+    dirs: () => route(project, mapId, from, to, avoid),
+    firstStepBlocked: (dir) => {
+      const d = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[dir];
+      return !canMove(project, project.maps[mapId]!, from.x, from.y, from.x + d[0]!, from.y + d[1]!);
+    },
+  });
   // 걸어 도착한 인물은 걸어 온 쪽이 아니라 그 자리의 할 일(상대·책상)을 본다 — 끝 방향을 경로 안에서 돌린다.
   return { ...(walk(eventId, [], waitDone) as object), routeKey, ...(endFacing ? { routeTail: [{ kind: "turn", dir: endFacing }] } : {}) } as unknown as Command;
 }
@@ -223,9 +231,12 @@ function resolveRoutes(project: Project): void {
     if (!Array.isArray(list)) return;
     for (const c of list as Record<string, unknown>[]) {
       if (c?.kind === "moveEvent" && typeof c.routeKey === "string") {
-        const dirs = pendingRoutes.get(c.routeKey)?.() ?? [];
+        const pending = pendingRoutes.get(c.routeKey);
+        const dirs = pending?.dirs() ?? [];
         const head = (c.routeHead as unknown[] | undefined) ?? [], tail = (c.routeTail as unknown[] | undefined) ?? [];
-        (c.route as { moves: unknown[] }).moves = [...head, ...dirs.map((dir) => ({ kind: "move", dir })), ...tail];
+        const steps: unknown[] = dirs.map((dir) => ({ kind: "move", dir }));
+        if (dirs.length && pending?.firstStepBlocked(dirs[0]!)) steps.splice(0, 1, { kind: "setThrough", enabled: true }, steps[0], { kind: "setThrough", enabled: false });
+        (c.route as { moves: unknown[] }).moves = [...head, ...steps, ...tail];
         delete c.routeKey; delete c.routeHead; delete c.routeTail;
       }
       for (const k of ["then", "else", "commands"]) fill(c?.[k]);
@@ -708,7 +719,8 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
       ...fadeOut(900),
       stopBgm(),
       setSw("sw_fl_flashback", true),
-      transfer(FL_MAP.broadcast, a.broadcast.start.x, a.broadcast.start.y, "up"),
+      // 화면은 이미 검다 — 옮기기 자체의 밝아짐을 끄고 회상 장면이 주인공(어른 서하)을 감춘 뒤에 밝힌다(VQA r5: 첫 칸에 어른 서하가 보였다).
+      transfer(FL_MAP.broadcast, a.broadcast.start.x, a.broadcast.start.y, "up", "none"),
     ]),
     page("cool2", [stageAtLeast(V_STAGE, S.FLASH)], think("바나나우유. 오늘은 그냥 보기만 한다.")),
   ]));
@@ -971,7 +983,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
 function buildFriday(project: Project, a: FirstLoveAnchors): void {
   const fri = project.maps[FL_MAP.officeFri]!;
   const o = a.office;
-  // 탁자 둘레(meetSeats): [0]=주인공(동쪽 끝) [1]=지후(주인공 오른쪽 옆 — 발표자 둘이 나란히) [2]=민호(남쪽 의자에 앉음) [3]=팀장(서쪽 끝) [4]=본부장(북쪽 의자에 앉음 — 먼저 나가는 손님이 바로 옆 유리문으로 나간다).
+  // 탁자 둘레(meetSeats): [0]=주인공(동쪽 끝) [1]=지후(주인공 오른쪽 옆 — 발표자 둘이 나란히) [2]=민호(북쪽 의자, 본부장 옆 — 남쪽 의자는 회의실이 맵 맨 아래라 대화창에 가린다, VQA r5) [3]=팀장(서쪽 끝) [4]=본부장(북쪽 의자에 앉음 — 먼저 나가는 손님이 바로 옆 유리문으로 나간다).
   const seats = o.meetSeats;
   const jihuSpot = seats[1]!; const clientSpot = seats[4]!; const leadSpot = seats[3]!; const minhoSpot = seats[2]!;
   // 손님·지후는 두 번째 엘리베이터(주인공이 내린 칸이 아닌 문)로 나간다 — 엘리베이터 문 바로 앞에서 사라진다.
@@ -984,7 +996,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     event("ev_fl_f_client", "박 본부장", clientSpot, [page("fc", [swOff("sw_fl_client_left")], [], { who: "client", dir: "down" })]),
     event("ev_fl_f_lead", "오정민 팀장", leadSpot, [page("fl", [], [], { who: "lead", dir: "right" })]),
     event("ev_fl_f_jihu", "강지후", jihuSpot, [page("fj", [swOff("sw_fl_jihu_left")], [], { who: "jihu", dir: "left" })]),
-    event("ev_fl_f_minho", "차민호", minhoSpot, [page("fm", [], [], { who: "minho", dir: "up" })]),
+    event("ev_fl_f_minho", "차민호", minhoSpot, [page("fm", [], [], { who: "minho", dir: "down" })]),
     door("ev_fl_f_elev2", o.npcExit, [stageIs(V_STAGE, 999)], [], think("…"), "down"),
   );
   add(fri, scene("ev_fl_fri", { x: 1, y: 1 }, S.WED_TALK, [
@@ -1027,6 +1039,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     ...say("lead", "happy", "그럼 다음 주부터 2차 개발 들어가겠습니다. 감사합니다, 본부장님."),
     clientOut.begin,
     face("@player", dirToward(o.meetingSeat, minhoSpot)),
+    face("ev_fl_f_minho", dirToward(minhoSpot, o.meetingSeat)),
     ...say("minho", "happy", "대박! 서하 씨, 첫 주에 발표 통과! 오늘 회식 각이에요!"),
     ...clientOut.end,
     face("@player", dirToward(o.meetingSeat, leadSpot)),

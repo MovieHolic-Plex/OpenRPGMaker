@@ -19,11 +19,12 @@
 //  - scene-arrival-faces-exit      도착 방향이 막 지나온 문·계단(또는 다른 이동 칸)을 본다 — 들어서면 문을 등진다
 //  - scene-speaker-faces-away      대사 줄의 화자가 곁(3칸 안)의 대화 상대 누구도 보지 않는다(걸어 온 쪽·벽·카메라를 본다)
 //  - scene-bust-faces-away        원래 시선을 아는 흉상·전신(현대 연애 → 그림)에 flipHorizontally 를 줘서 대화 상대가 아니라 화면 바깥을 본다
+//  - scene-seated-cannot-stand     의자·소품 칸(나가는 방향이 막힌 칸)에 앉힌 인물의 첫걸음이 통과 없이 그 칸을 나가려 한다 — 엔진이 첫걸음부터 막아 건너뛰기 경로가 통째로 사라지고 인물이 제자리에서 사라진다
 //  - scene-route-interrupted       기다리지 않는 긴 경로(퇴장 등)가 도는 인물에게 같은 장면이 다시 이동·돌기를 시킨다 — 뒤 명령이 앞 경로를 갈아 끼워 인물이 길 한가운데 멈춘다
 
 import { nestedCommandLists } from "../authoredCommandIndex";
 import type { Command, Dir, EventPage, GameEvent, GameMap, MoveCommand, Project, TilesetDef } from "../types";
-import { isPassable } from "../collision";
+import { canMove, isPassable } from "../collision";
 import handInteriorSpec from "@/assets/handInteriorSpec.json";
 import { sharedPortraitNativeGaze } from "@/assets/sharedPortraitAssets";
 import type { LintIssue } from "./projectLint";
@@ -1107,6 +1108,52 @@ function checkRouteInterrupted(project: Project, issues: LintIssue[]): void {
   }
 }
 
+// ---------------------------------------------------------------------------- 앉은 자리에서 일어서기
+
+/**
+ * 의자·소품 칸처럼 «나가는 방향» 비트가 닫힌 칸에 인물을 앉히면, 그 칸을 떠나는 첫걸음이 엔진 통행 검사(canMove 의 출발 칸)에 막힌다.
+ * 건너뛰기(skippable) 경로는 막힌 걸음을 차례로 버려 인물이 한 칸도 못 움직이고, 뒤이은 퇴장 연출(승강기 등)만 엉뚱한 곳에서 돈다
+ * (첫사랑 금요일 본부장: 북쪽 의자에서 못 일어나 벽 속으로 «탑승», VQA r5). 첫걸음만 setThrough 로 감싼다.
+ * 장면 순서대로 각 인물의 칸을 따라가며(통과 켜짐·꺼짐 포함) 첫 막힌 걸음만 본다.
+ */
+function checkSeatedCannotStand(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    const byId = new Map((map.events ?? []).map((e) => [e.id, e] as const));
+    for (const host of map.events ?? []) {
+      for (const page of pagesOf(host)) {
+        const at = new Map<string, Cell>();
+        const reported = new Set<string>();
+        for (const command of walk(page.commands)) {
+          if (command.kind === "transfer") break;
+          const id = routeTarget(command, host);
+          if (!id || command.kind !== "moveEvent") continue;
+          const actor = byId.get(id);
+          if (!actor) continue;
+          let cell = at.get(id) ?? { x: actor.x, y: actor.y };
+          let through = false;
+          for (const move of command.route?.moves ?? []) {
+            if (move?.kind === "setThrough") { through = Boolean((move as { enabled?: boolean }).enabled); continue; }
+            if (move?.kind !== "move") continue;
+            const dir = (move as { dir?: Dir }).dir;
+            if (!dir || !STEP[dir]) continue;
+            const next = { x: cell.x + STEP[dir].x, y: cell.y + STEP[dir].y };
+            if (!through && !canMove(project, map, cell.x, cell.y, next.x, next.y) && !isPassable(project, map, cell.x, cell.y)
+              && isPassable(project, map, next.x, next.y) && !reported.has(id)) {
+              reported.add(id);
+              issues.push({
+                severity: "warning", code: "scene-seated-cannot-stand", mapId: map.id, eventId: host.id, x: cell.x, y: cell.y,
+                message: `이벤트 ${host.id} 의 장면이 ${id} 를 (${cell.x},${cell.y}) 에서 ${dir} 로 걷게 하는데, 그 칸은 의자·소품 칸이라 나가는 걸음이 엔진에서 막힌다 — 경로가 통째로 건너뛰어져 인물이 제자리에 서 있다가 엉뚱한 곳에서 사라진다. 첫걸음을 setThrough 켜기/끄기로 감싸 일어서게 한다.`,
+              });
+            }
+            cell = next;
+          }
+          at.set(id, cell);
+        }
+      }
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------- 흉상 시선
 
 /**
@@ -1153,6 +1200,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkSpeakerFacing);
   guard(checkRouteInterrupted);
   guard(checkBustFacing);
+  guard(checkSeatedCannotStand);
   return issues;
 }
 
