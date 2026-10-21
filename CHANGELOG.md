@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.313.0 — 2026-10-22
+
+### 기능
+
+- **workshop** — persistent job queue for all generators + gen-kits lock/sync (#3212) (`9fd1628`)
+
+### 수정
+
+- **runtime** — stable dialogue frame (no jumps across speaker/narration/choices, letterbox, locked-door line) + ending cards in the game language (#3214) (`a8dbf00`)
+
 ## 0.312.0 — 2026-10-22
 
 ### 기능
