@@ -1299,6 +1299,41 @@ function checkLetterboxDialogue(project: Project, issues: LintIssue[]): void {
   }
 }
 
+// ---------------------------------------------------------------------------- 옮긴 뒤의 명령
+
+/** 옮긴 뒤에 남아도 아무 일 없는 명령(돌지 않아도 보이는 차이가 없다). */
+const AFTER_TRANSFER_HARMLESS: ReadonlySet<Command["kind"]> = new Set(["wait", "comment" as Command["kind"]]);
+
+/**
+ * 맵 이벤트는 「장소 이동」에서 끝난다(엔진: continueAfterTransfer 는 공용 이벤트만) — 같은 목록에서 이동 뒤에 둔 대사·날씨·엔딩은
+ * 돌지 않는다(첫사랑 엔딩 C: 밤거리로 옮긴 뒤의 비·독백·엔딩이 사라져 검은 화면에서 멈춤). 이어지는 연출은 도착 맵의 자동 장면
+ * (단계 변수 조건)으로 옮긴다.
+ */
+function checkCommandsAfterTransfer(project: Project, issues: LintIssue[]): void {
+  const scan = (list: readonly Command[] | undefined, map: GameMap, host: GameEvent): boolean => {
+    const commands = list ?? [];
+    for (let i = 0; i < commands.length; i++) {
+      const command = commands[i];
+      if (!command || typeof command !== "object") continue;
+      for (const branch of nestedCommandLists(command)) if (scan(branch, map, host)) return true;
+      if (command.kind !== "transfer") continue;
+      const rest = commands.slice(i + 1).filter((c) => c && !AFTER_TRANSFER_HARMLESS.has(c.kind));
+      if (rest.length === 0) continue;
+      issues.push({
+        severity: "warning", code: "scene-commands-after-transfer", mapId: map.id, eventId: host.id, x: host.x, y: host.y,
+        message: `이벤트 ${host.id} 가 장소 이동 뒤에 명령 ${rest.length}개(${[...new Set(rest.map((c) => c.kind))].slice(0, 4).join(", ")})를 둔다 — 맵 이벤트는 이동에서 끝나 뒤의 명령이 돌지 않는다. 이어지는 연출은 도착 맵의 자동 장면(단계 조건)으로 옮긴다.`,
+      });
+      return true;
+    }
+    return false;
+  };
+  for (const map of Object.values(project.maps)) {
+    for (const host of map.events ?? []) {
+      for (const page of pagesOf(host)) if (scan(page.commands, map, host)) break;
+    }
+  }
+}
+
 export function lintScenePolish(project: Project): LintIssue[] {
   const issues: LintIssue[] = [];
   let gates: Gate[] = [];
@@ -1324,6 +1359,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkActorUnderFurniture);
   guard(checkMapSmallerThanScreen);
   guard(checkLetterboxDialogue);
+  guard(checkCommandsAfterTransfer);
   return issues;
 }
 
