@@ -58,12 +58,13 @@ export function requiresVisualReview(before: Project | undefined, after: Project
 }
 
 /**
- * The review surface is the tile preview (`show_map_region`), which renders tiles only.
- * The play runtime does draw `map.background` (2026-09-14, `playSceneMapBackground.ts`),
- * but a tile image still cannot prove a background, its removal, or its scrolling.
- * Keep this refusal until a background-capable *preview* surface supplies owned evidence.
+ * 그림 증거를 못 만드는 맵이면 이유를, 만들 수 있으면 null 을 돌려준다.
+ *
+ * 예전(2026-09)에는 미리보기·검수 그림이 타일만 그려 `map.background` 가 있는 맵을 통째로 거부했다 — 그래서 배경을 깐 맵은
+ * show_map_region 그림도, 전체 맵 검수도 받을 수 없었다(2026-10-22 파노라마 조수 시험: 조수가 깐 하늘·바다를 눈으로 확인 못 함).
+ * 이제 두 표면 모두 배경을 첫 프레임 정지 화면으로 빈 칸 뒤에 그리고(mapBackgroundPreview.ts), 라벨에 「스크롤 없음」을 적는다.
+ * 스크롤·카메라 따라가기의 움직임은 여전히 그림으로 증명되지 않는다 — 그건 플레이 영상의 몫이다.
  */
-export function mapVisualEvidenceUnavailable(map: GameMap, before?: GameMap): string | null {
-  if (map.background === undefined && before?.background === undefined) return null;
-  return `map-background-rendering-unavailable: map ${map.id}; show_map_region renders tiles, not map.background or its scrolling; no approval`;
+export function mapVisualEvidenceUnavailable(_map: GameMap, _before?: GameMap): string | null {
+  return null;
 }
