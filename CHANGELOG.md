@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.312.0 — 2026-10-22
+
+### 기능
+
+- **map-bg** — usable map backgrounds — own panorama presets, live preview, motion presets, centred cover, assistant support (#3210) (`f44e5a3`)
+
+### 수정
+
+- **editor** — UI audit — 55 approved fixes across shell, dock, palette, canvas, maps, event editor, AI, database and dialogs (#3211) (`b335eb9`)
+
 ## 0.311.0 — 2026-10-22
 
 ### 기능
