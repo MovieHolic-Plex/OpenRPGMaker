@@ -846,6 +846,26 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     if (!page) throw new Error("[fallen-star] 포고 이벤트를 찾지 못했다");
     page.commands.unshift({ kind: "displayTextSettings", format: "normal", position: "bottom", preventObscuringPlayer: false, allowEventMovementDuringWait: false } as Command);
   }
+  // 위 한 번만으로는 포고를 거치지 않는 진입(QA 체크포인트·옛 저장)이 기본값(가리지 않기 켜짐)을 그대로 들고 와,
+  // 앞 대사 없이 뜨는 선택지(숲 문양·손바닥·떨리는 목소리)가 주인공 위치에 따라 화면 위로 올라갔다(r12 「선택지 창 위치」).
+  // 선택지마다 바로 앞에서 상자 설정을 다시 박아 어느 길로 들어와도 같은 곳(아래, 대사 상자 밑)에 붙인다.
+  {
+    const dock = (): Command => ({ kind: "displayTextSettings", format: "normal", position: "bottom", preventObscuringPlayer: false, allowEventMovementDuringWait: false } as Command);
+    const dockChoices = (list: Command[]): void => {
+      for (let i = 0; i < list.length; i += 1) {
+        const c = list[i] as Command & { kind: string; options?: { branch: Command[] }[]; cancelBranch?: Command[] };
+        for (const option of c.options ?? []) dockChoices(option.branch);
+        if (c.cancelBranch) dockChoices(c.cancelBranch);
+        if (c.kind === "choices" && (list[i - 1] as { kind?: string } | undefined)?.kind !== "displayTextSettings") {
+          list.splice(i, 0, dock());
+          i += 1;
+        }
+      }
+    };
+    for (const mapId of Object.values(ids)) {
+      for (const event of M(mapId).events) for (const pg of event.pages ?? []) dockChoices(pg.commands);
+    }
+  }
   // 처음엔 소지품이 비어 첫 전투에서 「아이템」이 쓸모없었다(가혹 검수 r1) — 포고 뒤 엘레나가 회복약 셋을 건넨다.
   {
     const herald = findTextList(M(ids.hub), "선생님이 천문대에서 기다리셔");

@@ -1,5 +1,6 @@
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import type { CinematicSequence, Project } from '@/project/types';
+import { warmAnimaticImages } from './openingAnimaticRenderer';
 
 type PreparedImage = { url: string; width: number; height: number };
 export type CinematicAssets = {
@@ -102,6 +103,7 @@ export function createCinematicAssets(): CinematicAssets {
           const url = id && resolveAssetResourceUrl(id, { project });
           if (url) void prepareAudio(url).catch(() => undefined);
         }
+        if (scene.kind === 'animatic') { warmAnimaticImages(project, scene.composition); continue; }
         if (scene.kind !== 'image') continue;
         for (const id of [scene.resourceId, ...(scene.direction?.layers?.map(layer => layer.resourceId) ?? [])]) {
           const url = resolveAssetResourceUrl(id, { project });
