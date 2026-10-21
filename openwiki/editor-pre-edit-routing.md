@@ -1115,6 +1115,12 @@ aria-current로 말하고 일회성 테스트에는 상태를 붙이지 않는�
 ⋯ 메뉴는 인라인 버튼이 숨었을 때만 보이므로 「한 동작의 집은 하나」 규칙을 깨지 않는다. AI 연결 칩 상한은 320px
 (220px 고정이던 때 1920 에서도 영어 경고가 잘렸다).
 
+**보기 ▾ 의 「패널」 절 (2026-10-21, UI 감사 02-leftdock-02·03·09):** 도크 멤버십(타일·맵) 토글을 걷고 왼쪽 활동 막대의
+패널 단추를 그대로 비춘다(`workspaceBar.ts` `syncPanelItems`). 체크 = 지금 펼쳐진 패널(막대 `aria-pressed`), 접힌 도크면
+체크 없음, 항목을 누르면 막대 단추를 누른 것과 같다(같은 패널이면 접기). 예전 토글은 `tiles` 가 작업 호스트로 늘 다시
+붙고 `maps` 는 막대로 옮겨 가 도크에 안 붙어 체크를 꺼도 화면이 그대로였다. Ctrl+K 의 「화면: 패널 — … 열기/닫기」
+명령(`commandRegistry.ts`)은 아직 옛 도크 토글이다.
+
 Ctrl+K: `workspace-density-*`·`workspace-preset-*` 명령 삭제, `editor-ui-mode-*`(옛 밀도 낱말은 keywords)·`open-audio`·`open-map-event-search`·`save-project` 추가.
 
 회귀 단정: `test/studioBarActions.test.ts`(집 하나·중복 testid 0·모드별 도구 자리·저장 점·프로젝트 이름), `test/editorMenuSidebarIa.test.ts`(게임 메뉴 부재·전문가 인라인·초보 도구 메뉴), `test/editorHeaderTerminology.test.ts`(모드별 집에서 정본 이름), `test/authoringTasks.test.ts`(프리셋 결합 해제), `test/commandRegistry.test.ts`. e2e 는 `toolbar-database`·`mode-play` 계약을 유지하고 삭제 표면을 쓰던 스펙 18개를 새 집으로 고쳤다. 보고서 `docs/2026-09-03-studio-bar.md`.
