@@ -213,6 +213,8 @@ async function walkTo(mapId, target, maxSteps = 160) {
     if (here.currentMapId !== mapId) return "map-changed";
     if (here.x === target.x && here.y === target.y) return "arrived";
     if (await present("battle-scene")) return "battle";
+    // 밟으면 말을 거는 칸(박사 인사 칸) — 대사가 뜨면 멈춘다. 멈추지 않으면 못 가는 칸으로 배워 길이 막혔다.
+    if (await present("dialogue-box")) return "dialogue";
     if (await present("dialogue-box")) { await page.keyboard.press("Enter"); await page.waitForTimeout(300); continue; }
     const prev = new Map([[`${here.x},${here.y}`, null]]), queue = [[here.x, here.y]];
     let found = false;
@@ -555,7 +557,11 @@ try {
   await go(home, lab.id);
   await shot("05-lab");
   const professor = findEvent(lab.id, /_professor$/);
-  await approachAndTalk(lab.id, professor);
+  // 박사 첫 인사는 한 칸 떨어진 통로 칸(박사 인사 칸)을 밟으면 시작한다 — 플레이어처럼 문에서 걸어 올라간다.
+  const greet = findEvent(lab.id, /_professor_greeting_step$/);
+  const greetWalk = greet ? await walkTo(lab.id, { x: greet.x, y: greet.y }, 200) : "none";
+  if (greetWalk === "arrived") await page.waitForSelector('[data-testid="dialogue-box"]', { timeout: 3000 }).catch(() => {});
+  if (!(await present("dialogue-box"))) await approachAndTalk(lab.id, professor);
   await page.waitForSelector("[data-testid='dialogue-box']", { timeout: 15000 }).catch(() => {});
   await shot("06-professor");
   let choiceShot = false;
