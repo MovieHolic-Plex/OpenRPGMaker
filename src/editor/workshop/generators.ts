@@ -9,7 +9,8 @@
  *   묶음은 `oprn-store-pack/1` tileset 하나 + autotileGroups(·animationStrips) — 가져오기가 그대로 보존한다.
  * - item-gen: 저장소가 없다(2026-10-21 조직·홈 확인) → 「준비 중」. 가짜로 채우지 않는다.
  * 견본 그림(sample)은 그 생성기가 실제로 만든 그림이다: object-gen 은 그 저장소 docs/images/hero.png 의 고른 기물,
- * char-gen 은 그 저장소의 자체 더미 칩(examples/bases/dummy_*)과 같은 칩의 편집 결과. 제3자 그림은 쓰지 않는다.
+ * char-gen 은 그 저장소의 자체 더미 칩(examples/bases/dummy_*)과 같은 칩의 편집 결과, tile-gen 은 풀밭 채우기 실제 출력(사람 선택 전).
+ * 제3자 그림은 쓰지 않는다.
  */
 import { getLocale } from "@/i18n";
 
@@ -24,7 +25,7 @@ export interface WorkshopGenerator {
   readonly makes: string;
   readonly status: GeneratorStatus;
   /** 그 생성기가 실제로 만든 견본 그림(원래 크기 도트, 화면에서 정수 배율로 키운다). 없으면 견본 자리만 비워 둔다. */
-  readonly sample?: { readonly src: string; readonly width: number; readonly height: number; readonly alt: string };
+  readonly sample?: { readonly src: string; readonly width: number; readonly height: number; readonly alt: string; readonly caption?: string };
 }
 
 export const WORKSHOP_GENERATORS: readonly WorkshopGenerator[] = [
@@ -38,7 +39,12 @@ export const WORKSHOP_GENERATORS: readonly WorkshopGenerator[] = [
     makes: "걷는 캐릭터의 옷·머리·색을 바꿔 새 사람을 만들어요.",
     sample: { src: "/assets/workshop/char-gen-sample.png", width: 124, height: 58, alt: "캐릭터 생성기가 옷을 바꾼 전후 두 쌍" },
   },
-  { id: "tile-gen", title: "지형·바닥", status: "local", makes: "이음매 없는 바닥, 물가·절벽 가장자리, 칠해 넣는 숲과 물을 내 타일셋 색으로 그려요." },
+  {
+    id: "tile-gen", title: "지형·바닥", status: "local", makes: "이음매 없는 바닥, 물가·절벽 가장자리, 칠해 넣는 숲과 물을 내 타일셋 색으로 그려요.",
+    // tile-gen 실제 결과(작업 floor5 후보 A, 버들항 풀밭 채우기). 독립 검수는 아슬아슬 통과, 사람이 고른 것은 아니다 —
+    // 승인·선택된 그림처럼 보이지 않게 「견본 출력」 표를 단다(2026-10-21 tile-gen 쪽 요청). 길·물·숲은 아직 검수 불통과라 싣지 않는다.
+    sample: { src: "/assets/workshop/tile-gen-sample.png", width: 124, height: 58, alt: "지형 생성기가 그린 풀밭 바닥 견본(사람이 고르지 않은 출력)", caption: "견본 출력" },
+  },
   { id: "item-gen", title: "아이템 아이콘", status: "soon", makes: "물약·열쇠·무기 같은 아이템 아이콘을 그려 줄 거예요." },
 ];
 
