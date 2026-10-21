@@ -26,7 +26,8 @@ export const CAST: Readonly<Record<Who, CastMember>> = {
   seoha: { name: "서하", stem: "casual-girl-lavender", tex: "tex_oprn_charset_modern2", resource: "oprn-charset-modern2", index: 6, side: "left" },
   jihu: { name: "지후", stem: "casual-boy-hoodie", tex: "tex_oprn_charset_modern2", resource: "oprn-charset-modern2", index: 2, side: "right" },
   minho: { name: "민호", stem: "casual-boy-mustard", tex: "tex_oprn_charset_modern2", resource: "oprn-charset-modern2", index: 1, side: "right" },
-  lead: { name: "오 팀장", stem: "suit-girl-navy", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 2, side: "right" },
+  // 팀장은 버건디 카디건 — 정장 차림 본부장·출근길 회사원과 칩에서 바로 갈린다(VQA 7차).
+  lead: { name: "오 팀장", stem: "teacher-cardigan", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 7, side: "right" },
   client: { name: "박 본부장", stem: "suit-boy-charcoal", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 1, side: "right" },
   clerk: { name: "점원", stem: "apron-brown", tex: "tex_oprn_charset_modern3", resource: "oprn-charset-modern3", index: 3, side: "right" },
   seohaYoung: { name: "열일곱의 서하", stem: "uni-girl-long", tex: "tex_oprn_charset_modern2", resource: "oprn-charset-modern2", index: 0, side: "left" },

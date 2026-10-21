@@ -678,6 +678,20 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     ...fadeIn(700),
     ...say("jihu", "base", "다 됐어요. 다시 보냈고, 본부장님 답장도 왔어요. ‘확인했습니다, 감사합니다.’"),
     ...say("seoha", "happy", "…감사합니다. 진짜로요."),
+    ...say("jihu", "base", "서하 씨 시안, 좋았어요. 버튼 누르면 사연 종이가 반으로 접히는 거."),
+    choices([
+      { text: "“선배라면 알아볼 줄 알았어요.”", then: [
+        ...say("seoha", "embarrassed", "…선배라면 알아볼 줄 알았어요. 방송실 사연함 모양이에요, 그거."),
+        ...emote("ev_fl_w_jihu", "exclamation", 900),
+        ...say("jihu", "embarrassed", "…역시. 어디서 본 것 같더라. 투입구가 비뚤어진 것까지."),
+        ...like(1, "ev_fl_w_jihu"),
+      ] },
+      { text: "“그냥, 회사 앱이니까요.”", then: [
+        ...say("seoha", "base", "그냥, 회사 앱이니까요. 열심히 했을 뿐이에요."),
+        ...say("jihu", "base", "…그렇죠."),
+        ...think("거짓말이다. 사연 종이가 접히는 그 버튼은, 그 방송실에서 가져온 거였다."),
+      ] },
+    ]),
     ifCond({ kind: "variable", variableId: V_JIHU, op: ">=", value: 3 } as never,
       say("jihu", "happy", "라면 먹을래요? 탕비실에 컵라면 있어요. 먼저 가 있을게요. …오늘은 도망 안 가요."),
       say("jihu", "base", "…배고프면 탕비실에 컵라면 있어요. 물은 내가 올려 둘게요."),
