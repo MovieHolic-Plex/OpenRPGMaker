@@ -48,7 +48,7 @@ export interface FirstLoveAnchors {
     readonly heroDesk: Cell; readonly jihuDesk: Cell; readonly leadDesk: Cell;
     readonly pantry: Cell; readonly meeting: Cell; readonly meetingSeat: Cell; readonly whiteboard: Cell;
   };
-  readonly rooftop: { readonly door: Cell; readonly doorOut: Cell; readonly rail: Cell; readonly bench: Cell };
+  readonly rooftop: { readonly door: Cell; readonly doorOut: Cell; readonly rail: Cell; readonly railHero: Cell; readonly bench: Cell };
   readonly konbini: { readonly door: Cell; readonly doorOut: Cell; readonly cooler: Cell; readonly counter: Cell };
   readonly broadcast: { readonly start: Cell; readonly mailbox: Cell; readonly booth: Cell };
 }
@@ -56,6 +56,8 @@ export interface FirstLoveAnchors {
 type RoomSpec = {
   name: string; plan: string[]; floor: string; wall: string; zones?: unknown[]; objects?: unknown[]; tables?: unknown[]; goods?: unknown[];
   rooms?: unknown[]; narrow?: unknown[]; exitWidth?: number; start: [number, number];
+  /** 옥상: 난간 너머로 보이는 도시(칸 번호 줄 — 쉼표로 이은 숫자 줄들). */
+  view?: { w: number; h: number; lower: string[]; upper: string[]; upper2: string[] };
 };
 const ROOMS = roomsJson as unknown as Record<"office" | "konbini" | "rooftop" | "platform" | "broadcast", RoomSpec>;
 
@@ -120,29 +122,31 @@ function light(id: string, at: Cell, radius: number, color: string, intensity = 
 }
 
 /**
- * 옥상 좌상단 계단탑 윗면 — 평면의 '#' 덩이는 빌더가 검은 허공으로 두므로, 그 윗면(x0..5, y0..2)을
- * 옥상 바닥과 같은 콘크리트 판 + 난간 모서리 띠로 덮는다. 전부 막힌 칸(문 위 벽·좌우 가장자리)에 둘러싸여 못 걷는 칸이라
- * 통행·앵커에는 영향이 없다(데모 전용 후처리).
+ * 옥상 난간 너머의 도시 — 맵 위쪽 줄(0..view.h-1)을 jp_city 거리 구성기가 짠 운하 거리(건물·보도·옹벽·운하·다리)의 한 토막으로 덮는다.
+ * 새 그림이 아니라 같은 칩셋의 기존 칸 번호이고, 칸마다 걷기 막힘은 난간 줄(y = view.h)이 막는다(데모 전용 후처리).
  */
-/** 옥상 한 판 = 이웃 건물 낮은 옥상(둘레) + 우리 옥상 블록(20×14). 블록의 왼쪽 위 좌표. */
-const ROOF_OX = 6, ROOF_OY = 4;
-// 사무층(34x20)·편의점·방송실(30x17)은 원래 방을 더 큰 평면 가운데에 놓았다 — 카메라가 맵 밖(검정)을 비추지 않게.
-const OFC_OX = 5;
-const KB_OX = 8, KB_OY = 2, KB_W = 14, KB_H = 12;
-const BC_OX = 8, BC_OY = 2;
-function paintStairwellRoof(map: GameMap): void {
+function paintRoofView(map: GameMap, view: NonNullable<RoomSpec["view"]>): void {
   const W = map.width;
-  const CAP_TOP = 9347, EDGE_LEFT = 9338;
-  for (let y = 0; y <= 2; y++) {
-    for (let x = 0; x <= 5; x++) {
-      const i = (y + ROOF_OY) * W + (x + ROOF_OX);
-      if (y === 0) map.lowerTiles[i] = CAP_TOP;
-      else if (x === 0) map.lowerTiles[i] = EDGE_LEFT;
-      else map.lowerTiles[i] = map.lowerTiles[(y + 4 + ROOF_OY) * W + (x + 7 + ROOF_OX)]!;
+  const parse = (rows: string[]): number[][] => rows.map((r) => r.split(",").map(Number));
+  const lower = parse(view.lower), upper = parse(view.upper), upper2 = parse(view.upper2);
+  for (let y = 0; y < view.h; y++) {
+    for (let x = 0; x < view.w && x < W; x++) {
+      const i = y * W + x;
+      map.lowerTiles[i] = lower[y]![x]!;
+      map.upperTiles[i] = upper[y]![x]!;
+      if (map.lowerOverlayTiles) map.lowerOverlayTiles[i] = -1;
+      if (map.upperOverlayTiles) map.upperOverlayTiles[i] = upper2[y]![x]!;
+      if (map.shadowBits) map.shadowBits[i] = 0;
     }
   }
 }
 
+/** 옥상 한 판 = 위 18줄 도시 풍경 + 아래 옥상(24×12). 난간 줄의 y. */
+const ROOF_FENCE_Y = 18;
+// 사무층(34x20)·편의점·방송실(30x17)은 원래 방을 더 큰 평면 가운데에 놓았다 — 카메라가 맵 밖(검정)을 비추지 않게.
+const OFC_OX = 5;
+const KB_OX = 8, KB_OY = 2, KB_W = 14, KB_H = 12;
+const BC_OX = 8, BC_OY = 2;
 /**
  * 역 운임표(st-fare-map, 3×2) — 글자 없이 흰 판에 점만 있어 「0000000」 플레이스홀더처럼 읽힌다.
  * 승강장 프리셋이 깔아 주는 두 장을 걷어 내고, 승강장 쪽은 벽시계 한 칸으로 바꾼다(데모 전용 후처리).
@@ -200,7 +204,7 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   const konbiniRoom = project.maps[FL_MAP.konbini]!;
   const roofRoom = project.maps[FL_MAP.rooftop]!;
   const platform = project.maps[FL_MAP.platformAm]!;
-  paintStairwellRoof(roofRoom);
+  if (ROOMS.rooftop.view) paintRoofView(roofRoom, ROOMS.rooftop.view);
   removeFareMapBoards(platform);
   const broadcast = project.maps[FL_MAP.broadcast]!;
 
@@ -231,8 +235,11 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       whiteboard: nearestFree(project, officeRoom, { x: 21 + OFC_OX, y: 9 }),
     },
     rooftop: {
-      door: nearestFree(project, roofRoom, { x: 3 + ROOF_OX, y: 6 + ROOF_OY }), doorOut: nearestFree(project, roofRoom, { x: 3 + ROOF_OX, y: 7 + ROOF_OY }),
-      rail: nearestFree(project, roofRoom, { x: 10 + ROOF_OX, y: 4 + ROOF_OY }), bench: nearestFree(project, roofRoom, { x: 6 + ROOF_OX, y: 10 + ROOF_OY }),
+      // 탑옥(계단탑) 철문은 북쪽 벽면에 박혀 있다 — 문 앞 첫 바닥 칸이 밟는 칸, 그 한 칸 아래가 들어서는 칸.
+      door: nearestFree(project, roofRoom, { x: 3, y: ROOF_FENCE_Y + 4 }), doorOut: nearestFree(project, roofRoom, { x: 3, y: ROOF_FENCE_Y + 5 }),
+      // 난간(철망 펜스) 바로 아래 줄 가운데 — 북쪽을 보고 선다. 옆 칸은 서하 자리.
+      rail: nearestFree(project, roofRoom, { x: 14, y: ROOF_FENCE_Y + 1 }), railHero: nearestFree(project, roofRoom, { x: 13, y: ROOF_FENCE_Y + 1 }),
+      bench: nearestFree(project, roofRoom, { x: 11, y: ROOF_FENCE_Y + 8 }),
     },
     konbini: {
       door: { x: 6 + KB_OX, y: 11 + KB_OY }, doorOut: nearestFree(project, konbiniRoom, { x: 6 + KB_OX, y: 9 + KB_OY }),
