@@ -648,6 +648,8 @@ try {
   { const greet = findEvent(labId, /_professor_greeting_step$/);
     const r = greet ? await walkTo(labId, { x: greet.x, y: greet.y }, 200) : "none";
     if (r === "arrived") await page.waitForSelector('[data-testid="dialogue-box"]', { timeout: 3000 }).catch(() => {});
+    const at = await live();
+    step("professor-greeting-step", r === "arrived" || r === "dialogue", `${r} · hero ${at.x},${at.y} · dialogue ${await present("dialogue-box")}`);
     if (!(await present("dialogue-box"))) await talkTo(labId, /_professor$/); }
   // QA_STARTER=0|1|2 — 스타터 고르기(첫 선택 창에서만 아래로 그만큼). 스타터 3종 균형 비교용.
   let starterPicked = false;
