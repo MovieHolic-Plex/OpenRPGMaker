@@ -1,0 +1,34 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r19",
+  "commit": "2d0dd28dbc",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "Recomputed pixel_sha256 (src/harnesses/_core/object_gate) on both PNGs in /tmp/fsrooms/gate-r19: dome_vault.png = 5103ffbf...29b8, stone_brazier.png = 1e0294a5...2bef. The verdicts below apply only to these hashes.",
+    "1_topdown_view": "Dome: reads as the inside of a dome rising over the stepped round room. Drum, cornice ring, courses and ribs sit correctly above the stepped wall faces, with no side or iso faces. Ribs converge toward a crown above the frame. The outer rib hugs the limb and the inner rib merges into it near x~140 / x~340; that is acceptable as limb-meridian convergence. Brazier: front-and-top 3/4 is fine. The heap is a symmetric dome on the rim, so its silhouette reads as a domed cap rather than an open bowl seen from above.",
+    "2_style_fit": "Dome: ramps, outline and top-left rib lighting match v5. The courses carry dashed 1px vertical joints and blotchy darker rectangles, e.g. (268,47)(268,49)(268,52), (277,39)(277,42), (286,46)(286,49)(287,51) near the slit. This is busier than v5 wall brick but not visible at 1x, so it is non-blocking. Brazier: the ash cap is painted in the bowl's own blue-steel stone ramp ((165,173,178),(130,138,149),(73,80,93),(51,57,66)). Heap and bowl therefore fuse into one stone mass. The embers are dark ((168,77,10),(120,60,31)) and disappear at 1x.",
+    "3_readability_1x": "Dome: yes. At 1x (mock-obs) the hall now clearly reads as a round domed observatory under a vault with a starlit slit, not a boxy hall. Brazier: no. At 1x in mock-gate the four cold braziers on the checker dais read as dark chess pawns or bollards with a knob top. The embers are not visible and the bowl mouth is not legible. The lit ones beside them read as braziers, so cold and lit do not read as the same object.",
+    "4_placement": "Dome: meets the stepped wall tops cleanly. The transparent notch at y>=48 on the slit columns hands over to 'dome slit tall' without a gap. Minor seam: the upper slit has grey stone jambs, while the lower piece has wooden jambs with a brass sill bar, so the jamb material changes at the cornice. Non-blocking. Brazier: grounded. Pedestal rows 13-31 match the lit piece exactly. Row 9 (the rim lip) does NOT match: the lit and old pieces have rim colour (52,70,85) at cols 2-5 of row 9, while the cold piece has (19,19,23)/(42,42,50) there. The bowl changes when swapped, which breaks the 'bowl identical' requirement.",
+    "5_silhouette_outline": "Dome: the outer silhouette steps are clean with no stubs. Brazier: the heap outline (row 8 cols 3/12, row 9 cols 2/13 near-black) runs into the rim's outer edge, so the heap swallows the rim instead of sitting inside it."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/dome vault",
+      "name": "천문대 둥근 지붕(큰 방 천장 띠 전체, 30×8) (dome vault)",
+      "kind": "wall_mounted",
+      "pixelSha256": "5103ffbfc30c09a4b639787a38abcf7b7e19ed2d0e2f33c62b36419f772229b8",
+      "verdict": "PASS",
+      "reasons": "Reads at 1x as the inside of a round dome over the stepped round hall: lighter drum, smooth cornice ring, courses darkening upward, four timber ribs with brass collars lit from the top-left, and a starry slit on the centre meridian. It meets the stepped wall tops and the slit piece cleanly. Style matches v5 ramps and outline. Optional cleanup (not blocking): remove the dashed 1px joint dots and dark blotch rectangles in the courses near the slit, e.g. (268,47..52), (277,39..42), (286..287,46..51), plus similar ones on the mid courses. Match the upper slit jambs to the lower piece's jamb material, or add a stone sill on the lower piece, so the jamb does not change from stone to wood at the cornice."
+    },
+    {
+      "id": "atlas_biome_interior/plus/stone brazier",
+      "name": "돌 화로(꺼짐, 버들항 돌 받침 화로) (stone brazier)",
+      "kind": "other",
+      "pixelSha256": "1e0294a557cebf10a9e036def83dfd576d90aee293986567fea99846be042bef",
+      "verdict": "FAIL",
+      "reasons": "(a) The bowl is not identical to the lit and approved pieces. Row 9 cols 2-5 must be the rim colour (52,70,85) as in 'stone brazier lit'; the cold piece has (19,19,23),(42,42,50),(42,42,50),(30,30,36). Restore the rim lip row 9 exactly from the lit tile, cols 2-5 and 11-13. (b) At 1x on the dais it still reads as a pawn or bollard. The heap is a symmetric dome in the bowl's own blue-steel ramp, so heap and bowl fuse into a knobbed post. Fixes: keep the heap inside the rim, starting at row 9 cols 4-11 only and never touching cols 2-3/12-13. Make it lower and lumpy, with an irregular top across rows 6-9 and no peaked dome at rows 5-6. Repaint the charcoal in warm near-blacks (e.g. 36,30,28 / 58,48,42) and the ash in warm pale greys (e.g. 196,188,176 / 150,142,132), not the stone ramp (165,173,178)/(130,138,149). Make at least one ember a bright single pixel (234,142,63 or 224,106,16) next to a dark one so it registers at 1x. Show a dark bowl-mouth line (rim back edge) behind the heap so the bowl opening reads. Re-check at 1x on the checker dais next to the lit one: it must read as the same brazier, unlit."
+    }
+  ]
+}

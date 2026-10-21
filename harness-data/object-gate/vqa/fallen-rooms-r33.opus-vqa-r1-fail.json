@@ -1,0 +1,33 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r33",
+  "commit": "2d0dd28dbc",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed with object_gate.pixel_sha256 on /tmp/fsrooms/gate-r33/great_stone_brazier.png = c60582c3...; lit partner (not judged) b924e320.... Lit bottom 32 rows differ from unlit only in rows 0-11 (bowl interior/flames), so foot/column/bowl wall are identical.",
+    "1_topdown_view": "OK. Rim top drawn as a flat ellipse (rows 3-11, ~29x9), far inner wall 1 row (row 5), bowl/column/foot show front faces only, no side/iso faces. Foot top plane is thin (rows 24-25 only) but acceptable.",
+    "2_style_fit": "Stone ramp, dark outline (30,30,36), left-light shading and carved groove (row 15) match the 1-tile harbour brazier (tile 7513) and the v5 stone. Fault is inside the bowl: charcoal colour E (26,14,6) is a warm brown-black almost the same hue as log underside K (99,49,11), and rows 7-10 contain alternating single-pixel I/L/K runs (row 7 cols 11-15 'ILILL', row 9 cols 14-17 'IILI') that read as noise, not bark.",
+    "3_readability_1x": "FAIL. In mock-gate (1x and 2x) the four pieces read as grey stone pots/basins filled with brown dirt; the two logs do not separate from the charcoal and the crossing is illegible. The pale cut ends sit right against the rim inner edge (cols 6-8 rows 6-7, cols 24-25 rows 7-8) and read as rim glints rather than log ends. The 1-tile reference reads as 'wood in a brazier' because its log is a clean band with a light top; this one does not.",
+    "4_placement": "OK. Foot sits on a soft contact shadow (rows 30-31), grounded, no clipping on the dais; lit swap keeps identical foot/column/bowl so the swap does not jump.",
+    "5_silhouette_outline": "Outer silhouette clean and symmetric (content cols 1-29, foot 4-27), no stubs. Interior fuel area is the only messy region (see 2)."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/great stone brazier",
+      "name": "큰 돌 화로(꺼짐, 2칸, 버들항 돌) (great stone brazier)",
+      "kind": "other",
+      "pixelSha256": "c60582c343abadedc29dffc0df4b2fc6f2585da1257ab5a3359c679262615612",
+      "verdict": "FAIL",
+      "reasons": [
+        "Readability at 1x fails: in the room mock it reads as a stone pot/basin of brown dirt, not 'a brazier laid with wood to light'.",
+        "Fix 1 (rows 6-10, cols 5-26): redraw the two logs as clean 2-px-thick diagonal bands, e.g. log A from (7,7) to (20,10) and log B from (24,7) to (11,10), each with a 1-px light bark top row (154,84,53) over a darker underside (99,49,11), separated from the bed by a 1-px near-black edge where they cross; delete the scattered single-pixel I/L runs at row 7 cols 11-15 and row 9 cols 14-17.",
+        "Fix 2: move the 2x2 cut ends inward to the log tips with at least 1 px of charcoal between them and the rim (now at cols 6-8 rows 6-7 and cols 24-25 rows 7-8, touching the rim inner edge); keep them H (208,196,182) with a G ring so they read as wood ends, not rim glints.",
+        "Fix 3: change the charcoal bed colour E (26,14,6) to a neutral/cool grey-black (around 36,34,40) with 1-2 mid-grey charcoal chunks so the brown logs separate by hue as well as value; place the 3-4 pale ash specks inside the bed, not on the rim (O at (4,9) and (27,8) currently sit on the rim lip).",
+        "Optional: add one more row of foot top plane (rows 23-25) so the 2-tile foot reads as a slab like the column base; not blocking.",
+        "Re-copy rows 0-11 changes into the lit variant's bowl rim only if the rim pixels change; foot/column/bowl wall must stay identical between states."
+      ]
+    }
+  ]
+}

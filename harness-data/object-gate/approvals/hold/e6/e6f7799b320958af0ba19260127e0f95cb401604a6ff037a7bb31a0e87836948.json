@@ -1,0 +1,18 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "e6f7799b320958af0ba19260127e0f95cb401604a6ff037a7bb31a0e87836948",
+ "profileHash": "4d8774b517f41638",
+ "kind": "other",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T20:05:31.313Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (2/4)"
+ ],
+ "note": "묶음 허용: 폴른 스타 꺼진 돌 화로 r30 — fallen-rooms-r30 (stone brazier) — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/fallen-rooms-r30.opus-vqa",
+ "sig": "addbba16269235b59baa026bee4f2581730467056126c588a2ab105fe0a947e7"
+}

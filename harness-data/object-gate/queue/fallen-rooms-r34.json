@@ -1,0 +1,20 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "fallen-rooms-r34",
+ "title": "fallen rooms r34 great stone brazier",
+ "createdAt": "2026-10-21T21:00:05.335Z",
+ "items": [
+  {
+   "sha": "bd98e24580b867387972462febee466c43ccc9361b5b18187e543e9ebd441170",
+   "kind": "other",
+   "label": "atlas_biome_interior/plus/great stone brazier",
+   "source": "/tmp/fsrooms/gate-r34/great_stone_brazier.png"
+  },
+  {
+   "sha": "f2d2d30bf2f9666fe1f5def80da7aed08c17cbc685e68a7696cf4a60015f3833",
+   "kind": "other",
+   "label": "atlas_biome_interior/plus/great stone brazier lit",
+   "source": "/tmp/fsrooms/gate-r34/great_stone_brazier_lit.png"
+  }
+ ]
+}

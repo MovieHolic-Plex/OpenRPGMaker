@@ -1,0 +1,31 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r29",
+  "commit": "2d0dd28dbc",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 of /tmp/fsrooms/gate-r29/stone_brazier.png computed with object_gate.pixel_sha256 = 47a992360fd78ebf125c58bdb4e79de5830770a26407aab08f09958e61e7bc1e.",
+    "1_topdown_view": "Pedestal, foot and front lip are the approved 3/4 art (rows 13-31 pixel-identical to the lit brazier). But the bowl's back rim arc (row 9) and left inner lip (x2,y10-11) are painted over by the fuel, so the bowl opening is no longer visible as a plane: the logs read as lying ON a flat-topped stand, not IN a bowl.",
+    "2_style_fit": "Palette ramps for bark (#9a5435/#6d3b15/#63310b), warm-black outline #1a0e06 and ash (#d0c4b6/#b9ab9d/#8e8378) fit v5. Logs are only 2px thick with 1px cut ends, so they read as flat planks; charcoal bed is just 2 pixels (#3a3530 at x11-12,y10).",
+    "3_readability_1x": "In mock-gate.png the four cold braziers now read as dark stands carrying a brown lump - clearly not a bare bollard any more, and the bowl silhouette matches the lit pair in the shrine. However the fuel fills the full bowl width edge-to-edge so it reads as a brown block/loaf sitting on the stand rather than wood laid inside a bowl.",
+    "4_placement": "Grounded; foot and drop shadow identical to the lit version (shadow difference is only alpha compositing in the pair sheet). Fuel overrides rim pixels instead of sitting behind the front lip, so it visually clips through the bowl wall on the left (x2) and back (y9).",
+    "5_silhouette_outline": "Stray near-black notch #1e1e24 at (7,12) in the middle of the front lip's top highlight, flanked by an odd brighter #828a95 at (6,12) - reads as a chip in the stone. Fuel top silhouette is a clean 2-step block."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/stone brazier",
+      "name": "돌 화로(꺼짐, 버들항 돌 받침 화로) (stone brazier)",
+      "kind": "other",
+      "pixelSha256": "47a992360fd78ebf125c58bdb4e79de5830770a26407aab08f09958e61e7bc1e",
+      "verdict": "FAIL",
+      "reasons": [
+        "Bowl not identical to the lit brazier: stone pixels visible in the lit version are overwritten by fuel - back rim (3,9),(4,9),(5,9) were #344655 and (11,9),(12,9),(13,9) were #2a2a32, now log outline/bark/ash; left inner lip (2,10),(2,11) were #76808a, now outline #1a0e06. Restore exactly these 8 pixels so the bowl rim swaps in place unchanged.",
+        "After restoring the rim, keep fuel inside it: front log must span at most x3..x12 on rows 10-11 (no outline on x2), and the back log (rows 7-8) should be shortened to about x5..x11 so the back rim arc shows at both ends on row 9 - this makes the logs read as laid IN a bowl instead of a block on a stand.",
+        "Front lip notch: (7,12) #1e1e24 is a stray dark pixel inside the lip highlight and (6,12) #828a95 is a spurious bright spot; replace (6,12),(7,12),(8,12) with a smooth fade e.g. #76808a,#606878,#596470 (no near-black on the lip top).",
+        "Logs read as 2px planks with 1px cut ends; give each visible cut end 2px height (pale #d0c4b6 over #b9ab9d) and show at least 3-4 more charcoal pixels (#3a3530/#1a0e06) between/below the logs so the cold charcoal bed described is actually legible at 1x."
+      ]
+    }
+  ]
+}

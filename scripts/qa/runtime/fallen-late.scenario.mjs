@@ -28,6 +28,12 @@ const closeDialogue = (max = 30) => [
   { kind: "pressUntil", key: "Enter", testid: "dialogue-box", state: "absent", maxPresses: max, timeoutMs: 900 },
   { kind: "hold", dir: null, ms: 500 },
 ];
+/** 옆(동쪽 두 칸)에서 걸어 들어와 (x, y)에 선다 — 천문대 서재처럼 아래가 벽이라 approachUp 이 쓸 수 없는 곳. */
+const approachFromEast = (mapId, x, y) => [
+  { kind: "teleport", mapId, x: x + 2, y }, { kind: "hold", dir: null, ms: 400 },
+  { kind: "evalToFile", fn: `() => { window.__oprnDebug.playerRoute([{ kind: "move", dir: "left" }, { kind: "move", dir: "left" }]); return true; }`, out: "/tmp/fs-late-approach2.json" },
+  { kind: "hold", dir: null, ms: 1200 },
+];
 const approachUp = (mapId, x, y) => [
   { kind: "face", dir: "up" }, { kind: "teleport", mapId, x, y: y + 2 }, { kind: "hold", dir: null, ms: 400 },
   { kind: "evalToFile", fn: `() => { window.__oprnDebug.playerRoute([{ kind: "move", dir: "up" }, { kind: "move", dir: "up" }]); return true; }`, out: "/tmp/fs-late-approach.json" },
@@ -129,7 +135,7 @@ export default {
       ...stepInto("fs_vault", 15, 25, "down"),
       ...stepInto("fs_vault_gate", 26, 4, "up"),
     ], shot: true },
-    { id: "report", note: "하넬에게 보고", ops: [...closeDialogue(), ...approachUp("fs_observatory", 24, 15), ...talk("up")], shot: true },
+    { id: "report", note: "하넬에게 보고", ops: [...closeDialogue(), ...approachFromEast("fs_observatory", 24, 21), ...talk("up")], shot: true },
     { id: "ending", note: "엔딩 카드", ops: [
       { kind: "repeatUntil", testid: "ending-screen", state: "present", maxRounds: 40, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 400 }] },
       { kind: "hold", dir: null, ms: 2500 },

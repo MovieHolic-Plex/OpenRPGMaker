@@ -6,13 +6,13 @@ import audit from "./fallen-audit.scenario.mjs";
 const keep = new Set(["title", "boot", "proclamation"]);
 const tp = (id, mapId, x, y) => ({ id, note: id, ops: [{ kind: "teleport", mapId, x, y }, { kind: "hold", dir: null, ms: 1200 }], shot: true });
 const full = [
-  tp("ceil-observatory", "fs_observatory", 25, 17),
+  tp("ceil-observatory", "fs_observatory", 25, 21),
   tp("ceil-vault-gate", "fs_vault_gate", 15, 14),
   tp("ceil-vault", "fs_vault", 15, 23),
 ];
 const spots = [
-  tp("obs-lower", "fs_observatory", 25, 17),
-  tp("obs-upper", "fs_observatory", 15, 8),
+  tp("obs-lower", "fs_observatory", 25, 21),
+  tp("obs-upper", "fs_observatory", 14, 12),
   tp("gate-top", "fs_vault_gate", 15, 4),
   tp("gate-bottom", "fs_vault_gate", 15, 14),
   tp("vault-north", "fs_vault", 15, 10),

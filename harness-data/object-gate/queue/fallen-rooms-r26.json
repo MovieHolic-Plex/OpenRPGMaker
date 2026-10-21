@@ -1,0 +1,14 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "fallen-rooms-r26",
+ "title": "폴른 스타 천문대 둥근 지붕 r26",
+ "createdAt": "2026-10-21T19:22:13.241Z",
+ "items": [
+  {
+   "sha": "fdb75653d579dd07bded47b72d38c1d640d54ddb74ab083744ff14eab5053730",
+   "kind": "wall_mounted",
+   "label": "atlas_biome_interior/plus/dome vault",
+   "source": "/tmp/fsrooms/gate-r26/dome_vault.png"
+  }
+ ]
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r21",
+  "commit": "2d0dd28dbc",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 of /tmp/fsrooms/gate-r21/dome_vault.png (480x128, RGBA, alpha only 0/255) computed with src/harnesses/_core/object_gate.pixel_sha256 = b3b5e9c458e3d9c8e718a3f7409d461f15ae3e1b0c65b23011b5ac5dd0286f1b.",
+    "1_topdown_view": "Reads correctly as the inside of a dome rising over the round room in the RM 3/4 convention: the drum/cornice ring sits on the stepped wall tops, courses curve and darken upward, four ribs converge toward a crown cut by the map top edge. No iso/side faces. Consistent with the stepped room plan below.",
+    "2_style_fit": "Stone courses, outline weight and the running-bond drum match the v5 wall ramps; ribs have a proper 3-step timber ramp lit top-left with brass collars. Fault: the sky slit (x=228..251, y=0..47) is three hard flat colour bands (10,26,58) y0-17 / (17,52,97) y18-35 / (24,78,136) y36-47 with no dither between them - flat banding unlike anything else on the sheet. Minor: blotchy lighter rectangles in the outer shell, e.g. (65,65,76) block at x~23..27,y~69..77 left (right side has an asymmetric patch), read as smudges rather than courses.",
+    "3_readability_1x": "Strong improvement: at 1x in mock-obs.png the hall now clearly reads as a round domed observatory hall with a star slit, close to ref-op3. The centre meridian is the focal point, which is exactly where the seam below is.",
+    "4_placement": "Dome meets the stepped wall tops cleanly and the cornice lands directly over the centre wall row. Fails at the slit hand-off: at y=47->48 the sky jumps from the lightest band (24,78,136) back to the darkest navy (10,26,58) of the dome-slit-tall top tile, and the jambs switch from (96,104,120) stone to (51,57,66)/(73,80,93) alternating at the same row, so the slit visibly restarts (a dark box with the moon) right under the cornice instead of continuing. Minor: at the far bottom-left/right (x~0..2, y~112..127) a sliver of black ceiling shows between the drum edge and the hall's side-wall corner post.",
+    "5_silhouette_outline": "Outer silhouette is a clean dark outline with smooth stepping; rib feet sit on the cornice; transparent notch for the slit is exact. No stray pixels found apart from the shell smudges noted under style."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/dome vault",
+      "name": "천문대 둥근 지붕(큰 방 천장 띠 전체, 30×8) (dome vault)",
+      "kind": "wall_mounted",
+      "pixelSha256": "b3b5e9c458e3d9c8e718a3f7409d461f15ae3e1b0c65b23011b5ac5dd0286f1b",
+      "verdict": "FAIL",
+      "reasons": "Composition, 3/4 reading, ribs, cornice and drum are good and the hall now reads as a domed observatory. Fails on the centre slit, the most-looked-at feature: (1) Sky gradient seam at y=47/48: the dome's slit ends on its lightest blue (24,78,136) and the existing 'dome slit tall' top tile starts on darkest navy (10,26,58). Fix: reverse/re-ramp the dome's slit so it is lightest at the crown (y=0) and reaches (10,26,58) by y~44-47 (or match whatever the slit tile's y=48 row is), so the sky is one continuous ramp. (2) Flat banding: the three bands at y=0-17/18-35/36-47 are hard-edged flat fills; add a 2-row checker dither at each band boundary (as on the slit-tall tile at y~45-47 of the window) or reduce to a single ramp with dithered transitions. (3) Jamb discontinuity at y=48: dome jambs (x=228-229 and x=250-251) are a flat (96,104,120); the slit tile's jambs at y>=48 are (51,57,66)/(73,80,93). Shade the dome jambs with the same two tones (light inner edge, dark outer) for the last ~8 rows so they run into the slit tile without a colour jump. Minor, fix while there: (4) clean the lighter flat patches in the outer shell (left x~23-27,y~69-77; check the mirrored right area x~452-457) into proper course lines, and make left/right shells symmetric in tone; (5) extend the drum by 1-2 px at the bottom outer corners (x=0..2 and x=477..479, y~112..127) so no black ceiling sliver shows against the hall's side-wall corner."
+    }
+  ]
+}

@@ -362,6 +362,144 @@ def great_brazier_lit(c):
         c.p(x, y, K('orange', 4))
 
 
+
+# ── 큰 돌 화로(2칸) — 버들항 돌 화로와 같은 슬레이트 돌(푸른 잿빛)·같은 짜임(넓은 돌 사발 + 굵은 돌 기둥 + 네모 받침)을 두 칸 폭으로 ──
+# 방 VQA r8~r11: 1칸 버들항 돌 화로는 1배에서 사발 속(숯·장작)이 2~3px 라 꺼졌을 때 「검은 말뚝」으로 읽혔다. 사발 윗면(타원)을 크게 보이게 한다.
+_GS_OUT, _GS_D1, _GS_D2 = (30, 30, 36), (42, 42, 50), (52, 70, 85)
+_GS_M1, _GS_M2, _GS_L1, _GS_L2, _GS_L3 = (89, 100, 112), (96, 104, 120), (118, 128, 138), (130, 138, 149), (165, 173, 178)
+
+
+def _great_stone_brazier(c, oy, lit):
+    """oy = 그림 윗단 여백(켜짐은 불꽃 자리 16px 더). 좌우 대칭(가운데 x = 15.5).
+    사발 테 = 타원(가운데 (15.5, oy+8), 반지름 13.5×4.2) · 테 아래 깊은 사발 몸(앞 테 밑으로 6줄, 아래로 좁아짐) · 굵은 돌 기둥(x10~21) · 네모 받침(x5~26)."""
+    cx, cy, rx, ry = 15.5, oy + 8, 13.5, 5.0
+    solid = set()
+    put = lambda x, y, col: (c.p(x, y, col), solid.add((x, y)))
+    ell = lambda x, y, a, b: ((x + .5 - cx) / a) ** 2 + ((y + .5 - cy) / b) ** 2 <= 1
+    # ① 네모 받침: 윗면 2줄(뒤 L1 · 앞 끝 L3 밝은 모서리) + 앞면 4줄(줄눈·이 빠진 점)
+    for x in range(5, 27):
+        put(x, oy + 24, _GS_L1); put(x, oy + 25, _GS_L3)
+        put(x, oy + 26, _GS_M2); put(x, oy + 27, _GS_M1); put(x, oy + 28, _GS_M1); put(x, oy + 29, _GS_D2)
+    for (x, y, col) in ((15, oy + 27, _GS_D1), (15, oy + 28, _GS_D1), (16, oy + 27, _GS_M2),
+                        (8, oy + 27, _GS_L1), (23, oy + 28, _GS_D2), (11, oy + 26, _GS_L1), (20, oy + 26, _GS_L1)):
+        c.p(x, y, col)
+    # ② 굵은 돌 기둥(원통: 왼쪽이 밝다) + 위·아래 돌 고리(한 칸씩 넓다)
+    SH = [_GS_L2, _GS_L2, _GS_L1, _GS_L1, _GS_M2, _GS_M2, _GS_M1, _GS_M1, _GS_D2, _GS_D2, _GS_D1, _GS_D1]
+    for y in range(oy + 19, oy + 24):
+        for i, col in enumerate(SH): put(10 + i, y, col)
+    for y, (a, b) in ((oy + 19, (_GS_L1, _GS_M1)), (oy + 23, (_GS_M2, _GS_D2))):
+        for x in range(9, 23): put(x, y, a if x < 16 else b)
+    # ③ 사발 몸(테 아래 깊은 돌 그릇): 아래로 갈수록 둥글게 좁아진다. 가운데 어두운 홈 띠 하나.
+    y0, y1 = int(cy), oy + 19
+    for y in range(y0, y1):
+        t = (y - y0) / (y1 - y0)
+        half = 6.0 + (rx - 6.0) * math.sqrt(max(0.0, 1 - t * t))
+        for x in range(32):
+            u = (x + .5 - cx) / half
+            if abs(u) > 1: continue
+            col = _GS_L2 if u < -.55 else _GS_L1 if u < -.15 else _GS_M2 if u < .25 else _GS_M1 if u < .6 else _GS_D2
+            if y == oy + 15: col = _GS_D2 if u < .25 else _GS_D1                  # 홈 띠
+            if y == oy + 16 and u < .25: col = _GS_L1 if u < -.15 else _GS_M2      # 홈 아래 밝은 턱
+            if y == oy + 18: col = _GS_D1 if u > -.5 else _GS_M1                   # 사발 밑 그늘
+            put(x, y, col)
+    # ④ 사발 테(위에서 본 고리): 뒤 테는 어둡고 앞 테는 밝다
+    for y in range(oy, oy + 18):
+        for x in range(32):
+            if not ell(x, y, rx, ry): continue
+            if ell(x, y, rx - 1.7, ry - 0.9):
+                put(x, y, None); solid.add((x, y)); continue
+            front = y + .5 > cy
+            u = (x + .5 - cx) / rx
+            col = (_GS_L3 if u < -.3 else _GS_L2 if u < .3 else _GS_L1) if front else (_GS_M2 if u < -.3 else _GS_M1 if u < .3 else _GS_D2)
+            put(x, y, col)
+    # 앞 테 밑 그늘 1줄(테가 사발 몸 위로 튀어나와 보이게)
+    for x in range(32):
+        ys = [y for y in range(oy, oy + 18) if ell(x, y, rx, ry)]
+        if ys and (x, ys[-1] + 1) in solid and ys[-1] + 1 > cy:
+            u = (x + .5 - cx) / rx
+            c.p(x, ys[-1] + 1, _GS_M1 if u < -.3 else _GS_D2 if u < .4 else _GS_D1)
+    # ⑤ 바깥 윤곽 1px(4이웃) — 좌우 대칭
+    for (x, y) in [(x, y) for x in range(32) for y in range(c.h) if (x, y) not in solid]:
+        if any((x + dx, y + dy) in solid for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+            c.p(x, y, _GS_OUT)
+    # ⑥ 바닥 그림자(반투명, 대칭)
+    for (y, x0, x1) in ((oy + 30, 3, 28), (oy + 31, 6, 25)):
+        for x in range(x0, x1 + 1):
+            if c.get(x, y) is None: c.p(x, y, (0, 0, 0, 70))
+    # ⑦ 사발 속
+    inner = [(x, y) for y in range(oy, oy + 18) for x in range(32) if ell(x, y, rx - 1.7, ry - 0.9)]
+    top = min(y for _, y in inner)
+    for (x, y) in inner:                                                           # 맨 윗줄 = 뒤 테 안쪽 그늘
+        c.p(x, y, _GS_D1 if y == top else (30, 28, 26))
+    if lit:
+        for (x, y) in inner:
+            if y == top: continue
+            h = hnoise(x, y, 61)
+            c.p(x, y, K('orange', 2) if h < .15 else K('yellow', 5) if h > .85 else K('orange', 5) if h > .55 else K('orange', 4) if h > .3 else K('orange', 3))
+        return
+    # 식은 숯 = 차가운 잿빛 검정(장작 그늘의 갈색과 다르게) · 덩이 몇 개 · 재 점 넷(테에서 떨어진 숯 위)
+    CH0, CH1, ASH0, ASH1 = (29, 34, 40), (55, 53, 56), (142, 131, 120), (185, 171, 157)
+    for (x, y) in inner:
+        if y != top: c.p(x, y, CH0)
+    for (x, y) in ((5, oy + 9), (6, oy + 9), (6, oy + 10), (9, oy + 11), (10, oy + 11), (21, oy + 11), (22, oy + 10), (23, oy + 10),
+                   (25, oy + 8), (25, oy + 9), (14, oy + 6), (15, oy + 6)):
+        c.p(x, y, CH1)
+    for (x, y, col) in ((7, oy + 10, ASH0), (12, oy + 11, ASH1), (20, oy + 11, ASH0), (24, oy + 9, ASH1)):
+        c.p(x, y, col)
+    # 마른 장작 두 토막: 깨끗한 2px 띠로 비스듬히 엇걸린다(뒤 토막 왼쪽 위→오른쪽 아래, 앞 토막 오른쪽 위→왼쪽 아래).
+    # 윗줄 = 밝은 껍질, 아랫줄 = 그늘, 위아래 검은 윤곽. 바깥 끝에 2×2 잘린 단면(테와 숯 1px 이상 떨어진다).
+    BARK, NOTCH, UNDER, OUT = (154, 84, 53), (116, 78, 44), (99, 49, 11), (26, 14, 6)
+    CUT, CUT2 = (208, 196, 182), (185, 171, 157)
+    inb = lambda x, y: ell(x, y, rx - 1.7, ry - 0.9)
+    L = lambda x, y, col: c.p(x, y, col) if inb(x, y) else None                    # 앞 테에 가려진 부분은 안 그린다
+
+    def log(xa, ya, xb, yb, notch):
+        x0, x1 = min(xa, xb), max(xa, xb)
+        yat = lambda x: int(math.floor(ya + (yb - ya) * (x - xa) / (xb - xa) + .5))
+        for x in range(x0, x1 + 1):
+            y = yat(x)
+            L(x, y - 1, OUT); L(x, y, NOTCH if x == notch else BARK); L(x, y + 1, UNDER); L(x, y + 2, OUT)
+        out = -1 if xa < xb else 1                                                 # 바깥 끝(첫 점) 쪽 = 잘린 단면 2×2
+        ey = yat(xa)
+        for (x, top_c, bot_c) in ((xa, CUT, CUT2), (xa - out, CUT2, CUT)):
+            L(x, ey, top_c); L(x, ey + 1, bot_c); L(x, ey - 1, OUT); L(x, ey + 2, OUT)
+        for yy in (ey - 1, ey, ey + 1, ey + 2): L(xa + out, yy, OUT)
+    log(7, oy + 5, 19, oy + 9, 13)                                                  # 뒤 토막
+    log(24, oy + 5, 12, oy + 9, 18)                                                 # 앞 토막(겹친 곳에서 뒤 토막을 덮고 윤곽이 갈라 준다)
+
+
+@REG.piece('great stone brazier', '큰 돌 화로(꺼짐, 2칸, 버들항 돌)', 'puzzle', 'floor', 2, 1, 16, 'other',
+           '버들항 돌 화로와 같은 푸른 잿빛 슬레이트 돌 — 네모 받침 위 굵은 돌 기둥이 넓고 얕은 돌 사발을 받친다. 사발 속엔 식은 숯과 옅은 재, '
+           '그 위에 마른 장작 두 토막을 비스듬히 엇걸어 놓아 두었다(불 붙일 준비가 된 화로). 불붙인 모습은 great stone brazier lit.',
+           ['퍼즐', '화로', '지하'],
+           '화로 순서 퍼즐 방 돌 단 네 모서리. 같은 자리에서 great stone brazier lit(켜짐)와 바꿔 낀다.', ['great stone brazier lit'], use=('search',))
+def great_stone_brazier(c):
+    _great_stone_brazier(c, 0, False)
+
+
+@REG.piece('great stone brazier lit', '큰 돌 화로(켜짐, 2칸, 버들항 돌, 불꽃)', 'puzzle', 'floor', 2, 1, 32, 'other',
+           '같은 큰 돌 화로 — 사발 속 숯이 벌겋게 달고 사발 위로 두 칸 폭 불꽃이 한 칸 높이 솟는다.',
+           ['퍼즐', '화로', '지하'],
+           'great stone brazier 와 같은 자리(불꽃 줄이 한 줄 위).', ['great stone brazier'], use=('search',))
+def great_stone_brazier_lit(c):
+    _great_stone_brazier(c, 16, True)
+    probe = Cv(32, 48)
+    great_brazier_lit(probe)                                        # 승인된 큰 화로 불꽃(사발 위 혀 셋)을 그대로 옮긴다
+    warm = {K('orange', k)[:3] for k in range(1, 7)} | {K('yellow', 6)[:3]}
+    rim_in = lambda x, y: ((x + .5 - 15.5) / 11.8) ** 2 + ((y + .5 - 24) / 4.1) ** 2 <= 1   # 사발 속(테 안쪽)
+    for y in range(0, 24):
+        for x in range(32):
+            col = probe.get(x, y)
+            if col is None or col[:3] not in warm: continue
+            if y >= 21 and not rim_in(x, y): continue                              # 테 양 끝(좌우 모서리)은 덮지 않는다 — 대칭
+            c.p(x, y, col)
+    for y in range(18, 24):                                                         # 불꽃 밑동이 뒤 테를 가린다(혀 사이로 테가 검은 홈처럼 보이지 않게)
+        for x in range(6, 26):
+            on_back_rim = ((x + .5 - 15.5) / 14.5) ** 2 + ((y + .5 - 24) / 6.0) ** 2 <= 1 and not rim_in(x, y)
+            if on_back_rim and y < 24:
+                h = hnoise(x, y, 67)
+                c.p(x, y, K('orange', 5) if h > .6 else K('orange', 4) if h > .25 else K('orange', 3))
+
 # 둥근 지붕 안쪽 면 — 벽면 마름돌(보랏빛 회색)을 2~3단 어둡게 한 색. 아래 칸(cornice)은 벽면 바로 위 돌 처마 + 위로 갈수록 어두운 벽돌,
 # 위 칸(shell)은 더 어두운 벽돌이라 띠가 위로 갈수록 어두워져 머리 위로 굽어 멀어지는 면으로 읽힌다.
 # 벽돌은 칸(16px) 안에 정확히 떨어진다: 줄 4px(벽돌 3 + 줄눈 1, 줄눈이 15째 줄), 길이 8px, 칸 경계를 넘는 벽돌도 한 색.
@@ -577,11 +715,40 @@ def _bd_stone_brazier(c, oy, lit):
 
 
 @REG.piece('stone brazier', '돌 화로(꺼짐, 버들항 돌 받침 화로)', 'puzzle', 'floor', 1, 1, 16, 'other',
-           '버들항 돌 화로 — 넓은 돌 사발을 굵은 돌 기둥과 네모 받침이 받친다. 사발 속엔 잿빛 재와 식은 숯, 꺼져 가는 불씨 하나. 불붙인 모습은 stone brazier lit.',
+           '버들항 돌 화로 — 넓은 돌 사발을 굵은 돌 기둥과 네모 받침이 받친다. 사발 테 안에 식은 숯이 낮고 울퉁불퉁하게 쌓였고 그 위에 마른 장작 두 토막을 사발 속에 나란히 눕혀 두었다(불 붙일 준비가 된 화로). 불붙인 모습은 stone brazier lit.',
            ['퍼즐', '화로', '지하'],
            '화로 순서 퍼즐 방 돌 단 네 모서리. 같은 자리에서 stone brazier lit(켜짐)와 바꿔 낀다.', ['stone brazier lit'], use=('search',))
 def stone_brazier(c):
     _bd_stone_brazier(c, 0, False)
+    # 꺼진 화로: 사발 안(10~11줄, x3~12)에 식은 숯(따뜻한 검정 — 돌 색과 다르게)과 옅은 재 몇 덩이, 그 위에 마른 장작 두 토막을 사발 안에 걸쳐 둔다
+    # (뒤 토막 7~9줄 · 앞 토막 9~11줄, 아래 변은 12줄 앞 테 뒤로 숨는다). 불씨(주황)는 없다. 12줄 아래(사발 앞면·기둥·받침)는 켜진 화로와 화소까지 같다.
+    # 방 VQA r8·r9: 사발 테와 낮은 숯만으로는 말뚝으로 읽혔다. 그림 VQA r27: 엇갈린 막대는 X 표, r28: 장작이 사발 위에 얹혀 보였다.
+    CH0, CH1, ASH0, ASH1 = (34, 28, 26), (58, 50, 46), (142, 131, 120), (185, 171, 157)
+    for y in (10, 11):
+        for x in range(3, 13):
+            c.p(x, y, CH1 if hnoise(x, y, 73) > .55 else CH0)
+    for (x, y, col) in ((4, 10, ASH1), (5, 10, ASH0), (11, 11, ASH1), (12, 11, ASH0), (10, 10, ASH0)):
+        c.p(x, y, col)
+    BARK, NOTCH, UNDER, OUT = (154, 84, 53), (109, 59, 21), (99, 49, 11), (26, 14, 6)
+    CUT, CUT2 = (208, 196, 182), (185, 171, 157)
+
+    RIM = lambda x: x <= 5 or x >= 11                                               # 9줄 뒤 테(켜진 화로와 같은 돌 화소)는 덮지 않는다
+
+    def log_h(x0, x1, y, end_right, notches):
+        for x in range(x0, x1 + 1):
+            if not (y - 1 == 9 and RIM(x)): c.p(x, y - 1, OUT)                       # 윗변 윤곽(뒤 테 위는 건너뛴다)
+        for x in range(x0, x1 + 1):
+            c.p(x, y, NOTCH if x in notches else BARK)                              # 나무껍질 윗면(빛) + 옹이 한두 점
+            c.p(x, y + 1, UNDER)                                                    # 아랫면 그늘
+        ex = x1 if end_right else x0
+        c.p(ex, y, CUT); c.p(ex, y + 1, CUT2)                                       # 잘린 단면(나이테) 2px
+        if end_right: c.p(ex + 1, y, OUT); c.p(ex + 1, y + 1, OUT); c.p(x0 - 1, y, OUT); c.p(x0 - 1, y + 1, OUT)
+    for x in range(6, 11): c.p(x, 9, (58, 53, 48) if x % 2 else OUT)                # 뒤 토막 밑 숯(뒤 테 사이)
+    log_h(6, 10, 7, True, (8,))                                                     # 뒤 토막: 7~8줄, 양 끝에 뒤 테가 보인다
+    log_h(3, 9, 10, False, (6, 8))                                                  # 앞 토막: 10~11줄, 왼쪽 안쪽 테(2줄)는 그대로
+    for (x, y, col) in ((10, 10, (58, 53, 48)), (10, 11, OUT), (11, 10, ASH1), (12, 10, ASH0), (11, 11, (58, 53, 48)), (12, 11, OUT)):
+        c.p(x, y, col)                                                              # 앞 토막 오른쪽 숯·재
+    for (x, col) in ((6, (118, 128, 138)), (7, (96, 104, 120)), (8, (89, 100, 112))): c.p(x, 12, col)   # 앞 테 윗면: 고른 빛 줄(검은 홈 없이)
 
 
 @REG.piece('stone brazier lit', '돌 화로(켜짐, 버들항 돌 받침 화로, 불꽃)', 'puzzle', 'floor', 1, 1, 32, 'other',
@@ -614,3 +781,193 @@ def stone_brazier_lit(c):
     for j, row in enumerate(F):
         for x, ch in enumerate(row):
             if ch in COL: c.p(x, 8 + j, COL[ch])
+
+
+# ── 천문대 둥근 지붕 한 장(dome vault) ──────────────────────────────────────────────────────────────
+# 별빛 천문대 큰 방(32 폭, 방 x1~30) 북쪽 천장 띠 전체를 덮는 30×8칸 걸이. 방 북벽은 3칸마다 한 줄씩 내려오는 계단식 벽면이고
+# (가운데 x13~18 벽면 윗변 = 4줄째, 양 끝 x1~3 = 8줄째), 그 위 천장 띠에 반구 안쪽 북쪽 절반을 비스듬히 올려다본 모습을 그린다:
+# 계단식 벽 위 밝은 돌 고리(드럼) → 매끈한 곡선 돌 처마(지붕 밑동 고리) → 위로 갈수록 어두워지는 동심 돌 줄 → 지붕 꼭대기 쪽으로
+# 모이는 나무 갈빗대 넷(놋쇠 띠 셋씩) → 갈빗대 끝을 잇는 꼭대기 나무 고리가 관측 틈 문설주로 이어진다 → 가운데 경선을 따라 하늘이 보이는 관측 틈(별·돌 문설주). 틈 아래 벽면은 dome slit tall 이 잇는다.
+# 반구 밖 위 모서리와 벽면 칸은 투명(천장 검정·벽면 그림이 그대로 보인다). 빛은 아래 촛불 — 밑동이 밝고 꼭대기가 어둡다; 갈빗대는 시트처럼 왼쪽 위가 밝다.
+_DV_STEP = [128] * 3 + [112] * 3 + [96] * 3 + [80] * 3 + [64] * 6 + [80] * 3 + [96] * 3 + [112] * 3 + [128] * 3
+_DV_MORT = (24, 20, 27)
+_DV_SHADE = [(30, 27, 34), (36, 32, 40), (42, 37, 46), (48, 43, 52), (55, 49, 58), (62, 56, 65), (70, 63, 73), (80, 73, 82), (92, 85, 94)]
+_DV_DRUM = [(70, 64, 73), (78, 71, 81), (90, 83, 92)]
+
+
+def _dome_vault(c):
+    W, H = 480, 128
+    STEP = _DV_STEP
+    WALL = (_sheet_tile(2988), _sheet_tile(2989))                # v5 돌벽(stone) 벽면 아랫줄 두 칸
+    CX, YB, A, K1, K2 = 240.0, 124.0, 240.0, 101.0, 72.0       # 가운데 x, 양 끝 밑동 y, 반폭(방 양 끝 벽까지), 높이, 깊이(비스듬히 올려다본 투영)
+    # 밑동 고리의 모양: 한 줄로 이어진 둥근 호 r(u) = 1 - |u|^1.6 — 가운데는 얕고 양 끝으로 갈수록 가팔라진다. 타원(√(1-u²))이면 가운데가 너무 납작해
+    # 계단 벽 위 드럼이 가운데 4px · 양 끝 34px 쐐기꼴(그림 VQA r24), 계단을 곧게 따르면 「^」 박공 선(r25). 이 호는 드럼을 5~25px 로 고르게 둔다.
+    # 위로 올라갈수록 둥근 반구(타원 √(1-u²))로 넘어간다 — 지붕 윤곽은 천막처럼 뾰족하지 않고 둥글다.
+    rr0 = lambda u: 1 - abs(u) ** 1.6
+    rw = lambda e: min(1.0, e / math.radians(40)) ** 0.8
+    rr = lambda u, e=0.0: (1 - rw(e)) * rr0(u) + rw(e) * math.sqrt(max(0.0, 1 - u * u))
+    EMAX = math.radians(64)                                     # 이보다 높은 곳은 머리 위로 넘어가 안 보인다
+    EC = math.radians(48)                                       # 꼭대기 고리(갈빗대가 모여 관측 틈 문설주로 이어지는 나무 고리)
+    proj = lambda e, f: (CX + A * math.cos(e) * math.cos(f), YB - K1 * math.sin(e) - K2 * math.cos(e) * rr(math.cos(f), e))
+
+    def base_y(x):
+        d = (x + .5 - CX) / A
+        return YB - K2 * rr(d) if abs(d) <= 1 else YB
+
+    # 화소마다 (고도 e, 가로 위치 u = cos f) 를 식으로 푼다(점 찍기 대신 — 빈 화소·튀는 줄눈이 없다). 한 열에서 e 를 올리며 y 가 처음 화소 가운데에 닿는 곳.
+    import numpy as np
+    es = np.linspace(0.0, EMAX, 6001)
+    par, sil = {}, {}
+    for x in range(W):
+        u = (x + .5 - CX) / (A * np.cos(es))
+        ok = np.abs(u) <= 1
+        if not ok[0]: continue
+        n = int(np.argmin(ok)) if not ok.all() else len(es)
+        uu = u[:n]
+        ee = es[:n]; w = np.minimum(1.0, ee / math.radians(40)) ** 0.8
+        r_ = (1 - w) * (1 - np.abs(uu) ** 1.6) + w * np.sqrt(np.maximum(0.0, 1 - uu * uu))
+        yv = YB - K1 * np.sin(ee) - K2 * np.cos(ee) * r_
+        cm = np.minimum.accumulate(yv)
+        for y in range(H):
+            yc = y + .5
+            if yc < cm[-1] or yc > yv[0]: continue
+            k = int(np.argmax(cm <= yc))
+            par[(x, y)] = (float(es[k]), float(math.acos(max(-1.0, min(1.0, uu[k])))))
+            if x not in sil or y < sil[x]: sil[x] = y
+    NR = 9
+    ring = lambda e: min(NR - 1, int(e / EMAX * NR))
+
+    def block(e, f, ri):
+        nb = max(4, int(24 * math.cos((ri + .5) / NR * EMAX)))                          # 화면 가로로 돌 한 장 폭이 같게(양 끝 어깨까지 같은 돌 줄·줄눈, 꼭대기 줄은 장 수가 준다)
+        return int((1 - math.cos(f)) / 2 * nb + (0.5 if ri % 2 else 0))
+
+    inside = lambda x, y: x in sil and sil[x] <= y < base_y(x) - 1 and y < STEP[x // 16]
+    # 돌 한 장마다: 줄눈(블록보다 3단 어두운 같은 결의 색 — 검정 아님), 윗변 1px 밝게, 아랫변 1px 어둡게, 드문 돌결 점. v5 돌벽 벽돌과 같은 짜임.
+    cls = {}
+    for y in range(H):
+        for x in range(W):
+            if not inside(x, y): continue
+            e, f = par[(x, y)]
+            ri = ring(e); bi = block(e, f, ri)
+            nb3 = [par[(x + dx, y + dy)] if inside(x + dx, y + dy) else None for dx, dy in ((0, -1), (-1, 0), (1, 0))]
+            # 줄 경계: 이웃(위·좌·우) 중 더 높은 줄이 있으면 1px 줄눈 — 어깨처럼 줄이 가파르게 눕는 곳에서도 끊기지 않는다
+            course = any(q is not None and ring(q[0]) > ri for q in nb3)
+            # 돌 사이 세로 줄눈: 같은 줄의 왼쪽 또는 위 화소가 다른 돌이면
+            joint = any(q is not None and ring(q[0]) == ri and block(q[0], q[1], ri) != bi for q in nb3[:2])
+            lk = 7 - (ri * 5) // NR                                                         # 줄마다 어두워진다(아래 촛불빛, 7 → 3)
+            if hnoise(bi, ri, 61) > .75: lk -= 1                                           # 돌 한 장 단위로만 톤을 흔든다
+            cls[(x, y)] = ('m' if course else 'j' if joint else 's', lk)
+    for (x, y), (kind, lk) in cls.items():
+        if kind != 's': c.p(x, y, _DV_SHADE[max(0, lk - 3)]); continue
+        up, dn = cls.get((x, y - 1)), cls.get((x, y + 1))
+        k = lk
+        if up is not None and up[0] == 'm': k = lk + 1                                    # 윗변: 빛 받는 모서리
+        elif dn is not None and dn[0] == 'm': k = lk - 1                                  # 아랫변: 그늘
+        else:
+            h = hnoise(x, y, 67)
+            if h > .975: k = lk - 1                                                      # 돌결 점(드물게)
+            elif h < .015: k = lk + 1
+        c.p(x, y, _DV_SHADE[max(0, min(8, k))])
+    for y in range(H):
+        for x in range(W):
+            if y >= STEP[x // 16] or inside(x, y): continue
+            by = base_y(x)
+            if y >= by - 1:                                         # 드럼: 아래 벽면과 같은 v5 돌벽 벽돌(칸 격자에 맞춘다) — 계단 벽이 둥근 고리 뒤로 이어져 솟는다
+                t = y - by
+                if t < 1: col = K('stone', 5)
+                elif t < 2: col = K('stone', 4)
+                elif t < 3: col = K('stone', 2)
+                else:
+                    tile = WALL[((x + 16) // 16) % 2]
+                    col = tile.getpixel(((x + 16) % 16, y % 16))[:3]
+                c.p(x, y, col)
+    # 지붕 바깥 윤곽: 천장 검정과 맞닿는 둥근 선을 1px 로 끊김 없이
+    rim = [(x, y) for y in range(H) for x in range(W) if inside(x, y)
+           and any(not inside(x + dx, y + dy) and (y + dy) < base_y(x + dx) - 1 for dx, dy in ((-1, 0), (1, 0), (0, -1)))]
+    # 갈빗대: 밑동 처마에서 꼭대기 고리까지 경선을 따라(원판을 찍어 굵기를 지키고, 중심선의 왼쪽 위 쪽이 밝다). 놋쇠 띠는 갈빗대에 직각.
+    # 꼭대기 고리: 고도 EC 의 나무 고리가 바깥 갈빗대 끝에서 관측 틈 문설주까지 이어지고(안쪽 갈빗대 끝이 그 위에 얹힌다), 문설주와 만나는 곳에 놋쇠 띠.
+    BAND_E = (math.radians(12), math.radians(28), math.radians(42))
+    SH, JB = 8, 4
+    rib = {}
+
+    def stroke(pts, width_of, bands):
+        for n, (x, y, e, key) in enumerate(pts):
+            xa, ya = pts[max(n - 1, 0)][:2]; xb, yb = pts[min(n + 1, len(pts) - 1)][:2]
+            tx, ty = xb - xa, yb - ya; L = math.hypot(tx, ty) or 1.0
+            nx, ny = -ty / L, tx / L
+            if nx + ny > 0: nx, ny = -nx, -ny
+            r = width_of(e) / 2
+            for py in range(int(y - r) - 1, int(y + r) + 2):
+                for px in range(int(x - r) - 1, int(x + r) + 2):
+                    dxp, dyp = px + .5 - x, py + .5 - y
+                    if abs(dxp * tx / L + dyp * ty / L) > .8: continue
+                    s_ = dxp * nx + dyp * ny
+                    if abs(s_) > r or not inside(px, py): continue
+                    rel = (s_ + r) / (2 * r)
+                    k = 6 if rel > .8 else 5 if rel > .55 else 4 if rel > .25 else 3
+                    if bands(key): k = 21 if rel > .5 else 20
+                    if (px, py) not in rib or rib[(px, py)] < k: rib[(px, py)] = k
+
+    wid = lambda e: 5.0 * math.cos(e) ** 0.5 + 1.2
+    for f in [math.radians(d) for d in (48, 70, 110, 132)]:
+        pts = [proj(EC * i / 2400, f) + (EC * i / 2400, EC * i / 2400) for i in range(2401)]
+        stroke(pts, wid, lambda e: any(abs(e - eb) < .016 for eb in BAND_E))
+    for side in (1, -1):                                           # 꼭대기 고리: 바깥 갈빗대(34°/146°)에서 문설주까지
+        f0, f1 = (math.radians(48), None) if side == 1 else (math.radians(132), None)
+        pts = []
+        for i in range(2401):
+            f = f0 + (math.pi / 2 - f0) * i / 2400
+            x, y = proj(EC, f)
+            if abs(x - CX) < SH + JB: break
+            pts.append((x, y, EC, f))
+        jx = pts[-1][0] if pts else CX
+        stroke(pts, lambda e: wid(EC), lambda f: abs(proj(EC, f)[0] - CX) < SH + JB + 3)
+    for (px, py), k in rib.items():
+        c.p(px, py, K('brass', 5) if k == 21 else K('brass', 2) if k == 20 else K('wood', k))
+    keep = {K('wood', i) for i in (3, 4, 5, 6)} | {K('brass', 5), K('brass', 2)}
+    woods = {K('wood', i) for i in (3, 4, 5, 6)} | {K('brass', 5), K('brass', 2)}
+    edge = [(x, y) for y in range(H) for x in range(W)
+            if c.get(x, y) is not None and c.get(x, y) not in keep
+            and any(c.get(x + dx, y + dy) in woods for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)))]
+    for (x, y) in edge: c.p(x, y, K('dwood', 0))
+    # 바깥 윤곽: 지붕 둘레 전체(갈빗대·꼭대기 고리가 둘레에 닿는 곳까지) 한 색 1px — 고리는 윤곽 안쪽에 앉는다
+    for (x, y) in rim: c.p(x, y, _DV_SHADE[0])
+    # 관측 틈: 가운데 경선을 따라 하늘(별) + 돌 문설주. 48줄 아래(벽면 바로 위 천장 줄)는 dome slit tall 이 그린다 → 비운다.
+    for y in range(H):
+        for x in range(int(CX) - SH - JB, int(CX) + SH + JB):
+            if y >= STEP[x // 16] or c.get(x, y) is None: continue
+            if y >= 48: c.a[y][x] = None; continue
+            d = x - CX
+            if -SH <= d < SH:
+                k = 0 if y < 36 else 1                                      # 하늘: 위가 깊은 남색, 아래로 한 단 밝아져 dome slit tall 의 보이는 윗부분(blue 1)으로 이어진다 — 섞기 무늬 없이
+                if (x * 7 + y * 13) % 29 == 0: c.p(x, y, K('white', 6))
+                elif (x * 5 + y * 11) % 37 == 0: c.p(x, y, K('yellow', 5))
+                else: c.p(x, y, K('blue', k))
+            else:
+                j = int(d + SH + JB) if d < 0 else int(d - SH)
+                tones = [1, 3, 2, 1] if y < 40 else [1, 2, 2, 1]          # 아래 8줄은 dome slit tall 천장 줄 문설주 톤으로 이어진다
+                c.p(x, y, K('stone', tones[j]))
+    # 틈 아래 두 칸(벽면 바로 위 천장 줄, 방 x15~16 · y3)은 dome slit tall 의 맨 윗줄과 같은 칸이다. 한 칸엔 그림 한 장만 놓이므로
+    # 이 지붕이 그 두 칸을 맡는다: 지붕 그림이 빈 화소는 dome slit tall 맨 윗줄 화소로 채운다(문설주·하늘·놋쇠 레일이 끊기지 않게).
+    slit = Cv(32, 48)
+    dome_slit_tall(slit)
+    for y in range(48, 64):
+        for x in range(224, 256):
+            if c.get(x, y) is None: c.p(x, y, slit.get(x - 224, y - 48))
+    # 그 두 칸의 하늘은 dome slit tall 윗줄(짙은 남색·섞기 무늬·달)을 쓰지 않고 위 하늘에서 이어지는 blue 1 한 색 + 별 둘로(두 창이 겹쳐 보이지 않게)
+    for y in range(48, 60):
+        for x in range(232, 248): c.p(x, y, K('blue', 1))
+    c.p(235, 51, K('white', 5)); c.p(244, 56, K('yellow', 5))
+    # 초승달은 위 하늘에 하나만
+    c.ell(241, 24, 3.2, 3.2, None, only=lambda x, y: K('yellow', 6) if 232 <= x < 248 else c.get(x, y))
+    c.ell(242.6, 23, 3, 3, None, only=lambda x, y: K('blue', 0) if 232 <= x < 248 else c.get(x, y))
+
+
+@REG.piece('dome vault', '천문대 둥근 지붕(큰 방 천장 띠 전체, 30×8)', 'observatory', 'hang', 30, 0, 0, 'wall_mounted',
+           '별빛 천문대 큰 방의 둥근 지붕 안쪽 — 계단식 벽 위 돌 고리와 매끈한 곡선 처마 위로 동심 돌 줄이 꼭대기로 어두워지며 솟고, '
+           '놋쇠 띠를 두른 나무 갈빗대 넷이 꼭대기로 모인다. 가운데 경선을 따라 별이 보이는 관측 틈이 열렸다.',
+           ['천문대', '관측실', '둥근 지붕'],
+           '별빛 천문대 큰 방(방 x1~30, 북벽 계단: x1~3·28~30 벽면 윗변 8줄째, 3칸마다 한 줄씩 올라 x13~18 은 4줄째) — (1, 0)에 한 장. '
+           '틈 아래 벽면은 (15, 3)의 dome slit tall — 그 맨 윗줄 두 칸은 이 지붕이 같은 그림으로 덮으므로 dome slit tall 을 먼저 찍고 지붕을 나중에 찍는다.', ['dome slit tall', 'great telescope'], rows=8)
+def dome_vault(c):
+    _dome_vault(c)

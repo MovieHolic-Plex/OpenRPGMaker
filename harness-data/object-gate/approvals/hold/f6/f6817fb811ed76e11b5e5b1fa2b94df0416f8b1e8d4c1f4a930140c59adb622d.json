@@ -1,0 +1,18 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "f6817fb811ed76e11b5e5b1fa2b94df0416f8b1e8d4c1f4a930140c59adb622d",
+ "profileHash": "4d8774b517f41638",
+ "kind": "other",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T18:40:43.590Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "note": "묶음 허용: Fallen Star 천문대 둥근 지붕 한 장 + 꺼진 돌 화로 숯 더미 (r20·r22) — fallen-rooms-r22 (dome vault · stone brazier) — delegated by user to supervisor 2026-10-21; Opus VQA receipts harness-data/object-gate/vqa/fallen-room",
+ "sig": "ed3b70ef5141ebc15e30765f4b18e0bbc4471da8ea9551ec4e940df1caea7efd"
+}

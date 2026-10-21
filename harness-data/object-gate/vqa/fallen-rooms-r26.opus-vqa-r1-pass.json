@@ -1,0 +1,32 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r26",
+  "commit": "2d0dd28dbc",
+  "overall": "PASS",
+  "criteriaNotes": {
+    "0_hash_check": "Pixel hash recomputed with object_gate.pixel_sha256 on /tmp/fsrooms/gate-r26/dome_vault.png (480x128 RGBA): fdb75653d579dd07bded47b72d38c1d640d54ddb74ab083744ff14eab5053730.",
+    "1_topdown_view": "Reads as the inside of a dome seen from the room. The brick drum continues the stepped north wall faces up behind the cornice on the tile grid. The cornice is one continuous arc, flat near the slit and steeper toward the ends, and it clears each step's outer corner by about 1-2 px. Above it the stone courses curve concentrically, the vertical joints fan out radially and the outer rim darkens to a round hemispherical silhouette. No side or iso faces. The crown is cut flat at y=0 by the 8-row band, which reads as the dome continuing past the map top. That fits the 3/4 room below.",
+    "2_style_fit": "Drum brick matches the v5 wall-face brick. Dome stone uses the sheet's grey-violet stone ramp with speckle texture and 1px dark joints, with no noise and no flat stone fills. Ribs have a dark outline, a 3-step wood ramp lit from the top-left and brass collars, consistent with the sheet. Minor nit: the slit sky (x~231..247, y0..59) is two flat bands, (10,26,58) for y0..35 and (17,52,97) for y36..59, with a hard horizontal step at y=36 that is off the 16px grid. The rest of the sheet's night glass is dithered. It does not fail the piece.",
+    "3_readability_1x": "At 1x in mock-obs.png the hall now clearly reads as a round domed observatory hall, matching ref-op3: a curved vault, ribs converging on the crown, a star slit on the centre meridian and a curved drum over the stepped round plan. It no longer reads as a boxy hall.",
+    "4_placement": "The dome's lower ends land on the outermost wall tops (x~5 and x~475, row 7) with no floating gap. The transparent corners let the existing black stepped ceiling show. Wall-face cells under the cornice are transparent or brick-continuous, with no clipping. In the shared cells (x224..255, y48..63) the dome carries the slit jambs, sky and brass rail (y60..63, (92,65,8)/(126,92,16)/(191,160,69)), so the slit runs straight into 'dome slit tall' with no gap or offset (slit-x6.png). The jump from the dark navy dome sky to the brighter dithered glass of 'dome slit tall' happens at the brass rail and reads as a frame transition, not a break.",
+    "5_silhouette_outline": "The outer dome silhouette is a clean stepped curve with a dark rim, with no stubs or orphan pixels. Rib feet end in capped ends on the cornice. The crown ring runs as a continuous 2px timber line along the top edge into the slit jambs. The only edge pixel is a 1px star at (232,0) inside the slit, which is intended."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/dome vault",
+      "name": "천문대 둥근 지붕(큰 방 천장 띠 전체, 30×8) (dome vault)",
+      "kind": "wall_mounted",
+      "pixelSha256": "fdb75653d579dd07bded47b72d38c1d640d54ddb74ab083744ff14eab5053730",
+      "verdict": "PASS",
+      "reasons": [
+        "3/4 correct: a drum in v5 wall brick continues the stepped wall faces on the grid, a smooth continuous cornice arc lands just above the step corners, and concentric curved courses with radial joints build a round hemispherical silhouette. No side or iso faces.",
+        "Style fits v5: the stone ramp, speckle texture and 1px joints match the sheet. Timber ribs have an outline, a 3-tone ramp lit from the top-left and brass collars. No flat stone fills, no noise.",
+        "At 1x the great hall reads unmistakably as a round domed observatory (cf. ref-op3), not a box.",
+        "Placement is clean: the dome ends meet the outer wall tops, the transparent corners show the black ceiling, and the shared cells x224..255 y48..63 carry the slit jambs, sky and brass rail, so the slit is continuous with 'dome slit tall'.",
+        "Optional polish, not blocking: the slit sky is two flat bands with a hard step at y=36 (x231..247). Dither 2-3 rows at y34..38 and move the step onto y=32 or y=48, or match the 'dome slit tall' glass ramp, so the dome sky blends into the lower glass."
+      ]
+    }
+  ]
+}

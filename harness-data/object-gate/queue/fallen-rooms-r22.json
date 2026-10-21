@@ -1,0 +1,20 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "fallen-rooms-r22",
+ "title": "Fallen Star 천문대 둥근 지붕 한 장 + 꺼진 돌 화로 숯 더미 (r20·r22)",
+ "createdAt": "2026-10-21T18:39:05.437Z",
+ "items": [
+  {
+   "sha": "ee3c91486d2655f948250973c6873139f11e062a6ddb0a03259339c0e504b929",
+   "kind": "wall_mounted",
+   "label": "atlas_biome_interior/plus/dome vault",
+   "source": "/tmp/fsrooms/gate-fin/dome_vault.png"
+  },
+  {
+   "sha": "f6817fb811ed76e11b5e5b1fa2b94df0416f8b1e8d4c1f4a930140c59adb622d",
+   "kind": "other",
+   "label": "atlas_biome_interior/plus/stone brazier",
+   "source": "/tmp/fsrooms/gate-fin/stone_brazier.png"
+  }
+ ]
+}
