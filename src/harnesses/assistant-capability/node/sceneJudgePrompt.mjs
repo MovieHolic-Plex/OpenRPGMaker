@@ -21,7 +21,7 @@ const frames = resolve(dir, 'film', 'frames');
 if (existsSync(frames)) for (const name of readdirSync(frames).filter(n => n.endsWith('.png')).sort()) add(resolve(frames, name), `shipped player.html frame ${name} (one every 2 s)`);
 const score = existsSync(resolve(dir, 'score.json')) ? JSON.parse(readFileSync(resolve(dir, 'score.json'), 'utf8')) : null;
 const filmLog = existsSync(resolve(dir, 'film', 'film-log.json')) ? JSON.parse(readFileSync(resolve(dir, 'film', 'film-log.json'), 'utf8'))
-  .filter(e => ['target', 'no-target', 'error'].includes(e.kind)).map(e => ({ kind: e.kind, mapId: e.mapId, eventId: e.eventId, name: e.name, reached: e.reached, message: e.message })) : [];
+  .filter(e => ['target', 'arrived', 'blocked-step', 'no-target', 'error'].includes(e.kind)).map(e => ({ kind: e.kind, mapId: e.mapId, eventId: e.eventId, name: e.name, planned: e.planned ?? e.reached, arrived: e.arrived, dir: e.dir, at: e.at, message: e.message })) : [];
 const input = { caseId, attempt: Number(attempt), prompt: entry.prompt, requirements: entry.requirements, lessons: entry.lessons, images,
   maps: score?.maps ?? [], filmTour: filmLog };
 writeFileSync(resolve(dir, 'judge-input.json'), JSON.stringify(input, null, 2));

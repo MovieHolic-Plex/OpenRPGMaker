@@ -56,14 +56,15 @@ const busy = () => page.evaluate(() => {
     return raw ? { running: raw.running === true, input: raw.inputEnabled !== false } : null; } catch { return null; }
 }).catch(() => null);
 async function drainDialogue(limit = 40) {
-  let idle = 0;
+  let idle = 0, stuckRounds = 0;
   for (let i = 0; i < limit && idle < 3; i++) {
     await sleep(900);
     const b = await busy();
     const box = await dialogueOpen();
     if (b && !b.running && b.input && !box) { idle++; continue; }
-    idle = 0;
-    await page.keyboard.press('Enter');
+    idle = 0; stuckRounds++;
+    // Enter pages through text; a shop/inn window that Enter cannot close (or would buy from) gets Escape after a few rounds.
+    await page.keyboard.press(stuckRounds > 5 && stuckRounds % 2 === 0 ? 'Escape' : 'Enter');
   }
 }
 try {
@@ -100,29 +101,38 @@ try {
     const blocked = events.filter(e => e.id !== target.event.id).map(e => ({ x: e.x, y: e.y }));
     const isTouch = ['touch', 'playerTouch'].includes(target.kind.trigger);
     const goalBlocked = !isTouch ? [{ x: target.event.x, y: target.event.y }] : [];
-    const path = route(map.id, s, target.event, [...blocked, ...goalBlocked]);
-    note('target', { mapId: map.id, eventId: target.event.id, name: target.event.name, at: [target.event.x, target.event.y], eventKind: target.kind, steps: path.moves?.length, reached: path.reached });
+    let path = route(map.id, s, target.event, [...blocked, ...goalBlocked]);
+    note('target', { mapId: map.id, eventId: target.event.id, name: target.event.name, at: [target.event.x, target.event.y], eventKind: target.kind, steps: path.moves?.length, planned: path.reached });
     if (!path.reached) continue;
-    if (path.moves.length) {
-      // Real arrow keys, one tile at a time: hold until the hero's tile changes (or the map changes).
-      const KEY = { up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight' };
-      let walked = 0;
-      for (const dir of path.moves) {
-        const before = await state(); if (!before || before.currentMapId !== map.id) break;
-        await page.keyboard.down(KEY[dir]);
-        const t0 = Date.now(); let moved = false;
-        while (Date.now() - t0 < 2500) {
-          await sleep(60); const now = await state();
-          if (!now) break;
-          if (now.currentMapId !== map.id || now.x !== before.x || now.y !== before.y) { moved = true; break; }
-        }
-        await page.keyboard.up(KEY[dir]);
-        await sleep(120);
-        if (!moved) { note('blocked-step', { dir, at: [before.x, before.y] }); break; }
-        walked++;
+    // Real arrow keys, one tile at a time: hold until the hero's tile changes, release, wait until the hero stops,
+    // then re-route from where the hero really is (a held key can carry the hero one tile further, and the static
+    // route cannot see every runtime blocker). A refused step marks that cell blocked for the re-route.
+    const KEY = { up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight' };
+    const DELTA = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+    const refused = [];
+    let arrived = path.moves.length === 0, walked = 0;
+    for (let guard = 0; guard < 80 && !arrived && path.reached && !deadline(); guard++) {
+      const dir = path.moves[0];
+      const before = await state(); if (!before || before.currentMapId !== map.id) break;
+      await page.keyboard.down(KEY[dir]);
+      const t0 = Date.now(); let moved = false;
+      while (Date.now() - t0 < 2500) {
+        await sleep(40); const now = await state();
+        if (!now) break;
+        if (now.currentMapId !== map.id || now.x !== before.x || now.y !== before.y) { moved = true; break; }
       }
-      note('walked', { steps: walked, of: path.moves.length });
+      await page.keyboard.up(KEY[dir]);
+      let here = await state(), stable = 0;
+      for (let i = 0; i < 20 && stable < 4; i++) { await sleep(80); const now = await state(); if (now && here && now.x === here.x && now.y === here.y && now.currentMapId === here.currentMapId) stable++; else stable = 0; here = now; }
+      if (!here || here.currentMapId !== map.id) break;
+      if (!moved) { refused.push({ x: before.x + DELTA[dir][0], y: before.y + DELTA[dir][1] }); note('blocked-step', { dir, at: [before.x, before.y] }); }
+      else walked++;
+      path = route(map.id, here, target.event, [...blocked, ...goalBlocked, ...refused]);
+      if (path.reached && path.moves.length === 0) arrived = true;
     }
+    note('walked', { steps: walked, refused: refused.length });
+    note('arrived', { eventId: target.event.id, arrived });
+    if (!arrived) continue;
     if (path.face) {
       await page.evaluate(dir => window.__oprnInput.face(dir), path.face).catch(() => {});
       await sleep(250);
