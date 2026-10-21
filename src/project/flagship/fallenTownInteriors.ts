@@ -20,6 +20,8 @@ type Home = {
   readonly name: string;
   /** build_hand_interior_room 의 layout — 집마다 쓰임에 맞춘 방 구성(rooms·seed·variant). 화면(30×17칸)을 거의 채우는 크기로 고른다. */
   readonly layout: Record<string, unknown>;
+  /** 빈 마루를 쓰임에 맞게 채우는 가구(키트 id, x, y) — 방 배치가 seed 로 고정이라 칸을 정해 둔다. 못 놓이면 건너뛴다. */
+  readonly dress?: readonly (readonly [string, number, number])[];
   readonly bgm: string;
   readonly people: readonly {
     readonly id: string; readonly name: string; readonly query: string;
@@ -62,6 +64,10 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       door: { x: 50, y: 31 }, mapId: "fs_inn", name: "아스텔 · 별빛 여관", bgm: "cc0-bgm-rtp-rst-001",
       // 선술집 홀 + 손님방 셋 + 부엌·저장고 — 「여관인데 침대가 없다」(VQA r5).
       layout: { program: "inn", seed: 5, variant: 1, styleVariant: "A" },
+      // 위층 휴게 홀(비어 있었다)에 찻상 두 벌, 아래 선술집 남쪽에 식탁 두 벌·술통 걸이.
+      dress: [["tea 2x2", 9, 4], ["chair E", 8, 4], ["chair W", 11, 4], ["tea 2x2", 17, 4], ["chair E", 16, 4], ["chair W", 19, 4], ["luggage trunk", 26, 5],
+        ["dining 2x1", 18, 15], ["chair S", 18, 14], ["chair S", 19, 14], ["chair N", 18, 16], ["chair N", 19, 16],
+        ["dining 2x1", 28, 15], ["chair S", 28, 14], ["chair S", 29, 14], ["chair N", 28, 16], ["chair N", 29, 16], ["keg rack", 30, 17]],
       people: [
         {
           id: "ev_fs_inn_keeper", name: "여관 주인 마르타", query: "젊은 여성", chip: ["tex_easyrpg_charset_people1", 5], behindCounter: true,
@@ -85,6 +91,8 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       door: { x: 31, y: 31 }, mapId: "fs_apothecary", name: "아스텔 · 약방", bgm: "cc0-bgm-rtp-cln-001",
       // 가게 앞방 + 조제실 + 약초 저장고 + 서재 + 부엌 + 침실.
       layout: { rooms: [{ kind: "pharmacy_shop", w: 16, h: 9 }, { kind: "alchemy", w: 7, h: 6 }, { kind: "bedroom" }, { kind: "storeroom" }, { kind: "kitchen" }, { kind: "study" }], seed: 55, variant: 1, styleVariant: "A" },
+      dress: [["table:potion+flask", 21, 13], ["balance scale", 24, 12], ["herb drying rack", 25, 13], ["basket:herb", 11, 15], ["basket:mushroom", 12, 15],
+        ["potted flowering", 15, 14], ["mortar and pestle", 23, 15], ["basket:potion+potionb+potiong", 10, 14]],
       people: [
         {
           id: "ev_fs_apothecary", name: "약재상 오든", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 7], behindCounter: true,
@@ -98,6 +106,8 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       door: { x: 13, y: 11 }, mapId: "fs_bakery_home", name: "아스텔 · 빵집 뒤채", bgm: "cc0-bgm-rtp-caf-001",
       // 빵 진열 가게 + 빵 굽는 방 + 밀가루 저장고 + 부엌 + 부부 침실.
       layout: { rooms: [{ kind: "bakery_shop", w: 14, h: 8 }, { kind: "bakery_oven", w: 8, h: 5 }, { kind: "storeroom" }, { kind: "bedroom" }, { kind: "kitchen" }], seed: 21, variant: 2, styleVariant: "C" },
+      dress: [["table:loaf+bun", 3, 13], ["table:cake+pie", 6, 13], ["cake display case", 16, 12], ["table:loaf+bun", 16, 15], ["basket:loaf", 2, 16],
+        ["basket:baguette", 3, 16], ["basket:bun", 9, 16], ["sack:flour", 17, 17], ["roundtable", 7, 16], ["chair E", 6, 16], ["chair W", 8, 16]],
       people: [
         {
           id: "ev_fs_baker_husband", name: "빵집 아저씨 토마", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people1", 4],
@@ -110,6 +120,8 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       door: { x: 4, y: 20 }, mapId: "fs_stargazer_home", name: "아스텔 · 늙은 별지기의 집", bgm: "cc0-bgm-rtp-mys-002",
       // 별 지도 서고 + 관측 일지 서재 + 침실 + 부엌 + 저장고.
       layout: { rooms: [{ kind: "library", w: 16, h: 7 }, { kind: "study", w: 8, h: 7 }, { kind: "bedroom" }, { kind: "kitchen" }, { kind: "storeroom" }], seed: 9, variant: 2, styleVariant: "D" },
+      dress: [["desk 3x1", 2, 12], ["chair N", 3, 13], ["book pile", 6, 13], ["map rolls", 1, 13], ["orrery", 14, 13], ["desk 2x2", 21, 13],
+        ["book pile", 22, 10], ["owl perch", 29, 13], ["scroll rack", 13, 10], ["map rolls", 27, 15], ["globe", 24, 14]],
       people: [
         {
           id: "ev_fs_old_stargazer", name: "늙은 별지기 오스본", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 6],
@@ -166,6 +178,13 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       if (overlay) for (let i = 0; i < overlay.length; i += 1) if (overlay[i] === 3964 || overlay[i] === 3965) overlay[i] = -1;
     }
     run(project, "set_map_properties", { mapId: home.mapId, bgm: { mode: "custom", resourceId: home.bgm } });
+    for (const [kit, x, y] of home.dress ?? []) {
+      const ctx = { project, assistantRun: false };
+      try {
+        const res = runTool(ctx, "stamp_object", { objectId: `kit:atlas_biome_interior/hand-interior:${kit}`, mapId: home.mapId, x, y }, { dryRun: false }) as Run;
+        if (res.ok) Object.assign(project, ctx.project);
+      } catch { /* 장식 — 못 놓으면 건너뛴다 */ }
+    }
     // 부엌의 수도꼭지 개수대·쇠 레인지는 중세 집에 어울리지 않았고 세 집에 똑같이 깔렸다(VQA r5) — 물동이와 화덕·조리대로 바꾼다.
     periodKitchen(project.maps[home.mapId]!);
     const interior = project.maps[home.mapId]!;
