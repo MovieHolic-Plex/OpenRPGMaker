@@ -604,6 +604,47 @@ function valenWalksIn(project: Project, vault: GameMap, bossId: string): void {
   }
 }
 
+/**
+ * 사운드트랙(사용자 검토 2026-10-21 「기본 곡처럼 들린다」). 광장 fld-003·전투 btl-001·타이틀 ttl-001 은 새 프로젝트 기본곡이었다.
+ * 장면마다 카탈로그의 곡 설명(brief)으로 고르고, 이야기의 뼈대는 메인 테마 「첫빛」 변주(flt-*)로 묶는다 —
+ * 타이틀·오프닝·마을·전투·보스·엔딩이 한 선율의 변주라 한 게임의 OST 로 들린다. 천문대·숲·지하는 장소 곡.
+ */
+const FS_MUSIC = {
+  title: "cc0-bgm-rtp-flt-002",        // 첫빛이 머무는 표지 — 타이틀 화면용 서정 변주
+  opening: "cc0-bgm-rtp-flt-001",      // 모험의 첫빛 — 메인 테마
+  hub: "cc0-bgm-rtp-flt-006",          // 햇살이 먼저 아는 마을 — 안전한 허브 마을 변주
+  observatory: "cc0-bgm-rtp-hlc-002",  // 별을 읽는 회랑의 밤 — 학문 도시의 밤
+  forest: "cc0-bgm-rtp-tcf-001",       // 소나무 길의 맑은 표식 — 온대 숲 탐험
+  vaultGate: "cc0-bgm-rtp-flt-020",    // 돌에 새겨진 첫 걸음 — 유적 탐사 변주(화로 퍼즐)
+  vault: "cc0-bgm-rtp-cav-001",        // 수정의 숨결 — 수정 동굴
+  battle: "cc0-bgm-rtp-flt-028",       // 첫빛을 지키는 발걸음 — 일반 전투 변주
+  boss: "cc0-bgm-rtp-flt-029",         // 검게 번진 첫빛 — 보스 변주
+  ending: "cc0-bgm-rtp-flt-023",       // 말이 멎은 뒤의 별 — 사건 뒤의 고요
+} as const;
+function applyFallenSoundtrack(project: Project, maps: { hub: GameMap; observatory: GameMap; forest: GameMap; vault: GameMap }, bossId: string | undefined): void {
+  const bgm = (resourceId: string) => ({ mode: "custom", resourceId }) as GameMap["bgm"];
+  maps.hub.bgm = bgm(FS_MUSIC.hub);
+  maps.observatory.bgm = bgm(FS_MUSIC.observatory);
+  maps.forest.bgm = bgm(FS_MUSIC.forest);
+  maps.vault.bgm = bgm(FS_MUSIC.vault);
+  const gate = project.maps["fs_vault_gate"];
+  if (gate) gate.bgm = bgm(FS_MUSIC.vaultGate);
+  project.system.battleBgmResourceId = FS_MUSIC.battle;
+  if (project.system.titleScreen) project.system.titleScreen.musicResourceId = FS_MUSIC.title;
+  if (project.system.opening) project.system.opening.musicResourceId = FS_MUSIC.opening;
+  for (const ending of project.endings ?? []) ending.presentation = { ...ending.presentation, musicResourceId: FS_MUSIC.ending };
+  // 결전만 보스 변주로 — 전투 직전 시스템 전투곡을 바꾸고, 끝나면(이기든 지든) 되돌린다.
+  const boss = bossId ? maps.vault.events.find((e) => e.id === bossId) : undefined;
+  const systemBgm = (fields: Record<string, string>) => ({ kind: "m2Command", commandId: "m2-027-change-system-bgm", fields: { cue: "battle", ...fields } }) as unknown as Command;
+  for (const list of boss ? eventCommandLists(boss) : []) {
+    for (let i = list.length - 1; i >= 0; i -= 1) {
+      if (list[i]!.kind !== "battleProcessing") continue;
+      list.splice(i + 1, 0, systemBgm({ operation: "reset" }));
+      list.splice(i, 0, systemBgm({ operation: "set", resourceId: FS_MUSIC.boss, volume: "100" }));
+    }
+  }
+}
+
 /** origin 에서 가장 가까운, 걸을 수 있고 다른 이벤트와 붙지 않은 빈 칸. */
 /**
  * 결전 승리 뒤 흐름(감사 2차): 장 구성기는 승리 즉시 단계 스위치를 켜 발렌이 「연기 속으로」 대사 전에 사라졌고,
@@ -838,8 +879,6 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 이리스가 합류하면 광장의 발렌 일행은 숲으로 떠난다(지하에서 다시 만난다).
   vanishWhen(M(ids.hub), `ev_${FS_PREFIX}_valen`, SW_IRIS_JOINED);
   vanishWhen(M(ids.hub), `ev_${FS_PREFIX}_knight`, SW_IRIS_JOINED);
-  // 가혹 검수 r12: 천문대에만 곡이 없어 광장 곡이 이어지거나 무음이었다 — 잠든 종탑(차분한 수수께끼 실내 곡).
-  M(ids.observatory).bgm = { mode: "custom", resourceId: "cc0-bgm-rtp-mys-002" } as GameMap["bgm"];
 
   // 보스 — 발렌 혼자가 아니라 깨운 수호상과 함께. 지면 엔딩 대신 숨을 고르고 다시 도전한다.
   if (bossEvent) {
@@ -1266,6 +1305,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // bossEvent 는 앞에서 잡은 옛 맵 객체일 수 있다(도구를 부를 때마다 맵이 새로 만들어진다) — id 로 다시 찾는다.
   stageTalk(bossEvent ? M(ids.vault).events.find((e) => e.id === bossEvent.id) : undefined);
   if (bossEvent) valenWalksIn(project, M(ids.vault), bossEvent.id);
+  applyFallenSoundtrack(project, { hub: M(ids.hub), observatory: M(ids.observatory), forest: M(ids.forest), vault: M(ids.vault) }, bossEvent?.id);
   // 길은 모든 소품·표지를 찍은 뒤에 잰다 — 앞에서 재면 뒤에 선 표지·자리 옮김이 길을 막았다.
   marchOffAfterProclamation(project, M(ids.hub));
   applySpeakerFaces(project, {
