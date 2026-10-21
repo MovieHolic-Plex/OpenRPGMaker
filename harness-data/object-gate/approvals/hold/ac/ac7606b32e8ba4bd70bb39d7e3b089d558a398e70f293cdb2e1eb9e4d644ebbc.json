@@ -1,0 +1,17 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "ac7606b32e8ba4bd70bb39d7e3b089d558a398e70f293cdb2e1eb9e4d644ebbc",
+ "profileHash": "4d8774b517f41638",
+ "kind": "other",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T12:09:38.552Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "note": "묶음 허용: Fallen Star 방 — 꺼진 화로·높은 관측 틈·별 렌즈 (r3) — fallen-rooms-r3 (cold brazier · dome slit tall · star lens) — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vq",
+ "sig": "eed66fb0b43f87c69a6807628b1a1c8c157d80b3881efa76a04eb71c0556adb3"
+}

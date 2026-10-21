@@ -331,3 +331,13 @@ v5 의 작은 삼각대 망원경·천체 모형·지구본·1칸 별자리표·
   「망원경」 조사 이벤트(`ev_fs_scope`)는 접안 칸 (15,11)·priority same 으로 옮긴다 — `fallen-audit` 의 scope 단계는 (15,12)에서 위로 말을 건다. 굽기 전에는 이 블록이 아무것도 바꾸지 않는다(옛 홀 그대로).
 - **굽기를 지금 막는 다른 것**: `abyss-b`·`abyss-c` 구멍 조립 그림이 옛 프로필 영수증이라 `gate_rooms.check` 가 `pit:abyss` 를 막는다(2026-10-21 실측, 이 조각과 무관). 그 둘도 다시 받거나 사람이 허용해야 `bake.py` 가 돈다.
 - 함정: `execTool` 은 맵 객체를 새로 만든다 — 찍은 뒤에 앞에서 잡은 맵의 이벤트를 고치면 버려진 사본을 고친다(`M(ids.…)` 로 다시 잡는다).
+
+## 폴른 스타 방 조각 — interior-plus `fallen` (2026-10-21, 위임 허용·굽기 완료)
+
+세 방(천문대·네 화로의 방·옛 별지기의 방)을 다시 지으며 v5 에 없던 세 조각을 그렸다. `scripts/content/interior-plus/pieces/fallen.py`.
+
+- `cold brazier`(1×1, 7455): 꺼진 화로. v5 `lava brazier` 아래 칸(6442) 사발 몸·삼각대(5~15줄)를 화소 그대로 쓰고, 사발 테를 열린 타원으로·속은 재와 숯·꺼져 가는 불씨로. 퍼즐이 켜면 (x,y-1)=6441·(x,y)=6442, 끄면 (x,y-1)=-1·(x,y)=7455 를 upper 층에 바꿔 낀다.
+- `dome slit tall`(2×3 걸이, 7456~7461): 천장 줄 1 + 벽면 2. 놋쇠 돔 레일이 천장 줄 회색 가장자리 선(12~15px)에 걸친다. y = 천장 줄.
+- `star lens`(4×2 발밑, 위로 48px, 7462~7481): 돌 원통 받침 + 놋쇠 굴대 + 위를 본 큰 렌즈. 옛 별지기의 방 한가운데·보스 자리 뒤.
+- 독립 Opus VQA: r2 FAIL(재 없는 뚜껑 냄비, 천장 위로 삐져나온 틈, 그림자 속 돌결 점 10개) → r3 PASS `harness-data/object-gate/vqa/fallen-rooms-r3.opus-vqa-r1-pass.json`. 묶음 `queue/fallen-rooms-r3.json`, 18323 위임 허용(supervisor, delegated by user 2026-10-21) 뒤 `bake.py`. 7455 앞 칸 화소 변화 0.
+- 함정: `c.shadow()` 를 먼저 깔면 그 칸이 4-튜플로 차서 `c.get(x,y) is not None` 검사가 통과한다 — 몸에만 결을 넣으려면 `len(c.get(x,y) or ()) == 3`.

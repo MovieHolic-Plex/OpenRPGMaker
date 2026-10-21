@@ -1,0 +1,54 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-21",
+  "batch": "fallen-rooms-r3",
+  "commit": "0af996dd35",
+  "overall": "PASS",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 (src/harnesses/_core/object_gate) computed on the three PNGs in /tmp/fsrooms/gate-r3 and recorded per item; verdicts bind only to these hashes.",
+    "1_topdown_view": "All three show top planes + front faces, no side/iso faces. Cold brazier keeps the lit kit's 3-row rim ellipse (grey rim row 0, ash/coal rows 1-2, grey lip row 3) - the same plane the lit kit fills with flame, so it reads in the same view; the advisory gate's 'front elevation' call is not upheld. Star lens: drum top ellipse ~12 rows over a ~11-row front face, lens shown as a tilted glass face in a yoke. Slit is a wall-mounted opening with a top-lit sill.",
+    "2_style_fit": "Palettes sit on v5 ramps: cold brazier uses the identical body/outline colours of tiles 6441/6442; slit stone jambs match the observatory wall greys and the brass band matches the poster frames; lens brass (4 steps + dark brown outline) matches v5 candelabra/frame brass, drum greys match marble statues. Multi-step shading, no flat fills. Sky dither bands in the slit are slightly mechanical but match the star-map posters.",
+    "3_readability_1x": "At 1x: brazier reads as an unlit iron brazier with ash next to the lit ones (clear on/off contrast for the puzzle); slit reads as a night-sky opening with moon rising through the roof; lens reads instantly as the room's centrepiece.",
+    "4_placement": "Slit's brass band sits on the ceiling ledge line (y=12..15 of the ceiling row) and the sill lands on the wall base, no clip; brazier occupies the foot tile exactly where 6442 sits; lens drum and dark translucent shadow (alpha 58/110) ground it on the sanctum floor, nothing floats.",
+    "5_silhouette_outline": "Inspected at 12x: no stray pixels, stubs or holes. Outlines are near-black/dark brown consistent with neighbouring v5 art and the lit brazier kit."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/cold brazier",
+      "name": "꺼진 화로(삼각대 쇠 화로, 숯·재) (cold brazier)",
+      "kind": "other",
+      "pixelSha256": "ee2cf6ab01d0077d1d9a681b825f6bd687b5904141ec3a4615f199c88e9a2acf",
+      "verdict": "PASS",
+      "reasons": [
+        "Same body, legs and outline as lit foot tile 6442; the rim ellipse (rows 0-3) is the same top plane the lit kit fills with flame, now ash + two dull embers - same 3/4 view, not a front elevation.",
+        "Side-by-side with mock-gate-lit at 1x and 6x the swap reads as 'the fire went out', which is what the four-braziers puzzle needs.",
+        "Near-black outline is inherited from the lit kit and matches it; changing it would make the swap pop."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome slit tall",
+      "name": "지붕까지 트인 관측 틈(2×3, 천장 1줄 + 벽면 2줄) (dome slit tall)",
+      "kind": "wall_mounted",
+      "pixelSha256": "1c650c07725ec7bd5e0e30530e513cb0368c6cd1824828997380f0998676c0cf",
+      "verdict": "PASS",
+      "reasons": [
+        "Brass band at y=12..15 replaces the ceiling ledge exactly and the darker ceiling-row jambs read as the slit continuing through the roof; wall-row jambs, shutters and top-lit sill match the wall face.",
+        "Sky ramp darkens upward with moon in the ceiling row - reads at 1x as a roof observation slit above the telescope.",
+        "Clean silhouette; minor note only: the horizontal checker dither rows at sky y=8-9, 20-21, 33-34 are a bit regular, acceptable since the v5 star posters use the same treatment."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/star lens",
+      "name": "별 렌즈(옛 별지기의 큰 렌즈, 4×2) (star lens)",
+      "kind": "other",
+      "pixelSha256": "ac7606b32e8ba4bd70bb39d7e3b089d558a398e70f293cdb2e1eb9e4d644ebbc",
+      "verdict": "PASS",
+      "reasons": [
+        "Stone drum has a lit top ellipse and a front face shaded light-left to dark-right with a brass foot ring; yoke arms meet in a brass knot sitting on the top plane - correct 3/4 stacking.",
+        "Brass ramp and gem-blue glass with a single star glint match v5 frames/crystal; shadow is dark translucent, grounding it on the sanctum floor.",
+        "Reads as the vault centrepiece at 1x without overpowering statues/candelabra; no stray pixels at 12x."
+      ]
+    }
+  ]
+}

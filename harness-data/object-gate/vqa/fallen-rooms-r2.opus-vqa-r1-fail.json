@@ -1,0 +1,42 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-21",
+  "batch": "fallen-rooms-r2",
+  "commit": "0af996dd35",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed from src/harnesses/_core/object_gate on the three PNGs in /tmp/fsrooms/gate-r2; hashes recorded per item below. Any pixel change invalidates this receipt.",
+    "1_topdown_view": "cold_brazier reuses the lit kit 6442 body silhouette pixel-for-pixel (legs, bowl, rim width), so it is in the SAME 3/4 view as the lit kit it replaces; the gate's 'front elevation' REFER is not a view mismatch with the kit. dome_slit_tall is a wall_mounted front-elevation opening, correct for wall faces. star_lens shows both the lens disc and the drum top as ellipses plus the drum front face: correct 3/4.",
+    "2_style_fit": "All three use v5 outline darks, 4-6 step ramps and dithered texture, no flat fills. cold_brazier uses an off-ramp saturated crimson (149,1,16) at (7,3) that does not exist in the lit brazier's orange ember ramp.",
+    "3_readability_1x": "star_lens and dome_slit_tall read instantly at 1x. cold_brazier at 1x in mock-gate-cold reads as a closed black iron pot with a single red 'eye' rather than a doused brazier: the bowl mouth has no ash and row 0 bulges above the rim like a lid.",
+    "4_placement": "star_lens sits on the sanctum floor correctly (overlap of the back wall base is fine for a tall centrepiece). dome_slit_tall assumes 2 ceiling rows, but the observatory's back wall has only ~1 ceiling row: in mock-obs the slit's top 12px (rows 0-11, incl. the gold cap) poke above the room's back ceiling edge line at y=12 into the outer void.",
+    "5_silhouette_outline": "star_lens has 10 opaque stray drum-grey pixels scattered in the shadow below the gold base band. cold_brazier and dome_slit_tall silhouettes are clean."
+  },
+  "items": [
+    {
+      "id": "cold_brazier",
+      "name": "꺼진 화로(삼각대 쇠 화로, 숯·재) (cold brazier)",
+      "kind": "other",
+      "pixelSha256": "e2ae7a8ecf6fca9b5baf89976a5770ba29b25fd26b8cd029f3bbd1bcab536426",
+      "verdict": "FAIL",
+      "reasons": "View: same 3/4 view as the lit kit 6441/6442 (body rows 5-15 match the lit foot), so the view itself is acceptable. Fails readability: at 1x it does not read as a cold brazier. (a) Row 0 x4-11 is a dome of iron-coloured pixels (74,84,96)/(54,62,71) bulging above the rim, so the top reads as a closed lid. (b) The bowl mouth rows 1-4 is filled with the same blue-steel greys as the iron body, so there is no ash/charcoal read. (c) The single saturated crimson (149,1,16) at (7,3) next to brown (113,48,5) at (8,3) reads as an eye/gem and is off the lit kit's ember ramp. Fixes: delete the row-0 bulge (make row 0 transparent or a flat rim line at the lit kit's rim height); draw the bowl mouth as an open ellipse - light rim ring (118,128,138)/(126,126,138) along row 1 x2-13 and as the front lip on row 4; fill rows 2-3 inside the ring with a warm pale ash ramp (~(128,120,122)/(104,98,102)) broken by 3-4 dark charcoal lumps (30,30,36); replace (149,1,16) and (113,48,5) with 1-2 dull embers taken from the darkest step of the lit brazier's orange ramp (or drop embers entirely). Optional: 1-2 px faint grey smoke above the rim. Keep rows 5-15 identical to 6442."
+    },
+    {
+      "id": "dome_slit_tall",
+      "name": "지붕까지 트인 관측 틈(2×4, 천장 2줄 + 벽면 2줄) (dome slit tall)",
+      "kind": "wall_mounted",
+      "pixelSha256": "857a6230d63e78e3dbb528c89e5444c84df4393fbd55e44dad8a1f29b0eead17",
+      "verdict": "FAIL",
+      "reasons": "Drawing quality is good: stone jambs with 3-step shading, gold collars, night sky with moon and stars, shutters and sill match the existing v5 star window. Fails placement: the piece assumes 2 ceiling rows, but the observatory back wall in mock-obs has a single ceiling row (back edge line at y=12-15, wall cap at y=28-31). The top 12px of the piece (rows 0-11: gold cap rows 0-3 and the upper jamb/sky) stick out above the room's back ceiling edge into the outer void, so the slit reads as a chimney poking out of the building silhouette. Fixes (pick one): (1) Redraw as 2x3 (1 ceiling row + 2 wall rows): move the gold cap (current rows 0-3) to rows 12-15 so it sits exactly on the ceiling back edge line, with the collar currently at rows 12-13 removed, and keep the collar at rows 24-25 on the wall cap line; or (2) keep 2x4 but give the observatory a 2-row ceiling band above that wall segment so the cap lands on the room's back edge. Minor: the sky shows two hard horizontal tone steps at about rows 29 and 45; add 1-2 rows of dither at each step so it does not read as three stacked flat bands."
+    },
+    {
+      "id": "star_lens",
+      "name": "별 렌즈(옛 별지기의 큰 렌즈, 4×2) (star lens)",
+      "kind": "other",
+      "pixelSha256": "4a2703094632ac0b34d07b0f704d4a9364febfd43be0a2eddefea6dc679c2a25",
+      "verdict": "FAIL",
+      "reasons": "View, style and 1x read are good: lens disc and drum top are both ellipses, drum has a shaded front face, gold yoke with rivets matches v5 brass, and it is an unmistakable centrepiece in mock-vault-sanctum. Fails clean silhouette only: 10 opaque stray pixels in the soft shadow below the gold base band, visible at 1x as specks on the floor: (130,138,149) at (8,75),(11,76),(13,77),(18,78),(26,78),(27,78),(31,79) and (96,104,120) at (50,77),(44,79),(45,79). Fix: replace each of these with the surrounding shadow pixel (28,20,24) at alpha 58/110 (or transparent where the neighbours are). No other change needed; resubmit for hash re-check."
+    }
+  ]
+}

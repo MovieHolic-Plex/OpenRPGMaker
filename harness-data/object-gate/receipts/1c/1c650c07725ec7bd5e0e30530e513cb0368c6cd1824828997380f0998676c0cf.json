@@ -1,0 +1,337 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1c650c07725ec7bd5e0e30530e513cb0368c6cd1824828997380f0998676c0cf",
+ "width": 32,
+ "height": 48,
+ "kind": "wall_mounted",
+ "name": "지붕까지 트인 관측 틈(2×3, 천장 1줄 + 벽면 2줄) (dome slit tall)",
+ "label": "atlas_biome_interior/plus/dome slit tall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 20,
+  "darkV5": 58,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gold lintel beam",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone sill",
+      "rows": "44-47",
+      "evidence": "none",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "slit opening with night sky, stone jambs and wooden side shutters",
+      "rows": "0-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 44,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is drawn face-on as a flat wall-mounted window frame. The night-sky opening (rows 0-43) is a vertical face. The gold lintel (rows 12-15) is a front-facing strip: row 13 is a highlight, and the rows around it are darker, with no eave shadow or receding top plane. The sill (rows 44-47) is a light row 44 fading into darker rows, so it is a 1-row highlight plus a front band, not a top surface. The jambs and shutters are vertical. No ellipse, roof plane or visible contents show a horizontal surface, so it reads as front elevation, which is acceptable for a wall-mounted kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a tall dome slit with a moon-clock cap, a starry night-sky window and a wooden frame. It measures 16 visible tones per tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge, so it sits in the range of the richer references. Near-flat coverage is 12%, close to the stall's 13%, and the flat areas are the sky gradient and frame panels, which carry star dots and bands. None of its dark edge pixels are neutral (0%), so the outline is a tinted dark navy or brown that follows the adjacent material rather than a black sticker line. Its weaker points are about 4 lightness steps on the frame and sky ramps (references use 5-6) and only 26 distinct colours in total, which makes it slightly less rich than the stall and well. That is consistent with a locked palette and does not look shallow beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18161
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "night-sky window slit with moon and starry water-like gradient",
+      "rows": "0-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "golden lintel beam across the slit",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone sill at the bottom",
+      "rows": "44-47",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "46-47"
+     },
+     {
+      "part": "wooden side shutters/pillars",
+      "rows": "18-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 44,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a tall flat wall-mounted observation slit viewed face-on. The main body (sky opening framed by stone pillars and wooden shutters) is a vertical face from rows 0-43. The gold lintel at rows 12-15 is a front-facing strip with no clear top plane. The only horizontal surface is the narrow stone sill at rows 44-47, a small detail that doesn't count as the main top. This is acceptable for a wall_mounted kind, which may be flat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a tall 2x3 observation slit: a dark blue-navy window with stars and a clock/moon emblem at the top, framed by wood-brown sides. Measured facts: 16 visible tones per tile, close to the stall (17) and well (20) and above the hedge (9). Near-flat coverage is 12%, similar to the stall's 13%, so there is little flat fill. Dark edge pixels are 0% neutral, so the outline is tinted (dark brown/navy), not near-black. Shading on the frame and glass has about 5 steps against 5-6 for the references. The starfield gives dot texture, though the frame wood has less grain than the stall or well. Overall it is slightly lower than the richest references but within what a careful artist would accept beside them, and it does not look like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11340
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "observation slit opening showing night sky (flat window view)",
+      "rows": "0-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "golden horizontal beam/lintel across the slit",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone sill at bottom",
+      "rows": "44-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden side shutters",
+      "rows": "18-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 44,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a wall-mounted window or slit seen face-on. It shows a night sky, stone jambs, wooden shutters and a golden lintel beam that is a 4-row front-facing strip. The bottom sill (rows 44-47) is a graded gray strip and reads as a front-facing step, not a deep horizontal surface. No ellipse, roof plane or top band ends in a front-edge line with eave shadow. The whole piece is a flat front elevation, which is acceptable for a wall-mounted kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a 2x3 observation slit: a clock/moon cap on top, a wooden frame at the sides and a starry night-blue window in the middle. Measured facts: 16 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well, so it sits in the reference range. Near-flat coverage is 12%, close to the stall's 13%. 0% of its dark edge pixels are neutral, so the outline is tinted (dark brown beside the wood frame, dark blue beside the glass) and reads as dark_material_tone. Weaknesses: the frame wood has about 3-4 shading steps against the references' 5-6, with little grain, and the window interior is a fairly smooth gradient with sparse star dots. The cap and clock face are small and flat. The overall form is clean and consistent with the references but a little thinner and simpler than the stall or well, so a careful artist would likely see it as slightly flatter. Close to the bar but not quite equal; when in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 11515
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gold lintel beam across the opening",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone sill ledge at the bottom",
+      "rows": "44-47",
+      "evidence": "none",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "night sky opening with stone jambs and wooden shutters",
+      "rows": "0-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 44,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a flat wall-mounted slit seen face-on. The sky opening, stone jambs and wooden shutters (rows 0-43) are all vertical faces. The gold lintel (rows 12-15) is a front-facing strip with a highlight at row 13 and no eave shadow below it, so it is not a top surface. The sill at rows 44-47 has a light edge at row 44 and then grades darker, which reads as a 1-2 row rim rather than a foreshortened top plane. No ellipse, roof or visible contents show a horizontal surface, so it reads as front elevation, which is acceptable for a wall-mounted object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 16 visible tones per 16x16 tile, close to the stall (17) and well (20) and well above the hedge (9). Near-flat coverage is 12%, matching the stall's 13%, so there is no large flat fill. The dark edge pixels are 0% neutral, so the outlines lean toward the neighbouring material (dark navy beside the glass, dark brown beside the frame) and do not read as a black sticker line. The frame and pillars carry several value steps with highlight and orange accent details. The starry gradient inside the slit and the moon-clock cap add varied texture. It is a bit simpler than the well-roofed reference, with about 5 steps against 6, but a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23759
+  }
+ ],
+ "decidedAt": "2026-10-21T12:03:29.603Z",
+ "cells": {
+  "16": [
+   "0cae2ab2024ce356",
+   "4a3d4075dba37889",
+   "99842ee85a3058e6",
+   "a080ddce75b74e43",
+   "e6b859dfd42dad78",
+   "e9619dded7e223d0"
+  ],
+  "24": [
+   "0520ed24ec9d736c",
+   "1c678072fce9bfcf",
+   "258bc327f2deaa3d",
+   "2983073e6858bfb1",
+   "2f79fa7ec14e64df",
+   "478488f2eef66c6f",
+   "6c8d53a278cfb1ee",
+   "730f0460f1fec050",
+   "b2fc63a17082f2b6",
+   "c45c020946d9baa6",
+   "c83a4764e9b80138",
+   "da8cd7ea03db7da8"
+  ],
+  "32": [
+   "06afaf2fee3a43ad",
+   "80f829bee37de369",
+   "95a398aa4ba1786f",
+   "c217cc638f0c6b73"
+  ],
+  "48": [
+   "6726e7c54f05db87",
+   "8f113481fa65f29b",
+   "a68f4a9b8afd1fdb"
+  ]
+ }
+}

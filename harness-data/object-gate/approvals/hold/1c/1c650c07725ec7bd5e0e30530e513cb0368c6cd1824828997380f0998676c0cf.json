@@ -1,0 +1,14 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "1c650c07725ec7bd5e0e30530e513cb0368c6cd1824828997380f0998676c0cf",
+ "profileHash": "4d8774b517f41638",
+ "kind": "wall_mounted",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T12:09:38.552Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [],
+ "note": "묶음 허용: Fallen Star 방 — 꺼진 화로·높은 관측 틈·별 렌즈 (r3) — fallen-rooms-r3 (cold brazier · dome slit tall · star lens) — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vq",
+ "sig": "5bc97fc2f8b2c61081278c29451fcb70ba0ba35bff2a2caa8cfd015ef54bbeea"
+}

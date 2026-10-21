@@ -1,0 +1,467 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ac7606b32e8ba4bd70bb39d7e3b089d558a398e70f293cdb2e1eb9e4d644ebbc",
+ "width": 64,
+ "height": 80,
+ "kind": "other",
+ "name": "별 렌즈(옛 별지기의 큰 렌즈, 4×2) (star lens)",
+ "label": "atlas_biome_interior/plus/star lens",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 12,
+  "darkV5": 49,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 8
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone base top (elliptical slab surface)",
+      "rows": "51-66",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base front face (drum side with gold rim)",
+      "rows": "67-76",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lens in gold ring (tilted ellipse showing glass)",
+      "rows": "7-37",
+      "evidence": "b",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": "35-37"
+     },
+     {
+      "part": "gold support arms",
+      "rows": "36-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The base's silhouette widens from 26 to 53 px over rows 51-58, then stays at 53 through row 73 and narrows at 74-76. This is an elliptical top (rows 51-66) with a lighter stone surface above a darker, shaded front face (rows 67-76) trimmed with a gold rim. The lens ring is a large ellipse (width 13 up to 51, then back down to 25 over rows 7-37) with glass visible inside it. A gold band with a darker underside (rows 34-37) forms its front edge. The gold arms are thin and stand on the base. Because the base and the lens ring both show a top surface and a front face, the object reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The lens has a readable ramp: pale highlight, a star glint and 3-4 blues. The stone pedestal has speckle and a few grey steps. The gold ring is the weak part. It is a thin band of about 3 tones (light, mid, dark brown) with little grain, so it reads flatter than the reference woods and roofs. The outline is tinted dark brown beside the gold and blue-grey beside the stone, but some edge pixels are neutral dark (29% near-neutral), so it is mixed rather than fully material-toned. The measured facts are 9 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well, and equal to the hedge. Near-flat coverage is 11%, close to the stall's 13%. That puts it clearly under the richer references, with about 4 shading steps against their 5-6. The piece is clean but a little simpler than the standard, and with the density gap I'd rather not pass it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19490
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone base top (ellipse disc)",
+      "rows": "51-66",
+      "evidence": "b",
+      "front_edge_line_row": 66,
+      "eave_shadow_rows": "66-67"
+     },
+     {
+      "part": "base front face with gold rim",
+      "rows": "67-76",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold ring with lens glass (tilted ellipse, seen from above)",
+      "rows": "7-33",
+      "evidence": "b",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": "35-37"
+     },
+     {
+      "part": "two gold support arms",
+      "rows": "36-60",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stone base widens from 26 px at row 51 to 53 px at row 58. It then holds that width, which gives an ellipse top of about rows 51-66 (light grey, L=137 at x=45). Below it a darker front face runs about rows 67-75 with a gold rim at the bottom. The gold ring and lens also form an ellipse, with widths 13 to 51 over rows 7-18 and back down to 25 at row 37. The ring's front thickness is rows 31-37, with a darker front-edge line at row 34. The thin arms are vertical supports, not major parts that need a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The gold frame has about 4-5 steps (highlight, light, mid, dark brown shadow). The blue lens has a gradient with a star glint and a rim highlight. The stone pedestal is shaded block by block with speckle and a lit top face. Outlines mostly lean toward the material, dark brown beside gold and dark blue-grey beside stone and glass, and only 29% of the dark edge pixels are neutral. That is within the references' range (well 33%, bench 44%) and well short of a uniform black sticker line. Measured facts: 9 visible tones per tile equals the hedge, but is below the cheese stall (17) and the roofed well (20). Near-flat coverage of 11% is close to the stall's 13%, so there are no large flat fills. The lens glass and the pedestal top are somewhat smooth and slightly less textured than the stall and well, so density is slightly lower but acceptable next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21869
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal top (ellipse of the round base)",
+      "rows": "51-66",
+      "evidence": "b",
+      "front_edge_line_row": 66,
+      "eave_shadow_rows": "67"
+     },
+     {
+      "part": "gold lens ring with glass (tilted ellipse, glass visible inside the frame)",
+      "rows": "7-37",
+      "evidence": "d",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": "35-37"
+     },
+     {
+      "part": "gold support arms and clasp",
+      "rows": "38-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stone pedestal is the base volume. Its width grows from 26 at row 51 to 53 at row 58, so the back rim and the top surface form an ellipse. Rows 51-66 are the stone top, with a darker edge at about rows 66-67. Below it is a front face of about rows 67-76, with a gold band on the lower rim at rows 70-76, and the width narrows again at rows 74-76. The large gold lens ring above (rows 7-37) is a wide ellipse. Its width profile rises from 13 to 51 and falls back to 25. It shows the glass surface inside the frame, a front-edge line near row 34 and shadow in rows 35-37. The thin gold arms (12 px wide) are slender supports and not a major volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate carries 9 visible tones per 16x16 tile, which equals the hedge and is well below the well (20) and the cheese stall (17). Near-flat coverage is 11%, close to the stall's 13%, so the piece is not flat-filled. 29% of its dark edge pixels are neutral, so the outline is partly neutral and partly tinted, which I read as mixed. The gold frame has roughly 3-4 steps (highlight, mid, dark) with a fairly clean outline and little grain. The stone base has some speckle and per-block shading, but it is soft and low-contrast. The glass lens has a gradient with a star sparkle, which is the richest part. Overall it is clean and readable, but it has fewer ramp steps and less grain than the well and the stall, and its large smooth areas on the base top and lens look a little sticker-like next to them. Because of that it is slightly thinner than the best references, and with doubt favouring a fail, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16510
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone pedestal top (elliptical)",
+      "rows": "51-65",
+      "evidence": "b",
+      "front_edge_line_row": 66,
+      "eave_shadow_rows": "66-67"
+     },
+     {
+      "part": "stone pedestal front face with gold rim",
+      "rows": "66-76",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold lens ring with glass face (tilted ellipse)",
+      "rows": "7-34",
+      "evidence": "b",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold ring front rim and support arms",
+      "rows": "31-57",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The round stone pedestal has a clear elliptical top. Its width grows from 26 at row 51 to 53 by row 58, and the light grey surface runs through row 65. The darker vertical front face then runs rows 66-76, with a gold rim at the bottom. The big lens is a tilted elliptical ring (rows 7-37, width 13 up to 51 and back down to 25) with the blue glass showing as a top surface (rows 11-30). Its gold front rim is at rows 31-37 and the two arms stand clear beneath it. Both major parts show a top surface plus a front face, so the object reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The lens prop is a gold ring around a blue glass disc with a star glint, standing on a stone plinth. Gold shows about 4-5 steps (highlight, light, mid, dark, deep). The glass has a gradient with a sparkle, and the stone has block lines and speckled shading, so each material has about 4-5 steps against roughly 6 in the references. Outlines look like the dark tone of the neighbouring material (brown-gold beside the ring, dark blue beside the glass, grey-blue beside the stone). Only 29% of the dark edge pixels are near-neutral, which is closer to the well (33%) and bench (44%) than to a black sticker line. Visible tones per tile are 9, equal to the hedge and below the well (20) and cheese stall (17). Near-flat coverage is 11%, close to the cheese stall (13%), so there are no big flat fills. The ring interior and the plinth top are somewhat smooth, so density is slightly lower than the richest references. Overall it would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20512
+  }
+ ],
+ "decidedAt": "2026-10-21T12:03:29.607Z",
+ "cells": {
+  "16": [
+   "01276b6c72ea8225",
+   "1aa47a8cb610c49d",
+   "28a506e21d5de6c1",
+   "3d12addde2182f36",
+   "41219352356d6ff5",
+   "55885b813d79c600",
+   "6e7e3d6e75c72dd5",
+   "753ab261a7029a26",
+   "808abc0ae9717051",
+   "8332e5b97a0e7df9",
+   "9b2bae4316452919",
+   "9b63a60b735ce430",
+   "b7196903770fe8b0",
+   "c6d8917bf7fe2370",
+   "ca5f2bfe9f97063d",
+   "cade36c3b6c7ed12",
+   "ee95607314fd9274",
+   "fb77f549b05d6ec2",
+   "fba913feb98e2772",
+   "fc083b75d6b7cffb"
+  ],
+  "24": [
+   "01ecf70d4323d131",
+   "056af9bde36ddd6d",
+   "0873962d34adc1d4",
+   "0d8b555e8ceebefa",
+   "1033951efecdc73c",
+   "12cc55de5c7cc2e5",
+   "19a77374883ec86b",
+   "1caddcae57952dc5",
+   "1cd836745e9f9ede",
+   "1ec5d9582873355f",
+   "228f042be12dde2d",
+   "246b0ed86e96544c",
+   "2b34cf56cff91552",
+   "30b39ae302e8652c",
+   "30edd608bd08a303",
+   "391dfc5a1e82b2b3",
+   "3d50baefdf4a2137",
+   "3fa17f0491773bbd",
+   "4096b2a2a21bd5fe",
+   "41160e02014582bb",
+   "41ad111a62bff2d6",
+   "440d10efbfa7857b",
+   "44371ff9ad6726c5",
+   "461c506ee35610b1",
+   "4ed338ba2dbacc60",
+   "528c49e9f21f7680",
+   "54bc3b19e53c2ba3",
+   "5659abc75b3b6d7e",
+   "5fc168cccff0c50f",
+   "660586d8de0ea3ea",
+   "75be44546860b693",
+   "7932145c7b63a77f",
+   "7b9cce14537d5cd1",
+   "807b7553846ea6a6",
+   "85596e6309b4f020",
+   "8edb28940681037d",
+   "90940c410ac1d24b",
+   "937112a9faaad91e",
+   "992ca962d450d559",
+   "9a8525d038c7b820",
+   "9c456c29cc6f408e",
+   "9d58dbbe754d5fb4",
+   "a2ca67f47d212822",
+   "ab7367da6b540b72",
+   "ae930cec512d31aa",
+   "b1dca2f869039b4c",
+   "b3f4aea22ed6da8c",
+   "bd9cbe1a1b9ecdb2",
+   "c12e4842fbb48b03",
+   "c1779bee8a51a2ab",
+   "c1e3adc3b3b46ad4",
+   "c53849eb982575ff",
+   "c715f1cec30636ec",
+   "c7ac4049aef83879",
+   "c966231861ab37f3",
+   "c98fdc71950ea30e",
+   "d4a902cf7eb0a3f6",
+   "d87ef0acf18f4be6",
+   "d91914823b104771",
+   "da434c5967151b4f",
+   "e74d416fffe692f5",
+   "e82ab508ff6a7d2b",
+   "eaccedcb2d2e5c23",
+   "ec100c9df90298c3",
+   "fae51fc817837da2",
+   "fd6af360fb79e3cb"
+  ],
+  "32": [
+   "144a91b12b073f69",
+   "2a6a52c00cfd0ad2",
+   "2e091ef2c1135108",
+   "328155ef6122ca83",
+   "366a68bebea365c5",
+   "6da31b1331f606bd",
+   "9d3a4855a28a638b",
+   "a8242bbb9703b6b8",
+   "abf48bea74302077",
+   "b250672c4079a19f",
+   "f1f3b8a6e9fc0579",
+   "f70fb3d223701c0a"
+  ],
+  "48": [
+   "1916c02109ee7422",
+   "1be1db4ca11054f6",
+   "1e298f0811359fc1",
+   "22df17f38088e484",
+   "2c219a96e48680da",
+   "2de7ac2d8b168dc8",
+   "34ff562bbae7e880",
+   "5613044ad206eaf0",
+   "63789c3aa7813695",
+   "6822c6c8a1811cdf",
+   "689121ef9246ebea",
+   "8c16f5d830614b4b",
+   "8ce11440bdb8ff26",
+   "995266e2e595bc78",
+   "9b375322a0405dab",
+   "a5b0b3c5cd99266f",
+   "a6e9380b1f9b049d",
+   "b3a304f57ec0f82c",
+   "b8dbffde6252745f",
+   "c56a39e3854dab96",
+   "cb6b49c1767de6e3",
+   "cf821bff1277a6a1",
+   "d69b64aceca9c632",
+   "d7a8fa24b020aa1a"
+  ]
+ }
+}
