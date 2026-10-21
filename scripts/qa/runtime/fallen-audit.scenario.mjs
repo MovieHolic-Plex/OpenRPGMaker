@@ -112,7 +112,7 @@ export default {
     { id: "proclamation", note: "심문관의 포고", ops: [
       ...[0, 1, 2, 3].flatMap(() => closeDialogue(20)),
     ], shot: true },
-    { id: "to-observatory", note: "천문대 문을 밟는다", ops: [...stepInto("fs_hub", 26, 21, "up")], shot: true },
+    { id: "to-observatory", note: "천문대 문을 밟는다", ops: [...stepInto("fs_hub", 24, 21, "up")], shot: true },
     { id: "hanel-ask", note: "하넬의 부탁 → 선택지", ops: [
       ...approachUp("fs_observatory", 17, 17),
       ...talk("up"),
@@ -123,9 +123,9 @@ export default {
     { id: "scope", note: "큰 망원경", ops: [{ kind: "teleport", mapId: "fs_observatory", x: 12, y: 10 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "scope-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "out-to-hub", note: "천문대 문 → 광장", ops: [...stepInto("fs_observatory", 11, 20, "down")], shot: true },
-    { id: "gate-guard", note: "동문 문지기", ops: [{ kind: "teleport", mapId: "fs_hub", x: 53, y: 21 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
+    { id: "gate-guard", note: "동문 문지기", ops: [{ kind: "teleport", mapId: "fs_hub", x: 50, y: 21 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "gate-guard-close", note: "", ops: [...closeDialogue()], shot: false },
-    { id: "to-forest", note: "동문 → 숲", ops: [...stepInto("fs_hub", 54, 22, "right")], shot: true },
+    { id: "to-forest", note: "동문(성문 통로) → 숲", ops: [...stepInto("fs_hub", 48, 20, "up")], shot: true },
     { id: "forest-walk", note: "숲길을 걷는다(풀숲 조우)", ops: [
       ...walkFighting("up", 2200), ...walkFighting("up", 2200), ...walkFighting("up", 2200),
       dumpState("forest-walk"),
@@ -150,7 +150,7 @@ export default {
     { id: "iris-joined", note: "합류", ops: [...closeDialogue(), dumpState("iris")], shot: true },
     { id: "back-to-hub", note: "숲 → 광장", ops: [...stepInto("fs_forest", 15, 38, "down")], shot: true },
     { id: "plaza-after", note: "광장 — 발렌 일행이 떠났는가", ops: [{ kind: "teleport", mapId: "fs_hub", x: 36, y: 27 }, { kind: "hold", dir: null, ms: 1200 }], shot: true },
-    { id: "back-to-obs", note: "천문대", ops: [...stepInto("fs_hub", 26, 21, "up")], shot: false },
+    { id: "back-to-obs", note: "천문대", ops: [...stepInto("fs_hub", 24, 21, "up")], shot: false },
     { id: "hanel-hint", note: "하넬 — 다음 갈 곳", ops: [...approachUp("fs_observatory", 17, 17), ...talk("up")], shot: true },
     { id: "hanel-hint-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "hatch", note: "바닥 뚜껑문 → 화로의 방", ops: [...stepInto("fs_observatory", 19, 20, "up"), ...closeDialogue(10), { kind: "hold", dir: null, ms: 1200 }], shot: true },

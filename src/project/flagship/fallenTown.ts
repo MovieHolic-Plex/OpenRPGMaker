@@ -1,0 +1,348 @@
+/**
+ * 『폴른 스타』 왕도 아스텔(fs_hub)을 오프닝 그림과 같은 곳으로 다시 다듬는다(2026-10-21 사용자 머지 차단 지적 —
+ * 「오프닝의 마을과 플레이하는 마을이 다르다」).
+ *
+ * 오프닝에는 운하 곁 둥근 돌 천문대 탑·아치 돌다리·성벽 성문과 포석 광장이 있었는데 마을은 농가 마을(밭·평평한 다리·
+ * 재단사 집이 천문대 입구·길 끝이 동쪽 출구)이었다. 새 그림은 그리지 않는다 — 버들항 시트에 있는 키트·칸만 쓴다.
+ * - 강 → 돌 둑 운하(「버들항 물」 오토타일), 평평한 다리 → `bd-bridge-arch`(아치 둘).
+ * - 천문대 입구: 재단사 집 → `bd-pick-wizard-tower-wizard-tower`(둥근 돌 탑) + 곁에 삼각대 놋쇠 망원경.
+ * - 동문: 왕성 키트(`bd-castle`)의 앞 성벽 줄(원탑·창살 성문루·원탑)을 그대로 옮겨 동쪽 성벽으로 세우고,
+ *   성문 통로를 숲으로 나가는 출구로 쓴다. 성벽 밖은 숲.
+ * - 성문 앞 포석 광장, 마을 가운데 밭은 정원·나무로.
+ */
+import catalog from "@/assets/beodeulNatureCatalog.json";
+import { isPassable } from "@/project/collision";
+import type { GameEvent, Project } from "@/project/types";
+
+type KitRow = { tiles: number[]; upperTiles?: number[] };
+type Kit = { id: string; width: number; height: number; rows: KitRow[] };
+type Shadow = { dx: number; dy: number; rows: number[][] };
+
+export type FallenTownResult = {
+  observatoryDoor: { x: number; y: number };
+  gate: { x: number; y: number };
+  guardSpot: { x: number; y: number };
+};
+
+const GRASS = 737;
+const PLAZA = 1509;
+/** 「버들항 물」 오토타일 — 이웃 물 방향 합(N1 E2 S4 W8) → 칸(bd-autotiles.md). */
+const WATER_BY_MASK = [23025, 23040, 23048, 23056, 23064, 23072, 23080, 23088, 23096, 23104, 23112, 23120, 23128, 23136, 23144, 23152];
+/** 「버들항 길 포석」 오토타일. */
+const ROAD_BY_MASK = [23015, 23016, 23017, 23018, 23019, 2666, 23020, 4674, 23021, 23022, 23023, 3353, 23024, 9585, 17443, 3221];
+
+export function reworkFallenTown(project: Project, hubId: string, ids: { observatory: string; forest: string }): FallenTownResult {
+  const map = project.maps[hubId]!;
+  const ts = project.tilesets[map.tilesetId] as unknown as {
+    structureKits: Kit[]; autotileGroups: { id: string; memberTileIds: number[]; connectTileIds?: number[] }[];
+    tileGrafts?: { targetTile: number; sourceChipset: string; sourceTile: number }[];
+  };
+  const W = map.width, H = map.height;
+  const at = (x: number, y: number): number => y * W + x;
+  const inside = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < W && y < H;
+  map.lowerOverlayTiles ??= Array(W * H).fill(-1);
+  map.upperOverlayTiles ??= Array(W * H).fill(-1);
+  const lo = map.lowerTiles, up = map.upperTiles, lo2 = map.lowerOverlayTiles!, up2 = map.upperOverlayTiles!;
+  const kit = (id: string): Kit => {
+    const found = ts.structureKits.find((k) => k.id === id);
+    if (!found) throw new Error(`[fallen-town] 키트가 없다: ${id}`);
+    return found;
+  };
+  const level = (x: number, y: number): number => map.relief?.levels?.[at(x, y)] ?? 0;
+
+  /** 칸을 풀밭으로 비운다(네 층). */
+  const clear = (x: number, y: number, ground = GRASS): void => {
+    if (!inside(x, y)) return;
+    const i = at(x, y);
+    lo[i] = ground; up[i] = -1; lo2[i] = -1; up2[i] = -1;
+  };
+  const clearRect = (x0: number, y0: number, x1: number, y1: number, keep?: (x: number, y: number) => boolean): void => {
+    for (let y = y0; y <= y1; y += 1) for (let x = x0; x <= x1; x += 1) if (!keep?.(x, y)) clear(x, y);
+    map.structurePlacements = (map.structurePlacements ?? []).filter((p: { x: number; y: number; w: number; h: number }) =>
+      p.x + p.w - 1 < x0 || p.x > x1 || p.y + p.h - 1 < y0 || p.y > y1);
+  };
+  /** 키트 칸을 그대로 옮겨 찍는다. cols/rows 로 키트 안 부분만, lowerRows 로 아래층을 옮길 키트 줄만 고른다. */
+  const copyKit = (
+    k: Kit, x0: number, y0: number,
+    opt: { cols?: [number, number]; rows?: [number, number]; lower?: (kx: number, ky: number) => boolean; upper?: (kx: number, ky: number) => boolean } = {},
+  ): void => {
+    const [c0, c1] = opt.cols ?? [0, k.width - 1];
+    const [r0, r1] = opt.rows ?? [0, k.height - 1];
+    for (let ky = r0; ky <= r1; ky += 1) for (let kx = c0; kx <= c1; kx += 1) {
+      const x = x0 + kx - c0, y = y0 + ky - r0;
+      if (!inside(x, y)) continue;
+      const row = k.rows[ky]!;
+      const l = row.tiles[kx] ?? -1, u = row.upperTiles?.[kx] ?? -1;
+      const i = at(x, y);
+      if (l >= 0 && (opt.lower?.(kx, ky) ?? true)) { lo[i] = l; lo2[i] = -1; }
+      if (u >= 0 && (opt.upper?.(kx, ky) ?? true)) { up[i] = u; up2[i] = -1; }
+    }
+  };
+  // 그림자(beodeul_nature 덧그림) — 마을 시공기와 같은 그림자를 키트 원점 기준으로 2층에 얹는다.
+  const graftOf = new Map<number, number>();
+  for (const g of ts.tileGrafts ?? []) if (g.sourceChipset === "tex_beodeul_nature") graftOf.set(g.sourceTile, g.targetTile);
+  const shadows = (catalog as { shadows: Record<string, Shadow> }).shadows;
+  const shade = (kitId: string, x0: number, y0: number): void => {
+    const s = shadows[kitId];
+    if (!s) return;
+    s.rows.forEach((row, j) => row.forEach((tile, i) => {
+      const x = x0 + s.dx + i, y = y0 + s.dy + j;
+      const t = graftOf.get(tile);
+      if (tile < 0 || t === undefined || !inside(x, y)) return;
+      const c = at(x, y);
+      if (up[c]! < 0 && lo2[c]! < 0 && !isWater(lo[c]!)) lo2[c] = t;
+    }));
+  };
+  const stamp = (kitId: string, x: number, y: number): void => { copyKit(kit(kitId), x, y); shade(kitId, x, y); };
+
+  const grassSet = new Set<number>((ts as unknown as { tileGroups: { id: string; tileIds: number[] }[] }).tileGroups.find((g) => g.id === "beodeul:grass")?.tileIds ?? [GRASS]);
+  const plazaSet = new Set<number>((ts as unknown as { tileGroups: { id: string; tileIds: number[] }[] }).tileGroups.find((g) => g.id === "beodeul:plaza")?.tileIds ?? [PLAZA]);
+  const waterSet = new Set<number>(WATER_BY_MASK);
+  const isWater = (t: number): boolean => waterSet.has(t);
+  const roadGroup = ts.autotileGroups.find((g) => g.id === "beodeul_road_autotile")!;
+  const roadSet = new Set(roadGroup.memberTileIds);
+  const roadLink = new Set([...roadGroup.memberTileIds, ...(roadGroup.connectTileIds ?? [])]);
+  const canalGroup = ts.autotileGroups.find((g) => g.id === "beodeul_canal_lake_47")!;
+  const waterLink = new Set([...canalGroup.memberTileIds, ...(canalGroup.connectTileIds ?? [])]);
+  /** 오토타일 칸을 이웃에 맞춰 다시 고른다(맵 밖 = 이어짐). */
+  const retile = (members: Set<number>, link: Set<number>, table: number[], cells?: Iterable<number>): void => {
+    const todo = cells ? [...cells] : lo.map((_, i) => i);
+    const next = new Map<number, number>();
+    for (const i of todo) {
+      if (!members.has(lo[i]!)) continue;
+      const x = i % W, y = Math.floor(i / W);
+      const linked = (nx: number, ny: number): boolean => !inside(nx, ny) || link.has(lo[at(nx, ny)]!) || members.has(lo[at(nx, ny)]!);
+      const mask = (linked(x, y - 1) ? 1 : 0) | (linked(x + 1, y) ? 2 : 0) | (linked(x, y + 1) ? 4 : 0) | (linked(x - 1, y) ? 8 : 0);
+      next.set(i, table[mask]!);
+    }
+    for (const [i, t] of next) lo[i] = t;
+  };
+
+  const events = map.events;
+  const transferTo = (target: string): GameEvent | undefined => events.find((e) => JSON.stringify(e).includes(`"mapId":"${target}"`));
+
+  // ── 1. 운하: 마을 시공기의 굽이진 흙 둑 강을 돌 둑 운하로. 한 칸씩 어긋나던 굽이는 돌 둑에서 계단처럼 보여
+  //    곧게 편다 — 마을 안(0~34줄)은 x CANAL_X..+3, 남쪽 들판에서 한 번 꺾인다.
+  const BRIDGE_ROW = 19; // 아치 다리 위 끝 줄(갑판 = 20·21줄 = 동서 큰길 두 줄)
+  let riverX = -1;
+  for (let x = 0; x < W && riverX < 0; x += 1) if (isWater(lo[at(x, 10)]!)) riverX = x;
+  if (riverX < 0) throw new Error("[fallen-town] 강을 찾지 못했다");
+  const canalX = (y: number): number => (y < 35 ? riverX : riverX + 3);
+  for (let y = 0; y < H; y += 1) {
+    const cx = canalX(y);
+    for (let x = Math.max(0, cx - 6); x <= Math.min(W - 1, cx + 9); x += 1) {
+      const i = at(x, y);
+      const want = x >= cx && x < cx + 4;
+      if (want && !isWater(lo[i]!)) clear(x, y, 23152);
+      else if (!want && isWater(lo[i]!)) clear(x, y, GRASS);
+      // 물가 둑 덧그림(2층, beodeul_nature 30000~) — 돌 둑은 물 오토타일이 스스로 그린다.
+      if (lo2[i]! >= 30000 && Math.abs(x - cx) <= 1 || lo2[i]! >= 30000 && Math.abs(x - (cx + 3)) <= 1) lo2[i] = -1;
+      if (isWater(lo[i]!)) { if (lo2[i]! >= 30000) lo2[i] = -1; if (y >= BRIDGE_ROW - 2 && y <= BRIDGE_ROW + 5) up[i] = -1; }
+    }
+  }
+  // 옛 다리(산길 돌다리, 강보다 한 칸 넓었다) 칸을 걷는다 — 큰길 두 줄은 다리 양 끝까지 포석, 나머지는 풀밭.
+  for (let y = BRIDGE_ROW - 1; y <= BRIDGE_ROW + 4; y += 1) for (let x = riverX + 4; x <= riverX + 6; x += 1) {
+    const road = y === BRIDGE_ROW + 1 || y === BRIDGE_ROW + 2;
+    if (road || up[at(x, y)]! < 0) clear(x, y, road ? 3221 : GRASS);
+  }
+  retile(waterSet, waterLink, WATER_BY_MASK);
+
+  // ── 2. 아치 돌다리 ──
+  copyKit(kit("bd-bridge-arch"), riverX, BRIDGE_ROW);
+
+  // ── 3. 천문대 탑: 재단사 집을 걷고 둥근 돌 탑을 세운다. 문 = 탑 밑 가운데(키트 문 칸 dx3,dy15). ──
+  const oldObs = transferTo(ids.observatory);
+  if (!oldObs) throw new Error("[fallen-town] 천문대 문을 찾지 못했다");
+  const tower = kit("bd-pick-wizard-tower-wizard-tower");
+  const towerX0 = riverX + 4; // 키트 원점 x(탑 몸통은 dx2~5)
+  const doorY = BRIDGE_ROW;    // 탑 문 칸(막힘) — 문 앞 칸 = 큰길 윗줄
+  const towerY0 = doorY - 15;
+  clearRect(towerX0 + 1, towerY0 - 1, towerX0 + 7, doorY, (x, y) => level(x, y) > 0);
+  copyKit(tower, towerX0, towerY0, { cols: [0, 7] });
+  const observatoryDoor = { x: towerX0 + 3, y: doorY + 1 };
+  oldObs.x = observatoryDoor.x; oldObs.y = observatoryDoor.y;
+  // 탑 곁(운하 쪽 둑) 삼각대 놋쇠 망원경.
+  stamp("bd-pick-headland-lighthouse-telescope", riverX + 4, doorY - 4);
+
+  // ── 4. 동문: 왕성 앞 성벽 줄(원탑 11~13 · 성문루 14~18 · 원탑 19~21 · 성벽 22~)을 동쪽 끝에 세운다 ──
+  const castle = kit("bd-castle");
+  const gateX0 = W - 13;          // 키트 11열이 놓이는 맵 x
+  const wallBase = BRIDGE_ROW;    // 성벽 밑 줄 = 키트 22줄
+  const top = wallBase - 7;       // 키트 15줄(원탑 지붕 끝)
+  // 성문 둘레의 집 두 채(큰 반목조 집·좁은 집)·언덕길·집 밑줄을 걷는다. 높은 단(언덕) 칸은 그대로.
+  clearRect(36, 9, W - 1, wallBase + 1, (x, y) => level(x, y) > 0);
+  const towerCol = (kx: number): boolean => (kx >= 11 && kx <= 13) || (kx >= 19 && kx <= 21) || (kx >= 29 && kx <= 31);
+  copyKit(castle, gateX0, top, {
+    cols: [11, 11 + (W - 1 - gateX0)], rows: [15, 22],
+    // 키트 15~18줄은 성 안마당이다 — 원탑 지붕(윗층)만 옮기고 바닥·가로등·석상은 두지 않는다.
+    lower: (_kx, ky) => ky >= 19,
+    upper: (kx, ky) => ky >= 19 || towerCol(kx),
+  });
+  const gate = { x: gateX0 + 5, y: wallBase };
+
+  // ── 5. 성문 앞 포석 광장 — 옛 광장(우물·노점)과 이어 붙인다. 성문 통로 밑 줄부터 큰길까지. ──
+  for (let y = wallBase + 1; y <= wallBase + 2; y += 1) for (let x = riverX + 4; x < 42; x += 1) {
+    if (up[at(x, y)]! < 0 && !isWater(lo[at(x, y)]!)) clear(x, y, 3221); // 다리 → 성문 광장 큰길
+  }
+  for (let y = wallBase + 1; y <= wallBase + 4; y += 1) for (let x = 42; x < W; x += 1) {
+    const i = at(x, y);
+    if (up[i]! >= 0 && y > wallBase + 2) continue; // 아래쪽 집·소품은 그대로
+    clear(x, y, PLAZA);
+  }
+  // 성문 서쪽 원탑 곁 빈 자리(옛 집터)에 반목조 집 한 채 — 문은 광장(밑 줄 아래)으로.
+  stamp("bd-house-h131_0", 36, wallBase - 5);
+
+  // ── 6. 숲으로 나가는 출구를 성문 통로로 옮긴다(통로 세 칸 모두 밟으면 나간다). 가운데 칸이 첫 출구다. ──
+  const exit = transferTo(ids.forest);
+  if (!exit) throw new Error("[fallen-town] 숲 출구를 찾지 못했다");
+  exit.x = gate.x; exit.y = gate.y;
+  const exitIdx = events.indexOf(exit);
+  for (const dx of [-1, 1]) {
+    const side = JSON.parse(JSON.stringify(exit)) as GameEvent;
+    side.id = `${exit.id}_${dx < 0 ? "w" : "e"}`;
+    side.x = gate.x + dx;
+    for (const page of side.pages ?? []) page.id = `${page.id}_${dx < 0 ? "w" : "e"}`;
+    events.splice(exitIdx + 1, 0, side);
+  }
+
+  // ── 7. 성벽 밖·언덕은 숲(동쪽 숲이 성문 바로 밖이다). 언덕 위 집·길도 걷어 숲으로. ──
+  clearRect(28, 0, W - 1, 8, (x, y) => level(x, y) === 0);
+  // 언덕으로 오르던 길 끝·경사로 표시도 걷는다(오를 길이 없어졌다).
+  const ramps = (map.relief as { ramps?: number[] } | undefined)?.ramps;
+  for (let y = 0; y <= wallBase; y += 1) for (let x = 28; x < W; x += 1) {
+    if (ramps) ramps[at(x, y)] = 0;
+    if (level(x, y) > 0 && !grassSet.has(lo[at(x, y)]!)) clear(x, y);
+  }
+  const TREES = ["bd-tree-d43edd", "bd-tree-1a786c", "bd-tree-03a8f7", "bd-tree-5844f6", "bd-tree-d61d7e", "bd-tree-3e8732", "bd-tree-b1d104", "bd-tree-1e09f0", "bd-tree-a80c85", "bd-tree-bdd36e", "bd-tree-7ecdb8"];
+  const SMALL = ["bd-tree-f4f319", "bd-tree-e9d9b3", "bd-tree-37f48b", "bd-tree-47e17a", "bd-tree-d105b2", "bd-tree-0f7ed1", "bd-tree-cc0fcb", "bd-tree-132848"];
+  const hash = (x: number, y: number, salt: number): number => (((x * 73856093) ^ (y * 19349663) ^ (salt * 83492791)) >>> 0);
+  const nearEvent = (x: number, y: number, r: number): boolean => events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= r);
+  let plazaMode = false; // 참이면 판석 칸에 놓는다(광장 소품)
+  const freeGround = (x: number, y: number): boolean => {
+    if (!inside(x, y)) return false;
+    const i = at(x, y);
+    const ground = plazaMode ? plazaSet.has(lo[i]!) : grassSet.has(lo[i]!) || lo[i]! >= 30000;
+    return ground && up[i]! < 0 && up2[i]! < 0 && (!plazaMode || lo2[i]! < 0);
+  };
+  /** 영역 안에 나무를 빽빽이 심는다(발자국이 모두 빈 풀밭일 때만). 심은 수. */
+  const plant = (x0: number, y0: number, x1: number, y1: number, kinds: string[], salt: number, ok: (x: number, y: number) => boolean = () => true, gap = 0, skip = 0): number => {
+    let count = 0;
+    for (let y = y0; y <= y1; y += 1) for (let x = x0; x <= x1; x += 1) {
+      const h = hash(x, y, salt);
+      if (skip && h % 100 < skip) continue;
+      const k = kit(kinds[(h >>> 8) % kinds.length]!);
+      if (x + k.width - 1 > x1 || y + k.height - 1 > y1) continue;
+      let fits = true;
+      // 띄움: 발자국 둘레 gap 칸 안에 다른 물체(윗층)가 없어야 한다 — 공원처럼 나무 사이 풀밭이 보이게.
+      for (let dy = -gap; dy < k.height + gap && fits; dy += 1) for (let dx = -gap; dx < k.width + gap; dx += 1) {
+        if (dy >= 0 && dy < k.height && dx >= 0 && dx < k.width) continue;
+        const cx = x + dx, cy = y + dy;
+        if (inside(cx, cy) && up[at(cx, cy)]! >= 0 && !isPassable(project, map, cx, cy)) { fits = false; break; }
+      }
+      for (let dy = 0; dy < k.height && fits; dy += 1) for (let dx = 0; dx < k.width; dx += 1) {
+        const cx = x + dx, cy = y + dy;
+        if (!freeGround(cx, cy) || !ok(cx, cy) || level(cx, cy) !== level(x, y + k.height - 1)) { fits = false; break; }
+      }
+      if (!fits) continue;
+      stamp(k.id, x, y); count += 1;
+    }
+    return count;
+  };
+  const outside = (x: number, y: number): boolean => !nearEvent(x, y, 2);
+  plant(36, 0, W - 1, wallBase - 4, TREES, 3, outside);
+  plant(28, 0, W - 1, wallBase - 4, SMALL, 5, outside);
+
+  // 성문 광장 마감 — 성문 통로(가운데 세 줄)는 비우고 양옆에 깃발 기둥·통행세 초소·말 물통·가로등.
+  stamp("bd-pick-walled-market-banner-red", gate.x - 3, wallBase + 1);
+  stamp("bd-pick-walled-market-banner-red", gate.x + 3, wallBase + 1);
+  stamp("bd-pick-walled-market-toll-booth", gate.x + 5, wallBase + 1);
+  stamp("bd-pick-walled-market-trough", gate.x - 6, wallBase + 3);
+  stamp("bd-pick-walled-market-hitching-rail", gate.x - 6, wallBase + 1);
+  const guardSpot = { x: gate.x + 2, y: gate.y + 1 };
+
+  // ── 8. 서쪽 주택가 — 흩어진 집 두 채 자리를 반목조 집 블록으로(문은 아래 거리로). ──
+  clearRect(0, 23, 12, 31);
+  for (let x = 0; x <= 13; x += 1) clear(x, 32, 3221);
+  stamp("bd-block-res-10x8-b", 2, 24);
+
+  // ── 9. 남쪽 밭 셋 → 주택 블록 둘 + 과수원. 블록 문 앞은 맵 남쪽 끝 거리, 블록 사이·양 끝 골목이 북쪽 큰길(34줄)에 닿는다. ──
+  clearRect(riverX + 7, 35, W - 1, H - 1);
+  const south = riverX + 8; // 운하(남쪽 들판 x+3..+6) 동쪽 둑 다음 칸
+  stamp("bd-block-res-14x8-c", south + 2, 35);
+  stamp("bd-block-res-14x8-b", south + 19, 35);
+  for (let x = south; x < W; x += 1) clear(x, H - 1, 3221);
+  for (const lane of [south, south + 1, south + 16, south + 17]) for (let y = 34; y < H; y += 1) clear(lane, y, 3221);
+  for (let x = south; x <= south + 17; x += 1) if (lo[at(x, 34)] === GRASS && up[at(x, 34)]! < 0) clear(x, 34, 3221);
+  clearRect(10, 35, riverX + 2, H - 1);
+  plant(10, 35, riverX + 2, H - 1, TREES, 11);
+  plant(10, 35, riverX + 2, H - 1, SMALL, 13);
+
+  // 운하 산책길 — 다리 남쪽 양 둑에 한 칸 포석 길(큰길 ↔ 남쪽 거리), 둑길 가로등.
+  for (let y = BRIDGE_ROW + 3; y <= 33; y += 1) for (const x of [riverX - 1, riverX + 4]) {
+    if (up[at(x, y)]! < 0 || isPassable(project, map, x, y)) clear(x, y, 3221);
+  }
+  for (const y of [BRIDGE_ROW + 5, BRIDGE_ROW + 10]) {
+    if (freeGround(riverX + 5, y) && freeGround(riverX + 5, y + 1) && freeGround(riverX + 5, y + 2)) stamp("bd-prop-lamp_crook", riverX + 5, y);
+  }
+
+  // 길 오토타일을 이웃에 맞춰 다시 고른다(연석·모서리).
+  retile(roadSet, roadLink, ROAD_BY_MASK);
+
+  // ── 10. 빈 풀밭 메우기 — 길·광장·물에서 한 칸 띄운 풀밭에 나무, 그다음 작은 나무·덤불·꽃밭. ──
+  const paved = (x: number, y: number): boolean => {
+    if (!inside(x, y)) return false;
+    const l = lo[at(x, y)]!;
+    return roadSet.has(l) || isWater(l) || plazaSet.has(l);
+  };
+  const awayFromPaving = (r: number) => (x: number, y: number): boolean => {
+    if (nearEvent(x, y, 2)) return false;
+    for (let dy = -r; dy <= r; dy += 1) for (let dx = -r; dx <= r; dx += 1) if (paved(x + dx, y + dy)) return false;
+    return true;
+  };
+  plant(0, 0, W - 1, H - 1, TREES, 21, awayFromPaving(1), 0, 55);
+  plant(0, 0, W - 1, H - 1, SMALL, 23, awayFromPaving(1), 0, 70);
+  // 좁은 틈(블록 옆·둑 곁 한두 칸)은 가는 나무로.
+  plant(0, 0, W - 1, H - 1, ["bd-tree-eef4bc", "bd-tree-28ad5e", "bd-tree-c27062"], 31, awayFromPaving(0), 0, 75);
+  // 남은 맨 풀밭 칸에 들꽃 무더기(밟고 지나가는 바닥 소품)를 성기게 — 길가 풀 띠가 맨바닥 줄로 보이지 않게.
+  plant(0, 0, W - 1, H - 1, ["bd-pick-wheat-roman-road-wild-a", "bd-pick-wheat-roman-road-wild-b", "bd-pick-deep-forest-path-wild-b", "bd-pick-deep-forest-path-wild-c", "bd-pick-deep-forest-path-heath-b"], 37,
+    (x, y) => !nearEvent(x, y, 1) && lo2[at(x, y)]! < 0, 0, 45);
+
+  // 광장 가장자리 소품 — 판석이 한 면으로 비지 않게. 성문 통로 앞 다섯 줄(행진 길)과 사람·출입구 둘레는 비운다.
+  plazaMode = true;
+  plant(0, wallBase + 1, W - 1, H - 1, ["bd-prop-planter_round", "bd-prop-bench_wood", "bd-prop-crate_apple", "bd-prop-flower_cart", "bd-pick-walled-market-sack-pile", "bd-prop-goods_pile"], 41,
+    (x, y) => !nearEvent(x, y, 2) && Math.abs(x - gate.x) > 2, 1, 55);
+  plazaMode = false;
+
+  // ── 11. 사람 자리 — 새 담·나무·소품에 갇히거나 올라선 사람은 천문대 문 앞에서 걸어 닿는 가장 가까운 빈 칸으로. ──
+  const reach = new Set<number>();
+  const start = at(observatoryDoor.x, observatoryDoor.y + 1);
+  const people = events.filter((e) => e.pages?.[0]?.priority === "same");
+  const blocker = new Set(people.map((e) => at(e.x, e.y)));
+  reach.add(start);
+  for (const q = [start]; q.length;) {
+    const c = q.shift()!, x = c % W, y = Math.floor(c / W);
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = x + dx, ny = y + dy;
+      if (!inside(nx, ny)) continue;
+      const n = at(nx, ny);
+      if (reach.has(n) || blocker.has(n) || !isPassable(project, map, nx, ny)) continue;
+      reach.add(n); q.push(n);
+    }
+  }
+  const touchable = (e: { x: number; y: number }): boolean => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => inside(e.x + dx!, e.y + dy!) && reach.has(at(e.x + dx!, e.y + dy!)));
+  for (const person of people) {
+    const home = person.id.endsWith("_gate") ? guardSpot : undefined;
+    if (!home && isPassable(project, map, person.x, person.y) && touchable(person)) continue;
+    const want = home ?? { x: person.x, y: person.y };
+    let best: { x: number; y: number; d: number } | undefined;
+    for (const c of reach) {
+      const x = c % W, y = Math.floor(c / W);
+      // 다른 사람과 붙지 않고, 출입구(문·성문) 앞 세 칸 안에는 서지 않는다(도착 칸을 막지 않게).
+      if (events.some((e) => e !== person && Math.abs(e.x - x) + Math.abs(e.y - y) <= (e.pages?.[0]?.priority === "same" ? 1 : home ? 1 : 3))) continue;
+      const d = Math.abs(x - want.x) + Math.abs(y - want.y);
+      if (!best || d < best.d) best = { x, y, d };
+    }
+    if (best) { person.x = best.x; person.y = best.y; }
+  }
+  return { observatoryDoor, gate, guardSpot };
+}

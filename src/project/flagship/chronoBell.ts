@@ -22,6 +22,7 @@ import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import { buildFallenStarOpening, FALLEN_STAR_TITLE_BACKGROUND } from "./fallenStarOpening";
 import { clearOrphanShadows, clearUpperByLabel, dressVaultRock, padMapCentered, varyVaultFloor, rimPit, scatterVaultFloorPatches } from "./fallenStarMapPolish";
 import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./fallenStarStory";
+import { reworkFallenTown } from "./fallenTown";
 import type { FlagshipDemoBuildResult } from "./types";
 
 const ENDING_ID = "end_fs_act1";
@@ -507,12 +508,13 @@ function walkPath(project: Project, map: GameMap, from: { x: number; y: number }
  * 루트 끝의 스위치로 지운다(떠남 페이지).
  */
 function marchOffAfterProclamation(project: Project, hub: GameMap): void {
-  const gate = hub.events.find((e) => String(e.id).startsWith("ev_gate_") && e.x >= hub.width - 2);
+  // 동문 = 숲으로 나가는 성문 통로 가운데 칸(reworkFallenTown). 일행은 통로 안까지 걸어 들어가 사라진다.
+  const gate = hub.events.find((e) => String(e.id).startsWith("ev_gate_") && JSON.stringify(e).includes('"mapId":"fs_forest"'));
   const proclamation = hub.events.find((e) => e.id === `ev_${FS_PREFIX}_event`);
   const list = proclamation?.pages?.[0]?.commands;
   const after = list?.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("교단보다 먼저"));
   if (!gate || !list || after === undefined || after < 0) throw new Error("[fallen-star] 포고·동문을 찾지 못했다");
-  const exit = { x: gate.x - 1, y: gate.y };
+  const exit = { x: gate.x, y: gate.y };
   const marches: Command[] = [];
   for (const [id, delay] of [[`ev_${FS_PREFIX}_knight`, 0], [`ev_${FS_PREFIX}_valen`, 1]] as const) {
     const npc = hub.events.find((e) => e.id === id);
@@ -703,6 +705,9 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   setEventFace(M(ids.hub), `ev_${FS_PREFIX}_gate`, undefined);
   setEventFace(M(ids.forest), `ev_${FS_PREFIX}_bram`, undefined);
   polishLines(M(ids.observatory), M(ids.forest), M(ids.vault));
+  // 왕도를 오프닝 그림과 같은 곳으로 — 운하·아치 돌다리·둥근 돌 천문대 탑·성벽 동문·성문 광장(fallenTown.ts).
+  // 문지기는 성문 곁에 세운다. 문·출구 좌표는 여기서 정해지고, 뒤 단계(도착 칸·포고 행진)가 이 자리를 쓴다.
+  reworkFallenTown(project, ids.hub, { observatory: ids.observatory, forest: ids.forest });
   // 장 구성기의 「기억의 세이브 결정」은 시스템 말투다 — 세계 안의 이름과 문장으로(감사 3차).
   for (const event of M(ids.vault).events) if (event.name === "기억의 세이브 결정") {
     event.name = "푸른 별빛 결정";
@@ -956,13 +961,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   const vaultEntry = vaultStairs ? { x: vaultStairs.x, y: vaultStairs.y + 2 } : { x: 30, y: 58 };
   for (const gx of [9, 10]) touchTransfer(M(PUZZLE_ROOM), `ev_fs_vault_gate_up${gx}`, gx, 2, { mapId: M(ids.vault).id, x: vaultEntry.x, y: vaultEntry.y, direction: "up" });
 
-  // 동문 문지기는 숲으로 나가는 출입구 곁에 세운다.
-  const forestGate = M(ids.hub).events.find((e) => JSON.stringify(e).includes(`"mapId":"${M(ids.forest).id}"`));
-  const guard = M(ids.hub).events.find((e) => e.id === `ev_${FS_PREFIX}_gate`);
-  if (forestGate && guard) {
-    const spot = nearFree(project, M(ids.hub), { x: forestGate.x - 2, y: forestGate.y - 1 }, 4, guard.id);
-    if (spot) { guard.x = spot.x; guard.y = spot.y; }
-  }
+  // 동문 문지기는 성문 곁(reworkFallenTown 이 세운 자리)에 그대로 선다.
 
   // 추락지 — 금속 알 둘레를 그을린 흙(농장 흙길 오토타일)으로 타원형으로 칠하고, 가장자리에 불씨 자국·쓰러진 나무·그루터기를 둔다.
   // 민무늬 풀 칸만 칠한다(알 그림·길은 건드리지 않는다). 알 앞 조사 칸과 숲길은 비운다.
@@ -1018,23 +1017,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     const spot = nearFree(project, M(ids.hub), { x: herald.x + 2, y: herald.y }, 3, herald.id);
     if (spot) { herald.x = spot.x; herald.y = spot.y; }
   }
-  // 천문대 입구가 재단사 가게집(가위 간판·차양)이라 천문대로 읽히지 않았다(감사 VQA) — 간판·차양 칸을 같은 집의 민벽·창으로 바꾸고
-  // 집 곁에 놋쇠 혼천의를 세운다. 그림 칸 번호는 버들항 집 키트 bd-house-h123_1(재단사)과 민가 행(같은 지붕·벽)에서 가져왔다.
-  const obsDoor = M(ids.hub).events.find((e) => JSON.stringify(e).includes(`"mapId":"${M(ids.observatory).id}"`));
-  if (obsDoor) {
-    const hub: GameMap = M(ids.hub);
-    const swap: Record<number, number> = { 10287: 2652, 6046: 6041, 10596: 757, 10597: 2493, 10711: 5742, 10712: 2656 };
-    const ox: number = obsDoor.x, oy: number = obsDoor.y;
-    for (let y: number = oy - 4; y <= oy - 1; y += 1) for (let x: number = ox - 3; x <= ox + 3; x += 1) {
-      if (x < 0 || y < 0 || x >= hub.width || y >= hub.height) continue;
-      const i: number = y * hub.width + x;
-      const t: number = hub.upperTiles[i] ?? -1;
-      if (swap[t] !== undefined) hub.upperTiles[i] = swap[t]!;
-    }
-    for (const [dx, dy] of [[3, -3], [-4, -3], [3, 1], [-3, 1]] as const) {
-      if (tryStamp(project, hub, "kit:beodeul_city/bd-pick-wizard-tower-armillary", obsDoor.x + dx, obsDoor.y + dy)) break;
-    }
-  }
+  // 천문대 입구는 reworkFallenTown 이 둥근 돌 탑(마법사의 탑 키트)과 곁의 놋쇠 망원경으로 바꿨다 — 예전 재단사 집 간판 바꾸기·혼천의는 걷었다.
   // 풀숲 가장자리에 풀 둑 덧그림을 얹던 마감은 걷어 냈다 — 흙 입술(진흙 못 가장자리)로 읽혔다(감사 라운드 2).
   // 맵 마감(감사 3차) — 주인 없는 그림자, 화로의 방 긴 화덕 띠.
   for (const map of [M(ids.hub), M(ids.forest), M(ids.vault)]) clearOrphanShadows(project, map);
@@ -1129,7 +1112,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     land(hub, obs, "up", "up");
     land(obs, hub, "down", "down");
     land(hub, forest, "up", "up");
-    land(forest, hub, "left", "left");
+    land(forest, hub, "down", "down"); // 성문 통로(북쪽) 앞 광장에 내려 성문을 등진다
     land(obs, gate, "up", "up");
     land(gate, obs, "down", "down");
     land(gate, vault, "down", "down");
@@ -1146,12 +1129,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       stampKit(M(ids.forest), "bd-pick-mountain-pass-brazier", forestDoor.x + 2, forestDoor.y - 2);
       stampKit(M(ids.forest), "bd-pick-mountain-pass-wayside-cross", forestDoor.x - 2, forestDoor.y - 4);
     }
-    const hubDoor = transfersTo(hub, forest.id)[0]?.event;
-    if (hubDoor) {
-      stampKit(M(ids.hub), "bd-pick-coast-cliff-road-milestone", hubDoor.x - 1, hubDoor.y - 2);
-      stampKit(M(ids.hub), "bd-pick-coast-cliff-road-milestone", hubDoor.x - 1, hubDoor.y + 1);
-      stampKit(M(ids.hub), "bd-mpart-lamp-post", hubDoor.x, hubDoor.y - 3);
-    }
+    // 마을 쪽 숲 출구는 성벽 성문 통로다(성문루·깃발·통행세 초소가 이미 문으로 읽힌다) — 이정표를 따로 세우지 않는다.
   }
   // 숲지기 곁 모닥불.
   const bram = M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_bram`);
