@@ -88,13 +88,13 @@ export function blockedRun(run: WorkshopRun): BlockKind | null {
 }
 
 /**
- * 참고 그림 단계(object-gen 실행기의 makeReference): 엔진은 그 단계 동안 round.reference 를 비워 두고 장을 모두 「줄 섬」에 둔다.
- * 끝나면 reference 가 { status: ok|none|failed } 로 한 번 채워진다(pending 상태는 없다). 그래서 「참고가 아직 없고 장이 하나도 안 움직였다」를
- * 참고 그림 단계로 읽는다. 참고 단계가 없는 실행기는 엔진이 장을 곧바로 그리기로 옮겨 이 상태가 잠깐만 보인다.
+ * 참고 그림 단계(object-gen 실행기의 makeReference, engine.ts referenceFor): 장은 「그리는 중」으로 바뀌지만 시도 번호(attempt)는 아직 0 이고,
+ * round.reference 는 그 단계가 끝날 때 { status: ok|none|failed } 로 한 번 채워진다(pending 상태는 없다).
+ * 그래서 「참고가 아직 없고 어느 장도 첫 시도에 들어가지 않았다」를 참고 그림 단계로 읽는다(2026-10-22 실화면: 약 2분).
  */
 function referencePending(round: WorkshopRound): boolean {
   if ((round as { reference?: unknown }).reference !== undefined) return false;
-  return round.runs.length > 0 && round.runs.every((run) => run.status === "queued");
+  return round.runs.length > 0 && round.runs.some((run) => run.status === "drawing") && round.runs.every((run) => (run.attempt ?? 0) === 0);
 }
 
 /** 작업의 보이는 단계. round = 이 작업의 판(없으면 아직 시작 전). */

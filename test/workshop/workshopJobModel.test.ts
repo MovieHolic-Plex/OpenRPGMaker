@@ -22,6 +22,9 @@ describe("workshop job model", () => {
   it("reads the visible state from the round", () => {
     expect(jobState(job({ roundId: null }), null)).toBe("queued");
     expect(jobState(job(), round([run("drawing"), run("queued")]))).toBe("drawing");
+    // 참고 그림 단계: 장은 그리는 중이지만 첫 시도 전, reference 없음
+    expect(jobState(job(), round([run("drawing", { attempt: 0 }), run("drawing", { attempt: 0 })]))).toBe("reference");
+    expect(jobState(job(), { ...round([run("drawing", { attempt: 0 })]), reference: { status: "ok", tries: 1 } } as never)).toBe("drawing");
     expect(jobState(job(), round([run("reviewing"), run("done")]))).toBe("review");
     expect(jobState(job(), round([run("done", { grid: { width: 1, height: 1, cells: [0] } as never }), run("failed")]))).toBe("ready");
     expect(jobState(job(), round([run("failed"), run("failed")]))).toBe("failed");
