@@ -337,10 +337,12 @@ function starterCoverage(project: Project): void {
   // 그래도 풀·벌레 체육관에서 불은 3턴 무패, 물은 수련생에게 전멸, 풀은 관장에게 10턴 끝에 졌다(2026-10-21 적대 검수 r3).
   // 처음부터(Lv5) 풀은 깃바람(비행 — 풀·벌레에 두 배), 물은 서리발(얼음 — 풀에 두 배)을 갖고 시작한다. 불은 숯불톡이 같은 몫이다.
   // 다시(r30): 같은 관장에게 불은 체력 18, 풀은 2 를 남기고 이겼다 — 깃바람(위력 30, 제 타입 아님)은 숯불톡(35, 제 타입 1.5배)의 6할 남짓이었다.
-  // 스타터 전용 사본을 위력 40 으로 둔다(풀 「잎새돌풍」 비행 · 물 「서리물보라」 얼음). 다른 종이 쓰는 깃바람·서리발은 그대로다.
+  // 스타터 전용 사본을 위력 40 으로 둔다(풀 「잎새돌풍」 비행 · 물 「서리물보라」 얼음 · 불 「다부진주먹」 격투). 다른 종이 쓰는 원래 기술은 그대로다.
   const fromStart: Record<string, { readonly base: string; readonly name: string; readonly power: number }> = {
     mx_species_spriglet: { base: "mx_skill_flying_1", name: "잎새돌풍", power: 40 },
     mx_species_rivulet: { base: "mx_skill_ice_1", name: "서리물보라", power: 40 },
+    // 리그의 두 배 위협(불 ← 로키온 바위)에 불만 맞설 기술이 없었다 — 가마숨이 반감인 채 두 배로 맞아 첫 도전에 졌다(r32). 진화형(가마발톱, 불·격투)에 맞춰 격투 하나.
+    mx_species_coalbit: { base: "mx_skill_fighting_1", name: "다부진주먹", power: 40 },
   };
   for (const species of project.database.monsterSpecies ?? []) {
     const plan = fromStart[species.id];
