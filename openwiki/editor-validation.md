@@ -20,6 +20,7 @@
 | `scene-map-no-bgm` | 시작 맵·이동 목적지인데 bgm 이 비었다(명시 `none` 은 의도). 자동/병렬 페이지의 BGM 재생이나 이동 직전 BGM 재생이 있으면 통과 |
 | `scene-moving-vehicle` | 켜진 `map.transit` 노선에 탈것이 있다 / 이름이 탈것인 이벤트의 첫 페이지 이동이 fixed 가 아니다 |
 | `scene-hang-on-floor` | 손 도트 실내 걸이 물건(handInteriorSpec kind `hang`, 칩셋 키트 `hand-interior:<id>`)의 위층 타일이 걸을 수 있는 칸에 있다(걸이 타일은 통행 가능, 벽면 1층은 막힘 — 칸이 통행 가능 = 바닥 위). 맵·물건마다 1건. Fallen 별자리표(fs_observatory)·거미줄(지하 화로의 방)을 잡았다 |
+| `scene-ceiling-tile` | 천장 구역 = 아래층이 천장·공허 이름표(`천장`·`ceiling`·`공허`·`void`, 막힘) 칸. ① 그 칸 어느 층이든 천장 아닌 타일이 있다 ② 천장 칸에 닿은 고립 통행 성분(아래층 통행만 본다, 이벤트·시작 칸 없음)이 있다. 맵마다 1건. Fallen fs_vault 의 방 밖 암반 바닥 값 칸(345칸)을 잡았다. 회색 디더 천장 재질(default·rock)은 천장 칸이라 못 잡는다 — 1배 실행 화면으로 본다(SKILL 3장 7) |
 | `scene-actors-stacked` | 한 페이지 안에서 Set Event Location·moveEvent(경로 끝 모의)로 **보이는** 두 인물이 같은 칸에 선다. 명령 순서대로 무대에서 내린다: Erase Event, 경로 끝 투명화, 스위치를 켜 «떠남» 페이지가 되거나 보이는 페이지 모두의 «스위치 꺼짐» 조건이 깨짐(`switchesThatHide`, 사라짐 검사와 공유). 같은 문으로 차례로 떠나는 것은 통과 |
 
 데모 검증(2026-10-21, `scripts/qa/scene-polish-lint.mts`): Fallen Star polish2 13건(방향 없는 이동 4·착지 2칸 3·문 아닌 칸 5·대사 뒤 사라짐 1), Astra fv 15건(문을 보는 착지 10 — 이후 손으로 고친 7fa8b2f3c2 와 같은 곳·한 칸 어긋난 출입 매트 2·표시 없는 출구 2·제자리 지우는 라이벌 1),
