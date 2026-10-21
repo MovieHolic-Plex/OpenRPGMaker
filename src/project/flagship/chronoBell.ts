@@ -404,6 +404,9 @@ function applySpeakerFaces(project: Project, faces: Readonly<Record<string, stri
 
 // ── 그림 ────────────────────────────────────────────────────────────────
 
+/** 푸른 별빛 결정 자리(금고 안 통로 옆 빈 바닥) — fallen-audit 시나리오 save-crystal 비트와 같이 바꾼다. */
+const FS_CRYSTAL = { x: 34, y: 20 };
+
 function setEventChip(map: GameMap | undefined, eventId: string, texture: string, characterIndex: number): void {
   const event = map?.events.find((e) => e.id === eventId);
   if (!event) return;
@@ -538,6 +541,18 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   for (const event of M(ids.vault).events) if (event.name === "기억의 세이브 결정") {
     event.name = "푸른 별빛 결정";
     for (const page of event.pages ?? []) page.name = "푸른 별빛 결정";
+    // 결정이 파티 행렬(x32 열) 바로 북쪽에 서서 플레이어 머리 뒤 보라 투구처럼 읽혔다(가혹 검수 r7) —
+    // 통로 옆 빈 바닥 구석으로 옮기고, 흰 룬 판 위에 얹어 「받침 위 보석」으로 읽히게 한다.
+    event.x = FS_CRYSTAL.x; event.y = FS_CRYSTAL.y;
+    M(ids.vault).events.push({
+      id: `ev_${FS_PREFIX}_vault_crystal_plate`, name: "룬 판", x: FS_CRYSTAL.x, y: FS_CRYSTAL.y, trigger: { kind: "action" }, commands: [],
+      pages: [{
+        id: `ev_${FS_PREFIX}_vault_crystal_plate_p1`, name: "룬 판", conditions: [],
+        graphic: { sprite: { type: "bundled", id: "tex_easyrpg_charset_object2" }, direction: "down", pattern: charsetFrameIndex({ characterIndex: 3, direction: "down", pattern: 1 }) },
+        trigger: { kind: "action" }, priority: "below", overlapForbidden: false,
+        movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [],
+      }],
+    } as unknown as GameEvent);
   }
   replaceLineAnywhere(M(ids.vault), "푸른 기억의 결정이 은은하게 공명하며 파티 전원의 체력과 마력을 완전히 회복시켰다!", [narrate("푸른 결정에 손을 대자, 지친 몸에 힘이 차올랐다.")]);
   const bossEvent = M(ids.vault).events.find((e) => (e.pages ?? []).some((p) => JSON.stringify(p.commands).includes("battleProcessing")) && e.id.includes("kill"));
@@ -876,6 +891,17 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         try { execTool(project, "stamp_object", { objectId: "kit:atlas_biome_interior/hand-interior:iron gate open", mapId: obs.id, x: 9, y: 14 }); } catch { /* 문틀은 장식이라 실패해도 통행은 그대로 */ }
         // 아래 줄(문틀 옆기둥 6424)은 통행을 막으므로 걷어 낸다 — 위 줄(상인방 6423)만 벽 칸에 남아 문 위를 두른다.
         { const om = M(ids.observatory); const door = om.upperTiles; const di = 15 * om.width + 9; if (door[di] === 6424) door[di] = -1; }
+  }
+  // 하넬이 서 있는 아래 오른쪽 방은 책장·탁자뿐이라 작은 집처럼 읽혔다(VQA r6 05-hanel-ask) — 천문대답게 별 보는 도구를 놓는다.
+  // 패딩 전 좌표다(방 x10~16·y11~17). 놓일 자리가 막혀 있으면 다음 후보로 간다.
+  {
+    const obs = M(ids.observatory);
+    const kitOf = (n: string): string => `kit:atlas_biome_interior/hand-interior:${n}`;
+    for (const [n, spots] of [
+      ["orrery", [[16, 15], [16, 14], [10, 15]]],
+      ["telescope", [[10, 16], [10, 17], [16, 17], [10, 15]]],
+      ["globe", [[16, 12], [10, 12], [16, 16]]],
+    ] as const) for (const [x, y] of spots) if (tryStamp(project, obs, kitOf(n), x, y)) break;
   }
   // 천문대(18×19)도 화면(30×17)보다 좁아 양옆·위아래가 검은 허공으로 40% 가량 비었다 — 화로의 방과 같이 암반 벽 둘레를 덧붙이고
   // 이 맵으로 들어오는 모든 이동 좌표를 같은 만큼 민다(VQA r5). 위 계단·철문·뚜껑문 좌표 작업은 모두 끝난 뒤여야 한다.

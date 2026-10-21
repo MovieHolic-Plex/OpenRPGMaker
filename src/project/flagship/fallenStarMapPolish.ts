@@ -197,7 +197,7 @@ export function dressVaultRock(
     let next: number;
     // 방 바로 바깥은 부드러운 한 덩이 암벽(가장자리 → 중간 암반)이고, 멀어질수록 어두운 허공 칸이 거리에 비례해 섞여 사그라진다(VQA r6 — 노이즈 많은 암벽 + 검은 덩어리 컷아웃 지적).
     // 허공 칸은 덩어리 임계값이 아니라 칸 단위 디더라 덩어리 모서리 없이 번진다. 중간 암반은 큰 격자로 변형을 고른다(칸마다 무작위 얼룩 금지).
-    const deepShare = d <= 8 ? 0 : Math.min(0.8, (d - 8) * 0.2) + (n - 0.5) * 0.1;
+    const deepShare = d <= 14 ? 0 : Math.min(0.7, (d - 14) * 0.15) + (n - 0.5) * 0.1;
     const coarse = (list: readonly number[]): number => list[Math.floor(smooth(x, y, 3, 3) * list.length) % list.length]!;
     if (d <= 2) next = pick(tiles.edge, x, y, 1);
     else if (hash(x, y, 4) < deepShare) next = pick(tiles.deep, x, y, 4);

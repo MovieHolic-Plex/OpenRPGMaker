@@ -146,7 +146,7 @@ export default {
     })),
     { id: "gate-open", note: "창살이 녹은 문", ops: [{ kind: "hold", dir: null, ms: 1500 }, ...closeDialogue(), { kind: "hold", dir: null, ms: 1500 }, ...closeDialogue(),{ kind: "teleport", mapId: "fs_vault_gate", x: 16, y: 8 }, { kind: "hold", dir: null, ms: 800 }], shot: true },
     { id: "to-vault", note: "지하로", ops: [{ kind: "hold", dir: "up", ms: 1200 }, { kind: "hold", dir: null, ms: 1500 }, dumpState("vault")], shot: true },
-    { id: "save-crystal", note: "세이브 결정", ops: [{ kind: "teleport", mapId: "fs_vault", x: 32, y: 23 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
+    { id: "save-crystal", note: "세이브 결정", ops: [{ kind: "teleport", mapId: "fs_vault", x: 33, y: 20 }, { kind: "hold", dir: null, ms: 400 }, ...talk("right")], shot: true },
     { id: "save-crystal-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "valen", note: "발렌", ops: [...closeDialogue(),{ kind: "teleport", mapId: "fs_vault", x: 25, y: 25 }, { kind: "hold", dir: null, ms: 600 }, ...talk("up")], shot: true },
     { id: "battle", note: "결전 시작", ops: [
