@@ -182,9 +182,12 @@ export async function runGenreTrial(rootArg, caseId, options = {}) {
           const opened = events.filter(event => event.type === 'stream_open').length;
           const closed = events.filter(event => ['stream_closed', 'stream_error'].includes(event.type)).length;
           return { opened, closed, busy: Boolean(window.__oprnAiBridge?.status().turnBusy), count: events.length,
-            ended: events.some(event => ['done', 'error', 'cancelled', 'chat_done'].includes(event.type)) };
+            ended: events.some(event => ['done', 'error', 'cancelled', 'chat_done'].includes(event.type)),
+            // 의도 선언의 되묻기로 멈춘 턴(실행 없음): 선택지 줄이 대화에 보이고 패널이 한가하다.
+            clarified: (document.body.innerText ?? '').includes('[선택지]') };
         });
-        const idle = probe.opened > 0 && probe.closed >= probe.opened && !probe.busy && probe.ended;
+        const idle = (probe.opened > 0 && probe.closed >= probe.opened && !probe.busy && probe.ended) || (probe.clarified && !probe.busy);
+        if (probe.clarified) result.clarifyAsked = true;
         quiet = idle && probe.count === result.lastProbeCount ? quiet + 1 : 0;
         result.lastProbeCount = probe.count;
         if (quiet >= 6) break;
