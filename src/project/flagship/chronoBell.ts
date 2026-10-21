@@ -582,6 +582,13 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     setEventChip(hub, event.id, tex, index); // 방향이 바뀌면 칩 프레임 번호도 다시 고른다
   }
 
+  // 발렌은 호위 줄보다 한 걸음 앞(남쪽, 백성 쪽)에 홀로 선다 — 호위와 같은 줄에 서면 누가 말하는지 안 읽히고, 호위 줄이
+  // 카메라를 보는 백성으로 읽혔다(VQA r10 major).
+  if (isPassable(project, hub, valen.x, valen.y + 1) && !doorCells.has(`${valen.x},${valen.y + 1}`) && !standing.has(`${valen.x},${valen.y + 1}`)
+    && !hub.events.some((e) => !marchers.has(e.id) && e.x === valen.x && e.y === valen.y + 1)) {
+    standing.delete(`${valen.x},${valen.y}`); valen.y += 1; standing.add(`${valen.x},${valen.y}`);
+  }
+
   // 포고를 듣는 백성 — 발렌이 「백성은 들어라」 하는데 듣는 사람이 일행뿐이라 누구에게 말하는지 읽히지 않았다(VQA r7 major).
   // 발렌 서·남쪽 빈 칸에 넷이 서서 발렌을 본다. 주인공이 천문대 문으로 가는 세로 길(시작 칸 좌우 한 칸)과 문 앞은 비운다.
   const start = { x: project.startPos?.x ?? 24, y: project.startPos?.y ?? 23 };
@@ -598,10 +605,12 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   // 백성은 발렌 남쪽(길 아래 풀밭)에 모여 위를 본다.
   for (let y = valen.y + 2; y <= valen.y + 5; y += 1) for (let x = valen.x - 5; x <= valen.x + 4; x += 1) {
     if (Math.abs(x - start.x) <= 1 || near(x, y, 1, valen) || !free(x, y)) continue;
+    // 엘레나 대사 때 주인공이 옆으로 두 걸음 비켜선다 — 그 두 칸 바로 아래에 서면 몸이 겹쳐 그려졌다(QA fs49).
+    if (Math.abs(x - start.x) <= 2 && y <= start.y + 1) continue;
     // 길(포석·흙길) 칸은 비운다 — 외길에 둘이 줄지어 서서 길을 막고 아무것도 안 보는 것처럼 읽혔다(VQA r9).
     if (!/풀밭/.test(hubMeta[hub.lowerTiles[y * hub.width + x]!]?.label ?? "")) continue;
     if ([...doorCells].some((k) => { const [dx, dy] = k.split(",").map(Number); return Math.abs(x - dx!) <= 2 && Math.abs(y - dy!) <= 2; })) continue;
-    candidates.push({ x, y, d: Math.hypot(x - valen.x, y - (valen.y + 3)) });
+    candidates.push({ x, y, d: Math.hypot(x - valen.x, y - (valen.y + 2)) }); // 발렌 바로 앞(두 칸 아래)부터 — 멀면 빈 길을 보는 것처럼 읽혔다(VQA r10)
   }
   candidates.sort((p, q) => p.d - q.d);
   for (const c of candidates) {
@@ -708,7 +717,14 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   list.splice(begin + 1, 0, { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "turn", dir: towardValen }], repeat: false, wait: true, skippable: true } } as unknown as Command);
   // 엘레나가 말할 때 주인공이 화면(아래)을 보고 있었다(VQA r5) — 엘레나 쪽(위)으로 돌아선다.
   const elenaLine = list.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("들었지, 카엘"));
-  if (elenaLine >= 0) list.splice(elenaLine, 0, { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "turn", dir: "up" }], repeat: false, wait: true, skippable: true } } as unknown as Command);
+  // 위를 보면 RTP 주인공 칩 뒷모습(머리 뒤 흰 띠)이 얼굴처럼 읽혀 엘레나에게 등을 돌린 것으로 보였다(VQA r10 major) —
+  // 주인공이 옆으로 두 걸음 비켜서면 뒤따르던 엘레나가 곁(같은 줄)으로 와 서로 옆모습으로 마주 본다.
+  const startX = project.startPos?.x ?? 24, startY = project.startPos?.y ?? 23;
+  const sideOpen = (dx: number): boolean => [1, 2].every((k) => isPassable(project, hub, startX + dx * k, startY)
+    && !hub.events.some((e) => e.x === startX + dx * k && e.y === startY && !marchers.has(e.id)));
+  const side: Step | undefined = sideOpen(-1) ? "left" : sideOpen(1) ? "right" : undefined;
+  const faceElena: unknown[] = side ? [{ kind: "move", dir: side }, { kind: "move", dir: side }, { kind: "turn", dir: side === "left" ? "right" : "left" }] : [{ kind: "turn", dir: "up" }];
+  if (elenaLine >= 0) list.splice(elenaLine, 0, { kind: "moveEvent", eventId: "@player", route: { moves: faceElena, repeat: false, wait: true, skippable: true } } as unknown as Command);
 }
 
 /**
@@ -1357,12 +1373,32 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   const pod = M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_main_inspect1`);
   if (pod) {
     const fm = M(ids.forest);
+    let hadCoffin = false;
+    // 관을 빈터 가운데로 두 칸 내린다 — 관이 빈터 북쪽 나무 줄 바로 밑에 붙어 구덩이 북쪽 테가 잘리고, 관이 구덩이 가운데가 아니라
+    // 북쪽 테 위에 얹힌 것으로 보였다(VQA r10 major). 조사 칸·이리스 자리도 같이 내린다.
+    {
+      const metaS = (project.tilesets[fm.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+      const ground = (x: number, y: number): boolean => {
+        const t = fm.lowerTiles[y * fm.width + x]!;
+        return t === 737 || (metaS[t]?.label ?? "").startsWith("버들항 · 모랫길");
+      };
+      // 옛 돌 관(하수도 관 2×2)은 구덩이 계산 전에 걷는다 — 남겨 두면 옛 관 자리가 「덧그림 있는 칸」으로 빠져 구덩이 북쪽에 풀 구멍이 났다.
+      fm.upperTiles.forEach((t, i) => { if (t >= 26599 && t <= 26602) { fm.upperTiles[i] = -1; hadCoffin = true; } });
+      const SHIFT = 2;
+      let ok = pod.y + SHIFT < fm.height - 4;
+      for (let y = pod.y; ok && y <= pod.y + SHIFT; y += 1) for (let x = pod.x - 1; x <= pod.x + 1; x += 1) if (!ground(x, y)) ok = false;
+      if (ok) {
+        pod.y += SHIFT;
+        const iris = fm.events.find((e) => e.id === `ev_${FS_PREFIX}_iris_field`);
+        if (iris && ground(iris.x, iris.y + SHIFT)) iris.y += SHIFT;
+      }
+    }
     // 관(별의 배) 가운데 — 관은 pod 바로 위 두 칸 너비. 구덩이는 관을 품고 사방으로 그을린 자국이 뻗는 불규칙한 모양이다:
     // 고른 타원(작은 칸 수)은 네모 흙 마당 + 검은 테두리로 읽혔다(VQA r6 major 「방·무덤 같다」). 각도마다 반지름을 흔들고
     // 일곱 갈래로 그을음 줄기를 뻗는다.
     // 구덩이가 빈터(풀 칸) 끝까지 닿으면 빈터 네모 모양을 그대로 따라 네모 흙 마당으로 읽혔다(VQA r7 major) — 빈터보다 작은
     // 타원으로 줄이고 가운데를 반 칸 내려 위쪽 나무 줄에 잘리지 않게 한다. 그을음은 구덩이 밖 풀 위의 불씨·숯 줄기로 뻗는다.
-    const cx = pod.x + 0.5, cy = pod.y + 0.3, rx = 5.2, ry = 3.4;
+    const cx = pod.x + 0.5, cy = pod.y - 1, rx = 5.2, ry = 3.4; // 관(조사 칸 위 두 줄) 한가운데
     const pit = new Set<number>();
     const rays = [0.35, 1.2, 2.05, 2.75, 3.6, 4.55, 5.5];
     const metaPit = (project.tilesets[fm.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
@@ -1414,9 +1450,11 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     for (const c of pit) fm.lowerTiles[c] = body >= 0 ? body : 23175;
     // 3/4 깊이: 북쪽 테 바로 아래 줄은 흙 절벽면(윗변 그늘) — 구덩이가 파여 들어간 안쪽 벽으로 읽힌다(VQA r9 major
     // 「평평한 네모 흙 마당」). 둑은 진흙 둑(바깥 그을린 풀 테 + 안쪽 짙은 선)으로 — 흑요석 둑은 네 변 같은 검은 테였다.
+    // 바닥은 모랫길(밝은 모래)이 아니라 짙은 갈아엎인 흙(바닥 흙 26809~26811) — 밝은 모래 바닥은 숲길이 넓어진 흙 마당으로 읽혔다(VQA r10).
     for (const c of pit) {
       const x = c % fm.width, y = Math.floor(c / fm.width);
       if (!pit.has(c - fm.width)) fm.lowerTiles[c] = 11646 + ((x + y) % 5);
+      else fm.lowerTiles[c] = 26809 + ((((x * 73856093) ^ (y * 19349663)) >>> 0) % 3);
     }
     // 구덩이 안: 불씨 자국·숯 더미(관 곁). 구덩이 밖: 쓰러진 나무·그루터기·꺾인 덤불을 둘레 바깥으로 빙 둘러 — 오프닝 crash 컷처럼
     // 충격에 넘어간 나무가 구덩이를 에워싼다. 예전 고정 좌표는 구덩이를 키우자 덤불이 구덩이 안에 섰다(VQA r6).
@@ -1462,7 +1500,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       const coffin = new Set([26599, 26600, 26601, 26602]);
       let x0 = Infinity, y1 = -Infinity;
       live.upperTiles.forEach((t, i) => { if (coffin.has(t)) { x0 = Math.min(x0, i % live.width); y1 = Math.max(y1, Math.floor(i / live.width)); live.upperTiles[i] = -1; } });
-      if (Number.isFinite(x0)) placeFallenStarVessel(project, live, pod.x - 1, y1 - 1);
+      if (hadCoffin || (Number.isFinite(x0) && Number.isFinite(y1))) placeFallenStarVessel(project, live, pod.x - 1, pod.y - 2);
       // 오프닝 crash 컷처럼 관 위로 연기 몇 가닥이 피어오른다 — 이리스가 깨어나기 전까지(병렬 이벤트, 투명·아래 층).
       const smoke = (x: number, y: number, ms: number) => ({ kind: "m2Command", commandId: "m2-224-particle-effect", fields: { preset: "smoke", target: "tile", x, y, durationMs: ms, wait: false } } as unknown as Command);
       live.events = live.events.filter((e) => e.id !== `ev_${FS_PREFIX}_crash_smoke`);
@@ -1472,7 +1510,9 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
           id: `ev_${FS_PREFIX}_crash_smoke_page`, name: "연기", conditions: [], graphic: { transparent: true },
           movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "below", trigger: { kind: "parallel" },
           // 관 발치의 금에서 희미한 별빛이 새고(반짝임), 둘레 불씨에서 불티가 오른다.
-          commands: [smoke(pod.x - 1, pod.y - 2, 1400), { kind: "wait", ms: 700 }, smoke(pod.x + 1, pod.y - 2, 1400),
+          // 연기 기둥 셋(관 양 끝·가운데)이 쉬지 않고 오른다 — 한두 가닥은 희미해 갓 떨어진 자리로 읽히지 않았다(VQA r10).
+          commands: [smoke(pod.x - 1, pod.y - 2, 1600), smoke(pod.x + 1, pod.y - 3, 1600), { kind: "wait", ms: 500 }, smoke(pod.x, pod.y - 2, 1600),
+            { kind: "wait", ms: 500 }, smoke(pod.x + 1, pod.y - 2, 1400), smoke(pod.x - 1, pod.y - 3, 1400),
             { ...smoke(pod.x + 1, pod.y - 2, 900), fields: { preset: "sparkle", target: "tile", x: pod.x + 1, y: pod.y - 2, durationMs: 900, wait: false } },
             { kind: "wait", ms: 900 }, smoke(pod.x, pod.y - 3, 1200),
             { ...smoke(pod.x - 2, pod.y, 800), fields: { preset: "fire", target: "tile", x: pod.x - 2, y: pod.y, durationMs: 800, wait: false } },
@@ -1508,7 +1548,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       for (let r = 1; r < 3; r += 0.2) {
         const x = Math.round(cx + Math.cos(angle) * rx * r), y = Math.round(cy + Math.sin(angle) * ry * r);
         if (x < 1 || y < 1 || x >= live.width - 1 || y >= live.height - 1 || pit.has(y * live.width + x)) continue;
-        if (tryStamp(project, M(ids.forest), `kit:beodeul_city/${k % 3 === 2 ? "bd-pick-volcano-cave-coal-pile" : "bd-pick-volcano-cave-ember-a"}`, x, y)) break;
+        // 불씨 자국은 풀 위에서 검은 돌무더기로 읽혔다(VQA r10) — 충격에 꺾인 나무(그루터기·쓰러진 통나무)로 바꾼다.
+        if (tryStamp(project, M(ids.forest), `kit:beodeul_city/${k % 2 === 0 ? "bd-pick-deep-forest-path-stump" : "bd-pick-deep-forest-path-log-fallen"}`, x, y)) break;
       }
     }
     // 구덩이 북쪽 위로 맵 끝까지 붙은 모랫길 토막 둘은 아무 데로도 안 갔다(VQA r6 m13) — 풀로 되돌린다.
@@ -1658,7 +1699,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     for (let y = 3; y < fm.height - 3; y += 1) for (let x = 2; x < fm.width - 2; x += 1) {
       if (fm.lowerTiles[y * fm.width + x] === 737) continue;
       // 추락 구덩이(몸통 흙 칸) 안에는 버섯·들꽃을 두지 않는다 — 갓 그을린 구덩이에 독버섯이 섰다(VQA r7).
-      { const t = fm.lowerTiles[y * fm.width + x]!; if (t === 23175 || (t >= 11646 && t <= 11650)) continue; }
+      { const t = fm.lowerTiles[y * fm.width + x]!; if (t === 23175 || (t >= 11646 && t <= 11650) || (t >= 26809 && t <= 26811)) continue; }
       let nearPath = false;
       for (let dy = -2; dy <= 2 && !nearPath; dy += 1) for (let dx = -2; dx <= 2; dx += 1) {
         if (fm.lowerTiles[(y + dy) * fm.width + (x + dx)] === 737) { nearPath = true; break; }
