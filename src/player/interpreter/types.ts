@@ -36,7 +36,7 @@ export type StepResult =
   | import("./minigameCommands").TimedChoiceStep
   | import("./minigameCommands").QuickTimeStep
   | import("./minigameCommands").TeleportMenuStep
-  | { kind: "text"; speaker?: string; body: string; face?: FaceGraphic; settings?: MessageWindowSettings; autoAdvance?: boolean; emotion?: string; style?: string; context?: string; container?: string; position?: "auto" | "top" | "center" | "bottom"; voiceResourceId?: string; endingEpilogue?: boolean }
+  | { kind: "text"; speaker?: string; body: string; face?: FaceGraphic; listenerFace?: FaceGraphic; settings?: MessageWindowSettings; autoAdvance?: boolean; emotion?: string; style?: string; context?: string; container?: string; position?: "auto" | "top" | "center" | "bottom"; voiceResourceId?: string; endingEpilogue?: boolean }
   | {
       kind: "choices";
       prompt?: string;
@@ -249,6 +249,10 @@ export interface InterpreterState {
   maxStackDepth: number;
   project?: Project;
   currentFace?: FaceGraphic;
+  /** 대사 없이 연달아 준 「얼굴 바꾸기」에서 화자와 다른 자리에 먼저 둔 얼굴 — 다음 대사의 듣는 사람 흉상이 된다. */
+  listenerFace?: FaceGraphic;
+  /** 마지막 대사 뒤에 「얼굴 바꾸기」가 이미 한 번 있었다. */
+  faceSinceText?: boolean;
   // 현재 실행 중인 이벤트 id. 셀프 스위치 조작/평가 기준.
   currentEventId?: string;
   onFactionStanceChanged?: () => void;

@@ -423,6 +423,7 @@ async function consumeBlockingStep(
         ...dialogueSceneHooks(scene, { speaker, currentEventId }),
         body: step.body,
         face: step.face,
+        ...(step.listenerFace ? { listenerFace: step.listenerFace } : {}),
         settings: textWindowSettings(scene.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS, step.position),
         textContext: { session: scene.session, project: store.getCurrent() },
         playerTileY: scene.tileY,
