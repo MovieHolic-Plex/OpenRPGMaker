@@ -70,7 +70,11 @@ const effective = args.project ? { ...scenario, projectFixture: args.project } :
 const browserType = args.browser === "firefox" ? firefox : chromium;
 const launchBrowser = () => browserType.launch({
   headless: !args.headed,
-  args: args.browser === "chromium" ? ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"] : [],
+  // 뒤 두 플래그: 이 머신의 tailscale·docker 인터페이스 때문에 크로미움이 «네트워크 바뀜» 으로 vite 모듈 요청을
+  // 통째로 끊는다(net::ERR_NETWORK_CHANGED → 백지·훅 없음). 산발적이라 긴 실행이 «부하로 죽은» 것처럼 보인다.
+  args: args.browser === "chromium"
+    ? ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--disable-background-networking", "--disable-features=NetworkChangeNotifier"]
+    : [],
 });
 
 const checkpointSetName = args.checkpointSet ?? (args.checkpoint ? scenario.checkpointSet ?? null : null);
