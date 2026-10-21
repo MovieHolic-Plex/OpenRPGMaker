@@ -983,7 +983,8 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
 function buildFriday(project: Project, a: FirstLoveAnchors): void {
   const fri = project.maps[FL_MAP.officeFri]!;
   const o = a.office;
-  // 탁자 둘레(meetSeats): [0]=주인공(동쪽 끝) [1]=지후(주인공 오른쪽 옆 — 발표자 둘이 나란히) [2]=민호(북쪽 의자, 본부장 옆 — 남쪽 의자는 회의실이 맵 맨 아래라 대화창에 가린다, VQA r5) [3]=팀장(서쪽 끝) [4]=본부장(북쪽 의자에 앉음 — 먼저 나가는 손님이 바로 옆 유리문으로 나간다).
+  // 탁자 둘레(meetSeats): [0]=주인공(동쪽 끝) [1]=지후(주인공 오른쪽 옆 — 발표자 둘이 나란히) [2]=민호(탁자 북서 모서리 바닥) [3]=팀장(서쪽 끝) [4]=본부장(탁자 북동 모서리 바닥 — 먼저 나가는 손님이 바로 옆 유리문으로 나간다).
+  // 의자 칸에는 세우지 않는다: 의자는 upper 타일이라 등받이가 얼굴을 덮고(VQA r7), 남쪽 의자 줄은 맵 맨 아래라 대화창에 가린다(VQA r5).
   const seats = o.meetSeats;
   const jihuSpot = seats[1]!; const clientSpot = seats[4]!; const leadSpot = seats[3]!; const minhoSpot = seats[2]!;
   // 손님·지후는 두 번째 엘리베이터(주인공이 내린 칸이 아닌 문)로 나간다 — 엘리베이터 문 바로 앞에서 사라진다.

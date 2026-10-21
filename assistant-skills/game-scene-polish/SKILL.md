@@ -53,6 +53,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 17. **말하는 사람은 대화창 위에 둔다.** 맵 맨 아래 줄 근처에서는 카메라가 더 내려가지 못해 아래쪽 3~4줄이 대화창 뒤에 깔린다. 회의 탁자의 아래쪽 의자처럼 그 줄에 앉힌 사람이 말하면 머리끝만 보인다(첫사랑 r5 민호). 말할 사람은 위쪽 자리에 앉히거나 방을 맵 아래 끝에서 띄운다. 확인: 화자가 나오는 첫 프레임에서 몸 전체가 대화창 위에 보인다.
 18. **회상·장면 전환 옮기기는 이미 검은 화면이면 밝아짐을 끈다.** `fadeOut` 뒤의 `transfer` 에 기본 페이드(black)를 두면 옮기기가 스스로 화면을 밝혀, 새 맵의 자동 장면이 주인공을 감추거나 자리를 잡기 전 한 장면이 보인다(첫사랑 r5: 10년 전 복도에 어른 서하). `fade:"none"` 으로 옮기고 장면 쪽 `fadeIn` 이 감추기·배치 뒤에 밝힌다.
 19. **검게 덮인 동안 색조를 걷지 않는다.** `fadeOut` 은 화면 색조 칸에 검정을 칠한 것이라 뒤이은 「Tint Screen」(회상 세피아 걷기 등)이 그 칸을 덮어써 검은 덮개가 걷힌다 — 옮기기 전 한 장면이 원색으로 드러나 감춰 둔 인물(어른 주인공)까지 보인다(첫사랑 r6). 덮인 동안엔 value `0,0,0,1`(검정 그대로)로 필터만 걷거나, 새 장면의 `fadeIn` 뒤에 색조를 바꾼다. 확인: `scene-tint-clears-fade` 0, 장면 전환 프레임에 원색 한 장이 없다.
+20. **의자·탁자 칸에 사람을 세우지 않는다.** 가구는 upper 타일이라 인물보다 앞에 그려진다 — 앉는 자세 그림 없이 의자 칸에 세우면 등받이가 얼굴을 덮어 장면 내내 얼굴이 안 보인다(첫사랑 r7 회의실). 탁자 모서리·끝의 빈 바닥에 세우고 탁자 쪽을 보게 한다. 확인: `scene-actor-under-furniture` 0.
 
 ## 4. 대화창
 
@@ -146,6 +147,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 | `scene-bust-faces-away` | 원래 시선을 아는 흉상(공용 현대 흉상·전신)에 flipHorizontally 를 줬다 → 대화창이 이미 상대 쪽으로 돌려 놓으므로 뒤집기를 지우고 자리만 정한다 |
 | `scene-seated-cannot-stand` | 의자·소품 칸에 앉힌 인물이 통과 없이 그 칸을 떠나려 한다 → 엔진이 첫걸음부터 막아 경로가 사라진다. 첫걸음을 setThrough 켜기/끄기로 감싼다 |
 | `scene-tint-clears-fade` | fadeOut 으로 덮은 뒤 fadeIn 전에 Tint Screen 으로 색조를 바꿨다 → 검은 덮개가 걷혀 화면이 드러난다. 덮인 동안엔 value 0,0,0,1 로 필터만 걷는다 |
+| `scene-actor-under-furniture` | 보이는 인물이 upper 우선순위의 막힌 가구 칸(의자·탁자) 위에 서 있다 → 가구가 얼굴을 덮는다. 옆 빈 바닥에 세운다 |
 
 ## 새 교훈 넣기
 

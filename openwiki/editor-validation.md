@@ -29,6 +29,7 @@
 | `scene-bust-faces-away` | `changeFace` 의 `flipHorizontally` 가 원래 시선을 아는 흉상(`sharedPortraitNativeGaze`, 공용 현대 흉상·전신 = 오른쪽)에 걸렸다. 런타임 `dialogue.ts` 가 자리에 맞춰 흉상을 상대 쪽으로 돌리고(`gaze-mirror` 클래스: 오른쪽 자리의 오른쪽 시선 흉상을 거울), 인물은 저작한 자리를 장면 내내 지킨다(듣는 사람이 화자와 같은 쪽이면 반대편으로 옮겨 그리지 않고 비운다 — 옮기면 줄마다 좌우가 바뀐다). 뒤집기는 그 결과를 화면 바깥으로 다시 돌린다. 첫사랑 r4 |
 | `scene-seated-cannot-stand` | 장면 순서대로 각 인물 칸을 따라가며(`setThrough` 포함) 첫 «막힌 칸에서 열린 칸으로» 걸음이 `canMove` 에 막히는지 본다 — 의자·소품 칸(나가는 방향 비트가 닫힌 칸)에 앉힌 인물. 건너뛰기 경로는 막힌 걸음을 다 버려 인물이 제자리에 서고 퇴장 연출만 다른 곳에서 돈다. 첫사랑 r5 본부장 |
 | `scene-tint-clears-fade` | 페이지를 차례로 읽어 「화면 효과」 fadeOut 뒤 fadeIn 전의 「Tint Screen」(value 가 검정 `0,0,0,1` 이 아닌 것)을 잡는다. 페이드(`screenEffectPlan.ts` FADE_OUT_TINT)와 Tint Screen 은 같은 `runtime.screen.tint` 칸을 쓰므로 덮인 동안 neutral 을 주면 검은 덮개가 걷힌다. 첫사랑 r6 회상→수요일 |
+| `scene-actor-under-furniture` | 보이는 그림이 있는 이벤트 칸의 `upperTiles` 타일이 `tileset.priority` 로 `upper` 이고 그 칸이 지나갈 수 없으면(가구) 경고. upper 는 인물보다 앞에 그려지므로 의자 등받이가 얼굴을 덮는다. 첫사랑 r7 회의실 |
 | `scene-arrival-faces-exit` | 짝 없는 한쪽 이동(문형 왕복 짝은 `scene-transfer-pair` 몫)의 도착 방향 1~2칸 앞에 이동 칸이나 문·계단 그림이 있다 — 막 지나온 문을 보고 선다 |
 
 데모 검증(2026-10-21, `scripts/qa/scene-polish-lint.mts`): Fallen Star polish2 13건(방향 없는 이동 4·착지 2칸 3·문 아닌 칸 5·대사 뒤 사라짐 1), Astra fv 15건(문을 보는 착지 10 — 이후 손으로 고친 7fa8b2f3c2 와 같은 곳·한 칸 어긋난 출입 매트 2·표시 없는 출구 2·제자리 지우는 라이벌 1),
