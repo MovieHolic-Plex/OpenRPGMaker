@@ -992,7 +992,10 @@ async function doBackupProject(): Promise<void> {
   try {
     const saved = await store.flush();
     if (saved.kind !== "saved") throw new Error("현재 변경을 저장하지 못했습니다. 다시 저장하거나 프로젝트 파일을 내보내세요.");
-    toast(`백업을 만들었습니다: ${await repository.backup()}`, "ok");
+    // 백업 폴더 경로(ISO 시각·UUID)는 토스트에 쓰지 않는다 — 사람이 읽는 시각만 보여 주고, 백업은 「백업에서 복구」 목록에서 찾는다.
+    await repository.backup();
+    const time = new Date().toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+    toast(`백업을 만들었습니다 (${time})`, "ok");
   } catch (error) {
     toast(error instanceof Error ? `백업 실패: ${error.message}` : "백업 실패", "error");
   }
