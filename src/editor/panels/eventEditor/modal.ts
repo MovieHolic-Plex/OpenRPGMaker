@@ -233,7 +233,11 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     minimized = true;
     flushPendingModalField(backdrop);
     checkpointEventDraft(request.mapId, request.eventId);
-    const name = backdrop.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]')?.value ?? request.eventId;
+    // 이름 상자는 저작한 이름만 담는다 — 아직 짓지 않은 이벤트는 빈 문자열이라 헤더가 보여 주는
+    // 표시 이름(페이지 이름에서 빌린 것)으로 부른다. 빈 이름이면 「이벤트 편집 계속: {0}」 키가 맞지 않는다.
+    const typedName = backdrop.querySelector<HTMLInputElement>('[data-testid="event-editor-name"]')?.value.trim() ?? "";
+    const ev = store.getCurrent().maps[request.mapId]?.events.find((entry) => entry.id === request.eventId);
+    const name = typedName || (ev ? eventDisplayName(ev) : "") || request.eventId;
     const label = `이벤트 편집 계속: ${name}`;
     restoreChip.setAttribute("aria-label", label);
     restoreChip.title = label;

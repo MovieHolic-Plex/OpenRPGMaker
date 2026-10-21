@@ -13,6 +13,7 @@ import {
 import { M2_COMMAND_PICKER_GROUP_ORDER, mapScreenNativeSurfaceGroup } from "@/project/eventCommands/m2PickerLayout";
 import type { Command } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
+import { t } from "@/i18n";
 import { commandKindLabel } from "./options";
 import { groupHeadingText, groupVisual, pickerPageGlyph, pickerPageIcon, renderCategoryIcon } from "./commandCategoryIcons";
 import { renderEditorIcon } from "./editorIcons";
@@ -548,9 +549,7 @@ function renderSearchResults(
 ): HTMLElement {
   const needle = query.trim().toLowerCase();
   const matches = COMMAND_PAGES.flatMap((page) => page.entries).filter(
-    (entry) => entry.label.toLowerCase().includes(needle)
-      || entry.group.toLowerCase().includes(needle)
-      || entry.alternateRoute?.toLowerCase().includes(needle)
+    (entry) => commandEntrySearchTexts(entry).some((text) => text.toLowerCase().includes(needle))
   );
   if (matches.length === 0) {
     return el("div", {
@@ -570,6 +569,20 @@ function renderSearchResults(
     dataset: { testid: "event-command-picker-search-results" },
     children: [countHead, grid],
   });
+}
+
+// 화면 라벨은 DOM 번역기가 나중에 바꾼다. 원문(한국어)만 비교하면 영어 UI 에서 화면에 보이는
+// 낱말(「condition」)로 아무것도 못 찾았다(UI 감사 07-eventcmd-13) — 현재 언어 라벨도 함께 본다.
+function commandEntrySearchTexts(entry: CommandEntry): string[] {
+  const baseLabel = pickerLabelParts(entry.label).base;
+  const texts = [entry.label, t(baseLabel), entry.group, t(entry.group), t(groupHeadingText(entry.group))];
+  if (entry.alternateRoute) texts.push(entry.alternateRoute, t(entry.alternateRoute));
+  return texts;
+}
+
+/** 피커 라벨 끝의 말줄임(`문장 표시...`)을 뗄다. 번역 키는 말줄임 없는 바탕 라벨이다. */
+function pickerLabelParts(label: string): { readonly base: string; readonly ellipsis: boolean } {
+  return label.endsWith("...") ? { base: label.slice(0, -3), ellipsis: true } : { base: label, ellipsis: false };
 }
 
 function renderCommandGrid(
@@ -633,7 +646,13 @@ function renderCommandButton(
       dataset: { glyph: visual.glyph },
       children: [renderCategoryIcon(visual)],
     }),
-    el("span", { class: "event-command-picker-command-label", text: entry.label }),
+    // 말줄임은 CSS(::after)가 붙인다. 텍스트에 넣으면 「문장 표시...」가 번역 키 「문장 표시」와
+    // 어긋나 영어 UI 에 한국어로 남았다(UI 감사 07-eventcmd-05).
+    el("span", {
+      class: "event-command-picker-command-label",
+      text: pickerLabelParts(entry.label).base,
+      ...(pickerLabelParts(entry.label).ellipsis ? { dataset: { ellipsis: "true" } } : {}),
+    }),
   ];
   if (options.showPageChip) {
     children.push(el("span", { class: "event-command-picker-page-chip", text: pickerPageTitle(entry.page), attrs: { "aria-hidden": "true" } }));
