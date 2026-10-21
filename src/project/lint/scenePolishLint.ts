@@ -9,6 +9,7 @@
 //  - scene-stair-direction         내려가는 계단 그림이 위층으로(또는 반대로) 이어진다
 //  - scene-npc-vanish              NPC 가 출구까지 걷지 않고 제자리에서 사라진다(Erase Event·투명 «떠남» 페이지·경로 속 불투명도 0)
 //  - scene-dialogue-position-mixed 대사 위치(top·center·bottom·auto)가 한 게임 안에서 섞였다
+//  - scene-dialogue-position-jump  이어지는 두 대사(사이에 창을 닫는 명령 없이)가 서로 다른 자리를 못박아 창이 위↔아래로 뛴다
 //  - scene-dialogue-context-mixed  sign·system·letter 밖의 특수 대화창 모양을 둘 이상 섞거나 말풍선을 쓴다
 //  - scene-map-no-bgm              이야기가 들르는 맵에 BGM 이 없다(명시 «없음» 은 의도로 본다)
 //  - scene-moving-vehicle          움직이는 교통(map.transit)·움직이는 탈것 이벤트
@@ -475,6 +476,72 @@ function checkDialogue(project: Project, issues: LintIssue[]): void {
   }
 }
 
+/** 대사 사이에 있어도 창이 닫히지 않는 명령 — 이 명령들만 끼면 두 대사는 같은 창 세션이다. */
+const DIALOGUE_NEUTRAL: ReadonlySet<Command["kind"]> = new Set(["changeFace", "setSwitch", "setSelfSwitch", "setVariable", "playAudio", "stopAudio", "displayTextSettings", "label"]);
+
+/**
+ * 고정 틀(2026-10-22): 런타임은 열린 대화 세션의 창 자리·높이를 지킨다(주인공 가림 피하기도 세션 첫 창에서 한 번만).
+ * 그래도 **저자가 줄마다 못박은 자리**는 따른다 — 이어지는 두 줄이 서로 다른 자리(top↔bottom, center)를 적으면 창이 뛴다.
+ * 조수가 「이 줄만 위로」를 습관처럼 붙여 대화 도중 창이 오르내린 데모 결함을 잡는다. 이벤트 페이지마다 첫 한 곳만 알린다.
+ */
+function checkDialoguePositionJump(project: Project, issues: LintIssue[]): void {
+  type Pos = "top" | "center" | "bottom" | "auto";
+  const lineOf = (command: Command): boolean =>
+    command.kind === "text" && !(command.context && SPECIAL_CONTEXT_OK.has(command.context.trim())) && (!command.container || command.container === "box");
+  const scanList = (list: readonly Command[] | undefined, start: Pos, report: (from: Pos, to: Pos) => boolean): boolean => {
+    let session: Pos = start;
+    let previous: Pos | undefined;
+    for (const command of list ?? []) {
+      if (!command || typeof command !== "object") continue;
+      if (command.kind === "displayTextSettings") {
+        session = command.preventObscuringPlayer ? "auto" : command.position;
+        continue;
+      }
+      if (lineOf(command) && command.kind === "text") {
+        const pos: Pos = command.position && command.position !== "auto" ? command.position : command.position === "auto" ? "auto" : session;
+        // auto 는 세션 자리를 물려받는다(대개 bottom). 못박은 top·center 와 auto 사이, 또는 서로 다른 두 못박음만 뛴다고 본다.
+        const jumps = previous !== undefined && previous !== pos
+          && !((previous === "auto" && pos === "bottom") || (previous === "bottom" && pos === "auto"));
+        if (jumps && report(previous!, pos)) return true;
+        previous = pos;
+        continue;
+      }
+      if (command.kind === "choices") {
+        // 선택지는 바로 앞 대사 상자 자리에 선다 — 자리를 바꾸지 않는다. 가지 안의 첫 줄은 그 자리에서 이어진다.
+        for (const option of command.options ?? []) if (scanBranch(option.branch, previous ?? session, session, report)) return true;
+        continue;
+      }
+      if (DIALOGUE_NEUTRAL.has(command.kind)) continue;
+      // 창을 닫는 명령(기다림·이동·화면 효과·전투…) — 새 세션이다. 가지는 따로 훑는다.
+      previous = undefined;
+      for (const branch of nestedCommandLists(command)) if (scanList(branch, session, report)) return true;
+    }
+    return false;
+  };
+  const scanBranch = (list: readonly Command[] | undefined, previous: Pos, session: Pos, report: (from: Pos, to: Pos) => boolean): boolean => {
+    const first = (list ?? []).find((command) => lineOf(command));
+    if (first && first.kind === "text") {
+      const pos: Pos = first.position && first.position !== "auto" ? first.position : first.position === "auto" ? "auto" : session;
+      const jumps = previous !== pos && !((previous === "auto" && pos === "bottom") || (previous === "bottom" && pos === "auto"));
+      if (jumps && report(previous, pos)) return true;
+    }
+    return scanList(list, session, report);
+  };
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events ?? []) {
+      for (const page of pagesOf(event)) {
+        scanList(page.commands, "auto", (from, to) => {
+          issues.push({
+            severity: "warning", code: "scene-dialogue-position-jump", mapId: map.id, eventId: event.id, x: event.x, y: event.y,
+            message: `이어지는 대사가 창 자리를 ${from} → ${to} 로 바꾼다 — 대화 도중 창이 뛴다. 엔진은 열린 창의 자리·높이를 지키지만 줄에 못박은 position 은 따른다. 의도가 아니면 그 줄의 position 을 지우고(문장 표시 설정 한 곳으로), 정말 옮길 장면이면 사이에 화면 전환·기다림을 둔다.`,
+          });
+          return true;
+        });
+      }
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------- 맵 음악
 
 function playsBgm(commands: readonly Command[] | undefined): boolean {
@@ -749,6 +816,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkTransfers);
   guard(checkNpcVanish);
   guard(checkDialogue);
+  guard(checkDialoguePositionJump);
   guard(checkMapBgm);
   guard(checkVehicles);
   guard(checkStacking);
@@ -759,7 +827,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
 
 function issueKey(issue: LintIssue): string {
   // 대화창 섞임은 프로젝트 하나에 한 건이라 개수·예시가 바뀌어도 같은 경고다.
-  if (issue.code.startsWith("scene-dialogue-")) return `${issue.code}|${issue.message.startsWith("말풍선") ? "balloon" : "mix"}`;
+  if (issue.code.startsWith("scene-dialogue-") && issue.code !== "scene-dialogue-position-jump") return `${issue.code}|${issue.message.startsWith("말풍선") ? "balloon" : "mix"}`;
   return `${issue.code}|${issue.mapId ?? ""}|${issue.eventId ?? ""}|${issue.x ?? ""}|${issue.y ?? ""}`;
 }
 

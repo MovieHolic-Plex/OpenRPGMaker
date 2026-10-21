@@ -10,6 +10,7 @@
 //   4. 그래도 없으면 플레이어
 // 화면 좌표는 손 슬롯 칩(PlayScene.syncHandSlotChip)과 같은 식 — (월드 − 카메라 스크롤) × 배율.
 
+import { cameraViewOrigin } from "@/player/cameraScreen";
 import { spriteReliefLiftPx } from "@/player/playSceneRelief";
 import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
@@ -44,9 +45,11 @@ export function dialogueSceneHooks(
       const camera = scene.cameras.main;
       const height = host.displayHeight > 0 ? host.displayHeight : TILE_SIZE;
       const worldY = host.y - height * host.originY - HEAD_GAP_PX - spriteReliefLiftPx(scene.map, host);
+      // 배율 ≠ 1 에서 scrollX/Y 는 화면 왼쪽 위가 아니다 — 카메라는 origin 을 기준으로 확대한다(cameraScreen.ts).
+      const { left, top } = cameraViewOrigin(camera);
       return {
-        x: (host.x - camera.scrollX) * camera.zoom,
-        y: (worldY - camera.scrollY) * camera.zoom,
+        x: (host.x - left) * camera.zoom,
+        y: (worldY - top) * camera.zoom,
       };
     },
     onSound: (soundId) => {

@@ -923,7 +923,12 @@ function assertFiniteNumberInRange(label: string, value: unknown, min: number, m
 
 export function validateEndingPresentation(value: unknown, label = "ending.presentation"): void {
   const settings = requireRecord(label, value);
-  requireOnlyFields(label, settings, ["tone", "backgroundResourceId", "musicResourceId", "credits", "kicker"]);
+  requireOnlyFields(label, settings, ["tone", "backgroundResourceId", "musicResourceId", "credits", "kicker", "badge", "finalTitle"]);
+  for (const key of ["kicker", "badge", "finalTitle"] as const) {
+    if (settings[key] === undefined) continue;
+    requireString(`${label}.${key}`, settings[key]);
+    assert((settings[key] as string).length <= 40, `${label}.${key} is too long.`);
+  }
   if (settings.musicResourceId !== undefined) requireNonBlankString(`${label}.musicResourceId`, settings.musicResourceId);
   if (settings.tone !== undefined) assert(settings.tone === "warm" || settings.tone === "dark", `${label}.tone is invalid.`);
   if (settings.credits !== undefined) {

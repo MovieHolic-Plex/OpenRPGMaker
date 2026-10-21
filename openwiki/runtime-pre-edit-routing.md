@@ -909,13 +909,52 @@ See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant
 
 - **규칙.** 흉상·전신 초상이 실제로 그려지는 줄은 저작한 위치(위·가운데, `displayTextSettings`·say `position`·가림 방지 자동)와 상관없이 `position-bottom` 이다. 초상이 없는 줄·48px 작은 얼굴·`hideFace`·말풍선은 저작한 위치를 그대로 따른다. 위·가운데 저장은 막지 않는다.
 - **결정은 한 곳.** `src/project/dialoguePortraitPosition.ts`(`portraitForcesBottom`·`positionWithPortrait`·안내 문구 `PORTRAIT_BOTTOM_NOTICE`/`PORTRAIT_BOTTOM_RULE`). 플레이어는 `dialogue.ts` `mount()` 에서 vnLook→초상(`baseFace`/`portraitMode`)을 **먼저** 구한 뒤 `applyTextSettings(…, forceBottom)` → `applyOverlayPosition(…, forceBottom)` 로 넘긴다(순서가 거꾸로면 위치를 먼저 정해 버린다). 스크림 방향도 같은 `position` 을 쓴다.
-- **선택지.** `lastLineForcedBottom` 이 같은 세션(`wasOpen`)이면 `showChoices` 도 아래다 — 흉상 대사 바로 뒤 선택지가 위로 뛰지 않는다. 퇴장 끝·`resetOverlay`/`dispose` 에서 초기화한다. 숫자 입력(`dialogueNumberInput.ts`)은 대사 직후가 아니라 따로 이어 쓰지 않는다.
+- **선택지.** (2026-10-22 고정 틀로 대체) 선택지는 같은 세션이면 바로 앞 대사 상자의 자리(`lastBoxPosition`)에 선다 — 흉상 대사 바로 뒤 선택지가 위로 뛰지 않는다. 퇴장 끝·`resetOverlay`/`dispose` 에서 초기화한다. 숫자 입력(`dialogueNumberInput.ts`)은 대사 직후가 아니라 따로 이어 쓰지 않는다.
 - **선택지 입력 유예 (2026-10-21, 첫사랑).** `showChoices` 는 열린 뒤 `CHOICE_CONFIRM_GRACE_MS`(300ms) 동안 **실제(isTrusted)** 결정·숫자 키를 버리고, 그 사이 키보드발 클릭(detail 0)도 버린다. 앞 대사를 넘기던 Enter 연타가 선택지가 그려진 바로 그 순간 닿아 플레이어가 읽지 못한 0번이 골라지고, 이어진 연타가 엔딩·타이틀을 넘겨 「새 게임으로 리셋」처럼 보이던 결함의 수정이다(재현 로그: 선택지 등장과 Enter 가 같은 0.1초). 단위 테스트의 합성 이벤트는 isTrusted 가 거짓이라 영향이 없다.
 - **호감 변화 알림 (2026-10-21).** `changeFriendship` 은 인터프리터 훅 `onFriendshipChanged` 를 부르고, 관계 메뉴를 쓰는 게임(`usesRelationshipMenu`)에서만 `playSceneRelationshipPulse.ts` 가 오른쪽 위에 「♥ 이름 · 호감이 올랐다/내려갔다」를 3.2초 띄운다(대사 진행을 막지 않음, 스타일 `playSurface.css`). 관계 메뉴 행은 `project.characters[key].note` 한 줄 소개를 함께 보인다.
 - **전환 부드럽게.** 같은 세션에서 초상 규칙이 창 자리를 바꾸는 줄(흉상 없음(위) ↔ 흉상 있음(아래))에서만 `glideFromPreviousBox` 가 Web Animations `translate` 로 앞 창 자리에서 새 자리까지 220ms 미끄러진다. 레이아웃은 즉시 새 자리로 확정되고 출발점은 변환(진입 연출)을 뺀 `offsetTop` 에 호스트 배율을 곱한 값이다 — 배율로 나누지 않으면 화면 배율(3.2배)만큼 어긋나 창이 화면 밖에서 날아온다(실측). 움직임 줄이기에서는 쓰지 않는다. 그 밖의 줄(같은 위치끼리의 높이 변화 등)은 옛 동작 그대로다.
 - **옛 위쪽 흉상 CSS.** `.position-top` 흉상 매달기 규칙(위 절)은 `dialogue.ts` 경로에서는 더는 닿지 않는다(흉상이면 아래). 편집기 미리보기·저작 도구가 직접 `position-top` 을 붙일 때를 위해 남겼다.
 - **편집기·도구 안내.** 이벤트 명령 「문장 표시 설정」 위치 그룹, 자료집 「메뉴·시스템」 대사창·대사창 룩 카드(`db-menu-system-portrait-bottom-note`), 도구 설명(`schemaShapes` say·displayTextSettings position, `cutsceneStageTools`, `set_dialogue_system`, `set_vn_look`), `gameAuthoringPresets/romance.md` 한 문단. 카탈로그 en/ja/zh 에 안내 문장 한 줄.
 - **증거.** `scripts/qa/runtime/vn-bust-bottom.scenario.mjs`(프로필 `bustbottom`): 캡처마다 DOM 을 읽어 흉상 줄은 아래, 흉상 없는 줄은 저작 위치임을 단정하고(어긋나면 비트 실패) 프레임별 창 윗변 궤적(`_trace.json`)을 남긴다. 전 조합은 프로필 `bb` + `VN_POS_PROBE_DIR=<dir>`(캡처마다 `.json` 위치 탐침, `vn-matrix.lib.mjs`).
+
+## 대사창은 고정 틀 (2026-10-22, dialogue-stable-frame)
+
+데모 두 개에서 「대사창이 위로 갔다 아래로 갔다」. 실측(`dialogue-frame` 시나리오, rAF 로 매 프레임 상자 사각): 아스트라 호라이즌은
+대사가 위·선택지가 아래로 200px 뛰고 높이도 80→112px, 첫사랑은 선택지가 위로 27px 자랐다. 원인 넷과 고친 곳:
+
+- **가림 피하기를 줄마다 다시 판정.** `effectivePosition` 은 화면 속 주인공이 0.5 를 넘으면 위로 보냈다 — 가리지도 않는 아래 창이 뒤집혔다.
+  이제 저작한 자리가 주인공을 **실제로 덮을 때만**(`DIALOGUE_OBSCURE_BAND` 0.36 띠 안) 반대쪽이다. 그리고 열린 세션(`wasOpen`)의 줄은
+  `sessionPosition` 을 물려받는다 — 판정은 세션 첫 창에서 한 번. 저자가 그 줄에 못박은 자리(say `position` top·center·bottom,
+  가림 피하기를 끈 `displayTextSettings`)는 따르되 세션 자리를 바꾸지 않는다(다음 보통 줄은 원래 자리로). 흉상·전신 줄의 아래 강제는 그대로이고 세션 자리를 아래로 옮긴다.
+- **화면 속 높이 계산이 배율 ≠ 1 에서 틀렸다.** `playerScreenYOf`(`playSceneInterpreter.ts`)와 말풍선 기준점(`playSceneDialogueHooks.ts`)이
+  `(y - scrollY) * zoom` 을 썼다. Phaser 카메라는 가운데를 기준으로 확대하므로 화면 높이 절반만큼 어긋난다(아스트라 배율 2: 가운데 주인공이 1.00).
+  이제 `cameraViewOrigin`(`src/player/cameraScreen.ts`: 스크롤·원점·배율로 화면 왼쪽 위 월드 좌표, 경계 클램프 포함) 기준. 선택지 요청에도 같은 값을 넘긴다.
+  `camera.worldView` 를 쓰지 말 것 — preRender 전(자동 실행 첫 프레임)에는 낡아서 폴른 스타가 1.00 으로 읽혀 창이 위로 갔다.
+- **선택지가 대사 상자를 갈아 치우고 내용 높이로 자랐다.** `showChoices` 는 앞 대사 상자 자리(`lastBoxPosition`)에 서고, 그 자리에 **틀**
+  (`choiceFrame`: 질문이 있으면 질문, 없으면 앞 대사 상자의 사본, 둘 다 없으면 빈 상자; testid `dialogue-choice-frame`)을 남긴다.
+  선택지 칸(testid 는 그대로 `dialogue-box`, 목록 `runtime-choices`)은 오버레이 `.choices-framed` 아래에서 `position:absolute` 로 틀 위(위쪽 창이면 아래)에 뜬다 —
+  오른쪽 정렬, 미연시 룩·두 전신 무대는 가운데, 오른쪽 흉상이 선 틀이면 왼쪽. 칸 높이 상한은 틀의 230%(넘치면 목록만 스크롤). 소지금 창은 왼쪽으로 비킨다.
+  에메랄드(handheld)는 원작처럼 80px 글 상자를 두고 그 위 오른쪽에 예/아니오 칸. CSS: `dialogue.css` 끝 「고정 틀 선택지」, `playSurface.css`, `emeraldSurfaces.css`.
+- **얼굴 있는 줄만 63px 로 커졌다.** `.dialogue-box:has(.dialogue-face)` 의 `max(100%, 63px)` 와 같은 바닥(`min-height: 63px`)을 위·아래 오버레이 전체에 준다(두 전신 무대 제외).
+  위쪽 자막 한 줄의 내용 높이 규칙(`playSurface.css`)은 **저자가 위에 고정한**(`data-dialogue-position-reason="fixed"`) 세션 첫 창에서만 쓴다.
+  가림 피하기로 위에 간 내레이션(폴른 스타 천문대 잠긴 철문 「꿈쩍도 하지 않는다」)이 67.5→25.5px 납작한 자막 상자로 바뀌던 것이 이것이었다.
+- **레터박스 띠를 덮었다.** `syncLetterboxInset`(`playSceneFieldStaging.ts`)이 무대에 `data-letterbox`·`--runtime-letterbox-px` 를 걸고,
+  `playSurface.css` 「레터박스 안쪽」이 아래 창은 위로·위 창은 아래로 `translate`(띠 높이 − 크롭 여백, 음수면 0)만큼 민다. 전환 애니메이션은 없다
+  (띠가 켜진 뒤 열리는 창이 미끄러져 오르면 그것이 곧 「창이 움직인다」). 말풍선은 무대 좌표라 제외.
+
+QA 근거와 재실행: `scripts/qa/runtime/dialogue-frame-fixture.mts`(데모의 실제 대사 명령으로 화자+초상 → 내레이션 → 선택지 → 초상 없는 화자 → … → 저자 top 한 줄),
+`dialogue-frame.scenario.mjs`(약 0.2초 띠 + `<out>-rects.json`), `dialogue-frame-measure.py`(줄마다 안정 상태 위·아래와 줄 사이 이동). 스킨 행렬은
+`DFRAME_STYLE`/`DFRAME_VN` 또는 같은 픽스처의 `system.dialogueStyle`·`meta.oprnVnLook` 만 바꾼 사본 + `DFRAME_FAST=1`.
+`DFRAME_SCENE=door`(천문대 철문 칸에서 화자 → 잠긴 문 안내)·`letterbox`(광장 컷신 그대로). 영상: `QA_RECORD_VIDEO=<폴더>`(runtime-qa.mjs, 컨텍스트 녹화) + `DFRAME_VIDEO=1`, `<out>-t0.json` 으로 자른다(영상 시각 ≈ performance.now + 0.75초). 오버레이의
+`data-dialogue-position-reason`(portrait·session·fixed·auto:0.25·previous-box)이 자리를 정한 근거다. 저작 쪽 경고는 `scene-dialogue-position-jump`(`scenePolishLint.ts`).
+
+## 엔딩 카드 글자는 게임 언어 (2026-10-22)
+
+`showEndingScreen`(`playSceneOverlays.ts`)의 배지(HAPPY·NORMAL·BAD·CHARACTER ENDING, 막·장 끝은 「다음 이야기에 계속」)·마지막 장(끝 / 「제1막 끝」)·
+기본 kicker·전당 등록·안내·「타이틀로 돌아가기」는 `vnExtrasStrings.ts` 의 `ending.*` 네 언어 표에서 고른다. 언어는 편집기 언어가 아니라
+게임 언어(`vnExtrasLanguage`: 저작 vnExtras > `meta.oprnDialogueSystem.language` > ko, auto 는 기기 언어). 막·장 끝 판정은 엔딩 id 의
+`act<n>`/`chapter<n>`(`endingSegmentOf`). 엔딩마다 덮기: `EndingPresentation.badge`·`finalTitle`(각 40자, `kicker` 도 40자 상한)
+— 엔딩 정의 presentation 과 ending 명령 presentation 둘 다, 검증 `validateEndingPresentation`, 조수 `define_ending` 스키마. 게임 오버 화면 글자는 이번 범위 밖이다.
 
 ## 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
 

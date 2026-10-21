@@ -57,7 +57,12 @@ try {
     args: args.browser === "chromium" ? ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"] : [],
   });
   console.log(JSON.stringify({ qaBrowser: args.browser, qaPort: server.port }));
-  const page = await browser.newPage();
+  // QA_RECORD_VIDEO=<폴더> — 움직임 증거용 영상(webm). 크기는 시나리오 viewport. 꺼 두면 예전과 같다.
+  const videoDir = process.env.QA_RECORD_VIDEO;
+  const context = videoDir
+    ? await browser.newContext({ viewport: effective.viewport, recordVideo: { dir: resolve(REPO_ROOT, videoDir), size: effective.viewport } })
+    : undefined;
+  const page = context ? await context.newPage() : await browser.newPage();
   report = await runRuntimeQa(page, effective, {
     serverUrl: server.url,
     // resolve: 절대 경로(--out /tmp/...)는 그대로 쓴다. join 은 저장소 안 tmp/... 로 바꿔 버린다.
@@ -65,6 +70,8 @@ try {
   });
 } finally {
   try {
+    // 영상은 컨텍스트를 닫아야 파일로 끝난다.
+    for (const ctx of browser?.contexts() ?? []) await ctx.close().catch(() => undefined);
     await browser?.close();
   } finally {
     await server.close();
