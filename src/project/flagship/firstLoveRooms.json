@@ -61,6 +61,14 @@
     "y1": 18,
     "floor": "of-lobby-stone",
     "wall": "of-lobby-wall"
+   },
+   {
+    "x0": 0,
+    "y0": 20,
+    "x1": 33,
+    "y1": 22,
+    "floor": "of-lobby-stone",
+    "wall": "of-lobby-wall"
    }
   ],
   "objects": [
@@ -448,6 +456,356 @@
     "id": "of-desk-chair-n",
     "x": 7,
     "y": 18
+   },
+   {
+    "id": "of-desk-chair-s",
+    "x": 30,
+    "y": 4
+   },
+   {
+    "id": "of-desk-n",
+    "x": 30,
+    "y": 5
+   },
+   {
+    "id": "of-desk-s",
+    "x": 30,
+    "y": 6
+   },
+   {
+    "id": "of-desk-chair-n",
+    "x": 30,
+    "y": 7
+   },
+   {
+    "id": "of-desk-chair-s",
+    "x": 31,
+    "y": 4
+   },
+   {
+    "id": "of-desk-n",
+    "x": 31,
+    "y": 5
+   },
+   {
+    "id": "of-desk-s",
+    "x": 31,
+    "y": 6
+   },
+   {
+    "id": "of-desk-chair-n",
+    "x": 31,
+    "y": 7
+   },
+   {
+    "id": "of-desk-chair-s",
+    "x": 32,
+    "y": 4
+   },
+   {
+    "id": "of-desk-n",
+    "x": 32,
+    "y": 5
+   },
+   {
+    "id": "of-desk-s",
+    "x": 32,
+    "y": 6
+   },
+   {
+    "id": "of-desk-chair-n",
+    "x": 32,
+    "y": 7
+   },
+   {
+    "id": "of-desk-chair-s",
+    "x": 33,
+    "y": 4
+   },
+   {
+    "id": "of-desk-n",
+    "x": 33,
+    "y": 5
+   },
+   {
+    "id": "of-desk-s",
+    "x": 33,
+    "y": 6
+   },
+   {
+    "id": "of-desk-chair-n",
+    "x": 33,
+    "y": 7
+   },
+   {
+    "id": "of-desk-chair-s",
+    "x": 30,
+    "y": 13
+   },
+   {
+    "id": "of-desk-n",
+    "x": 30,
+    "y": 14
+   },
+   {
+    "id": "of-desk-s",
+    "x": 30,
+    "y": 15
+   },
+   {
+    "id": "of-desk-chair-n",
+    "x": 30,
+    "y": 16
+   },
+   {
+    "id": "of-desk-chair-s",
+    "x": 31,
+    "y": 13
+   },
+   {
+    "id": "of-desk-n",
+    "x": 31,
+    "y": 14
+   },
+   {
+    "id": "of-desk-s",
+    "x": 31,
+    "y": 15
+   },
+   {
+    "id": "of-desk-chair-n",
+    "x": 31,
+    "y": 16
+   },
+   {
+    "id": "of-desk-chair-s",
+    "x": 32,
+    "y": 13
+   },
+   {
+    "id": "of-desk-n",
+    "x": 32,
+    "y": 14
+   },
+   {
+    "id": "of-desk-s",
+    "x": 32,
+    "y": 15
+   },
+   {
+    "id": "of-desk-chair-n",
+    "x": 32,
+    "y": 16
+   },
+   {
+    "id": "of-desk-chair-s",
+    "x": 33,
+    "y": 13
+   },
+   {
+    "id": "of-desk-n",
+    "x": 33,
+    "y": 14
+   },
+   {
+    "id": "of-desk-s",
+    "x": 33,
+    "y": 15
+   },
+   {
+    "id": "of-desk-chair-n",
+    "x": 33,
+    "y": 16
+   },
+   {
+    "id": "of-desk-chair-s",
+    "x": 1,
+    "y": 4
+   },
+   {
+    "id": "of-desk-n",
+    "x": 1,
+    "y": 5
+   },
+   {
+    "id": "of-desk-s",
+    "x": 1,
+    "y": 6
+   },
+   {
+    "id": "of-desk-chair-n",
+    "x": 1,
+    "y": 7
+   },
+   {
+    "id": "of-desk-chair-s",
+    "x": 2,
+    "y": 4
+   },
+   {
+    "id": "of-desk-n",
+    "x": 2,
+    "y": 5
+   },
+   {
+    "id": "of-desk-s",
+    "x": 2,
+    "y": 6
+   },
+   {
+    "id": "of-desk-chair-n",
+    "x": 2,
+    "y": 7
+   },
+   {
+    "id": "of-desk-chair-s",
+    "x": 3,
+    "y": 4
+   },
+   {
+    "id": "of-desk-n",
+    "x": 3,
+    "y": 5
+   },
+   {
+    "id": "of-desk-s",
+    "x": 3,
+    "y": 6
+   },
+   {
+    "id": "of-desk-chair-n",
+    "x": 3,
+    "y": 7
+   },
+   {
+    "id": "of-desk-chair-s",
+    "x": 4,
+    "y": 4
+   },
+   {
+    "id": "of-desk-n",
+    "x": 4,
+    "y": 5
+   },
+   {
+    "id": "of-desk-s",
+    "x": 4,
+    "y": 6
+   },
+   {
+    "id": "of-desk-chair-n",
+    "x": 4,
+    "y": 7
+   },
+   {
+    "id": "of-lobby-sofa-n",
+    "x": 1,
+    "y": 12
+   },
+   {
+    "id": "of-lobby-sofa-s",
+    "x": 1,
+    "y": 15
+   },
+   {
+    "id": "of-plant-big",
+    "x": 4,
+    "y": 12
+   },
+   {
+    "id": "of-plant-big",
+    "x": 4,
+    "y": 15
+   },
+   {
+    "id": "of-plant-big",
+    "x": 30,
+    "y": 2
+   },
+   {
+    "id": "of-plant-big",
+    "x": 33,
+    "y": 2
+   },
+   {
+    "id": "of-plant-big",
+    "x": 30,
+    "y": 10
+   },
+   {
+    "id": "of-plant-big",
+    "x": 33,
+    "y": 10
+   },
+   {
+    "id": "of-plant-big",
+    "x": 30,
+    "y": 19
+   },
+   {
+    "id": "of-plant-big",
+    "x": 33,
+    "y": 19
+   },
+   {
+    "id": "of-plant-big",
+    "x": 1,
+    "y": 2
+   },
+   {
+    "id": "of-plant-big",
+    "x": 4,
+    "y": 2
+   },
+   {
+    "id": "of-plant-big",
+    "x": 1,
+    "y": 9
+   },
+   {
+    "id": "of-plant-big",
+    "x": 4,
+    "y": 9
+   },
+   {
+    "id": "of-plant-big",
+    "x": 1,
+    "y": 19
+   },
+   {
+    "id": "of-plant-big",
+    "x": 4,
+    "y": 19
+   },
+   {
+    "id": "of-plant-big",
+    "x": 8,
+    "y": 22
+   },
+   {
+    "id": "of-plant-big",
+    "x": 14,
+    "y": 22
+   },
+   {
+    "id": "of-plant-big",
+    "x": 20,
+    "y": 22
+   },
+   {
+    "id": "of-plant-big",
+    "x": 26,
+    "y": 22
+   },
+   {
+    "id": "of-coat-rack",
+    "x": 2,
+    "y": 18
+   },
+   {
+    "id": "of-coat-rack",
+    "x": 31,
+    "y": 18
    }
   ],
   "tables": [
@@ -582,7 +940,7 @@
     "y0": 0,
     "x1": 29,
     "y1": 1,
-    "floor": "sh-concrete",
+    "floor": "st-concourse",
     "wall": "sh-white"
    },
    {
@@ -590,16 +948,16 @@
     "y0": 14,
     "x1": 29,
     "y1": 16,
-    "floor": "sh-concrete",
-    "wall": "sh-white"
+    "floor": "st-concourse",
+    "wall": "cs-parking-wall"
    },
    {
     "x0": 0,
     "y0": 2,
     "x1": 7,
     "y1": 13,
-    "floor": "sh-concrete",
-    "wall": "sh-white"
+    "floor": "cs-parking-floor",
+    "wall": "cs-parking-wall"
    },
    {
     "x0": 22,
@@ -616,6 +974,14 @@
     "y1": 6,
     "floor": "cv-backroom",
     "wall": "cv-panel"
+   },
+   {
+    "x0": 22,
+    "y0": 9,
+    "x1": 29,
+    "y1": 13,
+    "floor": "st-concourse",
+    "wall": "sh-white"
    }
   ],
   "objects": [
@@ -723,6 +1089,116 @@
     "id": "cv-baskets",
     "x": 13,
     "y": 12
+   },
+   {
+    "id": "cv-cart-rack",
+    "x": 4,
+    "y": 4
+   },
+   {
+    "id": "cv-cart",
+    "x": 2,
+    "y": 5
+   },
+   {
+    "id": "sh-crate-stack",
+    "x": 1,
+    "y": 10
+   },
+   {
+    "id": "h2-planter",
+    "x": 6,
+    "y": 3
+   },
+   {
+    "id": "h2-planter",
+    "x": 6,
+    "y": 12
+   },
+   {
+    "id": "cv-trash",
+    "x": 7,
+    "y": 8
+   },
+   {
+    "id": "sh-plant-pot",
+    "x": 2,
+    "y": 12
+   },
+   {
+    "id": "sh-waiting-bench",
+    "x": 24,
+    "y": 6
+   },
+   {
+    "id": "h2-planter",
+    "x": 23,
+    "y": 3
+   },
+   {
+    "id": "h2-planter",
+    "x": 28,
+    "y": 3
+   },
+   {
+    "id": "sh-flower-buckets",
+    "x": 22,
+    "y": 9
+   },
+   {
+    "id": "sh-plant-pot",
+    "x": 27,
+    "y": 9
+   },
+   {
+    "id": "cv-trash",
+    "x": 23,
+    "y": 11
+   },
+   {
+    "id": "h2-planter",
+    "x": 28,
+    "y": 12
+   },
+   {
+    "id": "sh-plant-pot",
+    "x": 6,
+    "y": 15
+   },
+   {
+    "id": "sh-plant-pot",
+    "x": 23,
+    "y": 15
+   },
+   {
+    "id": "h2-planter",
+    "x": 10,
+    "y": 16
+   },
+   {
+    "id": "h2-planter",
+    "x": 19,
+    "y": 16
+   },
+   {
+    "id": "cv-cart-rack",
+    "x": 3,
+    "y": 8
+   },
+   {
+    "id": "sh-waiting-bench",
+    "x": 26,
+    "y": 12
+   },
+   {
+    "id": "sh-plant-pot",
+    "x": 29,
+    "y": 7
+   },
+   {
+    "id": "cv-basket-stack",
+    "x": 23,
+    "y": 5
    }
   ],
   "tables": [],
