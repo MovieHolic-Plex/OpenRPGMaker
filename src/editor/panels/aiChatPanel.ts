@@ -125,7 +125,7 @@ import { aiActivityPersistenceState, extractCommitIdsFromAudit } from "@/ai/acti
 import { recordPiIntentFailure } from "@/ai/piAgent/activityLog";
 import { listAiUiEvents, recordAiUiEvent } from "@/ai/uiEventLog";
 import { AI_UI_ACTIONS } from "@/ai/uiEventTypes";
-import { parseQuickReplies } from "@/ai/interviewPrompt";
+import { parseQuickReplies, QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
 import { buildClusterEditKickoff, buildUnclassifiedAnalysisKickoff, type ClusterGroupSnapshot } from "@/ai/clusterAssistPrompt";
 import { resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
 import { AI_STUDIO_TOGGLE_EVENT, publishAiStudioChange } from "@/editor/aiStudioMode";
@@ -288,6 +288,13 @@ export {
   shouldShowStatusInChat,
   type StatusTransition,
 } from "./aiChatPanelHelpers";
+
+/** 되묻기의 선택지 표식 줄(「[선택지] A | B」)은 이 창에 단추가 없어 날것으로 보였다 — 읽히는 한 줄로 바꾼다. */
+function clarifyForChat(text: string): string {
+  return text.split("\n").map((line) => line.startsWith(QUICK_REPLY_MARKER)
+    ? `(골라 답해 주세요: ${line.slice(QUICK_REPLY_MARKER.length).split("|").map((option) => option.trim()).filter(Boolean).join(" · ")})`
+    : line).join("\n");
+}
 
 /** 컴포저가 AI 에게 넘기는 현재 맵/선택 영역 컨텍스트. */
 interface PanelMapContext {
@@ -2325,7 +2332,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const classified = await plainPiTurn(run.text, { ...(run.team ? { team: true } : {}), mapId: run.mapId, selection: run.selection, onDeclaring: () => card.setStatus("의도 읽는 중…") });
       if (classified.clarify) {
         pendingClarify = { text: run.text, question: classified.clarify };
-        card.say("assistant", classified.clarify);
+        card.say("assistant", clarifyForChat(classified.clarify));
+        renderQuickReplies(classified.clarify);
         return;
       }
       command = classified.command;
@@ -2494,7 +2502,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (classified.clarify) {
         // 선언이 도구가 갈릴 만큼 모호하다고 봤다 — 실행하지 않고 묻는다. 답은 다음 전송에서 원래 요청과 묶인다(clarifyFollowUpText).
         pendingClarify = { text, question: classified.clarify };
-        appendBubble("assistant", classified.clarify);
+        appendBubble("assistant", clarifyForChat(classified.clarify));
         renderQuickReplies(classified.clarify);
         finishWorkCard({ ok: true, message: "되묻기" });
         setStatus("대기");

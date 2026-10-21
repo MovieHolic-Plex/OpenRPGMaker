@@ -184,7 +184,7 @@ export async function runGenreTrial(rootArg, caseId, options = {}) {
           return { opened, closed, busy: Boolean(window.__oprnAiBridge?.status().turnBusy), count: events.length,
             ended: events.some(event => ['done', 'error', 'cancelled', 'chat_done'].includes(event.type)),
             // 의도 선언의 되묻기로 멈춘 턴(실행 없음): 선택지 줄이 대화에 보이고 패널이 한가하다.
-            clarified: (document.body.innerText ?? '').includes('[선택지]') };
+            clarified: /\[선택지\]|골라 답해 주세요/u.test(document.body.innerText ?? '') };
         });
         const idle = (probe.opened > 0 && probe.closed >= probe.opened && !probe.busy && probe.ended) || (probe.clarified && !probe.busy);
         if (probe.clarified) result.clarifyAsked = true;
