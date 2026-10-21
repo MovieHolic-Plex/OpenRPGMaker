@@ -469,7 +469,7 @@
   font-size: 8px;
   line-height: 1.2;
   pointer-events: none;
-  animation: relationship-pulse-life 2.4s ease-out forwards;
+  animation: relationship-pulse-life 3.2s ease-out forwards;
 }
 .player-layout .play-stage > .relationship-pulse .relationship-pulse-heart { color: #ff7f93; font-size: 10px; }
 .player-layout .play-stage > .relationship-pulse.is-down .relationship-pulse-heart { color: #9aa6c4; }

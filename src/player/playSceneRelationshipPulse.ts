@@ -10,7 +10,7 @@ import { usesRelationshipMenu } from "@/project/relationshipMenu";
 import { friendshipDisplayName } from "@/project/friendship";
 import { store } from "@/project/store";
 
-const PULSE_MS = 2400;
+const PULSE_MS = 3200;
 
 export function showRelationshipPulse(scene: PlaySceneContext, npcKey: string, delta: number): void {
   if (!Number.isFinite(delta) || delta === 0) return;
