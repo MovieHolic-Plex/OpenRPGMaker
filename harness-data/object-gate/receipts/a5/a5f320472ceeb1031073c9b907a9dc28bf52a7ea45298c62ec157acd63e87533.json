@@ -1,0 +1,351 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a5f320472ceeb1031073c9b907a9dc28bf52a7ea45298c62ec157acd63e87533",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "큰 꺼진 화로(2칸, 돌 받침) (great brazier)",
+ "label": "atlas_biome_interior/plus/great brazier",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 15,
+  "darkV5": 25,
+  "nearBlackEdge": 0.04,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brazier bowl mouth with dark coals and embers",
+      "rows": "5-13",
+      "evidence": "b",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl front band, gold rim and lower bowl",
+      "rows": "14-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base top edge",
+      "rows": "20-23",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "19-21"
+     },
+     {
+      "part": "stone base front face",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bowl width profile widens from 17 at row 5 to 29 at rows 8-12 and narrows again to 17 at row 18. This gives an ellipse-like mouth over rows 5-13, with dark contents and ember pixels visible inside (evidence b and d). A light line at row 13 ends the mouth, and a gold rim band at rows 14-15 follows. The stone base has a light top edge at rows 22-23 and a front face of about 7 rows (24-30). The bowl's own front face is rows 14-18, so the object has a top surface and a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "Density and texture are acceptable. The candidate has 14 visible tones per tile against 9-20 for the references, and 0% near-flat coverage. The coal bowl has some speckle and the stone base has block shading. The outline is the problem. 78% of the dark edge pixels are near-neutral, and the picture shows a dark, nearly colourless line around the bowl rim and the stone base. The Beodeul pieces that use stone or wood, such as the well and the hedge, outline with the dark tone of the adjacent material (33% and 0% neutral). The candidate reads more like a sticker. Its ramps are also shallower than the references: about 4 steps on the stone and 3-4 on the bowl, against 5-6 in Beodeul. The stone base looks fairly uniform, with little per-block highlight or grain compared with the well's stonework. Because the outline treatment and the ramp depth fall short of the standard, this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 19315
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bowl mouth with dark coals/ash (ellipse)",
+      "rows": "5-13",
+      "evidence": "b",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold front rim of bowl",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "16-18"
+     },
+     {
+      "part": "stone base top ledge",
+      "rows": "22-23",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile runs 17, 23, 27, then 29 for rows 5-12, then narrows to 27 at rows 13-14. That is an ellipse bowl mouth over rows 5-13, with dark contents and ember pixels visible inside (evidence b and d). A lighter front-edge line sits at row 13, followed by the gold rim at rows 14-15. Below it the bowl body tapers (widths 25, 23, 21, 17 at rows 15-18) and sits in dark shadow at rows 16-21. The stone base has a light ledge at rows 22-23 and a front face of stone blocks at rows 24-30. The front face runs from row 14 to row 30, which is well over 3 rows, so the object reads as a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per 16x16 tile, which sits between the references (hedge 9, cheese stall 17, roofed well 20). Near-flat coverage is 0%, so there are no flat fills. By eye, the iron bowl rim, the ash and ember speckle, and the individually shaded stone-block base give about 5 steps, slightly fewer than Beodeul's 5-6. 78% of dark edge pixels are near-neutral, which leans toward a black outline. The materials are grey iron and stone, so the neutral dark is partly their own dark tone. The lamp-crook reference, an iron prop, is 100% neutral, and the well and bench references are also partly neutral (33% and 44%). The outline is used selectively and forms are separated by value, so I call it mixed rather than a sticker-style near_black. Density and texture are comparable to the references of the same kind, and a careful artist would accept it beside them, though it is marginal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23030
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brazier bowl mouth with dark ash and embers",
+      "rows": "5-14",
+      "evidence": "b",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "16-18"
+     },
+     {
+      "part": "stone base top and front edge",
+      "rows": "19-23",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "19-21"
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile widens from 17 at row 5 to 29 at rows 8-12, then narrows through 27, 25, 23, 21 to 17 at row 18. That is an ellipse-shaped bowl mouth about 10 rows deep (rows 5-14). Dark ash and embers with two orange spots are visible inside it, which is contents (d). A gold front rim runs along rows 14-15. Below it, rows 16-21 are dark shadow under the bowl. The stone base has a light front-edge line at rows 22-23 and a front face of grey stone blocks in rows 24-30, 15 rows of front face in all. The top surface and the front face are both clearly drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a 2-tile stone-base brazier. It carries 14 visible tones per 16x16 tile, which sits inside the reference range (hedge 9, cheese stall 17, roofed well 20). Near-flat coverage is 0%, so there are no flat fills. The stone base shows individual blocks with light and dark faces, and the bowl has a rim highlight, an ash/coal interior and a dark underside, giving about 4-5 lightness steps. That is a little under Beodeul's 5-6 but far from the 2-3 step flat look. The outline is the weak point: 78% of dark edge pixels are near-neutral. The material is grey stone and iron, so the dark edges mostly sit beside grey and read as the dark tone of that material, not a uniform black sticker line. Forms are also separated by value in places, hence 'mixed'. The neutral lamp-crook reference has the same neutral outline. Overall the piece is at or near reference richness and a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20862
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brazier bowl mouth with dark coals and embers",
+      "rows": "5-13",
+      "evidence": "b",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold rim band on the bowl front",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base top slab (light band)",
+      "rows": "20-23",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-25"
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile runs 17, 23, 27, then 29 for rows 8-12, then narrows 27, 27, 25, 23, 21, 17 down to row 18. That is an ellipse-shaped bowl mouth spanning rows 5-13, with dark coals and embers visible inside, so it counts as a top surface (b, d). The light row 13 is the front rim line, followed by the gold rim band at rows 14-15. The bowl then tapers in rows 16-18 and sits on a stone base at rows 19-30. The base has a lighter top band at rows 22-23 above darker stone blocks, which gives a front face of about 16 rows. The view is a south-facing three-quarter view with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per 16x16 tile. That is above the hedge (9) and close to the cheese stall (17) and roofed well (20). Near-flat coverage is 0%, so there are no flat fills. The stone base shows per-block shading with a light top edge, and the dark coal bowl has a rim highlight and ember or ash variation, which gives roughly 5 steps against the references' 6. The dark edge pixels are 78% near-neutral, which leans toward a grey-black outline. But the material is grey stone and cold iron, so a neutral dark is also the material's own dark tone, and the outline is not a uniform sticker line around every shape. I call it mixed. Overall it is a little less rich than the well and stall but acceptable beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21335
+  }
+ ],
+ "decidedAt": "2026-10-21T14:41:13.469Z",
+ "cells": {
+  "16": [
+   "bbbe85f58a0b9f7a",
+   "cd3500535dbd5f8e",
+   "d46781b6464c5888",
+   "fd26a7646e16d605"
+  ],
+  "24": [
+   "03cf77d4ff690c94",
+   "0473945a361b2865",
+   "08d49f630a0e66c3",
+   "24ff78e393ea96db",
+   "26da5698fc0a56f3",
+   "2e58a3b5191dc54d",
+   "358f5263c17d1c8f",
+   "37212b0e3e29d34c",
+   "3976ad955e6c268f",
+   "3a5c4c85a602a9d6",
+   "3ddce78da7e076fa",
+   "3fb91c49a1b59672",
+   "4282e07dcc8dbf51",
+   "4e7968ecf610448d",
+   "67dcccc54df5136c",
+   "7d4135fc90c7f533",
+   "8042725f1beb1894",
+   "91cb69be3cda716c",
+   "c615c0953029a49c",
+   "ced4ae707f156c75",
+   "d3825509fd6ee2a2",
+   "d3b54616c6968424",
+   "ed1dad66c5fb0338",
+   "fb193593d9a6258e"
+  ],
+  "32": [
+   "1006bfa65d35e42f"
+  ],
+  "48": [
+   "3f87c9b835359f1f",
+   "61afed50fa22c1bf",
+   "bb93b07c2ae3899a",
+   "bf28f2a76321504b",
+   "e4cfa8ebcfc1eab5",
+   "edf80621328495fc"
+  ]
+ }
+}

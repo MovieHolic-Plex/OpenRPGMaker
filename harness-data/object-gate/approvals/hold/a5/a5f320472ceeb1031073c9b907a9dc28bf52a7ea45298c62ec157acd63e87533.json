@@ -1,0 +1,14 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "a5f320472ceeb1031073c9b907a9dc28bf52a7ea45298c62ec157acd63e87533",
+ "profileHash": "4d8774b517f41638",
+ "kind": "other",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T14:41:36.177Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [],
+ "note": "묶음 허용: Fallen Star 방 — 큰 화로(꺼짐·켜짐) (r9) — fallen-rooms-r9 (great brazier · great brazier lit) — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/fallen",
+ "sig": "c2ae06f5c14a6b483849cbbe83edacd616ad930b5459ebdd926ce2898ca40278"
+}

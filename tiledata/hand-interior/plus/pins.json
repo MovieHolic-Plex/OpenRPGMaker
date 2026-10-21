@@ -933,7 +933,17 @@
 "obj:star seal open:0,0": 7486,
 "obj:star seal open:1,0": 7487,
 "obj:star seal open:0,1": 7488,
-"obj:star seal open:1,1": 7489
+"obj:star seal open:1,1": 7489,
+"obj:great brazier:0,-1": 7490,
+"obj:great brazier:1,-1": 7491,
+"obj:great brazier:0,0": 7492,
+"obj:great brazier:1,0": 7493,
+"obj:great brazier lit:0,-2": 7494,
+"obj:great brazier lit:1,-2": 7495,
+"obj:great brazier lit:0,-1": 7496,
+"obj:great brazier lit:1,-1": 7497,
+"obj:great brazier lit:0,0": 7498,
+"obj:great brazier lit:1,0": 7499
 },
 "ids": [
 "plinth",
@@ -1025,6 +1035,8 @@
 "dome slit tall",
 "star lens",
 "star seal",
-"star seal open"
+"star seal open",
+"great brazier",
+"great brazier lit"
 ]
 }

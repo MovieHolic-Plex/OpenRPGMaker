@@ -1,0 +1,45 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-21",
+  "batch": "fallen-rooms-r8",
+  "commit": "3e825135ac",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed from the two PNGs in /tmp/fsrooms/gate-r8 via src/harnesses/_core/object_gate; values recorded per item. Lit piece rows 29-47 (lower 19 px) are pixel-identical to cold rows 13-31; only bowl rim/contents rows 0-12 of the cold frame differ, as intended.",
+    "1_topdown_view": "Both: bowl rim drawn as an ellipse top plane (rows 5-12 cold) over a front band, pedestal shows a light cap (rows 20-23) above a front face with courses; no side/iso faces. Correct 3/4.",
+    "2_style_fit": "Cold piece uses grey stone ramp + gold band consistent with v5 (25 colours, 3 alpha levels). Lit flame is the weak point: the flame mass is built from fixed-period vertical columns (r-o-Y-W repeating every ~4 px, rows 8-24) that read as a comb/picket pattern at x3-x10, inside a symmetric staircase cone; v5 lava brazier flame (tiles 6441/6442) uses asymmetric curling tongues. Four off-ramp crimson pixels (149,1,16) at (7,25),(14,25),(17,25),(14,26) do not belong to the fire ramp.",
+    "3_readability_1x": "In mock-gate-mixed.png at 1x both read as braziers on stone pedestals and cold vs lit is unmistakable (dark speckled dish vs tall yellow flame). The old 1-tile tripod problem is solved.",
+    "4_placement": "Pedestal base sits on the bottom 16 px footprint with a soft alpha-58 drop shadow to lower right; nothing floats or clips the dais edge in the dais mockups. Lit flames rise into the tile above without hitting the wall.",
+    "5_silhouette_outline": "Cold: clean silhouette; one isolated pale-gold pixel (255,240,160) at (3,13) on the rim's outer-left edge reads as a stray. Lit: sparks at (14,0),(19,1),(9,3),(24,4) are acceptable single embers; flame outline is a smooth stepped cone with no tongue separation."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/great brazier",
+      "name": "큰 꺼진 화로(2칸, 돌 받침) (great brazier)",
+      "kind": "other",
+      "pixelSha256": "c645818da02022870d3c77fabcf74d7cce5e2debf1005db00db9ba4f66ddc9b7",
+      "verdict": "PASS",
+      "reasons": [
+        "3/4 correct: elliptical rim top plane (rows 5-12) with ash/charcoal speckle, gold front band, pedestal cap + front face.",
+        "Style matches v5 grey-stone and gold ramps; shading steps present, no large flat fills except the pedestal cap rows 22-23.",
+        "Reads at 1x as a cold brazier; obvious contrast with the lit state.",
+        "Nits (not blocking): stray pale-gold pixel at (3,13) -> make it rim grey (130,138,149); pedestal vertical joints at x=12 and x=19 line up in both courses (rows 24-25 and 27-29) -> offset the lower course joints by ~3 px for a running bond."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/great brazier lit",
+      "name": "큰 켜진 화로(2칸, 돌 받침, 불꽃) (great brazier lit)",
+      "kind": "other",
+      "pixelSha256": "9d0117237715cbbb45e32d5c6cabf1f14a8de5a030b261604f6cee6326707e39",
+      "verdict": "FAIL",
+      "reasons": [
+        "Flame body (rows 4-24) is a regular vertical stripe pattern: columns cycle dark-orange/orange/yellow/white at a fixed ~4 px period (e.g. row 20: 'roWWoYWWYoYWWWYoYWYoroWYrr'), reading as a comb or haystack at x3 instead of fire. Fix: break the columns into 3-4 separate tongues of different heights (tallest centre-left reaching row 4, side tongues ending around rows 10-14), each with a white/yellow core only in its lower half, orange body, and dark-orange (168,77,10) edge; leave transparent notches between tongues on rows 8-16 and lean the tips slightly, like the v5 lava brazier tongue (tile 6441).",
+        "Silhouette is a symmetric stepped cone (widening 1 px per row from row 4 to row 24); make it asymmetric with notches so it does not read as a solid triangle.",
+        "Off-ramp crimson pixels (149,1,16) at (7,25),(14,25),(17,25),(14,26) look like red dots/eyes on the coal line at 3x. Replace with the existing dark orange (168,77,10) or (224,106,16).",
+        "Reduce the pure-white (255,248,176) area (78 px, mostly rows 14-24 in 2-3 px wide vertical bars) to a single hot core near the bowl so the flame has a bottom-hot to top-cool gradient instead of uniform bright columns.",
+        "Pedestal and bowl below row 28 match the cold piece exactly — keep that."
+      ]
+    }
+  ]
+}

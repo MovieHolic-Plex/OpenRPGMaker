@@ -8,7 +8,7 @@
 """
 import math, os
 from PIL import Image
-from iplib import REG, K, cyl, ring, Cv, hnoise, line, ROOT
+from iplib import REG, K, cyl, ring, Cv, hnoise, line, ROOT, box
 
 SHEET = os.path.join(ROOT, 'public', 'assets', 'atlas-interior', 'interior-chipset.png')
 
@@ -259,3 +259,104 @@ def star_seal_open(c):
     for y in range(6, 27):                                     # 바깥 한 칸 안벽
         c.p(4, y, K('black', 1)); c.p(27, y, K('black', 0))
     for y in range(8, 13): c.p(5, y, K('black', 2)); c.p(26, y, K('black', 1))
+
+
+def _great_brazier(c, oy, lit):
+    """큰 화로(2칸 폭): 밝은 마름돌 받침 위 넓은 쇠 사발. oy = 그림 윗단 여백(켜짐은 불꽃 자리 16px 더)."""
+    c.shadow(3, oy + 26, 29, oy + 31)
+    # ① 마름돌 받침(3/4 상자) — 어두운 바닥에서 떠 보이게 밝은 돌
+    box(c, 6, oy + 20, 20, 3, 7, 'stone', t0=5, f0=4)
+    for x in (12, 19):
+        c.vl(x, oy + 24, oy + 25, K('stone', 2))
+    for x in (9, 16, 22):
+        c.vl(x, oy + 27, oy + 29, K('stone', 2))
+    c.hl(7, 24, oy + 26, K('stone', 2))
+    # ② 짧은 쇠 다리 셋(사발 → 받침 윗면)
+    for x in (9, 16, 22):
+        c.vl(x, oy + 17, oy + 21, K('iron', 2)); c.vl(x + 1, oy + 17, oy + 21, K('iron', 1))
+    # ③ 쇠 사발 몸(반 타원, 왼쪽 위 밝음) + 놋쇠 띠
+    cx, cy = 16, oy + 9
+    for y in range(cy, oy + 19):
+        t = (y - cy) / 10
+        half = 14 * math.sqrt(max(0, 1 - t * t * .9))
+        for x in range(int(cx - half), int(math.ceil(cx + half)) + 1):
+            u = (x - cx) / max(1, half)
+            k = 4 if u < -.55 else 3 if u < -.1 else 2 if u < .45 else 1
+            if y >= oy + 16: k -= 1
+            c.p(x, y, K('iron', k))
+    for x in range(4, 29):
+        u = (x - cx) / 13.5
+        if abs(u) > 1: continue
+        y = int(round(cy + 4 + 1.6 * math.sqrt(1 - u * u)))
+        c.p(x, y, K('brass', 5 if u < -.2 else 4 if u < .4 else 2)); c.p(x, y + 1, K('brass', 1))
+        if x % 6 == 3: c.p(x, y, K('brass', 6))
+    # ④ 사발 테(위에서 본 타원) + 속
+    c.ell(cx, cy, 14, 4.2, None, only=lambda x, y: K('iron', 1))
+    ring(c, cx, cy, 14, 4.2, K('iron', 4))
+    for x in range(3, 16):
+        for y in range(int(cy) - 5, int(cy)):
+            if c.get(x, y) == K('iron', 4): c.p(x, y, K('iron', 5))
+    for x in range(int(cx) + 3, 30):
+        for y in (cy, cy + 1, cy + 2, cy + 3):
+            if c.get(x, y) == K('iron', 4) and y >= cy: c.p(x, y, K('iron', 3))
+    inner = lambda x, y: ((x - cx) / 12.2) ** 2 + ((y - cy) / 3.0) ** 2 <= 1
+    for y in range(cy - 4, cy + 4):
+        for x in range(2, 30):
+            if not inner(x, y): continue
+            h = hnoise(x, y, 61 if lit else 53)
+            if lit:
+                k = 6 if h > .85 else 5 if h > .55 else 4 if h > .25 else 3
+                c.p(x, y, K('orange', k) if not (h < .12) else K('orange', 2))
+            else:
+                col = K('stone', 4) if h > .82 else K('stone', 3) if h > .62 else K('black', 3) if h > .3 else K('black', 2)
+                c.p(x, y, col)
+    if not lit:
+        for (x, y) in ((8, cy), (9, cy), (14, cy - 1), (15, cy - 1), (15, cy), (21, cy + 1), (22, cy), (11, cy + 2), (18, cy + 2)):
+            c.p(x, y, K('black', 1))
+        c.p(15, cy, K('orange', 2)); c.p(21, cy + 1, K('orange', 1))
+
+
+@REG.piece('great brazier', '큰 꺼진 화로(2칸, 돌 받침)', 'puzzle', 'floor', 2, 1, 16, 'other',
+           '밝은 마름돌 받침 위 놋쇠 띠를 두른 넓은 쇠 사발 — 사발 속엔 잿빛 재와 식은 숯, 꺼져 가는 불씨 둘. 불붙인 모습은 great brazier lit.',
+           ['퍼즐', '화로', '지하'],
+           '화로 순서 퍼즐 방 돌 단 네 모서리. 같은 자리에서 great brazier lit(켜짐)와 바꿔 낀다.', ['great brazier lit'], use=('search',))
+def great_brazier(c):
+    _great_brazier(c, 0, False)
+
+
+@REG.piece('great brazier lit', '큰 켜진 화로(2칸, 돌 받침, 불꽃)', 'puzzle', 'floor', 2, 1, 32, 'other',
+           '같은 돌 받침·쇠 사발에 숯이 벌겋게 달아오르고 사발 위로 두 칸 폭 불꽃이 한 칸 높이 솟는다.',
+           ['퍼즐', '화로', '지하'],
+           'great brazier 와 같은 자리(불꽃 줄이 한 줄 위).', ['great brazier'], use=('search',))
+def great_brazier_lit(c):
+    _great_brazier(c, 16, True)
+    # 불꽃: 높이가 다른 혀 셋(가운데 왼쪽이 가장 높다), 혀 사이는 비우고 끝은 살짝 기운다. 흰 심은 사발 바로 위 하나.
+    F = [
+        ".............2..................",
+        "............232.................",
+        "............2432................",
+        ".............242................",
+        ".............32.................",
+        "............232.................",
+        "...........2432.......2.........",
+        "...........242.......232........",
+        "..........1432.......2432.......",
+        ".....2....2432........242.......",
+        "....232...2442.......1332.......",
+        "....242..24432.......2432.......",
+        ".....23..24542......24442.......",
+        ".....232124542.....124432.......",
+        "....12432245432...12445432......",
+        "....2443224544321224454321......",
+        "...124433445554332344554322.....",
+        "...2344344555544434455544321....",
+        "..12344455565554445556544332....",
+        "..23444555666555555565554332....",
+        "..233444555555555555555443322...",
+    ]
+    COL = {'1': K('orange', 2), '2': K('orange', 3), '3': K('orange', 4), '4': K('orange', 5), '5': K('orange', 6), '6': K('yellow', 6)}
+    for j, row in enumerate(F):
+        for x, ch in enumerate(row):
+            if ch in COL: c.p(x, 4 + j, COL[ch])
+    for (x, y) in ((9, 5), (20, 3), (25, 8)):
+        c.p(x, y, K('orange', 4))

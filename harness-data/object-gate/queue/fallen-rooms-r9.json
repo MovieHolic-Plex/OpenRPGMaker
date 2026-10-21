@@ -1,0 +1,20 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "fallen-rooms-r9",
+ "title": "Fallen Star 방 — 큰 화로(꺼짐·켜짐) (r9)",
+ "createdAt": "2026-10-21T14:40:08.352Z",
+ "items": [
+  {
+   "sha": "a5f320472ceeb1031073c9b907a9dc28bf52a7ea45298c62ec157acd63e87533",
+   "kind": "other",
+   "label": "atlas_biome_interior/plus/great brazier",
+   "source": "/tmp/fsrooms/gate-r9/great_brazier.png"
+  },
+  {
+   "sha": "f4d870119eb923a2af34d26a64f5ed1c1dd2304cce07aa27ebb287a6fd63a1da",
+   "kind": "other",
+   "label": "atlas_biome_interior/plus/great brazier lit",
+   "source": "/tmp/fsrooms/gate-r9/great_brazier_lit.png"
+  }
+ ]
+}
