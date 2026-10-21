@@ -15,7 +15,7 @@ import { sanitizeRiversidePromenade } from "@/project/startRoutePaint";
 import { isPassable } from "@/project/collision";
 import { normalizeCloudShadowParams } from "@/player/cloudShadows";
 import { TILE } from "@/project/defaults/constants";
-import { mapBackgroundVisibility } from "@/project/mapBackgroundVisibility";
+import { clearMapCellForBackground, emptyTopRows, HORIZON_PRESET_FEATURE_HEIGHT, mapBackgroundVisibility } from "@/project/mapBackgroundVisibility";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
@@ -60,7 +60,8 @@ import {
   type MapBackgroundMotion,
 } from "@/project/mapBackground";
 import { craftpixDefaultLayers, OGA_CRAFTPIX_BACKDROP_SETS } from "@/assets/ogaCraftpixBackgrounds";
-import { mapBackgroundFromPanoramaSet, OPRN_PANORAMA_SETS } from "@/assets/oprnPanoramas";
+import { mapBackgroundFromPanoramaSet, oprnPanoramaSetOfImage, OPRN_PANORAMA_SETS } from "@/assets/oprnPanoramas";
+import { mapTileSize } from "@/project/tileGeometry";
 import { tileCategoriesForTile } from "@/project/tilesetPalette";
 import { isActionCombatMap } from "@/project/actionCombat";
 import type { EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, MapBackground, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
@@ -2045,10 +2046,7 @@ function clearWaterForBackground(map: GameMap, tileset: Project["tilesets"][stri
   let cleared = 0;
   for (let index = 0; index < map.lowerTiles.length; index += 1) {
     if (!isWater(map.lowerTiles[index] ?? -1)) continue;
-    map.lowerTiles[index] = TILE.EMPTY;
-    map.upperTiles[index] = TILE.EMPTY;
-    if (map.lowerOverlayTiles) map.lowerOverlayTiles[index] = TILE.EMPTY;
-    if (map.upperOverlayTiles) map.upperOverlayTiles[index] = TILE.EMPTY;
+    clearMapCellForBackground(map, index);
     cleared += 1;
   }
   return cleared;
@@ -2063,11 +2061,7 @@ function clearTilesForBackground(map: GameMap, rect: { x: number; y: number; wid
   let cleared = 0;
   for (let y = y0; y < y1; y += 1) {
     for (let x = x0; x < x1; x += 1) {
-      const index = y * map.width + x;
-      map.lowerTiles[index] = TILE.EMPTY;
-      map.upperTiles[index] = TILE.EMPTY;
-      if (map.lowerOverlayTiles) map.lowerOverlayTiles[index] = TILE.EMPTY;
-      if (map.upperOverlayTiles) map.upperOverlayTiles[index] = TILE.EMPTY;
+      clearMapCellForBackground(map, y * map.width + x);
       cleared += 1;
     }
   }
@@ -2227,6 +2221,16 @@ const setMapProperties: ToolDefinition = {
         );
       } else {
         changed.push(`배경이 보이는 칸 ${visible}`);
+        // 지평선 견본은 화면 위쪽 약 112px 안에 해·구름·실루엣이 있다 — 위쪽 빈 줄이 모자라면 하늘 위쪽 색만 보인다.
+        const horizonSet = oprnPanoramaSetOfImage(map.background.imageId);
+        const needRows = Math.ceil(HORIZON_PRESET_FEATURE_HEIGHT / mapTileSize(map, draft.tilesets[map.tilesetId]));
+        const topRows = emptyTopRows(map);
+        if (horizonSet?.view === "horizon" && topRows > 0 && topRows < needRows) {
+          backgroundWarnings.push(
+            `${horizonSet.name} 견본의 해·구름·실루엣은 화면 위 ${needRows}줄 안에 있는데 위쪽 빈 줄이 ${topRows}줄이라 하늘 위쪽 색만 보입니다 — `
+            + `clearForBackground {x:0,y:0,width:${map.width},height:${Math.min(needRows, map.height)}} 로 더 비우면 다 보입니다.`,
+          );
+        }
       }
     }
     if (args.clearBattleBackground === true) {

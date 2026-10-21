@@ -44,3 +44,30 @@ export function mapBackgroundVisibility(
   }
   return { visible, empty, total: map.lowerTiles.length };
 }
+
+/**
+ * 칸 하나를 배경 자리로 비운다 — 모든 타일 층·덧칠 더미·그림자까지. 더미(`*TileStacks`)를 남기면 충돌·렌더가
+ * 그 칸을 여전히 막힌 칸으로 본다(2026-10-21 적대 검수). 편집기 「윗줄 비우기」 와 조수 clearForBackground 가 같이 쓴다.
+ */
+export function clearMapCellForBackground(map: GameMap, index: number): void {
+  map.lowerTiles[index] = -1;
+  map.upperTiles[index] = -1;
+  if (map.lowerOverlayTiles) map.lowerOverlayTiles[index] = -1;
+  if (map.upperOverlayTiles) map.upperOverlayTiles[index] = -1;
+  if (map.shadowBits) map.shadowBits[index] = 0;
+  if (map.lowerTileStacks) delete map.lowerTileStacks[index];
+  if (map.upperTileStacks) delete map.upperTileStacks[index];
+}
+
+/** 맵 위쪽에서부터 칸이 전부 빈 줄의 수. 지평선 견본은 7줄쯤 비어야 해·구름·실루엣이 보인다. */
+export function emptyTopRows(map: Pick<GameMap, "width" | "height" | "lowerTiles">): number {
+  let rows = 0;
+  for (let y = 0; y < map.height; y += 1) {
+    for (let x = 0; x < map.width; x += 1) if ((map.lowerTiles[y * map.width + x] ?? -1) >= 0) return rows;
+    rows += 1;
+  }
+  return rows;
+}
+
+/** 지평선 견본의 볼거리(해·구름·실루엣)가 들어 있는 화면 위쪽 높이(논리 px). 그림 생성기와 같은 값. */
+export const HORIZON_PRESET_FEATURE_HEIGHT = 112;

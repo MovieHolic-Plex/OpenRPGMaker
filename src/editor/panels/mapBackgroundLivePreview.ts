@@ -58,13 +58,14 @@ function drawCover(
   viewport: { readonly width: number; readonly height: number },
 ): void {
   const { cols, rows, tileSize, originX, originY } = cover;
-  ctx.fillStyle = "rgba(38, 44, 36, 0.86)";
+  // 불투명 — 반투명이면 「흐리게나마 보인다」 로 읽혔다. 플레이에서는 타일이 배경을 완전히 가린다.
+  ctx.fillStyle = "#3b4636";
   const firstCol = Math.max(0, Math.floor(originX / tileSize));
   const firstRow = Math.max(0, Math.floor(originY / tileSize));
   for (let row = firstRow; row < rows && row * tileSize - originY < viewport.height; row += 1) {
     for (let col = firstCol; col < cols && col * tileSize - originX < viewport.width; col += 1) {
       if (cover.cellVisible(row * cols + col)) continue;
-      ctx.fillRect(col * tileSize - originX, row * tileSize - originY, tileSize, tileSize);
+      ctx.fillRect(Math.round(col * tileSize - originX), row * tileSize - originY, tileSize, tileSize);
     }
   }
 }
@@ -91,6 +92,12 @@ export function createMapBackgroundLivePreview(input: {
     readonly originY: number;
     readonly cellVisible: (index: number) => boolean;
   };
+  /**
+   * 미리보기 카메라가 시작 화면에서 좌우로 갈 수 있는 거리(논리 px). 맵이 한 화면 크기면 {0,0} — 플레이에서도
+   * 카메라가 안 움직이므로 미리보기도 흔들지 않는다(2026-10-21 적대 검수: 없는 시차를 보여 줬다).
+   * 생략하면 ±40px.
+   */
+  readonly pan?: { readonly left: number; readonly right: number };
 }): HTMLElement {
   const { background, project, viewport } = input;
   const canvas = el("canvas", {
@@ -115,7 +122,9 @@ export function createMapBackgroundLivePreview(input: {
     if (!ctx) return;
     if (!canvas.isConnected && now - startedAt > 1000) return;
     const elapsed = now - startedAt;
-    const camera = Math.sin((elapsed / PAN_PERIOD_MS) * Math.PI * 2) * PAN_AMPLITUDE;
+    const wave = Math.sin((elapsed / PAN_PERIOD_MS) * Math.PI * 2);
+    const pan = input.pan ?? { left: PAN_AMPLITUDE, right: PAN_AMPLITUDE };
+    const camera = wave >= 0 ? wave * Math.min(PAN_AMPLITUDE, pan.right) : wave * Math.min(PAN_AMPLITUDE, pan.left);
     ctx.imageSmoothingEnabled = false;
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, viewport.width, viewport.height);
@@ -129,7 +138,8 @@ export function createMapBackgroundLivePreview(input: {
       };
       drawMapBackgroundLayer(ctx, layer, image, viewport, offset);
     }
-    if (input.cover) drawCover(ctx, input.cover, viewport);
+    // 타일은 카메라와 함께 움직인다 — 덮개도 카메라만큼 민다(배경은 깊이만큼만 움직인다).
+    if (input.cover) drawCover(ctx, { ...input.cover, originX: input.cover.originX + camera }, viewport);
     canvas.dataset.frame = String(++frame);
     requestAnimationFrame(draw);
   };

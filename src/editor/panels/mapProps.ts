@@ -25,7 +25,9 @@ import {
   normalizeMapBackgroundCameraFollow,
   normalizeMapBackgroundScroll,
 } from "@/project/mapBackground";
-import { mapBackgroundCellVisible, mapBackgroundVisibility } from "@/project/mapBackgroundVisibility";
+import { clearMapCellForBackground, emptyTopRows, HORIZON_PRESET_FEATURE_HEIGHT, mapBackgroundCellVisible, mapBackgroundVisibility } from "@/project/mapBackgroundVisibility";
+import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { tileCategoriesForTile } from "@/project/tilesetPalette";
 import { mapTileSize } from "@/project/tileGeometry";
 import { mapBackgroundFromPanoramaSet, oprnPanoramaSetOfImage, OPRN_PANORAMA_SETS } from "@/assets/oprnPanoramas";
 import { createMapBackgroundLivePreview } from "@/editor/panels/mapBackgroundLivePreview";
@@ -481,7 +483,9 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
   const project = store.getCurrent();
   const bg = map.background;
   const current = (): MapBackground | undefined => store.getCurrent().maps[map.id]?.background;
-  const commit = (next: MapBackground | null, focus?: string): void => {
+  // 배경 바꾸기·끄기·칸 비우기 모두 Ctrl+Z 로 되돌린다(2026-10-21 적대 검수: 되돌릴 작업이 없다고 나왔다).
+  const commit = (next: MapBackground | null, focus?: string, label = "맵 배경 변경"): void => {
+    recordProjectSnapshot(label, map.id, { kind: "map" });
     setMapBackground(map.id, next);
     rerender(host, focus);
   };
@@ -568,6 +572,16 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
     }));
   }
   section.append(sourceRow);
+  if (bg && !activeSet && bg.imageId) {
+    // 견본이 아닌 그림(직접 고르기·올리기) — 무엇이 깔렸는지 카드 대신 한 줄로 보인다.
+    const url = resolveAssetResourceUrl(bg.imageId, { project });
+    const uploaded = project.assets.uploaded[bg.imageId];
+    const chip = el("div", { class: "map-bg-current", dataset: { testid: "map-bg-current" } });
+    if (url) chip.append(el("img", { attrs: { src: url, alt: "", draggable: "false" } }));
+    const label = uploaded?.meta.width ? `${uploaded.name} (${uploaded.meta.width}×${uploaded.meta.height})` : (uploaded?.name ?? bg.imageId);
+    chip.append(el("span", { text: `지금 그림: ${label}` }));
+    section.append(chip);
+  }
 
   if (!bg) {
     section.append(el("p", { class: "map-props-hint", text: "배경은 타일을 지운 칸과 맵 바깥으로 보입니다. 견본을 누르면 바로 깔립니다." }));
@@ -583,6 +597,14 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
     status.append(el("span", { text: "그림이 아직 없습니다 — 견본을 누르거나 그림을 고르세요." }));
   } else if (visibility.visible > 0) {
     status.append(el("span", { text: `플레이에서 ${visibility.visible}칸에 보입니다(맵 바깥이 화면에 들어오면 거기도).` }));
+    if (activeSet?.view === "horizon") {
+      // 지평선 견본: 해·구름·실루엣이 화면 위쪽 약 112px 안이다. 위쪽 빈 줄이 모자라면 미리 알린다.
+      const needRows = Math.ceil(HORIZON_PRESET_FEATURE_HEIGHT / mapTileSize(map, project.tilesets[map.tilesetId]));
+      const topRows = emptyTopRows(map);
+      if (topRows > 0 && topRows < needRows) {
+        status.append(el("span", { class: "map-bg-status-note", text: `위쪽 빈 줄이 ${topRows}줄이라 해·실루엣은 가려집니다(${needRows}줄쯤 비우면 다 보입니다).` }));
+      }
+    }
   } else {
     status.classList.add("is-warn");
     status.append(el("span", { text: bg.showInEmptyCells
@@ -596,18 +618,32 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
       }));
     }
     if (visibility.empty === 0) {
-      const rows = Math.max(1, Math.min(7, Math.floor(map.height / 2)));
+      const tileset = project.tilesets[map.tilesetId];
+      const surface = activeSet?.view === "surface";
+      const waterCells = surface && tileset ? waterCellIndices(map, tileset) : [];
+      // 옆에서 본 하늘은 윗줄을, 위에서 본 면(바다·별·구름)은 물 칸이나 맵 둘레를 비운다 — 바다를 하늘 자리에 깔지 않는다.
+      const plan: { readonly label: string; readonly cells: readonly number[]; readonly testid: string } = surface
+        ? waterCells.length > 0
+          ? { label: `물 칸 ${waterCells.length}개 비우기(배경 바다 자리)`, cells: waterCells, testid: "map-bg-clear-water" }
+          : { label: "맵 둘레 2칸 비우기", cells: borderCellIndices(map, 2), testid: "map-bg-clear-border" }
+        : (() => {
+          const rows = Math.max(1, Math.min(Math.ceil(HORIZON_PRESET_FEATURE_HEIGHT / mapTileSize(map, tileset)), Math.floor(map.height / 2)));
+          return { label: `윗줄 ${rows}줄 비우기(하늘 자리)`, cells: Array.from({ length: rows * map.width }, (_, index) => index), testid: "map-bg-clear-top" };
+        })();
       status.append(el("button", {
-        class: "btn btn-small", text: `윗줄 ${rows}줄 비우기(하늘 자리)`, attrs: { type: "button" },
-        dataset: { testid: "map-bg-clear-top" },
-        on: { click: () => {
-          clearMapRowsForBackground(map.id, rows);
-          commit({ ...current()!, showInEmptyCells: true }, "map-bg-clear-top");
-        } },
+        class: "btn btn-small", text: plan.label, attrs: { type: "button" },
+        dataset: { testid: plan.testid },
+        on: { click: () => confirmClearForBackground(map, plan.cells, plan.label, () => {
+          recordProjectSnapshot(`맵 배경: ${plan.label}`, map.id, { kind: "map" });
+          clearMapCellsForBackground(map.id, plan.cells);
+          setMapBackground(map.id, { ...current()!, showInEmptyCells: true });
+          rerender(host, plan.testid);
+        }) },
       }));
     }
   }
   section.append(status);
+  const controls = el("div", { class: "map-bg-controls" });
 
   // 3. 게임 화면 미리보기 — 플레이와 같은 배율·움직임. 단추(움직임·맞추기) 아래에 붙여 누르고 바로 본다.
   let livePreview: HTMLElement | null = null;
@@ -624,10 +660,14 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
       originY: start ? clampOrigin((start.y + 0.5) * tileSize, viewport.height, map.height * tileSize) : 0,
       cellVisible: mapBackgroundCellVisible(map, tileset),
     };
+    const pan = { left: cover.originX, right: Math.max(0, map.width * tileSize - viewport.width - cover.originX) };
+    const moves = pan.left + pan.right > 0;
     const preview = el("figure", { class: "map-bg-live" });
     preview.append(
-      createMapBackgroundLivePreview({ background: bg, project, viewport, cover }),
-      el("figcaption", { class: "map-props-hint", text: `게임 화면 ${viewport.width}×${viewport.height} 그대로 · 어두운 칸은 타일이 가리는 자리 · 주인공이 좌우로 걷는다고 가정한 움직임` }),
+      createMapBackgroundLivePreview({ background: bg, project, viewport, cover, pan }),
+      el("figcaption", { class: "map-props-hint", text: moves
+        ? `시작 화면 ${viewport.width}×${viewport.height} 그대로 · 어두운 칸은 타일이 가리는 자리 · 주인공이 좌우로 걷는다고 가정한 움직임`
+        : `시작 화면 ${viewport.width}×${viewport.height} 그대로 · 어두운 칸은 타일이 가리는 자리 · 이 맵은 한 화면 크기라 걸어도 카메라가 움직이지 않습니다(시차는 화면보다 큰 맵에서 보입니다)` }),
     );
     livePreview = preview;
   }
@@ -644,8 +684,8 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
       on: { click: () => commit(applyMapBackgroundMotion(current()!, motion), `map-bg-motion-${motion}`) },
     }));
   }
-  section.append(fieldRow("움직임", motionRow));
-  section.append(el("p", { class: "map-props-hint", text: detected
+  controls.append(fieldRow("움직임", motionRow));
+  controls.append(el("p", { class: "map-props-hint", text: detected
     ? MAP_BACKGROUND_MOTION_LABELS[detected].hint
     : activeSet ? "견본 권장 움직임(층마다 다름) — 위 단추로 통째로 바꿀 수 있습니다." : "직접 조정한 움직임 — 세부 조정에서 층마다 바꿀 수 있습니다." }));
 
@@ -662,12 +702,12 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
     else delete next.fit;
     commit(next, "map-bg-fit");
   });
-  section.append(fieldRow("그림 맞추기", fitSelect));
+  controls.append(fieldRow("그림 맞추기", fitSelect));
   const baseAsset = project.assets.uploaded[bg.imageId];
   const baseWidth = baseAsset?.meta.width ?? 0;
   const viewportNow = mapBackgroundGameViewport(project.system);
   if (bg.fit !== "cover" && baseWidth > viewportNow.width * 2) {
-    section.append(el("p", { class: "map-props-hint is-warn", dataset: { testid: "map-bg-fit-warn" },
+    controls.append(el("p", { class: "map-props-hint is-warn", dataset: { testid: "map-bg-fit-warn" },
       text: `그림 폭이 ${baseWidth}px 로 게임 화면(${viewportNow.width}px)보다 훨씬 큽니다 — 1:1 이면 왼쪽 위 일부만 보입니다. 「화면에 맞춤」 을 권합니다.` }));
   }
 
@@ -684,8 +724,12 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
     attrs: { title: "끄면 옛 RM2K 규칙 — 파노라마 창 타일(합본 마을 #233·#258)을 깐 칸에서만 비치고 빈 칸은 검게 가려집니다. 지금 기본 칩셋에는 창 타일이 없습니다." },
   });
   emptyRow.append(emptyBox, el("span", { text: "빈 칸에도 배경 보이기" }));
-  section.append(emptyRow);
-  if (livePreview) section.append(livePreview);
+  controls.append(emptyRow);
+  // 미리보기를 단추 옆에 둔다 — 아래에 두면 단추를 눌러도 화면 밖이라 바뀐 게 안 보였다(적대 검수).
+  const mainRow = el("div", { class: "map-bg-main" });
+  if (livePreview) mainRow.append(livePreview);
+  mainRow.append(controls);
+  section.append(mainRow);
 
   // 6. 세부 조정 — 예전 숫자 칸. 접어 둔다(프리셋으로 대부분 끝난다).
   const details = el("details", { class: "map-bg-details" });
@@ -828,18 +872,52 @@ function singleImageBackground(base: MapBackground | undefined, imageId: string,
 }
 
 /** 윗줄 n 줄의 모든 타일 층을 비운다 — 「하늘 자리」. 조수 `clearForBackground` 사각형과 같은 결과. */
-function clearMapRowsForBackground(mapId: string, rows: number): void {
+function clearMapCellsForBackground(mapId: string, cells: readonly number[]): void {
   store.update((project) => {
     const target = project.maps[mapId];
     if (!target) return;
-    const count = Math.min(target.height, rows) * target.width;
-    for (let index = 0; index < count; index += 1) {
-      target.lowerTiles[index] = -1;
-      target.upperTiles[index] = -1;
-      if (target.lowerOverlayTiles) target.lowerOverlayTiles[index] = -1;
-      if (target.upperOverlayTiles) target.upperOverlayTiles[index] = -1;
-    }
+    for (const index of cells) clearMapCellForBackground(target, index);
   }, { scope: "map", mapId });
+}
+
+/** 칸을 지우기 전에 몇 칸·어떤 이벤트가 걸리는지 묻는다. 지운 뒤에는 Ctrl+Z 로 되돌린다. */
+function confirmClearForBackground(
+  map: import("@/project/types").GameMap,
+  cells: readonly number[],
+  label: string,
+  onConfirm: () => void,
+): void {
+  const cellSet = new Set(cells);
+  const tiles = cells.filter((index) => (map.lowerTiles[index] ?? -1) >= 0 || (map.upperTiles[index] ?? -1) >= 0).length;
+  const events = map.events.filter((event) => cellSet.has(event.y * map.width + event.x));
+  const body = [el("p", { text: `타일 ${tiles}칸을 지워 배경이 보이는 자리로 만듭니다. 지운 칸은 걸을 수 없습니다. Ctrl+Z 로 되돌릴 수 있습니다.` })];
+  if (events.length > 0) {
+    const names = events.slice(0, 3).map((event) => event.name || event.id).join(", ") + (events.length > 3 ? " …" : "");
+    body.push(el("p", { class: "is-warn", text: `이 자리에 이벤트 ${events.length}개(${names})가 있습니다 — 이벤트는 남지만 빈 칸 위에 서게 됩니다.` }));
+  }
+  openDialog("map-bg-clear-confirm", label, body, [
+    { label: "지우기", testid: "map-bg-clear-confirm-ok", action: onConfirm },
+    { label: "취소", testid: "map-bg-clear-confirm-cancel" },
+  ]);
+}
+
+function waterCellIndices(map: import("@/project/types").GameMap, tileset: import("@/project/types").TilesetDef): number[] {
+  const out: number[] = [];
+  for (let index = 0; index < map.lowerTiles.length; index += 1) {
+    const tile = map.lowerTiles[index] ?? -1;
+    if (tile >= 0 && (tileCategoriesForTile(tileset, tile).includes("water") || tileset.tileMeta?.[tile]?.tags?.includes("water") === true)) out.push(index);
+  }
+  return out;
+}
+
+function borderCellIndices(map: Pick<import("@/project/types").GameMap, "width" | "height">, ring: number): number[] {
+  const out: number[] = [];
+  for (let y = 0; y < map.height; y += 1) {
+    for (let x = 0; x < map.width; x += 1) {
+      if (x < ring || y < ring || x >= map.width - ring || y >= map.height - ring) out.push(y * map.width + x);
+    }
+  }
+  return out;
 }
 
 // ── BGM 탭 (RM2003 BGM) ──

@@ -2639,6 +2639,13 @@ export class EditScene extends PhaserRuntime.Scene {
     const mapW = map.width * tile;
     const mapH = map.height * tile;
     const viewport = mapBackgroundGameViewport(project.system);
+    // 플레이 배경은 화면에 붙는다. 캔버스는 **시작 화면 기준**으로 그린다 — 시작 칸이 이 맵이면 그 칸을 가운데 둔
+    // 첫 카메라 위치, 아니면 맵 왼쪽 위. 그 화면 안에서는 플레이와 같은 조각이 보인다(맵이 화면보다 크면 나머지는 근사).
+    const start = project.startMapId === mapId ? project.startPos : undefined;
+    const clampOrigin = (center: number, size: number, worldSize: number): number =>
+      worldSize <= size ? 0 : Math.max(0, Math.min(worldSize - size, Math.round(center - size / 2)));
+    const originX = start ? clampOrigin((start.x + 0.5) * tile, viewport.width, mapW) : 0;
+    const originY = start ? clampOrigin((start.y + 0.5) * tile, viewport.height, mapH) : 0;
     for (const [index, sprite] of this.mapBackgroundSprites.entries()) {
       if (!sprite.visible) continue;
       const spec = specs[index];
@@ -2649,11 +2656,16 @@ export class EditScene extends PhaserRuntime.Scene {
       if (sprite.tileScaleX !== scale || sprite.tileScaleY !== scale) sprite.setTileScale(scale, scale);
       // 플레이와 같이 넘치는 축은 가운데 맞춤 — 위상만 민다(반복을 끈 축은 그만큼 짧게 그린다).
       const centre = mapBackgroundCoverCentre(spec.fit, viewport, size);
-      if (sprite.tilePositionX !== centre.x / scale || sprite.tilePositionY !== centre.y / scale) sprite.setTilePosition(centre.x / scale, centre.y / scale);
-      const width = spec.loopX ? mapW : Math.min(mapW, Math.ceil(size.width * scale) - centre.x * 2);
-      const height = spec.loopY ? mapH : Math.min(mapH, Math.ceil(size.height * scale) - centre.y * 2);
-      if (sprite.width !== width || sprite.height !== height) sprite.setSize(width, height);
-      if (sprite.x !== 0 || sprite.y !== 0) sprite.setPosition(0, 0);
+      // 반복 축은 맵 전체를 덮고 시작 화면 왼쪽 위에서 그림 위상이 centre 가 되게 민다. 반복을 끈 축은 시작 화면 위치에 한 장.
+      const tileX = spec.loopX ? (centre.x - originX) / scale : centre.x / scale;
+      const tileY = spec.loopY ? (centre.y - originY) / scale : centre.y / scale;
+      if (sprite.tilePositionX !== tileX || sprite.tilePositionY !== tileY) sprite.setTilePosition(tileX, tileY);
+      const x = spec.loopX ? 0 : originX;
+      const y = spec.loopY ? 0 : originY;
+      const width = spec.loopX ? mapW : Math.min(mapW - x, Math.ceil(size.width * scale) - centre.x * 2);
+      const height = spec.loopY ? mapH : Math.min(mapH - y, Math.ceil(size.height * scale) - centre.y * 2);
+      if (sprite.width !== width || sprite.height !== height) sprite.setSize(Math.max(1, width), Math.max(1, height));
+      if (sprite.x !== x || sprite.y !== y) sprite.setPosition(x, y);
     }
   }
 
