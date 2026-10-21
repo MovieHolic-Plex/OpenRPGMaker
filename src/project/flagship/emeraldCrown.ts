@@ -623,6 +623,57 @@ function tunePacing(project: Project): void {
   }
 }
 
+/** 모습·종·상성만 다른 종으로 갈아입힌다(tunePacing 의 reskin 과 같은 몫). */
+function reskinEnemy(project: Project, enemyId: string, templateId: string, level: number, templateStats = false): Project["database"]["enemies"][number] | undefined {
+  const enemies = project.database.enemies;
+  const enemy = enemies.find((e) => e.id === enemyId), template = enemies.find((e) => e.id === templateId);
+  if (!enemy || !template) return enemy;
+  enemy.name = template.name;
+  enemy.speciesId = template.speciesId;
+  enemy.monsterResourceId = template.monsterResourceId;
+  enemy.graphicHue = template.graphicHue;
+  enemy.elementRates = structuredClone(template.elementRates);
+  enemy.stateRates = structuredClone(template.stateRates);
+  // 진화형 에이스는 진화형 능력치(템플릿)를 이 레벨로 줄여 쓴다 — 원래 몬스터 능력치를 늘리면 진화 전과 다를 바가 없었다.
+  if (templateStats && template.level) { enemy.stats = structuredClone(template.stats); enemy.level = template.level; }
+  rescaleEnemy(enemy, level);
+  return enemy;
+}
+
+/**
+ * 관장·챔피언 다시 짜기(2026-10-21 적대 검수 r7).
+ * - 관장 유림: 수련생과 같은 베르카부·브램보어 Lv6 둘이라 세 스타터 모두 2~3턴(「효과가 굉장했다」 세 번)이었다 → 과수뿔 Lv6 + 에이스 가이아돈(브램보어 진화) Lv7,
+ *   기술 둘씩(과수뿔 더듬이쏘기·새싹치기, 가이아돈 흙먼지·흙발톡) — 풀 ← 벌레, 불 ← 땅, 물 ← 풀로 스타터마다 두 배 위협이 하나씩.
+ *   모의전(scripts/qa/astra-horizon/balance-sim.mjs, 60판): Lv7 혼자 풀 85%·불 92%·물 100%(남은 체력 4·2·10), 7·7 은 불 12% 라 6·7.
+ * - 챔피언 나루: 라이벌·연구원·관장과 같은 볼트온·로키온·베르카부를 돌려 썼다 → 나루의 첫 동료 볼트온은 진화한 코일라군(에이스),
+ *   로키온 자리는 크래그혼(바위·격투). 두 배 위협은 그대로 물 ← 전기, 불 ← 바위, 풀 ← 벌레.
+ */
+function retuneLeaderAndChampion(project: Project): void {
+  const skillOf = (name: string) => project.database.skills.find((s) => s.name === name)?.id;
+  const sprout = skillOf("새싹치기");
+  const twoMoves = (enemy: Project["database"]["enemies"][number] | undefined, first: string | undefined, second: string | undefined) => {
+    const base = enemy?.actions.find((a) => a.skillId);
+    if (!enemy || !base || !first || !second) return;
+    enemy.actions = [first, second].map((skillId) => ({ ...structuredClone(base), skillId }));
+  };
+  // 새싹치기는 선봉에만 — 둘 다 들면 물만 두 배 위협이 둘이라 모의전 승률이 물 58%·풀 98% 로 갈렸다.
+  twoMoves(reskinEnemy(project, "mx_enemy_mx_map_grove_gym_leader_0", "mx_enemy_orchardant", LEADER_LEVELS[0]), skillOf("더듬이쏘기"), sprout);
+  twoMoves(reskinEnemy(project, "mx_enemy_mx_map_grove_gym_leader_1", "mx_enemy_briartusk", LEADER_LEVELS[1]), skillOf("흙먼지"), skillOf("흙발톡"));
+  const league = project.database.troops.find((t) => t.id === "mx_troop_mx_map_league_0_league_challenge");
+  const byId = (id: string) => project.database.enemies.find((e) => e.id === id);
+  if (!league?.members) return;
+  const find = (species: string) => league.members!.find((m) => byId(m.enemyId)?.speciesId === species);
+  const bug = find("mx_species_podback"), rock = find("mx_species_pebblekid"), spark = find("mx_species_zaptoe");
+  if (!bug || !rock || !spark) return;
+  rescaleEnemy(byId(bug.enemyId)!, CHAMPION_LEVELS[0]);
+  reskinEnemy(project, rock.enemyId, "mx_enemy_craghoof", CHAMPION_LEVELS[1]);
+  reskinEnemy(project, spark.enemyId, "mx_enemy_coilcrest", CHAMPION_LEVELS[2], true);
+  league.members = [bug, rock, spark];
+  league.enemyIds = league.members.map((m) => m.enemyId);
+}
+const LEADER_LEVELS = [6, 7] as const;
+const CHAMPION_LEVELS = [8, 8, 9] as const;
+
 /**
  * 사람 칩 다시 입히기 — 생성기는 Scarloxy 원본 두 장의 10명을 돌려 써서 라이벌 나루 = 회복 센터 직원 = 1번 도로 조련사,
  * 엄마 = 도로 연구원 트레이너, 챔피언 나루 = 체육관 관장 유림이 같은 그림이었다(2026-10-20 실플레이 검수). 이미 설치된
@@ -779,7 +830,7 @@ function softenTrainerDefeats(project: Project): void {
  */
 const TACKLE_NAMES: Readonly<Record<string, string>> = {
   grass: "줄기후리기", fire: "앞발톡", ice: "앞발톡", water: "지느러미툭", dragon: "지느러미툭", bug: "껍질부딪기",
-  electric: "발끝톡", rock: "바위어깨", ground: "바위어깨", fighting: "바위어깨", poison: "슬쩍밀기", ghost: "슬쩍밀기", psychic: "슬쩍밀기",
+  electric: "발끝톡", rock: "바위어깨", ground: "흙발톡", fighting: "바위어깨", poison: "슬쩍밀기", ghost: "슬쩍밀기", psychic: "슬쩍밀기",
 };
 function varyTackle(project: Project): void {
   const skills = project.database.skills;
@@ -850,6 +901,7 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   rebuildDawningCity(project);
   startInBedroom(project, introEvent);
   tunePacing(project);
+  retuneLeaderAndChampion(project);
   softenTrainerDefeats(project);
   recastPeople(project);
   tidyMeadowDecor(project);
