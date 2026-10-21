@@ -98,10 +98,16 @@ const waitMoves = (): Command => m2("Wait for All Movement");
  * 사라짐은 hideSw 스위치(그 NPC 페이지의 swOff 조건)로 한다. 걷는 동안 대사가 이어지게 하려면 begin 만 먼저 넣고 end 를 나중에.
  * firstLoveProbe(scripts/qa/runtime/first-love-probes.mts)가 「사라지기 직전 칸 = 출구 앞」을 검사한다.
  */
+function fadeAway(eventId: string): Command {
+  const step = { kind: "changeOpacity", delta: -64 }, pause = { kind: "wait" };
+  return { kind: "moveEvent", eventId, route: { moves: [step, pause, step, pause, step, pause, step], repeat: false, wait: true, skippable: true } } as unknown as Command;
+}
+
 function leave(project: Project, mapId: string, eventId: string, from: Cell, exit: { stand: Cell; door: Cell }, hideSw: string, hero: Cell): { begin: Command; end: Command[] } {
   return {
     begin: walkRoute(project, mapId, eventId, from, exit.stand, [hero], false),
-    end: [waitMoves(), face(eventId, dirToward(exit.stand, exit.door)), playSe(SE_ELEVATOR), wait(250), setSw(hideSw, true)],
+    // 닫힌 문 앞에서 뚝 사라지지 않게 — 딩 소리 뒤 문 쪽으로 서서 서서히 흐려진 다음 감춘다(VQA2 경미).
+    end: [waitMoves(), face(eventId, dirToward(exit.stand, exit.door)), playSe(SE_ELEVATOR), fadeAway(eventId), setSw(hideSw, true)],
   };
 }
 

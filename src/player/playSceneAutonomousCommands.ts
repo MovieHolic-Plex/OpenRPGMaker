@@ -223,6 +223,9 @@ function turnNpc(routeContext: NpcRouteCommandContext, target: NpcCommandTarget,
   // 인물을 다시 그린다 — 예전에는 걸음만 방향을 남겨, 경로 끝의 「돌아보기」가 다음 갱신에서 마지막 걸음 방향으로 되돌아갔다
   // (2026-10-22 r3 party-enter-cutscene: 두 동료가 「서로 바라보며」 대사하는 장면에서 둘 다 등을 보였다).
   moveRuntimeEventPosition(routeContext.scene.eventPositions, routeContext.eventId, target.view.x, target.view.y, frameDir);
+  // 세션에 옮겨 둔 위치(eventLocations)가 이 맵에 있으면 그쪽 방향도 함께 남긴다(첫사랑 r2: 옥상에서 서하를 보던 지후가 아래를 봄).
+  const location = routeContext.scene.session.eventLocations?.[routeContext.eventId];
+  if (location?.mapId === routeContext.scene.map.id) routeContext.scene.session.eventLocations[routeContext.eventId] = { ...location, direction: frameDir };
   setNpcIdleFrame(
     target.sprite,
     target.baseFrame,
