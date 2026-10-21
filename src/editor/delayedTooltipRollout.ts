@@ -55,6 +55,13 @@ export const DELAYED_TOOLTIP_ROLLOUT: readonly DelayedTooltipTarget[] = [
   { label: "저장 도구", name: "맵 저장 도구 펼치기/접기", testid: "editor-canvas-toolbar-expand" },
   { label: "저장", name: "프로젝트 저장 (Ctrl+S)", testid: "toolbar-save" },
   { label: "명령 팔레트", name: "명령 팔레트 — 명령 실행 · 맵 이동 (Ctrl+K)", testid: "workspace-command-palette-button" },
+  // 톱바 아이콘 도구(이름표가 없거나 1439px 이하에서 접힌다) — 이웃 저장·스튜디오와 같은 동작.
+  { label: "세계관", name: "세계관", testid: "toolbar-world" },
+  { label: "음악", name: "음악·효과음", testid: "toolbar-sound-test" },
+  { label: "찾기", name: "맵·이벤트 찾기", testid: "toolbar-search" },
+  { label: "도구", name: "도구 더 보기", testid: "menu-more-tools" },
+  { label: "랜덤 전투", name: "랜덤 전투 테스트", testid: "topbar-battle-test" },
+  { label: "커밋 히스토리", name: "커밋 히스토리", testid: "commit-history-toggle" },
   { label: "스튜디오", name: "AI 스튜디오 — 장면 모니터와 조수", testid: "topbar-ai-studio" },
   { label: "AI 설정", name: "AI 설정 열기", testid: "topbar-ai-settings" },
   { label: "전체화면", name: "전체화면 전환", testid: "window-fullscreen" },

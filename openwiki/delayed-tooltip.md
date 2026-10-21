@@ -52,7 +52,8 @@
 실제 키보드 초점 툴팁 및 1024px 창의 도구 클릭 확인은 `scripts/capture/capture-terrain-toolbar.mjs`에 있다.
 
 톱바(`toolbar-save`, `workspace-command-palette-button`, `topbar-ai-studio`,
-`topbar-ai-settings`, `window-fullscreen`), 조수 패널(`ai-new-chat`,
+`topbar-ai-settings`, `window-fullscreen`, 그리고 2026-10-21 UI 감사로 더한 `toolbar-world`·`toolbar-sound-test`·
+`toolbar-search`·`menu-more-tools`·`topbar-battle-test`·`commit-history-toggle`), 조수 패널(`ai-new-chat`,
 `ai-command-menu-toggle`, `ai-abort`), 타일셋 편집기(`tileset-layer-filter-*`,
 `tileset-layer-auto|lower|upper`).
 
