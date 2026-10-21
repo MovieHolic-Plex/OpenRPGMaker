@@ -9,8 +9,6 @@ import type { ChatFn } from "@/harnesses/_core/workshop/types";
 import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 
 export const WORKSHOP_FAKE_CHAT_KEY = "__oprnWorkshopChat";
-/** 에셋 만들기 권장 모델 안내(사용자 결정 2026-10-02). 약한 모델은 3/4 시점·격자 크기를 자주 틀린다. */
-export const WORKSHOP_MODEL_ADVICE = "성능이 높은 AI 모델일수록 결과가 좋아요. 낮은 모델은 그림의 각도와 크기를 자주 틀려요.";
 
 function fakeChat(): ChatFn | null {
   if (!import.meta.env.DEV) return null;

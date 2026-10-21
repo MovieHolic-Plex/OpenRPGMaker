@@ -1,6 +1,6 @@
 // 공방 「맵 기물」(map-objects): 지금 맵 칩셋에 없는 물건을 그 칩셋 색·화풍으로 그려 그 칩셋에 굽는다.
 import { describe, expect, it } from "vitest";
-import { getHarness, workshopHarnesses } from "@/harnesses/_core/registry";
+import { getHarness } from "@/harnesses/_core/registry";
 import type { ContentPart } from "@/ai/llmClient";
 import type { DrawContext, Grid, ItemDefinition, RgbaImage, WorkshopEnv, WorkshopTilesetSource } from "@/harnesses/_core/workshop/types";
 import { mapObjectHardCheck, parseMapObjectVerdict } from "@/harnesses/map-objects/editor/checks";
@@ -33,7 +33,6 @@ describe("map-objects 매니페스트", () => {
   it("에디터 공방에 보이고 실행기를 지연 로드한다", async () => {
     const harness = getHarness("map-objects")!;
     expect(harness.entrypoints).toEqual({ cli: false, editorUi: true, assistantTool: false });
-    expect(workshopHarnesses(null).map((h) => h.id)).toContain("map-objects");
     expect((await harness.workshop!()).harnessId).toBe("map-objects");
   });
 });

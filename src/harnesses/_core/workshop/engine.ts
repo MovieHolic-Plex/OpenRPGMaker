@@ -40,7 +40,8 @@ export type WorkshopEngineOptions = {
 };
 
 export interface WorkshopEngine {
-  startRound(item: WorkshopItem, options?: { note?: string }): Promise<WorkshopRound>;
+  /** count = 이번 판 후보 수(1 ~ runner.candidates). 없으면 runner.candidates. */
+  startRound(item: WorkshopItem, options?: { note?: string; count?: number }): Promise<WorkshopRound>;
   redrawRun(roundId: string, letter: string, note: string): Promise<void>;
   cancelRound(roundId: string): Promise<void>;
   resume(): Promise<number>;
@@ -290,7 +291,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       blocked = null;
       const round: WorkshopRound = {
         id: newId(), projectKey, harnessId: runner.harnessId, itemKey: item.key, note: startOptions.note ?? "", created: now(),
-        runs: runner.directions(item).slice(0, runner.candidates).map((d) => freshRun(d.letter, d.text)),
+        runs: runner.directions(item).slice(0, Math.max(1, Math.min(runner.candidates, Math.round(startOptions.count ?? runner.candidates)))).map((d) => freshRun(d.letter, d.text)),
       };
       await save(round);
       for (const run of round.runs) enqueue(round, run.letter);

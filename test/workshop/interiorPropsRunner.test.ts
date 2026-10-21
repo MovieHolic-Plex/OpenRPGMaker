@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getHarness, workshopHarnesses } from "@/harnesses/_core/registry";
+import { getHarness } from "@/harnesses/_core/registry";
 import { makePalette, renderGrid } from "@/harnesses/_core/workshop/grid";
 import type { DrawContext, Grid, Verdict, WorkshopEnv } from "@/harnesses/_core/workshop/types";
 import { interiorGate, interiorHardCheck, parseInteriorVerdict, TOP_MIN } from "@/harnesses/interior-props/editor/checks";
@@ -18,8 +18,6 @@ describe("interior-props 매니페스트", () => {
   it("에디터 화면만 있고 공방 실행기를 지연 로드한다", async () => {
     const harness = getHarness("interior-props")!;
     expect(harness.entrypoints).toEqual({ cli: false, editorUi: true, assistantTool: false });
-    expect(workshopHarnesses(null).map((h) => h.id)).toContain("interior-props");
-    expect(workshopHarnesses("monster-collect").map((h) => h.id)).toContain("interior-props");
     expect(typeof harness.workshop).toBe("function");
   });
 });
