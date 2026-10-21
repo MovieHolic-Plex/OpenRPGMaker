@@ -1,10 +1,18 @@
 // src/harnesses/interior-props/editor/runner.ts
-/** interior-props 의 공방 실행기. 매니페스트 harness.ts 의 workshop 로더가 부른다. */
+/**
+ * interior-props 의 공방 실행기. 매니페스트 harness.ts 의 workshop 로더가 부른다.
+ * 새 기물(isNew)은 object-gen 흐름 그대로 그린다(_core/workshop/objectGenFlow.ts, 2026-10-21) — 시트에 있는 그림을 고치는 판은 예전 흐름.
+ */
 import type { ChatMessage, ContentPart } from "@/ai/llmClient";
 import { imageToGrid, onBackground, renderGrid, scaleImage } from "@/harnesses/_core/workshop/grid";
 import type {
   AnchorSample, DrawContext, Grid, ItemDefinition, Palette, Rgba, RgbaImage, WorkshopEnv, WorkshopItem, WorkshopRunner,
 } from "@/harnesses/_core/workshop/types";
+import { gateAdviceMessages, parseGateAdvice } from "@/harnesses/_core/workshop/gateAdvice";
+import { REF_DRAW_NOTE, workshopRefDescribe } from "@/harnesses/_core/workshop/referencePrompt";
+import {
+  kitValue, loadAnchors, OG_DIRECTIONS, OG_LOOKS, ogCheck, ogDrawMessages, ogLookMessage, ogReview, type OgAnchors, type OgStyle,
+} from "@/harnesses/_core/workshop/objectGenFlow";
 import { interiorGate, interiorHardCheck, parseInteriorVerdict } from "./checks";
 import { cropCells, FLAT_KINDS, itemFromDefinition, itemFromSpec, SHEET_PATH, specObjects, VIEW_FAIL } from "./items";
 import { paletteForItem } from "./palette";
@@ -47,11 +55,26 @@ export function createInteriorRunner(): WorkshopRunner {
     return meta ? runner.palette(meta) : fallback;
   };
 
+  /** object-gen 흐름의 화풍 기준: 이 칩셋 기준 기물(ctx.anchors)을 칩셋 물체로(원본 job refs 와 같은 자리). */
+  const ogStyle = (env: WorkshopEnv, anchors: readonly AnchorSample[], palette: Palette): OgStyle => ({
+    name: "atlas_biome_interior (손 도트 실내 v5)", floor: BACKGROUND,
+    refs: anchors.map((anchor) => ({ label: `chipset object: ${anchor.title} (8x)`, url: shot(env, anchor.grid, paletteOf(anchor.itemKey, palette)) })),
+  });
+  let anchorsPending: Promise<OgAnchors | null> | null = null;
+  const anchorsFor = (env: WorkshopEnv): Promise<OgAnchors | null> =>
+    (anchorsPending ??= loadAnchors(env).catch((error) => { console.warn("[workshop] object-gen 견본을 못 읽음:", error); anchorsPending = null; return null; }));
+  const og = (item: WorkshopItem) => item.isNew;
+
   const runner: WorkshopRunner = {
     harnessId: "interior-props",
     // 2026-10-07: 5장 → 3장, 자기 점검 뺌(사용자 「너무 오래 걸린다」). 한 판 호출 약 20번 → 약 9번.
     // 독립 검수가 같은 것(지금보다 나빠졌나·윗면)을 보므로 자기 점검을 빼도 거르는 힘은 남는다.
     candidates: 3,
+    // 새 기물(object-gen 흐름): 후보 A·B 두 장(directions), 참고 그림 2장, 그리기 + 다시 그리기 1번, 미리보기 고치기.
+    referenceCount: (item) => (og(item) ? 2 : 1),
+    referenceStyleNote: (item) => (og(item) ? kitValue("reference", "STYLE_NOTE") : undefined),
+    maxAttempts: (item) => (og(item) ? 2 : 3),
+    looks: (item) => (og(item) ? OG_LOOKS : 0),
     prepare(env) {
       if (prepared) return prepared;
       const attempt = (async () => {
@@ -93,7 +116,7 @@ export function createInteriorRunner(): WorkshopRunner {
       }
       return currentGrids.get(item.key) ?? null;
     },
-    directions: (item) => (item.isNew ? NEW_DIRECTIONS : DIRECTIONS),
+    directions: (item) => (og(item) ? OG_DIRECTIONS : item.isNew ? NEW_DIRECTIONS : DIRECTIONS),
     anchors(item, picked) {
       const byKey = new Map(allItems.map((i) => [i.key, i]));
       const furniture = !FLAT_KINDS.has(item.kind);
@@ -115,7 +138,9 @@ export function createInteriorRunner(): WorkshopRunner {
       return out;
     },
     async drawMessages(ctx: DrawContext, env) {
+      if (og(ctx.item)) return ogDrawMessages(ctx, env, ogStyle(env, ctx.anchors, ctx.palette), await anchorsFor(env));
       const parts: ContentPart[] = [label(drawBrief(ctx))];
+      if (ctx.reference) parts.push(label(`참고 그림 (모양만 — 참고용, 설치 안 됨). ${REF_DRAW_NOTE}`), image(ctx.reference));
       if (!FLAT_KINDS.has(ctx.item.kind)) for (const example of EXAMPLES) parts.push(label(example.label), image(examples.get(example.file)!));
       if (ctx.current) parts.push(label("지금 시트의 그림(8배)"), image(shot(env, ctx.current, ctx.palette)));
       if (ctx.previousGrid) parts.push(label("지난 시도(8배)"), image(shot(env, ctx.previousGrid, ctx.palette)));
@@ -123,17 +148,35 @@ export function createInteriorRunner(): WorkshopRunner {
       ctx.rejected.forEach((rejected, index) => parts.push(label(`버린 것 ${index + 1}`), image(shot(env, rejected.grid, ctx.palette))));
       return [{ role: "system", content: drawSystemPrompt() }, { role: "user", content: parts }] satisfies ChatMessage[];
     },
+    async lookMessage(ctx, grid, env, look, max) {
+      return ogLookMessage(ctx, grid, env, ogStyle(env, ctx.anchors, ctx.palette), look, max);
+    },
+    async review(ctx, env, ask) {
+      if (!og(ctx.item)) return null;
+      return ogReview(ctx, env, ogStyle(env, ctx.anchors, ctx.palette), await anchorsFor(env), ask);
+    },
     async reviewMessages(ctx, env) {
       const parts: ContentPart[] = [label(reviewBrief(ctx))];
       if (ctx.current) parts.push(label("왼쪽 = 지금 그림, 오른쪽 = 후보 (8배)"), image(sideBySide(env, ctx.current, ctx.candidate, ctx.palette)));
+      if (ctx.item.isNew && !ctx.current) {
+        // 새 기물은 「1배에서 그 물건으로 읽히나」를 먼저 본다(2026-10-21 VQA: 검수 통과가 그 물건으로 읽힌다는 뜻이 아니었다).
+        parts.push(label("후보 1배 (실제 게임 크기 — 먼저 본다)"), image(shot(env, ctx.candidate, ctx.palette, 1)), label("후보 2배"), image(shot(env, ctx.candidate, ctx.palette, 2)));
+      }
       parts.push(label("후보 (8배)"), image(shot(env, ctx.candidate, ctx.palette)));
       if (!FLAT_KINDS.has(ctx.item.kind)) for (const file of REVIEW_REFS) parts.push(label(`칩셋 기준 가구: ${file.replace("good-", "")}`), image(examples.get(file)!));
       for (const anchor of ctx.anchors) parts.push(label(`화풍 기준: ${anchor.title}`), image(shot(env, anchor.grid, paletteOf(anchor.itemKey, ctx.palette))));
       return [{ role: "system", content: reviewSystemPrompt() }, { role: "user", content: parts }];
     },
-    hardCheck: (item, grid) => interiorHardCheck(item, grid, runner.currentGrid(item)),
+    // 참고 그림(object-gen ref 단계)은 새 기물만 — 있는 그림을 고치는 판은 지금 그림이 모양 기준이다.
+    referenceDescribe: (item) => (item.isNew ? workshopRefDescribe(item) : null),
+    // 3/4 관문 조언 배지(후보마다 호출 1번 더). 굽기는 막지 않는다.
+    async adviseMessages(item, grid, palette, env) { return gateAdviceMessages(item, grid, palette, env); },
+    parseAdvice: parseGateAdvice,
+    hardCheck: (item, grid) => (og(item)
+      ? ogCheck(item, grid, runner.palette(item)).hard.map((issue) => `${issue.code}: ${issue.msg}`)
+      : interiorHardCheck(item, grid, runner.currentGrid(item))),
     parseVerdict: parseInteriorVerdict,
-    gate: interiorGate,
+    gate: (item, verdict) => (og(item) ? verdict : interiorGate(item, verdict)),
   };
   return runner;
 }

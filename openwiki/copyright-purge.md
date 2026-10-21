@@ -71,3 +71,23 @@
 
 - git 이력에는 지운 파일이 그대로 남는다. 저장소를 공개하기 전에는 이력 재작성(filter-repo)이 따로 필요하다.
 - 이미 지운 칩셋으로 그린 사용자 프로젝트 맵은 그림이 빠진다(타일 번호는 남는다).
+
+## 정정 (2026-10-22) — 버들항은 「직접 만든 것」만이 아니었다: RTP 파생은 크레딧, 나무는 다시 그린다
+
+2026-10-07 정리는 버들항을 「직접 만든 칩셋」으로 남겼다. 그런데 2026-10-21~22 화소 감사에서 다른 결과가 나왔다.
+버들항 v6 파이프라인(`scripts/content/lib/city_v6/`)은 `assets/jungle-chipset-v6.png`를 잘라 썼다. 이 시트는 지운 숲마을 시트를 다시 칠한 사본이다.
+EasyRPG RTP 는 CC BY 4.0 이다(https://github.com/EasyRPG/RTP). 저작자 표기와 변경 표시만 하면 쓰고 고칠 수 있으므로,
+**RTP 파생 칸은 지우지 않고 크레딧을 단다.** 2026-10-07 의 「EasyRPG 칩셋과 그 파생 전부 삭제」는 사용자 판단이었지 라이선스 요구가 아니었다.
+그 판단도 버들항·탈것·월드맵 아이콘까지는 닿지 않았다.
+
+- RTP 파생으로 확인(상류 고정 커밋 993d88cb 의 ChipSet 과 8×8 정확 대조): `beodeul_city` 784칸 · `beodeul_architecture` 94 · `beodeul_forms` 86 ·
+  `beodeul_reviewed` 54 (모두 retro_Exterior: 벽돌·파랑/주황 기와·판자·포석길·광장·흙), `atlas_vehicles` 163 (Ship·Exterior·Dungeon·Interior, JasonPerry CC0),
+  `worldmap_selected` 464 (World·Exterior·Dungeon·Interior). 크레딧: `public/assets/ATTRIBUTION.md`
+  「EasyRPG RTP material in the Beodeul sheets and the vehicle sheet」(작가별 줄, 상류 링크, 변경 표시. 내보낸 게임의 `assets/ATTRIBUTION.md` 에 들어간다).
+- 검사: `python3 scripts/content/rtp-attribution/rtp_check.py`. 상류 시트 그림은 저장하지 않고 해시 지문(`fingerprint.bin`)만 둔다.
+  막는 것은 RTP 화소가 있는데 ATTRIBUTION 의 `rtp-derived-sheets` 목록에 없는 시트 하나뿐이다. 버들항·탈것 굽기 스크립트 아홉 개가 굽고 나서 부른다.
+- **RTP 가 아닌 것**은 활엽수 다섯 그루와 그 수관·밑동, `beodeul_ground` 나무 칸, `beodeul_warm_trees`, `beodeul_nature` 활엽 수관 윤곽,
+  jungle 땅 칸 7·129·160·302·363·365·393·394·423, 조선 `trees.py` 잎 결이다. 이것들은 숲마을의 「god-tibo-imagen 으로 사용자 참고 그림을 고친」
+  식생에서 나왔고, 그 참고 그림이 기록에 없다. 감독 결정으로 **새 손 도트로 다시 그린다**. 그 전까지 ATTRIBUTION 에는 「earlier image-generation edits, being replaced」라고 적어 둔다.
+- 지운 잔여물: `public/market-harness-*`(EasyRPG 혼합 마을 사본), `public/assets/generated/forest-harmony`(숲마을 생성 소품), `city_v6/v3_final.png`, `tiledata/jp-city/forest-r3/spec-tree-x8.png`.
+  사본은 `~/backups/beodeul-provenance-20261021/removed/`에 있다. git 이력은 다시 쓰지 않았다.

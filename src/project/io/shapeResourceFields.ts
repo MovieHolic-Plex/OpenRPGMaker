@@ -407,7 +407,13 @@ export function validateTileset(id: string, value: unknown): void {
         const cp = requireRecord(at, record.composer);
         requireString(`${at}.kind`, cp.kind);
         for (const layer of requireArray(`${at}.layers`, cp.layers)) requireNumber(`${at}.layers[]`, layer);
-        for (const name of requireArray(`${at}.overhangOnGroups`, cp.overhangOnGroups)) requireString(`${at}.overhangOnGroups[]`, name);
+        // overhangOnGroups 는 사람이 읽는 이름일 뿐(엔진은 overhangOnTiles 만 본다) — 공방 지형 팩은 빼고 보낸다.
+        if (cp.overhangOnGroups !== undefined) {
+          for (const name of requireArray(`${at}.overhangOnGroups`, cp.overhangOnGroups)) requireString(`${at}.overhangOnGroups[]`, name);
+        }
+        if (cp.overhangOnTiles !== undefined) {
+          for (const t of requireArray(`${at}.overhangOnTiles`, cp.overhangOnTiles)) requireNumber(`${at}.overhangOnTiles[]`, t);
+        }
         if (cp.ground !== undefined) {
           const gr = requireRecord(`${at}.ground`, cp.ground);
           for (const t of requireArray(`${at}.ground.floorTiles`, gr.floorTiles)) requireNumber(`${at}.ground.floorTiles[]`, t);

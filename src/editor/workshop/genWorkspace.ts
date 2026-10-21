@@ -11,7 +11,8 @@ import "@/styles/database/workshop/index.css";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
-import { CHAR_GEN_REPO_URL, charGenRequest, TERRAIN_MODES, tileGenRequest, type GeneratorId, type TerrainMode } from "./generators";
+import { t } from "@/i18n";
+import { CHAR_GEN_REPO_URL, charGenRequest, TERRAIN_MODES, TERRAIN_PRESETS, tileGenRequest, type GeneratorId } from "./generators";
 import { browserWorkshopEnv } from "./pixels";
 import { addLocalPackToProject, localPackPreviews, readLocalPack, revokeLocalPackPreviews, type LocalPack, type LocalPackPreview } from "./genPackImport";
 
@@ -159,15 +160,20 @@ function terrainRequestStep(): HTMLElement {
   const target = currentMapTileset();
   const mode = el("select", {
     attrs: { "aria-label": "지형 종류" }, dataset: { testid: "workshop-gen-terrain-mode" },
-    children: TERRAIN_MODES.map((m) => el("option", { value: m.mode, text: m.label })),
+    // optgroup label 은 DOM 번역기가 보지 않는 속성이라 t() 로 직접 옮긴다.
+    // 종류 다섯 + 그 종류에 재질 지시가 붙은 프리셋(용암·눈·돌길 …). 값은 그대로 `--mode` 로 간다.
+    children: [
+      el("optgroup", { attrs: { label: t("종류") }, children: TERRAIN_MODES.map((m) => el("option", { value: m.mode, text: m.label })) }),
+      el("optgroup", { attrs: { label: t("재질 프리셋") }, children: TERRAIN_PRESETS.map((m) => el("option", { value: m.mode, text: m.label })) }),
+    ],
   }) as HTMLSelectElement;
   const what = el("input", { attrs: { type: "text", placeholder: TERRAIN_MODES[0]!.example, "aria-label": "어떤 지형" }, dataset: { testid: "workshop-gen-what" } }) as HTMLInputElement;
   const ref = el("input", { attrs: { type: "text", placeholder: "예: 0,3", inputmode: "numeric", "aria-label": "참고 칸" }, dataset: { testid: "workshop-gen-ref" } }) as HTMLInputElement;
   const { request, copied, row } = requestBox();
   const update = (): void => {
-    const chosen = TERRAIN_MODES.find((m) => m.mode === mode.value) ?? TERRAIN_MODES[0]!;
+    const chosen = [...TERRAIN_MODES, ...TERRAIN_PRESETS].find((m) => m.mode === mode.value) ?? TERRAIN_MODES[0]!;
     what.placeholder = chosen.example;
-    request.value = tileGenRequest(chosen.mode as TerrainMode, what.value, target?.fileName ?? "tileset.png", ref.value);
+    request.value = tileGenRequest(chosen.mode, what.value, target?.fileName ?? "tileset.png", ref.value);
     copied.textContent = "";
   };
   mode.addEventListener("change", update);

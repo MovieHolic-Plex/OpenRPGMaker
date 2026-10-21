@@ -19,6 +19,7 @@ import { openTeamWindow } from "./teamWindow";
 import type { Splash } from "./splash";
 import { bootsToStartScreen, rendererDirectory, windowIconPath, type BootContext } from "./bootContext";
 import type { JoinTeamResult } from "../shared/start";
+import { TEAM_COLLAB_ENABLED } from "../shared/teamCollab";
 
 // 앱 본체(dist-electron/app.cjs). 시작 입구 boot.ts(dist-electron/main.cjs)가 app ready 뒤 스플래시를 띄우고 이 파일을 읽어
 // startApp 을 부른다. ready 전에 해야 하는 일(스킴 권한·한 번만 실행·링크 받아 두기)은 입구에 있다.
@@ -47,6 +48,7 @@ let companionServer: CompanionServer | null = null;
 const rendererDir = rendererDirectory();
 const windowIcon = windowIconPath(rendererDir);
 /** 팀 호스트 포트. 앱을 다시 켜도 팀원이 받은 주소가 그대로 맞도록 고정 범위에서 먼저 찾는다. */
+/** @deprecated multi-user team collaboration is not supported yet (2026-10-21). 「팀 협업 시작」이 LAN 에 여는 포트. */
 const TEAM_HOST_PORTS = [9840, 9841, 9842, 9843, 9844, 9845, 9846, 9847, 9848, 9849];
 
 const closing = new Set<number>();
@@ -256,7 +258,8 @@ function focusedWindow(): BrowserWindow | null {
   return BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0] ?? null;
 }
 
-/** 참여하는 쪽: 다른 컴퓨터의 팀 호스트를 앱 창으로 연다. 창이 첫 페이지를 불러오면 끝난다. */
+/** @deprecated multi-user team collaboration is not supported yet (2026-10-21).
+ * 참여하는 쪽: 다른 컴퓨터의 팀 호스트를 앱 창으로 연다. 창이 첫 페이지를 불러오면 끝난다. */
 function joinTeam(input: string): Promise<JoinTeamResult> {
   let target: URL;
   try { target = normalizeTeamUrl(input); }
@@ -298,7 +301,8 @@ function teamHostDetail(host: LocalProjectServer, accessCodeRequired: boolean): 
   ].filter(Boolean).join('\n\n');
 }
 
-/** The app owns the local host lifecycle; users do not install or start a DB/server. */
+/** @deprecated multi-user team collaboration is not supported yet (2026-10-21).
+ * The app owns the local host lifecycle; users do not install or start a DB/server. */
 async function hostCurrentTeam(): Promise<void> {
   const window = focusedWindow();
   if (!window) return;
@@ -327,7 +331,8 @@ async function hostCurrentTeam(): Promise<void> {
   finally { hosting.delete(session.projectDir); }
 }
 
-/** 파일 메뉴 → 팀에 참여. 주소 입력은 시작 화면이 맡는다. 새 창은 프로젝트가 없으니 시작 화면으로 열린다. */
+/** @deprecated multi-user team collaboration is not supported yet (2026-10-21).
+ * 파일 메뉴 → 팀에 참여. 주소 입력은 시작 화면이 맡는다. 새 창은 프로젝트가 없으니 시작 화면으로 열린다. */
 function showJoinFromMenu(): void {
   const window = BrowserWindow.getAllWindows().find((candidate) => candidate.webContents.getURL().includes('start-screen.html'));
   if (window) { window.show(); window.focus(); return; }
@@ -340,15 +345,19 @@ function buildMenu(): void {
     {
       label: "파일",
       submenu: [
-        { label: "팀 협업 시작 / 관리", click: () => { void hostCurrentTeam(); } },
-        { label: "팀에 참여…", click: () => { showJoinFromMenu(); } },
-        { label: "팀 호스트 중지", click: async () => {
-          const window = focusedWindow();
-          const projectDir = window ? sessions.get(window.webContents.id)?.projectDir : undefined;
-          if (!projectDir) return;
-          await teamHosts.get(projectDir)?.close(); teamHosts.delete(projectDir);
-        } },
-        { type: "separator" },
+        // @deprecated multi-user team collaboration is not supported yet (2026-10-21).
+        // TEAM_COLLAB_ENABLED(electron/shared/teamCollab.ts) 를 켜면 세 항목이 돌아온다.
+        ...(TEAM_COLLAB_ENABLED ? [
+          { label: "팀 협업 시작 / 관리", click: () => { void hostCurrentTeam(); } },
+          { label: "팀에 참여…", click: () => { showJoinFromMenu(); } },
+          { label: "팀 호스트 중지", click: async () => {
+            const window = focusedWindow();
+            const projectDir = window ? sessions.get(window.webContents.id)?.projectDir : undefined;
+            if (!projectDir) return;
+            await teamHosts.get(projectDir)?.close(); teamHosts.delete(projectDir);
+          } },
+          { type: "separator" as const },
+        ] : []),
         {
           label: "새 프로젝트",
           accelerator: "CmdOrCtrl+N",
@@ -556,11 +565,13 @@ export async function startApp(boot: BootContext): Promise<void> {
   ipcMain.handle(OPRN_CHANNELS.startImportFile, async (event: IpcMainInvokeEvent, payload: unknown) => {
     return { projectDir: null, imported: false };
   });
+  // @deprecated multi-user team collaboration is not supported yet (2026-10-21). 시작 화면이 부르지 않는다.
   ipcMain.handle(OPRN_CHANNELS.startJoinTeam, async (_event: IpcMainInvokeEvent, payload: unknown) => {
+    if (!TEAM_COLLAB_ENABLED) return { ok: false, error: "팀 협업은 아직 지원하지 않습니다." } satisfies JoinTeamResult;
     const url = (payload as { readonly url?: unknown } | null)?.url;
     return joinTeam(typeof url === "string" ? url : "");
   });
-  ipcMain.handle(OPRN_CHANNELS.startRecentTeams, () => listRecentTeams());
+  ipcMain.handle(OPRN_CHANNELS.startRecentTeams, () => (TEAM_COLLAB_ENABLED ? listRecentTeams() : []));
   ipcMain.on(OPRN_CHANNELS.startScreenReady, (event) => {
     mainMark("startScreenReady");
     revealOnStartReady.get(event.sender.id)?.();
