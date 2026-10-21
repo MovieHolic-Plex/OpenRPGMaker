@@ -165,12 +165,16 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   if (!office || !conv) throw new Error("[first-love] 거리에 사무소·편의점 건물이 없다");
   // 지하철 입구: 구성기가 공원 옆에 둔다(요약 문장 「지하철 입구 (x,y)」). 데이터에 없으면 공원 오른쪽 아래.
   const subwayMatch = /지하철 입구 \((\d+),(\d+)\)/.exec(String((composed as { summary?: string }).summary ?? ""));
-  const subway: Cell = subwayMatch ? { x: Number(subwayMatch[1]), y: Number(subwayMatch[2]) } : { x: 17, y: 8 };
+  const subwayHint: Cell = subwayMatch ? { x: Number(subwayMatch[1]), y: Number(subwayMatch[2]) } : { x: 17, y: 8 };
+  // 요약의 좌표는 입구 덩어리(3칸 폭)의 왼쪽 기둥 칸이다 — 계단이 열린 칸은 아래 줄 가운데(타일 7621, 지붕 처마 3칸 아래)다.
+  // 왼쪽 기둥 칸에 문을 두면 계단 그림이 아닌 벽 모서리에 부딪힌다.
+  const SUBWAY_STAIR_TILE = 7621;
+  const stairIdx = (street.upperTiles ?? []).findIndex((t, i) => t === SUBWAY_STAIR_TILE && Math.abs((i % street.width) - subwayHint.x) <= 2);
+  const subway: Cell = stairIdx >= 0 ? { x: stairIdx % street.width, y: Math.floor(stairIdx / street.width) } : { x: subwayHint.x + 1, y: subwayHint.y };
   // 지하철 입구 덩어리는 막혀 있고 계단이 아래로 열린다 — 덩어리 바로 아래 첫 통행 칸이 발판.
   let subwayStepY = subway.y;
   while (subwayStepY < street.height - 1 && !isPassable(project, street, subway.x, subwayStepY)) subwayStepY += 1;
   const subwayStep: Cell = { x: subway.x, y: subwayStepY };
-  const below = (c: Cell): Cell => nearestFree(project, street, { x: c.x, y: c.y + 1 });
 
   const officeRoom = project.maps[FL_MAP.office]!;
   const konbiniRoom = project.maps[FL_MAP.konbini]!;
@@ -194,7 +198,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       officeDoor: office.doors[0]!, officeOut: office.access[0]!,
       konbiniDoor: conv.doors[1] ?? conv.doors[0]!, konbiniOut: conv.access[1] ?? conv.access[0]!,
       subway: { x: subwayStep.x, y: subwayStep.y - 1 }, subwayOut: subwayStep,
-      arrive: below(subwayStep),
+      // 내린 사람은 계단 바로 아래 칸(나오는 칸)에 선다 — 문 그림에 붙어 아래를 본다.
+      arrive: subwayStep,
     },
     office: {
       // 엘리베이터·계단 그림은 북쪽 벽면에 박혀 있고 그림 칸 자체를 밟을 수 있다 — 문 칸 = 그림 칸, 나오는 칸 = 바로 아래(안쪽) 칸.
@@ -250,6 +255,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
     if (d) lamps.push(light(`fl_shop_${i}`, d, 3, b.kind === "conv" ? "#e8fff4" : "#ffd9a0", 0.8));
   }
   lamps.push(light("fl_subway", anchors.street.subway, 3, "#cfe4ff", 0.8));
+  // 편의점 문 앞 보도로 새어 나오는 따뜻한 가게 불빛(밤에 들르는 곳이 한눈에 읽히게).
+  lamps.push(light("fl_kb_spill", anchors.street.konbiniOut, 5, "#fff0c4", 1), light("fl_kb_spill2", { x: anchors.street.konbiniOut.x, y: anchors.street.konbiniOut.y + 2 }, 4, "#ffe8b0", 0.7));
   streetPm.defaultLighting = { ambient: 0.62, color: "#0e1630", sources: lamps };
   officePm.defaultLighting = {
     // 야근 밤: 너무 어두우면 인물이 안 읽힌다(VQA r3) — 어둠은 한 단계 줄이고 책상·탕비실·회의 자리 불을 넓힌다.
@@ -277,6 +284,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       light("fl_kb_a", { x: 8, y: 7 }, 7, "#f4fbff", 1), light("fl_kb_b", { x: 16, y: 7 }, 7, "#f4fbff", 1),
       light("fl_kb_c", { x: 8, y: 11 }, 7, "#f4fbff", 1), light("fl_kb_d", { x: 16, y: 11 }, 7, "#f4fbff", 1),
       light("fl_kb_door", { x: 12, y: 13 }, 5, "#f4fbff", 0.9),
+      // 계산대 쪽은 따뜻한 온장고·커피 불빛.
+      light("fl_kb_counter", anchors.konbini.counter, 4, "#ffe2a8", 0.7),
       // 문 앞 보도에 새어 나오는 가게 불빛(희미하게).
       light("fl_kb_glow", { x: 12, y: 16 }, 4, "#dfeeff", 0.45),
     ],
