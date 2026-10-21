@@ -38,7 +38,8 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 3. **바라보는 방향은 위치로 계산한다.** 맵이 바뀐 뒤 "down" 고정이면 인사하는 상대에게 등을 돌린다. 멈춘 칸 → 상대 칸 방향으로 turn.
 4. **대사의 풍경은 맵에 있다.** 「기차가 떠난다」면 선로가, 「계단을 오른다」면 계단이 화면에 있다.
 5. **밤은 어둡게.** 밤 자막 뒤 맵은 ambient ≤ 0.5 + 색, 빛은 등불·창에만. 실내 맵의 바깥 구역도 밤이면 어둡다. 정지 렌더 PNG 는 바탕 색조만 보이고 광원은 안 보인다 — 「따뜻한 빛을 더했다」는 실행 화면 프레임으로 확인한다.
-6. **카메라는 20×15칸.** 보여 줄 풍경(스카이라인·운하)은 주인공이 서는 줄에서 7줄 안에 그린다.
+6. **벽 걸이는 벽에.** 액자·별자리표·시계·거미줄 같은 걸이(손 도트 실내 kind hang) 키트를 바닥 가운데 찍으면 깃발처럼 홀로 선다. 걸이는 벽면 두 줄(천장 띠 바로 아래) 윗줄에만 — stamp_object 로 찍을 때도 같다. 확인: `scene-hang-on-floor` 0.
+7. **카메라는 20×15칸.** 보여 줄 풍경(스카이라인·운하)은 주인공이 서는 줄에서 7줄 안에 그린다.
 
 ## 4. 대화창
 
@@ -107,6 +108,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 | `scene-dialogue-context-mixed` | sign·system·letter 밖의 특수 창 모양을 둘 이상 섞거나 말풍선을 쓴다 |
 | `scene-map-no-bgm` | 이야기가 들르는 맵에 BGM 이 없다 |
 | `scene-moving-vehicle` | 움직이는 교통·탈것 |
+| `scene-hang-on-floor` | 벽 걸이 키트가 걸을 수 있는 바닥 칸에 있다 → 벽면 윗줄로 옮긴다 |
 | `scene-actors-stacked` | 한 페이지가 보이는 두 인물을 같은 칸에 세운다(앞 인물이 지워진·«떠남» 스위치로 사라진 뒤 같은 문 칸으로 오는 것은 괜찮다) |
 
 ## 새 교훈 넣기

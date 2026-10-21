@@ -13,10 +13,12 @@
 //  - scene-map-no-bgm              이야기가 들르는 맵에 BGM 이 없다(명시 «없음» 은 의도로 본다)
 //  - scene-moving-vehicle          움직이는 교통(map.transit)·움직이는 탈것 이벤트
 //  - scene-actors-stacked          한 페이지가 두 인물을 같은 칸에 세운다
+//  - scene-hang-on-floor           벽 걸이(액자·별자리표·시계…) 키트가 바닥 칸에 서 있다
 
 import { nestedCommandLists } from "../authoredCommandIndex";
 import type { Command, Dir, EventPage, GameEvent, GameMap, MoveCommand, Project, TilesetDef } from "../types";
 import { isPassable } from "../collision";
+import handInteriorSpec from "@/assets/handInteriorSpec.json";
 import type { LintIssue } from "./projectLint";
 
 type Cell = { x: number; y: number };
@@ -586,6 +588,54 @@ function checkStacking(project: Project, issues: LintIssue[]): void {
   }
 }
 
+// ---------------------------------------------------------------------------- 벽 걸이가 바닥에
+
+/** 손 도트 실내 걸이(kind hang) 물건 id — 칩셋 키트 id 는 "hand-interior:<id>". */
+const HANG_OBJECTS: ReadonlySet<string> = new Set(
+  Object.entries((handInteriorSpec as { objects: Record<string, { kind?: string }> }).objects)
+    .filter(([, o]) => o.kind === "hang").map(([id]) => id),
+);
+const hangTileCache = new Map<string, Map<number, string>>();
+
+function hangTiles(tileset: TilesetDef | undefined): Map<number, string> {
+  const kits = (tileset as { structureKits?: Array<{ id: string; name?: string; rows?: Array<{ upperTiles?: number[] }> }> } | undefined)?.structureKits ?? [];
+  const key = `${tileset?.id}|${kits.length}`;
+  let out = hangTileCache.get(key);
+  if (out) return out;
+  out = new Map();
+  for (const kit of kits) {
+    if (!kit.id.startsWith("hand-interior:") || !HANG_OBJECTS.has(kit.id.slice("hand-interior:".length))) continue;
+    for (const row of kit.rows ?? []) for (const tile of row.upperTiles ?? []) if (tile >= 0) out.set(tile, kit.name ?? kit.id);
+  }
+  if (hangTileCache.size > 32) hangTileCache.clear();
+  hangTileCache.set(key, out);
+  return out;
+}
+
+/** 걸이 그림은 벽면(막힌 칸) 위에만 — 걸을 수 있는 바닥 칸에 있으면 깃발처럼 홀로 선다(Fallen fs_observatory 별자리표). */
+function checkHangOnFloor(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    const tiles = hangTiles(project.tilesets[map.tilesetId]);
+    if (tiles.size === 0) continue;
+    const seen = new Set<string>();
+    for (const layer of ["upperTiles", "upperOverlayTiles"] as const) {
+      const grid = (map as unknown as Record<string, number[] | undefined>)[layer];
+      if (!grid) continue;
+      for (let i = 0; i < grid.length; i += 1) {
+        const name = tiles.get(grid[i]!);
+        if (!name) continue;
+        const x = i % map.width, y = Math.floor(i / map.width);
+        if (!isPassable(project, map, x, y) || seen.has(name)) continue;
+        seen.add(name);
+        issues.push({
+          severity: "warning", code: "scene-hang-on-floor", mapId: map.id, x, y,
+          message: `맵 ${map.name || map.id} 의 벽 걸이 ${name} 가 바닥 칸 (${x},${y}) 에 있다 — 깃발처럼 홀로 선다. 걸이는 벽면 두 줄(천장 띠 바로 아래) 윗줄에 건다.`,
+        });
+      }
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------- 진입점
 
 export function lintScenePolish(project: Project): LintIssue[] {
@@ -601,6 +651,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkMapBgm);
   guard(checkVehicles);
   guard(checkStacking);
+  guard(checkHangOnFloor);
   return issues;
 }
 
