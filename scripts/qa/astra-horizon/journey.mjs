@@ -429,8 +429,10 @@ async function playerTactic(switchedFor, { potionOnly = false } = {}) {
   // 2) 교체 — 다른 동료의 상성 점수가 1.6배 이상이고 체력이 반 이상이면(적 한 마리에 한 번).
   if (active && enemyTypes.length && !switchedFor.has(enemyName)) {
     const mine = moveScore(active.speciesId, active.level, enemyTypes, active.skillIds);
+    // 지금 동료에게 효과가 굉장한(2배 이상) 기술이 있으면 바꾸지 않는다 — 사람은 그 기술로 계속 친다. 물 스타터가 서리물보라(2배)를 두고 루미링으로 바꿔 관장전이 13턴이 됐다(r34).
+    const superEffective = (active.skillIds ?? []).some((id) => { const sk = skillById.get(id); if (!sk || !(sk.power > 0)) return false; let eff = 1; for (const t of enemyTypes) eff *= CHART[sk.elementId ?? "normal"]?.[t] ?? 1; return eff >= 2; });
     const better = party.filter((m) => m !== active && (m.currentHp ?? 1) > 0).map((m) => ({ m, score: moveScore(m.speciesId, m.level, enemyTypes, m.skillIds) })).sort((a, b) => b.score - a.score)[0];
-    if (better && better.score >= mine * 1.6) {
+    if (better && !superEffective && better.score >= mine * 1.6) {
       const pk = page.locator('[data-testid="actor-command-pkmn"]');
       if (await pk.count() && await pk.isEnabled()) {
         await pk.focus(); await page.keyboard.press("Enter"); await page.waitForTimeout(300);
