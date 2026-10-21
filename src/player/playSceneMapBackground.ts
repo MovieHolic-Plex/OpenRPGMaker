@@ -4,7 +4,7 @@ import { MAP_BACKGROUND_LAYER_DEPTH } from "@/player/characterDepth";
 import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
-import { decodeMapBackgroundFlow } from "@/project/mapBackground";
+import { decodeMapBackgroundFlow, mapBackgroundCoverCentre } from "@/project/mapBackground";
 import type { MapBackgroundFit, MapBackgroundLayer } from "@/project/types";
 import { store } from "@/project/store";
 
@@ -292,8 +292,13 @@ function placeMapBackgroundLayer(
     scene.mapBackgroundCameraAnchor = { x: camera.scrollX, y: camera.scrollY };
   }
   const anchor = scene.mapBackgroundCameraAnchor;
-  const logicalX = mapBackgroundLayerOffset(offset.x, camera.scrollX - (anchor?.x ?? Number.NaN), spec.cameraFollow);
-  const logicalY = mapBackgroundLayerOffset(offset.y, camera.scrollY - (anchor?.y ?? Number.NaN), spec.cameraFollow);
+  const zoom = Number.isFinite(camera.zoom) && camera.zoom > 0 ? camera.zoom : 1;
+  const centre = mapBackgroundCoverCentre(spec.fit, {
+    width: (camera.width || PLAY_RESOLUTION.width) / zoom,
+    height: (camera.height || PLAY_RESOLUTION.height) / zoom,
+  }, sourceSizeOf(scene, sprite));
+  const logicalX = centre.x + mapBackgroundLayerOffset(offset.x, camera.scrollX - (anchor?.x ?? Number.NaN), spec.cameraFollow);
+  const logicalY = centre.y + mapBackgroundLayerOffset(offset.y, camera.scrollY - (anchor?.y ?? Number.NaN), spec.cameraFollow);
   sprite.tilePositionX = mapBackgroundTilePosition(logicalX, sprite.tileScaleX || 1);
   sprite.tilePositionY = mapBackgroundTilePosition(logicalY, sprite.tileScaleY || 1);
   applyAxisScroll(sprite, layout, spec);

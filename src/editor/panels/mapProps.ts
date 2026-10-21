@@ -16,12 +16,23 @@ import { AudioPreviewSession } from "@/editor/panels/audioPreviewSession";
 import {
   MAP_BACKGROUND_CAMERA_FOLLOW_LIMIT,
   MAP_BACKGROUND_EXTRA_LAYER_LIMIT,
+  MAP_BACKGROUND_MOTIONS,
+  MAP_BACKGROUND_MOTION_LABELS,
   MAP_BACKGROUND_SCROLL_LIMIT,
-  mapBackgroundFromLayerSet,
+  applyMapBackgroundMotion,
+  detectMapBackgroundMotion,
+  mapBackgroundGameViewport,
   normalizeMapBackgroundCameraFollow,
   normalizeMapBackgroundScroll,
 } from "@/project/mapBackground";
-import { OGA_CRAFTPIX_BACKDROP_SETS, craftpixDefaultLayers } from "@/assets/ogaCraftpixBackgrounds";
+import { isPassableLanding } from "@/project/collision";
+import { clearMapCellForBackground, emptyTopRows, HORIZON_PRESET_FEATURE_HEIGHT, mapBackgroundCellVisible, mapBackgroundVisibility, startPosAfterBackgroundClear } from "@/project/mapBackgroundVisibility";
+import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { tileCategoriesForTile } from "@/project/tilesetPalette";
+import { mapTileSize } from "@/project/tileGeometry";
+import { mapBackgroundFromPanoramaSet, oprnPanoramaSetOfImage, OPRN_PANORAMA_SETS } from "@/assets/oprnPanoramas";
+import { createMapBackgroundLivePreview } from "@/editor/panels/mapBackgroundLivePreview";
+import { importBackdropFile, pickBackdropFile } from "@/editor/panels/backdropUpload";
 import { openDatabaseResourcePickerDialog, listDatabaseResourceOptions, type DatabaseResourcePickerKind } from "@/editor/panels/databaseResourcePickerDialog";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import { editorState } from "@/editor/editorState";
@@ -40,7 +51,7 @@ import {
   CLOUD_SHADOW_AMOUNT_RANGE,
   normalizeCloudShadowParams,
 } from "@/player/cloudShadows";
-import type { EncounterTableEntry, FieldSpawnDef, MapBackgroundLayer, MapBgmSetting } from "@/project/types";
+import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBackgroundLayer, MapBgmSetting } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { showConfirm } from "@/editor/ui/modal";
 import { toast } from "@/util/toast";
@@ -76,7 +87,7 @@ const SECTION_ORDER: readonly MapPropsTab[] = [
 const SECTION_DESCRIPTIONS: Record<MapPropsTab, string> = {
   climate: "전역 날씨를 따르거나 고정합니다. 실내에서는 날씨 효과가 보이지 않습니다.",
   general: "맵의 이름, 타일 그림판과 크기를 설정합니다.",
-  background: "투명한 타일 뒤에 표시할 그림과 움직임을 설정합니다.",
+  background: "맵 뒤에 깔리는 먼 풍경(하늘·바다·별)입니다. 타일을 지운 칸과 맵 바깥으로 보입니다.",
   clouds: "맵 위를 흘러가는 구름 그림자를 설정합니다.",
   transit: "길 위를 달리는 차·버스·노면전차와 지하철·전철 노선을 설정합니다. 게임에서 실제로 움직이고, 주인공 앞에서는 섭니다.",
   sunlight: "태양의 방향과 고도를 정해 절벽·집·나무가 땅에 드리우는 그림자를 설정합니다.",
@@ -462,271 +473,489 @@ function renderGeneralTab(host: HTMLElement, map: import("@/project/types").Game
   host.append(section);
 }
 
-// ── 배경 탭 (RM2003 Background) ──
+// ── 배경 탭 (RM2003 Background · 파노라마) ──
+//
+// 2026-10-21 감사로 다시 짰다. 예전 탭의 문제(실측): 「레이어 세트」 창이 비어 있었고(CraftPix 삭제),
+// 그림 고르기에는 전투 배경 세 장뿐, 빈 칸 비치기가 꺼져 있어 편집기 미리보기에는 하늘이 보이는데 플레이는 검은 칸,
+// 그림 맞추기(cover)는 화면에 칸이 없었고, 미리보기는 첫 장을 잘라 보인 정지 그림이었다.
+// 지금 순서: 견본 카드(그림이 보이는) → 게임 화면 미리보기(움직임까지) → 움직임 프리셋 → 맞추기·빈 칸 → 세부 숫자.
 function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").GameMap): void {
   const section = el("div", { class: "panel-section map-props-section" });
+  const project = store.getCurrent();
   const bg = map.background;
+  const current = (): MapBackground | undefined => store.getCurrent().maps[map.id]?.background;
+  // 배경 바꾸기·끄기·칸 비우기 모두 Ctrl+Z 로 되돌린다(2026-10-21 적대 검수: 되돌릴 작업이 없다고 나왔다).
+  const commit = (next: MapBackground | null, focus?: string, label = "맵 배경 변경"): void => {
+    recordProjectSnapshot(label, map.id, { kind: "map" });
+    setMapBackground(map.id, next);
+    rerender(host, focus);
+  };
+  const hasImage = Boolean(bg?.imageId || bg?.layers?.length);
+  const activeSet = bg?.imageId ? oprnPanoramaSetOfImage(bg.imageId) : undefined;
 
-  const enabled = Boolean(bg);
-  const enableCheck = el("input", {
-    attrs: { type: "checkbox" },
-    dataset: { testid: "map-bg-enable" },
-  }) as HTMLInputElement;
-  enableCheck.checked = enabled;
-  enableCheck.addEventListener("change", () => {
-    if (enableCheck.checked) {
-      setMapBackground(map.id, { imageId: "", scrollX: 0, scrollY: 0 });
-    } else {
-      setMapBackground(map.id, null);
+  // 1. 견본 — 그림이 보이는 카드. 누르면 바로 깔린다(다른 배경이 있으면 한 번 묻는다).
+  const pickSet = (setId: string): void => {
+    const next = mapBackgroundFromPanoramaSet(setId);
+    if (!next) return;
+    if (hasImage && activeSet?.id !== setId) {
+      openDialog("map-bg-replace-confirm", "배경 바꾸기", [
+        el("p", { class: "map-bg-layer-confirm-text", text: "지금 배경(그림·레이어·움직임)을 이 견본으로 바꿉니다. 계속할까요?" }),
+      ], [
+        { label: "바꾸기", testid: "map-bg-replace-confirm-ok", action: () => commit(next, `map-bg-preset-${setId}`) },
+        { label: "취소", testid: "map-bg-replace-confirm-cancel" },
+      ]);
+      return;
     }
-    rerender(host);
-  });
-  const enableRow = el("label", { class: "map-props-check-row" });
-  enableRow.append(enableCheck, el("span", { text: "맵 배경 사용" }));
-  section.append(enableRow);
-
-  if (bg) {
-    section.append(mapResourceField({
-      label: "배경 그림", resourceId: bg.imageId, kind: "backdrop", testid: "map-bg-image",
-      dialogTitle: "맵 배경 그림", allowClear: true,
-      onChange: ({ resourceId }) => {
-        if (!resourceId) setMapBackground(map.id, null);
-        else setMapBackground(map.id, {
-          ...store.getCurrent().maps[map.id]!.background!, imageId: resourceId,
-        });
-      },
-      rerender: () => rerender(host, "map-bg-image-set"),
-    }));
-
-    // CraftPix 레이어 세트 — 미리보기 카드 피커로 고른다. 기존 배경이 있는 상태에서 적용하면 한 번 확인을 본다
-    // (세트 적용은 기존 저작을 통째로 바꾼다).
-    const applyLayerSet = (setId: string): void => {
-      const defaults = craftpixDefaultLayers(setId);
-      if (defaults.length === 0) return;
-      // 층 순서·cover·기본 깊이(하늘 0 → 맨 앞 0.7)는 조수 도구와 같은 규칙(`mapBackgroundFromLayerSet`).
-      const next = mapBackgroundFromLayerSet(defaults.map((entry) => entry.id));
-      if (!next) return;
-      setMapBackground(map.id, next);
-      rerender(host, "map-bg-layer-set");
-    };
-    const layerSetRow = el("div", { class: "map-props-size-row" });
-    const layerSetBtn = el("button", {
-      class: "btn", text: "레이어 세트 고르기", attrs: { type: "button" },
-      dataset: { testid: "map-bg-layer-set" },
-      on: { click: () => openLayerSetPicker({
-        hasCurrentBackground: Boolean(bg?.imageId || bg?.layers?.length),
-        onPick: (setId) => applyLayerSet(setId),
-      }) },
+    commit(next, `map-bg-preset-${setId}`);
+  };
+  const grid = el("div", { class: "map-bg-preset-grid", attrs: { role: "list" }, dataset: { testid: "map-bg-preset-grid" } });
+  for (const set of OPRN_PANORAMA_SETS) {
+    const selected = activeSet?.id === set.id;
+    const card = el("button", {
+      class: "map-bg-preset-card",
+      attrs: { type: "button", role: "listitem", "aria-pressed": selected ? "true" : "false", title: set.summary },
+      dataset: { testid: `map-bg-preset-${set.id}` },
+      on: { click: () => pickSet(set.id) },
     });
-    layerSetRow.append(layerSetBtn);
-    section.append(fieldRow("다층 배경", layerSetRow));
+    const thumb = el("span", { class: `map-bg-preset-thumb is-${set.view}`, attrs: { "aria-hidden": "true" } });
+    for (const layer of set.layers) {
+      const url = resolveAssetResourceUrl(layer.id, { project });
+      if (url) thumb.append(el("img", { attrs: { src: url, alt: "", loading: "lazy", draggable: "false" } }));
+    }
+    card.append(
+      thumb,
+      el("span", { class: "map-bg-preset-name", text: set.name }),
+      el("span", { class: "map-bg-preset-view", text: set.view === "horizon" ? "옆에서 본 하늘" : "위에서 본 면" }),
+    );
+    grid.append(card);
+  }
+  section.append(fieldRow("견본에서 고르기", grid));
 
-    // 캔버스는 배경을 그리지 않는다(빈 칸 체커가 의도된 신호라 덮지 않는다 — 편집기 라우팅 문서).
-    // 그래서 고른 그림을 확인할 자리는 여기 하나뿐이다.
-    const previewUrl = resolveAssetResourceUrl(bg.imageId, { project: store.getCurrent() });
-    if (previewUrl) {
-      section.append(el("img", {
-        class: "map-bg-preview",
-        attrs: { src: previewUrl, alt: "맵 배경 미리보기", loading: "lazy" },
-        dataset: { testid: "map-bg-preview" },
+  const sourceRow = el("div", { class: "map-props-size-row map-bg-source-row" });
+  sourceRow.append(
+    el("button", {
+      class: "btn", text: "다른 그림 고르기…", attrs: { type: "button" },
+      dataset: { testid: "map-bg-image-set" },
+      on: { click: () => openDatabaseResourcePickerDialog({
+        kind: "backdrop", title: "맵 배경 그림", currentId: bg?.imageId, allowClear: false,
+        testidPrefix: "map-bg-image-dialog",
+        onConfirm: ({ resourceId }) => {
+          if (!resourceId) return;
+          const base = current();
+          // 직접 고른 한 장은 화면에 맞춤이 기본이다 — 큰 그림을 1:1 로 두면 왼쪽 위 구석만 보인다.
+          commit(singleImageBackground(base, resourceId, base?.fit ?? "cover"), "map-bg-image-set");
+        },
+      }) },
+    }),
+    el("button", {
+      class: "btn", text: "내 그림 올리기…", attrs: { type: "button" },
+      dataset: { testid: "map-bg-upload" },
+      on: { click: () => {
+        void pickBackdropFile().then(async (file) => {
+          if (!file) return;
+          try {
+            const imported = await importBackdropFile(file);
+            const base = current();
+            commit(singleImageBackground(base, imported.id, "cover"), "map-bg-upload");
+            toast(`배경 그림 올림: ${imported.width}×${imported.height} — 화면에 맞춤으로 깔았습니다`, "ok");
+          } catch (error) {
+            toast(error instanceof Error ? error.message : "그림을 올리지 못했습니다.", "error");
+          }
+        });
+      } },
+    }),
+  );
+  if (bg) {
+    sourceRow.append(el("button", {
+      class: "btn", text: "배경 끄기", attrs: { type: "button" },
+      dataset: { testid: "map-bg-clear" },
+      on: { click: () => commit(null, "map-bg-image-set") },
+    }));
+  }
+  section.append(sourceRow);
+  if (bg && !activeSet && bg.imageId) {
+    // 견본이 아닌 그림(직접 고르기·올리기) — 무엇이 깔렸는지 카드 대신 한 줄로 보인다.
+    const url = resolveAssetResourceUrl(bg.imageId, { project });
+    const uploaded = project.assets.uploaded[bg.imageId];
+    const chip = el("div", { class: "map-bg-current", dataset: { testid: "map-bg-current" } });
+    if (url) chip.append(el("img", { attrs: { src: url, alt: "", draggable: "false" } }));
+    const label = uploaded?.meta.width ? `${uploaded.name} (${uploaded.meta.width}×${uploaded.meta.height})` : (uploaded?.name ?? bg.imageId);
+    chip.append(el("span", { text: `지금 그림: ${label}` }));
+    section.append(chip);
+  }
+
+  if (!bg) {
+    section.append(el("p", { class: "map-props-hint", text: "배경은 타일을 지운 칸과 맵 바깥으로 보입니다. 견본을 누르면 바로 깔립니다." }));
+    host.append(section);
+    return;
+  }
+
+  // 2. 지금 플레이에서 보이는가 — 「편집기에는 보이는데 게임은 검다」 를 여기서 바로 말한다.
+  const visibility = mapBackgroundVisibility(map, project.tilesets[map.tilesetId]);
+  const status = el("div", { class: "map-bg-status", dataset: { testid: "map-bg-status", visible: String(visibility.visible) } });
+  if (!hasImage) {
+    status.classList.add("is-warn");
+    status.append(el("span", { text: "그림이 아직 없습니다 — 견본을 누르거나 그림을 고르세요." }));
+  } else if (visibility.visible > 0) {
+    status.append(el("span", { text: `플레이에서 ${visibility.visible}칸에 보입니다(맵 바깥이 화면에 들어오면 거기도).` }));
+    if (activeSet?.view === "horizon") {
+      // 지평선 견본: 해·구름·실루엣이 화면 위쪽 약 112px 안이다. 위쪽 빈 줄이 모자라면 미리 알린다.
+      const needRows = Math.ceil(HORIZON_PRESET_FEATURE_HEIGHT / mapTileSize(map, project.tilesets[map.tilesetId]));
+      const topRows = emptyTopRows(map);
+      if (topRows > 0 && topRows < needRows) {
+        status.append(el("span", { class: "map-bg-status-note", text: `위쪽 빈 줄이 ${topRows}줄이라 해·실루엣은 가려집니다(${needRows}줄쯤 비우면 다 보입니다).` }));
+      }
+    }
+  } else {
+    status.classList.add("is-warn");
+    status.append(el("span", { text: bg.showInEmptyCells
+      ? "지금은 플레이에서 한 칸도 안 보입니다 — 맵이 꽉 차 있어 비칠 자리가 없습니다."
+      : "지금은 플레이에서 한 칸도 안 보입니다 — 「빈 칸에도 보이기」 가 꺼져 있습니다." }));
+    if (!bg.showInEmptyCells && visibility.empty > 0) {
+      status.append(el("button", {
+        class: "btn btn-small", text: `빈 칸 ${visibility.empty}개에 보이기`, attrs: { type: "button" },
+        dataset: { testid: "map-bg-fix-empty" },
+        on: { click: () => commit({ ...current()!, showInEmptyCells: true }, "map-bg-show-in-empty") },
       }));
     }
-
-    const scrollLine = el("div", { class: "map-props-size-row" });
-    const sxInput = el("input", {
-      attrs: { type: "number", min: String(-MAP_BACKGROUND_SCROLL_LIMIT), max: String(MAP_BACKGROUND_SCROLL_LIMIT), step: "0.5", "aria-label": "가로 스크롤 속도" },
-      value: String(bg.scrollX ?? 0),
-      dataset: { testid: "map-bg-scroll-x" },
-    });
-    const syInput = el("input", {
-      attrs: { type: "number", min: String(-MAP_BACKGROUND_SCROLL_LIMIT), max: String(MAP_BACKGROUND_SCROLL_LIMIT), step: "0.5", "aria-label": "세로 스크롤 속도" },
-      value: String(bg.scrollY ?? 0),
-      dataset: { testid: "map-bg-scroll-y" },
-    });
-    scrollLine.append(el("span", { text: "X" }), sxInput, el("span", { text: "Y" }), syInput);
-    // 범위 밖 입력은 **조용히 클램프**한다 — 타이틀 배경 레이어(`databaseSystemView`)와 같은 규칙이고,
-    // 상한은 로드 정규화·AI 툴 스키마와 같은 상수(`@/project/mapBackground`)를 본다.
-    const updateScroll = (key: "scrollX" | "scrollY", input: HTMLInputElement): void => {
-      const value = Number(input.value);
-      const normalized = normalizeMapBackgroundScroll(value);
-      if (normalized === undefined) {
-        input.value = String(store.getCurrent().maps[map.id]!.background?.[key] ?? 0);
-        return;
-      }
-      setMapBackground(map.id, { ...store.getCurrent().maps[map.id]!.background!, [key]: normalized });
-      if (normalized !== value) input.value = String(normalized);
-    };
-    sxInput.addEventListener("change", () => updateScroll("scrollX", sxInput));
-    syInput.addEventListener("change", () => updateScroll("scrollY", syInput));
-    section.append(fieldRow("스크롤 속도", scrollLine));
-
-    // 깊이(카메라 따라가기) — 층마다 다르게 주면 시차 스크롤. 입력은 %, 저장은 0..2 비율.
-    const followInput = (value: number | undefined, label: string, testid: string, onCommit: (next: number | undefined) => void): HTMLInputElement => {
-      const input = el("input", {
-        attrs: { type: "number", min: "0", max: String(MAP_BACKGROUND_CAMERA_FOLLOW_LIMIT * 100), step: "5", "aria-label": label },
-        value: String(Math.round((value ?? 0) * 100)),
-        dataset: { testid },
-      }) as HTMLInputElement;
-      input.addEventListener("change", () => {
-        const next = normalizeMapBackgroundCameraFollow(Number(input.value) / 100);
-        input.value = String(Math.round((next ?? 0) * 100));
-        onCommit(next);
-      });
-      return input;
-    };
-    const baseFollowLine = el("div", { class: "map-props-size-row" });
-    baseFollowLine.append(
-      followInput(bg.cameraFollow, "첫 장 깊이(%)", "map-bg-camera-follow", (next) => {
-        const current = { ...store.getCurrent().maps[map.id]!.background! };
-        if (next === undefined) delete current.cameraFollow;
-        else current.cameraFollow = next;
-        setMapBackground(map.id, current);
-      }),
-      el("span", { text: "% (0 = 화면 고정, 100 = 타일과 함께)" }),
-    );
-    section.append(fieldRow("깊이", baseFollowLine));
-
-    // 추가 레이어 목록 — 세트 선택이 교체의 정규 경로이고, 층마다 흐름·깊이를 여기서 고친다.
-    const extraLayers = bg.layers ?? [];
-    if (extraLayers.length > 0) {
-      const layerList = el("div", { class: "map-bg-layer-list", dataset: { testid: "map-bg-layer-list" } });
-      const updateLayer = (index: number, patch: (layer: MapBackgroundLayer) => MapBackgroundLayer): void => {
-        const current = store.getCurrent().maps[map.id]!.background!;
-        const layers = (current.layers ?? []).map((layer, at) => (at === index ? patch({ ...layer }) : layer));
-        setMapBackground(map.id, { ...current, layers });
-      };
-      for (const [index, layer] of extraLayers.entries()) {
-        const row = el("div", { class: "map-bg-layer-row", dataset: { testid: `map-bg-layer-row-${index}` } });
-        const flowInput = el("input", {
-          attrs: { type: "number", min: String(-MAP_BACKGROUND_SCROLL_LIMIT), max: String(MAP_BACKGROUND_SCROLL_LIMIT), step: "0.1", "aria-label": `레이어 ${index + 2} 가로 흐름` },
-          value: String(layer.scrollX ?? 0),
-          dataset: { testid: `map-bg-layer-scroll-x-${index}` },
-        }) as HTMLInputElement;
-        flowInput.addEventListener("change", () => {
-          const next = normalizeMapBackgroundScroll(Number(flowInput.value));
-          flowInput.value = String(next ?? 0);
-          updateLayer(index, (entry) => {
-            if (next === undefined || next === 0) delete entry.scrollX;
-            else entry.scrollX = next;
-            return entry;
-          });
-        });
-        row.append(
-          el("span", { class: "map-bg-layer-name", text: `${index + 2}. ${layer.imageId}`, attrs: { title: layer.imageId } }),
-          el("span", { text: "흐름" }),
-          flowInput,
-          el("span", { text: "깊이%" }),
-          followInput(layer.cameraFollow, `레이어 ${index + 2} 깊이(%)`, `map-bg-layer-camera-follow-${index}`, (next) => {
-            updateLayer(index, (entry) => {
-              if (next === undefined) delete entry.cameraFollow;
-              else entry.cameraFollow = next;
-              return entry;
-            });
-          }),
-        );
-        layerList.append(row);
-      }
-      const removeBtn = el("button", {
-        class: "btn", text: "레이어 지우기", attrs: { type: "button" },
-        dataset: { testid: "map-bg-layers-clear" },
-        on: { click: () => {
-          const current = store.getCurrent().maps[map.id]!.background!;
-          const next = { ...current };
-          delete next.layers;
-          setMapBackground(map.id, next);
-          rerender(host, "map-bg-layers-clear");
-        } },
-      });
-      layerList.append(removeBtn);
-      section.append(fieldRow("추가 레이어 " + extraLayers.length + "/" + MAP_BACKGROUND_EXTRA_LAYER_LIMIT, layerList));
+    if (visibility.empty === 0) {
+      const tileset = project.tilesets[map.tilesetId];
+      const surface = activeSet?.view === "surface";
+      const waterCells = surface && tileset ? waterCellIndices(map, tileset) : [];
+      // 옆에서 본 하늘은 윗줄을, 위에서 본 면(바다·별·구름)은 물 칸이나 맵 둘레를 비운다 — 바다를 하늘 자리에 깔지 않는다.
+      const plan: { readonly label: string; readonly cells: readonly number[]; readonly testid: string } = surface
+        ? waterCells.length > 0
+          ? { label: `물 칸 ${waterCells.length}개 비우기(배경 바다 자리)`, cells: waterCells, testid: "map-bg-clear-water" }
+          : { label: "맵 둘레 2칸 비우기", cells: borderCellIndices(map, 2), testid: "map-bg-clear-border" }
+        : (() => {
+          const rows = Math.max(1, Math.min(Math.ceil(HORIZON_PRESET_FEATURE_HEIGHT / mapTileSize(map, tileset)), Math.floor(map.height / 2)));
+          return { label: `윗줄 ${rows}줄 비우기(하늘 자리)`, cells: Array.from({ length: rows * map.width }, (_, index) => index), testid: "map-bg-clear-top" };
+        })();
+      status.append(el("button", {
+        class: "btn btn-small", text: plan.label, attrs: { type: "button" },
+        dataset: { testid: plan.testid },
+        on: { click: () => confirmClearForBackground(map, plan.cells, plan.label, () => {
+          // 시작 위치를 옮기면 프로젝트 스냅숏 — Ctrl+Z 한 번에 타일과 시작 위치가 같이 돌아온다.
+          const live = store.getCurrent();
+          const liveMap = live.maps[map.id];
+          const startMoves = live.startMapId === map.id && liveMap !== undefined
+            && startPosAfterBackgroundClear(liveMap, live.startPos, new Set(plan.cells), (cleared, x, y) => isPassableLanding(live, cleared, x, y)).kind === "moved";
+          recordProjectSnapshot(`맵 배경: ${plan.label}`, map.id, startMoves ? undefined : { kind: "map" });
+          clearMapCellsForBackground(map.id, plan.cells);
+          setMapBackground(map.id, { ...current()!, showInEmptyCells: true });
+          rerender(host, plan.testid);
+        }) },
+      }));
     }
-
-    // 반복은 기본값이라 «끈 것» 만 저장한다(normalize 와 같은 규칙 — 옛 JSON 바이트 유지).
-    const loopRow = el("div", { class: "map-props-check-row" });
-    const loopBox = (key: "loopX" | "loopY", label: string): HTMLElement => {
-      const box = el("input", {
-        attrs: { type: "checkbox" },
-        dataset: { testid: `map-bg-loop-${key === "loopX" ? "x" : "y"}` },
-      }) as HTMLInputElement;
-      box.checked = bg[key] !== false;
-      box.addEventListener("change", () => {
-        const next = { ...store.getCurrent().maps[map.id]!.background! };
-        if (box.checked) delete next[key];
-        else next[key] = false;
-        setMapBackground(map.id, next);
-      });
-      const wrapper = el("label", { class: "map-props-check-row" });
-      wrapper.append(box, el("span", { text: label }));
-      return wrapper;
-    };
-    loopRow.append(loopBox("loopX", "가로 반복"), loopBox("loopY", "세로 반복"));
-    section.append(loopRow);
-
-    // 빈 칸에도 배경 — 기본은 RM2K 규칙(창 타일에서만 비침). 창 타일이 없는 칩셋은 이것을 켜야 보인다.
-    const emptyBox = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "map-bg-show-in-empty" } }) as HTMLInputElement;
-    emptyBox.checked = bg.showInEmptyCells === true;
-    emptyBox.addEventListener("change", () => {
-      const next = { ...store.getCurrent().maps[map.id]!.background! };
-      if (emptyBox.checked) next.showInEmptyCells = true;
-      else delete next.showInEmptyCells;
-      setMapBackground(map.id, next);
-    });
-    const emptyRow = el("label", {
-      class: "map-props-check-row",
-      attrs: { title: "끄면 파노라마 창 타일(합본 마을 #233·#258)을 깐 칸에서만 배경이 보이고 빈 칸은 검게 가려집니다." },
-    });
-    emptyRow.append(emptyBox, el("span", { text: "빈 칸에도 배경 보이기" }));
-    section.append(emptyRow);
   }
+  section.append(status);
+  const controls = el("div", { class: "map-bg-controls" });
+
+  // 3. 게임 화면 미리보기 — 플레이와 같은 배율·움직임. 단추(움직임·맞추기) 아래에 붙여 누르고 바로 본다.
+  let livePreview: HTMLElement | null = null;
+  let cameraStill = false;
+  if (hasImage) {
+    const viewport = mapBackgroundGameViewport(project.system);
+    const tileset = project.tilesets[map.tilesetId];
+    const tileSize = mapTileSize(map, tileset);
+    const start = project.startMapId === map.id ? project.startPos : undefined;
+    const clampOrigin = (center: number, size: number, worldSize: number): number =>
+      worldSize <= size ? 0 : Math.max(0, Math.min(worldSize - size, Math.round(center - size / 2)));
+    const cover = {
+      cols: map.width, rows: map.height, tileSize,
+      originX: start ? clampOrigin((start.x + 0.5) * tileSize, viewport.width, map.width * tileSize) : 0,
+      originY: start ? clampOrigin((start.y + 0.5) * tileSize, viewport.height, map.height * tileSize) : 0,
+      cellVisible: mapBackgroundCellVisible(map, tileset),
+    };
+    const pan = { left: cover.originX, right: Math.max(0, map.width * tileSize - viewport.width - cover.originX) };
+    const moves = pan.left + pan.right > 0;
+    cameraStill = !moves;
+    const preview = el("figure", { class: "map-bg-live" });
+    preview.append(
+      createMapBackgroundLivePreview({ background: bg, project, viewport, cover, pan }),
+      el("figcaption", { class: "map-props-hint", text: moves
+        ? `시작 화면 ${viewport.width}×${viewport.height} 그대로 · 어두운 칸은 타일이 가리는 자리 · 주인공이 좌우로 걷는다고 가정한 움직임`
+        : `시작 화면 ${viewport.width}×${viewport.height} 그대로 · 어두운 칸은 타일이 가리는 자리 · 카메라 고정(한 화면 맵)` }),
+    );
+    livePreview = preview;
+  }
+
+  // 4. 움직임 프리셋.
+  const detected = detectMapBackgroundMotion(bg);
+  const motionRow = el("div", { class: "map-bg-motion-row", attrs: { role: "group", "aria-label": "움직임" } });
+  for (const motion of MAP_BACKGROUND_MOTIONS) {
+    const label = MAP_BACKGROUND_MOTION_LABELS[motion];
+    motionRow.append(el("button", {
+      class: "btn map-bg-motion", text: label.name,
+      attrs: { type: "button", title: label.hint, "aria-pressed": detected === motion ? "true" : "false" },
+      dataset: { testid: `map-bg-motion-${motion}` },
+      on: { click: () => commit(applyMapBackgroundMotion(current()!, motion), `map-bg-motion-${motion}`) },
+    }));
+  }
+  controls.append(fieldRow("움직임", motionRow));
+  controls.append(el("p", { class: "map-props-hint", text: detected
+    ? MAP_BACKGROUND_MOTION_LABELS[detected].hint
+    : activeSet ? "견본 권장 움직임(층마다 다름) — 위 단추로 통째로 바꿀 수 있습니다." : "직접 조정한 움직임 — 세부 조정에서 층마다 바꿀 수 있습니다." }));
+  if (cameraStill) {
+    // 2026-10-21 적대 검수: 이 안내가 미리보기 캡션(모달 아래쪽)에만 있어 스크롤해야 보였다 — 단추 바로 아래에 둔다.
+    controls.append(el("p", {
+      class: "map-props-hint is-warn", dataset: { testid: "map-bg-camera-still" },
+      text: "이 맵은 한 화면 크기라 걸어도 카메라가 움직이지 않습니다 — 시차(깊이)는 화면보다 큰 맵에서만 보이고, 여기서는 흐름만 보입니다.",
+    }));
+  }
+
+  // 5. 맞추기 + 빈 칸.
+  const fitSelect = el("select", { attrs: { "aria-label": "그림 맞추기" }, dataset: { testid: "map-bg-fit" } }) as HTMLSelectElement;
+  fitSelect.append(
+    el("option", { attrs: { value: "cover" }, text: "화면에 맞춤(큰 그림·사진)" }),
+    el("option", { attrs: { value: "native" }, text: "원본 크기 1:1(도트 그림·무늬 반복)" }),
+  );
+  fitSelect.value = bg.fit === "cover" ? "cover" : "native";
+  fitSelect.addEventListener("change", () => {
+    const next = { ...current()! };
+    if (fitSelect.value === "cover") next.fit = "cover";
+    else delete next.fit;
+    commit(next, "map-bg-fit");
+  });
+  controls.append(fieldRow("그림 맞추기", fitSelect));
+  const baseAsset = project.assets.uploaded[bg.imageId];
+  const baseWidth = baseAsset?.meta.width ?? 0;
+  const viewportNow = mapBackgroundGameViewport(project.system);
+  if (bg.fit !== "cover" && baseWidth > viewportNow.width * 2) {
+    controls.append(el("p", { class: "map-props-hint is-warn", dataset: { testid: "map-bg-fit-warn" },
+      text: `그림 폭이 ${baseWidth}px 로 게임 화면(${viewportNow.width}px)보다 훨씬 큽니다 — 1:1 이면 왼쪽 위 일부만 보입니다. 「화면에 맞춤」 을 권합니다.` }));
+  }
+
+  const emptyBox = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "map-bg-show-in-empty" } }) as HTMLInputElement;
+  emptyBox.checked = bg.showInEmptyCells === true;
+  emptyBox.addEventListener("change", () => {
+    const next = { ...current()! };
+    if (emptyBox.checked) next.showInEmptyCells = true;
+    else delete next.showInEmptyCells;
+    commit(next, "map-bg-show-in-empty");
+  });
+  const emptyRow = el("label", {
+    class: "map-props-check-row",
+    attrs: { title: "끄면 옛 RM2K 규칙 — 파노라마 창 타일(합본 마을 #233·#258)을 깐 칸에서만 비치고 빈 칸은 검게 가려집니다. 지금 기본 칩셋에는 창 타일이 없습니다." },
+  });
+  emptyRow.append(emptyBox, el("span", { text: "빈 칸에도 배경 보이기" }));
+  controls.append(emptyRow);
+  // 미리보기를 단추 옆에 둔다 — 아래에 두면 단추를 눌러도 화면 밖이라 바뀐 게 안 보였다(적대 검수).
+  const mainRow = el("div", { class: "map-bg-main" });
+  if (livePreview) mainRow.append(livePreview);
+  mainRow.append(controls);
+  section.append(mainRow);
+
+  // 6. 세부 조정 — 예전 숫자 칸. 접어 둔다(프리셋으로 대부분 끝난다).
+  const details = el("details", { class: "map-bg-details" });
+  details.append(el("summary", { text: "세부 조정(층마다 흐름·깊이·반복)", dataset: { testid: "map-bg-details" } }));
+  const scrollLine = el("div", { class: "map-props-size-row" });
+  const sxInput = el("input", {
+    attrs: { type: "number", min: String(-MAP_BACKGROUND_SCROLL_LIMIT), max: String(MAP_BACKGROUND_SCROLL_LIMIT), step: "0.1", "aria-label": "가로 흐름(px/프레임)" },
+    value: String(bg.scrollX ?? 0),
+    dataset: { testid: "map-bg-scroll-x" },
+  });
+  const syInput = el("input", {
+    attrs: { type: "number", min: String(-MAP_BACKGROUND_SCROLL_LIMIT), max: String(MAP_BACKGROUND_SCROLL_LIMIT), step: "0.1", "aria-label": "세로 흐름(px/프레임)" },
+    value: String(bg.scrollY ?? 0),
+    dataset: { testid: "map-bg-scroll-y" },
+  });
+  scrollLine.append(el("span", { text: "가로" }), sxInput, el("span", { text: "세로" }), syInput, el("span", { text: "px/프레임(1 = 초당 60px)" }));
+  // 범위 밖 입력은 **조용히 클램프**한다 — 상한은 로드 정규화·AI 툴 스키마와 같은 상수(`@/project/mapBackground`).
+  const updateScroll = (key: "scrollX" | "scrollY", input: HTMLInputElement): void => {
+    const value = Number(input.value);
+    const normalized = normalizeMapBackgroundScroll(value);
+    if (normalized === undefined) {
+      input.value = String(current()?.[key] ?? 0);
+      return;
+    }
+    commit({ ...current()!, [key]: normalized }, input.dataset.testid);
+  };
+  sxInput.addEventListener("change", () => updateScroll("scrollX", sxInput));
+  syInput.addEventListener("change", () => updateScroll("scrollY", syInput));
+  details.append(fieldRow("첫 장 흐름", scrollLine));
+
+  // 깊이(카메라 따라가기) — 입력은 %, 저장은 0..2 비율.
+  const followInput = (value: number | undefined, label: string, testid: string, onCommit: (next: number | undefined) => void): HTMLInputElement => {
+    const input = el("input", {
+      attrs: { type: "number", min: "0", max: String(MAP_BACKGROUND_CAMERA_FOLLOW_LIMIT * 100), step: "5", "aria-label": label },
+      value: String(Math.round((value ?? 0) * 100)),
+      dataset: { testid },
+    }) as HTMLInputElement;
+    input.addEventListener("change", () => {
+      const next = normalizeMapBackgroundCameraFollow(Number(input.value) / 100);
+      input.value = String(Math.round((next ?? 0) * 100));
+      onCommit(next);
+    });
+    return input;
+  };
+  const baseFollowLine = el("div", { class: "map-props-size-row" });
+  baseFollowLine.append(
+    followInput(bg.cameraFollow, "첫 장 깊이(%)", "map-bg-camera-follow", (next) => {
+      const nextBg = { ...current()! };
+      if (next === undefined) delete nextBg.cameraFollow;
+      else nextBg.cameraFollow = next;
+      commit(nextBg, "map-bg-camera-follow");
+    }),
+    el("span", { text: "% (0 = 화면 고정, 100 = 타일과 함께)" }),
+  );
+  details.append(fieldRow("첫 장 깊이", baseFollowLine));
+
+  const extraLayers = bg.layers ?? [];
+  if (extraLayers.length > 0) {
+    const layerList = el("div", { class: "map-bg-layer-list", dataset: { testid: "map-bg-layer-list" } });
+    const updateLayer = (index: number, patch: (layer: MapBackgroundLayer) => MapBackgroundLayer, focus: string): void => {
+      const base = current()!;
+      const layers = (base.layers ?? []).map((layer, at) => (at === index ? patch({ ...layer }) : layer));
+      commit({ ...base, layers }, focus);
+    };
+    for (const [index, layer] of extraLayers.entries()) {
+      const row = el("div", { class: "map-bg-layer-row", dataset: { testid: `map-bg-layer-row-${index}` } });
+      const flowInput = el("input", {
+        attrs: { type: "number", min: String(-MAP_BACKGROUND_SCROLL_LIMIT), max: String(MAP_BACKGROUND_SCROLL_LIMIT), step: "0.1", "aria-label": `레이어 ${index + 2} 가로 흐름` },
+        value: String(layer.scrollX ?? 0),
+        dataset: { testid: `map-bg-layer-scroll-x-${index}` },
+      }) as HTMLInputElement;
+      flowInput.addEventListener("change", () => {
+        const next = normalizeMapBackgroundScroll(Number(flowInput.value));
+        updateLayer(index, (entry) => {
+          if (next === undefined || next === 0) delete entry.scrollX;
+          else entry.scrollX = next;
+          return entry;
+        }, `map-bg-layer-scroll-x-${index}`);
+      });
+      const layerName = listDatabaseResourceOptions("backdrop", project).find((item) => item.id === layer.imageId)?.name ?? layer.imageId;
+      row.append(
+        el("span", { class: "map-bg-layer-name", text: `${index + 2}. ${layerName}`, attrs: { title: layer.imageId } }),
+        el("span", { text: "흐름" }),
+        flowInput,
+        el("span", { text: "깊이%" }),
+        followInput(layer.cameraFollow, `레이어 ${index + 2} 깊이(%)`, `map-bg-layer-camera-follow-${index}`, (next) => {
+          updateLayer(index, (entry) => {
+            if (next === undefined) delete entry.cameraFollow;
+            else entry.cameraFollow = next;
+            return entry;
+          }, `map-bg-layer-camera-follow-${index}`);
+        }),
+      );
+      layerList.append(row);
+    }
+    layerList.append(el("button", {
+      class: "btn", text: "위 레이어 지우기", attrs: { type: "button" },
+      dataset: { testid: "map-bg-layers-clear" },
+      on: { click: () => {
+        const next = { ...current()! };
+        delete next.layers;
+        commit(next, "map-bg-layers-clear");
+      } },
+    }));
+    details.append(fieldRow(`위 레이어 ${extraLayers.length}/${MAP_BACKGROUND_EXTRA_LAYER_LIMIT}`, layerList));
+  }
+
+  // 반복은 기본값이라 «끈 것» 만 저장한다(normalize 와 같은 규칙 — 옛 JSON 바이트 유지).
+  const loopRow = el("div", { class: "map-props-check-row" });
+  const loopBox = (key: "loopX" | "loopY", label: string): HTMLElement => {
+    const box = el("input", {
+      attrs: { type: "checkbox" },
+      dataset: { testid: `map-bg-loop-${key === "loopX" ? "x" : "y"}` },
+    }) as HTMLInputElement;
+    box.checked = bg[key] !== false;
+    box.addEventListener("change", () => {
+      const next = { ...current()! };
+      if (box.checked) delete next[key];
+      else next[key] = false;
+      commit(next, box.dataset.testid);
+    });
+    const wrapper = el("label", { class: "map-props-check-row" });
+    wrapper.append(box, el("span", { text: label }));
+    return wrapper;
+  };
+  loopRow.append(loopBox("loopX", "첫 장 가로 반복"), loopBox("loopY", "첫 장 세로 반복"));
+  details.append(loopRow);
+  section.append(details);
 
   host.append(section);
 }
 
-// 레이어 세트 피커 — 4세트를 합성본 썬네일 카드로 보여주고 클릭 한 번으로 적용한다.
-// 드롭다운은 "보고 고르는" 배경 저작에 맞지 않아(2026-09-21 사용자 피드백) 카드 피커로 바꾴다.
-function openLayerSetPicker(input: {
-  hasCurrentBackground: boolean;
-  onPick: (setId: string) => void;
-}): void {
-  const confirmPick = (setId: string): void => {
-    if (input.hasCurrentBackground) {
-      openDialog("map-bg-layer-set-confirm", "배경 교체", [
-        el("p", { class: "map-bg-layer-confirm-text", text: "레이어 세트를 적용하면 현재 맵 배경(그림·레이어)를 모두 교체합니다. 계속할까요?" }),
-      ], [
-        { label: "교체", testid: "map-bg-layer-set-confirm-ok", action: () => input.onPick(setId) },
-        { label: "취소", testid: "map-bg-layer-set-confirm-cancel" },
-      ]);
-      return;
-    }
-    input.onPick(setId);
-  };
+/** 그림 한 장짜리 배경 — 위 레이어는 떼고(다른 세트의 구름이 남지 않게) 움직임·빈 칸 설정은 이어 받는다. */
+function singleImageBackground(base: MapBackground | undefined, imageId: string, fit: "cover" | "native"): MapBackground {
+  const next: MapBackground = { ...(base ?? {}), imageId, showInEmptyCells: base?.showInEmptyCells ?? true };
+  delete next.layers;
+  if (fit === "cover") next.fit = "cover";
+  else delete next.fit;
+  return next;
+}
 
-  const grid = el("div", { class: "map-bg-layer-set-grid", dataset: { testid: "map-bg-layer-set-grid" } });
-  for (const set of OGA_CRAFTPIX_BACKDROP_SETS) {
-    const thumb = resolveAssetResourceUrl(set.composite.id, { project: store.getCurrent() });
-    const card = el("button", {
-      class: "map-bg-layer-set-card",
-      attrs: { type: "button" },
-      dataset: { testid: `map-bg-layer-set-card-${set.id}` },
-      on: { click: () => confirmPick(set.id) },
-    });
-    if (thumb) {
-      card.append(el("img", {
-        class: "map-bg-layer-set-thumb",
-        attrs: { src: thumb, alt: set.name, loading: "lazy" },
-      }));
-    }
-    card.append(el("span", { class: "map-bg-layer-set-name", text: set.name }));
-    card.append(el("span", { class: "map-bg-layer-set-meta", text: `레이어 ${set.layers.length}장` }));
-    grid.append(card);
+/** 윗줄 n 줄의 모든 타일 층을 비운다 — 「하늘 자리」. 조수 `clearForBackground` 사각형과 같은 결과. */
+function clearMapCellsForBackground(mapId: string, cells: readonly number[]): void {
+  store.update((project) => {
+    const target = project.maps[mapId];
+    if (!target) return;
+    const plan = project.startMapId === mapId
+      ? startPosAfterBackgroundClear(target, project.startPos, new Set(cells), (cleared, x, y) => isPassableLanding(project, cleared, x, y))
+      : null;
+    for (const index of cells) clearMapCellForBackground(target, index);
+    if (plan?.kind === "moved") project.startPos = { x: plan.x, y: plan.y };
+  }, { scope: "map", mapId });
+}
+
+/** 칸을 지우기 전에 몇 칸·어떤 이벤트가 걸리는지 묻는다. 지운 뒤에는 Ctrl+Z 로 되돌린다. */
+function confirmClearForBackground(
+  map: import("@/project/types").GameMap,
+  cells: readonly number[],
+  label: string,
+  onConfirm: () => void,
+): void {
+  const cellSet = new Set(cells);
+  const tiles = cells.filter((index) => (map.lowerTiles[index] ?? -1) >= 0 || (map.upperTiles[index] ?? -1) >= 0).length;
+  const events = map.events.filter((event) => cellSet.has(event.y * map.width + event.x));
+  const body = [el("p", { text: `타일 ${tiles}칸을 지워 배경이 보이는 자리로 만듭니다. 지운 칸은 걸을 수 없습니다. Ctrl+Z 로 되돌릴 수 있습니다.` })];
+  const project = store.getCurrent();
+  const startPlan = project.startMapId === map.id
+    ? startPosAfterBackgroundClear(map, project.startPos, cellSet, (cleared, x, y) => isPassableLanding(project, cleared, x, y))
+    : null;
+  if (startPlan?.kind === "moved") {
+    body.push(el("p", {
+      class: "is-warn",
+      dataset: { testid: "map-bg-clear-start-moved" },
+      text: startPlan.reason === "cleared"
+        ? `시작 위치(${project.startPos.x},${project.startPos.y})가 지울 자리에 있어 가장 가까운 남는 칸(${startPlan.x},${startPlan.y})으로 옮깁니다 — 그대로 두면 주인공이 첫 칸에서 움직이지 못합니다.`
+        : `지우고 나면 시작 위치(${project.startPos.x},${project.startPos.y})에서 나갈 길이 없어 가장 가까운 설 수 있는 칸(${startPlan.x},${startPlan.y})으로 옮깁니다.`,
+    }));
+  } else if (startPlan?.kind === "stuck") {
+    body.push(el("p", {
+      class: "is-warn",
+      dataset: { testid: "map-bg-clear-start-stuck" },
+      text: "지우고 나면 주인공이 설 수 있는 칸이 남지 않아 시작 위치를 옮기지 못합니다 — 이대로 지우면 주인공이 첫 칸에서 움직이지 못합니다.",
+    }));
   }
-
-  openDialog("map-bg-layer-set-dialog", "레이어 세트 선택", [
-    el("p", { class: "map-bg-layer-set-hint", text: "세트를 고르면 첫 장이 배경 그림이 되고 나머지 레이어가 위에 얹힙니다. 먼 층일수록 카메라를 덜 따라가도록 깊이가 자동으로 들어가며, 층마다 흐름·깊이는 맵 속성에서 고칠 수 있습니다." }),
-    grid,
-  ], [
-    { label: "취소", testid: "map-bg-layer-set-dialog-cancel" },
+  if (events.length > 0) {
+    const names = events.slice(0, 3).map((event) => event.name || event.id).join(", ") + (events.length > 3 ? " …" : "");
+    body.push(el("p", { class: "is-warn", text: `이 자리에 이벤트 ${events.length}개(${names})가 있습니다 — 이벤트는 남지만 빈 칸 위에 서게 됩니다.` }));
+  }
+  openDialog("map-bg-clear-confirm", label, body, [
+    { label: "지우기", testid: "map-bg-clear-confirm-ok", action: onConfirm },
+    { label: "취소", testid: "map-bg-clear-confirm-cancel" },
   ]);
+}
+
+function waterCellIndices(map: import("@/project/types").GameMap, tileset: import("@/project/types").TilesetDef): number[] {
+  const out: number[] = [];
+  for (let index = 0; index < map.lowerTiles.length; index += 1) {
+    const tile = map.lowerTiles[index] ?? -1;
+    if (tile >= 0 && (tileCategoriesForTile(tileset, tile).includes("water") || tileset.tileMeta?.[tile]?.tags?.includes("water") === true)) out.push(index);
+  }
+  return out;
+}
+
+function borderCellIndices(map: Pick<import("@/project/types").GameMap, "width" | "height">, ring: number): number[] {
+  const out: number[] = [];
+  for (let y = 0; y < map.height; y += 1) {
+    for (let x = 0; x < map.width; x += 1) {
+      if (x < ring || y < ring || x >= map.width - ring || y >= map.height - ring) out.push(y * map.width + x);
+    }
+  }
+  return out;
 }
 
 // ── BGM 탭 (RM2003 BGM) ──

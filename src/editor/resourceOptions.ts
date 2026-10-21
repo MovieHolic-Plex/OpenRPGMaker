@@ -22,6 +22,7 @@ import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { listOpeningStillMoods } from "@/assets/openingStillMoods";
 import { OGA_BACKDROP_ASSETS } from "@/assets/ogaBackdropAssets";
 import { OGA_CRAFTPIX_BACKDROP_ASSETS } from "@/assets/ogaCraftpixBackgrounds";
+import { OPRN_PANORAMA_ASSETS } from "@/assets/oprnPanoramas";
 import {
   SCARLOXY_BACKDROP_ASSETS,
   SCARLOXY_MONSTER_ICON_ASSETS,
@@ -139,6 +140,8 @@ export function listDatabaseResourceOptions(
       for (const asset of EASYRPG_SYSTEM2_ASSETS) add(asset.id, asset.name);
       break;
     case "backdrop":
+      // 맵 파노라마 견본이 먼저다 — 맵 배경을 고르는 사람이 첫 화면에서 하늘·바다를 보게.
+      for (const asset of OPRN_PANORAMA_ASSETS) add(asset.id, asset.name);
       for (const asset of EASYRPG_BACKDROP_ASSETS) add(asset.id, asset.name);
       for (const asset of SCARLOXY_BACKDROP_ASSETS) add(asset.id, asset.name);
       for (const asset of OGA_BACKDROP_ASSETS) add(asset.id, asset.name);
@@ -152,6 +155,7 @@ export function listDatabaseResourceOptions(
       for (const asset of SCARLOXY_BACKDROP_ASSETS) add(asset.id, asset.name);
       for (const asset of OGA_BACKDROP_ASSETS) add(asset.id, asset.name);
       for (const asset of OGA_CRAFTPIX_BACKDROP_ASSETS) add(asset.id, asset.name);
+      for (const asset of OPRN_PANORAMA_ASSETS) add(asset.id, asset.name);
       for (const asset of EASYRPG_TITLE_ASSETS) add(asset.id, asset.name);
       for (const profile of project.resourceProfiles) {
         if (profile.kind === "gameOver" && profile.assetId) add(profile.assetId, profile.name || profile.assetId);
