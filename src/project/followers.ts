@@ -415,6 +415,8 @@ export type FollowerWorld = {
   readonly blocked?: (x: number, y: number) => boolean;
   /** 이벤트(대화·장면)가 도는 중 — companions.fanOutInScenes 가 켜져 있으면 둘째 동료부터 옆 줄에 선다. */
   readonly inScene?: boolean;
+  /** 주인공이 보는 방향. 궤적 없이 옆으로 비켜 선 동료(spreadWhenBlocked — 문으로 막 들어온 직후)는 주인공과 같은 쪽을 본다. */
+  readonly playerFacing?: Dir;
 };
 
 export function followerPositions(
@@ -494,7 +496,7 @@ export function followerPositions(
       const spread = config?.spreadWhenBlocked === true && world ? nearestSpreadCell(session, world, clear) : null;
       if (spread) {
         taken.push(spread);
-        return { follower, x: spread.x, y: spread.y, direction: follower.graphic.direction };
+        return { follower, x: spread.x, y: spread.y, direction: world?.playerFacing ?? follower.graphic.direction };
       }
       return { follower, x: session.x, y: session.y, direction: follower.graphic.direction, hidden: true };
     }

@@ -23,8 +23,10 @@ import { buildFallenStarOpening, FALLEN_STAR_TITLE_BACKGROUND } from "./fallenSt
 import { clearOrphanShadows, clearUpperByLabel, dressVaultRock, padMapCentered, varyVaultFloor, rimPit, scatterVaultFloorPatches } from "./fallenStarMapPolish";
 import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./fallenStarStory";
 import { reworkFallenTown } from "./fallenTown";
+import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX, ensureFallenValenChip } from "./fallenValenChip";
 import { buildFallenTownInteriors } from "./fallenTownInteriors";
 import { dressObservatoryHall } from "./fallenObservatoryHall";
+import { isFallenRoomRebuilt } from "./fallenRoomOwnership";
 import handInteriorSpec from "@/assets/handInteriorSpec.json";
 import { BEODEUL_GROUND_RECIPES } from "@/project/defaults/beodeulGround";
 import type { FlagshipDemoBuildResult } from "./types";
@@ -455,7 +457,7 @@ function setEventChip(map: GameMap | undefined, eventId: string, texture: string
     const direction = page.graphic.direction ?? "down";
     page.graphic = {
       ...page.graphic,
-      sprite: { type: "bundled", id: texture },
+      sprite: { type: texture === FS_VALEN_CHARSET_ID ? "uploaded" : "bundled", id: texture },
       direction,
       pattern: charsetFrameIndex({ characterIndex, direction, pattern: 1 }),
     };
@@ -554,7 +556,7 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   const byId = (id: string): GameEvent => hub.events.find((e) => e.id === id)!;
   // 발렌이 주인공 쪽에 홀로 서고, 그 뒤(동쪽)로 두 줄(큰길 두 줄)이 늘어선다 — 걸을 때는 동쪽 끝부터 성문으로 간다.
   const formation: [GameEvent, number, number, string, number][] = [
-    [valen, 0, 0, "tex_easyrpg_charset_actor1", 4], [knight, 1, -1, "tex_easyrpg_charset_actor1", 2],
+    [valen, 0, 0, FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX], [knight, 1, -1, "tex_easyrpg_charset_actor1", 2],
     ...escorts.map(([id, tex, index], k): [GameEvent, number, number, string, number] => [byId(id), 1 + Math.floor((k + 1) / 2), (k + 1) % 2 === 1 ? 0 : -1, tex, index]),
   ];
   const marchers = new Set(formation.map(([e]) => e.id));
@@ -806,6 +808,9 @@ function valenWalksIn(project: Project, vault: GameMap, bossId: string): void {
     id: `${bossId}_unseen`, name: "아직 오지 않음", conditions: [], graphic: { transparent: true },
     movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "below", trigger: { kind: "action" }, commands: [],
   } as EventPage);
+  // 금고의 발렌도 마을의 발렌과 같은 칩(흉상에 맞춘 긴 푸른 머리·머리띠).
+  ensureFallenValenChip(project);
+  setEventChip(vault, bossId, FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX);
   const visible = boss.pages.find((p) => p.graphic?.sprite)?.graphic;
   // 북쪽 통로에서 출발: 보스 위로 6~8칸, 좌우 2칸 안의 걸을 수 있는 칸 중 보스까지 길이 가장 긴(가장 깊은) 곳.
   let start: { x: number; y: number } | undefined;
@@ -948,7 +953,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applySpeakerPrefixes(project);
 
   // 인물 칩 — 검색어로 고른 그림 대신 정해 둔 배우를 쓴다(같은 인물이 맵마다 다른 그림이면 안 된다).
-  setEventChip(M(ids.hub), `ev_${FS_PREFIX}_valen`, "tex_easyrpg_charset_actor1", 4);
+  ensureFallenValenChip(project);
+  setEventChip(M(ids.hub), `ev_${FS_PREFIX}_valen`, FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX);
   setEventChip(M(ids.hub), `ev_${FS_PREFIX}_knight`, "tex_easyrpg_charset_actor1", 2);
   // 하넬 — 오프닝 그림의 백발 학자와 맞게 People3 #4(흰 머리·흰 수염·회색 옷)와 그 짝 얼굴 People2 #4.
   // 예전 People1 #6 칩은 대머리·녹색 옷이라 오프닝·초상화와 다른 사람으로 읽혔다(감사 VQA 2차).
@@ -1217,7 +1223,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   touchTransfer(M(PUZZLE_ROOM), "ev_fs_vault_gate_down", 10, 14, { mapId: M(ids.observatory).id, x: hatchFront.x, y: hatchFront.y, direction: "down" });
   const vaultStairs = retarget(M(ids.vault), M(ids.observatory).id, { mapId: PUZZLE_ROOM, x: 10, y: 3, direction: "down" });
   const vaultEntry = vaultStairs ? { x: vaultStairs.x, y: vaultStairs.y + 2 } : { x: 30, y: 58 };
-  for (const gx of [9, 10]) touchTransfer(M(PUZZLE_ROOM), `ev_fs_vault_gate_up${gx}`, gx, 3, { mapId: M(ids.vault).id, x: vaultEntry.x, y: vaultEntry.y, direction: "up" });
+  const roomsOwned = (id: string): boolean => isFallenRoomRebuilt(project, M(id)?.id ?? id);
+  if (!roomsOwned(PUZZLE_ROOM)) for (const gx of [9, 10]) touchTransfer(M(PUZZLE_ROOM), `ev_fs_vault_gate_up${gx}`, gx, 3, { mapId: M(ids.vault).id, x: vaultEntry.x, y: vaultEntry.y, direction: "up" });
 
   // 동문 문지기는 성문 곁(reworkFallenTown 이 세운 자리)에 그대로 선다.
 
@@ -1280,13 +1287,13 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 맵 마감(감사 3차) — 주인 없는 그림자, 화로의 방 긴 화덕 띠.
   for (const map of [M(ids.hub), M(ids.forest), M(ids.vault)]) clearOrphanShadows(project, map);
   // 지하 묘소 — 방 사이 균일한 남색 허공을 방 가까이에서 바위 덩어리로 바꿔 화면이 비어 보이지 않게 한다(VQA).
-  dressVaultRock(M(ids.vault), new Set([28462, 28509]), { edge: [25276, 25279, 25282], vein: [25277, 25280, 25283], mid: [25284, 25287, 25288], deep: [28462, 28509] });
-  varyVaultFloor(M(ids.vault), new Set([26817, 26818, 26819]), [26815, 26816], [26819, 26819, 26818, 26817], 90);
+  if (!roomsOwned(ids.vault)) dressVaultRock(M(ids.vault), new Set([28462, 28509]), { edge: [25276, 25279, 25282], vein: [25277, 25280, 25283], mid: [25284, 25287, 25288], deep: [28462, 28509] });
+  if (!roomsOwned(ids.vault)) varyVaultFloor(M(ids.vault), new Set([26817, 26818, 26819]), [26815, 26816], [26819, 26819, 26818, 26817], 90);
   // 세이브 결정의 방(x18~34, y18~28)은 같은 회색 포석이 한 면이라 평평했다 — 가운데 길을 빼고 흙·이끼 얼룩을 흩뿌린다(VQA).
-  scatterVaultFloorPatches(M(ids.vault), { x0: 18, y0: 18, x1: 34, y1: 28 }, new Set([26817, 26818, 26819]), [26809, 26810, 26811], [26815, 26816, 26812], [25, 27]);
-  clearUpperByLabel(project, M(PUZZLE_ROOM), /^긴 화덕/);
+  if (!roomsOwned(ids.vault)) scatterVaultFloorPatches(M(ids.vault), { x0: 18, y0: 18, x1: 34, y1: 28 }, new Set([26817, 26818, 26819]), [26809, 26810, 26811], [26815, 26816, 26812], [25, 27]);
+  if (!roomsOwned(PUZZLE_ROOM)) clearUpperByLabel(project, M(PUZZLE_ROOM), /^긴 화덕/);
   // 화로의 방(20×15)은 화면보다 작아 바깥이 검은 허공 + 먼지 입자(별밭)로 보였다 — 사방에 바위 둘레를 덧붙이고 들어오는 이동 좌표를 같은 만큼 민다(VQA r4).
-  {
+  if (!roomsOwned(PUZZLE_ROOM)) {
     const padX = 6, padY = 3;
     // 이 방은 atlas_biome_interior 라 지하실 바위 id(beodeul_city)가 없다 — 방 위쪽 벽면(3166~3176 두 줄)을 사방으로 이어 암반 덩이로 읽히게 한다.
         const wallUpper = [3170, 3172, 3166, 3168], wallLower = [3134, 3176, 3174, 3132];
@@ -1324,7 +1331,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   }
   // 천문대(18×19)도 화면(30×17)보다 좁아 양옆·위아래가 검은 허공으로 40% 가량 비었다 — 화로의 방과 같이 암반 벽 둘레를 덧붙이고
   // 이 맵으로 들어오는 모든 이동 좌표를 같은 만큼 민다(VQA r5). 위 계단·철문·뚜껑문 좌표 작업은 모두 끝난 뒤여야 한다.
-  {
+  if (!roomsOwned(ids.observatory)) {
     const padX = 6, padY = 3;
     const wallUpper = [3170, 3172, 3166, 3168], wallLower = [3134, 3176, 3174, 3132];
     // 방 바로 바깥은 같은 지도 안의 어두운 벽 덩어리(1번 칸 — 방 사이 빈 곳과 같은 칸)로 이어 건물 속처럼 읽히게 하고,
@@ -1514,14 +1521,15 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 실내 맵의 방 밖은 전부 어둠(game-scene-polish 3-7·11-6, 사용자 지적 「방 사이가 회색 바닥 띠로 읽힌다」) — 회색 디더·바위 천장은
   // 같은 이웃 번호의 어두운 천장으로, 여백을 메운 바위벽 조각은 공허 칸으로.
   // 천문대 윗 홀 — 오프닝 컷처럼 둥근 단 위 큰 망원경·혼천의·태양계의·별 지도 탁자(VQA r3 「집처럼 보인다」).
-  dressObservatoryHall(project, M(ids.observatory), "ev_fs_scope");
-  unifyPuzzleFloor(project, M("fs_vault_gate"));
+  if (!roomsOwned(ids.observatory)) dressObservatoryHall(project, M(ids.observatory), "ev_fs_scope");
+  if (!roomsOwned("fs_vault_gate")) unifyPuzzleFloor(project, M("fs_vault_gate"));
   joinForestTrail(project, ids.forest);
-  for (const map of Object.values(project.maps)) if (map.tilesetId === "atlas_biome_interior") { darkenInteriorMargins(map); dropFloorHangs(project, map); }
+  for (const map of Object.values(project.maps)) if (map.tilesetId === "atlas_biome_interior" && !isFallenRoomRebuilt(project, map.id)) { darkenInteriorMargins(map); dropFloorHangs(project, map); }
   // 둘레를 덧댄 실내(천문대·화로의 방)는 남쪽 출구가 맵 가장자리가 아니라 벽 틈 맨바닥이었다(scene-transfer-off-door) —
   // 틈에 열린 쇠창살 문틀 윗칸(상인방)을 세워(아랫칸 기둥은 바깥 천장 칸이라 얹지 않는다) 출구로 읽히게 한다.
   for (const [mapId, target] of [[ids.observatory, ids.hub], ["fs_vault_gate", ids.observatory]] as const) {
     const map = M(mapId);
+    if (isFallenRoomRebuilt(project, map.id)) continue;
     const exit = map.events.find((e) => eventCommandLists(e).some((l) => l.some((c) => c.kind === "transfer" && (c as { mapId?: string }).mapId === target)));
     if (!exit) continue;
     const i = exit.y * map.width + exit.x;

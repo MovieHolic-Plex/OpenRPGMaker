@@ -147,6 +147,11 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       const t = cmd as { kind?: string; x?: number; y?: number; direction?: string };
       if (t.kind === "transfer") { t.x = front.x; t.y = front.y; t.direction = "down"; }
     }
+    // 2칸 발깔개는 1칸 문 틈과 반 칸 어긋나 「문 옆 깔개」로 읽혔다(VQA r4) — 1칸 틈이면 깔개를 걷는다.
+    if ((exit.width ?? 1) < 2) {
+      const overlay = project.maps[home.mapId]!.lowerOverlayTiles;
+      if (overlay) for (let i = 0; i < overlay.length; i += 1) if (overlay[i] === 3964 || overlay[i] === 3965) overlay[i] = -1;
+    }
     run(project, "set_map_properties", { mapId: home.mapId, bgm: { mode: "custom", resourceId: home.bgm } });
     // 선술집 홀 북서쪽이 맨 마루로 비었다(VQA r3) — 원탁과 의자 두 벌을 더 놓는다(놓일 수 없으면 건너뛴다).
     for (const [kit, x, y] of home.extra ?? []) {

@@ -20,6 +20,9 @@ import { bakeWorkshopObject, workshopAssetId } from "@/project/workshopTiles";
  * 칸 맨 위로 올렸다(손 도트, 다른 색 없음). 닫힌 창살 사이로 드나드는 것처럼 보였다(적대 VQA r2 M2).
  * 공방 칸(tileGrafts, 업로드 그림판)으로 버들항 칩셋에 덧붙인다 — 번들 시트는 그대로.
  */
+/** bd-river-bridge 키트 12줄 위층(6980·6989·6998·7007)에서 아치 구멍 밑(위·아래가 비어 있는 칸)의 검은 윤곽 한 줄만 지운 사본 —
+ *  운하 물 위에 곧은 검은 줄로 읽혔다(VQA r4 「다리 물선」). 화소를 지우기만 했다(새 색 없음). */
+const BRIDGE_WATERLINE_PNG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAQCAYAAACm53kpAAABW0lEQVR42mOsrGr57+1jz3Du3DkGGDAyMoKzt245yNDeVsPIQCaIik76/+TpbYaQkBAU8TVr1mCI0dru48ePMzAwMDAsX7qC0c7B9v+L528YmPAZQKkDGBgYGJYtnccoI61Ksj562c1ESwcgO+TE8Yt09TyxdrMwMDAw2FjZMto52P7HlgypDdasWYOVTQ+7nz59ysDAwMCA7FcWGAM5P1IzBpBjgoEh6T+2fE+r2MdmN6zsgQU+1iywdu1ShoEC9LYbIwBOHL/IcOvmdUZaWEYoPw6E3Sz0jmF5eSWUfD516lQUeXMLm/8nTxxhpJd7WNALpBfP3zAMV3DmzHEGCUkRlMKXBZbn6OXxo8d2Mhw9thOnPDsHbSMf3Z+M9I4FWMsTVxa4d/cJAz2zANNgSqL09vyABEB7Ww3j1i0HB4XnBywF4AqEgQBMIzXpDwpQWdXy39zC5v9AugEAoqG6hUn4sXEAAAAASUVORK5CYII=";
 const RAISED_GATE_PNG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAQCAYAAABQrvyxAAABSElEQVR4nNWWsUrDUBSGv1sudXWoCEqJQnVxq9N9hrq5GFw6ODTPkLlv4CP0FZz6ABccHKRKC1ETWhepcXBKljgkwXSqrbcp+eAM9yT8/znJOXDFq/+SADg9h85FB601RZRSK+VOrHMARo+nC8+9tzsAbpyzf3sUz7XiC+12m8l4shCr5pZhwiMPAGFfXyUAvu8vNf8Le7vpl5ficiF//3ALQPP424gPgG3byH6/j9NziOPYiOj7xwiAJD7gqKkA8Kea/cNPAAzZUBPp8Mg8IRBmlHO9+hB/mpnVh2BYH0Br/dvABvSp7QzNixZQSiFd1yX8ChFiAx2UgARotVrGlrhMtNaI5/FT0u12t13LWgwGA2QYhsYXuCyiKMqWuJr1M5/P0waqusCNRiNroKq/AKo9QgByNptVdoQ8z0svc0EQbLuWtbAsix9fUbM2e2tIGQAAAABJRU5ErkJggg==";
 
 type KitRow = { tiles: number[]; upperTiles?: number[] };
@@ -160,12 +163,34 @@ export function reworkFallenTown(project: Project, hubId: string, ids: { observa
   //    앞면이 한 벌이다. 강 위 아치 다리(bd-bridge-arch)는 남 난간·기둥이 없어 상판이 길 한 토막처럼 떠 보였다(사용자 지적).
   //    키트 8줄 = 북 난간(물 위), 9·10줄 = 상판(마을 큰길 두 줄), 11·12줄 = 남 난간 아래 아치 앞면, 13줄부터 물.
   const riverBridge = kit("bd-river-bridge");
+  const waterlineFix = new Map<number, number>();
+  {
+    const src = riverBridge.rows[12]!.upperTiles!.slice(7, 11);
+    const tsDef = project.tilesets[map.tilesetId]!;
+    const before = (tsDef.tileGrafts ?? []).length;
+    const baked = bakeWorkshopObject(project as unknown as Parameters<typeof bakeWorkshopObject>[0], map.tilesetId, {
+      objectId: "workshop:fallen-town-bridge-waterline", title: "물선 없는 아치 다리 밑", description: "버들항 강 다리 아치 앞면 밑 줄 — 물 위 검은 윤곽을 지운 사본(폴른 스타 왕도)",
+      kind: "floor", columns: 4, rows: 1, footRows: 1, risePx: 0, use: ["다리"], gridHash: "fallen-town-bridge-waterline-v1",
+      asset: { id: workshopAssetId(BRIDGE_WATERLINE_PNG), dataUrl: BRIDGE_WATERLINE_PNG, width: 64, height: 16 },
+      cells: [0, 1, 2, 3].map((dx) => ({ sourceTile: dx, dx, dy: 0 })),
+      provenance: { aiGenerated: false, tool: "pixel erase (bd-river-bridge 6980/6989/6998/7007 row 9 under arch openings)" },
+    });
+    for (const g of (tsDef.tileGrafts ?? []).slice(before)) { g.sourceTileSize = 16; g.sourceTilesPerRow = 4; }
+    baked.rows[0]!.upperTiles!.forEach((id, dx) => {
+      const from = src[dx]!;
+      if (from < 0) return;
+      tsDef.priority[id] = tsDef.priority[from] ?? "upper";
+      if (tsDef.passability) (tsDef.passability as Record<number, unknown>)[id] = (tsDef.passability as Record<number, unknown>)[from];
+      waterlineFix.set(from, id);
+    });
+  }
   const bridgeAt = (top: number): void => {
     for (let ky = 8; ky <= 12; ky += 1) for (let kx = 6; kx <= 11; kx += 1) {
       const x = riverX + kx - 7, y = top + ky - 8;
       if (!inside(x, y)) continue;
       const i = at(x, y), row = riverBridge.rows[ky]!;
-      const l = row.tiles[kx] ?? -1, u = row.upperTiles?.[kx] ?? -1;
+      const l = row.tiles[kx] ?? -1, u0 = row.upperTiles?.[kx] ?? -1;
+      const u = ky === 12 ? waterlineFix.get(u0) ?? u0 : u0;
       if (kx >= 7 && kx <= 10) {
         lo[i] = l; lo2[i] = -1; up[i] = u; up2[i] = -1;
         if (ky === 8 || ky === 12) waterLink.add(l);   // 위·아래 운하 물이 둑 테두리 없이 다리 밑으로 이어진다
