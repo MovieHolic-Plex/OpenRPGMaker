@@ -272,7 +272,8 @@ export type SceneExpectStep = {
   inventoryDelta?: Record<string, number | { atLeast: number }>;
   ownedMonsterDelta?: Record<string, number | { atLeast: number }>;
   interactionComplete?: boolean;
-  lastTransfer?: { fromMapId: string; eventId: string; toMapId: string };
+  /** eventId 는 선택 — 긴 이벤트 id 를 옮겨 적다 한 글자 틀리는 일이 잦다(2026-10-22 실측). 생략하면 from→to 만 본다. */
+  lastTransfer?: { fromMapId: string; eventId?: string; toMapId: string };
   friendshipAtLeast?: { npcKey: string; value: number } | Record<string, number>;
   shopStock?: { eventId: string; itemIds: readonly string[]; prices?: Record<string, number>; mapId?: string };
 };
@@ -491,7 +492,7 @@ const sceneExpectFields: Readonly<Record<keyof Omit<SceneExpectStep, "kind">, Sc
   inventoryDelta: sceneRewardDeltas, ownedMonsterDelta: sceneRewardDeltas,
   goldDelta: value => sceneInteger(value) || sceneShape(value, { atLeast: sceneInteger }, ["atLeast"]),
   interactionComplete: sceneBoolean,
-  lastTransfer: value => sceneShape(value, { fromMapId: sceneText, eventId: sceneText, toMapId: sceneText }, ["fromMapId", "eventId", "toMapId"]),
+  lastTransfer: value => sceneShape(value, { fromMapId: sceneText, eventId: sceneText, toMapId: sceneText }, ["fromMapId", "toMapId"]),
   friendshipAtLeast: value => sceneNumbers(value) || sceneShape(value, { npcKey: sceneText, value: sceneNumber }, ["npcKey", "value"]),
   shopStock: value => sceneShape(value, { eventId: sceneText, itemIds: sceneStrings, prices: sceneNumbers, mapId: sceneText }, ["eventId", "itemIds"]),
 };
@@ -556,7 +557,7 @@ const SCENE_FIELD_EXPECTATIONS: Readonly<Record<string, string>> = {
   endingReached: "엔딩 id 문자열(예: ending_escape, 불리언 아님)", inventoryCount: "{아이템id: 개수} 또는 {itemId,count}",
   goldDelta: "정수 또는 {atLeast:정수}", inventoryDelta: "{아이템id: 정수 또는 {atLeast}}", ownedMonsterDelta: "{종id: 정수 또는 {atLeast}}",
   interactionComplete: "true/false", messageShown: "true/false", gameOver: "true/false", cutsceneLocked: "true/false",
-  lastTransfer: "{fromMapId,eventId,toMapId}", timePhase: "시간대 이름", weatherKind: "none|rain|storm|snow|fog",
+  lastTransfer: "{fromMapId,toMapId,eventId?}", timePhase: "시간대 이름", weatherKind: "none|rain|storm|snow|fog",
   // 아래는 거부 문구가 「값 형식이 맞지 않습니다」만 말하던 expect 필드 — 모델이 모양을 추측하며 같은 시험을 거듭 다시 불렀다
   // (2026-10-05 스트레스 p-shop: shopStock 에 [{itemId,price}] → [id…] 를 차례로 넣고 둘 다 거부).
   shopStock: "{eventId, itemIds:[아이템id…], prices?:{아이템id: 가격}, mapId?}",
@@ -2154,8 +2155,15 @@ function cameraSessionState(
 
 function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null {
   if (step.lastTransfer && (!state.lastTransfer || step.lastTransfer.fromMapId !== state.lastTransfer.fromMapId
-    || step.lastTransfer.eventId !== state.lastTransfer.eventId || step.lastTransfer.toMapId !== state.lastTransfer.toMapId)) {
-    return `Transfer: expected ${JSON.stringify(step.lastTransfer)}, actual ${JSON.stringify(state.lastTransfer ?? null)}`;
+    || (step.lastTransfer.eventId !== undefined && step.lastTransfer.eventId !== state.lastTransfer.eventId)
+    || step.lastTransfer.toMapId !== state.lastTransfer.toMapId)) {
+    const expectedId = step.lastTransfer.eventId;
+    const fromMap = state.project.maps[step.lastTransfer.fromMapId];
+    // 실측(2026-10-22 성벽 마을): 조수가 UUID 이벤트 id 를 한 글자 틀리게 옮겨 적어 맞는 문을 「실패」로 읽었다.
+    const typo = expectedId !== undefined && fromMap && !(fromMap.events ?? []).some((event) => event.id === expectedId)
+      ? ` — 기대 eventId "${expectedId}" 는 ${fromMap.id} 에 없는 id 입니다(옮겨 적기 오타). 이벤트 id 는 find_events 결과에서 그대로 복사하거나 lastTransfer 에서 eventId 를 빼고 {fromMapId,toMapId} 만 적으세요.`
+      : "";
+    return `Transfer: expected ${JSON.stringify(step.lastTransfer)}, actual ${JSON.stringify(state.lastTransfer ?? null)}${typo}`;
   }
   if (step.interactionComplete !== undefined && (state.held === null) !== step.interactionComplete) {
     return "Interaction completion does not match expectation.";
