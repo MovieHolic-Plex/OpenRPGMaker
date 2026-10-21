@@ -1079,7 +1079,7 @@ function mapContextMenuItems(context: MapActionContext): readonly MapContextMenu
   }
   items.push({
     action: () => beginRename(context.mapId),
-    icon: "map-settings",
+    icon: "pencil",
     id: "rename",
     label: "이름 바꾸기",
     shortcut: "F2",
@@ -1153,7 +1153,7 @@ function mapContextMenuItems(context: MapActionContext): readonly MapContextMenu
         const parentNode = findTreeNode(tree, parentId);
         return !parentNode || isMapTreeFolder(parentNode);
       })(),
-      icon: "map-shift",
+      icon: "link",
       id: "link-parent",
       label: "부모와 왕복 이동 넣기",
       testId: `map-menu-link-parent-${context.mapId}`,
@@ -1201,7 +1201,7 @@ function mapContextMenuItems(context: MapActionContext): readonly MapContextMenu
     });
     items.push({
       action: () => openMapShiftDialog(context.mapId, context.mapName),
-      icon: "map-shift",
+      icon: "hand",
       id: "shift",
       label: "맵 밀기",
       separatorBefore: true,
