@@ -4,7 +4,7 @@ const [stage, mapId, x, y] = (process.env.FL_JUMP ?? "4,fl_rooftop,3,22").split(
 const head = base.beats.slice(0, base.beats.findIndex((b) => b.id === "platform") + 1);
 const dump = (n) => ({ kind: "evalToFile", out: `/tmp/fl/jump-${n}.json`, fn: "() => { const s = window.__oprnHooksScene; const box = document.querySelector(\"[data-testid='dialogue-box']\"); return { text: box?.textContent?.slice(0, 60) ?? null, hero: [s.tileX, s.tileY, s.facing], pos: s.eventPositions, loc: s.session?.eventLocations }; }" });
 const steps = [];
-for (let i = 0; i < 14; i++) steps.push({ id: `l${i}`, note: `줄 ${i}`, ops: [dump(i), { kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 900 }], shot: i % 3 === 0 });
+for (let i = 0; i < Number(process.env.FL_LINES ?? 14); i++) steps.push({ id: `l${i}`, note: `줄 ${i}`, ops: [dump(i), { kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 900 }], shot: i % 3 === 0 });
 export default {
   ...base,
   beats: [

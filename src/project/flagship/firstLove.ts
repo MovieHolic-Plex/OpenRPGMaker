@@ -98,17 +98,15 @@ const waitMoves = (): Command => m2("Wait for All Movement");
  * 사라짐은 hideSw 스위치(그 NPC 페이지의 swOff 조건)로 한다. 걷는 동안 대사가 이어지게 하려면 begin 만 먼저 넣고 end 를 나중에.
  * firstLoveProbe(scripts/qa/runtime/first-love-probes.mts)가 「사라지기 직전 칸 = 출구 앞」을 검사한다.
  */
-function fadeAway(eventId: string): Command {
-  const step = { kind: "changeOpacity", delta: -64 }, pause = { kind: "wait" };
-  return { kind: "moveEvent", eventId, route: { moves: [step, pause, step, pause, step, pause, step], repeat: false, wait: true, skippable: true } } as unknown as Command;
-}
 
 function leave(project: Project, mapId: string, eventId: string, from: Cell, exit: { stand: Cell; door: Cell }, hideSw: string, hero: Cell): { begin: Command; end: Command[] } {
-  return {
-    begin: walkRoute(project, mapId, eventId, from, exit.stand, [hero], false),
-    // 닫힌 문 앞에서 뚝 사라지지 않게 — 딩 소리 뒤 문 쪽으로 서서 서서히 흐려진 다음 감춘다(VQA2 경미).
-    end: [waitMoves(), face(eventId, dirToward(exit.stand, exit.door)), playSe(SE_ELEVATOR), fadeAway(eventId), setSw(hideSw, true)],
-  };
+  // 퇴장은 그 인물의 이동 경로 하나로 끝낸다 — 걸어가 문을 보고, 딩, 서서히 흐려진 뒤 스스로 감춤 스위치를 켠다.
+  // 장면은 기다리지 않고 대사를 이어 간다(VQA r2: 20초 넘게 걷는 뒷모습만 보던 금요일 회의실).
+  const walkOut = walkRoute(project, mapId, eventId, from, exit.stand, [hero], false) as unknown as Record<string, unknown>;
+  const fade = { kind: "changeOpacity", delta: -64 }, pause = { kind: "wait" };
+  walkOut.routeHead = [{ kind: "changeSpeed", delta: 1 }];
+  walkOut.routeTail = [{ kind: "turn", dir: dirToward(exit.stand, exit.door) }, { kind: "playSe", resourceId: SE_ELEVATOR }, pause, fade, pause, fade, pause, fade, pause, fade, { kind: "setSwitch", switchId: hideSw, value: true }];
+  return { begin: walkOut as unknown as Command, end: [] };
 }
 
 /** 문 칸: 밟으면 단계에 따라 옮기거나 막는다. */
@@ -159,8 +157,9 @@ function resolveRoutes(project: Project): void {
     for (const c of list as Record<string, unknown>[]) {
       if (c?.kind === "moveEvent" && typeof c.routeKey === "string") {
         const dirs = pendingRoutes.get(c.routeKey)?.() ?? [];
-        (c.route as { moves: unknown[] }).moves = dirs.map((dir) => ({ kind: "move", dir }));
-        delete c.routeKey;
+        const head = (c.routeHead as unknown[] | undefined) ?? [], tail = (c.routeTail as unknown[] | undefined) ?? [];
+        (c.route as { moves: unknown[] }).moves = [...head, ...dirs.map((dir) => ({ kind: "move", dir })), ...tail];
+        delete c.routeKey; delete c.routeHead; delete c.routeTail;
       }
       for (const k of ["then", "else", "commands"]) fill(c?.[k]);
       if (Array.isArray(c?.options)) for (const o of c.options as { branch: unknown }[]) fill(o.branch);

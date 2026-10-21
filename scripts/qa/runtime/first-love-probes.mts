@@ -187,8 +187,16 @@ function run(list: Command[], sim: Sim): void {
       }
       checkVisibilityChange(sim, before, c.kind === "setSwitch" ? (c as { switchId: string }).switchId : `${(c as { variableId: string }).variableId}=${sim.s.variables[(c as { variableId: string }).variableId]}`);
     } else if (c.kind === "moveEvent") {
-      const m = c as unknown as { eventId: string; route: { moves: { kind: string; dir?: Dir }[] } };
-      for (const mv of m.route.moves) if (mv.kind === "move" && mv.dir) step(sim, m.eventId, mv.dir);
+      const m = c as unknown as { eventId: string; route: { moves: { kind: string; dir?: Dir; switchId?: string; value?: boolean }[] } };
+      for (const mv of m.route.moves) {
+        if (mv.kind === "move" && mv.dir) step(sim, m.eventId, mv.dir);
+        // 경로 끝의 스위치(스스로 감추는 퇴장) — 그 칸에서 사라지는 것으로 본다.
+        if (mv.kind === "setSwitch" && mv.switchId) {
+          const before = visibleSet(sim);
+          sim.s.switches[mv.switchId] = mv.value ?? true;
+          checkVisibilityChange(sim, before, `${mv.switchId}(경로)`);
+        }
+      }
     } else if (c.kind === "fork" || c.kind === "choices") {
       const subs = childLists(c);
       if (c.kind === "fork" && subs.length === 1) subs.push([]);
