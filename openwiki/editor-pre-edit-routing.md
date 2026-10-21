@@ -1107,6 +1107,14 @@ aria-current로 말하고 일회성 테스트에는 상태를 붙이지 않는�
 | 선택 이벤트 테스트 | 이벤트 편집기 「테스트」 + 이벤트 우클릭 「이 이벤트 테스트」(`event-layer-test-event`) | 클래식 툴바 `toolbar-event-test` 의 집 이전 |
 | 캔버스 툴바 | 구조·testid 그대로, 32px 컨트롤 유리 pill 로 재도색(같은 시트 §10) | — |
 
+**넘침 맞춤 (2026-10-21, UI 감사 01-shell-01):** 3열 그리드의 왼쪽 칸이 내용보다 좁으면 넘친 버튼이 가운데·오른쪽
+버튼 위에 그려져 클릭을 가로챘다(영어 1440 찾기→전투, 1024 레이어 전환→명령 팔레트). 폭 경계 미디어 쿼리 대신
+`src/editor/panels/topbarFit.ts` 가 바·양쪽 묶음의 `scrollWidth > clientWidth` 를 재서 `data-fit-level` 을 0~3 으로 누적해
+올린다 — 1 세계관·음악·찾기를 「도구 더 보기 ⋯」(`menu-more-tools`, 항목 `menu-more-tools-world|audio|search`)로 접기,
+2 AI 연결 칩 점만, 3 레이어 전환·프로젝트 이름 여백 축소. 모양은 `studio-bar.modern.css` 「14. 넘침 맞춤」이 소유한다.
+⋯ 메뉴는 인라인 버튼이 숨었을 때만 보이므로 「한 동작의 집은 하나」 규칙을 깨지 않는다. AI 연결 칩 상한은 320px
+(220px 고정이던 때 1920 에서도 영어 경고가 잘렸다).
+
 Ctrl+K: `workspace-density-*`·`workspace-preset-*` 명령 삭제, `editor-ui-mode-*`(옛 밀도 낱말은 keywords)·`open-audio`·`open-map-event-search`·`save-project` 추가.
 
 회귀 단정: `test/studioBarActions.test.ts`(집 하나·중복 testid 0·모드별 도구 자리·저장 점·프로젝트 이름), `test/editorMenuSidebarIa.test.ts`(게임 메뉴 부재·전문가 인라인·초보 도구 메뉴), `test/editorHeaderTerminology.test.ts`(모드별 집에서 정본 이름), `test/authoringTasks.test.ts`(프리셋 결합 해제), `test/commandRegistry.test.ts`. e2e 는 `toolbar-database`·`mode-play` 계약을 유지하고 삭제 표면을 쓰던 스펙 18개를 새 집으로 고쳤다. 보고서 `docs/2026-09-03-studio-bar.md`.
