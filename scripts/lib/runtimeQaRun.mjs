@@ -132,6 +132,26 @@ async function requireHooks(page) {
   }));
 }
 
+/** 체크포인트 부팅: 훅이 서면 성공, 플레이어 부팅 오류 패널이 뜨면 바로 실패(120초를 기다리지 않는다). */
+async function waitForCheckpointBoot(page) {
+  await page.evaluate(() => new Promise((resolve, reject) => {
+    const finish = () => { observer.disconnect(); clearTimeout(deadline); };
+    const check = () => {
+      if (window.__oprnDebug && document.querySelector('[data-testid="runtime-state-json"]')) {
+        finish(); resolve();
+        return;
+      }
+      const error = document.querySelector(".player-export-error");
+      if (error) { finish(); reject(new Error(`체크포인트 부팅 실패: ${error.textContent}`)); }
+    };
+    const observer = new MutationObserver(check);
+    // 부하(load 150+) 중 실측 부팅 112~219초 — 체크포인트 부팅은 넉넉히 기다린다.
+    const deadline = setTimeout(() => { finish(); reject(new Error("QA scene did not become ready")); }, 360_000);
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+    check();
+  }));
+}
+
 /** testid 존재 판정. `attr`/`value` 를 주면 "그 속성값을 가진 요소가 있다" 로 좁힌다 —
  *  같은 testid 가 여럿인 노드(피해 팝업)에서 특정 대상(data-target-id) 것만 기다릴 때 쓴다. */
 function testidPresentInPage([testid, attr, value]) {
@@ -305,7 +325,7 @@ async function applyOp(page, op, runState) {
       await page.evaluate((dir) => window.__oprnInput.dir(dir), op.dir ?? null);
       await page.waitForTimeout(op.ms);
       await page.evaluate(() => window.__oprnInput.dir(null));
-      await page.waitForFunction(() => true);
+      await page.waitForFunction(() => true, null, { timeout: 120_000 });
       return;
     case "face":
       await page.evaluate((dir) => window.__oprnInput.face(dir), op.dir);
@@ -575,6 +595,14 @@ async function applyOp(page, op, runState) {
         await page.waitForTimeout(op.settleMs ?? 450);
       }
       if (!(await ok())) throw new Error(`pressUntilJs: ${max}회 뒤에도 조건이 참이 아니다: ${op.fn}`);
+      return;
+    }
+    case "captureCheckpoint": {
+      // 지금 이 순간의 실제 저장을 체크포인트로 뜬다(scripts/qa/runtime/checkpoints). 손으로 적은 상태보다 정직하다.
+      const snapshot = await page.evaluate(() => window.__oprnDebug?.captureSave?.() ?? null);
+      if (!snapshot) throw new Error("captureCheckpoint: __oprnDebug.captureSave 가 없다(계측 꺼짐?)");
+      runState.capturedCheckpoints ??= [];
+      runState.capturedCheckpoints.push({ id: op.id, ...(op.label ? { label: op.label } : {}), snapshot });
       return;
     }
     case "evalToFile": {
@@ -969,8 +997,9 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   await page.setViewportSize(scenario.viewport);
   // exportEntry.ts 는 최상위에서 즉시 부팅하므로 주입은 addInitScript 여야 한다.
   // localStorage.clear() 는 이전 실행의 세이브가 타이틀 화면을 바꾸는 것을 막는다.
+  const checkpoint = opts.checkpoint ?? null;
   await page.addInitScript(
-    ([projectUrl, saveNamespace, storageSeed]) => {
+    ([projectUrl, saveNamespace, storageSeed, qaCheckpoint]) => {
       try {
         localStorage.clear();
         // 시나리오가 「이 기기에 이미 있던 기록」(예: 본 엔딩)을 심는다. 키의 {ns} 는 세이브 이름 공간으로 바뀐다.
@@ -978,9 +1007,9 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       } catch {
         // 접근 불가 환경이면 그대로 진행한다.
       }
-      window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace, qaInstrumentation: true };
+      window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace, qaInstrumentation: true, ...(qaCheckpoint ? { qaCheckpoint } : {}) };
     },
-    [opts.projectUrl ?? PROJECT_URL, `runtime-qa:${scenario.id}`, scenario.localStorageSeed ?? null],
+    [opts.projectUrl ?? PROJECT_URL, `runtime-qa:${scenario.id}`, scenario.localStorageSeed ?? null, checkpoint],
   );
   if (!opts.projectUrl) {
     await page.route(PROJECT_ROUTE, (route) =>
@@ -995,9 +1024,14 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
 
   const query = new URLSearchParams(scenario.query ?? {}).toString();
   const playerUrl = `${opts.serverUrl}${opts.entryPath ?? '/player.html'}${query ? `?${query}` : ""}`;
+  const startedAt = Date.now();
+  let bootMs = null;
   try {
-    await page.goto(playerUrl, { waitUntil: "domcontentloaded", timeout: 180_000 });
-    await page.waitForSelector("[data-testid='title-screen']", { timeout: 120_000 });
+    await page.goto(playerUrl, { waitUntil: "domcontentloaded", timeout: checkpoint ? 360_000 : 180_000 });
+    // 체크포인트는 타이틀을 거치지 않는다 — 플레이 씬 훅이 서면 그 상태에 들어온 것이다.
+    if (checkpoint) await waitForCheckpointBoot(page);
+    else await page.waitForSelector("[data-testid='title-screen']", { timeout: 120_000 });
+    bootMs = Date.now() - startedAt;
   } catch (error) {
     await writeFile(join(outDir, 'boot-failure.json'), JSON.stringify({ scenario: scenario.id,
       playerUrl, message: String(error?.message ?? error), errors, at: new Date().toISOString() }, null, 2));
@@ -1032,7 +1066,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   ];
 
 
-  let hooksReady = false;
+  let hooksReady = Boolean(checkpoint);
   const beats = [];
   // op 들 사이에 살아 있는 런 상태(그림자 픽셀 측정용 표본 프레임).
   const runState = {};
@@ -1127,6 +1161,9 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
 
   const report = {
     scenarioId: scenario.id,
+    ...(checkpoint ? { checkpointId: checkpoint.id } : {}),
+    timing: { bootMs, totalMs: Date.now() - startedAt },
+    ...(runState.capturedCheckpoints?.length ? { capturedCheckpoints: runState.capturedCheckpoints } : {}),
     projectPath: relative(REPO_ROOT, projectPath),
     seed: scenario.seed,
     viewport: scenario.viewport,

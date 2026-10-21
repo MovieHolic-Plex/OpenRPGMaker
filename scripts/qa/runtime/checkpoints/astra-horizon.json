@@ -1,0 +1,664 @@
+{
+  "set": "astra-horizon",
+  "query": {
+    "demo": "astra-horizon"
+  },
+  "viewport": {
+    "width": 960,
+    "height": 540
+  },
+  "defaultBeats": [
+    {
+      "id": "arrive",
+      "ops": [],
+      "shot": true
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": "starter-pick",
+      "label": "스타터 선택 직전 (박사 대화)",
+      "note": "world.ts:697-703 starterChoiceCommands; lab professor (7,5) action, greeting-step touch (7,7) avoided; mx_starter=false",
+      "mapId": "mx_map_lab",
+      "x": 7,
+      "y": 6,
+      "facing": "up",
+      "beats": [
+        {
+          "id": "arrive",
+          "ops": [
+            {
+              "kind": "hold",
+              "dir": null,
+              "ms": 800
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "face-npc",
+          "ops": [
+            {
+              "kind": "face",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "id": "talk",
+          "ops": [
+            {
+              "kind": "action"
+            },
+            {
+              "kind": "waitFor",
+              "testid": "dialogue-box",
+              "state": "present",
+              "timeoutMs": 20000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "to-choice",
+          "ops": [
+            {
+              "kind": "pressUntil",
+              "key": "Enter",
+              "testid": "runtime-choices",
+              "state": "present",
+              "maxPresses": 30,
+              "timeoutMs": 20000
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "route-1-meadow",
+      "label": "1번 길 (풀밭) 진입",
+      "note": "worldPlan.ts:34 meadow lv4 needs mx_starter; landing from home exit",
+      "mapId": "mx_map_meadow",
+      "x": 10,
+      "y": 28,
+      "facing": "up",
+      "switches": {
+        "mx_starter": true,
+        "mx_starter_mx_species_spriglet": true
+      },
+      "items": {
+        "item_capture_orb": 10,
+        "item_potion": 5,
+        "mx_revive": 1,
+        "mx_candy": 1
+      },
+      "sessionPatch": {
+        "monsterInstances": {
+          "monster_1": {
+            "instanceId": "monster_1",
+            "speciesId": "mx_species_spriglet",
+            "nickname": "Spriglet",
+            "level": 6,
+            "exp": 0,
+            "skillIds": [
+              "mx_skill_normal_1_grass",
+              "mx_skill_grass_1",
+              "mx_skill_flying_1_spriglet",
+              "mx_skill_psychic_1"
+            ],
+            "friendship": 70,
+            "caughtAt": {
+              "mapId": "mx_map_lab",
+              "x": 7,
+              "y": 7
+            }
+          }
+        },
+        "monsterParty": [
+          "monster_1"
+        ]
+      }
+    },
+    {
+      "id": "first-town-grove",
+      "label": "첫 마을 (숲 마을)",
+      "note": "grove meadow door (12,19) landing; Lv7 starter",
+      "mapId": "mx_map_grove",
+      "x": 12,
+      "y": 18,
+      "facing": "down",
+      "switches": {
+        "mx_starter": true,
+        "mx_starter_mx_species_spriglet": true
+      },
+      "items": {
+        "item_capture_orb": 10,
+        "item_potion": 5,
+        "mx_revive": 1,
+        "mx_candy": 1
+      },
+      "sessionPatch": {
+        "monsterInstances": {
+          "monster_1": {
+            "instanceId": "monster_1",
+            "speciesId": "mx_species_spriglet",
+            "nickname": "Spriglet",
+            "level": 7,
+            "exp": 0,
+            "skillIds": [
+              "mx_skill_normal_1_grass",
+              "mx_skill_grass_1",
+              "mx_skill_flying_1_spriglet",
+              "mx_skill_psychic_1"
+            ],
+            "friendship": 70,
+            "caughtAt": {
+              "mapId": "mx_map_lab",
+              "x": 7,
+              "y": 7
+            }
+          }
+        },
+        "monsterParty": [
+          "monster_1"
+        ]
+      }
+    },
+    {
+      "id": "gym-entrance",
+      "label": "체육관 입구",
+      "note": "gym exit (8,19) landing; grove door (16,9) -> gym transfer (8,19)",
+      "mapId": "mx_map_grove_gym",
+      "x": 8,
+      "y": 18,
+      "facing": "down",
+      "switches": {
+        "mx_starter": true,
+        "mx_starter_mx_species_spriglet": true
+      },
+      "items": {
+        "item_capture_orb": 10,
+        "item_potion": 5,
+        "mx_revive": 1,
+        "mx_candy": 1
+      },
+      "sessionPatch": {
+        "monsterInstances": {
+          "monster_1": {
+            "instanceId": "monster_1",
+            "speciesId": "mx_species_spriglet",
+            "nickname": "Spriglet",
+            "level": 8,
+            "exp": 0,
+            "skillIds": [
+              "mx_skill_normal_1_grass",
+              "mx_skill_grass_1",
+              "mx_skill_flying_1_spriglet",
+              "mx_skill_psychic_1"
+            ],
+            "friendship": 70,
+            "caughtAt": {
+              "mapId": "mx_map_lab",
+              "x": 7,
+              "y": 7
+            }
+          }
+        },
+        "monsterParty": [
+          "monster_1"
+        ]
+      }
+    },
+    {
+      "id": "gym-leader",
+      "label": "체육관 관장전",
+      "note": "world.ts:806 leader gated on mx_starter + mx_gym_1_puzzle; leader (14,3); troop orchardant7 briartusk10 podback6",
+      "mapId": "mx_map_grove_gym",
+      "x": 14,
+      "y": 4,
+      "facing": "up",
+      "switches": {
+        "mx_starter": true,
+        "mx_starter_mx_species_spriglet": true,
+        "mx_gym_1_puzzle": true
+      },
+      "items": {
+        "item_capture_orb": 10,
+        "item_potion": 5,
+        "mx_revive": 1,
+        "mx_candy": 1
+      },
+      "sessionPatch": {
+        "monsterInstances": {
+          "monster_1": {
+            "instanceId": "monster_1",
+            "speciesId": "mx_species_spriglet",
+            "nickname": "Spriglet",
+            "level": 10,
+            "exp": 0,
+            "skillIds": [
+              "mx_skill_grass_1",
+              "mx_skill_flying_1_spriglet",
+              "mx_skill_psychic_1",
+              "mx_skill_grass_2"
+            ],
+            "friendship": 70,
+            "caughtAt": {
+              "mapId": "mx_map_lab",
+              "x": 7,
+              "y": 7
+            }
+          }
+        },
+        "monsterParty": [
+          "monster_1"
+        ]
+      },
+      "beats": [
+        {
+          "id": "face-npc",
+          "ops": [
+            {
+              "kind": "face",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "id": "talk",
+          "ops": [
+            {
+              "kind": "action"
+            },
+            {
+              "kind": "waitFor",
+              "testid": "dialogue-box",
+              "state": "present",
+              "timeoutMs": 20000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "battle",
+          "ops": [
+            {
+              "kind": "pressUntil",
+              "key": "Enter",
+              "testid": "battle-scene",
+              "state": "present",
+              "maxPresses": 40,
+              "timeoutMs": 30000
+            },
+            {
+              "kind": "waitFor",
+              "testid": "actor-command-fight",
+              "state": "present",
+              "timeoutMs": 30000
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "temple-observatory",
+      "label": "신전 (관측소)",
+      "note": "world.ts:825-829 observatory boss (11,4) gated mx_badge_1; grove door (12,4)",
+      "mapId": "mx_map_observatory",
+      "x": 10,
+      "y": 12,
+      "facing": "down",
+      "switches": {
+        "mx_starter": true,
+        "mx_starter_mx_species_spriglet": true,
+        "mx_gym_1_puzzle": true,
+        "mx_badge_1": true
+      },
+      "items": {
+        "item_capture_orb": 10,
+        "item_potion": 5,
+        "mx_revive": 1,
+        "mx_candy": 1
+      },
+      "sessionPatch": {
+        "monsterInstances": {
+          "monster_1": {
+            "instanceId": "monster_1",
+            "speciesId": "mx_species_spriglet",
+            "nickname": "Spriglet",
+            "level": 13,
+            "exp": 0,
+            "skillIds": [
+              "mx_skill_flying_1_spriglet",
+              "mx_skill_psychic_1",
+              "mx_skill_grass_2",
+              "mx_skill_grass_6"
+            ],
+            "friendship": 70,
+            "caughtAt": {
+              "mapId": "mx_map_lab",
+              "x": 7,
+              "y": 7
+            }
+          }
+        },
+        "monsterParty": [
+          "monster_1"
+        ]
+      }
+    },
+    {
+      "id": "league-entrance",
+      "label": "리그 입구",
+      "note": "world.ts:833-846 league_0; grove league door (12,0) gated mx_story_beacon",
+      "mapId": "mx_map_league_0",
+      "x": 7,
+      "y": 10,
+      "facing": "down",
+      "switches": {
+        "mx_starter": true,
+        "mx_starter_mx_species_spriglet": true,
+        "mx_gym_1_puzzle": true,
+        "mx_badge_1": true,
+        "mx_story_beacon": true
+      },
+      "items": {
+        "item_capture_orb": 10,
+        "item_potion": 5,
+        "mx_revive": 1,
+        "mx_candy": 1
+      },
+      "sessionPatch": {
+        "monsterInstances": {
+          "monster_1": {
+            "instanceId": "monster_1",
+            "speciesId": "mx_species_spriglet",
+            "nickname": "Spriglet",
+            "level": 15,
+            "exp": 0,
+            "skillIds": [
+              "mx_skill_flying_1_spriglet",
+              "mx_skill_psychic_1",
+              "mx_skill_grass_2",
+              "mx_skill_grass_6"
+            ],
+            "friendship": 70,
+            "caughtAt": {
+              "mapId": "mx_map_lab",
+              "x": 7,
+              "y": 7
+            }
+          }
+        },
+        "monsterParty": [
+          "monster_1"
+        ]
+      }
+    },
+    {
+      "id": "champion",
+      "label": "리그 챔피언전",
+      "note": "league_0 challenge (7,4) action; troop podback11 gustchick10 coilcrest12 craghoof11 sandnip10 flurrykit10",
+      "mapId": "mx_map_league_0",
+      "x": 7,
+      "y": 5,
+      "facing": "up",
+      "switches": {
+        "mx_starter": true,
+        "mx_starter_mx_species_spriglet": true,
+        "mx_gym_1_puzzle": true,
+        "mx_badge_1": true,
+        "mx_story_beacon": true
+      },
+      "items": {
+        "item_capture_orb": 10,
+        "item_potion": 5,
+        "mx_revive": 1,
+        "mx_candy": 1
+      },
+      "sessionPatch": {
+        "monsterInstances": {
+          "monster_1": {
+            "instanceId": "monster_1",
+            "speciesId": "mx_species_spriglet",
+            "nickname": "Spriglet",
+            "level": 16,
+            "exp": 0,
+            "skillIds": [
+              "mx_skill_flying_1_spriglet",
+              "mx_skill_psychic_1",
+              "mx_skill_grass_2",
+              "mx_skill_grass_6"
+            ],
+            "friendship": 70,
+            "caughtAt": {
+              "mapId": "mx_map_lab",
+              "x": 7,
+              "y": 7
+            }
+          }
+        },
+        "monsterParty": [
+          "monster_1"
+        ]
+      },
+      "beats": [
+        {
+          "id": "face-npc",
+          "ops": [
+            {
+              "kind": "face",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "id": "talk",
+          "ops": [
+            {
+              "kind": "action"
+            },
+            {
+              "kind": "waitFor",
+              "testid": "dialogue-box",
+              "state": "present",
+              "timeoutMs": 20000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "battle",
+          "ops": [
+            {
+              "kind": "pressUntil",
+              "key": "Enter",
+              "testid": "battle-scene",
+              "state": "present",
+              "maxPresses": 40,
+              "timeoutMs": 30000
+            },
+            {
+              "kind": "waitFor",
+              "testid": "actor-command-fight",
+              "state": "present",
+              "timeoutMs": 30000
+            }
+          ],
+          "shot": true
+        }
+      ]
+    },
+    {
+      "id": "ending",
+      "label": "엔딩 화면",
+      "note": "world.ts:833-846 league reward sets mx_ending + triggerEnding mx_ending_starlight; overpowered Lv60 starter wins champion fight",
+      "mapId": "mx_map_league_0",
+      "x": 7,
+      "y": 5,
+      "facing": "up",
+      "switches": {
+        "mx_starter": true,
+        "mx_starter_mx_species_spriglet": true,
+        "mx_gym_1_puzzle": true,
+        "mx_badge_1": true,
+        "mx_story_beacon": true
+      },
+      "items": {
+        "item_capture_orb": 10,
+        "item_potion": 5,
+        "mx_revive": 1,
+        "mx_candy": 1
+      },
+      "sessionPatch": {
+        "monsterInstances": {
+          "monster_1": {
+            "instanceId": "monster_1",
+            "speciesId": "mx_species_spriglet",
+            "nickname": "Spriglet",
+            "level": 60,
+            "exp": 0,
+            "skillIds": [
+              "mx_skill_psychic_1",
+              "mx_skill_grass_2",
+              "mx_skill_grass_6",
+              "mx_skill_grass_3"
+            ],
+            "friendship": 70,
+            "caughtAt": {
+              "mapId": "mx_map_lab",
+              "x": 7,
+              "y": 7
+            }
+          }
+        },
+        "monsterParty": [
+          "monster_1"
+        ]
+      },
+      "beats": [
+        {
+          "id": "face-npc",
+          "ops": [
+            {
+              "kind": "face",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "id": "talk",
+          "ops": [
+            {
+              "kind": "action"
+            },
+            {
+              "kind": "waitFor",
+              "testid": "dialogue-box",
+              "state": "present",
+              "timeoutMs": 20000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "fight",
+          "ops": [
+            {
+              "kind": "pressUntil",
+              "key": "Enter",
+              "testid": "battle-scene",
+              "state": "present",
+              "maxPresses": 40,
+              "timeoutMs": 30000
+            },
+            {
+              "kind": "waitFor",
+              "testid": "actor-command-fight",
+              "state": "present",
+              "timeoutMs": 30000
+            }
+          ]
+        },
+        {
+          "id": "win",
+          "ops": [
+            {
+              "kind": "repeatUntil",
+              "testid": "battle-scene",
+              "state": "absent",
+              "maxRounds": 40,
+              "ops": [
+                {
+                  "kind": "pressUntil",
+                  "key": "Enter",
+                  "testid": "battle-scene",
+                  "attr": "data-battle-director-step",
+                  "value": "command",
+                  "state": "present",
+                  "maxPresses": 4,
+                  "timeoutMs": 5000
+                },
+                {
+                  "kind": "pointerClick",
+                  "testid": "actor-command-fight"
+                },
+                {
+                  "kind": "waitFor",
+                  "testid": "actor-skill-mx_skill_grass_3",
+                  "state": "present",
+                  "timeoutMs": 10000
+                },
+                {
+                  "kind": "pointerClick",
+                  "testid": "actor-skill-mx_skill_grass_3"
+                },
+                {
+                  "kind": "pressUntil",
+                  "key": "z",
+                  "testid": "battle-target-prompt",
+                  "state": "absent",
+                  "maxPresses": 3,
+                  "timeoutMs": 8000
+                }
+              ]
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "ending-epilogue",
+          "ops": [
+            {
+              "kind": "pressUntil",
+              "key": "Enter",
+              "testid": "ending-screen",
+              "attr": "data-phase",
+              "value": "epilogue",
+              "state": "present",
+              "maxPresses": 80,
+              "timeoutMs": 20000
+            }
+          ],
+          "shot": true
+        },
+        {
+          "id": "ending-final",
+          "ops": [
+            {
+              "kind": "pressUntil",
+              "key": "Enter",
+              "testid": "return-title",
+              "state": "present",
+              "maxPresses": 80,
+              "timeoutMs": 3000
+            }
+          ],
+          "shot": true
+        }
+      ]
+    }
+  ]
+}

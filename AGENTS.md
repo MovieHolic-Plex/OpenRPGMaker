@@ -242,6 +242,10 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 `docs/superpowers/specs/2026-08-28-runtime-vision-qa-design.md`, 함정 목록은
 `openwiki/testing.md`.
 
+**늦은 단계(보스·엔딩·패배 카드·보고 장면 등)는 타이틀부터 다시 플레이하지 말고 체크포인트로 바로 들어간다:**
+`npm run qa:runtime -- --scenario checkpoints --checkpoint-set <데모> --checkpoint <id|all> --parallel 2`.
+세트는 `scripts/qa/runtime/checkpoints/<데모>.json`, 규칙·형식은 `openwiki/testing.md` 「런타임 QA 체크포인트」.
+
 왜 편집기 경로로 하면 안 되는가 (실측):
 - `src/app/mode.ts` 의 `enterMode` 는 play 모드에서도 `renderTopbar()` 를 호출한다 —
   톱바가 모든 스크린샷에 남고 편집기 번들·DB 연결·welcome 게이트를 전부 태운다.

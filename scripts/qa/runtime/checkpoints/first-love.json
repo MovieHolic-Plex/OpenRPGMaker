@@ -1,0 +1,1073 @@
+{
+ "set": "first-love",
+ "query": {
+  "demo": "first-love"
+ },
+ "viewport": {
+  "width": 960,
+  "height": 540
+ },
+ "defaultBeats": [
+  {
+   "id": "arrive",
+   "ops": [
+    {
+     "kind": "hold",
+     "dir": null,
+     "ms": 1500
+    }
+   ],
+   "shot": true
+  }
+ ],
+ "checkpoints": [
+  {
+   "id": "d1-arrive",
+   "label": "월요일 승강장 도착",
+   "note": "src/project/flagship/firstLove.ts: START 0, ev_fl_intro auto at (1,1); arrive=nearestFree(8,8) firstLoveMaps.ts:190",
+   "mapId": "fl_platform_am",
+   "x": 8,
+   "y": 8,
+   "facing": "down",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 0
+   },
+   "beats": [
+    {
+     "id": "intro",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "intro2",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "d1-street",
+   "label": "월요일 아침 거리",
+   "note": "ARRIVED 1: ev_fl_street_am auto; arrive=subwayStep (18,11) after ev_fl_plat_exit",
+   "mapId": "fl_street",
+   "x": 18,
+   "y": 11,
+   "facing": "down",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 1
+   },
+   "beats": [
+    {
+     "id": "street",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "street2",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "d1-meet-choice",
+   "label": "첫 만남 선택",
+   "note": "STREET 2: ev_fl_meet auto in fl_office, arrive (16,4) via ev_fl_office_door",
+   "mapId": "fl_office",
+   "x": 16,
+   "y": 4,
+   "facing": "down",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 2
+   },
+   "beats": [
+    {
+     "id": "meet-start",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 160,
+       "settleMs": 700
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "d1-minho-choice",
+   "label": "민호 질문 선택",
+   "note": "MET 3: ev_fl_minho talk at (6,4)",
+   "mapId": "fl_office",
+   "x": 6,
+   "y": 5,
+   "facing": "up",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 3
+   },
+   "beats": [
+    {
+     "id": "pre",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "z",
+       "fn": "() => !!document.querySelector(\"[data-testid='dialogue-box']\") || !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 4,
+       "settleMs": 500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 60,
+       "settleMs": 450
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "d1-roof-choice",
+   "label": "옥상 3지선다",
+   "note": "PANTRY 4 -> ev_fl_roof auto; arrive (3,22) via ev_fl_stairs",
+   "mapId": "fl_rooftop",
+   "x": 3,
+   "y": 22,
+   "facing": "down",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 4
+   },
+   "beats": [
+    {
+     "id": "roof-start",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 60,
+       "settleMs": 450
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "d1-street-pm",
+   "label": "월요일 퇴근길 거리",
+   "note": "ROOF 5: ev_fl_street_pm auto; arrive (3,34) from rooftop",
+   "mapId": "fl_street_pm",
+   "x": 3,
+   "y": 34,
+   "facing": "down",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 5
+   },
+   "beats": [
+    {
+     "id": "street-pm",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "street-pm2",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "d1-konbini-enter",
+   "label": "편의점 입장",
+   "note": "EVENING 6: ev_fl_kon_enter auto; arrive (12,13) via ev_fl_konbini_pm",
+   "mapId": "fl_konbini",
+   "x": 12,
+   "y": 13,
+   "facing": "up",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 6
+   },
+   "beats": [
+    {
+     "id": "kon-enter",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "kon-enter2",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 3500
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "d1-cooler-choice",
+   "label": "바나나우유 선택",
+   "note": "KONBINI 7: ev_fl_cooler talk at (7,7)",
+   "mapId": "fl_konbini",
+   "x": 7,
+   "y": 8,
+   "facing": "up",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 7
+   },
+   "beats": [
+    {
+     "id": "pre",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "z",
+       "fn": "() => !!document.querySelector(\"[data-testid='dialogue-box']\") || !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 4,
+       "settleMs": 500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 60,
+       "settleMs": 450
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "d2-flashback",
+   "label": "회상 (방송실)",
+   "note": "KONBINI 7 + sw_fl_flashback: ev_fl_flashback auto in fl_broadcast, arrive (16,13)",
+   "mapId": "fl_broadcast",
+   "x": 16,
+   "y": 13,
+   "facing": "up",
+   "switches": {
+    "sw_fl_flashback": true
+   },
+   "variables": {
+    "var_fl_stage": 7
+   },
+   "beats": [
+    {
+     "id": "flashback",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "flashback2",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "d3-wed-choice1",
+   "label": "수요일 팀장 선택",
+   "note": "FLASH 8: ev_fl_wed auto in fl_office_pm, arrive (13,9)",
+   "mapId": "fl_office_pm",
+   "x": 13,
+   "y": 9,
+   "facing": "up",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 8,
+    "var_fl_jihu": 3
+   },
+   "beats": [
+    {
+     "id": "wed-start",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 60,
+       "settleMs": 450
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "d3-wed-choice2",
+   "label": "수요일 두 번째 선택",
+   "note": "FLASH 8: ev_fl_wed second choice (선배라면…)",
+   "mapId": "fl_office_pm",
+   "x": 13,
+   "y": 9,
+   "facing": "up",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 8,
+    "var_fl_jihu": 3
+   },
+   "beats": [
+    {
+     "id": "c1",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 60,
+       "settleMs": 450
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 450
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 60,
+       "settleMs": 450
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "d3-notebook-choice",
+   "label": "지후 노트 선택",
+   "note": "WED 9: ev_fl_notebook talk at (17,9)",
+   "mapId": "fl_office_pm",
+   "x": 17,
+   "y": 10,
+   "facing": "up",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 9,
+    "var_fl_jihu": 3
+   },
+   "beats": [
+    {
+     "id": "pre",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "z",
+       "fn": "() => !!document.querySelector(\"[data-testid='dialogue-box']\") || !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 4,
+       "settleMs": 500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 60,
+       "settleMs": 450
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "d3-pantry-choice",
+   "label": "탕비실 지후 선택",
+   "note": "WED 9: ev_fl_w_jihu_pantry talk at (6,4); jihu>=3 shows 'why' option",
+   "mapId": "fl_office_pm",
+   "x": 6,
+   "y": 5,
+   "facing": "up",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 9,
+    "var_fl_jihu": 3
+   },
+   "beats": [
+    {
+     "id": "pre",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 500
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "face",
+       "dir": "up"
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "z",
+       "fn": "() => !!document.querySelector(\"[data-testid='dialogue-box']\") || !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 4,
+       "settleMs": 500
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 60,
+       "settleMs": 450
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "d4-fri-choice",
+   "label": "금요일 발표 선택",
+   "note": "WED_TALK 10: ev_fl_fri auto in fl_office_fri, arrive (8,18) left",
+   "mapId": "fl_office_fri",
+   "x": 8,
+   "y": 18,
+   "facing": "left",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 10,
+    "var_fl_jihu": 4
+   },
+   "beats": [
+    {
+     "id": "fri-start",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 60,
+       "settleMs": 450
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "d4-fri-c8",
+   "label": "금요일 역/회식 선택",
+   "note": "WED_TALK 10: ev_fl_fri after presentation choice, c8 역으로 vs 회식",
+   "mapId": "fl_office_fri",
+   "x": 8,
+   "y": 18,
+   "facing": "left",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 10,
+    "var_fl_jihu": 4
+   },
+   "beats": [
+    {
+     "id": "pres",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 60,
+       "settleMs": 450
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 450
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 160,
+       "settleMs": 700
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "d5-run",
+   "label": "금요일 역으로 달리기",
+   "note": "FRI 11: ev_fl_run auto (stage==FRI) in fl_street_pm; arrive (41,11) down",
+   "mapId": "fl_street_pm",
+   "x": 41,
+   "y": 11,
+   "facing": "down",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 11,
+    "var_fl_jihu": 6
+   },
+   "beats": [
+    {
+     "id": "run",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "run2",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 4000
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "d5-platform",
+   "label": "저녁 승강장 고백",
+   "note": "RUN 12: ev_fl_platform auto in fl_platform_pm, arrive (8,8) up",
+   "mapId": "fl_platform_pm",
+   "x": 8,
+   "y": 8,
+   "facing": "up",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 12,
+    "var_fl_jihu": 6
+   },
+   "beats": [
+    {
+     "id": "plat-start",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 60,
+       "settleMs": 450
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "end-a",
+   "label": "엔딩 A (다시 시작)",
+   "note": "END_A: jihu>=6 and confession option 0 (ev_fl_p_jihu)",
+   "mapId": "fl_platform_pm",
+   "x": 8,
+   "y": 8,
+   "facing": "up",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 12,
+    "var_fl_jihu": 8
+   },
+   "beats": [
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 60,
+       "settleMs": 450
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 450
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "ending",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='ending-screen']\")",
+       "maxPresses": 80,
+       "settleMs": 600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "end-b",
+   "label": "엔딩 B (늦은 답장)",
+   "note": "END_B: jihu<6 and confession option 0",
+   "mapId": "fl_platform_pm",
+   "x": 8,
+   "y": 8,
+   "facing": "up",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 12,
+    "var_fl_jihu": 0
+   },
+   "beats": [
+    {
+     "id": "choice",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 60,
+       "settleMs": 450
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 450
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "ending",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='ending-screen']\")",
+       "maxPresses": 80,
+       "settleMs": 600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    }
+   ]
+  },
+  {
+   "id": "end-c",
+   "label": "엔딩 C (회식)",
+   "note": "END_C: fl_office_fri c8 option 1 (회식에 간다)",
+   "mapId": "fl_office_fri",
+   "x": 8,
+   "y": 18,
+   "facing": "left",
+   "switches": {},
+   "variables": {
+    "var_fl_stage": 10,
+    "var_fl_jihu": 4
+   },
+   "beats": [
+    {
+     "id": "pres",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 60,
+       "settleMs": 450
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 450
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "c8",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='runtime-choices']\")",
+       "maxPresses": 160,
+       "settleMs": 700
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 300
+      },
+      {
+       "kind": "key",
+       "key": "ArrowDown",
+       "times": 1,
+       "holdMs": 60
+      },
+      {
+       "kind": "key",
+       "key": "Enter"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 450
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "ending",
+     "ops": [
+      {
+       "kind": "pressUntilJs",
+       "key": "Enter",
+       "fn": "() => !!document.querySelector(\"[data-testid='ending-screen']\")",
+       "maxPresses": 80,
+       "settleMs": 600
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1200
+      }
+     ],
+     "shot": true
+    }
+   ]
+  }
+ ]
+}
