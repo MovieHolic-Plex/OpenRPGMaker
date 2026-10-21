@@ -27,6 +27,36 @@ const PERSON_HEAD = /^(사람|캐릭터|주민|행인|npc|병사|경비병?|상�
 /** 제목 끝 낱말이 지형·바닥·벽 칸이면 칸 타일 요청이다(깔개·러그 같은 바닥 무늬 물건은 flat 으로 통과). */
 const TERRAIN_HEAD = /^(바닥|돌바닥|마루|벽|벽면|외벽|땅|흙|잔디|풀밭|물|바다|강|호수|길|도로|보도|타일|지형|모래|절벽|천장|지붕|floor|wall|ground|grass|water|road|path|terrain|tile|tiles|ceiling|roof|cliff)$/iu;
 
+/** 3/4 관문 조언 배지가 쓸 종류(object-gate rules.ts 의 종류 중 기물에 해당하는 것). */
+const GATE_KINDS = ["tall_furniture", "low_furniture", "seat", "frame", "container", "round_body", "column", "box", "structure", "figure", "organic", "flat", "wall_mounted", "other"] as const;
+
+/**
+ * 맵 배경(나라·시대) 한 줄 — 칩셋으로 정한다. 공방 검수가 「1배에서 그 배경의 그 물건으로 읽히나」를 본다.
+ * 2026-10-21 VQA: 일본 거리(jp_city)에 부탁한 공중전화 부스가 영국식 빨간 부스로 나왔는데 검수가 화풍만 보고 통과시켰다.
+ */
+export function objectSetting(tileset: TilesetDef, mapName: string): string {
+  const id = tileset.id;
+  const where = mapName ? ` · 맵 「${mapName}」` : "";
+  const table: readonly [RegExp, string][] = [
+    [/^jp_city|^modern_city|^sengoku/u, id.startsWith("sengoku") ? "전국·에도 시대 일본" : "현대 일본 도시(주택가·상점가·역) — 일본에서 실제로 보는 모양"],
+    [/^joseon/u, "조선 시대 한국(바람의나라풍)"],
+    [/^murim/u, "중국 무협(문파·객잔)"],
+    [/^modern_campus/u, "현대 한국·일본 학교"],
+    [/^wizarding/u, "서양 마법 학교(고딕 성채)"],
+    [/^gothic/u, "고딕 저택·묘지(서양 호러)"],
+    [/^sf_|^steampunk/u, id.startsWith("sf_") ? "SF 우주 정거장·네온 거리" : "스팀펑크 서양 도시"],
+    [/^desert_east/u, "사막·중동풍 동양"],
+    [/^snow_north/u, "북방 설원(북유럽풍)"],
+    [/^pirate/u, "열대 군도·해적 항구"],
+    [/^sky_island/u, "하늘섬 판타지"],
+    [/^prehistoric/u, "선사 시대"],
+    [/^monster_|^emerald_|^scarloxy/u, "몬스터 수집 RPG 의 현대 시골 마을"],
+    [/^atlas_biome_interior/u, "서양 판타지 중세 마을의 집 안(SFC JRPG)"],
+  ];
+  const hit = table.find(([pattern]) => pattern.test(id));
+  return `${hit ? hit[1] : "서양 판타지 중세 항구 마을(SFC JRPG, 로마·지중해풍)"}${where}`;
+}
+
 const words = (text: string): string[] => text.trim().split(/[\s·,/()]+/u).filter(Boolean);
 const squash = (text: string): string => text.replace(/[\s·,/()]+/gu, "").toLowerCase();
 
@@ -92,7 +122,8 @@ const generateMissingObject: ToolDefinition = {
       objectKind: { type: "string", enum: OBJECT_GEN_KINDS as unknown as string[], description: "놓는 방식: floor 바닥에 세움(발밑 막힘) · wall 북쪽 벽 앞 가구 · hang 벽에 거는 것 · flat 밟고 지나가는 바닥 무늬(깔개)" },
       tilesW: { type: "integer", minimum: 1, maximum: 4, description: "가로 칸 수(실내 가구는 3까지)" },
       tilesH: { type: "integer", minimum: 1, maximum: 3, description: "발밑(막히는) 세로 칸 수(실내 가구는 2까지). 위로 솟은 부분은 rise" },
-      rise: { type: "integer", minimum: 0, maximum: 48, description: "발밑 칸 위로 솟는 높이 px(기본: 세우는 물건 16, 거는 것·무늬 0). 키 큰 부스·가로등은 32" },
+      rise: { type: "integer", minimum: 0, maximum: 48, description: "발밑 칸 위로 솟는 높이 px. 기본 0 = 그림 전체가 발밑 칸 안(1×1 이면 한 칸 높이 — 벌통·항아리·상자·어항). 사람 키보다 큰 것만: 옷장·부스 16, 가로등·큰 나무 32" },
+      gateKind: { type: "string", enum: GATE_KINDS as unknown as string[], description: "3/4 검사 종류(선택): tall_furniture 키 큰 가구·부스 · low_furniture 탁자·침대 · seat 의자 · frame 틀·걸대 · container 입구 있는 그릇(항아리·어항·우물) · round_body 통·북 · column 기둥·석등 · box 상자·궤·벌통 · structure 작은 건물·문 · figure 조각상 · organic 식물·바위 · flat 바닥 무늬 · wall_mounted 벽 걸이 · other" },
       base: {
         type: "object",
         properties: { x: { type: "integer" }, y: { type: "integer" } },
@@ -150,12 +181,15 @@ const generateMissingObject: ToolDefinition = {
         { code: "object-exists", mapId: map.id },
       );
     }
+    const gateKind = typeof args.gateKind === "string" && (GATE_KINDS as readonly string[]).includes(args.gateKind) ? args.gateKind : undefined;
     const request: ObjectGenRequest = {
       kind: "workshop-object-request", harnessId, tilesetId: tileset.id, tilesetName: tileset.name, mapId: map.id,
       title, description, objectKind, tilesW, tilesH, rise, base, need,
+      setting: objectSetting(tileset, map.name ?? ""),
+      ...(gateKind ? { gateKind } : {}),
     };
     return {
-      summary: `「${title}」 그리기 카드를 띄운다(${tilesW}×${tilesH}칸, 칩셋 ${tileset.id}). 후보를 사용자가 고르면 물체 id 가 후속 요청으로 온다 — 지금은 더 칠하지 말고 그렸다고 말하지 말고 이 턴을 끝내라.`,
+      summary: `「${title}」 그리기 카드를 띄운다(발밑 ${tilesW}×${tilesH}칸${rise ? ` + 위로 ${rise}px` : " · 칸 안에 다 들어가는 크기"}, 칩셋 ${tileset.id}, 배경 ${request.setting}). 후보를 사용자가 고르면 물체 id 가 후속 요청으로 온다 — 지금은 더 칠하지 말고 그렸다고 말하지 말고 이 턴을 끝내라.`,
       data: request,
     };
   },

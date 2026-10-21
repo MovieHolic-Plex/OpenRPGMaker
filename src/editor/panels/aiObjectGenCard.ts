@@ -25,6 +25,8 @@ function button(text: string, testid: string, onClick: () => void, primary = fal
 export function createObjectGenCard(request: ObjectGenRequest, followUp: ObjectGenFollowUp): HTMLElement {
   const status = el("p", { class: "ai-tileset-change-status", attrs: { role: "status" } });
   const candidates = el("div", { class: "ai-objectgen-candidates", dataset: { testid: "ai-objectgen-candidates" } });
+  // 참고 그림(object-gen ref 단계): 그리는 모델만 모양을 본다. 칩셋에 들어가지 않는다 — 카드에도 그렇게 적는다.
+  const reference = el("div", { class: "ai-objectgen-reference", dataset: { testid: "ai-objectgen-reference" } });
   const autoBox = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "ai-objectgen-autopick" } }) as HTMLInputElement;
   const footer = el("footer");
   let settled = false;
@@ -60,11 +62,30 @@ export function createObjectGenCard(request: ObjectGenRequest, followUp: ObjectG
     }
   };
 
+  const renderReference = (round: WorkshopRound): void => {
+    const ref = round.reference;
+    clearChildren(reference);
+    reference.dataset.status = ref?.status ?? "pending";
+    if (!ref) {
+      if (round.runs.some((r) => r.status === "drawing" && !r.grid)) reference.append(el("small", { text: "참고 그림을 만드는 중… (모양만 보는 그림이에요)" }));
+      return;
+    }
+    if (ref.status === "ok" && ref.dataUrl) {
+      reference.append(
+        el("img", { attrs: { alt: "참고 그림", src: ref.dataUrl } }),
+        el("small", { text: "참고용, 설치 안 됨 — 모양만 보고 도트는 새로 찍어요" }),
+      );
+      return;
+    }
+    reference.append(el("small", { class: "is-none", text: "참고 그림 없이 그림" }), ...(ref.note ? [el("small", { text: ref.note.replace(/^참고 그림 없이 그림 — /u, "") })] : []));
+  };
+
   const render = (round: WorkshopRound): void => {
     if (!glue || !started) return;
     const { gridDataUrl } = pixelsModule!;
     const item = started.session.items().find((candidate) => candidate.key === started!.itemKey);
     const palette = item ? started.session.runner.palette(item) : null;
+    renderReference(round);
     clearChildren(candidates);
     pickButtons.length = 0;
     for (const run of round.runs) {
@@ -82,6 +103,8 @@ export function createObjectGenCard(request: ObjectGenRequest, followUp: ObjectG
             ? el("img", { attrs: { alt: `후보 ${run.letter}`, src: gridDataUrl(run.grid, palette, scale, BACKGROUND) } })
             : el("div", { class: "ai-objectgen-placeholder", text: RUN_STATUS[run.status] }),
           el("strong", { text: `${run.letter} · ${verdict}` }),
+          ...(gateBadgeOf(run) ? [gateBadgeOf(run)!] : []),
+          ...(run.status === "done" && run.verdict?.looksLike ? [el("small", { class: "ai-objectgen-looks", text: `검수 눈엔: ${run.verdict.looksLike}` })] : []),
           ...(run.status === "failed" && run.error ? [el("small", { text: run.error.slice(0, 80) })] : []),
           pick,
         ],
@@ -100,15 +123,18 @@ export function createObjectGenCard(request: ObjectGenRequest, followUp: ObjectG
       ? "후보를 그리지 못했어요. 「다시 그리기」를 누르거나 조수에게 있는 것으로 해 달라고 하세요."
       : autoBox.checked
         ? "검수를 통과한 후보가 없어 알아서 고르지 않았어요. 마음에 드는 것을 직접 골라 주세요."
-        : "마음에 드는 후보의 「이걸로 넣기」를 눌러 주세요. 검수 통과는 참고일 뿐 — 직접 보고 고르세요.";
+        : "마음에 드는 후보의 「이걸로 넣기」를 눌러 주세요. 검수 통과·3/4 배지는 참고일 뿐 — 직접 보고 고르세요.";
   };
 
   let pixelsModule: typeof import("@/editor/workshop/pixels") | null = null;
+  let badgeModule: typeof import("@/editor/workshop/gateBadge") | null = null;
+  const gateBadgeOf = (run: WorkshopRun): HTMLElement | null => badgeModule?.gateBadge(run) ?? null;
   const start = async (): Promise<void> => {
-    const [chat, pixels, loaded] = await Promise.all([
-      import("@/editor/workshop/chat"), import("@/editor/workshop/pixels"), import("@/editor/workshop/assistantObjectGen"),
+    const [chat, pixels, loaded, badge] = await Promise.all([
+      import("@/editor/workshop/chat"), import("@/editor/workshop/pixels"), import("@/editor/workshop/assistantObjectGen"), import("@/editor/workshop/gateBadge"),
     ]);
     pixelsModule = pixels;
+    badgeModule = badge;
     glue = loaded;
     autoBox.checked = loaded.objectGenAutoPick();
     if (!chat.workshopAiReady()) {
@@ -170,6 +196,7 @@ export function createObjectGenCard(request: ObjectGenRequest, followUp: ObjectG
       el("h3", { text: `「${request.title}」을(를) 그려 넣어요` }),
       el("p", { class: "ai-tileset-change-reason", text: request.description }),
       el("p", { class: "ai-tileset-change-detail", text: `칩셋 「${request.tilesetName}」의 색과 그림 느낌으로 ${size}${request.base ? ` · (${request.base.x},${request.base.y})에 놓아요` : ""}. 내 AI 계정으로 그리고, 이 게임에만 들어가요.` }),
+      reference,
       candidates,
       el("label", { class: "ai-store-agree ai-objectgen-auto", children: [autoBox, "알아서 고르기 — 검수를 통과한 첫 후보를 바로 넣어요(이 기기에 기억)"] }),
       status,

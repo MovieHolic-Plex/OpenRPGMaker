@@ -2,6 +2,7 @@
 // 목록은 sharedDesignCatalog.ts(공용 오브젝트 카탈로그 + 프로젝트 킷). 장소 안 킷은 그 장소 원본을 prepare 에서 불러 온다.
 import { isPassable } from "@/project/collision";
 import { checkKitPlacement, checkReliefPlacement } from "@/project/kitPlacementRules";
+import { footprintFromUpper, footprintRefusal } from "@/project/objectFootprint";
 import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
 import { regionReferenceScene, preloadRegionReferenceScene, type RegionReferenceScene } from "@/project/regionReferenceImport";
 import { installStampAssets, stampPattern, type StampPattern } from "@/project/objectStamp";
@@ -13,6 +14,18 @@ import { ToolError, type ToolDefinition } from "./types";
 
 type Layers = "both" | "lower" | "upper";
 type Resolved = { name: string; source: TilesetDef; pattern: StampPattern; assets: Project["assets"]["uploaded"]; defaultLayers: Layers; entrances?: StructureKitDef["parts"]; kit?: StructureKitDef };
+
+/** 서는 소품 킷인가 — 발자국 검사 대상. 건물(입구)·지형·다리·벽 걸이·물 위 부품은 제외(그들은 놓기 규칙·받침 규칙이 본다). */
+function isStandingPropKit(kit: StructureKitDef, pattern: StampPattern): boolean {
+  if (kit.width > 8 || kit.height > 8) return false;
+  if ((kit.parts ?? []).some((part) => part.kind === "entrance")) return false;
+  if (pattern.lower.some((tile) => tile >= 0)) return false; // 제 바닥을 가져오는 킷(지형 조각·건물)은 아니다
+  if (!pattern.upper.some((tile) => tile >= 0)) return false;
+  const role = (kit.ai as { role?: string } | undefined)?.role;
+  if (role && role !== "prop") return false;
+  const label = `${kit.id} ${kit.name ?? ""} ${(kit.ai?.tags ?? []).join(" ")}`;
+  return !/\bbridge\b|다리|wall|벽 걸이|벽걸이|벽면|torch|횃불|banner|현수막|sign-wall|창문|window|door|문짝|boat|나룻배|돛단배|어선|pier|부두|water|물 위|shadow|그림자|decal|wallmount|overhead/iu.test(label);
+}
 
 const fail = (message: string): never => { throw new ToolError(message, { code: "invalid-args" }); };
 
@@ -90,7 +103,7 @@ export function sharedDesignDetail(project: Project, id: string) {
 
 export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
   { name: "stamp_object", mode: "write", domains: ["map"],
-    description: "Stamp one shared object (list_spatial_designs kind:object → data.shared.rows[].id: obj:… from the shared object catalog — leafless trees, volcano peaks, climate terrain pieces, harbor parts, gatehouse, house exteriors, village props — or kit:/group: for this project's other kits) onto a map with its top-left at (x, y). Works without spatial activation. The object keeps its authored cells; when the map's tileset shows other pictures at those numbers the pictures are grafted onto the map's tileset (same tile size only) and renumbered, so place kits such as generated building exteriors, the gatehouse or harbor boats can go onto a forest village map. -1 cells leave the map as it is. layers: both (default for kits/houses), upper (default for harbor parts and volcano peaks — keeps the water/ground below) or lower. obj:house/<form> rows stamp only the exterior; use author_house for doors and interiors. Overflow past the map edge is clipped and reported. Each row carries owner (where it belongs — next to what) and passage; follow owner. On maps with height steps (relief) the drawn cells must sit on one level, off ramp/stair cells, and not right north of higher ground (it hides the bottom row); a rejection names the levels and a nearby top-left on each level. Ground paint, shadows and bridges are exempt.",
+    description: "Stamp one shared object (list_spatial_designs kind:object → data.shared.rows[].id: obj:… from the shared object catalog — leafless trees, volcano peaks, climate terrain pieces, harbor parts, gatehouse, house exteriors, village props — or kit:/group: for this project's other kits) onto a map with its top-left at (x, y). Works without spatial activation. The object keeps its authored cells; when the map's tileset shows other pictures at those numbers the pictures are grafted onto the map's tileset (same tile size only) and renumbered, so place kits such as generated building exteriors, the gatehouse or harbor boats can go onto a forest village map. -1 cells leave the map as it is. layers: both (default for kits/houses), upper (default for harbor parts and volcano peaks — keeps the water/ground below) or lower. obj:house/<form> rows stamp only the exterior; use author_house for doors and interiors. Overflow past the map edge is clipped and reported. Each row carries owner (where it belongs — next to what) and passage; follow owner. On maps with height steps (relief) the drawn cells must sit on one level, off ramp/stair cells, and not right north of higher ground (it hides the bottom row); a rejection names the levels and a nearby top-left on each level. Ground paint, shadows and bridges are exempt. A standing prop kit (kit:…, no ground cells) is refused when its feet (blocking cells, or its bottom row) land on a wall, ceiling, roof, void, water or a blocked structure, or when any drawn cell overlaps another object; the refusal names the nearest free floor top-left — retry there.",
     parameters: { type: "object", properties: {
       objectId: { type: "string", description: "list_spatial_designs(kind:'object') 의 data.shared.rows[].id" },
       mapId: { type: "string" },
@@ -116,6 +129,13 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
       if (kitDef && mapTileset) {
         const broken = checkKitPlacement(map, mapTileset, kitDef.id, kitDef, Number(args.x), Number(args.y));
         if (broken) throw new ToolError(broken, { code: "kit-placement-rule", mapId: map.id });
+      }
+      // 발자국(project/objectFootprint.ts, 2026-10-21): 소품 킷(kit: 서는 물건, 8×8 이하, 아래층 그림 없음)의 발이 벽·천장·허공·물 위거나
+      // 다른 물체와 겹치면 거부하고 가까운 빈 바닥을 알려 준다. 실측: 2×4 혼천의를 서재 두 방 사이 벽·천장 위에 찍었다(objectgen VQA FAIL).
+      if (kitDef && isStandingPropKit(kitDef, pattern) && layers !== "lower") {
+        const cells = footprintFromUpper(pattern.width, pattern.height, pattern.upper, resolved.source);
+        const refusal = footprintRefusal(project, map, cells, Number(args.x), Number(args.y), `「${resolved.name}」(${objectId}) ${pattern.width}×${pattern.height}`);
+        if (refusal) throw new ToolError(refusal.message, { code: refusal.code, mapId: map.id, ...(refusal.suggestion ? refusal.suggestion.at : {}) });
       }
       // 높이 단(map.relief): 그림은 한 단 위에만, 경사로 칸 금지, 남쪽 높은 칸이 아랫줄을 덮지 않게. relief 없는 맵은 그대로.
       const reliefBroken = checkReliefPlacement(map, resolved.source, objectId, resolved.name, pattern, Number(args.x), Number(args.y));

@@ -5,6 +5,8 @@ import { imageToGrid, onBackground, renderGrid, scaleImage } from "@/harnesses/_
 import type {
   AnchorSample, DrawContext, Grid, ItemDefinition, Palette, Rgba, RgbaImage, WorkshopEnv, WorkshopItem, WorkshopRunner,
 } from "@/harnesses/_core/workshop/types";
+import { gateAdviceMessages, parseGateAdvice } from "@/harnesses/_core/workshop/gateAdvice";
+import { REF_DRAW_NOTE, workshopRefDescribe } from "@/harnesses/_core/workshop/referencePrompt";
 import { interiorGate, interiorHardCheck, parseInteriorVerdict } from "./checks";
 import { cropCells, FLAT_KINDS, itemFromDefinition, itemFromSpec, SHEET_PATH, specObjects, VIEW_FAIL } from "./items";
 import { paletteForItem } from "./palette";
@@ -116,6 +118,7 @@ export function createInteriorRunner(): WorkshopRunner {
     },
     async drawMessages(ctx: DrawContext, env) {
       const parts: ContentPart[] = [label(drawBrief(ctx))];
+      if (ctx.reference) parts.push(label(`참고 그림 (모양만 — 참고용, 설치 안 됨). ${REF_DRAW_NOTE}`), image(ctx.reference));
       if (!FLAT_KINDS.has(ctx.item.kind)) for (const example of EXAMPLES) parts.push(label(example.label), image(examples.get(example.file)!));
       if (ctx.current) parts.push(label("지금 시트의 그림(8배)"), image(shot(env, ctx.current, ctx.palette)));
       if (ctx.previousGrid) parts.push(label("지난 시도(8배)"), image(shot(env, ctx.previousGrid, ctx.palette)));
@@ -126,11 +129,20 @@ export function createInteriorRunner(): WorkshopRunner {
     async reviewMessages(ctx, env) {
       const parts: ContentPart[] = [label(reviewBrief(ctx))];
       if (ctx.current) parts.push(label("왼쪽 = 지금 그림, 오른쪽 = 후보 (8배)"), image(sideBySide(env, ctx.current, ctx.candidate, ctx.palette)));
+      if (ctx.item.isNew && !ctx.current) {
+        // 새 기물은 「1배에서 그 물건으로 읽히나」를 먼저 본다(2026-10-21 VQA: 검수 통과가 그 물건으로 읽힌다는 뜻이 아니었다).
+        parts.push(label("후보 1배 (실제 게임 크기 — 먼저 본다)"), image(shot(env, ctx.candidate, ctx.palette, 1)), label("후보 2배"), image(shot(env, ctx.candidate, ctx.palette, 2)));
+      }
       parts.push(label("후보 (8배)"), image(shot(env, ctx.candidate, ctx.palette)));
       if (!FLAT_KINDS.has(ctx.item.kind)) for (const file of REVIEW_REFS) parts.push(label(`칩셋 기준 가구: ${file.replace("good-", "")}`), image(examples.get(file)!));
       for (const anchor of ctx.anchors) parts.push(label(`화풍 기준: ${anchor.title}`), image(shot(env, anchor.grid, paletteOf(anchor.itemKey, ctx.palette))));
       return [{ role: "system", content: reviewSystemPrompt() }, { role: "user", content: parts }];
     },
+    // 참고 그림(object-gen ref 단계)은 새 기물만 — 있는 그림을 고치는 판은 지금 그림이 모양 기준이다.
+    referenceDescribe: (item) => (item.isNew ? workshopRefDescribe(item) : null),
+    // 3/4 관문 조언 배지(후보마다 호출 1번 더). 굽기는 막지 않는다.
+    async adviseMessages(item, grid, palette, env) { return gateAdviceMessages(item, grid, palette, env); },
+    parseAdvice: parseGateAdvice,
     hardCheck: (item, grid) => interiorHardCheck(item, grid, runner.currentGrid(item)),
     parseVerdict: parseInteriorVerdict,
     gate: interiorGate,

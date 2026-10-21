@@ -43,7 +43,9 @@ export async function startObjectGenRound(request: ObjectGenRequest): Promise<Ob
   await session.reload();
   const item = session.items().find((candidate) => candidate.key === def.key);
   if (!item) throw new Error("새 기물을 공방에 넣지 못했어요.");
-  const round = await session.engine.startRound(item);
+  // dev QA(참고 있음/없음 비교): window.__oprnWorkshopNoReference 가 참이면 참고 단계를 끈다. 출하 빌드에는 없다.
+  const noReference = import.meta.env.DEV && (window as unknown as Record<string, unknown>).__oprnWorkshopNoReference === true;
+  const round = await session.engine.startRound(item, noReference ? { reference: false } : {});
   await session.reload();
   return { session, itemKey: item.key, roundId: round.id };
 }
@@ -70,7 +72,7 @@ export async function bakeObjectGenRun(run: ObjectGenRun, letter: string, autoPi
     id: `f${now.toString(36)}${Math.random().toString(36).slice(2, 6)}`, projectKey: session.projectKey, itemKey: item.key, roundId: round.id,
     letter, verdict: "pick", reasons: [], note: autoPicked ? "알아서 고르기(검수 통과 첫 후보)" : "", at: now,
   });
-  const detail = bakeWorkshopPick(item, picked.grid, session.runner.palette(item), session.env, { autoPicked });
+  const detail = bakeWorkshopPick(item, picked.grid, session.runner.palette(item), session.env, { autoPicked, gate: picked.gate ?? null });
   await session.reload();
   return detail;
 }

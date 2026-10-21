@@ -7,7 +7,9 @@
 import type { ChatMessage, ContentPart } from "@/ai/llmClient";
 import { onBackground, renderGrid, scaleImage } from "@/harnesses/_core/workshop/grid";
 import type { AnchorSample, Grid, ItemDefinition, Palette, Rgba, RgbaImage, WorkshopEnv, WorkshopItem, WorkshopRunner, WorkshopTilesetSource } from "@/harnesses/_core/workshop/types";
-import { mapObjectHardCheck, parseMapObjectVerdict } from "./checks";
+import { gateAdviceMessages, parseGateAdvice } from "@/harnesses/_core/workshop/gateAdvice";
+import { REF_DRAW_NOTE, workshopRefDescribe } from "@/harnesses/_core/workshop/referencePrompt";
+import { mapObjectGate, mapObjectHardCheck, parseMapObjectVerdict } from "./checks";
 import { mapItemFromDefinition, paletteFromHexes } from "./items";
 import { drawBrief, drawSystemPrompt, MAP_DIRECTIONS, reviewBrief, reviewSystemPrompt } from "./prompts";
 import { dominantColor, sheetExcerpt, similarObjects } from "./sheet";
@@ -84,6 +86,7 @@ export function createMapObjectRunner(): WorkshopRunner {
     async drawMessages(ctx, env) {
       const style = await styleFor(ctx.item, env);
       const parts: ContentPart[] = [label(drawBrief(ctx, style.name))];
+      if (ctx.reference) parts.push(label(`참고 그림 (모양만 — 참고용, 설치 안 됨). ${REF_DRAW_NOTE}`), image(ctx.reference));
       for (const ref of style.refs) parts.push(label(ref.label), image(ref.url));
       if (ctx.previousGrid) parts.push(label("지난 시도(8배)"), image(shot(env, ctx.previousGrid, ctx.palette, style.background)));
       for (const anchor of ctx.anchors) parts.push(label(`이 칩셋에서 사용자가 고른 기물: ${anchor.title} (8배)`), image(shot(env, anchor.grid, runner.palette(items.find((i) => i.key === anchor.itemKey) ?? ctx.item), style.background)));
@@ -92,13 +95,22 @@ export function createMapObjectRunner(): WorkshopRunner {
     },
     async reviewMessages(ctx, env) {
       const style = await styleFor(ctx.item, env);
-      const parts: ContentPart[] = [label(reviewBrief(ctx)), label("후보 (8배)"), image(shot(env, ctx.candidate, ctx.palette, style.background))];
+      const actual = (scale: number) => env.encodePng(scaleImage(onBackground(renderGrid(ctx.candidate, ctx.palette), style.background), scale));
+      const parts: ContentPart[] = [
+        label(reviewBrief(ctx, style.name)),
+        label("후보 1배 (실제 게임 크기 — 먼저 본다)"), image(actual(1)),
+        label("후보 2배"), image(actual(2)),
+        label("후보 (8배)"), image(shot(env, ctx.candidate, ctx.palette, style.background)),
+      ];
       for (const ref of style.refs) parts.push(label(ref.label), image(ref.url));
       return [{ role: "system", content: reviewSystemPrompt() }, { role: "user", content: parts }];
     },
+    referenceDescribe: workshopRefDescribe,
+    adviseMessages: gateAdviceMessages,
+    parseAdvice: parseGateAdvice,
     hardCheck: mapObjectHardCheck,
     parseVerdict: parseMapObjectVerdict,
-    gate: (_item, verdict) => verdict,
+    gate: mapObjectGate,
   };
   return runner;
 }
