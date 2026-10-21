@@ -192,6 +192,27 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
     }
     // 부엌의 수도꼭지 개수대·쇠 레인지는 중세 집에 어울리지 않았고 세 집에 똑같이 깔렸다(VQA r5) — 물동이와 화덕·조리대로 바꾼다.
     periodKitchen(project.maps[home.mapId]!);
+    // 출구 바로 앞(두 칸 안)의 모피 깔개는 들어오자마자 주인공 뒤에 자루처럼 놓였다(VQA r9 minor) — 걷는다.
+    {
+      const im = project.maps[home.mapId]!;
+      const metaI = (project.tilesets[im.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+      for (const layer of [im.lowerOverlayTiles, im.upperTiles]) {
+        if (!layer) continue;
+        const rug = (i: number): boolean => i >= 0 && i < layer.length && /모피 깔개/.test(metaI[layer[i]!]?.label ?? "");
+        const queue: number[] = [];
+        for (let i = 0; i < layer.length; i += 1) {
+          const x = i % im.width, y = Math.floor(i / im.width);
+          if (Math.abs(x - exitCell.x) <= 2 && exitCell.y - y <= 2 && exitCell.y - y >= 0 && rug(i)) queue.push(i);
+        }
+        // 깔개 한 장을 통째로 — 붙은 깔개 칸까지 걷는다.
+        while (queue.length) {
+          const i = queue.pop()!;
+          if (!rug(i)) continue;
+          layer[i] = -1;
+          queue.push(i - 1, i + 1, i - im.width, i + im.width);
+        }
+      }
+    }
     const interior = project.maps[home.mapId]!;
     // 사람은 출구에서 걸어 닿는 방 안쪽 빈 칸에 — 출구·서로 3칸 이상 떨어지게. 가게 주인은 계산대 뒤에.
     const taken: Cell[] = [exitCell];

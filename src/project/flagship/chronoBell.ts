@@ -537,7 +537,7 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   const escorts: [string, string, number, string][] = [
     ["a", "tex_easyrpg_charset_actor1", 3, "심문회 기사"], ["b", "tex_easyrpg_charset_people2", 1, "교단 사제"],
     ["c", "tex_easyrpg_charset_people3", 4, "교단 사제"], ["d", "tex_easyrpg_charset_actor1", 2, "심문회 기사"],
-    ["e", "tex_easyrpg_charset_people2", 1, "교단 사제"], ["f", "tex_easyrpg_charset_people3", 5, "심문회 기사"],
+    ["e", "tex_easyrpg_charset_people2", 2, "교단 사제"], ["f", "tex_easyrpg_charset_people3", 5, "심문회 기사"],
     ["g", "tex_easyrpg_charset_people3", 4, "교단 사제"], ["h", "tex_easyrpg_charset_people3", 6, "심문회 기사"],
   ].map(([k, tex, index, name]) => [`ev_${FS_PREFIX}_escort_${k}`, tex as string, index as number, name as string]);
   hub.events = hub.events.filter((e) => !escorts.some(([id]) => id === e.id));
@@ -591,19 +591,22 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     ["c", "tex_easyrpg_charset_people4", 2, "광장의 상인", "포고 때문에 동문 길이 막히면 장사는 다 했네."],
     ["d", "tex_easyrpg_charset_people1", 6, "광장의 노인", "하늘에서 온 것을 함부로 부르면 화를 입는 법이야."],
   ];
+  const hubMeta = (project.tilesets[hub.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
   const near = (x: number, y: number, r: number, c: { x: number; y: number }) => Math.abs(x - c.x) <= r && Math.abs(y - c.y) <= r;
   const spots: { x: number; y: number }[] = [];
   const candidates: { x: number; y: number; d: number }[] = [];
   // 백성은 발렌 남쪽(길 아래 풀밭)에 모여 위를 본다.
   for (let y = valen.y + 2; y <= valen.y + 5; y += 1) for (let x = valen.x - 5; x <= valen.x + 4; x += 1) {
     if (Math.abs(x - start.x) <= 1 || near(x, y, 1, valen) || !free(x, y)) continue;
+    // 길(포석·흙길) 칸은 비운다 — 외길에 둘이 줄지어 서서 길을 막고 아무것도 안 보는 것처럼 읽혔다(VQA r9).
+    if (!/풀밭/.test(hubMeta[hub.lowerTiles[y * hub.width + x]!]?.label ?? "")) continue;
     if ([...doorCells].some((k) => { const [dx, dy] = k.split(",").map(Number); return Math.abs(x - dx!) <= 2 && Math.abs(y - dy!) <= 2; })) continue;
     candidates.push({ x, y, d: Math.hypot(x - valen.x, y - (valen.y + 3)) });
   }
   candidates.sort((p, q) => p.d - q.d);
   for (const c of candidates) {
     if (spots.length >= crowd.length) break;
-    if (spots.some((s) => near(c.x, c.y, 1, s))) continue;
+    if (spots.some((s) => near(c.x, c.y, 1, s) || (s.x === c.x && Math.abs(s.y - c.y) <= 2))) continue;
     spots.push({ x: c.x, y: c.y }); standing.add(`${c.x},${c.y}`);
   }
   hub.events = hub.events.filter((e) => !String(e.id).startsWith(`ev_${FS_PREFIX}_crowd_`));
@@ -718,12 +721,18 @@ function clearDoorFronts(project: Project, map: GameMap | undefined): void {
   const nearDoor = (x: number, y: number, r: number): boolean => doors.some((d) => Math.abs(d.x - x) <= r && Math.abs(d.y - y) <= r);
   for (const npc of map.events) {
     // 성문 문지기·포고 행렬은 문 곁이 제자리다.
-    if (String(npc.id).startsWith("ev_gate_") || /_(escort_|valen|knight|crowd_)|_gate$/.test(String(npc.id)) || !nearDoor(npc.x, npc.y, 2)) continue;
+    // 바로 위 칸에 큰 소품(물레방아 등)이 있으면 그 밑에 끼어 선 것처럼 보였다(VQA r8 minor, 빵집 아주머니) — 그때도 옮긴다.
+    const metaD = (project.tilesets[map.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+    const underProp = (x: number, y: number): boolean => {
+      const t = map.upperTiles[(y - 1) * map.width + x] ?? -1;
+      return t >= 0 && !/풀|꽃|돌|버섯|고사리|덤불|그림자/.test(metaD[t]?.label ?? "");
+    };
+    if (String(npc.id).startsWith("ev_gate_") || /_(escort_|valen|knight|crowd_)|_gate$/.test(String(npc.id)) || (!nearDoor(npc.x, npc.y, 2) && !underProp(npc.x, npc.y))) continue;
     const page = npc.pages?.[0];
     if (!page?.graphic?.sprite || (page.movement?.type ?? "fixed") !== "fixed") continue;
     let best: { x: number; y: number; d: number } | undefined;
     for (let y = npc.y - 6; y <= npc.y + 6; y += 1) for (let x = npc.x - 6; x <= npc.x + 6; x += 1) {
-      if (x < 1 || y < 1 || x >= map.width - 1 || y >= map.height - 1 || nearDoor(x, y, 3)) continue;
+      if (x < 1 || y < 1 || x >= map.width - 1 || y >= map.height - 1 || nearDoor(x, y, 3) || underProp(x, y)) continue;
       if (!isPassable(project, map, x, y) || map.events.some((e) => e !== npc && Math.abs(e.x - x) <= 1 && Math.abs(e.y - y) <= 1)) continue;
       const d = Math.abs(x - npc.x) + Math.abs(y - npc.y);
       if (!best || d < best.d) best = { x, y, d };
@@ -1403,11 +1412,19 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     // 네모 마당으로 부풀었다(VQA r7). 가장자리 모양은 아래 둑 덧그림(rimPit)이 그린다.
     const body = metaPit.findIndex((m) => m?.label === "버들항 · 모랫길 오토타일 · 사방 이어짐(몸통)");
     for (const c of pit) fm.lowerTiles[c] = body >= 0 ? body : 23175;
+    // 3/4 깊이: 북쪽 테 바로 아래 줄은 흙 절벽면(윗변 그늘) — 구덩이가 파여 들어간 안쪽 벽으로 읽힌다(VQA r9 major
+    // 「평평한 네모 흙 마당」). 둑은 진흙 둑(바깥 그을린 풀 테 + 안쪽 짙은 선)으로 — 흑요석 둑은 네 변 같은 검은 테였다.
+    for (const c of pit) {
+      const x = c % fm.width, y = Math.floor(c / fm.width);
+      if (!pit.has(c - fm.width)) fm.lowerTiles[c] = 11646 + ((x + y) % 5);
+    }
     // 구덩이 안: 불씨 자국·숯 더미(관 곁). 구덩이 밖: 쓰러진 나무·그루터기·꺾인 덤불을 둘레 바깥으로 빙 둘러 — 오프닝 crash 컷처럼
     // 충격에 넘어간 나무가 구덩이를 에워싼다. 예전 고정 좌표는 구덩이를 키우자 덤불이 구덩이 안에 섰다(VQA r6).
     const inside: Array<[string, number, number]> = [
       ["bd-pick-volcano-cave-ember-a", -3, -1], ["bd-pick-volcano-cave-ember-a", 3, 0], ["bd-pick-volcano-cave-ember-a", -4, 1],
       ["bd-pick-volcano-cave-ember-a", 2, -3], ["bd-pick-volcano-cave-coal-pile", -2, 1], ["bd-pick-volcano-cave-coal-pile", 3, -2],
+      // 관이 부딪히며 쪼갠 나무 — 쪼개진 판자 더미.
+      ["bd-pick-shipwreck-reef-plank-pile", 2, 1], ["bd-pick-shipwreck-reef-plank-pile", -4, -1],
     ];
     const around: Array<[string, number]> = [
       ["bd-pick-deep-forest-path-log-fallen", 0.2], ["bd-pick-deep-forest-path-stump", 0.9], ["bd-pick-deep-forest-path-log-fallen", 2.6],
@@ -1426,7 +1443,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       if (!pit.has(k) && (metaPit[live.lowerTiles[k]!]?.label ?? "").startsWith("버들항 · 모랫길")) rimCells.add(k);
     }
     // 구덩이에 닿는 숲길 칸은 몸통 흙으로 — 숲길 오토타일 가장자리 칸이 제 윗변에 풀 띠를 그려 구덩이 바닥을 가로질렀다(VQA r8).
-    for (const k of rimCells) live.lowerTiles[k] = body >= 0 ? body : 23175;
+    for (const k of rimCells) if (!pit.has(k)) live.lowerTiles[k] = body >= 0 ? body : 23175;
     // 앞선 마감이 남긴 둑 덧그림(이름표 없는 덧붙임 칸)을 구덩이 안·윗단에서 걷는다 — 안쪽에 남으면 흙 위에 검은 테 조각이,
     // 되돌린 풀 위에 남으면 풀밭 한가운데 네모 테가 보였다. 구덩이에 닿는 숲길 칸의 풀 둑도 걷는다 — 들머리에 풀 띠가 구덩이 바닥을
     // 가로질렀다(VQA r8). 그 밖의 남쪽 숲길 둑은 그대로 둔다.
@@ -1439,7 +1456,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         if (rimCells.has(i) || (y <= yTop && Math.abs(x - cx) <= rx * 2)) live.lowerOverlayTiles[i] = -1;
       }
     }
-    rimPit(project, live, rimCells, "bankLava"); // fill_region 이 맵 객체를 바꿔 끼우므로 fm 이 아니라 지금 맵에 얹는다.
+    rimPit(project, live, rimCells, "bankMud"); // fill_region 이 맵 객체를 바꿔 끼우므로 fm 이 아니라 지금 맵에 얹는다.
     // 평평한 돌 관(버들항 하수도 관 2×2)을 걷고, 오프닝 crash 컷의 누운 은빛 관(손 도트 3×2, 동서로 누움)을 조사 칸 바로 위에 눕힌다.
     {
       const coffin = new Set([26599, 26600, 26601, 26602]);
@@ -1641,7 +1658,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     for (let y = 3; y < fm.height - 3; y += 1) for (let x = 2; x < fm.width - 2; x += 1) {
       if (fm.lowerTiles[y * fm.width + x] === 737) continue;
       // 추락 구덩이(몸통 흙 칸) 안에는 버섯·들꽃을 두지 않는다 — 갓 그을린 구덩이에 독버섯이 섰다(VQA r7).
-      if (fm.lowerTiles[y * fm.width + x] === 23175) continue;
+      { const t = fm.lowerTiles[y * fm.width + x]!; if (t === 23175 || (t >= 11646 && t <= 11650)) continue; }
       let nearPath = false;
       for (let dy = -2; dy <= 2 && !nearPath; dy += 1) for (let dx = -2; dx <= 2; dx += 1) {
         if (fm.lowerTiles[(y + dy) * fm.width + (x + dx)] === 737) { nearPath = true; break; }

@@ -91,7 +91,7 @@ export function clearUpperByLabel(project: Project, map: GameMap, pattern: RegEx
  * bank="bankLava" 는 같은 모양의 그을린 흑요석 둑(검은 재 띠 + 불씨 주황 모서리) — 추락 구덩이용. 풀 둑은 진흙 입술로 읽힌다(감사 라운드 2).
  * 이미 2층에 무언가 있는 칸은 건드리지 않는다. 얹은 칸 수를 돌려준다.
  */
-export function rimPit(project: Project, map: GameMap, cells: ReadonlySet<number>, bank: "bankGrass" | "bankLava" = "bankGrass"): number {
+export function rimPit(project: Project, map: GameMap, cells: ReadonlySet<number>, bank: "bankGrass" | "bankLava" | "bankMud" = "bankGrass"): number {
   const tileset = project.tilesets[map.tilesetId];
   if (!tileset) return 0;
   const nature = project.tilesets[BEODEUL_NATURE_ID] && project.tilesets[BEODEUL_NATURE_ID]!.count >= BEODEUL_NATURE.count
