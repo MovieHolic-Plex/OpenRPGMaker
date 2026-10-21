@@ -13,6 +13,7 @@ import { createWizardingWorldTileset, ensureWizardingWorldTileset } from "@/proj
 import { createModernCityTileset, ensureModernCityTileset } from "@/project/defaults/modernCity";
 import { kitHandObjects } from "@/project/roomKit";
 import { passabilityOf } from "@/project/collision";
+import { isDoorArtCell } from "@/project/lint/scenePolishLint";
 import { isUntouchedMap } from "@/project/projectBlankness";
 import type { Command, GameEvent, GameMap, Project, TilesetDef } from "@/project/types";
 import { workshopHandObjects } from "@/project/workshopTiles";
@@ -252,6 +253,55 @@ type TransferCommand = Extract<Command, { kind: "transfer" }>;
 function eventTransfers(event: GameEvent): TransferCommand[] {
   const lists = [event.commands ?? [], ...(event.pages ?? []).map((page) => page.commands)];
   return lists.flatMap((commands) => commands.filter((command): command is TransferCommand => command.kind === "transfer"));
+}
+
+/**
+ * 층 이동 착지를 돌아오는 계단 그림 칸 바로 앞으로 당긴다. liftTravelLinksOntoArt 가 트리거를 한 줄 올리면 조수가 예전 탈 자리
+ * 아래 줄에 둔 착지가 2칸 떨어진다(scene-transfer-pair). 착지가 돌아오는 문에서 1칸 안이 아니고, 바로 위 두 칸째가 층 이동 그림 칸
+ * 트리거면 그 앞 칸(통행)으로 옮긴다.
+ */
+function snapArrivalsToTravelArt(draft: Project, notes: string[]): void {
+  for (const from of Object.values(draft.maps)) {
+    for (const event of from.events ?? []) {
+      for (const t of eventTransfers(event)) {
+        const target = draft.maps[t.mapId];
+        if (!target || target.climate?.mode !== "indoor" || target.id === from.id) continue;
+        const returns = (target.events ?? []).filter((e) => eventTransfers(e).some((r) => r.mapId === from.id) && isDoorArtCell(draft, target, e.x, e.y));
+        if (!returns.length || returns.some((e) => Math.max(Math.abs(e.x - t.x), Math.abs(e.y - t.y)) <= 1)) continue;
+        const above = returns.find((e) => e.x === t.x && e.y === t.y - 2);
+        if (!above) continue;
+        const tileset = draft.tilesets[target.tilesetId];
+        const idx = (t.y - 1) * target.width + t.x;
+        const p = tileset ? passabilityOf(tileset, target.lowerTiles[idx] ?? -1, target.lowerOverlayTiles?.[idx] ?? -1, target.upperTiles[idx] ?? -1, target.upperOverlayTiles?.[idx] ?? -1) : null;
+        if (!p || !(p.up || p.down || p.left || p.right)) continue;
+        notes.push(`${from.id} ${event.id} 착지 ${target.id}(${t.x},${t.y}) → (${t.x},${t.y - 1}) — 돌아오는 계단 그림 칸 바로 앞`);
+        (t as { y: number }).y = t.y - 1;
+      }
+    }
+  }
+}
+
+/**
+ * 층 이동 트리거를 계단·엘리베이터 그림 칸으로 올린다. 탈 자리(그림 앞 첫 바닥 줄)는 도착 칸으로 남긴다.
+ * 왜(2026-10-22 장면 교훈 시험 「집 계단」): 도구가 알려 준 탈 자리(그림 앞 바닥)에 links 를 두자 scene-transfer-off-door 가
+ * 여섯 건 났다 — 계단 앞 바닥을 지나가기만 해도 층이 바뀐다. 데모 교훈은 「문·계단 그림 칸에서 발동, 착지는 그 앞」이다.
+ * 그림 칸이 이미 문 그림(엘리베이터 문턱)이면 그대로 두고, 그림 칸이 막혀 있으면 priority:"same" 부딪힘으로 발동한다.
+ */
+function liftTravelLinksOntoArt(draft: Project, map: GameMap, tileset: TilesetDef, notes: string[]): void {
+  const taken = new Set((map.events ?? []).map((e) => `${e.x},${e.y}`));
+  for (const event of map.events ?? []) {
+    const indoor = eventTransfers(event).some((t) => t.mapId !== map.id && draft.maps[t.mapId]?.climate?.mode === "indoor");
+    if (!indoor || isDoorArtCell(draft, map, event.x, event.y) || !isDoorArtCell(draft, map, event.x, event.y - 1)) continue;
+    if (taken.has(`${event.x},${event.y - 1}`)) continue;
+    const idx = (event.y - 1) * map.width + event.x;
+    const p = passabilityOf(tileset, map.lowerTiles[idx] ?? -1, map.lowerOverlayTiles?.[idx] ?? -1, map.upperTiles[idx] ?? -1, map.upperOverlayTiles?.[idx] ?? -1);
+    const walkable = p.up || p.down || p.left || p.right;
+    taken.delete(`${event.x},${event.y}`);
+    notes.push(`층 이동 ${event.id} 트리거 (${event.x},${event.y}) → 그림 칸 (${event.x},${event.y - 1})${walkable ? "" : " 부딪힘"} — 앞 바닥은 도착 칸`);
+    event.y -= 1;
+    taken.add(`${event.x},${event.y}`);
+    if (!walkable) for (const page of event.pages ?? []) (page as { priority: string }).priority = "same";
+  }
 }
 
 /**
@@ -881,8 +931,12 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     }
     // 현대 실내(캠퍼스·도시·일본 도시)를 새로 지을 때 BGM 이 비면 맵 이름으로 곡을 고른다 — 연애·학원물 실내가 무음으로 남던 구멍(2026-10-16 실제 Argon 시험).
     // 다시 짓는 맵(replace)은 저작자가 정했을 수 있으니 건드리지 않는다. 환상 실내(손 도트 v5 등)는 그대로 둔다.
-    if ((!existing || existingUntouched) && !map.bgm && MODERN_BGM_TILESETS.has(tilesetId)) assignCreatedMapBgm(map, {}, { draft, fallbackTheme: "everyday" });
+    // 2026-10-22 장면 교훈 시험(Sonnet 5.5): 환상 실내(손 도트 v5)도 새로 지으면 무음으로 남아 지하 창고·여관·집 2층·서재 등 7건에서
+    // scene-map-no-bgm 이 났다 — create_map 처럼 새 실내는 모두 이름으로 곡을 고른다(현대 실내는 일상 곡, 환상 실내는 마을 곡이 기본).
+    if ((!existing || existingUntouched) && !map.bgm) assignCreatedMapBgm(map, {}, { draft, fallbackTheme: MODERN_BGM_TILESETS.has(tilesetId) ? "everyday" : "village" });
+    liftTravelLinksOntoArt(draft, map, tileset, doorNotes);
     draft.maps[mapId] = map;
+    snapArrivalsToTravelArt(draft, doorNotes);
     const trimNote = trimmed.trimmed
       ? `평면 바깥 막힌 여백을 잘라 ${built.width}×${built.height} 로 지었다 — 입력 좌표는 왼쪽 ${trimmed.dx}·위 ${trimmed.dy} 칸만큼 옮겨졌다. 이후 이 맵 좌표는 새 기준을 쓴다.`
       : "";
