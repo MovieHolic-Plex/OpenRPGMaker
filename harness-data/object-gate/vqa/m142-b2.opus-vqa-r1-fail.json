@@ -1,0 +1,193 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b2",
+ "round": 1,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png",
+  "board-3.png",
+  "board-4.png",
+  "board-5.png"
+ ],
+ "items": [
+  {
+   "id": "dept-handbag-vitrine",
+   "pixelSha256": "5c5fc6874e868d26f4ec249ca28019cdd82fb6cf63ec9fde7b24dc88b9d5ae9c",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The glass top reads as a lit plane with bags under it, and the front holds three bag cubbies and a drawer base. The outline and wood tones match the wardrobe original, and it stands on the floor in the room."
+  },
+  {
+   "id": "dept-nail-bar",
+   "pixelSha256": "ed291dc6ebda94dc3ce28006c49d822a35e4775ec7daf2fa8bbfc5a98a7e4155",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "This is a front-elevation shelf of polish bottles with a thin top plank. There is no manicure table, hand rest or seat, so at 1x it reads as a cosmetics shelf, not a nail bar."
+  },
+  {
+   "id": "dept-perfume-wall",
+   "pixelSha256": "ce75dcb0660f775a064d18e8b1bf6cb4c6ce44fc9077885082efdc7e72defe19",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The cabinet has a top band about 3 rows deep, glass-fronted compartments with bottles, and a dark brown outline in line with the originals. It sits against the wall on the floor line."
+  },
+  {
+   "id": "dept-rack-cool",
+   "pixelSha256": "9dc71f337c14e4113c1e607dae11d53f5fe7c0cf65ed71ad726ee88330e9f1f5",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The navy garments merge into a muddy dark-blue blob under the gold ring, with stray white speckles. At 1x it doesn't read as hanging clothes, and the spindly pole base looks like it is hovering in the room."
+  },
+  {
+   "id": "dept-rack-pastel",
+   "pixelSha256": "6d4c2ad81e532cf6901be81e928a9fcb8f6055fe664aba420a7f6f096d5d0164",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The round chrome ring seen from above, the separate pink, lilac and green garments and the round base read clearly at 1x. The palette and scale suit the room."
+  },
+  {
+   "id": "dept-shoe-wall",
+   "pixelSha256": "be81f2e2283c31b6f46ad8022db6e0ad8607372e8dbb6261b23c5e18b33a671b",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "It is a flat front elevation with no top plane visible. The washed-out beige box has none of the dark outline weight the originals use, so it looks pasted onto the wall."
+  },
+  {
+   "id": "dept-sneaker-wall",
+   "pixelSha256": "dda1b6894a8b7900b8ac2c5ad439d27f1a9b7aed0b89a53c8f76735b8c71bf06",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The lit white top plane, wood frame with shelves and clearly coloured sneakers read well at 1x. The outline and shading levels are close to the cooler original."
+  },
+  {
+   "id": "food-ticket-machine",
+   "pixelSha256": "1877e5382545c655f5f793b98514b07c29cbd752d383bb9051486cd1a16d8362",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The red cabinet has a top plane, a grid of coloured buttons, a display and a ticket slot. It reads as a Japanese ticket vending machine and stands on the floor at a sensible one-tile width."
+  },
+  {
+   "id": "home-appliance-rack",
+   "pixelSha256": "a6857852b729cb4413ec4fd5b3700a55d2e2b68d6fae79c76ce41aec520f854e",
+   "verdict": "FAIL",
+   "failed": [
+    1
+   ],
+   "reasons": "The tall brown rack is a pure front elevation with no visible top surface. The microwave and rice cooker sit flat on the face instead of on shelves seen from above."
+  },
+  {
+   "id": "home-drying-rack",
+   "pixelSha256": "594fa22acbc4e15a10a679ec0186775993a97920e5aa199b237f9873c0b62b2b",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The big blue towel block dominates, and the small red and dark garments on the left look like detached specks floating between the rails. The splayed legs read as a loose wire frame at 1x."
+  },
+  {
+   "id": "home-ofuro",
+   "pixelSha256": "c38c52719987544492a79bd7b63ce684dec0cfb015ac78861a5a8b8f57c4d055",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The water surface is seen from above inside a white tub with a front face. The rolled lid sits on the rim and the side control panel is clear, all at a believable bathroom scale."
+  },
+  {
+   "id": "home-school-bag",
+   "pixelSha256": "ef40742803a84f7c5f8b0ce45f6e8ed4ee89eae845bbfbc0061030274eb0df3c",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "It reads as a red randoseru with a lit top flap and a clasp, at a small-prop size that fits the room."
+  },
+  {
+   "id": "home-umbrella-stand",
+   "pixelSha256": "48356ca07511f56a788afc8b230b15c8111fe42cc69c656b1a1bd11be6f594db",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "The umbrella tops are a noisy tangle of red, navy and grey pixels with ragged silhouettes. The red umbrella sticks out of the stand's footprint like a stray sticker."
+  },
+  {
+   "id": "home-washing-machine",
+   "pixelSha256": "a5003fea425887c2159e4fb1806fcbb7c78a0d2ead7644750238042c55595c67",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The white top plane, control strip and round porthole door read clearly as a front-loader. It matches the grey and white palette and the outline of the desk original."
+  },
+  {
+   "id": "hosp-anesthesia",
+   "pixelSha256": "3690eca72fcff35ecc7156de6b317336bf50778b1fee19127bd8d425e77fcb2c",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "Monitor, screen, canisters and drawers are packed into a busy cream column with blue and green noise. At 1x it is an unreadable jumble and doesn't read as an anesthesia machine."
+  },
+  {
+   "id": "hosp-crash-cart",
+   "pixelSha256": "482afb63f693fc91cc03e6d7d6f756cbf5652fd38fd8db7cdaf163f2c65073c5",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The red cart has a lit top carrying the defib unit, stacked drawers in front and a solid outline. It reads as a crash cart and stands on the floor."
+  },
+  {
+   "id": "hosp-ct-scanner",
+   "pixelSha256": "f919032ade79d7cb8a8a589857650db93394bd265b6ec085f2cac42cc7aee8aa",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "The gantry ring faces the viewer, but the patient table sticks out sideways in side elevation, which mixes two viewpoints. The soft grey anti-aliased shading and the oversized size don't match the crisp originals."
+  },
+  {
+   "id": "hosp-ticket-dispenser",
+   "pixelSha256": "0cdc30c2571f69d25586090cc038248663597770026226f4a54d20db75e06fad",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The red head with the number 17 display on a white pedestal and base reads clearly as a queue-ticket dispenser. Its scale and outline fit the room."
+  },
+  {
+   "id": "hosp-vitals-bank",
+   "pixelSha256": "8661f2dad1d7adb674d01a575f6c01f0274cf2db1f213442e55d0c0071562682",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The lit grey top plane, two waveform monitors and a row of button modules read clearly. The outline and shading are close to the desk-pc original."
+  },
+  {
+   "id": "hospital-curtain-screen",
+   "pixelSha256": "bf6895e974a455b680d5ef519c18866110132c5702145f3b83153a56600368e9",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "It is a flat front-elevation panel three tiles tall with a thin top rail and no plane seen from above. It is overly tall and narrow next to the originals, and the pale grey-green has no dark outline weight."
+  }
+ ]
+}

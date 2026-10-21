@@ -1,0 +1,478 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "66a9be0433c71cb0710debc176907d4925616e5646c53a4d52c4a445d3375604",
+ "width": 112,
+ "height": 64,
+ "kind": "structure",
+ "name": "wooden station",
+ "label": "jp-inaka-r5:inaka-wooden-station",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 29,
+  "darkV5": 41,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 26
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled hip roof (main body)",
+      "rows": "5-26",
+      "evidence": "c",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "front gable pediment over entrance",
+      "rows": "10-25",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "platform slab",
+      "rows": "49-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 22,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped tile plane at rows 5-26, and its silhouette widens from 77 to 110 px. It ends in a dark eave edge at rows 24-27, with shadow beneath. Below it is the south wall (rows 28-48) with windows, an open entrance and a bench, so the front face is 20 or more rows. The platform at rows 49-62 is a front-facing stone edge with a yellow line and is secondary to the building. The gable has its own roof slopes and the ridge caps at rows 3-4 sit on top of the roof."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small wooden station with a tile roof, clapboard walls, windows, a gable clock and a platform. Its roof shows about 5 steps (highlight, light, mid, dark, deep) with per-tile scallops, in the same style as the references. The wall siding has plank lines and several greens, and the platform has speckle. The measured facts support this: 15 colours per tile against 18 and 11 for the references, 3% flat-fill coverage, and only 1% neutral dark edge pixels, so the outlines are tinted (dark brown or red-brown) and not a black sticker line. The total of 76 colours is lower than h101 (185) but close to the stone house (66), and the building is smaller. The density is a little lower than the richest reference, but a careful artist would accept it next to the references. The main shortfall is that the wall and platform ramps are slightly shallower than the roof.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15821
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof (main hip roof with central gable)",
+      "rows": "5-26",
+      "evidence": "c",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "platform slab in front",
+      "rows": "49-53",
+      "evidence": "a",
+      "front_edge_line_row": 53,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 22,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a wide sloped tile plane from rows 5-26. Its silhouette widens from 77 to 110 px and ends in a dark eave edge at rows 26-27, followed by shadow at rows 27-28. Below it, the south wall face runs rows 28-48 (about 21 rows) with windows, a door opening and a bench. The platform in rows 49-62 has a lighter top band with a yellow line, then a front face. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate station has a tile roof with scalloped rows and several lightness steps (about 5: highlight, light, mid, dark, deep), plus plank siding in green with visible grain, windows with frames, a gable emblem, and a platform with speckle. Median colours per tile is 15, between the two references (18 and 11). Flat-fill coverage is 3%, close to the references' 0%. Only 1% of dark edge pixels are neutral, so the outlines lean toward dark brown/green/red tones and not near-black. Its total of 76 distinct colours is well below h101's 185 but about equal to the stone reference's 66. It is a bit smaller and simpler than h101, and the platform and wall areas are a little more uniform. A careful artist would accept it next to the references without it looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13898
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main tiled roof",
+      "rows": "5-26",
+      "evidence": "c",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "central gable with clock over entrance",
+      "rows": "11-26",
+      "evidence": "c",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "platform slab",
+      "rows": "49-52",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 22,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tiled roof spans rows 5-26 and widens from 77 to 110 px. That is a sloped roof plane above an eave line at row 26, with dark eave shadow in rows 27-28. The front wall below, rows 28-48, has green siding, windows and an open entrance. It is about 21 rows tall, so it counts as a real front face. The central gable is also a sloped roof plane. The platform at the base is drawn as a front-facing strip, with a yellow line near row 52 and a light-gray face below it. The main body is a roofed building with a top surface and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a whole building with roof, walls, door and windows, so it matches the reference kind. Its tile roof has about 5 steps, from a light highlight through orange and mid red-brown to a dark brown eave, with visible per-tile scallops. The green plank walls show horizontal board grain in a few greens, and the pediment, sign and platform carry small detail dots. Only 1% of dark edge pixels are neutral, so the outlines lean brown or green and follow the adjacent material rather than forming a black sticker line. Measured facts: 15 colours per tile against 18 and 11 for the references, 3% flat-fill coverage against 0%, and 76 distinct colours against 66 and 185. This is within the reference range per tile and above the stone house, though the total palette is smaller than h101. The platform slab at the bottom is fairly plain, and the walls are a bit less textured than the plaster and stone of the references. These are minor shortfalls and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11220
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tiled roof (main roof plane with central gable)",
+      "rows": "5-27",
+      "evidence": "c",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "front wall with windows and open entrance",
+      "rows": "28-48",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "platform base with yellow edge stripe",
+      "rows": "49-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 35,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped tile plane over rows 5-27. Its silhouette widens from 77 to 110 px, with a ridge beam at the top and a gable at the centre. It ends in an eave edge at about row 26, with dark eave shadow below. Beneath it is a front wall of rows 28-48, with two windows, an open doorway and a hanging sign, then the platform front at rows 49-62. The roof is the top surface, and the south wall and platform give a front face well over 3 rows. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small wooden station with a tile roof, clapboard walls, a gable sign and a platform. The roof shows about 5 steps of red-brown tile scallops with per-row highlights and a dark red-brown eave line. The green clapboard walls have 3-4 tones with plank lines. Windows and the stone platform carry speckle. The measured facts support this: 15 colours per tile is close to the references (18 and 11), flat-fill coverage is 3% against 0%, and only 1% of dark edge pixels are neutral, so the outlines lean toward the neighbouring material (dark brown or red-brown) rather than black. The total of 76 colours is below h101 (185) but above the stone reference (66), and the building is smaller. The roof is a little less richly highlighted than the references, and the platform and door area are somewhat plainer. It would sit acceptably next to the references without looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12494
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.440Z",
+ "cells": {
+  "16": [
+   "074ff5f8d26176a5",
+   "08f8f08e26326d87",
+   "143e86c789f987f0",
+   "2f90e2fdea44c61c",
+   "3447b7fd68b1cd96",
+   "3b500ab83d55aac4",
+   "3c8bfa887429e477",
+   "4b7dae126cf7cfd0",
+   "5338f542ab5815aa",
+   "55d0b5b1f6d8e7d5",
+   "5b51b8bf826d41b8",
+   "7b37dc63ee12153a",
+   "7c5dff1a05d2003a",
+   "92c0451dc510b0d1",
+   "96477e122305e97f",
+   "9b85163470036a20",
+   "a14c34cff465a631",
+   "ad4b5b43d3123c08",
+   "b087fe56b9f520f0",
+   "b65963f8d8dedb5a",
+   "b6e682294c2384c9",
+   "b86f8ba4c804b752",
+   "cb47234260d1107f",
+   "ccbfdcb59adf657d",
+   "d6f3f14319da36f3",
+   "dd1bc5069aef6740",
+   "e7a4b64d1d616d71",
+   "f0b57bb5c1e74690"
+  ],
+  "24": [
+   "0299bf85cec404e5",
+   "02eadce32d4b2169",
+   "04da280020c9fe44",
+   "0636e271f7fe5c7b",
+   "06ee783500e57fde",
+   "080f0f7ec58d6abe",
+   "0a8387c78b446515",
+   "0ab0192599ec9b60",
+   "0b13ba7ba303ca0d",
+   "0f86ffe93d80ad2d",
+   "1366706a8c1f23a6",
+   "14fb872df1671cf9",
+   "166f6b17a1fef0b0",
+   "1bf2f6a7b65f3729",
+   "1fa7a7c92a381d61",
+   "2042cdc950c074bf",
+   "21df662e58410c90",
+   "22d0a809ced88e9c",
+   "2968467ebe92a7f7",
+   "29f1ea7b4e2a210e",
+   "2d23a9cbd7f84bde",
+   "37362c88da60882a",
+   "3c1104806c003886",
+   "47988dc652bb85b1",
+   "483718a39551232b",
+   "49914a427d020d92",
+   "4b65a309bb14ab85",
+   "51712a8051527308",
+   "535ae4b46cf55392",
+   "569cc8f33dcf8ead",
+   "56ad21510dac0004",
+   "56f8c4f8a0f70980",
+   "5713a607b88117ac",
+   "5974bf6550f8c6cd",
+   "5d541b33bfdbec7b",
+   "5fc607304a6e5d9a",
+   "60eb25c59279b5ce",
+   "65e9367ed96e7d29",
+   "66583bf7925c67dc",
+   "68d10fdd8bae96b7",
+   "6a9565635c221fa5",
+   "6f98768677b0c216",
+   "726317c3ebd15412",
+   "739e71851f93593f",
+   "761e856da8a17bce",
+   "78f096994e3add17",
+   "7af8f7b2a50a3b81",
+   "7cf16639532f15b5",
+   "7e8bc055cbca3eb3",
+   "8587e047ee36c095",
+   "86295d5f06326d74",
+   "87bb4c31e5f140b8",
+   "888dfaf9a867441e",
+   "889e1849c950e470",
+   "8a4f4099bcc89beb",
+   "8b4dd7d216296a9b",
+   "8e98b5fa6f55b639",
+   "98d353fc18f3aaed",
+   "a1df5c1d5027dbcc",
+   "a3d72a84f885b368",
+   "a8369e94284244b3",
+   "ac5d9d4c3b96c9ed",
+   "b5e2b4da5ea4298c",
+   "b6333c0e86950c6f",
+   "baef0bbf68474194",
+   "be8e46212a1246c1",
+   "c1830899c2988ddf",
+   "c2011e5577902f98",
+   "c84b0953d1b1896d",
+   "c8c3891095e2afa5",
+   "ce920d3cc7d35564",
+   "d1e35346cca416ba",
+   "d22bd7e8929833df",
+   "d98b924d0af8699e",
+   "dbacf10de37ac428",
+   "de334178d5b030cf",
+   "df4859848b3e5730",
+   "df75fee67f43ff83",
+   "e044e0011958babb",
+   "e3221afd6c3cf69b",
+   "e45dc71399729eac",
+   "e780953b2b210775",
+   "ea6b3d7396b2af73",
+   "ed9e9b8c3152d7db",
+   "edab0373aff93de6",
+   "ee0eececfd56791f",
+   "eeac9577500390bd",
+   "f0ae1779c4880b1f",
+   "f2e246aea7a64a74",
+   "f76bb75ffe3a4293"
+  ],
+  "32": [
+   "02dedcdf311675b4",
+   "0e5278ba2d7192a5",
+   "35871a04f3b35845",
+   "3f59f92d3be5053f",
+   "4013a2da501d1a7a",
+   "4265d3ebb8cf0b11",
+   "4ac71a6b47d0955e",
+   "4e314fa5374d4e62",
+   "51fbab94cf1b258d",
+   "57e643abf50db1da",
+   "892dd38528c10dd6",
+   "8a8e157bc8ee4ab7",
+   "8b16c63253c0b661",
+   "92922d733c33c941",
+   "9941d98c227b2a35",
+   "9ab25ed0e62825a2",
+   "a6e1fd54f003d0f7",
+   "a7c90681b2761e25",
+   "ab21de195e19d76a",
+   "bdc323f376ade8db",
+   "c434bb630fd0e491",
+   "de42a8fc16bd7b4f",
+   "e42a4a0eea914068",
+   "e6815c12ca607c63"
+  ],
+  "48": [
+   "025e12fa2620dc2d",
+   "04315269ea2431cc",
+   "0610b486e4d6521a",
+   "15bbabeb243725e0",
+   "16ecef2076e26ae1",
+   "1bc70671254ef36c",
+   "247fd8f514ce4b35",
+   "314b28dc073b577b",
+   "50bd10ab9caee94f",
+   "51c8b6a5cd9bafa5",
+   "5dc66a5b503634c6",
+   "5f2034bf3a49f5fe",
+   "624e86c1a811d662",
+   "6c990b024fa5d7aa",
+   "7638e4a96d028cc5",
+   "844a2db626a2d06f",
+   "87b5b7fd5338ddde",
+   "8d43a1722eb91877",
+   "8ece72004a6f9298",
+   "954ebbf1a8600c14",
+   "962682874cd8839d",
+   "a3cf7bd20559bf90",
+   "aab39397eb1a7c87",
+   "ad182cab98f355b4",
+   "b303e375637f4315",
+   "b5958a35f6f50ff7",
+   "b82dd226aa7f7220",
+   "c46ed391abdcd7e6",
+   "c4e307b39de03e55",
+   "cc39312ecf7db9f1",
+   "d4b510a8ee4e1197",
+   "da5837d622d1f496",
+   "deef8e5dc7abcb56",
+   "e419ec0784b20348",
+   "edcbc793aa35d61f",
+   "f042ba4f21a3950e"
+  ]
+ }
+}

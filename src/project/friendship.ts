@@ -5,6 +5,7 @@ import {
   type PlaySession,
 } from "@/project/session";
 import { isPositiveItemQuantity } from "@/project/itemQuantities";
+import { usesRelationshipMenu } from "@/project/relationshipMenu";
 import { resolveSocialKey } from "@/project/socialKey";
 import { recordSocialLoopTalk, resolveSocialLoop, socialLoopGate, socialLoopToday } from "@/project/socialLoop";
 import {
@@ -239,11 +240,27 @@ export function friendshipTier(
   return Math.min(safeTiers, Math.floor((value / safeMax) * safeTiers));
 }
 
-/** Optional short Korean label for a friendship tier. */
-export function friendshipTierLabel(tier: number): string | undefined {
+/** 관계 중심(연애) 게임의 단계 이름 — 「절친」「신뢰」 같은 우정 낱말 대신 마음의 거리(첫사랑 VQA 1차). */
+const ROMANCE_TIER_LABELS: readonly (string | undefined)[] = [
+  "낯선 사이",
+  "어색함",
+  "아는 사이",
+  "편한 사이",
+  "가까워짐",
+  "설렘",
+  "두근거림",
+  "마음이 기욺",
+  "좋아함",
+  "깊이 좋아함",
+  "사랑",
+];
+
+/** Optional short Korean label for a friendship tier. romance = 관계 중심 게임의 단계 이름. */
+export function friendshipTierLabel(tier: number, romance = false): string | undefined {
   if (!Number.isFinite(tier)) return undefined;
-  const index = Math.max(0, Math.min(FRIENDSHIP_TIER_LABELS.length - 1, Math.trunc(tier)));
-  return FRIENDSHIP_TIER_LABELS[index];
+  const labels = romance ? ROMANCE_TIER_LABELS : FRIENDSHIP_TIER_LABELS;
+  const index = Math.max(0, Math.min(labels.length - 1, Math.trunc(tier)));
+  return labels[index];
 }
 
 /** Dialogue suffix after a successful social delta (e.g. gift). */
@@ -358,6 +375,7 @@ export function listFriendshipEntries(
       });
     }
   }
+  const romance = project ? usesRelationshipMenu(project) : false;
   return [...merged.values()]
     .sort((a, b) => a.key.localeCompare(b.key))
     .map(({ key, value, displayName }) => {
@@ -367,7 +385,7 @@ export function listFriendshipEntries(
         value,
         tier,
         secondary: formatFriendshipTierBar(value, max, tiers),
-        label: friendshipTierLabel(tier),
+        label: friendshipTierLabel(tier, romance),
         ...(displayName ? { displayName } : {}),
       };
     });

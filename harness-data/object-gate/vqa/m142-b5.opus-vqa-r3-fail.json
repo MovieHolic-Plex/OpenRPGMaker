@@ -1,0 +1,77 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b5",
+ "round": 3,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "mart-sale-endcap",
+   "pixelSha256": "13b9cc4e18ac21b71ad38d8900b3c2fa25a4b822c83532548270fd760739b895",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The yellow '-50' sign and the cardboard box are stacked on top of the shelf like separate stickers. The shelf's own top plane is hidden under the box, so the unit reads as a pile of parts, not one endcap with a lit top surface."
+  },
+  {
+   "id": "mart-scale-station",
+   "pixelSha256": "a675214fccdc92494f1563a624ba3cb2b470a58abd7737b1cec81f539b07510f",
+   "verdict": "FAIL",
+   "failed": [
+    3
+   ],
+   "reasons": "At 1x it reads as a plain grey two-door cabinet. The scale is a tiny white blob and the roll is a sliver at the top-right corner, so the object can't be identified as a scale station."
+  },
+  {
+   "id": "mart-veg-wall",
+   "pixelSha256": "9dde50637f210d5a353c4e9e6332727889ebd844a078890df1e028c7fb172c3b",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The tiered produce case shows its top tier from above, has a short front face and a grey base on the floor line. Its outline and palette match the cooler original, and it stands two tiles wide believably in the room."
+  },
+  {
+   "id": "mci-magazine",
+   "pixelSha256": "f9f76e28a38d009d2cd9b0df81e25e5de8ec9f0b30d8bb8e90ef55febb6b0a0c",
+   "verdict": "FAIL",
+   "failed": [
+    3
+   ],
+   "reasons": "The 'magazines' are large flat solid squares (red, teal, yellow, blue, grey, purple) with no cover or page detail. It reads as a stepped wooden shelf of boxes, not a magazine rack."
+  },
+  {
+   "id": "mci-mailboxes",
+   "pixelSha256": "1f83b9d7785411caad524bd5aabeb44f1b844b582051ce162ddbae916c922046",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The light top plane with a paper slip is visible above a 4x4 grid of small locker doors with slots. The dark outline and grey shading steps match the originals, and it stands against the wall on a clear ground line."
+  },
+  {
+   "id": "museum-partition-wall",
+   "pixelSha256": "8ac736e4007b103df76741953e52422e69779a8934c3de31ffb6b049720a1806",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    5
+   ],
+   "reasons": "The panel is drawn as a flat front elevation with only a 1px top edge, not a 3/4 top plane. The three spotlights hang above the painting with no visible mount, and the wooden plinth is wider than the wall and reads as a separate bench."
+  }
+ ]
+}

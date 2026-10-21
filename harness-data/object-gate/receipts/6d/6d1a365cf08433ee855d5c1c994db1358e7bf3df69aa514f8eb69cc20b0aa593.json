@@ -1,0 +1,355 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6d1a365cf08433ee855d5c1c994db1358e7bf3df69aa514f8eb69cc20b0aa593",
+ "width": 16,
+ "height": 48,
+ "kind": "low_furniture",
+ "name": "mci hosp bed",
+ "label": "modern_city_interior/mci-hosp-bed",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headboard",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mattress with pillow and green blanket",
+      "rows": "7-35",
+      "evidence": "d",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "33-35"
+     },
+     {
+      "part": "footboard",
+      "rows": "36-42",
+      "evidence": "a",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs and wheels",
+      "rows": "43-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The mattress (rows 7-35) shows a pillow and a green blanket with a fold line at row 22. Its lower edge is closed by darker rows 33-35, which work as a front-edge line and shadow. Below it the footboard (rows 36-42) and the legs with wheels (rows 43-47) form a front face of about 11 rows. The mattress is drawn very tall, so the view is close to top-down, but the footboard and legs still give a real front face, so it is not a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate shows 14 visible tones per 16x16 tile. That is above the hedge (9) and close to the stall (17) and well (20). Its near-flat coverage is 9%, below the stall's 13%, so the mattress and rail panels are not large flat fills. Its dark edge pixels are 0% neutral, so the outline leans toward the neighbouring material's tone rather than a black sticker line, as in the hedge. The frame, mattress, rail and wheels each show a few lightness steps, about 5 on the main ramp, with some panel and edge variation. It is a little less textured than the well and stall, with fewer grain dots and per-surface clusters, but a careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19595
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headboard",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pillow",
+      "rows": "7-14",
+      "evidence": "d",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mattress and green blanket",
+      "rows": "15-35",
+      "evidence": "a",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": "33-35"
+     },
+     {
+      "part": "footboard",
+      "rows": "36-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "legs",
+      "rows": "43-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 28,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The mattress occupies rows 7-35, with a pillow at the head and a blanket below it. A light front-edge line at row 32 is followed by dark shadow rows 33-35, which is a top surface under evidence (a). Below it the footboard (rows 36-42) and the legs (rows 43-47) form a front face of about 12 rows. The bed is drawn quite elongated, so it leans toward a top-down look, but it still has a clear top surface plus a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a pale hospital bed with a mint mattress panel, a grey rail frame and small wheels. It is a small standing prop, so the references are the right kind. The measured facts are close to the references. It has 14 visible tones per tile, between the hedge (9) and the cheese stall (17). Near-flat coverage is 9%, below the stall's 13%. The dark edge pixels are 0% neutral, so the outline carries a tint, like the hedge and stall, and is not a black sticker line. By eye, the frame has a light, mid and dark ramp with a highlight on the rail, and the mattress has some panel variation and a shaded edge. It is a little simpler than the roofed well or the stall, with about 4 distinct steps against their 5-6, and the mattress interior is fairly smooth. It has no large flat fills and does not look thinner than the bench or hedge, so I accept it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19528
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headboard",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-6"
+     },
+     {
+      "part": "mattress with pillow and green blanket",
+      "rows": "7-32",
+      "evidence": "d",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": "33-35"
+     },
+     {
+      "part": "footboard",
+      "rows": "37-42",
+      "evidence": "a",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": "40-41"
+     }
+    ],
+    "main_top_rows": 26,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The mattress (pillow rows 7-14, green blanket rows 15-31) is a large horizontal surface about 26 rows tall. It ends in a lighter front-edge line at row 32, followed by dark shadow rows 33-35. Below it comes the gray footboard front (rows 36-42) and the legs (rows 43-47), so the front face is well over 3 rows. The pillow and blanket sit on the mattress top and read as seen from above. The headboard band at rows 1-6 and the footboard band both have a light edge row followed by darker rows. The bed is a tall, narrow sprite. The top is large and the front is clear, so it reads as three-quarter rather than a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a standing prop of the same kind as the references. It has 14 visible tones per tile, within the reference range of 9-20 and close to the cheese stall at 17. Near-flat coverage is 9%, below the stall's 13%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline carries a tint rather than being a black sticker line. By eye, the frame, mattress panel and wheels show about 5 lightness steps with some edge highlights and panel variation. It is a little simpler and smoother than the well or stall, with less grain, so density is slightly lower, but a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19706
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "headboard",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mattress with pillow and green blanket",
+      "rows": "7-35",
+      "evidence": "d",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": "33-35"
+     },
+     {
+      "part": "footboard front face",
+      "rows": "36-42",
+      "evidence": "none",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The mattress is a large horizontal surface in rows 7-35. It holds a pillow (rows 7-12) and a green blanket (rows 17-35) with a fold line at row 22. Row 32 is a lighter front-edge line, followed by dark green shadow in rows 33-35. Below that, a gray footboard front face (rows 36-42) and four legs (rows 43-47) give about 12 rows of front face. The top surface is very tall relative to the front face, so the bed leans toward a top-down view, but it does have a front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per tile, between the hedge (9) and the stall (17) and well (20). Its near-flat coverage is 9%, below the stall's 13%, so it has no large dead fills. Its dark edge pixels are 0% neutral, so the outline leans toward the material tone instead of a black sticker line. By eye, the metal frame, pale mattress panel, rails and wheels show about 5 lightness steps with some panel and rail variation. It is a little plainer than the stall and well, but smooth hospital metal justifies that, and it does not look thinner or flatter than the hedge. A careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15904
+  }
+ ],
+ "decidedAt": "2026-10-21T01:24:13.525Z",
+ "cells": {
+  "16": [
+   "3ada48511c1543a8",
+   "662e7eb7f5b97c57",
+   "d4703d1729920cce"
+  ],
+  "24": [
+   "91449c716160cf66",
+   "98a5ba96dbe648c8",
+   "aa874e6ae6665ce7",
+   "dbc0c66e5d57ccbe",
+   "e4e6577b680c7013",
+   "eb61520343e4eeed"
+  ],
+  "32": [
+   "15cc45003e00a388",
+   "3bc9cc68d2a79d48",
+   "55478d6d59e3752f",
+   "6c0a729cc028767d",
+   "7ff9dad5abed7be2",
+   "819de2bcd65309d5",
+   "b4e6521d91ed83c4",
+   "c193eff4b3352cce",
+   "c307e3e9f1be4abb",
+   "d614a42f3e9a19e8",
+   "e0e89726d11c865c",
+   "fc1b61206f04439a"
+  ],
+  "48": [
+   "5e54f166e197a176",
+   "a4370ee91ac5d65a",
+   "d3e6ddf24ae96ace"
+  ]
+ }
+}

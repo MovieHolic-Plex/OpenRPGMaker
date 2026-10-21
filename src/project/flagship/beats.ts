@@ -72,10 +72,23 @@ export const SHITAMACHI_STYLE_LOCK: FlagshipStyleLock = {
   bannedProperNouns: BANNED_IP_PROPER_NOUNS,
 } as const;
 
+export const FIRST_LOVE_STYLE_LOCK: FlagshipStyleLock = {
+  demoId: "first-love",
+  presetId: "story-cutscene",
+  resolution: { width: 480, height: 270 },
+  cameraZoom: 1,
+  dialogueStyle: "pixel-cinematic",
+  allowedTilesetIds: ["jp_city", "modern_city"],
+  allowedCharsetPrefixes: ["oprn-charset-modern", "tex_oprn_charset_modern"],
+  allowedPortraitPrefixes: ["shared-modern-"],
+  bannedProperNouns: BANNED_IP_PROPER_NOUNS,
+} as const;
+
 export const FLAGSHIP_STYLE_LOCKS: Readonly<Record<FlagshipDemoId, FlagshipStyleLock>> = {
   "chrono-bell": CHRONO_BELL_STYLE_LOCK,
   "emerald-crown": EMERALD_CROWN_STYLE_LOCK,
   "shitamachi-fourth-season": SHITAMACHI_STYLE_LOCK,
+  "first-love": FIRST_LOVE_STYLE_LOCK,
 } as const;
 
 export const CHRONO_BELL_BEATS: readonly FlagshipBeat[] = [
@@ -242,6 +255,16 @@ export const SHITAMACHI_FOURTH_SEASON_BEATS: readonly FlagshipBeat[] = [
   },
 ] as const;
 
+const FIRST_LOVE_BEATS: readonly FlagshipBeat[] = [
+  { id: "fl-01", atMinute: 0, act: "월요일", mapKey: "fl_platform_am", sceneTitle: "첫 출근", playerFeel: "아침 승강장에서 회사까지 걸어간다", mechanics: ["autorun", "letterbox"], sharedAssets: ["oprn-charset-modern2"] },
+  { id: "fl-02", atMinute: 2, act: "월요일", mapKey: "fl_office", sceneTitle: "처음 뵙겠습니다", playerFeel: "사수로 온 첫사랑이 모르는 척한다", mechanics: ["choices", "bust-expression"], sharedAssets: ["shared-modern-casual-boy-hoodie-expressions-bust-base"] },
+  { id: "fl-03", atMinute: 6, act: "월요일", mapKey: "fl_rooftop", sceneTitle: "옥상", playerFeel: "모르는 사이로 하자는 부탁", mechanics: ["choices", "affection"], sharedAssets: [] },
+  { id: "fl-04", atMinute: 8, act: "월요일 밤", mapKey: "fl_broadcast", sceneTitle: "금요일의 방송실", playerFeel: "세피아 회상 — 이름을 쓴 마지막 사연", mechanics: ["tint", "letterbox", "original-bgm"], sharedAssets: [] },
+  { id: "fl-05", atMinute: 11, act: "수요일", mapKey: "fl_office_pm", sceneTitle: "야근", playerFeel: "실수를 숨길지 말할지, 수첩 속 편지", mechanics: ["choices", "switch"], sharedAssets: [] },
+  { id: "fl-06", atMinute: 15, act: "금요일", mapKey: "fl_office_fri", sceneTitle: "발표와 발령", playerFeel: "늦은 답장 — 그리고 또 떠나는 사람", mechanics: ["choices", "fork"], sharedAssets: [] },
+  { id: "fl-07", atMinute: 17, act: "금요일 밤", mapKey: "fl_platform_pm", sceneTitle: "막차", playerFeel: "이번엔 먼저 말할까", mechanics: ["triggerEnding", "affection"], sharedAssets: [] },
+];
+
 export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBeatManifest>> = {
   "chrono-bell": {
     id: "chrono-bell",
@@ -311,6 +334,27 @@ export const FLAGSHIP_BEAT_MANIFESTS: Readonly<Record<FlagshipDemoId, FlagshipBe
     ],
     beats: SHITAMACHI_FOURTH_SEASON_BEATS,
     styleLock: SHITAMACHI_STYLE_LOCK,
+  },
+  "first-love": {
+    id: "first-love",
+    title: "첫사랑",
+    subtitle: "현대 오피스 로맨스 · 첫 출근 날, 사수가 된 첫사랑",
+    genreChoiceId: "story-cutscene",
+    targetMinutes: 18,
+    mapCount: 10,
+    endingCount: 3,
+    releaseOrder: 4,
+    priorityRank: 4,
+    summary: "앱 회사 스튜디오 늘봄에 첫 출근한 디자이너 윤서하. 사수로 배정된 선임은 10년 전 말없이 전학 간 고등학교 방송부 선배 강지후였다. 그는 「처음 뵙겠습니다」라고 말한다. 월요일 옥상과 편의점, 수요일 야근, 금요일 발표와 막차까지 — 선택이 쌓여 세 결말로 갈린다.",
+    thumb: "/assets/start/builtin/firstlove-title.webp",
+    cast: [
+      { id: "actor_hero", name: "윤서하", role: "주인공 · 신입 UX 디자이너", assetId: "shared-modern-casual-girl-lavender-expressions-bust-base" },
+      { id: "npc_fl_jihu", name: "강지후", role: "첫사랑 · 앱 개발 선임, 서하의 사수", assetId: "shared-modern-casual-boy-hoodie-expressions-bust-base" },
+      { id: "npc_fl_minho", name: "차민호", role: "입사 동기 · 백엔드 신입", assetId: "shared-modern-casual-boy-mustard-expressions-bust-base" },
+      { id: "npc_fl_lead", name: "오정민", role: "프로덕트팀 팀장", assetId: "shared-modern-suit-girl-navy-expressions-bust-base" },
+    ],
+    beats: FIRST_LOVE_BEATS,
+    styleLock: FIRST_LOVE_STYLE_LOCK,
   },
 } as const;
 

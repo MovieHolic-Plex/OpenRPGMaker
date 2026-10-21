@@ -19,6 +19,9 @@
   .chip .n { color: #e7c27a; font-weight: 600; }
   #batchbar { margin-top: 8px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
   #batchbar .title { font-weight: 600; }
+  #batchbar .explain { flex-basis: 100%; background: #1d2a1f; border: 1px solid #3d5a40; border-radius: 6px; padding: 10px 12px; }
+  #batchbar .explain-text { white-space: pre-line; line-height: 1.55; font-size: 14px; margin-bottom: 8px; max-width: 980px; }
+  #batchbar .explain img { max-width: 100%; image-rendering: pixelated; border-radius: 4px; display: block; }
   main { padding: 16px 20px; display: grid; gap: 14px; }
   .card { background: #26292f; border: 1px solid #3a3d44; border-radius: 8px; padding: 12px 14px; }
   .card.done { opacity: .6; }
@@ -83,7 +86,8 @@ function render() {
   document.getElementById('batchbar').innerHTML = b ? `<span class="title">${esc(b.title)}</span>
     <span class="meta">전체 ${b.total} · Opus 통과 ${b.opusPass} · Opus 불합격 ${b.opusFail} · Opus 판정 없음 ${b.waiting}(AI 통과 ${b.ai.pass} · 보류 ${b.ai.refer} · 불합격 ${b.ai.fail}) · 허용 ${b.allowed} · 거절 ${b.rejected}${b.noReceipt ? ` · AI 판정 대기 ${b.noReceipt}` : ''}${b.autoPass ? ` · 자동 통과 ${b.autoPass}` : ''}${b.waiting - b.withImage ? ` · 그림 없음 ${b.waiting - b.withImage}` : ''}</span>
     <button class="allall" id="allall" ${ready.length ? '' : 'disabled'}>이 묶음 전부 허용 (${ready.length}장)</button>
-    ${b.note ? `<div class="meta" style="flex-basis:100%">${esc(b.note)}</div>` : ''}` : '';
+    ${b.note ? `<div class="meta" style="flex-basis:100%">${esc(b.note)}</div>` : ''}
+    ${b.explainText || b.hasExplainImage ? `<div class="explain">${b.explainText ? `<div class="explain-text">${esc(b.explainText)}</div>` : ''}${b.hasExplainImage ? `<img src="/explain/${encodeURIComponent(b.id)}.png" alt="이 묶음이 쓰이는 곳">` : ''}</div>` : ''}` : '';
   const all = document.getElementById('allall'); if (all) all.onclick = () => allowBatch(b, ready);
   const list = document.getElementById('list');
   if (!items.length) { list.innerHTML = '<div class="empty">이 묶음에는 사람 결정을 기다리는 그림이 없다.</div>'; return; }
@@ -92,7 +96,7 @@ function render() {
     const img = i.hasImage && w ? `<figure><img class="pix" loading="lazy" src="/img/${i.sha}.png" width="${w}" height="${h}"><figcaption>1배</figcaption></figure>
       <figure><img class="pix" loading="lazy" src="/img/${i.sha}.png" width="${w * z4}" height="${h * z4}"><figcaption>4배</figcaption></figure>` : `<div class="why">${i.aiVerdict ? '그림이 저장돼 있지 않다 — object-gate enqueue/review 로 다시 받아야 결정할 수 있다.' : 'AI 판정(조언)이 아직 없다 — 판정이 끝나면 결정할 수 있다.'}</div>`;
     const refs = (i.refs || []).map(r => `<figure><img class="pix ref" data-src="/ref/${esc(i.styleKind)}/${esc(r)}.png"><figcaption>버들항 ${esc(r)} (4배)</figcaption></figure>`).join('');
-    const dec = i.decision ? `<span class="status" style="color:${i.decision.decision === 'allow' ? '#7fd38f' : '#f08a8a'}">${i.decision.decision === 'allow' ? '허용됨' : '거절됨(최종)'} — ${esc(i.decision.decidedBy)} ${esc(i.decision.decidedAt.slice(0, 16))}${i.decision.note ? ' · ' + esc(i.decision.note) : ''}</span>` : '';
+    const dec = i.decision ? `<span class="status" style="color:${i.decision.decision === 'allow' ? '#7fd38f' : '#f08a8a'}">${i.decision.decision === 'allow' ? (i.decision.by === 'delegated' ? '허용됨(위임)' : '허용됨') : '거절됨(최종)'} — ${esc(i.decision.decidedBy)}${i.decision.by === 'delegated' ? ' ← 위임: ' + esc(i.decision.delegatedBy || '') : ''} ${esc(i.decision.decidedAt.slice(0, 16))}${i.decision.note ? ' · ' + esc(i.decision.note) : ''}</span>` : '';
     const can = i.status === 'waiting' && i.hasImage, canReject = (i.status === 'opus-pass' || i.status === 'opus-fail') && !i.decision;
     const ot = i.opus ? `<span class="tag t-${i.opus.verdict}">Opus ${word(i.opus.verdict)}${i.opus.calibrated ? '' : '(미보정 프로필)'}</span><span class="sub">3/4 ${word(i.opus.view34)} · 화풍 ${word(i.opus.style)}${i.opus.kindOk ? '' : ' · 종류 틀림'}${i.opus.sure ? '' : ' · 확신 없음'} · ${esc(i.opus.profileHash)}</span><div class="why">${(i.opus.reasons || []).map(esc).join('<br>')}</div>` : '<span class="tag">Opus 판정 없음</span>';
     const tag = i.aiVerdict ? `<span class="tag t-${i.aiVerdict}">AI ${word(i.aiVerdict)}${i.aiVerdict === 'pass' && !i.calibrated ? '(미보정)' : ''}</span>` : '<span class="tag">AI 판정 없음</span>';

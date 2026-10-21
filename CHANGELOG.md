@@ -5,6 +5,122 @@
 
 <!-- releases -->
 
+## 0.303.0 — 2026-10-21
+
+### 기능
+
+- **modern-city** — redraw 1 interior objects (m142-h3) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3177) (`3d9406d`)
+- **modern-city** — redraw 1 interior objects (m142-b7) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3176) (`f0df402`)
+
+### 수정
+
+- **first-love** — konbini plaza props + compact top caption (#3178) (`e41f159`)
+
+## 0.302.0 — 2026-10-21
+
+### 기능
+
+- **first-love** — 첫사랑 built-in office-romance demo (3 endings) + choice confirm grace, relationship pulse (#3173) (`a0cafb7`)
+- **modern-city** — redraw 1 interior objects (m142-h2) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3172) (`5d9d8d7`)
+
+### 수정
+
+- **i18n** — 첫사랑 home card genre and description in en/ja/zh (#3174) (`a64ad74`)
+
+## 0.301.0 — 2026-10-21
+
+### 기능
+
+- **modern-city** — redraw 15 interior objects (m142-h1) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3171) (`de37eb1`)
+- **modern-city** — redraw 17 interior objects (m142-b5) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3170) (`b327231`)
+- **modern-city** — redraw 2 interior objects (m142-b6) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3168) (`0d4c8a8`)
+
+## 0.300.0 — 2026-10-21
+
+### 기능
+
+- **modern-city** — redraw 15 interior objects (m142-b4) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3166) (`a99cdaa`)
+- **modern-city** — redraw 13 interior objects (m142-b3) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3165) (`10fa766`)
+- **modern-city** — redraw 13 interior objects (m142-b2) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3164) (`a09fe6c`)
+- **modern-city** — redraw 15 interior objects (m142-b1) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3163) (`f23df26`)
+- **jp-inaka** — countryside R12-R14 — jp_city roof grammar hand pixels, Opus VQA gate (50/50), bake (#3071) (`e45d411`)
+
+### 수정
+
+- **inaka** — park the map 4 kei truck on the open dirt field instead of across the N-S farm lane (#3162) (`5914650`)
+- delegated gate holds, jp interior 'study' kind, inaka map 3 truck (#3160) (`8d2a4d8`)
+- **editor** — UI/UX 적대적 VQA 2차 (슬림 시작·AI 도크·공방·진행 창·타일 탭) (#3159) (`03c7061`)
+
+### 성능
+
+- **db** — fast 타일 tab (windowed chipset cells) + fix Fallen Star browser crash (#3167) (`ca8cb3f`)
+
+## 0.299.0 — 2026-10-21
+
+### 기능
+
+- **object-gate** — Opus final judge v9-v11 — no exempt kind correction, wall_structure, contrast pairs, side-seat charge, 3 per call (all rejected) (#3158) (`97fa517`)
+
+### 수정
+
+- **beodeul** — woodland — tree composer forests + original-pixel fence corners (#3122) (`6159010`)
+- **db-system** — 해상도 변경이 안 되던 버그(양쪽 전신 대화창) + 게임 설정 탭 전수 점검 (#3155) (`5eca89b`)
+- **editor** — UI/UX VQA 1 — topbar overlap, canvas seams, i18n, CSP, AI-off login (#3154) (`d893ccd`)
+
+### 잡무
+
+- **object-gate** — beodeul dark-grass r9 — allow records (user-delegated to supervisor 2026-10-21), receipts, held images, Opus VQA receipts r1-r4 (#3157) (`498d040`)
+
+## 0.298.0 — 2026-10-21
+
+### 기능
+
+- **object-gate** — Opus final judge v8 — same-chipset style anchors, kind correction (rejected) (#3151) (`6293e4e`)
+
+### 수정
+
+- **ai** — recover the ChatGPT/assistant connection after a local serve restart (stale token 403) without reload (#3152) (`0a1a93b`)
+
+## 0.297.0 — 2026-10-21
+
+### 기능
+
+- **object-gate** — review page shows an optional per-batch explanation (scene image + plain text) (#3150) (`ca78853`)
+- **object-gate** — Opus final judge v7 — audit of v6 misses, per-kind negative example, reshuffled anchors, majority of 3 (rejected) (#3147) (`cebdcc8`)
+
+### 수정
+
+- **ai** — Codex(ChatGPT) connection test always failed with 400 — worker now reads the {cli} body the settings screen sends (#3148) (`f6a1e7e`)
+
+## 0.296.0 — 2026-10-21
+
+### 기능
+
+- **object-gate** — Opus final judge v5/v6 — chipset-original anchors, condition (b), per-family report (both profiles rejected) (#3144) (`b5df7b9`)
+- **desktop** — splash at click, light boot entry, show home when cards are drawn (#3142) (`41a4ac9`)
+
+### 수정
+
+- **jp-city** — house interior passes the Opus interior gate by layout only; 2F inside 1F, 3-wide dressing room off the north corridor (#3143) (`c57c4d9`)
+
+## 0.295.1 — 2026-10-21
+
+### 수정
+
+- **start** — start screen sections with one view-state owner; home shows only what you can do; refreshed demo art (#3140) (`adcaaf5`)
+- **object-gate** — revoke Opus final profile 3b8dddb2 (7.5% clean pass; originals not measured) (#3139) (`80d20fc`)
+
+## 0.295.0 — 2026-10-21
+
+### 기능
+
+- **object-gate** — final-queue fails list carries tileset, sheet and sheet cells; written atomically per batch (#3136) (`4d5939f`)
+- **object-gate** — Opus 5.5 medium adversarial VQA is the final verdict (replaces option A) (#3135) (`f5aa0c2`)
+
+### 수정
+
+- **object-gate** — final-queue summary counts fails; beodeul_ground maps to beodeul_city (#3137) (`a7c3d1a`)
+
 ## 0.294.0 — 2026-10-21
 
 ### 기능

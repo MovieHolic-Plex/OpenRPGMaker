@@ -18,9 +18,10 @@
 import http from 'node:http';
 import { existsSync, readFileSync } from 'node:fs';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
+import { homedir } from 'node:os';
 import { resolve } from 'node:path';
 import { OBJECT_GATE_KINDS, finalApplies, humanDecision, type ObjectGateFinal, type ObjectGateHoldDecision, type ObjectGateReceipt } from '../../_core/objectGate';
-import { GATE_DATA, calibratedFinalProfiles, readFinal, calibratedProfiles, gateProfileHash, heldImage, holdKey, listQueueBatches, listReceipts, readHoldDecision, readProfiles, readReceipt, styleRefs, writeHoldDecision } from './store';
+import { GATE_DATA, calibratedFinalProfiles, readFinal, calibratedProfiles, gateProfileHash, heldImage, holdKey, listQueueBatches, listReceipts, queueExplainImagePath, readHoldDecision, readProfiles, readReceipt, styleRefs, writeHoldDecision } from './store';
 
 const PAGE = resolve(import.meta.dirname ?? __dirname, '..', 'web', 'holds.html');
 const equal = (a?: string, b?: string) => typeof a === 'string' && typeof b === 'string' && a.length === b.length && timingSafeEqual(Buffer.from(a), Buffer.from(b));
@@ -28,7 +29,7 @@ const SHA = /^[0-9a-f]{64}$/;
 const heldImagePath = (sha: string) => resolve(GATE_DATA, 'held-images', sha.slice(0, 2), `${sha}.png`);
 
 type Entry = { receipt: ObjectGateReceipt | null; sha: string; kind: string; label: string; batches: string[] };
-type BatchInfo = { id: string; title: string; note?: string; auto: boolean; shas: string[] };
+type BatchInfo = { id: string; title: string; note?: string; explainImage?: string; explainText?: string; auto: boolean; shas: string[] };
 
 /** 영수증 5,000장 넘게 매번 읽지 않게 잠깐 담아 둔다(결정 기록은 매번 새로 읽는다). */
 let receiptCache: { at: number; list: ObjectGateReceipt[] } | null = null;
@@ -52,7 +53,7 @@ function buildQueue(fresh = false): { entries: Map<string, Entry>; batches: Batc
       names.set(it.sha, [it.label]); e.batches.push(b.id); entries.set(it.sha, e); shas.push(it.sha);
     }
     for (const [sha, list] of names) entries.get(sha)!.label = list.length > 1 ? `${list[0]} (같은 그림 ${list.length}개: ${list.join(', ')})` : list[0]!;
-    batches.push({ id: b.id, title: b.title, note: b.note, auto: false, shas });
+    batches.push({ id: b.id, title: b.title, note: b.note, explainImage: b.explainImage, explainText: b.explainText, auto: false, shas });
   }
   const auto = new Map<string, string[]>();
   for (const e of entries.values()) if (!e.batches.length) {
@@ -102,6 +103,15 @@ export async function serveHolds({ host, port }: { host: string; port: number })
       return JSON.parse(body) as Record<string, unknown>;
     };
     const who = (q: Record<string, unknown>) => { const s = String(q.decidedBy ?? '').trim().slice(0, 60); if (!s) throw Error('결정한 사람 이름을 적어라'); return s; };
+    // 위임 허용(2026-10-21): 사용자가 감독자에게 위임해 독립 검수 뒤 기록하는 경우. delegatedBy 와 evidence 가 둘 다 있어야 하고, 없으면 사람 클릭으로 기록한다.
+    const delegation = (q: Record<string, unknown>): { by: 'human' } | { by: 'delegated'; delegatedBy: string; evidence: string } => {
+      const delegatedBy = String(q.delegatedBy ?? '').trim().slice(0, 60), evidence = String(q.evidence ?? '').trim().slice(0, 300);
+      if (!delegatedBy && !evidence) return { by: 'human' };
+      if (!delegatedBy || !evidence) throw Error('위임 허용은 delegatedBy(위임한 사람)와 evidence(근거 경로)를 둘 다 적어야 한다');
+      if (q.decision !== undefined && q.decision !== 'allow') throw Error('위임 결정은 허용만 기록한다 — 거절은 사람이 누른다');
+      if (!existsSync(resolve(evidence.replace(/^~(?=\/)/, homedir())))) throw Error(`evidence 경로에 파일이 없다: ${evidence}`);
+      return { by: 'delegated', delegatedBy, evidence };
+    };
     try {
       const url = new URL(req.url ?? '/', 'http://localhost');
       if (req.method === 'GET' && url.pathname === '/') {
@@ -131,7 +141,7 @@ export async function serveHolds({ host, port }: { host: string; port: number })
             else if (s === 'waiting') { c.waiting++; if (existsSync(heldImagePath(sha))) c.withImage++; if (r) c.ai[r.verdict]++; }
             else if (s === 'allowed') c.allowed++; else if (s === 'rejected') c.rejected++; else if (s === 'auto-pass') c.autoPass++; else c.noReceipt++;
           }
-          return { id: b.id, title: b.title, note: b.note ?? '', auto: b.auto, ...c };
+          return { id: b.id, title: b.title, note: b.note ?? '', explainText: b.explainText ?? '', hasExplainImage: !!queueExplainImagePath(b.explainImage), auto: b.auto, ...c };
         });
         // 전체 수는 그림(해시) 하나를 한 번만 센다(한 그림이 여러 묶음에 들 수 있다).
         const totals = { waiting: 0, allowed: 0, rejected: 0, autoPass: 0, opusPass: 0, opusFail: 0 };
@@ -157,6 +167,12 @@ export async function serveHolds({ host, port }: { host: string; port: number })
       }
       const img = url.pathname.match(/^\/img\/([0-9a-f]{64})\.png$/);
       if (req.method === 'GET' && img) { const path = existsSync(heldImagePath(img[1]!)) ? heldImagePath(img[1]!) : null; if (!path) { json(404, { error: '그림 없음' }); return; } png(path); return; }
+      const explain = url.pathname.match(/^\/explain\/([a-z0-9][-a-z0-9_.]{0,80})\.png$/);
+      if (req.method === 'GET' && explain) {
+        const path = queueExplainImagePath(listQueueBatches().find(b => b.id === explain[1])?.explainImage);
+        if (!path) { json(404, { error: '설명 그림 없음' }); return; }
+        png(path); return;
+      }
       const ref = url.pathname.match(/^\/ref\/([a-z_]+)\/([-_a-z0-9]+)\.png$/);
       if (req.method === 'GET' && ref) {
         const found = styleRefs(ref[1] as never).find(r => r.name === ref[2]);
@@ -182,7 +198,7 @@ export async function serveHolds({ host, port }: { host: string; port: number })
         // 해시 확인: 서버에 저장된 그림을 다시 재서 영수증·요청의 해시와 같아야 한다(화면에 보인 그림 = 결정이 묶이는 그림).
         if (!(await heldImage(sha))) throw Error('저장된 그림이 없거나 해시가 맞지 않는다 — object-gate review 로 다시 받아라');
         const note = String(q.note ?? '').trim().slice(0, 200);
-        writeHoldDecision({ schema: 'oprn-object-gate-hold-decision/1', pixelSha256: sha, profileHash: receipt.profileHash, kind: receipt.kind, decision: q.decision, decidedBy, decidedAt: new Date().toISOString(), by: 'human', via: 'review-page', reasons: receipt.reasons, ...(note ? { note } : {}) });
+        writeHoldDecision({ schema: 'oprn-object-gate-hold-decision/1', pixelSha256: sha, profileHash: receipt.profileHash, kind: receipt.kind, decision: q.decision, decidedBy, decidedAt: new Date().toISOString(), ...delegation(q), via: 'review-page', reasons: receipt.reasons, ...(note ? { note } : {}) });
         const saved = readHoldDecision(sha);
         if (!saved || saved.decision !== q.decision) throw Error('저장 확인 실패');
         json(200, { saved: true, decision: saved.decision, decidedAt: saved.decidedAt }); return;
@@ -209,9 +225,10 @@ export async function serveHolds({ host, port }: { host: string; port: number })
         if (sent.length !== want.length || sent.some((s, i) => s !== want[i])) throw Error('화면의 목록과 서버의 대기 목록이 다르다(그 사이에 바뀌었을 수 있다). 새로고침하세요');
         if (q.confirm !== `${want.length}장 전부 허용`) throw Error(`확인 문구가 맞지 않는다 — 「${want.length}장 전부 허용」을 직접 입력해야 한다`);
         const at = new Date().toISOString(), note = `묶음 허용: ${batch.title}${q.note ? ` — ${String(q.note).trim().slice(0, 150)}` : ''}`;
+        const deleg = delegation({ ...q, decision: 'allow' });
         let saved = 0;
         for (const { sha, receipt } of eligible) {
-          writeHoldDecision({ schema: 'oprn-object-gate-hold-decision/1', pixelSha256: sha, profileHash: receipt.profileHash, kind: receipt.kind, decision: 'allow', decidedBy, decidedAt: at, by: 'human', via: 'review-page', reasons: receipt.reasons, note });
+          writeHoldDecision({ schema: 'oprn-object-gate-hold-decision/1', pixelSha256: sha, profileHash: receipt.profileHash, kind: receipt.kind, decision: 'allow', decidedBy, decidedAt: at, ...deleg, via: 'review-page', reasons: receipt.reasons, note });
           if (readHoldDecision(sha)?.decision === 'allow') saved++;
         }
         if (saved !== eligible.length) throw Error(`저장 확인 실패(${saved}/${eligible.length})`);

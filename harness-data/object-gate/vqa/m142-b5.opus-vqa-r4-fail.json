@@ -1,0 +1,63 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b5",
+ "round": 4,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "mart-sale-endcap",
+   "pixelSha256": "0bb87c132933ea0d32abd978ce13347ceaa0365bcd801c11cc5458ff300a5b38",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The body is a flat front elevation. No shelf plank or top shows as a lit plane from above; the shelves are just stripes across the front. The yellow '-50' sign sits on a thin stem above the outline like a sticker, and the product pixels on the bottom shelf are a noisy mix of red and green specks."
+  },
+  {
+   "id": "mart-scale-station",
+   "pixelSha256": "347920f7330e33f983f94c07818800057f5216a0e46a55f02b5451312306d37b",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "At 1x it is a white-grey smear that does not read as a scale; the weighing pan and display are unreadable. The tall white cylinder at top right sticks out above the body like a detached tube. The cabinet is a front elevation with no top plane, and the brown box on the lower shelf looks like a muddy blob."
+  },
+  {
+   "id": "mci-magazine",
+   "pixelSha256": "71ee3e53472ad84df7e5a574a64d7f6ba9bb02d66f8cac52bf2b3bcf04fba5e0",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The stepped grey rack shows its tiers as lit ledges seen from above, and the short front face has a dark outline that matches the originals. The red, teal, blue and yellow magazine blocks read as magazines at 1x. The footprint sits cleanly on the floor."
+  },
+  {
+   "id": "museum-partition-wall",
+   "pixelSha256": "85a35c5fbe8867e9f094ad1052e03de93cc9cd04419451b7769a38f89cd94a06",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    5
+   ],
+   "reasons": "It is drawn as a flat front-on wall panel, with only a one-pixel top band instead of a 3/4 top plane. In the room it reads as a low cabinet or display case, not a freestanding partition. The three spotlights hang off thin stems at the top edge and look detached, and the framed art floats in the middle of the face."
+  }
+ ]
+}

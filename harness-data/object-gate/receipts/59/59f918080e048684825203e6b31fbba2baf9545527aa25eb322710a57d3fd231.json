@@ -1,0 +1,254 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "59f918080e048684825203e6b31fbba2baf9545527aa25eb322710a57d3fd231",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "inaka-river-shallow",
+ "label": "jp_inaka_pack/ground/inaka-river-shallow",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 5,
+  "darkV5": 87,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water tile surface (full 16x16 teal water texture with light ripple highlights)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a terrain tile: a full 16x16 opaque square of teal water with scattered lighter ripple pixels (rows 1-3, 8, 12) and darker patches. There is no standing object, no silhouette narrowing, no front-edge line, no eave shadow and no separate front face. The width profile is 16 for every row. It is a seamless flat water texture and not a standing object, so the top-surface and front-face rules do not apply."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small teal water patch with speckled ripple and highlight dots. It has no black sticker outline, and its 0% neutral dark-edge share matches the grass reference. It has 5 visible tones per tile, above the grass reference (3) and below the paving reference (7). Near-flat coverage is 0%, so there are no large flat fills. Only 5 raw colours are used, but they separate into 5 distinguishable tones, so the visible variation holds up against the grass. Texture is less layered than the grass clumps and paving stones, so it reads a little simpler than the best reference. It is still comparable to the grass on the primary facts, with no flat fills and no sticker look, so it is acceptable next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12838
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water tile fill",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 16x16 opaque water tile with a teal base, darker ripples and light highlights scattered across it. It has no silhouette, no front face and no edge line or eave shadow. It is a flat top-down terrain texture, which fits the terrain kind. It is not a standing object, so no 3/4 structure is expected."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate is a teal water patch drawn as a ground surface, and it is very small on the board, so I judged it mostly from the measured facts. It has 5 visible tones per tile, above the grass reference (3) and below the paving reference (7). Near-flat coverage is 0%, so there are no large flat fills. The picture shows dithered ripple and speckle dots in several teal steps rather than one flat colour. There is no black sticker outline, and the 0% neutral dark edge share confirms any dark pixels are tinted. The ramp is only 5 colours in total, so it is a compact ramp with less grain than the grass reference's 26 raw colours per tile, but the visible tone count matches or beats the grass. Nothing marks it as shallower than the grass reference, so it passes, with a low-confidence caveat because the sample is tiny.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14523
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water tile fill with ripple highlights",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 16x16 opaque square (width 16 on every row). It is a flat water texture of teal tones with scattered lighter ripple pixels and darker patches. There is no front-edge line, eave shadow, ellipse, or vertical front face, and nothing stands on it. It is a flat terrain surface with no object structure, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small teal patch, hard to read at this size. It shows about 5 visible tones per 16x16 tile, against 3 for the grass reference and 7 for the paving. Near-flat coverage is 0%, so there are no 5x5 flat fills, and the mottled dither speckles look like water-surface grain. It has only 5 raw colours, but they are spread into distinct lightness steps, close to the 5-6 steps the references use. It is a seamless ground patch with no outline, so there is no sticker look and no near-black line (0% neutral dark edge pixels). Texture is moderate rather than rich, since the 5-colour ramp is limited, but it is not thinner or flatter than the grass reference it is compared with.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16027
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "water tile surface (full 16x16 teal water texture with ripple highlights)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 16x16 water terrain tile. Every row has width 16, with a teal base and scattered lighter ripple highlights and darker flecks. There is no silhouette, front-edge line, eave shadow, ellipse, or front face. It is a flat top-down texture, which is expected for a terrain tile and not a standing object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small water patch with a mottled teal ramp of about 5 distinct tones. The measured facts back this up: 5 visible tones per tile, against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 0%, so there are no large flat fills; the speckle and ripple dither break up the surface. It has no hard outline, and the 0% near-neutral dark edge share shows no black sticker line. The patch is small and the ramp is modest, so it is not as rich as the paving, but it matches or exceeds the grass reference, which is the closest kind. Not a sticker look.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22740
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.216Z",
+ "cells": {
+  "16": [
+   "59e3b7e32b905922"
+  ],
+  "24": [
+   "14fc27dac6bbb1ca",
+   "27bd61ce6f51ad24",
+   "40b1b43c56b17b9b",
+   "4a2b4d50148e12bd",
+   "5a898b4c20dec9ce",
+   "760c50b8cf834d35"
+  ],
+  "32": [
+   "6d2841a9161e5f8e",
+   "6ffcc58079c171d9",
+   "a87a17630685ba92",
+   "b7b376c2d51a9a28",
+   "dcbb0d86af9f0012",
+   "fc770017e30e579b"
+  ],
+  "48": [
+   "12bc03f8204bd99a",
+   "1a1c60e950dd79e3",
+   "3fa025d2bdd4cdd5",
+   "531885cab142db71",
+   "6d48fb26c2e20945",
+   "fbd58aa73151b0c4"
+  ]
+ }
+}

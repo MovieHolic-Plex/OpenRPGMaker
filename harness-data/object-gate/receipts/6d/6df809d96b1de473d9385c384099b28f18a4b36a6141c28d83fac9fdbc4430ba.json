@@ -1,0 +1,392 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6df809d96b1de473d9385c384099b28f18a4b36a6141c28d83fac9fdbc4430ba",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "mart cake showcase",
+ "label": "modern_city_interior/mart-cake-showcase",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 27,
+  "tileColorsP90": 28,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "glass top lid of showcase",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "cakes on upper shelf",
+      "rows": "8-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cakes on lower shelf",
+      "rows": "16-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden base cabinet with panels",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-6 form a pale glass band with a bright front-edge line at row 6 (L=231 in all three scanned columns). It is followed by dark eave shadow at rows 7-8, and the front face runs below from row 7 to row 30. The front face holds two glass shelves with cakes (rows 8-22) and a wooden base with recessed panels (rows 24-30). The cakes are goods, so they count as decor. The top band is reasonably deep, but the glass streaks could also be read as a front pane, so the reading is moderately ambiguous."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden-framed glass display case with shelves of cakes. It reads as a proper standing prop at the same scale as the stall and well references. Measured facts support this: 27 visible tones per tile is above the stall (17) and the well (20). Near-flat coverage is 0% and the dark edge pixels are 0% neutral, so the outlines carry a tint. By eye the frame uses a dark brown next to the wood rather than a black line. The wood frame, glass and shelves show several lightness steps, and the cakes have small icing and topping dots. The case interior is slightly busier and less grain-heavy than the stall's wood, but there are no large flat fills and it would sit acceptably next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16706
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper glass panel with highlight streaks",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper shelf strip with cakes",
+      "rows": "11-15",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15"
+     },
+     {
+      "part": "cakes on shelves",
+      "rows": "8-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower shelf strip with cakes",
+      "rows": "22-23",
+      "evidence": "none",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "wooden base cabinet with two recessed drawer panels",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The showcase is drawn face-on. The upper glass pane (rows 1-6) is a vertical face with diagonal highlights and a bright line at row 6. Below it the interior cakes sit on shelves seen as thin 1-3 row tan strips (rows 14-15 and 22-23) with no real depth. The base (rows 24-30) is a flat front panel with recessed drawer rectangles. No horizontal top plane is foreshortened over the body, and the shelves are only rim-like strips. This is a front elevation, not a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a glass-front cake cabinet with a wooden frame, shelves and several small cakes. It shows about 27 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no large flat fills; the frame, glass panes, shelf boards and cakes each carry several tones. The near-neutral share of dark edge pixels is 0%, so the outline is tinted, a dark brown beside the wood, and is not a uniform black sticker line. The material ramps (wood frame, glass, cake tops) have about 4-5 steps, slightly below the 5-6 of the references. Texture is moderate: the cakes and shelves carry detail, but there is less grain than on the stall or the well. At this scale and on these measured facts, it would sit acceptably next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21664
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "glass top lid",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "upper cakes on shelf",
+      "rows": "8-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower cakes on shelf",
+      "rows": "17-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden base cabinet with drawer panels",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-6 form a pale glass top band that ends in a bright front-edge line at row 6. Dark shadow rows 7-8 follow it, so it counts as evidence (a), though it is faintly streaked like a glass front. Below it is a 24-row front face: an open display with cakes on two shelf planks (rows 13-15 and 22-23), then a wooden base with drawer panels (rows 24-30). The cakes are goods and count as decor. The top band is the weakest evidence here, because the diagonal highlights could also be read as a vertical glass pane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wooden-framed glass display case with shelves of cakes and pastries, so it matches the prop references. It reads as 4-5 tones on the wood frame and glass, plus varied cake colours (cream, pink, brown, orange), with a lit top sign and a shaded base. The outline is a dark brown frame edge that leans toward the wood, not a neutral black line, and the measured 0% neutral dark edge pixels agrees. Measured density is 27 visible tones per 16x16 tile, above the stall (17) and well (20) references. Near-flat coverage is 0%, so there are no large flat fills. The shelf and cake detail is a little small and busy at this scale, but it holds up next to the stall and well references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16199
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top glass/lid band",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "cakes on upper shelf",
+      "rows": "8-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cakes on lower shelf",
+      "rows": "16-22",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden base cabinet with panels",
+      "rows": "23-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a pale grey-green band at the top. It ends in a bright 1-row front-edge line at row 6 (L=231), followed by darker interior rows 7-8. This reads as the case's top plane. Below it is a front face of about 24 rows (rows 7-30), containing two shelves of cakes (shelf edges at rows 14-15 and 22-23) and a wooden base with recessed panels. The band could also be read as a face-on glass pane, since it has a few sheen pixels. I counted it as a top surface because it has an edge line and a shadow row below it. This is a borderline call."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden-framed glass display case with shelves and cakes. It measures 27 visible tones per 16x16 tile, above the stall (17), well (20) and hedge (9). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, which means the outline leans brown and follows the wood rather than being a black sticker line. The frame has about 5 wood steps, the glass has a lighter highlight band, and the cakes carry small icing and topping dots. The shelf rows give it internal structure comparable to the cheese stall's goods. It is somewhat simpler than the roofed stall, but it is not thinner or flatter than the references for a single-tile-wide prop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17746
+  }
+ ],
+ "decidedAt": "2026-10-21T00:04:54.243Z",
+ "cells": {
+  "16": [
+   "02e0778984d45830",
+   "550654b099b0c2d7",
+   "6f8a023c89fa82f4",
+   "fcd1fb24eb9ebd87"
+  ],
+  "24": [
+   "02eb1755fe6d1d1c",
+   "1ac620c572464a21",
+   "24fd4a322d6f3730",
+   "25ebb1843359a38c",
+   "28cb7e6ad985d0b4",
+   "2d0677b7340ff036",
+   "37f97e6b086e09f7",
+   "3dfe41c0ad0211bf",
+   "5016abca28e2ab4e",
+   "5079f3427d2b68f0",
+   "50e38a51a6c76524",
+   "521b75fd2394bf35",
+   "798b050bb62840ac",
+   "91bbeb879d6b551f",
+   "aa372893ed99b5dd",
+   "ae2518b739dccf80",
+   "b924b2ee1f8ec787",
+   "bc61e73a17c444c1",
+   "d026c2414abedebf",
+   "e19e192f2eb55639",
+   "e611a56137c6713f",
+   "efde7b1b8ba2849e",
+   "f8e0da6c8e9dc0da",
+   "fc81778f65b2097c"
+  ],
+  "32": [
+   "c97190177e395216"
+  ],
+  "48": [
+   "192d3dfef1b6ab79",
+   "1bb4decbb615566c",
+   "38bee08bd50eb524",
+   "a70ac35901aa23cc",
+   "b6a94a7868037789",
+   "d8a2ebe49ac02178"
+  ]
+ }
+}

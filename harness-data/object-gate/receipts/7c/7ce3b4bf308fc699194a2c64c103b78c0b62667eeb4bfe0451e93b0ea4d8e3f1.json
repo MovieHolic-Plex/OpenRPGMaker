@@ -1,0 +1,406 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7ce3b4bf308fc699194a2c64c103b78c0b62667eeb4bfe0451e93b0ea4d8e3f1",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "mart gondola tea",
+ "label": "modern_city_interior/mart-gondola-tea",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 1행 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 1행 < 4 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 20,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header sign band with tan and green labels",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "shelf boards (1-row light lips)",
+      "rows": "15-15, 22-22, 29-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottles and boxes on shelves",
+      "rows": "10-14, 17-21, 24-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is a face-on shelf unit. Rows 1-6 are a header strip with flat label panels. Row 7 is a 1-row white lip with a dark interior starting at rows 8-9, which is a rim and not a receding top. The shelf boards at rows 15, 22 and 29 are also 1-row lips, and the goods are drawn face-on. The width profile is a constant 32 px for all rows, with no ellipse and no top plane. A front face is clearly present, but no top surface of 3 or more rows is visible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 19 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no large flat fills; the shelves, bottles, packages and glass panel each carry several tones. The dark edge pixels are 0% neutral, so the outline is tinted toward the adjacent material and does not read as a black sticker line. The frame, shelf rows and goods show about 5 lightness steps, slightly below the references' 5-6 but not shallow. Texture is moderate: the goods rows give grain-like variation, but there is less per-surface speckle than the roof tiles and plaster on the stall and well. A careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15614
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band with tea boxes (flat front-facing panel)",
+      "rows": "1-8",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "shelf tier 1 with bottles/tea goods",
+      "rows": "9-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf tier 2 with tea boxes",
+      "rows": "16-21",
+      "evidence": "decor",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf tier 3 with tea boxes",
+      "rows": "23-28",
+      "evidence": "decor",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is drawn as a flat face-on shelving unit. Row 0 is a dark outline and row 1 is a light 1-row edge at the top. Rows 2-6 are a front-facing header with boxes, ending in a light line at row 7. Rows 9-29 are three recessed shelf bays, separated by 1-row light shelf-edge lines at rows 15, 22 and 29. These lines are thin front edges, not receding top surfaces. There is no band of rows that reads as a top plane, no ellipse and no roof. The width is a constant 32 px on every row and no side face is drawn. This matches the red 'front elevation: top 1' reference and not the green cabinet with a top of 5 rows plus an edge line and eave shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 19 visible tones per 16x16 tile, level with prop-stall-cheese (17) and prop-well-roofed (20) and well above prop-hedge (9). Near-flat coverage is 0%, so there are no flat fills. The frame and shelves are separated by value, with a lighter top rim and darker shelf edges. The dark edge pixels are 0% neutral, so the outline leans bluish-grey, a dark tone of the adjacent frame material, not a sticker-style black line. The shelves hold many small multi-tone items (bottles, boxes, labels) that add grain and clusters, and the top sign band has its own highlight. The frame ramp has about 4-5 steps against the reference's 5-6. Its detail is slightly more regular and grid-like than the cheese stall's, but it would sit acceptably next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16492
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header band with face-on tea boxes",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "top shelf compartment with bottles",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "middle shelf compartment with bottles",
+      "rows": "16-21",
+      "evidence": "none",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "bottom shelf compartment with tea boxes",
+      "rows": "23-28",
+      "evidence": "none",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "30"
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole unit is a flat front view. The header at rows 1-6 shows boxes face-on, and rows 7-8 form only a 1-2 row light rim line. The shelves at rows 15, 22 and 29 are 1-row light edge lines with a dark row below. Bottles and boxes are drawn face-on, with no shelf top surface or receding top plane visible. The width is a constant 32 for all rows, with no side face. This matches the 'front elevation / rim only' bad examples, not the cabinet with a 5-row top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The gondola shelf has a frame with several lightness steps, a striped header, and shelf rows of small bottles and boxes. Each item is a few pixels in different tones, so no large area is flat. Measured: 19 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, and 0% of dark edge pixels are near-neutral, so the outline carries a tint rather than being a black sticker line. Shading is slightly less deep than the best references, but the density and structure would sit acceptably next to the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17862
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header sign band with tea boxes",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf edge strips (white front lips)",
+      "rows": "7, 15, 22, 29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tea boxes and bottles on shelves",
+      "rows": "9-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is a flat, face-on shelf unit. The header band (rows 1-6) is a vertical sign strip with face-on boxes, closed by a 1-row white lip at row 7. The shelves are only 1-row white lips at rows 15, 22 and 29, each over a dark interior. No row range shows a foreshortened top surface, ellipse, or roof plane. The width is a constant 32 px across rows 0-31, with no receding side face and no top band. This matches the 'front elevation' wrong examples (rim only)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 19 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, and above the hedge's 9. Near-flat coverage is 0%, so no large flat fills. Dark edge pixels are 0% near-neutral, so the frame outline leans blue-grey to match the shelf material instead of a uniform black sticker line. The shelf rows carry many small tinted goods (bottles, boxes, label dots), a lighter top sign band and a shaded cabinet frame, which gives about 5 lightness steps on the frame. That is slightly fewer steps than the references' roof and wood ramps, but the information density is comparable to the stall and well. It is a small, clean prop that would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16425
+  }
+ ],
+ "decidedAt": "2026-10-21T01:38:23.392Z",
+ "cells": {
+  "16": [
+   "3d9f3f3e120d914a",
+   "a6fdc2fe8b878d99",
+   "f036a6638a835905",
+   "f7c07840da97b797"
+  ],
+  "24": [
+   "1fadb01e7e16d1f9",
+   "2bc1551f1624c846",
+   "30bd215b3e246107",
+   "45452774ce77e148",
+   "50f40151f9691e67",
+   "53fc8c3bdebce635",
+   "54e84a7c397e5ed8",
+   "5591ef802c8e2068",
+   "5d6be937946f339c",
+   "5f19de2495ce2eb3",
+   "6ecbc11ca4eee9a8",
+   "709160e2ee0d036c",
+   "70ec3f612896ba06",
+   "7b69b0c7458599dd",
+   "7cff1aeba41b9c26",
+   "83c163b3d6a060ee",
+   "983bcd17e853f716",
+   "a16acdc58593363c",
+   "a61687b35740ee9b",
+   "aa9c068cf1905b60",
+   "baaab9c9f3534c69",
+   "c1c7062a475e7642",
+   "c35556e46cc6c86f",
+   "e8d44db62ff1b70d"
+  ],
+  "32": [
+   "075d390891965019"
+  ],
+  "48": [
+   "03a11709c4c0b7d7",
+   "3c934902d96137b8",
+   "46ef33691a0bc2a2",
+   "5273d95fc6d55e23",
+   "8a859c4c1fcff3f2",
+   "f2e3b263f98ca7d6"
+  ]
+ }
+}

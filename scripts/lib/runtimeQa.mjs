@@ -18,6 +18,8 @@ export const OP_KINDS = [
   "audioAction",
   // 맵 타일을 실제 캔버스 위에서 누른다(클릭 이동 #32, masterpiece-field).
   "clickTile",
+  // 키를 누르며 JS 조건이 설 때까지 되풀이(first-love 시나리오).
+  "pressUntilJs",
   // 인라인 CSS 사용자 속성 값 대기(ct-engine: 적 이동 뒤 렌더 좌표).
   "waitForStyleVar",
   // 하위 op 묶음을 조건이 설 때까지 되풀이(ct-engine: 적이 쓰러질 때까지 공격).

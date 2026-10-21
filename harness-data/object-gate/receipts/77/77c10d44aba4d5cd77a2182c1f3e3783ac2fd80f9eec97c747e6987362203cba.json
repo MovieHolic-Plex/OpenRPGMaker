@@ -1,0 +1,349 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "77c10d44aba4d5cd77a2182c1f3e3783ac2fd80f9eec97c747e6987362203cba",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "mart meat case",
+ "label": "modern_city_interior/mart-meat-case",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 18,
+  "darkV5": 37,
+  "nearBlackEdge": 0.52,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "MART sign on top of case",
+      "rows": "0-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "case top (white/pale lid surface)",
+      "rows": "6-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "glass front with meat shelves and base",
+      "rows": "13-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The sign on rows 0-5 is narrower (18 px against 32 px) and sits on the case, so it counts as decor. Below it, rows 6-11 form a wide pale top surface with light streaks. Row 12 is a gray front-edge line (L=144), and row 13 is a dark eave shadow (#192737). Under that, rows 13-31 are the vertical front face: a glass display with three shelves of red meat, ending in a gray base at rows 30-31. That gives a 6-row top and a 19-row front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 18 visible tones per tile, level with prop-stall-cheese (17) and prop-well-roofed (20) and well above prop-hedge (9). Near-flat coverage is 0%, so the frame, glass and shelves have no 5x5 flat fills. By eye, the white/grey case frame shows about 4 steps (highlight, light, mid, dark). The red meat packages carry about 3 tones with highlights, and the sign cap and shelf lines add detail. The dark edge pixels are 0% neutral, so the outline leans toward the adjacent material: a bluish-grey line beside the case and dark red beside the meat. It is not a uniform black sticker line. The piece is a little cleaner and simpler than the cheese stall, with less grain on the case body, but it holds up beside the references on structure and density.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13938
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sign/header on case top",
+      "rows": "0-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "case top (glass/lid surface)",
+      "rows": "6-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "front glass face with shelves and meat",
+      "rows": "13-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 6-11 form a wide pale top band: a light rim at row 6, near-white body, and a grey front-edge line at row 12 (L=144) followed by dark row 13. Below it the front face spans rows 13-31, showing three shelves of red meat with white shelf edges. The red sign on rows 0-5 stands on the top, so it is decor, not the main body. The top is about 6 rows deep, enough to read as a horizontal surface seen from above, so the object reads as 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a white/grey refrigerated meat case with a red sign and red meat trays on shelves. Measured facts: 18 visible tones per tile, close to prop-stall-cheese (17) and prop-well-roofed (20), with 0% near-flat coverage and 0% neutral dark edges, so the outline is tinted and not a sticker line. By eye, though, the case body is mostly light grey/white panels with a few ramp steps, about 3-4, against 5-6 on the references. The glass front and frame are flat and clean, with little grain or speckle. The meat trays show some small highlight dots but are repetitive. The overall look is smoother and simpler than the stall and well, which have per-plank, per-tile and per-stone shading. Numbers suggest parity, but the visual impression is shallower and closer to a clean icon. Doubtful, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12888
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "MLO sign on top of case",
+      "rows": "0-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass/light top of case",
+      "rows": "6-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "front glass face with meat shelves",
+      "rows": "13-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The red MLO sign in rows 0-5 sits on the case, so it counts as decor. The main body has a pale top band in rows 6-11 with highlight streaks. It ends in a gray front-edge line at row 12 (#8d9095) and a dark shadow row at 13. Below that, rows 13-31 show the front face with three shelves of meat, and a base strip at rows 30-31. The top is 6 rows deep and the front face is about 19 rows, so the case shows both a top surface and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts support the candidate. It has 18 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline is tinted rather than a black sticker line. By eye, the white and blue-grey cabinet has about 4 lightness steps (highlight, light, mid, dark edge) with a glass sheen. The red MEAT sign carries lettering. The shelves hold individually shaded meat cuts with dot variation, so there are no big flat fills. It is a little simpler than the stall and well, mainly in the cabinet body, but a careful artist would accept it beside the references without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14095
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "MLO sign board on top",
+      "rows": "0-5",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass/lid top of the case",
+      "rows": "6-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "front glass face with meat shelves",
+      "rows": "13-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a display case. Rows 6-11 form a pale top band with a highlight at the back edge (row 6). It ends in a grey front-edge line at row 12 and a dark shadow row at 13. Below it, rows 13-31 show the front face with three shelves of meat and a base. The red MLO sign on rows 0-5 is a sign placed on top of the case, so it counts as decor. The top band is 6 rows, well beyond a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts put the candidate at the reference level. It has 18 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline carries a tint rather than being a black sticker line. By eye, the white and grey case body has about 4-5 lightness steps with a lighter top rim and darker shelf edges. The red meat items have 3 or more tones with small highlight dots, and the sign panel is separated by value. It is a little cleaner and simpler than the cheese stall, which has more material variety (awning stripes, wood grain, goods), and its total palette is small at 21 colours. Even so, the tile information density and the shading structure are comparable to the same-kind references, so a careful artist would accept it next to them without it reading as thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16255
+  }
+ ],
+ "decidedAt": "2026-10-21T01:24:13.487Z",
+ "cells": {
+  "16": [
+   "06ff133673012cc8",
+   "33cdeb1239788b31",
+   "7e947fb18d236dc9",
+   "a9dff66899d7c5db"
+  ],
+  "24": [
+   "0809c0844298a83f",
+   "2003f3ffd4e78375",
+   "200723d1addbf3ba",
+   "21247aeb36bd3385",
+   "237dee9f315c94fa",
+   "24658dc352478fe0",
+   "2728e3c06b57a899",
+   "3efd5fe47b32e082",
+   "4eb91631ceac7d90",
+   "544abf2861f60e87",
+   "54f4696e57e5b81e",
+   "5b5080d043119099",
+   "6fe6838132df4f64",
+   "78153fed43b76a39",
+   "830826ecdfbcd16c",
+   "8939d9142f3ae2e0",
+   "9d61a47d4a47831c",
+   "a40c33264944f767",
+   "ac1a49ccbfc50031",
+   "dcc0e24016ee2e56",
+   "e0344114f61bf443",
+   "e9c80f5d1061e1c7",
+   "f874d5bbc60e7485",
+   "fecfc58b375501f5"
+  ],
+  "32": [
+   "feba43ed52b00623"
+  ],
+  "48": [
+   "17ab90edeea966ea",
+   "3b208e089d3abf67",
+   "4b737a97d5672fba",
+   "5a6c6147df4b9262",
+   "7d128123e24bbe1e",
+   "fa9b43e63372bd45"
+  ]
+ }
+}

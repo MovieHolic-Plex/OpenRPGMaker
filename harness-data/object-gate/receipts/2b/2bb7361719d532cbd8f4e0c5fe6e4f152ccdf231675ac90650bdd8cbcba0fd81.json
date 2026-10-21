@@ -1,0 +1,394 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2bb7361719d532cbd8f4e0c5fe6e4f152ccdf231675ac90650bdd8cbcba0fd81",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "wooden pole transformer",
+ "label": "jp-inaka-r5:inaka-wooden-pole-transformer",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 윗면 2행 < 4 (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "윗면 2행 < 4 (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 24,
+  "tileColorsP90": 24,
+  "darkV5": 39,
+  "nearBlackEdge": 0.12,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crossarm with two insulators",
+      "rows": "4-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "transformer can (largest volume)",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole shaft",
+      "rows": "27-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 6,
+     "cap_width": 16,
+     "shaft_width": 6,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The top is a crossarm in rows 4-9 (widths 14,16,16,16,16,14). It is a front-facing beam with one light highlight row at row 5 and darker rows below, with no front-edge line or eave shadow. The two white insulators in rows 1-3 sit at its corners, so it is not an ellipse plate. The transformer can (rows 12-25, width 12) has a rounded top of only 2 light rows (12-13, widths 8,10) and then a flat face, which is a rim and not an ellipse or visible top. The shaft (rows 27-42, width 6) is a vertical face only. The whole drawing reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "Measured facts favour the candidate: 24 colours per 16x16 tile against 17-20 for the richest references, 40 distinct colours (same as the cheese stall), 0% flat-fill coverage, and 0% neutral dark edge pixels, so the outlines carry a colour tint rather than a black sticker line. By eye the pole transformer is a narrow piece but shows a stepped grey-white cylinder, a wooden pole with banded warning stripes, and a crossarm with insulators, each with several tones. Shading and texture hold up against the roofed well and stall at the same scale, and it does not look thinner or flatter than the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21226
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crossarm with insulators",
+      "rows": "4-9",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "transformer can (white cylinder)",
+      "rows": "12-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole shaft with warning stripes",
+      "rows": "27-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 33,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 6,
+     "cap_width": 16,
+     "shaft_width": 6,
+     "rounded_at_both_edges": true
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The crossarm (rows 4-9) is a front-facing beam. Row 5 is a light edge line and rows 8-9 are dark shading. Its silhouette widens and narrows (14, 16, 16, 16, 16, 14) only because of the corner rounding and the two insulators on top, so it is not an ellipse plate overhanging the shaft. The transformer can (rows 12-26, width 12) has only a rounded shoulder at rows 12-13 (widths 8, 10, 12). Its lid has no ellipse with a front rim, and the can is shaded as a vertical cylinder face. The shaft (rows 27-42, width 6-7) and base (rows 43-45) are vertical faces. No part shows a real horizontal top surface, so the whole object is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts put the candidate at or above the references. It has 24 distinct colours per tile against 17-20 for the richer references, 40 distinct colours (the same as the stall and slightly above the well's 38), and 0% flat-fill coverage. Its dark edge pixels are 0% neutral, so the outline is tinted rather than a black sticker line. By eye the pole shows a few lightness steps on the wood and a grey-white transformer can with a banded hazard stripe at the bottom. The crossarm and insulators carry some variation. The piece is thin, so I judged density by eye. It is comparable to the lamp and bench references and looks no flatter or more sticker-like than them. Texture is moderate (some grain and speckle) and not as rich as the roofed well's tile scallops, but it is acceptable beside the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26864
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crossarm at pole top",
+      "rows": "3-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "transformer can",
+      "rows": "12-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole shaft",
+      "rows": "27-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 6,
+     "cap_width": 16,
+     "shaft_width": 6,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The pole shaft (rows 27-42, width 6) is a plain vertical face with no top. The crossarm (rows 3-9, width 16) is a front-facing bar: row 5 is a highlight, rows 6-7 are mid-tone, rows 8-9 are dark. It has no front-edge line plus eave shadow and no elliptical lid. Its corners are only chamfered (14,16,16,16,16,14) and it sits directly on a 7-wide neck (rows 10-11). The transformer can (rows 12-25, width 12) shows only a rounded shoulder (widths 8,10,12) and a flat bottom (row 26, width 10) sitting on the shaft. This is a dome-and-hat shape, not an ellipse plate. Rows 12-13 are a lighter 1-2 row lid or rim. No part shows a real horizontal top surface, so the object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts favour the candidate. It has 24 distinct colours per 16x16 tile, against 17-20 for the richer references (stall, well) and 10 for the hedge. Its 40 distinct colours match the stall and are above the well's 38. Flat-fill coverage is 0%, and 0% of its dark edge pixels are neutral, so the outline is tinted rather than a black sticker line. By eye, the wooden pole has a lit side and a shadow side with brown-toned edges. The grey transformer can has several value steps, and the yellow/black hazard band and the crossarm insulators add small detail. Shading is about 5 steps on the main materials, close to the references' 5-6. It reads as a prop of the same craft level as the stall and well. It is slightly less textured than the hedge and stall, with little grain on the wood, but it is not flat or thin.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 28552
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crossarm with insulators",
+      "rows": "4-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "transformer can",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole shaft",
+      "rows": "27-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 6,
+     "cap_width": 16,
+     "shaft_width": 6,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The crossarm (rows 4-9, width 14-16) is a front-facing beam. Row 5 is a light highlight, rows 6-9 are progressively darker, and there is no front-edge line, eave shadow or ellipse. Only the corners are clipped, and the insulator nubs at rows 1-3 are small details. The transformer can (rows 12-25, width 12) has a 2-row lighter rounded top (widths 8, 10, 12) that reads as a rim or hat, with no ellipse and no edge line. Its body is a face-on vertical cylinder. The shaft (rows 27-42, width 6) and base (rows 43-45) are vertical faces. No part shows a real horizontal top surface, so the cap plate is not an ellipse overhanging the shaft."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The measured facts put the candidate at or above the references. It has 24 median colours per tile against 17-20 for the richest props (stall, well), 40 distinct colours (equal to the stall's 40 and above the well's 38), and 0% flat-fill coverage. Its dark edge pixels are 0% near-neutral, so the outline is tinted, not a black sticker line. By eye the pole has several brown wood steps with grain, a grey-white transformer can with a few highlight and shadow steps, and a striped hazard band at the base. The crossarm and insulators are small but carry separate value steps. The piece is thin, so the per-tile count partly reflects a narrow object, but the number of distinct colours confirms it is not shallow. A careful artist would accept it next to the stall and well without it looking flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20110
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.451Z",
+ "cells": {
+  "16": [
+   "128462d31455492c",
+   "1c4b170761ac528b",
+   "46a8e282c94ba082"
+  ],
+  "24": [
+   "348736a55e02cd92",
+   "8723a0d65dd4b26d",
+   "8e27e3e7ed3e7e9a",
+   "afffe99f971ae826",
+   "dd9236fe6de6fa8a",
+   "f89467439db51d20"
+  ],
+  "32": [
+   "4f6078f7411e3303",
+   "761e34c1c670169e",
+   "77fdcc336526f715",
+   "7dde8b3c5e6cfbed",
+   "80190be594f06727",
+   "837428c7b08c3a00",
+   "910eb2c05be20590",
+   "abb91137eab67c16",
+   "b4e4b6beeaff454e",
+   "dba70403e07c48bd",
+   "e40ac8218ab91ff1",
+   "e52e83cfc8d4d28a"
+  ],
+  "48": [
+   "39668357181ef8f6",
+   "72387823ee59a936",
+   "b4f7b09a30cb1d33"
+  ]
+ }
+}

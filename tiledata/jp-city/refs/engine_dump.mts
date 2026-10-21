@@ -807,15 +807,15 @@ const OWN_CATEGORY_BLOCKS = new Set<string>([...EXAMPLE_BLOCKS, "transit_street"
   const add = (o: { id: string; x: number; y: number }) => (a: In) => { a.objects = [...a.objects, o]; };
   const addGoods = (g: { id: string; x: number; y: number }) => (a: In) => { a.goods = [...a.goods, g]; };
   const ITAMPERS: { key: string; title: string; fix: string; tweak: (a: In) => void }[] = [
-    { key: "wallOffFace", title: "벽 가구(싱크대)를 LDK 한가운데 (5,14) 로", fix: "wall 종류는 북쪽 벽면 바로 아래 첫 바닥 줄에만 — 부엌 북쪽 벽 아래 줄(y=8)로 되돌린다", tweak: mv("kitchen-sink", 5, 14) },
-    { key: "hangLowRow", title: "걸이(벽시계)를 복도 벽면 아랫줄 (10,13) 에", fix: "hang 은 벽면 두 줄 중 윗줄(막힌 칸 바로 아래 줄) y=12 에 건다", tweak: mv("wall-clock", 10, 13) },
-    { key: "goodsOnFloor", title: "탁상 물건(접시)을 LDK 바닥 (7,15) 에", fix: "탁상 물건은 윗면 있는 가구(식탁·카운터·좌탁) 칸 위에만 — 식탁 (4,16) 으로", tweak: (a) => { a.goods = a.goods.map((g: { id: string; x: number; y: number }) => (g.id === "plates" ? { ...g, x: 7, y: 15 } : g)); } },
-    { key: "stairsMidFloor", title: "올라가는 계단을 복도 가운데 (11,16) 로", fix: "계단은 위가 막힌 칸막이 열의 벽 앞 첫 바닥 줄에 세운다(벽면 두 줄을 덮고 벽 속으로 오른다) — 복도 (13,14)", tweak: mv("stairs-up-wood", 11, 16) },
-    { key: "doorBlocked", title: "탈의실 문 앞 칸 (14,12) 에 화분을 놓아 복도→탈의실·욕실 통로를 막음", fix: "문 틈 바로 앞 칸은 비운다 — 가구를 한 칸 옆으로", tweak: mv("houseplant", 14, 12, 1) },
-    { key: "overlap", title: "우산꽂이를 신발장 칸 (10,19) 에 겹침", fix: "발자국이 겹치지 않게 다른 칸으로", tweak: mv("umbrella-stand", 10, 19) },
-    { key: "goodsNoLayer", title: "소파를 식탁 바로 남쪽 (6,18) 로 붙여 식탁 칸 4층에 소파 등받이가 걸린 뒤 과일 그릇(7,17)", fix: "식탁과 소파 사이에 한 줄 띄운다(소파 등받이 overhang 이 식탁 칸의 3·4층을 차지한다) — 예제는 소파를 서쪽 TV 열 (1,19) 에 둔다", tweak: mv("sofa-n", 6, 18) },
-    { key: "doorNotInGap", title: "여닫이문을 복도 바닥 (12,15) 에", fix: "문(door 종류)은 가로 칸막이('#' 줄)의 1칸 틈 칸에만 — 복도→북쪽 복도 (11,11). 세로 칸막이 3줄 틈 통로 칸에는 옆문(sidedoor 종류 door-side-*)을 단다", tweak: add({ id: "door-open-western", x: 12, y: 15 }) },
-    { key: "sidedoorNotInGap", title: "옆문을 복도 한가운데 (11,15) 에", fix: "옆문(sidedoor)은 세로 칸막이('#' 열) 3줄 틈의 통로 칸(셋째 줄)에만 — 2층 아이방·침실 입구처럼", tweak: add({ id: "door-side-western", x: 11, y: 15 }) },
+    { key: "wallOffFace", title: "벽 가구(싱크대)를 부엌 가운데 줄 (6,9) 로", fix: "wall 종류는 북쪽 벽면 바로 아래 첫 바닥 줄에만 — 부엌 북쪽 벽 아래 줄(y=8)로 되돌린다", tweak: mv("kitchen-sink", 6, 9) },
+    { key: "hangLowRow", title: "걸이(벽시계)를 북쪽 복도 벽면 아랫줄 (11,7) 에", fix: "hang 은 벽면 두 줄 중 윗줄(막힌 칸 바로 아래 줄) y=6 에 건다", tweak: mv("wall-clock", 11, 7) },
+    { key: "goodsOnFloor", title: "탁상 물건(접시)을 거실 바닥 (6,14) 에", fix: "탁상 물건은 윗면 있는 가구(식탁·카운터·좌탁) 칸 위에만 — 식탁 (7,15) 으로", tweak: (a) => { a.goods = a.goods.map((g: { id: string; x: number; y: number }) => (g.id === "plates" ? { ...g, x: 6, y: 14 } : g)); } },
+    { key: "stairsMidFloor", title: "올라가는 계단을 현관 타타키 가운데 (11,17) 로", fix: "계단은 북쪽 너머에 다른 방이 없는 열의 북쪽 벽 앞 첫 바닥 줄에 세운다(벽면 두 줄을 덮고 벽 속으로 오른다) — 북쪽 복도 (10,8)", tweak: mv("stairs-up-wood", 11, 17) },
+    { key: "doorBlocked", title: "탈의실 옆문 앞 칸 (12,10) 에 화분을 놓아 북쪽 복도→탈의실·욕실 통로를 막음", fix: "문 틈·옆문 바로 앞 칸은 비운다 — 가구를 한 칸 옆으로", tweak: mv("houseplant", 12, 10, 0) },
+    { key: "overlap", title: "우산꽂이를 신발장 칸 (10,17) 에 겹침", fix: "발자국이 겹치지 않게 다른 칸으로", tweak: mv("umbrella-stand", 10, 17) },
+    { key: "goodsNoLayer", title: "소파를 조리대 바로 남쪽 (5,9) 로 붙여 조리대 칸 4층에 소파 등받이가 걸린 뒤 주전자(6,8)", fix: "탁상 물건이 놓인 가구 바로 남쪽에 키 큰 가구를 붙이지 않는다(등받이 overhang 이 그 칸의 3·4층을 차지한다) — 예제는 소파를 서쪽 TV 열 (1,16) 에 둔다", tweak: (a) => { mv("sofa-n", 5, 9)(a); a.goods = a.goods.map((g: { id: string; x: number; y: number }) => (g.id === "kettle" ? { ...g, x: 6, y: 8 } : g)); } },
+    { key: "doorNotInGap", title: "여닫이문을 현관 복도 바닥 (11,14) 에", fix: "문(door 종류)은 가로 칸막이('#' 줄)의 1칸 틈 칸에만 — 복도→북쪽 복도 (11,11). 세로 칸막이 3줄 틈 통로 칸에는 옆문(sidedoor 종류 door-side-*)을 단다", tweak: add({ id: "door-open-western", x: 11, y: 14 }) },
+    { key: "sidedoorNotInGap", title: "옆문을 현관 타타키 가운데 (11,17) 에", fix: "옆문(sidedoor)은 세로 칸막이('#' 열) 3줄 틈의 통로 칸(셋째 줄)에만 — 탈의실 입구 (13,10)·2층 방 입구처럼", tweak: add({ id: "door-side-western", x: 11, y: 17 }) },
     { key: "unknownObject", title: "없는 가구 id \"sofa\"", fix: "list_hand_interior_parts({tileset:\"jp_city\"}) 의 id 를 그대로 쓴다(방향 있는 가구는 -s/-n/-e/-w)", tweak: add({ id: "sofa", x: 5, y: 13 }) },
   ];
   const sha = (a: number[]) => a.join(",");

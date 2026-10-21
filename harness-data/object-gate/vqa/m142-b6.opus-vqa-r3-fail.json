@@ -1,0 +1,73 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b6",
+ "round": 3,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "rest-bottle-shelf",
+   "pixelSha256": "d4bb2589b147d8a39b4d212f2543c1f70b79e2678a0541c20f0914bedaea5dac",
+   "verdict": "FAIL",
+   "failed": [
+    1
+   ],
+   "reasons": "The shelf is drawn as a flat front elevation. The top is only a thin 1–2 row wood strip with no lit plane, while the wardrobe and cooler originals show a clear top surface. The bottle rows sit straight on, with no depth on the shelf planks."
+  },
+  {
+   "id": "roof-fence",
+   "pixelSha256": "666a65841f746232c1231bc0a1a43adf69cb48c064454ca66fb4256c254d39c2",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "It is a flat frontal panel: the green top rail has no top plane and the posts have no depth. The diamond lattice is a noisy green-and-white checker that turns to mush at 1x and reads more like a crate or screen than a fence. In the room it sits as a free-standing box in the middle of the floor."
+  },
+  {
+   "id": "roof-stair-hut",
+   "pixelSha256": "ed1aaa9f6aa772f314d216df5ef7cadf3c731e8bad298a743e98af5460e5b19e",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    3
+   ],
+   "reasons": "It is badly under-scaled for a building: the stair hut is cabinet-sized and its door is about 1 tile tall at 2x, smaller than the desk-height originals. It reads as a grey appliance or console with a sign, not a structure you walk into. The roof plane is cluttered with a vent box and stray dark specks."
+  },
+  {
+   "id": "roof-water-tank",
+   "pixelSha256": "761b9dd5521073a9383c041c3076e70e3b6da2a724f7c6ae710089cd67de70ef",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The elliptical lid and cylinder read correctly in 3/4. The stand slab top is visible as a lit plane, and the legs and cross-brace meet the floor with a ground line. The navy outline and blue-grey ramp match the sofa and cooler originals, and the scale is reasonable."
+  },
+  {
+   "id": "school-cleaning-locker",
+   "pixelSha256": "f9f7b4b585807fc5bf8d1384be4c9884865b9861706cbed5e9b39b5f22e00605",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4,
+    5
+   ],
+   "reasons": "A brown and red broom strip runs down the right edge and reads as a side face or detached prop outside the locker's footprint. The blue bucket at the bottom is a muddy blob that overlaps the front face. The locker body is a narrow grey slab, with louvres only sketched in."
+  }
+ ]
+}

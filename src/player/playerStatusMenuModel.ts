@@ -214,6 +214,8 @@ export type RelationshipMenuRow = {
   readonly hearts: string;
   readonly value: number;
   readonly tierLabel?: string;
+  /** 저작한 한 줄 소개(project.characters[key].note). */
+  readonly note?: string;
 };
 export type RelationshipMenuOverview = {
   readonly leadName: string;
@@ -375,7 +377,8 @@ function relationshipOverview(project: Project, session: PlaySession, leadName: 
     .slice(0, RELATIONSHIP_MENU_ROWS)
     .map((entry): RelationshipMenuRow => {
       const filled = Math.max(0, Math.min(5, Math.round((entry.value / Math.max(1, max)) * 5)));
-      return { key: entry.key, name: entry.displayName ?? entry.key, hearts: "♥".repeat(filled) + "♡".repeat(5 - filled), value: entry.value, ...(entry.label ? { tierLabel: entry.label } : {}) };
+      const note = project.characters?.[entry.key]?.note?.trim();
+      return { key: entry.key, name: entry.displayName ?? entry.key, hearts: "♥".repeat(filled) + "♡".repeat(5 - filled), value: entry.value, ...(entry.label ? { tierLabel: entry.label } : {}), ...(note ? { note } : {}) };
     });
   const timeLine = socialLoopSummary(project, session);
   const cleanLeadName = /^(?:주인공|모험가|배우\s*\d+|Hero|Actor\s*\d+)$/iu.test(leadName.trim()) ? "한결" : leadName;

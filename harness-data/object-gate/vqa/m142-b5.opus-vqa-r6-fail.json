@@ -1,0 +1,45 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b5",
+ "round": 6,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "mart-scale-station",
+   "pixelSha256": "0a7f2f88bec1c67ce18bb0ece64a26607f21c739897dfefe711f10b1f14ef4cd",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "At 1x it reads as a narrow grey cabinet or fridge, not a scale station. There is no clear weighing platform or display, and the top third is a noisy cluster of scattered light-grey and white pixels instead of a clean lit top plane."
+  },
+  {
+   "id": "museum-partition-wall",
+   "pixelSha256": "286318101c6437bbc916edfc2cbe1bfb09992c584b07c87364a2b1e329e2a8dc",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "The panel is drawn as a flat front elevation: the wall's top edge is just a thin dark rail, with no lit cap plane seen from above, and only the base plinth gets a top face. The tan side posts and the busy multi-colour artwork are more saturated than the chipset's restrained palette."
+  }
+ ]
+}

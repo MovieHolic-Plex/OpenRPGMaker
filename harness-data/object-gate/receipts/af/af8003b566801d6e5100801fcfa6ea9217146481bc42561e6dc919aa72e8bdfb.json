@@ -1,0 +1,335 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "af8003b566801d6e5100801fcfa6ea9217146481bc42561e6dc919aa72e8bdfb",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "council trophy case",
+ "label": "modern_city_interior/council-trophy-case",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 15,
+  "darkV5": 43,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top slab / cornice of case",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "front face with glazed compartments",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trophies inside compartments (goblet, anvil, etc.)",
+      "rows": "10-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band spans rows 1-4 in mid-brown and has a light front-edge line at row 5 (#e6a05a, x=16 and x=23). Rows 6-7 below it are darker eave shadow and outline, and the band is 2 px wider than the body (30 vs 28), like an overhanging cornice. Below it the front face runs rows 8-30 (about 23 rows) and holds four framed glass compartments with trophies. The top surface is about 5 rows with a clear edge line and shadow, matching the green cabinet and fireplace references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a wooden cabinet with a glazed front and trophies on shelves. Measured facts: 14 visible tones per tile against 9 for the hedge, 17 for the cheese stall and 20 for the well. That is in the range of the references. Near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outline is a tinted dark brown and not a black sticker line. By eye, the wood frame has about 3-4 steps (light, mid, dark, deep) and the interior is mid-brown with small trophy shapes. This is shallower than the stall and well, which show per-plank grain, per-tile highlights and several more material ramps. The wood panels look fairly smooth, with little grain or speckle, and the trophy details are tiny and few. At this scale the piece reads a bit simpler and flatter than the stall and well. It is acceptable against the hedge and bench, but the wood grain and the shading depth do not reach the stall or well, so it is slightly lower in density. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 20303
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of the case",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "trophies inside the glass compartments (goblet, anvil, medals)",
+      "rows": "11-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is 30 px wide from row 0 down to row 30. Rows 1-4 form a band at the top, and row 5 is a bright #e6a05a front-edge line. Rows 6-7 below it are dark eave shadow (#8b4f3f, then the #2b1a13 outline), and the front face with its four display compartments runs from row 8 to row 30, about 23 rows. This matches the green 'cabinet: top 5 + edge + eave' reference. The top is a thin 5-row band, so the reading is somewhat borderline. The trophies are placed contents and are listed as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a wooden trophy cabinet with a cornice, a glass-front display holding small trophies and shields, and a lower cupboard. Its wood ramp shows about 5 steps (highlight, light, mid, dark, deep), comparable to the stall and well references. Outline pixels have 0% near-neutral share, so the edges lean dark brown against the wood rather than black, matching the hedge and cheese-stall references. Visible tones per 16x16 tile are 14, between the hedge (9) and the stall (17) and well (20), and near-flat coverage is 0%. Texture is present in the panel framing, the trophy details and the wood grain, with no large flat fills. It sits at the reference's level of density and would not look thinner or more sticker-like next to the stall or well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20536
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of the case",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "front face with trophy compartments",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a top band. Row 5 (#e6a05a at x=8, 16 and 23) is a light front-edge line. Rows 6-7 are darker eave shadow, and row 7 is the darkest. Below that the front face runs from row 8 to row 30 (about 23 rows) and holds a framed 2x2 grid of trophy compartments. The silhouette is 30 px wide at rows 0-7 and 28 px wide at rows 8-30, which fits a slightly overhanging top over the body. The band is not very deep, but the edge line plus eave shadow match the green cabinet reference (top, edge line, eave) rather than the 'front elevation top 1' or 'rim only' red ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden display cabinet with a framed glass front, trophies and shelves. It has 14 visible tones per 16x16 tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so the facts show no large flat fills. The dark edge pixels are 0% near-neutral, so the outlines lean brown and follow the wood rather than forming a black sticker line. The wood has about 5 steps: a light top cornice, mid panels, a dark frame and a deep shadow. The glass front and the gold trophy shapes add small varied details. Grain texture on the wood is modest and less rich than the well or the stall, but the density is at or near the references and nothing looks flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15870
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top / cornice slab",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "case front with shelves and trophies",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trophies and items on shelves",
+      "rows": "11-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is 30 px wide on rows 0-7 and 28 px wide on rows 8-30, so the top overhangs the body. Rows 1-4 are a reddish band, row 5 is a bright orange front-edge line (L=173), and rows 6-7 are darker eave shadow and outline. Together these give a top of about 5 rows, like the green cabinet reference. Below it, rows 8-30 form a 23-row front face with a frame, a central divider and four shelf compartments holding trophies. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a wooden cabinet with a glazed front, shelves and small trophies, and it matches the prop kind. It measures 14 visible tones per tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well. That is within the reference range and slightly below the richest pieces. Near-flat coverage is 0%. Its dark edge pixels are 0% neutral, so the outline is tinted dark brown, a dark material tone that fits the wood. I count about 5 shading steps on the wood frame, with a lighter top rail and darker inner panels. Texture comes from the trophy icons, shelf shading and grain dots, and there are no large flat fills. At this size it looks a little less textured than the stall and well, with less per-surface grain on the frame, but it does not look like a sticker next to the references. It is acceptable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21874
+  }
+ ],
+ "decidedAt": "2026-10-20T22:55:59.274Z",
+ "cells": {
+  "16": [
+   "0d9f016e55d21577",
+   "39c02e6d1eec2ced",
+   "517458982fc18cf3",
+   "c1f2f6b49e5b9b6b"
+  ],
+  "24": [
+   "0073151124e82b8c",
+   "0a25e4ee5dd007ee",
+   "1522dc1c5ae202ed",
+   "1e1c8d340a87c333",
+   "2bf4dddc04cf9ac7",
+   "2cac833cf06e1ecf",
+   "3c26c9046c31e7b9",
+   "4a68a9c4fb19647b",
+   "5b5fae66fa494575",
+   "5c73da0e7248574d",
+   "686ec576ce2f629f",
+   "69bad108ecad02a0",
+   "98c5c20cfa5fcbc9",
+   "a4ffcf467e164e9e",
+   "a613c3b61877b5c4",
+   "b2b86f869308190c",
+   "b496e0968d0d7229",
+   "cc49af7f0fe39b2a",
+   "db7c37818380fff3",
+   "dfdf4ffac3acea1f",
+   "fbb29f1b012e50e2",
+   "fc2b5e47d8c65ef4",
+   "fce422faf75e5644",
+   "ffad69dd3b2e8948"
+  ],
+  "32": [
+   "da81212b226b8606"
+  ],
+  "48": [
+   "03bccd086414d4f4",
+   "072969db2204d249",
+   "2871e9adf21e9b7e",
+   "4afb5660a96fb613",
+   "4b3e634dc4b8bf08",
+   "529849fd27f9437b"
+  ]
+ }
+}

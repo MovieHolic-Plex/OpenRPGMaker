@@ -1,0 +1,591 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3643b3c433082fd6594f4fa55a15dc6c39c4bb42658465c693cc64373d5e32cb",
+ "width": 80,
+ "height": 80,
+ "kind": "structure",
+ "name": "jumbo station ticket office",
+ "label": "modern_city_interior/jumbo-station-ticket-office",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 18,
+  "darkV5": 49,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 25
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green tiled roof/awning",
+      "rows": "4-33",
+      "evidence": "c",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "31-33"
+     },
+     {
+      "part": "station name sign on the facade",
+      "rows": "26-37",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ticket counter top band",
+      "rows": "62-65",
+      "evidence": "a",
+      "front_edge_line_row": 66,
+      "eave_shadow_rows": "67-68"
+     },
+     {
+      "part": "wooden facade with three ticket windows",
+      "rows": "34-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ATM machines at left and right",
+      "rows": "45-77",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 27,
+    "front_face_rows": 46,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top of the building is a large green roof or awning. Rows 4-30 are its tile stripes, with a dark stripe line every 7 rows (rows 11, 18, 25). A lighter front-edge line sits at row 30, followed by dark eave shadow in rows 31-33. Below it is a south-facing wooden facade of about 46 rows (34-79) with three ticket windows, posts and a counter that has its own light top band at rows 62-65. The name sign is decor. The ATMs are plain vertical faces, but they are small next to the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a tidy, readable ticket office, but it is shallower than the references. Its green roof is built from only about 3 greens (a light top band, a mid body, a dark lower edge) with no per-tile scallops or highlights, so it reads as a flat slab. The walls and wood trim use 2-3 browns with little grain. The measured facts agree: 8 visible tones per tile against 12 and 10 for the references, and 17% near-flat coverage against 0% for both. Dark edge pixels are 0% neutral, so the outlines lean brown or green and are not a black sticker line. Detail is concentrated in the windows and the sign, while the roof and wall fields stay plain. Next to the richly textured tile roofs and speckled plaster of the references it looks thinner and flatter. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17169
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green tiled roof plane",
+      "rows": "4-33",
+      "evidence": "c",
+      "front_edge_line_row": 33,
+      "eave_shadow_rows": "32-33"
+     },
+     {
+      "part": "station name sign above the windows",
+      "rows": "26-37",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "timetable board under the lintel",
+      "rows": "39-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ticket counter top",
+      "rows": "62-66",
+      "evidence": "a",
+      "front_edge_line_row": 66,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ticket machines left and right",
+      "rows": "45-77",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 46,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a building. Rows 4-33 form a tall green roof plane with tile course lines at rows 11, 18 and 25. A lighter edge line at row 30 and a dark eave row at 32-33 end it, and the wooden front facade runs below it from row 34 to row 79 (46 rows). The facade has three ticket windows with clerks, pillars and a counter whose lighter top band at rows 62-66 ends in a dark line. The sign and the side machines are placed on the building, so they count as decor. The roof gives a clear top surface and the facade a clear front face, so this reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a flat-front ticket office. Its green roof band has only about 3 steps (light, mid and dark stripes) and reads as largely flat, with no per-tile scallops or highlights like the references' tile roofs. The walls are a flat tan with a few bands, and the ticket machines and windows are small blocks. The outlines are dark brown/green-tinted (0% neutral), which fits the Beodeul approach. Measured: 8 visible tones per tile against 10-12 for the references, and 17% near-flat coverage against 0% for both references. The 5x5 flat areas on the roof and wall are real flat fills. Raw colours are 38 in total against 66-185 for the references. The candidate is cleanly drawn but flatter and thinner than the references, which have 5-6 shading steps and grain on every surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14894
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green tiled roof plane",
+      "rows": "4-33",
+      "evidence": "c",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "31-33"
+     },
+     {
+      "part": "name sign above the booth",
+      "rows": "26-37",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ticket counter top",
+      "rows": "62-67",
+      "evidence": "a",
+      "front_edge_line_row": 66,
+      "eave_shadow_rows": "67-68"
+     },
+     {
+      "part": "side ticket machines",
+      "rows": "45-77",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 46,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a large green roof plane (rows 4-32) with horizontal tile-course lines at rows 11, 18 and 25. It ends in a light edge line at row 30 and is followed by dark eave shadow at rows 31-33. Below it is a wooden front face (rows 34-79) with three ticket windows, posts, a counter and a name sign. The counter has its own light top strip with an edge line at row 66 and shadow below. The side ATM-like machines are small, with only a rim at the top, and do not count against the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a flat-fronted kiosk with a green awning roof, a signboard, and three booth windows with figures. The roof reads as about 3 green steps with simple horizontal banding. It has no per-tile scallops or highlights like the reference clay tiles, which carry 5-6 steps with grain. The walls are a flat tan and wood plane with little speckle or grain, whereas the references have plaster speckle and stone shaded one by one. Outlines are tinted dark green and brown, with 0% neutral dark edge pixels, so they are not near-black. Measured facts show 8 visible tones per tile against 12 and 10 for the references, and 17% near-flat coverage against 0% for both. That points to a real flat-fill problem on the wall and roof areas. Overall it is cleaner and flatter than the references, thinner in shading steps, and still reads as a sticker-like building next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18926
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green tiled roof plane",
+      "rows": "4-33",
+      "evidence": "c",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "31-33"
+     },
+     {
+      "part": "ticket counter top",
+      "rows": "62-67",
+      "evidence": "a",
+      "front_edge_line_row": 66,
+      "eave_shadow_rows": "67"
+     },
+     {
+      "part": "left and right ATM tops",
+      "rows": "45-47",
+      "evidence": "a",
+      "front_edge_line_row": 46,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "station name sign",
+      "rows": "26-37",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "clerks behind windows",
+      "rows": "51-62",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 46,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a large green roof plane at rows 4-33. Its tile courses are the dark lines at rows 11, 18 and 25. A light front-edge line at row 30 is followed by dark eave shadow at rows 31-33. The wooden front face below runs from row 34 to row 79 and holds three service windows, posts and a counter. The counter top at rows 62-67 shows a light band, an edge line and a shadow. The ATMs at the sides have a thin top band. The sign and the clerks are decor. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a flat-fronted ticket office. The green roof is a band with a few horizontal stripes: about 3 to 4 steps and no per-tile scallops or highlights. The references' roofs carry 5-6 steps with individual tile highlights, plus speckled plaster and stone shaded one by one. The candidate's wall and window areas are mostly flat panels, and the measured near-flat coverage is 17% against 0% for both references. Visible tones per tile are 8 against 12 and 10 for the references, so it is lower but not far below. The dark edge pixels are tinted (0% neutral), so the outline is not a sticker-like black line. It is a dark green and brown frame, but it is applied uniformly, so I call it mixed. The booths and kiosks have some detail, but the overall structure is simpler and flatter than the references. A careful artist would find it shallower next to them, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15113
+  }
+ ],
+ "decidedAt": "2026-10-20T23:53:05.153Z",
+ "cells": {
+  "16": [
+   "148b576aebb06e95",
+   "26f612d80c35710d",
+   "2f7684858df658aa",
+   "3b506b5e359f3738",
+   "3d22e834bbae6953",
+   "4b9b744fa643d852",
+   "59ad90acaa5a8f3c",
+   "73e7053cee3b0bb8",
+   "7ff85703cad892bc",
+   "820202fe0e6cb8c8",
+   "833d9f4f4da715f7",
+   "88cd44be07785ee9",
+   "8d7c6250349e3ac6",
+   "998bc2faeb803660",
+   "9ba16a1578732bd8",
+   "9cf260e0fd487f03",
+   "a4a5cee47cfc14d2",
+   "a5806cf56883ff0d",
+   "a90210b9988dbe48",
+   "b0d5f632a617038b",
+   "b53b47ec30ee81fe",
+   "bb33611b07f8b728",
+   "d421225bb940afa3",
+   "f56c3bf09de70e00",
+   "fcd884c8352c2ede"
+  ],
+  "24": [
+   "008f6dee728d3e21",
+   "03f50e2974591c7f",
+   "047c7b5d352ac124",
+   "08f411da97ad3a60",
+   "0a6bc1ec086d4fe0",
+   "12635c66a45dec1f",
+   "12a44cf8b0af6218",
+   "139ae05d8aef2f86",
+   "13bd32d2ade4120f",
+   "1a50a16396681645",
+   "1b38b6333990b8b9",
+   "1b4daf415ac907ae",
+   "1d76fb2928aa7f37",
+   "1e14852e00631ac1",
+   "20780cf0f2d19c28",
+   "218e8acab02f5431",
+   "27eb79939890416f",
+   "34d9720f37151025",
+   "3c111156c7735af1",
+   "446ba72f4d615035",
+   "4541920606a75179",
+   "4558995821792ef1",
+   "45d75603acd60132",
+   "4736a170208b038d",
+   "48bb2c30a185da55",
+   "49e8719aa19f341d",
+   "4de77d8df3c139f8",
+   "51313b48dce57309",
+   "5212adb38157236e",
+   "54d514b5c25434e2",
+   "5b2cd536297a508a",
+   "5f0663d781e9ce0d",
+   "6422a7d417512b15",
+   "67f191b3b29ec997",
+   "6a49b9db870dc737",
+   "6afee35eda8969fd",
+   "6daec178ba757dc5",
+   "6ded7843a73f4863",
+   "732683eb2768222d",
+   "738cf37817e62ce6",
+   "7401faf2ec88028b",
+   "7953a72d123c32a6",
+   "7fcfef8d38467acc",
+   "808c68e60649cf85",
+   "817906cde9c32108",
+   "8446a9f5d3312404",
+   "8cfbe02e71579d02",
+   "9002fb2c8759e6fe",
+   "90e3c3d381fc5406",
+   "947e6ca38c31032c",
+   "99613482cffa4b4d",
+   "9be62230370f2380",
+   "9f9687e0c0cca4c3",
+   "a0da357f6a3f8040",
+   "a19144d30822dbc6",
+   "a36b610361eceb69",
+   "a3fd4b9a2c86cd39",
+   "afb2a1b218a656f0",
+   "b1e638eceaa6654c",
+   "b5a77aca82d549bc",
+   "b902e9184a11fd4c",
+   "bd7acdaed2d51dfa",
+   "be31aa546389984c",
+   "bffceb2ac2290abe",
+   "c71a8a80df4fbcad",
+   "cd51df29f4e99ecd",
+   "d3d7cd84ec047c00",
+   "d45beda2cd7c2a98",
+   "d781aa5076c74024",
+   "d9dbb957aa6c7870",
+   "dc352af558c52276",
+   "dddd1a5269bfcdba",
+   "e1f7b614af4f2be6",
+   "e8cbd3c4cf622ecc",
+   "ebfced9a9b3d3748",
+   "ecc99501aa9a0a23",
+   "ecf6c43b4a20be0b",
+   "ed55eaa41eec7e8c",
+   "edea35bb2b1af666",
+   "eebd42752a3cd6ec",
+   "f034f32d71f7c570",
+   "f11d6d7029399266",
+   "f144eb2ab940f38f",
+   "f5f0eba01b4f8a3c",
+   "fa49a4e5ed6a3336",
+   "fa929d39e7ab91ad",
+   "fb275c46547ad4d8",
+   "fb88df1dbbc9e72e",
+   "fb916068c3acabdb",
+   "fca74524360ccf22",
+   "fcffd682e700f50f",
+   "fe00fd1e331f78c5"
+  ],
+  "32": [
+   "054e8f0d789883b3",
+   "0628b635d7638e74",
+   "115906b06d9a5725",
+   "19a6ce75e5d876d7",
+   "19c34e04f6a62cf5",
+   "1d185078c2afdd6f",
+   "1ec5725ec7823f57",
+   "27ce99171b9f08d9",
+   "2cbfe60bc9c5ed5e",
+   "38e3bc2b5b667693",
+   "3d2538a3a09446dd",
+   "3d5380424afcfa92",
+   "3d93a0928a19cccf",
+   "40c96cd9ce646bc4",
+   "4b0ab436423b5512",
+   "4c6f379085e95e7b",
+   "4e08dfce07c198f0",
+   "5153901949bf50e1",
+   "6050b2068ccf16f7",
+   "6240736d41dd7c99",
+   "6362ca39b6254b46",
+   "67ceb3545d4238e1",
+   "6b3d9be6a64a70c1",
+   "6c1a49d9d2cecd4f",
+   "6d8bdea19d778b18",
+   "6efc1006f4cd8fe0",
+   "71f6fa7742852a16",
+   "7917c49dba11d7ba",
+   "79a720619f04fd1d",
+   "7b45b099d231bb3e",
+   "7f7d6ab0743fdc57",
+   "82f9d70e964d60bc",
+   "8f76b701274da403",
+   "9b265114a288f27a",
+   "9b29bea78d8588fe",
+   "9c2b8c38d125919a",
+   "a438745ce77bca31",
+   "a8226096a4171c47",
+   "a953684ca4d2ed5d",
+   "aad77d4b5998b9d9",
+   "b26c46bca451859d",
+   "b6572a57547fcb53",
+   "b6da74b4537a92a2",
+   "bd2ae111a58f315d",
+   "c4fae72a71e219ae",
+   "cbf9ade662e897f5",
+   "cef20410a3163ee6",
+   "d1299b1b977b15ed",
+   "da021a412630bc86",
+   "e7fc9968af77b0e6",
+   "e873f9aee8131a50",
+   "ee2ad74486e845c5",
+   "f08a77329fe89372",
+   "f3d73ea91d5ea1d9"
+  ],
+  "48": [
+   "018de2cb1c221f05",
+   "0568d51b87eb902e",
+   "0cb62790049fec37",
+   "10ac1384b6f59d03",
+   "335d2988c1337012",
+   "478b0ef1a40efe48",
+   "4e896d3b8f1f376d",
+   "62e6d10de3b5a1eb",
+   "6441eba2bf17877a",
+   "78d025a80f224e70",
+   "7fd85b1920778fe5",
+   "97de02bdfdb7303c",
+   "97ec92dbcf1aeb17",
+   "9bc5b63cc54e649b",
+   "9ee0dbad78c67856",
+   "c709e343ecf513de",
+   "ca351da8ba13c2fd",
+   "d92d1f804b4ba7e1",
+   "dd051f5f0441f390",
+   "e6162163a76ac48f",
+   "f5fdfe54cb26ef48",
+   "f833745a8fc03740",
+   "faa831e151b4265a",
+   "fddac57a4dded444"
+  ]
+ }
+}

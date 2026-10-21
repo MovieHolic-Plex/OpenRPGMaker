@@ -14,6 +14,8 @@ declare global {
   }
 }
 
+const HANDSHAKE_PATH = "/__oprn/handshake";
+
 const tabId = Array.from(crypto.getRandomValues(new Uint8Array(16)), x => x.toString(16).padStart(2, '0')).join('');
 
 const selectedProject = new URL(location.href).searchParams.get('hostProject') ?? '';
@@ -50,17 +52,53 @@ function base64ToBytes(value: string): Uint8Array {
   return bytes;
 }
 
+type ConnectionRefresh = { readonly bridgeTokenChanged: boolean; readonly companionTokenChanged: boolean };
+let refreshing: Promise<ConnectionRefresh> | null = null;
+
+/**
+ * 서버에서 지금 토큰을 다시 받는다. 로컬 서버(oprn-serve)는 실행마다 브리지·동반 서비스 토큰을 새로 만들어서,
+ * 서버가 다시 시작되면 이미 열린 페이지는 옛 토큰으로 모든 저장·AI 요청이 403 이 됐다(새로고침 전까지).
+ * 동시에 여러 요청이 막혀도 한 번만 묻고, 끝나면 상태를 남기지 않는다.
+ */
+function refreshConnection(): Promise<ConnectionRefresh> {
+  refreshing ??= (async () => {
+    try {
+      const config = window.__OPRN_BRIDGE__;
+      if (!config) throw new Error("oprn 브리지 설정이 없습니다");
+      const response = await fetch(HANDSHAKE_PATH, { method: "GET", cache: "no-store", credentials: "same-origin" });
+      if (!response.ok) throw new Error(`연결 정보를 받지 못했습니다(${response.status})`);
+      const next = await response.json() as { token?: unknown; companionToken?: unknown };
+      const token = typeof next.token === "string" ? next.token : config.token;
+      const companionToken = typeof next.companionToken === "string" ? next.companionToken : null;
+      const result = { bridgeTokenChanged: token !== config.token, companionTokenChanged: companionToken !== (config.companionToken ?? null) };
+      window.__OPRN_BRIDGE__ = { ...config, token, companionToken };
+      const bridge = (window as unknown as { oprn?: { companionToken?: string | null } }).oprn;
+      if (bridge) bridge.companionToken = companionToken;
+      return result;
+    } finally {
+      refreshing = null;
+    }
+  })();
+  return refreshing;
+}
+
 async function call(channel: string, payload: unknown, keepalive = false, compress = true): Promise<unknown> {
-  const config = window.__OPRN_BRIDGE__;
-  if (!config) throw new Error("oprn 브리지 설정이 없습니다 — 로컬 서버가 주입한 페이지가 아닙니다");
+  if (!window.__OPRN_BRIDGE__) throw new Error("oprn 브리지 설정이 없습니다 — 로컬 서버가 주입한 페이지가 아닙니다");
   const encoded = await encodeBridgeRequest({ channel, payload }, keepalive, compress);
-  const response = await fetch(config.endpoint, {
+  // 토큰은 보낼 때마다 지금 값을 읽는다 — 다시 맺은 뒤에도 옛 값을 붙잡지 않는다.
+  const send = () => fetch(window.__OPRN_BRIDGE__!.endpoint, {
     method: "POST",
     keepalive,
     // x-oprn-channel lets the host grant project-document channels the larger decoded allowance.
-    headers: { ...encoded.headers, "content-type": "application/json", "x-oprn-bridge-token": config.token, "x-oprn-session": tabId, "x-oprn-project": selectedProject, "x-oprn-channel": channel },
+    headers: { ...encoded.headers, "content-type": "application/json", "x-oprn-bridge-token": window.__OPRN_BRIDGE__!.token, "x-oprn-session": tabId, "x-oprn-project": selectedProject, "x-oprn-channel": channel },
     body: encoded.body,
   });
+  let response = await send();
+  // 서버가 다시 시작돼 토큰이 바뀌었다 — 한 번 다시 맺고 같은 요청을 다시 보낸다(페이지를 떠나는 keepalive 는 제외).
+  if (response.status === 403 && !keepalive) {
+    const refreshed = await refreshConnection().catch(() => null);
+    if (refreshed?.bridgeTokenChanged) response = await send();
+  }
   if (!response.ok) throw new Error(`${channel}: ${response.status} ${await response.text()}`);
   return await response.json();
 }
@@ -166,4 +204,5 @@ async function readAsset(payload: unknown): Promise<Uint8Array> {
   },
   companionOrigin: null,
   companionToken: window.__OPRN_BRIDGE__?.companionToken ?? null,
+  refreshConnection,
 };

@@ -1,0 +1,564 @@
+{
+ "note": "woodland r5 — Opus 3/4·화풍 판정 대상: beodeul_ground 새 칸 93장(650 숲 장면 잔디 + 651~742 짙은 풀 가장자리). 650·697~742 는 채도 낮춘 잔디(650) 바탕이라 원본에 없는 색 4개를 쓴다. r9(2026-10-21): 독립 Opus 적대 VQA 4판에서 93장 전부 통과(1~3판 불합격 78·72·72 → 다시 그림). 짙은 풀은 2×2 덩이에서만 보이고 외딴 칸·한 칸 폭 띠는 바탕 잔디.",
+ "sheet": "public/assets/beodeul-ground/chipset.png (8칸/줄, 16px)",
+ "groundCells": [
+  {
+   "id": 650,
+   "recipe": "bdg-woodland-grass",
+   "kind": "woodland-grass",
+   "sha256": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa"
+  },
+  {
+   "id": 651,
+   "recipe": "bdg-dark-grass-plain-0",
+   "kind": "dark-grass-edge",
+   "sha256": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8"
+  },
+  {
+   "id": 652,
+   "recipe": "bdg-dark-grass-plain-1",
+   "kind": "dark-grass-edge",
+   "sha256": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8"
+  },
+  {
+   "id": 653,
+   "recipe": "bdg-dark-grass-plain-2",
+   "kind": "dark-grass-edge",
+   "sha256": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8"
+  },
+  {
+   "id": 654,
+   "recipe": "bdg-dark-grass-plain-3",
+   "kind": "dark-grass-edge",
+   "sha256": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8"
+  },
+  {
+   "id": 655,
+   "recipe": "bdg-dark-grass-plain-4",
+   "kind": "dark-grass-edge",
+   "sha256": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8"
+  },
+  {
+   "id": 656,
+   "recipe": "bdg-dark-grass-plain-5",
+   "kind": "dark-grass-edge",
+   "sha256": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8"
+  },
+  {
+   "id": 657,
+   "recipe": "bdg-dark-grass-plain-6",
+   "kind": "dark-grass-edge",
+   "sha256": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8"
+  },
+  {
+   "id": 658,
+   "recipe": "bdg-dark-grass-plain-7",
+   "kind": "dark-grass-edge",
+   "sha256": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8"
+  },
+  {
+   "id": 659,
+   "recipe": "bdg-dark-grass-plain-8",
+   "kind": "dark-grass-edge",
+   "sha256": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8"
+  },
+  {
+   "id": 660,
+   "recipe": "bdg-dark-grass-plain-9",
+   "kind": "dark-grass-edge",
+   "sha256": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8"
+  },
+  {
+   "id": 661,
+   "recipe": "bdg-dark-grass-plain-10",
+   "kind": "dark-grass-edge",
+   "sha256": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8"
+  },
+  {
+   "id": 662,
+   "recipe": "bdg-dark-grass-plain-11",
+   "kind": "dark-grass-edge",
+   "sha256": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8"
+  },
+  {
+   "id": 663,
+   "recipe": "bdg-dark-grass-plain-12",
+   "kind": "dark-grass-edge",
+   "sha256": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8"
+  },
+  {
+   "id": 664,
+   "recipe": "bdg-dark-grass-plain-13",
+   "kind": "dark-grass-edge",
+   "sha256": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8"
+  },
+  {
+   "id": 665,
+   "recipe": "bdg-dark-grass-plain-14",
+   "kind": "dark-grass-edge",
+   "sha256": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8"
+  },
+  {
+   "id": 666,
+   "recipe": "bdg-dark-grass-plain-15",
+   "kind": "dark-grass-edge",
+   "sha256": "b7101153ba6f6bbdf6da7b1adc542925dd35ca1ef7927a7c59e51e9a415918d8"
+  },
+  {
+   "id": 667,
+   "recipe": "bdg-dark-grass-plain-19",
+   "kind": "dark-grass-edge",
+   "sha256": "7a47f1266587d1427e0db0e5af8976a8448778cd65652bcc0d0f8fee0541ef81"
+  },
+  {
+   "id": 668,
+   "recipe": "bdg-dark-grass-plain-23",
+   "kind": "dark-grass-edge",
+   "sha256": "7a47f1266587d1427e0db0e5af8976a8448778cd65652bcc0d0f8fee0541ef81"
+  },
+  {
+   "id": 669,
+   "recipe": "bdg-dark-grass-plain-27",
+   "kind": "dark-grass-edge",
+   "sha256": "7a47f1266587d1427e0db0e5af8976a8448778cd65652bcc0d0f8fee0541ef81"
+  },
+  {
+   "id": 670,
+   "recipe": "bdg-dark-grass-plain-31",
+   "kind": "dark-grass-edge",
+   "sha256": "7a47f1266587d1427e0db0e5af8976a8448778cd65652bcc0d0f8fee0541ef81"
+  },
+  {
+   "id": 671,
+   "recipe": "bdg-dark-grass-plain-38",
+   "kind": "dark-grass-edge",
+   "sha256": "3a4e261d1aee530387d5127dff9ba7631617dfc4be42ba4575bc05077e58e2f8"
+  },
+  {
+   "id": 672,
+   "recipe": "bdg-dark-grass-plain-39",
+   "kind": "dark-grass-edge",
+   "sha256": "3a4e261d1aee530387d5127dff9ba7631617dfc4be42ba4575bc05077e58e2f8"
+  },
+  {
+   "id": 673,
+   "recipe": "bdg-dark-grass-plain-46",
+   "kind": "dark-grass-edge",
+   "sha256": "3a4e261d1aee530387d5127dff9ba7631617dfc4be42ba4575bc05077e58e2f8"
+  },
+  {
+   "id": 674,
+   "recipe": "bdg-dark-grass-plain-47",
+   "kind": "dark-grass-edge",
+   "sha256": "3a4e261d1aee530387d5127dff9ba7631617dfc4be42ba4575bc05077e58e2f8"
+  },
+  {
+   "id": 675,
+   "recipe": "bdg-dark-grass-plain-55",
+   "kind": "dark-grass-edge",
+   "sha256": "20dc4b40365611c95c4dd54d069570e0225fdca82928be8e83c2d48910ad7951"
+  },
+  {
+   "id": 676,
+   "recipe": "bdg-dark-grass-plain-63",
+   "kind": "dark-grass-edge",
+   "sha256": "20dc4b40365611c95c4dd54d069570e0225fdca82928be8e83c2d48910ad7951"
+  },
+  {
+   "id": 677,
+   "recipe": "bdg-dark-grass-plain-76",
+   "kind": "dark-grass-edge",
+   "sha256": "b7329258af06f83143516ff34fa6116d48c6e2e17dc5c9ac61b1b4465bcccb34"
+  },
+  {
+   "id": 678,
+   "recipe": "bdg-dark-grass-plain-77",
+   "kind": "dark-grass-edge",
+   "sha256": "b7329258af06f83143516ff34fa6116d48c6e2e17dc5c9ac61b1b4465bcccb34"
+  },
+  {
+   "id": 679,
+   "recipe": "bdg-dark-grass-plain-78",
+   "kind": "dark-grass-edge",
+   "sha256": "b7329258af06f83143516ff34fa6116d48c6e2e17dc5c9ac61b1b4465bcccb34"
+  },
+  {
+   "id": 680,
+   "recipe": "bdg-dark-grass-plain-79",
+   "kind": "dark-grass-edge",
+   "sha256": "b7329258af06f83143516ff34fa6116d48c6e2e17dc5c9ac61b1b4465bcccb34"
+  },
+  {
+   "id": 681,
+   "recipe": "bdg-dark-grass-plain-95",
+   "kind": "dark-grass-edge",
+   "sha256": "26af468f0771e1a1c9d51e6961fd92fa77d3ab2694fc6393a7b98a7d7f1df157"
+  },
+  {
+   "id": 682,
+   "recipe": "bdg-dark-grass-plain-110",
+   "kind": "dark-grass-edge",
+   "sha256": "93a9ef8e583ad4ccd650ecaf765bc69958db3230b48c2f75eadbdf7eade837d3"
+  },
+  {
+   "id": 683,
+   "recipe": "bdg-dark-grass-plain-111",
+   "kind": "dark-grass-edge",
+   "sha256": "93a9ef8e583ad4ccd650ecaf765bc69958db3230b48c2f75eadbdf7eade837d3"
+  },
+  {
+   "id": 684,
+   "recipe": "bdg-dark-grass-plain-127",
+   "kind": "dark-grass-edge",
+   "sha256": "23de0ea0ca88a8871354c1a99c8c0808d438b33bd0846669fc592b41d9f0969a"
+  },
+  {
+   "id": 685,
+   "recipe": "bdg-dark-grass-plain-137",
+   "kind": "dark-grass-edge",
+   "sha256": "030b6c25b160e60b125204623aba7c4c2992bdf4c5d80074b8b7200cd001499c"
+  },
+  {
+   "id": 686,
+   "recipe": "bdg-dark-grass-plain-139",
+   "kind": "dark-grass-edge",
+   "sha256": "030b6c25b160e60b125204623aba7c4c2992bdf4c5d80074b8b7200cd001499c"
+  },
+  {
+   "id": 687,
+   "recipe": "bdg-dark-grass-plain-141",
+   "kind": "dark-grass-edge",
+   "sha256": "030b6c25b160e60b125204623aba7c4c2992bdf4c5d80074b8b7200cd001499c"
+  },
+  {
+   "id": 688,
+   "recipe": "bdg-dark-grass-plain-143",
+   "kind": "dark-grass-edge",
+   "sha256": "030b6c25b160e60b125204623aba7c4c2992bdf4c5d80074b8b7200cd001499c"
+  },
+  {
+   "id": 689,
+   "recipe": "bdg-dark-grass-plain-155",
+   "kind": "dark-grass-edge",
+   "sha256": "3c813a5ae59d342b54dbe684683e73655a018bb9dcb15f4139033b5cb321e4e5"
+  },
+  {
+   "id": 690,
+   "recipe": "bdg-dark-grass-plain-159",
+   "kind": "dark-grass-edge",
+   "sha256": "3c813a5ae59d342b54dbe684683e73655a018bb9dcb15f4139033b5cb321e4e5"
+  },
+  {
+   "id": 691,
+   "recipe": "bdg-dark-grass-plain-175",
+   "kind": "dark-grass-edge",
+   "sha256": "90cbb398a6bf7ea4178ef72214ce8b0a1653e3ca54c548c4e4f3827bb51bf3be"
+  },
+  {
+   "id": 692,
+   "recipe": "bdg-dark-grass-plain-191",
+   "kind": "dark-grass-edge",
+   "sha256": "d1b583c1225f7a84a176351f424492daacf54ed1332d0ee8af5e662c50a5a714"
+  },
+  {
+   "id": 693,
+   "recipe": "bdg-dark-grass-plain-205",
+   "kind": "dark-grass-edge",
+   "sha256": "034dcbf0a6c1edb2943e4cddc9aeb82e35ef082c481828d6d57cf03e0ee17ab6"
+  },
+  {
+   "id": 694,
+   "recipe": "bdg-dark-grass-plain-207",
+   "kind": "dark-grass-edge",
+   "sha256": "034dcbf0a6c1edb2943e4cddc9aeb82e35ef082c481828d6d57cf03e0ee17ab6"
+  },
+  {
+   "id": 695,
+   "recipe": "bdg-dark-grass-plain-223",
+   "kind": "dark-grass-edge",
+   "sha256": "bf7384cac4af8a29206de042776163250f21f8814cc1f14c570b0a232d0e20ba"
+  },
+  {
+   "id": 696,
+   "recipe": "bdg-dark-grass-plain-239",
+   "kind": "dark-grass-edge",
+   "sha256": "cbfdda5dbd69889f8660d862dc4296bc90d0e809e6e92de060f174b5ed7eb50f"
+  },
+  {
+   "id": 697,
+   "recipe": "bdg-dark-grass-woodland-0",
+   "kind": "dark-grass-edge",
+   "sha256": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa"
+  },
+  {
+   "id": 698,
+   "recipe": "bdg-dark-grass-woodland-1",
+   "kind": "dark-grass-edge",
+   "sha256": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa"
+  },
+  {
+   "id": 699,
+   "recipe": "bdg-dark-grass-woodland-2",
+   "kind": "dark-grass-edge",
+   "sha256": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa"
+  },
+  {
+   "id": 700,
+   "recipe": "bdg-dark-grass-woodland-3",
+   "kind": "dark-grass-edge",
+   "sha256": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa"
+  },
+  {
+   "id": 701,
+   "recipe": "bdg-dark-grass-woodland-4",
+   "kind": "dark-grass-edge",
+   "sha256": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa"
+  },
+  {
+   "id": 702,
+   "recipe": "bdg-dark-grass-woodland-5",
+   "kind": "dark-grass-edge",
+   "sha256": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa"
+  },
+  {
+   "id": 703,
+   "recipe": "bdg-dark-grass-woodland-6",
+   "kind": "dark-grass-edge",
+   "sha256": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa"
+  },
+  {
+   "id": 704,
+   "recipe": "bdg-dark-grass-woodland-7",
+   "kind": "dark-grass-edge",
+   "sha256": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa"
+  },
+  {
+   "id": 705,
+   "recipe": "bdg-dark-grass-woodland-8",
+   "kind": "dark-grass-edge",
+   "sha256": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa"
+  },
+  {
+   "id": 706,
+   "recipe": "bdg-dark-grass-woodland-9",
+   "kind": "dark-grass-edge",
+   "sha256": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa"
+  },
+  {
+   "id": 707,
+   "recipe": "bdg-dark-grass-woodland-10",
+   "kind": "dark-grass-edge",
+   "sha256": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa"
+  },
+  {
+   "id": 708,
+   "recipe": "bdg-dark-grass-woodland-11",
+   "kind": "dark-grass-edge",
+   "sha256": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa"
+  },
+  {
+   "id": 709,
+   "recipe": "bdg-dark-grass-woodland-12",
+   "kind": "dark-grass-edge",
+   "sha256": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa"
+  },
+  {
+   "id": 710,
+   "recipe": "bdg-dark-grass-woodland-13",
+   "kind": "dark-grass-edge",
+   "sha256": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa"
+  },
+  {
+   "id": 711,
+   "recipe": "bdg-dark-grass-woodland-14",
+   "kind": "dark-grass-edge",
+   "sha256": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa"
+  },
+  {
+   "id": 712,
+   "recipe": "bdg-dark-grass-woodland-15",
+   "kind": "dark-grass-edge",
+   "sha256": "21fe1c2764815b2aec411acff004126e2b3f3568514787659dea505822e341fa"
+  },
+  {
+   "id": 713,
+   "recipe": "bdg-dark-grass-woodland-19",
+   "kind": "dark-grass-edge",
+   "sha256": "3fe14f54ef478d2be0f641b313d3d597a1326de3a6e0e4ff18d8706790e0b803"
+  },
+  {
+   "id": 714,
+   "recipe": "bdg-dark-grass-woodland-23",
+   "kind": "dark-grass-edge",
+   "sha256": "3fe14f54ef478d2be0f641b313d3d597a1326de3a6e0e4ff18d8706790e0b803"
+  },
+  {
+   "id": 715,
+   "recipe": "bdg-dark-grass-woodland-27",
+   "kind": "dark-grass-edge",
+   "sha256": "3fe14f54ef478d2be0f641b313d3d597a1326de3a6e0e4ff18d8706790e0b803"
+  },
+  {
+   "id": 716,
+   "recipe": "bdg-dark-grass-woodland-31",
+   "kind": "dark-grass-edge",
+   "sha256": "3fe14f54ef478d2be0f641b313d3d597a1326de3a6e0e4ff18d8706790e0b803"
+  },
+  {
+   "id": 717,
+   "recipe": "bdg-dark-grass-woodland-38",
+   "kind": "dark-grass-edge",
+   "sha256": "9d30a66e58651d905e3e622579ca540f6b20585f305f25dd7e1be9f9d33e09b7"
+  },
+  {
+   "id": 718,
+   "recipe": "bdg-dark-grass-woodland-39",
+   "kind": "dark-grass-edge",
+   "sha256": "9d30a66e58651d905e3e622579ca540f6b20585f305f25dd7e1be9f9d33e09b7"
+  },
+  {
+   "id": 719,
+   "recipe": "bdg-dark-grass-woodland-46",
+   "kind": "dark-grass-edge",
+   "sha256": "9d30a66e58651d905e3e622579ca540f6b20585f305f25dd7e1be9f9d33e09b7"
+  },
+  {
+   "id": 720,
+   "recipe": "bdg-dark-grass-woodland-47",
+   "kind": "dark-grass-edge",
+   "sha256": "9d30a66e58651d905e3e622579ca540f6b20585f305f25dd7e1be9f9d33e09b7"
+  },
+  {
+   "id": 721,
+   "recipe": "bdg-dark-grass-woodland-55",
+   "kind": "dark-grass-edge",
+   "sha256": "05cbc47efd383faae8a77879e0a1166e93621f9e1907f7c119f92d10e9ce1eea"
+  },
+  {
+   "id": 722,
+   "recipe": "bdg-dark-grass-woodland-63",
+   "kind": "dark-grass-edge",
+   "sha256": "05cbc47efd383faae8a77879e0a1166e93621f9e1907f7c119f92d10e9ce1eea"
+  },
+  {
+   "id": 723,
+   "recipe": "bdg-dark-grass-woodland-76",
+   "kind": "dark-grass-edge",
+   "sha256": "d18947d066c4d238a2255b01e559bc7c095da48ba441dfb96c6358f426dd5424"
+  },
+  {
+   "id": 724,
+   "recipe": "bdg-dark-grass-woodland-77",
+   "kind": "dark-grass-edge",
+   "sha256": "d18947d066c4d238a2255b01e559bc7c095da48ba441dfb96c6358f426dd5424"
+  },
+  {
+   "id": 725,
+   "recipe": "bdg-dark-grass-woodland-78",
+   "kind": "dark-grass-edge",
+   "sha256": "d18947d066c4d238a2255b01e559bc7c095da48ba441dfb96c6358f426dd5424"
+  },
+  {
+   "id": 726,
+   "recipe": "bdg-dark-grass-woodland-79",
+   "kind": "dark-grass-edge",
+   "sha256": "d18947d066c4d238a2255b01e559bc7c095da48ba441dfb96c6358f426dd5424"
+  },
+  {
+   "id": 727,
+   "recipe": "bdg-dark-grass-woodland-95",
+   "kind": "dark-grass-edge",
+   "sha256": "8c36eaebfaaee17de5fccd22b3edca127e198448266de04997cceebde600b973"
+  },
+  {
+   "id": 728,
+   "recipe": "bdg-dark-grass-woodland-110",
+   "kind": "dark-grass-edge",
+   "sha256": "93fb0c62da366080eb59a6e06e72989ae6319dc985bf27f5d6a9c9aab1d2d7f0"
+  },
+  {
+   "id": 729,
+   "recipe": "bdg-dark-grass-woodland-111",
+   "kind": "dark-grass-edge",
+   "sha256": "93fb0c62da366080eb59a6e06e72989ae6319dc985bf27f5d6a9c9aab1d2d7f0"
+  },
+  {
+   "id": 730,
+   "recipe": "bdg-dark-grass-woodland-127",
+   "kind": "dark-grass-edge",
+   "sha256": "3c9cc4525d209744614b62d1e875734a1559e0fff6d50b190b4a4ddd6791886b"
+  },
+  {
+   "id": 731,
+   "recipe": "bdg-dark-grass-woodland-137",
+   "kind": "dark-grass-edge",
+   "sha256": "d947ac07180f4ee4665053ffd7f1b198c00b2f7f3b13920592163d9864c25b9f"
+  },
+  {
+   "id": 732,
+   "recipe": "bdg-dark-grass-woodland-139",
+   "kind": "dark-grass-edge",
+   "sha256": "d947ac07180f4ee4665053ffd7f1b198c00b2f7f3b13920592163d9864c25b9f"
+  },
+  {
+   "id": 733,
+   "recipe": "bdg-dark-grass-woodland-141",
+   "kind": "dark-grass-edge",
+   "sha256": "d947ac07180f4ee4665053ffd7f1b198c00b2f7f3b13920592163d9864c25b9f"
+  },
+  {
+   "id": 734,
+   "recipe": "bdg-dark-grass-woodland-143",
+   "kind": "dark-grass-edge",
+   "sha256": "d947ac07180f4ee4665053ffd7f1b198c00b2f7f3b13920592163d9864c25b9f"
+  },
+  {
+   "id": 735,
+   "recipe": "bdg-dark-grass-woodland-155",
+   "kind": "dark-grass-edge",
+   "sha256": "7b58d50ea6af25f3791462cf198df13fbb7850205cc79e2c009bd3a98cc952e2"
+  },
+  {
+   "id": 736,
+   "recipe": "bdg-dark-grass-woodland-159",
+   "kind": "dark-grass-edge",
+   "sha256": "7b58d50ea6af25f3791462cf198df13fbb7850205cc79e2c009bd3a98cc952e2"
+  },
+  {
+   "id": 737,
+   "recipe": "bdg-dark-grass-woodland-175",
+   "kind": "dark-grass-edge",
+   "sha256": "19c0b1712e03b68ab79b958b623d4f440d8e57baba407dbf64ea41a8ee68712a"
+  },
+  {
+   "id": 738,
+   "recipe": "bdg-dark-grass-woodland-191",
+   "kind": "dark-grass-edge",
+   "sha256": "64427e4ae857709cc2fee419402943591fa88a5e40d2257322c5f6b7211095c6"
+  },
+  {
+   "id": 739,
+   "recipe": "bdg-dark-grass-woodland-205",
+   "kind": "dark-grass-edge",
+   "sha256": "37da0b99138d9b6f2440dbf49fafd1a5c8dc5697f9f41f22cb90961ff416b168"
+  },
+  {
+   "id": 740,
+   "recipe": "bdg-dark-grass-woodland-207",
+   "kind": "dark-grass-edge",
+   "sha256": "37da0b99138d9b6f2440dbf49fafd1a5c8dc5697f9f41f22cb90961ff416b168"
+  },
+  {
+   "id": 741,
+   "recipe": "bdg-dark-grass-woodland-223",
+   "kind": "dark-grass-edge",
+   "sha256": "c6d4d668833cd4545e0098249676a3046398571c9a48e8c839967c3f1facd1f6"
+  },
+  {
+   "id": 742,
+   "recipe": "bdg-dark-grass-woodland-239",
+   "kind": "dark-grass-edge",
+   "sha256": "2edeb1fefa91934c443bb33ae31a7ec7961c5b27f9e563ce646c8020b3820a42"
+  }
+ ]
+}

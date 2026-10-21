@@ -773,7 +773,7 @@
 /* ── 11. 전문가 = 촘촘하게 ───────────────────────────────────────────────────────────── */
 
 /* ── 12. 좁은 뷰포트(1024~1439) — 폭은 줄이고 클릭 경로는 남긴다 ───────────────────────── */
-@media (max-width: 1439px) {
+@media (max-width: 1559px) {
   /* 명령 아이콘의 32px을 먼저 확보하고, 왼쪽 저장 상태가 남은 폭 안에서 줄어든다. */
   .oprn-menu-bar.studio-bar {
     column-gap: 4px;
@@ -852,6 +852,21 @@
     max-width: 140px;
   }
 
+}
+
+/* 1439 이하: 왼쪽 도구 이름표(찾기·이벤트)까지 접는다. 1280 에서 레이어 분절과 명령 칩이
+   24~32px 겹치던 실측(2026-10-21 UI VQA R01) — 이름은 title/aria-label 로 남는다. */
+@media (max-width: 1439px) {
+  .studio-tool-button .studio-tool-button-label {
+    display: none;
+  }
+
+  .studio-tool-button {
+    flex: 0 0 32px;
+    justify-content: center;
+    padding: 0;
+    width: 32px;
+  }
 }
 
 @media (max-width: 1119px) {

@@ -1,0 +1,76 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b7",
+ "round": 1,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "food-drink-bar",
+   "pixelSha256": "5aa41ebb976322fb2c8682ad865f0de88e9e0fe5f5dcb6fad598f2c6684bfd63",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    3
+   ],
+   "reasons": "Drawn as a flat front elevation: the cabinet has no lit counter-top plane, and the dispenser's nozzle sticks up past the outline at the top right. At 1x the 1-tile-wide sliver looks undersized next to the originals and doesn't read as a drink bar."
+  },
+  {
+   "id": "mart-cart-bay",
+   "pixelSha256": "f2c7aed23d6a613a32e889bd40628d7e08d20828536dbe640f37d3cae662395a",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The stacked carts are a front view: repeated red and white horizontal bands with no basket-rim or top plane seen from above. The grey wire-basket body is a noisy checkered dither, unlike the clean flat shading in the originals."
+  },
+  {
+   "id": "mart-drink-open",
+   "pixelSha256": "3b12c0b4ade3429a6204e4ef4896a3211f9593bec69b1d2c80996746b5372012",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "The top is only a thin 1–2 row white and red strip with no lit top plane (the mci-cooler shows a deep top surface), so this is mostly a front elevation of shelves. The outline is lighter and thinner than the originals' dark navy border."
+  },
+  {
+   "id": "mart-gondola-household",
+   "pixelSha256": "147ccc87122a9d4ef4aa6109b6649471059d0f1d60439ad0335b86ab3b010e20",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "The teal cap is a 2-row front band, not a top plane seen from above, so the shelving reads as a flat front view. The products are blank white boxes with yellow smears and letter-like 'r' shapes on the lower shelf, which don't read as household goods at 1x."
+  },
+  {
+   "id": "mart-gondola-snack",
+   "pixelSha256": "7f1b54960275a6e913c81f682192509c5fba4a46791582a15d49de43760891c0",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The outer outline is a mid grey, not the dark navy weight of the originals. The yellow and orange snack bags are mottled blobs with random bright highlight pixels, and the orange item on top is a muddy, sticker-like lump."
+  }
+ ]
+}

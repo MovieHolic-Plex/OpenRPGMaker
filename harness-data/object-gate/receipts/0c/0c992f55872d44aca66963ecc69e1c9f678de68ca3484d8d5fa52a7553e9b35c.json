@@ -1,0 +1,386 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0c992f55872d44aca66963ecc69e1c9f678de68ca3484d8d5fa52a7553e9b35c",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "hospital med cabinet",
+ "label": "modern_city_interior/hospital-med-cabinet",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 23,
+  "tileColorsP90": 23,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper pale header band",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green-cross sign panel",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "open shelf compartments with bottles and boxes seen face-on",
+      "rows": "14-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is a flat front view. The pale band at rows 1-6 is mottled and reads as a face-on header or glass panel. It has a 1-row divider line at row 7 but no eave shadow and no foreshortened depth. Rows 8-12 are a face-on sign panel with a green cross. Rows 14-28 show shelf compartments with their contents seen straight on, not from above, so there is no ellipse and no opening seen from above. The width is a constant 30 px from row 1 to row 31, so there are no receding planes. This is a cabinet front elevation, not a container with an opening."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 21 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well, so it matches the richest references. Near-flat coverage is 11%, close to the stall's 13%, so there are no large flat fills beyond a few panel areas. None of its dark edge pixels are neutral (0%), so the outlines lean toward a dark tint of the neighbouring grey-blue material rather than a black sticker line. The cabinet body has about 4 lightness steps (pale face, door panels, shadowed frame, dark edge), a little below the references' 5-6. Shelf items, the green and red crosses, and bottle clusters add small-scale variation. Overall it is a plausible peer to the stall and well at the same scale, though the cabinet body is slightly less textured than the best references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19255
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper header band (light panel with faint streaks)",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cross sign panel",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "two open shelf compartments with bottles and boxes, seen face-on",
+      "rows": "14-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is a flat, face-on cabinet. Rows 1-6 are a light header band with the same width as the face below, and row 7 is a thin line. That line has no eave shadow below it, and rows 8-12 are a vertical sign panel with a green cross. This reads as stacked front-facing strips rather than a foreshortened top. Rows 14-28 show shelves with items drawn face-on, with no opening seen from above (no ellipse, no contents or heap visible from above). Nothing recedes in depth, so the object is a front elevation and not a container with a viewable opening."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The cabinet reads as a pale frame with glass doors, shelves holding small items, and a green cross. It shows about 5 lightness steps across the frame, door panels and shelf contents. The measured facts support this: 21 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well, which are the closest references. Near-flat coverage is 11%, in line with the stall's 13% and far from a flat sticker. The dark edge pixels are 0% neutral, so the outline carries a tint and is not a uniform black line. Texture is moderate: the shelf contents and door glass add variation, but the large pale cabinet face is somewhat plainer than the stall or hedge. I judge it acceptable beside the references, though not richer than them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19372
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper header panel (pale, with reflection smudges)",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green-cross sign panel",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf compartments with bottles and boxes, seen face-on",
+      "rows": "14-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is a flat front view. The horizontal lines at rows 7, 13 and 21 (L=169) repeat as frame dividers between the header, the cross panel and the shelf rows. They are not a front-edge line of a top surface, and there is no eave shadow below row 7. The pale band at rows 1-6 has reflection-like smudges and reads as a vertical glass or header panel. The silhouette is a constant 30 px wide with no ellipse or opening. The shelf contents (bottles, red cross box) are seen from the front, not from above. So there is no top surface and no opening seen from above, and the cabinet does not match the container kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 21 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well, so it matches the richest references. Near-flat coverage is 11%, close to the stall's 13%, and the candidate shows no large flat fills by eye. Dark edge pixels are 0% neutral, so the outline leans toward the cool grey-blue of the cabinet body rather than being a black sticker line. The frame, glass doors, shelves, bottles and green cross are separated mostly by value, with a few shading steps on the body (highlight, light, mid, dark, plus a deep tone on the frame). The body panels are somewhat smooth, with less grain than the stall or well, but a careful artist would accept it next to them without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18236
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper header panel / cornice band",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green-cross sign panel",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass-door shelf bays with bottles and boxes drawn face-on",
+      "rows": "14-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 30 px wide from row 1 to row 31, so there is no widening or narrowing that would make an ellipse. Rows 1-6 are a pale band with faint streaks. Row 7 is a 1-row grey line (L=169), the same tone as the frame lines at rows 13 and 21. The row after it is a flat panel, not a dark eave shadow, so I read the band as a vertical header or cornice and not a horizontal top. Rows 8-12 hold the green cross sign face-on, and rows 14-28 show shelf bays with bottles and boxes seen from the front, not into an opening from above. Nothing shows contents or an opening seen from above. The drawing is a flat front elevation of a wall cabinet, and it is not a container with an opening."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 21 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, so it is at or above the comparable references. Near-flat coverage is 11%, close to the stall's 13%, so there are no large flat fills. The 0% near-neutral share of dark edge pixels means the outline carries a tint (dark blue-grey beside the pale frame) and is not a uniform black sticker line. The frame, door panels, shelves, bottles and green cross show about 5 lightness steps, with highlight and shadow edges plus small item details. Its structure is a little simpler and more front-on than the stall and well, and the pale door panels are fairly smooth, but it would sit acceptably next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18628
+  }
+ ],
+ "decidedAt": "2026-10-20T23:53:04.985Z",
+ "cells": {
+  "16": [
+   "284b0d5330f96c6a",
+   "bf006ae5575dafec",
+   "d7cb59a9cb7a9650",
+   "f3c1624fc96f103f"
+  ],
+  "24": [
+   "154880ec54264986",
+   "1eaaec29c5b2c2b2",
+   "25ff9fa48899b4dc",
+   "275cb4f261c57c14",
+   "2851e0836e1e1b4f",
+   "28931586bf249585",
+   "37942ff431d8b856",
+   "49425bfb673d26a8",
+   "54c1f4363a37901a",
+   "5ade02b590b59d8d",
+   "5ffb86992bf28ea0",
+   "6271a7f5ef617e48",
+   "66b30252ed57d881",
+   "67f8638fabb5e68a",
+   "84a0968f88a34cf2",
+   "895b590d1e663376",
+   "97f430b597786796",
+   "9acdf2d2bd62d2a6",
+   "a96b2623e9abb721",
+   "b0831ea08f265eee",
+   "cd41fed15419091a",
+   "ce648471fad6012f",
+   "e83a242990e376b0",
+   "fc5b00ad14896010"
+  ],
+  "32": [
+   "7e9299aa81ad6e50"
+  ],
+  "48": [
+   "0846d05948eb9d13",
+   "308d8298531125b7",
+   "35b19d57aaeb2ac3",
+   "b13f7b7aba5765fe",
+   "c74863aaf19af543",
+   "eb208d53a59ed844"
+  ]
+ }
+}

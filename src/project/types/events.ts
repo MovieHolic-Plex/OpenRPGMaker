@@ -250,6 +250,8 @@ export interface SocialCalendar {
 export interface CharacterProfile {
   /** Optional UI label (status menu / future pickers). Not a social key. */
   readonly displayName?: string;
+  /** 관계 메뉴의 한 줄 소개(연애 게임 ESC 「호감도」 행 아래). */
+  readonly note?: string;
   /** Profile birthday used when event.socialCalendar.birthday is absent. */
   readonly birthday?: { readonly season: Season; readonly day: number };
   /** Default gift prefs; event.giftPrefs fully overrides when present. */

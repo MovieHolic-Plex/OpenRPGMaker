@@ -1,0 +1,385 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "915310549ee5026421e1c308b89dd08020006cbb5353f08bc6d3b85569473ae7",
+ "width": 48,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "cafe maid stage",
+ "label": "modern_city_interior/cafe-maid-stage",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 17,
+  "darkV5": 64,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "pink backdrop panel with heart",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden stage platform top",
+      "rows": "15-24",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "25"
+     },
+     {
+      "part": "microphone stand",
+      "rows": "9-23",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stage front face with gold knobs",
+      "rows": "26-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the wide wooden stage platform. Rows 15-24 form a tan plank surface, with a dark back rim at row 15 and a darker front-edge line at row 25 (#8a6128). Below it, rows 26-31 are a purple front face with gold knobs, 6 rows. The microphone stand on the platform is decor. The pink backdrop (rows 1-14) is a flat vertical panel; its light band at rows 2-4 is a banner, not a horizontal surface. The object is a wide, low stage with a backdrop, so it only loosely fits tall furniture against a wall."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The stage has a pink back panel with a scalloped top trim and a heart, a wooden platform front with plank lines and grain dots, and a mic stand. Its dark edges are tinted: 0% near-neutral, a dark pink/brown lean rather than black, like the hedge and cheese stall. Measured facts: 11 visible tones per tile, in the same range as the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so no large flat fills. The pink panel and wood each have about 4 lightness steps against about 5-6 on the references, and the panel is the plainest area. That makes it slightly lower in density, but it is structurally sound, outlined by material tone, and textured. A careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20161
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "wooden stage platform top",
+      "rows": "15-24",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "platform front face with gold studs",
+      "rows": "26-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pink backdrop panel with side posts",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "heart emblem and microphone stand",
+      "rows": "7-23",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a low wooden stage. Rows 15-24 are a wide tan plank top surface (about 10 rows including the dark outline at row 15). A dark front-edge line at row 25 (L=103, #8a6128) closes it, with a purple front face below in rows 26-31. The face carries gold studs and is 6 rows tall, so there is a top plus a front face. The backdrop above (rows 1-14) is a flat vertical pink panel and side posts with no top surface, so not every major part has a top. The heart and microphone are decor. The object is a stage, not tall furniture standing against a wall, so the kind does not match."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a pink-and-wood counter with a heart sign and a small microphone stand. At the reference scale it reads as a simple stage: a pink back panel with a lighter top rim, a wood-plank front, and a few dots of detail. The measured facts are 11 visible tones per tile, 0% near-flat coverage and 0% neutral dark edge pixels. That is above the hedge (9) and below the stall (17) and well (20). The outline is tinted, a dark pink-brown beside the pink and a dark brown beside the wood, so it is not a sticker-style black line. The structure is thinner than the stall and well. The pink panel has only about 3 tones (light rim, mid pink, dark pink) and the wood front has about 3 (light top, mid planks, dark base), against 5-6 steps on the references. The pink panel interior and the wood planks are fairly uniform, with little grain, plank knots or per-element highlights. The microphone stand is small and has few steps. Overall it is clean and not flat-filled, but its shading is shallower and its texture more limited than the Beodeul props, and it would look slightly flatter beside the stall and well.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15842
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "pink backdrop panel with heart and side posts",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden stage platform top",
+      "rows": "16-24",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "microphone stand on the stage",
+      "rows": "9-23",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "heart emblem on the backdrop",
+      "rows": "6-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stage front face with gold studs",
+      "rows": "26-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the wooden stage platform. Rows 16-24 are a wide plank surface, bounded above by a dark back edge at row 15 and below by a darker front-edge line at row 25 (#8a6128). Rows 26-31 are the purple front face with gold studs, which is 6 rows. This is a 3/4 view of a low stage, not tall furniture, so the kind does not match. The pink backdrop (rows 1-14) is a vertical panel with no top surface drawn. The microphone stand and heart emblem are decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 11 visible tones per tile, with 0% near-flat coverage and 0% neutral dark edges. That is above the hedge reference (9) and below the stall (17) and well (20). It has about 4 steps on each of the pink panel and the wood base, against about 5-6 in the references. The outline is a dark pink-brown or wood-brown tint rather than black, so it reads as dark_material_tone. Texture is present: a scalloped top trim, a heart motif, plank seams and a microphone stand. The pink back panel is a little plain and the totals (23 raw colours against 38-40 for the large references) are lower. There are no flat fills, though, and a careful artist would accept it next to the references, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20163
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "pink backdrop panel with heart, above the stage",
+      "rows": "1-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden stage platform top",
+      "rows": "15-24",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "25"
+     },
+     {
+      "part": "stage front face with gold studs",
+      "rows": "26-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the wooden stage platform. Rows 15-24 are a wide tan plank surface, about 10 rows, with a darker brown back rim at row 15. Row 25 (L=103) is a dark front-edge line, and the purple front face with gold studs below it runs rows 26-31, which is 6 rows. The pink backdrop (rows 1-14) is a vertical panel behind the platform, and it is an upright screen rather than a wardrobe or cabinet. The platform top and the front face both show, so this reads as three-quarter view. The kind is a poor match: it is a low stage with a backdrop, not tall furniture against a wall."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 11 visible tones per 16x16 tile. That is above the hedge (9) and below the cheese stall (17) and roofed well (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outlines lean toward dark pink or brown rather than black, and they read as the dark tone of the neighbouring material instead of a sticker line. The pink backdrop has a light border, a darker band and a lighter heart, and the wood front has plank lines and grain dots. Each material has about 4 steps against the references' 5-6, so the shading is a little shallower than the richest references. Overall it is comparable to the hedge and would sit acceptably beside the references without looking sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24211
+  }
+ ],
+ "decidedAt": "2026-10-20T22:55:59.254Z",
+ "cells": {
+  "16": [
+   "1a4e35eaf96a097f",
+   "3612897269815c3b",
+   "4686f82418f2a010",
+   "58e96b049a62d70e",
+   "5ebeb46b7ae0db67",
+   "f45a2157f142a58c"
+  ],
+  "24": [
+   "369054b036cf988b",
+   "4a1e3073fa79a6f6",
+   "4a64aa3792c1581e",
+   "5313995fce583732",
+   "944231b54460ca1e",
+   "bbf350f4958d0186",
+   "c53bc4a728e3eeaa",
+   "ec9627a4fecf14cf"
+  ],
+  "32": [
+   "2dea591f3c01ee55",
+   "750183cbec22666b",
+   "79cb830e307c1fb8",
+   "82a8a6da8edbfbc2",
+   "df211794cb8eedec",
+   "f2126cfd9e71d9fd"
+  ],
+  "48": [
+   "8dbf7443d30a99b2",
+   "ee3182f7b97231f2"
+  ]
+ }
+}

@@ -1,0 +1,310 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c1582310ca61086c120f90e5a96704ce6d6f6b39788e738887f21d59f1fde5ee",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "countryside grass",
+ "label": "jp-inaka-r5:at-grass",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 7,
+  "darkV5": 119,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image is a full 48x48 tile of flat green grass with scattered tufts, flowers and small dark patches. It is a seamless terrain fill with no standing object, no silhouette edges, no front face and no top-surface structure. The two small raised-looking tufts (rows 5-12 and 19-28) are ground detail only. This matches the terrain kind, so the three-quarter rules for standing objects do not apply."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate's ground is one mid green with sparse specks and a few tiny bush or flower props. It has 9 distinct colours and a median of 5 per tile, against 80 and 26 for the reference grass. Flat-fill coverage is 80%, while the reference grass has 0%. The base has only about 2 lightness steps, with no layered grass clumps, tonal patches or soil grain like the reference grass. Dark edge pixels are 0% neutral, so the little outline there is tinted, but it is barely present and does not offset the flat, sparse ground. Next to the reference it reads as a plain fill with scattered dots.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 12589
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat grass ground tile with scattered tufts and flowers",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a full-bleed 48x48 seamless terrain tile. Every row is 48 px wide, and the column scans show a uniform green #689e63 with only small darker tuft marks. No standing object, silhouette, front face or eave line is present. The small bush tufts at rows 5-12 and 19-28 are surface decoration on the ground, not volumes. It is a terrain tile, so the standing-object top and front rules do not apply."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a flat mid-green field with only sparse specks and two small bush clumps. It has 9 colours in total against 80 for the reference grass, and a median of 5 colours per tile against 26. 5x5 flat-fill coverage is 80% against 0% for the reference. The base grass has about 2 steps, where the reference grass has 5 or more with layered tufts and variation across the whole surface. The scattered dots and tiny flowers do not carry grain over the large areas. There is no outline problem: dark edge pixels are 0% neutral, so any edges are tinted. The paving reference is also low in colours, but it has structured stone shading, and the candidate is far thinner than the grass reference it should match.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 18840
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full 48x48 opaque grass tile with a uniform green fill (L=135). It has small scattered tufts, flowers and darker blades as detail. Column scans show the base color across all rows, with only 1-row darker specks. The two small bush clumps (rows 5-12 and 21-28) are minor details and do not form a standing body. The tile has no silhouette, front face or top surface structure, so it reads as flat ground terrain, which fits the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a mostly flat mid-green field with sparse tiny flower dots and two small bush clumps. It has only 9 distinct colours against 80 in the reference grass, and a median of 5 colours per tile against 26. Its 5x5 flat-fill coverage is 80% against 0% for the reference grass, so large areas are one flat colour. The grass has about 2 lightness steps, while the reference grass has 5 or more: highlights, mid greens, dark patches and tufts. The few dark edge pixels carry a tint (0% neutral), so there is no sticker outline, but the ground has no tufts, soil grain or shade variation to match the reference. It would look thinner and flatter next to the Beodeul grass.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15702
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "grass ground tile (full 48x48 fill)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless 48x48 grass terrain tile filled edge to edge with green (#689e63) and small decorative tufts, flowers and darker patches. The width is 48 on every row, so there is no silhouette. It is a flat ground texture with no standing body and no front face. The two bush-like clumps (rows 4-12 and 20-28) are small details, not the main body. Because it is a terrain tile, the lack of a top and front split is expected."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a mostly flat mid-green field with sparse speckles and two small bush clumps. It has only 9 distinct colours and 5 per 16x16 tile, against 80 and 26 for the Beodeul grass reference. Flat-fill coverage is 80%, while the grass reference is 0%. The base has about 2 lightness steps, with no tonal patches, tufts, or soil grain like the reference's 4-5 greens. The few scattered flower dots do not offset the large flat areas. Dark edge pixels are 0% neutral, so the outline is not black, but there is effectively no outline on a ground patch. The patch is clearly flatter and shallower than the reference grass.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 15901
+  }
+ ],
+ "decidedAt": "2026-10-20T06:14:17.627Z",
+ "cells": {
+  "16": [
+   "135169e0495ad45c",
+   "77cebd14e1f5d4a7",
+   "8452ff191a5f4b38",
+   "956b73e75b0b11df",
+   "ec5acbb7094686f4",
+   "f27117170615003b"
+  ],
+  "24": [
+   "047d3360f7a43225",
+   "439843736607d0b6",
+   "b9714e4b8b33aa95",
+   "f3938fc8184e8ecd"
+  ],
+  "32": [
+   "000d05a852f1e8b5",
+   "03a582731c30e0fa",
+   "15f949928d26f46b",
+   "2938f2234a70f0ff",
+   "2970253fa68dd9f5",
+   "30c2740ee1846b0a",
+   "4761b26b6bbff5b6",
+   "480a0a2da1555185",
+   "4a3f3d5e4217db94",
+   "5121c7384f1c8961",
+   "589c393419f81401",
+   "5a670dad6a58d2f7",
+   "75c3ab321392256a",
+   "78c41ff04bf4212f",
+   "7d3d0e210b9a3a21",
+   "7fde73778f43c844",
+   "8acbf212b993ed5d",
+   "93c4a04e54cdce20",
+   "971c6ba550497568",
+   "a2503516d1b9c83c",
+   "c6d2b3ad5de29f02",
+   "d0db6ccdf04633f5",
+   "da3965982e6f0c9f",
+   "ed9fa4a6b3725225"
+  ],
+  "48": [
+   "12e4fdd96fa6defa"
+  ]
+ }
+}

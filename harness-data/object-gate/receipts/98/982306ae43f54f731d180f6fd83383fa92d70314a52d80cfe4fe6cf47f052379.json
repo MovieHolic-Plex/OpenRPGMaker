@@ -1,0 +1,284 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "982306ae43f54f731d180f6fd83383fa92d70314a52d80cfe4fe6cf47f052379",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "inaka-paddy-golden",
+ "label": "jp_inaka_pack/ground/inaka-paddy-golden",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (2/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 105,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy field ground tile (golden crop rows over olive and brown soil)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile fills the full 16x16 square, with width 16 on every row. It is a flat top-down ground texture. Two repeating bands of golden-yellow and pale crop highlights over olive-green stalks run across rows 0-6 and 8-14, separated by dark brown soil at about rows 6-7 and 15. There is no front-edge line, eave shadow, ellipse, or vertical south face, so no front face is drawn. This is consistent with a terrain tile rather than a standing object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate on the board is a tiny golden striped block of roughly 10x8 source pixels, like a hay bale or crate. It is not a 4x3-tile paddy ground patch, so it does not match the reference kind of grass or paving surfaces. The measured 7 tones per tile and 0% near-flat coverage are technically at or above the grass reference, but only 7 distinct colours exist in total. The ramp is about 3 visible golden steps with a thin brownish edge. The edge pixels are tinted (0% neutral), so the outline is a material tone. There is no grass tuft, grain or soil variation, and no tiling surface. Against the references, which cover the full area with clustered texture, it carries far less surface information and does not read as a ground patch. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14596
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy field tile (golden rice rows, flat ground texture)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The tile is a full 16x16 opaque square (width 16 on every row) with alternating bands of golden/pale straw rows and dark olive/brown soil rows (light bands at rows 0-2 and 8-10, dark at 3-7 and 11-15). It is a flat repeating ground texture, not a standing object. It has no silhouette, no front-edge line with eave shadow, no ellipse, and no distinct front face. As terrain it is judged as a seamless tile, so the object top/front rules do not apply."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate on the board is a tiny golden striped block, about one tile or less, and looks like a hay bale or small prop. It does not read as a 4x3 golden paddy ground patch, so it doesn't match the grass/paving references. The measured facts (7 visible tones, 0% flat coverage, 0% neutral edge pixels) are not bad, and the edge pixels are tinted brown rather than black. But by eye the ramp is only about 3 steps (light gold, mid gold, dark brown), with banded stripes and little grain or tuft variation. The grass reference has varied tufts and soil grain across a full area, and the candidate shows none of that. With the wrong kind of piece and shallow shading, I'm failing it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 20772
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy field ground tile (golden rice rows)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a full 16x16 opaque terrain tile. The silhouette is 16 wide on every row, and the rows show repeating horizontal bands of pale straw, yellow and olive with brown soil rows (about rows 0-5 and 8-13). That reads as a flat field of golden rice and furrows seen from above. There is no standing object, no front face and no edge line or eave shadow. For terrain, a flat top-down tile is the expected form."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The measured facts (7 visible tones per tile, 0% near-flat, 0% neutral dark edges) would normally match the paving reference and beat the grass reference. The board does not show that, though. The candidate is a tiny golden striped block about 30x20 px at 2x, sitting on an empty dark background. It looks like a small bale or crate sprite, not a 4x3-tile (64x48 source px) paddy ground patch, and no ground surface is visible. The few tones on the sprite are warm golden steps with brownish dark edges, about 3-4 steps. That is shallower than the 5-6 steps in the references, with no grain, tufts or soil speckle. The piece cannot be judged as a full ground patch and has no per-tile texture to compare with the reference grass or paving. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16391
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy field ground tile with golden rice stalk rows",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The candidate is a full 16x16 opaque terrain tile (width 16 on all rows 0-15) showing alternating bands of golden/pale rice stalks and darker soil/olive rows. It is a repeating ground texture with no silhouette, no front face and no edge line or eave shadow. As terrain it is a flat ground surface, so it reads as a top-down tile with no standing volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 3,
+    "evidence": "The candidate on the board is a tiny golden bale-like block, roughly one tile or less, with a dark brown outline and a few horizontal stripes. It is not a 4x3-tile ground patch of golden paddy. The references are large continuous surfaces (grass with tufts, cobble paving), so there is no tileable ground surface to compare. The measured facts look fine on paper: 7 visible tones per tile (grass 3, paving 7), 0% near-flat coverage, and 0% neutral dark edges, which fits a tinted outline. But the whole piece uses only 7 colours in about 3-4 lightness steps, against roughly 5-6 per material in Beodeul. It has no per-stalk grain, no clumps and no soil variation. The facts cannot make up for the wrong kind of object and its sticker-like read, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13862
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.187Z",
+ "cells": {
+  "16": [
+   "123fe18df5f86c76"
+  ],
+  "24": [
+   "069852899a09e703",
+   "131b6d1fe5484b5f",
+   "3d7d321b5b460fa4",
+   "bbab28879d17aae4",
+   "dcd508c882902dd1",
+   "f291f4fc7a9b7b97"
+  ],
+  "32": [
+   "13287351d66f2ced",
+   "1b215b93dd738057",
+   "4d1e79b8a9f0a51e",
+   "94d5b9c8d96cab0d",
+   "c39550c1c92f5c54",
+   "fc3e5ab545d15628"
+  ],
+  "48": [
+   "0420bb247ab4d517",
+   "1c6bffcf1cea3191",
+   "5d5bc42e1d880848",
+   "ad880029b5583530",
+   "bdf4fb7374adab0c",
+   "f3964f12434cb128"
+  ]
+ }
+}

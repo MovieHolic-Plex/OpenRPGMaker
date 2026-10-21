@@ -1,0 +1,397 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "420b37cea9ca61be1a6b646219d0457ddb036333e999d64bfc6272d00f52e6d3",
+ "width": 48,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "hospital nurse station",
+ "label": "modern_city_interior/hospital-nurse-station",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 15,
+  "darkV5": 36,
+  "nearBlackEdge": 0.99,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "counter top (white worktop)",
+      "rows": "15-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front panel with teal bands and red cross",
+      "rows": "23-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right monitors, center monitor, books, and tray on the counter",
+      "rows": "2-20",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a low reception counter, not tall wall furniture. Its white worktop fills rows 15-21 (7 rows) and ends in a darker gray front-edge line at row 22 (L=111). The front face is rows 23-30 (8 rows) with teal bands and a red cross panel. That gives a top surface plus a front face, which is evidence (a). No distinct eave shadow is drawn; row 23 is lighter, not darker. The monitors, books and tray on the counter (rows 2-20) are decor. The object has no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 12 visible tones per tile. That is above the hedge (9) and below the stall (17) and well (20), so it sits inside the reference range. Near-flat coverage is 9%, lower than the cheese stall's 13%. 0% of its dark edge pixels are neutral, so the outlines carry a blue-grey or dark-material tint rather than a black sticker line. The counter has a lit top edge, a body tone and a darker base, plus a red cross, monitors, papers and books. Together these give some texture and variation, not big flat areas. The main white counter ramp is a little shallower than the 5-6 steps in the references, and it has fewer total colours (29 against 38-40), so density is slightly lower, but it would not look thinner or flatter than the references when placed next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17628
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "left monitor on counter",
+      "rows": "4-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "books on counter",
+      "rows": "6-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "center monitor on counter",
+      "rows": "2-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right monitor and tray on counter",
+      "rows": "4-20",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top (white worktop)",
+      "rows": "15-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter front face (teal stripes and red cross panel)",
+      "rows": "23-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a wide counter. Rows 15-21 form a 7-row white worktop with faint smudges, which reads as a horizontal surface. It ends in a darker gray front-edge line at row 22 (L=111). Below it is a vertical front face of 8 rows (23-30) with teal stripes and a red-cross panel, closed by the outline at row 31. The monitors, books and tray on top are decor. The object is a low, wide counter rather than tall furniture against a wall, so the kind only loosely fits."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts support the candidate. It has 12 visible tones per 16x16 tile, between the hedge (9) and the cheese stall (17) and below the well (20). Near-flat coverage is 9%, below the stall's 13%. 0% of its dark edge pixels are neutral, so the outlines lean toward the material (a dark blue-grey beside the white counter, dark tones beside the monitors) rather than a uniform black sticker line. By eye, the counter has a light top edge, a mid face and a darker base, with a separate shaded panel, a red cross, monitors with screen detail, books and a clipboard. That is about 4 steps against the reference's 5-6, and the counter face is a little smoother than the stall's grain. This reads as slightly lower density with some texture, but it is not shallow and sits within the range of the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17704
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "left monitor",
+      "rows": "4-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "books",
+      "rows": "4-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "center monitor",
+      "rows": "2-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right monitor and tray",
+      "rows": "4-21",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top",
+      "rows": "15-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a wide counter. Rows 15-21 form a white counter-top band, 7 rows deep. It ends in a gray front-edge line at row 22 (L=111, darker than the white band above it). The front face runs from row 23 to about row 31. It has teal stripe panels and a central red-cross panel, and no side face is drawn. The monitors, books and tray on the counter are decor. The object is a wide low counter rather than tall furniture against a wall, so kind_matches is false."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a counter with monitors, a red cross and a few items. It has 12 visible tones per tile, between the hedge (9) and the cheese stall (17) and well (20). Near-flat coverage is 9%, below the cheese stall's 13%. Dark edge pixels are 0% neutral, so the outline leans toward tinted dark blue-grey, which is a material-tone outline and not a black sticker line. The white counter front has only about 3-4 steps (white, light grey, mid grey, dark base) and is fairly smooth with little grain, and the monitors and desk top are simple. Compared with the stall and well it is thinner in per-material ramps and texture, such as speckle, wear and per-element shading. It is somewhat flatter than the references but not a sticker. Because the guidance says to fail when in doubt, and the main counter body is flat-ish with shallow ramps, this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14676
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "counter top",
+      "rows": "15-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "monitor and side screens on counter",
+      "rows": "2-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "books on counter",
+      "rows": "4-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "clipboard/tray on counter",
+      "rows": "15-20",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a low, wide reception counter, not tall furniture, so the kind only loosely fits. Its top is a pale band at rows 15-21, 7 rows deep, with a grey front-edge line at row 22. Below it is a front face at rows 23-30 with teal panels and a central red-cross door. The monitor, side screens, books and clipboard on the counter are decor. Rows 15-21 read as a horizontal worktop seen from above, so the main body is three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 12 visible tones per tile. That sits between the hedge (9) and the stall (17) and well (20), and well above the bench and lamp, which are too thin to count. Near-flat coverage is 9%, below the stall's 13%, so there are no large dead fills. Dark edge pixels are 0% neutral, so the outline is a tinted blue-grey/brown-grey tone rather than a black sticker line. The counter has a top highlight, a mid panel and a darker base. The monitors, books, clipboard, red cross and drawer details add varied small shapes. The white counter front is somewhat smooth and has fewer shading steps than the stall or well (about 4 against 5-6) and little grain. That makes it slightly lower than the best references, but a careful artist would still accept it beside them without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16248
+  }
+ ],
+ "decidedAt": "2026-10-20T23:53:05.024Z",
+ "cells": {
+  "16": [
+   "2c1deba8a258b13b",
+   "3b9247bce5186354",
+   "5d2c3f630ad4b2ce",
+   "a1a2ab7e85c21101",
+   "adc5308acee44845",
+   "b7131fa2dc80782f"
+  ],
+  "24": [
+   "3de1deecca8b92d9",
+   "45c63167f7f297d9",
+   "4732b6cbc68e5f50",
+   "5a5a333b0294ec86",
+   "9e2e683837b11a2b",
+   "b564560efacc5826",
+   "c4ad8538485381b8",
+   "c8fd72da2cf3b2a9"
+  ],
+  "32": [
+   "22901189884dc218",
+   "8daeed6b0d410967",
+   "b1143caa57a3e586",
+   "cbbc606bccf6fc37",
+   "f1b8df579e79d8fd",
+   "f8ce45b4ff24047d"
+  ],
+  "48": [
+   "5b976d85c92d8765",
+   "b5f4e40e16d50156"
+  ]
+ }
+}

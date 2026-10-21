@@ -1,0 +1,117 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-h1",
+ "round": 2,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png",
+  "board-3.png"
+ ],
+ "items": [
+  {
+   "id": "arcade-racing-cabinet",
+   "pixelSha256": "ef61e60cb1ead1ab235925917868e7c6e5022cad99e617b9877f08792fb960ba",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The red top plane, the road screen, the wheel and the black seat all sit inside one bounded footprint with a clear base line, and the outline and palette match the originals. The wheel's dark centre is a little face-like but still reads as a wheel at 1x."
+  },
+  {
+   "id": "dept-accessory-wall",
+   "pixelSha256": "3138128c0b71be4c672952a573e21ece4185a398facc80567a920a73a61bebd8",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "It has a beige top plane with boxes on it, a front panel with hanging accessories and a bag, and a drawer base sitting on the floor. The wood palette and dark outline match the wardrobe original."
+  },
+  {
+   "id": "dept-rack-cool",
+   "pixelSha256": "4bff7cb56c428b7dbddf247e96fb0cb4600b99dbc7d3fdae90aa509fade0fa18",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The jackets merge into one dark-blue blob with no readable garment shapes or hangers at 1x. The thin grey ring and base peek out around the mass and look detached rather than holding the clothes."
+  },
+  {
+   "id": "home-appliance-rack",
+   "pixelSha256": "ca8e5ff49f0265678fe069d4429ec71c9668a105a6118f08d2c36e546928c1d7",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "It is just a microwave stacked on a rice cooker in a very narrow dark slot. There is no visible rack shelf plane or frame, so at 1x it is an unreadable 1-tile-wide sliver and doesn't read as a rack."
+  },
+  {
+   "id": "home-drying-rack",
+   "pixelSha256": "2844c4d7e3acae8d63fdd7abb5bf731ce6f3a6d149c1753831a1775647bf79b1",
+   "verdict": "FAIL",
+   "failed": [
+    1
+   ],
+   "reasons": "It is drawn as a flat front elevation: a rectangular frame with clothes hanging flat and no top bar or plane seen from above. The splayed legs are pure front-view stubs."
+  },
+  {
+   "id": "hospital-curtain-screen",
+   "pixelSha256": "da6339084ee6f91e1cf8642f72a47b8d12b9d555811952fadc8df558cb6d8ee3",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The top third is a hollow tan-filled box that reads as nothing, neither curtain rail nor frame top, so the curtain only fills the lower part. The thin feet look tacked on, and at 1x it is an unclear grey stick."
+  },
+  {
+   "id": "ind-lathe",
+   "pixelSha256": "b16136e1a5cbc19d36b8069264d3769462f1e44437733533ab1d2ac54d7b60ad",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The white bed top is visible from above, with the chuck/spindle and tailstock along it, an orange control box, and a grey cabinet base with a ground line. The outline weight and greys fit the originals."
+  },
+  {
+   "id": "izakaya-beer-server",
+   "pixelSha256": "34e1499a27452d16c818ff7f02d35a7fef9f6f0ef88e3afcf58f4a548d10a1ee",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The tap head, the amber beer glass and the red drip tray on a grey base are readable, with a lit top and a clear bottom edge on the floor. The palette and outline match the chipset."
+  },
+  {
+   "id": "mart-bread-rack",
+   "pixelSha256": "bbedaff42986326a104df58610bf00e7121ad2a7c359ab9f3809524e8d4144f8",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The top shelf is visible as a plane with loaves on it, and two lower shelves of bread sit inside a grey frame with a base line. It is clean and fits the cooler and counter originals."
+  },
+  {
+   "id": "roof-fence",
+   "pixelSha256": "5699bdedcaa96360f1c7702c34a321d4080861ae3f01c9c4a2445aa168fb3784",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "The diamond mesh is framed on four sides like a lying floor grate or rug, not an upright fence panel. Posts and mesh don't establish height, and at 1x it reads as a green square tile."
+  },
+  {
+   "id": "school-cleaning-locker",
+   "pixelSha256": "1312d89fb64bb54826ce78a204b77078dcb76c7fc6b02167c075c4dde6cc2518",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "It is a grey locker with a light top lip, a vented door and a handle, with the broom leaning inside its footprint and a dark base line. The scale and outline match the originals."
+  }
+ ]
+}

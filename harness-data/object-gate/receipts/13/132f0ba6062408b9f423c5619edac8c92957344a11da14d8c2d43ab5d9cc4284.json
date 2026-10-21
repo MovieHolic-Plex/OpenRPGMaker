@@ -1,0 +1,306 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "132f0ba6062408b9f423c5619edac8c92957344a11da14d8c2d43ab5d9cc4284",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rice paddy ground tile (inaka-paddy-summer-bank)",
+ "label": "jp_inaka_pack/gnd/inaka-paddy-summer-bank",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 61,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy ground tile (soil bank strip at top, green paddy field below)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The candidate is a full 16x16 opaque terrain tile (width 16 on rows 0-15). Rows 0-2 form a brown soil bank with a dark shadow line at row 2. Rows 3-15 are a textured green paddy surface with a repeating pattern of light and dark pixels, which reads as flat ground. There is no standing volume, no ellipse, no roof and no front-edge line with eave shadow. It is a flat ground tile and not a standing object, so the kind matches terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny patch (about 16x16 px, roughly one tile) showing a paddy bank with a soil/grass strip and a darker band. Its 12 distinct colours are far below the grass reference's 80, and its 12 colours per tile is under half the grass reference's 26. The 0% flat-fill figure and 0% neutral dark edges are fine, so the outline is tinted and not near-black. The shading is shallow, at about 3 steps per material against roughly 5 on the references. The texture is limited to a few dots and stripes, with none of the clumped tufts or grain variation of the grass reference. The piece also reads as a small sticker-like block and not a 4x3 tile ground patch with the reference's variation and richness. Compared with the grass reference it is thinner and flatter, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12638
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy field surface (green mottled water and plant texture)",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "earthen bank strip at top (brown with a dark lower row)",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 16x16 opaque square (width 16 in every row), so it is a ground tile and not a standing object. Rows 0-2 are a brown bank strip with a dark shadow at row 2. Rows 3-15 are a mottled green paddy texture, with lightness varying only between about 75, 99, 125 and 153. There is no vertical front face, no eave line and no ellipse. It reads as a flat top-down terrain surface, which is normal for a terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is tiny on the board, so I judged it partly by the measured facts. It has only 12 distinct colours in total, against 80 for the grass reference, and a median of 12 colours per tile against 26 for grass. It beats the paving reference (7 on both counts), but paving is a flat stone pattern, so grass is the fairer comparison for a rice-paddy ground. The candidate reads as a green top over a brown bank with a few striped rows, and I count about 4 lightness steps per material against roughly 5-6 in Beodeul. The dark edge pixels are 0% neutral, so the outline is tinted and follows the material rather than being a black sticker line. Flat-fill coverage is 0%, so there are no large single-colour areas. However, the grass reference has varied clumps, tufts and several greens, and the candidate's palette is clearly thinner and more repetitive. It falls well short of that richness, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14698
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy field ground (green plant texture)",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "earth bank strip along the top edge",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": "2-2"
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 16x16 opaque square with every row 16 wide, so it is a ground tile and not a standing object. Rows 3-15 are a mottled green paddy texture with no edge line, ellipse or vertical face. Rows 0-2 are a thin brown earth bank with a dark shadow line at row 2. That strip is only 3 rows tall and reads as a bank edge, not a front face of a standing volume. The kind 'terrain' matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 12 distinct colours across the whole 4x3 patch, against 80 for the grass reference. Its per-tile median is 12 against 26 for grass, so it is less than half as dense as the main same-kind reference. It beats only the paving reference (7), and that reference is a simple stone pattern, not a grass or soil ramp. By eye, the top reads as a green grass band with a darker green strip, and the bottom as a brown bank with a few speckles. Each material has about 3 lightness steps, where the grass reference has 5 or more, with clumps and tufts in several greens. Dark edge pixels are 0% neutral, so the outlines lean toward the material tone and are not a black sticker line. 5x5 flat-fill coverage is 0%, so there are no large flat areas. The texture is only a light dither, without the layered clumps and grain of the reference. Because it is so much thinner and shallower than the grass reference, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16069
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy ground tile (full 16x16 tile, green mottled field with brown bank strip at top)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 16x16 opaque square (width 16 on every row), so it is a terrain tile and not a standing object. Rows 0-2 form a brown/dark bank strip, and rows 3-15 are mottled green paddy texture with no front-edge line, no eave shadow, no ellipse, and no distinct front face. It reads as flat ground seen from above, which is appropriate for a terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small banded patch with a green top, a brown bank and a few dotted stripes. It has only 12 distinct colours in total, against 80 for the reference grass, and its median of 12 colours per tile is under half the grass reference's 26. Each material (grass, soil) gets about 3 lightness steps, where the grass reference uses 5 or more with clumped tufts and varied dots. The dark edge pixels are 0% neutral, so the outline is tinted and reads as dark material tone, which is fine. There are no 5x5 flat fills, but the texture is a regular, repeated stripe pattern rather than the scattered clump variation of the reference. Shading is shallow and the colour variety is far below the grass reference, so it would look flatter and thinner beside it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10876
+  }
+ ],
+ "decidedAt": "2026-10-20T04:26:05.782Z",
+ "cells": {
+  "16": [
+   "38d564b7b90a099f"
+  ],
+  "24": [
+   "4815494ff1b9aaa1",
+   "a4d8d83240bd91fe",
+   "cc852d399451360f",
+   "e50376bb92c3674b",
+   "ed4f35355a76d775",
+   "fbd02c23fb357d29"
+  ],
+  "32": [
+   "153f1d07ccd0c77b",
+   "366871d7926cb822",
+   "3c189cd0395f76d5",
+   "461c06990a5a3e3c",
+   "d3c053a48763010d",
+   "f3dfb848263b3994"
+  ],
+  "48": [
+   "21016060a62a6d6c",
+   "47a86799462edd7c",
+   "b96b42ebffaee55a",
+   "e59f915a41e799a1",
+   "f1ee79229978fc43",
+   "fcf40f6a16c3ca35"
+  ]
+ }
+}

@@ -1,0 +1,354 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "22d44acd0522d6fa51dae768db0d59ee51890e97739917e36fcce2c0cff89447",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "kinder cubby",
+ "label": "modern_city_interior/kinder-cubby",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 22,
+  "tileColorsP90": 27,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top plank of the cubby",
+      "rows": "1-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "toys in the cubbies (red bag, teddy, lantern, blue bag, books, doll)",
+      "rows": "11-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-8 form a wood-grain top band, with horizontal plank streaks and a light front-edge line at row 8 (#bc9250). Row 9 is a short lip. Dark shadow rows 10-13 sit directly below it. Below that is a front face of about 22 rows (rows 9-30), a 2x3 grid of cubbies with vertical dividers and shelf ledges. The top band is 8 rows deep and has an edge line plus shadow, like the green fireplace mantel in the references. It is not a 1-2 row rim. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "The candidate is a wooden shelf with small items in each cubby. Density is good: 22 visible tones per tile against 17-20 for the stall and well, and 0% near-flat coverage, so there are no big flat fills. The weak points are shading and outline. The wood frame and shelves show only about 4 lightness steps with little grain, against about 5-6 on the references' wood and roof materials. 100% of the dark edge pixels are near-neutral, whereas the stall, hedge and well references sit at 0-33%, so the outline reads as a uniform near-black line rather than a dark tone of the adjacent wood. That is the sticker look. The bench and lamp references are too thin to measure per tile, and the lamp's 100% neutral share is not a fair comparison for a bulky furniture piece. Rich density does not offset the neutral outline and slightly shallow wood ramp, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17465
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top slab (wood plank top)",
+      "rows": "1-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "cubby front face with shelf openings and contents",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-7 are an orange plank-striped band that ends in a lighter front-edge line at row 8 (#bc9250). Dark eave shadow follows at rows 9-13, and below it is the cubby front face (rows 9-30, about 22 rows) with three upper and three lower openings. The top band is clearly a horizontal surface, like the green cabinet reference with top 5 + edge + eave, not a 1-2 row rim. No receding side face is drawn, and the silhouette is a constant 30 px wide from row 1 to row 30."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "Density is not the problem. The candidate has 22 visible tones per tile against 17-20 on the stall and well references, and 0% near-flat coverage. The goods on the shelves (jars, bottles, small items) give it plenty of variety. The weakness is the outline. 100% of its dark edge pixels are near-neutral, while the comparable references (hedge 0%, stall 1%, well 33%, bench 44%) use tinted dark edges. Only the thin lamp pole is at 100%, and it is a dark pole rather than a framed piece. The frame reads as a uniform dark line around the cubby and each compartment, which is the sticker look, not dark brown shaded into the wood. The wood frame itself shows about 3-4 lightness steps, with little per-plank grain or highlight, against about 5-6 on the stall and well woodwork. Because the outline is neutral and the wood shading is shallower than the references, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18786
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of cubby",
+      "rows": "1-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "10-12"
+     },
+     {
+      "part": "cubby contents (bag, bear, bell, toys)",
+      "rows": "12-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-7 form a wide orange plank band, which is the top surface seen from above. Row 8 is a lighter front-edge line (#bc9250), and rows 9-12 are a dark eave shadow. Below that, rows 9-30 give a front face with a 2x3 grid of cubby openings, so the front face is well over 3 rows. This matches the green cabinet and fireplace references, which have a top band, an edge line and a shadow. Row 31 narrows to 10 px, which reads as the base or feet."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "Density is not the problem. The candidate has 22 visible tones per tile against 17-20 for the stall and well, and 0% near-flat coverage. The weakness is structure. 100% of its dark edge pixels are near-neutral, while the comparable wood and roof references (stall 1%, hedge 0%, well 33%) carry tinted dark-material outlines. The 100% lamp reference is a thin iron pole, so it is not a fair comparison for a wooden cabinet. So the cubby's frame and cubby openings look like a uniform neutral dark line with a dark interior, the 'sticker' look. By eye the wood frame has only about 4 lightness steps against the reference's 5-6. The small items in the cubbies (bags, jars) are mostly 2-3 tone blobs. There is some grain and variation, with no large flat areas, but the shading craft is shallower than the Beodeul pieces, and the neutral outline decides it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16423
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top board of cubby",
+      "rows": "1-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "upper row of three cubbies with toys",
+      "rows": "11-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower row of three cubbies with items",
+      "rows": "21-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-7 form a wood-plank top band, with plank streaks. Row 8 is a lighter front-edge line (#bc9250). Row 9 is a darker step, and rows 10-13 are dark eave shadow. Below that is a front face of about 22 rows (rows 9-31) holding two rows of cubby openings with divider posts and shelf lips. The top band is 8 rows deep, so it is more than a 1-2 row rim. The cubby contents are the object's content, not a missing top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 5,
+    "evidence": "Density is not the problem: the candidate has 22 visible tones per tile against 17-20 for the stall and well, and 0% near-flat coverage, so there are no flat fills. The problems are outline and shading depth. 100% of its dark edge pixels are near-neutral, and the board shows a uniform dark line around the whole frame and each cubby, which is the sticker look. The stall (1%) and hedge (0%) references instead use tinted, material-toned edges, and the well (33%) is also well below the candidate. The wood frame carries only about 3-4 lightness steps with little grain, against 5-6 on the reference wood and roof. Most of the tone count comes from the small coloured items on the shelves, not from shaded material ramps. The lamp reference also has a neutral outline, but it is a thin pole and does not offset this on a large furniture piece. Next to the stall and well it would look flatter and more outlined, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17274
+  }
+ ],
+ "decidedAt": "2026-10-20T23:53:05.168Z",
+ "cells": {
+  "16": [
+   "1b214ef89571d135",
+   "3c74bda6c0fbf6bd",
+   "723cb417d7044acb",
+   "8c8c77471d03d135"
+  ],
+  "24": [
+   "05a9bc57b9001fba",
+   "061243fa350b216d",
+   "13eb23d50d693513",
+   "1a954a949c3b1dcb",
+   "33bc6363d4b6e210",
+   "443b6639263e76f6",
+   "4ceda86f84b1d94c",
+   "5125b4fc34d662d8",
+   "5698531a62904533",
+   "645eddb19504e28a",
+   "6f77d8c9322834a2",
+   "6faa4b3d423179d0",
+   "9a563b1a8f893384",
+   "a36c558ecc937dbc",
+   "a999c49d80b1576e",
+   "c082a6e95b356c00",
+   "cb821e06948b9572",
+   "ccda9fed2436332c",
+   "cff8f7d3dd3396bb",
+   "d63092f959e6a828",
+   "dcf54b24c4f80ff6",
+   "e0dcd159bcb0a1b4",
+   "f036f096c3980d8e",
+   "fb390699ae720c28"
+  ],
+  "32": [
+   "21cb9b36287fb71d"
+  ],
+  "48": [
+   "4515a1ac85c2b07c",
+   "59dfc78e909805e1",
+   "5d0bb964d096e9a1",
+   "98ea32a13d4934a1",
+   "a2cc06fd4a97cde5",
+   "ebe823de11acd20c"
+  ]
+ }
+}

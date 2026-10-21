@@ -1,0 +1,57 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b7",
+ "round": 4,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "food-drink-bar",
+   "pixelSha256": "9f0c38d0a3eb49dd7eb7f34814163b6f51658d52ede1124a5595e80271b7bfcb",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    4
+   ],
+   "reasons": "The dispenser and cabinet are drawn as a flat front view: the counter top is only about one light row, so there's no lit top plane like the originals have. The white cup pokes out past the right outline as a detached bright bit, and the whole piece is a thin one-tile column that looks undersized next to the 2-tile originals."
+  },
+  {
+   "id": "mart-drink-open",
+   "pixelSha256": "2a4eaeef5e7bec0696152938e15173c6f2b10f7e5ea4248b08410b458fce86b1",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "The top is a grey band with a red stripe, which reads as a front header panel, not a top surface seen from above like the mci-cooler's dark lid with boxes on it. The shelves are a pure front view with no visible plank tops, and the light grey/white body with a thin outline doesn't match the cooler's dark navy frame weight."
+  },
+  {
+   "id": "mart-gondola-snack",
+   "pixelSha256": "315e54e2622a32c7d65eda2372bda59eb30e784f99dee6374a0364dbf75149bb",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4,
+    5
+   ],
+   "reasons": "It's a flat front view with no top plane, so it reads as a framed picture, not a freestanding gondola. The snacks are muddy orange-yellow blobs on a navy backing with no clear packaging shapes. In the room it sits in the middle of the floor tiles with no ground shadow or base, so it looks like it's hovering."
+  }
+ ]
+}

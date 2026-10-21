@@ -1,0 +1,45 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b5",
+ "round": 5,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "mart-scale-station",
+   "pixelSha256": "aaf8b321584ea4c23547e5ba6b6e965888214236766bf63d2d31c862e940eb9a",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "The narrow 1-tile column stacks a small grey monitor, a green blob that floats at the top-right and a tan block holding a green lump. There's no clear lit weighing plate or counter top seen from above, so at 1x it reads as noise, not a scale station. The muddy tan and green middle and the detached green bit at the top-right look unfinished next to the clean originals."
+  },
+  {
+   "id": "museum-partition-wall",
+   "pixelSha256": "312aaa4a0952628a08cd5458278d8495fac10b81ee96d670b9a832d4f6162a77",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    5
+   ],
+   "reasons": "It's drawn as a flat front view of a wall: track lights, painting and placard on a grey panel. The top edge is only a dark outline line, with no lit cap plane to show the wall's thickness from above. In the room it looks like a wall-mounted panel sitting on the floor tiles rather than a freestanding partition with a footprint, and the lamp arms are painted above the panel into empty space."
+  }
+ ]
+}

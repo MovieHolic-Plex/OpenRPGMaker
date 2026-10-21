@@ -5,6 +5,7 @@ import { mapTileSize } from "@/project/tileGeometry";
 import { partySkillContext } from "@/project/partySkills";
 import { cancelFurniturePush } from './furniturePushAnimation';
 import { friendshipDeltaEmote } from "@/project/emotes";
+import { showRelationshipPulse } from "@/player/playSceneRelationshipPulse";
 import { showSceneEmote } from "@/player/playSceneEmotes";
 import {
   clearAudioState,
@@ -285,6 +286,7 @@ export async function runCommands(
     currentEventId, continueAfterTransfer: options.continueAfterTransfer, getEventPositions: () => scene.eventPositions,
     isEventIdle: target => isRuntimeEventIdle(scene, target),
     onFactionStanceChanged: () => invalidateFactionRetargetCache(scene),
+    onFriendshipChanged: (npcKey, delta) => showRelationshipPulse(scene, npcKey, delta),
   });
   // An awaited UI result must never resume commands after its owner/page/session was cancelled.
   const interpreter: Interpreter = { ...base, resume: value => current() ? base.resume(value) : { kind: "done" } };

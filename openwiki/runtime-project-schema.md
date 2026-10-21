@@ -133,9 +133,31 @@ width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴
 affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는 바이트 그대로. `normalizeSkillRecord` 화이트리스트(0 초과만 남김)·
 `updateSkillRecord` 패치 키 목록에 있다. 전투는 시전자 자신을 대상으로 한 타임라인 엔트리(대가 damage·흡수 healing)를 남겨 숫자가 뜬다. 상세는 runtime-battle.md 「스킬 기믹 명시화」.
 
-## 데스크톱 시작 화면 — 라이브러리 홈 (2026-10-20, 2026-10-17 플레이·만들기 두 갈래를 대체)
+## 데스크톱 시작 화면 — 라이브러리 홈 (2026-10-20, 2026-10-17 플레이·만들기 두 갈래를 대체 · 2026-10-21 칸 나누기)
 
-첫 화면은 한 본문을 내려 보는 「라이브러리 홈」이다(설계 http://mdc-server:18301/home-redesign-1.html A안, 사용자 선택 2026-10-20).
+첫 화면은 「라이브러리 홈」이다(설계 http://mdc-server:18301/home-redesign-1.html A안, 사용자 선택 2026-10-20).
+
+**2026-10-21 칸 나누기(사용자 신고 「왼쪽 버튼 누르면 상태 관리 엉망 · 홈은 지금 만들 수 있는 것만」).** 10-20 판은 한 긴 본문을 레일 단추로 스크롤했고
+스크롤 위치가 레일 표시를 다시 정했다. 실측 결함: (1) 누르자마자 표시가 「홈」으로 되돌아갔다가 스크롤이 끝나야 맞음, (2) 컨셉 상세·검색어가
+다른 단추를 눌러도 남음, (3) 검색어를 치면 격자가 줄어 스크롤이 당겨지고 표시가 「내 게임」으로 튐, (4) AI 상태가 바뀌면 홈 전체를 다시 그림,
+(5) 최근 목록이 늦게 오면 선반 위치가 밀려 스크롤 목표가 어긋남. 증상마다 고치지 않고 **지금 칸의 주인을 `state.section` 하나**로 바꿨다:
+- 레일 단추 하나 = 본문 칸 하나(`home`·`games`·`builtin`·`create`, 위 막대 「팀에 참여」 = `join`). `go(section)` 만 칸을 바꾼다 —
+  만드는 중·여는 중(`state.busy`·`feed.busy()`)이면 거절, 떠나는 칸을 `leave` 로 정리(새로 만들기면 `feed.reset()` — 상세·골라서 만들기 창 닫기,
+  검색어·분류 비우기, 맨 위), 새 칸을 상태에서 `mount`, 스크롤은 맨 위. 같은 칸을 다시 누르면 그 칸 처음 상태.
+- 비동기 결과(최근 목록·홈 컨셉·AI 상태·팀 목록)는 상태에만 넣고 `refresh(what)` 가 **지금 칸이 그 데이터를 쓸 때만** 그 칸을 다시 그린다.
+  팀 목록은 `sectionSeq` 로 늦은 응답을 버린다. 카드 그림은 `data-cover-for` 칸만 바꾼다.
+- 칸마다 `#home` 같은 history 기록 — 마우스 뒤로 단추·Alt+← 가 앞 칸으로 간다(만드는 중이면 되돌려 기록).
+- **홈 = 할 수 있는 것만**: 배너(이어서 만들기 / 처음이면 폴른 스타) · 「최근 게임」(배너 게임 빼고 4장, 「모두 보기 ›」 = 내 게임) ·
+  「지금 만들 수 있는 게임」(컨셉 출처 첫 쪽 8장, 누르면 새로 만들기 칸의 그 상세) · 「기본 게임」(작은 카드, 「자세히 ›」 = 기본 게임 칸).
+  옮긴 것: 컨셉 검색창·분류 칩·무한 격자·골라서 만들기·빈 프로젝트 → 「새로 만들기」, 전체 목록·숨김 보기·게임 파일 열기 → 「내 게임」,
+  장면 넘겨 보기·소개 글 → 「기본 게임」, 「AI 엔진이 아직 없어요」 카드 → 「새로 만들기」 맨 위(레일 AI 상태 줄은 그대로).
+- 클릭 행렬 스크립트 `scripts/qa/start-screen-nav.mjs`(vitest 아님, 가짜 브리지, 모든 순서쌍·연타·상세/검색 누수·뒤로 가기·늦은 목록) — 53개 확인.
+  증거 `verify-shots/start-screen-ux/`(before = 10-20 판, after, electron = 실제 앱에서 순서쌍 16 + 상세 누수·뒤로 가기 확인).
+- 기본 게임 그림(같은 날 다시 찍음): 데모를 다듬는 브랜치의 스냅숏(`git worktree add --detach`)에서 `home-builtin` 시나리오를 돌리고
+  `HOME_SHOTS_FALLEN=… HOME_SHOTS_ASTRA=… python3 scripts/content/bake-home-builtin-art.py` 로 굽는다. 이제 480×270 1배 무손실 webp
+  (화면이 pixelated 로 키운다). 이 머신은 크로미움이 ERR_NETWORK_CHANGED 로 백지가 되므로 시나리오는 `unshare -rn`(lo 올림) 안에서 돌렸다.
+
+아래는 10-20 판 설명이다 — 「선반으로 스크롤」·「lead」 부분은 위 칸 나누기로 바뀌었다.
 위에서부터 큰 배너 하나(「이어서 만들기」 — 마지막으로 편집한 게임) → 「내 게임」 선반 → 「기본 게임」 선반 → 「컨셉에서 시작」 피드.
 2026-10-17 판의 「플레이」·「만들기」 두 갈래는 없앴다 — 게임 카드마다 「플레이」와 「편집」이 같이 있어 갈래를 나눌 이유가 없다(`oprn:start-mode` 는 더 읽지 않는다).
 컨셉 피드 설계: `docs/superpowers/specs/2026-10-07-concept-feed-design.md`.
@@ -146,14 +168,14 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
   + 지연 툴팁 시트(`@/styles/map/delayed-tooltip.css` — 없으면 창 단추 툴팁 「닫기」가 레일 위에 맨 글자로 남았다).
   틀은 `src/start/launcherShell.ts` + `launcher.css`(`ln-`·`hm-` 접두, 층 밖): 레일(브랜드 · 홈 · 내 게임 · 기본 게임 · 새로 만들기 | 에셋 스토어,
   바닥에 AI 상태 줄 `start-ai-status` · 설정 `start-settings-open` · 판 번호 · 언어), 위 막대(컨셉 입력창 + 「폴더 열기」·「팀에 참여」), 본문 한 칸.
-  레일의 홈·내 게임·기본 게임·새로 만들기는 화면을 바꾸지 않고 본문 안 선반(`data-nav`)으로 스크롤하며, 스크롤 위치가 레일 표시를 바꾼다. 에셋 스토어는 브라우저 창.
+  레일의 홈·내 게임·기본 게임·새로 만들기는 본문 칸을 바꾼다(2026-10-21, 위). 위 막대 입력창은 「새로 만들기」 칸에서만 보인다. 에셋 스토어는 브라우저 창.
   아이콘은 `src/start/icons.ts` 의 선 SVG 하나뿐 — 이모지·색 배지를 쓰지 않는다.
 - **본문 위쪽**: `src/start/home/homeView.ts` 가 그리고 컨셉 피드(`mode: "launcher"`)의 `lead` 로 넘긴다.
   - 배너: 표지를 흐린 배경 + 오른쪽 16:9 액자, 주 단추 금색 「▶ 이어서 만들기」, 곁 「플레이」. 게임이 없으면 「처음이라면 먼저 해 보세요」 — 기본 게임 폴른 스타.
   - 「내 게임」: 최근 편집 순 5장 + 「새 게임」 칸, 「게임 파일 열기」·「모두 보기 (n)」. 마우스를 올리면 「플레이」·「편집」.
     같은 이름이 여럿이면 화면 언어 날짜를 붙인다(`displayTitles`, 「새 게임 · 10월 12일」). 처음 켠 상태는 「첫 게임 만들기」 + (AI 가 없으면) 막지 않는 안내 카드.
   - 「기본 게임」: `src/start/home/builtinGames.ts` 한 표(편집기 「새 게임」 덮는 창도 같은 표). 그림은 출하 플레이어(player.html)로 기본 해상도 그대로 찍어
-    (`scripts/qa/runtime/home-builtin.scenario.mjs`, 픽스처 `home-builtin-fixture.mts`) `scripts/content/bake-home-builtin-art.py` 가 논리 480×270 의 정확히 2배 webp 로 굽는다
+    (`scripts/qa/runtime/home-builtin.scenario.mjs`, 픽스처 `home-builtin-fixture.mts`) `scripts/content/bake-home-builtin-art.py` 가 논리 480×270 1배 무손실 webp 로 굽는다(10-21 전에는 2배 손실)
     (`public/assets/start/builtin/`). 아스트라는 480×320(GBA 비율, 장르 고정)이라 무대 가운데 16:9 를 자른다. 마우스를 올리면 오프닝·첫 필드를 넘겨 보인다.
     소개는 하는 사람 기준 한 줄 — 「96px 보스전」 같은 만든 사람 수치는 쓰지 않는다.
   - 「컨셉에서 시작」 머리 오른쪽 글자 단추 「골라서 만들기 ›」(빠른 인터뷰)·「빈 프로젝트 ›」. 카드 큰 그림은 그 컨셉이 지어질 칩셋의 등록 장소 그림
@@ -1260,7 +1282,7 @@ bytes after real remote reload and Test Play. The default is not remote proof.
 - Gen1 battle metadata is additive and optional in schema v3: `SkillRecord.maxPp` (1..99) and `gen1CriticalRate: "normal"|"high"`, `StateRecord.gen1MajorStatus` (`poison|burn|sleep|freeze|paralysis`), `TroopRecord.trainerBattle`, and `ItemCaptureProfile.ballClass` (`poke|great|ultra|master`). Omission keeps the compatibility contract: no authored PP cap, normal critical class, no major-status semantic, wild/non-trainer troop, and the existing capture `multiplier` path. Normalization drops invalid metadata while preserving valid values through load/save, so this optional expansion does **not** bump `SCHEMA_VERSION` or require migration.
 - The `monster-collect` genre preset must set the canonical selectors `system.battleParty = "monsters"` and `system.battleFlow = "strict"` in addition to the legacy `monsterBattleParty` compatibility flag, Pokemon battle UI, and `battleModel = "gen1"`. A Pokemon skin/model without the canonical party/flow selectors is not a complete preset.
 - `system.battleHitFeel?: "impact" | "light" | "calm"` (2026-09-27) is the battle hit-feel preset, independent of the skin. `normalizeSystemRecords` keeps only `light`/`calm`; the default `impact` and unknown values are omitted, so old projects open as `impact` with byte-identical JSON. Source of truth `src/project/battleHitFeel.ts`; runtime contract in `openwiki/runtime-battle.md` (타격감 프리셋).
-- Optional `system.playResolution` is the project-authored logical play viewport. Omission remains byte-compatible with the legacy 320×240 default; `normalizePlayResolution` truncates and clamps authored values to 320–1920 × 240–1080 and drops an explicit default. `validateSystem` requires numeric width/height when the field exists, so serialize → deserialize preserves a valid custom viewport without a schema-version bump. `createPlayGame` uses it for Phaser, while `createPlaySurface` publishes matching CSS variables and geometry for title/runtime DOM. Dialogue width, lighting masks, and runtime marker culling derive from the live host/camera rather than fixed 320×240 constants. `calculatePlaySurfaceScale` keeps integer pixel-perfect upscaling when the stage fits at 1× or larger, but uses a fractional contain scale below 1× so a large authored stage never crops inside a smaller host. Battle keeps its separate 640×480 logical stage contract.
+- Optional `system.playResolution` is the project-authored logical play viewport. Omission remains byte-compatible with the legacy 320×240 default; `normalizePlayResolution` truncates and clamps authored values to 320–1920 × 240–1080 and drops an explicit default. Exception (2026-10-21): with `dialogueStyle: "dual-fullbody-veil"` an absent value means the 1024×768 / zoom 3.2 fullbody stage, so `normalizeSystemRecords` keeps an explicit 320×240 (and `cameraZoom: 1`) there (`keepsExplicitDefaultResolution`); the fullbody upgrade in `resolvePlayResolution`/`resolveCameraZoom` applies only when `playResolution` is absent, never over an authored value. `validateSystem` requires numeric width/height when the field exists, so serialize → deserialize preserves a valid custom viewport without a schema-version bump. `createPlayGame` uses it for Phaser, while `createPlaySurface` publishes matching CSS variables and geometry for title/runtime DOM. Dialogue width, lighting masks, and runtime marker culling derive from the live host/camera rather than fixed 320×240 constants. `calculatePlaySurfaceScale` keeps integer pixel-perfect upscaling when the stage fits at 1× or larger, but uses a fractional contain scale below 1× so a large authored stage never crops inside a smaller host. Battle keeps its separate 640×480 logical stage contract.
 - System graphics: `system.titleResourceId` / `titleScreen.backgroundResourceId` drive the title background via `applyTitleScreenBackground` (default `rpg-zzu-title-field` 320×240 llm-provider pixel-art night village + crest logo `rpg-zzu-title-logo-crest` (scripts/generate-system-title-art.mts)). Changing `titleScreen.backgroundResourceId` must not clear `system.titleResourceId`. Optional `titleScreen.titleGraphic` (`mode` text|graphic|both + logo resource/x/y) renders title logo independently of the background. `system.systemResourceId` is the 9-slice windowskin (`applySystemGraphic` → `--runtime-window-skin`). `system.battleSystemResourceId` is the RM2k3 **System2** gauge/number/arrow chrome sheet (80×96 EasyRPG System2A/B/C) — **not** a windowskin and **not** a battle field backdrop. `applyBattleSystemGraphic` chroma-keys the sheet (top-left orange key), sets `--runtime-battle-system2`, and publishes slice CSS vars (`--system2-hp-fill-*`, `--system2-sp-fill-*`, `--system2-at-fill-*` from `src/assets/system2Sheet.ts`) consumed by `.battle-stat-bar` / `.battle-atb-bar`. Battle field art uses `resolveBattleBackdrop` (override → troop `previewBackgroundResourceId` → terrain → `generated-battle-reference-forest`); editor command previews and DB battle-screen labels must use the same fallback and never substitute System2. Runtime UI SFX use short RM2k3 cursor/decision/cancel wavs (`src/player/runtimeJuice.ts`); title can override cursor/confirm SE via `titleScreen.sounds.*SeResourceId` (`soundResourceId` on juice). Avoid long chimes on every menu open. The authored default runtime windowskin ships as `public/assets/ui/windowskin-warm.png`, a warm brown 9-slice painted through the same `--runtime-window-skin` variable (`src/styles/runtime/system.css`) and consumed via `border-image` by the status-menu party cards, detail panel, and command dock; `system.systemResourceId` still overrides it per project.
 - Runtime pixel typography: `--runtime-pixel-font` (`src/styles/runtime/system.css`) lists `NeoDunggeunmo` first, ahead of the existing `Galmuri11` / `Galmuri9` / `GulimChe` / `DotumChe` / `"MS Gothic"` / `monospace` fallbacks, so the fallback chain stays intact when the webfont is unavailable. The face is declared with `@font-face` loading `public/assets/fonts/neodgm.woff2` (Neo둥근모, SIL Open Font License; license text kept alongside the file at `public/assets/fonts/LICENSE-neodgm.txt`). Neo둥근모 is wider per glyph than Galmuri at the same authored `font-size`, so runtime surfaces that pack text into fixed-width grid columns must be re-measured after touching this variable rather than assumed safe.
 - Title menu options are id-based (`newGame` / `continueGame` / `quit`) and filtered by `titleScreen.menuVisibility` through `listTitleMenuOptions` (newGame always visible). Keyboard (↑↓ / Z·Enter / X·Esc) and mouse/touch click target only visible options. Click handlers live on `titleScreen.ts` options; `playInputBlocker` allows pointer events whose target is a title option (`title-new-game` / `title-load-game` / `title-quit-game`) while still blocking field pointer input. Optional `titleScreen.showInputHint` (default true) toggles the on-screen key hint. E2E should prefer `startNewGameFromTitle` from `test/e2e/runtimeInput.ts` (Enter) for stability; title option clicks are also valid for real users.

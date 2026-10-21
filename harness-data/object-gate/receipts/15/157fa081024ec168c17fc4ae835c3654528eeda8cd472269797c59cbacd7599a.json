@@ -1,0 +1,505 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "157fa081024ec168c17fc4ae835c3654528eeda8cd472269797c59cbacd7599a",
+ "width": 64,
+ "height": 64,
+ "kind": "structure",
+ "name": "jp-inaka-waterwheel-mill",
+ "label": "jp_inaka_pack/jp-inaka-waterwheel-mill",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 17,
+  "darkV5": 38,
+  "nearBlackEdge": 0.89,
+  "opaqueTiles": 12
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mill thatched roof plane (tile/straw texture, sloped, above eave line)",
+      "rows": "7-23",
+      "evidence": "c",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-25"
+     },
+     {
+      "part": "mill wooden wall body (front face with door and posts)",
+      "rows": "26-50",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone foundation base",
+      "rows": "50-55",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden water flume/trough with water, upper right",
+      "rows": "8-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "waterwheel",
+      "rows": "29-52",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone pool basin with water at lower right",
+      "rows": "51-62",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 17,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body (the mill house) has a large sloped thatched roof at rows 7-23 with a lighter front-edge line at rows 21-22 and a dark eave shadow at rows 24-25 (width profile widens 45 to 54 down the roof), then a wooden front wall of about 25 rows (26-50) on a stone base. This gives a top roof surface and a front face, so it reads as three-quarter. The flume at upper right is only a vertical face and the waterwheel is a front-facing disc, so not every part shows a top. The basin at lower right has water visible inside (rows 51-55)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts are at reference level: 11 visible tones per 16x16 tile against 12 and 10 for the references, 0% near-flat coverage like both references, and only 13% neutral dark edge pixels, so the outlines are tinted. By eye the outlines are dark olive-brown beside the moss roof and dark brown beside the wood, not a black sticker line. The mossy roof has a light top band, mid and dark tones, and speckle. The planked walls, stone base, door and waterwheel are each shaded with several steps, and the stream adds a bright accent. Roof and wall ramps look a little shallower than the references' 6-step tile scallops and per-stone shading. The total of 34 colours is lower than the references' 66 and 185, but that is expected with a locked palette and the visible tone count holds. A careful artist would accept it next to the references as a smaller, slightly simpler piece of the same craft level.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15559
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mill roof (mossy thatch slope)",
+      "rows": "7-22",
+      "evidence": "c",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-25"
+     },
+     {
+      "part": "mill wall front face with door",
+      "rows": "26-50",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone foundation",
+      "rows": "51-55",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "basin with water",
+      "rows": "51-55",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "waterwheel (face-on disc)",
+      "rows": "29-50",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "flume trough with falling water",
+      "rows": "8-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the mill house. Its roof is a wide sloped plane in rows 7-22 with tile or moss texture. A lighter front-edge line sits at rows 21-22, followed by dark brown eave shadow at rows 23-25. Below it is a south wall face of about 25 rows (26-50) with a door recess and a stone base at rows 51-55. The silhouette widens from 33 to 54 across the roof rows, which fits a sloped roof seen from above. The waterwheel and flume are drawn face-on, but they are secondary parts. The basin at the lower right shows water inside it (rows 52-54)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small mill: mossy thatch roof, plank walls with a door, and a spoked waterwheel with a water flume. It is smaller and simpler than the two references, but the measured facts are on par with them. It has 11 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage like both, and only 13% neutral dark edge pixels, so the outlines carry a tint. The outlines read as dark brown beside wood and dark olive beside the moss roof, not as a black sticker line. The roof has mottled moss and grain dots, the walls have plank lines and shading, and the wheel and water are separated by value. By eye it has about 4 lightness steps on the roof and walls, against 5-6 on the reference tile roofs, and it lacks per-tile scallops. That makes it slightly thinner than the references, but there are no flat fills and no sticker look. A careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22375
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mill thatched/mossy roof plane",
+      "rows": "8-23",
+      "evidence": "c",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "mill timber wall with door (front face)",
+      "rows": "26-50",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone foundation step",
+      "rows": "51-55",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water trough opening with water",
+      "rows": "51-55",
+      "evidence": "d",
+      "front_edge_line_row": 55,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "waterwheel (face-on disc)",
+      "rows": "30-50",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden flume with falling water",
+      "rows": "8-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main mill building has a wide sloped roof plane in rows 8-23 (tile/thatch texture), ending in a light front-edge line at about row 22 and 2 rows of dark eave shadow at rows 23-24. Below it is a wall with a door, rows 26-50, on a stone base to row 55, so the front face is well over 3 rows. The roof widens from 45 to 54 px toward the eave, which gives the slope. The waterwheel and the top-right flume are drawn face-on as vertical elements. They are small side attachments next to the main roofed body. The bottom-right trough shows water inside its opening at rows 51-55, with a front face below."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a much smaller building than the references. Measured facts: 11 visible tones per 16x16 tile (references 12 and 10), 0% near-flat coverage (same as both references), and only 13% neutral dark edge pixels, so the outlines carry a tint. By eye, the outlines are dark olive and brown beside the mossy thatch and wood. The roof has a light rim, olive mid-tones, moss speckle and dark eave shadow, about 4 steps. The walls show plank grain, with a stone footing and a shaded waterwheel. This is less crisp than the scalloped per-tile roofs and one-by-one shaded stones of the references, and the total of 34 raw colours is low, but the visible-tone numbers match the references. No large flat fills and no sticker-like black outline. It passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 30038
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mill thatched roof plane",
+      "rows": "8-22",
+      "evidence": "c",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-25"
+     },
+     {
+      "part": "mill wooden body front wall",
+      "rows": "26-50",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone foundation base",
+      "rows": "51-55",
+      "evidence": "a",
+      "front_edge_line_row": 51,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water trough/flume at top right",
+      "rows": "8-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "waterwheel",
+      "rows": "30-50",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water basin with stone front",
+      "rows": "50-62",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body (mill house) has a large sloped thatched roof plane at rows 8-22. It is textured and widens from 45 to 53 px, and it ends in a light front-edge line at rows 21-22 followed by dark eave shadow at rows 23-25. Below it is a wooden front wall of about 25 rows (26-50) on a stone base. The roof is the top surface (evidence c). The waterwheel, the flume at top right and the basin are secondary parts. The flume is drawn as a vertical panel with no visible top. The basin shows water inside (evidence d)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "Measured facts put the candidate level with the references. It has 11 visible tones per 16x16 tile against 12 (h101) and 10 (h112 stone). Near-flat coverage is 0%, the same as both references. Only 13% of its dark edge pixels are neutral, so the outlines are tinted: dark brown beside the wood and the roof, dark olive beside the moss. By eye, the mossy roof has banded courses with light and dark speckle. The plank walls are grained, the plinth stones are shaded individually, and the wheel has spokes and rim detail. Shading is shallower than the references, at about 4-5 steps per material against their 5-6, and the total of 34 distinct colours is below 66 and 185. The building is also smaller and simpler. Even so, no area is a flat fill and the outlines are not a black sticker line, so a careful artist would accept it beside the references."
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16767
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:03.901Z",
+ "cells": {
+  "16": [
+   "087bfd28a7c3cdc0",
+   "0d39d8b0d069f45d",
+   "0ddee8c7cb70a865",
+   "284243c9cdff6eec",
+   "30abcaffe3d49960",
+   "42ce41c7a25aa716",
+   "6573008a47af6c04",
+   "6c126127ba1592de",
+   "a95300cea6fd88b1",
+   "af143d8d0e1a980e",
+   "d39b354ff5338960",
+   "d6f1fe5ec78e1534",
+   "d9e6c48b9a228593",
+   "e0782dbf983ef6fa",
+   "f148a9a651414596",
+   "f7e9433795236c4f"
+  ],
+  "24": [
+   "0014429c5a52c48b",
+   "026e2c37a18ac126",
+   "0301869e581bf35f",
+   "0338d5671b6f37cd",
+   "0ca15cf2031af57a",
+   "1251d5bc33a84a29",
+   "130298e0695552a1",
+   "1acb52d4f4c25173",
+   "1b0c4ef19c36b2d4",
+   "23c98ac0c899c42a",
+   "253e53323a1ce092",
+   "2601c9e0ed063e03",
+   "2b83ebf2a1337f9c",
+   "2d8964e3723ac1ae",
+   "2f0eb6048a742a48",
+   "2f1807c22b3a926a",
+   "3ee9658d13bcb27f",
+   "40f32f8bc542e39e",
+   "426cc9ef13ef80b7",
+   "4495cc961122985e",
+   "488f494049aeb087",
+   "493e76c9c727386d",
+   "4a980c780906f739",
+   "4ad361ea42af9822",
+   "4d18453c1972fe82",
+   "535a113a076d7dec",
+   "5499b13ec0f61ffd",
+   "61be426810a9612f",
+   "6d977507a10fc9a0",
+   "7a2e9b282d316fb4",
+   "8664e1d1ca692176",
+   "8d3feb32128f18aa",
+   "91d4132fad635a9d",
+   "922ae7a30114b888",
+   "93a9dfd29df33f03",
+   "9405664b179a6183",
+   "98513cabfb205e53",
+   "a0aa4531f4f6c15c",
+   "a4c0de4c3be43828",
+   "a6588d5d6462fe46",
+   "aea56fb70c270e89",
+   "af570244dd1ce875",
+   "b2233f72e8256c67",
+   "c3eba3cf882ff20f",
+   "c55a88db9ff43b64",
+   "c5944e68a1e2b63d",
+   "cfc3115a4cde79da",
+   "e5e769976fe8c5f3",
+   "ea24fbee47b278ba",
+   "eb8a97cae5d23d32",
+   "f3315da73b111a85",
+   "f3849ffacbf94266",
+   "f8ea738f4b9867b4",
+   "ffbee70f805fd54f"
+  ],
+  "32": [
+   "12fea59081dc5555",
+   "2297a2f9c54c1654",
+   "33e2d150cbc61a38",
+   "78c7bbb98ea81468"
+  ],
+  "48": [
+   "009bd78ec9439e6e",
+   "02cd47cbf2ec9c66",
+   "13d90740acf618ff",
+   "2012b4fa62296851",
+   "3134a024af4f1508",
+   "32dcc452e0517fea",
+   "444bd8d8f8022f6b",
+   "44f1ff0c1899b60a",
+   "4b8cf14a002c6ba1",
+   "54e42b4041dae6be",
+   "6da1aad07a0cb2ec",
+   "6ec9c37a2355414a",
+   "71a6322eed6287b7",
+   "72241cae8c928fc4",
+   "7ff09453f95f2514",
+   "8230ec6bbefcb31b",
+   "87542fb9a0e3f14c",
+   "8c25dae9b2e52868",
+   "9b29e099ebd5636a",
+   "a2c1aa7cdae3efae",
+   "cde7cf197532cb93",
+   "d80a577f44561e75",
+   "de876603faeefcc1",
+   "fc662046ec619a5d"
+  ]
+ }
+}

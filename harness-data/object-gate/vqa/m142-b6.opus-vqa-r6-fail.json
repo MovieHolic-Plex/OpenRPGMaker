@@ -1,0 +1,65 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b6",
+ "round": 6,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "rest-bottle-shelf",
+   "pixelSha256": "c894d591cc827a79566731d0027ed9e5b66a0d03ed7c233dad711b81ee40a3ce",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The top is only a 1–2 row brown strip over a flat front of shelves, so there's no lit top plane like the cooler original has. The bottles are a dense, noisy mix of red, green and white pixels with no clear shading steps, and they read as clutter rather than distinct bottles."
+  },
+  {
+   "id": "roof-fence",
+   "pixelSha256": "48f9e9e6f0437d1bec86b64341f2d83b5bfc0fdaedeedec7f0ce7e4dc252e48b",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    3
+   ],
+   "reasons": "It's a flat front view of a lattice panel inside a dark frame with a tan strip on top, so there's no rail or top plane from above. At 1x the green diamond lattice reads as a rug or screen, not a fence. The dark posts and the saturated green don't match the originals' palette."
+  },
+  {
+   "id": "roof-stair-hut",
+   "pixelSha256": "8d6fa31b0611d804914a17031fc77d144b95a6994df777ab6b90bec6d4c8b3d7",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    3
+   ],
+   "reasons": "The rooftop stair hut is drawn at about one cabinet's height, much too small for a structure with a door that people walk through. In the room it reads as a grey counter or cabinet with a tiny blue door and a green exit sign stuck on it. The front wall panels are flat grey blocks with almost no shading."
+  },
+  {
+   "id": "school-cleaning-locker",
+   "pixelSha256": "90618ed957ce1a4a5fd3afbfa06fee4ca1519d666811e5ca4bd6857ac894eb77",
+   "verdict": "FAIL",
+   "failed": [
+    4,
+    5
+   ],
+   "reasons": "The red dustpan at the bottom-left and the broom and bucket on the right hang off the locker's edges, and the dustpan pokes past the locker's base, outside its own footprint. The locker body is a narrow grey strip whose top cap is only about 2 light rows, and the leaning tools look like detached sticker bits."
+  }
+ ]
+}
