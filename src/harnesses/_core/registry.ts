@@ -27,6 +27,7 @@ import { DUNGEON_CHIPSET_HARNESS } from "../dungeon-chipset/harness";
 import { OBJECT_GATE_HARNESS } from "../object-gate/harness";
 import { INTERVIEW_SCENE_BANK_HARNESS } from "../interview-scene-bank/harness";
 import { BATTLE_TRAINER_SPRITES_HARNESS } from "../battle-trainer-sprites/harness";
+import { BUILDING_KIT_HARNESS } from "../building-kit/harness";
 
 export const HARNESSES: readonly HarnessManifest[] = [
   MONSTER_COLLECT_SPECIES_HARNESS,
@@ -51,6 +52,7 @@ export const HARNESSES: readonly HarnessManifest[] = [
   OBJECT_GATE_HARNESS,
   INTERVIEW_SCENE_BANK_HARNESS,
   BATTLE_TRAINER_SPRITES_HARNESS,
+  BUILDING_KIT_HARNESS,
 ];
 
 export function getHarness(id: string): HarnessManifest | undefined {
