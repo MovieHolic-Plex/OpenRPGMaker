@@ -235,9 +235,10 @@ const autoLastSeen = new WeakMap<object, Map<string, number>>();
 const autoMap = new WeakMap<object, string>();
 
 /** 문 칸과 그 위·아래 두 줄(문간으로 오는 길) — 여기 누가 서 있으면 문이 열린다. 한 걸음 앞에서 열리기 시작해야 걸어 들어갈 때 다 열려 있다. */
-const APPROACH_ROWS = 2;
+// 자동문(미닫이)은 두 줄 앞에서, 여닫이는 한 줄 앞에서 — 여닫이 앞에 두 줄 떨어져 서서 이야기하는 사람 때문에 문이 열린 채 남지 않게.
 function occupiesApproach(door: MapDoorDef, x: number, y: number): boolean {
-  return x >= door.x && x < door.x + door.w && y >= door.y - APPROACH_ROWS && y < door.y + door.h + APPROACH_ROWS;
+  const rows = door.style === "slide" ? 2 : 1;
+  return x >= door.x && x < door.x + door.w && y >= door.y - rows && y < door.y + door.h + rows;
 }
 
 function someoneNear(scene: PlaySceneContext, door: MapDoorDef): boolean {
