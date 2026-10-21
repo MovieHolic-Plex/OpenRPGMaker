@@ -1,0 +1,21 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "modern-city-interior-m142-b6",
+ "title": "modern_city 실내 기물 m142-b6 (2) — object-gen 다시 그림, 사용자 위임·Opus 적대 VQA 통과 2026-10-21",
+ "note": "delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/m142-b6.opus-vqa-r*.json",
+ "createdAt": "2026-10-21T01:07:37.687Z",
+ "items": [
+  {
+   "sha": "ccaf8ec849b18fe6b27165a04338e2fa10b3a6c70cc22f139026c2b21eb7a368",
+   "kind": "frame",
+   "label": "modern_city_interior/rest-wine-rack",
+   "source": "/home/main/.cache/ogm142/ship/m142-b6/rest-wine-rack.png"
+  },
+  {
+   "sha": "761b9dd5521073a9383c041c3076e70e3b6da2a724f7c6ae710089cd67de70ef",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/roof-water-tank",
+   "source": "/home/main/.cache/ogm142/ship/m142-b6/roof-water-tank.png"
+  }
+ ]
+}
