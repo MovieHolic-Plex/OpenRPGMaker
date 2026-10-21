@@ -1,4 +1,6 @@
 import type { MapBackground, MapBackgroundFit, MapBackgroundLayer } from "@/project/types";
+import { resolvePlayResolution } from "@/project/playResolution";
+import { resolveCameraZoom } from "@/project/cameraZoom";
 
 /**
  * 맵 배경(파노라마) 저작 규칙 — 타입·클램프·정리.
@@ -187,4 +189,115 @@ export function normalizeMapBackground(value: unknown): MapBackground | undefine
     ...(record.loopY === false ? { loopY: false } : {}),
     ...(layers ? { layers } : {}),
   };
+}
+
+/**
+ * 움직임 프리셋 — 숫자 칸(흐름 px/프레임·깊이 %)을 몰라도 고를 수 있는 다섯 가지. 편집기 「움직임」 버튼과
+ * 조수 `set_map_properties.background.motion` 이 같은 함수를 쓴다. 스택 전체(첫 장 + layers)에 건다.
+ *
+ * - fixed: 화면에 붙어 움직이지 않는다(RM2K3 기본).
+ * - slowParallax: 먼 층은 천천히, 가까운 층은 조금 더 카메라를 따라간다(깊이 0.1 → 0.5). 자동 흐름은 둔다.
+ * - flowX / flowY: 카메라와 무관하게 그 축으로 계속 흐른다(구름·별·흐르는 물). 그 축은 반복을 켠다.
+ * - followCamera: 타일과 같이 움직인다(깊이 100%) — 위에서 본 바다처럼 「바닥」 같은 배경.
+ */
+export const MAP_BACKGROUND_MOTIONS = ["fixed", "slowParallax", "flowX", "flowY", "followCamera"] as const;
+export type MapBackgroundMotion = (typeof MAP_BACKGROUND_MOTIONS)[number];
+
+export const MAP_BACKGROUND_MOTION_LABELS: Readonly<Record<MapBackgroundMotion, { readonly name: string; readonly hint: string }>> = {
+  fixed: { name: "고정", hint: "화면에 붙어 움직이지 않음" },
+  slowParallax: { name: "느린 시차", hint: "걸으면 먼 층은 천천히, 가까운 층은 조금 빨리" },
+  flowX: { name: "가로 흐름", hint: "계속 옆으로 흐름(구름·별)" },
+  flowY: { name: "세로 흐름", hint: "계속 위아래로 흐름(폭포·눈·우주 비행)" },
+  followCamera: { name: "타일과 같이", hint: "바닥처럼 맵과 함께 움직임(위에서 본 바다)" },
+};
+
+type MotionLayer = MapBackground | MapBackgroundLayer;
+
+function withMotion<T extends MotionLayer>(layer: T, motion: MapBackgroundMotion, index: number, count: number): T {
+  const next = { ...layer } as T & { scrollX?: number; scrollY?: number; cameraFollow?: number; loopX?: boolean; loopY?: boolean };
+  const clear = (key: "scrollX" | "scrollY" | "cameraFollow"): void => { delete next[key]; };
+  switch (motion) {
+    case "fixed":
+      clear("scrollX"); clear("scrollY"); clear("cameraFollow");
+      break;
+    case "slowParallax": {
+      const follow = count <= 1 ? 0.3 : Math.round((0.1 + (0.4 * index) / (count - 1)) * 20) / 20;
+      next.cameraFollow = follow;
+      break;
+    }
+    case "flowX":
+      clear("scrollY"); clear("cameraFollow");
+      next.scrollX = Math.round((0.25 + 0.25 * index) * 100) / 100;
+      delete next.loopX;
+      break;
+    case "flowY":
+      clear("scrollX"); clear("cameraFollow");
+      next.scrollY = Math.round((0.25 + 0.25 * index) * 100) / 100;
+      delete next.loopY;
+      break;
+    case "followCamera":
+      next.cameraFollow = 1;
+      break;
+  }
+  return next;
+}
+
+/** 배경 스택 전체에 움직임 프리셋을 건다. 그림·맞추기·빈 칸 설정은 그대로 둔다. */
+export function applyMapBackgroundMotion(background: MapBackground, motion: MapBackgroundMotion): MapBackground {
+  const layers = background.layers ?? [];
+  const count = 1 + layers.length;
+  const base = withMotion(background, motion, 0, count);
+  if (layers.length === 0) return base;
+  return { ...base, layers: layers.map((layer, at) => withMotion(layer, motion, at + 1, count)) };
+}
+
+/** 지금 저작값이 어느 프리셋과 같은가(편집기 버튼 강조용). 손으로 고친 값이면 undefined. */
+export function detectMapBackgroundMotion(background: MapBackground): MapBackgroundMotion | undefined {
+  const strip = (bg: MapBackground): string => JSON.stringify([bg, ...(bg.layers ?? [])].map((layer) => [
+    layer.scrollX ?? 0, layer.scrollY ?? 0, layer.cameraFollow ?? 0, layer.loopX !== false, layer.loopY !== false,
+  ]));
+  const current = strip(background);
+  return MAP_BACKGROUND_MOTIONS.find((motion) => strip(applyMapBackgroundMotion(background, motion)) === current);
+}
+
+/**
+ * 플레이 화면이 보여 주는 월드 영역(논리 px) = 해상도 / 기본 카메라 배율. cover 배율은 이 크기를 덮게 잡는다.
+ * 편집기 캔버스·배경 탭 미리보기가 이 값으로 배율을 맞춰야 「편집기에서 본 크기 = 게임에서 본 크기」 가 된다
+ * (예전 편집기 미리보기는 편집기 창 크기를 기준으로 덮어 게임과 배율이 달랐다).
+ */
+export function mapBackgroundGameViewport(
+  system: Parameters<typeof resolvePlayResolution>[0] & Parameters<typeof resolveCameraZoom>[0],
+): { readonly width: number; readonly height: number } {
+  const resolution = resolvePlayResolution(system);
+  const zoom = resolveCameraZoom(system);
+  const safeZoom = Number.isFinite(zoom) && zoom > 0 ? zoom : 1;
+  return { width: Math.ceil(resolution.width / safeZoom), height: Math.ceil(resolution.height / safeZoom) };
+}
+
+/** 그림을 게임 화면에 맞추는 배율 — 플레이(`mapBackgroundFitScale`)와 같은 식. */
+/**
+ * 「화면에 맞춤」 으로 넘치는 축을 가운데에 맞추는 위상(논리 px). 넘치지 않는 축과 native 는 0.
+ * 예전에는 왼쪽 위에 붙여 16:9 그림을 4:3 화면에 깔면 오른쪽 1/4 이 늘 잘렸다(2026-10-21 감사).
+ * 플레이(`playSceneMapBackground`)·탭 미리보기·편집기 캔버스가 같은 값을 쓴다.
+ */
+export function mapBackgroundCoverCentre(
+  fit: MapBackgroundFit | undefined,
+  viewport: { readonly width: number; readonly height: number },
+  source: { readonly width: number; readonly height: number },
+): { readonly x: number; readonly y: number } {
+  if (fit !== "cover") return { x: 0, y: 0 };
+  const scale = mapBackgroundCoverScale(fit, viewport, source);
+  return {
+    x: Math.max(0, Math.round((source.width * scale - viewport.width) / 2)),
+    y: Math.max(0, Math.round((source.height * scale - viewport.height) / 2)),
+  };
+}
+
+export function mapBackgroundCoverScale(
+  fit: MapBackgroundFit | undefined,
+  viewport: { readonly width: number; readonly height: number },
+  source: { readonly width: number; readonly height: number },
+): number {
+  if (fit !== "cover") return 1;
+  return Math.max(viewport.width / Math.max(1, source.width), viewport.height / Math.max(1, source.height));
 }

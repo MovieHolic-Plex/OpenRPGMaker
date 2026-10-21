@@ -117,6 +117,10 @@
   scroll-margin-top: 20px;
 }
 
+/* 항목 하나만 연다(showSection 이 hidden 을 건다). display:flex 가 [hidden] 을 이겨 모든 항목이 한꺼번에 보이던 결함
+   (2026-10-21 감사: 「맵 배경」 을 눌러도 「기본 설정」 부터 열려 배경 칸을 찾아 내려가야 했다). */
+.map-props-section-block[hidden] { display: none; }
+
 .map-props-section-block:last-child {
   min-height: 100%;
 }
@@ -530,6 +534,84 @@
   background: var(--bg-raised);
 }
 
+/* ── 맵 배경 견본 카드 · 게임 화면 미리보기 (2026-10-21) ── */
+.map-bg-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 10px;
+}
+.map-bg-preset-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 0 8px;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  background: var(--bg-raised);
+  cursor: pointer;
+  overflow: hidden;
+  text-align: left;
+  color: var(--text-1);
+}
+.map-bg-preset-card:hover { border-color: var(--accent); }
+.map-bg-preset-card[aria-pressed="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+.map-bg-preset-thumb {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #000;
+  border-bottom: 1px solid var(--border-default);
+  margin-bottom: 4px;
+}
+.map-bg-preset-thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  image-rendering: pixelated;
+}
+.map-bg-preset-name { padding: 0 8px; font-weight: 700; font-size: 13px; }
+.map-bg-preset-view { padding: 0 8px; font-size: 12px; color: var(--text-2, #6B5F52); }
+.map-bg-preset-card[aria-pressed="true"] .map-bg-preset-name::after { content: " ✓"; color: var(--accent); }
+.map-bg-source-row { flex-wrap: wrap; gap: 8px; }
+.map-bg-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-inset);
+  font-size: 13px;
+}
+.map-bg-status.is-warn {
+  border-color: #c9772a;
+  background: color-mix(in srgb, #f2a640 14%, var(--bg-raised));
+}
+.map-props-hint.is-warn { color: #a85a12; }
+.map-bg-live { margin: 0; display: flex; flex-direction: column; gap: 4px; }
+.map-bg-live-canvas {
+  display: block;
+  width: min(100%, 640px);
+  aspect-ratio: auto;
+  height: auto;
+  image-rendering: pixelated;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  background: #000;
+}
+.map-bg-motion-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.map-bg-details > summary { cursor: pointer; font-weight: 600; margin-bottom: 8px; }
+.map-bg-details[open] { display: flex; flex-direction: column; gap: 12px; }
+
 /* ── 미니맵 탭 미리보기 ── */
 .map-minimap-preview {
   display: flex;
@@ -665,3 +747,19 @@
   font: 400 12px/1.5 var(--font-ui);
   color: var(--text-secondary, #6B5F52);
 }
+
+/* 미리보기(왼쪽, 게임 화면 1배) + 움직임·맞추기·빈 칸(오른쪽). 좁으면 위아래. */
+.map-bg-main { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.map-bg-main .map-bg-live { flex: 0 0 320px; max-width: 100%; }
+.map-bg-main .map-bg-live-canvas { width: min(100%, 320px); }
+.map-bg-controls { flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.map-props-section .btn.map-bg-motion[aria-pressed="true"],
+.map-props-section .btn.map-bg-motion[aria-pressed="true"]:hover {
+  background: var(--accent, #4f46e5) !important;
+  border-color: var(--accent, #4f46e5) !important;
+  color: #fff !important;
+}
+.map-props-section .btn.map-bg-motion[aria-pressed="true"]::before { content: "✓ "; }
+.map-bg-current { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-secondary, #555); }
+.map-bg-current img { width: 64px; height: 36px; object-fit: cover; image-rendering: pixelated; border: 1px solid var(--border-default); border-radius: 4px; }
+.map-bg-status-note { margin-left: 4px; }
