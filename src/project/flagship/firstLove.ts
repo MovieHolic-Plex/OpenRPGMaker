@@ -996,7 +996,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     event("ev_fl_f_client", "박 본부장", clientSpot, [page("fc", [swOff("sw_fl_client_left")], [], { who: "client", dir: "down" })]),
     event("ev_fl_f_lead", "오정민 팀장", leadSpot, [page("fl", [], [], { who: "lead", dir: "right" })]),
     event("ev_fl_f_jihu", "강지후", jihuSpot, [page("fj", [swOff("sw_fl_jihu_left")], [], { who: "jihu", dir: "left" })]),
-    event("ev_fl_f_minho", "차민호", minhoSpot, [page("fm", [], [], { who: "minho", dir: "down" })]),
+    event("ev_fl_f_minho", "차민호", minhoSpot, [page("fm", [], [], { who: "minho", dir: dirToward(minhoSpot, leadSpot) })]),
     door("ev_fl_f_elev2", o.npcExit, [stageIs(V_STAGE, 999)], [], think("…"), "down"),
   );
   add(fri, scene("ev_fl_fri", { x: 1, y: 1 }, S.WED_TALK, [
@@ -1010,6 +1010,8 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     face("@player", dirToward(o.meetingSeat, clientSpot)),
     face("ev_fl_f_jihu", dirToward(jihuSpot, clientSpot)),
     face("ev_fl_f_client", dirToward(clientSpot, o.meetingSeat)),
+    // 민호는 본부장 옆자리 — 팀장의 농담(서쪽) 뒤엔 본부장·발표자 쪽(동쪽)을 본다.
+    face("ev_fl_f_minho", dirToward(minhoSpot, clientSpot)),
     ...say("client", "base", "그럼 시작하시죠. 이번 리뉴얼, 핵심이 뭡니까?"),
     ...say("jihu", "base", "재생 엔진을 새로 짜서, 하루끝 방송이 1초 안에 시작됩니다. 그리고 화면은—"),
     // 발표를 넘길 땐 옆자리 서하를 본다(왼쪽 고정이면 본부장에게 서하를 소개하는 꼴).
