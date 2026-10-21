@@ -16,6 +16,8 @@ function convert(beat) {
       continue;
     }
     if (op.kind === "pressUntilJs" && op.key === "Escape") continue; // 오프닝 넘기기
+    // 문을 밟은 뒤의 긴 쉼(1.4초)은 기록하지 않고 지나가 버린다 — 문이 열리고 닫히는 장면을 기록기가 찍도록 뺀다.
+    if (op.kind === "hold" && op.dir === null && (op.ms ?? 0) >= 1400) continue;
     if (op.kind === "waitFor" && op.testid === "dialogue-box") {
       // 문을 밟은 뒤 첫 대사까지(걷기·돌아서기)도 기록한다.
       ops.push({ kind: "recordUntilJs", key: "Enter", fn: "() => !!document.querySelector(\"[data-testid='dialogue-box']\")", maxPresses: 0, frameMs, dir: beat.id });
