@@ -80,7 +80,7 @@ import { createAssistantWide } from "./aiAssistantWide";
 import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
 import { DEFAULT_PI_TEAM, type PiRunPlan } from "@/ai/piAgent/executionRoute";
-import { classifyPlainPiTurn, selectedEventFact } from "@/ai/piAgent/plainTurn";
+import { classifyPlainPiTurn, clarifyFollowUpText, selectedEventFact } from "@/ai/piAgent/plainTurn";
 import { applyMonsterIntentStart, needsMonsterKitStart } from "@/project/genrePresets";
 import { resolveContextWindow } from "@/ai/contextCompaction";
 import { modelForRole } from "@/ai/modelRoles";
@@ -587,6 +587,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let autoCollapseTimer: number | null = null;
   // Pending questions keep the conversation engaged even without promoted reply chips.
   let pendingQuestion = false;
+  /** 의도 선언의 되묻기를 보이고 멈춘 턴 — 다음 전송이 그 답이다. */
+  let pendingClarify: { readonly text: string; readonly question: string } | null = null;
   const hasPendingQuestion = (): boolean => pendingQuestion;
   // applyCollapsed 정의 전에 턴이 잡혀도 안전한 바인딩(런타임 호출은 패널 마운트 이후).
   let expandForAiWork: () => void = () => {};
@@ -2239,7 +2241,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 분류가 지연·실패하면 다이얼 그대로 두는 쪽이 안전하므로 타임아웃을 짧게 둔다.
   let piIntentDeclarer: { declarer: IntentDeclarer; timeoutMs: number } | null = null;
   /** 평문 한 줄 → Pi 명령 + 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */
-  type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null; readonly timing: TurnTimingRecorder };
+  type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly clarify?: string; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null; readonly timing: TurnTimingRecorder };
   const plainPiTurn = async (text: string, turnOptions?: {
     readonly team?: boolean;
     /** 같이 도는 실행(맵별 대기열)은 보낸 순간의 맵·선택으로 해석한다 — 사용자는 그 사이 다른 맵으로 옮겼을 수 있다. */
@@ -2288,6 +2290,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       command: plainPiCommand(text, classified.mode, turnMapId),
       plan: classified.plan,
       questionPromoted: classified.questionPromoted,
+      ...(classified.clarify ? { clarify: classified.clarify } : {}),
       ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}),
       intentNote: classified.intentNote,
       timing,
@@ -2320,6 +2323,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (explicit) command = explicit;
     else {
       const classified = await plainPiTurn(run.text, { ...(run.team ? { team: true } : {}), mapId: run.mapId, selection: run.selection, onDeclaring: () => card.setStatus("의도 읽는 중…") });
+      if (classified.clarify) {
+        pendingClarify = { text: run.text, question: classified.clarify };
+        card.say("assistant", classified.clarify);
+        return;
+      }
       command = classified.command;
       options = piRunOptionsFor(classified.plan, { timing: classified.timing, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote });
       if (classified.questionPromoted) card.say("system", "프로젝트를 바꾸지 않고 확인해서 답할게요.");
@@ -2389,8 +2397,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const typed = input.value.trim();
     // 입력창에 담긴 핸드오프를 그대로 보낼 때만 전체 지시문으로 바꾼다. 말풍선은 사용자가 본 문장이다.
     const handoff = composerHandoff && composerHandoff.display === typed ? composerHandoff : null;
-    const text = handoff?.full ?? typed;
-    const shown = handoff ? typed : text;
+    // 되묻기에 답한 턴은 원래 요청과 묶어 보낸다 — 답 한 낱말(「맵 배경」)만으로는 무엇을 하라는지 모른다. 말풍선은 사용자가 친 답 그대로.
+    const clarified = pendingClarify && !handoff && typed && !typed.startsWith("/") ? clarifyFollowUpText(pendingClarify.text, pendingClarify.question, typed) : null;
+    pendingClarify = null;
+    const text = clarified ?? handoff?.full ?? typed;
+    const shown = handoff || clarified ? typed : text;
     if (!text && !stampPlaceOn) {
       // 조용한 return 은 "버튼이 고장났나" 로 읽혔다. 무엇이 부족한지 말하고 초점을 준다.
       toast("보낼 지시를 입력하세요", "info");
@@ -2478,6 +2489,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         const reason = error instanceof Error ? error.message : String(error);
         void recordPiIntentFailure({ instruction: text, error: reason, mapId: editorState.get().currentMapId ?? null, model: loadAiConfig().model });
         appendBubble("system", `지시를 해석하지 못했습니다: ${reason}`);
+        return;
+      }
+      if (classified.clarify) {
+        // 선언이 도구가 갈릴 만큼 모호하다고 봤다 — 실행하지 않고 묻는다. 답은 다음 전송에서 원래 요청과 묶인다(clarifyFollowUpText).
+        pendingClarify = { text, question: classified.clarify };
+        appendBubble("assistant", classified.clarify);
+        renderQuickReplies(classified.clarify);
+        finishWorkCard({ ok: true, message: "되묻기" });
+        setStatus("대기");
         return;
       }
       await runPiTurn(classified.command, shown, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, echoed: true, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote, timing: classified.timing, ...(handoff ? { sentText: text } : {}) });
