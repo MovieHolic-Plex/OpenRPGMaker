@@ -6,10 +6,14 @@
 //   npm run gen-kits:sync -- --drift         # lock 커밋과 각 저장소 main 의 차이(커밋 수·바뀐 파일·상수 차이)를 보고한다
 //   npm run gen-kits:sync -- --drift --json  # 같은 보고를 JSON 으로
 //   npm run gen-kits:sync -- --bump object-gen   # 그 저장소 main 으로 lock 을 올리고 다시 만든다(계약이 깨지면 올리지 않는다)
+//   npm run gen-kits:check                   # CI 용: --check --only object-gen --max-behind 10 (생성물이 lock 과 다르거나, lock 이 main 보다 10커밋 넘게 뒤처지면 exit 1)
+//     --only a,b        이 생성기만 본다(CI 러너는 비공개 저장소를 못 받는다)
+//     --max-behind N    lock 이 그 저장소 main 보다 N 커밋 넘게 뒤처지면 실패. 뒤처짐이 1~N 이면 큰 경고만(GitHub Actions 주석 포함)
 //
 // 저장소는 .gen-kits/<kit>.git 에 bare 로 받는다(작업 트리 없음 — 파일은 git show <커밋>:<경로> 로 읽는다).
 // 비공개 저장소(char-gen·tile-gen)는 사용자의 git 자격으로 받고, 그 글은 생성물에 넣지 않는다(공개 모노레포로 새지 않게) — 계약만 본다.
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -22,6 +26,9 @@ const flag = (name) => argv.includes(name);
 const opt = (name) => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : undefined; };
 const cacheDir = resolve(root, process.env.OPRN_GEN_KITS_DIR || ".gen-kits");
 const summaryOut = "src/harnesses/_core/workshop/genKits/kits.json";
+const only = (opt("--only") ?? "").split(",").map((name) => name.trim()).filter(Boolean);
+const kitEntries = () => Object.entries(lock.kits).filter(([kit]) => !only.length || only.includes(kit));
+if (only.some((name) => !lock.kits[name])) throw new Error(`lock 에 없는 생성기: ${only.filter((name) => !lock.kits[name]).join(", ")}`);
 
 const gitDir = (kit) => join(cacheDir, `${kit}.git`);
 const git = (kit, ...args) => execFileSync("git", ["--git-dir", gitDir(kit), ...args], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], maxBuffer: 64 << 20 }).trim();
@@ -83,22 +90,34 @@ function vendor(kit, spec, commit) {
   return { json, copies };
 }
 
+/**
+ * 지시문·판정 기준 파일의 지문(sha256 앞 16자). 비공개 저장소는 글을 옮기지 않으므로 지문만 남긴다 —
+ * lock 을 올리면 지문이 바뀌어 「char-gen 의 지시문·판정 기준이 바뀌었다」가 생성물 diff 에 보인다.
+ */
+function fingerprints(kit, spec, commit) {
+  const out = {};
+  for (const path of spec.fingerprint ?? []) {
+    try { out[path] = createHash("sha256").update(gitBytes(kit, "show", `${commit}:${path}`)).digest("hex").slice(0, 16); } catch { out[path] = "missing"; }
+  }
+  return out;
+}
+
 function summary(results) {
   return JSON.stringify({
     note: "생성물 — 손으로 고치지 말 것(npm run gen-kits:sync). 공방이 어느 생성기 커밋을 따르는지 보인다.",
-    kits: Object.fromEntries(results.map((r) => [r.kit, { repo: r.repo, visibility: r.visibility, commit: r.commit, vendored: r.vendored, contract: r.problems.length ? r.problems : "ok" }])),
+    kits: Object.fromEntries(results.map((r) => [r.kit, { repo: r.repo, visibility: r.visibility, commit: r.commit, vendored: r.vendored, contract: r.problems.length ? r.problems : "ok", ...(Object.keys(r.fingerprint).length ? { fingerprint: r.fingerprint } : {}) }])),
   }, null, 1) + "\n";
 }
 
 function build(write) {
   const results = [];
   const mismatches = [];
-  for (const [kit, spec] of Object.entries(lock.kits)) {
+  for (const [kit, spec] of kitEntries()) {
     if (!/^[0-9a-f]{40}$/.test(spec.commit)) throw new Error(`${kit}: lock commit 이 40자 해시가 아니다`);
     ensureRepo(kit, spec, [spec.commit]);
     const problems = contractProblems(kit, spec, spec.commit);
     const vendored = Boolean(spec.vendor);
-    results.push({ kit, repo: spec.repo, visibility: spec.visibility, commit: spec.commit, problems, vendored });
+    results.push({ kit, repo: spec.repo, visibility: spec.visibility, commit: spec.commit, problems, vendored, fingerprint: fingerprints(kit, spec, spec.commit) });
     if (!spec.vendor) continue;
     if (spec.visibility !== "public") throw new Error(`${kit}: 비공개 저장소는 vendor 할 수 없다(공개 모노레포로 새어 나간다)`);
     const { json, copies } = vendor(kit, spec, spec.commit);
@@ -112,17 +131,23 @@ function build(write) {
       if (write) { mkdirSync(dirname(target), { recursive: true }); writeFileSync(target, bytes); }
     }
   }
-  const summaryText = summary(results);
   const summaryPath = join(root, summaryOut);
-  if (!existsSync(summaryPath) || readFileSync(summaryPath, "utf8") !== summaryText) mismatches.push(summaryOut);
-  if (write) writeFileSync(summaryPath, summaryText);
+  if (only.length) {
+    // 일부만 볼 때: 요약 파일의 그 생성기 줄(커밋)만 맞춰 본다(나머지는 받지 못했을 수 있다).
+    const current = existsSync(summaryPath) ? JSON.parse(readFileSync(summaryPath, "utf8")).kits ?? {} : {};
+    for (const r of results) if (current[r.kit]?.commit !== r.commit) mismatches.push(`${summaryOut} (${r.kit})`);
+  } else {
+    const summaryText = summary(results);
+    if (!existsSync(summaryPath) || readFileSync(summaryPath, "utf8") !== summaryText) mismatches.push(summaryOut);
+    if (write) writeFileSync(summaryPath, summaryText);
+  }
   return { results, mismatches };
 }
 
 /** lock 커밋 → main: 커밋 목록, 계약·뽑는 파일 중 바뀐 것, (공개 저장소면) 상수 이름별 차이. */
 function drift() {
   const report = [];
-  for (const [kit, spec] of Object.entries(lock.kits)) {
+  for (const [kit, spec] of kitEntries()) {
     const head = remoteHead(kit, spec);
     ensureRepo(kit, spec, [spec.commit, head]);
     const entry = { kit, visibility: spec.visibility, pinned: spec.commit, main: head, behind: 0, commits: [], trackedChanged: [], constantsChanged: [], contractAtMain: [] };
@@ -135,6 +160,8 @@ function drift() {
       entry.trackedChanged = changed.filter((file) => tracked.has(file) || vendorGlobs.some((re) => re.test(file)));
       entry.otherChanged = changed.length - entry.trackedChanged.length;
       entry.contractAtMain = contractProblems(kit, spec, head);
+      const before = fingerprints(kit, spec, spec.commit), after = fingerprints(kit, spec, head);
+      entry.promptFilesChanged = Object.keys({ ...before, ...after }).filter((path) => before[path] !== after[path]);
       if (spec.vendor) {
         const before = JSON.parse(vendor(kit, spec, spec.commit).json).constants;
         const after = JSON.parse(vendor(kit, spec, head).json).constants;
@@ -161,6 +188,7 @@ if (flag("--drift")) {
       if (r.trackedChanged.length) console.log(`   편집기가 따르는 파일이 바뀜: ${r.trackedChanged.join(", ")}`);
       if (r.constantsChanged.length) console.log(`   상수 차이: ${r.constantsChanged.join(", ")}`);
       if (r.contractAtMain.length) console.log(`   main 에서 계약이 깨짐: ${r.contractAtMain.join(" / ")}`);
+      if (r.promptFilesChanged?.length) console.log(`   지시문·판정 기준 파일이 바뀜: ${r.promptFilesChanged.join(", ")}`);
     }
   }
   process.exit(flag("--strict") && report.some((r) => r.behind > 0) ? 1 : 0);
@@ -179,11 +207,43 @@ if (bump) {
   console.log(`${bump} lock → ${head.slice(0, 12)}`);
 }
 
+/** lock 이 main 보다 몇 커밋 뒤처졌나(받을 수 없으면 null — 비공개 저장소를 자격 없이 볼 때). */
+function behindCount(kit, spec) {
+  try {
+    const head = remoteHead(kit, spec);
+    if (head === spec.commit) return { behind: 0, head };
+    ensureRepo(kit, spec, [spec.commit, head]);
+    return { behind: Number(git(kit, "rev-list", "--count", `${spec.commit}..${head}`)), head };
+  } catch (error) {
+    return { behind: null, head: null, error: error instanceof Error ? error.message.split("\n")[0] : String(error) };
+  }
+}
+
+const ci = Boolean(process.env.GITHUB_ACTIONS);
+const loud = (level, text) => {
+  if (ci) console.log(`::${level}::${text}`);
+  const bar = "!".repeat(Math.min(100, text.length + 8));
+  console.error(`\n${bar}\n!!! ${text}\n${bar}\n`);
+};
+
 if (flag("--check")) {
   const { results, mismatches } = build(false);
   const broken = results.filter((r) => r.problems.length);
-  console.log(JSON.stringify({ kits: results.map((r) => ({ kit: r.kit, commit: r.commit, contract: r.problems.length ? r.problems : "ok" })), stale: mismatches }, null, 1));
-  process.exit(broken.length || mismatches.length ? 1 : 0);
+  const maxBehind = opt("--max-behind") === undefined ? null : Number(opt("--max-behind"));
+  const lag = [];
+  if (maxBehind !== null) {
+    for (const [kit, spec] of kitEntries()) {
+      const { behind, head, error } = behindCount(kit, spec);
+      lag.push({ kit, behind, main: head, ...(error ? { error } : {}) });
+      if (behind === null) loud("warning", `gen-kits: ${kit} main 을 읽지 못해 뒤처짐을 못 쟀다 (${error})`);
+      else if (behind > maxBehind) loud("error", `gen-kits: ${kit} lock ${spec.commit.slice(0, 9)} 이 main ${head.slice(0, 9)} 보다 ${behind}커밋 뒤처짐 (한도 ${maxBehind}) — npm run gen-kits:sync -- --bump ${kit}`);
+      else if (behind > 0) loud("warning", `gen-kits: ${kit} lock 이 main 보다 ${behind}커밋 뒤처짐 — 공방은 아직 옛 지시문으로 돈다. npm run gen-kits:sync -- --drift 로 차이를 보고 --bump ${kit}`);
+    }
+  }
+  for (const path of mismatches) loud("error", `gen-kits: 생성물 ${path} 이 lock 과 다르다 — npm run gen-kits:sync`);
+  console.log(JSON.stringify({ kits: results.map((r) => ({ kit: r.kit, commit: r.commit, contract: r.problems.length ? r.problems : "ok" })), stale: mismatches, ...(maxBehind !== null ? { maxBehind, lag } : {}) }, null, 1));
+  const tooFar = lag.some((entry) => entry.behind !== null && entry.behind > maxBehind);
+  process.exit(broken.length || mismatches.length || tooFar ? 1 : 0);
 }
 
 const { results } = build(true);

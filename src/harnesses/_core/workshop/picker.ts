@@ -8,11 +8,13 @@
  * 고른 기록은 사람 선택(`review.pick`)이 아니다 — 굽기가 출처에 `/auto-pick` 을 붙인다.
  */
 import type { ChatMessage, ContentPart } from "@/ai/llmClient";
+import { kitConstant, objectGenKit } from "./genKits";
 import { onBackground, renderGrid, scaleImage } from "./grid";
 import type { Grid, Palette, Rgba, RgbaImage, WorkshopEnv, WorkshopItem } from "./types";
 
 const FLOOR: Rgba = [146, 118, 88, 255];
 
+// 견본 없는 옛 실행기용 짧은 지시문(편집기 자체 문장). object-gen 흐름은 원본 picker.PROMPT(ogPickerPrompt, gen-kits)를 쓴다.
 export const PICKER_PROMPT = `You pick ONE drawing for a 16 px pixel-art RPG tileset (3/4 top-down view, hand-placed pixels).
 All candidates already passed a strict review. Choose the one that would sit best in the map:
 the 3/4 view (top plane visible, short front, no side face), a clear silhouette at 1x that reads as the named object in its setting,
@@ -20,8 +22,8 @@ calm banded shading, believable structure, no stray or noisy pixels. Prefer the 
 Answer with ONE line of JSON only: {"pick": "<label>", "reason": "<one sentence, what makes it better than the other(s)>"}`;
 
 export type PickerCandidate = { readonly letter: string; readonly grid: Grid };
-/** 원본 picker.RUNS — 꼬리표를 매번 다시 섞어 3번 묻고 다수결. */
-export const PICK_RUNS = 3;
+/** 원본 picker.RUNS(gen-kits 생성물) — 꼬리표를 매번 다시 섞어 그만큼 묻고 다수결. */
+export const PICK_RUNS = kitConstant<number>(objectGenKit, "picker", "RUNS");
 
 export type PickerBoard = { readonly messages: ChatMessage[]; readonly labels: Readonly<Record<string, string>> };
 

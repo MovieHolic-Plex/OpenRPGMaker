@@ -50,6 +50,12 @@ jobs:
       - name: jp_city 핀 불변
         run: node scripts/content/jp-city/check-pins.mjs --base HEAD~1
 
+      # 생성기 고정판(tiledata/gen-kits.lock.json). 공방 지시문·판정 기준은 object-gen 저장소에서 뽑은 생성물에서 읽는다(2026-10-22).
+      # 생성물이 lock 과 다르거나, lock 이 object-gen main 보다 10커밋 넘게 뒤처지면 실패. 1~10 이면 경고 주석만.
+      # 비공개 생성기(char-gen·tile-gen)는 호스티드 러너가 받을 수 없어 여기서 보지 않는다(편집기 빌드가 로컬 사본으로 경고).
+      - name: 생성기 고정판 (object-gen)
+        run: npm run gen-kits:check
+
       - name: 캐릭터 하네스 계약
         run: |
           python3 -m venv "$RUNNER_TEMP/charset-harness-venv"

@@ -1,7 +1,7 @@
 // src/harnesses/_core/workshop/objectGenFlow.ts
 /**
  * object-gen 흐름(MovieHolic-Plex/object-gen `objectgen/flow.py`)을 공방 대화 호출로 옮긴 것(2026-10-21).
- * 지시문·판정 문장·견본(anchors)은 고치지 않고 `objectGenKit.json`(원본 상수 사본)에서 읽는다 — 원본이 바뀌면 사본만 다시 뽑는다.
+ * 지시문·판정 문장·견본(anchors)은 고치지 않고 gen-kits 생성물(`genKits/object-gen.json`, lock 고정 커밋)에서 읽는다 — 원본이 바뀌면 lock 을 올리고 `npm run gen-kits:sync`.
  *
  * 원본 단계와 여기:
  *   ref    참고 그림 2장(시점 검사)          → engine.makeReference(referenceCount 2, STYLE_NOTE 덧붙임)
@@ -15,24 +15,26 @@
  * 판정은 후보 한 장 + 숨긴 반려 표본으로 한다(원본은 그 판 후보 전부를 한 판에).
  */
 import type { ChatMessage, ContentPart } from "@/ai/llmClient";
-import kitJson from "./objectGenKit.json";
+import { kitConstant, kitFile, objectGenKit } from "./genKits";
 import { gridToAnswer, onBackground, renderGrid, scaleImage } from "./grid";
 import type { DrawContext, Grid, Palette, Rgba, RgbaImage, ReviewContext, Verdict, WorkshopEnv, WorkshopItem } from "./types";
 
 type KitSection = "prompts" | "reference" | "picker" | "vqa" | "drawer" | "exemplars";
-const kit = kitJson as unknown as {
-  commit: string;
-  constants: Record<KitSection, Record<string, unknown>>;
-  anchors: Record<string, { examples?: { file: string; label: string }[]; good: { file: string; label: string; why?: string }[]; bad: { file: string; label: string; why?: string }[]; rejects?: { file: string }[] }>;
-};
+type AnchorSet = { examples?: { file: string; label: string }[]; good: { file: string; label: string; why?: string }[]; bad: { file: string; label: string; why?: string }[]; rejects?: { file: string }[] };
 
-/** 원본 상수 하나. 없으면 던진다(원본이 이름을 바꿨는데 사본을 그대로 쓰는 일을 막는다). */
+/**
+ * 원본 상수 하나 — gen-kits 생성물(genKits/object-gen.json, tiledata/gen-kits.lock.json 의 고정 커밋에서 npm run gen-kits:sync 가 뽑음)에서 읽는다.
+ * 손으로 옮긴 사본(objectGenKit.json)은 2026-10-22 에 지웠다: lock 을 올리면 다음 빌드부터 공방 지시문·판정 기준이 그 커밋 것이 된다.
+ * 없으면 던진다(원본이 이름을 바꿨는데 옛 글로 조용히 도는 일을 막는다).
+ */
 export function kitValue<T = string>(section: KitSection, name: string): T {
-  const value = kit.constants[section]?.[name];
-  if (value === undefined) throw new Error(`object-gen 상수 ${section}.${name} 가 사본(objectGenKit.json)에 없다`);
-  return value as T;
+  return kitConstant<T>(objectGenKit, section, name);
 }
-export const OBJECTGEN_COMMIT = kit.commit;
+/** 지금 공방이 따르는 object-gen 커밋(lock) */
+export const OBJECTGEN_COMMIT = objectGenKit.commit;
+const anchorSet = (set: string): AnchorSet | undefined => {
+  try { return JSON.parse(kitFile(objectGenKit, `objectgen/anchors/${set}/set.json`)) as AnchorSet; } catch { return undefined; }
+};
 /** 원본 flow.DEFAULT_STYLE */
 export const OG_STYLE = "oprn-interior-v5-large";
 export const OG_JUDGE_RUNS = 3;
@@ -58,8 +60,8 @@ const anchorCache = new Map<string, Promise<OgAnchors>>();
 export function loadAnchors(env: WorkshopEnv, set = OG_STYLE): Promise<OgAnchors> {
   let pending = anchorCache.get(set);
   if (!pending) {
-    const meta = kit.anchors[set];
-    if (!meta) throw new Error(`object-gen 견본 묶음 ${set} 이 사본에 없다`);
+    const meta = anchorSet(set);
+    if (!meta) throw new Error(`object-gen@${OBJECTGEN_COMMIT.slice(0, 9)} 에 견본 묶음 ${set} 이 없다`);
     const load = (file: string) => env.loadImage(env.assetUrl(`assets/gen-kits/object-gen/anchors/${set}/${file}`));
     const many = (list: readonly { file: string; label?: string; why?: string }[]) =>
       Promise.all(list.map(async (entry) => ({ label: entry.label ?? entry.file, why: entry.why ?? "", image: await load(entry.file) })));
