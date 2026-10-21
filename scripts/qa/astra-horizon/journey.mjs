@@ -682,6 +682,7 @@ try {
     await waitIdle();
     let approach = await approachAndTalk(gym.id, grunt);
     if (!approach && (await live()).switches?.[`${grunt.id}_won`] !== true) { await page.waitForTimeout(1500); await waitIdle(); approach = await approachAndTalk(gym.id, grunt); }
+    if (!approach) await shot(`20c-gym-trainer-${k}-no-talk`);
     const probe = { running: await eventRunning(), approach, spot: besideOf(gym.id, grunt), live: liveSpots[grunt.id] ?? null, hero: await here().then((h) => `${h.x},${h.y}`), dialogue: await present("dialogue-box") };
     const started = await pressEnterUntil(() => present("battle-scene"), 30);
     if (started) { await page.waitForTimeout(2000); if (k === 0) await shot("20b-gym-trainer"); }
