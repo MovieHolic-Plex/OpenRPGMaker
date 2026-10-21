@@ -60,7 +60,8 @@ import { mapTileSize } from "@/project/tileGeometry";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { MAP_BACKGROUND_LAYER_DEPTH } from "@/player/characterDepth";
 import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
-import { mapBackgroundFitScale, mapBackgroundLayout, mapBackgroundTextureKey } from "@/player/playSceneMapBackground";
+import { mapBackgroundTextureKey } from "@/player/playSceneMapBackground";
+import { mapBackgroundCoverScale, mapBackgroundGameViewport } from "@/project/mapBackground";
 import {
   mapBackgroundPreviewEnabled,
   subscribeMapBackgroundPreview,
@@ -289,7 +290,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private mapBackgroundLayer: Phaser.GameObjects.Container | null = null;
   private mapBackgroundSprites: Phaser.GameObjects.TileSprite[] = [];
   /** 미리보기 중인 레이어 스펙(배율 재계산용). */
-  private mapBackgroundPreviewSpecs: readonly { readonly fit: "native" | "cover" }[] = [];
+  private mapBackgroundPreviewSpecs: readonly { readonly fit: "native" | "cover"; readonly loopX: boolean; readonly loopY: boolean }[] = [];
   private unsubAgentFocus: (() => void) | null = null;
   private unsubConstructionReveal: (() => void) | null = null;
   private unsubCameraFocus: (() => void) | null = null;
@@ -935,7 +936,7 @@ export class EditScene extends PhaserRuntime.Scene {
           gridGraphics: this.gridGraphics,
           mapId,
           tileIndex: this.tileIndex,
-          backgroundPreview: mapBackgroundPreviewEnabled(),
+          backgroundPreview: this.mapBackgroundShowsInEmptyCells(),
         });
         this.lastMaterializedTileWindowKey = nextWindowKey;
       }
@@ -2375,7 +2376,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!tileLayer || !upperTileLayer || !hoverPreviewLayer || !overlayLayer || !gridGraphics) return;
     renderEditScene({
       scene: this,
-      backgroundPreview: mapBackgroundPreviewEnabled(),
+      backgroundPreview: this.mapBackgroundShowsInEmptyCells(),
       tileLayer,
       upperTileLayer,
       tileChunks: this.tileChunks,
@@ -2461,20 +2462,20 @@ export class EditScene extends PhaserRuntime.Scene {
         if (!sprite) {
           sprite = this.add.tileSprite(0, 0, 16, 16, textureKey);
           sprite.setOrigin(0, 0);
-          sprite.setScrollFactor(0);
           container.add(sprite);
-        } else if (sprite.texture.key !== textureKey) {
+        } else if (previewDisplayTextureKey(sprite) !== textureKey) {
           sprite.setTexture(textureKey);
         }
+        // 맵 위에 고정한다(월드 좌표, 맵 왼쪽 위 = 그림 왼쪽 위). 예전에는 편집기 화면에 고정해 팬할 때마다
+        // 그림이 따라 움직이고 맵 바깥 넓은 회색 영역까지 덮어 게임 화면과 달라 보였다.
+        sprite.setScrollFactor(1);
+        sprite.setVisible(true);
         sprite.setDepth(MAP_BACKGROUND_LAYER_DEPTH + index);
-        // 플레이와 같은 배율 규칙(cover 면 뷰포트를 덮게 확대). 1:1 이면 1920x1080 아트가
-        // 좌상단 구석만 보여 «저작 화면과 게임 화면이 다른» 상태가 된다.
-        applyPreviewFit(this, sprite, spec.fit);
         sprites.push(sprite);
       }
       for (const leftover of previous.slice(ready.length)) leftover.setVisible(false);
       this.mapBackgroundSprites = sprites;
-      this.mapBackgroundPreviewSpecs = ready.map((entry) => ({ fit: entry.fit ?? "native" }));
+      this.mapBackgroundPreviewSpecs = ready.map((entry) => ({ fit: entry.fit ?? "native", loopX: entry.loopX !== false, loopY: entry.loopY !== false }));
       this.layoutMapBackgroundPreview();
     };
     if (missing.length === 0) {
@@ -2623,16 +2624,42 @@ export class EditScene extends PhaserRuntime.Scene {
     this.redrawCells(cells);
   }
 
+  /**
+   * 미리보기 배치 — 게임과 같은 **배율**(cover 는 게임 화면 = 해상도/카메라 배율 을 덮는 배율)로, 맵 사각형 안에만
+   * 그린다. 위치는 맵 왼쪽 위에 맞춘다(게임에서 카메라가 맵 왼쪽 위에 있을 때의 모습). 움직임(흐름·깊이)은
+   * 정지 화면이라 보이지 않는다 — 맵 설정 「맵 배경」 의 게임 화면 미리보기와 플레이가 정본이다.
+   */
   private layoutMapBackgroundPreview(): void {
     const specs = this.mapBackgroundPreviewSpecs;
+    const mapId = this.mapId();
+    const project = store.getCurrent();
+    const map = mapId ? project.maps[mapId] : undefined;
+    if (!map) return;
+    const tile = mapTileSize(map, project.tilesets[map.tilesetId]);
+    const mapW = map.width * tile;
+    const mapH = map.height * tile;
+    const viewport = mapBackgroundGameViewport(project.system);
     for (const [index, sprite] of this.mapBackgroundSprites.entries()) {
       if (!sprite.visible) continue;
       const spec = specs[index];
-      if (spec) applyPreviewFit(this, sprite, spec.fit);
-      const layout = mapBackgroundLayout(this.cameras.main);
-      if (sprite.width !== layout.width || sprite.height !== layout.height) sprite.setSize(layout.width, layout.height);
-      sprite.setPosition(layout.x, layout.y);
+      if (!spec) continue;
+      const source = this.textures.get(previewDisplayTextureKey(sprite)).getSourceImage() as { width?: number; naturalWidth?: number; height?: number; naturalHeight?: number };
+      const size = { width: Math.max(1, Number(source.naturalWidth ?? source.width ?? 0)), height: Math.max(1, Number(source.naturalHeight ?? source.height ?? 0)) };
+      const scale = mapBackgroundCoverScale(spec.fit, viewport, size);
+      if (sprite.tileScaleX !== scale || sprite.tileScaleY !== scale) sprite.setTileScale(scale, scale);
+      const width = spec.loopX ? mapW : Math.min(mapW, Math.ceil(size.width * scale));
+      const height = spec.loopY ? mapH : Math.min(mapH, Math.ceil(size.height * scale));
+      if (sprite.width !== width || sprite.height !== height) sprite.setSize(width, height);
+      if (sprite.x !== 0 || sprite.y !== 0) sprite.setPosition(0, 0);
     }
+  }
+
+  /** 빈 칸 체커를 옅게 할지 — 미리보기를 켰고 그 맵 배경이 빈 칸에서 보일 때만(플레이와 같은 규칙). */
+  private mapBackgroundShowsInEmptyCells(): boolean {
+    if (!mapBackgroundPreviewEnabled()) return false;
+    const mapId = this.mapId();
+    const background = mapId ? store.getCurrent().maps[mapId]?.background : undefined;
+    return background?.showInEmptyCells === true && Boolean(background.imageId || background.layers?.length);
   }
 
   private clearMapBackgroundPreview(): void {
@@ -2649,7 +2676,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!mid || !tileLayer || !upperTileLayer || !overlayLayer || !gridGraphics) return { tileObjectsUpdated: 0 };
     const stats = renderEditSceneTileCells({
       scene: this,
-      backgroundPreview: mapBackgroundPreviewEnabled(),
+      backgroundPreview: this.mapBackgroundShowsInEmptyCells(),
       tileLayer,
       upperTileLayer,
       tileChunks: this.tileChunks,
@@ -3611,33 +3638,9 @@ function setTileToolStatus(testId: string, text: string): void {
 }
 
 /** 미리보기 스프라이트의 타일 배율. 플레이와 같은 규칙(cover = 뷰포트를 덮는 배율)이다. */
-function applyPreviewFit(
-  scene: {
-    readonly cameras: { readonly main: { readonly zoom: number; readonly width: number; readonly height: number } };
-    readonly textures: Phaser.Textures.TextureManager;
-  },
-  sprite: Phaser.GameObjects.TileSprite,
-  fit: "native" | "cover" | undefined,
-): void {
-  if (fit !== "cover") {
-    if (sprite.tileScaleX !== 1 || sprite.tileScaleY !== 1) sprite.setTileScale(1, 1);
-    return;
-  }
-  const camera = scene.cameras.main;
-  const zoom = Number.isFinite(camera.zoom) && camera.zoom > 0 ? camera.zoom : 1;
-  const source = scene.textures.get(sprite.texture.key).getSourceImage() as {
-    readonly width?: number;
-    readonly naturalWidth?: number;
-    readonly height?: number;
-    readonly naturalHeight?: number;
-  };
-  const scale = mapBackgroundFitScale(
-    "cover",
-    { width: camera.width / zoom, height: camera.height / zoom },
-    {
-      width: Math.max(1, Number(source.naturalWidth ?? source.width ?? 0)),
-      height: Math.max(1, Number(source.naturalHeight ?? source.height ?? 0)),
-    },
-  );
-  if (sprite.tileScaleX !== scale || sprite.tileScaleY !== scale) sprite.setTileScale(scale, scale);
+/** TileSprite 가 보여 주는 원본 그림의 키 — Phaser 3.60+ 는 `texture` 가 채움 캔버스라 원본은 `displayTexture` 다
+ *  (`playSceneMapBackground.displayTextureKey` 와 같은 함정 — 편집기는 이걸 몰라 cover 배율이 늘 틀렸다). */
+function previewDisplayTextureKey(sprite: Phaser.GameObjects.TileSprite): string {
+  const display = (sprite as { displayTexture?: { key?: string } | null }).displayTexture;
+  return display?.key ?? sprite.texture.key;
 }
