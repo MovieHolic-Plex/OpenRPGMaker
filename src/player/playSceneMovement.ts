@@ -426,6 +426,13 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
     if (diagnosticObserved("collision")) publishDiagnostic({ category: "collision", phase: "terrain", x: scene.tileX + moveX, y: scene.tileY + moveY });
     // 벽을 향해도 그 방향으로 몸은 돌린다(제자리 방향 전환).
     if (input.dir) scene.facing = input.dir;
+    // 지나갈 수 없는 그림 칸(문짝·계단 입구) 위의 「캐릭터와 같은 층」 접촉 이벤트는 부딪히면 발동한다 —
+    // 문 그림 칸이 곧 옮기기 칸이어야 하는데, 지형 판정이 먼저 막아 영영 안 열렸다(첫사랑 r2 9cfb889150 에서 옮겨 옴).
+    if (input.dir && (moveX === 0 || moveY === 0)) {
+      const d = directionDelta(input.dir);
+      const bumped = findBlockingEventForPlayerBody(scene, body, scene.tileX + d.x, scene.tileY + d.y);
+      if (bumped) firePlayerTouchEvent(scene, bumped.event.id, bumped.trigger.kind);
+    }
     return;
   }
   scene.facing = facingForStep(step.dx, step.dy);

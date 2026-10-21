@@ -14,7 +14,7 @@ const look = (id, note, x, y, dir = "down") => ({
 
 export default {
   id: "fallen-town",
-  projectFixture: process.env.RES_FIXTURE ?? "/tmp/fs-town9.json",
+  projectFixture: process.env.RES_FIXTURE ?? "/tmp/fs-town14.json",
   viewport: { width: vw, height: vh },
   beats: [
     { id: "title", note: "타이틀", ops: [
@@ -46,6 +46,19 @@ export default {
     look("v-south-gate", "남 성벽 운하 수문", 22, 41),
     look("v-se", "남동 모서리 원탑 · 남쪽 거리", 47, 43),
     look("v-east", "동쪽 성벽", 52, 30, "right"),
+    // 집 문은 부딪혀 들어간다 — 들어가면 문을 등지고(위), 아래로 걸어 나오면 문 앞 칸에 문을 등지고(아래) 선다.
+    ...[["inn", 50, 31, "별빛 여관"], ["apothecary", 31, 31, "약방(사고팔기)"], ["bakery", 13, 11, "빵집 뒤채"], ["stargazer", 4, 20, "늙은 별지기의 집"], ["lisa", 32, 20, "리사네 집"]].flatMap(([id, x, y, note]) => [
+      { id: `in-${id}`, note: `${note} — 문에 부딪혀 들어감`, ops: [
+        { kind: "teleport", mapId: "fs_hub", x, y: y + 1 }, { kind: "face", dir: "up" }, { kind: "hold", dir: null, ms: 400 },
+        { kind: "hold", dir: "up", ms: 500 }, { kind: "hold", dir: null, ms: 1800 },
+      ], shot: true },
+      { id: `out-${id}`, note: `${note} — 나와서 문 앞`, ops: [{ kind: "hold", dir: "down", ms: 700 }, { kind: "hold", dir: null, ms: 1800 }], shot: true },
+    ]),
+    { id: "locked-door", note: "잠긴 집 문 — 한 줄", ops: [
+      { kind: "teleport", mapId: "fs_hub", x: 7, y: 12 }, { kind: "face", dir: "up" }, { kind: "hold", dir: null, ms: 500 },
+      { kind: "action" }, { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 8000 }, { kind: "hold", dir: null, ms: 900 },
+    ], shot: true },
+    { id: "locked-close", note: "잠긴 문 대사 닫기", ops: [...closeDialogue()], shot: false },
     { id: "to-forest", note: "성문 통로 → 숲", ops: [
       { kind: "teleport", mapId: "fs_hub", x: 48, y: 16 }, { kind: "hold", dir: null, ms: 500 },
       { kind: "hold", dir: "up", ms: 700 }, { kind: "hold", dir: null, ms: 1500 },

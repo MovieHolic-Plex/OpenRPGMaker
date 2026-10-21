@@ -23,6 +23,9 @@ import { buildFallenStarOpening, FALLEN_STAR_TITLE_BACKGROUND } from "./fallenSt
 import { clearOrphanShadows, clearUpperByLabel, dressVaultRock, padMapCentered, varyVaultFloor, rimPit, scatterVaultFloorPatches } from "./fallenStarMapPolish";
 import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./fallenStarStory";
 import { reworkFallenTown } from "./fallenTown";
+import { buildFallenTownInteriors } from "./fallenTownInteriors";
+import handInteriorSpec from "@/assets/handInteriorSpec.json";
+import { BEODEUL_GROUND_RECIPES } from "@/project/defaults/beodeulGround";
 import type { FlagshipDemoBuildResult } from "./types";
 
 const ENDING_ID = "end_fs_act1";
@@ -589,7 +592,102 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   list.splice(after + 1, 0, ...marches);
 }
 
+/** 손 도트 실내(atlas_biome_interior): 천장(default 2~33·rock 34~65) → 천장(dark 66~97), 가장자리에서 이어진 바위벽 메움 → 공허(1). */
+/**
+ * 벽 걸이(액자·별자리표·거미줄·문틀…)가 걸을 수 있는 바닥 칸에 걸쳐 있으면 깃발처럼 홀로 선다(scene-hang-on-floor) —
+ * 그 걸이 한 덩이(같은 키트 칸이 이어진 것)를 통째로 걷는다. 벽면에만 걸린 걸이는 그대로 둔다.
+ */
+function dropFloorHangs(project: Project, map: GameMap): void {
+  const hangIds = new Set(Object.entries((handInteriorSpec as { objects: Record<string, { kind?: string }> }).objects).filter(([, o]) => o.kind === "hang").map(([id]) => id));
+  const kits = (project.tilesets[map.tilesetId] as unknown as { structureKits?: { id: string; rows?: { upperTiles?: number[] }[] }[] }).structureKits ?? [];
+  const kitOf = new Map<number, string>();
+  for (const kit of kits) if (kit.id.startsWith("hand-interior:") && hangIds.has(kit.id.slice(14))) for (const row of kit.rows ?? []) for (const t of row.upperTiles ?? []) if (t >= 0) kitOf.set(t, kit.id);
+  const W = map.width;
+  for (const layer of [map.upperTiles, map.upperOverlayTiles]) {
+    if (!layer) continue;
+    for (let i = 0; i < layer.length; i += 1) {
+      const kit = kitOf.get(layer[i]!);
+      if (!kit || !isPassable(project, map, i % W, Math.floor(i / W))) continue;
+      const stack = [i];
+      while (stack.length) {
+        const c = stack.pop()!;
+        if (kitOf.get(layer[c]!) !== kit) continue;
+        layer[c] = -1;
+        if (c % W > 0) stack.push(c - 1);
+        if (c % W < W - 1) stack.push(c + 1);
+        if (c >= W) stack.push(c - W);
+        if (c + W < layer.length) stack.push(c + W);
+      }
+    }
+  }
+}
+
+function darkenInteriorMargins(map: GameMap): void {
+  const W = map.width, H = map.height;
+  const layers = [map.lowerTiles, map.lowerOverlayTiles, map.upperTiles, map.upperOverlayTiles].filter((l): l is number[] => !!l);
+  for (const layer of layers) for (let i = 0; i < layer.length; i += 1) {
+    const t = layer[i]!;
+    if (t >= 2 && t <= 33) layer[i] = t + 64;
+    else if (t >= 34 && t <= 65) layer[i] = t + 32;
+  }
+  const ROCK = new Set([3132, 3134, 3166, 3168, 3170, 3172, 3174, 3176]);
+  const VOID = 1;
+  const fill = (i: number): boolean => ROCK.has(map.lowerTiles[i]!) || map.lowerTiles[i] === VOID;
+  const seen = new Set<number>();
+  const queue: number[] = [];
+  for (let x = 0; x < W; x += 1) for (const y of [0, H - 1]) { const i = y * W + x; if (fill(i) && !seen.has(i)) { seen.add(i); queue.push(i); } }
+  for (let y = 0; y < H; y += 1) for (const x of [0, W - 1]) { const i = y * W + x; if (fill(i) && !seen.has(i)) { seen.add(i); queue.push(i); } }
+  while (queue.length) {
+    const i = queue.shift()!, x = i % W, y = Math.floor(i / W);
+    if (ROCK.has(map.lowerTiles[i]!)) { map.lowerTiles[i] = VOID; for (const layer of layers.slice(1)) layer[i] = -1; }
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = x + dx, ny = y + dy, n = ny * W + nx;
+      if (nx < 0 || ny < 0 || nx >= W || ny >= H || seen.has(n) || !fill(n)) continue;
+      seen.add(n); queue.push(n);
+    }
+  }
+}
+
+/** 짙은 풀 판(11628)·헤더 덤불 융단 → 둘레 바닥·성긴 숲 바닥 소품(버들항 깊은 숲길 1×1 조각). */
+function naturalizeFloor(project: Project, map: GameMap | undefined): void {
+  if (!map || map.tilesetId !== "beodeul_city") return;
+  const ts = project.tilesets[map.tilesetId] as unknown as { structureKits?: { id: string; rows: { tiles: number[]; upperTiles?: number[] }[] }[] };
+  const one = (name: string): number => {
+    const row = ts.structureKits?.find((k) => k.id === `bd-pick-deep-forest-path-${name}`)?.rows[0];
+    const u = row?.upperTiles?.[0] ?? -1;
+    return u >= 0 ? u : row?.tiles[0] ?? -1;
+  };
+  const heath = new Set(["heath-a", "heath-b", "heath-c"].map(one).filter((t) => t >= 0));
+  const floor = ["fern-c", "wild-a", "wild-b", "wild-c", "toadstools-a", "stones-a", "fern-c", "toadstools-b"].map(one).filter((t) => t >= 0);
+  const W = map.width, H = map.height, DARK = 11628;
+  const lo = map.lowerTiles;
+  for (let pass = 0; pass < 4; pass += 1) for (let i = 0; i < lo.length; i += 1) {
+    if (lo[i] !== DARK) continue;
+    const x = i % W, y = Math.floor(i / W);
+    const around = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dy]) => (x + dx! >= 0 && x + dx! < W && y + dy! >= 0 && y + dy! < H ? lo[(y + dy!) * W + x + dx!]! : -1)).filter((t) => t >= 0 && t !== DARK);
+    if (around.length || pass === 3) lo[i] = around[0] ?? 737;
+  }
+  for (const layer of ["upperTiles", "upperOverlayTiles", "lowerOverlayTiles"] as const) {
+    const cells = map[layer];
+    if (!cells) continue;
+    for (let i = 0; i < cells.length; i += 1) {
+      if (!heath.has(cells[i]!)) continue;
+      const x = i % W, y = Math.floor(i / W), h = (((x * 73856093) ^ (y * 19349663) ^ 0x7a3) >>> 0);
+      cells[i] = layer === "upperTiles" && h % 100 < 24 && floor.length ? floor[(h >>> 8) % floor.length]! : -1;
+    }
+  }
+  // 숲 바닥 그늘(버들항 기초 「숲 바닥 그늘」·「숲 가장자리 바닥 그늘」)은 나무 밑에서만 그늘이다 — 나무가 걷힌 빈터에 남은 그늘 칸은
+  // 네모난 짙은 풀 덩이(포켓몬 풀숲)로 읽혔다(사용자 2026-10-21). 그 칸이나 바로 위 칸에 나무가 없으면 민 잔디로 돌린다.
+  const full = project.tilesets[map.tilesetId] as unknown as { tileGrafts?: { targetTile: number; sourceChipset: string; sourceTile: number }[]; tileMeta?: ({ label?: string } | null)[] };
+  const shadeSrc = new Set(BEODEUL_GROUND_RECIPES.filter((r) => r.id.startsWith("bdg-forest-ground")).flatMap((r) => r.rows.flat()).filter((n) => n >= 0));
+  const shade = new Set((full.tileGrafts ?? []).filter((g) => g.sourceChipset === "tex_beodeul_ground" && shadeSrc.has(g.sourceTile)).map((g) => g.targetTile));
+  const isTree = (t: number | undefined): boolean => t !== undefined && t >= 0 && /나무·덤불|전나무/u.test(full.tileMeta?.[t]?.label ?? "");
+  const treeAt = (i: number): boolean => isTree(map.upperTiles[i]) || isTree(map.upperOverlayTiles?.[i]);
+  for (let i = 0; i < lo.length; i += 1) if (shade.has(lo[i]!) && !treeAt(i) && !(i >= W && treeAt(i - W))) lo[i] = 737;
+}
+
 export const SW_VALEN_ARRIVED = "sw_fs_valen_arrived";
+const SW_VALEN_WALKING = "sw_fs_valen_walking";
 /**
  * 지하의 발렌은 처음부터 등불 앞에 서 있지 않고, 일행이 방에 들어서면 북쪽 통로에서 걸어 내려와 선다(가혹 검수 r12
  * 「발렌 보스 등장도 입구에서 걸어 들어오게」). 걷는 그림은 따로 둔 이벤트가 맡고, 닿는 순간 스위치로 진짜 보스 이벤트와
@@ -620,25 +718,30 @@ function valenWalksIn(project: Project, vault: GameMap, bossId: string): void {
     }
   }
   if (!start || !path) throw new Error("[fallen-star] 발렌이 걸어 들어올 북쪽 통로를 찾지 못했다");
+  // 걷는 그림을 보스 이벤트 자신이 맡는다 — 따로 둔 걷는 이벤트가 도착하는 순간 지워지고 보스로 바뀌면 「제자리에서 사라지는 NPC」였다
+  // (scene-npc-vanish). 보스를 통로 끝으로 옮겨(투명 페이지일 때) 「걷는 중」 페이지를 켜고 걸려 내린 뒤, 도착 스위치로 진짜 페이지가 이어받는다.
   const walkerId = `ev_${FS_PREFIX}_valen_walk_in`;
   vault.events = vault.events.filter((e) => e.id !== walkerId && !String(e.id).startsWith(`ev_${FS_PREFIX}_valen_cue_`));
-  vault.events.push({
-    id: walkerId, name: "걸어 들어오는 발렌", x: start.x, y: start.y, trigger: { kind: "action" }, commands: [],
-    pages: [
-      { id: `${walkerId}_on`, name: "통로", conditions: [], graphic: { ...visible, direction: "down" }, movement: { type: "fixed", speed: 3, frequency: 3 },
-        priority: "same", trigger: { kind: "action" }, commands: [] },
-      { id: `${walkerId}_gone`, name: "섰다", conditions: [arrived], graphic: { transparent: true }, movement: { type: "fixed", speed: 3, frequency: 3 },
-        priority: "below", trigger: { kind: "action" }, commands: [] },
-    ],
-  } as unknown as GameEvent);
+  if (!project.switches.some((s) => s.id === SW_VALEN_WALKING)) project.switches.push({ id: SW_VALEN_WALKING, name: "발렌이 통로를 내려온다" });
+  boss.pages.splice(1, 0, {
+    id: `${bossId}_walking`, name: "통로를 내려온다", conditions: [{ kind: "switch", switchId: SW_VALEN_WALKING, value: true }],
+    graphic: { ...visible, direction: "down" }, movement: { type: "fixed", speed: 3, frequency: 3 },
+    priority: "same", trigger: { kind: "action" }, commands: [],
+  } as EventPage);
+  const placeBoss = (at: { x: number; y: number }): Command =>
+    ({ kind: "m2Command", commandId: "m2-040-set-event-location", fields: { target: bossId, mapId: vault.id, x: at.x, y: at.y } } as unknown as Command);
   const cue: Command[] = [
     { kind: "cutsceneControl", mode: "begin", skippable: true },
     narrate("어둠 저편에서 발소리가 내려온다."),
     { kind: "showEmote", target: "player", emote: "exclamation", durationMs: 700 },
     // 화면이 북쪽 통로를 비추게 들어 올린다 — 일행 자리에서는 통로가 화면 밖이라 걸어 내려오는 모습이 안 보였다.
     { kind: "m2Command", commandId: "m2-049-scroll-map", fields: { direction: "up", distance: "4", durationMs: "700", wait: "true" } },
-    { kind: "moveEvent", eventId: walkerId, route: { moves: [...path.map((dir) => ({ kind: "move", dir })), { kind: "turn", dir: "down" }], repeat: false, wait: true, skippable: true } },
+    placeBoss(start),
+    { kind: "setSwitch", switchId: SW_VALEN_WALKING, value: true },
+    { kind: "moveEvent", eventId: bossId, route: { moves: [...path.map((dir) => ({ kind: "move", dir })), { kind: "turn", dir: "down" }], repeat: false, wait: true, skippable: true } },
     { kind: "label", name: "cutscene_end" },
+    // 건너뛰면 걷다 만 자리에 선다 — 등불 앞 제자리로 붙인다.
+    placeBoss({ x: boss.x, y: boss.y }),
     { kind: "m2Command", commandId: "m2-049-scroll-map", fields: { mode: "return", durationMs: "500", wait: "true" } },
     { kind: "setSwitch", switchId: SW_VALEN_ARRIVED, value: true },
     { kind: "cutsceneControl", mode: "end" },
@@ -1013,7 +1116,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   touchTransfer(M(PUZZLE_ROOM), "ev_fs_vault_gate_down", 10, 14, { mapId: M(ids.observatory).id, x: hatchFront.x, y: hatchFront.y, direction: "down" });
   const vaultStairs = retarget(M(ids.vault), M(ids.observatory).id, { mapId: PUZZLE_ROOM, x: 10, y: 3, direction: "down" });
   const vaultEntry = vaultStairs ? { x: vaultStairs.x, y: vaultStairs.y + 2 } : { x: 30, y: 58 };
-  for (const gx of [9, 10]) touchTransfer(M(PUZZLE_ROOM), `ev_fs_vault_gate_up${gx}`, gx, 2, { mapId: M(ids.vault).id, x: vaultEntry.x, y: vaultEntry.y, direction: "up" });
+  for (const gx of [9, 10]) touchTransfer(M(PUZZLE_ROOM), `ev_fs_vault_gate_up${gx}`, gx, 3, { mapId: M(ids.vault).id, x: vaultEntry.x, y: vaultEntry.y, direction: "up" });
 
   // 동문 문지기는 성문 곁(reworkFallenTown 이 세운 자리)에 그대로 선다.
 
@@ -1194,7 +1297,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 숲길 밀도(VQA r7 맵) — 흙길 둘레 풀밭에 덤불·고사리·돌·버섯을 성기게 흩는다. 길(흙 칸)과 이벤트 곁 3칸은 건드리지 않는다.
   {
     const fm = M(ids.forest);
-    const kits = ["heath-a", "fern-a", "stones-a", "fern-b", "heath-b", "toadstools-a", "wild-a", "heath-c", "stones-b", "fern-c", "wild-b", "toadstools-b"];
+    // 헤더 덤불(꽃 핀 둥근 덤불)·네모 고사리 덤불(fern-a·b)은 촘촘히 모이면 몬스터 게임의 풀숲 판처럼 읽혔다(사용자 지적) — 낮은 고사리·들꽃·버섯·돌만.
+    const kits = ["fern-c", "stones-a", "toadstools-a", "wild-a", "stones-b", "fern-c", "wild-b", "toadstools-b", "wild-c", "stones-c"];
     const placed: Array<[number, number]> = [];
     for (let y = 3; y < fm.height - 3; y += 1) for (let x = 2; x < fm.width - 2; x += 1) {
       if (fm.lowerTiles[y * fm.width + x] === 737) continue;
@@ -1210,6 +1314,9 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       if (tryStamp(project, M(ids.forest), `kit:beodeul_city/bd-pick-deep-forest-path-${kits[(x * 7 + y * 3) % kits.length]}`, x, y)) placed.push([x, y]);
     }
   }
+  // 숲 바닥 — 장 구성기가 깐 「풀숲 조우 칸」(짙은 풀 11628 + 헤더 덤불 융단)은 몬스터 게임의 키 큰 풀 판으로 읽혔다(사용자 지적).
+  // 조우는 맵 전체 확률이라 그 칸에 묶여 있지 않다 — 짙은 풀은 둘레 숲 바닥으로, 덤불 융단은 성긴 고사리·들꽃·버섯·돌 무리로 바꾼다. 폴른 버들항 맵 모두.
+  for (const id of [ids.hub, ids.forest, ids.vault]) naturalizeFloor(project, M(id));
   // 화로의 방 밀도(VQA r7 맵) — 같은 모자이크 바닥이 화면 가득이라 가장자리·모서리에 버려진 소품을 흩는다. 가운데 세 열(15~17)·화로·석판·출구 곁은 비운다.
   {
     const room = M(PUZZLE_ROOM);
@@ -1300,6 +1407,34 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   if (bossEvent) valenWalksIn(project, M(ids.vault), bossEvent.id);
   // 길은 모든 소품·표지를 찍은 뒤에 잰다 — 앞에서 재면 뒤에 선 표지·자리 옮김이 길을 막았다.
   marchOffAfterProclamation(project, M(ids.hub));
+  // 마을 집 안 — 여관·약방·집 셋을 손 도트 실내로 짓고 부딪힘 문으로 잇는다. 나머지 집 문은 잠겼다고 말한다(사용자 「집에 들어갈 수 없다」).
+  buildFallenTownInteriors(project, ids.hub, { irisJoined: SW_IRIS_JOINED, valenMarched: SW_VALEN_MARCHED });
+  // 실내 맵의 방 밖은 전부 어둠(game-scene-polish 3-7·11-6, 사용자 지적 「방 사이가 회색 바닥 띠로 읽힌다」) — 회색 디더·바위 천장은
+  // 같은 이웃 번호의 어두운 천장으로, 여백을 메운 바위벽 조각은 공허 칸으로.
+  for (const map of Object.values(project.maps)) if (map.tilesetId === "atlas_biome_interior") { darkenInteriorMargins(map); dropFloorHangs(project, map); }
+  // 둘레를 덧댄 실내(천문대·화로의 방)는 남쪽 출구가 맵 가장자리가 아니라 벽 틈 맨바닥이었다(scene-transfer-off-door) —
+  // 틈에 열린 쇠창살 문틀 윗칸(상인방)을 세워(아랫칸 기둥은 바깥 천장 칸이라 얹지 않는다) 출구로 읽히게 한다.
+  for (const [mapId, target] of [[ids.observatory, ids.hub], ["fs_vault_gate", ids.observatory]] as const) {
+    const map = M(mapId);
+    const exit = map.events.find((e) => eventCommandLists(e).some((l) => l.some((c) => c.kind === "transfer" && (c as { mapId?: string }).mapId === target)));
+    if (!exit) continue;
+    const i = exit.y * map.width + exit.x;
+    map.upperTiles[i] = 6423;
+  }
+  // 천문대 문 — 탑 문 그림 칸(문 앞 큰길 한 칸 위)에서 부딪혀 들어가고, 나오면 그 문 바로 앞에 문을 등지고 선다(scene-transfer-off-door·pair).
+  {
+    const hub = M(ids.hub);
+    const door = hub.events.find((e) => String(e.id).startsWith("ev_gate_") && JSON.stringify(e).includes(`"mapId":"${ids.observatory}"`));
+    if (door) {
+      const front = { x: door.x, y: door.y };
+      door.y -= 1;
+      for (const page of door.pages ?? []) { page.priority = "same"; (page as { overlapForbidden?: boolean }).overlapForbidden = true; }
+      for (const event of M(ids.observatory).events) for (const list of eventCommandLists(event)) for (const cmd of list) {
+        const rec = cmd as unknown as Record<string, unknown>;
+        if (rec.kind === "transfer" && rec.mapId === ids.hub) { rec.x = front.x; rec.y = front.y; rec.direction = "down"; }
+      }
+    }
+  }
   applySpeakerFaces(project, {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),

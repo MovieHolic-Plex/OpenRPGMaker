@@ -156,8 +156,26 @@ export function reworkFallenTown(project: Project, hubId: string, ids: { observa
   }
   retile(waterSet, waterLink, WATER_BY_MASK);
 
-  // ── 2. 아치 돌다리 ──
-  copyKit(kit("bd-bridge-arch"), riverX, BRIDGE_ROW);
+  // ── 2. 아치 돌다리 — 버들항 강 다리(bd-river-bridge)의 강 위 네 칸 + 양 끝 난간 기둥. 북 난간·상판 두 줄·남 난간·쌍아치
+  //    앞면이 한 벌이다. 강 위 아치 다리(bd-bridge-arch)는 남 난간·기둥이 없어 상판이 길 한 토막처럼 떠 보였다(사용자 지적).
+  //    키트 8줄 = 북 난간(물 위), 9·10줄 = 상판(마을 큰길 두 줄), 11·12줄 = 남 난간 아래 아치 앞면, 13줄부터 물.
+  const riverBridge = kit("bd-river-bridge");
+  const bridgeAt = (top: number): void => {
+    for (let ky = 8; ky <= 12; ky += 1) for (let kx = 6; kx <= 11; kx += 1) {
+      const x = riverX + kx - 7, y = top + ky - 8;
+      if (!inside(x, y)) continue;
+      const i = at(x, y), row = riverBridge.rows[ky]!;
+      const l = row.tiles[kx] ?? -1, u = row.upperTiles?.[kx] ?? -1;
+      if (kx >= 7 && kx <= 10) {
+        lo[i] = l; lo2[i] = -1; up[i] = u; up2[i] = -1;
+        if (ky === 8 || ky === 12) waterLink.add(l);   // 위·아래 운하 물이 둑 테두리 없이 다리 밑으로 이어진다
+        if (ky === 9 || ky === 10) roadLink.add(l);     // 양쪽 큰길이 연석 없이 상판에 닿는다
+      } else if ((ky === 8 || ky === 10) && u >= 0) {
+        up[i] = u; up2[i] = -1;                          // 양 끝 난간 기둥(둑 위) — 바닥은 마을 길 그대로
+      }
+    }
+  };
+  bridgeAt(BRIDGE_ROW);
 
   // ── 3. 천문대 탑: 재단사 집을 걷고 둥근 돌 탑을 세운다. 문 = 탑 밑 가운데(키트 문 칸 dx3,dy15). ──
   const oldObs = transferTo(ids.observatory);
@@ -205,7 +223,6 @@ export function reworkFallenTown(project: Project, hubId: string, ids: { observa
   //   북 성벽은 아치로 운하가 마을에 흘러들고, 남 성벽은 아치로 빠져나간다(위 통로·윗 앞면 줄은 성벽 그대로).
   //   오프닝 그림의 수문은 성벽 앞면에 뚫린 돌테 쌍아치다 — 앞면 두 줄 위에 하수도 수로 아치(2×2, 물 위 돌테 아치) 둘을 나란히.
   //   다리 키트 아치 줄을 끼웠을 때는 벽면이 잘린 구멍처럼 읽혔다(적대 VQA r2 M4).
-  const archKit = kit("bd-bridge-arch");
   const waterArch = kit("bd-pick-aqueduct-sewer-arch-water");
   for (const top of [1, SWALL + 1]) for (const ox of [0, 2]) {
     for (let dy = 0; dy < 2; dy += 1) for (let dx = 0; dx < 2; dx += 1) {
@@ -341,8 +358,9 @@ export function reworkFallenTown(project: Project, hubId: string, ids: { observa
   clearRect(4, 35, riverX - 1, STREET);
   // 둘째 아치 다리(34·35줄 갑판) — 서쪽 34줄 길과 운하 양 둑 산책길이 남쪽 거리로 건너간다(길이 운하에 막혀 끝나지 않게).
   const BRIDGE2 = 33;
-  copyKit(archKit, riverX, BRIDGE2);
+  for (let y = BRIDGE2; y <= BRIDGE2 + 4; y += 1) for (let x = riverX; x < riverX + 4; x += 1) clear(x, y, 23152);
   for (let y = BRIDGE2 + 1; y <= BRIDGE2 + 2; y += 1) for (const x of [riverX - 1, riverX + 4, riverX + 5, riverX + 6, riverX + 7]) clear(x, y, 3221);
+  bridgeAt(BRIDGE2);
   plant(4, 36, riverX - 2, STREET, TREES, 11);
   plant(4, 36, riverX - 2, STREET, SMALL, 13);
   // 남쪽 두 모서리 원탑(남 성벽 앞면 밑 줄이 밑동).
@@ -376,7 +394,7 @@ export function reworkFallenTown(project: Project, hubId: string, ids: { observa
   // 좁은 틈(블록 옆·둑 곁 한두 칸)은 가는 나무로.
   plant(0, 0, W - 1, H - 1, ["bd-tree-eef4bc", "bd-tree-28ad5e", "bd-tree-c27062"], 31, awayFromPaving(0), 0, 75);
   // 남은 맨 풀밭 칸에 들꽃 무더기(밟고 지나가는 바닥 소품)를 성기게 — 길가 풀 띠가 맨바닥 줄로 보이지 않게.
-  plant(0, 0, W - 1, H - 1, ["bd-pick-wheat-roman-road-wild-a", "bd-pick-wheat-roman-road-wild-b", "bd-pick-deep-forest-path-wild-b", "bd-pick-deep-forest-path-wild-c", "bd-pick-deep-forest-path-heath-b"], 37,
+  plant(0, 0, W - 1, H - 1, ["bd-pick-wheat-roman-road-wild-a", "bd-pick-wheat-roman-road-wild-b", "bd-pick-deep-forest-path-wild-b", "bd-pick-deep-forest-path-wild-c", "bd-pick-deep-forest-path-fern-c"], 37,
     (x, y) => !nearEvent(x, y, 1) && lo2[at(x, y)]! < 0, 0, 45);
 
   // 광장 가장자리 소품 — 판석이 한 면으로 비지 않게. 성문 통로 앞 다섯 줄(행진 길)과 사람·출입구 둘레는 비운다.
