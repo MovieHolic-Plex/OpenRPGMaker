@@ -84,7 +84,11 @@
   font-size: var(--font-size-sm);
 }
 
+/* 조합 붓 배지와 해제 단추가 길어도 패널 폭 안에서 줄바꿈한다 — 부모 flex 가 이 줄을
+   max-content(약 380px)로 두면 해제 단추가 리사이저·캔버스 위로 삐져나갔다. */
 .sidebar-brush-controls {
+  max-width: 100%;
+  min-width: 0;
   padding-block: var(--space-1);
 }
 
