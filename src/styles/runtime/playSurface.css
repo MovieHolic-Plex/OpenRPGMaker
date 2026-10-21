@@ -485,8 +485,9 @@
   40% { transform: scale(1.35); }
 }
 
-/* 위쪽 시스템 안내(장소·시간 자막 같은 한 줄 알림)는 대사 칸 높이를 통째로 쓰지 않고 내용 높이만 차지한다. */
-.player-layout .play-stage > .dialogue-overlay.position-top:has(.dialogue-box[data-dialogue-context="system"]) {
+/* 위쪽의 이름·얼굴 없는 한 줄(장소·시간 자막, 위 내레이션)은 대사 칸 높이를 통째로 쓰지 않고 내용 높이만 차지한다.
+   선택지·말풍선은 자기 규칙을 따른다. */
+.player-layout .play-stage > .dialogue-overlay.position-top:not(.choices-active):not(.balloon-active):has(.dialogue-box:not(.has-speaker):not(.has-bust-face):not(.has-face)) {
   height: auto;
   min-height: 0;
 }
