@@ -979,7 +979,7 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
           "아스트라 호라이즌", "다우닝 시티와", "여명의 날개", "Astra Horizon", "",
           "— 여정 · The Journey —",
           "다우닝 시티에서 첫 동료를 만나", "새싹 들길을 지나", "실바나 체육관에서 유림을 이기고", "별모래 신전에서 무영을 막아",
-          "챔피언 전당에서 나루와 겨뤘다.", "From Downing City to the Hall of Champions.", "",
+          "챔피언 전당에서 나루와 겨뤘다.", "From Downing City", "to the Hall of Champions.", "",
           "— 등장인물 · Cast —",
           "주인공 · You", "천문박사 · The Professor", "라이벌 나루 · Naru, your rival", "관장 유림 · Yurim, Silvana Gym",
           "신전의 무영 · Muyeong of the Temple", "엄마 · Mom", "센터 직원 · Center Nurse", "",

@@ -34,6 +34,13 @@ try {
     await page.waitForTimeout(Math.max(0, t - (Date.now() - t0)));
     await shot(`1-credits-${t}`);
   }
+  // QA_SEEK="ms,ms": 롤 애니메이션을 그 시각으로 옮겨 뒷부분 줄(영문 병기 등)을 찍는다.
+  for (const t of (process.env.QA_SEEK ?? "").split(",").filter(Boolean)) {
+    await page.evaluate((ms) => { const a = document.querySelector(".ending-credits-roll")?.getAnimations()[0]; if (a) { a.pause(); a.currentTime = ms; } }, Number(t));
+    await page.waitForTimeout(200);
+    await shot(`seek-${t}`);
+  }
+  if (process.env.QA_SEEK) { await browser.close(); await server.close(); process.exit(0); }
   // 속도: 1초 동안 읽기 속도, 1초 동안 Enter 를 누르고 있을 때, 뗀 뒤 다시 1초.
   const measure = async (label) => { const a = await rollTop(), t = Date.now(); await page.waitForTimeout(1000); const b = await rollTop(); console.log(label, ((a - b) / ((Date.now() - t) / 1000)).toFixed(1), "px/s"); };
   await measure("normal");
