@@ -34,6 +34,18 @@ class HarnessPathTest(unittest.TestCase):
         dot._PAL.clear()
         shutil.rmtree(self.tmp, ignore_errors=True)
 
+    def test_cli_draw_agent_reaches_drawer_with_cmd(self):
+        """main() 를 거친 `draw --agent --cmd` 가 하위 명령 이름을 잃지 않고 cmd_draw 에 닿는다."""
+        seen = []
+        orig = harness.cmd_draw
+        harness.cmd_draw = lambda *a, **k: seen.append(a) or 0
+        try:
+            rc = harness.main(['draw', H.THEME, H.ROUND, '--agent', '--lines', 'A,B', '--jobs', '2', '--cmd', 'fake-claude'])
+        finally:
+            harness.cmd_draw = orig
+        self.assertEqual(rc, 0)
+        self.assertEqual(seen, [(H.THEME, H.ROUND, True, ['A', 'B'], 2, 'fake-claude')])
+
     def test_draw_gate_dry_assemble_sheet(self):
         self.assertEqual(harness.cmd_draw(H.THEME, H.ROUND, quiet=True), 0)
         man = json.load(open(os.path.join(dot.RUNS, H.THEME, H.ROUND, 'manifest.json')))

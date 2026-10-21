@@ -632,7 +632,7 @@ def main(argv=None):
     p.add_argument('--agent', action='store_true')
     p.add_argument('--lines')
     p.add_argument('--jobs', type=int, default=1)
-    p.add_argument('--cmd')
+    p.add_argument('--cmd', dest='agent_cmd')  # dest 'cmd' would overwrite the subcommand name
     p = sub.add_parser('dry')
     p.add_argument('theme')
     p.add_argument('round')
@@ -687,7 +687,7 @@ def main(argv=None):
         cmd_list(a.theme)
         return 0
     if a.cmd == 'draw':
-        return cmd_draw(a.theme, a.round, a.agent, (a.lines or '').split(',') if a.lines else None, a.jobs, a.cmd)
+        return cmd_draw(a.theme, a.round, a.agent, (a.lines or '').split(',') if a.lines else None, a.jobs, a.agent_cmd)
     if a.cmd == 'dry':
         return cmd_dry(a.theme, a.round, a.key)
     if a.cmd == 'gate':
