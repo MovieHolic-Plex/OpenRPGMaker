@@ -67,6 +67,9 @@ export function parsePicker(text: string, labels: Readonly<Record<string, string
         const readable = reason
           .replace(/\b([Cc]andidates?)\s+(\d+)\b/gu, (whole, word: string, n: string) => (labels[n] ? `${word} ${labels[n]}` : whole))
           .replace(/(?<![\w.])(\d+)(?='s\b)/gu, (whole, n: string) => labels[n] ?? whole)
+          // 한국어 답(「후보 2는…」)·맨 숫자 주어(「2 wins …」)도 — 시험 2(2026-10-21)에서 고른 글자 A 와 「후보 2」가 같이 보였다.
+          .replace(/후보\s*(\d+)/gu, (whole, n: string) => (labels[n] ? `후보 ${labels[n]}` : whole))
+          .replace(/(?<![\w.])(\d+)(?=\s+(?:wins|is|has|keeps|reads|breaks|loses)\b)/gu, (whole, n: string) => labels[n] ?? whole)
           .replace(/[.\s]+$/u, "");
         return { letter: labels[label]!, reason: readable.slice(0, 400) };
       }
