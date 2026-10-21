@@ -97,9 +97,10 @@ def expr_set(style):
         'happy': feat(["....", ".oo.", "o..o", "...."], ["...", ".o.", "o.o", "..."],
                       ["bbb."], [".bb"], ["MMMMM", ".MmmM", "..MM."], ey, by - 1, (10, my - 1), nose=nz,
                       extra=[(6, ey + 4, ["mm"]), (18, ey + 4, ["m"])]),
-        # surprised: wide whites with small pupils, brows high and arched, round open mouth
-        'surprised': feat(["oooo", "QeeQ", "QeeQ", "QQQQ"], ["ooo", "QeQ", "QeQ", "QQQ"],
-                          [".bb.", "b..b"], [".b.", "b.b"], [".MM.", "MmmM", ".MM."], ey, by - 2, (11, my - 1), nose=nz),
+        # surprised: round wide eyes (thin rounded top, whites all round small pupils), brows lifted clear of the
+        # eye, open dark O mouth
+        'surprised': feat([".oo.", "oQQo", "QeEQ", "QQQQ", ".QQ."], [".o.", "oQo", "QeQ", "QQQ", ".Q."],
+                          [".bb.", "b..b"], [".b.", "b.b"], [".MM.", "MooM", "MmmM", ".MM."], ey - 1, ey - 4, (11, my - 1), nose=nz),
         # angry: lids dropped, steep brows, shouting with teeth
         'angry': feat(["....", "oooo", "QeEo", ".EE."], ["...", "ooo", "eEo", "EE."],
                       ["b...", "bbb.", ".bbb"], ["..b", ".bb", "bb."], ["MMMMM", "MQQQM", ".MMM."], ey, by - 1, (10, my - 1), nose=nz),
@@ -176,11 +177,11 @@ PROF_HAIR_B = [  # offset (6,0): silhouette of the hair mass behind the head
     "...h............................",
 ]
 PROF_HAIR_F = [  # offset (6,0): tuft, crown, spiky bangs, side locks (face shows through '.')
-    "...............h................",
-    "..............hH....h...........",
-    "........h....hHH...hH...........",
-    "........hh..hHHHh.hHH....h......",
-    ".........hHhHHHHHhHHHh.hHh......",
+    "...............hh...............",
+    "..............hHh...............",
+    "..............hHh...............",
+    "..........hhhhHHhhhhh...........",
+    ".......hhhHHHHHHHHHHHhhh........",
     "......hhhHHHHHHHHHHHHHhHHh......",
     ".....hHHHHHHIIIHHHHHHHHHHHhh....",
     "...hhHHHHHIIIHHHHHHHHHHHHHHHh...",
@@ -201,21 +202,46 @@ PROF_HAIR_F = [  # offset (6,0): tuft, crown, spiky bangs, side locks (face show
     "..h.............................",
 ]
 PROF_COAT = {'W': 'f2f6fc', 'w': 'd6dfed', 'x': 'b9b5ae', 'C': '2e3d6c', 'c': '2e3d6c', 'A': 'f2c84b'}
-PROF_BODY = [  # offset (0,32)
-    "...............xWWw.......wWWx..............",
-    "..............xWWWWw.....wWWWWx.............",
-    "...........wwxWWWWWWwCCCwWWWWWWxww..........",
-    ".........wWWWxWWWWWWwCCCwWWWWWWxWWWw........",
-    ".......wWWWWWxWWWWWwCCACCwWWWWWxWWWWWw......",
-    ".....wWWWWWWWxWWWWwCCAAACCwWWWWxWWWWWWWw....",
-    "....wWWWWWWWWWxWWWwCCCACCCwWWWxWWWWWWWWWw...",
-    "...wWWWWWWWWWWWxWWwCCCCCCCwWWxWWWWWWWWWWWw..",
-    "..wWWWWWWWWWWWWWxWwCCCCCCCwWxWWWWWWWWWWWWWw.",
-    "..wWWWWWWWWWWWWWWxwCCCCCCCwxWWWWWWWWWWWWWWw.",
-    ".wWWWWWwWWWWWWWWWWwcCCCCCCwWWWWWWWWWwWWWWWWw",
-    ".wWWWWwWWWWWWWWWWWwcCCCCCCwWWWWWWWWWwWWWWWWw",
-    "wWWWWWwWWWWWWWWWWWwcCCCCCCwWWWWWWWWWwWWWWWWw",
-    "wWWWWWwWWWWWWWWWWWwcCCCCCCwWWWWWWWWWwWWWWWWw",
+PROF_BODY = pad([  # offset (0,32): open white coat with wide flared collar over a navy shirt
+    "..............wWWWw.......wWWWw",
+    "...........wWWWWWWWw.....wWWWWWWWw",
+    ".........wWWWWWWWxCCCCCCCCCxWWWWWWWw........",
+    ".......wWWWWWWWWWxCCCCCCCCCxWWWWWWWWWw......",
+    ".....wWWWWWWWWWWxCCCCCCCCCCCxWWWWWWWWWWw....",
+    "....wWWWWWWWWWWWxCCCCCCCCCCCxWWWWWWWWWWWw...",
+    "...wWWWWWWWWWWWWxCCCCCCCCCCCxWWWWWWWWWWWWw..",
+    "..wWWWWWWWWWWWWWxCCCCCCCCCCCxWWWWWWWWWWWWWw.",
+    "..wWWWWWWWWWWWWWxCCCCCCCCCCCxWWWWWWWWWWWWWw.",
+    ".wWWWWWwWWWWWWWWxCCCCCCCCCCCxWWWWWWWwWWWWWWw",
+    ".wWWWWwWWWWWWWWWxCCCCCCCCCCCxWWWWWWWwWWWWWWw",
+    "wWWWWWwWWWWWWWWWxCCCCCCCCCCCxWWWWWWWwWWWWWWw",
+    "wWWWWWwWWWWWWWWWxCCCCCCCCCCCxWWWWWWWwWWWWWWw",
+    "wWWWWWwWWWWWWWWWxCCCCCCCCCCCxWWWWWWWwWWWWWWw",
+], 44)
+STAR7 = PROF_STAR = [  # five-point star (professor: gold on navy at (19,36); naru: pink at (19,37))
+    "...A...",
+    "..AAA..",
+    "AAAAAAA",
+    ".AAAAA.",
+    ".AA.AA.",
+    "AA...AA",
+]
+PROF_LAPELS = [  # offset (8,32): fold lines of the wide flared collar, turned out over the shoulders
+    "......xx..............xx",
+    ".....x..x............x..x",
+    "....x....xx........xx....x",
+    "...x.......x......x.......x",
+    "..xwwwwwwwwx......xwwwwwwwwx",
+    ".........x..........x",
+    "........x............x",
+    ".......x..............x",
+]
+PROF_GOGGLES = [  # offset (8,8): grey goggles pushed up on the hair, dark strap round the head
+    "......xxxxx.....xxxxx......",
+    ".....xGggGGx...xGggGGx.....",
+    "xxxxxxGgGGGxxxxxGgGGGxxxxxx",
+    ".....xGGGGGx...xGGGGGx.....",
+    "......xxxxx.....xxxxx......",
 ]
 PROF_GLASSES = [  # offset face + (2,8); thin light frames around the eyes, arm back to the ear
     "....xxxxxx..xxxxx",
@@ -226,15 +252,17 @@ PROF_GLASSES = [  # offset face + (2,8); thin light frames around the eyes, arm 
     "....xxxxxx..xxxxx",
     ".....ssss....sss.",
 ]
-check_rows('prof hairB', PROF_HAIR_B, 32); check_rows('prof hairF', PROF_HAIR_F, 32); check_rows('prof body', PROF_BODY, 44)
+check_rows('prof hairB', PROF_HAIR_B, 32); check_rows('prof hairF', PROF_HAIR_F, 32); 
 CHARS['professor'] = {
     'face': 'adult', 'eyes': 'adult', 'face_off': (11, 10), 'neck_off': (19, 30),
     'skin': {'S': 'e4b387', 's': 'c38365', 'L': 'f5cca3', 'k': '7b382f'},
     'line': '23262e', 'white': 'f2f6fc', 'iris': '2c558c', 'brow': '381c14', 'mouth': 'a15d4a',
     'mouth_base': ["M..M", ".MM."],
     'behind': [Part(PROF_HAIR_B, (6, 0), PROF_HAIR, outline=PROF_HAIR_OUT, group='hair', name='hairB')],
-    'body': [Part(PROF_BODY, (0, 32), PROF_COAT, outline='23262e', name='coat')],
-    'over_face': [Part(PROF_GLASSES, (11 + 2, 10 + 8), {'x': '414c61', 's': 'c38365'}, name='glasses')],
+    'body': [Part(PROF_BODY, (0, 32), PROF_COAT, outline='23262e', name='coat'),
+             Part(PROF_STAR, (19, 36), {'A': 'f2c84b'}, name='star'),
+             Part(PROF_LAPELS, (8, 32), {'x': 'b9b5ae', 'w': 'd6dfed'}, name='lapels')],
+    'top': [Part(PROF_GOGGLES, (8, 8), {'x': '23262e', 'G': 'b9b5ae', 'g': 'f2f6fc'}, name='goggles')],
     'hair': [Part(PROF_HAIR_F, (6, 0), PROF_HAIR, outline=PROF_HAIR_OUT, group='hair', name='hairF')],
     'exprs': ['base', 'happy', 'surprised'],
 }
@@ -424,9 +452,14 @@ NURSE_HAIR_F = pad([  # offset (6,0): rounded bob, notched bangs, strand lines, 
     "hHHHhHh.................hHhHh",
     ".hHHhHHh................hHhHh",
     ".hHHHhHHh..............hHHhHh",
-    "..hHHHhHHhh...........hHHhHHh",
-    "...hhHHHHHHh.........hHHHHhh",
-    ".....hhhhhhh.........hhhhh",
+    ".hHHHhHHh..............hHHhHh",
+    ".hHHhHHHh..............hHHhHHh",
+    ".hHHhHHHh.............hHHHhHHh",
+    "..hHHhHHHh............hHHhHHh",
+    "..hHHHhHHh............hHHhHHh",
+    "...hHHhHHh.............hHhHh",
+    "...hhHHHh..............hhhh",
+    ".....hhh",
 ], 34)
 NURSE_HAIR_B = fill_between(NURSE_HAIR_F)
 NURSE_BODY = pad([  # offset (0,33)
@@ -514,21 +547,22 @@ NARU_BODY = pad([  # offset (0,33)
     "..........tTTTTTTTTt...tTTTTTTTTt",
     ".........tTTTTTTTTTTtttTTTTTTTTTTTt",
     ".......tTTTTTTTTTTTTTTTTTTTTTTTTTTTTt",
-    ".....tTTTTTTTTTTTTTTTpPPpTTTTTTTTTTTTTt",
-    "....tTTTTTTTTTTTTTTTTpPPpTTTTTTTTTTTTTTt",
-    "...tTTTTTTTTTTTTTpPPPPPPPPpTTTTTTTTTTTTTt",
-    "..tTTTTTTTTTTTTTTpPPPPPPPPpTTTTTTTTTTTTTTt",
-    "..tTTTTtTTTTTTTTTTTTpPPpTTTTTTTTTTtTTTTTTt",
-    ".tTTTTTtTTTTTTTTTTTTpPPpTTTTTTTTTTtTTTTTTTt",
-    ".tTTTTTtTTTTTTTTTTTTpPPpTTTTTTTTTTtTTTTTTTt",
-    "tTTTTTTtTTTTTTTTTTTTpPPpTTTTTTTTTTtTTTTTTTTt",
+    ".....tTTTTTTTTTTTTTTTtTTtTTTTTTTTTTTTTt",
+    "....tTTTTTTTTTTTTTTTTtTTtTTTTTTTTTTTTTTt",
+    "...tTTTTTTTTTTTTTtTTTTTTTTtTTTTTTTTTTTTTt",
+    "..tTTTTTTTTTTTTTTtTTTTTTTTtTTTTTTTTTTTTTTt",
+    "..tTTTTtTTTTTTTTTTTTtTTtTTTTTTTTTTtTTTTTTt",
+    ".tTTTTTtTTTTTTTTTTTTtTTtTTTTTTTTTTtTTTTTTTt",
+    ".tTTTTTtTTTTTTTTTTTTtTTtTTTTTTTTTTtTTTTTTTt",
+    "tTTTTTTtTTTTTTTTTTTTtTTtTTTTTTTTTTtTTTTTTTTt",
 ], 44)
 CHARS['naru'] = {
     'face': 'young', 'eyes': 'young', 'lashes': True, 'face_off': (11, 12), 'neck_off': (19, 30),
     'skin': SKIN_A, 'line': '251c43', 'white': 'ffffff', 'iris': '198263', 'brow': '552181', 'mouth': 'b6649a',
     'mouth_base': ["...M", "MMM."],
     'behind': [Part(NARU_HAIR_B, (6, 0), NARU_HAIR, outline='552181', group='hair', name='hairB')],
-    'body': [Part(NARU_BODY, (0, 33), {'T': '606297', 't': '3d356a', 'P': 'ffc0c7', 'p': 'b6649a'}, outline='251c43', name='top')],
+    'body': [Part(NARU_BODY, (0, 33), {'T': '606297', 't': '3d356a'}, outline='251c43', name='top'),
+             Part(STAR7, (19, 37), {'A': 'ffc0c7'}, name='star')],
     'hair': [Part(NARU_HAIR_F, (6, 0), NARU_HAIR, outline='552181', group='hair', name='hairF')],
     'exprs': ['base', 'happy', 'surprised', 'angry'],
 }
@@ -577,13 +611,26 @@ YURIM_BODY = pad([  # offset (0,33): leaf-green jacket, light layered collar, ce
     "jJJJJJJjJJJJJJJJJJJJJjJJJJJJJJJJjJJJJJJJj",
 ], 44)
 YURIM_HAIR_B = fill_between(YURIM_HAIR_F[:18])
+YURIM_SHIRT = [  # offset (18,36): pale vertically striped shirt in the open jacket
+    "..StS..",
+    ".StStS.",
+    ".StStS.",
+    "StStStS",
+    "StStStS",
+    "StStStS",
+    "StStStS",
+    "StStStS",
+    "StStStS",
+    "StStStS",
+]
 CHARS['yurim'] = {
     'face': 'young', 'eyes': 'young', 'face_off': (11, 12), 'neck_off': (19, 30),
     'skin': {'S': 'feddb1', 's': 'e29f7f', 'L': 'feddb1', 'k': '7b3d3a'},
     'line': '115345', 'white': 'fef7d7', 'iris': '38886d', 'brow': '247132', 'mouth': 'b56d5d',
     'mouth_base': ["M..M", ".MM."],
     'behind': [Part(YURIM_HAIR_B, (6, 0), YURIM_HAIR, outline='13491c', group='hair', name='hairB')],
-    'body': [Part(YURIM_BODY, (0, 33), {'J': '68a97a', 'j': '2e7353', 'L': 'ebdba7', 'l': '999c70'}, outline='115345', name='jacket')],
+    'body': [Part(YURIM_BODY, (0, 33), {'J': '68a97a', 'j': '2e7353', 'L': 'ebdba7', 'l': '999c70'}, outline='115345', name='jacket'),
+             Part(YURIM_SHIRT, (18, 36), {'S': 'fef7d7', 't': '999c70'}, name='shirt')],
     'hair': [Part(YURIM_HAIR_F, (6, 0), YURIM_HAIR, outline='13491c', group='hair', name='hairF')],
     'exprs': ['base', 'happy', 'surprised', 'angry'],
 }
@@ -641,10 +688,13 @@ MUY_BODY = pad([  # offset (0,32)
 ], 44)
 _ey, _by, _my, _nz = 9, 7, 17, (16, 13)
 MUY_EXPR = {
-    'base': feat(["....", "oooo", "QeEo", ".ss."], ["...", "ooo", "eEo", "ss."], ["bbb.", ".bbb"], [".bb", "bb."], ["MMMM"], _ey, _by, (11, _my), nose=_nz),
-    'happy': feat(["....", "oooo", "QeEo", ".ss."], ["...", "ooo", "eEo", "ss."], ["bbbb", "...."], ["bbb", "..."], ["...M", "MMM."], _ey, _by, (11, _my - 1), nose=_nz),
-    'surprised': feat(["oooo", "QeeQ", "QeeQ", ".QQ."], ["ooo", "QeQ", "QeQ", ".Q."], ["bbbb"], ["bbb"], [".M.", "MmM", ".M."], _ey, _by - 2, (12, _my - 1), nose=_nz),
-    'angry': feat(["....", "oooo", "QeEo", ".ss."], ["...", "ooo", "eEo", "ss."], ["b...", "bbb.", ".bbb"], ["..b", ".bb", "bb."], ["MMMM", "MQQM", "MMMM"], _ey, _by - 1, (11, _my - 1), nose=_nz),
+    # neutral-stern: level heavy brows, plain eyes, flat mouth
+    'base': feat(["....", "oooo", "QeEo", ".ss."], ["...", "ooo", "eEo", "ss."], ["bbbb"], ["bbb"], ["MMMM"], _ey, _by, (11, _my), nose=_nz),
+    # smug grin: lifted brows, eyes squeezed shut, toothy upturned grin through the beard
+    'happy': feat(["....", ".oo.", "o..o", "...."], ["...", ".o.", "o.o", "..."], ["bbbb"], ["bbb"], ["M.....M", "MQQQQQM", "MQQQQQM", ".MMMMM."], _ey, _by - 2, (9, _my - 1), nose=_nz),
+    'surprised': feat([".oo.", "oQQo", "QeEQ", "QQQQ", ".QQ."], [".o.", "oQo", "QeQ", "QQQ", ".Q."], [".bb.", "b..b"], [".b.", "b.b"], [".MM.", "MooM", "MmmM", ".MM."], _ey - 1, _ey - 4, (11, _my - 1), nose=_nz),
+    # furious: deep V brows, lids crushed down, shouting mouth with teeth
+    'angry': feat(["....", "....", "oooo", "QeEo"], ["...", "...", "ooo", "eEo"], ["bb..", "bbbb", "..bb"], ["..b", ".bb", "bbb"], ["MMMMMM", "MQQQQM", "MooooM", ".MMMM."], _ey, _by - 1, (10, _my - 1), nose=_nz),
 }
 CHARS['muyeong'] = {
     'face': 'adult', 'eyes': 'adult', 'face_off': (11, 10), 'neck_off': (19, 30),
