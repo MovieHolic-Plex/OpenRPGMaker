@@ -152,6 +152,26 @@ function walkRoute(project: Project, mapId: string, eventId: string, from: Cell,
   // 걸어 도착한 인물은 걸어 온 쪽이 아니라 그 자리의 할 일(상대·책상)을 본다 — 끝 방향을 경로 안에서 돌린다.
   return { ...(walk(eventId, [], waitDone) as object), routeKey, ...(endFacing ? { routeTail: [{ kind: "turn", dir: endFacing }] } : {}) } as unknown as Command;
 }
+/**
+ * 말 걸기 대화에서 주인공이 위·아래에서 다가오면 두 사람이 한 열로 쌓여 말풍선·대화창에 가린다.
+ * 주인공이 보는 방향(= 다가온 쪽)으로 갈라, 위·아래였다면 상대 옆 칸으로 걸어가 나란히 서서 마주 본다.
+ */
+function sideBySide(project: Project, mapId: string, npcId: string, npc: Cell): Command[] {
+  const map = project.maps[mapId]!;
+  const free = (c: Cell): boolean => isPassable(project, map, c.x, c.y) && !map.events.some((e) => e.x === c.x && e.y === c.y);
+  const side = [{ x: npc.x - 1, y: npc.y }, { x: npc.x + 1, y: npc.y }].find(free);
+  if (!side) return [faceHero(npcId)];
+  const from = (dir: "up" | "down"): Cell => ({ x: npc.x, y: dir === "up" ? npc.y + 1 : npc.y - 1 });
+  const go = (dir: "up" | "down"): Command[] => [
+    walkRoute(project, mapId, "@player", from(dir), side, [npc]),
+    face("@player", dirToward(side, npc)),
+  ];
+  return [
+    ifCond({ kind: "facing", subject: "player", dir: "up" } as Parameters<typeof ifCond>[0], go("up"),
+      [ifCond({ kind: "facing", subject: "player", dir: "down" } as Parameters<typeof ifCond>[0], go("down"))]),
+    faceHero(npcId),
+  ];
+}
 function resolveRoutes(project: Project): void {
   const fill = (list: unknown): void => {
     if (!Array.isArray(list)) return;
@@ -306,6 +326,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   add(office, event("ev_fl_minho", "차민호", minhoSpot, [
     page("minho_desk", [stageIs(V_STAGE, S.STREET)], [], { who: "minho", dir: "up" }),
     page("minho_pantry", [stageIs(V_STAGE, S.MET)], [
+      ...sideBySide(project, FL_MAP.office, "ev_fl_minho", minhoSpot),
       ...say("minho", "happy", "왔어요? 이 커피 머신, 버튼 두 개를 같이 누르면 라떼가 돼요. 우리 회사 최대 기밀."),
       ...say("seoha", "happy", "그런 걸 첫날에 알려 줘도 돼요?"),
       ...say("minho", "happy", "동기잖아요. 기밀은 동기끼리 나누는 거죠."),
@@ -679,6 +700,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     ]),
     event("ev_fl_w_jihu_pantry", "강지후", jihuPantry, [
       page("wjp", [stageIs(V_STAGE, S.WED)], [
+        ...sideBySide(project, FL_MAP.officePm, "ev_fl_w_jihu_pantry", jihuPantry),
         ...say("jihu", "base", "물 부었어요. 3분."),
         ...say("seoha", "base", "회사에서 이렇게 늦게까지 있는 거, 자주 해요?"),
         ...say("jihu", "base", "발표 주간엔요. …그리고 이번이 마지막이라."),
