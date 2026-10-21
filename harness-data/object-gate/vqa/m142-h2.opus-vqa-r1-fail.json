@@ -1,0 +1,109 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-h2",
+ "round": 1,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "dept-rack-cool",
+   "pixelSha256": "bb227878a887640cc4b699c7da6e297174bbc37242e4014a299b88a0d91656fa",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "reasons": "The top ring is a wide, pale-grey ellipse outline that looks isometric, and the outline is lighter than the near-black outlines on the originals. The shirts look stuck onto the ring and the round base floats under them, so at 1x it reads as a blue blob, not a clothing rack."
+  },
+  {
+   "id": "home-appliance-rack",
+   "pixelSha256": "219e24a3b2e2404599fb0ff8a40ce1c2f956d61edeb467a49b8b515e090ce6f6",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "Only the tan top shows as a plane. The shelf planks have no top surfaces, and the microwave and rice cooker are drawn flat from the front. The orange bar under the bottom appliance looks like a pasted-on sticker."
+  },
+  {
+   "id": "home-drying-rack",
+   "pixelSha256": "c0e1717a70a7f22fe832069dc885493174ae048187889ef07a112e0cef31db0e",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    5
+   ],
+   "reasons": "It is a flat front view of a frame with clothes hanging from it, with no top rail or plane seen from above. The thin splayed legs make it look like it is hovering over the tiles, not standing on them."
+  },
+  {
+   "id": "hospital-curtain-screen",
+   "pixelSha256": "2b8a1ed9556f819c830f5a517d2c2d324eee32c2d95f7380512b8110eff5bfc9",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    3
+   ],
+   "reasons": "It is a flat front view of a green curtain panel with just a thin white rail at the top. In the room it is too short and narrow for a privacy screen, and at 1x it reads as a grey-green pillar."
+  },
+  {
+   "id": "roof-fence",
+   "pixelSha256": "c701b19d1a0b6f1d3b6a228414543562156808e1a2c1992f88ce67a68985aec7",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "The chain-link panel is a pure front view between two posts, with no top surface. In the room it looks like a framed green window or panel, not a fence."
+  },
+  {
+   "id": "mart-sale-endcap",
+   "pixelSha256": "39e3d76f6f576e9ef1d248a1386dbe70278f2f01109472945a3d1bcb98d3dd84",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "The shelves are flat bands with no plank tops visible, and only the boxes at the top have any top-down depth. The saturated yellow and red sale blocks look pasted on, and at 1x the stack turns into striped noise."
+  },
+  {
+   "id": "mart-scale-station",
+   "pixelSha256": "3de120845ffb6a4a69569f7e56bdae38edd7db9d20f961bcdc092b9cd286ed35",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "Apart from the small green display, it is all white and grey blocks with no clear weighing platform seen from above. At 1x it reads as a generic white shelf, not a scale."
+  },
+  {
+   "id": "museum-partition-wall",
+   "pixelSha256": "487f8480dbc2c790d966524ad2a888077bfec586a571279979aaa014db561bda",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "It is a flat front view of a wall panel with only a 1-2 row strip of top plane. The three spotlight bits float above the painting, and the small grey label to its right looks like a stray mark."
+  }
+ ]
+}
