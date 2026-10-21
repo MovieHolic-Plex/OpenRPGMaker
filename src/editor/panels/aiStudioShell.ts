@@ -28,6 +28,8 @@ import { subscribeTeamActivity } from "@/ai/piAgent/teamActivity";
 import { LANE_STATUS_LABEL, type LaneState } from "@/ai/piAgent/lane";
 import type { LaneManager } from "./aiLaneManager";
 import { laneSession } from "./aiLaneSession";
+import { AI_CONNECTION_STATUS_CHANGED_EVENT, getAiConnectionStatus } from "./aiConnectionStatus";
+import { loadAiConfig } from "@/ai/llmClient";
 import {
   laneAvatarLetter,
   laneBoardSummary,
@@ -348,8 +350,15 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
   const statusLine = el("p", {
     class: "ai-studio-who-line",
     dataset: { testid: "ai-studio-status", state: "idle" },
-    text: "대기 중",
+    text: "요청 없음",
   });
+  // 유휴 문구는 「대기 중」 처럼 무언가를 기다리는 말을 쓰지 않는다 — 서버가 AI 를 꺼 두었으면 그 사실을 말한다(UI 감사 09-ai-12).
+  const idleStatusText = (): string =>
+    getAiConnectionStatus(loadAiConfig()).hostAiDisabled === true ? "AI 꺼짐" : "요청 없음";
+  const onConnectionStatusChanged = (): void => {
+    if (statusLine.dataset.state === "idle") statusLine.textContent = idleStatusText();
+  };
+  if (typeof window !== "undefined") window.addEventListener(AI_CONNECTION_STATUS_CHANGED_EVENT, onConnectionStatusChanged);
   const briefing = el("section", {
     class: "ai-studio-briefing",
     attrs: { "aria-label": "지금 이 장면" },
@@ -1353,7 +1362,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     setStatus(text: string) {
       const trimmed = text.trim();
       const idle = trimmed === "" || trimmed === "대기";
-      statusLine.textContent = idle ? "대기 중" : trimmed;
+      statusLine.textContent = idle ? idleStatusText() : trimmed;
       statusLine.dataset.state = idle ? "idle" : "busy";
       chatPane.classList.toggle("is-busy", !idle);
     },
@@ -1393,6 +1402,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
       splitterCleanup?.();
       splitterCleanup = null;
       if (typeof window !== "undefined") window.removeEventListener("resize", applyResponsiveWidths);
+      if (typeof window !== "undefined") window.removeEventListener(AI_CONNECTION_STATUS_CHANGED_EVENT, onConnectionStatusChanged);
     },
   };
 }
