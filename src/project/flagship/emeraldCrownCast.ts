@@ -35,7 +35,7 @@ const CLEAR = (): Command => ({ kind: "changeFace", resourceId: "", position: "l
 const SPOTLIGHT = "astra_cast_spotlight";
 /** card-base.png 크기(scripts/content/monsters/bake_astra_cast.py 가 굽는다). */
 const CARD_SIZE: Readonly<Record<AstraCastId, readonly [number, number]>> = {
-  hero: [85, 188], mom: [70, 188], professor: [81, 188], naru: [89, 188], nurse: [78, 188], yurim: [79, 188], muyeong: [105, 188],
+  hero: [88, 188], mom: [72, 188], professor: [80, 188], naru: [84, 188], nurse: [74, 188], yurim: [82, 188], muyeong: [90, 188],
 };
 
 /** 명령 목록 하나에 흉상을 끼운다. 안쪽 목록(분기·선택지)도 같은 규칙으로 따로 처리한다. 얼굴을 띄운 채 끝나면 끝에서 지운다. */
