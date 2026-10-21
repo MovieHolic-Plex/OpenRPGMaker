@@ -26,8 +26,6 @@ sys.path.insert(0, HERE)
 import dot  # noqa: E402
 
 REPO = dot.REPO
-DATA = dot.DATA
-RUNS = dot.RUNS
 SANDBOX = os.environ.get('BUILDING_KIT_DRAWER_DIR') or os.path.join(REPO, 'qa-runs', 'harnesses', 'building-kit', 'drawer')
 DEFAULT_TIMEOUT = int(os.environ.get('BUILDING_KIT_DRAWER_TIMEOUT', '3600'))
 MODEL = os.environ.get('BUILDING_KIT_DRAWER_MODEL', 'opus')
@@ -42,7 +40,7 @@ def func_name(item, key):
 
 
 def round_path(theme, rid):
-    s = json.load(open(os.path.join(DATA, theme, 'seed.json'), encoding='utf-8'))
+    s = dot.seed(theme)
     return os.path.join(REPO, s['rounds'][rid]['module'])
 
 
@@ -50,7 +48,8 @@ def skeleton(theme, rid, seed):
     rd = seed['rounds'][rid]
     items = [it for it in seed['items'] if it['id'] in rd['items']]
     style = rd.get('wave') == 'style'
-    keys = [ln for ln in seed['lines']] if style else [f'{ln}{n}' for ln in seed['lines'] for n in (1, 2)]
+    ls = [ln for ln, info in seed['lines'].items() if isinstance(info, dict)]
+    keys = ls if style else [f'{ln}{n}' for ln in ls for n in (1, 2)]
     head = [
         f'"""building-kit {theme} {rid} 후보 — 그리기 에이전트가 쓴다(행 문자열 손 도트, 팔레트 램프 글자만).',
         '',
@@ -70,7 +69,7 @@ def skeleton(theme, rid, seed):
 
 def ensure_module(theme, rid):
     path = round_path(theme, rid)
-    seed = json.load(open(os.path.join(DATA, theme, 'seed.json'), encoding='utf-8'))
+    seed = dot.seed(theme)
     head, items, keys = skeleton(theme, rid, seed)
     text = open(path, encoding='utf-8').read() if os.path.exists(path) else head
     for it in items:
@@ -137,7 +136,7 @@ def rejected(theme):
 
 
 def review_majors(theme, rid):
-    path = os.path.join(RUNS, theme, rid, 'review', 'result.json')
+    path = os.path.join(dot.RUNS, theme, rid, 'review', 'result.json')
     if not os.path.exists(path):
         return ''
     res = json.load(open(path, encoding='utf-8'))
@@ -219,7 +218,7 @@ def sandbox_for(theme, rid, item_id, key):
     os.makedirs(path, exist_ok=True)
     module = round_path(theme, rid)
     shutil.copy(module, os.path.join(path, 'round_module.py'))
-    seed = json.load(open(os.path.join(DATA, theme, 'seed.json'), encoding='utf-8'))
+    seed = dot.seed(theme)
     json.dump(seed, open(os.path.join(path, 'seed.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     json.dump(dot.palette(theme), open(os.path.join(path, 'palette.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     return path
@@ -228,7 +227,7 @@ def sandbox_for(theme, rid, item_id, key):
 def draw_one(theme, rid, item_id, key, runner, cmd, timeout, effort):
     line = key[0]
     sandbox = sandbox_for(theme, rid, item_id, key)
-    seed = json.load(open(os.path.join(DATA, theme, 'seed.json'), encoding='utf-8'))
+    seed = dot.seed(theme)
     text = brief(theme, rid, seed, item_id, key, line)
     (open(os.path.join(sandbox, 'BRIEF.md'), 'w', encoding='utf-8')).write(text)
     name = func_name(item_id, key)
@@ -243,7 +242,7 @@ def draw_one(theme, rid, item_id, key, runner, cmd, timeout, effort):
 
 def run(theme, rid, lines_=None, jobs=1, cmd=None, runner=None, timeout=None, effort=None):
     path = ensure_module(theme, rid)
-    seed = json.load(open(os.path.join(DATA, theme, 'seed.json'), encoding='utf-8'))
+    seed = dot.seed(theme)
     rd = seed['rounds'][rid]
     keys = list(lines_ or seed['lines'])
     style = rd.get('wave') == 'style'

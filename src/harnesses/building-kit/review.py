@@ -61,13 +61,15 @@ def _rng(seed=None):
 
 
 def ref_buildings():
-    out = []
-    for kid in REF_KITS:
-        try:
-            out.append((kid, dot.kit(kid).img()))
-        except SystemExit:
-            continue
-    return out
+    if not hasattr(ref_buildings, 'cache'):
+        out = []
+        for kid in REF_KITS:
+            try:
+                out.append((kid, dot.kit(kid).img()))
+            except SystemExit:
+                continue
+        ref_buildings.cache = out
+    return ref_buildings.cache
 
 
 def _flat(im):

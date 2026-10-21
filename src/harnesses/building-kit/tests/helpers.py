@@ -60,3 +60,40 @@ def parts(line, overrides=None):
 
 def buildings():
     return {b['id']: b for b in seed()['buildings']}
+
+
+ROUND_MODULE = '''import os
+import sys
+
+sys.path.insert(0, os.environ['BK_TESTS_DIR'])
+sys.path.insert(0, os.environ['BK_HARNESS_DIR'])
+import dot
+import helpers as H
+
+ROUND = {round!r}
+WAVE = 'style'
+NOTES = {{}}
+
+
+def _c(item, line):
+    def fn():
+        return dot.Cv.of(H.compose(item, line)), {{'note': line}}
+    return fn
+
+
+CANDIDATES = {{item: {{line: _c(item, line) for line in 'ABC'}} for item in H.round_items()}}
+'''
+
+
+def install_round(data_dir, theme=THEME, rid=ROUND):
+    """시험용 판 모듈을 data_dir 안에 쓰고 seed 의 rounds.<rid>.module 을 그 절대 경로로 바꿔 끼운다."""
+    import json
+    os.environ['BK_TESTS_DIR'] = HERE
+    os.environ['BK_HARNESS_DIR'] = HARNESS
+    path = os.path.join(data_dir, theme, f'round_{rid}.py')
+    open(path, 'w', encoding='utf-8').write(ROUND_MODULE.format(round=rid))
+    seed_path = os.path.join(data_dir, theme, 'seed.json')
+    s = json.load(open(seed_path, encoding='utf-8'))
+    s['rounds'][rid]['module'] = path
+    json.dump(s, open(seed_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    return path

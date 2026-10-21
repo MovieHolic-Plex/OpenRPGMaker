@@ -39,9 +39,6 @@ import dot  # noqa: E402
 import gate as G  # noqa: E402
 
 REPO = dot.REPO
-DATA = dot.DATA
-RUNS = dot.RUNS
-VIZ = dot.VIZ
 POLISH_CODES = ('OUTLINE', 'CONTRAST')
 
 
@@ -50,9 +47,9 @@ def now():
 
 
 def themes():
-    if not os.path.isdir(DATA):
+    if not os.path.isdir(dot.DATA):
         return []
-    return sorted(t for t in os.listdir(DATA) if os.path.exists(os.path.join(DATA, t, 'seed.json')))
+    return sorted(t for t in os.listdir(dot.DATA) if os.path.exists(os.path.join(dot.DATA, t, 'seed.json')))
 
 
 def seed(theme):
@@ -182,7 +179,7 @@ def cmd_draw(theme, rid, agent=False, lines_=None, jobs=1, cmd=None, quiet=False
         import drawer
         return drawer.run(theme, rid, lines_, jobs, cmd)
     mod, rendered = render_round(theme, rid)
-    base = os.path.join(RUNS, theme, rid)
+    base = os.path.join(dot.RUNS, theme, rid)
     man = {'theme': theme, 'round': rid, 'wave': getattr(mod, 'WAVE', None), 'at': now(), 'items': {}}
     for item, cands in rendered.items():
         d = os.path.join(base, item)
@@ -291,7 +288,7 @@ def cmd_assemble(theme, rid, line='A', key=None, quiet=False):
         raise SystemExit(f'{theme}: 조립할 부품이 없다 — 먼저 그려서 사람이 고르거나 --key 로 판 후보를 지정한다')
     rows = assemble_all(theme, parts, quiet=quiet)
     fails = [f for r in rows for f in r['fails']]
-    base = os.path.join(RUNS, theme, rid, 'buildings')
+    base = os.path.join(dot.RUNS, theme, rid, 'buildings')
     os.makedirs(base, exist_ok=True)
     for r in rows:
         if r['res']['img'] is None:
@@ -504,7 +501,7 @@ def cmd_pick(theme, rid, item, key, sha, note, by='user'):
     ln = line_of(theme, key)
     if not ln:
         raise SystemExit(f'후보 {key} 의 줄을 모른다 — 시드 lines: {", ".join(lines(theme))} (화풍 판은 글자, 이후 판은 <줄><번호>)')
-    man_p = os.path.join(RUNS, theme, rid, 'manifest.json')
+    man_p = os.path.join(dot.RUNS, theme, rid, 'manifest.json')
     if not os.path.exists(man_p):
         raise SystemExit(f'{theme} {rid} 의 manifest 가 없다 — sheet {theme} {rid} 를 먼저(사람이 본 시트가 있어야 고를 수 있다)')
     man = json.load(open(man_p, encoding='utf-8'))
@@ -606,15 +603,15 @@ def cmd_status(theme=None):
             runs = [r for r in L['runs'] if r['round'] == rid]
             last = runs[-1] if runs else None
             rev = [r for r in L['reviews'] if r.get('round') == rid]
-            print(f'  판 {rid}: 그림 {"있음" if os.path.exists(os.path.join(RUNS, t, rid, "manifest.json")) else "없음"}'
+            print(f'  판 {rid}: 그림 {"있음" if os.path.exists(os.path.join(dot.RUNS, t, rid, "manifest.json")) else "없음"}'
                   + (f' · 마지막 관문 {last["at"]} FAIL {last["fail"]} WARN {last["warn"]}' if last else ' · 관문 기록 없음')
                   + (f' · 검수 {rev[-1]["valid"]}/{rev[-1]["need"]} 유효 ({rev[-1]["at"]})' if rev else ' · 검수 없음')
-                  + f' · 시트 {"있음" if os.path.exists(os.path.join(VIZ, f"bk-{t}-{rid}.html")) else "없음"}')
+                  + f' · 시트 {"있음" if os.path.exists(os.path.join(dot.VIZ, f"bk-{t}-{rid}.html")) else "없음"}')
         got = [p for (item, line), (p, st) in ps.items() if st == 'current']
         print(f'  고른 부품 {len(got)}/{len(s["items"]) * len(lines(t))} · 버림 기록 {len(L["rejects"])}건')
         for (item, line), (p, st) in sorted(ps.items()):
             print(f'    {item:20} 줄 {line} {p["round"]:10} {p["key"]:3} {p["sha256"][:8]}  {st}')
-        builds = os.path.join(RUNS, t, 'buildings')
+        builds = os.path.join(dot.RUNS, t, 'buildings')
         print(f'  3/4 관문: objgate 기록 {sum(1 for a in L["assemblies"] if a.get("objgate"))}건 — 영수증 확인은 objgate {t}')
     return 0
 
