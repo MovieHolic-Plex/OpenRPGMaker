@@ -83,6 +83,9 @@ export function dressObservatoryHall(project: Project, map: GameMap, scopeId: st
     const y = Math.floor(i / W);
     if (y > y0 || (up[i - W] ?? -1) < 0) up[i] = -1;
   }
+  // 바닥 덧그림(마법진·떨어진 수정 같은 홀과 무관한 것)도 걷는다 — 오프닝 천문대엔 마법진이 없다(VQA r4).
+  if (map.lowerOverlayTiles) for (const i of room) map.lowerOverlayTiles[i] = -1;
+  if (map.upperOverlayTiles) for (const i of room) map.upperOverlayTiles[i] = -1;
   const taken = new Set<number>();
   const others = new Set(map.events.filter((e) => e.id !== scopeId).map((e) => e.y * W + e.x));
   const put = (grid: Grid, x: number, y: number, layer: "upper" | "lowerOverlay" = "upper"): boolean => {
@@ -109,7 +112,7 @@ export function dressObservatoryHall(project: Project, map: GameMap, scopeId: st
   put(orrery, x1 - 3, y0 + 1) || put(orrery, x1 - 4, y0 + 1);
   put(handKit(project, map.tilesetId, "globe"), x1, y0 + 1);
   put(handKit(project, map.tilesetId, "war map table"), x1 - 4, y1 - 1) || put(handKit(project, map.tilesetId, "chart table"), x1 - 5, y1 - 1);
-  put(handKit(project, map.tilesetId, "table:book+scroll"), x0 + 1, y1) || put(handKit(project, map.tilesetId, "table:book+scroll"), x0 + 2, y1);
+  put(handKit(project, map.tilesetId, "case scroll"), x0 + 1, y1 - 1) || put(handKit(project, map.tilesetId, "map case"), x0 + 1, y1 - 1);
   put(handKit(project, map.tilesetId, "candle stubs"), x1, y1);
   put(handKit(project, map.tilesetId, "armchair"), x0 + 3, y1) || put(handKit(project, map.tilesetId, "armchair"), x0 + 4, y1);
   put(handKit(project, map.tilesetId, "map rolls"), x1 - 1, y0 + 4);
