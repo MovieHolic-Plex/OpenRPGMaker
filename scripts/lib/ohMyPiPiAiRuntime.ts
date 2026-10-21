@@ -195,25 +195,29 @@ function assistantToOpenAI(message: {
 }
 
 /** OpenAI chat 본문 → CLI 한 차례 지시문. 그림은 싣지 않는다(이름만 남긴다). JSON 응답 요청은 문장으로 옮긴다. */
-function openAiBodyAsPrompt(body: Record<string, unknown>): { prompt: string; images: { mimeType: string; data: string }[] } {
+function openAiBodyAsPrompt(body: Record<string, unknown>): { prompt: string; images: { mimeType: string; data: string }[]; imageDelivery: ImageDelivery[] } {
   const messages = Array.isArray(body.messages) ? body.messages as { role?: string; content?: unknown }[] : [];
+  // 실제로 CLI 에 실은 그림의 자리(메시지·파트 번호). 검수 호출자(unusableReviewReason)는 이 영수증이 없으면 「그림이 안 갔다」로 보고
+  // 응답을 버린다 — 예전에는 로컬 CLI 경로가 이걸 돌려주지 않아 Claude Code 엔진의 전체 맵 검수가 매번 「검수 응답을 받지 못했습니다」로
+  // 끝났다(2026-10-22 조수 능력 루프 r3: 21건 중 7건 화면에 「#4 전체 검수 작업을 끝내지 못했어요」).
+  const imageDelivery: ImageDelivery[] = [];
   // 그림(image_url data URL)은 글로 바꾸지 않고 CLI 에 실제 그림으로 넘긴다 — 시각 검토가 그림 없이 판정하던 문제(2026-10-20 실측:
   // 「이미지 생략」을 받은 검토자가 판정 불가로 답했다). 원격 URL 그림은 받지 않는다(우리 쪽에서 내려받지 않는다).
   const images: { mimeType: string; data: string }[] = [];
-  const text = messages.map((message) => {
+  const text = messages.map((message, messageIndex) => {
     const content = typeof message.content === "string" ? message.content
-      : Array.isArray(message.content) ? message.content.map((part) => {
+      : Array.isArray(message.content) ? message.content.map((part, partIndex) => {
         const p = part as { type?: string; text?: string; image_url?: { url?: string } | string };
         if (p.type === "text" || p.type === "input_text") return p.text ?? "";
         const url = typeof p.image_url === "string" ? p.image_url : p.image_url?.url;
         const match = typeof url === "string" ? /^data:(image\/[a-z+.-]+);base64,(.+)$/isu.exec(url) : null;
-        if (p.type === "image_url" && match) { images.push({ mimeType: match[1]!, data: match[2]! }); return `[그림 ${images.length}]`; }
+        if (p.type === "image_url" && match) { images.push({ mimeType: match[1]!, data: match[2]! }); imageDelivery.push({ messageIndex, partIndex }); return `[그림 ${images.length}]`; }
         return p.type ? `[${p.type} 생략]` : "";
       }).join("\n") : "";
     return `[${message.role ?? "user"}]\n${content}`;
   }).join("\n\n");
   const format = (body.response_format as { type?: string } | undefined)?.type;
-  return { prompt: format === "json_object" || format === "json_schema" ? `${text}\n\n[응답 형식] 다른 말 없이 JSON 객체 하나만 출력하라.` : text, images };
+  return { prompt: format === "json_object" || format === "json_schema" ? `${text}\n\n[응답 형식] 다른 말 없이 JSON 객체 하나만 출력하라.` : text, images, imageDelivery };
 }
 
 export async function completeProvider(
@@ -226,10 +230,10 @@ export async function completeProvider(
   // 그런 호출자는 글 응답을 받는다(조수 본 루프의 도구는 runPiAgent 가 MCP 로 따로 준다).
   const cli = localCliIdOf(provider);
   if (cli) {
-    const { prompt, images } = openAiBodyAsPrompt(body);
+    const { prompt, images, imageDelivery } = openAiBodyAsPrompt(body);
     const text = await LOCAL_CLI_ADAPTERS[cli].complete(prompt, { binary: localCliBinary(cli), ...(modelId ? { model: modelId } : {}), ...(options?.signal ? { signal: options.signal } : {}), ...(images.length ? { images } : {}) });
     return { stream: false, completion: { id: `local-cli-${Date.now()}`, object: "chat.completion", model: modelId, provider,
-      choices: [{ index: 0, message: { role: "assistant", content: text }, finish_reason: "stop" }] } };
+      choices: [{ index: 0, message: { role: "assistant", content: text }, finish_reason: "stop" }], image_delivery: imageDelivery } };
   }
   const model = resolveOhMyPiModel(provider, modelId);
   if (!model) {
