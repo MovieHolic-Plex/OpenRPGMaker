@@ -70,6 +70,7 @@ const ACTIONS = {
   play: forms("게임을 시험하는 중", "게임을 시험했어요", "게임 시험을 실패했어요"),
   history: forms("편집 내용을 되돌리는 중", "편집 내용을 되돌렸어요", "편집 내용 되돌리기를 실패했어요"),
   askMissingTiles: forms("없는 타일을 어떻게 할지 묻는 중", "없는 타일을 어떻게 할지 물었어요", "없는 타일을 묻지 못했어요"),
+  objectGen: forms("없는 기물 그리기를 준비하는 중", "없는 기물 그리기 카드를 띄웠어요", "없는 기물 그리기를 준비하지 못했어요"),
   storeSearch: forms("스토어에서 찾는 중", "스토어에서 찾았어요", "스토어에서 찾지 못했어요"),
   storeInstall: forms("스토어 상품을 넣는 중", "스토어 상품을 넣었어요", "스토어 상품을 넣지 못했어요"),
   storePropose: forms("스토어 확인 카드를 준비하는 중", "스토어 확인 카드를 띄웠어요", "스토어 확인 카드를 띄우지 못했어요"),
@@ -144,6 +145,7 @@ addFamily(ACTIONS.history, "revert_last_edit");
 addFamily(ACTIONS.focusView, "focus_editor_view");
 addFamily(ACTIONS.askTileset, "ask_tileset_change");
 addFamily(ACTIONS.askMissingTiles, "ask_missing_tiles");
+addFamily(ACTIONS.objectGen, "generate_missing_object");
 addFamily(ACTIONS.storeSearch, "store_search store_my_items");
 addFamily(ACTIONS.storeInstall, "store_install");
 addFamily(ACTIONS.storePropose, "store_publish store_set_visibility");
