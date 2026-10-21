@@ -140,6 +140,14 @@ const refAssetRoots: string[] = [];
 export function addRenderAssetRoot(dir: string): void {
   if (!refAssetRoots.includes(dir)) refAssetRoots.push(dir);
 }
+function refDataUrl(ref: { sha256: string; extension: string; mime: string } | undefined): string | null {
+  if (!ref) return null;
+  for (const root of refAssetRoots) {
+    const file = path.join(root, `${ref.sha256}.${ref.extension.replace(/^\./u, "") || "png"}`);
+    if (fs.existsSync(file)) return `data:${ref.mime};base64,${fs.readFileSync(file).toString("base64")}`;
+  }
+  return null;
+}
 function refAssetDataUrl(project: Project, tileset: TilesetDef): string | null {
   if (tileset.image.type !== "uploaded") return null;
   const ref = project.assets.uploaded[tileset.image.id]?.ref;
@@ -291,7 +299,7 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1, sunSourc
 function drawEventCharset(context: PngContext, project: Project, event: GameMap["events"][number], ex: number, ey: number, size: number): boolean {
   const evName = `${event.name ?? ""} ${event.pages?.[0]?.name ?? ""}`;
   const pageGraphic = event.pages?.[0]?.graphic;
-  const spriteId = pageGraphic?.sprite?.type === "bundled" ? pageGraphic.sprite.id : event.graphic?.textureKey;
+  const spriteId = pageGraphic?.sprite?.type === "bundled" || pageGraphic?.sprite?.type === "uploaded" ? pageGraphic.sprite.id : event.graphic?.textureKey;
   // 표지판(이정표): Object1 0번(나무 문) 대신 나무 표지판 픽셀 아이콘을 그린다.
   if (/이정표|표지판|푯말|안내판/u.test(evName) && (!spriteId || spriteId === "tex_easyrpg_charset_object1")) {
     context.fillStyle = "rgba(92, 58, 33, 1)";
@@ -316,7 +324,8 @@ function drawEventCharset(context: PngContext, project: Project, event: GameMap[
   }
   if (!spriteId) return false;
   const asset = findCharsetAsset(spriteId);
-  const url = asset?.url ?? resolveAssetResourceUrl(spriteId, { project });
+  const uploaded = project.assets.uploaded[spriteId];
+  const url = asset?.url ?? (uploaded ? uploadedAssetUrl(uploaded) || refDataUrl(uploaded.ref) : null) ?? resolveAssetResourceUrl(spriteId, { project });
   const file = url && /^\/?assets\//u.test(url) ? path.join("public", url.replace(/^\//u, "").split("?")[0]!) : null;
   const bytes = url?.startsWith("data:image/") ? Buffer.from(url.slice(url.indexOf(",") + 1), "base64")
     : file && fs.existsSync(file) ? fs.readFileSync(file) : null;
@@ -529,6 +538,11 @@ export async function renderMain(argv: readonly string[] = process.argv.slice(2)
   const scale = Number(arg("scale") ?? 1);
   const started = Date.now();
   const { project } = loadProjectFile(projectFile);
+  // 저장본 옆의 자산 폴더(project/assets · assets)와 --assets 폴더에서 ref 자산 바이트를 찾는다 — 공용 캐릭터 칩처럼
+  // ref 로만 저장된 업로드 캐릭터가 판정 그림에서 빈 상자로 빠졌다(2026-10-22 r2 boss-balance-sim).
+  for (const dir of [arg("assets"), path.join(path.dirname(projectFile), "project", "assets"), path.join(path.dirname(projectFile), "assets")]) {
+    if (dir && fs.existsSync(dir)) addRenderAssetRoot(dir);
+  }
   store.replaceProject(project);
   const current = store.getCurrent();
   fs.mkdirSync(path.join(out, "render"), { recursive: true });
