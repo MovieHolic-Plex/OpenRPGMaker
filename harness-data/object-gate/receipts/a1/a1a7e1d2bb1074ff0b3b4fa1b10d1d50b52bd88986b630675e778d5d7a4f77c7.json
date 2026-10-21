@@ -1,0 +1,611 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a1a7e1d2bb1074ff0b3b4fa1b10d1d50b52bd88986b630675e778d5d7a4f77c7",
+ "width": 144,
+ "height": 144,
+ "kind": "structure",
+ "name": "2층 妻入り 단독주택",
+ "label": "jp_city/jp-bldg-house-hip2",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 15,
+  "darkV5": 38,
+  "nearBlackEdge": 0.97,
+  "opaqueTiles": 57
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main gable roof (light left slope and dark right slope, tile rows)",
+      "rows": "4-61",
+      "evidence": "c",
+      "front_edge_line_row": 42,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower tiled balcony/pent roof on left",
+      "rows": "89-103",
+      "evidence": "c",
+      "front_edge_line_row": 103,
+      "eave_shadow_rows": "102-104"
+     },
+     {
+      "part": "balcony floor slab and railing",
+      "rows": "80-104",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "entrance step",
+      "rows": "136-139",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 58,
+    "front_face_rows": 93,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is topped by a large sloped tiled roof (rows 4-61). At x=72 it runs rows 4-42 and ends at a light eave edge line. The cream clapboard gable wall below it, with windows, balcony and door, forms a front face of about 93 rows (rows 43-135). The lower-left balcony roof (rows 89-103) is a second tiled slope, so both major roof parts show a top surface. The right slope is a darker roof plane, not an isometric side wall."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a clean, modern-looking house. Its outlines are tinted (dark blue-grey beside the roof, dark olive beside the siding), and only 2% of dark edge pixels are neutral, so they are not near-black. Flat-fill coverage is 2%, close to the references' 0%. The measured numbers do not mark it as shallow, but it falls short by eye. The blue-grey roof has about 4 tones with faint tile rows and no per-tile highlights or scallops. The cream siding has about 3 tones and relies on regular horizontal lines instead of speckle or grain. The balcony, door and windows are simple, with few tones. Visible tones per tile are 9, against 12 and 10 for the references, so it is lower on the primary density fact. Next to the references (roof tiles lit one by one, plaster speckle, stones shaded individually) it reads as smoother and flatter, closer to vector art. It is not a plain sticker, but I would not accept it as equal to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17797
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main gabled roof (left light plane and right dark plane, tiled)",
+      "rows": "4-61",
+      "evidence": "c",
+      "front_edge_line_row": 61,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower shed/eave roof over the ground floor (left side, tiled)",
+      "rows": "89-103",
+      "evidence": "c",
+      "front_edge_line_row": 103,
+      "eave_shadow_rows": "102-103"
+     },
+     {
+      "part": "balcony floor slab and railing",
+      "rows": "80-103",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "air-conditioner outdoor unit",
+      "rows": "124-134",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 58,
+    "front_face_rows": 74,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a two-storey house seen from the south. The silhouette widens row by row from 3 px at row 4 to 122 px at row 24, and the tile-textured roof planes (left light, right dark) meet at a central ridge. The roof runs from row 4 to about row 61 and ends in a lighter eave edge, so it counts as roof-plane evidence (c). Below it is a tall front face (cream siding gable wall, windows, balcony, entrance door, ground-floor sliding window) from about row 62 to row 135. The lower shed roof at rows 89-98 also shows tile rows ending in an edge line at rows 102-103. The balcony railing is a front-facing vertical face on a thin slab, which is a minor part. The drawing is a clear top surface plus a front face of 3+ rows, so it reads as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is the right kind (a whole building) and the outlines are tinted: only 2% of dark edge pixels are neutral, and the roof edge leans dark blue-grey with dark olive beside the siding. So it is not a sticker outline. Near-flat coverage is 2% against 0% for both references, so there are no big flat fills. Siding lines, window grids, the balcony rail and the door add some texture. It still falls short of the references. The slate roof has only about 4 steps, in broad panels with faint horizontal tile lines and no per-tile highlights. The yellow walls are about 3-4 steps (base, line, shadow) with no plaster speckle or grain. The references have scalloped tiles with highlights, and shaded stones or timber. Visible tones per tile are 9, against 12 and 10 for the references. Raw colours per tile are 9 against 18 and 11, and total colours are 45 against 185 and 66. Overall it reads as cleaner, flatter and more vector-like than the Beodeul pieces. With the shading steps and texture both below the bar, and the rule to fail when in doubt, it fails."
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 26512
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main gable roof, light left slope and dark right slope with tile courses, meeting at a ridge",
+      "rows": "4-61",
+      "evidence": "c",
+      "front_edge_line_row": 61,
+      "eave_shadow_rows": "43-61"
+     },
+     {
+      "part": "lower lean-to tile roof over the left side of the first floor",
+      "rows": "89-103",
+      "evidence": "c",
+      "front_edge_line_row": 103,
+      "eave_shadow_rows": "101-103"
+     },
+     {
+      "part": "balcony railing and floor on the right",
+      "rows": "80-103",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "air conditioner outdoor unit",
+      "rows": "124-135",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 58,
+    "front_face_rows": 78,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is the main top surface. It is a large sloped tile plane covering rows 4-61. Its width grows row by row from 3 to 122 px, and the light left and dark right slopes meet at a central ridge. A lighter eave edge runs along the bottom of the left slope near rows 55-61, and the right slope ends in a darker edge line with shadow above the gable wall. Below it the yellow clapboard front face runs from about row 43 (gable) or 62 down to row 140, with windows, a door, a balcony railing and a porch step. The lower lean-to roof (rows 89-103) also shows a tiled top plane. No part is drawn only as a vertical face where a top should show, so this reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts are close to the references: 9 visible tones per tile against 10 and 12, 2% near-flat coverage, and only 2% neutral dark edge pixels. The outlines are therefore tinted, dark blue-grey beside the roof and darker yellow-brown beside the siding, not a black sticker line. The structure is still shallower than Beodeul. The roof has about 4 steps, with plain horizontal tile rows and no per-tile highlights or scallops, whereas the references show warm highlights on every tile. The yellow siding is mostly one cream tone broken by regular lines, with little grain, speckle or variation. The balcony, windows and door are clean, flat-shaded shapes with only 2-3 tones each. The result looks tidy and slightly vector-like beside the references' hand-dotted texture, so I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21204
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main roof (two sloped tile planes, light left and dark right, meeting at a ridge)",
+      "rows": "4-37",
+      "evidence": "c",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": "37-38"
+     },
+     {
+      "part": "ground-floor lean-to tile roof over the left bay",
+      "rows": "89-98",
+      "evidence": "c",
+      "front_edge_line_row": 99,
+      "eave_shadow_rows": "99-103"
+     },
+     {
+      "part": "balcony railing and floor on the right",
+      "rows": "89-103",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 33,
+    "front_face_rows": 99,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The widening silhouette (width 3 at row 4 growing 6 px per row to 122 at row 24) and the tile-textured planes show a large sloped roof, rows 4-37. The ridge sits at the center and the planes slope down to eave edges near rows 36-37, where a light edge line and a darker underside follow. Below the roof, the yellow clapboard front wall with windows, the balcony and the door runs through about row 135, giving a front face of far more than 3 rows. The small lean-to roof at rows 89-98 also shows a tiled slope. The roof reads as a top surface, so this is a three-quarter view and not a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts are close to the references: 9 visible tones per tile against 10-12, 2% near-flat coverage, and only 2% neutral dark edge pixels, so the outlines are tinted (dark blue-grey beside the roof, dark olive beside the siding) and not a black sticker line. By eye the candidate is still plainer than the references. The slate roof has about 4 steps in tile rows with little per-tile highlighting, where the references have 6 steps with scalloped, individually lit tiles. The cream siding is mostly smooth bands with a single horizontal line pattern and none of the plaster speckle or grain the references show. The balcony, door and windows are clean but have few shades. Raw colours total 45 against 66-185, which shows less dotted variation. It is not a flat fill, but it is a little thinner and cleaner than the Beodeul bar, and in doubt this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 23750
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:45.168Z",
+ "cells": {
+  "16": [
+   "0039c1f4fc9e8fc1",
+   "00acb024c18e6d32",
+   "00bd945949eb0c9e",
+   "0174b8615ce5ca94",
+   "11bb01eec88cec26",
+   "13f67129147338c0",
+   "145885f829590287",
+   "15149bf1b767b006",
+   "155ae8d4671f7d62",
+   "15ff741a25f5d016",
+   "1b9bd7da7fc6c56a",
+   "2128c3489bbd0058",
+   "22b30cc79d659e0e",
+   "28203280a21200f5",
+   "2e7d7f8d529f024d",
+   "307dc448f2019311",
+   "31a2b148b18ed5e3",
+   "31b2e11b21f072bc",
+   "3520bef4bae0bcb5",
+   "3f1d33589fb46bf4",
+   "40a2748edf1e5dbb",
+   "43757d24092329dc",
+   "439a5c156069ce1d",
+   "49183126009b0662",
+   "4ddc0be35c8f6aa8",
+   "5418ad7a789e9dc6",
+   "541b3f3cc5b7db58",
+   "5e22ea1277e17679",
+   "5f94aeaf3626b138",
+   "61fccb51736c1f8f",
+   "624532c8de805c0b",
+   "637cc2e32d0ea414",
+   "66a80b9693afdc03",
+   "68b237fc44dabbac",
+   "6d4aa809407059ed",
+   "7190c4702b9ebe06",
+   "7604124166975400",
+   "76902d8dde72a3c0",
+   "79632e2d7de6b910",
+   "7cf33c5b8504e024",
+   "7d668348c6f6e846",
+   "7e22234c807aeb10",
+   "8566e5c1ca574e85",
+   "8e3c69f058df4e15",
+   "8f390ac4fc62a480",
+   "94f12cf2c0ac27a6",
+   "960dfdfef13ae205",
+   "96ced6240170a496",
+   "9ddbce310e57ac65",
+   "a2003df5e0a11b4f",
+   "a3c3487e63ad8872",
+   "a4f06c57ab19633c",
+   "a6490b22c43e4eb7",
+   "a9e0977e231d18b5",
+   "aa830808f0e82670",
+   "b91812d819750c68",
+   "c44e8e149d8d59b2",
+   "c719464468000fca",
+   "c81043757d77cad8",
+   "c925b52fdfae9dde",
+   "cb9da3893aec6247",
+   "d3c4649e756be87d",
+   "d7a2f15a28963297",
+   "d82a645e795f9dde",
+   "e3f8c0ae8f397ed0",
+   "e5d51cfd3d312c6c",
+   "e97acbcb32ecbda5",
+   "ea5c55fbd71851cf",
+   "ef1782bdb5130789",
+   "f4aece8c9ca93f5a",
+   "f4c466f9140f311e",
+   "f8d0e31361805d16",
+   "fa825ae61a67d116",
+   "fca160e2c504b1e4",
+   "fcb47d4d3c429dad"
+  ],
+  "24": [
+   "0888320908e8e29b",
+   "08b09554ffc31413",
+   "1905f29719fe6526",
+   "209ad8528223fc70",
+   "2a5d253b786623f3",
+   "2e993719f8f1eefc",
+   "3062d20108ed6515",
+   "33ab01464e328575",
+   "4c51ef6e98ca57c6",
+   "4ea919ae5dcff03f",
+   "50ab6442879c7da8",
+   "539e960984a22736",
+   "5ccff8ed3f251f7e",
+   "60c6e99288bcb462",
+   "60f440637cbfb055",
+   "6456d5ca30fc0d17",
+   "6e64039cf3adf794",
+   "6f83956e55ac1328",
+   "770812bed785edae",
+   "77c8ffd936fa8913",
+   "7e0093792881d3a9",
+   "8202ca435a2b276d",
+   "93950180205c0672",
+   "950865106b10dcae",
+   "a8abcf78d6d58c03",
+   "ab5347c3f0a27574",
+   "aebb6074f1025337",
+   "b1d8a4560a29d4a4",
+   "d4fb9d2b789ba816",
+   "d6ccdd9e711db402",
+   "d912802ee29b6f27",
+   "e8642cd5114a0dfe",
+   "eb451d2d857ec93f",
+   "ed32c921cd8e66ad",
+   "f21cce1869840f55",
+   "fa7f51a5353899d9"
+  ],
+  "32": [
+   "00ac9cc2653c5530",
+   "01971862685bcdaa",
+   "0470419e6d9077c9",
+   "0b09e5d77e29c8d7",
+   "0c82afe3d0ccf305",
+   "10e514d0e083ad15",
+   "1294afcb049a793e",
+   "18131b1a8a516d40",
+   "187051987150adae",
+   "192bd7c9b9a32ca4",
+   "195b406c0f907c78",
+   "1fdf9f5724726f2f",
+   "216bda68abd9a585",
+   "21d3f3aa352e86c4",
+   "22f204e7f737ad5f",
+   "2383af2d4a09954a",
+   "23a5cc16f978504b",
+   "248aa6eb25d14616",
+   "24a9dba21b7d4bc9",
+   "25cd94ce17875587",
+   "25e38b1602e10090",
+   "278bd79505de4c22",
+   "278c88e5a0183b72",
+   "2831a3780ccf86f1",
+   "2849fabd799103b4",
+   "286c7594697ee5cd",
+   "297482e2bf2cffba",
+   "2aeb134381610636",
+   "2b061421ceab2060",
+   "2b8791a6e350a2d5",
+   "30cfbf48c6b54441",
+   "30d5e6971a0b8e3c",
+   "33fe82b8b390eb75",
+   "33ff57b834e5a42d",
+   "364ede28d7a8ff3d",
+   "37e8da6420d4dcaa",
+   "38af9628cdeb446a",
+   "3ec3c683957ecbb1",
+   "428dff9e9842fb3e",
+   "43833f2290028de4",
+   "47c7639281bf14bc",
+   "48feb4af7919a802",
+   "50ab80cddd6a03ad",
+   "516c312dc596e40f",
+   "52cdbb6850c1886c",
+   "55d39c862b76ceb5",
+   "57adb08ce55a19a4",
+   "58e728b9f2115466",
+   "58e8b610c63690cb",
+   "5c0f5ceb350ddc6c",
+   "5cb9456b8be33374",
+   "5fe8dc92d4b9349e",
+   "60dcc5f7fbdfa9e1",
+   "611274b54eaeed7d",
+   "616dd5abb2535615",
+   "63598b0e2551da55",
+   "664ca6d2554f6450",
+   "66e4a38d10c0a8a0",
+   "6721a840692ac97c",
+   "6a0747ab2e150b04",
+   "6ea10e7b4792449f",
+   "6f5e6b21b847e6b7",
+   "7006a3c07785c8a7",
+   "700d0914f7d59acf",
+   "7257e2e90403e7e6",
+   "7309bb45c51756fc",
+   "743f3223c8ffe112",
+   "755ccb626aea9053",
+   "75e401b9f4988a7e",
+   "75ea68e019a61173",
+   "7765948130890056",
+   "7bec0519c0cf2f7c",
+   "7ea5a5a5a84062ee",
+   "854c7e5d17af5c7c",
+   "8747aee3af6e12c8",
+   "8929bded316d386d",
+   "89394103ea49f74a",
+   "89a3112821f81b8a",
+   "8aff449ea950096f",
+   "9203dddb622d754c",
+   "957d3060894c274b",
+   "971d4c3226797536",
+   "9761df778c66d709",
+   "9a4e378c15ac9140",
+   "9b17f252cd8d7529",
+   "9c53b695f736ce19",
+   "a0afc60e769a14ce",
+   "a0e30006e0ca8538",
+   "a3f0684a4da3dc45",
+   "a4856a343c19d4da",
+   "a4978874e99045cd",
+   "a5013c99595717de",
+   "a62dc84f3c68416a",
+   "a8f83e8404aa5b7d",
+   "a9ffb1ff2a62aa3b",
+   "ab65461cfb7423ec",
+   "abc8de72fedc032b",
+   "ac5ac7acdd981027",
+   "ae26843a98e7e03f",
+   "afb5ffc20beaadd0",
+   "b23e83169a2599fc",
+   "b64d8f0687a0d9ee",
+   "b653010eafb95a81",
+   "ba646abdbe016c98",
+   "bc04ecf8a042e04b",
+   "be316a2c02683620",
+   "be5b75fc2501705d",
+   "bf0ccef618161ee5",
+   "bf638a4cd8be79d3",
+   "bf9226c83454f18f",
+   "c0056aaf3f3a2958",
+   "c02b84043b23fb0b",
+   "c42a93f5122deed5",
+   "ca86ac98e1e55733",
+   "cba7b4fb2f038a9e",
+   "d072f95a9112c54d",
+   "d2c53d7992fc717b",
+   "d40bb7f30a0e4068",
+   "d48572d13daf5bcf",
+   "d78ac421e1ba57c6",
+   "d7c3644111364d89",
+   "d84f0dbb8d69aec2",
+   "e3b2a25f149c9f54",
+   "e610a04c3f762a24",
+   "e9c53bdcfb1a4343",
+   "eb7bc2cd85196019",
+   "ebc406c7bc5584f4",
+   "ec4160e1f7f780dd",
+   "edb144d84a13a833",
+   "ee07eba72aa14a15",
+   "ee4be4e902aa0d2a",
+   "eebc05abba32a121",
+   "ef9ca6f465c6913f",
+   "f10c2bbfe738876e",
+   "f1dc70864284bc5f",
+   "f4b9f37f32c9abd5",
+   "f645849190ae08a3",
+   "f71c29ebf9151a87",
+   "f7721a372c800705",
+   "f9862525fbdc8062",
+   "fbdb885433ee9911",
+   "fc888d9713beea92",
+   "ff36dfd0cf4a29df",
+   "ff82b9d1b79394c7"
+  ],
+  "48": [
+   "24a39cbb9a73cdf8",
+   "879f66b3a49ee357",
+   "915f791ac13cf63c",
+   "be430c5f10f0c60a",
+   "c6d971ae173831dc",
+   "d4e551518bb081c2",
+   "d9046a23664abc47",
+   "ebe63f661a5172fc",
+   "fb68024c5c8a37f7"
+  ]
+ }
+}

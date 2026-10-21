@@ -1,0 +1,628 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7b9b955ff5308ab2a0076f9cff489d630383b5807cc4ee9a4a4b5673c37f338d",
+ "width": 192,
+ "height": 128,
+ "kind": "structure",
+ "name": "二世帯 2층 주택",
+ "label": "jp_city/jp-bldg-house-nisetai",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 14,
+  "darkV5": 38,
+  "nearBlackEdge": 0.99,
+  "opaqueTiles": 80
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat rooftop deck with parapet",
+      "rows": "8-44",
+      "evidence": "a",
+      "front_edge_line_row": 43,
+      "eave_shadow_rows": "44-46"
+     },
+     {
+      "part": "rooftop stair hut, AC unit and three potted plants",
+      "rows": "13-40",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tiled lean-to roof / balcony eave between floors",
+      "rows": "73-88",
+      "evidence": "c",
+      "front_edge_line_row": 88,
+      "eave_shadow_rows": "88-89"
+     },
+     {
+      "part": "small window awnings and entrance porch canopies",
+      "rows": "45-50",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 36,
+    "front_face_rows": 83,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan at x=96 shows a rooftop deck over rows 11-40. It has a light parapet at rows 9-10, a grey floor with a grid, and a front-edge parapet line at rows 41-44. A dark outline and eave shadow follow at rows 45-46, and below that the stucco front face with windows, doors and balcony runs from about row 45 to 127. The tiled roof band at rows 73-88 is a sloped roof plane with its own edge line and shadow. The rooftop objects are decor and are not the main body. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a whole building like the references, so the kind matches. Its outlines are tinted dark blue-grey, brown and olive rather than neutral black (0% near-neutral edge pixels), which fits the Beodeul approach. The wall plaster speckle and the dark tile awnings with scallop marks show real texture. Three things keep it below the references. (1) The material ramps are shallow: the rooftop parapet and panels, the AC unit, the balcony rail and the door panels each use about 3-4 steps, against about 6 on the reference roofs. (2) 17% of its pixels sit in flat 5x5 blocks, mostly the rooftop slab and window or door panels, while both references measure 0%. (3) It has 9 visible tones per tile against 12 and 10 for the references, so it is slightly lower. The smooth modern surfaces read cleaner and flatter than the grainy, per-tile-highlighted references, and since the brief says to fail when in doubt, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 21611
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat rooftop with parapet (large top plane)",
+      "rows": "9-42",
+      "evidence": "a",
+      "front_edge_line_row": 43,
+      "eave_shadow_rows": "44-45"
+     },
+     {
+      "part": "rooftop stair hatch and AC unit",
+      "rows": "13-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rooftop potted plants",
+      "rows": "26-37",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tiled lean-to roof / awning over the balcony and ground floor",
+      "rows": "73-88",
+      "evidence": "c",
+      "front_edge_line_row": 88,
+      "eave_shadow_rows": "87-88"
+     },
+     {
+      "part": "small window hoods (second and ground floor)",
+      "rows": "46-50",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 35,
+    "front_face_rows": 80,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At x=96 the rooftop runs from rows 9 to 42 as a gray plane with a light parapet band at rows 41-42, a front-edge line at row 43 and a dark line at row 44, so it is a clear top surface above the wall. Below it the front facade (second-floor wall with windows, then the tile awning at rows 73-88, then the ground-floor doors and windows) covers about rows 45-127. The tile band reads as a sloped roof plane. The rooftop planters and AC unit are decor and the stair hatch is a small rooftop box. The silhouette is a full-width rectangle with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The outlines are tinted: dark blue-grey beside the slate eaves and a dark olive-brown beside the plaster walls. The measured 0% neutral dark edge pixels agrees, so this is not a sticker outline. The shading and texture are thinner than the references. The rooftop parapet is a large grey slab with only panel lines. The doors, sash windows and balcony railing are close to flat two- or three-tone fills. The slate canopies have about 3-4 steps with little per-tile highlighting, where the references have per-tile highlights and scallops across 5-6 steps. The plaster speckle is the one real texture, but it is sparse and low contrast. The measured 17% near-flat coverage compares with 0% for both references. Visible tones per tile (9) are slightly under the references (12 and 10), and total colours are far lower (49 against 185 and 66). The piece is tidy and well structured, but it would look flatter and more plain-fill than the Beodeul houses beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 29545
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat rooftop with parapet and gray roof deck",
+      "rows": "8-44",
+      "evidence": "a",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "43-44"
+     },
+     {
+      "part": "rooftop stair housing box",
+      "rows": "13-29",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rooftop AC unit",
+      "rows": "18-30",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rooftop planters with shrubs",
+      "rows": "22-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tiled pent roof over the ground floor (left and right wings)",
+      "rows": "58-73",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "72-73"
+     },
+     {
+      "part": "balcony with railing",
+      "rows": "52-73",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "window hoods",
+      "rows": "36-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 33,
+    "front_face_rows": 80,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At x=96 and x=138 the rooftop runs from the dark outline at row 8 through a light parapet at rows 9-10 into a gray deck at rows 11-39. Row 40 is a darker line, rows 41-42 are a light front parapet edge, row 43 is a shadow line and rows 44-45 are dark. That is a roof top surface of about 33 rows with a front-edge line and eave shadow. Below it is a tall front face of about 80 rows with doors, windows and a stucco wall. The tiled pent roofs and the balcony add further sloped or horizontal surfaces, and the planters are decor. The silhouette widens to 170 at rows 73-87, which fits the tile eave."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a whole building, so the kind matches, but it is a modern flat-roof house rather than a tiled-roof one. Its outlines are tinted: 0% of dark edge pixels are neutral, and they lean blue-grey beside the awnings and brown beside the doors. That part is fine. The measured facts are mixed. Visible tones per tile are 9, against 12 and 10 for the references, so that is near-equal. Near-flat coverage is 17%, against 0% for both references, and the picture agrees. The rooftop parapet panels and the grey wall are large flat grey areas with only thin seam lines. The doors, the sashes and the balcony rail are also mostly single flat tones. The plaster speckle on the walls and the awning tile rows show some texture. Even so, the awnings and parapet have only about 3-4 lightness steps, where the references reach about 6 on the roof tiles, timber and stone, each shaded tile by tile. Overall it reads cleaner, flatter and more vector-like than the Beodeul pieces, so I would not accept it beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 24417
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat rooftop terrace with parapet",
+      "rows": "8-44",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "43-44"
+     },
+     {
+      "part": "rooftop stair hut",
+      "rows": "15-30",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rooftop AC unit",
+      "rows": "18-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rooftop potted plants",
+      "rows": "22-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue tile awning roof between floors (both wings)",
+      "rows": "73-88",
+      "evidence": "c",
+      "front_edge_line_row": 88,
+      "eave_shadow_rows": "87-88"
+     },
+     {
+      "part": "window hoods and entrance canopy",
+      "rows": "38-42",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "balcony railing",
+      "rows": "52-88",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 37,
+    "front_face_rows": 80,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan at x=96 shows a rooftop plane in rows 9-40: a light parapet rim at 9-10 and grey floor with grid lines at 11-39. It ends in a front-edge line at row 40, a light band at 41-42 and shade at 43-44. That is a visible top surface of about 37 rows. Below it the yellow stucco front face runs from row 46 to about 127, with windows, doors and a balcony. A sloped blue tile awning roof at rows 73-88 is wider than the body (170 vs 162) and carries its own top rows. The potted plants and AC unit on the roof are decor. The structure is a 3/4-view building with a top surface and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a whole building, so it matches the reference kind. Its outlines are tinted: 0% of dark edge pixels are neutral, and the lines lean dark blue-grey or brown beside the materials, so this is not the sticker look. The main weakness is shallow shading and flat areas. The rooftop slab and parapet are mostly flat grey with only thin panel lines. The blue-grey awning tiles show about 3-4 steps and the speckled plaster walls only 2-3, against about 6 steps on the references' tile roofs. The doors and window glass are also largely flat blocks. Measured near-flat coverage is 17% against 0% on both references. Visible tones per tile are 9 against 12 and 10, which is only slightly lower. The speckled plaster and awning scallops give some texture, but nothing like the references' per-tile highlights and stone-by-stone shading. Taken together, a careful artist would see this as flatter and thinner than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 23644
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:45.285Z",
+ "cells": {
+  "16": [
+   "02c5ca5135fb113a",
+   "05aba6c36807adad",
+   "06ee7319eb932780",
+   "0701181b084f3152",
+   "0c21d5fbe1c593e5",
+   "15ff741a25f5d016",
+   "1b9bd7da7fc6c56a",
+   "217836937519b525",
+   "27f75e259c5ab769",
+   "28203280a21200f5",
+   "2a4a2ec450baf099",
+   "2b8a5e08f2864250",
+   "2d7322ea7649f0d8",
+   "316f6fa0114879af",
+   "3a46e379b511d6c9",
+   "3a47cbfe46fed19d",
+   "3b833f919c44fc54",
+   "3f1d33589fb46bf4",
+   "3f73230a7d789e5b",
+   "439a5c156069ce1d",
+   "45943e964dc49a96",
+   "50627e9a27e5d720",
+   "5141b2308f13728f",
+   "554eafe96ae98a47",
+   "56418505e6c5f7db",
+   "5b21ddcac9e8e0ba",
+   "5bf926c6170ffbd0",
+   "5db2c385deb2618a",
+   "5de005ffbda4d035",
+   "5dfcb2fe10d5a0e1",
+   "5f17eefe8db39748",
+   "5f2291ec05407be2",
+   "625bf38732d99060",
+   "6457b6be77d321bb",
+   "67d34841f64a9c9e",
+   "682758447b474306",
+   "6ac8468203fbbea1",
+   "6ace745a751bbe70",
+   "6e35f37634ddbed7",
+   "6e8edfd5fcfa2164",
+   "703ed98988431832",
+   "71b8337cbbe62f56",
+   "742a6adb36ed3fc7",
+   "76459c4c333cc68e",
+   "7cf33c5b8504e024",
+   "809a8361241790b0",
+   "83f1249d6012d4e8",
+   "8ab0547707121ccf",
+   "93b8e88c469bcbb8",
+   "93e3fd318da8202b",
+   "94955bf1a08c5e35",
+   "985f84eee6be2d29",
+   "991cb10068c6995d",
+   "9d457c9db0f76452",
+   "9ddcd6530469a575",
+   "a2bddcf37fd00fb4",
+   "a36da0e40f1508d2",
+   "a4785343cec48eae",
+   "a7e3f9a3c915f121",
+   "a9b3414e3c7d281d",
+   "aa830808f0e82670",
+   "b2480cc3cc8300b3",
+   "b4116862888bfd78",
+   "b91812d819750c68",
+   "b99e57e1fa9d1d46",
+   "c13fb831ee644eb5",
+   "c33046b0f2a461d0",
+   "c5c967b71db1e8ad",
+   "c75e8b197e240e05",
+   "c81043757d77cad8",
+   "cfb13b4bae9fd9ea",
+   "d54387a0fc17e1ee",
+   "d7a2f15a28963297",
+   "ddbfc817dd6e7eb3",
+   "de9d991d458bdf28",
+   "e2f9d2b2ee4d28fe",
+   "e3cb88c6e6c3d39d",
+   "e6f6443e9c5b6a94",
+   "ec97f5962da59895",
+   "eef05e3d012963c3",
+   "f074d2694ef227a8",
+   "f181d4bbc84e35ba",
+   "f1f591729ab00b39",
+   "f87f2a03bb92765a"
+  ],
+  "24": [
+   "01bce2d9df6c0702",
+   "021ab23ff4e497f8",
+   "03ab1b4bba2fc0e4",
+   "06d2c0213336cf55",
+   "06d7a6ce3bcc3ec6",
+   "0bce87b75ecc0477",
+   "0e8a0fbd264d6ba4",
+   "0e972e04074577fe",
+   "110d07af74f2f571",
+   "1436542e4511eefa",
+   "182c60389d803d95",
+   "1901d55d54f57225",
+   "19f26fb433485515",
+   "1ba0ddc1c0dd1b19",
+   "25bf681c339eb859",
+   "2916a3f515817c1b",
+   "2c7072cf24cfa5c8",
+   "2e25fd73891c0c49",
+   "2fddacf079b496b3",
+   "32b9a85050845f8b",
+   "353d0e80a1b3b363",
+   "38b740c8d9db56d6",
+   "3c261df8f706b420",
+   "3fbf105208825b4a",
+   "4017d64a6e28ffc2",
+   "409a96580035dcff",
+   "428472fba5d98c5e",
+   "4380855191610a18",
+   "469066f80b301ef7",
+   "48532379a33bcd56",
+   "4945d15f46d171e6",
+   "494774f9f7bdc0b1",
+   "495e59b75983130f",
+   "4c8464abcb6faa21",
+   "4d64923b1e039ed4",
+   "4f4312bc695c0b17",
+   "4ffbde75806aaeb7",
+   "529b5eb7ac35d4cb",
+   "53706a0d6c315503",
+   "55586ed93574b39a",
+   "56825108b8e4b8a6",
+   "5959f2bb8d77bdb9",
+   "5dcf83f024bd5195",
+   "5e08e3a74d6cbf4d",
+   "5f3f82d16aa24335",
+   "631122aa70c43831",
+   "6910c2e5433cabf2",
+   "6a4570fc801648e0",
+   "6de205e00db18e40",
+   "72a58f7e1cbf8259",
+   "76401d3c26fc0bfa",
+   "7a4225fa9ddd565a",
+   "7c042325c62bb812",
+   "7e1234d41f75fcd2",
+   "80cfe8dd31d3dcb5",
+   "822bfeff3c3feca2",
+   "896e39820d374964",
+   "8a1dad1aba057305",
+   "8de98faf3cb952d2",
+   "9578f206ed5fe42a",
+   "95cf9740fe5151a4",
+   "a62570c4bce68c0d",
+   "a90ab29394e473f3",
+   "a94041e87d661ac8",
+   "af7a7c1a285f1405",
+   "b506413fc1db6d67",
+   "b736c0912a648b45",
+   "b966099cd2b99907",
+   "bb070766a5cb3ed5",
+   "c7ed1880ff67ee64",
+   "d0b35ef82cba2525",
+   "d0f9c4437c3b9a67",
+   "d35f262d7f5c8f71",
+   "d4dae87913a21f14",
+   "d5b4b73318635331",
+   "d9b0a12ed67cb4e6",
+   "e6f82e85805f95bf",
+   "e8ce44f3b89cad24",
+   "e9e700519e36f910",
+   "f30020d6daceae36",
+   "f789377cbb066b94",
+   "fa7f51a5353899d9"
+  ],
+  "32": [
+   "04802dfc82dfe394",
+   "1563bb3069d402ea",
+   "1977350d29f43bef",
+   "1db859e6d2547846",
+   "30cfbf48c6b54441",
+   "357ecd099df8fd32",
+   "4a57c29b5c1cb2f5",
+   "5019b49e925e25c5",
+   "5432c0e89ac05d4a",
+   "5830e6d5ea8e8a20",
+   "613452a8712b3216",
+   "662d756a7af44811",
+   "6d3581a277dbd32d",
+   "8666b6540b3f0990",
+   "87198450486e9247",
+   "981a70e2c387618e",
+   "9d3c5343c335e821",
+   "b48cf287513e0875",
+   "de786484b7c3807e",
+   "dfbd2e11f7d79c2f",
+   "e531274cebe9bba3",
+   "f7d0c52fa01abfab",
+   "faaa5177109c56fa",
+   "fecaa3c65d26a50e"
+  ],
+  "48": [
+   "10a6b8ac91225df1",
+   "2286bba4e019eaf5",
+   "2377d06855b03262",
+   "270c31eb1ffb98a8",
+   "3fc4a711035e8205",
+   "43be7761157a64d7",
+   "6b18b7474a36a274",
+   "71221519aefa564d",
+   "782a134acda5818c",
+   "927221c54499222f",
+   "97e9f04013a632a3",
+   "a6fdbcf07265a02e",
+   "c1902a84161705e0",
+   "c74201945ea3e4a5",
+   "d079d7b388b4b326",
+   "d3f34c43f4289a56",
+   "d63aca5e984421e1",
+   "d6e1590e4fd4b323",
+   "e3ea0e14c84bd486",
+   "e61a2c80693b8021",
+   "edec5718740e42f6",
+   "eea9d1312127e7db",
+   "f0199f46666e9f9e",
+   "f86fea01c42beb69"
+  ]
+ }
+}

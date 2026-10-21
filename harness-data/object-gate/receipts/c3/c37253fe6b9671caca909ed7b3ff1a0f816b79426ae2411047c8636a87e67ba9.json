@@ -1,0 +1,483 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c37253fe6b9671caca909ed7b3ff1a0f816b79426ae2411047c8636a87e67ba9",
+ "width": 80,
+ "height": 48,
+ "kind": "other",
+ "name": "택시 (taxi) facing left",
+ "label": "jp_vehicles/jp-car-taxi/left",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 11,
+  "darkV5": 27,
+  "nearBlackEdge": 0.11,
+  "opaqueTiles": 12
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "wrong",
+   "right",
+   "wrong",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof of the cabin (yellow plane)",
+      "rows": "6-16",
+      "evidence": "c",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "hood (left end)",
+      "rows": "13-24",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk (right end)",
+      "rows": "13-24",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "taxi roof sign",
+      "rows": "1-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "slanted windshield and rear window glass",
+      "rows": "7-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The car body is seen from above and the side. The hood and trunk are flat yellow planes at rows 13-24, with a light edge line at row 25 above the door and side panel (rows 25-37, 13 rows). The cabin roof is an 11-row yellow plane at rows 6-16 with a brown edge line at row 17, followed by dark window glass below. The slanted glass at the sides of the roof also shows we are looking down on it. The wheels (rows 34-45) sit under the side face. The roof sign on top is decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The taxi body is yellow with roughly 3 lightness steps (a highlight, a main tone and a darker lower shade) and flat-looking panels on the doors and hood. The references use about 5-6 steps per material. The outline reads as a uniform dark line around the whole car, and 89% of dark edge pixels are near-neutral, so it is a sticker-style near-black outline. The references use tinted dark material tones (hedge 0%, stall 1% neutral). The wheels and windows are dark and nearly neutral, with little grain. Density is 9 visible tones per tile, similar to the hedge reference but well below the stall (17) and well (20). Flat coverage is 14%, comparable to the stall's 13%, so the body has no big flat fills, but it has little texture, just a few highlight streaks on the glass and body. It is clean and readable but shallower than the Beodeul standard on shading steps and outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 21696
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof panel",
+      "rows": "6-16",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "hood and trunk decks (left and right blocks)",
+      "rows": "13-24",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "taxi roof sign",
+      "rows": "1-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "slanted windshield and rear window",
+      "rows": "7-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The car is drawn from the side, but the yellow roof (rows 6-16) ends in a brown edge line at row 17, with the dark window glass below it. The hood and trunk decks (rows 13-24) are yellow bands that end at a line around row 24-25. Below them is a tall door and body side (rows 25-41) with wheels. The roof sign counts as decor. This is a weak read: the decks could also be flat side-profile blocks, but the edge lines and shading support top surfaces over a clear front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The taxi body is yellow with roughly 3 lightness steps (highlight, mid, shadow). The windows are flat blue-grey with only a simple highlight, and the wheels are dark blobs. The outline is a uniform dark line around the whole car. The measured 89% near-neutral dark edge pixels confirms it is near-black rather than a dark tint of the adjacent material. That is the sticker look. The Beodeul references use tinted dark-material outlines (stall-cheese 1% neutral, hedge 0%, well 33%). The body panels (hood, doors, roof) are large smooth fills with no grain, speckle, or per-panel texture. The measured visible tones per tile (9) are well below the stall (17) and well (20) and only match the hedge. Near-flat coverage (14%) is close to the stall's 13%, but by eye the large yellow panels are flat. The shading is shallow against the 5-6 steps Beodeul uses per material, so a careful artist would not accept this next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 23465
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof sign (taxi light)",
+      "rows": "1-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cabin roof panel (yellow, seen side-on)",
+      "rows": "6-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hood and trunk blocks (yellow, side-on)",
+      "rows": "13-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side windows",
+      "rows": "10-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "door and body side with wheels",
+      "rows": "25-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The taxi is a flat side elevation. The doors, door-seam lines, side windows and the two circular wheels (rows 33-45) are all drawn face-on. The cabin roof (rows 6-17) is a yellow panel with a trapezoid outline, a brown line at rows 16-17 and the window directly below. It reads as a vertical profile, not a horizontal surface. The hood and trunk blocks (rows 13-24) are plain yellow side-on faces. A light line at row 25 is the beltline, not a front-edge line with eave shadow. There is no ellipse, no receding roof plane and no visible contents. The silhouette is a car profile with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The taxi body is yellow with roughly 3 lightness steps (highlight, base, shadow). It has a uniform near-black outline around the whole car and wheels, and 89% of its dark edge pixels are neutral, which is the sticker look. The references use dark tones tinted to the adjacent material (stall 1% neutral, hedge 0%, well 33%). The body panels, roof and hood are large smooth yellow areas with no grain, speckle or per-panel variation, and the windows are flat blue-grey with a single highlight diagonal. The candidate does reach 9 visible tones per tile, similar to the hedge, but the stall (17) and well (20) are clearly richer, and its 14% near-flat coverage matches the stall's 13% only because of the big flat body panels. The style reads as a clean vector-like sticker rather than the hand-shaded Beodeul look.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 21333
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof panel",
+      "rows": "6-16",
+      "evidence": "c",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "hood block (left)",
+      "rows": "13-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk block (right)",
+      "rows": "13-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "roof sign",
+      "rows": "1-6",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The car is shown in left-facing side view, but it also has horizontal-looking planes. The roof is a yellow plane (rows 6-16) with a gloss highlight, ending in a dark brown edge line at row 17 above the window shadow. The hood and trunk are yellow blocks (rows 13-23) ending in a brown edge line at row 24. Below that is the south body side (rows 25-41), with door seams, wheel arches and wheels. The slanted blue glass flanking the roof reads as a windshield and rear window in perspective. A weaker reading is that the tall yellow blocks are only side-profile panels, but the edge lines and the 17-row body side support three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The taxi body is mostly flat yellow with roughly 2-3 steps (base yellow, a lighter highlight, a darker shade under the door line). The windows are flat blue-grey with only a simple highlight. The outline around the whole car is a dark neutral line: 89% of dark edge pixels are near-neutral, against 0-1% on the hedge and cheese stall, which use tinted dark tones. This is the sticker look. The body panels, roof and hood are large smooth areas with no grain, speckle, dirt or panel texture, unlike the stall and well, which carry per-element texture. Visible tones per tile (9) match the hedge but fall well below the stall (17) and the well (20). The 14% near-flat coverage is close to the stall's 13%, so the flat areas are not extreme, but the surface lacks the Beodeul richness. A careful artist would see it as flatter and more outlined than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 21354
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:45.137Z",
+ "cells": {
+  "16": [
+   "0c4736d42515789c",
+   "129ed967582e03ce",
+   "17a8dd88863debfb",
+   "33fa10269aabd9ba",
+   "3cfc05082e0f9706",
+   "62f618085f450a4b",
+   "682a5bad12fba8ca",
+   "81c703f768837938",
+   "8f0b0784695c8f75",
+   "d305cb62085b1fa9",
+   "d63971d507751960",
+   "dbdf555b91efffab",
+   "dea82803925e2c12",
+   "ec265f69c2d86594",
+   "ef790be141040636"
+  ],
+  "24": [
+   "015dfa915ea74f10",
+   "08f71981e881285a",
+   "38d35660025437f7",
+   "4d215da00b893a64",
+   "5472e940f1f87994",
+   "593659adcb57e56d",
+   "5f3479e03bca56eb",
+   "619c98d3b2d2ceaf",
+   "7072a95b1a3013f6",
+   "748f87f5397b512c",
+   "78b2a156e9cc8cf8",
+   "92e09242de7658a1",
+   "9a28eecfa14bf8f7",
+   "9e4bce101ac9fc88",
+   "9ea6dcb06f6bfdc2",
+   "a5bcda5add3e753b",
+   "c0ea73b7bb12a757",
+   "c219c6ea13fbfdcd",
+   "cc961e4e2ded3376",
+   "d0eb0e8403ef6c41",
+   "d883e041a0ee1403",
+   "df98be37feb1b67d",
+   "e11959cf1f44a5b0",
+   "ff618e299e7affe5"
+  ],
+  "32": [
+   "03a8276e9d1830bb",
+   "079501f280fb64f4",
+   "07aee815d9a359d5",
+   "0bf91aa9eeaef103",
+   "17d18a0704eeda92",
+   "2b9e792dca75de51",
+   "33affefa4b35aea6",
+   "3942038efede0f12",
+   "3ce2c745ae07b6df",
+   "43db4abbfe9b7fc8",
+   "4b15775158b3e675",
+   "6334f96d00ab0b4b",
+   "6681875ee851aa49",
+   "690fb37b68b4b280",
+   "6d18322f5d7fd154",
+   "6e60db429e39e0cd",
+   "6fb9c78512118bf4",
+   "78423df7beb3d26b",
+   "792346cfabd812d6",
+   "7befaa0ac371582c",
+   "8169a0740db571b1",
+   "8542eb408d18c89b",
+   "95f5e22527f05874",
+   "9e3638ce57757507",
+   "a1cecb2d06361bf2",
+   "a5171e305ef93298",
+   "a6e1da21b6e1d318",
+   "ad76e62320e75a17",
+   "b5e14bd53844c0ae",
+   "be9a6aa9e1b2227f",
+   "c13ace91c0aae3e8",
+   "c776f3a302952c76",
+   "dac3feb7372d165b",
+   "e00849160f237463",
+   "f7d9bff52e9d60df",
+   "fe9edebcfaa3fa1f"
+  ],
+  "48": [
+   "2132177fe75562c1",
+   "23f07e5cec2670a8",
+   "92be1ed76b0d7f76",
+   "d8ee5a9d0c8ace8a",
+   "e7ddc2e72c221bd0",
+   "eaafe234176ed8ef"
+  ]
+ }
+}

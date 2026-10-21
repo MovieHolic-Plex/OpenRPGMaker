@@ -1,0 +1,385 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f09c9fcd30da73f5b0da8c60292bfd7a06bd22b7a89d4e493d3a063b769d9627",
+ "width": 64,
+ "height": 48,
+ "kind": "other",
+ "name": "경트럭 (truck) facing left",
+ "label": "jp_vehicles/jp-truck-kei/left",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 13,
+  "darkV5": 27,
+  "nearBlackEdge": 0.13,
+  "opaqueTiles": 10
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cab roof",
+      "rows": "5-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-17"
+     },
+     {
+      "part": "cargo bed interior (open bed seen from above)",
+      "rows": "17-22",
+      "evidence": "d",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-24"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The truck is drawn in side view facing left. The cargo bed shows its inside: rows 17-22 are gray striped bed floor and far wall, bounded by a rim at row 16. A light edge line at row 23 and a shadow at row 24 separate it from the side panel below, rows 25-35. The cab has a light roof band at rows 5-16, which ends in a light line at row 16 and a darker row at 17 above the window and door. The body has a front face of 3+ rows, so it reads as three-quarter rather than a flat profile. The bed's visible interior is the strongest top-surface evidence, and the cab roof is weaker."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The truck is a white/grey body with a dark cab window, wheels and a bed. Its body ramp has about 4 steps (white, light grey, mid grey, dark grey), and the wheels and glass add a few more. The measured facts show 10 visible tones per tile, comparable to the hedge (9) but well under the cheese stall (17) and the roofed well (20). Near-flat coverage is 10%, close to the stall's 13%, so there is no big flat-fill problem. However, 88% of the dark edge pixels are near-neutral, which fits the visible look: a uniform dark grey/black outline runs around the whole silhouette. The references use tinted outlines (stall 1%, hedge 0% neutral). That is the shallow 'sticker' outline. The large flat white panels on the door, bed and cab sides carry little grain or per-panel highlight, so the texture is only moderate. Taken together, the outline and the lower density against the richer references (stall, well) mean a careful artist would not accept it beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 20710
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cab roof",
+      "rows": "5-15",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-17"
+     },
+     {
+      "part": "cargo bed interior (open bed seen from above)",
+      "rows": "14-22",
+      "evidence": "d",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "body side, wheels and wheel arches",
+      "rows": "23-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The truck faces left and its south side is the normal front face, rows 17-41, with the wheels below. The cab has a light roof plane in rows 5-15 (L=232 at x=16). It ends in an edge line at row 16 (L=202) followed by a darker shade row at 17 (L=162), then the window. The cargo bed is an open container. Its interior is visible in rows 14-22 as alternating grey stripes (L=102/127 at x=31 and x=45), and a bright rim line at row 23 separates it from the side panel below. Both major parts therefore show a top surface above a front face of more than 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The truck has a white/grey cab and bed with only about 3 lightness steps (white, light grey, mid grey) plus a dark outline. Beodeul references such as the well, the stall and the hedge show 5-6 steps with grain and clumps. The measured dark edge pixels are 88% near-neutral, so the outline is a near-black sticker line rather than a dark tone of the adjacent material. The references with tinted outlines (hedge 0%, stall 1%) show the opposite. The visible tone count per tile (10) is comparable to the hedge (9) but well below the stall (17) and well (20). The large flat panels of the cab door, bed side and cab roof carry no grain, speckle or panel detail. The 10% near-flat coverage is modest, but the eye reads the big body panels as flat fills. The wheels and window have some shading, but the overall look is a clean, shallow sticker next to the textured Beodeul pieces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16410
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cab roof",
+      "rows": "5-15",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "cargo bed interior (open container, visible floor and inner wall)",
+      "rows": "14-22",
+      "evidence": "d",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24"
+     },
+     {
+      "part": "wheels",
+      "rows": "32-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The truck faces left and its long south side is the normal front face, with the door, bed side panel and wheels running from about row 23 to row 45. The cargo bed shows a top surface from rows 14 to 22. Its back wall is at row 14, the grey striped floor fills rows 17-22 (contents visible in an open container), and a light front-edge line sits at row 23 with a darker shadow row 24 below. The cab has a white roof band across rows 5-15 that ends in a grey line at row 16, then a shaded row 17, before the side window starts at row 18. Both the cab and the bed therefore show horizontal surfaces above their vertical faces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The truck reads as a clean sticker-style sprite. Its outline is a uniform dark grey/black line around the cab, bed and wheels, and 88% of its dark edge pixels are near-neutral. The Beodeul references use tinted dark material tones (hedge 0%, cheese stall 1%, well 33% near-neutral). The white body has only about 3-4 lightness steps (white, light grey, mid grey, dark grey) and no grain, speckle or per-panel texture. The cab side and bed panels are broad flat fills, and the windows are a flat blue-grey. The measured 10 visible tones per tile is comparable to the hedge (9) but well below the well (20) and cheese stall (17). The 10% near-flat coverage is similar to the cheese stall's 13%, but that is not enough to offset the neutral black outline and shallow ramps. Overall it looks thinner and flatter than the references (stall, well) next to it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 19345
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "west",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cab roof",
+      "rows": "5-16",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "cargo bed interior (seen from above)",
+      "rows": "14-22",
+      "evidence": "d",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "body side panel and wheels (south face)",
+      "rows": "23-41",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The truck faces left and is drawn as a side-facing vehicle with its south face showing. The cab has a light roof band at rows 5-16 that ends in an edge line at row 16, followed by a darker row 17 and the window below. The cargo bed shows a dark grey-striped interior at rows 14-22, bounded by a rim at row 14 and a lighter front edge line at rows 23-25. This is an open container with visible contents, so it counts as a top surface of about 10 rows. Below it, the side panel, wheels and wheel arches form a front face of about 19 rows (rows 23-41). The cab and the bed each have a top, so no major part is a vertical face only."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The truck is a white/grey body with a uniform dark outline around every shape, and the measured 88% near-neutral dark edge pixels confirm the outline is neutral near-black. That is the sticker look, while the Beodeul refs (hedge 0%, stall 1%, well 33%) use tinted, material-toned darks. The body panels, cab and bed side are broad, flat white/grey with only about 3 lightness steps (white, light grey, grey shade) against the 5-6 steps on the references. The tyres are flat black discs with little grain. The windows have a single highlight and the bed has little detail. Tones per tile (10) are comparable to the hedge (9) but well below the stall (17) and well (20). Near-flat coverage is 10%, which is acceptable, but it sits in the large body panels, with no speckle, grain or per-part shading. Compared with the references it looks flatter and more outlined, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16675
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:45.143Z",
+ "cells": {
+  "16": [
+   "06bd799881a7ccc3",
+   "0c60fd2a41818702",
+   "0db7179ff2d9a211",
+   "149437a1fee59dfb",
+   "420467a46ff66aed",
+   "615184ebbf0eea29",
+   "6e9d6c904a376057",
+   "6fc7fb2ca988eab4",
+   "a7f21a30167836eb",
+   "aba02a659abd04a8",
+   "b391fd20b3ef1f67",
+   "bb6956b713601623"
+  ],
+  "24": [
+   "03bf0731b92ed0c5",
+   "05761cbcbfbc5028",
+   "0f73dd5de6cedc0c",
+   "2a39522e0994ffc3",
+   "58b331e660bf6450",
+   "5f51d3f387a3d10c",
+   "70f5f58a71623580",
+   "79229ee0e6f6025d",
+   "7c22b2d0b2c015f3",
+   "8ebbb39ae6efa57c",
+   "9424f281fe1917d2",
+   "96228976c2c133af",
+   "97dac949825ac652",
+   "9b8b2865a2a4a9df",
+   "ab403e393c979aa1",
+   "dc80872ea30bb590",
+   "eb2a4986281a29b9",
+   "eebdd995cb79c006"
+  ],
+  "32": [
+   "341da6d6b2314265",
+   "528ab61b3e5cebf6",
+   "72a6e69111a43349",
+   "816472536605afa9",
+   "9847ba958bb57c34",
+   "a5f4af745ac69267",
+   "bb91836d4ef1aae0",
+   "d0f2bbee8b394f55"
+  ],
+  "48": [
+   "018b938d585eaa75",
+   "0f649dbe3dad7eac",
+   "20a11d6db6c3f550",
+   "485682160ba9e181",
+   "b5d134ab22203ed7",
+   "ce61964f912769b3"
+  ]
+ }
+}
