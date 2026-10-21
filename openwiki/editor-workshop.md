@@ -59,3 +59,16 @@
 - 조수 카드와 잇기: 「없는 타일」 카드의 「직접 그려 줘」가 `currentDrawTarget()` 으로 공방을 고른다 — 손 도트 실내 맵은 `interior-props`, 그 밖의 16px 맵은 `map-objects`(그 맵 칩셋에 굽는다, `workshopTargetTileset`). `openWorkshop(harnessId, { newItem })` 로 새 기물 폼을 채워 열고, 굽기가 내는 `oprn:workshop-baked`(`workshopEvents.ts`)를 한 번 듣고 후속 요청을 보낸다 — `openwiki/asset-store.md` 「조수와 스토어」.
 - 조수 도구와 잇기(2026-10-21): `generate_missing_object` 가 낸 요청을 조수 카드(`aiObjectGenCard.ts`)가 받아 공방 폼 없이 바로 판을 돌리고, 사람이 고르거나 「알아서 고르기」(검수 PASS 첫 후보, 설명서 `review.pick` 없음·출처 `/auto-pick`)로 굽는다 — `openwiki/editor-ai-tools.md` 「없는 기물 그리기」.
 - QA(2026-10-07, netns·가짜 채팅): 카드 → 폼 채움 → 후보 5장 → B 고름 → 넣기 → 칩셋 6557→6580(이식 4칸, 킷 2×2) · 후속 요청 문장 · `stamp_tileset_object`·`build_hand_interior_room` 이 새 id 로 성공 · 맵에 그림이 그려짐. 번호 이주는 node 스크립트로 확인(옛 정의에 구운 칸 6530 → 새로 고친 뒤 6578, 맵 칸도 따라 바뀜).
+
+## 새 기물 그리기 품질 — 참고 그림 단계 · 크기·윗면 · 1배 읽힘 · 3/4 관문 조언 (2026-10-21)
+
+조수 「없는 기물」 시험 1(`~/claude-viz/objectgen-assistant-1.html`)에서 그린 소품이 앞면만 크고 윗면이 얇았고, 1×1 로 부탁한 벌통이 두 칸 높이로 나왔다. 새 기물(공방 폼·조수 카드) 판에 아래를 더했다. 있는 그림을 고치는 판은 그대로다.
+
+- **참고 그림 단계** — object-gen(`MovieHolic-Plex/object-gen`, `objectgen/reference.py`)의 ref 단계를 옮겼다. 지시문 VIEW·NEGATIVE·TOP_WORDS, 이름 거부 IP_TERMS, 시점 검사 VIEW_PROMPT·`view_ok`(top34 + 윗면 ≥35%, 벽 앞 키 큰 가구·벽 걸이 15%), 시도 3번은 원본 문장 그대로다(`src/harnesses/_core/workshop/referencePrompt.ts` — 고치려면 원본부터).
+  - 엔진 `makeReference`(판마다 한 번, 후보 셋이 같이 쓴다): 실행기 `referenceDescribe(item)`(바닥 무늬·벽 걸이는 없음) → `env.referenceImage(prompt)` → 512px 로 줄여 `workshop-review` 로 시점 검사 → 통과한 한 장을 그리기 지시문에 「참고 그림(모양만 — 참고용, 설치 안 됨)」으로 붙인다. 따라 그리기·줄이기·색 뽑기는 지시문이 금한다. 모든 화소는 모델이 팔레트 키로 찍는다.
+  - 참고 그림은 **판 기록(`round.reference`, IndexedDB)에만** 둔다. 검수·3/4 조언·굽기·스토어는 보지 않는다. 칩셋에 들어가는 것은 격자뿐.
+  - 그림 계정: 사용자 자기 생성형 이미지 계정(용도 `object-form-reference`, `src/ai/imageRoute.ts`, `pixels.ts` `referenceImage`). 계정이 없거나(`companionCredentialMissing`) 실패하면 참고 없이 그리고 카드에 「참고 그림 없이 그림 — 이유」를 적는다. 우리 주소·키·유료 대체 경로 없음.
+  - dev QA: `window.__oprnWorkshopImage(prompt)` 가 있으면 그것으로 만든다(시험 구동기가 자기 경로를 env 로 잇는다 — 주소는 저장소에 없다). `window.__oprnWorkshopNoReference = true` 면 참고 단계를 끈다(있음/없음 비교). `engine.startRound(item, { reference: false })`.
+- **크기·윗면 숫자**(`objectShape.ts`, 두 실행기 공용) — 지시문이 칠할 폭·높이(px)와 윗면 행 수(칠한 높이의 25~33%, 16px → 4~5행)를 숫자로 준다. 깨짐 검사 `sizeProblems` 가 높이 < 요청−10px 또는 폭이 한 칸 모자라면 돌려보내 다시 그리게 한다. 판정 `topShareGate`/`mapObjectGate` 가 검수자가 잰 윗면 행 수 하한 미달을 불합격(THIN)으로 본다. 조수 도구 `rise` 기본은 0(발밑 칸 안에 다 들어감), 공방 폼은 종전대로 16.
+- **1배 읽힘·문화 맥락** — 정의에 `setting`(칩셋 → 「현대 일본 도시」「서양 판타지 중세 항구 마을」…, `objectGenTool.ts` `objectSetting`)을 싣고, 검수에 1배·2배 그림을 8배보다 먼저 보인다. 검수는 「1배에서 무엇으로 보이나(looks_like)」를 먼저 적고 READ(무엇인지 안 읽힘)·CONTEXT(이 배경에 안 맞음, 예: jp_city 의 영국식 부스)·SIZE·THIN 코드를 쓴다. 카드에 「검수 눈엔: …」로 보인다.
+- **3/4 관문 조언 배지** — 다 그린 후보마다 object-gate 와 같은 지시문(`OBJECT_GATE_RUBRIC`)·기준 그림(`public/assets/harnesses/object-gate/view34-*.png`)·측정 글(`facts.ts`)로 판정자 1번을 부르고 `decideObjectGate` 로 pass/refer/fail(`gateAdvice.ts`, `run.gate`). 배지 `gateBadge(run)`(`src/editor/workshop/gateBadge.ts`, 「3/4 통과 / 애매 / 미달 · 윗면 N행」). **넣기를 막지 않는다** — 미보정 1표라 object-gate 영수증이 아니다. 굽기는 설명서 `review.vqa`(`judge: workshop-object-gate-advice/<kind>`, `calibrated:false`)에 적는다. 공방 그림은 여전히 「3/4 관문 미통과」이고 스토어·공용은 접두사로 막힌다.

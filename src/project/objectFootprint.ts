@@ -29,11 +29,20 @@ function wallLike(tileset: TilesetDef | undefined, tile: number): string | null 
   return null;
 }
 
-/** 칸 하나에 이미 물체(위층 그림)가 있나 — 3·4층 */
-function objectAt(map: GameMap, index: number): number {
+/** 바닥에 깔린 지나가는 덧그림(접지 그림자·노면 표시)은 물체가 아니다 — 그 위에 물건을 세워도 된다(2026-10-21 시험 2: jp_city 보도의 건물 밑 그림자 때문에 자판기 자리가 하나도 없었다). */
+const GROUND_DECAL = /그림자|shadow|노면|횡단보도|중앙선|차선|marking/iu;
+function groundDecal(tileset: TilesetDef | undefined, tile: number): boolean {
+  const meta = tileset?.tileMeta?.[tile];
+  if (!meta || meta.passage !== "passable") return false;
+  return [meta.label ?? "", ...(meta.tags ?? [])].some((text) => GROUND_DECAL.test(text));
+}
+
+/** 칸 하나에 이미 물체(위층 그림)가 있나 — 3·4층. 바닥 덧그림은 빼고 센다. */
+function objectAt(map: GameMap, index: number, tileset: TilesetDef | undefined): number {
   const upper = map.upperTiles[index] ?? -1;
-  if (upper >= 0) return upper;
-  return map.upperOverlayTiles?.[index] ?? -1;
+  if (upper >= 0 && !groundDecal(tileset, upper)) return upper;
+  const overlay = map.upperOverlayTiles?.[index] ?? -1;
+  return overlay >= 0 && !groundDecal(tileset, overlay) ? overlay : -1;
 }
 
 /** 패턴(위층 칸 배열, -1 = 빈 칸)에서 발자국 칸을 만든다. 막는(통행 X) 그림 칸이 발, 없으면 그림 맨 아래 줄이 발. */
@@ -56,16 +65,16 @@ export function footprintProblem(project: Project, map: GameMap, cells: readonly
   const tileset = project.tilesets[map.tilesetId];
   for (const cell of cells) {
     const x = ox + cell.dx, y = oy + cell.dy;
-    if (x < 0 || y < 0 || x >= map.width || y >= map.height) return { code: "object-out-of-bounds", x, y, why: "맵 밖" };
+    if (x < 0 || y < 0 || x >= map.width || y >= map.height) return { code: "object-out-of-bounds", x, y, why: "맵 밖이다" };
     const index = y * map.width + x;
-    const other = objectAt(map, index);
+    const other = objectAt(map, index, tileset);
     if (other >= 0) return { code: "object-overlaps-object", x, y, why: `다른 물체(위층 타일 ${other})와 겹친다` };
     if (!cell.foot) continue;
     const lower = map.lowerTiles[index] ?? -1;
-    if (lower < 0) return { code: "object-on-void", x, y, why: "바닥이 없는 허공(빈 칸)" };
+    if (lower < 0) return { code: "object-on-void", x, y, why: "바닥이 없는 허공(빈 칸)이다" };
     const wall = wallLike(tileset, lower) ?? wallLike(tileset, map.lowerOverlayTiles?.[index] ?? -1);
-    if (wall) return { code: "object-on-wall", x, y, why: `${wall} 칸 위` };
-    if (!isPassable(project, map, x, y)) return { code: "object-on-blocked", x, y, why: "걷지 못하는 칸(물·구조물) 위" };
+    if (wall) return { code: "object-on-wall", x, y, why: `${wall} 칸 위다` };
+    if (!isPassable(project, map, x, y)) return { code: "object-on-blocked", x, y, why: "걷지 못하는 칸(물·구조물) 위다" };
   }
   return null;
 }
@@ -95,5 +104,5 @@ export function footprintRefusal(project: Project, map: GameMap, cells: readonly
   const next = suggestion
     ? ` 가장 가까운 빈 바닥 자리: 왼쪽 위 (${suggestion.at.x},${suggestion.at.y}) = base (${suggestion.base.x},${suggestion.base.y}). 그 자리로 다시 찍거나 show_map_region 으로 바닥을 보고 고른다.`
     : " 둘레 10칸 안에 놓을 자리가 없다 — 방 안 빈 바닥을 show_map_region 으로 찾아 고른다.";
-  return { code: problem.code, suggestion, message: `${label} 을(를) (${ox},${oy}) 에 놓으면 (${problem.x},${problem.y}) 칸이 ${problem.why}이다.${foot}${next}` };
+  return { code: problem.code, suggestion, message: `${label} 을(를) (${ox},${oy}) 에 놓으면 (${problem.x},${problem.y}) 칸이 ${problem.why}.${foot}${next}` };
 }

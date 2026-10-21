@@ -4553,6 +4553,7 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 | interview-scene | 생성형 | `src/editor/interviewSceneGeneration.ts:45` | **결정 2 확정**: 도트 격자 검수까지 하지만 이미지 모델로 생성한다(유지) |
 | concept-thumb | 생성형 | `src/concepts/draft.ts:96`, 프롬프트 `src/concepts/art.ts:24` | **결정 2 확정**: «SNES 도트 썸네일» 이어도 이미지 모델로 생성한다(유지) |
 | tileset · map-object · interior-prop | 도트(텍스트) | 공방 `src/harnesses/_core/workshop/engine.ts:142`(`workshop-draw`), 표 `src/ai/assistantEndpoint.ts:107` | 지금 `pixelModel` 을 읽는 유일한 소비자 |
+| object-form-reference | 생성형 | `src/editor/workshop/pixels.ts` `referenceImage`(공방 엔진 참고 단계 `engine.ts` `makeReference`) | 2026-10-21: 공방 새 기물의 **모양 참고 그림**. 그리는 모델만 보고 화소가 되지 않는다(판 임시 기록, 설치·저장·스토어 없음). 그림 계정이 없으면 참고 없이 그린다 — `openwiki/editor-workshop.md` 「참고 그림 단계」 |
 | charset | 도트(텍스트) — 앱 안 소비자 없음(가드 전용) | `src/editor/tools/mechCharsetTools.ts:1-4`(`author_actor_charset` = 결정적 코드 도트, 모델 호출 없음) | RM2000 캐릭터 대량 저작은 외부 하네스 `charset-actor`(이 설정과 무관) |
 | user-upload | 업로드만 | `src/editor/panels/databaseResourcePickerDialog.ts:240`(AI 칸은 title·backdrop·still 만), 본문 위 「charset/battleCharset/chipset/parallax 타일링은 제외」 | 생성 경로 없음 |
 | (제외) 몬스터·트레이너 | 별도 하네스 | `src/harnesses/monster-collect-species/node/imageSource.ts`, `src/harnesses/battle-trainer-sprites` | 생성→격자 도트화+사람 pick. **라우터를 거치지 않고 건드리지 않았다** |

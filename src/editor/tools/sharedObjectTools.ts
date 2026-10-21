@@ -132,7 +132,8 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
       }
       // 발자국(project/objectFootprint.ts, 2026-10-21): 소품 킷(kit: 서는 물건, 8×8 이하, 아래층 그림 없음)의 발이 벽·천장·허공·물 위거나
       // 다른 물체와 겹치면 거부하고 가까운 빈 바닥을 알려 준다. 실측: 2×4 혼천의를 서재 두 방 사이 벽·천장 위에 찍었다(objectgen VQA FAIL).
-      if (kitDef && isStandingPropKit(kitDef, pattern) && layers !== "lower") {
+      const footprintChecked = !!kitDef && isStandingPropKit(kitDef, pattern) && layers !== "lower";
+      if (footprintChecked) {
         const cells = footprintFromUpper(pattern.width, pattern.height, pattern.upper, resolved.source);
         const refusal = footprintRefusal(project, map, cells, Number(args.x), Number(args.y), `「${resolved.name}」(${objectId}) ${pattern.width}×${pattern.height}`);
         if (refusal) throw new ToolError(refusal.message, { code: refusal.code, mapId: map.id, ...(refusal.suggestion ? refusal.suggestion.at : {}) });
@@ -162,7 +163,9 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
         ...(startNote ? [startNote] : []),
         ...(result.clipped ? [`맵 밖으로 나간 칸은 뺐다 — 찍힌 범위 ${JSON.stringify(result.rect)}`] : []),
         // 2026-10-07 적대적 검토: 모델이 꽃 상자를 가로수 수관 위에 찍어 소품이 나무 잎에 얹혀 보였다. 덮인 칸을 되돌려 알린다.
-        ...(result.coveredUpper.length ? [`이미 다른 위층 그림(나무 수관·지붕 등)이 있던 ${result.coveredUpper.length}칸을 덮었다 — ${result.coveredUpper.slice(0, 6).map(c => `(${c.x},${c.y})`).join(" ")}. 소품이 그 위에 얹혀 보이면 빈 풀밭·바닥 칸으로 옮겨 다시 찍는다`] : []),
+        // 발자국 검사를 통과한 소품이 덮은 위층 칸은 바닥 덧그림(접지 그림자·노면 표시)뿐이다 — 물체 겹침이 아니다.
+        ...(result.coveredUpper.length && footprintChecked ? [`바닥 덧그림(그림자·노면 표시) ${result.coveredUpper.length}칸 위에 세웠다 — 그 칸의 덧그림은 소품 그림으로 바뀌었다`] : []),
+        ...(result.coveredUpper.length && !footprintChecked ? [`이미 다른 위층 그림(나무 수관·지붕 등)이 있던 ${result.coveredUpper.length}칸을 덮었다 — ${result.coveredUpper.slice(0, 6).map(c => `(${c.x},${c.y})`).join(" ")}. 소품이 그 위에 얹혀 보이면 빈 풀밭·바닥 칸으로 옮겨 다시 찍는다`] : []),
         ...(result.slotsAdded > 0 ? [`${map.tilesetId} 에 그림 ${result.slotsAdded}칸을 이식해 붙였다(${resolved.source.id} 그림)`] : []),
       ];
       // 입구 부위가 있는 킷(특수 건물 등)은 맵 좌표 입구를 돌려준다 — 길을 입구 바로 아래 칸에서 끝내고 이벤트를 입구 칸에 둔다.
