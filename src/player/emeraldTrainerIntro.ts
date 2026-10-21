@@ -15,8 +15,11 @@ const ROLES = ['hero', 'rival', 'professor', 'nurse', 'merchant', 'mother', 'res
 type TrainerPicture = { url: string; width: number; height: number };
 /** 볼 던지기 가로 시트: 프레임 한 칸이 정사각(64 또는 128) × N. 화면에는 한 칸을 128×128 로 보여 준다. */
 type TrainerSheet = { url: string; frames: number };
-type TrainerIntroPair = { role: string; opponent: TrainerPicture; hero: TrainerPicture; opponentThrow?: TrainerSheet; heroThrow?: TrainerSheet };
+type TrainerIntroPair = { role: string; opponent: TrainerPicture; hero: TrainerPicture; opponentThrow?: TrainerSheet; heroThrow?: TrainerSheet; orb?: string };
 const THROW_FRAME_MS = 80;
+/** 내보내기 구슬: 날아가는 시간과, 던지기 시트 없는 상대 쪽 구슬이 출발하는 때(인물이 걸어 나간 뒤). emeraldTrainerIntro.css 와 같은 값. */
+const ORB_FLIGHT_MS = 220;
+const FOE_ORB_START_MS = 380;
 
 /** 인물 그림 계약(TroopRecord.trainerSprite): 모든 값이 업로드 그림 id. 없으면 아래 옛 규칙(필드 이벤트 그래픽 → 역할 이름)으로 간다. */
 function authoredTrainerPair(project: Project, troopId: string): TrainerIntroPair | undefined {
@@ -25,12 +28,15 @@ function authoredTrainerPair(project: Project, troopId: string): TrainerIntroPai
   const opponent = trainerPicture(project, sprite.front);
   const hero = trainerPicture(project, sprite.back ?? 'oprn_emerald_trainer_hero_back', 'back');
   if (!opponent || !hero) return undefined;
-  return { role: 'authored', opponent, hero, opponentThrow: sprite.throw ? trainerSheet(project, sprite.throw) : undefined, heroThrow: sprite.backThrow ? trainerSheet(project, sprite.backThrow) : undefined };
+  const heroBack = sprite.back ?? 'oprn_emerald_trainer_hero_back';
+  // 내보내기 구슬 그림: 번들 뒷모습 역할에 orb.png(던지기 칸에서 그대로 잘라 낸 구슬)가 있으면 쓴다. 없으면 구슬 없이 옛 연출 그대로.
+  const orb = !project.assets.uploaded[heroBack] && BUNDLED_ROLE.test(heroBack) ? bundledTrainerUrl(heroBack, 'orb') : undefined;
+  return { role: 'authored', opponent, hero, opponentThrow: sprite.throw ? trainerSheet(project, sprite.throw) : undefined, heroThrow: sprite.backThrow ? trainerSheet(project, sprite.backThrow) : undefined, orb };
 }
 
 /** 번들 인물 그림(public/assets/battle-trainers/<role>/{front,back,throw}.png) 의 role id 꼴. 업로드 그림 id 가 먼저다. */
 const BUNDLED_ROLE = /^[a-z][a-z0-9_]*$/u;
-const bundledTrainerUrl = (role: string, file: 'front' | 'back' | 'throw'): string => `/assets/battle-trainers/${role}/${file}.png`;
+const bundledTrainerUrl = (role: string, file: 'front' | 'back' | 'throw' | 'orb'): string => `/assets/battle-trainers/${role}/${file}.png`;
 
 function trainerPicture(project: Project, id: string, bundledFile: 'front' | 'back' = 'front'): TrainerPicture | null {
   const asset = project.assets.uploaded[id];
@@ -129,7 +135,14 @@ export function mountEmeraldTrainerIntro(root: HTMLElement, project: Project, se
   let ready = 0;
   // 던지기 시트가 없으면 인물이 걸어 나간 뒤(지연 200ms + 퇴장 380ms)에 몬스터가 나온다 — 250ms 에 내보내면 나가는 인물과 막 나온 몬스터가
   // 330ms 동안 한 받침 위에 겹쳐 섰다(r5b 설치 정지 화면, 2026-10-22).
-  const revealMs = (sheet: TrainerSheet | undefined): number => sheet ? sheet.frames * THROW_FRAME_MS + 120 : 600;
+  // 구슬 그림이 있으면(layer.dataset.sendoutOrb) 몬스터는 구슬이 받침에 떨어져 번쩍인 뒤에 나온다:
+  // 내 쪽은 마지막 던지기 칸이 뜨는 순간(--throw-ms) 3칸 구슬 자리에서 구슬이 날아가 ORB_FLIGHT_MS 뒤 착지, 상대 쪽은 걸어 나간 뒤(380ms) 화면 밖에서 날아온다.
+  let orbReady = false;
+  const revealMs = (sheet: TrainerSheet | undefined): number => {
+    if (sheet && sheet.frames > 0) return orbReady ? sheet.frames * THROW_FRAME_MS + ORB_FLIGHT_MS + 20 : sheet.frames * THROW_FRAME_MS + 120;
+    if (sheet) return sheet.frames * THROW_FRAME_MS + 120;
+    return orbReady ? FOE_ORB_START_MS + ORB_FLIGHT_MS + 20 : 600;
+  };
   const update = (): void => {
     if (destroyed) return;
     const visible = phase !== undefined && !failed && ready === 2;
@@ -138,6 +151,9 @@ export function mountEmeraldTrainerIntro(root: HTMLElement, project: Project, se
       layer.dataset.phase = phase;
       root.dataset.emeraldTrainerIntro = phase;
       root.style.setProperty('--emerald-reveal-ms', `${revealMs(phase === 'foe' ? pair.opponentThrow : pair.heroThrow)}ms`);
+      // 내 구슬은 마지막 던지기 칸(빈손 마무리)이 뜨는 때 출발한다. 시트는 steps(N-1, end) 로 --throw-ms(N×80ms) 동안 밀리므로
+      // 마지막 칸은 정확히 --throw-ms 에 뜬다 — (N-1)×80ms 에 출발시키면 3칸 그림 속 구슬과 날아가는 구슬이 두 개 보였다.
+      if (pair.heroThrow?.frames) layer.style.setProperty('--orb-hero-start', `${pair.heroThrow.frames * THROW_FRAME_MS}ms`);
     } else {
       delete layer.dataset.phase;
       // 그림을 아직 불러오는 중이면(소개 단계인데 ready < 2) 몬스터·HUD 를 숨긴 채 기다린다 — 비워 두면 전환 막 사이로
@@ -200,6 +216,27 @@ export function mountEmeraldTrainerIntro(root: HTMLElement, project: Project, se
         probe.src = sheet.url;
       }
     }
+  }
+  if (pair.orb) {
+    // 구슬·섬광 노드(내 쪽 hero, 상대 쪽 foe). 그림을 못 불러오면 붙이지 않는다 — 구슬 없이 옛 연출 그대로.
+    const orbUrl = pair.orb;
+    const probe = new Image();
+    probe.onload = () => {
+      if (destroyed || probe.naturalWidth <= 0) return;
+      for (const side of ['hero', 'foe'] as const) {
+        if (side === 'foe' && pair.opponentThrow) continue; // 상대가 던지기 시트를 가지면 그 그림이 구슬을 그린다.
+        const orbNode = document.createElement('div');
+        orbNode.className = `emerald-sendout-orb emerald-sendout-orb-${side}`;
+        orbNode.style.backgroundImage = `url("${orbUrl}")`;
+        const flash = document.createElement('div');
+        flash.className = `emerald-sendout-flash emerald-sendout-flash-${side}`;
+        layer.append(orbNode, flash);
+      }
+      layer.dataset.sendoutOrb = 'true';
+      orbReady = true;
+      update();
+    };
+    probe.src = orbUrl;
   }
   root.append(layer);
   root.dataset.emeraldTrainerIntro = 'pending';

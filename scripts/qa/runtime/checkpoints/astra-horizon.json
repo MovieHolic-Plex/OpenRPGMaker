@@ -98,7 +98,7 @@
           "monster_1": {
             "instanceId": "monster_1",
             "speciesId": "mx_species_spriglet",
-            "nickname": "Spriglet",
+            "nickname": "토리프",
             "level": 6,
             "exp": 0,
             "skillIds": [
@@ -143,7 +143,7 @@
           "monster_1": {
             "instanceId": "monster_1",
             "speciesId": "mx_species_spriglet",
-            "nickname": "Spriglet",
+            "nickname": "토리프",
             "level": 7,
             "exp": 0,
             "skillIds": [
@@ -188,7 +188,7 @@
           "monster_1": {
             "instanceId": "monster_1",
             "speciesId": "mx_species_spriglet",
-            "nickname": "Spriglet",
+            "nickname": "토리프",
             "level": 6,
             "exp": 0,
             "skillIds": [
@@ -289,7 +289,7 @@
           "monster_1": {
             "instanceId": "monster_1",
             "speciesId": "mx_species_spriglet",
-            "nickname": "Spriglet",
+            "nickname": "토리프",
             "level": 8,
             "exp": 0,
             "skillIds": [
@@ -335,7 +335,7 @@
           "monster_1": {
             "instanceId": "monster_1",
             "speciesId": "mx_species_spriglet",
-            "nickname": "Spriglet",
+            "nickname": "토리프",
             "level": 10,
             "exp": 0,
             "skillIds": [
@@ -445,7 +445,7 @@
           "monster_1": {
             "instanceId": "monster_1",
             "speciesId": "mx_species_spriglet",
-            "nickname": "Spriglet",
+            "nickname": "토리프",
             "level": 13,
             "exp": 0,
             "skillIds": [
@@ -493,7 +493,7 @@
           "monster_1": {
             "instanceId": "monster_1",
             "speciesId": "mx_species_spriglet",
-            "nickname": "Spriglet",
+            "nickname": "토리프",
             "level": 15,
             "exp": 0,
             "skillIds": [
@@ -541,7 +541,7 @@
           "monster_1": {
             "instanceId": "monster_1",
             "speciesId": "mx_species_spriglet",
-            "nickname": "Spriglet",
+            "nickname": "토리프",
             "level": 16,
             "exp": 0,
             "skillIds": [
@@ -635,7 +635,7 @@
           "monster_1": {
             "instanceId": "monster_1",
             "speciesId": "mx_species_spriglet",
-            "nickname": "Spriglet",
+            "nickname": "토리프",
             "level": 60,
             "exp": 0,
             "skillIds": [
