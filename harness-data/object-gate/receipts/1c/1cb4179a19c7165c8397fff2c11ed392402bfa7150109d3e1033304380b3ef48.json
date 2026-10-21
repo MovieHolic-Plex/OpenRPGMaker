@@ -6,7 +6,7 @@
  "kind": "terrain",
  "name": "동굴 바닥 속 깊은 심연과 그 위 썩은 판자 다리(위에서 본 3/4 지형 — 먼 벽 바위 낯·가까운 바닥 입술·옆벽 띠)",
  "label": "atlas_biome_interior/plus/abyss-b",
- "profileHash": "ee216f0de5822996",
+ "profileHash": "4d8774b517f41638",
  "verdict": "pass",
  "reasons": [],
  "view34": {
@@ -36,45 +36,59 @@
    "judge": "sonnet",
    "run": 1,
    "answer": {
-    "facing": "north",
+    "facing": "south",
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "far wall rock face above chasm (north wall band)",
-      "rows": "6-18",
+      "part": "cave floor ground, top and sides around the pit",
+      "rows": "0-6",
       "evidence": "a",
-      "front_edge_line_row": 18,
-      "eave_shadow_rows": "19-22"
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
      },
      {
-      "part": "near floor lip (south edge of chasm, rocky ledge)",
-      "rows": "140-159",
+      "part": "far rock wall face above the abyss",
+      "rows": "7-20",
       "evidence": "a",
-      "front_edge_line_row": 140,
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "21-23"
+     },
+     {
+      "part": "floor islands (left and right) with lit front lips",
+      "rows": "76-108",
+      "evidence": "a",
+      "front_edge_line_row": 77,
+      "eave_shadow_rows": "78-79"
+     },
+     {
+      "part": "near floor strip at the bottom with lit lip",
+      "rows": "142-159",
+      "evidence": "a",
+      "front_edge_line_row": 141,
       "eave_shadow_rows": null
      },
      {
-      "part": "wooden plank bridge",
-      "rows": "19-57",
-      "evidence": "none",
+      "part": "plank bridge (two plank columns over the abyss)",
+      "rows": "48-143",
+      "evidence": "a",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
      },
      {
-      "part": "chasm void",
-      "rows": "22-139",
-      "evidence": "none",
+      "part": "dark abyss pit",
+      "rows": "24-140",
+      "evidence": "d",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
      }
     ],
-    "main_top_rows": 0,
-    "front_face_rows": 13,
+    "main_top_rows": 17,
+    "front_face_rows": 14,
     "side_face_visible": true,
     "all_major_parts_have_top": true,
     "round_cap": null,
     "reads_as": "three_quarter",
-    "evidence": "This is a terrain tile block rather than a standing object. A rocky floor surrounds a dark chasm. The far (north) wall shows a stone-brick face about rows 6-18 with a light top-edge line and dark shadow beneath it. Side wall bands appear on the left and right edges of the chasm, and the near floor lip has a light edge line at about row 140. The plank bridge is seen from above, with plank rows stacked vertically and visible gaps. The void interior is flat dark fill. The scan shows the column at x=112 holding near-black from row 32 onward, with repeating 2-row lighter plank edges every 16 rows. The view is a 3/4 top-down terrain read, with wall faces and floor lips matching the stated 'far wall, near floor lip, side wall band' structure."
+    "evidence": "This is a terrain autotile block. The far wall is a rock face of about 14 rows, with a light lip line at row 16 and dark shadow below it. The floor islands and the near floor have lit front lips (row 77 and the bottom lip) with floor surface behind them. The side wall bands show the vertical faces. The abyss is dark and the planks lie flat across it. Floor, lip and wall face all read in 3/4 view."
    },
    "styleAnswer": {
     "ref_kind_matches": true,
@@ -83,9 +97,9 @@
     "outline": "dark_material_tone",
     "texture": "some",
     "flat_fills": false,
-    "density": "slightly_lower",
+    "density": "equal_or_richer",
     "score": 7,
-    "evidence": "The candidate has 38 distinct colours, below the grass reference (80) but far above paving (7). Its median of 9 colours per tile is above paving (7) and below grass (26). Flat-fill coverage is 4%, close to the references' 0%, so there are no large dead areas. Only 3% of dark edge pixels are neutral, so the outlines lean dark brown next to the rock and wood, as Beodeul does; this is not a black sticker line. The rock floor has about 4 brown steps with speckle and grain, and the wall lip and side band are separated by value. The abyss is a near-black field with faint dither texture, which suits a pit. The plank bridge is the flattest part, at about 3 to 4 steps with a few decay chips. Overall it is slightly shallower than the grass reference but reads as a hand-shaded piece, and it would sit acceptably beside the references.",
+    "evidence": "The measured facts favour the candidate. It has 6 visible tones per tile against 3 for the grass and 7 for the paving. Near-flat coverage is only 4% (references 0%), and just 3% of dark edge pixels are neutral, so the outlines lean brown rather than black. By eye, the brown cave floor is mottled with several rock tones, and the lips and side-wall bands carry a tan highlight with a dark brown shadow edge, which separates forms by value rather than by a black sticker line. The abyss is mostly near-black but keeps a faint scale texture, so it does not read as a flat fill. The plank bridge is the weakest part: its planks repeat with only about 3 tones and look fairly clean for 'rotten' wood. Shading is a little shallower than the Beodeul 5-6 steps, but overall it would sit acceptably next to the references.",
     "verdict": "pass"
    },
    "pass": true,
@@ -98,7 +112,7 @@
     "pass": true,
     "reasons": []
    },
-   "ms": 23817
+   "ms": 20128
   },
   {
    "judge": "sonnet",
@@ -108,124 +122,59 @@
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "far wall rock face (top of chasm, rows 6-16 band with light edge line at row 6-7 and darker brick courses below)",
-      "rows": "6-16",
+      "part": "cave floor ledge above the far wall",
+      "rows": "0-4",
       "evidence": "a",
-      "front_edge_line_row": 7,
-      "eave_shadow_rows": "14-18"
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5-6"
      },
      {
-      "part": "near floor lip (ground at bottom edge of chasm)",
-      "rows": "139-143",
-      "evidence": "a",
-      "front_edge_line_row": 139,
-      "eave_shadow_rows": null
-     },
-     {
-      "part": "plank bridge (two columns of planks seen from above)",
-      "rows": "19-143",
-      "evidence": "a",
-      "front_edge_line_row": null,
-      "eave_shadow_rows": null
-     },
-     {
-      "part": "side wall strips (left and right stepped rock wall bands)",
-      "rows": "13-30",
-      "evidence": "a",
-      "front_edge_line_row": null,
-      "eave_shadow_rows": null
-     }
-    ],
-    "main_top_rows": 10,
-    "front_face_rows": 10,
-    "side_face_visible": true,
-    "all_major_parts_have_top": true,
-    "round_cap": null,
-    "reads_as": "three_quarter",
-    "evidence": "This is a terrain tile block: a cave floor with a dark chasm cut into it. The far (north) edge shows a rock wall face (rows 6-16) under a light top edge line, which reads as a vertical cliff face seen from the south. The near edge (around row 139-143) shows the floor lip as a thin light line with the chasm beginning above it, so the ground reads as a horizontal surface. Stepped side-wall bands on the left and right (e.g. rows 19-30, 38-45, 61-70) show vertical rock faces beside the pit. The planks cross the pit as flat tops seen from above. The 3/4 structure of the terrain (horizontal floor, far wall face, near lip, side bands) is present."
-   },
-   "styleAnswer": {
-    "ref_kind_matches": true,
-    "shading_steps": 4,
-    "reference_steps": 5,
-    "outline": "dark_material_tone",
-    "texture": "some",
-    "flat_fills": false,
-    "density": "slightly_lower",
-    "score": 6,
-    "evidence": "Measured: candidate has 9 colours per tile (grass reference 26, paving 7), 4% flat-fill coverage (references 0%), only 3% neutral dark edge pixels (tinted outlines), and 38 distinct colours (grass 80, paving 7). The rock floor has about 4 brown steps with speckle grain, and the lips and edge bands are shaded in warm browns rather than a black sticker line, which fits the Beodeul approach. The abyss is a near-black mass with faint dither, so it is lower in variation, and the planks are only moderately shaded. The overall look is coherent, but it sits below the grass reference in step count, texture richness and tile density. It beats the paving reference on colours but does not match the 5-6 step standard, so it is slightly shallow. When in doubt, fail.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "판정자 fail (1/1)"
-   ],
-   "view34": {
-    "pass": true,
-    "reasons": []
-   },
-   "style": {
-    "pass": false,
-    "reasons": [
-     "판정자 fail (1/1)"
-    ]
-   },
-   "ms": 17928
-  },
-  {
-   "judge": "sonnet",
-   "run": 3,
-   "answer": {
-    "facing": "south",
-    "kind_matches": true,
-    "surfaces": [
-     {
-      "part": "far cave floor (rock ground above the north wall)",
-      "rows": "0-15",
-      "evidence": "a",
-      "front_edge_line_row": 16,
-      "eave_shadow_rows": "22-31"
-     },
-     {
-      "part": "far wall rock face (south-facing cliff band above the abyss)",
-      "rows": "17-31",
+      "part": "far wall rock face (front face above the abyss)",
+      "rows": "5-24",
       "evidence": "none",
       "front_edge_line_row": null,
-      "eave_shadow_rows": "22-31"
+      "eave_shadow_rows": null
      },
      {
-      "part": "abyss pit with plank bridge (dark void, planks seen from above)",
-      "rows": "32-140",
-      "evidence": "d",
+      "part": "near floor lip with its lit front edge",
+      "rows": "140-159",
+      "evidence": "a",
+      "front_edge_line_row": 141,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plank bridge (planks seen from above, each with a lit edge)",
+      "rows": "33-145",
+      "evidence": "a",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
      },
      {
-      "part": "near floor and island ground with lip line",
-      "rows": "77-159",
-      "evidence": "a",
-      "front_edge_line_row": 77,
+      "part": "abyss void",
+      "rows": "30-140",
+      "evidence": "none",
+      "front_edge_line_row": null,
       "eave_shadow_rows": null
      }
     ],
-    "main_top_rows": 16,
-    "front_face_rows": 15,
+    "main_top_rows": 5,
+    "front_face_rows": 20,
     "side_face_visible": true,
     "all_major_parts_have_top": true,
     "round_cap": null,
     "reads_as": "three_quarter",
-    "evidence": "This is a terrain autotile, not a standing object. Column x=112 shows rock floor in rows 0-15 ending in a light lip line at row 16. Rows 17-31 are the south-facing wall face, with dark shading in rows 22-31 that acts as eave shadow. Below that the abyss is near-black (rows 32+). Near-side ground has lip lines, such as the light line at row 77 in column x=167. Side wall bands are visible at the left and right pit edges. The planks are drawn top-down across the pit. The terrain therefore combines a top surface with a wall face of more than 3 rows."
+    "evidence": "This is a terrain tile, not a standing object. A floor ledge at the top (rows 0-4) ends in a lighter edge line at row 4, and a rock wall face of about 20 rows hangs below it with darkening shadow toward the abyss. The abyss opens below as a black void. The near floor lip at the bottom carries its own lit edge line (around row 77 in the scan). Narrow side-wall bands on the left and right show vertical faces. The plank bridge is drawn from above, with a lit top edge on each plank and dark gaps between them. The result is a top surface plus a front face of 3+ rows, so it reads as three-quarter."
    },
    "styleAnswer": {
     "ref_kind_matches": true,
-    "shading_steps": 4,
+    "shading_steps": 5,
     "reference_steps": 5,
     "outline": "dark_material_tone",
     "texture": "some",
     "flat_fills": false,
     "density": "slightly_lower",
-    "score": 6,
-    "evidence": "The rock floor has about 4-5 brown steps with speckle and grain, and the cliff lips have a tan highlight, a mid tone and a dark shadow band. The abyss is deliberately very dark but still carries faint stone-grain variation, so it is not a flat fill. The planks are simpler, about 3-4 tones. Dark edge pixels are only 3% neutral, so the outlines lean brown and follow the adjacent material, not a black sticker line. Flat-fill coverage is 4%, against 0% for both references. The candidate has 9 colours per tile, 38 colours in total. That is well under the grass reference (26 per tile, 80 colours) but above the paving reference (7 per tile, 7 colours). Overall it is slightly lower than the richest Beodeul piece but acceptable next to the references, with no sticker look.",
+    "score": 7,
+    "evidence": "The candidate shows 6 visible tones per tile, above the grass reference (3) and just under the paving reference (7). Near-flat coverage is 4%, close to the references' 0%, so there are no large flat fills. Only 3% of dark edge pixels are neutral, so the outlines lean brown and follow the rock and plank material rather than being a black sticker line. The rock floor has speckle grain, a lit lip highlight on the cliff edges and a darker side-wall band, which gives about 5 steps. The abyss is very dark but carries dithered speckle, so it is not flat. The plank bridge is the weakest part: its planks are cleaner and have fewer tones (about 3-4) than the rock, with only a few rotten chips. That keeps density slightly below the references, but a careful artist would still accept it next to them.",
     "verdict": "pass"
    },
    "pass": true,
@@ -238,7 +187,75 @@
     "pass": true,
     "reasons": []
    },
-   "ms": 26346
+   "ms": 37481
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper cave floor plateau (back ground above the far wall)",
+      "rows": "0-15",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "22-24"
+     },
+     {
+      "part": "far wall rock face (vertical face under the floor edge)",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "near floor islands and bottom floor with a light lip line over the abyss",
+      "rows": "77-159",
+      "evidence": "a",
+      "front_edge_line_row": 77,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plank bridge (two plank columns across the abyss)",
+      "rows": "46-140",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 16,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a terrain block. The floor at the top (x=112, rows 0-15) ends in light edge-line rows at 16-21. Below it the far rock wall face (rows 16-31) drops into the dark abyss, which starts at row 32. Light lip lines at row 77 (x=56 and x=167) mark the near floor edges. Narrow side-wall bands appear at the pit sides, and the plank bridge sits on top of the abyss. The terrain has a floor top, a wall face and a lip, so it reads as 3/4 view and not as a flat slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The rock floor has a light lip, mid-brown grain, darker speckle and a dark brown rim. The far wall face and side-wall bands read as separate planes by value alone, in 3/4 view. The abyss is very dark but carries a subtle tile-grain speckle rather than a flat black fill. The planks have a highlight, a mid tone, a dark gap and some broken debris. The measured facts support this: 6 visible tones per tile, between the grass reference (3) and the paving reference (7). Near-flat coverage is only 4%, against 0% for both references. Only 3% of dark edge pixels are neutral, so the outlines lean brown and follow the neighbouring material rather than forming a black sticker line. Ramps are slightly shallower than the references, and the abyss and planks are somewhat sparse in tone, so density is a touch lower. Nothing reads as a flat fill or a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18412
   },
   {
    "judge": "sonnet",
@@ -248,45 +265,59 @@
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "far cave wall rock face (top band of the chasm)",
-      "rows": "6-24",
+      "part": "cave floor ground around the chasm (top plane)",
+      "rows": "0-6",
       "evidence": "a",
-      "front_edge_line_row": 16,
-      "eave_shadow_rows": "22-31"
-     },
-     {
-      "part": "near floor lip (bottom edge of the chasm, floor ledge)",
-      "rows": "140-159",
-      "evidence": "a",
-      "front_edge_line_row": 141,
+      "front_edge_line_row": 7,
       "eave_shadow_rows": null
      },
      {
-      "part": "plank bridge",
+      "part": "far chasm wall rock face with lit lip",
+      "rows": "7-24",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "22-24"
+     },
+     {
+      "part": "wooden plank bridge (top surface seen from above)",
       "rows": "19-57",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "near floor lips and ledge tops",
+      "rows": "30-57",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side wall bands left and right",
+      "rows": "19-45",
       "evidence": "none",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
      }
     ],
-    "main_top_rows": 0,
-    "front_face_rows": 19,
+    "main_top_rows": 39,
+    "front_face_rows": 18,
     "side_face_visible": true,
     "all_major_parts_have_top": true,
     "round_cap": null,
     "reads_as": "three_quarter",
-    "evidence": "This is a terrain tile block: a dark chasm in rocky floor. The far (north) wall shows a brick-like rock face with a light edge line at row 16 and dark shadow beneath, which fits the 3/4 view. The near floor has a thin light lip, for example the bright line at row 77 on x=167 and on the floor islands. Short side-wall bands (x≈105-175, 735-805, etc.) appear as vertical strips. The planks run across the chasm as top-down boards. The chasm itself is a dark void with no contents visible, so it reads as terrain in 3/4 view, not as a standing object."
+    "evidence": "This is a terrain tile of a cave floor with a dark chasm and a plank bridge. The far wall (rows 7-24) has a light lip line near row 16 followed by darker shadow rows 22-24 and then the abyss. The bridge planks (rows 19-57) are horizontal surfaces seen from above. The near floor edges carry thin lit lips at the chasm bottom, and the left and right wall bands add vertical faces. The result is a 3/4 layout of top surfaces plus 3+ row front faces, not a flat slab."
    },
    "styleAnswer": {
     "ref_kind_matches": true,
     "shading_steps": 5,
-    "reference_steps": 6,
+    "reference_steps": 5,
     "outline": "dark_material_tone",
     "texture": "some",
     "flat_fills": false,
     "density": "slightly_lower",
     "score": 7,
-    "evidence": "The measured facts support a pass. Only 3% of dark edge pixels are neutral, so the rim and edge lines lean brown (dark rock-brown beside the rock, not a black sticker line). Flat-fill coverage is 4%, close to the references' 0%. The candidate has 9 colours per tile and 38 distinct colours. That is above the paving reference (7 and 7) and below the grass reference (26 and 80). By eye, the rocky floor has a mottled, grainy brown ramp of about 5 steps, with a lighter lip highlight on the cliff edges and a darker side-wall band that gives the 3/4 depth. The planks carry light, mid and dark steps with nail and shadow details. The abyss is a large dark area, but it keeps speckled variation rather than a flat fill. It is slightly less rich than the grass reference, but a careful artist would accept it next to the references without it looking flat or sticker-like.",
+    "evidence": "The candidate shows 6 visible tones per tile, between the grass reference (3) and the paving reference (7). Near-flat coverage is 4%, close to the references' 0%. Only 3% of its dark edge pixels are near-neutral, so the outlines carry a tint: dark brown beside the rock and planks, dark blue-black in the abyss. The cave rock floor is shaded in about 5 steps, with a lit lip highlight on the near edge, a darker side-wall band and speckled grain. The abyss is near-black with subtle dithered grain, so it is not a flat fill. The plank bridge reads as separate planks with highlight and shadow edges, plus debris pieces. It is a bit cleaner and more repetitive than Beodeul's richest surfaces, and its total of 38 colours is modest, so density is slightly lower than the references. Overall it is a layered 3/4 ground piece (far rock face, near lip, side-wall band) with tinted outlines and enough texture, and a careful artist would accept it next to the references.",
     "verdict": "pass"
    },
    "pass": true,
@@ -299,10 +330,10 @@
     "pass": true,
     "reasons": []
    },
-   "ms": 17377
+   "ms": 20293
   }
  ],
- "decidedAt": "2026-10-20T07:01:37.068Z",
+ "decidedAt": "2026-10-21T07:03:01.640Z",
  "cells": {
   "16": [
    "0566fa84795cf038",

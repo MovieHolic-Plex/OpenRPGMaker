@@ -6,7 +6,7 @@
  "kind": "terrain",
  "name": "무너져 내려 구멍이 숭숭 뚫린 동굴 바닥(위에서 본 3/4 지형 — 먼 벽 바위 낯·가까운 바닥 입술·옆벽 띠)",
  "label": "atlas_biome_interior/plus/abyss-c",
- "profileHash": "ee216f0de5822996",
+ "profileHash": "4d8774b517f41638",
  "verdict": "pass",
  "reasons": [],
  "view34": {
@@ -40,45 +40,52 @@
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "floor slabs (raised cave floor chunks between holes)",
-      "rows": "0-159",
+      "part": "floor plateau at the top of the tile (speckled ground)",
+      "rows": "0-15",
       "evidence": "a",
-      "front_edge_line_row": 18,
-      "eave_shadow_rows": "19-35"
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "23-28"
      },
      {
-      "part": "far wall rock face bands at top of each pit",
+      "part": "far-wall rock face under the top ledge, with a light lip line and a dark gradient into the pit",
       "rows": "16-35",
       "evidence": "a",
-      "front_edge_line_row": 29,
-      "eave_shadow_rows": "31-44"
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "25-35"
      },
      {
-      "part": "lower floor lip with pits below",
-      "rows": "92-139",
+      "part": "floor islands between the pits, each with a light lip line on top and a rock face below",
+      "rows": "30-60",
+      "evidence": "a",
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": "37-44"
+     },
+     {
+      "part": "lower floor and rock bands along the bottom of the tile",
+      "rows": "92-147",
       "evidence": "a",
       "front_edge_line_row": 92,
-      "eave_shadow_rows": "93-139"
+      "eave_shadow_rows": "119-131"
      }
     ],
     "main_top_rows": 16,
-    "front_face_rows": 14,
+    "front_face_rows": 13,
     "side_face_visible": true,
     "all_major_parts_have_top": true,
     "round_cap": null,
     "reads_as": "three_quarter",
-    "evidence": "Terrain tile of cave floor with collapsed holes. Floor slabs show a flat dirt top surface, and each pit shows a light front-edge line (e.g. rows 16-18, 29, 48, 61, 92, 112-114, 140) followed by a rock face and dark shadow rows down to near-black pit voids. The far-wall rock faces, near floor lips and side-wall bands are all present, so the view reads as 3/4 with top surfaces and vertical faces. Side wall bands are drawn in the pit edges, so side_face_visible is true."
+    "evidence": "This is a cave-floor terrain tile seen from above at 3/4 view. The speckled brown floor (rows 0-15) is the horizontal top surface. It ends in a light tan edge-line (rows 16-18). Below that line comes a banded rock face of about 12 rows, then a dark pit gradient that acts as eave shadow (rows 23-35). The same pattern repeats on the floor islands: a lip line at rows 32-34 and 45, then a rock face and shadow. Narrow side-wall bands are also drawn beside the pits. The floor reads as top surface plus front face, so it is three_quarter."
    },
    "styleAnswer": {
     "ref_kind_matches": true,
-    "shading_steps": 4,
+    "shading_steps": 5,
     "reference_steps": 5,
     "outline": "dark_material_tone",
     "texture": "some",
     "flat_fills": false,
-    "density": "slightly_lower",
+    "density": "equal_or_richer",
     "score": 7,
-    "evidence": "Measured facts: the candidate has 13 colours per tile, 3% flat-fill coverage and 17 distinct colours. That is well above the Beodeul paving reference (7 per tile, 7 colours) and below the grass reference (26 per tile, 80 colours). Only 3% of its dark edge pixels are neutral, so the edges lean brown rather than being a black sticker line. By eye, the floor has speckled grain in about 3-4 browns. The tan lip pieces carry layered strata with a lit top edge and a darker underside, and the pit interiors have a gradient and noise instead of one flat black. The large pits are near-black with fairly few steps, and the floor ramp is a little shallower than Beodeul's 5-6 steps, which is why density reads as slightly lower. It has no flat 5x5 fills and sits above the paving reference in richness, so a careful artist would accept it next to the references.",
+    "evidence": "The candidate has 10 visible tones per 16x16 tile, against 3 for the grass and 7 for the paving. Near-flat coverage is only 3%, so there are no big flat fills. Only 3% of its dark edge pixels are neutral, so the edges carry a brown tint. This matches the picture: the far-wall rock face, the near floor lip and the side-wall bands are separated by value shifts in brown, not by a black sticker outline. The brown floor is speckled and mottled. The lips show stepped bands and per-block highlights, and the pits have a dark gradient with grain. The brown ramp has roughly 5 steps (highlight lip, light, mid, dark, deep pit). That is slightly below Beodeul's 5-6 but close. Total palette is small (17 colours), which fits a locked palette. Texture is moderate rather than lush, because the floor is somewhat uniform between the pits. Tile density matches or beats the references, so a careful artist would accept it beside them.",
     "verdict": "pass"
    },
    "pass": true,
@@ -91,7 +98,7 @@
     "pass": true,
     "reasons": []
    },
-   "ms": 18268
+   "ms": 17176
   },
   {
    "judge": "sonnet",
@@ -101,45 +108,45 @@
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "floor ledge slabs (raised floor blocks with rock-face lips)",
-      "rows": "16-23",
+      "part": "floor slabs (raised cave floor patches) with light lip edge lines",
+      "rows": "6-155",
       "evidence": "a",
-      "front_edge_line_row": 18,
-      "eave_shadow_rows": "23-28"
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17-28"
      },
      {
-      "part": "lower floor ledge blocks",
-      "rows": "92-99",
+      "part": "far rock wall face bands under top lips with dark pit shadow",
+      "rows": "16-45",
       "evidence": "a",
-      "front_edge_line_row": 92,
-      "eave_shadow_rows": "93-96"
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "26-28"
      },
      {
-      "part": "background floor ground",
-      "rows": "0-15",
+      "part": "dark collapsed pits",
+      "rows": "25-139",
       "evidence": "none",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
      }
     ],
-    "main_top_rows": 8,
+    "main_top_rows": 12,
     "front_face_rows": 12,
-    "side_face_visible": false,
+    "side_face_visible": true,
     "all_major_parts_have_top": true,
     "round_cap": null,
     "reads_as": "three_quarter",
-    "evidence": "This is a terrain tile of a broken cave floor with dark pits. Raised floor blocks show a light front-edge line (x=56 rows 18, 92, 114, 140; x=112 rows 18, 29, 48, 61; x=167 rows 32, 34, 45, 64) with a rock-face band of about 12-20 rows below. The face darkens into the black pit shadow (L=14-25) beneath. Pits are cut into the ground, with lighter floor tops above each lip and a rocky face below, so it reads as a 3/4 top-down view and not as a flat slab. Side wall bands appear as vertical dark strips beside the pits."
+    "evidence": "Terrain tile: brown cave floor with dark pits. Floor patches have flat tops with light lip lines (e.g. rows 16-18, 29, 48, 61, 92, 112-114, 140) followed by darker banded rock faces (rows 19-28, 30-47) dropping into near-black pits (rows 36-91, 121-139). This gives top-surface plus front-face structure with a light lip edge and shadow, consistent with a 3/4 view autotile. Side wall bands are visible in the vertical strips. The silhouette is a full 224-wide tile with no standing-object outline."
    },
    "styleAnswer": {
     "ref_kind_matches": true,
-    "shading_steps": 4,
+    "shading_steps": 5,
     "reference_steps": 5,
     "outline": "dark_material_tone",
     "texture": "some",
     "flat_fills": false,
-    "density": "slightly_lower",
-    "score": 6,
-    "evidence": "The candidate's 13 colours per tile sits between the paving reference (7) and the grass reference (26). Flat-fill coverage is 3%, so there are no large dead areas. Only 3% of its dark edge pixels are neutral, so the dark edges carry a brown tint, consistent with dark_material_tone rather than a sticker outline. The brown floor has speckled grain. The ledge lips have a light top edge stepping down through mid brown into a dark face. The pits have a dark gradient with ragged edges instead of one flat black. The weak points are the 17 total colours against the grass reference's 80 and a floor ramp of only about 4 steps. The floor grain is also fairly uniform noise with no per-stone shading. That makes it slightly lower than the references, but it is not a flat sticker, and a careful artist would accept it beside them.",
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate measures 10 visible tones per 16x16 tile, against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 3%, so there are no real flat fills. Only 3% of its dark edge pixels are neutral, so the edges lean brown and read as the dark tone of the adjacent soil and rock, not a black sticker line. The brown soil floor has grain speckle. The raised lips and side-wall bands show about 4-5 steps from light tan highlight through mid brown to dark. The dark pits have a gradient into near-black, which suits the cave-hole idea. Weaknesses: the pit interiors are fairly dark and uniform, and the brown floor is somewhat repetitive. Even so, it holds up next to the references in density and shading, and it is not a sticker or flat piece.",
     "verdict": "pass"
    },
    "pass": true,
@@ -152,7 +159,7 @@
     "pass": true,
     "reasons": []
    },
-   "ms": 18222
+   "ms": 12195
   },
   {
    "judge": "sonnet",
@@ -162,45 +169,45 @@
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "floor plateau between pits (e.g. x=56 rows 93-111; x=112 rows 30-47 and 62-79)",
-      "rows": "93-111",
+      "part": "top border floor and plateau islands of the cave floor",
+      "rows": "0-15",
       "evidence": "a",
-      "front_edge_line_row": 92,
-      "eave_shadow_rows": "113-118"
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "23-28"
      },
      {
-      "part": "far-wall rock face above pits (rows 16-35, light lip at 16-18 then gradient into dark)",
-      "rows": "16-35",
+      "part": "floor plateau at column x=167, rows 12-30, ending at its lip",
+      "rows": "12-31",
       "evidence": "a",
-      "front_edge_line_row": 18,
-      "eave_shadow_rows": "23-35"
+      "front_edge_line_row": 32,
+      "eave_shadow_rows": "37-40"
      },
      {
-      "part": "dark pit voids",
-      "rows": "25-91",
+      "part": "rock face band under each lip, then the dark pit",
+      "rows": "17-35",
       "evidence": "none",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
      }
     ],
-    "main_top_rows": 18,
-    "front_face_rows": 10,
-    "side_face_visible": true,
+    "main_top_rows": 16,
+    "front_face_rows": 12,
+    "side_face_visible": false,
     "all_major_parts_have_top": true,
     "round_cap": null,
     "reads_as": "three_quarter",
-    "evidence": "This is a terrain tile of a cave floor with holes. The column scans show floor plateaus of about 18-19 rows, such as x=56 rows 93-111 and x=112 rows 30-47 and 62-79. Each plateau sits under a 1-row light lip line (rows 92, 29, 48, 61) and above a rock face that darkens toward the pit (rows 16-35, 113-118). The pits are dark voids with narrow side-wall bands, which fits a 3/4 view with a top surface and a front face of 3+ rows."
+    "evidence": "This is a terrain tile, not a standing object. Floor plateaus are textured brown areas with a light 1-row lip line (rows 16-18, 29, 32, 45, 48 and others). Below each lip is a brick-like rock face of about 10-12 rows that darkens into black pit shadow. The top floor band (rows 0-15, 16 rows) and the islands (about 19 rows at x=167) are horizontal surfaces ended by a front-edge line. Each has a front face of 3+ rows below it. The vertical dark columns are pit voids, not receding side faces. The view is 3/4."
    },
    "styleAnswer": {
     "ref_kind_matches": true,
-    "shading_steps": 4,
+    "shading_steps": 5,
     "reference_steps": 6,
     "outline": "dark_material_tone",
     "texture": "some",
     "flat_fills": false,
-    "density": "slightly_lower",
-    "score": 6,
-    "evidence": "The candidate has 13 colours per tile, between the paving reference (7) and the grass reference (26). Flat-fill coverage is 3%, so there are no large dead areas. Only 3% of its dark edge pixels are neutral, so the dark edges lean brown instead of forming a black sticker line. The pit rims and ledge lips are built from a tan highlight, mid brown and dark brown, and they step down into a dark gradient. The brown floor carries speckle grain. Total palette is only 17 colours against grass at 80, and the floor reads with about 4 steps against Beodeul's 5-6, so it is a little leaner than the references. It is still clearly above the paving reference and has proper structure, so a careful artist would accept it beside the references.",
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 10 visible tones per 16x16 tile, against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 3%, so there are no large flat fills; the brown floor has speckle and grain throughout. Only 3% of its dark edge pixels are neutral, so the edges lean brown rather than black. The ledge lips and side-wall bands step from a light tan top edge down through mid-brown to a dark brown face, and the pits are separated mostly by value, not by a black sticker line. The floor ramp has about 5 steps, close to Beodeul's 5-6. The palette is small at 17 colours in total, and the pit interiors are fairly uniform dark, so the texture is 'some' rather than fully rich. Overall the piece would sit acceptably next to the references without looking thinner or flatter.",
     "verdict": "pass"
    },
    "pass": true,
@@ -213,7 +220,7 @@
     "pass": true,
     "reasons": []
    },
-   "ms": 24484
+   "ms": 18094
   },
   {
    "judge": "sonnet",
@@ -223,32 +230,32 @@
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "upper cave floor plateau (top ground band)",
+      "part": "upper cave floor (ground plateau at top of the tile)",
       "rows": "0-15",
       "evidence": "a",
       "front_edge_line_row": 16,
-      "eave_shadow_rows": "19-23"
+      "eave_shadow_rows": "17-28"
      },
      {
-      "part": "far-wall rock face above each hole (light edge line then darkening gradient)",
-      "rows": "16-30",
-      "evidence": "a",
-      "front_edge_line_row": 18,
-      "eave_shadow_rows": "23-28"
-     },
-     {
-      "part": "floor islands between the holes (near floor lips)",
-      "rows": "32-91",
-      "evidence": "a",
-      "front_edge_line_row": 92,
+      "part": "far rock wall face dropping into the black pits",
+      "rows": "17-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
       "eave_shadow_rows": null
      },
      {
-      "part": "lower floor plateau",
-      "rows": "93-111",
+      "part": "middle floor islands between the holes (lit lip with edge line)",
+      "rows": "29-47",
       "evidence": "a",
-      "front_edge_line_row": 112,
-      "eave_shadow_rows": "115-120"
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "26-28"
+     },
+     {
+      "part": "near floor lips at the pit bottoms",
+      "rows": "92-111",
+      "evidence": "a",
+      "front_edge_line_row": 92,
+      "eave_shadow_rows": null
      }
     ],
     "main_top_rows": 16,
@@ -257,18 +264,18 @@
     "all_major_parts_have_top": true,
     "round_cap": null,
     "reads_as": "three_quarter",
-    "evidence": "This is a tiled terrain block. Brown rocky floor surfaces sit at the top, for example rows 0-15 and 93-111. Each one ends in a 1-row light edge line (rows 16, 18, 92, 112, 114) followed by darker shaded rock-face rows and then the black hole. The floor lips, far-wall rock faces and vertical dark bands give a south-facing top-plus-front-face reading, so it is three-quarter. The dark side bands are the walls of the holes, not a receding isometric side face."
+    "evidence": "At x=112 the floor fills rows 0-15 and a light edge line at row 16 (#8c7554) starts a rock face with brick-like bands and a dark gradient on rows 17-28. A second light edge line at row 29 (#ac9067) then opens onto the next floor plateau at rows 30-47. The pattern repeats at x=56, with edge lines at rows 16/18 and 92, 112/114 and 140. Each pit is bounded by a lit edge line, a front wall that darkens into black, and floor surfaces on both sides. The floor reads as a top surface seen from above, and the wall bands are the front faces, about 10-14 rows each. The tile has no side face, only the south-facing walls, so it reads as three-quarter terrain."
    },
    "styleAnswer": {
     "ref_kind_matches": true,
-    "shading_steps": 4,
+    "shading_steps": 5,
     "reference_steps": 5,
     "outline": "dark_material_tone",
     "texture": "some",
     "flat_fills": false,
-    "density": "slightly_lower",
+    "density": "equal_or_richer",
     "score": 7,
-    "evidence": "The candidate sits between the two references on the measured facts. It has 13 colours per tile against 26 for grass and 7 for paving. Flat-fill coverage is 3%, so there are no dead areas. Only 3% of its dark edge pixels are neutral, so the outlines lean brown rather than black, which matches the dark-material-tone approach. By eye, the brown floor carries speckle grain in about 3-4 browns. The rock-face lips and side-wall bands are shaded in tan, mid-brown and dark-brown rows with per-course highlights. The pits fade through dithered dark steps instead of one flat black. Its 17 total colours and about 4 steps per material are a little below Beodeul's 5-6 steps and well below the grass's 80 colours. That is still a coherent, textured, tinted-edge cave floor, and it is richer per tile than the paving reference. It is slightly lower in density but would sit acceptably beside the references.",
+    "evidence": "The candidate shows 10 visible tones per 16x16 tile, against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is only 3%. Only 3% of its dark edge pixels are neutral, so the edges lean brown and read as dark material tone rather than a black sticker line. The brown floor has a speckled grain. The ledge lips and side-wall bands step through about 5 values, from a light top edge down to a deep shadow, with stratified striations. The pits are dark but have some gradient and grain. The floor patches are somewhat uniform and the pit interiors are close to black, which keeps texture at 'some' rather than 'rich'. Overall the candidate sits at or above the references on the primary facts and would sit acceptably next to them, so it passes.",
     "verdict": "pass"
    },
    "pass": true,
@@ -281,10 +288,10 @@
     "pass": true,
     "reasons": []
    },
-   "ms": 22503
+   "ms": 34564
   }
  ],
- "decidedAt": "2026-10-20T07:05:46.400Z",
+ "decidedAt": "2026-10-21T07:03:01.652Z",
  "cells": {
   "16": [
    "02e7f45f9766bf8f",
