@@ -180,7 +180,7 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
     finale.autoAlign = false;
     finale.members = [{ enemyId: "enemy_fs_valen", x: 0, y: 0, hidden: false }, { enemyId: "enemy_fs_guardian", x: 200, y: 40, hidden: false }] as typeof finale.members;
   }
-  if (finale) finale.backdropLayers = [{ preset: "mist", opacity: 30 }, { preset: "lightRays", opacity: 50 }, { preset: "stars", opacity: 60 }, { preset: "snow", opacity: 32, scrollX: 6, scrollY: -18, blendMode: "screen" }];
+  if (finale) finale.backdropLayers = [{ preset: "glow", opacity: 75 }, { preset: "lightRays", opacity: 50 }, { preset: "stars", opacity: 60 }, { preset: "snow", opacity: 32, scrollX: 6, scrollY: -18, blendMode: "screen" }];
   // 가혹 검수 r5: 「전투 스프라이트가 화면 대비 작다」 — 수호상을 1.5배로 세운다.
   // 발렌은 걷기 칩 전투 시트(사람 적)라 맞춤 대신 칸 그림을 발밑 기준으로 키운다(27-retro-motion.css) — 2.6배(2배는 수호상 옆에서 아직 작았다, r10).
   for (const [id, scale] of [["enemy_fs_guardian", 150], ["enemy_fs_valen", 260]] as const) {
