@@ -5,7 +5,7 @@
 // 시작하고 지은 장소로 갈 문이 없었다(qa-game unreachable-map·orphan-empty-map). 도구 결과의 「set_start_position 을
 // 부르라」 문장은 create_map 에만 있었고 author_beodeul_town·build_hand_interior_room 새 맵 경로에는 없었다.
 //
-// 규칙: 쓰기 도구 하나가 끝났을 때 시작 맵이 아직 손대지 않은 시드 빈 맵이고, 이번 호출이 새로 지은(손댄) 맵이
+// 규칙: 쓰기 도구 하나가 끝났을 때 시작 맵이 아직 손대지 않은 시드 빈 맵이고, 이번 호출이 새로 지었거나 빈 맵을 처음 칠한 맵이
 // 정확히 하나면 시작 위치를 그 맵으로 옮기고 경고로 알린다. 둘 이상이면 옮기지 않고 고르라고 알린다.
 // 이미 무언가를 지은 시작 맵·사용자가 고른 시작 맵은 건드리지 않는다.
 import { isPassableLanding } from "@/project/collision";
@@ -52,7 +52,10 @@ function isSeedBlankStart(project: Project): boolean {
 export function adoptBuiltMapAsStart(before: Project, draft: Project): string | null {
   if (!isSeedBlankStart(before) || !isSeedBlankStart(draft)) return null;
   if (draft.startMapId !== before.startMapId || draft.startPos.x !== before.startPos.x || draft.startPos.y !== before.startPos.y) return null;
-  const built = Object.values(draft.maps).filter((map) => !before.maps[map.id] && map.id !== draft.startMapId && !isUntouchedMap(map));
+  // 새로 생긴 맵, 또는 빈 맵으로 만들어 두었다가 이번 호출에서 처음 칠한 맵(create_map → author_wild_route 순서,
+  // r2 boss-balance-sim: 시작이 빈 시드 맵에 남아 보스까지 갈 길이 없었다).
+  const built = Object.values(draft.maps).filter((map) => (!before.maps[map.id] || isUntouchedMap(before.maps[map.id]!))
+    && map.id !== draft.startMapId && !isUntouchedMap(map));
   if (built.length === 0) return null;
   if (built.length > 1) {
     return `게임 시작 위치가 아직 빈 시드 맵 ${SEED_START_MAP_ID} 입니다 — 새로 지은 맵 ${built.map((map) => map.id).join(", ")} 중 시작할 맵을 set_start_position({mapId, x, y}) 로 정하세요. 그대로 두면 플레이는 아무것도 없는 풀밭에서 시작합니다.`;
