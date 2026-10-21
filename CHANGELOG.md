@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.310.0 — 2026-10-21
+
+### 기능
+
+- **workshop** — tile-gen material presets in the terrain request; drop the withdrawn grass sample (EasyRPG-derived target) (#3204) (`3c14f8d`)
+
 ## 0.309.0 — 2026-10-21
 
 ### 기능
