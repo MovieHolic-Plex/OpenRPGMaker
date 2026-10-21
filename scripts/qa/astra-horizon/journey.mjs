@@ -474,7 +474,13 @@ async function go(fromMapId, toMapId) {
 }
 /** 이벤트 옆까지 걸어가 말을 건다. 못 걸으면 순간이동. */
 async function approachAndTalk(mapId, event) {
-  liveSpots = (await page.evaluate(() => window.__oprnDebug.readState().eventLocations).catch(() => ({}))) ?? {};
+  // 세션 eventLocations 에는 시야 접근으로 움직인 칸이 안 남는다(r34 화면: 수련생 0 이 두 칸 옆에 서 있는데 live null) — 장면의 지금 맵 위치(eventPositions)를 같이 본다.
+  liveSpots = (await page.evaluate(() => {
+    const out = { ...(window.__oprnDebug.readState().eventLocations ?? {}) };
+    const scene = window.__oprnHooksScene, mapId = window.__oprnDebug.readState().currentMapId;
+    for (const [id, p] of Object.entries(scene?.eventPositions ?? {})) if (p && typeof p.x === "number") out[id] = { x: p.x, y: p.y, mapId };
+    return out;
+  }).catch(() => ({}))) ?? {};
   const spot = besideOf(mapId, event);
   if (!spot) return false;
   const now = await here();
