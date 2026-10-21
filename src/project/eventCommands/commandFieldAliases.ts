@@ -208,6 +208,61 @@ const WAIT_MS_ALIASES: readonly (readonly [string, number])[] = [
   ["seconds", 1000], ["sec", 1000], ["frames", 1000 / 60],
 ];
 
+// NPC 이동 경로를 `moves:["down","down"]`(문자열 방향 목록)이나 `route:[…]`(배열)로 쓴 사례
+// (2026-10-22 조수 장면 교훈 시험 npc-walk-out: Sonnet 5.5 가 같은 이벤트를 두 번 「route가 객체가 아닙니다」로 반려당하고
+// 세 번째에야 맞췄다). 이동 경로의 정본은 route:{moves:[{kind:"move",dir}],repeat:false}. 뜻이 하나인 표기만 옮긴다.
+const MOVE_DIRS = new Set(["up", "down", "left", "right"]);
+const ROUTE_FLAG_KEYS = ["wait", "repeat", "skippable"] as const;
+
+function moveStep(raw: unknown): unknown {
+  if (typeof raw !== "string") return raw;
+  const word = raw.trim().toLowerCase().replace(/[\s-]+/gu, "_");
+  if (MOVE_DIRS.has(word)) return { kind: "move", dir: word };
+  const turn = word.match(/^(?:turn|face)_?(up|down|left|right)$/u);
+  if (turn) return { kind: "turn", dir: turn[1] };
+  const move = word.match(/^(?:move|step|walk)_?(up|down|left|right)$/u);
+  if (move) return { kind: "move", dir: move[1] };
+  return undefined;
+}
+
+function canonicalizeMoveEventRoute(command: RecordValue): string | undefined {
+  let source: unknown = command.route;
+  let from = "route";
+  if (typeof source === "string") {
+    try { source = JSON.parse(source); } catch { return undefined; }
+    from = "route(문자열 JSON)";
+  }
+  if (source === undefined && Array.isArray(command.moves)) { source = command.moves; from = "moves"; }
+  if (source && typeof source === "object" && !Array.isArray(source) && Array.isArray((source as RecordValue).moves)) {
+    const moves = ((source as RecordValue).moves as unknown[]).map(moveStep);
+    if (moves.some((step) => step === undefined || step === null || typeof step !== "object")) return undefined;
+    command.route = { repeat: false, ...(source as RecordValue), moves };
+    return `moveEvent.${from} 를 route 객체로 옮겼습니다(문자열 방향은 {kind:"move",dir} 로).`;
+  }
+  if (!Array.isArray(source)) return undefined;
+  const moves = source.map(moveStep);
+  if (moves.some((step) => step === undefined || step === null || typeof step !== "object")) return undefined;
+  const route: RecordValue = { moves, repeat: false };
+  for (const key of ROUTE_FLAG_KEYS) {
+    if (typeof command[key] === "boolean") { route[key] = command[key]; delete command[key]; }
+  }
+  command.route = route;
+  if (from === "moves") delete command.moves;
+  return `moveEvent.${from} 방향 목록을 route:{moves:[{kind:"move",dir}…],repeat:false} 로 옮겼습니다(이동 경로의 정본 모양).`;
+}
+
+// 대화창 위치만 정하려고 `{kind:"displayTextSettings",position:"bottom"}` 만 쓴 사례(2026-10-22 장면 교훈 시험 2건) —
+// 「format가 문자열이 아닙니다」로 이벤트 전체가 반려됐다. 나머지 칸은 편집기 새 명령과 같은 기본값으로 채우되,
+// preventObscuringPlayer 는 장면 다듬기 규칙(§4-1: 창이 주인공을 피해 위로 뒤집히지 않게)대로 false 로 둔다.
+function fillDisplayTextSettings(command: RecordValue): string | undefined {
+  const filled: string[] = [];
+  if (typeof command.format !== "string") { command.format = "normal"; filled.push('format:"normal"'); }
+  if (typeof command.position !== "string") { command.position = "bottom"; filled.push('position:"bottom"'); }
+  if (typeof command.preventObscuringPlayer !== "boolean") { command.preventObscuringPlayer = false; filled.push("preventObscuringPlayer:false"); }
+  if (typeof command.allowEventMovementDuringWait !== "boolean") { command.allowEventMovementDuringWait = false; filled.push("allowEventMovementDuringWait:false"); }
+  return filled.length > 0 ? `displayTextSettings 의 빠진 칸을 채웠습니다(${filled.join(", ")}).` : undefined;
+}
+
 /** 명령 하나(중첩 분기 제외)를 제자리에서 고친다. 무엇을 고쳤는지 문장으로 돌려준다. */
 export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined {
   if (raw === null || typeof raw !== "object" || Array.isArray(raw)) return undefined;
@@ -237,6 +292,12 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     }
     return undefined;
   }
+  if (command.kind === "moveEvent" && (command.route === undefined || Array.isArray(command.route) || typeof command.route === "string"
+    || (command.route !== null && typeof command.route === "object" && Array.isArray((command.route as RecordValue).moves)
+      && ((command.route as RecordValue).moves as unknown[]).some((step) => typeof step === "string")))) {
+    return canonicalizeMoveEventRoute(command);
+  }
+  if (command.kind === "displayTextSettings") return fillDisplayTextSettings(command);
   if (command.kind === "wait" && typeof command.ms !== "number") {
     // 기다리기를 카메라·페이드 비트처럼 durationMs 로 쓴 사례(2026-09-24 꿈 세계 r3). 런타임은 ms 만 읽어
     // setTimeout(NaN) 으로 즉시 넘어갔다 — 컷신의 뜸이 통째로 사라졌다.
