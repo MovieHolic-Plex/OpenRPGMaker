@@ -79,7 +79,7 @@ function schoolShot(): OpeningAnimatic {
     painting("oprn-title-romance-school", { x: -60, y: -22, w: 600 }, { x: -110, y: -36, w: 640 }, SHOT_MS),
     dust(3),
     caption([
-      { atMs: 300, text: "열일곱, 금요일 점심. 방송실 스피커에서 그 목소리가 흘러나왔다." },
+      { atMs: 300, text: "열일곱, 금요일. 방송실 스피커에서 그 목소리가 흘러나왔다." },
       { atMs: 3400, text: "“오늘의 마지막 사연. 보낸 사람은… 바나나우유 님.”" },
     ]),
   ], { kind: "fade", durationMs: 1000 });
