@@ -728,6 +728,15 @@ try {
   }
   // 고정 칸 네 곳에서 다 못 걸면(r37 풀: 관장 0턴) 지금 위치(eventPositions)를 보고 한 번 더 다가간다.
   if (!talked) { await waitIdle(); talked = await approachAndTalk(gym.id, leader); }
+  if (!talked) {
+    // 진단(r37 풀·r38 불: 관장 바로 아래에서 위를 보고 눌러도 대화가 안 열림) — 그때 상태를 남기고 키보드 조사도 해 본다.
+    report.leaderProbe = await page.evaluate(() => {
+      const scene = window.__oprnHooksScene, live = window.__oprnDebug.readLive();
+      return { live, running: Boolean(scene?.running), leaderAt: scene?.eventPositions?.mx_map_grove_gym_leader ?? null, busy: scene?.inputLocked ?? null, dialogue: Boolean(document.querySelector('[data-testid="dialogue-box"]')) };
+    }).catch((e) => String(e));
+    await shot("21x-leader-no-talk");
+    for (const key of ["z", "Enter", "Space"]) { await page.keyboard.press(key); await page.waitForTimeout(900); if (await present("dialogue-box") || await present("battle-scene")) { talked = true; report.leaderProbe.key = key; break; } }
+  }
   const started = talked && await pressEnterUntil(() => present("battle-scene"), 40);
   if (started) { await page.waitForTimeout(2500); await shot("21-leader-battle"); }
   const log = started ? await fight("21b-leader") : [];
