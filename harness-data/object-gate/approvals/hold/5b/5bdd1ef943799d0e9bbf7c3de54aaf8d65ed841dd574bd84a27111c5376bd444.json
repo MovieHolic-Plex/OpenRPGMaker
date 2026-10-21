@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "5bdd1ef943799d0e9bbf7c3de54aaf8d65ed841dd574bd84a27111c5376bd444",
+ "profileHash": "4d8774b517f41638",
+ "kind": "organic",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T20:44:28.019Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "harness-data/object-gate/vqa/beodeul-redraw/receipt-trees-r6.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/beodeul-redraw/receipt-trees-r6.json (look-check receipt-lookcheck-r7.json)",
+ "sig": "86bf825a76b3294e12c5f85c1a37993bf0c95d3ab95dc2a0ac0da9e1cfa15f88"
+}

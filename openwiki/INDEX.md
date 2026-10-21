@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **180쪽 / 6647KB / 약 1,945,326 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **180쪽 / 6652KB / 약 1,946,909 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/atlas-biome-interior.md` | 55KB | 16KB | 312 | ~16,354 |
-| `openwiki/beodeul-city.md` | 136KB | 10KB | 764 | ~41,207 |
+| `openwiki/beodeul-city.md` | 140KB | 10KB | 786 | ~42,494 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 712KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4604 | ~208,981 |
 | `openwiki/editor-ai-tools.md` | 491KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3533 | ~143,224 |
@@ -75,7 +75,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/PROJECT_WIKI.md` | 2 | `.part-N.css`, `src/styles/editor/core.part-1.css` |
 | `openwiki/agent-worktrees.md` | 1 | `scripts/gen-combined-town-chipset-report.mts` |
 | `openwiki/ai-workflow.md` | 10 | `.omo/evidence/ai-assistant-failure-modes.md`, `20260709000000_ai_activity_logs.sql`, `docs/2026-07-10-tool-calling-architecture-review.md`, `docs/tool-catalog.md`, `latest.json`, `src/ai/plannerSkip.ts`, `test/authorVillageScopeGate.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/tilesetAiClient.test.ts`, `test/volumeContractSession.test.ts` |
-| `openwiki/architecture.md` | 5 | `.lazy.ts`, `app.cjs`, `bridge.js`, `player.js`, `project.json` |
+| `openwiki/architecture.md` | 8 | `.lazy.ts`, `app.cjs`, `bridge.js`, `dist-electron/main.cjs`, `dist-electron/project-core.cjs`, `dist/start-screen.html`, `player.js`, `project.json` |
 | `openwiki/asset-store.md` | 4 | `DATA/store-uploads.json`, `OpenRPGMaker-store/scripts/storeCli.ts`, `installed.json`, `scripts/check-contract.mjs` |
 | `openwiki/atlas-biome-interior.md` | 8 | `.loop.json`, `.loop.png`, `interior-merged-palette.html`, `public/assets/atlas-biomes/jungle-chipset.png`, `public/assets/atlas-interior/dungeon-chipset.png`, `scripts/content/atlas-dungeon/split-dungeon.mjs`, `src/assets/atlasBiomeDungeonTileset.json`, `verify-shots/interior-bake-4/new-objects.png` |
 | `openwiki/authoring-play-presets.md` | 1 | `catalog-96.json` |
@@ -107,6 +107,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/emerald-monster-production.md` | 3 | `docs/content/emerald-monster-production-contract.md`, `scripts/content/emerald-field-cast.py`, `verify-shots/emerald-monster-2026-10-04/REPORT.md` |
 | `openwiki/feature16-battle-ui.md` | 1 | `verify-shots/runtime-qa/feature16-battle-ui/SUMMARY.md` |
 | `openwiki/getting-started.ko.md` | 3 | `.oprn-local.json`, `docs/specs/2026-06-18-rpg-maker-mvp-design.md`, `io.test.ts` |
+| `openwiki/gothic-manor.md` | 1 | `dist-electron/browser-bridge.js` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/harnesses/README.md` | 1 | `docs/superpowers/specs/2026-10-05-unified-harness-production.md` |
 | `openwiki/harnesses/assistant-capability.md` | 19 | `REPORT.md`, `agent-briefs.json`, `assessment.json`, `asset-receipts.json`, `before/after/original/trace.json`, `dist/export-player/player.html`, `live.json`, `map-portals/after.png`, `matrix-native.json`, `matrix-score.json`, `matrix-validation.json`, `output/qa/vn2/seed-novn.json`, `page-errors.json`, `project.json`, `proof.json`, `reloaded.png`, `report.html`, `runtime-recheck.json`, `seed-novn.json` |
@@ -180,7 +181,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/runtime-battle.md` | 68 | `.omo/mx-rt/timeline-audit.ts`, `.omo/pixel-enemy-review/browser/report.json`, `.omo/r2check/a1-v2/MECHANICS.md`, `.omo/r2check/a1-v3/DISPLAY.md`, `.omo/retro-monsters/all/preview-big.png`, `.omo/retro-skills/big-target/preview.png`, `.omo/retro-skills/new-1/preview.png`, `_dragonquest.css`, `_mv.css`, `_octopath/_chrono/_bravely/_dragonquest/_ff/_mother/_goldensun/_mv/_vxace/_hud-templates.css`, `_retro-themes.css`, `ally-creature-back.png`, `assets/generated/charset-battlers/actorN-k.png`, `audio-score.js`, `battle.css`, `deprecated/README.md`, `dist/cli.mjs`, `docs/2026-09-30-battle-adversarial-review.md`, `docs/2026-09-30-battle-fixes.md`, `docs/experiments/hand-magic-20261005/README.md`, `docs/experiments/hero-magic-rework-20261005/README.md`, `docs/experiments/shared-hand-fx-20261005/README.md`, `docs/experiments/snes-study-redraw-20261005/README.md`, `docs/reviews/2026-09-20-battle-review-feedback.md`, `docs/reviews/2026-09-20-battle-review-fixes.md`, `docs/reviews/2026-09-20-pokemon-reference.md`, `docs/superpowers/specs/2026-09-03-battle-effect-hires-design.md`, `hero-03-battle-idle.png`, `metrics.json`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `pose-events.json`, `qa-runs/battle-moves/anim.js`, `qa-runs/battle-sfx/audio-score.js`, `raw.png`, `reference.png`, `review-decision.json`, `scripts/asset-gen/charset-battler/art3/actorN.py`, `scripts/capture-ice-grand-adventure.mts`, `scripts/legacy-db-resource-root/catalog.mjs`, `skyStairGame.ts`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png`, `t1500.png`, `test/battleLookFrontSkin.test.ts`, `test/e2e/_battle-menu-fixed.spec.ts`, `test/troopBattlePageTools.test.ts`, `verify-shots/hand-magic-20261005/SUMMARY.md`, `verify-shots/hero-magic-rework-20261005/SUMMARY.md`, `verify-shots/hydra-redesign/SUMMARY.md`, `verify-shots/hydra-rm2003/SUMMARY.md`, `verify-shots/monster-battle-av/SUMMARY.md`, `verify-shots/monster-battle-four/SUMMARY.md`, `verify-shots/monster-redraw-all/SUMMARY.md`, `verify-shots/monster-redraw-studies/README.md`, `verify-shots/monster-refresh/SUMMARY.md`, `verify-shots/monster-refresh/runtime/SUMMARY.md`, `verify-shots/poke-sys-battle/ad1-double-attempt.png`, `verify-shots/retro-assistant/SUMMARY.md`, `verify-shots/retro-btl-b/probe.mts`, `verify-shots/retro-btl-b/reconnect.py`, `verify-shots/retro-choreo-a1/SUMMARY.md`, `verify-shots/retro-choreo-b/SUMMARY.md`, `verify-shots/retro-states/probe.mts`, `verify-shots/retro-states/reconnect.py`, `verify-shots/runtime-qa/retro2003-skills/SUMMARY.md`, `verify-shots/shared-hand-fx-20261005/SUMMARY.md`, `verify-shots/snes-study-redraw-20261005/SUMMARY.md`, `vite-node/vite-node.mjs` |
 | `openwiki/runtime-m2-flow-controls.md` | 7 | `.omo/evidence/event-runtime-adversarial/README.md`, `cloud-amount-editor.png`, `docs/reviews/2026-09-05-event-runtime-audit.md`, `scripts/capture/capture-parallax-easing.mjs`, `test/runtimePictureStacking.test.ts`, `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
 | `openwiki/runtime-pre-edit-routing.md` | 10 | `.json`, `.omo/evidence/dialogue-face-url-r13/README.md`, `_trace.json`, `dialogueControlBar.ts`, `docs/reviews/2026-09-05-event-runtime-audit.md`, `editor/core.part-1.css`, `test/playerInputCss.test.ts`, `test/runtimeQaInstrumentationBoundary.test.ts`, `verify-shots/romance-art/SUMMARY.md`, `verify-shots/runtime-qa/emote/SUMMARY.md` |
-| `openwiki/runtime-project-schema.md` | 58 | `.json`, `.png`, `20260827000000_ai_log_anon_delete_revoke.sql`, `@/styles/map/delayed-tooltip.css`, `DRAFT_20260706_auth_rls.sql`, `communitySaveBoot.test.ts`, `devMediaPromotion.test.ts`, `docs/superpowers/specs/2026-09-15-oprn-local-sqlite-store-design.md`, `docs/superpowers/specs/2026-09-24-mz-four-layer-design.md`, `docs/superpowers/specs/2026-10-07-concept-feed-design.md`, `firstWorldArrival.ts`, `interiorLoadConsistency.test.ts`, `largeRiverMarketVillageBuild.ts`, `mediaImportDurability.test.ts`, `newProjectDialog.ts`, `openwiki/large-village-generation.md`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `persist-trace.mjs`, `phaser.min.js`, `presets-editor.json`, `project.json`, `render-relief-maps.mts`, `scripts/lib/fixtureDefaultDatabase.mts`, `scripts/lib/legacyDb-database-ops.mjs`, `scripts/publish-first-visit-demo.mts`, `scripts/qa/issue693-media.mjs`, `scripts/sync-fixture-default-database.mts`, `small-village-generation.md`, `src/project/defaults/fixtures/dew-village-demo.json`, `src/project/legacyDbProjectSync.ts`, `startLobby.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `tamper-doc.mjs`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/cropRegrowthContract.test.ts`, `test/fixtureDefaultDatabaseDrift.test.ts`, `test/fixtures/life-full/coverage.json`, `test/interiorConceptRoutes.test.ts`, `test/io.test.ts`, `test/legacyDbCanonicalRoundtrip.live.test.ts`, `test/legacyDbDatabaseOps.node.test.mjs`, `test/legacyDbMapPatchRecovery.test.ts`, `test/legacyDbProjectSync.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/mapPlanningReuse.test.ts`, `test/sampleAdventureNeedsNoBackfill.test.ts`, `test/sharedDemoStore.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts`, `verify-shots/battle-fix-2026-09-30/rules-probe.json`, `verify-shots/editor-lag-fix/F/normalizer-cost.mts`, `verify-shots/editor-lag-fix/F/ref-roundtrip-eq.mts`, `verify-shots/editor-ux-fixes-round2-20261004/storage/README.md`, `verify-shots/loc-transition/SUMMARY.md`, `verify-shots/worldmap-autotile-adversarial/export-checked.json`, `village/builder.ts` |
+| `openwiki/runtime-project-schema.md` | 59 | `.json`, `.png`, `20260827000000_ai_log_anon_delete_revoke.sql`, `@/styles/map/delayed-tooltip.css`, `DRAFT_20260706_auth_rls.sql`, `communitySaveBoot.test.ts`, `devMediaPromotion.test.ts`, `dist-electron/main.cjs`, `docs/superpowers/specs/2026-09-15-oprn-local-sqlite-store-design.md`, `docs/superpowers/specs/2026-09-24-mz-four-layer-design.md`, `docs/superpowers/specs/2026-10-07-concept-feed-design.md`, `firstWorldArrival.ts`, `interiorLoadConsistency.test.ts`, `largeRiverMarketVillageBuild.ts`, `mediaImportDurability.test.ts`, `newProjectDialog.ts`, `openwiki/large-village-generation.md`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `persist-trace.mjs`, `phaser.min.js`, `presets-editor.json`, `project.json`, `render-relief-maps.mts`, `scripts/lib/fixtureDefaultDatabase.mts`, `scripts/lib/legacyDb-database-ops.mjs`, `scripts/publish-first-visit-demo.mts`, `scripts/qa/issue693-media.mjs`, `scripts/sync-fixture-default-database.mts`, `small-village-generation.md`, `src/project/defaults/fixtures/dew-village-demo.json`, `src/project/legacyDbProjectSync.ts`, `startLobby.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `tamper-doc.mjs`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/cropRegrowthContract.test.ts`, `test/fixtureDefaultDatabaseDrift.test.ts`, `test/fixtures/life-full/coverage.json`, `test/interiorConceptRoutes.test.ts`, `test/io.test.ts`, `test/legacyDbCanonicalRoundtrip.live.test.ts`, `test/legacyDbDatabaseOps.node.test.mjs`, `test/legacyDbMapPatchRecovery.test.ts`, `test/legacyDbProjectSync.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/mapPlanningReuse.test.ts`, `test/sampleAdventureNeedsNoBackfill.test.ts`, `test/sharedDemoStore.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts`, `verify-shots/battle-fix-2026-09-30/rules-probe.json`, `verify-shots/editor-lag-fix/F/normalizer-cost.mts`, `verify-shots/editor-lag-fix/F/ref-roundtrip-eq.mts`, `verify-shots/editor-ux-fixes-round2-20261004/storage/README.md`, `verify-shots/loc-transition/SUMMARY.md`, `verify-shots/worldmap-autotile-adversarial/export-checked.json`, `village/builder.ts` |
 | `openwiki/runtime-sessions.md` | 17 | `docs/qa/saesol-three-hour-ai-authoring.md`, `docs/reviews/2026-09-18-menu-design.md`, `docs/reviews/2026-09-18-menu-eras.md`, `docs/reviews/2026-09-22-game-over/README.md`, `docs/reviews/2026-09-22-terminal-flows/README.md`, `output/evidence/cinematics-p1/runtime.md`, `output/evidence/cinematics-stall.md`, `output/evidence/stardew/stardew-legacyDb.json`, `reports/shots/companion/gap4-follow.png`, `scripts/qa/runtime/opening-assistant-native.cjs`, `src/project/defaults/actionCombatDemoProject.ts`, `test/emberQuestGame.test.ts`, `test/p1DayTransitionIntegration.test.ts`, `test/p1WeatherDayTransition.test.ts`, `verify-shots/runtime-qa/feature16-player/SUMMARY.md`, `verify-shots/runtime-qa/menu-design/SUMMARY.md`, `verify-shots/runtime-qa/weather-after/SUMMARY.md` |
 | `openwiki/se-catalog.md` | 9 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `inventory.json`, `lib/staticFile.ts`, `placed.json`, `test/audioDescriptionCommandSurfaces.test.ts` |
 | `openwiki/spatial-ai-tools.md` | 6 | `build-shared-object-index.mjs`, `publish-pixel-art-world-local-library.mjs`, `read-pixel-art-world-host.mjs`, `revise-pixel-art-world-civic.mjs`, `save-pixel-art-world-patch.mjs`, `scripts/content/lib/shared-object-catalog-entry.ts` |
@@ -195,7 +196,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/store-agent-contribution.md` | 3 | `.scratch.json`, `deploy/README.md`, `migrations/008_agent_tokens.sql` |
 | `openwiki/sunlight-shadows.md` | 4 | `verify-shots/building-shadow-shapes/SUMMARY.md`, `verify-shots/gabled-roof/SUMMARY.md`, `verify-shots/sunlight/SUMMARY.md`, `verify-shots/terrain-shadows/SUMMARY.md` |
 | `openwiki/teaching-assistant-tilesets.md` | 24 | `_specs.py`, `check_examples.py`, `docs/superpowers/plans/2026-09-25-mz-layers-assistant.md`, `docs/superpowers/specs/2026-09-24-mz-four-layer-design.md`, `fold_layers.py`, `mz_autotile.py`, `openwiki/refmap-town-outside.md`, `publicTileRecipes.ts`, `scripts/content/mv-pack/build-project.mts`, `scripts/content/rasak/apply-assistant-pack.mts`, `scripts/content/rasak/bake_atlas.py`, `scripts/content/rasak/build_assistant_pack.py`, `scripts/content/rasak/check_examples.py`, `scripts/content/rasak/compose_examples.py`, `scripts/content/rasak/mz_autotile.py`, `src/ai/piAgent/packTownRoute.ts`, `src/assets/dungeonSheetTilesets.json`, `src/assets/forestHarmonyVillageExtension.json`, `src/editor/tools/packTownTools.ts`, `src/project/defaults/dungeonSheetTilesets.ts`, `src/project/defaults/forestHarmonyExtension.ts`, `src/project/rpgmakerMv/townLayout.ts`, `stack_to_layers.py`, `tiledata/rasak-fantasy/bundles.json` |
-| `openwiki/team-project-host.md` | 5 | `SUMMARY.json`, `dist-electron/dist-electron/browser-bridge.js`, `install-pixel-art-world-shared-host.mjs`, `read-pixel-art-world-host.mjs`, `userData/recent-teams.json` |
+| `openwiki/team-project-host.md` | 6 | `SUMMARY.json`, `dist-electron/dist-electron/browser-bridge.js`, `dist-electron/main.cjs`, `install-pixel-art-world-shared-host.mjs`, `read-pixel-art-world-host.mjs`, `userData/recent-teams.json` |
 | `openwiki/terrain-design-suite.md` | 2 | `verify-shots/terrain-assistant-live/SUMMARY.md`, `verify-shots/terrain-seams/SUMMARY.md` |
 | `openwiki/terrain-placement-tools.md` | 1 | `verify-shots/terrain-placement/SUMMARY.md` |
 | `openwiki/testing.md` | 96 | `../dialogue.css`, `.omo/evidence/house-protection/p2/README.md`, `.omo/evidence/house-protection/p2/exercise.mts`, `.omo/evidence/life-full-20260906/10/VERIFY.md`, `.omo/evidence/life-full-20260906/5/q1/browser-proof.mjs`, `.omo/evidence/life-full-20260906/phase3-verification/final/VERIFY.md`, `.omo/gates-vitest-report.json`, `5/correction/browser-proof.mjs`, `COMPARISON.md`, `SOURCE-EVIDENCE.md`, `X.quarantine.test.ts`, `X.test.ts`, `acceptance-live-check.mjs`, `actions.json`, `aiChatObservability.test.ts`, `aiChatPanelTransportError.test.ts`, `aiSelectionChipScope.test.ts`, `before/probe.json`, `boot-failure.json`, `browser-play-start.png`, `browser-proof.mjs`, `browser-title.png`, `checks.json`, `completion.json`, `dist/cli.mjs`, `docs/reviews/db-beginner-adversarial-qa-findings.md`, `docs/reviews/db-beginner-heuristics-rubric.md`, `event-editor.command-preview/07-identifiable-previews.css`, `generation.json`, `harness-proof.mjs`, `legacyDb-proof-first-save.json`, `node_modules/vite-node/vite-node.mjs`, `output/evidence/acceptance-gate-followup/README.md`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `output/evidence/map-owned-overlays/phase2/BROWSER.md`, `priority.mjs`, `probe.json`, `project.json`, `public-probe.mjs`, `qa-db-beginner-mode.spec.ts`, `raw-results.json`, `reloaded.json`, `reports/feature16/README.md`, `reports/region-polish/facts.json`, `scripts/author-natural-village-harness.mts`, `scripts/author-natural-village-reference.mts`, `scripts/build-horror-mystery-prototype.mts`, `scripts/capture-horror-browser-evidence.mts`, `scripts/qa/acceptance-live.mjs`, `scripts/qa/maker-interview-ui.mjs`, `src/testing/horrorExperienceQa.ts`, `src/testing/horrorMysteryQaPlan.ts`, `test/actionRpgAuthoringAcceptance.test.ts`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/autosaveStatus.test.ts`, `test/buildPalette.test.ts`, `test/databaseKoreanRtpDefaults.test.ts`, `test/debugSession.test.ts`, `test/dialoguePreviewPresentationCss.test.ts`, `test/dungeonRoomPipeline.test.ts`, `test/dungeonThemedLayouts.test.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/e2e/stardew-resident-runtime.spec.ts`, `test/horrorBrowserEvidenceFreshness.test.ts`, `test/horrorSemanticScenarios.test.ts`, `test/iceDiagonalTerrain.test.ts`, `test/interiorConceptAssemblies.test.ts`, `test/loadNewRemoteProject.test.ts`, `test/p0DayTransitionSceneFailure.test.ts`, `test/p0RuntimeIntegration.test.ts`, `test/p1DayTransitionIntegration.test.ts`, `test/p1RuntimeUi.test.ts`, `test/p1WeatherDayTransition.test.ts`, `test/regionTaskRun.test.ts`, `test/stardewDemo.test.ts`, `test/storePersistenceProof.test.ts`, `test/tilesetAiClient.test.ts`, `test/toolActionAuthoringParity.test.ts`, `test/villageBuilder.test.ts`, `verify-shots/db-ux/pseudo-baseline/probe.json`, `verify-shots/maker-click-first/README.md`, `verify-shots/map-size-benchmark-20261001/SUMMARY.md`, `verify-shots/map-size-optimized-20261001/SUMMARY.md`, `verify-shots/official-map-512-20261001/SUMMARY.md`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/monster-town/SUMMARY.md`, `verify-shots/runtime-qa/romance-vn-ui2/17-title-load-card.png`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md`, `verify-shots/runtime-tile-window-20261001/SUMMARY.md` |
@@ -387,61 +388,61 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L131` 함정 목록
 - `L161` 실린 자산의 실측값
 
-### `openwiki/beodeul-city.md` — 136KB · 764줄 · ~41,207 토큰 · 통째읽기 잘림
+### `openwiki/beodeul-city.md` — 140KB · 786줄 · ~42,494 토큰 · 통째읽기 잘림
 
-- `L3` 출처 정정 (2026-10-22) — RTP 파생 칸은 크레딧, 나무는 다시 그린다
-- `L14` 2026-10-05 건물 반려와 사람의 허용/거절 대기열
-  - `L41` 나무 연결 보정과 집 5채 작은 마을 (2026-10-04 후속)
-- `L62` 민가·성당 외장: 원본 보존 보정 (2026-10-04 사용자 정정)
-- `L88` 원본 유지 일광·길 경계·잔디 보정 (2026-10-04)
-- `L95` 기본 타일셋 (2026-09-30)
-  - `L116` 빠른 집·도로 도구 (2026-10-03)
-  - `L131` 팔레트 실측 (2026-09-30, 헤드리스 chromium, dev 서버, 1600×900)
-- `L157` 무엇이 어디에 있나
-- `L177` 칸 자르기 규칙
-- `L189` 정본 저장·재로드 (2026-09-28)
-- `L197` 조수 시험 — 「버들항 비슷한 로마풍 항구 도시를 깔아줘」
-  - `L208` 결과 (2026-09-28, 두 번)
-- `L228` 라운드 2 (2026-09-29, v7) — 원본이 아닌 도시를 가르치기
-  - `L232` 무엇을 더했나
-  - `L245` 예시 배치 둘과 배치 자
-  - `L256` 참고문서 (v7)
-  - `L262` 정본 (v7)
-  - `L266` 조수 재시험 (klb/claude-opus-5.5, 「원본 좌표에 찍지 말고 새로 설계, 예시도 베끼지 말 것」)
-- `L288` 라운드 3 (2026-09-29, v8) — 블록 키트로 빈 풀밭 없애기
-  - `L293` 무엇을 더했나
-  - `L309` 배우며 찾은 것
-  - `L317` 조수 재시험 (klb/claude-opus-5.5, 라운드 2 과제 + 「블록 키트로」, 블록 25종 번들)
-  - `L337` 정본 (v8)
-- `L341` 다음 방향 (보류 — 이번에는 다시 그리지 않음)
-- `L359` 농장 beodeul_farm 2판·3판 (2026-10-14, 1판 2026-10-13 PR #2489 다시 그림) — 경작지 `farmland`·`farmland_watered` · 작물 · 울타리 · 헛간·닭장
-- `L398` 남은 것
-- `L409` 조수 마을 경로 (2026-10-01) — 「마을 만들어 줘」가 버들항으로 안 가던 원인과 수리
-- `L420` 고른 장소 조각 (2026-10-01) — 변형 20곳에서 사용자가 고른 것을 공용 시트로
-  - `L433` 칸·키트
-  - `L456` 기존 프로젝트
-  - `L462` 참고문서 (조수)
-  - `L469` 화면 증거
-  - `L473` 남은 것
-- `L478` 마을 문법 (2026-10-01 오후) — 「마을 만들어 줘」가 바둑판이 아니라 고른 변형 마을처럼
-  - `L502` 마을 형태 넷 + 이어진 밭 울타리 (2026-10-11)
-  - `L524` 그림자·자연 물가·놓기 규칙·지형 (2026-10-11 사용자 8가지 지적 + 「지형 먼저」)
-  - `L571` 높은 단 오르막·고립 방지·포구 길가·둥근 울타리 (2026-10-11 후속)
-- `L589` 작은 마을 길·마당 구도 보정 (2026-10-04)
-- `L594` 우물 공동마당으로 원본 마을 재배치 (2026-10-04)
-- `L599` 공동마당 식생·울타리/돌벽 보정 (2026-10-04)
-  - `L604` woodland 보정 (2026-10-20)
-- `L620` 기와 복원 · stone 박공 벽/중앙 창 (2026-10-04 사용자 정정)
-- `L625` 물굽이 조밀한 마을 표본 (2026-10-04)
-- `L631` 색 역할 정리 · 따뜻한 황록 확정 (2026-10-05)
-- `L637` 황록 마을 50×50 · 실제 선택 색 적용 (2026-10-05)
-  - `L645` 포석길 끊김 정정 (2026-10-05)
-- `L649` RPG 시설과 생활 역할 (2026-10-05)
-- `L657` 서로 다른 건축 구조의 강변 마을 (2026-10-05 초안 기록 · 4종 반려)
-- `L665` 던전 층: 받침 규칙 + `author_beodeul_dungeon` (2026-10-14, 사용자 스크린샷 · field-enemy fe1)
-  - `L686` 던전 시공기 2판 — 적대 시각 QA 뒤 한 번 고침 (2026-10-14 같은 날)
-  - `L709` 던전 시공기 3판 — 종류(`type`) 8가지 (2026-10-14, 사용자: 「던전 종류가 좀 다양해야 할 것 같다」)
-  - `L734` 던전 시공기 4판 — 장르 × 칩셋 어댑터 (2026-10-15, 사용자: 「던전을 장르별로 — 포켓몬풍 / 일반 RPG / 그 밖」)
+- `L3` 출처 정정 (2026-10-22) — RTP 파생 칸은 크레딧, 나무는 다시 그렸다
+- `L36` 2026-10-05 건물 반려와 사람의 허용/거절 대기열
+  - `L63` 나무 연결 보정과 집 5채 작은 마을 (2026-10-04 후속)
+- `L84` 민가·성당 외장: 원본 보존 보정 (2026-10-04 사용자 정정)
+- `L110` 원본 유지 일광·길 경계·잔디 보정 (2026-10-04)
+- `L117` 기본 타일셋 (2026-09-30)
+  - `L138` 빠른 집·도로 도구 (2026-10-03)
+  - `L153` 팔레트 실측 (2026-09-30, 헤드리스 chromium, dev 서버, 1600×900)
+- `L179` 무엇이 어디에 있나
+- `L199` 칸 자르기 규칙
+- `L211` 정본 저장·재로드 (2026-09-28)
+- `L219` 조수 시험 — 「버들항 비슷한 로마풍 항구 도시를 깔아줘」
+  - `L230` 결과 (2026-09-28, 두 번)
+- `L250` 라운드 2 (2026-09-29, v7) — 원본이 아닌 도시를 가르치기
+  - `L254` 무엇을 더했나
+  - `L267` 예시 배치 둘과 배치 자
+  - `L278` 참고문서 (v7)
+  - `L284` 정본 (v7)
+  - `L288` 조수 재시험 (klb/claude-opus-5.5, 「원본 좌표에 찍지 말고 새로 설계, 예시도 베끼지 말 것」)
+- `L310` 라운드 3 (2026-09-29, v8) — 블록 키트로 빈 풀밭 없애기
+  - `L315` 무엇을 더했나
+  - `L331` 배우며 찾은 것
+  - `L339` 조수 재시험 (klb/claude-opus-5.5, 라운드 2 과제 + 「블록 키트로」, 블록 25종 번들)
+  - `L359` 정본 (v8)
+- `L363` 다음 방향 (보류 — 이번에는 다시 그리지 않음)
+- `L381` 농장 beodeul_farm 2판·3판 (2026-10-14, 1판 2026-10-13 PR #2489 다시 그림) — 경작지 `farmland`·`farmland_watered` · 작물 · 울타리 · 헛간·닭장
+- `L420` 남은 것
+- `L431` 조수 마을 경로 (2026-10-01) — 「마을 만들어 줘」가 버들항으로 안 가던 원인과 수리
+- `L442` 고른 장소 조각 (2026-10-01) — 변형 20곳에서 사용자가 고른 것을 공용 시트로
+  - `L455` 칸·키트
+  - `L478` 기존 프로젝트
+  - `L484` 참고문서 (조수)
+  - `L491` 화면 증거
+  - `L495` 남은 것
+- `L500` 마을 문법 (2026-10-01 오후) — 「마을 만들어 줘」가 바둑판이 아니라 고른 변형 마을처럼
+  - `L524` 마을 형태 넷 + 이어진 밭 울타리 (2026-10-11)
+  - `L546` 그림자·자연 물가·놓기 규칙·지형 (2026-10-11 사용자 8가지 지적 + 「지형 먼저」)
+  - `L593` 높은 단 오르막·고립 방지·포구 길가·둥근 울타리 (2026-10-11 후속)
+- `L611` 작은 마을 길·마당 구도 보정 (2026-10-04)
+- `L616` 우물 공동마당으로 원본 마을 재배치 (2026-10-04)
+- `L621` 공동마당 식생·울타리/돌벽 보정 (2026-10-04)
+  - `L626` woodland 보정 (2026-10-20)
+- `L642` 기와 복원 · stone 박공 벽/중앙 창 (2026-10-04 사용자 정정)
+- `L647` 물굽이 조밀한 마을 표본 (2026-10-04)
+- `L653` 색 역할 정리 · 따뜻한 황록 확정 (2026-10-05)
+- `L659` 황록 마을 50×50 · 실제 선택 색 적용 (2026-10-05)
+  - `L667` 포석길 끊김 정정 (2026-10-05)
+- `L671` RPG 시설과 생활 역할 (2026-10-05)
+- `L679` 서로 다른 건축 구조의 강변 마을 (2026-10-05 초안 기록 · 4종 반려)
+- `L687` 던전 층: 받침 규칙 + `author_beodeul_dungeon` (2026-10-14, 사용자 스크린샷 · field-enemy fe1)
+  - `L708` 던전 시공기 2판 — 적대 시각 QA 뒤 한 번 고침 (2026-10-14 같은 날)
+  - `L731` 던전 시공기 3판 — 종류(`type`) 8가지 (2026-10-14, 사용자: 「던전 종류가 좀 다양해야 할 것 같다」)
+  - `L756` 던전 시공기 4판 — 장르 × 칩셋 어댑터 (2026-10-15, 사용자: 「던전을 장르별로 — 포켓몬풍 / 일반 RPG / 그 밖」)
 
 ### `openwiki/bgm-catalog.md` — 26KB · 354줄 · ~6,772 토큰
 
@@ -521,7 +522,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/copyright-purge.md` — 10KB · 94줄 · ~2,996 토큰
+### `openwiki/copyright-purge.md` — 11KB · 99줄 · ~3,292 토큰
 
 - `L7` 남기는 칩셋 (직접 만든 것)
 - `L12` 1단계 — 장소 (완료)
@@ -529,7 +530,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L46` 3단계 — 지운 칩셋에 묶인 코드·문서 (2026-10-07)
   - `L62` 남은 일
 - `L70` 주의
-- `L75` 정정 (2026-10-22) — 버들항은 「직접 만든 것」만이 아니었다: RTP 파생은 크레딧, 나무는 다시 그린다
+- `L75` 정정 (2026-10-22) — 버들항은 「직접 만든 것」만이 아니었다: RTP 파생은 크레딧, 나무는 다시 그렸다
 
 ### `openwiki/delayed-tooltip.md` — 7KB · 87줄 · ~1,981 토큰
 

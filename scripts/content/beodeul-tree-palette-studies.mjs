@@ -30,8 +30,13 @@ const defs=[
 ];
 const lum=c=>c[0]*.2126+c[1]*.7152+c[2]*.0722;
 const clamp=x=>Math.max(0,Math.min(255,Math.round(x)));
+// The trees were redrawn by hand on 2026-10-22. The user approved the warm look on the earlier trees; for the new
+// colours the approved look is kept by an explicit lookup (same hue, saturation and value targets per value band).
+const warmLookupPath=`${OUT}/warm-redrawn-lookup.json`;
+const warmLookup=fs.existsSync(warmLookupPath)?new Map(JSON.parse(fs.readFileSync(warmLookupPath,'utf8')).map(e=>[e.from.join(','),e.to])):null;
 function palette(c,id){
  if(c[3]!==255||id==='current')return c;
+ if(id==='warm'&&warmLookup)return warmLookup.get(c.join(','))||c;
  const green=c[1]>c[0]*1.08&&c[1]>c[2]*1.15,y=lum(c);let rgb=c.slice(0,3);
  if(green){
   if(id==='muted')rgb=rgb.map(v=>y+(v-y)*.56);
