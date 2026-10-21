@@ -56,6 +56,7 @@ export function validateMonsterCampaign(value: unknown): void {
   for (const value of objectives) {
     const objective = requireRecord("monsterCampaign.objective", value);
     for (const key of ["id", "title", "switchId"]) requireString(`monsterCampaign.objective.${key}`, objective[key]);
+    if (objective.summary !== undefined) requireString("monsterCampaign.objective.summary", objective.summary);
     if (objective.requiresSwitchId !== undefined) requireString("monsterCampaign.objective.requiresSwitchId", objective.requiresSwitchId);
   }
 }

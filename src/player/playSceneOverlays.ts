@@ -419,7 +419,13 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     const epilogue = textNode("div", "ending-epilogue", "");
     if (cg) epilogue.append(textNode("div", "ending-badge", cg.badge));
     epilogue.append(textNode("div", "ending-kicker", endingKicker(presentation)));
-    epilogue.append(textNode("h1", "ending-heading", title || "The End"));
+    // 「본제 · 부제」 이름은 구분점에서 줄을 나눈다 — 점이 줄 끝에 매달리지 않게 점은 빼고 부제를 둘째 줄로 보낸다.
+    const heading = textNode("h1", "ending-heading", "");
+    (title || "The End").split(/\s+[·・•]\s+/).forEach((part, index) => {
+      if (index > 0) heading.append(document.createElement("br"));
+      heading.append(document.createTextNode(part));
+    });
+    epilogue.append(heading);
     const body = message || cg?.epilogue;
     if (body) epilogue.append(textNode("div", "ending-message", body));
     terminal.root.append(epilogue);
@@ -456,10 +462,12 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     const viewport = textNode("div", "ending-credits", "");
     const roll = textNode("div", "ending-credits-roll", copy);
     viewport.append(roll); terminal.root.append(viewport);
-    const distance = viewport.clientHeight + roll.scrollHeight;
+    // 롤 첫 줄이 0초부터 마스크가 불투명한 구간 안에 보이게 아래 가장자리 밖이 아니라 위쪽 1/3 지점에서 출발한다(VQA R8).
+    const startOffset = Math.round(viewport.clientHeight * .3);
+    const distance = startOffset + roll.scrollHeight;
     const duration = Math.max(8000, distance / CREDITS_SPEED_PX_PER_SEC * 1000);
     terminal.root.style.setProperty("--credits-duration", `${duration}ms`);
-    terminal.root.style.setProperty("--credits-start", `${viewport.clientHeight}px`);
+    terminal.root.style.setProperty("--credits-start", `${startOffset}px`);
     terminal.root.style.setProperty("--credits-end", `${-roll.scrollHeight}px`);
     const hint = textNode("div", "game-over-hint", terminal.reducedMotion ? "PgUp/PgDn 읽기   ·   Z / Enter 마침" : "Z / Enter 누르면 빠르게   ·   Esc 건너뛰기");
     terminal.root.append(hint);

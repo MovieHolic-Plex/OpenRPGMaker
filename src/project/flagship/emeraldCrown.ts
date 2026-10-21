@@ -927,6 +927,17 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   const rewrite = (text: string): string => LINE_REWRITES[swapNames(text)] ?? swapNames(text);
   rewriteStrings(project.maps, rewrite);
   rewriteStrings(project.system.monsterCampaign, rewrite);
+  // 목표 목록은 한 줄 칸이라 긴 문장은 잘린다 — 목록용 짧은 이름을 따로 둔다(전체 문장은 「다음 목표」 칸과 설명에 남는다).
+  for (const objective of project.system.monsterCampaign?.objectives ?? []) {
+    const gym = /^gym_(\d+)$/.exec(objective.id);
+    const badge = gym ? project.system.monsterCampaign?.badges[Number(gym[1]) - 1]?.name : undefined;
+    const summary = objective.id === "starter" ? "첫 동료 만나기"
+      : objective.id === "rescue" ? "갇힌 몬스터 구하기"
+      : objective.id === "beacon" ? "등대의 빛 되찾기"
+      : objective.id === "league" ? "챔피언 나루와 승부"
+      : badge ? `${badge} 받기` : undefined;
+    if (summary) objective.summary = summary;
+  }
   if (project.system.gameOver) rewriteStrings(project.system.gameOver, rewrite);
   for (const [mapId, eventId, from, to] of EVENT_LINE_REWRITES) rewriteEventLine(findEvent(project, mapId, eventId), from, to);
   rewriteLockedRoutes(project);

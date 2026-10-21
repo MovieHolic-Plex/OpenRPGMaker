@@ -28,7 +28,7 @@ try {
   await page.waitForSelector(".game-over-hint", { timeout: 20000 });
   for (let i = 0; i < 8 && !(await page.locator(".ending-credits").count()); i++) { await page.waitForTimeout(700); await page.keyboard.press("Enter"); await page.waitForTimeout(700); }
   await page.waitForSelector(".ending-credits", { timeout: 20000 });
-  const rollTop = () => page.evaluate(() => document.querySelector(".ending-credits-roll").getBoundingClientRect().top);
+  const rollTop = () => page.evaluate(() => document.querySelector(".ending-credits-roll")?.getBoundingClientRect().top ?? -9999);
   const t0 = Date.now();
   for (const t of [300, 1200, 2500, 4500]) {
     await page.waitForTimeout(Math.max(0, t - (Date.now() - t0)));
