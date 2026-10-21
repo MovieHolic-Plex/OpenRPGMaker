@@ -389,7 +389,7 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
     // 2) 지우기(Erase Event)와 «떠남» 스위치를 켜는 자리를 이야기 순서대로 훑는다.
     //    제자리 사라짐으로 치지 않는 때: 화면이 검다 · 동료로 합류했다 · 전투 직후 대사 없이(쓰러진 필드 적).
     const goneSwitch = switchesThatHide(map, true);
-    type Stage = { black: boolean; joined: boolean; battle: boolean; talkedSinceBattle: boolean; lastRouteTo: string | null };
+    type Stage = { black: boolean; joined: boolean; battle: boolean; talkedSinceBattle: boolean; lastRouteTo: string | null; lastRouteWaits: boolean };
     const excused = (st: Stage): boolean => st.black || st.joined || (st.battle && !st.talkedSinceBattle);
     for (const { host, commands } of lists) {
       const visitList = (list: readonly Command[], inherited: Stage): void => {
@@ -404,11 +404,23 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
           if ((command.kind === "changeParty" && command.action === "add") || command.kind === "addFollower") st.joined = true;
           if (command.kind === "text" && st.battle) st.talkedSinceBattle = true;
           const target = routeTarget(command, host);
-          if (target) st.lastRouteTo = target;
+          if (target) { st.lastRouteTo = target; st.lastRouteWaits = command.kind === "moveEvent" && command.route?.wait === true; }
+          // 걸어 나가는 경로를 기다리지 않으면 다음 명령(지우기·떠남 스위치)이 걷기 시작과 함께 실행된다(r2 npc-walk-out).
+          const leavesWithoutWaiting = (id: string): boolean => st.lastRouteTo === id && routedToExit.has(id) && !st.lastRouteWaits;
+          if (command.kind === "setSelfSwitch" && command.value === true) {
+            const key = (command as { key?: string }).key;
+            const hides = pagesOf(host).some((p) => !visibleGraphic(p) && (p.conditions ?? []).some((c) => c.kind === "selfSwitch" && (c as { key?: string }).key === key && (c as { value?: boolean }).value !== false));
+            if (hides && visibleGraphic(pagesOf(host)[0])) {
+              if (leavesWithoutWaiting(host.id)) report(host, "출구로 가는 moveEvent 가 route.wait:true 없이 끝나, 걷기 시작하자마자 셀프 스위치가 켜져 투명 페이지로 사라진다 — route 안에 wait:true 를 넣는다");
+              else if (!(st.lastRouteTo === host.id && routedToExit.has(host.id)) && !excused(st)) report(host, "셀프 스위치로 투명 페이지가 켜져 제자리에서 사라진다");
+            }
+          }
           if (m2Title(command) === "Erase Event") {
             const id = fieldStr(command, "eventId") || host.id;
             const npc = byId.get(id);
-            if (npc && visibleGraphic(pagesOf(npc)[0]) && !excused(st) && !(st.lastRouteTo === id && routedToExit.has(id))) {
+            if (npc && visibleGraphic(pagesOf(npc)[0]) && leavesWithoutWaiting(id)) {
+              report(npc, "출구로 가는 moveEvent 가 route.wait:true 없이 끝나, 걷기 시작하자마자 Erase Event 로 지워진다 — route 안에 wait:true 를 넣는다");
+            } else if (npc && visibleGraphic(pagesOf(npc)[0]) && !excused(st) && !(st.lastRouteTo === id && routedToExit.has(id))) {
               report(npc, "Erase Event 로 제자리에서 지워진다");
             }
           }
@@ -425,7 +437,7 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
           for (const branch of nestedCommandLists(command)) visitList(branch, st);
         }
       };
-      visitList(commands, { black: false, joined: false, battle: false, talkedSinceBattle: false, lastRouteTo: null });
+      visitList(commands, { black: false, joined: false, battle: false, talkedSinceBattle: false, lastRouteTo: null, lastRouteWaits: false });
     }
   }
 }

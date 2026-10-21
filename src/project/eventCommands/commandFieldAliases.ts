@@ -318,6 +318,18 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     }
     return undefined;
   }
+  // 대기 칸을 route 밖 명령 머리에 둔 사례(2026-10-22 장면 교훈 r2 npc-walk-out): 런타임은 route.wait 만 읽어 걸음을
+  // 기다리지 않고 다음 명령(셀프 스위치 → 투명 페이지)으로 넘어갔다 — 여관 주인이 걷기 시작하자마자 제자리에서 사라졌다.
+  if (command.kind === "moveEvent" && command.route !== null && typeof command.route === "object" && !Array.isArray(command.route)
+    && ROUTE_FLAG_KEYS.some((key) => typeof command[key] === "boolean" && (command.route as RecordValue)[key] === undefined)) {
+    const moved: string[] = [];
+    for (const key of ROUTE_FLAG_KEYS) {
+      if (typeof command[key] !== "boolean" || (command.route as RecordValue)[key] !== undefined) continue;
+      (command.route as RecordValue)[key] = command[key]; delete command[key]; moved.push(key);
+    }
+    const more = canonicalizeCommandFieldAlias(command);
+    return `moveEvent.${moved.join("·")} 를 route.${moved.join("·")} 로 옮겼습니다(이동 대기·반복은 route 안의 칸입니다).${more ? ` ${more}` : ""}`;
+  }
   if (command.kind === "moveEvent" && (command.route === undefined || Array.isArray(command.route) || typeof command.route === "string"
     || (command.route !== null && typeof command.route === "object" && Array.isArray((command.route as RecordValue).moves)
       && ((command.route as RecordValue).moves as unknown[]).some((step) => typeof step === "string")))) {
