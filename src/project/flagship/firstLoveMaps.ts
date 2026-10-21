@@ -273,13 +273,15 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   cloneMap(project, FL_MAP.office, FL_MAP.officeFri, "스튜디오 늘봄 · 금요일");
   const platformPm = cloneMap(project, FL_MAP.platformAm, FL_MAP.platformPm, "한결역 승강장 · 막차");
   // 열차가 실제로 들어와 서고 떠난다(VQA r8: 「열차가 들어오고 있습니다」 안내만 있고 열차가 없다).
-  // 탈것 도구는 1층 jp-subway-track(2줄) 선로를 찾는다 — 방 키트가 그린 아래 두 줄 선로를 같은 계열의 그 선로 칸으로 바꾼다.
-  const TRACK_TOP = 8597, TRACK_BOTTOM = 8598;
+  // 탈것 도구는 1층 jp-subway-track(2줄) 선로를 찾는다 — 방 키트가 노란 끝선 바로 아래 그린 가까운 선로 두 줄(y 11·12)을
+  // 같은 계열의 그 선로 칸으로 바꾼다. 열차가 승강장 끝에 붙어 서고, 대화창(y192~) 위로 몸이 보인다. 맨 아래 두 줄은 건너편 선로 그대로.
+  const TRACK_TOP = 8597, TRACK_BOTTOM = 8598, NEAR_TRACK_Y = 11;
   for (const id of [FL_MAP.platformAm, FL_MAP.platformPm]) {
     const m = project.maps[id]!;
     for (let x = 0; x < m.width; x++) {
-      m.lowerTiles[(m.height - 2) * m.width + x] = TRACK_TOP;
-      m.lowerTiles[(m.height - 1) * m.width + x] = TRACK_BOTTOM;
+      m.lowerTiles[NEAR_TRACK_Y * m.width + x] = TRACK_TOP;
+      m.lowerTiles[(NEAR_TRACK_Y + 1) * m.width + x] = TRACK_BOTTOM;
+      if (m.upperTiles) { m.upperTiles[NEAR_TRACK_Y * m.width + x] = -1; m.upperTiles[(NEAR_TRACK_Y + 1) * m.width + x] = -1; }
     }
   }
   for (const id of [FL_MAP.platformAm, FL_MAP.platformPm]) {
