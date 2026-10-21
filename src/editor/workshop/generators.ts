@@ -9,8 +9,9 @@
  *   묶음은 `oprn-store-pack/1` tileset 하나 + autotileGroups(·animationStrips) — 가져오기가 그대로 보존한다.
  * - item-gen: 저장소가 없다(2026-10-21 조직·홈 확인) → 「준비 중」. 가짜로 채우지 않는다.
  * 견본 그림(sample)은 그 생성기가 실제로 만든 그림이다: object-gen 은 그 저장소 docs/images/hero.png 의 고른 기물,
- * char-gen 은 그 저장소의 자체 더미 칩(examples/bases/dummy_*)과 같은 칩의 편집 결과, tile-gen 은 풀밭 채우기 실제 출력(사람 선택 전).
- * 제3자 그림은 쓰지 않는다.
+ * char-gen 은 그 저장소의 자체 더미 칩(examples/bases/dummy_*)과 같은 칩의 편집 결과. 제3자 그림은 쓰지 않는다.
+ * tile-gen 견본은 비워 둔다: 첫 풀밭 견본(2026-10-21)은 겨냥한 beodeul_city 의 땅·나무·길·물 칸이 EasyRPG 계열이라 그 화풍 흉내가 돼
+ * tile-gen 쪽이 거둬들였다. jp_city·코드 도트 버들항 키트를 겨냥한 결과가 독립 검수를 통과하면 그때 싣는다.
  */
 import { getLocale } from "@/i18n";
 
@@ -39,12 +40,7 @@ export const WORKSHOP_GENERATORS: readonly WorkshopGenerator[] = [
     makes: "걷는 캐릭터의 옷·머리·색을 바꿔 새 사람을 만들어요.",
     sample: { src: "/assets/workshop/char-gen-sample.png", width: 124, height: 58, alt: "캐릭터 생성기가 옷을 바꾼 전후 두 쌍" },
   },
-  {
-    id: "tile-gen", title: "지형·바닥", status: "local", makes: "이음매 없는 바닥, 물가·절벽 가장자리, 칠해 넣는 숲과 물을 내 타일셋 색으로 그려요.",
-    // tile-gen 실제 결과(작업 floor5 후보 A, 버들항 풀밭 채우기). 독립 검수는 아슬아슬 통과, 사람이 고른 것은 아니다 —
-    // 승인·선택된 그림처럼 보이지 않게 「견본 출력」 표를 단다(2026-10-21 tile-gen 쪽 요청). 길·물·숲은 아직 검수 불통과라 싣지 않는다.
-    sample: { src: "/assets/workshop/tile-gen-sample.png", width: 124, height: 58, alt: "지형 생성기가 그린 풀밭 바닥 견본(사람이 고르지 않은 출력)", caption: "견본 출력" },
-  },
+  { id: "tile-gen", title: "지형·바닥", status: "local", makes: "이음매 없는 바닥, 물가·절벽 가장자리, 칠해 넣는 숲과 물을 내 타일셋 색으로 그려요." },
   { id: "item-gen", title: "아이템 아이콘", status: "soon", makes: "물약·열쇠·무기 같은 아이템 아이콘을 그려 줄 거예요." },
 ];
 
@@ -93,10 +89,29 @@ export const TERRAIN_MODES: readonly { readonly mode: TerrainMode; readonly labe
 ];
 
 /**
+ * tile-gen 프리셋 — 종류(kind) 하나에 그 재질의 그리기 지시가 붙은 것. CLI 는 `--mode <프리셋>` 을 그대로 받는다(tile-gen PR #3).
+ * 묶음 모양은 그 종류와 같다(물 계열은 움직이는 물 = animationStrips).
+ */
+export type TerrainPreset = "lava" | "swamp" | "poison" | "deep_water" | "beach" | "snow" | "ice" | "sand" | "road" | "cobble" | "meadow";
+export const TERRAIN_PRESETS: readonly { readonly mode: TerrainPreset; readonly kind: TerrainMode; readonly label: string; readonly example: string }[] = [
+  { mode: "lava", kind: "water", label: "용암", example: "예: 식은 껍질 테두리가 빛나는 용암" },
+  { mode: "swamp", kind: "water", label: "늪", example: "예: 진흙 위 탁한 늪물" },
+  { mode: "poison", kind: "water", label: "독 웅덩이", example: "예: 얼룩진 땅 위 독 웅덩이" },
+  { mode: "deep_water", kind: "water", label: "깊은 물", example: "예: 얕은 물 가운데의 깊은 물" },
+  { mode: "beach", kind: "water", label: "바닷가", example: "예: 젖은 모래와 물거품이 이는 바닷물" },
+  { mode: "snow", kind: "autotile", label: "눈 덮인 땅", example: "예: 풀밭 위에 쌓인 눈" },
+  { mode: "ice", kind: "autotile", label: "얼음판", example: "예: 눈밭 위 얼음판" },
+  { mode: "sand", kind: "autotile", label: "사막 모래", example: "예: 바람 물결이 진 사막 모래" },
+  { mode: "road", kind: "autotile", label: "흙길", example: "예: 수레바퀴 자국 난 다져진 흙길" },
+  { mode: "cobble", kind: "autotile", label: "돌길", example: "예: 경계석을 두른 돌 포장길" },
+  { mode: "meadow", kind: "autotile", label: "꽃밭", example: "예: 풀밭으로 옅어지는 꽃밭" },
+];
+
+/**
  * tile-gen 부탁 글 — 지형 한 벌. 참고 칸(`x,y`, 타일셋 그림의 칸 좌표)이 비면 에이전트가 가장 비슷한 땅 칸을 고르게 한다.
  * 타일셋 그림 파일은 화면의 「지금 맵 칩셋 그림 받기」로 받은 파일 이름이다.
  */
-export function tileGenRequest(mode: TerrainMode, brief: string, tilesetFile: string, ref: string): string {
+export function tileGenRequest(mode: TerrainMode | TerrainPreset, brief: string, tilesetFile: string, ref: string): string {
   const what = brief.trim() || defaultTerrain(mode);
   const cell = /^\s*\d+\s*,\s*\d+\s*$/.test(ref) ? ref.replace(/\s+/g, "") : "";
   switch (getLocale()) {
@@ -107,15 +122,34 @@ export function tileGenRequest(mode: TerrainMode, brief: string, tilesetFile: st
   }
 }
 
-function defaultTerrain(mode: TerrainMode): string {
+const PRESET_DEFAULTS: Readonly<Record<TerrainPreset, readonly [string, string, string, string]>> = {
+  lava: ["식은 껍질 테두리가 빛나는 용암", "molten lava with a glowing cooled-crust rim", "冷えた殻の縁が光る溶岩", "边缘冷却结壳、发着光的熔岩"],
+  swamp: ["진흙 위 탁한 늪물", "murky swamp water over mud", "泥の上の濁った沼の水", "泥地上浑浊的沼泽水"],
+  poison: ["얼룩진 땅 위 독 웅덩이", "a toxic pool over stained ground", "染みた地面の上の毒の水たまり", "污渍地面上的毒水坑"],
+  deep_water: ["얕은 물 가운데의 깊은 물", "deep water inside shallow water", "浅瀬の中の深い水", "浅水中的深水"],
+  beach: ["젖은 모래와 물거품이 이는 바닷물", "sea water with wet sand and foam", "濡れた砂と泡の立つ海水", "带湿沙与泡沫的海水"],
+  snow: ["풀밭 위에 쌓인 눈", "snow cover over grass", "草地に積もった雪", "覆盖在草地上的雪"],
+  ice: ["눈밭 위 얼음판", "an ice sheet over snow", "雪原の上の氷", "雪地上的冰面"],
+  sand: ["바람 물결이 진 사막 모래", "desert sand with wind ripples", "風紋のある砂漠の砂", "带风纹的沙漠沙地"],
+  road: ["수레바퀴 자국 난 다져진 흙길", "a packed dirt road with cart ruts", "轍のある踏み固めた土の道", "有车辙的夯实土路"],
+  cobble: ["경계석을 두른 돌 포장길", "cobblestone paving with kerb stones", "縁石のある石畳", "带路缘石的鹅卵石路"],
+  meadow: ["풀밭으로 옅어지는 꽃밭", "flowers thinning out into plain grass", "草地へ薄れていく花畑", "渐渐淡入草地的花田"],
+};
+
+function defaultTerrain(mode: TerrainMode | TerrainPreset): string {
+  if (mode in PRESET_DEFAULTS) {
+    const [ko, en, ja, zh] = PRESET_DEFAULTS[mode as TerrainPreset];
+    switch (getLocale()) { case "en": return en; case "ja": return ja; case "zh": return zh; default: return ko; }
+  }
   const ko: Record<TerrainMode, string> = { floor: "결이 고운 나무 마루", autotile: "흙 위로 번지는 풀밭", water: "잔물결 이는 얕은 연못", forest: "짙은 활엽수 숲", cliff: "이끼 낀 회색 바위 절벽" };
   const en: Record<TerrainMode, string> = { floor: "fine-grained wooden floor", autotile: "grass spreading over dirt", water: "a shallow rippling pond", forest: "a dense broadleaf forest", cliff: "a mossy grey rock cliff" };
   const ja: Record<TerrainMode, string> = { floor: "木目の細かい板の床", autotile: "土の上に広がる草地", water: "さざ波の立つ浅い池", forest: "深い広葉樹の森", cliff: "苔むした灰色の岩の崖" };
   const zh: Record<TerrainMode, string> = { floor: "纹理细腻的木地板", autotile: "在泥土上蔓延的草地", water: "泛起涟漪的浅池", forest: "茂密的阔叶林", cliff: "长满青苔的灰色岩崖" };
+  const kind = mode as TerrainMode;
   switch (getLocale()) {
-    case "en": return en[mode];
-    case "ja": return ja[mode];
-    case "zh": return zh[mode];
-    default: return ko[mode];
+    case "en": return en[kind];
+    case "ja": return ja[kind];
+    case "zh": return zh[kind];
+    default: return ko[kind];
   }
 }
