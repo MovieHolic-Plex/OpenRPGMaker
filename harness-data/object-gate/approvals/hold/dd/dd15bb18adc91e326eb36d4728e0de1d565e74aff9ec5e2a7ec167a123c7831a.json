@@ -1,0 +1,19 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "dd15bb18adc91e326eb36d4728e0de1d565e74aff9ec5e2a7ec167a123c7831a",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T16:06:46.904Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "note": "묶음 허용: fallen-town-r5 bridge waterline — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/fallen-town-r5.opus-vqa-r3.json",
+ "sig": "cdd49f76255b12033c1af981dddf14245ebf5244aacec4a3966e6223c685e270"
+}

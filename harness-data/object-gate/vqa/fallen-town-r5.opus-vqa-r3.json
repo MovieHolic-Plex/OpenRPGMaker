@@ -1,0 +1,42 @@
+{
+ "schema": "bdg-vqa/1",
+ "judge": "claude-opus-5-5",
+ "date": "2026-10-22",
+ "batch": "fallen-town-r5",
+ "overall": "PASS",
+ "criteriaNotes": {
+  "0_hash_check": "Recomputed with object_gate.pixel_sha256: gate feaf1603...ffe7 and bridge dd15bb18...31a match the brief. The chip judged is /tmp/valen/vqa/valen_chip_1x.png = b427fbb4025ec92fe16494ca6568ce9f4d72c44d686941045a141e2617152584. WARNING: /tmp/valen/gate/fallen_valen_chip.png, which items.jsonl points at, is a different and stale image (9e62d1ee..., the r1-failed version with enclosed holes). This PASS covers only b427fbb4.",
+  "1_topdown_view": "The gate strip and the bridge row stay in the castle and bridge kits' 3/4 front-wall convention, with no isometric side faces. The chip keeps the RTP 4-direction top-down charset view.",
+  "2_style_fit": "Gate: 174 pixels changed, all on rows 0-9, with no new colours versus tiles 3277-3279. Bridge: erase-only; 46 pixels on row 9 became transparent and no colours were added. Chip: all 38 colours come from RTP Actor1 plus the existing palette, with no semi-alpha.",
+  "3_readability_1x": "Gate: the bars end in tips at the top of the strip, over a dark passable passage. Bridge: the arches meet the water without a floating line. Chip: reads as one long-haired steel-blue figure with a gold band and a blue cape.",
+  "4_placement": "The gate strip's bar tips and banner tip line up with the arch row above, and the jamb edges continue the wall. The bridge's pier and abutment bases are intact in the map render.",
+  "5_silhouette_outline": "Bridge: no orphan pixels. The 1px transparent slit at x=1 in the left abutment already existed on rows 6-8 and now continues through row 9 (minor). Chip: 0 enclosed transparent holes, 0 teal key (0,147,146).",
+  "6_valen_identity": "Hair colour, hair length and the gold headband match the bust. The headband is present in all 12 frames: y=12 in standing frames, y=13 in walking frames (the 1px bob), with no gaps. Hat colours (246,164,24)/(115,41,16)/(213,98,16)/(189,57,8)/(255,123,8) in y<=20 appear only on the headband row; there are none elsewhere in or around the head. The face is never covered. Minor: the bust's dark cap above the band is not on the chip, and the face mixes the skin tones of RTP #1 and RTP #4."
+ },
+ "items": [
+  {
+   "id": "gate_raised",
+   "name": "걷어 올린 성문 창살",
+   "kind": "structure",
+   "pixelSha256": "feaf1603faf6311c701794fb76bfa96e4b02371cd2283c73eeeafeeabca4ffe7",
+   "verdict": "PASS",
+   "reasons": "Compared with tiles 3277-3279, only rows 0-9 change (174 px), and no new colours were added. The closed bars and the lower rail are replaced by the source's own dark passage greys. Bar tips stay on rows 0-1 and line up with the bars in the arch row above (gate_close_8x). The banner tip continues without a seam, and the jamb columns at x0/x47 continue the wall. At 1x and 3x in the gatehouse it reads as a hoisted portcullis over a dark, passable opening. Minor: the passage is a near-flat dark slab and meets the cobble row below with a hard edge."
+  },
+  {
+   "id": "bridge_waterline",
+   "name": "물선 없는 아치 다리 밑",
+   "kind": "structure",
+   "pixelSha256": "dd15bb18adc91e326eb36d4728e0de1d565e74aff9ec5e2a7ec167a123c7831a",
+   "verdict": "PASS",
+   "reasons": "The diff against the before tiles is exactly 46 pixels on row 9 (x=1, 5-27, 37-58), all set to alpha 0. Nothing else changed and no colours were added. In the map render the dark line under both arches is gone, and the water runs on from inside the arch. The pier cutwater (x28-36) and the abutment bases keep their outlines, and there are no orphan pixels. Minor: the existing 1px slit at x=1 in the left abutment now runs one row further down."
+  },
+  {
+   "id": "valen_chip",
+   "name": "심문관 발렌 걷기 칩",
+   "kind": "charset",
+   "pixelSha256": "b427fbb4025ec92fe16494ca6568ce9f4d72c44d686941045a141e2617152584",
+   "verdict": "PASS",
+   "reasons": "Programmatic scan of all 72x128 pixels: 0 enclosed transparent holes, 0 teal key pixels, 0 semi-alpha pixels. Hat colours in the head region (y<=20) appear only as the deliberate gold headband row. The r1 holes are fixed. The r2 stray gold forehead dot and brown hair flecks are absent. Walk-vs-stand differences around the head are hair-shade texture only (as in the RTP #1 source), plus the 1px bob. The face pixels and black brows are RTP #4's own face, and the band never covers the eyes. Against the bust, the steel-blue long hair, the gold band and the blue/dark palette read as the same person. Minor: the bust's dark cap is not on the chip; there are mixed skin tones; the down-standing frame has one hair-edge pixel (17,14) in (41,8,0) where the walking frames use (98,19,0). Note: the gate staging file /tmp/valen/gate/fallen_valen_chip.png is still the stale 9e62d1ee version and must be replaced before any gate run."
+  }
+ ]
+}

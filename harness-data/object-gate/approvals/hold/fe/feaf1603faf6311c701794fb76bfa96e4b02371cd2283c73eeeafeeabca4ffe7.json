@@ -1,0 +1,21 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "feaf1603faf6311c701794fb76bfa96e4b02371cd2283c73eeeafeeabca4ffe7",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T16:06:46.843Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 1행 < 3 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "note": "묶음 허용: fallen-town-r5 gate raised — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/fallen-town-r5.opus-vqa-r3.json",
+ "sig": "b2f809a94a795a0472d1dc0e3fe1497502ae74bbfbbbacf469dde88f0542bd58"
+}

@@ -1,0 +1,42 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-town-r5",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 recomputed: gate feaf1603...a4ffe7 and bridge dd15bb18...7c831a match the brief; valen_chip_1x = 9e62d1ee...0fc09624.",
+    "1_topdown_view": "Gate strip is a part (no own top face, as intended); in the assembled gatehouse the arch, portcullis bottom rail and spike tips read in the same front-wall 3/4 view as the castle kit. Bridge keeps the kit's front-elevation arches; no side faces introduced.",
+    "2_style_fit": "Gate strip uses only colours already present in beodeul 3277-3279 (0 new colours, 174 px changed, all inside the bar/rail area). Bridge edit only removes pixels, no new colours. Chip stays in RTP style; hair recoloured to a steel blue close to the bust.",
+    "3_readability_1x": "Gate: hoisted portcullis edge + uniform dark opening reads as an open gate passage. Bridge: arches now meet the water with no floating line. Chip: reads as one long-haired blue-caped armoured figure with a gold band.",
+    "4_placement": "Gate strip spike tips (strip row 1) line up column-for-column with the bars in the arch tile above; banner tip continues from the banner. Bridge pier/abutment bases keep their dark outline; only arch-opening spans were erased.",
+    "5_silhouette_outline": "Bridge: erased span row 9 x5-27 and x37-58 plus x1 (under the existing transparent slot column) — no orphan pixels, pier V-cutwater intact. Chip: three 1-px fully enclosed transparent holes inside the composited hair outline.",
+    "6_valen_identity": "Hair length/colour and gold headband match the bust; headband present in all 12 frames at a consistent height (row 13, row 12 on the bob frame). Bust shows a dark cap/crown above the band that the chip lacks (blue hair on the crown) — minor. RTP big eyes + long hair lean slightly feminine, but armour and cape keep it plausible."
+  },
+  "items": [
+    {
+      "id": "gate_raised",
+      "name": "걷어 올린 성문 창살",
+      "kind": "structure",
+      "pixelSha256": "feaf1603faf6311c701794fb76bfa96e4b02371cd2283c73eeeafeeabca4ffe7",
+      "verdict": "PASS",
+      "reasons": "Derived cleanly from 3277-3279: vertical bars below the bottom rail painted out with the source's own dark passage greys, the bottom rail and spike tips kept, so it reads as a hoisted portcullis over a dark walkable passage. No new colours, no seams at tile joins, tips aligned with bars in the arch tile above, jamb edges at x0/x47 continue the wall. Minor: the passage is a flat dark slab that meets the cobblestone row below with a hard horizontal edge (no floor hint inside the gate); acceptable at 1x."
+    },
+    {
+      "id": "bridge_waterline",
+      "name": "물선 없는 아치 다리 밑",
+      "kind": "structure",
+      "pixelSha256": "dd15bb18adc91e326eb36d4728e0de1d565e74aff9ec5e2a7ec167a123c7831a",
+      "verdict": "PASS",
+      "reasons": "The dark line across the canal under both arch openings is gone (in-map after shot shows water continuous from inside the arch to the open canal, only the natural arch shadow tone shift remains). Pier cutwater and abutment bases keep their outline; erase touched only row 9 where above/below were transparent. No orphan pixels or holes; x1 row 9 now open, but it continues an already-transparent slot column, so it reads consistently. No new colours."
+    },
+    {
+      "id": "valen_chip",
+      "name": "심문관 발렌 걷기 칩",
+      "kind": "charset",
+      "pixelSha256": "9e62d1eecfba7e5e3dff2c702979cb34b5c918bdf25dc94c61d51d730fc09624",
+      "verdict": "FAIL",
+      "reasons": "Blocker per brief's 'no transparent holes': three single-pixel fully enclosed transparent holes inside the composited hair, at (frame-local x,y) right row frame 0 (4,25), right row frame 1 (4,24), left row frame 1 (19,24) — sheet coords (4,57), (28,56), (43,120). These were key-colour background in RTP #4 and the hair overlay outlined around them without filling, so ground shows through the hair while walking. Otherwise good: no leftover teal key (0,147,146), no hat pixels, headband in all 12 frames at consistent height, face not covered, hair colour/length matches bust. Fix: fill the 3 pixels with the surrounding hair/outline colour (16,24,106)/(14,31,48). Minor: bust has a dark cap above the headband that the chip omits."
+    }
+  ]
+}

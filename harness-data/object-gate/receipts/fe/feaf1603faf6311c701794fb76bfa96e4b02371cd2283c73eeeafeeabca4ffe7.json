@@ -1,0 +1,403 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "feaf1603faf6311c701794fb76bfa96e4b02371cd2283c73eeeafeeabca4ffe7",
+ "width": 48,
+ "height": 16,
+ "kind": "structure",
+ "name": "fallen gate raised",
+ "label": "beodeul_city/workshop/fallen-town-gate-raised",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 1행 < 3 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 1행 < 3 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 21,
+  "darkV5": 52,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top edge strip with light studs",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark gate/wall face",
+      "rows": "2-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue-purple crystal or glow shape at top centre",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 48 px wide for all 16 rows. Columns x=12 and x=35 show a 1-row lighter line at row 0, then one uniform dark block from row 1 to 15. Row 0 is a 1-row outline with light studs, so it is not a top surface. There is no band ending in a front-edge line, no eave shadow, no roof or slope plane, and no ellipse. The blue-purple shape at x=24, rows 0-3, is a small detail on the face. The body is a flat dark vertical face with no visible top slope."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny, low, flat dark slab with a single blue dot. It is not a whole building with roof, walls and door/windows, so it does not match the reference kind and is far smaller than either reference. Measured facts agree: 81% near-flat coverage against 0% for both references, 95% of dark edge pixels near-neutral against 7-9% for the references (a neutral black outline, the sticker look), and 8 visible tones per tile against 10-12. By eye, the body is about 2-3 flat steps with no tile scallops, grain or per-stone shading, unlike the 5-6 step roofs and shaded stone or plaster of the references. It would look thinner, flatter and more sticker-like next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 12159
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top strip with light notches along the upper edge",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue/purple glowing shape at the top center, a gem or sigil",
+      "rows": "0-4",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark flat gate panel (front face)",
+      "rows": "2-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a uniform 48 px wide over all 16 rows, a flat rectangle. Columns x=12 and x=35 show one outline row at row 0, then a single dark tone (L=56) for rows 1-15. There is no band that ends in a front-edge line, no eave shadow, no roof or lintel slope, and no ellipse. The top 1-2 rows are only a rim or outline with light notch pixels. The blue shape at rows 0-4 is a small ornament, not a top surface. The rest is a flat dark vertical panel, so this is a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny, low strip (roughly 90x20 px at 2x) with a dark grey body, a small blue gem/knob at the top and a pale dotted lower edge. It has no roof tiles, walls, door or windows, so it reads as a flat sill or rubble band rather than a whole building like the references. Measured facts: 8 visible tones per tile against 12 and 10 for the references, 81% near-flat coverage against 0% for both, and 95% near-neutral dark edge pixels against 7% and 9%. That means a neutral black/grey outline instead of dark material tones. The body is a large, mostly single-tone dark fill with only about 3 shading steps, against 5-6 on the references' tiled roofs, plaster and stone. Texture is minimal, with a few speckles at the edge. It would look thinner, flatter and more sticker-like next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 12349
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top rim strip with light studs",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central blue crest/gem set into the door face",
+      "rows": "0-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark gate door panel (front face)",
+      "rows": "2-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The column scan shows only one light row at the top (row 0, L=90) over a uniform dark block (rows 1-15, L=56). The silhouette is a flat 48px-wide rectangle for all 16 rows. The top is a 1-2 row rim with light stud pixels, with no front-edge line, no eave shadow band, no sloped roof or lintel plane and no ellipse. The blue crest at x~24 (rows 0-5) is a vertical ornament on the face, not a horizontal surface. The rest is a flat dark panel drawn face-on. It matches the red 'front elevation / rim only' references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny, low, flat dark slab with a small blue dot on top, barely one tile tall. It reads as a fence or gate strip rather than a whole building with roof, walls and door/windows. Measured facts: 8 visible tones per tile against 10-12 for the references, 81% near-flat coverage against 0%, and 95% near-neutral dark edge pixels against 7-9%, so the outline is neutral near-black rather than a tinted material tone. It has only about 2 shading steps and large flat dark fills with no tile scallops, plaster speckle or stone shading. It is clearly shallower and more sticker-like than both references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 12532
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top rim strip with light notches (row 0-1)",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark gate face / sealed slab",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue crystal / rune glow at top centre",
+      "rows": "0-4",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a 48px-wide rectangle across all 16 rows. The column scan shows a 1-row lighter outline at row 0 (L≈90) at x=12 and x=35, then a uniform dark face from rows 1-15 (L≈56). There is no front-edge line, eave shadow, ellipse, roof slope or visible contents, so no top surface is drawn. The only top feature is a 1-row rim with small light notches. The blue crystal at x≈24 in rows 0-4 is an ornament on the face, not a horizontal surface. The gate is a flat front-facing dark panel, like the red 'front elevation: top 1' and 'rim only' references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 2,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny, low strip, roughly one tile tall, with a dark grey body, a pale top edge and a single blue dot. It has no roof tiles, no walls, no door or windows, and none of the material ramps the references show. Measured facts agree: 8 visible tones per tile against 12 and 10 for the references, 81% near-flat coverage against 0%, and 95% of dark edge pixels near-neutral against 7-9%. That means flat fills and a neutral near-black outline, the sticker look, where the references use tinted dark material tones. It has about 2 shading steps against the references' 5-6, and almost no texture or grain. It is far below the references in structure and information density, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14895
+  }
+ ],
+ "decidedAt": "2026-10-21T15:33:52.682Z",
+ "cells": {
+  "16": [
+   "0f13b0f11b5e34c0",
+   "57b663454f5ccdcd",
+   "c9477b73cb58be93"
+  ],
+  "24": [
+   "0dda6535019eeadb",
+   "12258fae63e8d63d",
+   "52792568be6a837e",
+   "d9875716c4c0687d"
+  ],
+  "32": [
+   "4d769c327c624324",
+   "73e58a3bfaf570c2",
+   "7f224fb07c1f61b8",
+   "8f685a2d67cc92cf",
+   "912384c18b88528e",
+   "a066b1e76407c3af",
+   "ab49fe27c7a63b93",
+   "b163d0c06572ebd7",
+   "b44481b99ea089f1",
+   "cae21eef397fa3d0",
+   "cdce963d6c6f799d",
+   "f17b61dba0798bb7"
+  ],
+  "48": [
+   "9e5a53678ebd8c1e",
+   "e5a1da99a3c2613e"
+  ]
+ }
+}
