@@ -60,7 +60,7 @@ async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   registerExportAssetBase(new URL(probeAssets ? "../" : ".", document.baseURI));
   const rawDemoParam = new URLSearchParams(window.location.search).get("demo");
   const demoParam = rawDemoParam === "fallen-star" ? "chrono-bell" : rawDemoParam === "astra-horizon" ? "emerald-crown" : rawDemoParam;
-  if (demoParam === "chrono-bell" || demoParam === "emerald-crown" || demoParam === "shitamachi-fourth-season") {
+  if (demoParam === "chrono-bell" || demoParam === "emerald-crown" || demoParam === "shitamachi-fourth-season" || demoParam === "first-love") {
     // 정적 import 하면 ?demo= 가 없는 일반 player.html 부팅에도 에디터 toolRegistry(1,800개 모듈) 전체가 로드된다.
     const { createFlagshipDemoProject } = await import("@/project/flagship");
     startPlayer(root, boot, createFlagshipDemoProject(demoParam).project, "bundled");

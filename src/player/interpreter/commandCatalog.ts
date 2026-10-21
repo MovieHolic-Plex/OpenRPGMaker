@@ -997,6 +997,7 @@ export function executeCommand(
     }
     case "changeFriendship":
       changeFriendship(state.session, command.npcKey, command.delta, resolveSocialHost(state));
+      if (command.npcKey) state.onFriendshipChanged?.(command.npcKey, command.delta);
       return resumeNext(frame);
     case "setRelationship": {
       const npcKey = friendshipKey(command.npcKey, resolveSocialHost(state));

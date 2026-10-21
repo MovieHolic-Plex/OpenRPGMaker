@@ -105,7 +105,7 @@ function mountOverlay(mode: "menu" | "welcome", resolve: (result: ConceptFeedOve
 
 
 async function openBuiltinDemoFromOverlay(
-  demoId: "chrono-bell" | "emerald-crown",
+  demoId: "chrono-bell" | "emerald-crown" | "first-love",
   action: "play" | "open",
   closeOverlay: () => void,
 ): Promise<void> {

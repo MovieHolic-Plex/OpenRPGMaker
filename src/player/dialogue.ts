@@ -141,6 +141,8 @@ export type DialogueLogEntry = {
 };
 
 const DIALOGUE_LOG_LIMIT = 200;
+/** 선택지가 열린 직후 결정 키를 받지 않는 시간 — 앞 대사를 넘기던 연타가 선택을 대신하지 않게. */
+const CHOICE_CONFIRM_GRACE_MS = 300;
 /** 휠 위로 백로그 열기: 닫은 뒤 이 시간은 다시 안 열고, 이 시간 안에 문턱만큼 쌓여야 연다(관성 스크롤·핀치 오작동 방지). */
 const WHEEL_REOPEN_COOLDOWN_MS = 450;
 const WHEEL_OPEN_WINDOW_MS = 300;
@@ -1720,6 +1722,12 @@ export function createDialogueUI(
 
       let onKey: (event: KeyboardEvent) => void;
       let settled = false;
+      // 앞 대사를 넘긴 그 Enter 가 선택지를 고르지 않게 한다. 대사를 닫는 keydown 안에서 선택지가 열리고 0번 단추에
+      // 포커스가 가면, 브라우저가 같은 키의 기본 동작으로 그 단추를 「클릭」해 플레이어가 보지도 못한 선택이 된다
+      // (첫사랑 VQA 4차 — 마지막 선택이 저절로 골라져 엔딩까지 흘러감). 키보드 결정은 onKey 가 따로 받으므로
+      // 열린 직후, 이 선택지가 keydown 을 하나도 받지 않은 채 들어온 키보드발 클릭(detail 0)만 버린다.
+      const openedAt = performance.now();
+      let sawKeyDown = false;
       const cleanup = (): void => {
         settled = true;
         document.removeEventListener("keydown", onKey);
@@ -1762,6 +1770,14 @@ export function createDialogueUI(
       };
       onKey = (e: KeyboardEvent) => {
         if (settled || e.isComposing) return;
+        // 열린 직후의 결정·숫자 키는 버린다 — 앞 대사를 넘기려고 연타한 Enter 가, 선택지가 그려진 바로 그 순간 닿아
+        // 플레이어가 읽지도 못한 0번이 골라지던 결함(첫사랑 r11·r8 재현: 선택지 등장과 Enter 가 같은 0.1초).
+        // 실제 키 입력(isTrusted)만 막는다. 단위 테스트의 합성 이벤트는 그대로 지나간다.
+        if (e.isTrusted && performance.now() - openedAt < CHOICE_CONFIRM_GRACE_MS && (isConfirmKey(e.key) || /^[1-9]$/.test(e.key))) {
+          e.preventDefault();
+          return;
+        }
+        sawKeyDown = true;
         if (e.repeat && (isConfirmKey(e.key) || isCancelKey(e.key) || /^[1-9]$/.test(e.key))) {
           e.preventDefault();
           return;
@@ -1811,7 +1827,10 @@ export function createDialogueUI(
         renderDialogueSegments(btn, parseDialogueText(opt.text, request.textContext));
         btn.addEventListener("mouseenter", () => setSelected(idx));
         btn.addEventListener("focus", () => setSelected(idx));
-        btn.addEventListener("click", () => finish(idx));
+        btn.addEventListener("click", (event) => {
+          if (event.isTrusted && event.detail === 0 && !sawKeyDown && performance.now() - openedAt < 400) return;
+          finish(idx);
+        });
         buttons.push(btn);
         choicesEl.append(btn);
       });
