@@ -356,6 +356,36 @@ function setEventFace(map: GameMap, eventId: string, faceId: string | undefined)
   }
 }
 
+/**
+ * 대사 한 줄마다 그 화자의 얼굴을 건다 — 얼굴은 바꿀 때까지 남아서, 하넬의 얼굴을 건 채 엘레나가 말하면 하넬 얼굴이
+ * 엘레나 이름표 옆에 떴다. 주인공 셋·발렌·브람 대사는 대부분 얼굴이 없었다(가혹 검수 r6 「인물·초상」 6.5).
+ * 얼굴 표에 없는 화자와 서술 줄은 얼굴을 내린다. 표는 칩과 같은 인물의 검토된 짝만 쓴다.
+ */
+function applySpeakerFaces(project: Project, faces: Readonly<Record<string, string>>): void {
+  const faceOf = (cmd: Command): string => {
+    const speaker = (cmd as { speaker?: string }).speaker?.trim();
+    return speaker ? faces[speaker] ?? "" : "";
+  };
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      for (const list of eventCommandLists(event)) {
+        for (let i = 0; i < list.length; i += 1) {
+          const cmd = list[i]!;
+          if (cmd.kind !== "text") continue;
+          const want = faceOf(cmd);
+          const prev = list[i - 1] as (Command & { resourceId?: string }) | undefined;
+          if (prev?.kind === "changeFace") {
+            if ((prev.resourceId ?? "") === want) continue;
+            if (!(prev as { appearanceId?: string }).appearanceId) { list[i - 1] = { ...prev, resourceId: want } as Command; continue; }
+          }
+          list.splice(i, 0, { kind: "changeFace", resourceId: want, position: "left", flipHorizontally: false } as Command);
+          i += 1;
+        }
+      }
+    }
+  }
+}
+
 // ── 그림 ────────────────────────────────────────────────────────────────
 
 function setEventChip(map: GameMap | undefined, eventId: string, texture: string, characterIndex: number): void {
@@ -910,6 +940,20 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     project.system.titleScreen.backgroundRendering = "pixelated";
   }
   buildFallenStarOpening(project);
+  // 얼굴은 모든 대사 편집이 끝난 뒤 한 번에 건다(위 단계들이 대사를 찾아 바꾸고 덧붙인다).
+  const actorFace = (id: string): string => project.database.actors.find((a) => a.id === id)?.faceResourceId ?? "";
+  applySpeakerFaces(project, {
+    [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
+    엘레나: actorFace("actor_fs_elena"),
+    이리스: actorFace("actor_fs_iris"),
+    "천문대장 하넬": "easyrpg-faceset-people2-04",
+    "심문관 발렌": "easyrpg-faceset-actor1-04",
+    "심문회 기사": "easyrpg-faceset-actor1-02",
+    "숲지기 브람": "easyrpg-faceset-actor1-10",
+    "광장의 할머니": "easyrpg-faceset-people1-07",
+    "꼬마 토비": "easyrpg-faceset-people1-00",
+    "빵집 아주머니": "easyrpg-faceset-people1-03",
+  });
 
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
