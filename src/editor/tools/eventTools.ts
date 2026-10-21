@@ -2818,8 +2818,13 @@ const createTransferPair: ToolDefinition = {
     // 문앞 칸(원래 출입구 자리)은 반대쪽에서 오는 착지가 된다 — 문을 등지고 선다.
     const onDoorCell = (map: GameMap, req: { x: number; y: number; doorAt?: Point }, endpoint: { gate: Point; landing: Point }): { gate: Point; landing: Point; bump: boolean } => {
       if (!onDoor) return { ...endpoint, bump: false };
+      // 실내 벽에 박힌 엘리베이터·계단은 그림 칸 바로 아래가 「탈 자리」(build_hand_interior_room 이 알려 주는 칸)다 —
+      // 조수가 그 탈 자리를 x,y 로 주면 트리거가 그림 아래 바닥에 남았다(2026-10-22 r3 office-elevator 2층 쪽).
+      const above = !isDoorArtCell(draft, map, req.x, req.y) && endpoint.gate.x === req.x && endpoint.gate.y === req.y
+        && isDoorArtCell(draft, map, req.x, req.y - 1) ? { x: req.x, y: req.y - 1 } : null;
       const door = req.doorAt
-        ?? (isDoorArtCell(draft, map, req.x, req.y) && Math.abs(req.x - endpoint.gate.x) + Math.abs(req.y - endpoint.gate.y) === 1 ? { x: req.x, y: req.y } : null);
+        ?? (isDoorArtCell(draft, map, req.x, req.y) && Math.abs(req.x - endpoint.gate.x) + Math.abs(req.y - endpoint.gate.y) === 1 ? { x: req.x, y: req.y } : null)
+        ?? above;
       if (!door || (door.x === endpoint.gate.x && door.y === endpoint.gate.y)) return { ...endpoint, bump: false };
       if (map.events.some((event) => event.x === door.x && event.y === door.y)) return { ...endpoint, bump: false };
       return { gate: door, landing: endpoint.gate, bump: !isPassable(draft, map, door.x, door.y) };
