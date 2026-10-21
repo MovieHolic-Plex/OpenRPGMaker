@@ -12,16 +12,17 @@
 | 카드 | 생성기 | 상태 | 하는 일 |
 |---|---|---|---|
 | 물건·가구 | object-gen | 여기서 바로 | 「새 물건 그리기」= 아래 공방 실행기(사용자 자기 AI 계정). 넣을 곳 전환: 실내 가구(`interior-props`, 손 도트 실내 칩셋) · 지금 맵 칩셋(`map-objects`). 「만든 묶음 가져오기」= object-gen `pack` 폴더 가져오기 |
-| 캐릭터 | char-gen (공개, `MovieHolic-Plex/char-gen`) | 내 컴퓨터에서 | 파이썬 도구라 브라우저에서 못 돈다. 「만들고 가져오기」(`genWorkspace.ts`)가 ① 무엇·몇 명 → 사용자 AI 에이전트에 붙여 넣을 부탁 글(언어별, `charGenRequest`) ② `char-gen pack` 폴더 가져오기 → 미리 보기 → 이 게임에 넣기 |
+| 캐릭터 | char-gen (공개, `MovieHolic-Plex/char-gen`) | 내 컴퓨터에서 | 파이썬 도구라 브라우저에서 못 돈다. 「부탁하고 가져오기」(`genWorkspace.ts`)가 ① 무엇·몇 명 → 사용자 AI 에이전트에 붙여 넣을 부탁 글(언어별, `charGenRequest`) ② `char-gen pack` 폴더 가져오기 → 미리 보기 → 이 게임에 넣기 |
 | 지형·바닥 | tile-gen (비공개, `MovieHolic-Plex/tile-gen`) | 내 컴퓨터에서 | **지형 생성기**(2026-10-21 다시 만듦): 이음매 없는 바닥 채우기, 47칸 자동 타일 가장자리(풀↔흙·길·카펫), 물가·움직이는 물, 숲 덩어리, 절벽·단. 물건·기물·건물은 object-gen 만 — tile-gen 을 물건 생성기로 소개하지 않는다(`tile-gen new --mode prop` 은 거절하고 object-gen 을 가리킨다). 화면: ① 종류(`TERRAIN_MODES`: floor·autotile·water·forest·cliff)·어떤 지형·참고 칸 `x,y`(선택) + 「지금 맵 칩셋 그림 받기」 → 부탁 글(`tileGenRequest`: `tile-gen auto` → 로컬 `tile-gen pick` → `tile-gen pack`) ② 묶음 가져오기. 묶음 = `oprn-store-pack/1` tileset 하나 + `autotileGroups`(256 이웃 키 `variantMap`, 바닥은 `interiorVariants`) + 물은 `animationStrips`. `content.objects`·ObjectSpec 킷은 없다. 가져오기는 타일셋을 통째로 옮겨(`applyPackToProject` 의 `mapStrings`) 두 칸을 그대로 둔다 — 넣은 뒤 안내에 자동 타일 벌 수를 보인다. 견본 그림은 첫 실제 결과가 나오면 단다(지금 카드는 「견본은 첫 결과가 나오면 올라와요」). 한계: 새 지형은 **새 칩셋**으로 들어가 그 칩셋을 쓰는 맵에서만 칠한다(지금 맵 칩셋에 합치기는 아직 없다), 숲 줄기·절벽 면 줄은 붓이 아직 안 놓는다 |
 | 아이템 아이콘 | item-gen | 준비 중 | 저장소가 없다(2026-10-21 조직·홈 확인). `scripts/asset-gen/generate.mjs`(agy CLI, 사람 고르기 없음)만 있어 가짜로 채우지 않았다 |
 
 - AI 미연결: 물건 카드 주 단추가 「내 AI 연결하기」, 가져오기는 글자 단추. 호스트가 AI 를 껐으면 안내 글 + 가져오기가 주 단추(죽은 버튼 없음).
-- **물건 화면 단계 띠**(`workshopWorkspace.ts` `stepper`): ① 무엇을 그릴지 적기 ② 후보 그리기 ③ 한 장 고르기 ④ 칩셋에 넣기 — 지금 단계는 폼·`itemState`·`isWorkshopPickBaked` 로 정한다(다 하면 data-step=5).
+- **물건 화면 단계 띠**(`workshopWorkspace.ts` `stepper`): ① 무엇을 그릴지 적기 ② 후보 그리기 ③ 한 장 고르기 ④ 칩셋에 넣기 ⑤ 맵에 놓기 — 지금 단계는 폼·`itemState`·`isWorkshopPickBaked` 로 정한다(칩셋에 넣으면 data-step=5 가 지금 할 일). 한 장도 못 그린 판(`itemState` = `stopped`, 「멈춤」 — 계정 한도·로그인 막힘)은 ②에 노란 「멈춤」 표로 머문다(고를 차례로 보이지 않는다). 막힘·경고 문구는 머리줄이 아니라 그 아래 한 줄 띠(`workshop-alert`)에 — 긴 문구가 「닫기」를 밀어내던 것(실화면). 카드 오류는 짧게: 한도 = 「계정 사용 한도 소진 · 약 N시간 뒤 풀림」(`quotaRunError`, 공급자 「Resets in 61h28m」에서), 401·403 = 「로그인 만료 · AI 설정에서 다시 로그인」. 다시 그리기 장 수 = 지난 판 장 수(폼에서 2장이면 2장). 「맵에 놓기」는 붓을 들고 창을 닫으며 토스트로 「맵에서 놓을 곳을 누르세요」.
   그리는 동안 진행 막대(`roundProgress`, 「후보 n/m장 다 그림 · 약 k분 남음. 창을 닫아도 계속 그려요」). 칩셋에 넣은 뒤 주 단추는 **「맵에 놓기」**(`armWorkshopStamp`: 기물 탭과 같은 `activePaletteStamp` + 칠하기 도구, 공방을 닫는다 → 맵을 클릭하면 놓인다). 지금 맵이 그 칩셋을 안 쓰면 이유를 보인다.
   안의 단추·입력은 `.workshop button` 한 모양, 주 단추는 `.workshop-primary`. 비교 띠(지금 그림 vs 후보)는 지금 그림이 있을 때만.
 - **묶음 가져오기**(`src/editor/workshop/genPackImport.ts`, 화면 `genWorkspace.ts` `importStep`): 큰 **끌어 놓기 칸**(폴더를 놓으면 `webkitGetAsEntry` 로 하위 폴더까지 읽는다, 누르면 `<input webkitdirectory>`). 묶음을 읽으면 칸이 한 줄(「다른 묶음 폴더…」)로 줄고 미리 보기·「이 게임에 넣기」가 나온다.
-  미리 보기: 작은 도트는 정수 배율(≤4배, 360×220 상자), 큰 그림(흉상 등)은 상자에 맞게 줄인다. 단계가 하나뿐이면 번호를 달지 않는다.
+  미리 보기: 한두 장이면 크게(정수 배율 ≤4배, 360×220 상자), 그보다 많으면 같은 칸(128×104) 격자에 통째로 — 12장 넘으면 11장 + 「나머지 N장도 같이 들어가요」(캐릭터 묶음 38장이 높이 제한 상자에 잘려 보이던 것). 큰 그림은 칸에 맞게 줄인다. 단계가 하나뿐이면 번호를 달지 않는다.
+  **캐릭터 묶음 가져오기 오류(2026-10-21 고침):** 짝 초상이 든 char-gen 묶음이 「reading 'characterAppearances'」로 죽었다 — `prepareStoreItem` 의 미리 돌려 보기 빈 문서에 `database` 가 없었다(`openwiki/asset-store.md`).
   `oprn-store-pack/1` 폴더(manifest.json + blobs/<sha256>): `validateManifest` · blob 은 sha256 을 다시 재서 이름과 맞는 것만 · 스토어 넣기와 같은 `prepareManifestItem`(storeApply.ts 에서 떼어 냄) + `applyPreparedStoreItem`.
   slug 는 `local-<생성기>-<blob 해시 12>`(같은 묶음을 다시 넣으면 덮어쓴다), 출처 `store = local:<생성기>`. 되돌리기 한 번으로 뺀다. 크레딧(CC BY 바탕 등)은 출처에 남는다.
 - **공용 출구는 막는다:** `storePublishBlockReason` 이 `workshop_` 그림(3/4 관문 영수증이 아직 공방에 배선되지 않음)과 `local:` 출처 묶음을 스토어 올리기에서 막는다.
