@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.311.0 — 2026-10-22
+
+### 기능
+
+- **workshop** — new objects follow the object-gen flow verbatim; setting as rules; placement check; advisory 3/4 badge (#3209) (`3af1cf3`)
+
+### 수정
+
+- **attribution** — credit EasyRPG RTP pixels in the Beodeul and vehicle sheets; add an RTP attribution check (#3208) (`6f9d34b`)
+- **workshop** — tile-gen forest packs with a tree composer save again; forest card says "forest floor + trees" (#3206) (`d0352d4`)
+
 ## 0.310.0 — 2026-10-21
 
 ### 기능
