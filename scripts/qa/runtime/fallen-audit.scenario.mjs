@@ -115,7 +115,7 @@ export default {
     { id: "out-to-hub", note: "천문대 문 → 광장", ops: [...stepInto("fs_observatory", 11, 20, "down")], shot: true },
     { id: "gate-guard", note: "동문 문지기", ops: [{ kind: "teleport", mapId: "fs_hub", x: 53, y: 21 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "gate-guard-close", note: "", ops: [...closeDialogue()], shot: false },
-    { id: "to-forest", note: "동문 → 숲", ops: [...stepInto("fs_hub", 54, 21, "right")], shot: true },
+    { id: "to-forest", note: "동문 → 숲", ops: [...stepInto("fs_hub", 54, 22, "right")], shot: true },
     { id: "forest-walk", note: "숲길을 걷는다(풀숲 조우)", ops: [
       ...walkFighting("up", 2200), ...walkFighting("up", 2200), ...walkFighting("up", 2200),
       dumpState("forest-walk"),
