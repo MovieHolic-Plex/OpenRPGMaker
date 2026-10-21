@@ -113,6 +113,8 @@ export type WorkshopRun = {
   topRows: number | null;
   verdict: Verdict | null;
   error: string | null;
+  /** 막혀 끝났으면 그 갈래(계정 한도 quota · 잠깐 몰림 rate · 로그인 auth). 옛 저장본에는 없다. */
+  errorKind?: "quota" | "rate" | "auth" | null;
   /** 이 장에 쓴 모델 호출 수 */
   calls: number;
   /** 사용자가 이 장만 다시 그리라며 남긴 말 */
@@ -235,7 +237,9 @@ export const perItem = <T>(value: PerItem<T>, item: WorkshopItem): T => (typeof 
 
 export type WorkshopSurface = "workshop-draw" | "workshop-review";
 /** 모델 한 번 호출 → 답 글. 오류는 그대로 던진다(status 가 있으면 401·429 판정에 쓴다). */
-export type ChatFn = (surface: WorkshopSurface, request: ChatRequest) => Promise<string>;
+/** meta = 이 호출이 어느 판·장의 것인가(작업 줄이 작업별 호출을 세고, dev 에서 한도 막힘을 흉내 낸다). */
+export type ChatCallMeta = { readonly roundId: string; readonly letter: string };
+export type ChatFn = (surface: WorkshopSurface, request: ChatRequest, meta?: ChatCallMeta) => Promise<string>;
 
 export interface WorkshopRunner {
   readonly harnessId: string;

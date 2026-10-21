@@ -12,7 +12,7 @@
 | 카드 | 생성기 | 상태 | 하는 일 |
 |---|---|---|---|
 | 물건·가구 | object-gen | 여기서 바로 | 「새 물건 그리기」= 아래 공방 실행기(사용자 자기 AI 계정). 넣을 곳 전환: 실내 가구(`interior-props`, 손 도트 실내 칩셋) · 지금 맵 칩셋(`map-objects`). 「만든 묶음 가져오기」= object-gen `pack` 폴더 가져오기 |
-| 캐릭터 | char-gen (공개, `MovieHolic-Plex/char-gen`) | 내 컴퓨터에서 | 파이썬 도구라 브라우저에서 못 돈다. 「부탁하고 가져오기」(`genWorkspace.ts`)가 ① 무엇·몇 명 → 사용자 AI 에이전트에 붙여 넣을 부탁 글(언어별, `charGenRequest`) ② `char-gen pack` 폴더 가져오기 → 미리 보기 → 이 게임에 넣기 |
+| 캐릭터 | char-gen (비공개 — 2026-10-21 바뀜, `MovieHolic-Plex/char-gen`. 설치 링크를 내지 않는다) | 내 컴퓨터에서 | 파이썬 도구라 브라우저에서 못 돈다. 「부탁하고 가져오기」(`genWorkspace.ts`)가 ① 무엇·몇 명 → 사용자 AI 에이전트에 붙여 넣을 부탁 글(언어별, `charGenRequest`) ② `char-gen pack` 폴더 가져오기 → 미리 보기 → 이 게임에 넣기 |
 | 지형·바닥 | tile-gen (비공개, `MovieHolic-Plex/tile-gen`) | 내 컴퓨터에서 | **지형 생성기**(2026-10-21 다시 만듦): 이음매 없는 바닥 채우기, 47칸 자동 타일 가장자리(풀↔흙·길·카펫), 물가·움직이는 물, 숲(숲 바닥 오토타일 + 편집기가 놓는 나무 — tile-gen PR #4 부터 그룹에 `composer` `{kind:"trees", layers:[4,3,2], sprites t4·t3a·t3b·t2 와 그늘판 d}` 가 붙고 옛 trunk_* 줄 칸은 없다, 붓이 칠하면 `autotileEngine` → `composeTreesAround` 가 2~4층에 나무를 짠다), 절벽·단. 물건·기물·건물은 object-gen 만 — tile-gen 을 물건 생성기로 소개하지 않는다(`tile-gen new --mode prop` 은 거절하고 object-gen 을 가리킨다). 화면: ① 종류(`TERRAIN_MODES`: floor·autotile·water·forest·cliff) 또는 재질 프리셋(`TERRAIN_PRESETS`: lava·swamp·poison·deep_water·beach = 물 계열, snow·ice·sand·road·cobble·meadow = 자동 타일 계열 — CLI `--mode <프리셋>`, tile-gen PR #3)·어떤 지형·참고 칸 `x,y`(선택) + 「지금 맵 칩셋 그림 받기」 → 부탁 글(`tileGenRequest`: `tile-gen auto` → 로컬 `tile-gen pick` → `tile-gen pack`) ② 묶음 가져오기. 묶음 = `oprn-store-pack/1` tileset 하나 + `autotileGroups`(256 이웃 키 `variantMap` + **`phaseVariants`** `{w:16,h:16,maps:[256 표]}` — 채움 변형 4~6·바깥 변형 1~6 을 칸 위치로 고른다, `autotileVariantForMask` 가 붓·채우기·길에서 따른다. 바닥도 phaseVariants. 옛 `interiorVariants` 는 tile-gen PR #3 에서 없어졌다) + 물은 멤버 칸마다 `animationStrips`(3~4프레임). 멤버 칸이 수백 개(물 시험 묶음 372칸·띠 372개). `content.objects`·ObjectSpec 킷은 없다. 가져오기는 타일셋을 통째로 옮겨(`applyPackToProject` 의 `mapStrings`) 이 칸들을 그대로 둔다 — 2026-10-21 tile-gen 시험 묶음(`examples/demo` 정해진 답, 물+바닥)으로 저장·다시 열기 뒤 phaseVariants·animationStrips 가 똑같이 남는 것을 SQLite 로 확인, 숲 시험 묶음(740칸)으로 `composer` 를 포함한 그룹 JSON 이 저장·다시 열기 뒤 바이트 그대로인 것도 확인 — 이때 저장 검사가 `composer.overhangOnGroups`(사람이 읽는 이름, 엔진은 `overhangOnTiles` 만 본다)를 필수로 요구해 400 으로 저장이 막혔다, 지금은 있을 때만 검사 — 넣은 뒤 안내에 자동 타일 벌 수를 보인다. 견본 그림은 비워 둔다(위 「견본」 줄 참고). 한계: 새 지형은 **새 칩셋**으로 들어가 그 칩셋을 쓰는 맵에서만 칠한다(지금 맵 칩셋에 합치기는 아직 없다), 절벽 면 줄은 붓이 아직 안 놓는다. 숲 그림은 아직 사람 검수를 통과한 것이 없다 |
 | 아이템 아이콘 | item-gen | 준비 중 | 저장소가 없다(2026-10-21 조직·홈 확인). `scripts/asset-gen/generate.mjs`(agy CLI, 사람 고르기 없음)만 있어 가짜로 채우지 않았다 |
 
@@ -90,3 +90,33 @@
 - **1배 읽힘·문화 맥락** — 정의에 `setting`(칩셋 → 「현대 일본 도시」「서양 판타지 중세 항구 마을」…, `objectGenTool.ts` `objectSetting`)을 싣고, 검수에 1배·2배 그림을 8배보다 먼저 보인다. 검수는 「1배에서 무엇으로 보이나(looks_like)」를 먼저 적고 READ(무엇인지 안 읽힘)·CONTEXT(이 배경에 안 맞음, 예: jp_city 의 영국식 부스)·SIZE·THIN 코드를 쓴다. 카드에 「검수 눈엔: …」로 보인다.
 - **알아서 고르기 = 블라인드 검수 → 고르기** — 조수 카드의 「알아서 고르기」는 검수 통과 후보가 둘 이상이면 object-gen picker(`objectgen/picker.py`)를 옮긴 고르기 호출 한 번(`picker.ts`)으로 고른다. 사람 선택(`review.pick`)이 아니다.
 - **3/4 관문 조언 배지** — 다 그린 후보마다 object-gate 와 같은 지시문(`OBJECT_GATE_RUBRIC`)·기준 그림(`public/assets/harnesses/object-gate/view34-*.png`)·측정 글(`facts.ts`)로 판정자 1번을 부르고 `decideObjectGate` 로 pass/refer/fail(`gateAdvice.ts`, `run.gate`). 배지 `gateBadge(run)`(`src/editor/workshop/gateBadge.ts`, 「3/4 통과 / 애매 / 미달 · 윗면 N행」). **넣기를 막지 않는다** — 미보정 1표라 object-gate 영수증이 아니다. 굽기는 설명서 `review.vqa`(`judge: workshop-object-gate-advice/<kind>`, `calibrated:false`)에 적는다. 공방 그림은 여전히 「3/4 관문 미통과」이고 스토어·공용은 접두사로 막힌다.
+
+
+## 작업 줄 — 여러 개를 함께 그리기 (2026-10-21)
+
+모든 생성 작업(공방 물건 폼 · 조수 `generate_missing_object` · char-gen/tile-gen/object-gen 묶음 가져오기)이 **한 줄**에 선다. 다운로드 관리자처럼 오른쪽 아래 알약(「공방 작업 · N개 진행」)을 누르면 판이 열리고, 편집은 그대로 계속한다.
+
+- 코드: `src/editor/workshop/queue/` — `jobModel.ts`(순수: 상태·진행·남은 시간·멈춤 이유), `jobStore.ts`(IndexedDB `oprn-workshop-jobs`: 작업 + 묶음 그림 바이트, 못 열면 메모리), `workshopQueue.ts`(일정·멈춤·넣기, 싱글턴 `workshopQueue()`), `queueDock.ts`(알약·판), `chatHooks.ts`(모델 호출 앞뒤 고리). CSS `src/styles/database/workshop/queue.css`. 셸에 붙이는 곳 `editor.ts` `renderEditor`.
+- **작업 하나 = 사용자가 기다리는 결과 하나**: 물건 한 판(후보 1~3장) 또는 묶음 하나. 물건 작업의 단계는 엔진 판에서 읽는다(정본은 판, `oprn-workshop`). 보이는 상태: 줄 서는 중 · 참고 그림(다른 작업자의 object-gen 참고 그림 단계가 판에 `reference` 를 달면) · 그리는 중 · 검수 중 · 고를 차례(묶음은 넣을 차례) · 넣는 중 · 넣음 · 못 그림 · 멈춤 · 그만둠.
+- **동시 수**: 작업 1~10개(기본 10, `oprn:workshop-queue-limit`, 판·공방 머리의 「동시에」). 엔진 장 동시 수는 작업 수×3(엔진 상한 30, `MAX_ENGINE_CONCURRENCY`).
+- **한도·로그인·연결 끊김**: 엔진이 장 오류에 `errorKind`(quota·rate·auth)를 단다(`runErrorKind`). 작업 줄은 막힌 장이 나온 작업을 멈추고 이유·풀리는 때를 보인다(공급자 「Resets in 61h28m」 또는 엔진 글 「약 2분 뒤 풀림」, 없으면 30분 · 몰림은 2분부터 두 배 30분까지 · 로그인은 사람이 다시 로그인하면). **계정 막힘 동안 다른 작업은 공급자를 부르지 않고 `chatHooks.before` 에서 기다린다**(두드리지 않기) — 때가 되면 작업 하나만 「탐침」으로 다시 해 보고, 통하면 모두 푼다. 연결 끊김(`Failed to fetch`)은 계정과 상관없어 그 작업만 20초부터 두 배(5분까지) 뒤 다시 그리고, 4번 넘으면 「못 그림」. 고를 후보가 이미 있으면 작업을 멈추지 않고 끊긴 장만 다시 그린다.
+  - 실측(2026-10-21): 이 기기에서 크로미움이 `net::ERR_NETWORK_CHANGED`(Tailscale)로 도는 요청을 한꺼번에 끊는다(47건, 두 번). 고치기 전에는 10개 중 8개가 「못 그림」으로 끝났고, 고친 뒤에는 모두 저절로 이어 그렸다. `chatHooks.before` 를 기다리지 않던 버그(대기·시험 고장 둘 다 무효)도 이 시험에서 찾았다.
+- **넣기는 맵 소유권을 지킨다**: 굽기(`workshopBake.ts`)·묶음 넣기(`genPackImport.ts`)를 `installOwnership.ts` `withInstallOwnership` 로 감싼다 — 그 칩셋을 쓰는 맵을 조수 실행과 같은 `editorAiMapRuns` 로 잠깐 잡고(칩셋을 쓰는 맵이 없으면 프로젝트 전체), 조수가 그 맵에서 일하는 중이면 `WorkshopInstallBusy` → 「넣는 중(기다림)」으로 두었다가 소유권이 풀리면 다시 넣는다.
+- **저장·새로 고침**: 작업은 IndexedDB 에 남는다. 탭을 닫거나 새로 고치면(`pagehide`) 엔진을 dispose 해 도는 장을 「끊김」(queued)으로 남기고, 다시 열면 이어 그린다. 결과(칩셋에 넣은 것)는 프로젝트 정본(`project.sqlite`)에 들어간다.
+- **느려짐 고침**: 장마다 칩셋 시트를 다시 풀던 것(버들항 23,936칸 시트를 수십 번 동시에 → 편집기가 2분 멈춤)을 `pixels.ts` `tilesetSource` 캐시 + `sheet.ts` 의 시트 조각·색 세기 WeakMap 캐시로 한 번만 한다. 첫 판에서 큰 시트를 처음 풀 때 한 번 3~5초 멈춤은 남아 있다.
+- **시험 고리(dev 또는 localStorage `oprn:workshop-queue-qa=1`)**: `window.__oprnWorkshopQueue` — `snapshot()`, `fault429(jobId, "0h2m")`(다음 호출에 한도 막힘을 던진다).
+- **실모델 시험(2026-10-21)**: 빌드 + `node scripts/oprn-serve.mjs --project-dir <폴더>`(정본 SQLite), 도트·검수 모델 Opus 5.5 medium(openai-compat 끝점), 폼으로 10개를 16초에 넣음 → 10개 동시 → 한도 흉내 → 2분 뒤 탐침으로 풀림 → 작업 줄에서 고름 → 저장·새로 고침 뒤 줄·넣은 결과가 남음. 증거 `verify-shots/workshop-queue/`.
+
+- **참고 그림 단계 읽기**: 엔진은 참고 그림을 만드는 동안 `round.reference` 를 비워 두고 장을 모두 `queued` 에 둔다(끝나면 `{status: ok|none|failed}` 를 한 번 쓴다, pending 상태 없음). 작업 줄은 「reference 없음 + 모든 장 queued」를 「참고 그림」 단계로 보인다(`jobModel.referencePending`).
+- **알아서 고르기**: 조수 요청 작업이 고를 차례가 되고 사용자가 「알아서 고르기」를 켰으면 작업 줄이 `assistantObjectGen.chooseAutoPick`(검수 통과 둘 이상이면 고르기 3번 다수결)으로 골라 굽는다. 고른 까닭은 피드백·카드 문구에 남는다. 3/4 관문 조언(`run.gate`)은 굽기 `review.vqa` 로 넘긴다.
+
+## 생성기 저장소 고정 — `npm run gen-kits:sync` (2026-10-21)
+
+공방이 생성기 저장소의 **어느 커밋**을 따르는지 lock 파일로 못 박는다(선례: 월드맵 키트 `worldmap-kit:sync`).
+
+- **솔직한 현재 상태**: 공방 안의 그리기·검수 글(`src/harnesses/interior-props/editor/prompts.ts`, `map-objects/editor/prompts.ts`)은 모노레포 파이썬 하네스(brief.py·prompt.md·review.md)를 옮긴 것이고 object-gen 의 `prompts.py` 와 이어져 있지 않다. 팔레트도 `tiledata/hand-interior` 의 v5(object-gen 은 v6). char-gen·tile-gen 은 가져오기 전용이라 편집기가 기대는 것은 부탁 글의 CLI 동사·묶음 형식 `oprn-store-pack/1`·지형 종류뿐이다. 즉 **저장소를 고쳐도 공방에 저절로 반영되지 않았다.**
+- lock: `tiledata/gen-kits.lock.json` — 저장소마다 `repo`·`visibility`·`branch`·`commit`(40자)·`contract`(파일별 꼭 있어야 할 글·CLI 동사)·`vendor`(공개 저장소만: 뽑을 파이썬 모듈 상수·글 파일·그림).
+- `npm run gen-kits:sync` — `.gen-kits/<kit>.git`(bare, gitignore)에 받고 `git show` 로 읽는다. object-gen(공개)은 모듈 상수(`scripts/lib/gen-kits-extract.py`, ast 로 대문자 상수만)·글 파일을 `src/harnesses/_core/workshop/genKits/object-gen.json` 으로, 기준 그림을 `public/assets/gen-kits/object-gen/` 로 뽑는다. 비공개(char-gen·tile-gen)는 계약만 검사하고 **글을 뽑지 않는다**(공개 모노레포로 새지 않게 — 비공개에 vendor 를 달면 거절). 요약 `genKits/kits.json`.
+- `-- --check`(생성물이 lock 과 같은지·계약, 다르면 exit 1) · `-- --drift [--json] [--strict]`(lock 과 각 저장소 main 의 차이: 커밋 목록·편집기가 따르는 파일·상수 이름 차이·main 에서 계약이 깨지는지) · `-- --bump <kit>`(main 으로 올리되 계약이 깨지면 안 올림).
+- 읽는 쪽: `src/harnesses/_core/workshop/genKits/index.ts` — `objectGenKit`, `kitConstant`, `kitText`, `kitFile`, `parseRamps`, `genKitPins`. 실행기 글을 이 모듈로 바꾸는 일은 실행기 담당 작업(참고 그림 단계 이식)과 함께 간다 — 아직 손 사본이 쓰인다.
+- drift 실측(2026-10-21): object-gen = main 과 같음 · char-gen 1커밋 뒤(`d5f2639` 얼굴 상자 머리카락) · tile-gen 2커밋 뒤(`bf53597` 채우기 변형·지형 프리셋, `cli.py`·`pack.py` 바뀜). 둘 다 main 에서 계약이 맞아 `--bump` 로 올렸다(char-gen `d5f2639`, tile-gen `bf53597`).

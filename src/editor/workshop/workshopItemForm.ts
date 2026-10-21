@@ -79,9 +79,12 @@ export function renderItemForm(session: WorkshopSession, onSaved: (key: string) 
     }
     await session.store.putItemDef(session.projectKey, def);
     await session.reload();
-    // 저장하고 바로 그리기 시작 — 「만들기」 한 번으로 후보가 나온다
+    // 저장하고 바로 작업 줄에 세운다 — 「만들기」 한 번으로 후보가 나온다(자리가 나면 곧 시작, 동시에 여러 개가 돈다).
     const item = session.items().find((candidate) => candidate.key === def.key);
-    if (item) await session.engine.startRound(item, { count: Number(count.value) });
+    if (item) {
+      const { workshopQueue } = await import("./queue/workshopQueue");
+      await workshopQueue().enqueueObject({ harnessId: session.harnessId, itemKey: item.key, title: item.title, count: Number(count.value), source: "workshop" });
+    }
     await session.reload();
     onSaved(def.key);
   }

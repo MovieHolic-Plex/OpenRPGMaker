@@ -13,6 +13,7 @@ import type { ItemDefinition, WorkshopEnv, WorkshopItem, WorkshopPick, WorkshopR
 import { store as projectStore } from "@/project/store";
 import { createWorkshopChat } from "./chat";
 import { browserWorkshopEnv } from "./pixels";
+import { withChatHooks } from "./queue/chatHooks";
 
 const CONCURRENCY_KEY = "oprn:workshop-concurrency";
 /** 세션(판·고른 것)이 바뀌면 window 에 낸다 — 왼쪽 판이 듣는다. */
@@ -104,7 +105,7 @@ async function createSession(harnessId: string, projectKey: string): Promise<Wor
   const session: WorkshopSession = {
     harnessId, projectKey, runner, store, env,
     engine: createWorkshopEngine({
-      runner, env, store, projectKey, chat: createWorkshopChat(), concurrency: savedConcurrency(),
+      runner, env, store, projectKey, chat: withChatHooks(createWorkshopChat()), concurrency: savedConcurrency(),
       onStatus: notify,
       onChange: (round) => {
         const index = session.rounds.findIndex((r) => r.id === round.id);

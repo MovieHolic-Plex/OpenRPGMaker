@@ -11,25 +11,17 @@ import { AI_CONNECTION_STATUS_CHANGED_EVENT, getAiConnectionStatus } from "@/edi
 import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { workshopAiReady } from "@/editor/workshop/chat";
 import { GENERATOR_STATUS_LABELS, WORKSHOP_GENERATORS, type WorkshopGenerator } from "@/editor/workshop/generators";
-import { objectWorkshopHarness, OBJECT_WORKSHOP_HARNESSES } from "@/editor/workshop/mapObjectTarget";
-import { peekWorkshopSession, WORKSHOP_CHANGED_EVENT } from "@/editor/workshop/workshopSession";
-import { itemState } from "@/editor/workshop/workshopStatus";
+import { objectWorkshopHarness } from "@/editor/workshop/mapObjectTarget";
+import { WORKSHOP_CHANGED_EVENT } from "@/editor/workshop/workshopSession";
+import { workshopQueue } from "@/editor/workshop/queue/workshopQueue";
 import { clearChildren, el } from "@/util/dom";
 
 /** 물건 그리기 진행 — 두 실행기(실내 가구·지금 맵 칩셋)를 합쳐 센다. 아직 연 적 없으면 null. */
-function objectProgress(): { drawing: number; choose: number } | null {
-  let seen = false, drawing = 0, choose = 0;
-  for (const harnessId of OBJECT_WORKSHOP_HARNESSES) {
-    const session = peekWorkshopSession(harnessId);
-    if (!session) continue;
-    seen = true;
-    for (const item of session.items()) {
-      const state = itemState(item.key, session.rounds, session.picks);
-      if (state === "drawing") drawing += 1;
-      else if (state === "choose") choose += 1;
-    }
-  }
-  return seen ? { drawing, choose } : null;
+/** 물건 카드의 진행 수 — 작업 줄과 같은 수(알약·판 머리와 어긋나지 않게, 2026-10-21 VQA). */
+function objectProgress(): { drawing: number; choose: number; paused: number } | null {
+  const { counts, jobs } = workshopQueue().snapshot();
+  if (!jobs.length) return null;
+  return { drawing: counts.active + counts.queued, choose: counts.ready, paused: counts.paused };
 }
 
 function button(text: string, testid: string, onClick: () => void, primary = false): HTMLButtonElement {
@@ -68,8 +60,11 @@ function generatorCard(generator: WorkshopGenerator, ai: { ready: boolean; hostO
     if (ai.ready) {
       actions.push(button("새 물건 그리기", "workshop-gen-open-object-gen", openObjectWorkshop, true));
       const progress = objectProgress();
-      if (progress && progress.drawing + progress.choose > 0) {
-        notes.push(el("span", { class: "left-workshop-meta", dataset: { testid: "left-workshop-progress" }, text: `그리는 중 ${progress.drawing} · 고를 차례 ${progress.choose}` }));
+      if (progress && progress.drawing + progress.choose + progress.paused > 0) {
+        notes.push(el("span", {
+          class: "left-workshop-meta", dataset: { testid: "left-workshop-progress" },
+          text: progress.paused ? `그리는 중 ${progress.drawing} · 고를 차례 ${progress.choose} · 멈춤 ${progress.paused}` : `그리는 중 ${progress.drawing} · 고를 차례 ${progress.choose}`,
+        }));
       }
     } else if (ai.hostOff) {
       notes.push(el("p", { class: "left-workshop-note", dataset: { testid: "left-workshop-no-ai" }, text: "이 서버는 AI를 꺼 두어 여기서 그릴 수 없어요. 만든 묶음은 가져올 수 있어요." }));
@@ -126,9 +121,18 @@ export function createLeftWorkshopPane(): { root: HTMLElement; show(): void; dis
   window.addEventListener(WORKSHOP_CHANGED_EVENT, render);
   // AI 연결 상태(연결됨·서버에서 꺼짐)가 바뀌면 연결 안내도 바로 바꾼다.
   window.addEventListener(AI_CONNECTION_STATUS_CHANGED_EVENT, render);
+  // 작업 줄 수(그리는 중·고를 차례·멈춤)가 바뀔 때만 다시 그린다 — 작업 줄은 자주 알린다.
+  let lastProgress = JSON.stringify(objectProgress());
+  const unsubscribeQueue = workshopQueue().subscribe(() => {
+    const next = JSON.stringify(objectProgress());
+    if (next === lastProgress) return;
+    lastProgress = next;
+    render();
+  });
   return {
     root, show: render,
     dispose: () => {
+      unsubscribeQueue();
       window.removeEventListener(WORKSHOP_CHANGED_EVENT, render);
       window.removeEventListener(AI_CONNECTION_STATUS_CHANGED_EVENT, render);
     },

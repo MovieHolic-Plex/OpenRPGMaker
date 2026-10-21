@@ -72,6 +72,8 @@ import { createJobEntry } from "./aiJobEntry";
 import { mountAiMapPresence } from "@/editor/aiMapPresence";
 import { createTilesetChangeCard } from "./aiTilesetChangeCard";
 import { createStoreCard } from "./aiStoreCard";
+import { createObjectGenBatch } from "./aiObjectGenCard";
+import { isObjectGenRequest } from "@/editor/workshop/objectRequest";
 import type { StoreCardRequest } from "@/editor/tools/storeTools";
 import type { TilesetChangeQuestion } from "@/editor/tools/tilesetChangeTools";
 import { createAssistantWide } from "./aiAssistantWide";
@@ -2139,14 +2141,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     syncGlassIdle();
     // 조수가 ask_tileset_change 로 물었으면 턴이 끝난 뒤 질문 카드를 띄운다(마지막 질문 하나).
     let tilesetQuestion = null as TilesetChangeQuestion | null;
-    let storeCard = null as StoreCardRequest | null;
+    // 스토어·없는 기물 카드 — 조수가 generate_missing_object 를 한 턴에 여러 번 부르면 모두 모아 함께 줄 세운다.
+    const storeCards: StoreCardRequest[] = [];
     const turnConversation = conversationId;
     try {
       await runPiCommand(command, {
         onEvent: event => progress.event(event),
         getApprovedTilesetFamilies: () => approvedTilesetFamilies,
         onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
-        onStoreCard: (request) => { storeCard = request; },
+        onStoreCard: (request) => { storeCards.push(request); },
         appendBubble: (role, line) => appendBubble(role, line),
         appendProcess: (text) => (reviewCard ?? ensureWorkCard()).attachElement(el("p", { class: "ai-work-process-note", text })),
         appendCard: (element) => { appendChangeCard(element); },
@@ -2197,17 +2200,24 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       syncGlassIdle();
     }
     if (tilesetQuestion && !disposed && turnConversation === conversationId) showTilesetChangeCard(tilesetQuestion);
-    if (storeCard && !disposed && turnConversation === conversationId) showStoreCard(storeCard);
+    if (storeCards.length && !disposed && turnConversation === conversationId) showStoreCards(storeCards);
   };
-  /** 스토어 카드(aiStoreCard). 넣기·그리기·있는 타일 고르기는 후속 요청을 평소 전송 경로로 보낸다. 올리기·숨기기는 카드 안에서 끝난다. */
-  const showStoreCard = (request: StoreCardRequest): void => {
+  /**
+   * 스토어 카드(aiStoreCard). 넣기·그리기·있는 타일 고르기는 후속 요청을 평소 전송 경로로 보낸다. 올리기·숨기기는 카드 안에서 끝난다.
+   * 없는 기물 그리기 요청(generate_missing_object)은 이 턴의 것을 모두 한 묶음 카드로 — 공방 작업 줄에 함께 서서 동시에 그리고,
+   * 다 넣으면 후속 요청 하나로 조수가 한꺼번에 놓는다. 그 밖의 스토어 카드는 예전처럼 마지막 하나.
+   */
+  const showStoreCards = (requests: readonly StoreCardRequest[]): void => {
     const owner = conversationId;
-    const card = createStoreCard(request, (followUp) => {
+    const followUp = (text: string): void => {
       if (disposed || owner !== conversationId) return;
-      restoreComposer(followUp);
+      restoreComposer(text);
       void send();
-    });
-    log.append(card);
+    };
+    const objectRequests = requests.filter(isObjectGenRequest);
+    const other = requests.filter((request) => !isObjectGenRequest(request)).at(-1);
+    if (objectRequests.length) log.append(createObjectGenBatch(objectRequests, followUp));
+    if (other) log.append(createStoreCard(other, followUp));
     followConversationLog(log);
   };
   /** 칩셋 계열 변경 질문 카드. 고르면 승인 목록을 고치고 후속 요청을 평소 전송 경로로 보낸다. */
@@ -2317,7 +2327,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     signal.throwIfAborted();
     card.setStatus("작업 중");
     let tilesetQuestion = null as TilesetChangeQuestion | null;
-    let storeCard = null as StoreCardRequest | null;
+    // 스토어·없는 기물 카드 — 조수가 generate_missing_object 를 한 턴에 여러 번 부르면 모두 모아 함께 줄 세운다.
+    const storeCards: StoreCardRequest[] = [];
     let phase: string | undefined;
     await runPiCommand(command, {
       background: true,
@@ -2327,7 +2338,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       onActivity: (state) => { phase = state.phase; if (ticketRef.id !== null) reportBackgroundBoard(ticketRef.id, state); },
       getApprovedTilesetFamilies: () => approvedTilesetFamilies,
       onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
-      onStoreCard: (request) => { storeCard = request; },
+      onStoreCard: (request) => { storeCards.push(request); },
       appendBubble: (role, line) => card.say(role, line),
       appendProcess: (text) => card.note(text),
       appendCard: (element) => card.attach(element),
@@ -2343,7 +2354,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     card.finish({ ok: !signal.aborted && phase !== "실패" && phase !== "중단",
       message: signal.aborted || phase === "중단" ? "중단" : phase === "실패" ? "실패" : phase === "검토 대기" ? "검토 필요" : "끝남" });
     if (tilesetQuestion && !disposed && owner === conversationId) showTilesetChangeCard(tilesetQuestion);
-    if (storeCard && !disposed && owner === conversationId) showStoreCard(storeCard);
+    if (storeCards.length && !disposed && owner === conversationId) showStoreCards(storeCards);
   };
   const enqueueMapRun = (run: MapRunInput, mapKey: string, exclusive: boolean): void => {
     const project = store.getCurrent();

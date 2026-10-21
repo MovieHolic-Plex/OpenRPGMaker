@@ -12,9 +12,10 @@ import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 import { t } from "@/i18n";
-import { CHAR_GEN_REPO_URL, charGenRequest, TERRAIN_MODES, TERRAIN_PRESETS, tileGenRequest, type GeneratorId } from "./generators";
+import { charGenRequest, TERRAIN_MODES, TERRAIN_PRESETS, tileGenRequest, type GeneratorId } from "./generators";
 import { browserWorkshopEnv } from "./pixels";
-import { addLocalPackToProject, localPackPreviews, readLocalPack, revokeLocalPackPreviews, type LocalPack, type LocalPackPreview } from "./genPackImport";
+import { localPackPreviews, readLocalPack, revokeLocalPackPreviews, type LocalPack, type LocalPackPreview } from "./genPackImport";
+import { workshopQueue } from "./queue/workshopQueue";
 
 let host: HTMLElement | null = null;
 let previews: LocalPackPreview[] = [];
@@ -113,14 +114,8 @@ function requestStep(): HTMLElement {
     el("div", { class: "workshop-form-row", children: [el("label", { class: "workshop-gen-grow", children: ["어떤 캐릭터", what] }), el("label", { children: ["몇 명", count] })] }),
     request,
     row,
-    el("p", {
-      class: "workshop-item-meta",
-      children: [
-        el("span", { text: "처음이면 char-gen 을 내 컴퓨터에 설치하고 내 AI 에이전트에 연결하세요. 그림은 내 계정으로만 만들고, 마지막에 사람이 직접 골라요." }),
-        " ",
-        el("a", { text: "char-gen 설치 안내", attrs: { href: CHAR_GEN_REPO_URL, target: "_blank", rel: "noopener noreferrer" } }),
-      ],
-    }),
+    // char-gen 저장소는 비공개가 됐다(2026-10-21, tiledata/gen-kits.lock.json) — 설치 링크는 받은 사람 말고는 404 라 내지 않는다.
+    el("p", { class: "workshop-item-meta", text: "char-gen 이 깔린 내 AI 에이전트가 만들어요(저장소는 아직 비공개라 받은 사람만 쓸 수 있어요). 그림은 내 계정으로만 만들고, 마지막에 사람이 직접 골라요." }),
   ], "workshop-gen-step-request");
 }
 
@@ -263,8 +258,11 @@ function importStep(generator: LocalGenerator, n: number): HTMLElement {
   const result = el("div", { class: "workshop-gen-result", dataset: { testid: "workshop-gen-result" } });
   const picker = el("input", { attrs: { type: "file", multiple: "", webkitdirectory: "", hidden: "" }, dataset: { testid: "workshop-gen-folder" } }) as HTMLInputElement;
   let current: LocalPack | null = null;
+  /** 읽은 묶음은 공방 작업 줄에 「넣을 차례」로 선다 — 창을 닫거나 새로 고쳐도 작업 줄에서 넣을 수 있다. */
+  let currentJob: Promise<string> | null = null;
 
   const show = (pack: LocalPack): void => {
+    currentJob = workshopQueue().enqueuePack(pack, generator).then((job) => job.id);
     revokeLocalPackPreviews(previews);
     previews = localPackPreviews(pack);
     current = pack;
@@ -277,8 +275,19 @@ function importStep(generator: LocalGenerator, n: number): HTMLElement {
           add.disabled = true;
           status.classList.remove("is-error");
           status.textContent = "넣는 중…";
-          addLocalPackToProject(current, generator).then(
+          (currentJob ?? Promise.reject(new Error("묶음을 다시 골라 주세요.")))
+            .then(async (jobId) => {
+              const outcome = await workshopQueue().install(jobId, null);
+              if (outcome === "waiting") {
+                status.textContent = "조수가 일하는 중이라, 끝나면 작업 줄이 바로 넣어요.";
+                return null;
+              }
+              const installed = workshopQueue().snapshot().jobs.find((view) => view.job.id === jobId)?.job.installed;
+              return installed?.kind === "pack" ? { title: installed.title, tilesetIds: installed.tilesetIds } : null;
+            })
+            .then(
             (added) => {
+              if (!added) return;
               add.textContent = "넣었어요 ✓";
               add.classList.add("is-done");
               status.classList.add("is-done");

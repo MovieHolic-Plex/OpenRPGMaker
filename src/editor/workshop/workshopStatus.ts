@@ -3,7 +3,7 @@
 import type { WorkshopPick, WorkshopRound } from "@/harnesses/_core/workshop/types";
 
 export type ItemState = "drawing" | "choose" | "stopped" | "picked" | "idle";
-export const ITEM_STATE_LABELS: Readonly<Record<ItemState, string>> = { choose: "고를 차례", drawing: "그리는 중", stopped: "멈춤", picked: "고름", idle: "아직" };
+export const ITEM_STATE_LABELS: Readonly<Record<ItemState, string>> = { choose: "고를 차례", drawing: "그리는 중", stopped: "잠시 멈춤", picked: "고름", idle: "아직" };
 const PENDING = new Set(["queued", "drawing", "reviewing"]);
 const FALLBACK_MINUTES = 3;
 

@@ -17,7 +17,7 @@
 .workshop-head { display: flex; align-items: center; flex-wrap: nowrap; gap: var(--space-3); padding: 10px var(--space-4); border-bottom: 1px solid var(--border-default); }
 .workshop-head h2 { margin: 0; font-size: 15px; font-weight: var(--font-weight-semibold, 600); }
 /* 머리줄은 한 줄 — 넣을 곳·진행 글이 줄고(말줄임), 제목·동시에·닫기는 줄지 않는다(영어 1280 에서 「닫기」가 아래로 떨어지던 것). */
-.workshop-head > h2, .workshop-head > .workshop-concurrency, .workshop-head > .workshop-close { flex: none; white-space: nowrap; }
+.workshop-head > h2, .workshop-head > .workshop-concurrency, .workshop-head > .workshop-close, .workshop-head > .workshop-queue-open { flex: none; white-space: nowrap; }
 .workshop-progress { flex: 1 1 0; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; color: var(--text-2); }
 .workshop-blocked { margin: 0; font-size: 12px; color: var(--warning); }
 .workshop:has(> .workshop-alert) { grid-template-rows: auto auto 1fr; }
@@ -34,13 +34,14 @@
 .workshop .workshop-target .workshop-filter.is-active { background: var(--bg-raised); border-color: var(--border-default); color: var(--text-1); font-weight: var(--font-weight-semibold, 600); box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08); }
 
 .workshop-body { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 0; }
-.workshop-side { display: grid; grid-template-rows: auto auto auto 1fr; gap: var(--space-2); padding: var(--space-3); border-right: 1px solid var(--border-default); background: var(--bg-surface); min-height: 0; }
+/* 세로 흐름: 칩·(설명 줄)·찾기·새로 만들기는 제 높이, 목록이 남은 높이 — 줄 수에 묶은 grid 는 설명 줄이 끼면 「새로 만들기」가 늘었다 */
+.workshop-side { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-3); border-right: 1px solid var(--border-default); background: var(--bg-surface); min-height: 0; }
 .workshop-filters { display: flex; flex-wrap: wrap; gap: var(--space-1); }
 .workshop .workshop-filter { min-height: 26px; padding: 2px 10px; border-radius: var(--radius-pill); font-size: 12px; }
 .workshop .workshop-filter.is-active { background: var(--accent-muted); border-color: var(--accent-border); color: var(--accent-active); }
 .workshop-search { width: 100%; }
-.workshop .workshop-new { width: 100%; border-style: dashed; color: var(--accent); font-weight: var(--font-weight-medium, 500); }
-.workshop-items { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; align-content: start; overflow: auto; min-height: 0; }
+.workshop .workshop-new { flex: none; width: 100%; border-style: dashed; color: var(--accent); font-weight: var(--font-weight-medium, 500); }
+.workshop-items { flex: 1 1 auto; list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; align-content: start; overflow: auto; min-height: 0; }
 .workshop .workshop-item { display: grid; width: 100%; min-height: 0; text-align: left; padding: 7px 10px; border: 1px solid transparent; border-radius: var(--radius-s); background: none; gap: 2px; }
 .workshop .workshop-item.is-selected { background: var(--bg-raised); border-color: var(--border-default); box-shadow: inset 3px 0 0 var(--accent); }
 .workshop-item-title { font-size: 13px; font-weight: var(--font-weight-medium, 500); }
@@ -192,3 +193,12 @@
 
 /* 한국어는 낱말 중간에서 줄을 바꾸지 않는다(「그림 느|낌」 방지). 긴 영문·경로는 overflow-wrap 이 끊는다. */
 .workshop, .left-workshop-pane { word-break: keep-all; overflow-wrap: anywhere; }
+
+/* 「고를 차례」 칩이 작업 줄 수보다 클 때의 한 줄 설명 */
+.workshop-outside-note {
+  margin: 2px 0 6px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-muted, #6b6f80);
+  word-break: keep-all;
+}
