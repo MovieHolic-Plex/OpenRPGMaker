@@ -18,6 +18,7 @@
 //  - scene-ceiling-tile            천장 구역(방 밖·벽면도 벽 윗면도 아닌 칸)에 천장이 아닌 칸이 있다 — 바닥·소품이 얹혔거나, 방 밖에 고립 통행 바닥이 깔렸다
 //  - scene-arrival-faces-exit      도착 방향이 막 지나온 문·계단(또는 다른 이동 칸)을 본다 — 들어서면 문을 등진다
 //  - scene-speaker-faces-away      대사 줄의 화자가 곁(3칸 안)의 대화 상대 누구도 보지 않는다(걸어 온 쪽·벽·카메라를 본다)
+//  - scene-route-interrupted       기다리지 않는 긴 경로(퇴장 등)가 도는 인물에게 같은 장면이 다시 이동·돌기를 시킨다 — 뒤 명령이 앞 경로를 갈아 끼워 인물이 길 한가운데 멈춘다
 
 import { nestedCommandLists } from "../authoredCommandIndex";
 import type { Command, Dir, EventPage, GameEvent, GameMap, MoveCommand, Project, TilesetDef } from "../types";
@@ -1007,6 +1008,40 @@ function checkSpeakerFacing(project: Project, issues: LintIssue[]): void {
 
 // ---------------------------------------------------------------------------- 진입점
 
+// ---------------------------------------------------------------------------- 도는 경로를 덮어씀
+
+/**
+ * moveEvent 는 그 인물의 지금 경로를 갈아 끼운다. 기다리지 않는(wait:false) 긴 경로 — 퇴장 걷기 — 가 끝나기 전에
+ * 같은 인물에게 「돌아봐」 한 줄만 줘도 퇴장이 그 자리에서 끊기고 인물이 복도 한가운데 영영 선다(첫사랑 금요일 본부장, 2026-10-21).
+ * 장면 순서대로 걷고, 「Wait for All Movement」 를 만나면 도는 경로를 비운다.
+ */
+function checkRouteInterrupted(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    for (const host of map.events ?? []) {
+      for (const page of pagesOf(host)) {
+        const running = new Map<string, number>();
+        const reported = new Set<string>();
+        for (const command of walk(page.commands)) {
+          if (command.kind === "transfer") break;
+          if (m2Title(command) === "Wait for All Movement") { running.clear(); continue; }
+          const id = routeTarget(command, host);
+          if (!id || command.kind !== "moveEvent") continue;
+          const steps = (command.route?.moves ?? []).filter((m) => m?.kind === "move").length;
+          if (running.has(id) && !reported.has(id)) {
+            reported.add(id);
+            issues.push({
+              severity: "warning", code: "scene-route-interrupted", mapId: map.id, eventId: host.id, x: host.x, y: host.y,
+              message: `이벤트 ${host.id} 의 장면이 아직 걷는 중인 ${id}(기다리지 않는 ${running.get(id)}걸음 경로)에게 다시 moveEvent 를 준다 — 뒤 명령이 앞 경로를 갈아 끼워 그 인물이 길 한가운데 멈춘다. 돌기는 걷기 전에 주거나, 경로 끝(routeTail)에 넣거나, 앞 경로를 wait:true 로 바꾼다.`,
+            });
+          }
+          if (command.route?.wait !== true && steps >= 3) running.set(id, steps);
+          else running.delete(id);
+        }
+      }
+    }
+  }
+}
+
 export function lintScenePolish(project: Project): LintIssue[] {
   const issues: LintIssue[] = [];
   let gates: Gate[] = [];
@@ -1025,6 +1060,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkCeilingTiles);
   guard(checkArrivalFacing);
   guard(checkSpeakerFacing);
+  guard(checkRouteInterrupted);
   return issues;
 }
 

@@ -24,6 +24,7 @@
 | `scene-actors-stacked` | 한 페이지 안에서 Set Event Location·moveEvent(경로 끝 모의)로 **보이는** 두 인물이 같은 칸에 선다. 명령 순서대로 무대에서 내린다: Erase Event, 경로 끝 투명화, 스위치를 켜 «떠남» 페이지가 되거나 보이는 페이지 모두의 «스위치 꺼짐» 조건이 깨짐(`switchesThatHide`, 사라짐 검사와 공유). 같은 문으로 차례로 떠나는 것은 통과 |
 | `scene-actors-stacked` | 한 페이지 안에서 Set Event Location·moveEvent(경로 끝 모의)로 **보이는** 두 인물이 같은 칸에 선다. 명령 순서대로 무대에서 내린다: Erase Event, 경로 끝 투명화(한 번 −200 이하 또는 여러 번 나눠 합이 −200 이하 — `leave()` 의 −64×4 퇴장), 스위치를 켜 «떠남» 페이지가 되거나 보이는 페이지 모두의 «스위치 꺼짐» 조건이 깨짐(`switchesThatHide`, 사라짐 검사와 공유). 같은 문으로 차례로 떠나는 것은 통과 |
 | `scene-speaker-faces-away` | 자동·병렬 장면 한 페이지를 명령 순서대로 모의한다(경로 걸음 → 끝 걸음 방향, turn, turnTowardPlayer, 스위치·투명화로 퇴장, 선택지·조건 갈래는 갈래마다 무대 복사). 무대 = 그 페이지가 움직이는 인물 + 이름표로 찾은 화자(«오 팀장» ↔ «오정민 팀장», 낱말이 모두 들어 있으면) + 주인공(이 맵에 내리는 이동이 모두 같은 칸일 때 그 칸·방향). 대사 화자 곁 3칸 안에 사람이 있는데 무대의 누구 쪽도 보지 않으면 경고. 조사(action) 페이지는 주인공 칸을 몰라 건너뛴다 — 그쪽은 런타임 기록(`scripts/qa/runtime/facing-audit.mjs`)으로 본다. 첫사랑 «나 먼저 가요!» 민호를 잡았다 |
+| `scene-route-interrupted` | 한 페이지를 명령 순서대로 걸으며 «기다리지 않는(wait 가 true 아님) 3걸음 이상 경로»가 도는 인물을 기억한다. 같은 인물에게 다시 moveEvent 가 오면 경고(런타임은 새 경로로 갈아 끼운다), `Wait for All Movement` 를 만나면 비운다. 첫사랑 금요일: 퇴장하는 본부장에게 돌기를 줬더니 (7,15)에 영영 섰다 |
 | `scene-arrival-faces-exit` | 짝 없는 한쪽 이동(문형 왕복 짝은 `scene-transfer-pair` 몫)의 도착 방향 1~2칸 앞에 이동 칸이나 문·계단 그림이 있다 — 막 지나온 문을 보고 선다 |
 
 데모 검증(2026-10-21, `scripts/qa/scene-polish-lint.mts`): Fallen Star polish2 13건(방향 없는 이동 4·착지 2칸 3·문 아닌 칸 5·대사 뒤 사라짐 1), Astra fv 15건(문을 보는 착지 10 — 이후 손으로 고친 7fa8b2f3c2 와 같은 곳·한 칸 어긋난 출입 매트 2·표시 없는 출구 2·제자리 지우는 라이벌 1),
