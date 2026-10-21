@@ -167,6 +167,12 @@ reports/left-sidebar-tools-adversarial-review.html
 !/public/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3
 !/public/assets/cc0/audio/catalog/rtp-btl-001-vanguard-signal_fc54007f.mp3
 !/public/assets/cc0/audio/catalog/rtp-ttl-001-dawn-guild-ledger_cab8051a.mp3
+!/public/assets/cc0/audio/catalog/rtp-sea-001-violet-sea-final_1b0c64aa.mp3
+!/public/assets/cc0/audio/catalog/rtp-q0137-rtp-flt-022-preview_123a166e.mp3
+!/public/assets/cc0/audio/catalog/rtp-rst-001-lamplit-rest-stop-final_5d3bb1cd.mp3
+!/public/assets/cc0/audio/catalog/rtp-pon-001-pond-afternoon-final_5006d840.mp3
+!/public/assets/cc0/audio/catalog/rtp-rad-002-porch-broadcast-final_1b45dec5.mp3
+!/public/assets/cc0/audio/catalog/rtp-wks-001-hammer-and-sawdust-final_94f1f031.mp3
 
 # 조수 UX 진단 프로브 산출물(전/후 근거만 큐레이션해 커밋한다).
 # 런타임 QA 하네스의 라이브 산출물 — 매 실행마다 디렉터리째 재생성된다(scripts/runtime-qa.mjs).
