@@ -167,3 +167,22 @@ describe("쓰기 도구용 새 경고만", () => {
     expect(newScenePolishIssues(before, after).map((i) => i.code)).toEqual(["scene-map-no-bgm"]);
   });
 });
+
+describe("scene-hang-on-floor", () => {
+  it("손 도트 실내의 벽 걸이(별자리표)가 바닥 칸에 서면 잡고, 벽면에 걸면 조용하다", async () => {
+    const { runTool } = await import("@/editor/tools");
+    const ctx = { project: createBlankProject() };
+    const plan = ["##########", "#........#", "#........#", "#........#", "#........#", "####.#####"];
+    const built = runTool(ctx, "build_hand_interior_room", { name: "서재", plan, floor: "boards", wall: "grey" });
+    expect(built.ok, built.summary).toBe(true);
+    const map = ctx.project.maps[(built.data as { mapId: string }).mapId]!;
+    const kits = (ctx.project.tilesets[map.tilesetId] as unknown as { structureKits: Array<{ id: string; rows: Array<{ upperTiles: number[] }> }> }).structureKits;
+    const chart = kits.find((k) => k.id === "hand-interior:star chart")!.rows[0]!.upperTiles[0]!;
+    const hangCodes = (): string[] => lintScenePolish(ctx.project).filter((i) => i.code === "scene-hang-on-floor").map((i) => i.code);
+    expect(hangCodes()).toEqual([]);
+    const upper = (map as unknown as { upperTiles: number[] }).upperTiles;
+    const floorCell = 4 * map.width + 4;
+    upper[floorCell] = chart;
+    expect(hangCodes()).toEqual(["scene-hang-on-floor"]);
+  });
+});
