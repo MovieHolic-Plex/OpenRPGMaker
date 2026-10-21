@@ -42,7 +42,8 @@ for (let seed = s0; seed <= (s1 ?? s0); seed++) {
         const aliasBottom = Array.from({ length: am.width }, (_, x) => x).filter((x) => canMove(project, am, x, am.height - 1, x, am.height - 2) || canMove(project, am, x, am.height - 2, x, am.height - 1));
         if (bottom.length || southDoor.length || aliasBottom.length || !/청사진/u.test(alias.summary + (alias.warnings ?? []).join(" "))) exitBad = `EXIT bottom=${bottom} south=${southDoor.map((o) => o.id)} alias=${aliasBottom}`;
       }
-      const warnings = (r.warnings ?? []).filter((w) => !/^청사진|^자동 맞춤|^평면이 참고 예제/u.test(w));
+      // 안내(실패 아님): 청사진·자동 맞춤·참고 예제 알림, 별칭 이름이 표준 구성과 맞는다는 알림(「이름이 "house-1f" 표준 구성과 맞는다 — …」).
+      const warnings = (r.warnings ?? []).filter((w) => !/^청사진|^자동 맞춤|^평면이 참고 예제|^이름이 "[^"]+" 표준 구성과 맞는다/u.test(w));
       // 방마다 빈 바닥(통로 포함, 벽면 두 줄 제외) ≤30% — 복도는 뺀다. Opus 관문 interior 가 세는 방식과 같다(가구·깔개 발자국이 아닌 바닥 칸).
       const occ = new Set<string>();
       for (const ob of bp.objects) { const dd = JP_INTERIOR_SPEC.objects[ob.id]; if (!dd || dd.kind === "hang" || dd.kind === "door" || dd.kind === "sidedoor") continue;
