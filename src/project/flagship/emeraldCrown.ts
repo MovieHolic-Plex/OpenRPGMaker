@@ -792,6 +792,8 @@ function recastPeople(project: Project): void {
   // 리그 안내원이 결투장 한복판(4,9)에 서 있었다 — 계단 올라온 옆자리로.
   const leagueGuide = project.maps.mx_map_league_0?.events.find((e) => e.id === "mx_map_league_0_return_home");
   if (leagueGuide) { leagueGuide.x = 5; leagueGuide.y = 10; }
+  // 챔피언은 단 위 4번째 줄이라, 문으로 들어서면 카메라가 아래쪽에 붙어 머리·상체가 화면 위로 잘렸다 — 한 칸 내려 바닥(324) 위 5번째 줄에 세운다.
+  if (champion) champion.y = 5;
 }
 
 /**
