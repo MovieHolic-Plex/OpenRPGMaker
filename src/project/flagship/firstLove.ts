@@ -401,7 +401,8 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     stopBgm(),
     ...caption("그날 오후는 계정 신청서와 회의와, 처음 듣는 줄임말로 지나갔다."),
     stage(S.ROOF),
-    transfer(FL_MAP.streetPm, a.street.officeOut.x, a.street.officeOut.y, "down"),
+    // 회사 문에서 편의점까지는 거리 맞은편 끝(60칸 남짓)이다 — 빈 밤길을 걷게 하지 않고 편의점 앞에서 연다(VQA r2).
+    transfer(FL_MAP.streetPm, a.street.konbiniOut.x, a.street.konbiniOut.y, "up"),
   ]));
 }
 
@@ -418,7 +419,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
     ...fadeIn(600),
     bgm(BGM_NIGHT),
     ...caption("오후 7시 48분."),
-    ...think("첫날부터 야근은 아니었다. 거의.", "배가 고프다. 편의점이라도 들렀다 가자."),
+    ...think("첫날부터 야근은 아니었다. 거의.", "역으로 가는 길, 편의점 불빛이 환하다. 배가 고프다. 뭐라도 사 가자."),
     stage(S.EVENING),
   ]));
   add(street,
