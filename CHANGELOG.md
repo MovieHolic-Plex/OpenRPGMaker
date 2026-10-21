@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.309.0 — 2026-10-21
+
+### 기능
+
+- **workshop** — terrain card shows a real tile-gen grass sample, labelled 「견본 출력」 (not picked) (#3202) (`2eb1855`)
+
+### 정리
+
+- deprecate multi-user team collaboration (hide entry points behind TEAM_COLLAB_ENABLED) (#3201) (`8e642e4`)
+
 ## 0.308.0 — 2026-10-21
 
 ### 기능
