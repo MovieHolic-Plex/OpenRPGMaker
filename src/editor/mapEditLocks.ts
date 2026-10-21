@@ -94,7 +94,7 @@ export function lockOwnerPhrase(ownerLabel: string): string {
 }
 
 export function mapEditLockNotice(mapId: MapId): string {
-  if (teamSessionStatus()?.member.role === 'viewer') return '읽기 전용 팀원입니다.';
+  if (teamSessionStatus()?.member.role === 'viewer') return '이 프로젝트는 보기 전용으로 열려 있습니다.';
   const current = statusForMap(mapId);
   if (current?.kind === 'locked') return `${lockOwnerPhrase(current.ownerLabel)}님이 편집 중입니다.`;
   if (current?.kind === 'unavailable') return current.message;
@@ -169,7 +169,7 @@ export async function checkoutMapForEditing(mapId: MapId, mapName: string, optio
         if (result.kind === 'held') publish({ kind: 'held', mapId, mapName, expiresAt: new Date(result.expiresAt!).toISOString() });
         else publish({ kind: 'locked', mapId, mapName, ownerLabel: result.ownerLabel ?? '다른 사용자', canTakeover: result.canTakeover, expiresAt: new Date(result.expiresAt ?? 0).toISOString() });
       } catch (error) {
-        if (id === requestId) publish({ kind: 'unavailable', mapId, mapName, reason: 'network-error', message: error instanceof Error ? error.message : '팀 연결을 확인하세요.' });
+        if (id === requestId) publish({ kind: 'unavailable', mapId, mapName, reason: 'network-error', message: error instanceof Error ? error.message : '호스트 연결을 확인하세요.' });
       }
     };
     transition = transition.then(run).finally(() => { queued = false; });

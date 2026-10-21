@@ -2,6 +2,7 @@
 // 데스크톱 앱 첫 화면(start-screen.html) — 「라이브러리 홈」(2026-10-20, 설계 http://mdc-server:18301/home-redesign-1.html A안).
 //
 // 2026-10-21: 레일 단추 하나 = 본문 칸 하나(홈 · 내 게임 · 기본 게임 · 새로 만들기, 위 막대의 팀에 참여).
+//   같은 날 사람 팀 협업을 접었다(electron/shared/teamCollab.ts TEAM_COLLAB_ENABLED=false) — 「팀에 참여」 단추와 칸은 숨는다.
 //   홈 = 할 수 있는 것만 — 이어서 만들기 배너 · 최근 게임 몇 개 · 지금 만들 수 있는 게임(컨셉 8개) · 기본 게임(작은 카드).
 //   검색·분류·상세·골라서 만들기·빈 프로젝트는 「새로 만들기」, 전체 목록·숨김·게임 파일 열기는 「내 게임」 칸으로 옮겼다.
 // 지금 칸의 주인은 state.section 하나(go/mount/leave/refresh). 칸마다 #해시 기록이 남아 마우스 뒤로 단추가 앞 칸으로 간다.
@@ -20,6 +21,7 @@ import type { OprnBridgeStart } from "@/project/persistence/electronRepository";
 import { el } from "@/util/dom";
 import { getLocale, initI18n, LOCALE_NATIVE_NAMES, t } from "@/i18n";
 import { START_PLAY_URL, writeStartScreenIntent } from "./startIntent";
+import { TEAM_COLLAB_ENABLED } from "../../electron/shared/teamCollab";
 import { createConceptFeed, type ConceptFeed } from "./conceptFeed/conceptFeed";
 import { launcherBriefHandler, launcherMakeHandler } from "./conceptFeed/launcherMake";
 import { createConceptSource } from "@/concepts/source";
@@ -49,7 +51,7 @@ const BLANK_TITLE = "새 게임";
 /** 카드 그림 굽기를 시작하기 전 기다림 — 첫 그림·프로젝트 코어 미리 읽기(fast-start, 1.5초)와 겹치지 않게. */
 const COVER_IDLE_DELAY_MS = 2_500;
 
-/** 지금 본문 칸. 레일 단추 넷 + 팀에 참여. */
+/** 지금 본문 칸. 레일 단추 넷 + 팀에 참여(@deprecated — 사람 팀 협업은 아직 지원하지 않는다, 2026-10-21. TEAM_COLLAB_ENABLED 가 꺼져 있으면 열리지 않는다). */
 export type StartSection = Exclude<LauncherNav, "store"> | "join";
 
 type State = {
@@ -271,6 +273,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     goEditor();
   });
 
+  // @deprecated multi-user team collaboration is not supported yet (2026-10-21).
   // 참여하는 쪽도 앱이다. 주 프로세스가 호스트 페이지를 앱 창으로 열고, 첫 페이지가 뜨면 돌아온다.
   const joinTeam = (url: string): void => void run(async () => {
     if (!bridge?.joinTeam) throw new Error("데스크톱 앱에서만 팀에 참여할 수 있습니다.");
@@ -419,7 +422,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   });
   const topActions = [
     topButton("폴더 열기", START_SCREEN_TESTIDS.openFolder, "folder", openFolder),
-    topButton("팀에 참여", START_SCREEN_TESTIDS.joinTeam, "team", () => go("join")),
+    // @deprecated multi-user team collaboration is not supported yet (2026-10-21). 스위치를 켜면 돌아온다.
+    ...(TEAM_COLLAB_ENABLED ? [topButton("팀에 참여", START_SCREEN_TESTIDS.joinTeam, "team", () => go("join"))] : []),
   ];
 
   /** 칸마다 스크롤 상자 하나. 칸을 바꾸면 맨 위에서 시작한다. 같은 칸 안의 다시 그리기는 스크롤을 지킨다. */
@@ -490,6 +494,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
    */
   function go(next: StartSection, how: { readonly history?: "push" | "none" } = {}): boolean {
     if (state.busy || feed.busy()) return false;
+    // 팀 협업을 접어 둔 동안 #join 해시·옛 기록으로 들어와도 홈으로 보낸다.
+    if (next === "join" && !TEAM_COLLAB_ENABLED) next = "home";
     leave(state.section);
     state.section = next;
     state.sectionSeq += 1;
@@ -527,6 +533,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   });
 
   // ── 팀에 참여 ─────────────────────────────────────────────────────────
+  /** @deprecated multi-user team collaboration is not supported yet (2026-10-21). TEAM_COLLAB_ENABLED 가 꺼져 있으면 열리지 않는다. */
   function renderJoinView(): void {
     const urlInput = el("input", {
       class: "ln-input",

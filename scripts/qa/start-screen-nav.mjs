@@ -9,7 +9,7 @@
 // 불변식(칸마다): 레일 표시 = 누른 칸 · aria-current 는 하나 · 본문에 그 칸의 표식 · 스크롤 맨 위 ·
 //   새로 만들기 밖에서는 컨셉 상세·골라서 만들기 창이 없다 · 새로 만들기에 들어오면 검색어가 비어 있고 피드가 보인다.
 // 시나리오: 상세 → 다른 칸 → 돌아오기 · 검색어 → 다른 칸 → 돌아오기 · 같은 칸 다시 누르기 · 연타(A→B→A, 0ms) ·
-//   팀에 참여 → Esc · 뒤로 가기(history) · 최근 목록이 늦게 와도 지금 칸을 덮지 않음.
+//   팀에 참여 단추 없음(2026-10-21 팀 협업 접힘) · 뒤로 가기(history) · 최근 목록이 늦게 와도 지금 칸을 덮지 않음.
 import { chromium } from "playwright";
 import { mkdirSync } from "node:fs";
 
@@ -168,11 +168,9 @@ try {
   await nav(page, "home");
   await page.click("[data-testid='start-home-builtin-more']"); await expectSection(page, "기본 게임 자세히", "builtin");
 
-  console.log("· 팀에 참여 → Esc / → 레일");
-  await page.click("[data-testid='start-join-team']"); await expectSection(page, "팀에 참여", "join");
-  await shot(page, "join");
-  await page.keyboard.press("Escape"); await expectSection(page, "팀에 참여 Esc", "home");
-  await page.click("[data-testid='start-join-team']"); await nav(page, "games"); await expectSection(page, "팀에 참여→내 게임", "games");
+  // 2026-10-21: 사람 팀 협업을 접었다(electron/shared/teamCollab.ts TEAM_COLLAB_ENABLED=false). 단추가 없어야 한다.
+  console.log("· 팀에 참여 단추 없음(팀 협업 접힘)");
+  if (await page.$("[data-testid='start-join-team']")) fail("팀에 참여", "팀 협업을 접었는데 단추가 보인다");
 
   console.log("· 뒤로 가기(마우스 뒤로 단추)");
   await nav(page, "home"); await nav(page, "builtin"); await nav(page, "create");

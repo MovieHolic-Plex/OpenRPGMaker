@@ -1,3 +1,4 @@
+// @deprecated multi-user team collaboration is not supported yet (2026-10-21). 진입점은 TEAM_COLLAB_ENABLED(electron/shared/teamCollab.ts) 를 켜야 보인다.
 // Visual evidence only; isolated empty host, no authored project or live user data.
 import { withTsModule } from '../ontology-ts-loader.mjs';
 import { resolve } from 'node:path';

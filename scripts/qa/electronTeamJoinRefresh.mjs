@@ -1,3 +1,4 @@
+// @deprecated multi-user team collaboration is not supported yet (2026-10-21). 진입점은 TEAM_COLLAB_ENABLED(electron/shared/teamCollab.ts) 를 켜야 보인다.
 // 동료가 저장했을 때 참여 창이 그 변경을 반영하는 데 걸리는 시간과 받는 양.
 // 동료 = 같은 호스트에 다른 탭 id 로 붙은 두 번째 HTTP 세션(meta.title 만 바꾼 saveMapPatch).
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";

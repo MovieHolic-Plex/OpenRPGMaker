@@ -2,6 +2,28 @@
 
 # 팀 프로젝트 호스트 (2026-09-18)
 
+## 사람 팀 협업은 접었다 — 저장 호스트는 그대로 (2026-10-21)
+
+**여러 사람이 여러 컴퓨터에서 한 프로젝트를 같이 편집하는 「팀 협업」은 아직 지원하지 않는다(@deprecated).**
+코드는 지우지 않고 스위치 하나 뒤에 숨겼다: `electron/shared/teamCollab.ts` 의 `TEAM_COLLAB_ENABLED = false`.
+되살릴 때는 이 값만 `true` 로 바꾼다. 아래 이 문서의 「팀 협업 시작」·「팀에 참여」·초대·권한 절은 그 스위치를 켰을 때의 기록이다.
+
+| 구분 | 무엇 | 지금 |
+|---|---|---|
+| 숨김 | 파일 메뉴 「팀 협업 시작 / 관리」·「팀에 참여…」·「팀 호스트 중지」(`electron/main/main.ts`) | 메뉴에 없음 |
+| 숨김 | 시작 화면 위 막대 「팀에 참여」, 참여 칸·「최근 참여한 팀」(`src/start/startScreen.ts`, `#join` 은 홈으로) | 단추 없음 |
+| 숨김 | 편집기 팀 연결 막대(`.oprn-team-session-bar`, 팀 이름·팀원 이름·「팀 관리 ↗」, `src/editor/teamSession.ts`) | 호스트 연결이 끊겼을 때만 「호스트 연결 끊김 · 저장 상태를 확인하세요」로 뜬다 |
+| 숨김 | 호스트 페이지 `/__oprn/team` 의 팀원 초대·팀 이름 바꾸기(`electron/serve/teamPage.ts`), 로그인 페이지의 「팀에 참여하기」 문구 | 초대 칸 숨김, 로그인은 「호스트에 접속하기」 |
+| 막힘 | IPC `oprn:start.joinTeam`·`oprn:start.recentTeams` | 「팀 협업은 아직 지원하지 않습니다」·빈 목록 |
+| @deprecated 표시만 | `teamWindow.ts`, `normalizeTeamUrl`, `listRecentTeams`·`rememberRecentTeam`, `JoinTeamResult`·`RecentTeamEntry`, 채널 `teamInvite`·`teamRevoke`·`teamRename`, `teamAccess.ts` 역할, `teamReadOnlyUi.ts`, QA `scripts/qa/electronTeamJoin*.mjs`·`team-*-shots.mjs` | 동작 그대로(스위치를 켜면 바로 쓴다) |
+| 유지 | 저장 호스트: Electron IPC·`npm run host`/`npm start` HTTP 의 `project.sqlite` + `assets/`, 공통 서비스 `createStoreHandlers` | 그대로 |
+| 유지 | 리비전 폴링·`refreshFromHost`, 3-way 저장 병합 `core/teamMerge.ts`, 맵 lease(같은 사람의 여러 탭·창), 접속 코드(소유자 로그인)·백업 | 그대로 |
+| 유지(범위 밖) | AI 조수 팀(팀장·팀원 에이전트, `/team`, teamBoardState, 맵 묶음 병합), 전투 파티, 팀·학교 스토어 주소 | 그대로 |
+
+예전에 팀 모드로 열었던 프로젝트도 평소처럼 열린다. 1인 팀의 owner 는 지금도 owner 라 아무것도 막히지 않는다.
+예전 초대로 들어온 **보기 전용 팀원**은 호스트(`dispatch.ts`)가 계속 쓰기를 거절하므로, 편집기도 같은 보기 전용
+상태(자료집 칸 비활성, 맵 「이 프로젝트는 보기 전용으로 열려 있습니다.」)를 유지한다 — 저장한 척하는 거짓 표시를 내지 않기 위해서다.
+
 ## 소유와 실행 위치
 
 `export-player/` 아래 SDK 파일은 HTML도 디스크 바이트 그대로 제공한다(2026-10-03).
@@ -29,10 +51,11 @@ SQLite 파일 위치와 브라우저 UI 위치는 독립적이다. 원격 접속
 
 ## 실행
 
-브라우저 팀 연결 상태는 `teamSession.ts`의 `.oprn-team-session-bar`다.
+브라우저 팀 연결 상태는 `teamSession.ts`의 `.oprn-team-session-bar`다(2026-10-21 부터 `TEAM_COLLAB_ENABLED=false` 이면 연결이 끊겼을 때만 보인다).
 높이/지형 도구 막대는 이 배지가 있으면 아래에서 64px 띄운다(2026-10-03).
 배지가 표면 모드의 높이 버튼을 가리던 실제 호스트 겹침을 막으며 팀 관리 링크는 유지한다.
 
+(@deprecated 2026-10-21 — 아래 메뉴는 `TEAM_COLLAB_ENABLED` 를 켜야 보인다.)
 Electron에서 프로젝트를 연 뒤 **파일 → 팀 협업 시작 / 관리**. 앱이 같은 session registry를
 사용하는 HTTP 호스트를 실행한다. 기본은 코드 없이 주소로 바로 접속한다.
 

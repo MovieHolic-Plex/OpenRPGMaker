@@ -1,3 +1,7 @@
+// 사람 팀 협업의 역할(소유자·편집자·보기 전용). 혼자 쓰는 프로젝트는 언제나 소유자라 이 모듈이 아무것도 막지 않는다.
+// 'editor'·'viewer' 는 팀원 초대로만 생긴다 — 초대 진입점은 @deprecated(multi-user team collaboration is not supported yet, 2026-10-21).
+// 그래도 이 검사는 남긴다: 예전에 초대받은 보기 전용 팀원은 호스트(dispatch.ts)가 쓰기를 거절하므로, 편집기도 먼저 막아
+// 「저장했다」는 거짓 표시를 내지 않는다. 소유자·편집자는 평소처럼 혼자 편집한다.
 type TeamRole = 'owner' | 'editor' | 'viewer';
 
 let role: TeamRole | null = null;

@@ -115,7 +115,7 @@ export function humanStoreError(failure: StoreFailure): HumanStoreError {
     return { title: "먼저 프로젝트를 열어 주세요", hint: "에셋은 열려 있는 프로젝트 폴더에 들어가요. 프로젝트를 열거나 새로 만든 뒤 다시 눌러 주세요.", actions: ["openProject", "dismiss"], detail: "" };
   }
   if (/읽기 전용|쓰기 권한/.test(message)) {
-    return { title: "이 프로젝트는 지금 고칠 수 없어요", hint: "팀 프로젝트를 보기 전용으로 열었어요. 편집 권한이 있는 사람이 넣어 주세요.", actions: ["dismiss"], detail: "" };
+    return { title: "이 프로젝트는 지금 고칠 수 없어요", hint: "이 프로젝트를 보기 전용으로 열었거나 폴더에 쓸 권한이 없어요.", actions: ["dismiss"], detail: "" };
   }
   if (failure.status === 0 && /연결하지 못했습니다|fetch failed|ECONNREFUSED|ENOTFOUND|network/i.test(raw)) {
     return { title: "스토어에 연결할 수 없어요", hint: "인터넷 연결을 확인하고 다시 시도해 주세요. 이미 받아 둔 에셋은 인터넷 없이도 프로젝트에 넣을 수 있어요.", actions: ["retry", "cached"], detail: raw };
