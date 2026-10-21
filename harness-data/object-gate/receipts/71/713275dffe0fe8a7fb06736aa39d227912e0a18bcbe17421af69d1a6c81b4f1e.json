@@ -1,0 +1,348 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "713275dffe0fe8a7fb06736aa39d227912e0a18bcbe17421af69d1a6c81b4f1e",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "허리벽(腰壁) 벽지",
+ "label": "jp_city/interior_house3/cloth-wainscot",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "wall",
+  "refs": [
+   "wall-h104_0-timber",
+   "wall-h106_1-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 66,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 8
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper cream wallpaper field",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wainscot wooden panel band with rail and paneled body",
+      "rows": "11-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a tileable wall face, drawn as a flat frontal elevation. Rows 0-10 are cream wallpaper with scattered speckles. Rows 11-13 are a dark wainscot cap rail, and rows 14-31 are paneled wood with a mid rail at rows 17-19 and a baseboard at rows 26-31. No ellipse, roof or contents show a horizontal surface, and there is no foreshortened top band with an eave shadow. The full 64-pixel width is opaque, so it works as a seamless terrain tile and not a standing object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wainscot wall: a cream plaster upper band over a brown carved-panel lower band with a scroll border. It has 13 visible tones per tile, matching the stone reference (13) and a little below the timber reference (17). Near-flat coverage is only 8%, close to the references' 0%, so no large flat fills. The speckled cream plaster and the grain in the panel band give some texture, though less than the timber reference. The dark edge pixels are 0% neutral, so the outlines lean brown and follow the neighbouring material instead of being a sticker-style black line. Each material ramp shows about 4 steps against the references' 5-6, a mild shortfall in depth, but the structure and density hold up beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12446
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper wallpaper field (cream, speckled)",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "chair-rail strip at the top of the wainscot (front-facing band with a dark line)",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wainscot panels with recessed frames and a base rail",
+      "rows": "14-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a flat wall-face tile seen head-on. Rows 0-10 are cream wallpaper with scattered speckles. Rows 11-13 are a chair rail, a 1-3 row horizontal strip with a dark line at row 13. It has no receding top plane, no ellipse and no eave shadow. Rows 14-31 are recessed wainscot panels with vertical stiles and a base rail. The width is a constant 64 across all rows, so there is no side face or roof plane. The whole tile is one vertical face with no horizontal top surface, so it reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a wainscot wall: a pale cream plaster upper band over a brown wood-panel lower band with a carved rail pattern. It is the right kind of piece. The measured facts are close to the references: 13 visible tones per tile against 13 (stone) and 17 (timber), 8% near-flat coverage against 0% for both, and 0% neutral dark edge pixels, so the outlines are tinted brown and read as the dark tone of the adjacent wood rather than black. The panel band has about 5 wood steps (highlight, light, mid, dark, deep), and the carved rail and panel frames show some grain. Weaknesses: the cream plaster band looks smoother than the references' speckled plaster and stone, and the 8% near-flat coverage suggests a few patches of flat fill. The band is also thin and small, so there is less to read than in the references. It sits slightly below the references on density and texture but is not shallow or sticker-like. A careful artist would likely accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13745
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper wallpaper field",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wainscot chair-rail moulding",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wainscot recessed panels",
+      "rows": "14-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "baseboard",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a flat, front-facing wall tile that fills all 64 columns across rows 0-31. Rows 0-10 are cream wallpaper with speckle. Rows 11-13 are a chair-rail band with a dark line at row 13. Rows 14-28 are repeating recessed panels outlined in dark vertical stiles, and rows 29-31 are the baseboard. No ellipse, roof plane, contents or edge line followed by eave shadow marks a horizontal surface. The rail is a front-facing strip, so the tile shows only a vertical wall face. That is acceptable for a wall-face terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a cream speckled plaster upper band over a brown carved-panel wainscot. It has 13 visible tones per tile, equal to the stone reference (13) and a little under the timber reference (17). Near-flat coverage is 8% against 0% for both references, which is a small gap and not a flat-fill problem. The dark edge pixels are 0% neutral, so the outlines lean brown and follow the neighbouring material, with no black sticker line. The plaster has speckle and grain, and the lower panel has a frame, inner bevel and highlight steps, about 4-5 steps per material against the references' 5-6. It is slightly simpler than the references, mainly in the cream ramp and the uniform grain, but a careful artist would accept it beside them without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17659
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper wallpaper field (cream, speckled)",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wainscot cap rail and dark groove",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wainscot panelling with recessed panels",
+      "rows": "14-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 32,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a full-width 64x32 wall-face tile seen face-on. The cream wallpaper in rows 0-10 is a vertical wall surface with speckle noise. Rows 11-13 are a rail and dark groove, which read as a chair-rail molding. Rows 14-31 are paneled wainscot with recessed rectangular panels at the columns. None of it has an edge line followed by eave shadow, an ellipse, a roof plane or visible contents, so no horizontal top surface is drawn. As terrain, a wall face is expected to be a flat vertical elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a half-height wainscot wall: a cream upper band over a brown panelled lower band with a carved rail pattern. It reads as the same kind as the timber and stone wall references. Its 13 visible tones per tile are below the timber reference (17) and equal to the stone reference (13). Near-flat coverage is 8% against 0% for both references, so there are a few flat areas, mainly in the cream upper band, which looks smooth and lightly speckled. The dark edge pixels are 0% neutral, so the outlines lean brown and count as dark_material_tone, not a sticker line. The brown panel ramp has about 4 steps, fewer than the 5-6 in the references. The panel carving is simple and repetitive, and the references are denser with per-stone shading and timber grain. The piece is competent but thinner and flatter than the references, and I would not accept it next to them without it looking lighter on texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 9774
+  }
+ ],
+ "decidedAt": "2026-10-21T03:39:44.793Z",
+ "cells": {
+  "16": [
+   "101e4130a81eec66",
+   "153a9651e6014bea",
+   "89447783183900c8",
+   "e878ca45ca8c0c92",
+   "e8c6f767ac975f8a"
+  ],
+  "24": [
+   "1242e984c73a0d4a",
+   "12d746eca81f531e",
+   "137859d3782a10d3",
+   "163278b350184355",
+   "23181b17b757a75d",
+   "2ef59851e7cffb91",
+   "2fdfdf0a5363a5c5",
+   "30346f614ce3b9cc",
+   "3723f02d05ac2154",
+   "4676a45006f0fd2d",
+   "48a9274404e2c009",
+   "4e88263e85248817",
+   "542e136817e9e0f4",
+   "5a08926b62ad1232",
+   "72ff070e4c20d8cf",
+   "732079e510870a8a",
+   "7840e39e8ccfce19",
+   "805cf70281c51237",
+   "84802b5f25024044",
+   "8fda24acdfe2e846",
+   "ab4f67da2d808d1a",
+   "abaf5fc5ae6a8af0",
+   "bcb786e93b50c412",
+   "be555a0ebe5c90f8",
+   "c471e3e40ae8b6c0",
+   "ca2f27d39c8ab0e8",
+   "cef1b6db8076b8fe",
+   "dbfeaa30193bedf3",
+   "e4d4c098fff88b62",
+   "eb12f0739c7d6ca3",
+   "f4fa3886391604bf",
+   "fe42aee7b0b3723e",
+   "fee0ca66306bbb57",
+   "ff59b4070b220ed1"
+  ],
+  "32": [
+   "23780fd4051ad302",
+   "d256f14197085cf1"
+  ],
+  "48": [
+   "1077428080f81ead",
+   "2ea393fabd30a0aa",
+   "2ec53f07dec5acb2",
+   "3b023dae9023d24f",
+   "42e1ff5714f92474",
+   "4493fcef60ffbfb6",
+   "5d80ea5446ddebf2",
+   "6484d847224a0bbc",
+   "9697fc59389ccd0e",
+   "b676138f2b625834",
+   "edda5c975935e2f2",
+   "ef389e207e252be1"
+  ]
+ }
+}

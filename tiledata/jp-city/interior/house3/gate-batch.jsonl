@@ -1,0 +1,6 @@
+{"png": "glass-cupboard.png", "kind": "tall_furniture", "styleKind": "prop", "name": "glass-door china cabinet", "label": "jp_city/interior_house3/glass-cupboard"}
+{"png": "vanity-mirror.png", "kind": "tall_furniture", "styleKind": "prop", "name": "washbasin vanity with a big mirror", "label": "jp_city/interior_house3/vanity-mirror"}
+{"png": "unit-bath.png", "kind": "low_furniture", "styleKind": "prop", "name": "one-piece unit bath (tub and shower panel)", "label": "jp_city/interior_house3/unit-bath"}
+{"png": "wainscot.png", "kind": "terrain", "styleKind": "wall", "name": "wall face with a wooden wainscot panel", "label": "jp_city/interior_house3/cloth-wainscot"}
+{"png": "wood-post.png", "kind": "wall_mounted", "styleKind": "wall", "name": "wooden house post on a wall", "label": "jp_city/interior_house3/wood-post"}
+{"png": "toilet-shelf.png", "kind": "wall_mounted", "styleKind": "prop", "name": "small wall shelf in a toilet", "label": "jp_city/interior_house3/toilet-shelf"}

@@ -69,6 +69,10 @@ interface Draft {
   objects: HandInteriorObject[]; tables: HandInteriorTable[]; goods: HandInteriorGoods[];
 }
 const o = (d: Draft, id: string, x: number, y: number) => { d.objects.push({ id, x, y }); };
+/** 집 보강 8종(object-gen, 2026-10-21 — interior_house3 블록)은 3/4 관문을 통과해 사양에 굽힌 것만 쓴다. 없으면 옛 대역을 쓴다. */
+const has = (S: HandInteriorSpec, id: string) => Boolean(S.objects[id]);
+const hasGood = (S: HandInteriorSpec, id: string) => S.goods[id] !== undefined;
+const hasWall = (S: HandInteriorSpec, id: string) => Boolean(S.walls[id]);
 const g = (d: Draft, id: string, x: number, y: number) => { d.goods.push({ id, x, y }); };
 
 /** 동↔서 거울: 칸 x → W-1-x, 폭 w 인 것은 W-w-x. */
@@ -99,16 +103,19 @@ export function composeJpHouse1F(S: HandInteriorSpec, seed: number): JpHouseBlue
   const W = a + 10, H = 20;
   const c0 = a + 2, c1 = a + 4;                // 가운데 띠
   const e0 = a + 6, e1 = a + 8;                // 동쪽 띠
+  const livingWall = hasWall(S, "cloth-wainscot") ? "cloth-wainscot" : P.livingWall;   // 거실·현관 복도 = 허리벽(腰壁) 벽지
   const rooms: HandInteriorRoom[] = [
     { id: "toilet", x0: c0 + 1, y0: 1, x1: c1, y1: 4, floor: P.wash, wall: P.washWall },
     { id: "kitchen", x0: 1, y0: 6, x1: a, y1: 10, floor: P.kitchen, wall: P.kitchenWall },
     { id: "hall-north", x0: c0, y0: 6, x1: c1, y1: 10, floor: P.hall, wall: P.livingWall },
     { id: "dressing", x0: e0, y0: 6, x1: e1, y1: 10, floor: P.wash, wall: P.washWall },
-    { id: "ldk", x0: 1, y0: 12, x1: a, y1: 16, floor: P.living, wall: P.livingWall },
-    { id: "hall", x0: c0, y0: 12, x1: c1, y1: 18, floor: P.hall, wall: P.livingWall },
+    { id: "ldk", x0: 1, y0: 12, x1: a, y1: 16, floor: P.living, wall: livingWall },
+    { id: "hall", x0: c0, y0: 12, x1: c1, y1: 18, floor: P.hall, wall: livingWall },
     { id: "bath", x0: e0, y0: 12, x1: e1, y1: 16, floor: "bathtile", wall: "bathwall" },
   ];
   const kOpen = a - 1;                          // 부엌↔거실 트임 2칸(부엌 동쪽 끝 — 북쪽 복도에서 들어온 길이 곧장 거실로)
+  // 배식 창(serving-hatch, 벽 2칸)이 있으면 트임을 동쪽 1칸(a)으로 줄이고, 막힌 트임 서쪽 칸과 그 옆 칸(a-2..a-1) 벽면에 창을 건다 — 거실은 여전히 부엌 트임으로 들어간다.
+  const hatch = has(S, "serving-hatch");
   const dressDoor: HandInteriorConnect = { a: "hall-north", b: "dressing", at: 10, door: "door-side-sliding" };
   const connect: HandInteriorConnect[] = [
     { a: "hall", b: "hall-north", at: c0 + 1, door: "door-open-western" },
@@ -116,7 +123,7 @@ export function composeJpHouse1F(S: HandInteriorSpec, seed: number): JpHouseBlue
     { a: "kitchen", b: "hall-north", open: true },
     dressDoor,
     { a: "dressing", b: "bath", at: e0, door: S.objects["kr-shower-door"] ? "kr-shower-door" : "door-open-western" },
-    { a: "kitchen", b: "ldk", open: true, at: kOpen, span: 2 },
+    hatch ? { a: "kitchen", b: "ldk", open: true, at: a, span: 1 } : { a: "kitchen", b: "ldk", open: true, at: kOpen, span: 2 },
   ];
   const genkanX = c0 + 1;
   const d: Draft = { objects: [], tables: [], goods: [] };
@@ -127,7 +134,7 @@ export function composeJpHouse1F(S: HandInteriorSpec, seed: number): JpHouseBlue
   // ── 부엌(대면식): 북쪽 벽 냉장고·조리대·싱크·가스대·레인지 선반·식기장, 싱크 앞 키친 매트, 남쪽 아일랜드 작업대 ──
   o(d, "fridge", 1, 8);
   ["kitchen-worktop", "kitchen-sink", "kitchen-worktop", "kitchen-stove", "kitchen-worktop"].forEach((id, i) => o(d, id, 2 + i, 8));
-  o(d, "microwave-rack", a - 1, 8); o(d, "cupboard", a, 8);
+  o(d, "microwave-rack", a - 1, 8); o(d, has(S, "glass-cupboard") ? "glass-cupboard" : "cupboard", a, 8);   // 식기장(유리문이 있으면 그것)
   o(d, "window-sash", 3, 6); o(d, "calendar", a - 2, 6);
   g(d, "rice-cooker", 2, 8); g(d, "kettle", 4, 8);
   o(d, "genkan-mat", 3, 9);                     // 싱크 앞 키친 매트(2칸 깔개)
@@ -137,16 +144,36 @@ export function composeJpHouse1F(S: HandInteriorSpec, seed: number): JpHouseBlue
   o(d, "wall-clock", c0 + 1, 6); o(d, "houseplant", c0 + 1, 8);
   o(d, "bookshelf", a + 1, 8);
   // ── 탈의·세면실(3×3): 세면대·수건 서랍장 / 동쪽 벽 세탁기 / 문 앞 발매트·빨래 장대 — 세면대 앞 두 칸만 걷는 자리 ──
-  o(d, "washbasin", e0, 8); g(d, "toothbrush-cup", e0, 8);
-  o(d, "dresser-low", e0 + 1, 8); o(d, "washing-machine", e1, 9);
-  o(d, "towel-rack", e0 + 1, 6); o(d, "window-sash-small", e1, 6);
+  // 세면화장대(2칸, 큰 거울)가 있으면 세면대·서랍장 대신 동쪽 두 칸에 — 세탁기는 서쪽 벽 첫 칸(그 앞이 문에서 들어온 걷는 칸), 빨래 바구니는 세탁기 자리였던 동쪽 칸.
+  // 세 가구 모두 걷는 두 칸((e0,9)·(e0+1,9))에 닿고, 문 앞 칸(e0,10)·욕실 문 열은 비어 있다.
+  const vanity = has(S, "vanity-mirror");
+  if (vanity) {
+    o(d, "washing-machine", e0, 8); o(d, "vanity-mirror", e0 + 1, 8); o(d, "laundry-basket", e1, 9);
+  } else {
+    o(d, "washbasin", e0, 8); g(d, "toothbrush-cup", e0, 8);
+    o(d, "dresser-low", e0 + 1, 8); o(d, "washing-machine", e1, 9);
+  }
+  o(d, "towel-rack", vanity ? e0 : e0 + 1, 6); o(d, "window-sash-small", e1, 6);
   o(d, "bath-mat", e0, 10); o(d, "h2-laundry-pole", e0 + 1, 10);
   // ── 욕실(3×3): 욕조·샤워·거울, 씻는 자리 의자·대야, 바닥 발판(すのこ) ──
-  o(d, "bathtub", e0 + 1, 14); o(d, "shower-faucet", e0 + 1, 12); o(d, "bath-mirror", e1, 12);   // 북벽은 탈의실과의 칸막이 — 창 없음
-  o(d, "sc-sunoko", e0, 14); o(d, "sc-sunoko", e0, 15); o(d, "bath-stool", e0 + 1, 15); o(d, "bath-bucket", e1, 15);
-  o(d, "sc-sunoko", e0, 16); o(d, "sc-sunoko", e0 + 1, 16); o(d, "sc-sunoko", e1, 16);
+  // 유닛 배스(3칸 한 덩어리)는 북벽 첫 줄에 서는데, 욕실 문(e0 열)이 그 줄로 들어온다 — 문 열을 비우고도 3칸이 남을 때(욕실 폭 ≥ 4)만 쓴다.
+  // 지금 욕실은 폭 3(e0..e1)이라 늘 옛 욕조·샤워·거울로 짓는다.
+  const unitBath = has(S, "unit-bath") && e1 - e0 + 1 >= Math.max(1, S.objects["unit-bath"]?.w ?? 3) + 1;
+  if (unitBath) {
+    o(d, "unit-bath", e0 + 1, 14);
+    o(d, "sc-sunoko", e0, 14); o(d, "sc-sunoko", e0, 15); o(d, "bath-stool", e0 + 1, 15); o(d, "bath-bucket", e0 + 2, 15);
+    for (let x = e0; x <= e1; x++) o(d, "sc-sunoko", x, 16);
+  } else {
+    o(d, "bathtub", e0 + 1, 14); o(d, "shower-faucet", e0 + 1, 12); o(d, "bath-mirror", e1, 12);   // 북벽은 탈의실과의 칸막이 — 창 없음
+    o(d, "sc-sunoko", e0, 14); o(d, "sc-sunoko", e0, 15); o(d, "bath-stool", e0 + 1, 15); o(d, "bath-bucket", e1, 15);
+    o(d, "sc-sunoko", e0, 16); o(d, "sc-sunoko", e0 + 1, 16); o(d, "sc-sunoko", e1, 16);
+  }
   // ── 거실 겸 식당: 서쪽 거실(TV — 좌탁 — 소파가 한 열), 가운데 깔개(동선), 동쪽 식탁(부엌 트임 아래) ──
   o(d, "ac-unit", 1, 12); o(d, "tv-board", 1, 14); g(d, "remote", 2, 14);
+  if (hatch) {   // 북쪽 벽면(부엌과의 칸막이): 줄인 트임 바로 서쪽에 배식 창 2칸, 그 서쪽에 나무 기둥
+    o(d, "serving-hatch", a - 2, 12);
+    if (has(S, "wood-post")) o(d, "wood-post", a - 3, 12);
+  }
   o(d, "low-table", 1, 15); o(d, "sofa-n", 1, 16);
   o(d, G.variant === 1 ? "floor-lamp" : "houseplant", 4, 14);
   o(d, "rug", 3, 15);
@@ -157,7 +184,7 @@ export function composeJpHouse1F(S: HandInteriorSpec, seed: number): JpHouseBlue
   o(d, "intercom", c1, 12); o(d, "houseplant", c0, 14); o(d, "ht-slipper-rack", c1, 14);
   o(d, "slippers", c0, 15); o(d, "genkan-mat", c0 + 1, 15);
   for (let x = c0; x <= c1; x++) o(d, "agarikamachi", x, 16);   // 현관 단·타타키는 복도 폭 전부
-  o(d, "getabako-narrow", c0, 17); g(d, "sh-bouquet", c0, 17);
+  o(d, "getabako-narrow", c0, 17); g(d, hasGood(S, "genkan-vase") ? "genkan-vase" : "sh-bouquet", c0, 17);
   o(d, "umbrella-stand", c1, 17);
   o(d, "shoes-pair", c0, 18); o(d, "shoes-pair", c1, 18);
   o(d, "genkan-door", genkanX, 19);
@@ -221,7 +248,8 @@ export function composeJpHouse2F(S: HandInteriorSpec, seed: number): JpHouseBlue
   const d: Draft = { objects: [], tables: [], goods: [] };
   // ── 화장실(1층 화장실 바로 위) ──
   o(d, "toilet", c0 + 1, 3);
-  o(d, "window-sash-small", c0 + 1, 1); o(d, "toilet-paper", c1, 1);
+  // 북벽 윗줄 두 칸뿐(문은 남쪽 c1 열) — 화장실 선반(여분 휴지·방향제)이 있으면 변기 위 작은 창 자리에, 휴지걸이는 문 열 그대로.
+  o(d, has(S, "toilet-shelf") ? "toilet-shelf" : "window-sash-small", c0 + 1, 1); o(d, "toilet-paper", c1, 1);
   o(d, "toilet-mat", c0 + 1, 4); o(d, "toilet-slippers", c1, 4);
   // ── 2층 복도: 북쪽 끝 계단통(1층 계단 바로 위 — 같은 열·같은 줄), 가운데 화분, 남쪽 화분 ──
   o(d, "stairwell-down-wood", c0, 8);

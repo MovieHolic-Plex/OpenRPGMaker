@@ -1,0 +1,168 @@
+{
+ "schema": "oprn-jp-house3-picks/1",
+ "tool": "object-gen (MovieHolic-Plex/object-gen, CLI unchanged)",
+ "flow": "strict 3/4 top-down reference (form only, Opus view check) -> Opus 5.5 medium hand-pixel A/B -> Opus 5.5 medium blind adversarial review (3 valid runs, majority, GOOD/BAD anchors, hidden rejects) -> Opus 5.5 medium picker (by: opus-picker, bound to the pixel hash). No human pick step (user decision 2026-10-21).",
+ "exemplars": [
+  "getabako",
+  "bathtub",
+  "bed-double",
+  "kitchen-sink",
+  "washing-machine",
+  "hs-drug-drawers",
+  "hs-dispense-table",
+  "hs-toy-shelf"
+ ],
+ "paidFallback": false,
+ "items": {
+  "glass-cupboard": {
+   "job": "glass-cupboard",
+   "letter": "B",
+   "by": "opus-picker",
+   "model": "claude-opus-5.5 medium",
+   "reason": "B is the only candidate, and it holds up: at 1x it reads as a china cabinet, with the blue glass doors and white stacked dishes over wooden lower doors, its lit wood top plane sits above a short front, and its brown outlines in the wood's own tone match the jp_city exemplars. Its flaws are small: the lower doors are a bit blocky and there is a stray white blob on the top.",
+   "pickedAt": "2026-10-20T18:07:34Z",
+   "pixelSha256": "8c242a07b25253ff75c89c389095e5029e7a2f14a33601f0cf0c5541d4e6f77b",
+   "gateSha256": "8c242a07b25253ff75c89c389095e5029e7a2f14a33601f0cf0c5541d4e6f77b",
+   "review": {
+    "judge": "claude:opus",
+    "verdict": "PASS",
+    "votes": "3/3",
+    "view34": "3/3",
+    "quality": "3/3"
+   },
+   "file": "glass-cupboard.png"
+  },
+  "toilet-shelf": {
+   "job": "toilet-shelf",
+   "letter": "A",
+   "by": "opus-picker",
+   "model": "claude-opus-5.5 medium",
+   "reason": "A shows all three items clearly at 1x: the shaded white roll, the bottle and a green plant on a lit tan board above a grained front and dark brackets, so it reads at once as a toilet shelf; B's plant is lost, and its muted board reads more like a plain box with a pink blob.",
+   "pickedAt": "2026-10-20T18:07:53Z",
+   "pixelSha256": "c71f433806aefd47b508dd550a798b22a46e6f1d065a8d25d4d53d6c400ab303",
+   "gateSha256": "c71f433806aefd47b508dd550a798b22a46e6f1d065a8d25d4d53d6c400ab303",
+   "review": {
+    "judge": "claude:opus",
+    "verdict": "PASS",
+    "votes": "3/3",
+    "view34": "3/3",
+    "quality": "3/3"
+   },
+   "file": "toilet-shelf.png"
+  },
+  "unit-bath": {
+   "job": "unit-bath",
+   "letter": "A",
+   "by": "opus-picker",
+   "model": "claude-opus-5.5 medium",
+   "reason": "At 1x the white moulded tub with blue water seen from above, the panelled front apron and the tiled wash area with a shower on a slide bar read as a unit bath right away, and the outlines and stepped white shading match the jp_city exemplars; its only flaws are a few soft grey pixels around the hose and a slightly floating bottle shelf.",
+   "pickedAt": "2026-10-20T18:07:39Z",
+   "pixelSha256": "7253b3ee11234dd5d6cb5b0058385540f5652f98344d98e9dface84da98c8a18",
+   "gateSha256": "7253b3ee11234dd5d6cb5b0058385540f5652f98344d98e9dface84da98c8a18",
+   "review": {
+    "judge": "claude:opus",
+    "verdict": "PASS",
+    "votes": "3/3",
+    "view34": "3/3",
+    "quality": "3/3"
+   },
+   "file": "unit-bath.png"
+  },
+  "vanity-mirror": {
+   "job": "vanity-mirror",
+   "letter": "B",
+   "by": "opus-picker",
+   "model": "claude-opus-5.5 medium",
+   "reason": "B's dark wood door front with inset panels matches the getabako exemplar's palette and shading, and its two-pane mirror has a clear light bar, while A's door panels have diagonal sticker highlights; both counters have some speckle.",
+   "pickedAt": "2026-10-20T18:07:39Z",
+   "pixelSha256": "1ccccc88ae10a83b4aaa2f92f6656fb50c666caec0f1dddde67e821c6915a65a",
+   "gateSha256": "1ccccc88ae10a83b4aaa2f92f6656fb50c666caec0f1dddde67e821c6915a65a",
+   "review": {
+    "judge": "claude:opus",
+    "verdict": "PASS",
+    "votes": "2/3",
+    "view34": "3/3",
+    "quality": "2/3"
+   },
+   "file": "vanity-mirror.png"
+  },
+  "cloth-wainscot": {
+   "job": "wainscot",
+   "letter": "A",
+   "by": "opus-picker",
+   "model": "claude-opus-5.5 medium",
+   "reason": "A's even row of framed, bevelled panels, lit chair rail and dark baseboard read right away as a wainscot and match the clean framed-panel style of the getabako exemplar, while B's boards vary in width, carry sticker-like highlights and sit under noisier, brick-like wallpaper.",
+   "pickedAt": "2026-10-20T18:07:35Z",
+   "pixelSha256": "bfe9a1add79d1cd697950f048874ca26fe4a92bc79e6eb94eba90f576eb78f3c",
+   "gateSha256": "713275dffe0fe8a7fb06736aa39d227912e0a18bcbe17421af69d1a6c81b4f1e",
+   "review": {
+    "judge": "claude:opus",
+    "verdict": "PASS",
+    "votes": "3/3",
+    "view34": "3/3",
+    "quality": "3/3"
+   },
+   "file": "wainscot.png",
+   "redrawn": {
+    "at": "2026-10-21",
+    "by": "supervisor-delegated worker (Claude Opus 5.5)",
+    "why": "independent Opus 5.5 adversarial VQA r1 (~/.cache/jpf/h3vqa/r1/verdict-house3.json): cloth area read as brick/tile (staggered white dashes); upper cloth redrawn as irregular speckle like the shipped wall:cloth originals, wainscot panel unchanged",
+    "previousSha256": "bfe9a1add79d1cd697950f048874ca26fe4a92bc79e6eb94eba90f576eb78f3c"
+   }
+  },
+  "wood-post": {
+   "job": "wood-post",
+   "letter": "B",
+   "by": "opus-picker",
+   "model": "claude-opus-5.5 medium",
+   "reason": "B is a centred post with clean grain running from floor to ceiling, a lit left edge, a dark right edge in its own brown and a clear foot band, so it reads straight away as a wooden pillar at 1x; A is off-centre, has a jagged right edge and noisy, blotchy grain.",
+   "pickedAt": "2026-10-20T18:07:39Z",
+   "pixelSha256": "daa2698c14d62ca978f3e881f89f0935a00172cf198d07c9cd13760a2d98f0ac",
+   "gateSha256": "daa2698c14d62ca978f3e881f89f0935a00172cf198d07c9cd13760a2d98f0ac",
+   "review": {
+    "judge": "claude:opus",
+    "verdict": "PASS",
+    "votes": "3/3",
+    "view34": "3/3",
+    "quality": "3/3"
+   },
+   "file": "wood-post.png"
+  },
+  "genkan-vase": {
+   "job": "genkan-vase",
+   "letter": "A",
+   "by": "opus-picker",
+   "model": "claude-opus-5.5 medium",
+   "reason": "It is the only candidate, and at 1x on the getabako it reads straight away as flowers in a white ceramic container, with the mouth seen from above, a clean outline and upper-left shading that fit the exemplars; its main weakness is that the wide body looks more like a trough planter than a small vase.",
+   "pickedAt": "2026-10-20T18:07:56Z",
+   "pixelSha256": "099079e54e7f045d29492c810d7974068564350f0066af130a449c32ae8a71f1",
+   "gateSha256": "099079e54e7f045d29492c810d7974068564350f0066af130a449c32ae8a71f1",
+   "review": {
+    "judge": "claude:opus",
+    "verdict": "PASS",
+    "votes": "2/3",
+    "view34": "3/3",
+    "quality": "2/3"
+   },
+   "file": "genkan-vase.png"
+  },
+  "serving-hatch": {
+   "job": "serving-hatch",
+   "letter": "A",
+   "by": "opus-picker",
+   "model": "claude-opus-5.5 medium",
+   "reason": "A is the only candidate and it is acceptable: in the room patch, the wooden-framed dark kitchen opening with a white cup on a deep, lit sill reads at once as a serving hatch, and its warm wood tones and dark outlines sit close to the getabako exemplar, although its sill grain is busier than the exemplars' flat shading.",
+   "pickedAt": "2026-10-20T18:18:07Z",
+   "pixelSha256": "8e4a83950ea1e81f1f867f6dd8b3d4082224766af25e950c13a35a174c25b91a",
+   "gateSha256": "8e4a83950ea1e81f1f867f6dd8b3d4082224766af25e950c13a35a174c25b91a",
+   "review": {
+    "judge": "claude:opus",
+    "verdict": "PASS",
+    "votes": "3/3",
+    "view34": "3/3",
+    "quality": "3/3"
+   },
+   "file": "serving-hatch.png"
+  }
+ }
+}

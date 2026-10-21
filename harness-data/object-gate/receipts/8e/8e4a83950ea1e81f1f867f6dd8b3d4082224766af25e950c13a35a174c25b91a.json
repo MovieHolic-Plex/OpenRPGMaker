@@ -1,0 +1,379 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8e4a83950ea1e81f1f867f6dd8b3d4082224766af25e950c13a35a174c25b91a",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "배식 창(부엌↔거실)",
+ "label": "jp_city/interior_house3/serving-hatch",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "wall",
+  "refs": [
+   "wall-h104_0-timber",
+   "wall-h106_1-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 21,
+  "tileColorsP90": 25,
+  "darkV5": 45,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper header beam/lintel",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark pass-through opening with inner frame posts",
+      "rows": "7-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top (plank stripes, seen from above)",
+      "rows": "14-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "22-22"
+     },
+     {
+      "part": "plate/bowl on counter",
+      "rows": "14-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower front panel",
+      "rows": "22-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base/skirting",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a serving-hatch frame, not a terrain tile, so the kind does not fit well. The main body is the counter, rows 14-21: horizontal plank stripes with a plate resting on it. A dark edge line at row 22 closes it, and the lower panel (rows 22-27) plus base (rows 28-31) form the front face, about 10 rows. The header beam (rows 1-6) is a front-facing strip with no edge line or shadow of its own, so it shows no top surface. The opening (rows 7-13) is a vertical dark face. The silhouette is 32 px wide on every row and shows no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a timber-framed serving hatch with a counter ledge, a cup, and a plaster-like interior. The wood frame shows several brown steps (light, mid, dark), and the edges are dark brown rather than black. This matches the measured 0% neutral dark-edge share against 12-13% for the references. Measured visible tones per tile are 20, above the references' 17 and 13, and near-flat coverage is 0%, the same as theirs. The interior has speckle and grain, and the counter and cup add shape variety, so I see no large flat fills. It is a little simpler than the full timber and stone wall references, which have more per-tile clusters. At this scale it would sit acceptably next to them without looking sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18401
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header beam above window",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top (serving ledge)",
+      "rows": "14-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "22-22"
+     },
+     {
+      "part": "plate/cup on counter",
+      "rows": "14-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower cabinet front panel",
+      "rows": "23-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base ledge",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The object is a serving window in a wall: a dark opening (rows 7-13) framed by a header beam at the top (rows 1-6, front-facing, no edge line) and side jambs. Below it, the counter ledge (rows 14-21) is drawn as a stack of light horizontal plank stripes. A dark line at row 22 acts as its front-edge line, with a darker shadow band below it. The front face of the cabinet (rows 23-27) and the base ledge (rows 28-31) follow. The plate and cup on the counter are decor. The header beam is only a vertical face, so not every part shows a top. The main body, the counter, does show a top surface of about 8 rows plus a front face of about 10 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small serving-hatch wall piece: a timber frame around a window opening, a counter ledge and a small bowl. It matches the wall kind, with a wood frame like the timber reference. Visible tones per tile are 20, against 17 for the timber reference and 13 for the stone reference. Near-flat coverage is 0%, the same as both references, and 0% of its dark edge pixels are neutral, so the outlines lean brown rather than black. The frame and counter show several wood steps (about 5, against 5-6 in the references) with grain variation and no large flat fills. The interior and the bowl have light and dark separation by value. It is small and simple, but it is not thinner or more sticker-like than the references, and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17384
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header beam/lintel above the window",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark window opening",
+      "rows": "7-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "serving counter / sill top (planks)",
+      "rows": "14-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "22"
+     },
+     {
+      "part": "plate and cup on counter",
+      "rows": "14-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter front panel and base",
+      "rows": "23-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The counter band at rows 14-21 is a light plank surface with horizontal stripes. It ends in a dark front-edge line at row 22 (#5c302a), which is the edge/shadow row. Below it, the front panel and base at rows 23-31 give roughly 9 rows of vertical south face. The header (rows 1-6) and window opening (rows 7-13) are vertical faces. The plate on the counter is decor. The frame sides are flat outlines, not receding side faces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small serving-window counter, roughly one tile in size, with a wooden frame, a plank counter and a cup. Measured facts: 20 visible tones per tile, against 17 for the timber reference and 13 for the stone reference. Near-flat coverage is 0%, so there are no flat fills. The 0% near-neutral share of dark edge pixels means the outlines carry a tint; by eye they read as dark brown beside the wood, a dark material tone and not a black sticker line. Shading on the wood has about 5 steps, with a highlight rim, mid planks and a dark interior opening. There is grain on the counter and a shaded cup. It is a little simpler than the references' plaster speckle and stone shading, but it is at or above them on the primary facts and does not look thinner or flatter beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14138
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lintel/header beam above the opening",
+      "rows": "2-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "serving counter top (wood planks)",
+      "rows": "14-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "plate/bowl on counter",
+      "rows": "15-19",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a hatch in a wall with a dark opening at rows 8-13. Its counter sill at rows 14-21 is a wide plank band with horizontal grain lines. A dark front-edge line at row 22 (#5c302a) closes the band and is followed by shadow, so it reads as a horizontal top surface of about 8 rows. Below it, the cabinet-style front panel at rows 23-27 and the base at rows 28-31 give a front face of about 9 rows. The lintel at rows 2-6 is a front-facing strip and is not counted as a top. The plate on the counter is decor. The caller kind 'terrain' is plausible only as a wall-face tile with a window."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 20 visible tones per tile against 17 for the timber reference and 13 for the stone reference. Near-flat coverage is 0%, the same as both references, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline carries a tint. It reads as dark brown beside the wood, not a black sticker line. The frame, counter and sill show about 5 lightness steps with grain and highlight variation, only slightly fewer than the references' 5-6. The small cup and the interior add detail. The piece is small, but it holds up next to the references without looking flatter or thinner. The facts and the picture agree, so I pass it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16391
+  }
+ ],
+ "decidedAt": "2026-10-21T03:39:44.804Z",
+ "cells": {
+  "16": [
+   "137da62cd0d78957",
+   "3ba8d44dd2bcdc9b",
+   "ce2b0551cd07b5e7",
+   "d5aa8f2c5391def6"
+  ],
+  "24": [
+   "0399ad1300c6497f",
+   "0b62e333ba0dfa23",
+   "14631f3e4b99b20c",
+   "16f24aef9ee67a69",
+   "1d0151db2fdb9c7b",
+   "2025ea7cba3006fd",
+   "20daae143531972b",
+   "21a047085f53195d",
+   "26fa97b2f6d11dc4",
+   "3801539e4450e5b6",
+   "3c4e29113a4c1224",
+   "3c7f4b5e5b1645d8",
+   "64dd09b90cf413b0",
+   "7e3a66dd4accef63",
+   "82398023a1b86d99",
+   "9fe784ea998ded80",
+   "a123af7b36667439",
+   "a45d1dc68bff7850",
+   "b2a70838230936c2",
+   "b58776e6c2904971",
+   "c68bb39e8dd6e99e",
+   "ceb6d74bd6260cb2",
+   "d8de0c9178b1eb52",
+   "dd6c7568a520580b"
+  ],
+  "32": [
+   "aa5cbc3c33d356c9"
+  ],
+  "48": [
+   "00282ced8911f284",
+   "32b732cec3a6c415",
+   "59f23d31018df8fa",
+   "6e1234a2cc2e892f",
+   "a536e8d276c384b9",
+   "f7dad23e88a76f3d"
+  ]
+ }
+}

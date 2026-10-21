@@ -316,7 +316,7 @@ for _b, _name in (('autotiles_ground', 'at8'), ('autotiles_lines', 'at4'), ('roa
                ('interior_school', 'interior'), ('interior_gym', 'interior'), ('interior_station', 'interior'), ('interior_office', 'interior'), ('interior_post', 'interior'),
                ('dungeon_underground', 'interior'), ('dungeon_hospital', 'interior'), ('dungeon_school', 'interior'), ('dungeon_construction', 'interior'), ('dungeon_warehouse', 'interior'),
                ('interior_amuse', 'interior'), ('interior_karaoke', 'interior'), ('interior_famires', 'interior'), ('interior_hotel', 'interior'), ('interior_mall', 'interior'),
-               ('interior_hospital', 'interior'), ('interior_school2', 'interior'), ('interior_office2', 'interior'),
+               ('interior_hospital', 'interior'), ('interior_school2', 'interior'), ('interior_office2', 'interior'), ('interior_house3', 'interior'),
                ('shitamachi_pack', 'packs'), ('jp_regions_pack', 'packs'), ('jp_inaka_pack', 'packs')):   # 지역 팩(2026-10 덧붙임) — 각 팩 키트로 찍는다
     for _t in PIN_BLOCK.get(_b, ()): REGION[_t] = _name
 assert '?' not in set(REGION.values()), [t for t in REGION if REGION[t] == '?'][:10]
@@ -2736,7 +2736,7 @@ _IN_ORDER = [o for b in ('interior_entry', 'interior_washitsu', 'interior_ldk', 
                           'interior_school', 'interior_gym', 'interior_station', 'interior_office', 'interior_post',
                           'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse',
                           'interior_amuse', 'interior_karaoke', 'interior_famires', 'interior_hotel', 'interior_mall',
-                          'interior_hospital', 'interior_school2', 'interior_office2') for o in JPI['objects'] if _IN_BLOCK[f'jp-in-{o}'] == b]
+                          'interior_hospital', 'interior_school2', 'interior_office2', 'interior_house3') for o in JPI['objects'] if _IN_BLOCK[f'jp-in-{o}'] == b]
 assert len(_IN_ORDER) == len(JPI['objects']), (len(_IN_ORDER), len(JPI['objects']))
 _chunks = []; _cur = []; _size = 0
 for _oid in _IN_ORDER:
