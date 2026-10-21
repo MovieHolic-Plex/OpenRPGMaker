@@ -13,6 +13,7 @@ import { ATLAS_BIOME_INTERIOR_ID, createAtlasBiomeInteriorTileset, ensureAtlasBi
 import { store } from "@/project/store";
 import type { ObjectSpecV1 } from "@/project/objectSpec";
 import { bakedWorkshopKit, bakeWorkshopObject, workshopAssetId, workshopObjectId, type WorkshopHandKind } from "@/project/workshopTiles";
+import { withInstallOwnership } from "./installOwnership";
 import { WORKSHOP_BAKED_EVENT, type WorkshopBakedDetail } from "./workshopEvents";
 
 
@@ -71,31 +72,34 @@ export function bakeWorkshopPick(item: WorkshopItem, grid: Grid, palette: Palett
     if (!target) throw new Error(`이 기물을 넣을 칩셋이 프로젝트에 없습니다: ${tilesetId}`);
     if (target.tileSize !== TILE) throw new Error(`공방 그림은 16px 칸이라 ${target.tileSize}px 칩셋에는 넣을 수 없습니다.`);
   }
-  recordProjectSnapshot("공방 기물 칩셋에 넣기");
-  store.update((draft) => {
-    if (tilesetId === ATLAS_BIOME_INTERIOR_ID) {
-      if (!draft.tilesets[ATLAS_BIOME_INTERIOR_ID]) draft.tilesets[ATLAS_BIOME_INTERIOR_ID] = createAtlasBiomeInteriorTileset();
-      else ensureAtlasBiomeInteriorCurrent(draft, ATLAS_BIOME_INTERIOR_ID);
-    }
-    bakeWorkshopObject(draft, tilesetId, {
-      objectId,
-      title: item.title,
-      description: item.description,
-      kind: item.kind as WorkshopHandKind,
-      columns,
-      rows,
-      footRows: item.footRows ?? 1,
-      risePx: item.risePx ?? Math.max(0, (rows - (item.footRows ?? 1)) * TILE - item.padTop),
-      use: item.use,
-      gridHash: workshopGridHash(grid),
-      asset: { id: workshopAssetId(dataUrl), dataUrl, width: sheet.width, height: sheet.height },
-      cells,
-      // 설명서(ObjectSpec): 공방 판에서 사람이 고른 후보다. 3/4 영수증은 아직 공방 굽기에 배선되지 않았다(object-gate 문서).
-      provenance: { aiGenerated: true, tool: `oprn-workshop/${item.tilesetId ? "map-objects" : "interior-props"}${options.autoPicked ? "/auto-pick" : ""}` },
-      // 3/4 관문 조언(1표, 미보정)은 review.vqa 에 calibrated:false 로만 남긴다 — 출구 효력 없음(관문 영수증이 아니다).
-      ...(reviewOf(options) ? { review: reviewOf(options) } : {}),
-    });
-  }, { scope: "project", origin: "human", label: `공방 기물 칩셋에 넣기: ${item.title}` });
+  // 그 칩셋을 쓰는 맵을 조수가 쥐고 있으면 넣지 않는다(WorkshopInstallBusy) — 되돌리기 기록도 남기지 않는다.
+  withInstallOwnership([tilesetId], `공방 넣기: ${item.title}`, () => {
+    recordProjectSnapshot("공방 기물 칩셋에 넣기");
+    store.update((draft) => {
+      if (tilesetId === ATLAS_BIOME_INTERIOR_ID) {
+        if (!draft.tilesets[ATLAS_BIOME_INTERIOR_ID]) draft.tilesets[ATLAS_BIOME_INTERIOR_ID] = createAtlasBiomeInteriorTileset();
+        else ensureAtlasBiomeInteriorCurrent(draft, ATLAS_BIOME_INTERIOR_ID);
+      }
+      bakeWorkshopObject(draft, tilesetId, {
+        objectId,
+        title: item.title,
+        description: item.description,
+        kind: item.kind as WorkshopHandKind,
+        columns,
+        rows,
+        footRows: item.footRows ?? 1,
+        risePx: item.risePx ?? Math.max(0, (rows - (item.footRows ?? 1)) * TILE - item.padTop),
+        use: item.use,
+        gridHash: workshopGridHash(grid),
+        asset: { id: workshopAssetId(dataUrl), dataUrl, width: sheet.width, height: sheet.height },
+        cells,
+        // 설명서(ObjectSpec): 공방 판에서 사람이 고른 후보다. 3/4 영수증은 아직 공방 굽기에 배선되지 않았다(object-gate 문서).
+        provenance: { aiGenerated: true, tool: `oprn-workshop/${item.tilesetId ? "map-objects" : "interior-props"}${options.autoPicked ? "/auto-pick" : ""}` },
+        // 3/4 관문 조언(1표, 미보정)은 review.vqa 에 calibrated:false 로만 남긴다 — 출구 효력 없음(관문 영수증이 아니다).
+        ...(reviewOf(options) ? { review: reviewOf(options) } : {}),
+      });
+    }, { scope: "project", origin: "human", label: `공방 기물 칩셋에 넣기: ${item.title}` });
+  });
   const detail: WorkshopBakedDetail = { objectId, title: item.title, tilesetId, kind: item.kind, columns, rows };
   window.dispatchEvent(new CustomEvent<WorkshopBakedDetail>(WORKSHOP_BAKED_EVENT, { detail }));
   return detail;

@@ -14,6 +14,7 @@ import { armWorkshopStamp, bakeWorkshopPick, isWorkshopPickBaked, workshopTarget
 import { store as projectStore } from "@/project/store";
 import type { WorkshopSession } from "./workshopSession";
 import { latestRound } from "./workshopStatus";
+import { workshopQueue } from "./queue/workshopQueue";
 
 export type RoundViewState = { selected: number; zoom: "fit" | "big"; rejectFor: string | null };
 
@@ -57,7 +58,8 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     ? [el("p", { class: "workshop-blocked", attrs: { role: "alert" }, text: `작업이 실패했습니다: ${lastError.message}` })] : []);
 
   async function startRound(note: string): Promise<void> {
-    await session.engine.startRound(item, { note, count: drawCount });
+    // 판은 작업 줄이 연다(동시 작업 수·계정 한도 멈춤을 줄이 맡는다).
+    await workshopQueue().enqueueObject({ harnessId: session.harnessId, itemKey: item.key, title: item.title, count: drawCount, note, source: "workshop" });
     state.selected = 0;
     await session.reload();
   }
@@ -83,15 +85,19 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
   note.addEventListener("input", () => { notes.set(item.key, note.value); });
   // 다시 그리기는 지난 판에서 고른 장 수 그대로(폼에서 2장을 골랐으면 2장) — 단추 글과 실제 장 수가 같아야 한다.
   const drawCount = round ? Math.max(1, round.runs.length) : session.runner.candidates;
+  // 작업 줄에서 아직 차례를 기다리는 판이 있으면 같은 판을 또 세우지 않는다.
+  const waiting = workshopQueue().snapshot().jobs.find((view) => view.job.itemKey === item.key && view.job.harnessId === session.harnessId && view.state === "queued" && !view.job.roundId);
   const startBlock = el("div", {
     class: "workshop-start",
     children: [
       note,
-      el("button", {
-        class: round ? "" : "workshop-primary", attrs: { type: "button" }, dataset: { testid: "workshop-start-round" },
-        text: round ? `후보 ${drawCount}장 다시 그리기` : `후보 ${drawCount}장 그리기`,
-        on: { click: () => act(() => startRound(noteText())) },
-      }),
+      waiting
+        ? el("p", { class: "workshop-item-meta", dataset: { testid: "workshop-start-waiting" }, text: "작업 줄에서 차례를 기다리는 중이에요. 자리가 나면 바로 그려요." })
+        : el("button", {
+          class: round ? "" : "workshop-primary", attrs: { type: "button" }, dataset: { testid: "workshop-start-round" },
+          text: round ? `후보 ${drawCount}장 다시 그리기` : `후보 ${drawCount}장 그리기`,
+          on: { click: () => act(() => startRound(noteText())) },
+        }),
     ],
   });
 

@@ -13,6 +13,7 @@ import { applyPreparedStoreItem, prepareManifestItem } from "@/editor/assetStore
 import { store } from "@/project/store";
 import { canWriteTeamProject } from "@/project/teamAccess";
 import type { GeneratorId } from "./generators";
+import { withInstallOwnership } from "./installOwnership";
 
 /** 출처 store 값 앞머리 — 스토어에서 받은 것과 구별한다. */
 export const LOCAL_PACK_STORE_PREFIX = "local:";
@@ -116,11 +117,14 @@ export async function addLocalPackToProject(pack: LocalPack, generator: Generato
       return bytes;
     },
   });
-  recordProjectSnapshot("생성기 묶음 넣기");
   let result: ReturnType<typeof applyPreparedStoreItem> | null = null;
-  store.update((project) => {
-    result = applyPreparedStoreItem(project, prepared);
-  }, { scope: "assets", origin: "human", label: `생성기 묶음 넣기: ${pack.manifest.title}` });
+  // 새 칩셋·에셋이라 쓰는 맵이 없다 — 조수가 하나라도 돌면 기다린다(WorkshopInstallBusy, installOwnership.ts).
+  withInstallOwnership([], `생성기 묶음 넣기: ${pack.manifest.title}`, () => {
+    recordProjectSnapshot("생성기 묶음 넣기");
+    store.update((project) => {
+      result = applyPreparedStoreItem(project, prepared);
+    }, { scope: "assets", origin: "human", label: `생성기 묶음 넣기: ${pack.manifest.title}` });
+  });
   const done = result as ReturnType<typeof applyPreparedStoreItem> | null;
   if (!done) throw new Error("프로젝트에 넣지 못했어요.");
   return { title: pack.manifest.title, assetIds: done.assetIds, tilesetIds: done.tilesetIds, replaced: done.replaced };

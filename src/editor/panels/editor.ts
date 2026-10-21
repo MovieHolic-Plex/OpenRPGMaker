@@ -246,6 +246,10 @@ export function renderEditor(main: HTMLElement): void {
   const suggestionPeek = aiPanel.querySelector<HTMLElement>(".ai-suggestion-peek");
   if (suggestionPeek) canvasArea.append(suggestionPeek);
   main.append(layout, projectExportNodeElement());
+  // 공방 작업 줄(내려받기 관리자처럼 오른쪽 아래) — 작업이 있을 때만 보인다. 새로 고침 뒤 남은 작업도 여기서 다시 잇는다.
+  void import("@/editor/workshop/queue/queueDock").then(({ mountWorkshopQueueDock }) => mountWorkshopQueueDock()).catch((error: unknown) => {
+    console.warn("[workshop-queue] 작업 줄을 붙이지 못했다:", error);
+  });
   disposeFirstRunGuide?.();
   disposeFirstRunGuide = mountFirstRunGuide(aiDock, layout);
 
@@ -441,6 +445,7 @@ function applyLeftDockLayout(): void {
 }
 
 export function teardownEditor(): void {
+  void import("@/editor/workshop/queue/queueDock").then(({ unmountWorkshopQueueDock }) => unmountWorkshopQueueDock()).catch(() => undefined);
   disposeFirstRunGuide?.();
   disposeFirstRunGuide = null;
   panelRefreshEpoch += 1;

@@ -32,8 +32,30 @@ function encodePng(image: RgbaImage): string {
   return context.canvas.toDataURL("image/png");
 }
 
+/**
+ * 칩셋 읽기 결과를 칩셋(그림 주소·물체 수)마다 하나만 둔다. 작업 줄이 여러 판을 함께 돌리면 장마다 칩셋을 다시 읽어
+ * 큰 시트(버들항 23,936칸)를 동시에 수십 번 풀고 훑느라 편집기가 몇 분씩 멈췄다(2026-10-21 10개 동시 실측). 실행기는 읽기만 한다.
+ */
+const SOURCE_CACHE = new Map<string, Promise<WorkshopTilesetSource | null>>();
+const SOURCE_CACHE_LIMIT = 3;
+
+function tilesetSource(tilesetId: string): Promise<WorkshopTilesetSource | null> {
+  const tileset = store.getCurrent().tilesets[tilesetId];
+  if (!tileset) return Promise.resolve(null);
+  const key = `${tilesetId}|${tilesetBaseImageUrl(tileset)}|${tileset.transparentColor ?? ""}|${tileset.structureKits?.length ?? 0}`;
+  const hit = SOURCE_CACHE.get(key);
+  if (hit) return hit;
+  const pending = readTilesetSource(tilesetId).then((source) => {
+    if (!source) SOURCE_CACHE.delete(key);
+    return source;
+  });
+  SOURCE_CACHE.set(key, pending);
+  while (SOURCE_CACHE.size > SOURCE_CACHE_LIMIT) SOURCE_CACHE.delete(SOURCE_CACHE.keys().next().value!);
+  return pending;
+}
+
 /** 맵 기물 실행기에 지금 프로젝트의 칩셋을 넘긴다: 이식 없는 바탕 시트(투명색 키를 뺀 것)와 학습된 물체. */
-async function tilesetSource(tilesetId: string): Promise<WorkshopTilesetSource | null> {
+async function readTilesetSource(tilesetId: string): Promise<WorkshopTilesetSource | null> {
   const tileset = store.getCurrent().tilesets[tilesetId];
   if (!tileset) return null;
   let image: RgbaImage;

@@ -109,7 +109,8 @@ const generateMissingObject: ToolDefinition = {
     + "**먼저 있는 것을 찾아라**: list_tileset_objects·list_spatial_designs(kind:object)·list_hand_interior_parts(실내)로 찾아 비슷한 게 있으면 그것을 쓰고 이 도구는 부르지 마라. "
     + "이름이 맞는 기물이 이미 있으면 이 도구가 그 id 를 돌려주며 거부한다(봤는데 정말 다른 물건이면 notThese 에 그 id 를 적어 다시 부른다). "
     + "사람·동물·캐릭터는 그리지 않는다(거부). 바닥·벽·물·길 같은 지형 칸도 이 도구가 아니다(ask_missing_tiles). 16px 칩셋 맵만. "
-    + "부른 뒤에는 더 칠하지 말고 이 턴을 끝내라.",
+    + "없는 물건이 여럿이면 같은 턴에 물건마다 한 번씩 불러라 — 모두 공방 작업 줄에 함께 서서 동시에 그려진다(하나씩 기다리지 않는다). "
+    + "다 부른 뒤에는 더 칠하지 말고 이 턴을 끝내라.",
   mode: "read",
   domains: ["core"],
   fillsCurrentMapId: true,
@@ -189,7 +190,7 @@ const generateMissingObject: ToolDefinition = {
       ...(gateKind ? { gateKind } : {}),
     };
     return {
-      summary: `「${title}」 그리기 카드를 띄운다(발밑 ${tilesW}×${tilesH}칸${rise ? ` + 위로 ${rise}px` : " · 칸 안에 다 들어가는 크기"}, 칩셋 ${tileset.id}, 배경 ${request.setting}). 후보를 사용자가 고르면 물체 id 가 후속 요청으로 온다 — 지금은 더 칠하지 말고 그렸다고 말하지 말고 이 턴을 끝내라.`,
+      summary: `「${title}」 그리기 카드를 띄운다(발밑 ${tilesW}×${tilesH}칸${rise ? ` + 위로 ${rise}px` : " · 칸 안에 다 들어가는 크기"}, 칩셋 ${tileset.id}, 배경 ${request.setting}). 공방 작업 줄에 서서 다른 요청과 함께 그려진다. 후보를 사용자가 고르면 물체 id 가 후속 요청으로 온다 — 없는 물건이 더 있으면 지금 이어서 부르고, 그 밖에는 더 칠하지 말고 그렸다고 말하지 말고 이 턴을 끝내라.`,
       data: request,
     };
   },

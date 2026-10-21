@@ -105,7 +105,16 @@ export function quotaRunError(error: unknown): string {
   return "계정 사용 한도 소진";
 }
 const isAbort = (error: unknown): boolean => error instanceof Cancelled || (error as { name?: string } | null)?.name === "AbortError";
-const clampConcurrency = (n: number): number => Math.max(1, Math.min(6, Math.round(n)));
+/** 장(후보) 동시 상한. 작업 줄이 작업 10개 × 후보 몇 장을 함께 돌릴 수 있게 30 까지 받는다(화면의 「동시에」 고르기는 따로 좁힌다). */
+export const MAX_ENGINE_CONCURRENCY = 30;
+const clampConcurrency = (n: number): number => Math.max(1, Math.min(MAX_ENGINE_CONCURRENCY, Math.round(n)));
+/** 막힌 장의 갈래 — 작업 줄이 이것으로 기다릴 시간을 정한다. */
+export function runErrorKind(error: unknown): "quota" | "rate" | "auth" | null {
+  const status = statusOf(error);
+  if (status === 401 || status === 403) return "auth";
+  if (status === 429) return isQuotaExhausted(error) ? "quota" : "rate";
+  return null;
+}
 
 export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEngine {
   const { runner, env, chat, store, projectKey } = options;
@@ -170,7 +179,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       try {
         run.calls += 1;
         void save(round);
-        return await chat(surface, { messages, response_format: { type: "json_object" }, temperature: surface === "workshop-draw" ? 0.6 : 0.1, signal, disableTransientRetry: true });
+        return await chat(surface, { messages, response_format: { type: "json_object" }, temperature: surface === "workshop-draw" ? 0.6 : 0.1, signal, disableTransientRetry: true }, { roundId: round.id, letter: run.letter });
       } catch (error) {
         if (isAbort(error)) throw new Cancelled();
         if (statusOf(error) === 429 && retry < MAX_RATE_RETRIES && !isQuotaExhausted(error)) {
@@ -372,6 +381,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       run.status = "drawing";
       run.startedAt = now();
       run.error = null;
+      run.errorKind = null;
       void save(round);
       let previousGrid = run.grid;
       // 다시 그리기(redrawRun)는 지난 격자를 출발점으로 넘긴다. 지난 판정은 불통과일 때만 「떨어진 이유」로 넘긴다.
@@ -441,6 +451,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       if (status === 401 || status === 403) blocked = BLOCKED_AUTH;
       else if (status === 429) blocked = BLOCKED_QUOTA;
       run.status = "failed";
+      run.errorKind = runErrorKind(error);
       run.error = isQuotaExhausted(error) ? quotaRunError(error)
         : status === 401 || status === 403 ? "로그인 만료 · AI 설정에서 다시 로그인"
           : error instanceof Error ? error.message : String(error);
@@ -457,7 +468,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
 
   const freshRun = (letter: string, direction: string): WorkshopRun => ({
     letter, direction, status: "queued", attempt: 0, attempts: [], grid: null, note: "", topRows: null, verdict: null,
-    error: null, calls: 0, redrawNote: "", startedAt: null, finishedAt: null,
+    error: null, errorKind: null, calls: 0, redrawNote: "", startedAt: null, finishedAt: null,
   });
 
   return {
@@ -512,6 +523,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
           run.attempts = [];
           run.attempt = 0;
           run.error = null;
+          run.errorKind = null;
           enqueue(target, run.letter);
           requeued += 1;
         }

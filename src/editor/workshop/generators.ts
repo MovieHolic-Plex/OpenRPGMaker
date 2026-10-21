@@ -51,8 +51,8 @@ export const GENERATOR_STATUS_LABELS: Readonly<Record<GeneratorStatus, string>> 
   soon: "준비 중",
 };
 
-/** char-gen 은 공개 저장소다. object-gen·tile-gen 은 비공개라 설치 링크를 내지 않는다. */
-export const CHAR_GEN_REPO_URL = "https://github.com/MovieHolic-Plex/char-gen";
+/* 저장소 공개 여부(2026-10-21): object-gen 공개 · char-gen·tile-gen 비공개 — 정본은 tiledata/gen-kits.lock.json 의 visibility.
+   비공개 저장소의 설치 링크는 화면에 내지 않는다(받은 사람 말고는 404). */
 
 /**
  * 사용자 컴퓨터의 AI 에이전트(자기 로그인)에게 붙여 넣을 부탁 글. 에이전트에게 가는 글이라 화면 번역 대상이 아니므로

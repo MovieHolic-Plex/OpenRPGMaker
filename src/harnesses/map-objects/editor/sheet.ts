@@ -21,12 +21,7 @@ const hex = (c: number): string => `#${c.toString(16).padStart(6, "0")}`;
 export function paletteFromImages(images: readonly { readonly image: RgbaImage; readonly weight: number }[], limit = MAP_PALETTE_LIMIT): string[] {
   const counts = new Map<number, number>();
   for (const { image, weight } of images) {
-    const { data } = image;
-    for (let i = 0; i < data.length; i += 4) {
-      if (data[i + 3] !== 255) continue;
-      const color = (data[i]! << 16) | (data[i + 1]! << 8) | data[i + 2]!;
-      counts.set(color, (counts.get(color) ?? 0) + weight);
-    }
+    for (const [color, n] of colorCounts(image)) counts.set(color, (counts.get(color) ?? 0) + n * weight);
   }
   const chosen: number[] = [];
   for (const [color] of [...counts].sort((a, b) => b[1] - a[1] || a[0] - b[0])) {
@@ -35,6 +30,22 @@ export function paletteFromImages(images: readonly { readonly image: RgbaImage; 
     chosen.push(color);
   }
   return chosen.sort((a, b) => luma(a) - luma(b) || a - b).map(hex);
+}
+
+/** 그림 하나의 불투명 색 개수 — 같은 그림(시트 전체)은 한 번만 센다. */
+const COLOR_COUNT_CACHE = new WeakMap<RgbaImage, Map<number, number>>();
+function colorCounts(image: RgbaImage): Map<number, number> {
+  const cached = COLOR_COUNT_CACHE.get(image);
+  if (cached) return cached;
+  const counts = new Map<number, number>();
+  const { data } = image;
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i + 3] !== 255) continue;
+    const color = (data[i]! << 16) | (data[i + 1]! << 8) | data[i + 2]!;
+    counts.set(color, (counts.get(color) ?? 0) + 1);
+  }
+  COLOR_COUNT_CACHE.set(image, counts);
+  return counts;
 }
 
 /** 가장 많이 칠해진 불투명 색 — 후보를 그 칩셋의 땅 위에 얹어 보여 줄 때 쓴다. */
@@ -121,6 +132,18 @@ export function similarObjects(source: WorkshopTilesetSource, title: string, des
 
 /** 시트에서 색이 가장 다양한 조각 하나(정사각, 한 변 최대 maxPx) — 물체가 학습돼 있지 않은 칩셋의 화풍 기준. */
 export function sheetExcerpt(source: WorkshopTilesetSource, maxPx = 192): RgbaImage {
+  // 같은 시트를 판마다 다시 훑지 않는다(큰 시트는 한 번에 수백 ms — 여러 판이 함께 돌면 편집기가 멈춘다).
+  const cached = EXCERPT_CACHE.get(source.image)?.get(maxPx);
+  if (cached) return cached;
+  const excerpt = computeSheetExcerpt(source, maxPx);
+  const perImage = EXCERPT_CACHE.get(source.image) ?? new Map<number, RgbaImage>();
+  perImage.set(maxPx, excerpt);
+  EXCERPT_CACHE.set(source.image, perImage);
+  return excerpt;
+}
+const EXCERPT_CACHE = new WeakMap<RgbaImage, Map<number, RgbaImage>>();
+
+function computeSheetExcerpt(source: WorkshopTilesetSource, maxPx: number): RgbaImage {
   const { image } = source;
   const side = Math.min(maxPx, image.width, image.height);
   const step = Math.max(source.tileSize, Math.floor(side / 2));

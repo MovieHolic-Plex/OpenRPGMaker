@@ -13,16 +13,19 @@ import { closeGenWorkspace, isGenWorkspaceOpen } from "./genWorkspace";
 import { currentDrawTarget, OBJECT_WORKSHOP_HARNESSES } from "./mapObjectTarget";
 import { renderItemForm } from "./workshopItemForm";
 import { renderRoundView, type RoundViewState } from "./workshopRoundView";
-import { getWorkshopSession, saveConcurrency, type WorkshopSession } from "./workshopSession";
+import { getWorkshopSession, type WorkshopSession } from "./workshopSession";
+import { QUEUE_MAX_LIMIT, workshopQueue } from "./queue/workshopQueue";
+import { retryText } from "./queue/jobModel";
 import { etaMinutes, ITEM_STATE_LABELS, itemState, latestRound, roundProgress, type ItemState } from "./workshopStatus";
 import { isWorkshopPickBaked } from "./workshopBake";
 
 type Filter = ItemState | "all";
-const FILTERS: Filter[] = ["choose", "drawing", "picked", "all"];
+const FILTERS: Filter[] = ["choose", "drawing", "stopped", "picked", "all"];
 
 let host: HTMLElement | null = null;
 let session: WorkshopSession | null = null;
 let unsubscribe: (() => void) | null = null;
+let unsubscribeQueue: (() => void) | null = null;
 let filter: Filter = "choose";
 let query = "";
 let selectedKey: string | null = null;
@@ -41,6 +44,8 @@ export type OpenWorkshopOptions = { readonly newItem?: { readonly title: string;
 
 export async function openWorkshop(harnessId: string, options: OpenWorkshopOptions = {}): Promise<void> {
   closeWorkshop();
+  // 작업 줄 판이 열려 있으면 알약으로 접는다 — 1280 에서 판이 공방의 「한 장 고르기」 후보를 가렸다(2026-10-21 VQA). 머리 「작업 줄」로 다시 연다.
+  void import("./queue/queueDock").then(({ collapseWorkshopQueue }) => collapseWorkshopQueue(true));
   if (options.newItem) {
     showForm = true;
     formDraft = { ...options.newItem };
@@ -71,14 +76,19 @@ export async function openWorkshop(harnessId: string, options: OpenWorkshopOptio
   // 처음 쓰는 사람에게는 빈 목록 대신 「무엇을 만들까요」 폼부터 보여 준다
   if (visibleItems(opened, "all").length === 0) showForm = true;
   unsubscribe = opened.subscribe(() => render(false));
+  unsubscribeQueue = workshopQueue().subscribe(() => render(false));
+  void workshopQueue().ensure().then(() => render(false));
   render(true);
 }
 
 export function closeWorkshop(): void {
+  if (host) void import("./queue/queueDock").then(({ collapseWorkshopQueue }) => collapseWorkshopQueue(false));
   closeGenWorkspace();
   document.removeEventListener("keydown", onKeydown);
   unsubscribe?.();
   unsubscribe = null;
+  unsubscribeQueue?.();
+  unsubscribeQueue = null;
   host?.remove();
   host = null;
   session = null;
@@ -95,8 +105,31 @@ function visibleItems(s: WorkshopSession, only: Filter = filter): WorkshopItem[]
   const needle = query.trim().toLowerCase();
   return ownItems(s).filter((item) => {
     if (needle && !`${item.title} ${item.key} ${item.category}`.toLowerCase().includes(needle)) return false;
-    return only === "all" || itemState(item.key, s.rounds, s.picks) === only;
+    return only === "all" || shownState(s, item) === only;
   });
+}
+
+/**
+ * 물건 목록의 상태 — 작업 줄이 그 물건을 멈춰 두었거나(계정 한도·연결 끊김·직접 멈춤) 계정 대기로 붙잡고 있으면 「멈춤」으로 읽는다.
+ * 판만 보면 「그리는 중」이라 작업 줄(멈춤)과 어긋났다(2026-10-21 VQA).
+ */
+function shownState(s: WorkshopSession, item: WorkshopItem): ItemState {
+  const view = workshopQueue().itemView(s.harnessId, item.key);
+  if (view) {
+    if (view.holding || view.state === "paused" || view.state === "failed") return "stopped";
+    if (view.state === "queued" || view.state === "reference" || view.state === "drawing" || view.state === "review") return "drawing";
+    if (view.state === "ready" || view.state === "installing") return "choose";
+  }
+  const state = itemState(item.key, s.rounds, s.picks);
+  // 작업 줄에 없는 판(빼거나 그만둔 작업)은 그리고 있지도, 이어서 그리지도 않는다 — 「그리는 중」·「잠시 멈춤」으로 세면
+  // 작업 줄(그리는 중 0 · 멈춤 1)과 어긋났다. 그 판에 그림이 한 장도 없으면 「고를 차례」도 아니다(오른쪽에 고를 것이 없다,
+  // 2026-10-22 VQA) — 고른 적이 있으면 「고름」, 없으면 「아직」(다시 그리기 단추가 보인다).
+  if ((state === "drawing" || state === "stopped" || state === "choose") && (!view || view.state === "cancelled")) {
+    const round = latestRound(item.key, s.rounds);
+    if (state === "choose" && round?.runs.some((run) => run.grid)) return state;
+    return s.picks.some((p) => p.itemKey === item.key) ? "picked" : "idle";
+  }
+  return state;
 }
 
 /** 넣을 곳 전환 — 실내 가구(손 도트 실내 칩셋) · 지금 맵 칩셋. 지금 맵이 16px 일반 칩셋일 때만 둘째가 보인다. */
@@ -121,7 +154,45 @@ function targetSwitch(s: WorkshopSession): HTMLElement {
 
 function signature(s: WorkshopSession): string {
   return JSON.stringify([filter, query, selectedKey, showForm, view, s.picks.map((p) => `${p.itemKey}|${p.roundId}|${p.letter}`), s.defs.length,
-    s.rounds.map((r) => [r.id, r.runs.map((run) => [run.status, run.attempt, run.verdict?.verdict, run.grid?.cells.length])]), s.engine.status()]);
+    s.rounds.map((r) => [r.id, r.runs.map((run) => [run.status, run.attempt, run.verdict?.verdict, run.grid?.cells.length])]), s.engine.status(),
+    queueSummary()]);
+}
+
+/** 작업 줄 요약(머리줄·막힘 띠가 읽는다) */
+function queueSummary(): { active: number; queued: number; ready: number; limit: number; hold: string | null; holdUntil: number | null; readyKeys: string[]; waiting: string[] } {
+  const snapshot = workshopQueue().snapshot();
+  return {
+    active: snapshot.counts.active, queued: snapshot.counts.queued, ready: snapshot.counts.ready, limit: snapshot.limit,
+    hold: snapshot.hold?.reason ?? null, holdUntil: snapshot.hold?.until ?? null,
+    readyKeys: snapshot.jobs.filter((view) => view.state === "ready").map((view) => `${view.job.harnessId}|${view.job.itemKey ?? ""}`),
+    waiting: snapshot.jobs.filter((view) => view.state === "queued" && !view.job.roundId).map((view) => view.job.itemKey ?? ""),
+  };
+}
+
+/**
+ * 작업 줄 멈춤 띠 — 이유와 다시 해 볼 때까지(1초마다). 조각마다 따로 적어 화면 번역이 조각째 맞춘다.
+ * 남은 때가 없던 띠는 「언제 풀리나」를 알 수 없었다(2026-10-22 VQA).
+ */
+function holdLine(reason: string, until: number | null): HTMLElement {
+  const when = el("span", { dataset: { testid: "workshop-hold-retry" } });
+  const tick = (): void => { if (until !== null) when.textContent = retryText(until - Date.now()); };
+  tick();
+  const line = el("p", { class: "workshop-blocked", children: [el("span", { text: "작업 줄 멈춤" }), " · ", el("span", { text: reason }), ...(until !== null ? [" · ", when] : [])] });
+  if (until !== null) {
+    const timer = window.setInterval(() => { if (!line.isConnected) { window.clearInterval(timer); return; } tick(); }, 1000);
+  }
+  return line;
+}
+
+/**
+ * 「고를 차례」 칩은 이 화면의 물건을 센다. 작업 줄에서 뺀(또는 줄 밖에서 그린) 물건도 고를 수 있어 작업 줄 수보다 클 수 있다 —
+ * 그때만 그 차이를 한 줄로 말한다(두 숫자가 서로 어긋나 보였다, 2026-10-22 VQA).
+ */
+function outsideQueueNote(s: WorkshopSession, readyKeys: readonly string[]): HTMLElement[] {
+  const inQueue = new Set(readyKeys);
+  const outside = visibleItems(s, "choose").filter((item) => !inQueue.has(`${s.harnessId}|${item.key}`)).length;
+  if (outside <= 0) return [];
+  return [el("p", { class: "workshop-outside-note", dataset: { testid: "workshop-outside-queue" }, text: `작업 줄에 없는 물건 ${outside}개도 여기서 고를 수 있어요` })];
 }
 
 const STEPS = ["무엇을 그릴지 적기", "후보 그리기", "한 장 고르기", "칩셋에 넣기", "맵에 놓기"] as const;
@@ -140,7 +211,8 @@ function currentStep(s: WorkshopSession, item: WorkshopItem | null): number {
 
 /** 줄 목록의 상태 글 — 고른 그림이 이미 칩셋에 들어갔으면 「칩셋에 넣음」. */
 function queueLabel(s: WorkshopSession, item: WorkshopItem): string {
-  const state = itemState(item.key, s.rounds, s.picks);
+  if (queueSummary().waiting.includes(item.key)) return "줄 서는 중";
+  const state = shownState(s, item);
   if (state === "picked") {
     const pick = s.picks.find((p) => p.itemKey === item.key);
     const grid = pick ? s.rounds.find((r) => r.id === pick.roundId)?.runs.find((r) => r.letter === pick.letter)?.grid : undefined;
@@ -202,6 +274,7 @@ function render(force: boolean): void {
     view.rejectFor = null;
   }
   const status = s.engine.status();
+  const queue = queueSummary();
   const eta = etaMinutes(s.rounds, status.concurrency);
   const selected = s.items().find((item) => item.key === selectedKey) ?? null;
   const scrollTop = host.querySelector(".workshop-items")?.scrollTop ?? 0;
@@ -224,24 +297,29 @@ function render(force: boolean): void {
           targetSwitch(s),
           el("span", {
             class: "workshop-progress", dataset: { testid: "workshop-progress" },
-            text: status.running + status.queued > 0 ? `후보 ${status.running}장 그리는 중 · ${status.queued}장 대기 · 약 ${eta}분 남음` : "쉬는 중",
+            // 고를 차례 수는 왼쪽 칩(이 화면의 물건)이 말한다 — 여기서 작업 줄 전체 수를 또 적으면 두 숫자가 어긋나 보였다(2026-10-22 VQA).
+            text: queue.active + queue.queued > 0 ? `작업 ${queue.active}개 그리는 중 · ${queue.queued}개 줄 서는 중` : "",
+          }),
+          el("button", {
+            class: "workshop-queue-open", text: "작업 줄", attrs: { type: "button", title: "공방 작업 줄 보기" }, dataset: { testid: "workshop-open-queue" },
+            on: { click: () => { void import("./queue/queueDock").then(({ openWorkshopQueue }) => openWorkshopQueue()); } },
           }),
           el("label", {
             class: "workshop-concurrency",
             children: ["동시에", el("select", {
-              dataset: { testid: "workshop-concurrency" },
-              on: { change: (event) => { const n = Number((event.target as HTMLSelectElement).value); s.engine.setConcurrency(n); saveConcurrency(n); render(true); } },
-              children: [1, 2, 3, 4, 5, 6].map((n) => el("option", { value: n, text: `${n}장`, attrs: n === status.concurrency ? { selected: "" } : {} })),
+              dataset: { testid: "workshop-concurrency" }, attrs: { "aria-label": "동시에 도는 작업 수" },
+              on: { change: (event) => { workshopQueue().setLimit(Number((event.target as HTMLSelectElement).value)); render(true); } },
+              children: Array.from({ length: QUEUE_MAX_LIMIT }, (_, i) => i + 1).map((n) => el("option", { value: n, text: `${n}개`, attrs: n === queue.limit ? { selected: "" } : {} })),
             })],
           }),
           el("button", { class: "workshop-close", text: "닫기", attrs: { type: "button", "aria-label": "공방 닫기" }, on: { click: closeWorkshop } }),
         ],
       }),
       // 막힘·경고는 머리줄 밖 한 줄 띠로 — 긴 문구가 머리줄을 밀어 「닫기」가 아래로 떨어지지 않게(2026-10-21 실화면).
-      ...(status.blocked || s.store.backend === "memory" ? [el("div", {
+      ...(status.blocked || queue.hold || s.store.backend === "memory" ? [el("div", {
         class: "workshop-alert", attrs: { role: "status" }, dataset: { testid: "workshop-alert" },
         children: [
-          ...(status.blocked ? [el("p", { class: "workshop-blocked", text: status.blocked })] : []),
+          ...(queue.hold ? [holdLine(queue.hold, queue.holdUntil)] : status.blocked ? [el("p", { class: "workshop-blocked", text: status.blocked })] : []),
           ...(s.store.backend === "memory" ? [el("p", { class: "workshop-blocked", text: "이 브라우저는 저장소를 못 열어 새로 고침하면 후보가 사라집니다." })] : []),
         ],
       })] : []),
@@ -260,6 +338,7 @@ function render(force: boolean): void {
                   on: { click: () => { filter = f; selectedKey = null; render(true); } },
                 })),
               }),
+              ...outsideQueueNote(s, queue.readyKeys),
               el("input", {
                 class: "workshop-search", value: query, attrs: { type: "search", placeholder: "찾기", "aria-label": "찾기" },
                 on: { input: (event) => { query = (event.target as HTMLInputElement).value; render(true); } },
@@ -270,7 +349,7 @@ function render(force: boolean): void {
                 children: items.map((item) => el("li", {
                   children: [el("button", {
                     class: "workshop-item" + (item.key === selectedKey ? " is-selected" : ""), attrs: { type: "button" },
-                    dataset: { testid: "workshop-item", key: item.key, state: itemState(item.key, s.rounds, s.picks) },
+                    dataset: { testid: "workshop-item", key: item.key, state: shownState(s, item) },
                     on: { click: () => { selectedKey = item.key; showForm = false; view.selected = 0; view.rejectFor = null; render(true); } },
                     children: [el("span", { class: "workshop-item-title", text: item.title }), el("span", { class: "workshop-item-meta", text: `${item.category} · ${queueLabel(s, item)}` })],
                   })],

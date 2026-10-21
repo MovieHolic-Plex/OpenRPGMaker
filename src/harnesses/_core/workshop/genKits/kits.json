@@ -1,0 +1,26 @@
+{
+ "note": "생성물 — 손으로 고치지 말 것(npm run gen-kits:sync). 공방이 어느 생성기 커밋을 따르는지 보인다.",
+ "kits": {
+  "object-gen": {
+   "repo": "https://github.com/MovieHolic-Plex/object-gen.git",
+   "visibility": "public",
+   "commit": "ca9e85c876859c79ccfb764b6a40b5999a10896b",
+   "vendored": true,
+   "contract": "ok"
+  },
+  "char-gen": {
+   "repo": "https://github.com/MovieHolic-Plex/char-gen.git",
+   "visibility": "private",
+   "commit": "d5f263904ca2b671ab6d54942b9c3651aa3e9d22",
+   "vendored": false,
+   "contract": "ok"
+  },
+  "tile-gen": {
+   "repo": "https://github.com/MovieHolic-Plex/tile-gen.git",
+   "visibility": "private",
+   "commit": "bf5359722545fa7bd566aa6bba66aabac3c9c0df",
+   "vendored": false,
+   "contract": "ok"
+  }
+ }
+}
