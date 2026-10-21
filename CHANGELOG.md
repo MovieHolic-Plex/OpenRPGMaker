@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.306.0 — 2026-10-21
+
+### 기능
+
+- **workshop** — 공방을 생성기 넷(char-gen·object-gen·tile-gen·item-gen) 허브로 개편 (#3193) (`7aaffd0`)
+
 ## 0.305.0 — 2026-10-21
 
 ### 기능
