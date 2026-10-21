@@ -131,7 +131,7 @@ const panBack = (ms = 900): Command => m2("Camera Control", { mode: "return", ta
  * pan 을 주면 문이 화면 밖일 때 카메라가 승강기로 갔다가 돌아온다(회의실에서 보는 퇴장).
  * firstLoveProbe(scripts/qa/runtime/first-love-probes.mts)가 「사라지기 직전 칸 = 출구 앞」을 검사한다.
  */
-function leave(project: Project, mapId: string, eventId: string, from: Cell, exit: { stand: Cell; door: Cell }, hideSw: string, hero: Cell, alsoAvoid: readonly Cell[] = [], pan?: Cell): { begin: Command; end: Command[] } {
+function leave(project: Project, mapId: string, eventId: string, from: Cell, exit: { stand: Cell; door: Cell }, hideSw: string, hero: Cell, alsoAvoid: readonly Cell[] = [], pan?: Cell, returnTo?: Cell): { begin: Command; end: Command[] } {
   const walkOut = walkRoute(project, mapId, eventId, from, exit.stand, [hero, ...alsoAvoid], false) as unknown as Record<string, unknown>;
   walkOut.routeHead = [{ kind: "changeSpeed", delta: 1 }];
   walkOut.routeTail = [{ kind: "turn", dir: dirToward(exit.stand, exit.door) }];
@@ -152,7 +152,7 @@ function leave(project: Project, mapId: string, eventId: string, from: Cell, exi
       quiet(SE_SLIDE, 0.45), ...doorFx(door, false, 700),
       setSw(hideSw, true),
       wait(300),
-      ...(pan ? [panBack()] : []),
+      ...(pan ? [returnTo ? panTo(returnTo.x, returnTo.y) : panBack()] : []),
     ],
   };
 }
@@ -640,7 +640,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
     door("ev_fl_office_pm", a.street.officeDoor, [stageIs(V_STAGE, 999)], [], think("오늘은 더는 못 한다. 머리가 꽉 찼다."), "down"),
     door("ev_fl_subway_pm", a.street.subway, [stageIs(V_STAGE, S.RUN)],
       // 계단은 승강장 위쪽 — 내려와 선 서하는 계단을 등지고 선로 쪽(아래)을 본다(아침 승강장과 같다).
-      [transfer(FL_MAP.platformPm, a.platform.arrive.x, a.platform.arrive.y, "down")],
+      [transfer(FL_MAP.platformPm, a.platform.exitOut.x, a.platform.exitOut.y, "down")],
       think("편의점부터 들르자. 저녁을 안 먹었다."), "down"),
   );
 
@@ -708,6 +708,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
           face("@player", dirToward(registerFront, jihuRegister)),
           listenTo("jihu"),
           ...say("seoha", "happy", "…선임님, 하나 드세요. 모르는 사이끼리도 우유 정도는 사 줄 수 있잖아요."),
+          faceHero("ev_fl_jihu_kon"),
           ...say("jihu", "happy", "…그 논리, 좀 이상한데요."),
           ...say("jihu", "embarrassed", "잘 마실게요, 윤서하 씨."),
           ...like(2, "ev_fl_jihu_kon"),
@@ -993,8 +994,10 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
   const exit = { stand: { x: o.npcExit.x, y: o.npcExit.y + 1 }, door: o.npcExit };
   // 회의실에서는 승강기가 화면 밖이다 — 탑승하는 동안 카메라가 승강기 쪽으로 올라갔다가 돌아온다.
   const elevatorView = { x: 13, y: 8 };
-  const clientOut = leave(project, FL_MAP.officeFri, "ev_fl_f_client", clientSpot, exit, "sw_fl_client_left", o.meetingSeat, [], elevatorView);
-  const jihuOut = leave(project, FL_MAP.officeFri, "ev_fl_f_jihu", jihuSpot, exit, "sw_fl_jihu_left", o.meetingSeat, [], elevatorView);
+  // 회의 장면 카메라: 회의실이 화면 위쪽(흉상 머리 위)에 오게 맵 아래 덧댄 줄 쪽으로 내려 잡는다(VQA r10 금요일 회의가 화면 아래 구석).
+  const meetView = { x: 13, y: 19 };
+  const clientOut = leave(project, FL_MAP.officeFri, "ev_fl_f_client", clientSpot, exit, "sw_fl_client_left", o.meetingSeat, [], elevatorView, meetView);
+  const jihuOut = leave(project, FL_MAP.officeFri, "ev_fl_f_jihu", jihuSpot, exit, "sw_fl_jihu_left", o.meetingSeat, [], elevatorView, meetView);
   add(fri,
     event("ev_fl_f_client", "박 본부장", clientSpot, [page("fc", [swOff("sw_fl_client_left")], [], { who: "client", dir: "down" })]),
     event("ev_fl_f_lead", "오정민 팀장", leadSpot, [page("fl", [], [], { who: "lead", dir: "right" })]),
@@ -1003,6 +1006,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     door("ev_fl_f_elev2", o.npcExit, [stageIs(V_STAGE, 999)], [], think("…"), "down"),
   );
   add(fri, scene("ev_fl_fri", { x: 1, y: 1 }, S.WED_TALK, [
+    panTo(meetView.x, meetView.y, 0),
     ...fadeIn(800),
     bgm(BGM_OFFICE),
     ...caption("금요일 오후 3시. 회의실."),
@@ -1120,7 +1124,8 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
     stopBgm(),
     { kind: "setWeather", weather: "none", transitionMs: 0 } as Command,
     stage(S.PLATFORM + 100),
-    { kind: "triggerEnding", endingId: END_C } as Command,
+    ...endingOpen("oprn-title-romance-cafe"),
+          { kind: "triggerEnding", endingId: END_C } as Command,
   ]));
   add(street, scene("ev_fl_run", { x: 2, y: 1 }, S.FRI, [
     // 밤거리 맵 BGM(라운지 피아노)이 질주에 깔리지 않게 — 화면이 검을 때 끊고, 비와 함께 단조 바이올린이 들어온다(r4 「비 오는 밤 쓸쓸하게」).
@@ -1140,7 +1145,8 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   add(plat, scene("ev_fl_platform", { x: 1, y: 1 }, S.RUN, [
     { kind: "setWeather", weather: "none", transitionMs: 0 } as Command,
     ...voice("안내 방송", "‘이번 열차는 서울역행입니다. 열차가 곧 도착하오니—’"),
-    walk("@player", route(project, FL_MAP.platformPm, p.arrive, meet)),
+    // 밤엔 계단으로 뛰어 내려온다 — 계단 발치에 도착해 지후에게 걸어간다(VQA r10: 승강장 한가운데에 서서 나타남).
+    walk("@player", route(project, FL_MAP.platformPm, p.exitOut, meet)),
     face("@player", "right"),
     face("ev_fl_p_jihu", "left"),
     ...emote("ev_fl_p_jihu", "exclamation", 1300),
@@ -1181,6 +1187,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...say("seoha", "happy", "…늦으면, 사연 보낼 거예요. 하루끝에. 실명으로."),
           ...fadeOut(1200),
           stopBgm(),
+          ...endingOpen("oprn-title-romance-office"),
           { kind: "triggerEnding", endingId: END_A } as Command,
         ], [
           ...memoryPictureIn(255, 1600),
@@ -1193,6 +1200,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           playSe(SE_PAPER),
           ...fadeOut(1200),
           stopBgm(),
+          ...endingOpen("oprn-title-romance-school"),
           { kind: "triggerEnding", endingId: END_B } as Command,
         ]),
       ] },
@@ -1203,10 +1211,22 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
         playSe(SE_PAPER),
         ...fadeOut(1200),
         stopBgm(),
-        { kind: "triggerEnding", endingId: END_B } as Command,
+        ...endingOpen("oprn-title-romance-school"),
+          { kind: "triggerEnding", endingId: END_B } as Command,
       ] },
     ]),
   ]));
+}
+
+/**
+ * 엔딩 직전 — 검게 덮은(fadeOut) 화면에서 에필로그 그림을 먼저 깔고 덮개를 걷는다. 엔딩의 에필로그 그림은 페이드의 검은 색조 아래에
+ * 그려져 글이 검은 화면에 떴다(VQA r10). 같은 그림·자리(fl_epilogue)라 에필로그의 그림 명령은 그대로 이어진다.
+ */
+function endingOpen(resourceId: string): Command[] {
+  return [
+    { kind: "showPicture", pictureId: "fl_epilogue", resourceId, x: -4, y: -3, scale: 29, opacity: 255, waitForPicture: false } as Command,
+    ...fadeIn(900),
+  ];
 }
 
 /** 에필로그를 검은 화면에 글만 늘어놓지 않는다(VQA2) — 앱에 든 연애 그림을 화면 가득 깔고 그 위로 아래 대사창. */
@@ -1247,7 +1267,7 @@ function defineEndings(project: Project): void {
     conditions: [],
     presentation: { musicResourceId: BGM_END_B, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", credits: ENDING_CREDITS, backgroundResourceId: "oprn-title-romance-school" },
     epilogue: [
-      epiloguePicture("oprn-title-romance-school", 200),
+      epiloguePicture("oprn-title-romance-school"),
       { kind: "say", text: "열차가 떠나고, 승강장에 혼자 남았다. 연두색 편지지 뒤에, 낯익은 글씨." },
       { kind: "say", text: "‘바나나우유 님께. 그 금요일 방송, 이제야 읽어요.’" },
       { kind: "say", text: "‘나도 금요일마다 사연함을 제일 먼저 열었어요. 당신 글씨가 있는지 보려고.’" },
@@ -1262,7 +1282,7 @@ function defineEndings(project: Project): void {
     conditions: [],
     presentation: { musicResourceId: BGM_END_C, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-title-romance-cafe" },
     epilogue: [
-      epiloguePicture("oprn-title-romance-cafe", 170),
+      epiloguePicture("oprn-title-romance-cafe"),
       { kind: "say", text: "회식 자리. 민호 씨가 건배사를 세 번째 하고 있다." },
       { kind: "say", text: "오후 9시 41분, 그 열차가 떠난 시각. 밤 열 시, ‘하루끝’ 오늘의 사연이 울렸다." },
       { kind: "say", text: "보낸 사람: 익명. 사연 제목은, ‘바나나우유 님께’." },

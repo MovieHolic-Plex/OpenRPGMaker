@@ -13,6 +13,8 @@ import { canMove, isPassable } from "@/project/collision";
 import { createJpCityTileset, JP_CITY_ID } from "@/project/defaults/jpCity";
 import type { GameMap, LightSource, Project } from "@/project/types";
 import roomsJson from "./firstLoveRooms.json";
+import { clearMapCellForBackground } from "@/project/mapBackgroundVisibility";
+import { mapBackgroundFromPanoramaSet } from "@/assets/oprnPanoramas";
 
 export type ExecTool = (name: string, args: Record<string, unknown>) => { data?: unknown };
 
@@ -111,25 +113,6 @@ function light(id: string, at: Cell, radius: number, color: string, intensity = 
   return { id, at: { x: at.x, y: at.y }, radius, color, intensity };
 }
 
-/**
- * 옥상 난간 너머의 도시 — 맵 위쪽 줄(0..view.h-1)을 jp_city 거리 구성기가 짠 운하 거리(건물·보도·옹벽·운하·다리)의 한 토막으로 덮는다.
- * 새 그림이 아니라 같은 칩셋의 기존 칸 번호이고, 칸마다 걷기 막힘은 난간 줄(y = view.h)이 막는다(데모 전용 후처리).
- */
-function paintRoofView(map: GameMap, view: NonNullable<RoomSpec["view"]>): void {
-  const W = map.width;
-  const parse = (rows: string[]): number[][] => rows.map((r) => r.split(",").map(Number));
-  const lower = parse(view.lower), upper = parse(view.upper), upper2 = parse(view.upper2);
-  for (let y = 0; y < view.h; y++) {
-    for (let x = 0; x < view.w && x < W; x++) {
-      const i = y * W + x;
-      map.lowerTiles[i] = lower[y]![x]!;
-      map.upperTiles[i] = upper[y]![x]!;
-      if (map.lowerOverlayTiles) map.lowerOverlayTiles[i] = -1;
-      if (map.upperOverlayTiles) map.upperOverlayTiles[i] = upper2[y]![x]!;
-      if (map.shadowBits) map.shadowBits[i] = 0;
-    }
-  }
-}
 
 /**
  * 맵 폭이 화면(30칸)보다 좁으면 카메라 둘레가 검다(옥상 24칸 = 화면 20% 검정, 전체 VQA 축 1). 왼쪽 left·오른쪽 right 칸을 덧대고
@@ -152,6 +135,23 @@ function padMapX(map: GameMap, left: number, right: number, pick: (y: number, si
   }
   map.width = NW;
   for (const e of map.events) e.x += left;
+}
+
+/** 맵 아래에 bottom 줄을 덧댄다(덧댄 줄 = pick(y) 가 고른 원래 줄의 복사). 좌표는 그대로다. */
+function padMapBottom(map: GameMap, bottom: number, pick: (y: number) => number): void {
+  const W = map.width, H = map.height, NH = H + bottom;
+  const bag = map as unknown as Record<string, unknown>;
+  for (const [key, value] of Object.entries(bag)) {
+    if (!Array.isArray(value) || value.length !== W * H || !value.every((v) => v === null || typeof v === "number")) continue;
+    const src = value as number[];
+    const out = src.slice();
+    for (let y = H; y < NH; y++) {
+      const sy = pick(y);
+      for (let x = 0; x < W; x++) out.push(src[sy * W + x]!);
+    }
+    bag[key] = out;
+  }
+  map.height = NH;
 }
 
 /** 옥상 한 판 = 위 18줄 도시 풍경 + 아래 옥상(24×12). 난간 줄의 y. */
@@ -204,9 +204,12 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   const konbiniRoom = project.maps[FL_MAP.konbini]!;
   const roofRoom = project.maps[FL_MAP.rooftop]!;
   const platform = project.maps[FL_MAP.platformAm]!;
-  if (ROOMS.rooftop.view) paintRoofView(roofRoom, ROOMS.rooftop.view);
-  // 옥상(24칸)을 화면 폭 30칸으로: 도시 풍경 줄은 빈 하늘·길 열(21)을, 옥상 줄은 바깥 벽 열을 복사한다. 아래 옥상 좌표는 모두 +ROOF_PAD.
-  padMapX(roofRoom, ROOF_PAD, ROOF_PAD, (y, side) => (y < ROOF_FENCE_Y ? 21 : side === "left" ? 0 : 23));
+  // 옥상(24칸)을 화면 폭 30칸으로: 옥상 줄은 바깥 벽 열을 복사한다. 아래 옥상 좌표는 모두 +ROOF_PAD.
+  padMapX(roofRoom, ROOF_PAD, ROOF_PAD, (_y, side) => (side === "left" ? 0 : 23));
+  // 난간 너머는 하늘이다 — 같은 크기의 길·벤치·우체통(땅에서 본 거리)을 그리면 옥상이 1층 광장으로 읽힌다(VQA r10).
+  // 난간 위 줄을 모두 비우고 맑은 낮 하늘 배경(빈 칸에도 보이기)을 깐다.
+  for (let i = 0; i < ROOF_FENCE_Y * roofRoom.width; i++) clearMapCellForBackground(roofRoom, i);
+  roofRoom.background = mapBackgroundFromPanoramaSet("oprn-sky-day");
   const broadcast = project.maps[FL_MAP.broadcast]!;
 
   // 사무층 좌표(예제 office-floor 평면 기준): 위 큰 방 = 자리, 아래 왼쪽 = 회의실, 가운데 = 탕비실, 계단실, 엘리베이터 홀.
@@ -270,27 +273,12 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   // ── 낮·밤 복사 ──
   const streetPm = cloneMap(project, FL_MAP.street, FL_MAP.streetPm, "늘봄 빌딩 앞 거리 · 밤");
   const officePm = cloneMap(project, FL_MAP.office, FL_MAP.officePm, "스튜디오 늘봄 · 야근");
-  cloneMap(project, FL_MAP.office, FL_MAP.officeFri, "스튜디오 늘봄 · 금요일");
+  const officeFri = cloneMap(project, FL_MAP.office, FL_MAP.officeFri, "스튜디오 늘봄 · 금요일");
+  // 금요일 회의실은 사무층 맨 아래(y 13~20)라 카메라가 맵 끝에 걸려 다섯 사람이 흉상·대화창 사이에 끼었다(VQA r10).
+  // 바깥 채움 두 줄(맨 아래 두 줄 무늬)을 FRI_PAD 줄 더 덧대 카메라가 회의실을 화면 위쪽에 둘 수 있게 한다 — 덧댄 줄은 대화창 뒤다.
+  const FRI_PAD = 4, friH = officeFri.height;
+  padMapBottom(officeFri, FRI_PAD, (y) => friH - 2 + ((y - friH) % 2));
   const platformPm = cloneMap(project, FL_MAP.platformAm, FL_MAP.platformPm, "한결역 승강장 · 막차");
-  // 열차가 실제로 들어와 서고 떠난다(VQA r8: 「열차가 들어오고 있습니다」 안내만 있고 열차가 없다).
-  // 탈것 도구는 1층 jp-subway-track(2줄) 선로를 찾는다 — 방 키트가 노란 끝선 바로 아래 그린 가까운 선로 두 줄(y 11·12)을
-  // 같은 계열의 그 선로 칸으로 바꾼다. 열차가 승강장 끝에 붙어 서고, 대화창(y192~) 위로 몸이 보인다. 맨 아래 두 줄은 건너편 선로 그대로.
-  const TRACK_TOP = 8597, TRACK_BOTTOM = 8598, NEAR_TRACK_Y = 11;
-  for (const id of [FL_MAP.platformAm, FL_MAP.platformPm]) {
-    const m = project.maps[id]!;
-    for (let x = 0; x < m.width; x++) {
-      m.lowerTiles[NEAR_TRACK_Y * m.width + x] = TRACK_TOP;
-      m.lowerTiles[(NEAR_TRACK_Y + 1) * m.width + x] = TRACK_BOTTOM;
-      if (m.upperTiles) { m.upperTiles[NEAR_TRACK_Y * m.width + x] = -1; m.upperTiles[(NEAR_TRACK_Y + 1) * m.width + x] = -1; }
-    }
-  }
-  for (const id of [FL_MAP.platformAm, FL_MAP.platformPm]) {
-    try {
-      exec("set_map_transit", { mapId: id, auto: { subway: { vehicle: "jp-subway", name: "한결선", stopName: "한결역", headwaySec: 50, waitSec: 10 } } });
-    } catch (error) {
-      console.warn(`[first-love] ${id} 열차를 깔지 못했다: ${(error as Error).message}`);
-    }
-  }
 
   // 밤 거리: 푸른 어둠 + 실제 가로등(3칸 기둥의 머리 높이)·공원 가로등·간판 빛.
   // 좌표는 거리 맵(modern_city, 시드 5)에 찍힌 mc-prop-lamp-a 기둥 윗칸 + 1 이다.
@@ -340,5 +328,25 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   roofRoom.defaultLighting = { ambient: 0.06, color: "#ffd9a8", sources: [] };
   roofRoom.atmosphereEffects = normalizeAtmosphereEffects([{ kind: "sunrays", amount: 0.5, speed: 0.4, size: 1, opacity: 0.5 }]);
 
+  // 도구 실행(exec)은 프로젝트 맵 객체를 새로 만들 수 있다 — 위에서 잡아 둔 맵 참조(조명 등)가 끊기지 않게 맨 끝에 둔다(VQA r10: 밤거리 조명 사라짐).
+  // 열차가 실제로 들어와 서고 떠난다(VQA r8: 「열차가 들어오고 있습니다」 안내만 있고 열차가 없다).
+  // 탈것 도구는 1층 jp-subway-track(2줄) 선로를 찾는다 — 방 키트가 노란 끝선 바로 아래 그린 가까운 선로 두 줄(y 11·12)을
+  // 같은 계열의 그 선로 칸으로 바꾼다. 열차가 승강장 끝에 붙어 서고, 대화창(y192~) 위로 몸이 보인다. 맨 아래 두 줄은 건너편 선로 그대로.
+  const TRACK_TOP = 8597, TRACK_BOTTOM = 8598, NEAR_TRACK_Y = 11;
+  for (const id of [FL_MAP.platformAm, FL_MAP.platformPm]) {
+    const m = project.maps[id]!;
+    for (let x = 0; x < m.width; x++) {
+      m.lowerTiles[NEAR_TRACK_Y * m.width + x] = TRACK_TOP;
+      m.lowerTiles[(NEAR_TRACK_Y + 1) * m.width + x] = TRACK_BOTTOM;
+      if (m.upperTiles) { m.upperTiles[NEAR_TRACK_Y * m.width + x] = -1; m.upperTiles[(NEAR_TRACK_Y + 1) * m.width + x] = -1; }
+    }
+  }
+  for (const id of [FL_MAP.platformAm, FL_MAP.platformPm]) {
+    try {
+      exec("set_map_transit", { mapId: id, auto: { subway: { vehicle: "jp-subway", name: "한결선", stopName: "한결역", headwaySec: 50, waitSec: 10 } } });
+    } catch (error) {
+      console.warn(`[first-love] ${id} 열차를 깔지 못했다: ${(error as Error).message}`);
+    }
+  }
   return anchors;
 }

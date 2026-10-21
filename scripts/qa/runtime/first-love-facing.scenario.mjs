@@ -4,7 +4,7 @@
 // 판정: node scripts/qa/runtime/facing-audit.mjs verify-shots/runtime-qa/fl-facing-A/d1-arrive
 import base from "./first-love.scenario.mjs";
 
-const SKIP = new Set(["title", "opening-1", "opening-2", "opening-4", "ending-after", "state"]);
+const SKIP = new Set(["title", "opening-1", "opening-2", "opening-4", "state"]);
 const frameMs = Number(process.env.FL_FRAME_MS ?? 200);
 
 function convert(beat) {

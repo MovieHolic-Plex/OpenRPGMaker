@@ -1336,6 +1336,39 @@ function checkCommandsAfterTransfer(project: Project, issues: LintIssue[]): void
   }
 }
 
+// ---------------------------------------------------------------------------- 검은 덮개 아래 엔딩 그림
+
+/**
+ * 엔딩 직전 fadeOut 으로 덮은 채 「엔딩」을 부르면, 에필로그의 그림(picture)이 검은 색조 아래에 그려져 글만 검은 화면에 뜬다
+ * (첫사랑 VQA r10: 세 엔딩 모두 검은 화면 + 글). 에필로그에 그림이 있으면 그 그림을 먼저 깔고 fadeIn 한 뒤 엔딩을 부른다.
+ */
+function checkEndingUnderFade(project: Project, issues: LintIssue[]): void {
+  const endings = new Map((project.endings ?? []).map((e) => [e.id, e] as const));
+  for (const map of Object.values(project.maps)) {
+    for (const host of map.events ?? []) {
+      for (const page of pagesOf(host)) {
+        let covered = false;
+        for (const command of walk(page.commands)) {
+          if (command.kind === "m2Command" && (command.commandId === "m2-202-screen-effect" || m2Title(command) === "Screen Effect")) {
+            const effect = fieldStr(command, "effect");
+            if (effect === "fadeOut") covered = true;
+            else if (effect === "fadeIn") covered = false;
+            continue;
+          }
+          if (command.kind !== "triggerEnding" || !covered) continue;
+          const ending = endings.get((command as { endingId?: string }).endingId ?? "");
+          const hasPicture = (ending?.epilogue ?? []).some((beat) => (beat as { kind?: string }).kind === "picture");
+          if (!hasPicture) continue;
+          issues.push({
+            severity: "warning", code: "scene-ending-under-fade", mapId: map.id, eventId: host.id, x: host.x, y: host.y,
+            message: `이벤트 ${host.id} 가 화면을 검게 덮은(fadeOut) 채 엔딩 ${ending?.id} 를 부른다 — 에필로그 그림이 검은 덮개 아래에 그려져 글만 검은 화면에 뜬다. 같은 그림(같은 pictureId)을 먼저 띄우고 fadeIn 한 뒤 엔딩을 부른다.`,
+          });
+        }
+      }
+    }
+  }
+}
+
 export function lintScenePolish(project: Project): LintIssue[] {
   const issues: LintIssue[] = [];
   let gates: Gate[] = [];
@@ -1362,6 +1395,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkMapSmallerThanScreen);
   guard(checkLetterboxDialogue);
   guard(checkCommandsAfterTransfer);
+  guard(checkEndingUnderFade);
   return issues;
 }
 
