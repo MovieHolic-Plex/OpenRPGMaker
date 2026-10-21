@@ -784,7 +784,7 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
 - **움직임 프리셋** `MAP_BACKGROUND_MOTIONS`(`src/project/mapBackground.ts`): 고정·느린 시차(층마다 깊이 0.1→0.5)·가로 흐름·세로 흐름·타일과 같이(깊이 1).
   `applyMapBackgroundMotion` / `detectMapBackgroundMotion`. 숫자 칸은 「세부 조정」 접힘 안으로 옮겼다.
 - **비칠 칸 판정** `src/project/mapBackgroundVisibility.ts` — 렌더러 `renderEmptyCellCover` 와 같은 규칙. 창 타일은 합본 마을 칩셋에서만 센다.
-  탭의 「플레이에서 N칸에 보입니다 / 한 칸도 안 보입니다」 줄과 고치기 단추(빈 칸에 보이기 · 윗줄 min(7, 높이/2)줄 비우기), 조수 0칸 경고가 같은 함수를 본다.
+  탭의 「플레이에서 N칸에 보입니다 / 한 칸도 안 보입니다」 줄과 고치기 단추, 조수 0칸 경고가 같은 함수를 본다.
 - **편집기 「맵 배경」 탭** (`mapProps.ts renderBackgroundTab`): 견본 카드(층을 겹친 썸네일·「옆에서 본 하늘/위에서 본 면」), 다른 그림 고르기,
   **내 그림 올리기**(`backdropUpload.ts`, 자원 관리자와 같은 검사·저장, 올린 그림은 cover), 배경 끄기, 상태 줄, 움직임 단추, 맞추기(큰 그림 1:1 이면 경고),
   빈 칸에도 보이기, **게임 화면 미리보기**(`mapBackgroundLivePreview.ts`: 게임 해상도/카메라 배율 크기 캔버스, 플레이와 같은 cover·반복·흐름·깊이 식,
@@ -792,13 +792,20 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
   고친 결함: 「맵 배경」 을 누르면 「기본 설정」 이 열리고 모든 절이 한꺼번에 보이던 것(`.map-props-section-block[hidden]` 이 CSS 에 덮여 있었다).
 - **편집기 캔버스 미리보기**(`EditScene.renderMapBackgroundPreview`): 맵 (0,0) 에 고정, 크기는 맵 사각형(반복 끈 축은 그림 크기까지),
   배율은 게임 뷰포트 기준 cover, `displayTexture` 키로 원본 크기를 읽는다. 「빈 칸에도 보이기」 가 꺼져 있으면 캔버스에도 안 그린다 — 플레이와 같은 거짓말 없는 화면.
+- **되돌리기·확인(적대 검수 뒤):** 배경 바꾸기·끄기·칸 비우기는 `recordProjectSnapshot(..., {kind:"map"})` 로 Ctrl+Z 가 된다. 칸 비우기는 확인 창(지울 타일 수·그 자리 이벤트)을 거치고
+  `clearMapCellForBackground` 로 모든 층·덧칠 더미(`*TileStacks`)·그림자까지 지운다(더미를 남기면 충돌이 막힌 칸으로 본다).
+  고치기 단추는 견본 종류를 따른다 — 옆에서 본 하늘은 「윗줄 N줄」(N = ceil(112px/칸 크기), 맵 높이 절반까지), 위에서 본 면은 「물 칸 N개」(없으면 「맵 둘레 2칸」).
+  탭 미리보기는 **맵이 화면보다 클 때만** 카메라를 흔들고(시작 화면에서 갈 수 있는 거리까지), 타일 덮개는 카메라와 함께 움직이며 불투명하다.
+  캔버스 「배경 보기」 는 **시작 화면 기준**(시작 칸이 그 맵이면 그 칸을 가운데 둔 첫 카메라)으로 그린다 — 그 화면 밖은 근사.
 - **조수**: `set_map_properties.background.preset`(OPRN 다섯 + 남아 있으면 CraftPix; `layerSet` 은 같은 뜻의 옛 이름), `motion`, `showInEmptyCells` 기본 true,
   `clearForBackground{water:true}` 는 그 맵의 물 타일 칸을 비운다(섬 바깥 바다를 배경으로). 이벤트 도구 힌트도 preset 을 가리킨다.
+  `get_project_summary` 의 `maps[].background`(preset·그림·층·빈 칸·보이는 칸 수)로 결과를 다시 읽는다(전에는 읽을 도구가 없었다). `backdrop:` 접두 id 도 받는다.
+  지평선 견본인데 위쪽 빈 줄이 7줄(112px)보다 적으면 경고와 정확한 clearForBackground 를 돌려준다. 빈 enum 이던 `layerSet` 은 스키마에서 뺐다(실행기는 옛 이름을 계속 받는다).
 - **검증(2026-10-21):** 출하 플레이어 1배(320×240) `scripts/qa/runtime/map-panorama.scenario.mjs` — 노을 지붕·맑은 하늘 절벽·섬 바깥 바다·우주 발판 네 장면,
   제자리·걸은 뒤·더 걸은 뒤 세 장. 모서리 확대·검은 빈칸 없음, 층마다 다른 이동. 이 박스는 크롬이 ERR_NETWORK_CHANGED 라 `unshare -rn` 안에서 돌렸다.
   `map-background-fixture.mjs` 기본값도 사라진 `easyrpg-backdrop-sky1` 대신 노을 세트(`--set <id>`). 단위 `test/mapBackgroundPanoramas.test.ts`(실행 안 함).
 - **남은 한계:** 맵에 처음 들어갈 때 배경 그림은 비동기로 실린다 — dev 서버 첫 로드에서는 첫 몇 프레임이 검을 수 있다(예전부터, 미리 싣기 없음).
-  배경 흐름·깊이는 플레이에서만 움직이고 편집기 캔버스는 정지 화면이다(움직임은 탭 미리보기에서 본다). 지평선 세트는 화면 고정이라 맵 아래쪽에서 하늘을 보이게 하면 지평선 아래(물) 부분이 보인다.
+  배경 흐름·깊이는 플레이에서만 움직이고 편집기 캔버스는 정지 화면이다(움직임은 탭 미리보기에서 본다). 칸을 비운 가장자리는 해안·절벽 타일 없이 각지게 잘린다(조수·편집기 모두 가장자리 마감은 하지 않는다). 지평선 세트는 화면 고정이라 맵 아래쪽에서 하늘을 보이게 하면 지평선 아래(물) 부분이 보인다.
   `map-parallax.capture.mjs` 는 아직 빈 CraftPix 세트를 쓴다.
 
 ## 8차 맵 진입 (2026-09-28)
