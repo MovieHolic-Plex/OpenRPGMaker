@@ -261,7 +261,18 @@
   animation: bf-defeat-ash 900ms ease-out both;
 }
 @keyframes bf-defeat-ash {
-  to { filter: grayscale(0.85) brightness(0.55) sepia(0.25); }
+  to { filter: grayscale(0.85) brightness(0.32) sepia(0.25); }
+}
+/* 전멸 결과에서는 적 머리 위 이름·체력 판을 걷는다 — 식은 무대 뒤로 「…/380」이 비쳐 보였다(폴른 스타 가혹 검수 r7). */
+.battle-scene[data-battle-motion="retro"][data-battle-director-step="result"]:has(.battle-result-panel[data-battle-result="defeat"]) .battle-enemy .battle-enemy-chrome {
+  display: none !important;
+}
+.battle-scene[data-battle-motion="retro"] .battle-result-panel .battle-result-subtitle {
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.4;
+  opacity: 0.85;
+  margin: 2px 0 6px;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-result-panel[data-battle-result="defeat"]:not(.battle-result-pixel) {
   animation: bf-defeat-window 700ms cubic-bezier(0.3, 0.6, 0.3, 1) 300ms both;

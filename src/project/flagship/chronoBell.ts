@@ -174,9 +174,9 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
   const finale = project.database.troops.find((t) => t.id === "troop_fs_finale");
   // 가혹 검수 r5: 「배경이 평평하다」 — 안개 층을 하나 더 깔아 깊이를 준다.
   if (finale) finale.backdropLayers = [{ preset: "mist", opacity: 30 }, { preset: "lightRays", opacity: 45 }, { preset: "stars", opacity: 55 }];
-  // 가혹 검수 r5: 「전투 스프라이트가 화면 대비 작다」 — 수호상을 1.5배로 세운다. 발렌 시트는 칸(96px) 안의 인물이 작아
-  // 키우면 상자가 전투 필드 높이를 넘어 맞춤(battleEnemyFit)이 도로 1배로 줄인다 — 그대로 둔다.
-  for (const [id, scale] of [["enemy_fs_guardian", 150]] as const) {
+  // 가혹 검수 r5: 「전투 스프라이트가 화면 대비 작다」 — 수호상을 1.5배로 세운다.
+  // 발렌은 걷기 칩 전투 시트(사람 적)라 맞춤 대신 칸 그림을 발밑 기준으로 키운다(27-retro-motion.css) — 2배.
+  for (const [id, scale] of [["enemy_fs_guardian", 150], ["enemy_fs_valen", 200]] as const) {
     const enemy = project.database.enemies.find((e) => e.id === id);
     if (enemy) enemy.battleScalePercent = scale;
   }
@@ -630,6 +630,14 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     };
     fixFlash(podPage.commands);
   }
+  // 대사·선택지 상자는 늘 아래에 둔다 — 「주인공 가리지 않기」가 주인공이 아래 절반에 서면 상자를 위로 올려
+  // 천문대 위층·지도 위쪽을 덮었다(가혹 검수 r7 「선택지 상자가 화면 위를 덮음」). 첫 자동 이벤트(포고) 맨 앞에서 한 번 정한다.
+  {
+    const opening = M(ids.hub).events.find((e) => e.id === `ev_${FS_PREFIX}_event`);
+    const page = opening?.pages?.[0];
+    if (!page) throw new Error("[fallen-star] 포고 이벤트를 찾지 못했다");
+    page.commands.unshift({ kind: "displayTextSettings", format: "normal", position: "bottom", preventObscuringPlayer: false, allowEventMovementDuringWait: false } as Command);
+  }
   // 처음엔 소지품이 비어 첫 전투에서 「아이템」이 쓸모없었다(가혹 검수 r1) — 포고 뒤 엘레나가 회복약 셋을 건넨다.
   {
     const herald = findTextList(M(ids.hub), "선생님이 천문대에서 기다리셔");
@@ -702,6 +710,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         "카엘 — 견습 별지기", "엘레나 — 천문대의 마도학자", "이리스 — 별에서 온 기계 소녀", "",
         "천문대장 하넬", "숲지기 브람", "심문관 발렌", "",
         "그날 밤 동쪽 숲에 떨어진 것은 별이 아니었다.", "이리스의 배가 남은 곳, 북쪽 하늘탑으로.", "",
+        "OPRN Studio 공식 데모", "",
         "제2막에서 계속됩니다.",
       ].join("\n"),
     },

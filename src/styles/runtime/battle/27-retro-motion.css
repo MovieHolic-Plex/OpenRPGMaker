@@ -510,8 +510,10 @@
   height: var(--battle-sprite-frame-height) !important;
   background-repeat: no-repeat;
   image-rendering: pixelated;
-  transform: scaleX(-1);
-  transform-origin: 50% 50%;
+  /* 적 레코드의 battleScalePercent 를 따른다(발밑 기준) — 예전엔 96px 칸에 고정돼 보스 사람 적이 졸개만 했다(폴른 스타 가혹 검수 r7).
+     칸 상자는 그대로라 이름·체력 판과 맞춤 규칙은 움직이지 않는다. */
+  transform: scaleX(-1) scale(var(--battle-enemy-scale, 1));
+  transform-origin: 50% 100%;
   scale: 1;
   rotate: none;
 }
