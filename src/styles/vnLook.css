@@ -407,3 +407,6 @@
 .dialogue-overlay[data-vn-layout="bar"][data-vn-look][data-vn-look].choices-active.choices-framed.position-top {
   padding-top: 0;
 }
+.dialogue-overlay[data-vn-layout="bar"][data-vn-look][data-vn-look].position-top {
+  top: 0;
+}

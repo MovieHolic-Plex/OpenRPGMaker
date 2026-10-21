@@ -75,7 +75,7 @@
 .player-layout .play-stage > .dialogue-overlay.position-top {
   bottom: auto;
   height: min(var(--runtime-dialogue-panel-height, 27%), var(--play-visible-height));
-  top: var(--play-crop-top);
+  top: calc(var(--play-crop-top) + 6px);
 }
 .player-layout .play-stage > .dialogue-overlay.position-center {
   bottom: auto;
@@ -516,4 +516,8 @@
 }
 .play-stage[data-letterbox] > .dialogue-overlay:not(.balloon-active).position-top {
   translate: 0 max(0px, var(--runtime-letterbox-px, 0px) - var(--play-crop-top, 0px));
+}
+/* 미연시 bar 레이아웃은 화면 끝에 닿는 전폭 띠다 — 위 창 6px 내림(이름표 여백)을 받지 않는다(이름표는 vnLook 이 띠 아래로 내린다). */
+.player-layout .play-stage > .dialogue-overlay[data-vn-layout="bar"][data-vn-look].position-top {
+  top: var(--play-crop-top);
 }

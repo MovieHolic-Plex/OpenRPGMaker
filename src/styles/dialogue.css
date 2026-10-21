@@ -63,11 +63,12 @@
   z-index: 39;
 }
 
+/* 위 창은 6px 내려 선다 — 이름표(top:-9px)가 화면 위 끝에 닿지 않게. 여백(padding)이 아니라 자리를 옮겨 상자 높이는 아래 창과 같다. */
 .dialogue-overlay.position-top {
   bottom: auto;
   height: var(--runtime-dialogue-panel-height);
   padding: 8px 10px 0;
-  top: 0;
+  top: 6px;
   transform: none;
 }
 

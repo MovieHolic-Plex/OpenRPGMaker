@@ -147,6 +147,8 @@ if (endingId) {
   const ending = project.endings?.find((e) => e.id === endingId);
   if (!ending) throw new Error(`엔딩 ${endingId} 없음`);
   ending.conditions = [];
+  // 엔딩 이름은 저작 글이라 엔진이 번역하지 않는다 — 영어 게임이면 저자가 영어로 쓴다. 언어 QA 사본은 그 이름도 그 언어로.
+  if (process.env.DFRAME_ENDING_NAME) ending.name = process.env.DFRAME_ENDING_NAME;
   ending.epilogue = [];
   if (badgeOverride) ending.presentation = { ...ending.presentation, badge: badgeOverride, finalTitle: process.env.DFRAME_ENDING_FINAL ?? "" };
   const run = (qaEvent.pages ?? [])[0]!;
