@@ -856,9 +856,11 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     ]),
     ...say("jihu", "base", "…먼저 일어나 보겠습니다. 수고하셨습니다."),
     jihuOut.begin,
+    stopBgm(),
     ...say("lead", "base", "그리고… 다들 알다시피, 오늘이 지후 씨 마지막 날이에요."),
     ...emote("player", "exclamation"),
     ...say("seoha", "surprised", "…네?"),
+    bgm(BGM_MEMORY, 2000),
     ...say("lead", "base", "다음 주부터 부산 지사예요. 아버님 곁에 있고 싶다고 몇 달 전에 신청했었죠."),
     ...say("minho", "base", "회식이 송별회 겸인데… 선임님은 오늘 밤 서울역에서 부산 가는 마지막 KTX 탄대요. 한결역에서 9시 40분 열차를 타야 맞춘다고요. 짐은 아침에 벌써 다 부치셨고요."),
     ...jihuOut.end,
@@ -904,6 +906,8 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   const p = a.platform;
 
   add(street, scene("ev_fl_run", { x: 2, y: 1 }, S.FRI, [
+    // 밤거리 맵 BGM(라운지 피아노)이 질주에 깔리지 않게 — 화면이 검을 때 끊고 빗소리 화면만 남긴다(VQA2 BGM).
+    stopBgm(),
     ...fadeIn(500),
     { kind: "setWeather", weather: "rain", intensity: 0.6, transitionMs: 800 } as Command,
     ...caption("오후 9시 21분. 9시 40분 열차까지 19분."),
@@ -1120,12 +1124,15 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
   const mapBgm: Record<string, string> = {
     [FL_MAP.platformAm]: BGM_OFFICE, [FL_MAP.street]: BGM_OFFICE, [FL_MAP.office]: BGM_OFFICE, [FL_MAP.officeFri]: BGM_OFFICE,
     [FL_MAP.rooftop]: BGM_ROOF, [FL_MAP.streetPm]: BGM_NIGHT, [FL_MAP.konbini]: BGM_NIGHT, [FL_MAP.officePm]: BGM_NIGHT,
-    [FL_MAP.broadcast]: BGM_MEMORY, [FL_MAP.platformPm]: BGM_NIGHT,
+    [FL_MAP.broadcast]: BGM_MEMORY,
   };
   for (const [mapId, id] of Object.entries(mapBgm)) {
     const m = project.maps[mapId];
     if (m) m.bgm = { mode: "custom", resourceId: id };
   }
+  // 밤 승강장은 클라이맥스 전용 — 고백 곡이 들어오기 전까지 침묵(라운지 피아노 금지, VQA2 BGM).
+  const platPm = project.maps[FL_MAP.platformPm];
+  if (platPm) platPm.bgm = { mode: "none" } as never;
 
   buildTitleAndOpening(project, BGM_MEMORY);
 
