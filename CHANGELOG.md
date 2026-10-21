@@ -5,6 +5,14 @@
 
 <!-- releases -->
 
+## 0.307.0 — 2026-10-21
+
+### 기능
+
+- **ai** — generate_missing_object — assistant draws a truly missing prop via workshop object-gen (#3198) (`7a82250`)
+- **lint** — scene-ceiling-tile — non-ceiling tile or stray floor in a ceiling area (#3197) (`81d8c64`)
+- **modern-city** — redraw 11 interior objects (m142-b8) via object-gen — Opus adversarial VQA pass, supervisor-delegated allow (#3195) (`83b6a8d`)
+
 ## 0.306.0 — 2026-10-21
 
 ### 기능
