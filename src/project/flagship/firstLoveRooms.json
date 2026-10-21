@@ -1286,6 +1286,46 @@
     "id": "st-boarding-mark",
     "x": 26,
     "y": 9
+   },
+   {
+    "id": "st-tactile-dot",
+    "x": 28,
+    "y": 4
+   },
+   {
+    "id": "st-tactile",
+    "x": 28,
+    "y": 5
+   },
+   {
+    "id": "st-tactile",
+    "x": 28,
+    "y": 6
+   },
+   {
+    "id": "st-tactile-dot",
+    "x": 28,
+    "y": 7
+   },
+   {
+    "id": "sx-extinguisher",
+    "x": 26,
+    "y": 3
+   },
+   {
+    "id": "st-platform-bench",
+    "x": 2,
+    "y": 6
+   },
+   {
+    "id": "st-vending",
+    "x": 5,
+    "y": 3
+   },
+   {
+    "id": "st-sign-pole",
+    "x": 28,
+    "y": 8
    }
   ],
   "tables": [
@@ -1521,6 +1561,36 @@
     "id": "sh-plant-pot",
     "x": 1,
     "y": 15
+   },
+   {
+    "id": "sx-trophy-case",
+    "x": 5,
+    "y": 12
+   },
+   {
+    "id": "sx-extinguisher",
+    "x": 8,
+    "y": 12
+   },
+   {
+    "id": "kr-poster",
+    "x": 18,
+    "y": 1
+   },
+   {
+    "id": "kr-poster",
+    "x": 21,
+    "y": 1
+   },
+   {
+    "id": "sx-umbrella-rack",
+    "x": 20,
+    "y": 13
+   },
+   {
+    "id": "sx-mop-bucket",
+    "x": 22,
+    "y": 12
    }
   ],
   "tables": [],
