@@ -798,6 +798,48 @@ function recastPeople(project: Project): void {
  * 1번 도로 꽃밭 세 곳은 나무 밑동 위에 숲 수관 가운데 조각(위층 616·617)을 덮고, 꽃밭에 몬스터 볼처럼 생긴 장식(640)을 얹었다.
  * 밑동 없는 네모 수관이 떠 보이고(2026-10-20 검수), 볼은 주울 수도 없는 장식이었다 → 위층 세 칸씩 비운다(아래층 나무·꽃은 그대로).
  */
+/** 별모래 신전: 맨 모래 바닥을 신전 칩셋의 석판·별 문양·향로·촛대·석상으로 좌우 대칭으로 채운다(새 그림 없음). */
+function decorateTemple(project: Project): void {
+  const m = project.maps.mx_map_observatory;
+  if (!m) return;
+  const W = m.width;
+  const L = m.lowerTiles;
+  const U = m.upperTiles;
+  const at = (x: number, y: number) => y * W + x;
+  const mirror = (x: number) => W - 1 - x;
+  for (let y = 3; y <= 14; y++) {
+    for (let x = 2; x <= mirror(2); x++) {
+      if (x === 10 || x === 11) continue;
+      const t = L[at(x, y)]!;
+      if (t >= 1776 && t <= 1779) L[at(x, y)] = 1780 + (x % 2) + 2 * (y % 2);
+    }
+  }
+  for (let y = 3; y <= 14; y++) {
+    for (let x = 2; x <= 9; x++) {
+      const t = L[at(x, y)]!;
+      if ((x + y) % 2 === 0 && t >= 1780 && t <= 1783) {
+        L[at(x, y)] = 1784;
+        L[at(mirror(x), y)] = 1784;
+      }
+    }
+  }
+  for (const [x, y] of [[6, 9], [19, 9], [15, 11], [3, 13], [14, 13]] as const) {
+    const t = U[at(x, y)];
+    if (t === 1840 || t === 1841) U[at(x, y)] = -1;
+  }
+  const single = (x: number, y: number, tile: number) => { U[at(x, y)] = tile; U[at(mirror(x), y)] = tile; };
+  const pair = (x: number, y: number, top: number, bottom: number) => {
+    for (const xx of [x, mirror(x)]) { U[at(xx, y)] = top; U[at(xx, y + 1)] = bottom; }
+  };
+  for (const y of [3, 7, 10, 12]) single(9, y, 1655);
+  pair(6, 3, 1656, 1657);
+  pair(6, 6, 1652, 1653);
+  pair(6, 10, 1652, 1653);
+  single(7, 4, 1655);
+  for (const [x, y] of [[7, 13], [5, 13], [2, 14], [8, 14]] as const) single(x, y, 1654);
+  for (const [x, y] of [[3, 10], [3, 8], [5, 3], [2, 8], [2, 10], [5, 10]] as const) single(x, y, 1842);
+}
+
 function tidyMeadowDecor(project: Project): void {
   const meadow = project.maps.mx_map_meadow;
   if (!meadow) return;
@@ -986,6 +1028,7 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
   recastPeople(project);
   tidyMeadowDecor(project);
   polishFirstTenMinutes(project);
+  decorateTemple(project);
   varyTackle(project);
 
   // 1번 도로와 신전에도 여명의 날개 — 길 위를 날 뿐 막지 않는다.
@@ -1003,20 +1046,20 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
       priority: 100,
       presentation: {
         tone: "warm",
-        // 크레딧은 고유명사 단위로 직접 줄을 나눈다(자동 줄바꿈이 「다우닝 / 시티」 사이를 끊지 않게). 24px/s 로 구른다(VQA R9-2). 여정 요약·등장인물·영어 병기는 VQA r11 m1.
+        // 크레딧은 고유명사 단위로 직접 줄을 나눈다(자동 줄바꿈이 「다우닝 / 시티」 사이를 끊지 않게). 24px/s 로 구른다(VQA R9-2). 여정 요약·등장인물은 VQA r11 m1. 영어 병기는 VQA r15 로 제거(게임명 한 줄만).
         credits: [
           "아스트라 호라이즌", "다우닝 시티와", "여명의 날개", "Astra Horizon", "",
-          "— 여정 · The Journey —",
+          "— 여정 —",
           "다우닝 시티에서 첫 동료를 만나", "새싹 들길을 지나", "실바나 체육관에서 유림을 이기고", "별모래 신전에서 무영을 막아",
-          "챔피언 전당에서 나루와 겨뤘다.", "From Downing City", "to the Hall of Champions.", "",
-          "— 등장인물 · Cast —",
-          "주인공 · You", "천문박사 · The Professor", "라이벌 나루 · Naru, your rival", "관장 유림 · Yurim, Silvana Gym",
-          "신전의 무영 · Muyeong of the Temple", "엄마 · Mom", "센터 직원 · Center Nurse", "",
-          "등대가 다시 밝아지고,", "여명의 날개 새떼가", "군도를 건넌다.", "The lighthouse shines again.", "",
-          "기획 · 도트 · 연출", "Design · Pixel Art · Direction", "OPRN Flagship Studio", "",
-          "음악 · Music", "OPRN 기본 BGM 라이브러리 (CC0)", "",
-          "다우닝 시티를 함께 걸어 준", "모든 트레이너에게", "To every trainer who walked with us", "",
-          "플레이해 주셔서 감사합니다", "Thank you for playing",
+          "챔피언 전당에서 나루와 겨뤘다.", "",
+          "— 등장인물 —",
+          "주인공", "천문박사", "라이벌 나루", "관장 유림",
+          "신전의 무영", "엄마", "센터 직원", "",
+          "등대가 다시 밝아지고,", "여명의 날개 새떼가", "군도를 건넌다.", "",
+          "기획 · 도트 · 연출", "OPRN Flagship Studio", "",
+          "음악", "OPRN 기본 BGM 라이브러리 (CC0)", "",
+          "다우닝 시티를 함께 걸어 준", "모든 트레이너에게", "",
+          "플레이해 주셔서 감사합니다",
         ].join("\n"),
       },
     },
