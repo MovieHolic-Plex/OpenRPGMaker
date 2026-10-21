@@ -46,6 +46,8 @@ const releaseSlot = await acquireSlot();
 process.on('exit', releaseSlot);
 const player = await openGenrePlayer(root, caseId, { attempt, name, recordVideo: true, viewport: { width: 960, height: 540 } });
 const { page } = player;
+let consoleLines = 0;
+page.on('console', (msg) => { if ((msg.type() === 'warning' || msg.type() === 'error') && consoleLines++ < 60) log.push({ t: Date.now(), kind: 'console', level: msg.type(), text: msg.text().slice(0, 300) }); });
 const started = Date.now();
 const deadline = () => Date.now() - started > seconds * 1000;
 const state = () => page.evaluate(() => window.__oprnDebug?.readState?.() ?? null).catch(() => null);
@@ -167,6 +169,7 @@ try {
 } catch (error) { note('error', { message: error.message.slice(0, 400) }); }
 finally {
   const video = page.video();
+  log.push({ t: Date.now(), kind: 'closing' }); // the recording ends here — sceneDenseFrames anchors offsets on it
   await player.close();
   const webm = video ? await video.path().catch(() => null) : null;
   const dir = player.evidenceDir;

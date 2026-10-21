@@ -19,6 +19,8 @@ if (existsSync(renderDir)) for (const name of readdirSync(renderDir).filter(n =>
 add(resolve(dir, 'reloaded.png'), 'editor screenshot after canonical reload');
 const frames = resolve(dir, 'film', 'frames');
 if (existsSync(frames)) for (const name of readdirSync(frames).filter(n => n.endsWith('.png')).sort()) add(resolve(frames, name), `shipped player.html frame ${name} (one every 2 s)`);
+const dense = resolve(dir, 'film', 'dense');
+if (existsSync(dense)) for (const name of readdirSync(dense).filter(n => n.endsWith('.png')).sort()) add(resolve(dense, name), `shipped player.html close-up frame ${name} (interaction ${name.slice(1, name.indexOf('_'))}, one every 0.5 s from 1 s before the observer reached the event)`);
 const score = existsSync(resolve(dir, 'score.json')) ? JSON.parse(readFileSync(resolve(dir, 'score.json'), 'utf8')) : null;
 const filmLog = existsSync(resolve(dir, 'film', 'film-log.json')) ? JSON.parse(readFileSync(resolve(dir, 'film', 'film-log.json'), 'utf8'))
   .filter(e => ['target', 'arrived', 'blocked-step', 'no-target', 'error'].includes(e.kind)).map(e => ({ kind: e.kind, mapId: e.mapId, eventId: e.eventId, name: e.name, planned: e.planned ?? e.reached, arrived: e.arrived, dir: e.dir, at: e.at, message: e.message })) : [];
