@@ -83,6 +83,7 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["마법학교", "호그와트", "wizarding", "hogwarts", "magic school"], tools: ["build_wizarding_space", "list_wizarding_spaces"], label: "마법 학교" },
   { terms: ["고딕", "저택", "묘지", "gothic", "manor", "graveyard"], tools: ["build_gothic_place", "list_gothic_places"], label: "고딕" },
   // ── 이벤트·연출·플래그 ──
+  { terms: ["조수 스킬", "교훈", "장면 다듬기", "장면 검수", "assistant skill", "scene polish", "lesson"], tools: ["read_assistant_skill", "list_assistant_skills"], label: "조수 스킬" },
   { terms: ["컷신", "연출", "장면", "cutscene", "scene"], tools: ["script_cutscene", "script_cutscene_staged", "read_directing_guide", "preview_cutscene"], label: "컷신" },
   { terms: ["오프닝", "타이틀", "opening", "title screen", "intro"], tools: ["set_opening", "plan_opening", "generate_title_art", "set_title_screen"], label: "오프닝·타이틀" },
   { terms: ["엔딩", "결말", "ending", "credits"], tools: ["define_ending", "list_endings", "script_cutscene"], label: "엔딩" },

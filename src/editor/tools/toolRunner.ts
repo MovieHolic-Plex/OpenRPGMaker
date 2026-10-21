@@ -25,6 +25,7 @@ import { guardWholeRecordRewrite } from "./assistantRewriteGuard";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { beginSpatialToolProposal, sealSpatialToolProposal } from "./spatialToolState";
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
+import { newScenePolishIssues } from "@/project/lint/scenePolishLint";
 import { compactMapLayers, EXTRA_LAYER_KEYS, hasExtraLayers } from "@/project/mapLayers";
 import { formatTreePairRepairSummary, repairTreePairsOnMap } from "@/project/lint/repairTreePairs";
 import { resolveForestCanopyReplacementExemptTileIds } from "./forestComposition";
@@ -311,6 +312,10 @@ function compactTouchedMapLayers(before: Project, draft: Project): void {
       || tileBuffersDiffer(previous, map);
     if (touched) compactMapLayers(map);
   }
+}
+
+function safeScenePolish(before: Project, after: Project): LintIssue[] {
+  try { return newScenePolishIssues(before, after); } catch { return []; }
 }
 
 /**
@@ -623,7 +628,10 @@ export function runToolDefinition(
     }
     const postTile = verifyPostTilePlacement(draft, { name, args: normalizedArgs, data: exec.data });
     if (postTile.length > 0) diff.warnings.push(...postTile.map((issue) => issue.message));
-    const issues = [...(exec.issues ?? []), ...commit.issues, ...postTile];
+    // 장면 다듬기(scene-*): 이번 변경이 새로 만든 것만 — 앞에 싣는다(모델에는 issues 앞 8건만 간다). 규칙은 game-scene-polish 스킬.
+    const scene = tool.mode === "write" ? safeScenePolish(before, draft) : [];
+    if (scene.length > 0) diff.warnings.push(...scene.map((issue) => issue.message));
+    const issues = [...(exec.issues ?? []), ...scene, ...commit.issues, ...postTile];
     const summary = treeRepairNote ? `${exec.summary} · ${treeRepairNote}` : exec.summary;
     return {
       ok: true,
