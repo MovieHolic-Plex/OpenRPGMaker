@@ -14,6 +14,7 @@
  * tile-gen 쪽이 거둬들였다. jp_city·코드 도트 버들항 키트를 겨냥한 결과가 독립 검수를 통과하면 그때 싣는다.
  */
 import { getLocale } from "@/i18n";
+import { genKitPins } from "@/harnesses/_core/workshop/genKits";
 
 export type GeneratorId = "char-gen" | "object-gen" | "tile-gen" | "item-gen";
 /** ready = 편집기 안에서 만든다 · local = 내 컴퓨터에서 만들어 가져온다 · next = 다시 만드는 중, 곧 · soon = 준비 중 */
@@ -55,10 +56,31 @@ export const GENERATOR_STATUS_LABELS: Readonly<Record<GeneratorStatus, string>> 
    비공개 저장소의 설치 링크는 화면에 내지 않는다(받은 사람 말고는 404). */
 
 /**
+ * 부탁 글 끝에 붙는 「이 편집기가 따르는 생성기 판」 한 줄(2026-10-22). 비공개 생성기(char-gen·tile-gen)는 지시문·판정 기준이
+ * 사용자 컴퓨터의 그 저장소 안에서 돈다 — 글을 공개 모노레포로 옮기지 않으므로, lock(tiledata/gen-kits.lock.json)의 커밋을 적어
+ * 사용자 에이전트가 같은 판으로 맞추게 한다. lock 을 올리면 다음 빌드부터 이 줄이 바뀌어 저장소 갱신이 사용자 쪽에도 닿는다.
+ */
+export function generatorPinLine(kit: "char-gen" | "tile-gen"): string {
+  const commit = genKitPins[kit]?.commit;
+  if (!commit) return "";
+  const short = commit.slice(0, 7);
+  switch (getLocale()) {
+    case "en": return ` Use ${kit} at commit ${short} — the version this editor is checked against (in your ${kit} folder: git fetch && git checkout ${short}).`;
+    case "ja": return ` ${kit} はコミット ${short} の版で使って(このエディターが合わせている版。${kit} フォルダで git fetch && git checkout ${short})。`;
+    case "zh": return ` ${kit} 请用提交 ${short} 的版本(本编辑器对齐的版本:在 ${kit} 文件夹里 git fetch && git checkout ${short})。`;
+    default: return ` ${kit} 는 커밋 ${short} 판으로 써 줘(이 편집기가 맞춰 둔 판 — ${kit} 폴더에서 git fetch && git checkout ${short}).`;
+  }
+}
+
+/**
  * 사용자 컴퓨터의 AI 에이전트(자기 로그인)에게 붙여 넣을 부탁 글. 에이전트에게 가는 글이라 화면 번역 대상이 아니므로
  * 지금 언어로 직접 만든다. char-gen 스킬이 깔려 있으면 에이전트가 단계(만들기·검사·사람 고르기·묶기)를 알아서 한다.
  */
 export function charGenRequest(what: string, count: number): string {
+  return charGenText(what, count) + generatorPinLine("char-gen");
+}
+
+function charGenText(what: string, count: number): string {
   const subject = what.trim() || defaultWhat();
   const n = Math.max(1, Math.min(4, Math.round(count) || 1));
   switch (getLocale()) {
@@ -112,6 +134,10 @@ export const TERRAIN_PRESETS: readonly { readonly mode: TerrainPreset; readonly 
  * 타일셋 그림 파일은 화면의 「지금 맵 칩셋 그림 받기」로 받은 파일 이름이다.
  */
 export function tileGenRequest(mode: TerrainMode | TerrainPreset, brief: string, tilesetFile: string, ref: string): string {
+  return tileGenText(mode, brief, tilesetFile, ref) + generatorPinLine("tile-gen");
+}
+
+function tileGenText(mode: TerrainMode | TerrainPreset, brief: string, tilesetFile: string, ref: string): string {
   const what = brief.trim() || defaultTerrain(mode);
   const cell = /^\s*\d+\s*,\s*\d+\s*$/.test(ref) ? ref.replace(/\s+/g, "") : "";
   switch (getLocale()) {

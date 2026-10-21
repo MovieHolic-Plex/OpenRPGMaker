@@ -105,6 +105,7 @@
     "harness": "vite-node --script scripts/harness.mts --",
     "worldmap-kit:sync": "node scripts/worldmap-kit-sync.mjs",
     "gen-kits:sync": "node scripts/gen-kits-sync.mjs",
+    "gen-kits:check": "node scripts/gen-kits-sync.mjs --check --only object-gen --max-behind 10",
     "object-gate:sync": "node scripts/object-gate-sync.mjs",
     "store": "vite-node --script scripts/store/agentStore.mts --",
     "store:publish-buildings": "vite-node --script scripts/store/publish-buildings.mts --",
