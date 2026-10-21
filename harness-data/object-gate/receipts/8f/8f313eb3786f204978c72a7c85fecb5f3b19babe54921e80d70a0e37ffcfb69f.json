@@ -1,0 +1,295 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8f313eb3786f204978c72a7c85fecb5f3b19babe54921e80d70a0e37ffcfb69f",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "park pay machine",
+ "label": "modern_city_interior/park-pay-machine",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top panel of the machine head",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "front face with P sign, screen, coin slot and base",
+      "rows": "7-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-5 form a mid-blue top band (L=124). Row 6 is a lighter grey-blue front-edge line (#8397b3, L=148), and row 7 is a darker eave shadow (#2d436e, L=65). Below that, rows 7-30 form the front face, which holds the P sign, the screen, the coin slot and the base. There is no side face. The top band is thin but passes evidence (a), with an edge line and shadow, so the body reads as three-quarter rather than front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a standing blue pay machine of the same prop kind as the references. It measures 15 visible tones per full tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline is a dark navy tinted to the blue body rather than a black sticker line. By eye the body has about 5 lightness steps: deep navy edge, dark blue, mid blue, light blue panel and a white 'P' sign. A screen, buttons and a slot add shape detail. Surface grain is more modest than on the stall or well, but the piece is not thinner or flatter than the references, so a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16986
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of machine housing",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 2-5 form a lighter blue band at the top, textured like a horizontal surface. It ends in a lighter front-edge line at row 6 (#8397b3), followed by a dark eave-shadow row at row 7 (#2d436e). Below it the front face runs from row 7 to row 30, with the P sign (rows 8-16), the screen (rows 17-22), the button panel (rows 23-26) and the base (rows 27-30). The silhouette is a constant 14 px wide, and no side face is drawn. The top band is short, but it meets evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a narrow standing blue kiosk with a screen and panel details. Measured facts support it: 15 visible tones per 16x16 tile, between the hedge (9) and the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% near-neutral, so the outline is a tinted dark navy blue beside the blue body, not a neutral black sticker line. The body ramps through about 4 steps (dark edge, mid, light face, highlight) with a lighter screen panel and a P glyph. This is slightly fewer steps than the 5-6 on the stall and well, but it is comparable to the hedge and well-shaded enough to sit beside them without looking flat. It is a small, thin, machine-like prop, so I judged by eye and did not penalise it for sparseness.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15740
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of machine housing",
+      "rows": "2-7",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "front face with P sign, screen, coin slot and base",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At the top, rows 2-5 form a lighter blue band (L=124). Row 6 is a lighter front-edge line (#8397b3, L=148) and row 7 is a dark eave-shadow row (#2d436e). That makes a top surface of about 5 rows with the edge line. Below it, rows 8-30 are the vertical front face, holding the P sign, the screen and the coin slot, with a dark base at rows 29-30. The silhouette is a constant 14 px wide with no side face, so the view is south-facing three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow standing blue pay machine with a P sign, a screen and a slot panel, drawn at the same scale as the references. Its measured 15 visible tones per 16x16 tile sit between the hedge (9) and the cheese stall (17) and well (20). Near-flat coverage is 0%, the same as the hedge, well and bench. Its dark edge pixels are 0% near-neutral, so the outline is a tinted dark navy next to the blue body rather than a neutral black line. The body shows about 4 lightness steps (dark edge, mid blue, lighter panel, white sign and screen highlights), slightly fewer than the roughly 5 on the references. The panels, sign and screen add enough small detail that it does not read as a flat sticker. Texture is modest because a metal and plastic machine has less grain than wood or leaves, and there are no large flat fills.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14367
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of machine housing",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Silhouette is a constant 14px wide over rows 1-31. Rows 2-5 form a lighter blue band at the top. Row 6 is a light front-edge line (#8397b3, L=148), and row 7 is a dark eave-shadow row (L=65). Below that is the front face: the P sign (rows 8-15), the screen (rows 17-22), the buttons and card slot (rows 23-26) and the base (rows 27-30). That is about 24 rows of front face under a 5-row top band, so it matches the cabinet-with-top pattern in the references rather than a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a tall, narrow blue machine with a sign panel carrying a white P, a screen and a slot area. The outline is a dark navy that leans blue, not neutral black, and the measured 0% near-neutral dark edge share confirms the tint. It carries 15 visible tones per 16x16 tile, which is above prop-hedge (9) and close to prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so there are no large flat fills. The body shows about 4 lightness steps (highlight, base, shade, deep) plus a lit screen and panel details. That is slightly fewer than the references' 5-6, but the density facts and the by-eye detail hold up next to the references without looking sticker-like. At this small scale the result is acceptable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15136
+  }
+ ],
+ "decidedAt": "2026-10-21T01:24:13.577Z",
+ "cells": {
+  "16": [
+   "1c1e1f5554ad0624",
+   "2d432e7a54b99c17"
+  ],
+  "24": [
+   "1cc444ebf0be0604",
+   "22649b9450e249c0",
+   "3c482f2fee804f2d",
+   "68bc030888ea311d",
+   "8d7f7bfcf07d6953",
+   "9e2f54db13179dd4",
+   "a15ef26647b04a1d",
+   "a3f66f1dd2c6e6ce",
+   "b40286f69c22cb76",
+   "d7fd33e082f93da8",
+   "db2d8cdc6779d84c",
+   "eae5eb7680ea9e91"
+  ],
+  "32": [
+   "526963c7cd10191d",
+   "b53232f2b31bb700",
+   "b8917a956d16ea62"
+  ],
+  "48": [
+   "2bd7c1f269e3e463",
+   "54e922b57f73d05a",
+   "79b474ba63529d1e",
+   "bc674ceceaf1ff50",
+   "bf6568df0ce92040",
+   "f6a486d3ef19f246"
+  ]
+ }
+}

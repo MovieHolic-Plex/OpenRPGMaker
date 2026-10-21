@@ -1,0 +1,419 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8d96d36af1a699da46603b4a03ca618de3234e93103505d9981c9a38805d5d90",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "park pillar",
+ "label": "modern_city_interior/park-pillar",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4)",
+  "3/4: 기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 0 튀어나옴 < 6) (4/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 0행 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 2/4)",
+   "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 0 튀어나옴 < 6) (4/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 0행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper gray panel (top of pillar)",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hazard stripe band",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaft with green B2 sign",
+      "rows": "12-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower hazard stripe base",
+      "rows": "26-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 0,
+     "cap_width": 14,
+     "shaft_width": 14,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The width profile is 14 px on every row from 1 to 31. Row 0 is 12 px, which is only the outline. The top does not widen or narrow, so there is no ellipse and no cap overhanging the shaft. Rows 1-7 are a flat gray face with light speckles and no front-edge line or eave shadow. The remaining rows are vertical faces: a hazard stripe band at rows 8-11, a green B2 plate at rows 12-19, and a hazard base at rows 26-31. The object is a flat front elevation with no visible top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The pillar shows about 5 lightness steps: a dark cap, a lit left face, a mid body, a shaded right edge and a distinct sign panel with 'B2' lettering. Measured facts support this. It has 11 visible tones per 16x16 tile, close to the hedge (9) and below only the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills, and the sign and body shading add variation. The dark edge pixels are 0% neutral, so the outline is tinted toward the material rather than a uniform black sticker line. It is a small, simple, thin prop, and next to the bench and lamp references it does not look thinner or flatter. Texture is modest (grain and panel detail rather than rich speckle), but a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22435
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "hazard stripe band",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaft with B2 sign",
+      "rows": "12-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom hazard stripe base",
+      "rows": "26-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 14,
+     "shaft_width": 14,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The width profile is 12 at row 0, then a constant 14 from rows 1 to 31. The cap does not widen and narrow again, and it does not overhang the shaft, so it is not an ellipse plate. Rows 1-5 form a light gray band. Row 5 is a lighter front-edge line (L=224 at x=4, 8 and 11). Rows 6-7 are darker, an eave shadow (L=144-169). That gives a weak flat-band top surface by evidence (a). Below it, hazard stripes (rows 8-11), a green B2 panel and a hazard-striped base fill about 24 rows of front face. This matches the 'column: flat band cap' red reference, not the green ellipse-cap one."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The pillar is a small, thin prop. It has a dark outline that leans slightly cool and tinted, not neutral black, and the measured near-neutral share of dark edge pixels is 0%, the same as the hedge. It reads as about 4 lightness steps: a lit edge, a body tone, a shadow side, and a darker cap and base. The B2 sign panel adds a separate value group, and there are no large flat fills (0% near-flat coverage). It has 11 visible tones per 16x16 tile, above the hedge (9) and below the stall (17) and well (20). By eye it is slightly plainer than the stall and well, but it is not a flat sticker, and a careful artist would accept it beside the references. Texture grain is modest, so I rate it 'some' rather than 'rich'.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 0 튀어나옴 < 6) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 0 튀어나옴 < 6) (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20558
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap band",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "upper hazard stripe band",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green B2 sign panel",
+      "rows": "12-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower hazard stripe base",
+      "rows": "26-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 5,
+     "cap_width": 14,
+     "shaft_width": 14,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a constant 14 px wide from row 1 to row 31, with only row 0 narrower at 12. There is no widening and narrowing, so no ellipse cap and no overhang. The top is a flat rectangular band in rows 1-5. Row 5 is a lighter line (L=224 at x=4, 8 and 11), and rows 6-7 are darker (L=144 at x=4, 8 and 11), which reads as an edge line plus eave shadow. This is like the flat-band-cap column reference, not the ellipse-cap one. Below the cap, the front face runs from row 8 to row 31 and carries hazard stripes, a green B2 panel and a hazard base."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a single-tile-wide stone/metal pillar with a light cap, a shaded grey body, a dark 'B2' label panel and a darker base. I count about 5 lightness steps on the body, close to the 5-6 steps in the references. The facts back this up: 11 visible tones per tile sits between the hedge (9) and the cheese stall (17) and well (20), and is far above the 0-tone thin props (bench, lamp). Near-flat coverage is 0%, so there are no large flat fills; the edge shading and label give some variation. Dark edge pixels are 0% neutral, so the outline leans towards a tint of the adjacent material rather than a uniform black sticker line, as in the hedge and stall references. Texture is less rich than the stall or well, with no grain or speckle on the body beyond the shading bands. It is a simple object and does not look thinner or flatter than the hedge reference beside it, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 0 튀어나옴 < 6) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 0 튀어나옴 < 6) (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19788
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper gray cap segment",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper hazard stripe band",
+      "rows": "8-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaft with green B2 sign",
+      "rows": "12-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower hazard stripe base",
+      "rows": "26-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 0,
+     "cap_width": 14,
+     "shaft_width": 14,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "front_elevation",
+    "evidence": "The width profile is 14 px from row 1 to row 31, with only a 12 px outline in row 0 where the corners are trimmed. There is no widening and narrowing, so there is no elliptical cap plate and no overhang. Rows 1-7 are a gray segment with the same width and shading as the shaft. Its texture alternates light and mid-gray from row to row. The darker rows 6-7 lead directly into the yellow/black hazard stripe at rows 8-11, and I see no front-edge line and no eave shadow that would mark a horizontal top surface. Below that, the green B2 sign and the gray shaft (rows 12-25) are vertical faces, and the hazard-stripe base runs to row 29. The whole object is a flat front elevation, like the red 'flat band cap' column reference, and it lacks the ellipse cap of the green column reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a narrow standing pillar with a cap, a lit and a shaded face, and a small 'B2' sign panel. The measured facts back it up. It shows 11 visible tones per 16x16 tile, against 9 for prop-hedge and 17-20 for the stall and well. Near-flat coverage is 0%, so there are no large single-colour fills. The dark edge pixels are 0% near-neutral, so the outline is tinted toward the adjacent material and is not a uniform black line. Forms are separated partly by value, as in the references. It is a simple, thin object with a small palette, similar to the hedge and the lamp, so it is not much thinner or flatter than those. The shading ramp is somewhat shorter than the well or stall, at about 5 steps against 5-6, and the texture is modest, but it reads as hand-shaded and not as a sticker. A careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21096
+  }
+ ],
+ "decidedAt": "2026-10-21T01:24:13.585Z",
+ "cells": {
+  "16": [
+   "6efb4f54e014cb29",
+   "a85d6643df9945d3"
+  ],
+  "24": [
+   "24ae8ace63072eef",
+   "352580207b9e1fa2",
+   "41e70424cd54629e",
+   "45183436655bf865",
+   "493526b4356b2edf",
+   "50c3780afece8758",
+   "51764189ae023bfe",
+   "5837535c92c48c7c",
+   "650ceff62e40c13c",
+   "70152706379e7d61",
+   "93862bdb3f9b57d2",
+   "dd14907f430fc0c6"
+  ],
+  "32": [
+   "44257bd4ade64cd1",
+   "5aa15b4627be34ea",
+   "a8b4a2418985a774"
+  ],
+  "48": [
+   "02895a20826f1577",
+   "3ec279a74492ddb6",
+   "a51d6d2dc2772f48",
+   "ba562a80fe2b0073",
+   "d217f73bff8cdd59",
+   "ec2191204f28b767"
+  ]
+ }
+}
