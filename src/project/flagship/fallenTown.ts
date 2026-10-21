@@ -127,7 +127,8 @@ export function reworkFallenTown(project: Project, hubId: string, ids: { observa
   let riverX = -1;
   for (let x = 0; x < W && riverX < 0; x += 1) if (isWater(lo[at(x, 10)]!)) riverX = x;
   if (riverX < 0) throw new Error("[fallen-town] 강을 찾지 못했다");
-  const canalX = (y: number): number => (y < 35 ? riverX : riverX + 3);
+  // 남쪽 들판에서 세 칸 꺾이던 굽이는 두 웅덩이처럼 끊겨 보였다(적대 VQA) — 남 성벽 수문까지 곧게.
+  const canalX = (_y: number): number => riverX;
   for (let y = 0; y < H; y += 1) {
     const cx = canalX(y);
     for (let x = Math.max(0, cx - 6); x <= Math.min(W - 1, cx + 9); x += 1) {
@@ -192,12 +193,12 @@ export function reworkFallenTown(project: Project, hubId: string, ids: { observa
   ewWall(WX, W - 14, ringNE);                                // 동북 성벽 → 성문루 왼쪽 원탑까지
   ewWall(0, W - 1, SWALL);                                   // 남 성벽
   setLo(W - 1, G + 1, 5565); nsWall(W - 1, G + 2, SWALL);    // 동쪽 성벽 — 성문루 끝 밑에서 남쪽 끝까지
-  // 운하 수문(도시 북벽 수문 6×3 — 둑 1 + 물 4 + 둑 1): 북 성벽·남 성벽.
-  const WATER_GATE = [[7, 8, 16, 24, 32, 40], [116, 117, 128, 136, 144, 152], [289, 290, 298, 306, 314, 322]];
-  for (const [gx, gy] of [[canalX(0) - 1, 0], [canalX(SWALL) - 1, SWALL]] as const) {
-    WATER_GATE.forEach((row, j) => row.forEach((t, i) => setLo(gx + i, gy + j, t)));
-  }
-  for (const t of [8, 16, 24, 32, 117, 128, 136, 144, 290, 298, 306, 314]) waterLink.add(t);
+  // 운하 수문 — 성벽 앞면의 밑 줄을 강 위 아치 다리 키트의 아치 줄(4줄: 돌 벽에 뚫린 아치 둘, 물 위)로 바꾼다.
+  //   북 성벽은 아치로 운하가 마을에 흘러들고, 남 성벽은 아치로 빠져나간다(위 통로·윗 앞면 줄은 성벽 그대로).
+  const archKit = kit("bd-bridge-arch");
+  const ARCH_LOW = archKit.rows[4]!.tiles;
+  for (let i = 0; i < 4; i += 1) { setLo(riverX + i, 2, ARCH_LOW[i]!); setLo(riverX + i, SWALL + 2, ARCH_LOW[i]!); }
+  for (const t of ARCH_LOW) waterLink.add(t);
   retile(waterSet, waterLink, WATER_BY_MASK);
   // 성문루: 왕성 키트 앞 성벽 줄을 동쪽 끝에(키트 15~18줄은 성 안마당 — 원탑 지붕(윗층)만 옮긴다).
   const gateX0 = W - 13;
@@ -301,9 +302,13 @@ export function reworkFallenTown(project: Project, hubId: string, ids: { observa
   for (let x = south; x <= W - 4; x += 1) clear(x, STREET, 3221);
   for (const lane of [south, south + 1, south + 16, south + 17]) for (let y = 34; y <= STREET; y += 1) clear(lane, y, 3221);
   for (let x = south; x <= south + 17; x += 1) if (lo[at(x, 34)] === GRASS && up[at(x, 34)]! < 0) clear(x, 34, 3221);
-  clearRect(4, 35, riverX + 2, STREET);
-  plant(4, 35, riverX + 2, STREET, TREES, 11);
-  plant(4, 35, riverX + 2, STREET, SMALL, 13);
+  clearRect(4, 35, riverX - 1, STREET);
+  // 둘째 아치 다리(34·35줄 갑판) — 서쪽 34줄 길과 운하 양 둑 산책길이 남쪽 거리로 건너간다(길이 운하에 막혀 끝나지 않게).
+  const BRIDGE2 = 33;
+  copyKit(archKit, riverX, BRIDGE2);
+  for (let y = BRIDGE2 + 1; y <= BRIDGE2 + 2; y += 1) for (const x of [riverX - 1, riverX + 4, riverX + 5, riverX + 6, riverX + 7]) clear(x, y, 3221);
+  plant(4, 36, riverX - 2, STREET, TREES, 11);
+  plant(4, 36, riverX - 2, STREET, SMALL, 13);
   // 남쪽 두 모서리 원탑(남 성벽 앞면 밑 줄이 밑동).
   clearRect(1, SWALL - 7, 3, STREET); clearRect(W - 3, SWALL - 7, W - 2, STREET);
   towerAt(1, H - 1); towerAt(W - 2, H - 1);

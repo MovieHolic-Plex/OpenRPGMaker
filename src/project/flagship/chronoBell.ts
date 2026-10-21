@@ -1219,12 +1219,12 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     openingPreset: "moonlitCastle",
     effects: [
       { kind: "camera", intensity: 0.5 },
-      { kind: "glint", line: [[0.84, 0.03], [0.578, 0.176]], color: "#e8f4ff" },
-      { kind: "glow", source: [0.578, 0.176], spread: 0.06, color: "#d8f4ff" },
-      { kind: "glow", source: [0.655, 0.55], spread: 0.03, speed: 1.3 },
-      { kind: "glow", source: [0.41, 0.70], spread: 0.025, speed: 0.9 },
-      { kind: "glow", source: [0.53, 0.70], spread: 0.025, speed: 1.1 },
-      { kind: "water", region: [[0.45, 0.38], [0.54, 0.38], [0.56, 1], [0.40, 1]], color: "#cfe0ff" },
+      { kind: "glint", line: [[0.90, 0.04], [0.73, 0.167]], color: "#e8f4ff" },
+      { kind: "glow", source: [0.73, 0.167], spread: 0.06, color: "#d8f4ff" },
+      { kind: "glow", source: [0.683, 0.574], spread: 0.03, speed: 1.3 },
+      { kind: "glow", source: [0.125, 0.685], spread: 0.025, speed: 0.9 },
+      { kind: "glow", source: [0.658, 0.86], spread: 0.025, speed: 1.1 },
+      { kind: "water", region: [[0.38, 0.40], [0.48, 0.40], [0.48, 1], [0.38, 1]], color: "#cfe0ff" },
       { kind: "motes", region: [[0, 0], [1, 0], [1, 0.3], [0, 0.3]], count: 24, color: "#e6eeff", intensity: 0.4, speed: 0.3 },
     ],
   });

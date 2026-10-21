@@ -25,12 +25,12 @@ const art = (id: FallenStarArtId, width: number, height: number, source: string)
 });
 
 export const FALLEN_STAR_ART: readonly FallenStarArt[] = [
-  art('title', 480, 270, 'fallen-town title-2 · by: supervisor'),
-  art('town', 528, 297, 'fallen-town town-2 · by: supervisor'),
-  art('fall', 528, 297, 'fallen-town fall-1 · by: supervisor'),
+  art('title', 480, 270, 'fallen-town walled title-3 · by: supervisor'),
+  art('town', 528, 297, 'fallen-town walled town-2 · by: supervisor'),
+  art('fall', 528, 297, 'fallen-town walled fall-1 · by: supervisor'),
   art('observatory', 528, 297, 'observatory-2 · by: supervisor'),
   art('crash', 528, 297, 'crash-2 · by: supervisor'),
-  art('morning', 528, 297, 'fallen-town morning-1 · by: supervisor'),
+  art('morning', 528, 297, 'fallen-town walled morning-3 · by: supervisor'),
 ];
 
 export const FALLEN_STAR_BACKDROP_URLS: Readonly<Record<string, string>> = Object.fromEntries(
