@@ -358,6 +358,7 @@ for n, px in enumerate(tiles):
     img[(n // COLS) * T:(n // COLS + 1) * T, (n % COLS) * T:(n % COLS + 1) * T] = px
 OUT_PNG.parent.mkdir(parents=True, exist_ok=True)
 Image.fromarray(img, "RGBA").save(OUT_PNG, optimize=True)
+import sys as _s, pathlib as _pl; _s.path.insert(0, str(_pl.Path(__file__).resolve().parents[2] / 'scripts/content/rtp-attribution')); from rtp_check import require_credit; require_credit(OUT_PNG)  # EasyRPG RTP CC BY credit check (public/assets/ATTRIBUTION.md)
 cat = {
     "id": "beodeul_nature", "texture": "tex_beodeul_nature", "tileSize": T, "tilesPerRow": COLS, "count": rows_n * COLS,
     "note": "2층 투명 덧그림. 생성 scripts/content/build-beodeul-nature.py. 이웃 비트 = 북서1 북2 북동4 서8 동16 남서32 남64 남동128(같은 것이면 1).",

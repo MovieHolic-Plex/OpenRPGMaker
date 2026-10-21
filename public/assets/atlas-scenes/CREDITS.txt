@@ -1,0 +1,19 @@
+atlas-scenes/vehicles.png — credits (2026-10-22)
+
+The vehicle and scene pieces (ships, boats, airship, carts, festival and sky pieces) are painted by
+scripts/content/atlas-scenes/vehicle_art.py, ship_parts.py, rig_art.py and scene_art.py. Their hull, deck, rail and
+prop textures are sampled from the EasyRPG RTP chipsets, and some 16px cells are exact or flipped copies of upstream
+cells. An attribution check on 2026-10-22 found 163 cells containing upstream pixels:
+
+  ChipSet/Ship.png      88 cells
+  ChipSet/Exterior.png  42 cells
+  ChipSet/Dungeon.png   18 cells
+  ChipSet/Interior.png   7 cells
+
+Upstream: EasyRPG RTP, https://github.com/EasyRPG/RTP (pinned commit 993d88cbc78c658d348bbfa74a3b424d393d27e5).
+Those four sheets are by JasonPerry (https://finalbossblues.itch.io/), released as CC0 within the RTP. The RTP as a whole
+is distributed under Creative Commons Attribution 4.0 International; full credit table: ../easyrpg/AUTHORS.md,
+licence text: ../easyrpg/COPYING.
+Changes were made: cells were cut, flipped, recoloured and re-composited with new hand-pixel parts.
+This project's own pixels follow the OPRN default-asset terms (openwiki/licensing.md).
+The canonical attribution is public/assets/ATTRIBUTION.md («EasyRPG RTP material in the Beodeul sheets and the vehicle sheet»).

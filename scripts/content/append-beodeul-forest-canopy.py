@@ -525,6 +525,7 @@ def main():
     for n, px in enumerate(tiles):
         extra[(n // COLS) * T:(n // COLS + 1) * T, (n % COLS) * T:(n % COLS + 1) * T] = px
     Image.fromarray(np.vstack([kept, extra]), "RGBA").save(PNG, optimize=True)
+    import sys as _s, pathlib as _pl; _s.path.insert(0, str(_pl.Path(__file__).resolve().parents[2] / 'scripts/content/rtp-attribution')); from rtp_check import require_credit; require_credit(PNG)  # EasyRPG RTP CC BY credit check (public/assets/ATTRIBUTION.md)
     cat["forestBase"] = base
     cat["forestPeriod"] = period
     cat["forestCanopy"] = {s: [[rel(n) for n in ph] for ph in v] for s, v in canopy.items()}
