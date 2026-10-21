@@ -582,10 +582,10 @@ function valenWalksIn(project: Project, vault: GameMap, bossId: string): void {
     narrate("어둠 저편에서 발소리가 내려온다."),
     { kind: "showEmote", target: "player", emote: "exclamation", durationMs: 700 },
     // 화면이 북쪽 통로를 비추게 들어 올린다 — 일행 자리에서는 통로가 화면 밖이라 걸어 내려오는 모습이 안 보였다.
-    { kind: "m2Command", commandId: "m2-049-scroll-map", fields: { direction: "up", distance: 4, durationMs: 700, wait: true } },
+    { kind: "m2Command", commandId: "m2-049-scroll-map", fields: { direction: "up", distance: "4", durationMs: "700", wait: "true" } },
     { kind: "moveEvent", eventId: walkerId, route: { moves: [...path.map((dir) => ({ kind: "move", dir })), { kind: "turn", dir: "down" }], repeat: false, wait: true, skippable: true } },
     { kind: "label", name: "cutscene_end" },
-    { kind: "m2Command", commandId: "m2-049-scroll-map", fields: { mode: "return", durationMs: 500, wait: true } },
+    { kind: "m2Command", commandId: "m2-049-scroll-map", fields: { mode: "return", durationMs: "500", wait: "true" } },
     { kind: "setSwitch", switchId: SW_VALEN_ARRIVED, value: true },
     { kind: "cutsceneControl", mode: "end" },
   ] as unknown as Command[];
