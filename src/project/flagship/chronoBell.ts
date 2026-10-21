@@ -174,9 +174,9 @@ function setupFoes(project: Project): { field: string[]; boss: string } {
   const finale = project.database.troops.find((t) => t.id === "troop_fs_finale");
   // 가혹 검수 r5: 「배경이 평평하다」 — 안개 층을 하나 더 깔아 깊이를 준다.
   if (finale) finale.backdropLayers = [{ preset: "mist", opacity: 30 }, { preset: "lightRays", opacity: 45 }, { preset: "stars", opacity: 55 }];
-  // 가혹 검수 r5: 「전투 스프라이트가 화면 대비 작다」 — 수호상을 1.5배로 세운다. 발렌 시트는 칸(96px) 안의 인물이 작아
-  // 키우면 상자가 전투 필드 높이를 넘어 맞춤(battleEnemyFit)이 도로 1배로 줄인다 — 그대로 둔다.
-  for (const [id, scale] of [["enemy_fs_guardian", 150]] as const) {
+  // 가혹 검수 r5: 「전투 스프라이트가 화면 대비 작다」 — 수호상을 1.5배로 세운다.
+  // 발렌은 걷기 칩 전투 시트(사람 적)라 맞춤 대신 칸 그림을 발밑 기준으로 키운다(27-retro-motion.css) — 2배.
+  for (const [id, scale] of [["enemy_fs_guardian", 150], ["enemy_fs_valen", 200]] as const) {
     const enemy = project.database.enemies.find((e) => e.id === id);
     if (enemy) enemy.battleScalePercent = scale;
   }
