@@ -1116,18 +1116,19 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   const p = a.platform;
 
   add(street, scene("ev_fl_dinner_rain", { x: 3, y: 1 }, S.DINNER, [
+    // 앞 맵에서 옮긴 카메라 좌표가 남아 빈 길을 비췄다(VQA r11) — 화면이 검을 때 서하에게 돌려 둔다.
+    panBack(0),
     { kind: "setWeather", weather: "rain", intensity: 0.6, transitionMs: 0 } as Command,
     bgm(BGM_RAIN, 1200),
     ...fadeIn(700),
     ...think("회사 앞, 비가 오기 시작했다. 9시 40분까지, 아직 시간은 있었다.", "…있었는데."),
-    ...fadeOut(900),
+    // 에필로그는 비 오는 회사 앞(서하가 보이는 화면) 위로 흐른다 — 연인 그림(낮 카페)은 그를 놓친 밤과 맞지 않았다(VQA r11).
     stopBgm(),
-    { kind: "setWeather", weather: "none", transitionMs: 0 } as Command,
     stage(S.PLATFORM + 100),
-    ...endingOpen("oprn-title-romance-cafe"),
-          { kind: "triggerEnding", endingId: END_C } as Command,
+    { kind: "triggerEnding", endingId: END_C } as Command,
   ]));
   add(street, scene("ev_fl_run", { x: 2, y: 1 }, S.FRI, [
+    panBack(0),
     // 밤거리 맵 BGM(라운지 피아노)이 질주에 깔리지 않게 — 화면이 검을 때 끊고, 비와 함께 단조 바이올린이 들어온다(r4 「비 오는 밤 쓸쓸하게」).
     stopBgm(),
     ...fadeIn(500),
@@ -1280,9 +1281,8 @@ function defineEndings(project: Project): void {
     id: END_C,
     name: "우리 팀의 봄",
     conditions: [],
-    presentation: { musicResourceId: BGM_END_C, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-title-romance-cafe" },
+    presentation: { musicResourceId: BGM_END_C, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-pano-night" },
     epilogue: [
-      epiloguePicture("oprn-title-romance-cafe"),
       { kind: "say", text: "회식 자리. 민호 씨가 건배사를 세 번째 하고 있다." },
       { kind: "say", text: "오후 9시 41분, 그 열차가 떠난 시각. 밤 열 시, ‘하루끝’ 오늘의 사연이 울렸다." },
       { kind: "say", text: "보낸 사람: 익명. 사연 제목은, ‘바나나우유 님께’." },
