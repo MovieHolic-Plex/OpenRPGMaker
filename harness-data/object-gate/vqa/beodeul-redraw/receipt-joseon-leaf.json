@@ -1,0 +1,22 @@
+{
+  "verdict": "PASS",
+  "reviewer": "fresh Opus adversarial VQA, 2026-10-22",
+  "images": [
+    "/tmp/bdtrees/vqa/joseon_trees_1x.png",
+    "/tmp/bdtrees/vqa/joseon_trees_3x.png",
+    "/tmp/bdtrees/vqa/artistC_leaf_preview.png"
+  ],
+  "findings": [
+    {"severity": "minor", "tree": "zelkova a, zelkova d, broadleaf grove", "issue": "AFTER grain is finer and more evenly distributed than BEFORE; fewer large dark interior pockets, so big crowns read slightly flatter and busier (less clump-on-clump depth). Per-clump lighting still carries the volume, and it reads as foliage at 1x."},
+    {"severity": "minor", "tree": "all (texture)", "issue": "Tiled preview shows a mild consistent diagonal (lower-left to upper-right) stroke bias. No seams and no obvious 32px grid at 3x3 tiling, but the directional bias is visible at 8x in large flat areas."},
+    {"severity": "minor", "tree": "large bush, small bush, persimmon", "issue": "Slightly more isolated single-pixel light tones on crown interiors than BEFORE; not salt-and-pepper at 1x, and persimmon fruit stays legible."},
+    {"severity": "minor", "tree": "palace pine, pine a", "issue": "Pine pads take the same broadleaf-style grain as before; no regression, but no needle character either (unchanged behaviour)."}
+  ],
+  "checks": {
+    "reads_as_clumps_1x": "yes; no checkerboard, stripes, seams or visible 32px repetition",
+    "pixel_noise_vs_before": "comparable, marginally busier, not worse in a blocking way",
+    "joseon_fit_same_family": "yes; silhouettes, ramp, lighting and trunks identical, same tree family",
+    "regressions": "none blocking or major"
+  },
+  "summary": "New hand-drawn leaf texture tiles cleanly (no seams/grid/checkerboard) and the AFTER trees remain the same Joseon/Baram family. Only minor issues: finer, slightly flatter and busier grain on the large crowns and a mild diagonal stroke bias in the texture. No blocker or major findings."
+}

@@ -1,0 +1,13 @@
+{"reviewer":"fresh Opus look-check","round":6,"date":"2026-10-22","verdict":"FAIL",
+"per_map":{
+ "facilities-town":"PASS - woodland/warm groves rebuilt cleanly: overlapping crowns read as distinct trees, no cut edges, seams, holes, specks, floating crowns or bare poles; trunks and shadows sit under crowns. Light trees stay yellow-green (median leaf hue 98->93 deg, value 0.51->0.60), not olive/mustard. Crops lc6/ft_*.png",
+ "village50":"PASS - same tree layout and same diff stats as facilities-town; same conclusion",
+ "river-town":"PASS with minor - top and bottom grove groups and mid grove are clean (lc6/rt_*.png). Minor: new crowns are narrower than old ones, so the evenly spaced 2-4 tree rows on the top edge (x~380-1216,y0-130) read a bit more like orchard rows than before (the layout itself is unchanged)",
+ "tool-village":"FAIL - the new bushes are flatter/shorter than the old round bushes, but the old bush cast-shadow (445b35/3d5531 crescent and outline dashes) is still on the ground cells. Result: a dark crescent detached to the upper-right of most bushes and stray diagonal shadow dashes on their left, with no bush body above them. About 40 instances across the map",
+ "forms-town":"UNCHANGED (0 differing pixels)",
+ "reviewed-street":"UNCHANGED (0 differing pixels)"},
+"blocking_regressions":[
+ {"map":"tool-village","where":"bushes map-wide, e.g. x425-590 y5-60 (lc6/tv_bush_shadow_a.png), x235-300 y200-250 (tv_bush_shadow_b.png), x480-600 y175-220 (tv_bush_shadow_c.png), x253-263 y83-107 (tv_sprig.png)","what":"leftover old bush shadow: the dark crescent sits above/right of the now-flatter bush with a grass gap, plus old outline-shadow dashes left of the bush - floating ghost shadow with no object above it, visible at 1x"}],
+"minor":[
+ {"map":"river-town","where":"top edge tree rows","what":"smaller crowns widen the gaps; evenly spaced near-identical trees read slightly orchard-like"},
+ {"map":"tool-village","where":"top-centre big tree on the ledge (~x330-390,y20-80)","what":"checker dither in the upper crown highlight, slightly noisy compared with the rest of the new art"}]}

@@ -1,0 +1,13 @@
+{"reviewer":"fresh Opus look-check","round":4,"date":"2026-10-22","verdict":"FAIL",
+"per_map":{
+"facilities-town":"Specks gone. Warm (yellow-green) trees changed from lime (170,187,54) to muddy olive/mustard (135,141,39)/(88,106,34); they read dull and khaki against the bright grass across the whole map (top rows, (140-220,250-320), bottom-left cluster (0-230,700-790)).",
+"village50":"Same warm-tree olive shift as facilities-town; specks gone.",
+"river-town":"Top row is clean: no vertical cut and no specks. The new green oaks read fine, and so does the bottom row.",
+"tool-village":"No seam in the big oak at x~241. The forest is no longer an orchard grid. Minor issues: straight horizontal crown-layer edges near y~533, and a bottom row of three similar trunks at (0-120,600-620).",
+"forms-town":"identical (no pixel diff)",
+"reviewed-street":"identical (no pixel diff)"},
+"previous_findings":{"river-town top-row vertical cut + specks":"fixed","facilities/village50 specks (255,13),(735,13)":"fixed","tool-village oak seam x~241":"fixed","tool-village orchard grid of bare trunks":"fixed (mostly; a mild 3-trunk row remains)"},
+"blocking_regressions":[
+{"map":"facilities-town","where":"all warm-tinted trees, e.g. (155-205,255-300), top row (0-560,0-80), bottom-left (0-230,700-790)","what":"Warm trees turned muddy olive/mustard (dominant colour went from 170,187,54 to 135,141,39 / 88,106,34). They clash with the grass and look dull; this is the listed 'warm trees turning olive' regression."},
+{"map":"village50","where":"same warm-tree cells as facilities-town","what":"same olive/mustard shift on the warm trees"}],
+"minor":["tool-village forest (30-140,500-580): straight horizontal crown-layer edges at y~533","tool-village forest bottom row (0-120,600-620): three near-identical bare trunks in a line","facilities-town bottom cluster middle tree: a few dark hole pixels inside the crown"]}

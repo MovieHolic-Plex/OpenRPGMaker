@@ -1,15 +1,37 @@
 # 버들항 v6·v7 — 로마풍 항구 도시를 편집기 맵·공용 타일셋으로 (beodeul_city)
 
-## 출처 정정 (2026-10-22) — RTP 파생 칸은 크레딧, 나무는 다시 그린다
+## 출처 정정 (2026-10-22) — RTP 파생 칸은 크레딧, 나무는 다시 그렸다
 
 버들항 v6 는 「손 도트 원본」만으로 이루어진 시트가 아니다. 파이프라인(`scripts/content/lib/city_v6/` 의 city6·terrain·pz·pn·pj·pk)이
 `assets/jungle-chipset-v6.png`(옛 숲마을 시트를 다시 칠한 것)에서 벽돌·기와·판자·포석길·광장·흙·나무를 잘라 썼다.
-- **EasyRPG RTP retro_Exterior(CC BY 4.0) 파생**은 `beodeul_city` 784칸, architecture 94, forms 86, reviewed 54칸이다. 길 오토타일 16변형, 광장, 벽돌, 기와, 판자가 여기에 든다.
+- **EasyRPG RTP retro_Exterior(CC BY 4.0) 파생**은 `beodeul_city` 779칸(옛 784칸 중 jungle 땅 칸 5칸은 새 땅 그림으로 바뀌었다), architecture 94, forms 86, reviewed 54칸이다. 길 오토타일 16변형, 광장, 벽돌, 기와, 판자가 여기에 든다.
   크레딧은 `public/assets/ATTRIBUTION.md` 의 `rtp-derived-sheets` 목록에 있다. 굽기 스크립트는 `scripts/content/rtp-attribution/rtp_check.py` 의 `require_credit` 를 부른다.
   목록에 없는 시트에 RTP 화소가 들어가면 굽기가 멈춘다. 새 버들항 시트를 만들면 목록에 한 줄을 더한다.
 - **RTP 가 아니고 출처가 불명확한 것**은 활엽수 다섯(oakA·oakB·bushC·bushD·bushE → `bd-tree-*`), 수관·밑동, `beodeul_ground` 나무 칸, `beodeul_warm_trees`, `beodeul_nature` 활엽 수관 윤곽,
-  jungle 땅 칸 7·129·160·302·363·365·393·394·423(`lawn16.png` 포함)이다. 숲마을의 Tibo 편집 식생에서 나왔다. 새 손 도트로 칸 번호를 지키며 제자리 교체한다(진행 중).
+  jungle 땅 칸 7·129·160·302·363·365·393·394·423(`lawn16.png` 포함)이다. 숲마을의 Tibo 편집 식생에서 나왔다. 2026-10-22 에 새 손 도트로 칸 번호를 지키며 제자리 교체했다.
   자세한 감사 결과는 `openwiki/copyright-purge.md` 「정정 (2026-10-22)」에 있다.
+- **다시 그린 그림의 원본**은 `scripts/content/beodeul-redraw/` 이다. `draw_trees_a.py`(oakA 64×80·oakB 48×64), `draw_trees_b.py`(bushC·bushE 32×32, bushD 48×48),
+  `draw_ground_c.py`(땅 363·365·393·394·423, RTP 풀·흙 칸 2502·23169 를 결로 쓴다)가 `art/` 에 쓴다. 시트에 옮긴 자리는 `placements/city.json`(칸·디자인·틴트·뒤집기·어긋남)이다.
+  옮기기는 옛 나무를 정확 화소 대조로 찾아 같은 자리·틴트(orig·tint2·tint3·warm-*)·뒤집기의 새 그림으로 바꾼다. **키트 단위로 조립해서**(아래·위 층 겹쳐) 찾아야 한다 —
+  시트의 칸은 키트 안에서 이웃이 아니라서 칸 하나씩 찾으면 이웃 칸과 다른 나무로 맞춰져 수관이 칸 경계에서 잘린다(2026-10-22 실측: river-town 윗줄 나무 왼쪽이 세로로 잘림).
+- 이 옮기기 도구는 옛 그림과 대조해야 해서 저장소에 없다(옛 그림을 다시 들이지 않는다). 새 그림을 고치면 `beodeul-redraw/*.py` 를 다시 돌리고, 시트는 지금 그림에서 그 자리만 다시 칠한다.
+- `append-beodeul-forest-canopy.py` 는 수관 카탈로그(forestCanopy)가 있으면 **제자리 굽기**가 기본이다. 새 수관 타일을 옛 칸 번호에 헝가리안 배정으로 다시 앉히고,
+  칸이 모자라면 가장 비슷한 타일끼리 합친다(2026-10-22: 1961종 → 1942칸, 저장된 맵 자리 12902/13407 이 같은 그림). `beodeul_nature` 는 `ensureBundledTilesets` 가
+  기존 프로젝트의 칸 수를 늘리지 않으므로 시트를 늘리지 않는다. 번호를 처음부터 다시 매기려면 `--renumber`(저장된 맵의 숲 칸이 바뀐다).
+- **여러 그루가 겹친 묶음은 옮기지 말고 다시 조립한다.** `beodeul_ground` 숲 깊이 4종(woodland north·north-open·west·east)은 나무 본체 세 장
+  (`tiledata/beodeul-ground/tree-studies/current-<id>-body.png`)을 카탈로그 `anchors` 자리(`pixelX-8, pixelY`)에 발 순서로 겹친 것이다(HEAD 에서 화소 일치 확인).
+  화소 옮기기로 바꾸면 가려진 옛 줄기가 기둥으로 남고 수관이 떠서(2026-10-22 VQA r5 반려) 다음 순서로 다시 만든다:
+  `node scripts/content/beodeul-tree-studies.mjs`(새 도시 키트 → 본체·연구 그림) → `node scripts/content/beodeul-tree-palette-studies.mjs` →
+  `python3 scripts/content/beodeul-redraw/rebuild_woodland.py`(woodland PNG + ground 시트 칸) → `python3 scripts/content/build-beodeul-warm-trees.py`.
+  두 mjs 는 `verify-shots/beodeul-tree-variants`·`beodeul-tree-palette` 폴더가 있어야 끝까지 돈다.
+- 따뜻한 황록(warm)은 사용자가 옛 나무에서 고른 **모습**이다. 새 색에 옛 공식(R+24·G−5·B−13)을 그대로 쓰면 겨자색이 되어서,
+  `tree-palette-studies/warm-redrawn-lookup.json`(값 구간별 색조·채도·명도 목표를 옛 승인 치환표에서 잰 것)을 palette 스크립트가 먼저 쓴다.
+  `build-beodeul-warm-trees.py` 는 기존 카탈로그의 칸 번호를 지킨다(빈 칸이 된 자리는 빈 칸으로 두고, 새로 그림이 생긴 칸만 뒤에 붙인다).
+- 나무·덤불 키트의 그림자(`beodeul_nature` shadows)는 키트 알파에서 잰다. 나무 모양이 바뀌면 옛 그림자가 수관 옆 초승달로 남는다(tool-village 40곳, VQA r6 반려).
+  `python3 scripts/content/beodeul-redraw/reshadow_trees.py` 가 `build-beodeul-nature.py` 의 `shadow_for()` 로 새 그림자를 같은 칸에 다시 칠한다(여러 키트가 쓰는 칸은 교집합, 나무 아닌 키트와 나눠 쓰는 5칸은 그대로).
+- `build-beodeul-ground.py` 는 낡았다 — 돌리면 ground 시트를 112칸으로 다시 만들고 manifest 5천 줄을 지운다. 나중 덧붙이기 스크립트들이 늘린 시트를 되살리지 못하니 돌리지 마라.
+- `tiledata/beodeul-variants/` 의 만들기 스크립트(`_lib-5/bd5.py`)는 옛 워크트리 경로를 박아 두었고, 고쳐 돌려도 지금 코드로는 부품·바닥이 달라진다(구멍).
+  그래서 `deep-forest-path`·`wheat-roman-road` 의 `render-1x.png` 는 화소 옮기기 뒤 남은 8×8 대조 칸 19곳을 바로 위 8px 로 덮었다. 참고 그림일 뿐 맵 데이터가 아니다.
 
 ## 2026-10-05 건물 반려와 사람의 허용/거절 대기열
 

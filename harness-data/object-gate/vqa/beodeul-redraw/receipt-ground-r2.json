@@ -1,0 +1,19 @@
+{
+  "verdict": "PASS",
+  "reviewer": "fresh Opus adversarial VQA, 2026-10-22, round 2",
+  "images": [
+    "/tmp/bdtrees/vqa/ground_v2_city_pairs.png",
+    "/tmp/bdtrees/vqa/ground_v2_hamlet_pairs.png",
+    "/tmp/bdtrees/vqa/artistC_ground_v2_preview_4x.png",
+    "/tmp/bdtrees/vqa/cmp_tool-village.png"
+  ],
+  "findings": [
+    {"severity": "minor", "cell": "23163, 23167", "note": "The grass/dirt area inside these cells moved noticeably compared with BEFORE. 23167 AFTER reads as a full grass strip on the left where BEFORE had grass only in the upper-left. The border ring is said to keep the seam classes, but these two cells change their silhouette the most. Check them once in a real autotile run next to their dirt neighbours."},
+    {"severity": "minor", "cell": "preview cell 2 (square dirt patch)", "note": "In a grass field, this cell shows straight vertical and horizontal dirt sides with grass fringe only at the corners. That is expected if the sides continue into dirt neighbours. If the cell is ever placed alone, it reads as a hard square. The darker rim under the grass lip is barely visible at this scale."},
+    {"severity": "minor", "cell": "preview cell 6 (dirt field, inner corners)", "note": "The four small grass tufts are isolated 1-2px fragments floating on the dirt. They read close to noise specks rather than lip remnants. Consider merging each into one coherent tuft."},
+    {"severity": "minor", "cell": "6049, 9132, 11110, 13856, 14053, 15508", "note": "The RTP cobble in the blue-tinted (shaded/edge) variants is slightly darker and higher-contrast than BEFORE. The light border bars are preserved. In the village map at 1x, the roads look equivalent and show no visible seam."},
+    {"severity": "minor", "cell": "336-351 (hamlet lawn)", "note": "The new code lawn matches the old tone and shows no visible edge jump in the pairs. The texture is very flat, which is acceptable. Stepping stones 352-355 and the dirt/stone transitions 304-335 are equivalent to BEFORE."},
+    {"severity": "minor", "cell": "review limitation", "note": "The pair sheets are displayed downscaled, so single-pixel specks and 1px seam ring mismatches cannot be fully ruled out from these images. The whole village map shows no new straight lines or colour jumps in the ground. The tree differences are outside this review's scope."}
+  ],
+  "summary": "No blocker or major regression found. Cobble and hamlet lawn swaps are visually equivalent and the village map shows no new ground seams. Hand-drawn edge cells read as organic dirt with grass lips. Minor concerns: the silhouette changes in 23163/23167, the faint 3/4 rim shading, and the floating grass specks in the inner-corner dirt cell. Verdict PASS, with the caveat that the sheets were judged at reduced display scale."
+}

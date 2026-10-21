@@ -1,0 +1,308 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5082dcc6e457c36c2192e8b15b58f8a1cf5d644c672c956484fe99741e651c6c",
+ "width": 48,
+ "height": 48,
+ "kind": "organic",
+ "name": "broadleaf bushD (new hand pixel, final)",
+ "label": "beodeul/bd-tree-3e8732",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 6,
+  "darkV5": 34,
+  "nearBlackEdge": 0.5,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lit upper foliage mass (top of the bush mound, light #b0cc58 / #6ea03a)",
+      "rows": "8-22",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaded lower and front foliage mass with dark underside",
+      "rows": "23-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 12,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bush is a single rounded blob. The width profile grows from 3 px at row 8 to 39 px at rows 25-26, then narrows to 3 px at row 45, so the outline is a full ellipse. The top of the mound (rows 8-22) is the lightest foliage (L=182 and 133). It sits above progressively darker foliage (L=96, 68, then 27-46 at rows 33-45), which forms the front and underside. There is no hard front-edge line or eave shadow, so the top is read from the light-to-dark volume shading, a heap of foliage seen from above and in front. The front mass below it is more than 3 rows tall. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small broadleaf bush with a clumped canopy in about 6 green steps (highlight, light, mid, dark, deep shadow at the base). The measured 6 visible tones per tile is close to tree-1a786c (7), though well below tree-d43edd (29). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, and by eye the edges are dark green rather than black, so the outline is a dark material tone and not a sticker line. Leaf clumps with light top edges and a darker underside give the canopy shape. Texture is somewhat coarser and less varied than the references' individual leaf clusters, so density is slightly lower. It would sit acceptably beside tree-1a786c at the same scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16354
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lit upper crown of foliage mound",
+      "rows": "8-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shaded lower foliage mass",
+      "rows": "23-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left lower lobe (lighter bulge)",
+      "rows": "34-40",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 36,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The bush is an irregular rounded foliage blob, 39px wide at its widest (rows 25-26), with width growing steadily from row 8 to row 26 and shrinking to row 45. Light yellow-green (#b0cc58) fills the upper-left and the top rows 8-22, with mid and dark greens toward the lower right (#0c2222 at the right edge, rows 28-45). This is diagonal light-to-shadow shading on a mound. No row band ends in a front-edge line, there is no eave shadow, and no ellipse width profile appears. The silhouette is a dome, not a flat horizontal plane over a vertical face. There is a full-height body of 36+ rows but no distinct top surface. I measure no discrete top plane and call the object an organic mound ('other')."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small bush with 6 visible tones per tile, against 7 for tree-1a786c (the nearest reference by size) and 29 for tree-d43edd. It has 0% near-flat coverage and 0% neutral dark edge pixels, so its outline is a dark green tint and not a black sticker line. The picture shows a lit upper-left canopy shading down to a deep green underside, with clumped leaf dots in several greens, and no large flat fills. It is a little simpler than the richest reference, but it matches the smaller reference in structure and shading craft, so a careful artist would accept it beside tree-1a786c.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15458
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage mound, lit upper dome",
+      "rows": "8-22",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "foliage mass, shaded front/lower body",
+      "rows": "23-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bush is a single rounded foliage mound (rows 8-45, widest 39 px at rows 25-26). The upper rows 8-22 are mostly the lightest green (#b0cc58) and the silhouette widens steadily from 3 to 35 px. This reads as a lit upper heap seen from above. Rows 23-43 shift to mid and dark greens (#3e7a34, #245832, #0c2222), with a very dark shadow on the lower right and underside, which forms the front face. There is no hard front-edge line, since foliage is organic, but the light-to-dark volume shading gives a top and a front of well over 3 rows. It is not a flat slab and not a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 7,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate bush has about 6 distinct greens, from a yellow-green highlight through mid greens to a deep green underside. The clumped canopy edge is broken into leaf lobes with lit tops and a shaded base. That is close to the 7 tones of tree-1a786c, which is the nearest reference in size and complexity. The much richer tree-d43edd (29 tones) is a large tree, so it is not a fair density bar for a small bush. Measured facts back this up: 6 visible tones per tile against 7 for tree-1a786c, 0% near-flat coverage, and 0% neutral dark edge pixels. The dark edge pixels are therefore tinted dark green, not a black sticker outline. There are no flat 5x5 fills, because the leaf clumps carry highlight and shadow variation. It is slightly less textured than the best reference, but a careful artist would accept it beside tree-1a786c without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15280
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bush crown (lit upper foliage mass)",
+      "rows": "8-22",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bush lower body (shaded foliage, front face)",
+      "rows": "23-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bush is a single rounded mound. Its width profile grows from 3 px at row 8 to 39 px at rows 25-26, then narrows to 3 px at row 45, so it is an ellipse-like blob. The upper rows 8-22 are mostly the lightest greens (#b0cc58, L~182), which reads as sunlit top foliage seen from above. Rows 23-44 turn mid and dark green, with the darkest tones (#0c2222) on the lower right, which reads as the shaded front and side volume. There is no hard front-edge line or eave shadow, because foliage is shaded by clumps instead. The lit crown still sits over a clearly taller shaded front mass of about 22 rows, so it reads as a top surface over a front face and not as a flat slab or a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate bush has about 6 green steps, from a yellow-green highlight through mid greens to a deep green-black shadow. It is clustered into leaf clumps with dithered highlight dots on the top-left and darker clumps at the bottom. Its measured 6 visible tones per tile is just under reference tree-1a786c (7) and far below tree-d43edd (29). Near-flat coverage is 0%, the same as both references. Dark edge pixels are 0% neutral, so the outline is a tinted dark green rather than black, which matches Beodeul. Compared with the closest reference, tree-1a786c, the bush looks similar in canopy clumping and shading. It is slightly simpler and smoother, with fewer leaf-level highlights and less ragged clump edges. The silhouette is a rounded blob. A careful artist would likely accept it as a bush, since it is a small, simple object and the tone count is near that reference. It is a bit softer than the richest Beodeul trees, so density is slightly lower.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14304
+  }
+ ],
+ "decidedAt": "2026-10-21T20:36:26.741Z",
+ "cells": {
+  "16": [
+   "17e8002d25aa3785",
+   "2e81a0b1b3eb4a4a",
+   "56a382a9041db8e3",
+   "68e7c271d681f9a4",
+   "82d83fc4ac42ed53",
+   "a151c66b70039e6c",
+   "a165b794464f1dda",
+   "e0c392ab42e4e3e2",
+   "fdd0aada86e444ec"
+  ],
+  "24": [
+   "536fd4776a0c0779",
+   "65c7350051477a40",
+   "cd9cd3b258859de9",
+   "d46fdc54d4690fea"
+  ],
+  "32": [
+   "05030bccad349f53",
+   "06f05b9a3b401c40",
+   "0e73211d907f3a04",
+   "2c5f8c51fad33e80",
+   "2cfc75acb3b64d9d",
+   "323f82f122ec918c",
+   "3813b6cf6b08e9fa",
+   "4e18d67aece1f464",
+   "509579914b7da52c",
+   "5174b6146e1685d1",
+   "53f6d7a215a4bf62",
+   "5f2e42f6240f0265",
+   "71ccda57ec9dc39e",
+   "783973d70cd53aeb",
+   "78ace483eb389408",
+   "c0465a41245ad0e3",
+   "d8bf11b1eeaefb48",
+   "d93c1a3870795065",
+   "db29c4dfdcdcb894",
+   "e5575423600d3b28",
+   "eeb5025b16f11cad",
+   "f5bfaffc5ca3d4c9",
+   "f984e78d62a80d2a",
+   "fb9f4871dbac6cc1"
+  ],
+  "48": [
+   "b6cda066f527af1e"
+  ]
+ }
+}

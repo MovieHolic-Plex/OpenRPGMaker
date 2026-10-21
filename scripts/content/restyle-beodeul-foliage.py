@@ -28,12 +28,14 @@ _spec = importlib.util.spec_from_file_location("canopy", HERE / "append-beodeul-
 cv = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(cv)
 T, COLS = cv.T, cv.COLS
 
+PIN = {'bd-tree-03a8f7': ('oak', 0), 'bd-tree-d43edd': ('oak', 0), 'bd-tree-5844f6': ('oak', 0), 'bd-tree-3e8732': ('oak', 0), 'bd-tree-f4f319': ('lime', 0), 'bd-tree-e9d9b3': ('oak', -1), 'bd-tree-37f48b': ('lime', 0), 'bd-tree-1a786c': ('oak', 0), 'bd-tree-47e17a': ('oak', -1), 'bd-tree-d105b2': ('oak', -1), 'bd-tree-0f7ed1': ('elm', 0), 'bd-tree-d61d7e': ('oak', 0), 'bd-tree-a80c85': ('oak', 0), 'bd-tree-7ecdb8': ('lime', 0), 'bd-tree-cc0fcb': ('oak', -1), 'bd-tree-132848': ('lime', 0), 'bd-tree-1e09f0': ('oak', -1), 'bd-tree-bdd36e': ('oak', 0), 'bd-tree-b1d104': ('oak', 0)}
 # (키트, 색 단 | None = 밝기·색조로 고름, 겹 깊이 off). 설원 소나무는 눈 단을 함께 쓴다.
 KITS = (
-    [(f"bd-tree-{h}", None, 0) for h in
+    # 색 단은 2026-10-22 새로 그린 나무로 바꾸며 그 전 그림이 고른 단으로 고정했다(새 그림의 밝기로 단이 바뀌어 마을 색이 흔들리지 않게).
+    [(f"bd-tree-{h}", *PIN[f"bd-tree-{h}"]) for h in
      "03a8f7 d43edd 5844f6 3e8732 f4f319 e9d9b3 37f48b 1a786c 47e17a d105b2 0f7ed1 d61d7e a80c85 7ecdb8 cc0fcb 132848 1e09f0 bdd36e b1d104".split()]
     + [("bd-tree-eef4bc", "cedar", 0), ("bd-tree-28ad5e", "cedar", 0), ("bd-tree-c27062", "pine", 0)]
-    + [("bd-mpart-bush-c", None, 0), ("bd-mpart-bush-e", None, 0),
+    + [("bd-mpart-bush-c", "oak", -1), ("bd-mpart-bush-e", "lime", 0),
        ("bd-mpart-hedge", "oak", 0), ("bd-prop-hedge", "oak", 0), ("bd-pick-wizard-tower-hedge", "oak", 0),   # elm 은 다듬은 생울타리를 레몬빛으로 바랬다
        ("bd-mpart-shrub-tub", "oak", 0), ("bd-mpart-cypress-tub", "pine", 0), ("bd-prop-tree_planter", "oak", 0)]
     + [("bd-pick-coast-cliff-road-fir-l", "pine", 0), ("bd-pick-coast-cliff-road-fir-m", "pine", 0),
