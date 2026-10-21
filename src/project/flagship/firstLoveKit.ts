@@ -177,7 +177,8 @@ export function page(id: string, conditions: EventPageCondition[], commands: Com
       : { direction: dir, pattern: 0, transparent: true },
     movement: { type: "fixed", speed: 3, frequency: 3 },
     priority: opts.priority ?? (who ? "same" : "below"),
-    overlapForbidden: !!who,
+    // 「같은 층」을 명시한 빈 그림 이벤트(문)는 몸이 있다 — 막고, 부딪히면 발동한다.
+    overlapForbidden: !!who || opts.priority === "same",
     trigger: { kind: opts.trigger ?? "action" },
     commands,
   } as unknown as EventPage;
