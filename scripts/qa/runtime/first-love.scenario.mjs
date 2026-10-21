@@ -109,6 +109,7 @@ export default {
     { id: "meet", note: "처음 뵙겠습니다", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => /강지후입니다/.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 40, settleMs: 500 }, shotPause(1200)], shot: true },
     { id: "c1", note: "선택 1", ops: [toChoice(), shotPause(500)], shot: true },
     { id: "after-c1", note: "선택 1 결과", ops: [...pick(pickC1), shotPause(900)], shot: true },
+    ...(A ? [{ id: "pulse", note: "호감 알림 — 오른쪽 위 ♥", ops: [{ kind: "pressUntilJs", key: "Enter", fn: "() => !!document.querySelector(\"[data-testid='relationship-pulse']\")", maxPresses: 12, settleMs: 250 }, shotPause(300)], shot: true }] : []),
     { id: "office-free", note: "사무실 자유 이동", ops: [untilStage(3), shotPause(800)], shot: true },
     openMenu("menu-mon", "ESC 메뉴 — 연애 메뉴(호감도·대화 기록·엔딩·저장)"),
     closeMenu("menu-mon-close"),

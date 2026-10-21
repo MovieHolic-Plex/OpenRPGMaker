@@ -56,9 +56,9 @@ export function think(...lines: string[]): Command[] {
   return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", body }))];
 }
 
-/** 장면 자막(시간·장소) — 가운데. */
+/** 장면 자막(시간·장소) — 위. 카메라가 주인공을 가운데 두므로 가운데 자막은 인물을 가린다(VQA 5차). */
 export function caption(...lines: string[]): Command[] {
-  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", body, position: "center" }))];
+  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", body, position: "top" }))];
 }
 
 /** 이름 없는 목소리(방송·안내). */

@@ -139,7 +139,7 @@ export const VN_PRESETS: Readonly<Record<VnPresetId, VnPresetDefinition>> = {
     description: "어두운 보랏빛 유리에 금색 이름 탭. 밤·학원·미스터리가 섞인 진지한 장면에 맞습니다.",
     fit: "학원 · 밤 장면 · 진지한 관계극",
     layout: "bar", nameplate: "ribbon", choiceStyle: "bar", waitIcon: "arrow",
-    tokens: { bg: "rgba(26, 20, 44, 0.84)", bgStrong: "rgba(20, 15, 36, 0.95)", border: "rgba(240, 200, 120, 0.55)", text: "#f6f1ff", textRead: "#b5aacb", textShadow: "0 1px 0 rgba(0,0,0,0.75)", nameBg: "#e6b85c", nameText: "#2a1d05", accent: "#e6b85c", accentText: "#2a1d05", accentInk: "#f0c872", stage: "rgba(10, 6, 22, 0.80)", radius: 2, borderWidth: 1, shadow: "0 -2px 10px rgba(10, 0, 30, 0.5)", blur: 3 },
+    tokens: { bg: "rgba(26, 20, 44, 0.94)", bgStrong: "rgba(20, 15, 36, 0.95)", border: "rgba(240, 200, 120, 0.55)", text: "#f6f1ff", textRead: "#b5aacb", textShadow: "0 1px 0 rgba(0,0,0,0.75)", nameBg: "#e6b85c", nameText: "#2a1d05", accent: "#e6b85c", accentText: "#2a1d05", accentInk: "#f0c872", stage: "rgba(10, 6, 22, 0.80)", radius: 2, borderWidth: 1, shadow: "0 -2px 10px rgba(10, 0, 30, 0.5)", blur: 3 },
   },
   "nvl-page": {
     id: "nvl-page",

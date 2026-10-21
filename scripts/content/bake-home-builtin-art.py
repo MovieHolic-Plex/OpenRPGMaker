@@ -25,7 +25,7 @@ PLAN = {
     # 첫 필드(내 방)는 맵이 무대보다 작아 둘레가 검다 — 오프닝 연구소 장면(03-op2)을 넷째 장면으로 쓴다(2026-10-21).
     "astra": {"crop": (240, 135, 1680, 945), "frames": {"01-title": "astra-title", "02-op1": "astra-op1", "04-op3": "astra-op2", "03-op2": "astra-lab"}},
     # 첫사랑은 통짜 플레이 시나리오(first-love, FL_PATH=A, 960×540 = 2배)의 샷을 그대로 쓴다: 타이틀 · 오프닝 편지 · 밤 편의점 선택 · 회상 방송실.
-    "firstlove": {"crop": None, "dir": "first-love-A", "frames": {"01-title": "firstlove-title", "03-opening-2": "firstlove-op1", "21-konbini-jihu": "firstlove-konbini", "23-flashback-2": "firstlove-flashback"}},
+    "firstlove": {"crop": None, "dir": "first-love-A", "frames": {"21-konbini-jihu": "firstlove-konbini", "23-flashback-2": "firstlove-flashback"}},
 }
 
 
