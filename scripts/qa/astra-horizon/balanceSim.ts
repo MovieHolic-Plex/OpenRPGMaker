@@ -100,12 +100,12 @@ export function sweep(n = 30, overrides: Overrides = {}): Cell[] {
   return cells;
 }
 
-/** 관장 70~90%·4턴 이상·체력 70% 이하, 신전·챔피언 55~80%, 챔피언 최고 레벨 ≥ 플레이어. */
+/** 관장 70~90%·5~9턴(스타터 무관)·체력 70% 이하, 신전·챔피언 55~80%, 챔피언 최고 레벨 ≥ 플레이어. */
 export function verdict(cell: Cell): string {
   const bad: string[] = [];
   if (cell.fight === "gym") {
     if (cell.win < 0.7 || cell.win > 0.9) bad.push("win");
-    if (cell.turns < 4) bad.push("turns");
+    if (cell.turns < 5 || cell.turns > 9) bad.push("turns");
     if (cell.hpPct > 0.7) bad.push("hp");
   }
   if (cell.fight === "temple" || cell.fight === "champion") {

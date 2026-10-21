@@ -644,7 +644,11 @@ try {
   await go(homeId, labId);
   await mark("lab");
   await shot("06-lab");
-  await talkTo(labId, /_professor$/);
+  // 박사 첫 인사는 한 칸 떨어진 통로 칸(박사 인사 칸)을 밟으면 시작한다.
+  { const greet = findEvent(labId, /_professor_greeting_step$/);
+    const r = greet ? await walkTo(labId, { x: greet.x, y: greet.y }, 200) : "none";
+    if (r === "arrived") await page.waitForSelector('[data-testid="dialogue-box"]', { timeout: 3000 }).catch(() => {});
+    if (!(await present("dialogue-box"))) await talkTo(labId, /_professor$/); }
   // QA_STARTER=0|1|2 — 스타터 고르기(첫 선택 창에서만 아래로 그만큼). 스타터 3종 균형 비교용.
   let starterPicked = false;
   await readThrough(80, { choose: async () => {

@@ -616,10 +616,37 @@ function meadowRestStop(project: Project): void {
   } as GameEvent);
 }
 
+/**
+ * 박사 첫 인사는 한 칸 떨어져서 — 바로 아래 칸에서 말을 걸면 주인공 머리가 박사의 발을 가렸다(2026-10-21 적대 검수 r11, 06-professor).
+ * 문에서 올라오는 통로(7,7)를 밟으면 박사 이벤트를 부른다. 스타터를 받은 뒤(mx_starter)에는 꺼진다.
+ */
+function professorGreetsFromAStep(project: Project): void {
+  const lab = project.maps.mx_map_lab;
+  const professor = lab?.events.find((e) => e.id === "mx_map_lab_professor");
+  const id = "mx_map_lab_professor_greeting_step";
+  if (!lab || !professor || lab.events.some((e) => e.id === id)) return;
+  const x = professor.x, y = professor.y + 2;
+  if (lab.events.some((e) => e.x === x && e.y === y)) return;
+  lab.events.push({
+    id, name: "박사 인사 칸", x, y,
+    trigger: { kind: "playerTouch" }, commands: [],
+    pages: [{
+      id: `${id}_p1`, name: "박사 인사 칸",
+      conditions: [{ kind: "switch", switchId: "mx_starter", value: false }],
+      graphic: { transparent: true },
+      movement: { type: "fixed", speed: 3, frequency: 3 },
+      priority: "below",
+      trigger: { kind: "playerTouch" },
+      commands: [{ kind: "callMapEvent", eventId: professor.id }],
+    }],
+  } as GameEvent);
+}
+
 export function polishFirstTenMinutes(project: Project): void {
   polishBedroom(project);
   polishMom(project);
   polishLab(project);
+  professorGreetsFromAStep(project);
   nurseBehindCounter(project);
   fairRouteOne(project);
   varyLabShelves(project);

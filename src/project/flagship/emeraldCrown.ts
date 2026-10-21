@@ -711,7 +711,7 @@ const TEMPLE_LEVELS = [7, 6, 8] as const;
 /** 미르핀(독 — 풀 위협) 1.04배: 그대로면 풀 82%, 1.08배면 45%. */
 const TEMPLE_STAT_SCALE = [1, 1.04, 1] as const;
 const CHAMPION_LEVELS = { bug: 8, rock: 8, ace: 12 } as const;
-const CHAMPION_ACE_STAT_SCALE = 0.8;
+const CHAMPION_ACE_STAT_SCALE = 0.76;
 const CHAMPION_ROCK_STAT_SCALE = 1.06;
 
 /**
@@ -974,8 +974,21 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
       priority: 100,
       presentation: {
         tone: "warm",
-        // 크레딧은 고유명사 단위로 직접 줄을 나눈다(자동 줄바꿈이 「다우닝 / 시티」 사이를 끊지 않게). 24px/s 로 약 25초 구른다(VQA R9-2).
-        credits: "아스트라 호라이즌\n다우닝 시티와\n여명의 날개\n\n등대가 다시 밝아지고,\n여명의 날개 새떼가\n군도를 건넌다.\n\n기획 · 도트 · 연출\nOPRN Flagship Studio\n\n음악\nOPRN 기본 BGM 라이브러리 (CC0)\n\n다우닝 시티를 함께 걸어 준\n모든 트레이너에게\n\n플레이해 주셔서 감사합니다",
+        // 크레딧은 고유명사 단위로 직접 줄을 나눈다(자동 줄바꿈이 「다우닝 / 시티」 사이를 끊지 않게). 24px/s 로 구른다(VQA R9-2). 여정 요약·등장인물·영어 병기는 VQA r11 m1.
+        credits: [
+          "아스트라 호라이즌", "다우닝 시티와", "여명의 날개", "Astra Horizon", "",
+          "— 여정 · The Journey —",
+          "다우닝 시티에서 첫 동료를 만나", "새싹 들길을 지나", "실바나 체육관에서 유림을 이기고", "별모래 신전에서 무영을 막아",
+          "챔피언 전당에서 나루와 겨뤘다.", "From Downing City to the Hall of Champions.", "",
+          "— 등장인물 · Cast —",
+          "주인공 · You", "천문박사 · The Professor", "라이벌 나루 · Naru, your rival", "관장 유림 · Yurim, Silvana Gym",
+          "신전의 무영 · Muyeong of the Temple", "엄마 · Mom", "센터 직원 · Center Nurse", "",
+          "등대가 다시 밝아지고,", "여명의 날개 새떼가", "군도를 건넌다.", "The lighthouse shines again.", "",
+          "기획 · 도트 · 연출", "Design · Pixel Art · Direction", "OPRN Flagship Studio", "",
+          "음악 · Music", "OPRN 기본 BGM 라이브러리 (CC0)", "",
+          "다우닝 시티를 함께 걸어 준", "모든 트레이너에게", "To every trainer who walked with us", "",
+          "플레이해 주셔서 감사합니다", "Thank you for playing",
+        ].join("\n"),
       },
     },
   ];
