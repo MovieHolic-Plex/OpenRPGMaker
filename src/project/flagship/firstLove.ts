@@ -20,11 +20,10 @@ import { deserialize, serialize } from "@/project/io";
 import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
-  bgm, caption, CAST, choices, clearTint, emote, event, face, fadeIn, fadeOut, flash, hidePlayer, ifCond, letterbox, page,
-  playSe, say, setSw, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk,
+  bgm, caption, CAST, choices, m2, clearTint, emote, event, face, fadeIn, fadeOut, flash, hidePlayer, ifCond, letterbox, page,
+  playSe, say, setSw, textAtBottom, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk,
 } from "./firstLoveKit";
 import { buildFirstLoveMaps, FL_MAP, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
-import { FIRST_LOVE_MEMORY_ARGS, FIRST_LOVE_THEME_ARGS } from "./firstLoveMusic";
 import { buildFirstLoveOpening } from "./firstLoveOpening";
 import type { FlagshipDemoBuildResult } from "./types";
 
@@ -59,9 +58,14 @@ const SE_MAIL = "cc0-se-orp-interface-interface1";
 const SE_PAPER = "cc0-se-orp-inventory-cloth";
 const SE_CAN = "cc0-se-orp-inventory-bottle";
 
-const BGM_DAY = "cc0-bgm-rtp-fld-003";
-const BGM_TOWN = "cc0-bgm-town";
-const BGM_NIGHT = "cc0-bgm-inn";
+// 음악(사용자 r2: 「BGM 쓰레기」) — 판타지 RPG 마을곡(fld-003·town·inn)과 합성 원곡 둘을 버리고, CC0 카탈로그에서
+// 귀 판정(Gemini 4 Argon, 곡마다 2회, 60초 발췌)으로 현대 연애 장면에 맞는 곡만 여섯 곡 고른다. 근거: openwiki/runtime-pre-edit-routing.md.
+const BGM_OFFICE = "cc0-bgm-rtp-wks-001"; // 경쾌한 피치카토·박수 — 스타트업 사무실 오전(사무 맞음 8.0)
+const BGM_ROOF = "cc0-bgm-rtp-rad-002"; // 로파이 재즈합 — 노을 옥상(9.0)
+const BGM_NIGHT = "cc0-bgm-rtp-pon-001"; // 라운지 피아노·브러시 — 밤거리·편의점·야근(9.0)
+const BGM_MEMORY = "cc0-bgm-rtp-rst-001"; // 피아노·어쿠스틱 기타 발라드 — 회상·타이틀(9.0 / 8.0)
+const BGM_CONFESS = "cc0-bgm-rtp-flt-022"; // 첼로·피아노 — 막차 고백·엔딩 B(8.0 / 9.0)
+const BGM_HAPPY = "cc0-bgm-rtp-sea-001"; // 밝게 차오르는 피아노·현 — 엔딩 A(8.5)
 
 function execTool(project: Project, name: string, args: Record<string, unknown>): { data?: unknown; summary?: string } {
   const ctx = { project, assistantRun: false };
@@ -77,12 +81,28 @@ function like(n: number, jihuEventId?: string): Command[] {
   const out: Command[] = [setVar(V_JIHU, n >= 0 ? "+=" : "-=", Math.abs(n)), { kind: "changeFriendship", npcKey: JIHU_KEY, delta: n * 90 } as Command];
   if (n > 0) {
     out.push(playSe(SE_HEART));
-    if (jihuEventId) out.push({ kind: "showEmote", target: { eventId: jihuEventId }, emote: "heart", durationMs: 1000 } as Command, wait(700));
+    // 머리 위 말풍선 아이콘은 쓰지 않는다(사용자 r2) — 오른쪽 위 「♥ 호감이 올랐다」 알림과 작은 소리로 충분하다.
+    void jihuEventId;
   }
   return out;
 }
 
 const stage = (n: number): Command => setVar(V_STAGE, "=", n);
+
+const SE_ELEVATOR = "cc0-se-osx-bell-01";
+const waitMoves = (): Command => m2("Wait for All Movement");
+
+/**
+ * NPC 퇴장 — 실제 걸을 수 있는 길로 출구 앞 칸까지 걸어가, 출구를 보고, 그 자리에서 사라진다(사용자 r2: 「방 한가운데서 사라진다」).
+ * 사라짐은 hideSw 스위치(그 NPC 페이지의 swOff 조건)로 한다. 걷는 동안 대사가 이어지게 하려면 begin 만 먼저 넣고 end 를 나중에.
+ * firstLoveProbe(scripts/qa/runtime/first-love-probes.mts)가 「사라지기 직전 칸 = 출구 앞」을 검사한다.
+ */
+function leave(project: Project, mapId: string, eventId: string, from: Cell, exit: { stand: Cell; door: Cell }, hideSw: string, hero: Cell): { begin: Command; end: Command[] } {
+  return {
+    begin: walkRoute(project, mapId, eventId, from, exit.stand, [hero], false),
+    end: [waitMoves(), face(eventId, dirToward(exit.stand, exit.door)), playSe(SE_ELEVATOR), wait(250), setSw(hideSw, true)],
+  };
+}
 
 /** 문 칸: 밟으면 단계에 따라 옮기거나 막는다. */
 function door(id: string, at: Cell, conditionsToGo: Parameters<typeof page>[1], go: Command[], blocked: Command[], back: Dir = "up"): GameEvent {
@@ -114,10 +134,38 @@ function dirToward(from: Cell, to: Cell): Dir {
   return dy > 0 ? "down" : "up";
 }
 
+/**
+ * 걷기 길은 모든 이벤트가 맵에 놓인 뒤에 찾는다 — 장면을 짓는 순간엔 뒤에 놓일 인물·사물 칸을 모른다(탐침: 민호가 지후를 밟고 지나감).
+ * walkRoute 는 빈 길의 명령을 돌려주고, resolveRoutes() 가 데모를 다 지은 뒤 채운다.
+ */
+// 도구 호출(define_ending 등)이 프로젝트를 복제해 맵을 갈아 끼우므로, 명령 객체를 붙잡지 않고 표식(routeKey)으로 나중에 찾는다.
+let pendingRoutes = new Map<string, () => Dir[]>();
+function walkRoute(project: Project, mapId: string, eventId: string, from: Cell, to: Cell, avoid: readonly Cell[] = [], waitDone = true): Command {
+  const routeKey = `r${pendingRoutes.size}`;
+  pendingRoutes.set(routeKey, () => route(project, mapId, from, to, avoid));
+  return { ...(walk(eventId, [], waitDone) as object), routeKey } as unknown as Command;
+}
+function resolveRoutes(project: Project): void {
+  const fill = (list: unknown): void => {
+    if (!Array.isArray(list)) return;
+    for (const c of list as Record<string, unknown>[]) {
+      if (c?.kind === "moveEvent" && typeof c.routeKey === "string") {
+        const dirs = pendingRoutes.get(c.routeKey)?.() ?? [];
+        (c.route as { moves: unknown[] }).moves = dirs.map((dir) => ({ kind: "move", dir }));
+        delete c.routeKey;
+      }
+      for (const k of ["then", "else", "commands"]) fill(c?.[k]);
+      if (Array.isArray(c?.options)) for (const o of c.options as { branch: unknown }[]) fill(o.branch);
+    }
+  };
+  for (const map of Object.values(project.maps)) for (const ev of map.events) { fill(ev.commands); for (const pg of ev.pages ?? []) fill(pg.commands); }
+  pendingRoutes = new Map();
+}
+
 /** from → to 의 실제 걸을 수 있는 최단 경로(통행 칸 + 이벤트 칸 피함). 길이 없으면 직선 path 로 물러난다. */
-function route(project: Project, mapId: string, from: Cell, to: Cell): Dir[] {
+function route(project: Project, mapId: string, from: Cell, to: Cell, avoid: readonly Cell[] = []): Dir[] {
   const map = project.maps[mapId]!;
-  const blocked = new Set(map.events.map((e) => `${e.x},${e.y}`));
+  const blocked = new Set([...map.events.map((e) => `${e.x},${e.y}`), ...avoid.map((c) => `${c.x},${c.y}`)]);
   blocked.delete(`${to.x},${to.y}`);
   const steps: [Dir, number, number][] = [["up", 0, -1], ["down", 0, 1], ["left", -1, 0], ["right", 1, 0]];
   const prev = new Map<string, [string, Dir]>();
@@ -163,7 +211,8 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
   );
 
   add(plat, scene("ev_fl_intro", { x: 1, y: 1 }, S.START, [
-    bgm(BGM_DAY),
+    textAtBottom(),
+    bgm(BGM_OFFICE),
     ...letterbox(true, 400),
     ...caption("월요일 오전 8시 41분, 한결역."),
     ...think(
@@ -188,7 +237,7 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
   ]));
   add(street,
     door("ev_fl_office_door", a.street.officeDoor, [stageAtLeast(V_STAGE, S.STREET)],
-      [transfer(FL_MAP.office, a.office.elevatorOut.x, a.office.elevatorOut.y, "up")], think("…"), "down"),
+      [transfer(FL_MAP.office, a.office.elevatorOut.x, a.office.elevatorOut.y, "down")], think("…"), "down"),
     door("ev_fl_konbini_am", a.street.konbiniDoor, [stageIs(V_STAGE, 999)], [], think("편의점은 나중에. 첫날부터 지각할 순 없다."), "down"),
     door("ev_fl_subway_am", a.street.subway, [stageIs(V_STAGE, 999)], [], think("방금 내렸잖아. 회사는 저쪽이다."), "down"),
   );
@@ -202,11 +251,17 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   const roof = project.maps[FL_MAP.rooftop]!;
   const o = a.office;
   const taken: Cell[] = [o.elevatorOut, o.heroDesk, o.stairsOut];
-  const leadSpot = spot(project, FL_MAP.office, { x: o.elevatorOut.x - 1, y: o.elevatorOut.y - 2 }, taken);
-  const jihuMeet = spot(project, FL_MAP.office, { x: o.elevatorOut.x - 3, y: o.elevatorOut.y - 2 }, taken);
   const minhoSpot = spot(project, FL_MAP.office, o.pantry, taken);
   const jihuSeat = o.jihuDesk;
-  taken.push(jihuSeat);
+  taken.push(jihuSeat, o.leadDesk);
+  // 만남 자리: 팀장은 주인공 두 칸 앞, 지후는 팀장 옆(엘리베이터 벽 그림 밑이 아닌 트인 바닥 — 시각 담당 앵커가 있으면 그것).
+  const named = o as typeof o & { meetLead?: Cell; meetJihu?: Cell };
+  const leadMeetStop = named.meetLead ?? spot(project, FL_MAP.office, { x: o.elevatorOut.x, y: o.elevatorOut.y + 2 }, taken);
+  const jihuMeetStop = named.meetJihu ?? spot(project, FL_MAP.office, { x: leadMeetStop.x + 1, y: leadMeetStop.y }, taken);
+  const minhoMeetStop = spot(project, FL_MAP.office, { x: leadMeetStop.x - 1, y: leadMeetStop.y }, taken);
+  // 둘 다 자기 자리에서 걸어 나온다(빈 바닥에서 솟아나지 않는다).
+  const leadSpot = o.leadDesk;
+  const jihuMeet = jihuSeat;
 
   // 팀장: 처음엔 엘리베이터 앞에서 맞이하고, 그다음엔 자기 자리에.
   add(office, event("ev_fl_lead", "오정민 팀장", leadSpot, [
@@ -278,18 +333,21 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   // 만남 장면 — 엘리베이터에서 내리자마자.
   add(office, scene("ev_fl_meet", { x: 1, y: 1 }, S.STREET, [
     ...caption("스튜디오 늘봄, 7층."),
-    walk("ev_fl_lead", path(leadSpot, { x: o.elevatorOut.x, y: o.elevatorOut.y - 1 }, true).slice(0, 2)),
+    walkRoute(project, FL_MAP.office, "ev_fl_lead", leadSpot, leadMeetStop, [o.elevatorOut]),
+    face("ev_fl_lead", dirToward(leadMeetStop, o.elevatorOut)),
     ...say("lead", "base", "윤서하 씨? 오정민이에요. 프로덕트팀 팀장."),
     ...say("seoha", "happy", "안녕하세요! 오늘부터 출근하는 윤서하입니다. 잘 부탁드립니다."),
     ...say("lead", "happy", "긴장 풀어요. 우리 팀 다섯 명이에요. 한 명은 휴가 중이고, 한 명은 벌써 탕비실에서 간식 먹고 있고."),
-    ...emote("ev_fl_minho", "sweat"),
+    // 민호는 탕비실에서 걸어 나와 인사한다(VQA2: 「탕비실 안에서 자기소개」).
+    walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoSpot, minhoMeetStop, [o.elevatorOut, leadMeetStop]),
+    face("ev_fl_minho", dirToward(minhoMeetStop, o.elevatorOut)),
     ...say("minho", "happy", "아, 들켰다. 차민호예요! 지난주에 들어온 백엔드 신입. 동기라고 해도 되죠?"),
     ...say("seoha", "happy", "네, 그럼요. 반가워요."),
     { kind: "changeFriendship", npcKey: "lead", delta: 60 } as Command,
     { kind: "changeFriendship", npcKey: "minho", delta: 60 } as Command,
     ...say("lead", "base", "그리고 서하 씨 사수. 지후 씨, 잠깐 와 볼래요?"),
-    walk("ev_fl_jihu_meet", path(jihuMeet, { x: o.elevatorOut.x - 1, y: o.elevatorOut.y - 1 }, true).slice(0, 3)),
-    face("ev_fl_jihu_meet", "down"),
+    walkRoute(project, FL_MAP.office, "ev_fl_jihu_meet", jihuMeet, jihuMeetStop, [o.elevatorOut, leadMeetStop, minhoMeetStop]),
+    face("ev_fl_jihu_meet", dirToward(jihuMeetStop, o.elevatorOut)),
     stopBgm(),
     ...emote("player", "exclamation", 1300),
     ...think("…어?", "회색 후드. 조금 길어진 앞머리. 목소리를 듣기도 전에 알았다."),
@@ -314,11 +372,16 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
         ...like(1, "ev_fl_jihu_meet"),
       ] },
     ]),
-    bgm(BGM_DAY),
+    bgm(BGM_OFFICE),
     ...say("lead", "base", "서하 씨 자리는 지후 씨 맞은편이에요. 오늘 숙제는 금요일 발표 자료 읽어 두기."),
     ...say("lead", "base", "금요일 오후 세 시에 ‘소리결’ 박 본부장님 앞에서 리뉴얼 시안 발표가 있어요. 신입한테 미안하지만, 첫 주부터 바빠요."),
     ...say("minho", "happy", "서하 씨, 이따 탕비실로 와요! 커피 머신 쓰는 법 알려 줄게요."),
+    walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoMeetStop, minhoSpot, [o.elevatorOut], false),
+    // 만남 자리의 둘은 그 자리에서 사라지지 않고 각자 자리까지 걸어간다 — 자리의 지후·팀장 페이지가 같은 칸에서 이어받는다.
+    walkRoute(project, FL_MAP.office, "ev_fl_jihu_meet", jihuMeetStop, jihuSeat, [o.elevatorOut], false),
+    walkRoute(project, FL_MAP.office, "ev_fl_lead", leadMeetStop, o.leadDesk, [o.elevatorOut], false),
     ...think("(탕비실에서 민호 씨를 찾아보자. 자리와 화이트보드도 한번 볼까.)"),
+    waitMoves(),
     stage(S.MET),
   ]));
   // 만남 장면에만 서 있는 지후(그 뒤엔 자리의 지후가 대신한다).
@@ -356,11 +419,11 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   ]));
   add(roof, door("ev_fl_roof_door", r.door, [stageAtLeast(V_STAGE, S.ROOF)], [], think("…아직 할 말이 남았다."), "down"));
   add(roof, scene("ev_fl_roof", { x: 1, y: 1 }, S.PANTRY, [
-    bgm(BGM_TOWN),
+    bgm(BGM_ROOF),
     face("ev_fl_jihu_roof", "up"),
     ...think("…있다."),
     ...think("난간에 기대 선 뒷모습. 바람에 후드 끈이 흔들린다."),
-    walk("@player", route(project, FL_MAP.rooftop, r.doorOut, nearestFree(project, roof, { x: jihuRail.x - 1, y: jihuRail.y }, 2, [jihuRail]))),
+    walkRoute(project, FL_MAP.rooftop, "@player", r.doorOut, r.railHero),
     face("@player", "right"),
     face("ev_fl_jihu_roof", "left"),
     ...emote("ev_fl_jihu_roof", "ellipsis"),
@@ -373,6 +436,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     ...think("편하다고. 10년 만에 만나서 처음 하는 부탁이, 그거라니."),
     choices([
       { text: "“왜 모르는 척해요? 저 기억하잖아요.”", then: [
+        setSw("sw_fl_admitted", true),
         ...say("seoha", "sad", "왜 모르는 척해요? 저 기억 못 하는 거, 아니잖아요."),
         ...say("jihu", "surprised", "…"),
         ...say("jihu", "sad", "기억해요. 그래서 그래요.", "첫 출근 날이잖아요. 나 때문에 망치게 하고 싶지 않았어요."),
@@ -401,7 +465,8 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     stopBgm(),
     ...caption("그날 오후는 계정 신청서와 회의와, 처음 듣는 줄임말로 지나갔다."),
     stage(S.ROOF),
-    transfer(FL_MAP.streetPm, a.street.officeOut.x, a.street.officeOut.y, "down"),
+    // 회사 문에서 편의점까지는 거리 맞은편 끝(60칸 남짓)이다 — 빈 밤길을 걷게 하지 않고 편의점 앞에서 연다(VQA r2).
+    transfer(FL_MAP.streetPm, a.street.konbiniOut.x, a.street.konbiniOut.y, "down"),
   ]));
 }
 
@@ -418,7 +483,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
     ...fadeIn(600),
     bgm(BGM_NIGHT),
     ...caption("오후 7시 48분."),
-    ...think("첫날부터 야근은 아니었다. 거의.", "배가 고프다. 편의점이라도 들렀다 가자."),
+    ...think("첫날부터 야근은 아니었다. 거의.", "역으로 가는 길, 편의점 불빛이 환하다. 배가 고프다. 뭐라도 사 가자."),
     stage(S.EVENING),
   ]));
   add(street,
@@ -466,7 +531,10 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
         ...think("그 사람은 계산대 쪽으로 반 걸음 물러섰다. 그냥 나가려는 걸까."),
       ]),
       ...say("jihu", "base", "…아직 그거 마셔요?"),
-      ...say("seoha", "base", "선임님은 기억 못 하시는 줄 알았는데요."),
+      ifCond(swOn("sw_fl_admitted"),
+        say("seoha", "base", "회사에선 모르는 사이라면서요. 그런 건 기억하시네요."),
+        say("seoha", "base", "선임님은 기억 못 하시는 줄 알았는데요."),
+      ),
       ...emote("ev_fl_jihu_kon", "sweat"),
       ...say("jihu", "sad", "…"),
       choices([
@@ -506,13 +574,13 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
     memoryTint(0),
     ...letterbox(true, 0),
     ...fadeIn(1200),
-    { kind: "playAudio", resourceId: "@memory", loop: true, channel: "bgm", fadeInMs: 1500 } as Command,
+    { kind: "playAudio", resourceId: BGM_MEMORY, loop: true, channel: "bgm", fadeInMs: 1500 } as Command,
     ...caption("10년 전. 성하고등학교 방송실."),
     ...voice("교내 방송", "…오늘의 마지막 사연. 보낸 사람은, 바나나우유 님."),
     ...voice("교내 방송", "‘선배, 금요일마다 선배 목소리 들으려고 급식 줄을 일부러 늦게 서요. 이건 비밀이에요.’"),
     ...voice("교내 방송", "…바나나우유 님. 비밀은 지켜 드릴게요. 대신 다음 주에도 사연 보내 주세요. 오늘의 노래는, ‘여름의 끝에서’."),
     ...say("seohaYoung", "embarrassed", "…바보. 진짜 읽으면 어떡해."),
-    walk("ev_fl_y_jihu", path(youngJihu, { x: youngSeoha.x, y: youngSeoha.y - 1 }, true)),
+    walkRoute(project, FL_MAP.broadcast, "ev_fl_y_jihu", youngJihu, nearestFree(project, bc, { x: youngSeoha.x, y: youngSeoha.y - 1 }, 2, [youngSeoha, b.start])),
     face("ev_fl_y_jihu", "down"),
     ...say("jihuYoung", "base", "어, 2학년. 방송실 앞에서 뭐 해?"),
     ...say("seohaYoung", "surprised", "아, 아니요! 그냥 지나가다가요!"),
@@ -525,7 +593,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
     setSw("sw_fl_jihu_gone", true),
     ...caption("그해 겨울, 마지막 금요일."),
     ...fadeIn(900),
-    walk("ev_fl_y_seoha", path(youngSeoha, { x: b.mailbox.x - 1, y: b.mailbox.y })),
+    walkRoute(project, FL_MAP.broadcast, "ev_fl_y_seoha", youngSeoha, nearestFree(project, bc, { x: b.mailbox.x - 1, y: b.mailbox.y }, 2, [b.mailbox, b.start])),
     face("ev_fl_y_seoha", "right"),
     ...think("처음으로, 진짜 이름을 썼다.", "‘바나나우유가 아니라, 윤서하가요. 선배를 좋아해요.’"),
     playSe(SE_PAPER),
@@ -553,6 +621,9 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
   const minhoStart = spot(project, FL_MAP.officePm, { x: o.heroDesk.x + 2, y: o.heroDesk.y }, taken);
   const jihuSeat = spot(project, FL_MAP.officePm, { x: o.heroDesk.x + 1, y: o.heroDesk.y - 2 }, taken);
   const jihuPantry = spot(project, FL_MAP.officePm, o.pantry, taken);
+  const exit = { stand: { x: o.npcExit.x, y: o.npcExit.y + 1 }, door: o.npcExit };
+  const minhoOut = leave(project, FL_MAP.officePm, "ev_fl_w_minho", minhoStart, exit, "sw_fl_minho_left", o.heroDesk);
+  const leadOut = leave(project, FL_MAP.officePm, "ev_fl_w_lead", leadSeat, exit, "sw_fl_lead_left", o.heroDesk);
 
   add(off,
     event("ev_fl_w_lead", "오정민 팀장", leadSeat, [
@@ -561,6 +632,9 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     event("ev_fl_w_minho", "차민호", minhoStart, [page("wm", [swOff("sw_fl_minho_left")], [], { who: "minho", dir: "left" })]),
     event("ev_fl_w_jihu", "강지후", jihuSeat, [
       page("wj", [stageIs(V_STAGE, S.FLASH)], [], { who: "jihu", dir: "down" }),
+    ]),
+    // 빈 자리는 따로 — 지후는 탕비실로 걸어가고(같은 이벤트가 위치를 들고 간다), 의자는 제자리에 남는다.
+    event("ev_fl_w_chair", "강지후 자리", jihuSeat, [
       page("wj_empty", [stageIs(V_STAGE, S.WED)], think(
         "빈 의자 등받이에 회색 후드가 걸려 있다. 모니터에는 ‘하루끝’ 관리자 화면.",
         "오늘의 사연 대기열 맨 위에 ‘보낸 사람: 익명’. …사연은, 아직도 누군가 보내는구나.",
@@ -601,7 +675,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
         stopBgm(),
         ...caption("그리고, 금요일."),
         stage(S.WED_TALK),
-        transfer(FL_MAP.officeFri, a.office.meetingSeat.x, a.office.meetingSeat.y, "up"),
+        transfer(FL_MAP.officeFri, a.office.meetingSeat.x, a.office.meetingSeat.y, "left"),
       ], { who: "jihu", dir: "up" }),
     ]),
   );
@@ -628,6 +702,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     page("nb3", [stageIs(V_STAGE, S.WED), swOn("sw_fl_closed_note")], think("덮어 둔 수첩. 그대로 둔다.")),
   ]));
   add(off,
+    door("ev_fl_w_elev2", o.npcExit, [stageIs(V_STAGE, 999)], [], think("지후 선배가 아직 탕비실에 있다. 이대로 가면… 안 될 것 같다."), "down"),
     door("ev_fl_w_elev", o.elevator, [stageIs(V_STAGE, 999)], [], think("지후 선배가 아직 탕비실에 있다. 이대로 가면… 안 될 것 같다."), "down"),
     door("ev_fl_w_stairs", o.stairs, [stageIs(V_STAGE, 999)], [], think("옥상 문은 밤엔 잠겨 있다.")),
     event("ev_fl_w_desk", "서하 자리", { x: o.heroDesk.x, y: o.heroDesk.y - 1 }, [
@@ -640,12 +715,12 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     bgm(BGM_NIGHT),
     ...caption("수요일 오후 8시 3분."),
     ...say("minho", "happy", "서하 씨, 나 먼저 가요! 내일 봐요—"),
-    walk("ev_fl_w_minho", ["down", "down", "right", "right"]),
-    setSw("sw_fl_minho_left", true),
+    minhoOut.begin,
+    ...minhoOut.end,
     playSe(SE_MAIL),
     ...emote("player", "exclamation"),
     ...think("메일. ‘소리결’ 박 본부장님."),
-    ...voice("메일", "‘윤서하 님, 보내 주신 시안이 지난주 버전인 것 같습니다. 내일 오전 임원 보고에 써야 해서요.’"),
+    ...voice("메일", "‘윤서하 님, 보내 주신 시안이 수정 전 버전인 것 같습니다. 내일 오전 임원 보고에 써야 해서요.’"),
     shake(400),
     ...say("seoha", "surprised", "…어? 잠깐만. 최종본 보낸 거, 아니었어?"),
     ...think("폴더 이름이 ‘최종’, ‘최종_진짜’, ‘최종_진짜_수정’.", "내가 보낸 건 ‘최종’이었다."),
@@ -669,11 +744,14 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
         ...say("jihu", "base", "근데 서하 씨. 숨기는 거, 생각보다 오래 무거워요. 나중에 꼭 말씀드려요."),
         ...think("그 말이 이상하게 오래 남았다."),
         ...say("lead", "base", "둘 다 너무 늦게까지 있지 말아요. 먼저 갈게요."),
+        leadOut.begin,
         ...like(1, "ev_fl_w_jihu"),
+        ...leadOut.end,
       ] },
     ]),
-    setSw("sw_fl_lead_left", true),
     ...fadeOut(700),
+    // 정직 분기의 팀장은 통화를 마치고 시간이 건너뛰는 동안(화면 검정) 퇴근한다 — 보이는 데서 사라지지 않는다.
+    setSw("sw_fl_lead_left", true),
     ...caption("밤 10시 40분."),
     ...fadeIn(700),
     ...say("jihu", "base", "다 됐어요. 다시 보냈고, 본부장님 답장도 왔어요. ‘확인했습니다, 감사합니다.’"),
@@ -696,7 +774,9 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
       say("jihu", "happy", "라면 먹을래요? 탕비실에 컵라면 있어요. 먼저 가 있을게요. …오늘은 도망 안 가요."),
       say("jihu", "base", "…배고프면 탕비실에 컵라면 있어요. 물은 내가 올려 둘게요."),
     ),
+    walkRoute(project, FL_MAP.officePm, "ev_fl_w_jihu", jihuSeat, jihuPantry, [o.heroDesk], false),
     ...think("(탕비실로 가자.)"),
+    waitMoves(),
     stage(S.WED),
   ]));
 }
@@ -707,20 +787,23 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
 function buildFriday(project: Project, a: FirstLoveAnchors): void {
   const fri = project.maps[FL_MAP.officeFri]!;
   const o = a.office;
-  const taken: Cell[] = [o.meetingSeat];
-  const clientSpot = spot(project, FL_MAP.officeFri, { x: o.meetingSeat.x + 3, y: o.meetingSeat.y - 1 }, taken);
-  const leadSpot = spot(project, FL_MAP.officeFri, { x: o.meetingSeat.x + 2, y: o.meetingSeat.y + 1 }, taken);
-  const jihuSpot = spot(project, FL_MAP.officeFri, { x: o.meetingSeat.x + 1, y: o.meetingSeat.y }, taken);
-  const minhoSpot = spot(project, FL_MAP.officeFri, { x: o.meetingSeat.x, y: o.meetingSeat.y + 2 }, taken);
+  // 탁자 둘레 빈 바닥(시각 담당 meetSeats): [0]=주인공(동쪽 아래) [1]=지후(동쪽 위) [2]=본부장(서쪽 위) [3]=팀장(서쪽 아래) [4]=민호(북쪽).
+  const seats = o.meetSeats;
+  const jihuSpot = seats[1]!; const clientSpot = seats[2]!; const leadSpot = seats[3]!; const minhoSpot = seats[4]!;
+  // 손님·지후는 두 번째 엘리베이터(주인공이 내린 칸이 아닌 문)로 나간다 — 엘리베이터 문 바로 앞에서 사라진다.
+  const exit = { stand: { x: o.npcExit.x, y: o.npcExit.y + 1 }, door: o.npcExit };
+  const clientOut = leave(project, FL_MAP.officeFri, "ev_fl_f_client", clientSpot, exit, "sw_fl_client_left", o.meetingSeat);
+  const jihuOut = leave(project, FL_MAP.officeFri, "ev_fl_f_jihu", jihuSpot, exit, "sw_fl_jihu_left", o.meetingSeat);
   add(fri,
-    event("ev_fl_f_client", "박 본부장", clientSpot, [page("fc", [swOff("sw_fl_client_left")], [], { who: "client", dir: "left" })]),
-    event("ev_fl_f_lead", "오정민 팀장", leadSpot, [page("fl", [], [], { who: "lead", dir: "up" })]),
+    event("ev_fl_f_client", "박 본부장", clientSpot, [page("fc", [swOff("sw_fl_client_left")], [], { who: "client", dir: "right" })]),
+    event("ev_fl_f_lead", "오정민 팀장", leadSpot, [page("fl", [], [], { who: "lead", dir: "right" })]),
     event("ev_fl_f_jihu", "강지후", jihuSpot, [page("fj", [swOff("sw_fl_jihu_left")], [], { who: "jihu", dir: "left" })]),
-    event("ev_fl_f_minho", "차민호", minhoSpot, [page("fm", [], [], { who: "minho", dir: "up" })]),
+    event("ev_fl_f_minho", "차민호", minhoSpot, [page("fm", [], [], { who: "minho", dir: "down" })]),
+    door("ev_fl_f_elev2", o.npcExit, [stageIs(V_STAGE, 999)], [], think("…"), "down"),
   );
   add(fri, scene("ev_fl_fri", { x: 1, y: 1 }, S.WED_TALK, [
     ...fadeIn(800),
-    bgm(BGM_DAY),
+    bgm(BGM_OFFICE),
     ...caption("금요일 오후 3시. 회의실."),
     ...say("lead", "base", "지후 씨, 본부장님 앞인데 오늘도 후드예요?"),
     ...say("jihu", "embarrassed", "…재킷은 가방에 있어요. 이게 머리가 더 잘 돌아가서요."),
@@ -748,9 +831,9 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
       ] },
     ]),
     ...say("lead", "happy", "그럼 다음 주부터 2차 개발 들어가겠습니다. 감사합니다, 본부장님."),
-    walk("ev_fl_f_client", ["down", "down"]),
-    setSw("sw_fl_client_left", true),
+    clientOut.begin,
     ...say("minho", "happy", "대박! 서하 씨, 첫 주에 발표 통과! 오늘 회식 각이에요!"),
+    ...clientOut.end,
     ifCond(swOff(SW_HONEST), [
       ...say("lead", "base", "서하 씨. 수요일 일, 본부장님한테 들었어요."),
       ...say("seoha", "sad", "…죄송합니다."),
@@ -758,19 +841,19 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     ], [
       ...say("lead", "happy", "서하 씨, 수요일에 바로 말해 준 거. 그거 잘한 거예요. 그게 팀이에요."),
     ]),
-    face("ev_fl_f_jihu", "down"),
-    walk("ev_fl_f_jihu", ["down", "down"]),
-    setSw("sw_fl_jihu_left", true),
+    ...say("jihu", "base", "…먼저 일어나 보겠습니다. 수고하셨습니다."),
+    jihuOut.begin,
     ...say("lead", "base", "그리고… 다들 알다시피, 오늘이 지후 씨 마지막 날이에요."),
     ...emote("player", "exclamation"),
     ...say("seoha", "surprised", "…네?"),
     ...say("lead", "base", "다음 주부터 부산 지사예요. 아버님 곁에 있고 싶다고 몇 달 전에 신청했었죠."),
-    ...say("minho", "base", "회식이 송별회 겸인데… 선임님은 오늘 막차로 서울역 가서, 부산 가는 첫차 탄대요. 아까 짐 챙겨서 먼저 나가셨어요."),
+    ...say("minho", "base", "회식이 송별회 겸인데… 선임님은 오늘 밤 서울역에서 부산 가는 마지막 KTX 탄대요. 한결역에서 9시 40분 열차를 타야 맞춘다고요. 짐은 아침에 벌써 다 부치셨고요."),
+    ...jihuOut.end,
     ...say("lead", "sad", "인사는… 따로 못 했나 보네요."),
     ...think("또.", "또, 인사도 없이."),
     ifCond({ kind: "variable", variableId: V_JIHU, op: ">=", value: TRUE_END_AT } as never, [
       playSe(SE_PAPER),
-      ...think("…책상 모서리에 노란 포스트잇이 붙어 있었다. 낯익은, 비스듬한 글씨.", "‘21:40 서울역행 막차. 인사는 거기서 할게요. 이번엔 진짜로.’"),
+      ...think("…책상 모서리에 노란 포스트잇이 붙어 있었다. 낯익은, 비스듬한 글씨.", "‘21:40, 한결역 서울역행. 인사는 거기서 할게요. 이번엔 진짜로.’"),
     ]),
     ifCond(swOn(SW_TOLD_MINHO),
       say("minho", "base", "서하 씨. …가요. 이번엔 붙잡아요. 회식은 내가 알아서 할게요."),
@@ -810,7 +893,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   add(street, scene("ev_fl_run", { x: 2, y: 1 }, S.FRI, [
     ...fadeIn(500),
     { kind: "setWeather", weather: "rain", intensity: 0.6, transitionMs: 800 } as Command,
-    ...caption("오후 9시 21분. 막차까지 19분."),
+    ...caption("오후 9시 21분. 9시 40분 열차까지 19분."),
     ...think("뛰자.", "(지하철 입구로!)"),
     stage(S.RUN),
   ]));
@@ -820,7 +903,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   const meet = { x: jihuSpot.x - 1, y: jihuSpot.y };
   add(plat, scene("ev_fl_platform", { x: 1, y: 1 }, S.RUN, [
     { kind: "setWeather", weather: "none", transitionMs: 0 } as Command,
-    ...voice("안내 방송", "‘이번 열차는 서울역행, 마지막 열차입니다. 열차가 곧 도착하오니—’"),
+    ...voice("안내 방송", "‘이번 열차는 서울역행입니다. 열차가 곧 도착하오니—’"),
     walk("@player", route(project, FL_MAP.platformPm, p.arrive, meet)),
     face("@player", "right"),
     face("ev_fl_p_jihu", "left"),
@@ -829,7 +912,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
     ...think("처음이다. 회사에서 만나고, ‘씨’를 떼고 부른 건."),
     ...say("seoha", "sad", "또… 인사도 없이 가려고 했죠."),
     ...say("jihu", "sad", "…인사하면, 못 갈 것 같아서."),
-    { kind: "playAudio", resourceId: "@theme", loop: true, channel: "bgm", fadeInMs: 2000 } as Command,
+    { kind: "playAudio", resourceId: BGM_CONFESS, loop: true, channel: "bgm", fadeInMs: 2000 } as Command,
     ...letterbox(true, 600),
     ifCond(swOn(SW_SAW_LETTER),
       say("seoha", "sad", "수요일에, 선배 수첩 봤어요. 미안해요. …연두색 편지지."),
@@ -891,13 +974,31 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   ]));
 }
 
-function defineEndings(project: Project, themeId: string): void {
+/** 에필로그를 검은 화면에 글만 늘어놓지 않는다(VQA2) — 앱에 든 연애 그림을 화면 가득 깔고 그 위로 아래 대사창. */
+const epiloguePicture = (resourceId: string, opacity = 255) => ({ kind: "picture", action: "show", pictureId: "fl_epilogue", resourceId, x: -4, y: -3, scale: 29, opacity, durationMs: 1400 });
+const ENDING_CREDITS = [
+  "『첫사랑』",
+  "",
+  "이야기 · 연출   OPRN Flagship Studio",
+  "인물   OPRN 공용 흉상 · 걷기 칩",
+  "장소   jp_city · modern_city 손 도트",
+  "음악   CC0 BGM 카탈로그",
+  "         wks-001 · rad-002 · pon-001 · rst-001 · flt-022 · sea-001",
+  "효과음   CC0",
+  "",
+  "만든 도구   OPRN Studio",
+  "",
+  "끝까지 함께해 주셔서 고맙습니다.",
+].join("\n");
+
+function defineEndings(project: Project): void {
   execTool(project, "define_ending", {
     id: END_A,
     name: "다시, 첫사랑",
     conditions: [],
-    presentation: { musicResourceId: themeId, tone: "warm", kicker: "엔딩 A · 두 사람의 이야기" },
+    presentation: { musicResourceId: BGM_HAPPY, tone: "warm", kicker: "엔딩 A · 두 사람의 이야기", credits: ENDING_CREDITS, backgroundResourceId: "oprn-title-romance-office" },
     epilogue: [
+      epiloguePicture("oprn-title-romance-office"),
       { kind: "say", text: "석 달 뒤, 금요일 밤." },
       { kind: "say", text: "‘하루끝’ 오늘의 늦은 답장 — 바나나우유 님께." },
       { kind: "say", text: "‘다음 주 금요일엔 내가 서울로 갈게요. 급식 줄은 이제 안 서도 돼요.’" },
@@ -909,8 +1010,9 @@ function defineEndings(project: Project, themeId: string): void {
     id: END_B,
     name: "늦은 답장",
     conditions: [],
-    presentation: { musicResourceId: themeId, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", backgroundResourceId: "oprn-title-romance-school" },
+    presentation: { musicResourceId: BGM_CONFESS, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", credits: ENDING_CREDITS, backgroundResourceId: "oprn-title-romance-school" },
     epilogue: [
+      epiloguePicture("oprn-title-romance-school", 200),
       { kind: "say", text: "열차가 떠나고, 승강장에 혼자 남았다. 연두색 편지지 뒤에, 낯익은 글씨." },
       { kind: "say", text: "‘바나나우유 님께. 그 금요일 방송, 이제야 읽어요.’" },
       { kind: "say", text: "‘나도 금요일마다 사연함을 제일 먼저 열었어요. 당신 글씨가 있는지 보려고.’" },
@@ -923,11 +1025,12 @@ function defineEndings(project: Project, themeId: string): void {
     id: END_C,
     name: "우리 팀의 봄",
     conditions: [],
-    presentation: { musicResourceId: BGM_TOWN, tone: "warm", kicker: "엔딩 C · 첫 주의 끝" },
+    presentation: { musicResourceId: BGM_ROOF, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-title-romance-cafe" },
     epilogue: [
+      epiloguePicture("oprn-title-romance-cafe", 170),
       { kind: "say", text: "회식 자리. 민호 씨가 건배사를 세 번째 하고 있다." },
-      { kind: "say", text: "오후 9시 41분, 막차가 떠난 시각. ‘하루끝’ 알림이 울렸다." },
-      { kind: "say", text: "늦은 답장이 도착했습니다 — 오늘 발표한, 내가 그린 버튼으로." },
+      { kind: "say", text: "오후 9시 41분, 그 열차가 떠난 시각. 밤 열 시, ‘하루끝’ 오늘의 사연이 울렸다." },
+      { kind: "say", text: "보낸 사람: 익명. 사연 제목은, ‘바나나우유 님께’." },
       { kind: "say", text: "‘10년 전 금요일의 사연, 이제야 답장해요. 이번에도 인사는 못 했네요.’" },
       { kind: "say", speaker: "서하", text: "…답장만 하고 가 버리면, 어떡해요." },
       { kind: "say", text: "다음 주 금요일엔 내가 먼저 사연을 보내야지. 부산까지 닿게." },
@@ -948,13 +1051,15 @@ function buildTitleAndOpening(project: Project, themeId: string): void {
 }
 
 export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
+  pendingRoutes = new Map();
   const project = createBlankProject();
   const initialMapIds = Object.keys(project.maps);
   project.meta.title = "첫사랑";
   project.meta.author = "OPRN Flagship Studio";
   project.system.playResolution = { width: 480, height: 270 };
   delete project.system.cameraZoom;
-  project.system.dialogueStyle = "pixel-cinematic";
+  // 매끈한 글꼴·가는 선(사용자 r2: 「외곽선이 너무 두껍다」) — 도트 글꼴 9px 를 화면 배율로 키우면 1px 그림자가 굵은 띠가 된다.
+  project.system.dialogueStyle = "glass";
   // 전투도 체력도 없는 이야기 — 필드 HUD 는 비운다(호감은 숫자로 보이지 않고 장면으로만 드러난다).
   project.system.fieldHud = { theme: "chase", vitals: false, clock: false, tools: false, objective: false, hideEmpty: true, widgets: [] };
 
@@ -977,9 +1082,6 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
   }
   for (const id of initialMapIds) delete project.maps[id];
 
-  // 원곡 두 곡(프로젝트 안에 실린다).
-  const theme = exec("generate_original_bgm", FIRST_LOVE_THEME_ARGS as unknown as Record<string, unknown>).data as { resourceId: string };
-  const memory = exec("generate_original_bgm", FIRST_LOVE_MEMORY_ARGS as unknown as Record<string, unknown>).data as { resourceId: string };
 
   const ensureVar = (id: string, name: string): void => { if (!project.variables.some((v) => v.id === id)) project.variables.push({ id, name }); };
   const ensureSw = (id: string, name: string): void => { if (!project.switches.some((s) => s.id === id)) project.switches.push({ id, name }); };
@@ -990,10 +1092,10 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
     [SW_KNOWS_WHY, "지후가 떠난 이유를 들음"], [SW_COFFEE, "옥상 캔커피"], [SW_MILK, "바나나우유 두 개"], [SW_STORY, "발표에서 내 이야기를 함"],
     ["sw_fl_jihu_in_konbini", "편의점에 지후 등장"], ["sw_fl_flashback", "회상 중"], ["sw_fl_jihu_gone", "회상: 지후 퇴장"],
     ["sw_fl_lead_left", "수요일: 팀장 퇴근"], ["sw_fl_minho_left", "수요일: 민호 퇴근"], ["sw_fl_closed_note", "수첩을 덮어 둠"],
-    ["sw_fl_client_left", "금요일: 본부장 퇴장"], ["sw_fl_jihu_left", "금요일: 지후 퇴장"],
+    ["sw_fl_client_left", "금요일: 본부장 퇴장"], ["sw_fl_jihu_left", "금요일: 지후 퇴장"], ["sw_fl_admitted", "옥상: 지후가 기억한다고 말함"],
   ] as const) ensureSw(id, name);
 
-  defineEndings(project, theme.resourceId);
+  defineEndings(project);
   buildMondayMorning(project, anchors);
   buildMondayOffice(project, anchors);
   buildMondayNight(project, anchors);
@@ -1001,32 +1103,18 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
   buildFriday(project, anchors);
   buildClimax(project, anchors);
 
-  // 원곡 자리표시(@theme/@memory)를 실제 리소스 id 로.
-  const swapIds = (cmds: unknown): void => {
-    if (!Array.isArray(cmds)) return;
-    for (const c of cmds as Record<string, unknown>[]) {
-      if (c && c.kind === "playAudio") {
-        if (c.resourceId === "@theme") c.resourceId = theme.resourceId;
-        if (c.resourceId === "@memory") c.resourceId = memory.resourceId;
-      }
-      for (const key of ["then", "else", "commands"]) swapIds(c[key]);
-      if (Array.isArray(c.options)) for (const o of c.options as { branch: unknown }[]) swapIds(o.branch);
-    }
-  };
-  for (const map of Object.values(project.maps)) for (const ev of map.events) { swapIds(ev.commands); for (const pg of ev.pages ?? []) swapIds(pg.commands); }
-
   // 맵 BGM(장면이 바꾸지 않을 때의 바탕).
   const mapBgm: Record<string, string> = {
-    [FL_MAP.platformAm]: BGM_DAY, [FL_MAP.street]: BGM_DAY, [FL_MAP.office]: BGM_DAY, [FL_MAP.officeFri]: BGM_DAY,
-    [FL_MAP.rooftop]: BGM_TOWN, [FL_MAP.streetPm]: BGM_NIGHT, [FL_MAP.konbini]: BGM_NIGHT, [FL_MAP.officePm]: BGM_NIGHT,
-    [FL_MAP.broadcast]: memory.resourceId, [FL_MAP.platformPm]: theme.resourceId,
+    [FL_MAP.platformAm]: BGM_OFFICE, [FL_MAP.street]: BGM_OFFICE, [FL_MAP.office]: BGM_OFFICE, [FL_MAP.officeFri]: BGM_OFFICE,
+    [FL_MAP.rooftop]: BGM_ROOF, [FL_MAP.streetPm]: BGM_NIGHT, [FL_MAP.konbini]: BGM_NIGHT, [FL_MAP.officePm]: BGM_NIGHT,
+    [FL_MAP.broadcast]: BGM_MEMORY, [FL_MAP.platformPm]: BGM_NIGHT,
   };
   for (const [mapId, id] of Object.entries(mapBgm)) {
     const m = project.maps[mapId];
     if (m) m.bgm = { mode: "custom", resourceId: id };
   }
 
-  buildTitleAndOpening(project, theme.resourceId);
+  buildTitleAndOpening(project, BGM_MEMORY);
 
   // 연애 게임의 ESC 메뉴 — 전투 능력치(상태·스킬·장비·돈) 없이 호감도·대화 기록·엔딩·저장(VQA 1차 MAJOR).
   project.characters = { ...(project.characters ?? {}), [JIHU_KEY]: { displayName: "강지후", note: "앱 개발 4년 차 선임, 그리고 내 사수. 10년 전, 금요일 점심 방송의 목소리." },
@@ -1047,6 +1135,10 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
   for (const [id, name] of Object.entries(shortNames)) if (project.maps[id]) project.maps[id]!.name = name;
   // 현대 연애 장르 잠금 — 메뉴·대사 보조(오토·스킵·기록)·엔딩 목록이 연애 기본 구성을 따르고, 편집기 조수도 현대 칩셋 계열만 새로 쓴다.
   enableGenreLock(project, "romance", "enforce");
+
+  resolveRoutes(project);
+  // 움직이는 탈것 금지(사용자 r2: 「돌아다니는 오토바이」) — 거리 구성기가 깐 차량 행렬을 걷어 낸다. 서 있는 차(타일)는 그대로다.
+  for (const id of [FL_MAP.street, FL_MAP.streetPm]) { const m = project.maps[id]; if (m) delete (m as { transit?: unknown }).transit; }
 
   project.startMapId = FL_MAP.platformAm;
   project.startPos = anchors.platform.arrive;

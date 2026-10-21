@@ -48,25 +48,29 @@ export function say(who: Who, expr: Expr, ...lines: string[]): Command[] {
   const c = CAST[who];
   return [
     { kind: "changeFace", resourceId: bustId(who, expr), presentation: "bust", position: c.side, flipHorizontally: false },
-    ...lines.map((body): Command => ({ kind: "text", speaker: c.name, body })),
+    ...lines.map((body): Command => ({ kind: "text", speaker: c.name, body, position: "bottom" })),
   ];
 }
 
 /** 서하의 속마음 — 얼굴 없이 괄호 대신 흐린 독백으로. */
 export function think(...lines: string[]): Command[] {
-  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", body }))];
+  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", body, position: "bottom" }))];
 }
 
-/** 장면 자막(시간·장소) — 위. 가운데 자막은 인물을 가린다(VQA 5차). 이름·얼굴 없는 위 상자는 내용 높이만 쓴다(playSurface.css, VQA 8차).
- *  한 번에 표시하는 맥락(system 등)은 쓰지 않는다 — 앞 대사를 넘기던 Enter 가 나타나는 순간의 자막을 바로 닫아 버린다. */
+/** 장면 자막(시간·장소) — 대사와 같은 아래 자리, 모양만 다르다(테두리 없는 짙은 띠·가운데 기울임, 내레이션 맥락).
+ *  창이 위아래로 뛰지 않게 모든 글은 아래다(사용자 지적 r2). 한 번에 표시하는 맥락(system 등)은 쓰지 않는다 —
+ *  앞 대사를 넘기던 Enter 가 나타나는 순간의 자막을 바로 닫아 버린다. narration 은 타자기로 나온다. */
 export function caption(...lines: string[]): Command[] {
-  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", body, position: "top" }))];
+  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", body, position: "bottom", context: "narration" }))];
 }
 
 /** 이름 없는 목소리(방송·안내). */
 export function voice(speaker: string, ...lines: string[]): Command[] {
-  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", speaker, body }))];
+  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", speaker, body, position: "bottom" }))];
 }
+
+/** 창 자리 고정 — 선택지 창도 세션 설정을 따르므로, 주인공이 화면 아래에 있어도 위로 뛰지 않게 끈다. */
+export const textAtBottom = (): Command => ({ kind: "displayTextSettings", format: "normal", position: "bottom", preventObscuringPlayer: false, allowEventMovementDuringWait: false } as Command);
 
 export function m2(title: string, fields: Record<string, unknown> = {}): Command {
   const entry = M2_COMMAND_CATALOG.find((c) => c.title === title);
@@ -105,8 +109,10 @@ export const memoryPictureErase = (): Command => ({ kind: "erasePicture", pictur
 export const hidePlayer = (): Command => m2("Sprite Look", { target: "player", opacity: "0" });
 export const showPlayer = (): Command => m2("Sprite Look", { target: "player", reset: true });
 
-export function emote(target: "player" | string, kind: EmoteKind, ms = 1100): Command[] {
-  return [{ kind: "showEmote", target: target === "player" ? "player" : { eventId: target }, emote: kind, durationMs: ms }, wait(Math.min(ms, 900))];
+/** 머리 위 말풍선 아이콘(! ♥ … 땀) — 이 데모는 쓰지 않는다(사용자 r2: 「말풍선을 전부 대화창으로」). 감정은 대사·표정 흉상이 맡는다.
+ *  장면 글에 남은 호출은 반 박자 쉼으로만 남긴다(대사 사이 호흡). 탐침이 showEmote 0 을 검사한다. */
+export function emote(_target: "player" | string, _kind: EmoteKind, ms = 1100): Command[] {
+  return [wait(Math.min(ms, 400))];
 }
 
 /** 이벤트(또는 주인공 "@player")를 한 칸씩 걷게 한다. */
