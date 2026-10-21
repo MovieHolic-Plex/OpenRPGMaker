@@ -256,11 +256,37 @@ function canonicalizeMoveEventRoute(command: RecordValue): string | undefined {
 // preventObscuringPlayer 는 장면 다듬기 규칙(§4-1: 창이 주인공을 피해 위로 뒤집히지 않게)대로 false 로 둔다.
 function fillDisplayTextSettings(command: RecordValue): string | undefined {
   const filled: string[] = [];
-  if (typeof command.format !== "string") { command.format = "normal"; filled.push('format:"normal"'); }
-  if (typeof command.position !== "string") { command.position = "bottom"; filled.push('position:"bottom"'); }
+  // 실측(2026-10-22 흉상 카페): format:"default" — 형식 값은 normal·transparent 둘뿐이라 거부됐다. 모르는 값은 normal.
+  if (command.format !== "normal" && command.format !== "transparent") {
+    filled.push(command.format === undefined ? 'format:"normal"' : `format:${JSON.stringify(command.format)}→"normal"`);
+    command.format = "normal";
+  }
+  if (command.position !== "top" && command.position !== "center" && command.position !== "bottom") {
+    filled.push(command.position === undefined ? 'position:"bottom"' : `position:${JSON.stringify(command.position)}→"bottom"`);
+    command.position = "bottom";
+  }
   if (typeof command.preventObscuringPlayer !== "boolean") { command.preventObscuringPlayer = false; filled.push("preventObscuringPlayer:false"); }
   if (typeof command.allowEventMovementDuringWait !== "boolean") { command.allowEventMovementDuringWait = false; filled.push("allowEventMovementDuringWait:false"); }
   return filled.length > 0 ? `displayTextSettings 의 빠진 칸을 채웠습니다(${filled.join(", ")}).` : undefined;
+}
+
+/**
+ * changeFace 는 FaceGraphic 칸(resourceId·position·flipHorizontally)을 명령에 바로 둔다.
+ * 실측(2026-10-22 아래 서술창): {kind:"changeFace",face:{resourceId:"…"},position:"left"} — 대사(text)의 face 칸 모양을
+ * 그대로 옮겨 적어 resourceId 가 없다고 거부됐다. face 객체를 펼치고 빠진 위치·뒤집기를 기본값으로 채운다.
+ */
+function canonicalizeChangeFace(command: RecordValue): string | undefined {
+  const fixed: string[] = [];
+  const nested = command.face;
+  if (typeof command.resourceId !== "string" && nested && typeof nested === "object" && !Array.isArray(nested)) {
+    for (const [key, value] of Object.entries(nested as RecordValue)) if (command[key] === undefined) command[key] = value;
+    delete command.face;
+    fixed.push("face:{…} 를 명령 칸으로 펼침");
+  }
+  if (typeof command.resourceId !== "string") return fixed.length ? `changeFace: ${fixed.join(", ")}.` : undefined;
+  if (command.position !== "left" && command.position !== "right") { command.position = "left"; fixed.push('position:"left"'); }
+  if (typeof command.flipHorizontally !== "boolean") { command.flipHorizontally = false; fixed.push("flipHorizontally:false"); }
+  return fixed.length ? `changeFace: ${fixed.join(", ")}.` : undefined;
 }
 
 /** 명령 하나(중첩 분기 제외)를 제자리에서 고친다. 무엇을 고쳤는지 문장으로 돌려준다. */
@@ -298,6 +324,7 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     return canonicalizeMoveEventRoute(command);
   }
   if (command.kind === "displayTextSettings") return fillDisplayTextSettings(command);
+  if (command.kind === "changeFace") return canonicalizeChangeFace(command);
   if (command.kind === "wait" && typeof command.ms !== "number") {
     // 기다리기를 카메라·페이드 비트처럼 durationMs 로 쓴 사례(2026-09-24 꿈 세계 r3). 런타임은 ms 만 읽어
     // setTimeout(NaN) 으로 즉시 넘어갔다 — 컷신의 뜸이 통째로 사라졌다.
