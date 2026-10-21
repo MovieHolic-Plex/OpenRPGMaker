@@ -24,6 +24,7 @@ import {
   nextMoveCommandForScene,
 } from "@/player/playSceneAutonomousCommands";
 import { canNpcMove, isPlayerOccupyingTile } from "@/player/playSceneAutonomousMapActions";
+import { detourAroundPlayer } from "@/player/commandRouteDetour";
 import { applySpriteAlpha, setNpcIdleFrame, setNpcWalkFrame } from "@/player/playSceneAutonomousSprites";
 import { nextChaseDecision } from "@/player/chaseAi";
 import type { AutonomousNpcSceneContext } from "@/player/playSceneAutonomousTypes";
@@ -107,6 +108,16 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
       livingBlockers.delete(mover);
       fireEventTouch(scene, eventId, view.trigger.kind);
       setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
+      // 명령 경로(moveEvent)는 주인공을 비켜 같은 끝 칸으로 간다 — 말을 건 주인공이 옆에 서 있어 걸음이 다 버려지고
+      // 인물이 제자리에서 사라지던 결함(commandRouteDetour 머리말).
+      if (!mover.repeat && !mover.stopOnBlocked && scene.commandMoveRouteEventIds?.has(eventId)) {
+        const detour = detourAroundPlayer({
+          moves: mover.moves, blockedIndex: mover.step - 1, from: position, width: scene.map.width, height: scene.map.height,
+          isPlayerAt: (x, y) => isPlayerOccupyingTile(scene, x, y),
+          canStep: (from, to, dir) => canNpcMove({ project, scene, mover, eventId, from, to }, { x: to.x - from.x, y: to.y - from.y, face: dir }),
+        });
+        if (detour) { mover.moves = detour; mover.step -= 1; mover.blockedSteps = 0; continue; }
+      }
       if (mover.stopOnBlocked) {
         scene.autonomousNPCs.delete(eventId);
         scene.commandMoveRouteEventIds?.delete(eventId);
