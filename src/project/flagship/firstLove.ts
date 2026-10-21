@@ -90,6 +90,7 @@ function like(n: number, jihuEventId?: string): Command[] {
 const stage = (n: number): Command => setVar(V_STAGE, "=", n);
 
 const SE_ELEVATOR = "cc0-se-osx-bell-01";
+const SE_DOOR = "cc0-se-osx-door-open";
 const waitMoves = (): Command => m2("Wait for All Movement");
 
 /**
@@ -462,6 +463,12 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
       ] },
     ]),
     ...say("jihu", "base", "점심시간 끝나요. 먼저 내려가요. 같이 내려가면… 말 나와요."),
+    // 옥상을 떠날 때도 실제 문으로 걸어 나간다 — 장면 끝 순간이동 금지(VQA2: 돌아오는 문 없이 거리로).
+    face("ev_fl_jihu_roof", "up"),
+    walkRoute(project, FL_MAP.rooftop, "@player", r.railHero, r.doorOut),
+    face("@player", dirToward(r.doorOut, r.door)),
+    playSe(SE_DOOR),
+    wait(250),
     ...fadeOut(800),
     stopBgm(),
     ...caption("그날 오후는 계정 신청서와 회의와, 처음 듣는 줄임말로 지나갔다."),
