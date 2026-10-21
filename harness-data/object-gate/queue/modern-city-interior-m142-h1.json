@@ -1,0 +1,99 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "modern-city-interior-m142-h1",
+ "title": "modern_city 실내 기물 m142-h1 (15) — object-gen 다시 그림, 사용자 위임·Opus 적대 VQA 통과 2026-10-21",
+ "note": "delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/m142-h1.opus-vqa-r*.json",
+ "createdAt": "2026-10-21T01:32:08.117Z",
+ "items": [
+  {
+   "sha": "ef61e60cb1ead1ab235925917868e7c6e5022cad99e617b9877f08792fb960ba",
+   "kind": "container",
+   "label": "modern_city_interior/arcade-racing-cabinet",
+   "source": "/home/main/.cache/ogm142/ship/m142-h1/arcade-racing-cabinet.png"
+  },
+  {
+   "sha": "3138128c0b71be4c672952a573e21ece4185a398facc80567a920a73a61bebd8",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/dept-accessory-wall",
+   "source": "/home/main/.cache/ogm142/ship/m142-h1/dept-accessory-wall.png"
+  },
+  {
+   "sha": "1b7c28a2835dc32aacbcbe826de431c82a17b738e4abbc7a36b45d1313849b6b",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/hosp-anesthesia",
+   "source": "/home/main/.cache/ogm142/ship/m142-h1/hosp-anesthesia.png"
+  },
+  {
+   "sha": "b16136e1a5cbc19d36b8069264d3769462f1e44437733533ab1d2ac54d7b60ad",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/ind-lathe",
+   "source": "/home/main/.cache/ogm142/ship/m142-h1/ind-lathe.png"
+  },
+  {
+   "sha": "34e1499a27452d16c818ff7f02d35a7fef9f6f0ef88e3afcf58f4a548d10a1ee",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/izakaya-beer-server",
+   "source": "/home/main/.cache/ogm142/ship/m142-h1/izakaya-beer-server.png"
+  },
+  {
+   "sha": "0aa08fddf6e81c5f309bae9671c889f98bf0736abe363865974cda359304a214",
+   "kind": "structure",
+   "label": "modern_city_interior/jp-torii",
+   "source": "/home/main/.cache/ogm142/ship/m142-h1/jp-torii.png"
+  },
+  {
+   "sha": "ebd395901c3564c856902a949720d82a48c8cb2e9846bfaaed809941cc82f822",
+   "kind": "container",
+   "label": "modern_city_interior/konbini-copier",
+   "source": "/home/main/.cache/ogm142/ship/m142-h1/konbini-copier.png"
+  },
+  {
+   "sha": "972320718440ec6225cf1fff2c0145b8b52a5de5aa5b9a86edd2178fc197460f",
+   "kind": "other",
+   "label": "modern_city_interior/library-carrel",
+   "source": "/home/main/.cache/ogm142/ship/m142-h1/library-carrel.png"
+  },
+  {
+   "sha": "bbedaff42986326a104df58610bf00e7121ad2a7c359ab9f3809524e8d4144f8",
+   "kind": "frame",
+   "label": "modern_city_interior/mart-bread-rack",
+   "source": "/home/main/.cache/ogm142/ship/m142-h1/mart-bread-rack.png"
+  },
+  {
+   "sha": "3c6194931ae0219d12071af0089d032a6836ba130b239da9448500a6c5fb4e06",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/mart-dairy-open",
+   "source": "/home/main/.cache/ogm142/ship/m142-h1/mart-dairy-open.png"
+  },
+  {
+   "sha": "a39aeff2e46892da5e24d1a56c134fc1bb05de10a496aa06bbbcc25220a2cbec",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-gondola-detergent",
+   "source": "/home/main/.cache/ogm142/ship/m142-h1/mart-gondola-detergent.png"
+  },
+  {
+   "sha": "7ce3b4bf308fc699194a2c64c103b78c0b62667eeb4bfe0451e93b0ea4d8e3f1",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mart-gondola-tea",
+   "source": "/home/main/.cache/ogm142/ship/m142-h1/mart-gondola-tea.png"
+  },
+  {
+   "sha": "850b51eedd2e0895c9630574d68cb9fca7cdf83a48832de4ec267822beca4671",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/rest-bottle-shelf",
+   "source": "/home/main/.cache/ogm142/ship/m142-h1/rest-bottle-shelf.png"
+  },
+  {
+   "sha": "6d93cc60a61dc04d4e75668988f278f524d77e76045a8133364723d6c7dbfd5c",
+   "kind": "structure",
+   "label": "modern_city_interior/roof-stair-hut",
+   "source": "/home/main/.cache/ogm142/ship/m142-h1/roof-stair-hut.png"
+  },
+  {
+   "sha": "1312d89fb64bb54826ce78a204b77078dcb76c7fc6b02167c075c4dde6cc2518",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/school-cleaning-locker",
+   "source": "/home/main/.cache/ogm142/ship/m142-h1/school-cleaning-locker.png"
+  }
+ ]
+}
