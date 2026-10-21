@@ -2535,11 +2535,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 20자에 레이아웃 60회·스타일 74회). 줄 수가 늘 때는 scrollHeight 가 지금 높이를 넘는다 — 그때만 늘리고,
   // 줄이 줄어들 수 있는 삭제·붙여넣기·비우기에서만 전체를 다시 잰다.
   let lastInputLength = 0;
-  const syncInputHeight = (): void => {
+  const syncInputHeight = (force = false): void => {
     const length = input.value.length;
     const shrinking = length < lastInputLength;
     lastInputLength = length;
-    if (!shrinking && input.style.height && input.scrollHeight <= input.clientHeight) return;
+    if (!force && !shrinking && input.style.height && input.scrollHeight <= input.clientHeight) return;
     input.style.height = "auto";
     const minHeight = typeof getComputedStyle === "function"
       ? Number.parseFloat(getComputedStyle(input).minHeight) || 0
@@ -2646,9 +2646,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     syncGlassIdle();
   };
+  // 빈 입력창 높이는 안내문 줄 수를 따른다 — 번역문이 원문보다 길면(영어 Quick paint 안내 3줄) 마지막 줄이
+  // 잘렸다(UI 감사 09-ai-06). 번역 계층이 placeholder 를 바꾼 뒤에 재야 하므로 다음 프레임에 다시 윔다.
+  const setComposerPlaceholder = (text: string): void => {
+    if (sourceAttributeOf(input, "placeholder") === text) return;
+    input.setAttribute("placeholder", text);
+    if (!input.value && typeof requestAnimationFrame === "function") {
+      requestAnimationFrame(() => { if (!disposed && !input.value) syncInputHeight(true); });
+    }
+  };
   const refreshComposerPlaceholder = (): void => {
     if (stampPlaceOn) {
-      input.setAttribute("placeholder", "바로 깔기 — 무엇을 어떻게 깔지 한 문장으로(상자·NPC도). 비우면 알아서.");
+      setComposerPlaceholder("바로 깔기 — 무엇을 어떻게 깔지 한 문장으로(상자·NPC도). 비우면 알아서.");
       syncConversationState();
       return;
     }
@@ -2658,7 +2667,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 두 번 파싱하고, 쓰이지 않는 readAgentBrief() 가 lowerTiles 전체를 훑었다.
     const aiConfig = loadAiConfig();
     const placeholder = formatComposerPlaceholder(isAiConfigReady(aiConfig, getAiConnectionStatus(aiConfig)));
-    if (sourceAttributeOf(input, "placeholder") !== placeholder) input.setAttribute("placeholder", placeholder);
+    setComposerPlaceholder(placeholder);
     syncConversationState();
   };
   const clearSelectionTaskContext = (): void => {
