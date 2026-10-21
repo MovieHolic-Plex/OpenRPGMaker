@@ -1099,6 +1099,8 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
       priority: 100,
       presentation: {
         tone: "warm",
+        // 명예의 전당·에필로그·크레딧 뒤를 검은 바탕 대신 오프닝의 별빛 바다 그림으로 채운다(기존 그림 재사용).
+        backgroundResourceId: "mx_opening_starlight",
         // 크레딧은 고유명사 단위로 직접 줄을 나눈다(자동 줄바꿈이 「다우닝 / 시티」 사이를 끊지 않게). 24px/s 로 구른다(VQA R9-2). 여정 요약·등장인물은 VQA r11 m1. 영어 병기는 VQA r15 로 제거(게임명 한 줄만).
         credits: [
           "아스트라 호라이즌", "다우닝 시티와", "여명의 날개", "Astra Horizon", "",
