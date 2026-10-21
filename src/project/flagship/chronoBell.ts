@@ -557,7 +557,8 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   // 발렌이 주인공 쪽에 홀로 서고, 그 뒤(동쪽)로 두 줄(큰길 두 줄)이 늘어선다 — 걸을 때는 동쪽 끝부터 성문으로 간다.
   const formation: [GameEvent, number, number, string, number][] = [
     [valen, 0, 0, FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX], [knight, 1, -1, "tex_easyrpg_charset_actor1", 2],
-    ...escorts.map(([id, tex, index], k): [GameEvent, number, number, string, number] => [byId(id), 1 + Math.floor((k + 1) / 2), (k + 1) % 2 === 1 ? 0 : -1, tex, index]),
+    // 두 줄 엇갈림(체크무늬) — 같은 줄 이웃은 두 칸, 앞뒤 줄은 대각선. 한 칸씩 붙여 세우면 24px 칩이 겹쳐 덩어리로 읽혔다(VQA r5).
+    ...escorts.map(([id, tex, index], k): [GameEvent, number, number, string, number] => [byId(id), k + 2, (k + 2) % 2 === 0 ? 0 : -1, tex, index]),
   ];
   const marchers = new Set(formation.map(([e]) => e.id));
   for (const [event, dx, dy, tex, index] of formation) {
@@ -577,17 +578,42 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   for (const [id] of escorts) switches[id] = `sw_${id.slice(3)}_marched`;
   const order = [...formation].sort((a, b) => b[1] - a[1]); // 동쪽(앞)부터
   const marches: Command[] = [];
-  order.forEach(([npc], rank) => {
+  // 모두 같은 걸음으로 걷는다 — 걸음마다 자리를 미리 셈해, 앞사람과 같은 칸·같은 줄 바로 옆 칸에 서게 되면 출발을 한 걸음씩 늦춘다.
+  // (통과 켬이라 겹쳐도 막히지 않아 성문 앞에서 행렬이 한 칸에 포개졌다 — VQA r5.)
+  const DIRS: Record<string, [number, number]> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+  const tracks: { x: number; y: number }[][] = [];
+  const delays: number[] = [];
+  const paths: Step[][] = [];
+  for (const [npc] of order) {
     const path = walkPath(project, hub, { x: npc.x, y: npc.y }, exit, npc.id, { allow, ignore: marchers })
       ?? walkPath(project, hub, { x: npc.x, y: npc.y }, exit, npc.id, { ignore: marchers });
     if (!path) throw new Error(`[fallen-star] ${npc.id} 가 동문까지 걸어갈 길이 없다`);
+    const cells = [{ x: npc.x, y: npc.y }];
+    for (const dir of path) { const [dx, dy] = DIRS[dir as string]!; const last = cells[cells.length - 1]!; cells.push({ x: last.x + dx, y: last.y + dy }); }
+    const posAt = (track: { x: number; y: number }[], delay: number, t: number) => (t - delay >= track.length ? undefined : track[Math.max(0, t - delay)]);
+    let delay = 0;
+    const clash = (d: number): boolean => tracks.some((other, j) => {
+      for (let t = 0; t < cells.length + d + 2; t += 1) {
+        const a = posAt(cells, d, t), b = posAt(other, delays[j]!, t);
+        if (!a || !b) continue;
+        if (a.x === b.x && a.y === b.y) return true;
+        if (a.y === b.y && Math.abs(a.x - b.x) <= 1) return true;
+        if (a.x === b.x && Math.abs(a.y - b.y) <= 1 && t > 0) return true;
+      }
+      return false;
+    });
+    while (clash(delay) && delay < 60) delay += 1;
+    tracks.push(cells); delays.push(delay); paths.push(path);
+  }
+  order.forEach(([npc], rank) => {
+    const path = paths[rank]!;
     const moves = [
       // 처음부터 지나갈 수 있게: 주인공이 성문 통로 앞에 서 있으면 행렬이 막혀 스위치가 안 켜지고, 그동안 투명한 기사가
       // 통로 칸을 막아 숲으로 못 나갔다(QA fallen-town to-forest). 길은 걸을 수 있는 칸으로만 짜였으니 건물은 안 뚫는다.
       { kind: "setThrough", enabled: true },
       // 행진 걸음 — 기본(느림·드묾)으로는 30칸 길에 30초가 넘게 걸려 대사가 끝난 뒤에도 광장에 남았다.
       { kind: "changeSpeed", delta: 2 }, { kind: "changeFrequency", delta: 3 },
-      ...Array.from({ length: rank }, () => ({ kind: "wait" })),
+      ...Array.from({ length: delays[rank]! }, () => ({ kind: "wait" })),
       ...path.map((dir) => ({ kind: "move", dir })),
       { kind: "changeOpacity", delta: -255 },
       { kind: "setSwitch", switchId: switches[npc.id]!, value: true },
@@ -615,6 +641,9 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     camera({ mode: "return", durationMs: "1000", wait: "true" }),
   ];
   list.splice(after + 1, 0, ...marches, ...follow);
+  // 엘레나가 말할 때 주인공이 화면(아래)을 보고 있었다(VQA r5) — 엘레나 쪽(위)으로 돌아선다.
+  const elenaLine = list.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("들었지, 카엘"));
+  if (elenaLine >= 0) list.splice(elenaLine, 0, { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "turn", dir: "up" }], repeat: false, wait: true, skippable: true } } as unknown as Command);
 }
 
 /** 손 도트 실내(atlas_biome_interior): 천장(default 2~33·rock 34~65) → 천장(dark 66~97), 가장자리에서 이어진 바위벽 메움 → 공허(1). */
@@ -1241,8 +1270,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         const wob = (((x * 73856093) ^ (y * 19349663)) >>> 0) % 7 * 0.1 - 0.25;
         const inside = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1 - wob
           && fm.lowerTiles[y * fm.width + x] === 737
-          // 관 그림 밑 칸도 칠한다 — 남겨 두면 관 둘레에 풀 테두리가 섰다.
-          && ((fm.upperTiles[y * fm.width + x] ?? -1) < 0 || (x === pod.x && y >= pod.y - 2 && y <= pod.y - 1));
+          // 관 그림 밑 칸도 칠한다 — 남겨 두면 관 둘레에 풀 테두리가 섰다. 누운 돌 관은 두 칸 너비라 좌우 한 칸까지.
+          && ((fm.upperTiles[y * fm.width + x] ?? -1) < 0 || (Math.abs(x - pod.x) <= 1 && y >= pod.y - 2 && y <= pod.y - 1));
         if (inside) pit.add(y * fm.width + x);
       }
     }

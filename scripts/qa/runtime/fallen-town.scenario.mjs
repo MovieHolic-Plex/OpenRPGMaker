@@ -14,7 +14,7 @@ const look = (id, note, x, y, dir = "down") => ({
 
 export default {
   id: "fallen-town",
-  projectFixture: process.env.RES_FIXTURE ?? "/tmp/fs-town23.json",
+  projectFixture: process.env.RES_FIXTURE ?? "/tmp/fs-town24.json",
   viewport: { width: vw, height: vh },
   beats: [
     { id: "title", note: "타이틀", ops: [
@@ -34,18 +34,18 @@ export default {
     { id: "procl-4", note: "포고 4 — 행진 시작", ops: [...closeDialogue()], shot: true },
     ...Array.from({ length: 10 }, (_, i) => ({ id: `march-${i + 1}`, note: "발렌 일행이 성문으로(화면이 행렬을 따라간다)", ops: [{ kind: "hold", dir: null, ms: 1400 }], shot: true })),
     { id: "march-done", note: "행진 끝", ops: [{ kind: "hold", dir: null, ms: 4000 }, ...closeDialogue()], shot: true },
-    look("v-bridge", "아치 돌다리 · 운하 · 천문대 탑", 22, 22),
+    look("v-bridge", "아치 돌다리 · 운하 · 천문대 탑", 21, 21),
     look("v-tower", "천문대 탑 문 앞", 24, 21, "up"),
     look("v-gate", "성문루 · 성문 광장", 48, 19, "up"),
     look("v-plaza", "옛 광장(우물·노점)", 42, 26),
-    look("v-ne-wall", "동북 성벽 · 꺾이는 원탑", 36, 18, "up"),
+    look("v-ne-wall", "동북 성벽 · 꺾이는 원탑", 35, 17, "up"),
     look("v-nw-wall", "서북 성벽 · 운하 북 수문", 15, 5, "up"),
     look("v-west", "서쪽 성벽 · 주택가", 4, 22),
-    look("v-sw", "남서 모서리 원탑 · 과수원", 8, 41),
+    look("v-sw", "남서 모서리 원탑 · 과수원", 6, 43),
     look("v-bridge2", "둘째 아치 다리", 16, 34),
-    look("v-south-gate", "남 성벽 운하 수문", 22, 41),
+    look("v-south-gate", "남 성벽 운하 수문", 21, 40),
     look("v-se", "남동 모서리 원탑 · 남쪽 거리", 47, 43),
-    look("v-east", "동쪽 성벽", 52, 30, "right"),
+    look("v-east", "동쪽 성벽", 53, 32, "right"),
     // 집 문은 부딪혀 들어간다 — 들어가면 문을 등지고(위), 아래로 걸어 나오면 문 앞 칸에 문을 등지고(아래) 선다.
     ...[["inn", 50, 31, "별빛 여관"], ["apothecary", 31, 31, "약방(사고팔기)"], ["bakery", 13, 11, "빵집 뒤채"], ["stargazer", 4, 20, "늙은 별지기의 집"], ["lisa", 32, 20, "리사네 집"]].flatMap(([id, x, y, note]) => [
       { id: `in-${id}`, note: `${note} — 문에 부딪혀 들어감`, ops: [

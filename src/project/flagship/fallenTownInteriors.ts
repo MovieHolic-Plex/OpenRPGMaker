@@ -6,6 +6,7 @@
  * 천문대·이리스). 나머지 문은 가짜 문이 되지 않게 「잠겨 있다」 한 줄을 단다.
  */
 import { runTool } from "@/editor/tools/toolRunner";
+import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { GameMap, Project } from "@/project/types";
 
 type Cell = { x: number; y: number };
@@ -17,12 +18,15 @@ type Home = {
   readonly door: Cell;
   readonly mapId: string;
   readonly name: string;
-  readonly program: string;
-  readonly style: "A" | "B" | "C" | "D";
+  /** build_hand_interior_room 의 layout — 집마다 쓰임에 맞춘 방 구성(rooms·seed·variant). 화면(30×17칸)을 거의 채우는 크기로 고른다. */
+  readonly layout: Record<string, unknown>;
   readonly bgm: string;
-  readonly extra?: readonly (readonly [string, number, number])[];
   readonly people: readonly {
     readonly id: string; readonly name: string; readonly query: string;
+    /** 이름 있는 사람마다 다른 칩(RTP 칩셋 텍스처·자리). */
+    readonly chip: readonly [string, number];
+    /** 계산대 뒤에 선다(앞 칸에 투명한 대리 이벤트를 두어 계산대 너머로 말을 건다). */
+    readonly behindCounter?: boolean;
     readonly lines: readonly string[]; readonly after: readonly string[];
     readonly commands?: readonly Record<string, unknown>[];
   }[];
@@ -55,32 +59,35 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
   const shopItems = (project.database.items ?? []).filter((i) => (i.price ?? 0) > 0 && i.type === "medicine").slice(0, 4).map((i) => i.id);
   const homes: Home[] = [
     {
-      door: { x: 50, y: 31 }, mapId: "fs_inn", name: "아스텔 · 별빛 여관", program: "tavern", style: "A", bgm: "cc0-bgm-rtp-rst-001",
-      extra: [["roundtable", 4, 10], ["chair E", 3, 10], ["chair W", 5, 10], ["roundtable", 7, 12], ["chair E", 6, 12], ["chair W", 8, 12], ["keg rack", 2, 8]],
+      door: { x: 50, y: 31 }, mapId: "fs_inn", name: "아스텔 · 별빛 여관", bgm: "cc0-bgm-rtp-rst-001",
+      // 선술집 홀 + 손님방 셋 + 부엌·저장고 — 「여관인데 침대가 없다」(VQA r5).
+      layout: { program: "inn", seed: 5, variant: 1, styleVariant: "A" },
       people: [
         {
-          id: "ev_fs_inn_keeper", name: "여관 주인 마르타", query: "젊은 여성",
+          id: "ev_fs_inn_keeper", name: "여관 주인 마르타", query: "젊은 여성", chip: ["tex_easyrpg_charset_people1", 5], behindCounter: true,
           lines: ["어서 와요, 카엘. 어젯밤 별똥별 봤어요? 손님들이 밤새 창가에 붙어 있었다니까.", "하룻밤 30골드. 푹 쉬고 가요."],
           after: ["그 아이… 이리스라고 했죠? 방은 넉넉해요. 교단 사람들 눈에 안 띄게 안쪽 방을 써요.", "하룻밤 30골드. 푹 쉬고 가요."],
           commands: [{ kind: "inn", price: 30 }],
         },
         {
-          id: "ev_fs_inn_bard", name: "떠돌이 악사", query: "젊은 남성",
+          id: "ev_fs_inn_bard", name: "떠돌이 악사", query: "젊은 남성", chip: ["tex_easyrpg_charset_actor1", 4],
           lines: ["별이 떨어진 밤의 노래를 짓는 중이오. 「동쪽 숲에 은빛 알이 내려앉았네」… 운이 안 맞는군."],
           after: ["은빛 머리 아가씨라… 노래 속 별의 딸 같구려. 걱정 마시오, 교단 앞에선 이 노래 안 부르리다."],
         },
         {
-          id: "ev_fs_inn_guest", name: "길손", query: "중년 남성 주민",
+          id: "ev_fs_inn_guest", name: "길손", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people4", 3],
           lines: ["동쪽 숲 위로 빛기둥이 솟는 걸 봤소. 새벽부터 교단 기사들이 성문을 지키더군."],
           after: ["심문관 발렌이 숲으로 갔다지. 별에서 떨어진 걸 찾는 거라고들 하던데… 찾으면 어쩔 셈인지."],
         },
       ],
     },
     {
-      door: { x: 31, y: 31 }, mapId: "fs_apothecary", name: "아스텔 · 약방", program: "pharmacy", style: "A", bgm: "cc0-bgm-rtp-cln-001",
+      door: { x: 31, y: 31 }, mapId: "fs_apothecary", name: "아스텔 · 약방", bgm: "cc0-bgm-rtp-cln-001",
+      // 가게 앞방 + 조제실 + 약초 저장고 + 서재 + 부엌 + 침실.
+      layout: { rooms: [{ kind: "pharmacy_shop", w: 16, h: 9 }, { kind: "alchemy", w: 7, h: 6 }, { kind: "bedroom" }, { kind: "storeroom" }, { kind: "kitchen" }, { kind: "study" }], seed: 55, variant: 1, styleVariant: "A" },
       people: [
         {
-          id: "ev_fs_apothecary", name: "약재상 오든", query: "노인 남성",
+          id: "ev_fs_apothecary", name: "약재상 오든", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 7], behindCounter: true,
           lines: ["회복약이랑 약초는 여기서 사고팔지. 숲에 간다고? 요즘 늑대가 유난히 사나워."],
           after: ["심문관이 약방까지 와서 「하늘에서 떨어진 것」을 본 사람 없냐고 묻고 갔어. 난 아무것도 못 봤다고 했지."],
           commands: [{ kind: "shop", shopType: "normal", itemIds: shopItems, allowSell: true }],
@@ -88,30 +95,36 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       ],
     },
     {
-      door: { x: 13, y: 11 }, mapId: "fs_bakery_home", name: "아스텔 · 빵집 뒤채", program: "bakery", style: "C", bgm: "cc0-bgm-rtp-caf-001",
+      door: { x: 13, y: 11 }, mapId: "fs_bakery_home", name: "아스텔 · 빵집 뒤채", bgm: "cc0-bgm-rtp-caf-001",
+      // 빵 진열 가게 + 빵 굽는 방 + 밀가루 저장고 + 부엌 + 부부 침실.
+      layout: { rooms: [{ kind: "bakery_shop", w: 14, h: 8 }, { kind: "bakery_oven", w: 8, h: 5 }, { kind: "storeroom" }, { kind: "bedroom" }, { kind: "kitchen" }], seed: 21, variant: 2, styleVariant: "C" },
       people: [
         {
-          id: "ev_fs_baker_husband", name: "빵집 아저씨 토마", query: "중년 남성 주민",
+          id: "ev_fs_baker_husband", name: "빵집 아저씨 토마", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people1", 4],
           lines: ["아내는 광장에 나가 있어요. 별이 떨어진 밤엔 반죽이 안 부푼다던데… 미신이겠죠.", "그래도 오늘 새벽 반죽은 정말 안 부풀었어요."],
           after: ["기계 아가씨가 빵을 먹나요? …먹는 흉내라도 낸다면 하나 싸 줄게요."],
         },
       ],
     },
     {
-      door: { x: 4, y: 20 }, mapId: "fs_stargazer_home", name: "아스텔 · 늙은 별지기의 집", program: "scholar", style: "D", bgm: "cc0-bgm-rtp-mys-002",
+      door: { x: 4, y: 20 }, mapId: "fs_stargazer_home", name: "아스텔 · 늙은 별지기의 집", bgm: "cc0-bgm-rtp-mys-002",
+      // 별 지도 서고 + 관측 일지 서재 + 침실 + 부엌 + 저장고.
+      layout: { rooms: [{ kind: "library", w: 16, h: 7 }, { kind: "study", w: 8, h: 7 }, { kind: "bedroom" }, { kind: "kitchen" }, { kind: "storeroom" }], seed: 9, variant: 2, styleVariant: "D" },
       people: [
         {
-          id: "ev_fs_old_stargazer", name: "늙은 별지기 오스본", query: "노인 남성",
+          id: "ev_fs_old_stargazer", name: "늙은 별지기 오스본", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 6],
           lines: ["나도 젊을 땐 저 천문대에서 별을 셌지. 하넬 녀석이 내 자리를 물려받았고.", "어젯밤 그 별은 궤도가 이상했어. 떨어진 게 아니라… 내려앉은 것처럼 보였지."],
           after: ["하늘을 건너는 배라… 하넬이 평생 찾던 답이 그 아이 안에 있겠구먼.", "교단은 하늘을 두려워해. 두려운 건 덮으려 들지. 조심하게, 카엘."],
         },
       ],
     },
     {
-      door: { x: 32, y: 20 }, mapId: "fs_lisa_home", name: "아스텔 · 리사네 집", program: "manor_1f", style: "A", bgm: "cc0-bgm-rtp-emo-002",
+      door: { x: 32, y: 20 }, mapId: "fs_lisa_home", name: "아스텔 · 리사네 집", bgm: "cc0-bgm-rtp-emo-002",
+      // 가족 집: 거실(벽난로) + 식당 + 부엌 + 침실 둘(부부·아이) + 식료품 광 + 씻는 방 + 헛간 광.
+      layout: { rooms: [{ kind: "living", w: 10, h: 7 }, { kind: "dining", w: 8, h: 7 }, { kind: "kitchen", w: 6, h: 6 }, { kind: "bedroom" }, { kind: "bedroom" }, { kind: "pantry" }, { kind: "bathroom" }, { kind: "storeroom" }], seed: 8, variant: 2, styleVariant: "A" },
       people: [
         {
-          id: "ev_fs_lisa", name: "리사", query: "젊은 여성",
+          id: "ev_fs_lisa", name: "리사", query: "젊은 여성", chip: ["tex_easyrpg_charset_people3", 3],
           lines: ["심문관 발렌이 왔다면서요. 교단은 그 별을 「불경한 하늘의 물건」이라 부른대요.", "우리 애가 밤새 창밖만 보더라고요. 별이 노래를 부른다나요."],
           after: ["그 은빛 머리 아가씨, 숨기는 게 좋을 거예요. 심문관은 한 번 본 얼굴은 잊지 않는대요."],
         },
@@ -123,7 +136,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
   const built: string[] = [];
   for (const home of homes) {
     if (!doors.some((d) => d.x === home.door.x && d.y === home.door.y)) throw new Error(`[fallen-town-interiors] 집 문이 아니다: ${home.name} (${home.door.x},${home.door.y})`);
-    const room = run(project, "build_hand_interior_room", { mapId: home.mapId, name: home.name, layout: { program: home.program, seed: home.door.x * 31 + home.door.y, styleVariant: home.style } });
+    const room = run(project, "build_hand_interior_room", { mapId: home.mapId, name: home.name, layout: home.layout });
     const exitsRaw = (room.data as { exits?: { x: number; y: number; width?: number }[] } | undefined)?.exits ?? [];
     const exit = exitsRaw[0];
     if (!exit) throw new Error(`[fallen-town-interiors] ${home.name}: 실내 출구가 없다`);
@@ -153,19 +166,14 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       if (overlay) for (let i = 0; i < overlay.length; i += 1) if (overlay[i] === 3964 || overlay[i] === 3965) overlay[i] = -1;
     }
     run(project, "set_map_properties", { mapId: home.mapId, bgm: { mode: "custom", resourceId: home.bgm } });
-    // 선술집 홀 북서쪽이 맨 마루로 비었다(VQA r3) — 원탁과 의자 두 벌을 더 놓는다(놓일 수 없으면 건너뛴다).
-    for (const [kit, x, y] of home.extra ?? []) {
-      const ctx = { project, assistantRun: false };
-      try {
-        const res = runTool(ctx, "stamp_object", { objectId: `kit:atlas_biome_interior/hand-interior:${kit}`, mapId: home.mapId, x, y }, { dryRun: false }) as Run;
-        if (res.ok) Object.assign(project, ctx.project);
-      } catch { /* 장식 — 못 놓으면 건너뛴다 */ }
-    }
+    // 부엌의 수도꼭지 개수대·쇠 레인지는 중세 집에 어울리지 않았고 세 집에 똑같이 깔렸다(VQA r5) — 물동이와 화덕·조리대로 바꾼다.
+    periodKitchen(project.maps[home.mapId]!);
     const interior = project.maps[home.mapId]!;
-    // 사람은 출구에서 걸어 닿는 방 안쪽 빈 칸에 — 출구·서로 3칸 이상 떨어지게.
+    // 사람은 출구에서 걸어 닿는 방 안쪽 빈 칸에 — 출구·서로 3칸 이상 떨어지게. 가게 주인은 계산대 뒤에.
     const taken: Cell[] = [exitCell];
     for (const [k, person] of home.people.entries()) {
-      const spot = farFreeCell(project, interior, exitCell, taken, k === 0 ? 0.45 : 0.8);
+      const counter = person.behindCounter ? counterSpot(project, interior, exitCell) : undefined;
+      const spot = counter?.behind ?? farFreeCell(project, interior, exitCell, taken, k === 0 ? 0.45 : 0.8);
       if (!spot) throw new Error(`[fallen-town-interiors] ${home.name}: ${person.name} 이 설 칸이 없다`);
       taken.push(spot);
       run(project, "place_npc", {
@@ -175,6 +183,30 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
           { name: `${person.name} · 이리스 합류 뒤`, conditions: after(ids.irisJoined), lines: person.after, commands: person.commands ?? [] },
         ],
       });
+      const live = project.maps[home.mapId]!;
+      const npc = live.events.find((e) => e.id === person.id);
+      if (!npc) continue;
+      // place_npc 는 가구 곁 칸을 피해 옆으로 비켜 세운다 — 계산대 뒤 자리는 일부러 고른 칸이라 그대로 둔다.
+      if (counter) { npc.x = counter.behind.x; npc.y = counter.behind.y; }
+      // 이름 있는 사람마다 다른 칩 — 같은 낱말(노인 남성·젊은 여성)로 고르면 두 집에 같은 얼굴이 섰다(VQA r5).
+      for (const page of npc.pages ?? []) {
+        if (!page.graphic?.sprite) continue;
+        const direction = counter ? "down" : page.graphic.direction ?? "down";
+        page.graphic = { ...page.graphic, sprite: { type: "bundled", id: person.chip[0] }, direction, pattern: charsetFrameIndex({ characterIndex: person.chip[1], direction, pattern: 1 }) };
+        if (counter) page.movement = { type: "fixed", speed: 3, frequency: 3 };
+      }
+      if (counter) {
+        // 계산대 칸에 투명한 대리 이벤트 — 손님이 계산대를 보고 말을 걸면 주인의 대사·가게가 열린다.
+        const proxy = JSON.parse(JSON.stringify(npc)) as typeof npc;
+        proxy.id = `${person.id}_counter`; proxy.name = `${person.name}(계산대)`; proxy.x = counter.counter.x; proxy.y = counter.counter.y;
+        for (const page of proxy.pages ?? []) {
+          page.id = `${page.id}_counter`;
+          page.graphic = { transparent: true } as typeof page.graphic;
+          page.priority = "same";
+          page.movement = { type: "fixed", speed: 3, frequency: 3 };
+        }
+        live.events.push(proxy);
+      }
     }
     built.push(home.mapId);
   }
@@ -238,4 +270,43 @@ function farFreeCell(project: Project, map: GameMap, origin: Cell, taken: readon
   if (!cells.length) return undefined;
   const c = cells[Math.min(cells.length - 1, Math.round(rank * (cells.length - 1)))]!;
   return { x: c.x, y: c.y };
+}
+
+/** 수도꼭지 개수대 → 물동이, 쇠 레인지(2×3) → 화덕 + 조리대(위 줄은 비운다). 칸 번호만 바꾼다(새 그림 없음). */
+function periodKitchen(map: GameMap): void {
+  const swap: Record<number, number> = { 3697: -1, 3698: 7142, 4125: -1, 4126: -1, 4127: 3936, 4128: 4064, 4140: 3948, 4152: 4065 };
+  for (const layer of [map.lowerTiles, map.lowerOverlayTiles, map.upperTiles, map.upperOverlayTiles]) {
+    if (!layer) continue;
+    for (let i = 0; i < layer.length; i += 1) { const to = swap[layer[i]!]; if (to !== undefined) layer[i] = to; }
+  }
+}
+
+/** 출구에서 걸어 닿는 계산대 칸 바로 북쪽(계산대 뒤)의 빈 칸 — 남쪽(손님 쪽)은 걸어 닿아야 한다. */
+function counterSpot(project: Project, map: GameMap, exit: Cell): { counter: Cell; behind: Cell } | undefined {
+  const ts = project.tilesets[map.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[]; passability: Record<number, { up?: boolean; down?: boolean; left?: boolean; right?: boolean } | undefined> };
+  const meta = ts.tileMeta ?? [];
+  const layers = [map.lowerTiles, map.lowerOverlayTiles, map.upperTiles, map.upperOverlayTiles];
+  const at = (x: number, y: number): number[] => layers.map((l) => l?.[y * map.width + x] ?? -1).filter((t) => t >= 0);
+  const passable = (x: number, y: number): boolean => x > 0 && y > 0 && x < map.width - 1 && y < map.height - 1
+    && at(x, y).every((t) => { const p = ts.passability[t]; return !p || p.up || p.down || p.left || p.right; })
+    && !map.events.some((e) => e.x === x && e.y === y);
+  const isCounter = (x: number, y: number): boolean => at(x, y).some((t) => /카운터|계산대|판매대/.test(meta[t]?.label ?? "") && !/조리대/.test(meta[t]?.label ?? ""));
+  const reach = new Set<string>([`${exit.x},${exit.y}`]);
+  const queue = [exit];
+  while (queue.length) {
+    const c = queue.shift()!;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const n = { x: c.x + dx, y: c.y + dy }, k = `${n.x},${n.y}`;
+      if (reach.has(k) || !passable(n.x, n.y)) continue;
+      reach.add(k); queue.push(n);
+    }
+  }
+  const options: { counter: Cell; behind: Cell; d: number }[] = [];
+  for (let y = 1; y < map.height - 2; y += 1) for (let x = 1; x < map.width - 1; x += 1) {
+    if (!isCounter(x, y) || !passable(x, y - 1) || !reach.has(`${x},${y + 1}`)) continue;
+    options.push({ counter: { x, y }, behind: { x, y: y - 1 }, d: Math.abs(x - exit.x) + Math.abs(y - exit.y) });
+  }
+  // 손님이 계산대 앞에 서 볼 수 있게 출구에서 가까운 계산대 — 뒤 칸이 손님 쪽과 이어져 있지 않은(진짜 계산대 뒤) 자리를 먼저.
+  options.sort((p, q) => Number(reach.has(`${p.behind.x},${p.behind.y}`)) - Number(reach.has(`${q.behind.x},${q.behind.y}`)) || p.d - q.d);
+  return options[0];
 }
