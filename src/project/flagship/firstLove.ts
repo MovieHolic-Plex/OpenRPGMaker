@@ -67,7 +67,7 @@ const BGM_OFFICE = "cc0-bgm-rtp-qui-001"; // 휘파람·어쿠스틱 셔플 — 
 const BGM_ROOF = "cc0-bgm-rtp-rad-002"; // 로파이 재즈합 — 노을 옥상(9.0)
 const BGM_NIGHT = "cc0-bgm-rtp-pon-001"; // 라운지 피아노·브러시 — 밤거리·편의점·야근(9.0)
 const BGM_MEMORY = "cc0-bgm-rtp-rst-001"; // 피아노·어쿠스틱 기타 발라드 — 회상·타이틀(9.0 / 8.0)
-const BGM_CONFESS = "cc0-bgm-rtp-flt-004"; // 피아노 독주가 패드로 차오른다 — 막차 고백(r4 「감정 피아노」, 귀 미판정; 옛 flt-022 8.0)
+const BGM_CONFESS = "cc0-bgm-rtp-mys-002"; // 잔향 깊은 피아노 독주에 현이 차오르고 잦아든다, 드럼 없음 — 막차 고백(r4 「감정 피아노」, 귀 미판정; 옛 flt-022 8.0. flt-004 는 41MB WAV 라 절정에서 로드가 늦어 뺐다)
 const BGM_END_B = "cc0-bgm-rtp-flt-022"; // 하프·현이 벅차오르는 작별 — 엔딩 B(9.0)
 const BGM_RAIN = "cc0-bgm-rtp-flt-017"; // 기타 아르페지오 위 애절한 바이올린, E단조 — 비 오는 밤 질주(r4, 귀 미판정; 옛 무음)
 const BGM_END_C = "cc0-bgm-rtp-mgv-004"; // 솔로 첼로 — 놓친 뒤의 후회, 엔딩 C(r4, 귀 미판정; 옛 rad-002 는 따뜻한 옥상 곡이라 반대 정서)
@@ -120,8 +120,8 @@ function doorFx(d: DoorSpec, open: boolean, ms = 600, block = true): Command[] {
 }
 const quiet = (resourceId: string, volume = 0.6): Command => ({ ...(playSe(resourceId) as object), volume } as unknown as Command);
 /** 카메라를 화면 칸(x, y)로 옮겼다가 / 주인공에게 되돌린다. */
-const panTo = (x: number, y: number, ms = 900): Command => m2("Camera Control", { mode: "panTo", target: "screen", x, y, durationMs: ms, wait: true, easing: "easeInOut" });
-const panBack = (ms = 900): Command => m2("Camera Control", { mode: "return", target: "player", durationMs: ms, wait: true, easing: "easeInOut" });
+const panTo = (x: number, y: number, ms = 900): Command => m2("Camera Control", { mode: "panTo", target: "screen", x, y, zoom: 1, durationMs: ms, wait: true, easing: "easeInOut" });
+const panBack = (ms = 900): Command => m2("Camera Control", { mode: "return", target: "player", x: 0, y: 0, zoom: 1, durationMs: ms, wait: true, easing: "easeInOut" });
 
 /**
  * NPC 퇴장 — 실제 걸을 수 있는 길로 승강기 앞까지 걸어가 단추를 누르고, 문이 열리면 타고, 문이 닫힌다(사용자 r4: 「승강기를 진짜로」).
