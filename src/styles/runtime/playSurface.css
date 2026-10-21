@@ -484,3 +484,9 @@
   0%, 100% { transform: scale(1); }
   40% { transform: scale(1.35); }
 }
+
+/* 위쪽 시스템 안내(장소·시간 자막 같은 한 줄 알림)는 대사 칸 높이를 통째로 쓰지 않고 내용 높이만 차지한다. */
+.player-layout .play-stage > .dialogue-overlay.position-top:has(.dialogue-box[data-dialogue-context="system"]) {
+  height: auto;
+  min-height: 0;
+}

@@ -57,9 +57,10 @@ export function think(...lines: string[]): Command[] {
   return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", body }))];
 }
 
-/** 장면 자막(시간·장소) — 위. 카메라가 주인공을 가운데 두므로 가운데 자막은 인물을 가린다(VQA 5차). */
+/** 장면 자막(시간·장소) — 위, 시스템 안내 창(가운데 정렬·한 번에 표시·내용 높이). 가운데 자막은 인물을 가린다(VQA 5차),
+ *  대사 칸 높이를 통째로 쓰는 위 상자는 한 줄에 비해 너무 크다(VQA 8차). */
 export function caption(...lines: string[]): Command[] {
-  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", body, position: "top" }))];
+  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", body, position: "top", context: "system" }))];
 }
 
 /** 이름 없는 목소리(방송·안내). */
