@@ -133,7 +133,11 @@ async function nextKey() {
     return { labels: rows.map((r) => r.querySelector(".emerald-movelearn-label")?.textContent ?? ""), cursor: rows.findIndex((r) => r.dataset.cursor === "true") };
   }).catch(() => null);
   if (!menu) return "Enter";
-  if (menu.labels.length === 2 && menu.labels[0] === "예") return menu.cursor === 0 ? "Enter" : "ArrowUp";
+  if (menu.labels.length === 2 && menu.labels[0] === "예") {
+    // 기본 커서가 「예」인지 보이는 증거 한 장(VQA R9-3).
+    if (!report.moveLearnShot) report.moveLearnShot = { cursor: menu.cursor, labels: menu.labels, file: await shot("move-learn-prompt") };
+    return menu.cursor === 0 ? "Enter" : "ArrowUp";
+  }
   const power = (name) => project.database.skills.find((s) => s.name === name)?.power ?? 0;
   let weakest = 0;
   menu.labels.forEach((name, i) => { if (power(name) < power(menu.labels[weakest])) weakest = i; });
