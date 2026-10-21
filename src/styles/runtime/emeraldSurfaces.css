@@ -95,6 +95,11 @@
   bottom: -12px;
 }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-actor-group .battle-actor::before { width: 232px; height: 48px; bottom: -12px; }
+/* 피격 번쩍임·hit 포즈 밝기는 노드(filter)가 아니라 그림에만 건다. 노드에 brightness 를 걸면 ::before 받침 타원까지 흰 덩어리로 날아간다
+   (관장 브램보어 전투 21b 프레임, VQA R7-3) — 받침은 몬스터 크기·피격 상태와 무관하게 늘 같은 지형색 타원이어야 한다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy, .battle-actor-group .battle-actor).battle-targeted { animation: none; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-enemy[data-battle-pose="hit"] { filter: none; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy, .battle-actor-group .battle-actor).battle-targeted :is(.battle-monster-image, .battle-monster-authored-back) { animation: oprn-target-flash 0.2s ease-out 2; }
 /* 지형 배경(emeraldBattleTerrain → data-emerald-terrain). 그림은 코드 도트 240×120(scripts/content/emerald/draw-battle-backgrounds.py),
    발판은 같은 팔레트의 CSS 타원. 사막 마을에서도 늘 연두 바닥이던 결함(2026-10-07 사용자 지적). */
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-field { background: var(--emerald-battle-bg) 0 0 / 480px 240px no-repeat, #e8f0d8; image-rendering: pixelated; }
@@ -491,6 +496,8 @@
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="summary"] .status-menu-detail-row { grid-column: 1 / -1; min-height: 25px; padding-top: 0; padding-bottom: 0; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="summary"] .status-menu-detail-row[data-summary-half="true"] { grid-column: auto; padding-right: 6px; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="summary"] :is(.status-menu-detail-label, .status-menu-detail-value) { font-size: 18px; }
+/* 반줄에 「레벨업 84 EXP」가 말줄임 없이 들어가도록 이 줄만 한 단계 작게. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="summary"] [data-testid="status-menu-monster-next-level"] :is(.status-menu-detail-label, .status-menu-detail-value) { font-size: 14px; }
 /* Bag: native left pocket/description and eight-row right list. */
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="bag"] .status-menu-header { display: none; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="bag"] .status-menu-detail { inset: 0; display: block; overflow: hidden; }
