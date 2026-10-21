@@ -120,8 +120,8 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       door: { x: 4, y: 20 }, mapId: "fs_stargazer_home", name: "아스텔 · 늙은 별지기의 집", bgm: "cc0-bgm-rtp-mys-002",
       // 별 지도 서고 + 관측 일지 서재 + 침실 + 부엌 + 저장고.
       layout: { rooms: [{ kind: "library", w: 16, h: 7 }, { kind: "study", w: 8, h: 7 }, { kind: "bedroom" }, { kind: "kitchen" }, { kind: "storeroom" }], seed: 9, variant: 2, styleVariant: "D" },
-      dress: [["desk 3x1", 2, 12], ["chair N", 3, 13], ["book pile", 6, 13], ["map rolls", 1, 13], ["orrery", 14, 13], ["desk 2x2", 21, 13],
-        ["book pile", 22, 10], ["owl perch", 29, 13], ["scroll rack", 13, 10], ["map rolls", 27, 15], ["globe", 24, 14]],
+      dress: [["desk 3x1", 2, 12], ["chair N", 3, 13], ["book pile", 6, 13], ["orrery", 14, 13], ["desk 2x2", 21, 13],
+        ["book pile", 22, 10], ["owl perch", 29, 13], ["scroll rack", 13, 10], ["globe", 24, 14]],
       people: [
         {
           id: "ev_fs_old_stargazer", name: "늙은 별지기 오스본", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 6],
