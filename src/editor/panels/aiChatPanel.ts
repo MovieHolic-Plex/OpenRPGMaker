@@ -3493,7 +3493,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    */
   const lockScrim = createAiLockScrim({
     onOpenSettings: () => openAiSettingsModal(),
-    onLockChange: (locked) => { panel?.classList.toggle("is-ai-locked", locked); },
+    onLockChange: (locked) => {
+      panel?.classList.toggle("is-ai-locked", locked);
+      // 막이 덮은 본문(스타터·대화 기록)은 키보드·낭독기로도 닿지 않게 한다. 막 자신과
+      // 컴포저(commandBar, body 밖)는 살려 둔다 — 쓰다가 로그인하면 이어 쓸 수 있어야 한다.
+      for (const child of body.children) {
+        if (child !== lockScrim.element && child instanceof HTMLElement) child.inert = locked;
+      }
+    },
   });
   body.append(lockScrim.element);
 
