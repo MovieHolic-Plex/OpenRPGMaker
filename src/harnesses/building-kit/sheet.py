@@ -23,6 +23,7 @@ sys.path.insert(0, HERE)
 
 from PIL import Image  # noqa: E402
 
+import beodeul  # noqa: E402
 import dot  # noqa: E402
 import review  # noqa: E402
 
@@ -78,7 +79,7 @@ _REF = {}
 
 def ref_image(kit_id):
     if kit_id not in _REF:
-        _REF[kit_id] = dot.kit(kit_id).img()
+        _REF[kit_id] = beodeul.kit(kit_id).img()
     return _REF[kit_id]
 
 def ref_for_item(theme, item_id, refs):
@@ -105,14 +106,14 @@ def street_scene(theme, buildings):
     body = sum(im.width // dot.T for im in ims) + gap * max(0, len(ims) - 1)
     w = gap + body + gap + 1
     h = max((im.height // dot.T for im in ims), default=4) + 3
-    cv = dot.ground_scene(w, h, theme, 'grass')
+    cv = beodeul.ground_scene(w, h, theme, 'grass')
     base_y = (h - 2) * dot.T
-    cv.paste(dot.ground_scene(w, 2, theme, 'cobble'), 0, base_y)
+    cv.paste(beodeul.ground_scene(w, 2, theme, 'cobble'), 0, base_y)
     x = gap
     for im in ims:
         cv.paste(dot.Cv.of(im), x * dot.T, base_y - im.height)
         x += im.width // dot.T + gap
-    cv.paste(dot.Cv.of(dot.actor1_frame(1, 0, 0)), x * dot.T - dot.T // 2, base_y - 24)
+    cv.paste(dot.Cv.of(beodeul.actor1_frame(1, 0, 0)), x * dot.T - dot.T // 2, base_y - 24)
     return cv
 
 def review_state(theme, rid, cands, keys):
@@ -209,7 +210,7 @@ def write(theme, rid, show_failed=False):
         H.append(f'<div class="card ref"><h3>{html_mod.escape(r.get("label", r["kit"]))}</h3>'
                  f'<div class="sub">kit {html_mod.escape(r["kit"])} · use {html_mod.escape(str(r.get("use", "")))}</div>'
                  f'<div class="imgs">{figure(im, 1, "1배")}{figure(im, 2, "2배")}</div></div>')
-    act = dot.actor1_frame(1, 0, 0)
+    act = beodeul.actor1_frame(1, 0, 0)
     H.append(f'<div class="card ref"><h3>Actor1 정면</h3><div class="sub">24×32 — 사람은 그리지 않는다</div>'
              f'<div class="imgs">{figure(act, 1, "1배")}{figure(act, 2, "2배")}</div></div></div>')
 

@@ -35,6 +35,7 @@ sys.path.insert(0, HERE)
 from PIL import Image  # noqa: E402
 
 import assemble as AS  # noqa: E402
+import beodeul  # noqa: E402
 import dot  # noqa: E402
 import gate as G  # noqa: E402
 
@@ -409,7 +410,7 @@ def cmd_validate(theme):
         for ex in b.get('extras') or []:
             if ex.get('part') not in ids:
                 errs.append(f'건물 {b["id"]}: extra {ex.get("part")} 가 items 에 없다')
-    kit_ids = {k['id'] for k in dot.tileset()['structureKits']}
+    kit_ids = {k['id'] for k in beodeul.tileset()['structureKits']}
     for ref in s.get('refs', []):
         if ref.get('kit') not in kit_ids:
             errs.append(f'기준 그림 {ref.get("kit")} 가 버들항 structureKits 에 없다')
@@ -447,9 +448,9 @@ def cmd_validate(theme):
         if re.search(r"['\"]#[0-9a-fA-F]{6}['\"]", src):
             errs.append(f'판 {rid}: 후보 코드에 hex 색이 있다(팔레트 램프만 쓴다)')
 
-    if not os.path.exists(dot.SHEET):
-        errs.append(f'버들항 공용 시트가 없다: {dot.SHEET}')
-    if not os.path.exists(dot.ACTOR):
+    if not os.path.exists(beodeul.SHEET):
+        errs.append(f'버들항 공용 시트가 없다: {beodeul.SHEET}')
+    if not os.path.exists(beodeul.ACTOR):
         errs.append('Actor1 이 없다')
     if os.path.exists(os.path.join(dot.theme_dir(theme), 'palette.json')):
         r = subprocess.run([sys.executable, os.path.join(HERE, 'palette.py'), '--theme', theme, '--check'], capture_output=True, text=True)

@@ -30,6 +30,7 @@ import numpy as np
 from PIL import Image, ImageDraw  # noqa: E402
 
 import assemble as AS  # noqa: E402
+import beodeul  # noqa: E402
 import dot  # noqa: E402
 
 REPO = dot.REPO
@@ -65,7 +66,7 @@ def ref_buildings():
         out = []
         for kid in REF_KITS:
             try:
-                out.append((kid, dot.kit(kid).img()))
+                out.append((kid, beodeul.kit(kid).img()))
             except SystemExit:
                 continue
         ref_buildings.cache = out
