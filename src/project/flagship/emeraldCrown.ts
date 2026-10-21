@@ -974,7 +974,8 @@ export function createEmeraldCrownFlagshipDemo(): FlagshipDemoBuildResult {
       priority: 100,
       presentation: {
         tone: "warm",
-        credits: "아스트라 호라이즌: 다우닝 시티와 여명의 날개\n등대가 다시 밝아지고, 여명의 날개 새떼가 군도를 건넌다.\n기획·도트·연출: OPRN Flagship Studio",
+        // 크레딧은 고유명사 단위로 직접 줄을 나눈다(자동 줄바꿈이 「다우닝 / 시티」 사이를 끊지 않게). 24px/s 로 약 25초 구른다(VQA R9-2).
+        credits: "아스트라 호라이즌\n다우닝 시티와\n여명의 날개\n\n등대가 다시 밝아지고,\n여명의 날개 새떼가\n군도를 건넌다.\n\n기획 · 도트 · 연출\nOPRN Flagship Studio\n\n음악\nOPRN 기본 BGM 라이브러리 (CC0)\n\n다우닝 시티를 함께 걸어 준\n모든 트레이너에게\n\n플레이해 주셔서 감사합니다",
       },
     },
   ];

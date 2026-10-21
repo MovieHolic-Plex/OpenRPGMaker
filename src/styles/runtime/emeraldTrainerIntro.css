@@ -11,6 +11,7 @@
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro::before,
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro::after {
   content: "";
+  box-sizing: border-box;
   position: absolute;
   width: 192px;
   height: 40px;
@@ -20,8 +21,8 @@
   border-radius: 50%;
   box-shadow: inset 0 4px var(--emerald-base-light, #d0e0a8);
 }
-.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro::before { left: 8px; top: 208px; }
-.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro::after { right: 12px; top: 182px; }
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro::before { left: 6px; top: 196px; width: 208px; }
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro::after { right: 29px; top: 111px; }
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro img {
   position: absolute;
   width: 128px;
@@ -30,8 +31,8 @@
   image-rendering: pixelated;
   z-index: 1;
 }
-.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro-hero { left: 48px; bottom: 0; }
-.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro-opponent { right: 48px; bottom: 30px; }
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro-hero { left: 46px; bottom: 10px; }
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro-opponent { right: 61px; bottom: 105px; }
 /* 볼 던지기 시트(프레임 64×64 × N): 한 칸 128×128 로 보여 주고 프레임 수만큼 계단으로 민다. 인물 그림 자리와 같다. */
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-throw {
   position: absolute;
@@ -43,8 +44,8 @@
   image-rendering: pixelated;
   z-index: 1;
 }
-.battle-scene[data-monster-style="emerald"] .emerald-trainer-throw-hero { left: 48px; bottom: 0; }
-.battle-scene[data-monster-style="emerald"] .emerald-trainer-throw-opponent { right: 48px; bottom: 30px; }
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-throw-hero { left: 46px; bottom: 10px; }
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-throw-opponent { right: 61px; bottom: 105px; }
 /* 1) 소개: 두 사람이 화면 밖에서 미끄러져 들어온다(오른쪽 상대, 왼쪽 나). */
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="intro"] .emerald-trainer-intro-hero { animation: emerald-trainer-arrive-left 560ms steps(14, end) both; }
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="intro"] .emerald-trainer-intro-opponent { animation: emerald-trainer-arrive-right 560ms steps(14, end) both; }
@@ -70,6 +71,9 @@
 /* 내가 내보낼 때(hero) 상대 쪽은 이미 나와 있다 — 애니메이션을 끈다. 끄지 않으면 foe 의 emerald-reveal 이 빠진 자리에
    02-intro-reveal 의 패널 페이드(지연 780ms)가 새로 돌아 「가라, …!」 동안 상대 HP 상자가 사라졌다 반투명으로 돌아왔다(2026-10-20 실측). */
 .battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro="hero"] :is(.battle-enemy-group, .battle-enemy-list-panel) { visibility: visible; animation: none; }
+/* 소개 장면은 자기 받침(::before/::after)을 갖고 있고 전투 받침과 좌표가 같다. 몬스터가 나오는 동안 전투 받침까지 켜 두면
+   크기가 변하는 몇 프레임 동안 두 타원이 겹쳐 보인다(VQA R9-1). 소개가 끝나 속성이 빠지면 같은 자리의 전투 받침이 이어받는다. */
+.battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro] :is(.battle-enemy, .battle-actor-group .battle-actor)::before { visibility: hidden; }
 @keyframes emerald-reveal { from { visibility: hidden; } to { visibility: visible; } }
 @keyframes emerald-trainer-throw { from { background-position-x: 0%; } to { background-position-x: 100%; } }
 @keyframes emerald-trainer-arrive-left { from { transform: translateX(-208px); } to { transform: translateX(0); } }
