@@ -209,6 +209,13 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   // 난간 너머는 하늘이다 — 같은 크기의 길·벤치·우체통(땅에서 본 거리)을 그리면 옥상이 1층 광장으로 읽힌다(VQA r10).
   // 난간 위 줄을 모두 비우고 맑은 낮 하늘 배경(빈 칸에도 보이기)을 깐다.
   for (let i = 0; i < ROOF_FENCE_Y * roofRoom.width; i++) clearMapCellForBackground(roofRoom, i);
+  // 덧댄 옆 열도 하늘로 — 검은 난간 벽을 4칸씩 늘리면 검은 띠로 읽힌다(VQA r10). 맨 아래 두 줄(건물 앞면)만 이어 붙인 그대로 둔다.
+  for (let y = ROOF_FENCE_Y; y < roofRoom.height - 2; y++) {
+    for (let k = 0; k < ROOF_PAD; k++) {
+      clearMapCellForBackground(roofRoom, y * roofRoom.width + k);
+      clearMapCellForBackground(roofRoom, y * roofRoom.width + roofRoom.width - 1 - k);
+    }
+  }
   roofRoom.background = mapBackgroundFromPanoramaSet("oprn-sky-day");
   const broadcast = project.maps[FL_MAP.broadcast]!;
 
