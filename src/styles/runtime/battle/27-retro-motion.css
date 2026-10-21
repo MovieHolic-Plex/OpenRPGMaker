@@ -173,8 +173,9 @@
   20%, 60% { translate: 0 -10px; }
 }
 @keyframes retro-enemy-windup {
-  0%, 30%, 60%, 100% { filter: none; }
-  15%, 45% { filter: brightness(0) invert(1); }
+  /* 흰 실루엣(brightness(0) invert(1))은 몸을 흰 덩어리로 뭉갰다(VQA r11) — 윤곽·명암이 남는 밝기 혼합 한 번만. */
+  0%, 24%, 100% { filter: none; }
+  12% { filter: brightness(1.5) saturate(0.75) contrast(0.95); }
 }
 @keyframes retro-enemy-strike {
   0%, 100% { translate: 0 0; }
@@ -444,10 +445,10 @@
   text-shadow: 2px 2px 0 #101020;
   white-space: nowrap;
 }
-.battle-scene[data-battle-motion="retro"] .battle-enemy.retro-skill-struck .battle-enemy-image { filter: brightness(0) invert(1); }
+.battle-scene[data-battle-motion="retro"] .battle-enemy.retro-skill-struck .battle-enemy-image { filter: brightness(1.5) saturate(0.75) contrast(0.95); }
 .battle-scene[data-battle-motion="retro"] .battle-actor.retro-skill-blessed .battle-actor-sprite { filter: brightness(1.7) saturate(0.6); }
 /* 몬스터 스킬(retroMonsterSkills): 편이 반대다 — 맞는 쪽은 아군, 축복받는 쪽은 몬스터 편. */
-.battle-scene[data-battle-motion="retro"] .battle-actor.retro-skill-struck .battle-actor-sprite { filter: brightness(0) invert(1); }
+.battle-scene[data-battle-motion="retro"] .battle-actor.retro-skill-struck .battle-actor-sprite { filter: brightness(1.5) saturate(0.75) contrast(0.95); }
 .battle-scene[data-battle-motion="retro"] .battle-enemy.retro-skill-blessed .battle-enemy-image { filter: brightness(1.6) saturate(0.7); }
 /* 몬스터 스킬 재생기가 translate 를 소유한다. 비트 키프레임(retro-enemy-windup·strike)을 끄고 파고들 때 아군 위에 그린다. */
 .battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-retro-class-skill],
