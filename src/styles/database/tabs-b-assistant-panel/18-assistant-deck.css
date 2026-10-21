@@ -78,7 +78,8 @@
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail { cursor: default; flex-wrap: nowrap; gap: 8px; padding: 16px 18px; border-bottom: 0; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-who { flex: 1; min-width: 0; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-name { font-size: 14px; }
-.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-state { max-width: 90px; }
+/* 상태 칸은 보이는 글자만큼만 차지한다 — 유휴 상태 글자는 숨는데(display:none) flex 1 이면 빈 칸이 맵 이름 폭을 빼앗았다(UI 감사 09-ai-10). */
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-state { flex: 0 1 auto; max-width: 90px; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-spacer { display: none; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-actions { width: auto; justify-content: flex-end; gap: 4px; flex-shrink: 0; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck > .ai-chat-body {
@@ -138,7 +139,7 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
 
 /* Sidebar header and overflow retain the original controls and keyboard behavior. */
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-state:empty { display: none; }
-.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-ctx { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 130px; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-ctx { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 130px; }
 .ai-chat-secondary-actions { display: grid; gap: 3px; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border-subtle); }
 .ai-deck .ai-chat-secondary-actions > button { display: flex; align-items: center; justify-content: flex-start; gap: 10px; width: 100%; min-height: 34px; padding: 7px 10px; border: 0; border-radius: var(--radius-s); background: transparent; color: var(--text-2); font: 12px var(--font-ui); }
 .ai-deck .ai-chat-secondary-actions > button:hover { background: var(--bg-inset); color: var(--text-1); }
