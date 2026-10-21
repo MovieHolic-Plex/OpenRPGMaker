@@ -237,7 +237,7 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
   ]));
   add(street,
     door("ev_fl_office_door", a.street.officeDoor, [stageAtLeast(V_STAGE, S.STREET)],
-      [transfer(FL_MAP.office, a.office.elevatorOut.x, a.office.elevatorOut.y, "up")], think("…"), "down"),
+      [transfer(FL_MAP.office, a.office.elevatorOut.x, a.office.elevatorOut.y, "down")], think("…"), "down"),
     door("ev_fl_konbini_am", a.street.konbiniDoor, [stageIs(V_STAGE, 999)], [], think("편의점은 나중에. 첫날부터 지각할 순 없다."), "down"),
     door("ev_fl_subway_am", a.street.subway, [stageIs(V_STAGE, 999)], [], think("방금 내렸잖아. 회사는 저쪽이다."), "down"),
   );
@@ -258,6 +258,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   const named = o as typeof o & { meetLead?: Cell; meetJihu?: Cell };
   const leadMeetStop = named.meetLead ?? spot(project, FL_MAP.office, { x: o.elevatorOut.x, y: o.elevatorOut.y - 2 }, taken);
   const jihuMeetStop = named.meetJihu ?? spot(project, FL_MAP.office, { x: leadMeetStop.x + 1, y: leadMeetStop.y }, taken);
+  const minhoMeetStop = spot(project, FL_MAP.office, { x: leadMeetStop.x - 1, y: leadMeetStop.y }, taken);
   // 둘 다 자기 자리에서 걸어 나온다(빈 바닥에서 솟아나지 않는다).
   const leadSpot = o.leadDesk;
   const jihuMeet = jihuSeat;
@@ -337,13 +338,15 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     ...say("lead", "base", "윤서하 씨? 오정민이에요. 프로덕트팀 팀장."),
     ...say("seoha", "happy", "안녕하세요! 오늘부터 출근하는 윤서하입니다. 잘 부탁드립니다."),
     ...say("lead", "happy", "긴장 풀어요. 우리 팀 다섯 명이에요. 한 명은 휴가 중이고, 한 명은 벌써 탕비실에서 간식 먹고 있고."),
-    ...emote("ev_fl_minho", "sweat"),
+    // 민호는 탕비실에서 걸어 나와 인사한다(VQA2: 「탕비실 안에서 자기소개」).
+    walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoSpot, minhoMeetStop, [o.elevatorOut, leadMeetStop]),
+    face("ev_fl_minho", "down"),
     ...say("minho", "happy", "아, 들켰다. 차민호예요! 지난주에 들어온 백엔드 신입. 동기라고 해도 되죠?"),
     ...say("seoha", "happy", "네, 그럼요. 반가워요."),
     { kind: "changeFriendship", npcKey: "lead", delta: 60 } as Command,
     { kind: "changeFriendship", npcKey: "minho", delta: 60 } as Command,
     ...say("lead", "base", "그리고 서하 씨 사수. 지후 씨, 잠깐 와 볼래요?"),
-    walkRoute(project, FL_MAP.office, "ev_fl_jihu_meet", jihuMeet, jihuMeetStop, [o.elevatorOut, leadMeetStop]),
+    walkRoute(project, FL_MAP.office, "ev_fl_jihu_meet", jihuMeet, jihuMeetStop, [o.elevatorOut, leadMeetStop, minhoMeetStop]),
     face("ev_fl_jihu_meet", "down"),
     stopBgm(),
     ...emote("player", "exclamation", 1300),
@@ -373,6 +376,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     ...say("lead", "base", "서하 씨 자리는 지후 씨 맞은편이에요. 오늘 숙제는 금요일 발표 자료 읽어 두기."),
     ...say("lead", "base", "금요일 오후 세 시에 ‘소리결’ 박 본부장님 앞에서 리뉴얼 시안 발표가 있어요. 신입한테 미안하지만, 첫 주부터 바빠요."),
     ...say("minho", "happy", "서하 씨, 이따 탕비실로 와요! 커피 머신 쓰는 법 알려 줄게요."),
+    walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoMeetStop, minhoSpot, [o.elevatorOut], false),
     // 만남 자리의 둘은 그 자리에서 사라지지 않고 각자 자리까지 걸어간다 — 자리의 지후·팀장 페이지가 같은 칸에서 이어받는다.
     walkRoute(project, FL_MAP.office, "ev_fl_jihu_meet", jihuMeetStop, jihuSeat, [o.elevatorOut], false),
     walkRoute(project, FL_MAP.office, "ev_fl_lead", leadMeetStop, o.leadDesk, [o.elevatorOut], false),
@@ -432,6 +436,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     ...think("편하다고. 10년 만에 만나서 처음 하는 부탁이, 그거라니."),
     choices([
       { text: "“왜 모르는 척해요? 저 기억하잖아요.”", then: [
+        setSw("sw_fl_admitted", true),
         ...say("seoha", "sad", "왜 모르는 척해요? 저 기억 못 하는 거, 아니잖아요."),
         ...say("jihu", "surprised", "…"),
         ...say("jihu", "sad", "기억해요. 그래서 그래요.", "첫 출근 날이잖아요. 나 때문에 망치게 하고 싶지 않았어요."),
@@ -526,7 +531,10 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
         ...think("그 사람은 계산대 쪽으로 반 걸음 물러섰다. 그냥 나가려는 걸까."),
       ]),
       ...say("jihu", "base", "…아직 그거 마셔요?"),
-      ...say("seoha", "base", "선임님은 기억 못 하시는 줄 알았는데요."),
+      ifCond(swOn("sw_fl_admitted"),
+        say("seoha", "base", "회사에선 모르는 사이라면서요. 그런 건 기억하시네요."),
+        say("seoha", "base", "선임님은 기억 못 하시는 줄 알았는데요."),
+      ),
       ...emote("ev_fl_jihu_kon", "sweat"),
       ...say("jihu", "sad", "…"),
       choices([
@@ -711,7 +719,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     playSe(SE_MAIL),
     ...emote("player", "exclamation"),
     ...think("메일. ‘소리결’ 박 본부장님."),
-    ...voice("메일", "‘윤서하 님, 보내 주신 시안이 지난주 버전인 것 같습니다. 내일 오전 임원 보고에 써야 해서요.’"),
+    ...voice("메일", "‘윤서하 님, 보내 주신 시안이 수정 전 버전인 것 같습니다. 내일 오전 임원 보고에 써야 해서요.’"),
     shake(400),
     ...say("seoha", "surprised", "…어? 잠깐만. 최종본 보낸 거, 아니었어?"),
     ...think("폴더 이름이 ‘최종’, ‘최종_진짜’, ‘최종_진짜_수정’.", "내가 보낸 건 ‘최종’이었다."),
@@ -838,13 +846,13 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     ...emote("player", "exclamation"),
     ...say("seoha", "surprised", "…네?"),
     ...say("lead", "base", "다음 주부터 부산 지사예요. 아버님 곁에 있고 싶다고 몇 달 전에 신청했었죠."),
-    ...say("minho", "base", "회식이 송별회 겸인데… 선임님은 오늘 막차로 서울역 가서, 부산 가는 첫차 탄대요. 짐은 아침에 벌써 다 부치셨고요."),
+    ...say("minho", "base", "회식이 송별회 겸인데… 선임님은 오늘 밤 서울역에서 부산 가는 마지막 KTX 탄대요. 한결역에서 9시 40분 열차를 타야 맞춘다고요. 짐은 아침에 벌써 다 부치셨고요."),
     ...jihuOut.end,
     ...say("lead", "sad", "인사는… 따로 못 했나 보네요."),
     ...think("또.", "또, 인사도 없이."),
     ifCond({ kind: "variable", variableId: V_JIHU, op: ">=", value: TRUE_END_AT } as never, [
       playSe(SE_PAPER),
-      ...think("…책상 모서리에 노란 포스트잇이 붙어 있었다. 낯익은, 비스듬한 글씨.", "‘21:40 서울역행 막차. 인사는 거기서 할게요. 이번엔 진짜로.’"),
+      ...think("…책상 모서리에 노란 포스트잇이 붙어 있었다. 낯익은, 비스듬한 글씨.", "‘21:40, 한결역 서울역행. 인사는 거기서 할게요. 이번엔 진짜로.’"),
     ]),
     ifCond(swOn(SW_TOLD_MINHO),
       say("minho", "base", "서하 씨. …가요. 이번엔 붙잡아요. 회식은 내가 알아서 할게요."),
@@ -884,7 +892,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   add(street, scene("ev_fl_run", { x: 2, y: 1 }, S.FRI, [
     ...fadeIn(500),
     { kind: "setWeather", weather: "rain", intensity: 0.6, transitionMs: 800 } as Command,
-    ...caption("오후 9시 21분. 막차까지 19분."),
+    ...caption("오후 9시 21분. 9시 40분 열차까지 19분."),
     ...think("뛰자.", "(지하철 입구로!)"),
     stage(S.RUN),
   ]));
@@ -894,7 +902,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   const meet = { x: jihuSpot.x - 1, y: jihuSpot.y };
   add(plat, scene("ev_fl_platform", { x: 1, y: 1 }, S.RUN, [
     { kind: "setWeather", weather: "none", transitionMs: 0 } as Command,
-    ...voice("안내 방송", "‘이번 열차는 서울역행, 마지막 열차입니다. 열차가 곧 도착하오니—’"),
+    ...voice("안내 방송", "‘이번 열차는 서울역행입니다. 열차가 곧 도착하오니—’"),
     walk("@player", route(project, FL_MAP.platformPm, p.arrive, meet)),
     face("@player", "right"),
     face("ev_fl_p_jihu", "left"),
@@ -965,13 +973,31 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   ]));
 }
 
+/** 에필로그를 검은 화면에 글만 늘어놓지 않는다(VQA2) — 앱에 든 연애 그림을 화면 가득 깔고 그 위로 아래 대사창. */
+const epiloguePicture = (resourceId: string, opacity = 255) => ({ kind: "picture", action: "show", pictureId: "fl_epilogue", resourceId, x: -4, y: -3, scale: 29, opacity, durationMs: 1400 });
+const ENDING_CREDITS = [
+  "『첫사랑』",
+  "",
+  "이야기 · 연출   OPRN Flagship Studio",
+  "인물   OPRN 공용 흉상 · 걷기 칩",
+  "장소   jp_city · modern_city 손 도트",
+  "음악   CC0 BGM 카탈로그",
+  "         wks-001 · rad-002 · pon-001 · rst-001 · flt-022 · sea-001",
+  "효과음   CC0",
+  "",
+  "만든 도구   OPRN Studio",
+  "",
+  "끝까지 함께해 주셔서 고맙습니다.",
+].join("\n");
+
 function defineEndings(project: Project): void {
   execTool(project, "define_ending", {
     id: END_A,
     name: "다시, 첫사랑",
     conditions: [],
-    presentation: { musicResourceId: BGM_HAPPY, tone: "warm", kicker: "엔딩 A · 두 사람의 이야기" },
+    presentation: { musicResourceId: BGM_HAPPY, tone: "warm", kicker: "엔딩 A · 두 사람의 이야기", credits: ENDING_CREDITS, backgroundResourceId: "oprn-title-romance-office" },
     epilogue: [
+      epiloguePicture("oprn-title-romance-office"),
       { kind: "say", text: "석 달 뒤, 금요일 밤." },
       { kind: "say", text: "‘하루끝’ 오늘의 늦은 답장 — 바나나우유 님께." },
       { kind: "say", text: "‘다음 주 금요일엔 내가 서울로 갈게요. 급식 줄은 이제 안 서도 돼요.’" },
@@ -983,8 +1009,9 @@ function defineEndings(project: Project): void {
     id: END_B,
     name: "늦은 답장",
     conditions: [],
-    presentation: { musicResourceId: BGM_CONFESS, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", backgroundResourceId: "oprn-title-romance-school" },
+    presentation: { musicResourceId: BGM_CONFESS, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", credits: ENDING_CREDITS, backgroundResourceId: "oprn-title-romance-school" },
     epilogue: [
+      epiloguePicture("oprn-title-romance-school", 200),
       { kind: "say", text: "열차가 떠나고, 승강장에 혼자 남았다. 연두색 편지지 뒤에, 낯익은 글씨." },
       { kind: "say", text: "‘바나나우유 님께. 그 금요일 방송, 이제야 읽어요.’" },
       { kind: "say", text: "‘나도 금요일마다 사연함을 제일 먼저 열었어요. 당신 글씨가 있는지 보려고.’" },
@@ -997,11 +1024,12 @@ function defineEndings(project: Project): void {
     id: END_C,
     name: "우리 팀의 봄",
     conditions: [],
-    presentation: { musicResourceId: BGM_ROOF, tone: "warm", kicker: "엔딩 C · 첫 주의 끝" },
+    presentation: { musicResourceId: BGM_ROOF, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-title-romance-cafe" },
     epilogue: [
+      epiloguePicture("oprn-title-romance-cafe", 170),
       { kind: "say", text: "회식 자리. 민호 씨가 건배사를 세 번째 하고 있다." },
-      { kind: "say", text: "오후 9시 41분, 막차가 떠난 시각. ‘하루끝’ 알림이 울렸다." },
-      { kind: "say", text: "늦은 답장이 도착했습니다 — 오늘 발표한, 내가 그린 버튼으로." },
+      { kind: "say", text: "오후 9시 41분, 그 열차가 떠난 시각. 밤 열 시, ‘하루끝’ 오늘의 사연이 울렸다." },
+      { kind: "say", text: "보낸 사람: 익명. 사연 제목은, ‘바나나우유 님께’." },
       { kind: "say", text: "‘10년 전 금요일의 사연, 이제야 답장해요. 이번에도 인사는 못 했네요.’" },
       { kind: "say", speaker: "서하", text: "…답장만 하고 가 버리면, 어떡해요." },
       { kind: "say", text: "다음 주 금요일엔 내가 먼저 사연을 보내야지. 부산까지 닿게." },
@@ -1063,7 +1091,7 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
     [SW_KNOWS_WHY, "지후가 떠난 이유를 들음"], [SW_COFFEE, "옥상 캔커피"], [SW_MILK, "바나나우유 두 개"], [SW_STORY, "발표에서 내 이야기를 함"],
     ["sw_fl_jihu_in_konbini", "편의점에 지후 등장"], ["sw_fl_flashback", "회상 중"], ["sw_fl_jihu_gone", "회상: 지후 퇴장"],
     ["sw_fl_lead_left", "수요일: 팀장 퇴근"], ["sw_fl_minho_left", "수요일: 민호 퇴근"], ["sw_fl_closed_note", "수첩을 덮어 둠"],
-    ["sw_fl_client_left", "금요일: 본부장 퇴장"], ["sw_fl_jihu_left", "금요일: 지후 퇴장"],
+    ["sw_fl_client_left", "금요일: 본부장 퇴장"], ["sw_fl_jihu_left", "금요일: 지후 퇴장"], ["sw_fl_admitted", "옥상: 지후가 기억한다고 말함"],
   ] as const) ensureSw(id, name);
 
   defineEndings(project);
