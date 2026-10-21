@@ -123,6 +123,12 @@ export async function runCheckpoints({ scenario, set, checkpoints, parallel = 2,
             ? { ...(size ? { viewport: size } : {}), recordVideo: { dir: resolve(REPO_ROOT, videoDir, checkpoint.id), ...(size ? { size } : {}) } }
             : {});
           const page = await context.newPage();
+          // 영상 시작 시각 — actors.jsonl 의 t(ms) 와 빼면 영상 안 위치(초)가 된다. 움직임 구간을 잘라 낼 때 쓴다.
+          if (videoDir) {
+            const dir = resolve(REPO_ROOT, videoDir, checkpoint.id);
+            await mkdir(dir, { recursive: true });
+            await writeFile(join(dir, "start.json"), JSON.stringify({ startedAt: Date.now() }));
+          }
           const report = await runRuntimeQa(page, checkpointScenario, {
             serverUrl,
             outDir,
