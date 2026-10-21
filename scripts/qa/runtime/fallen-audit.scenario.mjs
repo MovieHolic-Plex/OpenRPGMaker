@@ -18,6 +18,13 @@ const choose = (index) => [
   { kind: "hold", dir: null, ms: 400 },
 ];
 // 대사 타자 효과가 다 찍힌 뒤에 찍는다 — 바로 찍으면 「석판: 「」「불길이」처럼 한두 글자만 보였다(가혹 검수 r3).
+// 대화 칸 두 칸 아래에서 걸어 올라와 선다 — 순간이동만 하면 동료가 직전 방향(옆)으로 깔려 기둥 위·대화창 아래에 섰다.
+// 실제 플레이어처럼 다가오면 동료는 지나온 칸(뒤)에 선다(가혹 검수 r10 z46·z53).
+const approachUp = (mapId, x, y) => [
+  { kind: "face", dir: "up" }, { kind: "teleport", mapId, x, y: y + 2 }, { kind: "hold", dir: null, ms: 400 },
+  { kind: "evalToFile", fn: `() => { window.__oprnDebug.playerRoute([{ kind: "move", dir: "up" }, { kind: "move", dir: "up" }]); return true; }`, out: "/tmp/fs-audit-approach.json" },
+  { kind: "hold", dir: null, ms: 1200 },
+];
 const talk = (dir) => [{ kind: "face", dir }, { kind: "action" }, { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 8000 }, { kind: "hold", dir: null, ms: 1800 }];
 /** 출입구 칸 바로 앞에 서서 그쪽으로 걸어 밟는다. */
 const stepInto = (mapId, x, y, dir) => [
@@ -97,7 +104,7 @@ export default {
     ], shot: true },
     { id: "to-observatory", note: "천문대 문을 밟는다", ops: [...stepInto("fs_hub", 26, 21, "up")], shot: true },
     { id: "hanel-ask", note: "하넬의 부탁 → 선택지", ops: [
-      { kind: "teleport", mapId: "fs_observatory", x: 17, y: 17 }, { kind: "hold", dir: null, ms: 400 },
+      ...approachUp("fs_observatory", 17, 17),
       ...talk("up"),
       { kind: "pressUntil", key: "Enter", testid: "runtime-choices", state: "present", maxPresses: 20, timeoutMs: 900 },
     ], shot: true },
@@ -134,7 +141,7 @@ export default {
     { id: "back-to-hub", note: "숲 → 광장", ops: [...stepInto("fs_forest", 15, 38, "down")], shot: true },
     { id: "plaza-after", note: "광장 — 발렌 일행이 떠났는가", ops: [{ kind: "teleport", mapId: "fs_hub", x: 36, y: 27 }, { kind: "hold", dir: null, ms: 1200 }], shot: true },
     { id: "back-to-obs", note: "천문대", ops: [...stepInto("fs_hub", 26, 21, "up")], shot: false },
-    { id: "hanel-hint", note: "하넬 — 다음 갈 곳", ops: [{ kind: "teleport", mapId: "fs_observatory", x: 17, y: 17 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
+    { id: "hanel-hint", note: "하넬 — 다음 갈 곳", ops: [...approachUp("fs_observatory", 17, 17), ...talk("up")], shot: true },
     { id: "hanel-hint-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "hatch", note: "바닥 뚜껑문 → 화로의 방", ops: [...stepInto("fs_observatory", 19, 20, "up"), ...closeDialogue(10), { kind: "hold", dir: null, ms: 1200 }], shot: true },
     { id: "tablet", note: "단서 석판", ops: [{ kind: "teleport", mapId: "fs_vault_gate", x: 16, y: 13 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
@@ -148,7 +155,7 @@ export default {
     { id: "to-vault", note: "지하로", ops: [{ kind: "hold", dir: "up", ms: 1200 }, { kind: "hold", dir: null, ms: 1500 }, dumpState("vault")], shot: true },
     { id: "save-crystal", note: "세이브 결정", ops: [{ kind: "teleport", mapId: "fs_vault", x: 33, y: 20 }, { kind: "hold", dir: null, ms: 400 }, ...talk("right")], shot: true },
     { id: "save-crystal-close", note: "", ops: [...closeDialogue()], shot: false },
-    { id: "valen", note: "발렌", ops: [...closeDialogue(),{ kind: "teleport", mapId: "fs_vault", x: 25, y: 25 }, { kind: "hold", dir: null, ms: 600 }, ...talk("up")], shot: true },
+    { id: "valen", note: "발렌", ops: [...closeDialogue(), ...approachUp("fs_vault", 25, 25), ...talk("up")], shot: true },
     { id: "battle", note: "결전 시작", ops: [
       { kind: "pressUntil", key: "Enter", testid: "battle-scene", state: "present", maxPresses: 20, timeoutMs: 900 },
       { kind: "hold", dir: null, ms: 2500 },
@@ -166,7 +173,7 @@ export default {
       ...stepInto("fs_vault", 30, 57, "up"),
       ...stepInto("fs_vault_gate", 16, 16, "down"),
     ], shot: true },
-    { id: "report", note: "하넬에게 보고", ops: [...closeDialogue(),{ kind: "teleport", mapId: "fs_observatory", x: 17, y: 17 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
+    { id: "report", note: "하넬에게 보고", ops: [...closeDialogue(), ...approachUp("fs_observatory", 17, 17), ...talk("up")], shot: true },
     { id: "ending", note: "엔딩까지", ops: [
       { kind: "repeatUntil", testid: "ending-screen", state: "present", maxRounds: 40, ops: [{ kind: "key", key: "Enter" }, { kind: "hold", dir: null, ms: 400 }] },
       { kind: "hold", dir: null, ms: 2500 },
