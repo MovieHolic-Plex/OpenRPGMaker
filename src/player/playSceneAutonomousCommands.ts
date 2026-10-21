@@ -1,6 +1,6 @@
 import { mapCharacterSizeFactor } from "@/project/characterScale";
 import { fallHop, jumpHop } from "@/player/characterHop";
-import { invalidateEventIdIndexPass } from "@/project/runtimeEventState";
+import { invalidateEventIdIndexPass, moveRuntimeEventPosition } from "@/project/runtimeEventState";
 import { mapTileSize } from "@/project/tileGeometry";
 import type { Dir } from "@/player/input";
 import { npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
@@ -133,22 +133,22 @@ export function executeInstantCommand(
       );
       return true;
     case "turn":
-      turnNpc(target, command.dir);
+      turnNpc(routeContext, target, command.dir);
       return true;
     case "turnRelative":
-      turnNpc(target, relativeTurn(target.mover.facing, command.turn, () => nextSessionRandom(routeContext.scene.session, "movement")));
+      turnNpc(routeContext, target, relativeTurn(target.mover.facing, command.turn, () => nextSessionRandom(routeContext.scene.session, "movement")));
       return true;
     case "turnRandom":
-      turnNpc(target, randomDirection(() => nextSessionRandom(routeContext.scene.session, "movement")));
+      turnNpc(routeContext, target, randomDirection(() => nextSessionRandom(routeContext.scene.session, "movement")));
       return true;
     case "turnTowardPlayer": {
       const dir = playerRelativeDirection(routeContext.scene, routeContext.eventId, true);
-      if (dir) turnNpc(target, dir);
+      if (dir) turnNpc(routeContext, target, dir);
       return true;
     }
     case "turnAwayFromPlayer": {
       const dir = playerRelativeDirection(routeContext.scene, routeContext.eventId, false);
-      if (dir) turnNpc(target, dir);
+      if (dir) turnNpc(routeContext, target, dir);
       return true;
     }
     case "setDirectionFix":
@@ -217,8 +217,12 @@ function playerRelativeMove(context: NpcRouteCommandContext, towardPlayer: boole
   return dir ? { ...commandDelta(dir), face: dir } : null;
 }
 
-function turnNpc(target: NpcCommandTarget, dir: Dir): void {
+function turnNpc(routeContext: NpcRouteCommandContext, target: NpcCommandTarget, dir: Dir): void {
   const frameDir = applyFacing(target.mover, dir);
+  // 돈 방향을 런타임 위치에도 남긴다. 경로가 끝나 무버가 지워진 뒤 표면 갱신은 그 위치의 방향(없으면 페이지 그림 방향)으로
+  // 인물을 다시 그린다 — 예전에는 걸음만 방향을 남겨, 경로 끝의 「돌아보기」가 다음 갱신에서 마지막 걸음 방향으로 되돌아갔다
+  // (2026-10-22 r3 party-enter-cutscene: 두 동료가 「서로 바라보며」 대사하는 장면에서 둘 다 등을 보였다).
+  moveRuntimeEventPosition(routeContext.scene.eventPositions, routeContext.eventId, target.view.x, target.view.y, frameDir);
   setNpcIdleFrame(
     target.sprite,
     target.baseFrame,
