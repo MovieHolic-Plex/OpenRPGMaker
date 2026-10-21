@@ -100,6 +100,12 @@ for (const [mapId, map] of Object.entries(project.maps)) {
     const touches = (ev.pages ?? []).some((p) => (p.trigger as { kind?: string })?.kind === "playerTouch");
     // 막힌 문 그림 칸은 부딪혀 들어간다 — 걸어서 닿는 칸이 그 문 칸에 바로 붙어 있으면 된다(대각선 아님).
     const bump = !isPassable(project, map, ev.x, ev.y) && Object.values(DELTA).some((d) => seen.has(key({ x: ev.x + d.x, y: ev.y + d.y })));
+    // 막힌 칸의 문은 엔진이 「같은 층 + 몸 있음」 이벤트만 부딪힘으로 발동한다 — 아니면 탐침은 통과해도 실제 플레이는 갇힌다(r2 VQA 블로커).
+    if (bump) for (const p of ev.pages ?? []) {
+      if ((p.trigger as { kind?: string })?.kind !== "playerTouch") continue;
+      const solid = (p as { priority?: string }).priority === "same" && (p as { overlapForbidden?: boolean }).overlapForbidden === true;
+      if (!solid) fail("transfer", `${mapId}/${ev.id} 막힌 문 칸 ${key(ev)} 의 페이지 ${(p as { id: string }).id} 가 같은 층·몸 있음이 아니다 — 부딪혀도 안 열린다`);
+    }
     if (touches && !seen.has(key(ev)) && !bump && ev.x > 1) fail("transfer", `${mapId}/${ev.id} 문 칸 ${key(ev)} 에 걸어서 닿지 못한다(벽·허공 문)`);
   }
 }
