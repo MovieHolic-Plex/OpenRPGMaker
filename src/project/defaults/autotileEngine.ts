@@ -1,5 +1,6 @@
 import type { AutotileGroup, AutotileNeighborhood, GameMap } from "../types";
 import type { TileLayerNo } from "../mapLayers";
+import { composeTreesAround } from "./treeComposer";
 
 // 범용 오토타일(지형 자동 연결) 엔진 — 순수 로직.
 // 이웃 연결 상태를 비트마스크로 계산하고 variantMap 조회로 배치 타일을 결정한다.
@@ -22,6 +23,8 @@ export interface AutotileMapView {
   readonly width: number;
   readonly height: number;
   readonly lowerTiles: number[];
+  /** 이 뷰가 빌려 온 맵(층 뷰). 나무 composer 그룹이 2~4층까지 고치려면 필요하다(autotileLayerView 가 채운다). */
+  readonly composeTarget?: GameMap;
 }
 
 /**
@@ -33,7 +36,7 @@ export interface AutotileMapView {
  */
 export function autotileLayerView(map: GameMap, layer: TileLayerNo): AutotileMapView {
   const { width, height } = map;
-  if (layer === 1) return { width, height, lowerTiles: map.lowerTiles };
+  if (layer === 1) return { width, height, lowerTiles: map.lowerTiles, composeTarget: map };
   if (layer === 3) return { width, height, lowerTiles: map.upperTiles };
   const tiles = layer === 2 ? map.lowerOverlayTiles : map.upperOverlayTiles;
   return { width, height, lowerTiles: tiles ?? new Array<number>(width * height).fill(-1) };
@@ -196,7 +199,26 @@ export function autotileGroupLayerView(
 }
 
 // 비트마스크에 매핑된 변형 타일. 없으면 undefined.
-export function autotileVariantForMask(group: AutotileGroup, mask: number): number | undefined {
+/** 8방 마스크 정규화 — 대각 비트는 맞닿은 두 변이 다 이어졌을 때만 남긴다(47 키). */
+export function canonicalAutotileMask8(mask: number): number {
+  const { N, E, S, W, NE, SE, SW, NW } = AUTOTILE_DIR;
+  let c = mask & (N | E | S | W);
+  if ((mask & NE) && (mask & N) && (mask & E)) c |= NE;
+  if ((mask & SE) && (mask & S) && (mask & E)) c |= SE;
+  if ((mask & SW) && (mask & S) && (mask & W)) c |= SW;
+  if ((mask & NW) && (mask & N) && (mask & W)) c |= NW;
+  return c;
+}
+
+/** 마스크 → 변형 칸. 칸 좌표(x,y)를 주면 위치 위상 변형(phaseVariants)을 먼저 본다. */
+export function autotileVariantForMask(group: AutotileGroup, mask: number, x?: number, y?: number): number | undefined {
+  const phase = group.phaseVariants;
+  if (phase && x !== undefined && y !== undefined && phase.w > 0 && phase.h > 0) {
+    const px = ((x % phase.w) + phase.w) % phase.w, py = ((y % phase.h) + phase.h) % phase.h;
+    const table = phase.maps[py * phase.w + px];
+    const hit = table?.[String(mask)] ?? table?.[String(canonicalAutotileMask8(mask))];
+    if (typeof hit === "number") return hit;
+  }
   const value = group.variantMap[String(mask)];
   return typeof value === "number" ? value : undefined;
 }
@@ -217,7 +239,7 @@ export function autotileVariantForCell(map: AutotileMapView, group: AutotileGrou
   if (!members.has(current)) return undefined;
   const connect = connectSet(group);
   const mask = autotileNeighborMask(map, x, y, (tile) => connect.has(tile), group.neighborhood ?? 4, group.edgeConnects === true || group.outsideConnects === true);
-  return autotileVariantForMask(group, mask);
+  return autotileVariantForMask(group, mask, x, y);
 }
 
 // 편집된 이전/다음 타일이 이 그룹의 재계산을 유발하는지 판정한다.
@@ -256,11 +278,21 @@ export function shapeAutotileGroupAround(
       const current = tileAt(map, cx, cy);
       if (typeof current !== "number" || !members.has(current)) continue;
       const mask = autotileNeighborMask(map, cx, cy, isConnected, neighborhood, edgeConnects);
-      const variant = autotileVariantForMask(group, mask);
+      const variant = autotileVariantForMask(group, mask, cx, cy);
       if (variant === full && interior.has(current)) continue;
       if (typeof variant === "number") map.lowerTiles[cy * map.width + cx] = variant;
     }
   }
+  // 나무 composer 숲 바닥(jp 숲 r4): 칠하거나 지운 둘레의 나무 그림을 2~4층에 다시 짠다. 1층 그룹일 때만, 맵 전체를 알 때만.
+  if (group.composer && (group.layer ?? "lower") === "lower") {
+    const full = map.composeTarget ?? (isFullMap(map) ? map : undefined);
+    if (full) composeTreesAround(full, group, points, canWrite);
+  }
+}
+
+function isFullMap(map: AutotileMapView): map is AutotileMapView & GameMap {
+  const m = map as Partial<GameMap>;
+  return Array.isArray(m.upperTiles) && m.lowerTiles === map.lowerTiles;
 }
 
 /**

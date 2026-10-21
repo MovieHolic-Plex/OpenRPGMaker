@@ -1,0 +1,754 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0768f574a0ef6c5a454e487142e9767d30c1ae591df079c1a743fffd692cc6cc",
+ "width": 112,
+ "height": 144,
+ "kind": "structure",
+ "name": "不動産屋 · 셔터 내림",
+ "label": "jp_city/jp-bldg-shop-realestate-shut",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 3 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 3 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 13,
+  "darkV5": 38,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 40
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top parapet rim of upper floor",
+      "rows": "14-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper floor window display with plants",
+      "rows": "17-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle floor wall with windows",
+      "rows": "49-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "projecting cornice ledge band",
+      "rows": "79-82",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green sign board",
+      "rows": "84-104",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "closed shutter",
+      "rows": "106-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "potted plants in upper window",
+      "rows": "29-42",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 128,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This is a flat front elevation of a shop. The silhouette is a constant 82 px wide from row 14 to row 143. Rows 14-16 are only a 1-row outline plus a 2-row light rim, with no front-edge line, eave shadow, roof slope or ellipse above a face. Rows 79-82 are a slightly wider cornice strip drawn face-on, with no edge line or shadow. The upper floor, middle floor, sign and shutter are all vertical faces. The building has no visible roof or horizontal top surface, so only a rim of about 2 rows reads as top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a flat-fronted modern shop with a sign, windows and a shutter, so it shares little structure with the reference houses, but the kind is still a building. Measured facts: 9 visible tones per tile against 12 and 10 for the references, which is only slightly lower. Near-flat coverage is 12% against 0% for both references, so there are real flat fills: the green sign panel, the window glass and the plain grey wall bands. The dark edge pixels are 0% neutral, so the outlines are tinted (grey-blue and dark green) and read as dark material tones rather than sticker black. The shutter has horizontal slat lines and a few speckle dots, and the wall has some brick/panel grain, but each material ramp has only about 3-4 steps against 5-6 in the references. There are no per-tile highlights or grain like the roof tile scallops and stone shading in the references. It is cleanly drawn but flatter and more graphic than the references, with large uniform areas on the sign and shutter. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 15553
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top parapet / upper-window frame rim",
+      "rows": "14-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cornice ledge between the upper storey and the signboard",
+      "rows": "79-83",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green signboard with 住まい lettering",
+      "rows": "84-104",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lowered shutter",
+      "rows": "108-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plants in the upper window",
+      "rows": "29-43",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 130,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole building is a flat, face-on storefront elevation: upper-floor window display, wall with windows, cornice, signboard and roll-down shutter. There is no roof slope, awning plane or other horizontal surface seen from above. The silhouette is a plain rectangle, 82 px wide from row 14 to row 143, with a slight 84 px bump at rows 79-82. The light bands at rows 15-16 and 47-48 are 2-row rims or sills. The cornice at rows 79-83 is a front-facing strip with no edge line or shadow below it that would indicate a top surface. Nothing shows depth, so it reads as front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a modern shopfront with a flat facade, not a roofed house, so it matches the kind only loosely. Its measured tones per tile (9) are close to the references (10-12), and the near-flat coverage is 12% against 0% for both references. The shutter has grey horizontal slats, a few grain dots and little per-slat highlighting. The green sign panel is a large, nearly flat colour block with only the lettering on it. The upper wall panels and the window frames use 2-3 grey steps. The outline is a dark grey-blue and tinted (0% neutral), but it is applied as a uniform frame around every panel, which reads as a sticker-like border rather than material-tone edges. The facade lacks the per-element shading, speckle and clustered grain seen in the references, such as per-tile roof highlights, plaster speckle and stones shaded one by one. It is cleanly drawn, but its shading is shallow compared with Beodeul's 5-6 steps per material.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15525
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top parapet band / frame of upper floor",
+      "rows": "14-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper floor window box showing interior (vertical face)",
+      "rows": "17-50",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small awning-like bars over the windows (front-facing strips)",
+      "rows": "53-57",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brick wall with windows (vertical face)",
+      "rows": "51-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cornice ledge between floors (front-facing strip)",
+      "rows": "79-82",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green sign panel (vertical face)",
+      "rows": "83-105",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rolled-down shutter (vertical face)",
+      "rows": "111-139",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "potted plants inside the upper window",
+      "rows": "29-42",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 128,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The building is drawn as a flat front elevation. Silhouette width is constant at 82 px from row 14 to 143, apart from a 84 px cornice at rows 79-82. The top edge at rows 15-16 is a 2-row white rim, framing the façade rather than a roof plane. There is no sloped roof, no eave shadow, and no front-edge line followed by a front face. The cornice at rows 79-82 and the small bars over the windows at rows 53-57 are front-facing strips with no top surface. The sign, shutter, brick wall and windows are all vertical faces. The front face is large, but no horizontal top surface is visible anywhere."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a modern shop front with a flat facade, a green sign and a shutter, whereas the references are tiled-roof houses. It is the same kind (a whole building) but a different structure. Measured facts: 9 visible tones per tile against 12 and 10 for the references, so it is only slightly lower. Near-flat coverage is 12% against 0% for both references, so there are flat areas: the green sign panel and the grey wall bands are broad single-tone fills with little grain. Shading on the main materials is shallow, about 3 steps on the wall, the sign and the shutter, against 5-6 steps on the reference roofs and walls. The shutter has horizontal slat lines and a few dots, and the window and upper room have some detail, so texture is present but modest. The dark edge pixels are 0% neutral, so the outlines carry a tint rather than being near-black. The result is a clean, graphic look that is flatter and more sticker-like than the hand-shaded reference tile and plaster surfaces. A careful artist would likely not accept it next to the references without more grain and shading steps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19312
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper storey top frame / parapet rim",
+      "rows": "14-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper storey shop window with interior",
+      "rows": "18-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "potted plants inside upper window",
+      "rows": "29-43",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle wall with windows and awnings strips",
+      "rows": "47-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "projecting ledge / cornice strip above sign",
+      "rows": "79-82",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green sign board",
+      "rows": "83-108",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rolled-down shutter",
+      "rows": "109-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 129,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole building is a flat front elevation. The top is a 1-row dark outline at row 14 plus a 2-row light rim at rows 15-16, with no roof slope, eave shadow or front-edge line, so it is a rim only. The 4-row ledge at rows 79-82 is a front-facing cornice strip with no edge line or shadow. The window box, sign and shutter are all vertical faces. The only horizontal-looking contents are the plants in the upper window, which are decor. No top surface is visible anywhere."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a modern shopfront with a grey concrete frame, a green sign and a shutter. It is clean and tinted, but flatter than the Beodeul references. Measured: 9 visible tones per tile against 12 and 10 for the references, which is close, but near-flat coverage is 12% against 0% for both references. By eye, the green sign panel and the grey wall bands are large, mostly uniform fills with only 2-3 steps and little grain. The shutter has regular horizontal slats but few highlight dots. The window and the top interior have a few detail dots (plant, AC unit). Outline pixels are 0% neutral, so they lean toward the neighbouring material tone (dark grey-blue, dark green) and are used selectively. The result is cleaner and flatter than the reference tiles, which carry per-tile scallop highlights, plaster speckle and stone shading. The flat fills in the sign and the wall bands keep it from matching the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14132
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:45.414Z",
+ "cells": {
+  "16": [
+   "02745bdc9d5553fa",
+   "065ae96911df1bd3",
+   "15ff741a25f5d016",
+   "2d3d1602fd09fdb6",
+   "3811cd203eca161f",
+   "393216d67cd081dc",
+   "394061f44da2e408",
+   "3b4f2b48ac15f4e2",
+   "3b80b32092ffce9d",
+   "3ea017194a76f188",
+   "411f0874e1a26c5a",
+   "4129dc88d5c9e5a7",
+   "46136102e9965242",
+   "48d00680500d9e8f",
+   "51c87748a720d3be",
+   "5a7d765e1b6bddf3",
+   "63527f7986c1ce48",
+   "69784d1653640d24",
+   "73229ef75b1efabf",
+   "7659572ae3e9b024",
+   "791295c059191c0d",
+   "7cf33c5b8504e024",
+   "8dc38d000fe4a935",
+   "9b1c50a9b8478c60",
+   "a52632f0520be8fc",
+   "a7a6f78ea1ad145e",
+   "abf50df9ef6ecac3",
+   "b6be9ab6b765cb43",
+   "bba300085d6d34d8",
+   "bc2b63ad4cf77235",
+   "c99cfa27aa46df49",
+   "cd6e2a283f7d5a87",
+   "ce64bd8d68514f99",
+   "d055c8ade5c77c0f",
+   "d27e4e299d5f5956",
+   "d2858689e8568aea",
+   "d2d350947752f7cd",
+   "d87ba16dc44ed638",
+   "dc45ed4b1ddeb680",
+   "df5fc40a7607061d",
+   "e061be58ca3fbee0",
+   "e09a2ef87e141c8b",
+   "e45507617ba66880",
+   "e8c4ba619c5e858b",
+   "ea3b4feea51305dd",
+   "ef431832cbaab5bc",
+   "f361a7d0f0db2381",
+   "f49278aa0458edd5",
+   "fc07cb04cdccc900"
+  ],
+  "24": [
+   "0162c90bed0c6694",
+   "0a110b4e277ea0a3",
+   "0a18ea7e4f5821bf",
+   "0c4a2adfb5829c52",
+   "0e4c9fef7e78808e",
+   "19d518ad6305cc40",
+   "1b59accb2044fc96",
+   "1cdee2a015615014",
+   "1d7081eafa82ab82",
+   "2f3df594296506f1",
+   "2fec4d9298e1a792",
+   "3249320b1aceb92c",
+   "33458a963d166503",
+   "38c9dcf89ff161a2",
+   "3d8bdb0503382e1d",
+   "3ebf80ef25785dbc",
+   "4140177174005f66",
+   "434b92591d19027f",
+   "453d26d0b250c858",
+   "4687e538e78cc0a6",
+   "47851a1818bc2fbe",
+   "4823d08838ff4bf3",
+   "49b35f55bc1f2186",
+   "4f97d63c3103fd60",
+   "4fb861384e8f8e95",
+   "542efa933ce1b2ce",
+   "55cc09100ed25e1b",
+   "589bcda97db83c11",
+   "616e4d31dbeda750",
+   "62afe25774a69163",
+   "64d5ccdfe55a2fe7",
+   "6a78cd94c4d2b48c",
+   "6ecac4d7a44eada0",
+   "7044fa9455672b25",
+   "72f5fab6164c5efd",
+   "75c7db982ea81298",
+   "763aeb8b9bb2c138",
+   "764ab08eac16c3fa",
+   "78e1eb9f6562e19e",
+   "8437930152bf9c31",
+   "8467e45ac026aa31",
+   "853c23cc44c1257b",
+   "873bf9efd6a7642b",
+   "8b13f9ddd7cb59fc",
+   "8bb56ec5d28421ed",
+   "8cc0b3d55d83bd55",
+   "90a95b3bca3735e1",
+   "91284247d76ffa78",
+   "954e22e7d32abcef",
+   "97b7a82f953c371c",
+   "98a4c04d1c56ac66",
+   "9ade6ed2beffad4f",
+   "9c3a4f5ed6a58c6f",
+   "a010c4c2f5a62501",
+   "a1e7720d6d39bbb9",
+   "a33c522a1adbb04f",
+   "a4c12de6876b93de",
+   "a55ad629187579e5",
+   "a8d15fbbcfb70caf",
+   "aae06fbce125b4f1",
+   "ab3d2cf7100c50b2",
+   "ac9797b652e82cff",
+   "acfe775e0d79c5b3",
+   "add68c6c698777d0",
+   "af2b8735eecec99c",
+   "b071b8b1a8c26a5b",
+   "b166ca16f51f362d",
+   "be177571371ed1fd",
+   "c17a6ce32fd62eb1",
+   "c536c0922e8a31b7",
+   "cdeab4555a62238a",
+   "cee78f3017ceee71",
+   "d092f36c3b1d340e",
+   "d87a3a231f48a28a",
+   "db4ef650c205c0a1",
+   "e384fd3d1db79146",
+   "e47c1c57df911bfb",
+   "e5eaf2ee7c033866",
+   "f014d0737f7e543a",
+   "f89a04d7397efa1a",
+   "f908b251f071edbe",
+   "f9f0e75b6911e0e0",
+   "fc5b65eb90532a6a",
+   "fe74b4868f1c7c53"
+  ],
+  "32": [
+   "02730c5c3ea32414",
+   "047a145bd8eece37",
+   "04c4fea5412ec30c",
+   "05d464313d20f6ad",
+   "08e2a140d8165757",
+   "0a8e4194e82ae528",
+   "129fc73d4c11984c",
+   "12e43657ec92e2aa",
+   "130369990fb5cd46",
+   "13503ad01c11dcd1",
+   "175db0c4e2590136",
+   "17841efe497165e5",
+   "18a12b6634168ce5",
+   "19e3cb75a3b014b7",
+   "1a9dad22a7d6ecfa",
+   "1bc5c3b5356a73e3",
+   "1e657c6c982cf889",
+   "2649b18f3ac40013",
+   "26e1603fb7e4ca0c",
+   "2831e85f968981a1",
+   "2cb3406eb6f07ca8",
+   "2d70c837b521f9a7",
+   "2ef2851c7dbfd2ec",
+   "2ffd125d684db2ed",
+   "30a6ed691c38c9eb",
+   "33640ad4afab8168",
+   "347e4c1f5faa2f82",
+   "34aae5b6a7c01f71",
+   "376e37c38866ec0c",
+   "3b22d8aa02651313",
+   "3c8bf42240bd642e",
+   "3da4887d12929bf9",
+   "3e48b2ecbf98adcc",
+   "43ecd364b22ab4f5",
+   "4dd0378ddec141bf",
+   "52b3f066fd0a65f0",
+   "535cbcc00a2f96af",
+   "551448d4d8ab3d6e",
+   "59c1ac0755ffdfad",
+   "5eb9a2c2fe138b35",
+   "63b72f3ab8029d9b",
+   "6472a7b0d83998b2",
+   "65ba56e76ccc3f73",
+   "6657d3f28f9df59b",
+   "6defb97380ccdf5d",
+   "76720443f78f252e",
+   "77c987a90aa603df",
+   "795f23dceb471bbc",
+   "7c88a3f705feb97e",
+   "7dc6db34c5489022",
+   "7f59cb4d1aaeb0d4",
+   "7fa59a0541aa2295",
+   "80188aca22061c48",
+   "820d8308d575afa2",
+   "83d9b49612be25bc",
+   "88687baf19c96e9d",
+   "8ab8a9618d9b3c6f",
+   "8f333d5f84284f34",
+   "91069fd8ca25d231",
+   "937d412df8f303de",
+   "93d0eebc5a70683e",
+   "962fba3c334bfad2",
+   "96d98aff7eda0574",
+   "9d859727a19a9746",
+   "a1a5f551a4f3bb7f",
+   "a32c069883adfc8a",
+   "a36ef56faf52b65b",
+   "a3a82c111295f557",
+   "a3c04c661813be1e",
+   "a71b11ec039105ef",
+   "a96a45cab1d38ab5",
+   "ab3d2c482a1affb5",
+   "af9f1c89140b77af",
+   "afe76ce1ef4cc988",
+   "b0dc66394b167571",
+   "b4bf5ac9c0008a05",
+   "b4e7ab494fd484c6",
+   "b54ff8a6e56f62bd",
+   "b8cf5d29e3cee1a2",
+   "bbc8f07f30b5eb03",
+   "bc4365185c0a6e02",
+   "c3e5f42743fccf6c",
+   "c4e8924d9c9dbb8b",
+   "c58308f5ee871160",
+   "c86449d2dfbe25aa",
+   "ca61dfe05cc1da48",
+   "cb07ad476d7bc673",
+   "d0949a168ef4738e",
+   "d1d1462006d8d288",
+   "d48ef56b18b6bd7e",
+   "d944974e4acb338f",
+   "de8ef34ec21e4f8d",
+   "e18fcc6b558082d5",
+   "e3c23e08bc8e86c2",
+   "e5b24ff6ee2e3402",
+   "e7ade4f75ccc051e",
+   "ea3d6be75c9ccf66",
+   "ef820f210a9cbdb4",
+   "efd3d47725645c0c",
+   "f06b149832f76a54",
+   "f0758931cf94c912",
+   "f0cc7afd69e519e0",
+   "f0f512a43e493943",
+   "f0f8e72f0434a5b7",
+   "f29312ad7deb2190",
+   "f3ab7be0d6a6b856",
+   "f61d4fe697192c5a",
+   "f737f1bd1d1802a9",
+   "f7be23f2ddfd07c9",
+   "fa355b53070d69be",
+   "fab1fe86643039c7"
+  ],
+  "48": [
+   "1034b1b947b77d3d",
+   "2408e7459267911b",
+   "29e9219305c102c2",
+   "2e358e4b87eba45e",
+   "2f2e44bf27a43721",
+   "3107464be54dfdc2",
+   "3bcf1931d1063333",
+   "3bd1a1d1d3a73953",
+   "3df8ce411d4b14fb",
+   "4c70a3512f4b79b0",
+   "585d1871dbb18942",
+   "5d27f6cdbdd356c6",
+   "66bd404c898a8b66",
+   "672bf0cf4ee30e56",
+   "6f84c44ed6f23f37",
+   "7bbe52ca51b6ae3f",
+   "7cfa4353bf62634d",
+   "7e30719a4c870e24",
+   "8169052361fb711f",
+   "94e2180052f2c696",
+   "9b3b872fdff219ae",
+   "c143fa9929549121",
+   "c2eb039a1e0ff120",
+   "d7468965f6411782",
+   "f8babfb03c417545",
+   "fba9032e2d7c8d06",
+   "ff10fd0652d65bc9"
+  ]
+ }
+}

@@ -1,0 +1,1127 @@
+{
+ "schema": "jp-vqa/1",
+ "batch": "jp-forest-r1",
+ "round": 1,
+ "judge": "claude-opus-5-5 (medium, fresh independent subagent per group per round; saw neither the author's opinion nor earlier verdicts)",
+ "date": "2026-10-21",
+ "overall": "FAIL",
+ "criteria": {
+  "path": "criteria.md",
+  "sha256": "61571cf0d8916cafa1346da6581f589175582c58dc00997904c08527f02f250a",
+  "text": "# jp_city new-pixel adversarial VQA — fixed criteria (do not change between rounds)\n\nYou are an adversarial visual QA judge for 16px pixel art in the `jp_city` chipset of a top-down JRPG drawn in **3/4 view**\n(camera south of the subject, looking down about 45 degrees). Your job is to find real defects. Do not be polite.\nYou have not seen any earlier verdicts and you get nobody's opinion about these pictures.\n\nEach candidate board shows every candidate at **1x** (true game size) and **4x**. Each `ref-*.png` board shows\n**original jp_city pieces of the same kind** (already in the shipped chipset) at 1x and 4x. The originals are the quality bar.\nJudge every candidate against those originals, at both 1x and 4x. Use the Read tool to open every image you are given.\n\nA candidate FAILS if any of these is clearly true:\n\n1. **View (3/4).** A standing object (building, vehicle, tree trunk/crown base, prop) must show its top surfaces seen from above\n   (roof planes, flat roofs with a visible top plane, car roof/hood/trunk tops, foreshortened) **and** its south front face.\n   Pure side or front elevation with no visible top plane, or pure plan view with almost no front face, fails.\n   Vehicles facing east/west show their side profile as the south face plus the roof/hood tops above it. Ground tiles must read as\n   flat ground seen from above.\n2. **Shading craft vs the originals.** Main materials have clearly fewer value steps than the same material in the originals,\n   or large single-colour areas (about 5x5 px or more) with no texture where the originals carry texture, or muddy/blurred/\n   noise-like clusters where the originals have clean readable pixel clusters.\n3. **Outline.** Outlines are neutral black/grey wrapped around everything where the originals use dark tones of the adjacent material.\n4. **Palette/coherence.** Colours or contrast clash with the originals so that the piece would look foreign next to them in one map.\n5. **Tiling (ground cells and scenes only).** Visible tile-grid artefacts in a composed map: square/rectangular blocks snapped to the\n   16px grid, hard straight seams, obviously repeated stamps, or a hard ruler-straight boundary between the new ground and the\n   neighbouring original ground that the originals do not have. Ground autotile cells are variants: judge the cell sheet for pixel\n   quality and the **scenes** for how they actually look when laid.\n6. **Readability at 1x.** At game size it does not read as what it is named.\n\nRelative rule (fixed): a trait that the originals share to the same degree is not a defect of the candidate.\nTree sprites are never seen alone in game; they overlap in forests — use the forest scenes for crown/trunk/ground judgement as well.\n\nOutput: JSON only, written to the file you are told, schema:\n```\n{\"schema\":\"jp-vqa/1\",\"judge\":\"claude-opus-5-5\",\"group\":\"<group>\",\"overall\":\"PASS|FAIL\",\n \"items\":[{\"label\":\"<label exactly as printed on the board>\",\"verdict\":\"PASS|FAIL\",\"criteria\":[<numbers violated>],\n           \"reasons\":\"<concrete: where (rows/area), what, compared with which original>\",\"fix\":\"<what to change if FAIL>\"}]}\n```\n`overall` is PASS only if every item is PASS. Every label on your boards must appear exactly once.\n"
+ },
+ "verdictFiles": [
+  "r1/verdict-trees.json",
+  "r1/verdict-ground.json",
+  "r1/verdict-buildings-a.json",
+  "r1/verdict-buildings-b.json",
+  "r1/verdict-vehicles.json"
+ ],
+ "boards": [
+  "r1/cand-buildings-01.png",
+  "r1/cand-buildings-02.png",
+  "r1/cand-buildings-03.png",
+  "r1/cand-buildings-04.png",
+  "r1/cand-buildings-05.png",
+  "r1/cand-buildings-06.png",
+  "r1/cand-buildings-07.png",
+  "r1/cand-buildings-08.png",
+  "r1/cand-buildings-09.png",
+  "r1/cand-buildings-10.png",
+  "r1/cand-buildings-11.png",
+  "r1/cand-buildings-12.png",
+  "r1/cand-buildings-13.png",
+  "r1/cand-buildings-14.png",
+  "r1/cand-buildings-15.png",
+  "r1/cand-buildings-16.png",
+  "r1/cand-buildings-17.png",
+  "r1/cand-buildings-18.png",
+  "r1/cand-buildings-19.png",
+  "r1/cand-ground-cells-apron-1x.png",
+  "r1/cand-ground-cells-apron.png",
+  "r1/cand-ground-cells-floor-1x.png",
+  "r1/cand-ground-cells-floor.png",
+  "r1/cand-trees-01.png",
+  "r1/cand-trees-02.png",
+  "r1/cand-trees-03.png",
+  "r1/cand-trees-04.png",
+  "r1/cand-trees-05.png",
+  "r1/cand-vehicles-01.png",
+  "r1/cand-vehicles-02.png",
+  "r1/cand-vehicles-03.png",
+  "r1/ref-buildings.png",
+  "r1/ref-ground.png",
+  "r1/ref-trees.png",
+  "r1/ref-vehicles.png",
+  "r1/scene-ex-1x.png",
+  "r1/scene-ex-4x.png",
+  "r1/scene-grove-1x.png",
+  "r1/scene-grove-4x.png",
+  "r1/scene-noground-1x.png",
+  "r1/scene-noground-4x.png",
+  "r1/scene-road-1x.png",
+  "r1/scene-road-4x.png",
+  "r1/scene-shrine-1x.png",
+  "r1/scene-shrine-4x.png",
+  "r1/scene-street-1x.png",
+  "r1/scene-street-4x.png",
+  "r1/scene-thin-1x.png",
+  "r1/scene-thin-4x.png"
+ ],
+ "counts": {
+  "items": 108,
+  "passed": 81
+ },
+ "items": [
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T40",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; brown branch marks mid-crown form two hooked zigzags that read as a glyph/scribble floating in the leaves, not connected to the trunk. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "8d1d485ddaaf03c4d53f54074fee9408d2b8574f86906179bbb82e8c85d9d17e"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T41",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; branch marks are short Y fragments scattered in the crown. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "67c0c326530bb85dde4dd528267ad2065fe96607e366482e05180bcfeaa81f62"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T42",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; mid-crown branch mark is a zigzag scribble that reads like a letter. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "4d6243260f0f170f33ca89063fdf9644158369aac70645ccf75f7889fa40a122"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T40d",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; same floating hooked zigzag glyph as T40, darker crown so speckle turns muddy on the shade side. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "c29ca4e887784c6085d3a6a2a2a85896d2f3c1c9863b72b465f76a98a58fba2b"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T41d",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; loose Y branch fragments; dark variant crown is muddy on right half. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "b9ac89389515f4e63e4213b83df736cdae0841ef9ea07192e3eaccfe9961a104"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T42d",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; diagonal branch strokes disconnected from trunk. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "e46796e252ad4c7510713d1d2e38dc4200c105efcf7dfbd3818f21022f4d98ba"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T30",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; upper-centre branch mark is an M/W scribble floating in the crown. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "026c18e4221a4fb8d05c2251ff5aef312807e46c043d9344615c89b7b5a284f9"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T31",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; two separate Y marks floating in crown. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "380d328c41f0230a4e95839b57b5a46b1cdbf68f50295d3cdfce9cd7a34aa34f"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T32",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; W-shaped zigzag mark mid-crown reads as a glyph. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "db35c4e6f09bf5dcd6ad493a82984c877ad135b379bf9230cb0f0a16878bfba2"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T33",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; single diagonal brown slash floating in crown. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "2b0e7f7d7a6553c7f692a686a43d04e2aa92367d5210072592661fa682647f61"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T34",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; hooked X mark mid-crown (swastika-like at 4x and in scene-ex-4x), clearly a stamp-like glyph. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "fe58314b70f8071feafb540709c2b5da8633eead904f8fbc62fe40b71964d38a"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T30d",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; same M/W scribble as T30; dark crown muddy. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "5fde0bf5ce10a8e0c9c5f5cee0aa7c5f9380ab680b033dc84bf40e733f43d3bf"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T31d",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; floating Y marks; dark crown muddy. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "2d207466aa835c841466d9cdddddbb1802e71223d77e5ea4be77d1e7f9164378"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T32d",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; zigzag mark mid-crown. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "315c649c943e333d870446f442e46c0318d3780ba8800fceec6adeedebceda8e"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T33d",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; diagonal slash and X hook mid-crown. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "d3569864c9cbfdb05e0b7e604d3a646a809dfd80ae9f2ff3db9e9e76af919e99"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T34d",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; hooked X glyph as T34. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "caaa6789a8e4d1254e210872c997293564de4ba9a52c15da1d3da21638d52af1"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T20",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; diagonal branch strokes floating in crown. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "7ee48f0f378f02a9fe8be72811395d1c252fc09839983aedd4b702a40eea7367"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T21",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; branch strokes floating in crown. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "7d0611d1d5af97228a41b8ec40fa611128d22bbc8dd8ab0a9585d2ae855bdb1d"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T22",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; V-shaped branch marks floating in crown. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "d26b1cd62c5a549897756ac85c84faef677a38e9b6759307fc8b54befc0d387b"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T23",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; short branch fragment in crown. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "cd4f381fc11dc22bc38b966aae70b31f0163ec8dcad63fa5993d6bd818558e2f"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T20d",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; branch strokes; dark crown muddy. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "b963b051d0eb9eb187f72c13d48159801abcdb8c72ad2fab1287445e39cb278e"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T21d",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; branch strokes; dark crown muddy. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "00f8e3bd76983e86e647e281f7db06cf52b3c6ffdf686b059b75313642d8e911"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T22d",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; branch strokes; dark crown muddy. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "17bb50fdb4704a8800a5e5590c9136869d2aa5020474e9f81e30138f3933f1e0"
+  },
+  {
+   "group": "trees",
+   "label": "jp_forest_r4/bl-T23d",
+   "verdict": "FAIL",
+   "criteria": [
+    2,
+    4
+   ],
+   "reasons": "crown is a 1px speckle/checker of 4-5 greens with almost no clean clump clusters (at 4x it reads as noise), whereas jp-prop-tree-zelkova and jp-rg-pine use large clean value bands and readable lobes; branch strokes; dark crown muddy. View (crown top + trunk front + root flare/grass patch) is fine and it reads as a broadleaf tree at 1x, and forest overlap in scene-grove/scene-ex is acceptable, but next to the flat-banded originals (and the park in scene-street) the noisy texture looks like a different art set.",
+   "fix": "Rebuild the crown as 5-8 readable leaf lobes, each with clean 2-4px clusters per value step (lit top-left lobe face, mid, shade, dark rim), cut the isolated single-pixel speckle by about 70 percent, and run branches as one continuous limb out of the trunk instead of loose brown marks",
+   "pixelSha256": "cfd46157cc6d86ffe11621db6ba6593a69dac542b49bc83f7c6fb8431e816566"
+  },
+  {
+   "group": "trees",
+   "label": "jp_city/jp-rg-bamboo-grove",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Leaf crowns seen from above as outlined clumps with 3-4 values, segmented stalks as the south face, ground patch; dark-tone outline matches the zelkova/pine outline treatment; reads as bamboo grove at 1x.",
+   "fix": "",
+   "pixelSha256": "a86b1cdfecfcd6484ea2a29ec569028919be402e17126f241c6a594aca59661d"
+  },
+  {
+   "group": "trees",
+   "label": "jp_city/jp-rg-bamboo-grove-b",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Same construction as bamboo-grove with stray leaf sprigs at the sides; clumps readable, stalk segments and node highlights clean; reads as bamboo at 1x.",
+   "fix": "",
+   "pixelSha256": "d6dec45328d6f953b697fe9948cc7069e739fd749bb878ee26f8643830ac653f"
+  },
+  {
+   "group": "trees",
+   "label": "jp_city/jp-rg-bamboo-clump",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Small clump with top crowns, segmented culms and base patch with shoot; consistent outline and palette with originals; reads at 1x.",
+   "fix": "",
+   "pixelSha256": "9c8958739874a3753dac5f24d58fff47c61019f085819eb021c7299a569cc342"
+  },
+  {
+   "group": "ground",
+   "label": "floor-cells (48 unique)",
+   "verdict": "FAIL",
+   "criteria": [
+    5
+   ],
+   "reasons": "Cell pixels are fine (original lawn speckle kept, 2-3 dark shade steps, no flat 5x5 blobs), but laid in scene-shrine-4x the darker forest-floor region ends on a ruler-straight vertical seam at x~512 (16px grid col 8) for the full map height against the shrine's dirt-grass, and at the bottom (x 512-768, y 960-1200) it juts out as a hard grid-snapped rectangle with square corners. The original lawn has no such boundary. The 1x cell sheet also shows quarter-cell (8px) square dark blocks in a checkerboard pattern, which is where those blocky edges come from.",
+   "fix": "Make the outer forest-floor edge an autotile transition with irregular dithered edges instead of a full-cell fill. Never let the floor extent follow the tile rectangle at a ground-type boundary. Feather the area outside the outermost trunks the way the apron does in scene-ex.",
+   "pixelSha256": null
+  },
+  {
+   "group": "ground",
+   "label": "apron-cells (141 unique)",
+   "verdict": "FAIL",
+   "criteria": [
+    5
+   ],
+   "reasons": "In scene-ex, scene-thin and scene-road the apron reads as a soft dithered shadow on the original lawn and beats the no-ground contrast. But in scene-street-4x the shade under the two park trees is cut into a hard rectangle: a straight horizontal edge at y~320 and a straight vertical edge at x~895 (hedge/sidewalk side) with a square corner. That is a grid-snapped block of darkness on open lawn. scene-ex-4x also has near-straight vertical shade bands down the right (x~945-975) and left (x~135) sides of the forest that follow the column grid.",
+   "fix": "Fade the apron out irregularly inside its own cells instead of stopping at a cell boundary. When the lawn ends (map edge, hedge, sidewalk), use partial edge cells with dithered falloff so no straight horizontal or vertical shadow edge remains. Break up the long straight column edges along the forest sides with jagged per-row offsets.",
+   "pixelSha256": null
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-hip2",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Front-gable roof shows both roof planes from above (parallel top/bottom chevrons, vertical outer eaves) plus south gable wall; siding has steps comparable to soba wall; dark-material outline like originals. Note: drawn as a gable, not a hip, despite the name; reads as a house at 1x.",
+   "fix": "",
+   "pixelSha256": "a1a7e1d2bb1074ff0b3b4fa1b10d1d50b52bd88986b630675e778d5d7a4f77c7"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-gable-garage",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable planes visible from above, white siding with clean courses, shutter and door readable at 1x; palette sits with clinic/apartment greys.",
+   "fix": "",
+   "pixelSha256": "635a1eba5e3d95d24aa88b2ad5c733b45d229504f08cf30f931885ca5b503220"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-hiraya",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Red hip roof shows top plane and sloped ends like soba roof; stucco speckle is sparse and clean; lattice door, sash and window read at 1x.",
+   "fix": "",
+   "pixelSha256": "93fd54305e4bcc8204e820f6d5d976117848f9239ab47dfc5c065ccef29fbf1f"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-shed-modern",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Shed roof reads as a top plane with seams and a light band; dark board upper / white stucco lower front; readable at 1x.",
+   "fix": "",
+   "pixelSha256": "b34fd096cbaf787a1ea5ea26af0cb7312eab57cf520fcf5cecb4d4f993fa5bbd"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-flat3",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Flat roof top plane with parapet, stair hut, AC and tank, same convention as jp-bldg-clinic; three storeys with shutter and door read at 1x.",
+   "fix": "",
+   "pixelSha256": "beaa21ce4669228c14e39b601d7eb0ee30821770ac8b64c74231433b6bdb4948"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-greengrocer",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable roof planes from above, やおや sign, striped awning and produce crates; matches wagashi sign/front convention.",
+   "fix": "",
+   "pixelSha256": "5ef329ee7a0aa313d3a3e75fcc7179a1ba070b7aca162997682b88020dd8b572"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-fish",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Roof planes visible, さかな sign, awning, ice/display counter; value steps comparable to originals.",
+   "fix": "",
+   "pixelSha256": "41069296b5173d526a8853a80992a37f9ea31b9d86ed48f9e955f00362f4e177"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-butcher",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Brown tile gable roof, お肉 red sign, awning and meat display windows readable at 1x.",
+   "fix": "",
+   "pixelSha256": "af8f6822919d544cdccd45ee486e714c4f8ab50839cae99b20f504b4f6d36d82"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-bakery",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable roof from above, beige stucco, パン board sign, awning, bread shelves; coherent palette.",
+   "fix": "",
+   "pixelSha256": "bfbd4263512ceaddf846435f3536f6614da11c4735556ab275aafd61a6c64bb1"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-flower",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Corrugated roof planes visible, 花 sign, bucket display row; shopfront reuses greengrocer layout but reads as flowers with the sign.",
+   "fix": "",
+   "pixelSha256": "31c595a537bb7a3030625c264c76e58447e44e9463e7ba627431c8b153fd782a"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-books",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Flat roof plane with stair hut/laundry like clinic convention; 本 sign and book shelves readable at 1x.",
+   "fix": "",
+   "pixelSha256": "d935578a2d69e9a3ef0089f609d889ef99155e5fcebb534bb4ef263bd2e5a452"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-pharmacy",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Flat roof top plane, tiled upper wall similar to clinic, くすり sign and shelves readable.",
+   "fix": "",
+   "pixelSha256": "ebdb529166f59d79619fab8454046412da6e41880e69a8bee310e928fb4837d1"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-cleaning",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Roof planes visible, 洗たく sign, awning and glass front; textured walls.",
+   "fix": "",
+   "pixelSha256": "2b29409544c449cea6643879137333cb7ea339396bae598fce2023d06ab58c9d"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-ramen",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable roof plus pent roof, ラーメン sign, red noren and lantern; reads clearly at 1x.",
+   "fix": "",
+   "pixelSha256": "18fa3071d6399d99edc438c4c87376dcb9e4f5aa51a767d49fd553cc06484034"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-izakaya",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "酒場 board, lanterns, noren, lattice, crates; wood front value steps comparable to sento/soba.",
+   "fix": "",
+   "pixelSha256": "4063df550b8aa7da693f8314c08100cfc3c29cb7c39832db4ef0c2da3cf3504f"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-cafe",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Brown tile roof planes, brick facade with clean courses, 喫茶 sign and awning readable.",
+   "fix": "",
+   "pixelSha256": "68c4d3bb556eaf94dd090772785cb833751b78e811213e562357c13edf373edc"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-barber",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Roof planes visible, tiled wall, とこや sign and barber pole; reads at 1x.",
+   "fix": "",
+   "pixelSha256": "d618270a17bcfe5e46bf171bee7ddf5acf9e884e18936c489e6d1a4ca9c35f61"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-tabako",
+   "verdict": "FAIL",
+   "criteria": [
+    6
+   ],
+   "reasons": "Lower floor has only a small display window, a door and a vending machine, no たばこ plate or sign; at 1x it reads as an ordinary house with a vending machine, unlike every original shop (soba/wagashi/sento/clinic) which carries an explicit sign.",
+   "fix": "Add the classic red たばこ plate/eave sign above the counter window (and a little counter ledge) so the kiosk reads as a tobacco shop at 1x.",
+   "pixelSha256": "fdd6f7b16b6465c5ebd08916cc5b30001fe753a20c6be052ab30f4f1a603f5ee"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-hip2-wide",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Red hip roof top plane with sloped ends, white tile wall, pent roof, garage shutter and door; readable and coherent.",
+   "fix": "",
+   "pixelSha256": "d517c74e9de2fe34de7a62df5910c8ccbbb532ff7dd26a692ca9ebd270b0cd13"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-machiya",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Tile roof top plane with ridge cap, white plaster with mushiko window, pent roof, lattice front; in line with soba roof craft.",
+   "fix": "",
+   "pixelSha256": "bcce7810a12816fadfb17335af0fbae1fb68edc4d047efeb0c959c414cc1b8c9"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-nagaya",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Long tiled roof top plane, wooden frontage with repeated lattice doors/windows, pots and bicycle; reads as row house.",
+   "fix": "",
+   "pixelSha256": "57f17dad54effc9203e0653c59c90d33ac746c81c9dc16b76ea3f6c33166d4a7"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-western",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable planes visible, cream stucco upper and brick lower with clean courses; readable at 1x.",
+   "fix": "",
+   "pixelSha256": "2460065d5fcbcbd9ddd3427e18f2e550317c1692d91f646a3865b460fef36bd2"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-nisetai",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Flat roof plane with stair hut, AC and planters; two entrances, balcony and pent roofs read as two-household house.",
+   "fix": "",
+   "pixelSha256": "7b9b955ff5308ab2a0076f9cff489d630383b5807cc4ee9a4a4b5673c37f338d"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-tile3",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Shed roof top plane, blue-grey tiled facade with clean value steps, three storeys with shutter and door.",
+   "fix": "",
+   "pixelSha256": "1b34b633594506ec284372a68f30a638a7300bff08c17c275162b2523aa14334"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-terrace",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Flat roof plane with AC units, continuous balcony band and three unit doors; reads as terrace house like apart-steel2 convention.",
+   "fix": "",
+   "pixelSha256": "6d8ca892cc953596b262d33d775b51662f6c4da323834ced4c99fd3507bfacea"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-house-hiraya-gable",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Tile roof top plane with end caps, stucco wall, lattice entrance and sash; readable single-storey house.",
+   "fix": "",
+   "pixelSha256": "1a19a8dd49bfb1077736d4e084c7c69646eb551a6ced46564c4149d30aaf514c"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-sushi",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable roof planes, pent roof, すし board, noren and lattice like soba original.",
+   "fix": "",
+   "pixelSha256": "efd671469d90cbeacb2d66897b7219e1c1b59d9a309d2950bbd1fe29440ef77b"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-teishoku",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Roof planes visible, めし処 red sign, cream awning, noren and shelves readable.",
+   "fix": "",
+   "pixelSha256": "6b3a4e44dd81ba52f043cdf94de469a41705ded1be54f3ce8cc16c7b4c4a0221"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-dagashi",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Corrugated roof planes, board-wall upper, pent roof, だがし sign, candy rows and vending machine readable.",
+   "fix": "",
+   "pixelSha256": "e21c9807301d608730d223fca2eadb78bc830f8255900720885455ae3760eb8d"
+  },
+  {
+   "group": "buildings-a",
+   "label": "jp_city/jp-bldg-shop-sake",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable roof planes, 酒 board, green awning, shelves, crates and vending machine; coherent.",
+   "fix": "",
+   "pixelSha256": "9cb4de52451c3d1561f032a0dfcfcb1d4acafa4affb1b794fa4eb2e470a239d4"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-bicycle",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable roof: two foreshortened roof parallelograms above the south gable wall (top silhouette parallels the rake), light/dark plane split and 3-4 tile value steps like the soba/sento roofs; corrugated wall carries texture like apart-steel2; blue sign + bike/goods display reads as bicycle shop at 1x.",
+   "fix": "",
+   "pixelSha256": "c27e11b85f9f4ea3de8c41bd83ef6a7e24ef02928544900f80bd7115b366b288"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-realestate",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Flat roof with visible top plane (penthouse, AC, plants) like conbini/clinic; tile wall matches clinic; green 住まい sign readable at 1x.",
+   "fix": "",
+   "pixelSha256": "f41b3f071217c93c9b5e8e2dc0940a569f187cea33a6aab50a131d413b4a8f58"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-salon",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable roof: two foreshortened roof parallelograms above the south gable wall (top silhouette parallels the rake), light/dark plane split and 3-4 tile value steps like the soba/sento roofs; dark corrugated wall textured; pink ヘアー sign readable; palette sits with originals.",
+   "fix": "",
+   "pixelSha256": "823e4be0bb031b2177dc44f104f9ed85af6f8f54909c49525d8c8dfe06269631"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-post-office",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Flat roof top plane with penthouse/AC/tank like clinic; red 郵便局 sign and postbox read at 1x; tile wall shading equals clinic.",
+   "fix": "",
+   "pixelSha256": "56d0f285531d2f89f47ff3a5c9eaf0a61155a7907b601204ac6a0bb4b721a059"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-koban",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable roof: two foreshortened roof parallelograms above the south gable wall (top silhouette parallels the rake), light/dark plane split and 3-4 tile value steps like the soba/sento roofs; tile wall like clinic, red lamp, 交番 sign, door read at 1x.",
+   "fix": "",
+   "pixelSha256": "aeb0f9593e657d0c46dd42fe8d1ba494d47b308cd91d8bfc029c5c39ae924224"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-warehouse",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable roof: two foreshortened roof parallelograms above the south gable wall (top silhouette parallels the rake), light/dark plane split and 3-4 tile value steps like the soba/sento roofs; corrugated walls with vertical value banding, roll shutter and door; reads as warehouse at 1x.",
+   "fix": "",
+   "pixelSha256": "9180db68d02e33ececc26f14bf324af0c932e43500ad164067732320d95a9d5a"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-garage-carport-house",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Low roof band seen from above like apart-steel2 roof; cream wall, door, window, shutter garage and step slab like soba; reads as house with garage.",
+   "fix": "",
+   "pixelSha256": "d8b87b847f46f7de1956a7eff5622d3ab133366830320adf8255489e11c2c80a"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-fish-shut",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable roof: two foreshortened roof parallelograms above the south gable wall (top silhouette parallels the rake), light/dark plane split and 3-4 tile value steps like the soba/sento roofs; stucco speckle is sparse texture not noise; さかな sign + shutter reads as closed fish shop.",
+   "fix": "",
+   "pixelSha256": "2a1a82eacd9144bf69916601b2975758e41c315d674fcdcb9b1136f3619ef49b"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-butcher-shut",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable roof: two foreshortened roof parallelograms above the south gable wall (top silhouette parallels the rake), light/dark plane split and 3-4 tile value steps like the soba/sento roofs; brown tile roof, cream board wall, お肉 sign + shutter read at 1x.",
+   "fix": "",
+   "pixelSha256": "0f159c101de40f5ed23f1d0cb8799e033d6e0cdcd468695d3f2154fa35fdc20d"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-books-shut",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Flat roof top plane with penthouse/plants; 本 sign, shutter with notice read at 1x; shading matches clinic/conbini.",
+   "fix": "",
+   "pixelSha256": "1e9f251596e742a2e73b39042cff7a20b81bafaf48df7770eef900766f697397"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-cleaning-shut",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable roof: two foreshortened roof parallelograms above the south gable wall (top silhouette parallels the rake), light/dark plane split and 3-4 tile value steps like the soba/sento roofs; 洗たく sign and shutter readable; palette coherent.",
+   "fix": "",
+   "pixelSha256": "9a4384b2da1cbfa6f253918e2bf5ac1c01633b650ee031a4f3086089e0d6a8dd"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-bicycle-shut",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable roof: two foreshortened roof parallelograms above the south gable wall (top silhouette parallels the rake), light/dark plane split and 3-4 tile value steps like the soba/sento roofs; corrugated wall textured; 自転車 sign + shutter readable.",
+   "fix": "",
+   "pixelSha256": "c9cb8a6aeada2ef19ef9abc0adc46796b850f8e9f0d2bcd957fc76f4b9cd038c"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-sake-shut",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable roof: two foreshortened roof parallelograms above the south gable wall (top silhouette parallels the rake), light/dark plane split and 3-4 tile value steps like the soba/sento roofs; board wall, 酒 sign, shutter with notice and lattice side panel read at 1x.",
+   "fix": "",
+   "pixelSha256": "aaedd05b2627adb88f14e3f6912794fb36fecbd61d4c177a551e4f634e7e47fa"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-flower-shut",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable roof: two foreshortened roof parallelograms above the south gable wall (top silhouette parallels the rake), light/dark plane split and 3-4 tile value steps like the soba/sento roofs; white stucco with sparse speckle, green 花 sign, shutter readable.",
+   "fix": "",
+   "pixelSha256": "6310a10701931272032e9c0c36625002889d11f651b3d099a28d8e4cc2878424"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-realestate-shut",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Flat roof top plane like clinic; 住まい sign + shutter readable.",
+   "fix": "",
+   "pixelSha256": "0768f574a0ef6c5a454e487142e9767d30c1ae591df079c1a743fffd692cc6cc"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-shop-vacant",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Flat roof top plane like clinic; 貸店舗 sign with notice on shutter reads as vacant shop.",
+   "fix": "",
+   "pixelSha256": "fdf24b5140808b7346437d5c3bfef6f5ae7d2eb0b6509bcb73807bcd9f4b5bdf"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-station-small",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Hip roof with foreshortened top planes and tile value steps like soba roof; white wall, 駅 sign, vending machines, clock read as small station at 1x.",
+   "fix": "",
+   "pixelSha256": "d85a705c92284c73fd3182852c2a3ab8d0c6ec5eaf7ef4f5a84ab82c6078db5f"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-row-shotengai-a",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Row of four gable shops, consistent baseline and eave line, awnings and goods readable; no seams beyond building joins.",
+   "fix": "",
+   "pixelSha256": "99aae6335babc53549ccefac5f295c8db14678f41376fe4ef3c9a0f427572ac7"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-row-shotengai-b",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Gable/flat-roof mix aligned on one baseline; each storefront readable; palette coherent.",
+   "fix": "",
+   "pixelSha256": "ff1f48dbd248cbaf4a84df050ce1f7c354eb6ae026ccd5981edd7a24686bfed2"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-row-shotengai-c",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Four shops aligned; roofs show top planes; signs readable at 1x.",
+   "fix": "",
+   "pixelSha256": "6c8954b547a45baa7718fcc626354db11402cab7c21d2ca4ecf2e05f9d78c02c"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-row-shotengai-d",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Varied heights with original dango/soba-style roof next to new gables; overlaps read as depth, top planes visible on all; signs readable.",
+   "fix": "",
+   "pixelSha256": "36bac5b7182bf536f95f737a771fbc0f92a1039cc4249126092709ed42efa513"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-row-inshokugai",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Five eateries with tile eave bands, noren, lanterns, awning; roofs show planes; flat noren areas match original soba noren degree.",
+   "fix": "",
+   "pixelSha256": "2f213599226d76d833b1e1982284e15174c52f481cfae6014af53b814f0c6e01"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-row-ekimae",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Flat-roof shops + original conbini + brick kissa gable on one baseline; roof planes visible; readable.",
+   "fix": "",
+   "pixelSha256": "da303a92d9d5542073ac086bb2b94d6a493fa090e17f8c0c385480fa62b5474c"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-row-shutter-a",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Mixed shuttered/open shops, aligned; roofs and rooftop visible; readable at 1x.",
+   "fix": "",
+   "pixelSha256": "116cde467029cf72f0886d535768d46eb4c9510503d2a629df62dce76cab62bb"
+  },
+  {
+   "group": "buildings-b",
+   "label": "jp_city/jp-bldg-row-shutter-b",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Four shops aligned on one baseline; roofs and flat roof top visible; signs/shutters readable.",
+   "fix": "",
+   "pixelSha256": "11fe509da39d7047d53dac42042bfd2ef32f803ae83d6fa913defd595ffd79a3"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-white/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Side profile as south face with foreshortened roof, hood and trunk tops above it (lighter planes), as the tram roof plane does. Body has 3-4 value steps with panel seams and lamp details. The dark outline matches the tram/train outline. Reads as a white sedan at 1x.",
+   "fix": "",
+   "pixelSha256": "0d18f36d65458bb7207e04c563844538c230c227f087fd00bbbda3668fae7886"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-white/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Clean mirror of right: headlight on the left, tail lamp on the right, top planes visible. Same craft as the right-facing car.",
+   "fix": "",
+   "pixelSha256": "599235368e01c47ae85f2af1bb45f7cfe1e0edd74b7c0cb0d179ec5aa97ebe44"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-silver/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Wagon body with a large roof top plane carrying dither highlight, readable windows and side panel steps. Palette sits with the commuter train greys.",
+   "fix": "",
+   "pixelSha256": "aa90dbaaef87b8f6d19dbd8dc026956ac6c1427e926a8633d1a2e900708528b7"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-silver/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Correct mirror. Roof and hood tops are visible and the lamps are swapped correctly.",
+   "fix": "",
+   "pixelSha256": "46e8568bc332edcd84c6a66b325eeb383eeb8db95ff3610c5c181d3381101006"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-black/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Dark grey body keeps 3 value steps on roof, side and sill, so it does not collapse into a blob at 1x. The window blue-grey matches the tram glass.",
+   "fix": "",
+   "pixelSha256": "b95207e5034207f93584c48dd9445d2f2bbc936c8668289bde8142ad9c424c53"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-black/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Correct mirror with top planes visible. Readable at 1x.",
+   "fix": "",
+   "pixelSha256": "6a845ac826b020efe7bda08626d488641fa03da3b7ba3a0fafe53db657ec8b24"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-red/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Hatchback with a dithered highlighted roof top plane and dark-red outline and shading steps. Reads as a red car at 1x.",
+   "fix": "",
+   "pixelSha256": "4d0783169e9ebfb1511ba3c68271daeb2dc57cbf4ed3999939eb388f88262362"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-red/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Correct mirror with top planes visible.",
+   "fix": "",
+   "pixelSha256": "1bb073c816128b3622b613cfb2f840f081cb10576a2c8645f4bcc83b8692cabf"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-blue/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Sedan with a lighter blue roof plane plus hood and trunk tops, side seams and lamps. Value steps are comparable to the tram green body.",
+   "fix": "",
+   "pixelSha256": "af81887d43ab5d38e9137e3f0eaa2ea7bb571683f165fae44a3376274588322d"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-blue/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Correct mirror.",
+   "fix": "",
+   "pixelSha256": "a72056bff7f1dffcc0ae4bcfe1c49bd76fece72096877546322aa3822306f28c"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-kei-yellow/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Boxy kei with a large foreshortened roof plane (dither highlight) and a brown-dark outline of the adjacent material. Reads as a kei car at 1x.",
+   "fix": "",
+   "pixelSha256": "47ea5bed8721cea0fa91dc031b191007f42c70de38fc8467cdc790e2567e6dcc"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-kei-yellow/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Correct mirror.",
+   "fix": "",
+   "pixelSha256": "56609f743f46f26a7f54f537479eff49d31a3f935992e8fcbff8b0043fe42847"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-kei-mint/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Muted mint fits the tram green family. Roof top plane is visible and side value steps are present.",
+   "fix": "",
+   "pixelSha256": "e566b59be42907af7b0857f91aae17f41344d8e016ca5e92c1a47bc3eb760464"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-kei-mint/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Correct mirror.",
+   "fix": "",
+   "pixelSha256": "26b0da4c67f00b03226376a38d29186f152d5af9fc5ce97379675f1a74425079"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-taxi/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Yellow sedan with a roof lamp box, roof and hood planes visible and a brown shading ramp. Reads as a taxi at 1x through the roof sign.",
+   "fix": "",
+   "pixelSha256": "12719d9f717a48b3126088f7229addaee26cb7516883df12c02378824f8ca854"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-car-taxi/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Correct mirror.",
+   "fix": "",
+   "pixelSha256": "c37253fe6b9671caca909ed7b3ff1a0f816b79426ae2411047c8636a87e67ba9"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-truck-kei/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Cab roof top plane is visible and the bed reads as an open, slatted recess seen from above. White body has grey steps like the tram roof. Reads as a kei truck at 1x.",
+   "fix": "",
+   "pixelSha256": "8b83bb9d31b67b35a9c6cb74640f4712ab09893f30ca7175a452c2d51f386e13"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-truck-kei/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Correct mirror.",
+   "fix": "",
+   "pixelSha256": "f09c9fcd30da73f5b0da8c60292bfd7a06bd22b7a89d4e493d3a063b769d9627"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-truck-box/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Box top plane is a lighter dithered surface above the ribbed box side, with the cab roof visible and twin rear axles. The large white areas are broken by ribs, on par with the tram roof.",
+   "fix": "",
+   "pixelSha256": "9b4a85b915b8230d04d2499f982ff6b1d9282075250e39201d1b84f5ff327e52"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-truck-box/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Correct mirror.",
+   "fix": "",
+   "pixelSha256": "0b08d7cd1fff3587a0a2f2d9935869d419f18fb0b10d040e28ac8fa947aaa2e9"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-bus-city/right",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Large roof plane with vent boxes drawn in the same idiom as the tram roof. Side window band and green stripe use the tram palette. Correct for left-hand traffic: doors are on the hidden north side.",
+   "fix": "",
+   "pixelSha256": "5e650f7271a6707df7d28b5c282132adaec150fc1455c5d3afbf042aeb22901a"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-bus-city/left",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Roof plane with vents, front and middle doors on the visible curb side, front screen and lamps. Reads as a city bus at 1x.",
+   "fix": "",
+   "pixelSha256": "8cbb57441fd8a52f5863a9de8cfccdb0b65fe7ad241a1c7aa4857e29a840a96c"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-bus-city/right_open",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Pixel-identical to right. In left-hand traffic the doors are on the far side, so no open door can show from this angle. This is consistent, not a defect. Same craft as right.",
+   "fix": "",
+   "pixelSha256": "5e650f7271a6707df7d28b5c282132adaec150fc1455c5d3afbf042aeb22901a"
+  },
+  {
+   "group": "vehicles",
+   "label": "jp_vehicles/jp-bus-city/left_open",
+   "verdict": "PASS",
+   "criteria": [],
+   "reasons": "Both doors are shown as dark openings with a lit interior and step, and read as open at 1x. Otherwise identical to left.",
+   "fix": "",
+   "pixelSha256": "3c1dc0541690562817db83b7b39820b654d335207ba636234eac738e561fa500"
+  }
+ ]
+}

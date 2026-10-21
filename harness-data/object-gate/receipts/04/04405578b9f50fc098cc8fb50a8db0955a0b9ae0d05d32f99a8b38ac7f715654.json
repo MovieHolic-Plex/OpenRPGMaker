@@ -1,0 +1,303 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04405578b9f50fc098cc8fb50a8db0955a0b9ae0d05d32f99a8b38ac7f715654",
+ "width": 48,
+ "height": 48,
+ "kind": "organic",
+ "name": "forest canopy crown heads (tile overlay on forest roof) (japanese cedar)",
+ "label": "jp_city/jp-forest-sg-head-c3x3-0",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 11,
+  "darkV5": 34,
+  "nearBlackEdge": 0.43,
+  "opaqueTiles": 9
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cedar canopy crown mass (full 48x48 tile of overlapping conical crowns)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image is a full-bleed 48x48 tile of dark and light green foliage clusters (conical cedar crowns with highlight flecks and dark gaps). The width profile is 48 for every row, so there is no silhouette, no ellipse, no front-edge line, and no eave shadow. There is also no distinct front face or standing body with a south face. It is a flat overlay texture, not a standing object, so neither a top plus front structure nor a front elevation applies. Reads as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a single 16x16-ish tile of cedar crown heads, a repeating pattern of small conifer silhouettes in about 4 dark-to-mid greens on a dark green ground. Its measured facts are 11 colours per tile and 11 distinct colours in total. The references have about 108 colours per tile and 427-567 distinct colours, so it sits about 10x lower. Flat-fill coverage is 0%, and the dark edge pixels are tinted rather than neutral, so the shading reads as dark green rather than black sticker lines. That is a point in its favour. The texture is mostly the repeated cone shapes with little per-clump highlighting, and the ramp is shallow: roughly 4 steps against the 5-6 seen on the references' leaf clumps. As a tile overlay it is naturally simpler than a full tree, and its sparse crown heads are cleanly drawn. Still, with such a big gap in colours per tile and distinct colours and only a thin ramp, a careful artist would see it as flatter and less rich than the Beodeul references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14281
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cedar canopy foliage mass (full tile, several conical crown heads)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image is a full-bleed 48x48 foliage texture. Every row is 48 px wide, so the silhouette has no widening and narrowing profile and no ellipse. The column scans show only mottled green dither with scattered highlights, with no 1-row front-edge line followed by eave shadow. Several conical crown heads are drawn face-on, and their lighter peaks and darker gaps are leaf texture, not horizontal surfaces. There is no distinct front face either, and no top-down slab. It is a tile overlay of canopy texture, not a standing object, so none of the top-surface evidence (a-d) applies cleanly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small 4x4-tile cedar crown overlay with only 11 distinct colours in total, against 427 and 567 for the references. Its median of 11 colours per tile is about a tenth of the references' 108 and 109. The crown is built from repeated conical cedar-head shapes in about 4 dark greens, which is fewer lightness steps than the 5-6 on the reference canopies. Dark edge pixels are 0% neutral and lean green, so the outline reads as a dark material tone. Flat-fill coverage is 0%, and the repeated cone pattern gives some texture. It lacks the leaf clumps in several greens, the per-clump highlights and the varied detail of the references. It is a clean pattern but visibly thinner and flatter than the reference trees, so on density it falls well short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12637
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "canopy foliage mass (cedar crown heads, tile overlay)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image is a full-bleed 48x48 foliage texture of conical cedar crown tips in greens, with dark gaps between them. The silhouette is 48 wide on every row, so there is no outline, ellipse or width change. No front-edge line, eave shadow, ellipse, roof plane or visible contents appear in any band of rows. No distinct front face or vertical south face is drawn either. It is a seamless tile overlay of leaf clusters, not a standing object with a top and a front, so it fits none of the view categories."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small tile of repeating cedar crown cones. It has about 4 green steps, with a dark green background and lighter cone tips. Its dark edge pixels are tinted green (0% neutral), so the outline is dark_material_tone. It has no flat 5x5 fills, and there is some repeated texture from the cone pattern. But it has only 11 distinct colours in total and 11 per tile, against about 108 per tile and 427-567 total in the references. That is roughly ten times lower. The references have many leaf clumps in 5-6 greens with highlights and per-clump shading, while the candidate repeats a near-identical stamp with few steps. It reads as a thin, stamped pattern and not a hand-shaded canopy. This is much lower than the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14862
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cedar canopy foliage mass (tile overlay, full 48x48 tile)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The silhouette is a full 48-wide opaque tile from row 0 to 47, so it is a seamless foliage texture and not a standing object. It is built from overlapping pointed conifer crowns in mottled greens with bright highlight pixels. I found no front-edge line, no eave shadow, no ellipse and no visible container contents, so there is no distinct top surface. It also has no distinct vertical front face, only repeated crown shapes. This fits an overhead canopy overlay tile, not a 3/4 object with a top and a front."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a 4x4-tile patch of repeated conifer/cedar crown shapes in dark greens. It has only 11 distinct colours in total and a median of 11 per 16x16 tile. The references have a median of about 108 per tile and 427-567 colours overall, so it is roughly 10x lower in density. I see about 4 green steps (deep, dark, mid, a light tip), against 5-6 in the references. The dark edge pixels are 0% neutral, so the outlines are tinted dark green and read as dark_material_tone. Flat-fill coverage is 0%, and there is some texture from the repeated pointed crowns, but each crown is a simple stamped shape with few highlight clumps and none of the per-clump variation the references show. It stays graphically clean but looks thinner and more patterned than the Beodeul canopies, which are richly clumped, so it fails on density and shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15035
+  }
+ ],
+ "decidedAt": "2026-10-20T07:08:11.771Z",
+ "cells": {
+  "16": [
+   "52d5277043aacb89",
+   "63b94a7c66065f44",
+   "7ba7b7c04dbd7914",
+   "8780737efebc65f3",
+   "896b2f474e26a6b6",
+   "b28ec59bc4c346f4",
+   "b28fa01c3ec06a6a",
+   "c985e551102e3582",
+   "cee327b75798a551"
+  ],
+  "24": [
+   "3b767d70b00af7f1",
+   "505c98ab85fd7bb2",
+   "567f1d22bd395650",
+   "c019ba79c854a1ce"
+  ],
+  "32": [
+   "00e05c9d945be861",
+   "0d6415a7247757f6",
+   "0e483c7cad26dd4e",
+   "1d9d959dcb601b94",
+   "265f6aa9a374bb32",
+   "36e9d0fa2a293eeb",
+   "397e2de30e79ce7d",
+   "4b54f9e4a85333b0",
+   "51ab63dace138952",
+   "5a15eab97685282f",
+   "5deca04e73c31153",
+   "5f9b687eb72d2140",
+   "613ea4020d4aa8e4",
+   "6620879a881b6210",
+   "7237f4e7f3b9f3dd",
+   "8b972adf1fc86717",
+   "92c947fd6333c840",
+   "9a7c6e4e4d834808",
+   "a3b894602007a8bc",
+   "a9e60a05a0c77640",
+   "c85590315a66b74d",
+   "dd8465a3e44883fa",
+   "e0ef0594e41f97a0",
+   "ffe6795352dfe802"
+  ],
+  "48": [
+   "3603bbbe6a5a563b"
+  ]
+ }
+}

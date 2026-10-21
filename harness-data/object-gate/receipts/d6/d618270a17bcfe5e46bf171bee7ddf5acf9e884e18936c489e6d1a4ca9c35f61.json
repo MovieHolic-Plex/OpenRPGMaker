@@ -1,0 +1,484 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d618270a17bcfe5e46bf171bee7ddf5acf9e884e18936c489e6d1a4ca9c35f61",
+ "width": 96,
+ "height": 144,
+ "kind": "structure",
+ "name": "理髪店 이발소",
+ "label": "jp_city/jp-bldg-shop-barber",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 15,
+  "darkV5": 38,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 34
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gabled tile roof, two sloped planes (light left, dark right)",
+      "rows": "2-45",
+      "evidence": "c",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "46-46"
+     },
+     {
+      "part": "gable wall with window (vertical face)",
+      "rows": "47-80",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sign band and shop front with barber pole",
+      "rows": "83-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 43,
+    "front_face_rows": 97,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped tile plane that fills rows 2-45. Its silhouette widens by 6 px per row from row 2 to row 13, then holds at 74 px. The column scan at x=29 and x=66 shows a repeating tile-course pattern, a light front-edge line at row 44, and a dark eave and outline line at row 46. Below the roof is a tall front face of about 97 rows: the gable wall with a window, a cornice at rows 80-82, the sign band, and the shop front with a pole. The sign, window and shop front are vertical faces. The roof planes meet at a centre ridge, so the roof reads as a sloped top surface and not as a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a grey-tiled hip roof over a stone-brick wall with a sign band and a shopfront. The roof shows about 4 grey steps with a tile grid, and the wall carries brick lines and some highlights, but the sign band, window glass and door areas are flat blue or grey fills. Measured: 8 visible tones per tile against 12 and 10 for the references, which is lower. Near-flat coverage is 16% against 0% for both references, so the candidate has real flat fills while the references have none. Dark edge pixels are 0% neutral, so the outlines are tinted (dark blue-grey to the material) and not a black sticker line. Per-material ramps are shallower than the references' 5-6 steps, which have per-tile highlights, plaster speckle and stone shaded one by one. It is clean and readable, but a careful artist would see it as thinner and flatter than the references next to it, particularly in the sign and shopfront areas.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18229
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "shingled roof (two sloped planes, light left and dark right, meeting at a central ridge)",
+      "rows": "2-46",
+      "evidence": "c",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-46"
+     },
+     {
+      "part": "upper gable wall with window",
+      "rows": "47-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cornice ledge above sign",
+      "rows": "80-82",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "signboard (とこや)",
+      "rows": "83-98",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shop front with window, shelves and barber pole",
+      "rows": "99-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 44,
+    "front_face_rows": 97,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof fills rows 2-46 as two large shingled planes that widen from 3 px at row 2 to 74 px at row 14. It ends in a light front-edge line at row 44 with dark eave shadow at rows 45-46, so it is a real sloped roof surface (evidence c). Below it, the south face runs from about row 47 to 143: gable wall with window, cornice, sign and shop front, roughly 97 rows. The roof is the main top and the facade is the front face, so this is a three-quarter view. No receding side wall is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a whole building, so it matches the references' kind. Measured facts: 8 visible tones per tile against 12 and 10 for the references, and 16% near-flat coverage against 0% for both. The dark edge pixels are 0% neutral, so the outline is tinted, with a bluish-grey lean against the roof and wall. The roof has about 4 grey steps with a scalloped tile pattern, but the tiles are uniform and have no per-tile highlights. The brick walls have light and dark mortar lines but only 2-3 tones. The sign band, the shop door and the lower wall have flat areas with little grain. Overall it is clean and tinted rather than sticker-like, but it is shallower than the references in tones, texture variation and shading steps, with noticeably more flat fill.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 14457
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof (two sloped tile planes, left light and right dark, meeting at a central ridge)",
+      "rows": "2-46",
+      "evidence": "c",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-46"
+     },
+     {
+      "part": "gable wall with brick pattern and upper window",
+      "rows": "47-80",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "signboard band 'とこや'",
+      "rows": "83-100",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shop window and storefront",
+      "rows": "101-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "barber pole at the right of the shop window",
+      "rows": "115-135",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 43,
+    "front_face_rows": 97,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a building with a large sloped tile roof in rows 2-46. The roof is built from stepped, widening tile rows (width grows from 3 at row 2 to 74 at row 14). It ends in a light front-edge line at row 44, with a dark outline and eave shadow at rows 45-46, so evidence (c) applies. Below it the south front face runs about rows 47-143: a brick gable wall, a blue sign band and the shop window. That is far more than 3 rows. The two roof halves (light left, dark right) are both roof planes and not an isometric side wall. The signboard and storefront are vertical faces on the front facade and are not parts that need a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate shows 8 visible tones per tile against 12 and 10 in the references, and 16% near-flat coverage against 0% in both references. Its roof is a gray shingle with only about 3 steps (light, mid, dark) and a faint scallop pattern, where the references have 5-6 steps with per-tile highlights. The wall is a gray brick pattern with little per-stone shading. The sign panel, the door glass and the lower shopfront have large flat blue and gray areas. The outline is dark and tinted (bluish-gray beside the walls), with 0% neutral edge pixels, so it reads as dark_material_tone and is not a sticker line. Structurally it is clean and readable, with a barber pole and a window, but it is shallower and flatter than the references in shading depth and texture. Because the references are richer and the candidate has flat fills, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19646
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gabled roof, two tiled planes (left lighter, right darker) meeting at a central ridge",
+      "rows": "2-45",
+      "evidence": "c",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "46-46"
+     },
+     {
+      "part": "gable wall with upper window",
+      "rows": "47-80",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue sign band with kana lettering",
+      "rows": "83-103",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shop window, door and barber pole",
+      "rows": "104-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 44,
+    "front_face_rows": 97,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof fills rows 2-45 as two large tiled slope planes. The silhouette widens row by row from 3 px at row 2 to 74 px at row 14, which marks the sloped planes. The light eave line at rows 44-45 is followed by a dark outline at row 46, so the roof has a front-edge line and eave shadow. Below it, rows 47-143 form a tall south face: the gable wall with a window, the blue sign band, and the shopfront with glass and a barber pole. This is a roof top surface above a front face of 3+ rows, so it is three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate's roof is grey tile with about 3-4 steps and a visible grid pattern, but it lacks the per-tile highlights and scalloping of the references' roofs. The stone wall has brick-like lines in 2-3 greys. The sign and shop-front windows are flat blue and grey areas with little grain. Visible tones per tile are 8 against 12 and 10 for the references, so it is lower but not extremely so. Near-flat coverage is 16% against 0% for both references, which confirms the flat fills in the sign and walls. Dark edge pixels are 0% neutral, so the outlines carry a tint (dark blue-grey) and are not a black sticker line. Overall it is cleanly drawn and tidy, but shallower than the references in shading steps, texture and flat areas. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 15334
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:45.258Z",
+ "cells": {
+  "16": [
+   "02745bdc9d5553fa",
+   "10e43c255e0054a2",
+   "124ca65439e2ea53",
+   "12ccce0d9ea4e8f9",
+   "1427a6311d688a28",
+   "15ff741a25f5d016",
+   "1741530e1068ea7b",
+   "1b1e82cac3e749a6",
+   "23ed818c629e5cef",
+   "27dbef94a628bb00",
+   "2c43739843b757e4",
+   "32a5d284cdf95407",
+   "393216d67cd081dc",
+   "44223018f18ec5e2",
+   "4a6df4cabdb3dd7f",
+   "4b78767153332ae4",
+   "500d4de1ae8d7598",
+   "50121c1947a73e62",
+   "5ab435474ff6b26a",
+   "5fe5c44a4ad48f1c",
+   "5feddf3bfb78586f",
+   "608e8f2cec7bf908",
+   "64e0f34a6dfe2857",
+   "7100aa200bc776e0",
+   "793a2b9f86e83e5e",
+   "7ac2e6a73b7272b8",
+   "7cf33c5b8504e024",
+   "87f5d30758079c70",
+   "a1a92990adaa5e82",
+   "a4ca12aab11ca77e",
+   "ace59704716c8609",
+   "aced28d7c456bd55",
+   "b0fb41c763db31e3",
+   "bb0a697ea8c520e0",
+   "bc2b63ad4cf77235",
+   "bd141e757c51743a",
+   "be9137af9b86acdf",
+   "bec221e20869de6c",
+   "c483550b8c66dff1",
+   "c51478fb3efc2ba6",
+   "d03d4c7404bfef4d",
+   "dc9b9c6b7a0d500f",
+   "dd00fbe2e6d17bb9",
+   "ec90820ce9bfe3ac",
+   "f001c28cd6acbda4",
+   "f361a7d0f0db2381",
+   "f6df46dba4ce2d33",
+   "ff1e1e2be11298fb"
+  ],
+  "24": [
+   "02776eeb90aad153",
+   "149c4f4c2bb9504a",
+   "1d6d60a9602d9f3e",
+   "21491c4c4536226d",
+   "38184a3865c5f93d",
+   "5084c486e6474474",
+   "55194065a9b63eda",
+   "5b06b93af98df296",
+   "686ded6badc652c9",
+   "6f024acef42c6e2b",
+   "6fafadafee7e5b54",
+   "71637547b8371923",
+   "84c417b94e56d5d3",
+   "8f24a4bfdb3c34c8",
+   "94a67eb4269d6fc4",
+   "95b20b91d2212e21",
+   "9b83c9f7b8d7cc08",
+   "a471b326cb1bd7ab",
+   "b2b53049bad7889f",
+   "bc8473830b56b384",
+   "c1cc571cd8d31b6b",
+   "c51234bd1884fbff",
+   "cbfefffcebbc6d2e",
+   "da48a6e8f520254f"
+  ],
+  "32": [
+   "087934e3ce5e6cfb",
+   "12b9fd7aae819b09",
+   "14eb50d2e8a50039",
+   "161cfc382d015e65",
+   "1779b2117b90b2ed",
+   "29b5b86615f566d8",
+   "34e4d2908bc04d1a",
+   "36c2baafb605f939",
+   "43240bce628e53f2",
+   "4825d73ddc0c3182",
+   "49a066bc4d7bdeb2",
+   "4ae8879815e194c2",
+   "63de28077847b3d1",
+   "66a94031ab82e651",
+   "76d946f51e349289",
+   "83c5d8014e7637ac",
+   "83c83d3343d0e9e0",
+   "86cad94a64904c6b",
+   "8a52d18452ba51ea",
+   "a33bea83304e2ed0",
+   "a4152aa2322fd66e",
+   "a715adf1d758bb6f",
+   "b334dcf90ad2d0dc",
+   "b430a8fbc75218b0",
+   "bbd1c18b30870a49",
+   "c67069b573649f6e",
+   "c6ee622b4c963ebf",
+   "cde06f9656a941ff",
+   "d77d6eaeb84310d9",
+   "eeb2c0ce301e5b76"
+  ],
+  "48": [
+   "28c70e3575b3eea1",
+   "394c35eddb796911",
+   "615752fe1a3e3d48",
+   "9c02a96e7d98d10b",
+   "d69be3bb3831dd24",
+   "f882cfd7a304d371"
+  ]
+ }
+}

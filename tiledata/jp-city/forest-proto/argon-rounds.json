@@ -1,0 +1,291 @@
+{
+ "judge": "gemini-4-argon-high (8319, hostile prompt, 4x quadrant crops vs beodeul forest crop)",
+ "rounds": {
+  "0": {
+   "bamboo": {
+    "verdict": "FAIL",
+    "score": "1.5",
+    "top": [
+     "q0, q1, q2, q3 (Entire bamboo mass)",
+     "q0, q1, q2, q3 (All foliage overlays, e.g., q0 cols 2–7, rows 2–6; q1 cols 1–8, rows 2–7)",
+     "q2 (cols 1–5, rows 1–4) & q3 (cols 0–5, rows 2–4)"
+    ]
+   },
+   "dense": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "q0, q1, q2, q3 (All forest interiors)",
+     "q2 (cols 1-9, rows 1-5) and q3 (cols 0-9, rows 2-5)",
+     "q0, q1, q2, q3 (All bright canopy crowns)"
+    ]
+   },
+   "edge": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "q0, q1, q2, q3 — All south-facing canopy edges (e.g., q0 row 5 cols 1-5, row 6 cols 6-10; q2/q3 row 6 across entire width)",
+     "q0, q1, q2, q3 — Base canopy fill (all quadrants, every non-crown canopy tile)",
+     "q0, q1, q2, q3 — North skyline and side edges (q0/q1 row 1; q2/q3 rows 2-3; q0/q2 col 1 left edge; q1/q3 col 11 right edge)"
+    ]
+   },
+   "light": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "q0-q3, entire background",
+     "q0-q3, all tree sprites",
+     "q0-q3, all foliage crowns"
+    ]
+   }
+  },
+  "1": {
+   "dense": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "Catastrophic 16px Tile Grid Repetition (\"Egg-Carton\" Canopy)",
+     "Horizontal Guillotine Line & \"Picket Fence\" South Trunk Band",
+     "Clone-Stamped Emergent Crown Heads"
+    ]
+   },
+   "edge": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "Severe 16x16 \"Cauliflower\" Tile Repetition in Base Canopy (q0–q3, entire canopy interior)",
+     "Horizontal \"Shelf\" Banding at South Canopy Lip (q0 row 5/6; q1 row 4/5; q2 row 6; q3 row 6)",
+     "Picket-Fence South Trunk Band (q0 rows 6–7; q1 rows 5–6; q2 row 7; q3 row 7)"
+    ]
+   }
+  },
+  "2": {
+   "bamboo": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "q0, q1, q2, q3 — All dark canopy fill tiles (e.g., q0 cols 1–9, rows 1–8)",
+     "q2, q3 — South bamboo culm walls (q2 cols 1–10 rows 2–5; q3 cols 4–12 rows 3–6)",
+     "q2, q3 — Canopy-to-culm transition (q2 row 3 cols 4–10; q3 row 3 cols 4–11)"
+    ]
+   },
+   "dense": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "q0, q1, q2, q3 — All canopy fill areas (e.g., q0 cols 2–11, rows 1–7)",
+     "q2 (cols 1–11, rows 1–6) & q3 (cols 0–11, rows 2–6) — South trunk band",
+     "q0 (cols 2–11), q1 (cols 1–9), q2 (cols 5–11), q3 (cols 0–7) — Emergent bright-green crown heads"
+    ]
+   },
+   "edge": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "q0, q1, q2, q3 — Entire canopy field (all forest rows)",
+     "q0, q1, q2, q3 — South forest edges (q0 rows 5–6, q1 rows 4–6, q2/q3 row 6)",
+     "q0, q1, q2, q3 — Grass ground tiles (q0/q1 rows 6–7, q2/q3 rows 1–2 and 7)"
+    ]
+   },
+   "light": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "q0, q1, q2, q3 — All background grass tiles",
+     "q0, q1, q2, q3 — Every single tree trunk (30+ instances, e.g., q0 col 3 row 2, q1 col 5 row 3, q2 col 2 row 4)",
+     "q0, q1, q2, q3 — Repeated tree crown stamps (all quadrants)"
+    ]
+   }
+  },
+  "3": {
+   "bamboo": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "q0, q1, q2, q3 (Entire canopy fill)",
+     "q2 (cols 1-11, rows 2-6) & q3 (cols 4-12, rows 4-6)",
+     "q0, q1, q2, q3 (All canopy areas)"
+    ]
+   },
+   "dense": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "Catastrophic 16px \"Bubble\" Grid & Cauliflower Syndrome",
+     "Picket-Fence South Trunk Band",
+     "Vertical Seam Slicing Right Through a Trunk"
+    ]
+   },
+   "edge": {
+    "verdict": "FAIL",
+    "score": "3",
+    "top": [
+     "q0-q3 (All quadrants, entire forest canopy)",
+     "q0, q1, q2, q3 (South forest edges: q0 row 5 cols 1-6 and row 6 cols 7-11; q1 row 6 cols 1-4 and 9-12; q2/q3 row 6 cols 1-12)",
+     "q2, q3 (North forest skyline, rows 2-3 across both quadrants)"
+    ]
+   },
+   "light": {
+    "verdict": "FAIL",
+    "score": "3",
+    "top": [
+     "Blatant Stamp Repetition of Entire Tree Assets (q0–q3, all quadrants)",
+     "Pillar-Like, Pipe-Straight Trunks with Zero Organic Taper (q0–q3, every single trunk)",
+     "Lollipop / Balloon Crown Silhouettes (\"Sticker\" Look) (q0–q3, all trees)"
+    ]
+   }
+  },
+  "4": {
+   "bamboo": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "q0, q1, q2, q3 (all canopy fill areas)",
+     "q2 (cols 1–10, rows 2–5) and q3 (cols 4–11, rows 3–5)",
+     "q2 (cols 1–10, rows 4–5) and q3 (cols 4–11, row 5)"
+    ]
+   },
+   "dense": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "q0, q1, q2, q3 (Entire Canopy Interior — e.g., q0 cols 2–10, rows 2–7; q1 cols 0–10, rows 2–7)",
+     "q2 (cols 1–2 row 1, cols 3–5 row 4, cols 6–10 row 5) & q3 (cols 0–1 row 5, cols 2–6 row 4, cols 7–8 row 3)",
+     "q0 (cols 3–10, rows 2–7), q1 (cols 1–8, rows 3–7), q2 (cols 4–10, rows 0–3), q3 (cols 0–7, rows 0–3)"
+    ]
+   },
+   "edge": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "q0, q1, q2, q3 — All canopy fill areas (e.g., q0 row 2 cols 1–12; q2 rows 4–5 cols 1–12)",
+     "q0, q1, q2, q3 — South trunk bands (q0 row 6 cols 1–6 and row 7 cols 7–11; q1 row 6 cols 5–8 and row 7 cols 1–4, 9–12; q2/q3 row 7 cols 1–12",
+     "q0, q1, q2, q3 — Trunk sprites along all south edges"
+    ]
+   },
+   "light": {
+    "verdict": "FAIL",
+    "score": "3",
+    "top": [
+     "q0, q1, q2, q3 — All tree trunks (e.g., q0 upper-left row, q2 lower-left pair)",
+     "q0, q1, q2, q3 — All tree crowns (global defect)",
+     "q0, q1, q2, q3 — Repeated identical crown stamps across quadrants"
+    ]
+   }
+  },
+  "5": {
+   "bamboo": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "Catastrophic 16x16 Wallpaper Tiling in Dark Canopy (q0, q1, q2, q3 – entire canopy mass)",
+     "Picket-Fence Bamboo Culm Wall (q2 rows 2–5, cols 0–10; q3 rows 3–5, cols 3–11)",
+     "Razor-Straight Horizontal Canopy-to-Trunk Seam (q2 row 3, cols 4–10; q3 row 3, cols 3–10)"
+    ]
+   },
+   "dense": {
+    "verdict": "FAIL",
+    "score": "3",
+    "top": [
+     "q0, q1, q2, q3 (All over canopy interior)",
+     "q0, q1, q2, q3 (Repeated across all quadrants)",
+     "q2 (bottom-right, cols 5–8, row 5) & q3 (cols 2–5, row 4)"
+    ]
+   },
+   "edge": {
+    "verdict": "FAIL",
+    "score": "2.5",
+    "top": [
+     "q0, q1, q2, q3 — All dark canopy background areas (e.g., q0 row 5 cols 6–10; q2 rows 3–5 across)",
+     "q0, q1, q2, q3 — Bright tree crowns everywhere (e.g., q0 cols 2–9, rows 1–4)",
+     "q2, q3 — North forest skyline (q2 row 2 cols 1–3, row 3 cols 4–7; q3 row 2 cols 1–2 & 6–11)"
+    ]
+   },
+   "light": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "q0, q1, q2, q3 (All tree trunks)",
+     "q0, q1, q2, q3 (Extreme stamp repetition — 4-tree cluster)",
+     "q0 (center, col 4, row 2 & bottom, col 5, row 5), q1 (lower-right, cols 5–7, rows 3–6)"
+    ]
+   }
+  },
+  "6": {
+   "bamboo": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "q0, q1, q2, q3 (entire dark canopy interior)",
+     "q2 (cols 1–10, rows 2–5) & q3 (cols 3–11, rows 4–5)",
+     "q2 (cols 1–10, rows 1–5) & q3 (cols 3–12, rows 3–5)"
+    ]
+   },
+   "dense": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "Picket-Fence South Trunk Band",
+     "Blatant 16px Tile Grid in Dark Canopy Fill",
+     "\"Cauliflower\" / Popcorn Crown Syndrome"
+    ]
+   },
+   "edge": {
+    "verdict": "FAIL",
+    "score": "3",
+    "top": [
+     "q0, q1, q2, q3 (all south forest boundaries, e.g., q2 row 6 across all 12 cols)",
+     "q2, q3 (north forest skyline, rows 2–3 across both quadrants)",
+     "q0, q1, q2, q3 (all quadrants, background canopy fill)"
+    ]
+   },
+   "light": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "Extreme Stamp Repetition (Crown Clones)",
+     "Cobblestone / \"Brain\" Canopy Texture",
+     "Rigid Pipe Trunks with Identical Moss Pixels"
+    ]
+   }
+  },
+  "7": {
+   "bamboo": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "q0, q1, q2, q3 (entire canopy mass)",
+     "q2 (cols 1-10, rows 2-5) & q3 (cols 3-11, rows 3-5)",
+     "q0 (cols 2, 4, 7; rows 3-8) & q1 (cols 4, 6, 8, 9; rows 3-8)"
+    ]
+   },
+   "dense": {
+    "verdict": "FAIL",
+    "score": "3",
+    "top": [
+     "South Trunk Band Reads as a Picket Fence Under a Straight Valance (q2, q3 — all south-facing edges, e.g., q3 cols 1–6 row 4, q2 cols 6–9 row",
+     "Severe \"Cauliflower\" Syndrome / Disconnected Cotton-Ball Crowns (q0, q1, q2, q3 — entire canopy interior)",
+     "Blatant Stamp Repetition of Crown Heads (q0, q1, q2, q3 — throughout canopy)"
+    ]
+   },
+   "edge": {
+    "verdict": "FAIL",
+    "score": "3",
+    "top": [
+     "q0, q1, q2, q3 — All dark canopy background fill tiles (especially visible in q2 cols 1–3, rows 3–6 and q3 cols 1–2, rows 3–6)",
+     "q0, q1, q2, q3 — South trunk band across all forest edges (e.g., q2 row 7, cols 1–12; q3 row 7, cols 1–12)",
+     "q0, q1, q2, q3 — Trunk tiles along the south edge (e.g., q2 row 7 cols 3–4, q1 row 6 cols 2–3, q3 row 7 cols 6 & 8)"
+    ]
+   },
+   "light": {
+    "verdict": "FAIL",
+    "score": "2",
+    "top": [
+     "q0-q3, All tree crowns (Global)",
+     "q0-q3, All tree perimeters (Global)",
+     "q0-q3, All trunks (Global)"
+    ]
+   }
+  }
+ }
+}

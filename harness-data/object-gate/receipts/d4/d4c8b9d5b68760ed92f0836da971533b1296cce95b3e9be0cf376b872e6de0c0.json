@@ -1,0 +1,392 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d4c8b9d5b68760ed92f0836da971533b1296cce95b3e9be0cf376b872e6de0c0",
+ "width": 128,
+ "height": 96,
+ "kind": "organic",
+ "name": "forest canopy autotile sample",
+ "label": "jp_city/jp-forest-sk-canopy",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 7,
+  "darkV5": 34,
+  "nearBlackEdge": 0.17,
+  "opaqueTiles": 26
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "forest canopy tile block (main body)",
+      "rows": "16-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper canopy bump",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 64,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sample is a repeating pattern of dark green foliage clumps with pink highlights, in a block with a bump on top. It has no front-edge line, no eave shadow and no ellipse. The scalloped rim at rows 16-19 is only the silhouette outline. The column scans show the same light/dark cycle every 16 rows (e.g. x=64 rows 15-22, 31-38, 47-54) that repeats the tile pattern, not a top surface. Width goes 35 to 65 to 85 to 96 at rows 16-19, which is a rounded silhouette edge and not a lid. No contents are visible. This is a flat tiled texture seen face-on and reads as a front elevation without a top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a canopy autotile block, and its scalloped top edge and dithered dark mass do read as foliage. But it has only 8 distinct colours and a median of 6 per 16x16 tile, against about 108 per tile and 427-567 colours in the references. The main canopy ramp has about 3 lightness steps: a deep dark green-black base, a mid dark green, and a few pink-mauve highlight clumps. The references have 5-6 greens with per-clump highlights and shadows. Dark edge pixels are 0% neutral, so the outline carries a tint and counts as dark_material_tone. Flat-fill coverage is 0% thanks to the dithering, which gives some texture, but the pink spots are sparse and uniform and do not build leaf clumps one by one. Overall it is far shallower and flatter than the references, and the large gap in colour count and density means it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15423
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage canopy mass (repeating leaf-clump texture)",
+      "rows": "0-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 78,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a tileable foliage block (rows 16-79, 89-96 px wide) with a narrower bump on top (rows 0-15, about 30 px wide). The column scans show the same dark green and pink leaf pattern repeating every 16 rows (x=64: bands at rows 15-22, 31-38, 47-54, 63-70). That is a flat texture seen from above. There is no front-edge line, no eave shadow, and no lighter or darker band that separates a top plane from a vertical south face. The scalloped upper silhouette at rows 16-20 is outline rounding of leaf clumps, not a rim. The whole mass is one uniform canopy surface with no distinct front face, so it reads as a top-down slab and not a 3/4 volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate uses only 8 distinct colours and a median of 6 per 16x16 tile, against 108-109 per tile and 427-567 colours in the references. The canopy has a dark green-black base, a mid dusky-pink clump layer and a few light pink speckles, so about 3 usable lightness steps against the references' 5-6. The scalloped top edge is tinted dark rather than neutral black, and the 0% neutral share confirms this, but the outline is a single dark tone and not a graded ramp. Texture is a dither-like speckle with little clump structure: no per-leaf highlights and no multi-step leaf clusters like the references. There are no 5x5 flat fills. As an autotile it reads as a patterned fill and is much thinner than the references, so it fails on shading depth and density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19439
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage canopy block",
+      "rows": "16-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper canopy bump",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The object is a flat tiled foliage texture (autotile sample) with a repeating leaf pattern of dark green and pink-mauve highlights. The scalloped upper edge at rows 16-19 and 0-5 is only a silhouette bump, with no front-edge line, no eave shadow and no ellipse width profile. The column scans show a repeating 16-row pattern (light, mid, dark) that continues down the whole height, so there is no distinct top band and front face. It reads as an even texture fill without a 3/4 top and front structure, so it is neither a clear top-down slab nor a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 8 distinct colours in total and a median of 6 per 16x16 tile. The references have 427 and 567 colours and a median of about 108 per tile, so the candidate is far below both. The canopy ramp is shallow: a dark green-black base, a mid dark tone and a few pinkish-mauve highlight clumps, about 3 clear steps against the references' 5-6. Texture is a dithered speckle with scattered light blobs, and none of it is a flat fill (0% flat coverage). But the clumps are not shaded leaf by leaf, and the pale blobs look like scattered dots rather than lit leaf masses. The edge pixels are tinted rather than neutral (0% neutral share), so the outline reads as dark material tone, with a scalloped silhouette. The structure is acceptable for an autotile canopy sample, but the density and the number of shading steps are well below the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15153
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "foliage canopy mass (tiled leaf clumps)",
+      "rows": "16-79",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "raised upper bump of canopy",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 64,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a tiled autotile sample of leaf clumps, not a single standing volume. Light pink highlight rows appear only as scalloped fringes at the top of each clump (rows 16-19, rows 2-4 on the upper bump). There is no band that ends in a front-edge line followed by eave shadow, no ellipse, and no visible contents. The silhouette is a near-constant 94-96 px wide from row 22 to row 79, with a flat bottom at row 79. The repeating dark and pink texture pattern runs identically down every 16-row tile, so the body reads as a flat front-facing foliage wall with no distinct horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a canopy autotile block with only 8 distinct colours and a median of 6 per tile, against 108-109 per tile and 427-567 colours in the references. That is far below every reference. Its main ramp reads as about 3 steps: a deep green-black base, a mid dark tone, and pink-mauve leaf-clump highlights. The scalloped top edge and dither speckle give some texture, and 5x5 flat-fill coverage is 0%. The dark edge pixels are 0% neutral, so the outline leans tinted and reads as dark material tone. Still, the clumps are sparse, repeat a similar pattern, and lack the multi-green clump layering and per-leaf highlights of the references. It looks flatter and thinner than the references, so it fails on shading depth and density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12507
+  }
+ ],
+ "decidedAt": "2026-10-20T07:08:11.782Z",
+ "cells": {
+  "16": [
+   "01524f3c778484a7",
+   "310628e51eae47c4",
+   "40278deefd9f56d3",
+   "4cac985dd59961d7",
+   "5191b7bcf112cace",
+   "5758439c384d16f0",
+   "5d328b6c814e2f3e",
+   "7c1af14decb33e0a",
+   "8034814ce8fa19e1",
+   "963a87cbc8f5433b",
+   "9a05dc97cd7382bb",
+   "a0e58c3bde5c4295",
+   "b0b57a23596a7e3d",
+   "cb94a50b01c4ee44",
+   "d4d853478e811636",
+   "f395122b840e8c3a",
+   "f3cac65a02a1a9d5"
+  ],
+  "24": [
+   "00990c58a4dcb236",
+   "03db7b81ec0113b9",
+   "0b5e1d2d1529b89e",
+   "1653f789864d9cfb",
+   "243a221cf335a8b6",
+   "2a9d4b3703aa406b",
+   "2e5ad3654774e368",
+   "36a89820d5b2e966",
+   "3a7419869ceb0f34",
+   "3c39dbee3a140729",
+   "3ed583774dfb3c92",
+   "44f80f5c8584ca2f",
+   "45e43c636c0cf2f1",
+   "4715321bd99cecf0",
+   "4743697b556ddbb0",
+   "47a05f000fe282af",
+   "6033c89c377310a9",
+   "6649f89e1b965f60",
+   "678092eba99ed14a",
+   "67bb40e601fedab6",
+   "693c4764038ccb0b",
+   "6b39f11f32b87363",
+   "6fc475d3e7d28045",
+   "70ac34dd3735dbff",
+   "7c7a546e7624b46d",
+   "8ce1d0ce957b49d5",
+   "8e3a6d6b3c793aa9",
+   "9133b244ad4ec576",
+   "9c15a1ea50a5362c",
+   "a1e5a4d5a903adf2",
+   "a4510aba8580b9a1",
+   "a775981734a72619",
+   "a7ce103eb0b8a924",
+   "a9b11b599b55706e",
+   "ac7153a3018ba777",
+   "af84cd8b21058abc",
+   "b3c097fc9475c88b",
+   "b79c08bb0c1010f5",
+   "c16f8718bcf7638a",
+   "c929207b7e2cc43a",
+   "cc44fc205f625b3f",
+   "d84e731fdf675010",
+   "db8b0200ede80604",
+   "dd5863f3e9e7aa6c",
+   "e1fadddef6da554e",
+   "e51d2463bd833092",
+   "e8a9678c37c50f2c",
+   "e9db85c24d754245",
+   "f586a366be62c5d9",
+   "fd7da06f1f7033f1"
+  ],
+  "32": [
+   "0c2269da9182a3d3",
+   "1f22f4fba40078f7",
+   "36e4e3d041b92e7a",
+   "4b3b83dfe60632a5",
+   "5014edadc59466b0",
+   "76da86f605222622",
+   "7d722203f48e272a",
+   "b5ee400544f70178",
+   "e1d205677727aa2b",
+   "f1ebff29742544c3",
+   "f7fd6ea78531d893"
+  ],
+  "48": [
+   "07d52cc2e2ba6f6c",
+   "11a2b43665a7dbb9",
+   "14f87ce44393ecd8",
+   "1fe71e4792bc52d4",
+   "2489206986d20f01",
+   "54627738ef5a4ad4",
+   "5eb224d4f43e1651",
+   "683a8922a0fa72ec",
+   "959896313470608a",
+   "989b45b90dd6f0fc",
+   "98d03286b1a3b5a0",
+   "aa13788ca202652d",
+   "c36b2503c120cd88",
+   "c56c0fcac502b4cd",
+   "cb2f688189f0cf8e",
+   "dfba71511809c38d",
+   "e0bfeffacdcaf959",
+   "f33dcc6b934202da"
+  ]
+ }
+}

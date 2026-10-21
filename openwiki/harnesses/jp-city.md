@@ -182,3 +182,60 @@ R4 의 PR-A(#3054)·PR-B(#3056)를 대체한다(그 두 가지를 이어받아 #
 `house_hip2` 를 妻入り(`gable_front_top`, 박공벽은 맨 위층 벽 재질·무늬 위상을 그대로 잇는다)로, 평지붕은 사방 난간 + 塔屋·실외기·화분·물탱크·빨래
 데크(`flat_top(rail=True, floor=…)`)로, `house_nisetai` 는 난간 옥상으로 바꾼다. 寄棟은 `house_hiraya`·`house_hip2_wide` 만 남긴다.
 지붕 높이 상한 `cap_roof()`: 지붕 면 깊이 절대 36줄(`ROOF_DEPTH`, 妻入り는 박공벽 제외 · 파출소 35·창고 32 기준, 2026-10-20 적대 VQA) + 낮은 집은 비율(경사 ≤40%, 평지붕·片流れ ≤35%), 단층은 최소 24줄. 기와는 한 계열(kawara −3 흑갈), 평지붕 난간 갓은 민무늬, 片流れ 명암은 디더 없이 골 단위 3단. 기와 단은 처마에 맞춘다(`_anchor`).
+
+## 나무 composer 숲 `jp_forest_r4` (2026-10-20, PR #3058 — 활엽만, 굽기 보류)
+
+- 사용자 판정(2026-10-20): r4 나무 단위 방식은 「괜찮다」. 다만 색은 jp_city 잔디·땅과 어울려야 한다 → r5 색 맞춤.
+- 붓으로 칠하는 것은 1층 숲 바닥 오토타일 `jp-forest4-bl`(모든 마스크가 같은 바닥 칸, solidfloor)이다. 그룹의 `composer`(타입 `TreeComposerDef`, `src/project/types/base.ts`)가 있으면
+  엔진 `shapeAutotileGroupAround` 가 끝에 `src/project/defaults/treeComposer.ts` 의 `composeTreesAround` 를 부른다 — 편집기 붓·지우개·채우기, 조수 지형 도구(mapTools·terrainBrush), forestPainter 모두 같은 경로다.
+  1층 층 뷰는 `autotileLayerView(map, 1)` 이 `composeTarget` 으로 맵을 함께 넘긴다(없으면 2~4층을 못 고친다).
+- 규칙: 밑동 칸 (x, y) 에 나무가 서는지는 그 칸 해시와 이웃 몇 칸만으로 정해진다(짝수 줄 또는 숲 남쪽 끝 줄, 줄마다 위상이 다른 3칸 간격, 5% 비움, 모양 T4/T3/T2 해시, 숲 속 나무는 그늘판).
+  칸마다 덮는 조각을 깊이(남쪽 = 앞)로 줄 세워 앞에서부터 4·3·2층에 둔다(이웃 수관이 겹친다). 수관은 `overhangOnTiles`(굽기가 잔디 그룹 `jp-lawn-dirt`·`jp-gravel-lawn` 멤버로 풀어 둔다) 위로만 넘친다. 2~4층에 남의 칸이 있으면 비킨다.
+  그래서 붓질은 국소이고 결정적이다 — 붓질을 쌓은 결과 = 한 번에 짠 결과(`scripts/content/jp-city/forest/ts_compose_check.mts`, 모양 5종 차이 0).
+- 원형(파이썬, 해시까지 같다): `forest_r4_compose.py` 의 `anchor_at`·`cell_stack`. 그림 `forest_r4.py`, 장면 `forest_r4_scenes.py`, r5 색 비교 `forest_r5_compare.py`, 상태 쪽 `forest_r4_viz.py`.
+- r5 색: jp 잔디 3281(색상 122°·채도 0.41·명도 0.52)에 버들항 나무/잔디 관계(나무 명도 중앙값 = 잔디 ×0.77)를 옮긴 램프 `pine_bamboo/keyaki_g1·g2·h1·h2·leafhi_g`, `aged_cedar/bark_g`(paletteContract.ts).
+- 지역 생성(jpRegionTool): paint_forest 는 활엽 칸에 숲 바닥만 칠하고, 키트를 다 찍은 뒤 `composeJpForestR4` 로 한 번에 세운다(집 위로 수관이 넘치지 않게).
+- 알려진 한계: 숲 옆에 길·물을 새로 칠해도 숲 그룹 재성형이 안 불리므로 이미 넘친 수관은 그대로다(숲 쪽을 한 번 다시 칠하면 맞춰진다).
+- **r6 접지**(사용자 「떠 보인다」, 2026-10-20): 버들항 실측 — 숲 그림자는 나무와 따로 땅에 깔린 두 단 반투명 덩이(잔디 ×0.83 · ×0.70), 보이는 쪽은 오른쪽 아래.
+  jp 는 알파 0/255 계약이라 잔디 무늬를 같은 비율로 어둡게 한 칸(계약 램프 `pine_bamboo/lawn_shade`)을 깐다. `TreeComposerDef.ground`(선택, 칩셋마다): 숲 칸은 1층 `floorTiles[code]`(64 변형, 오토타일 멤버),
+  숲 밖 잔디(`apronBases` 3281~3283)는 `apronLayer`(2층) 덧칸, 그 칸의 나무는 2층을 비운다. 그늘 코드 = 가운데·북·서·북서·동·북동 칸이 「그늘 덮개」(그림 맨 아래 `shadeRows`=2 줄을 30%/밑줄 15% 넘게 덮은 칸)인가.
+  그늘 모양 `forest_r6_ground.py`(덮개 칸을 (+2,+3) 민 속 · 오른 3·아래 5 넓힌 가, 원판 다수결로 둥글림). 밑동: 들쭉날쭉 파고드는 아랫선·앞 뿌리·밑동 타원(×0.55)·풀 술(`forest_r4.py` GROUND=r6).
+  `ground` 가 없는 composer(예: #3122 버들항 `composeTreesInMask`)는 예전 그대로 나무만 짠다. 접지 검수 `argon_ground_judge.py`: r5 2.0/2.33 → r6 4.0/3.33(덩이/연못·길·집, 3번 평균).
+- Argon 적대 검수(r3 와 같은 설정): jp 활엽 6.6, **버들항 bd-tree 를 같은 composer 에 넣어도 6.6** — 이 판별 설정은 기준 그림도 0 을 못 만든다.
+- 굽기: `blocks/jp_forest_r4.py`(BLOCK_ORDER 끝), 임시 `--out-root` 로만 확인(23,459칸). 3/4 관문 미통과 — 보정 대기.
+
+## 붓으로 칠하는 숲 오토타일 `jp_forest_r3` (2026-10-20, PR #3058 — 그림 머지 보류)
+
+- r1/r2 숲 팩(키트를 흩뿌리고 머리·하늘선·줄기 띠를 손으로 찍는 방식)을 대신하는 r3. 종마다 오토타일 하나 `jp-forest3-<bl|bb|sk|sg|mp|mh>`(활엽·대숲·벚·삼나무·단풍·섞인 숲 삼나무+활엽).
+- 칸 그림 = 8방 마스크(정규화 47) × 칸 위치 위상. 엔진 `AutotileGroup.phaseVariants {w,h,maps}`(`src/project/defaults/autotileEngine.ts` `autotileVariantForMask(group, mask, x, y)`)를 더했다.
+  편집기 붓(`shapeAutotileGroupAround`)·조수 지형 도구·`forestPainter.paintJpForestR3` 가 같은 표를 쓴다. 위상을 모르는 호출자는 `variantMap`(위상 0,0)으로 떨어진다.
+- 위상 주기: 여섯 종 모두 6×4. jp 시트 4096px 한도(24576칸) 때문에 `jp_forest_pack` 은 한 그루 나무 키트만 남기고(`TREES_ONLY`), 소나무 단독·소나무+단풍 섞인 숲은 뺐다(임시 굽기 실측 합계 23232 / 24576).
+- 섞인 숲은 그 자체가 오토타일 `mh`(한 수관 밭 안에서 수관마다 삼나무 원뿔/활엽 돔). 코드 6 소나무·7 신사·8 산비탈을 모두 `mh` 로 칠한다. 다른 오토타일끼리 맞닿으면 서로 숲 밖으로 보아 사이에 풀 틈이 남는다.
+- 1칸 띠(가로 1줄·세로 1칸)는 칸마다 작은 나무 한 그루(`_small_tree`, 크기·치우침은 위상 해시). 대숲은 잎 다발 + 마디 있는 대줄기 결(`_bamboo_tex`), 단풍은 등롱 호박색 노란 잎을 섞는다.
+- 그림 `scripts/content/jp-city/forest/forest_r3.py`(버들항 역설계 `tiledata/jp-city/forest-r3/SPEC.md`), 장면·붓 시험 GIF `forest_r3_scenes.py`, 적대 검수 `argon_r3_judge.py`·`argon_r3_round.py`(종 6 × 모양 5 + 맞닿음, 활엽을 옆에 두고 1× 가시성 순위), 상태 쪽 `forest_r3_viz.py` → `~/claude-viz/jp-forest-kit-1.html`.
+- 상태: Argon 적대 검수 10판 모두 NO-SHIP(장면당 막는 결함 7~8). 가장 보이는 결함은 주기 반복(6칸)·남쪽 줄기 줄·직선 가장자리. object-gate 프로필 미보정. **저장소 굽기 금지** — `BLOCK_ORDER` 에는 올렸지만 관문 보정 뒤에 굽는다.
+
+## 이어지는 숲 팩 `jp_forest_pack` (2026-10-20, PR #3058 — 그림 머지 보류)
+
+- 진단(r1): 옛 숲은 한 그루짜리 키트(rg-sugi·rg-pine·대숲)를 `regionComposer` 가 흩뿌렸다. 시트에 수관끼리 이어지는 칸이 없어 스티커 무리가 됐고, 키트 5~6칸이 전부 숲 구획 안이어야 해서 폭 3~4칸 숲 띠는 비었다.
+- **그림**(`scripts/content/jp-city/forest/forest_kit_proto.py`, 코드 손 도트, 위치 해시, 계약 확장·하위 램프만): 종류 다섯 — `bl` 활엽(느티나무·잡목) · `bb` 대숲 · `sk` 벚나무 숲(`sakura_petal+`) · `sg` 삼나무 숲(`pine_bamboo+`, 원뿔 수관) · `mp` 단풍 숲(`autumn_maple+`, 가을 지역). 종류마다
+  수관 8방 오토타일 `jp-forest-<k>`(canon 47 + 몸통 변형 12/대숲 4, 3층 막힘) · 곧은 가장자리 변형 그룹 `jp:forest-<k>-edge-<n|s|w|e>` · 수관 머리 `jp-forest-<k>-head-*`(3층 불투명) · 머리 덧그림 `-headx-*`(4층, 대숲 없음) · 하늘선 `-sky-*`(윗줄 ★ 4층) · 줄기 띠 `-band-<L|M|R|one>-*`(활엽 1칸·대숲 2칸) · 한 그루 `-tree-*`(활엽 t2x3·t3x4·t4x4, 삼나무 s2x4·s2x5·s3x5).
+  **한 그루 느티나무·벚나무는 그리지 않는다** — `jp_street_trees`(modern-tiles-r1, 사용자 승인 3×4 가로수)를 쓴다.
+- **몸통은 공을 줄 세우지 않는다**: 몸통 칸 = 어두운 덤불 결(3~5px 잎 뭉치, 점묘 없음)이고 칸 테두리 2px 가 모든 변형에서 같다. 밝은 덩이는 전부 머리 키트(투명 덧그림 + 몸통 위 합성)라 칸 경계를 넘는다 — 몸통에 16px 마다 같은 공을 두면 Argon 이 「달걀판」으로 본다(r4).
+- **칠하기**(`src/editor/jpCity/forestPainter.ts` `paintJpForest`): 마스크(칸마다 종류 코드) → 수관 오토타일 → 하늘선 → 머리(3층, 큰 키트부터) → 머리 덧그림(4층, 엇갈림) → 줄기 띠. 수관 = 아래로 띠 높이만큼 같은 숲이 이어지는 칸, 그 밑 줄이 띠 — 띠가 숲 구획 안에 들어가 폭 3~4칸 얕은 띠도 칠해진다. 맵 밖은 숲이 이어진다고 본다.
+- **구성기**(`regionComposer.paintForestZones` → 단계 `paint_forest`, 실행 `jpRegionTool`): 숲 구획에서 키트·길·물·비움 칸과 그 둘레 1칸을 빼고, 폭 1칸 기둥·6칸 미만 자투리를 지운다. 덩이마다 수종(신사·절·산 → 삼나무 55%, 봄 → 벚나무, 성·공원 → 벚나무 25%, 가끔 대숲, 가을 활엽 → 단풍), 대숲 산길은 서쪽 대숲·동쪽 삼나무. 칩셋에 숲 팩이 없으면 옛 흩뿌리기로 돌아간다.
+- **굽기 보류**: `BLOCK_ORDER` 끝에 `jp_forest_pack` 를 붙였지만 저장소 시트에는 굽지 않았다(3/4 관문 보정 전 저장소 굽기 보류). 미리보기는 임시 굽기 —
+  저장소 `public/assets/jp-city/jp-city-chipset.png`·`src/assets/jpCity*.json`·`tiledata/jp-city/{pins,kit-index}.json` 을 `/tmp/root` 같은 곳에 복사한 뒤 `bake_jp.bake('/tmp/root')` → `bun scripts/qa/jp-forest-preview.mts --mode regions|inaka --root /tmp/root --out <폴더>`(번호는 덧붙기만, 기존 17,053칸 이동 0).
+- **관문(정직)**: 대표 13장 `object-gate review` — 3/4 통과 13/13, 화풍 불합격 13/13(「칸 정보량이 기준보다 훨씬 낮음」), 프로필 `ee216f0de5822996` 미보정(rejected) → **3/4 관문 미통과 — 보정 대기**. 판정 PNG·목록 `tiledata/jp-city/blocks/jp_forest_pack/_gate/`.
+- **적대 VQA**: Argon(`gemini-4-argon-high`, 판정 스크립트 `forest/argon_judge.py`, 버들항 숲 크롭 기준 4배 사분면) r0~r7, 점수 기록 `tiledata/jp-city/forest-proto/argon-rounds.json`. 1.5~2 → 2~3. 끝까지 남은 지적: 줄기 띠의 「울타리」 리듬, 머리 덩이의 「콜리플라워」 결, 얕은 띠의 16px 계단.
+
+## 대나무(대숲) 재작화 — R4 적대 VQA (2026-10-20)
+
+사용자: 「대나무가 끔찍하다」. 지역 팩 `scripts/content/jp-city/blocks/jp_regions_pack.py` 의 대숲은 4~5px 굵은 기둥에 10px 마다 검은 마디 띠, 활엽수와 같은 둥근 덩이 수관이라 「초록 철창 위 브로콜리」로 읽혔다. 산길(21)에서는 이 4×6 덩이 하나만 되풀이해 같은 꼴이 쌓였다.
+
+- **대나무 문법(공용 함수, 다른 팩은 import 해서 쓴다 — 다시 그리지 말 것):** `bamboo_culm(c, x, top, bot, w, depth, seed, lean)` 줄기 2~3px(왼쪽 빛·몸·오른쪽 그늘, 줄기마다 윤곽선 없음), 마디 7~9px 간격·줄기마다 어긋남, 마디 위 2줄 턱 그늘, 끝 6px 가늘어짐, 위로 갈수록 휘는 `lean`. `bamboo_spray(t, x, y, ln, lv, bias)` 아래로 처지는 笹 잎 부채(밑동 2px → 끝 1px). `bamboo_plume(...)` 엇갈린 격자로 뿌린 잎 부채 무리(그늘 쪽부터 칠해 밝은 잎이 위). `bamboo_grove_art(...)` 3/4 발치 이끼 둔덕 타원 + 마른 댓잎 + 오른쪽 아래 그늘, 가장자리가 늦게 시작하는 숲 속 그늘, 뒤 줄기 → 잎 무리 → 앞 줄기 → 잔가지 잎 → 죽순 원뿔 순서.
+- **키트:** `jp-rg-bamboo-grove`(4×6, 같은 id·같은 발 칸·같은 칸 번호 — 24칸을 제자리에서 다시 칠함, 저장 지도 번호 불변) + 새 `jp-rg-bamboo-grove-b`(3×6, 발 1칸) · `jp-rg-bamboo-clump`(2×4, 발 2칸) — 새 칸 26개는 끝에 덧붙음(17027~17052, 이동 0).
+- **구성기:** `src/editor/jpCity/regionComposer.ts` 숲 채움이 대숲을 고를 때 넓은 덩이 50% · 좁은 덩이 32% · 작은 무리 18% 로 섞는다(`bambooVariant`). 나무 판별·지역 허용 목록에 두 변형을 더했다. 같은 x 에 밑동 차 6칸 미만으로 앞뒤 쌓던 나무(세로 기둥처럼 줄 서던 것)는 그 자리를 옆으로 어긋난 후보에 넘긴다(`clashesWithPlaced`).
+- **3/4 관문(정직):** `object-gate review` 영수증 3장(`a86b1cdfecfc` grove · `d6dec45328d6` grove-b · `9c8958739874` clump) — 3/4 반쪽 통과(4/4), **화풍 반쪽 불합격(4/4, 「칸 정보량이 기준보다 훨씬 낮음」)**, 프로필 `ee216f0de5822996` 미보정 → **관문 미통과**. 옛 대숲(`91fb2352ed07`)·기존 `rg-sugi`(`68c36e6d6582`)도 같은 반쪽에서 불합격이다(옛 대숲 「평면 채움·질감 없음」, 이 두 영수증은 비교용이라 저장소에 넣지 않았다). 원인은 측정됐다: 버들항 나무 기준 그림은 16px 칸당 고유색 중앙값 약 100, jp_city 팔레트 계약(재료당 5단)의 대숲 칸은 8(최대 15)이다 — 계약 색을 지키는 한 이 지표로는 통과할 수 없다. 기준을 낮추지 않았다. 병합은 사용자 판단 대기(jp_city 화풍 기준 그림을 따로 둘지).
+- jp-inaka(`inaka_art_props.py` 죽담·허수아비 대)도 이 함수를 import 해서 쓰기로 했다(같은 대나무 두 화풍 방지).
+- 남은 것(이 판에서 안 고침): 쇼텐가이 아치의 실제 한자 「商店街」(글자 금지 규칙과 충돌 — 예전 판에서 사용자가 받아들인 그림이라 그대로 둠), 삼나무도 같은 화풍 반쪽 불합격(곰솔·단풍은 판정 안 함).

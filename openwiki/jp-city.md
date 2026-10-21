@@ -50,6 +50,10 @@ modern3 팔레트(154색) 손 도트로 그린 일본 도시(상가·주택·역
 
 - 행인 `person.*`(Actor1 프레임)은 번들에서 **제외**한다. Actor1 은 타일이 아니고 출처·라이선스가 불확실하다.
 - 새 칸의 색은 modern3 팔레트(`tiledata/atlas-pick/palette/modern3.pal`) 안이어야 한다. modern4(modern_city 쪽)로 확장하지 않는다.
+- **일본 로케일 팔레트 계약**(`src/editor/jpCity/paletteContract.ts` → `bun scripts/content/jp-city/export_palette_contract.mts` → `tiledata/jp-city/palette-contract.json`): 6계열 × 재료 3~4개. 바깥 칸(실내·던전 블록 제외)은 굽기에서 퇴출 램프 색이 계약 색으로 옮겨지고, 허용 색 = modern3 ∪ 계약 색(`bake_jp.py`·`bake_inaka.py`).
+  - **2026-10-20 사용자 결정: 「재료당 5단」 제한을 푼다.** 재료는 핵심 5단(`steps`, 뜻 불변 — 시간대 단 이동·퇴출 램프 짝·`jp_regions_pack` 의 단 번호) 위에 버들항식 **확장 램프** `ramp`(6~10단, 핵심 5단을 순서대로 품는다)와 **하위 램프** `subRamps`(3~10단, 같은 재료의 다른 결)를 가질 수 있다. JSON v2 의 `ramps` 가 이름 붙은 램프 전부를 펼친다: `<재료>`(핵심) · `<재료>+`(확장) · `<재료>/<하위>`. jp_city 와 시골 팩(`jp_inaka_pack`) 모두 적용.
+  - 처음 넣은 것: `pine_bamboo+`(9단) · `pine_bamboo/sunleaf`(9단, 그늘 청록 → 빛 연두로 색상이 도는 버들항 숲 실측 램프, 채도 ≤ 0.49) · `pine_bamboo/culm`(대 줄기 7단) · `moss+`(7단) · `aged_cedar/bark`(나무껍질 7단) · `sakura_petal+`(벚나무 숲 9단) · `autumn_maple+`(단풍 숲 9단). 쓰는 곳: 숲 팩 `jp_forest_pack`(`openwiki/harnesses/jp-city.md` 「이어지는 숲 팩」). 새 재료 결이 필요하면 같은 자리로 더한다 — 램프 밖 낱색은 여전히 금지.
+  - 검사 `validateJpPaletteContract()`(내보내기가 부르고 실패하면 JSON 을 안 쓴다): 핵심 5단 · 확장 6~10단·핵심 포함 · 하위 3~10단 · 단마다 밝기 증가 · 채도 ≤ 램프 상한 ≤ 0.50. 정규화(`nearestContractColor`)는 핵심 5단 색만 본다 — 확장 전에 구운 칸의 정규화 결과가 그대로다.
 
 ## 조수 정책
 
@@ -257,7 +261,7 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 
 ## 탈것 — 차·버스·노면전차·전철·지하철 (2026-10-07)
 
-**그림**: 칩셋 칸이 아니라 따로 된 시트 `public/assets/jp-city/vehicles/<id>.png` 14종(승용 5·경차 2·택시·경트럭·박스 트럭·시내버스·노면전차·전철·지하철), 목록 `src/assets/jpCityVehicles.json`(프레임 `right/left/up/down` + `*_open`, 발자국 `foot`). 원본 `scripts/content/jp-city/vehicles/`(`SPEC.md` 규약: 발자국 아래 가장자리 정렬, 옆 = 길이 L × 2칸, 위아래 = 2 × L, 경차 L=4, 버스·전차 문은 차의 **왼쪽 면**에만 — 동쪽행 `right_open` = `right`, 3/4 윗면 띠·짙은 남색 유리). 관문 `vehicles` 통과.
+**그림**: 칩셋 칸이 아니라 따로 된 시트 `public/assets/jp-city/vehicles/<id>.png` 14종(승용 5·경차 2·택시·경트럭·박스 트럭·시내버스·노면전차·전철·지하철), 목록 `src/assets/jpCityVehicles.json`(프레임 `right/left/up/down` + `*_open`, 발자국 `foot`). 원본 `scripts/content/jp-city/vehicles/`(`SPEC.md` 규약: 발자국 아래 가장자리 정렬, 옆 = 길이 L × 2칸, 위아래 = 2 × L, 경차 L=4, 버스·전차 문은 차의 **왼쪽 면**에만 — 동쪽행 버스엔 `right_open` 이 없다(멈춰도 `right`), 3/4 윗면 띠·짙은 남색 유리). 관문 `vehicles` 통과.
 
 **저장 모양**: `GameMap.transit = { routes: MapTransitRoute[] }` (`src/project/mapTransit.ts`). 노선 = 칸 경로(꺾이는 점) + 탈것 목록 + `loop`/`count`(순환) 또는 `headwaySec`(열린 노선, 맵 밖에서 나타나 맵 밖으로) + `speed` + `stops[{index, waitSec, name, board{mapId,x,y,dir}}]`. 경로 칸 = 머리가 지나는 칸이자 몸 폭 2칸의 위/왼쪽 칸. 좌측통행(`laneOffsetFor`): 폭 4칸 길에서 동쪽행 위 두 줄·서쪽행 아래 두 줄·남쪽행 오른쪽 두 열·북쪽행 왼쪽 두 열. 상태(위치)는 저장하지 않는다.
 
@@ -447,3 +451,27 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 - layout(program·rooms)으로 지은 맵에는 방마다 위치 이름표(`hand-layout-room` + `composed-layout`)를 단다 — 조수 배치 품질 권고(«빈 바닥 → 맵을 줄여라»)가 견본 한 벌짜리 방을 빈 방으로 보고 손으로 다시 짓게 하던 것을 막는다(`piAgentRuntime.ts` 가 composed-layout 맵을 건너뜀). 시설 노트에도 «닿지 못한 빈 바닥 0·경고 0 이면 그대로 두고 다시 짓지 말라, 다른 배치는 layout.variant» 한 줄.
 - 실조수 시험(입력창 경로, `harness-data/assistant-capability/ai-configs/gemini-4-argon.json`: 모든 역할 gemini-4-argon 추론 medium): 새 기본 프로젝트에 4문장(일본 학교 교실·회사 사무실·병원 진료실과 대기실·일본 학교 신발장과 복도). 지침 개선 전 7·7·8·6(c1 은 6번 다시 지음, c4 는 «빈 바닥» 권고에 22×16 손 짓기로 줄임) → 개선 후 7·7·8·7 — 넷 다 jp_city program(school-2f·office-floor·hospital-1f, c4 는 rooms 뒤 school-1f)으로 짓고 다시 짓기 없이 경고 0. 남은 흠: 학교 2층 두 교실이 소품까지 똑같다, 사무 층 자판기 옆 곁문, 학교 1층 계단 옆 짧은 문. 실조수 시험 중에 굽기 사슬(`interiorRoomTemplates.json` 을 origin 판으로 되돌렸다 다시 뽑는다)을 같이 돌리면 «방 구성 "school-2f" 이 없다»가 난다 — 둘을 겹치지 말 것. 3.8-flash·gpt 로 잰 점수와 섞지 않는다.
 - 남은 것: program 배치 후보가 병실을 옆문으로 지나가게 짜는 경우(병동 program 후보 1) · 동·서 벽면 걸이 없음 · 의사·간호사 NPC 는 Actor1 이벤트.
+
+## 숲 — 조수 도구 `paint_jp_forest`·지역/거리 숲·참고문서 `jp-forest` (2026-10-21, PR #3058)
+
+- 숲은 1층 숲 바닥 오토타일 `jp-forest4-bl` + 나무 composer(`src/project/defaults/treeComposer.ts`, 그림 `scripts/content/jp-city/blocks/jp_forest_r4.py`). 나무·접지 그늘 칸은 composer 가 놓는다 — 낱칸·키트로 숲을 만들지 않는다.
+- **조수 입구 셋:** ① `compose_jp_region` 숲 구획(r4 가 구워졌으면 기본, `grounding` 인자; 대숲 등산로는 r3 가 없으면 옛 대숲·삼나무 키트) ② `compose_jp_city_street` 주택가 공원 구획 뒤쪽 55% 에 `parkForest` (`grove` 기본 | `dense` | `none`) + `grounding` ③ 이미 있는 맵에 `paint_jp_forest`(`src/editor/tools/jpForestTool.ts`: `rect` | `beside{x,y,w,h,side,depth}` | `besideLocation`+`side`·`depth`, `forestType` `dense|grove`, `grounding`, `seed` = grove 덩이 모양만).
+- 공용 함수 `paintJpForestArea`(`src/editor/jpCity/forestPainter.ts`): 요청 칸 ∩ 잔디(2~4층에 남의 칸 없음) → dense 는 2×2 열기, grove 는 값 잡음 분위수 55% + 3×3 열기 → 1층 숲 바닥(바닥에 맞춰 잔디 위 `bl`·이끼 바닥 위 `bm`) → `composeR4Family(…, 0)`(형제 composer 를 두 번에 나눠 짠다 — 한 번씩 `composeTreesAll` 을 부르면 서로의 나무를 지웠다). **composer 씨앗은 늘 0** — 편집기 붓이 씨앗 0 으로 다시 짜므로 다른 씨앗으로 세우면 붓질 한 번에 둘레 나무가 바뀐다(지역 도구도 0 으로 바꿨다).
+- **판 r7 (2026-10-21, 독립 Opus 적대 VQA 7판 끝에 전부 통과):**
+  - 나무: 수관 v7.
+  - 숲 바닥 그늘: `forest_r6_ground.py` 의 매끈한 물결 흔들림 + 바깥 1px 성김. 곧은 칸 모서리 그늘이 보여 r2 에서 반려됐다.
+  - 이끼 바닥 형제 그룹 `jp-forest4-bm`: 바탕 칸은 지역 팩 이끼 16109.
+  - 접지(땅 그늘): 늘 켜진다. 도구의 `grounding` 인자는 옛 인자라 무시한다. 접지 없는 숲은 칸 격자 사각형으로 보여 반려됐다.
+  - 대숲 키트 `jp-rg-bamboo-*`: `bamboo_mass`·`bamboo_crown` 으로 다시 그렸다.
+  - 같은 판의 거리 그림 보정:
+    - 함석 지붕: 골이 Λ 박공을 따라 기운다.
+    - 단층·창고 지붕: 4단 + 4px 골.
+    - 간판 탁점: 두 2×2 점, 그림자 없음. 굵히면 だ·が·ご 가 한 덩이로 붙었다.
+    - 交: 1px 틈을 지킨다(文 으로 읽혔다).
+    - 역 문 높이: 간판과 겹치지 않게 잘랐다.
+  - 탈것: 동쪽(right) 버스는 `right_open` 이 없다(문이 반대쪽이다). 런타임이 닫힌 프레임으로 내린다.
+  - 판정 기준: `harness-data/object-gate/vqa/jp-forest-r1.*`. 허용은 사용자 위임 감독 허용이다(18323 묶음 `jp-forest-r1`).
+- 구조 검사 `checkJpForest`: `FOREST_TILE_ON_LAYER1`·`FOREST_ROOT_OFF_FOREST`(줄기 열 밑칸만)·`FOREST_OVER_FOREIGN`·`FOREST_TRUNK_MISSING`·`FOREST_APRON_OFF_LAWN`. 보기 좋은지는 판정하지 않는다.
+- 참고문서 용도 `jp-forest`(4쪽·그림 8장 — 접지 비교 그림은 접지가 늘 켜져 뺐다)는 **따로 굽는다** — `forest_refs_scenes.mts`(실제 도구 결과·변조 검출 JSON) → `bake_forest_refs.py` → `src/assets/jpForestReferences.json` + `public/assets/jp-city-references/forest-*.png`. `jpCity.ts` 가 `jpCityReferences.json` 뒤에 붙여 `ensureJpCityReferences` 로 기존 프로젝트에도 심는다(bake_refs.py 재굽기가 숲 문서를 지우지 않게 파일을 나눴다). 숲 칸이 구워진 시트로만 굽는다(시트 칸 수 확인).
+- 실조수 시험 `scripts/qa/jp-forest-assistant-run.mts`(Pi 실행기, `argonproxy/gemini-4-argon-high` 강도 medium, 새 SQLite 폴더 저장·재로드·1배 그림 → `verify-shots/jp-forest-assistant/<label>/`).
+- **옛 번호는 옛 그림을 지킨다 (2026-10-21):** 핀은 덧붙이기만이다. 같은 키로 그림만 바뀐 칸(예: #3098 깊은 지붕·차량 다시 그리기)이 옛 번호에 덮어써지면 이미 깔린 맵이 바뀐다. `bake_jp.py` 의 `Cells._frozen_key` 가 옛 시트(정의 count 미만 번호)의 화소와 새 그림(야외는 색 계약 적용 후)을 비교해 다르면 키를 `<키>@r<sha8>` 로 바꿔 새 번호를 받게 한다. 굽기 보고 `tiles.rekeyed_art`(바꾼 키 수)·`tiles.old_cells_changed`(옛 번호 중 화소가 바뀐 칸, 0 이 아니면 굽기 거절). 실측(origin/main 핀 기준 임시 굽기): 칸 19,614 · legacy 1,837 · 다시 키 344 · 옛 칸 화소 변경 0 · 핀 이동 0. 전에 적었던 「옛 칸 1,493」은 이동이 아니라 legacy(이번 굽기가 만들지 않는 번호)였고, 그중 344칸이 제자리에서 그림이 바뀌고 있었다 — 이 규칙으로 막았다.

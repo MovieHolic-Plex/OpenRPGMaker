@@ -1,0 +1,296 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "54ee8bf4bf0dcf991e5d392a0f4d9cf058586a1307f0b5e7cd234e2d48987f81",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "forest north-edge skyline of treetops (japanese cedar)",
+ "label": "jp_city/jp-forest-sg-sky-0",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 34,
+  "nearBlackEdge": 0.25,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cedar treetop spires and foliage mass",
+      "rows": "17-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a skyline of two conical cedar treetops over a dark foliage mass. The silhouette widens from a narrow spire (rows 6-16) to full width 32 at row 19, then stays constant to row 47. The column scans show no front-edge line, eave shadow, ellipse or visible horizontal surface. Instead they show alternating lighter and darker foliage tiers that read as a vertical face. There is no top plane or canopy plane. It is a front-facing elevation of tree silhouettes with a rim-like, irregular top edge."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 10 distinct colours against 427 and 567 for the references. Its median is 9 colours per tile against about 108. The cedar spires show roughly 3 green steps (light, mid, dark) with simple stepped tiers, while the references use 5-6 greens in clumped leaf masses with per-clump highlights. Outline pixels are tinted dark green (0% neutral), so there is no sticker outline, and there are no 5x5 flat fills. Texture comes only from the tier edges and a little speckle in the dark backing mass, which is far sparser than the reference leaf clumps and grain. It is a thin, low-colour silhouette that would look flatter and simpler next to the references, so density is much lower even allowing for a small skyline piece.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13783
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cedar treetop spires and foliage mass",
+      "rows": "6-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is two tapering conical spires rising from a flat-topped foliage band. The width profile goes 1, 5, 3, 5, 7, 9, 21, 30, then a constant 32 from row 19 to row 47. The foliage band has a straight horizontal top edge at row 18-19 and no ellipse. The column scans show no front-edge line followed by eave shadow. They show only alternating light and dark tiers of foliage texture, which read as vertical layers. No horizontal top surface and no contents are visible, so this is an elevation view of the treetops with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is two small cedar spires with only 10 distinct colours in total, against 427 and 567 in the references. Its median of 9 colours per tile is about a tenth of the references' ~108. The cedar tiers are stepped in roughly 4 greens, while the references use 6 or more steps with many leaf clumps, each with its own highlight. Dark edge pixels are 0% neutral, so the outline leans green and counts as dark_material_tone. Flat-fill coverage is 0%, but the tiers are simple repeated chevrons with little grain or clump variation, which reads as simplified next to the reference canopies. The piece is small and simple, but the colour count and shading depth are far below every reference, so it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15667
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cedar treetop canopy mass (two conical spires over a dark foliage band)",
+      "rows": "17-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a skyline of treetops: two conical cedar spires rise above a 32px-wide foliage band that is full width from row 19 down to row 47. The width profile jumps from 9 to 21 to 30 to 32 across rows 16-19, which is the silhouette of the canopy and not an ellipse that widens and then narrows. There is no front-edge line, no eave shadow, and no ellipse or lid. Columns x=8, 16 and 23 show only alternating light and dark foliage clumps, with no top band ending in an edge line. The whole drawing is a vertical face seen from the front, which reads as a front elevation with no distinct horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 10 distinct colours against 427 and 567 for the references, and a median of 9 colours per tile against about 108. Its two cedar spires and the dark green backing show roughly 3 green steps, where the references use 5-6 with leaf clumps. The outline is tinted dark green (0% neutral), so it is not a sticker line, and flat-fill coverage is 0%. The tiered spire shapes carry some texture, but the shading is shallow and the palette is far thinner than the Beodeul standard. A careful artist would see it as noticeably flatter and simpler beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12879
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cedar treetop skyline (two conical spires over a foliage mass)",
+      "rows": "6-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is two conical cedar spires (rows 6-18) rising from a full-width foliage band (width 32 from row 19 to 47). Rows 19-47 are vertical foliage texture with light and dark clumps, shaded in tiers. There is no front-edge line followed by eave shadow, no ellipse width profile, and no visible contents. The spire tips are pointed, not a flat horizontal surface. It reads as a front-facing elevation of treetops with no distinct top plane. The kind is organic, so the object matches."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is two small conifer silhouettes with tiered, scalloped boughs and a dark green base. It has only 10 distinct colours in total, against 427 and 567 for the references, and a per-tile median of 9 against 108 and 109. That is far lower on every measured fact. By eye, the cedars show about 4 green steps with a lighter top edge, and the tier edges give some texture. They lack the per-leaf-clump highlights and varied greens of the reference canopies, and the trunks and base are dark and flat. The dark edge pixels are not neutral (0% near-neutral) and lean green, so the outline reads as dark material tone. There are no 5x5 flat fills. Overall it is simpler and shallower than the references and would look thinner beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11238
+  }
+ ],
+ "decidedAt": "2026-10-20T07:08:11.772Z",
+ "cells": {
+  "16": [
+   "37e41307e846ff8e",
+   "3a412ea04243d5ab",
+   "6dd85ce3ffc0aa08",
+   "8b22be7b675f0ec3",
+   "a3f941e26af1b67f",
+   "bac6848aaeba8483"
+  ],
+  "24": [
+   "1317d5512d52c07b",
+   "136ef0f5053f2f55",
+   "1a8019bf9115300c",
+   "6e3c2c0b93b457e5",
+   "71d0d17886bbc92e",
+   "889a51d69b1ceb23",
+   "9f9eaa68f28388fe",
+   "b7ccaceed409a56b",
+   "db4e5d14605aed38",
+   "de781b6610e3f5f0",
+   "ec07f0da2c2929b4",
+   "f3a9c04e420b3c49"
+  ],
+  "32": [
+   "7bcd4ba58988277c",
+   "8089a2db239a5e8f",
+   "909c520e6ac25798",
+   "cf9ff3a44c031a69"
+  ],
+  "48": [
+   "24f676a1bb14b1bc",
+   "4189ad8a0b61ded2",
+   "dfa3007fcf544d93"
+  ]
+ }
+}

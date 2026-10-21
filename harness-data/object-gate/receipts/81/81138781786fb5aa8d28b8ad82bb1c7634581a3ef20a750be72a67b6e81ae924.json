@@ -1,0 +1,515 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "81138781786fb5aa8d28b8ad82bb1c7634581a3ef20a750be72a67b6e81ae924",
+ "width": 96,
+ "height": 160,
+ "kind": "structure",
+ "name": "たばこ屋 담배가게",
+ "label": "jp_city/jp-bldg-shop-tabako",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 평면 채움 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "평면 채움 (1/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 14,
+  "darkV5": 38,
+  "nearBlackEdge": 0.98,
+  "opaqueTiles": 36
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main gable roof (two slopes, light left and dark right, with ridge)",
+      "rows": "8-57",
+      "evidence": "c",
+      "front_edge_line_row": 57,
+      "eave_shadow_rows": "58-58"
+     },
+     {
+      "part": "tiled awning/eave roof over shopfront",
+      "rows": "85-99",
+      "evidence": "c",
+      "front_edge_line_row": 99,
+      "eave_shadow_rows": "98-99"
+     },
+     {
+      "part": "upper wall with window (front face)",
+      "rows": "58-84",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sign board and shopfront with door",
+      "rows": "100-155",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vending machine beside the door",
+      "rows": "125-150",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 50,
+    "front_face_rows": 76,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens row by row from 3 to 74 px over rows 8-19. The tile-striped roof planes (rows 8-57) end in a light eave edge at rows 57-58, and the cream gable wall sits below them. A second tiled awning (rows 85-99) ends in a darker edge line, with the sign and shopfront front face below it (rows 100-155). The building has roof planes and a front face of well over 3 rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts: the candidate has 10 visible tones per tile against 12 and 10 for the references, so it is roughly on par with the stone reference. Near-flat coverage is 6% against 0% for both references, and 0% of its dark edge pixels are neutral, so the outlines carry a tint, not near-black. By eye: the grey-blue roof has a scalloped tile pattern but only about 4 lightness steps and little per-tile highlighting, where the references' roofs show 5-6 steps with warm highlights. The cream upper wall is mostly flat, with only a few horizontal clapboard lines and no plaster speckle or grain. The lower wall and shopfront, the sign, the vending machine and the window are cleanly drawn, but they are smooth and read as vector-like fills next to the references' stone, timber and plaster grain. The result is cleaner and flatter than Beodeul, with the wall areas visibly thinner in texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16301
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main gable roof (two sloped planes with ridge, left lit and right dark)",
+      "rows": "8-57",
+      "evidence": "c",
+      "front_edge_line_row": 57,
+      "eave_shadow_rows": "58-59"
+     },
+     {
+      "part": "middle awning/shed roof over shop front (tile rows)",
+      "rows": "85-99",
+      "evidence": "c",
+      "front_edge_line_row": 99,
+      "eave_shadow_rows": "100"
+     },
+     {
+      "part": "signboard (tabako) on shop front",
+      "rows": "101-122",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vending machine",
+      "rows": "125-150",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 50,
+    "front_face_rows": 56,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main building has a large tiled gable roof from rows 8-57 with a width that grows from 3 to 74 px and ends in an eave line at about row 57, followed by a narrower wall below (width 71 then 66). The roof is clearly a sloped top plane, shown as two slopes split by a ridge. Below it is the cream wall with a window (rows 59-84). A second tiled awning roof (rows 85-99) projects over the shop front with an edge line and shadow. The shop front (sign, door, display window) is a vertical south face of 56+ rows. The roof and the awning both show top slopes, so the structure reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The facts are close to the references: 10 visible tones per tile against 12 and 10, 6% near-flat coverage against 0%, and 0% neutral dark edge pixels. The outlines are tinted, in dark blue-grey beside the roof and dark brown beside the wall and sign, so they are not a sticker line. By eye the candidate is cleaner and smoother than the references. The roof has only about 4 grey-blue steps with faint tile texture, where the references show scalloped tiles with per-tile highlights. The cream wall is mostly flat, carrying only a few siding lines and none of the plaster speckle the references have. The red sign board and the dark eave band are near-flat blocks that rely on the lettering for interest. The vending machine and window details are good, but the main material ramps (roof, wall, sign) are shallower than the 5-6 steps in the references. The candidate is slightly thinner than the references, and with the doubt rule it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18635
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main gabled roof (two slope planes, light left and dark right, meeting at a ridge)",
+      "rows": "8-57",
+      "evidence": "c",
+      "front_edge_line_row": 57,
+      "eave_shadow_rows": "58-59"
+     },
+     {
+      "part": "upper wall with window (cream clapboard face)",
+      "rows": "58-84",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tiled awning roof over the shopfront",
+      "rows": "85-99",
+      "evidence": "c",
+      "front_edge_line_row": 99,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "signboard",
+      "rows": "100-123",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shopfront with door, vending machine and display window",
+      "rows": "124-155",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 50,
+    "front_face_rows": 98,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile widens by 6 px per row from row 8 to row 20, then holds at 74 px through row 57. That is a large sloped roof with two tiled planes, a lighter left plane and a darker right plane, meeting at a ridge. It ends in a light eave edge at about row 57, with the silhouette narrowing at rows 58-59. Below it is a tall cream front wall with a window. A second tiled awning band at rows 85-99 has its own light bottom edge at about row 99, so both roof elements show top slopes. Rows 100-155 are the sign and shopfront, which are vertical front faces. The front face is far more than 3 rows tall. The roof slopes are top surfaces, not a receding side wall, so no side face is counted."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts: the candidate has 10 visible tones per tile against 12 and 10 for the references. Near-flat coverage is 6% against 0%. Dark edge pixels are 0% neutral, so the outlines are tinted (dark blue-grey beside the roof, dark brown beside the wall) and not a sticker-like black line. The slate roof has about 4 steps with a per-tile scallop and a light edge, which is less rich than the references' 5-6 step tile roofs with per-tile highlights. The cream upper wall is a mostly flat fill with only faint lines, and the shop sign and lower wall are fairly flat. The 6% flat coverage confirms small flat areas. Overall the piece is cleanly drawn and structurally sound, but it is a bit shallower and flatter than the references, and plaster speckle and grain are weaker than the stone and timber texture of the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17325
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "main gabled roof (two slopes, light left and dark right, with a ridge line)",
+      "rows": "8-57",
+      "evidence": "c",
+      "front_edge_line_row": 57,
+      "eave_shadow_rows": "58-58"
+     },
+     {
+      "part": "shop-front tiled awning/pent roof over the sign",
+      "rows": "85-99",
+      "evidence": "c",
+      "front_edge_line_row": 99,
+      "eave_shadow_rows": "100-101"
+     },
+     {
+      "part": "upper wall with window",
+      "rows": "47-84",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shop sign board",
+      "rows": "100-123",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shopfront, door and vending machine",
+      "rows": "124-155",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 50,
+    "front_face_rows": 98,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body has a large sloped gable roof in rows 8-57. The two slopes are covered in tile rows, with a ridge at about x=48 and a lighter eave edge at about row 57. Below it is a tall front wall of about 98 rows (rows 58-155) with a window, sign and door. The pent-roof awning at rows 85-99 also shows a tiled top slope ending in an edge line at row 99, followed by shadow. The roof and awning both read as top surfaces, and the wall and sign are vertical south faces. No receding side wall is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building (roof, walls, door, windows, sign), so it matches the reference kind. Its measured 10 visible tones per tile sits between the references (12 and 10). Near-flat coverage is 6% against 0% for the references, which is slight and confined to the red sign and parts of the wall. Dark edge pixels are 0% neutral, so the outlines are tinted: dark blue-grey beside the roof, dark brown beside wood and the sign. The roof has about 5 steps with per-tile hatching and highlights. The cream siding has plank lines and shading, and the vending machine, window and shop front carry small detail. It is a little cleaner and less grainy than the references, and the walls have fewer steps (about 3-4). It is still comparable in density and has no sticker-like uniform black outline, so a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19098
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:45.264Z",
+ "cells": {
+  "16": [
+   "05b1db5d2d25eb1c",
+   "0c41e5018080c2f0",
+   "10653202a778fb6f",
+   "150069f9b60d6552",
+   "15ff741a25f5d016",
+   "1b68eae4a3f7e8a1",
+   "1f346278598b314b",
+   "25d4641d5b81729e",
+   "2cacd81d274d6f09",
+   "311f7c19edaf6b3f",
+   "315b58be2b91ff68",
+   "327d04f6838c6952",
+   "3a8895717ff8c2a8",
+   "4393ae53df4115c1",
+   "4c546c1da97f82d0",
+   "4c97e920e601a255",
+   "4ff6594258042fcc",
+   "50f454b9bee17097",
+   "5244b15206369bc2",
+   "600a78aa6aefcad9",
+   "637cc2e32d0ea414",
+   "70006607a1073c0b",
+   "72b31b8db685dc09",
+   "7886a12ab9defb31",
+   "7adf2b082820847e",
+   "7b4af1b48620950b",
+   "7cab31c3a36032ba",
+   "7cf33c5b8504e024",
+   "7ed38ea8b8dbb6b5",
+   "7f49a7e106f5721f",
+   "80b1473633d87e97",
+   "868ac925dfe63e0b",
+   "8740592a13951a3b",
+   "8bac9ac3db942161",
+   "94fe95436f078a59",
+   "99c14c98181fbef8",
+   "b91812d819750c68",
+   "ba5f2937631b7d51",
+   "ba9107f1f54a1fab",
+   "bf0c502d31bd96ae",
+   "c5fc8a961a833187",
+   "cb1639bf0b7929f5",
+   "cf2a40c1e14f1985",
+   "d039c6ff8b145a71",
+   "d3ec7dfc6f82d0dd",
+   "d43572f7202415cc",
+   "d63082ddcc50d1b6",
+   "d9f1087a5b9e10ea",
+   "dbfe75f901c08eff",
+   "dc5fc2cd1adbc252",
+   "e8670e678bf1b36e",
+   "f4b4d44a2314b508",
+   "f5bf02b176500201",
+   "ffb21909cb7e90d4"
+  ],
+  "24": [
+   "01735a649a52818f",
+   "045de87a5fe0a23d",
+   "0cd5bedf5458fea9",
+   "0f85c3d54269ab10",
+   "10d1a785e8aa796a",
+   "1135e08290676514",
+   "1209543f76e089d5",
+   "1507c3743af1b936",
+   "1dedee9a0066a530",
+   "237e8fe457aea22f",
+   "2cd82989ee7a5317",
+   "36f0ecbf31bd0e63",
+   "4964bc439bb6be80",
+   "5185cf4712a42b03",
+   "520e28a07171c6cc",
+   "5ccce0ba7cbaae3d",
+   "5e34015798379be0",
+   "5e45f17d8af9d7dd",
+   "61234db39c7f0eed",
+   "66eac32226305e25",
+   "6ab1d56c69a008df",
+   "6b66e05316b827ec",
+   "6df7450e8ef5a00d",
+   "6eacaa65cb6e1d1e",
+   "737e0adb74717b80",
+   "7fcb2b1bafe209ae",
+   "848300fc1897ee55",
+   "8acf71e2419d18da",
+   "9bfe44504ed61f15",
+   "9c7f516d5c696f07",
+   "a01307bc00d4b898",
+   "a229d294484d23a5",
+   "a64db4479761ac95",
+   "aa17c5f916cde353",
+   "ab7b430499d65148",
+   "b5dfff97075bbd1c",
+   "b971028dfb1bff6d",
+   "beb9f0189bf1712f",
+   "c4f33d87c57a57ff",
+   "c5560d6214bc8f7a",
+   "c960f77d730dd673",
+   "cf63c7765a6974ec",
+   "db29ca35db5ce352",
+   "dd28e4fa2b12ccb1",
+   "e0c7e845fcfa8ac0",
+   "e603e0818bde58d5",
+   "e70b58cc69e837a8",
+   "e84c14b874877b4a",
+   "ef8279aed6fd0d63",
+   "ef93fdb2bc361053",
+   "f388fdfe3a3b0249",
+   "f723ff5db9af2127",
+   "f74259ce8b0efe85",
+   "fbbe24cce785ea6c"
+  ],
+  "32": [
+   "007957e1711c3152",
+   "0bdac14022de85f9",
+   "117dd04e3560056b",
+   "4ad84ce0ad857315",
+   "4d5b8a0b73e03772",
+   "5f0e6e0d29e1471a",
+   "75ca722019aa4139",
+   "9111071c03a04dc9",
+   "95dac49024442ea5",
+   "9de2b480dfc5011a",
+   "b517b9b6603785f9",
+   "d368490881af3624",
+   "e1283e884ab70102",
+   "f4e7950749b63f54",
+   "fea3ae70e5f934ff"
+  ],
+  "48": [
+   "0cb107271f37cea4",
+   "0dcf2a9eee93fb7a",
+   "1d22ec5e603c27da",
+   "2f53ea46b1dd09ea",
+   "2fd4e31f1a8c9257",
+   "3195e0cdc9e630ae",
+   "46802a4fe4475440",
+   "47b66328974748c3",
+   "6b0ca9361968ccfb",
+   "8847147d19c8b3e1",
+   "8a64b5940bac26be",
+   "8df09fa7b350a92f",
+   "bcf94811ac6d8a03",
+   "d1fe7d10789b0a51",
+   "d422772df5ff1224",
+   "e49ca0f6420fd6f2"
+  ]
+ }
+}

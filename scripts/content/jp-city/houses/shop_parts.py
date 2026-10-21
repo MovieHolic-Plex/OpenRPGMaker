@@ -90,10 +90,51 @@ def _holes(on):
     return n
 
 
+GAP_KEEP = set('交')     # 굵히면 1px 틈이 메워져 다른 글자로 읽히는 글자(2026-10-21 VQA: 交 → 文)
+
+
+def _dakuten(on):
+    """탁점(゛) 화소: 위쪽 세 줄 안, 오른쪽(11열 이후)에 2px 세로 점 두 개가 한 열 띄워 나란히(だ 12·14열, ご 13·15열). 없으면 빈 집합."""
+    for r in (0, 1):
+        for c in range(11, 14):
+            d = {(r, c), (r + 1, c), (r, c + 2), (r + 1, c + 2)}
+            if d <= on and not ({(r, c + 1), (r + 1, c + 1)} & on): return d
+    return set()
+
+
+def _dakuten_dots(dk, body):
+    """굵힌 탁점: 두 점을 2×2 로 따로. 원래 두 열 c·c+2 기준으로 (c-2,c-1)·(c+2,c+3)(사이 2열) → 몸 획에 닿으면 (c-1,c)·(c+2,c+3)
+    → (c,c+1)·(c+3,c+4)(사이 1열) 순으로 몸 획(8방향 이웃)에 닿지 않는 첫 자리."""
+    r = min(j for j, _ in dk); c = min(k for _, k in dk)
+    near = {(j + a, k + b) for j, k in body for a in (-1, 0, 1) for b in (-1, 0, 1)}
+    for l0, r0 in ((c - 2, c + 2), (c - 1, c + 2), (c, c + 3)):
+        dots = frozenset({(j, k) for j in (r, r + 1) for k in (l0, l0 + 1, r0, r0 + 1)})
+        if not (dots & near): return dots
+    return dots
+
+
 def bold_glyph(ch):
-    """굵게(오른쪽 1px)는 속 칸이 하나도 닫히지 않을 때만 — 麺·駅처럼 빽빽한 글자는 굵히면 속이 메워진다(VQA 4차)."""
+    """굵게(오른쪽 1px)는 속 칸이 하나도 닫히지 않을 때만 — 麺·駅처럼 빽빽한 글자는 굵히면 속이 메워진다(VQA 4차).
+    탁점은 굵히면 한 줄 막대로 붙어 사라져 보인다(2026-10-21 VQA: だんご → たんこ) — 두 점을 2×2 로 따로 찍고 사이 2열을 비운다.
+    탁점에는 그림자도 찍지 않는다 — 그림자가 사이 열을 메워 한 덩이로 보였다(2026-10-21 VQA r6: だがし)."""
+    return bold_glyph_parts(ch)[0]
+
+
+def bold_glyph_parts(ch):
+    """(굵힌 화소, 그림자를 찍지 않을 화소)."""
     g = jfont.glyph(ch)
     on = set((j, k) for j in range(16) for k in range(16) if g[j, k])
+    dk = _dakuten(on)
+    if dk:
+        body = bold_glyph_set(on - dk, ch)
+        dots = _dakuten_dots(dk, body)
+        return body | dots, dots
+    return bold_glyph_set(on, ch), frozenset()
+
+
+def bold_glyph_set(on, ch=''):
+    if ch in GAP_KEEP:
+        return on | {(j, k + 1) for j, k in on if (j, k + 2) not in on and (j + 1, k + 2) not in on and (j - 1, k + 2) not in on}
     bold = on | set((j, k + 1) for j, k in on)
     gaps = sum(1 for j in range(16) for k in range(15) if (j, k) not in on and (j, k - 1) in on and (j, k + 1) in on)
     return bold if _holes(bold) >= _holes(on) and gaps <= 10 else on              # 1px 틈이 10개 넘는 빽빽한 글자(麺 23 · 駅 18 · 喫 12)도 그대로
@@ -103,9 +144,9 @@ def sign_text(c, x, y, s, col, shadow, step=18):
     """간판 레터링: 16px 글리프 획을 오른쪽으로 1px 두껍게(속 칸이 닫히는 글자는 그대로) + 오른쪽 아래 1px 그림자."""
     for i, ch in enumerate(s):
         if ch == ' ': continue
-        bold = bold_glyph(ch)
+        bold, nosh = bold_glyph_parts(ch)
         for j, k in bold:
-            if (j + 1, k + 1) not in bold: c.P(x + i * step + k + 1, y + j + 1, shadow)
+            if (j + 1, k + 1) not in bold and (j, k) not in nosh: c.P(x + i * step + k + 1, y + j + 1, shadow)
         for j, k in bold: c.P(x + i * step + k, y + j, col)
 
 
@@ -244,8 +285,9 @@ def shop_glass(c, x, y, w, h, goods='mart', door='mid'):
         c.VL(gx + i, gy, gh, K('tekko', 2)); c.VL(gx + i + 1, gy, gh, K('tekko', 0))
     if door:
         dx = x + (w - 16) // 2 if door == 'mid' else x + (w - 20 if door == 'right' else 4)
-        c.R(dx, y + h - 28, 16, 28, K('tekko', 2)); c.R(dx + 1, y + h - 27, 14, 27, K('garasu', 0))
-        c.VL(dx + 7, y + h - 27, 27, K('tekko', 1)); c.VL(dx + 8, y + h - 27, 27, K('tekko', 3))
+        dh = min(28, h - 1)                                           # 감실보다 높은 문은 위 간판을 뚫는다(2026-10-21 VQA: 역 자동문이 역명판을 가렸다)
+        c.R(dx, y + h - dh, 16, dh, K('tekko', 2)); c.R(dx + 1, y + h - dh + 1, 14, dh - 1, K('garasu', 0))
+        c.VL(dx + 7, y + h - dh + 1, dh - 1, K('tekko', 1)); c.VL(dx + 8, y + h - dh + 1, dh - 1, K('tekko', 3))
         for k in range(5): c.P(dx + 2 + k, y + h - 8 - k, K('garasu', 2))
         c.R(dx - 2, y + h, 20, 2, K('tekko', -1))                   # 매트
         if hasattr(c, 'doors'): c.doors.append(dx + 8)

@@ -1,0 +1,20 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "56609f743f46f26a7f54f537479eff49d31a3f935992e8fcbff8b0043fe42847",
+ "profileHash": "4d8774b517f41638",
+ "kind": "other",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T05:16:56.730Z",
+ "by": "delegated",
+ "delegatedBy": "user (2026-10-21, all gate decisions delegated to the superv",
+ "evidence": "harness-data/object-gate/vqa/jp-forest-r1.opus-vqa-r7.json",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (1/4)"
+ ],
+ "note": "묶음 허용: jp_city 숲 r7 · 나무 24 · 대숲 3 · 거리 건물 55 · 탈것 23 · 숲 바닥 2 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/jp-forest-r1.opus-vqa-r7.json",
+ "sig": "f2389a34b87e1cf1bf84378f5c620416f37462107d20780bf6c4f0eb60ab2861"
+}

@@ -1,0 +1,364 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "62bd4cb5d760446ae324fb653bb10152c0b6eb049e2ce6b7c3a0743bbe56cc83",
+ "width": 48,
+ "height": 80,
+ "kind": "organic",
+ "name": "single deciduous tree (japanese cedar)",
+ "label": "jp_city/jp-forest-sg-tree-s3x5-1",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 50,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "conifer foliage cone (main body)",
+      "rows": "3-72",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk base",
+      "rows": "73-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 70,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tree is a tall conical foliage mass from row 3 to row 72, with a short trunk and shadow at rows 73-78. The width grows steadily from 2 to 28 px. Light and dark tiers repeat down the cone, but they are foliage clumps, not a horizontal top surface with a front-edge line and eave shadow. There is no ellipse and no visible contents. The object reads as a front-facing silhouette with no distinct top plane, so it is a front elevation. The organic kind plausibly matches a cedar, though the shape is conifer-like."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a conical cedar built from horizontal tier bands in about 3-4 greens. It has only 13 distinct colours in total, against 427 and 567 for the references, and a median of 10 per tile against 108 and 109. The references have clumped leaf canopies in 5-6 greens, with highlight clusters and a visible branching structure. The candidate's silhouette is smooth and uniform, with regular striping and no leaf clumps or per-tile variation. The trunk is small and plain. Its outline is a dark green tint (0% neutral), so it is not a black sticker line. There are no 5x5 flat fills, but the texture is just repeated banding. Shading depth and density are far below the Beodeul standard, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14414
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "conifer foliage cone (main body)",
+      "rows": "3-72",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk base",
+      "rows": "73-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 70,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tree is a tall conical, layered conifer. The silhouette widens steadily from 2 px at row 3 to 28 px at row 72, then narrows to a small trunk and root shadow at rows 73-78. The tier bands of lighter and darker green are only small scallops along the foliage. None ends in a front-edge line with eave shadow, and none forms an ellipse. There is no visible top surface or interior contents, so the foliage reads as a front elevation. The trunk base is tiny and is a detail, not the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a conical cedar built from banded horizontal tiers with only 13 distinct colours in total, against 427 and 567 for the references. Its median is 10 colours per 16x16 tile, against 108 and 109 for the references, so it is far below both. Shading is shallow: roughly 3 green steps (light, mid, dark) repeated as stripes down the cone. The references use 5-6 steps in clumped leaf masses with individually shaded leaf clusters. The tiers repeat in a regular, mechanical pattern with no leaf clumps or irregular silhouette, and the trunk is a small, plain block. The outline is a tinted dark green with 0% neutral edge pixels, so it is not a sticker outline, and flat-fill coverage is 0%. Those two points do not make up for the shallow ramp, the sparse texture and the very low density next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13395
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "conical foliage mass (stacked drooping tiers)",
+      "rows": "3-72",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk stub and ground shadow",
+      "rows": "73-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 75,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a symmetric cone that widens from 2 px at row 3 to 28 px at row 72. The tiers repeat about every 5 rows, each with a light 1-row bough edge (e.g. x=24 rows 14, 19, 24, 29, 34, 39) followed by 1-2 rows of darker shade. These read as hanging bough tiers on the face, not as horizontal surfaces: no band widens and narrows like an ellipse, and no tier shows a separate top plane above its edge line. The tip at rows 3-9 is a plain pointed apex. The brown trunk at rows 73-77 is small and sits under a flat base shadow. The whole object is a front-facing elevation of the foliage, with no separate top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a conical cedar with only 13 distinct colours in total, against 427 and 567 in the references. Its median is 10 colours per tile against about 108, so density is far lower. Shading is shallow: roughly 3-4 green steps arranged as horizontal tier bands with a lighter left edge, while the references use 5-6 greens in clumped leaf masses with highlights. The outline is a dark green tint, not neutral (0% near-neutral edge pixels), so it is not a sticker outline. Flat-fill coverage is 0%, but the surface is regular banded stripes with little per-clump or leaf texture. The trunk is a tiny, almost featureless stub with no root flare or branch structure like the references. Overall it looks simple and flat next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17142
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "conifer foliage cone (main body)",
+      "rows": "3-72",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk base",
+      "rows": "73-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 70,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tree is a tall conical foliage mass, rows 3-72, widening from 2 px at the tip to 28 px at row 72. There is no ellipse and no flat band ending in a front-edge line. The horizontal tier highlights (e.g. rows 14, 19, 24, 29, 34, 39 in column x=24) are lighter stripes inside the silhouette and do not form a top surface. The trunk at rows 73-78 is a short stub with no visible top. The silhouette is a flat front elevation, and for an organic tree this is a plausible stylised reading. Under the stated rules it shows no top surface, so I report it as front_elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a conical cedar built from stacked horizontal tiers. Its 13 distinct colours compare with 427 and 567 in the references, and its median of 10 colours per tile compares with about 108. The tiers show about 4 green steps (light edge, mid, dark, deep shadow), against 5-6 in the references, which have clumped leaf highlights in several greens. The dark edge pixels are 0% neutral, so the outline leans green/brown, a dark material tone, and it is not a sticker-style black line. Flat-fill coverage is 0%, but the tier rows repeat a regular banded pattern with little per-leaf clumping or grain, and the trunk is small and plain. The references have irregular, clumpy canopies with shaded branches and roots. The candidate is much thinner in colour and detail, so it would look flatter next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14809
+  }
+ ],
+ "decidedAt": "2026-10-20T07:08:11.777Z",
+ "cells": {
+  "16": [
+   "28f44adb486fe080",
+   "536ad4167a821d82",
+   "536f246ec9c5a306",
+   "66f4a1d1726626b3",
+   "98b93d904bd10fde",
+   "9debb8280b4179a3",
+   "a1c9d2f8fe1bcb7c",
+   "a1e7664b6f2858e7",
+   "ad99a33b959c6023",
+   "c2fc40a03287b644",
+   "c566051b2a08b968"
+  ],
+  "24": [
+   "133b94798b8184b2",
+   "237ff2ca61fe4e3d",
+   "69b530a7c98dcca0",
+   "708a5a9043fe9531",
+   "7f7fbcfb704c03f7",
+   "8595263f369a5e47",
+   "9e800e6abb08dc9b",
+   "aec621cd3bdec559",
+   "b4c670e4b02379f6",
+   "ba589347b4e08d30",
+   "bb81e587f6e5cf36",
+   "cf075e2b12bce4de",
+   "d1aa87960c417a9b",
+   "de8755396815133e",
+   "ec7105bd9c4baf26",
+   "ffe9a8757046fec8"
+  ],
+  "32": [
+   "05322a502381aebd",
+   "0850b25e062c0225",
+   "1d6defb39520bdd6",
+   "296d368e550ae37f",
+   "3488cf3b3ba334c3",
+   "3a32304c27340ce3",
+   "4aa01f944e3126fc",
+   "4f0aad43d78cafff",
+   "5b54dd11dd3918a0",
+   "5b71e3d55deab98a",
+   "689b9f4261d0c77c",
+   "6c6855870da90932",
+   "703632dcbbb4080f",
+   "767b78d411862624",
+   "79629696e7e2ee9b",
+   "7a0325972e7640ba",
+   "7e84b5e75fb763ba",
+   "84c9405f6d2429e6",
+   "94cf2f0ff4e14520",
+   "98280edc81481750",
+   "9dbab74bdb5a6148",
+   "a297f5e17dab8133",
+   "a527be4129d669b3",
+   "a901bc372b561f16",
+   "acd644039f2a771c",
+   "b17769da323ddfa0",
+   "b9397a49c8a930e5",
+   "bff12c02e0473a3a",
+   "c2a50c2e08f24c3e",
+   "e1c910419dbb0e5a",
+   "f1847048c4b11e33",
+   "fad9ea27ae5b9e37"
+  ],
+  "48": [
+   "2c6fe669ac4f2ef9",
+   "3783c59edcaf0512",
+   "6478ab558990cf63",
+   "fdbac711da606520"
+  ]
+ }
+}

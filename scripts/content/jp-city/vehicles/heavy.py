@@ -419,7 +419,7 @@ def _f(fn, *a, **k): return lambda: fn(*a, **k)
 VEHICLES = [
     dict(id='jp-bus-city', name='노선버스(흰·초록 띠)', kind='bus', L=9,
          frames={'right': _f(bus_side, True), 'left': _f(bus_side, False), 'up': bus_up, 'down': bus_down,
-                 'right_open': _f(bus_side, True, True), 'left_open': _f(bus_side, False, True)}),
+                 'left_open': _f(bus_side, False, True)}),   # 문은 왼쪽(인도) 면에만 — 동쪽 진행이면 보이는 면에 문이 없어 right_open 이 없다(멈춰도 right 를 그린다, 2026-10-21 VQA)
     dict(id='jp-tram', name='노면전차(크림·초록)', kind='tram', L=12,
          frames={'right': _f(tram_side, True), 'left': _f(tram_side, False), 'up': tram_up, 'down': tram_down,
                  'right_open': _f(tram_side, True, True), 'left_open': _f(tram_side, False, True)}),

@@ -1,0 +1,449 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3f18bf810056b462e853d6205fc13a1570523e1e03ea167a6a064c7f6c392535",
+ "width": 64,
+ "height": 80,
+ "kind": "organic",
+ "name": "broadleaf forest tree (zelkova) shade variant (inside forest)",
+ "label": "jp_forest_r4/bl-T41d",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 13,
+  "darkV5": 37,
+  "nearBlackEdge": 0.05,
+  "opaqueTiles": 14
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "canopy upper dome with lit leaf clumps",
+      "rows": "2-20",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "canopy lower mass with dark shaded underside",
+      "rows": "21-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "57-62"
+     },
+     {
+      "part": "trunk and roots",
+      "rows": "63-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 57,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The canopy is the main body. Its silhouette width widens from 4 px at row 2 to 59 px by row 26, then narrows to 12 px at the trunk, so it reads as a rounded volume. The lit leaf clumps at rows 3-20 act as the top surface, and the canopy gets darker toward the underside (L about 40-60 at rows 35-62). Below the canopy, the trunk and roots at rows 63-78 form a front face of 16 rows. The foliage has no hard front-edge line, so the top surface is read from the curved silhouette and the lit-to-shaded tonal progression, not from an edge line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate canopy is built from large, blocky clumps in about 4 greens with little per-leaf grain. The references show many small leaf clusters and sparkle across 5-6 greens. Measured visible tones per 16x16 tile are 8 for the candidate against 26 and 29 for the references, so it carries well under a third of the information. Near-flat coverage is only 3%, and the dark edges are tinted green rather than neutral, which is a point in its favour. The trunk is small and simple, with little root or bark texture compared with the references' flared roots and branch structure showing through the canopy. Overall it reads as a smooth, soft, shallow mass beside the detailed references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15875
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy (clumped foliage mass, light tops and dark undersides)",
+      "rows": "2-62",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "56-62"
+     },
+     {
+      "part": "trunk and root flare",
+      "rows": "63-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 58,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The canopy is the main volume. Its width profile widens from 4 px at row 2 to about 59 px at rows 26-37, then narrows to 12 px at the trunk by row 65, so the silhouette is a large rounded ellipse-like mass. It is made of leaf clumps with light upper faces, such as the L≈114-143 greens at rows 3-10 and 12-23, over darker undersides (L≈41-66) at rows 11, 24 and 35-37. The darkest band at rows 50-62 acts as shadow beneath the crown. Below it, the trunk and root flare (rows 63-78, about 16 rows, 12-37 px wide) is a visible south face standing on a ground patch. The view is a 3/4 view from above, not a flat slab or a pure front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate canopy is built from large, blocky clumps in about 4 greens (highlight, light, mid, dark) with a small trunk. Dark edge pixels are tinted (0% neutral), so the outline reads as dark green and brown, not black. Against that, the references show 26-29 visible tones per tile and the candidate shows 8, which is far lower. Its clumps are big and smooth with little leaf-level grain. The references have many small leaf clusters in several greens, plus a detailed trunk with roots and highlights. The candidate trunk is small and flat, with little bark texture. Near-flat coverage is low at 3%, so there are no large flat fills, but the canopy is clearly simpler and softer than the references. A careful artist would see it as thinner and less detailed beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14104
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy, lit upper clumps",
+      "rows": "2-12",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "leaf canopy, shaded front mass",
+      "rows": "13-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "57-62"
+     },
+     {
+      "part": "trunk and root flare",
+      "rows": "63-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grass tufts at base",
+      "rows": "73-78",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 66,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The canopy is a large rounded mass (silhouette widens from 4 px at row 2 to 59 px by rows 26-37, then narrows to the trunk at rows 63-69). The upper clumps (rows 3-12, light #538b42 and #6fa95a) read as sunlit top foliage. Below them the clumps get darker (#2d5b34, then #193320 and #0e1c15 at rows 50-62), so the canopy reads as a volume with a shaded underside above the trunk. There is no hard front-edge line, so the top evidence is the lit-top-to-shaded-front value shift and the rounded form. The trunk (rows 63-78, width 12 px, flaring to 37 px at the roots) is a clear front face. Its light left and dark right sides are the normal 3/4 shading. It has no horizontal top of its own because the canopy covers it. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate canopy is built from large blocky leaf clumps with only about 4 green steps (light top-left, mid, dark, deep). The references show 5-6 steps with many small leaf clusters and per-leaf highlights. Visible tones per 16x16 tile are 8, against 26 and 29 for the references, so it is far below both. Near-flat coverage is 3%, so there are no big flat fills, but the clumps are large and smooth with little internal dot or grain texture, and the references are much busier. The trunk is small and simple, with little root or bark detail compared with the buttressed, textured trunks of the references. Outline is tinted dark green with 0% neutral edge pixels, so it is not a sticker outline. The shading is cleaner than a flat fill but clearly shallower than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 17126
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "canopy upper lit clumps (top of crown)",
+      "rows": "2-25",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26-34"
+     },
+     {
+      "part": "canopy lower shaded mass (front of crown)",
+      "rows": "26-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk and roots",
+      "rows": "63-78",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 24,
+    "front_face_rows": 53,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The crown is a rounded volume, rows 2-62, up to 59 px wide. Its upper rows 2-25 are lit, with light clumps, and the column scan at x=32 shows an edge-line pixel at row 25 (L=132). Below that the mass turns dark (L about 66 at rows 26-34, 41 at rows 35-37, 29 at rows 61-62), which reads as a shaded front face, so the crown has both a lit top and a shaded front. The trunk (rows 63-78, 12-17 px wide) is a vertical front face with a root flare and ground tufts at rows 73-78. It is a small part below the crown, so it does not count against the top-surface rule."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate has 8 visible tones per 16x16 tile against 26 and 29 for the references, so it is far below both. Its canopy is built from large, blocky clumps in about 4 greens, where the references use many small leaf clusters in 5-6 steps with bright highlights. The canopy is mostly smooth within each clump, so it reads simpler and softer than the references' leaf-by-leaf texture. Edge pixels are 0% neutral, so the outline is a dark green tone and not a black sticker line, which is a point in its favour. Flat coverage is only 3%, so there are no large flat fills. The trunk is small and thin, with little root and bark detail next to the references' flared, textured roots. Overall it is a clean but shallower piece that falls clearly short of the Beodeul density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 23751
+  }
+ ],
+ "decidedAt": "2026-10-21T05:13:44.930Z",
+ "cells": {
+  "16": [
+   "3942e63a3865c8c6",
+   "3a589cfc208a3f50",
+   "3e93ea767f6e3c54",
+   "4569a4a322a045bb",
+   "476b524697f648b0",
+   "50898149e4dd76ac",
+   "553575aa2d47d23c",
+   "577c1aa368cb080e",
+   "5f1cc5be0fa3bbaf",
+   "60b8582a6fd8f714",
+   "716a1f54f02d7103",
+   "7a68aa3a946622e5",
+   "7f752f3fd79e9a70",
+   "953efe5a4c757569",
+   "98138918e6fbf046",
+   "c2a63ae2e3b06160",
+   "c2c09079a90404e0",
+   "c7ccab090239a874",
+   "c7f77fe99af0e921",
+   "fe30ca1d2e4b9179"
+  ],
+  "24": [
+   "046c4659167349c6",
+   "060e71747263ac7f",
+   "07693342870d560f",
+   "0c5eb41cf99d83c9",
+   "11dbfa20806a4b5f",
+   "1548accc18fe77cc",
+   "1b2572f737419e36",
+   "1d0c2452cd8353dc",
+   "242e245fdef6b771",
+   "25262b827b22b8f3",
+   "25d75b64988e9db8",
+   "2878096b517029cc",
+   "2b58488d0b657f4b",
+   "2b9f18c977cb4c76",
+   "31dac4d32dff2f89",
+   "323901c6bdda8de7",
+   "377f18638aec013f",
+   "3d192cfca3062af4",
+   "3fda72b9368ed692",
+   "42f7cde2de6742c3",
+   "43c069e234a91080",
+   "484e34f46f4b0780",
+   "48df0883db350c16",
+   "4b9284a6888aa358",
+   "4e93a364a1f8859a",
+   "587f093c81600d7e",
+   "5a74ef1228d84a6f",
+   "64c73c64582b5f51",
+   "6ddff48452a5b0a8",
+   "7025bf6aafe05d4d",
+   "7a523b7602904adb",
+   "7a9d8042c02ee61c",
+   "8696c075d18194cf",
+   "887046b4a6ce5615",
+   "89b4c0d721db215a",
+   "8a792d4b9a6cff0d",
+   "8c1f6fd57de60233",
+   "91225fe78d0620b6",
+   "947a4e768b86982e",
+   "9f80bdb1976a0b02",
+   "a1e1fa62d0cd212b",
+   "a5e6c69329fd37ab",
+   "a8310d4ca511b641",
+   "ac535aff46d19aa4",
+   "aff63cc131eeedc1",
+   "b556558117b477c9",
+   "ba9fe13b3ce65d92",
+   "bbea7d5ba5993344",
+   "bc79164f3560c952",
+   "c6677140737a62d7",
+   "c7fc63c3ff3a23e0",
+   "cb4bc1f7b9246662",
+   "cd1297a5ad860ed0",
+   "cd30c60ab0313829",
+   "cfe3ac3065051b59",
+   "d1e059a263de29cf",
+   "d21772294ae53bcb",
+   "d22ffeb704ab5aca",
+   "dd5d4bbc45115e92",
+   "df14fe8769c7a8d1",
+   "e223c533d920603f",
+   "e4513c17a1b4ebc8",
+   "e8349c498ee2aa20",
+   "ea487d9ea23c5272",
+   "ec45cd85b7a02746",
+   "ed1bc22166ce462f",
+   "ef42e9a271d065bf",
+   "f136482e2f09ab47",
+   "f2cddfd29a1f2141",
+   "f3ae980e78a09253",
+   "f681752165804aaa",
+   "fedc016e0f3b6dd1"
+  ],
+  "32": [
+   "02589d7a8d548982",
+   "08cbc87e489a606d",
+   "0cbeddb51b0c097c",
+   "2008ae16ecd4e083",
+   "2ef4610cecae84e5",
+   "2f47696b2d5f44df",
+   "4c973d993abc19bb",
+   "6396901b9e394b0d",
+   "8a7a0726c788b276",
+   "b278e5e10a1c3dd7",
+   "c579e93ffc0f90aa",
+   "d350d86d89fef499"
+  ],
+  "48": [
+   "06663ab337e14b85",
+   "0b1bd13d2822cb09",
+   "16b5d0a72c0ef354",
+   "1a8ef045dcc66873",
+   "28f36741656a4c98",
+   "2ad7efc4940964ed",
+   "390dc66cc6b17407",
+   "3a6f4d5ba8ad36ae",
+   "5105880256de7aec",
+   "5955af84e1bba7e2",
+   "72cc5e5eba39fcf9",
+   "8c5c107bdd9fbaaa",
+   "9193b1b41f9be9a6",
+   "a5dc52bf2319a704",
+   "a8be17a249c75db5",
+   "b09ccacc95351912",
+   "b40853549d0e633c",
+   "ca4e8481ac891cbd",
+   "d1c05dbf2f5b8878",
+   "db1045c8de84fc24",
+   "e63ab3e9ed54ba6c",
+   "e996259794177a9e",
+   "f62869e26b43fa14",
+   "f641dd8220821603"
+  ]
+ }
+}
