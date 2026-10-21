@@ -580,6 +580,46 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     setEventChip(hub, event.id, tex, index); // 방향이 바뀌면 칩 프레임 번호도 다시 고른다
   }
 
+  // 포고를 듣는 백성 — 발렌이 「백성은 들어라」 하는데 듣는 사람이 일행뿐이라 누구에게 말하는지 읽히지 않았다(VQA r7 major).
+  // 발렌 서·남쪽 빈 칸에 넷이 서서 발렌을 본다. 주인공이 천문대 문으로 가는 세로 길(시작 칸 좌우 한 칸)과 문 앞은 비운다.
+  const start = { x: project.startPos?.x ?? 24, y: project.startPos?.y ?? 23 };
+  const crowd: [string, string, number, string, string][] = [
+    ["a", "tex_easyrpg_charset_people4", 0, "광장의 농부", "별이 떨어진 게 이단이라니… 우리 밭에도 불똥이 튀었는데."],
+    ["b", "tex_easyrpg_charset_people5", 1, "광장의 아낙", "심문관님이 직접 오셨어. 저 숲엔 얼씬도 말아야겠어."],
+    ["c", "tex_easyrpg_charset_people4", 2, "광장의 상인", "포고 때문에 동문 길이 막히면 장사는 다 했네."],
+    ["d", "tex_easyrpg_charset_people1", 6, "광장의 노인", "하늘에서 온 것을 함부로 부르면 화를 입는 법이야."],
+  ];
+  const near = (x: number, y: number, r: number, c: { x: number; y: number }) => Math.abs(x - c.x) <= r && Math.abs(y - c.y) <= r;
+  const spots: { x: number; y: number }[] = [];
+  const candidates: { x: number; y: number; d: number }[] = [];
+  for (let y = valen.y - 1; y <= valen.y + 4; y += 1) for (let x = valen.x - 6; x <= valen.x + 1; x += 1) {
+    if (Math.abs(x - start.x) <= 1 || near(x, y, 1, valen) || !free(x, y)) continue;
+    if ([...doorCells].some((k) => { const [dx, dy] = k.split(",").map(Number); return Math.abs(x - dx!) <= 2 && Math.abs(y - dy!) <= 2; })) continue;
+    candidates.push({ x, y, d: Math.hypot(x - (valen.x - 2), y - (valen.y + 2)) });
+  }
+  candidates.sort((p, q) => p.d - q.d);
+  for (const c of candidates) {
+    if (spots.length >= crowd.length) break;
+    if (spots.some((s) => near(c.x, c.y, 1, s))) continue;
+    spots.push({ x: c.x, y: c.y }); standing.add(`${c.x},${c.y}`);
+  }
+  hub.events = hub.events.filter((e) => !String(e.id).startsWith(`ev_${FS_PREFIX}_crowd_`));
+  spots.forEach((spot, k) => {
+    const [key, tex, index, name, line] = crowd[k]!;
+    const dx = valen.x - spot.x, dy = valen.y - spot.y;
+    const direction = Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? "right" : "left") : (dy > 0 ? "down" : "up");
+    const id = `ev_${FS_PREFIX}_crowd_${key}`;
+    hub.events.push({
+      id, name, x: spot.x, y: spot.y, trigger: { kind: "action" }, commands: [], placementRole: "npc",
+      pages: [{
+        id: `${id}_p0`, name: `${name} · 기본`, conditions: [],
+        graphic: { sprite: { type: "bundled", id: tex }, direction, pattern: charsetFrameIndex({ characterIndex: index, direction, pattern: 1 }) },
+        trigger: { kind: "action" }, priority: "same", overlapForbidden: true, movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [{ kind: "text", speaker: name, body: line }],
+      }],
+    } as unknown as GameEvent);
+  });
+
   const ts = project.tilesets[hub.tilesetId] as unknown as { autotileGroups?: { id: string; memberTileIds: number[] }[]; tileGroups?: { id: string; tileIds: number[] }[] };
   const pavedIds = new Set<number>([
     ...(ts.autotileGroups?.find((g) => g.id === "beodeul_road_autotile")?.memberTileIds ?? []),
@@ -663,6 +703,30 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   // 엘레나가 말할 때 주인공이 화면(아래)을 보고 있었다(VQA r5) — 엘레나 쪽(위)으로 돌아선다.
   const elenaLine = list.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("들었지, 카엘"));
   if (elenaLine >= 0) list.splice(elenaLine, 0, { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "turn", dir: "up" }], repeat: false, wait: true, skippable: true } } as unknown as Command);
+}
+
+/**
+ * 문 둘레(체비쇼프 2칸)에 선 붙박이 NPC 를 떨어진 빈 칸으로 옮긴다 — 가게에서 나오면 동료가 문 옆 NPC 바로 아래 칸에 서
+ * 모자가 NPC 몸을 덮어 한 덩이로 그려졌다(VQA r7 major, 약방 앞 할머니).
+ */
+function clearDoorFronts(project: Project, map: GameMap | undefined): void {
+  if (!map) return;
+  const doors = map.events.filter((e) => String(e.id).startsWith("ev_gate_"));
+  const nearDoor = (x: number, y: number, r: number): boolean => doors.some((d) => Math.abs(d.x - x) <= r && Math.abs(d.y - y) <= r);
+  for (const npc of map.events) {
+    // 성문 문지기·포고 행렬은 문 곁이 제자리다.
+    if (String(npc.id).startsWith("ev_gate_") || /_(escort_|valen|knight|crowd_)|_gate$/.test(String(npc.id)) || !nearDoor(npc.x, npc.y, 2)) continue;
+    const page = npc.pages?.[0];
+    if (!page?.graphic?.sprite || (page.movement?.type ?? "fixed") !== "fixed") continue;
+    let best: { x: number; y: number; d: number } | undefined;
+    for (let y = npc.y - 6; y <= npc.y + 6; y += 1) for (let x = npc.x - 6; x <= npc.x + 6; x += 1) {
+      if (x < 1 || y < 1 || x >= map.width - 1 || y >= map.height - 1 || nearDoor(x, y, 3)) continue;
+      if (!isPassable(project, map, x, y) || map.events.some((e) => e !== npc && Math.abs(e.x - x) <= 1 && Math.abs(e.y - y) <= 1)) continue;
+      const d = Math.abs(x - npc.x) + Math.abs(y - npc.y);
+      if (!best || d < best.d) best = { x, y, d };
+    }
+    if (best) { npc.x = best.x; npc.y = best.y; }
+  }
 }
 
 /** 손 도트 실내(atlas_biome_interior): 천장(default 2~33·rock 34~65) → 천장(dark 66~97), 가장자리에서 이어진 바위벽 메움 → 공허(1). */
@@ -1284,35 +1348,58 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     // 관(별의 배) 가운데 — 관은 pod 바로 위 두 칸 너비. 구덩이는 관을 품고 사방으로 그을린 자국이 뻗는 불규칙한 모양이다:
     // 고른 타원(작은 칸 수)은 네모 흙 마당 + 검은 테두리로 읽혔다(VQA r6 major 「방·무덤 같다」). 각도마다 반지름을 흔들고
     // 일곱 갈래로 그을음 줄기를 뻗는다.
-    const cx = pod.x + 0.5, cy = pod.y - 1.5, rx = 5.6, ry = 3.4;
+    // 구덩이가 빈터(풀 칸) 끝까지 닿으면 빈터 네모 모양을 그대로 따라 네모 흙 마당으로 읽혔다(VQA r7 major) — 빈터보다 작은
+    // 타원으로 줄이고 가운데를 반 칸 내려 위쪽 나무 줄에 잘리지 않게 한다. 그을음은 구덩이 밖 풀 위의 불씨·숯 줄기로 뻗는다.
+    const cx = pod.x + 0.5, cy = pod.y + 0.3, rx = 5.2, ry = 3.4;
     const pit = new Set<number>();
     const rays = [0.35, 1.2, 2.05, 2.75, 3.6, 4.55, 5.5];
+    const metaPit = (project.tilesets[fm.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+    const isSand = (i: number): boolean => (metaPit[fm.lowerTiles[i]!]?.label ?? "").startsWith("버들항 · 모랫길");
     for (let y = Math.max(1, Math.floor(cy - ry * 1.6)); y <= Math.min(fm.height - 2, Math.ceil(cy + ry * 1.6)); y += 1) {
       for (let x = Math.max(1, Math.floor(cx - rx * 1.6)); x <= Math.min(fm.width - 2, Math.ceil(cx + rx * 1.6)); x += 1) {
         const ex = (x + 0.5 - cx) / rx, ey = (y + 0.5 - cy) / ry, theta = Math.atan2(ey, ex) + Math.PI;
-        const ray = rays.some((r) => Math.abs(Math.atan2(Math.sin(theta - r), Math.cos(theta - r))) < 0.2) ? 1.5 : 1;
+        const ray = rays.some((r) => Math.abs(Math.atan2(Math.sin(theta - r), Math.cos(theta - r))) < 0.22) ? 1.3 : 1;
         const wob = ((((x * 73856093) ^ (y * 19349663)) >>> 0) % 5) * 0.05 - 0.1;
         const reach = (1 + 0.2 * Math.sin(3 * theta + 0.7) + 0.12 * Math.sin(5 * theta + 2.1) + wob) * ray;
         const inside = Math.hypot(ex, ey) <= reach
-          && fm.lowerTiles[y * fm.width + x] === 737
+          && (fm.lowerTiles[y * fm.width + x] === 737 || isSand(y * fm.width + x))
           // 관 그림 밑 칸도 칠한다 — 남겨 두면 관 둘레에 풀 테두리가 섰다. 누운 돌 관은 두 칸 너비라 좌우 한 칸까지.
           && ((fm.upperTiles[y * fm.width + x] ?? -1) < 0 || (Math.abs(x - pod.x) <= 1 && y >= pod.y - 2 && y <= pod.y - 1));
-        if (inside) pit.add(y * fm.width + x);
+        // 나무(덧그림) 바로 곁 칸은 비운다 — 구덩이 테가 빈터 가장자리(네모)를 그대로 따라가지 않고 풀 한 줄을 두고 둥글게 닫힌다.
+        const treeSide = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]].some(([dx, dy]) => {
+          const nx = x + dx!, ny = y + dy!;
+          if (Math.abs(nx - pod.x) <= 1 && ny >= pod.y - 2 && ny <= pod.y - 1) return false;
+          // 숲 나무는 위 겹(upperOverlay)에도 그려진다.
+          return [fm.upperTiles, fm.upperOverlayTiles].some((layer) => {
+            const t = layer?.[ny * fm.width + nx] ?? -1;
+            return t >= 0 && /나무|덤불/.test(metaPit[t]?.label ?? "");
+          });
+        });
+        if (inside && !treeSide) pit.add(y * fm.width + x);
       }
     }
     // 가로·세로 이웃이 둘 미만인 삐죽 칸은 뺀다 — 둑 덧그림에 그런 모양이 없어 네모 흙 한 칸이 튀어나왔다.
     for (let changed = true; changed;) {
       changed = false;
       for (const c of [...pit]) {
-        const n = [c - fm.width, c + fm.width, c - 1, c + 1].filter((k) => pit.has(k)).length;
-        if (n < 2) { pit.delete(c); changed = true; }
+        const [u, d, l, r] = [c - fm.width, c + fm.width, c - 1, c + 1].map((k) => pit.has(k));
+        // 한 칸 폭 기둥·띠도 뺀다 — 둑 덧그림이 양쪽에서 붙어 검은 네모 한 칸으로 그려졌다(VQA r7).
+        if ([u, d, l, r].filter(Boolean).length < 2 || (!l && !r) || (!u && !d)) { pit.delete(c); changed = true; }
       }
     }
-    for (const c of [...pit].sort((p, q) => p - q)) {
-      if (pit.has(c - 1)) continue;
-      let end = c; while (pit.has(end + 1) && Math.floor((end + 1) / fm.width) === Math.floor(c / fm.width)) end += 1;
-      execTool(project, "fill_region", { mapId: fm.id, x: c % fm.width, y: Math.floor(c / fm.width), w: end - c + 1, h: 1, layer: "lower", material: "버들항 모랫길" });
+    // 빈터에 먼저 깔려 있던 네모 모랫길 마당(숲길 끝)이 구덩이와 합쳐져 네모 흙 마당으로 보였다(VQA r7 major) — 구덩이 아래쪽
+    // 가운데 줄보다 위에 있는, 구덩이 밖 모랫길 칸(덧그림 없는 칸)은 풀로 되돌린다. 남쪽에서 올라오는 숲길은 그대로 둔다.
+    const reverted: number[] = [];
+    for (let y = 0; y <= Math.floor(cy + ry * 0.6); y += 1) for (let x = Math.max(0, Math.floor(cx - rx * 2)); x <= Math.min(fm.width - 1, Math.ceil(cx + rx * 2)); x += 1) {
+      const i = y * fm.width + x;
+      if (pit.has(i) || !isSand(i) || (fm.upperTiles[i] ?? -1) >= 0) continue;
+      fm.lowerTiles[i] = 737; reverted.push(i);
+      if (fm.lowerOverlayTiles) fm.lowerOverlayTiles[i] = -1; // 옛 구덩이 둑 덧그림도 걷는다(풀 위에 검은 테 조각이 남았다)
     }
+    // 흙은 오토타일 칠하기 도구 대신 「몸통」 칸으로 바로 깐다 — 도구가 오목한 모서리 칸을 스스로 채워 둥근 구덩이가 다시
+    // 네모 마당으로 부풀었다(VQA r7). 가장자리 모양은 아래 둑 덧그림(rimPit)이 그린다.
+    const body = metaPit.findIndex((m) => m?.label === "버들항 · 모랫길 오토타일 · 사방 이어짐(몸통)");
+    for (const c of pit) fm.lowerTiles[c] = body >= 0 ? body : 23175;
     // 구덩이 안: 불씨 자국·숯 더미(관 곁). 구덩이 밖: 쓰러진 나무·그루터기·꺾인 덤불을 둘레 바깥으로 빙 둘러 — 오프닝 crash 컷처럼
     // 충격에 넘어간 나무가 구덩이를 에워싼다. 예전 고정 좌표는 구덩이를 키우자 덤불이 구덩이 안에 섰다(VQA r6).
     const inside: Array<[string, number, number]> = [
@@ -1328,7 +1415,23 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     // 흙길 오토타일이 오목한 모서리 칸을 스스로 채운다 — 실제로 바뀐 칸을 다시 모아 둑을 얹는다.
     const live = M(ids.forest);
     for (let c = 0; c < live.lowerTiles.length; c += 1) if (live.lowerTiles[c] !== fm.lowerTiles[c] && fm.lowerTiles[c] === 737) pit.add(c);
-    rimPit(project, live, pit, "bankLava"); // fill_region 이 맵 객체를 바꿔 끼우므로 fm 이 아니라 지금 맵에 얹는다.
+    // 앞선 마감이 남긴 둑 덧그림(이름표 없는 덧붙임 칸)을 구덩이 안·윗단에서 걷는다 — 안쪽에 남으면 흙 위에 검은 테 조각이,
+    // 되돌린 풀 위에 남으면 풀밭 한가운데 네모 테가 보였다. 남쪽 숲길 둑(아랫단)은 그대로 둔다.
+    if (live.lowerOverlayTiles) {
+      const metaL = (project.tilesets[live.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+      const yTop = Math.floor(cy + ry * 0.6);
+      for (let i = 0; i < live.lowerOverlayTiles.length; i += 1) {
+        const t = live.lowerOverlayTiles[i]!, x = i % live.width, y = Math.floor(i / live.width);
+        if (t < 0 || metaL[t]?.label) continue;
+        if (pit.has(i) || (y <= yTop && Math.abs(x - cx) <= rx * 2)) live.lowerOverlayTiles[i] = -1;
+      }
+    }
+    // 남쪽에서 이어지는 숲길 칸도 「안쪽」으로 쳐서 구덩이와 숲길 사이에 둑이 가로막지 않게 한다(숲길 자기 둑이 있는 칸은 rimPit 이 건너뛴다).
+    const rimCells = new Set(pit);
+    for (const c of pit) for (const k of [c - 1, c + 1, c - live.width, c + live.width]) {
+      if (!pit.has(k) && (metaPit[live.lowerTiles[k]!]?.label ?? "").startsWith("버들항 · 모랫길")) rimCells.add(k);
+    }
+    rimPit(project, live, rimCells, "bankLava"); // fill_region 이 맵 객체를 바꿔 끼우므로 fm 이 아니라 지금 맵에 얹는다.
     // 평평한 돌 관(버들항 하수도 관 2×2)을 걷고, 오프닝 crash 컷의 누운 은빛 관(손 도트 3×2, 동서로 누움)을 조사 칸 바로 위에 눕힌다.
     {
       const coffin = new Set([26599, 26600, 26601, 26602]);
@@ -1351,13 +1454,30 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         }],
       } as unknown as GameEvent);
     }
+    // 갓 생긴 그을린 구덩이 안에 독버섯·고사리·들꽃이 그대로 서 있었다 — 구덩이 칸의 풀숲 덧그림은 걷는다.
+    {
+      const fz = M(ids.forest);
+      for (const c of pit) for (const layer of [fz.lowerOverlayTiles, fz.upperTiles, fz.upperOverlayTiles]) {
+        const t = layer?.[c] ?? -1;
+        if (t >= 0 && /버섯|고사리|들꽃|헤더|징검돌|풀 포기|풀덩이/.test(metaPit[t]?.label ?? "")) layer![c] = -1;
+      }
+    }
     for (const [kit, dx, dy] of inside) if (pit.has((pod.y + dy) * live.width + pod.x + dx)) tryStamp(project, M(ids.forest), `kit:beodeul_city/${kit}`, pod.x + dx, pod.y + dy);
     for (const [kit, angle] of around) {
-      for (let r = 1; r < 10; r += 0.5) {
+      for (let r = 1; r < 10; r += 0.25) {
         const x = Math.round(cx + Math.cos(angle) * rx * r * 0.75), y = Math.round(cy + Math.sin(angle) * ry * r * 0.75);
         if (pit.has(y * live.width + x) || pit.has(y * live.width + x + 1)) continue;
         if (tryStamp(project, M(ids.forest), `kit:beodeul_city/${kit}`, x, y)) break;
-        if (r > 2.2) break;
+        if (r > 3.2) break;
+      }
+    }
+    // 그을음 줄기 — 일곱 갈래 끝마다 구덩이 둑 바로 밖 풀 위에 불씨·숯 자국을 하나씩(충격이 사방으로 튄 자리).
+    for (const [k, r0] of rays.entries()) {
+      const angle = r0 - Math.PI;
+      for (let r = 1; r < 3; r += 0.2) {
+        const x = Math.round(cx + Math.cos(angle) * rx * r), y = Math.round(cy + Math.sin(angle) * ry * r);
+        if (x < 1 || y < 1 || x >= live.width - 1 || y >= live.height - 1 || pit.has(y * live.width + x)) continue;
+        if (tryStamp(project, M(ids.forest), `kit:beodeul_city/${k % 3 === 2 ? "bd-pick-volcano-cave-coal-pile" : "bd-pick-volcano-cave-ember-a"}`, x, y)) break;
       }
     }
     // 구덩이 북쪽 위로 맵 끝까지 붙은 모랫길 토막 둘은 아무 데로도 안 갔다(VQA r6 m13) — 풀로 되돌린다.
@@ -1505,6 +1625,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     const placed: Array<[number, number]> = [];
     for (let y = 3; y < fm.height - 3; y += 1) for (let x = 2; x < fm.width - 2; x += 1) {
       if (fm.lowerTiles[y * fm.width + x] === 737) continue;
+      // 추락 구덩이(몸통 흙 칸) 안에는 버섯·들꽃을 두지 않는다 — 갓 그을린 구덩이에 독버섯이 섰다(VQA r7).
+      if (fm.lowerTiles[y * fm.width + x] === 23175) continue;
       let nearPath = false;
       for (let dy = -2; dy <= 2 && !nearPath; dy += 1) for (let dx = -2; dx <= 2; dx += 1) {
         if (fm.lowerTiles[(y + dy) * fm.width + (x + dx)] === 737) { nearPath = true; break; }
@@ -1613,6 +1735,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   buildFallenTownInteriors(project, ids.hub, { irisJoined: SW_IRIS_JOINED, valenMarched: SW_VALEN_MARCHED });
   // 길은 모든 소품·표지를 찍은 뒤에 잰다 — 앞에서 재면 뒤에 선 표지·자리 옮김이 길을 막았다.
   marchOffAfterProclamation(project, M(ids.hub));
+  clearDoorFronts(project, M(ids.hub));
   // 실내 맵의 방 밖은 전부 어둠(game-scene-polish 3-7·11-6, 사용자 지적 「방 사이가 회색 바닥 띠로 읽힌다」) — 회색 디더·바위 천장은
   // 같은 이웃 번호의 어두운 천장으로, 여백을 메운 바위벽 조각은 공허 칸으로.
   // 천문대 윗 홀 — 오프닝 컷처럼 둥근 단 위 큰 망원경·혼천의·태양계의·별 지도 탁자(VQA r3 「집처럼 보인다」).

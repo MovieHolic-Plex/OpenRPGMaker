@@ -92,7 +92,9 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       // 가게 앞방 + 조제실 + 약재 광 + 지하 저장고 + 서재 + 부부 침실 — 부엌은 두지 않는다(집집마다 같은 부엌이 되풀이됐다, VQA r6).
       layout: { rooms: [{ kind: "pharmacy_shop", w: 19, h: 9 }, { kind: "alchemy", w: 9, h: 7 }, { kind: "pantry" }, { kind: "cellar" }, { kind: "master_bedroom" }, { kind: "study" }], seed: 13, variant: 0, styleVariant: "A" },
       dress: [["table:potion+flask", 12, 15], ["herb drying rack", 26, 15], ["basket:herb", 9, 17], ["basket:mushroom", 10, 17],
-        ["basket:potion+potionb+potiong", 13, 17]],
+        ["basket:potion+potionb+potiong", 13, 17],
+        // 가게 바닥 가운데가 비었다(VQA r7 minor) — 물약 진열대 하나와 약초 바구니를 더 둔다(문에서 계산대 가는 길은 비운다).
+        ["table:potion+flask", 21, 14], ["basket:herb", 23, 16], ["basket:mushroom", 24, 16], ["book pile", 14, 16]],
       people: [
         {
           id: "ev_fs_apothecary", name: "약재상 오든", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 7], behindCounter: true,
@@ -121,7 +123,10 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       // 별 지도 서고 + 관측 일지 서재 + 침실 + 지하 저장고 + 벽난로 거실(괘종시계) — 부엌·열 사람 식탁은 두지 않는다(혼자 사는 노인, VQA r6).
       layout: { rooms: [{ kind: "library", w: 18, h: 8 }, { kind: "study", w: 9, h: 7 }, { kind: "bedroom" }, { kind: "cellar" }, { kind: "living", w: 8, h: 6 }], seed: 21, variant: 0, styleVariant: "D" },
       dress: [["orrery", 15, 15], ["globe", 13, 12], ["book pile", 18, 12], ["desk 3x1", 22, 16], ["owl perch", 27, 16], ["scroll rack", 13, 16],
-        ["desk 2x2", 14, 4], ["book pile", 12, 3]],
+        ["desk 2x2", 14, 4], ["book pile", 12, 3],
+        // 서고 가운데·거실 아랫단이 빈 마루로 남았다(VQA r7 minor) — 읽는 탁자와 의자, 거실 찻상.
+        ["tea 2x2", 17, 14], ["chair E", 16, 14], ["chair W", 19, 14], ["book pile", 22, 14],
+        ["tea 2x2", 6, 15], ["chair E", 5, 15], ["chair W", 8, 15]],
       people: [
         {
           id: "ev_fs_old_stargazer", name: "늙은 별지기 오스본", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 6],
