@@ -2075,7 +2075,8 @@ Studio v2의 최종 소유 규칙을 먼저 확인하고 앞선 시트에 같은
 일반 `.database-modal-window`는 다른 작업 창도 사용하므로 DB 전용으로 간주해 삭제하지 않는다.
 테마의 살아 있는 important 규칙, 동적 import 시트, 도킹·최대화 예외와 호환 폴백은 별도 계약이다.
 
-**셸.** 헤더는 `데이터베이스 | 그룹 › 탭`(`database-modal-crumb`). 활성 탭은 `database.ts` 의
+**셸.** 헤더는 `데이터베이스 | 그룹 › 탭`(`database-modal-crumb`). 조각은 `ol.database-modal-crumb-list > li` 로
+나뉘고 `›` 는 aria-hidden 이다(화면 낭독기가 조각을 목록 항목으로 따로 읽는다, UI 감사 2026-10-21). 활성 탭은 `database.ts` 의
 `subscribeDatabaseActiveTab` 으로 따라간다 — 레일 클릭·G006 점프·Ctrl+T 가 전부 `setDatabaseActiveTab`
 한 곳을 지나므로 DOM 이벤트가 필요 없고 fake DOM 에서도 돈다. 창 컨트롤은 `⇥ □ x` 글리프가 아니라
 SVG(`database-modal-icon`, `tileToolbarIcons` 규격). 푸터 상태는 전폭 초록 띠가 아니라 점 하나 붙은

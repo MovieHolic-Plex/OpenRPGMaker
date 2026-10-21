@@ -344,7 +344,7 @@ export function createStudioDirectorBoard(options: StudioDirectorBoardOptions = 
       class: "ai-studio-director-live-controls",
       dataset: { testid: "ai-studio-live-controls" },
       children: [
-        el("label", { class: "ai-studio-director-control", children: [el("span", { text: "BGM" }), bgmSelect] }),
+        el("label", { class: "ai-studio-director-control is-bgm", children: [el("span", { text: "BGM" }), bgmSelect] }),
         el("div", { class: "ai-studio-director-control", children: [el("span", { text: "시간대" }), el("div", { class: "ai-studio-director-segs", children: tintButtons })] }),
         el("label", {
           class: "ai-studio-director-control",
