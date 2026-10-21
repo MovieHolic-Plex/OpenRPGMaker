@@ -1049,7 +1049,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     clientOut.begin,
     face("@player", dirToward(o.meetingSeat, minhoSpot)),
     face("ev_fl_f_minho", dirToward(minhoSpot, o.meetingSeat)),
-    ...say("minho", "happy", "대박! 서하 씨, 첫 주에 발표 통과! 오늘 회식 각이에요!"),
+    ...sayAt("minho", "left", "happy", "대박! 서하 씨, 첫 주에 발표 통과! 오늘 회식 각이에요!"),
     ...clientOut.end,
     face("@player", dirToward(o.meetingSeat, leadSpot)),
     ifCond(swOff(SW_HONEST), [
@@ -1070,7 +1070,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     bgm(BGM_MEMORY, 2000),
     ...sayAt("lead", "left", "base", "다음 주부터 부산 지사예요. 아버님 곁에 있고 싶다고 몇 달 전에 신청했었죠."),
     face("@player", dirToward(o.meetingSeat, minhoSpot)),
-    ...say("minho", "base", "회식이 송별회 겸인데… 선임님은 오늘 밤 서울역에서 부산 가는 마지막 KTX 탄대요. 한결역에서 9시 40분 열차를 타야 맞춘다고요. 짐은 아침에 벌써 다 부치셨고요."),
+    ...sayAt("minho", "left", "base", "회식이 송별회 겸인데… 선임님은 오늘 밤 서울역에서 부산 가는 마지막 KTX 탄대요. 한결역에서 9시 40분 열차를 타야 맞춘다고요. 짐은 아침에 벌써 다 부치셨고요."),
     ...jihuOut.end,
     ...sayAt("lead", "left", "sad", "인사는… 따로 못 했나 보네요."),
     ...think("또.", "또, 인사도 없이."),
@@ -1079,8 +1079,8 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
       ...think("…책상 모서리에 노란 포스트잇이 붙어 있었다. 낯익은, 비스듬한 글씨.", "‘21:40, 한결역 서울역행. 인사는 거기서 할게요. 이번엔 진짜로.’"),
     ]),
     ifCond(swOn(SW_TOLD_MINHO),
-      say("minho", "base", "서하 씨. …가요. 이번엔 붙잡아요. 회식은 내가 알아서 할게요."),
-      say("minho", "base", "서하 씨, 회식 가죠? …근데 표정이 왜 그래요."),
+      sayAt("minho", "left", "base", "서하 씨. …가요. 이번엔 붙잡아요. 회식은 내가 알아서 할게요."),
+      sayAt("minho", "left", "base", "서하 씨, 회식 가죠? …근데 표정이 왜 그래요."),
     ),
     choices([
       { text: "역으로 간다", then: [
@@ -1092,7 +1092,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
       ] },
       { text: "회식에 간다", then: [
         ...think("발을 떼지 못했다. 10년 전에도, 오늘도."),
-        ...say("minho", "happy", "좋아요! 오늘은 내가 쏩니다. …아, 법카로요."),
+        ...sayAt("minho", "left", "happy", "좋아요! 오늘은 내가 쏩니다. …아, 법카로요."),
         ...sayAt("lead", "left", "happy", "민호 씨."),
         ...emote("ev_fl_f_minho", "sweat"),
         face("@player", dirToward(o.meetingSeat, leadSpot)),
