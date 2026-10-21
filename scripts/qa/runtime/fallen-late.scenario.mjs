@@ -70,6 +70,8 @@ const dumpState = (name) => evalOp(`state-${name}`,
 export default {
   id: "fallen-late",
   projectFixture: derived,
+  // 패배 카드는 파티 체력을 1로 내려 일부러 진다 — __oprnSetActorVitals 는 이 쿼리가 있을 때만 열린다.
+  query: { e2eVitals: "1" },
   viewport: { width: vw, height: vh },
   beats: [
     { id: "boot", note: "새 게임 → 오프닝 건너뛰기 → 포고 넘기기", ops: [
