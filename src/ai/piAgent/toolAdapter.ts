@@ -293,7 +293,8 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
           ? (({ value, logs }) => { constructionLogs = logs; return value; })(withConstructionLog(tool.name, () => runTool(ctx, tool.name, args)))
           : runTool(ctx, tool.name, args));
       if (tool.name === "find_tools" && options.findToolsCallable) result = scopeFindToolsResult(result, options.findToolsCallable);
-      if (tool.mode === 'write' && result.ok && options.charsetGate && !tool.placesCuratedCast) {
+      const ownGraphic = typeof tool.choosesOwnGraphic === 'function' ? tool.choosesOwnGraphic(args) : tool.choosesOwnGraphic === true;
+      if (tool.mode === 'write' && result.ok && options.charsetGate && !tool.placesCuratedCast && !ownGraphic) {
         const violation = options.charsetGate.afterWrite(beforeProject, ctx.project);
         if (violation) { ctx.project = beforeProject; result = violation; }
       }

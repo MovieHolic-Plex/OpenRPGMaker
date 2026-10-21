@@ -165,6 +165,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
   {
     name: 'place_field_enemy',
     mode: 'write',
+    choosesOwnGraphic: (args) => args.graphic === undefined,
     description:
       '필드 맵에 「보이는 적」(심볼 인카운터, 크로노 트리거·FF 심볼식) 한 마리를 놓는다. 걸어 다니는 적에게 닿으면 그 자리에서 전투가 열리고, 이기면 사라지며 맵을 나갔다 들어와도 그대로 사라져 있다(승리 스위치). 패배는 기존 게임 오버 경로, 도망치면 몇 초 기절해 같은 전투가 바로 다시 열리지 않는다. 느낌표(alert)는 chase 는 시야에 든 순간, stationary·patrol 은 닿기 직전에 뜬다. ' +
       'behavior: stationary=제자리 보초(주인공이 닿거나 부딪히면 전투) · patrol=닫힌 왕복 순찰(patrol.length 칸 직선 또는 patrol.directions 닫힌 경로) · chase=시야(sightRange 칸, 벽 가림) 안에 들면 머리 위 느낌표(alert)와 짧은 멈춤 뒤 쫓아오고, 놓치면 마지막 목격 자리를 잠깐 뒤진 뒤 원래 자리로 돌아간다. chase 에 patrol 을 같이 주면 시야 밖에서는 순찰하다 시야에 들면 쫓고 놓치면 돌아와 다시 순찰한다. pace 는 주인공 걷기보다 항상 느려 피할 수 있다. ' +

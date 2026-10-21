@@ -3273,6 +3273,7 @@ export const placeChest: ToolDefinition = {
     "장식용 박스·나무상자·나무박스·과일박스는 place_props(harness-combined-town-wood-box / fruit-box) — place_chest 금지. " +
     "벽 위(문·벽감)여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 물 위는 거부한다 — 지면이나 통행 가능한 다리 위 좌표를 선택하라.",
   mode: "write",
+  choosesOwnGraphic: true,
   parameters: {
     type: "object",
     properties: {
@@ -3475,6 +3476,7 @@ const placeSavepoint: ToolDefinition = {
   name: "place_savepoint",
   description: "세이브 포인트 이벤트를 배치한다(크리스탈 외형). 조사하면 mode 에 따라 동작한다 — both(기본): 사망 재시도용 체크포인트를 기록하고 **저장 칸 메뉴(openSaveMenu)** 도 연다(크로노 트리거식: 크리스탈에서 3칸 중 골라 저장) · slot: 저장 칸 메뉴만 · checkpoint: 체크포인트만(저장 칸 안 염, 새로고침하면 사라진다 — 호러·사망 재시도용). 플레이어가 새로고침 뒤에도 이어 하려면 slot 이나 both 다. 맵이 저장 금지(set_map_properties disableSave)면 경고한다. 벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 세이브 포인트는 반드시 이 툴 — place_npc/upsert_event 흉내 금지.",
   mode: "write",
+  choosesOwnGraphic: true,
   parameters: {
     type: "object",
     properties: {
