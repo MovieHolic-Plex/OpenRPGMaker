@@ -19,7 +19,7 @@ type TrainerIntroPair = { role: string; opponent: TrainerPicture; hero: TrainerP
 const THROW_FRAME_MS = 80;
 /** 내보내기 구슬: 날아가는 시간과, 던지기 시트 없는 상대 쪽 구슬이 출발하는 때(인물이 걸어 나간 뒤). emeraldTrainerIntro.css 와 같은 값. */
 const ORB_FLIGHT_MS = 220;
-const FOE_ORB_START_MS = 380;
+const FOE_ORB_START_MS = 560;
 
 /** 인물 그림 계약(TroopRecord.trainerSprite): 모든 값이 업로드 그림 id. 없으면 아래 옛 규칙(필드 이벤트 그래픽 → 역할 이름)으로 간다. */
 function authoredTrainerPair(project: Project, troopId: string): TrainerIntroPair | undefined {
@@ -136,7 +136,7 @@ export function mountEmeraldTrainerIntro(root: HTMLElement, project: Project, se
   // 던지기 시트가 없으면 인물이 걸어 나간 뒤(지연 200ms + 퇴장 380ms)에 몬스터가 나온다 — 250ms 에 내보내면 나가는 인물과 막 나온 몬스터가
   // 330ms 동안 한 받침 위에 겹쳐 섰다(r5b 설치 정지 화면, 2026-10-22).
   // 구슬 그림이 있으면(layer.dataset.sendoutOrb) 몬스터는 구슬이 받침에 떨어져 번쩍인 뒤에 나온다:
-  // 내 쪽은 마지막 던지기 칸이 뜨는 순간(--throw-ms) 3칸 구슬 자리에서 구슬이 날아가 ORB_FLIGHT_MS 뒤 착지, 상대 쪽은 걸어 나간 뒤(380ms) 화면 밖에서 날아온다.
+  // 내 쪽은 마지막 던지기 칸이 뜨는 순간(--throw-ms) 3칸 구슬 자리에서 구슬이 날아가 ORB_FLIGHT_MS 뒤 착지, 상대 쪽은 다 걸어 나간 뒤(560ms) 화면 밖에서 날아온다.
   let orbReady = false;
   const revealMs = (sheet: TrainerSheet | undefined): number => {
     if (sheet && sheet.frames > 0) return orbReady ? sheet.frames * THROW_FRAME_MS + ORB_FLIGHT_MS + 20 : sheet.frames * THROW_FRAME_MS + 120;

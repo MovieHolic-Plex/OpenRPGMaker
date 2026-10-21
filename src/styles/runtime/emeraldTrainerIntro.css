@@ -95,7 +95,7 @@
 @keyframes emerald-trainer-exit-right { from { transform: translateX(0); } to { transform: translateX(208px); } }
 /* 내보내기 구슬(번들 <역할>/orb.png = 던지기 3칸에서 잘라 낸 그 구슬, 8×8 을 2배). 구슬 없이 몬스터만 튀어나오면 「무엇이 내보냈나」가 안 읽혔다
    (r5b 설치 VQA 1차 major). 내 쪽: 마지막 던지기 칸이 뜨는 때(--throw-ms) 3칸 구슬 자리(그림 상자 0.94·0.23)에서 떠나 왼쪽 받침에 떨어진다 —
-   3칸이 그린 구슬을 그대로 이어받으므로 같은 때 구슬은 하나다. 상대 쪽(던지기 시트 없음): 인물이 걸어 나간 뒤 오른쪽 밖에서 날아온다.
+   3칸이 그린 구슬을 그대로 이어받으므로 같은 때 구슬은 하나다. 상대 쪽(던지기 시트 없음): 인물이 다 걸어 나간 뒤(560ms) 오른쪽 밖에서 날아온다 — 일찍 던지면 나가는 인물 얼굴 위에 구슬이 한 칸 겹쳤다.
    착지하면 흰 섬광이 터지고, 그 뒤(--emerald-reveal-ms)에 몬스터가 나온다. 값은 emeraldTrainerIntro.ts 의 ORB_FLIGHT_MS·FOE_ORB_START_MS. */
 .battle-scene[data-monster-style="emerald"] .emerald-sendout-orb {
   position: absolute;
@@ -121,8 +121,8 @@
 .battle-scene[data-monster-style="emerald"] .emerald-sendout-flash-foe { left: 327px; top: 90px; }
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="hero"][data-hero-throw="true"] .emerald-sendout-orb-hero { animation: emerald-orb-hero 220ms steps(11, end) var(--orb-hero-start, 320ms) forwards; }
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="hero"][data-hero-throw="true"] .emerald-sendout-flash-hero { animation: emerald-orb-flash 200ms steps(5, end) calc(var(--orb-hero-start, 320ms) + 220ms) forwards; }
-.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="foe"] .emerald-sendout-orb-foe { animation: emerald-orb-foe 220ms steps(11, end) 380ms forwards; }
-.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="foe"] .emerald-sendout-flash-foe { animation: emerald-orb-flash 200ms steps(5, end) 600ms forwards; }
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="foe"] .emerald-sendout-orb-foe { animation: emerald-orb-foe 220ms steps(11, end) 560ms forwards; }
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="foe"] .emerald-sendout-flash-foe { animation: emerald-orb-flash 200ms steps(5, end) 780ms forwards; }
 /* 내 쪽 출발점: 허리 잘린 뒷모습(아랫변 = 글상자)이면 상자 위 112px, 아니면 102px. 구슬 중심 = 그림 왼쪽 46 + 120, 위 + 30. */
 @keyframes emerald-orb-hero {
   0% { visibility: visible; left: 158px; top: 124px; }
