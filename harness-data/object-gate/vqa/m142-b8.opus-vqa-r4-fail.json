@@ -1,0 +1,87 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b8",
+ "round": 4,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "arcade-claw-machine",
+   "pixelSha256": "19308444d61c08f003a8acfda5a7341828780ed11edf0a4757e42274f1308f82",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The cabinet is drawn flat from the front: the pink top band is a front marquee, not a lit top plane seen from above, so the glass box shows no depth. The prizes inside are a cluttered patch of saturated sticker colours (yellow, pink, white) that lose their shapes at 1x."
+  },
+  {
+   "id": "school-piano",
+   "pixelSha256": "946176a52399b5112e67f9c0134c44906e04bbdf71fac7944f31c06161f78691",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The body is a near-black, low-contrast mass with only 2–3 dark grey steps, so it reads muddy next to the originals' clear light-to-dark shading. The orange pixels at the bottom (feet or pedals) look like detached bright specks under the cabinet."
+  },
+  {
+   "id": "shop-peg-wall",
+   "pixelSha256": "a661f55d1116d4b90ece4f43e2f52e3cec14c74b70d4c81d9ab93c73f0f746e2",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4,
+    5
+   ],
+   "reasons": "A wall pegboard is drawn as a tall front-on panel standing in the middle of the floor; its only top surface is a thin plank and the face is a flat front view. The peg-hole dot grid and tiny product bottles make noisy speckle at 1x, and the big yellow '100' sign is a sticker-like block."
+  },
+  {
+   "id": "subway-pillar-sign",
+   "pixelSha256": "28c3cca2c5ab43d187df0d61882448c341c8368d2827f696060f339848f4201a",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    5
+   ],
+   "reasons": "The pillar is a flat front view of a cylinder with no top cap seen from above. In the room it is a thin one-tile stub, far too small for a structural pillar. It sits loose in the middle of the floor with a flared base instead of reaching up to the wall or ceiling."
+  },
+  {
+   "id": "svc-arcade-shopfront",
+   "pixelSha256": "41661ee580ba9702e6cfbef8946691caec496d57ab3f0438dee7eb22878f688f",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    5
+   ],
+   "reasons": "The facade is a pure front view with no floor or step plane. In the room it covers the back-wall band, and the awning sits on the wall stripe without lining up with the wall. Its footprint spills across both the wall and floor rows, so it reads as a pasted-on image rather than a shopfront set into the wall."
+  },
+  {
+   "id": "train-luggage-rack",
+   "pixelSha256": "ef563b2ea25f2891b9edd5afe12b20f498e0115758044d8d2db2955b999c2f73",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    5
+   ],
+   "reasons": "An overhead luggage rack is drawn as a floor-standing cabinet with three poster panels below. At 1x it reads as a notice board or vending unit, not a rack. The bag and box on the top bars are the only cue, and in the room it stands on the floor instead of being mounted high on the wall."
+  }
+ ]
+}

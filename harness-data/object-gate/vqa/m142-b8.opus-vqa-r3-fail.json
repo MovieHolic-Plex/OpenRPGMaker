@@ -1,0 +1,113 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b8",
+ "round": 3,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png",
+  "board-3.png"
+ ],
+ "items": [
+  {
+   "id": "arcade-claw-machine",
+   "pixelSha256": "208e194afd2642bdcdf15bd7a443311d54331ff96450ac13eff2b31097d3404e",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The cabinet is basically a flat front view: the pink top is only about 2 rows and not a lit plane like the cooler/desk tops. The prize pile in the glass is a crowded blob of saturated sticker colours (yellow/blue/purple dots), and the dark-red slot plus the coloured buttons on the base look noisy."
+  },
+  {
+   "id": "school-piano",
+   "pixelSha256": "14653d0918016be622730d14e2c38c720192ebde1b5ebc7a756ad086ed368265",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "Everything below the keyboard is a muddy near-black block with a recessed black slot that has no readable shading steps. The three gold pedal pixels float in that dark mass, and the white music sheet over the keys reads as a sticker highlight."
+  },
+  {
+   "id": "shop-drug-gondola",
+   "pixelSha256": "eacf65a2241e499c714f97b3d69418798090765f1586c5c47bec6283242feca6",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The white top plane with boxes seen from above is about 3+ rows, the front shelves are short with stocked products, and the pink kickplate grounds it on the floor. Palette and density sit close to mci-cooler."
+  },
+  {
+   "id": "shop-peg-wall",
+   "pixelSha256": "153cc61d39aa6af7a69f5856a6b2921cef0cab0d8637699c2021c0bc116f588f",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    5
+   ],
+   "reasons": "The pegboard face is a flat front elevation with only a 1–2 row wooden top edge. The yellow '100' sign on posts sits above the object's footprint and pokes up over the back wall, so in the room it neither stands on the floor nor hangs on the wall believably."
+  },
+  {
+   "id": "shop-used-shelf",
+   "pixelSha256": "97417a746a0b552ee252db0a8b1c424264be987c7a6b218c789e6aa62c0142cc",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The wooden shelf matches mci-wardrobe's tan palette and dark outline, has a top surface with items seen from above, readable stocked shelves and a ground line. It sits on the floor at a sensible 2x2-tile scale."
+  },
+  {
+   "id": "station-ic-charger",
+   "pixelSha256": "b064b08a61ea4cfeedd1448d9a2d484ae80941c8d81df5fb3483cc1e1e676b8d",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The kiosk has a lit green top plane of about 3 rows, a blue screen, an orange card slot and a dark outline consistent with the originals. At 1x it reads as a ticket/charge machine and stands cleanly on the floor."
+  },
+  {
+   "id": "subway-pillar-sign",
+   "pixelSha256": "8a0a28c61e1c8a6501871dd1a14b4a0c5d364b074550ced177b8d4080dd99a75",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    5
+   ],
+   "reasons": "It is a short, free-standing white cylinder with a capped top that ends at about 2 tiles, so it reads as a trash bin or drum, not a structural pillar going up to the ceiling. In the room it floats mid-floor like a canister."
+  },
+  {
+   "id": "svc-arcade-shopfront",
+   "pixelSha256": "859476c19d1b63265c3ba5a2965a60832950ce10fb6c675a3f8c6b6f903c7db0",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "The candidate is labelled 'BOUTIQUE' and shows a red dress and a suit on mannequins, so it is a clothing store, not an arcade. It is also a pure flat front elevation (awning stripes, sign, glass) with no top plane."
+  },
+  {
+   "id": "svc-washer-row",
+   "pixelSha256": "914e6e20491776808a5ad49dc3b9df01bde99133197dfd067fbf87a3a5513bf9",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "Three blue washers with grey porthole doors and a white top strip, plus a teal detergent shelf behind them, read clearly at 1x. The outline and shading steps match the originals, and the row sits on the floor across the wall line believably."
+  },
+  {
+   "id": "train-luggage-rack",
+   "pixelSha256": "5e8469825efc8fee7484ac897f36519e8f36851f7a62e0de1d0f5710d93f7ae0",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    5
+   ],
+   "reasons": "An overhead luggage rack is drawn as a floor-standing cabinet with three framed posters on the front and a tan base, so at 1x it reads as a display case or notice board. A luggage rack should be mounted overhead, and in the room this one is planted on the floor at the wall line."
+  }
+ ]
+}

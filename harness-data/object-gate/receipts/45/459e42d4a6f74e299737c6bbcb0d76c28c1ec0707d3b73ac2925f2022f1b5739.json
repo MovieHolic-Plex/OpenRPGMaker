@@ -1,0 +1,310 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "459e42d4a6f74e299737c6bbcb0d76c28c1ec0707d3b73ac2925f2022f1b5739",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "subway ticket machine",
+ "label": "modern_city_interior/subway-ticket-machine",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 18,
+  "darkV5": 46,
+  "nearBlackEdge": 0.27,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "machine top (grey-blue band, both units)",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Both units have a light grey-blue band at rows 2-6 with texture highlights. It ends in a bright front-edge line at row 6 (#dde0e7), followed by a dark shadow row at row 7 (#1f3052). Below it the south front face runs rows 8-30 and holds the ticket slot, screen, buttons and a dispenser tray. The silhouette is a plain 32px-wide rectangle with no side face. The top band is about 5 rows, so it reads as a top surface and not just a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is two standing blue ticket kiosks, the same kind of standing prop as the references. Measured facts: 16 visible tones per tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline is a tinted dark navy that follows the blue body rather than a black sticker line. By eye, the body has about 5 lightness steps: a light top highlight, mid blue, dark blue side and base, and a dark navy edge. Small details (screen, buttons, card slot, panel seams) add variation, though the texture is more panel detail than grain. Information density sits at the level of the stall and well references, and nothing looks thinner or flatter than they do.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13674
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "machine top band (both units)",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     },
+     {
+      "part": "front face with ticket slot, screen and card reader",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In column x=16, rows 2-5 are a light gray-blue band (L=202). Row 6 is a lighter 1-row front-edge line (L=224), and row 7 is a dark eave-shadow row (L=47). Below that, rows 8-30 are a vertical blue front face with a ticket slip, a screen, a card reader and a tray, so the front face is 23 rows. The top band is about 5 rows, which is more than a rim. No side face is drawn. Two identical units sit side by side, each with the same top band and front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 16 visible tones per 16x16 tile, close to the stall (17) and well (20) and well above the hedge (9). Near-flat coverage is 0%, so there are no large single-colour areas. The measured 0% neutral share of dark edge pixels, plus the visible dark blue-navy edges, means the outline leans toward the material's own tone and is not a black sticker line. The body shows about 5 steps: light casing highlight, mid grey-blue, shadow, dark panel edge and the screen/keypad accents. Details such as screens, button grids and ticket slots give it clear internal structure, though the surfaces are a little smoother than the stall's grain and its total palette (23 colours) is smaller than the stall's (40) and the well's (38). It would sit acceptably next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16351
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of both machine housings",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "front face with ticket display, screen, coin slots and tray",
+      "rows": "8-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Two machines stand side by side. Rows 2-6 form a grey-blue band that is lighter than the dark blue body, with its lightest row at row 6 (L=224) acting as the front-edge line. Row 7 is a dark line (L≈43-47) that works as eave shadow, and the front face runs from row 8 to row 31 below it. No side face is drawn. The band could instead be read as a face-on header sign, but its colour shift, light front edge and dark shadow row match evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 16 visible tones per 16x16 tile, close to prop-stall-cheese (17) and prop-well-roofed (20) and above prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline is a tinted dark blue beside the blue body rather than a black sticker line. The blue casing ramps through about 4 steps (dark edge, mid, light panel, highlight), and the screen, ticket slot and keypad add small detail clusters. That is slightly under the 5-6 steps Beodeul uses, and the 23 total colours are fewer than the richer references (38-40). The machines are hard-edged manufactured objects with few materials, so this is acceptable. A careful artist would accept it next to the references without it looking noticeably flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17432
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of both cabinet units (grey-blue lid with lighter dashes)",
+      "rows": "2-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     },
+     {
+      "part": "front face: ticket slot panel, screen, card reader, coin tray, base",
+      "rows": "8-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan at x=16 shows rows 2-5 at L=202, then row 6 lighter at L=224 as a front-edge line, then row 7 dark (#1f3052) as a 1-row eave shadow. That gives a 5-row top band (rows 2-6) over a front face of rows 8-31, about 24 rows. The front face holds the ticket slot, screen, card reader and tray. No receding side face is drawn. The top band has dashes that could read as a face-on sign, so this call is borderline. It still meets evidence (a) of an edge line plus shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is two blue ticket machines. Its outline is a dark navy that leans clearly blue, and 0% of its dark edge pixels are near-neutral, so it is not the black sticker look. It has 0% near-flat coverage and about 16 visible tones per 16x16 tile, on par with stall-cheese (17) and just under well-roofed (20), and above hedge (9). Each machine shows a body ramp, a lit screen, a panel with buttons and a ticket slot, with highlight edges, so the body has roughly 4 steps against about 6 in the references. It has only 23 distinct colours in total against 38-40 for the richest references, so it is somewhat leaner and simpler. Texture is limited to small panel and button detail with little grain. The measured density and the tinted outlines are at reference level, so I judge it acceptable next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17604
+  }
+ ],
+ "decidedAt": "2026-10-21T08:22:08.637Z",
+ "cells": {
+  "16": [
+   "1f43ab6345753147",
+   "69d2f236e1f6c6b7",
+   "96f1cbe9cc3f4518",
+   "bb31c36534004aee"
+  ],
+  "24": [
+   "1b7e9e2063ded56b",
+   "1c93a8b851803ca9",
+   "26eeb96ab8a5f35f",
+   "28d46a78062275a9",
+   "34d6f548eb4ee283",
+   "5b6a2f1745b9b4c2",
+   "68a24e186dd6d213",
+   "71085c0b4a569fab",
+   "7b60ed407bc11454",
+   "7ea3635f1ea9c36a",
+   "88ac77bd20ac2d8f",
+   "9844e967cc626ad4",
+   "9b54e70f74c7f7c9",
+   "b31c6d0564e3f5c2",
+   "bd8c124b3ef7552f",
+   "d2694f3d0db7e2c9",
+   "d52fe3556a44c85d",
+   "e5b41ad19599a4f9",
+   "e89d92783d69786d",
+   "e9656685e101a578",
+   "ed2f25653f284db2",
+   "efc2d81fae15cf98",
+   "f260d63631b91360",
+   "f63c53be53a9b55c"
+  ],
+  "32": [
+   "c1e02a55cffac799"
+  ],
+  "48": [
+   "06921d978d149a04",
+   "39cd096900ef6b64",
+   "61ad130ac7c60ed1",
+   "c06691298bea5fe4",
+   "cfc9c6176f1e9c1a",
+   "dbd1d66ae22e551b"
+  ]
+ }
+}

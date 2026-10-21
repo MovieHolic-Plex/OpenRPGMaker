@@ -1,0 +1,385 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d541a263e4a321a5063c8d825515c2da89e975b0c30ff2957eddf03464f2a50",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "arcade claw machine",
+ "label": "modern_city_interior/arcade-claw-machine",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 21,
+  "tileColorsP90": 22,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header/canopy panel",
+      "rows": "1-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "10"
+     },
+     {
+      "part": "glass window with plush toys and claw",
+      "rows": "11-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control deck ledge on base",
+      "rows": "22-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "base front panel",
+      "rows": "27-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The machine is a pink header (rows 1-10), a dark glass window (rows 11-21) and a wider base (rows 22-31). The base's control deck is a lighter pink band at rows 22-26, with button marks, a darker edge line at row 26 and shadow at rows 27-28. The front panel with coin slot sits below it (rows 27-31), so the deck reads as a top surface. The header is 7 flat pink rows with a darker line at row 8, a highlight at row 9 and shadow at row 10. That is ambiguous, since it could be a front-facing marquee, but it counts weakly as a top band. The window and base give 14+ rows of front face. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 21 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well, so it is at or above the comparable references. Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, which means the outline leans toward a dark maroon/pink of the cabinet instead of a black sticker line. The pink body shows a highlight, light, mid and dark ramp. The glass window with prizes and the control panel add varied shapes and small clusters. It is a little less textured than the stall or well, but a careful artist would accept it beside them without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22054
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top canopy/header band",
+      "rows": "1-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "glass cabinet front with claw and plush toys",
+      "rows": "12-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base control ledge (top of lower base)",
+      "rows": "22-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "base front face with slot and coin plate",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wider lower base has a light pink top ledge in rows 22-26 (the width steps from 24 to 26 at row 22). It ends in an edge line at row 26 with dark shadow at rows 27-28, then a front face with slot and coin plate in rows 27-31. The upper canopy rows 1-8 is a light pink band ending in a darker edge line at row 8, followed by a highlight and shadow at rows 9-11; a small label stripe at row 5 suggests it may be a sign panel, so this top is the less certain reading. The glass window, claw and toys in rows 12-21 form the front face. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts: the candidate has 21 visible tones per 16x16 tile, 0% near-flat coverage and 0% neutral dark edge pixels. That is on par with the stall (17) and the well (20), and above the hedge (9). The outline is tinted, a dark magenta/red-brown beside the pink body, not black. By eye the candidate is small and clean, and the pink cabinet reads with about 3-4 steps (light pink, mid, dark, deep) plus a glass window with a few toys. Beodeul props like the well and stall show 5-6 steps, per-tile highlights and grain. The candidate's cabinet face is smoother, with little speckle or grain, and the prize interior is only a few pixels of detail. It is not a flat sticker, since the tinted outline, the glass highlights and the toy clusters give real variation, but it is somewhat below the richest references. Slightly lower than the references on shading depth and surface texture, so I fail it under the 'when in doubt' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17730
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header / marquee panel",
+      "rows": "1-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass window with claw and prizes",
+      "rows": "11-21",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base control ledge",
+      "rows": "22-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "base front panel with coin slot",
+      "rows": "27-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main cabinet (rows 1-21) is a face-on elevation. The header (rows 1-10) is uniform pink with a darker row 8, a light sign strip at row 9 and a dark row 10. It is the same width as the glass body, so it reads as a vertical marquee panel with no top surface, only a 1-row rim at row 1. The glass window (rows 11-21) shows the claw and prizes face-on. Only the wider base (width 26 from row 22) has a lighter ledge, rows 22-26, with a button and joystick. That is a small control-panel top below a large flat elevation, not a top on the main body. The tall header is drawn as a vertical face only, where a horizontal top would be expected."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The claw machine reads as a prop of the same kind and scale as the stall and well. Its measured density is 21 visible tones per 16x16 tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no large flat fills. The 0% near-neutral share of dark edge pixels means the outline is tinted. It leans dark magenta-brown against the pink body rather than black, so it is not a sticker line. The pink cabinet shows highlight, mid and dark steps, and the glass window holds several small toys in different tones, which gives it clustered detail. The cabinet has about 5 steps, slightly fewer than the references' 5-6, but the density and outline facts are at reference level, so a careful artist would accept it beside the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23122
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header / roof of cabinet",
+      "rows": "1-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "10"
+     },
+     {
+      "part": "glass window with claw and plush toys",
+      "rows": "11-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wider base with control-panel top",
+      "rows": "22-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27"
+     },
+     {
+      "part": "plush toys and claw inside the cabinet",
+      "rows": "12-21",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cabinet has a light pink band on rows 1-8 that ends in a darker front-edge line at row 8. A highlight at row 9 and a dark shadow at row 10 follow, then the front glass face on rows 11-21. The header could instead be read as a vertical marquee sign, but the band-plus-edge-line pattern fits a top surface. The wider base (26 px against 24 px) has a light top band on rows 22-26 with an edge line at row 26 and shadow at row 27. Its front face on rows 27-30 holds the coin slot. The front face is well over 3 rows and no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 21 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, and 0% of its dark edge pixels are near-neutral, so the outline is tinted. By eye, the outline is a dark magenta-brown beside the pink cabinet rather than a black sticker line. The pink body shows about 5 steps (highlight, light, mid, shadow, deep). The glass window holds several small plush toys and a claw in varied tones, and the control panel has small details. It is a little less textured than the stall and well, and the cabinet is somewhat smooth, but it has no large flat fills and is not thinner than the references of the same kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22842
+  }
+ ],
+ "decidedAt": "2026-10-21T08:22:08.618Z",
+ "cells": {
+  "16": [
+   "315896959c577886",
+   "46dcd89e17a299da",
+   "7bd4483dba597bf5",
+   "de18b247a97096d6"
+  ],
+  "24": [
+   "0b6e6ffcf4817986",
+   "0b91e29ea201022c",
+   "266ecf412b86a83a",
+   "2b7c11e30daef19e",
+   "360b650fb128a5f9",
+   "4b15f73bae4dfa8a",
+   "5ab93f25cad97a32",
+   "5bd94018025e8a45",
+   "663c577fb5fb609c",
+   "79c9413310472c2d",
+   "7afb02e5c87cf6d4",
+   "91d5c5f149e773c6",
+   "940c0bc19487afd2",
+   "94d80eae84a23207",
+   "b343ec918cc76088",
+   "c86eaa7e5a1d7781",
+   "ca5afede901870e9",
+   "cc3c452b2a35108d",
+   "d2e5f7fdb4d1c517",
+   "d49dfbc8816663b4",
+   "da6b809c0d25f862",
+   "ed2ceac3e6c8940d",
+   "f21dcc06de6c537c",
+   "f9a6014053138534"
+  ],
+  "32": [
+   "62b2d562ec5717c8"
+  ],
+  "48": [
+   "09577e8efd1dc36f",
+   "330a08de1020f19e",
+   "4d0506ef5e2984ea",
+   "8582b4a1e0797f99",
+   "8b4518a6dd67d925",
+   "92cbed9e327ff7ef"
+  ]
+ }
+}
