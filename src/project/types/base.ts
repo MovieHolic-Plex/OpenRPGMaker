@@ -647,7 +647,7 @@ export interface TreeComposerDef {
   shapeOrder: string[];                   // 모양 순서(첫째 우선 · 둘째 우선 · 셋째 우선 경계는 shapeOdds)
   shapeOdds: number[];
   trunkCols: Record<string, number[]>;    // 모양별 줄기 열(그림 왼쪽 기준)
-  overhangOnGroups: string[];             // 수관이 숲 밖으로 넘쳐도 되는 1층 오토타일 그룹(잔디) — 사람이 읽는 이름
+  overhangOnGroups?: string[];            // 수관이 숲 밖으로 넘쳐도 되는 1층 오토타일 그룹(잔디) — 사람이 읽는 이름
   overhangOnTiles: number[];              // 굽기가 위 그룹 멤버 + 제 숲 바닥으로 풀어 둔 칸 번호(엔진은 이것만 본다)
   sprites: TreeComposerSprite[];
   ground?: TreeComposerGround;            // r6 접지(없으면 땅 그늘 없이 나무만)

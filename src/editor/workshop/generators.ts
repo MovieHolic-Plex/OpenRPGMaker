@@ -4,7 +4,7 @@
  * 화면 글은 쉬운 말만 — 모델 이름·내부 용어를 쓰지 않는다. 상태는 정직하게:
  * - object-gen: 편집기 안에서 사용자 자기 AI 계정으로 그린다(공방 실행기). object-gen 이 만든 묶음도 가져온다.
  * - char-gen: 파이썬 도구라 브라우저에서 못 돈다 → 사용자 컴퓨터의 AI 에이전트에게 부탁할 글을 만들어 주고, 결과 묶음을 가져온다.
- * - tile-gen: 지형 생성기(2026-10-21 다시 만듦) — 이음매 없는 바닥·자동 타일 가장자리(47칸)·물가·움직이는 물·숲 덩어리·절벽.
+ * - tile-gen: 지형 생성기(2026-10-21 다시 만듦) — 이음매 없는 바닥·자동 타일 가장자리(47칸)·물가·움직이는 물·숲(숲 바닥 + 편집기가 놓는 나무, tile-gen PR #4 composer)·절벽.
  *   물건·기물·건물은 object-gen 만 그린다 — tile-gen 을 물건 생성기로 소개하지 않는다. char-gen 처럼 부탁 글 + 묶음 가져오기.
  *   묶음은 `oprn-store-pack/1` tileset 하나 + autotileGroups(·animationStrips) — 가져오기가 그대로 보존한다.
  * - item-gen: 저장소가 없다(2026-10-21 조직·홈 확인) → 「준비 중」. 가짜로 채우지 않는다.
@@ -84,7 +84,7 @@ export const TERRAIN_MODES: readonly { readonly mode: TerrainMode; readonly labe
   { mode: "floor", label: "바닥 채우기", example: "예: 결이 고운 나무 마루" },
   { mode: "autotile", label: "가장자리 자동 타일", example: "예: 흙 위로 번지는 풀밭" },
   { mode: "water", label: "물가·움직이는 물", example: "예: 잔물결 이는 얕은 연못" },
-  { mode: "forest", label: "숲 덩어리", example: "예: 짙은 활엽수 숲" },
+  { mode: "forest", label: "숲 바닥 + 나무", example: "예: 짙은 활엽수 숲 · 나무는 편집기가 놓아요" },
   { mode: "cliff", label: "절벽·단", example: "예: 이끼 낀 회색 바위 절벽" },
 ];
 
