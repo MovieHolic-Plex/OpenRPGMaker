@@ -58,8 +58,15 @@ export type PlayResolutionAnalysis = {
 /**
  * Normalize an authored logical viewport. The default is stored by omission so
  * legacy projects and explicit 320x240 projects have the same wire shape.
+ *
+ * `keepDefault`: 양쪽 전신(dual-fullbody-veil) 프로젝트는 「저작 없음」이면 1024×768 로 올라간다
+ * (resolvePlayResolution). 그래서 그 프로젝트에서 작가가 320×240 을 직접 고르면 생략이 아니라
+ * 값으로 남겨야 한다 — 생략하면 다시 1024×768 로 튀어 「해상도가 안 바뀐다」(2026-10-21 신고).
  */
-export function normalizePlayResolution(value: unknown): PlayResolution | undefined {
+export function normalizePlayResolution(
+  value: unknown,
+  options: { readonly keepDefault?: boolean } = {},
+): PlayResolution | undefined {
   if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
   const candidate = value as { readonly width?: unknown; readonly height?: unknown };
   const width = clampDimension(
@@ -74,18 +81,27 @@ export function normalizePlayResolution(value: unknown): PlayResolution | undefi
     PLAY_RESOLUTION_LIMITS.minHeight,
     PLAY_RESOLUTION_LIMITS.maxHeight,
   );
-  if (width === DEFAULT_PLAY_RESOLUTION.width && height === DEFAULT_PLAY_RESOLUTION.height) return undefined;
+  if (!options.keepDefault && width === DEFAULT_PLAY_RESOLUTION.width && height === DEFAULT_PLAY_RESOLUTION.height) return undefined;
   return { width, height };
+}
+
+/** 이 시스템에서 기본값(320×240)도 값으로 남겨야 하는가 — 양쪽 전신 대화창이면 생략이 1024×768 을 뜻한다. */
+export function keepsExplicitDefaultResolution(
+  system: Pick<SystemRecords, "dialogueStyle"> | undefined,
+): boolean {
+  return system?.dialogueStyle === "dual-fullbody-veil";
 }
 
 export function resolvePlayResolution(
   system: Pick<SystemRecords, "playResolution" | "dialogueStyle"> | undefined,
 ): Readonly<PlayResolution> {
-  const normalized = normalizePlayResolution(system?.playResolution);
-  if (system?.dialogueStyle === "dual-fullbody-veil" && isCrampedFullbodyPlayResolution(normalized)) {
+  // 양쪽 전신 고해상도 승격은 「작가가 아무 값도 안 정한」 옛 프로젝트에만 한다. 작가가 고른 값
+  // (480×270·320×240 포함)은 그대로 쓴다 — 예전에는 480×320 이하를 전부 1024×768 로 덮어서
+  // 자료집에서 해상도를 골라도 화면·플레이가 그대로였다(2026-10-21 신고 「해상도 변경이 안 됨」).
+  if (system?.dialogueStyle === "dual-fullbody-veil" && system.playResolution === undefined) {
     return HIGH_RES_FULLBODY_PLAY_RESOLUTION;
   }
-  return normalized ?? DEFAULT_PLAY_RESOLUTION;
+  return normalizePlayResolution(system?.playResolution, { keepDefault: true }) ?? DEFAULT_PLAY_RESOLUTION;
 }
 
 export function analyzePlayResolution(

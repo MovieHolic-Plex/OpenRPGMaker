@@ -4594,3 +4594,8 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 - 스마트 팔레트 탭(`지형 | 프리팹 | 최근 | 개별 타일`, `src/editor/panels/tilePaletteSmart.ts`)을 누를 때 `라벨·태그 검색`(`catalogQuery`)이 남아 있으면 검색어와 디바운스 타이머를 함께 비워, 검색 결과 화면에 갇히지 않고 고른 탭의 카드 목록으로 바로 전환한다.
 - 왼쪽 활동 막대의 「스토어」(`data-testid="sidebar-store"`)는 다른 활동 탭과 마찬가지로 좌측 `left-store-pane`만 열고, 전체 화면 스토어 모달(`.store-host`)은 패널 안의 「인기 에셋 둘러보기」(`data-testid="left-store-open"`)를 눌렀을 때만 연다.
   - 2026-10-20: 패널 아래에 「내 에셋 나누기」(`data-testid="left-store-share"`)가 더해져 스토어를 `upload` 탭(3걸음 나누기 마법사)으로 바로 연다. 창 안 계약은 `openwiki/asset-store.md` 「스토어 창 UX」.
+
+## UX 2차 — 도크 배치·서버 AI 꺼짐 문구 (2026-10-21, F24)
+
+- 오른쪽 AI 도크가 열려 있으면 폭 1100px 이상에서는 **레이아웃 폭을 차지**한다(지도 위를 덮지 않는다). 1100px 미만에서는 예전처럼 덮는 오버레이이고 툴바만 비켜 준다(`32-ai-workspace.css`).
+- 서버가 AI 를 껐을 때(`hostAiDisabled`) 잠금 막(`aiLockScrim`)과 칩은 같은 「AI 서버에서 꺼짐」 문구를 쓰고, 소용없는 로그인 버튼은 숨긴다. AI 입구 4곳은 그대로 둔다. 대화/조수 탭에는 설명 title 이 붙는다.

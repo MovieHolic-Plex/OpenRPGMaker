@@ -1,0 +1,357 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "78304e14127fdb8f64bc7f09bb9e4ca62d9f298bb0d546b92a04c6f101bcda3e",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "retro postbox vending",
+ "label": "jp-inaka-r5:inaka-retro-postbox-vending",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 2행 < 3 (2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 2행 < 3 (2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 22,
+  "tileColorsP90": 24,
+  "darkV5": 38,
+  "nearBlackEdge": 0.5,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "vending machine top",
+      "rows": "3-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "postbox top (orange, slanted)",
+      "rows": "5-9",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Two bodies stand side by side: a red postbox on the left (x about 5-16) and a vending machine on the right (x about 17-31). The vending machine has a light band at rows 3-6 (L about 224-230). Its last row, 6, is slightly darker (L=200) at x=23, and below it come the blue display and the grey front face, which runs from about row 7 to row 29. There is no distinct eave shadow, so the top evidence is weak and may be a cornice. The postbox top is a lighter orange gradient at rows 5-9, where the silhouette widens from 25 to 29 to 31 px. This suggests a rounded, tilted top surface. Both parts have a front face of 20+ rows, so the object is a weak three-quarter view with a shallow top band of about 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a red postbox beside a vending machine. It has 48 distinct colours and a median of 22 per 16x16 tile, at or above the stall (17) and well (20) references. Flat-fill coverage is 0%. The measured near-neutral share of dark edge pixels is 0%, so the outlines carry a tint and read as dark red-brown beside the red body and dark blue-grey beside the machine, not a uniform black sticker line. The red postbox body shows about 5 lightness steps, with highlight, light, mid and dark bands plus a cap and slot detail. The vending machine has a lit panel and a dark frame with some variation. Texture is moderate rather than lavish, but the machine's screen area is a bit simple. Overall it holds up next to the stall and well references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24649
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "vending machine upper header band",
+      "rows": "3-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red postbox top (lit salmon/orange slope)",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vending machine front face",
+      "rows": "7-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The largest volume is the vending machine on the right (x~17-35). Its top (rows 2-6) is a dark outline row, a dark gray row, and then a 3-row light band. This band continues into the front-facing panel, with no front-edge line and no eave shadow below it. It reads as a header strip or rim, not a horizontal top seen from above. The blue display, product slots and dispenser rows 7-29 are a vertical face. The red postbox on the left has a lit, slightly angled top (rows 5-8), but it is the smaller part and its top is only weakly defined. The whole object is a front elevation with at most a rim-like top on the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a red postbox beside a vending machine. It has 48 distinct colours and a median of 22 per 16x16 tile, which is above the stall (17) and well (20) references. Flat-fill coverage is 0%. 0% of its dark edge pixels are near-neutral, so the outlines carry a tint (dark red-brown beside red, dark blue-grey beside the machine body) and are not a uniform black line. The red body shows about 5 lightness steps with highlight and shadow sides. The vending machine has a light panel, a dark window and small product dots. Texture is moderate rather than rich: it shows panel details and slot lines, but less grain than the roofed well. Density and shading are comparable with the stall and well references, so a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16100
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "vending machine top band",
+      "rows": "3-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "postbox lit top (sloped, gradient)",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vending machine front face",
+      "rows": "7-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 22,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The sprite shows a red postbox beside a vending machine. The vending machine has a light band at rows 3-6 (x=16 L~230) above a blue display starting at row 7. This reads weakly as a top plane with a lighter edge row at 6-7. The postbox has a lit orange top at rows 5-9 that darkens downward, like a sloped or rounded top. Both bodies have tall front faces of about 20 rows or more, and the postbox has a dark right side shading. The tops are thin and ambiguous, but a top surface plus a front face is plausible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a red postbox plus a vending machine. It has 22 median colours per tile and 48 distinct colours, matching or beating the richest references (stall 17/40, well 20/38). Flat-fill coverage is 0%, and 0% of dark edge pixels are neutral, so the outline is tinted. It reads as dark red-brown beside the red body and dark blue-grey beside the machine, not a black sticker line. The red body shows about 5 steps (highlight, light, mid, dark, deep), with a lit left edge and a shaded right side. The vending machine has a bright panel, shelf rows of small coloured items, and a grey frame with highlights. Texture is moderate (slot details, rim highlights, small items) rather than the full grain of the roof or well, hence 'some'. Overall it holds up beside the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22914
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "postbox lid (left part)",
+      "rows": "5-9",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vending machine top band (right part, main body)",
+      "rows": "3-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The scene is two objects side by side: a red postbox on the left (x about 5-16) and a vending machine on the right (x about 17-31). The vending machine is the largest volume. Its top, rows 3-6 (light #dce1e8), is a face-on frame strip with a dark outline above it. It has no front-edge line and no eave shadow, and the blue display window starts directly below at row 7. The rest of the machine is a vertical face: display, buttons, grille and dispensing slot. So the machine reads as a front elevation with at most a 1-2 row rim. The postbox lid, rows 5-9, widens from 25 to 31 pixels and has a lighter orange top. That gives a weak sloped or ellipse-like top, but it is small and does not carry the whole structure. The postbox body below it is a plain vertical face with slots. The main body therefore lacks a clear horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a red postbox beside a vending machine, and both are props of the same kind as the references. It has 48 distinct colours and a median of 22 per 16x16 tile, which is above the stall (17) and well (20) and well above the bench and lamp, where thin shapes make the per-tile median 0. Flat-fill coverage is 0%, and 0% of its dark edge pixels are neutral, so the outlines carry a tint. By eye they are dark red-brown beside the red body and dark blue-grey beside the machine, not a uniform black sticker line. The postbox body shows highlight, light, mid and dark red bands plus a slot and rim detail, about 5 steps. The vending machine has a lit panel, a shaded frame and small product dots. Texture is present but a little less grainy than the roofed well or the stall awning, so I rate it 'some' rather than 'rich'. It would sit next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20130
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.451Z",
+ "cells": {
+  "16": [
+   "561b86596f76e9c3",
+   "75b39717c7c7b741",
+   "75dcb2f906d7f276",
+   "75e2a3032b4123b6"
+  ],
+  "24": [
+   "0b38e27307f7a530",
+   "1548d8c1acafe743",
+   "1a817e111052235b",
+   "213ac3fa1ac87a91",
+   "21e0d309850c24c2",
+   "29c796f3c67249ad",
+   "31a09035d18df2e3",
+   "45a80af3310f69b9",
+   "5113a5eeaeff94c7",
+   "5b8fa52f18e0b57e",
+   "5c40b164e1978747",
+   "7ea7e6881bac4221",
+   "96324366232cfa87",
+   "b072a5f8128370fe",
+   "b2b57461e482d408",
+   "c453268515a6f642",
+   "df29d1ad39aec4d7",
+   "e1bd3d4a4bbd0617",
+   "e52df8a7151b9229",
+   "e79c75fc6d15fa47",
+   "e9c3532faec38265",
+   "ed1f28d45b460ce6",
+   "f5c78b7be67aeea1",
+   "f659b1af34312295"
+  ],
+  "32": [
+   "ee07844c528ec12d"
+  ],
+  "48": [
+   "44f4c6776398984e",
+   "46bb5dd9d1c97aae",
+   "51403673a8660e20",
+   "7662a42247ac4352",
+   "8c7bb1fe297e3842",
+   "ec50c98e7c9be520"
+  ]
+ }
+}

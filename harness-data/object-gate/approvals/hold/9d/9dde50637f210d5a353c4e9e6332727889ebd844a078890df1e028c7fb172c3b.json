@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "9dde50637f210d5a353c4e9e6332727889ebd844a078890df1e028c7fb172c3b",
+ "profileHash": "4d8774b517f41638",
+ "kind": "low_furniture",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T01:24:20.198Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 10/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "note": "묶음 허용: modern_city 실내 기물 m142-b5 (17) — object-gen 다시 그림, 사용자 위임·Opus 적대 VQA 통과 2026-10-21 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/m142-b5.opus-vqa-r*.json",
+ "sig": "ed971b9f4b10a1b3c834e096dbff03e5dd557d612689dc2cb02c4af8158f9f46"
+}

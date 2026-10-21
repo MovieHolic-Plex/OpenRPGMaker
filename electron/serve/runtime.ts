@@ -27,6 +27,8 @@ import { createAssetBlobIndex } from "./assetBlobs";
 
 const BRIDGE_PATH = "/__oprn/bridge";
 const BRIDGE_SCRIPT_PATH = "/__oprn/bridge.js";
+/** 이미 열린 페이지가 서버 재시작 뒤 새 토큰을 받아 가는 곳(electron/browser/bridge.ts refreshConnection). */
+const HANDSHAKE_PATH = "/__oprn/handshake";
 const ASSET_PATH_PREFIX = "/__oprn/asset/";
 const LOOPBACK = "127.0.0.1";
 
@@ -120,7 +122,7 @@ function pageCsp(nonce: string): string {
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}'`,
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob:",
+    "img-src 'self' data: blob: https://cdn.openrpgmaker.com",
     "media-src 'self' data: blob:",
     "font-src 'self' data:",
     "connect-src 'self'",
@@ -383,6 +385,11 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
           sendHtml(response, entryLoginPage);
         } else await sendJson(response, 401, { error: '팀 접속 코드로 로그인하세요' });
         return;
+      }
+      // 서버가 다시 시작되면 열린 페이지는 HTML 에 박힌 옛 토큰을 쥐고 있다 — 새로고침 없이 지금 토큰을 다시 받는다.
+      // 노출 범위는 같은 토큰을 싣는 페이지 HTML(GET /)과 같다: 호스트·출처 검사와 팀 로그인을 이미 지났다.
+      if (url.pathname === HANDSHAKE_PATH && request.method === 'GET') {
+        await sendJson(response, 200, { token, companionToken: shared ? null : companionToken }); return;
       }
       if (url.pathname === '/__oprn/team' && request.method === 'GET') {
         sendHtml(response, inject(teamPage.replaceAll('href="/"', `href="${returnUrl}"`))); return;

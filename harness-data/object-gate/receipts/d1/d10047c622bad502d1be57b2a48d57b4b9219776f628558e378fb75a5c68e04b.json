@@ -1,0 +1,399 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d10047c622bad502d1be57b2a48d57b4b9219776f628558e378fb75a5c68e04b",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "manga shelf",
+ "label": "modern_city_interior/manga-shelf",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 1행 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 1행 < 4 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 21,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top compartment (empty light back panel with a few books at right)",
+      "rows": "2-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards between book rows",
+      "rows": "14-15, 21-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "book rows with spines facing the viewer",
+      "rows": "9-13, 16-20, 24-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole 32px-wide body is a flat face-on elevation. Row 1 is the dark outline. Row 2 is a 1-row light rim. Rows 3-7 are a light back panel of the top compartment, with book spines standing upright in front of it at the right. That makes it a vertical open compartment, not a top surface. Row 8 is a grey line and row 9 is dark, which is the underside edge of the top board and the shadow over the first book row. The rest is stacked book rows at rows 10-13, 17-20 and 24-28. Each is separated by a 1-2 row light shelf edge (rows 14-15, 21-23) and a dark shadow. These shelf boards are thin face-on strips, not foreshortened horizontal planes. There is no ellipse, roof or visible contents seen from above, and no receding side face. So there is a front face of about 30 rows but no real top, as in the red 'bookshelf' reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a standing furniture piece, so it matches the reference kind. Measured facts support it: 20 visible tones per 16x16 tile, level with prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outline is tinted rather than a black sticker line. By eye, the cabinet frame steps through about 5 lightness levels, from a pale highlight through grey-blue mids to a dark blue-grey edge. The interior rows are broken up by many small, varied book spines, which gives dense texture and avoids large flat areas. The panel surfaces are somewhat smoother than the references' grain and tile scallops, so texture is rated 'some' rather than 'rich'. A careful artist would still accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19716
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top compartment with books (rows 3-7), light back panel",
+      "rows": "2-7",
+      "evidence": "none",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "shelf boards (1 row light + 1 row grey edge) at rows 14, 21 and 29",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16"
+     },
+     {
+      "part": "base plinth",
+      "rows": "30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is a flat straight-on front view of an open bookcase, 32 px wide and rows 1-31. Row 1 is the dark outline and row 2 is a 1-row light highlight. Rows 3-7 are the top compartment's pale back panel with a small stack of books at the right, so they are contents and not a horizontal top surface. Rows 8-9 (grey, then dark) and the shelf boards at rows 14-15 and 21-22 are thin 1-2 row strips, so they read as front-facing board edges and not as a top plane. The rows between them are book spines drawn face-on. No lid ellipse, roof plane or receding side face is drawn, so this matches the red 'front elevation' bookshelf reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 20 visible tones per 16x16 tile, level with prop-well-roofed (20) and above prop-hedge (9) and prop-stall-cheese (17). Near-flat coverage is 0%, and 0% of its dark edge pixels are near-neutral, so the outline carries a tint. By eye it reads as a dark blue-grey edge beside the pale frame, not a black sticker line. The frame has a light highlight, mid and shadow ramp, and the shelf interior has several rows of multi-coloured book spines with small variations, so there are no large flat fills. The pale casing is somewhat smooth and the piece is slightly less textured than the cheese stall, but it is not thinner or flatter than the references. The prop kind matches.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19422
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top compartment back panel with a few books at right (pale, no front-edge line or eave shadow at the top)",
+      "rows": "2-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards drawn as thin 2-row light strip plus gray edge (rim only)",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards, second level (rim only)",
+      "rows": "21-22",
+      "evidence": "none",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom plinth and base board",
+      "rows": "29-30",
+      "evidence": "none",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a full-width 32 px rectangle from row 1 to row 31. It is a flat face-on view of a shelf unit. Rows 2-7 are the pale back wall of the top compartment, with books at the right, not a top surface. Rows 8-9 are a gray line and then a dark line, so there is no front-edge line with eave shadow beneath a top band. The shelf boards at rows 14-15, 21-22 and 29-30 are each a light row over a gray row, which is a 2-row rim viewed from the front. The column scan shows the same repeating pattern in every column (light, gray, dark, then book rows). There is no ellipse, no sloped roof plane, no visible side face and no horizontal top. This matches the red 'front elevation' references, not the green ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a standing furniture prop, so it matches the reference kind. It has 20 visible tones per tile, level with the roofed well (20) and above the cheese stall (17) and hedge (9). Near-flat coverage is 0%, so no large area is a single flat colour. The dark edge pixels are 0% near-neutral, which fits a tinted outline: a dark blue-grey beside the pale cabinet frame, not a black sticker line. The cabinet body shows a light, mid and dark ramp plus a deep tone for the shelf gaps and edges, about 5 steps. The rows of multicoloured book spines add varied small clusters. It is a bit cleaner and less grainy than the stall or well, since the white frame carries little grain, so texture is rated 'some', not 'rich'. Next to the references it does not look thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19287
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top compartment with a few books at right, drawn face-on",
+      "rows": "2-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf boards (1 light row plus 1 gray row each)",
+      "rows": "14-15, 21-22, 29-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "books on the shelves",
+      "rows": "10-13, 17-20, 24-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole piece is a flat front view of a bookcase. Row 1 is the dark outline and rows 2-7 are the light back of the top compartment (white, with books at right), so this is a vertical face rather than a horizontal top. Row 8 is a gray band followed by dark shadow in row 9, which reads as a shelf board and not as a top plane with a front-edge line. The other shelf boards (rows 14-15, 21-22, 29-30) are each only a 1-2 row light-plus-gray rim. The column scans at x=8, 16 and 23 show the same repeating pattern of books, light row, gray row, dark row, with no ellipse and no roof or cap plane. The silhouette is a constant 32 px wide from rows 1-31, so no receding top or side face is shown. This matches the red 'bookshelf' and 'front elevation' references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 20 visible tones per 16x16 tile, level with prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no large flat fills. Its dark edge pixels are 0% neutral, so the outline is a tinted dark version of the neighbouring material (blue-grey beside the pale frame) and not a sticker-style black line. The casing has a highlight, mid and shadow ramp of about 5 steps. The rows of book spines in varied tones add per-item texture, like the stall's goods. It is somewhat cleaner and simpler than the stall and well, with less grain on the casing, but a careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19098
+  }
+ ],
+ "decidedAt": "2026-10-21T00:04:54.235Z",
+ "cells": {
+  "16": [
+   "b3e8295523028990",
+   "c925c1b05697a55f",
+   "d83dd1731378b3d4",
+   "ec0bd87eee06000a"
+  ],
+  "24": [
+   "0fc0c7484d5c6186",
+   "1ee5789c7ab3be7d",
+   "27f7c00da697981a",
+   "34a6a1b2c77c2508",
+   "368d0488c753d59f",
+   "42074465bc325787",
+   "566db2c54ee61f44",
+   "5858313d72d8861b",
+   "5a659398345769f0",
+   "600d40ccad3d59c2",
+   "6b3b0b176c8a2a64",
+   "741f24df001b0a7a",
+   "744266f4fa56470b",
+   "84acf9132baf0e32",
+   "8b07aa66665c740b",
+   "8d5844a3f4c158af",
+   "99bbcc5acfd3c4c8",
+   "aa8f2966a5654206",
+   "b1993b26ff2dab36",
+   "b601f4dedcfd9185",
+   "bba491018fd7976a",
+   "dc522800a732380d",
+   "dd3bb895cb8c7a0b",
+   "f2909db63ff6aff2"
+  ],
+  "32": [
+   "681fb23be641638f"
+  ],
+  "48": [
+   "112da3454c30f931",
+   "6e3d889b86cd5ced",
+   "8444da7bed5e9828",
+   "ce1cd39189b93881",
+   "d222f52c6234e118",
+   "d8b8fd4df26c2073"
+  ]
+ }
+}

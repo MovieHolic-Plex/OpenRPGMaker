@@ -1,0 +1,366 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "130e8a1b1bdb87fe0599eb5c1f5de3076d851507579b0443db31b034c63b7653",
+ "width": 64,
+ "height": 32,
+ "kind": "structure",
+ "name": "mossy dry-stone retaining wall segment (Japanese countryside, chains horizontally)",
+ "label": "jp_inaka_pack/inaka-mossy-stone-wall",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (2/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 13,
+  "darkV5": 38,
+  "nearBlackEdge": 0.64,
+  "opaqueTiles": 8
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mossy capping top of wall",
+      "rows": "5-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "dry-stone front face with courses",
+      "rows": "13-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 5-11 form a 7-row moss-covered top band with a ragged lower edge. A dark moss edge line sits at row 12 (L=75 at x=16 and x=47, and a dark drip at x=32 down to row 16), which acts as an eave shadow. Below it, rows 13-29 show a vertical stone face of about 17 rows, with horizontal joints at rows 15-16 and 22-23 and vertical mortar gaps. The base is dark at row 30. The wall has no receding side face and the silhouette is a uniform 64 px wide. The top band is a real horizontal surface, not just a rim, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The references are whole houses (roof, walls, door, windows). The candidate is a low wall strip with a mossy top and about three grey stone courses. I can't match the kind, but the stone and moss material can still be compared to the stone wall on house-h112_0-stone. Distinct colours are 13, against 66 and 185 for the references, so the palette is far narrower. The median of 12 colours per tile is close to h112's 11, but that is partly because the piece is thin. Each stone has only about 2-3 grey steps (light top edge, mid face, dark joint) where the reference stones have 5-6, with per-stone highlights and tinted shadows. The moss has only 2-3 greens and some tuft dots on top, and the grass tufts are sparse. Dark edge pixels are 22% neutral against 7-9% for the references, so the outline leans grey and is only partly tinted. The stone joints are cool dark grey with little warm or green tint. Flat-fill coverage is 0%, so there are no large flat areas. Overall it is readable but shallower and more uniform than the references, with fewer colours and less per-stone variation. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13035
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mossy grass cap on top of wall",
+      "rows": "5-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "stone front face (dry-stone courses)",
+      "rows": "13-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Row 4 is the dark outline. Rows 5-11 are a 7-row moss-covered top surface, varied green with lighter patches, and it is wider than a rim. Row 12 is a darker green line (L=75 at x=16 and x=47, with moss drips down to row 16 at x=32) that acts as the front-edge line and eave shadow. Below it, rows 13-29 are the vertical stone front face, about 17 rows. It has horizontal mortar lines at rows 16, 22-23 and 28-29, with lighter stone highlights at rows 17 and 24. Only the south face is drawn, with no receding side face. The silhouette is a uniform 64 px wide, so it chains horizontally."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are whole buildings with roof, walls and door, while the candidate is a low wall segment. The kind does not match, so I judged it by eye against the stone wall of house-h112_0-stone. Measured facts: the candidate has 12 colours per tile against 11 for the stone reference and 18 for h101, with 0% flat fill. That part is on par. But it has only 13 distinct colours in total against 66 and 185 for the references, so its ramps are shallow. The grey stone blocks and the moss strip carry about 3-4 lightness steps each, not the 5-6 the references use. 22% of its dark edge pixels are neutral against 7-9% for the references, so the outlines lean toward grey-black and look somewhat sticker-like. The stones show some per-block shading and the moss has small tufts, but the blocks are mostly regular rectangles with little individual grain or per-stone highlight. Compared with the richly shaded stone-and-tile wall in the reference it looks flatter and thinner. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12733
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mossy grass cap on top of wall",
+      "rows": "5-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12-12"
+     },
+     {
+      "part": "stone block front face",
+      "rows": "13-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wall has a moss-covered top band at rows 5-11 (about 7 rows) that ends in a dark-green edge/shadow line at row 12 (#46532d, at x=32 the dark run extends rows 12-16). Below it are stone block courses at rows 13-29 (about 17 rows), with mortar lines at rows 16, 22-23 and 28-29. The top surface and the front face are both clearly drawn, so it reads as three-quarter view. The small tufts at rows 2-3 are minor details."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a low wall prop, while the references are whole buildings. The closest comparison is the stone wall of house-h112_0-stone. On the measured facts it holds up locally: 12 colours per tile against 11 for h112 and 18 for h101, 0% flat-fill coverage, and only 22% neutral dark edge pixels. It is weaker overall: only 13 distinct colours against 66 and 185, so each material (moss, stone, joints) gets about 4 steps against Beodeul's 5-6. Visually the stones are fairly uniform grey blocks, each with a similar dark joint line, so they are not shaded one by one with tonal variety. The outline is mostly tinted but partly neutral, so I call it mixed. The moss cap has some tufts and a few greens but little clump variety. Overall it reads as shallower and more uniform than the reference stone, and when in doubt I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17414
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mossy cap of the wall (top surface)",
+      "rows": "5-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "dry-stone front face",
+      "rows": "13-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 5-11 are a mottled moss band across the full 64px width, which reads as the horizontal top of the wall. Row 12 is a dark moss line (L=75 at x=16 and x=47, and dark moss hanging to row 16 at x=32) that works as the front-edge line and eave shadow. Below it, rows 13-29 are a stone face with courses, joints and vertical block seams, ending in a dark base outline at row 30. The top surface is 7 rows and the front face is 17 rows, with no receding side face. The wall chains horizontally and is a plausible structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The references are whole houses (roof, walls, door), while the candidate is a low wall strip, so the kind match is only partial. The closest comparison is the stone wall of h112. The candidate has only 13 distinct colours against 66 and 185 for the references, so its ramps are shallow. The grey stone has about 3 steps and the moss about 3 greens, against roughly 5-6 steps per material in Beodeul. Its per-tile median of 12 colours is on par with h112 (11), and flat-fill coverage is 0%. That density comes from a small palette dithered in a repeating block pattern, not from graded shading. The stones are not shaded one by one with highlight, mid and deep tones as in h112's cobbles. The dark joint lines lean grey-blue and are 22% neutral, against 7-9% for the references. That is more neutral than the references but not a pure black sticker outline, so I call it mixed. The moss tufts on top are a nice touch, but overall the piece looks flatter and thinner than the reference stonework.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17637
+  }
+ ],
+ "decidedAt": "2026-10-20T04:26:05.779Z",
+ "cells": {
+  "16": [
+   "33858ef7eedb14a3",
+   "3a9823c2bb307752",
+   "41959f5afb1d9ad0",
+   "4fedb17e5276ccbc",
+   "59df38117af6208c",
+   "65c2b6c34a004931",
+   "9d4f0cf9afe504b1",
+   "db92b3934ec11c11"
+  ],
+  "24": [
+   "07504be49ba53fd9",
+   "0946e7f7a752499a",
+   "0998edb7016b0980",
+   "17b2b0d6b27b2f3e",
+   "20743fcb53f62d32",
+   "253ebce2aa897230",
+   "3dfe029444c35d6b",
+   "43efb68c8504d85a",
+   "44d2e329dc5efe4e",
+   "476ae9834280dc1f",
+   "4b1a5d2a0e5db7df",
+   "519a67b2d5003ef7",
+   "5369d85b38e4fb4b",
+   "5784753111b112e5",
+   "646e06a16b47b1a7",
+   "6c095e050d518dcd",
+   "75cff21189656a96",
+   "7745bc2f99a0f9ef",
+   "7963d68ffa25c169",
+   "83762eaa3064ba9b",
+   "9411963f92691323",
+   "95477ef1ee47b37b",
+   "9766eb8a5d2aee96",
+   "9a349bfa3931c64b",
+   "9f6d7c713c7de444",
+   "a2bd570a85c30ca1",
+   "ba6dcf7e2a81ca40",
+   "bae2aa56bc4f7e13",
+   "bf32623cc7db272e",
+   "c2cd70fb99bee16c",
+   "c637db5a5a3ae136",
+   "e8d19668100305f7",
+   "ec8a117b99e50fdf",
+   "f521be70b82f1153",
+   "f7ebe81a0b77adc7"
+  ],
+  "32": [
+   "594833ee2cbd2a04",
+   "a3eed442109a160d"
+  ],
+  "48": [
+   "056f72e8b1ce5345",
+   "5807be332c9fb571",
+   "593ab09a5640d414",
+   "69dfa08bc73ec5e3",
+   "77bd2fba58009738",
+   "7e5128e20fe3a3cc",
+   "8c3a35e8fea1043c",
+   "b6d8df9ce38e53a9",
+   "c5383aa3c293e65a",
+   "c6d8708194785ed9",
+   "d3d4dbd7ebc83002",
+   "d49bd5fdae54e383"
+  ]
+ }
+}

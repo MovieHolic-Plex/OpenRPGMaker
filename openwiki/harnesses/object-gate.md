@@ -40,6 +40,11 @@
 | v6 + 실내 원본은 10-01 전수조사 ok 만·윗면 깊이는 앵커 기준·채운 윗면·천 차양·가까운 종류 허용 | `906489632e461ca6` | 215/223 | 220/317 (69.4%) | (b) 원본 111/158 (70.3%) | rejected |
 | v7 감사(종류 라벨 수정 7·버들항 원본 결함 3·화풍만 반려 5장 (a) 제외)·종류별 틀린 예 1장·표마다 기준 다시 섞기·**3표 과반**·v6 「앵커가 이긴다」 철회 | `0a7de657d3da80f1` | 183/197 | 262/315 (83.2%) | (b) 원본 135/155 (87.1%) | rejected |
 | v8 + 화풍 기준은 같은 칩셋 원본만(없으면 8c·8d 만) · 종류 라벨이 틀리면 가장 가까운 종류로 정정해 판정(front_prop 정정 불가) · 벽 구조물 종류 규칙 | `4639fba0af41af30` | 169/197 | 267/315 (84.8%) | (b) 원본 128/155 (82.6%) | rejected |
+| v9 = v7 + 같은 칩셋 화풍 기준(v8) + 면제 종류로의 정정 금지 + `wall_structure` 종류 + 약한 유형 대조 쌍(쌍과 같은 물건은 채점에서 뺌) + 화소가 같은 블라인드 표본이 위반·애매로 라벨된 버들항 원본 5장 불확실로 | `0b5db6b84dd48c02` | 137/161 | 257/297 (86.5%) | (b) 원본 129/144 (89.6%) | rejected |
+| v10 + 옆으로 놓인 좌석 혐의 2c · 침대 평면판 · 받침 기둥 끝 · 옆 의자 대조 쌍 | `1361c8d95a3d4ca7` | 140/161 | 253/297 (85.2%) | (b) 원본 126/144 (87.5%) | rejected |
+| v11 + 한 호출 3장 | `7c00f78f2d6cad5a` | 142/161 | 244/297 (82.2%) | (b) 원본 126/144 (87.5%) | rejected |
+
+**v7~v11 결론(2026-10-21, 감독 지시의 반복 상한 v11 도달):** 기준 (a) 100%·(b) 90% 를 그대로 두고는 Opus 5.5 medium 판정이 보정되지 않았다. 표 집계(과반·만장일치·종류별 만장일치)를 같은 답으로 바꿔 세어도 둘을 함께 맞추는 조합이 없다 — 판정자가 같은 위반 약 18장(옆으로 놓인 교회 의자 pew_E2/E3, 돌 왕좌, 접이의자 s022, 이발 의자 s047, v5-large 의자 2, 목재 받침 timber_prop, 무기 걸이, 합성 집·나무, gothic q001, potion r0)을 세 표 모두 통과시키고, 원본 약 15장(버들항 판대·통·빵 선반·가로등, 실내 벽 선반·바 의자·세면대·화분)을 떨어뜨린다. 그래서 보정된 Opus 프로필은 없고, 출구는 옛 규칙(서명된 사람 허용·보정된 옛 프로필) 그대로다.
 
 **보정 조건(감독 지시 2026-10-21, v5 부터):** (a) 확실 위반 100% 잡음 **그리고** (b) 알려진 정상 칩셋 원본(버들항 원본 55 · jp_city 사용자 OK 59 · 손 도트 v5 실내 중 10-01 전수조사 ok · object-gen `oprn-interior-v5-large` good 8)의 **전체 판정** 통과 90% 이상. 원본 표본은 `tools/build_originals_calibration.py` 가 판정 전에 고정한다(`calibration/originals.json`). 전수조사가 A·B 로 표시했거나 조사에 없던 v5 조각은 `uncertain-interior`(불확실 — (a)·(b) 어디에도 안 세고 보고만), 궤짝 cabbage·식탁보 cake+pie·화덕 stove 는 결함으로 다시 그리기 목록. 보정 기록에 계열별 (a)/(b)(`families`)·불확실 판정(`uncertain`)을 남긴다.
 
@@ -480,6 +485,10 @@ jp_city 823 · sf-station 623 · steampunk-city 472 · pirate-isles 402 · sky-i
 `{schema: "oprn-object-gate-hold-decision/1", pixelSha256, profileHash, kind, decision: allow|reject, decidedBy, decidedAt, by: "human", via: "review-page", reasons, note?, sig}`
 - `sig` 는 저장소 밖 키(`~/.config/oprn/object-gate-hold.key`, 0600, 서버가 처음 뜰 때 만든다. `OBJECT_GATE_HOLD_KEY` 로 바꿀 수 있다)로 만든 HMAC-SHA256 이다.
 - 서명 대상은 sig 를 뺀 필드의 고정 순서 배열(TS `objectGateHoldPayload` = Python `hold_payload`)이다.
+- **위임 허용(`by: "delegated"`, 2026-10-21):** 사용자가 허용 결정을 감독자에게 위임하고 감독자가 독립 Opus 5.5 medium 적대적 VQA 뒤 같은 검토 API(`/api/decide`·`/api/decide-batch`)로 기록한 허용이다. 요청에 `delegatedBy`(위임한 사람)와 `evidence`(근거 영수증·검수 결과 경로, 실제 파일이어야 한다)를 둘 다 적으면 기록이 `by: "delegated"` + `delegatedBy` + `evidence` 로 남고, 둘 다 없으면 지금처럼 `by: "human"`(사람이 화면에서 누른 클릭)이다. 하나만 있거나 거절이면 서버가 거절한다(위임은 허용만).
+  - 서명 대상에 `delegatedBy`·`evidence` 는 위임 기록에서만 들어간다 — 사람 기록의 서명 문자열은 그대로라 기존 기록이 유효하다. `schema` 이름도 그대로다.
+  - 출구 효력은 사람 허용과 같다: TS `humanDecision`·Python `human_decision` 이 서명 확인, 그림 해시·종류 일치, 비어 있지 않은 `delegatedBy`·`evidence` 를 요구한다. 거절 위에 올라서지 못하고, Opus 최종 판정이 있는 그림에는 사람 허용과 똑같이 효력이 없다. 검토 화면은 「허용됨(위임)」과 위임자를 보여 준다.
+  - **소급 기록은 고치지 않는다.** 2026-10-21 이전에 감독자가 위임받아 검토 API 로 넣은 허용(beodeul-dark-grass-r9 묶음, inaka-handpixel-r14 묶음, astra-centre-mart-kits 묶음 등)은 `by: "human"` 으로 남아 있다. **`note` 에 「delegated by user to supervisor 2026-10-21」 가 들어 있는 기록은 사람 클릭이 아니라 위임이다.** 감사할 때는 이 문구로 가려라(서명이 걸려 있어 `by` 를 사후에 고칠 수 없다).
 - 손으로 쓴 기록이나 고친 기록은 서명이 맞지 않아 없는 것과 같다. 키가 없는 다른 기계에서는 모든 승인이 무효다. 굽기는 이 박스에서 한다.
 
 **서버 확인 사항:**

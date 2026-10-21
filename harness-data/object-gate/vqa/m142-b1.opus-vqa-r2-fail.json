@@ -1,0 +1,130 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b1",
+ "round": 2,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png",
+  "board-3.png"
+ ],
+ "items": [
+  {
+   "id": "amuse-bowling-pins",
+   "pixelSha256": "7d33722b5a45d5fd9f7c972274369203d022448b76551eafc5bc96adc0d47e48",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "It is drawn as a flat front elevation: a tall wooden panel with a dark grey block on top and no lit top plane. At 1x the pins are a tiny white-red dot grid, so it does not read as bowling pins or a pin deck."
+  },
+  {
+   "id": "amuse-pachinko-island",
+   "pixelSha256": "ba1c6926ec8dc569fdaed2ae39f39e0a6c919c2a093ff4659e936c52d4e81031",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The brown counter top shows as a lit strip of several rows. The four machines have navy outlines like the originals and the stools sit on the tan base, so the island stands on the floor in the room without hovering."
+  },
+  {
+   "id": "amuse-speaker-stack",
+   "pixelSha256": "6ffdd61b32ed76e7167e06a7c845939c2d4ab857e11b52a6e3fb2d932a9dd9b9",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "It is a single dark grey box with one low-contrast cone, not a stack. The cone and the body merge into a muddy grey mass at 1x."
+  },
+  {
+   "id": "arcade-cabinet-pair",
+   "pixelSha256": "5aeab2bd4ce3e23a255d078b8d8933ed372ea3b726efbd05e89bbef3d3e272de",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "Two brown cabinets with a marquee, screen and coin panel, plus red stools in front, read clearly at 1x. The outline and shading match the wardrobe original, and the stools sit inside the footprint on the floor."
+  },
+  {
+   "id": "arcade-prize-counter",
+   "pixelSha256": "c3ee24e361c180177913a34da43fa2ed65e71f4426ee9d1c8af65a93f91a253d",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The saturated purple counter and the cluster of bright balloon or ball blobs are far louder than the muted chipset palette. The plush toys and balls pile above a thin counter top and form a noisy sticker-like heap."
+  },
+  {
+   "id": "arcade-purikura",
+   "pixelSha256": "6d85c2835370a8e49abffd2c2ec03b7d1ba38f852e6a4d8f30b385badc004184",
+   "verdict": "FAIL",
+   "failed": [
+    2
+   ],
+   "reasons": "In the room the photo booth is barely taller than a counter, about 1.5 tiles. A walk-in purikura booth should clearly stand taller than a person, so this is one size too small."
+  },
+  {
+   "id": "arcade-racing-cabinet",
+   "pixelSha256": "63ec64ff063c2644c5974283c12a7e88fa26f884003ba63ffbb6d9b50f1312dd",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The checkered marquee and body are a pure front elevation with no visible top plane. The large red steering-wheel ring and the dark seat below merge into a muddy red and black blob."
+  },
+  {
+   "id": "art-plinth",
+   "pixelSha256": "34d419af2ca8fdddf8d2a84e36b9260d1f5100c472e3f1b33ad54645809b6a77",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "A white pedestal under a light glass case holding a small bust reads at 1x. Its light top and short front face fit the 3/4 view, and it stands on the floor with a clean base."
+  },
+  {
+   "id": "clinic-pet-kennels",
+   "pixelSha256": "ed8dff532c9550957862ff3e6f6e454174a933f726e7d3979150c3d4985bf4de",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "A 2x2 grey cage stack with a lit top strip, dark barred doors and readable cat and dog shapes. The outline and shading match the cooler original, and it stands against the wall on a ground line."
+  },
+  {
+   "id": "dept-accessory-wall",
+   "pixelSha256": "6ac60740705c85bafe08cdf9c24d6c3f9257cf39a722c446b5defc4a786db83c",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The pegboard interior is a busy jumble of brown, yellow and red bits (bags, keys) on a speckled beige ground, so at 1x it is mud. No single accessory type reads clearly."
+  },
+  {
+   "id": "dept-directory-kiosk",
+   "pixelSha256": "71dede7813ec78b54ad833cc779fec966170ce96c359ef06151332e6c8c81b84",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "A grey rounded-top kiosk with a lit cap, a screen of coloured listing bars and arrow buttons reads as a directory at 1x. It is cleanly outlined and stands on the floor at a believable scale."
+  },
+  {
+   "id": "dept-eyewear-tower",
+   "pixelSha256": "49df47b799afe101a472302b361edc51062d95de04d978dca3ce22820b9e9ede",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "Each pair of sunglasses spans almost the whole width of the tower, roughly half a tile. That is far too big next to the chipset's scale, and the stacked black, red and blue glasses look like stickers on a white post."
+  }
+ ]
+}

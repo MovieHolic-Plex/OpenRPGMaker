@@ -1,0 +1,56 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b4",
+ "round": 5,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "mart-dairy-open",
+   "pixelSha256": "05df67891858793b9c067fb3d1f6972f64fff2cd7f20e6036ccf82ec4d327973",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "This is a flat front elevation. The top is only a thin 1–2 px blue band with no lit top plane, unlike the original mci-cooler, whose top surface is visible with items on it. A stray tan strip also runs down the left edge of the 4x canvas, outside the cabinet's own outline."
+  },
+  {
+   "id": "mart-gondola-detergent",
+   "pixelSha256": "8475a706cd4bc4d738dbed2da3ba3f54b370a5f2dde4fb88c901667dfd66a8b0",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    3
+   ],
+   "reasons": "The top is a 1-row dark band, so the shelf unit reads as a dark box seen straight on, with no shelf plank visible from above. The near-black navy fill is much darker than the originals' lit palette. At 1x the bottles blur into pink/teal blobs and don't read as detergent."
+  },
+  {
+   "id": "mart-gondola-tea",
+   "pixelSha256": "82701130c3b1986dbed12fd1620f5fddaf0409cff7e5962d66fa6e1e476f3090",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    4
+   ],
+   "reasons": "Flat front elevation with no visible top plane, and the shelves are thin lines rather than lit planks. The whole unit is a saturated dark green with low contrast, which doesn't match the originals. The green bottles with white blobs and the tan boxes on the bottom shelf turn into a muddy cluster at 1x and 2x."
+  }
+ ]
+}

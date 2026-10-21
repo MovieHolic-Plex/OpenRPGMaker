@@ -1,0 +1,319 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1312d89fb64bb54826ce78a204b77078dcb76c7fc6b02167c075c4dde6cc2518",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "school cleaning locker",
+ "label": "modern_city_interior/school-cleaning-locker",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 36,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "locker top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "locker front face with vent slats and mop",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a light top band (L 244 down to 202) that ends in a lighter edge line at row 5. Rows 6-8 are a dark eave shadow (L 111, 144, 91). Below that, a front face of about 22 rows (rows 9-30) shows vent slats, a mop and a bucket. The structure matches the green 'cabinet: top 5 + edge + eave' reference, not the 1-2 row rim of the red front-elevation examples. The band is flat and the width is constant at 16, so it is not an ellipse, but the edge line and eave shadow are enough evidence of a top surface. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a narrow metal locker, about 13x22 source pixels, with a frame, a lighter door or interior panel and a mop or broom silhouette inside. It has about 4 lightness steps on the metal, a little below the references' 5-6. The measured facts support it. It shows 13 visible tones per tile, between the hedge (9) and the cheese stall (17) and well (20). Near-flat coverage is 7%, close to the stall's 13% and far from a sticker-like flat fill. The dark edge pixels are 0% neutral, so the outline is tinted toward the adjacent material and not a uniform black line. Texture is modest, with edge highlights and the inner prop detail, but it is not flat. It is a little simpler than the stall and well, which is acceptable for a small single-tile prop. It would sit next to the hedge and bench without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18008
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "locker top band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "mop/broom leaning in front of the locker",
+      "rows": "10-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a light band (a highlight on row 1, then a lighter face), ending in a slightly darker front-edge line at row 5. Rows 6-8 are darker eave shadow. Below that, rows 9-30 are the front face with a door panel, vent slats and a handle, about 23 rows, so the front face is well over 3 rows. The top band is 5 rows deep, similar to the 'cabinet: top 5 + edge + eave' reference. The mop and broom at the lower left are decor and do not change the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, tall locker with a metal frame, a lit interior panel and a mop or broom inside. It measures 13 visible tones per full tile, which sits between the hedge (9) and the stall (17) and the well (20). Near-flat coverage is 7%, below the stall's 13% and well under the level that would signal flat fills. Dark edge pixels are 0% neutral, so the outline leans toward the material's tint rather than being a black sticker line. It has about 4 lightness steps on the metal body, a bit fewer than the 5-6 on the references, and only 14 distinct colours in total. That is close to the hedge's 11, and the per-tile tone count is at or above the hedge. Structure and shading hold up next to the references, so a careful artist would accept it beside them, though it is slightly simpler than the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17940
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "locker top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "locker front face with door and vent slats",
+      "rows": "9-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mop leaning in the open locker",
+      "rows": "10-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a light band (L about 224-244) across the full width. Row 5 (#c6cad4) is the front-edge line, and rows 6-8 are darker eave shadow (#6c7076, #8d9095, #585a64). Below that, rows 9-30 show the vertical front face with a frame, slat vents and a leaning mop. This matches the reference cabinet 'top 5 + edge + eave' and is not a front elevation with only a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a single-tile locker with a cool grey body, a lighter inner panel and a mop or broom inside. By eye it shows about 5 lightness steps on the body, a bevelled frame with highlight and shadow edges, and a small cluster of detail in the interior. The measured 13 visible tones per tile is above the hedge (9) and close to the cheese stall (17) and well (20). Near-flat coverage is 7%, below the stall's 13%, so there are no large flat fills. The dark edge pixels are 0% near-neutral, so the outline is tinted toward the adjacent material and does not read as a black sticker line. It is somewhat plainer and smaller than the stall and well, with less grain on the large body panel. That is expected for a simple furniture piece, and it does not look thinner or flatter than the bench or lamp references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16634
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "locker top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "locker front face with door panel",
+      "rows": "6-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "mop/broom leaning in front",
+      "rows": "10-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a light band across the full width (L=244 then 224). Row 5 is a lighter edge line (L=202), followed by darker eave shadow in rows 6-8 (L=111, 144, 91). That makes a top of about 5 rows ending in a front-edge line, with a shadow below it. The front face runs from row 9 to row 30 and holds the inset door panel with vent slats. Counting the shadow rows, the front is about 23-25 rows. The leaning mop is drawn as decor, and no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a standing locker prop, the same kind as the references. It shows 13 visible tones per 16x16 tile, which is above the hedge (9) and close to the cheese stall (17) and well (20). Near-flat coverage is 7%, below the stall's 13%, so there are no large flat fills. Only 0% of its dark edge pixels are near-neutral, so the outline is tinted and follows the material, not a black sticker line. The metal body has about 5 steps (highlight, light, mid, dark, deep). Inside the door, the mop or broom and the window panel give extra variation. Texture is moderate: no heavy grain, but the panel panes and the tool inside break up the surface. It sits at the reference's level of craft and does not look thinner or flatter beside it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15502
+  }
+ ],
+ "decidedAt": "2026-10-21T01:38:23.417Z",
+ "cells": {
+  "16": [
+   "2ad08ced683986bb",
+   "cc4f5d31ab737167"
+  ],
+  "24": [
+   "0c56a35eeac7e785",
+   "1dd82ac9d7573e51",
+   "224ab6a7c4acf3f4",
+   "265f58feaf4a31a4",
+   "38c11cedd3993885",
+   "5ceb7180c8cdb4b3",
+   "8f107a8e2d046b36",
+   "b0bad4daf01ce55f",
+   "b71c836e2dda5564",
+   "c2c0a7b79474881c",
+   "d47e15ec08e5cc0f",
+   "e6ea937d1ac05b66"
+  ],
+  "32": [
+   "0f2a3d764cc94412",
+   "3385fdf52a1f5b05",
+   "4e6aead54c52c420"
+  ],
+  "48": [
+   "5ec0afb84bca3dbc",
+   "6aa518d71f8ce28b",
+   "7135f306eff6e607",
+   "7cd8a76d9ba2f233",
+   "9e3e74ea99e3e296",
+   "a0be324b15f5fb6f"
+  ]
+ }
+}

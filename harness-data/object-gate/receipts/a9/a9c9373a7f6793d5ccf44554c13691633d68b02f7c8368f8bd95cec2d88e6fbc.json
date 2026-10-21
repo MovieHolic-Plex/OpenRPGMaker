@@ -1,0 +1,400 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a9c9373a7f6793d5ccf44554c13691633d68b02f7c8368f8bd95cec2d88e6fbc",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "jp-inaka-bicycle-parked",
+ "label": "jp_inaka_pack/jp-inaka-bicycle-parked",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(side_profile_no_top) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 3 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(side_profile_no_top) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 3 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 17,
+  "darkV5": 56,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "front basket with groceries",
+      "rows": "3-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rear carrier rack / saddle band",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "frame and wheels",
+      "rows": "15-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The bicycle is drawn in pure side profile: two wheels, a blue frame, and a basket facing right. The frame, wheels and fenders are all vertical silhouette with no horizontal surface. The rear carrier at rows 12-14 is only a thin band of about 2 rows, which counts as a rim. The basket at rows 3-14 is a front-facing mesh panel with groceries, so it counts as decor. No ellipse, roof, or edge line with eave shadow marks a top surface on the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small bicycle with a basket and a rear-rack box. It reads clearly, and the measured facts are acceptable: 12 visible tones per tile against 9 for the hedge and 17-20 for the stall and well, 0% near-flat coverage, and 21% neutral dark edge pixels. The outline is partly tinted and partly dark grey-blue, with a few near-black frame pixels, so I rate it mixed. Shading is thinner than the references: the blue frame has about 3-4 steps (light blue, mid blue, dark, outline), the wheels are mostly dark ring with little tonal variation, and the basket and box are rendered with 2-3 greys. It has less per-material grain than the well and the stall, which carry 5-6 steps with per-stone and per-tile highlights. At this scale the 12 tones per tile is mid-range and not far below the references, but it is a small, thin object whose shading ramps are shallower than the Beodeul standard (about 5 steps). It is somewhat lower in richness, close to a careful-artist pass but not clearly equal. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16526
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "front basket with contents",
+      "rows": "3-14",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "saddle / rear rack strip",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels and frame (side profile)",
+      "rows": "15-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The bicycle is drawn as a flat side silhouette facing east. Two wheels span rows 15-31, joined by a thin blue frame. The saddle or rack strip at rows 12-14 is only about 2-3 rows tall and has no front-edge line or eave shadow. The basket at rows 3-14 is mostly a vertical mesh face, with a few orange and green contents pixels visible at rows 4-8. No horizontal surface is large enough to count as a main top, so it reads as a profile with no top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin, small object, a blue bicycle with a grey box on the rear rack, so I judged it by eye against the thin references (bench, lamp) as well as the measured facts. It measures 12 visible tones in a full tile, 0% near-flat coverage and 22 distinct colours. That is above the bench and lamp (about 14 colours each) and near the hedge (9 visible tones). It is below the stall (17) and well (20), but those are much larger and busier pieces. Only 21% of the dark edge pixels are neutral, so the outline mostly leans toward dark blue or grey-blue, the dark tone of the neighbouring material. The frame, wheels and box are separated by value, not by a uniform black line. The blue frame and grey box each show about 3-4 lightness steps, with highlights on the tyres and spoke or hub detail. That is a little short of Beodeul's 5-6, but there are no flat fills and no sticker look. A careful artist would accept it next to the bench and lamp without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17147
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "basket contents (orange and green goods)",
+      "rows": "4-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front basket mesh face",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rear rack / saddle strip",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "frame, wheels and fenders (side profile)",
+      "rows": "15-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 28,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The bicycle is a pure side silhouette facing east, with two wheels, a thin frame and a front basket. The basket's mesh front (rows 9-14) is a vertical face. Its contents at rows 4-8 are goods placed in it, so I counted them as decor. The rear rack or saddle at rows 12-15 is a thin strip with no front-edge line and no eave shadow. No part of the main body shows a horizontal top surface that ends in an edge line or forms an ellipse. The wheels are drawn as side-on rings rather than as ellipses seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, thin prop (a bicycle with a rack box), so I judged it by eye against the thin references (bench, lamp) as well as by the numbers. It has 12 visible tones in its tile. That is above the hedge (9) and below the stall (17) and well (20). The bench and lamp read 0 only because they are smaller than a tile. Near-flat coverage is 0%, so there are no flat fills. Only 21% of the dark edge pixels are neutral, so the outline mostly leans toward the material: a dark blue-grey on the frame and dark brown on the basket and box. It is not a uniform black sticker line. The frame, wheels, basket and rear box each show about 3-4 lightness steps, with highlights on the blue frame and grey tyres and spokes. That is slightly shallower than the 5-6 steps in the richer references, but it is on par with the bench and lamp. Distinct colours (22) exceed the bench and lamp (14 each). A careful artist would accept it next to the references without it looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19046
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "front basket frame with mesh face",
+      "rows": "3-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "vegetables in basket",
+      "rows": "4-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rear rack/saddle strip",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels and frame",
+      "rows": "16-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "side_profile_no_top",
+    "evidence": "The bicycle is drawn as a pure side profile. Two wheels (rows 16-31), a thin blue frame and a flat-faced basket (rows 3-14) make up the body. The rear rack or saddle at rows 12-15 is a 1-2 row strip with a dark outline on top and no front-edge line or eave shadow. The basket is face-on mesh with its goods placed on it, so it shows no horizontal surface. The wheels are drawn as side-view discs, not ellipses seen from above. No part has a real top surface, so the object reads as a side elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 12 visible tones per 16x16 tile, above the hedge (9) and close to the larger props (stall 17, well 20). The bench and lamp read 0 only because they are thin objects. Near-flat coverage is 0%, so no 5x5 area is a flat fill. Only 21% of dark edge pixels are neutral, so the outlines lean toward a dark blue, grey or brown tint of the adjacent material rather than a uniform black sticker line. The frame, wheels, basket and rear box panel each show 3-4 value steps with highlights on the blue frame and grey wheel rims, slightly shallower than the 5-6 steps in the references. The piece is small and thin like the bench and lamp, and I judge by eye that it sits next to them without looking flatter or thinner. Its raw colour count (22 colours, 14 per tile) is comparable to the lamp and bench (14 colours each).",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(side_profile_no_top) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(side_profile_no_top) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18115
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:03.966Z",
+ "cells": {
+  "16": [
+   "0a40571e6b39b6cd",
+   "166ee83380b5c576",
+   "7360d84b76d24abc",
+   "a90a5797ac925522"
+  ],
+  "24": [
+   "0b693dcdfba5adad",
+   "43ccb6a6ed45fb76",
+   "4c5cfab860fbccee",
+   "4e7c3f64dd50c5ba",
+   "65f399094c56b67c",
+   "66f9879a63c216aa",
+   "7e5a13cb6ab93fdc",
+   "80428561186b18ab",
+   "847b5fddc14a8f4b",
+   "8688db00f38b0bbc",
+   "8c21b33ec49f15af",
+   "8e4b4f2e3aaadecb",
+   "a037012760fe4653",
+   "a49a05fcc3e44d45",
+   "aaf3c64689aa26a9",
+   "ac5a747de7a6ed9a",
+   "d281fd6babc46023",
+   "dd0b912ad9c7e476",
+   "e568a97e620341e3",
+   "f4e64e1666cf8f88",
+   "f5c56a87fc17793b",
+   "fc96e656412f3b9b"
+  ],
+  "32": [
+   "80a069338e84e055"
+  ],
+  "48": [
+   "15a0a0635aba7e76",
+   "2964615919282aaa",
+   "2eb9b35e2a4bb207",
+   "986fea3e1ec6beb2",
+   "a04bf9c1cf2721c1",
+   "add06c89b27446b3"
+  ]
+ }
+}

@@ -1,0 +1,106 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-h2",
+ "round": 2,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "dept-rack-cool",
+   "pixelSha256": "455337d29184ea7ca070d44e6c9cb2c9f084a7d0b927c4068d345f3309969c26",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "The garments are a flat front elevation inside a closed white box frame, and there is no rail or top plane seen from above. It reads as a display case or wardrobe interior, not a free-standing clothing rack, and the heavy dark outline boxes in the whole thing."
+  },
+  {
+   "id": "home-appliance-rack",
+   "pixelSha256": "be1deaeca61786cf4d947f1d6337a6c6670de4eef3536f66bf4d145f822a4673",
+   "verdict": "FAIL",
+   "failed": [
+    3
+   ],
+   "reasons": "At 1x it reads as a white fridge or cabinet stack rather than an open rack. The lower appliance is a generic grey box with a slot, so it doesn't read as a rice cooker or any clear appliance. The rack's posts and open shelves are not visible."
+  },
+  {
+   "id": "home-drying-rack",
+   "pixelSha256": "90a49f355801e5a041cb2a8e166f6b14890d042633d5652aecabcf55bfdd4028",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "It is drawn as a solid boxed cabinet with a dark interior holding a blue towel, a white cloth and a stray red vertical stick. There are no thin bars or folding legs, so it reads as an open wardrobe rather than a drying rack, and the wide white base slab is not a lit top plane."
+  },
+  {
+   "id": "hospital-curtain-screen",
+   "pixelSha256": "f958ea16e9901d0a58d3dd3dce6bcd757b90de8d83f5e6df05e3a579964439f3",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    3
+   ],
+   "reasons": "It is a pure flat front-elevation strip of green pleats with only a thin grey cap, and no rail or base is seen from above. It is one tile wide and very tall, so at 1x it reads as a pillar or column, and the bottom white base looks pasted on."
+  },
+  {
+   "id": "roof-fence",
+   "pixelSha256": "b412b597ce3dcc0e7fe67a54e39dcea94561f4dd4fd90c13fdb78dccb733967e",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    4
+   ],
+   "reasons": "The chain-link mesh sits in a heavy boxed frame with a thick white concrete slab below it, which is a front elevation with no top rail plane. The dense green diamond dither is much noisier than the originals' clean blocks, and it reads as a framed window or screen, not a fence."
+  },
+  {
+   "id": "mart-sale-endcap",
+   "pixelSha256": "a6bbb84ba6bb1efe63073edacfe01ccc704179fb45c4b8f7cb4c9439b71b97d8",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "It is a one-tile shelf unit with stocked colour-block goods and a yellow POP sign on top. Its outline, shading and density are consistent with mci-cooler, and it stands cleanly on the floor."
+  },
+  {
+   "id": "mart-scale-station",
+   "pixelSha256": "e096f168c9caf435e14f389a42620167c6dac2cb2727726cd28987dc7ac0b669",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    1
+   ],
+   "reasons": "The top unit with its small green LED dots reads as a printer or microwave; there is no visible weighing pan or plate seen from above. The white containers and grey drawer below make the whole thing read as a generic appliance shelf, not a scale station."
+  },
+  {
+   "id": "museum-partition-wall",
+   "pixelSha256": "1a92155a23d19c8c26c058b158ba777c1f8a2cbc491c0cfbadf73f0f248946f5",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "It is a flat front elevation of a panel with a framed painting, and the top is only a thin white strip with no wall-thickness plane from above. The three black spotlight dashes float detached at the top edge, and the grey gradient base makes it read as a wall-mounted display or TV rather than a free-standing partition."
+  }
+ ]
+}

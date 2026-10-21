@@ -1,0 +1,78 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b2",
+ "round": 4,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "dept-rack-cool",
+   "pixelSha256": "38cdf1061b687f9a3e8a69ca969d909c4ec37faf0af23fe3c8df72c11e971584",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    3,
+    4
+   ],
+   "reasons": "The hanging blue garments merge into one solid ring-shaped mass on a thin grey pedestal. At 1x it reads as a goblet or basket on a stand, not a clothing rack: no individual hangers or garment edges. The thin grey/blue outline is much lighter than the originals' heavy dark navy outline, and the central pole sticks up above the ring like a loose spike."
+  },
+  {
+   "id": "home-appliance-rack",
+   "pixelSha256": "5d6562bccf1427994a4a465307b65f8c04a8fce60f182c4d90a8f4bdc5553e64",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    3
+   ],
+   "reasons": "It is basically a flat front view of a tall, narrow wooden shelf. The top plank is only a 1–2 row strip and the shelf surfaces show no top-down planes. At 1x it is a tiny one-tile column, and the microwave and rice cooker shrink to grey smudges, which is too small and thin next to the wardrobe and desk originals."
+  },
+  {
+   "id": "home-drying-rack",
+   "pixelSha256": "b0c6c27da82ab34b3385bd8e4cfade798f2cb2951e1558b6920df07a58d9f970",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The frame is drawn in thin light-grey 1px lines with no dark outline, so it loses the originals' outline weight. The middle shelf area is a muddy jumble of beige, white and green pixels. The blue and red shirts hang outside the frame as separate stickers, and the right leg and left rail ends look disconnected."
+  },
+  {
+   "id": "home-umbrella-stand",
+   "pixelSha256": "c77c7c10d39d6c3b53bcbf265dbd73e55c54fc1551e94f62931e34956aab44f5",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The umbrellas spread wider than the bucket and the light-grey one is a noisy blob with stray pixels at the top. The grey bucket has a soft gradient but no dark outline, unlike the originals' crisp navy outline and flat shading steps. Its open top doesn't read as an ellipse seen from above, and at 1x the whole thing is a smudge."
+  },
+  {
+   "id": "hospital-curtain-screen",
+   "pixelSha256": "d12364d3de581a39d64b0665cea1b63951f35f48334ab642784b785c3ad6e7ff",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "The green curtain panels are a flat front view with only a thin rail on top, and the beige base strip looks like a box with no believable feet or castors. In the room it reads as a narrow green cabinet or locker, not a folding curtain screen. The pale grey frame outline also fades into the white floor."
+  }
+ ]
+}

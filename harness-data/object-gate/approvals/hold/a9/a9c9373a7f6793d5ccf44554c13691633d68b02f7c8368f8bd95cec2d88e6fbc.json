@@ -1,0 +1,18 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "a9c9373a7f6793d5ccf44554c13691633d68b02f7c8368f8bd95cec2d88e6fbc",
+ "profileHash": "4d8774b517f41638",
+ "kind": "other",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-20T22:16:46.352Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(side_profile_no_top) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 3 (3/4)"
+ ],
+ "note": "delegated by user to supervisor 2026-10-21; Opus 5.5 medium adversarial VQA receipt harness-data/jp-inaka/vqa-r14/gate2/findings-C.json (PR #3071)",
+ "sig": "488c06d799abd4fa61943f8abc3b5c2c800427c96375d62d89c70d38dde5fe67"
+}

@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "ebd395901c3564c856902a949720d82a48c8cb2e9846bfaaed809941cc82f822",
+ "profileHash": "4d8774b517f41638",
+ "kind": "container",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T01:38:30.381Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 종류 불일치"
+ ],
+ "note": "묶음 허용: modern_city 실내 기물 m142-h1 (15) — object-gen 다시 그림, 사용자 위임·Opus 적대 VQA 통과 2026-10-21 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/m142-h1.opus-vqa-r*.json",
+ "sig": "34cd5a4ea842401af2a16d741d91820611360bcd7baae477b4eb278a19995bcd"
+}

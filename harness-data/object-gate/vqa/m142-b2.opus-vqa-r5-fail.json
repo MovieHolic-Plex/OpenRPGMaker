@@ -1,0 +1,71 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b2",
+ "round": 5,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "dept-rack-cool",
+   "pixelSha256": "1c650bc523f180426bf0a31cd9d6af1722407704473464a0103a3ae04022d7c5",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "At 1x the hanging shirts merge into a muddy blue blob under the ring, so it doesn't read as a clothing rack. The garments are noisy overlapping blue shapes with no clear separation, and they spill wider than the rail ring and pedestal base."
+  },
+  {
+   "id": "home-appliance-rack",
+   "pixelSha256": "ab1918726d015e3fa75deec45ef2f3a062c3960eeb2eba9624cdc0ba04d33241",
+   "verdict": "FAIL",
+   "failed": [
+    1
+   ],
+   "reasons": "The wooden shelf is a flat front elevation: the top and shelf planks are single-pixel rims with no lit top plane, and the microwave and rice cooker are shown straight-on from the front with no top surface."
+  },
+  {
+   "id": "home-drying-rack",
+   "pixelSha256": "923640a296b6c547230943faaea2de67a0f9d9e045f64dae275c4cf390f5d014",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The white slatted top on four legs reads as a desk or bench at 1x, not a drying rack. The small clothes hang from a lower rod as tiny bright sticker shapes (red and blue) that look like they float inside the frame instead of draping over the bars."
+  },
+  {
+   "id": "home-umbrella-stand",
+   "pixelSha256": "93009d3e0f9a60c411d2196c266d4680f0706d05942076136192675dd051542c",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "A grey bucket with a visible rim holds red, blue and white furled umbrellas; it reads at 1x, the scale is right next to the wall, and it sits on the floor. The white umbrella is low-contrast but acceptable."
+  },
+  {
+   "id": "hospital-curtain-screen",
+   "pixelSha256": "246b3a9d1c2838d700e5f841b5f45122bdef5b37817ab04a47d78747f44d9d3b",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "The curtain is a flat front elevation: a vertical green pleated panel with only a thin top rail and no top plane or depth. It is a tall narrow strip that fills the canvas edge to edge, and in the room it looks like a door or wall panel rather than a free-standing screen on casters."
+  }
+ ]
+}

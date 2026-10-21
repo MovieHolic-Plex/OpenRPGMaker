@@ -1,0 +1,345 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b7280d90cf60d3c00bba72b9feebd8b0b93087a1351d9ac3ca35dd283c810125",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-inaka-jizo-shrine-row",
+ "label": "jp_inaka_pack/jp-inaka-jizo-shrine-row",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 25,
+  "darkV5": 39,
+  "nearBlackEdge": 0.3,
+  "opaqueTiles": 9
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "thatched/slat roof plane",
+      "rows": "0-21",
+      "evidence": "c",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "jizo statues with red bibs",
+      "rows": "24-40",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base/plinth strip with offerings",
+      "rows": "36-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 22,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-21 are a large roof plane with thatch/slat texture, mossy flecks and a light top edge at row 0. It ends in a dark edge line at row 20 and eave shadow at rows 22-23 (L=51-70), so it reads as a sloped roof seen from above, per evidence (c). Below it, rows 24-46 form the front opening with three jizo statues on a stone base, giving about 23 rows of front face. The statues are decor on the base. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small roofed shrine, not a full house, but it still has the roof, wall and base structure the references show. The thatch roof has fibrous grain with several brown-grey steps, plus a darker eave band. The jizo statues are shaded in several tones with red bibs and a stone base with speckle. Outlines lean toward the neighbouring material (dark brown beside thatch and wood, dark grey-green beside stone) rather than a uniform black line. The measured facts agree: 17 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% neutral dark edge pixels. Texture is not flat anywhere. Shading depth is slightly below the tile roofs of the references, but it is not shallow or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17724
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof (weathered plank or thatch slope with moss)",
+      "rows": "0-20",
+      "evidence": "c",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-23"
+     },
+     {
+      "part": "stone base or plinth row",
+      "rows": "36-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "three jizo statues with red bibs",
+      "rows": "24-40",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 21,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof fills rows 0-20 as a plane over the whole 48px width, with plank and moss texture. A dark front-edge line at row 20 (L=51) ends it, and eave shadow follows on rows 21-23 (L=70). Below that, the shrine front face runs from row 24 to about row 46. It holds the niche, the three statues and the stone base. The statues are decor standing in the niche. The roof counts as a top surface under evidence (c), and the front face is well over 3 rows, so this reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small open shrine shed with a thatch roof, wooden posts and three jizo stones. It is smaller than the reference houses but is still a whole building with roof, supports and contents, so the kind matches. The thatch roof shows streaked grain in about 4-5 tones, from a light top edge to a dark eave shadow. The jizo stones and base carry several grey tones, with red bibs as accents. Measured facts support this: 17 visible tones per 16x16 tile against 12 and 10 for the references, and 0% near-flat coverage, the same as both references. The dark edge pixels are 0% neutral, so the outline leans brown or grey-green into the neighbouring material rather than being a black sticker line. It is simpler in structure than the tiled houses, but not thinner, flatter or more sticker-like, so a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17043
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "roof plane (mossy plank/thatch pattern)",
+      "rows": "0-21",
+      "evidence": "c",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "three jizo statues in the alcove",
+      "rows": "24-40",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base and front face of the alcove",
+      "rows": "36-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-21 are a roof plane with a mossy plank/tile texture. It ends in a dark front-edge line at row 20 (L=51, #452b2d), followed by a dark eave shadow at rows 22-23 (L=70). Below it, rows 24-46 (about 23 rows) form the south front face: an open alcove with three statues and a stone base. The statues stand on the base and count as decor. The silhouette is 48 px wide throughout, so no side face is drawn. The roof is a real top slope above an eave line, not a front-facing strip."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small open shrine: a thatched roof over dark wood posts, with three jizo statues on a stone base. The thatch has streaky grain in about 5 brown steps, from highlight through mid to a dark eave line. The statues and base are shaded in several tones, and the red bibs add accents. Outlines lean brown beside the wood and thatch, with no neutral black sticker line. This matches the measured 0% near-neutral dark edge pixels, against 7% and 9% for the references. Near-flat coverage is 0%, the same as both references. It shows 17 visible tones per tile against 12 and 10 in the references, so density is at or above the references. It is smaller and simpler than the two houses, with no multi-material wall, but it is not thinner or flatter than they are, and a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 30270
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "thatched roof plane",
+      "rows": "0-20",
+      "evidence": "c",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-23"
+     },
+     {
+      "part": "three jizo statues in the alcove",
+      "rows": "24-37",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base and front wall",
+      "rows": "36-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 21,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-20 are a thatched roof plane with horizontal and vertical thatch texture. A dark front-edge line at row 20 is followed by eave shadow in rows 21-23. Below it the front face runs rows 24-46: a dark alcove holding three jizo statues, with a stone base at rows 36-45. The roof is a sloped plane above an eave line, so the top surface is clearly present and the drawing reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small shrine row: a thatched roof over three jizo statues with red bibs on a stone base. It is much smaller than the two references, so I judged by eye as well as by the numbers. The measured facts are at or above the references. It has 17 visible tones per tile against 12 and 10, 0% near-flat coverage like both references, and 0% neutral dark edge pixels, so the outlines are tinted rather than near-black. By eye, the thatch roof has fibre-streak texture in about 4-5 brown steps, with a dark eave band underneath. The statues and the stone base are shaded one by one, with no large flat fills. The outlines are dark brown or grey-brown beside the thatch and stone, not a uniform black sticker line. It is simpler than the tiled roofs and half-timbered walls of the references, with fewer roof steps and less per-tile highlighting. Even so, a careful artist would accept it next to them without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19056
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.098Z",
+ "cells": {
+  "16": [
+   "29c16597690756b0",
+   "5d2bb5b051ad9330",
+   "8f5c2c7eff22f72c",
+   "a5327fe41468fb1b",
+   "b236f3129d6b3de7",
+   "d4a4631108a86a44",
+   "dc1b9787bd22287d",
+   "e9a4e0fe3f927056",
+   "eff28016f1d3c855"
+  ],
+  "24": [
+   "34e647dbe944aa39",
+   "5e37d04f3ec58050",
+   "ba16fee5ed9c55bf",
+   "d9a262d1c758691d"
+  ],
+  "32": [
+   "016539757038b68d",
+   "058a607c7f5eae0a",
+   "0640b615d5b440df",
+   "16fbfd4810ae0c3e",
+   "1a56a81f06d6b6b6",
+   "201df0c5da5676f1",
+   "3ba0aeab91380fc4",
+   "535e40a31e7d65ea",
+   "61f036321ec0a196",
+   "65eba1cd4e6db79e",
+   "66a41b934b43c9ca",
+   "7469f99a5bc0b92a",
+   "7a8850a9d9117b53",
+   "8a8ed9c35cca465d",
+   "8b6af19530470422",
+   "8cf0fd65a9b7f06c",
+   "939c4078f78ba48a",
+   "ad52004d43442538",
+   "bd219fb458dfb1ae",
+   "d534830c7d6acd12",
+   "de0bf93efaf28579",
+   "e9c901ddd6209f31",
+   "ef976c95b6f1236e",
+   "fd17c0a78f9e51a5"
+  ],
+  "48": [
+   "2baf0075078854f1"
+  ]
+ }
+}

@@ -1,0 +1,392 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a1bf074ee8c8cd49aa71d353855b85ea86c2eddbb33fcf25cf16f14529e085d0",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "pub ticket dispenser",
+ "label": "modern_city_interior/pub-ticket-dispenser",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (2/4)",
+  "3/4: 윗면 2행 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+   "투영이 3/4 아님(front_elevation) (2/4)",
+   "윗면 2행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header bevel",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "display screen with red number",
+      "rows": "7-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle widened band with blue button",
+      "rows": "13-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower ticket slot housing",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole object is drawn as a face-on machine. Rows 1-6 are a light gradient bevel that darkens into a dark screen at rows 7-12, which reads as a front-facing header strip. Row 6 is a thin darker line, but the screen below it is a vertical face, not eave shadow. The wider middle band (rows 13-21) and the lower slot housing (rows 22-30) are also vertical faces with highlight and shade steps. Nothing shows a horizontal surface seen from above: no ellipse, no roof plane and no visible contents. At most a 1-2 row rim at the top, so there is no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small standing machine with a pale casing, a red display and a lower slot. It shows about 14 visible tones per 16x16 tile, which is above the hedge (9) and close to the cheese stall (17) and the roofed well (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% near-neutral, so the outline is tinted, not a uniform black sticker line. The casing has roughly 4-5 lightness steps, with a highlight edge, mid body and dark side, plus display and slot detail. It is slightly simpler than the stall and well, but it is a small single-tile prop and holds up beside the hedge and bench without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20996
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper housing with display screen",
+      "rows": "1-12",
+      "evidence": "none",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle bulge with blue button",
+      "rows": "13-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower tray and ticket slot",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a vertical machine drawn as a straight front panel. Rows 1-5 get steadily lighter (169, 202, 224, 244 at x=4), and row 6 is a single darker line. That reads as a shaded bezel, not a horizontal top surface, because there is no widening and narrowing ellipse and no eave shadow beneath it. The red '27' screen on rows 7-12 and the blue button on rows 14-17 are vertical details. The wider middle section (rows 13-21) has only a 1-row light rim at row 13, and its dark steps on rows 19-21 look like shading on the face. The lower part (rows 22-30) is another flat front face with a slot. No part shows a top surface, so it matches the 'front elevation: top 1' and 'rim only' reference examples. It is also a machine, not a wall-standing cabinet, so the kind is only loosely matched."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small one-tile-wide dispenser with a pale body, a red display and a slot. It has 14 visible tones per full tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well. That puts it inside the reference range. Near-flat coverage is 0%, so there are no large flat fills. 0% of its dark edge pixels are neutral, so the outline is a tinted, darker version of the neighbouring material rather than a black sticker line. The body ramp is a little shallower than the references, at about 4 steps against 5-6, and the texture is modest because the object is small. Even so, it is not thinner or flatter than the hedge or the bench at this scale, and a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19498
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper housing top plate",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "red digit screen",
+      "rows": "7-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle ledge with blue button",
+      "rows": "13-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-21"
+     },
+     {
+      "part": "blue button",
+      "rows": "14-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower ticket slot housing",
+      "rows": "22-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The head (12 px wide) starts with a light band at rows 1-5 that brightens from L=169 to 244. A darker line at row 6 closes it, and the dark screen face begins at row 7. I read this as a top plate with a front-edge line, though it could also be a face-on panel, so confidence is moderate. The wider middle ledge (14 px, rows 13-21) has a lit band at rows 13-18 with a front-edge line at row 18, then shaded face rows 19-21. The lower housing (10 px, rows 22-31) is drawn only as a front face with a slot at row 23 and a ticket, so it shows no top surface. The overall body has a top and a front face of more than 20 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, narrow standing prop with a light body, a red display panel, a slot and a grey base. On the primary facts it matches the references. It has 14 visible tones per 16x16 tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, with no 5x5 flat blocks. The dark edge pixels are 0% neutral, so the outline is tinted and follows the adjacent material, not a uniform black sticker line. Shading on the body has about 4 steps (highlight, light, mid, dark), a little under the 5-6 in the richer references. It has only 18 distinct colours in total, below the stall and well, but it is a small, simple object and the tone count per tile holds up. A careful artist would accept it beside the references without it looking clearly flatter or thinner, though it is slightly less textured than the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22566
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "head top above screen",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "wide middle ledge/shelf",
+      "rows": "13-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
+     },
+     {
+      "part": "blue button on ledge",
+      "rows": "14-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "red number screen",
+      "rows": "7-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower body with ticket slot",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wide middle ledge (rows 13-18, width 14) is lighter and has a front-edge line at row 19 (a6a9ad) followed by darker shadow rows 20-21 (8d9095, 6c7076). It is drawn as a top surface with the blue oval button sitting on it as decor. Below it the narrower lower body (rows 22-30) is a front face with a ticket slot. The head has a light band at rows 1-5 with an edge line at row 6 above the screen. The screen (rows 7-12) is a vertical face. The top surface is moderately deep (about 6 rows), with a front face of 9 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small standing dispenser about one tile wide and two tiles tall. It has a light casing, a red display panel and a slot or tray. The measured facts support it. It shows 14 visible tones per tile, inside the reference range of 9-20 and close to the cheese stall (17) and the hedge (9). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% near-neutral, so the outlines lean toward the material tone rather than black, as on the hedge and cheese stall. By eye the casing has several value steps (highlight, light, mid, dark) with a shaded edge and small panel details. That is about 4 steps against the references' 5, which is slightly shallower but not shallow. It does not look like a flat sticker next to the references. The piece is tiny, so the texture is modest, but it holds up at this scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19894
+  }
+ ],
+ "decidedAt": "2026-10-21T01:24:13.607Z",
+ "cells": {
+  "16": [
+   "658cf1673b59ab2c",
+   "e8888c337648a687"
+  ],
+  "24": [
+   "038d151062dd6d94",
+   "044088c8b89a95c4",
+   "36e67520d77887e4",
+   "38dd56a6af840600",
+   "5af526e0bb571218",
+   "6ed2dd5b4c1da76d",
+   "72d7befdda847c23",
+   "8f0b39dc001decba",
+   "93ac28d97d846fec",
+   "cc6f9dc280d1594e",
+   "e2940b0d9fac1b6c",
+   "eb26609d94989e14"
+  ],
+  "32": [
+   "46e22ed19a21293e",
+   "529c66eeaac53f14",
+   "7b110990f69055ef"
+  ],
+  "48": [
+   "134e08eea5561135",
+   "2d74bcfb802544a5",
+   "65905150a1e8ebed",
+   "78e1b20a83b6bf01",
+   "a8e44ba8f31a5160",
+   "cd681ee7a82cbc36"
+  ]
+ }
+}

@@ -1,0 +1,336 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b122ac15e0f0236d6f465ccd1796b9b7bf193a3b242a5e1703dd1adaa420baf3",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "well with hand pump",
+ "label": "jp-inaka-r5:inaka-well-handpump",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 31,
+  "tileColorsP90": 31,
+  "darkV5": 34,
+  "nearBlackEdge": 0.36,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "well opening with water (stone rim plus dark blue water)",
+      "rows": "10-17",
+      "evidence": "d",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "well front face (stone bricks)",
+      "rows": "18-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pump base slab on right",
+      "rows": "23-26",
+      "evidence": "a",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the stone well. Rows 10-12 are the tan stone rim at the back and sides. Rows 13-17 show a dark blue water surface inside the opening, which is evidence (d). The rim and water together give about 8 rows of top surface. Below that, rows 18-27 are a stone-brick front face of about 10 rows with moss patches. The green hand pump (rows 3-22) is a small thin detail beside the well. It sits on a light slab at rows 23-27 whose top surface and front edge are visible. The width profile grows steadily from 12 to 32 without a clear ellipse, so the opening is identified by the water contents rather than by its silhouette."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a stone well base with a green hand pump. Measured facts put it at or above the references: 31 colours per 16x16 tile against 20 for the roofed well and 17 for the cheese stall, 44 distinct colours against 38 and 40, and 0% flat-fill coverage. Dark edge pixels are 0% near-neutral, so the outlines carry a tint and read as dark material tones (dark grey-blue beside the stones, dark green beside the pump) rather than a black sticker line. By eye, the stones are shaded one by one with several lightness steps and texture speckle, and the green pump has highlight, mid and dark steps. The piece is small and the image resolution is low, but it is not thinner or flatter than the roofed-well reference, so it fits beside the reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19271
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "well opening (rim and water)",
+      "rows": "10-17",
+      "evidence": "d",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "pump base slab",
+      "rows": "22-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pump pipe (green)",
+      "rows": "5-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The well body is the large left mass. Its width grows from 12 at row 10 to 20 at row 11 and 26 at rows 13-14, so the top reads as a rounded opening. Rows 10-12 are a tan and brown rim. Rows 13-17 show dark blue water inside, which is contents seen from above (evidence d), ending in a light front rim line near row 17-18. Below it, a stone block front face runs rows 18-27 (about 10 rows) with mossy stones and a dark base. The green pump pipe is a thin vertical detail with a spout, and it sits on a light slab at rows 22-27 that has its own top and front. The overall structure matches the green reference examples: a visible top or opening plus a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a stone well with a green hand pump. It has 44 distinct colours and a median of 31 colours per 16x16 tile, above the well-roofed reference (38 colours, median 20) and the stall (40 colours, median 17). Flat-fill coverage is 0%. Dark edge pixels are 0% near-neutral, so the outline is tinted: dark blue-grey beside the stones and dark green beside the pump, not a uniform black sticker line. The stones are shaded one by one with several lightness steps, and the pump has highlight, mid and dark greens. The piece is small, but it is as dense and textured as the references and does not look thinner or flatter next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15213
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "well opening (water and stone rim)",
+      "rows": "10-17",
+      "evidence": "d",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "pump base slab",
+      "rows": "24-30",
+      "evidence": "a",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The well body at left starts with a brown back rim at rows 10-11. Rows 12-17 show a tan stone rim around dark blue water, so the opening is seen from above (evidence d). The width grows from 12 to 26 px over rows 10-13 and then holds. Below the opening, a dark edge at rows 16-17 leads into a stone block front face at rows 18-27, which is 10 rows of masonry with mortar lines and moss. That gives a top of about 8 rows and a front face of about 10 rows. The green pump pipe at right (rows 5-22) is a thin vertical shaft with a handle, and its small light base slab at rows 24-30 shows its own top. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 44 distinct colours and a median of 31 per 16x16 tile, above the roofed well (38 colours, median 20) and the cheese stall (40 colours, median 17). Flat-fill coverage is 0%. The dark edge pixels are 0% near-neutral, so the outlines lean toward a material tone (dark brown/blue-grey beside stone and metal) and are not a uniform black line. The stone basin is shaded stone by stone with speckle, and the green pump has highlight, mid and dark steps, so it has about 5 steps against the reference's 5-6. It is small and fairly compact, but it looks as rich as the reference well and does not look like a sticker next to it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17118
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "well opening with water and rim",
+      "rows": "10-18",
+      "evidence": "d",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "16-17"
+     },
+     {
+      "part": "well stone front face",
+      "rows": "19-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pump base slab",
+      "rows": "24-30",
+      "evidence": "a",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The well body starts at row 10 with a brown rim (width 12, then 20, then 22, then 26). Inside the rim, rows 13-18 show a dark blue water or interior area, which is evidence (d): contents visible in an open container. A darker row at the bottom of the opening (rows 16-17 in column x=8) marks the front rim. Below it, a stone-brick front face runs from about row 19 to row 27 (about 9 rows) and shows mortar lines and moss. The green hand pump is a thin vertical pipe with a spout and handle, so it is a small detail. It stands on a light slab at rows 24-30 that reads as a flat top. The well reads as a 3/4 view with an open top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a stone well with a green hand pump, and it is the same kind of prop as the well and stall references. It has 44 distinct colours and a median of 31 per full tile, against 38 and 20 for the roofed well. Flat-fill coverage is 0%, so there are no large single-colour areas. The dark edge pixels are 0% neutral, so the outline is tinted: dark brown-grey beside the stones and dark green beside the pump, which fits the dark-material-tone rule and avoids the sticker look. The stones look shaded one by one with highlight and shadow dots, the water is dark and varied, and the pump has several green steps with a lighter highlight. It is small, but it matches the references in ramp depth, texture and density. A careful artist would accept it next to the roofed well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17753
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.452Z",
+ "cells": {
+  "16": [
+   "0c80e6be55b66537",
+   "503b5aaddeca884e",
+   "6d6270b8f68789a7",
+   "8bef92b1da8f2610"
+  ],
+  "24": [
+   "0950bf6696ecb8b4",
+   "10e610689caf124a",
+   "1514301ac7a28300",
+   "376d56af32be5b28",
+   "434985752b1cf548",
+   "599d78ff49fa5ee8",
+   "5c3bbbeacc495fdc",
+   "71768b2e7227d14d",
+   "7530d12bf838bd3d",
+   "7fdb2f03049cd474",
+   "9a833cc0e1f5cca6",
+   "9c5bcc1b0045e8ba",
+   "a4a1472e4d450066",
+   "aafa023095d91361",
+   "b68a07743d70b720",
+   "b70c560c937fe6a2",
+   "b9c9f0e2669c0e88",
+   "c09b407b4e6f2468",
+   "daa80aa57def6ae0",
+   "de7587cf6578b97e",
+   "e096f2408e6f354e",
+   "fbdc5cc66fb3886d"
+  ],
+  "32": [
+   "537fa9a6eeeb66f1"
+  ],
+  "48": [
+   "0675cd96a0261ee9",
+   "51b8c6d6e3ab07ce",
+   "baacb9643fa7fd19",
+   "db8aa393f089addd",
+   "e2509afad402706b",
+   "edab9742c3c6b18c"
+  ]
+ }
+}

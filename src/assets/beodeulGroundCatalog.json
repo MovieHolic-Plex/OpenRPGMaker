@@ -3,7 +3,7 @@
   "texture": "tex_beodeul_ground",
   "tileSize": 16,
   "tilesPerRow": 8,
-  "count": 648,
+  "count": 744,
   "recipes": [
     {
       "id": "bdg-grass-0",
@@ -3944,7 +3944,7 @@
     },
     {
       "id": "bdg-woodland-fence-horizontal",
-      "name": "숲 깊이 · fence-horizontal",
+      "name": "숲 울타리 · 가로",
       "width": 1,
       "height": 1,
       "layer": 3,
@@ -3962,11 +3962,13 @@
         ]
       ],
       "upperCells": [],
-      "kind": "fence"
+      "kind": "fence",
+      "sourceCityTile": 28288,
+      "sourceKit": "bd-farm-fenced-plot"
     },
     {
       "id": "bdg-woodland-fence-vertical",
-      "name": "숲 깊이 · fence-vertical",
+      "name": "숲 울타리 · 세로(서쪽 변)",
       "width": 1,
       "height": 1,
       "layer": 3,
@@ -3984,11 +3986,13 @@
         ]
       ],
       "upperCells": [],
-      "kind": "fence"
+      "kind": "fence",
+      "sourceCityTile": 28289,
+      "sourceKit": "bd-farm-fenced-plot"
     },
     {
       "id": "bdg-woodland-fence-corner",
-      "name": "숲 깊이 · fence-corner",
+      "name": "숲 울타리 · 남서 모서리",
       "width": 1,
       "height": 1,
       "layer": 3,
@@ -4006,7 +4010,1500 @@
         ]
       ],
       "upperCells": [],
-      "kind": "fence"
+      "kind": "fence",
+      "sourceCityTile": 28292,
+      "sourceKit": "bd-farm-fenced-plot"
+    },
+    {
+      "id": "bdg-woodland-fence-vertical-east",
+      "name": "숲 울타리 · 세로(동쪽 변)",
+      "width": 1,
+      "height": 1,
+      "layer": 3,
+      "rows": [
+        [
+          646
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [
+        [
+          0,
+          0
+        ]
+      ],
+      "upperCells": [],
+      "kind": "fence",
+      "sourceCityTile": 28300,
+      "sourceKit": "bd-farm-fenced-plot"
+    },
+    {
+      "id": "bdg-woodland-fence-corner-se",
+      "name": "숲 울타리 · 남동 모서리",
+      "width": 1,
+      "height": 1,
+      "layer": 3,
+      "rows": [
+        [
+          647
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [
+        [
+          0,
+          0
+        ]
+      ],
+      "upperCells": [],
+      "kind": "fence",
+      "sourceCityTile": 28293,
+      "sourceKit": "bd-farm-fenced-plot"
+    },
+    {
+      "id": "bdg-woodland-fence-corner-nw",
+      "name": "숲 울타리 · 북서 모서리",
+      "width": 1,
+      "height": 1,
+      "layer": 3,
+      "rows": [
+        [
+          648
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [
+        [
+          0,
+          0
+        ]
+      ],
+      "upperCells": [],
+      "kind": "fence",
+      "sourceCityTile": 28290,
+      "sourceKit": "bd-farm-fenced-plot"
+    },
+    {
+      "id": "bdg-woodland-fence-corner-ne",
+      "name": "숲 울타리 · 북동 모서리",
+      "width": 1,
+      "height": 1,
+      "layer": 3,
+      "rows": [
+        [
+          649
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [
+        [
+          0,
+          0
+        ]
+      ],
+      "upperCells": [],
+      "kind": "fence",
+      "sourceCityTile": 28291,
+      "sourceKit": "bd-farm-fenced-plot"
+    },
+    {
+      "id": "bdg-woodland-grass",
+      "name": "숲 장면 잔디(채도 낮춤)",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          650
+        ]
+      ],
+      "blocked": false,
+      "kind": "woodland-grass",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-0",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 0",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          651
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-1",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          652
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-2",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          653
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-3",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 3",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          654
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-4",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 4",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          655
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-5",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 5",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          656
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-6",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 6",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          657
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-7",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 7",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          658
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-8",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 8",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          659
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-9",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 9",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          660
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-10",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 10",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          661
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-11",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 11",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          662
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-12",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 12",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          663
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-13",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 13",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          664
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-14",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 14",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          665
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-15",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 15",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          666
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-19",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 19",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          667
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-23",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 23",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          668
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-27",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 27",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          669
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-31",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 31",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          670
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-38",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 38",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          671
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-39",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 39",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          672
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-46",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 46",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          673
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-47",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 47",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          674
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-55",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 55",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          675
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-63",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 63",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          676
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-76",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 76",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          677
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-77",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 77",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          678
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-78",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 78",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          679
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-79",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 79",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          680
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-95",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 95",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          681
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-110",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 110",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          682
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-111",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 111",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          683
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-127",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 127",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          684
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-137",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 137",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          685
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-139",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 139",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          686
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-141",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 141",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          687
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-143",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 143",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          688
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-155",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 155",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          689
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-159",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 159",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          690
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-175",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 175",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          691
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-191",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 191",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          692
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-205",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 205",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          693
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-207",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 207",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          694
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-223",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 223",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          695
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-plain-239",
+      "name": "짙은 풀 가장자리(민무늬 잔디) 239",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          696
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-0",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 0",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          697
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-1",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          698
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-2",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          699
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-3",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 3",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          700
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-4",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 4",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          701
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-5",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 5",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          702
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-6",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 6",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          703
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-7",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 7",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          704
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-8",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 8",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          705
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-9",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 9",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          706
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-10",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 10",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          707
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-11",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 11",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          708
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-12",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 12",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          709
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-13",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 13",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          710
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-14",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 14",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          711
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-15",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 15",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          712
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-19",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 19",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          713
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-23",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 23",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          714
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-27",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 27",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          715
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-31",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 31",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          716
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-38",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 38",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          717
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-39",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 39",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          718
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-46",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 46",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          719
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-47",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 47",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          720
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-55",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 55",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          721
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-63",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 63",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          722
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-76",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 76",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          723
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-77",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 77",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          724
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-78",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 78",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          725
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-79",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 79",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          726
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-95",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 95",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          727
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-110",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 110",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          728
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-111",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 111",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          729
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-127",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 127",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          730
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-137",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 137",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          731
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-139",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 139",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          732
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-141",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 141",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          733
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-143",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 143",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          734
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-155",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 155",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          735
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-159",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 159",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          736
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-175",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 175",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          737
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-191",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 191",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          738
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-205",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 205",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          739
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-207",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 207",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          740
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-223",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 223",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          741
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
+    },
+    {
+      "id": "bdg-dark-grass-woodland-239",
+      "name": "짙은 풀 가장자리(숲 장면 잔디) 239",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          742
+        ]
+      ],
+      "blocked": false,
+      "kind": "dark-grass-edge",
+      "forestGround": true
     }
   ],
   "lighting": {

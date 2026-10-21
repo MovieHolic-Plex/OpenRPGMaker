@@ -1,0 +1,387 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "71dede7813ec78b54ad833cc779fec966170ce96c359ef06151332e6c8c81b84",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "dept directory kiosk",
+ "label": "modern_city_interior/dept-directory-kiosk",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 33,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap / roof slab",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "directory screen panel with colored label rows",
+      "rows": "8-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower control panel",
+      "rows": "22-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth strip",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top cap spans rows 1-5 and is 16 px wide, wider than the 14 px body. Row 5 (L=189) is a lighter front-edge line. Rows 6-7 (L=136 and 107) are darker eave shadow. Row 8 starts the navy front face, which runs to about row 31 and holds the screen and the control panel. The side columns are flat vertical frame strips, not a receding side face. The base strip at rows 28-31 is a front-facing plinth and is minor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny single-tile kiosk (about 1 tile wide), not a whole building with roof, walls and door. The references are full houses with scalloped tile roofs, timber framing and stone or plaster walls, so the kind does not match and the comparison is only partial. Its measured facts show 14 visible tones per tile, which is above the references' 10-12, and 0% near-flat coverage. Its dark edge pixels are 100% near-neutral, against 7-9% for the references. That means a neutral black sticker-style outline rather than a dark tone of the adjacent material. By eye, the body is a grey housing with a dark outline, and a small screen panel with a few coloured bars. Each material ramp has only about 2-3 steps, where the references use 5-6 per material. The piece has no tile scallops, grain or speckle, and no clustered texture. It reads as a flat, outlined icon placed next to richly shaded houses.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15701
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap / roof slab",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "directory screen panel with colored bars",
+      "rows": "8-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower control panel with buttons",
+      "rows": "22-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth band",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a uniform grey top band (L=167). Row 5 is a lighter front-edge line (L=189), and rows 6-7 are darker eave shadow (L=136, 107). The silhouette widens from 12 to 16 across rows 0-2, so the cap overhangs the body. Below it, rows 8-31 are the front face: the navy screen panel with colored bars, the lower control panel with buttons, and a base band. The side columns are flat frame strips, not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny kiosk, about one tile wide and 1.5 tiles tall. It is not a whole building with roof, walls and door, so it does not match the reference kind, which are full houses with tiled roofs, timber and plaster walls, and stone courses. Its measured tone count (14 per tile) is at or above the references (12 and 10), and near-flat coverage is 0%, but the picture shows those tones come from small screen and button accents. The body is a flat grey-blue casing with only about 3 lightness steps. The dark edge pixels are 100% near-neutral, against 7-9% for the references, so the outline is a uniform neutral black-grey line around the whole shape. This is the shallow sticker look, not a dark tone of the adjacent material. It has no tile scallops, plaster speckle or per-stone shading, and only 19 distinct colours in total against 66-185 for the references. Because the outline is neutral, the shading is shallow and the kind does not match, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14775
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of kiosk housing",
+      "rows": "1-7",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "directory panel with colored listing strips",
+      "rows": "8-20",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower control panel with buttons",
+      "rows": "21-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth band",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top cap spans rows 1-4 as a light gray band (L=167). Row 5 (L=189) is a lighter front-edge line, and rows 6-7 (L=136, 107) are darker eave shadow. The cap widens from 12 to 16 px over rows 0-2. Below it, the front face runs from row 8 to row 31 and holds the directory panel (rows 8-20), the control panel with buttons (rows 21-27) and the base plinth (rows 28-31). The top surface is about 5 rows over a 24-row front face, so it reads as a 3/4 view. The plinth is a front-facing band and is not counted as a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny kiosk, about one tile wide, set beside full buildings with a roof, walls and door. It is not a whole building, so the kind does not really match. It has a grey-blue body in a neutral near-black outline, and 100% of its dark edge pixels are near-neutral. That is the sticker look, while the references are only 7-9% neutral and use dark brown or red-brown tones beside their materials. The body has a few panel and light details, but its ramps have only about 3 lightness steps against 5-6 on the reference roofs and walls. It has no scalloped tile highlights, plaster speckle or stone-by-stone shading. The 14 visible tones per tile are above the references' 10-12, but they come from small screen details and not from material ramps, so the number overstates its richness. Outline and shallow shading together make it fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14280
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap of kiosk",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "lower ledge / base plinth",
+      "rows": "26-30",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top cap is a light grey band at rows 1-5 (L=167). Row 5 (L=189) is a lighter front-edge line. Rows 6-7 (L=136, then 107) are darker eave shadow above the navy directory panel. The front face runs from row 8 to row 31: the navy panel with coloured entries at rows 8-20, a grey control panel with green and red buttons at rows 23-25, and a base with its own lighter edge line at row 26. The silhouette is 14-16 px wide with no ellipse profile, so the top is a flat band with an edge line and shadow, which counts as evidence (a). The top is about 5 rows deep, and the front face is well over 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny single-tile kiosk (about 1 tile wide), not a whole building with roof, walls and door/windows, so it does not match the reference kind. Its measured 14 visible tones per tile is above the references (12 and 10), with 0% near-flat coverage. However, 100% of its dark edge pixels are near-neutral, against 7-9% for the references. That confirms a uniform black/grey sticker outline around the whole shape, where Beodeul uses tinted dark material tones. By eye, the grey body is shaded in only about 3 steps, with a few small coloured lights on the panel. The references show roof tile scallops, plaster speckle and per-stone shading in 5-6 steps per material. The kiosk is a small prop with a clean silhouette but a thinner, flatter, more sticker-like look than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13244
+  }
+ ],
+ "decidedAt": "2026-10-20T22:55:59.286Z",
+ "cells": {
+  "16": [
+   "06598e9376150800",
+   "77763885df171f4a"
+  ],
+  "24": [
+   "12916c3b725c6564",
+   "143ff0f7103f79de",
+   "165e224ad605920f",
+   "4c9c753b1193f710",
+   "5b13f149a9efdb56",
+   "64751db375425193",
+   "7b6c412f438df581",
+   "7bdd26227f0644e3",
+   "d09d3590da1e8169",
+   "d58a9778d473e8b2",
+   "df1f47bd027639c5",
+   "e187c8246ffaf333"
+  ],
+  "32": [
+   "777c602d15115105",
+   "caefbf5dcda5b966",
+   "edc6bf80ed5b0340"
+  ],
+  "48": [
+   "0173146f52821c09",
+   "0a7c60c9e22967e5",
+   "0c7223521dd02ba0",
+   "76ba92f9552d9bee",
+   "beebc5a9cac3a17a",
+   "bf5ed2f353f89bdb"
+  ]
+ }
+}

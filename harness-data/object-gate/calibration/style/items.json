@@ -1377,8 +1377,10 @@
   "styleKind": "prop",
   "view34": "good",
   "style": "good",
-  "group": "beodeul-heldout",
-  "note": "버들항 번들 키트 bd-prop-flower_cart(기준 그림 아님)"
+  "group": "uncertain-defect",
+  "note": "버들항 번들 키트 bd-prop-flower_cart(기준 그림 아님)",
+  "groupBefore": "beodeul-heldout",
+  "defect": "2026-10-21 감사: 화소가 같은 fresh4/q113_beodeul 의 블라인드 라벨(판정 전 고정)이 3/4 위반·애매(등급 C)라 알려진 정상이 아니다 → 불확실"
  },
  {
   "name": "beodeul__prop-goods_pile",
@@ -1386,8 +1388,10 @@
   "styleKind": "prop",
   "view34": null,
   "style": "good",
-  "group": "beodeul-heldout",
-  "note": "버들항 번들 키트 bd-prop-goods_pile(기준 그림 아님)"
+  "group": "uncertain-defect",
+  "note": "버들항 번들 키트 bd-prop-goods_pile(기준 그림 아님)",
+  "groupBefore": "beodeul-heldout",
+  "defect": "2026-10-21 감사: 화소가 같은 fresh4/q013_beodeul 의 블라인드 라벨(판정 전 고정)이 3/4 위반·애매(등급 C)라 알려진 정상이 아니다 → 불확실"
  },
  {
   "name": "beodeul__prop-table_mugs",
@@ -1395,8 +1399,10 @@
   "styleKind": "prop",
   "view34": "good",
   "style": "good",
-  "group": "beodeul-heldout",
-  "note": "버들항 번들 키트 bd-prop-table_mugs(기준 그림 아님)"
+  "group": "uncertain-defect",
+  "note": "버들항 번들 키트 bd-prop-table_mugs(기준 그림 아님)",
+  "groupBefore": "beodeul-heldout",
+  "defect": "2026-10-21 감사: 화소가 같은 fresh4/q061_beodeul 의 블라인드 라벨(판정 전 고정)이 3/4 위반·애매(등급 C)라 알려진 정상이 아니다 → 불확실"
  },
  {
   "name": "beodeul__prop-lamp_double",

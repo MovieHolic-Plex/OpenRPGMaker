@@ -1,0 +1,268 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "530cce8390dacdf37735ccd38667f7af94d830a098ecfc4b1a8add37a61c7256",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "inaka-paddy-summer",
+ "label": "jp_inaka_pack/ground/inaka-paddy-summer",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 51,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy rice rows upper band (light green blades over dark soil/water)",
+      "rows": "0-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "paddy rice rows lower band (light green blades over dark soil/water)",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a fully opaque 16x16 terrain tile, not a standing object. Rows 0-7 and 8-15 repeat the same pattern: light green at the top, then mid-green, then dark green at the bottom. This is a repeating rice-row ground texture that tiles seamlessly. There is no object silhouette, no front-edge line, no eave shadow and no separate front face. The width is 16 on every row. It reads as a flat repeating ground pattern, not a 3/4 object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate renders very small on the board, so I rely mostly on the measured facts and what I can see. It shows about 7 visible tones per tile, against 3 for the Beodeul grass and 7 for the paving, so it is at or above both. Near-flat coverage is 0%, the same as both references, and I see no large single-colour fills. Its dark edge pixels are 0% neutral, so the dark edges lean green rather than black, which fits dark_material_tone. I see roughly 5 green steps, from a light tuft highlight down to a dark base band, comparable to the grass reference. Texture is only 'some' because the board is small and the pattern reads as stripes of tufts. It is not as varied as the reference grass speckle, but nothing marks it as a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14426
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy terrain tile (rice plant rows, two repeating bands of light green tips fading to dark green)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a full 16x16 seamless terrain tile (width 16 on every row) showing a repeating paddy pattern. Rows 0-7 and rows 8-15 each form a band that goes from light green or olive tips down to dark green, and the pattern repeats. It is not a standing object, so there is no body, top surface or front face to measure. The bands are texture stripes, not edge lines with eave shadow. As terrain it should be judged as a tile, not as a three-quarter object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate renders very small on the board, so I judged mostly from the measured facts and the visible rows. It shows 7 visible tones per tile, against 3 for the reference grass and 7 for the paving. Near-flat coverage is 0%, so no 5x5 area is a flat fill. Dark edge pixels are 0% neutral, so the outlines lean green rather than black and read as dark material tone. The paddy rows carry light and dark green bands with small tuft marks, giving about 5 lightness steps. Texture is a little more regular and repetitive than the reference grass's irregular clumps, so I rate it 'some' rather than 'rich'. It is not thinner or more sticker-like than the reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15136
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy ground tile (flat repeating rows of rice shoots and water)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile fills the full 16x16 area (width 16 on every row). It is a seamless terrain texture made of two repeating bands: light green to dark green at rows 0-7 and again at rows 8-15. There is no silhouette, no standing body, no front-edge line and no eave shadow. No front face is drawn, so it reads as a flat top-down terrain surface. For a terrain kind this is the expected result, not a standing object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small paddy patch of banded seedling rows, each with light tips and a darker green underside. It reads as about 5 green steps (7 visible tones per tile, all 7 raw colours distinct). That matches the paving reference (7) and clearly beats the grass reference (3 visible tones). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, meaning they lean green rather than black, so the darks read as a dark version of the adjacent material and not a sticker outline. The raw palette is small (7 colours against 80 for the grass), but that is expected from a locked palette, and the visible texture is comparable. The picture is small and the grain is more regular than the reference grass tufts, so I rate it 'some' and not 'rich'. Overall it holds up next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14673
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy row band 1 (light green rice tops fading to dark furrow shadow)",
+      "rows": "0-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "paddy row band 2 (same pattern repeated)",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 16x16 square (width 16 on every row). The column scan shows two identical 8-row bands, each going from light green (L~160) through mid greens to dark (L~51). This is a repeating ground texture of rice rows and furrows seen from above. It has no front-edge line, no eave shadow, no ellipse and no vertical south face, so this is a flat seamless terrain tile and not a standing object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate renders very small on the board, so I judged mostly from the measured facts and the visible detail. It shows 7 visible tones per 16x16 tile, against 3 for the Beodeul grass and 7 for the paving. Near-flat coverage is 0%, the same as both references, and I see no large single-colour areas. The scalloped, tufted green rows step from a light highlight through mid greens to a dark green base. The dark edge pixels are 0% neutral, so the darks lean green rather than black, which matches the references' dark-material-tone approach. Texture is real but lighter than the grass reference's scattered tufts, hence 'some' rather than 'rich'. Its total palette is only 7 colours, so the richness comes from tone steps, not grain variety. On tone count and structure it holds up next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18403
+  }
+ ],
+ "decidedAt": "2026-10-20T22:15:04.177Z",
+ "cells": {
+  "16": [
+   "d969bbad27b74adb"
+  ],
+  "24": [
+   "08b1cc99423e3cb6",
+   "80cfe11c3f32018a",
+   "87be61a62be324a8",
+   "c812075d70dc13c4",
+   "d51a22639cbcc36f",
+   "d7dbb71dcea3cf3e"
+  ],
+  "32": [
+   "46d96b15752ab738",
+   "5e2bf105411fca96",
+   "7b97b7d265014f8f",
+   "a12bef8d340582f6",
+   "daff0cd09b0e0f8e",
+   "fd912bf82d022732"
+  ],
+  "48": [
+   "0789c3d03cfa7c73",
+   "482140814322bece",
+   "8507eb7b5266a4aa",
+   "c8160af902c1411f",
+   "dc2e96790bf2ee93",
+   "fe4ce72f9bf1b9de"
+  ]
+ }
+}

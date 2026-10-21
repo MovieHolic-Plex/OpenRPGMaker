@@ -1,0 +1,351 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8661f2dad1d7adb674d01a575f6c01f0274cf2db1f213442e55d0c0071562682",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "hosp vitals bank",
+ "label": "modern_city_interior/hosp-vitals-bank",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 17,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "front face with monitors and sample slots",
+      "rows": "7-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-6 form a light top band with horizontal streaks. It ends in a bright 1-row front-edge line at row 6 (L=244), and row 7 is a darker eave-shadow row. Below it rows 7-31 are the vertical front face, holding two monitors, a panel and five slots. The band could be read as a face-on header strip, but the edge line plus shadow fits evidence (a). No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey monitor cabinet with two screens and a button row. The numbers are fine: 15 visible tones per tile sits within the references' 9-20, and near-flat coverage is 0%. The weaknesses are structural. The body reads as only about 3 lightness steps (light grey face, mid grey, dark edge), against the 5-6 steps of the roof, well and stall references. The dark edge pixels are 100% near-neutral, so the outline is a uniform neutral dark line around the whole cabinet. The Beodeul pieces mostly use tinted material-tone edges (hedge 0%, stall 1%, well 33%). The lamp reference is also 100% near-neutral, but it is a thin pole, so that case is not comparable. The grey panel face has little grain or speckle beyond the screen detail, so the cabinet looks like a flat sticker next to the shaded wood, tile and hedge pieces. The shallow shading and the near-black outline outweigh the adequate tone count, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17124
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top slab of the cabinet",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-6 form a light grey band across the full 30px width, with a dark outline at row 0. The band has horizontal highlight streaks and ends in a bright front-edge line at row 6 (L=244). Row 7 is a darker shadow line (L=111) just below it. Under that the front face runs rows 7-31, with a dark frame, two monitor screens (rows 10-18), a panel band (rows 19-22), five coloured slots (rows 23-27) and a base (rows 28-31). The top band is 6 rows, more than a 1-2 row rim, so it reads as a top surface above a tall front face. The call is somewhat uncertain, because the band could also be read as a face-on header panel."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a grey wall-panel monitor with two screens, graph lines and a row of buttons. Its measured density is acceptable: 15 visible tones per tile against 17 for the stall and 20 for the well, with 0% near-flat coverage. The structure is a mostly rectangular slab with a light grey frame, a mid grey face and dark screens, so each material ramp has about 4 steps against 5-6 in the references. 100% of the dark edge pixels are near-neutral, which gives a uniform near-black outline around the whole piece. The stall, hedge and well references have tinted outlines (0-33% neutral). Only the lamp reference matches this neutral figure, and it is a thin iron pole. The candidate therefore has the 'sticker' look rather than outlines in the dark tone of the adjacent material. Texture is limited to the screen graphs and the buttons, and the grey frame has no grain, speckle or per-element highlights. The candidate sits below the references on outline craft and shading depth, and when in doubt the rule is to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 17575
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top slab of the cabinet",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "monitor and control front face",
+      "rows": "9-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is 30 px wide on every row. Rows 1-6 form a light-grey top band with streak highlights. It ends in a bright front-edge line at row 6 (L=244 at x=16), followed by dark eave shadow at rows 7-8 (L=111, then 169). The front face runs below it from row 7 to row 31, about 25 rows. It holds two inset monitor screens (rows 9-18), a control strip (rows 19-22), five coloured button sockets (rows 23-27) and a base (rows 28-31). Nothing else is a separate major volume, so the top band is the only part that should show a top surface. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey wall-panel monitor unit. Tile density is fine: 15 visible tones per tile against 9-20 for the references, and 0% near-flat coverage. Its main grey casing ramp has only about 3-4 steps, against 5-6 on the references' wood, roof and stone. The screens and buttons add some detail, but the casing is mostly smooth bands with little grain or speckle. 100% of the dark edge pixels are near-neutral, and the picture shows one uniform dark grey/black line around the whole object. That is the sticker look, not the tinted material-tone edges of the hedge and cheese stall, which measure 0-1% neutral. The lamp-crook also measures 100% neutral, but it is a thin iron prop, and this large panel body does not get the same allowance. A careful artist would find it flatter and more outlined than the references, and when in doubt the rule is to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16359
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top band of the vitals bank",
+      "rows": "1-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "front face with two monitor screens and a lower row of five slots",
+      "rows": "7-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is 30 px wide on every row. Rows 1-6 form a light grey band with streaked highlights. It ends in a bright front-edge line at row 6 (L=244), followed by dark shadow rows 7-8 (L=111 and 169). This reads as a top surface about 6 rows deep. Below it, rows 7-31 are a vertical front face of about 25 rows holding two monitors (rows 9-18), a ledge and a bottom row of five slots (rows 23-27). No side face is drawn. It could be read as a front-facing header panel, but the edge line plus shadow meets evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey monitor cabinet with two screens and a row of small buttons. The measured facts are close to the references on density: 15 visible tones per tile against 17-20 for the stall and well, with 0% near-flat coverage. The main grey casing, however, shows only about 3-4 lightness steps, against 5-6 on the references' roofs, wood and hedge. Texture is mostly in the screens and buttons, while the casing reads as smooth panels. 100% of the dark edge pixels are near-neutral, so the dark edge is a uniform neutral line around the whole object. That is the sticker-style outline, not the tinted dark-material outline the stall, well and hedge use (0-33% neutral). The lamp reference is also neutral, but it is a thin iron pole, so it does not excuse a large boxy prop. The piece is clean and readable, but its outline and shading are shallower than the Beodeul standard, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 15950
+  }
+ ],
+ "decidedAt": "2026-10-20T23:28:13.366Z",
+ "cells": {
+  "16": [
+   "180ea5c1637ccc64",
+   "41de58913fde954b",
+   "e498b490ca81aa42",
+   "fb2d8c24c8305055"
+  ],
+  "24": [
+   "03afff9407d03636",
+   "03cdabf757f0befe",
+   "16876bb55cc3d405",
+   "1fc0523a28a19fee",
+   "262554eb15804f65",
+   "2d8ecc3e1fb0c480",
+   "30764edd72787c30",
+   "358c544cf16790bb",
+   "4620886bb0dbc832",
+   "646277ff2d2d89b6",
+   "67470e480c14cf36",
+   "678fb425d040203e",
+   "747027580e19a99f",
+   "8c16162b4ebdc55e",
+   "8ec61d5948a66c82",
+   "97de18743527b58a",
+   "a61f221967dc70b6",
+   "aa14cfb7513f4218",
+   "c95c42411de8706f",
+   "ce1ff702b612bb91",
+   "d367ddbdc7b46374",
+   "e8df16e9cc9631ab",
+   "fc03f8a25927a0c4",
+   "fc3709edb615ff12"
+  ],
+  "32": [
+   "bde41c959309985a"
+  ],
+  "48": [
+   "06fee71667d99630",
+   "1796ff64b28b00b3",
+   "316b9cba44334a7e",
+   "3d9c775abb3e02bf",
+   "447a585e9e124997",
+   "d3363933b2f85bac"
+  ]
+ }
+}

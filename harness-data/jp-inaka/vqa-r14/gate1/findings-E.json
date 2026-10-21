@@ -1,0 +1,265 @@
+{
+ "group": "E",
+ "items": [
+  {
+   "label": "jp_inaka_pack/ground/inaka-paddy-water",
+   "kind": "terrain",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "Terrain; flooded paddy water with seedling dots, 8 tones on a crisp 1px grid. In maps 02/04 it reads as a planted flooded paddy; even dot rows look like planted rows, not a seam defect."
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/ground/inaka-paddy-summer",
+   "kind": "terrain",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "Terrain; green rice rows in horizontal bands, about 7 tones. The bands repeat every 8/16 rows, which reads as crop rows in maps 01-04. No seams or stray pixels."
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/ground/inaka-paddy-golden",
+   "kind": "terrain",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "Terrain; ripe rice rows, 7 tones, crisp. Note: the golden field in map 04 renders an older palette ((224,197,122) instead of the candidate's (240,205,69)), so this exact tile was not seen in a map; the 4x4 tiled check is clean."
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/ground/inaka-aze-path",
+   "kind": "terrain",
+   "verdict": "fail",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [
+    "tiling"
+   ],
+   "sure": true,
+   "reasons": [
+    "Tiling defect seen in map 04: almost all detail sits on rows 11-13 (one line of about 7 pebbles); the other ~94% of pixels are one flat tan. Repeated 267x in map 04 (the open field around the greenhouses, x250-530, and the paths between paddies), it draws a dotted horizontal line every 16 px, like ruled paper.",
+    "Name/kind mismatch (not a gate charge): an aze is a raised grassy paddy levee, but this tile is plain flat dirt that cannot be told apart from the at-dirt centre fill."
+   ],
+   "fixes": [
+    "Spread the pebbles/specks over all 16 rows (no row band) and add 2-4 random variants, as at-grass does, or use the at-dirt centre/variant cells for open dirt.",
+    "If it is meant to be a levee path, give it a grass rim along both long edges so it reads as an aze."
+   ]
+  },
+  {
+   "label": "jp_inaka_pack/ground/inaka-canal-water",
+   "kind": "terrain",
+   "verdict": "fail",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [
+    "tiling"
+   ],
+   "sure": true,
+   "reasons": [
+    "Tiling defect (simulated; tile is in no map): the only bright detail is a diagonal cluster of white glints and light streaks at fixed positions (e.g. (15,1),(2,4),(5,6),(7,8),(0,15)) on a flat (69,97,132) base (173/256 px). Tiled 10x6 at 1x/2x it forms a hard diagonal wallpaper lattice with a 16 px period."
+   ],
+   "fixes": [
+    "Break the glint cluster into smaller sparse glints scattered over the tile, and add 2-3 variants or a 32x32 repeat; keep (69,97,132) as the base."
+   ]
+  },
+  {
+   "label": "jp_inaka_pack/ground/inaka-canal-wall",
+   "kind": "terrain",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "Terrain wall face (one-row canal edge): rows 0-3 coping top, rows 4-11 two courses of stone with moss at rows 10-11, rows 12-15 a dark waterline band. Placed above canal-water it joins without a hard seam (the darker band reads as wall shadow). Charges 1-6 are exempt; style is the same crisp grid.",
+    "Note: mortar lines (38,40,51) at rows 6/9/12 are darker and more neutral than the mid-grey mortar of the same-chipset jp-river-wall anchor. Not a full 8a sticker outline. Only usable as one row, never tiled vertically."
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/ground/inaka-gravel-road",
+   "kind": "terrain",
+   "verdict": "fail",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [
+    "tiling"
+   ],
+   "sure": true,
+   "reasons": [
+    "Tiling defect (simulated; tile is in no map): a flat tan field with a single diagonal stone clump (rows 3-15, x3-14) is the only detail. Tiled, it becomes a polka-dot lattice of identical clumps every 16 px, and it reads as a dirt patch with pebbles at the same spot rather than a gravel road surface."
+   ],
+   "fixes": [
+    "Use dense, even gravel: many 1-2 px stones in 3-4 tones over the whole tile with no single clump; add 2-4 variants so no motif repeats on a 16 px grid."
+   ]
+  },
+  {
+   "label": "jp_inaka_pack/ground/inaka-river-shallow",
+   "kind": "terrain",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "Terrain; shallow river centre fill, mottled teal with light streaks, crisp. In map 05 it sits seamlessly inside the at-stream banks. One white glint per tile (12,5) gives a faint grid of dots but the busy texture hides it."
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/ground/inaka-meadow-wildflower",
+   "kind": "terrain",
+   "verdict": "fail",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [
+    "tiling"
+   ],
+   "sure": true,
+   "reasons": [
+    "Tiling defect (simulated; tile is in no map): a flat green field (most pixels one tone) with one fixed set of three white flowers, one yellow flower and two dark tufts. Tiled, it shows a rigid 16 px lattice of identical flower groups. at-grass avoids this with 6 variants, but this single tile has none."
+   ],
+   "fixes": [
+    "Add 3-4 variants with flowers in different positions (or make it an at-grass-style variant set), and scatter the flowers so no group repeats on a fixed grid."
+   ]
+  },
+  {
+   "label": "jp_inaka_pack/ground/inaka-vegetable-furrow",
+   "kind": "terrain",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "Terrain; two furrows per tile (plant rows 1-5 and 9-13, dark trench rows 6-7 and 14-15), the second row offset by half a plant. Tiled, it reads as a cabbage/vegetable bed; the regular grid is natural for planted rows. Not used in any map."
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/ground/inaka-at-grass",
+   "kind": "terrain",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "Terrain; 6 grass variants with small tufts and flowers, flat green base. It is the base grass of all six maps and reads cleanly, and the variants break up repetition."
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/ground/inaka-at-dirt",
+   "kind": "terrain",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "Terrain autotile, 47 blob cells plus 2 variants (rut line, pebbles). The grass-to-dirt edges use a speckled green rim and join without seams in maps 01-06. The rut/pebble variants are clean."
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/ground/inaka-at-stream",
+   "kind": "terrain",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "Terrain autotile; north edges show a 3-4 row brown earth bank face (the correct 3/4 cue), south edges a white foam line, and east/west edges a thin tan lip. In map 05 the bends, inner corners and stepping-stone section join correctly with no hard seams."
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/ground/inaka-at-paddy-water",
+   "kind": "terrain",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "Terrain autotile, 52 cells; speckled aze levee with a green rim, a dark shadow line on the levee's south edge and a light water glint line. In maps 02/04 the rectangular paddies and the notched paddy in map 04 close correctly."
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/ground/inaka-at-paddy-summer",
+   "kind": "terrain",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "Terrain autotile, 52 cells, same levee system as paddy-water. Maps 01-04 show clean closed fields, including the shared levee between the two fields in map 03."
+   ],
+   "fixes": []
+  },
+  {
+   "label": "jp_inaka_pack/ground/inaka-at-paddy-golden",
+   "kind": "terrain",
+   "verdict": "pass",
+   "kind_ok": true,
+   "closest_kind": null,
+   "top_rows": 0,
+   "front_rows": 0,
+   "charges": [],
+   "sure": true,
+   "reasons": [
+    "Terrain autotile, 52 cells, same levee system with golden rows. No exact match in any map (map 04 uses the older golden palette), but the sheet's edges and inner corners match the summer/water sets cell for cell."
+   ],
+   "fixes": []
+  }
+ ],
+ "summary": "Group E (16 ground groups, all kind terrain, charges 1-6 exempt). No 8a-8d style charge holds: everything is on the same crisp 1px grid with 5-22 tones, no anti-aliasing, and every autotile closes without hard seams in the real maps. 4 FAIL for tiling: aze-path (seen in map 04: every pebble sits on rows 11-13, drawing dotted horizontal lines every 16 px over the large dirt field) plus three single-tile textures that appear in no map (canal-water, gravel-road, meadow-wildflower). Each has one fixed motif on a flat base, which tiles into a hard 16 px wallpaper lattice. Fix: scatter the detail and add variants. 12 PASS. Side note: map 04's golden paddy renders an older palette than the candidate."
+}

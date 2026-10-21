@@ -1,0 +1,376 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "993bb51b9f9f152e241c32c85b2e2c39966f349fabff5fe3819ad69e305168dc",
+ "width": 64,
+ "height": 32,
+ "kind": "structure",
+ "name": "bamboo fence gate",
+ "label": "jp-inaka-r5:inaka-bamboo-fence-gate",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "wall",
+  "refs": [
+   "wall-h104_0-timber",
+   "wall-h106_1-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 23,
+  "darkV5": 34,
+  "nearBlackEdge": 0.11,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gate roof (gray tile cap)",
+      "rows": "0-8",
+      "evidence": "c",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "bamboo fence top band",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "gate lintel beam",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "11-12"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The gate has a sloped gray tile roof in rows 0-8. Its dark lower edge at rows 7-8 acts as the eave, so this is a roof plane (c). The bamboo fence on both sides has a lighter top band in rows 9-12 that ends in a light front-edge line at row 12 (#a09862). Darker shade follows in rows 13-14, then the vertical bamboo face runs through rows 13-29, about 17 rows. The two posts and the lintel are front faces with an open passage between them. The roof, fence top and front face together read as a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a bamboo fence gate: green slat panels, a dark tiled roof cap, and brown posts. The measured facts are 18 colours per tile, 0% flat fill, and 30 distinct colours in total. That is within the range of the stone reference (13 per tile, 33 distinct) but below the timber reference (26 per tile, 68 distinct). Bamboo slats show about 4 green steps with vertical grain and node highlights, against 5-6 steps in the references, so the shading is a little shallower. 31% of dark edge pixels are neutral, against 12-13% in the references. By eye the roof cap and the gaps between slats lean near-black, while the posts and slats carry green or brown tints, so the outline is mixed. The piece is small and simple, and the texture is present but repetitive. It is not a flat sticker, yet it is slightly thinner and less richly shaded than the references, and the near-black roof and gap lines hold it back.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22141
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gate roof (grey tile cap)",
+      "rows": "0-7",
+      "evidence": "c",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "fence top band (left and right sections)",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "gate lintel beam",
+      "rows": "9-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The gate has a roof plane in rows 0-7 (width 28-32) with tile pattern. A dark edge line at row 7 and a shadow at row 8 separate it from the posts and lintel below. The bamboo fence sections have a light green top band in rows 9-12, ending in a lighter edge line at row 12 and darker rows below. Below that the front face runs rows 13-29, about 17 rows, with vertical bamboo stalks. The gate posts and lintel are drawn as front-facing, and the lintel is only a front strip. The roof and the fence tops give the main body a top surface plus a tall front face, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The bamboo panel carries about 4-5 greens, with vertical stalk highlights, node marks and dark gaps between canopies. The tile cap and posts add a separate dark ramp with scalloped edging. Flat-fill coverage is 0%, the same as both references. Colours per tile (18) sit between the stone reference (13) and the timber reference (26). Total colours (30) are close to the stone reference (33) but well below the timber reference (68). The neutral share of dark edges is 31%, higher than the references' 12-13%, so the outline is mixed rather than consistently material-tinted. The dark roof cap leans greyest. The outline is not a uniform black sticker line, because the bamboo is separated mostly by value and green-tinted darks. On balance the piece is acceptable next to the stone reference, though a little thinner than the timber one.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26237
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gate roof (grey tile)",
+      "rows": "0-7",
+      "evidence": "c",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-9"
+     },
+     {
+      "part": "bamboo fence top band",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "gate lintel between posts",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The gate has a grey tiled roof plane at rows 0-7 with a dark front edge at rows 7-8, which reads as a sloped roof (c). The bamboo fence at rows 9-12 has a lighter top band ending in a tan edge line at row 12, followed by dark shadow at rows 13-14 (a). Below that the fence front face runs rows 13-30 (about 18 rows). The open gate posts and lintel sit in front of the roof. The object is a three-quarter view with a top surface and a front face, not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a bamboo fence with a dark-tiled gate roof and wooden posts. Measured: 18 colours per tile (timber ref 26, stone ref 13), 0% flat-fill coverage, 30 distinct colours (refs 68 and 33). It sits between the two references on density and matches the stone reference on distinct colours. Dark edge pixels are 31% near-neutral against 12-13% in the references, so the outline leans toward black in places, mainly the roof and gate frame, while the bamboo edges are green-tinted. The bamboo has about 4 green steps with vertical stalk grain and node marks, but it reads somewhat uniform and repetitive. The roof tile has less per-tile highlight scalloping than the references show. A careful artist would find it a bit thinner and flatter than the timber reference, though not sticker-like. Overall it is slightly shallower than Beodeul. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18817
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gate roof (tiled canopy)",
+      "rows": "0-7",
+      "evidence": "c",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "bamboo fence top band",
+      "rows": "9-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "gate lintel beam",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "11-12"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The fence is a green band over rows 9-12 with a light front-edge line at row 12 and dark shadow at rows 13-14. Below it is a bamboo front face about 18 rows tall (rows 13-30). The gate has a gray tiled roof plane at rows 0-7 with a dark eave line at row 7 and outline at row 8. The roof sits above two posts and a lintel. The posts and lintel are vertical faces, which is normal for the supports under a roof."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 18 colours per 16x16 tile, which is above the stone reference (13) and below the timber reference (26). It has 30 distinct colours against 33 for stone, and 0% flat-fill coverage like both references. The bamboo panels show about 4 green steps with per-stalk highlights and node marks. The posts and the roof cap add further steps, so no large area reads as a flat fill. The dark edge pixels are 31% near-neutral against 12-13% in the references. The roof cap edge leans towards grey-black, while the bamboo and posts take dark green and brown tones, so I call the outline mixed. That is not the uniform sticker line. The ramps are a little shallower than the references' 5-6 steps and the gate is simpler. A careful artist would still accept it beside the stone reference without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21473
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.456Z",
+ "cells": {
+  "16": [
+   "06b08ad16cb63e55",
+   "25ee517d11ac24c9",
+   "360de45fc5376660",
+   "47243815abf4dc8d",
+   "8ae0af0e1e93df44",
+   "8c30e3e6ea84dea8",
+   "9d6289c1a81b0ee3",
+   "bff8797d9425edc0"
+  ],
+  "24": [
+   "0de309433acf4c7a",
+   "0ee0a590587f56c2",
+   "0f8075b982031c7a",
+   "1454d35025295d08",
+   "1e356ed30c8d7bcd",
+   "23da10c7831c7a20",
+   "4675b8f8d4420c6e",
+   "47c35ba742710544",
+   "4847941639cf2b5a",
+   "49227f1342b0bc2e",
+   "4dd5e209f627b2e3",
+   "515fa3decdd52b5b",
+   "546765a0bf50deb6",
+   "5f914450d0b7737a",
+   "63a94d5f4bf89550",
+   "668614fdb5ccb060",
+   "66b1ace915b63c55",
+   "68522fe3fe48dac3",
+   "6bd663f49af736f3",
+   "6e3e8b26099ebbaa",
+   "75255813245f2ca7",
+   "9d6f69649b8eb982",
+   "b7fd1f334a1c2125",
+   "b8cff7100cc8add5",
+   "b9ab876c12a62f93",
+   "bc7206ec7246bd3c",
+   "cd52be02ef4bab30",
+   "d9eaea415464056d",
+   "db0c5e97387c9009",
+   "e1d38a99560bcf84",
+   "e6e6fca24b8b1854",
+   "fe5bd4697766fa1c",
+   "ff659bf6753f3e31"
+  ],
+  "32": [
+   "3d5a4835d6e754ae",
+   "7d1a2a2ecae3d12e"
+  ],
+  "48": [
+   "112c2afc08f3b1e6",
+   "17519392454fe8a4",
+   "254b081a42146d5d",
+   "2d161a3fd3fcacec",
+   "2d37f31be5f6a791",
+   "6456008f339ec929",
+   "891d9854c282d419",
+   "cadf5539f131cd86",
+   "d246c5cc9095ca69",
+   "d9cf8a5c8a4508d7",
+   "f12479dfe474b427",
+   "fbda7a306f23e879"
+  ]
+ }
+}

@@ -1,0 +1,45 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b1",
+ "round": 8,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "arcade-racing-cabinet",
+   "pixelSha256": "667a43981eae1c090730c59137ed15268066638a3793dc5058f6e7daad3a12b3",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "It is drawn as a flat front view. The cabinet roof has no lit top plane, and the seat is a red handbag-like blob stuck on the lower front panel instead of a seat seen from above. At 1x the steering wheel and the seat are an unreadable red smear, and the yellow coin slot on the control deck is a stray sticker-like highlight."
+  },
+  {
+   "id": "dept-accessory-wall",
+   "pixelSha256": "3908ea2fa062ae46c6003d35c4ad88b61033726bd6d84cfbf9e11175740a9c23",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    5
+   ],
+   "reasons": "It is a flat front view of a backboard with belts and bags. The top is only a 1–2 px plank with no lit top surface, and the shelves show no depth. In the room it straddles the wall/floor seam with no believable ground line or wall mount, so it reads as a floating panel rather than a fixture standing on the floor or hanging on the wall."
+  }
+ ]
+}

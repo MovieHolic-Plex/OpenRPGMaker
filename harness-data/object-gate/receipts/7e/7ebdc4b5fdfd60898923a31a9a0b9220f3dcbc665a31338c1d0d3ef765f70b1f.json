@@ -1,0 +1,337 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7ebdc4b5fdfd60898923a31a9a0b9220f3dcbc665a31338c1d0d3ef765f70b1f",
+ "width": 48,
+ "height": 32,
+ "kind": "organic",
+ "name": "sunflower patch",
+ "label": "jp-inaka-r5:inaka-sunflower-patch",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 18,
+  "tileColorsP90": 19,
+  "darkV5": 47,
+  "nearBlackEdge": 0.03,
+  "opaqueTiles": 6
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "soil mound / planting bed",
+      "rows": "22-28",
+      "evidence": "d",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-30"
+     },
+     {
+      "part": "sunflower heads (face-on discs)",
+      "rows": "0-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "leaves and stems",
+      "rows": "8-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The soil bed at the bottom has a light tan top band (rows 23-25, #a68e73) with speckled soil. Its width profile widens from 36 at row 22 to 47 at rows 26-27 and narrows again to 33 at row 31, so it reads as an oval bed seen from above. Rows 28-31 are darker brown and form the front face. The sunflower heads are face-on discs, which is natural for flowers, and sit on stems and leaves above the bed. The overall read is a plant patch in a bed seen at 3/4 view, though the front face is only about 4 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small sunflower bed with 25 distinct colours in total and a median of 18 per tile. The references have 427 and 567 colours and a median of about 108 per tile, so the candidate is far below them on both measures. Its outlines are tinted dark brown and green (0% neutral), which fits the Beodeul approach, and there are no 5x5 flat fills. The sunflower petals show about 3-4 yellow/orange steps, and the leaves and soil show 2-3 steps each. These are shallower than the 5-6 steps per material in the references. Texture is limited to a few petal and seed dots, with no leaf clumps in several greens and little soil grain. Next to the references it looks thinner and flatter, so it is not up to the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15870
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "soil mound base",
+      "rows": "22-27",
+      "evidence": "b",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "28"
+     },
+     {
+      "part": "sunflower heads and leaves",
+      "rows": "0-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The soil bed at the bottom has an ellipse silhouette. Its width goes 36 at rows 21-22, widens to 47 at rows 26-27, then narrows to 33 at row 31. Its lighter top rows 22-27 are a visible soil surface, and rows 28-31 form a dark front face. The sunflowers are drawn face-on as vertical discs with leaves, which is natural for plants and needs no horizontal top. The mound gives the object a ground plane, so it reads as three-quarter, though weakly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small sunflower patch with 25 distinct colours and a median of 18 colours per tile. The references have 427 and 567 colours and a median of about 108 per tile, so the candidate is far below them. The flat-fill coverage is 0% and the dark edge pixels are 0% neutral, so the outlines carry a tint (dark brown and green) and it is not a sticker look. Even so, each material ramp is shallow. The petals are mostly yellow and orange with a dark centre, giving about 3 steps. The leaves and stems are 2-3 greens, and the soil bed is about 3 browns. The references use 5-6 steps with clumped, per-leaf highlights. The patch is a small piece, so some sparseness is acceptable. Even so, it looks flatter and thinner than the references next to them: the petals are repeated near-identical blobs with little grain, and the soil and leaves have little variation. The colour counts are too far below the reference to pass.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 23944
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "soil mound base",
+      "rows": "22-25",
+      "evidence": "d",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26-27"
+     },
+     {
+      "part": "sunflower heads (back row)",
+      "rows": "2-10",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sunflower heads (front row)",
+      "rows": "9-19",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The plants stand in an oval soil mound. Its lighter top band (rows 23-25) ends in a front-edge line, and the darker brown front face below (rows 26-31) is about 6 rows, with a widening-then-narrowing silhouette (width 36 to 47 to 33). The sunflower heads are round discs with dark centres that read as tilted toward the camera. The leaves and stems are organic, with no flat front-elevation panel. Overall it reads as a 3/4-view heap of soil with plants on top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small sunflower bed with 25 distinct colours and a median of 18 per 16x16 tile. The references have 427-567 colours and a median of about 108 per tile, so it is far below both. Its outlines are tinted (0% neutral edge pixels), and the dark brown soil edge and dark green leaves read as material tones. The flowers have about 3 steps (dark brown centre, orange-yellow petals, light yellow highlight). The leaves and stems are only 2-3 greens, much shallower than the 5-6 step leaf clumps in the references. The soil mound is a small area with little grain. There are no flat fills, but the shading is shallow and sparse, and the patch looks thinner and more sticker-like beside the richly clumped, multi-green canopies. The density gap is too large to pass.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19535
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "soil mound / planting bed",
+      "rows": "22-27",
+      "evidence": "b",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "28"
+     },
+     {
+      "part": "sunflower heads and leaves",
+      "rows": "0-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bottom soil bed is an oval whose width goes 36, 39, 43, 45, 47 and then narrows 45, 43, 39, 33 by row 31. Its lighter tan soil surface at rows 23-25 sits above darker brown front rows 26-31, so it reads as a heap seen from above with a front face. The sunflower heads (rows 0-19) are drawn face-on and the stems and leaves (rows 17-22) are vertical front elements. This is an organic cluster on a soil mound, and the soil gives it a 3/4 top and front structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate has only 25 distinct colours against 427 and 567 for the references, and a median of 18 colours per tile against about 108. Each flower has roughly 3 steps (yellow, orange-gold, dark brown centre), and the leaves and stems have about 2-3 greens. The references have 5-6 steps per material with clumped leaf texture. The outlines are tinted dark brown/green (0% neutral), which is correct, and there are no 5x5 flat fills. But the patch is small, with simple round flower heads and few leaf clumps. Next to the references it looks thinner and flatter, with much less shading depth and texture, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19827
+  }
+ ],
+ "decidedAt": "2026-10-20T06:19:08.454Z",
+ "cells": {
+  "16": [
+   "3252358f0fe85774",
+   "5916a102b7a30f33",
+   "886d61d7bf0fb8da",
+   "88bc80eab49ad616",
+   "939a2cdd03d79ba3",
+   "d434f27786c1345d"
+  ],
+  "24": [
+   "071047e75ebe1add",
+   "13e17ce5fd4a5895",
+   "186a89b02f0d77a7",
+   "36e99cf5cede8f79",
+   "5465a1145de0d289",
+   "ae1b868104815c65",
+   "de0ade77f92ece10",
+   "f9a858043cf49311"
+  ],
+  "32": [
+   "04959de43db51d3b",
+   "210014b415b76ef8",
+   "5fc3789b568e951f",
+   "cd4053dc115f29ed",
+   "da831ab91753fbfb",
+   "ebdc617c0c92a00f"
+  ],
+  "48": [
+   "6f77aea0fa5189f1",
+   "fda47571fb1fee51"
+  ]
+ }
+}

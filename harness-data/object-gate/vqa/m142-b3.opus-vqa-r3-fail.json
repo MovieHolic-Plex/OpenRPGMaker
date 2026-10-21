@@ -1,0 +1,94 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b3",
+ "round": 3,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png"
+ ],
+ "items": [
+  {
+   "id": "hospital-med-cabinet",
+   "pixelSha256": "e90438514477dbf808a16154b9b702b4ea891318a0d22605e654dde53a6ea989",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The top is only a thin 1–2 row light band, so the cabinet reads as a flat front elevation with a sign stuck on top. The shelf contents are tiny noisy specks of red, white and teal that look like scattered dots at 1x, not bottles."
+  },
+  {
+   "id": "hospital-nurse-station",
+   "pixelSha256": "420b37cea9ca61be1a6b646219d0457ddb036333e999d64bfc6272d00f52e6d3",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The counter top shows as a lit white plane of several rows with a short teal-striped front and a red cross, and the monitors and binders sit on it. Outline, palette and scale match mci-desk-pc and mci-counter-register, and it stands cleanly on the floor."
+  },
+  {
+   "id": "hotel-capsule-pods",
+   "pixelSha256": "13f4553dc54b20da020fb8455145d474e40eedd79deacf20c186cf2d109838a7",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "The 3x2 grid of pod openings is a pure front elevation, and the top strip is just a flat panel with no depth. Each pod has a bright yellow-orange sticker blob in its top-right corner, and at 1x the whole thing reads as a vending machine or locker grid, not capsule beds."
+  },
+  {
+   "id": "ind-lathe",
+   "pixelSha256": "9e6505e8c56f9c9686d06cfeaaf9619db4bf77447a0e9e87f889d673edf33c5f",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The headstock and chuck are a muddy grey blob with no readable spindle, bed or tailstock. The orange panel and green screen on the right look pasted on, and at 1x it reads as a generic machine or counter, not a lathe."
+  },
+  {
+   "id": "izakaya-beer-server",
+   "pixelSha256": "0de0afc15ca3b7aa89b7f4f6c72dd4e0ace9b76669145e4326e3566859c78e58",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2,
+    5
+   ],
+   "reasons": "This countertop tap is drawn as a narrow front-view box with almost no top plane on the base. Standing alone on the floor, it reads as a toy-sized object next to the originals, with the tall tap tower and red knob sticking up above a sliver of a body."
+  },
+  {
+   "id": "jp-torii",
+   "pixelSha256": "21674b341903d8d65d5653e514c87cf9f88b683d1dfa0e0d451244673b8d9095",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    2
+   ],
+   "reasons": "The kasagi and nuki beams are flat horizontal bands with no visible top plane, and the pillars are straight front-on cylinders, so it is a front elevation, not 3/4. The black roof beam uses a smooth dark gradient that is off the chipset palette, and the gate is too small for a gate in this room."
+  },
+  {
+   "id": "jumbo-hosp-mri",
+   "pixelSha256": "693a65df7c58ea84a183247ea284ab1df54acdba382002fa375e6a9b7a4678d9",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The bore and table use a smooth multi-step blue gradient with a glowing cyan ring, much denser shading than the originals' 2–3 step flat shading. The grey inner outlines are inconsistent with the dark navy outline weight elsewhere, and the table tongue sticks out past the base footprint onto the floor."
+  }
+ ]
+}

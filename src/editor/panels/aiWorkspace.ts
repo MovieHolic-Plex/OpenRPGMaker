@@ -23,8 +23,8 @@ export function createAiWorkspace(options: {
   const { panel, deck, body, commandBar, outcome, team } = options;
   panel.classList.add("is-workspace");
   const tabs = el("div", { class: "ai-workspace-tabs", attrs: { role: "tablist", "aria-label": "AI 작업 보기" }, dataset: { testid: "ai-workspace-tabs" } });
-  const chatTab = el("button", { text: "대화", attrs: { type: "button", role: "tab", id: "ai-workspace-chat-tab", "aria-controls": "ai-workspace-chat" }, dataset: { testid: "ai-workspace-chat-tab" } }) as HTMLButtonElement;
-  const teamTab = el("button", { text: "조수", attrs: { type: "button", role: "tab", id: "ai-workspace-team-tab", "aria-controls": "ai-workspace-team" }, dataset: { testid: "ai-workspace-team-tab" } }) as HTMLButtonElement;
+  const chatTab = el("button", { text: "대화", attrs: { type: "button", title: "AI 에게 묻고 지시하는 대화창", role: "tab", id: "ai-workspace-chat-tab", "aria-controls": "ai-workspace-chat" }, dataset: { testid: "ai-workspace-chat-tab" } }) as HTMLButtonElement;
+  const teamTab = el("button", { text: "조수", attrs: { type: "button", title: "AI 팀원에게 일을 맡기고 진행을 보는 곳", role: "tab", id: "ai-workspace-team-tab", "aria-controls": "ai-workspace-team" }, dataset: { testid: "ai-workspace-team-tab" } }) as HTMLButtonElement;
   body.id = "ai-workspace-chat"; body.setAttribute("role", "tabpanel"); body.setAttribute("aria-labelledby", chatTab.id);
   team.root.id = "ai-workspace-team"; team.root.setAttribute("role", "tabpanel"); team.root.setAttribute("aria-labelledby", teamTab.id);
   team.setEmbedded(true);

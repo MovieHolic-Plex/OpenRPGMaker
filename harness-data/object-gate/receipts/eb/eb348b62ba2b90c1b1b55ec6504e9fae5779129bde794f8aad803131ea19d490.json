@@ -1,0 +1,304 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eb348b62ba2b90c1b1b55ec6504e9fae5779129bde794f8aad803131ea19d490",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rice paddy ground tile (inaka-paddy-water-bank)",
+ "label": "jp_inaka_pack/gnd/inaka-paddy-water-bank",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (3/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 64,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy water and bank ground tile",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is a full 16x16 opaque terrain fill. Rows 0-1 show a brown/green bank strip, row 2 is a dark edge line, and rows 3-15 are teal water with lighter green and yellow-green speckles. There is no standing body, no front face and no separate top surface, so it reads as a flat ground tile. For a terrain tile this is the expected form."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate has only 12 distinct colours in total, against 80 for the grass reference. It is a small patch with an earthen bank strip on top and teal-green water below. Each material ramp has only about 3 steps (bank brown, water mid, water dark with light flecks), where Beodeul uses 5-6. Its edge pixels are tinted (0% neutral), so the outline is a dark material tone and not a black sticker line. Flat-fill coverage is 0%, with some speckle and ripple dots. Its median of 12 colours per tile is above the paving reference (7) but well under the grass reference (26). The water has no layered reflections or highlight clumps, and the bank has no per-clod shading. Next to the grass reference the candidate reads as thinner and flatter, with a shallow palette. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10780
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "earthen bank strip at top",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "2-2"
+     },
+     {
+      "part": "paddy water with green plant specks",
+      "rows": "3-15",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile fills the full 16x16 square (width 16 on every row). Rows 0-1 are a brown bank strip and row 2 is a dark shadow line. Rows 3-15 are a flat teal water field with lighter ripple pixels and green and yellow plant flecks. This is a seamless ground tile seen from above, not a standing object. It has no vertical front face of 3 or more rows, and no lid, ellipse or roof. The water counts as contents or surface (d) over a flat area."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 12 distinct colours in total, against 80 for the grass reference. Its median is 12 colours per tile against 26 for the grass. Its ramps are shallow: about 3 steps in the water/green body and a brownish bank strip along the top. The dark edge pixels are tinted (0% neutral), so the outline is a dark material tone, which is fine. There are no 5x5 flat fills, because a dithered texture breaks up the surface. But the texture is a small repeated speckle with few tones, nowhere near the grass reference's multi-green tufts and clumps. A single small bank and water motif has too little variety to carry a 4x3 ground patch. Next to the grass reference it reads as thinner and flatter, and it does not reach the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13774
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dirt bank strip at top",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "paddy water and rice sprouts field",
+      "rows": "3-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a full-bleed 16x16 terrain tile, not a standing object. Rows 0-1 are a brown earth bank, and row 2 is a dark edge. Rows 3-15 are a teal water surface with lighter green and yellow sprout pixels. The tile has no silhouette, no front-edge line with eave shadow, no ellipse and no vertical front face, so it reads as a flat ground surface. That is the expected form for a terrain tile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 12 distinct colours across the whole patch, against 80 for the grass reference. Its per-tile median of 12 is below the grass reference's 26 and only above the paving reference's 7, and paving is a sparse, simple surface. On the board it renders as a small strip, well under the 4x3 tile size the reference ground patches fill. It shows a brownish bank edge over teal water with a few speckles. Each material has only about 3 lightness steps, where Beodeul grass uses 5 or more with varied tufts and clumps. Edge pixels carry a tint (0% neutral), so the outline is not a black sticker line, and there are no 5x5 flat fills. Even so, the patch is much shallower than the grass reference in ramp depth and colour variety. It does not read as a full rich paddy ground and would look thin next to the reference, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 11572
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "paddy water/ground tile (brown bank strip at top, rows 0-2, then water-and-grass surface rows 3-15)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "This is a full 16x16 terrain tile (width 16 on every row, rows 0-15) and not a standing object. Rows 0-1 are a brown earth bank and row 2 is a dark teal/brown shadow line. Rows 3-15 are a textured teal water field with green and yellow-green plant speckles. There is no standing volume, no front-edge line with eave shadow, no ellipse, and no south face distinct from a top. As a terrain tile it matches the stated kind, and the object-view rules for top surface and front face do not meaningfully apply."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 5,
+    "evidence": "The candidate is a small single-tile-sized swatch, not the 4x3 patch shown for the references, so I judged it mostly by eye and by the measured facts. It has 12 distinct colours in total against 80 for the grass reference, and a median of 12 per tile against 26 for grass. Only the paving reference, at 7 colours, is lower. The paving is a simple cobble pattern with a neutral outline, so it is a weak yardstick for a paddy. The water area has some dithered teal and green speckle and a brown bank edge, with about 3-4 lightness steps against the grass's 5-6. Dark edge pixels are 0% neutral, so the outline is tinted (dark brown or green) and not a black sticker line. Flat-fill coverage is 0%, so there are no big flat areas. Even so, the colour variety, the shading depth and the ground-patch size fall clearly short of the grass reference. The piece is noticeably thinner and simpler than the Beodeul standard, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 21706
+  }
+ ],
+ "decidedAt": "2026-10-20T04:26:05.781Z",
+ "cells": {
+  "16": [
+   "728bd86dc20c504a"
+  ],
+  "24": [
+   "03d5a0dbfee8ca5f",
+   "5855e37a1c1eac79",
+   "6ba9571eacf08473",
+   "846a89277e65b505",
+   "8c2d855154c45091",
+   "9bfc6a814fa22909"
+  ],
+  "32": [
+   "10103ad168cd7a1b",
+   "2be588e2261ca6fb",
+   "7e140de3f7eec098",
+   "99281c5ea034b76c",
+   "ba3f9b248bbe5960",
+   "d3f37c5a8def73dc"
+  ],
+  "48": [
+   "446e7148c4cb239b",
+   "4bc362999511d67f",
+   "5dd3bd74808c915f",
+   "e64ff79ee8435998",
+   "ecd5da227cfa4a20",
+   "f25ddf152a808789"
+  ]
+ }
+}

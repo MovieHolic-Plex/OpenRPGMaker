@@ -1,0 +1,310 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "31d3538fd3ec62a75f6275d4aa1bc342805e1299e18525f6f3137c59e1d909dc",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "golden rice paddy",
+ "label": "jp-inaka-r5:at-paddy-golden",
+ "profileHash": "ee216f0de5822996",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 9,
+  "darkV5": 105,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rice paddy terrain tile (repeating horizontal crop rows, full 48x48 fill)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image is a full-bleed 48x48 opaque tile (width 48 on every row) made of repeating horizontal bands of pale straw, yellow grain and brown soil, which is a seamless terrain pattern rather than a standing object. It has no silhouette, no cap or ellipse, no eave line and no distinct front face, so the top-surface and front-face rules for standing objects do not apply. It matches the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has only 10 distinct colours in total, against 80 for the grass reference. Its median is 7 colours per tile, against 26 for grass, so it is far below the richest reference and only level with the simple paving. It reads as horizontal rows of golden stalks, with about 3 lightness steps (pale yellow, gold, brown-orange) and dark brown row separators. There is no outline, and dark pixels are tinted (0% neutral). Flat-fill coverage is 0%, but the texture is a repetitive stripe pattern with only a few sparse speckles. There are no per-clump highlights, soil grain between rows, or varied ear shapes, so the surface looks shallow and banded next to the grass reference, which has several greens, tufts and clumps. Overall it is clearly thinner than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15660
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "repeating horizontal bands of rice stalks and soil across the full 48x48 tile",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The silhouette is a full 48x48 rectangle (width 48 on every row), so this is a tiling terrain texture rather than a standing object. It repeats horizontal bands of pale tan, olive and yellow rice with dark brown soil lines at about rows 6-7, 14-15, 22, 31 and 38. No ellipse, roof or single front-edge line marks a standing body with a top and front face. It reads as a seamless ground pattern, which fits the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a rice paddy drawn as repeating horizontal rows of golden stalks and darker brown furrows, with only 10 distinct colours in total. Its median is 7 colours per tile, against 26 for the grass reference, and the grass has 80 distinct colours overall. The paving reference also scores 7 per tile, but paving is a sparse, regular surface by nature, so it is the weaker comparison. The rows hold about 3 lightness steps (pale gold, mid gold, brown) instead of the 5-6 Beodeul uses per material, so the shading ramp is shallow. There are no clump shapes or per-stalk highlights, and the uniform stripes read as a repeating pattern rather than hand-shaded grain. Flat-fill coverage is 0%, so there are no large flat areas, and the small dots and speckles give some texture. The dark edge pixels are not neutral (0%), so there is no near-black sticker outline. Even so, the shading depth and tile density are clearly below the grass reference, so the piece is too shallow for the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13618
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "repeating paddy rows tile (light stalk band, yellow grain, olive shade, brown soil furrow)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The silhouette is a full 48x48 opaque square (width 48 on every row), so it is a seamless terrain tile and not a standing object. The interior is a repeating horizontal pattern of about 8-row bands: light tan (#dad3a2), yellow grain (#f0cd45), olive (#a09862, #7f784b) and a dark brown furrow (#694d38), repeating at rows 0-7, 8-15, 16-23, 24-31, 32-39 and 40-47. It has no front-edge line, no eave shadow, no ellipse and no object outline. There is no standing body with a top and front face, so the 3/4-object rules do not apply. It reads as a flat, tileable ground texture, which fits the terrain kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is regular horizontal rows of golden stalks, with only 10 distinct colours in total against 80 for the grass reference. Its median is 7 colours per tile against 26 for grass, so it is well below the richest reference and only equal to the paving, which is itself a low-colour piece. Each row is a flat band of yellow with a thin dark line and a lighter stripe, so it has about 3 lightness steps against 5-6 for the references. Flat-fill coverage is 0% thanks to the dotted grain, but the dots repeat in an identical mechanical pattern with no clumps, tufts, per-stalk highlights or soil variation between rows. The dark edge pixels are tinted (0% neutral), but there is no real outline, only dark brown row separators. Overall it looks like a thin, striped, repeated texture rather than a hand-shaded paddy with the depth of the grass reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14444
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "repeating rice-paddy terrain bands (full 48x48 tile)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The image is a full-bleed 48x48 tile (every row is 48 px wide) of horizontally repeating bands: pale straw, yellow grain, olive stalks, then a dark brown soil row (about rows 5-7, 13-15, 21-23, 29-31, 37-39), repeating every 8 rows. It has no standing silhouette, no ellipse, and no single top surface with a front face. This is a seamless terrain pattern, not a standing object. The 3/4 top/front rules do not apply, so it is classed as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a striped golden paddy with only 10 distinct colours in total, against 80 for the grass reference. Its median is 7 colours per tile, which matches the paving reference but sits far below the grass reference at 26. The rows are horizontal bands of yellow with dark brown furrow lines, and each material has only about 3 lightness steps (light yellow, mid gold, brown shadow). The grass reference has 5-6 greens plus tufts and clumps, so this is shallower. The 0% flat-fill coverage comes from regular row repetition and sparse speckle dots, not from varied grain. There are no clumps, no grain-head variation and no soil texture between the rows. The repeating stripes look mechanical next to the organic grass. No dark outline is used, and the dark furrow lines are tinted brown, so tint is not an issue. Overall it is too shallow and too uniform for the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18158
+  }
+ ],
+ "decidedAt": "2026-10-20T06:14:17.629Z",
+ "cells": {
+  "16": [
+   "123fe18df5f86c76",
+   "39094ceecbe00880",
+   "7139688944446d25",
+   "71a6e602ae490018",
+   "8cac70d725278610",
+   "aab3ead9f18e7e9b"
+  ],
+  "24": [
+   "304fba430af81ad5",
+   "459100dfd10bc9ba",
+   "63d1177beb61345d",
+   "c10ce11b2ee3ac9c"
+  ],
+  "32": [
+   "0ba3e5b497f1c71e",
+   "13287351d66f2ced",
+   "15e5a5d1c3127236",
+   "227290de820145fb",
+   "3f81d95562a37ef3",
+   "43c57f5a16bd0e15",
+   "4ee144ed026fb769",
+   "5b6d85e1842a1eee",
+   "6199f50df16f5193",
+   "6f25a35b0068e5df",
+   "6f570adbba3dd495",
+   "76c440b767dbedf6",
+   "78cb6dce8c051513",
+   "7ae82c3a872d33d3",
+   "8bdbadd3b8c4490a",
+   "b3f10c9954ea37c4",
+   "bf7e3e5492add14a",
+   "ca65afff9e3a2ad7",
+   "cb515022f0675a62",
+   "dc1fefd95cd8eae6",
+   "ec98883ff2c6ca8a",
+   "f629648a476b7d59",
+   "fc3e5ab545d15628",
+   "fdc0c706d73f452c"
+  ],
+  "48": [
+   "5e4fe58bec455f90"
+  ]
+ }
+}

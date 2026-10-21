@@ -1,0 +1,360 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "24cb61f8e0d8a91fe7a3434a76e1ba0821e2fa916efc1fe1c8c1b6e34db17117",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "arcade rhythm",
+ "label": "modern_city_interior/arcade-rhythm",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 17,
+  "darkV5": 72,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "marquee header panel",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "screen bezel and side speaker panels (vertical upper face)",
+      "rows": "6-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "control panel with buttons (projecting, seen from above)",
+      "rows": "17-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-24"
+     },
+     {
+      "part": "screen contents and buttons",
+      "rows": "9-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The arcade cabinet is drawn mostly face-on. The marquee (rows 1-5) and screen bezel (rows 6-16) are vertical faces with no edge line. The control panel is a horizontal surface and the silhouette widens from 26 to 30 at row 17 to show it projecting. Its rows 17-21 hold the colored buttons. They end in a darker edge line at row 22 (L=82) and then eave shadow at rows 23-24 (L=57). Below that is a front face of about 9 rows (23-31) with a coin door and panels. The top surface is 5 rows, but the upper marquee/screen part has no top of its own."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is an arcade cabinet, a standing prop, so it matches the reference kind. It measures 16 visible tones per full tile, close to the stall (17) and the well (20) and above the hedge (9). Near-flat coverage is 0%, so there are no 5x5 flat fills. Dark edge pixels are 0% neutral, so the outline is a tinted dark navy next to the blue body rather than a black sticker line. The body shows about 4 blue steps (highlight, mid, shadow, deep). The marquee, screen and coloured buttons add small clusters of detail, though the body panels are a little smoother than the reference's grain. It is slightly shallower than the 5-6 steps of the best references, but a careful artist would accept it beside the stall and well.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19002
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "control panel deck with buttons",
+      "rows": "17-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-24"
+     },
+     {
+      "part": "screen and marquee area",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The cabinet has a lighter band at rows 1-5 (L 128-148). It ends in a lighter front-edge line at row 5, followed by a dark eave-shadow row at row 6 (L about 61). Below that, the front face runs from row 6 to row 31 and holds the screen, the control deck and the lower panels. The control deck at rows 17-21 is a second lit horizontal surface, and the buttons sit on it. Silhouette width changes from 26 to 30 at row 17, so the deck sticks out from the body. The object is a tall cabinet that reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is an arcade cabinet with a dark blue body, a screen, a button panel and a coin area. It is the same kind (a standing furniture prop) as the references. Measured facts: 16 visible tones per tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% near-neutral, so the outline is tinted dark blue rather than black, matching the dark-material-tone approach. By eye, the cabinet has several blue steps (highlight, light, mid, dark, deep) with a bezel, a screen with coloured pixels and small coloured buttons, which gives varied detail. It is somewhat small and the body shading is a little blocky compared with the roofed well and the stall, but it is not thinner or more sticker-like than the references. A careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13929
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "cabinet top / marquee band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "control deck with buttons",
+      "rows": "17-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-24"
+     },
+     {
+      "part": "screen and monitor contents",
+      "rows": "9-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The object is an arcade cabinet, so it only loosely fits tall furniture against a wall. The main body has a 5-row light top band at rows 1-5 (L=128-148). Row 5 is lighter and reads as the front-edge line, and dark rows 6-8 follow it. Below that is a front face from row 6 to row 31, about 26 rows, with the screen recess and speaker panels. The control deck at rows 17-21 is a second horizontal surface with buttons. Row 21 is its front edge and rows 22-24 are shadow beneath it. The silhouette is 26-30 px wide and has no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is an arcade cabinet, a standing prop like the references. It has 16 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge, so it sits in the range of the richer references. Near-flat coverage is 0%, and 0% of its dark edge pixels are neutral. The outline is therefore a dark blue lean of the neighbouring body colour, not a black sticker line, which matches Beodeul's tinted outlines. By eye, the body has about 5 blue steps (highlight, light, mid, dark, deep). The marquee, screen, control panel and buttons add small varied shapes and colour accents. The side panels and the base have some grain and shading variation, so large areas are not flat fills. Texture is moderate rather than rich: the cabinet body is a bit smoother than the stall's tile and grain detail. This is a minor gap, and a careful artist would accept the piece next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20473
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "cabinet top / marquee band",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "control panel deck with buttons",
+      "rows": "17-21",
+      "evidence": "a",
+      "front_edge_line_row": 21,
+      "eave_shadow_rows": "22-23"
+     },
+     {
+      "part": "buttons on deck",
+      "rows": "18-21",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band, rows 1-5, is lighter (L128-148) than the dark screen face below. It ends in a lighter front-edge row at row 5 and is followed by darker eave rows 6-7, so it reads as a top surface. The wider lower section has a light deck at rows 17-21 holding the buttons. Row 21 is its brightest edge row, and rows 22-23 are darker shadow beneath it. Below that, the cabinet front face runs through row 31 with panels and coin slots. The silhouette widens from 26 to 30 columns at row 17 as the lower body steps out. Both the top and the deck show a horizontal surface above a vertical face, so this is a three-quarter view with a 5-row top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is an arcade cabinet built from a blue ramp of about 5 steps: a lit top edge, body, side shade and a dark base. The marquee, screen, control panel and coloured buttons add small varied details. The outline is a dark navy that leans blue, not neutral black, and the measured near-neutral share of dark edge pixels is 0%, which agrees with that. Near-flat coverage is 0%, so there are no large flat fills. It shows 16 visible tones per tile, in line with the stall (17) and the well (20) and above the hedge (9). The panel and screen carry the texture, though the body sides are somewhat smooth. Taken as a whole, it would sit next to the stall and well references without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16951
+  }
+ ],
+ "decidedAt": "2026-10-20T22:55:59.234Z",
+ "cells": {
+  "16": [
+   "6f0010c1dda3f555",
+   "7554fe15ac00fe1c",
+   "c39c9db97fa1ef0e",
+   "e09342ce51ea15d6"
+  ],
+  "24": [
+   "09480fe6dca70365",
+   "138035de24e3cf8e",
+   "17d4290f53f8735e",
+   "1880450ae8377f08",
+   "203a1fd138f880e1",
+   "3084af7b5f11910e",
+   "38115913488f62f0",
+   "405d1ce6e8ecd5d3",
+   "4f3110f5250a5332",
+   "5aefc8b987c04771",
+   "644191f9b816dc58",
+   "71e5ef6bf62565a8",
+   "7ffe5cac6c16ffe3",
+   "87608a071d85b507",
+   "8a040b25afa4ede0",
+   "8a6a8113128c3c58",
+   "b4aff60397926010",
+   "c70ccdc6ef94f413",
+   "caddfe6bd290da6c",
+   "d149a077eb15cf87",
+   "dd85aa323279d984",
+   "de57b16504c9a787",
+   "ec2ad9bb82fd9e9a",
+   "f7a2435b84c3fbe2"
+  ],
+  "32": [
+   "7781fc8b9b3484fb"
+  ],
+  "48": [
+   "07260266b946347c",
+   "5645c394812c7fe0",
+   "818473b5bb0f56ae",
+   "9965b2cf4a2966fe",
+   "de0af9ef8c5c4c1b",
+   "f724a56bb0f6d900"
+  ]
+ }
+}

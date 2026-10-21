@@ -1,0 +1,302 @@
+[
+ {
+  "label": "jp_inaka_pack/jp-inaka-kominka-thatched",
+  "kind": "structure",
+  "sha": "59f01ed1f7960b1cbc2f4b862f47412e030c68ee94c922c51c40ceb8d03ddc75",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate2/findings-A.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-kawara-farmhouse",
+  "kind": "structure",
+  "sha": "4c815f99f0944db5e2d2e8172a342f8773d361cf31af6cb8a507c61dced471ce",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate3/findings-A.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-kura-storehouse",
+  "kind": "structure",
+  "sha": "0456a5a899061f01bef9cb3f04959a9c022286cb433253b8bfbb378e717d3494",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate2/findings-A.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-dagashiya",
+  "kind": "structure",
+  "sha": "d749e1e01237b0003f0dd31a31b12ba2d9a401fd74b333ae586c5022d46b56d5",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate2/findings-A.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-wooden-station",
+  "kind": "structure",
+  "sha": "f520d95fe75804d3b1806f762e504370ae19c23fb1f2391530d6e466f7c73cd4",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate5/findings-A.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-bus-stop-shelter",
+  "kind": "structure",
+  "sha": "85b6ac53f97b0067cdec6441c5a8e13406d95a0f0b94146acfa6526da1066ac4",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate2/findings-A.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-waterwheel-mill",
+  "kind": "structure",
+  "sha": "157fa081024ec168c17fc4ae835c3654528eeda8cd472269797c59cbacd7599a",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate2/findings-A.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-vinyl-greenhouse",
+  "kind": "structure",
+  "sha": "cd69ae1365f4a16b1f326b85b7dc93c8911a7f65c066a03c08a85837e959173c",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-B.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-agri-tin-shed",
+  "kind": "structure",
+  "sha": "4c08384bb3dbe5d27c5c6dc7ffbe112fad2f8d487e6b7d4f4d0ccc45e153bc95",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate2/findings-A.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-hillside-torii-stairs",
+  "kind": "structure",
+  "sha": "e5a013d701aeede75b5732c4fbcce513b9f3111bcf01734f46e6e97501b5c05a",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-B.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-keitora-white",
+  "kind": "other",
+  "sha": "1b1521219b0e8558243893e03ecb070fc92bebdafd4b768acfe1e096a6113dcc",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate2/findings-C.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-red-tractor",
+  "kind": "other",
+  "sha": "2f4da624e2846107af3c9fc6c49b1a646b07999e2c531b7353cab0b2b548d4ad",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate2/findings-C.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-single-car-train",
+  "kind": "other",
+  "sha": "40073abdf05b429853f9e1644ffc8cd98d10eaa58c502fbd826851488d65b196",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-C.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-bicycle-parked",
+  "kind": "other",
+  "sha": "a9c9373a7f6793d5ccf44554c13691633d68b02f7c8368f8bd95cec2d88e6fbc",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate2/findings-C.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-wooden-pole-transformer",
+  "kind": "column",
+  "sha": "f0a96c00c7c42407741eefe54ffe74e164e6fec00e26e5ab62d70d42f0a1a6bd",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate3/findings-C.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-roadside-mirror",
+  "kind": "column",
+  "sha": "0837c47f65ac72defb78bf867096475890f75a2b8099ca93ba9b1f0b3f3dac25",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-C.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-retro-postbox-vending",
+  "kind": "structure",
+  "sha": "1264e9785bba859f9f1d092dfee6f67c9e8df0166e30bdacb1ad089a39fbab1c",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-B.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-unmanned-veg-stand",
+  "kind": "structure",
+  "sha": "ef4c20fa6f8d0df44e3fe11ee99b049e799d529d306fccb54c0db6e55c1a08e4",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-B.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-well-handpump",
+  "kind": "container",
+  "sha": "ae5937fb8a6afc1ecc0f643794db8509dabe70106ce91b1b17570d5e4fd768f7",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate2/findings-C.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-fire-watchtower",
+  "kind": "structure",
+  "sha": "1355959ecda70a1887fdc573f3894c573944ab8c2ea137b1f99825485d7d4846",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-B.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-rice-rack-hasagi",
+  "kind": "structure",
+  "sha": "7a0debed635f7a9dc5570fb6740e87901f927ba729620257dd258b292b1057cb",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate2/findings-C.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-scarecrow-pair",
+  "kind": "other",
+  "sha": "07218de84eadca78100f78cb00f32de341eeeeaaf2aac4ea67ed072e523f349d",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate2/findings-C.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-sunflower-patch",
+  "kind": "organic",
+  "sha": "64b53896f8bdea9548992a73a6d8e1e3b4da29140233daf53302a16db8eab1b3",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-D.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-hydrangea-hedge",
+  "kind": "organic",
+  "sha": "9e0b8397dc4dc673e497bfb9b9c592050c8ecfc37d97176b3745f088c2fd6187",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-D.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-jizo-shrine-row",
+  "kind": "structure",
+  "sha": "b7280d90cf60d3c00bba72b9feebd8b0b93087a1351d9ac3ca35dd283c810125",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-B.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-sluice-gate",
+  "kind": "structure",
+  "sha": "4bc3e61d7f8830c0c0d64d3f088dde7174e9f4ac531722fc0e46a450ada232c2",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-B.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-bamboo-fence-gate",
+  "kind": "structure",
+  "sha": "bb205261308d9cd111803c68d58ef3d3c86d4f90f8c170bc5fb4c7c868245ff9",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate2/findings-C.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-mossy-stone-wall",
+  "kind": "structure",
+  "sha": "59cdac4e2fb770bdfde567a6addefcc0f3f4d8945a3599c1ed9620db7a2784ea",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-D.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-mossy-stone-wall-mid",
+  "kind": "structure",
+  "sha": "ae8bf018a254c44249b2da86d3d2fd6864ce135f1a63ac93e71c80c9e313fa85",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-D.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-red-iron-bridge",
+  "kind": "structure",
+  "sha": "06142ec127ccc83dc6c315e402d57adcf92fc4c873b773854adb4a3db292cff9",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-B.json"
+ },
+ {
+  "label": "jp_inaka_pack/jp-inaka-stepping-stones",
+  "kind": "terrain",
+  "sha": "6eae3e66f09bb0b8d9592f2dabb7478e34dc69bfb9b119c0b4e9eee71f6ecebd",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-D.json"
+ },
+ {
+  "label": "jp_inaka_pack/ground/inaka-paddy-water",
+  "kind": "terrain",
+  "sha": "6f8f792ef94030a1647d78eaa79d41f32d1a0d62c614a17834a8c5093d8aa119",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-E.json"
+ },
+ {
+  "label": "jp_inaka_pack/ground/inaka-paddy-summer",
+  "kind": "terrain",
+  "sha": "530cce8390dacdf37735ccd38667f7af94d830a098ecfc4b1a8add37a61c7256",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-E.json"
+ },
+ {
+  "label": "jp_inaka_pack/ground/inaka-paddy-golden",
+  "kind": "terrain",
+  "sha": "982306ae43f54f731d180f6fd83383fa92d70314a52d80cfe4fe6cf47f052379",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-E.json"
+ },
+ {
+  "label": "jp_inaka_pack/ground/inaka-aze-path",
+  "kind": "terrain",
+  "sha": "a9415e42977fe338d832672b3153c186ed632a8f1d9cdda5da45668d029ed961",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate2/findings-E.json"
+ },
+ {
+  "label": "jp_inaka_pack/ground/inaka-canal-water",
+  "kind": "terrain",
+  "sha": "f03d08d63e99aa739effdb3b9c7edf21a3e78d50d0686a054c756c68631e765a",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate2/findings-E.json"
+ },
+ {
+  "label": "jp_inaka_pack/ground/inaka-canal-wall",
+  "kind": "terrain",
+  "sha": "870b70412a76f30f93e60a67bfc6605c7db77711bb39c308ce9b300e2bc01714",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-E.json"
+ },
+ {
+  "label": "jp_inaka_pack/ground/inaka-gravel-road",
+  "kind": "terrain",
+  "sha": "52c82a3b7bf7f66c805c2bdb27e6d49690d18d45e517cf14ae12378c6813528c",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate2/findings-E.json"
+ },
+ {
+  "label": "jp_inaka_pack/ground/inaka-river-shallow",
+  "kind": "terrain",
+  "sha": "59f918080e048684825203e6b31fbba2baf9545527aa25eb322710a57d3fd231",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-E.json"
+ },
+ {
+  "label": "jp_inaka_pack/ground/inaka-meadow-wildflower",
+  "kind": "terrain",
+  "sha": "e0604dfc83484de1c9ce6eb1c07ae65d05784ad0e9f41e0746243328c9ee0714",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate2/findings-E.json"
+ },
+ {
+  "label": "jp_inaka_pack/ground/inaka-vegetable-furrow",
+  "kind": "terrain",
+  "sha": "310017912b4c0fd82ca03ddb7f677244e6a676775539c50782a5782dd56b7f0e",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-E.json"
+ },
+ {
+  "label": "jp_inaka_pack/ground/inaka-at-grass",
+  "kind": "terrain",
+  "sha": "997e7c1bdab454cf76994ef4018869a23ab661a8ac0549ecc5b3ee617da162dd",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-E.json"
+ },
+ {
+  "label": "jp_inaka_pack/ground/inaka-at-dirt",
+  "kind": "terrain",
+  "sha": "369033f7875b9e268d705e40d94c99afbbc2fbe7fcd34970ecc11be16c7e9e4a",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-E.json"
+ },
+ {
+  "label": "jp_inaka_pack/ground/inaka-at-stream",
+  "kind": "terrain",
+  "sha": "7e8ba5af86442cab08a2390f86e18d989724650e4637297c36dad93410e86339",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-E.json"
+ },
+ {
+  "label": "jp_inaka_pack/ground/inaka-at-paddy-water",
+  "kind": "terrain",
+  "sha": "66f229d51368fa07737b0e5dc20839c5ce77a594c20cb3d3ff9d6ba4b70cda67",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-E.json"
+ },
+ {
+  "label": "jp_inaka_pack/ground/inaka-at-paddy-summer",
+  "kind": "terrain",
+  "sha": "987df250f20ea71e42b1c2dfd7afed7a318aef68e89724217c67c737797e7a1f",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-E.json"
+ },
+ {
+  "label": "jp_inaka_pack/ground/inaka-at-paddy-golden",
+  "kind": "terrain",
+  "sha": "c03cb34fc5ab875329a0af11cd454bf2762eb85083da8f4fd234166c59b2c5a1",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-E.json"
+ },
+ {
+  "label": "jp_regions_pack/jp-rg-bamboo-clump",
+  "kind": "organic",
+  "sha": "9c8958739874a3753dac5f24d58fff47c61019f085819eb021c7299a569cc342",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-D.json"
+ },
+ {
+  "label": "jp_regions_pack/jp-rg-bamboo-grove",
+  "kind": "organic",
+  "sha": "a86b1cdfecfcd6484ea2a29ec569028919be402e17126f241c6a594aca59661d",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-D.json"
+ },
+ {
+  "label": "jp_regions_pack/jp-rg-bamboo-grove-b",
+  "kind": "organic",
+  "sha": "d6dec45328d6f953b697fe9948cc7069e739fd749bb878ee26f8643830ac653f",
+  "receipt": "harness-data/jp-inaka/vqa-r14/gate1/findings-D.json"
+ }
+]

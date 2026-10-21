@@ -1,0 +1,111 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "modern-city-interior-m142-b5",
+ "title": "modern_city 실내 기물 m142-b5 (17) — object-gen 다시 그림, 사용자 위임·Opus 적대 VQA 통과 2026-10-21",
+ "note": "delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/m142-b5.opus-vqa-r*.json",
+ "createdAt": "2026-10-21T01:17:14.115Z",
+ "items": [
+  {
+   "sha": "77c10d44aba4d5cd77a2182c1f3e3783ac2fd80f9eec97c747e6987362203cba",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/mart-meat-case",
+   "source": "/home/main/.cache/ogm142/ship/m142-b5/mart-meat-case.png"
+  },
+  {
+   "sha": "9dde50637f210d5a353c4e9e6332727889ebd844a078890df1e028c7fb172c3b",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/mart-veg-wall",
+   "source": "/home/main/.cache/ogm142/ship/m142-b5/mart-veg-wall.png"
+  },
+  {
+   "sha": "6d1a365cf08433ee855d5c1c994db1358e7bf3df69aa514f8eb69cc20b0aa593",
+   "kind": "low_furniture",
+   "label": "modern_city_interior/mci-hosp-bed",
+   "source": "/home/main/.cache/ogm142/ship/m142-b5/mci-hosp-bed.png"
+  },
+  {
+   "sha": "71ee3e53472ad84df7e5a574a64d7f6ba9bb02d66f8cac52bf2b3bcf04fba5e0",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/mci-magazine",
+   "source": "/home/main/.cache/ogm142/ship/m142-b5/mci-magazine.png"
+  },
+  {
+   "sha": "1f83b9d7785411caad524bd5aabeb44f1b844b582051ce162ddbae916c922046",
+   "kind": "box",
+   "label": "modern_city_interior/mci-mailboxes",
+   "source": "/home/main/.cache/ogm142/ship/m142-b5/mci-mailboxes.png"
+  },
+  {
+   "sha": "f5c721b5addf7b5a97acd104f77acce2ea9370d1b9fdb189a1bccd297edc387e",
+   "kind": "other",
+   "label": "modern_city_interior/mci-med-cart",
+   "source": "/home/main/.cache/ogm142/ship/m142-b5/mci-med-cart.png"
+  },
+  {
+   "sha": "2ace4db780f17e9b666f2b9849c80e51adbada10e957ef9015d948f614a1e0dd",
+   "kind": "structure",
+   "label": "modern_city_interior/mci-shelf-office",
+   "source": "/home/main/.cache/ogm142/ship/m142-b5/mci-shelf-office.png"
+  },
+  {
+   "sha": "dedc8bad9ced6fa427aef0cc56e1128c200527a93fac171ac4d64e121a29cb67",
+   "kind": "container",
+   "label": "modern_city_interior/mci-toilet",
+   "source": "/home/main/.cache/ogm142/ship/m142-b5/mci-toilet.png"
+  },
+  {
+   "sha": "606be3bcfd1ab820483ed9758736e227d79fbd87f29f1b962176d59f1cc6c1f1",
+   "kind": "frame",
+   "label": "modern_city_interior/mci-tv-stand",
+   "source": "/home/main/.cache/ogm142/ship/m142-b5/mci-tv-stand.png"
+  },
+  {
+   "sha": "a27d15c820166a882c4bb0b841509bebf20fdb05c14b37a2e747619d35131e3f",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/music-amp",
+   "source": "/home/main/.cache/ogm142/ship/m142-b5/music-amp.png"
+  },
+  {
+   "sha": "60561b3bf913585baca72efe4f6bb93aa8975eff26757d53aff9906cd5c60837",
+   "kind": "structure",
+   "label": "modern_city_interior/office-water-cooler",
+   "source": "/home/main/.cache/ogm142/ship/m142-b5/office-water-cooler.png"
+  },
+  {
+   "sha": "8f313eb3786f204978c72a7c85fecb5f3b19babe54921e80d70a0e37ffcfb69f",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/park-pay-machine",
+   "source": "/home/main/.cache/ogm142/ship/m142-b5/park-pay-machine.png"
+  },
+  {
+   "sha": "8d96d36af1a699da46603b4a03ca618de3234e93103505d9981c9a38805d5d90",
+   "kind": "column",
+   "label": "modern_city_interior/park-pillar",
+   "source": "/home/main/.cache/ogm142/ship/m142-b5/park-pillar.png"
+  },
+  {
+   "sha": "ae537399ca9238837351d713ce2e8b954cb7b1ef2037a21c65e947e885f2d4a9",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/pub-atm",
+   "source": "/home/main/.cache/ogm142/ship/m142-b5/pub-atm.png"
+  },
+  {
+   "sha": "82c8f2791c53e7c32877ef2101d5936075e12ef6e74dbf976348e0dcc5f3d88e",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/pub-fire-locker",
+   "source": "/home/main/.cache/ogm142/ship/m142-b5/pub-fire-locker.png"
+  },
+  {
+   "sha": "e04b481194cb78c9722d0e41d362916033e57717022a0927c846df1fcf946e82",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/pub-service-window",
+   "source": "/home/main/.cache/ogm142/ship/m142-b5/pub-service-window.png"
+  },
+  {
+   "sha": "a1bf074ee8c8cd49aa71d353855b85ea86c2eddbb33fcf25cf16f14529e085d0",
+   "kind": "tall_furniture",
+   "label": "modern_city_interior/pub-ticket-dispenser",
+   "source": "/home/main/.cache/ogm142/ship/m142-b5/pub-ticket-dispenser.png"
+  }
+ ]
+}

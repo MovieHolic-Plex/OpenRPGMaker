@@ -184,7 +184,7 @@ function isTreeOrBushKit(id: string): boolean {
     || k === "jp-rg-sugi"
     || k === "jp-rg-pine"
     || k === "jp-rg-maple"
-    || k === "jp-rg-bamboo-grove"
+    || k === "jp-rg-bamboo-grove" || k === "jp-rg-bamboo-grove-b" || k === "jp-rg-bamboo-clump"
     || k.startsWith("jp-tsutsuji")
   );
 }
@@ -208,7 +208,7 @@ export const ALLOWED_KITS: Readonly<Record<JpRegionCategory, readonly RegExp[]>>
     /^jp-(monthly-parking|fumikiri-|rail-|pole|pole-wood|gate|gatepost|carport|pots|monohoshi|keijiban|gomi-box|bike-shelter|jungle-gym|tetsubo|hokora-jizo|jizo|torii|tsutsuji)/,
     /^jp-prop-(wall-|gate-|stairs-|tree-|vending-|vend-|bike-|car-|bus|train|catenary-pole|curve-mirror|post-box|stop-sign|lantern-post|stone-lantern|ricksha-cart|bench|lamp-post|planter|pot|bollard|cat-|slide|swing|sandbox|a-frame)/,
     /^jp-lot-(slide|sandbox|clock|fountain|planter|veg)$/,
-    /^jp-rg-(ishigaki|fishing-boat|pine|maple|sugi|bamboo-grove)$/,
+    /^jp-rg-(ishigaki|fishing-boat|pine|maple|sugi|bamboo-grove|bamboo-grove-b|bamboo-clump)$/,
     /^jp-(gnd-|water-|bridge-|foot-shadow)/,
   ],
   campus_civic: [
@@ -219,18 +219,18 @@ export const ALLOWED_KITS: Readonly<Record<JpRegionCategory, readonly RegExp[]>>
     /^jp-(goal-l|goal-r|ball-net|chorei-dai|flagpoles|fujidana|biotope|gakkyuen|souko|ninomiya|kadan|tetsubo|jungle-gym|bike-shelter|keijiban|bus-stop|torii|pole|pole-wood|pots|monohoshi|gomi-box|tsutsuji)/,
     /^jp-lot-(clock|fountain|kiosk|planter|slide|sandbox)$/,
     /^jp-prop-(wall-|gate-|stairs-|tree-|bench|lamp-post|planter|hachiko|bus|car-|bike-|vending-|vend-|chozuya|censer|nakamise-|string-lanterns4|stone-lantern|lantern-post|nobori-|swing|sandbox)/,
-    /^jp-rg-(ishigaki|shoro|yatai|sugi|pine|maple|bamboo-grove)$/,
+    /^jp-rg-(ishigaki|shoro|yatai|sugi|pine|maple|bamboo-grove|bamboo-grove-b|bamboo-clump)$/,
     /^jp-(gnd-|water-|bridge-|foot-shadow)/,
   ],
   sacred_historic: [
     /^jp-bldg-shrine-haiden$/,
     /^jp-prop-(honden|pagoda5|sanmon6|kaminarimon|hozomon|chozuya|censer|nakamise-|stone-lantern|lantern-post|string-lanterns4|wall-tsuiji|wall-hedge|wall-board|stairs-stone8|stairs-stone15|tree-|bench|nobori-)/,
     /^jp-(torii|hokora-jizo|jizo|tsutsuji)/,
-    /^jp-rg-(ishigaki|tenshu|shoro|stone-ruin|moss-buddha|wakimizu|doshirube|lodge|sugi|pine|maple|bamboo-grove)$/,
+    /^jp-rg-(ishigaki|tenshu|shoro|stone-ruin|moss-buddha|wakimizu|doshirube|lodge|sugi|pine|maple|bamboo-grove|bamboo-grove-b|bamboo-clump)$/,
     /^jp-(gnd-|water-|bridge-|foot-shadow)/,
   ],
   mountain_nature: [
-    /^jp-rg-(bamboo-grove|sugi|pine|maple|ishigaki|stone-ruin|moss-buddha|waterfall|tsuribashi|ropeway|lodge|tunnel|wakimizu|doshirube|mujin-eki)$/,
+    /^jp-rg-(bamboo-grove|bamboo-grove-b|bamboo-clump|sugi|pine|maple|ishigaki|stone-ruin|moss-buddha|waterfall|tsuribashi|ropeway|lodge|tunnel|wakimizu|doshirube|mujin-eki)$/,
     /^jp-prop-(stairs-stone8|stairs-stone15|bench|stone-lantern|wall-hedge|wall-board|train8-g)/,
     /^jp-train-car-[ab]$/,
     /^jp-(hokora-jizo|jizo|torii|tsutsuji)/,
@@ -241,7 +241,7 @@ export const ALLOWED_KITS: Readonly<Record<JpRegionCategory, readonly RegExp[]>>
     /^jp-bldg-(sento|conbini|market-hall|warehouse|factory)$/,
     /^jp-bldg-shop-(wagashi|soba|izakaya|sake|fish|sushi|teishoku|cafe|dagashi|tabako|flower)$/,
     /^jp-recipe-(machiya-izakaya|l-machiya-annex)$/,
-    /^jp-rg-(rotenburo|yukemuri|ishigaki|kakashi|hazakake|sunflower|tsuribashi|wakimizu|doshirube|lighthouse|fishing-boat|tetrapod|yatai|mujin-eki|sugi|pine|maple|bamboo-grove)$/,
+    /^jp-rg-(rotenburo|yukemuri|ishigaki|kakashi|hazakake|sunflower|tsuribashi|wakimizu|doshirube|lighthouse|fishing-boat|tetrapod|yatai|mujin-eki|sugi|pine|maple|bamboo-grove|bamboo-grove-b|bamboo-clump)$/,
     /^jp-prop-(lantern-post|stone-lantern|ricksha-cart|wall-tsuiji|wall-block|wall-hedge|wall-board|stairs-stone8|tin-stall-|van-white|ad-truck|car-|bus|train8-g|lamp-post|bench|vending-|vend-|tree-|catenary-pole|curve-mirror|stop-sign)/,
     /^jp-(in-ht-bamboo-fence|fumikiri-|rail-|bus-stop|pole|pole-wood|gate|gatepost|pots|monohoshi|gomi-box|bike-shelter|souko|lot-veg|hokora-jizo|jizo|tsutsuji)/,
     /^jp-(gnd-|water-|bridge-|foot-shadow)/,
@@ -946,14 +946,20 @@ export function planJpRegionScene(input: {
       forestCandidates[j] = tmp;
     }
 
+    // 대숲은 한 덩이 키트만 되풀이하면 같은 꼴이 기둥처럼 쌓인다(R4 VQA) — 넓은 덩이·좁은 덩이·작은 무리를 섞는다.
+    const bambooVariant = (): string => {
+      const r = rand();
+      return r < 0.5 ? "rg-bamboo-grove" : r < 0.82 ? "rg-bamboo-grove-b" : "rg-bamboo-clump";
+    };
     const pickSpeciesAt = (x: number, y: number): string => {
       const n = Math.sin(x * 0.21 + seed * 0.9) + Math.cos(y * 0.19 - seed * 0.6) + 0.5 * Math.sin((x - y) * 0.13 + seed * 0.4);
       if (region.id === "bamboo_mountain_trail") {
         const isWest = x + n * 2.5 < W * 0.48;
-        return isWest ? (rand() < 0.88 ? "rg-bamboo-grove" : "rg-sugi") : (rand() < 0.88 ? "rg-sugi" : "rg-bamboo-grove");
+        return isWest ? (rand() < 0.88 ? bambooVariant() : "rg-sugi") : (rand() < 0.88 ? "rg-sugi" : bambooVariant());
       }
       const idx = Math.max(0, Math.min(forestPool.length - 1, Math.floor(((n + 2.5) / 5.0) * forestPool.length)));
-      return forestPool[idx]!;
+      const id = forestPool[idx]!;
+      return id === "rg-bamboo-grove" ? bambooVariant() : id;
     };
 
     const pendingTrees: { kit: string; x: number; y: number; w: number; h: number }[] = [];
@@ -965,9 +971,11 @@ export function planJpRegionScene(input: {
       if (!isForestTreeAllowed(x, y, s.w, s.h)) continue;
 
       // X 열이 겹치는 나무끼리는 밑동(y+h) 높이가 최소 3칸 이상 차이나야 앞 나무 수관이 뒤 나무 줄기만 자연스럽게 덮는다.
+      // 같은 x 에서 바로 앞뒤(밑동 차 6칸 미만)로 쌓으면 같은 나무가 세로 기둥처럼 줄 선다(R4 VQA) — 그 자리는 옆으로 어긋난 후보에 넘긴다.
       const clashesWithPlaced = pendingTrees.some((pt) => {
         const xOverlap = x < pt.x + pt.w && x + s.w > pt.x;
-        if (xOverlap) return Math.abs((y + s.h) - (pt.y + pt.h)) < 3;
+        const dBase = Math.abs((y + s.h) - (pt.y + pt.h));
+        if (xOverlap) return dBase < 3 || (x === pt.x && dBase < 6);
         return false;
       });
       if (clashesWithPlaced) continue;
