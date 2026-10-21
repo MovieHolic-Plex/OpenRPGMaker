@@ -210,12 +210,177 @@ function renderScrollButton(model: {
   });
 }
 
+/**
+ * 이 칸 수를 넘는 시트는 보이는 행·열만 DOM 으로 만든다.
+ * 예전에는 시트 전체(버들항 23,936칸)를 버튼으로 만들어 타일 탭이 7~15초 걸렸다.
+ * 칸 위치는 그리드 영역(grid-area)으로 고정되므로 창 밖 칸이 없어도 배치는 그대로다.
+ */
+const VIRTUALIZE_MIN_CELLS = 1500;
+const VIRTUAL_ROW_BUFFER = 4;
+const VIRTUAL_COL_BUFFER = 4;
+/** 아직 배치 전이라 크기를 못 잴 때 쓰는 가정 뷰포트. */
+const VIRTUAL_FALLBACK_VIEWPORT = { width: 1400, height: 900 } as const;
+
+type VirtualGrid = {
+  /** 이 타일이 보이도록 스크롤하고 창을 즉시 맞춘다. */
+  readonly reveal: (tile: number) => void;
+};
+
+const virtualGrids = new WeakMap<HTMLElement, VirtualGrid>();
+
+function mountVirtualCells(
+  model: ChipsetPreviewModel,
+  preview: HTMLElement,
+  grid: HTMLElement,
+  cellPx: number,
+  rows: number,
+): VirtualGrid {
+  const cols = model.tileset.tilesPerRow;
+  const count = model.tileset.count;
+  const mounted = new Map<number, HTMLButtonElement>();
+  let box = { r0: -1, r1: -1, c0: -1, c1: -1 };
+  const selected = (): number => {
+    const raw = grid.dataset.selected;
+    return raw === undefined ? model.selectedTile : Number(raw);
+  };
+  const place = (cell: HTMLButtonElement, tile: number) => {
+    cell.style.gridArea = `${Math.floor(tile / cols) + 1} / ${(tile % cols) + 1}`;
+  };
+  /** 화면에 실제로 보이는 사각형(뷰포트와 잘리는 모든 조상의 교집합). */
+  const visibleClip = (): { top: number; bottom: number; left: number; right: number } => {
+    let top = 0;
+    let left = 0;
+    let bottom = window.innerHeight;
+    let right = window.innerWidth;
+    for (let node: HTMLElement | null = preview; node && node !== document.body; node = node.parentElement) {
+      const style = getComputedStyle(node);
+      if (node !== preview && style.overflowX === "visible" && style.overflowY === "visible") continue;
+      const rect = node.getBoundingClientRect();
+      top = Math.max(top, rect.top);
+      left = Math.max(left, rect.left);
+      bottom = Math.min(bottom, rect.bottom);
+      right = Math.min(right, rect.right);
+    }
+    return { top, bottom, left, right };
+  };
+  const sync = (): void => {
+    let r0 = 0;
+    let r1 = Math.min(rows - 1, Math.ceil(VIRTUAL_FALLBACK_VIEWPORT.height / cellPx) + VIRTUAL_ROW_BUFFER);
+    let c0 = 0;
+    let c1 = Math.min(cols - 1, Math.ceil(VIRTUAL_FALLBACK_VIEWPORT.width / cellPx) + VIRTUAL_COL_BUFFER);
+    if (preview.isConnected) {
+      // 스크롤하는 쪽은 미리보기가 아니라 모달 본문일 수 있다(미리보기는 높이 전체로 펼쳐짐).
+      // 그래서 자기 스크롤값 대신 격자 원점의 화면 좌표와 보이는 사각형으로 창을 정한다.
+      const origin = grid.getBoundingClientRect();
+      const clip = visibleClip();
+      if (clip.bottom > clip.top && clip.right > clip.left) {
+        r0 = Math.max(0, Math.floor((clip.top - origin.top) / cellPx) - VIRTUAL_ROW_BUFFER);
+        r1 = Math.min(rows - 1, Math.ceil((clip.bottom - origin.top) / cellPx) + VIRTUAL_ROW_BUFFER);
+        c0 = Math.max(0, Math.floor((clip.left - origin.left) / cellPx) - VIRTUAL_COL_BUFFER);
+        c1 = Math.min(cols - 1, Math.ceil((clip.right - origin.left) / cellPx) + VIRTUAL_COL_BUFFER);
+      }
+    }
+    if (r1 < r0) [r0, r1] = [r1, r0];
+    if (c1 < c0) [c0, c1] = [c1, c0];
+    const keep = selected();
+    if (box.r0 === r0 && box.r1 === r1 && box.c0 === c0 && box.c1 === c1 && mounted.has(keep)) return;
+    box = { r0, r1, c0, c1 };
+    for (const [tile, node] of mounted) {
+      const row = Math.floor(tile / cols);
+      const col = tile % cols;
+      const inside = row >= r0 && row <= r1 && col >= c0 && col <= c1;
+      if (!inside && tile !== keep) {
+        node.remove();
+        mounted.delete(tile);
+      }
+    }
+    const fragment = document.createDocumentFragment();
+    const add = (tile: number) => {
+      if (tile < 0 || tile >= count || mounted.has(tile)) return;
+      const cell = renderTileCell(model, tile, keep);
+      place(cell, tile);
+      mounted.set(tile, cell);
+      fragment.appendChild(cell);
+    };
+    for (let row = r0; row <= r1; row += 1) {
+      for (let col = c0; col <= c1; col += 1) add(row * cols + col);
+    }
+    add(keep);
+    grid.appendChild(fragment);
+  };
+  let frame = 0;
+  const schedule = (): void => {
+    if (frame) return;
+    if (typeof window === "undefined" || typeof window.requestAnimationFrame !== "function") {
+      sync();
+      return;
+    }
+    frame = window.requestAnimationFrame(() => {
+      frame = 0;
+      sync();
+    });
+  };
+  let listening = false;
+  const detach = (): void => {
+    if (!listening) return;
+    document.removeEventListener("scroll", onScroll, true);
+    window.removeEventListener("resize", onScroll);
+    listening = false;
+  };
+  const onScroll = (): void => {
+    if (!preview.isConnected) detach();
+    else schedule();
+  };
+  const onViewChange = (): void => {
+    if (!preview.isConnected) {
+      detach();
+      return;
+    }
+    if (!listening) {
+      document.addEventListener("scroll", onScroll, { capture: true, passive: true });
+      window.addEventListener("resize", onScroll);
+      listening = true;
+    }
+    sync();
+  };
+  sync();
+  if (typeof ResizeObserver !== "undefined") new ResizeObserver(() => onViewChange()).observe(preview);
+  const virtual: VirtualGrid = {
+    reveal: (tile) => {
+      sync();
+      mounted.get(tile)?.scrollIntoView({ block: "nearest", inline: "nearest" });
+      sync();
+    },
+  };
+  virtualGrids.set(grid, virtual);
+  return virtual;
+}
+
 function renderChipsetPreview(model: ChipsetPreviewModel): HTMLElement {
   const previewCell = model.tileset.tileSize * previewScale;
   const previewWidth = model.tileset.tilesPerRow * previewCell;
   const rows = Math.ceil(model.tileset.count / model.tileset.tilesPerRow);
   const previewHeight = rows * previewCell;
-  return el("div", {
+  const virtual = model.tileset.count > VIRTUALIZE_MIN_CELLS;
+  const clickGrid = el("div", {
+    class: "tileset-db-click-grid",
+    // 격자 시맨틱 + roving tabindex. 예전에는 480 칸이 전부 tabindex 0 이라
+    // 시트를 지나 아래 이름 필드로 가려면 Tab 을 480 번 눌러야 했다.
+    attrs: {
+      role: "grid",
+      "aria-label": `${model.tileset.name} 타일 격자 — 방향키로 이동, Enter 로 적용`,
+      "aria-colcount": String(model.tileset.tilesPerRow),
+      "aria-rowcount": String(rows),
+      ...(virtual ? { style: `grid-template-rows:repeat(${rows},var(--tileset-cell))` } : {}),
+    },
+    children: virtual ? [] : Array.from({ length: model.tileset.count }, (_, index) => renderTileCell(model, index)),
+    on: {
+      keydown: (event) => {
+        if (event instanceof KeyboardEvent) handleGridKeyDown(model, event);
+      },
+    },
+  });
+  const preview = el("div", {
     class: "tileset-db-preview",
     dataset: { testid: "tileset-db-preview", layerFilter },
     attrs: {
@@ -235,23 +400,7 @@ function renderChipsetPreview(model: ChipsetPreviewModel): HTMLElement {
           height: String(previewHeight),
         },
       }),
-      el("div", {
-        class: "tileset-db-click-grid",
-        // 격자 시맨틱 + roving tabindex. 예전에는 480 칸이 전부 tabindex 0 이라
-        // 시트를 지나 아래 이름 필드로 가려면 Tab 을 480 번 눌러야 했다.
-        attrs: {
-          role: "grid",
-          "aria-label": `${model.tileset.name} 타일 격자 — 방향키로 이동, Enter 로 적용`,
-          "aria-colcount": String(model.tileset.tilesPerRow),
-          "aria-rowcount": String(rows),
-        },
-        children: Array.from({ length: model.tileset.count }, (_, index) => renderTileCell(model, index)),
-        on: {
-          keydown: (event) => {
-            if (event instanceof KeyboardEvent) handleGridKeyDown(model, event);
-          },
-        },
-      }),
+      clickGrid,
       ...(model.mode === "passage"
         ? []
         : [
@@ -270,6 +419,8 @@ function renderChipsetPreview(model: ChipsetPreviewModel): HTMLElement {
       mousedown: (event) => startPreviewPan(event),
     },
   });
+  if (virtual) mountVirtualCells(model, preview, clickGrid, previewCell, rows);
+  return preview;
 }
 
 /**
@@ -308,6 +459,11 @@ function handleGridKeyDown(model: ChipsetPreviewModel, event: KeyboardEvent): vo
   if (next < 0 || next > last) return;
   event.preventDefault();
   model.onSelectTile?.(next, { quiet: true });
+  const grid = document.querySelector<HTMLElement>(".tileset-db-click-grid");
+  if (grid) {
+    grid.dataset.selected = String(next);
+    virtualGrids.get(grid)?.reveal(next);
+  }
   paintSelectedCell(next);
   const cell = document.querySelector<HTMLElement>(`.tileset-db-click-grid [data-tile="${next}"]`);
   if (!cell) return;
@@ -334,10 +490,14 @@ function tileCellAriaLabel(
   return `${parts.join(", ")}. 우클릭 또는 컨텍스트 메뉴 키로 의미 편집`;
 }
 
-function renderTileCell(model: ChipsetPreviewModel, index: number): HTMLButtonElement {
+function renderTileCell(
+  model: ChipsetPreviewModel,
+  index: number,
+  selectedTile: number = model.selectedTile,
+): HTMLButtonElement {
   const mark = passageMarkForTile(model.tileset, index);
   const home = tileLayerHome(model.tileset, index);
-  const selected = index === model.selectedTile ? " selected" : "";
+  const selected = index === selectedTile ? " selected" : "";
   const unlabeledOn = model.unlabeledOnly ?? unlabeledOnlyFilter;
   const unlabeled = isUnlabeledTile(model.tileset, index);
   const dimmed = isLayerDimmed(home) || (unlabeledOn && !unlabeled) ? " layer-dimmed" : "";
@@ -351,7 +511,7 @@ function renderTileCell(model: ChipsetPreviewModel, index: number): HTMLButtonEl
       type: "button",
       role: "gridcell",
       // 선택된 칸 하나만 Tab 순서에 남기고 나머지는 방향키로 옮긴다.
-      tabindex: index === model.selectedTile ? "0" : "-1",
+      tabindex: index === selectedTile ? "0" : "-1",
       title: `${cellTitle(model.tileset, index)} · ${layerHomeLabel(home)}${unlabeled ? " · 미분류" : ""} · 우클릭: 의미/통행/레이어`,
       // 통행 상태를 접근 가능한 이름에 넣는다. 예전에는 칠하기로 통행을 바꿔도 이 이름이
       // 그대로여서 보조기술 사용자에게는 이 화면의 본래 데이터가 아예 보이지 않았다.
@@ -422,8 +582,9 @@ function paintAutotileHover(ids: ReadonlySet<number>): void {
 }
 
 function paintSelectedCell(tile: number): void {
-  const root = document.querySelector(".tileset-db-click-grid");
+  const root = document.querySelector<HTMLElement>(".tileset-db-click-grid");
   if (!root) return;
+  if (virtualGrids.has(root)) root.dataset.selected = String(tile);
   for (const node of root.querySelectorAll(".tileset-db-cell.selected")) {
     node.classList.remove("selected");
   }
