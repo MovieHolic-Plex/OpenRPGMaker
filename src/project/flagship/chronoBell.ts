@@ -846,6 +846,17 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         // 아래 줄(문틀 옆기둥 6424)은 통행을 막으므로 걷어 낸다 — 위 줄(상인방 6423)만 벽 칸에 남아 문 위를 두른다.
         { const om = M(ids.observatory); const door = om.upperTiles; const di = 15 * om.width + 9; if (door[di] === 6424) door[di] = -1; }
   }
+  // 하넬이 서 있는 아래 오른쪽 방은 책장·탁자뿐이라 작은 집처럼 읽혔다(VQA r6 05-hanel-ask) — 천문대답게 별 보는 도구를 놓는다.
+  // 패딩 전 좌표다(방 x10~16·y11~17). 놓일 자리가 막혀 있으면 다음 후보로 간다.
+  {
+    const obs = M(ids.observatory);
+    const kitOf = (n: string): string => `kit:atlas_biome_interior/hand-interior:${n}`;
+    for (const [n, spots] of [
+      ["orrery", [[16, 15], [16, 14], [10, 15]]],
+      ["telescope", [[10, 16], [10, 17], [16, 17], [10, 15]]],
+      ["globe", [[16, 12], [10, 12], [16, 16]]],
+    ] as const) for (const [x, y] of spots) if (tryStamp(project, obs, kitOf(n), x, y)) break;
+  }
   // 천문대(18×19)도 화면(30×17)보다 좁아 양옆·위아래가 검은 허공으로 40% 가량 비었다 — 화로의 방과 같이 암반 벽 둘레를 덧붙이고
   // 이 맵으로 들어오는 모든 이동 좌표를 같은 만큼 민다(VQA r5). 위 계단·철문·뚜껑문 좌표 작업은 모두 끝난 뒤여야 한다.
   {
