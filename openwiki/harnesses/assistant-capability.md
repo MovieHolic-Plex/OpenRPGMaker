@@ -276,3 +276,17 @@ src/harnesses/assistant-capability/node/scenePostLoop.sh $R 1 &   # 채점 → �
   같은 끝 칸으로 비켜 감(`src/player/commandRouteDetour.ts`, 출하 런타임).
 - 빈 맵을 만들어 두고 나중에 칠하면 시작이 빈 시드 맵에 남음 → 처음 칠할 때도 시작을 옮김. 템플릿 빈 풀밭에 이벤트만 놓으면 경고.
 - 판정 그림(`qa-game render`)이 업로드(공용) 캐릭터 칩을 그리지 않아 보스가 「보이지 않음」으로 판정 → 저장본 옆 자산 폴더에서 그린다.
+
+r3 판정 뒤(r4 로 다시 잰 것):
+- 주인공이 유일한 출구 칸을 막아 NPC 가 한 칸 틈에서 못 나옴(이벤트 30초 정지) → 비켜 갈 길이 없으면 주인공이 한 번 옆으로 비켜 선다.
+- 엘리베이터 아래 탑승 칸을 준 `create_transfer_pair` 가 2층 트리거를 그림 밖에 둠 → 위 그림 칸으로 올린다.
+- 이벤트 경로 끝의 `turn`(서로 마주보기)이 경로가 끝나자마자 마지막 걸음 방향으로 되돌아감 → 돈 방향을 런타임 위치에 남긴다
+  (`playSceneAutonomousCommands.ts` turnNpc). r3 party-enter 에서 두 동료가 대사 내내 등을 보였다.
+- 로컬 CLI 엔진의 보조 완성이 「어느 그림을 실었는지」(`image_delivery`)를 돌려주지 않아 **전체 맵 검수가 매번 실패** — 21건 중 7건 화면에
+  「#4 전체 검수 작업을 끝내지 못했어요」. 그림은 실제로 CLI 에 실렸다(Claude·Codex). 이제 그 자리를 돌려준다(`ohMyPiPiAiRuntime.ts`).
+- 배경(`map.background`)이 있는 맵은 미리보기·전체 맵 검수가 통째로 거부(`map-background-rendering-unavailable`) — 배경을 그리게 한 것이
+  닿지 않았다. 두 표면 모두 배경 첫 프레임을 빈 칸 뒤에 그리고 「스크롤 없음」을 라벨에 적는다(`mapBackgroundPreview.ts`). 움직임은 영상의 몫.
+- 관찰자(scene film) 결함 — 조수 결함이 아니다: 창 없이 컷신만 도는 동안 누른 Escape 가 필드 메뉴를 열고 40회 한도가 컷신 도중에 끝나
+  다음 대사를 아무도 넘기지 않음(r3 party-enter 「같은 대사 80초」), 전투에서 Escape 가 명령을 취소해 첫 턴에 멈춤, 상점 목록에서 Enter 가 다시 삼.
+  이제 대사 창=Enter(같은 글 6회 넘게 그대로면 Escape), 전투=Enter, 상점·저장·메뉴 창=Escape, 창 없는 컷신=키 없이 기다림(최대 120초).
+  녹화 영상은 전투 프레임 상당수를 검게 떨어뜨린다(녹화 결함, 게임은 정상) — 전투는 실제 페이지 스크린숏(`film/battle`)을 판정자에게 준다.
