@@ -184,7 +184,7 @@ const listTilesetObjects: ToolDefinition = {
       });
     return {
       summary: objects.length === 0
-        ? `${map.name} 타일셋(${map.tilesetId})에 ${query ? `"${query}" 에 맞는 ` : ""}팩 물체가 없습니다.`
+        ? `${map.name} 타일셋(${map.tilesetId})에 ${query ? `"${query}" 에 맞는 ` : ""}팩 물체가 없습니다. 칩셋 소품 킷(버들항 bd-prop-* 등)은 list_spatial_designs({kind:"object", query}) 로 찾고 stamp_object 로 놓는다 — 거기에도 없을 때만 generate_missing_object.`
         : `${map.name} 타일셋의 팩 물체 ${objects.length}개${query ? `("${query}")` : ""}`,
       data: { tilesetId: map.tilesetId, objects },
     };
