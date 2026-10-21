@@ -15,7 +15,7 @@ import { sanitizeRiversidePromenade } from "@/project/startRoutePaint";
 import { isPassable } from "@/project/collision";
 import { normalizeCloudShadowParams } from "@/player/cloudShadows";
 import { TILE } from "@/project/defaults/constants";
-import { clearMapCellForBackground, emptyTopRows, HORIZON_PRESET_FEATURE_HEIGHT, mapBackgroundVisibility } from "@/project/mapBackgroundVisibility";
+import { clearMapCellForBackground, emptyTopRows, HORIZON_PRESET_FEATURE_HEIGHT, mapBackgroundVisibility, startPosAfterBackgroundClear } from "@/project/mapBackgroundVisibility";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
@@ -2038,31 +2038,31 @@ function resolveBackgroundArgs(raw: Record<string, unknown>, mapId: string): Map
   return normalized;
 }
 
-/** 이 맵의 물 칸(칩셋 이름표·분류 water)을 모든 층에서 비운다. 비운 칸 수를 돌려준다. */
-function clearWaterForBackground(map: GameMap, tileset: Project["tilesets"][string] | undefined): number {
-  if (!tileset) return 0;
+/** 이 맵의 물 칸(칩셋 이름표·분류 water)을 모든 층에서 비운다. 비운 칸 인덱스를 돌려준다. */
+function clearWaterForBackground(map: GameMap, tileset: Project["tilesets"][string] | undefined): number[] {
+  if (!tileset) return [];
   const isWater = (tile: number): boolean => tile >= 0
     && (tileCategoriesForTile(tileset, tile).includes("water") || tileset.tileMeta?.[tile]?.tags?.includes("water") === true);
-  let cleared = 0;
+  const cleared: number[] = [];
   for (let index = 0; index < map.lowerTiles.length; index += 1) {
     if (!isWater(map.lowerTiles[index] ?? -1)) continue;
     clearMapCellForBackground(map, index);
-    cleared += 1;
+    cleared.push(index);
   }
   return cleared;
 }
 
-/** 사각형의 모든 타일 층을 비운다. 맵 밖은 잘라 낸다. 비운 칸 수를 돌려준다. */
-function clearTilesForBackground(map: GameMap, rect: { x: number; y: number; width: number; height: number }): number {
+/** 사각형의 모든 타일 층을 비운다. 맵 밖은 잘라 낸다. 비운 칸 인덱스를 돌려준다. */
+function clearTilesForBackground(map: GameMap, rect: { x: number; y: number; width: number; height: number }): number[] {
   const x0 = Math.max(0, Math.floor(rect.x));
   const y0 = Math.max(0, Math.floor(rect.y));
   const x1 = Math.min(map.width, x0 + Math.max(0, Math.floor(rect.width)));
   const y1 = Math.min(map.height, y0 + Math.max(0, Math.floor(rect.height)));
-  let cleared = 0;
+  const cleared: number[] = [];
   for (let y = y0; y < y1; y += 1) {
     for (let x = x0; x < x1; x += 1) {
       clearMapCellForBackground(map, y * map.width + x);
-      cleared += 1;
+      cleared.push(y * map.width + x);
     }
   }
   return cleared;
@@ -2199,15 +2199,24 @@ const setMapProperties: ToolDefinition = {
     }
     if (args.clearForBackground && typeof args.clearForBackground === "object") {
       const clear = args.clearForBackground as { x?: number; y?: number; width?: number; height?: number; water?: boolean };
+      let clearedCells: number[] = [];
       if (clear.water === true) {
         const cleared = clearWaterForBackground(map, draft.tilesets[map.tilesetId]);
-        changed.push(`물 칸 ${cleared}칸 비움(배경이 보이는 자리)`);
-        if (cleared === 0) backgroundWarnings.push("이 맵 칩셋에서 물로 표시된 칸을 찾지 못했습니다 — 사각형 {x,y,width,height} 로 비울 자리를 직접 주세요.");
+        clearedCells = cleared;
+        changed.push(`물 칸 ${cleared.length}칸 비움(배경이 보이는 자리)`);
+        if (cleared.length === 0) backgroundWarnings.push("이 맵 칩셋에서 물로 표시된 칸을 찾지 못했습니다 — 사각형 {x,y,width,height} 로 비울 자리를 직접 주세요.");
       } else if ([clear.x, clear.y, clear.width, clear.height].every((value) => typeof value === "number")) {
         const cleared = clearTilesForBackground(map, clear as { x: number; y: number; width: number; height: number });
-        changed.push(`하늘 자리 ${cleared}칸 비움`);
+        clearedCells = cleared;
+        changed.push(`하늘 자리 ${cleared.length}칸 비움`);
       } else {
         throw new ToolError("clearForBackground 는 {x,y,width,height} 또는 {water:true} 여야 합니다.", { code: "invalid-args", mapId: map.id });
+      }
+      // 시작 칸을 비우면 주인공이 첫 칸에서 못 움직인다 — 가장 가까운 남는 칸으로 옮긴다.
+      const moved = draft.startMapId === map.id ? startPosAfterBackgroundClear(map, draft.startPos, new Set(clearedCells)) : null;
+      if (moved) {
+        backgroundWarnings.push(`시작 위치(${draft.startPos.x},${draft.startPos.y})가 비운 칸이라 가장 가까운 남는 칸(${moved.x},${moved.y})으로 옮겼습니다 — 다른 자리를 원하면 set_start_position.`);
+        draft.startPos = moved;
       }
     }
     if (map.background && (args.background || args.clearForBackground)) {

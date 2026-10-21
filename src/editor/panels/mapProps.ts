@@ -25,7 +25,7 @@ import {
   normalizeMapBackgroundCameraFollow,
   normalizeMapBackgroundScroll,
 } from "@/project/mapBackground";
-import { clearMapCellForBackground, emptyTopRows, HORIZON_PRESET_FEATURE_HEIGHT, mapBackgroundCellVisible, mapBackgroundVisibility } from "@/project/mapBackgroundVisibility";
+import { clearMapCellForBackground, emptyTopRows, HORIZON_PRESET_FEATURE_HEIGHT, mapBackgroundCellVisible, mapBackgroundVisibility, startPosAfterBackgroundClear } from "@/project/mapBackgroundVisibility";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { tileCategoriesForTile } from "@/project/tilesetPalette";
 import { mapTileSize } from "@/project/tileGeometry";
@@ -647,6 +647,7 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
 
   // 3. 게임 화면 미리보기 — 플레이와 같은 배율·움직임. 단추(움직임·맞추기) 아래에 붙여 누르고 바로 본다.
   let livePreview: HTMLElement | null = null;
+  let cameraStill = false;
   if (hasImage) {
     const viewport = mapBackgroundGameViewport(project.system);
     const tileset = project.tilesets[map.tilesetId];
@@ -662,12 +663,13 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
     };
     const pan = { left: cover.originX, right: Math.max(0, map.width * tileSize - viewport.width - cover.originX) };
     const moves = pan.left + pan.right > 0;
+    cameraStill = !moves;
     const preview = el("figure", { class: "map-bg-live" });
     preview.append(
       createMapBackgroundLivePreview({ background: bg, project, viewport, cover, pan }),
       el("figcaption", { class: "map-props-hint", text: moves
         ? `시작 화면 ${viewport.width}×${viewport.height} 그대로 · 어두운 칸은 타일이 가리는 자리 · 주인공이 좌우로 걷는다고 가정한 움직임`
-        : `시작 화면 ${viewport.width}×${viewport.height} 그대로 · 어두운 칸은 타일이 가리는 자리 · 이 맵은 한 화면 크기라 걸어도 카메라가 움직이지 않습니다(시차는 화면보다 큰 맵에서 보입니다)` }),
+        : `시작 화면 ${viewport.width}×${viewport.height} 그대로 · 어두운 칸은 타일이 가리는 자리 · 카메라 고정(한 화면 맵)` }),
     );
     livePreview = preview;
   }
@@ -688,6 +690,13 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
   controls.append(el("p", { class: "map-props-hint", text: detected
     ? MAP_BACKGROUND_MOTION_LABELS[detected].hint
     : activeSet ? "견본 권장 움직임(층마다 다름) — 위 단추로 통째로 바꿀 수 있습니다." : "직접 조정한 움직임 — 세부 조정에서 층마다 바꿀 수 있습니다." }));
+  if (cameraStill) {
+    // 2026-10-21 적대 검수: 이 안내가 미리보기 캡션(모달 아래쪽)에만 있어 스크롤해야 보였다 — 단추 바로 아래에 둔다.
+    controls.append(el("p", {
+      class: "map-props-hint is-warn", dataset: { testid: "map-bg-camera-still" },
+      text: "이 맵은 한 화면 크기라 걸어도 카메라가 움직이지 않습니다 — 시차(깊이)는 화면보다 큰 맵에서만 보이고, 여기서는 흐름만 보입니다.",
+    }));
+  }
 
   // 5. 맞추기 + 빈 칸.
   const fitSelect = el("select", { attrs: { "aria-label": "그림 맞추기" }, dataset: { testid: "map-bg-fit" } }) as HTMLSelectElement;
@@ -876,7 +885,9 @@ function clearMapCellsForBackground(mapId: string, cells: readonly number[]): vo
   store.update((project) => {
     const target = project.maps[mapId];
     if (!target) return;
+    const moved = project.startMapId === mapId ? startPosAfterBackgroundClear(target, project.startPos, new Set(cells)) : null;
     for (const index of cells) clearMapCellForBackground(target, index);
+    if (moved) project.startPos = moved;
   }, { scope: "map", mapId });
 }
 
@@ -891,6 +902,15 @@ function confirmClearForBackground(
   const tiles = cells.filter((index) => (map.lowerTiles[index] ?? -1) >= 0 || (map.upperTiles[index] ?? -1) >= 0).length;
   const events = map.events.filter((event) => cellSet.has(event.y * map.width + event.x));
   const body = [el("p", { text: `타일 ${tiles}칸을 지워 배경이 보이는 자리로 만듭니다. 지운 칸은 걸을 수 없습니다. Ctrl+Z 로 되돌릴 수 있습니다.` })];
+  const project = store.getCurrent();
+  const moved = project.startMapId === map.id ? startPosAfterBackgroundClear(map, project.startPos, cellSet) : null;
+  if (moved) {
+    body.push(el("p", {
+      class: "is-warn",
+      dataset: { testid: "map-bg-clear-start-moved" },
+      text: `시작 위치(${project.startPos.x},${project.startPos.y})가 지울 자리에 있어 가장 가까운 남는 칸(${moved.x},${moved.y})으로 옮깁니다 — 그대로 두면 주인공이 첫 칸에서 움직이지 못합니다.`,
+    }));
+  }
   if (events.length > 0) {
     const names = events.slice(0, 3).map((event) => event.name || event.id).join(", ") + (events.length > 3 ? " …" : "");
     body.push(el("p", { class: "is-warn", text: `이 자리에 이벤트 ${events.length}개(${names})가 있습니다 — 이벤트는 남지만 빈 칸 위에 서게 됩니다.` }));

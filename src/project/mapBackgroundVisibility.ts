@@ -71,3 +71,26 @@ export function emptyTopRows(map: Pick<GameMap, "width" | "height" | "lowerTiles
 
 /** 지평선 견본의 볼거리(해·구름·실루엣)가 들어 있는 화면 위쪽 높이(논리 px). 그림 생성기와 같은 값. */
 export const HORIZON_PRESET_FEATURE_HEIGHT = 112;
+
+/**
+ * 배경 자리로 비울 칸에 시작 위치가 있으면, 비우지 않는 칸 중 하층 타일이 있는 가장 가까운 칸을 돌려준다.
+ * 시작 위치가 비울 칸 밖이면 null. 2026-10-21 적대 검수: 윗줄을 비우면 시작 칸도 빈 칸(통행 불가)이 되어
+ * 주인공이 첫 칸에서 한 걸음도 못 움직였다 — 편집기 「비우기」 단추와 조수 `clearForBackground` 가 같이 쓴다.
+ */
+export function startPosAfterBackgroundClear(
+  map: Pick<GameMap, "width" | "height" | "lowerTiles">,
+  start: { readonly x: number; readonly y: number },
+  cleared: ReadonlySet<number>,
+): { x: number; y: number } | null {
+  if (!cleared.has(start.y * map.width + start.x)) return null;
+  let best: { x: number; y: number; d: number } | null = null;
+  for (let y = 0; y < map.height; y += 1) {
+    for (let x = 0; x < map.width; x += 1) {
+      const index = y * map.width + x;
+      if (cleared.has(index) || (map.lowerTiles[index] ?? -1) < 0) continue;
+      const d = Math.abs(x - start.x) + Math.abs(y - start.y);
+      if (!best || d < best.d) best = { x, y, d };
+    }
+  }
+  return best ? { x: best.x, y: best.y } : null;
+}

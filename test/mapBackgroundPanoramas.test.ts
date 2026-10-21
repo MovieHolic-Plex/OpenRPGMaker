@@ -13,7 +13,7 @@ import {
   MAP_BACKGROUND_MOTIONS,
   normalizeMapBackground,
 } from "@/project/mapBackground";
-import { mapBackgroundVisibility } from "@/project/mapBackgroundVisibility";
+import { mapBackgroundVisibility, startPosAfterBackgroundClear } from "@/project/mapBackgroundVisibility";
 import { collectWebExportAssets } from "@/project/webExportAssets";
 
 describe("OPRN 파노라마 견본", () => {
@@ -91,5 +91,18 @@ describe("비칠 칸 판정", () => {
   it("합본 마을이 아닌 칩셋에서는 #233 을 창 타일로 세지 않는다", () => {
     const map = { lowerTiles: [233], upperTiles: [-1], background: { imageId: "x" } };
     expect(mapBackgroundVisibility(map, { image: { type: "bundled", id: "beodeul_city" } } as never).visible).toBe(0);
+  });
+});
+
+describe("배경 자리 비우기와 시작 위치", () => {
+  const map = { width: 4, height: 4, lowerTiles: Array.from({ length: 16 }, () => 1) };
+  const topTwoRows = new Set([0, 1, 2, 3, 4, 5, 6, 7]);
+
+  it("시작 칸이 비울 자리면 남는 칸 중 가장 가까운 곳으로 옮긴다", () => {
+    expect(startPosAfterBackgroundClear(map, { x: 1, y: 0 }, topTwoRows)).toEqual({ x: 1, y: 2 });
+  });
+
+  it("시작 칸이 비울 자리 밖이면 그대로(null)", () => {
+    expect(startPosAfterBackgroundClear(map, { x: 1, y: 3 }, topTwoRows)).toBeNull();
   });
 });

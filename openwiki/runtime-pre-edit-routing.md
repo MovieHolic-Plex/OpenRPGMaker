@@ -795,6 +795,7 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
 - **되돌리기·확인(적대 검수 뒤):** 배경 바꾸기·끄기·칸 비우기는 `recordProjectSnapshot(..., {kind:"map"})` 로 Ctrl+Z 가 된다. 칸 비우기는 확인 창(지울 타일 수·그 자리 이벤트)을 거치고
   `clearMapCellForBackground` 로 모든 층·덧칠 더미(`*TileStacks`)·그림자까지 지운다(더미를 남기면 충돌이 막힌 칸으로 본다).
   고치기 단추는 견본 종류를 따른다 — 옆에서 본 하늘은 「윗줄 N줄」(N = ceil(112px/칸 크기), 맵 높이 절반까지), 위에서 본 면은 「물 칸 N개」(없으면 「맵 둘레 2칸」).
+  **시작 칸을 비우면 주인공이 첫 칸에서 못 움직인다**(빈 칸 = 통행 불가) — 편집기 단추와 조수 `clearForBackground` 모두 `startPosAfterBackgroundClear` 로 가장 가까운 남는 칸에 시작 위치를 옮기고 확인 창·도구 경고로 알린다. Ctrl+Z(맵 스냅숏)는 타일만 되돌리고 옮긴 시작 위치는 그대로 둔다.
   탭 미리보기는 **맵이 화면보다 클 때만** 카메라를 흔들고(시작 화면에서 갈 수 있는 거리까지), 타일 덮개는 카메라와 함께 움직이며 불투명하다.
   캔버스 「배경 보기」 는 **시작 화면 기준**(시작 칸이 그 맵이면 그 칸을 가운데 둔 첫 카메라)으로 그린다 — 그 화면 밖은 근사.
 - **조수**: `set_map_properties.background.preset`(OPRN 다섯 + 남아 있으면 CraftPix; `layerSet` 은 같은 뜻의 옛 이름), `motion`, `showInEmptyCells` 기본 true,
