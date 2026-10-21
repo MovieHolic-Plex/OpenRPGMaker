@@ -442,6 +442,10 @@ object-gen 흐름(시점 판정 통과 참고 그림 → Opus 손 도트 A/B →
 판정 확인은 `scripts/content/jp-city/interior/house3_picks.py`(`refusal(kind=…, context='bundle')`, 해시 일치).
 블록은 통과분만 등록하므로 지금은 칸 0, 분류표에서도 빠진다. `jpHouseBlueprint.ts` 는 사양(spec)에 그 조각이 있을 때만 쓰고
 없으면 옛 대역(cupboard·washbasin·bathtub+shower-faucet·sh-bouquet·2칸 틈)으로 간다 — 다시 그려 관문을 받으면 굽기만으로 들어간다.
+청사진 자리(2026-10-21 새 격자 c0/c1·e0/e1 기준): 허리벽 = 거실·현관 복도 벽면 · 유리 식기장 = 부엌 식기장 자리(새 배치엔 거실·서재 식기장이 없다) ·
+세면화장대 = 탈의실 (e0+1,8) 2칸, 세탁기 (e0,8)·바구니 (e1,9) · 배식 창 = 거실 북벽 (a-2,12) 2칸 + 기둥 (a-3,12), 부엌↔거실 트임은 (a) 1칸 ·
+현관 꽃병 = 신발장 위 · 화장실 선반 = 2층 화장실 북벽 변기 위(작은 창 대신) · **유닛 배스는 지금 들어가지 않는다** — 욕실 폭 3 의 북벽 첫 줄로 욕실 문(e0)이 들어와 3칸 덩어리를 둘 수 없다(폭 ≥ 4 일 때만).
+대역 주입 시험(사양에 임시 조각을 넣고 `qa/jp-house-blueprint.mts` 씨앗 1~40)으로 경고 0·계단 도달·방 빈 바닥 ≤30% 를 확인했다.
 관문 종류 판정이 흔들린 조각: 기둥(terrain↔wall_mounted), 배식 창(wall_mounted→low_furniture→terrain 모두 kind 반려), 선반(other).
 
 ## 시설 실내 6묶음 — 병원·학교 별관·IT 사옥 + 방 구성(program)·길 고르기 (2026-10-14)
