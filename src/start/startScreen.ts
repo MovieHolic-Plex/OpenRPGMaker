@@ -657,6 +657,8 @@ const START_SECTIONS: readonly StartSection[] = ["home", "games", "builtin", "cr
 function sectionFromHash(): StartSection | null {
   if (typeof location === "undefined") return null;
   const hash = location.hash.replace(/^#/, "");
+  // 팀 협업을 접어 둔 동안 #join 은 칸으로 치지 않는다(첫 화면은 go() 를 거치지 않고 바로 mount 한다).
+  if (hash === "join" && !TEAM_COLLAB_ENABLED) return null;
   return (START_SECTIONS as readonly string[]).includes(hash) ? hash as StartSection : null;
 }
 
