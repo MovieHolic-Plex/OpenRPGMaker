@@ -2335,7 +2335,10 @@ export function resolveTransferEndpoint(
   const fixed = requested.doorAt !== undefined;
   if (requested.doorAt && (!inMapBounds(map, requested.doorAt.x, requested.doorAt.y)
     || requested.x !== requested.doorAt.x || requested.y !== requested.doorAt.y + 1)) {
-    throw new ToolError('doorAt은 문 하단 칸이며 출입구는 바로 남쪽 문앞(x=doorAt.x, y=doorAt.y+1)이어야 합니다.', { code: 'transfer-door-mismatch', mapId: map.id });
+    // 실측(2026-10-22 여관·상점 문): 조수가 x,y 와 doorAt 에 같은 칸을 넣어 두 번 거부됐다 — 받은 값과 고친 두 가지 모양을 그대로 보여 준다.
+    const door = requested.doorAt;
+    throw new ToolError(`${label}: doorAt은 문 하단 칸이며 출입구(x,y)는 바로 남쪽 문앞(x=doorAt.x, y=doorAt.y+1)이어야 합니다 — 받은 값 x,y=(${requested.x},${requested.y}), doorAt=(${door.x},${door.y}). `
+      + `문이 (${door.x},${door.y}) 이면 {x:${door.x},y:${door.y + 1},doorAt:{x:${door.x},y:${door.y}}}, 문앞이 (${requested.x},${requested.y}) 이면 {x:${requested.x},y:${requested.y},doorAt:{x:${requested.x},y:${requested.y - 1}}}. 문 그림이 없으면 doorAt 을 빼세요.`, { code: 'transfer-door-mismatch', mapId: map.id });
   }
   const localNotes: string[] = [];
   const endpoint = transferEndpoint(project, map, requested.x, requested.y, fixed ? 0 : 3, localNotes, fixed);
