@@ -139,6 +139,8 @@ export type RoundReference = {
   readonly rejected?: readonly { readonly dataUrl: string; readonly view: string; readonly topShare: number; readonly why: string }[];
   readonly source?: string;
   readonly note: string;
+  /** 시점 검사를 넘은 다음 참고 그림들(object-gen 흐름은 2장을 만든다). dataUrl 이 첫 장. */
+  readonly more?: readonly { readonly dataUrl: string; readonly view: { readonly view: string; readonly topShare: number; readonly why: string; readonly ok: boolean; readonly minTop: number } }[];
 };
 
 export type WorkshopRound = {
@@ -186,6 +188,8 @@ export type DrawContext = {
   readonly notes: readonly string[];
   /** 판의 참고 그림(모양만 — 화소를 옮기지 않는다). 없으면 null. */
   readonly reference?: string | null;
+  /** 참고 그림 전부(object-gen 흐름은 2장). 첫 장이 reference 와 같다. */
+  readonly references?: readonly string[];
 };
 export type ReviewContext = {
   readonly item: WorkshopItem;
@@ -226,6 +230,9 @@ export interface WorkshopEnv {
   assetUrl(path: string): string;
 }
 
+export type PerItem<T> = T | ((item: WorkshopItem) => T);
+export const perItem = <T>(value: PerItem<T>, item: WorkshopItem): T => (typeof value === "function" ? (value as (item: WorkshopItem) => T)(item) : value);
+
 export type WorkshopSurface = "workshop-draw" | "workshop-review";
 /** 모델 한 번 호출 → 답 글. 오류는 그대로 던진다(status 가 있으면 401·429 판정에 쓴다). */
 export type ChatFn = (surface: WorkshopSurface, request: ChatRequest) => Promise<string>;
@@ -253,6 +260,21 @@ export interface WorkshopRunner {
   /** 있으면 다 그린 후보마다 3/4 관문 조언 호출을 한 번 더 한다(굽기를 막지 않는 배지). */
   adviseMessages?(item: WorkshopItem, grid: Grid, palette: Palette, env: WorkshopEnv): Promise<ChatMessage[]>;
   parseAdvice?(item: WorkshopItem, text: string): GateAdvice;
+  /**
+   * object-gen 흐름(objectGenFlow.ts)을 쓰는 실행기가 주는 갈래. 있으면 엔진이 그 단계를 이것으로 돈다.
+   * - referenceCount: 시점 검사를 넘은 참고 그림을 이만큼 모은다(원본 n_refs 2). referenceStyleNote: 참고 지시문 끝에 붙일 원본 STYLE_NOTE.
+   * - maxAttempts: 그리기 시도 수(원본: 그리기 + 불통과 다시 그리기 1번 = 2).
+   * - looks/lookMessage: 그린 뒤 미리보기를 보여 주고 고치게 하는 횟수와 메시지(원본 drawer 의 preview 고리). {"keep":true} 면 멈춘다.
+   * - review: 독립 검수를 통째로(원본: 블라인드 판정 유효 3판 다수결, 숨긴 반려 표본). ask 는 새 검수 호출 하나.
+   */
+  /** 기물마다 다를 수 있다(손 도트 실내: 새 기물만 object-gen 흐름). 함수면 기물을 받아 값을 낸다. */
+  readonly referenceCount?: PerItem<number>;
+  readonly referenceStyleNote?: PerItem<string | undefined>;
+  readonly maxAttempts?: PerItem<number>;
+  readonly looks?: PerItem<number>;
+  lookMessage?(ctx: DrawContext, grid: Grid, env: WorkshopEnv, look: number, max: number): Promise<ChatMessage>;
+  /** null = 이 기물은 기본 검수(reviewMessages + parseVerdict)로. */
+  review?(ctx: ReviewContext, env: WorkshopEnv, ask: (messages: ChatMessage[]) => Promise<string>): Promise<Verdict | null>;
   hardCheck(item: WorkshopItem, grid: Grid): string[];
   parseVerdict(text: string): Verdict;
   gate(item: WorkshopItem, verdict: Verdict): Verdict;

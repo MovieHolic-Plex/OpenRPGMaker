@@ -4,8 +4,9 @@
  * 새 기물 정의 → 공방 판(후보 그리기·검수, 사용자 자기 AI 계정) → 사용자가 고르거나 「알아서 고르기」 → 그 맵 칩셋에 굽기.
  * 공방 화면(workshopWorkspace)과 같은 세션·저장소를 쓰므로 판은 공방 「물건·가구」에서도 그대로 보인다.
  */
-import { parsePicker, pickerMessages } from "@/harnesses/_core/workshop/picker";
-import type { WorkshopRound } from "@/harnesses/_core/workshop/types";
+import { exemplarSheet, loadAnchors, ogPickerPrompt } from "@/harnesses/_core/workshop/objectGenFlow";
+import { parsePicker, pickerMajority, pickerMessages, PICK_RUNS } from "@/harnesses/_core/workshop/picker";
+import type { Rgba, RgbaImage, WorkshopItem, WorkshopRound } from "@/harnesses/_core/workshop/types";
 import { store as projectStore } from "@/project/store";
 import { createWorkshopChat } from "./chat";
 import { mapObjectPalette } from "./mapObjectTarget";
@@ -89,6 +90,17 @@ export function autoPickLetter(run: ObjectGenRun): string | null {
  * 「알아서 고르기」(2026-10-21 시험 2): 검수 통과가 하나면 그것, 둘 이상이면 object-gen picker 를 옮긴 고르기 호출 한 번(picker.ts, 숫자 꼬리표 섞음).
  * 고르기 호출이 실패하거나 답을 못 읽으면 통과 첫 장으로 물러선다. 통과가 없으면 null(사람에게 넘긴다).
  */
+/** object-gen 고르기 지시문·견본(실행기가 object-gen 흐름일 때). 견본을 못 읽으면 견본 없이. */
+async function ogPickerExtras(item: WorkshopItem, session: ObjectGenRun["session"]): Promise<{ prompt: string; exemplars: RgbaImage | null; floor: Rgba }> {
+  const floor: Rgba = [149, 107, 68, 255];
+  try {
+    const anchors = await loadAnchors(session.env);
+    return { prompt: ogPickerPrompt(item), exemplars: exemplarSheet(anchors, floor, 8), floor };
+  } catch {
+    return { prompt: ogPickerPrompt(item), exemplars: null, floor };
+  }
+}
+
 export async function chooseAutoPick(run: ObjectGenRun): Promise<{ letter: string; reason: string } | null> {
   const round = currentRound(run);
   if (!round) return null;
@@ -99,11 +111,20 @@ export async function chooseAutoPick(run: ObjectGenRun): Promise<{ letter: strin
   const { session } = run;
   const item = session.items().find((candidate) => candidate.key === run.itemKey);
   if (!item) return { letter: first.letter, reason: "검수 통과 첫 후보" };
-  try {
-    const board = pickerMessages(item, passed.map((r) => ({ letter: r.letter, grid: r.grid })), session.runner.palette(item), session.env);
-    const text = await createWorkshopChat()("workshop-review", { messages: board.messages, response_format: { type: "json_object" }, temperature: 0.1 });
-    return parsePicker(text, board.labels) ?? { letter: first.letter, reason: "고르기 답을 읽지 못해 검수 통과 첫 후보" };
-  } catch {
-    return { letter: first.letter, reason: "고르기 호출이 실패해 검수 통과 첫 후보" };
+  // object-gen 흐름(원본 picker): 원본 지시문 + 견본 그림, 꼬리표를 매번 섞어 3번 묻고 다수결.
+  const og = session.runner.review ? await ogPickerExtras(item, session) : undefined;
+  const chat = createWorkshopChat();
+  const votes: { letter: string; reason: string }[] = [];
+  for (let i = 0; i < (og ? PICK_RUNS : 1); i++) {
+    try {
+      const board = pickerMessages(item, passed.map((r) => ({ letter: r.letter, grid: r.grid })), session.runner.palette(item), session.env, Math.random, og);
+      const text = await chat("workshop-review", { messages: board.messages, response_format: { type: "json_object" }, temperature: 0.1 });
+      const vote = parsePicker(text, board.labels);
+      if (vote) votes.push(vote);
+    } catch { /* 이 판은 빠진다 */ }
   }
+  const win = og ? pickerMajority(votes) : votes[0] ? { ...votes[0], tally: "" } : null;
+  if (win) return { letter: win.letter, reason: win.tally ? `${win.reason} (고르기 ${win.tally})` : win.reason };
+  if (votes[0]) return { letter: votes[0].letter, reason: `${votes[0].reason} (고르기 의견이 갈려 첫 답)` };
+  return { letter: first.letter, reason: "고르기 답을 못 받아 검수 통과 첫 후보" };
 }

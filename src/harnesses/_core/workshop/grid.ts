@@ -166,6 +166,34 @@ export function parseDrawAnswer(text: string, palette: Palette): ParsedDraw {
       cells.push(key);
     }
   }
+  // parts(원본 object-gen ANSWER): 격자 위에 덧그리는 조각. at = [왼쪽 x, 아래 y], 「.」은 아래를 그대로 둔다.
+  const { parts } = raw as Record<string, unknown>;
+  if (parts !== undefined) {
+    if (!Array.isArray(parts)) return fail("parts 가 배열이 아니다");
+    for (const [index, part] of parts.entries()) {
+      const { at, legend: partLegend, rows: partRows } = (part ?? {}) as Record<string, unknown>;
+      if (!Array.isArray(at) || at.length !== 2 || !at.every((v) => Number.isInteger(v))) return fail(`parts[${index}].at 은 [x, 아래 y] 정수 둘이어야 한다`);
+      if (!partLegend || typeof partLegend !== "object" || Array.isArray(partLegend)) return fail(`parts[${index}].legend 가 객체가 아니다`);
+      if (!Array.isArray(partRows) || partRows.some((row) => typeof row !== "string")) return fail(`parts[${index}].rows 가 글자열 배열이 아니다`);
+      const local = new Map<string, string>();
+      for (const [char, key] of Object.entries(partLegend as Record<string, unknown>)) {
+        if (typeof key !== "string" || !palette.byKey.has(key)) return fail(`parts[${index}].legend 「${char}」의 색 ${String(key)} 은 팔레트에 없다`);
+        local.set(char, key);
+      }
+      const [left, bottomY] = at as number[];
+      const top = bottomY! - (partRows as string[]).length + 1;
+      for (const [dy, row] of (partRows as string[]).entries()) {
+        for (const [dx, char] of [...row].entries()) {
+          if (char === TRANSPARENT) continue;
+          const key = local.get(char) ?? keys.get(char);
+          if (!key) return fail(`parts[${index}].rows[${dy}][${dx}] 글자 「${char}」가 legend 에 없다`);
+          const x = left! + dx, y = top + dy;
+          if (x < 0 || x >= width || y < 0 || y >= lines.length) return fail(`parts[${index}] 가 캔버스 밖(${x},${y})에 칠한다`);
+          cells[y * width + x] = key;
+        }
+      }
+    }
+  }
   return {
     ok: true,
     grid: { width, height: lines.length, cells },

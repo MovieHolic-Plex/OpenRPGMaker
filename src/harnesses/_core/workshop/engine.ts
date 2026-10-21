@@ -8,6 +8,7 @@ import type { ChatMessage } from "@/ai/llmClient";
 import { applyRowFix, parseDrawAnswer, rowsNeedingFix } from "./grid";
 import { parseRefViewCheck, REF_TRIES, REF_VIEW_PROMPT, refMinTop, refPrompt, refPromptNames } from "./referencePrompt";
 import type { WorkshopStore } from "./store";
+import { perItem } from "./types";
 import type {
   AnchorSample, ChatFn, DrawContext, Grid, RejectedSample, RgbaImage, RoundReference, Verdict, WorkshopEnv, WorkshopItem, WorkshopRound, WorkshopRun,
   WorkshopRunner, WorkshopSurface,
@@ -56,6 +57,11 @@ export interface WorkshopEngine {
 }
 
 class Cancelled extends Error {}
+
+/** {"keep": true} — 미리보기를 보고 더 고칠 게 없다는 답(격자 없이). */
+function isKeepAnswer(text: string): boolean {
+  return /"keep"\s*:\s*true/u.test(text) && !/"rows"\s*:/u.test(text);
+}
 
 /** 참고 그림을 판 기록에 담을 크기(긴 변 px). 모양만 보면 되니 원본(1024)을 다 담지 않는다. */
 const REF_STORE_PX = 512;
@@ -181,66 +187,84 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
    * 참고 그림 단계(object-gen ref, referencePrompt.ts) — 판마다 한 번. 사용자 그림 계정으로 만들고 시점 검사(판정자 새 호출)를 넘은 첫 장을 쓴다.
    * 그림 계정이 없거나 다 떨어지면 참고 없이 그린다(카드에 「참고 그림 없이 그림」). 결과는 판 기록(round.reference)에만 남는다.
    */
-  const references = new Map<string, Promise<string | null>>();
-  function referenceFor(round: WorkshopRound, item: WorkshopItem, run: WorkshopRun, signal: AbortSignal): Promise<string | null> {
-    if (round.reference) return Promise.resolve(round.reference.status === "ok" ? round.reference.dataUrl ?? null : null);
+  const references = new Map<string, Promise<string[]>>();
+  const acceptedOf = (reference: RoundReference): string[] =>
+    reference.status === "ok" && reference.dataUrl ? [reference.dataUrl, ...(reference.more ?? []).map((m) => m.dataUrl)] : [];
+  function referenceFor(round: WorkshopRound, item: WorkshopItem, run: WorkshopRun, signal: AbortSignal): Promise<string[]> {
+    if (round.reference) return Promise.resolve(acceptedOf(round.reference));
     let pending = references.get(round.id);
     if (!pending) {
       pending = makeReference(round, item, run, signal).catch((error) => {
         if (isAbort(error) || signal.aborted) { references.delete(round.id); throw error; }
         round.reference = { status: "failed", tries: round.reference?.tries ?? 0, note: `참고 그림 없이 그림 — 참고 그림을 만들지 못했다: ${error instanceof Error ? error.message.slice(0, 120) : String(error)}` };
         void save(round);
-        return null;
+        return [];
       });
       references.set(round.id, pending);
     }
     return pending;
   }
 
-  async function makeReference(round: WorkshopRound, item: WorkshopItem, run: WorkshopRun, signal: AbortSignal): Promise<string | null> {
+  async function makeReference(round: WorkshopRound, item: WorkshopItem, run: WorkshopRun, signal: AbortSignal): Promise<string[]> {
     const describe = runner.referenceDescribe?.(item) ?? null;
     if (!describe || !env.referenceImage) {
       round.reference = { status: "none", tries: 0, note: describe ? "참고 그림 없이 그림 — 그림을 만들 수 있는 계정이 연결되지 않았다" : "참고 그림 없이 그림 — 이 종류는 참고 단계가 없다" };
       void save(round);
-      return null;
+      return [];
     }
-    const prompt = refPrompt(describe, item.gateKind);
+    const prompt = refPrompt(describe, item.gateKind, runner.referenceStyleNote === undefined ? undefined : perItem(runner.referenceStyleNote, item));
     const names = refPromptNames(prompt);
     if (names.length) {
       round.reference = { status: "failed", prompt, tries: 0, note: `참고 그림 없이 그림 — 지시문에 쓰면 안 되는 이름(${names.join(", ")})이 들어 있다` };
       void save(round);
-      return null;
+      return [];
     }
     const minTop = refMinTop(item.gateKind);
+    // 원본 reference.generate: 장마다 시점 검사를 넘을 때까지 tries 번(object-gen 흐름 n 2 · tries 4, 기본 실행기 1장 · 3번).
+    const count = runner.referenceCount === undefined ? 0 : perItem(runner.referenceCount, item);
+    const need = Math.max(1, count);
+    const triesEach = count > 0 ? 4 : REF_TRIES;
     const rejected: { dataUrl: string; view: string; topShare: number; why: string }[] = [];
+    const accepted: { dataUrl: string; view: NonNullable<RoundReference["view"]> }[] = [];
     let last: RoundReference["view"];
     let source = "";
-    for (let attempt = 1; attempt <= REF_TRIES; attempt++) {
-      if (signal.aborted) throw new Cancelled();
-      const made = await env.referenceImage(prompt, signal);
-      if (!made) {
-        round.reference = { status: "none", prompt, tries: attempt - 1, note: "참고 그림 없이 그림 — 그림을 만들 수 있는 계정이 연결되지 않았다" };
-        void save(round);
-        return null;
+    let tries = 0;
+    const finish = (): string[] => {
+      const [first, ...more] = accepted;
+      round.reference = first
+        ? { status: "ok", dataUrl: first.dataUrl, prompt, view: first.view, tries, ...(more.length ? { more } : {}), ...(rejected.length ? { rejected } : {}), source,
+          note: `참고 그림 ${accepted.length}장(시점 검사 통과, 윗면 ${accepted.map((a) => `${a.view.topShare}%`).join("·")}) — 참고용, 설치 안 됨` }
+        : { status: "failed", prompt, view: last, tries, rejected, source, note: `참고 그림 없이 그림 — 참고 그림 ${tries}장이 모두 시점 검사에서 떨어졌다(${last?.view ?? "?"}, 윗면 ${last?.topShare ?? 0}%)` };
+      void save(round);
+      return accepted.map((a) => a.dataUrl);
+    };
+    for (let n = 0; n < need; n++) {
+      for (let attempt = 1; attempt <= triesEach; attempt++) {
+        if (signal.aborted) throw new Cancelled();
+        const made = await env.referenceImage(prompt, signal);
+        if (!made) {
+          if (accepted.length) return finish();
+          round.reference = { status: "none", prompt, tries, note: "참고 그림 없이 그림 — 그림을 만들 수 있는 계정이 연결되지 않았다" };
+          void save(round);
+          return [];
+        }
+        tries += 1;
+        source = made.source;
+        const small = shrinkImage(await env.loadImage(made.dataUrl), REF_STORE_PX);
+        const dataUrl = env.encodePng(small);
+        const viewText = await call("workshop-review", [
+          { role: "system", content: REF_VIEW_PROMPT },
+          { role: "user", content: [{ type: "text", text: "The picture to check:" }, { type: "image_url", image_url: { url: dataUrl, detail: "high" } }] },
+        ], run, round, signal);
+        last = parseRefViewCheck(viewText, minTop);
+        if (last.ok) {
+          accepted.push({ dataUrl, view: last });
+          break;
+        }
+        rejected.push({ dataUrl: env.encodePng(shrinkImage(small, REJECTED_REF_PX)), view: last.view, topShare: last.topShare, why: last.why });
       }
-      source = made.source;
-      const small = shrinkImage(await env.loadImage(made.dataUrl), REF_STORE_PX);
-      const dataUrl = env.encodePng(small);
-      const viewText = await call("workshop-review", [
-        { role: "system", content: REF_VIEW_PROMPT },
-        { role: "user", content: [{ type: "text", text: "The picture to check:" }, { type: "image_url", image_url: { url: dataUrl, detail: "high" } }] },
-      ], run, round, signal);
-      last = parseRefViewCheck(viewText, minTop);
-      if (last.ok) {
-        round.reference = { status: "ok", dataUrl, prompt, view: last, tries: attempt, ...(rejected.length ? { rejected } : {}), source, note: `참고 그림(시점 검사 통과, 윗면 ${last.topShare}%) — 참고용, 설치 안 됨` };
-        void save(round);
-        return dataUrl;
-      }
-      rejected.push({ dataUrl: env.encodePng(shrinkImage(small, REJECTED_REF_PX)), view: last.view, topShare: last.topShare, why: last.why });
     }
-    round.reference = { status: "failed", prompt, view: last, tries: REF_TRIES, rejected, source, note: `참고 그림 없이 그림 — 참고 그림 ${REF_TRIES}장이 모두 시점 검사에서 떨어졌다(${last?.view ?? "?"}, 윗면 ${last?.topShare ?? 0}%)` };
-    void save(round);
-    return null;
+    return finish();
   }
 
   /** 그리기 대화 하나: 답 → 해석·깨짐 검사 → (고치기) → (자기 점검). 끝까지 깨지면 오류 글을 돌려준다. */
@@ -272,6 +296,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       const parsed = parseDrawAnswer(text, ctx.palette);
       const problems = parsed.ok ? runner.hardCheck(ctx.item, parsed.grid) : [parsed.error];
       if (parsed.ok && problems.length === 0) {
+        if (runner.lookMessage && perItem(runner.looks ?? 0, ctx.item) > 0) return await lookLoop(ctx, messages, text, parsed, run, round, signal);
         if (!runner.selfCheckMessage) return { grid: parsed.grid, note: parsed.note, topRows: parsed.topRows };
         messages.push({ role: "assistant", content: text }, runner.selfCheckMessage(ctx, parsed.grid, env));
         const checkedText = await call("workshop-draw", messages, run, round, signal);
@@ -286,7 +311,27 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
     return { error: lastError };
   }
 
-  async function contextFor(round: WorkshopRound, run: WorkshopRun, item: WorkshopItem, attempt: number, previousGrid: Grid | null, lastVerdict: Verdict | null, reference: string | null = null): Promise<DrawContext> {
+  /** object-gen drawer 의 preview 고리: 그린 것을 보여 주고 고친 격자 또는 {"keep":true} 를 받는다. 깨진 답은 버리고 앞 격자를 쓴다. */
+  async function lookLoop(ctx: DrawContext, messages: ChatMessage[], text: string, first: { grid: Grid; note: string; topRows: number | null }, run: WorkshopRun, round: WorkshopRound, signal: AbortSignal): Promise<{ grid: Grid; note: string; topRows: number | null }> {
+    let best = { grid: first.grid, note: first.note, topRows: first.topRows };
+    let lastText = text;
+    const max = perItem(runner.looks ?? 0, ctx.item);
+    for (let look = 1; look <= max; look++) {
+      messages.push({ role: "assistant", content: lastText }, await runner.lookMessage!(ctx, best.grid, env, look, max));
+      lastText = await call("workshop-draw", messages, run, round, signal);
+      if (isKeepAnswer(lastText)) {
+        const note = /"note"\s*:\s*"([^"]*)"/u.exec(lastText)?.[1];
+        if (note) best = { ...best, note };
+        break;
+      }
+      const next = parseDrawAnswer(lastText, ctx.palette);
+      if (!next.ok || runner.hardCheck(ctx.item, next.grid).length > 0) break;
+      best = { grid: next.grid, note: next.note || best.note, topRows: next.topRows ?? best.topRows };
+    }
+    return best;
+  }
+
+  async function contextFor(round: WorkshopRound, run: WorkshopRun, item: WorkshopItem, attempt: number, previousGrid: Grid | null, lastVerdict: Verdict | null, reference: readonly string[] = []): Promise<DrawContext> {
     const feedback = await store.listFeedback(projectKey, item.key);
     const rejected: RejectedSample[] = [];
     for (const entry of feedback.filter((f) => f.verdict === "reject" && f.letter).slice(-4)) {
@@ -306,14 +351,15 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       roundNote: round.note,
       redrawNote: run.redrawNote,
       attempt,
-      maxAttempts: MAX_ATTEMPTS,
+      maxAttempts: perItem(runner.maxAttempts ?? MAX_ATTEMPTS, item),
       previousGrid,
       lastVerdict,
       current: runner.currentGrid(item),
       anchors: runner.anchors(item, picked),
       rejected,
       notes: feedback.map((f) => f.note).filter(Boolean).slice(-5),
-      reference,
+      reference: reference[0] ?? null,
+      references: reference,
     };
   }
 
@@ -331,7 +377,8 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       // 다시 그리기(redrawRun)는 지난 격자를 출발점으로 넘긴다. 지난 판정은 불통과일 때만 「떨어진 이유」로 넘긴다.
       let lastVerdict: Verdict | null = run.verdict?.verdict === "FAIL" ? run.verdict : null;
       const reference = await referenceFor(round, item, run, signal);
-      for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      const maxAttempts = perItem(runner.maxAttempts ?? MAX_ATTEMPTS, item);
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         run.attempt = attempt;
         run.status = "drawing";
         void save(round);
@@ -339,7 +386,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
         const drawn = await drawOnce(ctx, run, round, signal);
         if ("error" in drawn) {
           run.attempts.push({ attempt, hard: [drawn.error], verdict: null, grid: null });
-          if (attempt === MAX_ATTEMPTS) {
+          if (attempt === maxAttempts) {
             run.status = "failed";
             run.error = `그림을 못 냈다: ${drawn.error}`;
             return;
@@ -351,15 +398,20 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
         run.topRows = drawn.topRows;
         run.status = "reviewing";
         void save(round);
-        const reviewText = await call("workshop-review", await runner.reviewMessages({
-          item, palette: ctx.palette, direction: ctx.direction, attempt, maxAttempts: MAX_ATTEMPTS,
+        const reviewCtx = {
+          item, palette: ctx.palette, direction: ctx.direction, attempt, maxAttempts,
           candidate: drawn.grid, current: ctx.current, anchors: ctx.anchors, previousVerdict: lastVerdict,
-        }, env), run, round, signal);
-        let parsed: Verdict;
-        try {
-          parsed = runner.parseVerdict(reviewText);
-        } catch {
-          parsed = { verdict: "FAIL", codes: ["READ"], top: "", topRows: null, reasons: "검수 답을 읽지 못했다", fix: "", worse: false };
+        };
+        let parsed: Verdict | null = runner.review
+          ? await runner.review(reviewCtx, env, (reviewMessages) => call("workshop-review", reviewMessages, run, round, signal))
+          : null;
+        if (!parsed) {
+          const reviewText = await call("workshop-review", await runner.reviewMessages(reviewCtx, env), run, round, signal);
+          try {
+            parsed = runner.parseVerdict(reviewText);
+          } catch {
+            parsed = { verdict: "FAIL", codes: ["READ"], top: "", topRows: null, reasons: "검수 답을 읽지 못했다", fix: "", worse: false };
+          }
         }
         const verdict = runner.gate(item, parsed);
         run.verdict = verdict;

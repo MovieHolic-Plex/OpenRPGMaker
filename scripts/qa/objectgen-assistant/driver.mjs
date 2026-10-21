@@ -66,7 +66,7 @@ function relay(surface, raw) {
     child.on("close", (code) => {
       const result = stdout.trim().split("\n").map((line) => { try { return JSON.parse(line); } catch { return null; } }).filter(Boolean).find((e) => e.type === "result");
       const text = String(result?.result ?? "").replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
-      appendFileSync(relayLog, JSON.stringify({ at: new Date().toISOString(), surface, ms: Date.now() - started, code, model: Object.keys(result?.modelUsage ?? {})[0] ?? null, images: blocks.filter((b) => b.type === "image").length, answerChars: text.length, error: result?.is_error ? result.result : (code ? stderr.slice(0, 300) : null) }) + "\n");
+      appendFileSync(relayLog, JSON.stringify({ at: new Date().toISOString(), surface, ms: Date.now() - started, code, model: Object.keys(result?.modelUsage ?? {})[0] ?? null, images: blocks.filter((b) => b.type === "image").length, answerChars: text.length, labels: blocks.filter((b) => b.type === "text").map((b) => b.text.slice(0, 48)).slice(0, 24), error: result?.is_error ? result.result : (code ? stderr.slice(0, 300) : null) }) + "\n");
       if (code !== 0 || !result || result.is_error) reject(Object.assign(new Error(`relay 실패: ${String(result?.result ?? stderr).slice(0, 200)}`), { status: 500 }));
       else resolvePromise(text);
     });
@@ -79,6 +79,7 @@ const page = await browser.newPage({ viewport: { width: 1440, height: 960 } });
 page.setDefaultTimeout(180_000);
 const pageErrors = [];
 page.on("pageerror", (error) => pageErrors.push(error.message));
+page.on("console", (message) => { if (message.type() === "warning" && /workshop/.test(message.text())) pageErrors.push(`warn: ${message.text().slice(0, 300)}`); });
 await page.exposeFunction("__ogRelay", relay);
 await page.exposeFunction("__ogImage", referenceImage);
 await page.addInitScript(() => {

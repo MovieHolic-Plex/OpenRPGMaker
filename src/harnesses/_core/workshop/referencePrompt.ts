@@ -56,9 +56,10 @@ export function refMinTop(gateKind: string | undefined): number {
 }
 
 /** 원본 prompt_for(high view). describe = 물건 설명(이름·생김새·배경·크기 비율). */
-export function refPrompt(describe: string, gateKind?: string): string {
+export function refPrompt(describe: string, gateKind?: string, styleNote?: string): string {
   const top = TOP_WORDS[gateKind === "seat" ? "seat" : "default"]!;
-  return `${REF_VIEW.replace("{top}", top).replace("{d}", describe.trim())} Must NOT be: ${REF_NEGATIVE}.`;
+  // styleNote = 원본 STYLE_NOTE(견본 묶음을 쓰는 흐름에서 원본 prompt_for 가 덧붙인다).
+  return `${REF_VIEW.replace("{top}", top).replace("{d}", describe.trim())} Must NOT be: ${REF_NEGATIVE}.${styleNote ? ` ${styleNote}` : ""}`;
 }
 
 /** 원본 view_ok(high view) — 판정자 답 JSON 을 읽어 통과 여부까지. 못 읽으면 통과가 아니다. */

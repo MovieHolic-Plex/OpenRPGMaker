@@ -60,7 +60,23 @@
 - 조수 도구와 잇기(2026-10-21): `generate_missing_object` 가 낸 요청을 조수 카드(`aiObjectGenCard.ts`)가 받아 공방 폼 없이 바로 판을 돌리고, 사람이 고르거나 「알아서 고르기」(검수 PASS 첫 후보, 설명서 `review.pick` 없음·출처 `/auto-pick`)로 굽는다 — `openwiki/editor-ai-tools.md` 「없는 기물 그리기」.
 - QA(2026-10-07, netns·가짜 채팅): 카드 → 폼 채움 → 후보 5장 → B 고름 → 넣기 → 칩셋 6557→6580(이식 4칸, 킷 2×2) · 후속 요청 문장 · `stamp_tileset_object`·`build_hand_interior_room` 이 새 id 로 성공 · 맵에 그림이 그려짐. 번호 이주는 node 스크립트로 확인(옛 정의에 구운 칸 6530 → 새로 고친 뒤 6578, 맵 칸도 따라 바뀜).
 
+## 새 기물은 object-gen 흐름 그대로 그린다 (2026-10-21)
+
+사용자: 「조수가 object-gen 을 쓴다면서 왜 이렇게 못 그리나」. 실측해 보니 공방은 object-gen 의 참고 그림 단계만 옮겼고, 그 뒤(그리는 에이전트의 미리보기 고치기, 견본 묶음, 숨긴 반려 표본을 섞은 블라인드 판정 3판 다수결, 다시 그리기, 고르기 3판 다수결)는 공방 자체 한국어 지시문 한 번씩이었다. 그래서 새 기물(맵 기물 전부, 손 도트 실내의 `isNew`)은 object-gen(`MovieHolic-Plex/object-gen` `objectgen/flow.py`)의 단계·지시문·견본을 그대로 쓴다. 시트에 있는 그림을 고치는 판은 예전 흐름 그대로다.
+
+- **원문 사본, 갈래(fork) 없음** — 지시문·판정 문장·고르기 문장·참고 지시문은 `src/harnesses/_core/workshop/objectGenKit.json`(원본 모듈 상수 + 견본 묶음 `set.json`, 커밋 고정)에서 읽고, 견본·반려 PNG 는 `public/assets/gen-kits/object-gen/anchors/<set>/`. 다시 뽑기: `python3 scripts/content/extract-objectgen-kit.py <object-gen 체크아웃>`. 공용 `npm run gen-kits:sync`(공방 대기열 작업)가 들어오면 그 모듈로 바꾸고 이 사본·스크립트는 지운다. 바꾼 것은 「그림판 파일을 Read 로 열라」는 JUDGE 첫 문단 한 곳(대화에는 그림이 붙는다)과 ANSWER 의 PNG 갈래뿐이다(원본 drawer.WORKFLOW 가 ANSWER 를 덮듯 「How to answer in this run」 절로 덮는다). 원본 문장이 바뀌어 그 자리를 못 찾으면 던진다.
+- **단계** (`objectGenFlow.ts`, 실행기 갈래 `referenceCount`·`referenceStyleNote`·`maxAttempts`·`looks`·`lookMessage`·`review` — 기물마다 다를 수 있다 `PerItem`):
+  1. 참고 그림 **2장**(장마다 시점 검사 4번까지, 원본 `STYLE_NOTE` 덧붙임) → 판 기록 `round.reference`(+`more`).
+  2. 그리기: 원본 `draw_brief`(방향 A 칩셋 충실 · B 지시 충실 = 후보 둘, VIEW·RECIPE·6칸 이상이면 LARGE, 팔레트 단 요약 `ramps_of`), 칩셋 물체·참고 그림 2장·견본 묶음(oprn-interior-v5-large) 그림.
+  3. **미리보기 고치기** 최대 3번(원본 drawer 의 `j.dry` + preview.png 고리): 8배·1배·2배 + 기계 검사(`ogCheck` = 원본 checks 의 SIZE·EMPTY·TOPPAD·GROUND·BG·STRAY·FOOTPRINT 는 막고, TONES·SPECKLE·INK·TOP 은 알린다) → 고친 격자 또는 `{"keep": true}`.
+  4. **블라인드 판정**: 원본 JUDGE, GOOD/BAD 견본 6배+1배, 숨긴 반려 표본(flat/noise/foreign 중 하나 + slab + 견본 반려 하나)을 섞는다. 표본을 빠뜨리거나 반려 표본을 통과시킨 판은 무효, **유효 3판 다수결**(무효는 2번까지 더). 후보 하나씩 판정한다(원본은 그 판 후보 전부를 한 판에).
+  5. 불통과는 판정 이유를 주고 **한 번 다시 그린다**(시도 2번).
+  6. 「알아서 고르기」: 원본 picker PROMPT + 견본 그림, 꼬리표를 섞어 **3번 묻고 다수결**(`picker.ts` `pickerMajority`).
+- **같은 물건 A/B 실측**(2026-10-21, 벌통·일본 공중전화 부스·금붕어 어항): 원본 CLI(`python3 -m objectgen run`, 그리기·판정·고르기 Opus 5.5 medium) 고른 것 vs 공방(같은 모델) 고른 것을 새 Opus 블라인드 비교 두 번 — 6번 중 공방 3·원본 3 이 낫다는 판정, 공방이 「clearly worse」 는 0번(원본은 1번). 원본 대비 「on par」.
+
 ## 새 기물 그리기 품질 — 참고 그림 단계 · 크기·윗면 · 1배 읽힘 · 3/4 관문 조언 (2026-10-21)
+
+> 아래 크기·윗면 숫자(`sizeProblems`·`topShareGate`)와 한국어 검수 지시문(READ·CONTEXT·looks_like)은 이제 **시트 그림을 고치는 판**에만 쓴다. 새 기물은 위 object-gen 흐름이다.
 
 조수 「없는 기물」 시험 1(`~/claude-viz/objectgen-assistant-1.html`)에서 그린 소품이 앞면만 크고 윗면이 얇았고, 1×1 로 부탁한 벌통이 두 칸 높이로 나왔다. 새 기물(공방 폼·조수 카드) 판에 아래를 더했다. 있는 그림을 고치는 판은 그대로다.
 
