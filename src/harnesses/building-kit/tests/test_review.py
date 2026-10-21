@@ -69,6 +69,32 @@ class ReviewTest(unittest.TestCase):
             self.assertEqual(v['verdict'], 'PASS', bid)
             self.assertEqual(v['votes'], '3/3')
 
+    def test_runs_that_saw_other_pixels_are_not_counted(self):
+        """그림이 바뀐 뒤에는 옛 회차(다른 화소를 본 판정)를 새 그림의 표로 세지 않는다."""
+        for _ in range(3):
+            prep = self.prepare()
+            review.score(H.THEME, H.ROUND, prep['run'], answer_for(prep['dir']), 'fake/judge')
+        changed = {line: {i: dict(p) for i, p in parts.items()} for line, parts in self.parts.items()}
+        item = next(iter(changed['A']))
+        img = changed['A'][item]['img'].copy()
+        w, h = img.size
+        x, y = next((x, y) for y in range(h) for x in range(w) if img.getpixel((x, y))[3] == 255)
+        r, g, b, a = img.getpixel((x, y))
+        img.putpixel((x, y), (255 - r, g, b, a))
+        changed['A'][item]['img'] = img
+        prep = review.prepare(H.THEME, H.ROUND, changed, seed=9)
+        agg = review.score(H.THEME, H.ROUND, prep['run'], answer_for(prep['dir']), 'fake/judge')
+        self.assertEqual(agg['valid'], 1)
+        self.assertFalse(agg['complete'])
+        self.assertTrue(all(v['verdict'] == 'none' for v in agg['candidates'].values()))
+
+    def test_injected_judge_is_labelled_as_injected(self):
+        def runner(prompt, images, work, model, effort, timeout):
+            return answer_for(os.path.dirname(work))
+        review.run(H.THEME, H.ROUND, runs=3, judge_runner=runner, parts=self.parts, seed=11, quiet=True)
+        agg = json.load(open(os.path.join(self.tmp, H.THEME, H.ROUND, 'review', 'result.json')))
+        self.assertTrue(agg['judge'] and all(j.startswith('injected:') for j in agg['judge']), agg['judge'])
+
     def test_probe_passed_voids_the_run_and_it_is_not_counted(self):
         prep = self.prepare()
         review.score(H.THEME, H.ROUND, prep['run'], answer_for(prep['dir'], probe_verdict='PASS'), 'fake/judge')

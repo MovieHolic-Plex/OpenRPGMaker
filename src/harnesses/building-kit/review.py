@@ -355,16 +355,18 @@ def aggregate(theme, rid, need=DEFAULT_RUNS):
     names = _runs(rnd)
     runs = [json.load(open(os.path.join(rnd, n, 'result.json'), encoding='utf-8')) for n in names
             if os.path.exists(os.path.join(rnd, n, 'result.json'))]
-    valid = [r for r in runs if not r.get('void')]
-    void = [r for r in runs if r.get('void')]
+    # 현재 후보 = 가장 나중 회차가 본 후보와 그 화소 해시. 후보 해시 묶음이 정확히 같은 회차만 센다 —
+    # 그림이 바뀐 뒤의 옛 회차(다른 그림을 본 판정)를 새 그림의 표로 쓰지 않는다.
+    def cand_set(name):
+        key = json.load(open(os.path.join(rnd, name, 'key.json'), encoding='utf-8'))
+        return {k['name']: k['pixelSha256'] for k in key.values() if k['kind'] == 'candidate'}
+    cands = cand_set(names[-1]) if names else {}
+    current = [r for n, r in zip([n for n in names if os.path.exists(os.path.join(rnd, n, 'result.json'))], runs)
+               if cand_set(n) == cands]
+    valid = [r for r in current if not r.get('void')]
+    void = [r for r in current if r.get('void')]
     counted = valid[:need]
     complete = len(counted) >= need
-    cands = {}
-    if names:
-        key = json.load(open(os.path.join(rnd, names[0], 'key.json'), encoding='utf-8'))
-        for k in key.values():
-            if k['kind'] == 'candidate':
-                cands[k['name']] = k['pixelSha256']
     out = {'theme': theme, 'round': rid, 'at': now(), 'valid': len(counted), 'void': len(void), 'need': need,
            'complete': complete, 'judge': sorted({r['judge'] for r in counted}),
            'voids': [r['void'] for r in void], 'candidates': {}}
@@ -382,7 +384,7 @@ def aggregate(theme, rid, need=DEFAULT_RUNS):
             'reasons': [v['reason'] for v in votes],
             'issues': [{'code': 'VIEW' if v['view34'] != 'PASS' else 'QUALITY', 'why': v['reason']} for v in fails],
         }
-    out['probes'] = {v['name']: f"{v['view34']}/{v['quality']}" for r in runs for v in r.get('samples', {}).values()
+    out['probes'] = {v['name']: f"{v['view34']}/{v['quality']}" for r in current for v in r.get('samples', {}).values()
                      if v['kind'] == 'probe'}
     json.dump(out, open(os.path.join(rnd, 'result.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     _write_receipts(theme, rid, out, counted)
@@ -428,16 +430,19 @@ def run(theme, rid, runs=DEFAULT_RUNS, judge_cmd=None, judge_runner=None, parts=
     judge_runner = judge_runner or claude_judge
     os.makedirs(_round_dir(theme, rid), exist_ok=True)
     budget = runs + DEFAULT_RETRIES
+    label = f'claude/{JUDGE_MODEL}/{JUDGE_EFFORT}' if judge_runner is claude_judge else f'injected:{judge_cmd or "runner"}'
     agg = None
+    started = 0
     while True:
+        started += 1
         prep = prepare(theme, rid, parts, runs, DEFAULT_RETRIES, only, seed)
         try:
             text = judge_runner(prep['prompt'], prep['images'], prep['work'], JUDGE_MODEL, JUDGE_EFFORT, JUDGE_TIMEOUT)
         except Exception as e:  # noqa: BLE001
             shutil.rmtree(prep['dir'], ignore_errors=True)
             raise SystemExit(f'판정자 프로세스 실패(기록 없음): {e}')
-        agg = score(theme, rid, prep['run'], text, f'claude/{JUDGE_MODEL}/{JUDGE_EFFORT}')
-        if agg['complete'] or len(_runs(_round_dir(theme, rid))) >= budget:
+        agg = score(theme, rid, prep['run'], text, label)
+        if agg['complete'] or started >= budget:
             break
     if not quiet:
         print(describe(agg))
