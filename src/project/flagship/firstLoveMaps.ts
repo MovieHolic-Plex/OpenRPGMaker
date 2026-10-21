@@ -43,8 +43,10 @@ export interface FirstLoveAnchors {
   };
   /** 사무층: 엘리베이터(거리로) · 계단(옥상으로) · 서하 자리 · 지후 자리 · 팀장 자리 · 탕비실 · 회의실. */
   readonly office: {
-    readonly elevator: Cell; readonly elevatorOut: Cell;
+    readonly elevator: Cell; readonly elevatorOut: Cell; readonly npcExit: Cell;
     readonly stairs: Cell; readonly stairsOut: Cell;
+    /** 엘리베이터 앞 첫 만남 자리(팀장·지후) — 트인 바닥. */
+    readonly meetLead: Cell; readonly meetJihu: Cell;
     readonly heroDesk: Cell; readonly jihuDesk: Cell; readonly leadDesk: Cell;
     readonly pantry: Cell; readonly meeting: Cell; readonly meetingSeat: Cell; readonly whiteboard: Cell;
   };
@@ -144,7 +146,6 @@ function paintRoofView(map: GameMap, view: NonNullable<RoomSpec["view"]>): void 
 /** 옥상 한 판 = 위 18줄 도시 풍경 + 아래 옥상(24×12). 난간 줄의 y. */
 const ROOF_FENCE_Y = 18;
 // 사무층(34x20)·편의점·방송실(30x17)은 원래 방을 더 큰 평면 가운데에 놓았다 — 카메라가 맵 밖(검정)을 비추지 않게.
-const OFC_OX = 5;
 const KB_OX = 8, KB_OY = 2, KB_W = 14, KB_H = 12;
 const BC_OX = 8, BC_OY = 2;
 /**
@@ -224,15 +225,18 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       arrive: below(subwayStep),
     },
     office: {
-      elevator: { x: 18 + OFC_OX, y: 14 }, elevatorOut: nearestFree(project, officeRoom, { x: 19 + OFC_OX, y: 15 }),
-      stairs: { x: 14 + OFC_OX, y: 15 }, stairsOut: nearestFree(project, officeRoom, { x: 14 + OFC_OX, y: 13 }),
-      heroDesk: nearestFree(project, officeRoom, { x: 9 + OFC_OX, y: 8 }),
-      jihuDesk: nearestFree(project, officeRoom, { x: 10 + OFC_OX, y: 4 }),
-      leadDesk: nearestFree(project, officeRoom, { x: 20 + OFC_OX, y: 8 }),
-      pantry: nearestFree(project, officeRoom, { x: 10 + OFC_OX, y: 15 }),
-      meeting: nearestFree(project, officeRoom, { x: 5 + OFC_OX, y: 15 }),
-      meetingSeat: nearestFree(project, officeRoom, { x: 3 + OFC_OX, y: 15 }),
-      whiteboard: nearestFree(project, officeRoom, { x: 21 + OFC_OX, y: 9 }),
+      // 엘리베이터·계단 그림은 북쪽 벽면에 박혀 있고 그림 칸 자체를 밟을 수 있다 — 문 칸 = 그림 칸, 나오는 칸 = 바로 아래(안쪽) 칸.
+      elevator: { x: 16, y: 3 }, elevatorOut: { x: 16, y: 4 }, npcExit: { x: 21, y: 3 },
+      stairs: { x: 10, y: 3 }, stairsOut: { x: 10, y: 4 },
+      // 엘리베이터 앞 첫 만남: 서하는 elevatorOut, 팀장은 두 칸 아래(트인 사무실 쪽), 지후는 그 옆 — 전부 석재 로비 바닥 위, 벽·엘리베이터 그림에 안 가린다.
+      meetLead: { x: 16, y: 6 }, meetJihu: { x: 17, y: 6 },
+      heroDesk: nearestFree(project, officeRoom, { x: 7, y: 10 }),
+      jihuDesk: nearestFree(project, officeRoom, { x: 11, y: 10 }),
+      leadDesk: nearestFree(project, officeRoom, { x: 20, y: 11 }),
+      pantry: nearestFree(project, officeRoom, { x: 5, y: 4 }),
+      meeting: nearestFree(project, officeRoom, { x: 8, y: 14 }),
+      meetingSeat: nearestFree(project, officeRoom, { x: 8, y: 17 }),
+      whiteboard: nearestFree(project, officeRoom, { x: 23, y: 10 }),
     },
     rooftop: {
       // 탑옥(계단탑) 철문은 북쪽 벽면에 박혀 있다 — 문 앞 첫 바닥 칸이 밟는 칸, 그 한 칸 아래가 들어서는 칸.
