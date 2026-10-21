@@ -12,7 +12,7 @@ const spots = (process.env.ROOM_SPOTS ? JSON.parse(process.env.ROOM_SPOTS) : [
   ["gate-bottom", "fs_vault_gate", 15, 14],
   ["vault-sanctum", "fs_vault", 15, 10],
   ["vault-hall", "fs_vault", 15, 16],
-  ["vault-west", "fs_vault", 3, 17],
+  ["vault-west", "fs_vault", 11, 17],
   ["vault-east", "fs_vault", 26, 18],
   ["vault-south", "fs_vault", 15, 23],
 ]).map(([id, m, x, y]) => tp(id, m, x, y));
