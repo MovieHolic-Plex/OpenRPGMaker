@@ -192,7 +192,14 @@ export const LIST_HAND_INTERIOR_PARTS_TOOL: ToolDefinition = {
       const r = roomParts(room, Math.min(limit, 16), S);
       if (!r) {
         const idx = roomIndex(S);
-        throw new ToolError(`방 종류·건물 '${room}' 을(를) 모른다 — 방: ${idx.rooms} / 건물: ${idx.buildings}`, { code: "unknown-room" });
+        // 다른 실내 칩셋에는 그 방이 있다(2026-10-22 조수 시험: 「카페」를 기본 판타지 실내에서 찾다 실패 — modern_city 에 cafe 가 있었다).
+        const elsewhere = roomTilesetIds(project).filter((id) => id !== tilesetId).filter((id) => {
+          try { return Boolean(roomParts(room, 1, specFor(project, id))); } catch { return false; }
+        });
+        const hint = elsewhere.length
+          ? ` → '${room}' 은(는) 다른 실내 칩셋에 있다: ${elsewhere.map((id) => `list_hand_interior_parts({tileset:"${id}", room:"${room}"})`).join(" · ")} — 시대(현대·판타지)에 맞는 칩셋을 고른다.`
+          : "";
+        throw new ToolError(`방 종류·건물 '${room}' 을(를) ${tilesetId} 에서 모른다${hint} — ${tilesetId} 의 방: ${idx.rooms} / 건물: ${idx.buildings}`, { code: "unknown-room" });
       }
       const n = Object.values(r.groups).reduce((a, g) => a + (g?.length ?? 0), 0);
       return { summary: `${r.mode === "building" ? "건물" : "방"} ${r.ko}: 예제 ${r.exampleDocs.length}맵 ${r.roomCount}방에서 쓰인 가구 ${n}종(종류별)${r.alsoTagged ? ` + 태그가 맞는 ${r.alsoTagged.length}종` : ""}. 예제 참고문서 documentId: ${r.exampleDocs.slice(0, 4).join(", ")}${r.exampleDocs.length > 4 ? " …" : ""}.`,
