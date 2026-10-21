@@ -166,6 +166,8 @@ export function dressVaultRock(
   tiles: { edge: readonly number[]; vein: readonly number[]; mid: readonly number[]; deep: readonly number[] },
   /** 방 윗벽 위로 이만큼 줄은 밝은 가장자리 암벽 대신 어두운 천장 띠(deep 칸)로 칠한다. 0 이면 끈다. */
   ceilingRows = 0,
+  /** 0 보다 크면 방에서 이 거리 너머는 전부 어두운 천장 칸(deep) — 밝은 중간 암반·디더 얼룩 없이 균일하게(바닥처럼 읽히는 암반 덩어리 금지). 0 이면 옛 동작. */
+  solidBeyond = 0,
 ): number {
   const { width: w, height: h } = map;
   const dist = new Int16Array(w * h).fill(-1);
@@ -209,6 +211,7 @@ export function dressVaultRock(
     }
     if (capped) next = pick(tiles.deep, x, y, 5);
     else if (d <= 2) next = pick(tiles.edge, x, y, 1);
+    else if (solidBeyond > 0 && d > solidBeyond) next = pick(tiles.deep, x, y, 4);
     else if (hash(x, y, 4) < deepShare) next = pick(tiles.deep, x, y, 4);
     else if (d <= 6 && n > 0.8) next = pick(tiles.vein, x, y, 2);
     else next = coarse(tiles.mid);
