@@ -347,14 +347,19 @@
 .cinematic-sequence[data-monster-style="emerald"] .cinematic-creature {
   position:absolute;left:268px;top:72px;width:var(--art-box-width,128px);height:var(--art-box-height,128px);object-fit:contain;image-rendering:pixelated;z-index:1;
 }
+/* 대사창: 본문 3줄(3×24px)을 항상 담고, 아래 22px 패딩은 쪽 안내(book-hint) 전용 띠다.
+   예전 max-height:29% 는 3줄+패딩(약 100px)보다 낮아 스크롤바가 생기고 안내가 3번째 줄 위에 겹쳤다.
+   게임 대사창에는 스크롤바를 두지 않는다 — 더 긴 본문은 창이 위로 자란다(아래는 bottom 고정). */
 .cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"] .cinematic-narration {
-  top:auto;bottom:16px;left:14px;width:calc(100% - 28px - 40px);min-height:25%;max-height:29%;padding:4px 14px 24px;
+  top:auto;bottom:16px;left:14px;width:calc(100% - 28px - 40px);min-height:72px;max-height:none;overflow:visible;padding:4px 14px 22px;
   border:6px double #55615f;background:#fffef0;color:#303840;
   font-family:"Galmuri9",monospace;font-size:18px;line-height:24px;
   box-shadow:inset 0 0 0 2px #baccc7;white-space:pre-wrap;text-align:left;
 }
+/* 쪽 안내는 대사창 안쪽 아래 띠(본문 흐름 밖)에 작은 글자로 둔다.
+   bottom 26px = 창 bottom 16 + 테두리 6 + 4, right 68px = 창 오른쪽 여백 54(14+40) + 테두리 6 + 8. */
 .cinematic-sequence[data-monster-style="emerald"] .cinematic-book-hint {
-  width:auto;right:34px;bottom:26px;font:18px/20px "Galmuri9",monospace;color:#445450;z-index:3;
+  width:auto;right:68px;bottom:26px;font:10px/12px "Galmuri9",monospace;color:#445450;z-index:3;
 }
 .player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] {
   background-color: #0b5264;

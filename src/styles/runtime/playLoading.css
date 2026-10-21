@@ -70,6 +70,8 @@
   font: 500 11px/1.4 var(--font-ui, system-ui, sans-serif);
   max-width: 34ch;
   min-height: 2.8em;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
 }
 
 .play-loading-bar {
@@ -88,6 +90,15 @@
   height: 100%;
   transition: width 120ms linear;
   width: 0%;
+}
+
+/* 진행률을 모르는 동안은 스피너 하나가 진행을 말한다. 실제 비율이 오면(has-progress) 막대가 나타나고 스피너는 빠진다. */
+.play-loading-bar.is-indeterminate {
+  display: none;
+}
+
+.play-loading-overlay.has-progress:not(.is-error) .play-loading-spinner {
+  display: none;
 }
 
 .play-loading-bar.is-indeterminate .play-loading-bar-fill {
@@ -230,6 +241,8 @@
 .player-layout[data-monster-style="emerald"] .play-loading-message { color: #384840; font: 18px/24px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; letter-spacing: 0; }
 .player-layout[data-monster-style="emerald"] .play-loading-bar { background: #f8f8e8; border: 2px solid #586058; border-radius: 0; box-sizing: border-box; height: 10px; width: 160px; }
 .player-layout[data-monster-style="emerald"] .play-loading-bar-fill { background: #48b888; border-radius: 0; }
+/* 에메랄드 미니 창은 스피너를 숨기므로 불확정 막대가 유일한 진행 표시다. */
+.player-layout[data-monster-style="emerald"] .play-loading-bar.is-indeterminate { display: block; }
 .player-layout[data-monster-style="emerald"] .play-loading-bar.is-indeterminate .play-loading-bar-fill { animation-timing-function: steps(8, end); width: 40px; }
 .player-layout[data-monster-style="emerald"] .play-loading-overlay.is-error .play-loading-message { color: #c85048; }
 .player-layout[data-monster-style="emerald"] .play-loading-overlay.is-error .play-loading-bar-fill { background: #c85048; }
