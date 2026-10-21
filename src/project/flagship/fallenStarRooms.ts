@@ -91,7 +91,9 @@ const OBS_ROOM: RoomSpec = {
     {id: "bookshelf 2w", x: 5, y: 9},
     {id: "bookshelf 2w", x: 8, y: 8},
     {id: "cabinet:book+bookb+bookg", x: 11, y: 7},
-    {id: "bookshelf 1w", x: 20, y: 7},
+    {id: "map rolls", x: 20, y: 7},
+    {id: "telescope", x: 17, y: 7},
+    {id: "hourglass", x: 19, y: 8},
     {id: "scroll rack", x: 22, y: 8},
     {id: "bookshelf 2w", x: 25, y: 9},
     {id: "bookshelf 2w", x: 28, y: 10},
@@ -106,8 +108,9 @@ const OBS_ROOM: RoomSpec = {
     {id: "desk 2x1", x: 17, y: 12},
     {id: "chair N", x: 17, y: 13},
     {id: "chair N", x: 18, y: 13},
-    {id: "orrery", x: 22, y: 9},
+    {id: "orrery", x: 22, y: 10},
     {id: "desk 2x1", x: 24, y: 11},
+    {id: "chair N", x: 25, y: 12},
     {id: "paschal candle", x: 21, y: 9},
     {id: "catalog drawers", x: 3, y: 17},
     {id: "scroll rack", x: 4, y: 17},
@@ -147,17 +150,17 @@ const OBS_ROOM: RoomSpec = {
     {id: "chair E", x: 24, y: 19},
     {id: "paschal candle", x: 30, y: 21},
     {id: "owl perch", x: 23, y: 19},
-    {id: "desk 3x2", x: 27, y: 20},
-    {id: "chair S", x: 28, y: 19},
+    {id: "desk 3x2", x: 27, y: 19},
+    {id: "chair N", x: 29, y: 21},
     {id: "globe", x: 29, y: 17},
   ],
   lines: [
     {id: "rug red", rect: {"x0": 12, "y0": 12, "x1": 15, "y1": 13}},
     {id: "rug blue", rect: {"x0": 6, "y0": 11, "x1": 9, "y1": 12}},
-    {id: "rug brown", rect: {"x0": 23, "y0": 11, "x1": 25, "y1": 12}},
-    {id: "rug red", rect: {"x0": 16, "y0": 10, "x1": 21, "y1": 13}},
+    {id: "rug brown", rect: {"x0": 21, "y0": 10, "x1": 25, "y1": 12}},
+    {id: "rug red", rect: {"x0": 16, "y0": 10, "x1": 20, "y1": 13}},
     {id: "rug green", rect: {"x0": 5, "y0": 20, "x1": 8, "y1": 20}},
-    {id: "rug red", rect: {"x0": 24, "y0": 18, "x1": 27, "y1": 20}},
+    {id: "rug red", rect: {"x0": 24, "y0": 18, "x1": 26, "y1": 20}},
     {id: "rug blue", rect: {"x0": 15, "y0": 16, "x1": 15, "y1": 20}},
   ],
   goods: [
@@ -167,11 +170,11 @@ const OBS_ROOM: RoomSpec = {
     {id: "candlestick", x: 19, y: 10},
     {id: "papers", x: 24, y: 11},
     {id: "candlestick", x: 25, y: 11},
-    {id: "papers", x: 27, y: 20},
-    {id: "openbook", x: 28, y: 20},
-    {id: "candlestick", x: 29, y: 20},
-    {id: "quill", x: 27, y: 21},
-    {id: "inkwell", x: 29, y: 21},
+    {id: "papers", x: 27, y: 19},
+    {id: "openbook", x: 28, y: 19},
+    {id: "candlestick", x: 29, y: 19},
+    {id: "quill", x: 27, y: 20},
+    {id: "inkwell", x: 29, y: 20},
     {id: "openbook", x: 6, y: 21},
     {id: "candlestick", x: 7, y: 21},
   ],
@@ -197,8 +200,8 @@ const GATE_ROOM: RoomSpec = {
     "###..........................###",
     "###..........................###",
     "###..........................###",
-    "#########..............#########",
-    "###.......#####..#####.......###",
+    "#########.#####..#####.#########",
+    "###..........................###",
     "###..........................###",
     "###..........................###",
     "###..........................###",
@@ -211,7 +214,7 @@ const GATE_ROOM: RoomSpec = {
     {x0: 9, y0: 1, x1: 22, y1: 17, floor: "grey"},
   ],
   daises: [
-    {id: "dais stone", x: 11, y: 7, w: 10, h: 6},
+    {id: "dais stone", x: 11, y: 7, w: 10, h: 5},
   ],
   objects: [
     {id: "portcullis", x: 15, y: 1},
@@ -241,8 +244,8 @@ const GATE_ROOM: RoomSpec = {
     {id: "great stone brazier lit", x: 19, y: 16},
     {id: "seal stone", x: 13, y: 16},
     {id: "seal stone", x: 18, y: 16},
-    {id: "wall torch", x: 14, y: 14},
-    {id: "wall torch", x: 17, y: 14},
+    {id: "wall torch", x: 14, y: 13},
+    {id: "wall torch", x: 17, y: 13},
     {id: "wall torch", x: 4, y: 1},
     {id: "star chart", x: 1, y: 1},
     {id: "celestial chart", x: 6, y: 1},
@@ -261,7 +264,6 @@ const GATE_ROOM: RoomSpec = {
     {id: "crystal ball", x: 8, y: 10},
     {id: "wall torch", x: 6, y: 13},
     {id: "star chart", x: 4, y: 13},
-    {id: "votive stand", x: 3, y: 15},
     {id: "seal stone", x: 5, y: 15},
     {id: "seal stone", x: 7, y: 15},
     {id: "paschal candle", x: 3, y: 16},
@@ -283,7 +285,7 @@ const GATE_ROOM: RoomSpec = {
   ],
   lines: [
     {id: "rug royal", rect: {"x0": 12, "y0": 4, "x1": 19, "y1": 6}},
-    {id: "rug blue", rect: {"x0": 15, "y0": 13, "x1": 16, "y1": 15}},
+    {id: "rug blue", rect: {"x0": 15, "y0": 12, "x1": 16, "y1": 15}},
     {id: "rug blue", rect: {"x0": 25, "y0": 4, "x1": 27, "y1": 5}},
   ],
   goods: [
@@ -359,7 +361,6 @@ const VAULT_ROOM: RoomSpec = {
     {id: "lectern", x: 6, y: 8},
     {id: "paschal candle", x: 3, y: 8},
     {id: "crystal ball", x: 5, y: 5},
-    {id: "spellbook stand", x: 6, y: 9},
     {id: "relic cabinet", x: 23, y: 3},
     {id: "statue", x: 27, y: 4},
     {id: "relic cabinet", x: 29, y: 4},
@@ -408,7 +409,6 @@ const VAULT_ROOM: RoomSpec = {
     {id: "water jar", x: 7, y: 22},
     {id: "alchemy table", x: 8, y: 22},
     {id: "geode stand", x: 11, y: 22},
-    {id: "stool", x: 9, y: 24},
     {id: "dish rack", x: 20, y: 20},
     {id: "pot rack", x: 24, y: 20},
     {id: "banner blue", x: 29, y: 20},
@@ -417,7 +417,7 @@ const VAULT_ROOM: RoomSpec = {
     {id: "sideboard 2x1", x: 20, y: 22},
     {id: "bread oven", x: 27, y: 22},
     {id: "water jar", x: 29, y: 22},
-    {id: "crate:loaf", x: 29, y: 24},
+    {id: "sack pile", x: 28, y: 24},
     {id: "dining 3x1", x: 23, y: 22},
     {id: "bench 3", x: 23, y: 23},
     {id: "chair W", x: 26, y: 22},
@@ -511,7 +511,7 @@ function build(project: Project, exec: Exec, mapId: string, spec: RoomSpec): Gam
 /** 불빛 가구마다 빛 웅덩이(VQA r2: 불은 켜져 있는데 방이 고르게 밝다). 벽 횃불·걸이 등은 한 칸 아래 바닥을 비춘다. */
 // 벽 횃불은 작고 흐리게 — 크게 겹친 웅덩이가 지하에서 햇살 줄기처럼 읽혔다(VQA r7).
 const LIGHTS: Record<string, { radius: number; dy: number; w?: number; flicker?: boolean; color?: string; intensity?: number }> = {
-  "wall torch": { radius: 1.8, dy: 1, flicker: true, intensity: 0.7 },
+  "wall torch": { radius: 1.8, dy: 1, flicker: true, intensity: 0.55 },   // VQA r16: 겹친 웅덩이가 모난 빛 덩이로 읽혔다
   "brazier": { radius: 2.8, dy: 0, flicker: true },
   "lava brazier": { radius: 2.6, dy: 0, flicker: true },
   "stone brazier lit": { radius: 2.8, dy: 0, flicker: true },
@@ -522,7 +522,7 @@ const LIGHTS: Record<string, { radius: number; dy: number; w?: number; flicker?:
   "paschal candle": { radius: 1.8, dy: 0, flicker: true },
   "candle": { radius: 1.4, dy: 0, flicker: true },
 };
-function lightRoom(project: Project, exec: Exec, mapId: string, spec: RoomSpec, ambient: number, color: string, extra: Array<Cell & { radius: number; color: string }> = []): void {
+function lightRoom(project: Project, exec: Exec, mapId: string, spec: RoomSpec, ambient: number, color: string, extra: Array<Cell & { radius: number; color: string; intensity?: number }> = []): void {
   const sources: Array<Record<string, unknown>> = [];
   spec.objects.forEach((o, i) => {
     const l = LIGHTS[o.id];
@@ -531,7 +531,7 @@ function lightRoom(project: Project, exec: Exec, mapId: string, spec: RoomSpec, 
       sources.push({ id: `l${i}${dx ? `_${dx}` : ""}`, at: { x: o.x + dx, y: o.y + l.dy }, radius: l.radius, intensity: l.intensity ?? 0.9, color: l.color ?? "#ffcf8a", ...(l.flicker ? { flicker: true } : {}) });
     }
   });
-  extra.forEach((e, i) => sources.push({ id: `x${i}`, at: { x: e.x, y: e.y }, radius: e.radius, intensity: 0.8, color: e.color }));
+  extra.forEach((e, i) => sources.push({ id: `x${i}`, at: { x: e.x, y: e.y }, radius: e.radius, intensity: e.intensity ?? 0.8, color: e.color }));
   exec(project, "set_lighting_volume", { mapId, ambient, color, sources, applyMode: "map" });
 }
 
@@ -626,8 +626,9 @@ export function rebuildFallenRooms(project: Project, exec: Exec, ids: { hub: str
   build(project, exec, ids.vault, VAULT_ROOM);
   exec(project, "stamp_object", { objectId: KIT("magic circle"), mapId: ids.vault, x: 26, y: 7 });   // 성소 동쪽 별 원
   lightRoom(project, exec, ids.observatory, OBS_ROOM, 0.45, "#1c1830");
-  lightRoom(project, exec, ids.gate, GATE_ROOM, 0.72, "#141420");   // VQA r10: 0.55 는 꺼진 화로가 검은 기둥으로 묻혔다
-  lightRoom(project, exec, ids.vault, VAULT_ROOM, 0.68, "#141c40", [{ x: 15, y: 5, radius: 4.5, color: "#a8d8f0" }, { x: 10, y: 15, radius: 2.5, color: "#88b3ca" }, { x: 27, y: 8, radius: 2.2, color: "#c8a8f0" }]);
+  // VQA r10: 0.55 는 꺼진 화로가 검은 기둥으로 묻혔다. VQA r16: 꺼진 화로가 빈 검은 항아리로 읽혔다 → 단 가운데 별 원의 옅은 빛이 장작을 비춘다.
+  lightRoom(project, exec, ids.gate, GATE_ROOM, 0.66, "#141420", [{ x: 15, y: 9, radius: 4.2, color: "#c8d4ff", intensity: 0.5 }]);
+  lightRoom(project, exec, ids.vault, VAULT_ROOM, 0.62, "#141c40", [{ x: 15, y: 5, radius: 4.5, color: "#a8d8f0" }, { x: 10, y: 15, radius: 2.5, color: "#88b3ca" }, { x: 27, y: 8, radius: 2.2, color: "#c8a8f0" }]);
 
   // ── 천문대 ──
   const obs = M(ids.observatory);
