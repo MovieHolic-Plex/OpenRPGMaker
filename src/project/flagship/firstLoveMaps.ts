@@ -68,13 +68,18 @@ function buildRoom(exec: ExecTool, mapId: string, name: string, spec: RoomSpec):
   });
 }
 
-/** 맨 아래 줄 틈(출입구) 중 가운데 칸. */
+/**
+ * 아래쪽 출입구 틈의 가운데 칸 — 맨 아래 줄부터 위로 올라가며 걸을 수 있는 칸이 있는 첫 줄을 쓴다.
+ * 승강장 평면은 맨 아래 줄이 벽이고 그 위 줄(역사 앞 뒷길)이 열려 있다. #3182 전에는 맵 이름의 「승강장」이 평면을
+ * 표준 지하철역 청사진으로 바꿔 맨 아래 줄에 틈이 있었고, 이제 준 평면대로 지어 맨 아래 줄만 보던 검사가 데모를 멈췄다.
+ */
 function bottomGap(map: GameMap, project: Project): Cell {
-  const y = map.height - 1;
-  const xs: number[] = [];
-  for (let x = 0; x < map.width; x++) if (isPassable(project, map, x, y)) xs.push(x);
-  if (xs.length === 0) throw new Error(`[first-love] ${map.id}: 아래 출입구 틈이 없다`);
-  return { x: xs[Math.floor((xs.length - 1) / 2)]!, y };
+  for (let y = map.height - 1; y >= Math.floor(map.height / 2); y--) {
+    const xs: number[] = [];
+    for (let x = 0; x < map.width; x++) if (isPassable(project, map, x, y)) xs.push(x);
+    if (xs.length > 0) return { x: xs[Math.floor((xs.length - 1) / 2)]!, y };
+  }
+  throw new Error(`[first-love] ${map.id}: 아래 출입구 틈이 없다`);
 }
 
 /** origin 에서 가장 가까운, 걸어 들어갈 수 있는 빈 칸(이벤트 없는 칸). */
