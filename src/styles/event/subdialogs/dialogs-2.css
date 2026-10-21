@@ -829,6 +829,11 @@
   text-overflow: ellipsis;
 }
 
+/* 「더 묻는 명령」 말줄임. 글자에 넣으면 번역 키와 어긋난다(commandPicker.ts pickerLabelParts). */
+.event-command-picker-command-label[data-ellipsis]::after {
+  content: "...";
+}
+
 .command-runtime-badge {
   align-items: center;
   border: 1px solid currentColor;
