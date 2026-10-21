@@ -257,50 +257,55 @@ def lens_bench(c):
            TAGS + ['발판', '사다리'],
            '큰 망원경 바로 왼쪽(접안경 옆) 2×2칸. 발밑은 막힌다.', ['great telescope'], use=('block',))
 def observing_platform(c):
-    # 캔버스 32×48. 발밑 칸 = y16..47(2×2). 위에서 내려다본 넓은 단 윗면(y17..32) + 낮은 앞면 + 앞으로 기댄 사다리 + 가는 놋쇠 난간.
+    # 캔버스 32×48. 발밑 칸 = y16..47(2×2), 맨 위 줄(0..15)은 난간. 무릎 높이 상자가 아니라 사다리로 오르는 높은 단:
+    # 판자 윗면(y11..20) 아래로 한 칸 반 높이의 다리 틀(기둥·X 버팀·바닥 밑 그늘), 기둥 박은 놋쇠 난간, 짙은 윤곽의 사다리.
     m = 'wood'
-    c.shadow(1, 42, 31, 47)
-    # 단 앞면 y33..40 — 가로 판 두 장, 모서리 기둥, 놋쇠 모서리 쇠
-    for y in range(33, 41):
+    D = K('wood', 1)                                                        # v5 가구 윤곽 짙은 갈색
+    c.shadow(1, 43, 31, 47)
+    # 단 밑 그늘(다리 사이로 보이는 어두운 속)
+    for y in range(22, 44):
+        for x in range(3, 29): c.p(x, y, K('dwood', 1 if y < 30 else 2))
+    # 다리 기둥 셋(왼 밝게·오른 그늘) + X 버팀대 둘 + 아래 가로대
+    for x0, kl, kr in ((2, 5, 4), (15, 4, 3), (27, 3, 2)):
+        for y in range(21, 45):
+            c.p(x0, y, K(m, kl)); c.p(x0 + 1, y, K(m, kl)); c.p(x0 + 2, y, K(m, kr))
+    for xa, xb in ((5, 14), (18, 26)):
+        for i in range(xb - xa + 1):
+            ya = 24 + int(round(i * 17 / (xb - xa))); yb = 41 - int(round(i * 17 / (xb - xa)))
+            c.p(xa + i, ya, K(m, 4)); c.p(xa + i, ya + 1, K(m, 2))
+            c.p(xa + i, yb, K(m, 3)); c.p(xa + i, yb + 1, K(m, 2))
+    c.hl(2, 29, 42, K(m, 3)); c.hl(2, 29, 43, K(m, 2))
+    # 단 머리 보(앞면 띠)
+    for y in range(21, 24):
+        c.hl(2, 29, y, K(m, (4, 3, 2)[y - 21]))
+    # 단 윗면 y11..20 — 동서로 놓인 널, 뒤 어둡게 → 앞 밝게, 앞 입술
+    for y in range(11, 21):
+        j = y - 11
         for x in range(2, 30):
-            k = 4 if y < 37 else 3
-            if y == 36: k = 2                                              # 판 이음
-            if x in (2, 3): k = 5 if x == 2 else 4                         # 왼 기둥(빛)
-            elif x in (28, 29): k = 2                                      # 오른 기둥(그늘)
-            elif hnoise(x // 3, y, 41) > .86: k -= 1
-            c.p(x, y, K(m, k))
-    c.hl(2, 29, 40, K(m, 2))
-    for x in (2, 28): c.p(x, 33, K('brass', 6 if x == 2 else 4)); c.p(x + 1, 33, K('brass', 4 if x == 2 else 3))
-    # 단 윗면 y17..32 — 동서로 놓인 널 5장(3줄씩), 뒤 어둡게 → 앞 밝게, 널 끝 이음·못, 앞 입술
-    for y in range(17, 33):
-        j = y - 17
-        for x in range(2, 30):
-            k = 4 if j < 3 else 5 if j < 9 else 6
+            k = 4 if j < 3 else 5 if j < 6 else 6
             if j % 3 == 2: k -= 1
             elif x == (7 + 9 * (j // 3)) % 25 + 3: k -= 2
-            elif hnoise(x // 4, y, 43) > .87: k -= 1
             if x >= 27: k -= 1
             c.p(x, y, K(m, k))
-    c.hl(2, 29, 32, K(m, 7)); c.hl(2, 29, 16, K(m, 3))
-    for (x, y) in ((6, 21), (21, 24), (12, 27), (25, 30)): c.p(x, y, K('iron', 5))
-    # 사다리 — 앞 입술에 걸쳐 바닥으로 기댄다(아래로 갈수록 앞으로 나와 살짝 벌어진다)
-    for y in range(30, 47):
-        f = (y - 30) / 16
-        xl = int(round(17 - f)); xr = int(round(26 + f))
-        c.p(xl, y, K('pine', 6)); c.p(xl + 1, y, K('pine', 4))
-        c.p(xr, y, K('pine', 5)); c.p(xr + 1, y, K('pine', 3))
-    for y in range(33, 46, 4):
-        f = (y - 30) / 16
-        x0 = int(round(19 - f)); x1 = int(round(25 + f))
-        c.hl(x0, x1, y, K('pine', 7)); c.hl(x0, x1, y + 1, K('pine', 3))   # 가로대 윗면 + 밑 그늘
-    c.p(17, 29, K('brass', 6)); c.p(26, 29, K('brass', 5))                 # 사다리 갈고리
-    c.outline(dark=K('wood', 1))
-    # 난간(윤곽 뒤에 그려 가로대 사이가 비어 보이게) — 낮은 난간: 뒤 기둥 셋, 윗면이 보이는 굵은 손잡이 가로대(밝은 윗면 2줄 + 그늘 1줄),
-    # 양옆 손잡이(뒤 → 앞으로 세로로 보인다, 2px 폭으로 윗면 빛 + 그늘)
+    c.hl(2, 29, 20, K(m, 7))
+    # 사다리 — 단 입술에 걸쳐 바닥으로 기댄다, 디딤대 4, 기둥 바깥에 짙은 윤곽
+    for y in range(18, 47):
+        f = (y - 18) / 28
+        xl = int(round(17 - 1.5 * f)); xr = int(round(25 + 1.5 * f))
+        c.p(xl - 1, y, D); c.p(xl, y, K('pine', 6)); c.p(xl + 1, y, K('pine', 4)); c.p(xl + 2, y, D)
+        c.p(xr - 1, y, D); c.p(xr, y, K('pine', 5)); c.p(xr + 1, y, K('pine', 3)); c.p(xr + 2, y, D)
+    for y in range(24, 46, 6):
+        f = (y - 18) / 28
+        x0 = int(round(19 - 1.5 * f)); x1 = int(round(23 + 1.5 * f))
+        c.hl(x0, x1, y - 1, D); c.hl(x0, x1, y, K('pine', 7)); c.hl(x0, x1, y + 1, K('pine', 4)); c.hl(x0, x1, y + 2, D)
+    c.outline(dark=D)
+    # 놋쇠 난간(윤곽 뒤에 그린다 — 가로대 사이는 비워 바닥이 보이게): 기둥 넷 + 손잡이 + 가운데 가로대, 바깥쪽에 짙은 윤곽 한 줄
     br = 'brass'
-    for x, k in ((3, 5), (15, 5), (28, 4)):
-        c.vl(x, 11, 16, K(br, k)); c.vl(x + 1, 12, 16, K(br, 2))
-    c.hl(2, 29, 9, K(br, 6)); c.hl(2, 29, 10, K(br, 5)); c.hl(2, 29, 11, K(br, 2))
-    for x in (1, 29):
-        c.vl(x, 9, 31, K(br, 6 if x == 1 else 4)); c.vl(x + 1, 10, 31, K(br, 3 if x == 1 else 2))
-    c.p(1, 32, K(br, 3)); c.p(30, 32, K(br, 1))
+    c.hl(1, 30, 1, D)                                                      # 손잡이 위 윤곽
+    c.hl(1, 30, 2, K(br, 6)); c.hl(1, 30, 3, K(br, 4)); c.hl(2, 29, 4, D)  # 손잡이(윗면 빛 + 앞면 그늘)
+    c.hl(3, 28, 7, K(br, 5)); c.hl(3, 28, 8, D)                            # 가운데 가로대
+    for x, k in ((1, 5), (9, 5), (22, 4), (30, 3)):                         # 기둥(뒤 둘은 단 뒤 가장자리까지, 양 끝은 앞 입술까지)
+        y1 = 10 if x in (9, 22) else 20
+        c.vl(x, 2, y1, K(br, k))
+        c.vl(x + (1 if x < 16 else -1), 5, y1 if x in (9, 22) else 10, D if x in (9, 22) else K(br, 2))
+    c.vl(0, 1, 21, D); c.vl(31, 1, 21, D)                                  # 양 끝 기둥 바깥 윤곽

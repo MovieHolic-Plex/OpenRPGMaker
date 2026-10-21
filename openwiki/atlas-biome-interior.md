@@ -317,9 +317,9 @@ v5 의 작은 삼각대 망원경·천체 모형·지구본·1칸 별자리표·
 
 - `great telescope` 큰 굴절 망원경 5×6(발밑 5×2 막힘, 위 4줄 ★) — 둥근 나무 단·벽돌 돌기둥·놋쇠 집게·나무 경통·놋쇠 띠·이슬막이·파인더. 접안경은 왼쪽 아래 (발밑 왼쪽 칸 바로 위). kind `other`.
 - `dome slit` 관측 틈 2칸 걸이(벽면 두 줄) — 돌 문설주 머리가 벽 머리 갓돌을 받아 끝내고, 덧문·별 하늘·초승달·돌 창턱. `wall_mounted`.
-- `celestial chart` 별자리 원판 도표 2칸 걸이 · `lens bench` 렌즈 작업대(발밑 3×2) · `observing platform` 관측 발판(발밑 2×2, 넓은 단 윗면 + 낮은 놋쇠 난간 + 앞 사다리, kind `other`).
-- 관문: 그림 `tiledata/hand-interior/plus/gate-observatory/*.png`(시트에 들어가는 화소, 팔레트 v6). 묶음 `harness-data/object-gate/queue/fallen-observatory-r2.json`(r1 은 대체됨).
-  독립 Opus VQA r1 FAIL 3/5 영수증 `harness-data/object-gate/vqa/fallen-observatory-r1.opus-vqa-r1-fail.json` — 망원경 잔선·떨어진 토막·검정 접안경·`#000` 윤곽, 관측 틈이 한 칸 높아 갓돌·천장 띠를 덮음·바둑 무늬 하늘, 발판이 1배에서 상자로 읽힘·접안경과 4칸 떨어짐, 작업대 실제 발밑 3×2. r2 에서 모두 고쳤다.
+- `celestial chart` 별자리 원판 도표 2칸 걸이 · `lens bench` 렌즈 작업대(발밑 3×2) · `observing platform` 관측 발판(발밑 2×2, 다리 틀 위 높은 단 + 기둥 놋쇠 난간 + 앞 사다리, kind `other`).
+- 관문: 그림 `tiledata/hand-interior/plus/gate-observatory/*.png`(시트에 들어가는 화소, 팔레트 v6). 묶음 `harness-data/object-gate/queue/fallen-observatory-r3.json`(r1·r2 는 대체됨).
+  독립 Opus VQA r1 FAIL 3/5 영수증 `harness-data/object-gate/vqa/fallen-observatory-r1.opus-vqa-r1-fail.json` — 망원경 잔선·떨어진 토막·검정 접안경·`#000` 윤곽, 관측 틈이 한 칸 높아 갓돌·천장 띠를 덮음·바둑 무늬 하늘, 발판이 1배에서 상자로 읽힘·접안경과 4칸 떨어짐, 작업대 실제 발밑 3×2. r2 에서 모두 고쳤다. VQA r2(`vqa/fallen-observatory-r2.opus-vqa-r1-fail.json`)는 망원경·관측 틈·도표·작업대 PASS(화소 고정), 발판만 FAIL(앞면 8px = 무릎 높이 상자, 윤곽 없는 얇은 난간·사다리, 회색 못) → r3 발판: 윗면 10줄 + 다리 틀 앞면 24줄(기둥 셋·X 버팀·밑 그늘), 기둥 박은 난간(윤곽 뒤에 그려 가로대 사이가 빈다), 짙은 윤곽 사다리.
   사람 허용 전에는 `bake.py` 가 막는다. AI 조언은 판마다 갈렸다(발판: 남북 널+못 → 「정면 입면」, 윤곽 기본값 wood 0단 = 거의 검정 → 화풍 NO, 높은 난간 → 「윗끝이 세로 면뿐」).
 - 윤곽: `Cv.outline()` 기본은 재질 램프 0단이고 wood·black 0단은 `#000000` 이다. v5 가구 윤곽은 짙은 갈색(`#411e05` = `K('wood',1)`) — `outline(dark=K('wood', 1))` 로 준다.
 - 칸(미리보기 굽기에서 잰 값, 핀 덧붙이기 전용): 망원경 7410~7434 · 관측 틈 7435~7438 · 도표 7439~7442 · 작업대 7443~7448 · 발판 7449~7454. 그 앞 7410칸은 화소·정의 변화 0.
