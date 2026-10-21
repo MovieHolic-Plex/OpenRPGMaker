@@ -220,7 +220,8 @@
   color: var(--runtime-window-muted);
   cursor: default;
   font-family: var(--runtime-ui-font);
-  font-size: 11px;
+  /* titleScreen.menuFontPx 가 있으면 그 크기(titleScreen.ts renderMenu). */
+  font-size: var(--rm-title-menu-font, 11px);
   font-weight: 400;
   line-height: 1.2;
   min-height: 16px;

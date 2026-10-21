@@ -336,6 +336,7 @@ export function normalizeTitleOpeningFields(
   | "logoStyle"
   | "logoSubtitle"
   | "menuStyle"
+  | "menuFontPx"
   | "sequence"
   | "logoShine"
   | "transition"
@@ -346,6 +347,9 @@ export function normalizeTitleOpeningFields(
   const logoStyle = normalizeTitleLogoStyle(settings?.logoStyle);
   const logoSubtitle = normalizeTitleLogoSubtitle(settings?.logoSubtitle);
   const menuStyle = normalizeTitleMenuStyle(settings?.menuStyle);
+  const menuFontPx = typeof settings?.menuFontPx === "number" && Number.isFinite(settings.menuFontPx)
+    ? Math.min(24, Math.max(10, Math.round(settings.menuFontPx)))
+    : undefined;
   const sequence = normalizeTitleOpeningSequence(settings?.sequence);
   const logoShine = normalizeTitleLogoShine(settings?.logoShine);
   const transition = normalizeTitleTransition(settings?.transition);
@@ -356,6 +360,7 @@ export function normalizeTitleOpeningFields(
     ...(logoStyle ? { logoStyle } : {}),
     ...(logoSubtitle ? { logoSubtitle } : {}),
     ...(menuStyle ? { menuStyle } : {}),
+    ...(menuFontPx ? { menuFontPx } : {}),
     ...(sequence ? { sequence } : {}),
     ...(logoShine ? { logoShine } : {}),
     ...(transition ? { transition } : {}),

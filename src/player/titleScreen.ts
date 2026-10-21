@@ -699,6 +699,7 @@ function renderMenu(
     attrs: { "aria-label": "게임 시작 메뉴", role: "listbox" },
   });
   if (settings.menuStyle) menu.dataset.menuStyle = settings.menuStyle;
+  if (settings.menuFontPx) menu.style.setProperty("--rm-title-menu-font", `${settings.menuFontPx}px`);
   menu.style.left = logicalX(settings.layout.menuX);
   menu.style.top = logicalY(titleMenuTop(settings.layout.menuY, options.length, hintVisible));
   for (const [index, option] of options.entries()) {

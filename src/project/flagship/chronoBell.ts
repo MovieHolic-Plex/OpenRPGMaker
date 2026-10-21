@@ -1134,6 +1134,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   if (project.system.titleScreen) {
     project.system.titleScreen.logoSubtitle = "제1막 · 떨어진 별";
     project.system.titleScreen.logoStyle = "gold";
+    // 가혹 검수 r12: 메뉴 글자가 480 폭에서 작다 — 18px.
+    project.system.titleScreen.menuFontPx = 18;
     // 키아트는 화면 1배(480×270) 도트 — 늘리지 않고 도트 그대로 보인다.
     project.system.titleScreen.backgroundFit = "cover";
     project.system.titleScreen.backgroundRendering = "pixelated";

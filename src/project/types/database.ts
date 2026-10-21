@@ -1715,6 +1715,8 @@ export interface TitleScreenSettings {
   /** 로고 아래 부제(최대 60자). */
   logoSubtitle?: string;
   menuStyle?: TitleMenuStyle;
+  /** 메뉴 글자 크기(논리 px, 10..24). 생략 = 스킨 기본(11px). 480 폭 화면에서 11px 은 작다(폴른 스타 가혹 검수 r12). */
+  menuFontPx?: number;
   /** Optional title-screen BGM (music resource id). Empty/undefined = silent. */
   musicResourceId?: string;
   layout: TitleScreenLayout;

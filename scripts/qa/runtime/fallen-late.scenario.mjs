@@ -20,7 +20,8 @@ const BOSS_HP = Number(process.env.FS_LATE_BOSS_HP ?? 60);
 for (const enemy of project.database.enemies) {
   if (enemy.id === "enemy_fs_valen" || enemy.id === "enemy_fs_guardian") enemy.stats = { ...enemy.stats, maxHp: BOSS_HP };
 }
-const derived = "/tmp/fs-late-fixture.json";
+// 프로세스마다 따로 — 검수자와 감독이 동시에 돌리면 같은 파일을 서로 덮었다.
+const derived = `/tmp/fs-late-fixture-${process.pid}.json`;
 writeFileSync(derived, JSON.stringify(fixture));
 
 const closeDialogue = (max = 30) => [
@@ -40,19 +41,23 @@ const stepInto = (mapId, x, y, dir) => [
   { kind: "hold", dir: null, ms: 1500 },
 ];
 const evalOp = (name, fn) => ({ kind: "evalToFile", fn, out: `/tmp/fs-late-${name}.json` });
-/** 전투 한 수: 결과 창이면 확인, 명령 창이면 공격, 대상 창이면 첫 대상. 결과 패널이 뜨면 손대지 않는다(찍을 차례). */
-const STEP_FN = (confirm) => `() => {
+/**
+ * 전투 한 수: 결과 창이면 확인, 명령 창이면 command(공격 또는 방어), 대상 창이면 첫 대상. 결과 패널이 뜨면 손대지 않는다(찍을 차례).
+ * 패배 판은 체력 1 로 방어만 한다 — 보스 체력을 줄인 픽스처라 공격하면 이겨 버렸다.
+ */
+const STEP_FN = (confirm, command = "actor-command-attack") => `() => {
   const q = (t) => document.querySelector('[data-testid="' + t + '"]');
   if (q("battle-result-panel") && !${confirm}) return "result-panel";
   const ok = q("battle-result-confirm"); if (ok) { ok.click(); return "confirm"; }
   const live = [...document.querySelectorAll("button.battle-command")].filter((n) => !n.disabled && n.dataset.previewOnly !== "true");
-  const atk = live.find((n) => n.dataset.testid === "actor-command-attack"); if (atk) { atk.click(); return "attack"; }
+  const cmd = live.find((n) => n.dataset.testid === "${command}") ?? live.find((n) => n.dataset.testid === "actor-command-attack");
+  if (cmd) { cmd.click(); return cmd.dataset.testid; }
   const target = live.find((n) => (n.dataset.testid || "").startsWith("battle-target-") && n.dataset.testid !== "battle-target-cancel");
   if (target) { target.click(); return "target"; }
   return null;
 }`;
-const fightUntilResult = (name) => [
-  { kind: "repeatUntil", testid: "battle-result-panel", state: "present", maxRounds: 300, ops: [evalOp(`${name}-step`, STEP_FN(false)), { kind: "hold", dir: null, ms: 400 }] },
+const fightUntilResult = (name, command) => [
+  { kind: "repeatUntil", testid: "battle-result-panel", state: "present", maxRounds: 300, ops: [evalOp(`${name}-step`, STEP_FN(false, command)), { kind: "hold", dir: null, ms: 400 }] },
   { kind: "hold", dir: null, ms: 1600 },
 ];
 const leaveBattle = (name) => [
@@ -74,8 +79,11 @@ export default {
   query: { e2eVitals: "1" },
   viewport: { width: vw, height: vh },
   beats: [
-    { id: "boot", note: "새 게임 → 오프닝 건너뛰기 → 포고 넘기기", ops: [
+    { id: "title", note: "타이틀(메뉴 글자 크기)", ops: [
       { kind: "waitFor", testid: "title-screen", state: "present", timeoutMs: 60000 },
+      { kind: "waitForAttr", testid: "title-screen", attr: "data-seq-state", value: "done", timeoutMs: 30000 },
+    ], shot: true },
+    { id: "boot", note: "새 게임 → 오프닝 건너뛰기 → 포고 넘기기", ops: [
       { kind: "pressUntil", key: "Enter", testid: "cinematic-sequence", state: "present", maxPresses: 6, timeoutMs: 12000 },
       { kind: "hold", dir: null, ms: 600 },
       { kind: "pressUntil", key: "Escape", testid: "cinematic-sequence", state: "absent", maxPresses: 6 },
@@ -96,7 +104,7 @@ export default {
       { kind: "pressUntil", key: "Enter", testid: "battle-scene", state: "present", maxPresses: 30, timeoutMs: 900 },
       { kind: "hold", dir: null, ms: 2500 },
     ], shot: true },
-    { id: "defeat-card", note: "패배 카드", ops: [...fightUntilResult("lose")], shot: true },
+    { id: "defeat-card", note: "패배 카드", ops: [...fightUntilResult("lose", "actor-command-defend")], shot: true },
     { id: "retreat", note: "물러섬 대사", ops: [...leaveBattle("lose"), { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 8000 }, { kind: "hold", dir: null, ms: 1800 }], shot: true },
     { id: "retry-start", note: "다시 말 걸어 재도전", ops: [...closeDialogue(), evalOp("heal", "() => { window.__oprnDebug.heal(); return true; }"), ...startBoss], shot: true },
     { id: "victory-card", note: "승리 카드", ops: [...fightUntilResult("win")], shot: true },
