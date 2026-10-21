@@ -46,14 +46,15 @@ export function createObjectGenCard(request: ObjectGenRequest, followUp: ObjectG
     if (next) followUp(next);
   };
 
-  const bake = async (letter: string, auto: boolean): Promise<void> => {
+  let choosing = false;
+  const bake = async (letter: string, auto: boolean, reason = ""): Promise<void> => {
     if (settled || baking || !started || !glue) return;
     baking = true;
     for (const node of pickButtons) node.disabled = true;
     status.textContent = auto ? `알아서 고르기: 검수를 통과한 ${letter} 를 칩셋에 넣는 중…` : `${letter} 를 칩셋에 넣는 중…`;
     try {
-      const baked = await glue.bakeObjectGenRun(started, letter, auto);
-      finish(`「${baked.title}」(${letter})을(를) 칩셋 ${baked.tilesetId} 에 넣었어요. 조수가 이어서 놓을게요.`, objectGenFollowUp(request, baked, auto ? "auto" : "user"));
+      const baked = await glue.bakeObjectGenRun(started, letter, auto, reason);
+      finish(`「${baked.title}」(${letter})을(를) 칩셋 ${baked.tilesetId} 에 넣었어요.${auto && reason ? ` 고른 까닭: ${reason}.` : ""} 조수가 이어서 놓을게요.`, objectGenFollowUp(request, baked, auto ? "auto" : "user"));
     } catch (error) {
       status.textContent = `넣지 못했어요: ${error instanceof Error ? error.message : String(error)}`;
       for (const node of pickButtons) node.disabled = false;
@@ -116,8 +117,18 @@ export function createObjectGenCard(request: ObjectGenRequest, followUp: ObjectG
       status.textContent = `후보를 그리는 중이에요(${done}/${round.runs.length}). 한 판에 1~3분 걸려요. 다른 일을 해도 계속 그려요.`;
       return;
     }
-    const auto = autoBox.checked ? glue.autoPickLetter(started) : null;
-    if (auto) { void bake(auto, true); return; }
+    if (choosing) return;
+    if (autoBox.checked && glue.autoPickLetter(started)) {
+      // 검수 통과가 둘 이상이면 고르기 호출 한 번(object-gen picker, picker.ts). 그동안 사람 고르기 단추는 그대로 열려 있다.
+      choosing = true;
+      status.textContent = "알아서 고르기: 검수를 통과한 후보 중 하나를 고르는 중…";
+      const run = started;
+      void glue.chooseAutoPick(run).then((choice) => {
+        choosing = false;
+        if (choice && !settled && !baking) void bake(choice.letter, true, choice.reason);
+      });
+      return;
+    }
     const usable = round.runs.some((r) => r.status === "done" && r.grid);
     status.textContent = !usable
       ? "후보를 그리지 못했어요. 「다시 그리기」를 누르거나 조수에게 있는 것으로 해 달라고 하세요."
@@ -198,7 +209,7 @@ export function createObjectGenCard(request: ObjectGenRequest, followUp: ObjectG
       el("p", { class: "ai-tileset-change-detail", text: `칩셋 「${request.tilesetName}」의 색과 그림 느낌으로 ${size}${request.base ? ` · (${request.base.x},${request.base.y})에 놓아요` : ""}. 내 AI 계정으로 그리고, 이 게임에만 들어가요.` }),
       reference,
       candidates,
-      el("label", { class: "ai-store-agree ai-objectgen-auto", children: [autoBox, "알아서 고르기 — 검수를 통과한 첫 후보를 바로 넣어요(이 기기에 기억)"] }),
+      el("label", { class: "ai-store-agree ai-objectgen-auto", children: [autoBox, "알아서 고르기 — 검수를 통과한 후보 중 하나를 골라 바로 넣어요(이 기기에 기억)"] }),
       status,
       footer,
     ],
