@@ -357,6 +357,32 @@ function setEventFace(map: GameMap, eventId: string, faceId: string | undefined)
 }
 
 /**
+ * 말을 거는 장면을 세운다 — 24×32 칩을 16px 칸에 세우면 마주 붙어 선 두 사람은 앞사람 발이 뒷사람 머리를 덮어
+ * 「한 칸에 겹쳐 선」 것처럼 보였다(발렌·카엘, 하넬·카엘 — 가혹 검수 r5~r8 major). 대사 전에 주인공이 바라보는
+ * 방향을 유지한 채 한 칸 물러서 상대와 빈 칸 하나를 둔다. 막혀 있으면 건너뛴다(skippable).
+ * 동료는 주인공이 지나온 칸(궤적)을 따르고 몸 길이(2칸)만큼 서로·주인공과 떨어져 서므로(followers.ts followerPositions)
+ * 물러선 뒤에도 주인공 칸·서로의 칸을 나누지 않는다.
+ */
+const BACK_STEP: Readonly<Record<"up" | "down" | "left" | "right", "up" | "down" | "left" | "right">> = { up: "down", down: "up", left: "right", right: "left" };
+function stageTalk(event: GameEvent | undefined): void {
+  if (!event) return;
+  const stepBack = (["up", "down", "left", "right"] as const).reduceRight<Command[]>((rest, facing) => [{
+    kind: "fork",
+    condition: { kind: "facing", subject: "player", dir: facing },
+    then: [{
+      kind: "moveEvent", eventId: "@player",
+      // 주인공 루트는 방향 고정을 모른다 — 물러선 뒤 다시 상대 쪽으로 돈다.
+      route: { moves: [{ kind: "move", dir: BACK_STEP[facing] }, { kind: "turn", dir: facing }], repeat: false, wait: true, skippable: true },
+    }],
+    else: rest,
+  } as unknown as Command], []);
+  for (const page of event.pages ?? []) {
+    if (page.trigger?.kind !== "action" || !JSON.stringify(page.commands).includes('"kind":"text"')) continue;
+    page.commands.unshift(...stepBack);
+  }
+}
+
+/**
  * 대사 종류를 단다 — 서술·안내·석판·외침이 모두 같은 창이라 누가 말하는지 읽기 어려웠다(가혹 검수 r6 「대사」 6.5).
  * 서술은 내레이션 창, 얻음·동료 합류·화로 진행은 시스템 안내, 석판은 표지판, 정해 둔 외침 두 줄은 외침.
  */
@@ -993,6 +1019,10 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   buildFallenStarOpening(project);
   // 얼굴은 모든 대사 편집이 끝난 뒤 한 번에 건다(위 단계들이 대사를 찾아 바꾸고 덧붙인다).
   const actorFace = (id: string): string => project.database.actors.find((a) => a.id === id)?.faceResourceId ?? "";
+  // 이야기 장면(하넬·브람·지하의 발렌)은 말을 걸면 한 칸 물러서 마주 선다.
+  stageTalk(M(ids.observatory).events.find((e) => e.id === `ev_${FS_PREFIX}_hanel`));
+  stageTalk(M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_bram`));
+  stageTalk(bossEvent);
   applySpeakerFaces(project, {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),
