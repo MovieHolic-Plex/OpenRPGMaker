@@ -1720,6 +1720,12 @@ export function createDialogueUI(
 
       let onKey: (event: KeyboardEvent) => void;
       let settled = false;
+      // 앞 대사를 넘긴 그 Enter 가 선택지를 고르지 않게 한다. 대사를 닫는 keydown 안에서 선택지가 열리고 0번 단추에
+      // 포커스가 가면, 브라우저가 같은 키의 기본 동작으로 그 단추를 「클릭」해 플레이어가 보지도 못한 선택이 된다
+      // (첫사랑 VQA 4차 — 마지막 선택이 저절로 골라져 엔딩까지 흘러감). 키보드 결정은 onKey 가 따로 받으므로
+      // 열린 직후, 이 선택지가 keydown 을 하나도 받지 않은 채 들어온 키보드발 클릭(detail 0)만 버린다.
+      const openedAt = performance.now();
+      let sawKeyDown = false;
       const cleanup = (): void => {
         settled = true;
         document.removeEventListener("keydown", onKey);
@@ -1762,6 +1768,7 @@ export function createDialogueUI(
       };
       onKey = (e: KeyboardEvent) => {
         if (settled || e.isComposing) return;
+        sawKeyDown = true;
         if (e.repeat && (isConfirmKey(e.key) || isCancelKey(e.key) || /^[1-9]$/.test(e.key))) {
           e.preventDefault();
           return;
@@ -1811,7 +1818,10 @@ export function createDialogueUI(
         renderDialogueSegments(btn, parseDialogueText(opt.text, request.textContext));
         btn.addEventListener("mouseenter", () => setSelected(idx));
         btn.addEventListener("focus", () => setSelected(idx));
-        btn.addEventListener("click", () => finish(idx));
+        btn.addEventListener("click", (event) => {
+          if (event.isTrusted && event.detail === 0 && !sawKeyDown && performance.now() - openedAt < 400) return;
+          finish(idx);
+        });
         buttons.push(btn);
         choicesEl.append(btn);
       });

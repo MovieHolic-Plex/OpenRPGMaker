@@ -450,3 +450,37 @@
 .player-layout .play-stage > .runtime-overlay[data-testid="picture-overlay"] {
   display: none;
 }
+
+/* 관계 중심 게임의 호감 변화 알림(playSceneRelationshipPulse.ts). 무대 좌표(게임 픽셀) 기준, 대사를 가리지 않게 오른쪽 위. */
+.player-layout .play-stage > .relationship-pulse {
+  position: absolute;
+  top: calc(var(--play-crop-top, 0px) + 22px);
+  right: calc(var(--play-crop-right, 0px) + 8px);
+  z-index: 38;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px 3px 6px;
+  border: 1px solid rgba(255, 196, 206, 0.45);
+  border-radius: 999px;
+  background: rgba(24, 16, 30, 0.82);
+  color: #fff1f3;
+  font-family: var(--runtime-ui-font);
+  font-size: 8px;
+  line-height: 1.2;
+  pointer-events: none;
+  animation: relationship-pulse-life 2.4s ease-out forwards;
+}
+.player-layout .play-stage > .relationship-pulse .relationship-pulse-heart { color: #ff7f93; font-size: 10px; }
+.player-layout .play-stage > .relationship-pulse.is-down .relationship-pulse-heart { color: #9aa6c4; }
+.player-layout .play-stage > .relationship-pulse.is-up .relationship-pulse-heart { animation: relationship-pulse-beat 0.6s ease-out 2; }
+@keyframes relationship-pulse-life {
+  0% { opacity: 0; transform: translateY(-4px); }
+  12% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes relationship-pulse-beat {
+  0%, 100% { transform: scale(1); }
+  40% { transform: scale(1.35); }
+}
