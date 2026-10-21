@@ -125,9 +125,13 @@ try {
       let here = await state(), stable = 0;
       for (let i = 0; i < 20 && stable < 4; i++) { await sleep(80); const now = await state(); if (now && here && now.x === here.x && now.y === here.y && now.currentMapId === here.currentMapId) stable++; else stable = 0; here = now; }
       if (!here || here.currentMapId !== map.id) break;
-      if (!moved) { refused.push({ x: before.x + DELTA[dir][0], y: before.y + DELTA[dir][1] }); note('blocked-step', { dir, at: [before.x, before.y] }); }
+      const expected = { x: before.x + DELTA[dir][0], y: before.y + DELTA[dir][1] };
+      if (!moved) { refused.push(expected); note('blocked-step', { dir, at: [before.x, before.y] }); }
       else walked++;
-      path = route(map.id, here, target.event, [...blocked, ...goalBlocked, ...refused]);
+      if (moved && here.x === expected.x && here.y === expected.y) {
+        // on plan: drop the step instead of spawning a new route search
+        path = { ...path, moves: path.moves.slice(1) };
+      } else path = route(map.id, here, target.event, [...blocked, ...goalBlocked, ...refused]);
       if (path.reached && path.moves.length === 0) arrived = true;
     }
     note('walked', { steps: walked, refused: refused.length });

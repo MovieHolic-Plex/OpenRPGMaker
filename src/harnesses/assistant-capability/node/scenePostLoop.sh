@@ -8,7 +8,7 @@ while true; do
     [ -f $d/result.json ] || continue
     [ -f $d/score.json ] || timeout 900 node src/harnesses/assistant-capability/node/sceneLessons.mjs score --out $R --case $c --attempt $N > $d/score-log.txt 2>&1
     if [ ! -d $d/film ] && [ -f $d/live.json ]; then
-      timeout 600 node src/harnesses/assistant-capability/node/sceneFilm.mjs --out $R --case $c --attempt $N --seconds 100 > $d/film-log.txt 2>&1
+      timeout 600 node src/harnesses/assistant-capability/node/sceneFilm.mjs --out $R --case $c --attempt $N --seconds 150 > $d/film-log.txt 2>&1
     fi
     if [ -f $d/film/film.mp4 ] && [ ! -d $d/film/frames ]; then mkdir -p $d/film/frames; ffmpeg -loglevel error -y -i $d/film/film.mp4 -vf fps=1/2 $d/film/frames/f%02d.png; fi
   done
