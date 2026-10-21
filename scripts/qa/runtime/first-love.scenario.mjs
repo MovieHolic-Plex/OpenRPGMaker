@@ -133,7 +133,7 @@ export default {
     { id: "c7", note: "발표 선택", ops: [toChoice(), ...pick(pickC7), shotPause(900)], shot: true },
     { id: "c8", note: "역으로 / 회식", ops: [toChoice(), shotPause(500)], shot: true },
     ...(C
-      ? [{ id: "ending-c", note: "엔딩 C", ops: [...pick(1), untilEnding, shotPause(2500)], shot: true }]
+      ? [{ id: "ending-c", note: "엔딩 C", ops: [...pick(1), untilEnding, shotPause(3600)], shot: true }]
       : [
         { id: "run", note: "비 오는 밤거리", ops: [...pick(0), untilStage(12), shotPause(1200)], shot: true },
         { id: "platform-night", note: "막차 승강장", ops: [...stepInto("fl_street_pm", subwayPm, "up"), { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 20000 }, shotPause(1500)], shot: true },
@@ -141,7 +141,7 @@ export default {
         { id: "c9", note: "마지막 선택", ops: [toChoice(), shotPause(500)], shot: true },
         { id: "confess", note: "고백", ops: [...pick(0), shotPause(1500)], shot: true },
         { id: "peak", note: "고백 정점 — 10년 전 그림이 겹친다", ops: [{ kind: "pressUntilJs", key: "Enter", fn: `() => /${A ? "10년 늦은 답장이에요" : "그 금요일에도. 지금도"}/.test(document.querySelector("[data-testid='dialogue-box']")?.textContent ?? '')`, maxPresses: 20, settleMs: 700 }, shotPause(600)], shot: true },
-        { id: `ending-${PATH.toLowerCase()}`, note: `엔딩 ${PATH}`, ops: [untilEnding, shotPause(2500)], shot: true },
+        { id: `ending-${PATH.toLowerCase()}`, note: `엔딩 ${PATH}`, ops: [untilEnding, shotPause(3600)], shot: true },
       ]),
     { id: "ending-after", note: "엔딩 에필로그 뒤", ops: [{ kind: "key", key: "Enter" }, shotPause(2500), { kind: "key", key: "Enter" }, shotPause(2500)], shot: true },
     { id: "state", note: "최종 상태", ops: [{ kind: "evalToFile", out: `/tmp/fl-state-${PATH}${process.env.FL_TAG ?? ""}.json`, fn: "() => { const s = window.__oprnDebug.readState(); return { log: window.__flLog ?? 'reloaded (hook lost)', heapMB: Math.round((performance.memory?.usedJSHeapSize ?? 0) / 1048576), map: s.currentMapId, vars: s.variables, sw: Object.fromEntries(Object.entries(s.switches).filter(([k]) => k.startsWith('sw_fl'))) }; }" }], shot: false },
