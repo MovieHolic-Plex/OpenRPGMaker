@@ -132,7 +132,7 @@ export default {
     { id: "signal", note: "렌즈 신호", ops: [{ kind: "pressUntilText", key: "Enter", testid: "dialogue-box", text: "답이 왔어요", maxPresses: 30 }], shot: true },
     { id: "signal-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "vault-out", note: "지하 → 화로의 방 → 천문대", ops: [
-      ...stepInto("fs_vault", 15, 25, "down"),
+      ...stepInto("fs_vault", 15, 26, "down"),
       ...stepInto("fs_vault_gate", 26, 4, "up"),
     ], shot: true },
     { id: "report", note: "하넬에게 보고", ops: [...closeDialogue(), ...approachFromEast("fs_observatory", 24, 21), ...talk("up")], shot: true },

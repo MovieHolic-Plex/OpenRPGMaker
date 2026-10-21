@@ -26,6 +26,8 @@ type RoomSpec = {
   lines?: Array<Record<string, unknown>>;
   daises?: Array<{ id: string; x: number; y: number; w: number; h: number }>;
   goods?: Array<{ id: string; x: number; y: number }>;
+  /** 남쪽 출구 폭(기본 1칸) — 두 칸 통로로 지도 밖까지 이어지는 출구. */
+  exitWidth?: number;
 };
 
 const TILESET = "atlas_biome_interior";
@@ -73,6 +75,8 @@ const OBS_ROOM: RoomSpec = {
     "#..............................#",
     "#..............................#",
     "#..............................#",
+    "###############.################",
+    "###############.################",
     "###############.################",
   ],
   floor: "plank",
@@ -135,7 +139,6 @@ const OBS_ROOM: RoomSpec = {
     {id: "coat rack", x: 21, y: 19},
     {id: "bench 3", x: 11, y: 21},
     {id: "bench 3", x: 18, y: 21},
-    {id: "doormat", x: 15, y: 21},
     {id: "column marble", x: 13, y: 18},
     {id: "column marble", x: 17, y: 18},
     {id: "potted fern", x: 14, y: 21},
@@ -161,7 +164,7 @@ const OBS_ROOM: RoomSpec = {
     {id: "rug red", rect: {"x0": 16, "y0": 10, "x1": 20, "y1": 13}},
     {id: "rug green", rect: {"x0": 5, "y0": 20, "x1": 8, "y1": 20}},
     {id: "rug red", rect: {"x0": 24, "y0": 18, "x1": 26, "y1": 20}},
-    {id: "rug blue", rect: {"x0": 15, "y0": 16, "x1": 15, "y1": 20}},
+    {id: "rug blue", rect: {"x0": 15, "y0": 16, "x1": 15, "y1": 21}},
   ],
   goods: [
     {id: "openbook", x: 17, y: 12},
@@ -330,8 +333,10 @@ const VAULT_ROOM: RoomSpec = {
     "##............................##",
     "#############......#############",
     "#############......#############",
-    "###############.################",
+    "###############..###############",
+    "###############..###############",
   ],
+  exitWidth: 2,
   floor: "flag",
   wall: "stone",
   ceiling: "dark",
@@ -639,7 +644,7 @@ export function rebuildFallenRooms(project: Project, exec: Exec, ids: { hub: str
   const obs = M(ids.observatory);
   const hubDoor = obs.events.find((e) => transfersIn(e).some((t) => t.mapId === ids.hub));
   if (!hubDoor) throw new Error("[fallen-star] 천문대 → 광장 문을 찾지 못했다");
-  hubDoor.x = 15; hubDoor.y = 22;
+  hubDoor.x = 15; hubDoor.y = 24;   // VQA r18: 한 칸 틈+발깔개는 문으로 읽히지 않았다 → 지도 밖까지 이어지는 짧은 통로 끝
   // 지하로 가는 길(장 구성기는 지하 묘소로 바로 이었다) → 네 화로의 방 북벽 돌 계단 앞으로.
   const hatch = obs.events.find((e) => transfersIn(e).some((t) => t.mapId === ids.vault || t.mapId === ids.gate));
   if (!hatch) throw new Error("[fallen-star] 천문대 지하 입구를 찾지 못했다");
@@ -693,7 +698,8 @@ export function rebuildFallenRooms(project: Project, exec: Exec, ids: { hub: str
   const vault = M(ids.vault);
   const exit = vault.events.find((e) => transfersIn(e).some((t) => t.mapId === ids.observatory || t.mapId === ids.gate));
   if (!exit) throw new Error("[fallen-star] 옛 별지기의 방 출구를 찾지 못했다");
-  exit.x = 15; exit.y = 26;
+  exit.x = 15; exit.y = 27;   // 두 칸 통로가 지도 밖까지 이어진다(VQA r18) — 오른쪽 칸에도 같은 이동
+  cloneAt(vault, exit, "r", { x: 16, y: 27 });
   for (const rec of transfersIn(exit)) if (rec.mapId === ids.observatory || rec.mapId === ids.gate) Object.assign(rec, { mapId: ids.gate, x: 15, y: 3, direction: "down" });
   const spots: Record<string, Cell> = {
     ev_fs_vault_foe1: { x: 27, y: 23 },   // 남쪽 곁방 식당 앞 줄(VQA r17: 곁방이 키가 커 아래 두 줄이 비었다 → 한 줄로 줄였다)(좌우로 두 칸씩 돈다) — VQA r14: 홀 한가운데 늑대는 곁방 밖을 돌았다

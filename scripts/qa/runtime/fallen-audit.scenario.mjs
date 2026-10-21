@@ -128,7 +128,7 @@ export default {
     { id: "hanel-accept-close", note: "", ops: [...closeDialogue(), dumpState("quest")], shot: false },
     { id: "scope", note: "큰 망원경", ops: [{ kind: "teleport", mapId: "fs_observatory", x: 13, y: 12 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "scope-close", note: "", ops: [...closeDialogue()], shot: false },
-    { id: "out-to-hub", note: "천문대 문 → 광장", ops: [...stepInto("fs_observatory", 15, 21, "down")], shot: true },
+    { id: "out-to-hub", note: "천문대 문 → 광장", ops: [...stepInto("fs_observatory", 15, 23, "down")], shot: true },
     { id: "gate-guard", note: "동문 문지기", ops: [{ kind: "teleport", mapId: "fs_hub", x: 53, y: 21 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "gate-guard-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "to-forest", note: "동문 → 숲", ops: [...stepInto("fs_hub", 54, 22, "right")], shot: true },
@@ -187,7 +187,7 @@ export default {
     { id: "signal", note: "렌즈 신호", ops: [{ kind: "pressUntilText", key: "Enter", testid: "dialogue-box", text: "답이 왔어요", maxPresses: 20 }], shot: true },
     { id: "signal-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "vault-out", note: "지하 → 화로의 방 → 천문대", ops: [
-      ...stepInto("fs_vault", 15, 25, "down"),
+      ...stepInto("fs_vault", 15, 26, "down"),
       ...stepInto("fs_vault_gate", 26, 4, "up"),
     ], shot: true },
     { id: "report", note: "하넬에게 보고", ops: [...closeDialogue(), ...approachFromEast("fs_observatory", 24, 21), ...talk("up")], shot: true },
