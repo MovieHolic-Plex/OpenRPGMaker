@@ -40,11 +40,9 @@ const scene = (key: string, m: GameMap, extra: Record<string, unknown> = {}) => 
 // 1) 정답 예제: 16×12 잔디, 숲 사각형 (2,2) 12×7, dense, 그늘 켬
 lawnMap("ex", 16, 12);
 const exRes = run("paint_jp_forest", { mapId: "ex", rect: { x: 2, y: 2, w: 12, h: 7 }, forestType: "dense" });
+
 scene("ex", project.maps.ex!, { call: { tool: "paint_jp_forest", args: { mapId: "ex", rect: { x: 2, y: 2, w: 12, h: 7 }, forestType: "dense" } }, result: exRes });
 // 2) 그늘 끔(나무가 떠 보인다)
-lawnMap("noground", 16, 12);
-const ngRes = run("paint_jp_forest", { mapId: "noground", rect: { x: 2, y: 2, w: 12, h: 7 }, forestType: "dense", grounding: false });
-scene("noground", project.maps.noground!, { call: { tool: "paint_jp_forest", args: { mapId: "noground", rect: { x: 2, y: 2, w: 12, h: 7 }, forestType: "dense", grounding: false } }, result: ngRes });
 // 3) 공원 숲 grove
 lawnMap("grove", 32, 20);
 const grRes = run("paint_jp_forest", { mapId: "grove", rect: { x: 2, y: 2, w: 28, h: 15 }, forestType: "grove" });
@@ -79,10 +77,10 @@ const firstTree = (m: GameMap, pred: (x: number, y: number, t: number, L: number
     const t = layerTileAt(m, L, y * m.width + x);
     if (own.has(t) && pred(x, y, t, L)) return { x, y, t, L };
   }
-  throw new Error("no tree tile");
+  throw new Error("no tree tile: " + m.id);
 };
 mutate("mut-layer", (m) => {   // 수관 칸을 1층에 칠함(잘못된 레이어)
-  const p = firstTree(m, (_x, y) => y === 4);
+  const p = firstTree(m, (_x, y) => y >= 4);
   setLayerTileAt(m, 1, p.y * m.width + p.x, p.t); setLayerTileAt(m, p.L, p.y * m.width + p.x, -1);
   return `(${p.x},${p.y}) ${p.L}층 칸 ${p.t} 을 1층으로 옮김`;
 });

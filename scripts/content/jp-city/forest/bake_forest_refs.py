@@ -106,13 +106,11 @@ def call_str(c):
 
 
 # ── 그림 ─────────────────────────────────────────────
-ex, ng, gr, kits, thin, road = S['ex'], S['noground'], S['grove'], S['kits'], S['thin'], S['road']
+ex, gr, kits, thin, road = S['ex'], S['grove'], S['kits'], S['thin'], S['road']
 save('forest-ex.png', side(up(render(ex), 2), up(render(ex), 1)),
      '정답 예제: 16×12 잔디(칸 3281)에 ' + call_str(ex['call']) + ' 한 번. 왼쪽 ×2, 오른쪽 원본 1배(맵 전체, 1~4층 합성). 칸 배열은 `jp-forest-example`.', 'ex')
 save('forest-ex-layers.png', side(*[up(render(ex, (k,)), 1) for k in ('L1', 'L2', 'L3', 'L4')]),
      '정답 예제의 층별 그림(원본 1배, 왼쪽 위부터 오른쪽·아래로 1층 숲 바닥·그늘 변형 / 2층 숲 밖 잔디 둘레 그늘 덧칸 + 가장 뒤 나무 / 3층 / 4층 가장 앞 나무). 검은 곳은 그 층이 빈 칸.', 'layers')
-save('forest-grounding.png', side(up(render(ng), 2), up(render(ex), 2)),
-     '오류/정상: 위(또는 왼쪽) grounding:false(나무 밑 그늘 없음 — 나무가 잔디 위에 떠 보인다), 아래(또는 오른쪽) 기본(grounding:true, 숲 바닥 그늘 변형 + 숲 밖 둘레 그늘). 같은 자리·같은 나무. ×2.', 'grounding')
 save('forest-kits-vs-forest.png', side(up(render(kits), 2), up(render(ex), 2)),
      '오류/정상: 위는 나무 키트 jp-prop-tree-zelkova 를 stamp_object 로 4칸 간격 격자에 6번 찍은 것(줄 맞춘 나무·수관이 안 겹침·그늘 없음 — 숲이 아니라 가로수 줄). 아래는 paint_jp_forest 한 번. ×2.', 'kits')
 save('forest-grove.png', up(render(gr), 1),
@@ -165,11 +163,10 @@ doc_dict = head + f"""# 일본 도시 · 숲 사전 (나무 composer 숲 `{G['id
 doc_order = head + f"""# 일본 도시 · 숲 까는 순서·규칙·층
 
 ## 조수가 쓰는 입구 (이것만 쓴다)
-1. **새 장소를 통째로 지을 때**: `compose_jp_region`(신사·사찰·산길·사토야마 등 숲 구획이 있는 지역)과 `compose_jp_city_street`(주택가 공원 → `parkForest` 기본 `grove`)가 숲을 **스스로** 같은 composer 로 칠한다. 둘 다 `grounding`(기본 true)을 받는다.
+1. **새 장소를 통째로 지을 때**: `compose_jp_region`(신사·사찰·산길·사토야마 등 숲 구획이 있는 지역)과 `compose_jp_city_street`(주택가 공원 → `parkForest` 기본 `grove`)가 숲을 **스스로** 같은 composer 로 칠한다. 나무 밑 땅 그늘(접지)은 늘 켜진다(`grounding` 인자는 옛 호출용으로 받기만 하고 무시한다).
 2. **이미 있는 맵에 숲을 더할 때**: `paint_jp_forest` 한 번.
    - 자리: `rect:{{x,y,w,h}}` 또는 `beside:{{x,y,w,h, side, depth}}`(기준 사각형 — 신사 경내·공원·건물 — 옆 띠, side `north|south|east|west|around`, depth 3~20 기본 6) 또는 `besideLocation`(맵 위치 이름표) + `side`·`depth`.
    - `forestType`: `dense`(기본, 빽빽한 숲 — 신사 옆 진수의 숲·산비탈·경계 숲) | `grove`(공원 숲 — 덩이 숲 사이 잔디 빈터).
-   - `grounding`: 나무 밑 땅 그늘(기본 true). 끄면 나무가 떠 보인다(`jp-img-forest-grounding`).
 3. 편집기 붓: 「숲 · 활엽」 오토타일로 1층을 칠하면 같은 규칙으로 나무가 선다(붓질 둘레만 다시 짠다 — 붓질을 쌓은 결과 = 한 번에 칠한 결과).
 4. 확인: `show_map_region` 으로 본다. 구조 검사 `checkJpForest`(아래 코드)는 0건이어야 한다.
 
@@ -237,7 +234,7 @@ codes = {
     'FOREST_APRON_OFF_LAWN': '둘레 그늘 덧칸 밑이 그늘용 잔디가 아니다',
 }
 mut_rows = '\n'.join(f"| `{m['id']}` | {m['mutation']} | " + ', '.join(f"`{i['code']}` ({i['x']},{i['y']}) {i['layer']}층 칸 {i['tile']}" for i in m['issues']) + ' |' for m in muts)
-clean = ', '.join(f"`{k}` {len(S[k]['issues'])}건" for k in ('ex', 'noground', 'grove', 'thin', 'road', 'kits', 'shrine', 'street'))
+clean = ', '.join(f"`{k}` {len(S[k]['issues'])}건" for k in ('ex', 'grove', 'thin', 'road', 'kits', 'shrine', 'street'))
 doc_err = head + f"""# 일본 도시 · 숲 정상/오류·자동 좌표 검사·층 정정
 
 ## 검사 `checkJpForest(map, tileset)` (`src/editor/jpCity/forestPainter.ts`)
@@ -254,7 +251,6 @@ doc_err = head + f"""# 일본 도시 · 숲 정상/오류·자동 좌표 검사�
 키트 격자(`kits`)도 0건이다 — 구조는 틀리지 않았지만 숲이 아니다(줄 맞춘 가로수). 이것은 검사가 못 잡는 «보기» 오류라서 그림(`jp-img-forest-kits-vs-forest`)으로 가른다.
 
 ## 정상/오류 그림
-- 그늘 끔 vs 켬: `jp-img-forest-grounding` — grounding:false 는 구조 검사 0건이지만 나무가 떠 보인다(사용자 판정 2026-10-20 「떠 보인다」 → r6 접지).
 - 키트 격자 vs 숲: `jp-img-forest-kits-vs-forest`.
 - 2줄 띠·길 사이: `jp-img-forest-thin-road` — 길 칸은 건너뛰고(`skipped`), 수관이 길 위로 안 넘친다.
 - 저장 전 실패: `paint_jp_forest` 는 맵 사본에 칠하고 성공해야 반영한다 — 숲이 될 잔디 칸이 0이면 오류(`no-forest-cells`)로 멈추고 맵은 그대로다. jp_city 가 아닌 맵은 `wrong-tileset`, 숲 칸이 없는 옛 시트는 `forest-not-baked`.
@@ -275,7 +271,7 @@ os.makedirs(MD_DIR, exist_ok=True)
 for d in DOCS:
     open(os.path.join(MD_DIR, d['id'].replace('jp-', '', 1) + '.md'), 'w', encoding='utf-8').write(d['markdown'])
 cat = dict(id='jp-forest', name='일본 도시 · 숲(나무 composer — 신사 숲·공원 숲)',
-           description='jp_city 숲을 까는 법: paint_jp_forest(rect·beside·besideLocation, forestType dense|grove, grounding) 한 번, 지역·거리 조립기의 숲. '
+           description='jp_city 숲을 까는 법: paint_jp_forest(rect·beside·besideLocation, forestType dense|grove) 한 번, 지역·거리 조립기의 숲. '
                        '숲 바닥·그늘·나무 그림 칸 사전, 엔진 규칙(밑동 줄·모양·겹침·그늘), 완전한 층 배열 예제, 정상/오류 그림과 변조 검출 좌표, 층 정정.',
            documents=DOCS, images=IMAGES)
 json.dump([cat], open(OUT_JSON, 'w', encoding='utf-8'), ensure_ascii=False, indent=0)

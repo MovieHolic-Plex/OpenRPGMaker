@@ -261,7 +261,7 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 
 ## 탈것 — 차·버스·노면전차·전철·지하철 (2026-10-07)
 
-**그림**: 칩셋 칸이 아니라 따로 된 시트 `public/assets/jp-city/vehicles/<id>.png` 14종(승용 5·경차 2·택시·경트럭·박스 트럭·시내버스·노면전차·전철·지하철), 목록 `src/assets/jpCityVehicles.json`(프레임 `right/left/up/down` + `*_open`, 발자국 `foot`). 원본 `scripts/content/jp-city/vehicles/`(`SPEC.md` 규약: 발자국 아래 가장자리 정렬, 옆 = 길이 L × 2칸, 위아래 = 2 × L, 경차 L=4, 버스·전차 문은 차의 **왼쪽 면**에만 — 동쪽행 `right_open` = `right`, 3/4 윗면 띠·짙은 남색 유리). 관문 `vehicles` 통과.
+**그림**: 칩셋 칸이 아니라 따로 된 시트 `public/assets/jp-city/vehicles/<id>.png` 14종(승용 5·경차 2·택시·경트럭·박스 트럭·시내버스·노면전차·전철·지하철), 목록 `src/assets/jpCityVehicles.json`(프레임 `right/left/up/down` + `*_open`, 발자국 `foot`). 원본 `scripts/content/jp-city/vehicles/`(`SPEC.md` 규약: 발자국 아래 가장자리 정렬, 옆 = 길이 L × 2칸, 위아래 = 2 × L, 경차 L=4, 버스·전차 문은 차의 **왼쪽 면**에만 — 동쪽행 버스엔 `right_open` 이 없다(멈춰도 `right`), 3/4 윗면 띠·짙은 남색 유리). 관문 `vehicles` 통과.
 
 **저장 모양**: `GameMap.transit = { routes: MapTransitRoute[] }` (`src/project/mapTransit.ts`). 노선 = 칸 경로(꺾이는 점) + 탈것 목록 + `loop`/`count`(순환) 또는 `headwaySec`(열린 노선, 맵 밖에서 나타나 맵 밖으로) + `speed` + `stops[{index, waitSec, name, board{mapId,x,y,dir}}]`. 경로 칸 = 머리가 지나는 칸이자 몸 폭 2칸의 위/왼쪽 칸. 좌측통행(`laneOffsetFor`): 폭 4칸 길에서 동쪽행 위 두 줄·서쪽행 아래 두 줄·남쪽행 오른쪽 두 열·북쪽행 왼쪽 두 열. 상태(위치)는 저장하지 않는다.
 

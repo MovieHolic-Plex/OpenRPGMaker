@@ -30,9 +30,13 @@ BLOCK = 'jp_forest_r4'
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..', '..'))
 T = 16
 KINDS = (('bl', '활엽 혼효림(느티나무·잡목)'),)
+MOSS = 16109                           # 지역 팩 숲 바닥(이끼·낙엽) 칸(번호 핀으로 고정) — 신사 진수의 숲 바탕
+# 같은 나무 그림을 서로 다른 바닥 위에 세운다(2026-10-21 적대 VQA: 잔디색 숲 바닥이 이끼 바닥 옆에서 곧은 경계로 보였다).
+# (그룹 코드, 이름, 바탕 칸). apronBases[0] = 그 그룹 숲 바닥의 바탕 칸(TS forestPainter r4ForGround 약속).
+FLOORS = (('bl', '', 3281), ('bm', ' · 이끼 바닥', MOSS))
 SHAPES = ('T4', 'T3', 'T2')
 OVERHANG_ON = ['jp-lawn-dirt', 'jp-gravel-lawn']
-APRON_BASES = [3281, 3282, 3283]       # jp-lawn-dirt 속 잔디 칸(번호 핀으로 고정) — 둘레 그늘은 이 잔디 무늬를 어둡게 한 덧칸
+APRON_BASES = [3281, 3282, 3283, MOSS]   # 잔디(jp-lawn-dirt 속 칸)·이끼 바닥 — 둘레 그늘은 이 바닥 무늬를 어둡게 한 덧칸
 _CACHE = {}
 
 
@@ -50,20 +54,14 @@ def _finalize():
         return loc
 
     for k, ko in KINDS:
-        # r6 접지: 숲 바닥(1층) 그늘 변형 64 + 숲 둘레 그늘(2층 덧칸) 잔디 칸 3 × 64 — forest_r6_ground
-        base = S3.tile(S3.GRASS)
-        floor_tiles = []
-        for code in range(G.NCODES):
-            floor_tiles.append(put(G.floor_tile(base, code), f'{ko} 숲 바닥 (그늘 {code})', 'solidfloor', ['숲', '숲 바닥', k],
-                                   f'[숲 r6] {ko} 숲 바닥(1층). 오토타일 jp-forest4-{k} 로 칠하면 나무가 저절로 서고, 나무가 덮은 칸 둘레에 땅 그늘이 깔린다.'))
-        floor = floor_tiles[0]
+        # 둘레 그늘(2층 덧칸): 잔디 칸 3 + 이끼 바닥 × 그늘 코드 64 — 형제 그룹이 같은 덧칸을 쓴다
         apron = []
         for b in APRON_BASES:
             bimg = S3.tile(b)
             for code in range(G.NCODES):
                 t = G.apron_tile(bimg, code)
-                apron.append(None if t is None else put(t, f'{ko} 숲 둘레 그늘 (잔디 {b}, 그늘 {code})', 'flat', ['숲', '그늘', k],
-                                                       f'[숲 r6] {ko} 숲 둘레 땅 그늘(2층 덧칸, 잔디 {b} 위). composer 가 놓는다.'))
+                apron.append(None if t is None else put(t, f'{ko} 숲 둘레 그늘 (바닥 {b}, 그늘 {code})', 'flat', ['숲', '그늘', k],
+                                                       f'[숲 r6] {ko} 숲 둘레 땅 그늘(2층 덧칸, 바닥 {b} 위). composer 가 놓는다.'))
         S = C.Sprites(k)
         sprites = []
         for shape in SHAPES:
@@ -81,18 +79,33 @@ def _finalize():
                                              f'[숲 r4] {ko} 나무 그림 {name} 의 칸. 숲 바닥(jp-forest4-{k})을 칠하면 composer 가 놓는다(낱칸으로 찍지 말 것).'))
                             covers.append(int(round(cov[j, i] * 100)))
                     sprites.append(dict(name=name, shape=shape, dark=dark, w=cw, h=ch, tiles=tiles, cover=covers))
-        autotiles.append(dict(
-            id=f'jp-forest4-{k}', name=f'숲 · {ko}', neighborhood=8, layer='lower', member=list(dict.fromkeys(floor_tiles)), connect=None,
-            variantMap={str(m): floor for m in range(256)}, edgeConnects=True,
-            composer=dict(kind='trees', version=1, layers=[4, 3, 2], rowStep=2, colStep=3, skip=0.05,
-                          shapeOrder=list(SHAPES), shapeOdds=[0.32, 0.94],
-                          trunkCols={s: list(C.TRUNK_COLS[s]) for s in SHAPES},
-                          overhangOnGroups=OVERHANG_ON, sprites=sprites,
-                          ground=dict(shadeBits=[[dx, dy] for _, dx, dy in G.SHADE_BITS], shadeCover=C.SHADE_COVER, shadeCoverBase=C.SHADE_COVER_BASE, shadeRows=C.SHADE_ROWS,
-                                      floorTiles=floor_tiles, apronLayer=C.APRON_LAYER, apronBases=APRON_BASES, apronTiles=apron))))
-        groups.append(dict(id=f'jp:forest4-{k}', name=f'숲 · {ko}', role='green', defaultLayer='lower', cells=[floor],
-                           desc=f'{ko}: 붓으로 칠하는 숲(1층 숲 바닥). 칠한 구역에 나무 그림이 저절로 겹쳐 선다 — 남쪽 끝은 줄기, 안쪽은 겹친 수관.',
-                           rules=f'오토타일 jp-forest4-{k} 로 구역을 칠한다(편집기 붓·조수 지형 도구 모두). 나무 칸은 composer 가 2~4층에 쓰니 손으로 찍거나 지우지 않는다.'))
+        fam = [fk for fk, _, _ in FLOORS]
+        for fk, fsuf, fbase in FLOORS:
+            # r6 접지: 숲 바닥(1층) 그늘 변형 64 — 바탕 칸(잔디·이끼 바닥) 무늬를 그늘 코드대로 어둡게
+            base = S3.tile(fbase)
+            fko = ko + fsuf
+            floor_tiles = []
+            for code in range(G.NCODES):
+                floor_tiles.append(put(G.floor_tile(base, code), f'{fko} 숲 바닥 (그늘 {code})', 'solidfloor', ['숲', '숲 바닥', k],
+                                       f'[숲 r6] {fko} 숲 바닥(1층). 오토타일 jp-forest4-{fk} 로 칠하면 나무가 저절로 서고, 나무가 덮은 칸 둘레에 땅 그늘이 깔린다.'))
+            floor = floor_tiles[0]
+            bases = [fbase] + [x for x in APRON_BASES if x != fbase]          # [0] = 이 그룹 바탕 칸(약속)
+            ap = []
+            for x in bases:
+                bi = APRON_BASES.index(x); ap += apron[bi * G.NCODES:(bi + 1) * G.NCODES]
+            autotiles.append(dict(
+                id=f'jp-forest4-{fk}', name=f'숲 · {fko}', neighborhood=8, layer='lower', member=list(dict.fromkeys(floor_tiles)), connect=None,
+                variantMap={str(m): floor for m in range(256)}, edgeConnects=True,
+                composer=dict(kind='trees', version=1, layers=[4, 3, 2], rowStep=2, colStep=3, skip=0.05,
+                              shapeOrder=list(SHAPES), shapeOdds=[0.32, 0.94],
+                              trunkCols={s_: list(C.TRUNK_COLS[s_]) for s_ in SHAPES},
+                              overhangOnGroups=OVERHANG_ON + [f'jp-forest4-{o}' for o in fam if o != fk],
+                              overhangOnExtraTiles=[MOSS], sprites=sprites,
+                              ground=dict(shadeBits=[[dx, dy] for _, dx, dy in G.SHADE_BITS], shadeCover=C.SHADE_COVER, shadeCoverBase=C.SHADE_COVER_BASE, shadeRows=C.SHADE_ROWS,
+                                          floorTiles=floor_tiles, apronLayer=C.APRON_LAYER, apronBases=bases, apronTiles=ap))))
+            groups.append(dict(id=f'jp:forest4-{fk}', name=f'숲 · {fko}', role='green', defaultLayer='lower', cells=[floor],
+                               desc=f'{fko}: 붓으로 칠하는 숲(1층 숲 바닥). 칠한 구역에 나무 그림이 저절로 겹쳐 선다 — 남쪽 끝은 줄기, 안쪽은 겹친 수관.',
+                               rules=f'오토타일 jp-forest4-{fk} 로 구역을 칠한다(편집기 붓·조수 지형 도구 모두). 나무 칸은 composer 가 2~4층에 쓰니 손으로 찍거나 지우지 않는다.'))
     _CACHE['r'] = (cells, autotiles, groups)
     return _CACHE['r']
 

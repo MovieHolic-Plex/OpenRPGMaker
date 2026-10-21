@@ -41,7 +41,7 @@ def _jit(px, py, salt):
     return int(F3.hf('sj', salt, px, py) * 3) - 1
 
 
-_DISK = [(dx, dy) for dy in range(-4, 5) for dx in range(-4, 5) if dx * dx + dy * dy <= 14]
+_DISK = [(dx, dy) for dy in range(-5, 6) for dx in range(-5, 6) if dx * dx + dy * dy <= 20]   # r7(2026-10-21 VQA): 모서리를 더 둥글게
 
 
 def _raw(X, Y, forest):
@@ -56,12 +56,18 @@ def _raw(X, Y, forest):
     return lev
 
 
-def level_at(px, py, forest):
-    """forest(i, j) — 3×3 창에서 (i, j) ∈ {-1,0,1}² 칸이 그늘 덮개인가. (px, py) 는 가운데 칸 안 픽셀. 0 잔디 · 1 가 · 2 속.
-    날 영역(사각형 합)을 반지름 2.6 원판으로 다수결해 모서리를 둥글린다(볼록은 깎이고 오목은 메워진다). 그다음 칸 안 해시로 경계를 한 픽셀 흔든다."""
-    # 큰 결 흔들림(4px 덩이마다 ±2) + 픽셀 흔들림(±1) — 그늘 가장자리가 칸 선을 따라가지 않게
-    jx = int(F3.hf('sjb', 'x', px // 4, py // 4) * 5) - 2 + _jit(px, py, 'x')
-    jy = int(F3.hf('sjb', 'y', px // 4, py // 4) * 5) - 2 + _jit(px, py, 'y')
+_TAU = 6.283185307179586
+
+
+def _wave(t, a, b):
+    """칸 주기(16px) 매끄러운 흔들림 — 두 배음. 칸 안 좌표만 쓰니 이웃 칸 경계에서 값이 같아 이어진다."""
+    return 2.4 * np.sin(_TAU * t / T + a) + 1.3 * np.sin(_TAU * 2 * t / T + b)
+
+
+def _level0(px, py, forest):
+    # 매끄러운 물결 흔들림(r8, 2026-10-21 VQA: 덩이 흔들림은 16px 마다 같은 네모 홈을 냈다) — 세로 경계는 y 로, 가로 경계는 x 로 흔든다
+    jx = int(round(_wave(py, 0.7, 2.1))) + _jit(px, py, 'x') * (1 if F3.hf('sjm', 'x', px, py) > 0.6 else 0)
+    jy = int(round(_wave(px, 1.9, 0.4))) + _jit(px, py, 'y') * (1 if F3.hf('sjm', 'y', px, py) > 0.6 else 0)
     core = outer = 0
     for dx, dy in _DISK:
         r = _raw(px + dx + jx, py + dy + jy, forest)
@@ -69,8 +75,18 @@ def level_at(px, py, forest):
         if r >= 1: outer += 1
     n = len(_DISK)
     if core * 2 >= n: return 2
-    if outer * 2 >= n: return 1
+    if outer * 3 >= n: return 1
     return 0
+
+
+def level_at(px, py, forest):
+    """forest(i, j) — 3×3 창에서 (i, j) ∈ {-1,0,1}² 칸이 그늘 덮개인가. (px, py) 는 가운데 칸 안 픽셀. 0 잔디 · 1 가 · 2 속.
+    날 영역(사각형 합)을 원판 다수결로 둥글리고(속은 반, 가는 1/3 — 가 띠가 속보다 넓게 번진다), 경계를 칸 주기 물결로 흔든다.
+    마지막에 가 띠의 바깥 한 픽셀을 칸 안 해시로 성기게 해(점묘) 잔디로 녹아들게 한다."""
+    L = _level0(px, py, forest)
+    if L == 1 and F3.hf('sjd', 'o', px, py) < 0.45:
+        if any(_level0(px + ax, py + ay, forest) == 0 for ax, ay in ((1, 0), (-1, 0), (0, 1), (0, -1))): return 0
+    return L
 
 
 def shaded_tile(base, forest):

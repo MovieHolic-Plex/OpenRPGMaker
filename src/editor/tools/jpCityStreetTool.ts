@@ -67,7 +67,7 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 짠다" },
       region: { type: "string", enum: JP_REGIONS.map((r) => r.id), description: "일본 지역 30종 id(list_jp_regions) — 주면 style·shops 대신 그 지역 문법으로 짓는다" },
       parkForest: { type: "string", enum: ["grove", "dense", "none"], description: "공원 구획 뒤쪽 잔디에 숲 — grove 덩이 숲(기본) · dense 빽빽한 숲 · none 숲 없음(나무 키트 몇 그루만)" },
-      grounding: { type: "boolean", description: "숲 나무 밑 땅 그늘(접지). 기본 true" },
+      grounding: { type: "boolean", description: "옛 인자 — 무시한다. 숲 나무 밑 땅 그늘(접지)은 늘 켜진다" },
       lotsOnly: { type: "boolean", description: "다시 짜지 않고 이미 지은 jp_city 맵의 남은 빈 대지만 쓰임(코인 주차·골목 자판기·놀이터·텃밭·공사장·광장 꾸밈)으로 채운다 — 건물을 손으로 더하거나 옮긴 뒤 부른다" },
     },
     additionalProperties: false,

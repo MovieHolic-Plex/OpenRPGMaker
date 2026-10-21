@@ -95,8 +95,10 @@ def build(write=True, preview=False):
             if need not in frames: problems.append(f'{vid}: {need} 프레임 없음')
         if kind in ('car', 'taxi', 'kei', 'truck', 'bus') and not ('up' in frames and 'down' in frames):
             problems.append(f'{vid}: 도로 탈것은 up·down 프레임도 필요')
-        if kind in ('bus', 'tram', 'train', 'subway') and not ('right_open' in frames and 'left_open' in frames):
+        if kind in ('tram', 'train', 'subway') and not ('right_open' in frames and 'left_open' in frames):
             problems.append(f'{vid}: 문 여는 프레임(right_open·left_open) 필요')
+        if kind == 'bus' and 'left_open' not in frames:
+            problems.append(f'{vid}: 버스는 문이 보이는 쪽(left_open) 문 여는 프레임 필요 — 일본 버스 문은 왼쪽(인도) 면이라 동쪽 진행 그림엔 문이 없다(런타임은 right 로 멈춘다)')
         # 가로로 이어 붙인다(프레임 사이 2px 빈칸), 높이는 가장 큰 프레임
         H = max(f.shape[0] for f in frames.values())
         W = sum(f.shape[1] for f in frames.values()) + 2 * (len(frames) - 1)

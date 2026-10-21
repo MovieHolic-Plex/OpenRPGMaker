@@ -599,7 +599,7 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
                 gr['apronTiles'] = [L(b, v) if v is not None else -1 for v in gr['apronTiles']]
                 cp['ground'] = gr
             # 수관이 넘쳐도 되는 1층 칸 = 잔디 그룹 멤버 + 제 숲 바닥(엔진은 그룹 이름을 몰라도 된다)
-            cp['overhangOnTiles'] = sorted(set(mem).union(*[set(at_members.get(g, [])) for g in cp.get('overhangOnGroups', [])]))
+            cp['overhangOnTiles'] = sorted(set(mem).union(*[set(at_members.get(g, [])) for g in cp.get('overhangOnGroups', [])], set(cp.pop('overhangOnExtraTiles', []))))
             at['composer'] = cp
         autotiles.append(at)
     block_groups = []

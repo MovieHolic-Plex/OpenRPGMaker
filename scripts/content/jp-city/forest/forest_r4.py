@@ -23,6 +23,7 @@ import forest_r3 as F  # noqa: E402  팔레트·해시를 같이 쓴다
 T = 16
 PAL_R4 = F.PAL
 GROUND = os.environ.get('JPF_GROUND', 'r6')
+CROWN = os.environ.get('JPF_CROWN', 'v7')   # v7 = 띠 명암 수관(2026-10-21), r4 = 옛 3px 잎 무리 결
 
 # r5 잔디 맞춤: 버들항 나무와 버들항 잔디의 관계(색상 +4°, 채도 ×0.9, 명도 중앙값 −0.14·폭 0.23~0.80)를
 # jp_city 잔디(3281: 색상 122°, 채도 0.41, 명도 0.52)에 그대로 옮긴다. 나무 색상은 124° 쪽으로 당기고(노란 연두를 뺀다),
@@ -158,6 +159,45 @@ def paint_crown(img, lev, famg, cx, cy, rw, rh, fam, seed, rl=7.0, mixf=0.0, bri
         for t in range(3):
             x = int(round(bx + sgn * 0.5 - sgn * t)); y = int(round(by - t))
             if 0 <= x < W and 0 <= y < H and lev[y, x] >= 0: lev[y, x] = 201
+    return own
+
+
+BANDS = (3, 6, 9, 12, 15, 17)   # v7 수관 명암 단(keyaki 램프 번호): 깊은 그늘 · 그늘 · 중간 · 밝음 · 빛 · 빛 끝
+
+
+def paint_crown_v7(img, lev, famg, cx, cy, rw, rh, fam, seed, rl=7.0, bright=0.0):
+    """v7 수관(2026-10-21 적대 VQA r1: 1px 점무늬·떠 있는 가지 획 불합격): 덩이(lobe)마다 5단 명암 띠,
+    5px 잎 무리는 띠 경계만 물결로 밀고(낱점 없음), 무리 왼쪽 위 2~3px 초승달만 한 단 밝게. 가지 획은 그리지 않는다."""
+    H, W = lev.shape
+    own = np.full((H, W), -1, int)
+    for ci, (x0, y0, r) in enumerate(_lumps(cx, cy, rw, rh, seed, rl)):
+        r = min(r, (y0 - 1.0) / 1.16, (x0 - 1.0) / 1.16, (W - 1.0 - x0) / 1.16)
+        for y in range(max(0, int(y0 - r - 2)), min(H, int(y0 + r + 3))):
+            for x in range(max(0, int(x0 - r - 2)), min(W, int(x0 + r + 3))):
+                dx, dy = x + 0.5 - x0, y + 0.5 - y0
+                a = math.atan2(dy, dx)
+                rj = r * (1.0 + 0.10 * math.sin(a * 4 + ci * 1.7 + seed % 7) + 0.06 * math.sin(a * 7 + ci))
+                d = math.sqrt(dx * dx + dy * dy) / rj
+                if d > 1.0: continue
+                nx, ny = dx / rj, dy / rj
+                nz = math.sqrt(max(0.0, 1 - d * d))
+                lam = -0.55 * nx - 0.65 * ny + 0.52 * nz
+                ncx, ncy = (x + 0.5 - cx) / rw, (y + 0.5 - cy) / rh
+                lv, le, gr = _vor(x, y, 5.0, (seed, 'lf7'))
+                v = 0.50 - 0.20 * ncy - 0.10 * ncx + bright + 0.42 * (lam - 0.30) + 0.07 * lv
+                b = int(np.clip(math.floor(v * 5.0), 0, 4))
+                if gr > 0.50 and le < 0.6: b = min(5, b + 1)          # 잎 무리 왼쪽 위 초승달
+                elif gr < -0.55 and le > 0.55: b = max(0, b - 1)      # 무리 오른쪽 아래 홈
+                if d > 0.84 and (nx * 0.6 + ny * 0.8) > -0.2: b = max(0, b - 1)   # 덩이 오른쪽 아래 테
+                L = BANDS[b]
+                if b == 5 and v > 0.86 and gr > 0.7: L = 100
+                lev[y, x] = L; famg[y, x] = ('keyaki_b' if b >= 3 else 'keyaki_a') if fam in FAMS else fam; own[y, x] = ci
+    for y in range(H):
+        for x in range(W):
+            if lev[y, x] >= 0: continue
+            ex, ey = (x + 0.5 - cx) / rw, (y + 0.5 - cy) / rh
+            if ex * ex + ey * ey < 0.70:
+                lev[y, x] = BANDS[0]; famg[y, x] = 'keyaki_a' if fam in FAMS else fam
     return own
 
 
@@ -326,8 +366,12 @@ def sprite(sp, shape, v, dark=False):
     jx = (hf('vjx', seed) - 0.5) * 2.0; jr = 1.0 - 0.07 * hf('vjr', seed)
     lev = np.full((H, W), -1, int); famg = np.full((H, W), None, object)
     if tw: paint_trunk(img, cx + jx * 0.5, ttop - up, tbase, tw, bark, seed, root)
-    paint_crown(img, lev, famg, cx + jx, cy, rw * jr, rh * jr, fam, seed, rl=rl,
-                bright=(-0.05, 0.03, -0.01, 0.05, -0.03, 0.01)[v % 6] - (0.13 if dark else 0.0), pockets=0 if shape in ('T1',) else 2 if shape in ('C2', 'T2') else 4)
+    if CROWN == 'v7':
+        paint_crown_v7(img, lev, famg, cx + jx, cy, rw * jr, rh * jr, fam, seed, rl=rl,
+                       bright=(-0.04, 0.03, -0.01, 0.05, -0.03, 0.01)[v % 6] - (0.10 if dark else 0.0))
+    else:
+        paint_crown(img, lev, famg, cx + jx, cy, rw * jr, rh * jr, fam, seed, rl=rl,
+                    bright=(-0.05, 0.03, -0.01, 0.05, -0.03, 0.01)[v % 6] - (0.13 if dark else 0.0), pockets=0 if shape in ('T1',) else 2 if shape in ('C2', 'T2') else 4)
     # 수관 밑면 그늘(줄기 위 2줄)
     for x in range(W):
         col = [y for y in range(H) if lev[y, x] >= 0]

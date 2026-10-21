@@ -88,7 +88,7 @@ export const COMPOSE_JP_REGION_TOOL: ToolDefinition = {
       region: { type: "string", enum: REGION_IDS, description: "지역 id(list_jp_regions)" },
       seed: { type: "integer", minimum: 0, description: "배치 씨앗 - 다른 값이면 다른 배치. 생략하면 0" },
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 짓는다(이벤트는 남는다)" },
-      grounding: { type: "boolean", description: "숲 나무 밑 땅 그늘(접지). 기본 true — 끄면 나무가 떠 보인다. 숲 구획이 있는 지역(신사 경내·산길·사토야마 등)에만 의미가 있다" },
+      grounding: { type: "boolean", description: "옛 인자 — 무시한다. 숲 나무 밑 땅 그늘(접지)은 늘 켜진다" },
     },
     required: ["region"],
     additionalProperties: false,

@@ -90,10 +90,30 @@ def _holes(on):
     return n
 
 
+GAP_KEEP = set('交')     # 굵히면 1px 틈이 메워져 다른 글자로 읽히는 글자(2026-10-21 VQA: 交 → 文)
+
+
+def _dakuten(on):
+    """탁점(゛) 화소: 맨 위 두 줄, 오른쪽 끝 두 세로 점(13·15열). 없으면 빈 집합."""
+    d = {(j, k) for j, k in on if j <= 1 and k in (13, 15)}
+    return d if {(0, 13), (0, 15)} <= d else set()
+
+
 def bold_glyph(ch):
-    """굵게(오른쪽 1px)는 속 칸이 하나도 닫히지 않을 때만 — 麺·駅처럼 빽빽한 글자는 굵히면 속이 메워진다(VQA 4차)."""
+    """굵게(오른쪽 1px)는 속 칸이 하나도 닫히지 않을 때만 — 麺·駅처럼 빽빽한 글자는 굵히면 속이 메워진다(VQA 4차).
+    탁점은 굵히면 한 줄 막대로 붙어 사라져 보인다(2026-10-21 VQA: だんご → たんこ) — 두 점을 2×2 로 따로 찍는다(사이 1열 비움)."""
     g = jfont.glyph(ch)
     on = set((j, k) for j in range(16) for k in range(16) if g[j, k])
+    dk = _dakuten(on)
+    if dk:
+        body = bold_glyph_set(on - dk, ch)
+        return body | {(j, k) for j in (0, 1) for k in (12, 13)} | {(j, k) for j in (0, 1) for k in (15, 16)}
+    return bold_glyph_set(on, ch)
+
+
+def bold_glyph_set(on, ch=''):
+    if ch in GAP_KEEP:
+        return on | {(j, k + 1) for j, k in on if (j, k + 2) not in on and (j + 1, k + 2) not in on and (j - 1, k + 2) not in on}
     bold = on | set((j, k + 1) for j, k in on)
     gaps = sum(1 for j in range(16) for k in range(15) if (j, k) not in on and (j, k - 1) in on and (j, k + 1) in on)
     return bold if _holes(bold) >= _holes(on) and gaps <= 10 else on              # 1px 틈이 10개 넘는 빽빽한 글자(麺 23 · 駅 18 · 喫 12)도 그대로
@@ -244,8 +264,9 @@ def shop_glass(c, x, y, w, h, goods='mart', door='mid'):
         c.VL(gx + i, gy, gh, K('tekko', 2)); c.VL(gx + i + 1, gy, gh, K('tekko', 0))
     if door:
         dx = x + (w - 16) // 2 if door == 'mid' else x + (w - 20 if door == 'right' else 4)
-        c.R(dx, y + h - 28, 16, 28, K('tekko', 2)); c.R(dx + 1, y + h - 27, 14, 27, K('garasu', 0))
-        c.VL(dx + 7, y + h - 27, 27, K('tekko', 1)); c.VL(dx + 8, y + h - 27, 27, K('tekko', 3))
+        dh = min(28, h - 1)                                           # 감실보다 높은 문은 위 간판을 뚫는다(2026-10-21 VQA: 역 자동문이 역명판을 가렸다)
+        c.R(dx, y + h - dh, 16, dh, K('tekko', 2)); c.R(dx + 1, y + h - dh + 1, 14, dh - 1, K('garasu', 0))
+        c.VL(dx + 7, y + h - dh + 1, dh - 1, K('tekko', 1)); c.VL(dx + 8, y + h - dh + 1, dh - 1, K('tekko', 3))
         for k in range(5): c.P(dx + 2 + k, y + h - 8 - k, K('garasu', 2))
         c.R(dx - 2, y + h, 20, 2, K('tekko', -1))                   # 매트
         if hasattr(c, 'doors'): c.doors.append(dx + 8)

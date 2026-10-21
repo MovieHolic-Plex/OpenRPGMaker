@@ -141,7 +141,7 @@ add('shop_barber', '理髪店 이발소', 'shop', dict(
 
 add('shop_tabako', 'たばこ屋 담배가게', 'shop', dict(
     w=4, rmat='tairu', rbase=0, roof=('gable_side', {}),
-    floors=[fl(34, 'kinari', 1, S, ('kiosk', 0, 4), ('door', 2, 6), ('vend', 3, 0)),
+    floors=[fl(50, 'kinari', 1, S, ('sign', 0, 60, 'たばこ', 'aka', WH, 1, 18), ('kiosk', 0, 4), ('door', 2, 6), ('vend', 3, 0)),
             fl(28, 'kinari', 1, S, ('sash', 0, 24, 14, 12, 8, False, True))],
     joins=[('lean', {})], porch=[(36, 20)]))
 
