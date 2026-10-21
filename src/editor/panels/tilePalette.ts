@@ -39,6 +39,7 @@ import {
   currentPaletteView,
   makePaletteSmartBody,
   makePaletteSmartTabs,
+  PALETTE_SMART_PANEL_ID,
   smartPaletteInputToken,
 } from "@/editor/panels/tilePaletteSmart";
 import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
@@ -571,6 +572,8 @@ function makePaletteSurface(input: {
         visibleTiles,
       }));
   palette.dataset.retainKey = paintSheetRetainKey(tileset, tileLayer);
+  // 네 탭의 aria-controls 가 가리키는 자리 — 개별 타일 탭에서는 이 시트가 탭 본문이다.
+  if (smart) palette.id = PALETTE_SMART_PANEL_ID;
   if (retainedSheet) {
     // 살린 판은 칸을 다시 짓지 않는다 — 그림(이식 베이크)과 필터·선택만 제자리에서 맞춘다.
     applyPaletteSheetImage(palette, tilesetImageUrl(tileset));

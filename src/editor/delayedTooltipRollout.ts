@@ -51,6 +51,7 @@ export const DELAYED_TOOLTIP_ROLLOUT: readonly DelayedTooltipTarget[] = [
   { label: "걷기 전투", name: "이 영역에서 걸을 때 적 만나기", testid: "selection-chip-walk-encounter" },
   { label: "구조물 저장", name: "선택 영역을 이 맵 타일셋의 구조물 킷으로 저장", testid: "selection-chip-save-structure" },
   { label: "선택 해제", name: "선택 해제 (Esc)", testid: "selection-chip-dismiss" },
+  { label: "격자", name: "격자 보이기/숨기기", testid: "editor-grid-toggle" },
   { label: "맵 저장", name: "현재 맵만 PNG로 저장", testid: "editor-map-screenshot-button" },
   { label: "저장 도구", name: "맵 저장 도구 펼치기/접기", testid: "editor-canvas-toolbar-expand" },
   { label: "저장", name: "프로젝트 저장 (Ctrl+S)", testid: "toolbar-save" },

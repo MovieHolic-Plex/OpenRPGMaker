@@ -17,7 +17,7 @@ import {
 import { revealPaletteTileFromMap } from "@/editor/panels/tilePalette";
 import { selectTileRegion } from "@/editor/mapClipboard";
 import { canEditMap, toastMapEditLockNotice } from "@/editor/mapEditLocks";
-import { recordMapEditIfChanged } from "@/editor/mapEditHistory";
+import { appendCellCountToLatestMapEdit, getMapEditHistoryMarker, recordMapEditIfChanged } from "@/editor/mapEditHistory";
 import { beginKitStampCapture, checkKitStampConditions, commitKitStampCapture } from "@/editor/structurePlacementActions";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import { layerTilePickAt, visibleTilePickAt, type VisibleTilePick } from "@/editor/tilePicking";
@@ -94,6 +94,9 @@ export class TilePaintEngine {
    */
   private placementNoticeShown = false;
   private strokeSnapshotRecorded = false;
+  /** 라벨을 붙여 기록한 스트로크의 맵과 시작 시점 — 끝날 때 기록 라벨에 바뀐 칸 수를 붙인다. */
+  private labeledStroke: { readonly mapId: MapId; readonly marker: number } | null = null;
+  private strokeHistoryMarker = 0;
   private reliefStrokeBase = 0;
   /** 이 스트로크를 오른쪽 버튼으로 시작했는가 — 높이 붓은 왼쪽과 반대 방식으로 칠한다. */
   private reliefStrokeInverted = false;
@@ -126,6 +129,8 @@ export class TilePaintEngine {
     if (firstStrokeTile) {
       this.placementNoticeShown = false;
       this.strokeSnapshotRecorded = false;
+      this.labeledStroke = null;
+      this.strokeHistoryMarker = getMapEditHistoryMarker();
     }
     const repeatedNonEventCell = layer !== "event" && key === previousKey;
     const tileLayer: TileLayer = layer === "upper" ? "upper" : "lower";
@@ -149,6 +154,8 @@ export class TilePaintEngine {
         brushStrokePoints({ centerX: center.x, centerY: center.y, size: brushSize }))
       : brushStrokePoints({ centerX: x, centerY: y, size: brushSize });
 
+    // 되돌리기 기록 메뉴에 「편집」 대신 무엇을 했는지 남긴다. 칸 수는 endStroke 가 붙인다.
+    const paintLabel = activePaletteStamp ? "도장 찍기" : selectedTile < 0 ? "지우기" : "칠하기";
     switch (tool) {
       case "paint":
         this.applyStrokeEdit(mid, () => {
@@ -244,23 +251,23 @@ export class TilePaintEngine {
               },
             }), worldmapAutoBackground: editorState.get().worldmapAutoBackground },
           );
-        });
+        }, { label: paintLabel });
         break;
       case "fill":
         if (firstStrokeTile) {
           if (selectedTile < 0 && tileLayer === "lower") break;
           this.applyStrokeEdit(mid, () => {
             fillTile(mid, tileLayer, x, y, selectedTile, { autoConnect: autoConnectMode, worldmapAutoBackground: editorState.get().worldmapAutoBackground });
-          });
+          }, { label: "채우기" });
         }
         break;
       case "erase":
         this.applyStrokeEdit(mid, () => {
           eraseVisibleTilesBulk(mid, tileLayer, points, { autoConnect: autoConnectMode });
-        });
+        }, { label: "지우기" });
         break;
       case "collision":
-        this.applyStrokeEdit(mid, () => toggleCollision(mid, x, y), { includeTilesets: true });
+        this.applyStrokeEdit(mid, () => toggleCollision(mid, x, y), { includeTilesets: true, label: "통행 표시" });
         break;
       case "relief":
         this.applyRelief(mid, ptr, x, pointerTile.groundY ?? y, firstStrokeTile);
@@ -431,6 +438,9 @@ export class TilePaintEngine {
     }
     if (editorState.get().terrainDragPoint !== null) editorState.set({ terrainDragPoint: null });
     this.terrainLast=null;
+    const labeled = this.labeledStroke;
+    this.labeledStroke = null;
+    if (commit && labeled) appendCellCountToLatestMapEdit(labeled.mapId, labeled.marker);
     const rough = this.reliefRough;
     this.stopReliefGrowth();
     this.reliefRough = null;
@@ -445,9 +455,13 @@ export class TilePaintEngine {
     });
   }
 
-  private applyStrokeEdit(mapId: MapId, edit: () => void, options: { readonly includeTilesets?: boolean } = {}): void {
-    if (this.strokeSnapshotRecorded) edit();
-    else this.strokeSnapshotRecorded = recordMapEditIfChanged(mapId, edit, options);
+  private applyStrokeEdit(mapId: MapId, edit: () => void, options: { readonly includeTilesets?: boolean; readonly label?: string } = {}): void {
+    if (this.strokeSnapshotRecorded) {
+      edit();
+      return;
+    }
+    this.strokeSnapshotRecorded = recordMapEditIfChanged(mapId, edit, options);
+    if (this.strokeSnapshotRecorded && options.label) this.labeledStroke = { mapId, marker: this.strokeHistoryMarker };
   }
 
   pickTileAtPointer(ptr: Phaser.Input.Pointer): void {
