@@ -159,7 +159,19 @@ def probes_for(base_im, kit, parts, recipe, pal, rng):
     return out
 
 
+# 검수판의 그림은 게임처럼 풀 땅 위에 놓는다. 어두운 카드 바탕에 바로 놓으면 지붕·벽 사이 투명 틈이
+# 처마 밑 그림자처럼 보여 판정자가 roof_gap 함정을 통과시켰다(northern-snow style-r1·r2 무효 6회).
+GROUND = (98, 140, 72, 255)
+
+
+def _on_ground(img):
+    g = Image.new('RGBA', img.size, GROUND)
+    g.alpha_composite(img.convert('RGBA'))
+    return g
+
+
 def _card(label, img, k=SCALE):
+    img = _on_ground(img)
     big = img.resize((img.width * k, img.height * k), Image.NEAREST)
     W, H = max(big.width + img.width + 14, 120), max(big.height, img.height) + 20
     c = Image.new('RGBA', (W, H), (58, 52, 48, 255))

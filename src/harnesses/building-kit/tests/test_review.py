@@ -52,6 +52,13 @@ class ReviewTest(unittest.TestCase):
         kinds = {v['kind'] for v in json.load(open(key)).values()}
         self.assertEqual(kinds, {'candidate', 'probe'})
 
+    def test_transparent_pixels_show_ground_on_the_board(self):
+        """투명 틈은 카드의 어두운 바탕이 아니라 풀 땅으로 보여야 한다(처마 그림자와 구분)."""
+        from PIL import Image
+        im = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
+        card = review._card('x', im, k=2)
+        self.assertEqual(card.getpixel((4 + 5, 18 + 5)), review.GROUND)
+
     def test_all_six_probe_kinds_are_on_the_board(self):
         prep = self.prepare()
         key = json.load(open(os.path.join(prep['dir'], 'key.json')))
