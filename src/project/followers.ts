@@ -458,10 +458,21 @@ export function followerPositions(
   let cursor = -1;
   const placed: { readonly x: number; readonly y: number; readonly direction?: Dir; readonly hidden?: boolean }[] = [];
   const result = followers.map((follower, index) => {
-    const entry = placeOne(follower, index);
+    const entry = sceneFacing(placeOne(follower, index));
     placed.push(entry);
     return entry;
   });
+  // 장면 중에는 동료가 주인공과 같은 쪽(말하는 이)을 본다 — 주인공이 동료 쪽으로 돌아서면(동료가 말할 때) 동료는 주인공을 본다.
+  // 궤적 방향 그대로 두면 포고 중 동료가 화면만 보고, 주인공이 돌아서도 동료는 등을 보였다(폴른 스타 VQA r6).
+  function sceneFacing<T extends { readonly x: number; readonly y: number; readonly direction?: Dir; readonly hidden?: boolean }>(entry: T): T {
+    const facing = world?.inScene ? world.playerFacing : undefined;
+    if (!facing || entry.hidden) return entry;
+    const dx = entry.x - session.x, dy = entry.y - session.y;
+    const along = facing === "up" ? -dy : facing === "down" ? dy : facing === "left" ? -dx : dx;
+    const across = facing === "up" || facing === "down" ? Math.abs(dx) : Math.abs(dy);
+    const opposite: Record<Dir, Dir> = { up: "down", down: "up", left: "right", right: "left" };
+    return { ...entry, direction: along > 0 && along <= 4 && across <= along ? opposite[facing] : facing };
+  }
   function placeOne(follower: RuntimeFollower, index: number) {
     // 옆자리가 모자라면(인접 4칸 초과 인원, 또는 물·벽으로 막힌 칸) 그 동료는 일렬로 떨어진다.
     const slot = slots[index];

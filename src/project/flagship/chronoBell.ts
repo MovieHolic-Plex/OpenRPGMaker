@@ -25,6 +25,7 @@ import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./falle
 import { reworkFallenTown } from "./fallenTown";
 import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX, ensureFallenValenChip } from "./fallenValenChip";
 import { buildFallenTownInteriors } from "./fallenTownInteriors";
+import { placeFallenStarVessel } from "./fallenStarVessel";
 import { dressObservatoryHall } from "./fallenObservatoryHall";
 import { isFallenRoomRebuilt } from "./fallenRoomOwnership";
 import handInteriorSpec from "@/assets/handInteriorSpec.json";
@@ -561,6 +562,18 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     ...escorts.map(([id, tex, index], k): [GameEvent, number, number, string, number] => [byId(id), k + 2, (k + 2) % 2 === 0 ? 0 : -1, tex, index]),
   ];
   const marchers = new Set(formation.map(([e]) => e.id));
+  // 뒷줄이 집 벽 맨 아랫줄·문 칸에 서던 것(VQA r6 major) — 걸을 수 있고 문·다른 사람이 없는 칸만 쓴다. 위 줄이 막히면 아래 줄로.
+  const doorCells = new Set(hub.events.filter((e) => String(e.id).startsWith("ev_gate_")).map((e) => `${e.x},${e.y}`));
+  const standing = new Set<string>();
+  const free = (x: number, y: number): boolean => isPassable(project, hub, x, y) && !doorCells.has(`${x},${y}`) && !standing.has(`${x},${y}`)
+    && !hub.events.some((e) => !marchers.has(e.id) && e.x === x && e.y === y);
+  for (const slot of formation) {
+    const [, dx, dy] = slot;
+    const tries = [dy, dy === 0 ? -1 : 1, dy === 0 ? 1 : 0].map((d) => lead.y + d);
+    const y = tries.find((ty) => free(lead.x + dx, ty)) ?? lead.y + dy;
+    slot[2] = y - lead.y;
+    standing.add(`${lead.x + dx},${y}`);
+  }
   for (const [event, dx, dy, tex, index] of formation) {
     event.x = lead.x + dx; event.y = lead.y + dy;
     for (const page of event.pages ?? []) if (page.graphic?.sprite) page.graphic.direction = "left";
@@ -613,7 +626,9 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
       { kind: "setThrough", enabled: true },
       // 행진 걸음 — 기본(느림·드묾)으로는 30칸 길에 30초가 넘게 걸려 대사가 끝난 뒤에도 광장에 남았다.
       { kind: "changeSpeed", delta: 2 }, { kind: "changeFrequency", delta: 3 },
-      ...Array.from({ length: delays[rank]! }, () => ({ kind: "wait" })),
+      // 경로의 「기다림」 한 번은 걸음 간격(80ms)만 쓴다 — 한 걸음(간격 80 + 이동 240ms)은 기다림 넷이다. 한 번씩만 넣으면
+      // 출발이 4분의 1 걸음만 늦어 발렌과 기사가 한 칸에 포개져 걸었다(VQA r6 major).
+      ...Array.from({ length: delays[rank]! * 4 }, () => ({ kind: "wait" })),
       ...path.map((dir) => ({ kind: "move", dir })),
       { kind: "changeOpacity", delta: -255 },
       { kind: "setSwitch", switchId: switches[npc.id]!, value: true },
@@ -641,6 +656,10 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     camera({ mode: "return", durationMs: "1000", wait: "true" }),
   ];
   list.splice(after + 1, 0, ...marches, ...follow);
+  // 포고 동안 주인공(과 동료)은 발렌 쪽을 본다 — 화면만 보고 서 있었다(VQA r6 major).
+  const begin = list.findIndex((c) => c.kind === "cutsceneControl");
+  const towardValen: Step = valen.x > (project.startPos?.x ?? 0) ? "right" : "left";
+  list.splice(begin + 1, 0, { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "turn", dir: towardValen }], repeat: false, wait: true, skippable: true } } as unknown as Command);
   // 엘레나가 말할 때 주인공이 화면(아래)을 보고 있었다(VQA r5) — 엘레나 쪽(위)으로 돌아선다.
   const elenaLine = list.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("들었지, 카엘"));
   if (elenaLine >= 0) list.splice(elenaLine, 0, { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "turn", dir: "up" }], repeat: false, wait: true, skippable: true } } as unknown as Command);
@@ -1262,13 +1281,19 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   const pod = M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_main_inspect1`);
   if (pod) {
     const fm = M(ids.forest);
-    const cx = pod.x, cy = pod.y - 1, rx = 3.9, ry = 2.7;
+    // 관(별의 배) 가운데 — 관은 pod 바로 위 두 칸 너비. 구덩이는 관을 품고 사방으로 그을린 자국이 뻗는 불규칙한 모양이다:
+    // 고른 타원(작은 칸 수)은 네모 흙 마당 + 검은 테두리로 읽혔다(VQA r6 major 「방·무덤 같다」). 각도마다 반지름을 흔들고
+    // 일곱 갈래로 그을음 줄기를 뻗는다.
+    const cx = pod.x + 0.5, cy = pod.y - 1.5, rx = 5.6, ry = 3.4;
     const pit = new Set<number>();
-    for (let y = Math.max(1, Math.floor(cy - ry)); y <= Math.min(fm.height - 2, Math.ceil(cy + ry)); y += 1) {
-      for (let x = Math.max(1, Math.floor(cx - rx)); x <= Math.min(fm.width - 2, Math.ceil(cx + rx)); x += 1) {
-        // 칸마다 흔든다 — 고른 타원은 공터 네모 판으로 보였다(감사 3차 「흙 마당」).
-        const wob = (((x * 73856093) ^ (y * 19349663)) >>> 0) % 7 * 0.1 - 0.25;
-        const inside = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1 - wob
+    const rays = [0.35, 1.2, 2.05, 2.75, 3.6, 4.55, 5.5];
+    for (let y = Math.max(1, Math.floor(cy - ry * 1.6)); y <= Math.min(fm.height - 2, Math.ceil(cy + ry * 1.6)); y += 1) {
+      for (let x = Math.max(1, Math.floor(cx - rx * 1.6)); x <= Math.min(fm.width - 2, Math.ceil(cx + rx * 1.6)); x += 1) {
+        const ex = (x + 0.5 - cx) / rx, ey = (y + 0.5 - cy) / ry, theta = Math.atan2(ey, ex) + Math.PI;
+        const ray = rays.some((r) => Math.abs(Math.atan2(Math.sin(theta - r), Math.cos(theta - r))) < 0.2) ? 1.5 : 1;
+        const wob = ((((x * 73856093) ^ (y * 19349663)) >>> 0) % 5) * 0.05 - 0.1;
+        const reach = (1 + 0.2 * Math.sin(3 * theta + 0.7) + 0.12 * Math.sin(5 * theta + 2.1) + wob) * ray;
+        const inside = Math.hypot(ex, ey) <= reach
           && fm.lowerTiles[y * fm.width + x] === 737
           // 관 그림 밑 칸도 칠한다 — 남겨 두면 관 둘레에 풀 테두리가 섰다. 누운 돌 관은 두 칸 너비라 좌우 한 칸까지.
           && ((fm.upperTiles[y * fm.width + x] ?? -1) < 0 || (Math.abs(x - pod.x) <= 1 && y >= pod.y - 2 && y <= pod.y - 1));
@@ -1288,22 +1313,63 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       let end = c; while (pit.has(end + 1) && Math.floor((end + 1) / fm.width) === Math.floor(c / fm.width)) end += 1;
       execTool(project, "fill_region", { mapId: fm.id, x: c % fm.width, y: Math.floor(c / fm.width), w: end - c + 1, h: 1, layer: "lower", material: "버들항 모랫길" });
     }
-    const debris: Array<[string, number, number]> = [
-      ["bd-pick-volcano-cave-ember-a", -2, -2], ["bd-pick-volcano-cave-ember-a", 2, 1], ["bd-pick-volcano-cave-ember-a", -3, 0],
-      ["bd-pick-deep-forest-path-log-fallen", -7, 1], ["bd-pick-deep-forest-path-log-fallen", 5, 2],
-      ["bd-pick-deep-forest-path-stump", -6, -3], ["bd-pick-deep-forest-path-stump", 6, -2], ["bd-pick-deep-forest-path-stump", -7, -1],
-      ["bd-pick-volcano-cave-ember-a", 1, -2], ["bd-pick-deep-forest-path-log-fallen", 4, -4],
-      // 그을린 구덩이 — 숯 더미를 구덩이 안쪽에 흩어 맨 흙 타원으로 읽히지 않게 한다(감사 2차).
-      ["bd-pick-volcano-cave-coal-pile", -2, 0], ["bd-pick-volcano-cave-coal-pile", 2, -1],
-      // 그을린 자리 바깥 풀밭 — 꺾인 덤불이 흩어져 공터 경계를 흐린다.
-      ["bd-pick-deep-forest-path-heath-a", -5, 2], ["bd-pick-deep-forest-path-heath-b", 5, -1], ["bd-pick-deep-forest-path-fern-c", -5, -2],
-      ["bd-pick-deep-forest-path-heath-c", 4, 3], ["bd-pick-deep-forest-path-fern-c", -4, 3], ["bd-pick-deep-forest-path-heath-b", 6, 1],
+    // 구덩이 안: 불씨 자국·숯 더미(관 곁). 구덩이 밖: 쓰러진 나무·그루터기·꺾인 덤불을 둘레 바깥으로 빙 둘러 — 오프닝 crash 컷처럼
+    // 충격에 넘어간 나무가 구덩이를 에워싼다. 예전 고정 좌표는 구덩이를 키우자 덤불이 구덩이 안에 섰다(VQA r6).
+    const inside: Array<[string, number, number]> = [
+      ["bd-pick-volcano-cave-ember-a", -3, -1], ["bd-pick-volcano-cave-ember-a", 3, 0], ["bd-pick-volcano-cave-ember-a", -4, 1],
+      ["bd-pick-volcano-cave-ember-a", 2, -3], ["bd-pick-volcano-cave-coal-pile", -2, 1], ["bd-pick-volcano-cave-coal-pile", 3, -2],
+    ];
+    const around: Array<[string, number]> = [
+      ["bd-pick-deep-forest-path-log-fallen", 0.2], ["bd-pick-deep-forest-path-stump", 0.9], ["bd-pick-deep-forest-path-log-fallen", 2.6],
+      ["bd-pick-deep-forest-path-stump", 3.3], ["bd-pick-deep-forest-path-log-fallen", 3.9], ["bd-pick-deep-forest-path-heath-a", 1.6],
+      ["bd-pick-deep-forest-path-heath-b", 4.6], ["bd-pick-deep-forest-path-fern-c", 5.4], ["bd-pick-deep-forest-path-stump", 5.9],
+      ["bd-pick-deep-forest-path-heath-c", 2.2],
     ];
     // 흙길 오토타일이 오목한 모서리 칸을 스스로 채운다 — 실제로 바뀐 칸을 다시 모아 둑을 얹는다.
     const live = M(ids.forest);
     for (let c = 0; c < live.lowerTiles.length; c += 1) if (live.lowerTiles[c] !== fm.lowerTiles[c] && fm.lowerTiles[c] === 737) pit.add(c);
     rimPit(project, live, pit, "bankLava"); // fill_region 이 맵 객체를 바꿔 끼우므로 fm 이 아니라 지금 맵에 얹는다.
-    for (const [kit, dx, dy] of debris) tryStamp(project, M(ids.forest), `kit:beodeul_city/${kit}`, pod.x + dx, pod.y + dy);
+    // 평평한 돌 관(버들항 하수도 관 2×2)을 걷고, 오프닝 crash 컷의 누운 은빛 관(손 도트 3×2, 동서로 누움)을 조사 칸 바로 위에 눕힌다.
+    {
+      const coffin = new Set([26599, 26600, 26601, 26602]);
+      let x0 = Infinity, y1 = -Infinity;
+      live.upperTiles.forEach((t, i) => { if (coffin.has(t)) { x0 = Math.min(x0, i % live.width); y1 = Math.max(y1, Math.floor(i / live.width)); live.upperTiles[i] = -1; } });
+      if (Number.isFinite(x0)) placeFallenStarVessel(project, live, pod.x - 1, y1 - 1);
+      // 오프닝 crash 컷처럼 관 위로 연기 몇 가닥이 피어오른다 — 이리스가 깨어나기 전까지(병렬 이벤트, 투명·아래 층).
+      const smoke = (x: number, y: number, ms: number) => ({ kind: "m2Command", commandId: "m2-224-particle-effect", fields: { preset: "smoke", target: "tile", x, y, durationMs: ms, wait: false } } as unknown as Command);
+      live.events = live.events.filter((e) => e.id !== `ev_${FS_PREFIX}_crash_smoke`);
+      live.events.push({
+        id: `ev_${FS_PREFIX}_crash_smoke`, name: "추락지 연기", x: pod.x - 3, y: pod.y - 3, trigger: { kind: "parallel" }, commands: [],
+        pages: [{
+          id: `ev_${FS_PREFIX}_crash_smoke_page`, name: "연기", conditions: [], graphic: { transparent: true },
+          movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "below", trigger: { kind: "parallel" },
+          commands: [smoke(pod.x - 1, pod.y - 2, 1400), { kind: "wait", ms: 700 }, smoke(pod.x + 1, pod.y - 2, 1400), { kind: "wait", ms: 900 },
+            smoke(pod.x, pod.y - 3, 1200), { kind: "wait", ms: 1100 }] as unknown as Command[],
+        }, {
+          id: `ev_${FS_PREFIX}_crash_smoke_done`, name: "연기 걷힘", conditions: [{ kind: "switch", switchId: SW_IRIS_JOINED, value: true }], graphic: { transparent: true },
+          movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "below", trigger: { kind: "action" }, commands: [],
+        }],
+      } as unknown as GameEvent);
+    }
+    for (const [kit, dx, dy] of inside) if (pit.has((pod.y + dy) * live.width + pod.x + dx)) tryStamp(project, M(ids.forest), `kit:beodeul_city/${kit}`, pod.x + dx, pod.y + dy);
+    for (const [kit, angle] of around) {
+      for (let r = 1; r < 10; r += 0.5) {
+        const x = Math.round(cx + Math.cos(angle) * rx * r * 0.75), y = Math.round(cy + Math.sin(angle) * ry * r * 0.75);
+        if (pit.has(y * live.width + x) || pit.has(y * live.width + x + 1)) continue;
+        if (tryStamp(project, M(ids.forest), `kit:beodeul_city/${kit}`, x, y)) break;
+        if (r > 2.2) break;
+      }
+    }
+    // 구덩이 북쪽 위로 맵 끝까지 붙은 모랫길 토막 둘은 아무 데로도 안 갔다(VQA r6 m13) — 풀로 되돌린다.
+    {
+      const fz = M(ids.forest);
+      const top = Math.min(...[...pit].map((c) => Math.floor(c / fz.width)));
+      const metaF = (project.tilesets[fz.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+      for (let y = 0; y < top; y += 1) for (let x = Math.floor(cx - rx * 1.6); x <= Math.ceil(cx + rx * 1.6); x += 1) {
+        const i = y * fz.width + x;
+        if (x >= 0 && x < fz.width && (metaF[fz.lowerTiles[i]!]?.label ?? "").startsWith("버들항 · 모랫길")) fz.lowerTiles[i] = 737;
+      }
+    }
   }
   // 선포하는 발렌이 광장 가장자리 수정 기둥에 겹쳐 서 몸이 가렸다(감사 VQA) — 광장 포석 쪽 빈 칸으로 옮긴다.
   const herald = M(ids.hub).events.find((e) => e.id === `ev_${FS_PREFIX}_valen`);

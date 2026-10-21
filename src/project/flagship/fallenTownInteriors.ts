@@ -76,7 +76,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
           commands: [{ kind: "inn", price: 30 }],
         },
         {
-          id: "ev_fs_inn_bard", name: "떠돌이 악사", query: "젊은 남성", chip: ["tex_easyrpg_charset_actor1", 4],
+          id: "ev_fs_inn_bard", name: "떠돌이 악사", query: "젊은 남성", chip: ["tex_easyrpg_charset_people2", 0],
           lines: ["별이 떨어진 밤의 노래를 짓는 중이오. 「동쪽 숲에 은빛 알이 내려앉았네」… 운이 안 맞는군."],
           after: ["은빛 머리 아가씨라… 노래 속 별의 딸 같구려. 걱정 마시오, 교단 앞에선 이 노래 안 부르리다."],
         },
@@ -89,10 +89,10 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
     },
     {
       door: { x: 31, y: 31 }, mapId: "fs_apothecary", name: "아스텔 · 약방", bgm: "cc0-bgm-rtp-cln-001",
-      // 가게 앞방 + 조제실 + 약초 저장고 + 서재 + 부엌 + 침실.
-      layout: { rooms: [{ kind: "pharmacy_shop", w: 16, h: 9 }, { kind: "alchemy", w: 7, h: 6 }, { kind: "bedroom" }, { kind: "storeroom" }, { kind: "kitchen" }, { kind: "study" }], seed: 55, variant: 1, styleVariant: "A" },
-      dress: [["table:potion+flask", 21, 13], ["balance scale", 24, 12], ["herb drying rack", 25, 13], ["basket:herb", 11, 15], ["basket:mushroom", 12, 15],
-        ["potted flowering", 15, 14], ["mortar and pestle", 23, 15], ["basket:potion+potionb+potiong", 10, 14]],
+      // 가게 앞방 + 조제실 + 약재 광 + 지하 저장고 + 서재 + 부부 침실 — 부엌은 두지 않는다(집집마다 같은 부엌이 되풀이됐다, VQA r6).
+      layout: { rooms: [{ kind: "pharmacy_shop", w: 19, h: 9 }, { kind: "alchemy", w: 9, h: 7 }, { kind: "pantry" }, { kind: "cellar" }, { kind: "master_bedroom" }, { kind: "study" }], seed: 13, variant: 0, styleVariant: "A" },
+      dress: [["table:potion+flask", 12, 15], ["herb drying rack", 26, 15], ["basket:herb", 9, 17], ["basket:mushroom", 10, 17],
+        ["basket:potion+potionb+potiong", 13, 17]],
       people: [
         {
           id: "ev_fs_apothecary", name: "약재상 오든", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 7], behindCounter: true,
@@ -104,13 +104,13 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
     },
     {
       door: { x: 13, y: 11 }, mapId: "fs_bakery_home", name: "아스텔 · 빵집 뒤채", bgm: "cc0-bgm-rtp-caf-001",
-      // 빵 진열 가게 + 빵 굽는 방 + 밀가루 저장고 + 부엌 + 부부 침실.
-      layout: { rooms: [{ kind: "bakery_shop", w: 14, h: 8 }, { kind: "bakery_oven", w: 8, h: 5 }, { kind: "storeroom" }, { kind: "bedroom" }, { kind: "kitchen" }], seed: 21, variant: 2, styleVariant: "C" },
-      dress: [["table:loaf+bun", 3, 13], ["table:cake+pie", 6, 13], ["cake display case", 16, 12], ["table:loaf+bun", 16, 15], ["basket:loaf", 2, 16],
-        ["basket:baguette", 3, 16], ["basket:bun", 9, 16], ["sack:flour", 17, 17], ["roundtable", 7, 16], ["chair E", 6, 16], ["chair W", 8, 16]],
+      // 빵 진열 가게 + 빵 굽는 방(화덕이 부엌을 겸한다) + 식료품 광 + 지하 저장고 + 침실 + 식당.
+      layout: { rooms: [{ kind: "bakery_shop", w: 14, h: 8 }, { kind: "bakery_oven", w: 8, h: 5 }, { kind: "pantry" }, { kind: "cellar" }, { kind: "bedroom" }, { kind: "dining" }], seed: 21, variant: 0, styleVariant: "C" },
+      dress: [["table:loaf+bun", 13, 13], ["basket:loaf", 11, 14], ["basket:bun", 12, 14], ["basket:baguette", 11, 13],
+        ["roundtable", 27, 13], ["chair E", 26, 13], ["chair W", 28, 13]],
       people: [
         {
-          id: "ev_fs_baker_husband", name: "빵집 아저씨 토마", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people1", 4],
+          id: "ev_fs_baker_husband", name: "빵집 아저씨 토마", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people1", 4], behindCounter: true,
           lines: ["아내는 광장에 나가 있어요. 별이 떨어진 밤엔 반죽이 안 부푼다던데… 미신이겠죠.", "그래도 오늘 새벽 반죽은 정말 안 부풀었어요."],
           after: ["기계 아가씨가 빵을 먹나요? …먹는 흉내라도 낸다면 하나 싸 줄게요."],
         },
@@ -118,10 +118,10 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
     },
     {
       door: { x: 4, y: 20 }, mapId: "fs_stargazer_home", name: "아스텔 · 늙은 별지기의 집", bgm: "cc0-bgm-rtp-mys-002",
-      // 별 지도 서고 + 관측 일지 서재 + 침실 + 부엌 + 저장고.
-      layout: { rooms: [{ kind: "library", w: 16, h: 7 }, { kind: "study", w: 8, h: 7 }, { kind: "bedroom" }, { kind: "kitchen" }, { kind: "storeroom" }], seed: 9, variant: 2, styleVariant: "D" },
-      dress: [["desk 3x1", 2, 12], ["chair N", 3, 13], ["book pile", 6, 13], ["orrery", 14, 13], ["desk 2x2", 21, 13],
-        ["book pile", 22, 10], ["owl perch", 29, 13], ["scroll rack", 13, 10], ["globe", 24, 14]],
+      // 별 지도 서고 + 관측 일지 서재 + 침실 + 지하 저장고 + 벽난로 거실(괘종시계) — 부엌·열 사람 식탁은 두지 않는다(혼자 사는 노인, VQA r6).
+      layout: { rooms: [{ kind: "library", w: 18, h: 8 }, { kind: "study", w: 9, h: 7 }, { kind: "bedroom" }, { kind: "cellar" }, { kind: "living", w: 8, h: 6 }], seed: 21, variant: 0, styleVariant: "D" },
+      dress: [["orrery", 15, 15], ["globe", 13, 12], ["book pile", 18, 12], ["desk 3x1", 22, 16], ["owl perch", 27, 16], ["scroll rack", 13, 16],
+        ["desk 2x2", 14, 4], ["book pile", 12, 3]],
       people: [
         {
           id: "ev_fs_old_stargazer", name: "늙은 별지기 오스본", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 6],
@@ -132,8 +132,8 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
     },
     {
       door: { x: 32, y: 20 }, mapId: "fs_lisa_home", name: "아스텔 · 리사네 집", bgm: "cc0-bgm-rtp-emo-002",
-      // 가족 집: 거실(벽난로) + 식당 + 부엌 + 침실 둘(부부·아이) + 식료품 광 + 씻는 방 + 헛간 광.
-      layout: { rooms: [{ kind: "living", w: 10, h: 7 }, { kind: "dining", w: 8, h: 7 }, { kind: "kitchen", w: 6, h: 6 }, { kind: "bedroom" }, { kind: "bedroom" }, { kind: "pantry" }, { kind: "bathroom" }, { kind: "storeroom" }], seed: 8, variant: 2, styleVariant: "A" },
+      // 가족 집: 거실(벽난로) + 식당 + 부엌 + 침실 둘(부부·아이) + 식료품 광 + 헛간 광 + 지하 저장고(흰 도기 욕조는 중세 집에 안 맞았다, VQA r6).
+      layout: { rooms: [{ kind: "living", w: 10, h: 7 }, { kind: "dining", w: 8, h: 7 }, { kind: "kitchen", w: 6, h: 6 }, { kind: "bedroom" }, { kind: "bedroom" }, { kind: "pantry" }, { kind: "storeroom" }, { kind: "cellar" }], seed: 8, variant: 1, styleVariant: "A" },
       people: [
         {
           id: "ev_fs_lisa", name: "리사", query: "젊은 여성", chip: ["tex_easyrpg_charset_people3", 3],
@@ -230,6 +230,8 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
     built.push(home.mapId);
   }
 
+  dressShopFronts(project, hubId, homes);
+
   // 들어가지 않는 문 — 부딪히면 잠겼다고 말한다(가짜 문 금지).
   const LOCKED = [
     "문이 굳게 잠겨 있다. 안에서는 아무 대답이 없다.",
@@ -294,6 +296,9 @@ function farFreeCell(project: Project, map: GameMap, origin: Cell, taken: readon
 /** 수도꼭지 개수대 → 물동이, 쇠 레인지(2×3) → 화덕 + 조리대(위 줄은 비운다). 칸 번호만 바꾼다(새 그림 없음). */
 function periodKitchen(map: GameMap): void {
   const swap: Record<number, number> = { 3697: -1, 3698: 7142, 4125: -1, 4126: -1, 4127: 3936, 4128: 4064, 4140: 3948, 4152: 4065 };
+  // 저장고의 「무너진 벽돌」 벽면(3228~3243)은 붉고 보랏빛 얼룩이 번진 낮은 해상도처럼 보였다(VQA r6 major) — 같은 짜임(16칸)의
+  // 「짙은 통나무」 벽면(3098~3113)으로 바꾼다.
+  for (let t = 3228; t <= 3243; t += 1) swap[t] = t - 3228 + 3098;
   for (const layer of [map.lowerTiles, map.lowerOverlayTiles, map.upperTiles, map.upperOverlayTiles]) {
     if (!layer) continue;
     for (let i = 0; i < layer.length; i += 1) { const to = swap[layer[i]!]; if (to !== undefined) layer[i] = to; }
@@ -328,4 +333,68 @@ function counterSpot(project: Project, map: GameMap, exit: Cell): { counter: Cel
   // 손님이 계산대 앞에 서 볼 수 있게 출구에서 가까운 계산대 — 뒤 칸이 손님 쪽과 이어져 있지 않은(진짜 계산대 뒤) 자리를 먼저.
   options.sort((p, q) => Number(reach.has(`${p.behind.x},${p.behind.y}`)) - Number(reach.has(`${q.behind.x},${q.behind.y}`)) || p.d - q.d);
   return options[0];
+}
+
+/**
+ * 가게 앞 — 여관·약방·빵집이 바깥에서 그냥 집으로 보였고, 늙은 별지기의 집만 간판·차양을 달아 가게로 읽혔다(VQA r6 major).
+ * 가게 문 옆 벽에 걸이 간판을 걸고, 문 곁 풀밭에 쓰임을 말하는 버들항 소품(주막 탁자·약초 말리는 틀·빵 진열대·입간판)을 둔다.
+ * 별지기의 집은 같은 집 키트의 민짜 벽(문 오른쪽 두 칸)으로 간판·차양을 걷는다. 새 그림 없음(버들항 키트·칸 번호만).
+ */
+function dressShopFronts(project: Project, hubId: string, homes: readonly Home[]): void {
+  const FRONT: Record<string, readonly string[]> = {
+    fs_inn: ["bd-prop-table_mugs", "bd-prop-sandwich_board"],
+    fs_apothecary: ["bd-pick-wizard-tower-herb-rack", "bd-prop-sandwich_board"],
+    fs_bakery_home: ["bd-prop-bread_rack", "bd-prop-sandwich_board"],
+  };
+  const HANGING_SIGN = 23605;
+  for (const home of homes) {
+    const hub = project.maps[hubId]!;
+    const { door } = home;
+    const at = (x: number, y: number): number => y * hub.width + x;
+    if (home.mapId === "fs_stargazer_home") {
+      // 처마 간판 걸이(5457·5459) → 민짜 처마(757·826), 걸이 간판 벽(5745·5747) → 버팀대 벽(5831·5742), 차양 진열창(6046) → 버팀대 아랫벽(6041).
+      // 문 왼쪽 벽과 같은 반쪽 목조 벽 칸만 쓴다(같은 집 키트, 새 그림 없음).
+      const plain: Record<number, number> = { 5457: 757, 5459: 826, 5745: 5831, 5747: 5742, 6046: 6041 };
+      for (let y = door.y - 2; y <= door.y; y += 1) for (let x = door.x + 1; x <= door.x + 2; x += 1) {
+        const to = plain[hub.upperTiles[at(x, y)]!];
+        if (to !== undefined) hub.upperTiles[at(x, y)] = to;
+      }
+      continue;
+    }
+    const kits = FRONT[home.mapId];
+    if (!kits) continue;
+    // 걸이 간판 — 문 오른쪽 벽(문 윗줄). 덧그림 층(upperOverlay)이라 벽 그림 위에 걸린다.
+    const overlay = hub.upperOverlayTiles ?? (hub.upperOverlayTiles = new Array(hub.width * hub.height).fill(-1));
+    const signAt = at(door.x + 1, door.y - 1);
+    if ((overlay[signAt] ?? -1) < 0) overlay[signAt] = HANGING_SIGN;
+    const tileset = project.tilesets[hub.tilesetId]!;
+    const free = (x: number, y: number): boolean => {
+      if (x < 1 || y < 1 || x >= hub.width - 1 || y >= hub.height - 1) return false;
+      if (Math.abs(x - door.x) <= 1 && y >= door.y && y <= door.y + 2) return false; // 문 앞 길은 비운다
+      const i = at(x, y);
+      for (const t of [hub.lowerTiles[i], hub.lowerOverlayTiles?.[i], hub.upperTiles[i], hub.upperOverlayTiles?.[i]]) {
+        if (t === undefined || t < 0) continue;
+        const pass = tileset.passability[t];
+        if (pass && !pass.up && !pass.down && !pass.left && !pass.right) return false;
+        if (/길|포석|광장|road|plaza/i.test(tileset.tileMeta?.[t]?.label ?? "")) return false; // 길을 막지 않는다
+      }
+      return !hub.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1);
+    };
+    const taken = new Set<string>();
+    for (const kitId of kits) {
+      const kit = tileset.structureKits?.find((k) => k.id === kitId);
+      if (!kit) continue;
+      const spots: Cell[] = [];
+      for (let r = 2; r <= 5; r += 1) for (const dx of [-r, r, -r + 1, r - 1]) for (const dy of [0, 1, -1, 2]) spots.push({ x: door.x + dx, y: door.y + dy - (kit.height - 1) });
+      const spot = spots.find((s) => {
+        for (let ky = 0; ky < kit.height; ky += 1) for (let kx = 0; kx < kit.width; kx += 1) if (!free(s.x + kx, s.y + ky) || taken.has(`${s.x + kx},${s.y + ky}`)) return false;
+        return true;
+      });
+      if (!spot) continue;
+      try {
+        run(project, "stamp_object", { objectId: `kit:${hub.tilesetId}/${kitId}`, mapId: hubId, x: spot.x, y: spot.y });
+        for (let ky = -1; ky <= kit.height; ky += 1) for (let kx = -1; kx <= kit.width; kx += 1) taken.add(`${spot.x + kx},${spot.y + ky}`);
+      } catch { /* 장식 — 못 놓으면 건너뛴다 */ }
+    }
+  }
 }
