@@ -76,7 +76,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 
 ## 9. 입력 보호
 
-1. **선택지는 열린 직후 확인 키를 잠깐 무시한다(엔진, 약 300ms).** 대사를 Enter 로 넘기던 손이 선택지 첫 줄을 못 보고 고른다. 조수는 중요한 선택 바로 앞 대사를 autoAdvance 로 넘기지 않는다.
+1. **선택지 직전 Enter 연타를 막는다.** 대사를 Enter 로 넘기던 손이 선택지 첫 줄을 못 보고 고른다. 엔진의 «선택지 열린 직후 약 300ms 확인 키 무시»는 **아직 main 에 없음 — 지금은** 중요한 선택 바로 앞 대사를 autoAdvance 로 넘기지 않고, 선택지 직전에 짧은 대사 한 줄을 둔다.
 2. **자막을 즉시 닫히는 창으로 띄우지 않는다**(4-2).
 
 ## 10. 엔진 화면 (코딩 에이전트만)
@@ -84,7 +84,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 - 한 상태는 한 곳에서만 말한다(PP 0 상자 + 「남은 횟수가 없습니다」 이중 표기 금지). 좁은 고정 칸의 글은 2줄 clamp. 확인: 최악 값(PP 0·긴 이름)으로 출하 player.html 480×320 프레임.
 - 기절·퇴장은 발판 안으로 가라앉기(translateY + clip-path), 정보 상자는 연출이 끝날 때까지 둔다. 확인: 0.1초 간격 연속 촬영.
 - 닫히는 행은 마지막 키프레임에서 흐름에서 뺀다(position:absolute·높이 0). 확인: 다음 상자 등장 프레임의 getBoundingClientRect 를 숫자로 대조.
-- 전투 배경이 어둡고 가운데가 비면 공용 기본값을 바꾸지 말고 opt-in 겹 프리셋(빛무리 glow: 방사 그라데이션·screen 섞기·불투명도 70~75·스크롤 0)을 더하고, 겹 4칸이 찼으면 약한 겹(mist)과 바꾼다. 프리셋 목록 여섯 곳(battleBackdropLayers 상수·라벨·기본값, battleBackdropLayersDom PRESET_PAINT, types/database.ts 유니온, dbTools enum)을 같이 맞춘다. 확인: 전투 프레임에서 빛이 보이고 이름표·HP 글자가 읽힌다.
+- 전투 배경이 어둡고 가운데가 비면 공용 기본값을 바꾸지 말고 빛 겹을 더한다. **빛무리 `glow` 프리셋은 아직 main 에 없음 — 지금은 `lightRays`(성당·수정 위 빛줄기)를 쓸 것**, 겹 4칸이 찼으면 약한 겹(`mist`)과 바꾼다. 지금 있는 프리셋: fog·clouds·mist·rain·snow·embers·stars·lightRays. (Fallen 브랜치의 glow 가 main 에 들어오면 이 주석을 지운다. 새 프리셋을 더할 때는 battleBackdropLayers 상수·라벨·기본값, battleBackdropLayersDom PRESET_PAINT, types/database.ts 유니온, dbTools enum 여섯 곳을 같이 맞춘다.) 확인: 전투 프레임에서 빛이 보이고 이름표·HP 글자가 읽힌다.
 - 발판 타원은 한 판에 하나. 레벨업 팝업은 HUD 를 가리지 않는다. 흉상·칩은 정수 배율로 같은 틀에, 그림이 다 읽힌 뒤에 보인다.
 - 조사 힌트: 사람 앞은 「Z 대화」, 문은 「Z 이동」(이동으로 끝나는 대화도 사람이 먼저). 이벤트가 도는 동안(컷신 걷기 중) 힌트를 띄우지 않는다.
 - 도달성 검사: 막힌 문 그림 칸은 그 칸 자체이거나 걸어 닿는 이웃이 있으면 닿는 것으로 본다(부딪힘 문).
@@ -108,5 +108,5 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 
 ## 새 교훈 넣기
 
-데모·사용자 지적이 새로 나오면 «실수 → 규칙 → 확인» 한 줄로 이 파일에 더한다. 기계로 잡히면 `src/project/lint/scenePolishLint.ts` 에 경고를 더하고
+데모·사용자 지적이 새로 나오면 «실수 → 규칙 → 확인» 한 줄로 이 파일에 더한다. 스킬은 main 에 있는 도구·프리셋·필드만 시킨다(아직 데모 브랜치에만 있는 것은 «아직 main 에 없음 — 지금은 X» 로 적고 대안을 준다). 기계로 잡히면 `src/project/lint/scenePolishLint.ts` 에 경고를 더하고
 `npx tsx scripts/qa/scene-polish-lint.mts <project.json>` 으로 데모에 돌려 본다. 그다음 `npm run assistant-skills:bundle` 로 조수 번들을 다시 굽는다.
