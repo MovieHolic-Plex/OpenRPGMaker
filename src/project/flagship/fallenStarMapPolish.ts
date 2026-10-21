@@ -164,6 +164,8 @@ export function dressVaultRock(
   map: GameMap,
   voidTiles: ReadonlySet<number>,
   tiles: { edge: readonly number[]; vein: readonly number[]; mid: readonly number[]; deep: readonly number[] },
+  /** 방 윗벽 위로 이만큼 줄은 밝은 가장자리 암벽 대신 어두운 천장 띠(deep 칸)로 칠한다. 0 이면 끈다. */
+  ceilingRows = 0,
 ): number {
   const { width: w, height: h } = map;
   const dist = new Int16Array(w * h).fill(-1);
@@ -199,7 +201,14 @@ export function dressVaultRock(
     // 허공 칸은 덩어리 임계값이 아니라 칸 단위 디더라 덩어리 모서리 없이 번진다. 중간 암반은 큰 격자로 변형을 고른다(칸마다 무작위 얼룩 금지).
     const deepShare = d <= 14 ? 0 : Math.min(0.7, (d - 14) * 0.15) + (n - 0.5) * 0.1;
     const coarse = (list: readonly number[]): number => list[Math.floor(smooth(x, y, 3, 3) * list.length) % list.length]!;
-    if (d <= 2) next = pick(tiles.edge, x, y, 1);
+    // 방(비허공 칸) 바로 위 ceilingRows 줄 = 천장. 밝은 가장자리 암벽이면 바닥·벽 윗면처럼 읽히므로 어두운 칸으로 덮는다.
+    let capped = false;
+    for (let k = 1; k <= ceilingRows && y + k < h; k += 1) {
+      if (!voidTiles.has(map.lowerTiles[(y + k) * w + x] ?? -1)) { capped = true; break; }
+      if (dist[(y + k) * w + x]! < 0) break;
+    }
+    if (capped) next = pick(tiles.deep, x, y, 5);
+    else if (d <= 2) next = pick(tiles.edge, x, y, 1);
     else if (hash(x, y, 4) < deepShare) next = pick(tiles.deep, x, y, 4);
     else if (d <= 6 && n > 0.8) next = pick(tiles.vein, x, y, 2);
     else next = coarse(tiles.mid);

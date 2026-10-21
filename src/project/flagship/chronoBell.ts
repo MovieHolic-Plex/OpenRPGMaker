@@ -1078,7 +1078,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 맵 마감(감사 3차) — 주인 없는 그림자, 화로의 방 긴 화덕 띠.
   for (const map of [M(ids.hub), M(ids.forest), M(ids.vault)]) clearOrphanShadows(project, map);
   // 지하 묘소 — 방 사이 균일한 남색 허공을 방 가까이에서 바위 덩어리로 바꿔 화면이 비어 보이지 않게 한다(VQA).
-  dressVaultRock(M(ids.vault), new Set([28462, 28509]), { edge: [25276, 25279, 25282], vein: [25277, 25280, 25283], mid: [25284, 25287, 25288], deep: [28462, 28509] });
+  dressVaultRock(M(ids.vault), new Set([28462, 28509]), { edge: [25276, 25279, 25282], vein: [25277, 25280, 25283], mid: [25284, 25287, 25288], deep: [28462, 28509] }, 3);
   varyVaultFloor(M(ids.vault), new Set([26817, 26818, 26819]), [26815, 26816], [26819, 26819, 26818, 26817], 90);
   // 세이브 결정의 방(x18~34, y18~28)은 같은 회색 포석이 한 면이라 평평했다 — 가운데 길을 빼고 흙·이끼 얼룩을 흩뿌린다(VQA).
   scatterVaultFloorPatches(M(ids.vault), { x0: 18, y0: 18, x1: 34, y1: 28 }, new Set([26817, 26818, 26819]), [26809, 26810, 26811], [26815, 26816, 26812], [25, 27]);
