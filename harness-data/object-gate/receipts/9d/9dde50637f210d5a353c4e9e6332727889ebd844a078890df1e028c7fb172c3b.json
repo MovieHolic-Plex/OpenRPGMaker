@@ -1,0 +1,398 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9dde50637f210d5a353c4e9e6332727889ebd844a078890df1e028c7fb172c3b",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "mart veg wall",
+ "label": "modern_city_interior/mart-veg-wall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 10/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 10/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 28,
+  "tileColorsP90": 29,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top shelf surface (white band)",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper produce row (greens)",
+      "rows": "9-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "second tier shelf ledge",
+      "rows": "13-14",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14"
+     },
+     {
+      "part": "middle produce row",
+      "rows": "15-18",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "third tier shelf ledge",
+      "rows": "19-20",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20"
+     },
+     {
+      "part": "lower produce row (greens, red and yellow)",
+      "rows": "21-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom shelf ledge",
+      "rows": "25-26",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette steps out from 24 to 32 px wide going down, so it reads as a tiered display. Rows 5-8 form a light top band over the first produce bay, and each lower tier has a light edge row (13, 19, 25) followed by a grey shadow row (14, 20, 26), which reads as a ledge with a front-edge line. The produce sits in open bays on these ledges (decor). The front face runs from about row 9 to row 30, over 3 rows. The top band is weak, with no clear eave shadow, so this is a borderline three_quarter reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a glass-fronted vegetable display case with produce (greens, red, orange) in compartments, a light metallic frame and a darker base. It reads as the same kind of prop as the stall and well references. Measured facts support it: 26 visible tones per 16x16 tile, above the stall (17) and well (20), 0% near-flat coverage, and 0% neutral dark edge pixels, so the outlines carry a tint rather than being near-black. At 2x the case shows about 5 lightness steps on the frame and glass (highlight, light, mid, dark, deep), with produce clumps in several tones, so the shading is not shallow. Large flat fills are absent, and the texture comes from the produce dots and glass glints. A careful artist would accept it next to the stall and hedge references without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18173
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cap / canopy band of the display",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "upper shelf ledge",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14"
+     },
+     {
+      "part": "middle shelf ledge",
+      "rows": "19-20",
+      "evidence": "none",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20"
+     },
+     {
+      "part": "lower shelf ledge",
+      "rows": "25-26",
+      "evidence": "none",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26"
+     },
+     {
+      "part": "vegetables and produce on the tiers",
+      "rows": "9-12, 15-18, 21-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band (rows 5-8) is white and lighter than the face below. Its front edge is a darker line at row 8 in the centre columns, and row 9 is a darker shadow at x=8, so it reads as a 4-row top surface. Below it is a front face of about 23 rows (rows 9-31) with three stacked tiers. Each tier has a 1-row white front-edge line (rows 13, 19, 25) and a 1-row gray shadow line under it (rows 14, 20, 26), with produce in front-elevation between them. The silhouette steps wider going down, from 24 to 32 px, which suggests receding tiers. There is no isometric side face. The top is shallow, so this is borderline, but it is more than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a glass-fronted vegetable display case with produce, and it fits the prop kind next to the stall and hedge references. It measures 26 visible tones per 16x16 tile, above the stall (17), well (20) and hedge (9). Near-flat coverage is 0%, and the 0% near-neutral dark edge share means the outlines are tinted rather than black. By eye, the metal frame, glass panes and produce are shaded in several steps, with highlights on the glass and varied greens, reds and yellows in the crates, so there are no large flat fills. A careful artist would accept it beside the stall and hedge without it looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14996
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top rim/lid band of the display",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "produce on upper tier (lettuce, greens)",
+      "rows": "9-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "produce on middle tier (greens)",
+      "rows": "15-18",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "produce on lower tier (peppers, bananas, greens)",
+      "rows": "21-24",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens in steps from 24 to 32 px at rows 4, 5, 9, 15 and 21, forming a tiered stand. Rows 5-7 at the top are a light band (L about 224-244) ending in a darker line at row 8 (x=16, L=111). That reads as a 4-row top surface with a front-edge line and shadow, which is more than a 1-2 row rim. Below it, the produce shelves are drawn face-on and sit on the stand as decor, separated by light shelf-edge lines at rows 13, 19 and 25 with a gray line under each. Rows 27-30 are a gray base apron, so the front face is well over 3 rows. This is a borderline call: the shelves themselves are largely vertical, and the top band is the only clear horizontal surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a vegetable display case with a pale metal and glass frame and produce on shelves. It reads as a finished prop at the same scale as the stall and well references. Measured facts: 26 visible tones per tile, above the stall (17) and well (20). Near-flat coverage is 0% and the neutral share of dark edge pixels is 0%, so the outlines carry a tint instead of being a black sticker line. By eye, the frame has about 5 lightness steps (highlight, light, mid, shadow, deep). The produce has clustered greens, reds and oranges with per-item highlights, and the glass shows reflection and grain variation. There are no large flat fills. It is slightly smaller and cooler than the references, but its density and shading craft match them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20616
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lid / upper rim of the display wall",
+      "rows": "5-8",
+      "evidence": "a",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "vegetable produce in the shelf bays (face-on)",
+      "rows": "9-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "shelf ledges with white strip and grey strip",
+      "rows": "13-14, 19-20, 25-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At the center column, rows 5-8 form a light top band. Row 7 is a bright front-edge line (L=244) and row 8 is a darker shadow row (L=111). The front face of tiered shelf bays with produce runs from row 9 to row 30, so about 22 rows. The silhouette widens from 24 to 32 px downward, which suggests stacked tiers. The shelf ledges at rows 13-14, 19-20 and 25-26 are only 2-row strips, and the bays are drawn face-on. The top band is short and marginal, but it does end in an edge line with a shadow row below it."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a glass-fronted veg display case with produce (green, red, yellow items) on shelves, a pale top and a grey-blue frame. It reads as a market prop and sits comfortably next to the stall and well references. Measured facts: 26 visible tones per tile, above the stall (17) and well (20) references; near-flat coverage is 0%; the dark edge pixels have 0% neutral share, so the outline is tinted rather than near-black. By eye, the glass case shows several lightness steps (highlight, light, mid, dark) with a tinted dark edge, and the produce adds clustered variation with no large flat fills. Density and shading match the references, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16599
+  }
+ ],
+ "decidedAt": "2026-10-21T01:24:13.517Z",
+ "cells": {
+  "16": [
+   "25af30c15ada11ec",
+   "d16dbb1874f45ac5",
+   "e23318ff834ff25d",
+   "f53859768f3b3815"
+  ],
+  "24": [
+   "02d7ae9f40ed5d41",
+   "0b2108fd56efdd12",
+   "1c1606285e07368c",
+   "225f1b844bd47ff4",
+   "37fa2219fed23e48",
+   "385de29b5380a8b5",
+   "4184663d83c69111",
+   "4287b07eec0ab3a5",
+   "42e69026ebb2ab72",
+   "48863987893a2b0a",
+   "4db6bbef7ddbb7f8",
+   "626a4ac923e7d3ac",
+   "7361f07e8c5bec6a",
+   "84bdad2b0c997232",
+   "8b0c9bac84949507",
+   "941d0025a5da8760",
+   "a614b1d6d6279371",
+   "a93141d7601568df",
+   "ac4aa9dd116e8ccb",
+   "c0d2ace0b7633783",
+   "d7e2633730c1b9c6",
+   "e6be3b6db5f9bc57",
+   "e96b7ac7862b904e",
+   "f96a52f8410a1827"
+  ],
+  "32": [
+   "a06b847d863b4118"
+  ],
+  "48": [
+   "057dc1baae1fd8de",
+   "19d7f94ed289c83e",
+   "553e6511d30ac23e",
+   "658a9cc56fef4f68",
+   "a2ac3edbbee041ba",
+   "d4ca14ea5422c023"
+  ]
+ }
+}

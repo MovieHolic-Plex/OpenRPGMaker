@@ -1,0 +1,434 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e04b481194cb78c9722d0e41d362916033e57717022a0927c846df1fcf946e82",
+ "width": 64,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "pub service window",
+ "label": "modern_city_interior/pub-service-window",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 14,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 12
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "menu sign header with numbers 1-4",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass window panes",
+      "rows": "13-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top / serving shelf",
+      "rows": "23-33",
+      "evidence": "a",
+      "front_edge_line_row": 33,
+      "eave_shadow_rows": "34-35"
+     },
+     {
+      "part": "items and glass dividers on the counter",
+      "rows": "24-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "drawer/cabinet front",
+      "rows": "35-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The counter top is a wide light band at rows 23-33. It ends in a bright front-edge line at row 33, followed by a darker shadow at rows 34-35. Below it is a drawer front of about 12 rows (35-46). Small items sit on the counter and the glass dividers rise from it. The sign and the glass above are vertical faces, as expected for a wall-backed piece. The result is a top surface of 11 rows over a 12-row front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a counter with four numbered service windows. Its outline is a dark blue-purple that leans toward the neighbouring panels, and 0% of its dark edge pixels are neutral. That is the same tinted approach as the hedge and cheese stall references, not a black sticker line. It has 12 visible tones per tile, which is above the hedge (9) and below the cheese stall (17) and well (20). Near-flat coverage is 6%, close to the stall's 13% and with no large flat areas. The window frames, the small icons and number plates, and the lower cabinet panels each carry about 4 lightness steps, slightly fewer than the 5-6 on the references. The surfaces have some detail but little grain, and the grey lower panels are somewhat smooth. Overall it is slightly lower in density than the best references, but a careful artist would accept it next to them without it looking sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20629
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "menu sign header with numbers 1-4",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass service window with goods behind",
+      "rows": "13-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top (light surface)",
+      "rows": "23-33",
+      "evidence": "a",
+      "front_edge_line_row": 33,
+      "eave_shadow_rows": "34-35"
+     },
+     {
+      "part": "items on counter (tray, sticky notes, device, dish)",
+      "rows": "24-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter front face with 4 drawer panels",
+      "rows": "36-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the counter. Rows 23-33 form a light horizontal surface that ends in a bright front-edge line at row 33 (L=244). Rows 34-35 are darker shadow beneath it (L=169, then 136). Below that, rows 36-47 are a front face with four recessed drawer panels and a base. The sign band (rows 3-12) and the glass window (rows 13-21) are drawn only as vertical faces with no top surface, so not every major part has a top. The counter itself reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 12 visible tones per tile, which sits between the hedge (9) and the cheese stall (17) and the roofed well (20). Near-flat coverage is 6%, below the cheese stall's 13%, so there are no large dead fills. The dark edges are 0% neutral, so the outline leans tinted (dark blue-violet/slate) rather than a black sticker line. The counter has several lightness steps (about 5) from highlight to dark base, with panel recesses and a trim band. The upper window has numbered signs and small items in the panes, giving varied detail. It reads as a crafted prop, not a flat sticker, and holds up next to the stall and well on density. Texture is moderate: the counter panels are somewhat smooth, with less grain than the well stones or hedge clumps, but still not flat.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20011
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "counter top (service ledge)",
+      "rows": "23-33",
+      "evidence": "a",
+      "front_edge_line_row": 33,
+      "eave_shadow_rows": "34-35"
+     },
+     {
+      "part": "items on counter (tray, devices, cups)",
+      "rows": "25-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sign board with numbers 1-4",
+      "rows": "3-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass window panes with dividers",
+      "rows": "13-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter front with 4 drawer panels",
+      "rows": "36-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the counter. Rows 23-33 form a wide light horizontal surface with items on it. It ends in a bright front-edge line at row 33 (L=244), followed by a darker shadow band at rows 34-35. Below that, the front face runs from rows 36 to 46 with recessed panels and a dark base line at row 46-47. The silhouette widens from 60 to 64 at row 22, which marks the counter's back edge. The sign board (rows 3-12) and the glass window (rows 13-21) are vertical wall elements above the counter. The silhouette has no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 12 visible tones per tile. That is above the hedge (9) but below the two comparable large props, the cheese stall (17) and the roofed well (20). Near-flat coverage is only 6%, so there are no big dead fills by the numbers. By eye, though, the lower counter is built from fairly smooth blue-grey panels with only 3-4 lightness steps and little grain or per-element speckle. The Beodeul stall and well carry about 5-6 steps with clumped texture dots. The upper window row is more detailed, with numbered tags and small items. The dark edge pixels are 0% neutral, so the outline is a dark blue-grey tint of the adjacent material and not a sticker-style black line. Overall this is clean and structured, but shallower and less textured than the stall and well it should match, so it fails on the 'when in doubt' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21199
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top sign board with numbers 1-4",
+      "rows": "3-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass window pane with posts",
+      "rows": "13-21",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "items behind the glass (cups, taps, plant)",
+      "rows": "14-21",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter top (light slab)",
+      "rows": "22-33",
+      "evidence": "a",
+      "front_edge_line_row": 33,
+      "eave_shadow_rows": "34-35"
+     },
+     {
+      "part": "items on the counter (tablet, receipt, device, cup)",
+      "rows": "24-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter front with 4 drawer panels",
+      "rows": "34-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the counter. Rows 22-33 form a wide light horizontal surface with items on it. It ends in a bright front-edge line at row 33 (L=244) and is followed by darker shadow rows 34-35. Below it is a 12-row front face (rows 34-46) with four recessed drawer panels. The sign board (rows 3-12) and the glazed window (rows 13-21) are drawn as vertical faces only. They show no top, but they sit above the counter and do not form the main volume. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 12 visible tones per tile. That sits between the hedge (9) and the cheese stall (17) and well (20), so it is in the reference range. Near-flat coverage is 6%, below the stall's 13% and well below the 'flat fill' territory. Dark edge pixels are 0% near-neutral, so the outline is tinted (dark navy/blue-grey next to the frame and counter) rather than a black sticker line, like the hedge and stall. The frame, counter and window panels carry about 5 value steps, with highlight edges, drawer panels and small icons in the window cells. The lower counter's grey drawer faces are somewhat smooth and have less grain than the stall or well, so overall richness is a touch below the best references. A careful artist would still accept it next to the references without it looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22321
+  }
+ ],
+ "decidedAt": "2026-10-21T01:24:13.601Z",
+ "cells": {
+  "16": [
+   "333436aa8dbf76e0",
+   "341382341f6d4178",
+   "35f1c4cc3e64eb86",
+   "363467f44996d630",
+   "3863a4fd56aae922",
+   "4fa03823592727b0",
+   "5082cababc2a89c8",
+   "63eff6b842e1d0b2",
+   "8707e439ba4e5c85",
+   "d46ceda376b2ae79",
+   "fac7d6dea97aedec"
+  ],
+  "24": [
+   "0ddd039ed995276b",
+   "18a0136456d95463",
+   "1bbd576f1bd29f48",
+   "48bdafcca4b4446b",
+   "5ddcad4285d133fa",
+   "7a2a122542d3c055",
+   "7eef192c7354fcba",
+   "80acd852e779a601",
+   "8f278bc7af48319d",
+   "91c52d5fcabb579b",
+   "944e20e3110009c6",
+   "9c14a5ea8bfda73e",
+   "a1ddc7bd2e7dcbcc",
+   "c02301306af60bcf",
+   "de412aab6e1992e8",
+   "e6c39614bba62c3f",
+   "f2dae300226ef386",
+   "f65f9cfc31e3c937"
+  ],
+  "32": [
+   "0eceda08d8993ad0",
+   "105fb12d60cd7b5f",
+   "255a2f6f4099440f",
+   "7619a20d0efca6f3",
+   "892d20e9756474f5",
+   "899b6378338940ec",
+   "a74c69eb43bdedac",
+   "f770a6401136fdda"
+  ],
+  "48": [
+   "090f9513b491f3ed",
+   "550e2bc207faedd3",
+   "5545de834e7a5b74",
+   "81c749e61584f5de",
+   "b5713c38699e64ce",
+   "d34ea572868dd737"
+  ]
+ }
+}

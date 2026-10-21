@@ -1,0 +1,386 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ae537399ca9238837351d713ce2e8b954cb7b1ef2037a21c65e947e885f2d4a9",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "pub atm",
+ "label": "modern_city_interior/pub-atm",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 윗면 1행 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+   "윗면 1행 < 4 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 37,
+  "nearBlackEdge": 0.99,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ATM head cap (light top band above the screen frame)",
+      "rows": "1-4",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "protruding keypad ledge",
+      "rows": "17-21",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a tall cabinet, 15-16 px wide, drawn from the south. Rows 1-4 form a light band at the top. At x=8 it ends in a lighter blue edge line at row 5 (#5e80b2), followed by darker rows 6-7 that act as eave shadow above the screen frame. This is the cabinet pattern of top, edge line and eave, so I count it as a top surface. The call is borderline, since the band also carries small gray details that could be read as a face-on header panel. Below it the screen (rows 8-13) and a lower body (rows 14-16) form the front face. A wider ledge at rows 17-23 has a gray edge at row 17 and a darker front edge at rows 22-23. Its keypad sits on rows 18-21, which reads as a top surface seen from above. The dispenser section (rows 24-31) is a vertical front face. The front face totals about 26 rows (rows 6-31)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The ATM is about one tile wide and two tall. It has a light-blue and white body with a darker blue side and edge, a lit screen with detail, a keypad dot grid, and a card slot. The outline is a dark navy that leans blue, not neutral black, which matches the measured 0% near-neutral dark edge pixels. That figure is the same as prop-hedge and prop-stall-cheese. It carries 14 visible tones per tile, between the hedge (9) and the stall (17) and the well (20). Near-flat coverage is 0%, so there are no large flat fills; the panels are broken up by screen, keypad, and slot detail. The body ramp is a little shallower than the references, about 4 steps against 5-6, and the texture is more panel detail than grain. That does not make it look thinner or more sticker-like than the references, so a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22814
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "header panel above the screen",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "screen bezel and screen",
+      "rows": "5-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "card slot panel",
+      "rows": "14-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "keypad ledge with buttons",
+      "rows": "17-23",
+      "evidence": "none",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "lower cash dispenser panel",
+      "rows": "24-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The ATM is drawn flat and face-on. Rows 1-4 are a light header panel with a couple of grey detail pixels, and rows 5-7 are blue bezel framing the screen, so this reads as a vertical panel. There is no ellipse, no sloped roof and no visible horizontal surface on the cabinet. Rows 17-23 are a slightly wider keypad ledge (width 16 vs 15). Its buttons are drawn face-on, and the line at row 22 with the grey row 23 reads as a ledge face and shadow, not a receding top. The silhouette width is nearly constant (15-16), so there is no depth cue. The whole body is a front elevation with at most a 1-row rim at the top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The ATM reads as a small blue and white machine with a lit screen, keypad and card slot. The body shows about 4-5 value steps: white or pale top, light blue face, mid blue, dark blue shadow side, and a dark panel. The outline is a dark navy that leans blue, not neutral black, and the measured 0% near-neutral dark edge pixels agrees. Form separation also relies on value changes between the screen, panel and body. There are no flat fills, with 0% near-flat coverage, and small details such as the keypad dots and screen lines break up the surfaces. The 14 visible tones per 16x16 tile sit between prop-hedge (9) and prop-stall-cheese (17) and prop-well-roofed (20). It is a little less textured than the stall or well, but it is a thin, simple object and it does not look like a flat sticker next to the references. A careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20607
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header panel with small gray detail squares",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue screen bezel and screen",
+      "rows": "5-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wider keypad panel with gray keys and red/green buttons, drawn face-on",
+      "rows": "17-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower cash-dispenser slot panel",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The ATM is a flat, face-on machine. Rows 1-4 are a light header panel with small gray detail squares and no edge line or eave shadow of its own. Row 5 is a thin blue strip that leads straight into the screen bezel, so it reads as a vertical panel boundary. The screen (rows 8-13), the yellow card slot (row 16) and the wider keypad band (rows 17-23) all read as vertical faces. The red and green buttons and gray keys sit on that band, which also points to a vertical face. The slightly wider band at rows 17-23 has a darker line at row 17 and 22-23, but it shows no foreshortened horizontal surface. The lower dispenser section (rows 24-31) is also a vertical face. The silhouette is only 1 row of rim at the top, with no ellipse, roof or visible contents. The whole object is a front elevation with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small blue-and-white ATM cabinet, about one tile wide and a little over one tile tall. The measured facts support it: 14 visible tones per tile sits between the hedge (9) and the cheese stall (17) and well (20), near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outline carries a tint. By eye the outline is a dark navy that leans toward the body colour, not a black sticker line. The body has about 4 lightness steps (highlight, light, mid, dark) with a lit screen, keypad dots and a card slot that add detail. It has no large flat fills. It is slightly less textured than the well or the stall, but a careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20525
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top header panel",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "screen bezel and screen",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "keypad shelf, wider middle section",
+      "rows": "17-23",
+      "evidence": "none",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower cash tray panel",
+      "rows": "24-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The ATM is drawn as a straight-on front elevation. The top block (rows 1-4) has small gray squares like a face-on panel, followed by a blue band at rows 5-7. The blue band reads as a trim line, not a receding top surface. The screen (rows 8-13), the wider keypad section (rows 17-23) and the lower tray panel (rows 24-31) are all vertical faces. The silhouette width stays at 15-16 px for every row, so no ellipse or widening-then-narrowing top appears. The only horizontal hint is a 1-2 row ledge line at row 17, which counts as a rim and not as a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The ATM is a small standing prop that fits the same kind as the bench, lamp and stall. The measured facts support it: 14 visible tones per tile sits between the hedge (9) and the stall (17), well above the thin bench and lamp. Near-flat coverage is 0%, and 0% of dark edge pixels are neutral, so the outline is a tinted dark navy/blue rather than a black sticker line. By eye, the body has a light face, mid blue and dark side planes, with a lit screen, keypad dots, a card slot and a header panel, so there are no large flat fills. The main ramps have about 4 steps, a little under the reference's 5-6, but the density and detail hold up next to the references without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 4 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 4 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16316
+  }
+ ],
+ "decidedAt": "2026-10-21T01:24:13.593Z",
+ "cells": {
+  "16": [
+   "01cb270a7db6d051",
+   "a896b95ba72303fc"
+  ],
+  "24": [
+   "0195edc33bef61fb",
+   "0ed99ba4c2834045",
+   "106f809555cc1aec",
+   "38ac83119e41b04e",
+   "3b3573e3a7b3b4ac",
+   "8c4916507cf04940",
+   "9861b397566d0e5d",
+   "b8dad822e35bf968",
+   "bf7bf42c32e8bb3b",
+   "c80750f707c60bf8",
+   "ee9c1a44f5ce3e7a",
+   "f83e4329f3e10acc"
+  ],
+  "32": [
+   "042ef7f311ce8017",
+   "4536ca8cc380d322",
+   "8cc95190a9e8f965"
+  ],
+  "48": [
+   "4afb45275436aa06",
+   "4d598cd85ac0a414",
+   "69a8d2404075c10f",
+   "815023549d843282",
+   "935e02c7e92a1b2c",
+   "bd27b71cd40f83b8"
+  ]
+ }
+}

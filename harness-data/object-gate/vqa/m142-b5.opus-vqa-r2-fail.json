@@ -1,0 +1,178 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b5",
+ "round": 2,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png",
+  "board-3.png",
+  "board-4.png",
+  "board-5.png"
+ ],
+ "items": [
+  {
+   "id": "mart-meat-case",
+   "pixelSha256": "77c10d44aba4d5cd77a2182c1f3e3783ac2fd80f9eec97c747e6987362203cba",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The grey top is a lit plane about 3 rows deep with a red sign on it, and the glass front shows rows of meat. The outline weight and greys match mci-cooler, and the case sits on the floor line in the room."
+  },
+  {
+   "id": "mart-sale-endcap",
+   "pixelSha256": "54cfd733a97667e2a8c74715a514bee94e9a6b12fc2b89db9c3bdfc711af87a7",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3,
+    4
+   ],
+   "reasons": "It is just a 1-tile stack of cardboard boxes with almost no visible top plane. The yellow -50 sign floats on a thin pole above the stack, so it doesn't read as a shelf endcap at 1x."
+  },
+  {
+   "id": "mart-scale-station",
+   "pixelSha256": "f54fce713e081b92304b457408a3867b1d395addccb985773ed1a9fdb12c0607",
+   "verdict": "FAIL",
+   "failed": [
+    3,
+    4
+   ],
+   "reasons": "The scale on top is a shapeless white blob with a detached grey bit at the upper right. At 1x it reads as a generic grey cabinet, not a weighing station."
+  },
+  {
+   "id": "mart-veg-wall",
+   "pixelSha256": "22a02e433a68a7962f8b80eaa206cb98815f29f71c94495ecddf135732bbaa13",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "The top plane is scattered with dark, noisy specks, and the produce is muddy green and yellow dithering with no clean shapes. That is much noisier than the clean bottle rows in mci-cooler."
+  },
+  {
+   "id": "mci-hosp-bed",
+   "pixelSha256": "6d1a365cf08433ee855d5c1c994db1358e7bf3df69aa514f8eb69cc20b0aa593",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The mattress, pillow and green blanket are seen from above, with a short footboard and wheels at the bottom. The 1x2-tile scale suits a bed, and the outline and greys match the originals."
+  },
+  {
+   "id": "mci-magazine",
+   "pixelSha256": "502c163f9e68d785bee05223bbe088d31a08ae3c87b8f7e73dda000ac203a105",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    3
+   ],
+   "reasons": "The upper display box seems to float above the lower tray with no consistent top plane, so the perspective is muddled. At 1x it reads as two stacked boxes rather than a magazine rack."
+  },
+  {
+   "id": "mci-mailboxes",
+   "pixelSha256": "ee9096bc1d99281860c5e9ff55fefb588fbbed3df9f2974e2b4fe5c91563a438",
+   "verdict": "FAIL",
+   "failed": [
+    1
+   ],
+   "reasons": "It is almost a flat front-on view of a grid of doors, with only about 1–2 rows of top surface. Unlike the originals it shows no real lit top plane, so it looks like a wall panel on the floor."
+  },
+  {
+   "id": "mci-med-cart",
+   "pixelSha256": "f5c721b5addf7b5a97acd104f77acce2ea9370d1b9fdb189a1bccd297edc387e",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The bottles stand on a visible top plane, and the coloured drawer fronts have outlines and shading that match the chipset. It reads as a medical cart and sits on the floor line."
+  },
+  {
+   "id": "mci-shelf-office",
+   "pixelSha256": "2ace4db780f17e9b666f2b9849c80e51adbada10e957ef9015d948f614a1e0dd",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The wood-grain top is a lit plane of 3+ rows, and the shelves of coloured books are clean. The palette and outline match mci-wardrobe, and the scale fits the room."
+  },
+  {
+   "id": "mci-tv-stand",
+   "pixelSha256": "606be3bcfd1ab820483ed9758736e227d79fbd87f29f1b962176d59f1cc6c1f1",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The wooden stand has a lit top plane with the TV and a potted plant on it, and a short drawer front. The palette and outline are consistent with mci-wardrobe, and it reads clearly at 1x."
+  },
+  {
+   "id": "museum-partition-wall",
+   "pixelSha256": "2c0dcf764fd343719ab2861c24242fb63e4a0438c7ad0e46ee429929a3579e11",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The panel is drawn as a flat front elevation and has no top edge seen from above. The three spotlights hang detached above the painting, and the grey base slab looks like a separate plinth."
+  },
+  {
+   "id": "music-amp",
+   "pixelSha256": "a27d15c820166a882c4bb0b841509bebf20fdb05c14b37a2e747619d35131e3f",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The amp head with its orange knob strip sits on a speaker cabinet, and both have short grey top planes. It reads as a guitar amp at 1x and has a clean outline and a ground line."
+  },
+  {
+   "id": "office-water-cooler",
+   "pixelSha256": "60561b3bf913585baca72efe4f6bb93aa8975eff26757d53aff9906cd5c60837",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The blue bottle on the white dispenser body is clean, with red and blue taps. It is the right 1-tile scale and stands on the floor."
+  },
+  {
+   "id": "park-pay-machine",
+   "pixelSha256": "8f313eb3786f204978c72a7c85fecb5f3b19babe54921e80d70a0e37ffcfb69f",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "It is a blue kiosk with a P sign, a screen and a slot, plus a short top plane. The outline and shading match the chipset, and it reads at 1x."
+  },
+  {
+   "id": "park-pillar",
+   "pixelSha256": "8d96d36af1a699da46603b4a03ca618de3234e93103505d9981c9a38805d5d90",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The concrete pillar has a grey top plane, hazard stripes and a green B2 sign. It reads as a car-park pillar and is clean and grounded."
+  },
+  {
+   "id": "pub-atm",
+   "pixelSha256": "ae537399ca9238837351d713ce2e8b954cb7b1ef2037a21c65e947e885f2d4a9",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The blue ATM body has a screen, a keypad ledge and a slot, with a visible top. It is clean, readable and the right scale."
+  },
+  {
+   "id": "pub-fire-locker",
+   "pixelSha256": "82c8f2791c53e7c32877ef2101d5936075e12ef6e74dbf976348e0dcc5f3d88e",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The glass-front cabinet has a grey top plane and shows two clear orange firefighter suits with helmets. The outline and palette match mci-cooler."
+  },
+  {
+   "id": "pub-service-window",
+   "pixelSha256": "e04b481194cb78c9722d0e41d362916033e57717022a0927c846df1fcf946e82",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The counter top is a lit plane under a glass partition with numbered windows 1–4. Its multi-tile scale suits a service counter, and it is grounded with clean outlines."
+  },
+  {
+   "id": "pub-ticket-dispenser",
+   "pixelSha256": "a1bf074ee8c8cd49aa71d353855b85ea86c2eddbb33fcf25cf16f14529e085d0",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "A grey pedestal kiosk shows a red 27 display, a blue ticket slot and a short top. It reads as a queue-ticket dispenser and stands on the floor."
+  }
+ ]
+}
