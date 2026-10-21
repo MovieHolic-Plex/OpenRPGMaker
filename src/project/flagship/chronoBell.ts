@@ -527,6 +527,7 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     ];
     marches.push({ kind: "moveEvent", eventId: id, route: { moves, repeat: false, wait: false, skippable: true } } as unknown as Command);
   }
+  if (!project.switches.some((s) => s.id === SW_VALEN_MARCHED)) project.switches.push({ id: SW_VALEN_MARCHED, name: "발렌 일행 동문으로 떠남" });
   list.splice(after + 1, 0, ...marches);
   vanishWhen(hub, `ev_${FS_PREFIX}_valen`, SW_VALEN_MARCHED);
   vanishWhen(hub, `ev_${FS_PREFIX}_knight`, SW_VALEN_MARCHED);

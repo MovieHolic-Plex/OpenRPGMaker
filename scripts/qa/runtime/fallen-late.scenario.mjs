@@ -81,7 +81,13 @@ export default {
       { kind: "pressUntil", key: "Escape", testid: "cinematic-sequence", state: "absent", maxPresses: 6 },
       { kind: "waitForRuntime", timeoutMs: 120000 },
       { kind: "hold", dir: null, ms: 1500 },
-      ...[0, 1, 2, 3].flatMap(() => closeDialogue(20)),
+      ...closeDialogue(20),
+    ], shot: false },
+    // 포고 뒤 발렌·기사가 동문으로 걸어 나간다(가혹 검수 r12) — 걷는 중 한 장, 조금 뒤 한 장.
+    { id: "march", note: "포고 뒤 발렌 일행이 동문으로 걸어 나간다", ops: [{ kind: "hold", dir: null, ms: 1200 }], shot: true },
+    { id: "march-2", note: "", ops: [...closeDialogue(20), { kind: "hold", dir: null, ms: 2500 }], shot: true },
+    { id: "proclamation-rest", note: "", ops: [
+      ...[0, 1].flatMap(() => closeDialogue(20)),
       evalOp("switches", `() => { for (const id of ["sw_fs_main_started", "sw_fs_main_step0", "sw_fs_main_step1"]) window.__oprnDebug.setSwitch(id, true); return window.__oprnDebug.readState().partyActorIds; }`),
     ], shot: false },
     { id: "valen", note: "발렌 앞 — 대열", ops: [...approachUp("fs_vault", 25, 25), ...talk("up")], shot: true },
