@@ -45,7 +45,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - 공용 몬스터 140종 · 옛 그림 폐기 · native 초상/포즈 · RM2003 스킬 비교: `openwiki/native-enemy-retirement.md`
    - 지원 전투 규칙 2종(RM식 `rm2k3`, 포켓몬식 `gen1`)과 스킨 12종(유리 뼈대 변형 11 + 몬스터 대치 1, 2026-09-25): `openwiki/runtime-battle.md` 의 "지원 전투 시스템은 둘뿐이다" 절
    - Runtime sessions & state: `openwiki/runtime-sessions.md`
-   - Team project host, local/remote SQLite, membership and asset ownership: `openwiki/team-project-host.md`
+   - Team project host, local/remote SQLite, membership and asset ownership: `openwiki/team-project-host.md` (multi-user team collaboration is deprecated since 2026-10-21; the storage host stays)
    - Runtime project schema & persistence: `openwiki/runtime-project-schema.md`
    - Runtime M2 flow controls: `openwiki/runtime-m2-flow-controls.md`
    - Runtime index: `openwiki/runtime-and-data.md` (slim TOC linking to the above)

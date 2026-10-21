@@ -1095,7 +1095,7 @@ function paintMapEditLockBanner(container: HTMLElement, status: MapEditLockStatu
     el("button", {
       class: "map-lock-takeover-button",
       text: "편집 권한 가져오기",
-      attrs: { type: "button", title: status.canTakeover === false ? "본인의 다른 탭 또는 팀 소유자만 편집 권한을 가져올 수 있습니다" : "현재 맵 편집 권한 가져오기", ...(status.canTakeover === false ? { disabled: "" } : {}) },
+      attrs: { type: "button", title: status.canTakeover === false ? "다른 곳에서 편집 중이라 편집 권한을 가져올 수 없습니다" : "현재 맵 편집 권한 가져오기", ...(status.canTakeover === false ? { disabled: "" } : {}) },
       dataset: { testid: "map-lock-banner-takeover" },
       on: {
         click: () => void requestMapLockTakeover(status),

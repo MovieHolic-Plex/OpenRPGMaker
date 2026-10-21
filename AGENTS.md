@@ -359,6 +359,7 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 현재 정본은 Electron 또는 팀 프로젝트 호스트가 관리하는 `project.sqlite` + `assets/`다.
 LegacyDb는 과거 데이터 이관·복구 경로이며 새 콘텐츠 작업의 필수 연결이 아니다.
 실행·백업 계약은 `openwiki/team-project-host.md`, 제거 현황은 `openwiki/storage-retirement.md`를 따른다.
+사람 여러 명이 같이 편집하는 「팀 협업」(초대·참여·권한)은 2026-10-21 부터 @deprecated 다 — 진입점은 `electron/shared/teamCollab.ts` 의 `TEAM_COLLAB_ENABLED=false` 뒤에 숨었다. 저장 호스트 자체는 그대로다.
 
 1. 콘텐츠 작업 전에 **프로젝트 폴더 또는 호스트 주소와 project id**를 확인한다.
    저장 대상에 접근할 수 없으면 대상 연결 정보를 요청한다. 임시 메모리 세션으로 대체하지 않는다.

@@ -22,7 +22,7 @@ export const LAUNCHER_TESTIDS = {
 
 const BRAND_MARK = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" shape-rendering="crispEdges"><rect width="16" height="16" fill="#4a57d6"/><rect x="3" y="3" width="4" height="4" fill="#fff"/><rect x="9" y="3" width="4" height="4" fill="#fff" fill-opacity=".55"/><rect x="3" y="9" width="4" height="4" fill="#fff" fill-opacity=".55"/><rect x="9" y="9" width="4" height="4" fill="#f3c34f"/></svg>';
 
-/** 위 막대 오른쪽의 글자 단추(폴더 열기·팀에 참여). */
+/** 위 막대 오른쪽의 글자 단추(폴더 열기·팀에 참여 — 팀에 참여는 @deprecated, 2026-10-21 팀 협업 접힘). */
 export function topButton(label: string, testid: string, icon: StartIconName, onClick: () => void): HTMLButtonElement {
   return el("button", {
     class: "ln-tbtn", attrs: { type: "button" }, dataset: { testid }, on: { click: onClick },

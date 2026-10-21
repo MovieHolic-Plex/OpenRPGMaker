@@ -224,6 +224,7 @@ body:has(.ln-root) .studio-window-controls { --swc-fg: var(--ln-fg, #eceef6); }
 .hm-thumb.is-on { opacity: 1; outline: 2px solid var(--ln-gold); }
 
 /* ── 팀에 참여 ────────────────────────────────────────────────────────── */
+/* @deprecated multi-user team collaboration is not supported yet (2026-10-21). TEAM_COLLAB_ENABLED 를 켜야 쓰인다. */
 .ln-join { max-width: 680px; }
 .ln-join .ln-link { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 16px; }
 .ln-join h1 { margin: 0 0 20px; font-size: 26px; line-height: 1.2; letter-spacing: -0.02em; }

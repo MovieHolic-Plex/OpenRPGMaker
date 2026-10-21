@@ -99,9 +99,9 @@ export type OprnBridgeStart = {
   readonly coverSource?: (input: { readonly projectDir: string }) => Promise<import("../../../electron/shared/start").ProjectCoverSource | null>;
   /** 데스크톱 전용 — 시작 화면이 구운 카드 그림 저장. 목록에 없는 경로면 false. */
   readonly saveCover?: (input: { readonly projectDir: string; readonly dataUrl: string }) => Promise<boolean>;
-  /** 데스크톱 전용 — 다른 컴퓨터의 팀 호스트를 앱 창으로 연다. */
+  /** 데스크톱 전용 — 다른 컴퓨터의 팀 호스트를 앱 창으로 연다. @deprecated multi-user team collaboration is not supported yet (2026-10-21). */
   readonly joinTeam?: (input: { readonly url: string }) => Promise<import("../../../electron/shared/start").JoinTeamResult>;
-  /** 데스크톱 전용 — 전에 참여한 팀 호스트 주소. */
+  /** 데스크톱 전용 — 전에 참여한 팀 호스트 주소. @deprecated multi-user team collaboration is not supported yet (2026-10-21). */
   readonly recentTeams?: () => Promise<readonly import("../../../electron/shared/start").RecentTeamEntry[]>;
 };
 
