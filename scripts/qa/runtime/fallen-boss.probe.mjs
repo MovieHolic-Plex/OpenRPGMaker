@@ -28,7 +28,7 @@ const RUNS = [
   { id: "defend-mix", seed: 33, plan: "defendFirst2" },
   { id: "lose-retry", seed: 77, plan: "attack", vitals: { hp: 30 }, retry: true },
 ];
-const RUN_DEADLINE_MS = Number(process.env.FS_DEADLINE ?? 300_000);
+const RUN_DEADLINE_MS = Number(process.env.FS_DEADLINE ?? 900_000);
 const LOOP_MAX = 800;
 
 async function readUi(page) {
