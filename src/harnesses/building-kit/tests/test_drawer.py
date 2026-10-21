@@ -1,4 +1,4 @@
-"""그리기 — 샌드박스 사본, 함수 블록만 되돌리기, 모델 호출 주입, 타임아웃 기본값. 모델은 부르지 않는다."""
+"""그리기 — 후보 키 하나가 그 벌 전체를 그린다, 샌드박스 그림·자체 점검, 함수 블록만 되돌리기, 모델 호출 주입."""
 import json
 import os
 import shutil
@@ -6,14 +6,17 @@ import sys
 import tempfile
 import unittest
 
+import numpy as np
+from PIL import Image
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 sys.path.insert(0, HERE)
 
+import beodeul  # noqa: E402
 import dot  # noqa: E402
 import drawer  # noqa: E402
 import helpers as H  # noqa: E402
-
 
 class DrawerTest(unittest.TestCase):
     def setUp(self):
@@ -35,6 +38,27 @@ class DrawerTest(unittest.TestCase):
         os.environ.update(self._env)
         shutil.rmtree(self.tmp, ignore_errors=True)
 
+    def sandbox(self, key='A'):
+        return os.path.join(drawer.SANDBOX, H.THEME, H.ROUND, key)
+
+    def edit_own_block(self, calls, items=None):
+        def runner(cmd, prompt, cwd, timeout):
+            calls.append((cmd, cwd, timeout, prompt))
+            path = os.path.join(cwd, 'round_module.py')
+            text = open(path, encoding='utf-8').read()
+            key = os.path.basename(cwd)
+            for item in (items or H.round_items()):
+                name = drawer.func_name(item, key)
+                block = '\n'.join([drawer.BEGIN.format(name=name), f'def {name}():',
+                                   f"    return dot.Cv.of(H.compose({item!r}, {key!r})), {{'note': 'fake'}}",
+                                   drawer.END.format(name=name)])
+                start = text.index(drawer.BEGIN.format(name=name))
+                end = text.index(drawer.END.format(name=name)) + len(drawer.END.format(name=name))
+                text = text[:start] + block + text[end:]
+            open(path, 'w', encoding='utf-8').write(text)
+            return 0, 'drew', ''
+        return runner
+
     def test_ensure_module_writes_skeleton_with_stub_functions(self):
         os.remove(self.module)
         drawer.ensure_module(H.THEME, H.ROUND)
@@ -46,50 +70,84 @@ class DrawerTest(unittest.TestCase):
                 self.assertIn(f'def {name}():', text)
         self.assertIn("'roof.gable': {'A': cand_roof_gable_A,", text.replace('"', "'"))
 
+    def test_one_job_per_candidate_key_and_each_job_covers_every_item(self):
+        calls = []
+        drawer.run(H.THEME, H.ROUND, lines_=['A', 'B'], jobs=2, runner=self.edit_own_block(calls), cmd=['fake'])
+        self.assertEqual(sorted(os.path.basename(c[1]) for c in calls), ['A', 'B'])
+        for _, cwd, _, prompt in calls:
+            key = os.path.basename(cwd)
+            for item in H.round_items():
+                self.assertIn(drawer.func_name(item, key), prompt)
+
+    def test_later_rounds_draw_one_job_per_line_and_number(self):
+        seed_path = os.path.join(dot.DATA, H.THEME, 'seed.json')
+        s = json.load(open(seed_path, encoding='utf-8'))
+        s['rounds']['frame-r1'] = {'wave': None, 'title': 'frame', 'items': H.round_items(),
+                                   'module': os.path.join(dot.DATA, H.THEME, 'round_frame-r1.py')}
+        json.dump(s, open(seed_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+        dot._PAL.clear()
+        self.assertEqual(drawer.keys_for(H.THEME, 'frame-r1'), ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])
+        calls = []
+        drawer.run(H.THEME, 'frame-r1', jobs=1, runner=self.edit_own_block(calls), cmd=['fake'])
+        self.assertEqual([os.path.basename(c[1]) for c in calls], ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])
+        self.assertEqual(drawer.keys_for(H.THEME, 'frame-r1', ['B']), ['B1', 'B2'])
+
+    def test_sandbox_has_reference_actor_and_palette_pngs(self):
+        calls = []
+        drawer.run(H.THEME, H.ROUND, lines_=['A'], jobs=1, runner=self.edit_own_block(calls), cmd=['fake'])
+        root = self.sandbox('A')
+        for rel in ('round_module.py', 'BRIEF.md', 'dry.py', 'dry.json',
+                    'data/fantasy-kingdom/seed.json', 'data/fantasy-kingdom/palette.json',
+                    'refs/actor1-front-1x.png', 'refs/actor1-front-4x.png', 'refs/palette.png'):
+            self.assertTrue(os.path.exists(os.path.join(root, rel)), rel)
+        seed = dot.seed(H.THEME)
+        kit = beodeul.kit(seed['refs'][0]['kit'])
+        for scale in (1, 4):
+            im = Image.open(os.path.join(root, f'refs/{seed["refs"][0]["kit"]}-{scale}x.png'))
+            self.assertEqual(im.size, (kit.w * scale, kit.h * scale))
+        cfg = json.load(open(os.path.join(root, 'dry.json'), encoding='utf-8'))
+        self.assertEqual(cfg['key'], 'A')
+        self.assertEqual(os.path.abspath(cfg['module']), os.path.join(root, 'round_module.py'))
+        self.assertEqual(os.path.abspath(cfg['out']), os.path.join(root, 'preview'))
+        self.assertEqual(os.path.abspath(cfg['data']), os.path.join(root, 'data'))
+        self.assertTrue(os.path.isdir(cfg['harness']))
+
+    def test_brief_gives_3_4_roof_guidance_targets_and_self_check(self):
+        calls = []
+        drawer.run(H.THEME, H.ROUND, lines_=['A'], jobs=1, runner=self.edit_own_block(calls), cmd=['fake'])
+        prompt = calls[0][3]
+        self.assertIn('3/4 지붕', prompt)
+        for word in ('용마루', '사면', '처마', '벽돌 담'):
+            self.assertIn(word, prompt)
+        self.assertIn('3칸 폭 1층', prompt)
+        self.assertIn('5칸 폭 2층', prompt)
+        self.assertIn('preview/compare.png', prompt)
+        self.assertIn('python3 dry.py', prompt)
+        self.assertIn('refs/actor1-front-4x.png', prompt)
+        self.assertIn('화소를 베끼지', prompt)
+        self.assertIn('잠긴 팔레트', prompt)
+        self.assertIn('중세 판타지 왕국', prompt)
+
+    def test_claude_command_allows_reading_pictures_and_python(self):
+        cmd = drawer.claude_command('/tmp/sandbox')
+        tools = cmd[cmd.index('--allowedTools') + 1]
+        self.assertEqual(tools, 'Read,Write,Edit,Bash(python3:*)')
+        self.assertIn('/tmp/sandbox', cmd)
+
     def test_fake_runner_changes_only_its_own_function(self):
         before = open(self.module, encoding='utf-8').read()
-        name = drawer.func_name('roof.gable', 'A')
         calls = []
-
-        def runner(cmd, prompt, cwd, timeout):
-            calls.append((cmd, cwd, timeout))
-            path = os.path.join(cwd, 'round_module.py')
-            text = open(path, encoding='utf-8').read()
-            block = '\n'.join([drawer.BEGIN.format(name=name), f'def {name}():',
-                               "    return dot.Cv.of(H.compose('roof.gable', 'A')), {'note': 'fake'}",
-                               drawer.END.format(name=name)])
-            start = text.index(drawer.BEGIN.format(name=name))
-            end = text.index(drawer.END.format(name=name)) + len(drawer.END.format(name=name))
-            open(path, 'w', encoding='utf-8').write(text[:start] + block + text[end:])
-            return 0, 'drew roof A', ''
-
+        runner = self.edit_own_block(calls, items=['roof.gable'])
         rc = drawer.run(H.THEME, H.ROUND, lines_=['A'], jobs=1, runner=runner, cmd=['fake'], timeout=11)
         self.assertEqual(rc, 1)
         self.assertEqual(calls[0][0], ['fake'])
         self.assertEqual(calls[0][2], 11)
         after = open(self.module, encoding='utf-8').read()
         self.assertIn("H.compose('roof.gable', 'A')", after)
-        self.assertNotIn('H.compose(\'roof.gable\', \'B\')', after)
+        self.assertNotIn("H.compose('roof.gable', 'B')", after)
         self.assertIn(drawer.func_name('wall.storey', 'A') + '():\n    raise NotImplementedError', after)
+        self.assertIn(drawer.func_name('wall.storey', 'B') + '():\n    raise NotImplementedError', after)
         self.assertNotEqual(before, after)
-
-    def test_runner_receives_the_brief_and_the_palette_legend(self):
-        seen = {}
-
-        def runner(cmd, prompt, cwd, timeout):
-            seen['prompt'] = prompt
-            seen['files'] = sorted(os.listdir(cwd))
-            return 0, 'ok', ''
-
-        drawer.run(H.THEME, H.ROUND, lines_=['B'], jobs=1, runner=runner, cmd=['fake'])
-        self.assertIn('중세 판타지 왕국', seen['prompt'])
-        self.assertIn('잠긴 팔레트', seen['prompt'])
-        self.assertIn('round_module.py', seen['files'])
-        self.assertIn('BRIEF.md', seen['files'])
-        self.assertIn('palette.json', seen['files'])
-        self.assertIn('seed.json', seen['files'])
-        self.assertIn('Actor1', seen['prompt'])
-        self.assertIn('금지', seen['prompt'])
 
     def test_unchanged_function_counts_as_not_changed(self):
         def runner(cmd, prompt, cwd, timeout):
@@ -101,7 +159,6 @@ class DrawerTest(unittest.TestCase):
     def test_default_timeout_is_one_hour_and_env_overridable(self):
         self.assertEqual(drawer.DEFAULT_TIMEOUT, int(os.environ.get('BUILDING_KIT_DRAWER_TIMEOUT', '3600')))
         self.assertEqual(drawer.DEFAULT_TIMEOUT, 3600)
-
 
 if __name__ == '__main__':
     unittest.main()

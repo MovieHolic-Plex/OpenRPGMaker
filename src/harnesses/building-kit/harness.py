@@ -3,8 +3,8 @@
   palette <테마> [--check]        테마 잠금 팔레트를 다시 뽑는다(--check 는 비교만)
   validate [<테마>]               테마 seed·팔레트·부품 세트·조립 레시피·판 모듈·기준 그림 점검
   list <테마>                     부품 세트·조립 레시피. 줄마다 ★ = 사람이 고른 것(현재 그림과 해시가 맞을 때) · - = 뺀 항목
-  draw <테마> <판> [--agent]      판 후보를 그려 qa-runs/harnesses/building-kit/<테마>/<판>/ 에 PNG·manifest.json
-  dry <테마> <판> <후보>          후보 하나의 관문·조립 미리보기(그리기 에이전트가 스스로 고치는 입구)
+  draw <테마> <판> [--agent] [--lines A,B,C] [--jobs N]  후보 키마다(화풍 판 = 줄, 이후 판 = <줄><번호>) 그 벌 전체를 그리고 판 모듈로 옮긴다
+  dry <테마> <판> <후보> [--module <판 모듈>] [--out <폴더>]  후보 한 벌의 관문·조립 + preview/ PNG(자체 점검 입구)
   gate <테마> <판>                draw + 기계 관문(P Z Q F S J G Y R / WARN OUTLINE CONTRAST T L N). FAIL 이면 종료코드 1
   assemble <테마> <판> [--line A] [--key A1]   부품을 레시피대로 조립하고 조립 관문 A1~A6
   review <테마> <판> [--runs 3]   독립 Opus 검수(숨긴 함정·무효 회차·다수결·영수증)
@@ -244,27 +244,9 @@ def cmd_gate(theme, rid, quiet=False):
     return rendered, res, fails
 
 
-def cmd_dry(theme, rid, key, quiet=False):
-    mod, rendered = render_round(theme, rid)
-    if not any(key in c for c in rendered.values()):
-        raise SystemExit(f'{theme} {rid}: 후보 {key} 가 없다')
-    res = run_gate(theme, rid, rendered)
-    items = items_by_id(theme)
-    bad_total = 0
-    print(f'{theme} {rid} 후보 {key}')
-    for item, cands in rendered.items():
-        if key not in cands:
-            continue
-        rs = res[item][key]
-        bad = [r for r in rs if not r['ok']]
-        bad_total += len([r for r in bad if r['level'] == 'FAIL'])
-        print(f'{item:20} {key} {dot.image_hash(cands[key][0])[:8]}  ' + ('통과' if not bad else ' · '.join(f'{r["level"]} {r["code"]}: {r["msg"]}' for r in bad)))
-    parts = parts_for(theme, rid, key, rendered)
-    print('조립:')
-    for row in assemble_all(theme, parts):
-        bad_total += len(row['fails'])
-    print('FAIL ' + str(bad_total) + (' — 고칠 것: ' + str(bad_total) if bad_total else ' — 기계 관문·조립 통과(합격 아님)'))
-    return 1 if bad_total else 0
+def cmd_dry(theme, rid, key, quiet=False, module=None, out=None):
+    import dry
+    return dry.run(theme, rid, key, module, out, quiet)
 
 
 def resolve_parts(theme, rid, line, key=None):
@@ -638,6 +620,8 @@ def main(argv=None):
     p.add_argument('theme')
     p.add_argument('round')
     p.add_argument('key')
+    p.add_argument('--module')
+    p.add_argument('--out')
     for c in ('gate',):
         q = sub.add_parser(c)
         q.add_argument('theme')
@@ -690,7 +674,7 @@ def main(argv=None):
     if a.cmd == 'draw':
         return cmd_draw(a.theme, a.round, a.agent, (a.lines or '').split(',') if a.lines else None, a.jobs, a.agent_cmd)
     if a.cmd == 'dry':
-        return cmd_dry(a.theme, a.round, a.key)
+        return cmd_dry(a.theme, a.round, a.key, module=a.module, out=a.out)
     if a.cmd == 'gate':
         _, _, fails = cmd_gate(a.theme, a.round)
         return 1 if fails else 0
