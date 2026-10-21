@@ -1,0 +1,61 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-h3",
+ "round": 1,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png"
+ ],
+ "items": [
+  {
+   "id": "food-drink-bar",
+   "pixelSha256": "7c959f797928887b6c08d8a9e59710da3c9cfad4bf63fb3be6e86ee90e46a7e8",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    3
+   ],
+   "reasons": "It is a skinny one-tile column, much narrower than the two-tile originals, so it is too small for a bar. At 1x the grey top and the tiny row of coloured cup pixels blur together and read as a generic locker or vending slab, not a drink bar."
+  },
+  {
+   "id": "mart-cart-bay",
+   "pixelSha256": "8e52ffc6c84de3bf9a6950ad081e4e03fb4938b41c095eecff0ba4531cf8355d",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The carts are drawn as a side elevation, with a basket grid seen from the front, a wheel row underneath and red handles sticking up, so there is no lit top plane. The heavy black outline around the whole cart and around each wheel is thicker than on the originals, and the wheels look like separate blobs below the body."
+  },
+  {
+   "id": "mart-drink-open",
+   "pixelSha256": "9708a9cf9f72de472ad8461bd73ad60ea847243836eab64a5ffd54b6ec5a9b8f",
+   "verdict": "FAIL",
+   "failed": [
+    1,
+    4
+   ],
+   "reasons": "The top is just a flat red band with a darker red stripe, not a lit horizontal plane, so the cooler reads as a front elevation with bottles in a grid. Two stray light pixels sit below the bottom-left and bottom-right corners, outside the object's footprint."
+  },
+  {
+   "id": "mart-gondola-snack",
+   "pixelSha256": "dc91f25726e1d2e5f94af7364ecea4b18d829988e893f4905605f411b725329d",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The top plane shows a light grey surface with tan boxes on it, about 3+ rows, and the shelf front is short, in the same way as mci-cooler. The outline, palette and size match the originals, and the stacked orange snack boxes on three shelves read as a snack gondola at 1x."
+  }
+ ]
+}
