@@ -1,0 +1,74 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r17",
+  "commit": "a144f5e8ed",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed with src/harnesses/_core/object_gate on each PNG in /tmp/fsrooms/gate-r17; hashes recorded per item.",
+    "1_topdown_view": "All seven are wall/ceiling surface pieces; ribs show front face only with lit 1-row band tops and a corbel with visible top plane; cornice ledge has lit top then shadowed front. No side/iso faces.",
+    "2_style_fit": "Outline (26,14,6) wood ramp and brass ramp match v5 furniture; stone ramps match v5 walls. Wood is medium rather than dark; corbel slightly cooler than wall stone (non-blocking).",
+    "3_readability_1x": "In mock-obs.png the inward-curving west/east ribs with knobs over the darkening cornice/shell band read as a ribbed domed hall, not random poles; centre ribs read as straight ribs on the north wall.",
+    "4_placement": "Rib feet sit on corbels on the wall face, rib top cells use the cornice pattern and continue seamlessly into the top tiles; no floating or clipping.",
+    "5_silhouette_outline": "Top west/east have a 1px outward stub at row 12 (x11 west, x4 east). Ribs west/east have a 3-row bridge swelling at rows 9-11 (non-blocking). Others clean."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/dome rib",
+      "name": "둥근 지붕 갈빗대(가운데, 1×3) (dome rib)",
+      "kind": "wall_mounted",
+      "pixelSha256": "480358c174ac9bb7c052170a5f9062ef6d07dc165e135c615f3f90bb27edc283",
+      "verdict": "PASS",
+      "reasons": "Straight 6px shaft (outline+4-step wood ramp, light left), two 8px brass bands with highlight/shadow rows, stone corbel with lit top plane and tapered front: correct 3/4 for a wall-mounted piece. Top 16px background matches dome_cornice pixel-for-pixel (rows 0-15), so it tiles into the cornice row. Grain specks (99,49,11) at (8,20) and swapped F at (7,27) give texture without noise. Reads at 1x on the north wall as a dark-band-reaching rib. Non-blocking: wood ramp (183,114,70 highlight) is medium rather than the \"dark wooden\" ribs of the reference; corbel stone is cooler blue-grey than the purple-grey wall."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib west",
+      "name": "둥근 지붕 갈빗대(서쪽 벽, 가운데로 휨, 1×3) (dome rib west)",
+      "kind": "wall_mounted",
+      "pixelSha256": "4a39bc949910ca85035f24247af7fa8f4f5ca7226a6070daf46b701ca7300cd9",
+      "verdict": "PASS",
+      "reasons": "Shaft curves east going up (x2-7 below row 12, x3-8 rows 5-8, x4-9 rows 0-2), exits top edge at x4-9 and continues exactly into dome_rib_top_west bottom row (x4-10 bridge). Cornice background matches dome_cornice exactly; ledge passes behind the shaft. Light stays top-left. Bands/corbel as centre rib, corbel x0-9 centred on shaft. Reads at 1x as a rib springing from the wall and arching inward. Non-blocking polish: the bridge band at rows 9-11 (x2-8, fill D D E E F, no highlight) is 3 rows tall while every other bridge is 1-2 rows, so at 8x the shaft shows a 3-row swelling at the cornice ledge; shorten it to one row (row 11 only) and keep the C highlight pixel in bridge rows."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib east",
+      "name": "둥근 지붕 갈빗대(동쪽 벽, 가운데로 휨, 1×3) (dome rib east)",
+      "kind": "wall_mounted",
+      "pixelSha256": "80d676e3e49879c92f84dff9d2cb60fa5f7f6da9786a02cd2ff9ca2a62552ff5",
+      "verdict": "PASS",
+      "reasons": "Exact horizontal mirror of the west shape (x8-13 lower, x7-12 rows 5-8, x6-11 rows 0-2) while keeping the highlight C on the left of each row, so lighting is not mirrored. Top seam meets dome_rib_top_east row 15 (x5-11 bridge) correctly; cornice background matches. Same non-blocking note as west: 3-row bridge band at rows 9-11 (x7-13) reads as a swelling at 8x; make it one row and keep the left highlight."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib top west",
+      "name": "둥근 지붕 갈빗대 끝(서쪽, 천장 줄 1칸) (dome rib top west)",
+      "kind": "wall_mounted",
+      "pixelSha256": "0d0a5c324a34bc4d38a4d0b2acb796fc954ac9351c9f6d20094188a8deb84704",
+      "verdict": "FAIL",
+      "reasons": "Concept, seam and knob are right (shell background matches dome_shell, knob 6x5 at x8-13 rows 1-5 with outline and lit top-left, shaft continues from rib top at x4-9). Silhouette defect: row 12 is drawn x5-11 (E L M O O N E) but its neighbours are row 11 x6-10 and row 13 x5-10, so the right outline juts 1px at (11,12) - a single-row stub on the outer side of the curve, clearly visible as a dark notch in stack-x8 at about (90,100). Fix: row 12 should be the bridge x5-10 only -> pixels x5..10 = E L M O N E, restore (11,12) to the dome_shell pixel D (35,39,44). Also keep a highlight pixel (L/183,114,70) on the left in bridge rows 7, 10, 15 (currently M M O O N) to avoid darker rings at each step."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib top east",
+      "name": "둥근 지붕 갈빗대 끝(동쪽, 천장 줄 1칸) (dome rib top east)",
+      "kind": "wall_mounted",
+      "pixelSha256": "f5e9df43b47e6f864322015b443dfb10d560cc3be87dc37fbf32bfaa9d38ba3f",
+      "verdict": "FAIL",
+      "reasons": "Mirror of top west with knob x2-7 lit top-left, shell background matches. Same stub mirrored: row 12 drawn x4-10 (E M M O O N E) while row 11 is x5-9 and row 13 is x5-10, so the left outline juts 1px at (4,12) (dark notch in stack-x8 at about 555,100). Fix: row 12 = x5-10 (E L M O N E), set (4,12) back to dome_shell pixel C (46,38,48). Same bridge-row highlight note as west (rows 7, 10, 12, 15 start with M; put L at the first fill pixel)."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome cornice",
+      "name": "둥근 지붕 돌 처마 띠(천장 줄 1칸, 벽면 바로 위) (dome cornice)",
+      "kind": "wall_mounted",
+      "pixelSha256": "95659a688bf1f51cef9941bf97c997cb8f1b07fa728813cdfe23273810559ef0",
+      "verdict": "PASS",
+      "reasons": "Rows 0-10: 7px medium bricks (55,53,56)/(67,63,70) with dark mortar, running-bond offsets, two shades below the wall-face stone; rows 11-15: ledge with lit top (118,110,116) stepping down to a dark underside (30,30,36) that sits on the wall top - reads as a projecting stone cornice in 3/4. Tiles horizontally (mortar at x7/x15 row 0, brick offsets wrap). In the mock it forms a continuous ledge line along every wall step and sits between wall face and dome shell as intended."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome shell",
+      "name": "둥근 지붕 안쪽 면(천장 줄 1칸, 처마 위) (dome shell)",
+      "kind": "wall_mounted",
+      "pixelSha256": "3813fa88df9267f03cdab68f829c535359b1a28b9b670915b6ad5de3bf8deae7",
+      "verdict": "PASS",
+      "reasons": "4x3 bricks with 1px mortar, three dark cool/purple tones (29,33,40)/(35,39,44)/(46,38,48), offset rows wrap cleanly horizontally and vertically. Darker and finer than the cornice so the ceiling band darkens upward; at 1x the hall top reads as the inside of a dome and matches the existing dark ceiling band beside the star window. No flat fills."
+    }
+  ]
+}

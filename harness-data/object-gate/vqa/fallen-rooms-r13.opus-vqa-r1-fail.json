@@ -1,0 +1,50 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r13",
+  "commit": "a144f5e8ed",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed with src/harnesses/_core/object_gate on each PNG at native size (16x48 x3, 16x16). dome_rib_east is an exact horizontal mirror of dome_rib_west (bbox diff None). Rib top cells reproduce the dome_shell course pattern column-for-column (mortar at x7/x15 rows 0-3, x3/x11 rows 4-7), so the tiling seam is clean.",
+    "1_topdown_view": "All four are wall-mounted / ceiling-band fills; no side or iso faces. Corbel brackets show a lit top face (165,173,178) over darker front rows - correct 3/4. Brass bands are flat front plates. No view violations.",
+    "2_style_fit": "Rib wood ramp (183,114,70)/(158,104,75)/(154,84,53)/(109,59,21) with (26,14,6) outline matches v5 bookcase/furniture wood; J and C steps (158 vs 154) are near-duplicates but acceptable. dome_shell uses a cool blue-grey ramp (73,80,93)/(51,57,66)/(29,34,40)/(19,19,23) that is visibly a different hue family from the warm mauve-grey hall wall face directly below it, and it has no cornice/springing course where it meets the wall face.",
+    "3_readability_1x": "In mock-obs / mock-obs-x3 the hall does NOT read as a dome. The six side ribs read as walking canes / shepherd's crooks: a straight pole with a short 45-degree hook in the top 16px that stops dead mid-masonry because more dome_shell rows continue above it on the stepped outline. Nothing converges, the shell has flat horizontal courses with no darkening or curvature toward the top, so the dark band reads as a second, darker rectangular brick wall above a stepped hall rather than the inside of a dome. The straight centre rib reads fine as a banded pilaster on the back wall where it runs to the map top.",
+    "4_placement": "Feet sit on corbels on the wall face, bands start just below the face top; grounded, no floating. Problem is the top: west/east rib hooks are cut at the tile's top edge (and east at the left edge too) while shell continues above -> visible clipping in the room.",
+    "5_silhouette_outline": "Straight rib clean (ramp steps shift one column at row 15/16 and the core narrows to 3px in rows 0-5, reads as taper, acceptable). West/east: kinked silhouette - perfectly straight rows 7-47 then an abrupt 45-degree 4px band rows 0-6; terminal is an edge cut, not an end. dome_shell: wallpaper-regular 2-course repeat, no stray pixels."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/dome rib",
+      "name": "둥근 지붕 갈빗대(가운데, 1×3) (dome rib)",
+      "kind": "wall_mounted",
+      "pixelSha256": "2abc1e05cce68a66e84c828a124b577774bcddfc02ecb153e48ee891da67529d",
+      "verdict": "PASS",
+      "reasons": "Straight banded wood rib on a stone corbel; 3/4 correct, palette and outline match v5 wood, top cell masonry tiles seamlessly with dome_shell, grounded on the corbel, clean silhouette. On the back wall it runs to the map top so there is no visible cut. Minor (not blocking): at the row 15/16 seam every shading column steps one ramp position (x6 J->K, x9 I->D) - harmless at 1x."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib west",
+      "name": "둥근 지붕 갈빗대(서쪽 벽, 가운데로 휨, 1×3) (dome rib west)",
+      "kind": "wall_mounted",
+      "pixelSha256": "2dee17148593dc689cc50e361503b48c99cba952cc5902b3454b3247fb0731a6",
+      "verdict": "FAIL",
+      "reasons": "Reads as a cane/crook, not a dome rib, and is clipped in the room. (a) The bend is a hard kink: rows 7-47 dead straight at x5-10, then rows 0-6 a constant 4px 45-degree band exiting the top edge at x11-15 row 0. In the stepped hall the cell above is more dome_shell, so the rib visibly stops mid-masonry (mock-obs-x3 x~70,y~145; x~215,y~95; x~360,y~48). Fixes: 1) spread the curve over the whole top cell and the upper wall rows with increasing 1px offsets (e.g. offset 0,0,0,1,1,2,3,4,6 going up) instead of a single kink at row 6/7; 2) add a continuation piece ('dome rib upper west', 16x16, shell background) that carries the rib on through every shell row above to the band top so ribs reach the top edge / visually converge toward the centre, or end the rib in a deliberate brass boss/keystone at x10-15 rows 0-2 instead of an edge cut; 3) keep the rib 5-6px wide through the bend (rows 0-6 currently drop the K/J lit columns, so the hook also looks thinner and darker than the shaft)."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib east",
+      "name": "둥근 지붕 갈빗대(동쪽 벽, 가운데로 휨, 1×3) (dome rib east)",
+      "kind": "wall_mounted",
+      "pixelSha256": "cfab6f7c5fbde6cf30e0abc722fd9a865f9f83b60a68cd6423f4fbb83c31373b",
+      "verdict": "FAIL",
+      "reasons": "Exact mirror of the west rib, same failure: hard kink at rows 6/7 then a 45-degree hook that is cut at the top edge while dome_shell continues above (mock-obs-x3 x~1170,y~48; x~1315,y~95; x~1460,y~145) -> reads as a crook pole. Extra edge defect: row 0 x0-2 is rib wood (154,84,53)/(109,59,21)/(65,30,5) with no outline on the left, cut by both the top and left tile edges. Fixes: same as west (gradual multi-step curve, an upper continuation/terminal piece so the rib does not stop mid-shell), and close the silhouette at row 0 (outline (26,14,6) at x0 or bring the exit fully onto the top edge)."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome shell",
+      "name": "둥근 지붕 안쪽 면(천장 줄 1칸) (dome shell)",
+      "kind": "wall_mounted",
+      "pixelSha256": "2950c825a6ff0f6731dc72660959944d8b58e544834c2b16158e9cea6f116eff",
+      "verdict": "FAIL",
+      "reasons": "Tiles cleanly but does not make the ceiling band read as a dome interior; it reads as a second, darker straight brick wall. (a) Hue: cool blue-grey ramp (51,57,66)/(29,34,40) with (73,80,93) highlights sits directly on the warm mauve-grey hall wall face and visibly clashes - fix: rebuild the ramp as 2-3 darker steps of the wall face hue (shift R up / B down so it reads as the same stone in shadow). (b) No curvature cue: identical 2-course pattern (rows 0-7 repeated at 8-15), uniform tone - fix: provide at least a lower variant (springing course: one row of larger lit voussoir-like blocks or a 2px stone cornice/ledge line at rows 13-15 where it meets the wall face) and an upper variant that is darker with shorter/narrower courses, so tone darkens upward and the stepped band reads as a vault; (c) vary highlights - (73,80,93) top-light appears only on the bricks at x0-1/x12-15 rows 4 and 12, giving a regular diagonal stripe in large fields; break the repeat with 2-3 brick variants."
+    }
+  ]
+}

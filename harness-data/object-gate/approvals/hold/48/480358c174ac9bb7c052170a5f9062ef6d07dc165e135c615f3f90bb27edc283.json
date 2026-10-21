@@ -1,0 +1,14 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "480358c174ac9bb7c052170a5f9062ef6d07dc165e135c615f3f90bb27edc283",
+ "profileHash": "4d8774b517f41638",
+ "kind": "wall_mounted",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T16:30:25.027Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [],
+ "note": "묶음 허용: Fallen Star 천문대 — 둥근 지붕 갈빗대·처마·안쪽 면 (r18) — fallen-rooms-r18 (dome rib · dome rib west · dome rib east · dome rib top west · dome rib top east · dome cornice · dome shell) — delegated by user to",
+ "sig": "5f5077d36e6bff6a2eb1986d64349b1fba63057262c5bc09f67dd5065278a9a6"
+}

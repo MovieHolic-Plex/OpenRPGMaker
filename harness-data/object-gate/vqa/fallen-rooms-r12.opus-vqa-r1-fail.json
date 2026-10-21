@@ -1,0 +1,56 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r12",
+  "commit": "a144f5e8ed",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed from src/harnesses/_core/object_gate on the three native 16x48 PNGs in /tmp/fsrooms/gate-r12; hashes recorded per item.",
+    "1_topdown_view": "Front-facing wall hanging, no side/iso faces; acceptable for wall_mounted. The upper 16px, however, is drawn as the same front-lit cylinder as the wall-face part, so nothing tells the eye it is curving back over the viewer into a dome surface.",
+    "2_style_fit": "Palette ramps (dark wood a/d/c/b/e/f, brass g/h/i/j/k, stone l/m/n/o) are in range of v5. But the shaft is pure vertical stripes with no grain or knots: lower section rows 32-42 has a flat 3px 'bbb' block for 11 rows, upper section rows 19-29 identical rows repeated. Reads as a turned pipe, not timber.",
+    "3_readability_1x": "In mock-obs.png the ribs do NOT make the hall read as domed. The ceiling band above the wall tops is flat black void, and the top 16px of each rib is a narrow stick poking into that void and ending in a flat cut at row 0. At 1x the set reads as eight crooked poles/stakes planted along a stepped wall, not as ribs converging into a dome (compare ref-op3-observatory.png, where ribs sit ON a lit curved dome surface and taper/converge).",
+    "4_placement": "Foot corbel (rows 43-47) lands on the wall/floor seam, so it reads as a column base standing on the floor rather than a corbel on the wall. Top end floats: rib ends abruptly in empty black with no cap, ring or dome surface behind it.",
+    "5_silhouette_outline": "Outline closed, no stray pixels. Problems: bend in the west/east variants is a 1px-every-3-4-rows staircase (west: left edge x=10 rows 0-2, x=9 rows 3-5, x=7 rows 6-9, x=6 rows 10-13, x=5 rows 14-16) - uniform-ish steps read as a crooked stick, not an arc. Shaft width jumps 6px->8px at row 32 under the lower brass band, making it look like a telescoping pipe. Corbel is off-centre by 0.5px: shaft x4-11 and plates x3-12 centre at 7.5, but corbel rows 43-44 span x3-13 and rows 45-47 (x4-12, x5-11, x6-10) centre at 8."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/dome rib",
+      "name": "둥근 지붕 갈빗대(가운데, 1×3) (dome rib)",
+      "kind": "wall_mounted",
+      "pixelSha256": "74010d55f3c74114415c93e9f35166e189e544bc9483ef61959c2aecf79646fc",
+      "verdict": "FAIL",
+      "reasons": [
+        "Readability: in the mockup the straight centre ribs (beside the window and the star tapestry) are vertical posts whose top 16px sticks up into the black void above the wall top and ends in a flat cut at row 0 - reads as a pole, not a dome rib.",
+        "Fix top (rows 0-15): taper to 3px at row 0 (e.g. rows 0-4 'acda' 4px, rows 5-10 'abcda', rows 11-15 'aebcda'), darken the top 6 rows one ramp step (the rib recedes into the dome, darker/less lit), and end at row 0 against a dome surface instead of void. The ceiling band itself needs a dark curved-plaster/stone dome fill tile behind the ribs (not part of this piece but the piece cannot pass while it reads against black).",
+        "Fix texture: add wood grain - 1px 'd' or 'c' flecks/short horizontal grain marks inside the 'b' column every 4-6 rows (e.g. rows 22, 27, 35, 40) and break the flat 'bbb' block rows 32-42 with a 'c' grain line; avoid identical repeated rows.",
+        "Fix silhouette: remove the 6px->8px width jump at row 32 (keep the shaft 6-7px wide continuous, or widen gradually 1px over rows 29-34).",
+        "Fix corbel: centre it on the shaft - rows 43-44 should span x3-12 (drop the x=13 column) and rows 45-47 x4-11 / x5-10 / x6-9, or shift the whole shaft+plates right 1px; and give the corbel a visible wall-mounted shape (darker underside wedge into the wall) so it does not read as a floor pedestal."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib west",
+      "name": "둥근 지붕 갈빗대(서쪽 벽, 가운데로 휨, 1×3) (dome rib west)",
+      "kind": "wall_mounted",
+      "pixelSha256": "7943a7318ec347762f800bd4879e29bcf87e9876fe33e88710da4bbf5a196c1b",
+      "verdict": "FAIL",
+      "reasons": [
+        "Readability: on the west stepped wall the four ribs read as bent stakes leaning right into black void; the slight kink does not suggest a curving dome.",
+        "Fix bend: the lean is a near-uniform staircase (left edge x=10 rows 0-2, x=9 rows 3-5, x=7 rows 6-9, x=6 rows 10-13, x=5 rows 14-16). Make it an accelerating arc - straight up to row ~10, then steps of 1px over 3 rows, 1px over 2 rows, then 1px per row near the top (rows 0-3 should shift ~3-4px total) so the top visibly curves toward the room centre; use 'e'/'d' anti-alias pixels at each step corner instead of hard 1px stairs.",
+        "Same fixes as the centre rib: taper and darken rows 0-6, end against a dome surface (not flat cut into void), add wood grain flecks and break the flat 'bbb' block rows 32-42, remove the 6->8px width jump at row 32, centre the corbel (rows 43-44 x3-12, rows 45-47 x4-11/x5-10/x6-9) and shape it as a wall bracket rather than a floor pedestal."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib east",
+      "name": "둥근 지붕 갈빗대(동쪽 벽, 가운데로 휨, 1×3) (dome rib east)",
+      "kind": "wall_mounted",
+      "pixelSha256": "dfb2dbc18be6e754ca94fc1280c19fadb0c5833d3f73c286e1d5a6a33f68b8b1",
+      "verdict": "FAIL",
+      "reasons": [
+        "Readability: same as west - on the east stepped wall the ribs read as crooked poles leaning left into black void, not as dome ribs.",
+        "Fix bend: mirror of the west fix - current right edge staircase (x=6 rows 0-2, x=7 rows 3-5, x=8 rows 6-9, x=9 rows 10-13, x=10 rows 14-16) should become an accelerating arc with ~3-4px of shift in rows 0-3, with anti-alias corner pixels.",
+        "Same shared fixes: taper/darken rows 0-6 and terminate against a dome surface, add wood grain and break the flat 'bbb' block rows 32-42, remove the 6->8px width jump at row 32, centre the corbel (rows 43-44 x3-12, rows 45-47 x4-11/x5-10/x6-9) and make it read as a wall bracket."
+      ]
+    }
+  ]
+}

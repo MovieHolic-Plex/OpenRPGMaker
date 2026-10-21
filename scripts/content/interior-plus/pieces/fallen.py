@@ -360,3 +360,257 @@ def great_brazier_lit(c):
             if ch in COL: c.p(x, 4 + j, COL[ch])
     for (x, y) in ((9, 5), (20, 3), (25, 8)):
         c.p(x, y, K('orange', 4))
+
+
+# 둥근 지붕 안쪽 면 — 벽면 마름돌(보랏빛 회색)을 2~3단 어둡게 한 색. 아래 칸(cornice)은 벽면 바로 위 돌 처마 + 위로 갈수록 어두운 벽돌,
+# 위 칸(shell)은 더 어두운 벽돌이라 띠가 위로 갈수록 어두워져 머리 위로 굽어 멀어지는 면으로 읽힌다.
+# 벽돌은 칸(16px) 안에 정확히 떨어진다: 줄 4px(벽돌 3 + 줄눈 1, 줄눈이 15째 줄), 길이 8px, 칸 경계를 넘는 벽돌도 한 색.
+_SH_MORTAR = (30, 25, 32)
+_SH_LOW = ((60, 54, 62), (67, 61, 69), (54, 48, 57))
+_SH_MID = ((52, 46, 55), (57, 51, 60), (48, 42, 51))
+_SH_HI = ((40, 36, 44), (43, 39, 47), (37, 33, 41))
+_SH_HI_MORTAR = (22, 20, 24)
+
+
+def _bricks(x, y, tones_by_course, seed, light, bond):
+    row = y // 4; yy = y % 4
+    off = (row * bond) % 8
+    xx = (x + off) % 8
+    blk = ((x + off) // 8) % 2                                      # 칸 안 벽돌 2개 — 경계를 넘는 벽돌도 같은 번호
+    if yy == 3 or xx == 7: return _SH_MORTAR
+    tones = tones_by_course[row % 4]
+    t = tones[int(hnoise(blk, row % 4, seed) * 3) % 3]
+    if light and yy == 0 and xx < 6 and hnoise(blk, row % 4, seed + 1) > .5: return light
+    return t
+
+
+def _cornice_px(x, y):
+    """벽면 바로 위 천장 줄 칸(16×16): 위 11줄 벽돌(위 줄이 가장 어둡다), 아래 5줄 돌 처마(윗면 밝음 → 앞면 → 그늘)."""
+    if y <= 10: return _bricks(x, y, (_SH_MID, _SH_LOW, _SH_LOW, _SH_LOW), 47, None, 3)
+    return {11: (118, 110, 116), 12: (96, 88, 96), 13: (82, 76, 81), 14: (46, 38, 48), 15: (36, 30, 38)}[y]
+
+
+def _shell_px(x, y):
+    """그 위 천장 줄 칸(16×16): 처마 벽돌보다 작고(4px 길이·3px 높이) 더 어두운 벽돌, 줄눈도 더 어둡다(15째 줄 줄눈이 처마와 맞닿는다)."""
+    row = y // 4; yy = y % 4
+    off = 2 if row % 2 else 0
+    xx = (x + off) % 4
+    blk = ((x + off) // 4) % 4
+    if yy == 3 or xx == 3: return _SH_HI_MORTAR
+    return _SH_HI[int(hnoise(blk, row, 59) * 3) % 3]
+
+
+def _rib_layer(side, mirror=False):
+    """갈빗대 한 줄기(16×64: 위 16 = 이음 칸, 아래 48 = 갈빗대 칸)를 투명 바탕에 그린다. side = 'west'·'centre'.
+    서쪽: 벽면 아래(갈빗대 y19 밑)는 곧고, 그 위부터 끝까지 제곱으로 휘어 이음 칸 꼭대기에서 8px 가운데(동)로 간다.
+    경계 화소는 덮인 비율로 반 톤을 써서 한 줄에 통째로 1px 꺾이지 않게 한다. mirror = 동쪽: 모양은 좌우 거울, 명암은 그대로 밝은 왼쪽."""
+    T = 64
+    L = Cv(16, T)
+    cb = 8.0 if side == 'centre' else 5.0                           # 몸 4px 가 화소 경계에 딱 맞는 가운데(곧은 줄은 반 톤 없음)
+    top = 16 if side == 'centre' else 6                              # 몸이 시작하는 줄(가운데는 갈빗대 칸 맨 위에서 칸 밖으로)
+    A = 0.0 if side == 'centre' else 8.0
+    off = lambda Y: 0.0 if Y >= 35 else A * ((35 - Y) / 35.0) ** 2
+    MX = (lambda x: 15 - x) if mirror else (lambda x: x)
+    body = {}
+    for Y in range(top, 59):
+        w = 4 if Y >= 12 else 3
+        c = cb + off(Y + .5)
+        lo, hi = c - w / 2, c + w / 2
+        row = {}
+        for x in range(16):
+            cov = max(0.0, min(hi, x + 1) - max(lo, x))
+            if cov >= .3: row[x] = cov
+        xs = sorted(row)
+        while len(row) > w:                                           # 한 줄 폭은 정확히 w — 덜 덮인 끝을 버린다(튀어나온 1px 금지)
+            xs = sorted(row)
+            del row[xs[0] if row[xs[0]] < row[xs[-1]] else xs[-1]]
+        for x, cov in row.items(): body[(MX(x), Y)] = 'f' if cov >= .65 else 'h'
+    OUT = K('dwood', 0)
+    for (x, Y), kind in body.items():
+        row = sorted(xx for (xx, yy) in body if yy == Y)
+        x0, x1 = row[0], row[-1]
+        if kind == 'h' and x not in (x0, x1): col = K('wood', 4)
+        elif kind == 'h': col = K('wood', 6) if x == x0 else K('wood', 3)   # 반 톤 끝: 왼쪽 = 밝은 첫 화소, 오른쪽 = 그늘
+        else:
+            k = 6 if x == x0 else 5 if x == x0 + 1 else 3 if x == x1 else 4
+            if Y >= 24 and (Y * 7 + x * 3) % 23 == 0 and x0 < x < x1: k -= 2      # 나뭇결 점
+            if 48 <= Y <= 58 and (Y // 3) % 2 == 0 and x == x0 + 2: k -= 1      # 아래 몸 결
+            col = K('wood', k)
+        L.p(x, Y, col)
+    for (x, Y) in list(body):
+        for nx in (x - 1, x + 1):
+            if (nx, Y) not in body and 0 <= nx < 16: L.p(nx, Y, OUT)
+    # 놋쇠 이음판(갈빗대 y17~18 · y30~31): 외곽선보다 양옆 1px 넓게
+    bx0 = int(round(cb - 2)) - 2; bx1 = int(round(cb + 2)) + 1
+    if mirror: bx0, bx1 = 15 - bx1, 15 - bx0
+    for Y0 in (33, 46):
+        for Y in (Y0, Y0 + 1):
+            for x in range(bx0, bx1 + 1):
+                if Y == Y0: col = K('brass', 6) if x == bx0 else K('brass', 2) if x == bx1 else K('brass', 5)
+                else: col = K('brass', 3) if x == bx0 else K('brass', 1) if x == bx1 else K('brass', 2)
+                L.p(x, Y, col)
+    # 돌 까치발(벽에 박힌 받침): 윗면 2줄 → 앞면이 아래로 좁아진다
+    m = int(round(cb - 2))                                         # 몸 왼쪽 열
+    if mirror: m = 15 - (m + 3)
+    L.hl(m - 3, m + 6, 59, K('stone', 5)); L.hl(m - 3, m + 6, 60, K('stone', 4))
+    L.hl(m - 2, m + 5, 61, K('stone', 3)); L.hl(m - 1, m + 4, 62, K('stone', 2)); L.hl(m, m + 3, 63, K('stone', 1))
+    L.p(m - 2, 61, K('stone', 1)); L.p(m + 5, 61, K('stone', 1)); L.p(m - 1, 62, K('stone', 1)); L.p(m + 4, 62, K('stone', 1))
+    if side != 'centre':
+        # 놋쇠 꼭지(4×3 + 외곽선): 몸 꼭대기 위
+        kc = cb + off(5.5); k0 = int(round(kc - 2))
+        if mirror: k0 = 15 - (k0 + 3)
+        for x in range(k0 - 1, k0 + 5): L.p(x, 1, OUT); L.p(x, 5, OUT)
+        for y in (2, 3, 4): L.p(k0 - 1, y, OUT); L.p(k0 + 4, y, OUT)
+        for x in range(k0, k0 + 4):
+            L.p(x, 2, K('brass', 6) if x == k0 else K('brass', 5))
+            L.p(x, 3, K('brass', 5) if x == k0 else K('brass', 3) if x == k0 + 3 else K('brass', 4))
+            L.p(x, 4, K('brass', 2) if x < k0 + 3 else K('brass', 1))
+    return L
+
+
+def _rib_draw(c, side, mirror, part):
+    """part = 'rib'(갈빗대 칸: 처마 바탕 + 아래 48줄) · 'top'(이음 칸: 안쪽 면 바탕 + 위 16줄).
+    mirror = 동쪽: 모양만 좌우 거울이고 명암은 다른 갈빗대처럼 왼쪽 위 빛(밝은 왼쪽)."""
+    L = _rib_layer(side, mirror)
+    y0, h, bg = (16, 48, _cornice_px) if part == 'rib' else (0, 16, _shell_px)
+    for y in range(h):
+        for x in range(16):
+            col = L.get(x, y0 + y)
+            if col is None: col = bg(x, y) if y < 16 else None
+            if col is not None: c.p(x, y, col)
+
+
+def _dome_rib(c, lean):
+    _rib_draw(c, 'centre' if lean == 0 else 'west', lean < 0, 'rib')
+
+
+def _dome_rib_top(c, lean):
+    _rib_draw(c, 'west', lean < 0, 'top')
+
+
+@REG.piece('dome cornice', '둥근 지붕 돌 처마 띠(천장 줄 1칸, 벽면 바로 위)', 'observatory', 'hang', 1, 0, 0, 'wall_mounted',
+           '천문대 둥근 지붕이 벽에서 솟기 시작하는 자리 — 아래는 벽 위에 얹힌 돌 처마(밝은 윗면·앞면·그늘), 위는 벽면 돌보다 두 단 어두운 중간 벽돌.',
+           ['천문대', '관측실', '둥근 지붕'],
+           '천문대 큰 방 벽면 바로 위 천장 줄(벽면 윗줄 바로 위 막힌 칸). 그 위 천장 줄은 dome shell.', ['dome shell', 'dome rib'], rows=1)
+def dome_cornice(c):
+    for y in range(16):
+        for x in range(16): c.p(x, y, _cornice_px(x, y))
+
+
+@REG.piece('dome shell', '둥근 지붕 안쪽 면(천장 줄 1칸, 처마 위)', 'observatory', 'hang', 1, 0, 0, 'wall_mounted',
+           '천문대 둥근 지붕 안쪽 높은 곳의 더 어둡고 작은 마름돌 — 처마 띠 위 천장 줄을 채워, 위로 갈수록 어두워지며 머리 위로 굽어 멀어지는 면으로 읽힌다.',
+           ['천문대', '관측실', '둥근 지붕'],
+           '천문대 큰 방 dome cornice 위의 천장 줄(막힌 칸)마다 한 칸씩.', ['dome cornice', 'dome rib west', 'dome rib east'], rows=1)
+def dome_shell(c):
+    for y in range(16):
+        for x in range(16): c.p(x, y, _shell_px(x, y))
+
+
+@REG.piece('dome rib', '둥근 지붕 갈빗대(가운데, 1×3)', 'observatory', 'hang', 1, 0, 0, 'wall_mounted',
+           '천문대 둥근 지붕을 받치는 나무 갈빗대 — 벽면 아래 돌 까치발에서 곧게 솟아 천장 속으로 들어가고, 이음마다 놋쇠 판을 댔다.',
+           ['천문대', '관측실', '둥근 지붕'],
+           '천문대 큰 방 북벽 가운데 벽면. 맨 위 줄이 천장 줄, 아래 두 줄이 벽면(y = 천장 줄).', ['dome rib west', 'dome rib east', 'dome slit tall'], rows=3)
+def dome_rib(c):
+    _dome_rib(c, 0)
+
+
+@REG.piece('dome rib west', '둥근 지붕 갈빗대(서쪽 벽, 가운데로 휨, 1×3)', 'observatory', 'hang', 1, 0, 0, 'wall_mounted',
+           '천문대 둥근 지붕 서쪽 벽의 나무 갈빗대 — 위로 갈수록 가늘어지며 방 가운데(동쪽)로 휘어 천장 속으로 모인다.',
+           ['천문대', '관측실', '둥근 지붕'],
+           '천문대 큰 방 서쪽 계단식 벽면. 맨 위 줄이 천장 줄(y = 천장 줄).', ['dome rib', 'dome rib east'], rows=3)
+def dome_rib_west(c):
+    _dome_rib(c, 1)
+
+
+@REG.piece('dome rib east', '둥근 지붕 갈빗대(동쪽 벽, 가운데로 휨, 1×3)', 'observatory', 'hang', 1, 0, 0, 'wall_mounted',
+           '천문대 둥근 지붕 동쪽 벽의 나무 갈빗대 — 위로 갈수록 가늘어지며 방 가운데(서쪽)로 휘어 천장 속으로 모인다.',
+           ['천문대', '관측실', '둥근 지붕'],
+           '천문대 큰 방 동쪽 계단식 벽면. 맨 위 줄이 천장 줄(y = 천장 줄).', ['dome rib', 'dome rib west'], rows=3)
+def dome_rib_east(c):
+    _dome_rib(c, -1)
+
+
+@REG.piece('dome rib top west', '둥근 지붕 갈빗대 끝(서쪽, 천장 줄 1칸)', 'observatory', 'hang', 1, 0, 0, 'wall_mounted',
+           'dome rib west 바로 위 천장 줄 — 갈빗대가 가늘어지며 방 가운데로 더 휘고 놋쇠 꼭지로 끝난다. 바탕은 dome shell.',
+           ['천문대', '관측실', '둥근 지붕'],
+           'dome rib west 의 맨 윗줄 바로 위 칸(같은 x, y - 1).', ['dome rib west', 'dome shell'], rows=1)
+def dome_rib_top_west(c):
+    _dome_rib_top(c, 1)
+
+
+@REG.piece('dome rib top east', '둥근 지붕 갈빗대 끝(동쪽, 천장 줄 1칸)', 'observatory', 'hang', 1, 0, 0, 'wall_mounted',
+           'dome rib east 바로 위 천장 줄 — 갈빗대가 가늘어지며 방 가운데로 더 휘고 놋쇠 꼭지로 끝난다. 바탕은 dome shell.',
+           ['천문대', '관측실', '둥근 지붕'],
+           'dome rib east 의 맨 윗줄 바로 위 칸(같은 x, y - 1).', ['dome rib east', 'dome shell'], rows=1)
+def dome_rib_top_east(c):
+    _dome_rib_top(c, -1)
+
+
+BD_SHEET = os.path.join(ROOT, 'public', 'assets', 'beodeul-city', 'beodeul-city-chipset.png')
+
+
+def _bd_stone_brazier(c, oy, lit):
+    """버들항 돌 화로(beodeul_city 27228 위 · 27229 아래, bd-pick-volcano-cave-brazier) 몸을 화소 그대로 옮긴다.
+    위 칸 0~8줄(연기·불티 점)은 버리고, 사발 속 따뜻한 색은 켜짐 = 그대로 · 꺼짐 = 재·숯."""
+    s = Image.open(BD_SHEET).convert('RGBA')
+    for k, i in enumerate((27228, 27229)):
+        t = s.crop(((i % 128) * 16, (i // 128) * 16, (i % 128) * 16 + 16, (i // 128) * 16 + 16))
+        for y in range(16):
+            if k == 0 and y < 9: continue
+            for x in range(16):
+                r, g, b, a = t.getpixel((x, y))
+                if not a: continue
+                warm = r > g + 40 and r > b + 40
+                if a < 255:                                                # 반투명 바닥 그림자는 반투명 그대로(검은 턱 금지)
+                    c.p(x, oy + k * 16 + y, (r, g, b, a)); continue
+                if warm and not lit:
+                    h = hnoise(x, y, 57)
+                    col = K('stone', 4) if h > .78 else K('stone', 3) if h > .55 else K('black', 3) if h > .25 else K('black', 2)
+                    if (x, y) == (7, 11): col = K('orange', 2)            # 꺼져 가는 불씨 하나
+                    if (x, y) in ((4, 10), (10, 10), (12, 11)): col = K('stone', 5)   # 밝은 재
+                    c.p(x, oy + k * 16 + y, col)
+                elif warm and lit:                                         # 달군 숯: 어두운 불씨·주황·뜨거운 노랑 점박이(한 색 띠 금지)
+                    h = hnoise(x, y, 59)
+                    c.p(x, oy + k * 16 + y, K('orange', 2) if h < .25 else K('yellow', 5) if h > .8 else K('orange', 4) if h > .5 else K('orange', 3))
+                else:
+                    c.p(x, oy + k * 16 + y, (r, g, b))
+
+
+@REG.piece('stone brazier', '돌 화로(꺼짐, 버들항 돌 받침 화로)', 'puzzle', 'floor', 1, 1, 16, 'other',
+           '버들항 돌 화로 — 넓은 돌 사발을 굵은 돌 기둥과 네모 받침이 받친다. 사발 속엔 잿빛 재와 식은 숯, 꺼져 가는 불씨 하나. 불붙인 모습은 stone brazier lit.',
+           ['퍼즐', '화로', '지하'],
+           '화로 순서 퍼즐 방 돌 단 네 모서리. 같은 자리에서 stone brazier lit(켜짐)와 바꿔 낀다.', ['stone brazier lit'], use=('search',))
+def stone_brazier(c):
+    _bd_stone_brazier(c, 0, False)
+
+
+@REG.piece('stone brazier lit', '돌 화로(켜짐, 버들항 돌 받침 화로, 불꽃)', 'puzzle', 'floor', 1, 1, 32, 'other',
+           '같은 버들항 돌 화로 — 사발 속 숯이 벌겋게 달고 사발 위로 불꽃 혀가 한 칸 넘게 솟는다.',
+           ['퍼즐', '화로', '지하'],
+           'stone brazier 와 같은 자리(불꽃 줄이 한 줄 위).', ['stone brazier'], use=('search',))
+def stone_brazier_lit(c):
+    _bd_stone_brazier(c, 16, True)
+    F = [
+        ".......2........",
+        "......232.......",
+        "......242.......",
+        ".......32.......",
+        "......2432......",
+        ".....24432..2...",
+        ".....24542.232..",
+        "....124542.242..",
+        "....2455421342..",
+        "...12456542442..",
+        "...24566654432..",
+        "...24566665432..",
+        "...24566665432..",
+        "...24456654432..",
+        "....2345554432..",
+        "....234455432...",
+        ".....2344432....",
+        "......23332.....",
+    ]
+    COL = {'1': K('orange', 2), '2': K('orange', 3), '3': K('orange', 4), '4': K('yellow', 4), '5': K('yellow', 5), '6': K('yellow', 6)}
+    for j, row in enumerate(F):
+        for x, ch in enumerate(row):
+            if ch in COL: c.p(x, 8 + j, COL[ch])

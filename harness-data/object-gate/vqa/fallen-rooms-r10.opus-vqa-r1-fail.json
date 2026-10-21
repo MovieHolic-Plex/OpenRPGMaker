@@ -1,0 +1,79 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r10",
+  "commit": "a144f5e8ed",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 (src/harnesses/_core/object_gate) computed on each PNG in /tmp/fsrooms/gate-r10 as judged; hashes recorded per item.",
+    "1_topdown_view": "Ribs are front-facing wall hangings with a front-only shaft and a corbel showing a top plane (rows 43-44): acceptable 3/4. Braziers keep the Beodeul body: bowl top plane + front face + base top plane: acceptable 3/4. No iso side faces.",
+    "2_style_fit": "Rib wood ramp and brass bands match v5 wood props. Rib shafts change width at unmotivated rows and switch outline colour mid-shaft. Lit brazier flame is a pale peach/cream ramp (244,179,112 / 255,216,160) with only 2 core pixels; it reads washed out next to the saturated orange v5 cauldron flames in the same room. The lit coals are a flat (240,120,24) fill (rows 26-27), with no coal texture.",
+    "3_readability_1x": "Cold vs lit braziers are clearly different at 1x, so that requirement is met. The ribs read as leaning wooden poles planted at the stepped wall corners, not as dome ribs: each top 16px ends in a hard horizontal cut against the black ceiling band and keeps full lighting up to row 0, so nothing suggests a rib curving away into a dome.",
+    "4_placement": "Rib corbels sit at the wall/floor line and are grounded. Brazier bases are grounded on 1 floor tile. In mock-gate-lit/mixed, the north-row lit braziers' flame tile overlaps the front of the lion statues (room layout issue; flag to the room author). The opaque shadow stub (below) makes the brazier base look like it extends past its footprint.",
+    "5_silhouette_outline": "Both braziers turned the reference's semi-transparent cast shadow (22,27,35,a96 at x14-15 rows 29-30 and x6-13 row 31) into opaque (30,30,36,255). This creates a solid black ledge sticking out right of and below the base. West/east rib upper shafts have a wobbling 6/7px width (bulges at row 3 and rows 8-10), so the edges look lumpy rather than a clean diagonal."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/dome rib",
+      "name": "둥근 지붕 갈빗대(가운데, 1×3) (dome rib)",
+      "kind": "wall_mounted",
+      "pixelSha256": "348b4ed60c19d825afdf27a39b2a84c6871ebc6fd74fbe4a129644c175d44937",
+      "verdict": "FAIL",
+      "reasons": [
+        "Top termination: rows 0-3 are a full-brightness shaft cut flat at y=0. In the mock it ends abruptly in the black ceiling band and reads as a post, not a rib rising into a dome. Fix: in rows 0-5, step the ramp down so the lit column B(154,84,53) goes to C/D and then to the A outline colour, narrow the shaft by 1px at rows 0-2, and let the top 2 rows dissolve into the dark band.",
+        "Unmotivated width step: the shaft widens from 6px (x5-10) to 8px (x4-11) at row 22, 3 rows below the brass band at rows 17-18. Fix: make the width change exactly at a brass band (rows 17-18 or 30-31), or keep a constant width.",
+        "Outline colour switches mid-shaft: the left outline is A(26,14,6) at rows 0-11 and F(42,24,11) from row 12. Use one outline colour along the whole edge.",
+        "Noise: the stray darker E(109,59,21) pixel at x8, rows 22-23 between B pixels breaks the shading. Remove it or extend it into a deliberate grain line."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib west",
+      "name": "둥근 지붕 갈빗대(서쪽 벽, 가운데로 휨, 1×3) (dome rib west)",
+      "kind": "wall_mounted",
+      "pixelSha256": "160ec4d3346d83b0f01cb184f519d42e71e73b2b9fe1608d6e7c79720f36dda0",
+      "verdict": "FAIL",
+      "reasons": [
+        "Same hard flat cut at y=0 (x9-15) with full lighting, which reads as a leaning pole in mock-obs. Fix: darken and taper rows 0-5 into the ceiling band, as for the centre rib.",
+        "Lumpy lean: the upper shaft width alternates 7/6/7/6px (row 3 x8-14 bulge, rows 8-10 x7-13 bulge, row 11 x7-12). Fix: draw the lean as a clean constant-width diagonal, stepping 1px left every 4 rows (rows 0,4,8,12,16,20), with no width changes outside the brass bands.",
+        "Lower shaft widens again at row 33 (x4-11 vs x5-11 at row 32), 2 rows after the band at rows 30-31. Move the step onto the band row."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib east",
+      "name": "둥근 지붕 갈빗대(동쪽 벽, 가운데로 휨, 1×3) (dome rib east)",
+      "kind": "wall_mounted",
+      "pixelSha256": "5b2c21e847b27c78408f1040b4c42e86b987e8888faf4018e27f4254a48c0ea1",
+      "verdict": "FAIL",
+      "reasons": [
+        "Same hard flat cut at y=0 (x1-6) with full lighting, which reads as a pole poking into the void. Fix: taper and darken rows 0-5 into the ceiling band.",
+        "Lumpy lean: width bulges at row 3 (x1-7), rows 8-10 (x2-8) and rows 14-15 (x3-9) between 6px rows. Fix: use a constant-width diagonal stepping 1px right every 4 rows, mirroring the fixed west rib exactly.",
+        "Lower shaft widens at row 33 (x4-11) instead of at the band at rows 30-31. Align the step to the band."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/stone brazier",
+      "name": "돌 화로(꺼짐, 버들항 돌 받침 화로) (stone brazier)",
+      "kind": "other",
+      "pixelSha256": "bf5dbcc1eebf84c20b5e2f2408839aa32cd34391bad97bc8fe120578b5e5e582",
+      "verdict": "FAIL",
+      "reasons": [
+        "Opaque shadow stub: x14-15 at rows 29-30 and x6-13 at row 31 are opaque (30,30,36). In the Beodeul reference these were a semi-transparent cast shadow (alpha 96), and palette snapping made them solid. The base now has a black ledge sticking out to the right and below (visible in mock-gate-*-dais-x4). Fix: delete those pixels (set alpha 0), or keep alpha 96 if the sheet allows semi-transparent shadows. Rows 29-30 should end at x13 like the rest of the base.",
+        "Cold read: no change needed. It reads as cold. Optional: put 2-3 light ash pixels (e.g. (118,128,138)) on the bowl top plane, rows 10-11, so it reads as 'ash' and not as an empty dark bowl."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/stone brazier lit",
+      "name": "돌 화로(켜짐, 버들항 돌 받침 화로, 불꽃) (stone brazier lit)",
+      "kind": "other",
+      "pixelSha256": "1ca63f2bbf3a5d371f55f5234926ca720f1e11763720afebea2ad758a808db87",
+      "verdict": "FAIL",
+      "reasons": [
+        "Same opaque shadow stub as the cold piece: x14-15 at rows 45-46 and x6-13 at row 47. Remove them so the cold and lit bases stay identical.",
+        "Flat coal fill: rows 26-27 are a solid run of (240,120,24) across x3-12. Fix: break it up into a coal texture with dark-red/ember (168,77,10) and hot-yellow pixels, like the reference's red/yellow speckle at rows 9-11.",
+        "Washed-out flame: the body is mostly the pale (244,179,112)/(255,216,160) ramp, and the hot core F(255,248,176) is only 2px (x7, x10 at row 20). Next to the v5 cauldron flames in the same room it looks pale and peach. Fix: shift the ramp one step hotter (outer (224,106,16), mid (240,150,40), inner (255,200,58)), widen the yellow core to about 4-6px at rows 18-22, and narrow the flame by 1-2px per side (currently x1-14, nearly the full tile) so it matches the v5 brazier flame weight.",
+        "Placement in room: on the north row of the dais the flame tile draws over the front of the lion statues (mock-gate-lit-x3). This is a room-layout issue: move the braziers or statues 1 tile so the flame tile is clear."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,337 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cf004bce3dee0204bc9e45d8f62cbe843ef7d0c421de53cd00321360e50414f1",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "둥근 지붕 갈빗대 끝(동쪽, 천장 줄 1칸) (dome rib top east)",
+ "label": "atlas_biome_interior/plus/dome rib top east",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 15,
+  "darkV5": 23,
+  "nearBlackEdge": 0.45,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gold rib end cap (rectangular block)",
+      "rows": "2-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "curved bronze rib running down and to the right",
+      "rows": "6-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark brick wall backdrop",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "A flat wall-mounted rib piece drawn face-on against a brick wall. The gold cap (rows 2-4) is a small rectangle with a lighter top row (row 2, #dfc872) fading to darker rows below (row 4, #7e5c10). Its outline is dark at row 1 and row 5. It has no front-edge line with eave shadow and no ellipse, so it reads as a lit vertical face, not a horizontal top. The bronze rib below (rows 6-15) is a diagonal strip with highlight and shadow along its length and no horizontal surface. The object reads as a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "On the measured facts the candidate holds up. It has 15 visible tones per tile against 9-20 for the references, and 0% near-flat coverage, so there are no flat fills. The checkered stone grain gives it some texture. The weak point is structure. The edge pixels are 100% near-neutral, and the stone body reads as a neutral dark grey with a black edge, not a darker tint of the adjacent material. The small brown handle-like element at top left looks like a plain shape with a dark edge. The stone ramp has only about 3-4 distinguishable steps, against 5-6 on the Beodeul references (the roofed well, the cheese stall). Overall it looks closer to a sticker than to the reference craft. Because the edges are neutral and the shading is shallow, I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 15996
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gold rib-end cap block",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "curved orange rib strip",
+      "rows": "6-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark brick wall background",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The piece is a flat, face-on wall ornament drawn over a full-tile dark brick background. The gold cap (rows 2-5) has a light top row and darkens downward, which reads as a bevel highlight, not a horizontal surface. It has no front-edge line, no eave shadow and no ellipse width profile. The orange rib (rows 6-15) is a vertical diagonal strip with no top surface. Only a 1-2 row highlight/rim exists, so the main body shows no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a single full-bleed 16x16 ceiling tile: a dark stone-like ground with a brown rib or bracket at the top. It has 15 visible tones per tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge, so it is on par and slightly below the richest references. Near-flat coverage is 0%, so there are no flat fills, and the ground carries grain and variation. The dark edge pixels are 100% near-neutral, which on its own would point to a black-line look. The lamp-crook reference measures the same, and the rib is separated mostly by value against the dark ground rather than wrapped in a sticker outline. I therefore call the outline mixed rather than near_black. The stepping is about 5 tones, close to Beodeul's 5-6, so I judge it acceptable next to the references. At this small size the image is hard to read, which limits confidence in the tint call.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24098
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gold cap block at top of rib",
+      "rows": "2-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "curved copper rib running diagonally down",
+      "rows": "5-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark brick wall backdrop filling the tile",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tile is a flat, face-on view of a rib on a dark brick wall, which fits a wall-mounted object. The small gold cap (rows 2-4) shades from light to dark down the rows (column x=4: L=197, 159, 94). That reads as a vertical face with a highlight, not a top surface, and it has no front-edge line, eave shadow or ellipse. The copper rib (rows 5-15) is a diagonal strip drawn face-on, with no horizontal surface visible. I count no top surface, so the object is front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a single 16x16 tile: a brown rib or handle shape on a dark neutral grey-black ground. Density is acceptable. It has 15 visible tones, within the reference range of 9-20 (well-roofed 20, stall 17, hedge 9). Near-flat coverage is 0%, so there are no flat fills. The problem is structure. 100% of its dark edge pixels are neutral, so the outline and ground read as a colourless black line with no brown tint beside the wood. References such as the hedge (0% neutral) and the stall (1% neutral) use tinted dark tones of the adjacent material. The rib shows only about 3-4 lightness steps against roughly 5-6 on the Beodeul wood and roof ramps, and it reads as a flat, sticker-like shape on a black field. In doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 14993
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "gold rib end cap (rectangular block with a top-to-bottom shading gradient)",
+      "rows": "2-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "orange curved rib running diagonally down to the lower right",
+      "rows": "6-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark brick wall background filling the full 16x16 tile",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tile is a flat wall-mounted picture of a rib end. The gold block in rows 2-5 has a light-to-dark vertical gradient (L=197, 159, 94, then an outline at row 5). That is shading on a vertical face, not an edge line with eave shadow, and it is not an ellipse. The orange rib in rows 6-15 is a diagonal band seen face-on and shows no horizontal surface. The silhouette is a constant 16 px wide because the wall background fills the tile, so there is no widening and narrowing profile. The object has no top surface and reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a single 16x16 tile. It shows a brown rib or handle shape with a lighter cap, set on a dark grey checker or brick ground. Density is fine on the numbers: 15 visible tones per tile sits inside the reference range of 9-20, and near-flat coverage is 0%. The weakness is structure. All of its dark edge pixels (100%) are neutral black or grey with no brown or other tint. The references that carry rich material shading (stall, well, hedge) are at 0-33% neutral, with tinted dark-material edges. The brown element has only about 3-4 lightness steps, against 5-6 steps in Beodeul materials. The neutral dark ground also reads as a flat, sticker-like backdrop, not a shaded material. I am failing it because the neutral outline and shallow ramps leave it below the reference standard, and the rule is to fail when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 19196
+  }
+ ],
+ "decidedAt": "2026-10-21T16:24:33.532Z",
+ "cells": {
+  "16": [
+   "3046d2d03507dfc7"
+  ],
+  "24": [
+   "481f094d25d0aec1",
+   "72d18491ece15319",
+   "88f5255b9948e7e5",
+   "941dc2e47a779a69",
+   "be9b122ac7fbd787",
+   "ea9c4de4981491a1"
+  ],
+  "32": [
+   "12d80ddc7d348ffb",
+   "4cf826402124b7ba",
+   "4fee6650dd9a9f78",
+   "78e01077c3a7d385",
+   "9ac2011790987e64",
+   "a866ea8276942ab4"
+  ],
+  "48": [
+   "07d31531ad568c9d",
+   "27b4f5832f48cce2",
+   "622393b9ea97d49e",
+   "bd72fdd141263e8b",
+   "ef59395668410d98",
+   "fc55532acb338bcb"
+  ]
+ }
+}

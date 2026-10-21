@@ -1,0 +1,50 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "fallen-rooms-r18",
+ "title": "Fallen Star 천문대 — 둥근 지붕 갈빗대·처마·안쪽 면 (r18)",
+ "createdAt": "2026-10-21T16:22:32.618Z",
+ "items": [
+  {
+   "sha": "480358c174ac9bb7c052170a5f9062ef6d07dc165e135c615f3f90bb27edc283",
+   "kind": "wall_mounted",
+   "label": "atlas_biome_interior/plus/dome rib",
+   "source": "/tmp/fsrooms/gate-r18/dome_rib.png"
+  },
+  {
+   "sha": "351ae0783571568ef4f73c222b38dd6b4f91b7ddaa2f66b5167c2d0e93979bf7",
+   "kind": "wall_mounted",
+   "label": "atlas_biome_interior/plus/dome rib west",
+   "source": "/tmp/fsrooms/gate-r18/dome_rib_west.png"
+  },
+  {
+   "sha": "a0dec11a3605815121f5cd9c4d47b3c3640d7987f3e08d4b71aa99c64ff8dbc9",
+   "kind": "wall_mounted",
+   "label": "atlas_biome_interior/plus/dome rib east",
+   "source": "/tmp/fsrooms/gate-r18/dome_rib_east.png"
+  },
+  {
+   "sha": "2a85aac188b191ce69ffe7450d295a52aa94b5df5092af5e13be81a5eeda134d",
+   "kind": "wall_mounted",
+   "label": "atlas_biome_interior/plus/dome rib top west",
+   "source": "/tmp/fsrooms/gate-r18/dome_rib_top_west.png"
+  },
+  {
+   "sha": "cf004bce3dee0204bc9e45d8f62cbe843ef7d0c421de53cd00321360e50414f1",
+   "kind": "wall_mounted",
+   "label": "atlas_biome_interior/plus/dome rib top east",
+   "source": "/tmp/fsrooms/gate-r18/dome_rib_top_east.png"
+  },
+  {
+   "sha": "95659a688bf1f51cef9941bf97c997cb8f1b07fa728813cdfe23273810559ef0",
+   "kind": "wall_mounted",
+   "label": "atlas_biome_interior/plus/dome cornice",
+   "source": "/tmp/fsrooms/gate-r18/dome_cornice.png"
+  },
+  {
+   "sha": "3813fa88df9267f03cdab68f829c535359b1a28b9b670915b6ad5de3bf8deae7",
+   "kind": "wall_mounted",
+   "label": "atlas_biome_interior/plus/dome shell",
+   "source": "/tmp/fsrooms/gate-r18/dome_shell.png"
+  }
+ ]
+}

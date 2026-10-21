@@ -943,7 +943,25 @@
 "obj:great brazier lit:0,-1": 7496,
 "obj:great brazier lit:1,-1": 7497,
 "obj:great brazier lit:0,0": 7498,
-"obj:great brazier lit:1,0": 7499
+"obj:great brazier lit:1,0": 7499,
+"obj:dome cornice:0,0": 7500,
+"obj:dome shell:0,0": 7501,
+"obj:dome rib:0,0": 7502,
+"obj:dome rib:0,1": 7503,
+"obj:dome rib:0,2": 7504,
+"obj:dome rib west:0,0": 7505,
+"obj:dome rib west:0,1": 7506,
+"obj:dome rib west:0,2": 7507,
+"obj:dome rib east:0,0": 7508,
+"obj:dome rib east:0,1": 7509,
+"obj:dome rib east:0,2": 7510,
+"obj:dome rib top west:0,0": 7511,
+"obj:dome rib top east:0,0": 7512,
+"obj:stone brazier:0,-1": 7513,
+"obj:stone brazier:0,0": 7514,
+"obj:stone brazier lit:0,-2": 7515,
+"obj:stone brazier lit:0,-1": 7516,
+"obj:stone brazier lit:0,0": 7517
 },
 "ids": [
 "plinth",
@@ -1037,6 +1055,15 @@
 "star seal",
 "star seal open",
 "great brazier",
-"great brazier lit"
+"great brazier lit",
+"dome cornice",
+"dome shell",
+"dome rib",
+"dome rib west",
+"dome rib east",
+"dome rib top west",
+"dome rib top east",
+"stone brazier",
+"stone brazier lit"
 ]
 }

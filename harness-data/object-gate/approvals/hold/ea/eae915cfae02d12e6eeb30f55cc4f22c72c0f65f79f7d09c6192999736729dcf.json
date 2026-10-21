@@ -1,0 +1,18 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "eae915cfae02d12e6eeb30f55cc4f22c72c0f65f79f7d09c6192999736729dcf",
+ "profileHash": "4d8774b517f41638",
+ "kind": "other",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T16:30:25.856Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "note": "묶음 허용: Fallen Star 네 화로의 방 — 버들항 돌 화로 꺼짐·켜짐 (r11) — fallen-rooms-r11 (stone brazier · stone brazier lit) — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/falle",
+ "sig": "b12ae364ef0029b282302cd343171a917c7f1024b3f7dd33379c2e7615d89d31"
+}

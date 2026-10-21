@@ -1,0 +1,74 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r16",
+  "commit": "a144f5e8ed",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed with src/harnesses/_core/object_gate on each PNG in /tmp/fsrooms/gate-r16 at review time.",
+    "1_topdown_view": "All seven pieces are front-face wall/ceiling-band art with no side or iso faces; cornice ledge shows top face + front + shadow correctly.",
+    "2_style_fit": "Wood/brass/stone ramps and dark outline match v5. The two east pieces mirror the lighting (highlight on the right) against the top-left light of the centre/west ribs and v5 walls. Ceiling bricks are flat fills (tolerable in the dark band).",
+    "3_readability_1x": "At 1x the fan of curved ribs with knobs climbing toward the centre does make the stepped hall read as domed; the shell band does not add to it because it is indistinguishable from the cornice bricks.",
+    "4_placement": "Ribs, top tiles, cornice and shell tile seamlessly (backgrounds and shaft columns match at every seam). Corbel feet sit on the floor line and read as base cups rather than brackets (minor).",
+    "5_silhouette_outline": "Clean outlines, no stray pixels or stubs; the 1px widening step rows on the curves are consistent."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/dome rib",
+      "name": "둥근 지붕 갈빗대(가운데, 1×3) (dome rib)",
+      "kind": "wall_mounted",
+      "pixelSha256": "480358c174ac9bb7c052170a5f9062ef6d07dc165e135c615f3f90bb27edc283",
+      "verdict": "PASS",
+      "reasons": "Straight wooden rib, 1px dark outline (26,14,6), 4-step wood ramp lit from the left (B M L J G B) matching v5 top-left light, two outlined-free brass bands with highlight on the left end, grey corbel foot. Top 16px carry the cornice pattern and the shaft correctly occludes the cornice ledge (rows 11-15). No side faces; reads at 1x as a dome rib flanking the north window together with the curved side ribs. Minor (not blocking): the corbel (rows 43-47) sits on the floor line so it reads as a base cup rather than a wall bracket; consider ending the shaft ~4px higher with wall showing below the bracket."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib west",
+      "name": "둥근 지붕 갈빗대(서쪽 벽, 가운데로 휨, 1×3) (dome rib west)",
+      "kind": "wall_mounted",
+      "pixelSha256": "4a39bc949910ca85035f24247af7fa8f4f5ca7226a6070daf46b701ca7300cd9",
+      "verdict": "PASS",
+      "reasons": "Shaft x2..7 on the wall face, steps right (toward room centre) through the cornice cell (x3..9 at rows 3-8, x4..9 at rows 0-2) and continues seamlessly into 'dome rib top west' (its row 15 x4..10 is the 1px widening step row used throughout the curve). Lighting left-bright like the centre rib; brass bands and corbel clean; background columns match dome_cornice exactly. Reads at 1x as a rib bending into the dome. Same minor corbel-at-floor note as the centre rib."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib east",
+      "name": "둥근 지붕 갈빗대(동쪽 벽, 가운데로 휨, 1×3) (dome rib east)",
+      "kind": "wall_mounted",
+      "pixelSha256": "ecf894189a2c8bd9d5f2b29925ab03281eea3bc1d19c2b22ae93e4ae48d6a7e3",
+      "verdict": "FAIL",
+      "reasons": "Geometry is a correct mirror of the west rib, but the lighting was mirrored too: the shaft ramp is B G J L M B, i.e. the brightest column (183,114,70) is on the RIGHT (x10 rows 19-42), the brass bands have the bright V end on the right (x14, rows 17 and 30) and the dark H end on the left (x7). The centre and west ribs and the v5 wall bricks are lit from the top-left, so the east ribs visibly disagree with their neighbours. Fix: keep the mirrored silhouette but re-order every shaft row to bright-left (B M L J G B, e.g. rows 16-42 x8..13 -> B M L J G B), step rows 'B G J J L L B' -> 'B M M L J G B' style with the doubled pixel on the dark side, bands rows 17/30 -> V at x7 and H at x14 (row 18/31: K at x7, F at x14), and the knot pixels may stay."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib top west",
+      "name": "둥근 지붕 갈빗대 끝(서쪽, 천장 줄 1칸) (dome rib top west)",
+      "kind": "wall_mounted",
+      "pixelSha256": "57d316bb794060274f7315d7a48a534c7f0bb83e8fab84402a9ab1cdd5ab5f68",
+      "verdict": "PASS",
+      "reasons": "Shaft continues from the west rib (x4..10 row 15) curving east to x8..12 at row 6 and narrows from 4 to 3 interior pixels; ends in an outlined brass knob (rows 1-5, x8..13) with highlight top-left. Background is the dome_shell pattern and tiles with the rib's cornice row below. Clean silhouette, no stubs. NOTE: its background is copied from dome_shell; if dome_shell is redrawn (see that item) this tile must be re-derived and re-reviewed, which changes its hash."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib top east",
+      "name": "둥근 지붕 갈빗대 끝(동쪽, 천장 줄 1칸) (dome rib top east)",
+      "kind": "wall_mounted",
+      "pixelSha256": "39d82cced0f76f1679c67987e396f52fe1b3b8c96576735b403d7d0ed47fded3",
+      "verdict": "FAIL",
+      "reasons": "Same mirrored-lighting defect as dome rib east: shaft rows 6-15 are B G L M B (bright on the right), and the knob is mirrored: row 2 'B R R R V B' puts the specular V (255,240,160) at top-RIGHT x6, row 3 'B K O O R B' puts the dark K on the left, row 4 'B F H H H B'. Fix: knob rows 2-4 -> 'B V R R R B' / 'B R O O K B' / 'B H H H F B' (highlight top-left, shade bottom-right, like top west); shaft rows re-ordered bright-left (B M L G B / B M L J G B). Also re-derive the background if dome_shell changes."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome cornice",
+      "name": "둥근 지붕 돌 처마 띠(천장 줄 1칸, 벽면 바로 위) (dome cornice)",
+      "kind": "wall_mounted",
+      "pixelSha256": "95659a688bf1f51cef9941bf97c997cb8f1b07fa728813cdfe23273810559ef0",
+      "verdict": "PASS",
+      "reasons": "Ceiling-band row: a 5px stone ledge on the wall top (rows 11-15: (118,110,116) top face, (91,89,96)/(82,76,81) front, (46,38,48)/(30,30,36) shadow) reads correctly in 3/4 as a cornice; bricks (67,63,70)/(55,53,56) are two steps darker than the wall face fill (108,92,102), as specified; half-bond tiles seamlessly horizontally and vertically onto the wall face. Bricks are flat single-colour fills without the 1px top/left bevel of the v5 wall-face bricks, which is acceptable in the shadowed ceiling band (v5 ceiling bands are flat too) but a bevel line would help. Not blocking."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome shell",
+      "name": "둥근 지붕 안쪽 면(천장 줄 1칸, 처마 위) (dome shell)",
+      "kind": "wall_mounted",
+      "pixelSha256": "0671ad8d5d87c71eb8f9f24dbe755462ec9a5dd386eb250a5a38e7a9a2f9c76a",
+      "verdict": "FAIL",
+      "reasons": "Spec says darker, SMALLER bricks so the band reads as a dome curving away overhead. Measured: the brick module is identical to dome_cornice (3px tall courses + 1px mortar, 7px/8px long, same half-bond offsets at x3/x7/x11), and the brick values (46,38,48),(55,53,56),(35,39,44),(46,49,55),(42,42,50) overlap the cornice's darker brick (55,53,56) - rows 8-10 even use exactly that colour. At 1x in mock-obs the shell rows and the cornice rows above the ledge are indistinguishable; the band does not darken upward or foreshorten, so the dome read comes only from the ribs. Fix: use visibly smaller bricks (e.g. 4-5px long, 2px tall courses, or 3px courses with 4px bricks), drop every brick value below the cornice's darkest brick (max about (44,42,50), mortar (22,20,24)), and keep the bottom row a full mortar line so it still meets dome_cornice row 0 and the rib top cells; then re-derive the backgrounds of dome rib top west/east from the new tile."
+    }
+  ]
+}

@@ -1,0 +1,330 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "95659a688bf1f51cef9941bf97c997cb8f1b07fa728813cdfe23273810559ef0",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "둥근 지붕 돌 처마 띠(천장 줄 1칸, 벽면 바로 위) (dome cornice)",
+ "label": "atlas_biome_interior/plus/dome cornice",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 26,
+  "nearBlackEdge": 0.4,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone brick wall face",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cornice strip (highlight, mid band, dark shadow)",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "14-15"
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a full 16-wide rectangle on every row (0-15). Rows 0-10 are a flat brick wall face with mortar lines. Row 11 is a light 1-row highlight. Rows 12-13 are a mid-tone band and rows 14-15 are dark. This reads as a front-facing cornice strip with a highlight and shadow, not a horizontal top plane. No band sits above a front-edge line, no ellipse is present, and no roof plane or visible contents are drawn. The piece is a flat wall-mounted face, so it reads as a front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey brick-course band with about 4 lightness steps (dark mortar/outline, mid grey, light grey, a faint highlight). The references use about 5-6 steps. Its dark edge pixels are 100% near-neutral, so the outline is a neutral black/grey line, not a tinted dark material tone. The well-roofed (33% neutral), hedge (0%) and cheese-stall (1%) references all lean toward the colour of the adjacent material. The candidate has 8 visible tones per tile against 9 for the hedge and 17-20 for the stall and well. That is the low end, and it falls well short of the richer references. It has no flat fills (0% near-flat), and the bricks are individually shaded, but with little per-brick grain or highlight variation. It reads as a clean but somewhat sticker-like outlined block, shallower than the Beodeul references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 15281
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brick wall face",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cornice band (highlight line, face strip, dark lower strip)",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Rows 0-10 are a face-on brick pattern with mortar lines at rows 3 and 7, so they form a vertical wall face. Row 11 is a 1-row light highlight (L=113). Rows 12-13 are a mid-tone strip and rows 14-15 are dark. This reads as a front-facing molding strip with a highlight, not a sloped top plane. The width is 16 on every row, so there is no ellipse and no receding top or side. At most the row-11 highlight is a 1-row rim, so there is no real top surface. As a wall-mounted piece it is acceptable to draw flat, and it matches the 'front elevation' and 'rim only' reference cases."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey stone brick cornice strip, about 1 tile. It shows roughly 3 grey steps: light brick faces, a mid tone and a dark mortar/outline. The measured 8 visible tones per tile are close to the hedge (9) but well below the well (20) and cheese stall (17). The dark edge pixels are 100% near-neutral, so the outline and mortar read as a neutral dark grey/black line, not a tint of the stone. That is the sticker-like look the Beodeul references avoid, since the hedge is 0% and the stall 1%. There is no near-flat coverage, but the bricks look like flat rectangles with little per-stone grain or highlights, and the 'dome' roundness is barely modelled. Compared with the references' 5-6 steps and tinted edges, it is shallower and flatter.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13429
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brick wall field",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cornice band (highlight line, mid band)",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark shadow strip under cornice",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a full 16-wide rectangle on every row, so there is no ellipse or widening. Rows 0-10 are a brick wall face with mortar lines at rows 3 and 7, which is a vertical face. Row 11 is a 1-row lighter line (L=113), and rows 12-13 are a mid-tone band (L=84). Rows 14-15 are dark (L=37). Together these read as a front-facing cornice strip: a 1-row highlight, then a band, then shadow below it. That is a rim and not a top surface, because no band of rows sits above a front-edge line to show a horizontal plane receding. There is no roof or awning plane and no contents. The drawing is a flat wall-mounted front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small grey stone-brick cornice strip with a neutral near-black outline. 100% of its dark edge pixels are near-neutral, versus 0-1% for the hedge and cheese stall and 33-44% for the well and bench, so it reads as the 'sticker' outline rather than a dark material tone. The stone is shaded in only about 3 grey steps: bricks of one grey with dark mortar lines and little per-stone highlight. It has 8 visible tones per tile, below the hedge (9), stall (17) and well (20). There are no flat fills (0% near-flat), but the grain is sparse. The well's stones are shaded one by one with tinted outlines and the candidate is plainly shallower. It is also grey and neutral, but I did not judge hue; the problem is the structure of the outline and the shallow shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15738
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brick wall face",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cornice strip",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "14-15"
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "Rows 0-10 are a flat brick wall face with mortar lines. Row 11 is a 1-row light highlight, rows 12-13 are a mid-tone strip, and rows 14-15 are dark. This reads as a front-facing cornice strip with a bevel highlight and a shadow below it. The strip does not end in a front-edge line followed by eave shadow, and it has no widening or narrowing ellipse. The silhouette is a constant 16 px wide for all rows. No horizontal top surface is visible, so this is a wall-mounted front elevation, which is allowed to be flat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small grey stone band with a brick-like pattern. It has about 8 visible tones per tile, which is near the hedge reference (9) but well below the well (20) and stall (17). By eye, the stone body uses only about 3 lightness steps: a light grey face, a mid grey and a dark joint line. The bricks are separated mostly by dark lines rather than shaded one by one. All of its dark edge pixels are near-neutral (100%), so the outline is a colourless black/grey line, which gives the 'sticker' look. The well and hedge references have tinted outlines (33% and 0% neutral) with 5-6 steps per material. The candidate has no flat fills (0% near-flat) and some brick texture, but its shading is shallow and its outline is neutral, so it falls short of the Beodeul bar. It does not read as a rounded dome cornice with a lit curved face and a shadowed underside; it reads as a flat brick strip.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14791
+  }
+ ],
+ "decidedAt": "2026-10-21T16:24:33.534Z",
+ "cells": {
+  "16": [
+   "ae1ee61a8e131866"
+  ],
+  "24": [
+   "1eddfb5c92ff0454",
+   "2a9c4b7256c0ad73",
+   "34053773c05eeaff",
+   "6ff33ee416b59e17",
+   "73c7ea5a38d376ec",
+   "da5205ac263a0aaa"
+  ],
+  "32": [
+   "4b8cd085bd800168",
+   "5cce95895750e2bf",
+   "7dc3adc887c10345",
+   "e6675aca97429d5d",
+   "ec80356c0e9673ae",
+   "f217980dba34d004"
+  ],
+  "48": [
+   "025348ac862930f3",
+   "0c972e19250089e0",
+   "3908bbdbc6094953",
+   "5d89ed7fe0ce6bfa",
+   "68fc823962c9210b",
+   "e50be405bc507e89"
+  ]
+ }
+}
