@@ -17051,4 +17051,6 @@
 "계정 사용 한도 소진 · 약 {0}분 뒤 풀림":"Account usage limit reached · resets in about {0} min",
 "계정 사용 한도 소진":"Account usage limit reached",
 "나머지 {0}장도 같이 들어가요":"The other {0} images come along too",
-"「{0}」 붓을 들었어요. 맵에서 놓을 곳을 누르세요. Esc 로 내려놓아요.":"Holding the \"{0}\" brush. Click where to place it on the map. Esc puts it down."}
+"「{0}」 붓을 들었어요. 맵에서 놓을 곳을 누르세요. Esc 로 내려놓아요.":"Holding the \"{0}\" brush. Click where to place it on the map. Esc puts it down.",
+"견본 출력":"Sample output",
+"지형 생성기가 그린 풀밭 바닥 견본(사람이 고르지 않은 출력)":"A grass floor sample drawn by the terrain generator (output, not picked by a person)"}

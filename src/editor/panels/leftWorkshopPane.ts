@@ -54,7 +54,10 @@ function openGen(generator: "char-gen" | "tile-gen" | "object-gen"): void {
 function sampleBand(sample: NonNullable<WorkshopGenerator["sample"]>): HTMLElement {
   return el("div", {
     class: "left-workshop-art",
-    children: [el("img", { attrs: { src: sample.src, alt: sample.alt, width: String(sample.width * 2), height: String(sample.height * 2), loading: "lazy", decoding: "async" } })],
+    children: [
+      el("img", { attrs: { src: sample.src, alt: sample.alt, width: String(sample.width * 2), height: String(sample.height * 2), loading: "lazy", decoding: "async" } }),
+      ...(sample.caption ? [el("span", { class: "left-workshop-art-caption", text: sample.caption })] : []),
+    ],
   });
 }
 
