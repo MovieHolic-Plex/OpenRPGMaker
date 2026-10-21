@@ -20,6 +20,8 @@
   툴팁이 죽은 노드 좌표에 남아 있었다. 유닛 테스트는 대기 중 타이머만 덮고 있었다.
 - 위치: 아래 우선, 공간이 없으면 위로 뒤집고, 가로는 대상 중앙 정렬 후 여백 8px 안으로 자른다.
   대상 사각형을 덮지 않는다.
+- 글자는 **`t(label)` 로 번역한 뒤** 붙이고 잰다(2026-10-21). 원문(한국어)으로 붙이면 DOM 번역 계층이 배치 뒤에
+  글자를 바꿔, 잰 폭(「전체화면」)과 그린 폭(「Fullscreen」)이 달라 오른쪽 끝 대상의 툴팁이 뷰포트를 5px 넘었다.
 - 층: `--z-tooltip`(2650) — 데이터베이스 모달보다 위, 토스트(2700)보다 아래. 롤아웃 14개 중
   5개(타일셋 편집기)가 그 모달 **안**에 있어서, 예전 하드코딩 `z-index: 400` 에서는 툴팁이
   모달 뒤에 그려져 화면에 아예 보이지 않았다(같은 실측, `09-tileset-editor-*.png`).
@@ -50,7 +52,8 @@
 실제 키보드 초점 툴팁 및 1024px 창의 도구 클릭 확인은 `scripts/capture/capture-terrain-toolbar.mjs`에 있다.
 
 톱바(`toolbar-save`, `workspace-command-palette-button`, `topbar-ai-studio`,
-`topbar-ai-settings`, `window-fullscreen`), 조수 패널(`ai-new-chat`,
+`topbar-ai-settings`, `window-fullscreen`, 그리고 2026-10-21 UI 감사로 더한 `toolbar-world`·`toolbar-sound-test`·
+`toolbar-search`·`menu-more-tools`·`topbar-battle-test`·`commit-history-toggle`), 조수 패널(`ai-new-chat`,
 `ai-command-menu-toggle`, `ai-abort`), 타일셋 편집기(`tileset-layer-filter-*`,
 `tileset-layer-auto|lower|upper`).
 

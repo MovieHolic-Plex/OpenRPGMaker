@@ -1198,7 +1198,7 @@ function bindLeftResizer(): void {
   leftResizer.addEventListener("mousedown", (event: MouseEvent) => {
     event.preventDefault();
     const startX = event.clientX;
-    const startWidth = leftWidth;
+    const startWidth = renderedLeftWidth();
     const onDrag = (moveEvent: MouseEvent): void => {
       leftWidth = Math.max(LEFT_PANEL_MIN_WIDTH, Math.min(LEFT_PANEL_MAX_WIDTH, startWidth + moveEvent.clientX - startX));
       applyLayout();
@@ -1216,11 +1216,22 @@ function bindLeftResizer(): void {
   });
   leftResizer.addEventListener("keydown", (event: KeyboardEvent) => {
     const step = event.shiftKey ? 40 : 16;
-    if (event.key === "ArrowLeft") { leftWidth = Math.max(LEFT_PANEL_MIN_WIDTH, leftWidth - step); applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
-    else if (event.key === "ArrowRight") { leftWidth = Math.min(LEFT_PANEL_MAX_WIDTH, leftWidth + step); applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
+    if (event.key === "ArrowLeft") { leftWidth = Math.max(LEFT_PANEL_MIN_WIDTH, renderedLeftWidth() - step); applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
+    else if (event.key === "ArrowRight") { leftWidth = Math.min(LEFT_PANEL_MAX_WIDTH, renderedLeftWidth() + step); applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
     else if (event.key === "Home") { leftWidth = LEFT_PANEL_MAX_WIDTH; applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
     else if (event.key === "End") { leftWidth = LEFT_PANEL_MIN_WIDTH; applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
   });
+}
+
+/**
+ * 지금 화면에 그려진 좌패널 폭. 저장값(leftWidth)은 표시 상한·남는 폭에 눌려 화면보다 클 수 있다 —
+ * 끌기·방향키를 저장값(예: 640)에서 시작하면 그 차이만큼 끌어도 폭이 1px 도 안 변했다
+ * (2026-10-21 UI 감사 02-leftdock-01). 치수를 잴 수 없는 환경에서는 저장값을 쓴다.
+ */
+function renderedLeftWidth(): number {
+  const panel = aiSidebarWorkspace?.root ?? leftRoot;
+  const width = panel?.getBoundingClientRect?.().width ?? 0;
+  return width > 0 ? Math.round(width) : leftWidth;
 }
 
 // leftRoot 를 전제하지 않는다 — mountLeftDock 은 renderEditor 가 leftRoot 를 대입하기
