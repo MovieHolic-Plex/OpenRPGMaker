@@ -1,0 +1,142 @@
+{
+ "schema": "m142-vqa/1",
+ "judge": "claude-opus-5-5 (effort medium, fresh process)",
+ "date": "2026-10-21",
+ "batch": "m142-b4",
+ "round": 2,
+ "overall": "FAIL",
+ "originals": [
+  "mci-desk-pc",
+  "mci-cooler",
+  "mci-wardrobe",
+  "mci-sofa",
+  "mci-counter-register",
+  "mci-pastry-case",
+  "mci-filing",
+  "mci-kitchen"
+ ],
+ "missing": [],
+ "boards": [
+  "board-1.png",
+  "board-2.png",
+  "board-3.png",
+  "board-4.png"
+ ],
+ "items": [
+  {
+   "id": "lab-reagent-shelf",
+   "pixelSha256": "55504bca0c2cb67766adcaade4c3352236c626b27148eabd567f616ca3d19e45",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The grey glass-front cabinet has a lit top band, a dark outline that matches the cooler original, and two shelves of small bottles that read clearly at 1x. It stands cleanly on the floor line in the room."
+  },
+  {
+   "id": "library-carrel",
+   "pixelSha256": "e22088b401b5902e1127d49dd8c8f3d938de5e55c83a99e0634c8ef0b4262a35",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The outline is warm brown, not the dark navy outline used across the originals. The green lamp heads are lumpy saturated blobs that read as stuck-on shapes rather than lamps."
+  },
+  {
+   "id": "manga-booth",
+   "pixelSha256": "13bcbf1afb779d0436de5e7c20bcd67dd09e6974ee63f27a2c8e2a848a9b3b19",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The desk top, monitor, red armchair seen from above and the blue partition tops are all readable in 3/4 view. The outline and palette match the desk-pc and sofa originals, and the booth sits within its footprint in the room."
+  },
+  {
+   "id": "manga-shelf",
+   "pixelSha256": "d10047c622bad502d1be57b2a48d57b4b9219776f628558e378fb75a5c68e04b",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The white bookcase has a lit top plane with lying books, three rows of spines and a dark outline in line with the cooler. It is clean, readable at 1x and grounded."
+  },
+  {
+   "id": "mart-basket-stacker",
+   "pixelSha256": "9f6220961b50f1b663d11dfbefc044c319fdb59daad2777d8ec683a162fa1154",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The top orange basket shows its interior from above and the stack below has a wheeled base touching the floor. It reads as a basket stack at 1x and is a plausible one-tile footprint."
+  },
+  {
+   "id": "mart-bread-rack",
+   "pixelSha256": "41c20c9c6cb8e307a4fb34608843731e630b6e5a99acfc08068261b94991b00f",
+   "verdict": "FAIL",
+   "failed": [
+    4
+   ],
+   "reasons": "The top is a noisy grey checker dither instead of a lit plane. Every loaf carries bright red/white sticker dots that turn into speckle at 1x."
+  },
+  {
+   "id": "mart-cake-showcase",
+   "pixelSha256": "6df809d96b1de473d9385c384099b28f18a4b36a6141c28d83fac9fdbc4430ba",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The glass top, two tiers of distinct cakes and the wooden drawer base read well. The outline and shading steps match the wardrobe and counter originals, and it rests on the floor."
+  },
+  {
+   "id": "mart-dairy-open",
+   "pixelSha256": "c1b9ec1e80de9476632ec5fc055fb7855eda067313b6254aabaeb00024ed2d12",
+   "verdict": "FAIL",
+   "failed": [
+    4,
+    3
+   ],
+   "reasons": "The canopy and top are covered in scattered white/grey speckles. The products are tiny noisy pixel clusters, so at 1x the case dissolves into a busy blur instead of reading as an open dairy cooler."
+  },
+  {
+   "id": "mart-donut-case",
+   "pixelSha256": "419908daf8de2633c602839fe7a5fea19b565bcb9024ef3af10bf8a04426ef44",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The grey case has a lit top, a pink light bar, clearly drawn pink/glazed/chocolate donuts on two shelves and a vented base. It is clean, on-palette and grounded."
+  },
+  {
+   "id": "mart-gondola-cereal",
+   "pixelSha256": "1216d723d7fb8c3c2562783d566987efa14d96cb5b205a6ec11d0d46a763d77e",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The saturated purple/yellow block fill is far brighter than the muted chipset palette. The boxes are flat rectangles with dark dot pairs that read as faces, not product packaging."
+  },
+  {
+   "id": "mart-gondola-detergent",
+   "pixelSha256": "a2d8284df0fcca4290be5ed6d6d7cb272658c106e9c9185242f577e6b7f24e7b",
+   "verdict": "FAIL",
+   "failed": [
+    4,
+    3
+   ],
+   "reasons": "The bottles are soft low-contrast teal/pink/lavender blobs on a dark navy back with no crisp shapes or outlines. They are muddy and hard to read as detergent at 1x."
+  },
+  {
+   "id": "mart-gondola-ramen",
+   "pixelSha256": "9924c5ba94b4e1689685cd9956a9062c8c4f295fb9100cc3b9cc937b0579418e",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The grey gondola has a lit white top with a red header and three shelves of red/orange cup noodles with white lids. It is clean, consistent with the cooler original and grounded."
+  },
+  {
+   "id": "mart-gondola-tea",
+   "pixelSha256": "dcb69252e36d0b1c046497b13201f403bf0834e2372e0194ffe381994137a2cb",
+   "verdict": "FAIL",
+   "failed": [
+    2,
+    4
+   ],
+   "reasons": "The whole unit is a monochrome bright green with a lime top that clashes with the chipset palette. The products are green-on-green noise with random beige blobs, so the shelf contents are muddy."
+  },
+  {
+   "id": "mart-liquor-fridge",
+   "pixelSha256": "f39115da4ee29ed52d5d6cfd3569566d1ec7872557725129489e5df847d769ed",
+   "verdict": "PASS",
+   "failed": [],
+   "reasons": "The two-door glass fridge has a lit top, a red header band, and green/amber bottles on shelves. It closely matches the cooler original's weight and shading and sits on its footprint."
+  }
+ ]
+}

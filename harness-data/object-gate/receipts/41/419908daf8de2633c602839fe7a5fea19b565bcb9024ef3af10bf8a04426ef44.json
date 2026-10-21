@@ -1,0 +1,366 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "419908daf8de2633c602839fe7a5fea19b565bcb9024ef3af10bf8a04426ef44",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "mart donut case",
+ "label": "modern_city_interior/mart-donut-case",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 20,
+  "tileColorsP90": 21,
+  "darkV5": 37,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "case top (light grey slab)",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "pink header strip",
+      "rows": "6-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass front with donut shelves",
+      "rows": "9-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a light band that brightens toward the front (L 202, 224, 244). Row 5 is the lightest and acts as the front-edge line. Below it, rows 6-8 (the pink header strip and the dark row 8) work as the eave shadow. The glass front with shelves and donuts runs rows 9-25 and the base runs rows 26-30, so the front face is about 22 rows. The top reading is only moderately certain, because the band could instead be a flat cornice. It has a brightening gradient and a shadow below, so it is counted as a top surface. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a glass-fronted donut display case. Its measured facts match the richer references: 20 visible tones per tile against 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, so there are no 5x5 flat fills. None of its dark edge pixels are neutral, so the outline is a tinted dark tone of the neighbouring material, not a sticker-style black line. The frame, glass sheen, shelf and donuts show about 5 lightness steps with highlights, and the donuts are individually shaded. The case has fewer total colours (26) than the stall (40) and is somewhat simpler, but that comes from the locked palette and does not look flatter by eye. A careful artist would accept it beside the cheese stall and well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17597
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "case top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "pink sign fascia",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass display front with shelves and donuts",
+      "rows": "9-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "25-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-5 form a light top band that brightens toward the front (L 202, 224, 244) and ends in the lightest front-edge line at row 5. Rows 6-7 are a pink fascia and row 8 is a dark eave shadow (L 111). Below that is a front face of about 25 rows (rows 6-30): glass shelves with donuts, then a base. The same structure as the green cabinet reference (top 5 + edge + eave). The silhouette is a constant 30 px wide, so no side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 20 visible tones per 16x16 tile, level with prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% near-neutral, so the outline is tinted (a dark blue-grey frame), not a black sticker line. The frame, the glass pane with highlights, the pink top band, and the donuts on two shelves each have their own tones, giving about 5 lightness steps on the glass and frame ramps against the references' 5-6. Texture is somewhat less rich than the stall's tile and grain detail. At this scale, though, the case holds up next to the references and does not look thinner, flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14894
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "case top (light grey lid)",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "pink sign fascia (face-on strip under the top edge)",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "glass display front with donut shelves",
+      "rows": "9-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "26-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At x=16 the rows go: outline at row 0, then rows 1-2 (L=202), 3-4 (L=224) and row 5 (L=244). The lightening gradient ends in the brightest 1-row line at row 5, which reads as the front edge of a top surface about 5 rows deep. Below it are the pink and grey fascia at rows 6-7 and a dark shadow line at row 8, which acts as the eave shadow. The glass front face (rows 9-25) and the base (rows 26-30) give about 25 rows of south face in total, which is well over 3. The silhouette is a uniform 30 px wide, so no receding side face is drawn. The donuts are contents inside the glass face, so they are not separate decor parts. The top is a bit thin at 5 rows but is clearly marked by the edge line and the shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The case matches the prop references in kind and scale. Measured facts support it: 20 visible tones per 16x16 tile, level with prop-well-roofed (20) and above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% near-neutral, so the outline is tinted, a dark bluish-grey frame tone rather than a black sticker line. By eye, the metal frame, glass highlights, pink top band and shelves hold several lightness steps (about 4 on the frame and glass). The donuts are small clusters with their own shading and topping dots, which gives grain and variation. It is slightly simpler than the cheese stall and well, but nothing reads thinner or flatter than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17513
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "case top",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "pink fascia band",
+      "rows": "6-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "donuts and trays inside glass",
+      "rows": "9-25",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "At x=16, rows 1-5 form a light top band that brightens from L=202 to 224 to 244. Row 5 (L=244) is the front-edge line. Below it, rows 6-7 are the pink fascia and row 8 (L=111) is a dark eave-shadow line. The glass front with the donut shelves runs rows 9-25 and the base rows 26-30, so the front face is about 25 rows. The top band is 5 rows deep, which is more than a rim. The side frame strips are part of the front face and are not a receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 20 visible tones per 16x16 tile. That matches prop-well-roofed (20) and is above prop-stall-cheese (17) and prop-hedge (9). Near-flat coverage is 0%, so there are no flat 5x5 fills. None of its dark edge pixels are neutral, so the outline is tinted rather than a near-black sticker line. The glass panel has gradient variation and highlights. The shelves carry several rows of donuts with varied tones, and the frame and pink canopy strip are shaded in a few steps. It is slightly less textured than the roofed well and the cheese stall, but it holds up next to them without looking thinner or flatter. This is a judgement from a small board image.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14704
+  }
+ ],
+ "decidedAt": "2026-10-21T00:04:54.252Z",
+ "cells": {
+  "16": [
+   "18838a97d4e1d7f4",
+   "3b52f08dbc9af384",
+   "4dbf762aea3fa65c",
+   "d620449740d8fdfc"
+  ],
+  "24": [
+   "02e571a220836a7f",
+   "32d61ad6cfa6ff9a",
+   "39575356c9a817ab",
+   "45216241b7b58f67",
+   "4da40317af2f6ed5",
+   "665b43f0a0f2594a",
+   "66e4b1e6cf084b9a",
+   "67330a40e81d2b15",
+   "68fa55db1e9ed79b",
+   "6f332bba54ec7a0d",
+   "7de9afc6cd6aa369",
+   "7eba1ee9a415ec3c",
+   "810c1da8eda4e369",
+   "8a67a9353f25b61d",
+   "99ed3d4940495d9b",
+   "ae236979d8bd88bf",
+   "b3cf3b6416381219",
+   "da4a9c4007a3a39d",
+   "dc3f71f1a74c475f",
+   "de5f56218dca1613",
+   "df846fa085dfed7c",
+   "df8b2c2418d4f2a8",
+   "e595fafc3924e1b2",
+   "f65c42841170d8d9"
+  ],
+  "32": [
+   "ef704bf2267ad109"
+  ],
+  "48": [
+   "24de9aefb8819a40",
+   "33c09658680ace25",
+   "8f7c298560a002cf",
+   "b002ca467ee41ac7",
+   "ddf3aa5f77068b2a",
+   "f3b5a74a4a6e47d5"
+  ]
+ }
+}
