@@ -195,10 +195,14 @@ export function dressVaultRock(
     const x = c % w, y = Math.floor(c / w);
     const n = smooth(x, y, 5, 7) * 0.7 + smooth(x, y, 2, 8) * 0.3;
     let next: number;
-    if (d <= 1) next = pick(tiles.edge, x, y, 1);
-    else if (d <= 3) next = n > 0.72 ? pick(tiles.vein, x, y, 2) : n > 0.1 ? pick(tiles.mid, x, y, 3) : pick(tiles.deep, x, y, 4);
-    else if (d <= 6) next = n > 0.84 ? pick(tiles.vein, x, y, 5) : n > 0.3 ? pick(tiles.mid, x, y, 6) : pick(tiles.deep, x, y, 7);
-    else next = n > 0.45 ? pick(tiles.mid, x, y, 9) : pick(tiles.deep, x, y, 10);
+    // 방 바로 바깥은 부드러운 한 덩이 암벽(가장자리 → 중간 암반)이고, 멀어질수록 어두운 허공 칸이 거리에 비례해 섞여 사그라진다(VQA r6 — 노이즈 많은 암벽 + 검은 덩어리 컷아웃 지적).
+    // 허공 칸은 덩어리 임계값이 아니라 칸 단위 디더라 덩어리 모서리 없이 번진다. 중간 암반은 큰 격자로 변형을 고른다(칸마다 무작위 얼룩 금지).
+    const deepShare = d <= 8 ? 0 : Math.min(0.8, (d - 8) * 0.2) + (n - 0.5) * 0.1;
+    const coarse = (list: readonly number[]): number => list[Math.floor(smooth(x, y, 3, 3) * list.length) % list.length]!;
+    if (d <= 2) next = pick(tiles.edge, x, y, 1);
+    else if (hash(x, y, 4) < deepShare) next = pick(tiles.deep, x, y, 4);
+    else if (d <= 6 && n > 0.8) next = pick(tiles.vein, x, y, 2);
+    else next = coarse(tiles.mid);
     map.lowerTiles[c] = next; changed += 1;
   }
   return changed;
