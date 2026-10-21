@@ -212,6 +212,8 @@ def item_sections(seed, items):
             f'  - 조각 {pc["id"]} ({pc.get("role", "")}) at={pc["at"]} size={pc["size"]} kind={pc["kind"]}'
             + (f' tileable={pc["tileable"]}' if pc.get('tileable') else '')
             + (f' inset={pc["inset"]}' if pc.get('inset') else '')
+            + (f' qMin={pc["qMin"]}' if 'qMin' in pc else '')
+            + (f' qTopRow={str(pc["qTopRow"]).lower()}' if 'qTopRow' in pc else '')
             for pc in it['pieces'])
         joins = ', '.join('→'.join(j[:2]) + f'({j[2]})' for j in it.get('joins', []))
         out.append(f"""### {it['id']} — {it['title']}
@@ -244,6 +246,8 @@ def brief(theme, rid, seed, key, items, line):
 - 처마(overhang)는 지붕 l·r 조각의 **바깥 2~3px** 에 그린다 — 조립에서 지붕 폭 = 벽 폭(0칸)이다.
   벽 l·r 조각은 바깥 2~3px 을 투명하게 두어(시드 inset) 지붕 처마가 벽보다 튀어나와 보이게 한다.
 - 처마 그늘은 벽 조각 **맨 위 1~2행**에 벽 재질의 어두운 단으로 **불투명하게** 찍는다.
+- 지붕 끝 조각에 qMin·qTopRow 가 선언돼 있으면 박공 윤곽을 위해 바깥 위 귀퉁이를 비울 수 있다(불투명 비율 ≥ qMin).
+  가운데 조각은 윗줄까지 꽉 차야 한다(불투명 90% 이상). 어느 조각이든 맨 아래 2행은 꽉 찬다.
 - refs/ 의 버들항 기준 건물 지붕과 같은 배율로 견줘라(색·기와 줄 간격·처마 두께).
 
 ## 조립 목표 크기 (dry.py 가 이 레시피로 조립해 preview/ 에 보여 준다)

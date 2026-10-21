@@ -180,7 +180,8 @@ def preview_compare(theme, assembled, out, scale=COMPARE_SCALE):
             scene.a[:, x * dot.T - 1:x * dot.T + 1] = dot.C(theme, 'cobble', 1) + (255,)
             x += 1
         scene.paste(dot.Cv.of(im), x * dot.T, base - im.height)
-        labels.append((x, f'{"new" if kind == "candidate" else "beodeul"} {name}'[:22]))
+        chars = max(4, (im.width + dot.T) // 6)
+        labels.append((x, f'{"new" if kind == "candidate" else "ref"}:{name}'[:chars]))
         x += im.width // dot.T + gap
     img = scene.img()
     draw = ImageDraw.Draw(img)

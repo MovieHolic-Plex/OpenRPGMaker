@@ -27,7 +27,8 @@
 ## 폴더
 
 - 코드 `src/harnesses/building-kit/` — `harness.ts`(매니페스트) · `node/cli.ts`(입구 → python) · `harness.py`(단계) · `palette.py` ·
-  `dot.py`(캔버스·`grid(rows, legend)`·해시) · `assemble.py`(조립) · `gate.py`(기계 관문) · `review.py`(독립 검수) · `drawer.py`(그리기 에이전트) ·
+  `dot.py`(캔버스·`grid(rows, legend)`·해시 — **그림 파일을 읽지 않는다**) · `beodeul.py`(버들항 시트 칸·키트·Actor1·장면 바탕) ·
+  `assemble.py`(조립) · `gate.py`(기계 관문) · `dry.py`(자체 점검·미리보기) · `review.py`(독립 검수) · `drawer.py`(그리기 에이전트) ·
   `sheet.py`(고르기 시트) · `rounds/<테마>/<판>.py`(후보 화소의 원본, 그리기 에이전트가 쓴다).
 - 계약 `harness-data/building-kit/<테마>/seed.json` · `palette.json`(생성) · `ledger.json`(하네스가 씀) · `picked/<줄>/<항목>.png`.
 - 산출물 `qa-runs/harnesses/building-kit/<테마>/<판>/`(gitignore).
@@ -58,8 +59,8 @@
 
 | 세트 | 조각 | 이음 계약 |
 |---|---|---|
-| `roof` | 3행(용마루·사면·처마) × 3열(왼끝·가운데 반복·오른끝). 변형: 박공(남향 삼각 벽 포함)·모임 | 가운데 열을 1~6번 반복해 폭을 만든다(x 반복 S). 처마 줄 아래 1~2행 벽 그림자는 벽 조각 위쪽이 아니라 처마 조각 안에 그린다 |
-| `wall` | 층마다: 왼끝(1칸)·가운데(반복)·창 칸·문 칸(1층만)·오른끝 | 기둥·줄눈 박자가 조각 경계를 넘어 이어진다(무림 벽 세트처럼 16 주기 바탕 + 기둥 기준 무늬). 문 칸은 아래 행이 칸 아래 경계에 닿는다 |
+| `roof` | 3행(용마루·사면·처마) × 3열(왼끝·가운데 반복·오른끝). 변형: 박공(남향 삼각 벽 포함)·모임 | 가운데 열을 1~6번 반복해 폭을 만든다(x 반복 S). 처마는 l·r 조각 바깥 2~3px 에 그리고, 맨 아래 2행은 칸 경계까지 불투명. 박공 윤곽이 필요한 끝 조각만 시드에 `qMin`·`qTopRow` 를 명시(무림과 같은 방식, 판타지 박공 l·r = 0.6·false) |
+| `wall` | 층마다: 왼끝(1칸)·가운데(반복)·창 칸·문 칸(1층만)·오른끝 | 기둥·줄눈 박자가 조각 경계를 넘어 이어진다(무림 벽 세트처럼 16 주기 바탕 + 기둥 기준 무늬). 문 칸은 아래 행이 칸 아래 경계에 닿는다. 처마 그늘은 맨 위 1~2행에 벽 재질 어두운 단으로 **불투명하게**. 왼끝·오른끝은 시드 `inset: 2` — 바깥 2px 을 비워 처마가 튀어나와 보인다 |
 | `band` | 층 띠(처마돌림 선반) 왼끝·가운데·오른끝 | 2층 이상에서 층 사이 |
 | `base` | 기단(주춧돌 줄) 왼끝·가운데·오른끝 | 맨 아래 행이 칸 아래 경계, 버들항 잔디·포석 위에 앉는다(장면으로 본다) |
 | `extra` | 굴뚝 · 지붕창 · 옆 탑(몸통+원뿔/돔 지붕) · 현관(기둥 박공·계단) · 간판 걸이(글자 없음) | 지붕·벽 위 고정 좌표에 얹는다(`anchor`) |
@@ -68,12 +69,20 @@
 
 ## 조립 (assemble.py)
 
-seed `buildings` = 조립 레시피 목록: `{id, title, use, cols, storeys, roof: <roof 세트 변형>, walls: [층마다 칸 순서 문자열 예: "L M W D W M R"], base, extras: [{part, anchor}]}`.
-같은 줄·같은 번호의 부품으로 조립한다(줄 A 의 1번 후보 = `A1` 부품끼리). 결과:
+seed `buildings` = 조립 레시피 목록: `{id, title, use, cols, storeys, overhang: 0, roof: <roof 세트 변형>, walls: [층마다 칸 순서 문자열 예: "L M W D W M R"], base, extras: [{part, anchor}]}`.
+같은 줄·같은 번호의 부품으로 조립한다(줄 A 의 1번 후보 = `A1` 부품끼리).
+
+**처마 기하(2026-10-22 고침):** 지붕 세트 폭 = 벽 폭(`overhang: 0`). 처마는 칸으로 내밀지 않고 지붕 l·r 조각의 바깥 2~3px 에 그리며,
+벽 l·r 조각은 시드가 선언한 `inset`(바깥 2px)만큼 비워 지붕이 눈으로 튀어나온다. 지붕 맨 아래 2행은 칸 경계까지 불투명이고,
+처마 그늘은 벽 맨 위 1~2행에 불투명으로 그린다. `~`(반투명 그림자)는 건물 발치 바닥 그림자에만 쓴다 — 지붕 아래에 쓰면 바닥이 비쳐 A2 틈이 된다.
+예전 레시피는 `overhang: 1` 이라 지붕이 양쪽으로 16px 씩 밖에 떠 있었다.
+
+결과:
 - `building.png`(투명 바탕) + `kit.json`: 칸 격자(lower/upper — 버들항 키트처럼 걸을 수 있는 칸 위에 걸치는 처마·지붕은 upper ★, 건물 몸통은 막힘),
   `walkGrid`(X 막힘 · ★ 지나감·그림이 사람 위 · . 지나감), `door`(문 칸 좌표, 그 아래 칸은 걸음).
-- 조립 관문(gate A*, FAIL): A1 문 정확히 하나 · A2 지붕과 벽 사이 투명/바탕색 틈 없음(모든 열) · A3 지붕이 벽 폭을 덮음(처마 0~1칸 돌출) ·
-  A4 기단 맨 아래 행 = 그림 맨 아래 칸 경계 · A5 모든 맞닿은 조각 쌍의 이음(S/J) · A6 지붕 윗면 높이 비율 0.30~0.50(view low, object-gen `--min-top 30 --max-top 50` 과 같은 범위).
+- 조립 관문(gate A*, FAIL): A1 문 정확히 하나 · A2 지붕과 벽 사이 투명/바탕색 틈 없음(모든 벽 열 — 지붕 맨 아래 행은 전부 불투명, 벽 맨 윗행은 선언된 inset 화소만 빌 수 있다) ·
+  A3 지붕 폭 = 벽 폭(처마 0칸) · A4 기단 맨 아래 행 = 그림 맨 아래 칸 경계 · A5 모든 맞닿은 조각 쌍의 이음(S/J) ·
+  A6 지붕 윗면 높이 비율 0.30~0.50(view low, object-gen `--min-top 30 --max-top 50` 과 같은 범위).
 
 ## 관문 (gate.py) — 깨짐만 거른다
 
@@ -83,12 +92,56 @@ seed `buildings` = 조립 레시피 목록: `{id, title, use, cols, storeys, roo
 
 ## 그리기 (drawer.py) — 그리는 쪽
 
-`draw <테마> <판> --agent [--lines A,B,C] [--jobs N]`: (줄, 후보 번호)마다 새 `claude -p --model opus` 프로세스를 띄운다.
-작업 폴더(샌드박스)에 넣는 것: seed 항목·규칙·잠긴 팔레트 범례(`{'글자': ('램프', 단)}`)·버들항 기준 건물 1배·4배 그림(같은 용도)·Actor1·
-그 줄의 화풍 기준 조각(이후 판)·사람이 버린 후보와 이유(ledger reject)·이전 독립 검수의 major 사유. 에이전트는 `rounds/<테마>/<판>.py` 의 자기 후보 함수만 쓰고,
-`python3 harness.py dry <테마> <판> <후보>` 로 관문·조립 미리보기를 스스로 돌려 고친다(최대 3회). 그림 파일을 여는 도구는 주지 않는다(트레이스 차단 — object-gen `drawlib` 와 같다).
+`draw <테마> <판> --agent [--lines A,B,C] [--jobs N]`: **후보 키마다** 새 `claude -p --model opus` 프로세스 하나가 그 판의 **모든 항목**을 그린다.
+화풍 판(`wave: style`)은 줄마다 하나(A·B·C), 이후 판은 (줄, 번호)마다 하나(A1 A2 B1 …, 줄당 `CANDIDATES_PER_LINE` = 2).
+한 줄의 지붕·벽·기단을 같은 에이전트가 그려야 서로 맞는다. `--jobs` 는 동시에 뜨는 프로세스 수만 제한한다.
+
+샌드박스 `qa-runs/harnesses/building-kit/drawer/<테마>/<판>/<후보>/`:
+
+| 파일 | 내용 |
+|---|---|
+| `round_module.py` | 판 모듈 사본. 에이전트는 이번 후보의 함수들(항목마다 하나)만 고친다 |
+| `data/<테마>/seed.json` · `palette.json` | 그 테마 시드와 잠금 팔레트 |
+| `refs/<키트>-1x.png` · `-4x.png` | 시드 `refs` 의 버들항 기준 건물(공용 시트 키트를 시트·검수와 같은 `beodeul.kit` 으로 합성, 4배는 nearest) |
+| `refs/actor1-front-1x.png` · `-4x.png` | Actor1 정면(사람 크기 기준) |
+| `refs/palette.png` | 잠긴 팔레트 램프 견본 |
+| `dry.py` · `dry.json` | 자체 점검(아래). `dry.json` = 테마·판·후보·모듈·미리보기 폴더·하네스 경로·데이터 폴더 |
+| `BRIEF.md` | 항목 전부 · 3/4 지붕 지침 · 조립 목표 크기 · 줄 화풍 · 팔레트 범례 · 사람이 버린 것 · 이전 검수 major · 쓰는 법 |
+| `preview/` | `dry.py` 가 쓴다(샌드박스를 만들 때 비운다) |
+
+호출: `claude -p --allowedTools Read,Write,Edit,Bash(python3:*) --add-dir <샌드박스>`, cwd = 샌드박스.
+에이전트는 그림을 **Read 로 눈으로만** 본다 — 참고 그림은 모양·비율용이고 화소를 베끼지 않는다. `dot` 에는 그림 파일을 읽는 헬퍼가 없다
+(시트·키트·Actor1 로더는 `beodeul.py` 로 분리 — 트레이스 차단). 끝나면 그 후보의 함수 블록만 저장소 판 모듈로 옮긴다.
+항목 하나라도 안 고쳤으면 그 후보는 «안 고침»으로 보고되고 `draw` 가 종료코드 1.
 판 모듈 형식은 무림·던전과 같다: `ROUND` · `CANDIDATES = {항목: {후보키: 함수}}`, 함수는 `grid(rows, legend)` 로만 화소를 찍는다
 (원·다각형 마스크로 본체 만들기·노이즈 채우기·난수 금지 — 반복 무늬 보조는 좌표를 고른 것만).
+
+**3/4 지붕 지침(BRIEF):** 용마루는 위쪽 가까이 밝은 선, 그 아래 큰 사면(2칸 이상)이 기와 줄을 가진 면, 처마는 더 어둡고, l·r 끝은 삼각벽·널 끝으로 닫는다.
+한 색·한 무늬 사각형은 벽돌 담으로 읽힌다. 조립 목표 크기(작은 집 3칸 폭 1층 = 3×6칸, 긴 집 5칸 폭 2층 = 5×8칸)를 레시피에서 계산해 적는다.
+
+### 자체 점검 (dry.py)
+
+에이전트는 고칠 때마다 샌드박스에서 **그대로 `python3 dry.py`** 를 돌린다(인자 없음, `Bash(python3:*)` 라 승인 없이 돈다).
+`dry.py` 는 같은 폴더의 `dry.json` 을 읽고 **샌드박스의 `round_module.py`** 를 불러(저장소 판 모듈이 아니다 — 예전 `harness.py dry` 는
+저장소 모듈을 불러 에이전트가 자기 함수를 검사할 수 없었다) 관문(P Z Q F S J G + R·Y·WARN)을 돌리고, 시드 레시피마다 조립해 A1~A6 을 본다.
+이번 판에 없는 부품이 필요한 레시피(예: 층 띠)는 «건너뜀»으로 알리고 FAIL 로 세지 않는다. 미리보기:
+
+- `preview/<항목>.png` — 세트 그림 4배
+- `preview/<건물>.png` — 조립 건물 3배, 버들항 잔디 위
+- `preview/compare.png` — 조립 건물과 시드 `refs` 의 버들항 기준 건물을 같은 3배로 나란히(구분선 왼쪽 `new:`, 오른쪽 `ref:`)
+
+BRIEF 는 고칠 때마다 preview PNG 를 Read 로 열고, 끝내기 전에 `preview/compare.png` 를 반드시 보라고 적는다.
+FAIL 이 있으면 종료코드 1. 저장소에서도 같은 코드를 쓴다: `harness.py dry <테마> <판> <후보> [--module <경로>] [--out <폴더>]`
+(기본 모듈 = 저장소 판 모듈, 기본 출력 = `qa-runs/harnesses/building-kit/<테마>/<판>/preview/<후보>/`). 기계 통과는 합격이 아니다.
+
+### 실제 판에서 나온 결함과 고침 (2026-10-22, fantasy-kingdom style-r1, Opus 9명)
+
+| 결함 | 고침 |
+|---|---|
+| 샌드박스에 그림이 없어 지붕이 전부 평평한 기와 사각형(벽돌 담)으로 나왔다 | `refs/` PNG + Read 허용 + 3/4 지붕 지침 + `preview/compare.png` |
+| `dry` 가 저장소 모듈을 불러 에이전트가 자기 함수를 검사하지 못했다(NotImplementedError), python 실행은 승인 대기 | 샌드박스 `dry.py`(샌드박스 모듈), cwd = 샌드박스, `python3 dry.py` |
+| (항목, 줄)마다 에이전트가 달라 한 줄의 부품이 서로를 못 봤다 | 후보 키마다 한 에이전트가 판의 항목 전부 |
+| `overhang: 1` 로 지붕이 양쪽 16px 씩 튀어남, 처마 그림자 `~` 가 지붕 아래 4행에 있어 바닥이 비침(A2) | `overhang: 0`, 처마는 지붕 l·r 안, 벽 l·r `inset: 2`, 처마 그늘은 벽 맨 위 불투명 |
 
 ## 독립 검수 (review.py) — 판정하는 쪽
 
@@ -134,8 +187,9 @@ seed `buildings` = 조립 레시피 목록: `{id, title, use, cols, storeys, roo
 ### 파일
 
 `src/harnesses/building-kit/` — `harness.ts`(매니페스트, 레지스트리 등록) · `node/cli.ts`(입구 → python) · `harness.py`(단계 입구) ·
-`palette.py` · `dot.py`(캔버스·`grid`·해시·버들항 키트/Actor1/장면) · `assemble.py`(조립 + A1~A6) · `gate.py`(기계 관문) ·
-`review.py`(독립 검수) · `drawer.py`(그리기 에이전트) · `sheet.py`(고르기 시트) · `rounds/<테마>/`(후보 화소 원본, 그리기 전) · `tests/`.
+`palette.py` · `dot.py`(캔버스·`grid`·해시, 그림 파일 읽기 없음) · `beodeul.py`(버들항 키트/Actor1/장면) · `assemble.py`(조립 + A1~A6) ·
+`gate.py`(기계 관문) · `dry.py`(자체 점검·preview) · `review.py`(독립 검수) · `drawer.py`(그리기 에이전트) · `sheet.py`(고르기 시트) ·
+`rounds/<테마>/`(후보 화소 원본) · `tests/`.
 
 ### 명령
 
@@ -146,8 +200,8 @@ seed `buildings` = 조립 레시피 목록: `{id, title, use, cols, storeys, roo
 | `palette <테마> [--check]` | 테마 잠금 팔레트를 다시 뽑거나 비교만 한다 |
 | `validate [<테마>]` | 시드·팔레트·부품 세트·조립 레시피·판 모듈 후보 키·기준 그림·Actor1 점검 |
 | `list <테마>` | 부품 세트와 조립 레시피, 줄마다 ★(사람이 고름)·-(뺌) |
-| `draw <테마> <판> [--agent]` | 판 후보를 그려 `qa-runs/.../<테마>/<판>/` 에 1배·4배 PNG·`manifest.json` |
-| `dry <테마> <판> <후보>` | 후보 하나의 관문·조립 미리보기(그리기 에이전트의 자체 점검 입구) |
+| `draw <테마> <판> [--agent] [--lines A,B] [--jobs N]` | `--agent`: 후보 키마다 Opus 한 명이 판의 항목 전부를 그린다. 없으면 판 후보를 `qa-runs/.../<테마>/<판>/` 에 1배·4배 PNG·`manifest.json` |
+| `dry <테마> <판> <후보> [--module P] [--out D]` | 후보 한 벌의 관문·조립 + preview PNG(항목 4배·건물 3배·compare). 샌드박스에서는 `python3 dry.py` |
 | `gate <테마> <판>` | 기계 관문. FAIL 이면 종료코드 1 |
 | `assemble <테마> <판> [--line A] [--key A1]` | 부품을 레시피대로 붙이고 조립 관문 A1~A6 |
 | `review <테마> <판> [--runs 3]` | 독립 Opus 검수(숨긴 함정·무효 회차·다수결·영수증) |
@@ -158,10 +212,11 @@ seed `buildings` = 조립 레시피 목록: `{id, title, use, cols, storeys, roo
 
 ### 관문
 
-- 부품(`gate.py`): **P** 팔레트 잠금 · **Z** 크기 · **Q** 불투명 계약 · **F** 윗면 띠(2행 이상·폭 50% 이상·앞 모서리보다 밝음) ·
+- 부품(`gate.py`): **P** 팔레트 잠금 · **Z** 크기 · **Q** 불투명 계약(지붕 끝 조각은 시드가 적은 `qMin`·`qTopRow` 만, 벽·띠·기단은 시드가 적은 `inset` 바깥만 비울 수 있다) ·
+  **F** 윗면 띠(2행 이상·폭 50% 이상·앞 모서리보다 밝음) ·
   **S** 반복 이음 · **J** 세트 이음 · **G** 바닥 닿음 · **Y** 줄 재료 · **R** 색만 바꾼 후보 — 모두 FAIL.
   WARN: **OUTLINE** 먹 윤곽 · **CONTRAST** 묻힘 · **T** 가는 줄 · **L** 빛 방향 · **N** 1px 잡티.
-- 조립(`assemble.py`): **A1** 문 정확히 하나 · **A2** 지붕/벽 틈 없음 · **A3** 지붕이 벽을 덮음 · **A4** 기단이 바닥에 닿음 ·
+- 조립(`assemble.py`): **A1** 문 정확히 하나 · **A2** 지붕/벽 틈 없음(지붕 맨 아래 행 전부 불투명, 벽 맨 윗행은 선언 inset 만) · **A3** 지붕 폭 = 벽 폭 · **A4** 기단이 바닥에 닿음 ·
   **A5** 맞닿은 조각 이음 · **A6** 지붕 윗면 비율 0.30~0.50.
 - 검수(`review.py`): 함정 6종(지붕·벽 틈, 문 두 개, 평면 채우기, 잡음, 얇은 지붕 입면, 색만 바꾼 원본)을 하나라도 통과시키거나
   표본을 빠뜨리면 그 회차는 무효. 유효 3회 다수결, 영수증은 그림 화소 해시 + 판정 원문 해시에 묶인다.
@@ -181,16 +236,17 @@ seed `buildings` = 조립 레시피 목록: `{id, title, use, cols, storeys, roo
 
 ### 시험
 
-`python3 -m unittest discover -s src/harnesses/building-kit/tests -p 'test_*.py'` → **57 tests, OK** (모델 호출 없음).
+`python3 -m unittest discover -s src/harnesses/building-kit/tests -p 'test_*.py'` → **72 tests, OK** (모델 호출 없음).
 
 | 파일 | 수 | 범위 |
 |---|---|---|
 | `test_gates.py` | 19 | 관문 P Z Q F S J G Y R + 조립 A1~A6, 깨뜨린 표본이 각 관문에서 FAIL |
 | `test_review.py` | 11 | 함정 6종·무효 처리·표본 누락·3회 다수결(1/3 FAIL, 2/3 PASS)·영수증 해시·재시도 예산·판정 실패는 기록 없음 |
 | `test_pick.py` | 9 | 해시 불일치·manifest 없음·재그리기·picked 파일 변조·에이전트 대리 선택 거절 |
-| `test_fixtures.py` | 7 | 고정 후보 행 문자열이 조립까지 가는지 |
-| `test_harness_path.py` | 6 | draw → gate → dry → assemble → review → sheet → pick → status, 테마 넷 validate |
-| `test_drawer.py` | 5 | 샌드박스 사본·자기 함수 블록만 되돌리기·모델 호출 주입·기본 타임아웃 |
+| `test_fixtures.py` | 11 | 고정 후보가 조립까지 가는지, 테마 넷 레시피 `overhang` 0, overhang 0 조립에 A2·A3 없음, 선언된 inset 은 통과·선언 안 된 벽 구멍은 Q·A2 FAIL |
+| `test_harness_path.py` | 7 | draw → gate → dry → assemble → review → sheet → pick → status, 테마 넷 validate |
+| `test_drawer.py` | 9 | 후보 키마다 작업 하나(화풍 판 A·B·C, 이후 판 A1…C2)·작업이 항목 전부를 맡음·샌드박스 refs/Actor1/팔레트 PNG(1배·4배 크기)·`dry.json`·BRIEF 의 3/4 지침·목표 크기·`python3 dry.py`·Read 허용·자기 함수 블록만 되돌리기 |
+| `test_dry.py` | 6 | 주어진 모듈(샌드박스 사본)을 검사(깨진 모듈 FAIL / 저장소 모듈 통과)·preview 4배·3배·compare 쓰기·샌드박스에서 인자 없는 `python3 dry.py` 성공/실패·CLI `--module`/`--out`·판 밖 부품 레시피는 건너뜀 |
 
 `tests/fixtures.py` 의 고정 후보는 시트에 나오지 않는다(시험 전용). 판 모듈이 없을 때 시험은 `tests/helpers.py` 가 임시 폴더에
 쓰는 판 모듈을 seed 의 `rounds.<판>.module` 에 끼워 돌린다.
