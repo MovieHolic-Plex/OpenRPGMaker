@@ -307,12 +307,18 @@ function endingBackdropResourceId(project: Project, presentation?: EndingPresent
   return presentation?.backgroundResourceId ?? project.system.titleScreen?.backgroundResourceId ?? project.system.titleResourceId ?? openingStill;
 }
 
+/** 막·장 끝 엔딩(이야기가 이어지는 끝). */
+function isSegmentEnding(endingId: string | undefined): boolean {
+  return /(?:^|_)(?:act|chapter)\d/iu.test(endingId ?? "");
+}
+
 function endingBadge(endingId: string | undefined, hasPartner: boolean, presentation?: EndingPresentation): string {
   if (hasPartner) return "CHARACTER ENDING";
   if (/bad/iu.test(endingId ?? "")) return "BAD ENDING";
   if (/normal|segment/iu.test(endingId ?? "")) return "NORMAL ENDING";
   // 막·장 끝(end_fs_act1 등)은 이야기가 이어진다 — 「해피 엔딩」이라 부르지 않는다(폴른 스타 감사 2차).
-  if (/(?:^|_)(?:act|chapter)\d/iu.test(endingId ?? "")) return "TO BE CONTINUED";
+  // 「TO BE CONTINUED」는 마지막 카드 제목이 맡는다 — 첫 카드와 둘 다 쓰면 같은 말이 두 번 나왔다(가혹 검수 r8·r9).
+  if (isSegmentEnding(endingId)) return /chapter/iu.test(endingId ?? "") ? "END OF CHAPTER" : "END OF ACT";
   return presentation?.tone === "dark" ? "ENDING" : "HAPPY ENDING";
 }
 
@@ -435,7 +441,8 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     terminal.root.querySelector(".game-over-hint")?.remove();
     terminal.phase("final");
     const final = textNode("div", "ending-final game-over-content", "");
-    final.append(textNode("div", "ending-final-title", "THE END"));
+    // 막 끝은 「끝」이 아니다 — 마지막 카드가 이어짐을 말한다(첫 카드 배지는 END OF ACT).
+    final.append(textNode("div", "ending-final-title", isSegmentEnding(endingId) ? "TO BE CONTINUED" : "THE END"));
     final.append(textNode("div", "ending-final-caption", title));
     const summary = endingSummaryLine(scene);
     if (summary) final.append(textNode("div", "ending-final-summary", summary));
