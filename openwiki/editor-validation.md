@@ -19,7 +19,7 @@
 | `scene-dialogue-context-mixed` | sign·system·letter 밖의 context 가 둘 이상, 또는 box 밖의 container(말풍선) |
 | `scene-map-no-bgm` | 시작 맵·이동 목적지인데 bgm 이 비었다(명시 `none` 은 의도). 자동/병렬 페이지의 BGM 재생이나 이동 직전 BGM 재생이 있으면 통과 |
 | `scene-moving-vehicle` | 켜진 `map.transit` 노선에 탈것이 있다 / 이름이 탈것인 이벤트의 첫 페이지 이동이 fixed 가 아니다 |
-| `scene-actors-stacked` | 한 페이지 안에서 Set Event Location·moveEvent(경로 끝 모의)로 두 인물이 같은 칸에 선다 |
+| `scene-actors-stacked` | 한 페이지 안에서 Set Event Location·moveEvent(경로 끝 모의)로 **보이는** 두 인물이 같은 칸에 선다. 명령 순서대로 무대에서 내린다: Erase Event, 경로 끝 투명화, 스위치를 켜 «떠남» 페이지가 되거나 보이는 페이지 모두의 «스위치 꺼짐» 조건이 깨짐(`switchesThatHide`, 사라짐 검사와 공유). 같은 문으로 차례로 떠나는 것은 통과 |
 
 데모 검증(2026-10-21, `scripts/qa/scene-polish-lint.mts`): Fallen Star polish2 13건(방향 없는 이동 4·착지 2칸 3·문 아닌 칸 5·대사 뒤 사라짐 1), Astra fv 15건(문을 보는 착지 10 — 이후 손으로 고친 7fa8b2f3c2 와 같은 곳·한 칸 어긋난 출입 매트 2·표시 없는 출구 2·제자리 지우는 라이벌 1),
 「첫사랑」 수정 전 4건(움직이는 교통 2·내려가는 계단으로 옥상 1·맨바닥 출구 1) → 수정 뒤 r2 최신 2건(같은 칸으로 걷는 두 인물). 거짓 경고로 고친 것: 키트 문 부품의 풀밭 칸, 필드 길 출구(끝 2칸 안), 쓰러진 필드 적·합류 동료.

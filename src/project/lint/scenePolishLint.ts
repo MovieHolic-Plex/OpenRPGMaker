@@ -328,6 +328,28 @@ function routeTarget(command: Command, host: GameEvent | undefined): string | nu
   return id === "" ? host?.id ?? null : id;
 }
 
+/**
+ * 스위치를 켜면 사라지는 인물(스위치 id → 이벤트 id). 두 꼴:
+ *  ① 첫 페이지가 보이고, 뒤 페이지 중 그 스위치 조건의 투명 «떠남» 페이지가 있다(strict 면 명령 없는 페이지만).
+ *  ② 보이는 페이지 모두가 «스위치 S 꺼짐» 조건 — S 를 켜면 맞는 페이지가 없어 사라진다.
+ */
+function switchesThatHide(map: GameMap, strict: boolean): Map<string, GameEvent[]> {
+  const out = new Map<string, GameEvent[]>();
+  const add = (id: string, npc: GameEvent): void => { const list = out.get(id) ?? []; if (!list.includes(npc)) list.push(npc); out.set(id, list); };
+  for (const npc of map.events ?? []) {
+    const pages = pagesOf(npc);
+    if (!visibleGraphic(pages[0])) continue;
+    for (const p of pages.slice(1)) {
+      if (visibleGraphic(p) || (strict && (p.commands ?? []).length > 0)) continue;
+      for (const c of p.conditions ?? []) if (c.kind === "switch" && (c as { value?: boolean }).value !== false) add(c.switchId, npc);
+    }
+    const shown = pages.filter((p) => visibleGraphic(p));
+    const offSwitches = (p: EventPage): string[] => (p.conditions ?? []).filter((c) => c.kind === "switch" && (c as { value?: boolean }).value === false).map((c) => (c as { switchId: string }).switchId);
+    for (const id of offSwitches(shown[0]!)) if (shown.every((p) => offSwitches(p).includes(id))) add(id, npc);
+  }
+  return out;
+}
+
 function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly Gate[]): void {
   for (const map of Object.values(project.maps)) {
     const isExit = exitCells(project, map, gates);
@@ -357,13 +379,7 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
     }
     // 2) 지우기(Erase Event)와 «떠남» 스위치를 켜는 자리를 이야기 순서대로 훑는다.
     //    제자리 사라짐으로 치지 않는 때: 화면이 검다 · 동료로 합류했다 · 전투 직후 대사 없이(쓰러진 필드 적).
-    const goneSwitch = new Map<string, GameEvent>();
-    for (const npc of map.events ?? []) {
-      const pages = pagesOf(npc);
-      if (pages.length < 2 || !visibleGraphic(pages[0])) continue;
-      const gone = pages.slice(1).find((p) => !visibleGraphic(p) && (p.conditions ?? []).some((c) => c.kind === "switch") && (p.commands ?? []).length === 0);
-      for (const c of gone?.conditions ?? []) if (c.kind === "switch") goneSwitch.set(c.switchId, npc);
-    }
+    const goneSwitch = switchesThatHide(map, true);
     type Stage = { black: boolean; joined: boolean; battle: boolean; talkedSinceBattle: boolean; lastRouteTo: string | null };
     const excused = (st: Stage): boolean => st.black || st.joined || (st.battle && !st.talkedSinceBattle);
     for (const { host, commands } of lists) {
@@ -388,8 +404,9 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
             }
           }
           if (command.kind === "setSwitch" && command.value === true) {
-            const npc = goneSwitch.get(command.switchId);
-            if (npc && !routedToExit.has(npc.id) && !excused(st)) report(npc, "스위치로 투명한 «떠남» 페이지로 바뀌어 방 안에서 사라진다");
+            for (const npc of goneSwitch.get(command.switchId) ?? []) {
+              if (!routedToExit.has(npc.id) && !excused(st)) report(npc, "스위치로 보이는 페이지가 꺼져 방 안에서 사라진다");
+            }
           }
           if (command.kind === "battleProcessing") {
             for (const branch of nestedCommandLists(command)) visitList(branch, { ...st, battle: true, talkedSinceBattle: false });
@@ -519,13 +536,20 @@ function checkVehicles(project: Project, issues: LintIssue[]): void {
 function checkStacking(project: Project, issues: LintIssue[]): void {
   for (const map of Object.values(project.maps)) {
     const byId = new Map((map.events ?? []).map((e) => [e.id, e] as const));
+    const hiddenBySwitch = switchesThatHide(map, false); // 스위치를 켜면 그 순간 무대에서 내려간다.
     for (const host of map.events ?? []) {
       for (const page of pagesOf(host)) {
+        // 명령 순서대로 «지금 보이는» 인물의 칸만 둔다. 같은 출구 칸이라도 앞 인물이 사라진 뒤 도착하면 겹침이 아니다.
         const pos = new Map<string, Cell>();
         let hit: { a: string; b: string; at: Cell } | null = null;
         for (const command of walk(page.commands)) {
           if (command.kind === "transfer") break; // 다른 맵으로 넘어가면 이 맵 무대는 끝.
           let moved: string | null = null;
+          if (m2Title(command) === "Erase Event") { pos.delete(fieldStr(command, "eventId") || host.id); continue; }
+          if (command.kind === "setSwitch" && command.value === true) {
+            for (const npc of hiddenBySwitch.get(command.switchId) ?? []) pos.delete(npc.id);
+            continue;
+          }
           if (m2Title(command) === "Set Event Location" && (!fieldStr(command, "mapId") || fieldStr(command, "mapId") === map.id)) {
             const id = fieldStr(command, "target") || host.id;
             const x = fieldNum(command, "x"), y = fieldNum(command, "y");
@@ -534,7 +558,9 @@ function checkStacking(project: Project, issues: LintIssue[]): void {
           const routeId = routeTarget(command, host);
           if (routeId && command.kind === "moveEvent" && byId.has(routeId)) {
             const start = pos.get(routeId) ?? byId.get(routeId)!;
-            pos.set(routeId, simulateRoute(start, command.route?.moves, map).end);
+            const route = simulateRoute(start, command.route?.moves, map);
+            if (route.fades) { pos.delete(routeId); continue; } // 경로 끝에서 투명해져 무대를 떠난다.
+            pos.set(routeId, route.end);
             moved = routeId;
           }
           if (!moved) continue;
