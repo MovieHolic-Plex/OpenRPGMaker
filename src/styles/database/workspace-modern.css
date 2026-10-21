@@ -545,8 +545,9 @@
   min-width: 0;
 }
 
-/* 예전에는 `btn danger tiny` 가 행마다 붉게 서 있었다. 평소엔 조용하고, 행 hover /
-   선택 / 확인 대기 때만 존재감을 갖는다. 클릭 가능성은 항상 유지한다. */
+/* 예전에는 `btn danger tiny` 가 행마다 붉게 서 있었다. 평소엔 조용한 회색 글자, hover /
+   확인 대기 때만 빨간 강조를 갖는다. 클릭 가능성은 항상 유지한다.
+   평소 opacity 0.4 는 흰 배경 대비가 약 1.7:1 이라 글자가 거의 안 보여 뺐다(UI 감사 08-database-03). */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-row-delete {
   background: transparent;
   border: 1px solid transparent;
@@ -556,14 +557,8 @@
   flex: 0 0 auto;
   font: 500 11px/1 var(--font-ui);
   min-height: 24px;
-  opacity: 0.4;
   padding: 0 7px;
   white-space: nowrap;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-row-wrap:hover .db-ws-row-delete,
-.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-row-wrap:focus-within .db-ws-row-delete {
-  opacity: 1;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-row-delete:hover,
