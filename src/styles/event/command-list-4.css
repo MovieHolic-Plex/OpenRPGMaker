@@ -150,6 +150,32 @@
   min-width: 96px;
 }
 
+/* 입력칸은 감싸개 폭을 따른다. command-list-3.css 의 min-width:140px 가 남으면 96px 까지 줄어든
+   감싸개 밖으로 넘쳐 되돌리기 버튼 밑에 깔렸다(UI 감사 06-eventwin-07). */
+.event-editor .event-editor-command-toolbar .event-editor-command-search-field > .event-editor-command-search {
+  min-width: 0;
+  width: 100%;
+}
+
+/* 되돌리기·다시 실행은 글리프 상자(28px)보다 줄지 않는다 — 줄면 아이콘이 20px 로 잘렸다(06-eventwin-08).
+   폭을 돌려주는 쪽은 검색칸(최소 96px)과 아래 AI 라벨이다. */
+.event-editor .event-editor-command-toolbar > .event-editor-command-tool {
+  flex-shrink: 0;
+}
+
+/* 명령 칼럼이 툴바 전체(약 710px)를 못 담으면 AI 버튼은 글리프 + 「AI」로 줄인다. 긴 라벨은
+   title 로 남는다. 그대로 두면 버튼이 칼럼 밖으로 밀려 잘리고 목록에 가로 스크롤이 생겼다
+   (07-eventcmd-01·02·04). */
+@container evt-command-column (max-width: 759px) {
+  .event-editor .event-editor-command-toolbar .event-editor-command-aux-group .event-editor-command-tool-label {
+    display: none;
+  }
+
+  .event-editor .event-editor-command-toolbar .event-editor-command-aux-group .event-editor-command-tool::after {
+    content: "AI";
+  }
+}
+
 /* 좁은 칼럼에서 세그먼트 버튼의 여백을 먼저 잃게 한다 — 낱말은 마지막까지 지킨다. */
 .event-editor .event-editor-command-toolbar .event-view-toggle-btn {
   min-width: 0;

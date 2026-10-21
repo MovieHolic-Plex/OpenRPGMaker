@@ -33,7 +33,8 @@ const toolbarRenderMemo = new WeakMap<HTMLElement, { readonly key: string; reado
 
 export function renderCanvasToolbar(container: HTMLElement): void {
   const currentZoom = editorState.get().zoom;
-  const key = `${currentZoom}|${locationLayerState().enabled ? 1 : 0}|${mapBackgroundPreviewEnabled() ? 1 : 0}|${readCanvasToolbarExpanded() ? 1 : 0}`;
+  const showGrid = editorState.get().showGrid;
+  const key = `${currentZoom}|${locationLayerState().enabled ? 1 : 0}|${mapBackgroundPreviewEnabled() ? 1 : 0}|${readCanvasToolbarExpanded() ? 1 : 0}|${showGrid ? 1 : 0}`;
   const memo = toolbarRenderMemo.get(container);
   if (memo && memo.key === key && memo.first !== null && container.firstElementChild === memo.first && memo.first.isConnected) return;
   clearChildren(container);
@@ -64,8 +65,8 @@ export function renderCanvasToolbar(container: HTMLElement): void {
       dataset: { testid: "editor-zoom-stepper" },
       on: {
         click: () => {
-          const open = zoomGroup.classList.toggle("is-menu-open");
-          zoomGroup.querySelector("[data-testid='editor-zoom-stepper']")?.setAttribute("aria-expanded", String(open));
+          if (zoomGroup.classList.contains("is-menu-open")) closeZoomMenu(zoomGroup);
+          else openZoomMenu(zoomGroup);
         },
       },
     }),
@@ -88,7 +89,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
         text: `${zoom}x`,
         attrs: { title: `${zoom}배 확대`, "aria-label": `${zoom}배 확대`, "aria-pressed": String(currentZoom === zoom) },
         dataset: { testid: `editor-zoom-${zoom}` },
-        on: { click: () => { zoomGroup.classList.remove("is-menu-open"); editorState.set({ zoom }); } },
+        on: { click: () => { closeZoomMenu(zoomGroup); editorState.set({ zoom }); } },
       }),
     );
   }
@@ -132,12 +133,25 @@ export function renderCanvasToolbar(container: HTMLElement): void {
     dataset: { testid: "map-background-preview-toggle" },
     on: { click: () => toggleMapBackgroundPreview() },
   }));
-  // 배율 · ⋯ 펼치기 · AI 빠른 작업 · 맵 저장.
+  // 배율 · ⋯ 펼치기 · AI 빠른 작업 · 격자 · 맵 저장.
+  // 격자는 잘 안 끄는 보기 옵션이라 ⋯ 펼침 안에 둔다. 상태는 editorState.showGrid(기본 켜짐) 하나다.
   const saveAction = el("div", {
     class: "canvas-toolbar-save-group",
-    attrs: { "aria-label": "맵 이미지 저장", role: "group" },
+    attrs: { "aria-label": "맵 보기 · 이미지 저장", role: "group" },
     dataset: { testid: "editor-map-save-group", uiDensity: "expert" },
     children: [
+      el("button", {
+        class: "oprn-tool-button map-grid-toggle",
+        children: [makeSvgIcon("grid")],
+        attrs: {
+          type: "button",
+          title: showGrid ? "격자 숨기기" : "격자 보이기",
+          "aria-label": "격자 보이기/숨기기",
+          "aria-pressed": String(showGrid),
+        },
+        dataset: { testid: "editor-grid-toggle" },
+        on: { click: () => editorState.set({ showGrid: !editorState.get().showGrid }) },
+      }),
       el("button", {
         class: "oprn-tool-button map-save-button",
         children: [makeSvgIcon("save")],
@@ -167,6 +181,58 @@ export function renderCanvasToolbar(container: HTMLElement): void {
   container.append(zoomGroup, aiWorkbench, expandButton, saveAction);
   installDelayedTooltips(container);
   toolbarRenderMemo.set(container, { key, first: container.firstElementChild });
+}
+
+/** 열린 배율 목록을 닫는 문서 리스너. 목록은 한 번에 하나만 열린다. */
+let detachZoomMenuDismiss: (() => void) | null = null;
+
+/**
+ * 배율 목록은 팝오버다 — Escape 와 바깥 누름으로 닫히고, 그 바깥 누름은 닫기에만 쓰인다.
+ * 예전에는 배율을 고르는 것 말고는 닫을 길이 없었고, 열린 채 캠버스를 누르면 타일이 칠해졌다.
+ * Phaser 는 mousedown 을 듣는다. pointerdown 의 preventDefault 가 뒤따르는 mousedown 을 막고,
+ * 캡처 단계 stopPropagation 이 다른 리스너를, 한 번만 도는 click 삼키기가 DOM 단추의 동작을 막는다.
+ */
+function openZoomMenu(zoomGroup: HTMLElement): void {
+  detachZoomMenuDismiss?.();
+  zoomGroup.classList.add("is-menu-open");
+  zoomGroup.querySelector("[data-testid='editor-zoom-stepper']")?.setAttribute("aria-expanded", "true");
+  const swallowClick = (event: MouseEvent): void => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+  const onPointerDown = (event: PointerEvent): void => {
+    if (!zoomGroup.isConnected) {
+      detachZoomMenuDismiss?.();
+      return;
+    }
+    if (event.target instanceof Node && zoomGroup.contains(event.target)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    closeZoomMenu(zoomGroup);
+    window.addEventListener("click", swallowClick, { capture: true, once: true });
+    // 누른 자리와 뗅 자리가 달라 click 이 안 오면 다음 누름 전에 치운다.
+    window.addEventListener("pointerdown", () => window.removeEventListener("click", swallowClick, { capture: true }), { capture: true, once: true });
+  };
+  const onKeyDown = (event: KeyboardEvent): void => {
+    if (event.key !== "Escape") return;
+    event.preventDefault();
+    event.stopPropagation();
+    closeZoomMenu(zoomGroup);
+    zoomGroup.querySelector<HTMLElement>("[data-testid='editor-zoom-stepper']")?.focus();
+  };
+  window.addEventListener("pointerdown", onPointerDown, { capture: true });
+  window.addEventListener("keydown", onKeyDown, { capture: true });
+  detachZoomMenuDismiss = () => {
+    window.removeEventListener("pointerdown", onPointerDown, { capture: true });
+    window.removeEventListener("keydown", onKeyDown, { capture: true });
+    detachZoomMenuDismiss = null;
+  };
+}
+
+function closeZoomMenu(zoomGroup: HTMLElement): void {
+  detachZoomMenuDismiss?.();
+  zoomGroup.classList.remove("is-menu-open");
+  zoomGroup.querySelector("[data-testid='editor-zoom-stepper']")?.setAttribute("aria-expanded", "false");
 }
 
 function readCanvasToolbarExpanded(): boolean {

@@ -5,7 +5,7 @@ import { listMonsterResources, type MonsterResource } from "@/assets/monsterReso
 import { EASYRPG_MONSTER_ASSETS } from "@/assets/easyrpgRtp";
 import { SCARLOXY_MONSTER_ASSETS } from "@/assets/scarloxyPack";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
-import { hasOpenModalLayer, isTopModal } from "@/editor/ui/modalStack";
+import { hasOpenModalLayer, isTopModal, registerModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
@@ -610,6 +610,15 @@ function renderCharsetRowCard(profile: ResourceProfile, isSelected: boolean, onS
   card.append(header, charactersStrip);
   return card;
 }
+/**
+ * 내장 프로필의 그림을 찾지 못했을 때 빈 칸 문구. EasyRPG 그림(전투 배경·칩셋·시스템·타이틀…)은 2026-10-07
+ * 저작권 정리로 번들에서 지웠지만, 그 전에 저장한 프로젝트에는 프로필과 참조가 남아 있다. 프로필을 지우면
+ * 그 id 를 참조하는 지형·시스템 설정이 저장 검증(존재하지 않는 리소스)에서 막히므로, 목록에 두되 사라진 이유를 드러낸다.
+ */
+function missingProfilePreviewText(assetId: string | undefined, fallback: string): string {
+  return assetId?.startsWith("easyrpg-") ? "그림 파일 없음 · 번들에서 제거됨" : fallback;
+}
+
 function renderProfileCard(profile: ResourceProfile, isSelected: boolean, onSelect: () => void): HTMLElement {
   const project = store.getCurrent();
   const spec = getResourceProfileSpec(profile.kind);
@@ -633,7 +642,7 @@ function renderProfileCard(profile: ResourceProfile, isSelected: boolean, onSele
   } else if (isAudio) {
     previewBox.append(el("div", { class: "rm-card-audio-icon", text: profile.kind === "music" ? "🎵" : "🔊" }));
   } else {
-    previewBox.append(el("div", { class: "rm-card-no-img", text: "미리보기 없음" }));
+    previewBox.append(el("div", { class: "rm-card-no-img", text: missingProfilePreviewText(profile.assetId, "미리보기 없음") }));
   }
 
   const infoBox = el("div", {
@@ -707,6 +716,8 @@ function resourceCommandPanel(
       },
     }) as HTMLInputElement;
 
+    // 모달 스택에 올린 뒤에는 스택이 돌려준 close 로 닫는다 — 그래야 Escape 가 이 창만 닫고 부모 관리자는 남는다.
+    let closeUrlModal = (): void => backdrop.remove();
     const backdrop = el("div", {
       class: "database-modal-backdrop rm-url-backdrop",
       children: [
@@ -721,7 +732,7 @@ function resourceCommandPanel(
                   class: "database-modal-close",
                   text: "×",
                   attrs: { type: "button", title: "닫기" },
-                  on: { click: () => backdrop.remove() },
+                  on: { click: () => closeUrlModal() },
                 }),
               ],
             }),
@@ -735,7 +746,7 @@ function resourceCommandPanel(
                     class: "btn",
                     text: "취소",
                     attrs: { type: "button" },
-                    on: { click: () => backdrop.remove() },
+                    on: { click: () => closeUrlModal() },
                   }),
                   el("button", {
                     class: "btn primary",
@@ -746,7 +757,7 @@ function resourceCommandPanel(
                         const val = input.value.trim();
                         if (val && options.onImportUrl) {
                           options.onImportUrl(val);
-                          backdrop.remove();
+                          closeUrlModal();
                         }
                       },
                     },
@@ -760,6 +771,7 @@ function resourceCommandPanel(
     });
 
     document.body.append(backdrop);
+    closeUrlModal = registerModal(backdrop, () => backdrop.remove());
     input.focus();
   };
 
@@ -955,7 +967,7 @@ function renderInspector(
     });
     previewContainer.append(img);
   } else {
-    previewContainer.append(el("div", { class: "rm-inspector-no-img", text: "미리보기 이미지 없음" }));
+    previewContainer.append(el("div", { class: "rm-inspector-no-img", text: isUploaded ? "미리보기 이미지 없음" : missingProfilePreviewText(item.profile.assetId, "미리보기 이미지 없음") }));
   }
 
   const metaList = el("div", {

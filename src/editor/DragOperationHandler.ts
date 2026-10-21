@@ -6,7 +6,7 @@ import { cellLift, reliefLiftField } from "@/project/relief/screen";
 import { editorState, type PaintShape } from "@/editor/editorState";
 import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
-import { recordMapEditIfChanged, recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { appendCellCountToLatestMapEdit, getMapEditHistoryMarker, recordMapEditIfChanged, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { selectTileRegion } from "@/editor/mapClipboard";
 import { moveEvent } from "@/editor/eventActions";
 import { tileCellsForPaintShape, tileRectFromDrag, tileRectWithinBounds, type TilePoint } from "@/editor/tileShapeTools";
@@ -204,7 +204,8 @@ export class DragOperationHandler {
     const cells = tileCellsForPaintShape(operation.shape, operation.start, point, { width: map.width, height: map.height });
     if (cells.length === 0) return;
     // 도형 드래그 전 칸을 한 번의 updateMap 으로 (N번 structuredClone 금지)
-    recordMapEditIfChanged(operation.mapId, () => {
+    const marker = getMapEditHistoryMarker();
+    const recorded = recordMapEditIfChanged(operation.mapId, () => {
       paintTilesBulk(
         operation.mapId,
         cells.map((cell) => ({
@@ -215,7 +216,8 @@ export class DragOperationHandler {
         })),
         { autoConnect: operation.autoConnect, worldmapAutoBackground: operation.worldmapAutoBackground },
       );
-    });
+    }, { label: operation.shape === "rect" ? "사각형 칠하기" : "타원 칠하기" });
+    if (recorded) appendCellCountToLatestMapEdit(operation.mapId, marker);
   }
 
   private commitEventMoveDrag(operation: Extract<DragOperation, { readonly kind: "eventMove" }>, point: TilePoint): void {

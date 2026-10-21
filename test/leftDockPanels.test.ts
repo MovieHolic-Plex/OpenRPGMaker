@@ -178,45 +178,60 @@ describe("좌측 도크 구성은 워크스페이스 레이아웃을 따른다",
 
 });
 
-describe("패널 메뉴는 실제로 되는 선택지만 제시한다", () => {
-  it("호스트가 없는 zone 으로 옮기는 칩을 만들지 않는다", async () => {
-    setWorkspaceDocks(["tiles", "maps"]);
+describe("패널 메뉴는 왼쪽 활동 막대를 그대로 비춘다", () => {
+  // 감사 02-leftdock-02·03·09: 예전 절은 도크 멤버십(타일·맵)을 토글해서 체크를 꺼도 화면이 그대로였고,
+  // 접힌 도크도 「열림」으로 보였다. 이제 체크 = 막대에서 지금 펼쳐진 패널, 누르면 막대 단추를 누른다.
+  function mountActivityBar(pressed: string | null): { readonly clicks: string[] } {
+    const clicks: string[] = [];
+    const bar = document.createElement("nav");
+    bar.dataset.testid = "left-activity-bar";
+    for (const [id, label] of [["tools", "그리기"], ["maps", "맵"]] as const) {
+      const button = document.createElement("button");
+      button.className = "left-activity-item";
+      button.dataset.testid = `sidebar-${id}`;
+      button.setAttribute("aria-label", label);
+      button.setAttribute("aria-pressed", String(pressed === id));
+      button.addEventListener("click", () => clicks.push(id));
+      bar.append(button);
+    }
+    const inspect = document.createElement("button");
+    inspect.className = "left-activity-item";
+    inspect.dataset.testid = "sidebar-inspect";
+    inspect.setAttribute("aria-label", "검사");
+    bar.append(inspect);
+    document.body.append(bar);
+    return { clicks };
+  }
+
+  async function openPanelsMenu(): Promise<FakeElement> {
     const { renderWorkspaceBar } = await import("@/editor/panels/workspaceBar");
-
     for (const node of renderWorkspaceBar()) document.body.append(node);
-
     const bodyRoot = fake(document.body as unknown as HTMLElement);
-    expect(findByTestId(bodyRoot, "workspace-panel-dock-tiles-right")).toBeNull();
-  }, 120_000);
+    findByTestId(bodyRoot, "workspace-panels-button")?.click();
+    return bodyRoot;
+  }
 
-  it("오른쪽 도크 호스트가 있으면 그 zone 칩을 제시한다", async () => {
-    setWorkspaceDocks(["tiles", "maps"]);
-    const rightHost = document.createElement("div");
-    rightHost.dataset.dockZone = "right";
-    document.body.append(rightHost);
-    const { renderWorkspaceBar } = await import("@/editor/panels/workspaceBar");
+  it("펼쳐진 패널만 체크하고, 항목을 누르면 막대 단추를 누른다", async () => {
+    const { clicks } = mountActivityBar("tools");
 
-    for (const node of renderWorkspaceBar()) document.body.append(node);
+    const bodyRoot = await openPanelsMenu();
 
-    const bodyRoot = fake(document.body as unknown as HTMLElement);
-    expect(findByTestId(bodyRoot, "workspace-panel-dock-tiles-right")).not.toBeNull();
-  }, 120_000);
-
-  it("이 메뉴가 패널 토글의 유일한 집이다", async () => {
-    setWorkspaceDocks(["tiles", "maps"]);
-    const { renderWorkspaceBar } = await import("@/editor/panels/workspaceBar");
-
-    for (const node of renderWorkspaceBar()) document.body.append(node);
-
-    const bodyRoot = fake(document.body as unknown as HTMLElement);
-    const tilesToggle = findByTestId(bodyRoot, "workspace-panel-toggle-tiles");
     expect(findByTestId(bodyRoot, "workspace-panels-button")?.getAttribute("aria-label")).toBe("보기 — 패널과 언어");
-    // 글리프만 있던 버튼은 장식으로 읽혔다 — 화면 글자 「보기」가 반드시 함께 있어야 한다.
     expect(findByTestId(bodyRoot, "workspace-panels-button")?.textContent).toContain("보기");
-    expect(tilesToggle).not.toBeNull();
-    expect(tilesToggle?.getAttribute("aria-disabled")).toBeNull();
-    // 그리고 진짜로 된다 — 이 토글이 지속 구성을 바꿔야 한다.
-    tilesToggle?.click();
-    expect(JSON.parse(storage.getItem(WORKSPACE_KEY) ?? "{}").docks.left).not.toContain("tiles");
+    expect(findByTestId(bodyRoot, "workspace-panel-toggle-tools")?.getAttribute("aria-checked")).toBe("true");
+    expect(findByTestId(bodyRoot, "workspace-panel-toggle-maps")?.getAttribute("aria-checked")).toBe("false");
+    // 「검사」는 패널이 아니라 명령이다.
+    expect(findByTestId(bodyRoot, "workspace-panel-toggle-inspect")).toBeNull();
+    findByTestId(bodyRoot, "workspace-panel-toggle-maps")?.click();
+    expect(clicks).toEqual(["maps"]);
+  }, 120_000);
+
+  it("도크가 접혀 있으면 어느 패널도 체크하지 않는다", async () => {
+    mountActivityBar(null);
+
+    const bodyRoot = await openPanelsMenu();
+
+    expect(findByTestId(bodyRoot, "workspace-panel-toggle-tools")?.getAttribute("aria-checked")).toBe("false");
+    expect(findByTestId(bodyRoot, "workspace-panel-toggle-maps")?.getAttribute("aria-checked")).toBe("false");
   }, 120_000);
 });

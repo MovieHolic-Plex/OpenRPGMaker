@@ -9,6 +9,7 @@
 // 접근성 계약: 짧은 한국어 시각 라벨(여섯 자 이하 권장)은 **표시용**이고, 컨트롤의
 // 접근 가능한 이름(`aria-label`)은 완전한 문장을 유지한다. 즉 시각 라벨을 줄여도
 // 스크린 리더가 듣는 이름은 잘리지 않는다.
+import { t } from "@/i18n";
 import { el } from "@/util/dom";
 
 export const TOOLTIP_DELAY_MS = 1200;
@@ -174,7 +175,9 @@ function showDelayedTooltip(target: HTMLElement, spec: DelayedTooltipSpec): void
     class: `delayed-tooltip side-below`,
     dataset: { testid: "delayed-tooltip" },
     attrs: { role: "tooltip" },
-    text: spec.label,
+    // 번역된 글자로 넣는다 — DOM 번역 계층은 배치 뒤에 글자를 바꿔 재 폭과 그린 폭이 달랐고,
+    // 오른쪽 끝 대상(전체화면)에서 가로 클램프가 모자라 화면 밖으로 나갔다(2026-10-21 UI 감사).
+    text: t(spec.label),
   });
   document.body.append(tip);
   active = { element: tip, target };

@@ -818,10 +818,20 @@
   background: var(--bg-inset);
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
-  grid-template-columns: minmax(0, 1.4fr) auto auto;
   padding: 8px 10px;
+}
+
+/* BGM 칸은 남는 폭을 쓰되 140px 아래로 줄지 않는다 — 같은 줄에 안 들어가면 시간대·조우율이 다음 줄로 내려간다.
+   예전 grid(minmax(0,1.4fr) auto auto)는 영어처럼 긴 문구에서 BGM 칸이 0 으로 눌려 고를 수 없었다(UI 감사 09-ai-02). */
+.ai-studio-director-live-controls > .ai-studio-director-control {
+  flex: 0 0 auto;
+}
+
+.ai-studio-director-live-controls > .ai-studio-director-control.is-bgm {
+  flex: 1 1 140px;
 }
 
 .ai-studio-director-control {
@@ -930,7 +940,8 @@
   border-radius: 6px;
   display: grid;
   gap: 8px;
-  grid-template-columns: 32px minmax(0, 1fr) auto;
+  /* 첫 칸은 얼굴(32px) 또는 종류 라벨 — 라벨이 길면(영어 'Characters') 칸이 늘어난다(UI 감사 09-ai-03). */
+  grid-template-columns: minmax(32px, max-content) minmax(0, 1fr) auto;
   padding: 4px 6px;
 }
 
@@ -1272,7 +1283,6 @@
 }
 
 @media (max-width: 960px) {
-  .ai-studio-director-live-controls,
   .ai-studio-director-theater {
     grid-template-columns: 1fr;
   }

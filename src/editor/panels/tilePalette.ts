@@ -39,6 +39,7 @@ import {
   currentPaletteView,
   makePaletteSmartBody,
   makePaletteSmartTabs,
+  PALETTE_SMART_PANEL_ID,
   smartPaletteInputToken,
 } from "@/editor/panels/tilePaletteSmart";
 import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
@@ -410,6 +411,7 @@ function updateSelectedTileStatus(
   const labelText = labelButton.firstChild;
   if (labelText instanceof Text && labelButton.childNodes.length === 1) labelText.data = label;
   else labelButton.textContent = label;
+  labelButton.title = hasTile ? label : "선택된 타일이 없습니다";
   labelButton.setAttribute("aria-label", hasTile ? `선택 타일 ${label} — 팔레트에서 위치 보기` : "선택 타일 없음");
   return true;
 }
@@ -448,7 +450,8 @@ function makeSelectedTileStatus(
       text: label,
       attrs: {
         type: "button",
-        title: hasTile ? "팔레트에서 이 타일 위치로 이동" : "선택된 타일이 없습니다",
+        // 좁은 칩에서 이름이 … 로 잘리므로 title 은 전체 이름이다 — 동작 설명은 aria-label 이 말한다(2026-10-21 UI 감사 02-leftdock-06).
+        title: hasTile ? label : "선택된 타일이 없습니다",
         "aria-label": hasTile ? `선택 타일 ${label} — 팔레트에서 위치 보기` : "선택 타일 없음",
       },
       dataset: { testid: "selected-tile-reveal" },
@@ -461,7 +464,7 @@ function makeSelectedTileStatus(
       text: tileset.name,
       attrs: {
         type: "button",
-        title: `타일 그림판: ${tileset.name} — 맵 설정에서 바꿉니다`,
+        title: tileset.name,
         "aria-label": `타일 그림판 ${tileset.name} — 맵 설정에서 바꾸기`,
       },
       dataset: { testid: "palette-tileset-name" },
@@ -569,6 +572,8 @@ function makePaletteSurface(input: {
         visibleTiles,
       }));
   palette.dataset.retainKey = paintSheetRetainKey(tileset, tileLayer);
+  // 네 탭의 aria-controls 가 가리키는 자리 — 개별 타일 탭에서는 이 시트가 탭 본문이다.
+  if (smart) palette.id = PALETTE_SMART_PANEL_ID;
   if (retainedSheet) {
     // 살린 판은 칸을 다시 짓지 않는다 — 그림(이식 베이크)과 필터·선택만 제자리에서 맞춘다.
     applyPaletteSheetImage(palette, tilesetImageUrl(tileset));

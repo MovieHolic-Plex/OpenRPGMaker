@@ -494,6 +494,10 @@ Enter·Space 선택, Ctrl+Enter 시연, F2, Delete, Shift+F10. 플레이 상태 
 
 좁은 창(≤1100px)에서 상세 칸은 숨지 않고 목록 아래로 쌓인다(`map-panel.modern.css:889-912`).
 
+행 메타 조각은 `이벤트 N개` · `문 N개` 다(2026-10-21, UI 감사 05-maps-02) — 예전 `N이벤트` · `문N` 은 번역 키에
+걸리지 않아 영어 UI 에서 `19 event · 문19` 로 섞였다. 시작 배지(`.start-mark`)는 행 그리드 열이 아니라 이름 줄
+(`.map-tree-name-line`) 끝에 있어 메타 줄이 배지 아래까지 전체 폭을 쓴다(05-maps-03).
+
 ## 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
 
 `installEventEditorCustomSelects` 의 팝오버는 열릴 때 `registerModal` 로 **최상위 층**이 되고

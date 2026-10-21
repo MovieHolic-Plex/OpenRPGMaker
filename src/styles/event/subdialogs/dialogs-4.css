@@ -529,6 +529,14 @@
   width: 100%;
 }
 
+.npc-graphic-picker .npc-charset-teach-field {
+  color: var(--event-rm-text);
+  display: grid;
+  font: 400 12px/16px "Malgun Gothic", sans-serif;
+  gap: 2px;
+  min-width: 0;
+}
+
 /* P1: 이동 경로 다이얼로그 리치화 (높음-2) */
 /* --- 커맨드 버튼: 16px 아이콘 슬롯 + 라벨 --- */
 .event-page-move-route-command {

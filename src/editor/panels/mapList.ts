@@ -487,20 +487,35 @@ function renderNode(spec: RenderNodeSpec): void {
       ? [`분류`, `하위 ${node.children.length}`]
       : [
         map ? `${map.width}×${map.height}` : "",
-        `${map?.events.length ?? 0}이벤트`,
+        `이벤트 ${map?.events.length ?? 0}개`,
       ].filter(Boolean);
     if (!isFolder && ((map?.encounterRate ?? 0) > 0 || (map?.troopIds?.length ?? 0) > 0)) metaBits.push("인카운터");
     // 초보 2단 탐색기에서는 `문N` 을 뺀다 — 나가는/들어오는/연결로 쪼갠 값이 상세 칸에
     // 있고, 목록 칸의 1fr 트랙은 이름을 읽는 데 써야 한다. 다만 0 일 때는 그 자리에
     // '고립'을 남긴다: 이게 유일하게 행에서 손을 써야 하는 신호다.
     if (isBasicRow && isUnlinked) metaBits.push("고립");
+    // 시작 배지는 이름 줄 끝에 둔다. 행 그리드의 열로 두면 메타 줄까지 그 폭을 잃어
+    // 「문 N개」가 말줄임됐다(UI 감사 05-maps-03) — 메타 줄은 배지 아래까지 쓴다.
+    const nameLine = el("div", {
+      class: "map-tree-name-line",
+      children: [
+        el("span", { class: "map-tree-name", text: actionContext.mapName }),
+        ...(isStart
+          ? [el("span", {
+            class: isBasicRow ? "start-mark is-start" : "start-mark",
+            text: "시작",
+            attrs: { title: "시작 맵" },
+          })]
+          : []),
+      ],
+    });
     item.append(el("div", {
       class: "map-tree-copy",
       children: [
-        el("span", { class: "map-tree-name", text: actionContext.mapName }),
+        nameLine,
         el("span", {
           class: "map-tree-meta" + (isUnlinked ? " is-unlinked" : ""),
-          text: isFolder || isBasicRow ? metaBits.join(" · ") : `${metaBits.join(" · ")} · 문${links?.playLinkCount ?? 0}`,
+          text: isFolder || isBasicRow ? metaBits.join(" · ") : `${metaBits.join(" · ")} · 문 ${links?.playLinkCount ?? 0}개`,
           attrs: {
             title: isFolder
               ? "플레이 맵이 아닙니다. 정리용 폴더입니다."
@@ -510,14 +525,6 @@ function renderNode(spec: RenderNodeSpec): void {
           },
         }),
       ],
-    }));
-  }
-
-  if (isStart) {
-    item.append(el("span", {
-      class: isBasicRow ? "start-mark is-start" : "start-mark",
-      text: "시작",
-      attrs: { title: "시작 맵" },
     }));
   }
 
@@ -1072,7 +1079,7 @@ function mapContextMenuItems(context: MapActionContext): readonly MapContextMenu
   }
   items.push({
     action: () => beginRename(context.mapId),
-    icon: "map-settings",
+    icon: "pencil",
     id: "rename",
     label: "이름 바꾸기",
     shortcut: "F2",
@@ -1146,7 +1153,7 @@ function mapContextMenuItems(context: MapActionContext): readonly MapContextMenu
         const parentNode = findTreeNode(tree, parentId);
         return !parentNode || isMapTreeFolder(parentNode);
       })(),
-      icon: "map-shift",
+      icon: "link",
       id: "link-parent",
       label: "부모와 왕복 이동 넣기",
       testId: `map-menu-link-parent-${context.mapId}`,
@@ -1194,7 +1201,7 @@ function mapContextMenuItems(context: MapActionContext): readonly MapContextMenu
     });
     items.push({
       action: () => openMapShiftDialog(context.mapId, context.mapName),
-      icon: "map-shift",
+      icon: "hand",
       id: "shift",
       label: "맵 밀기",
       separatorBefore: true,
