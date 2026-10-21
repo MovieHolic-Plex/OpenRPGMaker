@@ -114,14 +114,20 @@ try {
     for (let guard = 0; guard < 200 && !arrived && path.reached && !deadline(); guard++) {
       const dir = path.moves[0];
       const before = await state(); if (!before || before.currentMapId !== map.id) break;
-      await page.keyboard.down(KEY[dir]);
-      const t0 = Date.now(); let moved = false;
-      while (Date.now() - t0 < 2500) {
-        await sleep(40); const now = await state();
-        if (!now) break;
-        if (now.currentMapId !== map.id || now.x !== before.x || now.y !== before.y) { moved = true; break; }
+      // tap first (a held key carries the hero a second tile); hold only if the tap did not start a step
+      let moved = false;
+      for (const holdMs of [90, 2500]) {
+        await page.keyboard.down(KEY[dir]);
+        if (holdMs === 90) { await sleep(90); await page.keyboard.up(KEY[dir]); }
+        const t0 = Date.now();
+        while (Date.now() - t0 < (holdMs === 90 ? 900 : 2500)) {
+          await sleep(40); const now = await state();
+          if (!now) break;
+          if (now.currentMapId !== map.id || now.x !== before.x || now.y !== before.y) { moved = true; break; }
+        }
+        if (holdMs !== 90) await page.keyboard.up(KEY[dir]);
+        if (moved) break;
       }
-      await page.keyboard.up(KEY[dir]);
       let here = await state(), stable = 0;
       for (let i = 0; i < 20 && stable < 4; i++) { await sleep(80); const now = await state(); if (now && here && now.x === here.x && now.y === here.y && now.currentMapId === here.currentMapId) stable++; else stable = 0; here = now; }
       if (!here || here.currentMapId !== map.id) break;
@@ -129,10 +135,18 @@ try {
       log.push({ t: Date.now(), kind: 'step', dir, from: [before.x, before.y], to: [here.x, here.y] });
       if (!moved) { refused.push(expected); note('blocked-step', { dir, at: [before.x, before.y] }); }
       else walked++;
-      if (moved && here.x === expected.x && here.y === expected.y) {
-        // on plan: drop the step instead of spawning a new route search
-        path = { ...path, moves: path.moves.slice(1) };
-      } else path = route(map.id, here, target.event, [...blocked, ...goalBlocked, ...refused]);
+      // on plan: drop the steps the hero actually took (a held key often carries two tiles) instead of re-routing —
+      // re-routing from an overshoot sent the hero back and forth on one road for 100 s (r2 map-bgm-every-map).
+      let consumed = 0;
+      if (moved) {
+        let px = before.x, py = before.y;
+        for (let k = 0; k < path.moves.length && k < 4; k++) {
+          px += DELTA[path.moves[k]][0]; py += DELTA[path.moves[k]][1];
+          if (here.x === px && here.y === py) { consumed = k + 1; break; }
+        }
+      }
+      if (consumed) path = { ...path, moves: path.moves.slice(consumed) };
+      else path = route(map.id, here, target.event, [...blocked, ...goalBlocked, ...refused]);
       if (path.reached && path.moves.length === 0) arrived = true;
     }
     note('walked', { steps: walked, refused: refused.length });
