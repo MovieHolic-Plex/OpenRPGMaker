@@ -675,6 +675,12 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
   // 「의자를 끌고 와 내 옆에 앉았다」 — 지후는 서하 왼쪽 옆 칸으로 와서 마주 본다(대사가 말하는 자리를 화면도 보인다).
   const jihuBeside = nearestFree(project, off, { x: o.heroDesk.x - 1, y: o.heroDesk.y }, 1, taken);
   taken.push(jihuBeside);
+  // 정직 분기: 통화 중인 팀장에게 자리에서 소리쳐 말하지 않고, 팀장 책상 앞까지 걸어가서 말한다.
+  // 팀장 책상 옆 칸(같은 줄 우선) — 위·아래 칸은 두 사람이 한 열로 쌓여 대화창에 가린다.
+  const leadFront = [{ x: leadSeat.x - 1, y: leadSeat.y }, { x: leadSeat.x + 1, y: leadSeat.y }, { x: leadSeat.x, y: leadSeat.y + 1 }, { x: leadSeat.x, y: leadSeat.y - 1 }]
+    .find((c) => isPassable(project, off, c.x, c.y) && !off.events.some((e) => e.x === c.x && e.y === c.y) && !taken.some((t) => t.x === c.x && t.y === c.y))
+    ?? nearestFree(project, off, leadSeat, 2, taken);
+  taken.push(leadFront);
   const comeBeside = (): Command[] => [
     walkRoute(project, FL_MAP.officePm, "ev_fl_w_jihu", jihuSeat, jihuBeside, [o.heroDesk], true, dirToward(jihuBeside, o.heroDesk)),
     face("@player", dirToward(o.heroDesk, jihuBeside)),
@@ -789,8 +795,8 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
       { text: "팀장님께 바로 말씀드린다", then: [
         setSw(SW_HONEST, true),
         { kind: "changeFriendship", npcKey: "lead", delta: 220 } as Command,
-        // 팀장에게 말할 땐 팀장 쪽으로 돌고, 팀장도 통화를 멈추고 서하를 본다.
-        face("@player", dirToward(o.heroDesk, leadSeat)),
+        // 팀장 책상 앞까지 걸어가 말하고, 팀장도 통화를 멈추고 서하를 본다.
+        walkRoute(project, FL_MAP.officePm, "@player", o.heroDesk, leadFront, [], true, dirToward(leadFront, leadSeat)),
         faceHero("ev_fl_w_lead"),
         ...say("seoha", "sad", "팀장님. 제가 소리결에 시안을 잘못 보냈습니다. 지난주 버전으로요."),
         ...say("lead", "base", "…몇 시에 보냈어요?"),
@@ -798,6 +804,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
         ...say("lead", "happy", "좋아요. 숨기지 않고 바로 말해 줘서 다행이에요. 본부장님한텐 내가 지금 전화할게요."),
         ...say("lead", "base", "서하 씨는 최종본 다시 정리하고. 지후 씨, 서하 씨 좀 도와줄래요?"),
         ...say("jihu", "base", "네."),
+        walkRoute(project, FL_MAP.officePm, "@player", leadFront, o.heroDesk, [jihuBeside]),
         ...comeBeside(),
         ...think("지후 선배가 의자를 끌고 와 내 옆에 앉았다. 아주 잠깐, 웃은 것 같았다."),
         ...like(1, "ev_fl_w_jihu"),
