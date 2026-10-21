@@ -318,11 +318,6 @@
     "y": 16
    },
    {
-    "id": "ox-standing-table",
-    "x": 21,
-    "y": 17
-   },
-   {
     "id": "of-plant-big",
     "x": 24,
     "y": 20
@@ -335,11 +330,6 @@
    {
     "id": "of-plant-big",
     "x": 24,
-    "y": 13
-   },
-   {
-    "id": "of-plant-big",
-    "x": 13,
     "y": 13
    },
    {
@@ -421,6 +411,96 @@
     "id": "of-plant-big",
     "x": 13,
     "y": 4
+   },
+   {
+    "id": "of-lobby-sofa-s",
+    "x": 21,
+    "y": 14
+   },
+   {
+    "id": "low-table",
+    "x": 21,
+    "y": 15
+   },
+   {
+    "id": "of-lobby-sofa-n",
+    "x": 21,
+    "y": 16
+   },
+   {
+    "id": "ox-standing-table",
+    "x": 14,
+    "y": 18
+   },
+   {
+    "id": "ox-bar-stool",
+    "x": 14,
+    "y": 19
+   },
+   {
+    "id": "ox-bar-stool",
+    "x": 15,
+    "y": 19
+   },
+   {
+    "id": "ox-standing-table",
+    "x": 21,
+    "y": 19
+   },
+   {
+    "id": "ox-bar-stool",
+    "x": 21,
+    "y": 18
+   },
+   {
+    "id": "ox-bar-stool",
+    "x": 22,
+    "y": 18
+   },
+   {
+    "id": "of-partition",
+    "x": 17,
+    "y": 18
+   },
+   {
+    "id": "of-partition",
+    "x": 18,
+    "y": 18
+   },
+   {
+    "id": "of-partition",
+    "x": 19,
+    "y": 18
+   },
+   {
+    "id": "ox-planter-box",
+    "x": 17,
+    "y": 19
+   },
+   {
+    "id": "ox-planter-box",
+    "x": 19,
+    "y": 19
+   },
+   {
+    "id": "floor-lamp",
+    "x": 18,
+    "y": 16
+   },
+   {
+    "id": "floor-lamp",
+    "x": 19,
+    "y": 16
+   },
+   {
+    "id": "ox-planter-box",
+    "x": 14,
+    "y": 14
+   },
+   {
+    "id": "of-coat-rack",
+    "x": 13,
+    "y": 14
    }
   ],
   "tables": [
