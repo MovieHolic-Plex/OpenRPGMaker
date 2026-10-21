@@ -1231,12 +1231,12 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       const stamp = (n: string, x: number, y: number): void => {
         execTool(project, "stamp_object", { objectId: `kit:atlas_biome_interior/${kitName(n)}`, mapId: obs.id, x, y });
       };
-      stamp("dome slit", 17, 3);            // 천장 띠부터 벽면 두 줄 — 망원경 대물 끝 바로 위
+      stamp("dome slit", 17, 4);            // 벽면 두 줄(갓돌은 문설주 머리에서 끝난다) — 망원경 대물 끝 바로 위
       stamp("celestial chart", 8, 4);
       stamp("celestial chart", 20, 4);
       stamp("great telescope", 14, 6);      // 발밑 14~18 × 10~11(막힘), 위 4줄은 플레이어 위에 그린다
-      stamp("observing platform", 12, 10);  // 발밑 12~13 × 11, 접안경 곁
-      stamp("lens bench", 20, 9);           // 발밑 20~22 × 10
+      stamp("observing platform", 12, 9);   // 발밑 12~13 × 10~11(2×2), 접안경(14,9) 바로 왼쪽
+      stamp("lens bench", 20, 9);           // 발밑 20~22 × 9~10(3×2)
       // execTool 은 맵 객체를 새로 만든다 — 찍은 뒤에는 늘 M() 으로 다시 잡는다.
       tryStamp(project, M(ids.observatory), `kit:atlas_biome_interior/${kitName("orrery")}`, 21, 6);
       tryStamp(project, M(ids.observatory), `kit:atlas_biome_interior/${kitName("globe")}`, 8, 6);

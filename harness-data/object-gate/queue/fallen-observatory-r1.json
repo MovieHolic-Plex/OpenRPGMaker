@@ -1,8 +1,8 @@
 {
  "schema": "oprn-object-gate-queue/1",
  "id": "fallen-observatory-r1",
- "title": "폴른 스타 천문대 — 큰 망원경·관측 틈·별자리 원판·렌즈 작업대·관측 발판 (interior-plus observatory 5)",
- "note": "atlas_biome_interior 시트 끝 7410~7453 에 덧붙일 손 도트 5장(브랜치 agent/fallen-telescope). 허용 전에는 굽지 않는다 — 허용 뒤 python3 scripts/content/interior-plus/bake.py",
+ "title": "[대체됨 → fallen-observatory-r2] 폴른 스타 천문대 — 큰 망원경·관측 틈·별자리 원판·렌즈 작업대·관측 발판 (interior-plus observatory 5)",
+ "note": "독립 Opus VQA r1 FAIL 3/5(vqa/fallen-observatory-r1.opus-vqa-r1-fail.json) — r2 로 대체. 이 묶음은 허용하지 않는다. atlas_biome_interior 시트 끝 7410~7453 에 덧붙일 손 도트 5장(브랜치 agent/fallen-telescope). 허용 전에는 굽지 않는다 — 허용 뒤 python3 scripts/content/interior-plus/bake.py",
  "createdAt": "2026-10-21T05:56:14.425Z",
  "items": [
   {
