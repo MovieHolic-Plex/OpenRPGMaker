@@ -123,10 +123,12 @@ export function interactionPromptLabel(page: EventPage | undefined): string | nu
   if (!page || page.trigger.kind !== "action") return null;
   if (page.commands.some((command) => command.kind === "checkpointSave")) return "Z 휴식";
   if (page.commands.some((command) => command.kind === "battleProcessing")) return "Z 전투";
-  if (page.commands.some((command) => command.kind === "transfer")) return "Z 오르기";
   // 보이는 인물이 이름 붙은 대사로 말하면 사람이다 — 「조사」가 아니라 「대화」(첫사랑 VQA 1차: 사람 앞에 「Z 조사」).
+  // 대화 끝에 장면을 넘기는(transfer) 인물도 사람이다 — 옮기기 검사보다 먼저 본다(첫사랑 r2: 탕비실 지후 앞에 「Z 오르기」).
   const visible = page.graphic && !page.graphic.transparent && page.graphic.sprite;
   if (visible && page.commands.some((command) => command.kind === "text" && typeof command.speaker === "string" && command.speaker.trim() !== "")) return "Z 대화";
+  // 문·계단·엘리베이터 — 모두 「오르기」가 아니다. 어디로 가는지 모르니 중립 낱말.
+  if (page.commands.some((command) => command.kind === "transfer")) return "Z 이동";
   return "Z 조사";
 }
 

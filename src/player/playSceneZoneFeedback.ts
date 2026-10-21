@@ -53,6 +53,8 @@ export type ZoneFeedbackScene = {
   tileX: number;
   tileY: number;
   activeRuntimeEvents: (trigger: "action") => RuntimeEventView[];
+  /** 이벤트(컷신·대사 사이 걷기)가 도는 중 — 조작할 수 없으니 「Z 조사」 안내를 띄우지 않는다. */
+  running?: boolean;
   game: { registry: { get: (key: string) => unknown } };
 };
 
@@ -125,7 +127,7 @@ export function syncPlaySceneZoneFeedback(
   const update = updateZoneFeedback(feedback.model, {
     entries,
     nowMs: feedback.elapsedMs,
-    prompt: suppressed ? null : cachedFacingPrompt(scene, feedback),
+    prompt: suppressed || scene.running ? null : cachedFacingPrompt(scene, feedback),
     suppressed,
     transientToast: farmMessages.get(scene)?.message ?? null,
   });
