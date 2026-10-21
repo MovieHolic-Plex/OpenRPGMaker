@@ -847,8 +847,11 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     ...say("jihu", "base", "재생 엔진을 새로 짜서, 하루끝 방송이 1초 안에 시작됩니다. 그리고 화면은—"),
     // 발표를 넘길 땐 옆자리 서하를 본다(왼쪽 고정이면 본부장에게 서하를 소개하는 꼴).
     face("ev_fl_f_jihu", dirToward(jihuSpot, o.meetingSeat)),
+    face("@player", dirToward(o.meetingSeat, jihuSpot)),
     ...say("jihu", "happy", "윤서하 디자이너가 설명드리겠습니다."),
     ...think("숨을 한 번 고른다."),
+    // 발표는 손님(본부장)을 보고 한다.
+    face("@player", dirToward(o.meetingSeat, clientSpot)),
     choices([
       { text: "내 이야기로 시작한다", then: [
         setSw(SW_STORY, true),
@@ -879,9 +882,11 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     ], [
       ...say("lead", "happy", "서하 씨, 수요일에 바로 말해 준 거. 그거 잘한 거예요. 그게 팀이에요."),
     ]),
+    face("@player", dirToward(o.meetingSeat, jihuSpot)),
     ...say("jihu", "base", "…먼저 일어나 보겠습니다. 수고하셨습니다."),
     jihuOut.begin,
     stopBgm(),
+    face("@player", dirToward(o.meetingSeat, leadSpot)),
     ...say("lead", "base", "그리고… 다들 알다시피, 오늘이 지후 씨 마지막 날이에요."),
     ...emote("player", "exclamation"),
     ...say("seoha", "surprised", "…네?"),
