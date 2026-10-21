@@ -66,7 +66,8 @@ async function drainDialogue(limit = 40) {
     if (b && !b.running && b.input && !box) { idle++; continue; }
     idle = 0; stuckRounds++;
     // Enter pages through text; a shop/inn window that Enter cannot close (or would buy from) gets Escape after a few rounds.
-    await page.keyboard.press(stuckRounds > 5 && stuckRounds % 2 === 0 ? 'Escape' : 'Enter');
+    // 상점·저장 창은 Enter 가 다시 사거나 다시 저장한다(r3 boss-checkpoint: 저장 창에서 50초) — 다섯 번 뒤로는 Escape 만.
+    await page.keyboard.press(stuckRounds > 5 ? 'Escape' : 'Enter');
   }
 }
 try {
