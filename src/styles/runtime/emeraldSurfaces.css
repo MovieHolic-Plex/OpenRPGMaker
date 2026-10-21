@@ -155,6 +155,35 @@
   filter: none;
 }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status)::before { content: none; display: none; }
+/* 쓰러지는 동안(pkmn-battler-faint 0.55s)에는 상대 HP 상자도 같이 남는다 — 그림만 가라앉고 상자가 먼저 사라지면 어느 쪽이 쓰러졌는지 읽히지 않는다(VQA R10-1).
+   쓰러진 행·빈 패널은 애니메이션이 끝나면 visibility:hidden 으로 닫히고 forwards 로 거기 머문다(다시 켜지지 않는다).
+   행은 다음 몬스터 상자 옆에서 되살아나지 않도록 끝에서 자리까지 접는다(max-height 0). */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-enemy-list-row.defeated {
+  display: grid;
+  position: relative;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 24px 10px auto;
+  gap: 4px;
+  padding: 8px 12px;
+  border: 4px solid #486050;
+  border-radius: 0;
+  background: #f8f8e8;
+  box-shadow: 4px 4px #90a080;
+  opacity: 1;
+  overflow: hidden;
+  animation: pkmn-enemy-row-linger 0.6s linear forwards;
+}
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-enemy-list-panel:not(:has(.battle-enemy-list-row:not(.defeated))) {
+  animation: pkmn-enemy-panel-linger 0.6s linear forwards;
+}
+@keyframes pkmn-enemy-row-linger {
+  0%, 99% { visibility: visible; max-height: 200px; }
+  100% { visibility: hidden; position: absolute; max-height: 0; padding-top: 0; padding-bottom: 0; border-width: 0; }
+}
+@keyframes pkmn-enemy-panel-linger {
+  0%, 99% { visibility: visible; opacity: 1; }
+  100% { visibility: hidden; opacity: 1; }
+}
 /* 상대 HP 상자 보임 계약: 상대 몬스터가 서 있는 동안(쓰러지지 않음) 그 상자는 늘 불투명하게 제자리에 있다. scripts/qa/astra-horizon/hud-probe.mjs 가 잰다. */
 /* 야생 등장: 02-intro-reveal 의 패널 페이드는 적 그림보다 360ms 늦게 시작해 상대가 다 보인 뒤 0.6초 넘게 상자가 비었다.
    에메랄드는 상자가 몬스터와 같이 들어온다 — 같은 때 시작하고 짧게. 트레이너 소개(data-emerald-trainer-intro)는 자기 박자를 쓴다. */
@@ -294,7 +323,7 @@
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-pp[data-pp-state="low"] { color: #c88820; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-pp[data-pp-state="empty"] { color: #c85048; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type { display: inline-block; min-width: 48px; padding: 0 6px; box-sizing: border-box; text-align: center; font: 16px/16px var(--runtime-pixel-font); color: #fff; text-shadow: 1px 1px #384840; background: #686868; border: 2px solid #384840; border-radius: 0; }
-.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-reason { font: 16px/18px var(--runtime-pixel-font); color: #c85048; white-space: normal; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-reason { font: 16px/18px var(--runtime-pixel-font); color: #c85048; white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; max-width: 100%; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type[data-skill-type="normal"] { background: #a8a878; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type[data-skill-type="fire"] { background: #f08030; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type[data-skill-type="water"] { background: #6890f0; }
