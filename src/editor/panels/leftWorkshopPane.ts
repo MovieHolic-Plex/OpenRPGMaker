@@ -1,7 +1,7 @@
 // src/editor/panels/leftWorkshopPane.ts
 import "@/styles/database/workshop/index.css";
 /**
- * 왼쪽 활동 막대 「공방」: 생성기 카드 넷(캐릭터·물건·타일·아이템, `editor/workshop/generators.ts`).
+ * 왼쪽 활동 막대 「공방」: 생성기 카드 넷(캐릭터·물건·타일 조각·아이템, `editor/workshop/generators.ts`).
  * 2026-10-21 사용자 결정으로 하네스 목록(실내 가구·맵 소품 카드)을 뺐다 — 물건 그리기 실행기는 「물건·가구」 카드 안으로 들어갔다.
  * AI 가 필요한 버튼은 AI 가 준비됐을 때만 보인다. 연결 전이면 「AI 연결하기」, 서버가 AI 를 껐으면 안내 글만 보인다.
  */
@@ -42,7 +42,7 @@ function openObjectWorkshop(): void {
   void import("@/editor/workshop/workshopWorkspace").then(({ openWorkshop }) => openWorkshop(objectWorkshopHarness()));
 }
 
-function openGen(generator: "char-gen" | "object-gen"): void {
+function openGen(generator: "char-gen" | "tile-gen" | "object-gen"): void {
   void Promise.all([import("@/editor/workshop/workshopWorkspace"), import("@/editor/workshop/genWorkspace")]).then(([workspace, gen]) => {
     workspace.closeWorkshop();
     gen.openGenWorkspace(generator);
@@ -67,8 +67,9 @@ function generatorCard(generator: WorkshopGenerator, ai: { ready: boolean; hostO
       );
     }
     actions.push(button("만든 묶음 가져오기", "workshop-gen-import-object-gen", () => openGen("object-gen")));
-  } else if (generator.id === "char-gen") {
-    actions.push(button("만드는 법·가져오기", "workshop-gen-open-char-gen", () => openGen("char-gen"), true));
+  } else if (generator.id === "char-gen" || generator.id === "tile-gen") {
+    const id = generator.id;
+    actions.push(button("만드는 법·가져오기", `workshop-gen-open-${id}`, () => openGen(id), true));
   }
   return el("li", {
     class: "left-workshop-card" + (generator.status === "soon" ? " is-soon" : ""),

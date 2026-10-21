@@ -8,8 +8,8 @@
 |---|---|---|---|
 | 캐릭터 | char-gen (공개, `MovieHolic-Plex/char-gen`) | 내 컴퓨터에서 만들어 가져오기 | 파이썬 도구라 브라우저에서 못 돈다. 「만드는 법·가져오기」(`genWorkspace.ts`)가 ① 무엇·몇 명 → 사용자 AI 에이전트에 붙여 넣을 부탁 글(언어별, `charGenRequest`) ② `char-gen pack` 폴더 가져오기 → 미리 보기 → 이 프로젝트에 넣기 |
 | 물건·가구 | object-gen | 여기서 만들기 | 「만들기」= 아래 공방 실행기(사용자 자기 AI 계정). 넣을 곳 전환: 실내 가구(`interior-props`, 손 도트 실내 칩셋) · 지금 맵 칩셋(`map-objects`). 「만든 묶음 가져오기」= object-gen `pack` 폴더 가져오기 |
-| 타일 | tile-gen | 준비 중 | 저장소 `tile-gen` 은 이름과 달리 물건 생성기(object-gen 의 앞 판)라 칸 타일(바닥·벽·길)을 만드는 것이 없다. 가짜로 채우지 않았다 |
-| 아이템·아이콘 | item-gen | 준비 중 | 저장소가 없다. `scripts/asset-gen/generate.mjs`(agy CLI, 사람 고르기 없음)만 있다 |
+| 타일 조각 | tile-gen (비공개, `MovieHolic-Plex/tile-gen`) | 내 컴퓨터에서 만들어 가져오기 | 이름과 달리 칸 타일(바닥·벽)이 아니라 사용자 타일셋 색에 맞춘 맵 조각(우물·노점 같은 물체)을 그린다. 사람이 로컬 페이지에서 고르고 `tile-gen pack`. 화면: ① 무엇·크기 + 「지금 맵 칩셋 그림 받기」(`WorkshopEnv.tilesetSource` 바탕 시트 PNG — tile-gen 이 색을 잠글 파일) → 부탁 글(`tileGenRequest`) ② 묶음 가져오기 |
+| 아이템·아이콘 | item-gen | 준비 중 | 저장소가 없다(2026-10-21 조직·홈 확인). `scripts/asset-gen/generate.mjs`(agy CLI, 사람 고르기 없음)만 있어 가짜로 채우지 않았다 |
 
 - AI 미연결: 물건 카드에 「AI 연결하기」. 호스트가 AI 를 껐으면 안내 글만(죽은 버튼 없음). 묶음 가져오기는 AI 없이 된다.
 - **묶음 가져오기**(`src/editor/workshop/genPackImport.ts`): `<input webkitdirectory>` 로 `oprn-store-pack/1` 폴더(manifest.json + blobs/<sha256>)를 고른다.
@@ -21,8 +21,8 @@
   목록이 비면 폼부터 연다. 폼(`workshopItemForm.ts`) = 무엇 · 어떻게 생겼나 · 가로/세로 칸 · 놓는 방식 · 후보 수(1~3, `engine.startRound({count})`) → 「만들기」가 저장하고 바로 판을 시작한다.
   분류·쓰임·닮은 기물·솟는 px 칸은 화면에서 뺐다(기본값: 솟는 높이 세우는 것 16px · 거는 것·무늬 0).
 - 「없는 타일」 카드 「직접 그려 줘」는 그대로 `openWorkshop(harnessId, { newItem })` 로 이 폼을 채워 연다.
-- 그림 생성은 전부 사용자 계정: 편집기 안은 조수와 같은 엔드포인트(`chat.ts`), char-gen·object-gen 은 사용자 컴퓨터의 CLI 로그인. 우리 키·스토어 크레딧·유료 대체 경로 없음.
-- 남은 일: 데스크톱(Electron)에서 char-gen/object-gen 을 직접 띄우기, tile-gen(칸 타일)·item-gen(아이콘) 실체, 공방 굽기에 3/4 관문 영수증 배선.
+- 그림 생성은 전부 사용자 계정: 편집기 안은 조수와 같은 엔드포인트(`chat.ts`), char-gen·tile-gen·object-gen 은 사용자 컴퓨터의 CLI 로그인. 우리 키·스토어 크레딧·유료 대체 경로 없음.
+- 남은 일: 데스크톱(Electron)에서 char-gen·tile-gen·object-gen 을 직접 띄우기(지금은 부탁 글 + 묶음 가져오기), item-gen 실체, 칸 타일(바닥·벽) 생성기, 공방 굽기에 3/4 관문 영수증 배선.
 
 ## 공방 실행기(물건·가구 카드 안)
 
