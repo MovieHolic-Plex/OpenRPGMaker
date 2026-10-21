@@ -985,6 +985,7 @@ function normalizeCompanionConfig(value: CompanionConfig | undefined): Companion
   if (value.formation === "line" || value.formation === "beside") out.formation = value.formation;
   if (value.clearOnTransfer === true) out.clearOnTransfer = true;
   if (value.fromParty === true) out.fromParty = true;
+  if (value.spreadWhenBlocked === true) out.spreadWhenBlocked = true;
   return Object.keys(out).length > 0 ? out : undefined;
 }
 

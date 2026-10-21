@@ -474,6 +474,11 @@ export function followerPositions(
     }
     const point = trail[at];
     if (!point) {
+      const spread = config?.spreadWhenBlocked === true && world ? nearestSpreadCell(session, world, clear) : null;
+      if (spread) {
+        taken.push(spread);
+        return { follower, x: spread.x, y: spread.y, direction: follower.graphic.direction };
+      }
       return { follower, x: session.x, y: session.y, direction: follower.graphic.direction, hidden: true };
     }
     cursor = at;
@@ -482,6 +487,36 @@ export function followerPositions(
   });
   followerPlacementMemo.set(session, { trail, x: session.x, y: session.y, followers, gap, minDistance, result });
   return result;
+}
+
+/**
+ * companions.spreadWhenBlocked: 궤적에 설 칸이 없을 때 쓰는 자리. 주인공 칸에서 통행 가능한 칸만 밟아 넓혀 가며
+ * (벽 너머로 건너뛰지 않는다) 처음 만나는 「떨어진」 칸(clear — 주인공·앞 동료·막는 이벤트와 몸 길이만큼)을 고른다.
+ * 6칸 안에 없으면 null(숨김으로 돌아간다).
+ */
+function nearestSpreadCell(
+  hero: { readonly x: number; readonly y: number },
+  world: FollowerWorld,
+  clear: (point: { readonly x: number; readonly y: number }) => boolean,
+): { x: number; y: number } | null {
+  const seen = new Set<string>([`${hero.x},${hero.y}`]);
+  let frontier: { x: number; y: number }[] = [{ x: hero.x, y: hero.y }];
+  for (let depth = 0; depth < 6 && frontier.length; depth += 1) {
+    const next: { x: number; y: number }[] = [];
+    for (const cell of frontier) {
+      for (const dir of ["down", "left", "right", "up"] as const) {
+        const x = cell.x + DIR_STEP[dir].dx, y = cell.y + DIR_STEP[dir].dy;
+        const key = `${x},${y}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        if (!inBounds(world.map, x, y) || !isPassable(world.project, world.map, x, y)) continue;
+        if (clear({ x, y })) return { x, y };
+        next.push({ x, y });
+      }
+    }
+    frontier = next;
+  }
+  return null;
 }
 
 type FollowerPlacement = ReturnType<typeof followerPositions>;

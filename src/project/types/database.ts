@@ -2195,6 +2195,12 @@ export interface CompanionConfig {
    * 따라온다(크로노 트리거식). 새 게임·불러오기·changeParty 마다 다시 맞춘다. 생략 = 기존 동작.
    */
   fromParty?: boolean;
+  /**
+   * true 면 궤적에 설 칸이 없는 동료를 숨기지 않고, 주인공에게서 걸어서 닿는 가장 가까운 빈 칸
+   * (주인공·다른 동료·NPC 와 몸 길이만큼 떨어진 칸)에 세운다. 좁은 방에서 순간이동·장면 진입 직후
+   * 동료가 사라지거나 한 칸에 겹쳐 보이던 문제(폴른 스타 가혹 검수 r8·r9). 생략 = 기존 동작(숨김).
+   */
+  spreadWhenBlocked?: boolean;
 }
 
 export interface MonsterCareConfig {
