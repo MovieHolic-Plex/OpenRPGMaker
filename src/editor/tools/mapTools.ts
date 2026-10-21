@@ -1879,7 +1879,9 @@ const backgroundSchema: JsonSchema = {
   type: "object",
   description:
     "맵 뒤 먼 배경(파노라마). 가장 쉬운 길은 preset 하나 — 층 순서·맞추기·층별 움직임·빈 칸에도 보이기가 자동으로 들어간다. "
-    + "배경은 **타일이 없는 칸과 맵 바깥으로만** 보인다. 하늘(절벽·지붕 뒤)은 clearForBackground {x,y,width,height} 로 위쪽 몇 줄을 비우고, "
+    + "배경은 **타일이 없는 칸과 맵 바깥으로만** 보이고 화면에 고정된다(화면 위쪽 칸에는 그림 위쪽이 비친다). "
+    + "하늘(절벽·지붕 뒤)은 clearForBackground {x,y,width,height} 로 위쪽 줄을 비운다 — 지평선 세트(oprn-sky-day·oprn-sunset)의 구름·해·도시 실루엣은 "
+    + "화면 위에서 약 112px(16px 칸 7줄) 안에 있으니 7줄쯤 비워야 다 보이고, 3~4줄이면 하늘 위쪽 색만 보인다. "
     + "섬 둘레 바다·구름 위·우주는 clearForBackground {water:true} 로 물 칸을 비워 배경 바다가 보이게 한다. "
     + "회상·꿈에서 구름을 멈추거나 느리게 하려면 script_cutscene 의 background 비트(flowPercent).",
   properties: {
@@ -1888,22 +1890,20 @@ const backgroundSchema: JsonSchema = {
       enum: [...BACKGROUND_PRESET_IDS],
       description: `견본 세트(주면 imageId·layers 를 대신 채운다). ${BACKGROUND_PRESET_GUIDE}`,
     },
-    layerSet: {
-      type: "string",
-      enum: [...BACKGROUND_PRESET_IDS],
-      description: "preset 의 옛 이름(같은 값).",
-    },
     motion: {
       type: "string",
       enum: [...MAP_BACKGROUND_MOTIONS],
       description: `움직임 프리셋(생략하면 세트 권장값). ${MAP_BACKGROUND_MOTIONS.map((motion) => `${motion}=${MAP_BACKGROUND_MOTION_LABELS[motion].name}(${MAP_BACKGROUND_MOTION_LABELS[motion].hint})`).join(", ")}`,
     },
-    cloudDrift: {
-      type: "number",
-      minimum: -MAP_BACKGROUND_SCROLL_LIMIT,
-      maximum: MAP_BACKGROUND_SCROLL_LIMIT,
-      description: "CraftPix layerSet 전용: 구름·새 층만 이 속도(px/프레임)로 흐른다.",
-    },
+    // CraftPix 세트가 하나라도 남아 있을 때만 보인다(2026-10-07 정리 뒤 0개 — 빈 선택지는 조수를 헷갈리게 한다).
+    ...(OGA_CRAFTPIX_BACKDROP_SETS.length > 0 ? {
+      cloudDrift: {
+        type: "number",
+        minimum: -MAP_BACKGROUND_SCROLL_LIMIT,
+        maximum: MAP_BACKGROUND_SCROLL_LIMIT,
+        description: "CraftPix 세트 전용: 구름·새 층만 이 속도(px/프레임)로 흐른다.",
+      },
+    } : {}),
     imageId: { type: "string", description: "직접 고른 첫 장(맨 아래) 그림 — list_resources(kind:\"backdrop\") 의 id 나 올린 그림 id. preset 을 주면 생략." },
     // 상한은 편집기 입력·로드 정규화와 같은 값이어야 한다 — 툴로만 들어가는 값이 생기면
     // 저장한 뒤 다시 열 때 조용히 잘린다.
@@ -1994,7 +1994,7 @@ const sunlightSchema: JsonSchema = {
 };
 
 /**
- * `background` 인자 → 저작값. `layerSet` 이 있으면 세트를 펴고(`mapBackgroundFromLayerSet`), 같이 준
+ * `background` 인자 → 저작값. `preset`(옛 이름 `layerSet`, 스키마에서는 뺐다)이 있으면 세트를 펴고, 같이 준
  * 개별 값(scrollX·fit·showInEmptyCells 등)은 첫 장에 덮어쓴다. 없으면 예전처럼 그대로 정규화한다.
  */
 function resolveBackgroundArgs(raw: Record<string, unknown>, mapId: string): MapBackground {
@@ -2015,6 +2015,15 @@ function resolveBackgroundArgs(raw: Record<string, unknown>, mapId: string): Map
     });
     candidate = { ...expanded, ...rest, ...(rest.imageId === undefined ? { imageId: expanded!.imageId } : {}), layers: rest.layers ?? expanded!.layers };
   }
+  // list_resources(kind:"backdrop") 는 id 를 「backdrop:<resourceId>」 로 준다 — 그대로 넣어도 받는다.
+  const stripKind = (value: unknown): unknown => typeof value === "string" ? value.replace(/^backdrop:/u, "") : value;
+  candidate = {
+    ...candidate,
+    imageId: stripKind(candidate.imageId),
+    ...(Array.isArray(candidate.layers)
+      ? { layers: candidate.layers.map((layer) => layer && typeof layer === "object" ? { ...layer, imageId: stripKind((layer as { imageId?: unknown }).imageId) } : layer) }
+      : {}),
+  };
   if (typeof candidate.imageId !== "string") {
     throw new ToolError("background 에는 preset 또는 imageId 가 필요합니다.", { code: "invalid-args", mapId });
   }
@@ -2081,7 +2090,7 @@ function loopEdgeOpenings(project: Project, map: GameMap): number {
 // 맵 속성 설정. 크기 변경은 resize_map, 트리 위치는 manage_map_tree로 분리.
 const setMapProperties: ToolDefinition = {
   name: "set_map_properties",
-  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·캐릭터 크기(characterScale — 월드맵에서 캐릭터를 작게)·인카운트·BGM·배경(먼 풍경 파노라마·parallax background — 회상·꿈·하늘 장면은 background.preset 한 칸(맑은 하늘·노을·밤하늘·바다·구름 바다 견본) + clearForBackground 로 하늘 자리나 물 칸 비우기, 층마다 깊이가 달라 시차 스크롤이 된다)·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자·기후(실내 차단/고정/상속)·반복 맵(loop: 가장자리가 반대편으로 이어짐 — 끝없는 숲·꿈 세계·반복 복도는 가장자리 이동 이벤트 대신 이것).",
+  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·캐릭터 크기(characterScale — 월드맵에서 캐릭터를 작게)·인카운트·BGM·맵 배경(먼 풍경 파노라마·맵 바깥 배경·parallax background — 하늘·노을·섬 둘레 바다·별밤·회상·꿈 장면은 background.preset 한 칸(맑은 하늘·노을·밤하늘·바다·구름 바다 견본) + clearForBackground 로 하늘 자리나 물 칸 비우기(물 타일을 지운다 — 되돌리기는 revert_last_edit), 층마다 깊이가 달라 시차 스크롤이 된다. 결과는 get_project_summary 의 maps[].background 로 다시 읽는다)·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자·기후(실내 차단/고정/상속)·반복 맵(loop: 가장자리가 반대편으로 이어짐 — 끝없는 숲·꿈 세계·반복 복도는 가장자리 이동 이벤트 대신 이것).",
   mode: "write",
   parameters: {
     type: "object",

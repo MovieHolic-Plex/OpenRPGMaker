@@ -61,7 +61,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { MAP_BACKGROUND_LAYER_DEPTH } from "@/player/characterDepth";
 import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
 import { mapBackgroundTextureKey } from "@/player/playSceneMapBackground";
-import { mapBackgroundCoverScale, mapBackgroundGameViewport } from "@/project/mapBackground";
+import { mapBackgroundCoverCentre, mapBackgroundCoverScale, mapBackgroundGameViewport } from "@/project/mapBackground";
 import {
   mapBackgroundPreviewEnabled,
   subscribeMapBackgroundPreview,
@@ -2647,8 +2647,11 @@ export class EditScene extends PhaserRuntime.Scene {
       const size = { width: Math.max(1, Number(source.naturalWidth ?? source.width ?? 0)), height: Math.max(1, Number(source.naturalHeight ?? source.height ?? 0)) };
       const scale = mapBackgroundCoverScale(spec.fit, viewport, size);
       if (sprite.tileScaleX !== scale || sprite.tileScaleY !== scale) sprite.setTileScale(scale, scale);
-      const width = spec.loopX ? mapW : Math.min(mapW, Math.ceil(size.width * scale));
-      const height = spec.loopY ? mapH : Math.min(mapH, Math.ceil(size.height * scale));
+      // 플레이와 같이 넘치는 축은 가운데 맞춤 — 위상만 민다(반복을 끈 축은 그만큼 짧게 그린다).
+      const centre = mapBackgroundCoverCentre(spec.fit, viewport, size);
+      if (sprite.tilePositionX !== centre.x / scale || sprite.tilePositionY !== centre.y / scale) sprite.setTilePosition(centre.x / scale, centre.y / scale);
+      const width = spec.loopX ? mapW : Math.min(mapW, Math.ceil(size.width * scale) - centre.x * 2);
+      const height = spec.loopY ? mapH : Math.min(mapH, Math.ceil(size.height * scale) - centre.y * 2);
       if (sprite.width !== width || sprite.height !== height) sprite.setSize(width, height);
       if (sprite.x !== 0 || sprite.y !== 0) sprite.setPosition(0, 0);
     }

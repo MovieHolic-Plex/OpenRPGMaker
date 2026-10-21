@@ -175,7 +175,8 @@ def sunset(out: Path) -> None:
     sky = dither_gradient(w, HORIZON, ["#241a4a", "#3a2160", "#5e2a6e", "#8e3570", "#c44c62", "#e8704e", "#f79a44", "#ffc35c", "#ffdf8a"], 0, HORIZON - 2)
     water = dither_gradient(w, h - HORIZON, ["#e07a52", "#9a3e64", "#5e2a6e", "#3a2160", "#241a4a", "#1a1238"], 0, h - HORIZON)
     base = np.concatenate([sky, water], axis=0)
-    sun_x, sun_y = 214, HORIZON - 8  # 첫 화면(왼쪽 320px) 안 — 배율 1 화면 고정이라 x>320 은 흐르지 않으면 안 보인다
+    # 화면에 맞춤은 넘치는 가로를 가운데 맞춘다(640 그림 → 320 화면이면 x 160..480 이 첫 화면). 해는 그 안 왼쪽.
+    sun_x, sun_y = 374, HORIZON - 8
     for y in range(HORIZON):
         for x in range(w):
             d = math.hypot(x - sun_x, (y - sun_y) * 1.05)

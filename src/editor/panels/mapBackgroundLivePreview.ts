@@ -4,11 +4,11 @@
 // <img> 로 잘라 보여 줘서 「무엇이 어떻게 움직이는지」 도, 게임에서 몇 배로 보이는지도 알 수 없었다.
 // 여기서는 게임 화면 크기(해상도 / 카메라 배율)의 캔버스에 층을 그리고, 주인공이 좌우로 걷는다고 가정해
 // 카메라를 천천히 흔든다 — 깊이(시차)가 눈에 보인다. 식은 `playSceneMapBackground` 와 같다:
-//   cover 배율 = max(화면/그림), 층 위치(논리 px) = 자동 흐름 + 카메라 이동 × 깊이,
+//   cover 배율 = max(화면/그림)(넘치는 축은 가운데 맞춤), 층 위치(논리 px) = 자동 흐름 + 카메라 이동 × 깊이,
 //   반복 축은 그림 폭마다 이어 그리고, 반복을 끈 축은 한 장만(남는 자리는 검다).
 
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { mapBackgroundCoverScale } from "@/project/mapBackground";
+import { mapBackgroundCoverCentre, mapBackgroundCoverScale } from "@/project/mapBackground";
 import type { MapBackground, MapBackgroundLayer, Project } from "@/project/types";
 import { el } from "@/util/dom";
 
@@ -30,10 +30,13 @@ export function drawMapBackgroundLayer(
   layer: MapBackground | MapBackgroundLayer,
   image: { readonly width: number; readonly height: number } & CanvasImageSource,
   viewport: { readonly width: number; readonly height: number },
-  offset: { readonly x: number; readonly y: number },
+  initialOffset: { readonly x: number; readonly y: number },
 ): void {
+  let offset = initialOffset;
   if (!image.width || !image.height) return;
   const scale = mapBackgroundCoverScale(layer.fit, viewport, image);
+  const centre = mapBackgroundCoverCentre(layer.fit, viewport, image);
+  offset = { x: offset.x + centre.x, y: offset.y + centre.y };
   const drawnW = image.width * scale;
   const drawnH = image.height * scale;
   const loopX = layer.loopX !== false;

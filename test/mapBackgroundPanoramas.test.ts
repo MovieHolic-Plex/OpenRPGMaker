@@ -8,6 +8,7 @@ import { createBlankProject } from "@/project/defaults";
 import {
   applyMapBackgroundMotion,
   detectMapBackgroundMotion,
+  mapBackgroundCoverCentre,
   mapBackgroundCoverScale,
   MAP_BACKGROUND_MOTIONS,
   normalizeMapBackground,
@@ -42,6 +43,14 @@ describe("OPRN 파노라마 견본", () => {
   it("지평선 세트는 320×240 화면에 배율 1 로 깔린다(도트가 뭉개지지 않는다)", () => {
     const sky = OPRN_PANORAMA_SETS.find((set) => set.view === "horizon")!.layers[0]!;
     expect(mapBackgroundCoverScale(sky.fit, { width: 320, height: 240 }, sky)).toBe(1);
+  });
+});
+
+describe("화면에 맞춤 가운데 맞춤", () => {
+  it("16:9 그림을 4:3 화면에 깔면 넘치는 가로를 반씩 자른다(왼쪽 위 고정 아님)", () => {
+    expect(mapBackgroundCoverCentre("cover", { width: 320, height: 240 }, { width: 1920, height: 1080 })).toEqual({ x: 53, y: 0 });
+    expect(mapBackgroundCoverCentre("cover", { width: 320, height: 240 }, { width: 640, height: 240 })).toEqual({ x: 160, y: 0 });
+    expect(mapBackgroundCoverCentre("native", { width: 320, height: 240 }, { width: 1920, height: 1080 })).toEqual({ x: 0, y: 0 });
   });
 });
 

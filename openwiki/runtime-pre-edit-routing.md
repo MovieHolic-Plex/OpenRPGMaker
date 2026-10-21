@@ -777,8 +777,9 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
 - **견본 다섯 세트** `src/assets/oprnPanoramas.ts` — 맑은 하늘·노을(옆에서 본 지평선 640×240, cover 로 320×240 에 배율 1),
   밤하늘·별·바다·구름 바다(위에서 본 면, 사방 이음매 없음, native). 코드 손 도트, 생성기 `scripts/content/panoramas/bake_panoramas.py`
   (결정적, 그림 `public/assets/panoramas/`). 세트마다 층별 권장 흐름·깊이가 들어 있고 `mapBackgroundFromPanoramaSet` 가
-  **`showInEmptyCells:true` 로 편다**. 지평선(노을의 해·도시 실루엣, 맑은 하늘의 구름)은 **화면 위쪽 절반·왼쪽 320px 안**에 둔다 —
+  **`showInEmptyCells:true` 로 편다**. 지평선(노을의 해·도시 실루엣, 맑은 하늘의 구름)은 **화면 위쪽 절반·가운데 320px(그림 x 160..480) 안**에 둔다 —
   배경은 화면 고정이라 지붕·절벽 위 윗줄 몇 칸만 비우면 그 위쪽만 비친다(처음 굽기는 해가 맨 아래·x=430 이라 윗줄을 비워도 어두운 보라뿐이었다).
+  **「화면에 맞춤」 은 넘치는 축을 가운데 맞춘다**(`mapBackgroundCoverCentre` — 플레이·탭 미리보기·캔버스 공통). 예전에는 왼쪽 위에 붙어 16:9 그림의 오른쪽 1/4 이 늘 잘렸다.
   등록: 자원 해석기·참조 검증·고르기(맨 앞)·검색. 내보내기는 `resolveAssetResourceUrl` 로 자동으로 실린다.
 - **움직임 프리셋** `MAP_BACKGROUND_MOTIONS`(`src/project/mapBackground.ts`): 고정·느린 시차(층마다 깊이 0.1→0.5)·가로 흐름·세로 흐름·타일과 같이(깊이 1).
   `applyMapBackgroundMotion` / `detectMapBackgroundMotion`. 숫자 칸은 「세부 조정」 접힘 안으로 옮겼다.

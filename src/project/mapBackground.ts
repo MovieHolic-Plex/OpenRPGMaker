@@ -275,6 +275,24 @@ export function mapBackgroundGameViewport(
 }
 
 /** 그림을 게임 화면에 맞추는 배율 — 플레이(`mapBackgroundFitScale`)와 같은 식. */
+/**
+ * 「화면에 맞춤」 으로 넘치는 축을 가운데에 맞추는 위상(논리 px). 넘치지 않는 축과 native 는 0.
+ * 예전에는 왼쪽 위에 붙여 16:9 그림을 4:3 화면에 깔면 오른쪽 1/4 이 늘 잘렸다(2026-10-21 감사).
+ * 플레이(`playSceneMapBackground`)·탭 미리보기·편집기 캔버스가 같은 값을 쓴다.
+ */
+export function mapBackgroundCoverCentre(
+  fit: MapBackgroundFit | undefined,
+  viewport: { readonly width: number; readonly height: number },
+  source: { readonly width: number; readonly height: number },
+): { readonly x: number; readonly y: number } {
+  if (fit !== "cover") return { x: 0, y: 0 };
+  const scale = mapBackgroundCoverScale(fit, viewport, source);
+  return {
+    x: Math.max(0, Math.round((source.width * scale - viewport.width) / 2)),
+    y: Math.max(0, Math.round((source.height * scale - viewport.height) / 2)),
+  };
+}
+
 export function mapBackgroundCoverScale(
   fit: MapBackgroundFit | undefined,
   viewport: { readonly width: number; readonly height: number },
