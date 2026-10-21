@@ -108,7 +108,10 @@ export default {
       ...[0, 1].flatMap(() => closeDialogue(20)),
       evalOp("switches", `() => { for (const id of ["sw_fs_main_started", "sw_fs_main_step0", "sw_fs_main_step1"]) window.__oprnDebug.setSwitch(id, true); return window.__oprnDebug.readState().partyActorIds; }`),
     ], shot: false },
-    { id: "valen-enters", note: "발렌이 북쪽 통로에서 걸어 내려온다", ops: [...valenWalksIn, ...closeDialogue(10), { kind: "hold", dir: null, ms: 1800 }], shot: true },
+    { id: "valen-enters", note: "발렌 등장 — 서술", ops: [...valenWalksIn], shot: true },
+    { id: "valen-enters-close", note: "", ops: [...closeDialogue(10)], shot: false },
+    // 걸어 내려오는 모습을 0.4초 간격으로(채점 규칙: 움직임은 연속 캡처).
+    ...[1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({ id: `valen-walk-${n}`, note: n === 1 ? "발렌이 북쪽 통로에서 걸어 내려온다(0.4초 간격)" : "", ops: [{ kind: "hold", dir: null, ms: 400 }], shot: true })),
     { id: "valen", note: "발렌 앞 — 대열", ops: [untilValenArrived, { kind: "hold", dir: null, ms: 800 }, ...closeDialogue(), ...approachUp("fs_vault", 25, 25), ...talk("up")], shot: true },
     { id: "lose-start", note: "결전(일부러 체력 1로)", ops: [
       evalOp("weak", `() => { for (const id of window.__oprnDebug.readState().partyActorIds) window.__oprnSetActorVitals(id, 1, 999); return true; }`),
