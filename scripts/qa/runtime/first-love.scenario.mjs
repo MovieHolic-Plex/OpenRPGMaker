@@ -78,7 +78,7 @@ const pickC7 = A ? 0 : 1;
 
 const exitCell = at("fl_platform_am", "ev_fl_plat_exit");
 const officeDoor = at("fl_street", "ev_fl_office_door");
-const stairs = at("fl_office", "ev_fl_stairs");
+const elevator = at("fl_office", "ev_fl_elev");
 const minho = at("fl_office", "ev_fl_minho");
 const konDoorPm = at("fl_street_pm", "ev_fl_konbini_pm");
 const cooler = at("fl_konbini", "ev_fl_cooler");
@@ -116,7 +116,7 @@ export default {
     closeMenu("menu-mon-close"),
     { id: "pantry", note: "탕비실 민호", ops: [...talkTo("fl_office", minho, "up"), toChoice(), shotPause(500)], shot: true },
     { id: "after-pantry", note: "선택 2 → 옥상 힌트", ops: [...pick(pickC2), untilStage(4), shotPause(500)], shot: true },
-    { id: "rooftop", note: "옥상의 지후", ops: [...stepInto("fl_office", stairs, "up"), { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 20000 }, shotPause(1500)], shot: true },
+    { id: "rooftop", note: "엘리베이터로 옥상 — 옥상의 지후", ops: [...stepInto("fl_office", elevator, "up"), { kind: "waitFor", testid: "dialogue-box", state: "present", timeoutMs: 30000 }, { kind: "pressUntilJs", key: "Enter", fn: "() => /있다\\./.test(document.querySelector(\"[data-testid='dialogue-box']\")?.textContent ?? '')", maxPresses: 8, settleMs: 900 }, shotPause(1500)], shot: true },
     { id: "c3", note: "옥상 선택", ops: [toChoice(), shotPause(500)], shot: true },
     { id: "after-c3", note: "옥상 선택 결과", ops: [...pick(pickC3), shotPause(1000)], shot: true },
     { id: "night-street", note: "밤거리", ops: [untilStage(6), shotPause(1200)], shot: true },

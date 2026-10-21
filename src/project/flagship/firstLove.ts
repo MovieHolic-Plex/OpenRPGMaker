@@ -26,6 +26,7 @@ import {
 import { buildFirstLoveMaps, FL_MAP, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
 import { buildFirstLoveOpening } from "./firstLoveOpening";
 import type { FlagshipDemoBuildResult } from "./types";
+import { doorValue, type DoorSpec, type MapDoorDef } from "@/project/eventCommands/doorAnimation";
 
 // ── 상태 ──
 const V_STAGE = "var_fl_stage";
@@ -60,12 +61,17 @@ const SE_CAN = "cc0-se-orp-inventory-bottle";
 
 // 음악(사용자 r2: 「BGM 쓰레기」) — 판타지 RPG 마을곡(fld-003·town·inn)과 합성 원곡 둘을 버리고, CC0 카탈로그에서
 // 귀 판정(Gemini 4 Argon, 곡마다 2회, 60초 발췌)으로 현대 연애 장면에 맞는 곡만 여섯 곡 고른다. 근거: openwiki/runtime-pre-edit-routing.md.
-const BGM_OFFICE = "cc0-bgm-rtp-wks-001"; // 경쾌한 피치카토·박수 — 스타트업 사무실 오전(사무 맞음 8.0)
+// r4(사용자: 「무드에 맞게」): 귀 판정(agy Gemini)은 할당량 소진으로 못 했다 — 아래 r4 곡은 카탈로그 설명·AI 청취 설명·측정(밝기·빌드)으로
+// 골랐고 귀 점수가 없다. 옛 곡(괄호)은 Argon 귀 판정 점수가 있던 것.
+const BGM_OFFICE = "cc0-bgm-rtp-qui-001"; // 휘파람·어쿠스틱 셔플 — 월요일 아침 사무실의 밝은 빛(r4, 귀 미판정; 옛 wks-001 8.0 은 측정상 가장 어두운 곡)
 const BGM_ROOF = "cc0-bgm-rtp-rad-002"; // 로파이 재즈합 — 노을 옥상(9.0)
 const BGM_NIGHT = "cc0-bgm-rtp-pon-001"; // 라운지 피아노·브러시 — 밤거리·편의점·야근(9.0)
 const BGM_MEMORY = "cc0-bgm-rtp-rst-001"; // 피아노·어쿠스틱 기타 발라드 — 회상·타이틀(9.0 / 8.0)
-const BGM_CONFESS = "cc0-bgm-rtp-flt-022"; // 첼로·피아노 — 막차 고백·엔딩 B(8.0 / 9.0)
-const BGM_HAPPY = "cc0-bgm-rtp-sea-001"; // 밝게 차오르는 피아노·현 — 엔딩 A(8.5)
+const BGM_CONFESS = "cc0-bgm-rtp-flt-004"; // 피아노 독주가 패드로 차오른다 — 막차 고백(r4 「감정 피아노」, 귀 미판정; 옛 flt-022 8.0)
+const BGM_END_B = "cc0-bgm-rtp-flt-022"; // 하프·현이 벅차오르는 작별 — 엔딩 B(9.0)
+const BGM_RAIN = "cc0-bgm-rtp-flt-017"; // 기타 아르페지오 위 애절한 바이올린, E단조 — 비 오는 밤 질주(r4, 귀 미판정; 옛 무음)
+const BGM_END_C = "cc0-bgm-rtp-mgv-004"; // 솔로 첼로 — 놓친 뒤의 후회, 엔딩 C(r4, 귀 미판정; 옛 rad-002 는 따뜻한 옥상 곡이라 반대 정서)
+const BGM_HAPPY = "cc0-bgm-rtp-res-002"; // 현 패드·뮤직박스가 가벼운 북과 차오르는 귀환곡 — 엔딩 A(r4, 귀 미판정; 옛 sea-001 8.5 는 로파이 칠아웃)
 
 function execTool(project: Project, name: string, args: Record<string, unknown>): { data?: unknown; summary?: string } {
   const ctx = { project, assistantRun: false };
@@ -89,24 +95,64 @@ function like(n: number, jihuEventId?: string): Command[] {
 
 const stage = (n: number): Command => setVar(V_STAGE, "=", n);
 
-const SE_ELEVATOR = "cc0-se-osx-bell-01";
-const SE_DOOR = "cc0-se-osx-door-open";
+const SE_ELEVATOR = "cc0-se-osx-bell-01"; // 승강기 도착 «딩»
+const SE_DOOR = "cc0-se-orp-misc-random4"; // 철문 걸쇠가 당겨지며 풀리는 소리(옥상 문 열기)
+const SE_DOOR_SHUT = "cc0-se-osx-door-close-02"; // 묵직한 철문이 닫히며 걸쇠가 물리는 소리
+const SE_BUTTON = "cc0-se-osx-switch-01"; // 호출 단추 딸깍
+const SE_SLIDE = "easyrpg-sound-evade2"; // 승강기·로비 문이 미끄러지는 바람 소리
+const SE_GLASS_OPEN = "easyrpg-sound-teleport2"; // 유리문 손잡이 걸쇠가 풀리는 소리
+const SE_GLASS_SHUT = "cc0-se-osx-door-close-03"; // 유리문 걸쇠 딸깍
+const SE_CHIME = "easyrpg-sound-song"; // 편의점 자동문 입점 차임(네 음 상행)
 const waitMoves = (): Command => m2("Wait for All Movement");
 
+// ── 문 열고 닫기(화면 효과 doorOpen/doorClose — 칸 그림을 그대로 쓴 문짝) ──
+// 문틀 두께는 그림을 재서 정했다(16px 칸 기준): 승강기 문짝은 층 표시등·테두리 안쪽만, 철문·유리문도 문틀은 제자리.
+const ELEV_FRAME = { l: 4, r: 3, t: 7, b: 1 };
+/** 승강기 문 그림(2×2)은 문 앞 칸(이벤트 칸) 두 줄 위다. */
+const elevDoor = (front: Cell): DoorSpec => ({ x: front.x, y: front.y - 2, w: 2, h: 2, style: "slide", hinge: "left", interior: "lit", frame: ELEV_FRAME });
+/** 거리의 회사 로비 유리문(2×2, 두 짝 미닫이) — 문 이벤트 칸이 그림 아랫줄 왼쪽 칸. */
+const LOBBY_DOOR = (a: FirstLoveAnchors): DoorSpec => ({ x: a.street.officeDoor.x, y: a.street.officeDoor.y - 1, w: 2, h: 2, style: "slide", hinge: "left", interior: "dark", frame: { l: 5, r: 5, t: 3, b: 1 } });
+/** 옥상 계단탑 철문(1×2 여닫이, 경첩 왼쪽). */
+const ROOF_DOOR = (a: FirstLoveAnchors): DoorSpec => ({ x: a.rooftop.door.x, y: a.rooftop.door.y - 1, w: 1, h: 2, style: "swing", hinge: "left", interior: "dark", frame: { l: 2, r: 2, t: 1, b: 2 } });
+/** 문 연출 한 번(기다림 포함). ms 1 = 그 상태로 바로. */
+function doorFx(d: DoorSpec, open: boolean, ms = 600, block = true): Command[] {
+  return [m2("Screen Effect", { effect: open ? "doorOpen" : "doorClose", value: doorValue(d), durationMs: ms }), ...(block && ms > 1 ? [wait(ms)] : [])];
+}
+const quiet = (resourceId: string, volume = 0.6): Command => ({ ...(playSe(resourceId) as object), volume } as unknown as Command);
+/** 카메라를 화면 칸(x, y)로 옮겼다가 / 주인공에게 되돌린다. */
+const panTo = (x: number, y: number, ms = 900): Command => m2("Camera Control", { mode: "panTo", target: "screen", x, y, durationMs: ms, wait: true, easing: "easeInOut" });
+const panBack = (ms = 900): Command => m2("Camera Control", { mode: "return", target: "player", durationMs: ms, wait: true, easing: "easeInOut" });
+
 /**
- * NPC 퇴장 — 실제 걸을 수 있는 길로 출구 앞 칸까지 걸어가, 출구를 보고, 그 자리에서 사라진다(사용자 r2: 「방 한가운데서 사라진다」).
- * 사라짐은 hideSw 스위치(그 NPC 페이지의 swOff 조건)로 한다. 걷는 동안 대사가 이어지게 하려면 begin 만 먼저 넣고 end 를 나중에.
+ * NPC 퇴장 — 실제 걸을 수 있는 길로 승강기 앞까지 걸어가 단추를 누르고, 문이 열리면 타고, 문이 닫힌다(사용자 r4: 「승강기를 진짜로」).
+ * begin = 승강기 앞까지 걷기(기다리지 않는다 — 걷는 동안 대사가 이어진다). end = 도착을 기다려 단추·딩·문 열림·탑승·문 닫힘 → 감춤 스위치.
+ * pan 을 주면 문이 화면 밖일 때 카메라가 승강기로 갔다가 돌아온다(회의실에서 보는 퇴장).
  * firstLoveProbe(scripts/qa/runtime/first-love-probes.mts)가 「사라지기 직전 칸 = 출구 앞」을 검사한다.
  */
-
-function leave(project: Project, mapId: string, eventId: string, from: Cell, exit: { stand: Cell; door: Cell }, hideSw: string, hero: Cell, alsoAvoid: readonly Cell[] = []): { begin: Command; end: Command[] } {
-  // 퇴장은 그 인물의 이동 경로 하나로 끝낸다 — 걸어가 문을 보고, 딩, 서서히 흐려진 뒤 스스로 감춤 스위치를 켠다.
-  // 장면은 기다리지 않고 대사를 이어 간다(VQA r2: 20초 넘게 걷는 뒷모습만 보던 금요일 회의실).
+function leave(project: Project, mapId: string, eventId: string, from: Cell, exit: { stand: Cell; door: Cell }, hideSw: string, hero: Cell, alsoAvoid: readonly Cell[] = [], pan?: Cell): { begin: Command; end: Command[] } {
   const walkOut = walkRoute(project, mapId, eventId, from, exit.stand, [hero, ...alsoAvoid], false) as unknown as Record<string, unknown>;
-  const fade = { kind: "changeOpacity", delta: -64 }, pause = { kind: "wait" };
   walkOut.routeHead = [{ kind: "changeSpeed", delta: 1 }];
-  walkOut.routeTail = [{ kind: "turn", dir: dirToward(exit.stand, exit.door) }, { kind: "playSe", resourceId: SE_ELEVATOR }, pause, fade, pause, fade, pause, fade, pause, fade, { kind: "setSwitch", switchId: hideSw, value: true }];
-  return { begin: walkOut as unknown as Command, end: [] };
+  walkOut.routeTail = [{ kind: "turn", dir: dirToward(exit.stand, exit.door) }];
+  const door = elevDoor(exit.door);
+  const ride = { kind: "moveEvent", eventId, route: { moves: [
+    { kind: "setThrough", enabled: true }, { kind: "move", dir: "up" }, { kind: "move", dir: "up" }, { kind: "turn", dir: "down" }, { kind: "setThrough", enabled: false },
+  ], repeat: false, wait: true, skippable: true } } as unknown as Command;
+  return {
+    begin: walkOut as unknown as Command,
+    end: [
+      ...(pan ? [panTo(pan.x, pan.y)] : []),
+      waitMoves(),
+      quiet(SE_BUTTON), wait(500),
+      playSe(SE_ELEVATOR), wait(300),
+      quiet(SE_SLIDE, 0.45), ...doorFx(door, true, 700),
+      ride,
+      wait(250),
+      quiet(SE_SLIDE, 0.45), ...doorFx(door, false, 700),
+      setSw(hideSw, true),
+      wait(300),
+      ...(pan ? [panBack()] : []),
+    ],
+  };
 }
 
 /** 문 칸: 밟으면 단계에 따라 옮기거나 막는다. */
@@ -264,8 +310,14 @@ function buildMondayMorning(project: Project, a: FirstLoveAnchors): void {
     stage(S.STREET),
   ]));
   add(street,
-    door("ev_fl_office_door", a.street.officeDoor, [stageAtLeast(V_STAGE, S.STREET)],
-      [transfer(FL_MAP.office, a.office.elevatorOut.x, a.office.elevatorOut.y, "down")], think("…"), "down"),
+    // 로비 유리문이 갈라져 열리고, 들어가면 화면이 어두워진다 — 다음 화면은 7층 승강기 안(문이 닫힌 채).
+    door("ev_fl_office_door", a.street.officeDoor, [stageAtLeast(V_STAGE, S.STREET)], [
+      quiet(SE_SLIDE, 0.5), ...doorFx(LOBBY_DOOR(a), true, 600),
+      { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "setThrough", enabled: true }, { kind: "move", dir: "up" }, { kind: "setThrough", enabled: false }], repeat: false, wait: true, skippable: true } } as unknown as Command,
+      ...fadeOut(500),
+      // 승강기 문 앞 칸에 내리고(막힌 그림 칸에는 내릴 수 없다), 화면이 검은 동안 한 칸 올라 칸 안에 선다 — 만남 장면 첫머리.
+      transfer(FL_MAP.office, a.office.elevator.x, a.office.elevator.y, "down", "none"),
+    ], think("…"), "down"),
     door("ev_fl_konbini_am", a.street.konbiniDoor, [stageIs(V_STAGE, 999)], [], think("편의점은 나중에. 첫날부터 지각할 순 없다."), "down"),
     door("ev_fl_subway_am", a.street.subway, [stageIs(V_STAGE, 999)], [], think("방금 내렸잖아. 회사는 저쪽이다."), "down"),
   );
@@ -328,6 +380,12 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     page("minho_pantry", [stageIs(V_STAGE, S.MET)], [
       ...sideBySide(project, FL_MAP.office, "ev_fl_minho", minhoSpot),
       ...say("minho", "happy", "왔어요? 이 커피 머신, 버튼 두 개를 같이 누르면 라떼가 돼요. 우리 회사 최대 기밀."),
+      // 커피 머신 앞의 작은 시연 — 돌아서서 두 단추를 같이 누르고, 기계가 울리면 잔을 들고 돌아선다.
+      face("ev_fl_minho", "up"),
+      quiet(SE_BUTTON, 0.5), wait(120), quiet(SE_BUTTON, 0.5), wait(700),
+      quiet("cc0-se-osx-dishes-02", 0.5), wait(500),
+      faceHero("ev_fl_minho"),
+      ...think("고소한 냄새. …진짜 라떼다."),
       ...say("seoha", "happy", "그런 걸 첫날에 알려 줘도 돼요?"),
       ...say("minho", "happy", "동기잖아요. 기밀은 동기끼리 나누는 거죠."),
       { kind: "changeFriendship", npcKey: "minho", delta: 150 } as Command,
@@ -346,9 +404,9 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
         ] },
       ]),
       ...say("minho", "base", "점심 같이 먹자고 하고 싶은데, 나 오늘 점심 미팅이에요."),
-      ...say("minho", "happy", "대신 팁. 계단 올라가면 옥상이에요. 사람 별로 없고, 바람 좋고. 캔커피 두 개 챙겨 가요."),
+      ...say("minho", "happy", "대신 팁. 엘리베이터에서 R 누르면 옥상이에요. 사람 별로 없고, 바람 좋고. 캔커피 두 개 챙겨 가요."),
       playSe(SE_CAN),
-      ...think("(캔커피 두 개를 챙겼다. 점심시간이다. 계단으로 옥상에 올라가 보자.)"),
+      ...think("(캔커피 두 개를 챙겼다. 점심시간이다. 엘리베이터로 옥상에 올라가 보자.)"),
       // 점심시간으로 건너뛴다 — 지후 자리가 빈 자리로 바뀌는 순간을 화면이 어두운 동안에(눈앞에서 사라지지 않게).
       ...fadeOut(500),
       stage(S.PANTRY),
@@ -364,8 +422,21 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   ]));
 
   // 만남 장면 — 엘리베이터에서 내리자마자.
+  const elev = elevDoor(o.elevator);
   add(office, scene("ev_fl_meet", { x: 1, y: 1 }, S.STREET, [
+    // 승강기 안에서 도착: 닫힌 문 뒤 → 딩 → 문이 열리고 → 걸어 나온다 → 등 뒤에서 문이 닫힌다.
+    ...doorFx(elev, false, 1),
+    { kind: "moveEvent", eventId: "@player", route: { moves: [
+      { kind: "setThrough", enabled: true }, { kind: "move", dir: "up" }, { kind: "turn", dir: "down" }, { kind: "setThrough", enabled: false },
+    ], repeat: false, wait: true, skippable: true } } as unknown as Command,
+    ...fadeIn(500),
     ...caption("스튜디오 늘봄, 7층."),
+    playSe(SE_ELEVATOR), wait(400),
+    quiet(SE_SLIDE, 0.45), ...doorFx(elev, true, 700),
+    { kind: "moveEvent", eventId: "@player", route: { moves: [
+      { kind: "setThrough", enabled: true }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }, { kind: "setThrough", enabled: false },
+    ], repeat: false, wait: true, skippable: true } } as unknown as Command,
+    quiet(SE_SLIDE, 0.4), ...doorFx(elev, false, 700, false),
     walkRoute(project, FL_MAP.office, "ev_fl_lead", leadSpot, leadMeetStop, [o.elevatorOut]),
     face("ev_fl_lead", dirToward(leadMeetStop, o.elevatorOut)),
     ...say("lead", "base", "윤서하 씨? 오정민이에요. 프로덕트팀 팀장."),
@@ -440,12 +511,24 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     ]),
   );
 
-  // 문: 엘리베이터(퇴근 전엔 막힘), 계단(점심에만 옥상으로).
+  // 문: 엘리베이터(점심에만 옥상으로 — 단추·딩·문 열림·탑승·문 닫힘·층 이동), 비상계단(막힘).
   add(office,
-    door("ev_fl_elev", o.elevator, [stageIs(V_STAGE, 999)], [], think("아직 근무 시간이다. 첫날부터 땡땡이는 곤란하다."), "down"),
-    door("ev_fl_stairs", o.stairs, [stageIs(V_STAGE, S.PANTRY)],
-      [transfer(FL_MAP.rooftop, a.rooftop.doorOut.x, a.rooftop.doorOut.y, "down")],
-      think("옥상 계단이다. 점심시간에 올라가 보자.")),
+    door("ev_fl_elev", o.elevator, [stageIs(V_STAGE, S.PANTRY)], [
+      quiet(SE_BUTTON), wait(600),
+      playSe(SE_ELEVATOR), wait(300),
+      quiet(SE_SLIDE, 0.45), ...doorFx(elev, true, 700),
+      { kind: "moveEvent", eventId: "@player", route: { moves: [
+        { kind: "setThrough", enabled: true }, { kind: "move", dir: "up" }, { kind: "move", dir: "up" }, { kind: "turn", dir: "down" }, { kind: "setThrough", enabled: false },
+      ], repeat: false, wait: true, skippable: true } } as unknown as Command,
+      wait(300),
+      quiet(SE_SLIDE, 0.45), ...doorFx(elev, false, 700),
+      wait(400),
+      ...fadeOut(600),
+      ...caption("7층, 8층, 9층… R."),
+      playSe(SE_ELEVATOR), wait(500),
+      transfer(FL_MAP.rooftop, a.rooftop.doorOut.x, a.rooftop.doorOut.y, "down", "none"),
+    ], think("아직 근무 시간이다. 옥상은 점심시간에 가 보자."), "down"),
+    door("ev_fl_stairs", o.stairs, [stageIs(V_STAGE, 999)], [], think("비상계단이다. 옥상은 엘리베이터로 가면 된다고 했다.")),
   );
 
   // ── 옥상 ──
@@ -455,11 +538,19 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     page("jr", [stageIs(V_STAGE, S.PANTRY)], [], { who: "jihu", dir: "down" }),
   ]));
   add(roof, door("ev_fl_roof_door", r.door, [stageAtLeast(V_STAGE, S.ROOF)], [], think("…아직 할 말이 남았다."), "down"));
+  const roofDoor = ROOF_DOOR(a);
   add(roof, scene("ev_fl_roof", { x: 1, y: 1 }, S.PANTRY, [
+    // 계단탑 철문을 밀고 막 나온 참 — 열린 문이 등 뒤에서 무겁게 닫힌다.
+    ...doorFx(roofDoor, true, 1),
+    ...fadeIn(500),
+    quiet(SE_DOOR_SHUT, 0.7), ...doorFx(roofDoor, false, 500),
     bgm(BGM_ROOF),
     face("ev_fl_jihu_roof", "up"),
+    // 문 앞에서 난간 쪽으로 카메라가 천천히 건너가 그 사람을 찾는다.
+    panTo(jihuRail.x - 1, jihuRail.y + 3, 1600),
     ...think("…있다."),
     ...think("난간에 기대 선 뒷모습. 바람에 후드 끈이 흔들린다."),
+    panBack(1000),
     walkRoute(project, FL_MAP.rooftop, "@player", r.doorOut, r.railHero),
     face("@player", "right"),
     face("ev_fl_jihu_roof", "left"),
@@ -503,8 +594,8 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     face("ev_fl_jihu_roof", "up"),
     walkRoute(project, FL_MAP.rooftop, "@player", r.railHero, r.doorOut),
     face("@player", dirToward(r.doorOut, r.door)),
-    playSe(SE_DOOR),
-    wait(250),
+    quiet(SE_DOOR, 0.7), ...doorFx(roofDoor, true, 500),
+    wait(200),
     ...fadeOut(800),
     stopBgm(),
     ...caption("그날 오후는 계정 신청서와 회의와, 처음 듣는 줄임말로 지나갔다."),
@@ -881,8 +972,10 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
   const jihuSpot = seats[1]!; const clientSpot = seats[4]!; const leadSpot = seats[3]!; const minhoSpot = seats[2]!;
   // 손님·지후는 두 번째 엘리베이터(주인공이 내린 칸이 아닌 문)로 나간다 — 엘리베이터 문 바로 앞에서 사라진다.
   const exit = { stand: { x: o.npcExit.x, y: o.npcExit.y + 1 }, door: o.npcExit };
-  const clientOut = leave(project, FL_MAP.officeFri, "ev_fl_f_client", clientSpot, exit, "sw_fl_client_left", o.meetingSeat);
-  const jihuOut = leave(project, FL_MAP.officeFri, "ev_fl_f_jihu", jihuSpot, exit, "sw_fl_jihu_left", o.meetingSeat);
+  // 회의실에서는 승강기가 화면 밖이다 — 탑승하는 동안 카메라가 승강기 쪽으로 올라갔다가 돌아온다.
+  const elevatorView = { x: 13, y: 8 };
+  const clientOut = leave(project, FL_MAP.officeFri, "ev_fl_f_client", clientSpot, exit, "sw_fl_client_left", o.meetingSeat, [], elevatorView);
+  const jihuOut = leave(project, FL_MAP.officeFri, "ev_fl_f_jihu", jihuSpot, exit, "sw_fl_jihu_left", o.meetingSeat, [], elevatorView);
   add(fri,
     event("ev_fl_f_client", "박 본부장", clientSpot, [page("fc", [swOff("sw_fl_client_left")], [], { who: "client", dir: "down" })]),
     event("ev_fl_f_lead", "오정민 팀장", leadSpot, [page("fl", [], [], { who: "lead", dir: "right" })]),
@@ -995,10 +1088,11 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   const p = a.platform;
 
   add(street, scene("ev_fl_run", { x: 2, y: 1 }, S.FRI, [
-    // 밤거리 맵 BGM(라운지 피아노)이 질주에 깔리지 않게 — 화면이 검을 때 끊고 빗소리 화면만 남긴다(VQA2 BGM).
+    // 밤거리 맵 BGM(라운지 피아노)이 질주에 깔리지 않게 — 화면이 검을 때 끊고, 비와 함께 단조 바이올린이 들어온다(r4 「비 오는 밤 쓸쓸하게」).
     stopBgm(),
     ...fadeIn(500),
     { kind: "setWeather", weather: "rain", intensity: 0.6, transitionMs: 800 } as Command,
+    bgm(BGM_RAIN, 1500),
     ...caption("오후 9시 21분. 9시 40분 열차까지 19분."),
     ...think("뛰자.", "(지하철 입구로!)"),
     stage(S.RUN),
@@ -1117,7 +1211,7 @@ function defineEndings(project: Project): void {
     id: END_B,
     name: "늦은 답장",
     conditions: [],
-    presentation: { musicResourceId: BGM_CONFESS, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", credits: ENDING_CREDITS, backgroundResourceId: "oprn-title-romance-school" },
+    presentation: { musicResourceId: BGM_END_B, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", credits: ENDING_CREDITS, backgroundResourceId: "oprn-title-romance-school" },
     epilogue: [
       epiloguePicture("oprn-title-romance-school", 200),
       { kind: "say", text: "열차가 떠나고, 승강장에 혼자 남았다. 연두색 편지지 뒤에, 낯익은 글씨." },
@@ -1132,7 +1226,7 @@ function defineEndings(project: Project): void {
     id: END_C,
     name: "우리 팀의 봄",
     conditions: [],
-    presentation: { musicResourceId: BGM_ROOF, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-title-romance-cafe" },
+    presentation: { musicResourceId: BGM_END_C, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-title-romance-cafe" },
     epilogue: [
       epiloguePicture("oprn-title-romance-cafe", 170),
       { kind: "say", text: "회식 자리. 민호 씨가 건배사를 세 번째 하고 있다." },
@@ -1188,6 +1282,9 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
     if (m && !m.defaultLighting) m.defaultLighting = { ambient: 0, color: "#000000", sources: [] };
   }
   for (const id of initialMapIds) delete project.maps[id];
+  // 시간대 빛: 월요일 오전 사무실은 창으로 든 엷은 아침 햇살, 금요일 오후 세 시 회의실은 기울어 가는 호박빛.
+  if (project.maps[FL_MAP.office]) project.maps[FL_MAP.office]!.defaultLighting = { ambient: 0.07, color: "#fff2d2", sources: [] };
+  if (project.maps[FL_MAP.officeFri]) project.maps[FL_MAP.officeFri]!.defaultLighting = { ambient: 0.12, color: "#ffcf94", sources: [] };
 
 
   const ensureVar = (id: string, name: string): void => { if (!project.variables.some((v) => v.id === id)) project.variables.push({ id, name }); };
@@ -1245,6 +1342,12 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
   for (const [id, name] of Object.entries(shortNames)) if (project.maps[id]) project.maps[id]!.name = name;
   // 현대 연애 장르 잠금 — 메뉴·대사 보조(오토·스킵·기록)·엔딩 목록이 연애 기본 구성을 따르고, 편집기 조수도 현대 칩셋 계열만 새로 쓴다.
   enableGenreLock(project, "romance", "enforce");
+
+  // 사람이 지나다니는 문은 저절로 열고 닫힌다(map.doors auto) — 회의실 유리 여닫이, 편의점 자동문.
+  const meetingDoor: MapDoorDef = { x: 10, y: 13, w: 1, h: 2, style: "swing", hinge: "right", interior: "none", frame: { l: 3, r: 1, t: 4, b: 3 }, auto: true, openSe: SE_GLASS_OPEN, closeSe: SE_GLASS_SHUT };
+  for (const id of [FL_MAP.office, FL_MAP.officePm, FL_MAP.officeFri]) { const m = project.maps[id]; if (m) m.doors = [meetingDoor]; }
+  const konbiniMap = project.maps[FL_MAP.konbini];
+  if (konbiniMap) konbiniMap.doors = [{ x: anchors.konbini.door.x, y: anchors.konbini.door.y, w: 2, h: 1, style: "slide", hinge: "left", interior: "none", frame: { l: 0, r: 0, t: 1, b: 10 }, auto: true, openSe: SE_CHIME }];
 
   resolveRoutes(project);
   // 움직이는 탈것 금지(사용자 r2: 「돌아다니는 오토바이」) — 거리 구성기가 깐 차량 행렬을 걷어 낸다. 서 있는 차(타일)는 그대로다.
