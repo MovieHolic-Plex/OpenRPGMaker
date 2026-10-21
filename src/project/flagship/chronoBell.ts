@@ -630,6 +630,14 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     };
     fixFlash(podPage.commands);
   }
+  // 대사·선택지 상자는 늘 아래에 둔다 — 「주인공 가리지 않기」가 주인공이 아래 절반에 서면 상자를 위로 올려
+  // 천문대 위층·지도 위쪽을 덮었다(가혹 검수 r7 「선택지 상자가 화면 위를 덮음」). 첫 자동 이벤트(포고) 맨 앞에서 한 번 정한다.
+  {
+    const opening = M(ids.hub).events.find((e) => e.id === `ev_${FS_PREFIX}_event`);
+    const page = opening?.pages?.[0];
+    if (!page) throw new Error("[fallen-star] 포고 이벤트를 찾지 못했다");
+    page.commands.unshift({ kind: "displayTextSettings", format: "normal", position: "bottom", preventObscuringPlayer: false, allowEventMovementDuringWait: false } as Command);
+  }
   // 처음엔 소지품이 비어 첫 전투에서 「아이템」이 쓸모없었다(가혹 검수 r1) — 포고 뒤 엘레나가 회복약 셋을 건넨다.
   {
     const herald = findTextList(M(ids.hub), "선생님이 천문대에서 기다리셔");
@@ -702,6 +710,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         "카엘 — 견습 별지기", "엘레나 — 천문대의 마도학자", "이리스 — 별에서 온 기계 소녀", "",
         "천문대장 하넬", "숲지기 브람", "심문관 발렌", "",
         "그날 밤 동쪽 숲에 떨어진 것은 별이 아니었다.", "이리스의 배가 남은 곳, 북쪽 하늘탑으로.", "",
+        "OPRN Studio 공식 데모", "",
         "제2막에서 계속됩니다.",
       ].join("\n"),
     },
