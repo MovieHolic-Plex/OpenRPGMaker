@@ -18106,4 +18106,15 @@
 "준비하는 중…":"Preparing…",
 "컷 연출":"Cutscene",
 "영상":"Video",
-"타일 집기 (I) — 맵에 놓인 타일을 찍어 팔레트 선택으로 가져옵니다":"Pick tile (I) — Stamp a tile placed on the map to select it in the palette"}
+"타일 집기 (I) — 맵에 놓인 타일을 찍어 팔레트 선택으로 가져옵니다":"Pick tile (I) — Stamp a tile placed on the map to select it in the palette",
+"데모를 열지 못했습니다. 잠시 뒤 다시 시도해 주세요.":"Couldn't open the demo. Please try again in a moment.",
+"조건에 맞는 맵이 없습니다.":"No maps match the filter.",
+"검색어 지우기":"Clear search",
+"'{0}' 지점까지 {1}단계를 한 번에 되돌립니다. 계속할까요?":"Undo {1} steps at once back to '{0}'. Continue?",
+"'{0}' 지점까지 {1}단계를 한 번에 다시 실행합니다. 계속할까요?":"Redo {1} steps at once up to '{0}'. Continue?",
+"화면: 패널 — {0}을 {1}으로":"Screen: Panel — Set {0} to {1}",
+"경고 {0}개를 확인하세요. {1}는 계속 진행합니다.":"Check the {0} warnings. {1} will continue.",
+"되돌리기 {0}단계":"Undo {0} steps",
+"다시실행 {0}단계":"Redo {0} steps",
+"{0}단계 되돌리기":"Undo {0} steps",
+"{0}단계 다시실행":"Redo {0} steps"}
