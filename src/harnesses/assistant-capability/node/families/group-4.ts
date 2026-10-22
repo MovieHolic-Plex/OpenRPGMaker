@@ -4,8 +4,9 @@ import {
   MAP, changedCells, clone, eventEdit, eventOf, fail, mapOf, pass, runOn, sameExcept, withoutEvent,
 } from '../matrixNativeSpec';
 import { numArg, strArg, type Family, type FamilyOutcome } from './types';
+import type { JudgeInput, Verdict } from '../matrixNativeSpec';
 import {
-  DOOR, HAMLET, HOUSE, SOUTH, WORLD, attempt, distinct, eventEditOn, eventOn, facingAway, gatesTo, pageWithTransfer,
+  DOOR, HAMLET, HOUSE, SOUTH, WORLD, attempt, distinct, eventEditOn, eventOn, facingAway, gatesTo, gateUnsealCells, newEventOn, pageWithTransfer,
   transfersOfEvent, walkableIn, withHamlet,
 } from './group-4-shared';
 import { GROUP_4_TRANSFER } from './group-4-transfer';
@@ -144,36 +145,49 @@ const removeBarrels: Family = {
 const SE_DOOR = 'cc0-se-osx-door-open';
 const SE_CLOSE = 'cc0-se-osx-door-close-01';
 
+function judgeDoorSe(input: JudgeInput, args: Record<string, unknown>, target: { mapId: string; eventId: string }): Verdict {
+  const { mapId, eventId } = target;
+  const allowWait = args.allowWait === true;
+  return eventEditOn(input, mapId, eventId, (before, after) => {
+    const pageIndex = pageWithTransfer(before);
+    if (pageIndex < 0) return fail(`fixture 의 ${eventId} 에 전이 명령이 없다`);
+    const was: any[] = before.pages[pageIndex].commands ?? [];
+    const now: any[] = after.pages?.[pageIndex]?.commands ?? [];
+    const audio = now.findIndex((command: any) => command.kind === 'playAudio');
+    const transfer = now.findIndex((command: any) => command.kind === 'transfer');
+    if (audio < 0) return fail(`${eventId}: 효과음(playAudio) 명령이 없다`);
+    if (transfer < 0) return fail(`${eventId}: 전이 명령이 사라졌다`);
+    if (audio > transfer) return fail(`${eventId}: 효과음이 이동 뒤에 있다(이동 앞이어야 한다)`);
+    // The sound has to be audible before the screen changes: a wait between sound and transfer is that, nothing more.
+    const kept = now.filter((command: any, index: number) => index !== audio && !(allowWait && command.kind === 'wait'));
+    if (!isDeepStrictEqual(kept, was)) return fail(`${eventId}: 효과음 밖의 명령이 바뀌었다`);
+    const waits = now.filter((command: any) => command.kind === 'wait');
+    if (!allowWait && now.length !== was.length + 1) return fail(`${eventId}: 명령이 ${now.length - was.length}개 늘었다(효과음 하나만 추가되어야 한다)`);
+    if (allowWait && waits.length > 1) return fail(`${eventId}: 대기 명령이 ${waits.length}개다`);
+    return pass(`${eventId}: 전이 앞에 효과음 삽입(${now[audio].resourceId ?? '리소스 미지정'})`);
+  }, { unseal: true });
+}
+
 const doorSe: Family = {
   id: 'door-se',
   area: 'transfer',
   mode: 'write',
   title: '이동 앞에 효과음 하나',
   variants: [
-    { key: 'village-door', prompt: '문이 열릴 때 효과음을 재생해줘.', args: { eventId: DOOR, resourceId: SE_DOOR }, setup: { event: DOOR } },
-    { key: 'south-gate-polite', prompt: '남쪽 출입구로 이동하기 직전에 문 여는 소리를 넣어 주세요.', args: { eventId: SOUTH, resourceId: SE_DOOR }, setup: { event: SOUTH } },
-    { key: 'plaza-door-terse', prompt: '광장 가는 문, 이동 전에 문 닫는 소리 하나.', args: { eventId: 'ev_plaza_back', mapId: 'map_plaza', resourceId: SE_CLOSE }, setup: { event: 'ev_plaza_back' } },
+    { key: 'village-door', prompt: '문이 열릴 때 효과음을 재생해줘.', args: { eventId: DOOR, resourceId: SE_DOOR, allowWait: true }, setup: { event: DOOR } },
+    { key: 'south-gate-polite', prompt: '남쪽 출입구로 이동하기 직전에 문 여는 소리를 넣어 주세요.', args: { eventId: SOUTH, resourceId: SE_DOOR, allowWait: true }, setup: { event: SOUTH } },
+    // 「광장 가는 문」은 마을 문(광장으로 가는 쪽)을 가리킬 수도 있다 — 선택된 돌아오는 문과 둘 다 정답으로 본다.
+    { key: 'plaza-door-terse', prompt: '광장 가는 문, 이동 전에 문 닫는 소리 하나.', args: { eventId: 'ev_plaza_back', mapId: 'map_plaza', resourceId: SE_CLOSE, allowWait: true, alsoAccept: [{ mapId: MAP, eventId: DOOR }] }, setup: { event: 'ev_plaza_back' } },
     { key: 'door-explained', prompt: '마을 문 전이 명령 바로 앞에 효과음 재생 명령을 하나만 넣어 주세요. 다른 명령 순서는 그대로 두세요.', args: { eventId: DOOR, resourceId: SE_DOOR }, setup: { event: DOOR } },
-    { key: 'gate-casual', prompt: '출입구 밟으면 소리 나게 해줘.', args: { eventId: SOUTH, resourceId: SE_DOOR }, setup: { event: SOUTH } },
+    { key: 'gate-casual', prompt: '출입구 밟으면 소리 나게 해줘.', args: { eventId: SOUTH, resourceId: SE_DOOR, allowWait: true }, setup: { event: SOUTH } },
   ],
   judge(input, args) {
-    const eventId = strArg(args, 'eventId');
-    const mapId = typeof args.mapId === 'string' ? args.mapId : MAP;
-    return eventEditOn(input, mapId, eventId, (before, after) => {
-      const pageIndex = pageWithTransfer(before);
-      if (pageIndex < 0) return fail(`fixture 의 ${eventId} 에 전이 명령이 없다`);
-      const was: any[] = before.pages[pageIndex].commands ?? [];
-      const now: any[] = after.pages?.[pageIndex]?.commands ?? [];
-      const audio = now.findIndex((command: any) => command.kind === 'playAudio');
-      const transfer = now.findIndex((command: any) => command.kind === 'transfer');
-      if (audio < 0) return fail(`${eventId}: 효과음(playAudio) 명령이 없다`);
-      if (transfer < 0) return fail(`${eventId}: 전이 명령이 사라졌다`);
-      if (audio > transfer) return fail(`${eventId}: 효과음이 이동 뒤에 있다(이동 앞이어야 한다)`);
-      if (now.length !== was.length + 1) return fail(`${eventId}: 명령이 ${now.length - was.length}개 늘었다(효과음 하나만 추가되어야 한다)`);
-      const kept = now.filter((_command, index) => index !== audio);
-      if (!isDeepStrictEqual(kept, was)) return fail(`${eventId}: 효과음 밖의 명령이 바뀌었다`);
-      return pass(`${eventId}: 전이 앞에 효과음 삽입(${now[audio].resourceId ?? '리소스 미지정'})`);
-    });
+    const targets = [
+      { mapId: typeof args.mapId === 'string' ? args.mapId : MAP, eventId: strArg(args, 'eventId') },
+      ...((args.alsoAccept as Array<{ mapId: string; eventId: string }> | undefined) ?? []),
+    ];
+    const verdicts = targets.map(target => judgeDoorSe(input, args, target));
+    return verdicts.find(verdict => verdict.ok) ?? verdicts[0]!;
   },
   reference(project, args) {
     const eventId = strArg(args, 'eventId');
@@ -206,6 +220,9 @@ const doorSe: Family = {
         mapId, eventId, pageIndex,
         set: { commands: [...was.filter(command => command.kind !== 'transfer'), audio] },
       })),
+      // 허용한 두 동반 편집의 경계: 게이트에서 먼 칸을 열거나, 대기 대신 다른 명령을 넣으면 실패다.
+      attempt(() => runOn(clone(reference), 'paint_tiles', { mapId, layer: 'lower', mode: 'cells', tile: 737, cells: [{ x: Math.max(0, event.x - 3), y: Math.max(0, event.y - 3) }] })),
+      insertAt(0, [audio, { kind: 'text', body: '문이 열린다.' }]),
     ]);
   },
 };
@@ -227,14 +244,18 @@ const doorToPlaza: Family = {
     const eventId = strArg(args, 'eventId');
     const mapId = typeof args.mapId === 'string' ? args.mapId : MAP;
     const targetMapId = strArg(args, 'targetMapId');
+    // 이어 준 뒤 돌아오는 문을 새로 놓는 것은 같은 연결의 반대쪽이다 — 대상 맵의 **기존** 이벤트·타일은 그대로여야 한다.
+    const backGate = newEventOn(input.before, input.after, targetMapId).find((event: any) => transfersOfEvent(event).some((command: any) => command.mapId === mapId));
+    const scope = backGate ? { blank: (doc: any) => { const map = doc.maps[targetMapId]; if (map) map.events = (map.events ?? []).filter((event: any) => event.id !== backGate.id); } } : {};
     return eventEditOn(input, mapId, eventId, (_before, after) => {
       const transfers = transfersOfEvent(after).filter((command: any) => command.mapId === targetMapId);
       if (!transfers.length) return fail(`${eventId}: ${targetMapId} 로 가는 전이 명령이 없다`);
       const landings = transfers.map((command: any) => ({ x: command.x, y: command.y }));
       const good = landings.find(cell => walkableIn(input.after, targetMapId, cell.x, cell.y));
       if (!good) return fail(`${eventId}: 착지 ${landings.map(cell => `(${cell.x},${cell.y})`).join(', ')} 가 ${targetMapId} 의 통행 가능 칸이 아니다`);
+      if (backGate && !transfersOfEvent(backGate).some((command: any) => command.mapId === mapId)) return fail('돌아오는 문이 원래 맵으로 오지 않는다');
       return pass(`${eventId} → ${targetMapId} (${good.x},${good.y})`);
-    });
+    }, { unseal: true, ...scope });
   },
   reference(project, args) {
     const eventId = strArg(args, 'eventId');
@@ -262,6 +283,8 @@ const doorToPlaza: Family = {
       patch(strArg(args, 'targetMapId'), 40, 40),
       right && attempt(() => runOn(right, 'paint_tiles', { mapId, layer: 'lower', mode: 'cells', tile: 534, cells: [{ x: 8, y: 5 }] })),
       attempt(() => runOn(clone(project), 'patch_event_page', { mapId, eventId, pageIndex: 0, set: { trigger: { kind: 'playerTouch' } } })),
+      // 돌아오는 문을 놓으면서 대상 맵의 **기존** 이벤트까지 바꾸면 부작용이다.
+      right && attempt(() => runOn(right, 'remove_event', { mapId: targetMapId, eventId: (mapOf(right, targetMapId).events as any[])[0]?.id })),
     ]);
   },
 };
@@ -310,6 +333,7 @@ const alignPortals: Family = {
     };
     if (!accepts(nowOut, out, otherGate(out))) return fail(`${out.eventId} 방향이 ${nowOut.direction ?? '(없음)'} — ${out.dir} 여야 한다`);
     if (!accepts(nowBack, back, otherGate(back))) return fail(`${back.eventId} 방향이 ${nowBack.direction ?? '(없음)'} — ${back.dir} 여야 한다`);
+    const unsealed = gateUnsealCells(input, out.mapId, out.eventId);
     const keep = (project: Project) => {
       const copy: any = clone(project);
       for (const side of [out, back]) {
@@ -318,6 +342,8 @@ const alignPortals: Family = {
           for (const page of event.pages ?? []) for (const command of page.commands ?? []) if (command.kind === 'transfer') delete command.direction;
         }
       }
+      const source = mapOf(input.before, out.mapId);
+      for (const cell of unsealed) copy.maps[out.mapId].lowerTiles[cell.y * source.width + cell.x] = source.lowerTiles[cell.y * source.width + cell.x];
       return copy;
     };
     return isDeepStrictEqual(keep(input.before), keep(input.after))
@@ -360,6 +386,8 @@ const alignPortals: Family = {
       setDirection(clone(project), out),
       swapped,
       movedLanding,
+      // 게이트에서 먼 칸을 여는 것은 방향 정렬이 아니다.
+      attempt(() => runOn(clone(reference), 'paint_tiles', { mapId: out.mapId, layer: 'lower', mode: 'cells', tile: 737, cells: [{ x: 4, y: 4 }] })),
     ]);
   },
 };
@@ -380,9 +408,12 @@ const worldmapNorth: Family = {
   judge(input, args) {
     const worldId = strArg(args, 'worldMapId');
     const villageId = strArg(args, 'villageMapId');
-    const north = gatesTo(input.after, worldId, villageId).filter(({ event }) => event.y <= 2);
+    // 「북쪽」은 띠가 아니라 월드맵 위쪽 1/3 이다 — y<=2 로 좁히면 정답(11,3)을 실패시킨다.
+    const worldHeight = mapOf(input.after, worldId)?.height ?? 18;
+    const northEdge = Math.max(3, Math.floor(worldHeight / 3));
+    const north = gatesTo(input.after, worldId, villageId).filter(({ event }) => event.y < northEdge);
     const way = gatesTo(input.after, villageId, worldId);
-    if (!north.length) return fail(`${worldId} 북쪽(y<=2)에 ${villageId} 로 가는 출입구가 없다`);
+    if (!north.length) return fail(`${worldId} 북쪽(y<${northEdge})에 ${villageId} 로 가는 출입구가 없다`);
     if (!way.length) return fail(`${villageId} 에서 ${worldId} 로 가는 출입구가 없다`);
     for (const mapId of [worldId, villageId]) {
       for (const event of mapOf(input.before, mapId)?.events ?? []) {

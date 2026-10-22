@@ -53,10 +53,70 @@ export const facesGate = (command: any, gate: { x: number; y: number }): boolean
   return command.direction !== facingAway(gate, { x: command.x, y: command.y });
 };
 
-export function eventEditOn(input: { before: Project; after: Project }, mapId: string, eventId: string, check: (before: any, after: any) => Verdict): Verdict {
+const TILE_KEYS = ['lowerTiles', 'upperTiles', 'lowerOverlayTiles', 'upperOverlayTiles', 'shadowBits'] as const;
+
+/** Cell is walkable: neither the floor tile nor the tile stacked on it is solid. Reads tileMeta, so no project clone. */
+export function passableCell(project: Project, mapId: string, x: number, y: number): boolean {
+  const map = mapOf(project, mapId);
+  if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+  const meta = (project as any).tilesets?.[map.tilesetId]?.tileMeta;
+  const solid = (tile: number) => tile >= 0 && meta?.[tile]?.passage === 'solid';
+  const index = y * map.width + x;
+  return !solid(map.lowerTiles?.[index] ?? -1) && !solid(map.upperTiles?.[index] ?? -1);
+}
+
+/**
+ * The fixture's south gate stands on a cell that bushes seal off, so every model that checks reachability
+ * clears one or two bushes before it can even trigger the door it was asked to edit. That repair is part of
+ * doing the request — but only within one cell of the gate, only floor tiles, and only blocked → walkable.
+ * Anything else stays a side effect.
+ */
+export function gateUnsealCells(input: { before: Project; after: Project }, mapId: string, eventId: string): Array<{ x: number; y: number }> {
+  const event = eventOn(input.after, mapId, eventId);
+  const was = eventOn(input.before, mapId, eventId);
+  if (!event || !was) return [];
+  const before = mapOf(input.before, mapId), after = mapOf(input.after, mapId);
+  if (!before || !after || before.width !== after.width || before.height !== after.height) return [];
+  const cells: Array<{ x: number; y: number }> = [];
+  for (const layer of TILE_KEYS) {
+    const left: number[] = before[layer] ?? [], right: number[] = after[layer] ?? [];
+    for (let i = 0; i < Math.max(left.length, right.length); i++) {
+      const l = left[i] ?? (layer === 'shadowBits' ? 0 : -1);
+      const r = right[i] ?? (layer === 'shadowBits' ? 0 : -1);
+      if (l === r) continue;
+      if (layer !== 'lowerTiles') return [];
+      const cell = { x: i % before.width, y: Math.floor(i / before.width) };
+      if (Math.max(Math.abs(cell.x - event.x), Math.abs(cell.y - event.y)) > 1) return [];
+      if (passableCell(input.before, mapId, cell.x, cell.y) || !passableCell(input.after, mapId, cell.x, cell.y)) return [];
+      cells.push(cell);
+    }
+  }
+  return cells.length <= 4 ? cells : [];
+}
+
+/** Events on `mapId` that exist only in `after` — the gate the turn itself created. */
+export const newEventOn = (before: Project, after: Project, mapId: string): any[] => {
+  const known = new Set((mapOf(before, mapId)?.events ?? []).map((event: any) => event.id));
+  return (mapOf(after, mapId)?.events ?? []).filter((event: any) => !known.has(event.id));
+};
+
+export type EditScope = {
+  /** Let the model clear the bushes sealing the edited gate (see gateUnsealCells). */
+  unseal?: boolean;
+  /** Further allowance, applied to both documents before the comparison. */
+  blank?: (doc: any) => void;
+};
+
+export function eventEditOn(input: { before: Project; after: Project }, mapId: string, eventId: string, check: (before: any, after: any) => Verdict, scope: EditScope = {}): Verdict {
+  const unsealed = scope.unseal ? gateUnsealCells(input, mapId, eventId) : [];
   const blank = (doc: any) => {
     const map = doc.maps[mapId];
     if (map) map.events = (map.events ?? []).filter((event: any) => event.id !== eventId);
+    const source = mapOf(input.before, mapId);
+    if (unsealed.length && source) {
+      for (const cell of unsealed) doc.maps[mapId].lowerTiles[cell.y * source.width + cell.x] = source.lowerTiles[cell.y * source.width + cell.x];
+    }
+    scope.blank?.(doc);
   };
   if (!sameExcept(input.before, input.after, blank)) return fail(`${eventId} 밖의 내용이 바뀌었다`);
   const before = eventOn(input.before, mapId, eventId), after = eventOn(input.after, mapId, eventId);

@@ -217,6 +217,70 @@ export function blockedCells(project: Project, rect: Rect): Array<{ x: number; y
   return cells;
 }
 
+/** One map's blocked cells, read from the editor's own region grid for that map. */
+export function blockedOn(project: Project, mapId: string): Set<string> {
+  const map = mapOf(project, mapId);
+  if (!map) return new Set();
+  const context: any = { project, currentMapId: mapId, assistantRun: false };
+  const result: any = runTool(context, 'get_map_region', { mapId, x: 0, y: 0, w: map.width, h: map.height });
+  const grid: string[] = result.data?.grid ?? [];
+  const blocked = new Set<string>();
+  grid.forEach((row, dy) => [...row].forEach((glyph, dx) => { if (glyph === '#') blocked.add(`${dx},${dy}`); }));
+  return blocked;
+}
+
+/** Walkable cells of one map, reached on foot from `from` (4-directional, blocked cells excluded). */
+export function walkableFrom(project: Project, mapId: string, from: { x: number; y: number }): Set<string> {
+  const map = mapOf(project, mapId);
+  const blocked = blockedOn(project, mapId);
+  const seen = new Set<string>();
+  if (!map || blocked.has(`${from.x},${from.y}`)) return seen;
+  const queue = [`${from.x},${from.y}`];
+  seen.add(queue[0]!);
+  while (queue.length) {
+    const [x, y] = queue.pop()!.split(',').map(Number) as [number, number];
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = x + dx, ny = y + dy;
+      if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height) continue;
+      const key = `${nx},${ny}`;
+      if (seen.has(key) || blocked.has(key)) continue;
+      seen.add(key);
+      queue.push(key);
+    }
+  }
+  return seen;
+}
+
+/**
+ * Maps a player can actually enter from the start position. A door only links when its own cell is walkable
+ * from where the player arrives — the fixture's south gate is sealed off, so the map behind it is unreachable
+ * even though the transfer command exists.
+ */
+export function reachableMaps(project: Project): Set<string> {
+  const start = (project as any).startMapId ?? MAP;
+  const seen = new Set<string>([start]);
+  const queue: Array<{ mapId: string; from: { x: number; y: number } }> = [
+    { mapId: start, from: (project as any).startPos ?? { x: 0, y: 0 } },
+  ];
+  while (queue.length) {
+    const current = queue.shift()!;
+    const map = mapOf(project, current.mapId);
+    if (!map) continue;
+    const cells = walkableFrom(project, current.mapId, current.from);
+    for (const event of map.events ?? []) {
+      if (!cells.has(`${event.x},${event.y}`)) continue;
+      for (const page of event.pages ?? []) for (const command of page.commands ?? []) {
+        if (command?.kind !== 'transfer' || typeof command.mapId !== 'string' || seen.has(command.mapId)) continue;
+        seen.add(command.mapId);
+        queue.push({ mapId: command.mapId, from: { x: command.x ?? 0, y: command.y ?? 0 } });
+      }
+    }
+  }
+  return seen;
+}
+
+export const orphanMaps = (project: Project): string[] => Object.keys((project as any).maps).filter(id => !reachableMaps(project).has(id));
+
 /** "(3,2)", "3,2", "x=3, y=2", "(3, 2)" → coordinate pairs. */
 export function coordinatesIn(text: string): Array<{ x: number; y: number }> {
   const pairs: Array<{ x: number; y: number }> = [];

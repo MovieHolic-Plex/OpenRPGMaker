@@ -885,11 +885,17 @@ const chainDbItemThenShop: Family = {
     const before = rows(input.before, 'items'), after = rows(input.after, 'items');
     const known = new Set(before.map((row: any) => row.id));
     const added = after.filter((row: any) => !known.has(row.id));
-    if (added.length !== 1) return fail(`${label}: 새 아이템이 ${added.length}개다`);
-    const item = added[0];
+    // 「등불 기름을 만들어」 — 같은 이름의 아이템이 이미 있으면 그 가격을 맞추는 것이 정답이다(중복 생성은 오히려 나쁘다).
+    const existing = before.find((row: any) => norm(String(row.name ?? '')) === norm(itemName));
+    const item = existing
+      ? after.find((row: any) => row.id === existing.id)
+      : (added.length === 1 ? added[0] : undefined);
+    if (!item) return fail(added.length ? `${label}: 새 아이템이 ${added.length}개다` : `${label}: 새 아이템이 0개이고 같은 이름의 아이템도 없다`);
+    if (!existing && added.length !== 1) return fail(`${label}: 새 아이템이 ${added.length}개다`);
+    if (existing && added.length) return fail(`${label}: 같은 이름의 아이템이 이미 있는데 새로 만들었다`);
     if (norm(String(item.name ?? '')) !== norm(itemName)) return fail(`${label}: 이름이 「${item.name}」`);
     if (Number(item.price) !== price) return fail(`${label}: 가격 ${item.price}(요청 ${price})`);
-    if (!sameRows(before, after, (row: any) => known.has(row.id))) return fail(`${label}: 기존 아이템이 바뀌었다`);
+    if (!sameRows(before, after, (row: any) => row.id !== item.id && known.has(row.id))) return fail(`${label}: 기존 아이템이 바뀌었다`);
     const shopBefore = shopsOf(eventOf(input.before, eventId)).flatMap(shopGoods);
     const shopAfter = shopsOf(eventOf(input.after, eventId)).flatMap(shopGoods);
     if (!shopAfter.includes(item.id)) return fail(`${label}: 만든 아이템이 상점 재고에 없다`);
@@ -901,11 +907,15 @@ const chainDbItemThenShop: Family = {
     const eventId = strArg(args, 'eventId');
     const itemId = strArg(args, 'itemId');
     const itemName = strArg(args, 'itemName');
-    let next = runOn(project, 'upsert_item', { item: { id: itemId, name: itemName, price: numArg(args, 'price'), description: `${itemName} 아이템입니다.` } });
+    const price = numArg(args, 'price');
+    const existing = rows(project, 'items').find((row: any) => norm(String(row.name ?? '')) === norm(itemName));
+    const next = runOn(project, 'upsert_item', {
+      item: existing ? { ...existing, price } : { id: itemId, name: itemName, price, description: `${itemName} 아이템입니다.` },
+    });
+    const stockId = existing ? existing.id : itemId;
     const shop = shopsOf(eventOf(next, eventId))[0];
-    const stock = [...(shop?.stock ?? []), { itemId }];
-    next = runOn(next, 'set_shop_stock', { mapId: MAP, eventId, stock });
-    return next;
+    const stock = [...(shop?.stock ?? []), { itemId: stockId }];
+    return runOn(next, 'set_shop_stock', { mapId: MAP, eventId, stock });
   },
   wrongs(project, args): FamilyOutcome[] {
     const eventId = strArg(args, 'eventId');
@@ -914,6 +924,7 @@ const chainDbItemThenShop: Family = {
     const price = numArg(args, 'price');
     const made = runOn(project, 'upsert_item', { item: { id: itemId, name: itemName, price } });
     const shop = shopsOf(eventOf(project, eventId))[0];
+    const existing = rows(project, 'items').find((row: any) => norm(String(row.name ?? '')) === norm(itemName));
     return [
       // 부분 수행: 아이템만 만들고 상점에 넣지 않았다.
       made,
@@ -923,7 +934,9 @@ const chainDbItemThenShop: Family = {
       runOn(runOn(project, 'upsert_item', { item: { id: itemId, name: itemName, price: price + 25 } }), 'set_shop_stock', { mapId: MAP, eventId, stock: [...(shop?.stock ?? []), { itemId }] }),
       // 잘못된 물건: 만든 아이템이 아니라 다른 아이템을 재고에 넣었다.
       runOn(made, 'set_shop_stock', { mapId: MAP, eventId, stock: [...(shop?.stock ?? []), { itemId: 'item_bread' }] }),
-    ];
+      // 같은 이름이 이미 있는데 새 아이템을 하나 더 만들고 기존 가격은 그대로 뒀다.
+      existing ? runOn(made, 'set_shop_stock', { mapId: MAP, eventId, stock: [...(shop?.stock ?? []), { itemId }] }) : undefined,
+    ].filter((outcome): outcome is Project => Boolean(outcome));
   },
 };
 
@@ -1001,8 +1014,9 @@ const ambiguousThisNpc: Family = {
     if (!after) return fail(`${label}: 선택한 이벤트가 삭제됐다`);
     // 「손봐 줘」에는 무엇을 손볼지가 없다: 할 일을 되묻는 답도 유효하다(무변경 문서는 selfcheck 에서 여전히 실패한다).
     if (isDeepStrictEqual(before, after)) {
-      return /[?？]|어떤|무엇|어느|어떻게/iu.test(input.answer)
-        ? pass(`${label}: 변경 없이 무엇을 손볼지 되물었다`)
+      const honest = /이미|그대로|바뀔\s*(것|게|곳|칸)|손볼\s*(것|게|곳|칸)|비어\s*있|깨끗/u.test(input.answer);
+      return honest || /[?？]|어떤|무엇|어느|어떻게/iu.test(input.answer)
+        ? pass(`${label}: 변경 없이 무엇을 손볼지 밝혔다`)
         : fail(`${label}: 선택한 이벤트가 바뀌지 않았다`);
     }
     return pass(`${label}: 선택한 이벤트만 수정`);
@@ -1054,7 +1068,9 @@ const ambiguousTidyArea: Family = {
     if (cells.length && cleared.length === rect.w * rect.h) return fail(`${label}: 영역 바닥을 전부 지웠다`);
     const touchedInside = changedEvents(input.before, input.after).some(event => inside(rect, event.x, event.y));
     if (!cells.length && !touchedInside) {
-      return /[?？]|어떤|무엇|어느|어떻게/iu.test(input.answer) ? pass(`${label}: 변경 없이 무엇을 할지 되물었다`) : fail(`${label}: 아무 개선도 없고 되묻지도 않았다`);
+      // 「이미 깨끗하다」는 정직한 답이다 — 없던 변경을 지어내지 않은 것이지 아무 말도 안 한 것이 아니다.
+      const honest = /이미|그대로|바뀔\s*(것|게|곳|칸)|정리할\s*(것|게|곳|칸)|손볼\s*(것|게|곳|칸)|비어\s*있|깨끗/u.test(input.answer);
+      return honest || /[?？]|어떤|무엇|어느|어떻게/iu.test(input.answer) ? pass(`${label}: 변경 없이 상태를 밝혔다`) : fail(`${label}: 아무 개선도 없고 되묻지도 않았다`);
     }
     return pass(`${label}: 영역 안 ${cells.length}칸만 작게 정리`);
   },

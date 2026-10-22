@@ -4,7 +4,7 @@ import { MAP, clone, fail, mapOf, pass, runOn, sameExcept } from '../matrixNativ
 import { numArg, strArg, type Family, type FamilyOutcome } from './types';
 import {
   DOOR, HAMLET, HOUSE, PLAZA, SOUTH, attempt, distinct, eventEditOn, eventOn, facesGate, gatesTo, manhattan,
-  pageWithTransfer, transfersOfEvent, walkableIn, withHamlet,
+  pageWithTransfer, passableCell, transfersOfEvent, walkableIn, withHamlet,
 } from './group-4-shared';
 
 const transferTwoWay: Family = {
@@ -49,6 +49,12 @@ const transferTwoWay: Family = {
         const map = doc.maps[mapId];
         if (map) map.events = (map.events ?? []).filter((event: any) => !touched.has(event.id));
       }
+      // Linking two maps in the editor also records the connection between them; a connection that drags in a third map is still a side effect.
+      const pair = new Set([from.mapId, to.mapId]);
+      doc.mapConnections = (doc.mapConnections ?? []).filter((connection: any) => {
+        const ends = [connection.from?.mapId, connection.to?.mapId];
+        return !ends.every((mapId: any) => pair.has(mapId));
+      });
     };
     return sameExcept(input.before, input.after, blank)
       ? pass(`양방향 전이 ${out.length}/${back.length}, 착지가 서로의 문 앞`)
@@ -87,6 +93,9 @@ const transferTwoWay: Family = {
       noReturn,
       facesDoor,
       attempt(() => runOn(clone(reference), 'paint_tiles', { mapId: from.mapId, layer: 'lower', mode: 'cells', tile: 534, cells: [{ x: 2, y: 2 }] })),
+      attempt(() => runOn(clone(reference), 'upsert_map_connection', {
+        connection: { id: 'conn_wrong', playerEnabled: true, npcEnabled: false, from: { mapId: from.mapId, x: from.x, y: from.y }, to: { mapId: 'map_field', x: 4, y: 4 } },
+      })),
     ]);
   },
 };
@@ -203,7 +212,7 @@ const transferConditional: Family = {
         if (!isDeepStrictEqual(now[field], original[field])) return fail(`${eventId}: 전이의 ${field} 가 바뀌었다`);
       }
       return pass(`${eventId} 전이가 ${switchId} 조건으로만 열린다`);
-    });
+    }, { unseal: true });
   },
   reference(project, args) {
     const eventId = strArg(args, 'eventId');
@@ -232,6 +241,8 @@ const transferConditional: Family = {
         mapId, eventId, pageIndex,
         set: { conditions: [{ kind: 'switch', switchId, value: true }], commands: [{ kind: 'text', body: '문이 잠겨 있다.' }] },
       })),
+      // 게이트에서 먼 칸을 여는 것은 문을 여는 일이 아니다.
+      attempt(() => runOn(clone(reference), 'paint_tiles', { mapId, layer: 'lower', mode: 'cells', tile: 737, cells: [{ x: 2, y: 2 }] })),
     ]);
   },
 };
@@ -263,7 +274,7 @@ const transferFadeChoice: Family = {
         if (!isDeepStrictEqual(transfers[0][field], original[field])) return fail(`${eventId}: 페이드 밖의 값(${field})이 바뀌었다`);
       }
       return pass(`${eventId} 페이드만 ${fade}`);
-    });
+    }, { unseal: true });
   },
   reference(project, args) {
     const eventId = strArg(args, 'eventId');
@@ -299,6 +310,7 @@ const transferFadeChoice: Family = {
       patch(fade === 'white' ? 'black' : 'white'),
       patch(fade, command => ({ ...command, x: command.x + 2 })),
       returnDoorToo,
+      attempt(() => runOn(clone(reference), 'paint_tiles', { mapId, layer: 'lower', mode: 'cells', tile: 737, cells: [{ x: 3, y: 3 }] })),
     ]);
   },
 };
@@ -311,15 +323,15 @@ const chainCreateThenLink: Family = {
   variants: [
     { key: 'well-yard', prompt: '우물 마당이라는 새 맵(20×14)을 만들고 집 문과 양방향으로 이어줘.', args: { name: '우물 마당', width: 20, height: 14, from: { mapId: MAP, x: 7, y: 6 }, to: { x: 10, y: 8 } }, setup: { event: HOUSE } },
     { key: 'well-yard-polite', prompt: '「우물 마당」이라는 20×14 맵을 새로 만들어 주시고, 집 문에서 갔다가 돌아올 수 있게 연결해 주세요.', args: { name: '우물 마당', width: 20, height: 14, from: { mapId: MAP, x: 7, y: 6 }, to: { x: 6, y: 9 } }, setup: { event: HOUSE } },
-    { key: 'cellar', prompt: '지하 창고 16×12 맵 만들고 남쪽 출입구랑 왕복 연결해줘.', args: { name: '지하 창고', width: 16, height: 12, from: { mapId: MAP, x: 12, y: 16 }, to: { x: 8, y: 10 } }, setup: { event: SOUTH } },
-    { key: 'hamlet-yard-explained', prompt: '「안동 뒷마당」 18×12 맵을 새로 만든 뒤, 안동 어귀에서 그 맵으로 왕복 이동할 수 있게 해 주세요. 기존 맵과 이벤트는 그대로 두세요.', args: { name: '안동 뒷마당', width: 18, height: 12, from: { mapId: HAMLET, x: 10, y: 12 }, to: { x: 9, y: 6 } }, setup: { event: 'ev_hamlet_gate' } },
+    { key: 'cellar', prompt: '지하 창고 16×12 맵 만들고 남쪽 출입구랑 왕복 연결해줘.', args: { name: '지하 창고', width: 16, height: 12, from: { mapId: MAP, x: 12, y: 16, eventId: 'ev_south_gate' }, to: { x: 8, y: 10 } }, setup: { event: SOUTH } },
+    { key: 'hamlet-yard-explained', prompt: '「안동 뒷마당」 18×12 맵을 새로 만든 뒤, 안동 어귀에서 그 맵으로 왕복 이동할 수 있게 해 주세요. 기존 맵과 이벤트는 그대로 두세요.', args: { name: '안동 뒷마당', width: 18, height: 12, from: { mapId: HAMLET, x: 10, y: 12, eventId: 'ev_hamlet_gate' }, to: { x: 9, y: 6 } }, setup: { event: 'ev_hamlet_gate' } },
     { key: 'terse-yard', prompt: '새 맵 「뒷산」 16×16 만들고 집 문과 이어.', args: { name: '뒷산', width: 16, height: 16, from: { mapId: MAP, x: 7, y: 6 }, to: { x: 8, y: 8 } }, setup: { event: HOUSE } },
   ],
   prepare: withHamlet,
   judge(input, args) {
     const name = strArg(args, 'name');
     const width = numArg(args, 'width'), height = numArg(args, 'height');
-    const from = args.from as { mapId: string; x: number; y: number };
+    const from = args.from as { mapId: string; x: number; y: number; eventId?: string };
     const beforeIds = new Set(Object.keys((input.before as any).maps));
     const added = Object.keys((input.after as any).maps).filter(id => !beforeIds.has(id));
     const named = added.filter(id => mapOf(input.after, id)?.name === name);
@@ -332,15 +344,49 @@ const chainCreateThenLink: Family = {
     const back = gatesTo(input.after, newId, from.mapId);
     if (!out.length) return fail(`${from.mapId} → ${name} 전이가 없다`);
     if (!back.length) return fail(`${name} → ${from.mapId} 전이가 없다(왕복이어야 한다)`);
+    // 기존 문과 이어 달라는 요청은 그 문을 고치는 일이다 — 새 맵으로 가는 전이가 그 문에 생겼거나, 있던 전이가 새 맵으로 갈아졌으면 맞다.
+    if (from.eventId) {
+      const source = eventOn(input.after, from.mapId, from.eventId);
+      if (!source) return fail(`${from.eventId} 문이 사라졌다`);
+      if (!transfersOfEvent(source).some((command: any) => command.mapId === newId)) return fail(`${from.eventId} 에서 ${name} 로 가는 전이가 없다`);
+    }
     if (!walkableIn(input.after, newId, out[0]!.command.x, out[0]!.command.y)) {
       return fail(`${name} 착지 (${out[0]!.command.x},${out[0]!.command.y}) 가 통행 가능 칸이 아니다`);
     }
     if (manhattan(out[0]!.command, back[0]!.event) > 2) return fail(`${name} 쪽 착지가 출입구 앞이 아니다`);
     if (manhattan(back[0]!.command, out[0]!.event) > 2) return fail(`${from.mapId} 쪽 착지가 출입구 앞이 아니다`);
     const gateIds = new Set([...out, ...back].map(entry => entry.event.id));
+    // 「기존 문과 이어라」는 그 문 자체를 고치는 일이다 — 그 문의 전이만 갈아끼우고 나머지(대사·페이지·위치)는 그대로여야 한다.
+    const sourceEventId = (args.from as { eventId?: string }).eventId;
+    const sourceAt = sourceEventId ? eventOn(input.after, from.mapId, sourceEventId) : undefined;
     const blank = (doc: any) => {
       for (const id of added) delete doc.maps[id];
       for (const map of Object.values<any>(doc.maps)) map.events = (map.events ?? []).filter((event: any) => !gateIds.has(event.id));
+      if (sourceEventId) {
+        const source = (doc.maps[from.mapId]?.events ?? []).find((event: any) => event.id === sourceEventId);
+        for (const page of source?.pages ?? []) page.commands = (page.commands ?? []).filter((command: any) => command.kind !== 'transfer');
+        // 문이 막힌 칸에 서 있으면 바로 옆 통행 칸으로 옮기는 것까지가 「연결」이다 — 2칸 안, 새 자리는 걸을 수 있어야 한다.
+        const original = (input.before as any).maps[from.mapId]?.events?.find((event: any) => event.id === sourceEventId);
+        if (source && original && !passableCell(input.before, from.mapId, original.x, original.y)
+          && passableCell(input.after, from.mapId, source.x, source.y)
+          && Math.max(Math.abs(source.x - original.x), Math.abs(source.y - original.y)) <= 2) {
+          source.x = original.x;
+          source.y = original.y;
+        }
+      }
+      // 그 문이 막힌 칸에 서 있으면 앞 칸을 여는 것까지가 「연결」이다 — 문에서 2칸 안, 막힘→통행만.
+      if (sourceAt) {
+        const map = doc.maps[from.mapId];
+        const was = (input.before as any).maps[from.mapId];
+        for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
+          const x = sourceAt.x + dx, y = sourceAt.y + dy;
+          if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+          const index = y * map.width + x;
+          if (map.lowerTiles?.[index] === was.lowerTiles?.[index]) continue;
+          if (passableCell(input.before, from.mapId, x, y) || !passableCell(input.after, from.mapId, x, y)) continue;
+          map.lowerTiles[index] = was.lowerTiles[index];
+        }
+      }
       if (doc.mapTree) {
         const strip = (node: any): any => ({ ...node, children: (node.children ?? []).filter((child: any) => !added.includes(child.mapId)).map(strip) });
         doc.mapTree = strip(doc.mapTree);

@@ -1,6 +1,6 @@
 import type { Project } from '../../../../project/types';
 import { runTool } from '../../../../editor/tools/toolRunner';
-import { MAP, called, fail, pass } from '../matrixNativeSpec';
+import { MAP, called, coordinatesIn, fail, pass } from '../matrixNativeSpec';
 import { strArg, type Family } from './types';
 import { G2, prepareGroup2, readVerdict } from './group-2-shared';
 
@@ -62,6 +62,15 @@ const claims = (answer: string) => {
   return { reachable: says.reachable.test(text), blocked: says.blocked.test(text) };
 };
 
+const NEGATED_ONCE = /(막힌|막힘|막혀)\s*(칸|곳|데|부분|것)?\s*(은|는|이|가|도)?\s*(없|않)/u;
+const sentences = (answer: string) => answer.split(/[.\n!?。？！]/u).map(line => line.trim()).filter(Boolean);
+/** A blocked claim plus the line before it — a coordinate in that window is the cell the claim is about. */
+const blockedNear = (answer: string, from: { x: number; y: number }, to: { x: number; y: number }): boolean => {
+  const list = sentences(answer);
+  const hits = (text: string) => coordinatesIn(text).some(cell => (cell.x === from.x && cell.y === from.y) || (cell.x === to.x && cell.y === to.y));
+  return list.some((line, index) => says.blocked.test(line.replace(NEGATED_ONCE, ' ')) && hits(`${list[index - 1] ?? ''} ${line}`));
+};
+
 const walkabilityCheck: Family = {
   id: 'walkability-check',
   area: 'read',
@@ -82,12 +91,18 @@ const walkabilityCheck: Family = {
     return readVerdict(input, 'walkability', () => {
       if (!called(input.tools, 'check_reachability', 'run_scene_test', 'get_map_region')) return fail('도달성 검사 도구 호출이 없다');
       const { reachable: claimsReachable, blocked: claimsBlocked } = claims(input.answer);
-      if (claimsReachable && claimsBlocked) return fail('도달 가능과 불가를 함께 말해 결론이 모호하다');
       if (!claimsReachable && !claimsBlocked) return fail('도달 가능 여부에 대한 결론이 없다');
       if (truth) {
-        return claimsReachable ? pass(`(${from.x},${from.y}) → (${to.x},${to.y}) 도달 가능 보고`) : fail(`실제로는 (${to.x},${to.y}) 에 도달할 수 있는데 불가라고 답했다`);
+        if (!claimsReachable) return fail(`실제로는 (${to.x},${to.y}) 에 도달할 수 있는데 불가라고 답했다`);
+        // 「바로 옆까지는 갈 수 있지만 그 칸에는 오브젝트가 있어 설 수 없다」는 지형 도달성과 모순이 아니다.
+        const caveat = /이벤트|오브젝트|서\s*기|설\s*수\s*없|점유|차지/u.test(input.answer);
+        if (claimsBlocked && !caveat) return fail('도달 가능과 불가를 함께 말해 결론이 모호하다');
+        return pass(`(${from.x},${from.y}) → (${to.x},${to.y}) 도달 가능 보고`);
       }
-      return claimsBlocked ? pass(`(${from.x},${from.y}) → (${to.x},${to.y}) 도달 불가 보고`) : fail(`실제로는 (${to.x},${to.y}) 에 도달할 수 없는데 가능하다고 답했다`);
+      if (!claimsBlocked) return fail(`실제로는 (${to.x},${to.y}) 에 도달할 수 없는데 가능하다고 답했다`);
+      // 「출입구 칸이 막혀 있다」가 물어본 두 칸 중 하나를 가리키면 그 쌍의 결론이다.
+      if (!blockedNear(input.answer, from, to)) return fail('도달 가능과 불가를 함께 말해 결론이 모호하다');
+      return pass(`(${from.x},${from.y}) → (${to.x},${to.y}) 도달 불가 보고`);
     });
   },
   reference(project, args) {

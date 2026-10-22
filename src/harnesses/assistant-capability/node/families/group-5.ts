@@ -2,7 +2,7 @@ import { isDeepStrictEqual } from 'node:util';
 import { isPassable } from '../../../../project/collision';
 import type { Project } from '../../../../project/types';
 import {
-  MAP, changedCells, eventOf, fail, inside, mapOf, pass, readOnly, runOn, sameExcept, withoutEvent, type Rect,
+  MAP, changedCells, eventOf, fail, inside, mapOf, pass, reachableMaps, readOnly, runOn, sameExcept, withoutEvent, type Rect,
 } from '../matrixNativeSpec';
 import { numArg, rectArg, strArg, type Family, type FamilyOutcome } from './types';
 import { closeColor, dropMoodEvents, judgeDarkness, mapField, systemField, tintColor, weatherOf } from './group-5-support';
@@ -595,8 +595,17 @@ const readEventPages: Family = {
   },
 };
 
-const linesWithNumbers = (answer: string, entries: Array<{ keys: string[]; value: number }>): { hit: number; wrong: string[] } => {
-  const lines = answer.split('\n');
+/** 아이템 행을 상점 진열에서 찾는다 — 「뭐뭐 팔고」의 진실은 재고다. */
+const soldItems = (project: Project): any[] => {
+  const items: any[] = (project as any).database?.items ?? [];
+  const events = Object.values<any>((project as any).maps ?? {}).flatMap((map: any) => map.events ?? []);
+  const shops = events.flatMap((event: any) => (event.pages ?? []).flatMap((page: any) => page.commands ?? []).concat(event.commands ?? []))
+    .filter((command: any) => command?.kind === 'shop');
+  const ids = new Set<string>(shops.flatMap((shop: any) => [...(shop.itemIds ?? []), ...(shop.stock ?? []).map((entry: any) => entry.itemId)]));
+  return [...ids].map(id => items.find((item: any) => item.id === id)).filter(Boolean);
+};
+
+const linesWithNumbers = (answer: string, entries: Array<{ keys: string[]; value: number }>): { hit: number; wrong: string[] } => {  const lines = answer.split('\n');
   let hit = 0;
   const wrong: string[] = [];
   for (const entry of entries) {
@@ -619,14 +628,21 @@ const readDbItems: Family = {
     { key: 'items-polite', prompt: '데이터베이스의 아이템 id 와 가격을 정리해 주세요.', args: {} },
     { key: 'items-terse', prompt: '아이템 가격표.', args: {} },
     { key: 'items-explain', prompt: '상점 가격을 조정하려고 합니다. 아이템마다 id 와 현재 가격을 표로 보여 주세요.', args: {} },
-    { key: 'items-casual', prompt: '뭐뭐 팔고 각각 얼마인지 보여줘.', args: {} },
+    { key: 'items-casual', prompt: '뭐뭐 팔고 각각 얼마인지 보여줘.', args: { allowShop: true } },
   ],
   readTools: ['get_database_records'],
   judge(input, args) {
-    void args;
     return readOnly(input, 'read-db-items', () => {
       const items: any[] = (input.before as any).database?.items ?? [];
       if (!items.length) return fail('아이템이 없다');
+      // 「뭐뭐 팔고」는 상점 재고를 묻는 말이다 — 판매 품목을 가격과 함께 답한 것도 정답이다.
+      if (args.allowShop === true) {
+        const sold = soldItems(input.before);
+        if (sold.length) {
+          const check = linesWithNumbers(input.answer, sold.map((item: any) => ({ keys: [item.id, item.name].filter(Boolean).map(String), value: Number(item.price ?? 0) })));
+          if (check.hit === sold.length && check.wrong.length === 0) return pass(`판매 품목 ${sold.length}개 가격 보고`);
+        }
+      }
       const entries = items.map((item: any) => ({ keys: [item.id, item.name].filter(Boolean).map(String), value: Number(item.price ?? 0) }));
       const { hit, wrong } = linesWithNumbers(input.answer, entries);
       const need = Math.min(5, items.length);
@@ -781,24 +797,9 @@ const readTilesetRefs: Family = {
 };
 
 function unreachableMaps(project: Project): any[] {
-  const maps: any[] = Object.values<any>((project as any).maps);
-  const byId = new Map(maps.map(map => [map.id, map]));
-  const seen = new Set<string>([project.startMapId]);
-  const queue = [project.startMapId];
-  while (queue.length) {
-    const id = queue.shift()!;
-    const map = byId.get(id);
-    if (!map) continue;
-    for (const event of map.events ?? []) {
-      for (const page of event.pages ?? []) for (const command of page.commands ?? []) {
-        if (command.kind !== 'transfer' || typeof command.mapId !== 'string') continue;
-        if (seen.has(command.mapId)) continue;
-        seen.add(command.mapId);
-        queue.push(command.mapId);
-      }
-    }
-  }
-  return maps.filter(map => !seen.has(map.id));
+  // 걸어서 들어갈 수 있는 맵 — 문 명령이 있어도 문 칸이 막혀 있으면 닿지 않는다(공용 reachableMaps).
+  const reachable = reachableMaps(project);
+  return Object.values<any>((project as any).maps).filter(map => !reachable.has(map.id));
 }
 
 const readUnreachableMap: Family = {
@@ -821,7 +822,12 @@ const readUnreachableMap: Family = {
       const missing = truth.filter((map: any) => !matchAny(input.answer, map.id, map.name));
       if (missing.length) return fail(`고립된 맵 ${missing.map((map: any) => map.id).join(',')} 를 빠뜨렸다`);
       const reachable = Object.values<any>((input.before as any).maps).filter((map: any) => !truth.some((found: any) => found.id === map.id));
-      const falseClaim = reachable.find((map: any) => new RegExp(`(?:${[map.id, map.name].filter(Boolean).join('|')})[^\\n]{0,40}(?:연결되지|고립|도달할 수 없|연결이 없)`, 'u').test(input.answer));
+      // 「완전 고립은 아닙니다」처럼 부정하는 문장은 끊겼다는 주장이 아니다.
+      const falseClaim = reachable.find((map: any) => input.answer.split(/[.\n!?。？！]/u).some(sentence => {
+        if (![map.id, map.name].filter(Boolean).some((needle: string) => sentence.includes(needle))) return false;
+        if (!/(연결되지|고립|도달할\s*수\s*없|연결이\s*없|갈\s*수\s*없|끊긴|끊겨)/u.test(sentence)) return false;
+        return !/(고립은?\s*아니|아닙니다|않습니다|없지\s*않)/u.test(sentence);
+      }));
       if (falseClaim) return fail(`${falseClaim.id} 는 실제로 닿는다`);
       return pass(`고립된 맵 ${truth.length}개 보고`);
     });

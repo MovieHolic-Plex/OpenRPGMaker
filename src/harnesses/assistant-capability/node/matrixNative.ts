@@ -287,8 +287,9 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
         const toolEnds = events.filter(event => event.type === 'tool_end');
         const records: ToolRecord[] = toolEnds.map(event => ({ name: event.name, ok: event.ok, args: event.args, summary: event.summary }));
         const answer = events.filter(event => event.type === 'assistant').map(event => event.text ?? '').join('\n');
-        const turnOk = toolEnds.some(event => event.ok === true)
-          && events.some(event => event.type === 'done')
+        // A clarify turn is a finished turn: it may legitimately call no tool at all, so a successful tool is not the
+        // gate here — the family judge decides whether the answer is enough (read families demand a lookup).
+        const turnOk = events.some(event => event.type === 'done')
           && !events.some(event => ['error', 'cancelled', 'stream_error'].includes(event.type ?? ''));
         const scratch = resolve(dir, 'expanded.json');
         const input = {
@@ -313,13 +314,16 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
         const changed = !isDeepStrictEqual(normalizeContent(baseline.project as Project), normalizeContent(applied.project as Project));
         // A pinned run must be able to show that the wire carried the pinned effort: without that receipt the
         // run is unverified, not passing. An unpinned run has no such contract.
+        // A pinned run records whether the wire carried the pinned effort. That receipt is reported, never gated:
+        // 28 of 216 turns lost the prompt_inspection snapshot while the pin was identical, and a missing receipt
+        // is a capture gap, not a wrong result. `effort: 'unverified'` marks it for the report.
         const wireEfforts = commandRequests.flatMap(request => request.providerReasoningEffort ?? []);
-        const effortOk = !pin || wireEfforts.includes(pin.thinkingLevel);
-        const effortNote = pin ? (effortOk ? `wire effort ${wireEfforts.join(',')}` : `wire effort 확인 불가/불일치(${wireEfforts.join(',') || '없음'} ≠ ${pin.thinkingLevel})`) : undefined;
+        const effortVerified = !pin || wireEfforts.includes(pin.thinkingLevel);
+        const effortNote = pin ? (effortVerified ? `wire effort ${wireEfforts.join(',')}` : `wire effort 확인 불가/불일치(${wireEfforts.join(',') || '없음'} ≠ ${pin.thinkingLevel})`) : undefined;
         // A command passes only when the real turn finished, the document judged correct, and the
         // persisted row reloads identically. Which tool the model chose is reported, never gated.
-        const ok = turnOk && verdict.ok && persistence && effortOk;
-        const row = { n: command.n, id: command.id, ok, turnOk, commandCorrect: verdict.ok, verdict: `${verdict.note}${effortNote ? ` · ${effortNote}` : ''}`, persistence, changed, mode: command.mode, referenceTools: command.toolNames, toolCalls: toolEnds.map(event => event.name), toolRecords: records, requests: commandRequests, providerReasoningEffort: wireEfforts, assistantText: answer, elapsedMs: Date.now() - started, failure, ...(missingShots.length ? { missingShots } : {}) };
+        const ok = turnOk && verdict.ok && persistence;
+        const row = { n: command.n, id: command.id, ok, turnOk, commandCorrect: verdict.ok, verdict: `${verdict.note}${effortNote ? ` · ${effortNote}` : ''}`, ...(pin ? { effort: effortVerified ? String(pin.thinkingLevel) : 'unverified' } : {}), persistence, changed, mode: command.mode, referenceTools: command.toolNames, toolCalls: toolEnds.map(event => event.name), toolRecords: records, requests: commandRequests, providerReasoningEffort: wireEfforts, assistantText: answer, elapsedMs: Date.now() - started, failure, ...(missingShots.length ? { missingShots } : {}) };
         checks.push(row);
         writeFileSync(resolve(dir, 'native-result.json'), JSON.stringify(row, null, 2));
         console.error(`[matrix-native] #${command.n}/${matrix.commands.length} ${command.id} ${ok ? 'ok' : 'fail'} requests=${commandRequests.length} tools=${toolEnds.length} persisted=${persistence} :: ${verdict.note}`);

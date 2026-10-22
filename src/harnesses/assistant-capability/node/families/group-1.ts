@@ -20,7 +20,8 @@ const cellsIn = (rect: { x: number; y: number; w: number; h: number }) =>
  * rejected by a check that only knew 모랫길 — the prompt names the ground, not the material.
  */
 const DIRT_TAGS = new Set(['sand', 'farm_lane']);
-const DIRT_LABEL = /흙길|모랫길/iu;
+// 「바닥 흙」처럼 흙을 이름에 단 바닥 타일도 흙이다 — 경작지(「경작지 …」)는 밭이라 다르다.
+const DIRT_LABEL = /흙|모랫길/iu;
 const tileTags = (project: Project, tile: number): string[] => {
   const meta = (project as any).tilesets[(project as any).maps[MAP].tilesetId]?.tileMeta?.[tile];
   return Array.isArray(meta?.tags) ? meta.tags.map(String) : [];
@@ -120,7 +121,10 @@ const renameNpc: Family = {
     const label = `${eventId} → ${want}`;
     return eventEdit(input, eventId, (before, after) => {
       const shown = after.name ?? after.pages?.[0]?.name;
-      if (after.name !== want && after.pages?.[0]?.name !== want) return fail(`${label}: 이름이 「${shown}」 그대로다`);
+      const oldShown = String(before.name ?? before.pages?.[0]?.name ?? '');
+      // 「여관 주인 마사」를 「마사」로 바꿔 달라는 요청은 이미 그렇게 불리고 있다 — 이름을 그대로 두고 인물 키만 잇는 답도 맞다.
+      const alreadyNamed = oldShown.includes(want) && String(shown ?? '') === oldShown;
+      if (after.name !== want && after.pages?.[0]?.name !== want && !alreadyNamed) return fail(`${label}: 이름이 「${shown}」 그대로다`);
       const oldName = before.name ?? before.pages?.[0]?.name;
       const texts = (after.pages ?? []).flatMap((page: any) => page.commands ?? []).filter((command: any) => command.kind === 'text');
       const stale = texts.filter((command: any) => command.speaker && command.speaker === oldName);

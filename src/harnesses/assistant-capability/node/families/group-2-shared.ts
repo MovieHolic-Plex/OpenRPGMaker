@@ -41,7 +41,7 @@ export const commandsAt = (project: Project, eventId: string, page = 0): any[] =
 export const addedCommands = (was: readonly any[], now: readonly any[]): any[] => now.filter(command => !was.some(old => isDeepStrictEqual(old, command)));
 
 /** What a family may ignore when it asks "everything else is preserved". Each ignored part is judged separately. */
-export type Ignore = { events?: readonly string[]; flags?: boolean; system?: boolean; tiles?: boolean };
+export type Ignore = { events?: readonly string[]; flags?: boolean; system?: boolean; systemFields?: readonly string[]; tiles?: boolean };
 
 const TILE_FIELDS = ['lowerTiles', 'upperTiles', 'lowerOverlayTiles', 'upperOverlayTiles', 'shadowBits', 'lowerTileStacks', 'upperTileStacks', 'doodadGroups', 'terrainDesign', 'relief'];
 
@@ -59,6 +59,12 @@ export function contentView(project: Project, ignore: Ignore = {}): any {
     if (key === 'meta' || key === 'tilesets' || key === 'assets') continue;
     if (ignore.flags && (key === 'switches' || key === 'variables' || key === 'session')) continue;
     if (ignore.system && key === 'system') continue;
+    if (key === 'system' && ignore.systemFields?.length) {
+      const system: any = { ...value };
+      for (const field of ignore.systemFields) delete system[field];
+      view[key] = system;
+      continue;
+    }
     view[key] = value;
   }
   const stripTiles = (map: any) => {

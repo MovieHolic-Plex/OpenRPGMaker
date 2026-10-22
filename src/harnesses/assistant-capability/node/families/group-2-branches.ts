@@ -231,11 +231,13 @@ const variableCreateAndSet: Family = {
       const created = newVariables(input.before, input.after);
       if (created.length !== 1) return fail(`새로 만든 변수가 ${created.length}개다`);
       if (!nonEmptyText(created[0].name)) return fail(`변수 ${created[0].id} 에 표시 이름이 없다`);
-      const commands = after.pages[0].commands as any[];
+      // 설정 명령은 어느 페이지에 있어도 된다 — 「허락 뒤」 페이지만 통행이 열리는 이벤트도 있다.
+      const commands = (after.pages ?? []).flatMap((page: any) => page.commands ?? []) as any[];
       const settings = commands.filter((command: any) => command.kind === 'setVariable' && command.variableId === created[0].id);
       if (!settings.length) return fail(`새 변수 ${created[0].id} 를 설정하는 명령이 없다`);
       if (!settings.some((command: any) => (command.op ?? '=') === '=' && Number(command.value) === value)) return fail(`변수를 ${value} 로 설정하지 않았다(${settings.map((command: any) => `${command.op}${command.value}`).join(', ')})`);
-      if (!keepsInOrder(before.pages[0].commands, commands)) return fail('기존 명령이 사라졌거나 순서가 바뀌었다');
+      const pagesKept = ((before.pages ?? []) as any[]).every((page: any, index: number) => keepsInOrder(page.commands ?? [], (after.pages?.[index]?.commands ?? []) as any[]));
+      if (!pagesKept) return fail('기존 명령이 사라졌거나 순서가 바뀌었다');
       return pass(`변수 ${created[0].id}(${created[0].name}) 생성, 값 ${value} 설정`);
     }, FLAGS_IGNORED);
   },

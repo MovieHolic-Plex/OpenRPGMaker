@@ -1,6 +1,6 @@
 import type { Project } from '../../../../project/types';
 import {
-  MAP, blockedCells as specBlockedCells, called, coordinatesIn, EVENT_FIELDS, fail, inside, mapOf, mentions, pass,
+  MAP, blockedCells as specBlockedCells, called, coordinatesIn, EVENT_FIELDS, fail, inside, mapOf, mentions, orphanMaps, pass, reachableMaps,
 } from '../matrixNativeSpec';
 import { rectArg, strArg, type Family, type FamilyOutcome } from './types';
 
@@ -71,12 +71,30 @@ const OBSTACLE_WORDS = /나무|막힘|막혀|막는|통행\s*불가|못\s*지나
 const OBSTACLE_NOUN = /나무|성벽|바위|울타리|벽|물|장애물/u;
 const BLOCKAGE_VERB = /막혀|막고|막는|막힌|가로막|둘러싸|지나갈\s*수\s*없|통행\s*불가|못\s*지나/u;
 const DENIED_OBSTACLE = /(나무|성벽|바위|울타리|벽|물|장애물)[^\s]{0,2}\s*(이|가|은|는|도)?\s*(없|않)/u;
+/** 「막힌 칸 0칸」·「막힌 칸은 없습니다」는 막힘 주장이 아니라 그 반대다. */
+const NO_BLOCKAGE = /(막힌|막힘|막혀)\s*(칸|곳|데|부분|것)?\s*(은|는|이|가|도)?\s*(없|않)|(^|[^\d])0\s*(칸|개)/u;
 const claimsBlockage = (answer: string): boolean => answer.split(/[.\n!?。？！]/u).some(sentence => {
   if (!BLOCKAGE_VERB.test(sentence)) return false;
+  if (NO_BLOCKAGE.test(sentence)) return false;
   if (/통행\s*불가\s*[^\d]{0,4}\d+\s*(칸|개)/u.test(sentence)) return true;
   if (!OBSTACLE_NOUN.test(sentence)) return false;
   return !DENIED_OBSTACLE.test(sentence);
 });
+/** 「영역은 물로 막혀 있다」처럼 장애물을 주장한 문장만 본다 — 「물도 없습니다」는 주장이 아니다. */
+const assertsObstacle = (answer: string, word: string): boolean => answer.split(/[.\n!?。？！]/u).some(sentence =>
+  sentence.includes(word) && BLOCKAGE_VERB.test(sentence) && !DENIED_OBSTACLE.test(sentence) && !NO_BLOCKAGE.test(sentence));
+
+/**
+ * 좌표 추출은 질문이 준 사각형의 모서리까지 집는다(「선택하신 (1,1)부터 5×3 영역」).
+ * 모서리는 영역 이름이지 "막힌 칸" 주장이 아니므로 뺀다.
+ */
+const claimedCells = (answer: string, rect: { x: number; y: number; w: number; h: number }) => {
+  const corners = new Set([
+    `${rect.x},${rect.y}`, `${rect.x + rect.w - 1},${rect.y}`,
+    `${rect.x},${rect.y + rect.h - 1}`, `${rect.x + rect.w - 1},${rect.y + rect.h - 1}`,
+  ]);
+  return coordinatesIn(answer).filter(cell => inside(rect, cell.x, cell.y) && !corners.has(`${cell.x},${cell.y}`));
+};
 
 const regionPreview: Family = {
   id: 'region-preview',
@@ -105,7 +123,7 @@ const regionPreview: Family = {
         return pass(`${label}: 미리보기, 막힌 칸 없음`);
       }
       if (!OBSTACLE_WORDS.test(input.answer)) return fail(`${label}: 통행 불가 ${blocked.length}칸을 말하지 않았다(장식으로만 서술)`);
-      const wrongMaterial = ['물', '성벽', '벽'].filter(word => input.answer.includes(word));
+      const wrongMaterial = ['물', '성벽', '벽'].filter(word => assertsObstacle(input.answer, word));
       if (wrongMaterial.length && !blocked.some(cell => cellHasAny(input.before, cell.x, cell.y, ['water', 'wall'])))
         return fail(`${label}: 막힌 칸을 ${wrongMaterial.join('/')}이라 했지만 실제는 나무·덤불이다`);
       return pass(`${label}: 미리보기 + 통행 불가 ${blocked.length}칸 언급`);
@@ -147,8 +165,9 @@ const blockedCellsFamily: Family = {
     const label = `영역 ${rect.w}×${rect.h}`;
     return readOnly(input, label, () => {
       const truth = blockedCells(input.before, rect);
-      const said = coordinatesIn(input.answer).filter(cell => inside(rect, cell.x, cell.y));
+      const said = claimedCells(input.answer, rect);
       const hit = truth.filter(cell => said.some(s => s.x === cell.x && s.y === cell.y)).length;
+      // A region's own corners name the area; they are not "this cell is blocked" unless the truth says so.
       const spurious = said.filter(s => !truth.some(cell => cell.x === s.x && cell.y === s.y)).length;
       const stated = /총\s*(\d+)\s*칸/u.exec(input.answer);
       if (stated && Number(stated[1]) !== truth.length) return fail(`${label}: 총 ${stated[1]}칸이라 했지만 실제는 ${truth.length}칸이다`);
@@ -289,7 +308,9 @@ const eventList: Family = {
     const label = `${mapId} 이벤트 목록`;
     return readOnly(input, label, () => {
       const events = listEvents(input.before);
-      const said = events.filter(event => mentions(input.answer, event.id) || input.answer.includes(named(input.before, event)));
+      const coords = coordinatesIn(input.answer);
+      const said = events.filter(event => mentions(input.answer, event.id) || input.answer.includes(named(input.before, event))
+        || coords.some(cell => cell.x === event.x && cell.y === event.y));
       return said.length >= events.length - 1
         ? pass(`${label}: 이벤트 ${events.length}개 중 ${said.length}개 나열`)
         : fail(`${label}: 이벤트 ${events.length}개 중 ${said.length}개만 나열`);
@@ -355,6 +376,18 @@ const blockedEntrance: Family = {
   },
 };
 
+/** One map's blocked cells, read from the editor's own region grid (the shared helper is pinned to the fixture map). */
+/**
+ * 시작 지점에서 실제로 들어갈 수 있는 맵. 문이 있어도 그 문 칸이 막혀 있으면 그 너머는 닿지 않는다 —
+ * 「갈 수 없는 연결」은 전이 명령의 존재가 아니라 플레이 중 도달 가능성이다.
+ */
+/** 「잿불 마을」은 완전 고립은 아닙니다 — 부정문은 끊겼다는 주장이 아니다. */
+const claimsDisconnected = (answer: string, id: string, name: string): boolean => answer.split(/[.\n!?。？！]/u).some(sentence => {
+  if (!sentence.includes(id) && !(name && sentence.includes(name))) return false;
+  if (!/(연결되지|고립|도달할\s*수\s*없|연결이\s*없|갈\s*수\s*없|끊긴|끊겨)/u.test(sentence)) return false;
+  return !/(고립은?\s*아니|아닙니다|않습니다|없지\s*않)/u.test(sentence);
+});
+
 const unreachableLinks: Family = {
   id: 'unreachable-links',
   area: 'read',
@@ -373,47 +406,27 @@ const unreachableLinks: Family = {
     const label = `${mapId} 연결 점검`;
     return readOnly(input, label, () => {
       if (!called(input.tools, 'run_lint', 'check_reachability')) return fail(`${label}: 연결 점검 도구 호출이 없다`);
-      const start = (input.before as any).startMapId ?? mapId;
-      const linked = new Set<string>([start]);
-      for (const event of listEvents(input.before)) {
-        for (const page of event.pages ?? []) for (const command of page.commands ?? []) {
-          if (command.kind === 'transfer' && command.mapId) linked.add(String(command.mapId));
-        }
-      }
-      const orphan = Object.keys((input.before as any).maps).filter(id => !linked.has(id));
-      const said = orphan.filter(id => mentions(input.answer, id) || input.answer.includes(String((input.before as any).maps[id].name)));
+      const maps = (input.before as any).maps;
+      const orphan = orphanMaps(input.before);
+      const reachable = new Set(reachableMaps(input.before));
+      const said = orphan.filter(id => mentions(input.answer, id) || input.answer.includes(String(maps[id].name)));
       if (said.length !== orphan.length) return fail(`${label}: 끊긴 맵 ${orphan.length}곳 중 ${said.length}곳만 지목했다 (${orphan.join(',')})`);
-      const connected = Object.keys((input.before as any).maps).filter(id => linked.has(id));
-      const wrong = connected.filter(id => mentions(input.answer, id) || input.answer.includes(String((input.before as any).maps[id].name)));
+      const wrong = Object.keys(maps).filter(id => reachable.has(id) && claimsDisconnected(input.answer, id, String(maps[id].name ?? '')));
       if (wrong.length) return fail(`${label}: 이어진 맵(${wrong.join(',')})을 끊겼다고 했다`);
       return pass(`${label}: 끊긴 맵 ${said.join(',')} 지목`);
     });
   },
   reference(project) {
-    const start = (project as any).startMapId ?? MAP;
-    const linked = new Set<string>([start]);
-    for (const event of listEvents(project)) {
-      for (const page of event.pages ?? []) for (const command of page.commands ?? []) {
-        if (command.kind === 'transfer' && command.mapId) linked.add(String(command.mapId));
-      }
-    }
-    const orphan = Object.keys((project as any).maps).filter(id => !linked.has(id));
+    const orphan = orphanMaps(project);
     return orphan.length
       ? `연결 점검 결과, 시작 마을에서 이어지지 않은 맵은 ${orphan.map(id => `${id}(${(project as any).maps[id].name})`).join(', ')} 입니다. 이 맵들로 가는 문이 없습니다.`
       : '연결 점검 결과 모든 맵이 문으로 이어져 있습니다.';
   },
   wrongs(project): FamilyOutcome[] {
-    const start = (project as any).startMapId ?? MAP;
-    const linked = new Set<string>([start]);
-    for (const event of listEvents(project)) {
-      for (const page of event.pages ?? []) for (const command of page.commands ?? []) {
-        if (command.kind === 'transfer' && command.mapId) linked.add(String(command.mapId));
-      }
-    }
-    const connected = Object.keys((project as any).maps).filter(id => linked.has(id));
+    const reachable = [...reachableMaps(project)];
     return [
       '연결 점검 결과 모든 맵이 잘 이어져 있습니다. 끊긴 곳은 없습니다.',
-      `연결이 끊긴 맵은 ${connected.slice(0, 2).join(', ')} 입니다.`,
+      `연결이 끊긴 맵은 ${reachable.slice(0, 2).join(', ')} 입니다.`,
       '점검해 보니 이 맵의 타일 배치에는 문제가 없습니다.',
     ];
   },

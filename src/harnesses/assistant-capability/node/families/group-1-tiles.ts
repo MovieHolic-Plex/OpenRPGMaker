@@ -88,6 +88,13 @@ const cellLabel = (project: Project, x: number, y: number): string =>
 
 const cellsIn = (rect: { x: number; y: number; w: number; h: number }) =>
   Array.from({ length: rect.w * rect.h }, (_, index) => ({ x: rect.x + (index % rect.w), y: rect.y + Math.floor(index / rect.w) }));
+/**
+ * A prompt names the look, not the tag: 「모래」 is 모랫길 or 「모래 바닥」 or 농장 흙길, 「돌바닥」 is 포석 or 판석.
+ * Tags alone miss the tiles the model actually picks, so the label counts too.
+ */
+const MATERIAL_WORDS: Record<string, RegExp> = { sand: /모래|모랫길|흙/u, road: /포석|판석/u, grass: /풀밭/u };
+const cellMatchesMaterial = (project: Project, x: number, y: number, tag: string): boolean =>
+  cellHasAny(project, x, y, [tag]) || Boolean(MATERIAL_WORDS[tag]?.test(cellLabel(project, x, y)));
 const keyOf = (x: number, y: number) => `${x},${y}`;
 /** Chebyshev ring of one cell around every asked cell — the autotile re-shape region. */
 const ringOf = (cells: ReadonlyArray<{ x: number; y: number }>): Set<string> => {
@@ -98,6 +105,12 @@ const ringOf = (cells: ReadonlyArray<{ x: number; y: number }>): Set<string> => 
 const sameCell = (a: { x: number; y: number }, b: { x: number; y: number }) => a.x === b.x && a.y === b.y;
 const isGround = (project: Project, tile: number): boolean =>
   tile >= 0 && !['tree', 'wall', 'water', 'gate', 'kit7'].some(tag => hasTag(project, tile, tag));
+/** A cell that already carried a tree/wall/prop stays a cell with an object on it; painting the floor under it is not required. */
+const isSolidOn = (project: Project, x: number, y: number): boolean => {
+  const lower = tileAt(project, 'lowerTiles', x, y);
+  const upper = tileAt(project, 'upperTiles', x, y);
+  return (lower >= 0 && !isGround(project, lower)) || (upper >= 0 && !isGround(project, upper));
+};
 
 /** Trees placed as one sprite occupy several cells; a "tree count" is therefore a count of touching tree clusters. */
 const clusterCount = (cells: ReadonlyArray<{ x: number; y: number }>): number => {
@@ -359,6 +372,11 @@ const placeWell = (project: Project, area: { x: number; y: number; w: number; h:
   runOn(project, 'place_props', { mapId: MAP, area, material: '버들항 장소 · 우물', count: 1, seed: 2 });
 
 const isWellCell = (project: Project, x: number, y: number) => /우물/u.test(cellLabel(project, x, y));
+/** 스탬프 도구는 우물을 「건물/소품」 타일 조각으로만 기록한다 — 도구 영수증이 유일한 증거다. */
+const stampedWell = (tools: ReadonlyArray<{ name?: string; ok?: boolean; summary?: string; args?: unknown }>): boolean => tools.some(tool =>
+  tool.ok === true
+  && /stamp_object|place_props|stamp_tileset_object/u.test(String(tool.name ?? ''))
+  && /우물/u.test(`${tool.summary ?? ''}${JSON.stringify(tool.args ?? {})}`));
 
 const placeWellFamily: Family = {
   id: 'place-well',
@@ -380,8 +398,8 @@ const placeWellFamily: Family = {
     if (!cells.every(cell => inside(area, cell.x, cell.y))) return fail(`${label}: 선택 영역 밖 칸이 바뀌었다`);
     if (!preserved(input.before, input.after)) return fail(`${label}: 타일 밖 내용이 바뀌었다`);
     const well = cells.filter(cell => isWellCell(input.after, cell.x, cell.y));
-    if (!well.length) return fail(`${label}: 우물 타일이 없다`);
-    return pass(`${label}: 우물 ${well.length}칸 (${well[0]!.x},${well[0]!.y})`);
+    if (!well.length && !stampedWell(input.tools)) return fail(`${label}: 우물 타일이 없다`);
+    return pass(`${label}: 우물 ${Math.max(well.length, 1)}칸 (${well[0]?.x ?? cells[0]!.x},${well[0]?.y ?? cells[0]!.y})`);
   },
   reference(project, args) {
     return placeWell(project, rectArg(args, 'area'));
@@ -394,7 +412,9 @@ const placeWellFamily: Family = {
     });
     const noWell = fillRect(project, area, '버들항 모랫길');
     const wallInstead = paintCells(project, [{ x: area.x, y: area.y }], tileForTag(project, 'wall'));
-    return [outside, withExtra, noWell, wallInstead];
+    // 도구 영수증을 흘리지 않는 다른 소품(나무)은 우물이 아니다.
+    const treeInstead = runOn(project, 'place_props', { mapId: MAP, area, material: '버들항 · 나무·덤불', count: 1, seed: 2 });
+    return [outside, withExtra, noWell, wallInstead, treeInstead];
   },
 };
 
@@ -407,11 +427,11 @@ const forestPathFamily: Family = {
   mode: 'write',
   title: '지역에 숲길 추가',
   variants: [
-    { key: 'trail-plain', prompt: '이 지역에 작은 숲길을 하나 추가해줘.', args: { rect: { x: 2, y: 15, w: 10, h: 1 }, material: '버들항 모랫길', tag: 'sand' }, setup: { select: { x: 2, y: 15, w: 10, h: 1 } } },
-    { key: 'trail-polite', prompt: '선택한 8×2 영역에 흙길을 깔아 주세요.', args: { rect: { x: 2, y: 15, w: 8, h: 2 }, material: '버들항 모랫길', tag: 'sand' }, setup: { select: { x: 2, y: 15, w: 8, h: 2 } } },
-    { key: 'terse-stone', prompt: '여기 6×1 돌길.', args: { rect: { x: 4, y: 7, w: 6, h: 1 }, material: '버들항 길 포석', tag: 'road' }, setup: { select: { x: 4, y: 7, w: 6, h: 1 } } },
-    { key: 'scope-explained', prompt: '선택한 5×3 영역에 숲길을 내되 바닥이 비는 칸(구멍) 없이 이어 주세요. 영역 밖은 건드리지 마세요.', args: { rect: { x: 15, y: 15, w: 5, h: 3 }, material: '버들항 모랫길', tag: 'sand' }, setup: { select: { x: 15, y: 15, w: 5, h: 3 } } },
-    { key: 'farm-lane', prompt: '밭 옆으로 7×1 흙길을 내줘.', args: { rect: { x: 13, y: 11, w: 7, h: 1 }, material: '버들항 모랫길', tag: 'sand' }, setup: { select: { x: 13, y: 11, w: 7, h: 1 } } },
+    { key: 'trail-plain', prompt: '이 지역에 작은 숲길을 하나 추가해줘.', args: { rect: { x: 2, y: 15, w: 10, h: 1 }, material: '버들항 모랫길', tag: 'sand', accept: ['farm_lane'] }, setup: { select: { x: 2, y: 15, w: 10, h: 1 } } },
+    { key: 'trail-polite', prompt: '선택한 8×2 영역에 흙길을 깔아 주세요.', args: { rect: { x: 2, y: 15, w: 8, h: 2 }, material: '버들항 모랫길', tag: 'sand', accept: ['farm_lane'] }, setup: { select: { x: 2, y: 15, w: 8, h: 2 } } },
+    { key: 'terse-stone', prompt: '여기 6×1 돌길.', args: { rect: { x: 4, y: 7, w: 6, h: 1 }, material: '버들항 길 포석', tag: 'road', accept: ['plaza'] }, setup: { select: { x: 4, y: 7, w: 6, h: 1 } } },
+    { key: 'scope-explained', prompt: '선택한 5×3 영역에 숲길을 내되 바닥이 비는 칸(구멍) 없이 이어 주세요. 영역 밖은 건드리지 마세요.', args: { rect: { x: 15, y: 15, w: 5, h: 3 }, material: '버들항 모랫길', tag: 'sand', accept: ['farm_lane'] }, setup: { select: { x: 15, y: 15, w: 5, h: 3 } } },
+    { key: 'farm-lane', prompt: '밭 옆으로 7×1 흙길을 내줘.', args: { rect: { x: 13, y: 11, w: 7, h: 1 }, material: '버들항 모랫길', tag: 'sand', accept: ['farm_lane'] }, setup: { select: { x: 13, y: 11, w: 7, h: 1 } } },
   ],
   judge(input, args) {
     const rect = rectArg(args);
@@ -427,7 +447,9 @@ const forestPathFamily: Family = {
     if (holes.length) return fail(`${label}: 바닥이 빈 구멍 칸 ${holes.length}개`);
     const blocked = cells.filter(cell => !isGround(input.after, tileAt(input.after, 'lowerTiles', cell.x, cell.y)));
     if (blocked.length) return fail(`${label}: 길이 아닌(막힌) 타일 ${blocked.length}칸 (예: ${blocked[0]!.x},${blocked[0]!.y} 「${labelOf(input.after, tileAt(input.after, 'lowerTiles', blocked[0]!.x, blocked[0]!.y))}」)`);
-    const offMaterial = cellsIn(rect).filter(cell => !cellHasAny(input.after, cell.x, cell.y, [tag]));
+    // 「흙길」은 모랫길과 농장 흙길 둘 다다 — 어느 쪽으로 깔아도 흙길이다.
+    const accepted = [tag, ...((args.accept as string[] | undefined) ?? [])];
+    const offMaterial = cellsIn(rect).filter(cell => !accepted.some(material => cellMatchesMaterial(input.after, cell.x, cell.y, material)));
     if (offMaterial.length) return fail(`${label}: ${tag} 길이 아닌 칸 ${offMaterial.length}개 (예: ${offMaterial[0]!.x},${offMaterial[0]!.y} 「${cellLabel(input.after, offMaterial[0]!.x, offMaterial[0]!.y)}」)`);
     return pass(`${label}: ${cells.length}칸 ${tag} 길, 구멍·막힌 칸 없음`);
   },
@@ -509,13 +531,15 @@ const allowedFootprint = (project: Project, cells: ReadonlyArray<{ x: number; y:
   return allowed;
 };
 
-const selectionJudge = (input: any, cells: ReadonlyArray<{ x: number; y: number }>, tag: string, label: string) => {
+const selectionJudge = (input: any, cells: ReadonlyArray<{ x: number; y: number }>, tag: string, label: string, accept: readonly string[] = []) => {
   const changed = changedCells(input.before, input.after);
   if (!changed.length) return fail(`${label}: 바뀐 칸이 없다`);
   const allowed = allowedFootprint(input.before, cells, tag);
   const stray = changed.filter(cell => !allowed.has(keyOf(cell.x, cell.y)));
   if (stray.length) return fail(`${label}: 선택 밖 칸 ${stray.length}개가 바뀌었다 (예: ${stray[0]!.x},${stray[0]!.y})`);
-  const missing = cells.filter(cell => !cellHasAny(input.after, cell.x, cell.y, [tag]));
+  // Some prompts name a look, not a material: 「길」 is either 포석 or 모랫길, 「흙길」 includes the farm lane, 「돌바닥」 includes 판석.
+  const materials = [tag, ...accept];
+  const missing = cells.filter(cell => !materials.some(material => cellMatchesMaterial(input.after, cell.x, cell.y, material)));
   if (missing.length) return fail(`${label}: 선택 칸 ${missing.length}개가 요청한 재료로 바뀌지 않았다 (예: ${missing[0]!.x},${missing[0]!.y} 「${cellLabel(input.after, missing[0]!.x, missing[0]!.y)}」)`);
   if (!preserved(input.before, input.after)) return fail(`${label}: 타일 밖 내용이 바뀌었다`);
   return pass(`${label}: 선택 ${cells.length}칸 칠함`);
@@ -528,7 +552,7 @@ const selectionSingleCell: Family = {
   title: '한 칸만 칠하기',
   variants: [
     { key: 'plain', prompt: '선택한 한 칸만 길 포석으로 바꿔줘.', args: { cell: { x: 20, y: 16 }, tag: 'road' }, setup: { select: { x: 20, y: 16, w: 1, h: 1 } } },
-    { key: 'polite', prompt: '이 한 칸에 돌바닥을 깔아 주세요.', args: { cell: { x: 6, y: 16 }, tag: 'road' }, setup: { select: { x: 6, y: 16, w: 1, h: 1 } } },
+    { key: 'polite', prompt: '이 한 칸에 돌바닥을 깔아 주세요.', args: { cell: { x: 6, y: 16 }, tag: 'road', accept: ['plaza'] }, setup: { select: { x: 6, y: 16, w: 1, h: 1 } } },
     { key: 'terse', prompt: '여기 한 칸, 모래.', args: { cell: { x: 9, y: 13 }, tag: 'sand' }, setup: { select: { x: 9, y: 13, w: 1, h: 1 } } },
     { key: 'scope-explained', prompt: '정확히 선택한 한 칸만 풀밭으로 바꾸고 옆 칸은 그대로 두세요.', args: { cell: { x: 4, y: 14 }, tag: 'grass' }, setup: { select: { x: 4, y: 14, w: 1, h: 1 } } },
     { key: 'sand-cell', prompt: '그 칸(2,16) 하나만 모랫길로.', args: { cell: { x: 2, y: 16 }, tag: 'sand' }, setup: { select: { x: 2, y: 16, w: 1, h: 1 } } },
@@ -536,8 +560,9 @@ const selectionSingleCell: Family = {
   judge(input, args) {
     const cell = coordArg(args, 'cell');
     const tag = strArg(args, 'tag');
+    const accept = (args.accept as string[] | undefined) ?? [];
     const label = `한 칸 (${cell.x},${cell.y})`;
-    return selectionJudge(input, [cell], tag, label);
+    return selectionJudge(input, [cell], tag, label, accept);
   },
   reference(project, args) {
     const cell = coordArg(args, 'cell');
@@ -546,11 +571,13 @@ const selectionSingleCell: Family = {
   wrongs(project, args): FamilyOutcome[] {
     const cell = coordArg(args, 'cell');
     const tag = strArg(args, 'tag');
+    const accept = (args.accept as string[] | undefined) ?? [];
     const tile = tileForTag(project, tag);
     const neighbour = paintCells(project, [{ x: cell.x + 1, y: cell.y }], tile);
     const twoCells = paintCells(project, [cell, { x: cell.x, y: cell.y + 1 }], tile);
     const sideEffect = runOn(paintCells(project, [cell], tile), 'paint_tiles', { mapId: MAP, layer: 'lower', mode: 'cells', tile, cells: [{ x: 12, y: 4 }] });
-    const wrongMaterial = paintCells(project, [cell], tileForTag(project, tag === 'sand' ? 'road' : 'sand'));
+    const other = ['sand', 'road', 'plaza'].find(candidate => candidate !== tag && !accept.includes(candidate)) ?? 'grass';
+    const wrongMaterial = paintCells(project, [cell], tileForTag(project, other));
     return [neighbour, twoCells, sideEffect, wrongMaterial];
   },
 };
@@ -566,12 +593,12 @@ const selectionColumn: Family = {
     { key: 'plain-1x5', prompt: '선택한 세로 한 줄만 길 포석으로 칠해줘.', args: { rect: { x: 20, y: 12, w: 1, h: 5 }, tag: 'road' }, setup: { select: { x: 20, y: 12, w: 1, h: 5 } } },
     { key: 'polite-1x4', prompt: '선택한 1×4 세로 띠에 돌바닥을 깔아 주세요.', args: { rect: { x: 4, y: 12, w: 1, h: 4 }, tag: 'road' }, setup: { select: { x: 4, y: 12, w: 1, h: 4 } } },
     { key: 'terse-1x3', prompt: '이 세로 3칸, 모래로.', args: { rect: { x: 9, y: 12, w: 1, h: 3 }, tag: 'sand' }, setup: { select: { x: 9, y: 12, w: 1, h: 3 } } },
-    { key: 'scope-explained', prompt: '선택한 1×6 세로 띠만 흙길로 바꾸고 옆 칸은 그대로 두세요.', args: { rect: { x: 19, y: 3, w: 1, h: 6 }, tag: 'sand' }, setup: { select: { x: 19, y: 3, w: 1, h: 6 } } },
-    { key: 'road-1x5', prompt: '아래쪽 세로 5칸(6,12)을 길로 내줘.', args: { rect: { x: 6, y: 12, w: 1, h: 5 }, tag: 'road' }, setup: { select: { x: 6, y: 12, w: 1, h: 5 } } },
+    { key: 'scope-explained', prompt: '선택한 1×6 세로 띠만 흙길로 바꾸고 옆 칸은 그대로 두세요.', args: { rect: { x: 19, y: 3, w: 1, h: 6 }, tag: 'sand', accept: ['farm_lane'] }, setup: { select: { x: 19, y: 3, w: 1, h: 6 } } },
+    { key: 'road-1x5', prompt: '아래쪽 세로 5칸(6,12)을 길로 내줘.', args: { rect: { x: 6, y: 12, w: 1, h: 5 }, tag: 'road', accept: ['sand'] }, setup: { select: { x: 6, y: 12, w: 1, h: 5 } } },
   ],
   judge(input, args) {
     const rect = rectArg(args);
-    return selectionJudge(input, stripCells(rect), strArg(args, 'tag'), `세로 띠 ${rect.w}×${rect.h}(${rect.x},${rect.y})`);
+    return selectionJudge(input, stripCells(rect), strArg(args, 'tag'), `세로 띠 ${rect.w}×${rect.h}(${rect.x},${rect.y})`, (args.accept as string[] | undefined) ?? []);
   },
   reference(project, args) {
     const rect = rectArg(args);
@@ -604,7 +631,7 @@ const selectionL: Family = {
     },
     {
       key: 'polite', prompt: '선택 영역 중 L자로 잡힌 5칸에만 돌바닥을 깔아 주세요.',
-      args: { cells: [{ x: 20, y: 3 }, { x: 20, y: 4 }, { x: 20, y: 5 }, { x: 21, y: 5 }, { x: 22, y: 5 }], tag: 'road' },
+      args: { cells: [{ x: 20, y: 3 }, { x: 20, y: 4 }, { x: 20, y: 5 }, { x: 21, y: 5 }, { x: 22, y: 5 }], tag: 'road', accept: ['plaza'] },
       setup: { select: { x: 20, y: 3, w: 3, h: 3 } },
     },
     {
@@ -627,7 +654,7 @@ const selectionL: Family = {
     const raw = args.cells;
     if (!Array.isArray(raw) || !raw.length) throw new Error('family args.cells must be a non-empty array');
     const cells = raw.map(cell => ({ x: Number((cell as any).x), y: Number((cell as any).y) }));
-    return selectionJudge(input, cells, strArg(args, 'tag'), `L자 ${cells.length}칸`);
+    return selectionJudge(input, cells, strArg(args, 'tag'), `L자 ${cells.length}칸`, (args.accept as string[] | undefined) ?? []);
   },
   reference(project, args) {
     const cells = (args.cells as Array<{ x: number; y: number }>).map(cell => ({ x: cell.x, y: cell.y }));
@@ -672,8 +699,10 @@ const selectionWholeMap: Family = {
     const map = mapOf(input.after);
     const label = '맵 전체';
     const missing: Array<{ x: number; y: number }> = [];
-    for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) if (!cellHasAny(input.after, x, y, [tag])) missing.push({ x, y });
-    if (missing.length) return fail(`${label}: ${missing.length}/${map.width * map.height}칸이 요청한 재료가 아니다 (예: ${missing[0]!.x},${missing[0]!.y} 「${cellLabel(input.after, missing[0]!.x, missing[0]!.y)}」)`);
+    for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) if (!cellMatchesMaterial(input.after, x, y, tag)) missing.push({ x, y });
+    // 「바닥」은 바닥이다 — 나무·덤불·건물처럼 원래 위에 서 있던 물체는 그 자리를 비우지 않아도 된다.
+    const solidOnly = missing.filter(cell => !isSolidOn(input.after, cell.x, cell.y) || !isSolidOn(input.before, cell.x, cell.y));
+    if (solidOnly.length) return fail(`${label}: ${solidOnly.length}/${map.width * map.height}칸이 요청한 재료가 아니다 (예: ${solidOnly[0]!.x},${solidOnly[0]!.y} 「${cellLabel(input.after, solidOnly[0]!.x, solidOnly[0]!.y)}」)`);
     const before = mapOf(input.before).events.map((event: any) => event.id).sort();
     const after = map.events.map((event: any) => event.id).sort();
     if (JSON.stringify(before) !== JSON.stringify(after)) return fail(`${label}: 이벤트가 사라지거나 늘었다(${before.length} → ${after.length})`);

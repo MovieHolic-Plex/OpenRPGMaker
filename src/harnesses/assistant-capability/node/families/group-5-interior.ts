@@ -183,10 +183,10 @@ const interiorRoomBuild: Family = {
     { key: 'bakery-casual', prompt: '빵집 안 좀 만들어줘. 문은 한 칸이면 충분해.', args: { mapId: 'map_bakery', doorway: 1 } },
   ],
   judge(input, args) {
-    const mapId = strArg(args, 'mapId');
     const created = newMapIds(input.before, input.after);
-    if (!created.includes(mapId)) return fail(`새 맵 ${mapId} 가 없다 (만들어진 맵: ${created.join(',') || '없음'})`);
-    if (created.length > 1) return fail(`새 맵이 ${created.length}개다 (${created.join(',')})`);
+    // The prompt asks for a room, not for a map id — the editor mints the id itself.
+    if (created.length !== 1) return fail(`새 맵이 ${created.length}개다 (${created.join(',') || '없음'})`);
+    const mapId = created[0]!;
     const touched = changedMaps(input.before, input.after, [mapId]);
     if (touched.length) return fail(`기존 맵 ${touched.join(',')} 가 바뀌었다`);
     const removed = removedMaps(input.before, input.after);
@@ -216,6 +216,32 @@ const interiorRoomBuild: Family = {
   },
 };
 
+const judgeFurnish = (input: any, mapId: string, wanted: number) => {
+  if (!mapOf(input.before, mapId)) return fail(`${mapId} 맵이 fixture 에 없다`);
+  if (!isDeepStrictEqual(mapOf(input.before, mapId).events, mapOf(input.after, mapId)?.events)) return fail(`${mapId} 의 이벤트가 바뀌었다`);
+  const touched = changedMaps(input.before, input.after, [mapId]);
+  if (touched.length) return fail(`다른 맵 ${touched.join(',')} 가 바뀌었다`);
+  const before = shapeOf(input.before, mapId)!;
+  const after = shapeOf(input.after, mapId);
+  if (!after) return fail(`${mapId} 맵이 사라졌다`);
+  if (after.width !== before.width || after.height !== before.height) return fail(`${mapId} 크기가 ${before.width}×${before.height} → ${after.width}×${after.height} 로 바뀌었다`);
+  if (after.holes) return fail(`${mapId} 에 빈 바닥 칸(-1) ${after.holes}개`);
+  const opened = openedStructure(before, after);
+  if (opened.length) return fail(`${mapId} 에서 벽·구조가 허물어져 열린 칸 ${opened.length}개 (${opened[0]!.x},${opened[0]!.y})`);
+  const placed = newlyBlocked(input.before, input.after, mapId);
+  const groups = blockGroups(after, mapId, placed);
+  if (placed.length < wanted) return fail(`${mapId} 새로 놓인 가구 칸이 ${placed.length}개뿐이다 (요청 ${wanted}개)`);
+  if (wanted >= 3 && groups < 2) return fail(`${mapId} 가구가 한 덩이뿐이다 (요청 ${wanted}개)`);
+  const onBorder = placed.filter(cell => cell.x === 0 || cell.y === 0 || cell.x === after.width - 1 || cell.y === after.height - 1);
+  if (onBorder.length) return fail(`가구가 벽·문 칸에 놓였다 (${onBorder[0]!.x},${onBorder[0]!.y})`);
+  const door = after.doorways[0];
+  if (door && placed.some(cell => cell.y === door.y && cell.x >= door.start && cell.x < door.start + door.width)) return fail('가구가 출입구를 막았다');
+  if (after.doorways.length !== before.doorways.length) return fail(`출입구가 ${before.doorways.length} → ${after.doorways.length}곳으로 바뀌었다`);
+  const reachableFloor = after.open - placed.length;
+  if (after.reachable < Math.ceil(reachableFloor * 0.9)) return fail(`${mapId} 출입구에서 닿는 칸 ${after.reachable}/${reachableFloor} — 가구가 길을 막았다`);
+  return sameExcept(input.before, input.after, blankTileLayers(mapId)) ? pass(`${mapId} 가구 ${groups}묶음 ${placed.length}칸, 통행 보존`) : fail('가구 밖 내용이 바뀌었다');
+};
+
 const interiorRoomFurnish: Family = {
   id: 'interior-room-furnish',
   area: 'interior',
@@ -230,31 +256,10 @@ const interiorRoomFurnish: Family = {
   ],
   prepare: prepareRoom,
   judge(input, args) {
-    const mapId = strArg(args, 'mapId');
     const wanted = Array.isArray(args.objects) ? args.objects.length : 1;
-    if (!mapOf(input.before, mapId)) return fail(`${mapId} 맵이 fixture 에 없다`);
-    if (!isDeepStrictEqual(mapOf(input.before, mapId).events, mapOf(input.after, mapId)?.events)) return fail(`${mapId} 의 이벤트가 바뀌었다`);
-    const touched = changedMaps(input.before, input.after, [mapId]);
-    if (touched.length) return fail(`다른 맵 ${touched.join(',')} 가 바뀌었다`);
-    const before = shapeOf(input.before, mapId)!;
-    const after = shapeOf(input.after, mapId);
-    if (!after) return fail(`${mapId} 맵이 사라졌다`);
-    if (after.width !== before.width || after.height !== before.height) return fail(`${mapId} 크기가 ${before.width}×${before.height} → ${after.width}×${after.height} 로 바뀌었다`);
-    if (after.holes) return fail(`${mapId} 에 빈 바닥 칸(-1) ${after.holes}개`);
-    const opened = openedStructure(before, after);
-    if (opened.length) return fail(`${mapId} 에서 벽·구조가 허물어져 열린 칸 ${opened.length}개 (${opened[0]!.x},${opened[0]!.y})`);
-    const placed = newlyBlocked(input.before, input.after, mapId);
-    const groups = blockGroups(after, mapId, placed);
-    if (placed.length < wanted) return fail(`${mapId} 새로 놓인 가구 칸이 ${placed.length}개뿐이다 (요청 ${wanted}개)`);
-    if (wanted >= 3 && groups < 2) return fail(`${mapId} 가구가 한 덩이뿐이다 (요청 ${wanted}개)`);
-    const onBorder = placed.filter(cell => cell.x === 0 || cell.y === 0 || cell.x === after.width - 1 || cell.y === after.height - 1);
-    if (onBorder.length) return fail(`가구가 벽·문 칸에 놓였다 (${onBorder[0]!.x},${onBorder[0]!.y})`);
-    const door = after.doorways[0];
-    if (door && placed.some(cell => cell.y === door.y && cell.x >= door.start && cell.x < door.start + door.width)) return fail('가구가 출입구를 막았다');
-    if (after.doorways.length !== before.doorways.length) return fail(`출입구가 ${before.doorways.length} → ${after.doorways.length}곳으로 바뀌었다`);
-    const reachableFloor = after.open - placed.length;
-    if (after.reachable < Math.ceil(reachableFloor * 0.9)) return fail(`${mapId} 출입구에서 닿는 칸 ${after.reachable}/${reachableFloor} — 가구가 길을 막았다`);
-    return sameExcept(input.before, input.after, blankTileLayers(mapId)) ? pass(`${mapId} 가구 ${groups}묶음 ${placed.length}칸, 통행 보존`) : fail('가구 밖 내용이 바뀌었다');
+    // 「이 방」은 지금 보이는 맵을 가리킨다 — 지도에 보이는 맵에 가구를 놓은 답도 정답으로 본다.
+    const verdicts = [...new Set([strArg(args, 'mapId'), MAP])].map(mapId => judgeFurnish(input, mapId, wanted));
+    return verdicts.find(verdict => verdict.ok) ?? verdicts[0]!;
   },
   reference(project, args) {
     return buildRoom(project, strArg(args, 'mapId'), PLAN_WIDE_DOOR, { objects: args.objects }, true);
@@ -298,8 +303,9 @@ const interiorRoomDoorway: Family = {
     const door = shape.doorways[0]!;
     if (door.width !== width) return fail(`출입구 폭 ${door.width}칸 (요청 ${width}칸)`);
     const centre = door.start + (door.width - 1) / 2;
-    const want = keep === 'west' ? GAP_WEST : GAP_EAST;
-    if (Math.abs(centre - want) > 1.5) return fail(`출입구가 ${keep === 'west' ? '서쪽' : '동쪽'}이 아니라 x=${door.start} 에 있다`);
+    // 「서쪽/동쪽」은 방의 3분면을 말한다 — 픽스처의 픽셀 하나가 아니라.
+    const side = shape.width / 3;
+    if (keep === 'west' ? centre > side : centre < shape.width - side) return fail(`출입구가 ${keep === 'west' ? '서쪽' : '동쪽'}이 아니라 x=${door.start} 에 있다`);
     if (shape.borderOpen.length) return fail(`옆·위 외곽에도 뚫린 칸 ${shape.borderOpen.length}개`);
     if (shape.reachable < Math.ceil(shape.open * 0.9)) return fail(`문에서 닿는 칸 ${shape.reachable}/${shape.open}`);
     const above = Array.from({ length: width }, (_, offset) => ({ x: door.start + offset, y: door.y - 1 }));
@@ -382,6 +388,26 @@ const interiorRoomSize: Family = {
   },
 };
 
+const judgeLighting = (input: any, mapId: string, args: Record<string, unknown>) => {
+  const want = typeof args.ambient === 'number' ? args.ambient : undefined;
+  const color = typeof args.color === 'string' ? args.color : undefined;
+  const touched = changedMaps(input.before, input.after, [mapId]);
+  if (touched.length) return fail(`다른 맵 ${touched.join(',')} 가 바뀌었다`);
+  const light = mapOf(input.after, mapId)?.defaultLighting;
+  const ambient = light?.ambient;
+  if (typeof ambient !== 'number') return fail(`${mapId} 에 기본 조명이 없다`);
+  if (want !== undefined) {
+    if (Math.abs(ambient - want) > 0.02) return fail(`${mapId} ambient ${ambient} (요청 ${want})`);
+  } else if (!(ambient < 0.7)) return fail(`${mapId} ambient ${ambient} 는 밤이라 하기엔 밝다`);
+  if (color !== undefined) {
+    const normalize = (value: unknown) => String(value ?? '').replace('#', '').toLowerCase();
+    if (normalize(light?.color) !== normalize(color)) return fail(`${mapId} 색 ${light?.color} (요청 ${color})`);
+  }
+  return sameExcept(input.before, input.after, doc => { delete doc.maps[mapId].defaultLighting; })
+    ? pass(`${mapId} ambient ${ambient}, 색 ${light?.color ?? '(기본)'}`)
+    : fail('조명 밖 내용(바닥·가구·이벤트)이 바뀌었다');
+};
+
 const interiorRoomLight: Family = {
   id: 'interior-room-light',
   area: 'interior',
@@ -396,24 +422,10 @@ const interiorRoomLight: Family = {
   ],
   prepare: prepareRoom,
   judge(input, args) {
-    const mapId = strArg(args, 'mapId');
-    const want = typeof args.ambient === 'number' ? args.ambient : undefined;
-    const color = typeof args.color === 'string' ? args.color : undefined;
-    const touched = changedMaps(input.before, input.after, [mapId]);
-    if (touched.length) return fail(`다른 맵 ${touched.join(',')} 가 바뀌었다`);
-    const light = mapOf(input.after, mapId)?.defaultLighting;
-    const ambient = light?.ambient;
-    if (typeof ambient !== 'number') return fail(`${mapId} 에 기본 조명이 없다`);
-    if (want !== undefined) {
-      if (Math.abs(ambient - want) > 0.02) return fail(`${mapId} ambient ${ambient} (요청 ${want})`);
-    } else if (!(ambient < 0.7)) return fail(`${mapId} ambient ${ambient} 는 밤이라 하기엔 밝다`);
-    if (color !== undefined) {
-      const normalize = (value: unknown) => String(value ?? '').replace('#', '').toLowerCase();
-      if (normalize(light?.color) !== normalize(color)) return fail(`${mapId} 색 ${light?.color} (요청 ${color})`);
-    }
-    return sameExcept(input.before, input.after, doc => { delete doc.maps[mapId].defaultLighting; })
-      ? pass(`${mapId} ambient ${ambient}, 색 ${light?.color ?? '(기본)'}`)
-      : fail('조명 밖 내용(바닥·가구·이벤트)이 바뀌었다');
+    // 「이 방」은 지금 화면에 보이는 맵을 가리킨다. 픽스처의 방은 다른 맵에 있으므로 둘 다 정답으로 본다(둘 중 하나만 바뀌어야 한다).
+    const targets = [...new Set([strArg(args, 'mapId'), MAP])];
+    const verdicts = targets.map(mapId => judgeLighting(input, mapId, args));
+    return verdicts.find(verdict => verdict.ok) ?? verdicts[0]!;
   },
   reference(project, args) {
     const mapId = strArg(args, 'mapId');

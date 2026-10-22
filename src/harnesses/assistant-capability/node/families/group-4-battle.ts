@@ -5,6 +5,7 @@ import {
   readOnly, runOn, sameExcept,
 } from '../matrixNativeSpec';
 import { numArg, rectArg, strArg, type Family, type FamilyOutcome } from './types';
+import type { JudgeInput } from '../matrixNativeSpec';
 import { attempt, distinct, eventOn, gatesTo } from './group-4-shared';
 
 const ARENA = 'ev_arena_keeper';
@@ -42,54 +43,73 @@ function withBattles(project: Project): Project {
 const battlesIn = (event: any): any[] => (event?.pages ?? []).flatMap((page: any) => page.commands ?? []).filter((command: any) => command.kind === 'battleProcessing');
 const battleOf = (event: any) => battlesIn(event)[0];
 
+/** Every command of the event in order, descending into choice/fork/loop/battle branches. */
+const walkCommands = (list: any[] | undefined): any[] => (list ?? []).flatMap((command: any) => {
+  if (!command || typeof command !== 'object') return [command];
+  const nested: any[] = [];
+  if (command.kind === 'choices') for (const option of command.options ?? []) nested.push(...walkCommands(option.branch));
+  if (command.kind === 'presentItem') {
+    for (const option of command.options ?? []) nested.push(...walkCommands(option.branch));
+    nested.push(...walkCommands(command.cancelBranch), ...walkCommands(command.otherwiseBranch));
+  }
+  if (command.kind === 'fork') nested.push(...walkCommands(command.then), ...walkCommands(command.else));
+  if (command.kind === 'loop') nested.push(...walkCommands(command.body));
+  if (command.kind === 'battleProcessing') nested.push(...walkCommands(command.victoryBranch), ...walkCommands(command.defeatBranch), ...walkCommands(command.escapeBranch));
+  return [command, ...nested];
+});
+const allCommands = (event: any): any[] => (event?.pages ?? []).flatMap((page: any) => walkCommands(page.commands));
+
 const battleTroopCreate: Family = {
   id: 'battle-troop-create',
   area: 'battle',
   mode: 'write',
   title: '적 그룹 하나 생성(구성 일치)',
   variants: [
-    { key: 'slime-trio', prompt: '슬라임 셋으로 이루어진 「슬라임 삼인방」 적 그룹을 만들어줘.', args: { troopId: 'troop_g4_slime_trio', name: '슬라임 삼인방', enemyIds: ['enemy_slime', 'enemy_slime', 'enemy_slime'] } },
-    { key: 'bat-pair-polite', prompt: '동굴 박쥐 두 마리짜리 적 그룹을 새로 만들어 주세요. 이름은 「박쥐 한 쌍」입니다.', args: { troopId: 'troop_g4_bat_pair', name: '박쥐 한 쌍', enemyIds: ['enemy_cave_bat', 'enemy_cave_bat'] } },
-    { key: 'mixed-terse', prompt: '슬라임+초원 슬라임 섞인 그룹 하나 추가.', args: { troopId: 'troop_g4_mixed', name: '슬라임 혼성', enemyIds: ['enemy_slime', 'enemy_meadow_slime'] } },
-    { key: 'golem-explained', prompt: '돌 골렘 하나로만 구성된 「골렘 파수꾼」 적 그룹을 추가해 주세요. 기존 적 그룹은 건드리지 마세요.', args: { troopId: 'troop_g4_golem', name: '골렘 파수꾼', enemyIds: ['enemy_stone_golem'] } },
-    { key: 'dragon-pair', prompt: '붉은 드래곤 두 마리 그룹 「쌍룡」 만들어.', args: { troopId: 'troop_g4_dragon_pair', name: '쌍룡', enemyIds: ['enemy_dragon', 'enemy_dragon'] } },
+    { key: 'slime-trio', prompt: '슬라임 셋으로 이루어진 「슬라임 삼인방」 적 그룹을 만들어줘.', args: { refId: 'troop_g4_slime_trio', name: '슬라임 삼인방', enemyIds: ['enemy_slime', 'enemy_slime', 'enemy_slime'] } },
+    { key: 'bat-pair-polite', prompt: '동굴 박쥐 두 마리짜리 적 그룹을 새로 만들어 주세요. 이름은 「박쥐 한 쌍」입니다.', args: { refId: 'troop_g4_bat_pair', name: '박쥐 한 쌍', enemyIds: ['enemy_cave_bat', 'enemy_cave_bat'] } },
+    { key: 'mixed-terse', prompt: '슬라임+초원 슬라임 섞인 그룹 하나 추가.', args: { refId: 'troop_g4_mixed', name: '슬라임 혼성', enemyIds: ['enemy_slime', 'enemy_meadow_slime'], nameContains: ['슬라임'] } },
+    { key: 'golem-explained', prompt: '돌 골렘 하나로만 구성된 「골렘 파수꾼」 적 그룹을 추가해 주세요. 기존 적 그룹은 건드리지 마세요.', args: { refId: 'troop_g4_golem', name: '골렘 파수꾼', enemyIds: ['enemy_stone_golem'] } },
+    { key: 'dragon-pair', prompt: '붉은 드래곤 두 마리 그룹 「쌍룡」 만들어.', args: { refId: 'troop_g4_dragon_pair', name: '쌍룡', enemyIds: ['enemy_dragon', 'enemy_dragon'] } },
   ],
   judge(input, args) {
-    const troopId = strArg(args, 'troopId');
     const name = strArg(args, 'name');
     const want = [...(args.enemyIds as string[])].sort();
     const before = (input.before as any).database.troops as any[];
     const after = (input.after as any).database.troops as any[];
     const added = after.filter(troop => !before.some(old => old.id === troop.id));
-    const created = after.find(troop => troop.id === troopId);
-    if (!created) return fail(`${troopId} 적 그룹이 없다`);
     if (added.length !== 1) return fail(`새 적 그룹이 ${added.length}개다(하나여야 한다)`);
-    if (created.name !== name) return fail(`이름이 「${created.name}」 — 「${name}」 여야 한다`);
+    const created = added[0]!;
+    // The prompt names the troop and its composition, never an id — the editor assigns that itself.
+    const nameWords = (args.nameContains as string[] | undefined) ?? [];
+    const named = created.name === name || (nameWords.length > 0 && nameWords.every(word => String(created.name ?? '').includes(word)));
+    if (!named) return fail(`이름이 「${created.name}」 — 「${name}」 여야 한다`);
     const got = [...(created.enemyIds ?? [])].sort();
     if (!isDeepStrictEqual(got, want)) return fail(`구성이 ${got.join(',')} — ${want.join(',')} 여야 한다`);
     for (const old of before) {
       const now = after.find(troop => troop.id === old.id);
       if (!now || !isDeepStrictEqual(now, old)) return fail(`기존 적 그룹 ${old.id} 가 바뀌었다`);
     }
-    const blank = (doc: any) => { doc.database.troops = doc.database.troops.filter((troop: any) => troop.id !== troopId); };
-    return sameExcept(input.before, input.after, blank) ? pass(`${troopId} (${got.length}마리) 추가, 기존 그룹 보존`) : fail('적 그룹 밖의 내용이 바뀌었다');
+    const blank = (doc: any) => { doc.database.troops = doc.database.troops.filter((troop: any) => troop.id !== created.id); };
+    return sameExcept(input.before, input.after, blank) ? pass(`${created.id} (${got.length}마리) 추가, 기존 그룹 보존`) : fail('적 그룹 밖의 내용이 바뀌었다');
   },
   reference(project, args) {
-    return runOn(project, 'upsert_troop', { troop: { id: strArg(args, 'troopId'), name: strArg(args, 'name'), enemyIds: args.enemyIds as string[] } });
+    // The prompt names the troop and its roster, never an id: `reference` picks one, and the judge accepts any
+    // new troop whose name and composition match.
+    return runOn(project, 'upsert_troop', { troop: { id: strArg(args, 'refId'), name: strArg(args, 'name'), enemyIds: args.enemyIds as string[] } });
   },
   wrongs(project, args): FamilyOutcome[] {
-    const troopId = strArg(args, 'troopId');
+    const refId = strArg(args, 'refId');
     const name = strArg(args, 'name');
     const enemyIds = args.enemyIds as string[];
     const reference = battleTroopCreate.reference!(clone(project), args) as Project;
     const oneLess = enemyIds.length > 1 ? enemyIds.slice(0, -1) : ['enemy_meadow_slime'];
-    const created = (ids: string[], id = troopId, label = name) => attempt(() =>
+    const created = (ids: string[], label = name, id = refId) => attempt(() =>
       runOn(clone(project), 'upsert_troop', { troop: { id, name: label, enemyIds: ids } }));
     return distinct(reference, [
       created(oneLess),
       created([...enemyIds, 'enemy_meadow_slime']),
+      created(enemyIds, `${name} 대장`),
       attempt(() => runOn(clone(project), 'upsert_troop', { troop: { id: 'troop_slime', name: '슬라임 정찰대', enemyIds: ['enemy_cave_bat'] } })),
-      attempt(() => runOn(clone(project), 'upsert_troop', { troop: { id: 'troop_dragon', name } })),
     ]);
   },
 };
@@ -100,33 +120,42 @@ const battleEventStart: Family = {
   mode: 'write',
   title: '이벤트 페이지가 그 troop 으로 전투',
   variants: [
-    { key: 'keeper-slime', prompt: '투기장 문지기가 말을 걸면 슬라임 정찰대와 전투가 시작되게 해줘.', args: { eventId: ARENA, troopId: 'troop_slime' }, setup: { event: ARENA } },
+    { key: 'keeper-slime', prompt: '투기장 문지기가 말을 걸면 슬라임 정찰대와 전투가 시작되게 해줘.', args: { eventId: ARENA, troopId: 'troop_slime', allowLeadText: true }, setup: { event: ARENA } },
     { key: 'keeper-polite', prompt: '투기장 문지기 이벤트에 전투 명령을 넣어 주세요. 상대는 「슬라임 정찰대」입니다. 대사는 그대로 두세요.', args: { eventId: ARENA, troopId: 'troop_slime' }, setup: { event: ARENA } },
-    { key: 'guard-bats', prompt: '수문장이 동굴 박쥐 떼와 싸우게 해줘.', args: { eventId: GUARD, troopId: 'troop_bat_swarm' }, setup: { event: GUARD } },
+    { key: 'guard-bats', prompt: '수문장이 동굴 박쥐 떼와 싸우게 해줘.', args: { eventId: GUARD, troopId: 'troop_bat_swarm', allowLeadText: true }, setup: { event: GUARD } },
     { key: 'guard-explained', prompt: '수문장 이벤트 페이지 끝에 「석상 수호병」 troop 과의 전투 명령을 하나 추가해 주세요. 기존 대사는 순서 그대로 남겨 주세요.', args: { eventId: GUARD, troopId: 'troop_golem_guard' }, setup: { event: GUARD } },
-    { key: 'keeper-terse', prompt: '문지기 → 슬라임 정찰대 전투.', args: { eventId: ARENA, troopId: 'troop_slime' }, setup: { event: ARENA } },
+    { key: 'keeper-terse', prompt: '문지기 → 슬라임 정찰대 전투.', args: { eventId: ARENA, troopId: 'troop_slime', allowLeadText: true }, setup: { event: ARENA } },
   ],
   prepare: withArena,
   judge(input, args) {
     const eventId = strArg(args, 'eventId');
     const troopId = strArg(args, 'troopId');
+    const allowLeadText = args.allowLeadText === true;
     const known = new Set(((input.after as any).database.troops ?? []).map((troop: any) => troop.id));
     if (!known.has(troopId)) return fail(`${troopId} 적 그룹이 프로젝트에 없다`);
     return eventEdit(input, eventId, (before, after) => {
-      const battle = battlesIn(after).find((command: any) => command.troopId === troopId);
+      const battles = allCommands(after).filter((command: any) => command.kind === 'battleProcessing');
+      const battle = battles.find((command: any) => command.troopId === troopId);
       if (!battle) return fail(`${eventId}: ${troopId} 로 시작하는 전투 명령이 없다`);
-      const was = (before.pages?.[0]?.commands ?? []) as any[];
-      const now = (after.pages?.[0]?.commands ?? []) as any[];
-      const bodies = was.filter((command: any) => command.kind === 'text').map((command: any) => String(command.body ?? ''));
-      const nowBodies = now.filter((command: any) => command.kind === 'text').map((command: any) => String(command.body ?? ''));
-      if (!bodies.every((body, index) => nowBodies[index] === body)) return fail(`${eventId}: 기존 대사가 사라지거나 순서가 바뀌었다`);
-      const addedKinds = [...now.map((command: any) => command.kind)];
-      for (const kind of was.map((command: any) => command.kind)) {
-        const at = addedKinds.indexOf(kind);
-        if (at >= 0) addedKinds.splice(at, 1);
+      const others = battles.filter((command: any) => command.troopId !== troopId);
+      if (others.length) return fail(`${eventId}: 다른 troop(${others.map((command: any) => command.troopId).join(',')}) 전투가 함께 들어갔다`);
+      const was = allCommands(before);
+      const now = allCommands(after);
+      // Existing commands survive in order; whatever is left is what the turn added.
+      let at = 0;
+      const added: any[] = [];
+      for (const command of now) {
+        if (at < was.length && isDeepStrictEqual(was[at], command)) at++;
+        else added.push(command);
       }
-      if (addedKinds.length !== 1 || addedKinds[0] !== 'battleProcessing') return fail(`${eventId}: 새 명령이 ${addedKinds.join(',') || '없음'} (전투 하나여야 한다)`);
-      return pass(`${eventId}: ${troopId} 전투 명령 하나 추가, 기존 대사 보존`);
+      if (at !== was.length) return fail(`${eventId}: 기존 대사·명령이 사라졌거나 순서가 바뀌었다`);
+      // A lead-in line before the battle is how the request reads; anything else added is an unrequested change.
+      const allowed = allowLeadText
+        ? new Set(['battleProcessing', 'text', 'displayTextSettings', 'wait', 'choices', 'fork', 'presentItem'])
+        : new Set(['battleProcessing', 'displayTextSettings', 'wait']);
+      const stray = added.filter((command: any) => !allowed.has(command?.kind));
+      if (stray.length) return fail(`${eventId}: 요청하지 않은 명령(${stray.map((command: any) => command?.kind).join(',')})이 함께 들어갔다`);
+      return pass(`${eventId}: ${troopId} 전투 명령 추가, 기존 대사 보존`);
     });
   },
   reference(project, args) {
@@ -147,6 +176,8 @@ const battleEventStart: Family = {
       patch([...base, { kind: 'battleProcessing', troopId: troopId === 'troop_slime' ? 'troop_slime_pair' : 'troop_slime', canEscape: true, canLose: false }]),
       patch([{ kind: 'battleProcessing', troopId, canEscape: true, canLose: false }]),
       patch([{ kind: 'battleProcessing', troopId, canEscape: true, canLose: false }], eventId === ARENA ? GUARD : ARENA),
+      // 전투와 함께 전이·스위치를 끼워 넣는 것은 요청 밖이다.
+      patch([...base, { kind: 'transfer', mapId: 'map_plaza', x: 2, y: 2 }, { kind: 'battleProcessing', troopId, canEscape: true, canLose: false }]),
     ]);
   },
 };
@@ -205,6 +236,29 @@ const battleEscapeAllowed: Family = {
   },
 };
 
+/**
+ * A defeat branch that sends the party home needs a flag to remember the win, and a keeper fight may need its own
+ * troop — new rows are append-only, so they are not side effects. Existing rows and every other change stay judged.
+ */
+const withNewRowsBlanked = (input: JudgeInput, collections: readonly string[]): JudgeInput => {
+  const copy = clone(input.after) as any;
+  for (const collection of collections) {
+    const before = ((input.before as any).database?.[collection] ?? []) as any[];
+    const known = new Set(before.map((row: any) => row.id));
+    if (!copy.database?.[collection]) continue;
+    copy.database[collection] = copy.database[collection].filter((row: any) => known.has(row.id));
+  }
+  const flags = new Set(((input.before as any).switches ?? []).map((entry: any) => entry.id));
+  copy.switches = (copy.switches ?? []).filter((entry: any) => flags.has(entry.id));
+  const vars = new Set(((input.before as any).variables ?? []).map((entry: any) => entry.id));
+  copy.variables = (copy.variables ?? []).filter((entry: any) => vars.has(entry.id));
+  if (copy.session) {
+    copy.session.switches = Object.fromEntries(Object.entries(copy.session.switches ?? {}).filter(([id]) => flags.has(id)));
+    copy.session.variables = Object.fromEntries(Object.entries(copy.session.variables ?? {}).filter(([id]) => vars.has(id)));
+  }
+  return { ...input, after: copy as Project };
+};
+
 const battleDefeatBranch: Family = {
   id: 'battle-defeat-branch',
   area: 'battle',
@@ -220,7 +274,7 @@ const battleDefeatBranch: Family = {
   prepare: withBattles,
   judge(input, args) {
     const eventId = strArg(args, 'eventId');
-    return eventEdit(input, eventId, (_before, after) => {
+    return eventEdit(withNewRowsBlanked(input, ['troops', 'enemies']), eventId, (_before, after) => {
       const battle = battlesIn(after)[0];
       if (!battle) return fail(`${eventId}: 전투 명령이 사라졌다`);
       const victory = battle.victoryBranch ?? [];
@@ -408,7 +462,10 @@ const planOnly: Family = {
     const rect = rectArg(args);
     return readOnly(input, 'plan-only', () => {
       if (input.answer.trim().length < 20) return fail('계획 답변이 없다');
-      if (/실내|내부 시공/u.test(input.answer)) return fail('요청에 없는 실내 시공을 지어냈다');
+      // Naming an interior build as an option is a plan; claiming it was built is not a plan.
+      if (/(지었|시공했|만들었|칠했|놓았|배치했|바꿨|적용했)(습니다|다|어요)/u.test(input.answer) && !/하겠|하실|예정|계획|제안|수 있/u.test(input.answer)) {
+        return fail('계획만 요청했는데 이미 실행했다고 적었다');
+      }
       const onSelection = coordinatesIn(input.answer).some(cell => inside(rect, cell.x, cell.y));
       const anchored = onSelection || mentions(input.answer, '선택') || /[?？]/u.test(input.answer);
       return anchored ? pass('실행 없이 선택 영역 기준 계획') : fail('선택 영역을 기준으로 하지도, 무엇을 할지 되묻지도 않았다');
@@ -421,7 +478,7 @@ const planOnly: Family = {
   wrongs(_project, args): FamilyOutcome[] {
     const rect = rectArg(args);
     return [
-      `선택 영역(${rect.x},${rect.y} ${rect.w}×${rect.h})에 실내 시공을 계획했습니다. 벽과 가구를 새로 배치합니다.`,
+      `선택 영역(${rect.x},${rect.y} ${rect.w}×${rect.h})에 벽과 가구를 새로 지었습니다. 마음에 드시면 다음으로 넘어가겠습니다.`,
       '계획: 마을 전체를 새로 칠합니다.',
     ];
   },

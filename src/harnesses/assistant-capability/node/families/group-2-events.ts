@@ -383,8 +383,14 @@ const addNpcLine: Family = {
     const eventId = strArg(args, 'eventId');
     const line = strArg(args, 'line');
     return editEvent(input, eventId, (before, after) => {
-      const was = before.pages[0].commands as any[];
-      const now = after.pages[0].commands as any[];
+      const beforePages = (before.pages ?? []) as any[];
+      const afterPages = (after.pages ?? []) as any[];
+      if (beforePages.length !== afterPages.length) return fail(`페이지 수가 ${beforePages.length}→${afterPages.length} 로 바뀌었다`);
+      // 「맨 끝에」는 마지막 페이지일 수도 있고 첫 페이지일 수도 있다 — 바뀐 페이지 하나만 본다.
+      const changed = beforePages.map((page: any, index: number) => (isDeepStrictEqual(page.commands, afterPages[index]?.commands) ? -1 : index)).filter(index => index >= 0);
+      if (changed.length !== 1) return fail(changed.length ? `바뀐 페이지가 ${changed.length}개다` : '대사가 추가된 페이지가 없다');
+      const was = (beforePages[changed[0]!].commands ?? []) as any[];
+      const now = (afterPages[changed[0]!].commands ?? []) as any[];
       const added = now.filter((command: any) => !was.some((old: any) => isDeepStrictEqual(old, command)));
       if (added.length !== 1) return fail(`추가된 명령이 ${added.length}개다`);
       const command = added[0];
@@ -438,6 +444,7 @@ const npcSchedule: Family = {
     const eventId = strArg(args, 'eventId');
     const at = args.at as { x: number; y: number };
     const hours = args.hours as [number, number] | undefined;
+    // 일정이 실행되려면 시간 시스템이 켜져 있어야 한다 — 그것만 동반 편집으로 허용한다.
     return editEvent(input, eventId, (before, after) => {
       const schedule = (after.schedule ?? []) as any[];
       if (!schedule.length) return fail('일정이 등록되지 않았다');
@@ -457,7 +464,7 @@ const npcSchedule: Family = {
         if (!covers) return fail(`요청한 시간대(${start}~${end}시)와 겹치는 일정이 없다`);
       }
       return pass(`일정 ${schedule.length}개 등록, 페이지 보존`);
-    });
+    }, { ...FLAGS_IGNORED, systemFields: ['timeSystem'] });
   },
   reference(project, args) {
     const eventId = strArg(args, 'eventId');
@@ -484,6 +491,8 @@ const npcSchedule: Family = {
       schedule(eventId, at, [hours[1], Math.min(48, hours[1] + 2)]),
       runOn(reference, 'patch_event_page', { mapId: MAP, eventId, pageIndex: 0, set: { commands: commandsAt(reference, eventId).slice(0, 1) } }),
       noWhen,
+      // 시간 시스템 밖의 system 필드를 함께 바꾸는 것은 일정 등록이 아니다.
+      (() => { const next = clone(reference) as any; next.system = { ...next.system, titleResourceId: 'windowskin-warm' }; return next; })(),
     ];
   },
 };
@@ -518,7 +527,10 @@ const screenShake: Family = {
       if (at !== was.length) return fail('기존 명령이 사라졌다');
       const shakes = added.filter((command: any) => command.kind === 'm2Command' && /shake|m2-?0?48/i.test(String(command.commandId)));
       if (shakes.length !== 1) return fail(`화면 흔들림 명령이 ${shakes.length}개다`);
-      if (!added.every((command: any) => command === shakes[0] || command.kind === 'wait')) return fail('요청하지 않은 명령이 함께 들어갔다');
+      // A shake reads better with its rumble: one sound effect is the same effect, a second is not.
+      const sounds = added.filter((command: any) => command.kind === 'playAudio');
+      if (sounds.length > 1) return fail(`효과음 명령이 ${sounds.length}개다`);
+      if (!added.every((command: any) => command === shakes[0] || command.kind === 'wait' || command.kind === 'playAudio')) return fail('요청하지 않은 명령이 함께 들어갔다');
       const fields = { ...(shakes[0].fields ?? {}), ...Object.fromEntries(Object.entries(shakes[0]).filter(([key]) => key !== 'fields')) };
       const values = Object.values(fields).map(value => String(value));
       if (args.intensity !== undefined && !values.includes(String(args.intensity))) return fail(`세기 ${args.intensity} 가 흔들림 명령에 없다`);
