@@ -89,7 +89,7 @@ def bake(dry=False, dev=False):
         auto = p['id'] in G.AUTO
         for (x, y), pc in sorted(pcs.items(), key=lambda kv: (kv[0][1], kv[0][0])):
             crop = BL.norm(im.crop((x * 16, y * 16, x * 16 + 16, y * 16 + 16)))
-            where = f" (마스크 {y} · 위상 {x % 4},{x // 4})" if p['id'] == 'asphalt-ph' else (f" (이웃 {y * 4 + x})" if y < 4 else (f" (이웃 {((y - 6) % 4) * 4 + x} · 가장자리 세트 {'BC'[(y - 6) // 4]})" if p['id'] == 'asphalt' and y >= 6 else (f" (이웃 {(y - 4) * 4 + x} · 변형 2)" if p['id'] == 'slab-break' else f" (속 변형 {(y - 4) * 4 + x + 1})"))) if auto else (f" ({x + 1},{y + 1})" if p['w'] * p['h'] > 1 else '')
+            where = f" (마스크 {y} · 위상 {x % G.APH},{x // G.APH})" if p['id'] == 'asphalt-ph' else (f" (이웃 {y * 4 + x})" if y < 4 else (f" (이웃 {((y - 6) % 4) * 4 + x} · 가장자리 세트 {'BC'[(y - 6) // 4]})" if p['id'] == 'asphalt' and y >= 6 else (f" (이웃 {(y - 4) * 4 + x} · 변형 2)" if p['id'] == 'slab-break' else f" (속 변형 {(y - 4) * 4 + x + 1})"))) if auto else (f" ({x + 1},{y + 1})" if p['w'] * p['h'] > 1 else '')
             tags = ['황무지', '폐허', GROUP_KO[p['group']]] + p['tags']
             meta = dict(label=f"{p['name']}{where}"[:80], desc=f"{p['desc'] or p['name']} — {BL.PCNOTE[pc]}.", role=role_of(p), tags=tags,
                         rep='auto' if auto else ('repeat' if p['kind'] in ('terrain', 'flat') else 'fixed'))
@@ -144,12 +144,13 @@ def bake(dry=False, dev=False):
         autotile_groups.append(g)
 
     ph = piece_cells.get('asphalt-ph')
-    if ph and all((k, m) in ph for m in range(16) for k in range(16)):  # 위상 오토타일: 칸 (위상 k, 마스크 m) — 조합기가 phaseTiles[m][(x%4)+4*(y%4)] 를 깐다
+    PP = G.APH * G.APH
+    if ph and all((k, m) in ph for m in range(16) for k in range(PP)):  # 위상 오토타일: 칸 (위상 k, 마스크 m) — 조합기가 phaseTiles[m][(x%P)+P*(y%P)] 를 깐다(P = G.APH)
         autotile_groups = [g for g in autotile_groups if g['id'] != 'wl-asphalt']
-        pt = {str(m): [ph[(k, m)][0] for k in range(16)] for m in range(16)}
+        pt = {str(m): [ph[(k, m)][0] for k in range(PP)] for m in range(16)}
         mem = sorted({t for ts in pt.values() for t in ts})
         autotile_groups.append(dict(id='wl-asphalt', name='금 간 아스팔트', neighborhood=4, memberTileIds=mem, connectTileIds=mem,
-                                    variantMap={str(m): pt[str(m)][0] for m in range(16)}, edgeConnects=True, phase=4, phaseTiles=pt))
+                                    variantMap={str(m): pt[str(m)][0] for m in range(16)}, edgeConnects=True, phase=G.APH, phaseTiles=pt))
 
     # 타일 그룹·키트
     groups = collections.OrderedDict(); kits = []
