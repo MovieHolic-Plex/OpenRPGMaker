@@ -17,6 +17,8 @@ import { browserWorkshopEnv } from "./pixels";
 import { localPackPreviews, readLocalPack, revokeLocalPackPreviews, type LocalPack, type LocalPackPreview } from "./genPackImport";
 import { workshopQueue } from "./queue/workshopQueue";
 import { castLineup, packCast } from "./castPreview";
+import { generatorStage, workshopEmblem } from "./workshopArt";
+import { WORKSHOP_GENERATORS } from "./generators";
 
 let host: HTMLElement | null = null;
 let previews: LocalPackPreview[] = [];
@@ -80,13 +82,15 @@ export function openGenWorkspace(generator: LocalGenerator): void {
       el("header", {
         class: "workshop-head",
         children: [
-          el("h2", { text: TITLES[generator] }),
+          el("h2", { children: [workshopEmblem(22), el("span", { text: TITLES[generator] })] }),
           el("button", { class: "workshop-close", text: "닫기", attrs: { type: "button", "aria-label": "공방 닫기" }, on: { click: closeGenWorkspace } }),
         ],
       }),
       el("div", {
         class: "workshop-gen-body",
         children: [
+          // 머리 무대 — 왼쪽 카드와 같은 그림(이 생성기가 만든 도트). 견본이 없는 생성기는 모눈 빈 작업대.
+          ...WORKSHOP_GENERATORS.filter((g) => g.id === generator).map((g) => generatorStage(g, "hero")),
           el("p", { class: "workshop-gen-lead", text: LEADS[generator] }),
           ...steps,
         ],

@@ -33,6 +33,10 @@ export interface WorkshopGenerator {
     readonly src: string; readonly width: number; readonly height: number; readonly alt: string; readonly caption?: string;
     /** 화면 배율(정수, 기본 2). 이미 정수 배율로 짜 맞춘 그림(칩 2배 + 상반신 1/7 칸 평균)은 1. */
     readonly scale?: number;
+    /** 무대 위에서 제자리 걸음하는 칩(가로 띠 frames 칸 × 칩마다 한 줄, 그림 좌표 = 무대 그림 픽셀). workshopArt.generatorStage 가 그린다. */
+    readonly walkers?: { readonly src: string; readonly frame: readonly [number, number]; readonly frames: number; readonly at: readonly (readonly [number, number])[] };
+    /** 가끔 반짝이는 자리(무대 그림 픽셀) — 「갓 만든 물건」 느낌 */
+    readonly twinkles?: readonly (readonly [number, number])[];
   };
 }
 
@@ -40,12 +44,17 @@ export const WORKSHOP_GENERATORS: readonly WorkshopGenerator[] = [
   {
     id: "object-gen", title: "물건·가구", status: "ready",
     makes: "가구·상자·표지판 같은 물건을 지금 맵의 그림 느낌에 맞춰 그려요.",
-    sample: { src: "/assets/workshop/object-gen-sample.png", width: 124, height: 58, alt: "물건 생성기가 그린 진열장·냉장고·보관함" },
+    // 무대: object-gen 견본 기물 셋(object-gen-sample.png 에서 뒷판을 뗌)을 손 도트 실내 v5 칩셋의 판자벽·마루 위에(2026-10-22).
+    sample: { src: "/assets/workshop/object-gen-stage.png", width: 124, height: 62, alt: "물건 생성기가 그린 진열장·냉장고·보관함", twinkles: [[12, 13], [76, 20], [112, 15]] },
   },
   {
     id: "char-gen", title: "캐릭터", status: "local",
     makes: "걷는 캐릭터의 옷·머리·색을 바꿔 새 사람을 만들어요.",
-    sample: { src: "/assets/workshop/char-gen-sample.png", width: 248, height: 116, scale: 1, alt: "캐릭터 생성기가 만든 상반신 초상과 걷는 캐릭터 셋" },
+    // 무대: char-gen-sample.png 에서 칩을 뺀 판(char-gen-stage.png) + 같은 자리에서 제자리 걸음하는 칩 셋(char-gen-walk.png, 2배·4칸 1·0·1·2).
+    sample: {
+      src: "/assets/workshop/char-gen-stage.png", width: 248, height: 116, scale: 1, alt: "캐릭터 생성기가 만든 상반신 초상과 걷는 캐릭터 셋",
+      walkers: { src: "/assets/workshop/char-gen-walk.png", frame: [48, 64], frames: 4, at: [[114, 40], [154, 40], [194, 40]] },
+    },
   },
   { id: "tile-gen", title: "지형·바닥", status: "local", makes: "이음매 없는 바닥, 물가·절벽 가장자리, 칠해 넣는 숲과 물을 내 타일셋 색으로 그려요." },
   { id: "item-gen", title: "아이템 아이콘", status: "soon", makes: "물약·열쇠·무기 같은 아이템 아이콘을 그려 줄 거예요." },

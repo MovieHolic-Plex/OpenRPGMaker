@@ -1,0 +1,176 @@
+/* 공방 「작업대」 겉모습(2026-10-22) — 생성기 무대(우리 도트, 정수 배율) · 대장간 불빛 진행 막대 · 「다 그림」 드러남 · 고른 그림 놋쇠 테.
+   색은 편집기 토큰을 쓰고, 공방에만 있는 셋(무대 먹색 · 불씨 · 놋쇠)만 여기서 정한다. 움직임은 transform·opacity·background-position 만.
+   prefers-reduced-motion 이면 모두 멈춘다(맨 아래). workshop.css 다음에 읽힌다(index.css). */
+.left-workshop-pane, .workshop, .workshop-host, .wq-dock {
+  --craft-stage: #1b1d24;
+  --craft-stage-edge: #0d0e12;
+  --craft-ember: #f0a43a;
+  --craft-ember-hot: #ffd76e;
+  --craft-ember-deep: #c4561f;
+  --craft-brass: #d4a23f;
+  --craft-brass-ink: #4a3307;
+  --craft-brass-soft: rgb(212 162 63 / 0.14);
+  --craft-brass-line: rgb(212 162 63 / 0.62);
+}
+
+/* ---------- 공방 표장 + 제목 ---------- */
+.workshop-emblem { flex: none; display: block; image-rendering: pixelated; }
+.workshop-emblem-spark { animation: craft-spark 2.4s steps(1) infinite; }
+.workshop-emblem-spark:nth-of-type(2n) { animation-delay: -1.2s; }
+@keyframes craft-spark { 0%, 62% { opacity: 1; } 63%, 78% { opacity: 0.15; } 79%, 100% { opacity: 1; } }
+.left-workshop-heading { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.left-workshop-heading .workshop-emblem { padding: 4px; border-radius: var(--radius-s, 6px); background: var(--craft-stage); box-shadow: inset 0 0 0 1px var(--craft-stage-edge), 0 1px 0 rgb(255 255 255 / 0.6); }
+.left-workshop-heading .left-workshop-title { font-size: 17px; letter-spacing: -0.01em; }
+.left-workshop-pane .left-workshop-lead { margin: 0; }
+
+/* ---------- 생성기 무대 ---------- */
+.workshop-stage { position: relative; display: grid; place-items: center; min-width: 0; overflow: hidden; background: var(--craft-stage); isolation: isolate; }
+/* 무대 가장자리: 안쪽 먹선 + 위쪽 잔광 + 바닥 그늘(그림 위 덧칠은 가장자리만) */
+.workshop-stage::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  box-shadow: inset 0 0 0 1px var(--craft-stage-edge), inset 0 1px 0 1px rgb(255 255 255 / 0.06), inset 0 -18px 24px -18px rgb(0 0 0 / 0.55); }
+.workshop-stage-scene { position: relative; flex: none; }
+.workshop-stage-scene > img { display: block; max-width: none; image-rendering: pixelated; }
+.workshop-stage.is-card { height: 124px; }
+.workshop-stage.is-hero { height: 148px; border-radius: var(--radius-m); background:
+  linear-gradient(90deg, rgb(255 255 255 / 0.035) 1px, transparent 1px) 0 0 / 32px 32px,
+  linear-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px) 0 0 / 32px 32px, var(--craft-stage); }
+.workshop-stage.is-hero .workshop-stage-scene { box-shadow: 0 0 0 1px var(--craft-stage-edge), 0 10px 24px -8px rgb(0 0 0 / 0.7); }
+
+/* 제자리 걸음 — 4칸 띠를 칸씩 넘긴다(번지지 않게 steps) */
+.workshop-stage-walker { position: absolute; z-index: 1; background-repeat: no-repeat; image-rendering: pixelated; background-position: 0 var(--walk-row);
+  animation: craft-walk 760ms steps(4) infinite; }
+@keyframes craft-walk { from { background-position: 0 var(--walk-row); } to { background-position: var(--walk-end) var(--walk-row); } }
+
+/* 반짝임 — 2px 도트로 찍은 네 갈래 별, 가끔 한 번 */
+.workshop-stage-twinkle { position: absolute; z-index: 1; width: 2px; height: 2px; margin: -1px 0 0 -1px; background: #fff8dc; opacity: 0; pointer-events: none;
+  box-shadow: 2px 0 #ffe9a8, -2px 0 #ffe9a8, 0 2px #ffe9a8, 0 -2px #ffe9a8, 4px 0 rgb(255 233 168 / 0.5), -4px 0 rgb(255 233 168 / 0.5), 0 4px rgb(255 233 168 / 0.5), 0 -4px rgb(255 233 168 / 0.5);
+  animation: craft-twinkle 3600ms steps(1) infinite; }
+@keyframes craft-twinkle { 0%, 70% { opacity: 0; transform: scale(1); } 71% { opacity: 0.7; transform: scale(1); } 74% { opacity: 1; transform: scale(2); } 78% { opacity: 0.6; transform: scale(1); } 81%, 100% { opacity: 0; } }
+
+/* 견본이 아직 없는 생성기 — 16px 모눈 위 빈 자리(그림을 흉내 내지 않는다) */
+.workshop-stage.is-blank { background:
+  linear-gradient(90deg, rgb(255 255 255 / 0.05) 1px, transparent 1px) 0 0 / 32px 32px,
+  linear-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px) 0 0 / 32px 32px, var(--craft-stage); }
+.workshop-stage.is-blank.is-card { height: 84px; }
+.workshop-stage-blank-text { position: relative; z-index: 1; padding: 6px 12px; border: 1px dashed rgb(255 255 255 / 0.28); border-radius: 3px; background: rgb(27 29 36 / 0.86); color: #c9cedb; font-size: 11.5px; }
+
+/* ---------- 왼쪽 막대 카드 ---------- */
+.left-workshop-pane .left-workshop-card { box-shadow: 0 1px 0 var(--border-subtle), 0 8px 18px -14px rgb(15 23 42 / 0.45); transition: border-color 140ms ease, box-shadow 140ms ease; }
+.left-workshop-pane .left-workshop-card.is-ready:hover, .left-workshop-pane .left-workshop-card.is-local:hover { border-color: var(--border-strong); box-shadow: 0 1px 0 var(--border-subtle), 0 12px 24px -14px rgb(15 23 42 / 0.55); }
+.left-workshop-pane .left-workshop-card:focus-within { border-color: var(--accent-border); }
+.left-workshop-pane .left-workshop-card-head strong { font-size: 15px; }
+/* 상태 표: 앞에 도트 하나(상태 색) */
+.left-workshop-pane .left-workshop-status { display: inline-flex; align-items: center; gap: 5px; }
+.left-workshop-pane .left-workshop-status::before { content: ""; width: 6px; height: 6px; background: currentColor; }
+.left-workshop-pane .left-workshop-status.is-ready::before { box-shadow: 0 0 0 2px rgb(24 118 79 / 0.18); }
+/* 주 단추 — 눌리는 판(아래 2px 그늘, 누르면 1px 내려감) */
+.left-workshop-pane .left-workshop-primary { box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.22); transition: background-color 120ms ease, transform 60ms ease; }
+.left-workshop-pane .left-workshop-primary:active { transform: translateY(1px); box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.22); }
+.left-workshop-forge { display: grid; gap: 6px; }
+
+/* ---------- 대장간 진행 막대(도트 칸) ---------- */
+.craft-bar { position: relative; height: 12px; padding: 2px; box-sizing: border-box; border-radius: 3px; background: var(--craft-stage); overflow: hidden;
+  box-shadow: inset 0 0 0 1px var(--craft-stage-edge), 0 1px 0 rgb(255 255 255 / 0.5); }
+.craft-bar > .craft-bar-fill { position: relative; display: block; height: 100%; min-width: 6px; overflow: hidden;
+  background: linear-gradient(180deg, var(--craft-ember-hot) 0 34%, var(--craft-ember) 34% 72%, var(--craft-ember-deep) 72%);
+  -webkit-mask: repeating-linear-gradient(90deg, #000 0 6px, transparent 6px 8px); mask: repeating-linear-gradient(90deg, #000 0 6px, transparent 6px 8px);
+  transition: width 0.45s steps(6, end); }
+/* 달군 쇠 위를 지나가는 빛 — 칸씩 건너뛴다 */
+.craft-bar.is-hot > .craft-bar-fill::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 0 44%, rgb(255 255 236 / 0.8) 44% 52%, transparent 52%);
+  transform: translateX(-60%); animation: craft-glint 1.6s steps(16) infinite; animation-delay: var(--craft-phase, 0ms); }
+@keyframes craft-glint { to { transform: translateX(60%); } }
+.craft-bar.is-hot { box-shadow: inset 0 0 0 1px var(--craft-stage-edge), 0 0 0 1px rgb(240 164 58 / 0.28), 0 0 12px -3px rgb(240 164 58 / 0.65); }
+/* 끝을 모르는 진행(줄 서는 중·계정 대기) — 불씨 덩이가 오간다 */
+.craft-bar.is-idle > .craft-bar-fill { width: 30%; animation: craft-sweep 2.2s steps(22) infinite alternate; animation-delay: var(--craft-phase, 0ms); }
+@keyframes craft-sweep { from { transform: translateX(0); } to { transform: translateX(233%); } }
+
+/* ---------- 공방 큰 화면 ---------- */
+.workshop .workshop-head { background: linear-gradient(180deg, var(--bg-raised), var(--bg-surface)); }
+.workshop .workshop-head h2 { display: inline-flex; align-items: center; gap: 8px; font-size: 16px; }
+.workshop .workshop-head h2 .workshop-emblem { padding: 3px; border-radius: 4px; background: var(--craft-stage); }
+.workshop .workshop-primary { box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.22); }
+.workshop .workshop-primary:active:not(:disabled) { transform: translateY(1px); box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.22); }
+
+/* 단계 띠 — 이어진 길. 지난 단계는 초록 도장, 지금 단계는 강조 테, 남은 단계는 옅게 */
+.workshop .workshop-stepper { gap: 8px; padding: 4px; border-radius: var(--radius-m); background: var(--bg-inset); }
+.workshop .workshop-step { background: none; border-radius: var(--radius-s); }
+.workshop .workshop-step + .workshop-step::before { content: ""; position: absolute; left: -8px; top: 50%; width: 8px; height: 2px; background: var(--border-default); }
+.workshop .workshop-step.is-done + .workshop-step::before { background: var(--success); }
+.workshop .workshop-step-no { border-radius: 4px; }
+.workshop .workshop-step.is-done { background: none; }
+.workshop .workshop-step.is-current { background: var(--bg-raised); box-shadow: inset 0 0 0 1px var(--accent-border), 0 1px 3px rgb(15 23 42 / 0.12); }
+.workshop .workshop-step.is-blocked { background: color-mix(in srgb, var(--warning) 12%, var(--bg-raised)); }
+.workshop .workshop-drawing { padding: 10px 12px; border-radius: var(--radius-m); background: var(--craft-stage); color: #e9ecf3; }
+.workshop .workshop-drawing .craft-bar { flex: 1 1 220px; max-width: 420px; box-shadow: inset 0 0 0 1px #000, 0 0 12px -3px rgb(240 164 58 / 0.65); }
+.workshop .workshop-drawing-text { color: #c9cedb; }
+
+/* 후보 카드 — 진열대 */
+.workshop .workshop-card { padding: 8px; transition: border-color 120ms ease, box-shadow 120ms ease; }
+.workshop .workshop-card:hover { box-shadow: 0 6px 16px -10px rgb(15 23 42 / 0.4); }
+.workshop .workshop-card-art { position: relative; border-radius: 4px; box-shadow: inset 0 0 0 2px rgb(40 26 14 / 0.28), inset 0 3px 0 0 rgb(255 255 255 / 0.1); }
+.workshop .workshop-card.is-selected { box-shadow: 0 0 0 2px var(--accent), 0 8px 20px -12px rgb(74 87 214 / 0.55); }
+.workshop .workshop-card.is-picked { border-color: var(--craft-brass); box-shadow: 0 0 0 2px var(--craft-brass), 0 8px 22px -12px rgb(212 162 63 / 0.75); }
+/* 고른 카드: 놋쇠 모서리 표(체크 모양 도트) */
+.workshop .workshop-card.is-picked .workshop-card-art::after { content: ""; position: absolute; top: 6px; right: 6px; width: 18px; height: 18px; border-radius: 3px;
+  background: var(--craft-brass) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 9' shape-rendering='crispEdges'%3E%3Cpath fill='%234a3307' d='M1 4h1v1h1v1h1V5h1V4h1V3h1V2h1v1H7v1H6v1H5v1H4v1H3V6H2V5H1z'/%3E%3C/svg%3E") center / 14px 14px no-repeat;
+  box-shadow: 0 0 0 2px rgb(74 51 7 / 0.35); image-rendering: pixelated; }
+.workshop .workshop-card-actions .workshop-pick.is-picked { background: var(--craft-brass); color: var(--craft-brass-ink); }
+.workshop .workshop-chip.is-pass { background: var(--success-muted); }
+
+/* 그리는 중 카드 — 대장간 불빛 + 오르는 불씨(도트) */
+.workshop .workshop-card-art.is-forging { overflow: hidden; background: radial-gradient(ellipse 70% 55% at 50% 100%, rgb(240 164 58 / 0.42), rgb(196 86 31 / 0.12) 55%, transparent 75%), #2a221d; }
+.workshop .workshop-card-art.is-forging::before, .workshop .workshop-card-art.is-forging::after { content: ""; position: absolute; bottom: 14px; width: 3px; height: 3px; background: var(--craft-ember-hot);
+  box-shadow: 18px 10px var(--craft-ember), -22px 6px var(--craft-ember), 34px 2px var(--craft-ember-hot), -40px 12px var(--craft-ember-deep);
+  animation: craft-embers 2.4s steps(12) infinite; }
+.workshop .workshop-card-art.is-forging::before { left: 42%; }
+.workshop .workshop-card-art.is-forging::after { left: 58%; animation-delay: -1.2s; }
+@keyframes craft-embers { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(-96px); opacity: 0; } }
+.workshop .workshop-card-art.is-forging .workshop-card-wait { position: relative; z-index: 1; background: rgb(20 16 12 / 0.72); box-shadow: 0 0 0 1px rgb(240 164 58 / 0.4); }
+
+/* 줄 서는 중 카드 — 불 꺼진 작업대 */
+.workshop .workshop-card-art.is-waiting { background: #2a2622; box-shadow: inset 0 0 0 2px rgb(0 0 0 / 0.25); }
+.workshop .workshop-card-art.is-waiting .workshop-card-wait { background: rgb(20 16 12 / 0.6); color: #c9c2b8; animation: none; }
+
+/* 새 물건 폼 — 머리 무대 아래 주문서 */
+.workshop .workshop-form { max-width: 720px; }
+.workshop .workshop-form > .workshop-stage.is-hero { margin-bottom: 4px; }
+
+/* 「다 그림」 드러남 — 막 나온 그림이 아래에서 위로 도트 줄씩 드러나고, 놋쇠 빛이 한 번 번진다(1.4초, 한 번) */
+.workshop .workshop-card.is-revealing .workshop-card-art img { animation: craft-reveal-wipe 640ms steps(8, end) both; animation-delay: var(--reveal-delay, 0ms); }
+@keyframes craft-reveal-wipe { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
+.workshop .workshop-card.is-revealing { animation: craft-reveal-ring 1400ms ease-out both; animation-delay: var(--reveal-delay, 0ms); }
+@keyframes craft-reveal-ring { 0% { box-shadow: 0 0 0 0 rgb(212 162 63 / 0); } 30% { box-shadow: 0 0 0 3px rgb(212 162 63 / 0.9), 0 0 24px 2px rgb(255 215 110 / 0.55); } 100% { box-shadow: 0 0 0 0 rgb(212 162 63 / 0); } }
+.workshop .workshop-card.is-revealing .workshop-card-art::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: 1; width: 4px; height: 4px; margin: -2px; background: #fff6d0; pointer-events: none;
+  box-shadow: 0 -36px var(--craft-ember-hot), 0 36px var(--craft-ember-hot), 36px 0 var(--craft-ember-hot), -36px 0 var(--craft-ember-hot), 26px 26px #fff6d0, -26px -26px #fff6d0, 26px -26px var(--craft-ember), -26px 26px var(--craft-ember);
+  animation: craft-reveal-burst 900ms steps(9) both; animation-delay: calc(var(--reveal-delay, 0ms) + 380ms); }
+@keyframes craft-reveal-burst { 0% { transform: scale(0.3); opacity: 1; } 70% { opacity: 1; } 100% { transform: scale(2.2); opacity: 0; } }
+
+/* 비교 띠·생성기 미리 보기 바닥에도 진열대 테 */
+.workshop .workshop-compare, .workshop .workshop-gen-previews { box-shadow: inset 0 0 0 2px rgb(40 26 14 / 0.28); }
+
+/* 빈 화면 — 무대를 보이며 다음 할 일을 말한다 */
+.workshop-empty-state { display: grid; justify-items: center; gap: var(--space-3); padding: var(--space-5) var(--space-4); text-align: center; }
+.workshop-empty-state .workshop-stage { width: min(100%, 420px); border-radius: var(--radius-m); }
+.workshop-empty-state .workshop-empty { margin: 0; max-width: 46ch; }
+
+/* 생성기 창 머리 무대 */
+.workshop-gen .workshop-gen-body > .workshop-stage.is-hero { margin-bottom: 2px; }
+.workshop-gen .workshop-head h2 { display: inline-flex; align-items: center; gap: 8px; }
+.workshop-gen .workshop-gen-step { background: var(--bg-raised); box-shadow: 0 1px 0 var(--border-subtle); }
+.workshop-gen .workshop-gen-step-no { border-radius: 4px; box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.22); }
+.workshop .workshop-drop { border-style: dashed; background:
+  linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px) 0 0 / 16px 16px,
+  linear-gradient(var(--border-subtle) 1px, transparent 1px) 0 0 / 16px 16px, var(--bg-inset); }
+.workshop .workshop-drop:hover, .workshop .workshop-drop.is-over { background:
+  linear-gradient(90deg, rgb(74 87 214 / 0.12) 1px, transparent 1px) 0 0 / 16px 16px,
+  linear-gradient(rgb(74 87 214 / 0.12) 1px, transparent 1px) 0 0 / 16px 16px, var(--accent-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .workshop-emblem-spark, .workshop-stage-walker, .workshop-stage-twinkle, .craft-bar > .craft-bar-fill, .craft-bar > .craft-bar-fill::after,
+  .workshop .workshop-card-art.is-forging::before, .workshop .workshop-card-art.is-forging::after,
+  .workshop .workshop-card.is-revealing, .workshop .workshop-card.is-revealing .workshop-card-art img, .workshop .workshop-card.is-revealing .workshop-card-art::before {
+    animation: none !important; transition: none !important;
+  }
+  .workshop-stage-twinkle, .craft-bar.is-hot > .craft-bar-fill::after, .workshop .workshop-card.is-revealing .workshop-card-art::before { display: none; }
+  .craft-bar.is-idle > .craft-bar-fill { transform: none; }
+}

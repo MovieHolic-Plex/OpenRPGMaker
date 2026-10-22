@@ -10,6 +10,12 @@
   데모 캐릭터 상반신(정수 1/7 칸 평균) + char-gen 칩 셋(정수 2배)(Scarloxy People1 바탕, CC BY 4.0 — 저장소에 이미 번들된 팩, 출처 `public/assets/ATTRIBUTION.md`
   「Workshop character card sample」)을 버들항 마당 길 위에 세운 그림(`public/assets/workshop/*-sample.png`). 전 견본(char-gen 더미 바탕 칩
   `examples/bases/dummy_a/b`, 윤곽·명암 없음)은 사용자가 「사람이 어색하다, 고급지게」라고 해서 뺐다.
+- **3차 「작업대」 겉모습(2026-10-22, 「공방 UI 를 더 화려하게」):** 그림 조각은 `src/editor/workshop/workshopArt.ts`, 겉모습은 `src/styles/database/workshop/craft.css`(레이어 database, workshop.css 다음) + 작업 줄 몫은 `queue.css` 끝(레이어 밖 시트라 레이어 안 craft.css 로는 못 이긴다 — 같은 선택자를 craft.css 에 두면 조용히 진다).
+  - **무대**(`generatorStage`, 카드 `is-card` · 생성기 창·새 물건 폼·빈 화면 머리 `is-hero`): 물건 = `object-gen-stage.png`(견본 기물 셋을 뒷판을 떼어 손 도트 실내 v5 판자벽·마루 위에, 2배) + 가끔 반짝임 · 캐릭터 = `char-gen-stage.png`(견본에서 칩만 뺀 판) 위에 `char-gen-walk.png`(칩 셋 × 1·0·1·2 네 칸, 2배)를 CSS `steps(4)` 로 제자리 걸음 · 지형 = 견본 없음, 16px 모눈 빈 작업대(다른 화풍 흉내 그림을 싣지 않는다). 견본 정의는 `generators.ts` `sample.walkers`·`sample.twinkles`. 무대 PNG 를 다시 만들 때 칩 자리(114,40)(154,40)(194,40)는 `char-gen-sample.png` 와 픽셀이 같게 맞췄다(칩 첫 칸을 무대에 얹으면 옛 견본과 차이 0).
+  - **불씨 막대**(`craftBar`): 2px 틈의 도트 칸 + 위·가운데·아래 세 단 불씨색, 그리는 중이면 빛이 칸씩 지나간다(`is-hot`), 줄 서는 중·계정 대기면 끝을 모르는 덩이(`is-idle`). 공방 머리 진행·작업 줄 줄·왼쪽 물건 카드가 같은 것을 쓴다. 큰 화면 막대는 작업 줄 진행(`itemView().progress`)을 읽는다 — 장 수만 세면 다 될 때까지 0 이었다.
+  - **그리는 중 카드** = 화로 불빛 + 오르는 불씨 도트(`is-forging`), 줄 서는 중 = 불 꺼진 작업대(`is-waiting`). **드러남**(`revealPhase`·`markReveal`): 열 때 아직 그림이 없던 카드에 그림이 처음 나온 순간 한 번 — 아래에서 위로 8줄 닦아내기 + 놋쇠 테 + 불똥. 작업 줄 줄·알약은 고를 차례가 된 순간 한 번. 고른 카드 = 놋쇠 테 + 모서리 체크 도트.
+  - 움직임은 transform·opacity·background-position 만, 다시 그려도 튀지 않게 `animationPhase`(시계에 맞춘 음수 지연). `prefers-reduced-motion` 이면 전부 멈춘다. 편집기는 밝은 테마 하나뿐이라 무대·막대 바탕(먹색)은 일부러 어두운 진열면이다.
+  - 성능(2026-10-22, 부하 30~50 기기, 작업 셋을 돌리며 작업 줄 판을 연 채 맵에 4초 칠하기 rAF): 바뀌기 전과 같은 범위(p50 16.7ms, 긴 작업 수 들쭉날쭉 — 기기 부하). 영상 캡처 `scripts/qa/workshop-ui-video.mjs`(가짜 그리기·판정, 숨긴 반려 표본은 색으로 가려낸다).
 - **부탁 글 칸(2026-10-22):** 글칸에는 사람이 읽는 부탁만 보이고, 「생성기 판」 줄(git 명령·커밋)은 복사할 때 붙는다(`requestBox`). 글칸 위 이름표는 「내 AI 에이전트에게 보낼 부탁」, 판은 복사 단추 풀이말에만. 사람 화면이 열려 있는 동안 작업 줄 알약은 숨는다(공방 큰 화면과 같게).
 - **사람 묶음 미리 보기(2026-10-22, `castPreview.ts`):** `content.characters` 가 있는 묶음은 파일을 늘어놓지 않고 사람 하나에 한 칸 —
   앞모습(아래 방향)을 정수 3배로 걷게(1·0·1·2, 190ms, reduced-motion 이면 멈춤) + 짝 얼굴 48×48 정수 2배 + 「얼굴·초상 N장 · 표정 N개」.

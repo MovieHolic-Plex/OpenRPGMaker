@@ -15,6 +15,7 @@ import { store as projectStore } from "@/project/store";
 import type { WorkshopSession } from "./workshopSession";
 import { latestRound } from "./workshopStatus";
 import { workshopQueue } from "./queue/workshopQueue";
+import { markReveal, revealPhase } from "./workshopArt";
 
 export type RoundViewState = { selected: number; zoom: "fit" | "big"; rejectFor: string | null };
 
@@ -176,15 +177,18 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
       ...(run.attempt > 1 ? [el("span", { class: "workshop-chip", text: `다시 그림 ${run.attempt - 1}번` })] : []),
       ...(run.error ? [el("span", { class: "workshop-chip is-fail", text: run.error, attrs: { title: run.error } })] : []),
     ];
-    return el("article", {
+    const busy = run.status === "drawing" || run.status === "reviewing" || run.status === "queued";
+    // 그림이 처음 나온 그 순간에만 한 번 드러낸다(열 때 이미 다 된 카드는 그대로)
+    const reveal = revealPhase(`${round!.id}|${run.letter}`, !!run.grid);
+    return markReveal(el("article", {
       class: "workshop-card" + (index === state.selected ? " is-selected" : "") + (picked ? " is-picked" : ""),
       dataset: { testid: "workshop-card", letter: run.letter, status: run.status, zoom: state.zoom },
       on: { click: () => { state.selected = index; rerender(); } },
       children: [
         el("div", {
-          class: "workshop-card-art",
+          class: "workshop-card-art" + (!run.grid && (run.status === "drawing" || run.status === "reviewing") ? " is-forging" : !run.grid && run.status === "queued" ? " is-waiting" : ""),
           children: run.grid ? [el("img", { attrs: { src: gridDataUrl(run.grid, palette, scale, BACKGROUND), alt: `후보 ${run.letter}` } })]
-            : [el("span", { class: "workshop-card-wait" + (run.status === "drawing" || run.status === "reviewing" || run.status === "queued" ? " is-busy" : ""), text: RUN_STATUS[run.status] })],
+            : [el("span", { class: "workshop-card-wait" + (busy ? " is-busy" : ""), text: RUN_STATUS[run.status] })],
         }),
         el("div", { class: "workshop-card-facts", children: facts }),
         ...(run.note ? [el("div", { class: "workshop-item-meta", text: run.note })] : []),
@@ -203,7 +207,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
           })),
         })] : []),
       ],
-    });
+    }), reveal);
   }
 
   function compare(run: WorkshopRun | null): HTMLElement {

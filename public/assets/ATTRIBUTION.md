@@ -533,3 +533,11 @@ License: Scarloxy parts keep CC BY 4.0; the derived edits follow OPRN default-as
 - Ground: a crop of `beodeul-ground/courtyard-native.png` at 2× (OPRN hand-pixel 버들항 courtyard).
 - Upstream for the chip bodies: Scarloxy (Ismael Garcia), "Monster Taming Game Essentials" (MyPixelWorld Special Packs #01), https://scarloxy.itch.io/mpwsp01 — Creative Commons Attribution 4.0 International; changes were made (clothes, hair and hats recoloured/repainted).
 License: Scarloxy parts keep CC BY 4.0; the rest follows OPRN default-asset terms (`openwiki/licensing.md`). The image-model portrait is AI-generated.
+
+## Workshop generator stages (2026-10-22)
+
+The editor's 공방 cards and generator windows show these as pixel "stages" (integer scaled):
+- `workshop/char-gen-stage.png` (248×116) — `workshop/char-gen-sample.png` with the three chips removed (same ground and bust, same sources and license as above).
+- `workshop/char-gen-walk.png` (192×192) — the same three char-gen chips' front walking frames (pattern 1·0·1·2, 2×), one row per chip; the card plays them in place. Same sources and license as the character card sample above (Scarloxy parts CC BY 4.0, changes made).
+- `workshop/object-gen-stage.png` (124×62) — the three object-gen items of `workshop/object-gen-sample.png` (object-gen `docs/images/hero.png`, same organisation's art) with their card backing removed, standing on a wall and floor built from OPRN hand-pixel interior v5 tiles (`atlas-interior/interior-chipset.png`). OPRN default-asset terms (`openwiki/licensing.md`).
+No image-generation output and no third-party art other than the Scarloxy chip bases noted above.

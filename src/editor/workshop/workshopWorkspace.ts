@@ -18,6 +18,8 @@ import { QUEUE_MAX_LIMIT, workshopQueue } from "./queue/workshopQueue";
 import { retryText } from "./queue/jobModel";
 import { etaMinutes, ITEM_STATE_LABELS, itemState, latestRound, roundProgress, type ItemState } from "./workshopStatus";
 import { isWorkshopPickBaked } from "./workshopBake";
+import { craftBar, generatorStage, workshopEmblem } from "./workshopArt";
+import { WORKSHOP_GENERATORS } from "./generators";
 
 type Filter = ItemState | "all";
 const FILTERS: Filter[] = ["choose", "drawing", "stopped", "picked", "all"];
@@ -155,7 +157,9 @@ function targetSwitch(s: WorkshopSession): HTMLElement {
 function signature(s: WorkshopSession): string {
   return JSON.stringify([filter, query, selectedKey, showForm, view, s.picks.map((p) => `${p.itemKey}|${p.roundId}|${p.letter}`), s.defs.length,
     s.rounds.map((r) => [r.id, r.runs.map((run) => [run.status, run.attempt, run.verdict?.verdict, run.grid?.cells.length])]), s.engine.status(),
-    queueSummary()]);
+    queueSummary(),
+    // 고른 물건의 진행(20칸) — 진행 막대가 장이 끝날 때만이 아니라 그리는 동안에도 차오르게
+    selectedKey ? Math.round((workshopQueue().itemView(s.harnessId, selectedKey)?.progress ?? 0) * 20) : 0]);
 }
 
 /** 작업 줄 요약(머리줄·막힘 띠가 읽는다) */
@@ -249,13 +253,23 @@ function stepper(s: WorkshopSession, item: WorkshopItem | null, eta: number): HT
       ...(progress ? [el("div", {
         class: "workshop-drawing", dataset: { testid: "workshop-drawing" },
         children: [
-          el("div", {
-            class: "workshop-bar", attrs: { role: "progressbar", "aria-valuemin": "0", "aria-valuemax": String(progress.total), "aria-valuenow": String(progress.done), "aria-label": "후보 그리기" },
-            children: [el("span", { attrs: { style: `width: ${Math.max(6, Math.round((progress.done / Math.max(1, progress.total)) * 100))}%` } })],
-          }),
+          // 막대는 작업 줄의 진행(장 안의 그리기·검수까지 센다) — 장 수만 세면 다 될 때까지 0 에 머물렀다
+          craftBar({ value: Math.max(0.04, workshopQueue().itemView(s.harnessId, item!.key)?.progress ?? progress.done / Math.max(1, progress.total)), hot: true, label: "후보 그리기" }),
           el("span", { class: "workshop-drawing-text", text: `후보 ${progress.done}/${progress.total}장 다 그림 · 약 ${Math.max(1, eta)}분 남음. 창을 닫아도 계속 그려요.` }),
         ],
       })] : []),
+    ],
+  });
+}
+
+/** 고를 것이 없을 때 — 물건 무대를 보이고 다음 할 일을 말한다. */
+function emptyState(): HTMLElement {
+  const objectGen = WORKSHOP_GENERATORS.find((g) => g.id === "object-gen");
+  return el("div", {
+    class: "workshop-empty-state",
+    children: [
+      ...(objectGen ? [generatorStage(objectGen, "hero")] : []),
+      el("p", { class: "workshop-empty", text: filter === "choose" ? "고를 차례인 물건이 없어요. 다 그리면 여기 나타나요." : "아직 만든 물건이 없어요. 「+ 새로 만들기」를 눌러 주세요." }),
     ],
   });
 }
@@ -293,7 +307,7 @@ function render(force: boolean): void {
       el("header", {
         class: "workshop-head",
         children: [
-          el("h2", { text: "공방 · 물건·가구" }),
+          el("h2", { children: [workshopEmblem(22), el("span", { text: "공방 · 물건·가구" })] }),
           targetSwitch(s),
           el("span", {
             class: "workshop-progress", dataset: { testid: "workshop-progress" },
@@ -362,7 +376,7 @@ function render(force: boolean): void {
             children: [stepper(s, showForm ? null : selected, eta), showForm
               ? renderItemForm(s, (key) => { showForm = false; formDraft = null; selectedKey = key; filter = "all"; render(true); }, () => { showForm = false; formDraft = null; render(true); }, formDraft ?? undefined)
               : selected ? renderRoundView(s, selected, view, () => render(true), closeWorkshop)
-              : el("p", { class: "workshop-empty", text: filter === "choose" ? "고를 차례인 물건이 없어요. 다 그리면 여기 나타나요." : "아직 만든 물건이 없어요. 「+ 새로 만들기」를 눌러 주세요." })],
+              : emptyState()],
           }),
         ],
       }),

@@ -71,8 +71,6 @@
 .wq-chip { flex: none; padding: 0 6px; border: 1px solid var(--border-default); border-radius: var(--radius-pill); color: var(--text-2); font-size: 11px; line-height: 16px; }
 .wq-line { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-2); font-size: 11.5px; }
 .wq-row.is-warn .wq-line, .wq-row.is-bad .wq-line { white-space: normal; overflow-wrap: anywhere; }
-.wq-bar { height: 5px; border-radius: var(--radius-pill); background: var(--bg-active); overflow: hidden; }
-.wq-bar span { display: block; height: 100%; border-radius: inherit; background: var(--accent); transition: width 0.5s ease; }
 .wq-candidates { display: flex; flex-wrap: wrap; gap: 6px; }
 .wq-candidate { display: grid; gap: 2px; justify-items: center; padding: 4px; border: 1px solid var(--border-default); border-radius: var(--radius-s); background: var(--bg-raised); cursor: pointer; }
 .wq-candidate:hover:not(:disabled) { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
@@ -86,3 +84,34 @@
 /* 사람 묶음 작은 그림 — 물건용 갈색 바닥이 아니라 밝은 무대 */
 .wq-thumb.is-cast { place-items: end center; background: linear-gradient(180deg, #f3eee4 0%, #e3d8c6 100%); }
 .wq-thumb.is-cast img { max-width: 56px; max-height: 56px; }
+
+/* 공방 「작업대」 겉모습(2026-10-22, craft.css 와 짝) — queue.css 는 레이어 밖이라 레이어 안 craft.css 로는 이 시트를 못 이긴다. 그래서 작업 줄 몫은 여기 둔다.
+   불씨 막대(.craft-bar)·색 변수(--craft-*)·드러남 닦아내기(craft-reveal-wipe)는 craft.css 에 있다. */
+/* 알약 표: 그리는 중 = 깜박이는 불씨(도트 셋), 고를 차례 = 놋쇠 칸, 그 밖 = 빈 칸 */
+.wq-dock .wq-pill-icon, .wq-dock .wq-pill-icon:not(.is-spinning) { position: relative; width: 12px; height: 12px; border: 0; border-radius: 2px; background: var(--craft-stage); box-shadow: inset 0 0 0 1px var(--craft-stage-edge); animation: none; }
+.wq-dock .wq-pill-icon::before { content: ""; position: absolute; left: 4px; top: 4px; width: 4px; height: 4px; background: var(--text-3); }
+.wq-dock .wq-pill.is-active .wq-pill-icon::before { background: var(--craft-ember-hot); box-shadow: 0 2px var(--craft-ember), -2px 2px var(--craft-ember-deep), 2px 2px var(--craft-ember-deep);
+  animation: craft-flicker 900ms steps(3) infinite; }
+@keyframes craft-flicker { 0% { transform: translateY(0); opacity: 1; } 50% { transform: translateY(-1px); opacity: 0.75; } 100% { transform: translateY(0); opacity: 1; } }
+.wq-dock .wq-pill.has-ready:not(.is-active) .wq-pill-icon { background: var(--craft-brass); box-shadow: inset 0 0 0 1px var(--craft-brass-ink); }
+.wq-dock .wq-pill.has-ready:not(.is-active) .wq-pill-icon::before { background: #fff3c4; }
+.wq-dock .wq-pill.has-ready { border-color: var(--craft-brass-line); box-shadow: var(--shadow-pop), inset 0 0 0 1px var(--craft-brass-line); }
+.wq-dock .wq-pill.has-ready .wq-pill-count { color: color-mix(in srgb, var(--craft-brass) 45%, var(--text-1)); }
+.wq-dock .wq-pill.is-revealing { animation: craft-pill-ready 1400ms ease-out both; animation-delay: var(--reveal-delay, 0ms); }
+@keyframes craft-pill-ready { 0% { transform: translateY(0); } 12% { transform: translateY(-4px); } 24% { transform: translateY(0); } 34% { transform: translateY(-2px); } 44%, 100% { transform: translateY(0); } }
+/* 줄 */
+.wq-dock .wq-row .craft-bar { height: 10px; }
+.wq-dock .wq-row.is-ready { border-color: var(--craft-brass-line); background: var(--craft-brass-soft); }
+.wq-dock .wq-state.is-ready { background: var(--craft-brass); color: var(--craft-brass-ink); font-weight: var(--font-weight-semibold, 600); }
+.wq-dock .wq-thumb { box-shadow: inset 0 0 0 2px rgb(40 26 14 / 0.28); }
+.wq-dock .wq-thumb.is-empty.is-drawing, .wq-dock .wq-thumb.is-empty.is-reference, .wq-dock .wq-thumb.is-empty.is-review { animation: none; border: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 100%, rgb(240 164 58 / 0.45), transparent 70%), #2a221d; }
+.wq-dock .wq-candidate { transition: transform 100ms ease, box-shadow 100ms ease; }
+.wq-dock .wq-candidate:hover:not(:disabled) { transform: translateY(-1px); }
+.wq-dock .wq-row.is-revealing { animation: craft-row-ready 1400ms ease-out both; animation-delay: var(--reveal-delay, 0ms); }
+@keyframes craft-row-ready { 0% { background: var(--bg-raised); box-shadow: none; } 25% { background: rgb(255 215 110 / 0.38); box-shadow: 0 0 0 2px var(--craft-brass); } 100% { background: var(--craft-brass-soft); box-shadow: none; } }
+.wq-dock .wq-row.is-revealing .wq-candidate img { animation: craft-reveal-wipe 640ms steps(8, end) both; animation-delay: var(--reveal-delay, 0ms); }
+
+@media (prefers-reduced-motion: reduce) {
+  .wq-dock .wq-pill-icon::before, .wq-dock .wq-pill.is-revealing, .wq-dock .wq-row.is-revealing, .wq-dock .wq-row.is-revealing .wq-candidate img { animation: none !important; }
+}
