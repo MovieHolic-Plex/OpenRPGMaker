@@ -269,6 +269,7 @@ const LEAF_BAND_MAX = kitValue<number>("checks", "LEAF_BAND_MAX");
 const LEAF_BASE_MAX = kitValue<number>("checks", "LEAF_BASE_MAX");
 const LEAF_LONE_MAX = kitValue<number>("checks", "LEAF_LONE_MAX");
 const LEAF_HOLES_MIN = kitValue<number>("checks", "LEAF_HOLES_MIN");
+const STRAIGHT_SIDE_MAX = kitValue<number>("checks", "STRAIGHT_SIDE_MAX");
 const DEEP_LUMA = kitValue<number>("checks", "DEEP_LUMA");
 const DEEP_MIN = kitValue<number>("checks", "DEEP_MIN");
 const ORGANIC_LEAF_RAMP = kitValue<readonly string[]>("prompts", "ORGANIC_LEAF_RAMP");
@@ -356,14 +357,14 @@ export function leafTone(image: RgbaImage): { leafPixels: number; leafHoles: num
  * 타원·돔은 한 번 꺾인다. ellipse = 가장 넓은 줄의 절반 이상인 띠와 거기 맞춘 타원의 IoU. 실측: 버들항 나무·덤불 0.25~0.45 / 0.82~0.87,
  * 반려된 달걀 사과나무 0.085 / 0.92.
  */
-export function silhouetteGeometry(image: RgbaImage): { rows: number; turns: number; ellipse: number; mirror: number; solidity: number } {
+export function silhouetteGeometry(image: RgbaImage): { rows: number; turns: number; ellipse: number; mirror: number; solidity: number; side: number } {
   const rows: [number, number, number, number][] = [];
   for (let y = 0; y < image.height; y++) {
     let first = -1, last = -1, n = 0;
     for (let x = 0; x < image.width; x++) if (image.data[(y * image.width + x) * 4 + 3]! > 0) { if (first < 0) first = x; last = x; n++; }
     if (n) rows.push([y, first, last, n]);
   }
-  if (rows.length < 4) return { rows: rows.length, turns: 1, ellipse: 0, mirror: 0, solidity: 0 };
+  if (rows.length < 4) return { rows: rows.length, turns: 1, ellipse: 0, mirror: 0, solidity: 0, side: 0 };
   const turns = (seq: number[]) => {
     const d: number[] = [];
     for (let i = 1; i < seq.length; i++) if (seq[i] !== seq[i - 1]) d.push(seq[i]! - seq[i - 1]!);
@@ -410,7 +411,16 @@ export function silhouetteGeometry(image: RgbaImage): { rows: number; turns: num
   for (let i = 0; i < hull.length; i++) { const a = hull[i]!, b = hull[(i + 1) % hull.length]!; area2 += a[0] * b[1] - b[0] * a[1]; }
   const harea = Math.abs(area2) / 2;
   const round3 = (v: number) => Math.round(v * 1000) / 1000;
-  return { rows: rows.length, turns: round3(t), ellipse: union ? round3(inter / union) : 0, mirror: mu ? round3(mi / mu) : 0, solidity: harea ? round3(crown / harea) : 0 };
+  // 띠(가장 넓은 줄의 절반 이상) 안에서 왼쪽·오른쪽 가장자리 x 가 그대로인 연속 줄 수 — 상자 벽 (object-gen geometry side)
+  let side = 1;
+  for (const k of [1, 2] as const) {
+    let run = 1;
+    for (let i = 1; i < band.length; i++) {
+      run = band[i]![0] === band[i - 1]![0] + 1 && band[i]![k] === band[i - 1]![k] ? run + 1 : 1;
+      side = Math.max(side, run);
+    }
+  }
+  return { rows: rows.length, turns: round3(t), ellipse: union ? round3(inter / union) : 0, mirror: mu ? round3(mi / mu) : 0, solidity: harea ? round3(crown / harea) : 0, side };
 }
 
 export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgCheck {
@@ -487,6 +497,7 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
     if (lv.leafPixels >= LEAF_MIN_PIXELS) {
       if (lv.leafCast > LEAF_CAST_MAX) hard.push({ code: "LEAFHUE", msg: `the leaves are olive/yellow (red-blue ${lv.leafCast}, Beodeul -16..+14) - paint them with the listed leaf-green keys` });
       if (!isTree && g.rows >= GEOMETRIC_MIN_ROWS && g.solidity > MASS_SOLIDITY_MAX) hard.push({ code: "BLOBBY", msg: `the leafy mass fills its outline like a ball or dome (solidity ${g.solidity}, Beodeul bushes 0.89-0.91) - bite 1-2 deep notches into the outline and let one clump stick out to one side` });
+      if (g.rows >= GEOMETRIC_MIN_ROWS && g.side > STRAIGHT_SIDE_MAX) hard.push({ code: "STRAIGHTSIDE", msg: `one side of the leafy mass runs straight down ${g.side} rows like a box wall (Beodeul 2-10) - let the side bulge in and out lobe by lobe, the edge moving every 1-3 rows` });
       if (lv.leafHoles < LEAF_HOLES_MIN) hard.push({ code: "LEAFHOLES", msg: `too few dark holes inside the crown (${lv.leafHoles} per 100 leaf px, Beodeul 0.9-3.2) - break big lobes into many small clusters with 1-3 px dark holes all through the interior` });
       if (lv.leafLone > LEAF_LONE_MAX) hard.push({ code: "LEAFSPECK", msg: `the highlights are single sprinkled pixels (${Math.round(lv.leafLone * 100)}% of the lightest leaf tone stands alone, Beodeul 0-35%) - group the lightest green into 2-4 px dashes on the upper-left lobes only` });
       if (lv.leafContrast < LEAF_CONTRAST_MIN) hard.push({ code: "LEAFFLAT", msg: `the leaves are a smooth gradient, not clumps (neighbour contrast ${lv.leafContrast}, Beodeul 15-25) - build separate clumps: a 2-4 px light dash on each clump's upper left right next to dark pockets` });
