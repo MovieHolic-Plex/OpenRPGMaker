@@ -688,8 +688,10 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
       ...think("바나나우유. 손이 먼저 간다.", "…아직도 이걸 고르네, 나."),
       playSe("cc0-se-orp-interface-interface2"),
       setSw("sw_fl_jihu_in_konbini", true),
-      // 자동문이 다 열린 뒤에 들어선다(VQA r18: 문이 19% 열렸는데 지후가 이미 한 칸 안에 있었다) — 문 칸에 나타나 문 소리와 함께 한 걸음 들어온다.
-      { kind: "moveEvent", eventId: "ev_fl_jihu_kon", route: { moves: [{ kind: "enterVia", x: k.door.x, y: k.door.y, dir: "up" }], repeat: false, wait: true, skippable: true } } as Command,
+      // 자동문이 다 열린 뒤에 들어선다(VQA r18: 문이 19% 열렸는데 지후가 이미 한 칸 안에 있었다) — 문 칸(문간)에 나타나면 자동문이 열리고,
+      // 다 열린 뒤에 한 걸음 들어선다(문 칸은 막힘이라 그 한 걸음만 통과).
+      wait(650),
+      { kind: "moveEvent", eventId: "ev_fl_jihu_kon", route: { moves: [{ kind: "setThrough", enabled: true }, { kind: "move", dir: "up" }, { kind: "setThrough", enabled: false }], repeat: false, wait: true, skippable: true } } as Command,
       walk("ev_fl_jihu_kon", path(jihuEnter, jihuStop, true)),
       // 주인공은 냉장고 앞(아래 칸)에 서 있다 — 냉장고 칸이 아니라 그 칸에서 지후 쪽으로 돈다.
       face("@player", dirToward(coolerFront, jihuStop)),
