@@ -14,7 +14,7 @@ import { MAP_TOOLS } from "./mapTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { BEODEUL_FOREST_TYPES, parseBeodeulForestType, type BeodeulForestType } from "./beodeulForest";
-import { BEODEUL_VILLAGE_FORMS, BEODEUL_VILLAGE_THEMES, buildBeodeulVillage, themeDefaultSize, type BeodeulVillageTheme } from "./beodeulVillage";
+import { BEODEUL_ROOF_PALETTES, BEODEUL_VILLAGE_WATERS, BEODEUL_VILLAGE_WOODS, BEODEUL_VILLAGE_FORMS, BEODEUL_VILLAGE_THEMES, buildBeodeulVillage, themeDefaultSize, type BeodeulVillageTheme } from "./beodeulVillage";
 import { VILLAGE_TERRAINS } from "./beodeulTerrain";
 
 import { buildSmallBeodeulVillage } from "./beodeulSmallVillage";
@@ -44,7 +44,9 @@ interface Seg { start: number; size: number; gapAfter: number }
 export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
   name: "author_beodeul_town",
   description:
-    "버들항(beodeul_city) 타일셋으로 마을·도시를 한 번에 시공한다. houseCount 3~5를 지정하면 40×30의 소규모 밝은 잔디 마을: 별채 박공·이층·돌집·ㄱ자·낮은 집의 서로 다른 외형, 굽은 길과 샛길·우물 마당·살림·나무 군락. 새 마을을 만들 때 기존 맵은 보존한다. theme 으로 문법을 고른다. " +
+    "버들항(beodeul_city) 타일셋으로 마을·도시를 한 번에 시공한다. 새 마을을 만들 때 기존 맵은 보존한다. " +
+    "마을마다 다르게 — 요청에서 마을의 정체를 먼저 정하고 그에 맞는 선택지를 고른다: theme(물·기후) · form(왜 거기 생겼나) · terrain(땅 모양) · roofs(지붕 팔레트) · forestType(숲) · 크기(width·height, 작은 마을 40×32 안팎·보통 56×44·큰 마을 72×56 이상) · houseCount(집 3~5채 작은 마을). 요청이 말하지 않은 선택은 보내지 말 것 — 도구가 프로젝트마다 다르게 고른다(결과 data 에 고른 값). seed 도 보내지 않는다(같은 마을을 다시 지을 때만 결과 data.seed). " +
+    "theme 으로 문법을 고른다. " +
     "마을(기본 theme:\"river\" 강가 마을 · \"coast\" 포구 · \"desert\" 사막 오아시스 · \"snow\" 설원 · \"swamp\" 늪 수상 마을): " +
     "물(강·바다·못·늪)을 먼저 깔고 길·집(문 앞 칸 = 길, 이웃 키트 반복 없음)·앵커 건물(여관·회관·대상 숙소)·용도별 소품 덩이(방앗간·포구 그물터·대상 마당·얼음낚시터)·울타리 친 밭·숲 덩이까지 짓는다. 집·소품은 bd-house-*·고른 조각 bd-pick-* 키트다. " +
     "form 으로 마을 형태를 고른다 — 마을이 왜 여기 생겼나에서 고를 것: \"street\" 길가 마을(나루·다리·포구 길·오아시스로 드는 길가에 선 마을, 광장 없이 앵커가 다리 머리·어귀에), " +
@@ -54,8 +56,9 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
     "2026-10-11 지형 도입 이후 같은 seed 도 예전과 다른 배치가 나온다. 이미 지은 마을 맵은 그대로다 — 지형을 넣으려면 다시 지어야 한다(맵 전체를 다시 깐다 — 손으로 고친 부분은 사라진다): 마을 집이 이미 선 맵은 완성된 집 보호로 같은 mapId 덮어 짓기가 거절되므로 remove_map 으로 지우고 같은 id 로 새로 짓는다. " +
     "theme:\"city\" 는 로마풍 블록 격자 도시(가로 격자 → bd-block-* 블록 → 공원·가로수, harbour:true 이고 가로 83 이상이면 항구 호수)다 — 사용자가 「도시·로마풍·대도시·블록」을 말할 때만. " +
     "mapId 없으면 버들항 새 맵을 만든다(마을 기본 56×44 안팎, 36×30~96×80 / 도시 기본 60×60). mapId 가 있으면 그 버들항 맵 전체를 비우고 다시 깐다(다른 계열 맵이면 거부, 마을 집이 이미 선 맵은 완성된 집 보호로 거부). " +
-    "같은 seed = 같은 마을, 다른 배치는 seed 를 바꾼다. 시공 뒤 check_city_form·check_reachability 로 점검한다(마을의 문 앞 칸은 결과 data.doors). " +
+    "같은 seed·선택 = 같은 마을. 시공 뒤 check_city_form·check_reachability 로 점검한다(마을의 문 앞 칸은 결과 data.doors). " +
     "고칠 곳만 stamp_object(kit:beodeul_city/…)·fill_region 으로 손본다 — 집을 하나씩 따로 놓지 말 것. " +
+    "마을을 두르는 성벽·성곽·성문 그림은 버들항에 아직 없다 — paint_tiles·fill_region 으로 맵 테두리에 돌 줄을 그려 성벽 흉내를 내지 말 것(위에서 본 납작한 선이 되어 3/4 시점이 깨진다). 성벽 마을은 이 도구로 짓고 「성벽 그림은 아직 없다」고 사용자에게 말한다. " +
     "농가·농촌 마을은 지은 뒤 농장 키트로 쓰임을 더한다: 헛간 bd-farm-barn 6×6·닭장 bd-farm-coop 3×3 을 흙 마당에 모은 농가 덩이, 울타리 두른 밭 bd-farm-fenced-plot 7×6(문 아래 흙길), 작물 밭 bd-farm-plot-wheat·cabbage·tomato·sowing — 밭 덩이 사이·마당 길은 폭 2칸 흙길(fill_region 재료 「버들항 농장 흙길」), 넓은 풀밭을 경작지로 통째로 덮지 않는다(참고문서 beodeul-farm). 던전·필드는 이 도구가 아니다(참고문서 beodeul-picks-dungeon·field, 필드 길은 author_wild_route).",
   mode: "write",
   domains: ["map"],
@@ -68,11 +71,14 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       id: { type: "string", description: "새 맵 id(생략 시 자동)" },
       width: { type: "integer", description: `새 맵 가로(기본 ${DEFAULT_W}, ${MIN_W}~${MAX_TOOL_MAP_DIMENSION}). 블록 격자에 맞춰 줄어든다.` },
       height: { type: "integer", description: `새 맵 세로(기본 ${DEFAULT_H}, ${MIN_H}~${MAX_TOOL_MAP_DIMENSION}). 블록 띠에 맞춰 줄어든다.` },
-      seed: { type: "integer", description: "배치 변주 시드(같은 값 = 같은 마을). 생략하면 7" },
-      houseCount: {type:"integer",minimum:3,maximum:5,description:"집 3~5채의 작은 잔디 마을. 5이면 서로 다른 집 외형 5종. 생략하면 기존 테마 마을/도시."},
-      church: {type:'boolean',description:'소규모 houseCount 모드에 석조 교회와 마당을 추가한다. 오른쪽 빈 띠를 포함해 폭 54칸. 기본 false.'},
-      form: { type: "string", enum: [...BEODEUL_VILLAGE_FORMS], description: "마을 형태(theme 마을만, city·houseCount 에는 없음): street 길가 · riverbank 물가 띠(river 만) · scatter 흩어진 · plaza 광장(장터일 때만). 생략하면 seed 로 고른다." },
-      terrain: { type: "string", enum: [...VILLAGE_TERRAINS], description: "지형(theme 마을만) — 마을보다 먼저 정하는 땅 모양: terraces 계단식 비탈(river·coast, 큰길 북쪽 집 띠 뒤로 한두 단, 강은 곧은 골) · hillside 눈 덮인 비탈(snow) · basin 오아시스 골(desert) · ridge 마른 둔덕(swamp, 북쪽 높은 마른 땅·늪물은 낮은 땅에만) · flat 평지. 생략하면 seed 로 고른다(결과 data.terrain)." },
+      seed: { type: "integer", description: "배치 변주 시드(같은 값·같은 선택 = 같은 마을). 보내지 말 것 — 생략하면 프로젝트·맵마다 다른 값을 도구가 고르고 data.seed 로 돌려준다. 이미 지은 마을을 그대로 다시 지을 때만 그 값을 보낸다." },
+      houseCount: {type:"integer",minimum:3,maximum:5,description:"집 3~5채의 작은 마을(앵커 건물 1채 별도). theme·form·terrain·roofs 와 함께 쓴다 — 크기를 생략하면 40×32 안팎. 생략하면 크기만큼 집을 앉힌다."},
+      water: { type: "string", enum: [...BEODEUL_VILLAGE_WATERS], description: "강가 마을(theme river)의 물: river 강이 맵을 세로로 지나고 다리(방앗간·나루 마을) · none 강 없는 마을(숲 빈터·언덕·산골·성벽 안 마을 — 큰길이 가로지르고 일터는 타작마당). riverbank 형태는 늘 river. 생략하면 도구가 고른다(결과 data.water)." },
+      woods: { type: "string", enum: [...BEODEUL_VILLAGE_WOODS], description: "숲(theme river·coast·snow): edge 마을 둘레에 숲 덩이(기본) · dense 숲속 빈터 마을 — 집·길 사이를 숲이 메우고 밭은 둘까지(숲속 마을·숲 깊은 곳)." },
+      roofs: { type: "string", enum: [...BEODEUL_ROOF_PALETTES], description: "지붕 팔레트(theme river·coast 마을만 — 사막·설원·늪은 자기 집): red 붉은 기와 목골집 · slate 청회색 슬레이트 · moss 이끼 낀 초가·너와(농가·숲 마을) · log 통나무집(산골·숲속). 집의 80%가 이 지붕, 나머지는 돌벽 작은 집. 생략하면 도구가 고른다(결과 data.roofs)." },
+      church: {type:'boolean',description:'houseCount 와 함께 true 이면 옛 예제 작은 마을(고정 배치 40×30 + 석조 교회와 마당, 폭 54칸)을 짓는다. 기본 false — 새 마을에는 쓰지 말 것.'},
+      form: { type: "string", enum: [...BEODEUL_VILLAGE_FORMS], description: "마을 형태(theme 마을만, city 에는 없음): street 길가 · riverbank 물가 띠(river 만) · scatter 흩어진 · plaza 광장(장터일 때만). 생략하면 seed 로 고른다." },
+      terrain: { type: "string", enum: [...VILLAGE_TERRAINS], description: "지형(theme 마을만) — 마을보다 먼저 정하는 땅 모양: terraces 계단식 비탈(river·coast, 큰길 북쪽 집 띠 뒤로 한두 단, 강은 곧은 골) · highland 높은 산비탈(river, 7칸 간격 세 단 — 산골, 요청할 때만) · hillside 눈 덮인 비탈(snow) · basin 오아시스 골(desert) · ridge 마른 둔덕(swamp, 북쪽 높은 마른 땅·늪물은 낮은 땅에만) · flat 평지. 생략하면 seed 로 고른다(결과 data.terrain)." },
       theme: { type: "string", enum: [...BEODEUL_VILLAGE_THEMES, "city"], description: "마을 문법(기본 river): river 강가 · coast 포구(바다) · desert 사막 오아시스 · snow 설원 · swamp 늪 · city 로마풍 블록 도시(도시를 말할 때만)" },
       forestType: { type: "string", enum: [...BEODEUL_FOREST_TYPES], description: "숲 덩이 종류(theme river·coast 마을만): broadleaf 활엽수림(기본) · conifer 침엽수림(전나무·측백) · mixed 혼효림(큰 활엽수 사이 측백·전나무)" },
       harbour: { type: "boolean", description: `true 이고 가로 ${HARBOUR_W} 이상이면 맨 아래에 항구 호수를 붙인다(세로 ${HARBOUR_H}칸 추가).` },
@@ -80,9 +86,14 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
   },
   invalidArgsExample: { width: 60, height: 60 },
   run(draft, rawArgs) {
-    const { args, notes } = normalizeTownArgs(draft, rawArgs);
+    const normalized = normalizeTownArgs(draft, rawArgs);
+    const notes = normalized.notes;
+    // seed 를 생략하면 프로젝트·맵마다 다른 값(2026-10-22 「마을 만들어 달라 하면 다 비슷하다」 — 모델이 늘 seed 7 을 보냈고 기본값도 7 이었다)
+    const args: Record<string, unknown> = normalized.args.seed === undefined ? { ...normalized.args, seed: defaultTownSeed(draft, normalized.args) } : normalized.args;
     if(typeof args.mapId==='string') clearBeodeulGroundDressing(draft,args.mapId);
-    const result=args.houseCount===undefined?buildTown(draft,args):buildSmallBeodeulVillage(draft,args);
+    // 옛 고정 배치 작은 마을(늘 같은 세 집·같은 길·같은 우물)은 교회 예제(church:true)에만 남긴다 — houseCount 는 이제 theme 마을의 집 수 상한이다
+    const legacySmall=args.houseCount!==undefined&&args.church===true&&(!args.theme||args.theme==='river')&&!args.form&&!args.terrain&&!args.roofs;
+    const result=legacySmall?buildSmallBeodeulVillage(draft,args):buildTown(draft,args);
     const builtMapId = (result.data as { mapId?: string } | undefined)?.mapId;
     if (builtMapId && draft.startMapId === builtMapId) {
       const moved = keepStartWalkable(draft, builtMapId);
@@ -91,17 +102,17 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
     if (notes.length) { result.warnings = [...notes, ...(result.warnings ?? [])]; result.summary = `${notes.join(' ')} ${result.summary}`; }
     const theme=String(args.theme??(args.harbour===true?'coast':'river'));
     const mapId=(result.data as {mapId?:string}|undefined)?.mapId;
-    if(mapId&&args.houseCount!==undefined&&args.church===true){
+    if(mapId&&legacySmall){
       const church=addBeodeulVillageChurch(draft,mapId);
       result.data={...(result.data as Record<string,unknown>),church,width:draft.maps[mapId]!.width};
       result.summary+=' 석조 교회와 마당을 연결했습니다.';
     }
     if(mapId&&['river','coast','city'].includes(theme)) {
-      const dressing=dressBeodeulGround(draft,mapId,'living',Number(args.seed??7));
+      const dressing=dressBeodeulGround(draft,mapId,'living',Number(args.seed));
       result.data={...(result.data as Record<string,unknown>),groundDressing:dressing.data};
       result.summary+=` ${dressing.summary}`;
     }
-    if(mapId&&args.houseCount!==undefined){
+    if(mapId&&legacySmall){
       const composition=naturalizeBeodeulHamlet(draft,mapId);
       result.data={...(result.data as Record<string,unknown>),composition:composition.data};result.summary+=` ${composition.summary}`;
       const light=harmonizeBeodeulDaylight(draft,mapId);
@@ -114,31 +125,24 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
 
 /**
  * 거부 대신 의도대로 고쳐 짓는 인자 정리(2026-10-07 장르 시험, gpt-6.1-sol 등대지기 JRPG).
- * - 기후·포구 theme 에 houseCount 를 함께 보내면(선택 칸을 다 채우는 모델) 소규모 잔디 마을 전용 칸이라 같은 거부를 7번 받았다.
- *   houseCount·church 를 버리고 theme 마을로 짓는다.
+ * - houseCount 는 2026-10-22 부터 theme 마을의 집 수 상한이다(어느 theme·form 과도 같이 쓴다). 도시(city)에만 없어 뺀다.
  * - 새 프로젝트의 빈 시작 맵(20×15, 바닥 한 가지·이벤트 없음)에 지으라고 하면 「너무 작다」로 거부했다.
  *   비어 있는 버들항 맵이면 그 자리에서 필요한 크기로 넓혀 짓는다 — 시작 맵 id·시작 위치가 그대로 이어진다.
  */
 function normalizeTownArgs(draft: Project, raw: Record<string, unknown>): { args: Record<string, unknown>; notes: string[] } {
   const notes: string[] = [];
   let args = raw;
-  if (args.houseCount !== undefined && args.theme && !["river", "city"].includes(String(args.theme))) {
+  if (args.houseCount !== undefined && args.theme === "city") {
     const { houseCount: _houseCount, church: _church, ...rest } = args;
     args = rest;
-    notes.push(`houseCount 는 밝은 잔디 소규모 마을 전용이라 빼고 theme ${String(args.theme)} 마을로 지었다.`);
-  } else if (args.houseCount !== undefined && ((typeof args.form === "string" && args.form.trim()) || (typeof args.terrain === "string" && args.terrain.trim())) && args.theme !== "city") {
-    // 마을 형태를 고른 모델이 선택 칸을 다 채워 houseCount 도 보낸다(실측 2026-10-11: form riverbank + houseCount 5 → 소규모 마을 48×38 로 8번 반복).
-    // form 은 theme 마을에만 있으므로 form 을 고른 쪽을 따른다.
-    const { houseCount: _houseCount, church: _church, ...rest } = args;
-    args = rest;
-    notes.push(`${args.form ? `form ${String(args.form)}` : `terrain ${String(args.terrain)}`} 은 theme 마을의 선택이라 houseCount(소규모 잔디 마을 전용)를 빼고 지었다.`);
+    notes.push("houseCount 는 마을의 집 수라 도시(theme city)에서는 빼고 지었다.");
   }
   const map = typeof args.mapId === "string" ? draft.maps[args.mapId] : undefined;
-  const small = args.houseCount !== undefined;
+  const small = args.houseCount !== undefined && args.church === true;
   const minW = small ? 40 : VILLAGE_MIN_W, minH = small ? 30 : VILLAGE_MIN_H;
   if (map && map.tilesetId === BEODEUL_TILESET_ID && (map.width < minW || map.height < minH) && isBlankMap(map)) {
     const theme = String(args.theme ?? (args.harbour === true ? "coast" : "river")) as BeodeulVillageTheme;
-    const [defaultW, defaultH] = small ? [40, 30] : (BEODEUL_VILLAGE_THEMES as readonly string[]).includes(theme) ? themeDefaultSize(theme) : [56, 44];
+    const [defaultW, defaultH] = small ? [40, 30] : (BEODEUL_VILLAGE_THEMES as readonly string[]).includes(theme) ? villageDefaultSize(theme, args.houseCount) : [56, 44];
     const want = (value: unknown, fallback: number, min: number, max: number) => Math.max(min, Math.min(max, Number.isInteger(value) ? value as number : fallback));
     const width = want(args.width, defaultW, minW, small ? 48 : VILLAGE_MAX_W), height = want(args.height, defaultH, minH, small ? 38 : VILLAGE_MAX_H);
     const before = `${map.width}×${map.height}`;
@@ -540,13 +544,16 @@ const VILLAGE_MIN_W = 36, VILLAGE_MIN_H = 30, VILLAGE_MAX_W = 96, VILLAGE_MAX_H 
 
 function buildVillage(draft: Project, args: Record<string, unknown>, theme: BeodeulVillageTheme): ToolExecResult {
   const seed = intArg(args, "seed", 7, 0, 2 ** 31 - 1);
+  const hc = Number(args.houseCount);
+  const houseCount = args.houseCount === undefined || !Number.isFinite(hc) ? undefined : Math.max(3, Math.min(5, Math.round(hc)));
   const tileset: any = draft.tilesets[BEODEUL_TILESET_ID];
   if (!tileset) throw new ToolError("이 프로젝트에는 버들항 타일셋(beodeul_city)이 없다.", { code: "beodeul-tileset-missing" });
   let mapId = typeof args.mapId === "string" && args.mapId.trim() ? args.mapId.trim() : "";
-  const [dw, dh] = themeDefaultSize(theme);
+  const [dw, dh] = villageDefaultSize(theme, houseCount);
   if (!mapId) {
     const W = intArg(args, "width", dw, VILLAGE_MIN_W, VILLAGE_MAX_W);
-    const H = intArg(args, "height", dh, VILLAGE_MIN_H, VILLAGE_MAX_H);
+    // highland(산골)는 큰길 위로 비탈 세 단이 서야 하므로 높이 46 이상
+    const H = Math.max(args.terrain === "highland" ? Math.min(46, VILLAGE_MAX_H) : 0, intArg(args, "height", dh, VILLAGE_MIN_H, VILLAGE_MAX_H));
     const name = typeof args.name === "string" && args.name.trim() ? args.name.trim() : "버들 마을";
     mapId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : uniqueId(draft, "map_beodeul", `${theme}_${seed}`);
     assertMapIdAvailable(draft, mapId);
@@ -570,12 +577,18 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
   const rebuilt = !!(typeof args.mapId === "string" && args.mapId.trim());
   let forestType: BeodeulForestType;
   try { forestType = parseBeodeulForestType(args.forestType); } catch (e) { throw new ToolError((e as Error).message, { code: "invalid-args", mapId }); }
-  const r = buildBeodeulVillage(draft, mapId, theme, seed, form, terrain, forestType);
+  const roofs = typeof args.roofs === "string" && args.roofs.trim() ? args.roofs.trim() : undefined;
+  const water = typeof args.water === "string" && args.water.trim() ? args.water.trim() : undefined;
+  const woods = typeof args.woods === "string" && args.woods.trim() ? args.woods.trim() : undefined;
+  const r = buildBeodeulVillage(draft, mapId, theme, seed, form, terrain, forestType, { roofs, water, woods, houseLimit: houseCount });
   // 지형 도입(2026-10-11)으로 같은 seed 도 배치가 달라졌다 — 예전 마을 맵을 가진 사용자·조수가 알 수 있게 결과에도 짧게
   const note = rebuilt
     ? " 같은 mapId 로 다시 지어 맵 전체를 새로 깔았다(손으로 고친 부분은 사라졌다)."
     : " 2026-10-11 지형 도입 이후 같은 seed 도 예전과 다른 배치다 — 기존 마을 맵에 지형을 넣으려면 다시 지어야 한다(맵 전체를 다시 깐다 — 손으로 고친 부분은 사라진다. 마을 집이 선 맵은 완성된 집 보호로 덮어 짓기가 거절되니 remove_map 후 같은 id 로).";
-  return { summary: r.summary + note, data: r.data, warnings: r.warnings.length ? r.warnings : undefined };
+  // 성벽 마을을 청하면 모델이 맵 테두리에 돌 줄을 손으로 칠해 성벽 흉내를 냈다(2026-10-22 실입력창 after4 — 납작한 선) — 결과에서 바로 막는다
+  const wallNote = /성벽|성곽|성문|요새|walled|rampart/i.test(`${args.name ?? ""}`)
+    ? " 성벽 없음: 버들항에는 마을을 두르는 성벽·성문 그림이 아직 없다. paint_tiles·fill_region 으로 테두리에 돌 줄을 그리지 말고(3/4 시점이 깨진 납작한 선이 된다) 사용자에게 「성벽 그림은 아직 없다」고 말한다." : "";
+  return { summary: r.summary + note + wallNote, data: r.data, warnings: r.warnings.length ? r.warnings : undefined };
 }
 
 function uniqueId(draft: Project, prefix: string, body: string): string {
@@ -588,4 +601,26 @@ function uniqueId(draft: Project, prefix: string, body: string): string {
     suffix += 1;
   }
   return id;
+}
+
+/** 작은 마을(집 3~5채)은 40×32 안팎 — 집 수가 많을수록 조금 넓게. 그 밖은 theme 기본 크기. */
+function villageDefaultSize(theme: BeodeulVillageTheme, houseCount: unknown): [number, number] {
+  if (typeof houseCount !== "number") return themeDefaultSize(theme);
+  return houseCount <= 3 ? [40, 32] : houseCount === 4 ? [42, 34] : [44, 36];
+}
+
+/**
+ * seed 를 생략했을 때의 값 — 같은 프로젝트·같은 상태면 같은 값(도구를 다시 돌려도 같은 마을), 프로젝트가 다르거나 맵이 늘면 다른 값.
+ * 새 프로젝트도 시스템 설정의 오프닝 장면 id(무작위)가 달라 서로 다른 값이 나온다.
+ */
+function defaultTownSeed(draft: Project, args: Record<string, unknown>): number {
+  const parts = [
+    JSON.stringify((draft as { system?: unknown }).system ?? null),
+    draft.meta?.title ?? "",
+    Object.keys(draft.maps).sort().join(","),
+    String(args.name ?? ""), String(args.id ?? ""), String(args.mapId ?? ""), String(args.theme ?? ""),
+  ].join("|");
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < parts.length; i += 1) { h ^= parts.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+  return h % 100000;
 }

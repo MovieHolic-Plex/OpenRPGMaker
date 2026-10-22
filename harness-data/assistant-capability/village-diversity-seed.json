@@ -1,0 +1,131 @@
+{
+ "id": "assistant-capability-village-diversity-v1",
+ "version": 1,
+ "purpose": "「마을 만들어 줘」 요청 8가지(같은 문장 둘 포함)를 실제 입력창 경로로 지어, 마을끼리 배치·크기·지형·물·지붕·소품이 뚜렷이 다른지 본다. 한 과제 = 빈 프로젝트 하나 + 자연어 한 번. 저장·재로드와 1배 렌더, 새 Opus 판정자의 차이·품질 판정을 따로 기록한다.",
+ "internalAi": "조수 엔진은 제품의 로컬 CLI 엔진 스위치(src/ai/localCliEngine.ts) — Claude Code + claude-sonnet-5-5, effort high. 기본 Argon 이 한도 소진이라 대용이다. Argon 점수와 직접 비교하지 않는다.",
+ "assistantEngine": {
+  "kind": "local-cli",
+  "cli": "claude",
+  "routineModel": "claude-sonnet-5-5",
+  "deepModel": "claude-sonnet-5-5",
+  "effort": "high"
+ },
+ "maximumConcurrentEditors": 2,
+ "turnDeadlineMs": 2400000,
+ "maximumRepairTurns": 0,
+ "panoramaCoveredElsewhere": "배경·파노라마(노을 옥상·바다·별밤 창·흐르는 구름·붉은 달 성·모래폭풍·모호한 '배경 예쁘게'·한 화면 시차·다리 밑 물)는 별도 파노라마 시험이 맡는다.",
+ "cases": [
+  {
+   "id": "village-fishing",
+   "label": "어촌",
+   "port": 19620,
+   "lessons": [
+    "village-diversity"
+   ],
+   "prompt": "바닷가 어촌 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built Beodeul village map that matches the requested place",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "village-mountain",
+   "label": "산골",
+   "port": 19621,
+   "lessons": [
+    "village-diversity"
+   ],
+   "prompt": "깊은 산속 산골 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built Beodeul village map that matches the requested place",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "village-river-market",
+   "label": "강가 장터",
+   "port": 19622,
+   "lessons": [
+    "village-diversity"
+   ],
+   "prompt": "강가에 장이 서는 장터 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built Beodeul village map that matches the requested place",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "village-forest",
+   "label": "숲속 마을",
+   "port": 19623,
+   "lessons": [
+    "village-diversity"
+   ],
+   "prompt": "숲속 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built Beodeul village map that matches the requested place",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "village-oasis",
+   "label": "사막 오아시스",
+   "port": 19624,
+   "lessons": [
+    "village-diversity"
+   ],
+   "prompt": "사막 오아시스 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built Beodeul village map that matches the requested place",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "village-walled",
+   "label": "성벽 마을",
+   "port": 19625,
+   "lessons": [
+    "village-diversity"
+   ],
+   "prompt": "성벽으로 둘러싼 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built Beodeul village map that matches the requested place",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "village-plain-a",
+   "label": "평범한 마을 A",
+   "port": 19626,
+   "lessons": [
+    "village-diversity"
+   ],
+   "prompt": "작은 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built Beodeul village map that matches the requested place",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  },
+  {
+   "id": "village-plain-b",
+   "label": "평범한 마을 B",
+   "port": 19627,
+   "lessons": [
+    "village-diversity"
+   ],
+   "prompt": "작은 마을 맵을 만들어 줘.",
+   "requirements": [
+    "a built Beodeul village map that matches the requested place",
+    "saved and reloaded"
+   ],
+   "lint0": []
+  }
+ ]
+}

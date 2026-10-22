@@ -1,7 +1,7 @@
 # 버들항 공용 일광·접지 보정
 
 원본 버들항 집·지붕·윤곽·나무 도트와 밝은 잔디를 유지한다. 빛은 왼쪽 위, 그늘은 짧게 오른쪽 아래. 측면 벽을 새로 그리지 않는다.
-`harmonize_beodeul_daylight({mapId})`는 기존 마을에 적용한다. author_beodeul_town의 houseCount 모드에서는 마지막에 자동 적용한다. 맵을 새로 만들거나 소품을 움직이지 않는다.
+`harmonize_beodeul_daylight({mapId})`는 기존 마을에 적용한다. author_beodeul_town의 예제 작은 마을(houseCount+church:true)에서는 마지막에 자동 적용한다. 맵을 새로 만들거나 소품을 움직이지 않는다.
 
 ## 실행 순서
 
