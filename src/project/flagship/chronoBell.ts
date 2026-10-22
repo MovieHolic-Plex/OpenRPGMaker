@@ -1459,7 +1459,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     for (let y = Math.max(1, Math.floor(cy - ry * 1.6)); y <= Math.min(fm.height - 2, Math.ceil(cy + ry * 1.6)); y += 1) {
       for (let x = Math.max(1, Math.floor(cx - rx * 1.6)); x <= Math.min(fm.width - 2, Math.ceil(cx + rx * 1.6)); x += 1) {
         const ex = (x + 0.5 - cx) / rx, ey = (y + 0.5 - cy) / ry, theta = Math.atan2(ey, ex) + Math.PI;
-        const ray = rays.some((r) => Math.abs(Math.atan2(Math.sin(theta - r), Math.cos(theta - r))) < 0.22) ? 1.3 : 1;
+        // 갈래는 구덩이를 늘리지 않는다 — 남쪽 갈래가 숲길과 이어져 「구덩이에서 길로 판 도랑」으로 읽혔다(VQA r19 major).
+        const ray = 1;
         const wob = ((((x * 73856093) ^ (y * 19349663)) >>> 0) % 5) * 0.05 - 0.1;
         const reach = (1 + 0.2 * Math.sin(3 * theta + 0.7) + 0.12 * Math.sin(5 * theta + 2.1) + wob) * ray;
         const inside = Math.hypot(ex, ey) <= reach
@@ -1520,6 +1521,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     // 바닥은 모랫길(밝은 모래)이 아니라 짙은 갈아엎인 흙(바닥 흙 26809~26811) — 밝은 모래 바닥은 숲길이 넓어진 흙 마당으로 읽혔다(VQA r10).
     for (const c of pit) {
       const x = c % fm.width, y = Math.floor(c / fm.width);
+      // (밝은 모랫길 고리는 숲길이 구덩이 밖으로 번진 것처럼 읽혀 걷었다 — 바닥은 한 가지 그을린 흙.)
       if (!pit.has(c - fm.width)) fm.lowerTiles[c] = 11646 + ((x + y) % 5);
       else fm.lowerTiles[c] = 26809 + ((((x * 73856093) ^ (y * 19349663)) >>> 0) % 3);
     }
@@ -1532,8 +1534,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       ["bd-pick-shipwreck-reef-plank-pile", 2, 1], ["bd-pick-shipwreck-reef-plank-pile", -4, -1],
     ];
     const around: Array<[string, number]> = [
-      ["bd-pick-deep-forest-path-log-fallen", 0.2], ["bd-pick-deep-forest-path-stump", 0.9], ["bd-pick-deep-forest-path-log-fallen", 2.6],
-      ["bd-pick-deep-forest-path-stump", 3.3], ["bd-pick-deep-forest-path-log-fallen", 3.9], ["bd-pick-deep-forest-path-heath-a", 1.6],
+      // 둘레 통나무 셋은 갈래 끝 통나무와 합쳐 여섯이 같은 가로줄로 늘어서 의자처럼 읽혔다(VQA r19) — 둘레엔 그루터기·덤불만.
+      ["bd-pick-deep-forest-path-stump", 0.9], ["bd-pick-deep-forest-path-stump", 3.3], ["bd-pick-deep-forest-path-heath-a", 1.6],
       ["bd-pick-deep-forest-path-heath-b", 4.6], ["bd-pick-deep-forest-path-fern-c", 5.4], ["bd-pick-deep-forest-path-stump", 5.9],
       ["bd-pick-deep-forest-path-heath-c", 2.2],
       // (통나무를 고르게 더 둘렀더니 목재 야적장처럼 읽혔다 — VQA r13. 쓰러진 나무는 위 셋과 갈래 끝 그루터기로 충분하다.)
