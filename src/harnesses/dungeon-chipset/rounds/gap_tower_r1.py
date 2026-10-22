@@ -200,20 +200,21 @@ A2 = {
     # 바닥·둘레(닳은 베이지 판돌): P 줄눈 · M 그늘 · N 몸 · R 엇갈린 몸 · O 판 윗·왼 가장자리 빛
     # 계단(나무 디딤판 + 막돌 몸): I 디딤판 앞 턱 · H 몸 · J 나뭇결 · K 챌판 위 · V 챌판 · Z 밑 · 몸 앞면 a·b
     'leg': legend(a=('vrock', 2), b=('vrock', 3), c=('iron', 2), d=('crock', 5), e=('crock', 6), f=('stone', 5),
-                  A=('vrock', 0), B=('iron', 0), D=('vrock', 1), E=('iron', 1), F=('vrock', 3), G=('iron', 3),
+                  A=('vrock', 0), B=('vrock', 1), D=('iron', 1), E=('vrock', 2), F=('iron', 2), G=('vrock', 3), X=('iron', 3), i=('vrock', 4),
+                  m=('rim', 2), n=('rim', 3), o=('rim', 4), p=('rim', 5),
                   P=('rim', 1), C=('cfloor', 4), L=('cfloor', 7), M=('cfloor', 1), N=('cfloor', 3), R=('cfloor', 2), O=('cfloor', 5), Q=('cfloor', 6),
                   I=('wood', 5), H=('wood', 4), J=('wood', 3), K=('wood', 2), V=('wood', 1), Z=('wood', 0),
                   x=('iron', 1), z=('vrock', 1),
                   S=('iron', 4), T=('iron', 3), U=('iron', 2), W=('iron', 5), Y=('iron', 1),
                   g=('crock', 2), h=('crock', 3), k=('crock', 4)),   # 받침 돌(회색 깐 돌)
-    'chain': 'ABDEFG',
+    'chain': 'ABDEFGX',
     'band': [   # 갓돌 길이가 4~9열로 제각각, 줄눈 b, 위·왼 빛 e·f, 아래 그늘 c, 9 = 안쪽 빛 턱 줄, 10 = 턱 끝
         'cbccccbcccbcccbc',
-        'deeeeffeedeeeefe',
+        'deeeeffefdfeeefe',
         'cbdeeeeedbdeeedd',
-        'cbdeedeedbcdeeec',
-        'bccddddcbbbccdcb',
-        'dfeeebdeeeeedbde',
+        'cbdffdeedbcdeeec',
+        'bchddddcbbbccdcb',
+        'dfeeebdeeeefdbde',
         'deeedbdeeefeebde',
         'dddecbcdeedeebcd',
         'bbbcbbbccccdcbbb',
@@ -221,96 +222,97 @@ A2 = {
         'ffffffffffffffff',
     ],
     'front': ['b', 'c'],
-    'face': [   # 어두운 막돌 쌓기: 층 높이가 다르고(4·5·5·6·6·…) 돌 길이도 다르다
+    'face': [   # 막돌 쌓기(층 5·5·6·5·6·5, 돌 길이 제각각): 돌 윗줄 빛 G·X · 왼 끝 빛 F · 몸 E(푸른 회색 중간) 반점 F·D·G · 밑 B · 오른 D · 줄눈 A
+        'iXXXAiGXXGAiGXGA',
+        'FEEDAFEEEDAFEFDA',
+        'FEGDAFEEFDAFEEDA',
+        'FBBBAFBBBBAFBBBA',
         'AAAAAAAAAAAAAAAA',
-        'BEEEFEBDEEEEFEBD',
-        'BEEEEEBDEFEEEEBD',
-        'BDEEEDBBDEEEEDBB',
-        'ABBBBBAABBBBBBAA',
-        'EFFEEBDEEEEFEEEB',
-        'EEEEEBDEEFEEEEDB',
-        'EEFEEBDEEEEEEEDB',
-        'DEEEDBBDEEEEEDBB',
-        'BBBBBAABBBBBBBBA',
-        'EEBDEEEFEEEBDEEE',
-        'EEBDEEEEEEEBDEFE',
-        'EEBDEFEEEEDBBDEE',
-        'DDBBDEEEEDDBBDDD',
-        'BBAABBBBBBBAABBB',
-        'FEEEEBDEEEEEEBDF',
-        'EEEEDBDEEFEEEBDE',
-        'EFEEDBDEEEEEDBDE',
-        'EEEEDBBDEEEEDBBE',
-        'DDDDBAABDDDDBAAD',
-        'BBBBAABBBBBBAABB',
-        'EEBDEEEEFEEEEEBD',
-        'EFBDEEEEEEEFEEBD',
-        'EEBDEEEFEEEEEDBD',
-        'EDBBDEEEEEEEDBBD',
-        'DBBADDDDDDDDBBAD',
-        'BAABBBBBBBBBAABB',
-        'EEEEEFEBDEEEEEEE',
-        'EEFEEEEBDEEFEEEE',
-        'DEEEEEDBBDEEEEED',
-        'BDDDDDBBABDDDDDB',
+        'GGAiGGAiXGXGGAiG',
+        'EDAFDDAFEEEDDAFE',
+        'FDAFEDAFEEGEDAFE',
+        'BBAFBBAFBBBBBAFB',
+        'AAAAAAAAAAAAAAAA',
+        'AiGGGGAiGGAiGGGG',
+        'AFEEEDAFEDAFDFED',
+        'AFEEDDAFGDAFEGED',
+        'AFEEEDAFEDAFEDDD',
+        'AFBBBBAFBBAFBBBB',
+        'AAAAAAAAAAAAAAAA',
+        'GGGAiGGGAiGGGAiG',
+        'EEDAFEEDAFEEDAFF',
+        'FEDAFEFDAFEEDAFE',
+        'BBBAFBBBAFBBBAFB',
+        'AAAAAAAAAAAAAAAA',
+        'XAiGGGGGAiGXGAiG',
+        'DAFEEEEDAFDEDAFE',
+        'DAFEDEFDAFEEDAFE',
+        'DAFDFEDDAFEEDAFD',
+        'BAFBBBBBAFBBBAFB',
+        'AAAAAAAAAAAAAAAA',
+        'GXGGAiGGAiXGGGAi',
+        'FFEDAFGDAFEEEDAF',
+        'EEEDAFEDAFFDEDAF',
+        'BBBBAFBBAFBBBBAF',
         'AAAAAAAAAAAAAAAA',
     ],
-    'floor': [   # 닳은 큰 판돌 — 칸마다 나눔이 다르다. 판마다 윗·왼 모서리 빛 O, 밑·오른 모서리 그늘 R·M, 몸 N 에 밝은 얼룩 C·L · 어두운 얼룩 M·R, 줄눈 P
-        'OOOOOOOOCPOOOOCP',
-        'OCNRNRNNRPONNNRP',
-        'ORMNNNCNRPORNNRP',
-        'ONNRNNRCRPONNNRP',
-        'OCRCRCNNRPONNCRP',
-        'OMNRNNNNRPONCMRP',
-        'CRRRRRRRMPORNCRP',
-        'PPPPPPPPPPORNNRP',
-        'OOOOCPOOCPCRRRMP',
-        'ORNMRPOMRPPPPPPP',
-        'ORCRRPOCRPOOOOCP',
-        'ONNMRPORRPORNNRP',
-        'ORNNRPONRPONMNRP',
-        'OMNNRPOCRPOCCNRP',
-        'CRRRMPCRMPCRRRMP',
+    'floor': [   # 닳은 큰 판돌(16 토러스 — 판이 칸 경계를 넘어 이어진다): 판마다 윗·왼 빛, 밑·오른 그늘, 몸 반점, 금. 누런 판(cfloor) + 붉은 판(rim m~p), 회색 잔돌 k·d, 줄눈 P
+        'MPQNNNRPNMMMMMMM',
         'PPPPPPPPPPPPPPPP',
+        'OOOOCPLpopppPLOO',
+        'NkNCRPpnPoomPONC',
+        'RNMNRPonnnnmPORM',
+        'NNNMRPpmnNmmPONN',
+        'MNCNRPpnnnnmPONR',
+        'RRRRMPpmmmmPPORR',
+        'PPPPPPPPPPPPPPPP',
+        'NPLQQQQPLCCCCCCC',
+        'MPQOoONPCmRMMRNM',
+        'MPQOCNNPCmRCRNRR',
+        'MPONCCNPCRMMMRMd',
+        'MPQCCNNPCRRRRMRR',
+        'MPQCoCNPCRmMMRRR',
+        'MPQCCNNPCNRRRkRd',
     ],
-    'floor_var': [[
-        'OOOOCPOOOOOOOOCP',
-        'OCCNRPOLCNNCNNRP',
-        'ORNNRPOCRNNNNNRP',
-        'OLNCRPONMNCCRCRP',
-        'ONLNRPCRRRRRRRMP',
-        'OCNRRPPPPPPPPPPP',
-        'ORLNRPOOOOOOOOCP',
-        'ONNNRPOLRRRRCLRP',
-        'CRRRMPOMCCCNRNRP',
-        'PPPPPPOLNNNNNRRP',
-        'OOOOCPOCLMLCLCRP',
-        'ONCLRPONCLRLCRRP',
-        'ONCNRPOCNNCNRCRP',
-        'ONCLRPOLRNCNRNRP',
-        'CRRRMPCRRRRRRRMP',
+    'floor_var': [[   # 변형 = 안쪽 판(경계를 넘지 않는 판)만 다르게 나눈다 — 경계 줄눈이 같아 어느 변형끼리 붙어도 이어진다
+        'MPQNNNRPCMMMMMMM',
         'PPPPPPPPPPPPPPPP',
+        'OOOOOPLQQQQOPLOO',
+        'NCNNRPQNNNNRPCNR',
+        'RNNNRPPPPPPPPORM',
+        'ONRNRPLpppppPORN',
+        'MNNNRPpnnnomPOnR',
+        'RRRRMPpmmmmPPORR',
+        'PPPPPPPPPPPPPPPP',
+        'CPLQQQOPLCNCCCCC',
+        'MPQOQONPCkNNkRRC',
+        'MPOONNNPCRRRRRRN',
+        'MPQCCCNPCNCMMRmR',
+        'MPQoCCNPCkRRRMRR',
+        'MPQCCCNPCMMMMRRR',
+        'MPQNCNNPNNRMRMCR',
     ], [
-        'OOOOOOOOOOOOOOCP',
-        'OMRCRNNMNMRNCCRP',
-        'ONNNRNRNNNNRNNRP',
-        'OMNNNCNNNRCNRMRP',
-        'ORNNCRMNCNMNMNRP',
-        'OCNCRRNMNNNNNRRP',
-        'ORMRMRNCNCNRNNRP',
-        'ONNNNNRNRNNRNCRP',
-        'ORRNNNRNCNMNMRRP',
-        'ORRCNNNRNMNCNCRP',
-        'ONCNMNRCNNCRRCRP',
-        'ONNNRCNNNCRNCNRP',
-        'ONNNNRMNCNCNRNRP',
-        'ONNNNNCCNRNMNNRP',
-        'CRRRRRRRRRRRRRMP',
+        'MPQNNNRPNMMMMMMM',
         'PPPPPPPPPPPPPPPP',
+        'OOOOOPLLLPLOPLCO',
+        'RNNORPLpnPORPONN',
+        'RNMNRPLonPORPORM',
+        'NONMRPLonPORPONN',
+        'nONRRPLonPCRPORR',
+        'RRRRMPLnmPOMPORR',
+        'PPPPPPPPPPPPPPPP',
+        'CPLQQQOPLCCCCNNC',
+        'MPQOCONPCRNNRNNN',
+        'MPQCCoNPCRMRRRRR',
+        'MPQCCCNPCRMMMRMR',
+        'MPQCCCNPCNRRRMmR',
+        'MPQOCNNPCRMMMRRM',
+        'MPQCCNNPCNRkRdNR',
     ]],
     'floor_mix': [0, 1, 2, 0, 1],
+    'course_var': True,   # 둘레 칸도 변형을 섞는다(한 판 도장 반복 방지)
     'iface_shift': 0,
-    'dark': {'L': 'Q', 'Q': 'O', 'O': 'C', 'C': 'N', 'N': 'R', 'R': 'M', 'M': 'P', 'P': 'P'},
+    'dark': {'L': 'Q', 'Q': 'O', 'O': 'C', 'C': 'N', 'N': 'R', 'R': 'M', 'M': 'P', 'P': 'P', 'p': 'o', 'o': 'n', 'n': 'm', 'm': 'P', 'd': 'k', 'k': 'M'},
     # 나선 계단(버들항 나선 계단 말): 나무 디딤판 — 앞 끝 턱 I · 몸 H · 결 J · 뒤 이음 K · 판 두께 V V Z
     'tread': ['HHIHHJJHHHHKHHHH', 'HJJHHHHHIHHHHJJH', 'HHHHKHHHJJJHHHHH', 'JHHHHHIHHHHHKHHJ', 'HHKJJHHHHHJHHHHH', 'HHHHHHJHHKHHIIHH'],
     'lip': 'I', 'joint': 'K', 'slab': ['K', 'V', 'Z'],
@@ -438,7 +440,7 @@ def ring(c, Ro, Lx=0, Ly=0, roof=False):
                     q = int(Ri - r)
                     cs = c.get('contact', [2, 2, 1, 1, 1])
                     steps = cs[q] if 0 <= q < len(cs) else 0
-                ch = c['floor'][y % 16][x % 16]
+                ch = course_table(c, x // T, y // T)[y % 16][x % 16]
                 for _ in range(steps):
                     ch = c['dark'].get(ch, ch)
                 cv.put(x, y, leg[ch])
@@ -495,6 +497,15 @@ VOID = grid(['aaaaaaaaaaaaaaaa', 'aaaaaaaaaaaaabaa', 'aaaaaaaaaaaaaaaa', 'aaaaba
             legend(a=('void', 0), b=('void', 1)))
 
 
+def course_table(c, i, j):
+    """둘레 칸의 바닥 글자 표. course_var 가 있는 후보(A2)만 칸마다 변형을 고른다(변형들의 경계 줄눈이 같아 이어진다), 나머지는 바닥 0번."""
+    if not c.get('course_var'):
+        return c['floor']
+    tabs = [c['floor']] + list(c.get('floor_var', []))
+    mix = c.get('floor_mix', [0])
+    return tabs[mix[dot.cell_hash(i, j) % len(mix)]]
+
+
 def floor_tiles(c):
     """바닥 몸통 둘 : 변형 하나(변형이 반이면 금이 무늬처럼 반복된다). 장면은 dot.cell_hash 로 고른다."""
     tiles = [grid(c['floor'], c['leg'])] + [grid(v, c['leg']) for v in c.get('floor_var', [])]
@@ -513,7 +524,7 @@ def under(kind, w, h, c, ox=0, oy=0):
             if cells.get((i, j)) != 'floor':
                 t = VOID
             elif (i, j) in edge:
-                t = base
+                t = grid(course_table(c, i, j), c['leg']) if c.get('course_var') else base
             else:
                 t = fl[dot.cell_hash(i + ox, j + oy) % len(fl)]
             out.a[j * T:(j + 1) * T, i * T:(i + 1) * T] = t.a
@@ -598,58 +609,60 @@ WIN = {
         'dark': _win([
             '..............',
             '..............',
-            '..fffefffefA..',
-            '.eddddaeddddA.',
-            '.dccccadccccA.',
-            '.edADAAAAbFcA.',
-            '.edADA,,EbFaA.',
-            '.dcADA,,EbFeA.',
-            '.aaADA,,EbFdA.',
-            '.feADA,,EbFdA.',
-            '.edADA,,EbFcA.',
-            '.edA,,,,,,FaA.',
-            '.dcA,,,,,,FeA.',
-            '.aaADA,,EbFdA.',
-            '.feADA,,EbFdA.',
-            '.edADA,,EbFcA.',
-            '.edADA,,EbFaA.',
-            '.dcADA,,EbFeA.',
-            '.aaADA,,EbFdA.',
-            '.feADA,,EbFdA.',
-            '.edADA,,EbFcA.',
-            '.edADAAAAbFaA.',
-            '.fffffefffffA.',
-            '.eddddaeddddA.',
-            '.dddddaddddcA.',
-            '.DDDDDDDDDDDD.',
+            'fefffefafffffA',
+            'edkkgdkaeedddA',
+            'dhhhhhhadkkkkA',
+            'fffABAAAAFGfeA',
+            'edkABA,,BFGfdA',
+            'eghABA,,BFGdkA',
+            'dhhABB,,DDFaaA',
+            'aaaAAB,,DFGffA',
+            'fffABB,,DFGedA',
+            'edkA,,,,,,GedA',
+            'dkhA,,,,,,GdkA',
+            'aaaAAB,,DDFaaA',
+            'fefABB,,DFGfeA',
+            'edkABB,,DFGedA',
+            'edkABB,,DFGedA',
+            'ekkABB,,DFGdkA',
+            'dkhABD,EEDFaaA',
+            'aaaAAD,EEFGfeA',
+            'fffABEDDFFGffA',
+            'dkhABBBBBFGdkA',
+            'fffffffeaffffA',
+            'eddeddkhaedddA',
+            'dkkkkkhhadkkkA',
+            'DDDDDDDDDDDDDD',
+            '.BBBBBBBBBBB..',
         ]),
         'lit': _win([
             '..............',
             '..............',
-            '..fffefffefA..',
-            '.eddddaeddddA.',
-            '.dccccadccccA.',
-            '.edbF^^^^GGcA.',
-            '.edbF^vv^GGaA.',
-            '.dcbFvvvvGGeA.',
-            '.aabFvuuvGGdA.',
-            '.febFvuuvGGdA.',
-            '.edbFvuuvGGcA.',
-            '.edbFvuuvGGaA.',
-            '.dcbFvuuvGGeA.',
-            '.aabFvuuvGGdA.',
-            '.febFvuuvGGdA.',
-            '.edbFvuuvGGcA.',
-            '.edbFvuuvGGaA.',
-            '.dcbFvuuvGGeA.',
-            '.aabFvuuvGGdA.',
-            '.febFvvvvGGdA.',
-            '.edbF^vv^GGcA.',
-            '.edbF^^^^GGaA.',
-            '.fffffefffffA.',
-            '.eddddaeddddA.',
-            '.dddddaddddcA.',
-            '.DDDDDDDDDDDD.',
+            'fefffefafffffA',
+            'edkkgdkaeedddA',
+            'dhhhhhhadkkkkA',
+            'fffDF^^^^GXfeA',
+            'edkDF^vv^GXfdA',
+            'eghDFvvuvGXdkA',
+            'dhhDFvuuvFGaaA',
+            'aaaBDvuvvGXffA',
+            'fffDFvuuvGXedA',
+            'edkD^vuuv^XedA',
+            'dkhD^vuuv^XdkA',
+            'aaaBDvuuvFGaaA',
+            'fefDFvvuvGXfeA',
+            'edkDFvuuvGXedA',
+            'edkDFvuvvGXedA',
+            'ekkDFvuuvGXdkA',
+            'dkhDFvuuvFGaaA',
+            'aaaBDvvuvGXfeA',
+            'fffDF^vv^GXffA',
+            'dkhDF^^^^GXdkA',
+            'fffffffeaffffA',
+            'eddeddkhaedddA',
+            'dkkkkkhhadkkkA',
+            'DDDDDDDDDDDDDD',
+            '.BBBBBBBBBBB..',
         ]),
     },
 }
@@ -676,6 +689,32 @@ def carve(cv, kind, geo, Ro, rows, u0, leg, only='face', v0=0):
         u = stx if stx is not None else Ri * math.asin(max(-1.0, min(1.0, sx / Ri)))
         col = int(math.floor(u - u0 + w / 2))
         v = y - itop[x] - v0
+        if 0 <= col < w and 0 <= v < len(rows) and rows[v][col] != '.':
+            cv.put(x, y, leg[rows[v][col]])
+
+
+def carve_flat(cv, kind, geo, Ro, rows, u0, leg, v0=0):
+    """carve 와 같되 줄을 화면 수평으로 둔다: 표 가운데 열 자리의 앞면 윗줄 + v0 를 모든 열의 0행으로 쓴다(곡면 위에서도 문이 기울지 않는다)."""
+    Ri = Ro - BAND
+    w = len(rows[0])
+    itop, ucol = {}, {}
+    for (x, y), k in kind.items():
+        if k == 'face':
+            itop[x] = min(itop.get(x, y), y)
+    for (x, y), k in kind.items():
+        if k != 'face':
+            continue
+        sx, sy, stx, sty, north = geo[x, y]
+        u = stx if stx is not None else Ri * math.asin(max(-1.0, min(1.0, sx / Ri)))
+        ucol[x] = int(math.floor(u - u0 + w / 2))
+    xs = sorted(x for x, col in ucol.items() if 0 <= col < w)
+    if not xs:
+        return
+    y0 = itop[min(xs, key=lambda x: abs(ucol[x] - w // 2))] + v0
+    for (x, y), k in kind.items():
+        if k != 'face' or x not in ucol:
+            continue
+        col, v = ucol[x], y - y0
         if 0 <= col < w and 0 <= v < len(rows) and rows[v][col] != '.':
             cv.put(x, y, leg[rows[v][col]])
 
@@ -722,13 +761,13 @@ def light_patch(sc, kind, c, Ro, u0, top=0):
 #   A2 = 쇠 기둥을 도는 나무 나선 계단(설계 1, 버들항 나선 계단 말): 둥근 돌 받침 위 디딤판 7(40° 씩, 3px 씩), 북쪽 맨 위 판이 벽에 닿는다.
 STAIR_RO = 96
 RUN = {'A1': {'steps': 3, 'a_lo': 84, 'deg': 11, 'rise': 4, 'land': 14, 'w': 12,
-              # 단마다 (몸, 어두운 얼룩·이음, 밝은 얼룩, 앞 턱) — 따뜻한 다듬은 돌, 이웃 단은 엇갈린 색조. 앞 턱 A 가 가장 밝다
-              'tones': [('F', 'I', 'A', 'A'), ('I', 'M', 'F', 'A'), ('F', 'I', 'A', 'A'), ('I', 'M', 'F', 'A')],
-              'riser': ['M', 'N', 'N', 'O'],   # 남쪽을 보는 챌판 4줄(디딤판보다 두~세 단 어둡게) — 이것만 보이고 옆 벽은 없다
-              # 계단참 뒤 안벽 문(16열): 돌 문설주 + 2줄 상인방 + 어두운 문 안. 문 밑이 계단참 뒤 끝보다 위라 가려지지 않는다
-              'door': ['.llllllwlllllll.', '.yyyyyywyyyyyyy.', '.lyKKKKKKKKKKyw.', '.lyK,,,,,,,,Dyw.',
-                       '.lyK;;;;;;;;Dyw.', '.wyK;;;;;;;;Dyw.', '.lyK;;;;;;;;Dyw.', '.lyK;;;;;;;;Dyw.',
-                       '.lyK;;;;;;;;Dyw.', '.lyyyyyyyyyyyyw.']}}
+              # 탑 띠와 같은 회색 돌 7단(iron1 iron2 cata3 cata4 cata5 stone4 stone5). 몸 단은 위로 갈수록 밝다(3 → 4), 앞 턱 = 몸 + 2
+              'lad': 'ijwylqQ', 'body': [3, 3, 4, 4], 'face_foot': 'm',
+              'shadow': ('z', 'n'),   # 바닥 그림자 = 나무 바닥의 어두운 단(돌 바로 옆 z, 그 바깥 n) — 무채 회색 반투명 대신
+              # 계단참 뒤 안벽 문(16열): 두 돌 상인방 + 돌마다 이음 문설주 + 푸른 보랏빛 어두운 문 안(벽 곡면에 앞면 좌표로 판다)
+              'door': ['.qQQQQQQjQQQQQq.', '.lqllllljlllllyi', '.yyyyyyyjyyyyyyi', '.qlKKKKKKKKKKDli',
+                       '.lyK,,,,,,,,Dyi.', '.jjK,,,,,,,,Dji.', '.qlK,,,,,,,,Dli.', '.lyK,,,,,,,,Dyi.',
+                       '.yyK,,,,,,,,Dyi.', '.jjK,,,,,,,,Dji.', '.qlK,,,,,,,,Dli.', '.lyK,,,,,,,,Dyi.']}}
 SPIRAL = {'A2': {'ang': 50, 'off': 21, 'R': 18, 'n': 7, 'span': 40, 'start': 100, 'rise': 3, 'post': 2}}
 
 
@@ -798,42 +837,55 @@ def _tread_fn(c, i):
 
 
 def _run_fn(P, i, fcx, fcy, a0, a1, rin, rout, e):
-    """벽 계단 단 i: 윗면(몸 + 얼룩, 앞 끝 턱, 뒤 끝 이음, 가운데 둘레 이음 하나 = 두 돌) + 밑 챌판 3줄 + 그 밑 몸 줄(3줄 켜)."""
-    lads = ('PNMIFAH', 'PNcdFeH')                 # rim 0~6 / 같은 밝기의 누런 돌(cfloor) — 한 단에 두 돌이 결이 갈린다. 몸 b(3 또는 4)에서 명암 6단
-    b = 4 if P['tones'][i][0] == 'F' else 3
+    """벽 계단 단 i: 탑 띠와 같은 회색 돌(iron1·2 → cata3~5 → stone4·5 7단). 윗면 = 앞 턱 빛 · 턱 뒤 모서리 · 몸(위 단일수록 한 단 밝다) ·
+    뒤 이음 · 가운데 돌 이음 + 불규칙 반점. 앞면 = 바닥까지 내려오는 막힌 돌 덩이(높은 단일수록 앞면이 길다 = 오르는 게 보인다), 3줄 켜·엇갈린 세로 이음, 밑 줄 접지."""
+    L = P['lad']
+    b = P['body'][i]
     am = (a0 + a1) / 2 + (2 if i % 2 else -2)
+
+    def hsh(fx, fy, s_):
+        v = (fx * 92821) ^ (fy * 68917) ^ (i * 1237 + s_ * 7919)
+        v = (v ^ (v >> 7)) * 2654435761 & 0xffffffff
+        return (v >> 11) % 29
 
     def f(fx, fy, k, fp):
         if k > 0:
+            if k == e:
+                return P['face_foot']                                # 접지 줄
             if k == 1:
-                return 'N' if (fx + 3 * i) % 7 == 0 else 'M'
-            return P['riser'][min(k, len(P['riser'])) - 1]
+                return L[b - 1]                                      # 턱 바로 밑 — 앞면 맨 윗줄(빛 조금)
+            course = (k - 2) // 3
+            if (k - 2) % 3 == 2:
+                return L[0]                                          # 켜 이음
+            if (fx + course * 3 + i * 2) % 7 == 0:
+                return L[0]                                          # 세로 이음(켜마다 엇갈림)
+            h = hsh(fx, k, 1)
+            if h < 3:
+                return L[2]
+            return L[1]
         r = math.hypot(fx + 0.5 - fcx, fy + 0.5 - fcy)
         a = math.degrees(math.atan2(fcx - fx - 0.5, fcy - fy - 0.5))
         side = r * math.radians(a) - r * math.radians(am)
-        lad = lads[(i + (side > 0)) % 2]
         if (fx, fy + 1) not in fp:
-            return lad[min(b + 2, 5)] if (fx + i) % 5 else lad[b + 1]      # 앞 턱 — 가장 밝다, 군데군데 이 빠짐
+            return L[min(b + 2, 6)] if hsh(fx, fy, 2) > 3 else L[b + 1]   # 앞 턱 — 가장 밝다, 군데군데 이 빠짐
         if (fx, fy + 2) not in fp:
-            return lad[b + 1]                                       # 턱 바로 뒤 둥근 모서리
+            return L[b + 1]                                          # 턱 뒤 둥근 모서리
         if (fx, fy - 1) not in fp:
-            return lad[b - 2]                                       # 뒤 이음
+            return L[b - 2]                                          # 뒤 이음
         if (fx, fy - 2) not in fp:
-            return lad[b - 1]                                       # 이음 밑 그늘
+            return L[b - 1]                                          # 이음 밑 그늘
         if int(r * math.radians(a)) == int(r * math.radians(am)):
-            return lad[b - 2]                                       # 돌 이음(벽에서 방 쪽으로)
+            return L[b - 2]                                          # 돌 이음(벽에서 방 쪽으로)
         if -1.6 < side < 0:
-            return lad[b + 1]                                       # 이음 왼(북서) 돌 끝 빛 모서리
-        h = (fx * 7 + fy * 13 + i * 5) % 11
-        if h == 0:
-            return lad[b - 1]
-        if h in (5, 8):
-            return lad[b + 1]
-        if h == 3:
-            return lad[b - 2]
-        if h == 9:
-            return lad[min(b + 2, 5)]
-        return lad[b]
+            return L[b + 1]                                          # 이음 왼(북서) 돌 끝 빛 모서리
+        h = hsh(fx, fy, 0)
+        if h < 2:
+            return L[b - 1]
+        if h < 5:
+            return L[b + 1]
+        if h == 5:
+            return L[b - 2]
+        return L[b]
     return f
 
 
@@ -865,19 +917,21 @@ def stair_layer(key, c):
             a1 = P['land'] if i == n else a0 - P['deg']
             fp = _sector(px, a0, a1, rin, rout)
             e = P['rise'] * (i + 1)
-            items.append((fp, e, P['rise'], _run_fn(P, i, fcx, fcy, a0, a1, rin, rout, e)))   # 판 두께 = 챌판 높이(밑 옆 벽 없음)
+            items.append((fp, e, e, _run_fn(P, i, fcx, fcy, a0, a1, rin, rout, e)))   # 막힌 돌 덩이: 앞면이 바닥까지 — 높은 단일수록 앞면이 길다
             fps.append(fp)
         am = math.radians((P['a_lo'] - n * P['deg'] + P['land']) / 2)   # 문: 계단참 한가운데 뒤 안벽
         u_door = -Ri * math.asin(min(1.0, math.sin(am) * (Ri + 1) / Ri))
         e = P['rise'] * (n + 1)
         door = P['door']
-        carve(cv, kind, geo, Ro, door, u_door, leg, v0=WALL_H - e - 3 - len(door) + 1)   # 문 밑 = 계단참 뒤 끝 3px 위
+        carve_flat(cv, kind, geo, Ro, door, u_door, leg, v0=WALL_H - e - len(door) + 2)   # 문 밑 2줄이 계단참 뒤에 묻힌다(계단참에서 바로 문으로), 줄은 화면 수평(기울지 않은 문)
         owner = _stack(cv, kind, items, leg)
-        for fp in fps:                                # 바닥 그림자: 들린 디딤판 밑 바닥 + 남동 1px(돌 밖, 바닥 자리에만)
+        allfp = set().union(*fps)
+        for fp in fps:                                # 바닥 그림자(남동 2px): 돌 바로 옆 = 바닥 가장 어두운 단, 바깥 = 그다음 단(틴트, 반투명 무채 회색 아님)
             for (fx, fy) in fp:
-                for p in ((fx, fy), (fx + 1, fy), (fx + 1, fy + 1)):
-                    if p not in owner and kind.get(p) in ('floor', 'course') and cv.a[p[1], p[0], 3] == 0:
-                        cv.shadow(*p)
+                for d, ch in (((1, 1), P['shadow'][0]), ((2, 1), P['shadow'][1]), ((2, 2), P['shadow'][1])):
+                    p = (fx + d[0], fy + d[1])
+                    if p not in owner and p not in allfp and kind.get(p) in ('floor', 'course') and cv.a[p[1], p[0], 3] == 0:
+                        cv.put(*p, leg[ch])
         return cv
     P = SPIRAL[key]
     am = math.radians(P['ang'])

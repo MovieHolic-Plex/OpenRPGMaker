@@ -107,8 +107,10 @@ def props_layer(cv, frame=0, key='A1'):
     put(cv, bl[0], 10, 4)
     put(cv, bl[1], 10, 10)
     pl = list(pal.values())
+    mids = [pal[k] for k in ('가운데', '가운데2', '가운데3') if k in pal] or [pl[1]]
+    west, east = pal.get('서끝', pl[0]), pal.get('동끝', pl[-1])
     for i, cx in enumerate(range(5, 11)):
-        put(cv, pl[0] if i == 0 else pl[2] if i == 5 else pl[1], cx, 11)
+        put(cv, west if i == 0 else east if i == 5 else mids[(i - 1) % len(mids)], cx, 11)
     act = dot.Cv.of(dot.actor1_frame())
     put(cv, act, 7, 13)
 
