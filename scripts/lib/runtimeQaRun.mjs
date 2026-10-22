@@ -7,6 +7,7 @@ import { createServer as createNetServer } from "node:net";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join, relative, resolve } from "node:path";
 import { homedir, tmpdir } from "node:os";
+import { gunzipSync } from "node:zlib";
 import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
 import { PNG } from "pngjs";
@@ -861,6 +862,7 @@ async function readObserved(page, {
       ),
       playerSpriteResourceId: sprite ? sprite.resourceId : null,
       playerSpriteTextureKey: sprite ? sprite.textureKey : null,
+      missingTextures: window.__oprnMissingTextures ? window.__oprnMissingTextures() : null,
       followerSpriteCount: characters ? Object.keys(characters.followers).length : null,
       vehicleSprites: characters ? (characters.vehicles ?? {}) : null,
       emotes: window.__oprnEmotes ? window.__oprnEmotes() : null,
@@ -971,7 +973,8 @@ export async function writeReport(outDir, report) {
 export async function runRuntimeQa(page, rawScenario, opts = {}) {
   const scenario = normalizeScenario(rawScenario);
   const projectPath = resolve(REPO_ROOT, scenario.projectFixture);
-  let projectJson = await readFile(projectPath, "utf8");
+  // 저장소의 예제 게임은 project.json.gz 로 커밋된다(examples/*). 스모크가 그 실물을 그대로 쓴다.
+  let projectJson = projectPath.endsWith(".gz") ? gunzipSync(await readFile(projectPath)).toString("utf8") : await readFile(projectPath, "utf8");
   // 시스템 설정만 QA 사본에서 고정한다 — 기본값(예: ESC 메뉴 스킨)이 바뀌어도 시나리오가 원래 보던 화면을 계속 본다.
   if (scenario.systemPatch) {
     const project = JSON.parse(projectJson);

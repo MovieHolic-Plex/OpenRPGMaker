@@ -155,6 +155,8 @@ export type RuntimeQaExpect = {
   }[];
   /** Phaser 텍스처가 실제로 로드됐는지(__MISSING 플레이스홀더 검출). */
   readonly playerSpriteTextureLoaded?: boolean;
+  /** 표시 목록의 어떤 객체(타일 포함)도 __MISSING 텍스처를 그리지 않는다. */
+  readonly noMissingTextures?: boolean;
   /**
    * 이벤트 id → 런타임이 계산한 발자국 사각. `runtime-state-json` DOM 노드에서 읽는다.
    * 좌표 이동 단정과 달리 판정의 **입력**을 직접 본다 — 사각이 틀렸는데 결과만 맞는 우연을 배제한다.

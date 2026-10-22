@@ -82,6 +82,8 @@ type TestHookWindow = Window & {
   };
   __oprnActionCombat?: () => ActionCombatDebug | null;
   __oprnPlayerSprite?: () => PlayerSpriteDebug | null;
+  /** 화면 표시 목록(컨테이너 안까지)에서 Phaser 의 __MISSING 텍스처를 그리는 객체 수. 타일셋 그림이 없으면 타일이 여기 잡힌다. */
+  __oprnMissingTextures?: () => MissingTextureDebug;
   __oprnCharacterSprites?: () => CharacterSpriteDebug | null;
   __oprnCamera?: () => CameraDebug | null;
   /** 재생성·카메라 스냅 계수기 스냅숏. 값이 없으면(계측 없는 씬) null. */
@@ -279,6 +281,7 @@ export function installPlaySceneTestHooks(
     },
   };
   w.__oprnPlayerSprite = () => playerSpriteDebug(scene);
+  w.__oprnMissingTextures = () => missingTextureDebug(scene);
   w.__oprnCharacterSprites = () => characterSpritesDebug(scene);
   w.__oprnCamera = () => cameraDebug(scene);
   w.__oprnPerf = () => perfCountersDebug(scene);
@@ -390,6 +393,7 @@ export function installPlaySceneTestHooks(
     delete w.__oprnActionCombat;
     delete w.__oprnInput;
     delete w.__oprnPlayerSprite;
+    delete w.__oprnMissingTextures;
     delete w.__oprnCharacterSprites;
     delete w.__oprnCamera;
     delete w.__oprnPerf;
@@ -754,6 +758,29 @@ function spriteLiftPx(sprite: Phaser.GameObjects.Sprite): number {
   const denominator = sprite.height * sprite.scaleY;
   if (!Number.isFinite(denominator)) return 0;
   return Math.max(0, Math.round((sprite.originY - characterBaseOrigin(sprite).y) * denominator));
+}
+
+interface MissingTextureDebug {
+  readonly textured: number;
+  readonly missing: number;
+}
+
+function missingTextureDebug(scene: Phaser.Scene): MissingTextureDebug {
+  let textured = 0;
+  let missing = 0;
+  const visit = (objects: readonly unknown[]): void => {
+    for (const object of objects) {
+      const key = (object as { texture?: { key?: unknown } }).texture?.key;
+      if (typeof key === "string") {
+        textured += 1;
+        if (key === "__MISSING") missing += 1;
+      }
+      const children = (object as { list?: unknown }).list;
+      if (Array.isArray(children)) visit(children);
+    }
+  };
+  visit(scene.children?.list ?? []);
+  return { textured, missing };
 }
 
 function isSpriteDebugScene(scene: Phaser.Scene): scene is SpriteDebugScene {
