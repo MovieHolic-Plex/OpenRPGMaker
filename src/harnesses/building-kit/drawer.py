@@ -384,9 +384,23 @@ def claude_command(sandbox, model=None, effort=None, tools='Read,Write,Edit,Bash
     return [shutil.which('claude') or 'claude', '-p', '--output-format', 'text', '--strict-mcp-config',
             '--allowedTools', tools, '--add-dir', sandbox, '--model', model or MODEL, '--effort', effort or EFFORT]
 
-def subprocess_runner(cmd, prompt, cwd, timeout):
-    r = subprocess.run(cmd, input=prompt, cwd=cwd, capture_output=True, text=True, timeout=timeout)
-    return r.returncode, r.stdout or '', r.stderr or ''
+GATEWAY_RETRIES = int(os.environ.get('BUILDING_KIT_DRAWER_GATEWAY_RETRIES', '3'))
+GATEWAY_WAIT = int(os.environ.get('BUILDING_KIT_DRAWER_GATEWAY_WAIT', '120'))
+
+
+def is_gateway_error(rc, out):
+    """게이트웨이 5xx(예: 8319 502 upstream_error)로 끊긴 호출 — 그림과 무관한 일시 오류."""
+    return rc != 0 and bool(re.search(r'API Error: 5\d\d', out or ''))
+
+
+def subprocess_runner(cmd, prompt, cwd, timeout, sleep=None):
+    import time
+    sleep = sleep or time.sleep
+    for attempt in range(GATEWAY_RETRIES + 1):
+        r = subprocess.run(cmd, input=prompt, cwd=cwd, capture_output=True, text=True, timeout=timeout)
+        if not is_gateway_error(r.returncode, r.stdout) or attempt == GATEWAY_RETRIES:
+            return r.returncode, r.stdout or '', r.stderr or ''
+        sleep(GATEWAY_WAIT)
 
 def sandbox_for(theme, rid, key):
     path = os.path.join(SANDBOX, theme, rid, key)

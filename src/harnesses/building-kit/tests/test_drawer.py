@@ -15,7 +15,30 @@ sys.path.insert(0, HERE)
 
 import beodeul  # noqa: E402
 import dot  # noqa: E402
-import drawer  # noqa: E402
+import drawer
+
+
+class GatewayRetryTest(unittest.TestCase):
+    def test_retries_only_gateway_5xx(self):
+        import types
+        calls = []
+
+        def fake_run(cmd, **kw):
+            calls.append(1)
+            out = 'API Error: 502 {"error":"upstream_error"}' if len(calls) < 3 else 'ok'
+            return types.SimpleNamespace(returncode=1 if len(calls) < 3 else 0, stdout=out, stderr='')
+        orig = drawer.subprocess.run
+        drawer.subprocess.run = fake_run
+        try:
+            rc, out, _ = drawer.subprocess_runner(['x'], 'p', '.', 5, sleep=lambda s: None)
+        finally:
+            drawer.subprocess.run = orig
+        self.assertEqual((rc, out, len(calls)), (0, 'ok', 3))
+
+    def test_other_failures_are_not_retried(self):
+        self.assertFalse(drawer.is_gateway_error(1, 'NotImplementedError'))
+        self.assertFalse(drawer.is_gateway_error(0, 'API Error: 502'))
+        self.assertTrue(drawer.is_gateway_error(1, 'API Error: 503 x'))  # noqa: E402
 import helpers as H  # noqa: E402
 
 class DrawerTest(unittest.TestCase):
