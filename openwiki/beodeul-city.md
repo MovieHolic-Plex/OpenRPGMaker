@@ -128,6 +128,13 @@ SQLite revision 7 저장·재로드와 전용 플레이어 8비트(모든 집 �
 - **조수**: `author_beodeul_town` `walls:true`(이름에 성벽·성곽·성문·요새면 자동). 평지로, river 테마는 강 없이, 크기 +2×+4.
   `beodeulVillage.ts` 12d 단계가 둘레 띠를 집·나무 자리에서 빼고, 남·북 성벽을 지나는 길이 없으면 남쪽 길을 하나 낸다(치울 수 있는 소품만 치움).
   결과 `data.walls = {gates, gaps, towers, stairs, blockedRoads, southGateRoad?}`. 경로 메모(`beodeulTownRoute.ts`)도 walls:true 를 가르친다.
+- **성문 고르기(조수 시험 r1 뒤 수리)**: `wallGate` S(기본)·N·NS — 그 쪽마다 성문루 하나. 가운데에서 폭 12% 안에 지나는 길이 있으면 그 길,
+  없으면 가운데 쪽으로 안쪽 길에서 맵 끝까지 새 길을 낸다. 그 밖에서 성벽을 지나던 길은 성벽 띠에서 끊고 안쪽 줄기를 갈림목까지 지운다.
+  서·동 틈은 `wallSideGaps:true` 일 때만. 성문 길은 마을 길망까지 빈 땅 최단 경로로 잇고 길 재료로 칠한다. 입구(`data.entrance`)는 성문 바깥 끝.
+  r1(수리 전): 「남쪽에 성문 하나」인데 서·동 틈 셋, 성문이 남동 모서리 곁. r5(수리 뒤): 남쪽 가운데 성문 하나, 옆 틈 0, 문 앞 4/4.
+- **조수 시험**: 시드 `scene-lessons-seed.json` 의 `walled-beodeul-town`. 실행 `qa-runs/harnesses/assistant-capability/2026-10-22-beodeul-wall-r1..r5`
+  (Claude Code Sonnet 5.5 high **조수 대용**, 실제 입력창 경로, SQLite 저장·재로드 일치). 성문 걷기 영상은 출하 player 에서 r5 저장본을 실제 방향키로
+  (`r5/.../gatefilm/gatewalk.mp4`). 남은 것: 집 수 요청(5)이 성벽 띠 때문에 3~4채로 덜 지어지기도 한다(r3·r4).
 - **참고문서**: 번들 `beodeulCityReferences.json` 용도 `beodeul-town-wall`(출처 `tiledata/beodeul-town-wall/`, 그림 `public/assets/beodeul-town-wall/`,
   생성 `wall_refs.py` — 예시 둘레·정상/오류 그림 4종·좌표 검사 `wrong-layer`·`face-missing`·`wall-gap`·`gate-blocked`).
 - **기존 프로젝트 한계**: 접목(tileGrafts)이 이미 28,544 이후 칸을 쓰는 프로젝트(대부분, count 30,080)는 꼬리를 덮지 않으려고 성벽을 싣지 않는다 —
