@@ -88,8 +88,15 @@ export function handInteriorCompositionLint(project: Project, map: GameMap, inpu
   // ⑥ 방 밖 허공 — 실내에 닿지 않는 막힌 칸(천장 띠도 벽면도 아닌 검은 칸)의 비율. 큰 덩이는 맵을 줄이거나 곁방으로 쓴다.
   let voidCells = 0;
   const seen = new Uint8Array(W * H);
+  // 걸이 그림이 덮은 천장 칸(dome vault 처럼 천장 띠 전체를 그리는 조각)은 검은 허공이 아니다 — 세면 r28 관측 홀이 40% 로 「맵을 줄여라」를 받는다.
+  const painted = new Uint8Array(W * H);
+  for (const o of objects) {
+    const so = spec.objects[o.id];
+    if (so?.kind !== "hang") continue;
+    for (const [dx, dy] of so.cells) { const x = o.x + dx, y = o.y + dy; if (x >= 0 && y >= 0 && x < W && y < H) painted[y * W + x] = 1; }
+  }
   const isVoid = (x: number, y: number) => {
-    if (plan[y]![x] !== "#") return false;
+    if (plan[y]![x] !== "#" || painted[y * W + x]) return false;
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (inner(x + dx, y + dy)) return false;
     return true;
   };
