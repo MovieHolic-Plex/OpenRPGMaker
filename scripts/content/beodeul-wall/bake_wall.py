@@ -425,6 +425,9 @@ def main():
     PIECES_JSON.write_text(json.dumps(dict(base=BASE, tiles={p["name"]: tid(p["name"]) for p in PIECES},
                                            lower=[p["name"] for p in PIECES if p["layer"] == "lower"]), ensure_ascii=False, indent=0) + "\n")
     print(json.dumps(dict(count=COUNT, pieces=len(PIECES), kits=[k["id"] for k in kits()]), ensure_ascii=False))
+    # 다음 꼬리: 마당 바닥(row 224, BASE 28672). 성벽이 시트를 다시 쓰면 마당 줄도 이어서 다시 굽는다.
+    import subprocess
+    subprocess.run([sys.executable, str(HERE.parent / "beodeul-yard" / "bake_yard.py")] + (["--dev"] if "--dev" in sys.argv else []), check=True)
 
 
 if __name__ == "__main__":

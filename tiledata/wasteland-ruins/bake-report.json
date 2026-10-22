@@ -1,0 +1,118 @@
+{
+ "definition": {
+  "violations": 0,
+  "by_code": {},
+  "examples": {},
+  "tiles_checked": 240,
+  "kits_checked": 40,
+  "groups_checked": 22,
+  "autotiles_checked": 1
+ },
+ "reassembly": {
+  "kits": 40,
+  "mismatched": 0,
+  "ids": []
+ },
+ "palette": {
+  "cells_off_palette": 0
+ },
+ "tiles": {
+  "count": 240,
+  "rows": 5,
+  "kits": 40,
+  "groups": 22,
+  "autotiles": 1,
+  "animationStrips": 1
+ },
+ "animation_noncontiguous": [],
+ "adopted": {
+  "pieces": 49,
+  "by_group": {
+   "ground": 16,
+   "ruins": 6,
+   "shacks": 3,
+   "defense": 3,
+   "props": 21
+  }
+ },
+ "dev_only_adopted": [
+  "dirt-a",
+  "dirt-b",
+  "dirt-c",
+  "dirt-d",
+  "asphalt",
+  "asphalt-c",
+  "slab-a",
+  "slab-b",
+  "slab-c",
+  "rubble-a",
+  "rubble-b",
+  "rubble-c",
+  "weeds-a",
+  "weeds-b",
+  "weeds-c",
+  "puddle",
+  "husk-a",
+  "husk-b",
+  "husk-tall",
+  "wall-h",
+  "wall-v",
+  "wall-stub",
+  "shack-a",
+  "shack-b",
+  "lean-to",
+  "barricade-h",
+  "fence-h",
+  "gate-scrap",
+  "car-rust-h",
+  "car-rust-v",
+  "van-rust",
+  "water-tank",
+  "generator",
+  "solar-scrap",
+  "campfire",
+  "log-seat",
+  "stall-a",
+  "stall-b",
+  "drums",
+  "tyres",
+  "crates",
+  "scrap-heap",
+  "rubble-pile",
+  "dead-tree",
+  "bush-wild",
+  "vine-wall",
+  "lamp-broken",
+  "jersey-barrier",
+  "sign-blank"
+ ],
+ "mode": "dev",
+ "rejected": [
+  {
+   "id": "asphalt-b",
+   "status": "refer",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(refer)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "barricade-v",
+   "status": "fail",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(fail)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "fence-v",
+   "status": "fail",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(fail)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "car-burnt",
+   "status": "refer",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(refer)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  },
+  {
+   "id": "watchtower",
+   "status": "refer",
+   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(refer)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
+  }
+ ],
+ "reassembly_from_files": 0
+}

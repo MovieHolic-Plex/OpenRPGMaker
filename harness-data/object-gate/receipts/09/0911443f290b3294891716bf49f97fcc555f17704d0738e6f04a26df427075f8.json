@@ -1,0 +1,268 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0911443f290b3294891716bf49f97fcc555f17704d0738e6f04a26df427075f8",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "dusty packed wasteland earth ground tile variant 2 laid among plain earth",
+ "label": "wasteland_ruins/dirt-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 84,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat ground tile texture (earth with pebbles and cracks)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The candidate is a full-bleed 64px-wide, 48-row seamless ground texture. The silhouette width is constant at 64 for rows 0-47, and the column scan shows only repeating texture patches with no front-edge line, eave shadow, ellipse or vertical front face. It is a flat terrain tile with no standing volume, so it has no front face and reads as a flat top-down surface, as expected for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a ground patch of the same kind as the grass and paving references. It shows about 8 visible tones per 16x16 tile, against 3 for the grass and 7 for the paving. Near-flat coverage is 0%, the same as both references. It has a mid grey-brown base with lighter dusty speckle, darker soil grain, and rust-brown crack and scratch marks scattered across the tiles. There are about 5 distinct lightness steps and no large flat areas. A ground tile needs no outline, and the 0% neutral dark-edge share means no black sticker line. The variation reads as packed earth rather than a flat fill. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 9007
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "earth ground texture fill (full tile, 64x48)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless, flat ground texture of brown and grey earth with speckles and small crack marks. The silhouette is a full 64-wide rectangle on every row (0-47) with no outline, no front-edge line, no eave shadow and no ellipse. The dark 1-2 row lines in the column scan are crack and speckle details, not edges of a raised object. It has no standing body and no front face, so it reads as a flat top-down terrain tile. That is expected for the terrain kind, and the separate rule decides pass or fail."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a seamless packed-earth ground with a grey-brown mid base, lighter dust speckle, darker pebble dots and rust-brown crack/vein marks. That gives about 5 distinct lightness steps, which matches the reference grass (about 3 visible tones) and paving (7). Measured facts agree: 8 visible tones per tile, above the grass reference and close to the paving reference, with 0% near-flat coverage and no 5x5 flat fills. Grain and variation cover the whole surface. As a ground tile it needs no outline, and the dark edge pixels are tinted (0% neutral), not near-black. It reads as texture rather than a sticker and would sit next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 9233
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flat ground texture tile (earth with brown and grey speckle patches, small cracks)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a seamless 64x48 ground texture filling the full frame in every row. It is a terrain tile, not a standing object. Dark 1-2 row lines at rows 9-10, 25-26 and 41-42 in the column scan are crack and speckle marks inside the texture, not front-edge lines or eave shadows. It has no front face, no silhouette change (width 64 in all rows), and no volume, so it reads as a flat top-down surface, which is correct for terrain."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a ground patch, the same kind as the grass and paving references. It has 8 visible tones per 16x16 tile, against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 0%, so there are no flat fills. The speckled grey-brown earth carries several lightness steps, with crack and dust marks in darker brown and lighter patches, so the grain reads as varied rather than uniform. Ground tiles have no outline, and the dark edge pixels are tinted (0% neutral), not near-black. Visible density is at or above the references, so it would sit next to them without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 9182
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground tile, flat earth texture with pebbles and cracks",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 64x48 terrain texture of grey-brown dusty earth with brown patches, pebbles and small cracks. Every row has the same width (64) and there is no silhouette, front-edge line, eave shadow, ellipse or vertical front face. The column scan shows only a repeating texture pattern (dark rows at 9-10, 25-26, 41-42 are crack or patch detail, not edges). It is a flat ground tile with no standing volume, which is what the terrain kind expects."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a ground patch of the same kind as the grass and paving references. It shows about 8 visible tones per 16x16 tile, against 3 for the grass and 7 for the paving, so density is at or above both. Near-flat coverage is 0%, the same as the references. The surface is textured with speckle, grain, and reddish-brown crack or dust streaks over a grey-brown base, so there are no large flat fills. Ground tiles have no outline, and the 0% neutral dark edge share confirms no black sticker line; the dark marks are brown-tinted and belong to the texture. The ramp has roughly 5 distinguishable steps from light dusty highlights to dark brown cracks, comparable to the references. A careful artist would accept it beside the references without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 9652
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.011Z",
+ "cells": {
+  "16": [
+   "c414088776e8da4c",
+   "d5aa26669a2a611c"
+  ],
+  "24": [
+   "056d054cfee072b5",
+   "0a5d7aec7f126152",
+   "17218c19a8706fde",
+   "2c748ffe39fdf3b1",
+   "4a43fc0808409387",
+   "4ce8870fe3583abc",
+   "50d2ea82e6c09aa5",
+   "52b1a314b96d7ddd",
+   "67808678dee10041",
+   "8225976d03395cc8",
+   "94e17db49dd69fb0",
+   "a688d0e83086b3f4",
+   "ab3716bad5cda8d0",
+   "ab68c9318d46085c",
+   "aefb7fb9d9cc4cff",
+   "bb4e4852cde523ad",
+   "e05470d3411480a4",
+   "ec2c648013f336cf"
+  ],
+  "32": [
+   "04ca93fc8d562f1f",
+   "08fa71e462d479a4",
+   "10ec4c90491993ad",
+   "acdbebeecf145d4b",
+   "adba24583fbfb4bc",
+   "bc73f42afbe1c0a3",
+   "fec69fb8b2e2f0c5"
+  ],
+  "48": [
+   "218c6b345e2f499b",
+   "37f3f040b554a712",
+   "7bd60fbb6470c9bb",
+   "9bdfaeaa9c041161",
+   "df2109802f032875",
+   "e71124adb1f7457a"
+  ]
+ }
+}

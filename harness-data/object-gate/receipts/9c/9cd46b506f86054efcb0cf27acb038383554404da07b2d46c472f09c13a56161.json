@@ -1,0 +1,381 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9cd46b506f86054efcb0cf27acb038383554404da07b2d46c472f09c13a56161",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "cracked asphalt road tile with a water-filled pothole and weeds, laid among plain asphalt",
+ "label": "wasteland_ruins/asphalt-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 4,
+  "tileColorsP90": 12,
+  "darkV5": 59,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground with cracks",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water-filled pothole (upper, dark rim with brown edge and water inside)",
+      "rows": "5-12",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water-filled pothole (lower)",
+      "rows": "21-28",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "weeds at the pothole edges",
+      "rows": "9-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "weeds at the lower pothole",
+      "rows": "25-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat, full-bleed 64x48 ground texture seen from above. The column scan shows only a repeating pattern of 1-row dark crack lines on a uniform asphalt colour. There is no silhouette, no front-edge line, no eave shadow and no vertical south face. The two potholes are depressions in the ground, with water visible inside and a few weed pixels beside them. As terrain it is a flat top-surface tile with no front face, so it is a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a grey-blue asphalt field with sparse speckle dots, two small dark pothole blobs with green weed tufts, and no visible cracks. It has about 3 shading steps on the asphalt against 6-7 in the paving reference. It has 4 visible tones per tile, which is above the grass reference (3) but below the paving reference (7). Near-flat coverage is 0%, but only because the speckle is evenly scattered. It reads as a uniform noisy field rather than shaded structure: there are no per-stone highlights and no clear crack lines or water highlight, so the water-filled pothole and the cracks are barely legible. The dark pothole edges are only partly neutral (27%), so the outline is mixed. This is thinner and flatter than the reference paving, whose stones are shaded one by one with light edges, so it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14429
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground with speckled cracks",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water-filled pothole (dark rim, brown earth wall, water highlight), two copies",
+      "rows": "5-12",
+      "evidence": "d",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "weed tuft at the pothole's lower right",
+      "rows": "9-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tile is flat ground drawn from above. The full 64x48 area is speckled grey-blue asphalt with brown crack patches, and the column scans show only a repeating 1-row darker line, which is texture. There is no standing volume and no front face of 3 or more rows. The pothole is a dark rim with a brown inner wall and a light water or edge line at row 11 (and a repeat near row 27). It reads as a hole in the ground surface, not a raised object. The green weed tuft at its lower right is decor. This is the expected top-down terrain form, so it reads as top_down_slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a grey asphalt field with only about 4 visible tones per tile and 12 colours in total. The paving reference shows 7 tones with distinct stones, highlight edges and dark joints, and the grass reference has several clustered tufts. The candidate's cracks are barely visible, so the asphalt reads as a speckled mid-grey with sparse dots rather than shaded surface. The two potholes are tiny dark blobs with a small green weed dot each, and they have almost no ramp: roughly dark, mid and one accent. The water is not readable as water because it has no highlight, reflection or rim shading. There are no per-stone or per-crack highlight and shadow steps like the paving reference. The dark edge pixels are only 27% neutral, so they lean tinted, but they are too few to establish a material-tone outline. Overall it is shallower and flatter than both references, with a 3-step ramp against about 6 and thin information density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13348
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground with cracks and speckle",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water-filled pothole with dark rim and brown dirt edge",
+      "rows": "5-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "weeds at pothole edge",
+      "rows": "9-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a full-bleed 64x48 ground tile of grey-blue asphalt with brown and grey speckle. Two small potholes (rows 5-12 and 21-28) show dark water with a teal glint, a brown dirt rim and green weeds. There is no standing volume, no front face and no edge line, and the column scan shows only a repeating tile pattern with 1-row crack lines at rows 11, 15, 27, 31, 43 and 47. This is flat terrain seen from above, which is correct for a terrain tile, so the tile has no front face by design."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a uniform grey-blue asphalt with sparse speckle dots and only about 3 lightness steps on the main ramp. The reference paving has about 6-7 steps with stones shaded one by one, light edges and a dark seam structure. The candidate's cracks and potholes are tiny dark blobs scattered across the field. The water-filled pothole barely reads as water, with no highlight or rim shading, and the weeds are only a few green pixels. Per-tile visible tones are 4 against 7 for the paving. The candidate has only 12 distinct colours in total, and the dark edge pixels are about 27% neutral, so the outline is mixed and the dark blobs look like stickers. There is no per-piece grain or tile structure, so the surface reads as a nearly flat field with sparse noise. This is clearly shallower than the Beodeul paving reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10915
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt ground with cracks and speckle",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "water-filled pothole (dark rim, brown edge, water) seen from above",
+      "rows": "5-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "second pothole with weeds",
+      "rows": "21-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "weeds beside potholes",
+      "rows": "9-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat, full-bleed 64x48 ground texture of grey-teal asphalt with brown speckles and faint horizontal crack lines. It has two small potholes with dark rims, brown edges and a teal water highlight, and green weeds. It has no standing volume, no front face and no eave or front-edge line. The width profile is 64 for every row. This is consistent with a terrain tile seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a uniform grey-blue asphalt with sparse speckle dots and only about 4 visible tones per tile (12 distinct colours in total). The paving reference has 7 visible tones plus clearly drawn stone shading and cracks. The grass reference has 3 visible tones, but it carries clump and tuft structure. The candidate's cracks are barely readable. The pothole and weeds are only a few tiny dark blobs with a green fleck, so there is no readable water surface, no highlight or reflection, and no rim shading. The material ramp is only about 3 steps against the 5-6 in Beodeul. Near-flat coverage is 0%, so there are no large flat fills, but the speckle is faint and evenly scattered rather than structured. Dark edge pixels are 27% neutral, so the outlines are partly tinted, but there are almost no real outlines. Overall it looks thinner and flatter than the paving reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10665
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.080Z",
+ "cells": {
+  "16": [
+   "c8e7e706822dd9e6",
+   "d5a3c12ce5bb0b0c"
+  ],
+  "24": [
+   "024a355ef5cc332a",
+   "33eb9686f3ee6bc6",
+   "39dec4b3b8f5371a",
+   "6a4b5974bf824ea7",
+   "6a71b9ddb43a234c",
+   "74b4706be2806094",
+   "8172cf48e1b80a90",
+   "843d30c3e68205f7",
+   "c465753ab3d03ff0",
+   "c88916a345e0be69",
+   "c8bcdf5bc7f0c207",
+   "c8da19ce212335c5",
+   "cec3bafd97f318c2",
+   "de08045cbe2ce768",
+   "dff37b3779cc0870",
+   "f03e06cbb5524abf",
+   "fda26019de4e9bc0"
+  ],
+  "32": [
+   "0d40323993526811",
+   "149ce1dc7d46260b",
+   "1c12913ab5ccc43a",
+   "52dbbc485e88f5a3",
+   "93bdf5c15a3e767a",
+   "be7f726be9f3a225"
+  ],
+  "48": [
+   "4a0b3c12ecd44bb3",
+   "68bb819ad234b874",
+   "9a47ed32c49d23a0",
+   "b254cd8a9a8c94b7",
+   "b4905c901a50bb5f",
+   "bd156db8f743bc8d"
+  ]
+ }
+}

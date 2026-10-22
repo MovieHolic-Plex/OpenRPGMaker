@@ -1,0 +1,364 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5c6f74ce85c32c3bc604472d6df6c5144c3e6292b6f40b660a0c8ddcbf2f1db2",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "stack of weathered wooden salvage crates seen from above: plank lids, slatted fronts, one crate on top",
+ "label": "wasteland_ruins/crates",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+  "3/4: 앞면 5행 < 8 (3/4)",
+  "3/4: 앞면 7행 < 8 (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+   "앞면 5행 < 8 (3/4)",
+   "앞면 7행 < 8 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 41,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "wrong",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top green crate lid",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4"
+     },
+     {
+      "part": "left brown crate plank lid",
+      "rows": "3-8",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "right brown crate plank lid",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The column scan at x=15 shows the green top crate with a lid at rows 0-3. Row 3 is a lighter front-edge line (L=130), row 4 is dark eave shadow (L=45), and the front face is rows 5-8. The right brown crate has plank rows 6-9, a tan edge line at row 10 (L=180 at x=22), dark shadow at row 11, and a slatted front at rows 12-15. The left brown crate has a plank lid at about rows 3-8 with a tan edge line at row 8, then a slatted front at rows 9-15. Each crate shows a top surface and a front face of 3+ rows, so the stack reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 12 visible tones per full tile, which is above prop-hedge (9) and below prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so there are no large flat fills; plank seams, slats and lid edges break up each surface. The dark edge pixels are 0% neutral, so the outlines lean brown or green and follow the adjacent material rather than forming a black sticker line. Each material (wood crates, green top crate) has only about 4 lightness steps against roughly 5-6 in Beodeul, and the grain is modest. That makes it a little thinner than the richest references, but it matches the hedge reference on the primary facts and sits acceptably beside it, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "앞면 7행 < 8 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "앞면 7행 < 8 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25248
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top green crate lid",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4"
+     },
+     {
+      "part": "right lower crate plank lid",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "left lower crate plank lid",
+      "rows": "3-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The right lower crate shows a plank lid in rows 5-9 ending in a light tan front-edge line at row 10 (L=180), then a dark shadow at row 11 and a slatted front face in rows 11-15. The left crate has the same structure, with its tan edge line near row 8. The top green crate has a lid in rows 0-3 with a lighter edge line at row 3, dark shadow at row 4, and a front face below. Each crate shows a top surface and a front face, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small prop, about 25x15 source pixels. The board shows a teal-green top crate on darker brown crates with plank and slat lines and lighter lid edges. That gives roughly 5 lightness steps across the wood and lid ramps, a little below the 5-6 steps of the references. The measured facts support it. It has 12 visible tones per 16x16 tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, so there are no large flat fills. Dark edge pixels are 0% near-neutral, so the outline is tinted brown/green rather than a black sticker line. The texture is moderate (plank grain and slat gaps) rather than lavish, but it is not thinner or flatter than the hedge or bench references, and a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "앞면 5행 < 8 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "앞면 5행 < 8 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17577
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top crate lid (green)",
+      "rows": "1-3",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "4-5"
+     },
+     {
+      "part": "right lower crate plank lid",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "left lower crate plank lid",
+      "rows": "4-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "All three crates show a plank lid band at the top. The right crate's lid is rows 5-9 at x=22, ending in a light front-edge line at row 10 with darker shadow at row 11, then slatted front rows 11-15. The left crate has a lid in rows 4-7 and an edge line at row 8, with its slatted front below. The green top crate has a lighter lid in rows 1-3, a dark edge/shadow at row 4, and a front face in rows 5-8 with a latch. The slatted fronts are 5+ rows tall. No isometric side face is drawn; the stack reads as 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 12 visible tones per 16x16 tile, above prop-hedge (9) and bench/lamp (0, thin objects), and below stall (17) and well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. The dark edge pixels are 0% neutral, so the outline is tinted: dark brown beside the wood and dark green-teal beside the top crate. Forms are separated by value, not by a uniform black line. Each material (brown planks, green-teal crate) gets about 3-4 steps, a little under Beodeul's 5-6. Plank lids and slatted fronts show some grain and weathering variation, but less than the stall or well. Overall it is comparable to the hedge and bench in richness and would sit acceptably next to them, so it is not a sticker-style piece.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "앞면 5행 < 8 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "앞면 5행 < 8 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24618
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top green crate lid",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4"
+     },
+     {
+      "part": "right lower crate plank lid",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "left lower crate plank lid",
+      "rows": "3-7",
+      "evidence": "a",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "9"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The right brown crate has a plank lid in rows 5-9 (L=100). A light tan front-edge line at row 10 (L=180) follows, then a darker shadow row 11 (L=60) and a slatted front in rows 11-15. The left crate shows the same structure: a tan edge line at row 8 with a slatted front below. The green crate on top has a lighter lid band in rows 1-3, with its edge at row 3 (L=130) and a dark eave at row 4. Its front face runs through row 8 and carries a latch. Every crate shows a top surface and a front face of 5 or more rows, so the stack reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 12 visible tones per tile, which sits between the hedge (9) and the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. 0% of its dark edge pixels are neutral, so the outlines carry a brown or green tint from the adjacent material rather than a black sticker line. At this scale the plank lids, slatted fronts and top crate are separated mostly by value, with a few grain and highlight dots. Its total of 12 distinct colours is below the stall and well (about 40), but close to the hedge, bench and lamp (11-14). That is acceptable for a small prop. Each material (wood, greenish lid) gets roughly 4 steps, slightly fewer than Beodeul's 5-6, and the texture is modest rather than rich. A careful artist would still accept it next to the references without it looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "앞면 5행 < 8 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "앞면 5행 < 8 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23480
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:07.044Z",
+ "cells": {
+  "16": [
+   "ed50942301e9e4fc",
+   "f0d07542e586473d"
+  ],
+  "24": [
+   "11573698fc8a0b7e",
+   "196e3a4271b66171",
+   "660f54652e870d26",
+   "7fd380ce61a3221a",
+   "a57b31de9b0e4774",
+   "ae9adcdbb79b2392",
+   "bd00663997d8ec6b",
+   "ce2bd5f039e5e781",
+   "ce56633130fd8cb4",
+   "d3606b9d10774705",
+   "db94c32ef90103bb",
+   "e37f84937ba8a06f"
+  ],
+  "32": [
+   "1cfd04bb2eb021c9",
+   "b9314d11b5157b3f"
+  ],
+  "48": [
+   "28725393d5aff2ce",
+   "46f2b1180b30e492",
+   "4d4f6e52f5824dc7",
+   "85adc238a45fefae",
+   "92b5c69c6523432c",
+   "bab296e6c958314a"
+  ]
+ }
+}

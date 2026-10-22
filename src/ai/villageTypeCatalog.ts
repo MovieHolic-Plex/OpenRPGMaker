@@ -126,11 +126,11 @@ export const VILLAGE_TYPES: readonly VillageType[] = [
     words: /수도원|수도회|교회\s*마을|성당\s*마을|abbey|monastery/iu,
     gap: "수도원 회랑·종탑 단지는 없고 마을 교회 한 채만 있다" }),
   T({ id: "mining-town", ko: "광산촌", era: "medieval", chipset: "beodeul_city", status: "ready",
-    recipe: "author_beodeul_town({theme:\"river\", water:\"none\", terrain:\"highland\", form:\"scatter\", roofs:\"log\", forestType:\"conifer\", houseCount:4, width:56, height:44}) → dress_village_quarter({mapId, quarter:\"mining\"}) — 다진 흙 마당 위에 갱구·권양탑·광재 더미·광차·용광로를 한 덩이로(마당·샛길은 도구가 깐다)",
+    recipe: "author_beodeul_town({theme:\"river\", water:\"none\", terrain:\"highland\", form:\"scatter\", roofs:\"log\", forestType:\"conifer\", houseCount:4, width:60, height:48}) → dress_village_quarter({mapId, quarter:\"mining\"}) — 다진 흙 마당 위에 갱구·권양탑·광재 더미·광차·용광로를 한 덩이로(마당·샛길은 도구가 깐다)",
     words: /광산\s*(?:마을|촌|도시)|광산촌|탄광\s*(?:마을|촌)|광부\s*마을|mining\s*(?:town|village)/iu,
   }),
   T({ id: "vineyard-village", ko: "포도원 마을", era: "medieval", chipset: "beodeul_city", status: "ready",
-    recipe: "author_beodeul_town({theme:\"river\", water:\"none\", form:\"scatter\", roofs:\"red\", houseCount:4, width:56, height:44}) → dress_village_quarter({mapId, quarter:\"vineyard\"}) — 다진 흙 마당 위에 포도주 창고·포도밭 이랑·압착기·올리브(마당·샛길은 도구가 깐다)",
+    recipe: "author_beodeul_town({theme:\"river\", water:\"none\", form:\"scatter\", roofs:\"red\", houseCount:4, width:64, height:48}) → dress_village_quarter({mapId, quarter:\"vineyard\"}) — 다진 흙 마당 위에 포도주 창고·포도밭 이랑·압착기·올리브(마당·샛길은 도구가 깐다)",
     words: /포도원|포도밭\s*마을|와인\s*마을|양조\s*마을|올리브\s*마을|vineyard|wine\s*village/iu,
   }),
   // ── 판타지 ──

@@ -1,0 +1,313 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1e42f66cd315d5c68e46f832d10dd9958ef629444fefef16ad1980b89a362791",
+ "width": 32,
+ "height": 32,
+ "kind": "debris",
+ "name": "pile of broken concrete and brick rubble with rebar sticking out, lying on the ground",
+ "label": "wasteland_ruins/rubble-pile",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 46,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rebar rods sticking out of the top",
+      "rows": "9-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rubble mound (whole heap)",
+      "rows": "12-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The object is a single irregular dome-shaped heap. The silhouette widens steadily from 4 px at row 9 to 31 px at rows 25-29, then closes at rows 30-31. The pixels are a mottled mix of grey and brick-red chunks with no horizontal banding. The column scans at x=9, 16 and 24 show no front-edge line, no eave shadow and no ellipse width profile. The only dark run in the middle is a single dark chunk. The rebar at rows 9-13 is a small protruding detail and counts as decor. The heap has no separable top plane and front face, so it reads as a lumpy mound seen from the front rather than a three-quarter box or a flat top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The rubble pile has stones shaded one by one: concrete chunks in about 4-5 grey steps, reddish brick fragments, and rusty rebar tips. Dark edge pixels are only 4% near-neutral, so the outline is a tinted dark tone of the neighbouring material rather than a black sticker line. Near-flat coverage is 0%, with no 5x5 flat fills, and the broken, chipped silhouette carries variation. It shows 12 visible tones per tile, above the hedge (9) and a little below the cheese stall (17) and well (20). That is appropriate for a small prop with a 12-colour palette, so density is only slightly lower than the best references. It is a bit less textured than the roofed well, but a careful artist would accept it next to the hedge and stall without it looking like a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21526
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rebar rods sticking out of the top",
+      "rows": "9-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper slope of the rubble heap (lighter grey concrete chunks)",
+      "rows": "12-20",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face of the heap (darker stone, brick pieces, dark outline at the base)",
+      "rows": "21-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 8,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a mound that widens steadily from 4px at row 9 to 31px at rows 25-29, then narrows at rows 30-31. The upper slope (rows 12-20) is lighter grey, with highlights such as #a1a3ac at x=16 row 15 and #9496a1 at x=9 rows 19-20. It reads as a heap seen from above. Below it, rows 21-30 are darker, with brick-red chunks and a dark base outline, and read as the front face. There is no hard front-edge line or eave shadow, so the top evidence is only the heap form (d), which is weak. The rebar at rows 9-13 is decor sitting on the pile."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The rubble pile is a compact mound with grey stone and brick-red patches, plus small rebar spikes at the top. The measured facts are at or above the closer references: 12 visible tones per tile against 9 for the hedge, near-flat coverage 0%, and only 4% neutral dark edge pixels, so the outline is tinted rather than a black sticker line. By eye, the mound reads as a handful of mid-value grey and red clusters with weak highlights and limited per-stone shading. It looks somewhat smaller and flatter than the stall and well, which reach 17-20 tones per tile. The rebar is only a few pixels and thin. Material ramps of about 4-5 steps are close to the references but not quite as crisp or richly textured. Overall it is slightly lower in density and has no flat fills, but it is not at the Beodeul bar, so I'm failing it on the when-in-doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15870
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rubble mound (main body)",
+      "rows": "12-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rebar rods sticking out of the top",
+      "rows": "9-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The object is a low dome-shaped heap. Its silhouette widens steadily from row 9 (4 px) to rows 25-29 (31 px), then rounds off at rows 30-31. The columns show a mottled mix of grey, brick-red and dark pieces. There is no band that ends in a front-edge line and no eave shadow, and no ellipse or lid. The heap is not an open container, so evidence (d) does not apply. The upper rows 13-20 are only the sloping outline of the pile, with no separate horizontal surface. The lower rows 21-31 are the front of the pile, which has about 19 rows in total. It is an irregular heap, not a box with a distinct top and front, so it fits neither three_quarter nor a strict front elevation. Because it is scattered debris on the floor, I classify it as other."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 12 visible tones per 16x16 tile, against 9 for the hedge and 17-20 for the stall and well. That puts it at or above the hedge and near the busier props. Near-flat coverage is 0%, so there are no flat fills. Only 4% of its dark edge pixels are neutral, so the outline is tinted (dark brown-grey and rust beside the brick and rebar), not a sticker line. The rubble mass shows about 5 grey and brick steps with chunk-by-chunk facets, highlights and speckle, and the rust-brown rebar tips are shaded separately. This is about the same craft as the hedge and well. The ramps are slightly narrower than the 5-6 steps in the richest references, and the piece is small and simple, which I did not hold against it. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17774
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rubble heap upper slope",
+      "rows": "12-21",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rubble heap lower body",
+      "rows": "22-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rebar sticking out",
+      "rows": "9-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a low dome-shaped heap that widens steadily from 4 px at row 9 to 31 px at rows 25-29, then narrows at rows 30-31. The upper slope (rows 12-21) is lit rubble with pale grey and brick highlights, and it reads as a heap surface seen from above, as in (d). The lower body (rows 22-31) is darker with brick-red chunks and a dark outline at the base. No front-edge line or eave shadow is drawn, because the object is a loose heap and not a built block. The rebar at the top (rows 9-13) is a small protruding detail, counted as decor. The object is roughly 10 rows of top slope over about 10 rows of front body, so it reads as three-quarter, though weakly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small rubble mound, about one tile in size. It carries 12 visible tones per tile, between the hedge (9) and the stall (17) and well (20), with 0% near-flat coverage. Only 4% of its dark edge pixels are neutral, so the outline is tinted, a dark brownish-red version of the neighbouring stone and brick, not a black sticker line. By eye, the grey chunks are shaded one by one with light tops and dark undersides, and the reddish brick fragments add a second material ramp. The rebar tips on top are small but readable. There are no large flat fills. It is slightly simpler than the well or stall, but it does not look thinner or flatter than the hedge or bench references, so a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16119
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:07.086Z",
+ "cells": {
+  "16": [
+   "128d1ab5bd61ea78",
+   "1556466118d39345",
+   "b4e17442eef8a1a6",
+   "e9947089f203d8b1"
+  ],
+  "24": [
+   "11451899ea3679da",
+   "19de9db9d423649e",
+   "33b3a84088d9b4bb",
+   "49db60ddd6579464",
+   "5f5128090706a744",
+   "665b0a7bc4d86d3e",
+   "6d8308c9ab8be96e",
+   "6d8daf53c0e00000",
+   "7a98b0a04357bccb",
+   "868f7afd46c84871",
+   "98706924fdc6da6a",
+   "b0d44ce5e22a85f3",
+   "b1cc3945440916ba",
+   "bf23f7ea052b8d0c",
+   "d25ecc8317e50274",
+   "df421e7118af7989",
+   "e65a9384f4706e51",
+   "eb165ea71af5c6c7"
+  ],
+  "32": [
+   "69fcb798848f9ba1"
+  ],
+  "48": [
+   "061e36732d95d791",
+   "5c3309966a2452ee",
+   "80ec60a438124dcf",
+   "968e8dc017d6142f",
+   "cf4415f0f02fb6d9",
+   "e1c11959fef5e927"
+  ]
+ }
+}

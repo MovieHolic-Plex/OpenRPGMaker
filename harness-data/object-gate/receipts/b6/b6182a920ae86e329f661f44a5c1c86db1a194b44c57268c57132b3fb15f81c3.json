@@ -1,0 +1,346 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b6182a920ae86e329f661f44a5c1c86db1a194b44c57268c57132b3fb15f81c3",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "salvaged solar panel tilted on a scrap frame: cracked blue cell grid top surface facing the sky, metal edge and short legs",
+ "label": "wasteland_ruins/solar-scrap",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 48,
+  "nearBlackEdge": 0.02,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "solar panel cell grid (tilted top surface)",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-13"
+     },
+     {
+      "part": "metal frame edge and front apron",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "short legs",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-9 are a blue cell-grid plane, with cracks and a highlight, that widens from 26 to 32 px going down, so it reads as a tilted horizontal surface seen from above. It ends in a light front-edge line at row 10 (#8ca29d), followed by darker eave and apron rows 11-13 (L=94, then 50). Two short legs at rows 14-15 (width 8 total) hold it up. The front face (edge, apron and legs) is about 6 rows. The top is far larger than a 1-2 row rim, so this is three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are fine for a thin prop: 13 visible tones per tile (hedge 9, stall 17, well 20), 0% near-flat coverage, and 0% neutral dark edge pixels, so the outline is a tinted dark blue rather than a black sticker line. The weakness is ramp depth. The whole piece uses only 13 distinct colours, against 38-40 in the stall and well references. That spreads across the blue cells, the metal edge and the legs, so each material gets only about 3-4 steps against Beodeul's 5-6. At 2x the panel reads as a mostly uniform blue slab with a light top edge and a faint grid. It shows no per-cell highlights, no visible cracks, and little metal-edge or leg shading, and it looks more like a cushioned sofa than a frame with cells. It is not flat-filled, but it is thinner and less crafted than the stall and well references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17086
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "solar panel cell grid (tilted top plane)",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-13"
+     },
+     {
+      "part": "metal front edge and frame lip",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "short legs",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-9 are a 10-row blue cell grid, widening from 26 to 32 px, seen from above as a sloped plane. Row 10 is a light metal front-edge line (L=155) and row 11 is a darker shadow row (L=94). Rows 12-13 are a dark front apron (L=50), and rows 12-15 show short legs 8 px wide. That gives a front face of about 6 rows below the top plane. The top is far larger than a 1-2 row rim, so this is a three-quarter view and not a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has about 13 visible tones per tile, against 9 for the hedge and 17-20 for the stall and well. It has 0% near-flat coverage, so no large flat fills, and the cell grid, metal rim and highlights give it a ramp of roughly 5 blue steps. Its dark edge pixels are 0% neutral, so the outline is a dark blue tint of the neighbouring material rather than a black sticker line. It is a small, simple prop, but it is not thinner or flatter than the bench or hedge references. The cell grid and crack detail are somewhat sparse and the panel could be read as a cushioned blue bench at this size. That is a minor point and does not fail it on style.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17654
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tilted solar panel cell grid",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "metal front edge of frame",
+      "rows": "12-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "short legs",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The blue cell grid fills rows 0-9, a 10-row top plane. The silhouette widens from 26 to 32 px going down, as a tilted plane seen from the south would. Row 10 is a light front-edge line (#8ca29d) and row 11 is a darker shadow row. Below that, the dark metal edge (rows 12-13) and the two short legs (rows 14-15) form a front face of about 5 rows. The panel is the main body and shows a clear top surface, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 13 visible tones per 16x16 tile, against 9 for the hedge, 17 for the cheese stall and 20 for the well. Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, which means the outline is a dark blue tint of the neighbouring material rather than a black sticker line. By eye, the blue top shows about 5 steps (dark base, mid blue, lighter cells and a pale rim highlight) with cell-grid dots and cracks that break up the surface. I read the piece as somewhat soft, closer to a tufted blue cushion than a crisp cell grid, and the legs and metal edge are hard to make out at this scale. Those are drawing-clarity issues rather than style-craft failures, and on structure, outline, texture and density it sits within the range of the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16666
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tilted solar panel cell grid (main body)",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "metal front edge and shadow under the panel",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "short legs",
+      "rows": "13-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-9 are a tall blue cell-grid surface seen from above, with a darker grid and highlight cracks. It ends in a 1-row light front-edge line at row 10 (#8ca29d), followed by dark shadow and metal at rows 11-12. Below that, rows 11-15 form the front face: the metal edge and two short legs. The silhouette widens from 26 to 32 px down the top, which fits a tilted plane receding upward. The top surface is much taller than a rim, and there are more than 3 rows of front face, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are fine: 13 visible tones per tile (hedge 9, stall 17, well 20), 0% near-flat coverage, and 0% neutral dark edge pixels. That supports tinted dark-blue outlines rather than a sticker line, and no large flat fills. By eye the piece is weaker than the references. The body is a light-blue rim around a mid-blue field with a few dark blobs, so it carries only about 4 lightness steps against roughly 6 on the Beodeul pieces. The cracked cell grid is not legible as a grid, only as dark tufts. The metal frame has no separate ramp, and the legs barely register. The whole thing reads closer to a tufted blue cushion or sofa than a solar panel on a scrap frame. The dots look sparse and uniform rather than shaded one by one like the stall or well. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21917
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.769Z",
+ "cells": {
+  "16": [
+   "34214b74fd4c9f0c",
+   "fa31a1940058878a"
+  ],
+  "24": [
+   "06fc4caac923ca54",
+   "2b139fa44ac8b940",
+   "2b14aa8a91f2618d",
+   "3169d318dbcece26",
+   "318da9995b9f09e6",
+   "358d758730ed9de8",
+   "56c6e94b50697d71",
+   "5ce78c682f5dd6fb",
+   "5d78fbe646f9079c",
+   "5eff8c65c9534cf4",
+   "e4d2c840e60a26dc",
+   "ec6dce43212e85ad"
+  ],
+  "32": [
+   "1fbd97a957b7198e",
+   "66336a1db9c1ef27"
+  ],
+  "48": [
+   "28180dcd5bf3cb28",
+   "36b77f2f543e980d",
+   "393891ec14320992",
+   "3a4b636f60b55e93",
+   "b2bab58840b783cb",
+   "e66d2ee0f39b64fc"
+  ]
+ }
+}

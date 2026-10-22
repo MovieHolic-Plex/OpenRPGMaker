@@ -1,0 +1,366 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "190573f68e3054d580874ca3e9d8930aa37f61da1bbf6364ad903d4bbce52ad5",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "old rusty diesel generator box seen from above: vented top with fuel cap and exhaust pipe, front control panel with dials, cables on the ground",
+ "label": "wasteland_ruins/generator",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 맨 위의 큰 부분(12행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "맨 위의 큰 부분(12행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 33,
+  "nearBlackEdge": 0.36,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "vented top with fuel cap",
+      "rows": "5-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "exhaust pipe",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front control panel with dials",
+      "rows": "19-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body has a lighter green top plate in rows 5-17 with vent slots and a fuel cap. Row 18 is a dark front-edge line, and rows 19-20 are darker eave shadow. Below that, the front face (rows 19-31) holds the dials and control panel. The top is about 13 rows deep and the front face about 13 rows. The thin exhaust pipe (rows 0-10) is a minor vertical detail and does not change the reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate measures 16 visible tones per 16x16 tile. That is level with the stall (17) and just under the well (20), and well above the hedge (9). Near-flat coverage is only 4%, below the stall's 13%, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline leans toward the body's dark green-teal rather than black. This matches the hedge and stall references and avoids the sticker look. The body ramp shows about 4 steps across the top plate, vents, front panel and dials, slightly shallower than Beodeul's 5-6. Small details such as the vent slats, dials, cables and fuel cap add grain and variation. The piece is small and simple, but it carries about as much information per tile as the references and would sit acceptably next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15211
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "vented top panel of generator box",
+      "rows": "5-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "exhaust pipe and fuel cap on top",
+      "rows": "0-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front control panel with dials",
+      "rows": "19-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cables on ground",
+      "rows": "27-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main box has a large green vented top surface at rows 5-17 (13 rows). A dark front-edge line at row 18 is followed by eave shadow at rows 19-20. Below it a front face runs to row 31, about 13 rows, holding the control panel, dials and base. The top is a real horizontal surface, not a rim, and the front face is clearly separate. The exhaust pipe, fuel cap and ground cables are decor on top of or beside the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 16 visible tones per 16x16 tile, against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge. Only 4% of it is near-flat, so there are no large single-colour fills; the stall is at 13%. The measured neutral share of dark edge pixels is 0%, so the outlines carry a tint. By eye they look like dark green-brown beside the casing rather than a black sticker line. The box body shows about 4 steps, with a lit top, vents, dials, a fuel cap and cables adding grain and small detail. That is slightly shallower than the 5-6 steps on the best references, and the piece is small, but a careful artist could place it next to the stall and well without it looking flatter. I am judging this from the 2x board only, so fine detail is not fully visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15441
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "vented top of generator box",
+      "rows": "5-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "exhaust pipe (small vertical pipe at top right)",
+      "rows": "0-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front control panel with dials",
+      "rows": "19-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body has a vented top plane over rows 5-17, about 13 rows, with grille slots and a fuel cap. A dark front-edge line at row 18 and eave shadow at rows 19-20 mark its end. Below it is a front face with a control panel, dials and a yellow gauge over rows 19-28, with a base and cables over rows 29-31. The top is a clear surface, not a rim, so this is a 3/4 view. The exhaust pipe is a small vertical detail and not a major part."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate carries 16 visible tones per full tile against 17 for the cheese stall, 20 for the roofed well and 9 for the hedge, so it sits within the reference range. Near-flat coverage is 4%, below the stall's 13% and close to the other references, so there are no big flat fills. The dark edge pixels are 0% neutral, meaning the outlines lean toward the material tone, as on the hedge and stall, and are not a uniform black sticker line. The body, vents, panel with dials, pipe and ground cables are each separated by value, with vent slats and dial dots giving some texture. Total distinct colours (23) are lower than the stall and well (38-40), so each material ramp is probably about 4 steps against the references' 5-6. That makes it slightly less rich, but not shallow or sticker-like, and a careful artist would accept it next to the references. The dial and cable detail is hard to make out at this board size, which is why I rate the density as slightly lower and not equal.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "맨 위의 큰 부분(12행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "맨 위의 큰 부분(12행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19845
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "vented top with fuel cap",
+      "rows": "5-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "exhaust pipe",
+      "rows": "0-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front control panel with dials",
+      "rows": "21-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body has a green vented top at rows 5-17, about 13 rows tall and 28 wide. It ends in a dark front-edge line at row 18, followed by dark eave shadow at rows 19-20. Below that is a front face of about 13 rows (19-31) with the control panel, dials, a yellow gauge and the base at rows 29-31. The thin exhaust pipe (5 px wide, rows 0-11) is a small vertical detail and does not change the reading. The cables at rows 27-31 sit on the ground."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 16 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well, so tile density is close to the references. Near-flat coverage is 4%, below the stall's 13%, so there are no large flat fills. 0% of its dark edge pixels are neutral, so the outline leans dark green/brown and follows the material rather than being a black sticker line. By eye, the green housing, vent grille, dials and cables are separated by value and carry some speckle and grain. The body ramp looks like about 4 steps, a little shallower than Beodeul's 5-6. Only 23 distinct colours across several materials is somewhat thin, but the structure and tinted outlines hold up next to the stall and well. This is borderline but acceptable.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "맨 위의 큰 부분(12행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "맨 위의 큰 부분(12행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16936
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.733Z",
+ "cells": {
+  "16": [
+   "055f1b3625630e3f",
+   "a6124d775134a537",
+   "df53ba83e5f12f3f",
+   "e5212ddb52b014b4"
+  ],
+  "24": [
+   "0d4232b77ce56f9f",
+   "0ed4a40ec7387342",
+   "164f3088c43063c6",
+   "2172d1f61fa786b9",
+   "3870c55d654dd566",
+   "4b105f98850bba7e",
+   "4c23ad48ce5a8d15",
+   "530fcdf08dca1e8d",
+   "54e274a057c505ef",
+   "5a0e9188f0cb6876",
+   "64760a75c8714ab8",
+   "683827089938b1e9",
+   "69b8f29cf99280d8",
+   "6d121d2893270c45",
+   "7ee781f070054771",
+   "87d60a599e676567",
+   "89412df9f9122bba",
+   "9d688cf50c654c84",
+   "a6e4f9f818b2b403",
+   "ab4b177685528dff",
+   "bd658253946b63b2",
+   "c00c6f76b9fbc420",
+   "d1f4808ad88e1a05",
+   "f980758e04c19efc"
+  ],
+  "32": [
+   "bcc27af9d6578782"
+  ],
+  "48": [
+   "066b1e42d8584a47",
+   "3818280c9101dc23",
+   "585a1035c1aa5ef0",
+   "5965d4a803af1800",
+   "7463ac42c534f117",
+   "c115b2daf712d488"
+  ]
+ }
+}

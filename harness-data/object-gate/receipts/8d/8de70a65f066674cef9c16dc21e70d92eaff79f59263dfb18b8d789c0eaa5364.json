@@ -1,0 +1,333 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8de70a65f066674cef9c16dc21e70d92eaff79f59263dfb18b8d789c0eaa5364",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "east-west scrap fence section: two rails of folded corrugated sheet metal on a wooden post, rail tops seen from above, tiles into a line",
+ "label": "wasteland_ruins/fence-h",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper corrugated rail",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     },
+     {
+      "part": "lower corrugated rail",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-14"
+     },
+     {
+      "part": "wooden post top end",
+      "rows": "0-0",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each rail has a top band of 3 rows (rows 3-5 and 10-12). A light edge row opens the band, and the band ends in a rust front-edge line (rows 6 and 13) followed by a 1-row dark shadow (rows 7 and 14). The rail's own front face is only about 2 rows. The wooden post provides a vertical front face of rows 1-14 (width 5), and its top cap is a 1-row light end at row 0. The rails are horizontal beams that show top faces, so the frame rule is met, but the front face is thin. The 3-row top, edge line and shadow, together with the post's tall front, read as three-quarter, though only weakly."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, thin fence tile: two grey corrugated rails on a brown wooden post. The facts support it. It has 13 visible tones per 16x16 tile, above the hedge (9) and close to the stall (17) and well (20). Near-flat coverage is 0%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outlines lean toward the material (dark brown beside the post, dark grey-blue beside the metal) rather than being a black sticker line. By eye, the rails show a few lightness steps (highlight, mid, dark, deep) with corrugation ridges and the wood has grain. That is slightly fewer steps than the 5-6 on the references, but it reads as similar craft for such a thin prop and does not look flatter than the bench or the lamp. The candidate is small, so I judged mostly on the measured facts, and the image is too low-resolution to rule out some flatness within the rails.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19975
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper corrugated rail top",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     },
+     {
+      "part": "lower corrugated rail top",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-14"
+     },
+     {
+      "part": "wooden post top",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each 16px-wide rail has a light top row (3 or 10), then mid-tone rows of rail top, then a reddish front-edge line (row 6 or 13) and a 1-row dark shadow (row 7 or 14). That gives about 3 rows of top surface per rail. The rails' own front faces are thin, only 2 rows. The post (x=8) has a light top band at rows 0-3, a darker edge line at row 4, and a dark front face at rows 5-14, which is 10 rows. The post's top band is lighter and ends in an edge line. Both major parts show a top surface and a front face, so the object reads as three-quarter, not a flat slab or a pure front elevation. The 3-row rail top is thin but meets the edge-line evidence."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a single-tile thin prop: two corrugated metal rails with banded ridges on a wooden post. It measures 13 visible tones per 16x16 tile, above the hedge reference (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% near-neutral, so the outline is tinted: dark brown beside the wood and dark grey-blue beside the metal. That matches the Beodeul habit of using the adjacent material's dark tone, not a black sticker line. By eye, the rails show a highlight, mid, shadow and corrugation ridges, and the post has grain, giving about 4 steps per material against the references' 5-6. That is slightly shallower, but for a thin, sparse fence piece it sits acceptably next to the hedge and bench without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19995
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "east",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper rail (corrugated sheet)",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     },
+     {
+      "part": "lower rail (corrugated sheet)",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-14"
+     },
+     {
+      "part": "wooden post",
+      "rows": "0-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each rail is a 16px-wide horizontal part. Its top band (rows 3-5 for the upper rail, 10-12 for the lower) starts with a light highlight row (3 or 10) and ends in a reddish front-edge line (row 6 or 13). A 1-row dark shadow follows (row 7 or 14). That makes about 3 rows of top surface per rail. Below the edge line the rail has only the 1-row shadow, so the rails have almost no front face of their own. The vertical wooden post (x 5-9, rows 0-14) supplies the front face. It is a plain vertical strip with a 1-row lighter cap at row 0 and no top surface of its own. The three-quarter reading is borderline because the rails are thin and the post is the only tall front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small one-tile fence piece: grey corrugated rails over a brown wooden post. On the measured facts it holds up against the references. It has 13 visible tones per 16x16 tile, above the hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outline is tinted (dark brown beside the post, dark grey-blue beside the metal) rather than a near-black sticker line. By eye, the rails show several metal steps (highlight, light, mid, dark, deep) with corrugation ridges and a few grain dots on the post. It is simpler than the stall and well, but it is a thin prop of the same density class as the hedge and bench, and it does not look flatter or thinner than them. Texture is slightly less varied than the best references, so I rate it 'some' rather than 'rich'.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "맨 위의 큰 부분(15행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "맨 위의 큰 부분(15행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20790
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper corrugated rail",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7-7"
+     },
+     {
+      "part": "lower corrugated rail",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14-14"
+     },
+     {
+      "part": "wooden post top",
+      "rows": "0-0",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Each rail is a full-width 16px band. Its top is a light row (3 or 10) plus mid-tone rows (4-5 or 11-12), ending in a rust front-edge line (row 6 or 13) and a dark shadow row (7 or 14). This is evidence (a): a top band, a front-edge line, then eave shadow. The post is 5px wide, runs rows 0-14 and shows a south face, with a 1-row light highlight at row 0 only. The rails' top bands are 3 rows, so the reading is three-quarter, but it is borderline because the rails' own front faces are only 1-2 rows tall."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small piece, so I judged it mostly from the measured facts. It has 13 visible tones per tile, above prop-hedge (9) and close to the stall (17) and well (20). Near-flat coverage is 0%, so there are no 5x5 flat fills. None of its dark edge pixels are neutral (0%), so the outline leans toward the material tone (dark brown by the wood post, dark grey-blue by the metal) and is not a black sticker line. The corrugated metal rails read as a light top edge, a mid tone, a shadow groove and a dark base, about 4-5 steps. The wood post has a few steps of its own. Total distinct colours (13) are fewer than the larger references (38-40), which is expected for a thin fence section. The piece is slightly less rich than the best references, but a careful artist would accept it next to the hedge and bench without it looking flat.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20696
+  }
+ ],
+ "decidedAt": "2026-10-22T16:00:54.416Z",
+ "cells": {
+  "16": [
+   "ef8041338e7e4418"
+  ],
+  "24": [
+   "7e787d0a3cf77599",
+   "8ef848884bcf0437",
+   "9650cd762df6edaa",
+   "985db7275b0d242c",
+   "efe748691d8b6fa1",
+   "f511970b3a5f1982"
+  ],
+  "32": [
+   "00b7568cc2effdbd",
+   "275c3d550422ed79",
+   "3a36e446c6042236",
+   "780a188a002e4ba6",
+   "a8462f2b51325359",
+   "eb4c0f235d1a6ca6"
+  ],
+  "48": [
+   "2c070941454e2abd",
+   "60105620d87035c4",
+   "60402ed10b3edf6e",
+   "8dbfed8fa8e50b24",
+   "931e41b45f458df3",
+   "9ad1c337e3ba1550"
+  ]
+ }
+}

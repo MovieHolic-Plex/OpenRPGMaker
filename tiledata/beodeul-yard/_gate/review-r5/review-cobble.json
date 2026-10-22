@@ -1,0 +1,23 @@
+{
+  "surface": "cobble",
+  "image": "tiledata/beodeul-yard/_gate/yard_cobble.png",
+  "pixel_sha256": "51ea1092407da132c59065ff4e694bfdf950c32135c0decbde423fd0eee11adf",
+  "verdict": "fail",
+  "view34": "pass",
+  "autotile": "pass",
+  "quality": "fail",
+  "material": "pass",
+  "defects": [
+    "/home/main/.cache/yard/vqa-r5/cobble_body8x.png (1x crop 96..160,48..112): r4 lattice defect still present - small 2-4px pebbles sit in strict horizontal courses at a fixed ~5px pitch (8x rows y~40,90,130,170,215,255,300,345,385,425,465) and in aligned vertical columns, reading as a dot-matrix / bead grid rather than laid river cobble; the few added large stones (8x (50,50),(310,50),(70,180),(215,180),(180,305),(440,305)) float on this grid instead of displacing it.",
+    "/home/main/.cache/yard/vqa-r5/cobble_body8x.png: body is 59% (h) / 50% (v) pixel-identical at a 16px shift vs 17-18% at 4/8px (r4: 63/56) - essentially unchanged cell-copy repetition; at yard_cobble-4x.png x 340-690, y 200-470 the same large tan stone recurs on a visible 64px column grid (e.g. 4x x~155, 415, 545 on rows y~150, 280, 410)."
+  ],
+  "evidence": "Flat 3/4 plane lit upper-left; kerb rim with 2px south face, outer/inner corners, hole, neck and isolated cell are seamless (cobble_south8x.png, cobble_hole8x.png). Warm/grey stones in dark earth read as a cobble yard distinct from the Beodeul grey sett road. But the r4 failure is not fixed: the small-stone layer is still a rigid course/column lattice and the 16px self-similarity barely moved, so at 4x the cell grid and dot-matrix rhythm dominate; it does not reach the organic irregularity of the Beodeul ground tiles.",
+  "crops": [
+    "/home/main/.cache/yard/vqa-r5/cobble_full8x.png",
+    "/home/main/.cache/yard/vqa-r5/cobble_body8x.png",
+    "/home/main/.cache/yard/vqa-r5/cobble_south8x.png",
+    "/home/main/.cache/yard/vqa-r5/cobble_hole8x.png",
+    "/home/main/.cache/yard/vqa-r5/cobble_iso8x.png"
+  ],
+  "reviewer": "claude-opus independent adversarial review 2026-10-23 r5"
+}

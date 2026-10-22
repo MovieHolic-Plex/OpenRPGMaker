@@ -19,23 +19,23 @@ interface QuarterDef {
    * 마당을 새로 낸다 — 빽빽한 완성 마을(조선 마을 20호)에는 좌판 덩이가 들어갈 빈 땅이 없다(r2 시험: 좌판 7개가 큰길·관아 옆에 흩어졌다).
    * 큰길에 맞닿은 w×h 풀밭(나무·덤불만 있는 곳)을 골라 나무를 통째로 걷고 마당 흙을 깐 뒤 좌판을 두 줄로 세운다. 집·담·소품·길·물은 건드리지 않는다.
    */
-  readonly plaza?: { readonly w: number; readonly h: number; readonly ground: readonly number[]; readonly grass: readonly number[]; readonly soft: readonly string[]; /** 길로 치는 바닥 tileMeta tags[2](또는 tags[1])(밭·논은 길이 아니다) */ readonly roads?: readonly string[] };
+  readonly plaza?: { readonly w: number; readonly h: number; readonly ground: readonly number[]; readonly grass: readonly number[]; readonly soft: readonly string[]; /** 풀밭 위 걷어도 되는 칸 번호(버들항 자연 이식 칸 — 꽃·풀 무늬·나무, tileMeta 태그 없음) */ readonly softTiles?: readonly number[]; /** 길로 치는 바닥 tileMeta tags[2](또는 tags[1])(밭·논은 길이 아니다) */ readonly roads?: readonly string[] };
   /**
    * 버들항 쓰임 마당(2026-10-22 village-art, ART_GAPS beodeul-quarter-yard): 쓰임 조각을 풀밭에 흩지 않고 «마당 바닥» 위에 모은다.
    * 큰길가 풀밭(나무만 있는 곳)을 w×h 로 개간해 마당 오토타일(8방, 가장자리·안쪽 모서리)을 깔고, 길까지 같은 바닥으로 샛길을 낸 뒤 그 안에 조각을 세운다.
    * 마당 그룹이 시트에 없으면(옛 번들) 예전처럼 마당 없이 앉힌다.
    */
-  readonly yard?: { readonly group: string; readonly w: number; readonly h: number };
+  readonly yard?: { /** 조각을 마당 가운데가 아니라 북서 귀부터 채운다(큰 조각 여럿이 한 마당에 들어가야 할 때) */ readonly pack?: "corner"; /** 마당 밖 풀밭에 두는 조각(밭 이랑·과수처럼 땅에 심는 것) */ readonly outside?: readonly string[]; readonly group: string; readonly w: number; readonly h: number };
 }
 
 /** 버들항 마당 바닥: 풀밭 칸(tags[1] grass)·걷어 낼 위층(tree)·길(road·plaza·sand). */
-const BEODEUL_YARD_SOFT = ["tree", "bush", "sapling", "tuft"] as const;
+const BEODEUL_YARD_SOFT = ["tree", "bush", "sapling", "tuft", "decal"] as const;
 const BEODEUL_YARD_ROADS = ["road", "plaza", "sand", "walk", "bridge"] as const;
 
 export const VILLAGE_QUARTERS: Record<string, QuarterDef> = {
   "joseon-market": { tilesetId: "joseon_baram", ko: "조선 장터 좌판", plaza: { w: 13, h: 9, ground: [4, 5], grass: [0, 1, 2, 3], soft: ["tree", "bush", "sapling", "tuft"], roads: ["road16", "yard16", "yard"] }, pieces: ["jb-market_stall", "jb-market_stall_cloth", "jb-market_stall_pots", "jb-market_stall", "jb-market_stall_cloth", "jb-market_stall_pots", "jb-market_stall", "jb-market_stall_pots"] },
   mining: { tilesetId: "beodeul_city", ko: "광산 갱구 마당", yard: { group: "beodeul_yard_dirt", w: 20, h: 12 }, pieces: ["bd-pick-mining-valley-adit", "bd-pick-mining-valley-headframe", "bd-pick-mining-valley-smelt", "bd-pick-mining-valley-slagheap", "bd-pick-mining-valley-cart-h", "bd-pick-mining-valley-ore", "bd-pick-mining-valley-pile", "bd-pick-mining-valley-kiln", "bd-pick-mining-valley-lamp", "bd-pick-mining-valley-crates", "bd-pick-mining-valley-slagrock", "bd-pick-mining-valley-barrel"] },
-  vineyard: { tilesetId: "beodeul_city", ko: "포도원", yard: { group: "beodeul_yard_dirt", w: 20, h: 12 }, pieces: ["bd-pick-vineyard-winery", "bd-pick-vineyard-vine-field", "bd-pick-vineyard-vine-field", "bd-pick-vineyard-wine-press", "bd-pick-vineyard-pergola", "bd-pick-vineyard-cask-rack", "bd-pick-vineyard-barrels-standing", "bd-pick-vineyard-grape-baskets", "bd-pick-vineyard-olive-a", "bd-pick-vineyard-olive-b", "bd-pick-vineyard-olive-c"] },
+  vineyard: { tilesetId: "beodeul_city", ko: "포도원", yard: { group: "beodeul_yard_dirt", w: 22, h: 13, pack: "corner", outside: ["bd-pick-vineyard-olive-a", "bd-pick-vineyard-olive-b", "bd-pick-vineyard-olive-c"] }, pieces: ["bd-pick-vineyard-winery", "bd-pick-vineyard-vine-field", "bd-pick-vineyard-vine-field", "bd-pick-vineyard-wine-press", "bd-pick-vineyard-pergola", "bd-pick-vineyard-cask-rack", "bd-pick-vineyard-barrels-standing", "bd-pick-vineyard-grape-baskets", "bd-pick-vineyard-olive-a", "bd-pick-vineyard-olive-b", "bd-pick-vineyard-olive-c"] },
   "temple-ruins": { tilesetId: "beodeul_city", ko: "신전 폐허", yard: { group: "beodeul_yard_flag", w: 16, h: 11 }, pieces: ["bd-pick-temple-ruins-roof-naiskos-pediment", "bd-pick-temple-ruins-roof-hip-shrine", "bd-pick-temple-ruins-column-temple-tall", "bd-pick-temple-ruins-column-temple-tall", "bd-pick-temple-ruins-column-temple", "bd-pick-temple-ruins-column-temple-broken", "bd-pick-temple-ruins-fallen-column-temple", "bd-pick-temple-ruins-ruined-wall-2", "bd-pick-temple-ruins-ruined-wall-2", "bd-pick-temple-ruins-cypress-ruin", "bd-pick-temple-ruins-cypress-ruin", "bd-pick-temple-ruins-rubble-temple", "bd-pick-temple-ruins-rubble-temple"] },
   // 북방 바이킹: 눈 마을(compose_snow_north_map village)에 북방 표지(룬석·방패 무기 걸이·오로라 깃발, 자리가 나면 통널 교회)를 광장 둘레에 한 덩이로. 장옥(7×5)은 작곡기가 빈 눈밭을 마당 덩이로 채워 들어갈 자리가 없다 — r2 적대 검수 «바이킹 표지가 없어 그냥 눈 마을» 수정.
   viking: { tilesetId: "snow_north", ko: "바이킹 표지(룬석·방패 걸이·오로라 깃발)", pieces: ["sn-rune-stone", "sn-weapon-rack", "sn-banner-aurora", "sn-rune-stone", "sn-weapon-rack", "sn-banner-aurora-b", "sn-cairn", "sn-rune-stone", "sn-weapon-rack", "sn-stave-church"] },
@@ -159,6 +159,16 @@ function nearestSlot(grid: Uint8Array, walk: Uint8Array, taken: Uint8Array, W: n
   return null;
 }
 
+/** 마당 안을 북서 귀부터 읽는 순서로 훑어 첫 자리(skip 번째). 큰 조각 여럿이 한 마당에 빽빽이 들어가게. */
+function packSlot(grid: Uint8Array, walk: Uint8Array, taken: Uint8Array, W: number, H: number, w: number, h: number, box: Box, skip = 0): Box | null {
+  let n = 0;
+  for (let y = box.y; y + h <= box.y + box.h; y++) for (let x = box.x; x + w <= box.x + box.w; x++) {
+    const b = { x, y, w, h };
+    if (boxFits(grid, walk, taken, W, H, b)) { if (n === skip) return b; n++; }
+  }
+  return null;
+}
+
 function kitSize(project: Project, tilesetId: string, kitId: string): { w: number; h: number } | null {
   const kit = project.tilesets[tilesetId]?.structureKits?.find((k) => k.id === kitId);
   return kit ? { w: kit.width, h: kit.height } : null;
@@ -185,14 +195,17 @@ function openPlaza(draft: Project, map: GameMap, plaza: NonNullable<QuarterDef["
   // 숲 속 나무는 서로 겹쳐 «겹침 칸»으로 이어져 한 그루씩 떼기 어렵다 — 마당과 그 둘레 2칸(RING)의 위층(나무·덤불·겹침)을 통째로 걷는다.
   // 둘레에 집·담·소품(built·prop·wall)이 하나라도 있으면 그 자리는 고르지 않는다(남의 그림을 반쪽 내지 않는다).
   const RING = 1;
-  const softOrOverlap = (t: number) => { const k = kind(t) ?? ""; return soft.has(k) || k === "overlap"; };
+  // 버들항 장소 조각(tags = [버들항, 버들항 장소, tree|decal|…])은 종류가 세 번째 칸에 있다 — 두 칸 다 본다.
+  const softTiles = new Set(plaza.softTiles ?? []);
+  const softOrOverlap = (t: number) => { if (softTiles.has(t)) return true; const k = kind(t) ?? "", k2 = (t >= 0 ? meta[t]?.tags?.[2] : undefined) ?? ""; return soft.has(k) || soft.has(k2) || k === "overlap"; };
+  const freeOverlay = (t: number | undefined) => (t ?? -1) < 0 || softTiles.has(t!);
   let best: { box: Box; score: number; clear: number[] } | null = null;
   for (let y = 1; y + plaza.h < H - 1; y++) for (let x = 1; x + plaza.w < W - 1; x++) {
     let ok = true;
     for (let yy = y; yy < y + plaza.h && ok; yy++) for (let xx = x; xx < x + plaza.w && ok; xx++) {
       const i = yy * W + xx;
       ok = grass.has(map.lowerTiles[i]!) && !eventAt.has(i) && (upper(i) < 0 || softOrOverlap(upper(i)))
-        && (map.lowerOverlayTiles?.[i] ?? -1) < 0 && (map.upperOverlayTiles?.[i] ?? -1) < 0;
+        && freeOverlay(map.lowerOverlayTiles?.[i]) && freeOverlay(map.upperOverlayTiles?.[i]);
     }
     if (!ok) continue;
     const clear: number[] = [];
@@ -216,14 +229,23 @@ function openPlaza(draft: Project, map: GameMap, plaza: NonNullable<QuarterDef["
   // 둘레 바깥으로 걸친 나무 끝(반쪽 나무)을 2칸까지 더 걷는다.
   const cleared = new Set(best.clear);
   let frontier = [...cleared];
-  for (let step = 0; step < 1; step++) {
+  const nb4 = (i: number): number[] => { const x = i % W, y = Math.floor(i / W); const o: number[] = [];
+    if (x > 0) o.push(i - 1); if (x < W - 1) o.push(i + 1); if (y > 0) o.push(i - W); if (y < H - 1) o.push(i + W); return o; };
+  if (softTiles.size) {
+    // 마당(자연 이식 칸을 아는 경우): 걷은 칸에 붙은 나무·덤불 덩이를 통째로 걷는다(반쪽 나무 금지). 덩이가 숲(24칸 넘음)이면 3걸음까지만.
+    for (const seed of [...cleared]) for (const n0 of nb4(seed)) {
+      if (cleared.has(n0) || upper(n0) < 0 || !softOrOverlap(upper(n0))) continue;
+      const comp = [n0], seen = new Set([n0]);
+      for (let q = 0; q < comp.length && comp.length <= 24; q++) for (const n of nb4(comp[q]!)) {
+        if (seen.has(n) || cleared.has(n) || upper(n) < 0 || !softOrOverlap(upper(n))) continue; seen.add(n); comp.push(n);
+      }
+      if (comp.length <= 24) for (const c of comp) cleared.add(c);
+      else { let f = [n0]; cleared.add(n0); for (let st = 1; st < 3; st++) { const nx: number[] = []; for (const c of f) for (const n of nb4(c)) if (!cleared.has(n) && upper(n) >= 0 && softOrOverlap(upper(n))) { cleared.add(n); nx.push(n); } f = nx; } }
+    }
+  } else for (let step = 0; step < 1; step++) {
     const next: number[] = [];
     for (const i of frontier) {
-      const x = i % W, y = Math.floor(i / W);
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
-        const nx = x + dx, ny = y + dy;
-        if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
-        const ni = ny * W + nx;
+      for (const ni of nb4(i)) {
         if (cleared.has(ni) || upper(ni) < 0 || !softOrOverlap(upper(ni))) continue;
         cleared.add(ni); next.push(ni);
       }
@@ -231,12 +253,23 @@ function openPlaza(draft: Project, map: GameMap, plaza: NonNullable<QuarterDef["
     frontier = next;
   }
   for (const i of cleared) map.upperTiles[i] = -1;
+  // 마당 칸과 걷은 나무 칸(과 그 바로 아래 그림자 칸)의 자연 덧칠(꽃·풀 무늬·나무 그림자)도 걷는다 — 유령 그림자가 남지 않게.
+  if (softTiles.size) {
+    const wipe = (i: number) => {
+      if (map.lowerOverlayTiles && softTiles.has(map.lowerOverlayTiles[i]!)) map.lowerOverlayTiles[i] = -1;
+      if (map.upperOverlayTiles && softTiles.has(map.upperOverlayTiles[i]!)) map.upperOverlayTiles[i] = -1;
+    };
+    for (let yy = best.box.y; yy < best.box.y + best.box.h; yy++) for (let xx = best.box.x; xx < best.box.x + best.box.w; xx++) wipe(yy * W + xx);
+    // 걷은 칸 둘레 한 칸까지: 남은 나무가 위·옆에 없는 칸의 자연 덧칠(그림자 조각)은 지운다.
+    const natureUpperNear = (i: number) => [i - W, i - 1, i + 1, i - W - 1, i - W + 1].some((j) => j >= 0 && j < W * H && Math.abs((j % W) - (i % W)) <= 1 && upper(j) >= 0 && softTiles.has(upper(j)));
+    for (const i of cleared) { wipe(i); for (const j of [i + W, i - 1, i + 1, i + W - 1, i + W + 1]) if (j >= 0 && j < W * H && Math.abs((j % W) - (i % W)) <= 1 && upper(j) < 0 && !natureUpperNear(j) && map.lowerOverlayTiles && softTiles.has(map.lowerOverlayTiles[j]!)) map.lowerOverlayTiles[j] = -1; }
+  }
   // 마당 테두리 어디서든 가장 가까운 길·흙 칸까지 흙길을 낸다(BFS, 나무 없는 풀밭만 지난다 — 나무를 반쪽 내지 않는다) — 외딴 마당이 아니라 길가 장터로.
   // r3 실측: 가운데 네 방향 직선만 보던 이전 판은 밭·숲을 돌아가야 하는 마당에서 길을 못 냈다.
   const b = best.box;
   const inBox = (x: number, y: number) => x >= b.x && x < b.x + b.w && y >= b.y && y < b.y + b.h;
   const walkable = (i: number) => grass.has(map.lowerTiles[i]!) && upper(i) < 0 && !eventAt.has(i)
-    && (map.lowerOverlayTiles?.[i] ?? -1) < 0 && (map.upperOverlayTiles?.[i] ?? -1) < 0;
+    && freeOverlay(map.lowerOverlayTiles?.[i]) && freeOverlay(map.upperOverlayTiles?.[i]);
   const prev = new Map<number, number>();
   let queue: number[] = [];
   let touching = false;
@@ -267,10 +300,26 @@ function openPlaza(draft: Project, map: GameMap, plaza: NonNullable<QuarterDef["
     queue = next;
   }
   const lane = laneCells.length ? { cells: laneCells } : null;
-  for (const i of lane?.cells ?? []) { map.lowerTiles[i] = plaza.ground[i % plaza.ground.length]!; map.upperTiles[i] = -1; }
+  // 마당 샛길은 두 칸 폭(한 칸 띠는 양쪽 연석만 남아 장난감 같다) — 걸을 수 있는 옆 칸을 하나 더 붙인다.
+  if (lane && softTiles.size) {
+    const extra: number[] = [];
+    for (const i of lane.cells) { const x = i % W; const vertical = lane.cells.includes(i - W) || lane.cells.includes(i + W);
+      const ni = vertical ? (x + 1 < W ? i + 1 : -1) : i + W; if (ni >= 0 && ni < W * H && !lane.cells.includes(ni) && walkable(ni)) extra.push(ni); }
+    lane.cells.push(...extra);
+  }
+  for (const i of lane?.cells ?? []) {
+    map.lowerTiles[i] = plaza.ground[i % plaza.ground.length]!; map.upperTiles[i] = -1;
+    if (map.lowerOverlayTiles && softTiles.has(map.lowerOverlayTiles[i]!)) map.lowerOverlayTiles[i] = -1;
+    if (map.upperOverlayTiles && softTiles.has(map.upperOverlayTiles[i]!)) map.upperOverlayTiles[i] = -1;
+  }
+  const origLower = map.lowerTiles.slice();
   let k = 0;
   for (let yy = best.box.y; yy < best.box.y + best.box.h; yy++) for (let xx = best.box.x; xx < best.box.x + best.box.w; xx++) {
     map.lowerTiles[yy * W + xx] = plaza.ground[(k++ * 7 + yy) % plaza.ground.length]!;
+  }
+  // 마당 네 귀를 한 칸씩 풀밭으로 되돌려 각진 상자 대신 귀가 둥근 마당으로(오토타일이 안쪽 모서리를 맞춘다).
+  if (softTiles.size) for (const [cx, cy] of [[b.x, b.y], [b.x + b.w - 1, b.y], [b.x, b.y + b.h - 1], [b.x + b.w - 1, b.y + b.h - 1]] as const) {
+    const i = cy * W + cx; map.lowerTiles[i] = origLower[i]!;
   }
   return best.box;
 }
@@ -279,7 +328,7 @@ type YardGroup = { id: string; memberTileIds: number[]; connectTileIds?: number[
 
 /** 버들항 마당 그룹과 그 맵에서 개간할 땅(plaza 정의). 그룹이 없으면 null. */
 function yardPlaza(draft: Project, map: GameMap, yard: NonNullable<QuarterDef["yard"]>): { plaza: NonNullable<QuarterDef["plaza"]>; group: YardGroup } | null {
-  const ts = draft.tilesets[map.tilesetId] as unknown as { autotileGroups?: YardGroup[]; tileMeta?: readonly TileMetaRow[] };
+  const ts = draft.tilesets[map.tilesetId] as unknown as { autotileGroups?: YardGroup[]; tileMeta?: readonly TileMetaRow[]; tileGrafts?: readonly { targetTile: number; sourceChipset: string }[] };
   const group = ts.autotileGroups?.find((g) => g.id === yard.group);
   if (!group) return null;
   const meta = ts.tileMeta ?? [];
@@ -288,7 +337,9 @@ function yardPlaza(draft: Project, map: GameMap, yard: NonNullable<QuarterDef["y
   const body = group.variantMap["255"];
   const ground = [...new Set([...(group.interiorVariants?.flat() ?? []), ...(body !== undefined ? [body] : [])])];
   if (!grass.size || !ground.length) return null;
-  return { group, plaza: { w: yard.w, h: yard.h, ground, grass: [...grass], soft: BEODEUL_YARD_SOFT, roads: BEODEUL_YARD_ROADS } };
+  // 버들항 자연 시트에서 이식한 칸(나무·꽃·풀 무늬)은 tileMeta 태그가 비어 있다 — 출처 시트로 «걷어도 되는 칸»을 가린다.
+  const softTiles = (ts.tileGrafts ?? []).filter((g) => g.sourceChipset === "tex_beodeul_nature").map((g) => g.targetTile);
+  return { group, plaza: { w: yard.w, h: yard.h, ground, grass: [...grass], soft: BEODEUL_YARD_SOFT, softTiles, roads: BEODEUL_YARD_ROADS } };
 }
 
 /** 마당 칸(그룹 멤버)을 8방 이웃으로 다시 맞춘다 — 가장자리·바깥 모서리·안쪽 모서리. 꽉 찬 칸은 속 변형을 해시로 섞는다. */
@@ -332,7 +383,7 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
         ?? openPlaza(draft, map, { ...p, w: p.w - 6, h: p.h - 3 }, opts.near ?? null);
       if (!plazaBox) throw new ToolError(`「${quarter.ko}」 마당(${p.w}×${p.h}, 길에 맞닿은 풀밭·나무 자리)을 낼 곳이 없다 — 마을을 더 크게(width·height) 짓거나 near 를 준다.`, { code: "no-quarter-slot", mapId: map.id });
       shapeYard(map, yardGroup);
-      opts = { ...opts, near: { x: plazaBox.x + Math.floor(plazaBox.w / 2), y: plazaBox.y + Math.floor(plazaBox.h / 2) } };
+      opts = { ...opts, near: quarter.yard.pack === "corner" ? { x: plazaBox.x + 1, y: plazaBox.y } : { x: plazaBox.x + Math.floor(plazaBox.w / 2), y: plazaBox.y + Math.floor(plazaBox.h / 2) } };
     }
   }
   if (quarter.plaza) {
@@ -347,6 +398,8 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
   const { ok: grid, walk } = buildGrids(draft, map, comp.cells);
   // 마당이 있으면 좌판은 마당 안에만(마당 바깥 줄은 통로로 남긴다).
   const ok = plazaBox ? grid.map((v, i) => { const x = i % W, y = Math.floor(i / W); return v && x > plazaBox!.x && x < plazaBox!.x + plazaBox!.w - 1 && y >= plazaBox!.y && y < plazaBox!.y + plazaBox!.h - 1 ? 1 : 0; }) : grid;
+  // 마당 밖 조각(밭·과수)은 마당 바닥을 피한 풀밭 격자에.
+  const outsideOk = plazaBox ? grid.map((v, i) => { const x = i % W, y = Math.floor(i / W); return v && !(x >= plazaBox!.x - 1 && x <= plazaBox!.x + plazaBox!.w && y >= plazaBox!.y - 1 && y <= plazaBox!.y + plazaBox!.h) ? 1 : 0; }) : grid;
   const pieces = quarter.pieces.slice(0, Math.max(2, Math.min(quarter.pieces.length, opts.count ?? quarter.pieces.length)))
     .map((id) => ({ id, size: kitSize(draft, quarter.tilesetId, id) }))
     .filter((p): p is { id: string; size: { w: number; h: number } } => !!p.size);
@@ -378,14 +431,17 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
   let rejected = 0;
   for (const piece of pieces) {
     for (let attempt = 0; attempt < 6; attempt++) {
-      const b = nearestSlot(ok, walk, taken, W, H, piece.size.w, piece.size.h, anchor.x, anchor.y, attempt);
+      const outside = quarter.yard?.outside?.includes(piece.id) ?? false;
+      const b = !outside && plazaBox && quarter.yard?.pack === "corner"
+        ? packSlot(ok, walk, taken, W, H, piece.size.w, piece.size.h, plazaBox, attempt)
+        : nearestSlot(outside ? outsideOk : ok, walk, taken, W, H, piece.size.w, piece.size.h, anchor.x, anchor.y, attempt);
       if (!b) break;
       const objectId = `kit:${quarter.tilesetId}/${piece.id}`;
       const snapshot = structuredClone(draft.maps[map.id]!);
       const startBefore = draft.startPos ? { ...draft.startPos } : undefined;
       try {
         stampTool.run(draft, { objectId, mapId: map.id, x: b.x, y: b.y });
-      } catch {
+      } catch (e) { if (process.env.VQ_DEBUG) console.error("stamp-reject", piece.id, b, String((e as Error)?.message ?? e).slice(0, 200));
         rejected++;
         draft.maps[map.id] = snapshot;
         continue;

@@ -1,0 +1,406 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b130375e7d628d4a9e3f99dbd5fc449313d122f0cecda85c12fa1af29244db0a",
+ "width": 64,
+ "height": 96,
+ "kind": "structure",
+ "name": "tall ruined multi-storey concrete facade remnant: top of the remaining walls and broken upper floor slabs seen from above, tall front face with rows of empty windows",
+ "label": "wasteland_ruins/husk-tall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 24,
+  "darkV5": 35,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 24
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of remaining walls and broken upper floor slabs (brown rubble interior with concrete rim walls)",
+      "rows": "0-37",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "38-39"
+     },
+     {
+      "part": "intermediate floor slab ledges on the facade",
+      "rows": "56-58",
+      "evidence": "none",
+      "front_edge_line_row": 56,
+      "eave_shadow_rows": "58-59"
+     },
+     {
+      "part": "lower floor slab ledge",
+      "rows": "76-78",
+      "evidence": "none",
+      "front_edge_line_row": 76,
+      "eave_shadow_rows": "78-79"
+     },
+     {
+      "part": "ivy climbing the facade",
+      "rows": "40-95",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 36,
+    "front_face_rows": 58,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-36 show a large horizontal top region seen from above: brown rubble floor inside light grey concrete wall rims, with broken slab pieces at rows 12-16 and 18-23. A light front-edge line at row 37 (L=189) closes it, and the vertical facade below runs from row 38 to 95 (about 58 rows). The facade has rows of empty windows, with floor-slab bands at rows 56-58 and 76-78, a doorway at the bottom, and ivy. The top surface is tall and clearly foreshortened, so the building reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 18 visible tones per tile against 12 and 10 for the references. Near-flat coverage is 5%, so there are no big flat fills. 0% of its dark edge pixels are neutral, so the outlines carry a tint. By eye, the dark edges are tinted browns and grey-greens rather than a uniform black line. The concrete wall has about 5 grey steps, with stains, cracks, speckle and grain. Window voids hold debris and interior shading, and green vine clumps add more tones. The broken slabs at the top show rubble and rebar detail. Structure is slightly less layered than the tile roofs of the references, but the candidate does not look thinner or more sticker-like next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14637
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of remaining walls, broken floor slabs and rubble interior seen from above",
+      "rows": "0-36",
+      "evidence": "d",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "38-39"
+     },
+     {
+      "part": "ledges and slab edges across the upper storeys (rows 56-58 and 76-78)",
+      "rows": "56-58",
+      "evidence": "a",
+      "front_edge_line_row": 56,
+      "eave_shadow_rows": "58-59"
+     },
+     {
+      "part": "vines",
+      "rows": "44-95",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "window and door openings with front face",
+      "rows": "38-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 37,
+    "front_face_rows": 58,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-36 show a large horizontal area seen from above. It holds wall tops, broken slabs with a light edge and a brown rubble/dirt interior with debris (evidence d). Row 37 is a light front-edge line (#bcbdc3) followed by darker rows. Below it the front face runs rows 38-95 with rows of windows, a door and floor-slab ledges at rows 56-58 and 76-78. The top surface is far more than a rim, and the front face is well over 3 rows tall."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate has 18 visible tones per 16x16 tile against 12 and 10 for the references. Near-flat coverage is 5%, which is low and close to the references' 0%. Dark edge pixels are 0% neutral, so the outlines carry a tint and read as the dark tone of the neighbouring material (grey-brown concrete, rust, moss) rather than a black sticker line. By eye, the concrete has about 5 steps (light highlights, mid grey, shadow, stains, cracks), with crumbled slab edges, rubble, rust and vines on the facade. The window rows are filled with varied debris and interior detail instead of flat black. The texture is comparable to the reference tile and rubble work. It is slightly less stepped than the tile roofs on the references, but a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12459
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of remaining walls and broken upper floor slabs (rubble/floor interior with concrete ledges)",
+      "rows": "0-37",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "38-39"
+     },
+     {
+      "part": "front facade with window rows and floor-slab bands",
+      "rows": "38-95",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ivy climbing the facade",
+      "rows": "48-95",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 37,
+    "front_face_rows": 58,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-36 show a large top region seen from above. It has a concrete rim with slab ledges and a brown rubble or floor interior with broken slab pieces at rows 12-16 and 18-23. Row 37 (L=189, light) is a clear front-edge line, followed by darker wall rows at 38-39. Below it the tall south face runs from row 38 to 95, with rows of windows and thin slab bands at rows 56-58 and 76-78. The ivy is drawn as decor over the face. The top surface and the 58-row front face together read as a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building (upper slab and walls, then a facade with window rows and a door), so it matches the reference kind. Measured facts favour it: 18 visible tones per tile against 12 and 10 for the references, 5% near-flat coverage (references 0%, so only marginally flatter), and 0% neutral dark edge pixels, so the outlines are tinted rather than black. By eye, the concrete has several grey steps with speckle, cracks and stains. The broken top floor carries rubble, wood and debris in varied tones. The windows have dark interiors with lighter frames, and the ivy is drawn in several greens. Edges are separated mostly by value and by tinted dark tones, not by a uniform black line. The ramps are a little less layered than the reference tile roofs (about 5 steps against 6), but it would sit acceptably beside the references without looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14294
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top of the remaining walls and broken upper floor slabs, with rubble and dirt visible inside the open top",
+      "rows": "0-37",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "38-39"
+     },
+     {
+      "part": "intermediate floor slab ledge, light edge with shadow below",
+      "rows": "56-59",
+      "evidence": "a",
+      "front_edge_line_row": 56,
+      "eave_shadow_rows": "58-59"
+     },
+     {
+      "part": "lower floor slab ledge, light edge with shadow below",
+      "rows": "76-79",
+      "evidence": "a",
+      "front_edge_line_row": 76,
+      "eave_shadow_rows": "78-79"
+     },
+     {
+      "part": "ivy climbing the facade and a plant on the rubble",
+      "rows": "26-95",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 37,
+    "front_face_rows": 58,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-37 show a large top surface seen from above. It has concrete wall-top rims around an interior of brown rubble and floor slab fragments. Its front edge is a light line at row 37 (L=189 in the column scan), followed by darker shadow. Below it, rows 38-95 are a tall front face with rows of empty windows and floor-slab ledges at rows 56-59 and 76-79, each with a light edge and shadow. The thin dark strip on the right is a drainpipe, not a receding side face. Ivy and plants are decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "Measured facts: candidate has 18 visible tones per 16x16 tile against 12 and 10 for the references. Near-flat coverage is 5% against 0%, which is a small share and not a problem. Dark edge pixels are 0% neutral, so the outlines carry a tint. By eye, the concrete walls show about 5 grey steps, with cracks, stains, rubble, exposed rebar and vines on the broken floor slabs. The windows are shaded individually and not as flat blocks. The outlines are tinted dark tones next to the concrete and not a uniform black sticker line. It is a tall building face rather than a tiled roof, but the shading craft is comparable to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13884
+  }
+ ],
+ "decidedAt": "2026-10-22T16:00:54.407Z",
+ "cells": {
+  "16": [
+   "0178cc73b34fa835",
+   "0642c0d07dc254e1",
+   "0e61c895db0045b3",
+   "0f2e951a79eaa02a",
+   "140e87a379b0f5bb",
+   "15951743b7e5a94d",
+   "2b45bca9c6bb4ebe",
+   "2ca2cd3833cff9bc",
+   "320ee9dd22065898",
+   "34fae39e6c00b894",
+   "3d11c89eaddee1b5",
+   "471752c955350d81",
+   "4a9957aa03512b62",
+   "51993729a93e07a3",
+   "64952a5a35e4f7df",
+   "6de91c6ef5606fd4",
+   "74e8f03d063d0b2a",
+   "79a558f47cc839d4",
+   "8617ba05e649d963",
+   "a8e58a2b97eb0f91",
+   "beee88ade048955b",
+   "e50658723f4f3e44",
+   "f2ea02ffb00fa50f",
+   "f8b78c15d24874bc"
+  ],
+  "24": [
+   "006c0b1848c470bd",
+   "0b44ee440fe985c7",
+   "0ecc4d56abd5c938",
+   "188df65c4a62999e",
+   "1c794f9666dc3151",
+   "1f1eacb914866876",
+   "20a0c416d3a753a5",
+   "3aee7dfde26e25e0",
+   "497e4497f4be7084",
+   "4a7ed3e67c25e81e",
+   "5756237fac78adf5",
+   "5b8df2bb74b454c9",
+   "60b27d7ed83a6d2a",
+   "622a3b022fa32027",
+   "63a231f16e364ff2",
+   "67bf794abeef7b9e",
+   "6efbdc24e00e1506",
+   "84cd589edda10e2c",
+   "864454281de61234",
+   "925989f6ceeb560d",
+   "9c4f89b927f04e94",
+   "9fb0fd9e2cf674ec",
+   "a4e348d796a46d93",
+   "a9299efb3497c7be",
+   "aa36939ecc91273a",
+   "adf12b0dc123774a",
+   "af55b49fb57edf31",
+   "b81e6af63a7c1102",
+   "bb142217dda3f3c3",
+   "c25c54dfa073c7bd",
+   "c93e754e49ac71f1",
+   "cc9fbb42be5b787a",
+   "db9294faaacbabc2",
+   "e4175bde66ae11e9",
+   "effb56bb2ee1bc7f",
+   "f09e4050f0f26bd3"
+  ],
+  "32": [
+   "187ba26cac4e6e9a",
+   "302397bdd7d631c5",
+   "8b433f9d92910242",
+   "c00d542953a900c1",
+   "e6afaf3bfedee5f5",
+   "e705e9c4eb7b5bba"
+  ],
+  "48": [
+   "178fe28aeef38b84",
+   "2aa301f60a430b09",
+   "542956c8c1b2565a",
+   "6c95ced19b7dcd5d",
+   "8ac64327591ac721",
+   "8f03e753b0398ea3",
+   "a2e353602e9f7267",
+   "a86025d3d062b3e3",
+   "bc12d29e22364504",
+   "dedecc8307539ea6",
+   "e16e94a5dfd49b5c",
+   "f1023cb7d4866a0f"
+  ]
+ }
+}

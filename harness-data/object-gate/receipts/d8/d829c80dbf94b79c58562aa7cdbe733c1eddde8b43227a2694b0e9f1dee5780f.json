@@ -1,0 +1,403 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d829c80dbf94b79c58562aa7cdbe733c1eddde8b43227a2694b0e9f1dee5780f",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "rusty cylindrical water tank on a stilt frame seen from above: elliptical top lid with hatch, banded tank body, braced legs and a ladder",
+ "label": "wasteland_ruins/water-tank",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 12,
+  "darkV5": 45,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tank elliptical lid with hatch",
+      "rows": "2-12",
+      "evidence": "b",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "banded tank body",
+      "rows": "13-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "horizontal frame beam / platform",
+      "rows": "27-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "braced stilt legs",
+      "rows": "30-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ladder",
+      "rows": "7-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile grows from 11 at row 2 to 30 at row 12, so the lid is an ellipse. It is lighter blue-grey (L about 132-155) and has a hatch. A light front-edge line sits at row 12 (#8ca29d), followed by the rusty banded tank face below (rows 13-25). The legs and cross braces give a front face about 34 rows tall. The ladder is a vertical strip on the right. The lid is clearly a top surface, so this reads as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small prop-like structure beside two large, tile-scalloped houses, so it is simpler. It still meets the primary facts. It has 11 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage like both references, and 0% neutral dark edge pixels, so the outline is a tinted dark brown/rust rather than a black sticker line. The tank body shows banding, a lit-to-shadowed gradient and a shaded lid ellipse, and the wooden legs and ladder are separated by value. The ramps are shorter than Beodeul's (about 4 steps per material against 5-6), and there is little grain beyond the bands, so density is slightly lower. It would not look like a flat sticker next to the references, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18942
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tank elliptical lid with hatch",
+      "rows": "2-12",
+      "evidence": "b",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hatch on lid",
+      "rows": "7-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "banded tank body front face",
+      "rows": "13-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "platform beam under tank",
+      "rows": "26-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "braced stilt legs",
+      "rows": "30-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ladder on right side",
+      "rows": "8-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile widens from 11 at row 2 to 30 at row 12, giving an ellipse lid about 11 rows tall. The light front rim line at row 12 (#8ca29d) marks its front edge. Below it the banded tank face runs rows 13-25, followed by the platform beam at rows 26-29 and the braced legs down to row 46. That is a top surface plus a front face of well over 3 rows. The platform beam is drawn as a front strip with no top, but it is a thin part and not the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The facts are fine: 11 visible tones per tile against 12 and 10 in the references, 0% near-flat coverage, and 0% neutral dark edge pixels. The outlines lean brown and rust beside the tank and wood, so they are tinted rather than sticker-black. By eye, though, the whole piece uses only 13 colours, against 66 and 185 in the references. That leaves about 3-4 steps per material, where the references carry 5-6. The tank body is mostly banded flats with a simple side highlight. The legs and ladder are thin 2-tone strokes. The lid ellipse has little tile-by-tile or grain variation, so it looks thinner and simpler than the references' scalloped roofs and speckled plaster. It has no flat fills, but the ramps are shallow, and when in doubt this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15249
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "elliptical lid of tank with hatch",
+      "rows": "2-12",
+      "evidence": "b",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "hatch on lid",
+      "rows": "6-9",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "banded tank body (front face)",
+      "rows": "13-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "platform/support beam under tank",
+      "rows": "26-29",
+      "evidence": "none",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "29"
+     },
+     {
+      "part": "braced legs",
+      "rows": "30-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 34,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tank has an ellipse lid: the width profile goes 11, 19, 23, 25, 27, 29 on rows 2-7 and reaches 30 at row 12. Rows 2-12 are a lighter blue-grey, and a light front-edge line sits at row 12 (#8ca29d at x=9, x=17 and x=24). Dark shadow follows at rows 13-14. Below that the banded rust-brown tank body runs through row 25, then a platform beam at rows 26-29 and braced legs down to row 46, giving a front face of well over 3 rows. The platform beam is drawn as a front strip with a light edge row at 27, and the lower legs are open supports. The tank lid is the main top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small stilt-tank prop, so it is not a full roof, wall and door building, but the style bar still applies. It measures 11 visible tones per 16x16 tile against 12 and 10 for the references. Near-flat coverage is 0%, the same as both references, so there are no flat fills. Dark edge pixels are 0% neutral, so the outline is tinted: dark rust-brown beside the body and dark grey-teal beside the lid, not a uniform black sticker line. The rust body shows vertical highlights and band lines. The lid is shaded with a lighter rim and hatch. The legs and braces are separated by value. Each material ramp has only about 4 steps against 5-6 in the references, and total distinct colours are far fewer (13 versus 66-185). That reads as a tight locked palette rather than a shallow flat fill, and per-tile information is on par with the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 25986
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tank elliptical lid with hatch",
+      "rows": "2-12",
+      "evidence": "b",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-13"
+     },
+     {
+      "part": "banded tank body (front face)",
+      "rows": "13-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "horizontal platform/beam under tank",
+      "rows": "27-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stilt legs with braces",
+      "rows": "30-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ladder on east side",
+      "rows": "5-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 14,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tank lid is an ellipse from row 2 (width 11) widening through 19, 23, 25, 27 to 29-30 by rows 7-12, so the top surface spans about rows 2-12. A light front-edge line at row 12 (L=155) is followed by the banded rust-coloured tank face at rows 13-26, which has dark band lines. Below it a platform beam (rows 27-29) sits on braced stilt legs (rows 30-46). The lid ellipse is large and the front face is well over 3 rows, so the main body has both a top surface and a front face. The crossbeam is a front-facing strip, but it is secondary to the tank."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small stilt-mounted tank, not a roof-and-wall house, but it is a whole structure, so the kind comparison is acceptable. The measured facts put it level with the references: 11 visible tones per tile against 12 and 10, 0% near-flat coverage, and 0% neutral dark edge pixels. The outline reads as a dark rust-brown tint beside the tank and as dark wood beside the legs, so it is not a black sticker line. The tank body shows about 4 steps (highlight on the lid, light and mid rust, dark underside) plus banding and speckle, which is fewer than Beodeul's 5-6 per material. The total of 13 raw colours is tight but still gives enough visible variation, so there are no flat fills. The thin legs and ladder limit density slightly, but a careful artist would accept the piece next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19004
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.644Z",
+ "cells": {
+  "16": [
+   "2a2e6a003b5cd395",
+   "43563513328c17c5",
+   "a74d2ea819305615",
+   "b244ab7932d14491",
+   "d0c899a3d56c0d9e",
+   "f1271d377ad519b3"
+  ],
+  "24": [
+   "192e43b3e6d10ee4",
+   "31129125f3218cb4",
+   "3f4fd077d0433776",
+   "4aa1aafe08162ed0",
+   "5a60fccb09f61b59",
+   "5c8574d33c91b2f9",
+   "84f83f9b0b26ec28",
+   "8ae2f01d52e4d400",
+   "a8a26a1afb7e25f6",
+   "b517b6029c333f07",
+   "d7a07756d338b8a2",
+   "ea0c88613e52bd9b"
+  ],
+  "32": [
+   "41b6eff4cce2de9e",
+   "9609deadbb90cdbd",
+   "b6553dbf6481a181",
+   "ef7e934b67303a97"
+  ],
+  "48": [
+   "9ab8f47b89abe74a",
+   "9af8e23747f510f5",
+   "db231d6052d80286"
+  ]
+ }
+}

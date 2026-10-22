@@ -1,0 +1,299 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fad6f244ce0c6ceb1f979383815f283f397aec8ab9ce4e17ae3b341861b3aea9",
+ "width": 64,
+ "height": 48,
+ "kind": "flat",
+ "name": "scattered broken bricks and mortar lumps lying on a patch of red brick dust on the ground",
+ "label": "wasteland_ruins/rubble-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 19,
+  "darkV5": 64,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brick dust patch ground decal (full tile, brown/grey speckled)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "three small broken brick/mortar clusters (top right, mid right, bottom left)",
+      "rows": "0-15, 17-31, 33-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a uniform 64px-wide full tile for all 48 rows. The main body is a flat speckled ground patch of brick dust seen from above, with no front face, eave line or ellipse. The small brick lumps are scattered debris on the ground with dark outlines and some face shading, but they are only small details on a flat decal. Column scans show only repeating texture bands, not a front face. This is a flat ground decal, which matches the kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 8 visible tones per tile, against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 0%, the same as both references, so the dust ground carries speckle and grain with no flat 5x5 areas. Only 7% of its dark edge pixels are neutral, so the outlines lean dark red-brown beside the bricks, matching the Beodeul practice of using the adjacent material's dark tone rather than a black sticker line. The brick lumps have about 4-5 steps (highlight, light, mid, dark, deep) and the dust ground has about 4. That is slightly shallower than the 5-6 steps in the references, but not shallow. The lumps are small and sparse, and the ground texture is a little noisy rather than clumped. Even so, a careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12606
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brick dust patch ground decal (full 64x48 area)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "broken brick clusters lying on the dust",
+      "rows": "2-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 64-wide rectangle for all 48 rows, a flat dusty ground patch seen from above with speckled texture. Small brick-rubble clusters (rows ~2-15, ~17-31, ~33-47) sit on it. They are drawn as small chunky lumps with dark outlines and no distinct front face or eave line. There is no vertical south face, so this is a flat top-down decal, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The ground carries speckled grain in several close dusty tones, with no flat areas (0% near-flat coverage). It has 8 visible tones per tile against 3 for the grass reference and 7 for the paving reference. The brick lumps have a dark red-brown edge and a lighter top face with small highlights, and only 7% of their dark edge pixels are neutral, so this is not a sticker-style black outline. The weaker points are that the brick clusters are few and small, and the total palette is only 20 colours. Even so, the ground speckle and tinted outlines put it level with the references on structure and shading craft, and a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11244
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground patch of brick dust, a full 64x48 area of rubble texture",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "three small broken brick clusters sitting on the dust patch (top right, right middle, bottom left)",
+      "rows": "0-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 64x48 sprite is a flat ground decal: a dusty brown and grey speckled patch filling the entire canvas, with a few small brick-rubble clumps scattered on it. The column scans show only horizontal texture bands with no front-edge line, eave shadow or vertical front face. The silhouette is a uniform 64 px wide in every row, so there is no standing volume. This is a flat floor decal seen from above, matching the kind 'flat'. It has no front face, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a reddish-brown dust ground with speckled grain and small brick clusters. It measures 8 visible tones per tile, against 3 for the grass reference and 7 for the paving reference, with 0% near-flat coverage. The dark edge pixels are only 7% neutral, so the outlines lean brown/red-brown and follow the adjacent material rather than forming a black sticker line. The speckled dust has no large flat areas. The brick lumps have about 4 shading steps (light top, mid, dark red-brown, shadow), a bit fewer than the 5-6 in the references, but they carry per-lump highlights and shadows. The patch is at or above the references on density and texture, with tinted outlines, so a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 9642
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "ground patch of brick dust (full 64x48 area)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "broken brick piles (three clusters) on the dust",
+      "rows": "1-15, 17-31, 33-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a constant 64 px wide across all 48 rows, so it is a flat rectangular ground decal. The main body is a speckled dust patch seen from above, with no front-edge line, no eave shadow and no vertical front face. The three brick-and-rubble clusters are small ornaments lying on it and are not structure. The kind is flat, so the drawing matches it and reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 8 visible tones per tile, against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 0%, the same as both references. The dusty ground is speckled with grain in several brownish-red steps, with no large flat areas. The brick lumps are small clusters with a highlight, mid, dark and deep step, and their edges lean dark red-brown, not black. Only 7% of dark edge pixels are neutral, against 80% for the paving reference, so the outline reads as a tinted material tone. Compared with the references, the candidate is a little sparser and its bricks are small. The ground texture is more uniform than the grass tufts or the stone-by-stone paving, which is why texture is 'some' and not 'rich'. It is still at or above the references on the primary facts, with no sticker look, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11322
+  }
+ ],
+ "decidedAt": "2026-10-22T16:02:21.164Z",
+ "cells": {
+  "16": [
+   "8af32604e23dafa2",
+   "c414088776e8da4c",
+   "d5aa26669a2a611c",
+   "f2c49a7df40a903e"
+  ],
+  "24": [
+   "056d054cfee072b5",
+   "3164397d1a084408",
+   "397abed1cf27fd73",
+   "3d6c8de7e65d6310",
+   "44458b6d1d9e6a6f",
+   "6a9ad70fd5941d86",
+   "6fd1f92606706510",
+   "a688d0e83086b3f4",
+   "b8c72d34ab10bd09",
+   "c0868c04bd8b2add",
+   "cce2acacd2bf4668",
+   "df8074063b5ace6e",
+   "e05470d3411480a4",
+   "ec42b33e7b43d6e0",
+   "f31dd7153a76d924",
+   "f3dc0a037d5277a4",
+   "fdeacbf5b75b9a97",
+   "fe834e371f530c61"
+  ],
+  "32": [
+   "04ca93fc8d562f1f",
+   "2ade67cd92611070",
+   "4b2c2509a7c05452",
+   "4c212fb23e0390ad",
+   "680f1057e0f180b8",
+   "7f704d175e0d3b7b",
+   "9e4142f124660d1f",
+   "bc73f42afbe1c0a3"
+  ],
+  "48": [
+   "05bd3807166c89a5",
+   "8f07a02e56b97946",
+   "9e2d1deec23554f2",
+   "a81790ab27158525",
+   "a87c5dacce7ada7b",
+   "caf246a5769497b9"
+  ]
+ }
+}

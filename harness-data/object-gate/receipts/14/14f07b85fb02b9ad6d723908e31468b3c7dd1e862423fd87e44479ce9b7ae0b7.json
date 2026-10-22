@@ -1,0 +1,397 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "14f07b85fb02b9ad6d723908e31468b3c7dd1e862423fd87e44479ce9b7ae0b7",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "tarp lean-to shelter: sloped tarp roof seen from above held by poles, open front with dark inside, bedroll and crate",
+ "label": "wasteland_ruins/lean-to",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 13,
+  "darkV5": 32,
+  "nearBlackEdge": 0.72,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sloped tarp roof",
+      "rows": "1-17",
+      "evidence": "c",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-19"
+     },
+     {
+      "part": "side support poles",
+      "rows": "17-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bedroll inside",
+      "rows": "25-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate inside",
+      "rows": "22-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 17,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tarp roof fills rows 1-17 as a large sloped plane with fold lines and seams. It ends in a light front-edge line at row 18, with a darker band at rows 15-17 above it and a dark row at 19 below it. Below that is a dark open front (rows 19-31) between the two poles, about 13 rows tall, with a bedroll and a crate inside. The roof is the top surface and the open front is the face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny teal tarp roof with only about 3 lightness steps. It has a lighter top edge and a slightly darker lower band, and the rest is a smooth sheet with no per-tile scallops, grain or speckle. The measured near-flat coverage is 35%, against 0% for both references, so large areas are flat fills. The outline is a dark teal tone with no neutral black (0% near-neutral edge pixels), which is fine. The 10 visible tones per tile match the references' 10-12, but they come from a tiny object whose interior is mostly one flat colour. The dark inside, bedroll and crate are simple blocks with 1-2 tones and no texture. Beside the richly textured tile roofs, plaster and stone of the references, it looks flatter and more sticker-like, and I am not confident a careful artist would accept it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 14734
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sloped tarp roof",
+      "rows": "1-18",
+      "evidence": "c",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-19"
+     },
+     {
+      "part": "side poles",
+      "rows": "17-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bedroll",
+      "rows": "25-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate",
+      "rows": "22-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-17 are a large tarp roof plane (teal, with fold lines and a darker lower band) seen from above. Row 18 is a light front-edge line (#a1b2ae) and row 19 is a dark eave shadow. Below, rows 20-31 are the open dark front with two side poles. This is a 12-row front face, with a bedroll and crate inside as decor. The roof shows a top slope and the front face is 3+ rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny lean-to, much smaller than the reference houses, and it reads as a flat teal tarp slab. The roof has about 3 teal steps (light edge, mid, dark) with no scallops, per-tile highlights, folds or grain. The measured near-flat coverage is 35% against 0% for both references, so large areas are flat fills. Its 10 visible tones per tile match the reference on paper, but that figure is inflated by the small footprint and the tile mix of roof edge, dark interior and crate. By eye the surfaces carry far less texture and variation than the references. The outline is a dark teal/brown tint (0% neutral edge pixels), so it is not near-black. The bedroll and crate are small, simple blocks with 2-3 tones each. The poles barely register. Overall it looks flatter and more sticker-like than the Beodeul tile roofs, which carry dozens of shaded tiles, plaster speckle and stone shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 14835
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tarp roof (sloped, seen from above, with fold lines and patches)",
+      "rows": "1-17",
+      "evidence": "c",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "support poles left and right",
+      "rows": "18-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bedroll inside the shelter",
+      "rows": "25-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate inside the shelter (lighter top band at rows 22-23)",
+      "rows": "22-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 17,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tarp roof is a large sloped plane covering rows 1-17. It ends in a light front-edge line at row 18 (#a1b2ae) with a dark eave shadow at row 19. Below it, rows 20-31 show the open dark front interior between two wooden poles, with a crate and bedroll inside. The roof is clearly the top surface and the open front is the front face (12 rows), so the view reads as 3/4."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small teal tarp roof with a dark open front, a bedroll and a crate. The tarp reads as only about 3 steps (a light edge, a mid teal and a dark teal) with no per-tile scallops, grain or clustering. The references carry about 6 steps per material with tile-by-tile highlights, plaster speckle and individually shaded stones. The measured facts back this up. Near-flat coverage is 35% against 0% for both references, and the candidate has only 20 distinct colours against 185 and 66. Its 10 visible tones per tile match the 10 to 12 of the references, but they sit mostly in the small dark interior and the props rather than across the roof, so the large tarp surface is still a flat fill. The outline is tinted (0% near-neutral edge pixels), a dark teal or brown that follows the adjacent material, which is good. Overall the piece looks flatter and thinner than the references and a careful artist would not accept it beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13475
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sloped tarp roof",
+      "rows": "2-17",
+      "evidence": "c",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-19"
+     },
+     {
+      "part": "support poles left and right",
+      "rows": "18-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bedroll",
+      "rows": "25-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crate",
+      "rows": "22-29",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tarp roof fills rows 2-17 as a large sloped plane with fold seams and darker lower rows 15-17. A light front-edge line sits at row 18, with a dark eave shadow at row 19. Below it, rows 19-31 form an open dark front interior, flanked by wooden poles, containing a bedroll and a crate. The roof plane is far taller than a rim, and the front face is 13 rows, so this is a top surface plus a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny, simple lean-to. Its tarp roof is mostly flat teal, with only a lighter top edge and a slightly darker lower band, so about 3 steps against the references' 5-6 on tile roofs. There is no per-tile scallop, speckle or grain. Near-flat coverage is 35% against 0% for both references, which points to flat fills on the tarp and the dark interior. The outline is a dark teal/brown tint (0% near-neutral), so it is not a sticker line, and that is a point in its favour. Visible tones per tile (10) are close to the references (10-12). However, the candidate is small, so much of that count comes from the few tiles that hold the crate and bedroll. By eye the large tarp surface is clearly flatter and less textured than the shaded roof tiles and the stone and plaster walls of the references. It would look thinner and flatter next to them, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 14752
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.380Z",
+ "cells": {
+  "16": [
+   "2e32cafbb2fed8b8",
+   "34422783e196c617",
+   "44afeb210380933e",
+   "5d35ddd4f5521760",
+   "95423077a766c4a4",
+   "f54d8a21ed05f823"
+  ],
+  "24": [
+   "12a2ff0d63f5f95b",
+   "1c46a1ee7f405efb",
+   "2366f40ff090bfc7",
+   "48ed05140f180b57",
+   "4e30eb19d67ef41b",
+   "61f28edb3004852b",
+   "6742f46dfeb56267",
+   "db48f98cb16b8615"
+  ],
+  "32": [
+   "1b5149249d0ebdfd",
+   "288f04fc98ca3c78",
+   "63cf5990def1159c",
+   "7743fd381bfa44b3",
+   "d3af60bfdfe2f45c",
+   "ebcbaa35fc9a8e61"
+  ],
+  "48": [
+   "8e701d813378193d",
+   "aaf979bace1648c1"
+  ]
+ }
+}

@@ -1,0 +1,315 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8ac1033f9c909f2dbcfeb864fd122151bce3760a923577784725ca12f882e08e",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "freestanding collapsed concrete wall segment running east-west, top of the wall seen from above, broken stepped ends with rebar, front face below",
+ "label": "wasteland_ruins/wall-h",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 14,
+  "darkV5": 37,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top (broken concrete cap)",
+      "rows": "6-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "wall front face with brick patch and dark opening",
+      "rows": "13-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rebar at stepped ends",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette narrows from 28 px wide at row 5 to 46 px at row 12. Rows 6-11 form a lighter gray top band, and row 12 (L=189) is a bright front-edge line. Rows 13-14 are darker, which reads as eave shadow. Below that, rows 13-31 (19 rows) are a vertical front face with a brick patch, a dark opening and cracks. The top is wide and clearly separate from the face, so this is not a rim-only front elevation. The rebar at the ends is a small detail and does not affect the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small prop, about 35x20 source px, so I judged it mostly on the measured facts plus what is visible. Visible tones per tile are 12, equal to house-h101_0 (12) and above house-h112_0-stone (10). Near-flat coverage is 3% against 0% for both references, which is negligible. Only 1% of its dark edge pixels are neutral, so the outlines carry a tint and are not a near-black sticker line. The concrete top and front face show several grey steps (about 5), with speckle and crack variation. The stepped broken ends, the green and red-brown rebar and stain accents, and the dark opening add structure beyond a flat body with an outline. Fine detail is hard to read at this size, and the ramps are slightly shallower than the references' roof tiles and stonework. It would still sit acceptably next to the references without looking flatter or thinner than a prop of this size should.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16461
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top (broken concrete cap, stepped ends)",
+      "rows": "6-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "rebar sticking up at both ends",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face of wall with opening and brick patch",
+      "rows": "13-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 28 px at row 5 to 46 px at row 12, which gives a trapezoid top band of lighter gray concrete (L about 150-160) over rows 6-11. It ends in a bright 1-row front-edge line at row 12 (L=189, #bcbdc3). Row 13 is darker (L=98) and acts as eave shadow. Below that, the south face runs from row 13 to row 31 (19 rows, full width 48). It holds a dark opening at rows 17-21, a brick patch at rows 20-24 and a moss strip. The top band is a horizontal surface seen from above, so the object reads as three-quarter view, not an elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small grey concrete wall seen at the same scale as the references. It reads as a top surface plus a front face, with a dark opening and rebar accents in red and green. Measured facts are close to the references: 12 visible tones per tile against 12 and 10, 3% near-flat coverage against 0%, and only 1% neutral dark edge pixels, so the outlines lean toward the material tone rather than a black sticker line. The concrete ramp has about 5 steps with chipped and speckled variation, a little shallower than the roughly 6 steps on the roof tiles and stone, and its 17 total colours are far below the references' 66 and 185. That follows from the locked palette and the plain material, and the visible tone count compensates. No large flat fills appear. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16261
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top (broken stepped crown)",
+      "rows": "6-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "rebar at broken ends",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wall has a light grey top band at rows 6-11 (L about 150-160) that narrows to the stepped broken ends (silhouette width 28 to 46). It ends in a bright 1-row front-edge line at row 12 (L=189), followed by darker shadow at rows 13-14 (L=98). Below it, a front face runs rows 13-31, about 19 rows, with a dark hole at rows 17-21 and a brick patch at rows 20-24. No receding side face is drawn. The rebar at the ends is a small detail."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, low concrete wall about 40x18 source pixels, so it is far smaller than the houses, but the per-tile facts hold up. It shows 12 visible tones per tile against 12 and 10 for the references, and only 3% near-flat coverage against 0% for both. Only 1% of its dark edge pixels are neutral, so the outline leans toward a tinted tone rather than a near-black sticker line. By eye, the lighter top face, mid-grey front face, darker broken stepped ends and opening, and the rebar accents give about 4 grey steps with speckle and chips. That is a little below the roofs' 5-6 steps, but this is a plain concrete prop, not a tiled roof. Raw distinct colours are low (17 against 66 and 185), but the visible tones match the references, so this is not shallow. A careful artist would accept it next to the references without it looking flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14642
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top (concrete cap)",
+      "rows": "6-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "broken ends with rebar",
+      "rows": "8-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top silhouette narrows from 28 to 46 px over rows 5-12. Rows 6-11 form a light grey top band, and row 12 (L=189) is a bright front-edge line. Row 13 is darker (L=98) and acts as eave shadow. Below it, rows 13-31 form a 19-row front face, with a dark hole at rows 17-21, a brick patch at rows 20-24 and vines on the left. The rebar at the stepped ends is part of the wall and has no top of its own. The wall reads as a three-quarter view with a visible top and front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small grey concrete wall prop beside two full houses, so it is simpler by nature. It still matches the references on the primary facts: 12 visible tones per tile against 12 (h101) and 10 (h112 stone), and near-flat coverage of 3% against 0%. Only 1% of its dark edge pixels are neutral, so the outlines lean tinted (grey-brown or green-grey) and are not a black sticker line. By eye, the concrete top and front face show speckle, cracks, a dark broken opening and tinted rebar accents, so the surface is not a flat fill. Its concrete ramp has about 4-5 steps against roughly 6 on the tile roofs and stone, which is a little shallower but acceptable for a plain material. It would sit next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15409
+  }
+ ],
+ "decidedAt": "2026-10-22T15:35:18.376Z",
+ "cells": {
+  "16": [
+   "3f41fe0e2cecf31b",
+   "466aa83c42966598",
+   "616a5ff5167d5653",
+   "8a2c6b25c2bde0b1",
+   "9cce5653f4bb2c9b",
+   "e4e968ae3932d162"
+  ],
+  "24": [
+   "01a34ad337334ca2",
+   "0621a0c1968c2be7",
+   "1e48e002894a2c7b",
+   "29ca9ad71eebd898",
+   "2b4859f2e0967e74",
+   "2ec973ee33856d30",
+   "501d1d2d6139bdfe",
+   "6dfd7c396f31ffa4"
+  ],
+  "32": [
+   "1bf9678587a5a851",
+   "404daf95f8115f08",
+   "67466a7b143f0595",
+   "9089835d392dc9b4",
+   "95e8ff27a53bdda2",
+   "fb6c8f085ffabd11"
+  ],
+  "48": [
+   "276f40b2edb16833",
+   "a1d7fe4e19bd2b98"
+  ]
+ }
+}

@@ -1,0 +1,375 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1a2ea491d31781fc3881f45da68ef62709aaaf81499abd0afe17c5888a1f1acc",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "east-west scrap corrugated-metal fence section on a wooden post: top edge of the sheets seen from above, short sheet front, tiles into a line",
+ "label": "wasteland_ruins/fence-h",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 윗면 2행 < 3 (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "윗면 2행 < 3 (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 36,
+  "nearBlackEdge": 0.16,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "corrugated sheet top edge band",
+      "rows": "3-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-9"
+     },
+     {
+      "part": "wooden post with lit cap",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": "3-4"
+     },
+     {
+      "part": "rust corrugated sheet front",
+      "rows": "6-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base strip",
+      "rows": "13-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The sheets (full width 16, rows 3-15) start with a gray-blue top-edge band in rows 3-5. Row 4 is a light line (#8ca29d) and row 5 a mid tone (#738a90). Under it, row 6 and the dark rows 7-9 at x=8 act as eave shadow. Below that is a rust corrugated front face with a dark base in rows 13-15, so the front face is about 10 rows (6-15). The top band is a thin 3-row surface with a front-edge line and shadow, not just an outline. The post (width 7, rows 0-2) has a light tan top at rows 0-1 and a lit/shaded step at rows 2-3. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small single-tile fence section. It shows a wooden post and corrugated sheets with a top-edge ridge and a short front face. It carries 17 visible tones per 16x16 tile, level with the stall (17) and the well (20) and well above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% neutral, so the outline leans brown/rust toward the neighbouring material instead of being a black sticker line. The metal ramp reads as about 4 steps (highlight, light, mid, dark) with rust and grain speckle, one step short of the references' 5-6. The scrap-metal texture is varied and the post is shaded separately from the sheets. The piece is as dense as the references and does not look thinner or flatter beside them. A slightly shallower ramp is not enough to fail it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18195
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "corrugated sheet top edge band",
+      "rows": "4-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "sheet front face (rust corrugation)",
+      "rows": "6-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden post",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sheet has a 1-row dark outline at row 3, then a light row 4 and a mid-tone row 5 in blue-grey. Row 6 is slightly darker, with no clear front-edge line. This is a 2-row rim-like strip, not a real top surface. Rows 6-12 are the rust corrugated front face, and rows 13-15 are a dark base. The post (rows 0-15) is drawn as a vertical strip with only a thin tan cap at rows 0-1. The whole piece reads as a flat front elevation with at most a rim at the top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a single 16x16 tile and reads small at this scale, so I leaned on the measured facts. It has 17 visible tones in the tile, equal to the stall (17) and close to the well (20), and above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outlines lean toward the neighbouring material (dark brown at the post, dark rust at the sheets) rather than the sticker look. The post and the corrugated sheet show about 4 steps each with rib and rust variation, slightly fewer than the 5-6 on the references, but not shallow. As a thin, sparse fence prop it looks no flatter or more sticker-like than the bench or lamp references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19742
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "corrugated sheet top edge",
+      "rows": "4-5",
+      "evidence": "none",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rust sheet front face",
+      "rows": "6-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden post",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base strip",
+      "rows": "13-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sheet run has only a thin 2-row top strip at rows 4-5: a light line at row 4, then a slightly darker row 5. That is a rim-sized band with no ellipse, no sloped plane and no eave shadow, so it is not a real top surface. Rows 6-12 are the flat rust sheet face, and rows 13-15 are a dark base. The wooden post (x 11-13) is a vertical strip that runs the full height, with a lighter cap only at rows 0-1 and no visible top plane. The object reads as a flat front elevation with at most a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a single 16x16 tile at 2x, so the visual read is limited and I leaned on the measured facts. It has 17 visible tones per tile, matching the cheese stall (17) and close to the roofed well (20), and well above the hedge (9). Near-flat coverage is 0%, so there are no flat fills. Dark edge pixels are 0% neutral, so the outline is tinted: it reads as dark brown by the post and dark rust or grey-brown by the sheets, not a black sticker line. The post, the corrugation ribs on the sheet top and the rusty patches give visible variation, which suggests about 5 lightness steps across the metal and wood ramps against about 6 in the references. Texture is some rather than rich because the tile is small and the grain is limited. A careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17901
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "corrugated sheet top edge",
+      "rows": "4-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden post",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "post top cap",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The sheet section is 16 px wide from row 3 down. Rows 4-5 are a light, then slightly darker, 2-row strip (L=155, 132) at the top edge of the sheets. This is only a rim-like lip, with no ellipse and no clear front-edge line followed by eave shadow. Below it the sheets are a flat rust-coloured vertical face (rows 6-12) on a dark base (rows 13-15). The wooden post (x about 11-14) is a vertical strip from row 0 to 15. Its light top at rows 0-1 is 1-2 rows, so it is also a rim and not a top surface. The sheet and the post both read as a front elevation, with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a single-tile fence on a wooden post, the same kind as the prop references. The measured facts support it: 17 visible tones per 16x16 tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 0% near-neutral, so the outline is tinted (brown beside wood, rust beside metal) rather than a black sticker line. By eye, the corrugated sheet shows rib highlights and rust variation, and the wooden post has grain. Each material ramp looks like about 4 steps, a little shallower than the 5-6 on the stall and well. The whole piece uses only 17 colours, so it is somewhat less varied than the richest references, but a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18093
+  }
+ ],
+ "decidedAt": "2026-10-22T15:08:30.377Z",
+ "cells": {
+  "16": [
+   "e873c4bb94efc3e9"
+  ],
+  "24": [
+   "1e97e7de1f4cf02f",
+   "2d092e29157ada91",
+   "53fec2e7a411befa",
+   "617f6c9353c13ae3",
+   "9d69f2266ae1bde9",
+   "a1a83075185aaf27"
+  ],
+  "32": [
+   "78e70bd54261f7c5",
+   "a6e337cb32e868ea",
+   "aa8c654dda8f57a5",
+   "ae4f64cec280f1f1",
+   "b6721d37e4cf4d68",
+   "f111b10f312c8376"
+  ],
+  "48": [
+   "3d0889241b8353b4",
+   "47785ac13838dec2",
+   "83ce25633f011bf2",
+   "941664979a62336b",
+   "98f5b3f24470f3b9",
+   "a781a09df6df8b28"
+  ]
+ }
+}

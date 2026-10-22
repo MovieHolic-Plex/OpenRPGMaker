@@ -1,0 +1,368 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3fbbf49984792116df33e78fef874b9bc2834842a383641f5d1a56e9b562bf1b",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "east-west barricade of stacked sandbags, old tyres and a rusty sheet-metal plate, tops seen from above",
+ "label": "wasteland_ruins/barricade-h",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 14,
+  "darkV5": 32,
+  "nearBlackEdge": 0.17,
+  "opaqueTiles": 5
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rusty sheet-metal plate top plane",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-10"
+     },
+     {
+      "part": "tyre stack top opening (ellipse)",
+      "rows": "8-14",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper sandbag course top",
+      "rows": "11-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower sandbag courses",
+      "rows": "16-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The metal plate has a salmon top plane (rows 4-8) with a bright edge at row 4 and a dark front-edge line at row 9. Below it is a rust-coloured vertical face (rows 10-14). The tyre stack at right has a dark ring around an open ellipse (rows 8-14, widening from 31 to 45 px) above its banded front rows 15-26. The sandbag stacks show light-grey top patches (rows 11-14) and a pale edge row at 15, then brown front faces and dark courses down to row 26. Every major part has a top surface above a front face of 3+ rows, so the whole object reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small low prop, not a full building, so I compared it on shading craft only. The measured facts put it level with the references: 10 visible tones per tile against 12 and 10, 0% near-flat coverage, and 0% neutral dark edge pixels, so the outlines are tinted. By eye, the sandbags are layered in grey-brown with about 4 steps and per-bag highlights and shadows. The rusty plate has a lighter top edge, a mid body and a dark base, and the tyres sit in a dark tinted tone. It has fewer steps and less grain than the roof tiles and stone on the references. Even so, there is no uniform black sticker outline and no large flat fill, so a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20358
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rusty sheet-metal plate top plane",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "rust plate front face",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sandbag stack tops (light highlights on each bag)",
+      "rows": "11-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "tyre stack top with dark opening (ellipse)",
+      "rows": "8-14",
+      "evidence": "b",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The rust plate has a lighter top plane in rows 4-8, with a gold edge line at row 4. A dark front-edge and eave-shadow row at row 9 separates it from the rust front face in rows 10-14. The sandbag stack to the left has lighter top patches in rows 11-15 above its stacked front faces in rows 15-26. The tyre stack on the right has an elliptical top in rows 8-14, widening from 31 to 45 px, with a dark hole inside, above dark tyre sides in rows 15-26. All parts show both a top and a front face of 3+ rows, and no receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small low barricade, not a building with roof, walls and door, so it is a different kind from the references. On the numbers it holds up: 10 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and 0% near-neutral dark edge pixels, so the outline is tinted. By eye, the sandbags, tyres and rust plate carry only about 3-4 lightness steps each, against the 5-6 steps of the reference roof tiles, which have per-tile highlights. The tyres on the right read as a nearly flat dark mass, and the sandbags are fairly smooth with little grain. The whole piece is clearly thinner and simpler than the references' scalloped roofs and speckled plaster, and it is only a few tiles in size. Because the shading is shallow and the texture is lighter than the references, I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14697
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rusty sheet-metal plate (sloped top plane)",
+      "rows": "4-8",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "9-10"
+     },
+     {
+      "part": "upper sandbag row tops",
+      "rows": "11-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower sandbag row tops",
+      "rows": "16-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tyre stack (top opening ellipse)",
+      "rows": "7-14",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The sheet-metal plate shows a 5-row top plane (rows 4-8) with a yellow highlight, and a dark edge line at row 9 followed by shadow before the streaked front face (rows 10-14). The sandbag courses have gray top bands (rows 11-13 and 16-18) that end in light edge lines (rows 14 and 19), with brown front faces below down to row 26. The tyre at right shows a dark oval opening, rows 9-13, set inside a widening-then-narrowing silhouette, which reads as an ellipse top. Every major part has a top surface and a front face of at least 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The references are houses and the candidate is a small barricade prop, so I judged craft rather than structure, as the assigned 'building' style kind implies. On the primary facts the candidate has 10 visible tones per tile, against 12 for h101 and 10 for h112-stone. Near-flat coverage is 0%, matching both references. Dark edge pixels are 0% neutral, so the outlines carry a tint and read as dark material tone: brown beside the sandbags and rust beside the plate. By eye, the sandbags are stacked and shaded bag by bag with about 5 steps, and the rust plate has a highlight edge and a darker underside. The tyres are the weakest part, a fairly dark mass with little internal variation, but they are not a large flat fill. The piece does not look thinner or more sticker-like than the stone reference tile, so it is acceptable beside it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19394
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "rusty sheet-metal plate (top slope)",
+      "rows": "4-8",
+      "evidence": "c",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "9"
+     },
+     {
+      "part": "sandbag top course (grey tops)",
+      "rows": "11-14",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sandbag middle course tops",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "sandbag bottom course tops",
+      "rows": "19-23",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": "24-25"
+     },
+     {
+      "part": "tyre stack opening (dark ring and hole)",
+      "rows": "8-14",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The metal plate at the back has a lighter salmon top plane at rows 4-8, with a yellow highlight on row 4. A dark front-edge line at row 9 separates it from the rusty front face at rows 10-14. The sandbags on the left are stacked in courses, each with a pale grey top band (rows 11, 15 and 19 start the bands) above a brown front face, down to a dark base at rows 24-26. The tyres on the right show a ring and dark hole at rows 8-14, which reads as an ellipse opening, above striped dark front rows to row 26. The main body has a top surface and a front face of well over 3 rows. The sandbag tops are thin, but each has a visible edge line."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts support the candidate. It has 10 visible tones per tile against 12 and 10 in the references, 0% near-flat coverage like both references, and 0% neutral dark edge pixels, so its outlines carry a tint rather than being a black sticker line. By eye, the sandbags, tyres and rusty plate each show about 4 steps (highlight, mid, dark, deep) with some per-bag and per-tyre variation and no large flat fills. This is slightly shallower than the 5-6 steps on the roof tiles and stone of the references. Its total of about 20 colours is low, but it is a small prop, and the per-tile tone count matches the stone reference, so it would sit acceptably next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21883
+  }
+ ],
+ "decidedAt": "2026-10-22T15:08:30.371Z",
+ "cells": {
+  "16": [
+   "3fae459a63ce8846",
+   "8bff5e20326859f4",
+   "9173475256375a47",
+   "9f1e5e7337563e8b",
+   "a4bc527c50b2d8e8",
+   "e5efef59c86ee5c9"
+  ],
+  "24": [
+   "0213b4f9b533ab67",
+   "622c005fe3e5e516",
+   "63713a68d0470433",
+   "9087f584f71493f5",
+   "ad6c76748e191c7e",
+   "e0c78307a974fcb0",
+   "ef7d5a945ae5dbf6",
+   "f36f9f3628072d3e"
+  ],
+  "32": [
+   "143e7b203cfac3ce",
+   "30d9218b1c80d3d6",
+   "5f95eddf08b7e629",
+   "d8812c1943e8261d",
+   "dcda313aec6b071d",
+   "fa6a76585fcd91ec"
+  ],
+  "48": [
+   "5734c4f2932dc1fe",
+   "7ab0234ad6bafb86"
+  ]
+ }
+}

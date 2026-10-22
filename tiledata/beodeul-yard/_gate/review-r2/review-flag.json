@@ -1,0 +1,16 @@
+{
+  "surface": "flag",
+  "image": "tiledata/beodeul-yard/_gate/yard_flag.png",
+  "verdict": "fail",
+  "view34": "fail",
+  "autotile": "pass",
+  "quality": "fail",
+  "material": "pass",
+  "defects": [
+    "Each cell has a wide tan slab with a dark underside line at the same row (~y+11..14), producing continuous horizontal bands every 16px across the whole court (8x crop _a at y~100,230,355,480,610; 4x full view clearly striped). Reads as regular brick coursing, not irregular flagstones.",
+    "Those tan slabs are drawn with their own lighter top and dark lower edge like tiny front faces, so the floor looks bumpy/raised per slab rather than one flat plane (8x crop _c row y~230-260, x 170-880).",
+    "Cracked-slab diagonal glyph is identical and repeated in many cells (8x crop _a at (190,60),(450,60),(710,60),(80,300),(80,430),(80,560)); the 'sunken slab' tan downward triangles repeat as a motif rather than reading as sunken stones."
+  ],
+  "evidence": "Kerb rim with 2px south face, corners, hole, neck and isolated cell are seamless, and the pale warm limestone without blue stones differs from Beodeul plaza, so autotile and material pass. However the per-cell banding and stamped crack/triangle motifs make the 16px grid obvious at 4x, and the per-slab dark undersides give an embossed/raised look instead of a flat court.",
+  "reviewer": "claude-opus independent adversarial review 2026-10-23 r2"
+}

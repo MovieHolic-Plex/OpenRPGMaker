@@ -1,0 +1,361 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d5231628f483eebdcfd49c028377d542ad78ef7b341b8c28e6da99946714168",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "stack of weathered wooden salvage crates seen from above: plank lids, slatted fronts, one crate on top",
+ "label": "wasteland_ruins/crates",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 8/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 8/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 37,
+  "nearBlackEdge": 0.17,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "right",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "plank lid / top surface of the crate (the brown crate has a tan front-edge line at row 5; the green crate has a lighter edge line at row 6)",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "slatted front face with a horizontal slat band and small side handles or hinges",
+      "rows": "7-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark base or shadow strip",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "I could not match the 31-px silhouette to the two crates visible in image 1, so these measurements are a best reading of the column scan. At x=8 the top 6 rows (0-5) form a lid band with a blue-gray plate. The band ends in a 1-row light tan front-edge line at row 5, followed by a dark eave-shadow row at row 6 and darker brown at rows 7-8. At x=23 the lid rows 1-5 are followed by a lighter edge line at row 6 and dark shadow at row 7. Below these, rows 7-13 show a slatted front face of about 7 rows with alternating light and dark bands. A dark base follows at rows 14-15. The top surface is therefore about 6 rows with an edge line and shadow, above a front face of 3 or more rows, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small piece, about 1.5 tiles wide, and it reads as two crates side by side (one brown, one teal-green) rather than a stack with one crate on top. The measured facts are acceptable: 0% near-flat coverage, 9 visible tones per tile (equal to the hedge), and 0% neutral dark edge pixels, so the outlines are tinted dark material tones with no sticker-style black line. The weak point is shading depth. There are only 16 colours in total across two materials, which leaves about 4 steps per material against roughly 6 on the references. Plank lids and slats are suggested, but there is little per-plank highlight, grain or wear, so 'weathered' is not really conveyed. The tone count is well below the stall (17) and the well (20), and the candidate looks thinner and flatter next to them. With no clear case for a pass, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "앞면 7행 < 8 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "앞면 7행 < 8 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19519
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crate lid (top plank surface with grey-blue inset panel)",
+      "rows": "1-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "slatted front face",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "In the x=8 column scan, rows 0-1 are the outline and top edge. Rows 2-4 are the lid interior, with the grey-blue inset. Row 5 is a light tan line (#d6b073), which is the front-edge line of the lid. Row 6 is a dark eave shadow (L=60). Rows 7-14 are the slatted front face, with alternating light and dark slat bands. The lid is a horizontal surface about 5 rows deep, ending in an edge line and shadow, and the front face below it is 9 rows. No second crate is clearly separated on top. The right-hand green image reads the same way. This is a top plus a front face, not a bare front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small two-crate cluster, one brown and one teal, and reads more as side-by-side crates than a stack with one on top. Each material has about 3-4 lightness steps (lid, face, slat shadow, dark edge) against about 5-6 on the references. Outlines are tinted dark tones of the neighbouring material, with 0% neutral dark edge pixels, so they are not sticker-style black. There are no large flat fills (0% near-flat). Visible tones per tile are 9, the same as prop-hedge but well under prop-stall-cheese (17) and prop-well-roofed (20). The plank grain, nail dots and per-slat highlights seen on the richer references are mostly absent, and only 16 colours are used in total. The surfaces are clean but simple, and a careful artist would see it as slightly flatter and thinner than the stall and well. With that doubt, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18147
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left crate plank lid (brown)",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "right crate plank lid (green)",
+      "rows": "0-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "left crate slatted front",
+      "rows": "7-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right crate slatted front",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The object is 31px wide with two crates side by side: a brown one on the left and a green one on the right, split by a dark divider at x=15. Each crate has a lid band at the top. On the brown crate (x=8) the lid runs rows 0-5 and ends in a light tan front-edge line at row 5. A dark eave-shadow row at row 6 follows it. On the green crate (x=23) the lid runs about rows 1-6 and ends in a lighter edge line at row 6, with a darker row 7 below it. Below each lid are slatted front faces of about 7-8 rows (brown rows 7-13, green rows 8-13 plus the base at 14-15). The top surface is about 6 rows, so it is more than a rim, and the front face is 3+ rows. The silhouette does not show a separate stacked top crate, but each crate still shows a top and a front."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small, roughly one-tile piece showing two crates, one brown and one teal-green. Each crate has a plank lid, slat lines and a dark rim. Measured facts: 9 visible tones per tile, equal to prop-hedge (9) and below the stall (17) and well (20). Near-flat coverage is 0%, so there are no flat fills. 0% of dark edge pixels are neutral, so the outlines lean toward the material hue (dark brown beside wood, dark teal beside green) and are not a black sticker line. Each material gets about 4 steps (highlight, mid, dark, outline) against about 5-6 in the references, so the shading is a little shallower and the density slightly lower. It is still not flat or sticker-like, and a careful artist could place it beside the hedge and small props without it looking thinner. Caveat: the picture shows two crates side by side rather than a stack with one on top, but that is a content issue, not a style one.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20594
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lid / top plank band with grey-blue handle plate (left, brown crate)",
+      "rows": "0-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "slatted front face (left crate)",
+      "rows": "7-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lid band with dark slot (right, green variant)",
+      "rows": "0-6",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "7"
+     },
+     {
+      "part": "slatted front face (right variant)",
+      "rows": "8-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The image holds two crate drawings side by side, brown at left and green at right. Each has a top band at the upper rows, 6-7 rows tall, with a handle plate or slot inside it. The band ends in a 1-row light front-edge line (x=8 row 5 is tan #d6b073; x=23 row 6 is lighter green) and is followed by a 1-row dark eave shadow (row 6 on the left, row 7 on the right). Below that is a slatted front face of about 8 rows with alternating light and dark planks, and a dark base row at the bottom. This matches the green cabinet/seat references (top plus edge line, eave and front face), not the red front-elevation ones. No second stacked crate is clearly separable."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small prop, two crates in the board. Each has a plank lid, a slatted front and a darker rim, in 3-4 lightness steps per material (brown wood, teal wood). Its dark edge pixels are 0% neutral, so the outline leans brown or green-brown beside the wood and is not a black sticker line. Measured facts: 9 visible tones per 16x16 tile and 0% near-flat coverage, level with prop-hedge (9) and well above prop-bench-wood and prop-lamp-crook (0, too sparse to count). It is below prop-well-roofed (20) and prop-stall-cheese (17), which are larger and more detailed props. There are no flat 5x5 fills, and the slat lines and plank grain give some texture. It has fewer steps and less speckle than the richest references, but a careful artist could place it beside the bench and hedge without it looking flatter. The board shows two side-by-side crates rather than a stack with one on top, but that is a content issue, not a style one.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 27149
+  }
+ ],
+ "decidedAt": "2026-10-22T15:35:18.442Z",
+ "cells": {
+  "16": [
+   "5aee6ad73e770f5f",
+   "af04dd150ccc49f4"
+  ],
+  "24": [
+   "1f8a7a2cf43940f8",
+   "2514e4b38108a09f",
+   "419267c886bc2b49",
+   "5cb6c9e8c5b7fc08",
+   "5e8610721e9ca618",
+   "83574d2d5aa82f23",
+   "988fc648fbc75cd6",
+   "bb3ce06c988cdc74",
+   "cc2ec60b93d9773d",
+   "def235b3dc36621c",
+   "f8fce5586c07cd7b",
+   "fa3b91b936a11721"
+  ],
+  "32": [
+   "21e1096969a3733a",
+   "9dab54bea211c517"
+  ],
+  "48": [
+   "1f1c59e9153d1f83",
+   "39a43e8d929d42d2",
+   "62a4098298ffff5c",
+   "818421a438944001",
+   "888cb153ad8e45c4",
+   "a17ea4c46810380c"
+  ]
+ }
+}
