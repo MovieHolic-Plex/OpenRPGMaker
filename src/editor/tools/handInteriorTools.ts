@@ -3,6 +3,7 @@
 //   build_hand_interior_room : 평면 문자열 → 벽·천장 자동, 가구는 v5 물건 id → atlas_biome_interior 새 맵(또는 같은 칩셋 맵 다시 짓기)
 //   두 도구 모두 tileset:"jp_city" 이면 일본 실내(jp_city 번들 안, 화실·LDK·욕실·현관)를 같은 규칙으로 짓는다.
 // 조립 규칙은 src/editor/handInterior/builder.ts, 칸 사전은 src/assets/handInteriorSpec.json · jpInteriorSpec.json.
+import { fitStairTransfers } from "@/project/stairs/fit";
 import { buildHandInteriorLayers, roomSpecOf, HAND_INTERIOR_SPEC, HAND_INTERIOR_SPECS, HAND_INTERIOR_TILESET_ID, JP_INTERIOR_SPEC, JP_INTERIOR_TILESET_ID, WIZARDING_INTERIOR_SPEC, WIZARDING_INTERIOR_TILESET_ID, SENGOKU_INTERIOR_SPEC, SENGOKU_INTERIOR_TILESET_ID, CAMPUS_INTERIOR_SPEC, MODERN_CITY_INTERIOR_SPEC, MODERN_CITY_INTERIOR_TILESET_ID, HandInteriorError, type HandInteriorInput, type HandInteriorLayers, type HandInteriorSpec } from "@/editor/handInterior/builder";
 import { roomIndex, roomParts, searchParts, fullRow, shortRow } from "@/editor/handInterior/parts";
 import { handInteriorShapeFromPlan, nearestOpening, PLAIN_BOX_MIN_CELLS, type HandInteriorShape } from "@/editor/handInterior/shape";
@@ -339,6 +340,23 @@ function fitDoorsToPlan(
     if (!outbound.length) {
       // 층 사이 이동(엘리베이터·계단): built.travel 탈 자리가 있으면 그 자리로 맞추고, 막힌 칸이면 가까운 열린 바닥으로 옮긴다.
       if (indoorTransfers.length && built.travel.length) {
+        // 계단 입구 계약이 있는 탈 자리: 이벤트는 그 계단 그림 칸(trigger)에 — 앞 바닥에 두면 지나가기만 해도 층이 바뀐다.
+        const contracted = built.travel.filter((tr) => tr.trigger);
+        if (contracted.length && !contracted.some((tr) => tr.trigger!.x === event.x && tr.trigger!.y === event.y)) {
+          const best = [...contracted]
+            .filter((tr) => !occupied.has(`${tr.trigger!.x},${tr.trigger!.y}`))
+            .sort((a, b) => (Math.abs(a.trigger!.x - event.x) + Math.abs(a.trigger!.y - event.y)) - (Math.abs(b.trigger!.x - event.x) + Math.abs(b.trigger!.y - event.y)))[0];
+          if (best && Math.abs(best.trigger!.x - event.x) + Math.abs(best.trigger!.y - event.y) <= 4) {
+            occupied.delete(`${event.x},${event.y}`);
+            notes.push(`층 이동 ${event.id} (${event.x},${event.y}) → 계단 그림 칸 (${best.trigger!.x},${best.trigger!.y})${best.mode === "bump" ? " 부딪힘" : ""} — 앞 칸 (${best.x},${best.y}) 은 도착 칸`);
+            event.x = best.trigger!.x;
+            event.y = best.trigger!.y;
+            occupied.add(`${event.x},${event.y}`);
+            if (best.mode === "bump") for (const page of event.pages ?? []) (page as { priority: string }).priority = "same";
+            continue;
+          }
+        }
+        if (contracted.some((tr) => tr.trigger!.x === event.x && tr.trigger!.y === event.y)) continue;
         if (!built.travel.some((tr) => tr.x === event.x && tr.y === event.y)) {
           const bestTravel = [...built.travel]
             .filter((tr) => !occupied.has(`${tr.x},${tr.y}`) || (tr.x === event.x && tr.y === event.y))
@@ -407,6 +425,14 @@ function fitDoorsToPlan(
       if (other.climate?.mode === "indoor" && built.travel.length) {
         const tr = [...built.travel]
           .sort((a, b) => (Math.abs(a.x - t.x) + Math.abs(a.y - t.y)) - (Math.abs(b.x - t.x) + Math.abs(b.y - t.y)))[0]!;
+        if (tr.facing) {
+          // 계약 계단: 앞 칸(들어서는 칸)에 내려 계단을 등진다.
+          if (t.x !== tr.x || t.y !== tr.y || t.direction !== tr.facing) {
+            notes.push(`${other.id}/${event.id} 도착 (${t.x},${t.y}) → 계단 앞 (${tr.x},${tr.y}) ${tr.facing}`);
+            t.x = tr.x; t.y = tr.y; t.direction = tr.facing;
+          }
+          continue;
+        }
         const landY = isWalkableFloor(tr.x, tr.y + 1) && !doorCells.has(`${tr.x},${tr.y + 1}`) ? tr.y + 1 : tr.y;
         if (t.x !== tr.x || t.y !== landY) {
           notes.push(`${other.id}/${event.id} 도착 (${t.x},${t.y}) → 층 이동 앞 (${tr.x},${landY})`);
@@ -944,6 +970,8 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     liftTravelLinksOntoArt(draft, map, tileset, doorNotes);
     draft.maps[mapId] = map;
     snapArrivalsToTravelArt(draft, doorNotes);
+    // 계단 입구 계약: 이 맵과 links 로 이은 맵의 계단 이동을 계단 그림 칸·앞 칸(등지는 방향)으로 맞춘다(project/stairs/fit.ts).
+    doorNotes.push(...fitStairTransfers(draft, [mapId, ...new Set(links.map((l) => l.toMapId).filter((id) => id !== mapId))]));
     const trimNote = trimmed.trimmed
       ? `평면 바깥 막힌 여백을 잘라 ${built.width}×${built.height} 로 지었다 — 입력 좌표는 왼쪽 ${trimmed.dx}·위 ${trimmed.dy} 칸만큼 옮겨졌다. 이후 이 맵 좌표는 새 기준을 쓴다.`
       : "";
