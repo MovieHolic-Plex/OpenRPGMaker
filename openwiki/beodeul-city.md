@@ -930,6 +930,17 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
   - 용암 줄기는 잡음 비용 최단 길로 굽이친다.
   - 「던전」이라고 부른 지하 묘지·카타콤은 `author_dungeon` 이다. 고딕 납골당 방 여러 장을 `create_transfer_pair` 로 잇던 경로를 막았다(`intentDeclaration`·`gothicPlaceTools`·`toolCapabilityIndex`).
   - 남은 가장 큰 감점은 방 사이·바깥의 검은 허공(맵의 40~60%)이다. 허공을 채울 동굴 천장 바위 결 그림이 없고, 용암·물 가장자리 전이, 탑 전용 조각, 버들항 화풍 문·레버도 없다. 모두 사람 선택이 필요한 그림이라 코드로 메우지 않았다.
+- **2026-10-23 assistant-dungeons-2(허공·출구·주제·판정 고정, 같은 9요청 다시, Sonnet 5.5 high 조수 대용):**
+  - 「공간이 남으면 맵이 너무 큰 것」: 방+통로 문법은 통로 길이를 남북 4~5·동서 2~4로 줄이고 소금 16개 배치 중 허공 점수가 가장 낮은 판을 고른다(`layoutRooms.ts layoutDungeon`). 신전 계획도 한 단 작게(`grammar.ts planTemple`).
+  - 덩이(동굴·화산·소굴)는 방마다 후보 160자리 중 덩이 바깥 상자가 가장 덜 커지는 자리를 고르고, 소금 16판을 **잘라 낸 판의 허공 + 플레이어 카메라(20×15) 최악 창의 절반**으로 점수 매긴다(`layouts.ts blobVoidScore`). 방은 입구 굴 옆까지 내려올 수 있고(`yHi = entY + 2`), 입구 굴 북쪽 벽 세 줄은 목 세 칸만 남기고 지킨다(계단·출구 자리).
+  - 허공을 칠할 바위 결 그림은 없다(확인한 것: `bd-pick-sea-cave-ceiling-cave` 3×3 비오토타일, `aqueduct-sewer-ceiling`, `mining-valley-ground-rock/cliff`는 바닥·절벽 결). 천장 오토타일이 곧 벽 윗면 채움이다. 그림 없는 천장 모양(약 101개)이 검은 칸(255)으로 접혀 「벽 속 검은 네모 구멍」이 되던 것은 가장 가까운 그려진 모양으로 바꾼다(`compose.ts ceilingTile`).
+  - 앵커: 입구 방 계단 앞 기둥 한 쌍(방 문법), 동굴·화산 입구 굴의 야영 흔적(모닥불+자루·궤짝, `dress.ts entranceCamp`), 동굴 보스방 북벽 앞 뼈 더미 제단 / 소굴은 붉은 깃발 한 쌍 사이 약탈품 더미(우두머리 자리, `chief-seat`). 동굴 보스방 반지름 7×5(옛 8×6).
+  - 출구: 1층 입구 계단은 늘 바깥 출구다. 요청이 온 맵(`sourceMapId`, 비우면 실행기가 보고 있던 맵으로 채움 — `fillsCurrentMapIdAs`)이 실제 맵이면 그 맵과 잇고, 비었거나 자기 자신이면 자리표시 이벤트 `ev_<map>_exit_placeholder`(「아직은 나갈 수 없다」)를 둔다. `link_world_entrance` 가 잇는 순간 자리표시는 지워진다(`dungeonLinkTools.linkEntranceInDraft`).
+  - 탑: 층마다 둥근(`shape:"round"`, 모서리 깎기 k=min(w,h)/3) 좁은 방 2~3개, 1층 입구는 북벽이 평평한 반원(`apse`) 방, 내려가는 구멍은 벽 옆 칸. 
+  - 물·용암: 잠긴 방은 둑길 양쪽에 엇갈린 타원 잎 두 개, 용암 못은 흔들림 ≤0.15 타원, 화산의 작은 웅덩이는 없앴다(가장자리 그림이 없어 네모 도장으로 읽혔다). 줄기는 새 용암 8칸 이상일 때만, 먼 방 먼저. 물 그림은 돌 둑 운하 오토타일(`beodeul_canal_lake_47`) 하나뿐이라 자연 물가는 그림이 필요하다.
+  - 주제 보스: `dungeonThemeTroops.ts` 가 이름 낱말·소굴·잠김·탑·종류로 주제(고블린·언데드·탑·화산·물·신전·동굴…)를 정하고 기본 DB 적 그림을 빌려 `troop_dg_<주제>_<역할>` 을 만든다(능력치는 원래 고르던 그룹 세기에 비례). 모든 보스가 붉은 드래곤이던 것.
+  - 상자: 보물 방 하나 + 보스로 가는 길 위 방 하나(조상 방 사슬). 두 상자가 모두 보스방 뒤에 있던 것.
+  - 측정: `scripts/qa/dungeons/space.mts`(깊은 허공·맨바닥·가장 큰 빈 직사각형·플레이어 카메라 최악 창), `space-run.mts <run-dir...>` 이 run 폴더마다 `space.json` 을 쓴다. 판정 지침은 고정 문서 `harness-data/space-craft/dungeon-vqa-brief.md`(major 목록 M1~M10을 매 판 같게, 출구 없음 = blocker, 자리표시 출구 = minor).
 - 증명: `bun scripts/qa/dungeons/proof.mts <dir>`(레지스트리 경로라 중첩 도구까지 돈다), 걷기 영상 경로 `scripts/qa/dungeons/walk-route.mts` + `scripts/qa/runtime/dungeon-walk.scenario.mjs`.
 
 **없는 그림(다음 타일 작업자 몫, `capabilities.ts` `missingArt` 가 정본):**
