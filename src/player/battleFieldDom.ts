@@ -472,7 +472,8 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, pr
     const row = party.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${actor.recordId}"]`);
     if (!row) continue;
     const level = row.querySelector(".battle-actor-level .battle-vital-value");
-    if (level && actor.level !== undefined && !row.dataset.expRolledLevel) level.textContent = ` ${actor.level}`;
+    // 에메랄드 상자는 「Lv9」 붙여 쓰기(actorStatusRow 와 같게) — 여기서 앞 공백을 다시 넣어 아군만 「Lv 9」로 상대 상자와 달랐다(아스트라 2026-10-23 VQA).
+    if (level && actor.level !== undefined && !row.dataset.expRolledLevel) level.textContent = isEmeraldMonsterStyle(store.getCurrent()) ? `${actor.level}` : ` ${actor.level}`;
     syncExpBar(row, actor, snapshot, presentation);
     const presented = rollingVitals(actor, presentedState(actor, presentation), presentation);
     // 롤링 미터: 치명타를 맞고 미터가 아직 0 에 닿지 않은 아군. 스킨이 붉게 깜빡이게 그릴 수 있다.
