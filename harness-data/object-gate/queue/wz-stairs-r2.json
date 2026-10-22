@@ -1,0 +1,46 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "wz-stairs-r2",
+ "title": "마법 학교 계단 6 (올라가는 계단 4 · 내려가는 계단통 2) r2",
+ "explainImage": "/tmp/wzst/g8/wz-stairs-r2.png",
+ "explainText": "마법 학교(wizarding_world) 계단 다시 그림. 올라가는 계단(성채·시계탑·부엉이 탑·허니듀크)은 북벽 문틀 안으로 남쪽에서 들어서 북쪽을 보며 오르고, 내려가는 계단통(성채·부엉이 탑)은 북·서·동 낮은 난간을 두른 바닥 구멍으로 남쪽에서 들어서 북쪽으로 내려간다. Opus 적대 검수 r5 주요 결함 0. 허용하면 번들에 굽고 시계탑·부엉이 탑·허니듀크 장소의 계단을 바꾼다.",
+ "createdAt": "2026-10-22T11:39:20.067Z",
+ "items": [
+  {
+   "sha": "68d32796ece1e9eab1af03a592aa6bf04bf87f5a8fefec24b6b28009f276b2f7",
+   "kind": "structure",
+   "label": "wizarding_world stairs wz-castle-stair-up (UP)",
+   "source": "/tmp/wzst/g8/wz-castle-stair-up.png"
+  },
+  {
+   "sha": "9e33261e6dc22ef1311c5134d795a4b9bb4804af914736686bfba9be8d86c4be",
+   "kind": "flat",
+   "label": "wizarding_world stairs wz-castle-stair-down (DOWN)",
+   "source": "/tmp/wzst/g8/wz-castle-stair-down.png"
+  },
+  {
+   "sha": "7db3a420534afc707c3950c90c48ca2fc48c9e56da8274d1fef4ffad163d7a7d",
+   "kind": "structure",
+   "label": "wizarding_world stairs wz-clock-stair (UP)",
+   "source": "/tmp/wzst/g8/wz-clock-stair.png"
+  },
+  {
+   "sha": "d3f00a6ab392e1ab48ed0257fa21de75b664cc1bafbf5371352066523b647d28",
+   "kind": "structure",
+   "label": "wizarding_world stairs wz-hd-stairs-down (UP)",
+   "source": "/tmp/wzst/g8/wz-hd-stairs-down.png"
+  },
+  {
+   "sha": "5249bb8ce8395fa41f91592d2d20aad77d67c17580547d2877e9b7bcad9e3b32",
+   "kind": "structure",
+   "label": "wizarding_world stairs wz-owl-stair-up (UP)",
+   "source": "/tmp/wzst/g8/wz-owl-stair-up.png"
+  },
+  {
+   "sha": "75e2b7d9d0acc4df8f78826e740033814e169af8adeb738b2ec1323446b35be2",
+   "kind": "flat",
+   "label": "wizarding_world stairs wz-owl-stair-down (DOWN)",
+   "source": "/tmp/wzst/g8/wz-owl-stair-down.png"
+  }
+ ]
+}

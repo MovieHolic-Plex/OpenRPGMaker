@@ -1,0 +1,188 @@
+{
+ "date": "2026-10-23",
+ "reviewers": "3 fresh Opus 5.5, parallel; a major counts only if 2 of 3 raise it",
+ "round": 13,
+ "majorityMajors": 0,
+ "evidence": "/tmp/gatechk/r34 (wz 1x/3x strip, 4x beside wizarding_world refs, example maps 1x/3x)",
+ "gate": {
+  "wz-clock-stair": "PASS 289f7f55cb4b",
+  "wz-castle-stair-up": "PASS f5bb3e61109c",
+  "wz-hd-stairs-down": "PASS a1acb8aba2ce",
+  "wz-owl-stair-down": "PASS 1a996d213818",
+  "wz-castle-stair-down": "PASS b719a9ba261f (same art judged REFER as 193e0e185ccf before; Argon PASS, delegated allow recorded)",
+  "wz-owl-stair-up": "REFER 475896a59f72 → Argon PASS → delegated allow (approvals/hold/47/)"
+ },
+ "reviews": {
+  "wz-clock-stair": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "at 1x, with no context, the stacked brown bands inside a dark iron frame can read as a dresser or drawers; in the gears scene the frame plus the floor contact makes it read as a stair",
+     "treads keep the same width all the way up and the risers barely differ from the tread tops, so there is little depth cue"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "in isolation (compare 4x, 1x strip) the parallel-sided framed box with evenly spaced brown bands and a bright top bar reads close to a bookcase/dresser; treads have no perspective narrowing toward the north. Reads as stairs in the gears-room scene thanks to context"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "parallel sides (no taper) plus dark gaps between tan treads make it shelf-like at 1x; the bright top step and iron frame keep it readable as a stair in the gears scene",
+     "frame top bar sits free on the floor with no wall behind in the scene"
+    ]
+   }
+  ],
+  "wz-castle-stair-up": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "the grey treads are evenly striped and the red runner is a straight vertical bar, so at 1x it is close to a striped door or shelf; the runner helps it read as a stair in the castle hall",
+     "the lit yellow band under the dark top reads a little like a lamp or hearth glow"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "red runner carries the read; arch frame with bright yellow top line resembles a lit hearth opening at 1x"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "red runner makes it read well; arched dark head slightly doorway-like",
+     "no taper, treads read as stacked slabs rather than receding"
+    ]
+   }
+  ],
+  "wz-owl-stair-up": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "the grey stone treads are low contrast inside the wood frame, so steps blur together at 1x"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "grey treads with wood frame read as a doorway with steps; tread edges low-contrast at 1x"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "grey treads low contrast against grey owlery floor; stair reads mostly from wood frame",
+     "white speck on lower tread reads as stray pixel/feather"
+    ]
+   }
+  ],
+  "wz-hd-stairs-down": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "it reads as going up in the honeydukes cellar, as intended, but the id says 'down', which will confuse authors",
+     "the orange glow band at the top over a dark interior could hint at an oven or fireplace mouth when seen alone"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "reads as going up (lit treads toward the arch top), correct direction despite id",
+     "in honeydukes cellar it sits in the wall right next to wooden shelving bands; brown banded alcove is the most bookcase-like of the set at 1x"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "major",
+    "majors": [
+     "Set into the wall under a stone arch with evenly stacked horizontal tan slats separated by dark bands and no taper (honeydukes cellar 3x, top-right; strip 1x 4th piece): reads as a fireplace/oven alcove or bookshelf rather than a stair climbing north; the only stair cue is the lighter bottom step"
+    ],
+    "minors": [
+     "id says 'down' but piece is an up stair; naming confusion for authors"
+    ]
+   }
+  ],
+  "wz-castle-stair-down": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "at 1x the baluster rail across the top plus the evenly spaced dark/grey stripes can read as a vent grate or rolled shutter rather than a hole in the floor",
+     "the south edge has no floor lip or shadow, so the hole sits flush; a darker band at the north end would sell the depth better"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "at 1x the north baluster row over dark bands reads like a vent/grille or roller shutter rather than a floor hole; the side rails run full height like a cabinet carcass, so the 'hole in floor' read relies on the tread darkening northward",
+     "beige floor strip at the south edge is thin; a clearer lit floor lip would sell the opening"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "north rail with evenly spaced balusters reads like a grate/radiator at 1x; descending steps inside the hole are low contrast but the dark north band sells the drop",
+     "pale floor strip at south edge can read as a step lip/threshold"
+    ]
+   }
+  ],
+  "wz-owl-stair-down": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "in the owlery scene it is clearly a stairwell, but at 1x alone the same grate/shutter risk applies as castle-stair-down",
+     "the floor-like flecks on the lowest tread look like stray pixels"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "same grille/shutter risk at 1x as castle-stair-down; reads correctly as a stairwell in the owlery tower scene",
+     "wood corner posts extend to the bottom with small feet, slightly furniture-like"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "wood baluster rail across the north reads crib/fence-like; hole reads correctly as descending in the owlery scene",
+     "white speck on bottom step reads as stray pixel"
+    ]
+   }
+  ]
+ }
+}

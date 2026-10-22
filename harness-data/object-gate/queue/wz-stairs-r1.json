@@ -1,0 +1,46 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "wz-stairs-r1",
+ "title": "마법 학교 계단 6 (올라가는 계단 4 · 내려가는 계단통 2)",
+ "explainImage": "wz-stairs-r1.png",
+ "explainText": "마법 학교(wizarding_world) 계단 다시 그림. 올라가는 계단(성채·시계탑·부엉이 탑·허니듀크)은 북벽 문틀 안으로 북쪽으로 오르고, 내려가는 계단통(성채·부엉이 탑)은 세 쪽 난간을 두른 바닥 구멍으로 남쪽에서 들어서 북쪽으로 내려간다. 허용하면 번들에 굽고 시계탑·부엉이 탑·허니듀크 장소의 계단을 바꾼다.",
+ "createdAt": "2026-10-22T11:05:26.418Z",
+ "items": [
+  {
+   "sha": "c3b20cd13dcd76b401b1fed953a16d6b9337fc74b544039dbc2ec7935d063415",
+   "kind": "structure",
+   "label": "wizarding_world stairs wz-castle-stair-up (UP)",
+   "source": "/tmp/wzst/gate/wz-castle-stair-up.png"
+  },
+  {
+   "sha": "b3ac7c1c3fc049296956aaa217a5c1c4b8c82e0476998b6b7fa90589b25dc667",
+   "kind": "structure",
+   "label": "wizarding_world stairs wz-castle-stair-down (DOWN)",
+   "source": "/tmp/wzst/gate/wz-castle-stair-down.png"
+  },
+  {
+   "sha": "a23e221b862361bce0b4c5574107c6534aea0d1dbce726ccb082aa1cbeb4d8b1",
+   "kind": "structure",
+   "label": "wizarding_world stairs wz-clock-stair (UP)",
+   "source": "/tmp/wzst/gate/wz-clock-stair.png"
+  },
+  {
+   "sha": "661bf0d56af37059e50623454737b74d88f8de958ff1b7145d054d93cb0cf241",
+   "kind": "structure",
+   "label": "wizarding_world stairs wz-hd-stairs-down (UP)",
+   "source": "/tmp/wzst/gate/wz-hd-stairs-down.png"
+  },
+  {
+   "sha": "afb118fd35ab4da851c31b5fa55bd95818218c8848282307734274470ad97ae8",
+   "kind": "structure",
+   "label": "wizarding_world stairs wz-owl-stair-up (UP)",
+   "source": "/tmp/wzst/gate/wz-owl-stair-up.png"
+  },
+  {
+   "sha": "b23a12e68d84e2858b5d7dafa1c1ffee81716b7d67f32a06a764821af0392e3c",
+   "kind": "structure",
+   "label": "wizarding_world stairs wz-owl-stair-down (DOWN)",
+   "source": "/tmp/wzst/gate/wz-owl-stair-down.png"
+  }
+ ]
+}

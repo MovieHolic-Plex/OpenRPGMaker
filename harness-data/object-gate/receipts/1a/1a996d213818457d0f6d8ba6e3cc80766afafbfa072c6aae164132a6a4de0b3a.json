@@ -1,0 +1,325 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1a996d213818457d0f6d8ba6e3cc80766afafbfa072c6aae164132a6a4de0b3a",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "wz-owl-stair-down",
+ "label": "wizarding_world stairs wz-owl-stair-down (DOWN)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "floor-flag",
+   "floor-oak"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "wizarding_world",
+   "chipset": "wizarding_world",
+   "fallback": false,
+   "hash": "47c4526a955e3fa6"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 13,
+  "darkV5": 35,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden frame with top beam and grating",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair opening with descending step bands",
+      "rows": "8-31",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 31,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a 30px-wide rectangle (rows 1-30) with a wooden frame around the edge. The frame is a top beam at rows 1-7 and side posts down both sides. Inside it is a dark opening at rows 8-13. Below that are horizontal step bands that get lighter toward the bottom, rows 14-31, with the lightest cream at rows 29-31. This is a stairwell seen from above, as a flat plate. No separate vertical south face of 3 or more rows is drawn, and there is no eave or edge line. This matches the flat kind and the top-down slab reference."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 3,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a stair-down: a wooden frame around descending stone steps shaded from light to dark. Measured facts: 10 visible tones per tile against 3 (floor-flag) and 2 (floor-oak), and 0% near-flat coverage against 41% and 17%, so it is clearly at or above both shipped references on density and has no flat fills. The steps show about 5 lightness steps, and the frame has a few wood tones. The weak point is the outline: 76% of dark edge pixels are near-neutral, so the dark edge reads as neutral dark grey rather than a clearly tinted material tone. The references have 0% neutral edges, so that is a mild deviation. The wood frame at this scale does look tinted brown, though, and the piece is a small stair prop, not a sticker-like uniform black outline. Overall it meets the standard set by the wizarding_world references, which are themselves simple.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14249
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel and grille wall",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "descending stair treads seen from above",
+      "rows": "8-31",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 24,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The main body is the stair opening in rows 8-31. It is drawn as a top-down plate: horizontal tread bands of 2 rows each, separated by 1-row dark riser lines, with the lightness rising steadily toward the bottom edge. The steps have no front face of 3 or more rows. The only vertical element is the wooden frame at rows 1-7, a lintel with a small grille, plus thin side posts, and it is not the main body. For a flat floor decal this reads as a flat plate with no front elevation, so I call it top_down_slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 3,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a stair-down with a wooden frame and grey stone steps, and it reads as a ground patch that fits the references. Measured facts: 10 visible tones per tile against 3 (flag) and 2 (oak), 0% near-flat coverage against 41% and 17%, so it is at least as rich as both shipped references. Step shading is visible, with about 5 lightness steps from light to dark on the steps. The dark edge pixels are 76% near-neutral, so the outline leans black or grey. It is used selectively around the dark stair opening, and the wooden frame has brown tones, so I call it mixed rather than a uniform sticker line. The shipped references have 0% neutral edges, but their own shading is shallow (2-3 tones), so the candidate still clears the wizarding_world standard on steps, texture and density.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16161
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden lintel with top edge",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "barred window strip under lintel",
+      "rows": "3-6",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark stair opening",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "descending steps drawn as stacked horizontal bands (2 light rows + 1 dark row each), brighter toward the bottom",
+      "rows": "14-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The piece is a vertical doorway-like elevation. It has a wooden frame with a lintel at rows 1-7, side posts, and a dark opening from row 8. Stacked step bands in rows 14-31 run straight across and lighten toward the bottom. These bands read as front faces and treads seen face-on, not as a plate seen from above. The only horizontal-looking part is the 1-2 row lintel rim, rows 1-2, which is too thin to count as a top surface. There is no ellipse and no roof plane, so it is not a flat plate lying on the ground. It reads as a front elevation of a stairwell."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 3,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wooden-framed stairwell with descending grey and beige steps. It measures 10 visible tones per tile against 3 (floor-flag) and 2 (floor-oak), and 0% near-flat coverage against 41% and 17%. The steps show 5-6 lightness steps, with lit treads, shaded risers and a dark void at the top, and the frame has a brown highlight and shadow. The dark edge pixels are 76% near-neutral, but they sit mainly in the shadowed stair interior, and the brown frame is separated by tinted dark brown, so I call the outline mixed rather than a sticker line. Its structure and density are at or above the shipped wizarding_world references, which are simple 2-3 tone floors, so a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18792
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden lintel with lattice window",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark stairwell void",
+      "rows": "8-13",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "descending stair treads",
+      "rows": "14-31",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "16,19,22,25,28"
+     }
+    ],
+    "main_top_rows": 18,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stair opening is a stairwell seen from the south. Rows 14-31 show repeated light tread bands of 2 rows, each followed by a 1-row dark riser or shadow line (rows 16, 19, 22, 25, 28), and the treads get lighter toward the bottom. Rows 8-13 are a dark void above them. Rows 1-7 are a wooden lintel with a lattice, drawn as a front-facing face of about 7 rows. The side posts are vertical strips with no receding side face. Some of it reads as a flat floor decal, but the lintel and the treads with shadow lines read as a 3/4 view, so I measured it as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 3,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small stair-down with a wooden frame. The wizarding_world references are simple: floor-flag has 3 visible tones and 41% near-flat coverage, and floor-oak has 2 tones and 17%. The candidate has 10 visible tones per tile and 0% near-flat coverage, so it is richer than both on the primary facts. By eye, the steps show about 5 lightness steps from cream down to grey, and the frame has wood grain and highlights. The outline is mixed: 76% of its dark edge pixels are near-neutral, which comes from the dark void inside the opening, while the frame edges lean brown. Neither reference has any neutral dark edges, so this is a mild risk. It does not read as a uniform black sticker outline, and the piece is at least as detailed as the shipped references, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18511
+  }
+ ],
+ "decidedAt": "2026-10-22T16:56:15.750Z",
+ "cells": {
+  "16": [
+   "1be4407467ad1ba3",
+   "37d1265b2b58bf76",
+   "a977389b00ce6d72",
+   "b8711ce5aa531c1f"
+  ],
+  "24": [
+   "192a714e4c8bc3bf",
+   "1dc5344c237ea8bc",
+   "1ebc72cfc33da890",
+   "214ee89b33a729ac",
+   "22f956f4d68d122d",
+   "2557d24d0ea8c6b6",
+   "2815c639d230d86b",
+   "3035014f84e514eb",
+   "3d856c787bd128c4",
+   "4ab26e75c8ce0cb3",
+   "55f31609cebba364",
+   "62bb5f98dfb952c8",
+   "69045fbfe95573d3",
+   "79988ca865e5b9aa",
+   "7f3e6ee0f048caa6",
+   "7fe5b3a4bdfd8841",
+   "8e8f9540a29acf99",
+   "8f524dab9f464078",
+   "a7b32167db426525",
+   "ba8122a0cbd5f160",
+   "c53b5e7723e296ef",
+   "c6113dab3de55305",
+   "c92e337f12640feb",
+   "db68dddc6f90b6f2"
+  ],
+  "32": [
+   "5ac0b4e8d43a0ca4"
+  ],
+  "48": [
+   "0f4af256ea1dea0b",
+   "26292da65783fc04",
+   "373ef422f4f76343",
+   "61b82ba4b1c4b9bd",
+   "81ecfd05deba68b9",
+   "9598af16912b0b47"
+  ]
+ }
+}

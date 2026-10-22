@@ -6,6 +6,7 @@ import os, sys, math
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from wzlib import REG, Cv, K, OL, OL2, run_module, darker   # noqa: E402
 from _clocktower_wall import wall_face, plinth, cap, wall_n_base, arch_mask, dilate, CUTS   # noqa: E402
+import _wz_stairs as S   # noqa: E402
 
 MODULE = 'clocktower'
 SP = 'clocktower'
@@ -374,27 +375,11 @@ def _rail_end(c): _rail_h(c, True)
 
 
 # ───────────────────────── 계단 ─────────────────────────
-@REG.piece('wz-clock-stair', '정비 계단(2×2)', 2, 2, ['FF', 'FF'], 'architecture', SP,
-           desc='정면으로 오르는 직선 오크 계단 2×2. 디딤판 8px 네 단, 양옆 석재 받침. 위로.', rules='발코니 앞이나 통로 끝에 붙인다.',
-           tags=['계단', '오크', '시계탑'], role='terrain')
+@REG.piece('wz-clock-stair', '정비 계단(올라가는 계단)', 2, 3, ['SS', 'FF', 'ff'], 'architecture', SP,
+           desc='올라가는 계단. 기어실 북벽의 리벳 무쇠 틀 문 안으로 오크 디딤판 8단이 북쪽으로 올라가 위층 정비 통로의 등불빛 속으로 사라진다. 남쪽에서 들어서서 북쪽(벽 쪽)을 보며 오른다. 밝은 디딤판·어두운 챌판, 위로 갈수록 얇고 꼭대기 두 단이 황동빛, 바닥으로 나온 첫 단 양 끝에 황동 머리 무쇠 친주. 다른 층에서 이 계단으로 도착하면(그 층의 내려가는 계단을 탄 경우) 맨 아래 줄 남쪽 앞 칸에 서서 계단을 등지고 남쪽(아래)을 본다.',
+           rules='북벽에 붙인다: 위 두 줄이 북벽 정면 자리(맨 위 줄은 벽 위에 덮는 막힌 칸, 둘째 줄은 벽을 걷어낸 계단 칸), 맨 아래 줄이 바닥. 들어서는 쪽 = 남쪽: 바로 남쪽 두 칸은 비운 바닥. 층 이동 이벤트는 맨 아래 줄(이동 칸)에. 방 가운데에 홀로 세우지 않는다(어디로 가는지 안 보인다).', tags=['계단', '오크', '시계탑', '오름', '올라가는 계단'], role='prop')
 def _stair(c):
-    sw = 3
-    c.R(0, 0, 32, 32, K(ST, 1))
-    for i in range(4):
-        y0 = i * 8
-        for x in range(sw, 32 - sw):
-            c.P(x, y0, K(WD, 5)); c.P(x, y0 + 1, K(WD, 5)); c.P(x, y0 + 2, K(WD, 4)); c.P(x, y0 + 3, K(WD, 4))
-            for y in range(y0 + 4, y0 + 8):
-                c.P(x, y, K(WD, 3) if y < y0 + 7 else K(WD, 1))
-            c.P(x, y0 + 4, K(WD, 2))
-        for x in (10, 20): c.P(x, y0 + 2, K(WD, 3))
-        for x in (5, 26): c.P(x, y0 + 5, K(IR, 4))
-        for y in range(y0, y0 + 8): c.P(sw, y, K(WD, 2) if y > y0 + 3 else K(WD, 4)); c.P(31 - sw, y, K(WD, 1))
-    for y in range(32):
-        c.P(sw - 1, y, K(ST, 1)); c.P(32 - sw, y, K(ST, 1))
-    c.R(0, 0, sw - 1, 32, K(ST, 4)); c.R(32 - sw + 1, 0, sw - 1, 32, K(ST, 2))
-    for y in range(0, 32, 8): c.HL(0, y + 7, sw - 1, K(ST, 3)); c.HL(32 - sw + 1, y + 7, sw - 1, K(ST, 1))
-    c.VL(0, 0, 32, K(ST, 1)); c.VL(31, 0, 32, K(ST, 1))
+    S.up_into_doorway(c, dict(tread=WD, tread_hi=5, tread_lo=4, riser=WD, rise_hi=2, rise_lo=1, rail='iron', frame='iron'))
 
 
 # ───────────────────────── 문 3상태 ─────────────────────────

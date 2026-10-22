@@ -2,6 +2,7 @@
 import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from wzlib import REG, Cv, K, OL, OL2, run_module   # noqa: E402
+import _wz_stairs as S   # noqa: E402
 
 MODULE = 'castle_kit'
 SP = 'shared'
@@ -983,51 +984,19 @@ def _door_s(c):
 
 
 # ───────────────────────── 계단 ─────────────────────────
-@REG.piece('wz-castle-stair-up', '성채 돌계단(오름)', 2, 2, ['FF', 'FF'], 'architecture', SP,
-           desc='북쪽으로 오르는 돌계단 4단. 단마다 밝은 디딤면과 어두운 챌면, 양옆 난간 돌벽.',
-           rules='위층 바닥 아래 가장자리에 놓는다. 위쪽 끝은 위층 바닥과 이어진다.', tags=['계단', '오름'], role='prop')
+@REG.piece('wz-castle-stair-up', '성채 돌계단(올라가는 계단)', 2, 3, ['SS', 'FF', 'ff'], 'architecture', SP,
+           desc='올라가는 계단. 북벽의 돌 첨두 아치 문 안으로 돌 디딤판 8단이 북쪽으로 올라가 위층 빛 속으로 사라진다. 남쪽에서 들어서서 북쪽(벽 쪽)을 보며 오른다. 밝은 디딤판·어두운 챌판, 위로 갈수록 얇고 꼭대기 두 단이 밝다. 가운데 붉은 깔개·황동 계단 막대, 바닥으로 나온 첫 단 양 끝에 낮은 돌 친주. 다른 층에서 이 계단으로 도착하면(그 층의 내려가는 계단을 탄 경우) 맨 아래 줄 남쪽 앞 칸에 서서 계단을 등지고 남쪽(아래)을 본다.',
+           rules='북벽에 붙인다: 위 두 줄이 북벽 정면 자리(맨 위 줄은 벽 위에 덮는 막힌 칸, 둘째 줄은 벽을 걷어낸 계단 칸), 맨 아래 줄이 바닥. 들어서는 쪽 = 남쪽: 바로 남쪽 두 칸은 비운 바닥. 층 이동 이벤트는 맨 아래 줄(이동 칸)에. 방 가운데에 홀로 세우지 않는다(어디로 가는지 안 보인다).', tags=['계단', '오름', '올라가는 계단'], role='prop')
 def _stair_up(c):
-    c.R(0, 0, 32, 32, K(ST, 3))
-    for k in range(4):
-        y0 = k * 8
-        c.R(3, y0, 26, 3, K(ST, 5 - (1 if k == 0 else 0)))
-        c.HL(3, y0, 26, K(ST, 5))
-        c.R(3, y0 + 3, 26, 5, K(ST, 3 if k % 2 == 0 else 3))
-        c.HL(3, y0 + 3, 26, K(ST, 4)); c.HL(3, y0 + 7, 26, K(ST, 2))
-        for x in range(3, 29):
-            if (x + k * 5) % 13 == 4:
-                c.VL(x, y0 + 4, 3, K(ST, 2))
-    for xs, lit in ((0, True), (29, False)):
-        c.R(xs, 0, 3, 32, K(ST, 4 if lit else 3))
-        c.VL(xs, 0, 32, K(ST, 5 if lit else 2)); c.VL(xs + 2, 0, 32, K(ST, 3 if lit else 1))
-        for y in range(4, 32, 8):
-            c.HL(xs, y, 3, K(ST, 2))
-    c.HL(0, 31, 32, K(ST, 1))
-    c.outline()
+    S.up_into_doorway(c, dict(tread=ST, tread_hi=5, tread_lo=4, riser=ST, rise_hi=2, rise_lo=1, rail='stone', frame='stone', runner='red'))
 
 
-@REG.piece('wz-castle-stair-down', '성채 돌계단(내림)', 2, 2, ['FF', 'FF'], 'architecture', SP,
-           desc='아래층으로 내려가는 돌계단. 디딤면이 안쪽으로 갈수록 어두워지고 끝은 어둠.',
-           rules='바닥에 구멍처럼 박는다. 남쪽 끝이 현재 층 바닥과 이어진다.', tags=['계단', '내림'], role='prop')
+@REG.piece('wz-castle-stair-down', '성채 돌계단통(내려가는 계단)', 2, 2, ['ff', 'ff'], 'architecture', SP,
+           desc='내려가는 계단. 바닥에 뚫린 계단통: 북·서·동 세 쪽은 돌 턱 위에 낮은 돌 난간, 남쪽은 턱도 난간도 없이 열려 있다. 남쪽에서 바닥 높이의 첫 디딤판으로 그대로 들어서서 북쪽을 보며 내려가고, 판돌 디딤판이 북쪽으로 갈수록 한 단씩 어두워져 끝은 어두운 북쪽 안벽이다. 다른 층에서 이 계단통으로 도착하면(그 층의 올라가는 계단을 탄 경우) 남쪽 앞 칸에 서서 계단통을 등지고 남쪽(아래)을 본다.',
+           rules='들어서는 쪽 = 남쪽: 바로 남쪽 두 칸은 비운 바닥. 층 이동 이벤트는 맨 아래 줄(이동 칸)에. 바닥 위에 구멍처럼 놓는다(난간 바깥·맨 아래 띠는 투명이라 방 바닥이 보인다). 북·서·동 쪽으로는 들어설 수 없다.',
+           tags=['계단', '내림', '내려가는 계단', '계단통'], role='prop')
 def _stair_down(c):
-    c.R(0, 0, 32, 32, K(ST, 1))
-    tones = (1, 2, 2, 3)
-    for k in range(4):
-        y0 = k * 8
-        t = tones[k]
-        c.R(3, y0, 26, 8, K(ST, t))
-        c.HL(3, y0 + 7, 26, K(ST, t + 2 if k else 4))
-        c.HL(3, y0 + 6, 26, K(ST, t + 1))
-        c.HL(3, y0, 26, K(ST, max(0, t - 1)))
-        for x in range(3, 29):
-            if (x + k * 7) % 11 == 3:
-                c.VL(x, y0 + 1, 5, K(ST, max(0, t - 1)))
-    for xs, lit in ((0, True), (29, False)):
-        c.R(xs, 0, 3, 32, K(ST, 4 if lit else 3))
-        c.VL(xs, 0, 32, K(ST, 5 if lit else 2)); c.VL(xs + 2, 0, 32, K(ST, 3 if lit else 1))
-    c.R(3, 0, 26, 3, K(ST, 0))
-    c.HL(0, 31, 32, K(ST, 2))
-    c.outline()
+    S.well_down(c, dict(rail='stone'))
 
 
 @REG.piece('wz-castle-floor-stair', '성채 계단 디딤면 바닥', 1, 1, ['F'], 'surfaces', SP,
@@ -1148,7 +1117,7 @@ def _hall():
     for x in (3, 10):
         for yy in (4, 5):
             pl.append(('wz-castle-floor-flag-worn', x, yy))
-    pl.append(('wz-castle-stair-up', 11, 4))
+    pl.append(('wz-castle-stair-up', 11, 2))     # 올라가는 계단은 북벽 문틀 안으로
     pl.append(('wz-castle-wall-sw', 0, 8)); pl.append(('wz-castle-wall-se', 13, 8))
     for x in range(1, 13):
         if x == 6: continue

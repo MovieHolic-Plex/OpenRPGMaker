@@ -70,7 +70,7 @@
  },
  "wz-clock-stair": {
   "verdict": "PASS",
-  "reason": "칸당 8px 디딤판 2단(밝은 디딤면+어두운 챌면에 볼트). 좌우 옆판이 있다. 북쪽으로 오르는 3/4 계단으로 읽히고 FF/FF 로 통행된다."
+  "reason": "2026-10-23 다시 그림(원근 디딤판·얇은 챌판/계단통 얇은 내림 단). Opus 적대 검수 r2 3명 중 다수 major 0 — 올라가는/내려가는 계단으로 1배·3배에서 읽힘, 3/4 윗면 일관, wizarding_world 화풍. {'wz-clock-stair': 'object-gate PASS (wizarding_world refs)', 'wz-castle-stair-up': 'object-gate PASS (wizarding_world refs)', 'wz-hd-stairs-down': 'object-gate PASS (wizarding_world refs)', 'wz-owl-stair-down': 'object-gate PASS (wizarding_world refs, kind flat)', 'wz-owl-stair-up': 'object-gate REFER → fresh Argon adversarial PASS → delegated allow 2026-10-23', 'wz-castle-stair-down': 'object-gate REFER (style split) → fresh Argon adversarial PASS → delegated allow 2026-10-23'}."
  },
  "wz-clock-door-closed": {
   "verdict": "PASS",

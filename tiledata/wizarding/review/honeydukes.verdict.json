@@ -1,6 +1,6 @@
 {
  "module": "honeydukes",
- "sealed": "2026-10-07T10:21:07.079700+09:00",
+ "sealed": "2026-10-23T02:09:48.330809+09:00",
  "reviewer": "sonnet adversarial",
  "pieces": {
   "wz-hd-wall-n": {
@@ -60,8 +60,8 @@
   },
   "wz-hd-stairs-down": {
    "verdict": "PASS",
-   "hash": "95538222d81e861e4797cc8f13b47cf12caa9aa0c47cb29a6da0f962349e65a7",
-   "reason": "재검수: 녹색 덩어리가 사라지고 계단통 입구에 주황 빛이 분홍 테두리와 함께 놓여 따뜻한 조명으로 읽힌다. 밝은 디딤판 띠와 어두운 챌판 띠가 1px 윤곽·못 점으로 번갈아 뚜렷하게 구분돼 나무 계단으로 읽힌다. 좌우 난간 대칭, 윗면+정면 3/4. 빛 번짐 모서리가 다소 각지지만 기준은 충족한다."
+   "hash": "1d8511fa7fec6bf0e5fd9692a3b7097fb4bb9c1014e9c29363f8b117f25b7181",
+   "reason": "2026-10-23 다시 그림(원근 디딤판·얇은 챌판/계단통 얇은 내림 단). Opus 적대 검수 r2 3명 중 다수 major 0 — 올라가는/내려가는 계단으로 1배·3배에서 읽힘, 3/4 윗면 일관, wizarding_world 화풍. {'wz-clock-stair': 'object-gate PASS (wizarding_world refs)', 'wz-castle-stair-up': 'object-gate PASS (wizarding_world refs)', 'wz-hd-stairs-down': 'object-gate PASS (wizarding_world refs)', 'wz-owl-stair-down': 'object-gate PASS (wizarding_world refs, kind flat)', 'wz-owl-stair-up': 'object-gate REFER → fresh Argon adversarial PASS → delegated allow 2026-10-23', 'wz-castle-stair-down': 'object-gate REFER (style split) → fresh Argon adversarial PASS → delegated "
   },
   "wz-hd-workbench": {
    "verdict": "PASS",

@@ -80,3 +80,23 @@
   이어 `fit-bundled-places.mts --write`. 예제 JSON(`mansion-corridor`·`school-3f`·`school-2f`·`mansion-lobby`)도 같이 고쳤다. `lint-bundled-stairs` 공용 장소 경고 0.
 - 출하 플레이어 걷기: `scripts/qa/runtime/jp-stairs-redraw.scenario.mjs`(단독주택 2F↔1F · 맨션 외복도↔로비 · 학교 2F↔3F).
 - 검수: Opus 적대 VQA 영수증 `harness-data/object-gate/vqa/jp-in-stairs-13.opus-vqa-r*.json`, object-gate 묶음 `jp-in-stairs-13`.
+
+## 마법 학교(wizarding_world) 계단 다시 그림 (2026-10-22)
+사용자 「계단들이 다 씹창」 → 여섯 키트를 공용 도우미 `scripts/content/wizarding/pieces/_wz_stairs.py` 두 형태로 다시 그렸다.
+- **올라가는 계단 2×3**(`wz-castle-stair-up` 돌 첨두 아치 · `wz-clock-stair` 리벳 무쇠 틀 · `wz-hd-stairs-down` 돌 아치 · `wz-owl-stair-up` 나무 틀, walk SS/FF/ff):
+  북벽에 붙인다. 위 두 줄이 북벽 정면 자리의 문틀이고, 디딤판(윗면 + 밝은 앞 모서리) · 챌판이 북쪽으로 올라가 위층 빛 속으로 사라진다.
+  들어서는 쪽 남쪽(맨 아래 줄 바로 남쪽 앞 칸) · 오를 때 북쪽을 본다 · 도착은 위층 내려가는 계단통의 남쪽 앞 칸, 계단을 등지고 남쪽.
+  방 가운데 홀로 선 계단은 「어디로 가는지 모르는 단상」으로 읽혀(적대 검수 r1·r2) 북벽 문틀형으로 바꿨다.
+  2026-10-23: 디딤판 폭이 위로 갈수록 곧게 좁아지는 원근(맨 아래 [5,27) → 맨 위 [10,22)), 챌판 3px, 결은 가로 줄. 아래 단을 감싸던 비스듬한 손잡이는 뺐다
+  (서랍장으로 읽혔다, Opus r12 2/3) — 바닥으로 나온 첫 단 양 끝 낮은 친주만 둔다.
+- **내려가는 계단통 2×2**(`wz-castle-stair-down` 돌 난간 · `wz-owl-stair-down` 나무 난간, walk ff/ff): 바닥 구멍(jp_city 계단통과 같은 짜임, 2026-10-23 세 번째 그림).
+  북쪽은 바닥 위에 선 난간 한 면(윗면 2px + 4px 간격 동자 + 밑 가로대), 서·동은 가는 손잡이와 남쪽 끝 낮은 친주, 남쪽만 열림.
+  안은 북쪽 검은 안벽 2줄 + 얇은 디딤판 일곱 단(단마다 윗면 2줄 + 앞 단 코 밑 그늘 1줄)이 남쪽으로 올수록 밝아져 맨 앞 단은 방 바닥 높이.
+  굵은 띠 넷·다섯은 「밝은 코 + 세운 챌판」 = 올라가는 계단 정면으로 읽혔고(object-gate 3/4 FAIL), 바닥까지 선 문틀 기둥은 벽난로로 읽혔다(Opus r12 3/3).
+  object-gate 종류는 `flat`(바닥 조각) — `structure` 로 넣으면 북쪽 난간을 「윗면 없는 인방」으로 본다.
+  들어서는 쪽 남쪽 · 내려갈 때 북쪽을 본다 · 도착은 아래층 올라가는 계단 맨 아래 줄의 남쪽 앞 칸, 계단을 등지고 남쪽.
+- `wz-hd-stairs-down` 은 id 의 down 이 옛 이름이고 **올라가는** 계단(지하 창고 → 위층 가게)이다 — 이름표·설명·계약(`leads: up`) 모두 「올라가는」.
+- 계약 문장(`overrides.json` 의 `why`)에 들어서는 쪽·보는 방향·도착을 적었고, `prepare_stair_references.py` 가 키트 행에 `note`(계약 문장)를 함께 싣는다(모든 칩셋).
+- 출하 장소: 시계탑 기어실 계단을 방 서쪽 (1,11) → 북벽 (1,2)(그 자리 벽걸이 공구판 하나 뗌), 부엉이 탑 (1,8) 은 올라가는 계단 → **내려가는 계단통**(탑 꼭대기 방),
+  허니듀크 지하 (13,2) 는 그대로. 다시 찍기 `scripts/content/stairs/restamp-wz-stairs.py --write`. 조립기는 계단 키트를 깔개(전부 f 칸)로 보지 않는다(`builder.ts` flatOnly).
+- 출하 플레이어 걷기: `scripts/qa/runtime/wz-stairs.scenario.mjs`.

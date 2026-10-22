@@ -1,0 +1,316 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a520f46178259b20b6eefd0ee360ec9b2507a6c0dd2a533860f75dd689c807ac",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "wz-castle-stair-down",
+ "label": "wizarding_world stairs wz-castle-stair-down (DOWN)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 7,
+  "darkV5": 35,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair plate with frame and descending step bands",
+      "rows": "1-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 30px-wide sprite is a flat rectangular plate seen from above. A light frame runs along the top (row 1) and sides, and it encloses horizontal step bands. The bands run dark (rows 6-8), mid-grey (rows 14-19) and light (rows 21-28). The columns at x=9, 16 and 24 are identical on every row, so no part of the sprite changes with depth. Rows 28-29 narrow slightly to 28 and then 26 px wide, but this is only a corner trim of the frame. There is no vertical south face of 3 or more rows, no eave shadow under an edge line, and no ellipse. It reads as a flat floor decal, which matches the kind 'flat', and has no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small stair graphic: a light grey frame around dark horizontal bands with a few lighter step lines. It sits on a dark slate surround that reads as one flat fill. The measured 6 visible tones per tile is close to the paving reference (7) and above the grass (3), and measured flat coverage is 0%. By eye, though, the surfaces are flat bands with no stone speckle, grain or per-step shading like the cobbled paving reference, which shades each stone. Its dark edge pixels are 100% near-neutral, so the outline is a colourless black/grey line, where the grass reference has 0% neutral edges. That is the shallow sticker look. The paving reference is also mostly neutral (80%), but it has far richer surface texture. The candidate therefore looks thinner and flatter than the references, and with doubt the verdict is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 19245
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair opening: outer stone frame with a dark well and descending step bands",
+      "rows": "1-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 28,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole sprite is a 30px-wide plate that is 29 rows tall and has a nearly constant silhouette width (30 px from rows 1-27, narrowing to 28 and 26 only at the bottom corners). Inside, a light frame runs along the top row (row 1) and the sides. A dark well starts at rows 6-8 and gets lighter toward the bottom, with horizontal step bands. Light nosing lines at rows 21 and 25 each sit above a 2-3 row band. These are treads and risers of steps seen from above, not the front face of a standing body. The columns at x=9, 16 and 24 are identical, so there are no side faces or vertical structure. There is no standing volume and no south face of 3 or more rows, so this is a flat floor decal seen from above, which matches the kind flat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate reads as a small stair icon (about 20x18 source px) framed in a neutral dark box on a flat slate backdrop, not a 4x3-tile ground patch, so it does not match the grass/paving references in kind or coverage. It has only 7 distinct colours in total. The stair treads are plain horizontal bands with no per-stone shading, grain or speckle. The measured 6 visible tones per tile is close to the paving's 7, but the paving gets them from individually shaded cobbles, and here they are only broad stripes. All the dark edge pixels (100%) are neutral, so the outline is a near-black line with no brown or green lean, which gives the sticker look. The references carry tinted or stone-toned edges and varied texture. The flat slate field and the broad bands look flatter and thinner than the references when compared by eye.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 22283
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "outer frame / stone border",
+      "rows": "1-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "descending stair treads and risers inside the dark pit",
+      "rows": "6-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 28,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a near-rectangular plate, 30 px wide and rows 1-29. A light border runs along the top (row 1) and the left and right edges, with a lighter bottom lip at row 25. Inside, a very dark recess (rows 6-8) is followed by alternating lighter tread bands and darker riser bands (rows 9-24) that step down. All columns scanned (x=9, 16, 24) are identical, so the stripes are uniform horizontal bands with no side face and no vertical front face. It is drawn as a flat plate seen from above, which matches the flat kind. There is no separate front face of 3+ rows below a top surface, so it is not a three-quarter volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small framed stair block made of horizontal bands: pale grey treads alternating with dark navy risers, inside a thin dark frame. There are only 7 distinct colours in total, with about 4 usable lightness steps. The paving reference carries cobbles shaded one by one, with highlight edges and speckle. The candidate has no grain, no per-stone shading and no texture dots, and each tread and riser is a smooth strip. The measured 6 visible tones per tile matches the paving's 7 and is above the grass's 3. That count comes from the stripe contrast, not from real surface variation, so the eye reads it as thinner than the paving. The dark edge pixels are 100% near-neutral, so the frame is a black or grey sticker-like line rather than a tinted dark material tone, while the grass reference is 0% neutral and the paving 80%. The neutral outline plus clean flat bands makes it look flatter and more sticker-like than the references. It does not reach the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 25244
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair-well plate: cream frame on the left and top, dark pit, and horizontal step bands descending into it",
+      "rows": "1-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a flat rectangle about 30 px wide and 29 rows tall, with a constant width of 30 from rows 1 to 27. The column scans at x=9, 16 and 24 are identical, so the drawing is made of uniform horizontal bands with no vertical variation across the width. Those bands are the cream frame (rows 1, 25), a dark pit (rows 6-16) and lighter step treads separated by darker risers (rows 9, 13, 17-24, 26-29). It is a plate seen from above, with no raised body, no front-edge line followed by eave shadow, and no ellipse. The few rows of light and dark at the bottom (rows 26-29) are step bands inside the frame, not a separate vertical south face. This matches the flat kind, so it is a flat top-down slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small stair icon in a thick frame on a flat dark grey-blue backdrop, not a textured ground patch like the references. Its 6 visible tones per tile roughly match the paving reference's 7. They come from smooth horizontal step bands (light, mid, dark) with no per-stone shading, speckle or grain, whereas the paving reference shades each cobble individually. The dark edge pixels are 100% near-neutral. The paving reference is also grey (80% neutral), but its stone edges still show some tonal variation, and the candidate's edges read as a uniform dark sticker line around the frame and steps. The backdrop and the step faces are plain fills. The 0% near-flat figure comes only from the tiny 7-colour count and is not backed by visible texture. Next to the references it looks flatter and more sticker-like, so it fails."
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 21796
+  }
+ ],
+ "decidedAt": "2026-10-22T11:55:47.938Z",
+ "cells": {
+  "16": [
+   "3d301d96ed943213",
+   "8ff008dfd32adfa5",
+   "d741fd0e84907a24",
+   "f4ec9a7b28964a5c"
+  ],
+  "24": [
+   "0e3349b0cbabcf3a",
+   "0fefcaa8d8c4640a",
+   "14aaea4a4abae9f3",
+   "2dfd4aef80f805d8",
+   "41521c5127afb93b",
+   "479cfb3885207f3d",
+   "4ab27d444e455278",
+   "4f735bf496c9e0a6",
+   "52c390734d883c3c",
+   "56adfc354018932a",
+   "5ea5da8fd7de60ad",
+   "73d5006e8b1f7d58",
+   "8f2afeade0b2dba7",
+   "9e35698dba0ba004",
+   "a31160a95b210115",
+   "a9e6b1ab1eb77621",
+   "bfdef7bb20d830ae",
+   "d7b9937df14c2984",
+   "d869074e46a783bc",
+   "de526ebaa4a1fe9c",
+   "ded70c89c601eddc",
+   "dfbe0a84a45cc552",
+   "ec2e4ae8da90346b",
+   "fda32aef0e583bf0"
+  ],
+  "32": [
+   "9e881a392ca5ae8b"
+  ],
+  "48": [
+   "001ad0218ef02620",
+   "82c68befe7643b10",
+   "915f7cc57319923f",
+   "95b072336137ce77",
+   "9dbe89d9a1d736c9",
+   "d826e9526481881e"
+  ]
+ }
+}
