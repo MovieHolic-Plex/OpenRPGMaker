@@ -281,7 +281,7 @@ export function leafRampLine(palette: Palette): string {
     return best;
   };
   const hex = (e: PaletteEntry) => `#${[0, 1, 2].map((i) => e.rgba[i]!.toString(16).padStart(2, "0")).join("")}`;
-  const pairs = ORGANIC_LEAF_RAMP.map((h, i) => { const e = nearest(h); return `${e.key} ${hex(e)} ~${ORGANIC_LEAF_SHARES[i]}%`; }).join(", ");
+  const pairs = ORGANIC_LEAF_RAMP.map((h, i) => { const e = nearest(h); return `[${i}] ${e.key} ${hex(e)} ~${ORGANIC_LEAF_SHARES[i]}%`; }).join(", ");
   return [
     "## Leaf greens (from the exemplar trees, darkest to lightest, with their share of the leaf pixels)",
     `- Paint leaves ONLY with these keys: ${pairs}. Other greens of the palette are grass, moss or olive keys -`,
