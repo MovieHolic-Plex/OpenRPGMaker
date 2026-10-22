@@ -5,19 +5,22 @@
 # 호스티드 러너(16GB)는 SEVENZIP_MEMUSE=2g 로 돌린다.
 set -eu
 limit=${SEVENZIP_MEMUSE:-8g}
-real=$(find "$HOME/.cache/electron-builder" -type f -name 7zz -perm -111 2>/dev/null | head -n 1)
-if [ -z "$real" ]; then
-  echo "7za-memcap: ~/.cache/electron-builder 아래에 7zz 가 없다" >&2
-  exit 127
-fi
+cached=$(find "$HOME/.cache/electron-builder" -type f -name 7zz -perm -111 2>/dev/null | head -n 1 || true)
+system=$(command -v 7zz || command -v 7z || command -v 7za || true)
 cmd=${1:-}
-if [ "$cmd" = "a" ] || [ "$cmd" = "u" ]; then
+# 압축만 캐시된 7zz 에 메모리 상한을 붙인다. 첫 추출은 7zz 가 아직 없어서 시스템 7z 를 쓴다.
+if { [ "$cmd" = "a" ] || [ "$cmd" = "u" ]; } && [ -n "$cached" ]; then
   shift
   for arg in "$@"; do
     case "$arg" in
-      -mmemuse*) exec "$real" "$cmd" "$@" ;;
+      -mmemuse*) exec "$cached" "$cmd" "$@" ;;
     esac
   done
-  exec "$real" "$cmd" "-mmemuse=$limit" "$@"
+  exec "$cached" "$cmd" "-mmemuse=$limit" "$@"
+fi
+real=${cached:-$system}
+if [ -z "$real" ]; then
+  echo "7za-memcap: 7z 가 없다" >&2
+  exit 127
 fi
 exec "$real" "$@"
