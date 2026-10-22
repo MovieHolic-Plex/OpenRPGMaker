@@ -661,7 +661,8 @@ function checkHangOnFloor(project: Project, issues: LintIssue[]): void {
       if (!grid) continue;
       for (let i = 0; i < grid.length; i += 1) {
         const name = tiles.get(grid[i]!);
-        if (!name) continue;
+        // 아치·문틀은 벽 틈(통로) 위에 거는 것이 제자리다 — 가운데 칸이 걸을 수 있는 통로 칸이어도 바닥에 선 깃발이 아니다.
+        if (!name || /문틀|door ?frame|arch/iu.test(name)) continue;
         const x = i % map.width, y = Math.floor(i / map.width);
         if (!isPassable(project, map, x, y) || seen.has(name)) continue;
         seen.add(name);
@@ -691,8 +692,13 @@ function ceilingTiles(tileset: TilesetDef | undefined): Set<number> {
     ? meta.map((m, i) => [i, m as TileMetaLike])
     : meta && typeof meta === "object" ? Object.entries(meta as Record<string, TileMetaLike>).map(([k, m]) => [Number(k), m]) : [];
   for (const [tile, m] of entries) {
-    if (!m || typeof m !== "object" || (m.passage && m.passage !== "solid")) continue;
-    if (CEILING_WORDS.test(`${m.label ?? ""} ${(m.tags ?? []).join(" ")}`)) out.add(tile);
+    if (!m || typeof m !== "object") continue;
+    // 천장 띠에 거는 그림(천문대 둥근 지붕·처마 띠 — 이름표 「천장 띠」「천장 줄」)은 위 층 걸이라 통행이 «passable» 이어도
+    // 천장 그 자체다(Fallen fs_observatory 둥근 지붕 30×8 이 천장 구역의 「천장 아닌 칸」으로 잡혔다).
+    const label = `${m.label ?? ""} ${(m.tags ?? []).join(" ")}`;
+    if (/천장 ?띠|천장 ?줄/u.test(m.label ?? "")) { out.add(tile); continue; }
+    if (m.passage && m.passage !== "solid") continue;
+    if (CEILING_WORDS.test(label)) out.add(tile);
   }
   if (ceilingTileCache.size > 64) ceilingTileCache.clear();
   ceilingTileCache.set(key, out);
