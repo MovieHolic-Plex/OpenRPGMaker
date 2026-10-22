@@ -343,7 +343,8 @@ class ProjectionGuideTest(unittest.TestCase):
         paths = projection.write_guides(self.tmp)
         names = sorted(os.path.basename(p) for p in paths)
         self.assertEqual(names, ['projection-gable-front-1x.png', 'projection-gable-front-4x.png',
-                                 'projection-l-combo-1x.png', 'projection-l-combo-4x.png'])
+                                 'projection-l-combo-1x.png', 'projection-l-combo-4x.png',
+                                 'projection-wing-depth-1x.png', 'projection-wing-depth-4x.png'])
         for p in paths:
             a = np.array(Image.open(p).convert('RGB')).astype(int)
             self.assertEqual(int(np.abs(a[:, :, 0] - a[:, :, 1]).max() + np.abs(a[:, :, 1] - a[:, :, 2]).max()), 0, p)

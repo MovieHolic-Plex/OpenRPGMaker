@@ -43,6 +43,8 @@ def piece_rows(item_id, line):
         return F.gf_back(line)
     if item_id == 'roof.lean.side':
         return F.lean(line)
+    if item_id == 'roof.lean.left':
+        return {role: [r[::-1] for r in rows] for role, rows in F.lean(line).items()}
     if item_id == 'extra.chimney':
         return F.chimney(line)
     if item_id in F.ROOF_CELLS:
