@@ -5,6 +5,14 @@
 
 <!-- releases -->
 
+## 0.325.0 — 2026-10-22
+
+### 기능
+
+- **jp-city** — hand-pixel street stairs (overpass, side stairs + stage, wall ladder) and explicit stair notes (#3263) (`c4edf79`)
+- **ai** — polish mode — opt-in longer 1x review/critic/fix loop from the checklist panel (#3261) (`363a31f`)
+- **workshop** — object-gen footprint decision, better reference pictures, multi-cell objects (#3260) (`70edc7c`)
+
 ## 0.324.0 — 2026-10-22
 
 ### 기능
