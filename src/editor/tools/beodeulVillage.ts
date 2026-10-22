@@ -2170,7 +2170,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   }
 
   // ---------- 12d. 성벽 둘레(walls) ----------
-  // 비워 둔 띠에 성벽을 싣는다. 길이 가로 성벽(북·남)을 지나는 곳은 4×4 성문루(가운데 두 열 통로), 세로 성벽(서·동)을 지나는 곳은 끝 마감 틈.
+  // 비워 둔 띠에 성벽을 싣는다. 길이 가로 성벽(북·남)을 지나는 곳은 4×7 성문루(가운데 두 열 통로), 세로 성벽(서·동)을 지나는 곳은 끝 마감 틈.
   // 망루는 성문과 겹치지 않는 후보 자리에, 계단은 북쪽 성벽 안쪽 앞면에서 아래 땅이 걸을 수 있는 자리 둘.
   let wallInfo: { gates: WallGate[]; gaps: WallGap[]; towers: WallTower[]; stairs: number[]; blockedRoads: number; southGateRoad?: { x: number; from: number } } | null = null;
   if (wallLayout) {
@@ -2187,8 +2187,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 이제 성문 쪽(wallGate)마다 가운데에 가장 가까운 길 하나만 성문루가 되고, 나머지 성벽을 지나는 길은 성벽 안에서 끊는다(풀밭으로 되돌림).
     // 서·동 틈은 wallSideGaps 일 때만. 성문 쪽에 지나는 길이 없으면 큰길에서 맵 끝까지 두 칸 길을 낸다(걷어 낼 수 있는 덤불·소품만 치움).
     const gateSides: ("N" | "S")[] = options.wallGate === "N" ? ["N"] : options.wallGate === "NS" ? ["S", "N"] : ["S"];
-    const bandRows = (side: "N" | "S") => side === "N" ? [L.y0, L.y0 + 1, L.y0 + 2] : [L.y1, L.y1 + 1, L.y1 + 2];
-    const gxMin = L.x0 + 3, gxMax = L.x1 - 4;
+    const bandRows = (side: "N" | "S") => side === "N" ? [L.y0, L.y0 + 1, L.y0 + 2, L.y0 + 3, L.y0 + 4] : [L.y1, L.y1 + 1, L.y1 + 2, L.y1 + 3, L.y1 + 4];
+    const gxMin = L.x0 + 4, gxMax = L.x1 - 4;
     const owner = new Map<number, Stamp>();
     for (const [st, u] of undo) if (st.v === PROP) for (let j = 0; j < u.h; j += 1) for (let i = 0; i < u.w; i += 1) if (inMap(st.x + i, st.y + j)) owner.set(idx(st.x + i, st.y + j), st);
     const open = (c: number) => occ[c] === FREE || occ[c] === CLEAR || occ[c] === WALLB || occ[c] === ROAD || occ[c] === PLAZAC || (occ[c] === PROP && owner.has(c));
@@ -2226,8 +2226,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       let made = false;
       for (const cx of cols) {
         let top = -1;
-        if (side === "S") { for (let y = L.y1 - 2; y > L.y0 + 3; y -= 1) if (roadAt(cx, y) && roadAt(cx + 1, y)) { top = y; break; } }
-        else for (let y = L.y0 + 3; y < L.y1 - 2; y += 1) if (roadAt(cx, y) && roadAt(cx + 1, y)) { top = y; break; }
+        if (side === "S") { for (let y = L.y1 - 2; y > L.y0 + 5; y -= 1) if (roadAt(cx, y) && roadAt(cx + 1, y)) { top = y; break; } }
+        else for (let y = L.y0 + 6; y < L.y1 - 2; y += 1) if (roadAt(cx, y) && roadAt(cx + 1, y)) { top = y; break; }
         if (top < 0) continue;
         const cells: number[] = [];
         const ys = side === "S" ? [...Array(H - top - 1).keys()].map((i) => top + 1 + i) : [...Array(top).keys()];
@@ -2243,9 +2243,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
     if (options.wallSideGaps === true) for (const side of ["W", "E"] as const) {
       const x = side === "W" ? L.x0 : L.x1;
-      for (const [a, b] of runs(H, (y) => roadAt(x, y), L.y0 + 1, L.y1 - 1)) {
-        if (a - 3 <= L.y0 || b + 1 >= L.y1) continue; // 모서리에 너무 붙은 길은 성벽이 막는다
-        if (gaps.some((g) => g.side === side && a - 3 <= g.y + g.rows)) continue;
+      for (const [a, b] of runs(H, (y) => roadAt(x, y), L.y0 + 2, L.y1 - 1)) {
+        if (a - 4 < L.y0 + 2 || b + 1 > L.y1 - 1) continue; // 모서리에 너무 붙은 길은 성벽이 막는다(끝 마감 윗면 + 끝 앞면 세 줄이 들어갈 자리)
+        if (gaps.some((g) => g.side === side && a - 4 <= g.y + g.rows)) continue;
         gaps.push({ side, y: a, rows: b - a + 1 });
       }
     }
@@ -2253,16 +2253,16 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const keep = new Set<number>();
     for (const g of gates) {
       const yw = g.side === "S" ? L.y1 : L.y0;
-      const ys = g.side === "S" ? [...Array(H - (yw - 2)).keys()].map((i) => yw - 2 + i) : [...Array(yw + 4).keys()];
+      const ys = g.side === "S" ? [...Array(H - (yw - 2)).keys()].map((i) => yw - 2 + i) : [...Array(yw + 7).keys()];
       const cells = ys.filter((y) => inMap(0, y)).flatMap((y) => [idx(g.x, y), idx(g.x + 1, y)]);
       dropProps(cells); paveCells(cells); for (const c of cells) keep.add(c);
     }
-    for (const g of gaps) for (let y = g.y; y < g.y + g.rows; y += 1) for (let x = 0; x < W; x += 1) if (g.side === "W" ? x <= L.x0 : x >= L.x1) keep.add(idx(x, y));
+    for (const g of gaps) for (let y = g.y; y < g.y + g.rows; y += 1) for (let x = 0; x < W; x += 1) if (g.side === "W" ? x <= L.x0 + 1 : x >= L.x1 - 1) keep.add(idx(x, y));
     const cut: number[] = [];
     for (let c = 0; c < W * H; c += 1) {
       if (occ[c] !== ROAD && occ[c] !== PLAZAC) continue;
       const x = c % W, y = (c - x) / W;
-      if (keep.has(c) || !(x <= L.x0 || x >= L.x1 || y <= L.y0 + 2 || y >= L.y1)) continue;
+      if (keep.has(c) || !(x <= L.x0 + 1 || x >= L.x1 - 1 || y <= L.y0 + 4 || y >= L.y1)) continue;
       cut.push(c);
     }
     if (cut.length) {
@@ -2288,14 +2288,14 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       };
       const cutSet = new Set(cut);
       const spans = (hit: (i: number) => boolean, lo: number, hi: number) => runs(hi + 1, hit, lo, hi);
-      for (const [a, b] of spans((y) => cutSet.has(idx(L.x0, y)), L.y0 + 1, L.y1 - 1))
-        trimRun((x) => [...Array(b - a + 1).keys()].map((i) => [x, a + i]), (x) => [[x, a - 1], [x, b + 1]], L.x0 + 1, 1, L.x1 - 1);
-      for (const [a, b] of spans((y) => cutSet.has(idx(L.x1, y)), L.y0 + 1, L.y1 - 1))
-        trimRun((x) => [...Array(b - a + 1).keys()].map((i) => [x, a + i]), (x) => [[x, a - 1], [x, b + 1]], L.x1 - 1, -1, L.x0 + 1);
-      for (const [a, b] of spans((x) => cutSet.has(idx(x, L.y0 + 2)), L.x0 + 1, L.x1 - 1))
-        trimRun((y) => [...Array(b - a + 1).keys()].map((i) => [a + i, y]), (y) => [[a - 1, y], [b + 1, y]], L.y0 + 3, 1, L.y1 - 1);
-      for (const [a, b] of spans((x) => cutSet.has(idx(x, L.y1)), L.x0 + 1, L.x1 - 1))
-        trimRun((y) => [...Array(b - a + 1).keys()].map((i) => [a + i, y]), (y) => [[a - 1, y], [b + 1, y]], L.y1 - 1, -1, L.y0 + 3);
+      for (const [a, b] of spans((y) => cutSet.has(idx(L.x0 + 1, y)), L.y0 + 2, L.y1 - 1))
+        trimRun((x) => [...Array(b - a + 1).keys()].map((i) => [x, a + i]), (x) => [[x, a - 1], [x, b + 1]], L.x0 + 2, 1, L.x1 - 2);
+      for (const [a, b] of spans((y) => cutSet.has(idx(L.x1 - 1, y)), L.y0 + 2, L.y1 - 1))
+        trimRun((x) => [...Array(b - a + 1).keys()].map((i) => [x, a + i]), (x) => [[x, a - 1], [x, b + 1]], L.x1 - 2, -1, L.x0 + 2);
+      for (const [a, b] of spans((x) => cutSet.has(idx(x, L.y0 + 4)), L.x0 + 2, L.x1 - 2))
+        trimRun((y) => [...Array(b - a + 1).keys()].map((i) => [a + i, y]), (y) => [[a - 1, y], [b + 1, y]], L.y0 + 5, 1, L.y1 - 1);
+      for (const [a, b] of spans((x) => cutSet.has(idx(x, L.y1)), L.x0 + 2, L.x1 - 2))
+        trimRun((y) => [...Array(b - a + 1).keys()].map((i) => [a + i, y]), (y) => [[a - 1, y], [b + 1, y]], L.y1 - 1, -1, L.y0 + 5);
       const repaint = [...cut, ...trimmed];
       if ("mat" in spec.base) for (const c of repaint) fill({ x: c % W, y: Math.floor(c / W), w: 1, h: 1 }, spec.base.mat);
       else paintCells(repaint, spec.base);
@@ -2303,9 +2303,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 성문 길이 마을 길망에 닿게(2026-10-22 r3: 끊긴 길을 줄기째 지우자 성문 안쪽 두 칸 길만 섬처럼 남았다):
     // 성문 머리 위 칸에서 성벽 안쪽 길·광장까지 빈 땅으로 가장 짧은 길을 찾아 두 칸 폭으로 깐다(걷어 낼 수 있는 소품만 치움).
     for (const g of gates) {
-      const inner = g.side === "S" ? L.y1 - 2 : L.y0 + 3, dir = g.side === "S" ? -1 : 1;
+      const inner = g.side === "S" ? L.y1 - 2 : L.y0 + 6, dir = g.side === "S" ? -1 : 1;
       const target = (c: number) => (occ[c] === ROAD || occ[c] === PLAZAC) && !keep.has(c);
-      const inside = (x: number, y: number) => x > L.x0 && x < L.x1 - 1 && y > L.y0 + 2 && y < L.y1 - 1;
+      const inside = (x: number, y: number) => x > L.x0 + 1 && x < L.x1 - 2 && y > L.y0 + 5 && y < L.y1 - 1;
       const starts = [idx(g.x, inner), idx(g.x + 1, inner)];
       if ([g.x - 1, g.x, g.x + 1, g.x + 2].some((x) => inMap(x, inner + dir) && target(idx(x, inner + dir))) || [g.x - 1, g.x + 2].some((x) => target(idx(x, inner)))) continue;
       const prev = new Map<number, number>(); const q = [...starts]; for (const c of starts) prev.set(c, -1);
@@ -2359,18 +2359,19 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       if (peeled.length) logConstructionTiles(mw, "tidy", "성벽이 끊은 길 토막 정리");
     }
     const used = (side: "N" | "S", x0: number, x1: number) => gates.some((g) => g.side === side && x1 >= g.x - 2 && x0 <= g.x + 3);
-    const towers = L.towers.filter((t) => t.x > L.x0 + 1 && t.x + 1 < L.x1 - 1 && !used(t.side, t.x - 1, t.x + 2)
-      && [0, 1].every((i) => [...Array(7).keys()].every((j) => { const y = (t.side === "S" ? L.y1 : L.y0) - 3 + j; return !roadAt(t.x + i, y) && (!inMap(t.x + i, y) || occ[idx(t.x + i, y)] === WALLB); })));
+    const towers = L.towers.filter((t) => t.x >= L.x0 + 3 && t.x + 2 <= L.x1 - 3 && !used(t.side, t.x - 1, t.x + 3)
+      && [0, 1, 2].every((i) => [...Array(7).keys()].every((j) => { const y = (t.side === "S" ? L.y1 : L.y0) - 1 + j; return !roadAt(t.x + i, y) && (!inMap(t.x + i, y) || occ[idx(t.x + i, y)] === WALLB); })));
     const stairs: number[] = [];
-    const stairOk = (x: number) => x > L.x0 + 1 && x < L.x1 - 1 && !used("N", x - 1, x + 1) && !towers.some((t) => t.side === "N" && x >= t.x - 1 && x <= t.x + 2)
-      && !stairs.some((s) => Math.abs(s - x) < 4) && [FREE, ROAD, PLAZAC, CLEAR].includes(occ[idx(x, L.y0 + 3)]!) && (lv[idx(x, L.y0 + 3)] ?? 0) === 0;
-    for (const want of [Math.round(W * 0.14), Math.round(W * 0.86)]) for (let d = 0; d <= 6; d += 1) { const x = want + (d % 2 ? -1 : 1) * Math.ceil(d / 2); if (stairOk(x)) { stairs.push(x); break; } }
+    // 옆 계단 3×3(x..x+2, 북쪽 앞면 세 줄): 왼쪽 아래(x, y0+4)에서 땅(x, y0+5 → y0+6)으로 내려선다
+    const stairOk = (x: number) => x > L.x0 + 2 && x + 2 < L.x1 - 2 && !used("N", x - 1, x + 3) && !towers.some((t) => t.side === "N" && x <= t.x + 3 && x + 2 >= t.x - 1)
+      && !stairs.some((s) => Math.abs(s - x) < 6) && [FREE, ROAD, PLAZAC, CLEAR].includes(occ[idx(x, L.y0 + 6)]!) && (lv[idx(x, L.y0 + 6)] ?? 0) === 0;
+    for (const want of [Math.round(W * 0.14), Math.round(W * 0.86) - 2]) for (let d = 0; d <= 6; d += 1) { const x = want + (d % 2 ? -1 : 1) * Math.ceil(d / 2); if (stairOk(x)) { stairs.push(x); break; } }
     const plan: TownWallPlan = { x0: L.x0, y0: L.y0, x1: L.x1, y1: L.y1, gates, gaps, towers, stairs };
     // 성문 통로 두 칸의 바닥은 길로(폭 1 길이면 옆 칸도), 성문 앞뒤 한 칸도 길에 잇는다
     const roadTile = (() => { for (let c = 0; c < W * H; c += 1) if (occ[c] === ROAD) return mw.lowerTiles[c]!; return -1; })();
     for (const g of gates) {
       const yw = g.side === "S" ? L.y1 : L.y0;
-      for (let cy = -2; cy <= 4; cy += 1) for (const cx of [g.x, g.x + 1]) {
+      for (let cy = -2; cy <= 6; cy += 1) for (const cx of [g.x, g.x + 1]) {
         const y = yw + cy; if (!inMap(cx, y)) continue; const c = idx(cx, y);
         if (occ[c] !== ROAD && occ[c] !== PLAZAC && roadTile >= 0) { mw.lowerTiles[c] = roadTile; setLayerTileAt(mw, 2, c, -1); setLayerTileAt(mw, 3, c, -1); setLayerTileAt(mw, 4, c, -1); occ[c] = ROAD; }
       }
