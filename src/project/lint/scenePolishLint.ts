@@ -370,8 +370,8 @@ function heldTransitCells(map: GameMap): (c: Cell) => boolean {
     for (const st of r.stops) {
       if (!st.departSwitch) continue;
       const rect = transitPose(sim, { key: 0, routeIndex, def, pos: st.index, wait: 1, stopAt: st.index, served: [], blockedSec: 0 }).rect;
-      // 문 앞 승강장 끝 줄(차체 바로 위·아래 칸)에서 사라지는 것도 탑승이다.
-      for (const c of transitRectCells(rect)) for (const dy of [-1, 0, 1]) cells.add(`${c.x},${c.y + dy}`);
+      // 차체 바로 앞 승강장 두 줄(안전선·탑승 표시 줄 — 3/4 시점의 지붕 그림 아래)에서 사라지는 것도 탑승이다.
+      for (const c of transitRectCells(rect)) for (const dy of [-2, -1, 0, 1]) cells.add(`${c.x},${c.y + dy}`);
     }
   });
   return (c) => cells.has(`${c.x},${c.y}`);

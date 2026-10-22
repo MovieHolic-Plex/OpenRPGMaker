@@ -1179,14 +1179,13 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   add(plat, event("ev_fl_p_jihu", "강지후", jihuSpot, [page("pj", [swOff("sw_fl_jihu_boarded")], [], { who: "jihu", dir: "down" })]));
   const meet = { x: jihuSpot.x - 1, y: jihuSpot.y };
   // 지후가 탄다 — 막차는 장면이 부르고(FL_TRAIN_CALL) 문을 연 채 붙잡아 둔다(FL_TRAIN_GO 가 꺼진 동안). 지후가 안전선을 지나
-  // 열린 문으로 들어간 뒤에야 문을 닫고 떠난다(VQA r17: 「열차가 지후를 두고 떠난다」). 선로 첫 줄은 열차 몸이라 마지막 한 걸음만 통과로 딛고,
-  // 열차 그림이 그 칸의 지후를 덮는다(열차 발 줄이 한 줄 아래).
-  const edge = { x: jihuSpot.x, y: 10 };
+  // 탑승 표시에서 사라진 뒤에야 문을 닫고 떠난다(VQA r17: 「열차가 지후를 두고 떠난다」).
+  // 탑승 표시(st-boarding-mark, y9)에 선다 — 안전선 줄(y10)은 3/4 시점에서 열차 지붕 그림 밑이라 거기 선 사람은 지붕에 가린다(VQA r19).
+  const edge = { x: jihuSpot.x, y: 9 };
   const jihuBoards = (): Command[] => [
     face("ev_fl_p_jihu", "down"),
     walk("ev_fl_p_jihu", route(project, FL_MAP.platformPm, jihuSpot, edge, [meet])),
-    // 안전선 끝 = 열린 문 바로 앞. 한 칸 더 내려가면 3/4 시점에서 차체 지붕 뒤로 머리가 튀어나온다(VQA r19) —
-    // 제자리에서 어두운 문틈 위로 서서히 흐려져 「문 안으로 들어간다」로 읽히게 한다.
+    // 탑승 표시 위에서 제자리로 서서히 흐려진다 — 차체 쪽으로 걸어 들어가면 3/4 시점에서 지붕에 머리만 남았다가 꺼진다(VQA r19).
     { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [0, 1, 2, 3].flatMap(() => [{ kind: "changeOpacity", delta: -64 }, { kind: "wait" }]), repeat: false, wait: true, skippable: true } } as Command,
     setSw("sw_fl_jihu_boarded", true),
     face("@player", "down"),
