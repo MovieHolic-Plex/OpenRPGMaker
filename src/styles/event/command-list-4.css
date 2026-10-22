@@ -147,13 +147,23 @@
   > .event-editor-command-search-field {
   flex: 1 1 140px;
   max-width: 320px;
-  min-width: 96px;
+  /* 감싸개 안에는 지우기 버튼·「N개 일치」도 산다 — 96px 이면 입력칸이 22px 알약으로 눌렸다.
+     그보다 좁아지면 줄을 바꾼다(아래 flex-wrap). */
+  min-width: 176px;
+}
+
+/* 최대화·미리보기로 칼럼이 좁아지면 컨트롤을 자르거나 눌러 담지 않고 다음 줄로 넘긴다
+   (VQA am3685 B06: 보기 토글·AI 버튼이 오른쪽에서 잘림). */
+.event-editor .event-contents-fieldset > .toolbar.event-editor-command-toolbar {
+  flex-wrap: wrap;
+  padding-block: 4px;
+  row-gap: 4px;
 }
 
 /* 입력칸은 감싸개 폭을 따른다. command-list-3.css 의 min-width:140px 가 남으면 96px 까지 줄어든
    감싸개 밖으로 넘쳐 되돌리기 버튼 밑에 깔렸다(UI 감사 06-eventwin-07). */
 .event-editor .event-editor-command-toolbar .event-editor-command-search-field > .event-editor-command-search {
-  min-width: 0;
+  min-width: 72px;
   width: 100%;
 }
 

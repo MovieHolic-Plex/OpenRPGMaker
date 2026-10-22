@@ -301,6 +301,7 @@ function scheduleMenuAnchor(menu: HTMLElement, trigger: HTMLElement): void {
   const apply = (): void => {
     if (!menu.isConnected || !trigger.isConnected) return;
     anchorMenuToViewport(menu, trigger);
+    observeMenuGrowth(menu, trigger);
   };
   if (typeof window.requestAnimationFrame === "function") window.requestAnimationFrame(apply);
   else setTimeout(apply, 0);
@@ -320,17 +321,47 @@ function scheduleMenuAnchor(menu: HTMLElement, trigger: HTMLElement): void {
 function installAnchorKeepers(): void {
   if (anchorKeepersInstalled || typeof window === "undefined") return;
   anchorKeepersInstalled = true;
-  const reanchor = (): void => {
+  const reanchor = (event?: Event): void => {
     const current = openAnchor;
     if (!current) return;
     if (!current.menu.isConnected || !current.trigger.isConnected) {
       openAnchor = null;
       return;
     }
+    // 메뉴 자신의 내부 스크롤은 위치와 상관없다 — 다시 재면 maxHeight 를 풀어 스크롤 위치와 폭이 흔들려 왼쪽으로 튄다.
+    if (event?.type === "scroll" && event.target instanceof Node && current.menu.contains(event.target)) return;
     anchorMenuToViewport(current.menu, current.trigger);
   };
   window.addEventListener("resize", reanchor);
   window.addEventListener("scroll", reanchor, true);
+}
+
+const observedMenus = new WeakSet<HTMLElement>();
+
+/**
+ * 열린 뒤 내용이 커지거나 줄면(작업 기록 섹션 펼치기 등) 높이 예산·좌표를 다시 잡는다.
+ * 열 때 한 번만 재면 커진 메뉴가 뷰포트 밖으로 넘치고, 나중 재고정에서야 폭이 바뀌며 튄다.
+ */
+function observeMenuGrowth(menu: HTMLElement, trigger: HTMLElement): void {
+  if (typeof ResizeObserver === "undefined" || observedMenus.has(menu)) return;
+  observedMenus.add(menu);
+  let lastHeight = 0;
+  let lastWidth = 0;
+  const observer = new ResizeObserver(() => {
+    if (!menu.isConnected || !trigger.isConnected) {
+      observer.disconnect();
+      return;
+    }
+    // 재고정이 만든 크기 변화에는 반응하지 않는다(자기 되먹임 방지): 내용 높이·폭이 바뀐 때만.
+    const height = menu.scrollHeight;
+    const width = menu.scrollWidth;
+    if (height === lastHeight && width === lastWidth) return;
+    lastHeight = height;
+    lastWidth = width;
+    anchorMenuToViewport(menu, trigger);
+  });
+  observer.observe(menu);
+  for (const child of Array.from(menu.children)) observer.observe(child);
 }
 
 /**
@@ -381,7 +412,20 @@ export function anchorMenuToViewport(menu: HTMLElement, trigger: HTMLElement): v
   menu.style.top = placeAbove
     ? `${Math.max(margin, rect.top - gap - height)}px`
     : `${Math.min(rect.bottom + gap, Math.max(margin, viewportH - margin - height))}px`;
-  menu.style.left = `${Math.min(Math.max(margin, rect.right - width), Math.max(margin, viewportW - margin - width))}px`;
+  // 가로 위치는 트리거 오른쪽 끝이 그대로면 처음 잡은 값을 지킨다. 다시 재면 이미 정해진 left 때문에 폭이 달리 읽혀
+  // (스크롤·내용 변화 때마다) 메뉴 왼쪽 끝이 튀었다.
+  const rightEdge = Math.round(rect.right);
+  const keptLeft = menu.dataset.anchorRight === String(rightEdge) ? Number(menu.dataset.anchorLeft) : Number.NaN;
+  // 왼쪽 경계는 트리거가 속한 팔레트 패널이다 — 툴바 왼쪽 끝 트리거(되돌리기 기록 ▾)의 메뉴가 레일까지 뻗지 않게 한다.
+  const panelLeft = trigger.closest<HTMLElement>('[data-testid="left-palette-root"]')?.getBoundingClientRect().left ?? 0;
+  const minLeft = Math.max(margin, panelLeft + 4);
+  const maxLeft = Math.max(minLeft, viewportW - margin - width);
+  const left = Number.isFinite(keptLeft)
+    ? Math.min(Math.max(keptLeft, minLeft), maxLeft)
+    : Math.min(Math.max(minLeft, rect.right - width), maxLeft);
+  menu.dataset.anchorRight = String(rightEdge);
+  menu.dataset.anchorLeft = String(left);
+  menu.style.left = `${left}px`;
   menu.dataset.placement = placeAbove ? "above" : "below";
 }
 

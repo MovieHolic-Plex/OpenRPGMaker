@@ -1213,6 +1213,12 @@ export class EditScene extends PhaserRuntime.Scene {
       this.clearMapEdgeBand();
       if (!this.getDragOperationHandler().active()) this.clearHoverPreview();
     });
+    // 캔버스 밖(툴바 등)으로 나가면 Phaser 의 pointerout 이 오지 않으므로 gameout 에서도 호버 미리보기를 치운다.
+    this.input.on("gameout", () => {
+      this.pointerOverCanvas = false;
+      this.clearMapEdgeBand();
+      if (!this.getDragOperationHandler().active()) this.clearHoverPreview();
+    });
     this.input.on("pointerupoutside", (ptr: Phaser.Input.Pointer) => {
       this.endPointerGesture(ptr);
       this.replayDeferredCameraFocus();

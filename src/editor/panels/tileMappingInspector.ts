@@ -51,6 +51,17 @@ function staticChipsetMeta(selectedTile: number): HTMLElement {
   return meta;
 }
 
+const TILE_ROLE_LABELS: Readonly<Record<string, string>> = {
+  prop: "소품", building: "건물", detail: "디테일", terrain: "지형", wall: "벽", floor: "바닥",
+  furniture: "가구", decor: "장식", water: "물", fence: "울타리", road: "길", path: "길",
+  empty: "비어 있음", roof: "지붕", unused: "미사용", green: "초목", edge: "가장자리", stairs: "계단",
+};
+
+/** 저장된 role 은 영문 내부 값이다 — 화면에는 사람 말로 보인다(모르는 값은 그대로). */
+function tileRoleLabel(role: string): string {
+  return TILE_ROLE_LABELS[role.trim().toLowerCase()] ?? role;
+}
+
 /** 기본 타일 그림판이 아닌 타일셋 — 프로젝트에 저장된 tileMeta 만 신뢰한다. */
 function projectTileMeta(tileset: TilesetDef, selectedTile: number): HTMLElement {
   const meta = el("div", { class: "tile-mapping-meta-group", dataset: { testid: "tile-mapping-meta-project" } });
@@ -71,7 +82,7 @@ function projectTileMeta(tileset: TilesetDef, selectedTile: number): HTMLElement
     );
     return meta;
   }
-  if (entry.role) meta.append(el("div", { class: "tile-mapping-meta", text: `역할: ${entry.role}` }));
+  if (entry.role) meta.append(el("div", { class: "tile-mapping-meta", text: `역할: ${tileRoleLabel(entry.role)}` }));
   if (entry.description) meta.append(el("div", { class: "tile-mapping-meta", text: entry.description }));
   const tags = entry.tags ?? [];
   if (tags.length > 0) meta.append(el("div", { class: "tile-mapping-meta", text: `태그: ${tags.join(", ")}` }));

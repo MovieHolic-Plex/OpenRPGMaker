@@ -247,6 +247,20 @@
   gap: 2px;
 }
 
+/* 메뉴 안 입력칸 공통 외형(appearance:none · 30px대 상자)이 :checked 표시를 지운다 —
+   네이티브 체크박스로 되돌려 켜짐/꺼짐이 보이게 한다. */
+.edit-activity-map-only > .edit-activity-map-only-input {
+  accent-color: var(--accent);
+  appearance: auto;
+  flex: 0 0 auto;
+  height: 14px;
+  margin: 0;
+  min-height: 0;
+  min-width: 0;
+  padding: 0;
+  width: 14px;
+}
+
 .edit-activity-toolbar {
   align-items: center;
   display: flex;
