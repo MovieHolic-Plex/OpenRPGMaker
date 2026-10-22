@@ -1203,8 +1203,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           featureChecklist.setMeasured({ id: itemId, text: `${map.name}: 독립 비평(축 1·2·6) major 0`, mapId: id });
           try {
             const px = pngSize(dataUrl);
-            const reply = await eventAssistChat(null, { messages: [{ role: "user", content: [{ type: "text", text: featureCriticPrompt(reviewTask, map.name, map, px) }, { type: "image_url", image_url: { url: dataUrl } }] }], ...(options.signal ? { signal: options.signal } : {}) });
-            const critic = parseFeatureCritic(typeof reply.message.content === "string" ? reply.message.content : "", id, 1);
+            const others = [...fullImages].filter(([other]) => other !== id);
+            const reply = await eventAssistChat(null, { messages: [{ role: "user", content: [
+              { type: "text", text: featureCriticPrompt(reviewTask, map.name, map, px, others.map(([other]) => ctx.project.maps[other]!.name)) },
+              { type: "image_url", image_url: { url: dataUrl } }, ...others.map(([, url]) => ({ type: "image_url", image_url: { url } }))] }], ...(options.signal ? { signal: options.signal } : {}) });
+            const critic = parseFeatureCritic(typeof reply.message.content === "string" ? reply.message.content : "", id, 1 + others.length);
             emit({ type: "execution_status", name: "feature_review.critic", ok: !critic.problem && critic.majors.length === 0, summary: `${map.name} 독립 비평 ${critic.score ?? "?"}점 · major ${critic.majors.length}${critic.problem ? ` · ${critic.problem}` : ""}`, data: critic });
             return criticToVerdict(itemId, critic);
           } catch (error) {

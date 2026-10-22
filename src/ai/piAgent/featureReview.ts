@@ -274,7 +274,7 @@ export interface CriticVerdict {
  * 이 지시문으로 매겼더니 Sonnet 6·6·7.6 대 6·7.6·7, Opus 6·6.7·7 대 5.7·7·7.3 — 그림 한 장 절대 점수는 두 판을 가르지 못했다.
  * 반면 major 목록(좌표·고칠 점)은 r28 성문 방 단 앞 검은 띠처럼 실제 결함을 짚었다. 그래서 점수 문턱 대신 major 0 을 통과로 본다. */
 
-export function featureCriticPrompt(task: string, mapName: string, cells: { width: number; height: number }, imagePx: { width: number; height: number } | undefined): string {
+export function featureCriticPrompt(task: string, mapName: string, cells: { width: number; height: number }, imagePx: { width: number; height: number } | undefined, otherMaps: readonly string[] = []): string {
   const scale = imagePx ? ` The image is ${imagePx.width}×${imagePx.height}px, so one cell is about ${(imagePx.width / cells.width).toFixed(1)}px; give coordinates in CELLS (x from the left, y from the top, 0-based).` : " Give coordinates in CELLS (x from the left, y from the top, 0-based).";
   return [
     "You are a fresh, adversarial visual QA reviewer for a 16px 3/4-view (top-down JRPG) game map. You have never seen this map, its build notes or any earlier score. Score it once, strictly.",
@@ -284,7 +284,9 @@ export function featureCriticPrompt(task: string, mapName: string, cells: { widt
     "Axis 2 View and palette consistency: all art shares the same 3/4 view and palette feel.",
     "Axis 6 Doors and stairs: the exit door reads as a door in a wall; stairs face the way they lead.",
     "Genre conventions (do NOT count these as majors): an interior is drawn as a room shape inside a black map; black OUTSIDE the room's outer wall outline is the off-screen exterior, not void — count void only for black or bare holes INSIDE the room's outline, or when the room fills only a small part of the frame. The standard interior exit is an opening or mat in the south wall at the bottom edge that leads off the map; that reads as a door. A room may be non-rectangular.",
-    `Map: ${mapName}, ${cells.width}×${cells.height} cells, rendered at about 1x.${scale}`,
+    `Map: ${mapName}, ${cells.width}×${cells.height} cells, rendered at about 1x (image 1).${scale}`,
+    // 여러 층·방으로 지은 요청에서 맵 하나만 보이면 다른 맵에 있는 특징을 「없다」고 major 로 잡는다(2026-10-22 천문대 아래층: 망원경이 없다는 major 를 여덟 바퀴 반복).
+    ...(otherMaps.length ? [`This build has ${otherMaps.length + 1} maps. Images 2..${otherMaps.length + 1} are the other maps (${otherMaps.join(", ")}) for context only — judge and list majors for image 1 alone, and do not count a requested feature as missing if it is clearly on another map.`] : []),
     `What the user asked for: ${task.slice(0, 1200)}`,
     "List EVERY major with the cell rectangle it covers and ONE concrete layout fix. The builder cannot draw new art or cut holes into the void: fixes must change the room plan (shape, size, narrowing an empty strip with wall), positions, framing (walls, pillars, dais with a front riser, rugs, paired statues or lights) or swap in a larger existing piece. Do not suggest changing the request.",
     'Reply with JSON only: {"imagesSeen": <number of images you received>, "axes": {"composition": n, "view": n, "doors": n}, "score": n, "majors": [{"axis": 1|2|6, "x": n, "y": n, "w": n, "h": n, "what": "한국어 한 줄 — 보이는 것", "fix": "한국어 한 줄"}], "minors": ["한국어 한 줄"]}',
