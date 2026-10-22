@@ -7,10 +7,12 @@
   dry <테마> <판> <후보> [--module <판 모듈>] [--out <폴더>]  후보 한 벌의 관문·조립 + preview/ PNG(자체 점검 입구)
   gate <테마> <판>                draw + 기계 관문(P Z Q F S J G Y R / WARN OUTLINE CONTRAST T L N). FAIL 이면 종료코드 1
   assemble <테마> <판> [--line A] [--key A1]   부품을 레시피대로 조립하고 조립 관문 A1~A11
-  review <테마> <판> [--runs 3]   독립 Opus 검수(숨긴 함정·무효 회차·다수결·영수증)
-  sheet <테마> <판>               검수 PASS 후보만 ~/claude-viz/bk-<테마>-<판>.html 자체완결 시트
-  village <테마> <판> --line A [--seed N] [--size 52x40] [--all]  그 줄의 조립 건물을 길·마당·광장·나무가 있는 마을로 놓는다
+  finish <테마> <판> --line A [--building id] [--jobs N]   조립 관문을 통과한 건물마다 Opus 5.5 high 가 손 마감(finish.py)
+  review <테마> <판> [--runs 3] [--finished]   독립 Opus 검수(숨긴 함정·무효 회차·다수결·영수증). --finished 는 마감 그림
+  sheet <테마> <판> [--finished]  검수 PASS 후보만 ~/claude-viz/bk-<테마>-<판>[-finished].html 자체완결 시트
+  village <테마> <판> --line A [--seed N] [--size 52x40] [--all] [--finished]  그 줄의 조립(또는 마감) 건물을 마을로 놓는다
   pick <테마> <판> <항목> <후보> --sha <앞 8자리>   사람이 고른 후보를 그림 해시에 묶어 기록
+  pick <테마> <판> <건물> <후보> --sha <앞 8자리> --finished   사람이 고른 마감 건물을 마감 그림 해시에 묶어 기록
   reject <테마> <판> <항목> <후보> --why …          사람이 버린 후보와 이유
   objgate <테마>                  사람이 고른 부품으로 조립한 건물의 3/4 관문(object-gate kind structure) 영수증
   status [<테마>]                 판·관문·검수·시트·고른 것·3/4 영수증 현황
@@ -570,6 +572,15 @@ def cmd_validate(theme):
     return 1 if errs else 0
 
 
+def _finish_status(theme, rid):
+    d = os.path.join(dot.RUNS, theme, rid, 'finished')
+    if not os.path.isdir(d):
+        return ''
+    recs = [json.load(open(os.path.join(d, f), encoding='utf-8')) for f in os.listdir(d)
+            if f.endswith('.json') and f != 'sheet.json']
+    return f' · 마감 검사 통과 {sum(1 for r in recs if r.get("pass"))}/{len(recs)}' if recs else ''
+
+
 def superseded_records(theme, rid):
     """원장에서 이 판의 그림 해시에 묶인 기록 수(고름·버림·관문 해시·시트). superseded 판은 안내로만 센다."""
     L = ledger(theme)
@@ -841,19 +852,69 @@ def cmd_objgate(theme):
     return 0 if ok == len(rows) and rows else 1
 
 
-def cmd_sheet(theme, rid, show_failed=False):
+def cmd_sheet(theme, rid, show_failed=False, finished=False):
     import sheet
-    return sheet.write(theme, rid, show_failed)
+    return sheet.write(theme, rid, show_failed, finished=finished)
 
 
-def cmd_review(theme, rid, runs=3, judge_cmd=None):
+def cmd_review(theme, rid, runs=3, judge_cmd=None, finished=False):
     import review
-    return review.run(theme, rid, runs, judge_cmd)
+    return review.run(theme, rid, runs, judge_cmd, finished=finished)
 
 
-def cmd_village(theme, rid, line='A', seed=0, size=None, all_=False, quiet=False):
+def cmd_village(theme, rid, line='A', seed=0, size=None, all_=False, quiet=False, finished=False):
     import village
-    return village.write(theme, rid, line, seed, size or village.DEFAULT_SIZE, all_, quiet)
+    return village.write(theme, rid, line, seed, size or village.DEFAULT_SIZE, all_, quiet, finished=finished)
+
+
+def cmd_finish(theme, rid, line, building=None, jobs=1, cmd=None):
+    import finish
+    return finish.run(theme, rid, line, building, jobs, cmd)
+
+
+def finished_picked_path(theme, line, building):
+    return os.path.join(dot.theme_dir(theme), 'picked', line, 'finished', f'{building}.png')
+
+
+def cmd_pick_finished(theme, rid, building, key, sha, note, by='user'):
+    """사람이 마감 시트에서 고른 마감 건물 — 시트에 보인 마감 해시 · 지금 마감 PNG · 마감 검사 · 바탕 조립 · 마감 검수 PASS 가
+    모두 같은 해시일 때만 picked/<줄>/finished/<건물>.png 와 원장 finishedPicks 에 적는다."""
+    import finish
+    import review
+    if by != 'user':
+        raise SystemExit('pick 은 사람만 한다 — --by 는 user 만 받는다(감독·에이전트 대리 선택 경로 없음)')
+    ln = line_of(theme, key)
+    if not ln:
+        raise SystemExit(f'후보 {key} 의 줄을 모른다 — 시드 lines: {", ".join(lines(theme))}')
+    recipe = building[len(key) + 1:] if building.startswith(f'{key}.') else building
+    bid = f'{key}.{recipe}'
+    sheet_p = os.path.join(finish.out_dir(theme, rid), 'sheet.json')
+    if not os.path.exists(sheet_p):
+        raise SystemExit(f'{theme} {rid}: 마감 시트가 없다 — sheet {theme} {rid} --finished 를 먼저(사람이 본 시트가 있어야 고를 수 있다)')
+    shown = (json.load(open(sheet_p, encoding='utf-8')).get('shown') or {}).get(bid)
+    if not shown:
+        raise SystemExit(f'{bid} 는 마감 시트에 보이지 않았다(검수 PASS 마감 건물만 시트에 올라온다)')
+    if not sha or not shown.startswith(sha):
+        raise SystemExit(f'--sha 가 시트에 보인 마감 해시({shown[:8]})와 다르다 — 사람이 본 그림의 해시 앞자리를 그대로 받는다')
+    cands, why = finish.finished_candidates(theme, rid)
+    if bid not in cands:
+        raise SystemExit(f'{bid}: 지금 쓸 수 있는 마감본이 아니다 — {why.get(bid, "마감 기록 없음")}')
+    img = cands[bid]['img']
+    cur = dot.image_hash(img)
+    if cur != shown:
+        raise SystemExit(f'시트 이후 마감 그림이 바뀌었다(시트 {shown[:12]} ≠ 현재 {cur[:12]}). sheet --finished 를 다시 만들어 보여야 한다')
+    if not review.passed(theme, rid, bid, img, finished=True):
+        raise SystemExit(f'{bid}: 마감 그림 해시에 대한 독립 검수 PASS 영수증이 없다 — review {theme} {rid} --finished')
+    out = finished_picked_path(theme, ln, recipe)
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    img.save(out)
+    L = ledger(theme)
+    L.setdefault('finishedPicks', [])
+    L['finishedPicks'] = [p for p in L['finishedPicks'] if not (p['building'] == recipe and p['line'] == ln)] + [
+        {'round': rid, 'building': recipe, 'line': ln, 'key': key, 'sha256': cur,
+         'baseSha256': cands[bid]['record'].get('baseSha256'), 'note': note, 'at': now(), 'by': 'user'}]
+    save_ledger(theme, L)
+    print(f'마감 고름 기록: {recipe} 줄 {ln} ← {theme} {rid} {bid} ({cur[:12]}) → {os.path.relpath(out, REPO)}')
 
 
 def cmd_list(theme):
@@ -886,7 +947,8 @@ def cmd_status(theme=None):
             print(f'  판 {rid}: 그림 {"있음" if os.path.exists(os.path.join(dot.RUNS, t, rid, "manifest.json")) else "없음"}'
                   + (f' · 마지막 관문 {last["at"]} FAIL {last["fail"]} WARN {last["warn"]}' if last else ' · 관문 기록 없음')
                   + (f' · 검수 {rev[-1]["valid"]}/{rev[-1]["need"]} 유효 ({rev[-1]["at"]})' if rev else ' · 검수 없음')
-                  + f' · 시트 {"있음" if os.path.exists(os.path.join(dot.VIZ, f"bk-{t}-{rid}.html")) else "없음"}')
+                  + f' · 시트 {"있음" if os.path.exists(os.path.join(dot.VIZ, f"bk-{t}-{rid}.html")) else "없음"}'
+                  + _finish_status(t, rid))
         got = [p for (item, line), (p, st) in ps.items() if st == 'current']
         print(f'  고른 부품 {len(got)}/{len(s["items"]) * len(lines(t))} · 버림 기록 {len(L["rejects"])}건')
         for (item, line), (p, st) in sorted(ps.items()):
@@ -928,15 +990,24 @@ def main(argv=None):
     p.add_argument('round')
     p.add_argument('--line', default='A')
     p.add_argument('--key')
+    p = sub.add_parser('finish')
+    p.add_argument('theme')
+    p.add_argument('round')
+    p.add_argument('--line', required=True)
+    p.add_argument('--building')
+    p.add_argument('--jobs', type=int, default=1)
+    p.add_argument('--cmd', dest='agent_cmd')
     p = sub.add_parser('review')
     p.add_argument('theme')
     p.add_argument('round')
     p.add_argument('--runs', type=int, default=3)
     p.add_argument('--judge-cmd')
+    p.add_argument('--finished', action='store_true')
     p = sub.add_parser('sheet')
     p.add_argument('theme')
     p.add_argument('round')
     p.add_argument('--show-failed', action='store_true')
+    p.add_argument('--finished', action='store_true')
     p = sub.add_parser('pick')
     p.add_argument('theme')
     p.add_argument('round')
@@ -945,6 +1016,7 @@ def main(argv=None):
     p.add_argument('--sha', required=True)
     p.add_argument('--note', default='')
     p.add_argument('--by', default='user')
+    p.add_argument('--finished', action='store_true')
     p = sub.add_parser('reject')
     p.add_argument('theme')
     p.add_argument('round')
@@ -961,6 +1033,7 @@ def main(argv=None):
     p.add_argument('--seed', type=int, default=0)
     p.add_argument('--size')
     p.add_argument('--all', action='store_true')
+    p.add_argument('--finished', action='store_true')
     p = sub.add_parser('status')
     p.add_argument('theme', nargs='?')
     p = sub.add_parser('projection')
@@ -987,12 +1060,17 @@ def main(argv=None):
     if a.cmd == 'assemble':
         _, fails = cmd_assemble(a.theme, a.round, a.line, a.key)
         return 1 if fails else 0
+    if a.cmd == 'finish':
+        return cmd_finish(a.theme, a.round, a.line, a.building, a.jobs, a.agent_cmd)
     if a.cmd == 'review':
-        return cmd_review(a.theme, a.round, a.runs, a.judge_cmd)
+        return cmd_review(a.theme, a.round, a.runs, a.judge_cmd, a.finished)
     if a.cmd == 'sheet':
-        return cmd_sheet(a.theme, a.round, a.show_failed)
+        return cmd_sheet(a.theme, a.round, a.show_failed, a.finished)
     if a.cmd == 'pick':
-        cmd_pick(a.theme, a.round, a.item, a.key, a.sha, a.note, a.by)
+        if a.finished:
+            cmd_pick_finished(a.theme, a.round, a.item, a.key, a.sha, a.note, a.by)
+        else:
+            cmd_pick(a.theme, a.round, a.item, a.key, a.sha, a.note, a.by)
         return 0
     if a.cmd == 'reject':
         cmd_reject(a.theme, a.round, a.item, a.key, a.why, a.by)
@@ -1007,7 +1085,7 @@ def main(argv=None):
             except ValueError:
                 raise SystemExit('--size 는 40x28 처럼 WxH 칸이다')
             size = (w, h)
-        _, html_path = cmd_village(a.theme, a.round, a.line, a.seed, size, a.all)
+        _, html_path = cmd_village(a.theme, a.round, a.line, a.seed, size, a.all, finished=a.finished)
         print(f'  HTML {html_path}')
         return 0
     if a.cmd == 'status':

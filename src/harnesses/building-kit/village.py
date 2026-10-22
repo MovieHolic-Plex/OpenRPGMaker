@@ -11,6 +11,8 @@ PNG(1배·2배)와 HTML 한 장으로 낸다.
 - 건물은 검수 영수증이 **지금 그림 화소 해시**에 대해 complete + PASS 인 것만 놓는다(`--all` 은 전부).
 - 문은 길 쪽을 향하고, 문 앞 마당 1~2칸을 거쳐 길까지 걸어갈 수 있어야 한다(BFS 로 확인하고 실패를 보고한다).
 - 건물끼리 겹치지 않는다. 같은 `--seed` 면 같은 마을이 나온다.
+- `--finished` 는 마감 건물(finish 단계)을 놓는다 — 마감 검수 영수증이 지금 마감 그림 해시에 대해 PASS 인 것만(`--all` 은 마감본 전부).
+  결과 이름에 `-finished` 가 붙는다.
 """
 import base64
 import datetime
@@ -208,12 +210,16 @@ def _reach(grid, start, targets):
                 queue.append((nx, ny))
     return False
 
-def plan(theme, rid, line, seed=0, size=DEFAULT_SIZE, all_=False, parts=None):
+def plan(theme, rid, line, seed=0, size=DEFAULT_SIZE, all_=False, parts=None, finished=False):
     recipes = [b for b in AS.round_buildings(theme, rid)]
     if parts is None:
         import harness
         rendered = harness.render_round(theme, rid)[1]
         parts = harness.parts_for(theme, rid, line, rendered)
+    fin, fin_why = {}, {}
+    if finished:
+        import finish
+        fin, fin_why = finish.finished_candidates(theme, rid, {line: parts})
     used, skipped = [], []
     kits = {}
     for recipe in recipes:
@@ -222,9 +228,15 @@ def plan(theme, rid, line, seed=0, size=DEFAULT_SIZE, all_=False, parts=None):
             skipped.append((recipe['id'], '조립 관문 FAIL'))
             continue
         im = res['img'].img()
-        ok = review.passed(theme, rid, f'{line}.{recipe["id"]}', im)
+        bid = f'{line}.{recipe["id"]}'
+        if finished:
+            if bid not in fin:
+                skipped.append((recipe['id'], '마감본 없음 — ' + fin_why.get(bid, 'finish 미실행')))
+                continue
+            im = fin[bid]['img']
+        ok = review.passed(theme, rid, bid, im, finished)
         if not ok and not all_:
-            rec = review.receipt(theme, rid, f'{line}.{recipe["id"]}')
+            rec = review.receipt(theme, rid, bid, finished)
             why = '검수 영수증 없음' if not rec else (
                 f'검수 {rec.get("verdict")} ({rec.get("votes", "?")})' if rec.get('verdict') != 'PASS'
                 else '영수증 해시가 지금 그림과 다르다')
@@ -241,13 +253,13 @@ def plan(theme, rid, line, seed=0, size=DEFAULT_SIZE, all_=False, parts=None):
     pc = road_rows[px0 + PLAZA // 2]
     plaza_rect = (px0, pc - PLAZA // 2, px0 + PLAZA, pc + PLAZA // 2 + 1)
     placed = _place_recipes([u['recipe'] for u in used], kits, size, road_rows, avoid=[plaza_rect])
-    return {'theme': theme, 'round': rid, 'line': line, 'seed': seed, 'size': size,
+    return {'theme': theme, 'round': rid, 'line': line, 'seed': seed, 'size': size, 'finished': finished,
             'road_rows': road_rows, 'placed': placed, 'used': used, 'skipped': skipped,
             'plaza_rect': plaza_rect, 'well_at': (px0 + PLAZA // 2 - 1, pc - 1),
             'images': {u['recipe']['id']: u['img'] for u in used}}
 
-def compose(theme, rid, line, seed=0, size=DEFAULT_SIZE, all_=False, parts=None):
-    p = plan(theme, rid, line, seed, size, all_, parts)
+def compose(theme, rid, line, seed=0, size=DEFAULT_SIZE, all_=False, parts=None, finished=False):
+    p = plan(theme, rid, line, seed, size, all_, parts, finished)
     w, h = size
     pal = dot.palette(theme)
     ground = ground_ramp(theme)
@@ -329,15 +341,16 @@ def compose(theme, rid, line, seed=0, size=DEFAULT_SIZE, all_=False, parts=None)
     return {**p, 'img': cv.img(), 'road': road_cells, 'plaza': plaza_cells, 'yard': yard_cells,
             'trees': green, 'failures': failures}
 
-def write(theme, rid, line, seed=0, size=DEFAULT_SIZE, all_=False, quiet=False):
-    res = compose(theme, rid, line, seed, size, all_)
+def write(theme, rid, line, seed=0, size=DEFAULT_SIZE, all_=False, quiet=False, finished=False):
+    res = compose(theme, rid, line, seed, size, all_, finished=finished)
     base = os.path.join(dot.RUNS, theme, rid)
     os.makedirs(base, exist_ok=True)
-    p1 = os.path.join(base, f'village-{line}.png')
+    suf = '-finished' if finished else ''
+    p1 = os.path.join(base, f'village-{line}{suf}.png')
     res['img'].save(p1)
     res['img'].resize((res['img'].width * 2, res['img'].height * 2), Image.NEAREST).save(
-        os.path.join(base, f'village-{line}-x2.png'))
-    html_path = os.path.join(dot.VIZ, f'bk-village-{theme}-{rid}-{line}.html')
+        os.path.join(base, f'village-{line}{suf}-x2.png'))
+    html_path = os.path.join(dot.VIZ, f'bk-village-{theme}-{rid}-{line}{suf}.html')
     os.makedirs(dot.VIZ, exist_ok=True)
     open(html_path, 'w', encoding='utf-8').write(page(res))
     if not quiet:
@@ -361,7 +374,7 @@ def _b64(im, scale=1):
 def page(res):
     rows = []
     for pl in res['placed']:
-        rec = review.receipt(res['theme'], res['round'], f'{res["line"]}.{pl["recipe"]["id"]}')
+        rec = review.receipt(res['theme'], res['round'], f'{res["line"]}.{pl["recipe"]["id"]}', res.get('finished', False))
         status = 'PASS' if rec and rec.get('verdict') == 'PASS' else 'PASS 없음'
         pl['review'] = status
         rows.append(f'<tr><td>{html_mod.escape(pl["id"])}</td><td>{html_mod.escape(pl["recipe"].get("title", ""))}</td>'
@@ -378,7 +391,7 @@ h1{{font-size:21px;margin:0 0 4px}} h2{{font-size:16px;margin:26px 0 6px;border-
 table{{border-collapse:collapse;font-size:13px}} td,th{{border:1px solid #3a3644;padding:3px 8px;text-align:left}}
 .ok{{color:#8fd08f}} .bad{{color:#ff8a7a}} .warn{{color:#f0c060}} code{{background:#2a2633;padding:1px 5px;border-radius:3px}}
 </style>
-<h1>building-kit 마을 — {html_mod.escape(res["theme"])} · {html_mod.escape(res["round"])} · 줄 {res["line"]}</h1>
+<h1>building-kit 마을 — {html_mod.escape(res["theme"])} · {html_mod.escape(res["round"])} · 줄 {res["line"]}{" · 마감" if res.get("finished") else ""}</h1>
 <p class="lead">시드 {res["seed"]} · {res["size"][0]}×{res["size"][1]}칸 · 건물 {len(res["placed"])}채 ·
 문에서 길까지 걸어가기 실패 {len(res["failures"])}건. 검수 PASS 인 건물만 놓았다(아니면 <code>--all</code>).
 바닥·길·나무·우물은 테마 팔레트 램프 색으로만 그렸다.</p>

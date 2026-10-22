@@ -17,6 +17,9 @@
 
 기준은 tile-gen ivqa/PROMPT.md 의 적대적 아트 디렉터 기준(반복·화풍 일치·지붕/벽 짜임·3/4 관례·읽힘)을 건물로 옮긴 것이다.
 판정자·그리기 프로세스는 다르다. 감독·에이전트는 판정을 고쳐 쓰지 않는다.
+
+`--finished` — 후보 = finish 단계의 마감 건물(마감 검사 통과 + 마감 PNG·바탕 조립 해시가 지금과 같은 것). 그림에서 만드는
+함정(roof_gap·flat·noise·thin_roof·two_doors)은 마감 그림에서 만든다. 회차·영수증은 review-finished/ 에 따로 두고 마감 해시에 묶인다.
 """
 import colorsys
 import datetime
@@ -350,8 +353,8 @@ def parse_answer(text, ids):
     return items
 
 
-def _round_dir(theme, rid):
-    return os.path.join(dot.RUNS, theme, rid, 'review')
+def _round_dir(theme, rid, finished=False):
+    return os.path.join(dot.RUNS, theme, rid, 'review-finished' if finished else 'review')
 
 
 def _runs(rnd):
@@ -371,13 +374,21 @@ def candidates_for(theme, rid, parts_by_key, only=None):
     return out
 
 
-def prepare(theme, rid, parts_by_key, runs=DEFAULT_RUNS, retries=DEFAULT_RETRIES, only=None, seed=None):
-    rnd = _round_dir(theme, rid)
+def finished_for(theme, rid, parts_by_key, only=None):
+    """마감 검사를 통과하고 마감·바탕 해시가 지금과 맞는 마감 건물(finish.finished_candidates). 함정도 이 그림에서 만든다."""
+    import finish
+    cands, _ = finish.finished_candidates(theme, rid, parts_by_key)
+    return {bid: c for bid, c in cands.items() if not only or c['recipe']['id'] == only or bid == only}
+
+
+def prepare(theme, rid, parts_by_key, runs=DEFAULT_RUNS, retries=DEFAULT_RETRIES, only=None, seed=None, finished=False):
+    rnd = _round_dir(theme, rid, finished)
     os.makedirs(rnd, exist_ok=True)
     pal = dot.palette(theme)
-    cands = candidates_for(theme, rid, parts_by_key, only)
+    cands = finished_for(theme, rid, parts_by_key, only) if finished else candidates_for(theme, rid, parts_by_key, only)
     if not cands:
-        raise SystemExit(f'{theme} {rid}: 조립까지 통과한 후보가 없다 — gate·assemble 을 먼저')
+        raise SystemExit(f'{theme} {rid}: 마감 검사를 통과한 마감 건물이 없다 — finish 를 먼저' if finished
+                         else f'{theme} {rid}: 조립까지 통과한 후보가 없다 — gate·assemble 을 먼저')
     rng = _rng(seed)
     base = next(iter(cands.values()))
     gable_front = AS.requires_gable_front(theme, rid)
@@ -408,11 +419,12 @@ def prepare(theme, rid, parts_by_key, runs=DEFAULT_RUNS, retries=DEFAULT_RETRIES
     open(os.path.join(run, 'prompt.txt'), 'w', encoding='utf-8').write(prompt)
     json.dump(key, open(os.path.join(run, 'key.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     return {'round': rid, 'run': k, 'dir': run, 'work': work, 'prompt': prompt, 'images': images, 'ids': ids,
-            'runs': runs, 'retries': retries, 'candidates': {bid: sha(c['img']) for bid, c in cands.items()}}
+            'runs': runs, 'retries': retries, 'candidates': {bid: sha(c['img']) for bid, c in cands.items()},
+            'finished': finished}
 
 
-def score(theme, rid, run_id, answer_text, judge):
-    run = os.path.join(_round_dir(theme, rid), f'run-{run_id}')
+def score(theme, rid, run_id, answer_text, judge, finished=False):
+    run = os.path.join(_round_dir(theme, rid, finished), f'run-{run_id}')
     key = json.load(open(os.path.join(run, 'key.json'), encoding='utf-8'))
     open(os.path.join(run, 'answer.txt'), 'w', encoding='utf-8').write(answer_text)
     items = parse_answer(answer_text, list(key))
@@ -434,11 +446,11 @@ def score(theme, rid, run_id, answer_text, judge):
         if leaked:
             res['void'] = f'판정자가 숨긴 함정 {leaked} 를 통과시켰다 — 이 회차는 쓰지 않는다'
     json.dump(res, open(os.path.join(run, 'result.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-    return aggregate(theme, rid)
+    return aggregate(theme, rid, finished=finished)
 
 
-def aggregate(theme, rid, need=DEFAULT_RUNS):
-    rnd = _round_dir(theme, rid)
+def aggregate(theme, rid, need=DEFAULT_RUNS, finished=False):
+    rnd = _round_dir(theme, rid, finished)
     names = _runs(rnd)
     runs = [json.load(open(os.path.join(rnd, n, 'result.json'), encoding='utf-8')) for n in names
             if os.path.exists(os.path.join(rnd, n, 'result.json'))]
@@ -454,7 +466,7 @@ def aggregate(theme, rid, need=DEFAULT_RUNS):
     void = [r for r in current if r.get('void')]
     counted = valid[:need]
     complete = len(counted) >= need
-    out = {'theme': theme, 'round': rid, 'at': now(), 'valid': len(counted), 'void': len(void), 'need': need,
+    out = {'theme': theme, 'round': rid, 'finished': finished, 'at': now(), 'valid': len(counted), 'void': len(void), 'need': need,
            'complete': complete, 'judge': sorted({r['judge'] for r in counted}),
            'voids': [r['void'] for r in void], 'candidates': {}}
     for bid, psha in cands.items():
@@ -474,29 +486,30 @@ def aggregate(theme, rid, need=DEFAULT_RUNS):
     out['probes'] = {v['name']: f"{v['view34']}/{v['quality']}" for r in current for v in r.get('samples', {}).values()
                      if v['kind'] == 'probe'}
     json.dump(out, open(os.path.join(rnd, 'result.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-    _write_receipts(theme, rid, out, counted)
+    _write_receipts(theme, rid, out, counted, finished)
     return out
 
 
-def _write_receipts(theme, rid, agg, counted):
-    d = _round_dir(theme, rid)
+def _write_receipts(theme, rid, agg, counted, finished=False):
+    d = _round_dir(theme, rid, finished)
     for bid, v in agg['candidates'].items():
         rec = {
             'schema': 'oprn-building-kit-review/1', 'theme': theme, 'round': rid, 'building': bid,
             'pixelSha256': v['pixelSha256'], 'verdict': v['verdict'], 'votes': v['votes'],
             'runs': [{'run': r['run'], 'judge': r['judge'], 'answerSha256': r['answerSha256']} for r in counted],
             'reasons': v['reasons'], 'issues': v['issues'], 'at': agg['at'], 'complete': agg['complete'],
+            'finished': finished,
         }
         json.dump(rec, open(os.path.join(d, f'{bid}.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 
 
-def receipt(theme, rid, bid):
-    p = os.path.join(_round_dir(theme, rid), f'{bid}.json')
+def receipt(theme, rid, bid, finished=False):
+    p = os.path.join(_round_dir(theme, rid, finished), f'{bid}.json')
     return json.load(open(p, encoding='utf-8')) if os.path.exists(p) else None
 
 
-def passed(theme, rid, bid, im):
-    rec = receipt(theme, rid, bid)
+def passed(theme, rid, bid, im, finished=False):
+    rec = receipt(theme, rid, bid, finished)
     return bool(rec and rec.get('complete') and rec.get('verdict') == 'PASS' and rec.get('pixelSha256') == sha(im))
 
 
@@ -507,7 +520,8 @@ def parts_by_key(theme, rid):
     return {k: harness.parts_for(theme, rid, k, rendered) for k in keys}
 
 
-def run(theme, rid, runs=DEFAULT_RUNS, judge_cmd=None, judge_runner=None, parts=None, only=None, seed=None, quiet=False):
+def run(theme, rid, runs=DEFAULT_RUNS, judge_cmd=None, judge_runner=None, parts=None, only=None, seed=None, quiet=False,
+        finished=False):
     if parts is None:
         parts = parts_by_key(theme, rid)
     if not parts:
@@ -515,20 +529,20 @@ def run(theme, rid, runs=DEFAULT_RUNS, judge_cmd=None, judge_runner=None, parts=
     if judge_runner is None and judge_cmd:
         judge_runner = command_judge(judge_cmd)
     judge_runner = judge_runner or claude_judge
-    os.makedirs(_round_dir(theme, rid), exist_ok=True)
+    os.makedirs(_round_dir(theme, rid, finished), exist_ok=True)
     budget = runs + DEFAULT_RETRIES
     label = f'claude/{JUDGE_MODEL}/{JUDGE_EFFORT}' if judge_runner is claude_judge else f'injected:{judge_cmd or "runner"}'
     agg = None
     started = 0
     while True:
         started += 1
-        prep = prepare(theme, rid, parts, runs, DEFAULT_RETRIES, only, seed)
+        prep = prepare(theme, rid, parts, runs, DEFAULT_RETRIES, only, seed, finished)
         try:
             text = judge_runner(prep['prompt'], prep['images'], prep['work'], JUDGE_MODEL, JUDGE_EFFORT, JUDGE_TIMEOUT)
         except Exception as e:  # noqa: BLE001
             shutil.rmtree(prep['dir'], ignore_errors=True)
             raise SystemExit(f'판정자 프로세스 실패(기록 없음): {e}')
-        agg = score(theme, rid, prep['run'], text, label)
+        agg = score(theme, rid, prep['run'], text, label, finished)
         if agg['complete'] or started >= budget:
             break
     if not quiet:
@@ -538,7 +552,7 @@ def run(theme, rid, runs=DEFAULT_RUNS, judge_cmd=None, judge_runner=None, parts=
 
 def describe(agg):
     state = '완료' if agg['complete'] else f'무효/부족 — 유효 {agg["valid"]}/{agg["need"]}회'
-    lines = [f'{agg["theme"]} {agg["round"]} 독립 검수: {state} · 무효 {agg["void"]}회 · 판정자 {", ".join(agg["judge"]) or "없음"}']
+    lines = [f'{agg["theme"]} {agg["round"]} 독립 검수{" (마감)" if agg.get("finished") else ""}: {state} · 무효 {agg["void"]}회 · 판정자 {", ".join(agg["judge"]) or "없음"}']
     for v in agg['voids'][:3]:
         lines.append(f'  무효: {v}')
     for bid, v in sorted(agg['candidates'].items()):

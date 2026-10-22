@@ -9,6 +9,9 @@ Actor1) · 검수 판정 요약 · 해시 앞 8자리 · 복사할 pick/reject �
 
 `--show-failed` 는 PASS 가 아닌 후보(검수 FAIL·미검수·영수증 해시 불일치·조립 불가)를 사유와 함께 회색으로 보여 준다.
 시트는 아무것도 고르지 않는다 — 명령 글자만 적는다. 감독·에이전트는 pick/reject 를 부르지 않는다.
+
+`--finished` 는 마감 건물(finish 단계) 시트 `bk-<테마>-<판>-finished.html` — 버들항 기준 · 바탕 · 마감을 같은 배율로 놓고
+마감 검수 PASS(마감 해시) 건물만 `pick … --finished` 명령과 함께 보인다. 보인 해시는 finished/sheet.json 에 남는다.
 """
 import base64
 import datetime
@@ -158,8 +161,10 @@ def _vote_summary(theme, rid, st):
             judges += [r.get('judge', '') for r in rec.get('runs', [])]
     return votes[0] if votes else '?', ', '.join(sorted({j for j in judges if j})) or '없음'
 
-def write(theme, rid, show_failed=False):
+def write(theme, rid, show_failed=False, finished=False):
     import harness
+    if finished:
+        return write_finished(theme, rid, show_failed)
     s = dot.seed(theme)
     mod, rendered = harness.render_round(theme, rid)
     rd = s['rounds'][rid]
@@ -317,4 +322,100 @@ def write(theme, rid, show_failed=False):
     print(f'시트 → {out}\n주소 http://mdc-server:18301/bk-{theme}-{rid}.html '
           f'(검수 PASS {len(passed_keys)} · 실패/미검수 {len(failed_keys)}'
           + ('' if show_failed else ' — --show-failed 로 사유를 본다') + ')')
+    return 0
+
+
+def _finished_numbers(rec):
+    c = (rec.get('check') or {}).get('checks') or {}
+    f = (c.get('f_changed') or {}).get('frac')
+    per = ' · '.join(f'{n} {v["base"]:.3f}→{v["finished"]:.3f}' for n, v in (c.get('g_period') or {}).items()
+                     if isinstance(v, dict) and v.get('base') is not None and v.get('finished') is not None)
+    return (f'바뀐 화소 {f:.1%}' if f is not None else '바뀐 화소 ?') + (f' · 16px 자기상관 {per}' if per else '')
+
+
+def write_finished(theme, rid, show_failed=False):
+    """마감 시트 — 마감 검수(review --finished) 영수증이 지금 마감 그림 해시에 대해 PASS 인 마감 건물만.
+    시트에 보인 해시는 finished/sheet.json 에 남고 pick --finished 가 그것과 대조한다. 원장(ledger)에는 쓰지 않는다."""
+    import finish
+    s = dot.seed(theme)
+    rd = s['rounds'][rid]
+    cands, why = finish.finished_candidates(theme, rid)
+    act = beodeul.actor1_frame(1, 0, 0)
+    rows, failed = [], []
+    for bid, c in sorted(cands.items()):
+        rec = review.receipt(theme, rid, bid, finished=True)
+        if review.passed(theme, rid, bid, c['img'], finished=True):
+            rows.append((bid, c, rec))
+            continue
+        if rec is None:
+            failed.append((bid, c, '마감 검수 없음 — review --finished'))
+        elif not rec.get('complete'):
+            failed.append((bid, c, f'마감 검수 미완료 ({rec.get("votes")})'))
+        elif rec.get('pixelSha256') != review.sha(c['img']):
+            failed.append((bid, c, '영수증 해시 불일치 — 검수 뒤 마감 그림이 바뀌었다'))
+        else:
+            failed.append((bid, c, ' · '.join(f'{i.get("code")} — {i.get("why")}' for i in (rec.get('issues') or [])[:2])
+                           or f'검수 {rec.get("verdict")}'))
+    for bid, w in sorted(why.items()):
+        failed.append((bid, None, w))
+    H = [f'<!doctype html><html lang="ko"><head><meta charset="utf-8">'
+         f'<title>building-kit {theme} {rid} 마감</title><style>{CSS}</style></head><body>']
+    H.append(f'<h1>{html_mod.escape(s["theme"]["name"])} — {html_mod.escape(rd.get("title", rid))} · 마감</h1>')
+    H.append('<p class="lead">조립 뒤 마감 단계(finish): 조립 건물 한 채씩 Opus 5.5 high 가 손으로 질감·디테일을 더했다. '
+             '마감 검사(윤곽·문·팔레트·처마·코드·변화량·16px 반복)를 하네스가 다시 돌려 통과했고, 독립 검수(review --finished) '
+             'PASS 영수증이 <b>지금 마감 그림 화소 해시</b>에 묶인 건물만 여기 올라온다.</p>')
+    H.append('<p class="lead warn">검수 PASS 는 합격이 아니다. <b>감독·에이전트는 고르지 않는다</b> — 아래 명령은 사람이 직접 부른다. '
+             '명령의 해시는 이 시트의 마감 그림 해시다 — 그림이 바뀌면 pick 이 거절한다.</p>')
+    H.append('<div class="row">')
+    for r in s.get('refs') or []:
+        try:
+            im = ref_image(r)
+        except SystemExit:
+            continue
+        H.append(f'<div class="card ref"><h3>{html_mod.escape(r.get("label", beodeul.ref_name(r)))}</h3>'
+                 f'<div class="imgs">{figure(im, 1, "1배")}{figure(im, 2, "2배")}</div></div>')
+    H.append(f'<div class="card ref"><h3>Actor1 정면</h3><div class="imgs">{figure(act, 2, "2배")}</div></div></div>')
+    shown = {}
+    for bid, c, rec in rows:
+        fsha = review.sha(c['img'])
+        shown[bid] = fsha
+        key, recipe = c['record']['key'], c['recipe']
+        ref = finish.ref_for(theme, recipe)
+        H.append(f'<h2>{html_mod.escape(bid)} — {html_mod.escape(recipe.get("title", ""))} <span class="sha">{fsha[:8]}</span></h2>')
+        H.append('<div class="row"><div class="card"><div class="imgs">')
+        if ref:
+            H.append(figure(ref_image(ref), 2, f'버들항 {beodeul.ref_name(ref)} 2배'))
+        H.append(figure(c['base'], 2, '바탕(조립) 2배'))
+        H.append(figure(c['img'], 2, '마감 2배'))
+        H.append(figure(c['img'], 1, '마감 1배'))
+        H.append(figure(c['img'], 4, '마감 4배'))
+        H.append('</div>')
+        H.append(f'<div class="gate"><span class="ok">마감 검수 PASS</span> · 두 축 {html_mod.escape(str(rec.get("votes")))} · '
+                 f'{html_mod.escape(_finished_numbers(c["record"]))} · 바탕 {c["record"].get("baseSha256", "")[:8]}</div>')
+        H.append(code_cmd(f'npm run harness -- building-kit pick {theme} {rid} {recipe["id"]} {key} --sha {fsha[:8]} --finished'))
+        H.append('</div></div>')
+    if not rows:
+        H.append('<h2>마감 검수 PASS 건물이 아직 없다</h2><p class="lead warn">'
+                 f'<code>npm run harness -- building-kit finish {theme} {rid} --line A</code> → '
+                 f'<code>review {theme} {rid} --finished</code> 순서로 돌린다.</p>')
+    if show_failed and failed:
+        H.append('<h2>고를 수 없는 마감 (--show-failed)</h2><div class="row">')
+        for bid, c, reason in failed:
+            imgs = (figure(c['base'], 2, '바탕 2배') + figure(c['img'], 2, '마감 2배')) if c else ''
+            H.append(f'<div class="card grey"><h3>{html_mod.escape(bid)}</h3><div class="sub">{html_mod.escape(reason)}</div>'
+                     f'<div class="imgs">{imgs}</div></div>')
+        H.append('</div>')
+    elif failed:
+        H.append(f'<p class="lead">고를 수 없는 마감 {len(failed)}채는 숨겼다 — <code>sheet {theme} {rid} --finished --show-failed</code>.</p>')
+    H.append(f'<p class="sub">판 {rid} · 시트 {now()}</p></body></html>')
+    os.makedirs(dot.VIZ, exist_ok=True)
+    out = os.path.join(dot.VIZ, f'bk-{theme}-{rid}-finished.html')
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(H))
+    d = finish.out_dir(theme, rid)
+    os.makedirs(d, exist_ok=True)
+    json.dump({'theme': theme, 'round': rid, 'at': now(), 'shown': shown, 'hidden': [b for b, _, _ in failed], 'file': out},
+              open(os.path.join(d, 'sheet.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    print(f'마감 시트 → {out}\n주소 http://mdc-server:18301/bk-{theme}-{rid}-finished.html '
+          f'(마감 검수 PASS {len(rows)} · 고를 수 없음 {len(failed)})')
     return 0
