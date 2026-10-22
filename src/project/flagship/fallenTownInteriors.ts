@@ -98,7 +98,10 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
         ["table:potion+flask", 21, 14], ["basket:herb", 23, 16], ["basket:mushroom", 24, 16], ["book pile", 14, 16],
         // 위 왼쪽 조제실이 빈 마루였다(VQA r16) — 약초 건조대·조제 탁자·약초 바구니.
         ["herb drying rack", 13, 4], ["table:potion+flask", 7, 5], ["basket:herb", 10, 7], ["basket:mushroom", 11, 7], ["book pile", 9, 4],
-        ["herb drying rack", 4, 7], ["basket:potion+potionb+potiong", 14, 7]],
+        ["herb drying rack", 4, 7], ["basket:potion+potionb+potiong", 14, 7],
+        // 가게 아랫단·조제실 가운데 줄이 아직 빈 마루였다(VQA r17) — 진열 탁자·약초 걸이·바구니(문~계산대 길은 비운다).
+        ["table:potion+flask", 16, 17], ["herb drying rack", 27, 17], ["basket:herb", 24, 18], ["basket:mushroom", 12, 18],
+        ["table:potion+flask", 8, 6], ["basket:herb", 2, 6]],
       people: [
         {
           id: "ev_fs_apothecary", name: "약재상 오든", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 7], behindCounter: true,
@@ -136,7 +139,9 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
         ["tea 2x2", 4, 7], ["chair E", 3, 7], ["chair W", 6, 7], ["globe", 24, 7], ["book pile", 27, 8], ["scroll rack", 16, 8],
         ["tea 2x2", 27, 17], ["chair E", 26, 17], ["chair W", 29, 17], ["book pile", 21, 18],
         // 진열실(왼쪽 아래) — 걷어 낸 갑옷 진열 대신 천구의·지구본·두루마리·관측 책상.
-        ["orrery", 3, 14], ["globe", 11, 14], ["scroll rack", 2, 17], ["desk 3x1", 6, 17], ["book pile", 11, 17], ["owl perch", 12, 18]],
+        ["orrery", 3, 14], ["globe", 11, 14], ["scroll rack", 2, 17], ["desk 3x1", 6, 17], ["book pile", 11, 17], ["owl perch", 12, 18],
+        // 위 서고 한가운데가 빈 마루였다(VQA r17) — 별 지도 책상·천구의·지구본.
+        ["desk 2x2", 15, 7], ["chair N", 15, 9], ["orrery", 19, 7], ["globe", 22, 9], ["book pile", 9, 9]],
       people: [
         {
           id: "ev_fs_old_stargazer", name: "늙은 별지기 오스본", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 6],

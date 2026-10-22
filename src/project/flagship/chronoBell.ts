@@ -610,6 +610,9 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     ["b", "tex_easyrpg_charset_people5", 1, "광장의 아낙", "심문관님이 직접 오셨어. 저 숲엔 얼씬도 말아야겠어."],
     ["c", "tex_easyrpg_charset_people4", 2, "광장의 상인", "포고 때문에 동문 길이 막히면 장사는 다 했네."],
     ["d", "tex_easyrpg_charset_people1", 6, "광장의 노인", "하늘에서 온 것을 함부로 부르면 화를 입는 법이야."],
+    // 오프닝 아침 그림은 길가에 백성이 늘어서 있다 — 넷은 적었다(VQA r17).
+    ["e", "tex_easyrpg_charset_people5", 3, "광장의 처녀", "기사님들 갑옷 좀 봐… 숲에 정말 뭐가 떨어졌나 봐."],
+    ["f", "tex_easyrpg_charset_people1", 1, "광장의 청년", "이단이라니. 별을 보고 소원 빈 것도 죄가 되나?"],
   ];
   const hubMeta = (project.tilesets[hub.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
   const near = (x: number, y: number, r: number, c: { x: number; y: number }) => Math.abs(x - c.x) <= r && Math.abs(y - c.y) <= r;
@@ -1457,6 +1460,21 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         if ([u, d, l, r].filter(Boolean).length < 2 || (!l && !r) || (!u && !d)) { pit.delete(c); changed = true; }
       }
     }
+    // 바깥 모서리 한 번 깎기 — 계단처럼 꺾인 직각 모서리가 네모 구덩이로 읽혔다(VQA r17). 한 번만 깎고 다시 삐죽 칸을 고른다.
+    {
+      const corners = [...pit].filter((c) => {
+        const [u, d, l, r] = [c - fm.width, c + fm.width, c - 1, c + 1].map((k) => pit.has(k));
+        return (!u && !l) || (!u && !r) || (!d && !l) || (!d && !r);
+      });
+      for (const c of corners) if (Math.abs((c % fm.width) - pod.x) > 2 || Math.abs(Math.floor(c / fm.width) - (pod.y - 1)) > 1) pit.delete(c);
+      for (let changed = true; changed;) {
+        changed = false;
+        for (const c of [...pit]) {
+          const [u, d, l, r] = [c - fm.width, c + fm.width, c - 1, c + 1].map((k) => pit.has(k));
+          if ([u, d, l, r].filter(Boolean).length < 2 || (!l && !r) || (!u && !d)) { pit.delete(c); changed = true; }
+        }
+      }
+    }
     // 빈터에 먼저 깔려 있던 네모 모랫길 마당(숲길 끝)이 구덩이와 합쳐져 네모 흙 마당으로 보였다(VQA r7 major) — 구덩이 아래쪽
     // 가운데 줄보다 위에 있는, 구덩이 밖 모랫길 칸(덧그림 없는 칸)은 풀로 되돌린다. 남쪽에서 올라오는 숲길은 그대로 둔다.
     const reverted: number[] = [];
@@ -1570,7 +1588,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         const x = Math.round(cx + Math.cos(angle) * rx * r), y = Math.round(cy + Math.sin(angle) * ry * r);
         if (x < 1 || y < 1 || x >= live.width - 1 || y >= live.height - 1 || pit.has(y * live.width + x)) continue;
         // 불씨 자국은 풀 위에서 검은 돌무더기로 읽혔다(VQA r10) — 충격에 꺾인 나무(그루터기·쓰러진 통나무)로 바꾼다.
-        if (tryStamp(project, M(ids.forest), `kit:beodeul_city/${k % 3 === 1 ? "bd-pick-deep-forest-path-heath-b" : "bd-pick-deep-forest-path-stump"}`, x, y)) break;
+        // 동서로 뻗은 갈래 끝엔 바깥으로 누운 통나무(쓰러진 나무), 남북 갈래 끝엔 그루터기 — 그루터기만 고르게 두르면 벌목지로 읽혔다(VQA r17).
+        if (tryStamp(project, M(ids.forest), `kit:beodeul_city/${Math.abs(Math.cos(angle)) > 0.6 ? "bd-pick-deep-forest-path-log-fallen" : k % 2 ? "bd-pick-deep-forest-path-heath-b" : "bd-pick-deep-forest-path-stump"}`, x, y)) break;
       }
     }
     // 구덩이 북쪽 위로 맵 끝까지 붙은 모랫길 토막 둘은 아무 데로도 안 갔다(VQA r6 m13) — 풀로 되돌린다.
