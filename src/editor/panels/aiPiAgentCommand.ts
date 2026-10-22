@@ -225,7 +225,7 @@ export interface PiRunOptions {
   /** 의도 판정 한 줄 — 활동 로그에만 싣는다(`PiRunPlan.routingAudit`). 모델에는 가지 않는다. */
   readonly routingAudit?: string;
   /** 다듬기 모드 — 계획 턴 없이 1배 검토→고치기만 N바퀴·M분 돈다(src/ai/piAgent/featureReview.ts). */
-  readonly polish?: { readonly maxRounds: number; readonly budgetMs: number; readonly request: string };
+  readonly polish?: import("@/ai/piAgent/featureReview").FeaturePolishOptions;
 }
 
 /** 적용 뒤 영수증(지금 → 적용 후) 재료. 렌더는 패널이 한다 — 되돌리기와 스튜디오 「변경」 탭이 거기 있다. */

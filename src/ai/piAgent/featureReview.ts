@@ -333,12 +333,19 @@ export interface FeaturePolishOptions {
   readonly budgetMs: number;
   /** 처음 사용자가 요청한 문장 — 판정자·비평가가 이 요청에 비춰 본다. */
   readonly request: string;
+  /** 다듬을 맵 — 앞 턴의 확인표가 본 맵. 비우면 요청 범위(mapIds·지금 맵). */
+  readonly mapIds?: readonly string[];
+  /** 맵마다 앞 턴이 마지막으로 성공시킨 짓기 호출(도구 이름·인자). 다듬기는 새 세션이라 이것 없이는 평면을 처음부터 다시 짠다. */
+  readonly lastBuilds?: Readonly<Record<string, { readonly tool: string; readonly args: unknown }>>;
 }
 export const FEATURE_POLISH_DEFAULT: Omit<FeaturePolishOptions, "request"> = { maxRounds: 8, budgetMs: 30 * 60_000 };
 
 export function featurePolishSystemPrompt(polish: FeaturePolishOptions): string {
   return `[다듬기 모드] 이번 실행은 이미 지은 맵을 다듬는 실행이다(최대 ${polish.maxRounds}바퀴 · ${Math.round(polish.budgetMs / 60_000)}분). `
     + "처음 차례에는 아무것도 짓거나 고치지 마라: show_map_region 으로 맵을 보고, 아직 확인표가 없으면 set_feature_checklist 로 처음 요청의 특징을 적은 뒤 짧게 끝낸다. "
-    + "그다음 실행기가 1배 확인과 독립 비평을 돌려 고칠 목록을 주면 그 목록만 고친다. 맵을 새로 만들거나 다른 맵을 건드리지 않는다.\n"
-    + `처음 요청: ${polish.request.slice(0, 1200)}`;
+    + "그다음 실행기가 1배 확인과 독립 비평을 돌려 고칠 목록을 주면 그 목록만 고친다. 맵을 새로 만들거나 다른 맵을 건드리지 않는다. "
+    + "참고문서·스킬을 처음부터 다시 읽지 마라 — 아래 「마지막 짓기 호출」 인자에서 시작해 고칠 곳만 바꿔 같은 도구를 같은 mapId·replace:true 로 다시 부른다.\n"
+    + `처음 요청: ${polish.request.slice(0, 1200)}`
+    + (polish.mapIds?.length ? `\n다듬을 맵: ${polish.mapIds.join(", ")}` : "")
+    + Object.entries(polish.lastBuilds ?? {}).map(([mapId, b]) => `\n마지막 짓기 호출 — ${mapId}: ${b.tool}(${JSON.stringify(b.args).slice(0, 12000)})`).join("");
 }

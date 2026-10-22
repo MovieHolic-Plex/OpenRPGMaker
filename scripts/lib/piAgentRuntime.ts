@@ -1149,7 +1149,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         return !!map && !!roomSpecOf(ctx.project.tilesets[map.tilesetId]) && map.climate?.mode === "indoor";
       };
       // 다듬기는 바뀌지 않은 맵도 본다 — 요청 범위(mapIds·지금 맵)의 맵과 항목이 가리키는 맵.
-      const polishScope = polish ? [...request.mapIds, ...(request.currentMapId ? [request.currentMapId] : [])].filter((id) => !!ctx.project.maps[id]) : [];
+      const polishScope = polish ? (polish.mapIds?.length ? polish.mapIds : [...request.mapIds, ...(request.currentMapId ? [request.currentMapId] : [])]).filter((id) => !!ctx.project.maps[id]) : [];
       const targetIds = (): string[] => {
         const changed = (id: string) => mapChanged(id) || polishScope.includes(id);
         const named = featureChecklist.judgeItems.map((i) => i.mapId).filter((id): id is string => !!id && !!ctx.project.maps[id] && (changed(id) || !!polish));

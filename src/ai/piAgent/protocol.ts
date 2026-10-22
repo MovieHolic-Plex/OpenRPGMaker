@@ -97,7 +97,8 @@ export interface PiAgentRequest {
   readonly systemPrompt?: readonly string[];
   readonly maxTurns?: number;
   /** 다듬기 모드(src/ai/piAgent/featureReview.ts) — 이미 지은 맵을 1배 검토→고치기로 N바퀴·M분까지 다듬는다. */
-  readonly polish?: { readonly maxRounds: number; readonly budgetMs: number; readonly request: string };
+  readonly polish?: { readonly maxRounds: number; readonly budgetMs: number; readonly request: string; readonly mapIds?: readonly string[];
+    readonly lastBuilds?: Readonly<Record<string, { readonly tool: string; readonly args: unknown }>> };
   readonly thinkingLevel?: PiAgentThinkingLevel;
   /** 노출할 툴 도메인. 비우면 살아 있는 레지스트리 전부. */
   readonly toolDomains?: readonly string[];

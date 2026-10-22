@@ -2120,7 +2120,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
      *  단계 합은 total 과 맞지 않는다. 표에서 더하지 마라. */
     readonly timing?: TurnTimingRecorder;
     /** 다듬기 실행(확인표의 「다듬기」 단추) — 계획 턴 없이 1배 확인·독립 비평→고치기를 길게 돈다. */
-    readonly polish?: { readonly maxRounds: number; readonly budgetMs: number; readonly request: string } }): Promise<void> => {
+    readonly polish?: import("@/ai/piAgent/featureReview").FeaturePolishOptions }): Promise<void> => {
     // slotClaimed: 호출자(평문 경로)가 의도 분류 전에 이미 슬롯을 잡았다. 그 경우 turnBusy=true 는
     // «다른 턴이 점유 중» 이 아니라 «이 턴의 분류 단계» 다 — 여기서 다시 거부하면 자기 턴을 죽인다.
     if (turnBusy && opts?.slotClaimed !== true) {
@@ -2161,10 +2161,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const polishRequest = opts?.polish?.request ?? command.task;
     const featureChecklist = createFeatureChecklistView((element) => { log.append(element); followConversationLog(log); }, {
       // 다듬기는 같은 맵 범위로 평소 Pi 턴을 하나 더 보낸다 — 맵 소유권·대기열·중지 단추가 그대로 적용된다.
-      onPolish: () => {
+      // 다듬을 맵은 앞 턴 확인표가 본 맵이고, 그 맵을 지은 마지막 호출 인자를 함께 넘긴다(다듬기는 새 세션이다).
+      onPolish: ({ mapIds, lastBuilds }) => {
         if (disposed || turnConversation !== conversationId) return;
-        void runPiTurn({ ...command, task: `[다듬기] ${polishRequest}` }, "다듬기 — 1배 확인·독립 비평으로 더 고칩니다(최대 30분, 중지 단추로 멈춤)", plan,
-          { polish: { ...FEATURE_POLISH_DEFAULT, request: polishRequest } });
+        void runPiTurn({ ...command, task: `[다듬기] ${polishRequest}`, ...(mapIds.length ? { mapIds } : {}) }, "다듬기 — 1배 확인·독립 비평으로 더 고칩니다(최대 30분, 중지 단추로 멈춤)", plan,
+          { polish: { ...FEATURE_POLISH_DEFAULT, request: polishRequest, mapIds, lastBuilds } });
       },
     });
     try {

@@ -13,13 +13,17 @@ export interface FeatureChecklistView {
 
 export interface FeatureChecklistViewOptions {
   /** 「다듬기」 단추 — 확인이 끝났는데 안 읽히는 항목이 남았을 때 보인다. 누르면 패널이 다듬기 실행(request.polish)을 보낸다. */
-  readonly onPolish?: () => void;
+  readonly onPolish?: (target: { readonly mapIds: string[]; readonly lastBuilds: Record<string, { tool: string; args: unknown }> }) => void;
 }
 
 export function createFeatureChecklistView(mount: (element: HTMLElement) => void, options: FeatureChecklistViewOptions = {}): FeatureChecklistView {
   let box: HTMLDetailsElement | null = null;
   let progress = "";
   let lastSnapshot: FeatureChecklistSnapshot | null = null;
+  // 짓기 도구 호출(성공한 것만)의 인자를 맵마다 기억한다 — 다듬기 턴이 같은 인자에서 시작하게 넘긴다.
+  const BUILD_TOOLS = /^(build_|author_|compose_)/u;
+  const pendingBuilds = new Map<string, { tool: string; args: Record<string, unknown> }>();
+  const lastBuilds: Record<string, { tool: string; args: unknown }> = {};
   const render = (snapshot: FeatureChecklistSnapshot) => {
     if (!snapshot.items.length) return;
     const fresh = !box;
@@ -52,7 +56,11 @@ export function createFeatureChecklistView(mount: (element: HTMLElement) => void
       ? el("button", { class: "ai-feature-checklist-polish", text: "다듬기 (최대 30분)", dataset: { testid: "ai-feature-polish" },
         attrs: { type: "button", title: "1배 확인·독립 비평→고치기를 더 오래 돌린다. 진행 중 중지 단추로 멈추면 그때까지 고친 것은 남는다." } })
       : null;
-    polishButton?.addEventListener("click", () => { polishButton.disabled = true; polishButton.textContent = "다듬기 시작함"; options.onPolish?.(); });
+    polishButton?.addEventListener("click", () => {
+      polishButton.disabled = true; polishButton.textContent = "다듬기 시작함";
+      const mapIds = [...new Set(snapshot.items.map((i) => i.mapId).filter((id): id is string => !!id))];
+      options.onPolish?.({ mapIds, lastBuilds: Object.fromEntries(Object.entries(lastBuilds).filter(([id]) => !mapIds.length || mapIds.includes(id))) });
+    });
     box.replaceChildren(el("summary", { text: title }), list,
       ...(progress && !snapshot.final ? [el("p", { class: "ai-feature-checklist-progress", text: progress })] : []),
       ...(last ? [el("p", { class: "ai-feature-checklist-note", text: `1배 그림 ${last.imagesSent}장 · 판정자가 받은 그림 ${last.imagesSeen ?? "?"}장 · 조수가 아닌 별도 판정·비평 호출` })] : []),
@@ -63,6 +71,17 @@ export function createFeatureChecklistView(mount: (element: HTMLElement) => void
     event(raw) {
       let event = raw;
       while (event.type === "agent_event") event = event.event;
+      if (event.type === "tool_start" && BUILD_TOOLS.test(event.name) && event.args && typeof event.args === "object") {
+        pendingBuilds.set(event.id, { tool: event.name, args: event.args as Record<string, unknown> });
+        return;
+      }
+      if (event.type === "tool_end") {
+        const started = pendingBuilds.get(event.id);
+        pendingBuilds.delete(event.id);
+        const mapId = started && typeof started.args.mapId === "string" ? started.args.mapId : undefined;
+        if (started && event.ok && mapId) lastBuilds[mapId] = started;
+        return;
+      }
       if (event.type !== "execution_status") return;
       if (event.name === "feature_review.repair" || event.name === "feature_review.judging") {
         progress = event.summary;
