@@ -58,7 +58,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
     "mapId 없으면 버들항 새 맵을 만든다(마을 기본 56×44 안팎, 36×30~96×80 / 도시 기본 60×60). mapId 가 있으면 그 버들항 맵 전체를 비우고 다시 깐다(다른 계열 맵이면 거부, 마을 집이 이미 선 맵은 완성된 집 보호로 거부). " +
     "같은 seed·선택 = 같은 마을. 시공 뒤 check_city_form·check_reachability 로 점검한다(마을의 문 앞 칸은 결과 data.doors). " +
     "고칠 곳만 stamp_object(kit:beodeul_city/…)·fill_region 으로 손본다 — 집을 하나씩 따로 놓지 말 것. " +
-    "성벽 마을(성벽·성곽·성문·요새로 둘러싼 마을)은 walls:true 로 짓는다 — 버들항 마을 성벽(3/4 성벽 통로·흉벽·앞면, 4×4 성문루, 기와 망루, 계단)이 맵 둘레를 두르고 길이 성벽을 지나는 곳마다 열린 성문루(가로 성벽)·틈(세로 성벽)이 생긴다. 평지로 짓고, 강가 마을은 강 없이(water none) 짓는다(강이 성벽을 뚫는 수문 그림은 없다). theme river·desert·snow 만. " +
+    "성벽 마을(성벽·성곽·성문·요새로 둘러싼 마을)은 walls:true 로 짓는다 — 버들항 마을 성벽(3/4 성벽 통로·흉벽·앞면, 4×4 성문루, 기와 망루, 계단)이 맵 둘레를 두른다. 성문루는 wallGate 쪽(S 남문 기본 · N 북문 · NS 남북)에 하나씩, 가운데에 가까운 길에 서고 그 길이 맵 끝까지 나간다. 그 밖에서 성벽을 지나는 길은 성벽 안에서 끊긴다(서·동 틈은 wallSideGaps:true 일 때만). 평지로 짓고, 강가 마을은 강 없이(water none) 짓는다(강이 성벽을 뚫는 수문 그림은 없다). theme river·desert·snow 만. " +
     "paint_tiles·fill_region 으로 맵 테두리에 돌 줄을 그려 성벽 흉내를 내지 말 것(위에서 본 납작한 선이 되어 3/4 시점이 깨진다) — 성벽 조각을 손으로 놓을 일이 있으면 키트 beodeul_city/bd-wall-*(성문루·닫힌 성문루·망루·계단·곧은 성벽)와 참고문서 beodeul-town-wall 을 따른다. " +
     "농가·농촌 마을은 지은 뒤 농장 키트로 쓰임을 더한다: 헛간 bd-farm-barn 6×6·닭장 bd-farm-coop 3×3 을 흙 마당에 모은 농가 덩이, 울타리 두른 밭 bd-farm-fenced-plot 7×6(문 아래 흙길), 작물 밭 bd-farm-plot-wheat·cabbage·tomato·sowing — 밭 덩이 사이·마당 길은 폭 2칸 흙길(fill_region 재료 「버들항 농장 흙길」), 넓은 풀밭을 경작지로 통째로 덮지 않는다(참고문서 beodeul-farm). 던전·필드는 이 도구가 아니다(참고문서 beodeul-picks-dungeon·field, 필드 길은 author_wild_route).",
   mode: "write",
@@ -82,7 +82,9 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       terrain: { type: "string", enum: [...VILLAGE_TERRAINS], description: "지형(theme 마을만) — 마을보다 먼저 정하는 땅 모양: terraces 계단식 비탈(river·coast, 큰길 북쪽 집 띠 뒤로 한두 단, 강은 곧은 골) · highland 높은 산비탈(river, 7칸 간격 세 단 — 산골, 요청할 때만) · hillside 눈 덮인 비탈(snow) · basin 오아시스 골(desert) · ridge 마른 둔덕(swamp, 북쪽 높은 마른 땅·늪물은 낮은 땅에만) · flat 평지. 생략하면 seed 로 고른다(결과 data.terrain)." },
       theme: { type: "string", enum: [...BEODEUL_VILLAGE_THEMES, "city"], description: "마을 문법(기본 river): river 강가 · coast 포구(바다) · desert 사막 오아시스 · snow 설원 · swamp 늪 · city 로마풍 블록 도시(도시를 말할 때만)" },
       forestType: { type: "string", enum: [...BEODEUL_FOREST_TYPES], description: "숲 덩이 종류(theme river·coast 마을만): broadleaf 활엽수림(기본) · conifer 침엽수림(전나무·측백) · mixed 혼효림(큰 활엽수 사이 측백·전나무)" },
-      walls: { type: "boolean", description: "true 이면 마을 둘레에 성벽을 두른다(성벽·성곽·성문·요새 마을). theme river·desert·snow 마을만 — 평지로, 강가 마을은 강 없이 짓는다. 길이 성벽을 지나는 곳은 열린 성문루·틈, 망루·계단도 함께. 결과 data.walls." },
+      walls: { type: "boolean", description: "true 이면 마을 둘레에 성벽을 두른다(성벽·성곽·성문·요새 마을). theme river·desert·snow 마을만 — 평지로, 강가 마을은 강 없이 짓는다. 성문루·망루·계단도 함께. 결과 data.walls." },
+      wallGate: { type: "string", enum: ["S", "N", "NS"], description: "walls 일 때 성문 쪽. S 남문 하나(기본) · N 북문 하나 · NS 남북에 하나씩. 사용자가 말한 쪽을 그대로." },
+      wallSideGaps: { type: "boolean", description: "walls 일 때 서·동 성벽을 지나는 길에 열린 틈을 둘지(기본 false — 성문 말고는 성벽이 닫힌다). 사용자가 옆 출입구를 말할 때만 true." },
       harbour: { type: "boolean", description: `true 이고 가로 ${HARBOUR_W} 이상이면 맨 아래에 항구 호수를 붙인다(세로 ${HARBOUR_H}칸 추가).` },
     },
   },
@@ -601,7 +603,8 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
     if (terrain && terrain !== "flat") { wallTerrain = "flat"; wallNotes.push(`성벽 마을이라 지형 ${terrain} 대신 평지로 지었다.`); }
     else wallTerrain = "flat";
   } else if (args.walls === true) wallNotes.push(`성벽은 강가·사막·설원 마을(theme river·desert·snow)만 두른다 — ${theme} 마을은 성벽 없이 지었다.`);
-  const r = buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { roofs, water: wallWater, woods, houseLimit: houseCount, walls });
+  const r = buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { roofs, water: wallWater, woods, houseLimit: houseCount, walls,
+    ...(args.wallGate === "N" || args.wallGate === "NS" || args.wallGate === "S" ? { wallGate: args.wallGate } : {}), ...(args.wallSideGaps === true ? { wallSideGaps: true } : {}) });
   // 지형 도입(2026-10-11)으로 같은 seed 도 배치가 달라졌다 — 예전 마을 맵을 가진 사용자·조수가 알 수 있게 결과에도 짧게
   const note = rebuilt
     ? " 같은 mapId 로 다시 지어 맵 전체를 새로 깔았다(손으로 고친 부분은 사라졌다)."
