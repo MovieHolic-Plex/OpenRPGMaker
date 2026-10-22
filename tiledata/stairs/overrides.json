@@ -113,7 +113,57 @@
   "jp-in-ml-escalator-up": {},
   "jp-in-ml-escalator-down": {},
   "jp-alley-stair-tree": {},
-  "jp-inaka-hillside-torii-stairs": {}
+  "jp-inaka-hillside-torii-stairs": {},
+  "jp-overpass-stair-e": {
+   "leads": "same",
+   "side": "S",
+   "mode": "walk",
+   "trigger": [],
+   "approach": [[0,8],[1,8]],
+   "exit": [[2,1],[2,2]],
+   "why": "육교 곧은 계단 — 남쪽 맨 아래 두 칸으로 들어서 층계참(동쪽 상판)으로 이어진다"
+  },
+  "jp-overpass-stair-w": {
+   "leads": "same",
+   "side": "S",
+   "mode": "walk",
+   "trigger": [],
+   "approach": [[0,8],[1,8]],
+   "exit": [[-1,1],[-1,2]],
+   "why": "육교 곧은 계단 — 남쪽 맨 아래 두 칸으로 들어서 층계참(서쪽 상판)으로 이어진다"
+  },
+  "jp-side-stair-l": {
+   "leads": "same",
+   "side": "W",
+   "mode": "walk",
+   "trigger": [],
+   "approach": [[-1,0]],
+   "exit": [[3,0]],
+   "why": "옆 계단 — 서쪽 낮은 끝으로 들어서 동쪽 단상으로 오른다"
+  },
+  "jp-side-stair-r": {
+   "leads": "same",
+   "side": "E",
+   "mode": "walk",
+   "trigger": [],
+   "approach": [[3,0]],
+   "exit": [[-1,0]],
+   "why": "옆 계단 — 동쪽 낮은 끝으로 들어서 서쪽 단상으로 오른다"
+  },
+  "jp-wall-ladder": {
+   "leads": "up",
+   "side": "S",
+   "mode": "walk",
+   "trigger": [[0,2]],
+   "approach": [[0,3]],
+   "why": "벽 사다리 — 맨 아래 칸으로만 들어서 위(옥상)로"
+  },
+  "jp-overpass-deck-red": {
+   "drop": true
+  },
+  "jp-stage-platform": {
+   "drop": true
+  }
  },
  "modern_campus": {
   "mc-in-sc-stairs-up": {},

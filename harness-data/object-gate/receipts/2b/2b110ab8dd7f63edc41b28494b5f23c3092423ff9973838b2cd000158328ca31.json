@@ -1,0 +1,486 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2b110ab8dd7f63edc41b28494b5f23c3092423ff9973838b2cd000158328ca31",
+ "width": 160,
+ "height": 64,
+ "kind": "structure",
+ "name": "raised concrete stage with wooden floor, reached by side stairs from both ends",
+ "label": "jp_city/street_stairs/jp-stage-assembled",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 9,
+  "darkV5": 38,
+  "nearBlackEdge": 0.86,
+  "opaqueTiles": 26
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden stage floor",
+      "rows": "0-44",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair treads, left and right (four steps each side)",
+      "rows": "32-48",
+      "evidence": "a",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "49"
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The central stage is a large wooden plank floor over rows 0-44, drawn from above with horizontal plank seams and a dark back outline at rows 0-1. It ends in a light front-edge band at about rows 45-47 (L about 229 at the top of the band). Below it is a grey stone-brick south face over rows 48-63 (16 rows). The stair blocks at both ends step up in width, 88 to 160 over rows 32-44. Each block has a light top panel with a yellow edge line at row 48, followed by a darker front face over rows 49-63. This matches the green cabinet and seat references: a deep top, an edge line and a front face. It is not a top-down slab and not a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a large prop, so the right size comparison is the cheese stall (17 visible tones per tile) and the roofed well (20). At 8 visible tones per tile it is less than half of those and only just under the hedge (9). Its total of 19 distinct colours is far below the stall (40) and well (38). The wood plank area has some grain and varied plank tones, and the base has brick-like stone courses. Each material still reads as only about 3-4 lightness steps, against about 5-6 in Beodeul. The side-stair slabs are pale grey blocks with only a few speckles and a yellow trim line, so they look simple and slightly sticker-like next to the well's stones and the stall's detail. The outlines are tinted (0% near-neutral dark edge pixels) and form separation is partly by value, which matches Beodeul. Near-flat coverage is only 1%, so there are no big flat fills. Overall the candidate is clean and tinted but shallower than the same-size references, and I fail it on the doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 27451
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden stage floor",
+      "rows": "0-44",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light stone edge band at stage front",
+      "rows": "45-47",
+      "evidence": "a",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "49"
+     },
+     {
+      "part": "side stair blocks (light stone tops)",
+      "rows": "32-48",
+      "evidence": "a",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "49"
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The central wooden floor (rows 0-44, planks) is a large horizontal top surface. It ends in a light front-edge band at rows 45-47, with a dark shadow line at row 49. Below it is the stone-block front face, rows 48-63, which is 16 rows. The stair blocks on both sides step down in width (88 to 160 px). Each has a light top (rows 33-47 at x=40) bounded by a yellow edge line at row 48 and a dark shadow at row 49, then a dark front face down to row 63. No receding isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has about 8 visible tones per tile, matching the hedge (9) and above the bench and lamp. It is below the stall (17) and the well (20). Near-flat coverage is 1%, so there are no big flat fills. The wood back panel has plank grain, knots and nail dots in about 4-5 tones. The stone base has individually shaded bricks with a lit top edge. The stair blocks are bevelled, with speckle and gold trim. The dark edges are 0% neutral, so the outlines lean toward the adjacent material and are not a near-black sticker line. It falls a little short of the stall and well in density: the stair blocks repeat and are lightly shaded, and the steps are about 5 against the reference's 5-6. This is a minor shortfall and the piece is acceptable next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 27289
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden stage floor",
+      "rows": "0-43",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "light concrete front lip of the stage",
+      "rows": "44-47",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side stair treads, left and right (4 steps each)",
+      "rows": "32-47",
+      "evidence": "a",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "49-52"
+     }
+    ],
+    "main_top_rows": 44,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stage floor is a large plank-textured top surface (rows 0-43) with a light concrete lip at row 44 as the front-edge line. Below it is a stone-block front face (rows 48-63, about 16 rows). The four steps on each side are light, flat tread surfaces with darker front faces below them, with dark shadow rows at about 49-52. The width profile steps up 88, 112, 136, 160 toward the stage. Every major part shows both a top and a front face, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a large piece with only 19 distinct colours in total. It has 8 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well, and about level with the hedge's 9. The wood back wall has plank grain, nail dots and a few tones (about 4-5 steps), and the stone base is shaded brick by brick. The stair blocks are mostly one pale grey with a few speckle dots and a thin gold line, so each carries only about 3 steps and looks flatter than the reference props. Near-flat coverage is only 1%, so there are no big dead fills. The edge pixels are 0% neutral, so the outlines lean dark brown or grey-violet like the adjacent material, not a black sticker line. Overall it is clean and tinted but shallower in shading and texture than the richer references, and on a piece this large that reads as slightly lower density. Doubt goes to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 24634
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden stage floor (plank top)",
+      "rows": "0-43",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "49"
+     },
+     {
+      "part": "pale concrete front lip of stage",
+      "rows": "44-47",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side stair blocks, light tread tops (4 steps left, 4 steps right)",
+      "rows": "33-47",
+      "evidence": "a",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "49"
+     }
+    ],
+    "main_top_rows": 44,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wooden plank floor fills rows 0-43 and is a large horizontal surface seen from above. It ends in a pale concrete front-edge band at rows 44-47, then a dark line at row 49 and a stone-brick front face at rows 48-63 (about 16 rows). The stair blocks on both sides step up toward the stage, with silhouette width growing from 64 at rows 0-31 to 160 at rows 44-63. Each block has a light top and tread area, a yellow edge line at row 48, a dark shadow at row 49, and a darker riser below. So the stage and stairs both show a top surface plus a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate shows 8 visible tones per tile. That is about equal to prop-hedge (9) and below prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is only 1%, so there are no big dead fills. The planked wood back wall carries about 4-5 plank tones with grain and seams. The stone plinth is shaded block by block, and the stair blocks have speckle and a thin gold edge accent. The 0% neutral share of dark edge pixels means the outlines are tinted, so I read them as dark material tone and not a black sticker line. The concrete ramps are fairly flat light grey (about 3-4 steps), and the 19 total colours are leaner than the richer references (38-40). That puts it slightly below them, but still within what a careful artist would accept next to the reference set.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23958
+  }
+ ],
+ "decidedAt": "2026-10-22T11:58:32.462Z",
+ "cells": {
+  "16": [
+   "015e3ee37b229e70",
+   "0a31decc64b206b9",
+   "280d0015e5ad0e3d",
+   "31ab803a8a15e4ca",
+   "61f1ebfaa91b944b",
+   "62752f907dd80259",
+   "6c20f02ebe49969c",
+   "72ad0a9384289503",
+   "74e3d5e32cd3900f",
+   "7e4d632f04ef8645",
+   "98cf1ff26ba3e29b",
+   "9e05918c46d00694",
+   "b29290297e9b3a64",
+   "b4d3f72a5f16dadf",
+   "c91bdc4e26ae07d0",
+   "da60fd73c52b9600",
+   "e28987e9cfbe29f2",
+   "e7bd8fd580854f4d",
+   "ebdcbbfb35835bc9",
+   "fe481972e3bed69d"
+  ],
+  "24": [
+   "008b9864d8d35910",
+   "078593d0bea48064",
+   "07ef8ead6418edd5",
+   "0894f9b958e4328b",
+   "0b766d61a2518370",
+   "0ca2447aa318f0c2",
+   "109ced6db7ce29a9",
+   "109faa69a05d62ce",
+   "138b879d69900535",
+   "1f486f31dddc2541",
+   "243c7340dfe97ed7",
+   "296150f0a7272faf",
+   "2b4a0b758e34eaab",
+   "2d20634a28e65c7a",
+   "30ea7286c0b42bd6",
+   "31703702c6bb9832",
+   "36e47b701d849e51",
+   "37a78c0f68c8fdaa",
+   "390140462fc31431",
+   "3cd7a61edfa5bdb8",
+   "3f4e68ea581fc768",
+   "3ff5cb91dc696a40",
+   "4017d54272515a5c",
+   "40a2fa8e5ba6740c",
+   "4a0bcd26a325dd69",
+   "4ad321cdfbcbfaea",
+   "4e1383b3a72e2c1b",
+   "572760b51052a3de",
+   "57d0539e3953f840",
+   "5d9e80d048b34765",
+   "5e06f3165d14a05f",
+   "60010fba803b70e6",
+   "6012728bd1ae5ee5",
+   "607e80c88e5016ac",
+   "6477e9fd47e5b0e2",
+   "696e0a663f3fa972",
+   "6a7709156c13e603",
+   "6f31d490da0150a2",
+   "70546d501aafe056",
+   "70811d570d8e5b14",
+   "71c1ae8bb16a3d32",
+   "7242c439deaafa58",
+   "74a70f6ba178c0aa",
+   "74bf2943ea8a278e",
+   "7944b825e6cbe1f2",
+   "7b79d4222e9b91de",
+   "7c6050922556decc",
+   "7de6c8c2ce39a7ea",
+   "7e0e468a03d52476",
+   "7fe467568b0f70d9",
+   "811b281469fcb474",
+   "837fb7570f8ea7cd",
+   "86a5cef8df952ac4",
+   "8a862c1975a5ca51",
+   "8ac69f6a69cc6c2c",
+   "8c2b1b69bc0cd8af",
+   "8fe61270fcc086f5",
+   "943cf575570be31d",
+   "94d4cb153fbd8aae",
+   "9ceef5e28914e0d4",
+   "9fd04f4d8e551f89",
+   "a1e766a8a0e761eb",
+   "a23f5fc6dfa9e60d",
+   "ab07a5cb4c59c9ee",
+   "acf5ee6d75d208be",
+   "ade943997726cd15",
+   "ae087785b4f1183e",
+   "ae2a6dbbbbbb654d",
+   "b2fbee38525296d3",
+   "b3de40e7f2b17edd",
+   "b4876e316bacbf7a",
+   "b4b2ee064dd95f62",
+   "b4da657eb92bc106",
+   "b7c69e77c8725303",
+   "c17e9e8c60f48cb5",
+   "c4862b5cd453d88b",
+   "c6a4d139ebab5f92",
+   "c724eb56b0f50487",
+   "ca2b5ac1990093e2",
+   "cb750e06d592c2e9",
+   "d0e8390e24c23fd1",
+   "d24c1a2d5a086428",
+   "d2beb4eeab08efb7",
+   "d3f6a63bb73e80c1",
+   "dd8d1fada17b3f81",
+   "ddc960b3d1032e25",
+   "e16c880f9e73254f",
+   "e1b26401a97a8071",
+   "e52838e32ae95310",
+   "ec277e32f21a1879",
+   "ef9a4b873787c365",
+   "f16d57fcf932cc50",
+   "f17f22c273090963",
+   "f1fa8c430e6891ac",
+   "f2cf877c6072fa3b",
+   "fed31f99943f30ca"
+  ],
+  "32": [
+   "1175ab4381558da1",
+   "2662a41524c957aa",
+   "31eea269dfc7567a",
+   "35d985f2e95ba24c",
+   "777a3559fa1a35c9",
+   "bd4df63d97f771de",
+   "e7ca2b3054fa4f25",
+   "f2b6f8b9e4e0e9a9"
+  ],
+  "48": [
+   "01807449cf5891fb",
+   "01eb532d9fec8eb3",
+   "02ace9d59b213ef2",
+   "112783540d7e8d86",
+   "186a8cec048a667b",
+   "1ea8a42c66e887ca",
+   "1f4dffc330d03505",
+   "247edd96bc2ef4e1",
+   "28efaf79a7138706",
+   "3fe590ff25328a27",
+   "44ed95b38192928e",
+   "50fea4f5c862996a",
+   "77ab3df19daf11ba",
+   "8076512fca785c6b",
+   "819dba31899f1d0d",
+   "81e88de71073fb7b",
+   "82b4ddb476bb8a1b",
+   "8554efa0d389c79d",
+   "8e35a9b1b140557c",
+   "8e648c42e887e0c1",
+   "916b6bb54fb1944b",
+   "96bde40788675054",
+   "a1c379b7798b8715",
+   "a1f56174dfb796b0",
+   "a9144bb16bbc912c",
+   "ab4a7284f2106d15",
+   "b6d666a987c14f94",
+   "b9f98642f5926313",
+   "bb535542d166a788",
+   "c46438a0df15adbf",
+   "c68bb637ae6ccc58",
+   "c942371906542180",
+   "ca7645dcc3b0807d",
+   "d932607c0e8ca96d",
+   "de7586915dd90d71",
+   "e725b1edbac67a7d",
+   "ed4f92c77222f987",
+   "ee41ad0f4ebcd75e",
+   "f0ed5d2165319e9e",
+   "f28f4c89dba9102d",
+   "fc27787d4b32ee38",
+   "ff6a6c31bf3d9b7d"
+  ]
+ }
+}

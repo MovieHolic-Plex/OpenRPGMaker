@@ -1,0 +1,33 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "jp-street-stairs",
+ "title": "jp_city 거리 계단 (육교·옆 계단·단상·사다리, 조립 그림)",
+ "explainText": "역 광장용 새 계단 조각: 남쪽에서 북으로 오르는 2칸 폭 육교 계단(층계참 쇠망)·육교 상판(붉은/녹색)·옆에서 오르는 계단 한 쌍과 단상·건물 벽 사다리. 허용하면 jp_city 번들에 굽는다.",
+ "createdAt": "2026-10-22T10:37:12.518Z",
+ "items": [
+  {
+   "sha": "a4c22b7271cf5c5d5855ddd998f8d9fb90717f18fd6731ffbcef1dbb0b542b79",
+   "kind": "wall_mounted",
+   "label": "jp_city/street_stairs/jp-wall-ladder",
+   "source": "/tmp/jps/gate/jp-wall-ladder.png"
+  },
+  {
+   "sha": "38a69cd360b0485df5932f753374b784507fff02fb2f75d9cb0ca09dd8bf87f3",
+   "kind": "structure",
+   "label": "jp_city/street_stairs/jp-overpass-assembled-red",
+   "source": "/tmp/jps/gate/jp-overpass-assembled-red.png"
+  },
+  {
+   "sha": "5ca21654b221593eab84a0928be2f39951b176080cb4f5117f9ad861577746db",
+   "kind": "structure",
+   "label": "jp_city/street_stairs/jp-overpass-assembled-green",
+   "source": "/tmp/jps/gate/jp-overpass-assembled-green.png"
+  },
+  {
+   "sha": "2b110ab8dd7f63edc41b28494b5f23c3092423ff9973838b2cd000158328ca31",
+   "kind": "structure",
+   "label": "jp_city/street_stairs/jp-stage-assembled",
+   "source": "/tmp/jps/gate/jp-stage-assembled.png"
+  }
+ ]
+}

@@ -1,0 +1,50 @@
+{
+ "jp-overpass-assembled-red::jp-overpass-stair-e": {
+  "png": "tiledata/jp-city/blocks/street_stairs/_gate/jp-overpass-assembled-red.png",
+  "part": "jp-overpass-stair-e",
+  "block": "street_stairs",
+  "x": 0,
+  "y": 0,
+  "source": "jp-overpass-assembled-red"
+ },
+ "jp-overpass-assembled-red::jp-overpass-deck-red": {
+  "png": "tiledata/jp-city/blocks/street_stairs/_gate/jp-overpass-assembled-red.png",
+  "part": "jp-overpass-deck-red",
+  "block": "street_stairs",
+  "x": 32,
+  "y": 0,
+  "source": "jp-overpass-assembled-red"
+ },
+ "jp-overpass-assembled-red::jp-overpass-stair-w": {
+  "png": "tiledata/jp-city/blocks/street_stairs/_gate/jp-overpass-assembled-red.png",
+  "part": "jp-overpass-stair-w",
+  "block": "street_stairs",
+  "x": 96,
+  "y": 0,
+  "source": "jp-overpass-assembled-red"
+ },
+ "jp-stage-assembled::jp-side-stair-l": {
+  "png": "tiledata/jp-city/blocks/street_stairs/_gate/jp-stage-assembled.png",
+  "part": "jp-side-stair-l",
+  "block": "street_stairs",
+  "x": 0,
+  "y": 32,
+  "source": "jp-stage-assembled"
+ },
+ "jp-stage-assembled::jp-stage-platform": {
+  "png": "tiledata/jp-city/blocks/street_stairs/_gate/jp-stage-assembled.png",
+  "part": "jp-stage-platform",
+  "block": "street_stairs",
+  "x": 48,
+  "y": 0,
+  "source": "jp-stage-assembled"
+ },
+ "jp-stage-assembled::jp-side-stair-r": {
+  "png": "tiledata/jp-city/blocks/street_stairs/_gate/jp-stage-assembled.png",
+  "part": "jp-side-stair-r",
+  "block": "street_stairs",
+  "x": 112,
+  "y": 32,
+  "source": "jp-stage-assembled"
+ }
+}
