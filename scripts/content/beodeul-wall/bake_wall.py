@@ -133,6 +133,7 @@ def plan_ring(x0, y0, x1, y1, gates=(), closed=(), vgaps=(), towers=(), stairs=(
     def shade_right(x, yw):
         n = up.get((x, yw))
         if n and n.startswith("hs"): up[(x, yw)] = "hs_sh_a"; up[(x, yw + 1)] = "hs_sh_b"
+        elif n and n.startswith("hn") and n != "hn_stair" and up.get((x, yw + 1)) != "hn_stair": up[(x, yw)] = "hn_sh_a"; up[(x, yw + 1)] = "hn_sh_b"
         for i, k in enumerate(FACE_ROWS):
             if up.get((x, yw + 2 + i), "").startswith("f_") and not up[(x, yw + 2 + i)].endswith(("endL", "endR")): up[(x, yw + 2 + i)] = f"f_{k}_shL"
 

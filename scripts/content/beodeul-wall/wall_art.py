@@ -56,6 +56,15 @@ def step(c, n):
     return r[i]
 
 
+def step_any(c, n):
+    """램프 밖 색(돌 결 잡색)도 가장 가까운 COOL·WARM 램프 색으로 붙여 n 단 옮긴다 — 그늘이 잡색 돌을 건너뛰어 1배에서 안 보였다(r13)."""
+    if c[3] != 255: return c
+    if _ramp_of(c) is not None: return step(c, n)
+    best = min(((sum((a - b) ** 2 for a, b in zip(c[:3], r[i][:3])), r, i) for r in (COOL, WARM) for i in range(len(r))), key=lambda t: t[0])
+    _, r, i = best
+    return r[max(0, min(len(r) - 1, i + n))]
+
+
 def h(*a):
     """결정적 해시(같은 입력 → 같은 값)."""
     v = 2166136261
@@ -317,11 +326,21 @@ def _quoins(cv, side):
     cv.set(xi, 0, COOL[9] if side == "L" else COOL[7]); cv.set(xi, PLINTH_Y, COOL[9] if side == "L" else COOL[7])
 
 
+def SHADOW_PROFILE(x, y):
+    """왼쪽 물체 그늘 세기(r13): 9열 네 단 · 3열 두 단 · 2열 성긴 한 단 — 고른 짙은 덩이로 읽혀야 한다(얕으면 잡색 돌 사이에 묻혔다)."""
+    if x < 9: return -4
+    if x < 12: return -2
+    if x < 14: return -1 if (x + y) % 2 == 0 else -2
+    return 0
+
+
 def _cast_shadow_left(cv):
     """왼쪽에 선 세로 성벽·망루·성문루가 드리운 그늘: 왼쪽 9열(두 단 5열 + 한 단 3열 + 성긴 한 열)."""
+    # 3판 r13: 넓고 짙게(망루·성문루는 성벽보다 높다 — 8열 한두 단은 1배에서 안 보였다): 7열 세 단 · 4열 두 단 · 3열 한 단(성긴 끝)
     for y in range(FACE_H):
-        for x in range(8):
-            cv.shade(x, y, -2 if x < 5 else -1)
+        for x in range(14):
+            n = SHADOW_PROFILE(x, y)
+            if n: cv.set(x, y, step_any(cv.get(x, y), n))
 
 
 # ================================================================ 통로 판석 (윗면)
@@ -472,12 +491,13 @@ def south_top(var=0, shade_left=False):
     front_parapet(cv, 0, 15, 22, ("hs", var))
     if shade_left:
         for y in range(32):
-            for x in range(8):
-                cv.shade(x, y, -2 if x < 5 else -1)
+            for x in range(14):
+                n = SHADOW_PROFILE(x, y)
+                if n: cv.set(x, y, step_any(cv.get(x, y), n))
     return cv
 
 
-def north_top(var=0, stair=False):
+def north_top(var=0, stair=False, shade_left=False):
     """북쪽 성벽 윗면: 0~11 뒤 흉벽(안쪽 면) · 12~13 흉벽 그늘 · 12~29 판석 · 30 앞 턱 빛 · 31 윤곽."""
     cv = Canvas(16, 32)
     flags(cv, 0, 12, 15, 29, ("hn", var), shift=3)
@@ -490,6 +510,11 @@ def north_top(var=0, stair=False):
         for x in range(4, 16):
             cv.set(x, 30, FLAG[6] if x % 6 else FLAG[5]); cv.set(x, 31, FLAG[5])
         cv.set(3, 30, FLAG[3]); cv.set(3, 31, OUT2)
+    if shade_left:      # 3판 r13: 북쪽 성벽 통로에도 왼쪽 망루·성문루 그늘(뒤 흉벽 안쪽 면까지)
+        for y in range(32):
+            for x in range(14):
+                n = SHADOW_PROFILE(x, y)
+                if n: cv.set(x, y, step_any(cv.get(x, y), n))
     return cv
 
 
@@ -610,7 +635,8 @@ def stairs():
     top_of = lambda x: FACE_H - 8 * (min(7, x // 6) + 1)
     for x in range(Wd):
         top = top_of(x)
-        if top > 0: cv.set(x, top - 1, step(cv.get(x, top - 1), -2))         # 디딤판 뒤가 벽에 닿는 그늘 줄
+        if top > 0: cv.set(x, top - 1, OUT2)                                  # 디딤판 뒤가 벽에 닿는 윤곽 줄(r13)
+        if top > 1: cv.set(x, top - 2, step_any(cv.get(x, top - 2), -2))         # 그 위 벽에 진 얕은 그늘
         for y in range(top, FACE_H):
             d = y - top
             j = min(7, x // 6)
@@ -622,8 +648,14 @@ def stairs():
             elif d == 4:
                 c = OUT2                                # 디딤판 코 밑 그늘
             else:
-                c = step(mass.get(x, y), -1)            # 계단 몸 남쪽 면(마름돌, 한 단 어둡게)
-                if x == 6 * j and y < top + 9: c = COOL[9]      # 단 앞 모서리 빛
+                # 계단 몸 남쪽 면: 마름돌 두 단 어둡게(r13: 한 단이면 뒤 성벽과 같은 돌로 녹아 「희미한 사선 조각」) +
+                # 단마다 오른쪽 끝 짙은 줄(챌판 사이 그늘)로 기둥이 갈린다
+                # r13: 단마다 챌판(디딤판 밑 8행, 빛 받는 면 −1)과 그 밑 계단 몸(그늘 −4) — 계단 꼴 띠가 생긴다.
+                # 줄눈은 디딤판 높이(8행 주기)에 맞춘 가로줄 + 단 경계 세로 짙은 줄(챌판 높이까지만)
+                c = step_any(mass.get(x, y), -1 if d < 12 else -4)
+                if (FACE_H - y) % 8 == 0: c = OUT2
+                if x % 6 == 5 and j < 7 and d < 12: c = OUT2
+                if x == 6 * j and d < 12: c = COOL[9]           # 단 앞 모서리 빛
             cv.set(x, y, c)
     for x in range(Wd): cv.set(x, FACE_H - 1, OUT)
     return cv
@@ -1184,9 +1216,26 @@ def postern_block(side):
         for y in range(h_):
             for x in (28, 29, 30): f.shade(x, y, -1)
         return f
-    f1 = face(16, 1, slit=(4, 8))
-    tall = Canvas(32, 48)
-    tall.paste(face(48, 2, slit=(5, 14), torches=True), 0, 0)
+    def arch(f, y_spring, y_bot, half=8, cx=16):
+        """길이 밑으로 지나는 아치 구멍(3판 r13 — 막힌 돌 앞면에 화살 구멍만 있어 「길이 벽에 막혔다」): 둥근 머리 홍예 + 안쪽으로 짙어지는 터널 + 바닥은 길로 이어지게 투명."""
+        r = half
+        for y in range(y_spring - r, y_bot + 1):
+            dy = y_spring - y
+            w = half if dy <= 0 else int((r * r - dy * dy) ** 0.5 + 0.5)
+            if w <= 0: continue
+            for x in range(cx - w, cx + w):
+                depth = y - (y_spring - r)
+                c = OUT if depth < 6 else OUT2
+                if y >= y_bot - 3: c = CLEAR                    # 바닥 몇 줄은 비워 밑의 길이 보인다
+                f.set(x, y, c)
+            # 홍예석 테(왼쪽 빛·오른쪽 그늘)
+            if dy > 0 or y < y_bot - 3:
+                f.set(cx - w - 1, y, COOL[10] if dy > 0 else COOL[9]); f.set(cx + w, y, COOL[5] if dy > 0 else COOL[6])
+        for x in range(cx - 3, cx + 3): f.set(x, y_spring - r - 1, COOL[10] if x < cx else COOL[8])   # 이맛돌
+    f1 = face(16, 1)
+    arch(f1, 9, 15, half=6)
+    tall = face(48, 2, slit=(4, 7), torches=True)
+    arch(tall, 24, 47, half=8)
     return top, f1, tall
 
 
@@ -1484,6 +1533,10 @@ def pieces():
             v = vert_wall(side, 0, r)
             P(f"{nm}{r}_0", cut(v, 0, 0), "UDR", f"{'서' if side == 'W' else '동'}쪽 성벽 윗면 왼쪽 열(변형 {r})")
             P(f"{nm}{r}_1", cut(v, 1, 0), "UDL", f"{'서' if side == 'W' else '동'}쪽 성벽 윗면 오른쪽 열(변형 {r})")
+    # 3판 r13: 북쪽 성벽 통로에 진 왼쪽 망루·성문루 그늘
+    n = north_top(0, shade_left=True)
+    P("hn_sh_a", cut(n, 0, 0), "LRD", "북쪽 성벽 윗면 위 줄 — 왼쪽에 선 망루·성문루 그늘")
+    P("hn_sh_b", cut(n, 0, 1), "LRU", "북쪽 성벽 윗면 아래 줄 — 왼쪽 그늘")
     # --- 3판 r8: 기후 변형 — 눈 덮인 성벽(snow:) · 사막 사암 성벽(desert:). 그림자·터널 입 그늘은 기후와 무관해 복사하지 않는다
     base = list(out)
     for biome in BIOMES:

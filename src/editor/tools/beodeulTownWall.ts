@@ -100,6 +100,7 @@ export function planTownWallRing(p: TownWallPlan): { up: Cells; lo: Cells } {
   }
   const shadeRight = (x: number, yw: number) => {
     if (up.get(key(x, yw))?.startsWith("hs")) { up.set(key(x, yw), "hs_sh_a"); up.set(key(x, yw + 1), "hs_sh_b"); }
+    else if (up.get(key(x, yw))?.startsWith("hn") && up.get(key(x, yw + 1)) !== "hn_stair") { up.set(key(x, yw), "hn_sh_a"); up.set(key(x, yw + 1), "hn_sh_b"); } // 3판 r13
     FACE_ROWS.forEach((k, i) => {
       const n = up.get(key(x, yw + 2 + i));
       if (n?.startsWith("f_") && !n.endsWith("endL") && !n.endsWith("endR")) up.set(key(x, yw + 2 + i), `f_${k}_shL`);

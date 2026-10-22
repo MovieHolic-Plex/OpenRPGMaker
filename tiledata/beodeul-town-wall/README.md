@@ -1,12 +1,12 @@
 # 버들항 마을 성벽 3판 — 윗면 통로·흉벽·앞면·성문루·망루·계단·그림자 (beodeul_town_wall, 2026-10-22)
 
 타일셋 `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chipset.png`(텍스처 `tex_beodeul_city`) · **16px 칸, 한 줄 128칸**.
-번호 n 의 칸 = 행 ⌊n/128⌋, 열 n mod 128. 성벽 칸은 시트 꼬리 **28544~29451**(행 223~230)이다. 조각 이름 → 칸 번호는 아래 사전과 `src/assets/beodeulTownWallPieces.json`. 다른 칩셋 번호를 섞지 않는다.
+번호 n 의 칸 = 행 ⌊n/128⌋, 열 n mod 128. 성벽 칸은 시트 꼬리 **28544~29457**(행 223~230)이다. 조각 이름 → 칸 번호는 아래 사전과 `src/assets/beodeulTownWallPieces.json`. 다른 칩셋 번호를 섞지 않는다.
 그림은 코드 손 도트(scripts/content/beodeul-wall/wall_art.py), 3/4 탑뷰: 성벽 윗면(판석 통로 + 흉벽 톱니)은 위에서 본 면 **두 줄 깊이**, 그 아래 마름돌 앞면 **네 줄**(64px — 단층 민가 벽보다 높다. 고르지 않은 켜·빗물 자국·이끼 낀 굽도리).
 세로 성벽은 **두 칸 폭** 윗면만 보인다. 성문루(4×8)는 윗면 플랫폼(사방 흉벽·물레·쇠창살 구덩이)이 보이고 성벽보다 16px 높으며 한 줄 앞으로 내민다.
 망루(3×9)는 성벽보다 32px 높아 윗면이 성벽 흉벽보다 한 줄 위에 선다. 망루는 자리마다 변형을 돌려 쓴다(tower·tower1·tower2 — 윗면 소품과 앞면 구멍 배치가 다르다), 성문루 윗면은 gate·gate1.
 색은 모두 버들항 시트에 있는 값(돌 = 왕성 성벽 회색, 통로 = 왕성 안뜰 판석).
-**기후 변형:** 모든 성벽 조각에 눈 덮인 판(`snow:이름`)과 사막 사암 판(`desert:이름`)이 있다 — 기본 조각 312개 뒤에 같은 순서로 이어진다(번호는 `src/assets/beodeulTownWallPieces.json`). 그림자 `sh_*`·터널 입 그늘 `mo_*` 는 기후와 무관해 하나뿐이다. 설원 마을은 snow:, 사막 마을은 desert: 를 쓴다(walls:true 가 고른다).
+**기후 변형:** 모든 성벽 조각에 눈 덮인 판(`snow:이름`)과 사막 사암 판(`desert:이름`)이 있다 — 기본 조각 314개 뒤에 같은 순서로 이어진다(번호는 `src/assets/beodeulTownWallPieces.json`). 그림자 `sh_*`·터널 입 그늘 `mo_*` 는 기후와 무관해 하나뿐이다. 설원 마을은 snow:, 사막 마을은 desert: 를 쓴다(walls:true 가 고른다).
 
 ## 1. 정확한 사전
 
