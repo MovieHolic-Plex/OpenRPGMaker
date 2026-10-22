@@ -42,7 +42,7 @@ export const FIND_VILLAGE_TYPE_TOOL: ToolDefinition = {
     const top = pool[0]!;
     const head = q
       ? top.status === "needs-art"
-        ? `「${top.ko}」은(는) 그림이 없어 짓지 않는다 — ${top.gap}. 사용자에게 그렇게 말하고 대안(nearest)을 제안한다.`
+        ? `「${top.ko}」은(는) 그림이 없어 짓지 않는다 — ${top.gap}. 그 종류로 흉내 내지 말고 가장 가까운 대안(nearest)을 대안의 이름으로 짓되, 답 첫 문장에 빠진 그림을 말한다.`
         : `「${top.ko}」 → ${top.chipset}: ${top.recipe}${top.status === "partial" ? ` (빠진 그림: ${top.gap})` : ""}`
       : `마을 종류 ${pool.length}종(ready ${pool.filter((t) => t.status === "ready").length}).`;
     return { summary: head, data: { types: pool.map(row) } };

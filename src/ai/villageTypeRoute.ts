@@ -3,7 +3,7 @@
 //  - 버들항이 아닌 칩셋의 종류(조선 장터·달 정착지…)는 버들항 마을 노트를 끈다 — 정책 낱말이 못 잡은 요청이 버들항으로 새지 않게.
 //  - 그 칩셋의 도구를 첫 요청부터 보이게 한다.
 import type { IntentDeclaration } from "@/ai/intentDeclaration";
-import { matchVillageType, type VillageType } from "./villageTypeCatalog";
+import { matchVillageType, villageTypeById, type VillageType } from "./villageTypeCatalog";
 import { SF_STATION_EXPOSED_TOOLS } from "./sfStationPolicy";
 import { PREHISTORIC_EXPOSED_TOOLS } from "./prehistoricPolicy";
 import { DESERT_EAST_EXPOSED_TOOLS } from "./desertEastPolicy";
@@ -19,7 +19,7 @@ import { MODERN_CITY_EXPOSED_TOOLS } from "./modernCityPolicy";
 /** 마을·도시를 «짓는» 문장의 표지 — 「엘프 NPC 놓아 줘」 같은 문장이 엘프 마을로 잡히지 않게. */
 const SETTLEMENT_RE = /마을|도시|동네|촌|부락|거리|시가|정착지|정착촌|콜로니|기지|단지|장터|시장|항구|포구|어항|대학가|상점가|주택가|관광지|수향|역참|town|village|city|settlement|colony|street|harbou?r/iu;
 
-const JOSEON_TOOLS = ["import_region_reference", "read_region_reference", "list_spatial_designs", "stamp_object", "show_map_region", "list_map_locations", "check_reachability", "create_map"] as const;
+const JOSEON_TOOLS = ["dress_joseon_market", "import_region_reference", "read_region_reference", "list_spatial_designs", "stamp_object", "show_map_region", "list_map_locations", "check_reachability", "create_map"] as const;
 
 const CHIPSET_TOOLS: Record<string, readonly string[]> = {
   sf_station: SF_STATION_EXPOSED_TOOLS,
@@ -56,5 +56,7 @@ export function villageTypeSuppressesBeodeul(type: VillageType | null): boolean 
 
 export function villageTypeExposedTools(type: VillageType | null): string[] {
   if (!type) return [];
-  return ["find_village_type", ...(type.chipset ? CHIPSET_TOOLS[type.chipset] ?? [] : [])];
+  // 그림이 없는 종류는 대안(nearest)을 짓는다 — 대안 칩셋의 도구도 보이게.
+  const chipsets = [type.chipset, ...(type.nearest ?? []).map((id) => villageTypeById(id)?.chipset ?? null)].filter((c): c is string => !!c);
+  return [...new Set(["find_village_type", ...chipsets.flatMap((c) => CHIPSET_TOOLS[c] ?? [])])];
 }
