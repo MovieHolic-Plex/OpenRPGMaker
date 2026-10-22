@@ -578,7 +578,9 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     event.x = lead.x + dx; event.y = lead.y + dy;
     // 포고는 남쪽(길 아래 풀밭)에 모인 백성에게 한다 — 발렌과 호위 모두 남쪽을 보고 선다. 서쪽(일행 쪽)을 보던 옆모습은
     // 백성 쪽이 아니라 카메라를 보는 것처럼 읽혔다(VQA r8 major).
-    for (const page of event.pages ?? []) if (page.graphic?.sprite) page.graphic.direction = "down";
+    // r10·r12: 모두 남쪽(카메라)을 보면 말하는 이와 듣는 이가 나란히 선 줄 세우기로 읽혔다(VQA r12 major) — 발렌은 동쪽 행렬·백성을,
+    // 행렬은 서쪽 발렌을 본다(서로 마주 보는 연설). 풀밭 백성은 아래에서 발렌을 본다.
+    for (const page of event.pages ?? []) if (page.graphic?.sprite) page.graphic.direction = event === valen ? "right" : "left";
     setEventChip(hub, event.id, tex, index); // 방향이 바뀌면 칩 프레임 번호도 다시 고른다
   }
 

@@ -191,8 +191,26 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
     for (const [kit, x, y] of home.dress ?? []) {
       const ctx = { project, assistantRun: false };
       try {
+        // 방 배치가 바뀌면 고정 좌표 가구가 벽 너머 어둠(천장·허공)에 찍혔다(VQA r12 major, 약방 바구니·별지기 침실 찻상) —
+        // 찍힌 칸 가운데 하나라도 바닥이 아니면 되돌린다.
+        const before = project.maps[home.mapId]!;
+        const snap = { upper: [...before.upperTiles], lowerOverlay: before.lowerOverlayTiles ? [...before.lowerOverlayTiles] : undefined, upperOverlay: before.upperOverlayTiles ? [...before.upperOverlayTiles] : undefined };
         const res = runTool(ctx, "stamp_object", { objectId: `kit:atlas_biome_interior/hand-interior:${kit}`, mapId: home.mapId, x, y }, { dryRun: false }) as Run;
-        if (res.ok) Object.assign(project, ctx.project);
+        if (res.ok) {
+          const after = ctx.project.maps[home.mapId]!;
+          const metaD = (ctx.project.tilesets[after.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+          const changed: number[] = [];
+          after.upperTiles.forEach((t, i) => { if (t !== snap.upper[i]) changed.push(i); });
+          after.lowerOverlayTiles?.forEach((t, i) => { if (snap.lowerOverlay && t !== snap.lowerOverlay[i]) changed.push(i); });
+          after.upperOverlayTiles?.forEach((t, i) => { if (snap.upperOverlay && t !== snap.upperOverlay[i]) changed.push(i); });
+          const onFloor = changed.every((i) => (metaD[after.lowerTiles[i]!]?.label ?? "").startsWith("바닥"));
+          if (onFloor) Object.assign(project, ctx.project);
+          else {
+            after.upperTiles.splice(0, after.upperTiles.length, ...snap.upper);
+            if (snap.lowerOverlay && after.lowerOverlayTiles) after.lowerOverlayTiles.splice(0, after.lowerOverlayTiles.length, ...snap.lowerOverlay);
+            if (snap.upperOverlay && after.upperOverlayTiles) after.upperOverlayTiles.splice(0, after.upperOverlayTiles.length, ...snap.upperOverlay);
+          }
+        }
       } catch { /* 장식 — 못 놓으면 건너뛴다 */ }
     }
     // 부엌의 수도꼭지 개수대·쇠 레인지는 중세 집에 어울리지 않았고 세 집에 똑같이 깔렸다(VQA r5) — 물동이와 화덕·조리대로 바꾼다.
