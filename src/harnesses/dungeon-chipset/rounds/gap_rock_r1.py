@@ -210,10 +210,10 @@ BLOTCH = [
     '..+.####....##..', '.....##....###..', '...........##.+.', '.##.....+.......',
     '.###.......#....', '..#.......###...', '.......+..##....', '....#...........']
 # 줄마다 (X, Y, Z, H, B, S). A: 사암 b 바탕에 차가운 회녹 q 큰 얼룩 — 바닥(따뜻한 0.47 잔 점)과 결 크기·색온도가 다르다.
-TONES = {'A': 'bqdmcd', 'B': 'bcplmp', 'C': 'bdkcmk'}
+TONES = {'A': 'bqdmcd', 'B': 'bdmlmdkh', 'C': 'bkmhmkxw'}   # (X Y Z H B S [D 가장 깊은 그늘 · W 가장 밝은 점]) — B·C 덩이는 5단
 CLUMPS = {   # 크기 0 작은 → 3 큰. 방향 없는 덩이(층 줄은 앞면에만)
-    'ABC': (['HB', 'BS'], ['.HB.', 'HBBS', '.BS.'], ['.HHB.', 'HBBBS', 'BBBSS', '.SSS.'],
-           ['..HHB.', '.HBBBB', 'HBBBBS', 'BBBBSS', '.SSSS.']),
+    'ABC': (['HB', 'BS'], ['.WB.', 'HBBS', '.BS.'], ['.WHB.', 'HBBBS', 'BBBSS', '.SSD.'],
+           ['..WHB.', '.HBBBB', 'HBBBBS', 'BBBBSS', '.SSSD.']),
 }
 CLUMP_AT = [   # 변형 8개(마지막 = 본몸통)의 (x, y, 크기)
     ((2, 1, 2), (9, 3, 1), (4, 8, 0), (11, 10, 3), (1, 12, 1)),
@@ -232,15 +232,25 @@ def base_rows(line, k):
     return turn([r.replace('.', X).replace('#', Y).replace('+', Z) for r in BLOTCH], k)
 
 
-def clumped(line, rows, at):
-    H, B, S = TONES[line][3:]
+# B·C 는 덩이를 더 많이(작은 덩이 3~4개 덧) — 넓은 한 단 면이 남지 않게. A 는 그대로.
+EXTRA_AT = [((6, 13, 0), (13, 6, 0), (7, 5, 1)), ((1, 8, 1), (6, 13, 0), (13, 7, 0), (6, 6, 0)),
+            ((8, 9, 1), (13, 4, 0)), ((1, 1, 1), (9, 1, 0), (2, 11, 0), (8, 12, 0)),
+            ((7, 1, 0), (1, 7, 0), (9, 12, 1)), ((12, 4, 0), (4, 1, 0), (5, 13, 0)),
+            ((7, 6, 1), (1, 3, 0), (7, 13, 0), (13, 14, 0)), ((7, 1, 0), (1, 8, 0), (12, 13, 0), (13, 3, 0))]
+
+
+def clumped(line, rows, at, extra=()):
+    t = TONES[line]
+    H, B, S = t[3:6]
+    D = t[6] if len(t) > 6 else S
+    W = t[7] if len(t) > 7 else H
     spr = CLUMPS['ABC']
     g = [list(r) for r in rows]
-    for x, y, k in sorted(at, key=lambda t: t[1]):
+    for x, y, k in sorted(tuple(at) + tuple(extra), key=lambda t: t[1]):
         for dy, r in enumerate(spr[k]):
             for dx, ch in enumerate(r):
                 if ch != '.':
-                    g[(y + dy) % 16][(x + dx) % 16] = {'H': H, 'B': B, 'S': S}[ch]
+                    g[(y + dy) % 16][(x + dx) % 16] = {'H': H, 'B': B, 'S': S, 'D': D, 'W': W}[ch]
     return [''.join(r) for r in g]
 
 
@@ -282,7 +292,7 @@ def _crack(line, rows, paths):
 
 def tops(line, n):
     ks = (1, 2, 3, 0, 1, 2, 3, 0) if n == 1 else (2, 3, 0, 1, 2, 3, 0, 1)
-    t = [clumped(line, base_rows(line, k), at) for k, at in zip(ks, CLUMP_AT)]
+    t = [clumped(line, base_rows(line, k), at, () if line == 'A' else ex) for k, at, ex in zip(ks, CLUMP_AT, EXTRA_AT)]
     if n == 1:   # 금·턱·층 줄은 칸 안에서 시작해 칸 안에서 끝난다(이웃 칸 앞에서 잘린 금이 생기지 않게)
         big, small = LEDGE[line]
         if line == 'C':
@@ -393,6 +403,18 @@ def _specks(g, pts):
         _fput(g, x, y, ch)
 
 
+FACE_MOTTLE = [
+    '..++.......-....', '.+++......--....', '..+.....+.......', '......-.+++.....', '.-...--..+......',
+    '.--.............', '.......++....-..', '..+...+++...--..', '.+++...+........', '..+.........++..',
+    '......--...+++..', '.....---....+...', '..........-.....', '.++......---....', '.+++......-.....',
+    '..+...++.......-', '......+++.....--', '.-.....+........', '.--..........++.', '..........-.+++.',
+    '.....++..---....', '....+++...-.....', '.....+..........', '..-.........++..', '.---.......+++..']
+FACE_LADDER = {   # (바탕 글자, 표) → 바꿀 글자. 금·주름 글자(k·x)는 그대로
+    'B': {('b', '+'): 'm', ('b', '-'): 'd', ('d', '+'): 'b', ('d', '-'): 'k', ('m', '+'): 'l'},
+    'C': {('b', '+'): 'm', ('b', '-'): 'k', ('k', '+'): 'b', ('k', '-'): 'x', ('d', '+'): 'm', ('m', '+'): 'h'},
+}
+
+
 def face_cv(line, rows, left, right):
     """rows 16×32 → 32×32 표본. left/right = 끝 마구리 열 [(열0 글자열 32), …] — '.' 는 그대로."""
     leg = LEG[line]
@@ -400,6 +422,15 @@ def face_cv(line, rows, left, right):
     if line == 'B':   # B 앞면은 한두 단 밝게: 위 단 d→b·e→d, 아래 단 e→d (금 k 는 그대로) — 거의 검은 벽이 되지 않게
         rows = [r.translate(str.maketrans('de', 'bd')) if 3 <= y < 15 else
                 r.translate(str.maketrans('e', 'd')) if 15 <= y < 28 else r for y, r in enumerate(rows)]
+    if line in FACE_LADDER:   # B·C: 손으로 찍은 얼룩 표로 바탕 단을 한 단 올리고(+) 내려(-) 넓은 한 단 면을 깬다 → 4~5단
+        lad = FACE_LADDER[line]
+        out = []
+        for y, r in enumerate(rows):
+            if 3 <= y < 28:
+                m = FACE_MOTTLE[y - 3]
+                r = ''.join(lad.get((c, mk), c) for c, mk in zip(r, m))
+            out.append(r)
+        rows = out
     cv = Cv(32, 32)
     for y, r in enumerate(rows):
         for x in range(32):
