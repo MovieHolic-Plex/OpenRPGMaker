@@ -768,23 +768,43 @@
    "id": "temple",
    "title": "돔 사원",
    "use": "temple",
-   "cols": 6,
-   "storeys": 1,
-   "roof": "roof.flat",
-   "wall": "wall.storey",
-   "walls": [
-    "L W M W D R"
-   ],
-   "extras": [
+   "masses": [
     {
-     "part": "extra.dome",
-     "at": [
-      2,
-      0
+     "id": "body",
+     "cols": 6,
+     "storeys": 1,
+     "x": 0,
+     "depth": 1,
+     "roof": "roof.flat",
+     "wall": "wall.storey",
+     "walls": [
+      "L W M W M R"
+     ]
+    },
+    {
+     "id": "drum",
+     "cols": 4,
+     "storeys": 2,
+     "x": 1,
+     "depth": 0,
+     "roof": "roof.flat",
+     "wall": "wall.storey",
+     "walls": [
+      "L M M M",
+      "L M D M"
+     ],
+     "extras": [
+      {
+       "part": "extra.dome",
+       "at": [
+        1,
+        0
+       ]
+      }
      ]
     }
    ],
-   "note": "낮고 넓은 몸체 + 청록 돔. 기단 행 없음(포장 금지 — 사용자 2026-10-22)"
+   "note": "낮고 넓은 몸체(한 칸 물러남) + 앞으로 선 돔 북 — 문은 돔 아래 하나. 기단 행 없음(포장 금지)"
   }
  ],
  "rounds": {

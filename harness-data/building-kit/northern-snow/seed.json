@@ -989,7 +989,7 @@
      "id": "porch",
      "cols": 4,
      "storeys": 1,
-     "x": 1,
+     "x": 3,
      "depth": 0,
      "roof": "roof.steep",
      "walls": [

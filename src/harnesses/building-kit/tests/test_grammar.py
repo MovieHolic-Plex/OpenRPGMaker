@@ -221,5 +221,100 @@ class StoreyMaterialTest(unittest.TestCase):
         self.assertEqual(walls[1]['item'], 'wall.stone')
         self.assertEqual(walls[1]['letters'].replace(' ', '').count('D'), 1)
 
+class SeedGrammarTest(unittest.TestCase):
+    def test_every_theme_r3_has_three_buildings_and_two_multi_mass(self):
+        for theme in dot.THEMES:
+            recipes = AS.round_buildings(theme, 'style-r3')
+            with self.subTest(theme=theme):
+                self.assertGreaterEqual(len(recipes), 3)
+                self.assertGreaterEqual(len([b for b in recipes if len(b.get('masses') or []) > 1]), 2)
+
+    def test_every_theme_r3_recipe_has_geometry_that_can_pass(self):
+        for theme in dot.THEMES:
+            items = {it['id']: it for it in dot.seed(theme)['items']}
+            for recipe in AS.round_buildings(theme, 'style-r3'):
+                ms = AS.masses(recipe)
+                with self.subTest(theme=theme, building=recipe['id']):
+                    self.assertEqual(AS.mass_problems(ms), [])
+                    self.assertTrue(any(m['depth'] == 0 for m in ms))
+                    self.assertTrue(all(m['cols'] >= AS.MIN_COLS for m in ms))
+                    self.assertEqual(AS.needed(recipe) - set(items), set())
+                    for m in ms:
+                        self.assertEqual(AS.roof_problems(items[m['roof']]), [])
+                        doors = sum(r['letters'].replace(' ', '').count('D') for r in m['walls'])
+                        self.assertLessEqual(doors, 1)
+                    self.assertEqual(sum(r['letters'].replace(' ', '').count('D')
+                                         for m in ms for r in m['walls']), 1)
+
+    def test_no_r3_recipe_carries_a_pavement_base(self):
+        for theme in dot.THEMES:
+            for recipe in AS.round_buildings(theme, 'style-r3'):
+                with self.subTest(theme=theme, building=recipe['id']):
+                    self.assertFalse([m['id'] for m in AS.masses(recipe) if m.get('base')])
+
+    def test_noble_refs_drop_the_broken_manor_and_porch(self):
+        refs = dot.seed('beodeul-noble')['refs']
+        kits = {r['kit'] for r in refs}
+        self.assertNotIn('bd-house-manor', kits)
+        self.assertNotIn('bd-mpart-porch', kits)
+        self.assertIn('bd-mpart-tower', kits)
+        self.assertIn('bd-house-h101_0', kits)
+
+    def test_old_rounds_are_reported_as_superseded(self):
+        for theme in dot.THEMES:
+            rounds = dot.seed(theme)['rounds']
+            for rid, rd in rounds.items():
+                if rid == 'style-r3':
+                    continue
+                with self.subTest(theme=theme, round=rid):
+                    self.assertEqual(rd.get('superseded'), 'style-r3')
+
+class SeedGrammarTest(unittest.TestCase):
+    def test_every_theme_r3_has_three_buildings_and_two_multi_mass(self):
+        for theme in dot.THEMES:
+            recipes = AS.round_buildings(theme, 'style-r3')
+            with self.subTest(theme=theme):
+                self.assertGreaterEqual(len(recipes), 3)
+                multi = [b for b in recipes if len(b.get('masses') or []) > 1]
+                self.assertGreaterEqual(len(multi), 2, [b['id'] for b in recipes])
+
+    def test_every_theme_r3_recipe_is_geometrically_assemblable(self):
+        for theme in dot.THEMES:
+            items = {it['id']: it for it in dot.seed(theme)['items']}
+            for recipe in AS.round_buildings(theme, 'style-r3'):
+                ms = AS.masses(recipe)
+                with self.subTest(theme=theme, building=recipe['id']):
+                    self.assertEqual(AS.mass_problems(ms), [])
+                    self.assertTrue(any(m['depth'] == 0 for m in ms), '앞줄 질량이 없다')
+                    self.assertTrue(all(m['cols'] >= AS.MIN_COLS for m in ms))
+                    self.assertEqual(AS.needed(recipe) - set(items), set(), '없는 부품을 쓴다')
+                    for m in ms:
+                        self.assertEqual(AS.roof_problems(items[m['roof']]), [], m['roof'])
+                        for row in m['walls']:
+                            self.assertEqual(len(row['letters'].replace(' ', '')), m['cols'])
+                    self.assertEqual(sum(r['letters'].replace(' ', '').count('D')
+                                         for m in ms for r in m['walls']), 1)
+
+    def test_no_r3_recipe_carries_a_pavement_base(self):
+        for theme in dot.THEMES:
+            for recipe in AS.round_buildings(theme, 'style-r3'):
+                with self.subTest(theme=theme, building=recipe['id']):
+                    self.assertFalse([m['id'] for m in AS.masses(recipe) if m.get('base')])
+
+    def test_noble_refs_drop_the_broken_manor_and_porch(self):
+        kits = {r['kit'] for r in dot.seed('beodeul-noble')['refs']}
+        self.assertNotIn('bd-house-manor', kits)
+        self.assertNotIn('bd-mpart-porch', kits)
+        self.assertIn('bd-mpart-tower', kits)
+        self.assertIn('bd-house-h101_0', kits)
+
+    def test_old_rounds_are_marked_superseded(self):
+        for theme in dot.THEMES:
+            for rid, rd in dot.seed(theme)['rounds'].items():
+                if rid == 'style-r3':
+                    continue
+                with self.subTest(theme=theme, round=rid):
+                    self.assertEqual(rd.get('superseded'), 'style-r3')
+
 if __name__ == '__main__':
     unittest.main()

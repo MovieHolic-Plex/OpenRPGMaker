@@ -1060,6 +1060,47 @@
     }
    ],
    "note": "2층 본채 + 앞으로 선 원뿔 탑. 버들항 저택 현관(bd-mpart-porch)은 사용자가 깨진 기준이라고 했다 — 베끼지 않는다"
+  },
+  {
+   "id": "mews",
+   "title": "마구간 채",
+   "use": "stable",
+   "masses": [
+    {
+     "id": "main",
+     "cols": 4,
+     "storeys": 2,
+     "x": 0,
+     "depth": 0,
+     "roof": "roof.mansard.tall",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L W M R"
+      },
+      {
+       "item": "wall.storey",
+       "letters": "L W M R"
+      }
+     ]
+    },
+    {
+     "id": "stall",
+     "cols": 4,
+     "storeys": 1,
+     "x": 4,
+     "depth": 0,
+     "roof": "roof.mansard",
+     "walls": [
+      {
+       "item": "wall.ivy",
+       "letters": "L W D R"
+      }
+     ]
+    }
+   ],
+   "note": "2층 본채 + 한 층짜리 마구간 날개 — 문은 낮은 날개에 하나"
   }
  ],
  "rounds": {
@@ -1093,7 +1134,8 @@
    ],
    "buildings": [
     "coachhouse",
-    "townhouse"
+    "townhouse",
+    "mews"
    ],
    "lead": "줄 A·B·C 마다 부품 전부를 한 에이전트가 그리고, 이번 판의 건물 전부(여러 질량 포함)를 dry 로 조립해 refs/ 와 나란히 본다. 사용자 반려(지붕·접지면·색감·ㅁ자)를 문법으로 고친 판이다."
   }
