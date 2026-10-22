@@ -19,7 +19,7 @@ const spots = [
   tp("vault-lantern", "fs_vault", 15, 16),
   tp("vault-west", "fs_vault", 2, 15),
   tp("vault-hall", "fs_vault", 20, 17),
-  tp("vault-east", "fs_vault", 26, 18),
+  tp("vault-east", "fs_vault", 26, 17),
   tp("vault-south", "fs_vault", 15, 23),
 ];
 export default { ...audit, id: "fallen-ceil", beats: [
