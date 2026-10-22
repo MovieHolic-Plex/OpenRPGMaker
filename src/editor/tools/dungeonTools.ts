@@ -17,6 +17,7 @@ import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS } from "./mapTools";
 import { upsertEventIntoMap } from "./eventTools";
 import { resolveGraphic } from "./eventCompile";
+import { ensureNamedSwitch } from "./flagHelpers";
 import { asCell, asRoom, chestLoot, field, list, nested, pickTroops, placeRoamer, text, type Room } from "./jrpgVolumeTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { DUNGEON_ENTRANCE_TAG, ENTRANCE_OPTION_SCHEMA, linkEntranceInDraft, parseEntranceOption } from "./dungeonLinkTools";
@@ -215,13 +216,14 @@ function stairEvent(map: GameMap, id: string, at: Stair, name: string, to: { map
 }
 
 /** 레버 퍼즐(같은 칩셋 안): 보물 방(없으면 보스방)으로 들어가는 통로 칸에 닫힌 쇠창살 문, 먼 곁방에 레버. 레버를 당기면 스위치가 켜지고 문이 사라진다. */
-function placeLeverGate(map: GameMap, data: Record<string, unknown>, warnings: string[]): string {
+function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unknown>, warnings: string[]): string {
   const lock = field(field(data, "population"), "lockedGate");
   const gate = asCell(lock);
   const key = asCell(field(lock, "keySpot"));
   if (!gate || !key) { warnings.push(`${map.name}: 레버 퍼즐 자리(잠긴 통로·열쇠 방)가 없는 배치라 레버를 두지 않았다 — 방을 늘리거나 vault 방을 넣는다.`); return ""; }
   if (map.events.some((e) => (e.x === gate.x && e.y === gate.y) || (e.x === key.x && e.y === key.y))) { warnings.push(`${map.name}: 레버·창살 자리에 이미 이벤트가 있다`); return ""; }
   const sw = `sw_${map.id}_lever`;
+  ensureNamedSwitch(draft, sw, `${map.name}: 레버 당김(쇠창살 열림)`);
   const fixed = { type: "fixed", speed: 3, frequency: 3 } as const;
   const bars = resolveGraphic({ textureKey: "tex_easyrpg_charset_object1", characterIndex: 5 } as never);
   const lever = resolveGraphic({ textureKey: "tex_easyrpg_charset_object2", characterIndex: 0 } as never);
@@ -346,7 +348,7 @@ function authorDungeon(draft: Project, args: Record<string, unknown>): ToolExecR
   }
   if (args.puzzle === "lever") {
     const i = datas.length - 1;
-    const line = placeLeverGate(draft.maps[mapIds[i]!]!, datas[i]!, warnings);
+    const line = placeLeverGate(draft, draft.maps[mapIds[i]!]!, datas[i]!, warnings);
     if (line) filled.push(`${draft.maps[mapIds[i]!]!.name}: ${line}`);
   }
   const floorWarnings = results.flatMap((r) => r.warnings ?? []);
@@ -385,6 +387,9 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
   mode: "write",
   domains: ["map", "tile"],
   preservesAuthoredRaster: true,
+  // 채우기(populate)·레버 퍼즐이 상자·세이브 결정·전투 그림의 필드 적·레버·쇠창살 그림을 스스로 고른다 — 모델이 칩을 고르지 않는다.
+  // 실측(2026-10-22 dg-r1): 이 표시가 없어 charsetSelectionGate 가 「캐릭터 그림 선택을 되돌렸습니다」로 세 번 거부했다.
+  choosesOwnGraphic: (args) => args.populate !== false || args.puzzle === "lever",
   parameters: {
     type: "object",
     additionalProperties: false,
