@@ -67,7 +67,9 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       // 손님방이 위 왼쪽에 모이고 부엌이 아래 왼쪽에 붙는 seed 1 배치로 바꾼다. 홀 위쪽 빈 마루에 식탁 두 벌·술통 걸이.
       layout: { program: "inn", seed: 1, variant: 1, styleVariant: "A" },
       dress: [["dining 2x1", 15, 8], ["chair S", 15, 7], ["chair S", 16, 7], ["chair N", 15, 9], ["chair N", 16, 9],
-        ["dining 2x1", 20, 8], ["chair S", 20, 7], ["chair S", 21, 7], ["chair N", 20, 9], ["chair N", 21, 9], ["keg rack", 14, 16]],
+        ["dining 2x1", 20, 8], ["chair S", 20, 7], ["chair S", 21, 7], ["chair N", 20, 9], ["chair N", 21, 9], ["keg rack", 14, 16],
+        // 홀 오른쪽 아래가 빈 마루였다(VQA r28) — 둥근 술상 하나(문 x16 길은 비운다).
+        ["roundtable", 22, 16], ["stool", 21, 16], ["stool", 23, 16]],
       people: [
         {
           id: "ev_fs_inn_keeper", name: "여관 주인 마르타", query: "젊은 여성", chip: ["tex_easyrpg_charset_people1", 5], behindCounter: true,
@@ -96,7 +98,9 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       // 쉼터 원형(광산 휴게실)의 동굴 바위 벽은 목조 집 안에서 튀었다(VQA r24·r25 minor) — 회벽·마루로 바꾼다.
       layout: { rooms: [{ kind: "pharmacy_shop", w: 14, h: 6 }, { kind: "alchemy", w: 7, h: 6 }, { kind: "study", w: 8, h: 7 }, { kind: "master_bedroom", w: 8, h: 7 }, { kind: "rest", w: 5, h: 6, wall: "plaster", floor: "plank" }, { kind: "storeroom", w: 5, h: 5 }], seed: 13, variant: 0, styleVariant: "A" },
       // 약재 광(아래 오른쪽, 바닥 x24~28·y11~14, 문 틈 (23,12))은 원형 가구가 셋뿐이라 빈 돌바닥으로 읽혔다(VQA r25) — 약재 자루·통·궤짝(문 앞 칸은 비운다).
-      dress: [["sack", 25, 11], ["sack", 26, 11], ["barrel", 27, 11], ["crate", 26, 14], ["basket:herb", 27, 14]],
+      dress: [["sack", 25, 11], ["sack", 26, 11], ["barrel", 27, 11], ["crate", 26, 14], ["basket:herb", 27, 14],
+        // 위 가운데 쉼터(바닥 x14~18·y3~7, 문 틈 (15,8))는 원형 가구가 넷뿐이라 빈 방으로 읽혔다(VQA r28) — 약초 말리는 틀·약 빻는 자리.
+        ["herb drying rack", 16, 3], ["mortar and pestle", 16, 5], ["crate", 17, 5], ["basket:herb", 14, 6]],
       people: [
         {
           id: "ev_fs_apothecary", name: "약재상 오든", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 7], behindCounter: true,
@@ -133,7 +137,9 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       layout: { rooms: [{ kind: "library", w: 12, h: 6 }, { kind: "study", w: 6, h: 5 }, { kind: "bedroom", w: 5, h: 5 }, { kind: "museum_relics", w: 7, h: 6 }, { kind: "living", w: 10, h: 5 }], seed: 21, variant: 0, styleVariant: "D" },
       // 진열실(위 왼쪽, 바닥 x4~12·y3~6)은 무기고로 읽히는 투구·왕관 진열을 걷어 내면 비므로, 별지기 방의 쓰임인 큰 별 렌즈·별자리표·천체 모형을 둔다.
       // 거실(아래 오른쪽, 바닥 x14~25·y9~14)은 벽난로 앞 안락의자뿐이라 아랫단이 비었다 — 찻상 하나(문 x18 길은 비운다).
-      dress: [["star lens", 8, 1], ["orrery", 5, 3], ["globe", 12, 5], ["tea 2x2", 21, 12], ["chair E", 20, 12], ["chair W", 23, 12]],
+      dress: [["star lens", 8, 1], ["orrery", 5, 3], ["globe", 12, 5], ["tea 2x2", 21, 12], ["chair E", 20, 12], ["chair W", 23, 12],
+        // 서고(아래 왼쪽) 왼쪽 아래가 빈 마루였다(VQA r28) — 별 지도를 펴 보는 읽기 책상.
+        ["desk 2x1", 2, 11], ["chair N", 2, 12]],
       people: [
         {
           id: "ev_fs_old_stargazer", name: "늙은 별지기 오스본", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 6],

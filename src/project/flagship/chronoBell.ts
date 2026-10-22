@@ -1852,6 +1852,28 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     const spot = nearFree(project, M(ids.hub), { x: herald.x + 2, y: herald.y }, 3, herald.id);
     if (spot) { herald.x = spot.x; herald.y = spot.y; }
   }
+  // 다리 상판에 선 붙박이 주민은 남쪽 난간에 다리가 잘려 보였고, 뒤따르는 동료가 그 머리 뒤에 가렸다(VQA r27·r28) —
+  // 다리·물이 아닌 가까운 빈 칸으로 옮긴다.
+  {
+    const hub = M(ids.hub);
+    const metaB = (project.tilesets[hub.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+    const onBridge = (x: number, y: number): boolean => /다리|물/.test(metaB[hub.lowerTiles[y * hub.width + x]!]?.label ?? "")
+      || /다리|물/.test(metaB[hub.lowerTiles[(y + 1) * hub.width + x]!]?.label ?? "");
+    for (const npc of hub.events) {
+      if (String(npc.id).startsWith("ev_gate_") || (npc.pages?.[0]?.movement?.type ?? "fixed") !== "fixed" || !npc.pages?.[0]?.graphic?.sprite) continue;
+      if (!onBridge(npc.x, npc.y)) continue;
+      let spot: { x: number; y: number } | undefined;
+      for (let r = 1; r <= 4 && !spot; r += 1) for (let dy = -r; dy <= r && !spot; dy += 1) for (let dx = -r; dx <= r && !spot; dx += 1) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+        const x = npc.x + dx, y = npc.y + dy;
+        if (x < 1 || y < 1 || x >= hub.width - 1 || y >= hub.height - 1 || !isPassable(project, hub, x, y) || onBridge(x, y)) continue;
+        if (hub.events.some((e) => e !== npc && Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) continue;
+        if ((hub.upperTiles[y * hub.width + x] ?? -1) >= 0) continue;
+        spot = { x, y };
+      }
+      if (spot) { npc.x = spot.x; npc.y = spot.y; }
+    }
+  }
   // 천문대 입구는 reworkFallenTown 이 둥근 돌 탑(마법사의 탑 키트)과 곁의 놋쇠 망원경으로 바꿨다 — 예전 재단사 집 간판 바꾸기·혼천의는 걷었다.
   // 풀숲 가장자리에 풀 둑 덧그림을 얹던 마감은 걷어 냈다 — 흙 입술(진흙 못 가장자리)로 읽혔다(감사 라운드 2).
   // 맵 마감(감사 3차) — 주인 없는 그림자, 화로의 방 긴 화덕 띠.
