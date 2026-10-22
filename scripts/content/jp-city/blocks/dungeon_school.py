@@ -537,6 +537,9 @@ def _debris(c):
 def _stairs_broken(c):
     SC._conc_stairs(c, 2)
     age(c, -1, (0, 0, 32, 48))
+    for y in range(1, 10):                                          # 바랜 뒤에도 위층 바닥 밑 어둠에 얼룩이 남게(한 단 내리면 가장 어두운 두 단이 한 색이 된다)
+        for x in range(1, 31):
+            if SA._h(x, y, 77) < 30: px(c, x, y, K('sumi', 1))
     # 이 빠진 디딤판 코(원근 계단의 코 줄을 따른다 — SA.persp_noses): 코가 떨어져 나가 챌판 어둠이 위로 먹어 들고, 깨진 뒤 모서리만 밝다
     noses = SA.persp_noses(2)
     for (k, off, w) in ((0, 3, 4), (1, 12, 4), (3, 2, 3)):

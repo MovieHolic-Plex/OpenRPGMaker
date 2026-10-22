@@ -266,8 +266,11 @@ def up_stairs_persp(c, w, mat, right='balustrade'):
     tr = lambda d: _k(M['tr'], d)
     TOP = 48 - sum(PERSP_STEPS)                                    # 가장 먼 단 윗선
     span = lambda yy: persp_span(w, yy)
-    for j in range(TOP):                                           # 위층 바닥 밑 어둠
+    for j in range(TOP):                                           # 위층 바닥 밑 어둠 — 위층 바닥 판 밑면의 희미한 얼룩(민 검정 덩이는 「평면 채움」, 세로 장선은 셔터로 읽힐 수 있어 넣지 않는다)
         c.HL(0, j, pw, K('sumi', -1) if j < TOP - 3 else (K('sumi', 0), K('sumi', 1), K('yoru', -3))[j - (TOP - 3)])
+        if j < TOP - 3:
+            for xx in range(1, pw - 1):
+                if _h(xx, j, 77) < 30: c.P(xx, j, K('sumi', 0))
     if mat == 'bare':                                              # 맨 콘크리트 옆벽: 빛 받는 서쪽 덩이 · 그늘 동쪽 덩이
         WF, EF = K('conc', -3), K('yoru', 1)
     else:
@@ -284,12 +287,19 @@ def up_stairs_persp(c, w, mat, right='balustrade'):
             yy = top + k
             x0, x1 = span(yy)
             c.HL(1, yy, x0 - 1, WF); c.HL(x1, yy, pw - 1 - x1, EF)
+            for xx in list(range(1, x0)) + list(range(x1 + 1, pw - 1)):   # 옆벽 안면 결(나무 = 세로 판자 줄, 그 밖 = 잔 얼룩)
+                r = _h(xx, yy, 53)
+                if wood and xx % 4 == 2: c.P(xx, yy, K('ita', -4))
+                elif r < 18: c.P(xx, yy, K('yoru', -2) if not wood else K('ita', -4))
+                elif not wood and r < 30: c.P(xx, yy, K('yoru', 0) if xx < x0 else K('yoru', 2))
             c.HL(x0, yy, x1 - x0, col)
-            if k < tdepth and k >= (tdepth + 1) // 2:               # 앞 절반에 결(나무 = 짧은 결, 콘크리트 = 잔 점)
+            if k < tdepth:                                          # 결(나무 = 짧은 가로 결, 콘크리트 = 잔 점) — 뒤 절반은 한 단 어둡게
+                back = k < (tdepth + 1) // 2
                 for xx in range(x0 + 1, x1 - 1):
                     r = _h(xx, yy, 31 + i)
-                    if r < 7: c.P(xx, yy, tr(d - 1))
-                    elif not wood and r < 10: c.P(xx, yy, tr(d + 1))
+                    if r < 7: c.P(xx, yy, tr(d - 2) if back else tr(d - 1))
+                    elif not wood and r < 12: c.P(xx, yy, tr(d) if back else tr(d + 1))
+                    elif wood and r < 11 and xx + 1 < x1 - 1: c.P(xx, yy, tr(d - 2) if back else tr(d - 1)); c.P(xx + 1, yy, tr(d - 2) if back else tr(d - 1))
             nose, riser = k == tdepth, k > tdepth
             # 옆판(stringer): 원근선 1px — 디딤판·코 높이는 밝은 윗모서리, 챌판 높이는 어둡게 꺾인다(단을 따라 톱니)
             c.P(x0 - 1, yy, (K('ita', 0) if wood else K('conc', 1) if mat == 'bare' else K('yoru', 3)) if nose else
