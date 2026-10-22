@@ -127,7 +127,7 @@ export function planTownWallRing(p: TownWallPlan): { up: Cells; lo: Cells } {
     shadeRight(t.x + 3, yw);
   }
   for (const g of p.gaps) {
-    // 쪽문 터널: 성벽 윗면은 덮개돌로 잇고(★ — 사람이 밑으로 지난다), 양옆 땅에 터널 입 그늘
+    // 쪽문 문루: 성벽 위에 솟은 네모 문루(★ — 사람이 밑으로 지난다), 양옆 땅에 터널 입 그늘
     const xa = g.side === "W" ? x0 : x1 - 1, e = g.side === "W" ? "vw" : "ve";
     for (const [y, nm] of posternRows(e, g.y, g.rows)) { up.set(key(xa, y), nm(0)); up.set(key(xa + 1, y), nm(1)); }
     for (let i = 0; i < g.rows; i += 1) { lo.set(key(xa - 1, g.y + i), "mo_w"); lo.set(key(xa + 2, g.y + i), "mo_e"); }

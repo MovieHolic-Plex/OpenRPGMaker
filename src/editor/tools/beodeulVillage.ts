@@ -2182,7 +2182,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   }
 
   // ---------- 12d. 성벽 둘레(walls) ----------
-  // 비워 둔 띠에 성벽을 싣는다. 길이 가로 성벽(북·남)을 지나는 곳은 4×8 성문루(가운데 두 열 통로), 세로 성벽(서·동)을 지나는 곳은 쪽문 터널(덮개돌 ★ + 터널 입 그늘).
+  // 비워 둔 띠에 성벽을 싣는다. 길이 가로 성벽(북·남)을 지나는 곳은 4×8 성문루(가운데 두 열 통로), 세로 성벽(서·동)을 지나는 곳은 쪽문 문루(성벽 위로 솟은 네모 문루 ★ + 터널 입 그늘).
   // 망루는 성문과 겹치지 않는 후보 자리에, 계단은 북쪽 성벽 안쪽 앞면에서 아래 땅이 걸을 수 있는 자리 둘.
   let wallInfo: { gates: WallGate[]; gaps: WallGap[]; towers: WallTower[]; stairs: number[]; blockedRoads: number; southGateRoad?: { x: number; from: number } } | null = null;
   if (wallLayout) {
