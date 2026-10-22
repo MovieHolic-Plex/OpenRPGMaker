@@ -95,9 +95,10 @@ def draw_steps(c, M, tx0, tx1, y, treads, warm=0, span=None):
     위에서 본 수평면(디딤판) → 밝은 앞 모서리 → 어두운 앞면(챌판) 순서라 3/4 윗면으로 읽힌다.
     위(멀다)일수록 한 단 어둡다. warm>0 이면 맨 위 warm 단은 위층 빛(황동 램프)을 받는다. 반환 steps [(종류, y, h, i)], 끝 y."""
     steps = []
+    rh = 3 if span else 2                                   # 원근 계단은 챌판(세운 면)을 3px 로 — 디딤판만 두꺼우면 서랍 앞판으로 읽혔다
     for i, h in enumerate(treads):
         steps.append(('t', y, h, i)); y += h
-        steps.append(('r', y, 2, i)); y += 2
+        steps.append(('r', y, rh, i)); y += rh
     n = len(treads)
     for kind_s, yy, h, i in steps:
         far = (n - 1 - i)                                   # 0=맨 아래(가까움)
@@ -114,9 +115,9 @@ def draw_steps(c, M, tx0, tx1, y, treads, warm=0, span=None):
                     c.HL(a0, yy + k, a1 - a0, col)
                     c.P(a0 - 1, yy + k, K(tm, hi) if k == h - 1 else K(M.get('side', 'stone'), 2))   # 서쪽 옆판 윗모서리
                     c.P(a1, yy + k, K(tm, hi) if k == h - 1 else K(M.get('side', 'stone'), 3))       # 동쪽 옆판 윗모서리
-                    if 0 < k < h - 1:
-                        for x in range(a0 + 2, a1 - 2):
-                            if _hs(x, yy + k, 5) < 0.06: c.P(x, yy + k, K(tm, lo - 1))
+                    if 0 < k < h - 1:                                                 # 결: 가로로 흐르는 짧은 줄(점 = 서랍 손잡이로 읽혔다)
+                        for x in range(a0 + 2, a1 - 4):
+                            if _hs(x, yy + k, 5) < 0.035: c.HL(x, yy + k, 3, K(tm, lo - 1))
                 continue
             c.R(tx0, yy, tx1 - tx0, h, K(tm, lo))
             c.HL(tx0, yy, tx1 - tx0, K(tm, lo - 1))                                  # 뒤 챌판 밑 그늘
@@ -128,7 +129,7 @@ def draw_steps(c, M, tx0, tx1, y, treads, warm=0, span=None):
         else:
             rm = M['riser']
             if span:
-                for k in range(2):
+                for k in range(rh):
                     a0, a1 = span(yy + k)
                     c.HL(a0, yy + k, a1 - a0, K(rm, M['rise_lo']) if k == 0 else K(rm, M['rise_hi'] - (1 if far >= n - 2 else 0)))
                     c.P(a0 - 1, yy + k, K(M.get('side', 'stone'), 0)); c.P(a1, yy + k, K(M.get('side', 'stone'), 1))   # 옆판이 챌판 높이에서 어둡게 꺾인다
@@ -186,49 +187,59 @@ def _low_rail_v(c, x, y0, y1, kind, lit):
 
 
 def well_down(c, M):
-    """바닥에 뚫린 내려가는 계단통(위에서 비스듬히 본다). 구멍 둘레에 턱을 따로 두르지 않는다 — 방 바닥이 그대로 구멍 가장자리까지
-    오고(투명), 가장자리에는 1px 어두운 떨어짐 선만 있다. 북·서·동 세 쪽 바닥 위에 낮은 난간(위에서 본 2px 손잡이 윗면 + 그늘),
-    남쪽은 난간 없이 열려 있어 바닥 높이에 가까운 첫 디딤판으로 그대로 들어선다.
-    구멍 안: 줄눈 없는 어두운 북쪽 안벽과 디딤판 네 단이 북쪽으로 내려가며 한 단씩 어두워진다(벽돌 줄눈·기울인 옆벽은 아궁이로 읽혀 뺐다 — 단마다 밝은 코만 둔다).
-    각 디딤판의 북쪽 끝(화면 위)은 한 단 아래로 떨어지는 모서리라 밝은 코, 남쪽 끝은 앞 단 코 밑 그늘. 챌판은 북쪽을 봐서 안 보인다."""
+    """바닥에 뚫린 내려가는 계단통(위에서 비스듬히 본다) — 2026-10-23 세 번째 그림(jp_city 계단통과 같은 짜임, 그쪽은 관문·적대 검수 통과).
+    북쪽: 바닥 위에 선 난간 한 면(손잡이 윗면 2px + 동자 + 밑 가로대) — 세운 면이 보여야 「구멍 둘레 난간」으로 읽힌다.
+    서·동: 가는 손잡이(윗면 1px + 그늘 1px)가 남쪽 끝 짧은 친주까지. 남쪽은 열려 있다.
+    구멍 안: 북쪽 끝 검은 안벽 → 디딤판 다섯 단이 남쪽(가까운 쪽)으로 올수록 높고 밝고 두꺼워져 맨 앞 단은 거의 방 바닥 높이.
+    단마다 북쪽 끝(띠 윗줄)은 밝은 코, 띠 아랫줄은 앞 단 코 밑 그늘. 줄눈·벽돌은 넣지 않는다(아궁이로 읽혔다).
+    양옆 안벽은 북쪽으로 갈수록 넓어진다(원근). 돌 문틀을 세우지 않는다(바닥까지 선 기둥 = 벽난로로 읽혔다, Opus 적대 검수 r1 3/3)."""
     kind = M['rail']
-    X0, X1, Y0 = 5, 27, 5
-    c.clear(0, 0, 32, 32)
-    # 북쪽 안벽 정면(바닥 아래로 꺼진 벽, 가장 어둡다) y5..8 + 맨 윗줄 바닥 끝 모서리
-    c.R(X0, Y0, X1 - X0, 4, K('night', 0)); c.HL(X0, Y0, X1 - X0, K('stone', 1))   # 줄눈 없는 민 어둠(벽돌 무늬는 아궁이로 읽혔다)
-    # 2026-10-23 다시 그림: 같은 4px 띠 다섯은 바닥 환기구·창살로 읽혔다(Argon 적대 검수). 단 높이가 남쪽(가까운 쪽)으로 갈수록 커지고
-    # (원근 2·3·4·5·6), 구덩이 양옆 안벽이 북쪽으로 갈수록 넓어지며(사다리꼴), 가까운 세 단에는 돌 줄눈이 엇갈려 박힌다.
-    bands = M.get('bands') or [(('night', 0), ('night', 1), 2), (('night', 1), ('stone', 1), 3), (('stone', 1), ('stone', 2), 4),
-                               (('stone', 2), ('stone', 3), 5), (('stone', 3), ('stone', 4), 6)]   # 가까운 단도 방 바닥보다 밝지 않게(밝은 띠 = 솟은 단상)
-    y = Y0 + 4
-    nb = len(bands)
-    for k, ((bm, bt), (nm, nt), h) in enumerate(bands):
-        c.R(X0, y, X1 - X0, h, K(bm, bt))
-        c.HL(X0, y, X1 - X0, K(nm, nt))                                   # 북쪽 끝 = 한 단 아래로 떨어지는 코(밝음)
-        if k < nb - 1: c.HL(X0, y + h - 1, X1 - X0, K(bm, max(0, bt - 1)))   # 앞(가까운) 단 코 밑 그늘
-        if k >= nb - 3 and h >= 4:                                         # 가까운 세 단: 엇갈린 돌 줄눈(세로 1px)
-            for x in range(X0 + 3 + (k % 2) * 4, X1 - 2, 8): c.VL(x, y + 1, h - 2, K(bm, max(0, bt - 1)))
-        for yy in range(y, y + h):                                         # 구덩이 안벽: 북쪽(먼 단)일수록 곧게 넓어진다(원근선)
-            ww = 1 + round(4 * (28 - yy) / 19)
-            c.HL(X0, yy, ww, K('stone', 0) if yy == y else K(bm, max(0, bt - 2)))
-            c.HL(X1 - ww, yy, ww, K('stone', 1) if yy == y else K(bm, max(0, bt - 1)))
-            c.P(X0 + ww, yy, K('stone', 2) if yy == y else K(bm, max(0, bt - 1)))   # 안벽과 디딤판이 만나는 원근선
-        if M.get('bits'): M['bits'](c, k, y, h)
-        y += h
-    assert y == 29, y
-    # 구멍 가장자리 떨어짐 선(서·동), 남쪽은 첫 단과 바닥 사이 얕은 이음
-    c.VL(X0 - 1, Y0, 29 - Y0, K('stone', 1)); c.VL(X1, Y0, 29 - Y0, K('stone', 2))
-    c.HL(X0 - 1, Y0 - 1, X1 - X0 + 2, K('stone', 2))
-    c.HL(X0, 29, X1 - X0, K('stone', 2))
-    # 세 쪽 낮은 난간: 위에서 본 2px 손잡이 윗면 + 남동쪽 1px 바닥 그늘(솟은 기둥 없음)
     m = _rm(kind); hi = 5 if m != 'iron' else 4
     cap = 'brass' if kind == 'iron' else m
-    sh = K(m, 1) if m != 'iron' else K('iron', 2)
-    c.HL(1, 1, 30, K(cap, hi)); c.HL(1, 2, 30, K(cap, hi - 2)); c.HL(3, 3, 26, sh)       # 북쪽
-    c.VL(1, 1, 27, K(cap, hi)); c.VL(2, 1, 27, K(cap, hi - 2)); c.VL(3, 3, 25, sh)         # 서쪽
-    c.VL(29, 1, 27, K(cap, hi - 1)); c.VL(30, 1, 27, K(cap, hi - 2)); c.VL(31, 2, 26, sh)  # 동쪽
-    for x in (1, 29):                                                                       # 남쪽 끝: 손잡이가 바닥으로 낮게 끝난다
-        c.HL(x, 28, 2, K(cap, hi - 2)); c.HL(x, 29, 2, sh)
+    X0, X1 = 4, 28
+    c.clear(0, 0, 32, 32)
+    # 구멍(y 9..31) — 북쪽 안벽 2줄 + 얇은 디딤판 일곱 단(단마다 3줄: 디딤판 윗면 2줄 + 앞 단 코 밑 그늘 1줄).
+    # 굵은 띠 넷은 「밝은 코 + 세운 챌판」 = 올라가는 계단 정면으로 읽혔다(object-gate 3/4 FAIL 3/4) — jp_city 계단통처럼 얇은 단을 촘촘히.
+    ramp = M.get('ramp') or [('stone', 1), ('stone', 2), ('stone', 2), ('stone', 3), ('stone', 3), ('stone', 4), ('stone', 5)]
+    y = 9
+    c.R(X0, y, X1 - X0, 2, K('night', 0)); y += 2                        # 북쪽 안벽(가장 어둡다)
+    for k, (tm, tt) in enumerate(ramp):
+        h = 3
+        sh = K('night', 1) if k < 2 else K(tm, max(0, tt - 2))
+        for j in range(h):
+            yy = y + j
+            col = sh if j == 2 else K(tm, tt)
+            c.HL(X0, yy, X1 - X0, col)
+            if j < 2:
+                for x in range(X0 + 2, X1 - 2):
+                    if _hs(x, yy, 9 + k) < 0.07: c.P(x, yy, K(tm, max(0, tt - 1)))
+            ww = 1 + round(4 * (31 - yy) / 22)                              # 양옆 안벽: 북쪽(먼 단)일수록 넓다
+            c.HL(X0, yy, ww, K(tm, max(0, tt - 2)) if j < 2 else sh)
+            c.HL(X1 - ww, yy, ww, K(tm, max(0, tt - 1)) if j < 2 else sh)
+        if M.get('bits'): M['bits'](c, k, y, h)
+        y += h
+    # 맨 앞 단은 그늘 줄 없이 바닥과 이어진다
+    c.HL(X0, 31, X1 - X0, K(*ramp[-1])); y = 32
+    assert y == 32, y
+    # 구멍 가장자리 떨어짐 선
+    c.VL(X0 - 1, 9, 23, K(m, 1)); c.VL(X1, 9, 23, K(m, 1))
+    # 북쪽 난간(세운 면): 손잡이 윗면 y1·2, 동자 y3..6, 밑 가로대 y7, 바닥 그늘 y8
+    c.HL(1, 1, 30, K(cap, hi)); c.HL(1, 2, 30, K(cap, hi - 2))
+    for x in range(3, 30, 4):
+        c.VL(x, 3, 4, K(m, hi - 1)); c.P(x + 1, 3, K(m, hi - 3)); c.VL(x + 1, 4, 3, K(m, 1))
+    c.HL(1, 7, 30, K(m, hi - 2)); c.HL(1, 8, 30, K('night', 1))
+    # 서·동 손잡이(가늘게) + 남쪽 끝 짧은 친주
+    for x, lit in ((1, True), (29, False)):
+        c.VL(x, 1, 26, K(cap, hi if lit else hi - 1)); c.VL(x + 1, 3, 24, K(m, 1))
+        for yy in range(5, 26, 4): c.P(x + 1, yy, K(m, hi - 2))
+        c.R(x, 26, 2, 4, K(m, hi - 1)); c.VL(x + 1, 26, 4, K(m, 2)); c.HL(x, 30, 2, K('night', 1))
+    # 유색 윤곽(CONTRACT 1절 4): 바깥 가장자리의 무채색 어두운 돌(stone 1·2)은 재질 가장 어두운 단(푸른 기 도는 stone 0)으로
+    if m == 'stone':
+        grey = {K('stone', 1)[:3], K('stone', 2)[:3]}
+        for yy in range(32):
+            for xx in range(32):
+                if not c.opaque(xx, yy) or tuple(int(v) for v in c.a[yy, xx, :3]) not in grey: continue
+                if any(not c.opaque(xx + dx, yy + dy) for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))): c.P(xx, yy, K('stone', 0))
 
 
 # ───────────────────────── 북벽 문 안으로 올라가는 계단 2×3 ─────────────────────────
@@ -259,7 +270,7 @@ def up_into_doorway(c, M):
     for yy in range(TY, 48):
         x0, x1 = span(yy)
         c.R(3, yy, x0 - 3, 1, K(sm, 1)); c.R(x1, yy, 29 - x1, 1, K(sm, 2))
-    steps, y = draw_steps(c, M, 0, 0, TY, [3, 4, 6, 7, 7], warm=1, span=span)
+    steps, y = draw_steps(c, M, 0, 0, TY, [2, 3, 5, 6, 6], warm=1, span=span)
     assert y == 47, y
     if M.get('runner'): _runner(c, M['runner'], [st for st in steps if st[1] >= 14], span=span)
     if M.get('bits'): M['bits'](c, steps)
@@ -269,12 +280,10 @@ def up_into_doorway(c, M):
     for yy in range(33, 48): c.R(29, yy, 1 + (47 - yy) // 6, 1, SHADOW2)
     rm = _rm(kind); top = 5 if rm != 'iron' else 4
     capc = K('brass', 3) if kind == 'iron' else K(rm, top - 1)
-    for yy in range(26, 40):                       # 손잡이: 아래 단 옆으로만, 계단 끝 바깥 2px 를 원근선 따라(윗면 + 바깥 그늘)
-        x0, x1 = span(yy)
-        c.P(x0 - 2, yy, capc); c.P(x0 - 3, yy, K(rm, 0) if rm != 'iron' else K('iron', 1))
-        c.P(x1 + 1, yy, K(rm, top - 2) if kind != 'iron' else K('brass', 2)); c.P(x1 + 2, yy, K(rm, 0) if rm != 'iron' else K('iron', 1))
+    # 손잡이는 그리지 않는다(2026-10-23): 아래 단을 감싸는 비스듬한 손잡이 둘이 상자 윤곽을 만들어 서랍장으로 읽혔다(Opus 적대 검수 r1 2/3).
+    # 계단 양옆은 원근으로 모이는 옆판·계단통 벽이 막고, 바닥으로 나온 첫 단 양 끝에만 낮은 친주를 둔다.
     c.VL(2, 32, 9, SHADOW); c.VL(29, 32, 9, SHADOW)
-    newel(c, 3, 38, 10, kind); newel(c, 26, 38, 10, kind)
+    newel(c, 3, 41, 7, kind); newel(c, 26, 41, 7, kind)
     # 문틀: 기둥 x0..2 · x29..31 (y0..31)
     for x0, lit in ((0, True), (29, False)):
         c.R(x0, 0, 3, 32, K(fm, fhi - 2))
@@ -283,7 +292,7 @@ def up_into_doorway(c, M):
         if fr == 'stone':
             for yy in (6, 13, 20, 27): c.HL(x0, yy, 3, K(fm, fhi - 4)); c.P(x0 + 1, yy + 1, K(fm, fhi))
         elif fr == 'iron':
-            for yy in range(4, 31, 5): c.P(x0 + 1, yy, K('brass', 4))
+            for yy in (6, 18, 30): c.P(x0 + 1, yy, K('brass', 3))       # 리벳은 드물게(촘촘한 황동 점 = 장식장)
         else:
             for yy in (9, 21): c.HL(x0, yy, 3, K('wood', 1)); c.P(x0 + 1, yy + 1, K('iron', 3))
         c.HL(x0, 31, 3, K(fm, 0))
@@ -296,7 +305,7 @@ def up_into_doorway(c, M):
         c.R(14, 0, 4, 4, K(fm, fhi - 1)); c.HL(14, 3, 4, K(fm, fhi - 3)); c.VL(17, 0, 4, K(fm, fhi - 3))   # 쐐기돌
     elif fr == 'iron':
         c.R(0, 0, 32, 4, K('iron', 2)); c.HL(0, 0, 32, K('iron', 4)); c.HL(0, 1, 32, K('iron', 3)); c.HL(0, 3, 32, K('iron', 0))
-        for x in range(3, 30, 4): c.P(x, 2, K('brass', 4))
+        for x in (4, 27): c.P(x, 2, K('brass', 3))
         c.HL(3, 4, 26, K('night', 0))
     else:
         c.R(0, 0, 32, 4, K('wood', 3)); c.HL(0, 0, 32, K('wood', 4)); c.HL(0, 1, 32, K('wood', 4)); c.HL(1, 1, 30, K('wood', 5))
