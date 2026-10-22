@@ -40,7 +40,15 @@
   border-bottom: 1px solid var(--db-studio-border-subtle);
   border-radius: 0;
   flex: 0 0 auto;
+  /* 강도 배지가 제목 줄을 먹지 않게, 폭이 모자라면 배지를 아랫줄로 보낸다(VQA A12). */
+  flex-wrap: wrap;
+  gap: 8px 16px;
   padding: 16px 20px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-workbench > .db-ws-hero > .db-ws-hero-text {
+  flex: 1 1 14rem;
+  min-width: min(14rem, 100%);
 }
 
 /* ── 카드 안 필드: 라벨 왼쪽 고정폭 + 컨트롤 1fr ───────────────────────── */
@@ -680,10 +688,12 @@
   align-items: center;
   color: var(--db-studio-text-2);
   display: flex;
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
   font: 400 12px/1.4 var(--font-ui);
   gap: 8px;
   margin-left: auto;
+  min-width: 0;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-difficulty[hidden] {
