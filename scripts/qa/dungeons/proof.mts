@@ -17,6 +17,7 @@ const CASES: Record<string, Record<string, unknown>> = {
   "catacomb2": { type: "catacomb", floors: 2, name: "지하 묘지" },
   "flooded-temple": { type: "temple", flooded: true, name: "잠긴 신전" },
   "lava": { type: "volcano", name: "화산 동굴" },
+  "puzzle": { type: "catacomb", puzzle: "lever", name: "레버 던전" },
   "boss-run": { type: "catacomb", size: "medium", name: "보스 던전" },
 };
 const only = process.argv.slice(3);

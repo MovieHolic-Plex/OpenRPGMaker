@@ -16,6 +16,7 @@ import { composeRouted, routeDungeon } from "../dungeonKit/route";
 import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS } from "./mapTools";
 import { upsertEventIntoMap } from "./eventTools";
+import { resolveGraphic } from "./eventCompile";
 import { asCell, asRoom, chestLoot, field, list, nested, pickTroops, placeRoamer, text, type Room } from "./jrpgVolumeTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { DUNGEON_ENTRANCE_TAG, ENTRANCE_OPTION_SCHEMA, linkEntranceInDraft, parseEntranceOption } from "./dungeonLinkTools";
@@ -213,6 +214,32 @@ function stairEvent(map: GameMap, id: string, at: Stair, name: string, to: { map
   upsertEventIntoMap(map, event);
 }
 
+/** 레버 퍼즐(같은 칩셋 안): 보물 방(없으면 보스방)으로 들어가는 통로 칸에 닫힌 쇠창살 문, 먼 곁방에 레버. 레버를 당기면 스위치가 켜지고 문이 사라진다. */
+function placeLeverGate(map: GameMap, data: Record<string, unknown>, warnings: string[]): string {
+  const lock = field(field(data, "population"), "lockedGate");
+  const gate = asCell(lock);
+  const key = asCell(field(lock, "keySpot"));
+  if (!gate || !key) { warnings.push(`${map.name}: 레버 퍼즐 자리(잠긴 통로·열쇠 방)가 없는 배치라 레버를 두지 않았다 — 방을 늘리거나 vault 방을 넣는다.`); return ""; }
+  if (map.events.some((e) => (e.x === gate.x && e.y === gate.y) || (e.x === key.x && e.y === key.y))) { warnings.push(`${map.name}: 레버·창살 자리에 이미 이벤트가 있다`); return ""; }
+  const sw = `sw_${map.id}_lever`;
+  const fixed = { type: "fixed", speed: 3, frequency: 3 } as const;
+  const bars = resolveGraphic({ textureKey: "tex_easyrpg_charset_object1", characterIndex: 5 } as never);
+  const lever = resolveGraphic({ textureKey: "tex_easyrpg_charset_object2", characterIndex: 0 } as never);
+  const ev = (id: string, at: Pt, pages: GameEvent["pages"]): GameEvent => ({ id, x: at.x, y: at.y, trigger: { kind: "action" }, commands: [], pages } as GameEvent);
+  upsertEventIntoMap(map, ev(`ev_${map.id}_lever_gate`, gate, [
+    { id: `ev_${map.id}_lever_gate_p1`, name: "닫힌 쇠창살", conditions: [], graphic: bars, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixed,
+      commands: [{ kind: "text", body: "굳게 닫힌 쇠창살이다. 어딘가의 레버로 여는 것 같다." } as Command] },
+    { id: `ev_${map.id}_lever_gate_p2`, name: "열린 쇠창살", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", overlapForbidden: false, movement: fixed, commands: [] },
+  ] as GameEvent["pages"]));
+  upsertEventIntoMap(map, ev(`ev_${map.id}_lever`, key, [
+    { id: `ev_${map.id}_lever_p1`, name: "레버", conditions: [], graphic: { ...lever, direction: "down" }, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixed,
+      commands: [{ kind: "text", body: "녹슨 레버가 있다. 힘껏 당겼다!" } as Command, { kind: "setSwitch", switchId: sw, value: true } as Command, { kind: "text", body: "어디선가 쇠창살이 올라가는 소리가 울렸다." } as Command] },
+    { id: `ev_${map.id}_lever_p2`, name: "당긴 레버", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { ...lever, direction: "up" }, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixed,
+      commands: [{ kind: "text", body: "레버는 이미 당겨져 있다." } as Command] },
+  ] as GameEvent["pages"]));
+  return `레버 퍼즐: 레버 (${key.x},${key.y}) → 쇠창살 (${gate.x},${gate.y}) 스위치 ${sw}`;
+}
+
 /** 층 하나를 채운다(rpg): 계획된 자리의 보이는 적·상자, 보스방 수호자/층 수문장, 보스 앞 방의 회복 세이브 포인트. 실패한 자리는 경고로 넘긴다. */
 function populateFloor(draft: Project, mapId: string, data: Record<string, unknown>, troops: ReturnType<typeof pickTroops>, role: { boss: boolean; guardian: boolean; rest: boolean }, salt: number, warnings: string[]): string {
   const map = draft.maps[mapId]!;
@@ -317,6 +344,11 @@ function authorDungeon(draft: Project, args: Record<string, unknown>): ToolExecR
       if (line) filled.push(`${draft.maps[mapIds[i]!]!.name}: ${line}`);
     });
   }
+  if (args.puzzle === "lever") {
+    const i = datas.length - 1;
+    const line = placeLeverGate(draft.maps[mapIds[i]!]!, datas[i]!, warnings);
+    if (line) filled.push(`${draft.maps[mapIds[i]!]!.name}: ${line}`);
+  }
   const floorWarnings = results.flatMap((r) => r.warnings ?? []);
   const head = results.length === 1 ? results[0]!.summary : `${results.length}층 ${direction === "up" ? "탑" : "지하"} 던전: ${results.map((r, i) => `[${i + 1}] ${r.summary}`).join(" ")}`;
   const tail = [
@@ -373,6 +405,7 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
       direction: { type: "string", enum: ["down", "up"], description: "floors 가 2 이상일 때 층 방향: down(기본) 지하로 내려가는 던전(이름 「지하 N층」, 입구 방 북벽 오르는 계단 ↔ 깊은 방 바닥 내려가는 계단) · up 탑(이름 「N층」, 깊은 방 북벽 오르는 계단 ↔ 위층 입구 방 바닥 내려가는 계단, 꼭대기 층에 보스방·보물 방)." },
       populate: { type: "boolean", description: "rpg 장르 채우기(기본 true): 계획된 자리에 보이는 적(순찰)·상자(보물 방 먼저)·마지막 층 보스방 보스(도망 불가)·보스 앞 방 회복 세이브 포인트·그 아래층 층 수문장. 적 그룹은 troops 또는 데이터베이스에서 세기 순으로 고른다. false 면 data.population 계획만 돌려준다." },
       troops: { type: "object", additionalProperties: false, description: "채우기에 쓸 적 그룹 id(선택 — 요청한 적이 있으면 upsert_troop 으로 먼저 만들고 여기 준다. 고블린 굴이면 고블린 무리)", properties: { field: { type: "array", items: { type: "string" }, description: "돌아다니는 잡몹 무리" }, midBoss: { type: "string", description: "층 수문장" }, boss: { type: "string", description: "마지막 방 보스" } } },
+      puzzle: { type: "string", enum: ["lever"], description: "같은 칩셋 안의 퍼즐(마지막 층): lever = 보물 방(없으면 보스방)으로 들어가는 통로를 닫힌 쇠창살로 막고, 먼 곁방에 레버를 둔다(당기면 열림). 「레버로 문을 여는 퍼즐 던전」은 이것 하나 — 다른 칩셋(손 도트 실내) 퍼즐 방을 따로 만들어 잇지 말 것(화풍이 갈린다)." },
       flooded: { type: "boolean", description: "물에 잠긴 던전(신전·묘지·성 등 방 문법 종류): 큰 방 바닥 대부분이 물이고 3칸 폭 마른 길(가운데 축)이 방을 가로지른다. 「물에 잠긴 신전」은 type temple + flooded:true — fill_region 으로 물을 직접 칠하지 말 것." },
       size: { type: "string", enum: [...DUNGEON_SIZES], description: "rooms 를 생략했을 때 층 크기: small 방 4 · medium 6(기본) · large 9" },
       width: { type: "integer", description: "바라는 맵 가로(칸, 선택). rooms 생략 시 방 수를 이 넓이에 맞추고, 배치가 이 비율로 자란다." },
