@@ -1,0 +1,38 @@
+{
+ "queue": "jp-in-stairs-13",
+ "round": 19,
+ "judges": "3x claude-opus-5.5 fresh subagents in parallel, no prior scores; a major counts only if >=2 of 3 raise it (supervisor rule from r19)",
+ "date": "2026-10-22",
+ "verdict": "fail",
+ "perReviewer": {
+  "A": {
+   "majors": 5,
+   "axis2": 7,
+   "axis6": 5
+  },
+  "B": {
+   "majors": 7,
+   "axis2": 6,
+   "axis6": 5
+  },
+  "C": {
+   "majors": 5,
+   "axis2": 6,
+   "axis6": 6
+  }
+ },
+ "majorityMajors": [
+  "sc-stairwell-down (3/3): vent/grille box, centred dashes in an inner frame, weak darkness ramp",
+  "mc-stairwell-down (3/3): same",
+  "of-stairwell-down (3/3): same",
+  "as-stairwell-down (3/3): same",
+  "cs-stairwell-down (2/3): grey box with dashes, lip too thin"
+ ],
+ "minorityMajors": [
+  "stairwell-down-wood (C only): hearth/crib",
+  "house-1f scene (B only): cabinet south of the up stair"
+ ],
+ "upStairs": "all 7 up stairs: no major from any reviewer",
+ "majoritycount": 5,
+ "action": "grey wells: full-width treads, 2px inner side walls darkening north (no funnel frame), clear value ramp floor-grey -> near-black, each tread 1px dark drop on its north edge and 1px light nosing on its south edge, near tread at floor value; posts in rail colour; cs lip 2px raw concrete"
+}

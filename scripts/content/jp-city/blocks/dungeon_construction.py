@@ -29,6 +29,7 @@ import math, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', 'interior'))
 from ikit import Registry, K, OL, run_block, ROOT   # noqa: E402
+import stairart as SA   # noqa: E402
 
 BLOCK = 'dungeon_construction'
 R = Registry(BLOCK, '공사장·주차장')
@@ -583,48 +584,35 @@ def _tarp(c):
     vl(c, 0, 8, 22, OL); vl(c, 31, 9, 21, OL); hl(c, 1, 29, 30, OL)
 
 
-@R.obj('cs-stairs-up-bare', '콘크리트 계단(위, 난간 없음)', w=2, h=1, up=32, kind='wall', walk=[(0, 0), (1, 0)], stairs='up', use=('travel',),
+@R.obj('cs-stairs-up-bare', '콘크리트 계단(올라가는, 난간 없음)', w=2, h=1, up=32, kind='wall', walk=[(0, 0), (1, 0)], stairs='up', use=('travel',),
        tags=TC + ('계단', '階段'),
        place='공사장 북쪽 벽 바로 아래(벽 가구 자리). 발칸 두 칸에 위층으로 가는 links — 위층 cs-stairwell-down 아랫줄 옆에 내린다.', pair=('cs-stairwell-down',),
-       desc='벽을 타고 올라가는 2칸 폭 맨 콘크리트 계단 — 난간이 아직 없고 디딤판 모서리가 깨졌으며 계단에 부스러기. 위로 올라가면 위층으로 이동.')
+       desc='공사장 북쪽 벽 앞에서 천장 구멍으로 오르는 2칸 폭 맨 콘크리트 계단 — 난간이 아직 없고 디딤판 모서리가 깨졌으며 부스러기가 있다. 올라가는 계단 — 들어서는 쪽: 남쪽 앞 칸(발칸 바로 아래 바닥). 오를 때 보는 방향: 북쪽(화면 위). 발칸에서 북쪽으로 걸으면 위층으로 이동하고, 위층 cs-stairwell-down(난간 없는 계단통) 남쪽 앞 칸에 계단을 등지고 남쪽(아래)을 보고 선다.')
 def _stairs_bare(c):
-    c.R(0, 0, 32, 48, OL)
-    c.R(1, 0, 30, 5, K('yoru', -3)); c.R(1, 4, 30, 2, K('yoru', -1))
-    for i in range(8):
-        yb = 46 - 5 * i; dim = 1 if i >= 6 else 0
-        c.R(2, yb - 4, 28, 2, K('conc', 1 - dim)); c.HL(2, yb - 4, 28, K('conc', 2 - dim))
-        c.R(2, yb - 2, 28, 1, K('yoru', -1)); c.R(2, yb - 1, 28, 2, K('conc', -1 - dim))
-        c.HL(2, yb + 1, 28, K('conc', -3))
-        for x in range(2, 30):
-            if rnd(x, i, 191, 60): c.P(x, yb - 4, K('conc', -1))          # 깨진 모서리
-            if rnd(x, i, 192, 40): c.P(x, yb - 3, K('conc', 3))           # 부스러기
-    c.R(1, 6, 1, 41, K('conc', -2)); c.R(30, 6, 1, 41, K('conc', -3))     # 거푸집 단면(옆)
-    for y in range(8, 46, 5): c.P(1, y, K('conc', 0)); c.P(30, y + 2, K('conc', -1))
-    c.HL(0, 47, 32, OL)
+    SA.up_stairs(c, 2, 'bare', left='stringer', right='stringer')
+    for (x, y) in ((8, 42), (19, 34), (11, 28), (23, 22)):              # 깨진 코 몇 군데·부스러기
+        c.R(x, y, 3, 1, K('conc', -2)); c.P(x + 1, y + 1, K('conc', 2))
 
 
-@R.obj('cs-stairwell-down', '콘크리트 계단통(아래로, 난간 없음)', w=2, h=2, up=8, kind='floor', use=('travel',), stairs='down', walk=((0, 1), (1, 1)),
+@R.obj('cs-stairwell-down', '콘크리트 계단통(내려가는, 난간 없음)', w=2, h=2, up=8, kind='floor', use=('travel',), stairs='down', walk=((0, 1), (1, 1)),
        tags=TC + ('계단', '階段'),
        place='위층 바닥 한쪽. 아래층 cs-stairs-up-bare 와 x 를 맞춘다. 아랫줄 두 칸에 아래층으로 가는 links.', pair=('cs-stairs-up-bare',),
-       desc='슬래브에 뚫린 계단 구멍 — 난간 대신 북쪽 모서리에 라바콘 둘과 노랑·검정 막대 하나, 맨 콘크리트 계단이 어둠으로 내려간다. 윗줄은 막히고 아랫줄 두 칸을 밟으면 아래층으로.')
+       desc='슬래브에 뚫린 2×2 계단 구멍 — 난간 대신 북쪽 턱에 라바콘 둘과 노랑·검정 막대, 맨 콘크리트 디딤판이 북쪽으로 한 단씩 낮아지며 어둠으로 내려간다. 윗줄(구멍)은 막히고 아랫줄 두 칸을 밟는다. 내려가는 계단 — 들어서는 쪽: 남쪽 앞 칸(키트 바로 아래 바닥, 북·동·서는 난간·턱으로 막힘). 내려갈 때 보는 방향: 북쪽(화면 위, 구멍 속 어둠 쪽). 아랫줄 두 칸(밟는 칸)에 들어서면 아래층으로 이동하고, 아래층 cs-stairs-up-bare(난간 없는 올라가는 계단) 남쪽 앞 칸에 계단을 등지고 남쪽(아래)을 보고 선다. 바닥 세 줄(구멍 줄·밟는 줄·앞 칸)이 필요하다 — 벽면 아랫줄 바로 아래 첫 바닥 줄부터 놓는다(난간 윗부분이 벽면 아랫줄 위로 솟는다).')
 def _well(c):
-    c.R(1, 18, 30, 29, OL); c.R(3, 20, 26, 24, K('yoru', -3))
-    for i in range(6):
-        y = 22 + i * 4
-        c.R(4, y, 24, 2, K('conc', 1 - i)); c.HL(4, y, 24, K('conc', 2 - i)); c.HL(4, y + 1, 24, K('yoru', -1) if i < 3 else K('yoru', -2))
-        c.R(4, y + 2, 24, 2, K('yoru', -3))
-        for x in range(4, 28):
-            if rnd(x, i, 201, 70): c.P(x, y, K('conc', -1 - i // 2))
-    c.R(1, 44, 30, 3, K('conc', 0)); c.HL(1, 44, 30, K('conc', 2)); c.HL(1, 46, 30, K('conc', -2)); c.HL(1, 47, 30, K('conc', -3))
-    c.R(1, 17, 30, 2, K('conc', 0)); c.HL(1, 17, 30, K('conc', 1))        # 북쪽 턱
-    for x in (1, 30): c.R(x, 18, 1, 26, K('conc', -2 if x == 30 else 0))
-    for x0 in (2, 25):                                                    # 라바콘 둘
-        for y in range(6, 17):
-            hw = 1 + (y - 6) * 2 // 10
-            for x in range(x0 + 2 - hw, x0 + 2 + hw): c.P(x, y, K('shiro', 1) if y in (10, 11) else K('aka', 0 if x > x0 + 1 else 1))
-            c.P(x0 + 1 - hw, y, OL); c.P(x0 + 2 + hw, y, OL)
-        c.R(x0, 16, 5, 2, K('yoru', -1)); c.HL(x0, 15, 5, OL)
-    hazard(c, 6, 9, 20, 2, period=4); c.HL(6, 8, 20, OL); c.HL(6, 11, 20, OL)
+    SA.down_well(c, 'bare', rails=False)
+    for i, y in enumerate((31, 35, 39)):                                  # 깨진 디딤판 끝(몇 점만)
+        for x in range(6, 26):
+            if rnd(x, i, 201, 45): c.P(x, y, K('conc', -2))
+    hazard(c, 3, 9, 26, 2, period=4); c.HL(3, 8, 26, OL); c.HL(3, 11, 26, OL)   # 차단봉: 구멍 북쪽 턱 뒤(콘 허리 높이)
+    for x0 in (0, 26):                                                    # 라바콘 둘 — 북쪽 턱 두 모서리 바닥(발 y18)에 선 원뿔
+        for y in range(6, 18):
+            hw = (y - 6) * 5 // 22 + (1 if y >= 8 else 0)                 # 위 1px → 아래 6px
+            cx = x0 + 3
+            for x in range(cx - hw, cx + max(hw, 1)):
+                c.P(x, y, K('shiro', 1) if y in (11, 12) else K('aka', 1 if x < cx else 0))
+            c.P(cx - hw - 1, y, OL); c.P(cx + max(hw, 1), y, OL)
+        c.HL(x0, 17, 7, K('aka', -1)); c.HL(x0, 18, 7, OL); c.HL(x0 + 1, 19, 6, K('yoru', -2))   # 받침판 + 바닥 그늘
+        c.P(x0 + 3, 5, OL)
 
 
 @R.obj('cs-column-bare', '맨 콘크리트 기둥', w=1, h=1, up=32, kind='floor', use=('block',), tags=TC + ('기둥',),

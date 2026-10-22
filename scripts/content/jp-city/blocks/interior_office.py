@@ -21,6 +21,7 @@ import math, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', 'interior'))
 from ikit import Registry, K, OL, run_block, ROOT
+import stairart as SA   # noqa: E402
 
 BLOCK = 'interior_office'
 R = Registry(BLOCK, '사무실 빌딩')
@@ -689,46 +690,19 @@ def _stool(c):
 
 
 # ══ 비상계단 ═════════════════════════════════════════════════════════════════
-@R.obj('of-stairs-up', '비상계단(위)', w=1, h=1, up=32, kind='wall', walk=[(0, 0)], stairs='up', use=('travel',), tags=TAGS + ('계단', '비상계단', '階段'),
+@R.obj('of-stairs-up', '비상계단(올라가는)', w=1, h=1, up=32, kind='wall', walk=[(0, 0)], stairs='up', use=('travel',), tags=TAGS + ('계단', '비상계단', '階段'),
        place='비상계단통 북쪽 벽 바로 아래(벽 가구 자리). 발칸에 위층으로 가는 links.',
-       desc='북쪽 벽을 타고 올라가는 한 칸 폭 콘크리트 비상계단 — 회색 디딤판 끝마다 어두운 미끄럼 막이 줄, 오른쪽에 철제 난간·기둥, 왼쪽 벽 손잡이. 위로 올라가면 위층으로 이동.')
+       desc='북쪽 벽 앞에서 천장 구멍으로 오르는 한 칸 폭 콘크리트 비상계단 — 밝은 디딤판 코마다 어두운 미끄럼 막이 줄, 어두운 챌판, 오른쪽 철 파이프 난간, 왼쪽 벽 손잡이. 올라가는 계단 — 들어서는 쪽: 남쪽 앞 칸(발칸 바로 아래 바닥). 오를 때 보는 방향: 북쪽(화면 위). 발칸에서 북쪽으로 걸으면 위층으로 이동하고, 위층 of-stairwell-down(비상계단 내려가는 구멍) 남쪽 앞 칸에 계단을 등지고 남쪽(아래)을 보고 선다.')
 def _stairs(c):
-    pw = 16; R0 = pw - 6
-    c.R(0, 0, pw, 48, OL)
-    c.R(1, 0, pw - 2, 5, K('yoru', -2)); c.R(1, 4, pw - 2, 2, K('yoru', 0))
-    tx, tw = 3, R0 - 3
-    for i in range(8):
-        yb = 46 - 5 * i; dim = 1 if i >= 6 else 0
-        c.R(tx, yb - 4, tw, 2, K('conc', 3 - dim)); c.HL(tx, yb - 4, tw, K('conc', 4 - dim))
-        c.R(tx, yb - 2, tw, 1, K('yoru', 0)); c.R(tx, yb - 1, tw, 2, K('conc', 0 - dim))
-        c.HL(tx, yb + 1, tw, K('conc', -3))
-    c.R(1, 6, 2, 41, K('conc', -1)); c.VL(2, 6, 41, K('conc', 0)); c.VL(1, 8, 34, K('tekko', 3))
-    NT = 30
-    c.R(R0, 6, 1, NT - 6, K('tekko', -2)); c.R(R0 + 1, 6, 2, NT - 6, K('yoru', -2))
-    for y in range(8, NT - 2, 5): c.R(R0 + 1, y, 2, 3, K('tekko', 1)); c.HL(R0 + 1, y, 2, K('tekko', 3))
-    c.R(R0 + 3, 6, 2, NT - 6, K('tekko', 2)); c.VL(R0 + 3, 6, NT - 6, K('tekko', 4)); c.VL(R0 + 4, 6, NT - 6, K('tekko', 0))
-    c.R(R0, NT, 6, 3, OL); c.R(R0 + 1, NT, 4, 2, K('tekko', 3))
-    c.R(R0 + 1, NT + 3, 4, 47 - NT - 3, K('tekko', 1)); c.VL(R0 + 1, NT + 3, 47 - NT - 3, K('tekko', 3)); c.VL(R0 + 4, NT + 3, 47 - NT - 3, K('tekko', -2))
-    c.R(R0, NT + 3, 1, 47 - NT - 3, OL); c.HL(R0, 47, 6, OL); c.HL(0, 47, pw, OL)
+    SA.up_stairs(c, 1, 'office', left='wall', right='pipe')
 
 
 @R.obj('of-stairwell-down', '비상계단 내려가는 구멍(철 난간)', w=2, h=2, up=16, kind='floor', use=('travel',), stairs='down', walk=((0, 1), (1, 1)),
        tags=TAGS + ('계단', '비상계단', '階段', '난간'),
        place='위층 비상계단통 한쪽. 아래층 비상계단(of-stairs-up)과 x 를 맞춘다.',
-       desc='위층 바닥에 뚫린 콘크리트 비상계단 구멍과 철제 난간. 북·동·서가 난간, 남쪽이 열린 입구. 2×2. 윗줄(난간)은 막히고 아랫줄 두 칸은 밟는다 — 그 칸에 아래층으로 가는 links 를 단다.')
+       desc='위층 비상계단통 바닥에 뚫린 2×2 콘크리트 계단 구멍 — 북·동·서 철 난간, 남쪽만 열린 입구. 디딤판이 북쪽으로 한 단씩 낮아지며 어두워진다. 윗줄(구멍)은 막히고 아랫줄 두 칸을 밟는다. 내려가는 계단 — 들어서는 쪽: 남쪽 앞 칸(키트 바로 아래 바닥, 북·동·서는 난간·턱으로 막힘). 내려갈 때 보는 방향: 북쪽(화면 위, 구멍 속 어둠 쪽). 아랫줄 두 칸(밟는 칸)에 들어서면 아래층으로 이동하고, 아래층 of-stairs-up(올라가는 비상계단) 남쪽 앞 칸에 계단을 등지고 남쪽(아래)을 보고 선다. 바닥 세 줄(구멍 줄·밟는 줄·앞 칸)이 필요하다 — 벽면 아랫줄 바로 아래 첫 바닥 줄부터 놓는다(난간 윗부분이 벽면 아랫줄 위로 솟는다).')
 def _well(c):
-    c.R(1, 18, 30, 29, OL); c.R(3, 20, 26, 24, K('yoru', -2))
-    for i in range(6):
-        y = 22 + i * 4
-        c.R(4, y, 24, 2, K('conc', 2 - i)); c.HL(4, y, 24, K('conc', 3 - i)); c.HL(4, y + 1, 24, K('yoru', 0) if i < 3 else K('yoru', -1))
-        c.R(4, y + 2, 24, 2, K('yoru', -2))
-    c.R(1, 44, 30, 3, K('conc', 1)); c.HL(1, 44, 30, K('conc', 3)); c.HL(1, 46, 30, K('conc', -2)); c.HL(1, 47, 30, K('conc', -3))
-    c.R(2, 17, 28, 2, K('tekko', 3)); c.HL(2, 17, 28, K('tekko', 4)); c.R(2, 19, 28, 1, K('tekko', -2))
-    for x in (6, 11, 16, 21, 26): c.R(x, 19, 1, 3, K('tekko', 1))
-    for x in (1, 29):
-        c.R(x, 18, 2, 27, K('tekko', 1)); c.VL(x, 18, 27, K('tekko', 3))
-        c.R(x - 1 if x == 1 else x, 6, 3, 40, K('tekko', -2)); c.R(x, 7, 1, 38, K('tekko', 2))
-        c.R(x - 1 if x == 1 else x, 4, 3, 2, K('tekko', 4))
+    SA.down_well(c, 'office')
 
 
 # ══ 탁상 물건(R.good, 16×16) ═════════════════════════════════════════════════
