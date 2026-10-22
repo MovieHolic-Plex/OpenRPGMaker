@@ -7,10 +7,10 @@
     "rows": 500
   },
   "counts": {
-    "families": 80,
-    "rows": 400
+    "families": 100,
+    "rows": 500
   },
-  "complete": false,
+  "complete": true,
   "commands": [
     {
       "id": "paint-dirt__selection-plain",
@@ -5974,8 +5974,2093 @@
       }
     },
     {
-      "id": "night-mood__village-plain",
+      "id": "move-door__house-left",
       "n": 301,
+      "family": "move-door",
+      "variant": "house-left",
+      "area": "events",
+      "mode": "write",
+      "title": "문·기물 이벤트 이동(페이지 보존)",
+      "prompt": "이 집의 문을 한 칸 왼쪽으로 옮겨줘.",
+      "args": {
+        "eventId": "ev_house_door",
+        "dx": -1,
+        "dy": 0
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "move-door__village-door-polite",
+      "n": 302,
+      "family": "move-door",
+      "variant": "village-door-polite",
+      "area": "events",
+      "mode": "write",
+      "title": "문·기물 이벤트 이동(페이지 보존)",
+      "prompt": "마을 문을 한 칸 왼쪽으로 옮겨 주세요. 전이 목적지는 그대로 두세요.",
+      "args": {
+        "eventId": "ev_test_door",
+        "dx": -1,
+        "dy": 0
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "move-door__crate-right",
+      "n": 303,
+      "family": "move-door",
+      "variant": "crate-right",
+      "area": "events",
+      "mode": "write",
+      "title": "문·기물 이벤트 이동(페이지 보존)",
+      "prompt": "상자를 한 칸 오른쪽으로.",
+      "args": {
+        "eventId": "ev_crate",
+        "dx": 1,
+        "dy": 0
+      },
+      "setup": {
+        "event": "ev_crate"
+      }
+    },
+    {
+      "id": "move-door__far-barrel-down",
+      "n": 304,
+      "family": "move-door",
+      "variant": "far-barrel-down",
+      "area": "events",
+      "mode": "write",
+      "title": "문·기물 이벤트 이동(페이지 보존)",
+      "prompt": "먼 통을 한 칸 아래로 옮겨 주세요. 다른 기물은 건드리지 마세요.",
+      "args": {
+        "eventId": "ev_barrel_far",
+        "dx": 0,
+        "dy": 1
+      },
+      "setup": {
+        "event": "ev_barrel_far"
+      }
+    },
+    {
+      "id": "move-door__arena-keeper-explained",
+      "n": 305,
+      "family": "move-door",
+      "variant": "arena-keeper-explained",
+      "area": "events",
+      "mode": "write",
+      "title": "문·기물 이벤트 이동(페이지 보존)",
+      "prompt": "투기장 문지기를 한 칸 왼쪽으로 옮겨 주세요. 페이지와 전투 명령은 그대로 두세요.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "dx": -1,
+        "dy": 0
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "remove-barrels__all-in-area",
+      "n": 306,
+      "family": "remove-barrels",
+      "variant": "all-in-area",
+      "area": "events",
+      "mode": "write",
+      "title": "영역 안 통만 제거(상자·먼 통 보존)",
+      "prompt": "이 지역의 통을 모두 제거해줘.",
+      "args": {
+        "removeIds": [
+          "ev_barrel_a",
+          "ev_barrel_b"
+        ],
+        "keepIds": [
+          "ev_crate",
+          "ev_barrel_far"
+        ]
+      },
+      "setup": {
+        "select": {
+          "x": 2,
+          "y": 11,
+          "w": 5,
+          "h": 4
+        }
+      }
+    },
+    {
+      "id": "remove-barrels__polite-two",
+      "n": 307,
+      "family": "remove-barrels",
+      "variant": "polite-two",
+      "area": "events",
+      "mode": "write",
+      "title": "영역 안 통만 제거(상자·먼 통 보존)",
+      "prompt": "선택한 구역의 통 두 개를 없애 주세요. 상자는 그대로 두세요.",
+      "args": {
+        "removeIds": [
+          "ev_barrel_a",
+          "ev_barrel_b"
+        ],
+        "keepIds": [
+          "ev_crate",
+          "ev_barrel_far"
+        ]
+      },
+      "setup": {
+        "select": {
+          "x": 2,
+          "y": 11,
+          "w": 5,
+          "h": 4
+        }
+      }
+    },
+    {
+      "id": "remove-barrels__terse-one",
+      "n": 308,
+      "family": "remove-barrels",
+      "variant": "terse-one",
+      "area": "events",
+      "mode": "write",
+      "title": "영역 안 통만 제거(상자·먼 통 보존)",
+      "prompt": "(4,13) 통만 치워.",
+      "args": {
+        "removeIds": [
+          "ev_barrel_b"
+        ],
+        "keepIds": [
+          "ev_barrel_a",
+          "ev_crate",
+          "ev_barrel_far"
+        ]
+      },
+      "setup": {
+        "select": {
+          "x": 4,
+          "y": 13,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "remove-barrels__explained-scope",
+      "n": 309,
+      "family": "remove-barrels",
+      "variant": "explained-scope",
+      "area": "events",
+      "mode": "write",
+      "title": "영역 안 통만 제거(상자·먼 통 보존)",
+      "prompt": "선택 영역 안의 통만 지우고, 영역 밖 통과 상자는 남겨 주세요.",
+      "args": {
+        "removeIds": [
+          "ev_barrel_a",
+          "ev_barrel_b"
+        ],
+        "keepIds": [
+          "ev_crate",
+          "ev_barrel_far"
+        ]
+      },
+      "setup": {
+        "select": {
+          "x": 2,
+          "y": 11,
+          "w": 5,
+          "h": 4
+        }
+      }
+    },
+    {
+      "id": "remove-barrels__crate-safe",
+      "n": 310,
+      "family": "remove-barrels",
+      "variant": "crate-safe",
+      "area": "events",
+      "mode": "write",
+      "title": "영역 안 통만 제거(상자·먼 통 보존)",
+      "prompt": "창고 앞 통을 정리해줘. 상자까지 없애면 안 돼.",
+      "args": {
+        "removeIds": [
+          "ev_barrel_a",
+          "ev_barrel_b"
+        ],
+        "keepIds": [
+          "ev_crate",
+          "ev_barrel_far"
+        ]
+      },
+      "setup": {
+        "select": {
+          "x": 2,
+          "y": 11,
+          "w": 5,
+          "h": 4
+        }
+      }
+    },
+    {
+      "id": "door-se__village-door",
+      "n": 311,
+      "family": "door-se",
+      "variant": "village-door",
+      "area": "transfer",
+      "mode": "write",
+      "title": "이동 앞에 효과음 하나",
+      "prompt": "문이 열릴 때 효과음을 재생해줘.",
+      "args": {
+        "eventId": "ev_test_door",
+        "resourceId": "cc0-se-osx-door-open"
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "door-se__south-gate-polite",
+      "n": 312,
+      "family": "door-se",
+      "variant": "south-gate-polite",
+      "area": "transfer",
+      "mode": "write",
+      "title": "이동 앞에 효과음 하나",
+      "prompt": "남쪽 출입구로 이동하기 직전에 문 여는 소리를 넣어 주세요.",
+      "args": {
+        "eventId": "ev_south_gate",
+        "resourceId": "cc0-se-osx-door-open"
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "door-se__plaza-door-terse",
+      "n": 313,
+      "family": "door-se",
+      "variant": "plaza-door-terse",
+      "area": "transfer",
+      "mode": "write",
+      "title": "이동 앞에 효과음 하나",
+      "prompt": "광장 가는 문, 이동 전에 문 닫는 소리 하나.",
+      "args": {
+        "eventId": "ev_plaza_back",
+        "mapId": "map_plaza",
+        "resourceId": "cc0-se-osx-door-close-01"
+      },
+      "setup": {
+        "event": "ev_plaza_back"
+      }
+    },
+    {
+      "id": "door-se__door-explained",
+      "n": 314,
+      "family": "door-se",
+      "variant": "door-explained",
+      "area": "transfer",
+      "mode": "write",
+      "title": "이동 앞에 효과음 하나",
+      "prompt": "마을 문 전이 명령 바로 앞에 효과음 재생 명령을 하나만 넣어 주세요. 다른 명령 순서는 그대로 두세요.",
+      "args": {
+        "eventId": "ev_test_door",
+        "resourceId": "cc0-se-osx-door-open"
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "door-se__gate-casual",
+      "n": 315,
+      "family": "door-se",
+      "variant": "gate-casual",
+      "area": "transfer",
+      "mode": "write",
+      "title": "이동 앞에 효과음 하나",
+      "prompt": "출입구 밟으면 소리 나게 해줘.",
+      "args": {
+        "eventId": "ev_south_gate",
+        "resourceId": "cc0-se-osx-door-open"
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "door-to-plaza__house-door",
+      "n": 316,
+      "family": "door-to-plaza",
+      "variant": "house-door",
+      "area": "transfer",
+      "mode": "write",
+      "title": "집 문을 광장으로 연결",
+      "prompt": "이 문을 마을 맵의 광장으로 연결해줘.",
+      "args": {
+        "eventId": "ev_house_door",
+        "targetMapId": "map_plaza",
+        "x": 2,
+        "y": 2
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "door-to-plaza__house-polite",
+      "n": 317,
+      "family": "door-to-plaza",
+      "variant": "house-polite",
+      "area": "transfer",
+      "mode": "write",
+      "title": "집 문을 광장으로 연결",
+      "prompt": "집 문을 열면 광장으로 나가게 해 주세요.",
+      "args": {
+        "eventId": "ev_house_door",
+        "targetMapId": "map_plaza",
+        "x": 4,
+        "y": 3
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "door-to-plaza__hamlet-gate",
+      "n": 318,
+      "family": "door-to-plaza",
+      "variant": "hamlet-gate",
+      "area": "transfer",
+      "mode": "write",
+      "title": "집 문을 광장으로 연결",
+      "prompt": "안동 어귀 문을 광장으로 이어줘.",
+      "args": {
+        "eventId": "ev_hamlet_gate",
+        "mapId": "map_hamlet",
+        "targetMapId": "map_plaza",
+        "x": 6,
+        "y": 4
+      },
+      "setup": {
+        "event": "ev_hamlet_gate"
+      }
+    },
+    {
+      "id": "door-to-plaza__explained-landing",
+      "n": 319,
+      "family": "door-to-plaza",
+      "variant": "explained-landing",
+      "area": "transfer",
+      "mode": "write",
+      "title": "집 문을 광장으로 연결",
+      "prompt": "집 문에 광장(map_plaza)으로 가는 전이를 넣어 주세요. 착지는 광장 안 통행 가능한 칸이면 됩니다.",
+      "args": {
+        "eventId": "ev_house_door",
+        "targetMapId": "map_plaza",
+        "x": 3,
+        "y": 3
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "door-to-plaza__terse-door",
+      "n": 320,
+      "family": "door-to-plaza",
+      "variant": "terse-door",
+      "area": "transfer",
+      "mode": "write",
+      "title": "집 문을 광장으로 연결",
+      "prompt": "집 문 → 광장.",
+      "args": {
+        "eventId": "ev_house_door",
+        "targetMapId": "map_plaza",
+        "x": 5,
+        "y": 2
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "align-portals__plaza-pair",
+      "n": 321,
+      "family": "align-portals",
+      "variant": "plaza-pair",
+      "area": "transfer",
+      "mode": "write",
+      "title": "두 출입구 방향 정렬",
+      "prompt": "두 맵 사이의 출입구 방향을 맞춰줘.",
+      "args": {
+        "out": {
+          "mapId": "map_ember_village",
+          "eventId": "ev_test_door",
+          "dir": "right"
+        },
+        "back": {
+          "mapId": "map_plaza",
+          "eventId": "ev_plaza_back",
+          "dir": "left"
+        }
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "align-portals__plaza-polite",
+      "n": 322,
+      "family": "align-portals",
+      "variant": "plaza-polite",
+      "area": "transfer",
+      "mode": "write",
+      "title": "두 출입구 방향 정렬",
+      "prompt": "마을 문과 광장 문이 서로 마주 보게 방향을 맞춰 주세요.",
+      "args": {
+        "out": {
+          "mapId": "map_ember_village",
+          "eventId": "ev_test_door",
+          "dir": "right"
+        },
+        "back": {
+          "mapId": "map_plaza",
+          "eventId": "ev_plaza_back",
+          "dir": "left"
+        }
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "align-portals__field-pair",
+      "n": 323,
+      "family": "align-portals",
+      "variant": "field-pair",
+      "area": "transfer",
+      "mode": "write",
+      "title": "두 출입구 방향 정렬",
+      "prompt": "남쪽 출입구와 숲길 쪽 문의 방향을 서로 마주 보게 해줘.",
+      "args": {
+        "out": {
+          "mapId": "map_ember_village",
+          "eventId": "ev_south_gate",
+          "dir": "down"
+        },
+        "back": {
+          "mapId": "map_field",
+          "eventId": "ev_field_gate",
+          "dir": "up"
+        }
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "align-portals__explained-both",
+      "n": 324,
+      "family": "align-portals",
+      "variant": "explained-both",
+      "area": "transfer",
+      "mode": "write",
+      "title": "두 출입구 방향 정렬",
+      "prompt": "가는 문과 돌아오는 문 **둘 다**의 전이 방향을 맞춰 주세요. 좌표와 목적지는 바꾸지 마세요.",
+      "args": {
+        "out": {
+          "mapId": "map_ember_village",
+          "eventId": "ev_test_door",
+          "dir": "right"
+        },
+        "back": {
+          "mapId": "map_plaza",
+          "eventId": "ev_plaza_back",
+          "dir": "left"
+        }
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "align-portals__terse-mirror",
+      "n": 325,
+      "family": "align-portals",
+      "variant": "terse-mirror",
+      "area": "transfer",
+      "mode": "write",
+      "title": "두 출입구 방향 정렬",
+      "prompt": "두 문 방향 반대로 맞춰.",
+      "args": {
+        "out": {
+          "mapId": "map_ember_village",
+          "eventId": "ev_test_door",
+          "dir": "right"
+        },
+        "back": {
+          "mapId": "map_plaza",
+          "eventId": "ev_plaza_back",
+          "dir": "left"
+        }
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "worldmap-north__village-north",
+      "n": 326,
+      "family": "worldmap-north",
+      "variant": "village-north",
+      "area": "transfer",
+      "mode": "write",
+      "title": "월드맵 북쪽 ↔ 마을 양방향",
+      "prompt": "이 맵을 월드맵의 북쪽에 연결해줘.",
+      "args": {
+        "worldMapId": "map_world",
+        "villageMapId": "map_ember_village",
+        "gateX": 12,
+        "gateY": 1
+      },
+      "setup": {
+        "select": {
+          "x": 12,
+          "y": 0,
+          "w": 1,
+          "h": 3
+        }
+      }
+    },
+    {
+      "id": "worldmap-north__village-polite",
+      "n": 327,
+      "family": "worldmap-north",
+      "variant": "village-polite",
+      "area": "transfer",
+      "mode": "write",
+      "title": "월드맵 북쪽 ↔ 마을 양방향",
+      "prompt": "마을에서 월드맵 북쪽으로 나갈 수 있게 이어 주세요. 왕복이 되어야 합니다.",
+      "args": {
+        "worldMapId": "map_world",
+        "villageMapId": "map_ember_village",
+        "gateX": 16,
+        "gateY": 1
+      },
+      "setup": {
+        "select": {
+          "x": 16,
+          "y": 0,
+          "w": 1,
+          "h": 3
+        }
+      }
+    },
+    {
+      "id": "worldmap-north__terse-north",
+      "n": 328,
+      "family": "worldmap-north",
+      "variant": "terse-north",
+      "area": "transfer",
+      "mode": "write",
+      "title": "월드맵 북쪽 ↔ 마을 양방향",
+      "prompt": "월드맵 북쪽에 이 마을 붙여.",
+      "args": {
+        "worldMapId": "map_world",
+        "villageMapId": "map_ember_village",
+        "gateX": 6,
+        "gateY": 1
+      },
+      "setup": {
+        "select": {
+          "x": 6,
+          "y": 0,
+          "w": 1,
+          "h": 3
+        }
+      }
+    },
+    {
+      "id": "worldmap-north__explained-preserve",
+      "n": 329,
+      "family": "worldmap-north",
+      "variant": "explained-preserve",
+      "area": "transfer",
+      "mode": "write",
+      "title": "월드맵 북쪽 ↔ 마을 양방향",
+      "prompt": "월드맵 북쪽 가장자리(y가 작은 쪽)에 이 마을로 오는 출입구를 만들고, 마을에서 돌아가는 출입구도 함께 넣어 주세요. 출입구 밖 타일과 기존 이벤트는 그대로 두세요.",
+      "args": {
+        "worldMapId": "map_world",
+        "villageMapId": "map_ember_village",
+        "gateX": 20,
+        "gateY": 1
+      },
+      "setup": {
+        "select": {
+          "x": 20,
+          "y": 0,
+          "w": 1,
+          "h": 3
+        }
+      }
+    },
+    {
+      "id": "worldmap-north__hamlet-north",
+      "n": 330,
+      "family": "worldmap-north",
+      "variant": "hamlet-north",
+      "area": "transfer",
+      "mode": "write",
+      "title": "월드맵 북쪽 ↔ 마을 양방향",
+      "prompt": "안동 마을을 월드맵 북쪽에 연결해줘.",
+      "args": {
+        "worldMapId": "map_world",
+        "villageMapId": "map_hamlet",
+        "gateX": 10,
+        "gateY": 1
+      },
+      "setup": {
+        "event": "ev_hamlet_gate"
+      }
+    },
+    {
+      "id": "transfer-two-way__house-hamlet",
+      "n": 331,
+      "family": "transfer-two-way",
+      "variant": "house-hamlet",
+      "area": "transfer",
+      "mode": "write",
+      "title": "양방향 전이 + 마주 보는 착지",
+      "prompt": "집 문과 안동 어귀를 양방향으로 이어줘. 서로의 문 앞에 도착해야 해.",
+      "args": {
+        "from": {
+          "mapId": "map_ember_village",
+          "x": 7,
+          "y": 6
+        },
+        "to": {
+          "mapId": "map_hamlet",
+          "x": 10,
+          "y": 12
+        }
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "transfer-two-way__house-polite",
+      "n": 332,
+      "family": "transfer-two-way",
+      "variant": "house-polite",
+      "area": "transfer",
+      "mode": "write",
+      "title": "양방향 전이 + 마주 보는 착지",
+      "prompt": "집 문에서 안동으로 나가고, 안동에서 다시 집 문 앞으로 돌아올 수 있게 두 방향 전이를 만들어 주세요.",
+      "args": {
+        "from": {
+          "mapId": "map_ember_village",
+          "x": 7,
+          "y": 6
+        },
+        "to": {
+          "mapId": "map_hamlet",
+          "x": 11,
+          "y": 12
+        }
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "transfer-two-way__south-hamlet",
+      "n": 333,
+      "family": "transfer-two-way",
+      "variant": "south-hamlet",
+      "area": "transfer",
+      "mode": "write",
+      "title": "양방향 전이 + 마주 보는 착지",
+      "prompt": "남쪽 출입구랑 안동을 왕복으로 연결해줘.",
+      "args": {
+        "from": {
+          "mapId": "map_ember_village",
+          "x": 12,
+          "y": 16
+        },
+        "to": {
+          "mapId": "map_hamlet",
+          "x": 10,
+          "y": 12
+        }
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "transfer-two-way__explained-both-directions",
+      "n": 334,
+      "family": "transfer-two-way",
+      "variant": "explained-both-directions",
+      "area": "transfer",
+      "mode": "write",
+      "title": "양방향 전이 + 마주 보는 착지",
+      "prompt": "마을과 안동 사이에 왕복 출입구를 만들어 주세요. 도착 칸은 서로의 문 바로 앞이어야 하고, 도착하면 문을 등지고 서야 합니다.",
+      "args": {
+        "from": {
+          "mapId": "map_ember_village",
+          "x": 18,
+          "y": 9
+        },
+        "to": {
+          "mapId": "map_hamlet",
+          "x": 10,
+          "y": 12
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 18,
+          "y": 9,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "transfer-two-way__plaza-hamlet-terse",
+      "n": 335,
+      "family": "transfer-two-way",
+      "variant": "plaza-hamlet-terse",
+      "area": "transfer",
+      "mode": "write",
+      "title": "양방향 전이 + 마주 보는 착지",
+      "prompt": "광장 ↔ 안동 왕복.",
+      "args": {
+        "from": {
+          "mapId": "map_plaza",
+          "x": 6,
+          "y": 6
+        },
+        "to": {
+          "mapId": "map_hamlet",
+          "x": 10,
+          "y": 12
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 6,
+          "y": 6,
+          "w": 1,
+          "h": 1
+        }
+      }
+    },
+    {
+      "id": "transfer-landing-offset__village-door",
+      "n": 336,
+      "family": "transfer-landing-offset",
+      "variant": "village-door",
+      "area": "transfer",
+      "mode": "write",
+      "title": "착지 좌표만 오프셋",
+      "prompt": "마을 문의 착지 좌표를 한 칸 오른쪽으로 옮겨줘.",
+      "args": {
+        "eventId": "ev_test_door",
+        "dx": 1,
+        "dy": 0
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "transfer-landing-offset__village-polite",
+      "n": 337,
+      "family": "transfer-landing-offset",
+      "variant": "village-polite",
+      "area": "transfer",
+      "mode": "write",
+      "title": "착지 좌표만 오프셋",
+      "prompt": "마을 문으로 광장에 도착하는 자리를 한 칸 아래로 내려 주세요. 다른 값은 그대로 두세요.",
+      "args": {
+        "eventId": "ev_test_door",
+        "dx": 0,
+        "dy": 1
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "transfer-landing-offset__plaza-back",
+      "n": 338,
+      "family": "transfer-landing-offset",
+      "variant": "plaza-back",
+      "area": "transfer",
+      "mode": "write",
+      "title": "착지 좌표만 오프셋",
+      "prompt": "광장에서 마을로 오는 문의 착지를 한 칸 위로.",
+      "args": {
+        "eventId": "ev_plaza_back",
+        "mapId": "map_plaza",
+        "dx": 0,
+        "dy": -1
+      },
+      "setup": {
+        "event": "ev_plaza_back"
+      }
+    },
+    {
+      "id": "transfer-landing-offset__south-gate-explained",
+      "n": 339,
+      "family": "transfer-landing-offset",
+      "variant": "south-gate-explained",
+      "area": "transfer",
+      "mode": "write",
+      "title": "착지 좌표만 오프셋",
+      "prompt": "남쪽 출입구의 전이 목적지 좌표를 x로 한 칸, y로 한 칸 옮겨 주세요. 페이드·방향은 유지하세요.",
+      "args": {
+        "eventId": "ev_south_gate",
+        "dx": 1,
+        "dy": 1
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "transfer-landing-offset__terse-offset",
+      "n": 340,
+      "family": "transfer-landing-offset",
+      "variant": "terse-offset",
+      "area": "transfer",
+      "mode": "write",
+      "title": "착지 좌표만 오프셋",
+      "prompt": "마을 문 착지 두 칸 오른쪽으로.",
+      "args": {
+        "eventId": "ev_test_door",
+        "dx": 2,
+        "dy": 0
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "transfer-conditional__south-clear",
+      "n": 341,
+      "family": "transfer-conditional",
+      "variant": "south-clear",
+      "area": "transfer",
+      "mode": "write",
+      "title": "전이를 스위치 조건으로 게이팅",
+      "prompt": "남쪽 출입구는 sw_ember_q1_clear 스위치가 켜져 있을 때만 열리게 해줘.",
+      "args": {
+        "eventId": "ev_south_gate",
+        "switchId": "sw_ember_q1_clear"
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "transfer-conditional__south-polite",
+      "n": 342,
+      "family": "transfer-conditional",
+      "variant": "south-polite",
+      "area": "transfer",
+      "mode": "write",
+      "title": "전이를 스위치 조건으로 게이팅",
+      "prompt": "남쪽 출입구 전이에 「잿불 퀘스트 클리어」 스위치 조건을 붙여 주세요. 조건이 꺼져 있으면 지나갈 수 없어야 합니다.",
+      "args": {
+        "eventId": "ev_south_gate",
+        "switchId": "sw_ember_q1_clear"
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "transfer-conditional__village-door",
+      "n": 343,
+      "family": "transfer-conditional",
+      "variant": "village-door",
+      "area": "transfer",
+      "mode": "write",
+      "title": "전이를 스위치 조건으로 게이팅",
+      "prompt": "마을 문은 sw_ember_q1_started 가 켜졌을 때만 작동하게.",
+      "args": {
+        "eventId": "ev_test_door",
+        "switchId": "sw_ember_q1_started"
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "transfer-conditional__plaza-back-explained",
+      "n": 344,
+      "family": "transfer-conditional",
+      "variant": "plaza-back-explained",
+      "area": "transfer",
+      "mode": "write",
+      "title": "전이를 스위치 조건으로 게이팅",
+      "prompt": "광장에서 마을로 돌아오는 문을 sw_unused 스위치가 켜진 동안에만 통하게 해 주세요. 전이 자체는 그대로 두세요.",
+      "args": {
+        "eventId": "ev_plaza_back",
+        "mapId": "map_plaza",
+        "switchId": "sw_unused"
+      },
+      "setup": {
+        "event": "ev_plaza_back"
+      }
+    },
+    {
+      "id": "transfer-conditional__south-terse",
+      "n": 345,
+      "family": "transfer-conditional",
+      "variant": "south-terse",
+      "area": "transfer",
+      "mode": "write",
+      "title": "전이를 스위치 조건으로 게이팅",
+      "prompt": "남쪽 출입구, sw_ember_q1_clear 켜야만 통과.",
+      "args": {
+        "eventId": "ev_south_gate",
+        "switchId": "sw_ember_q1_clear"
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "transfer-fade-choice__village-white",
+      "n": 346,
+      "family": "transfer-fade-choice",
+      "variant": "village-white",
+      "area": "transfer",
+      "mode": "write",
+      "title": "그 문의 페이드만 변경",
+      "prompt": "마을 문 전이의 페이드를 흰색으로 바꿔줘.",
+      "args": {
+        "eventId": "ev_test_door",
+        "fade": "white"
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "transfer-fade-choice__village-none-polite",
+      "n": 347,
+      "family": "transfer-fade-choice",
+      "variant": "village-none-polite",
+      "area": "transfer",
+      "mode": "write",
+      "title": "그 문의 페이드만 변경",
+      "prompt": "마을 문으로 이동할 때 화면이 페이드되지 않게 해 주세요.",
+      "args": {
+        "eventId": "ev_test_door",
+        "fade": "none"
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "transfer-fade-choice__south-none",
+      "n": 348,
+      "family": "transfer-fade-choice",
+      "variant": "south-none",
+      "area": "transfer",
+      "mode": "write",
+      "title": "그 문의 페이드만 변경",
+      "prompt": "남쪽 출입구 페이드를 없애줘.",
+      "args": {
+        "eventId": "ev_south_gate",
+        "fade": "none"
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "transfer-fade-choice__plaza-explained",
+      "n": 349,
+      "family": "transfer-fade-choice",
+      "variant": "plaza-explained",
+      "area": "transfer",
+      "mode": "write",
+      "title": "그 문의 페이드만 변경",
+      "prompt": "광장에서 마을로 오는 문만 페이드를 흰색으로 바꿔 주세요. 다른 문의 페이드는 그대로 두세요.",
+      "args": {
+        "eventId": "ev_plaza_back",
+        "mapId": "map_plaza",
+        "fade": "white"
+      },
+      "setup": {
+        "event": "ev_plaza_back"
+      }
+    },
+    {
+      "id": "transfer-fade-choice__village-terse",
+      "n": 350,
+      "family": "transfer-fade-choice",
+      "variant": "village-terse",
+      "area": "transfer",
+      "mode": "write",
+      "title": "그 문의 페이드만 변경",
+      "prompt": "마을 문 페이드 없애.",
+      "args": {
+        "eventId": "ev_test_door",
+        "fade": "none"
+      },
+      "setup": {
+        "event": "ev_test_door"
+      }
+    },
+    {
+      "id": "chain-create-then-link__well-yard",
+      "n": 351,
+      "family": "chain-create-then-link",
+      "variant": "well-yard",
+      "area": "transfer",
+      "mode": "write",
+      "title": "새 맵 생성 + 양방향 연결",
+      "prompt": "우물 마당이라는 새 맵(20×14)을 만들고 집 문과 양방향으로 이어줘.",
+      "args": {
+        "name": "우물 마당",
+        "width": 20,
+        "height": 14,
+        "from": {
+          "mapId": "map_ember_village",
+          "x": 7,
+          "y": 6
+        },
+        "to": {
+          "x": 10,
+          "y": 8
+        }
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "chain-create-then-link__well-yard-polite",
+      "n": 352,
+      "family": "chain-create-then-link",
+      "variant": "well-yard-polite",
+      "area": "transfer",
+      "mode": "write",
+      "title": "새 맵 생성 + 양방향 연결",
+      "prompt": "「우물 마당」이라는 20×14 맵을 새로 만들어 주시고, 집 문에서 갔다가 돌아올 수 있게 연결해 주세요.",
+      "args": {
+        "name": "우물 마당",
+        "width": 20,
+        "height": 14,
+        "from": {
+          "mapId": "map_ember_village",
+          "x": 7,
+          "y": 6
+        },
+        "to": {
+          "x": 6,
+          "y": 9
+        }
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "chain-create-then-link__cellar",
+      "n": 353,
+      "family": "chain-create-then-link",
+      "variant": "cellar",
+      "area": "transfer",
+      "mode": "write",
+      "title": "새 맵 생성 + 양방향 연결",
+      "prompt": "지하 창고 16×12 맵 만들고 남쪽 출입구랑 왕복 연결해줘.",
+      "args": {
+        "name": "지하 창고",
+        "width": 16,
+        "height": 12,
+        "from": {
+          "mapId": "map_ember_village",
+          "x": 12,
+          "y": 16
+        },
+        "to": {
+          "x": 8,
+          "y": 10
+        }
+      },
+      "setup": {
+        "event": "ev_south_gate"
+      }
+    },
+    {
+      "id": "chain-create-then-link__hamlet-yard-explained",
+      "n": 354,
+      "family": "chain-create-then-link",
+      "variant": "hamlet-yard-explained",
+      "area": "transfer",
+      "mode": "write",
+      "title": "새 맵 생성 + 양방향 연결",
+      "prompt": "「안동 뒷마당」 18×12 맵을 새로 만든 뒤, 안동 어귀에서 그 맵으로 왕복 이동할 수 있게 해 주세요. 기존 맵과 이벤트는 그대로 두세요.",
+      "args": {
+        "name": "안동 뒷마당",
+        "width": 18,
+        "height": 12,
+        "from": {
+          "mapId": "map_hamlet",
+          "x": 10,
+          "y": 12
+        },
+        "to": {
+          "x": 9,
+          "y": 6
+        }
+      },
+      "setup": {
+        "event": "ev_hamlet_gate"
+      }
+    },
+    {
+      "id": "chain-create-then-link__terse-yard",
+      "n": 355,
+      "family": "chain-create-then-link",
+      "variant": "terse-yard",
+      "area": "transfer",
+      "mode": "write",
+      "title": "새 맵 생성 + 양방향 연결",
+      "prompt": "새 맵 「뒷산」 16×16 만들고 집 문과 이어.",
+      "args": {
+        "name": "뒷산",
+        "width": 16,
+        "height": 16,
+        "from": {
+          "mapId": "map_ember_village",
+          "x": 7,
+          "y": 6
+        },
+        "to": {
+          "x": 8,
+          "y": 8
+        }
+      },
+      "setup": {
+        "event": "ev_house_door"
+      }
+    },
+    {
+      "id": "battle-troop-create__slime-trio",
+      "n": 356,
+      "family": "battle-troop-create",
+      "variant": "slime-trio",
+      "area": "battle",
+      "mode": "write",
+      "title": "적 그룹 하나 생성(구성 일치)",
+      "prompt": "슬라임 셋으로 이루어진 「슬라임 삼인방」 적 그룹을 만들어줘.",
+      "args": {
+        "troopId": "troop_g4_slime_trio",
+        "name": "슬라임 삼인방",
+        "enemyIds": [
+          "enemy_slime",
+          "enemy_slime",
+          "enemy_slime"
+        ]
+      }
+    },
+    {
+      "id": "battle-troop-create__bat-pair-polite",
+      "n": 357,
+      "family": "battle-troop-create",
+      "variant": "bat-pair-polite",
+      "area": "battle",
+      "mode": "write",
+      "title": "적 그룹 하나 생성(구성 일치)",
+      "prompt": "동굴 박쥐 두 마리짜리 적 그룹을 새로 만들어 주세요. 이름은 「박쥐 한 쌍」입니다.",
+      "args": {
+        "troopId": "troop_g4_bat_pair",
+        "name": "박쥐 한 쌍",
+        "enemyIds": [
+          "enemy_cave_bat",
+          "enemy_cave_bat"
+        ]
+      }
+    },
+    {
+      "id": "battle-troop-create__mixed-terse",
+      "n": 358,
+      "family": "battle-troop-create",
+      "variant": "mixed-terse",
+      "area": "battle",
+      "mode": "write",
+      "title": "적 그룹 하나 생성(구성 일치)",
+      "prompt": "슬라임+초원 슬라임 섞인 그룹 하나 추가.",
+      "args": {
+        "troopId": "troop_g4_mixed",
+        "name": "슬라임 혼성",
+        "enemyIds": [
+          "enemy_slime",
+          "enemy_meadow_slime"
+        ]
+      }
+    },
+    {
+      "id": "battle-troop-create__golem-explained",
+      "n": 359,
+      "family": "battle-troop-create",
+      "variant": "golem-explained",
+      "area": "battle",
+      "mode": "write",
+      "title": "적 그룹 하나 생성(구성 일치)",
+      "prompt": "돌 골렘 하나로만 구성된 「골렘 파수꾼」 적 그룹을 추가해 주세요. 기존 적 그룹은 건드리지 마세요.",
+      "args": {
+        "troopId": "troop_g4_golem",
+        "name": "골렘 파수꾼",
+        "enemyIds": [
+          "enemy_stone_golem"
+        ]
+      }
+    },
+    {
+      "id": "battle-troop-create__dragon-pair",
+      "n": 360,
+      "family": "battle-troop-create",
+      "variant": "dragon-pair",
+      "area": "battle",
+      "mode": "write",
+      "title": "적 그룹 하나 생성(구성 일치)",
+      "prompt": "붉은 드래곤 두 마리 그룹 「쌍룡」 만들어.",
+      "args": {
+        "troopId": "troop_g4_dragon_pair",
+        "name": "쌍룡",
+        "enemyIds": [
+          "enemy_dragon",
+          "enemy_dragon"
+        ]
+      }
+    },
+    {
+      "id": "battle-event-start__keeper-slime",
+      "n": 361,
+      "family": "battle-event-start",
+      "variant": "keeper-slime",
+      "area": "battle",
+      "mode": "write",
+      "title": "이벤트 페이지가 그 troop 으로 전투",
+      "prompt": "투기장 문지기가 말을 걸면 슬라임 정찰대와 전투가 시작되게 해줘.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "troopId": "troop_slime"
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "battle-event-start__keeper-polite",
+      "n": 362,
+      "family": "battle-event-start",
+      "variant": "keeper-polite",
+      "area": "battle",
+      "mode": "write",
+      "title": "이벤트 페이지가 그 troop 으로 전투",
+      "prompt": "투기장 문지기 이벤트에 전투 명령을 넣어 주세요. 상대는 「슬라임 정찰대」입니다. 대사는 그대로 두세요.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "troopId": "troop_slime"
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "battle-event-start__guard-bats",
+      "n": 363,
+      "family": "battle-event-start",
+      "variant": "guard-bats",
+      "area": "battle",
+      "mode": "write",
+      "title": "이벤트 페이지가 그 troop 으로 전투",
+      "prompt": "수문장이 동굴 박쥐 떼와 싸우게 해줘.",
+      "args": {
+        "eventId": "ev_arena_guard",
+        "troopId": "troop_bat_swarm"
+      },
+      "setup": {
+        "event": "ev_arena_guard"
+      }
+    },
+    {
+      "id": "battle-event-start__guard-explained",
+      "n": 364,
+      "family": "battle-event-start",
+      "variant": "guard-explained",
+      "area": "battle",
+      "mode": "write",
+      "title": "이벤트 페이지가 그 troop 으로 전투",
+      "prompt": "수문장 이벤트 페이지 끝에 「석상 수호병」 troop 과의 전투 명령을 하나 추가해 주세요. 기존 대사는 순서 그대로 남겨 주세요.",
+      "args": {
+        "eventId": "ev_arena_guard",
+        "troopId": "troop_golem_guard"
+      },
+      "setup": {
+        "event": "ev_arena_guard"
+      }
+    },
+    {
+      "id": "battle-event-start__keeper-terse",
+      "n": 365,
+      "family": "battle-event-start",
+      "variant": "keeper-terse",
+      "area": "battle",
+      "mode": "write",
+      "title": "이벤트 페이지가 그 troop 으로 전투",
+      "prompt": "문지기 → 슬라임 정찰대 전투.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "troopId": "troop_slime"
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "battle-escape-allowed__keeper-forbid",
+      "n": 366,
+      "family": "battle-escape-allowed",
+      "variant": "keeper-forbid",
+      "area": "battle",
+      "mode": "write",
+      "title": "도주 플래그만 변경",
+      "prompt": "투기장 문지기 전투에서는 도망칠 수 없게 해줘.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "canEscape": false
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "battle-escape-allowed__keeper-polite",
+      "n": 367,
+      "family": "battle-escape-allowed",
+      "variant": "keeper-polite",
+      "area": "battle",
+      "mode": "write",
+      "title": "도주 플래그만 변경",
+      "prompt": "투기장 전투의 도주 허용을 꺼 주세요. 다른 전투 설정은 그대로 두세요.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "canEscape": false
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "battle-escape-allowed__guard-allow",
+      "n": 368,
+      "family": "battle-escape-allowed",
+      "variant": "guard-allow",
+      "area": "battle",
+      "mode": "write",
+      "title": "도주 플래그만 변경",
+      "prompt": "수문장 전투는 도망칠 수 있게 해줘.",
+      "args": {
+        "eventId": "ev_arena_guard",
+        "canEscape": true
+      },
+      "setup": {
+        "event": "ev_arena_guard"
+      }
+    },
+    {
+      "id": "battle-escape-allowed__guard-explained",
+      "n": 369,
+      "family": "battle-escape-allowed",
+      "variant": "guard-explained",
+      "area": "battle",
+      "mode": "write",
+      "title": "도주 플래그만 변경",
+      "prompt": "수문장과의 전투에서 플레이어가 도주를 고를 수 있도록 canEscape 를 켜 주세요. 상대·패배 허용은 바꾸지 마세요.",
+      "args": {
+        "eventId": "ev_arena_guard",
+        "canEscape": true
+      },
+      "setup": {
+        "event": "ev_arena_guard"
+      }
+    },
+    {
+      "id": "battle-escape-allowed__keeper-terse",
+      "n": 370,
+      "family": "battle-escape-allowed",
+      "variant": "keeper-terse",
+      "area": "battle",
+      "mode": "write",
+      "title": "도주 플래그만 변경",
+      "prompt": "문지기 전투 도주 금지.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "canEscape": false
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "battle-defeat-branch__keeper-branches",
+      "n": 371,
+      "family": "battle-defeat-branch",
+      "variant": "keeper-branches",
+      "area": "battle",
+      "mode": "write",
+      "title": "승리·패배 분기 + 패배 시 맵 복귀",
+      "prompt": "투기장 전투에 승리·패배 분기를 만들고, 지면 게임오버 없이 마을로 돌아오게 해줘.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "retreat": {
+          "x": 8,
+          "y": 8
+        }
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "battle-defeat-branch__keeper-polite",
+      "n": 372,
+      "family": "battle-defeat-branch",
+      "variant": "keeper-polite",
+      "area": "battle",
+      "mode": "write",
+      "title": "승리·패배 분기 + 패배 시 맵 복귀",
+      "prompt": "투기장 문지기 전투 결과로 갈라지게 해 주세요. 이기면 문지기 대사가 나오고, 지면 마을 입구로 돌아가며 게임오버는 없어야 합니다.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "retreat": {
+          "x": 9,
+          "y": 8
+        }
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "battle-defeat-branch__guard-branches",
+      "n": 373,
+      "family": "battle-defeat-branch",
+      "variant": "guard-branches",
+      "area": "battle",
+      "mode": "write",
+      "title": "승리·패배 분기 + 패배 시 맵 복귀",
+      "prompt": "수문장 전투에 승패 분기를 넣고, 패배하면 마을로 되돌려 보내줘.",
+      "args": {
+        "eventId": "ev_arena_guard",
+        "retreat": {
+          "x": 10,
+          "y": 8
+        }
+      },
+      "setup": {
+        "event": "ev_arena_guard"
+      }
+    },
+    {
+      "id": "battle-defeat-branch__guard-explained",
+      "n": 374,
+      "family": "battle-defeat-branch",
+      "variant": "guard-explained",
+      "area": "battle",
+      "mode": "write",
+      "title": "승리·패배 분기 + 패배 시 맵 복귀",
+      "prompt": "수문장 전투를 branchOnResult 로 바꾸고 victoryBranch·defeatBranch 를 모두 채워 주세요. defeatBranch 는 게임오버가 아니라 마을 맵으로의 복귀여야 하고, canLose 도 켜 주세요.",
+      "args": {
+        "eventId": "ev_arena_guard",
+        "retreat": {
+          "x": 7,
+          "y": 8
+        }
+      },
+      "setup": {
+        "event": "ev_arena_guard"
+      }
+    },
+    {
+      "id": "battle-defeat-branch__keeper-terse",
+      "n": 375,
+      "family": "battle-defeat-branch",
+      "variant": "keeper-terse",
+      "area": "battle",
+      "mode": "write",
+      "title": "승리·패배 분기 + 패배 시 맵 복귀",
+      "prompt": "지면 마을로, 이기면 계속. 문지기 전투.",
+      "args": {
+        "eventId": "ev_arena_keeper",
+        "retreat": {
+          "x": 6,
+          "y": 8
+        }
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "battle-encounter-rate__field-rate",
+      "n": 376,
+      "family": "battle-encounter-rate",
+      "variant": "field-rate",
+      "area": "battle",
+      "mode": "write",
+      "title": "그 맵의 조우 스텝만 변경",
+      "prompt": "숲길 맵의 조우 발생률을 30으로 맞춰줘.",
+      "args": {
+        "mapId": "map_field",
+        "rate": 30
+      }
+    },
+    {
+      "id": "battle-encounter-rate__field-polite",
+      "n": 377,
+      "family": "battle-encounter-rate",
+      "variant": "field-polite",
+      "area": "battle",
+      "mode": "write",
+      "title": "그 맵의 조우 스텝만 변경",
+      "prompt": "숲길(map_field)의 인카운트율만 25로 설정해 주세요. 다른 맵은 건드리지 마세요.",
+      "args": {
+        "mapId": "map_field",
+        "rate": 25
+      }
+    },
+    {
+      "id": "battle-encounter-rate__village-rate",
+      "n": 378,
+      "family": "battle-encounter-rate",
+      "variant": "village-rate",
+      "area": "battle",
+      "mode": "write",
+      "title": "그 맵의 조우 스텝만 변경",
+      "prompt": "마을 조우 스텝 40으로.",
+      "args": {
+        "mapId": "map_ember_village",
+        "rate": 40
+      }
+    },
+    {
+      "id": "battle-encounter-rate__plaza-explained",
+      "n": 379,
+      "family": "battle-encounter-rate",
+      "variant": "plaza-explained",
+      "area": "battle",
+      "mode": "write",
+      "title": "그 맵의 조우 스텝만 변경",
+      "prompt": "광장 맵의 랜덤 조우 발생률을 12로 낮춰 주세요. 조우 테이블·타일·이벤트는 그대로 두세요.",
+      "args": {
+        "mapId": "map_plaza",
+        "rate": 12
+      }
+    },
+    {
+      "id": "battle-encounter-rate__field-terse",
+      "n": 380,
+      "family": "battle-encounter-rate",
+      "variant": "field-terse",
+      "area": "battle",
+      "mode": "write",
+      "title": "그 맵의 조우 스텝만 변경",
+      "prompt": "숲길 조우 50.",
+      "args": {
+        "mapId": "map_field",
+        "rate": 50
+      }
+    },
+    {
+      "id": "event-playtest__utility-npc",
+      "n": 381,
+      "family": "event-playtest",
+      "variant": "utility-npc",
+      "area": "battle",
+      "mode": "read",
+      "title": "이벤트를 실제 플레이처럼 실행",
+      "prompt": "이 이벤트를 실제 플레이처럼 실행해줘.",
+      "args": {
+        "eventId": "ev_utility_npc"
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "event-playtest__utility-polite",
+      "n": 382,
+      "family": "event-playtest",
+      "variant": "utility-polite",
+      "area": "battle",
+      "mode": "read",
+      "title": "이벤트를 실제 플레이처럼 실행",
+      "prompt": "선택한 NPC 이벤트를 실행해서 대사가 어떻게 나오는지 확인해 주세요.",
+      "args": {
+        "eventId": "ev_utility_npc"
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "event-playtest__shop",
+      "n": 383,
+      "family": "event-playtest",
+      "variant": "shop",
+      "area": "battle",
+      "mode": "read",
+      "title": "이벤트를 실제 플레이처럼 실행",
+      "prompt": "상점 이벤트 한 번 돌려봐.",
+      "args": {
+        "eventId": "ev_test_shop"
+      },
+      "setup": {
+        "event": "ev_test_shop"
+      }
+    },
+    {
+      "id": "event-playtest__cutscene-explained",
+      "n": 384,
+      "family": "event-playtest",
+      "variant": "cutscene-explained",
+      "area": "battle",
+      "mode": "read",
+      "title": "이벤트를 실제 플레이처럼 실행",
+      "prompt": "장면 연출 이벤트를 실행해 화면 숨기기·보이기와 대기가 제대로 지나가는지 결과를 알려 주세요.",
+      "args": {
+        "eventId": "ev_test_cutscene"
+      },
+      "setup": {
+        "event": "ev_test_cutscene"
+      }
+    },
+    {
+      "id": "event-playtest__arena-terse",
+      "n": 385,
+      "family": "event-playtest",
+      "variant": "arena-terse",
+      "area": "battle",
+      "mode": "read",
+      "title": "이벤트를 실제 플레이처럼 실행",
+      "prompt": "문지기 전투 이벤트 실행해 봐.",
+      "args": {
+        "eventId": "ev_arena_keeper"
+      },
+      "setup": {
+        "event": "ev_arena_keeper"
+      }
+    },
+    {
+      "id": "summarize-diff__map-changes",
+      "n": 386,
+      "family": "summarize-diff",
+      "variant": "map-changes",
+      "area": "read",
+      "mode": "read",
+      "title": "방금 변경만 요약",
+      "prompt": "현재 맵의 변경 사항만 요약해줘.",
+      "args": {
+        "x": 14,
+        "y": 2,
+        "material": "나무"
+      },
+      "setup": {
+        "prior": {
+          "prompt": "(14,2) 칸에 나무 한 그루를 놓아줘.",
+          "select": {
+            "x": 14,
+            "y": 2,
+            "w": 1,
+            "h": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "summarize-diff__map-changes-polite",
+      "n": 387,
+      "family": "summarize-diff",
+      "variant": "map-changes-polite",
+      "area": "read",
+      "mode": "read",
+      "title": "방금 변경만 요약",
+      "prompt": "방금 무엇을 바꿨는지 요약해 주세요.",
+      "args": {
+        "x": 14,
+        "y": 2,
+        "material": "나무"
+      },
+      "setup": {
+        "prior": {
+          "prompt": "(14,2) 칸에 나무 한 그루를 놓아줘.",
+          "select": {
+            "x": 14,
+            "y": 2,
+            "w": 1,
+            "h": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "summarize-diff__terse-diff",
+      "n": 388,
+      "family": "summarize-diff",
+      "variant": "terse-diff",
+      "area": "read",
+      "mode": "read",
+      "title": "방금 변경만 요약",
+      "prompt": "바뀐 것만.",
+      "args": {
+        "x": 14,
+        "y": 2,
+        "material": "나무"
+      },
+      "setup": {
+        "prior": {
+          "prompt": "(14,2) 칸에 나무 한 그루를 놓아줘.",
+          "select": {
+            "x": 14,
+            "y": 2,
+            "w": 1,
+            "h": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "summarize-diff__explained-diff",
+      "n": 389,
+      "family": "summarize-diff",
+      "variant": "explained-diff",
+      "area": "read",
+      "mode": "read",
+      "title": "방금 변경만 요약",
+      "prompt": "마지막 편집 이후 이 맵에서 실제로 바뀐 타일과 좌표만 알려 주세요. 없는 변경은 지어내지 마세요.",
+      "args": {
+        "x": 14,
+        "y": 2,
+        "material": "나무"
+      },
+      "setup": {
+        "prior": {
+          "prompt": "(14,2) 칸에 나무 한 그루를 놓아줘.",
+          "select": {
+            "x": 14,
+            "y": 2,
+            "w": 1,
+            "h": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "summarize-diff__audit-diff",
+      "n": 390,
+      "family": "summarize-diff",
+      "variant": "audit-diff",
+      "area": "read",
+      "mode": "read",
+      "title": "방금 변경만 요약",
+      "prompt": "편집 이력을 확인해서 방금 놓은 오브젝트를 짚어 줘.",
+      "args": {
+        "x": 14,
+        "y": 2,
+        "material": "나무"
+      },
+      "setup": {
+        "prior": {
+          "prompt": "(14,2) 칸에 나무 한 그루를 놓아줘.",
+          "select": {
+            "x": 14,
+            "y": 2,
+            "w": 1,
+            "h": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "plan-only__meadow",
+      "n": 391,
+      "family": "plan-only",
+      "variant": "meadow",
+      "area": "plan",
+      "mode": "read",
+      "title": "실행 없이 선택 영역 계획",
+      "prompt": "이 작업을 실행하지 말고 계획만 보여줘.",
+      "args": {
+        "rect": {
+          "x": 14,
+          "y": 2,
+          "w": 6,
+          "h": 5
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 14,
+          "y": 2,
+          "w": 6,
+          "h": 5
+        }
+      }
+    },
+    {
+      "id": "plan-only__meadow-polite",
+      "n": 392,
+      "family": "plan-only",
+      "variant": "meadow-polite",
+      "area": "plan",
+      "mode": "read",
+      "title": "실행 없이 선택 영역 계획",
+      "prompt": "실행은 하지 마시고, 이 지역에 뭘 할 수 있을지 계획만 세워 주세요.",
+      "args": {
+        "rect": {
+          "x": 14,
+          "y": 2,
+          "w": 6,
+          "h": 5
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 14,
+          "y": 2,
+          "w": 6,
+          "h": 5
+        }
+      }
+    },
+    {
+      "id": "plan-only__trail-terse",
+      "n": 393,
+      "family": "plan-only",
+      "variant": "trail-terse",
+      "area": "plan",
+      "mode": "read",
+      "title": "실행 없이 선택 영역 계획",
+      "prompt": "실행 말고 계획.",
+      "args": {
+        "rect": {
+          "x": 2,
+          "y": 15,
+          "w": 10,
+          "h": 2
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 2,
+          "y": 15,
+          "w": 10,
+          "h": 2
+        }
+      }
+    },
+    {
+      "id": "plan-only__dirt-explained",
+      "n": 394,
+      "family": "plan-only",
+      "variant": "dirt-explained",
+      "area": "plan",
+      "mode": "read",
+      "title": "실행 없이 선택 영역 계획",
+      "prompt": "지금은 아무것도 바꾸지 말고, 선택 영역을 어떻게 다듬을지 단계별 계획만 적어 주세요.",
+      "args": {
+        "rect": {
+          "x": 12,
+          "y": 13,
+          "w": 4,
+          "h": 2
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 12,
+          "y": 13,
+          "w": 4,
+          "h": 2
+        }
+      }
+    },
+    {
+      "id": "plan-only__barrels-plan",
+      "n": 395,
+      "family": "plan-only",
+      "variant": "barrels-plan",
+      "area": "plan",
+      "mode": "read",
+      "title": "실행 없이 선택 영역 계획",
+      "prompt": "선택 영역 정리 계획만 알려줘. 아직 실행은 하지 마.",
+      "args": {
+        "rect": {
+          "x": 2,
+          "y": 11,
+          "w": 5,
+          "h": 4
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 2,
+          "y": 11,
+          "w": 5,
+          "h": 4
+        }
+      }
+    },
+    {
+      "id": "suggest-selection-actions__meadow",
+      "n": 396,
+      "family": "suggest-selection-actions",
+      "variant": "meadow",
+      "area": "plan",
+      "mode": "read",
+      "title": "선택 영역 기준 추천",
+      "prompt": "현재 선택 영역에 할 수 있는 작업을 추천해줘.",
+      "args": {
+        "rect": {
+          "x": 14,
+          "y": 2,
+          "w": 6,
+          "h": 5
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 14,
+          "y": 2,
+          "w": 6,
+          "h": 5
+        }
+      }
+    },
+    {
+      "id": "suggest-selection-actions__meadow-polite",
+      "n": 397,
+      "family": "suggest-selection-actions",
+      "variant": "meadow-polite",
+      "area": "plan",
+      "mode": "read",
+      "title": "선택 영역 기준 추천",
+      "prompt": "선택한 지역에 어울릴 만한 작업을 두세 가지 추천해 주세요.",
+      "args": {
+        "rect": {
+          "x": 14,
+          "y": 2,
+          "w": 6,
+          "h": 5
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 14,
+          "y": 2,
+          "w": 6,
+          "h": 5
+        }
+      }
+    },
+    {
+      "id": "suggest-selection-actions__trail-terse",
+      "n": 398,
+      "family": "suggest-selection-actions",
+      "variant": "trail-terse",
+      "area": "plan",
+      "mode": "read",
+      "title": "선택 영역 기준 추천",
+      "prompt": "여기 뭐 할 수 있어?",
+      "args": {
+        "rect": {
+          "x": 2,
+          "y": 15,
+          "w": 10,
+          "h": 2
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 2,
+          "y": 15,
+          "w": 10,
+          "h": 2
+        }
+      }
+    },
+    {
+      "id": "suggest-selection-actions__dirt-explained",
+      "n": 399,
+      "family": "suggest-selection-actions",
+      "variant": "dirt-explained",
+      "area": "plan",
+      "mode": "read",
+      "title": "선택 영역 기준 추천",
+      "prompt": "선택 영역의 현재 칩셋·레이어·통행 상태를 고려해 지금 바로 할 수 있는 작업을 추천해 주세요. 실행은 하지 마세요.",
+      "args": {
+        "rect": {
+          "x": 12,
+          "y": 13,
+          "w": 4,
+          "h": 2
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 12,
+          "y": 13,
+          "w": 4,
+          "h": 2
+        }
+      }
+    },
+    {
+      "id": "suggest-selection-actions__barrels-suggest",
+      "n": 400,
+      "family": "suggest-selection-actions",
+      "variant": "barrels-suggest",
+      "area": "plan",
+      "mode": "read",
+      "title": "선택 영역 기준 추천",
+      "prompt": "이 구역에서 할 만한 정리 작업 추천해줘.",
+      "args": {
+        "rect": {
+          "x": 2,
+          "y": 11,
+          "w": 5,
+          "h": 4
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 2,
+          "y": 11,
+          "w": 5,
+          "h": 4
+        }
+      }
+    },
+    {
+      "id": "night-mood__village-plain",
+      "n": 401,
       "family": "night-mood",
       "variant": "village-plain",
       "area": "media",
@@ -5996,7 +8081,7 @@
     },
     {
       "id": "night-mood__plaza-polite",
-      "n": 302,
+      "n": 402,
       "family": "night-mood",
       "variant": "plaza-polite",
       "area": "media",
@@ -6011,7 +8096,7 @@
     },
     {
       "id": "night-mood__field-terse",
-      "n": 303,
+      "n": 403,
       "family": "night-mood",
       "variant": "field-terse",
       "area": "media",
@@ -6033,7 +8118,7 @@
     },
     {
       "id": "night-mood__world-explain",
-      "n": 304,
+      "n": 404,
       "family": "night-mood",
       "variant": "world-explain",
       "area": "media",
@@ -6048,7 +8133,7 @@
     },
     {
       "id": "night-mood__house-casual",
-      "n": 305,
+      "n": 405,
       "family": "night-mood",
       "variant": "house-casual",
       "area": "media",
@@ -6069,7 +8154,7 @@
     },
     {
       "id": "media-bgm-map__village-amber",
-      "n": 306,
+      "n": 406,
       "family": "media-bgm-map",
       "variant": "village-amber",
       "area": "media",
@@ -6091,7 +8176,7 @@
     },
     {
       "id": "media-bgm-map__plaza-amber",
-      "n": 307,
+      "n": 407,
       "family": "media-bgm-map",
       "variant": "plaza-amber",
       "area": "media",
@@ -6105,7 +8190,7 @@
     },
     {
       "id": "media-bgm-map__field-vanguard",
-      "n": 308,
+      "n": 408,
       "family": "media-bgm-map",
       "variant": "field-vanguard",
       "area": "media",
@@ -6119,7 +8204,7 @@
     },
     {
       "id": "media-bgm-map__world-amber",
-      "n": 309,
+      "n": 409,
       "family": "media-bgm-map",
       "variant": "world-amber",
       "area": "media",
@@ -6133,7 +8218,7 @@
     },
     {
       "id": "media-bgm-map__interior-ledger",
-      "n": 310,
+      "n": 410,
       "family": "media-bgm-map",
       "variant": "interior-ledger",
       "area": "media",
@@ -6147,7 +8232,7 @@
     },
     {
       "id": "media-weather-rain__village-rain",
-      "n": 311,
+      "n": 411,
       "family": "media-weather-rain",
       "variant": "village-rain",
       "area": "media",
@@ -6168,7 +8253,7 @@
     },
     {
       "id": "media-weather-rain__plaza-polite",
-      "n": 312,
+      "n": 412,
       "family": "media-weather-rain",
       "variant": "plaza-polite",
       "area": "media",
@@ -6181,7 +8266,7 @@
     },
     {
       "id": "media-weather-rain__field-terse",
-      "n": 313,
+      "n": 413,
       "family": "media-weather-rain",
       "variant": "field-terse",
       "area": "media",
@@ -6194,7 +8279,7 @@
     },
     {
       "id": "media-weather-rain__world-heavy",
-      "n": 314,
+      "n": 414,
       "family": "media-weather-rain",
       "variant": "world-heavy",
       "area": "media",
@@ -6208,7 +8293,7 @@
     },
     {
       "id": "media-weather-rain__interior-rain",
-      "n": 315,
+      "n": 415,
       "family": "media-weather-rain",
       "variant": "interior-rain",
       "area": "media",
@@ -6221,7 +8306,7 @@
     },
     {
       "id": "media-screen-tint__night-blue",
-      "n": 316,
+      "n": 416,
       "family": "media-screen-tint",
       "variant": "night-blue",
       "area": "media",
@@ -6239,7 +8324,7 @@
     },
     {
       "id": "media-screen-tint__dusk-polite",
-      "n": 317,
+      "n": 417,
       "family": "media-screen-tint",
       "variant": "dusk-polite",
       "area": "media",
@@ -6254,7 +8339,7 @@
     },
     {
       "id": "media-screen-tint__dark-terse",
-      "n": 318,
+      "n": 418,
       "family": "media-screen-tint",
       "variant": "dark-terse",
       "area": "media",
@@ -6272,7 +8357,7 @@
     },
     {
       "id": "media-screen-tint__red-explain",
-      "n": 319,
+      "n": 419,
       "family": "media-screen-tint",
       "variant": "red-explain",
       "area": "media",
@@ -6287,7 +8372,7 @@
     },
     {
       "id": "media-screen-tint__pale-casual",
-      "n": 320,
+      "n": 420,
       "family": "media-screen-tint",
       "variant": "pale-casual",
       "area": "media",
@@ -6305,7 +8390,7 @@
     },
     {
       "id": "media-battle-bgm__amber-plain",
-      "n": 321,
+      "n": 421,
       "family": "media-battle-bgm",
       "variant": "amber-plain",
       "area": "media",
@@ -6318,7 +8403,7 @@
     },
     {
       "id": "media-battle-bgm__ledger-polite",
-      "n": 322,
+      "n": 422,
       "family": "media-battle-bgm",
       "variant": "ledger-polite",
       "area": "media",
@@ -6331,7 +8416,7 @@
     },
     {
       "id": "media-battle-bgm__battle-terse",
-      "n": 323,
+      "n": 423,
       "family": "media-battle-bgm",
       "variant": "battle-terse",
       "area": "media",
@@ -6344,7 +8429,7 @@
     },
     {
       "id": "media-battle-bgm__boss-explain",
-      "n": 324,
+      "n": 424,
       "family": "media-battle-bgm",
       "variant": "boss-explain",
       "area": "media",
@@ -6357,7 +8442,7 @@
     },
     {
       "id": "media-battle-bgm__amber-casual",
-      "n": 325,
+      "n": 425,
       "family": "media-battle-bgm",
       "variant": "amber-casual",
       "area": "media",
@@ -6370,7 +8455,7 @@
     },
     {
       "id": "media-se-volume__bell-quiet",
-      "n": 326,
+      "n": 426,
       "family": "media-se-volume",
       "variant": "bell-quiet",
       "area": "media",
@@ -6387,7 +8472,7 @@
     },
     {
       "id": "media-se-volume__bell-polite",
-      "n": 327,
+      "n": 427,
       "family": "media-se-volume",
       "variant": "bell-polite",
       "area": "media",
@@ -6401,7 +8486,7 @@
     },
     {
       "id": "media-se-volume__bell-terse",
-      "n": 328,
+      "n": 428,
       "family": "media-se-volume",
       "variant": "bell-terse",
       "area": "media",
@@ -6418,7 +8503,7 @@
     },
     {
       "id": "media-se-volume__bell-explain",
-      "n": 329,
+      "n": 429,
       "family": "media-se-volume",
       "variant": "bell-explain",
       "area": "media",
@@ -6432,7 +8517,7 @@
     },
     {
       "id": "media-se-volume__bell-casual",
-      "n": 330,
+      "n": 430,
       "family": "media-se-volume",
       "variant": "bell-casual",
       "area": "media",
@@ -6449,7 +8534,7 @@
     },
     {
       "id": "ambiguous-make-it-nicer__meadow-plain",
-      "n": 331,
+      "n": 431,
       "family": "ambiguous-make-it-nicer",
       "variant": "meadow-plain",
       "area": "plan",
@@ -6475,7 +8560,7 @@
     },
     {
       "id": "ambiguous-make-it-nicer__meadow-polite",
-      "n": 332,
+      "n": 432,
       "family": "ambiguous-make-it-nicer",
       "variant": "meadow-polite",
       "area": "plan",
@@ -6501,7 +8586,7 @@
     },
     {
       "id": "ambiguous-make-it-nicer__meadow-terse",
-      "n": 333,
+      "n": 433,
       "family": "ambiguous-make-it-nicer",
       "variant": "meadow-terse",
       "area": "plan",
@@ -6527,7 +8612,7 @@
     },
     {
       "id": "ambiguous-make-it-nicer__meadow-explain",
-      "n": 334,
+      "n": 434,
       "family": "ambiguous-make-it-nicer",
       "variant": "meadow-explain",
       "area": "plan",
@@ -6553,7 +8638,7 @@
     },
     {
       "id": "ambiguous-make-it-nicer__meadow-casual",
-      "n": 335,
+      "n": 435,
       "family": "ambiguous-make-it-nicer",
       "variant": "meadow-casual",
       "area": "plan",
@@ -6579,7 +8664,7 @@
     },
     {
       "id": "ambiguous-add-something__meadow-plain",
-      "n": 336,
+      "n": 436,
       "family": "ambiguous-add-something",
       "variant": "meadow-plain",
       "area": "plan",
@@ -6605,7 +8690,7 @@
     },
     {
       "id": "ambiguous-add-something__meadow-polite",
-      "n": 337,
+      "n": 437,
       "family": "ambiguous-add-something",
       "variant": "meadow-polite",
       "area": "plan",
@@ -6631,7 +8716,7 @@
     },
     {
       "id": "ambiguous-add-something__meadow-terse",
-      "n": 338,
+      "n": 438,
       "family": "ambiguous-add-something",
       "variant": "meadow-terse",
       "area": "plan",
@@ -6657,7 +8742,7 @@
     },
     {
       "id": "ambiguous-add-something__meadow-explain",
-      "n": 339,
+      "n": 439,
       "family": "ambiguous-add-something",
       "variant": "meadow-explain",
       "area": "plan",
@@ -6683,7 +8768,7 @@
     },
     {
       "id": "ambiguous-add-something__meadow-casual",
-      "n": 340,
+      "n": 440,
       "family": "ambiguous-add-something",
       "variant": "meadow-casual",
       "area": "plan",
@@ -6709,7 +8794,7 @@
     },
     {
       "id": "read-map-list__all-plain",
-      "n": 341,
+      "n": 441,
       "family": "read-map-list",
       "variant": "all-plain",
       "area": "read",
@@ -6720,7 +8805,7 @@
     },
     {
       "id": "read-map-list__all-polite",
-      "n": 342,
+      "n": 442,
       "family": "read-map-list",
       "variant": "all-polite",
       "area": "read",
@@ -6731,7 +8816,7 @@
     },
     {
       "id": "read-map-list__all-terse",
-      "n": 343,
+      "n": 443,
       "family": "read-map-list",
       "variant": "all-terse",
       "area": "read",
@@ -6742,7 +8827,7 @@
     },
     {
       "id": "read-map-list__all-explain",
-      "n": 344,
+      "n": 444,
       "family": "read-map-list",
       "variant": "all-explain",
       "area": "read",
@@ -6753,7 +8838,7 @@
     },
     {
       "id": "read-map-list__all-casual",
-      "n": 345,
+      "n": 445,
       "family": "read-map-list",
       "variant": "all-casual",
       "area": "read",
@@ -6764,7 +8849,7 @@
     },
     {
       "id": "read-event-pages__child-plain",
-      "n": 346,
+      "n": 446,
       "family": "read-event-pages",
       "variant": "child-plain",
       "area": "read",
@@ -6780,7 +8865,7 @@
     },
     {
       "id": "read-event-pages__guard-polite",
-      "n": 347,
+      "n": 447,
       "family": "read-event-pages",
       "variant": "guard-polite",
       "area": "read",
@@ -6796,7 +8881,7 @@
     },
     {
       "id": "read-event-pages__child-terse",
-      "n": 348,
+      "n": 448,
       "family": "read-event-pages",
       "variant": "child-terse",
       "area": "read",
@@ -6812,7 +8897,7 @@
     },
     {
       "id": "read-event-pages__guard-explain",
-      "n": 349,
+      "n": 449,
       "family": "read-event-pages",
       "variant": "guard-explain",
       "area": "read",
@@ -6828,7 +8913,7 @@
     },
     {
       "id": "read-event-pages__child-casual",
-      "n": 350,
+      "n": 450,
       "family": "read-event-pages",
       "variant": "child-casual",
       "area": "read",
@@ -6844,7 +8929,7 @@
     },
     {
       "id": "read-db-items__items-plain",
-      "n": 351,
+      "n": 451,
       "family": "read-db-items",
       "variant": "items-plain",
       "area": "read",
@@ -6855,7 +8940,7 @@
     },
     {
       "id": "read-db-items__items-polite",
-      "n": 352,
+      "n": 452,
       "family": "read-db-items",
       "variant": "items-polite",
       "area": "read",
@@ -6866,7 +8951,7 @@
     },
     {
       "id": "read-db-items__items-terse",
-      "n": 353,
+      "n": 453,
       "family": "read-db-items",
       "variant": "items-terse",
       "area": "read",
@@ -6877,7 +8962,7 @@
     },
     {
       "id": "read-db-items__items-explain",
-      "n": 354,
+      "n": 454,
       "family": "read-db-items",
       "variant": "items-explain",
       "area": "read",
@@ -6888,7 +8973,7 @@
     },
     {
       "id": "read-db-items__items-casual",
-      "n": 355,
+      "n": 455,
       "family": "read-db-items",
       "variant": "items-casual",
       "area": "read",
@@ -6899,7 +8984,7 @@
     },
     {
       "id": "read-troop-list__troops-plain",
-      "n": 356,
+      "n": 456,
       "family": "read-troop-list",
       "variant": "troops-plain",
       "area": "read",
@@ -6910,7 +8995,7 @@
     },
     {
       "id": "read-troop-list__troops-polite",
-      "n": 357,
+      "n": 457,
       "family": "read-troop-list",
       "variant": "troops-polite",
       "area": "read",
@@ -6921,7 +9006,7 @@
     },
     {
       "id": "read-troop-list__troops-terse",
-      "n": 358,
+      "n": 458,
       "family": "read-troop-list",
       "variant": "troops-terse",
       "area": "read",
@@ -6932,7 +9017,7 @@
     },
     {
       "id": "read-troop-list__troops-explain",
-      "n": 359,
+      "n": 459,
       "family": "read-troop-list",
       "variant": "troops-explain",
       "area": "read",
@@ -6943,7 +9028,7 @@
     },
     {
       "id": "read-troop-list__troops-casual",
-      "n": 360,
+      "n": 460,
       "family": "read-troop-list",
       "variant": "troops-casual",
       "area": "read",
@@ -6954,7 +9039,7 @@
     },
     {
       "id": "read-switch-usage__clear-plain",
-      "n": 361,
+      "n": 461,
       "family": "read-switch-usage",
       "variant": "clear-plain",
       "area": "read",
@@ -6967,7 +9052,7 @@
     },
     {
       "id": "read-switch-usage__clear-polite",
-      "n": 362,
+      "n": 462,
       "family": "read-switch-usage",
       "variant": "clear-polite",
       "area": "read",
@@ -6980,7 +9065,7 @@
     },
     {
       "id": "read-switch-usage__clear-terse",
-      "n": 363,
+      "n": 463,
       "family": "read-switch-usage",
       "variant": "clear-terse",
       "area": "read",
@@ -6993,7 +9078,7 @@
     },
     {
       "id": "read-switch-usage__clear-explain",
-      "n": 364,
+      "n": 464,
       "family": "read-switch-usage",
       "variant": "clear-explain",
       "area": "read",
@@ -7006,7 +9091,7 @@
     },
     {
       "id": "read-switch-usage__started-casual",
-      "n": 365,
+      "n": 465,
       "family": "read-switch-usage",
       "variant": "started-casual",
       "area": "read",
@@ -7019,7 +9104,7 @@
     },
     {
       "id": "read-tileset-refs__interior-plain",
-      "n": 366,
+      "n": 466,
       "family": "read-tileset-refs",
       "variant": "interior-plain",
       "area": "read",
@@ -7032,7 +9117,7 @@
     },
     {
       "id": "read-tileset-refs__interior-polite",
-      "n": 367,
+      "n": 467,
       "family": "read-tileset-refs",
       "variant": "interior-polite",
       "area": "read",
@@ -7045,7 +9130,7 @@
     },
     {
       "id": "read-tileset-refs__village-terse",
-      "n": 368,
+      "n": 468,
       "family": "read-tileset-refs",
       "variant": "village-terse",
       "area": "read",
@@ -7058,7 +9143,7 @@
     },
     {
       "id": "read-tileset-refs__village-explain",
-      "n": 369,
+      "n": 469,
       "family": "read-tileset-refs",
       "variant": "village-explain",
       "area": "read",
@@ -7071,7 +9156,7 @@
     },
     {
       "id": "read-tileset-refs__interior-casual",
-      "n": 370,
+      "n": 470,
       "family": "read-tileset-refs",
       "variant": "interior-casual",
       "area": "read",
@@ -7084,7 +9169,7 @@
     },
     {
       "id": "read-unreachable-map__unreachable-plain",
-      "n": 371,
+      "n": 471,
       "family": "read-unreachable-map",
       "variant": "unreachable-plain",
       "area": "read",
@@ -7095,7 +9180,7 @@
     },
     {
       "id": "read-unreachable-map__unreachable-polite",
-      "n": 372,
+      "n": 472,
       "family": "read-unreachable-map",
       "variant": "unreachable-polite",
       "area": "read",
@@ -7106,7 +9191,7 @@
     },
     {
       "id": "read-unreachable-map__unreachable-terse",
-      "n": 373,
+      "n": 473,
       "family": "read-unreachable-map",
       "variant": "unreachable-terse",
       "area": "read",
@@ -7117,7 +9202,7 @@
     },
     {
       "id": "read-unreachable-map__unreachable-explain",
-      "n": 374,
+      "n": 474,
       "family": "read-unreachable-map",
       "variant": "unreachable-explain",
       "area": "read",
@@ -7128,7 +9213,7 @@
     },
     {
       "id": "read-unreachable-map__unreachable-casual",
-      "n": 375,
+      "n": 475,
       "family": "read-unreachable-map",
       "variant": "unreachable-casual",
       "area": "read",
@@ -7139,7 +9224,7 @@
     },
     {
       "id": "interior-room-build__house-plain",
-      "n": 376,
+      "n": 476,
       "family": "interior-room-build",
       "variant": "house-plain",
       "area": "interior",
@@ -7153,7 +9238,7 @@
     },
     {
       "id": "interior-room-build__inn-polite",
-      "n": 377,
+      "n": 477,
       "family": "interior-room-build",
       "variant": "inn-polite",
       "area": "interior",
@@ -7167,7 +9252,7 @@
     },
     {
       "id": "interior-room-build__forge-terse",
-      "n": 378,
+      "n": 478,
       "family": "interior-room-build",
       "variant": "forge-terse",
       "area": "interior",
@@ -7181,7 +9266,7 @@
     },
     {
       "id": "interior-room-build__store-explain",
-      "n": 379,
+      "n": 479,
       "family": "interior-room-build",
       "variant": "store-explain",
       "area": "interior",
@@ -7195,7 +9280,7 @@
     },
     {
       "id": "interior-room-build__bakery-casual",
-      "n": 380,
+      "n": 480,
       "family": "interior-room-build",
       "variant": "bakery-casual",
       "area": "interior",
@@ -7209,7 +9294,7 @@
     },
     {
       "id": "interior-room-furnish__house-plain",
-      "n": 381,
+      "n": 481,
       "family": "interior-room-furnish",
       "variant": "house-plain",
       "area": "interior",
@@ -7247,7 +9332,7 @@
     },
     {
       "id": "interior-room-furnish__inn-polite",
-      "n": 382,
+      "n": 482,
       "family": "interior-room-furnish",
       "variant": "inn-polite",
       "area": "interior",
@@ -7272,7 +9357,7 @@
     },
     {
       "id": "interior-room-furnish__forge-terse",
-      "n": 383,
+      "n": 483,
       "family": "interior-room-furnish",
       "variant": "forge-terse",
       "area": "interior",
@@ -7302,7 +9387,7 @@
     },
     {
       "id": "interior-room-furnish__store-explain",
-      "n": 384,
+      "n": 484,
       "family": "interior-room-furnish",
       "variant": "store-explain",
       "area": "interior",
@@ -7327,7 +9412,7 @@
     },
     {
       "id": "interior-room-furnish__bakery-casual",
-      "n": 385,
+      "n": 485,
       "family": "interior-room-furnish",
       "variant": "bakery-casual",
       "area": "interior",
@@ -7352,7 +9437,7 @@
     },
     {
       "id": "interior-room-doorway__west-one",
-      "n": 386,
+      "n": 486,
       "family": "interior-room-doorway",
       "variant": "west-one",
       "area": "interior",
@@ -7375,7 +9460,7 @@
     },
     {
       "id": "interior-room-doorway__east-one-polite",
-      "n": 387,
+      "n": 487,
       "family": "interior-room-doorway",
       "variant": "east-one-polite",
       "area": "interior",
@@ -7390,7 +9475,7 @@
     },
     {
       "id": "interior-room-doorway__west-two-terse",
-      "n": 388,
+      "n": 488,
       "family": "interior-room-doorway",
       "variant": "west-two-terse",
       "area": "interior",
@@ -7405,7 +9490,7 @@
     },
     {
       "id": "interior-room-doorway__east-two-explain",
-      "n": 389,
+      "n": 489,
       "family": "interior-room-doorway",
       "variant": "east-two-explain",
       "area": "interior",
@@ -7420,7 +9505,7 @@
     },
     {
       "id": "interior-room-doorway__west-one-casual",
-      "n": 390,
+      "n": 490,
       "family": "interior-room-doorway",
       "variant": "west-one-casual",
       "area": "interior",
@@ -7435,7 +9520,7 @@
     },
     {
       "id": "interior-room-size-change__wider-plain",
-      "n": 391,
+      "n": 491,
       "family": "interior-room-size-change",
       "variant": "wider-plain",
       "area": "interior",
@@ -7450,7 +9535,7 @@
     },
     {
       "id": "interior-room-size-change__wider-polite",
-      "n": 392,
+      "n": 492,
       "family": "interior-room-size-change",
       "variant": "wider-polite",
       "area": "interior",
@@ -7465,7 +9550,7 @@
     },
     {
       "id": "interior-room-size-change__taller-terse",
-      "n": 393,
+      "n": 493,
       "family": "interior-room-size-change",
       "variant": "taller-terse",
       "area": "interior",
@@ -7480,7 +9565,7 @@
     },
     {
       "id": "interior-room-size-change__wider-explain",
-      "n": 394,
+      "n": 494,
       "family": "interior-room-size-change",
       "variant": "wider-explain",
       "area": "interior",
@@ -7495,7 +9580,7 @@
     },
     {
       "id": "interior-room-size-change__bigger-casual",
-      "n": 395,
+      "n": 495,
       "family": "interior-room-size-change",
       "variant": "bigger-casual",
       "area": "interior",
@@ -7510,7 +9595,7 @@
     },
     {
       "id": "interior-room-light__dim-plain",
-      "n": 396,
+      "n": 496,
       "family": "interior-room-light",
       "variant": "dim-plain",
       "area": "interior",
@@ -7533,7 +9618,7 @@
     },
     {
       "id": "interior-room-light__warm-polite",
-      "n": 397,
+      "n": 497,
       "family": "interior-room-light",
       "variant": "warm-polite",
       "area": "interior",
@@ -7548,7 +9633,7 @@
     },
     {
       "id": "interior-room-light__candle-terse",
-      "n": 398,
+      "n": 498,
       "family": "interior-room-light",
       "variant": "candle-terse",
       "area": "interior",
@@ -7571,7 +9656,7 @@
     },
     {
       "id": "interior-room-light__dark-explain",
-      "n": 399,
+      "n": 499,
       "family": "interior-room-light",
       "variant": "dark-explain",
       "area": "interior",
@@ -7586,7 +9671,7 @@
     },
     {
       "id": "interior-room-light__night-casual",
-      "n": 400,
+      "n": 500,
       "family": "interior-room-light",
       "variant": "night-casual",
       "area": "interior",
