@@ -322,6 +322,8 @@ export interface BeodeulCanopyShape {
   readonly minComponent?: number;
   /** 가로·세로 폭이 이 줄 수 미만인 덩이는 지운다 — 단 사이 2~3줄 띠는 산울타리로 읽힌다(VQA r1·r2). */
   readonly minExtent?: number;
+  /** 오목한 ㄱ자 홈을 한 번 메운다(기본 늘). 작은 덩이(붓)는 끄는 편이 덜 네모나다. */
+  readonly fillCorners?: boolean;
   /** 열기 크기(2 또는 3): 모든 숲 칸은 다 숲인 block×block 덩이에 들어야 한다. 3 이면 좁은 목·한두 칸 혹이 없어 짙은 틈 홈이 덜 생긴다. */
   readonly block?: number;
 }
@@ -348,7 +350,7 @@ export function shapeBeodeulCanopyMask(W: number, H: number, forest: Set<number>
       const k = (f(1, 0) ? 1 : 0) + (f(-1, 0) ? 1 : 0) + (f(0, 1) ? 1 : 0) + (f(0, -1) ? 1 : 0);
       // 오목한 안쪽 모서리(ㄱ자 홈 — 두 직교 이웃과 그 사이 대각이 숲)도 메운다: 칸 계단 홈에서 아래 겹 짙은 수관이 풀밭 쪽으로 드러나 검은 홈이 됐다(VQA r4)
       const corner = (f(0, -1) && f(-1, 0) && f(-1, -1)) || (f(0, -1) && f(1, 0) && f(1, -1)) || (f(0, 1) && f(-1, 0) && f(-1, 1)) || (f(0, 1) && f(1, 0) && f(1, 1));
-      if (k >= 3 || (corner && pass === 0)) { forest.add(c); changed = true; } // 모서리 메우기는 한 번만 — 되풀이하면 오목한 덩이가 직사각형으로 차오른다
+      if (k >= 3 || (corner && pass === 0 && opt.fillCorners !== false)) { forest.add(c); changed = true; } // 모서리 메우기는 한 번만 — 되풀이하면 오목한 덩이가 직사각형으로 차오른다
     }
     for (const c of [...forest]) {
       const x = c % W, y = (c - x) / W;
@@ -368,7 +370,7 @@ export function shapeBeodeulCanopyMask(W: number, H: number, forest: Set<number>
       for (let h = 0; h < comp.length; h++) {
         const c = comp[h]!, x = c % W, y = (c - x) / W;
         if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
-        if (x === 0 || y === 0 || x === W - 1 || y === H - 1) edge = true;
+        if (x === 0 || x === W - 1 || y === H - 1) edge = true; // 북쪽 맵 끝은 숲이 이어지지 않는다(beodeulCanopyMask) — 절반 봐주기 없음
         for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
           const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
           const n = ny * W + nx; if (forest.has(n) && !seen.has(n) && joins(c, n)) { seen.add(n); comp.push(n); }
@@ -465,12 +467,14 @@ export function plantBeodeulCanopyArea(project: Project, map: GameMap, target: T
     if (x < 0 || y < 0 || x >= W || y >= H) continue;
     const c = y * W + x; if (!groundOk(c)) continue;
     const ex = (x - cx) / rx, ey = (y - cy) / ry;
-    if (density === "dense") { if (ex * ex + ey * ey > 1.05 + 0.25 * Math.sin(Math.atan2(ey, ex) * 3 + wob)) continue; }
-    else if (Math.abs(ex) + Math.abs(ey) > 1.6) continue;
+    // 둥근 덩이: 각도 물결(3·5배) + 칸 잡음으로 가장자리를 흔든다 — 작은 area 에서 2×2 열기만 하면 상자가 됐다(VQA r5)
+    const ang = Math.atan2(ey, ex), jitter = ((treeHash(x, y, seed + 41) % 1000) / 1000 - 0.5) * 0.3;
+    const lim = (density === "dense" ? 0.8 : 1.05) + 0.22 * Math.sin(ang * 3 + wob) + 0.12 * Math.sin(ang * 5 + wob * 2) + jitter;
+    if ((density === "dense" ? ex * ex + ey * ey : Math.pow(Math.abs(ex), 3) + Math.pow(Math.abs(ey), 3)) > lim) continue;
     forest.add(c);
   }
   const inArea = (c: number) => { const x = c % W, y = (c - x) / W; return x >= area.x && y >= area.y && x < area.x + area.w && y < area.y + area.h && groundOk(c); };
-  shapeBeodeulCanopyMask(W, H, forest, { canFill: inArea, minComponent: 9, minExtent: 3 });
+  shapeBeodeulCanopyMask(W, H, forest, { canFill: inArea, minComponent: 9, minExtent: 3, fillCorners: false });
   const plan = planBeodeulCanopy(W, H, style, forest, (s) => !forest.has(s) && groundOk(s));
   writeBeodeulCanopy(project, map, target, plan);
   return { forestCells: plan.canopy.size, shadeCells: plan.shade.size };

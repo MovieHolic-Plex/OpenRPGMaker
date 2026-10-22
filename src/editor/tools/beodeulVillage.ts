@@ -1726,7 +1726,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     if (!fits(k, x, y, 0, (v) => v === FREE || v === POND_RING)) return false;
     for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) if (distRoad[idx(x + i, y + j)]! < gap) return false;
     // 나무 한 그루는 한 단 위에만 — 단 동서 끝 너머로 걸치면 두 단이 다른 높이로 그려져 수관이 선을 따라 썰린다(VQA r4)
-    const base = lv[idx(x, y + k.h - 1)]; for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) if (lv[idx(x + i, y + j)] !== base) return false;
+    const base = lv[idx(x, y + k.h - 1)]; for (let j = 0; j < k.h; j += 1) for (let i = -1; i <= k.w; i += 1) if (inMap(x + i, y + j) && lv[idx(x + i, y + j)] !== base) return false; // 옆 한 칸도 같은 단 — 단 끝 선에 수관이 붙으면 선이 수관 가장자리를 긋는다
     return true;
   };
   // 숲 둘레 나무(침엽·혼효 마을): 수관 오토타일은 활엽·전나무가 섞인 한 장이라 침엽 마을 숲도 활엽으로 읽혔다(VQA r1) —
