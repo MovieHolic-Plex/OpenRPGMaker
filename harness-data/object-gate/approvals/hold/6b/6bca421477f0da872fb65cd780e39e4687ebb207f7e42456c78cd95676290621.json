@@ -1,0 +1,17 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "6bca421477f0da872fb65cd780e39e4687ebb207f7e42456c78cd95676290621",
+ "profileHash": "4d8774b517f41638",
+ "kind": "other",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-22T00:26:55.685Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (3/4)"
+ ],
+ "note": "묶음 허용: fallen rooms r37: dais riser + steps, ash-bed great stone brazier — fallen-rooms-r37 (dais riser stone/L/R, dais steps stone, great stone brazier ash bed) — delegated by user to supervisor 2026-10-21; Opus VQA receipt ",
+ "sig": "4c73c8db39d822060788b9565b1a3b9ba131f73b3a867ad0e046fe297553d822"
+}

@@ -1,0 +1,383 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6bca421477f0da872fb65cd780e39e4687ebb207f7e42456c78cd95676290621",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "큰 돌 화로(꺼짐, 2칸, 버들항 돌) (great stone brazier)",
+ "label": "atlas_biome_interior/plus/great stone brazier",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (3/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 17,
+  "darkV5": 26,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bowl mouth with glowing/ember contents and stone rim",
+      "rows": "2-11",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "ember/coal heap inside the open bowl",
+      "rows": "4-11",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plinth top band",
+      "rows": "23-25",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26"
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile widens from 11 px (row 2) to 29 px (rows 7-11), a wide elliptical bowl mouth, then narrows through rows 12-22 (27 to 14 px) for the bowl body and stem. The mouth is an ellipse (b) of about 10 rows, from the back rim at row 2 to the light front rim at rows 11-12. Embers and coals are visible inside the open bowl (d). Below it are the bowl belly (rows 12-19), the narrow pedestal stem (rows 20-22) and a wide plinth (rows 23-30), whose top band ends in a light edge line at row 25 with darker rows below. The front face is a tall south face of about 19 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "Density is fine: 16 visible tones per tile against 9-20 for the references with tone data, and 0% near-flat coverage. The bowl and pedestal carry about 4 grey steps (highlight rim, light, mid, dark), with some facet shading and dark charcoal/ember sticks inside, so it is not a flat fill. The weak point is the outline. 100% of the dark edge pixels are near-neutral, and by eye the bowl, rim and pedestal are enclosed in a uniform dark neutral line. That is the sticker look, not a darker tone of the adjacent stone. The Beodeul pieces with stone or organic material (hedge 0%, cheese stall 1%, well 33%) use tinted outlines and separate forms by value. The stone also lacks per-stone shading and grain, with fewer steps than the roofed well's stonework. Because the outline reads as near-black and the shading is slightly shallower than the references, I fail it on the 'when in doubt' rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 18631
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bowl mouth with cold embers and charcoal inside",
+      "rows": "2-11",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "contents (charred wood and embers) visible inside the open bowl",
+      "rows": "3-10",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth",
+      "rows": "23-25",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26"
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile widens from 11 at row 2 to 29 at rows 7-11, then narrows through rows 12-19 to the stem. This is an ellipse bowl mouth, about 9-10 rows tall including the back rim. Brown embers and charcoal are visible inside it, which counts as contents. A light front-rim line at row 11 closes the ellipse, and the bowl's front face runs below it. Under the bowl are a narrow stem (rows 20-22, width 14) and a wide base (rows 23-30, width 22-24) with a light edge line at rows 24-25. Together the front face spans about rows 12-30. The mouth reads as a real top surface, not just a rim, so the object reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 16 visible tones per tile, 0% near-flat coverage, and no large flat fills. That matches the stall (17) and nearly matches the well (20), so density is not the main problem. However, the whole piece uses only 17 distinct colours, against 38-40 for the rich references (stall, well). The stone body reads as about 4 gray steps (rim highlight, light, mid, dark) with little stone-by-stone shading or speckle, while Beodeul stonework, as on the well, has about 5-6 steps with individually shaded stones. 100% of the dark edge pixels are neutral, and the bowl and logs look wrapped in a uniform dark gray-black line. This is the 'sticker' outline, not a darkened tint of the adjacent material like the well's brown-tinted edges (33% neutral) or the hedge's green ones (0%). The coal and log crosshatch adds some texture, but it is thinner than the references. The piece is clean and readable but shallower than the Beodeul bar, and with doubt about the outline and shading the verdict is fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 20282
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bowl mouth with embers/coals inside",
+      "rows": "2-11",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "embers and coals in the bowl",
+      "rows": "4-11",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl body (front face)",
+      "rows": "12-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal stem",
+      "rows": "20-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "plinth base",
+      "rows": "23-30",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26-26"
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile widens from 11 at row 2 to 29 at rows 7-11. A lighter front rim at row 11 closes the ellipse, and coals are visible inside the mouth. Below it the bowl narrows over rows 12-19 to a 14-wide stem at rows 20-22. A wider plinth follows at rows 23-30, with a light edge line at row 25 and a darker band below it. The main body has a top surface and a front face of about 19 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a gray stone bowl on a pedestal with a rim highlight, light, mid and dark stone faces, and a dark interior holding charcoal and sticks. I count about 5 lightness steps on the stone, a bit under Beodeul's 5-6. Measured facts: 16 visible tones per tile, which sits between the hedge (9) and the well (20) and level with the cheese stall (17). Near-flat coverage is 0%, so there are no flat fills, and the stone shows per-block shading and dark gaps between blocks. The dark edge pixels are 100% near-neutral, but the material is itself neutral gray, so the outline reads as a darker stone tone rather than a uniform black sticker line. It is selective, with value-only separation on the lit rim. The lamp-crook reference has the same neutral share. I call the outline mixed rather than near_black for that reason. Overall the piece is on par with the references for density and shading craft, with only slightly shallower ramps and less speckle than the well.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17790
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bowl mouth with embers/charcoal inside",
+      "rows": "2-11",
+      "evidence": "b",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "bowl contents (charcoal and embers)",
+      "rows": "4-11",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth top",
+      "rows": "23-25",
+      "evidence": "a",
+      "front_edge_line_row": 25,
+      "eave_shadow_rows": "26"
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile of the bowl mouth widens from 11 at row 2 to 29 at rows 7-11, which is an elliptical opening. Brown charcoal and ember contents are visible inside it (rows 4-11), so the top is shown. The bowl body (rows 12-19) tapers to the stem (rows 20-22), and the base plinth (rows 23-30) has a light edge line at row 25. That gives a front face of about 19 rows below the top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a grey stone bowl on a pedestal, with dark logs and ember flecks inside. It has 16 visible tones per tile and 0% near-flat coverage, which matches the well (20) and the cheese stall (17), so there are no big flat fills. Its dark edge pixels are 100% near-neutral, so the outline is a uniform neutral dark line around the bowl, base and logs. That is the 'sticker' look, not the tinted dark material tones the references use (the hedge is at 0%, the stall at 1%). The stone ramp has only about 4 steps (highlight, light, mid, dark) against the 5-6 steps on Beodeul's well and stall. The stones are not shaded block by block and have little grain. The whole piece uses only 17 distinct colours, against 38-40 for the well and the stall. It is competent but shallower than the references, and its outline is the main problem.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 15850
+  }
+ ],
+ "decidedAt": "2026-10-22T00:26:31.276Z",
+ "cells": {
+  "16": [
+   "78b59699944ddb5c",
+   "90a259af5f3345cf",
+   "95564e0a5344d6e2",
+   "bb3f28b4ebf44a38"
+  ],
+  "24": [
+   "1104e6d9b6aeae80",
+   "13d6e6fae5aaf9b5",
+   "1b2c9f96c9b45cd7",
+   "1e6d9ded155b8a2c",
+   "2bbe9dc4cb75179d",
+   "3d882e51668f01be",
+   "49f8acd55d889846",
+   "51ccdfc963d214a8",
+   "55d219356bb56bf7",
+   "5bcc1257177d1a99",
+   "5cf0eb53562cfe84",
+   "67a5e7d96afca0a4",
+   "726faec8433a5b53",
+   "a2026d9ce6db8e11",
+   "a57e9b82ecde6850",
+   "aa3a56a95640560c",
+   "abf54915c8e1bd50",
+   "b020ded0e47f90fb",
+   "b7e0a668b199c3e6",
+   "c01043aab296e875",
+   "cf646df87003b103",
+   "d074019f79970829",
+   "e38a310a411ed269",
+   "f6b1b62b431de0d5"
+  ],
+  "32": [
+   "f2455ba21fb1d4d1"
+  ],
+  "48": [
+   "229fd07b06f5e643",
+   "e29698f85144873f",
+   "e5f62e302a1cf532",
+   "e9835c7d4ee802ba",
+   "e998b79670781c16",
+   "f93fe69f49e81264"
+  ]
+ }
+}

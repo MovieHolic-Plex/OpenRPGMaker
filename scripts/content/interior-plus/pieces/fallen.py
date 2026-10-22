@@ -438,14 +438,19 @@ def _great_stone_brazier(c, oy, lit):
             c.p(x, y, K('orange', 2) if h < .15 else K('yellow', 5) if h > .85 else K('orange', 5) if h > .55 else K('orange', 4) if h > .3 else K('orange', 3))
         return
     # 식은 숯 = 차가운 잿빛 검정(장작 그늘의 갈색과 다르게) · 덩이 몇 개 · 재 점 넷(테에서 떨어진 숯 위)
-    CH0, CH1, ASH0, ASH1 = (29, 34, 40), (55, 53, 56), (142, 131, 120), (185, 171, 157)
+    # VQA r16·r20·r21: 검은 속 = 「빈 검은 항아리」로 읽혔다 → 잿빛 재 바닥(따뜻한 회색) 위에 검은 숯 덩이, 밝은 재 점.
+    ASHBED, CH0, CH1, ASH0, ASH1 = (100, 92, 84), (30, 30, 36), (65, 65, 76), (142, 131, 120), (185, 171, 157)
     for (x, y) in inner:
-        if y != top: c.p(x, y, CH0)
+        if y != top: c.p(x, y, ASHBED)
     for (x, y) in ((5, oy + 9), (6, oy + 9), (6, oy + 10), (9, oy + 11), (10, oy + 11), (21, oy + 11), (22, oy + 10), (23, oy + 10),
-                   (25, oy + 8), (25, oy + 9), (14, oy + 6), (15, oy + 6)):
+                   (25, oy + 8), (25, oy + 9), (14, oy + 6), (15, oy + 6), (4, oy + 8), (27, oy + 9), (16, oy + 11), (17, oy + 11)):
+        c.p(x, y, CH0)
+    for (x, y) in ((5, oy + 8), (22, oy + 11), (26, oy + 8), (15, oy + 11), (8, oy + 6), (23, oy + 6)):
         c.p(x, y, CH1)
-    for (x, y, col) in ((7, oy + 10, ASH0), (12, oy + 11, ASH1), (20, oy + 11, ASH0), (24, oy + 9, ASH1)):
+    for (x, y, col) in ((7, oy + 10, ASH0), (12, oy + 11, ASH1), (20, oy + 11, ASH0), (24, oy + 9, ASH1), (10, oy + 6, ASH0), (19, oy + 6, ASH0)):
         c.p(x, y, col)
+    for (x, y) in ((5, oy + 7), (25, oy + 7), (7, oy + 9), (24, oy + 10), (8, oy + 11), (19, oy + 11), (26, oy + 10)):   # VQA r35: 재를 더 밝게
+        if (x, y) in inner and y != top: c.p(x, y, ASH1)
     # 마른 장작 두 토막: 깨끗한 2px 띠로 비스듬히 엇걸린다(뒤 토막 왼쪽 위→오른쪽 아래, 앞 토막 오른쪽 위→왼쪽 아래).
     # 윗줄 = 밝은 껍질, 아랫줄 = 그늘, 위아래 검은 윤곽. 바깥 끝에 2×2 잘린 단면(테와 숯 1px 이상 떨어진다).
     BARK, NOTCH, UNDER, OUT = (154, 84, 53), (116, 78, 44), (99, 49, 11), (26, 14, 6)
@@ -499,6 +504,77 @@ def great_stone_brazier_lit(c):
             if on_back_rim and y < 24:
                 h = hnoise(x, y, 67)
                 c.p(x, y, K('orange', 5) if h > .6 else K('orange', 4) if h > .25 else K('orange', 3))
+
+# 돌 단 앞 턱 — 단 맨 아랫줄에 찍어 단의 앞면(올라선 높이)을 세운다. 위 4줄은 비워 단 윗면 칸이 그대로 보이고,
+# 아래 12줄이 한 단 높이의 마름돌 앞면(윗모서리 빛 · 두 켜 돌 · 이음 · 바닥 그림자)이다. 색은 단(돌) 칸과 같은 다섯 톤.
+_DR_EDGE, _DR_LIP, _DR_TOP, _DR_FACE, _DR_JOINT, _DR_SHADOW = (200, 208, 208), (165, 173, 178), (146, 151, 158), (119, 125, 134), (74, 74, 88), (46, 49, 55)
+
+
+def _dais_riser(c, x0, x1, left, right):
+    for x in range(x0, x1 + 1):
+        c.p(x, 4, _DR_EDGE); c.p(x, 5, _DR_LIP)
+        for y in range(6, 14):
+            col = _DR_FACE
+            if y in (6, 11): col = _DR_TOP                                   # 켜마다 윗모서리 빛
+            if y == 10: col = _DR_JOINT                                      # 가로 줄눈
+            c.p(x, y, col)
+        c.p(x, 14, _DR_JOINT); c.p(x, 15, _DR_SHADOW)
+    for x in range(x0, x1 + 1):                                              # 세로 이음(켜마다 엇갈림)
+        if right and x >= x1 - 2: continue                                   # VQA r36: 끝 윤곽 옆 1px 조각 없게
+        if (x - x0) % 8 == 5:
+            for y in (7, 8, 9): c.p(x, y, _DR_JOINT)
+        if (x - x0) % 8 == 1:
+            for y in (12, 13): c.p(x, y, _DR_JOINT)
+    if left:
+        for y in range(4, 15): c.p(x0, y, _DR_JOINT)
+        for y in range(5, 14): c.p(x0 + 1, y, _DR_LIP)
+    if right:
+        for y in range(4, 15): c.p(x1, y, _DR_JOINT)
+        for y in range(5, 14):
+            if y != 10: c.p(x1 - 1, y, _DR_FACE)                             # 오른쪽 끝 그늘 한 줄(L 의 빛 줄과 짝)
+
+
+@REG.piece('dais riser stone', '돌 단 앞 턱(가운데, 1칸)', 'puzzle', 'flat', 1, 1, 0, 'terrain',
+           '돌 단(dais stone) 맨 아랫줄에 찍는 앞 턱 — 위 4줄은 단 윗면 그대로, 아래는 한 단 높이의 마름돌 앞면(두 켜, 엇갈린 이음)과 바닥 그림자.',
+           ['던전', '유적', '단'],
+           '돌 단의 맨 아랫줄 칸마다. 양 끝은 dais riser stone L/R, 가운데 오르는 곳은 dais steps stone.', ['dais riser stone L', 'dais riser stone R', 'dais steps stone'], use=('walk',))
+def dais_riser_stone(c):
+    _dais_riser(c, 0, 15, False, False)
+
+
+@REG.piece('dais riser stone L', '돌 단 앞 턱(왼쪽 끝, 1칸)', 'puzzle', 'flat', 1, 1, 0, 'terrain',
+           '돌 단 앞 턱의 왼쪽 끝 — 모서리 윤곽과 옆면 빛 한 줄.',
+           ['던전', '유적', '단'], '돌 단 맨 아랫줄 왼쪽 끝 칸.', ['dais riser stone'], use=('walk',))
+def dais_riser_stone_l(c):
+    _dais_riser(c, 0, 15, True, False)
+
+
+@REG.piece('dais riser stone R', '돌 단 앞 턱(오른쪽 끝, 1칸)', 'puzzle', 'flat', 1, 1, 0, 'terrain',
+           '돌 단 앞 턱의 오른쪽 끝 — 모서리 윤곽.',
+           ['던전', '유적', '단'], '돌 단 맨 아랫줄 오른쪽 끝 칸.', ['dais riser stone'], use=('walk',))
+def dais_riser_stone_r(c):
+    _dais_riser(c, 0, 15, False, True)
+
+
+@REG.piece('dais steps stone', '돌 단 오르는 두 계단(2칸)', 'puzzle', 'flat', 2, 1, 0, 'terrain',
+           '돌 단 앞 턱 가운데의 낮은 돌계단 두 단 — 양옆 볼 돌 사이로 디딤판 둘(위 디딤판, 낮은 챌판, 아래 디딤판)이 바닥으로 내려온다.',
+           ['던전', '유적', '단', '계단'], '돌 단 맨 아랫줄, 깔개·통로가 단에 닿는 두 칸.', ['dais riser stone'], use=('walk',))
+def dais_steps_stone(c):
+    # VQA r35·r36: 두 챌판 같은 높이, 밝은 디딤판(가장자리+입술) / 어두운 챌판(윗줄 빛+앞면)이 번갈아 또렷하게, 점 무늬 없이 짧은 이음만.
+    _dais_riser(c, 0, 2, False, False); _dais_riser(c, 24, 31, False, False)   # 양 볼(이음 간격은 앞 턱과 같은 8px)
+    for x in range(3, 29):
+        c.p(x, 4, _DR_EDGE); c.p(x, 5, _DR_LIP)                             # 위 디딤판(단 높이)
+        c.p(x, 6, _DR_JOINT); c.p(x, 7, _DR_TOP); c.p(x, 8, _DR_FACE)        # 디딤판 밑 그늘 + 위 챌판
+        c.p(x, 9, _DR_EDGE); c.p(x, 10, _DR_LIP); c.p(x, 11, _DR_LIP)        # 아래 디딤판
+        c.p(x, 12, _DR_JOINT); c.p(x, 13, _DR_TOP); c.p(x, 14, _DR_FACE)     # 디딤판 밑 그늘 + 아래 챌판
+        c.p(x, 15, _DR_SHADOW)
+    for x in (11, 20):
+        for y in (7, 8): c.p(x, y, _DR_JOINT)
+    for x in (7, 16, 24):
+        for y in (13, 14): c.p(x, y, _DR_JOINT)
+    for x in (2, 3, 28, 29):                                                 # 양 볼 안쪽 = 단에 파인 자리
+        for y in range(4, 15): c.p(x, y, _DR_JOINT)
+
 
 # 둥근 지붕 안쪽 면 — 벽면 마름돌(보랏빛 회색)을 2~3단 어둡게 한 색. 아래 칸(cornice)은 벽면 바로 위 돌 처마 + 위로 갈수록 어두운 벽돌,
 # 위 칸(shell)은 더 어두운 벽돌이라 띠가 위로 갈수록 어두워져 머리 위로 굽어 멀어지는 면으로 읽힌다.

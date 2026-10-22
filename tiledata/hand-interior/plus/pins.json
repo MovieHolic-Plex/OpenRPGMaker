@@ -1115,7 +1115,12 @@
 "obj:great stone brazier lit:0,-1": 7668,
 "obj:great stone brazier lit:1,-1": 7669,
 "obj:great stone brazier lit:0,0": 7670,
-"obj:great stone brazier lit:1,0": 7671
+"obj:great stone brazier lit:1,0": 7671,
+"obj:dais riser stone:0,0": 7672,
+"obj:dais riser stone L:0,0": 7673,
+"obj:dais riser stone R:0,0": 7674,
+"obj:dais steps stone:0,0": 7675,
+"obj:dais steps stone:1,0": 7676
 },
 "ids": [
 "plinth",
@@ -1212,6 +1217,10 @@
 "great brazier lit",
 "great stone brazier",
 "great stone brazier lit",
+"dais riser stone",
+"dais riser stone L",
+"dais riser stone R",
+"dais steps stone",
 "dome cornice",
 "dome shell",
 "dome rib",

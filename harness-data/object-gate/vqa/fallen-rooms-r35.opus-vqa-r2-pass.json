@@ -1,0 +1,88 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r35",
+  "commit": "b71786b930",
+  "overall": "PASS",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed for all 5 PNGs via object_gate.pixel_sha256 at review time.",
+    "1_topdown_view": "All five are 3/4: top planes + front faces only, no side/iso faces.",
+    "2_style_fit": "Ramps, outline and shading steps match v5 stone and the harbour brazier 7513/7514 side by side.",
+    "3_readability_1x": "Braziers read as laid with fuel; dais reads raised with front face and steps in both room mocks.",
+    "4_placement": "Brazier grounded with shadow; riser L/centre/R/steps join seamlessly with each other and the dais top.",
+    "5_silhouette_outline": "No stray pixels, stubs or jaggies found."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/great stone brazier",
+      "name": "큰 돌 화로(꺼짐, 2칸, 버들항 돌) (great stone brazier)",
+      "kind": "other",
+      "pixelSha256": "45984a4ba35dcc708dff79e57a3fc89cc8d966748386990ae102e5e295b3c064",
+      "verdict": "PASS",
+      "reasons": [
+        "3/4 correct: elliptical rim top visible as a plane, bowl/column/foot show only front faces with top-light lips; no side faces.",
+        "Style matches the harbour brazier 7513/7514 exactly in ramp (blue-grey slate), dark outline, 4-5 shading steps, cut-end log highlights; no flat fills or noise.",
+        "At 1x in mock-gate the four bowls clearly read as filled with crossed logs on a charcoal/ash bed - 'laid, ready to light', not empty urns. Nit (non-blocking): the ash bed is closer to mid-grey than pale; a few more light-grey pixels in the bowl corners would sell 'ash' better.",
+        "Grounded on the dais with a soft drop shadow under the foot; footprint 2 tiles, no clipping with neighbours in the mock.",
+        "Clean silhouette, no stray pixels; rim ellipse and foot corners stepped cleanly."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/dais riser stone",
+      "name": "돌 단 앞 턱(가운데, 1칸) (dais riser stone)",
+      "kind": "terrain",
+      "pixelSha256": "4b3a2a280c19a69c9377fe7c4652b85f5ae680c8a5cb2a30a8b10dc3b1c758d1",
+      "verdict": "PASS",
+      "reasons": [
+        "Overlay correct for 3/4: transparent top rows leave the dais top plane; light edge line + front face of courses + dark bottom shadow = a raised slab front.",
+        "Grey-stone ramp, staggered joints, 1px dark course lines, light top lip - consistent with v5 stone pieces; no noise.",
+        "In both mocks the dais reads as a raised slab with a front face at 1x.",
+        "Tiles seamlessly with itself and with L/R ends; top edge meets the dais checker without a gap.",
+        "Clean."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/dais riser stone L",
+      "name": "돌 단 앞 턱(왼쪽 끝, 1칸) (dais riser stone L)",
+      "kind": "terrain",
+      "pixelSha256": "9e5e5c5c6c61808a48118047774316a2f4057d18787f2fa1928b849e4bb84caa",
+      "verdict": "PASS",
+      "reasons": [
+        "Same construction as the centre riser with a left end outline; 3/4 correct.",
+        "Style identical to centre piece.",
+        "End cap closes the slab front cleanly at 1x.",
+        "Joins the centre piece seamlessly (courses and lip continue), sits flush with the dais's left edge in both mocks.",
+        "Clean end outline, no stubs."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/dais riser stone R",
+      "name": "돌 단 앞 턱(오른쪽 끝, 1칸) (dais riser stone R)",
+      "kind": "terrain",
+      "pixelSha256": "0c6e7925e72c6bf1cabd908581e5fbfcb22bfdc1cb4db20d5a1749bbdbbb4d3c",
+      "verdict": "PASS",
+      "reasons": [
+        "Mirror construction of L with a right end outline; 3/4 correct.",
+        "Style identical to centre piece.",
+        "End cap reads at 1x.",
+        "Joins seamlessly; flush with the dais's right edge in both mocks.",
+        "Clean."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/dais steps stone",
+      "name": "돌 단 오르는 두 계단(2칸) (dais steps stone)",
+      "kind": "terrain",
+      "pixelSha256": "8828888bd03745eacc41be5efb000efd0bb036cba79e5434a300b978265a2b30",
+      "verdict": "PASS",
+      "reasons": [
+        "Two shallow steps shown as top planes (light treads) + short front faces, cheeks either side - correct 3/4, no side faces.",
+        "Same ramp/outline as the riser; tread highlights and joints consistent.",
+        "At 1x in mock-gate and mock-vault a lighter notch with two treads reads as steps up onto the dais; weakest piece at 1x but legible.",
+        "Cheeks align with the riser courses on both sides; equal-height steps fill the riser height without overhang.",
+        "Clean; cheek lines straight, no stray pixels."
+      ]
+    }
+  ]
+}

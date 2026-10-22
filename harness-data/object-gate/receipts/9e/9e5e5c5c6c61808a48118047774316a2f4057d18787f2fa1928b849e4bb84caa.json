@@ -1,0 +1,286 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9e5e5c5c6c61808a48118047774316a2f4057d18787f2fa1928b849e4bb84caa",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "돌 단 앞 턱(왼쪽 끝, 1칸) (dais riser stone L)",
+ "label": "atlas_biome_interior/plus/dais riser stone L",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 6,
+  "darkV5": 55,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top highlight lip of riser",
+      "rows": "4-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "riser front face with stone courses",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a full 16px-wide block over rows 4-15. Rows 4-6 are a light-to-mid highlight gradient (L 206, 171, 150). It works as a rim or lip on the vertical stone face, with no ellipse, no distinct front-edge line and no eave shadow below it. Rows 7-15 are the face: mortar lines at rows 10 and 14, a shadow base at row 15, and a darker left-edge column. No horizontal top surface of 3 or more rows is drawn, so the piece reads as a flat front elevation of a dais riser."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a single stone riser tile: a light top lip, a mid face split into two brick courses by mortar lines, and a dark base. It shows 6 visible tones per tile against 7 for the paving reference and 3 for the grass, so it is close to the paving. Near-flat coverage is 0%, the same as both references, so there are no large flat fills. Only 13% of its dark edge pixels are neutral, so the outline leans toward the grey-blue stone tone rather than a black sticker line. It is less pebbly than the paving reference, which has cobble speckle on every stone, so texture is only 'some' and density is slightly lower. For a small single-tile riser piece the shading and structure are acceptable beside the reference, so it passes, though not by a wide margin.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14960
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lip / bevel highlight of riser",
+      "rows": "4-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "riser front face with mortar joints",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a full 16x12 block (rows 4-15). Rows 4-6 are a light-to-mid highlight gradient (L 206, 171, 150) that works as a bevel or lip. It has no distinct front-edge line and no darker eave shadow beneath it. Rows 7-15 are a vertical stone face with dark mortar joints at rows 10 and 14 and short vertical joints. The left-end strip is a bevel, not a receding side face. This is a dais riser, the vertical face below a dais top that is drawn on a separate tile. It therefore reads as a front elevation with only a 2-3 row rim and no horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small stone riser with brick-like courses, a light top edge, mid-grey faces and dark seams. It reads as about 5 lightness steps, close to the paving reference. Measured facts: 6 visible tones per tile against 7 for paving and 3 for grass, and 0% near-flat coverage, the same as both references. Only 13% of the dark edge pixels are neutral, so the outline leans toward the material tone rather than a black sticker line. It lacks the cobble stipple of the paving reference, and some brick faces look smooth, so density is slightly lower and texture only 'some'. It is not flat-filled and not shallow, so it is acceptable next to the reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19473
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top bevel highlight of riser",
+      "rows": "4-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone riser front face with joints",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tile is 16 px wide and opaque on rows 4-15. Rows 4-6 are a light-to-mid gradient (L 206, 171, 150), which is a bevel or lip highlight. It has no front-edge line and no eave shadow, so it is a rim of about 2 rows, not a top surface. Rows 7-15 are a vertical stone face (L about 124) with dark joint lines at rows 10 and 14 and a darker base at row 15. The left column is a lit end-cap edge, not a receding side face. This is a flat front wall face of a dais riser with no horizontal top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, clean two-row stone block with a light top edge, a darker underside and a mortar line. The measured facts are acceptable: 6 visible tones per tile against 7 for the paving reference, 0% near-flat coverage, and only 13% neutral dark edge pixels, so the outline is tinted rather than a black sticker line. By eye it is still lighter than the reference. The whole piece uses only 6 colours in total, and each stone face is nearly uniform, with no per-stone speckle or pebble grain. The paving reference shows cobbles shaded one by one with grainy texture. The candidate's ramp is about 4 steps against 5-6 for Beodeul. It also reads as a crisp icon, closer to the sticker look than the reference, and its outline is not clearly the dark tone of the adjacent stone. With no clear case that it equals the reference, it fails on the when-in-doubt rule.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18489
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lit top edge band of the riser",
+      "rows": "4-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "riser front face with mortar joints",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The opaque silhouette is a full 16-wide rectangle on rows 4-15. Rows 4-6 form a light-to-mid gradient (L 206, 171, 150) that reads as a bevel or lip on the highlighted top edge. There is no separate front-edge line and no eave shadow below it, and no horizontal surface of any depth. Rows 7-15 are a vertical stone face with mortar lines at rows 10 and 14 and a dark base at row 15. The tile is a riser face only; the dais top would be drawn on a neighbouring tile. The left-end column is only a lighter edge, not an isometric receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a single-tile stone riser, shown at about 14x9 source pixels. It has a light top edge, mid-grey block faces, darker mortar lines and a dark base, which gives about 5 readable steps. The measured facts back this up: 6 visible tones per tile against 7 for the paving reference and 3 for the grass, and 0% near-flat coverage like both references. Only 13% of its dark edge pixels are neutral, so the outline leans toward a tinted stone tone and is not a uniform black sticker line. The paving reference has denser cobble speckle, so the candidate is a little simpler. Even so, a careful artist would accept it beside the reference without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17086
+  }
+ ],
+ "decidedAt": "2026-10-22T00:21:20.362Z",
+ "cells": {
+  "16": [
+   "4d99e52105d2cbd8"
+  ],
+  "24": [
+   "30ce72c39e7429d8",
+   "51255c453c5c1436",
+   "5a3eb30fd20296cf",
+   "9fc555698b13133b",
+   "a6e03495d1811023",
+   "a966f18ec0020fc0"
+  ],
+  "32": [
+   "1ce10a8b778b276e",
+   "c5f3668b4adf6f28",
+   "d14074156bb3e1b6",
+   "e535ed311dec16b4",
+   "f4ad0043640f62d3",
+   "fae58774f6098963"
+  ],
+  "48": [
+   "43723a9d61caca46",
+   "4555e88334d024e3",
+   "8639a276ef4643ab",
+   "87cd4dc23a5621c6",
+   "a5782f4cd0a4110d",
+   "aea09beb2af9df3f"
+  ]
+ }
+}

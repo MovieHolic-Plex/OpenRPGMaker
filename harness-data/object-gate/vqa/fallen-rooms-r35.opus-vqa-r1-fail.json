@@ -1,0 +1,58 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r35",
+  "commit": "b71786b930",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed from object_gate for all five PNGs in /tmp/fsrooms/gate-r35; hashes recorded per item.",
+    "1_topdown_view": "All five are 3/4 (top faces as planes + front faces), no side/iso faces. Brazier rim ellipse and foot top face read correctly; riser/steps are front faces under the dais top.",
+    "2_style_fit": "Brazier uses the exact harbour stone brazier ramp (7513/7514). Riser pieces use a pale stone ramp matching the dais. Steps use the same ramp but with long flat fills and no joints, standing out from the jointed riser.",
+    "3_readability_1x": "Brazier reads as laid fuel ready to light (crossed logs, cut ends, charcoal). Dais reads as raised with a front face in both rooms. Steps read weakly - lower step squashed (1px face), top tread merges with the lip.",
+    "4_placement": "Brazier grounded by drop shadow; riser L/centre/R tile seamlessly and meet the dais border; steps join the riser on the left but the right stub joint at x30 breaks the 8px joint rhythm.",
+    "5_silhouette_outline": "No stray pixels or stubs on the brazier outline; riser ends closed by dark outline columns. Minor: brazier row 11 ash pixels interrupt the inner front-rim line."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/great stone brazier",
+      "name": "큰 돌 화로(꺼짐, 2칸, 버들항 돌) (great stone brazier)",
+      "kind": "other",
+      "pixelSha256": "45984a4ba35dcc708dff79e57a3fc89cc8d966748386990ae102e5e295b3c064",
+      "verdict": "PASS",
+      "reasons": "3/4 correct: elliptical rim top (rows 2-12) seen from above, front faces of bowl, column (rows 19-22, cylindrical 6-step ramp) and foot (top face rows 24-25, front rows 26-29); no side/iso face. Palette is exactly the harbour stone brazier ramp (tiles 7513/7514): same slate blues, charcoal (26,14,6), bark (99,49,11)/(154,84,53), pale cut ends (208,196,182)/(185,171,157). At 1x and 3x in mock-gate the bowl reads as laid fuel: two crossing logs with light cut ends at x7-8/x21-22 row 5 over dark charcoal - ready to light, not an empty urn. Grounded by the 70-alpha drop shadow rows 30-31. Minor notes, not blocking: the ash (100,92,84) is mid-grey rather than pale, so the ash bed is weaker than the brief; row 11 x11-15/x18-20 ash pixels break the inner front-rim line; bowl has heavy horizontal banding (rows 13/15/18 dark bands) that reads as carved rings."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dais riser stone",
+      "name": "돌 단 앞 턱(가운데, 1칸) (dais riser stone)",
+      "kind": "terrain",
+      "pixelSha256": "4b3a2a280c19a69c9377fe7c4652b85f5ae680c8a5cb2a30a8b10dc3b1c758d1",
+      "verdict": "PASS",
+      "reasons": "Rows 0-3 transparent so the dais top shows; row 4 light edge (200,208,208), row 5 lip, two stone courses (rows 6-9, 11-13) with joints at x5/x13 and x1/x9 staggered by 4 and tiling on an 8px rhythm across the 16px seam, dark line row 14, shadow row 15. In both mocks the pale dais clearly reads as a raised slab with a front face. Courses are flat-filled except for joints, acceptable for the smooth pale dais stone it extends."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dais riser stone L",
+      "name": "돌 단 앞 턱(왼쪽 끝, 1칸) (dais riser stone L)",
+      "kind": "terrain",
+      "pixelSha256": "9e5e5c5c6c61808a48118047774316a2f4057d18787f2fa1928b849e4bb84caa",
+      "verdict": "PASS",
+      "reasons": "Same rows as the centre piece with a dark outline column x0 and a lit edge column x1 (rows 5-13); course joints x5/x13 and x9 keep the centre rhythm so L|centre joins seamlessly. Left end meets the dais border cleanly in mock-gate and mock-vault."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dais riser stone R",
+      "name": "돌 단 앞 턱(오른쪽 끝, 1칸) (dais riser stone R)",
+      "kind": "terrain",
+      "pixelSha256": "0c6e7925e72c6bf1cabd908581e5fbfcb22bfdc1cb4db20d5a1749bbdbbb4d3c",
+      "verdict": "PASS",
+      "reasons": "Mirror of L without a highlight on the shaded side (dark outline x15 rows 4-14), consistent with left lighting; joints continue the centre rhythm; right end closes cleanly against the dais border in both mocks."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dais steps stone",
+      "name": "돌 단 오르는 두 계단(2칸) (dais steps stone)",
+      "kind": "terrain",
+      "pixelSha256": "dd144e52cc858ead38fd905146807af97bad6f3e2929b2bd6d00878372a6e2cc",
+      "verdict": "FAIL",
+      "reasons": "Reads only weakly as two steps and stands out against the jointed riser. (a) Unequal step faces: upper face rows 7-9 (dark line + 2px of (119,125,134)) but lower face is just the dark line row 13 + 1px row 14, so the bottom step looks squashed into a slat. (b) Treads x4-27 rows 5-6 and 11-12 and faces rows 8-9 and 14 are 24px-wide perfectly flat fills; next to the riser's staggered stone courses they look like smooth metal bars or a bench, not cut stone. (c) The top tread rows 4-6 is almost indistinguishable from the neighbouring riser lip (rows 4-6), so at 1x only one step reads. (d) Right outer stub x30-31 rows 12-13 puts a course joint at x30, off the riser's 8px joint rhythm (next tile joint at x33, 3px away). FIXES: re-profile rows 4-14 as tread1 rows 4-5 (edge+1), face1 rows 6-8 (dark nosing row 6 + 2px), tread2 rows 9-11 (light edge row 9 + 2px), face2 rows 12-14 (dark nosing row 12 + 2px), so both faces are 2px; add stone joints to each step face (e.g. face1 at x11/x20, face2 at x7/x16/x24, staggered) and a few (146,151,158)/(200,208,208) chips or a mid-tone wear strip on the tread centres so treads are stone, not flat bands; darken the cheek returns at x3/x28 one step on tread1 rows 4-5 so the cut reads recessed below the dais lip; move/remove the x30 joint in rows 12-13 so the right stub matches the riser rhythm (no joint, or put it where a riser tile would have it)."
+    }
+  ]
+}
