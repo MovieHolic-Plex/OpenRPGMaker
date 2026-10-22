@@ -143,7 +143,7 @@ interface Chamber { cx: number; cy: number; rx: number; ry: number; kind: Dungeo
 export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayout & { grid: Grid } {
   let best: { layout: DungeonLayout & { grid: Grid }; score: number } | null = null;
   let lastError: unknown = null;
-  for (let salt = 0; salt < 16; salt += 1) {
+  for (let salt = 0; salt < 32; salt += 1) {
     let layout: DungeonLayout & { grid: Grid };
     try { layout = layoutBlobOnce(spec, profile, salt); } catch (error) { lastError = error; continue; }
     const score = blobVoidScore(layout.grid);
@@ -187,7 +187,7 @@ function blobVoidScore(g: Grid): number {
     for (let y = sy; y < sy + SH; y += 1) for (let x = sx; x < sx + SW; x += 1) if (!used[y * W + x]) v += 1;
     worst = Math.max(worst, v / (SW * SH));
   }
-  return voids / (W * H) + 0.5 * worst;
+  return voids / (W * H) + worst;
 }
 
 function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): DungeonLayout & { grid: Grid } {
@@ -393,7 +393,7 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
               if (!g.inb(x + dx, y + dy)) continue;
               const n = g.idx(x + dx, y + dy);
               if (!okCell(n)) continue;
-              const nd = d + 1 + Math.floor(vnoise(x + dx, y + dy, 4, seed + 77) * 4);
+              const nd = d + 1 + Math.floor(vnoise(x + dx, y + dy, 2.5, seed + 77) * 9);
               if (nd >= dist[n]!) continue;
               dist[n] = nd; prev[n] = c; (buckets[nd] ??= []).push(n);
             }

@@ -365,7 +365,7 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
 
   const ctx: DressCtx = {
     W, H, rooms, corridors, seed, grid: !!layout.grid, hasKit, kit, put, putAny, weighted, shuffle, wallSlots, floorCells, edgeCells, hangAlong, cluster,
-    isFloor, isWalk, isWall, idx, inb, wallB, roomAt, liquid, bridge, upper, lower, blocked, doorstep, counts, litter, lair: !!spec.lair,
+    isFloor, isWalk, isWall, idx, inb, wallB, roomAt, liquid, bridge, upper, lower, blocked, doorstep, counts, litter, lair: !!spec.lair, seats: {},
   };
   let stairsUp: DungeonCompose["stairsUp"] = null;
   let stairsDown: DungeonCompose["stairsDown"] = null;
@@ -680,7 +680,9 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   // 이벤트·적을 둘 만한 빈 바닥 칸(방마다) — 위층 그림이 없고 네 이웃도 걸을 수 있고 입구에서 닿는 칸, 방 가운데에서 가까운 순.
   const spots: Record<string, { x: number; y: number }[]> = {};
   for (const r of rooms) {
-    const ccx = r.x + (r.w - 1) / 2, ccy = r.y + (r.h - 1) / 2;
+    // 보스가 설 자리(우두머리 자리·뼈 제단 앞)가 있으면 그 칸에서 가까운 순 — 보스가 자리에서 떨어져 졸개처럼 서 있었다(2026-10-23 dg2-r1 VQA).
+    const seat = ctx.seats[r.id];
+    const ccx = seat ? seat.x : r.x + (r.w - 1) / 2, ccy = seat ? seat.y : r.y + (r.h - 1) / 2;
     const cells: { x: number; y: number; d: number }[] = [];
     for (const [x, y] of floorCells(r, 1)) {
       if (upper[idx(x, y)]! >= 0 || blocked[idx(x, y)] || !seen[idx(x, y)] || doorstep[idx(x, y)] || reservedFront.has(idx(x, y))) continue;

@@ -6,7 +6,7 @@
 //   worstScreenVoidPct: 플레이어 카메라(걸을 수 있는 칸 중심, 맵 경계로 당긴 20×15) 창의 깊은 허공 비율 최댓값
 import type { GameMap, Project } from "../../../src/project/types.ts";
 
-export interface SpaceMeasure { w: number; h: number; voidPct: number; bareFloorPct: number; maxBareRect: { w: number; h: number; x: number; y: number; area: number }; worstScreenVoidPct: number; meanScreenVoidPct: number }
+export interface SpaceMeasure { w: number; h: number; voidPct: number; bareFloorPct: number; maxBareRect: { w: number; h: number; x: number; y: number; area: number }; worstScreenVoidPct: number; worstScreenAt: { x: number; y: number }; meanScreenVoidPct: number }
 
 export function measureSpace(project: Project, map: GameMap): SpaceMeasure {
   const ts = project.tilesets[map.tilesetId]!;
@@ -56,6 +56,7 @@ export function measureSpace(project: Project, map: GameMap): SpaceMeasure {
   // 화면 창은 플레이어가 실제로 보는 창이다: 걸을 수 있는 칸을 가운데 두고 맵 경계에 맞춰 당긴 20×15 카메라.
   const SW = Math.min(20, W), SH = Math.min(15, H);
   let worst = 0, sum = 0, n = 0;
+  let worstAt = { x: 0, y: 0 };
   const seen = new Set<number>();
   for (let cy = 0; cy < H; cy += 1) for (let cx = 0; cx < W; cx += 1) {
     if (!walk[cy * W + cx]) continue;
@@ -65,8 +66,8 @@ export function measureSpace(project: Project, map: GameMap): SpaceMeasure {
     seen.add(key);
     let v = 0;
     for (let y = y0; y < y0 + SH; y += 1) for (let x = x0; x < x0 + SW; x += 1) if (isVoid[y * W + x]) v += 1;
-    const p = v / (SW * SH); worst = Math.max(worst, p); sum += p; n += 1;
+    const p = v / (SW * SH); if (p > worst) worstAt = { x: x0, y: y0 }; worst = Math.max(worst, p); sum += p; n += 1;
   }
   const r = (v: number) => Math.round(v * 1000) / 10;
-  return { w: W, h: H, voidPct: r(voids / N), bareFloorPct: r(bare / N), maxBareRect: best, worstScreenVoidPct: r(worst), meanScreenVoidPct: r(n ? sum / n : 0) };
+  return { w: W, h: H, voidPct: r(voids / N), bareFloorPct: r(bare / N), maxBareRect: best, worstScreenVoidPct: r(worst), worstScreenAt: worstAt, meanScreenVoidPct: r(n ? sum / n : 0) };
 }
