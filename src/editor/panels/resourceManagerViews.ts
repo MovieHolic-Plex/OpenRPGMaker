@@ -2,6 +2,8 @@ import { FACE_EXPRESSION_SETS, isFaceExpressionResource } from "@/assets/faceExp
 import { renderExpressionSection } from "./resourceExpressionSection";
 import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
+import { findBundledImageAsset } from "@/assets/bundled";
+import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { HARNESS_MONSTER_RESOURCE_IDS } from "@/assets/harnessMonsterArt";
 import { listMonsterResources, type MonsterResource } from "@/assets/monsterResourceCatalog";
 import { EASYRPG_MONSTER_ASSETS } from "@/assets/easyrpgRtp";
@@ -117,6 +119,13 @@ function monsterCatalog(project: Project) {
   // Remember the new equal dependency without rebuilding full catalog semantics.
   catalogCache.metadata = project.monsterMetadata;
   return catalogCache;
+}
+/** 번들 칩셋 텍스처(tex_beodeul_city 등)는 해석기 사슬에 없어 URL 이 null 이다 — 프로필 미리보기는 번들 시트 경로로 그린다. */
+function profilePreviewUrl(profile: ResourceProfile, project: Project): string | null {
+  const resolved = resolveAssetResourceUrl(profile.assetId, { project });
+  if (resolved !== null || profile.kind !== "chipset" || !profile.assetId) return resolved;
+  const bundled = findBundledImageAsset(profile.assetId);
+  return bundled ? withInlineAsset(bundled.path) : null;
 }
 const workbenches = new WeakMap<HTMLElement, ResourceWorkbenchOptions>();
 const galleryCleanups = new WeakMap<HTMLElement, () => void>();
@@ -629,7 +638,7 @@ function missingProfilePreviewText(assetId: string | undefined, fallback: string
 function renderProfileCard(profile: ResourceProfile, isSelected: boolean, onSelect: () => void): HTMLElement {
   const project = store.getCurrent();
   const spec = getResourceProfileSpec(profile.kind);
-  const previewUrl = resolveAssetResourceUrl(profile.assetId, { project });
+  const previewUrl = profilePreviewUrl(profile, project);
   const isAudio = profile.kind === "music" || profile.kind === "sound";
   const dims = profile.imageWidth && profile.imageHeight ? `${profile.imageWidth}×${profile.imageHeight}` : "";
 
@@ -743,6 +752,11 @@ function resourceCommandPanel(
     }) as HTMLButtonElement;
     importButton.disabled = true;
     input.addEventListener("input", () => { importButton.disabled = input.value.trim().length === 0; });
+    input.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" || event.isComposing) return;
+      event.preventDefault();
+      if (!importButton.disabled) importButton.click();
+    });
 
     // 모달 스택에 올린 뒤에는 스택이 돌려준 close 로 닫는다 — 그래야 Escape 가 이 창만 닫고 부모 관리자는 남는다.
     let closeUrlModal = (): void => backdrop.remove();
@@ -960,7 +974,7 @@ function renderInspector(
       dimensions = `${item.asset.meta.width} × ${item.asset.meta.height} px`;
     }
   } else {
-    previewUrl = resolveAssetResourceUrl(item.profile.assetId, { project }) ?? "";
+    previewUrl = profilePreviewUrl(item.profile, project) ?? "";
     if (item.profile.imageWidth && item.profile.imageHeight) {
       dimensions = `${item.profile.imageWidth} × ${item.profile.imageHeight} px`;
     }
