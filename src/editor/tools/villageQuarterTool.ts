@@ -15,6 +15,10 @@ interface QuarterDef {
   readonly ko: string;
   /** 앞의 조각부터 놓는다(첫 조각이 덩이의 중심). */
   readonly pieces: readonly string[];
+  /** 맵마다 몇 개를 골라 더하는 조각(r6: 두 맵이 같은 조각 묶음이었다) */
+  readonly extras?: readonly string[];
+  /** 얼굴 조각(첫 조각) 대신 맵마다 고르는 다른 얼굴 */
+  readonly faces?: readonly string[];
   /**
    * 마당을 새로 낸다 — 빽빽한 완성 마을(조선 마을 20호)에는 좌판 덩이가 들어갈 빈 땅이 없다(r2 시험: 좌판 7개가 큰길·관아 옆에 흩어졌다).
    * 큰길에 맞닿은 w×h 풀밭(나무·덤불만 있는 곳)을 골라 나무를 통째로 걷고 마당 흙을 깐 뒤 좌판을 두 줄로 세운다. 집·담·소품·길·물은 건드리지 않는다.
@@ -41,9 +45,9 @@ export function beodeulYardReserve(quarter: string): { w: number; h: number } | 
 
 export const VILLAGE_QUARTERS: Record<string, QuarterDef> = {
   "joseon-market": { tilesetId: "joseon_baram", ko: "조선 장터 좌판", plaza: { w: 13, h: 9, ground: [4, 5], grass: [0, 1, 2, 3], soft: ["tree", "bush", "sapling", "tuft"], roads: ["road16", "yard16", "yard"] }, pieces: ["jb-market_stall", "jb-market_stall_cloth", "jb-market_stall_pots", "jb-market_stall", "jb-market_stall_cloth", "jb-market_stall_pots", "jb-market_stall", "jb-market_stall_pots"] },
-  mining: { tilesetId: "beodeul_city", ko: "광산 갱구 마당", yard: { group: "beodeul_yard_dirt", w: 20, h: 12 }, pieces: ["bd-pick-mining-valley-adit", "bd-pick-mining-valley-headframe", "bd-pick-mining-valley-smelt", "bd-pick-mining-valley-slagheap", "bd-pick-mining-valley-cart-h", "bd-pick-mining-valley-ore", "bd-pick-mining-valley-pile", "bd-pick-mining-valley-kiln", "bd-pick-mining-valley-lamp", "bd-pick-mining-valley-crates", "bd-pick-mining-valley-slagrock", "bd-pick-mining-valley-barrel"] },
+  mining: { tilesetId: "beodeul_city", ko: "광산 갱구 마당", yard: { group: "beodeul_yard_dirt", w: 20, h: 12 }, pieces: ["bd-pick-mining-valley-adit", "bd-pick-mining-valley-headframe", "bd-pick-mining-valley-smelt", "bd-pick-mining-valley-slagheap", "bd-pick-mining-valley-cart-h", "bd-pick-mining-valley-ore", "bd-pick-mining-valley-pile", "bd-pick-mining-valley-kiln", "bd-pick-mining-valley-lamp", "bd-pick-mining-valley-crates", "bd-pick-mining-valley-slagrock", "bd-pick-mining-valley-barrel"], extras: ["bd-pick-mining-valley-chimney", "bd-pick-mining-valley-bin", "bd-pick-mining-valley-sluice", "bd-pick-mining-valley-rack", "bd-pick-mining-valley-board", "bd-pick-mining-valley-cart", "bd-pick-mining-valley-bench", "bd-pick-mining-valley-buffer", "bd-pick-mining-valley-s2", "bd-pick-mining-valley-slagheap"] },
   vineyard: { tilesetId: "beodeul_city", ko: "포도원", yard: { group: "beodeul_yard_dirt", w: 26, h: 15, pack: "corner", outside: ["bd-pick-vineyard-olive-a", "bd-pick-vineyard-olive-b", "bd-pick-vineyard-olive-c"] }, pieces: ["bd-pick-vineyard-winery", "bd-pick-vineyard-vine-field", "bd-pick-vineyard-vine-field", "bd-pick-vineyard-vine-field", "bd-pick-vineyard-vine-field", "bd-pick-vineyard-wine-press", "bd-pick-vineyard-pergola", "bd-pick-vineyard-cask-rack", "bd-pick-vineyard-barrels-standing", "bd-pick-vineyard-grape-baskets", "bd-pick-vineyard-olive-a", "bd-pick-vineyard-olive-b", "bd-pick-vineyard-olive-c"] },
-  "temple-ruins": { tilesetId: "beodeul_city", ko: "신전 폐허", yard: { group: "beodeul_yard_flag", w: 16, h: 11, ruin: true }, pieces: ["bd-pick-temple-ruins-roof-naiskos-pediment", "bd-pick-temple-ruins-roof-hip-shrine", "bd-pick-temple-ruins-column-temple-tall", "bd-pick-temple-ruins-column-temple-tall", "bd-pick-temple-ruins-column-temple", "bd-pick-temple-ruins-column-temple-broken", "bd-pick-temple-ruins-fallen-column-temple", "bd-pick-temple-ruins-ruined-wall-2", "bd-pick-temple-ruins-ruined-wall-2", "bd-pick-temple-ruins-cypress-ruin", "bd-pick-temple-ruins-cypress-ruin", "bd-pick-temple-ruins-rubble-temple", "bd-pick-temple-ruins-rubble-temple"] },
+  "temple-ruins": { tilesetId: "beodeul_city", ko: "신전 폐허", yard: { group: "beodeul_yard_flag", w: 16, h: 11, ruin: true }, pieces: ["bd-pick-temple-ruins-roof-naiskos-pediment", "bd-pick-temple-ruins-roof-hip-shrine", "bd-pick-temple-ruins-column-temple-tall", "bd-pick-temple-ruins-column-temple-tall", "bd-pick-temple-ruins-column-temple", "bd-pick-temple-ruins-column-temple-broken", "bd-pick-temple-ruins-fallen-column-temple", "bd-pick-temple-ruins-ruined-wall-2", "bd-pick-temple-ruins-ruined-wall-2", "bd-pick-temple-ruins-cypress-ruin", "bd-pick-temple-ruins-rubble-temple", "bd-pick-temple-ruins-rubble-temple"], faces: ["bd-pick-temple-ruins-roof-baldachin", "bd-pick-temple-ruins-roof-hip-storehouse"], extras: ["bd-pick-temple-ruins-mosaic-medallion-5x5", "bd-pick-temple-ruins-floor-ruin", "bd-pick-temple-ruins-floor-ruin", "bd-pick-temple-ruins-floor-ruin", "bd-pick-temple-ruins-column-temple-broken", "bd-pick-temple-ruins-fallen-column-temple", "bd-pick-temple-ruins-rubble-temple", "bd-pick-temple-ruins-face-temple-2h", "bd-pick-temple-ruins-roof-hip-shrine"] },
   // 북방 바이킹: 눈 마을(compose_snow_north_map village)에 북방 표지(룬석·방패 무기 걸이·오로라 깃발, 자리가 나면 통널 교회)를 광장 둘레에 한 덩이로. 장옥(7×5)은 작곡기가 빈 눈밭을 마당 덩이로 채워 들어갈 자리가 없다 — r2 적대 검수 «바이킹 표지가 없어 그냥 눈 마을» 수정.
   viking: { tilesetId: "snow_north", ko: "바이킹 표지(룬석·방패 걸이·오로라 깃발)", pieces: ["sn-rune-stone", "sn-weapon-rack", "sn-banner-aurora", "sn-rune-stone", "sn-weapon-rack", "sn-banner-aurora-b", "sn-cairn", "sn-rune-stone", "sn-weapon-rack", "sn-stave-church"] },
   "walled-market": { tilesetId: "beodeul_city", ko: "장터 좌판·짐수레", yard: { group: "beodeul_yard_cobble", w: 18, h: 11 }, pieces: ["bd-pick-walled-market-cloth-stall", "bd-pick-walled-market-cloth-stall", "bd-pick-walled-market-wagon", "bd-pick-walled-market-cloth-stall", "bd-pick-walled-market-banner-red", "bd-pick-walled-market-banner-teal", "bd-pick-walled-market-sack-pile", "bd-pick-walled-market-hay-bales", "bd-pick-walled-market-trough", "bd-pick-walled-market-hitching-rail", "bd-pick-walled-market-forge-yard", "bd-pick-walled-market-toll-booth"] },
@@ -390,9 +394,9 @@ function roughenYard(map: GameMap, b: Box, origLower: readonly number[], lane: R
     { len: b.h, at: (t) => [b.x, b.y + t] }, { len: b.h, at: (t) => [b.x + b.w - 1, b.y + t] },
   ];
   for (const sd of sides) {
-    const n = Math.floor(rnd() * 3);
+    const n = mode === "ruin" ? 1 + Math.floor(rnd() * 3) : Math.floor(rnd() * 3);
     for (let k = 0; k < n; k++) {
-      const nw = 2 + Math.floor(rnd() * 2); if (sd.len < nw + 6) continue;
+      const nw = 2 + Math.floor(rnd() * (mode === "ruin" ? 3 : 2)); if (sd.len < nw + 6) continue;
       const t0 = 2 + Math.floor(rnd() * (sd.len - nw - 4));
       revert(Array.from({ length: nw }, (_, j) => sd.at(t0 + j)));
     }
@@ -412,16 +416,18 @@ function overgrowYard(draft: Project, mapId: string, box: Box, placed: readonly 
   if (!pool.length) return;
   let st = ((box.x * 374761393) ^ (box.y * 668265263) ^ W) >>> 0;
   const rnd = () => { st = (Math.imul(st, 1664525) + 1013904223) >>> 0; return st / 4294967296; };
-  const inPiece = (x: number, y: number) => placed.some((p) => x >= p.x - 1 && x < p.x + p.w + 1 && y >= p.y && y < p.y + p.h + 1);
-  for (let k = 6 + Math.floor(rnd() * 4); k > 0; k--) {
-    const cx = box.x + Math.floor(rnd() * box.w), cy = box.y + Math.floor(rnd() * box.h);
-    for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
-      const x = cx + dx, y = cy + dy; if (x < box.x || y < box.y || x >= box.x + box.w || y >= box.y + box.h) continue;
-      const d = Math.hypot(dx, dy);
-      if (d > 2.3 || rnd() > 0.55 - d * 0.13 || inPiece(x, y)) continue;
-      const i = y * W + x; if ((up[i] ?? -1) >= 0 || (map.upperOverlayTiles?.[i] ?? -1) >= 0) continue;
-      up[i] = pool[Math.floor(rnd() * pool.length)]!;
-    }
+  // 조각 칸과 그 앞줄(문·발밑)만 피한다 — 둘레 1칸까지 피했더니 덧그림이 거의 안 남았다.
+  const inPiece = (x: number, y: number) => placed.some((p) => x >= p.x && x < p.x + p.w && y >= p.y && y < p.y + p.h + 1);
+  // 풀은 마당 가장자리(연석 쪽)에 더 많이, 가운데엔 드물게 — 무너진 판석 사이로 풀이 밀고 들어온 모양.
+  const seeds = Array.from({ length: 4 + Math.floor(rnd() * 3) }, () => ({ x: box.x + rnd() * box.w, y: box.y + rnd() * box.h }));
+  for (let y = box.y; y < box.y + box.h; y++) for (let x = box.x; x < box.x + box.w; x++) {
+    if (inPiece(x, y)) continue;
+    const edge = Math.min(x - box.x, box.x + box.w - 1 - x, y - box.y, box.y + box.h - 1 - y);
+    const near = seeds.some((c) => Math.hypot(c.x - x, c.y - y) < 2.2);
+    const p = (edge <= 0 ? 0.45 : edge === 1 ? 0.25 : 0.08) + (near ? 0.35 : 0);
+    if (rnd() > p) continue;
+    const i = y * W + x; if ((up[i] ?? -1) >= 0 || (map.upperOverlayTiles?.[i] ?? -1) >= 0) continue;
+    up[i] = pool[Math.floor(rnd() * pool.length)]!;
   }
 }
 
@@ -516,8 +522,13 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
   const fromRight = plazaBox ? rnd() < 0.5 : false;
   const oneOfDup = rnd() < 0.5;
   const fromBottom = plazaBox ? rnd() < 0.5 : false; // r3: 포도원 두 맵이 같은 귀·같은 배치였다 — 위·아래 채우기도 맵마다
+  // 얼굴 조각은 맵마다 둘 중 하나(faces), 더하는 조각(extras)은 맵마다 2~4개 — r6: 두 맵이 같은 묶음·같은 얼굴로 읽혔다.
+  const face = plazaBox && quarter.faces?.length && rnd() < 0.4 ? quarter.faces[Math.floor(rnd() * quarter.faces.length)]! : quarter.pieces[0]!;
+  const extraPool = plazaBox ? [...(quarter.extras ?? [])] : [];
+  const extras: string[] = []; for (let n = 2 + Math.floor(rnd() * 3); n > 0 && extraPool.length; n--) extras.push(extraPool.splice(Math.floor(rnd() * extraPool.length), 1)[0]!);
+  const basePieces = [face, ...quarter.pieces.slice(1), ...extras];
   const order = plazaBox
-    ? [quarter.pieces[0]!, ...quarter.pieces.slice(1).map((id) => { const z = kitSize(draft, quarter.tilesetId, id); return { id, r: (z ? z.w * z.h : 0) * (0.7 + 0.6 * rnd()) }; }).sort((a, b) => b.r - a.r).map((o) => o.id)]
+    ? [face, ...basePieces.slice(1).map((id) => { const z = kitSize(draft, quarter.tilesetId, id); return { id, r: (z ? z.w * z.h : 0) * (0.4 + 1.2 * rnd()) }; }).sort((a, b) => b.r - a.r).map((o) => o.id)]
     : [...quarter.pieces];
   // 되풀이 조각(포도밭 이랑 둘)은 맵마다 하나 또는 둘 — 같은 덩이가 늘 같은 구성으로 읽히지 않게(빈자리는 압착기·통 선반이 쓴다).
   if (plazaBox && quarter.yard?.pack === "corner" && oneOfDup) { const dup = order.findIndex((id, i) => order.indexOf(id) !== i); if (dup > 0) order.splice(dup, 1); }
@@ -527,7 +538,7 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
     // r5: 두 맵이 같은 조각 묶음이었다 — 얼굴(첫 조각) 말고 1~3개를 맵마다 다르게 더 뺀다.
     for (let n = 1 + Math.floor(rnd() * 3); n > 0 && order.length > 6; n--) order.splice(1 + Math.floor(rnd() * (order.length - 1)), 1);
   }
-  const pieces = order.slice(0, Math.max(2, Math.min(quarter.pieces.length, opts.count ?? quarter.pieces.length)))
+  const pieces = order.slice(0, Math.max(2, Math.min(order.length, opts.count ?? order.length)))
     .map((id: string) => ({ id, size: kitSize(draft, quarter.tilesetId, id) }))
     .filter((p): p is { id: string; size: { w: number; h: number } } => !!p.size);
   if (!pieces.length) throw new ToolError(`${quarter.tilesetId} 에 「${quarter.ko}」 조각이 없다.`, { code: "kit-missing", mapId: map.id });
@@ -564,6 +575,30 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
   const taken = new Uint8Array(W * H);
   const placed: { objectId: string; x: number; y: number; w: number; h: number }[] = [];
   let rejected = 0;
+  // 광산: 갱구가 평지에 홀로 선 «지하실 문»으로 읽혔다(r5·r6) — 갱구 양옆·뒤에 광재 더미·광석·광재 돌을 붙여 파낸 흙더미(버력) 언덕으로 감싼다.
+  const wrapAdit = (adit: Box): void => {
+    const heap = (id: string, x: number, y: number): boolean => {
+      const z = kitSize(draft, quarter.tilesetId, id); if (!z) return false;
+      const bx = { x, y, w: z.w, h: z.h };
+      if (x < 0 || y < 0 || x + z.w > W || y + z.h > H) return false;
+      for (let yy = y; yy < y + z.h; yy++) for (let xx = x; xx < x + z.w; xx++) if (taken[yy * W + xx] || !ok[yy * W + xx]) return false;
+      const objectId = `kit:${quarter.tilesetId}/${id}`;
+      const snapshot = structuredClone(draft.maps[map.id]!);
+      try { stampTool.run(draft, { objectId, mapId: map.id, x, y }); } catch { draft.maps[map.id] = snapshot; return false; }
+      const all = [...placed, { objectId, ...bx }];
+      const inPiece = (px: number, py: number) => all.some((p) => px >= p.x && px < p.x + p.w && py >= p.y && py < p.y + p.h);
+      const current = draft.maps[map.id]!;
+      let from = comp.seed; if (!isPassable(draft, current, from.x, from.y)) from = { x: adit.x + 1, y: adit.y + adit.h };
+      const after = reachable(draft, current, from);
+      for (const i of comp.cells) { const cx = i % W, cy = Math.floor(i / W); if (!inPiece(cx, cy) && !after.has(i)) { draft.maps[map.id] = snapshot; return false; } }
+      mark(taken, W, H, bx); placed.push({ objectId, ...bx }); return true;
+    };
+    const L = "bd-pick-mining-valley-slagheap", R = "bd-pick-mining-valley-slagrock", O = "bd-pick-mining-valley-ore";
+    // 조각 사이 1칸은 stamp 규칙이라 한 칸 띄워 붙인다.
+    heap(L, adit.x - 4, adit.y + 1) || heap(L, adit.x - 4, adit.y) || heap(R, adit.x - 3, adit.y + 2) || heap(O, adit.x - 3, adit.y + 2);
+    heap(rnd() < 0.5 ? L : R, adit.x + adit.w + 1, adit.y + 1) || heap(R, adit.x + adit.w + 1, adit.y + 2) || heap(O, adit.x + adit.w + 1, adit.y + 2);
+    heap(O, adit.x - 3, adit.y - 3) || heap(R, adit.x + adit.w + 1, adit.y - 3);
+  };
   for (const piece of pieces) {
     for (let attempt = 0; attempt < 6; attempt++) {
       const outside = quarter.yard?.outside?.includes(piece.id) ?? false;
@@ -601,11 +636,12 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
       }
       mark(taken, W, H, b);
       placed.push({ objectId, ...b });
+      if (quarterId === "mining" && piece.id === "bd-pick-mining-valley-adit") wrapAdit(b);
       break;
     }
   }
   if (plazaBox && quarter.yard?.ruin) overgrowYard(draft, map.id, plazaBox, placed);
-  if (quarterId === "vineyard") reshapeVineFields(draft.maps[map.id]!, placed.filter((p) => p.objectId.endsWith("/bd-pick-vineyard-vine-field")));
+  if (quarterId === "vineyard") reshapeVineFields(draft.maps[map.id]!, placed.filter((p) => p.objectId.endsWith("/bd-pick-vineyard-vine-field")), yardGroup?.variantMap["255"]);
   if (!placed.length) throw new ToolError(`「${quarter.ko}」 조각을 하나도 놓지 못했다 — 트인 땅이 모자라거나 놓으면 길이 끊긴다. 마을을 더 크게 짓거나 near 를 바꾼다.`, { code: "no-quarter-slot", mapId: map.id });
   const box = placed.reduce((a, p) => ({ x0: Math.min(a.x0, p.x), y0: Math.min(a.y0, p.y), x1: Math.max(a.x1, p.x + p.w), y1: Math.max(a.y1, p.y + p.h) }), { x0: W, y0: H, x1: 0, y1: 0 });
   const missing = pieces.length - placed.length;
@@ -621,8 +657,8 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
  * 찍은 자리(틀) 안에서 밭마다 이랑 길이(속 2~6칸)·줄 수(1~2)·틀 안 위치를 다르게 다시 깐다 — 원본 칸(윗줄·속·아랫줄·양 끝·모서리)만 쓰고 새 그림은 없다.
  */
 const VINE = { tl: 24269, top: [24270, 24271, 24272], tr: 24273, left: [24274, 24280], right: [24279, 24285],
-  inner: [...Array(4).fill([24275, 24276, 24278, 24281, 24282, 24284]).flat(), 24277, 24283], bl: 24286, bottom: [...Array(4).fill([24287, 24288, 24289]).flat(), 24290], bendR: 24290, br: 24291 };
-function reshapeVineFields(map: GameMap, fields: readonly { x: number; y: number; w: number; h: number }[]): void {
+  inner: [...Array(4).fill([24275, 24276, 24278, 24281, 24282, 24284]).flat(), 24277, 24283], bl: 24286, bottom: [24287, 24288, 24289], br: 24291 };
+function reshapeVineFields(map: GameMap, fields: readonly { x: number; y: number; w: number; h: number }[], body?: number): void {
   const W = map.width;
   const layers = [map.lowerTiles, map.lowerOverlayTiles, map.upperTiles, map.upperOverlayTiles].filter((a): a is number[] => Array.isArray(a));
   const isVine = (t: number) => t >= 24269 && t <= 24291;
@@ -633,18 +669,21 @@ function reshapeVineFields(map: GameMap, fields: readonly { x: number; y: number
     const at = (x: number, y: number) => y * W + x;
     const edgeLayer = layers.find((a) => a[at(f.x, f.y)] === VINE.tl), innerLayer = layers.find((a) => isVine(a[at(f.x + 1, f.y + 1)] ?? -1));
     if (!edgeLayer || !innerLayer) continue;
-    const ground = map.lowerTiles[at(f.x, f.y + 1)]!;
+    // 지운 칸은 마당 몸 칸으로(r6: 원래 칸을 베껴 오면 가장자리 조각이 마당 한가운데 떠 보였다)
+    const ground = body ?? map.lowerTiles[at(f.x, f.y + 1)]!;
     for (let y = f.y; y < f.y + f.h; y++) for (let x = f.x; x < f.x + f.w; x++) for (const a of layers) if (isVine(a[at(x, y)] ?? -1)) a[at(x, y)] = a === map.lowerTiles ? ground : -1;
-    const n = 2 + Math.floor(rnd() * Math.min(5, f.w - 2 - 1)), m = rnd() < 0.3 ? 1 : 2;
+    const n = 3 + Math.floor(rnd() * Math.min(4, f.w - 2 - 2)), m = rnd() < 0.3 ? 1 : 2;
     const x0 = f.x + Math.floor(rnd() * (f.w - (n + 2) + 1)), y0 = f.y + (m === 1 && rnd() < 0.5 ? 1 : 0);
     const put = (a: number[], x: number, y: number, t: number) => { a[at(x, y)] = t; };
-    put(edgeLayer, x0, y0, VINE.tl); for (let c = 1; c < n; c++) put(edgeLayer, x0 + c, y0, pick(VINE.top)); put(edgeLayer, x0 + n, y0, VINE.tr);
+    // 윗줄도 오른 끝 기둥 열까지 — 원본 키트의 «윗줄 한 칸 짧은 계단 귀»가 모든 밭에서 같은 윤곽으로 읽혔다(r5·r6).
+    put(edgeLayer, x0, y0, VINE.tl); for (let c = 1; c <= n; c++) put(edgeLayer, x0 + c, y0, pick(VINE.top)); put(edgeLayer, x0 + n + 1, y0, VINE.tr);
     for (let r = 1; r <= m; r++) {
       put(edgeLayer, x0, y0 + r, VINE.left[(r - 1) % 2]!); put(edgeLayer, x0 + n + 1, y0 + r, VINE.right[(r - 1) % 2]!);
       for (let c = 1; c <= n; c++) put(innerLayer, x0 + c, y0 + r, pick(VINE.inner));
     }
     const yb = y0 + m + 1;
-    put(edgeLayer, x0, yb, VINE.bl); for (let c = 1; c < n; c++) put(edgeLayer, x0 + c, yb, pick(VINE.bottom)); put(edgeLayer, x0 + n, yb, VINE.bendR); put(edgeLayer, x0 + n + 1, yb, VINE.br);
+    // 아랫줄 오른쪽 노란 칸(24290)은 모든 밭의 같은 자리 표지로 읽혀 쓰지 않는다.
+    put(edgeLayer, x0, yb, VINE.bl); for (let c = 1; c <= n; c++) put(edgeLayer, x0 + c, yb, pick(VINE.bottom)); put(edgeLayer, x0 + n + 1, yb, VINE.br);
   }
 }
 
