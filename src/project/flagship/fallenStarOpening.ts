@@ -47,9 +47,9 @@ function nightTownShot(): OpeningAnimatic {
   return shot([
     backdrop("town"),
     particles("stars", "stars", "#dfe8ff", { x: 0, y: 0, width: 528, height: 90 }, 30, 3),
-    flicker("door", { x: 304, y: 188 }, 26), flicker("lamp-l", { x: 287, y: 186 }), flicker("balcony", { x: 248, y: 112 }, 20),
-    flicker("win-a", { x: 120, y: 150 }), flicker("win-b", { x: 368, y: 118 }, 18), flicker("bridge-lamp", { x: 76, y: 175 }),
-    glow("dome", "#c8dcff", { x: 335, y: 80 }, 60, { opacity: 0.35 }),
+    flicker("door", { x: 205, y: 235 }, 26), flicker("lamp-l", { x: 162, y: 262 }), flicker("balcony", { x: 205, y: 178 }, 20),
+    flicker("win-a", { x: 75, y: 160 }), flicker("win-b", { x: 470, y: 200 }, 18), flicker("bridge-lamp", { x: 130, y: 265 }),
+    glow("dome", "#c8dcff", { x: 205, y: 110 }, 60, { opacity: 0.35 }),
     caption([
       { atMs: 300, text: "왕도 아스텔. 별을 읽는 천문대의 도시." },
       { atMs: 3600, text: "견습 별지기 카엘과 마도학자 엘레나. 오늘 밤도 관측 당번이다." },
@@ -60,12 +60,12 @@ function nightTownShot(): OpeningAnimatic {
 
 /** 2. 별똥별 — 하늘을 가로지르는 꼬리, 다리 위 사람들이 올려다본다. 동쪽 숲 너머 섬광과 땅울림. */
 function fallingStarShot(): OpeningAnimatic {
-  const head = { x: 343, y: 67 };
+  const head = { x: 420, y: 36 };
   return shot([
     backdrop("fall"),
     particles("stars", "stars", "#dfe8ff", { x: 0, y: 0, width: 528, height: 80 }, 24, 5),
     glow("star-halo", "#c8f6ff", head, 36, { opacity: 0.5, glow: { inner: 0.45, pulse: { hz: 2.2, amount: 0.35, pattern: "pulse", seed: 3 } } }),
-    flicker("bridge-lamp", { x: 334, y: 194 }, 24), flicker("lamp-b", { x: 268, y: 190 }), flicker("win-c", { x: 160, y: 200 }),
+    flicker("bridge-lamp", { x: 150, y: 200 }, 24), flicker("lamp-b", { x: 215, y: 195 }), flicker("win-c", { x: 130, y: 125 }),
     // 꼬리 끝이 향하는 동쪽 지평선 너머 섬광.
     { ...glow("impact", "#e8fbff", { x: 0, y: 0 }, 220, { startMs: 3000, endMs: 5600 }), x: 400, y: -10,
       keys: { opacity: [{ atMs: 3000, value: 0 }, { atMs: 3250, value: 0.85, ease: "ease-out" }, { atMs: 5600, value: 0, ease: "ease-in" }] } },
@@ -122,7 +122,7 @@ function crashShot(): OpeningAnimatic {
 function morningShot(): OpeningAnimatic {
   return shot([
     backdrop("morning"),
-    particles("dust", "dust", "#fff2c8", { x: 160, y: 120, width: 300, height: 120 }, 14, 21, { opacity: 0.35 }),
+    particles("dust", "dust", "#fff2c8", { x: 300, y: 150, width: 200, height: 100 }, 14, 21, { opacity: 0.35 }),
     caption([
       { atMs: 300, text: "이튿날 아침. 교단의 심문관이 왕도에 들어섰다." },
       { atMs: 3600, text: "하늘에서 떨어진 것을, 모두 거두러 온 자들이었다." },

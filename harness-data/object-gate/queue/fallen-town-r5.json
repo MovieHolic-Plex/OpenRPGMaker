@@ -1,0 +1,23 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "fallen-town-r5",
+ "title": "폴른 스타 왕도 r5 — 걷어 올린 성문 창살·물선 없는 아치 다리 밑",
+ "note": "fallenTown.ts 손 도트 2장: 성문 아래 줄(bd-castle 3277-3279 파생), bd-river-bridge 12줄 위층에서 아치 밑 검은 윤곽만 지운 사본. 허용 전에는 3/4 관문 미통과로 보고.",
+ "explainImage": "fallen-town-r5-explain.png",
+ "explainText": "폴른 스타 왕도 성문은 창살을 걷어 올린 열린 문(왼쪽 그림 아래 줄 세 칸)이고, 운하 아치 다리 밑에 곧은 검은 줄이 물 위에 떠 보여(오른쪽) 아치 구멍 밑 윤곽만 지운 사본을 쓴다. 허용하면 왕도 맵에 그대로 남고, 거절하면 다시 그린다.",
+ "createdAt": "2026-10-21T15:33:06.784Z",
+ "items": [
+  {
+   "sha": "feaf1603faf6311c701794fb76bfa96e4b02371cd2283c73eeeafeeabca4ffe7",
+   "kind": "structure",
+   "label": "beodeul_city/workshop/fallen-town-gate-raised",
+   "source": "/tmp/valen/gate/fallen_gate_raised.png"
+  },
+  {
+   "sha": "dd15bb18adc91e326eb36d4728e0de1d565e74aff9ec5e2a7ec167a123c7831a",
+   "kind": "structure",
+   "label": "beodeul_city/workshop/fallen-town-bridge-waterline",
+   "source": "/tmp/valen/gate/fallen_bridge_waterline.png"
+  }
+ ]
+}

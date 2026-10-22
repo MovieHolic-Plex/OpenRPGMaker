@@ -1,0 +1,42 @@
+{
+ "schema": "bdg-vqa/1",
+ "judge": "claude-opus-5-5",
+ "date": "2026-10-22",
+ "batch": "fallen-town-r5",
+ "overall": "FAIL",
+ "criteriaNotes": {
+  "0_hash_check": "Recomputed pixel_sha256: gate feaf1603...a4ffe7 and bridge dd15bb18...7c831a match the brief. Valen chip valen_chip_1x.png = ae5a37e61d7363551b2bf73b5ccc826026e94959a227ca16d791a67e4340accf (no expected hash was given).",
+  "1_topdown_view": "Gate strip and bridge row are building parts with no top face of their own, which is expected. The assembled gatehouse (arch row with bars, then the raised-gate strip, then the cobble floor row inside the wall) reads in the same 3/4 front-wall view as the castle kit. The bridge front row is unchanged apart from the erased line.",
+  "2_style_fit": "Gate: no colours outside the source tiles 3277-3279. Only rows 0-9 changed; the edge columns and the banner tip are kept. Bridge: 46 pixels, all on row 9, set to transparent; no new colours. Valen: the RTP base style is kept, but leftover pixels from the RTP #4 hat band remain (see item 3).",
+  "3_readability_1x": "At 3x and 1x the gate reads as an open archway: the portcullis is hoisted with its spike tips at the strip's top edge, and a dark passage leads to the floor. The bridge arches open straight onto the water. Valen reads as one long-haired blue-caped figure with a headband.",
+  "4_placement": "The gate strip sits in the archway's bottom row, under the arch row. The banner tip continues the banner above with no seam (checked per pixel in gate_close). The left banner pole ends one row above the strip, which is acceptable. The bridge abutment and pier bottoms are kept.",
+  "5_silhouette_outline": "Bridge: the pier outline (cols 28-36 row 9 down to the tip) and the abutment bottoms (cols 2-4 and 59-63) are intact, and there are no orphan pixels from the erase. The single-pixel transparent slit at col 1 rows 3-9 was there before the fix. Valen: no enclosed transparent holes and no teal (0,147,146) key colour anywhere in the 72x128 sheet.",
+  "6_valen_identity": "Hair length and colour (steel blue, long), the gold headband, and the blue cape match the bust well. The headband sits at a consistent height in all 12 frames (row 13; row 12 in the bobbing middle frames). However, leftover hat pixels from RTP #4 remain in 6 walking frames: a gold (246,164,24) dot between or beside the eyes and dark-brown (115,41,16) pixels in the back-view hair. They are missing from the standing frames, so they flicker during the walk."
+ },
+ "items": [
+  {
+   "id": "gate_raised",
+   "name": "걷어 올린 성문 창살",
+   "kind": "structure",
+   "pixelSha256": "feaf1603faf6311c701794fb76bfa96e4b02371cd2283c73eeeafeeabca4ffe7",
+   "verdict": "PASS",
+   "reasons": "Derived from 3277-3279 with no new colours; only rows 0-9 changed. The portcullis bars end in spike tips at the top of the strip, which lines up with the bars in the arch row above. The banner tip continues without a seam. Below is a dark passage that reads as passable at 1x and 3x. No stray pixels or edge misalignment. Minor: the passage fill is nearly flat (±3 levels of noise), but it matches the source's back-wall tone."
+  },
+  {
+   "id": "bridge_waterline",
+   "name": "물선 없는 아치 다리 밑",
+   "kind": "structure",
+   "pixelSha256": "dd15bb18adc91e326eb36d4728e0de1d565e74aff9ec5e2a7ec167a123c7831a",
+   "verdict": "PASS",
+   "reasons": "Exactly 46 pixels on row 9 (cols 1, 5-27 and 37-58) became transparent, and no colours were added. The line floating over the water is gone in the map render. The pier outline, the pier tip and both abutment bottom outlines stay intact. No gaps or orphan pixels were introduced. The arches now meet the water believably."
+  },
+  {
+   "id": "valen_chip",
+   "name": "심문관 발렌 걷기 칩",
+   "kind": "charset",
+   "pixelSha256": "ae5a37e61d7363551b2bf73b5ccc826026e94959a227ca16d791a67e4340accf",
+   "verdict": "FAIL",
+   "reasons": "Stray RTP #4 hat-band pixels survived. They were traced per pixel to the same RTP #4 coordinates. (1) Gold (246,164,24), one pixel at the eye line just below the headband: right p2 (12,15), down p0 (11,15), down p2 (12,15), left p0 (11,15). (2) Dark brown (115,41,16) in the back-view hair below the band ends: up p0 (16,15) and up p2 (7,15). These appear only in the walking frames, not the standing ones, so at 1x a gold dot blinks on the forehead and a brown fleck blinks in the hair while he walks. The brief requires no stray hat pixels and consistent frames. No holes and no teal were found, and the identity match to the bust is otherwise good. Fix: replace these 6 pixels with the skin or hair colours of the matching standing frame. A minor note: the face mixes two skin palettes (RTP #1 238,156,123 and RTP #4 249,193,157)."
+  }
+ ]
+}

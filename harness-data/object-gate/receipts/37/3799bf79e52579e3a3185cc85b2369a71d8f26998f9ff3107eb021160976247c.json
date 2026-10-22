@@ -1,0 +1,324 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3799bf79e52579e3a3185cc85b2369a71d8f26998f9ff3107eb021160976247c",
+ "width": 48,
+ "height": 32,
+ "kind": "box",
+ "name": "떨어진 별의 관",
+ "label": "beodeul_city/workshop/fallen-star-vessel",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 43,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "coffin lid (capsule-shaped top with highlight)",
+      "rows": "7-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-21"
+     },
+     {
+      "part": "front (south) face of coffin body",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 9px at row 7 to 47px at rows 16-20, then narrows again to row 30. The lid occupies rows 7-20 and shows a bright highlight (L=248 at rows 11-13) and a light front-edge line at row 20 (L=221). A dark eave shadow follows at row 21 (L=51), and the front face runs from row 22 to 30. The front face is a darker band that deepens toward the bottom, from L=146 to L=43, with small rivet-like marks. The lid is a clearly foreshortened top surface and the front face is 9 rows, so this is a three-quarter box (coffin)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a silver-blue capsule or pod, about 2 tiles wide. It shows 8 visible tones per tile and 0% near-flat coverage, which is close to the hedge reference (9) but well below the stall (17) and well (20). Its dark edge pixels are 0% neutral, so the outline leans blue-grey and reads as a dark tone of the hull material, not a sticker line. The hull has roughly 4 lightness steps: a highlight, light, mid and dark. It also has a few panel seams and a small window or hatch. There are no large flat areas, but the surface texture is sparse. The smooth metal gives little grain, rivets or per-panel shading, and the object reads as simpler and smoother than the stall and well references. A careful artist would find it slightly thinner and flatter than those references next to them, though it avoids the sticker look. Doubt leans to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12763
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "coffin lid (capsule top)",
+      "rows": "8-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-21"
+     },
+     {
+      "part": "glass or crystal window on lid",
+      "rows": "12-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front hull face with rivets",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The lid occupies rows 8-20. It has a bright highlight band at rows 9-13 and a mid-tone surface down to row 19. A light front-edge line sits at row 20 (x=23 L=221, x=35 row 18). A dark eave shadow follows at row 21 (L=51). Below this, a front hull face runs from about row 22 to 30, with a gradient from L=146 to L=43 and rivet details. The silhouette widens from 9 px to 47 px and narrows again, which gives an oval lid shape. The object is a closed pod-like coffin seen from the south at about 45 degrees. The top surface is clearly larger than a rim, and the front face is 9 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a silver-blue capsule/coffin with a tinted dark blue-grey outline (0% near-neutral edge pixels, so not a sticker line). It has a bright rim highlight, a light-to-mid-to-dark metal ramp, and a glassy lid panel with its own highlights, about 5 visible steps. There are no flat fills (0% near-flat coverage). Measured at 8 visible tones per tile, it matches prop-hedge (9) and sits below prop-stall-cheese (17) and prop-well-roofed (20). Its 13 total colours are fewer than those two complex props, but about equal to the hedge, so the surface reads as smooth with only some panel and highlight texture. It is slightly lower in density than the richest references, but it is clean, tinted and not shallow, so it passes next to the hedge-level references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19874
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "capsule lid (star-pod top)",
+      "rows": "7-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-21"
+     },
+     {
+      "part": "front face / hull",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The columns at x=12, 23 and 35 show a lid band that starts at the dark outline (row 7-10) and continues through highlight and mid-tone rows. It ends in a light front-edge line (row 20 at x=23, row 21 at x=12, row 18 at x=35) followed by a 1-row dark eave shadow (rows 21, 22 and 19). Below that is a front face of about 9 rows (22-30) that darkens toward the bottom. The silhouette widens from 9 to 47 px and narrows again, which fits a lens-shaped lid seen from above at an angle. The top surface is 14 rows and the front face is 9 rows, so this reads as a 3/4 view rather than a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a capsule-shaped metal pod. Its metal ramp has about 5 steps (highlight, light, mid, shadow, deep), with a hull panel, a window and rivet-like details breaking up the surface. The dark edge pixels are 0% neutral, so the outline leans blue-grey, a dark tone of the adjacent metal rather than a black sticker line. Near-flat coverage is 0%, so there are no flat fills. It carries 8 visible tones per tile, close to prop-hedge (9) and below prop-stall-cheese (17) and prop-well-roofed (20). With only 13 distinct colours it is a little simpler than the richest references, and the smooth metal gradient has less grain than they do. It is still comparable to the hedge reference in structure and density, and a careful artist would accept it beside the set without it looking flat.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16717
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "coffin lid (top of capsule, with glass window and highlights)",
+      "rows": "8-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-21"
+     },
+     {
+      "part": "front face / hull side below the lid edge",
+      "rows": "22-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 9px at row 7 to 47px at rows 16-20 and narrows again to 9px at row 30. Inside it, the lid is a tall band of rows 8-20 with a bright highlight at rows 11-13 and a glass window. It ends in a light front-edge line at row 20 (L=221) and a dark shadow line at row 21 (L=51). Below that is a darker front face at rows 22-30 that shades from L=146 to L=43, with rivet details. This matches the 'cabinet: top + edge + eave' green reference, not a rim-only or flat-band drawing."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a capsule-shaped pod with a metallic body. It shows about 5 lightness steps from a bright highlight on top down to a dark blue-grey underside. It has a small lid or hatch with a lighter rim and a few panel lines. The measured facts back this up: 8 visible tones per tile against 9 for the hedge, and 0% near-flat coverage, so there are no large flat fills. Dark edge pixels are 0% neutral, so the outline leans toward the body's blue-grey rather than black. That reads as dark_material_tone and not a sticker line. It falls short of the richer references (stall 17 and well 20 tones per tile) because the body is smooth, with little grain, no per-panel speckle and no rivet or wear dots. It is a clean, soft gradient rather than a textured surface. The result is slightly lower than the richest references but comparable to the hedge and above the thin props. Still, the smooth hull looks a bit thinner than a careful Beodeul piece, and a careful artist would likely want more texture detail before accepting it next to the stall and well. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13639
+  }
+ ],
+ "decidedAt": "2026-10-21T20:33:46.038Z",
+ "cells": {
+  "16": [
+   "03498687a048693a",
+   "9d3d528b7d9ad226",
+   "c2e981386169911b",
+   "c8214c99adfa50e8",
+   "d7ca40adb26e5e6d",
+   "eaaf19aadf6cfb47"
+  ],
+  "24": [
+   "04fbef99650eb251",
+   "221444136d57dcfd",
+   "3f25211f76640744",
+   "96f6152de052c8b7",
+   "bff8ef1eb6e7cc6b",
+   "e7e300c1bbd53768",
+   "f05f9b5207ca4dfe"
+  ],
+  "32": [
+   "14286cf696ad544d",
+   "8265283c916fcfc0",
+   "c9c6b501b0899c54",
+   "cf2640dd2a9d5a5d",
+   "e0e10e3cc31e8db5",
+   "e5c83aea2818de40"
+  ],
+  "48": [
+   "aa9e666bee3c9b68",
+   "dd9df0459119e6ce"
+  ]
+ }
+}
