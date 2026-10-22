@@ -622,6 +622,8 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     if (Math.abs(x - start.x) <= 2 && y <= start.y + 1) continue;
     // 길(포석·흙길) 칸은 비운다 — 외길에 둘이 줄지어 서서 길을 막고 아무것도 안 보는 것처럼 읽혔다(VQA r9).
     if (!/풀밭/.test(hubMeta[hub.lowerTiles[y * hub.width + x]!]?.label ?? "")) continue;
+    // 바로 위 칸에 가로등·간판 같은 소품이 있으면 머리에서 기둥이 솟은 것처럼 그려졌다(VQA r14 minor).
+    { const t = hub.upperTiles[(y - 1) * hub.width + x] ?? -1; if (t >= 0 && !/풀|꽃|돌|버섯|고사리|덤불|그림자/.test(hubMeta[t]?.label ?? "")) continue; }
     if ([...doorCells].some((k) => { const [dx, dy] = k.split(",").map(Number); return Math.abs(x - dx!) <= 2 && Math.abs(y - dy!) <= 2; })) continue;
     candidates.push({ x, y, d: Math.hypot(x - valen.x, y - (valen.y + 2)) }); // 발렌 바로 앞(두 칸 아래)부터 — 멀면 빈 길을 보는 것처럼 읽혔다(VQA r10)
   }
@@ -677,7 +679,12 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
       for (let t = 0; t < cells.length + d + 2; t += 1) {
         const a = posAt(cells, d, t), b = posAt(other, delays[j]!, t);
         if (!a || !b) continue;
+        // 둘 다 아직 제자리(출발 전)면 처음 대열 그대로다 — 이것까지 겹침으로 치면 대열 앞줄에 선 발렌이 바로 위 기사와
+        // 「세로로 붙음」이 끝나지 않아 60걸음을 기다리다 홀로 남았다(VQA r14 major). 내가 제자리일 땐 같은 칸만 본다.
+        const aWaiting = t < d, bWaiting = t < delays[j]!;
+        if (aWaiting && bWaiting) continue;
         if (a.x === b.x && a.y === b.y) return true;
+        if (aWaiting) continue;
         if (a.y === b.y && Math.abs(a.x - b.x) <= 1) return true;
         if (a.x === b.x && Math.abs(a.y - b.y) <= 1 && t > 0) return true;
       }
@@ -717,7 +724,8 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     camera({ mode: "follow", targetEventId: middle, durationMs: "900", wait: "true" }),
     // 따라가는 사람이 성문 통로로 사라질 때까지(벽시계 대기는 느린 기기에서 행렬보다 먼저 끝났다).
     { kind: "loop", body: [
-      { kind: "fork", condition: { kind: "switch", switchId: switches[middle]!, value: true }, then: [{ kind: "breakLoop" }] },
+      // 맨 뒤 발렌까지 성문으로 사라진 뒤에 돌아온다 — 가운데 사람 기준이면 발렌이 홀로 남은 채 엘레나 대사가 시작됐다(VQA r14 major).
+      { kind: "fork", condition: { kind: "switch", switchId: switches[order[order.length - 1]![0].id]!, value: true }, then: [{ kind: "breakLoop" }] },
       { kind: "wait", ms: 250 },
     ] } as unknown as Command,
     { kind: "wait", ms: 500 } as Command,
