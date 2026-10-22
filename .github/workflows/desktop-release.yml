@@ -41,6 +41,15 @@ jobs:
           node-version: 24
           cache: npm
 
+      # 호스티드 러너에는 bun 이 없다. AI 워커(oh-my-pi-worker)를 이 단계에서 컴파일한다.
+      - name: bun
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y p7zip-full
+          curl -fsSL https://bun.sh/install | bash
+          echo "$HOME/.bun/bin" >> "$GITHUB_PATH"
+          "$HOME/.bun/bin/bun" --version
+
       # 체크아웃은 릴리스 태그다. 빌드 절차는 이 파일에 둔다 — 태그 쪽 스크립트가
       # 이 워크플로보다 옛 것이어도 호스티드 러너에서 같은 산출물이 나오게.
       - name: 패키지 빌드 후 릴리스에 업로드
@@ -70,18 +79,20 @@ jobs:
           #!/bin/sh
           set -eu
           limit=${SEVENZIP_MEMUSE:-2g}
-          real=$(find "$HOME/.cache/electron-builder" -type f -name 7zz -perm -111 2>/dev/null | head -n 1)
-          if [ -z "$real" ]; then echo "7za-memcap: 7zz 없음" >&2; exit 127; fi
+          cached=$(find "$HOME/.cache/electron-builder" -type f -name 7zz -perm -111 2>/dev/null | head -n 1 || true)
+          system=$(command -v 7zz || command -v 7z || command -v 7za || true)
           cmd=${1:-}
-          if [ "$cmd" = "a" ] || [ "$cmd" = "u" ]; then
+          if { [ "$cmd" = "a" ] || [ "$cmd" = "u" ]; } && [ -n "$cached" ]; then
             shift
             for arg in "$@"; do
               case "$arg" in
-                -mmemuse*) exec "$real" "$cmd" "$@" ;;
+                -mmemuse*) exec "$cached" "$cmd" "$@" ;;
               esac
             done
-            exec "$real" "$cmd" "-mmemuse=$limit" "$@"
+            exec "$cached" "$cmd" "-mmemuse=$limit" "$@"
           fi
+          real=${cached:-$system}
+          if [ -z "$real" ]; then echo "7za-memcap: 7z 없음" >&2; exit 127; fi
           exec "$real" "$@"
           EOF
           # heredoc 가 들여쓰기를 스크립트에 넣으면 sh 가 죽는다. 앞 공백을 벗긴다.
