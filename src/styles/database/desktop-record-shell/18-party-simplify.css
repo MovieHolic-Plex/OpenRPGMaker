@@ -55,7 +55,7 @@
 }
 
 /* ── 주인공 목록: 같은 값뿐인 열을 뺀 만큼 좁힌다 ───────────────────────── */
-@media (min-width: 901px) {
+@media (min-width: 1px) {
   .database-modal-body .db-actor-studio-workspace .db-actor-studio-table[data-column-count="2"] .db-actor-table-row {
     grid-template-columns: minmax(0, 1.5fr) minmax(64px, 0.8fr);
     min-width: 0;
