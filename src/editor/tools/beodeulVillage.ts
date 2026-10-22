@@ -1255,7 +1255,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
           }
         }
       } else if (sp.kind === "dock" && small) {
-        const j = jetty(small, sp.x);
+        // 작은 부두 그림(jetty-west)은 맨 윗줄 뒤가 물빛이라 물가 길 아래 풀 위에서 검은 네모로 보였다(2026-10-22 독립 검수) —
+        // 길에서 바로 뻗어도 깨끗한 잔교 몸통(stem)을 쓴다. 몸통이 안 맞는 자리에서만 작은 부두
+        const j = (stem ? jetty(stem, sp.x) : null) ?? jetty(small, sp.x);
         if (j) { moor(sp.x, j.y + 3 + ri(0, 3)); used.push("작은 부두");
           if (post) for (const px of [sp.x + 1, sp.x - 1]) { const py = j.y; if (fits(post, px, py)) { claim(post, px, py, PROP, false); break; } } }
       } else if (sp.kind === "nets" && netKits.length) {
