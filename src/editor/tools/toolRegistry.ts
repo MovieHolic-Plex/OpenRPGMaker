@@ -118,6 +118,7 @@ import { SF_STATION_TOOLS } from "./sfStationTools";
 import { GOTHIC_PLACE_TOOLS } from "./gothicPlaceTools";
 import { PREHISTORIC_TOOLS } from "./prehistoricTools";
 import { SNOW_NORTH_TOOLS } from "./snowNorthTools";
+import { FIND_VILLAGE_TYPE_TOOL } from "./villageTypeTool";
 import { TRANSIT_TOOLS } from "./transitTools";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
@@ -293,6 +294,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(PREHISTORIC_TOOLS, "tile"),
   // 북방 설원(snow_north) 구성기 — 눈 마을·얼어붙은 호수·얼음 동굴 입구·겨울 장터·실내 다섯을 한 번에 짓고(배치·통행·오토타일 덩이는 구성기), 집 문 ↔ 실내를 잇는다.
   ...withDomain(SNOW_NORTH_TOOLS, "tile"),
+  // 마을 종류 표(시대·세계별 60여 종 → 칩셋·시공 도구·선택지, 그림 없는 종류는 «없다») — src/ai/villageTypeCatalog.ts.
+  FIND_VILLAGE_TYPE_TOOL,
   // 맵 위 탈것(차 흐름·버스·노면전차·전철·지하철) — 길 그림에서 자동으로 또는 칸 경로로 노선을 깐다. 런타임이 실제로 움직인다.
   ...withDomain(TRANSIT_TOOLS, "map"),
   ...withDomain(STRUCTURE_KIT_TOOLS, "tile"),
