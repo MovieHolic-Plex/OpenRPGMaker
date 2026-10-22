@@ -20,10 +20,10 @@ import type { GameMap, StructureKitDef, TilesetDef } from "@/project/types";
 export type SfMapKind = "station" | "lab" | "street" | "moonbase";
 export const SF_MAP_KINDS: readonly SfMapKind[] = ["station", "lab", "street", "moonbase"];
 export const SF_MIN_SIZE: Readonly<Record<SfMapKind, { w: number; h: number }>> = {
-  station: { w: 34, h: 26 }, lab: { w: 32, h: 24 }, street: { w: 36, h: 26 }, moonbase: { w: 36, h: 26 },
+  station: { w: 34, h: 26 }, lab: { w: 32, h: 24 }, street: { w: 36, h: 26 }, moonbase: { w: 34, h: 18 },
 };
 export const SF_DEFAULT_SIZE: Readonly<Record<SfMapKind, { w: number; h: number }>> = {
-  station: { w: 44, h: 32 }, lab: { w: 40, h: 30 }, street: { w: 48, h: 30 }, moonbase: { w: 48, h: 32 },
+  station: { w: 44, h: 32 }, lab: { w: 40, h: 30 }, street: { w: 48, h: 30 }, moonbase: { w: 38, h: 20 },
 };
 
 export interface SfPlaced { readonly id: string; readonly x: number; readonly y: number }
@@ -538,15 +538,20 @@ const MOON_ROLE_KO: Readonly<Record<string, string>> = {
 };
 
 function composeMoonbase(b: Board): { areas: SfArea[]; spawn: { x: number; y: number } } {
+  // 2026-10-22 적대 검수(마을 종류 표 시험): 48×32·38×26 모두 «위 띠가 빈 월면 · 남쪽 설비가 길 없이 흩뿌려짐»(major).
+  // → 건물 줄을 위로 붙이고(지붕 위 2줄만 남김), 남쪽 설비는 큰길에서 내려오는 가지길 끝의 «쓰임 마당»(전력·연료·화물·통신)으로 묶는다.
   const { w: Wd, h: Hd } = b;
   const areas: SfArea[] = [];
   for (let y = 0; y < Hd; y++) for (let x = 0; x < Wd; x++) b.setLower(x, y, b.floor("regolith"));
   const path = new Array<boolean>(Wd * Hd).fill(false);
-  const mainY = Math.floor(Hd * 0.55) + b.int(-1, 1);
-  const foot = mainY - 3;                                          // 북쪽 건물 발 줄(문 앞 2칸 가지길)
+  const tallest = Math.max(1, ...MOON_BUILDINGS.map((id) => b.kitSize(id)?.h ?? 0));
+  const foot = Math.min(Math.floor(Hd * 0.55) + b.int(-1, 1) - 3, tallest); // 북쪽 건물 발 줄(문 앞 2칸 가지길) — 가장 큰 건물 지붕이 1줄에 닿는다
+  const mainY = foot + 3;
   // 북쪽 건물 줄 — 연구 모듈은 꼭 하나
   const doorFronts: { x: number; y: number }[] = [];
-  const order = ["lab-module", ...MOON_BUILDINGS.filter((id) => id !== "lab-module").sort(() => b.rng() - 0.5)];
+  // 돔 하나는 꼭(적대 검수: 상자 건물만 줄지으면 «사는 곳»으로 안 읽힘) — 연구 모듈 다음 자리에 돔을 둔다.
+  const dome = b.pick(["hab-dome", "hab-dome-l", "greenhouse-dome"]);
+  const order = ["lab-module", dome, ...MOON_BUILDINGS.filter((id) => id !== "lab-module" && id !== dome).sort(() => b.rng() - 0.5)];
   let x = b.int(1, 3);
   for (const id of order) {
     const s = b.kitSize(id); if (!s) continue;
@@ -559,38 +564,63 @@ function composeMoonbase(b: Board): { areas: SfArea[]; spawn: { x: number; y: nu
     for (let y = foot + 1; y <= mainY; y++) for (const dx of [0, 1]) path[b.idx(Math.min(Wd - 1, door.x + dx - (s.w % 2 === 0 ? 1 : 0)), y)] = true;
     x += s.w + b.int(2, 3);
   }
-  // 큰길(2줄) + 남쪽 착륙장으로 가는 가지길
+  // 큰길(2줄) + 남쪽 «설비 길»(2줄) — 두 길을 세로 연결로 잇고, 설비 길 위·아래에 쓰임 마당(전력·연료·화물·통신)과 착륙장을 줄지어 놓는다.
   for (let y = mainY; y < mainY + 2; y++) for (let xx = 1; xx < Wd - 1; xx++) path[b.idx(xx, y)] = true;
-  const padX = b.int(Math.floor(Wd * 0.45), Wd - 12), padY = mainY + 5;
-  for (let y = mainY + 2; y < padY; y++) for (const dx of [1, 2]) path[b.idx(padX + dx, y)] = true;
+  // 설비 길: 위 설비(≤3줄)가 큰길과 2줄 띄우고, 아래 설비·착륙장(≤3줄) 밑에 1~2줄만 남게(적대 검수: 아래 띠 빈 월면). 큰 맵은 남는 아래 띠를 바위·크레이터가 맡는다.
+  const svcY = Math.max(mainY + 5, Math.min(Hd - 6, mainY + 5));
+  for (let y = svcY; y < svcY + 2; y++) for (let xx = 2; xx < Wd - 2; xx++) path[b.idx(xx, y)] = true;
+  const links = [Math.floor(Wd * 0.25), Math.floor(Wd * 0.75)];
+  for (const lx of links) for (let y = mainY + 2; y < svcY; y++) for (const dx of [0, 1]) path[b.idx(lx + dx, y)] = true;
+  const road = path.slice(); // 설비는 길(road) 위에 서지 않는다. 마당 포장(path)은 그 아래 바닥일 뿐.
+  const segW = Math.floor((Wd - 4) / 4);
+  // 마당마다 다진 바닥을 깐다 — 설비가 «진열된 줄»이 아니라 울 없는 작업 마당 위에 서도록(적대 검수 r8).
+  for (let k = 0; k < 4; k++) { const x0 = 2 + k * segW; for (let y = svcY - 3; y <= Math.min(Hd - 2, svcY + 5); y++) for (let xx = x0; xx < x0 + segW - 1; xx++) if (b.inb(xx, y)) path[b.idx(xx, y)] = true; }
   b.autotile("at-regolith-path", path);
   const spawn = { x: 2, y: mainY };
-  const must = [...doorFronts, { x: Wd - 3, y: mainY }, { x: padX + 1, y: padY + 1 }];
-  b.stamp("landing-pad", padX, padY);
-  if (b.kit("shuttle")) b.stampSafe("shuttle", padX - 6, padY - 1, spawn, must);
-  areas.push({ name: "착륙장", x: padX, y: padY, w: 4, h: 3, tag: "landing-pad" });
+  const must = [...doorFronts, { x: Wd - 3, y: mainY }, { x: 3, y: svcY }, { x: Wd - 4, y: svcY }];
   // 큰길 가 비컨
   for (let xx = 3; xx < Wd - 2; xx += b.int(7, 10)) b.stampSafe("beacon", xx, mainY - 1, spawn, must);
-  // 남쪽: 로버·탱크·태양광·접시·상자
-  const south = ["rover", "fuel-tank", "gas-tank-pair", "solar-array", "solar-array-l", "dish", "crate-stack", "container", "container-stack", "oxygen-tank-row", "radome-tower", "antenna-mast", "battery-bank", "radiator-panel", "comms-relay"];
-  for (let k = 0, tries = 0; k < Math.floor(Wd / 4) && tries < 160; tries++) {
-    const id = south[(k * 3 + tries) % south.length]!; const s = b.kitSize(id); if (!s) continue;
-    const xx = b.int(1, Wd - 1 - s.w), yy = b.int(mainY + 3, Hd - 1 - s.h);
-    if (xx + s.w >= padX - 7 && xx <= padX + 5 && yy <= padY + 3) continue;
-    if (b.stampSafe(id, xx, yy, spawn, must)) k++;
+  const YARDS: { name: string; tag: string; up: string[]; down: string[] }[] = [
+    { name: "전력 마당", tag: "power-yard", up: ["solar-array", "solar-array", "battery-bank"], down: ["radiator-panel", "solar-array-l"] },
+    { name: "연료 마당", tag: "fuel-yard", up: ["fuel-tank", "gas-tank-pair", "fuel-tank"], down: ["oxygen-tank-row", "fuel-tank"] },
+    { name: "화물 마당", tag: "cargo-yard", up: ["container", "crate-stack", "container-stack"], down: ["rover", "crate-stack", "container"] },
+    { name: "통신 마당", tag: "comms-yard", up: ["dish", "radome-tower", "antenna-mast"], down: ["comms-relay", "dish"] },
+  ].sort(() => b.rng() - 0.5);
+  const padSeg = b.int(1, 2);
+  const free = (xx: number, yy: number, w: number, h: number) => {
+    for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) if (!b.inb(xx + dx, yy + dy) || road[b.idx(xx + dx, yy + dy)]) return false;
+    return true;
+  };
+  const row = (ids: readonly string[], x0: number, x1: number, above: boolean): number => {
+    let cx = x0, n = 0;
+    for (const id of ids) {
+      const s = b.kitSize(id); if (!s) continue;
+      for (; cx + s.w - 1 <= x1; cx++) {
+        const yy = above ? svcY - s.h : svcY + 2;
+        if (!free(cx, yy, s.w, s.h)) continue;
+        if (b.stampSafe(id, cx, yy, spawn, must)) { n++; cx += s.w + 1; break; }
+      }
+    }
+    return n;
+  };
+  for (let k = 0; k < 4; k++) {
+    const x0 = 2 + k * segW, x1 = x0 + segW - 2, yd = YARDS[k]!;
+    let n = row(yd.up, x0, x1, true);
+    if (k === padSeg) {
+      const px = x0 + Math.max(0, Math.floor((segW - 4) / 2));
+      if (b.stamp("landing-pad", px, svcY + 2)) areas.push({ name: "착륙장", x: px, y: svcY + 2, w: 4, h: 3, tag: "landing-pad" });
+    } else n += row(yd.down, x0, x1, false);
+    if (n) areas.push({ name: yd.name, x: x0, y: svcY - 3, w: x1 - x0 + 1, h: 8, tag: yd.tag });
   }
-  // 북쪽 건물 뒤(위쪽 땅): 태양광·안테나·바위
-  for (let k = 0, tries = 0; k < Math.floor(Wd / 8) && tries < 80; tries++) {
-    const id = k === 0 ? "antenna-mast" : b.pick(["solar-array", "solar-array-l", "dish-small", "rock-regolith-l", "rock-regolith-m", "vent-stack", "radiator-panel"]); const s = b.kitSize(id); if (!s) continue;
-    const xx = b.int(0, Wd - s.w), yy = b.int(0, Math.max(0, foot - 6 - s.h));
-    if (b.stampSafe(id, xx, yy, spawn, must)) k++;
-  }
-  // 바위·크레이터(흩뿌림)
-  for (let k = 0, tries = 0; k < Math.floor(Wd / 5) && tries < 120; tries++) {
+  if (b.kit("shuttle")) for (let tx = 2; tx < Wd - 7; tx++) if (free(tx, svcY + 2, 5, 4) && b.stampSafe("shuttle", tx, Math.min(Hd - 5, svcY + 3), spawn, must)) break;
+  // 바위·크레이터(길에서 떨어진 곳에 몇 개)
+  for (let k = 0, tries = 0; k < Math.floor(Wd / 6) && tries < 120; tries++) {
     const id = b.pick(["rock-regolith-s", "rock-regolith-m", "rock-regolith-l", "boulder-cluster", "crater"]); const s = b.kitSize(id); if (!s) continue;
     const xx = b.int(0, Wd - s.w), yy = b.int(0, Hd - s.h);
-    let onPath = false; for (let dy = -1; dy <= s.h; dy++) for (let dx = -1; dx <= s.w; dx++) if (b.inb(xx + dx, yy + dy) && path[b.idx(xx + dx, yy + dy)]) onPath = true;
-    if (onPath) continue;
+    let near = false; for (let dy = -1; dy <= s.h; dy++) for (let dx = -1; dx <= s.w; dx++) if (b.inb(xx + dx, yy + dy) && path[b.idx(xx + dx, yy + dy)]) near = true;
+    // 크레이터·바위는 바닥 그림이라 다른 기물 밑으로도 찍힌다 — 놓인 기물(건물·착륙장) 둘레 1칸 안에는 두지 않는다(적대 검수: 착륙장·건물 모서리를 파먹음).
+    for (const q of b.placed) { const qs = b.kitSize(q.id); if (qs && xx - 1 < q.x + qs.w && xx + s.w + 1 > q.x && yy - 1 < q.y + qs.h && yy + s.h + 1 > q.y) near = true; }
+    if (near) continue;
     if (b.stampSafe(id, xx, yy, spawn, must)) k++;
   }
   return { areas, spawn };

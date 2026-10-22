@@ -3574,3 +3574,39 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - **심연·판자·추 그림 (r4):** 손 도트 실내 시트에 심연 가장자리 오토타일(`handInteriorSpec.json` `pits.abyss`, 8방향 마스크 47칸 — `puzzleRoomScenery.buildLayers` 가 `chasm` 칸마다 이웃을 보고 고른다), 심연 위 판자 프레임 넷(`plank bridge` → `cracked` → `falling 1` → `falling 2`, 2층 `overlays` — 판자 칸을 심연으로 파고 그 위에 얹으므로 판자를 떼면 저절로 막힌다), 저울 추 받침(`weight stand`, `weight stand 1..5` 무게 순 크기·재질·눈금)을 더했다. 칩셋에 그 조각이 없으면 옛 그림(마루 판자·투구 받침·검은 빈칸)으로 물러선다.
 - 실기 검증 러너: `bun scripts/qa/jrpg-puzzle-play.mts` 가 정본 `project.sqlite` 저장·재로드 무결성(`initLocalProjectStore` → `saveProject` → `openLocalProjectStore` → `loadSnapshot`, `--sqlite-only` 옵션 지원)을 검증한 뒤, 출하 플레이어(`player.html`)에서 실제 방향키 걸음·조사·선택지·숫자 입력·아이템 제시로 오답/리셋과 정답 해제를 끝까지 수행하고 GIF·핵심 프레임을 생성한다.
 - **소리·화면 적대 검수 r3 (2026-10-20):** 퍼즐 전용 원본 효과음 세트 `public/assets/puzzle-sfx/`(빌더 `scripts/content/puzzle-sfx/build.py`, 2026-10-20 부터 SNES 샘플 악기풍 합성 `snes.py` 변형 A — 32 kHz·BRR·가우스 보간·FIR 에코, 크기는 옛 칩튠판 게이트 RMS 에 맞춤, 비교 예제는 `python3 scripts/content/puzzle-sfx/snes.py`, id `cc0-sound-puzzle-<cue>`, 표 `src/assets/puzzleSfxAssets.ts`)를 `puzzleKit.sfx(cue)` 로 쓴다 — 해결 징글 `secret-solved`(`revealInWaves` 가 첫머리에 울리고 첫 물결에 낮은 굉음 `earth2`), 바위 밀기 `stone-push`, 발판 `plate-press`, 레버 `switch-clack`, 오답 `wrong`(옛 Buzzer1 대체), 수정·판 뒤집힘 `crystal-ping`, 오르간 발판 네 음 `organ-c/e/g/c2`(같은 음색·음높이만 다름). 밀기 소리는 엔진 계약 `EventObjectInteraction.sound`(pushable 전용, 밀기가 시작될 때 `playSoundEffect`)로 낸다. `revealInWaves` 와 옛 프리셋은 더 이상 Flash Screen(런타임이 800ms·85% 로 붙잡아 화면을 통째로 가림)을 쓰지 않고 색조 펄스를 쓴다. 화면 수정: 원소 제단은 원소마다 다른 기물(용암 화로·마나 결정·룬석·돌 구, 옛 판은 네 원소 모두 「포획 구슬 받침」), 두 수조는 쇠살 크기 = 수조 크기·빈 질항아리 ↔ 물동이, 판자 다리는 해제 연출에서 다리를 다시 놓는다(남쪽 출입문만 있는 방이라 옛 판은 북쪽 둑에 갇혔다), 미믹 오답은 주인공을 한 칸 뒤로 튕겨 미믹이 보이게 한다, 오르간 방은 회중석 줄을 채웠다.
+
+## 마을 종류 표 — `find_village_type` · `dress_village_quarter` · `dress_joseon_market` (2026-10-22, village-eras)
+
+「조선 장터 마을」「사이버펑크 거리」「엘프 숲 마을」처럼 **시대·세계가 담긴 마을 요청**을 칩셋 하나와 시공 도구 하나로 옮기는 단일 표.
+
+- **정본:** `src/ai/villageTypeCatalog.ts` — 65종, 시대 7(선사·고대 / 중세 서양 / 동아시아 옛날 / 근대·산업 / 오늘날 / 미래·SF / 판타지).
+  각 종류 = `chipset` · `recipe`(어느 도구를 어떤 선택지로) · `status`(ready / partial / needs-art) · `words`(요청 낱말 정규식) · `gap`(빠진 그림) · `nearest`(대안 종류).
+  `ART_GAPS` 가 빠진 그림 묶음(무림 키트·버들항 성벽·엘프 나무 키트·한국 현대 키트·폐허 키트…)이다. 그림이 생기면 그 묶음을 쓰는 종류의 status 를 올린다.
+- **경로:** `src/ai/villageTypeRoute.ts` → `plainTurn.ts`. 조건은 llm 의도 선언 · mode create · 실내 아님 · 문장에 정착지 낱말(마을/도시/거리/정착지…).
+  - `matchVillageType` 은 가장 긴 낱말 일치. 버들항이 아닌 칩셋에 +3을 주어 「조선 장터 마을」이 일반 「장터 마을」(버들항)을 이긴다.
+  - needs-art 종류는 **모든 칩셋 노트를 끈다**. 버들항 노트가 붙으면 모델이 버들항 마을을 지어 「엘프 마을」이라 부른다.
+    노트는 「그 종류로 흉내 내지 않는다 · 대안(nearest)을 **대안의 이름으로** 짓는다 · 답 첫 문장에 빠진 그림을 말한다」이다.
+  - 버들항이 아닌 칩셋의 종류는 버들항 마을 노트를 끈다. 그 칩셋 도구(+ nearest 칩셋 도구)를 첫 요청부터 노출한다.
+  - 칩셋 계열 규칙(`rejectTilesetFamilyChange`)은 그대로다. 빈 시작 맵은 기준이 아니다.
+  - 알려진 한계: Pi 경로는 되묻지 않는다(`clarifyBypassed`). 그래서 «그림 없음»은 묻기 카드가 아니라 답 첫 문장 + 대안 시공으로 처리한다.
+- **`find_village_type`**(읽기, `villageTypeTool.ts`): query 또는 era → 종류 행(recipe·missingArt·nearest). 짓지 않는다.
+- **`dress_village_quarter`**(`villageQuarterTool.ts`): 지은 마을 위에 쓰임 덩이 하나를 앉힌다.
+  덩이는 joseon-market(조선 좌판 8, 풀밭을 개간해 13×9 흙 마당 + 태그 `road16/yard16/yard` 길까지 BFS 샛길) · mining · vineyard · temple-ruins · walled-market(버들항 pick 키트) · viking(설원 룬석·방패 걸이·오로라 깃발)이다.
+  - 「풀밭」은 가장 흔한 바닥과 tileMeta 태그 앞 네 개가 같은 변주까지 포함한다. 설원에서 눈밭 1번만 풀밭으로 치면 물결·발자국 변주가 길로 잡혀 자리가 없었다.
+  - 설원 작곡기는 빈 눈밭을 마당 덩이로 채운다. 그래서 장옥(7×5)·통널 교회(5×8)는 지은 마을에 들어가지 않는다.
+  - 앵커 탐색은 첫 조각 3배 가중, CLUSTER 10 이다. 놓을 때마다 BFS 로 주 연결 성분을 확인하고, 길을 끊으면 되돌린다.
+  - 마당 개간은 고리 1칸 + 1단계 범람만 한다. 그보다 크면 숲을 지나치게 깎는다.
+  - `dress_joseon_market` 은 joseon-market 덩이를 부르는 얇은 포장이다.
+  - 한계: 버들항 덩이는 큰 조각이 들어갈 빈 땅이 부족해 성기다. 그래서 그 종류는 partial 로 둔다. 조선 마당에서 큰길로 가는 2칸 샛길은 자주 못 찾는다.
+- **적대 검수(Opus, 이전 점수 없이)가 바꾼 판정:** 고대 로마 도시는 needs-art다. 블록 도시가 목골집·성당·깃발이 섞인 중세 도시로 읽혔고, 대안도 없어 짓지 않는다.
+  - 대안 `nearest` 가 빈 needs-art 종류는 맵을 만들지 않는다. 답 첫 문장에 빠진 그림을 말하고, 같은 시대의 지을 수 있는 종류 2~3개만 알린다.
+    해당 종류는 로마 도시와 폐허 셋(포스트아포칼립스·좀비 도시·황무지)이다.
+    실측: 대안이 다른 종류 맵의 복사본(공장 도시 판박이)이거나 흩뿌린 소품 마을로 읽혔다.
+  - 버들항 쓰임 덩이 종류(신전 폐허·광산촌·포도원)는 needs-art(`beodeul-quarter-yard`)다. 조각이 마당 바닥·길 없이 덤불 사이에 흩어진다.
+    `dress_village_quarter` 의 그 덩이들은 도구에 남아 있지만 표의 recipe 는 부르지 않는다. 장터 마을도 walled-market 덩이 없이 광장 마을만 짓는다.
+  - 달 기지 작곡기(`sfStationComposer` composeMoonbase)를 다시 짰다. 지붕을 1줄에 붙인 건물 줄 → 큰길 → 세로 연결 둘 → 설비 길 순서다.
+    설비 길 위·아래에 전력·연료·화물·통신 마당과 착륙장을 둔다. 크레이터·바위는 놓인 기물 둘레 1칸을 피한다.
+    기본 크기는 38×22, 하한은 34×20 이다.
+  - 바이킹은 partial이다. 롱십·용머리 회관 그림이 없다.
+  - needs-art 대안은 seed를 1 이상으로 준다. 기본 seed 0이면 대안 맵이 그 종류를 직접 요청한 맵과 바이트까지 같았다.
+- **시험 시드:** `harness-data/assistant-capability/village-eras-seed.json`(18건, 조수 대용 Sonnet 5.5 high, 포트 19640~19657).
