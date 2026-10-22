@@ -623,7 +623,7 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     // 길(포석·흙길) 칸은 비운다 — 외길에 둘이 줄지어 서서 길을 막고 아무것도 안 보는 것처럼 읽혔다(VQA r9).
     if (!/풀밭/.test(hubMeta[hub.lowerTiles[y * hub.width + x]!]?.label ?? "")) continue;
     // 바로 위 칸에 가로등·간판 같은 소품이 있으면 머리에서 기둥이 솟은 것처럼 그려졌다(VQA r14 minor).
-    { const t = hub.upperTiles[(y - 1) * hub.width + x] ?? -1; if (t >= 0 && !/풀|꽃|돌|버섯|고사리|덤불|그림자/.test(hubMeta[t]?.label ?? "")) continue; }
+    { const t = hub.upperTiles[(y - 1) * hub.width + x] ?? -1; if (t >= 0 && !/풀|꽃|잔돌|자갈|버섯|고사리|덤불|그림자/.test(hubMeta[t]?.label ?? "")) continue; }
     if ([...doorCells].some((k) => { const [dx, dy] = k.split(",").map(Number); return Math.abs(x - dx!) <= 2 && Math.abs(y - dy!) <= 2; })) continue;
     candidates.push({ x, y, d: Math.hypot(x - valen.x, y - (valen.y + 2)) }); // 발렌 바로 앞(두 칸 아래)부터 — 멀면 빈 길을 보는 것처럼 읽혔다(VQA r10)
   }
@@ -762,11 +762,12 @@ function clearDoorFronts(project: Project, map: GameMap | undefined): void {
     const metaD = (project.tilesets[map.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
     const underProp = (x: number, y: number): boolean => {
       const t = map.upperTiles[(y - 1) * map.width + x] ?? -1;
-      return t >= 0 && !/풀|꽃|돌|버섯|고사리|덤불|그림자/.test(metaD[t]?.label ?? "");
+      return t >= 0 && !/풀|꽃|잔돌|자갈|버섯|고사리|덤불|그림자/.test(metaD[t]?.label ?? "");
     };
     if (String(npc.id).startsWith("ev_gate_") || /_(escort_|valen|knight|crowd_)|_gate$/.test(String(npc.id)) || (!nearDoor(npc.x, npc.y, 2) && !underProp(npc.x, npc.y))) continue;
     const page = npc.pages?.[0];
-    if (!page?.graphic?.sprite || (page.movement?.type ?? "fixed") !== "fixed") continue;
+    // 돌아다니는 사람도 처음 선 칸이 소품 밑이면 옮긴다(빵집 아주머니가 물레방아 밑에서 시작했다 — VQA r8·r15).
+    if (!page?.graphic?.sprite || ((page.movement?.type ?? "fixed") !== "fixed" && !underProp(npc.x, npc.y))) continue;
     let best: { x: number; y: number; d: number } | undefined;
     for (let y = npc.y - 6; y <= npc.y + 6; y += 1) for (let x = npc.x - 6; x <= npc.x + 6; x += 1) {
       if (x < 1 || y < 1 || x >= map.width - 1 || y >= map.height - 1 || nearDoor(x, y, 3) || underProp(x, y)) continue;

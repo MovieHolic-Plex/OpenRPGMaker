@@ -144,7 +144,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       door: { x: 32, y: 20 }, mapId: "fs_lisa_home", name: "아스텔 · 리사네 집", bgm: "cc0-bgm-rtp-emo-002",
       // 가족 집: 거실(벽난로) + 식당 + 부엌 + 침실 둘(부부·아이) + 식료품 광 + 헛간 광 + 지하 저장고(흰 도기 욕조는 중세 집에 안 맞았다, VQA r6).
       // 여덟 방(여덟 자리 식탁·식료품 광·헛간·지하 저장고)은 작은 오두막에 안 맞았다(VQA r11 major) — 거실·부엌·침실 둘·바느질 방(리사의 일감).
-      layout: { rooms: [{ kind: "living", w: 12, h: 8 }, { kind: "kitchen", w: 8, h: 7 }, { kind: "bedroom", w: 8, h: 7 }, { kind: "bedroom", w: 8, h: 7 }, { kind: "tailor_work", w: 9, h: 7 }], seed: 29, variant: 0, styleVariant: "A" },
+      layout: { rooms: [{ kind: "living", w: 12, h: 8 }, { kind: "kitchen", w: 8, h: 7 }, { kind: "master_bedroom", w: 8, h: 7 }, { kind: "bedroom", w: 8, h: 7 }, { kind: "tailor_work", w: 9, h: 7 }], seed: 29, variant: 0, styleVariant: "A" },
       // 거실 아랫단·바느질 방 아랫단이 빈 마루였다 — 찻상과 의자, 옷감 상자.
       dress: [["tea 2x2", 16, 14], ["chair E", 15, 14], ["chair W", 18, 14], ["book pile", 20, 15], ["luggage trunk", 5, 15], ["dining 2x1", 3, 13], ["chair S", 3, 12], ["chair N", 4, 14],
         // 침실 둘이 똑같은 그림이고 아랫단이 비었다(VQA r13) — 부부 방엔 찻상, 아이 방엔 짐 궤짝·책 더미.
@@ -350,7 +350,9 @@ function farFreeCell(project: Project, map: GameMap, origin: Cell, taken: readon
   const cells = [...dist.entries()].map(([k, d]) => { const [x, y] = k.split(",").map(Number); return { x: x!, y: y!, d }; })
     .filter((c) => c.d >= 3 && !near(c, 2)
       // 사람 둘레 네 칸 중 셋 이상이 걸을 수 있어야 한다(가구 틈에 끼지 않게).
-      && [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => dist.has(`${c.x + dx!},${c.y + dy!}`)).length >= 3)
+      && [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => dist.has(`${c.x + dx!},${c.y + dy!}`)).length >= 3
+      // 방 사이 문틈(좌우가 벽인 칸)과 그 앞뒤 칸에는 세우지 않는다 — 리사가 침실 문간을 막고 섰다(VQA r15 minor).
+      && ![[0, 0], [0, 1], [0, -1]].some(([dx, dy]) => { const x = c.x + dx!, y = c.y + dy!; return dist.has(`${x},${y}`) && !passable(x - 1, y) && !passable(x + 1, y); }))
     .sort((a, b) => a.d - b.d || a.y - b.y || a.x - b.x);
   if (!cells.length) return undefined;
   const c = cells[Math.min(cells.length - 1, Math.round(rank * (cells.length - 1)))]!;
