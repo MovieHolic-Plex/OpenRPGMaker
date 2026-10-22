@@ -85,3 +85,11 @@ await scenario("village", () => {}, [
 await scenario("dungeon", () => {}, [
   { tool: "make_place", args: { spec: { type: "dungeon", name: "옛 지하묘지", theme: "catacomb", floors: 2, features: ["boss", "chests"] } } },
 ], "2층짜리 지하묘지 던전을 만들어 줘. 맨 아래에 보스, 보물상자도.");
+
+await scenario("people-event", (ctx) => {
+  getTool("author_beodeul_town")!.run(ctx.project, { mapId: "map_blank_start", name: "버들 마을", houseCount: 4, theme: "river", seed: 11 });
+}, [
+  { tool: "add_people", args: { people: [{ role: "문지기", where: "입구", looks: "경비병", firstTalk: ["해가 지면 성문을 닫는다네."], laterTalk: ["조심해서 다녀오게."] }] } },
+  { tool: "add_event", args: { event: { kind: "cutscene", when: "game-start", beats: [{ do: "appear", who: "촌장", where: "광장", looks: "노인" }, { do: "walk", who: "촌장", to: "주인공" }, { do: "say", who: "촌장", text: "드디어 왔구나, 기다리고 있었네" }] } } },
+  { tool: "draw_object", args: { object: { what: "놋쇠 태엽 지구본", description: "놋쇠 받침 위 태엽 지구본", where: "광장" } } },
+], "마을 입구에 문지기를 세우고, 게임 시작하면 촌장이 다가와 말 거는 장면");

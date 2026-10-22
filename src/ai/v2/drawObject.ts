@@ -77,6 +77,7 @@ export function drawObject(run: BuildRun, spec: ObjectSpec): ContentBuildResult 
   const spot = req.base ? `(${req.base.x},${req.base.y})` : "자리 미정";
   return {
     ok: true,
+    card: res.data,
     mapIds: [mapId],
     summary:
       `「${what}」 그리기 카드를 대기열에 올렸다(${objectKind}, ${size}, 놓을 자리 ${spot}, 칩셋 ${req.tilesetId ?? map.tilesetId}). ` +

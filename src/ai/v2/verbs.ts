@@ -11,7 +11,7 @@ import { fixPlayerStart, runMachineChecks, summarizeChecks, type MachineCheck } 
 import { critique } from "./critic";
 import type { CriticVerdict } from "@/ai/piAgent/featureReview";
 import type { ContentBuildResult, EventSpec, ObjectSpec, PersonSpec, PlaceBuildResult, PlacePatch, PlaceRecord, PlaceSpec, PlaceType } from "./types";
-import { buildPeople } from "./people";
+import { buildPeople, findMap, resolveWhere } from "./people";
 import { buildEvent } from "./events";
 import { drawObject } from "./drawObject";
 
@@ -222,7 +222,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
   };
 
   const finishContent = async (toolCallId: string, verb: string, args: unknown, result: ContentBuildResult): Promise<PiToolExecResult> => {
-    recordWrite(env, run, toolCallId, verb, args, result.ok, result.summary, { eventIds: result.eventIds });
+    recordWrite(env, run, toolCallId, verb, args, result.ok, result.summary, result.card !== undefined ? result.card : { eventIds: result.eventIds });
     session.content.push({ verb, result });
     for (const m of result.missingArt) session.missingArt.add(m);
     if (result.ok) await env.checkpoint(verb);
@@ -231,7 +231,9 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     const npcProblems = seen?.checks.filter((c) => !c.ok && (c.id === "npc-reachable" || c.id.startsWith("exit"))) ?? [];
     return withImages({ ok: result.ok, summary: result.summary, warnings: result.warnings, missingArt: result.missingArt, eventIds: result.eventIds,
       ...(seen ? { machineChecks: npcProblems.length ? npcProblems.map((c) => c.detail) : "사람·출입 검사 통과" } : {}),
-      next: result.ok ? (npcProblems.length ? "where 낱말이나 at 칸을 바꿔 다시 부른다." : "통과.") : "명세를 고쳐 다시 부르거나 못 하는 것을 보고한다." }, seen, 1);
+      next: result.ok ? (npcProblems.length ? "where 낱말이나 at 칸을 바꿔 다시 부른다." : "통과.")
+        : /이미 (칩셋에 )?있다/u.test(result.summary) ? "칩셋에 이미 있는 물건이다 — 요청과 맞으면 그 id 를 place_object({mapId, objectId, where}) 로 놓고, 다른 물건이면 description 을 더 구체적으로 써서 다시 draw_object 한다."
+        : "명세를 고쳐 다시 부르거나 못 하는 것을 보고한다." }, seen, 1);
   };
 
   const makePlace: PiToolShape = {
@@ -337,6 +339,29 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     },
   };
 
+  const placeObject: PiToolShape = {
+    name: "place_object", label: "그린 물건 놓기", concurrency: "exclusive",
+    description: "공방에서 그려 칩셋에 넣은 물건(objectId)을 맵에 놓는다. 자리는 낱말(where) 또는 비평·후속 지시가 준 칸(at). 막히면 함수가 가까운 빈 바닥으로 옮긴다.",
+    parameters: { type: "object", properties: { mapId: { type: "string" }, objectId: { type: "string" }, where: { type: "string" }, at: POINT }, required: ["mapId", "objectId"] },
+    async execute(id, params) {
+      const p = params as { mapId: string; objectId: string; where?: string; at?: { x: number; y: number } };
+      const map = findMap(env.ctx.project, p.mapId);
+      if (!map) return text({ ok: false, summary: `맵 ${p.mapId} 이 없다` });
+      const first = p.at && !p.where ? p.at : resolveWhere(env.ctx.project, map, p.where, p.at ? { at: p.at } : {}).cell;
+      const tried: string[] = [];
+      let placed: { ok: boolean; summary: string } | undefined;
+      for (let r = 0; r <= 3 && !placed?.ok; r++) for (let dy = -r; dy <= r && !placed?.ok; dy++) for (let dx = -r; dx <= r && !placed?.ok; dx++) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+        const base = { x: first.x + dx, y: first.y + dy };
+        const res = run.call("stamp_tileset_object", { mapId: p.mapId, objectId: p.objectId, base });
+        tried.push(`(${base.x},${base.y})`);
+        if (res.ok) placed = { ok: true, summary: `${p.objectId} 를 (${base.x},${base.y})에 놓았다${r ? ` — 처음 자리 (${first.x},${first.y})가 막혀 옮겼다` : ""}` };
+        else placed = { ok: false, summary: String(res.summary).slice(0, 200) };
+      }
+      return finishContent(id, "place_object", params, { ok: !!placed?.ok, mapIds: [p.mapId], summary: placed?.ok ? placed.summary : `놓지 못했다(${tried.length}자리 시도): ${placed?.summary ?? ""}`, warnings: [], missingArt: placed?.ok ? [] : [`${p.objectId} — 놓을 자리가 없다`], calls: [] });
+    },
+  };
+
   const inspect: PiToolShape = {
     name: "inspect", label: "맵 보기", concurrency: "shared",
     description: "맵 하나의 1배 그림·기계 검사·사람/이벤트 목록을 본다(비평가 없이). 고치기 전에 지금 상태를 확인할 때.",
@@ -362,7 +387,7 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     },
   };
 
-  return [makePlace, editPlace, addPeople, addEvent, drawObjectVerb, inspect, askUser];
+  return [makePlace, editPlace, addPeople, addEvent, drawObjectVerb, placeObject, inspect, askUser];
 }
 
 /** 끝맺음 관문 — 남은 문제가 있으면 한 번 더 돌게 하는 글. 다 통과면 undefined. */

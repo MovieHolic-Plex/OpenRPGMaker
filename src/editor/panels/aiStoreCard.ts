@@ -22,7 +22,7 @@ import { getLocale } from "@/i18n";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 
-const STORE_CARD_TOOLS: ReadonlySet<string> = new Set(["ask_missing_tiles", "store_publish", "store_set_visibility", "generate_missing_object"]);
+const STORE_CARD_TOOLS: ReadonlySet<string> = new Set(["ask_missing_tiles", "store_publish", "store_set_visibility", "generate_missing_object", "draw_object"]); // draw_object = 조수 v2 동사(같은 그리기 카드)
 
 /** Pi 이벤트(팀 모드의 agent_event 포장 포함)에서 스토어 카드 요청을 꺼낸다. */
 export function storeCardFromEvent(raw: PiAgentEvent): StoreCardRequest | null {

@@ -173,4 +173,6 @@ export interface ContentBuildResult {
   readonly calls: readonly BuilderCall[];
   /** 만든 이벤트 id(맵별). */
   readonly eventIds?: readonly { readonly mapId: string; readonly eventId: string }[];
+  /** 편집기에 띄울 카드 요청(그리기 카드 등) — 동사 결과 data 로 실려 편집기가 카드를 연다. */
+  readonly card?: unknown;
 }
