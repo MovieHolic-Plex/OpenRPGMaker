@@ -83,3 +83,6 @@
 .wq-actions { display: flex; flex-wrap: wrap; gap: 6px; }
 .wq-actions:empty { display: none; }
 .wq-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px 8px 14px; border-top: 1px solid var(--border-default); }
+/* 사람 묶음 작은 그림 — 물건용 갈색 바닥이 아니라 밝은 무대 */
+.wq-thumb.is-cast { place-items: end center; background: linear-gradient(180deg, #f3eee4 0%, #e3d8c6 100%); }
+.wq-thumb.is-cast img { max-width: 56px; max-height: 56px; }
