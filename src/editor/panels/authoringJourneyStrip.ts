@@ -58,6 +58,11 @@ export function renderAuthoringJourney(
     if (!root.isConnected) return detach();
     if (event.target instanceof Node && root.contains(event.target)) return;
     setOpen(false);
+    // 캔버스 위 바깥 클릭은 닫기만 하고 그 제스처는 칠하기로 넘기지 않는다.
+    if (event.target instanceof Element && event.target.closest("canvas")) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
   };
   const onKeyDown = (event: KeyboardEvent): void => {
     if (!root.isConnected) return detach();
