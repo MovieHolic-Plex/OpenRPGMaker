@@ -14,7 +14,7 @@ const look = (id, note, x, y, dir = "down") => ({
 
 export default {
   id: "fallen-town",
-  projectFixture: process.env.RES_FIXTURE ?? "/tmp/fs-town94.json",
+  projectFixture: process.env.RES_FIXTURE ?? "/tmp/fs-town96.json",
   viewport: { width: vw, height: vh },
   beats: [
     { id: "title", note: "타이틀", ops: [
@@ -34,7 +34,8 @@ export default {
     { id: "procl-2", note: "포고 2", ops: [{ kind: "pressUntilText", key: "Enter", testid: "dialogue-box", text: "불경한 하늘의 물건", maxPresses: 6, settleMs: 300 }, { kind: "hold", dir: null, ms: 900 }], shot: true },
     { id: "procl-3", note: "포고 3", ops: [{ kind: "pressUntilText", key: "Enter", testid: "dialogue-box", text: "이단으로 다스린다", maxPresses: 6, settleMs: 300 }, { kind: "hold", dir: null, ms: 900 }], shot: true },
     { id: "procl-4", note: "포고 4 — 행진 시작", ops: [{ kind: "pressUntilText", key: "Enter", testid: "dialogue-box", text: "마찬가지다", maxPresses: 6, settleMs: 300 }, { kind: "hold", dir: null, ms: 900 }, ...closeDialogue()], shot: true },
-    ...Array.from({ length: 10 }, (_, i) => ({ id: `march-${i + 1}`, note: "발렌 일행이 성문으로(화면이 행렬을 따라간다)", ops: [{ kind: "hold", dir: null, ms: 1400 }], shot: true })),
+    // 0.2초 간격(행진 겹침·사라짐을 프레임으로 본다 — 판정 규칙의 움직임 캡처).
+    ...Array.from({ length: 70 }, (_, i) => ({ id: `march-${String(i + 1).padStart(2, "0")}`, note: "발렌 일행이 성문으로(0.2초 간격, 화면이 행렬을 따라간다)", ops: [{ kind: "hold", dir: null, ms: 200 }], shot: true })),
     { id: "march-done", note: "행진 끝", ops: [{ kind: "hold", dir: null, ms: 4000 }, ...closeDialogue()], shot: true },
     look("v-bridge", "아치 돌다리 · 운하 · 천문대 탑", 21, 21),
     look("v-tower", "천문대 탑 문 앞", 24, 21, "up"),

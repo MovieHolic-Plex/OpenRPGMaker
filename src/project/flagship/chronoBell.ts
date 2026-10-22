@@ -685,6 +685,7 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   const tracks: { x: number; y: number }[][] = [];
   const delays: number[] = [];
   const paths: Step[][] = [];
+  const arrivals: number[] = [];
   // 뒤에 출발할 사람의 제자리는 막힌 칸으로 친다 — 한가운데 발렌이 바로 위 기사 칸을 지나가는 길을 고르면 그 기사는
   // 몇 걸음을 기다려도 겹침이 풀리지 않아 뒤 다섯이 60걸음 상한에 걸렸다. 앞서 떠난 사람 칸만 비었다고 본다.
   const departed = new Set<string>();
@@ -697,8 +698,12 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     if (!path) throw new Error(`[fallen-star] ${npc.id} 가 동문까지 걸어갈 길이 없다`);
     const cells = [{ x: npc.x, y: npc.y }];
     for (const dir of path) { const [dx, dy] = DIRS[dir as string]!; const last = cells[cells.length - 1]!; cells.push({ x: last.x + dx, y: last.y + dy }); }
-    const posAt = (track: { x: number; y: number }[], delay: number, t: number) => (t - delay >= track.length ? undefined : track[Math.max(0, t - delay)]);
-    let delay = 0;
+    // 끝 칸(성문 통로)에서 한 걸음 동안 옅어지며 머문다 — 그동안 뒷사람이 같은 칸에 들어서면 겹쳐 그려진다.
+    const posAt = (track: { x: number; y: number }[], delay: number, t: number) => (t - delay >= track.length + 1 ? undefined : track[Math.min(track.length - 1, Math.max(0, t - delay))]);
+    // 한 줄 행렬 — 앞사람보다 꼭 두 걸음 뒤에 성문에 닿게 출발을 맞춘다(한 칸 띄운 세로 줄). 겹침이 없을 때까지만 더 늦춘다.
+    // 겹침만 피해 가장 이른 출발을 고르면 간격이 1~5칸으로 들쭉날쭉해 발렌이 홀로 앞서 걸었다(VQA r25).
+    const arriveAt = arrivals.length ? arrivals[arrivals.length - 1]! + 2 : path.length;
+    let delay = Math.max(0, arriveAt - path.length);
     const clash = (d: number): boolean => tracks.some((other, j) => {
       for (let t = 0; t < cells.length + d + 2; t += 1) {
         const a = posAt(cells, d, t), b = posAt(other, delays[j]!, t);
@@ -716,7 +721,7 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     });
     while (clash(delay) && delay < 60) delay += 1;
     if (process.env.MARCH_DEBUG) console.error("march", npc.id, npc.x, npc.y, "delay", delay, "steps", path.length);
-    tracks.push(cells); delays.push(delay); paths.push(path);
+    tracks.push(cells); delays.push(delay); paths.push(path); arrivals.push(delay + path.length);
   }
   order.forEach(([npc], rank) => {
     const path = paths[rank]!;
@@ -725,12 +730,16 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
       // 통로 칸을 막아 숲으로 못 나갔다(QA fallen-town to-forest). 길은 걸을 수 있는 칸으로만 짜였으니 건물은 안 뚫는다.
       { kind: "setThrough", enabled: true },
       // 행진 걸음 — 기본(느림·드묾)으로는 30칸 길에 30초가 넘게 걸려 대사가 끝난 뒤에도 광장에 남았다.
-      { kind: "changeSpeed", delta: 2 }, { kind: "changeFrequency", delta: 3 },
-      // 경로의 「기다림」 한 번은 걸음 간격(80ms)만 쓴다 — 한 걸음(간격 80 + 이동 240ms)은 기다림 넷이다. 한 번씩만 넣으면
-      // 출발이 4분의 1 걸음만 늦어 발렌과 기사가 한 칸에 포개져 걸었다(VQA r6 major).
-      ...Array.from({ length: delays[rank]! * 4 }, () => ({ kind: "wait" })),
+      // 속도 4 = 한 칸 240ms(characterMotion), 빈도 6 = 기다림 한 번 80ms. 명령 경로는 걸음 사이에 쉬지 않으므로 한 걸음 = 기다림 셋이다.
+      // 속도 5(200ms)에 기다림 넷(320ms)으로 늦추면 출발 지연이 걸음의 1.6배로 늘어 셈한 대열이 어긋났다 — 발렌이 홀로 앞서고
+      // 뒤 기사가 같은 세로 줄에서 발렌 위에 겹쳐 그려졌다(VQA r25 major).
+      { kind: "changeSpeed", delta: 1 }, { kind: "changeFrequency", delta: 3 },
+      ...Array.from({ length: delays[rank]! * 3 }, () => ({ kind: "wait" })),
       ...path.map((dir) => ({ kind: "move", dir })),
-      { kind: "changeOpacity", delta: -255 },
+      // 성문 통로 안에서 한 프레임에 사라지지 않고 한 걸음(기다림 둘·셋) 동안 세 번에 걸쳐 옅어진다(VQA r25 minor).
+      { kind: "changeOpacity", delta: -85 }, { kind: "wait" },
+      { kind: "changeOpacity", delta: -85 }, { kind: "wait" },
+      { kind: "changeOpacity", delta: -85 },
       { kind: "setSwitch", switchId: switches[npc.id]!, value: true },
     ];
     marches.push({ kind: "moveEvent", eventId: npc.id, route: { moves, repeat: false, wait: false, skippable: true } } as unknown as Command);
