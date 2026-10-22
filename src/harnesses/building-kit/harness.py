@@ -209,13 +209,7 @@ def parts_for(theme, rid, key, rendered):
 
 
 def round_buildings(theme, rid=None):
-    """그 판이 조립하는 레시피 목록 — rounds.<판>.buildings 가 있으면 그것만, 없으면 시드 전체(옛 판)."""
-    s = seed(theme)
-    ids = (s.get('rounds', {}).get(rid or '', {}) or {}).get('buildings')
-    if not ids:
-        return s['buildings']
-    by = {b['id']: b for b in s['buildings']}
-    return [by[i] for i in ids if i in by]
+    return AS.round_buildings(theme, rid)
 
 def assemble_all(theme, parts, only=None, quiet=False, rid=None):
     out = []

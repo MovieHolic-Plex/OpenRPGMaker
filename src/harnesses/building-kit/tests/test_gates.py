@@ -159,7 +159,9 @@ class BrokenAssemblyTest(unittest.TestCase):
         it['pieces'] = [dict(p, size=[p['size'][0], 1]) for p in ITEMS['roof.hip']['pieces']]
         thin = self.parts['roof.hip']['img'].crop((0, 32, 80, 48))
         parts = dict(self.parts, **{'roof.hip': {'item': it, 'img': thin}})
-        res = AS.assemble(H.buildings()['cottage'], parts, PAL, H.THEME)
+        recipe = {'id': 'tall', 'title': '', 'use': 'home', 'cols': 4, 'storeys': 3,
+                  'roof': 'roof.hip', 'wall': 'wall.storey', 'walls': ['L W M R', 'L W M R', 'L W D R']}
+        res = AS.assemble(recipe, parts, PAL, H.THEME)
         self.assertIn('A6', codes(res['checks']))
 
     def test_one_cell_roof_ends_fail_a3(self):
@@ -178,7 +180,7 @@ class BrokenAssemblyTest(unittest.TestCase):
     def test_broken_wall_rows_break_the_join(self):
         wall = self.parts['wall.storey']['img']
         a = np.array(wall.convert('RGBA'))
-        a[0:2, :, :3] = dot.C(H.THEME, 'iron', 2)
+        a[0:2, :, :3] = dot.C(H.THEME, 'plaster', 4)
         parts = H.parts('A', overrides={'wall.storey': Image.fromarray(a, 'RGBA')})
         res = AS.assemble(H.buildings()['cottage'], parts, PAL, H.THEME)
         self.assertIn('A5', codes(res['checks']))

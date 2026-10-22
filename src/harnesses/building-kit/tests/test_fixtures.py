@@ -91,12 +91,12 @@ class AssemblyTest(unittest.TestCase):
         for bid, recipe in H.round_buildings().items():
             res = AS.assemble(recipe, self.parts, PAL, H.THEME)
             codes_ = {c['code'] for c in AS.run_checks(res)}
-            cols = res['masses'][0]['cols'] if len(res['masses']) == 1 else recipe['cols']
+            cols = res['masses'][0]['cols'] if len(res['masses']) == 1 else max(m['cols'] for m in AS.masses(recipe))
             with self.subTest(building=bid):
                 self.assertNotIn('A2', codes_, [c['msg'] for c in AS.run_checks(res)])
                 self.assertNotIn('A3', codes_)
                 self.assertEqual(res['width'], max(m['x'] + m['cols'] for m in AS.masses(recipe)))
-                self.assertEqual(res['wall_x'], 0)
+                self.assertEqual(res['kit']['wallX'], next(m['x'] for m in res['masses'] if m['id'] == res['kit']['doorMass']))
                 self.assertGreaterEqual(cols, AS.MIN_COLS)
 
     def test_declared_eave_inset_allows_a_transparent_wall_edge(self):

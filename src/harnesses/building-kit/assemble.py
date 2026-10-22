@@ -58,8 +58,16 @@ def _eave_px(role, inset, w=dot.T):
         return ()
     return tuple(range(0, min(n, w))) if role == 'l' else tuple(range(max(0, w - n), w))
 
+def round_buildings(theme, rid=None):
+    s = dot.seed(theme)
+    ids = ((s.get('rounds') or {}).get(rid or '') or {}).get('buildings')
+    if not ids:
+        return s.get('buildings', [])
+    by = {b['id']: b for b in s.get('buildings', [])}
+    return [by[i] for i in ids if i in by]
+
+
 def masses(recipe):
-    """레시피를 질량 목록으로 편다. masses 가 없으면 레시피 하나가 질량 하나다(옛 레시피 그대로)."""
     raw = recipe.get('masses') or [dict(recipe)]
     out = []
     for i, m in enumerate(raw):
