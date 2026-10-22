@@ -160,7 +160,9 @@ async function ask(judge: (typeof OBJECT_GATE_PROFILE.judges)[number], half: Hal
 }
 
 /** Claude 판정자: `claude -p`(헤드리스, 도구 없음, 빈 임시 폴더·--setting-sources "" 로 CLAUDE.md·훅·메모리 차단 — 실측: 지침·메모리 0)에 그림 셋을 첨부해 JSON 한 개를 받는다. 모델은 응답의 modelUsage 로 확인한다. */
+let calls = 0;
 function askClaude(judge: { model: string; effort: string }, system: string, userContent: Array<Record<string, unknown>>): Promise<string> {
+  calls++;
   const message = { type: 'user', message: { role: 'user', content: userContent } };
   const cwd = mkdtempSync(resolve(tmpdir(), 'oprn-gate-judge-'));
   return new Promise((done, fail) => {
@@ -203,7 +205,12 @@ async function pool<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>
 const STYLE_FLAG_DEFAULT = defaultObjectGateStyleKind;
 
 /** anyProfile: 같은 그림·같은 종류의 영수증이 어느 프로필로든 이미 있으면 다시 판정하지 않는다(사람 검토 대기열에 올릴 AI 조언이 이미 있다 — 2026-10-20 결정). */
-type JudgeOpts = { force: boolean; write: boolean; concurrency: number; runs?: number; cacheAnswers?: boolean; quiet?: boolean; offline?: boolean; anyProfile?: boolean };
+/**
+ * shareEyeAnswers: 눈 호출 답(run 1~eyeRuns)을 이 실행 안에서 판정 회차마다 같이 쓴다 — 보정(calibrate, 답 캐시)과 같은 셈법
+ * (「고유 답 eyeRuns 개가 회차마다 다시 들어가 runsPerJudge×eyeRuns 표」, 위 judgeItems 의 주의 글). 캐시 없는 review 는 회차마다 새로 물어
+ * 고유 답이 12개가 되어 보정과 다른 통계를 썼다. 공방(workshop 단계)은 보정과 같은 셈법을 쓰고 호출을 20→11 로 줄인다.
+ */
+type JudgeOpts = { force: boolean; write: boolean; concurrency: number; runs?: number; cacheAnswers?: boolean; quiet?: boolean; offline?: boolean; anyProfile?: boolean; shareEyeAnswers?: boolean };
 
 // front_prop(규칙 v8)는 종류 뜻이 사용자 문구에 들어가므로 같은 그림이라도 옛 종류의 답을 쓰면 안 된다 — 이름에 -fp 를 붙인다. 다른 종류의 프롬프트는 v7 과 같아 캐시를 그대로 쓴다.
 const answerCachePath = (half: Half, promptHash: string, sha: string, run: number, kind?: string) => // 칩셋 묶음의 화풍 답은 promptHash 에 묶음 해시가 섞여 들어온다(judgeItems 의 stylePrompt)
@@ -257,8 +264,28 @@ async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateRec
     }
   }
   let done = 0;
+  const sharedEye = new Map<string, Promise<unknown>>();
   const results = await pool(jobs, opts.concurrency, async job => {
     const t = Date.now();
+    if (opts.shareEyeAnswers && job.half === 'eye') {
+      const key = `${job.sha}|${job.run}|${job.kind ?? ''}`;
+      let pending = sharedEye.get(key);
+      if (!pending) {
+        pending = (async () => {
+          for (let attempt = 0; attempt < 3; attempt++) {
+            try { const answer = await ask(job.judge, job.half, job.images, job.text); if (answer) return answer; } catch (error) { if (attempt === 2 || error instanceof JudgeUnavailable) throw error; }
+          }
+          return null;
+        })();
+        sharedEye.set(key, pending);
+      }
+      try {
+        return { sha: job.sha, half: job.half, run: job.run, judge: job.judge.id, answer: await pending, ms: Date.now() - t, error: undefined as string | undefined };
+      } catch (error) {
+        if (error instanceof JudgeUnavailable) { console.error(`\n판정자를 쓸 수 없어 멈춘다 — ${error.message}`); process.exit(4); }
+        return { sha: job.sha, half: job.half, run: job.run, judge: job.judge.id, answer: null, ms: Date.now() - t, error: String(error).slice(0, 300) };
+      }
+    }
     const cachePath = opts.cacheAnswers ? answerCachePath(job.half, job.promptHash ?? prompts[job.half], job.sha, job.run, job.kind) : '';
     try {
       let answer: unknown = null;
@@ -309,6 +336,42 @@ async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateRec
   return receipts;
 }
 
+/**
+ * 보류(REFER) 영수증의 적대 검사(공방 workshop 단계). 새 판정자 호출 한 번 — 영수증 판정자들의 답을 보지 않고, 영수증이 망설인 이유만 혐의로 받는다.
+ * 검사관은 그 종류의 올바른 3/4 탑뷰·칩셋 화풍이 **아닌** 이유를 찾는다. 확실히 통과(sure)일 때만 pass — 애매하면 fail.
+ */
+const REFER_SYSTEM = `You are an adversarial inspector for 16px pixel-art RPG map objects. Another review could not decide whether this candidate is acceptable. Your job is to find reasons it is NOT a correct 3/4 top-down drawing of its kind that matches the chipset style. Default to rejection when unsure.
+
+Use the same measuring rules as the gate:
+${OBJECT_GATE_RUBRIC}
+
+Style bar:
+${OBJECT_GATE_STYLE_RUBRIC}
+
+Answer with ONE JSON object only: {"verdict":"pass"|"fail","sure":true|false,"reasons":["short reason", ...]}. "pass" only if you checked every suspicion and none holds. Any real doubt → "fail".`;
+async function referCheck(item: Item, receipt: ObjectGateReceipt): Promise<{ verdict: 'pass' | 'fail'; sure: boolean; reasons: string[]; judge: string }> {
+  const judge = { model: OBJECT_GATE_PROFILE.judges[0]!.model, effort: OBJECT_GATE_PROFILE.judges[0]!.effort };
+  const { width, height, data } = readPng(item.png);
+  const styleKind = item.styleKind ?? STYLE_FLAG_DEFAULT(item.kind);
+  const { refs } = resolveStyleRefs(styleKind, item.chipset ?? chipsetOfLabel(item.label));
+  const b64 = (b: Buffer) => ({ type: 'image', source: { type: 'base64', media_type: 'image/png', data: b.toString('base64') } });
+  const text = `Object name: ${item.name}\nKind: ${item.kind} — ${OBJECT_GATE_KINDS[item.kind]?.meaning ?? ''}\n`
+    + `Image 1 = the candidate magnified with source row numbers. Image 2 = REAL reference pairs (red = wrong, green = right). Image 3 = the synthetic 3/4 guide. Image 4 = the candidate next to shipped chipset references of the same style kind.\n`
+    + `The undecided review said: ${[...(receipt.view34?.reasons ?? []), ...(receipt.style?.reasons ?? []), ...receipt.reasons].slice(0, 8).join(' · ') || '(no reason given)'}\n\n${columnScan({ width, height, data })}\n\n${widthProfile({ width, height, data })}`;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const answer = await askClaude(judge, REFER_SYSTEM, [{ type: 'text', text }, b64(magnify(width, height, data).png), b64(pairsPng()), b64(guidePng()), b64(styleBoard({ width, height, data }, refs.map(r => r.path)).png)]);
+      const match = answer.match(/\{[\s\S]*\}/);
+      const parsed = match ? JSON.parse(match[0]) as { verdict?: string; sure?: boolean; reasons?: unknown } : null;
+      if (!parsed || (parsed.verdict !== 'pass' && parsed.verdict !== 'fail')) continue;
+      const reasons = Array.isArray(parsed.reasons) ? parsed.reasons.map(String).slice(0, 6) : [];
+      const pass = parsed.verdict === 'pass' && parsed.sure === true;
+      return { verdict: pass ? 'pass' : 'fail', sure: parsed.sure === true, reasons: pass ? reasons : reasons.length ? reasons : ['적대 검사: 확실하지 않음'], judge: `${judge.model}(${judge.effort})` };
+    } catch (error) { if (attempt === 2 || error instanceof JudgeUnavailable) throw error; }
+  }
+  return { verdict: 'fail', sure: false, reasons: ['적대 검사 답을 읽지 못함'], judge: `${judge.model}(${judge.effort})` };
+}
+
 const argv = process.argv.slice(2);
 const stage = argv[0];
 const option = (name: string) => { const i = argv.indexOf(`--${name}`); return i >= 0 ? argv[i + 1] : undefined; };
@@ -343,6 +406,47 @@ if (stage === 'review' || stage === 'audit') {
     process.exit(0);
   }
   process.exit(passed === receipts.length ? 0 : 3);
+}
+
+// 공방 「한 번에 만들기」(2026-10-23): 후보 한 장을 영수증과 같은 판정(review 와 같은 지시문·판정자·규칙)으로 재고,
+// 보류(REFER)면 새 적대 검사 한 번(Sonnet 5.5 high, 새 claude -p)이 통과·불합격을 정한다. 결과 JSON 한 줄을 stdout 에 낸다.
+// 영수증은 저장소 영수증 폴더가 아니라 공방 영수증 폴더(OPRN_WORKSHOP_GATE_RECEIPTS, 기본 ~/.cache/oprn/workshop-gate/receipts)에 쓴다 —
+// 공방 그림은 그 게임에만 들어가고 번들·공용 출구 영수증이 아니다. 같은 화소·종류·프로필이면 다시 부르지 않는다. 임계값·판정자·표 수는 그대로다.
+if (stage === 'workshop') {
+  const { homedir } = await import('node:os');
+  const png = resolve(option('png') ?? '');
+  const kind = option('kind') as ObjectGateKind;
+  if (!option('png') || !kind) throw Error('workshop --png <그림> --kind <3/4 종류> [--name] [--label] [--chipset]');
+  const item: Item = { png, kind, name: option('name') ?? basename(png), label: option('label'), chipset: option('chipset') };
+  const root = resolve(process.env.OPRN_WORKSHOP_GATE_RECEIPTS ?? resolve(homedir(), '.cache', 'oprn', 'workshop-gate', 'receipts'));
+  const { width, height, data } = readPng(png);
+  const sha = await objectGatePixelSha256(width, height, data);
+  const profileHash = await gateProfileHash();
+  const recordPath = resolve(root, sha.slice(0, 2), `${sha}-${kind}.json`);
+  let fix = '';
+  type WorkshopGateRecord = { schema: 'oprn-workshop-gate/1'; pixelSha256: string; kind: string; profileHash: string; verdict: string; final: 'pass' | 'fail'; reasons: string[]; fix?: string; refer: null | { verdict: 'pass' | 'fail'; sure: boolean; reasons: string[]; judge: string }; receipt: ObjectGateReceipt; decidedAt: string; calls: number; ms: number };
+  const started = Date.now();
+  let record: WorkshopGateRecord | null = existsSync(recordPath) ? JSON.parse(readFileSync(recordPath, 'utf8')) as WorkshopGateRecord : null;
+  if (record && record.profileHash !== profileHash) record = null;
+  if (!record) {
+    const before = calls;
+    const [receipt] = await judgeItems([item], { force: false, write: false, concurrency, quiet: true, shareEyeAnswers: true });
+    let refer: WorkshopGateRecord['refer'] = null;
+    if (receipt!.verdict === 'refer') refer = await referCheck(item, receipt!);
+    const final = receipt!.verdict === 'pass' ? 'pass' : receipt!.verdict === 'refer' && refer?.verdict === 'pass' ? 'pass' : 'fail';
+    const reasons = final === 'pass' ? [] : (refer && refer.verdict === 'fail' ? refer.reasons : receipt!.reasons).slice(0, 4);
+    // 다시 그릴 때 줄 고칠 점: 판정 규칙 이유(「화풍: 판정자 fail (4/4)」)만으로는 무엇을 고칠지 모른다 — 떨어진 반쪽 판정자의 근거 글을 붙인다.
+    const evidence = (answer: unknown) => String((answer as { evidence?: unknown } | null)?.evidence ?? '').replace(/\s+/g, ' ').trim();
+    const runs = receipt!.runs ?? [];
+    const styleWhy = receipt!.style?.verdict !== 'pass' ? runs.filter(r => r.style && !r.style.pass).map(r => evidence(r.styleAnswer)).find(Boolean) ?? '' : '';
+    const viewWhy = receipt!.view34?.verdict !== 'pass' ? runs.filter(r => r.view34 && !r.view34.pass).map(r => evidence(r.answer)).find(Boolean) ?? '' : '';
+    fix = final === 'pass' ? '' : [...reasons, ...(viewWhy ? [`3/4: ${viewWhy}`] : []), ...(styleWhy ? [`style: ${styleWhy}`] : [])].join(' / ').slice(0, 1200);
+    record = { schema: 'oprn-workshop-gate/1', pixelSha256: sha, kind, profileHash, verdict: receipt!.verdict, final, reasons, fix, refer, receipt: receipt!, decidedAt: new Date().toISOString(), calls: calls - before, ms: Date.now() - started };
+    mkdirSync(dirname(recordPath), { recursive: true });
+    writeFileSync(recordPath, `${JSON.stringify(record, null, 1)}\n`);
+  }
+  console.log(JSON.stringify({ ok: true, pixelSha256: sha, kind, profileHash, verdict: record.verdict, final: record.final, reasons: record.reasons, fix: record.fix ?? record.reasons.join(' / '), refer: record.refer, view34: record.receipt.view34, style: record.receipt.style ? { verdict: record.receipt.style.verdict, reasons: record.receipt.style.reasons } : null, calls: record.calls, ms: record.ms, cached: Date.now() - started < 2000, record: recordPath }));
+  process.exit(0);
 }
 
 if (stage === 'preview') {

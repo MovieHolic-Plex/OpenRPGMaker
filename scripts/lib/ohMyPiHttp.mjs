@@ -6,6 +6,7 @@ import { cancelRelayedRun, resumeRelayedRun, startRelayedRun } from "./piRunRela
 // 정적 import — vite 설정 로드 뒤 모듈 러너가 닫혀 요청 처리 중 동적 import 가 「Vite module runner has been closed」 로 죽었다.
 import { buildWorldmap } from "./worldmapBuild.mjs";
 import { cancelWorkshopGen, startWorkshopGen, workshopGenStatus } from "./workshopGen.mjs";
+import { cancelWorkshopGate, startWorkshopGate, workshopGateStatus } from "./workshopGate.mjs";
 
 applyLegacyEnvAliases();
 
@@ -50,6 +51,8 @@ export function isCompanionPath(url = "") {
     || path === "/v1/worldmap/build"
     || path === "/v1/workshop/gen"
     || path === "/v1/workshop/gen/cancel"
+    || path === "/v1/workshop/gate"
+    || path === "/v1/workshop/gate/cancel"
     || path === "/v1/local-agents"
     || path === "/v1/local-agents/health"
   );
@@ -278,6 +281,16 @@ export async function handleCompanionRequest(req, adapters) {
     return json(200, workshopGenStatus(query.get("jobId")));
   }
   if (method === "POST" && path === "/v1/workshop/gen/cancel") return json(200, cancelWorkshopGen(body.jobId));
+  // 공방 물건의 3/4 관문 — 영수증 판정기(object-gate judge.mts workshop 단계)를 호스트에서(scripts/lib/workshopGate.mjs).
+  if (method === "POST" && path === "/v1/workshop/gate") {
+    const started = startWorkshopGate(body);
+    return json(started.ok ? 200 : started.unavailable ? 503 : 400, started);
+  }
+  if (method === "GET" && path === "/v1/workshop/gate") {
+    const query = new URL(req.url ?? "", "http://companion.local").searchParams;
+    return json(200, workshopGateStatus(query.get("jobId")));
+  }
+  if (method === "POST" && path === "/v1/workshop/gate/cancel") return json(200, cancelWorkshopGate(body.jobId));
 
   // 로컬 에이전트 CLI(claude·codex·gemini) 감지·건강 확인 — 설정 화면의 엔진 카드가 쓴다.
   // 우리는 그 CLI 의 토큰을 보지 않는다: 설치 여부·버전·CLI 자신이 말한 로그인 상태만 돌려준다.

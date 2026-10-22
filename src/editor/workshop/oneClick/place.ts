@@ -7,6 +7,7 @@ import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { editorState } from "@/editor/editorState";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { armMapPick } from "@/editor/mapPickHook";
+import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { store } from "@/project/store";
 import { josa } from "@/util/josa";
 import { toast } from "@/util/toast";
@@ -18,7 +19,7 @@ export function armCharacterPlacement(input: { readonly textureKey: string; read
   armMapPick((pickedMap, x, y) => {
     const map = store.getCurrent().maps[pickedMap];
     if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) {
-      toast("맵 안쪽 칸을 눌러 주세요. Esc 로 그만둬요.", "info");
+      toast("맵 안쪽 칸을 눌러 주세요. Esc로 그만둬요.", "info");
       return false;
     }
     void import("@/editor/tools/eventTools").then(({ EVENT_TOOLS }) => {
@@ -53,8 +54,18 @@ export function armCharacterPlacement(input: { readonly textureKey: string; read
       }
     });
     return true;
-  });
+  }, undefined, characterGhost(input));
   return null;
+}
+
+/** 커서 칸에 띄울 그 캐릭터(앞모습 가운데 걸음). 시트는 RM2000 CharSet 288×256 — 4×2 명, 한 명 72×128(24×32 칸 3×4). */
+function characterGhost(input: { readonly textureKey: string; readonly characterIndex: number; readonly name: string }) {
+  const asset = store.getCurrent().assets.uploaded[input.textureKey] as ({ meta?: { width?: number; height?: number } } & Parameters<typeof uploadedAssetUrl>[0]) | undefined;
+  const url = asset ? uploadedAssetUrl(asset) : undefined;
+  if (!url) return undefined;
+  const sheet = { width: asset?.meta?.width ?? 288, height: asset?.meta?.height ?? 256 };
+  const x = (input.characterIndex % 4) * 72 + 24, y = Math.floor(input.characterIndex / 4) * 128 + 64;
+  return { url, sheet, frame: { x, y, width: 24, height: 32 }, label: input.name };
 }
 
 /** 지형: 지금 맵 칩셋에 합친 자동 타일 그룹의 칸을 붓에 든다(이웃 연결 켬, 아래층). */

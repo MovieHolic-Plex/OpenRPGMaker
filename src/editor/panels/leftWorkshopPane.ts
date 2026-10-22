@@ -15,7 +15,7 @@ import { objectWorkshopHarness } from "@/editor/workshop/mapObjectTarget";
 import { WORKSHOP_CHANGED_EVENT } from "@/editor/workshop/workshopSession";
 import { workshopQueue } from "@/editor/workshop/queue/workshopQueue";
 import { craftBar, generatorStage, workshopEmblem } from "@/editor/workshop/workshopArt";
-import { oneClickSignature, renderOneClick } from "@/editor/workshop/oneClick/oneClickPanel";
+import { oneClickLayoutKey, oneClickSignature, refreshOneClickCard, renderOneClick } from "@/editor/workshop/oneClick/oneClickPanel";
 import { clearChildren, el } from "@/util/dom";
 
 /** 물건 그리기 진행 — 두 실행기(실내 가구·지금 맵 칩셋)를 합쳐 센다. 아직 연 적 없으면 null. */
@@ -102,12 +102,20 @@ function generatorCard(generator: WorkshopGenerator, ai: { ready: boolean; hostO
 
 export function createLeftWorkshopPane(): { root: HTMLElement; show(): void; dispose(): void } {
   const root = el("section", { class: "left-workshop-pane", attrs: { "aria-label": "공방" }, dataset: { testid: "left-workshop-pane" } });
+  let lastLayout = "";
+  /** 작업 줄·시계가 부를 때: 창 위쪽 모양이 같으면 진행 카드만 고친다(무대 그림을 다시 읽지 않게 — 검은 띠 깜빡임). */
+  const update = (): void => {
+    if (root.hidden) return;
+    if (lastLayout === oneClickLayoutKey() && refreshOneClickCard(root, render)) return;
+    render();
+  };
   const render = (): void => {
     if (root.hidden) return;
     // 입력 중이면 글자·포커스를 지키려고 다시 그리지 않는다(작업 줄이 자주 알린다).
     const focused = root.contains(document.activeElement) && (document.activeElement as HTMLElement | null)?.tagName === "INPUT";
     if (focused) { pendingRender = true; return; }
     pendingRender = false;
+    lastLayout = oneClickLayoutKey();
     clearChildren(root);
     root.append(
       el("div", { class: "left-workshop-heading", children: [workshopEmblem(32), el("h2", { class: "left-workshop-title", text: "공방" })] }),
@@ -133,7 +141,7 @@ export function createLeftWorkshopPane(): { root: HTMLElement; show(): void; dis
   const onFocusOut = (): void => { if (pendingRender) queueMicrotask(render); };
   root.addEventListener("focusout", onFocusOut);
   // 프로젝트 store 는 칠할 때마다 알린다 — 그걸 듣지 않고, 공방 세션이 바뀔 때만 다시 그린다(펼칠 때는 show).
-  window.addEventListener(WORKSHOP_CHANGED_EVENT, render);
+  window.addEventListener(WORKSHOP_CHANGED_EVENT, update);
   // AI 연결 상태(연결됨·서버에서 꺼짐)가 바뀌면 연결 안내도 바로 바꾼다.
   window.addEventListener(AI_CONNECTION_STATUS_CHANGED_EVENT, render);
   // 작업 줄 수(그리는 중·고를 차례·멈춤)나 한 번에 만들기 진행이 바뀔 때만 다시 그린다 — 작업 줄은 자주 알린다.
@@ -142,14 +150,14 @@ export function createLeftWorkshopPane(): { root: HTMLElement; show(): void; dis
     const next = JSON.stringify(objectProgress()) + oneClickSignature();
     if (next === lastProgress) return;
     lastProgress = next;
-    render();
+    update();
   });
   // 경과 시간(30초 단위)을 갱신한다.
   const tick = window.setInterval(() => {
     const next = JSON.stringify(objectProgress()) + oneClickSignature();
     if (next === lastProgress) return;
     lastProgress = next;
-    render();
+    update();
   }, 5000);
   void workshopQueue().ensure().then(render, () => undefined);
   return {
@@ -158,7 +166,7 @@ export function createLeftWorkshopPane(): { root: HTMLElement; show(): void; dis
       unsubscribeQueue();
       window.clearInterval(tick);
       root.removeEventListener("focusout", onFocusOut);
-      window.removeEventListener(WORKSHOP_CHANGED_EVENT, render);
+      window.removeEventListener(WORKSHOP_CHANGED_EVENT, update);
       window.removeEventListener(AI_CONNECTION_STATUS_CHANGED_EVENT, render);
     },
   };

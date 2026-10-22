@@ -18,6 +18,16 @@
 - 새 칩셋 묶음을 더하려면 `build_style_ref_sets.py` 의 `SETS` 에 출하 키트·타일 그룹을 넣고 다시 돌린다. 프로필은 바뀌지 않는다.
 - 새 단계 플래그: `review --chipset <칩셋>` · `--no-write`(영수증을 쓰지 않음) · `--offline`(답 캐시만 사용) · `preview --chipset`(비교판 묶음 확인).
 
+## 공방 「한 번에 만들기」 단계 `workshop` (2026-10-23)
+
+편집기 공방의 「한 번에 만들기」 물건은 칩셋에 굽기 전에 이 관문을 지난다. 사람에게 관문을 보이지 않는다(사용자 규칙) — 결과만 「넣음/못 그림」.
+- 입구: `bun src/harnesses/object-gate/node/judge.mts workshop --png <후보> --kind <종류> --name <이름> --label workshop/<…> [--chipset <칩셋>]`.
+  호스트(동반 서비스 `scripts/lib/workshopGate.mjs`, `POST /v1/workshop/gate` → `GET ?jobId=`)가 사용자 컴퓨터의 Claude Code 로그인으로 띄운다. 판정자는 프로필 그대로(Sonnet 5.5 high ×4, 3/4 + 화풍).
+- 판정 = 영수증 `verdict` 그대로. **PASS → 넣음. REFER → 같은 판정자 새 호출 한 번(`referCheck`, 적대적 — pass 이고 `sure` 일 때만 통과)이 정한다. FAIL → 판정 근거(`fix`: 이유 + 3/4·화풍 판정자 근거)로 한 번 다시 그리고, 그래도 아니면 「못 그림」.**
+  임계값·표 수·판정자·프로필은 바꾸지 않았다. 프로필이 미보정이라 이 영수증은 「보정된 관문 통과」가 아니다 — 굽기 기록(`spec.gate`)에 판정·해시·프로필을 그대로 남긴다.
+- 영수증은 저장소가 아니라 `~/.cache/oprn/workshop-gate/receipts/<sha2>/<sha>-<kind>.json`(`OPRN_WORKSHOP_GATE_RECEIPTS`)에 쓴다. 같은 화소·같은 프로필이면 다시 부르지 않는다.
+- 속도: 한 판 안에서 눈 판정(eye) 답을 화소 해시·회차·종류로 나눠 쓴다(`shareEyeAnswers` — 보정과 같은 뜻) → 호출 20 → 11. 실측 한 장 18~32초(REFER 검사 포함).
+
 ## Opus 최종 판정 (사용자 결정 2026-10-21)
 
 **결정:** 18323 에서 불합격인 그림은 다시 그린다. 최종 판정은 Opus 5.5 medium 이 **적대적 VQA**(검사관)로 한다. 옵션 A(사람 허용이 최종, 2026-10-20)를 대체한다.

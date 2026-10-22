@@ -85,3 +85,55 @@ export async function packFromHost(pack: NonNullable<HostGenStatus["pack"]>, fol
   }
   return { manifest: checked.value, blobs, folder };
 }
+
+// ── 3/4 관문(object-gate) — scripts/lib/workshopGate.mjs 의 브라우저 쪽 ─────────────────────────────
+
+/** 호스트 관문 결과. final = 영수증 PASS, 또는 REFER 를 적대 검사가 통과시킨 것만 pass. */
+export interface HostGateResult {
+  readonly final: "pass" | "fail";
+  readonly verdict: "pass" | "refer" | "fail";
+  readonly reasons: readonly string[];
+  /** 다시 그릴 때 줄 고칠 점(판정자 근거 글 포함). 통과면 빈 글. */
+  readonly fix?: string;
+  readonly pixelSha256: string;
+  readonly profileHash: string;
+  readonly kind: string;
+  readonly refer: { readonly verdict: "pass" | "fail"; readonly sure: boolean; readonly reasons: readonly string[]; readonly judge: string } | null;
+  readonly calls: number;
+  readonly ms: number;
+}
+
+/** 관문을 이 호스트에서 돌릴 수 없을 때(설치에 판정기·bun·claude 가 없음) — 부르는 쪽은 그 후보를 넣지 않는다. */
+export class HostGateUnavailable extends Error {}
+
+/**
+ * 후보 PNG 하나를 호스트 관문에 넣고 끝날 때까지 기다린다(보통 20초~2분). signal 로 그만두면 호스트 작업도 끈다.
+ */
+export async function runHostGate(input: { readonly png: string; readonly kind: string; readonly name: string; readonly label?: string; readonly chipset?: string }, signal?: AbortSignal): Promise<HostGateResult> {
+  let started: { ok: boolean; jobId?: string; error?: string; unavailable?: boolean };
+  try {
+    started = await call("POST", "/workshop/gate", input);
+  } catch (error) {
+    throw new HostGateUnavailable(error instanceof Error ? error.message : String(error));
+  }
+  if (!started.ok || !started.jobId) {
+    if (started.unavailable) throw new HostGateUnavailable(started.error ?? "그림 확인기를 쓸 수 없어요.");
+    throw new Error(started.error ?? "그림 확인을 시작하지 못했어요.");
+  }
+  const jobId = started.jobId;
+  const onAbort = () => { void call("POST", "/workshop/gate/cancel", { jobId }).catch(() => undefined); };
+  signal?.addEventListener("abort", onAbort, { once: true });
+  try {
+    for (let wait = 1500; ; wait = Math.min(4000, wait + 500)) {
+      if (signal?.aborted) throw new DOMException("cancelled", "AbortError");
+      await new Promise((done) => setTimeout(done, wait));
+      if (signal?.aborted) throw new DOMException("cancelled", "AbortError");
+      const status = await call<{ ok: boolean; state: string; result?: HostGateResult; error?: string | null }>("GET", `/workshop/gate?jobId=${encodeURIComponent(jobId)}`);
+      if (status.state === "running") continue;
+      if (status.state === "done" && status.result) return status.result;
+      throw new Error(status.error ?? "그림 확인이 끝나지 않았어요.");
+    }
+  } finally {
+    signal?.removeEventListener("abort", onAbort);
+  }
+}

@@ -36,6 +36,42 @@ export function extractJsonObject(text: string): unknown {
   return JSON.parse(body.slice(start, end + 1));
 }
 
+/**
+ * 글 속의 맨 바깥 `{…}` 덩이들(글자열 안의 괄호는 센다에서 뺀다). 앞에서부터.
+ * 모델이 깨진 격자를 내고 「Wait — here is the final answer:」 뒤에 온전한 격자를 다시 내는 일이 있다(2026-10-23 실측, Sonnet 5.5 high):
+ * 첫 `{` ~ 마지막 `}` 를 한 덩이로 읽으면 실패해 전체 격자를 다시 받는 호출(약 100초)이 하나 더 들었다.
+ */
+export function jsonObjectCandidates(text: string): string[] {
+  const out: string[] = [];
+  let depth = 0, start = -1, inString = false, escaped = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (ch === "\\") escaped = true;
+      else if (ch === '"') inString = false;
+      continue;
+    }
+    if (ch === '"') { if (depth > 0) inString = true; continue; }
+    if (ch === "{") { if (depth === 0) start = i; depth += 1; }
+    else if (ch === "}" && depth > 0) { depth -= 1; if (depth === 0 && start >= 0) { out.push(text.slice(start, i + 1)); start = -1; } }
+  }
+  return out;
+}
+
+/** 답 하나 → JSON 객체. 통째로 못 읽으면 코드 꼴을 풀어 보고, 그래도 안 되면 덩이(jsonObjectCandidates)를 뒤에서부터. */
+export function extractLastJsonObject(text: string): unknown {
+  try { return extractJsonObject(text); } catch (error) {
+    try { return extractJsonObject(repairStringExpressions(text)); } catch { /* 덩이로 */ }
+    const pieces = jsonObjectCandidates(text);
+    for (let i = pieces.length - 1; i >= 0; i--) {
+      try { return JSON.parse(pieces[i]!); } catch { /* 다음 */ }
+      try { return JSON.parse(repairStringExpressions(pieces[i]!)); } catch { /* 다음 */ }
+    }
+    throw error;
+  }
+}
+
 const fail = (error: string): ParsedDraw => ({ ok: false, error });
 
 /**
@@ -81,9 +117,7 @@ export function repairStringExpressions(json: string): string {
  */
 export function rowsNeedingFix(text: string, width: number, height: number): { rows: string[]; bad: number[] } | null {
   let raw: unknown;
-  try { raw = extractJsonObject(text); } catch {
-    try { raw = extractJsonObject(repairStringExpressions(text)); } catch { return null; }
-  }
+  try { raw = extractLastJsonObject(text); } catch { return null; }
   const rows = (raw as { rows?: unknown } | null)?.rows;
   if (!Array.isArray(rows) || rows.some((row) => typeof row !== "string")) return null;
   const lines = (rows as string[]).filter((row) => row.length > 0);
@@ -95,12 +129,8 @@ export function rowsNeedingFix(text: string, width: number, height: number): { r
 export function applyRowFix(text: string, fixText: string): string | null {
   let raw: Record<string, unknown>;
   let fix: unknown;
-  try { raw = extractJsonObject(text) as Record<string, unknown>; } catch {
-    try { raw = extractJsonObject(repairStringExpressions(text)) as Record<string, unknown>; } catch { return null; }
-  }
-  try { fix = extractJsonObject(fixText); } catch {
-    try { fix = extractJsonObject(repairStringExpressions(fixText)); } catch { return null; }
-  }
+  try { raw = extractLastJsonObject(text) as Record<string, unknown>; } catch { return null; }
+  try { fix = extractLastJsonObject(fixText); } catch { return null; }
   const patch = (fix as { rows?: unknown } | null)?.rows;
   if (!patch || typeof patch !== "object" || Array.isArray(patch)) return null;
   const rows = ((raw.rows as string[]) ?? []).filter((row) => row.length > 0);
@@ -142,6 +172,19 @@ function resolvePaletteKey(key: unknown, palette: Palette): string | null {
 }
 
 export function parseDrawAnswer(text: string, palette: Palette): ParsedDraw {
+  const whole = parseDrawAnswerOnce(text, palette);
+  if (whole.ok) return whole;
+  // 덩이가 여럿이면(모델이 스스로 고쳐 다시 낸 답) 뒤에서부터 온전히 읽히는 첫 덩이를 쓴다 — 마지막 답이 모델의 최종 답이다.
+  const pieces = jsonObjectCandidates(text);
+  if (pieces.length < 2) return whole;
+  for (let i = pieces.length - 1; i >= 0; i--) {
+    const parsed = parseDrawAnswerOnce(pieces[i]!, palette);
+    if (parsed.ok) return parsed;
+  }
+  return whole;
+}
+
+function parseDrawAnswerOnce(text: string, palette: Palette): ParsedDraw {
   let raw: unknown;
   try {
     raw = extractJsonObject(text);

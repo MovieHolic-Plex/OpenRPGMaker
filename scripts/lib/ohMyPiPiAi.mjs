@@ -2,6 +2,7 @@
 // Bun 워커는 모델 호출(completion) 하나만 맡는다 — 그래서 Bun 이 없는 머신도
 // 로그인까지는 끝마칠 수 있고, 워커는 실제로 모델을 부를 때에서야 처음 뜨운다.
 
+import http from "node:http";
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
@@ -160,16 +161,38 @@ function startWorker() {
   return promise;
 }
 
+/**
+ * 워커에 오래 걸리는 요청 하나(로컬 CLI 완성 `/complete`). Node 내장 fetch(undici)는 응답 머리를 300초까지만 기다려,
+ * 부하 걸린 기기에서 Sonnet 그리기 한 번이 5분을 넘자 「fetch failed」(500)로 공방 물건이 통째로 실패했다(2026-10-23 실측 300.7초).
+ * 브라우저 쪽 상한은 10분(LLM_LOCAL_CLI_TIMEOUT_MS)이므로 여기는 node:http 로 머리 시간 제한 없이 보낸다(끊기는 브라우저 요청이 정한다).
+ */
+function postLongJson(port, pathname, body) {
+  return new Promise((resolvePost, rejectPost) => {
+    const data = Buffer.from(JSON.stringify(body ?? {}));
+    const request = http.request({ host: "127.0.0.1", port, path: pathname, method: "POST", headers: { "Content-Type": "application/json", "Content-Length": data.length } }, (response) => {
+      const chunks = [];
+      response.on("data", (chunk) => chunks.push(chunk));
+      response.on("end", () => {
+        const text = Buffer.concat(chunks).toString("utf8");
+        resolvePost({ ok: (response.statusCode ?? 500) < 400, status: response.statusCode ?? 500, json: async () => JSON.parse(text || "{}") });
+      });
+      response.on("error", rejectPost);
+    });
+    request.on("error", rejectPost);
+    request.end(data);
+  });
+}
+
 async function workerJson(pathname, body) {
   // An acknowledgement belongs to the worker already running this request.
   // A dev reload may mark it stale, but must not retire its pending decision.
   if (["/agent/checkpoint", "/agent/render"].includes(pathname) && !workerPortPromise) throw Object.assign(new Error("적용 대기 실행이 종료되었습니다."), { status: 409 });
   const port = await (["/agent/checkpoint", "/agent/render"].includes(pathname) ? workerPortPromise : startWorker());
-  const post = () => fetch(`http://127.0.0.1:${port}${pathname}`, {
+  const post = () => (pathname === "/complete" ? postLongJson(port, pathname, body) : fetch(`http://127.0.0.1:${port}${pathname}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body ?? {}),
-  });
+  }));
   let response;
   try {
     response = await post();
