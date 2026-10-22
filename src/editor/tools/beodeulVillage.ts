@@ -1646,7 +1646,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const x = (c % W) / grid, y = Math.floor(c / W) / grid + salt, x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0;
       return hv(x0, y0) * (1 - fx) * (1 - fy) + hv(x0 + 1, y0) * fx * (1 - fy) + hv(x0, y0 + 1) * (1 - fx) * fy + hv(x0 + 1, y0 + 1) * fx * fy;
     };
-    const roadGap = (c: number) => 2 + Math.floor(vnoise(c, denseWoods || highWoods ? 3 : 4, 0) * 2.99); // 3칸 격자 — 4칸 격자·숲속 빈터 2~3칸은 곧은 길 옆 숲 벽이 남았다(VQA r6 산골 남쪽 빈터)
+    const roadGap = (c: number) => 2 + Math.floor(vnoise(c, denseWoods || highWoods ? 3 : 4, 0) * (denseWoods || highWoods ? 3.99 : 2.99)); // 3칸 격자 — 4칸 격자·숲속 빈터 2~3칸은 곧은 길 옆 숲 벽이 남았다(VQA r6 산골 남쪽 빈터)
     const okCell = (c: number, L: number) => occ[c] === FREE && distRoad[c]! >= roadGap(c) && lv[c] === L && !rampCells.has(c) && (c + W >= W * H || lv[c + W] === L);
     // 침엽·혼효 마을은 숲 덩이를 크게·넓게(독립 검수 D10 「덩어리 없이 듬성듬성」) — 활엽 마을은 그대로
     const bigGroves = canopyStyle === "leaf" && forestType !== "broadleaf";
@@ -1681,6 +1681,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
     // 수관은 2×2 숲 덩이에만 선다 — 어떤 2×2 에도 못 드는 칸(한 칸 띠·뾰족한 끝)은 수관 없는 덤불 낱칸·칸 계단으로 보이니 지운다
     const sameLv = (a: number, b: number) => lv[a] === lv[b];
+    // 깎은 칸(잡음 깎기·곧은 변 홈) — 뒤 다듬기의 「이웃 셋 메우기」가 도로 메우면 깎기 전 곧은 변으로 돌아간다(VQA r6~r8 산골 빈터 벽)
+    const carved = new Set<number>();
     // 가장자리 물결(VQA r3 「길·단을 따라 자로 그은 사각 숲」): 숲 밖(맵 안 빈 땅·길·다른 단)까지 거리가 잡음 깊이(0~2칸) 이하인 칸을 깎는다 —
     // 길 간격·단 경계·덩이 합집합이 남긴 곧은 변이 들쭉날쭉한 숲 끝이 된다. 맵 가장자리는 숲 밖으로 보지 않는다(맵 밖으로 이어지는 숲은 깔끔히 잘린다).
     {
@@ -1694,12 +1696,31 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         for (const [dx, dy] of N4) { const n = idx(x + dx, y + dy); if (inMap(x + dx, y + dy) && forestSet.has(n) && dist[n] < 0) { dist[n] = dist[c]! + 1; q.push(n); } }
       }
       // 잡음 칸 4 — 3칸 격자 한 칸 물림은 다듬기(이웃 셋 메우기)가 도로 메워 곧은 변이 남았다(VQA r6 산골 숲 빈터 벽)
-      const erode = (c: number) => Math.floor(vnoise(c, 3, 977) * (denseWoods || highWoods ? 3.4 : 3)) - 1; // -1 깎지 않음 · 0~2 가장자리에서 그 깊이까지
-      for (const c of [...forestSet]) if (dist[c]! >= 0 && dist[c]! <= erode(c)) forestSet.delete(c);
+      const erode = (c: number) => Math.floor(vnoise(c, 3, 977) * (denseWoods || highWoods ? 3 : 0)) - 1; // -1 깎지 않음 · 빈터·산골만 0~2(작은 숲 덩이는 홈만 — 깎으면 작은 덩이가 사라졌다) 가장자리에서 그 깊이까지
+      for (const c of [...forestSet]) if (dist[c]! >= 0 && dist[c]! <= erode(c)) { forestSet.delete(c); carved.add(c); }
     }
-    const notchCut = new Set<number>();
+    // 숲 속 구멍(길 간격 잡음·깎기가 남긴 4칸 이하 빈 땅, 사방이 같은 단 숲)은 메운다 — 수관 속 검은 구멍으로 보였다(VQA r4)
+    {
+      const seen = new Set<number>();
+      for (let c0 = 0; c0 < W * H; c0 += 1) {
+        if (forestSet.has(c0) || seen.has(c0) || occ[c0] !== FREE || rampCells.has(c0)) continue;
+        const comp = [c0]; seen.add(c0); let open = false;
+        for (let h = 0; h < comp.length && comp.length <= 4; h += 1) {
+          const c = comp[h]!, x = c % W, y = (c - x) / W;
+          for (const [dx, dy] of N4) {
+            if (!inMap(x + dx, y + dy)) { open = true; continue; }
+            const n = idx(x + dx, y + dy);
+            if (forestSet.has(n) && lv[n] === lv[c0]) continue;
+            if (occ[n] !== FREE || lv[n] !== lv[c0] || rampCells.has(n)) { open = true; continue; }
+            if (!seen.has(n)) { seen.add(n); comp.push(n); }
+          }
+        }
+        if (!open && comp.length <= 4) for (const c of comp) forestSet.add(c);
+      }
+    }
+    shapeBeodeulCanopyMask(W, H, forestSet, { canFill: (c) => okCell(c, lv[c]!) && !carved.has(c), joins: sameLv, minComponent: canopyStyle === "snow" ? 12 : 16, minExtent: canopyStyle === "snow" ? 3 : 4, block: 2 });
     // 곧은 변 끊기(VQA r6·r7 「자로 그은 숲 벽·평평한 윗변」): 잡음 깎기가 못 끊은 5칸 이상 곧은 숲 변에 5~8칸마다 너비 2~3·깊이 1~2칸 홈을 판다.
-    // 3칸 미만 홈은 다듬기(이웃 셋 메우기)가 도로 메우므로 너비 2 이상·깊이 방향 셀까지 함께 판다.
+    // 3칸 미만 홈은 다듬기(이웃 셋 메우기)가 도로 메우므로 다듬기 뒤에 파고 너비 2 이상·깊이 방향 셀까지 함께 판다.
     {
       const edgeIn = (c: number, dx: number, dy: number) => {
         const x = c % W, y = (c - x) / W, nx = x + dx, ny = y + dy;
@@ -1728,28 +1749,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
           }
         }
       }
-      for (const c of cut) { forestSet.delete(c); notchCut.add(c); }
+      for (const c of cut) { forestSet.delete(c); carved.add(c); }
     }
-    // 숲 속 구멍(길 간격 잡음·깎기가 남긴 4칸 이하 빈 땅, 사방이 같은 단 숲)은 메운다 — 수관 속 검은 구멍으로 보였다(VQA r4)
-    {
-      const seen = new Set<number>();
-      for (let c0 = 0; c0 < W * H; c0 += 1) {
-        if (forestSet.has(c0) || seen.has(c0) || occ[c0] !== FREE || rampCells.has(c0)) continue;
-        const comp = [c0]; seen.add(c0); let open = false;
-        for (let h = 0; h < comp.length && comp.length <= 4; h += 1) {
-          const c = comp[h]!, x = c % W, y = (c - x) / W;
-          for (const [dx, dy] of N4) {
-            if (!inMap(x + dx, y + dy)) { open = true; continue; }
-            const n = idx(x + dx, y + dy);
-            if (forestSet.has(n) && lv[n] === lv[c0]) continue;
-            if (occ[n] !== FREE || lv[n] !== lv[c0] || rampCells.has(n)) { open = true; continue; }
-            if (!seen.has(n)) { seen.add(n); comp.push(n); }
-          }
-        }
-        if (!open && comp.length <= 4) for (const c of comp) forestSet.add(c);
-      }
-    }
-    shapeBeodeulCanopyMask(W, H, forestSet, { canFill: (c) => okCell(c, lv[c]!) && !notchCut.has(c), joins: sameLv, minComponent: canopyStyle === "snow" ? 12 : 16, minExtent: canopyStyle === "snow" ? 3 : 4, block: 2 });
+    shapeBeodeulCanopyMask(W, H, forestSet, { canFill: () => false, joins: sameLv, minComponent: canopyStyle === "snow" ? 12 : 16, minExtent: canopyStyle === "snow" ? 3 : 4, block: 2 }); // 홈이 남긴 가는 끝만 걷는다(메우지 않음)
     for (let c = 0; c < W * H; c += 1) if (occ[c] === FOREST && !forestSet.has(c)) occ[c] = FREE; // 다듬기로 빠진 산마루(summit) 칸은 풀밭으로
     for (const c of forestSet) occ[c] = FOREST;
   }
