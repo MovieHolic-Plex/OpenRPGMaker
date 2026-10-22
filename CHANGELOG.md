@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.319.0 — 2026-10-22
+
+### 기능
+
+- **workshop** — people packs shown per person — walking chip at integer 3x, bust at integer 1/4, real char-gen card sample (#3237) (`c579805`)
+
 ## 0.318.0 — 2026-10-22
 
 ### 기능
