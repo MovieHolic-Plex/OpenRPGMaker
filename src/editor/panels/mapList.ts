@@ -26,6 +26,7 @@ import {
 } from "@/project/mapTree";
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
+import { t } from "@/i18n";
 import { isJpCityMap, openJpCityPinRepairDialog } from "@/editor/jpCityPinRepairDialog";
 import type { MapId, MapTreeNode, Project } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
@@ -169,6 +170,30 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
     host: tree,
     node: project.mapTree,
   });
+  if (visibleIds.size === 0 && hasActiveMapFilter()) {
+    tree.append(el("div", {
+      class: "map-tree-filter-empty",
+      dataset: { testid: "map-tree-filter-empty" },
+      children: [
+        el("span", { text: "조건에 맞는 맵이 없습니다." }),
+        el("button", {
+          class: "btn btn-mini",
+          text: "필터 지우기",
+          attrs: { type: "button" },
+          dataset: { testid: "map-tree-filter-clear" },
+          on: {
+            // 입력칸 포커스를 뺏지 않는다 — 포커스가 바뀌며 목록이 다시 그려지면 눌림 중에 단추가 사라져 click 이 오지 않는다.
+            mousedown: (event) => event.preventDefault(),
+            click: () => {
+              mapFilterQuery = "";
+              mapFilterFacet = "all";
+              rerenderMapList();
+            },
+          },
+        }),
+      ],
+    }));
+  }
 
   if (isBasic) {
     // 2단 탐색기: 왼쪽은 이름 위주 목록, 오른쪽은 고른 맵의 상세. 행에 정보를 더 밀어넣는
@@ -972,7 +997,8 @@ function mapMatchesFacet(map: { events: { length: number }; encounterRate?: numb
 
 function nameMatches(name: string, mapId: string, query: string): boolean {
   const q = query.trim().toLowerCase();
-  return name.toLowerCase().includes(q) || mapId.toLowerCase().includes(q);
+  // 화면에는 DOM 번역기가 바꾼 이름(예: 「新しいマップ」)이 보이므로 번역된 이름으로도 찾는다.
+  return name.toLowerCase().includes(q) || t(name).toLowerCase().includes(q) || mapId.toLowerCase().includes(q);
 }
 
 function pathToMap(node: MapTreeNode, mapId: MapId, path: MapId[] = []): readonly MapId[] {
