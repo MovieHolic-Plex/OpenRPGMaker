@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "f4034b02b7bb0ef872a512703616e74bc680f1272ffebc3b33b65f4dff813bba",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-22T06:44:42.122Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "note": "town wall r4 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/beodeul-town-wall-r4/receipt.json",
+ "sig": "1fd026a83c1a1d4b03e6cc8cd4195055ed66365ee5df4d4e209d4fb4b8d04b65"
+}

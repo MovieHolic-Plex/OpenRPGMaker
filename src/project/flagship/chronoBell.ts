@@ -475,8 +475,8 @@ function vanishWhen(map: GameMap | undefined, eventId: string, switchId: string)
 const SW_VALEN_MARCHED = "sw_fs_valen_marched";
 type Step = "up" | "down" | "left" | "right";
 /** from → to 걸음(통행 칸·다른 이벤트 칸을 피하는 BFS). 못 가면 null. */
-function walkPath(project: Project, map: GameMap, from: { x: number; y: number }, to: { x: number; y: number }, selfId: string): Step[] | null {
-  const occupied = new Set(map.events.filter((e) => e.id !== selfId && !String(e.id).startsWith("ev_gate_")).map((e) => `${e.x},${e.y}`));
+function walkPath(project: Project, map: GameMap, from: { x: number; y: number }, to: { x: number; y: number }, selfId: string, ignore: ReadonlySet<string> = new Set()): Step[] | null {
+  const occupied = new Set(map.events.filter((e) => e.id !== selfId && !ignore.has(e.id) && !String(e.id).startsWith("ev_gate_")).map((e) => `${e.x},${e.y}`));
   const prev = new Map<string, { key: string; dir: Step }>();
   const start = `${from.x},${from.y}`, goal = `${to.x},${to.y}`;
   const seen = new Set([start]);
@@ -501,6 +501,40 @@ function walkPath(project: Project, map: GameMap, from: { x: number; y: number }
 }
 
 /**
+ * 행진 길을 막고 선 떠도는 주민(movement random)을 길 밖 빈 칸으로 비켜 세운다. 마을 배치는 버들항 구성기(seed)가 정하고
+ * 동문 곁 이정표가 문 앞을 한 칸 목으로 좁힌다 — #3240 이후 seed 7 마을에서는 꼬마 토비가 그 목에 서서 기사·발렌의
+ * 동문 길이 없어졌다. 떠도는 주민은 어차피 움직이므로 처음 자리만 옮긴다(고정 NPC·문·조사 칸은 건드리지 않는다).
+ */
+function clearMarchRoute(project: Project, hub: GameMap, exit: { x: number; y: number }, marcherIds: readonly string[]): void {
+  const roamers = hub.events.filter((e) => !marcherIds.includes(e.id) && (e.pages ?? []).some((p) => p.movement?.type === "random"));
+  const roamerIds = new Set(roamers.map((e) => e.id));
+  for (const id of marcherIds) {
+    const npc = hub.events.find((e) => e.id === id);
+    if (!npc || walkPath(project, hub, npc, exit, id)) continue;
+    const through = walkPath(project, hub, npc, exit, id, roamerIds);
+    if (!through) continue;
+    const onPath = new Set<string>([`${npc.x},${npc.y}`]);
+    let x = npc.x, y = npc.y;
+    for (const dir of through) { x += dir === "right" ? 1 : dir === "left" ? -1 : 0; y += dir === "down" ? 1 : dir === "up" ? -1 : 0; onPath.add(`${x},${y}`); }
+    for (const roamer of roamers) {
+      if (!onPath.has(`${roamer.x},${roamer.y}`)) continue;
+      const others = hub.events.filter((e) => e !== roamer);
+      let spot: { x: number; y: number } | undefined;
+      for (let r = 2; r <= 10 && !spot; r += 1) for (let dy = -r; dy <= r && !spot; dy += 1) for (let dx = -r; dx <= r && !spot; dx += 1) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+        const cx = roamer.x + dx, cy = roamer.y + dy;
+        if (cx < 1 || cy < 1 || cx >= hub.width - 1 || cy >= hub.height - 1 || !isPassable(project, hub, cx, cy)) continue;
+        if (onPath.has(`${cx},${cy}`) || others.some((e) => Math.abs(e.x - cx) + Math.abs(e.y - cy) <= 1)) continue;
+        // 옮긴 자리에서 마을 본체로 이어져야 한다(나무 사이 섬에 갇히지 않게).
+        if (!walkPath(project, hub, { x: cx, y: cy }, exit, roamer.id, new Set([...marcherIds, ...roamerIds]))) continue;
+        spot = { x: cx, y: cy };
+      }
+      if (spot) { roamer.x = spot.x; roamer.y = spot.y; }
+    }
+  }
+}
+
+/**
  * 포고가 끝나면 발렌과 기사가 동문으로 걸어 나간다 — 예전에는 이리스 합류 때 제자리에서 페이지 전환으로 사라졌다
  * (가혹 검수 r12 major 「NPC 가 문까지 걷지 않는다」). 대사가 이어지는 동안(기다리지 않음) 걷고, 문 앞에 닿으면
  * 루트 끝의 스위치로 지운다(떠남 페이지).
@@ -512,27 +546,7 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   const after = list?.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("교단보다 먼저"));
   if (!gate || !list || after === undefined || after < 0) throw new Error("[fallen-star] 포고·동문을 찾지 못했다");
   const exit = { x: gate.x - 1, y: gate.y };
-  // 동문 앞이 한 칸 통로인 방 배치에서는 떠돌이 주민(꼬마 등)이 그 길목에 서 있으면 기사가 못 지나간다
-  // (rooms 개편 뒤 ev_fs_kid 가 (52,22) 에서 길을 막아 데모 빌드가 통째로 실패했다) — 길목의 주민은 비켜 세운다.
-  const marchers = new Set([`ev_${FS_PREFIX}_knight`, `ev_${FS_PREFIX}_valen`]);
-  const keep = (e: { id: string }): boolean => marchers.has(e.id) || String(e.id).startsWith("ev_gate_") || e.id === `ev_${FS_PREFIX}_event` || e.id === `ev_${FS_PREFIX}_gate`;
-  const taken = new Set(hub.events.map((e) => `${e.x},${e.y}`));
-  for (const blocker of hub.events.filter((e) => !keep(e) && Math.abs(e.x - exit.x) <= 2 && Math.abs(e.y - exit.y) <= 2)) {
-    let moved = false;
-    for (let radius = 3; radius <= 8 && !moved; radius += 1) {
-      for (let dy = -radius; dy <= radius && !moved; dy += 1) {
-        for (let dx = -radius; dx <= radius && !moved; dx += 1) {
-          if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
-          const x = exit.x + dx, y = exit.y + dy;
-          if (x < 0 || y < 0 || x >= hub.width || y >= hub.height || taken.has(`${x},${y}`) || !isPassable(project, hub, x, y)) continue;
-          taken.delete(`${blocker.x},${blocker.y}`);
-          blocker.x = x; blocker.y = y;
-          taken.add(`${x},${y}`);
-          moved = true;
-        }
-      }
-    }
-  }
+  clearMarchRoute(project, hub, exit, [`ev_${FS_PREFIX}_knight`, `ev_${FS_PREFIX}_valen`]);
   const marches: Command[] = [];
   for (const [id, delay] of [[`ev_${FS_PREFIX}_knight`, 0], [`ev_${FS_PREFIX}_valen`, 1]] as const) {
     const npc = hub.events.find((e) => e.id === id);

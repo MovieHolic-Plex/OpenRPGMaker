@@ -1,0 +1,405 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "29660bf2d86d90ffe5f78347faf472cc906f562555a34a365bd9589e4e35e6d0",
+ "width": 64,
+ "height": 64,
+ "kind": "structure",
+ "name": "stone town gatehouse, 3/4 top-down: crenellated walkable top seen from above, front face with an open round arch passage (raised portcullis, dark tunnel, paved floor), two wall torches",
+ "label": "beodeul_town_wall/gatehouse_open",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 10/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 10/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 14,
+  "darkV5": 59,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 16
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crenellated walkable top with merlons",
+      "rows": "0-15",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-16"
+     },
+     {
+      "part": "paved passage floor seen from above inside the arch",
+      "rows": "45-63",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wall torches",
+      "rows": "42-48",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-15 form a crenellated top: merlon tops at rows 1-4, a shadowed walkway at rows 5-6, and merlon blocks at rows 7-14. Row 15 (L=131) is the front-edge line, and row 16 (L=81) is a dark eave shadow beneath it. Below that, the vertical stone front face runs from rows 17 to 63 (about 47 rows). It has a round arch, a dark tunnel, a raised portcullis, and a paved floor visible from above in rows 45-63. The silhouette is a constant 64 px wide from row 3 down, so no side face is drawn. The top surface is the largest part and is clearly separated from the front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts are on par with the references: 12 visible tones per tile (references 12 and 10), 6% near-flat coverage, and 0% neutral dark edge pixels, so the outline is tinted (dark blue-grey/brown beside the stone) rather than near-black. By eye the stone has roughly 4 lightness steps: light grey, mid grey, shadow grey and a dark tone. The block courses and crenellations carry some per-stone variation, and the arch voussoirs, tunnel gradient and cobbled floor add detail. Against the references, which have about 6 steps on the tile roofs, per-tile highlights, plaster speckle and individually shaded stones, the candidate's stone faces are more uniform. The coursing is regular and the large wall faces on either side of the arch have only light mottling. The torches are tiny, and the top walkway reads as a thin strip with little grain. It is competent and not sticker-like, but a careful artist would see it as somewhat flatter and less richly shaded than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16433
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crenellated walkable top (merlons, walkway, parapet blocks)",
+      "rows": "1-15",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "front wall face with round arch, tunnel, portcullis and paved floor",
+      "rows": "17-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wall torches",
+      "rows": "42-48",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-15 show a crenellated top. Merlons sit at rows 1-4, a shadowed walkway at rows 5-6, and lighter parapet blocks at rows 7-14. A dark front-edge line at row 16 (preceded by the shaded row 15) separates this top from the front face. The front face runs from row 17 to row 63 (47 rows) and holds the stone courses, the round arch with raised portcullis, the dark tunnel and the paved floor. The torches are small decor on the wall. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate matches the references on the primary facts: 12 visible tones per 16x16 tile against 12 and 10, and only 6% near-flat coverage against 0%. Its dark edge pixels are 0% neutral, so the outline is tinted. By eye it is a cool dark grey-blue beside the stone, not a uniform black sticker line. The stone ramp has about 5 steps: light block faces, mid faces, shadowed mortar and joints, and the dark tunnel. Blocks are shaded one by one, the arch voussoirs are separated by value, the battlements are stepped, and the cobbled floor has grain. The portcullis, the dark tunnel interior and the two small torch glows add variety. It is slightly less rich than the tiled roofs in the references, which have per-tile highlights, and the wall face has some fairly even block areas. There is no large flat fill, and a careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15114
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crenellated walkable top (merlons, walkway, parapet blocks)",
+      "rows": "1-15",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "16"
+     },
+     {
+      "part": "front wall face with round arch, portcullis, tunnel and paved floor",
+      "rows": "17-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wall torches",
+      "rows": "42-48",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-15 form a stone band seen from above, with merlon blocks at the top and a walkway behind a parapet. It ends in a dark front-edge line at row 16, which is the eave shadow. Below it, rows 17-63 are the vertical south face with stone courses, a round arch, a raised portcullis, a dark tunnel (rows ~26-43) and a paved floor. The torches are small decor on the wall. The top is clearly more than a rim, and the front face is well over 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate matches the references on the primary facts: 12 visible tones per tile (references 12 and 10), 6% near-flat coverage (references 0%), and 0% neutral dark edge pixels, so its outlines are tinted rather than black. The stone is built from individually shaded blocks with mortar lines, voussoir stones around the arch, and a light-to-dark ramp on the crenellations. The tunnel interior is dark with a portcullis and a paved floor, and the two torches add small warm accents. It has roughly 5 stone steps against about 6 on the references, and its texture is a bit more regular and less speckled than the roof tiles and plaster on the references. I saw no large flat fills. A careful artist would accept it next to the references without it looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13918
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crenellated walkable top (battlement, merlons and walkway)",
+      "rows": "0-15",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "wall torches",
+      "rows": "41-48",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-15 form a crenellated top band with merlon blocks and a recessed walkway strip around rows 5-8. It ends in a dark front-edge line at row 16 (row 15 is mid-dark L=131, row 16 is dark L=81), which works as an eave shadow. Below it, rows 17-63 are a stone-brick front face with a round arch, a dark tunnel, raised portcullis bars and a paved floor. The width stays at 64 across the face and no isometric side face is drawn. The torches are small decor on the wall."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate matches the references on the primary facts. It has 12 visible tones per 16x16 tile against 12 and 10 for the references. Near-flat coverage is 6% (references 0%), so there are no real flat fills. The 0% near-neutral share of dark edge pixels shows the edges carry a tint: they read as a dark stone-toned line, not a black sticker outline. By eye, the wall is built from individually shaded stone blocks with mortar lines and lit and shaded faces. The crenellations have top highlights and shadowed sides. The arch has a voussoir ring, the portcullis bars sit against a dark tunnel, and the floor is cobbled. The two torches add small warm accents. The stone ramp has about 5 steps, close to the references' 5-6 but slightly shallower. Texture is moderate: block-level variation, but less grain and speckle than the references' per-tile roof highlights. The raw colour count is low (26 against 66-185), but the visible tone count is equal, so density holds. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14689
+  }
+ ],
+ "decidedAt": "2026-10-22T06:43:33.569Z",
+ "cells": {
+  "16": [
+   "0dacc26c272aec55",
+   "17b9edb614e6ee63",
+   "36d912e1a185eeb4",
+   "5e64f96e6d022b85",
+   "700dfa59c69ccce2",
+   "98b2253e1d522e03",
+   "a0915c6cda78443b",
+   "ace9b95a2adb07bb",
+   "b01b72637ee916f6",
+   "b4961f7606c6f67a",
+   "d46d4ef0767570cb",
+   "db120c606b632ef8",
+   "db7df097931bc109",
+   "e1f8d748975d5f97",
+   "eb602e4abce93dda"
+  ],
+  "24": [
+   "040dfd127c69113e",
+   "04139eef4f415daa",
+   "04f83d7cca069806",
+   "12342db0884b1a05",
+   "160355ff76636e19",
+   "16a35c2a47a9bd29",
+   "2832eb50e3ad9b66",
+   "2a085a2defae70a9",
+   "2e2188abf3f6350e",
+   "38a667b3af6f5d8d",
+   "3be245f0fa2afd7a",
+   "41190b95bbc98d08",
+   "43200bdb7ae57958",
+   "47b673edd212597d",
+   "4d820fcdc512f792",
+   "4fdca162fcc7d037",
+   "58ad4949b267e791",
+   "5b00f907421eed0c",
+   "625c9f43a76eea40",
+   "62b08d70493c3c7a",
+   "6715bf0a6fdc43ac",
+   "6e2afc3e7f161f9c",
+   "6ee7972c4d0c291c",
+   "70619fb0e8a59d02",
+   "751850940e302407",
+   "77cb20f474c94629",
+   "788d398185626d83",
+   "7c382ac30298558e",
+   "815a2a4bac84f03a",
+   "822f3f54abe555d3",
+   "829be274342b33f0",
+   "8df688a9008498d8",
+   "8e162f1e1bfbb219",
+   "93626183f24ff6be",
+   "97a9a3efc33e4b1f",
+   "a0c5c9eda32965bf",
+   "a452c0d7b39946f7",
+   "a9a56dbce9adc5d6",
+   "aa805df21ea4870b",
+   "b60cd4ca08c6d7b4",
+   "bbef71c204ea8635",
+   "c1e01ca267aafd19",
+   "c6ca28915eee6fbe",
+   "cea484306151bbdf",
+   "da8c00d6893c9262",
+   "daec2aa4fa5f067f",
+   "dee7d9d5541c9706",
+   "eca3aa28e5316c07",
+   "f1c6c65b37cbb6ec",
+   "f5a37d3a75625de9",
+   "f6fa10841ef5aa5c",
+   "f70898ba31859b8c",
+   "fcf830ae549ce302",
+   "fd24df7765f11a38"
+  ],
+  "32": [
+   "096092db42f492e2",
+   "1edd1c4d5e06ea78",
+   "af6f68235107e404",
+   "f95bf40105e203c8"
+  ],
+  "48": [
+   "2e33c4e6ef4958d8",
+   "33bd0cea8868dc30",
+   "3e7caacc70fcce8f",
+   "423d33f1015de067",
+   "53679000a732e42d",
+   "53d6fde3db8f9254",
+   "5cda5357fe8ccda9",
+   "72a3a80412648816",
+   "73e2bcd518b2a8fb",
+   "7e022a1520dbbef8",
+   "812cb8b92c3ee9af",
+   "8e1a8ab9e257a103",
+   "8e63330a24cb46e5",
+   "952fc00672d2ca24",
+   "a8edb484ec6cd67a",
+   "b8c639a675ae35d3",
+   "c82149059e287988",
+   "cc8368bfafa14964",
+   "d2a2a7bda62b0135",
+   "db52b21f395c26c3",
+   "de7905d4e9541ae5",
+   "e85acc163152a99e",
+   "ece6983dc724e4a9",
+   "f36093f46f21ae6b"
+  ]
+ }
+}

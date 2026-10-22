@@ -1,0 +1,19 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "639097180aa76db32e04128160e5e62294764f6da1a455278b65673a06a8e7bd",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-22T06:44:42.260Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (2/4)"
+ ],
+ "note": "town wall r4 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/beodeul-town-wall-r4/receipt.json",
+ "sig": "027bf59998c7964ef8fb2d51c57688fd0382f327167db3df3b9e803381d0e611"
+}

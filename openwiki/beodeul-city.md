@@ -99,7 +99,7 @@
 - `woods: "dense"`: 숲 덩이 목표 50%·씨앗 길에서 3칸·덩이 반지름 7~14, 밭 둘까지 — 숲속 빈터 마을. 「숲속 마을이 트인 풀밭」 지적.
 - 단의 동서 끝(남향 절벽 면만 그리므로 1px 선)은 그 위 두 줄에 숲을 둘러 덮고, 160칸 미만 대지 조각은 아랫단으로 내린다.
 - 포구 길가 마을의 작은 부두는 잔교 몸통(`jetty-stem`)을 쓴다 — `jetty-west` 맨 윗줄 뒤가 물빛이라 길 아래 풀 위에서 검은 네모로 보였다.
-- 성벽 마을: 버들항에는 마을을 두르는 성벽 조각이 없다. 경로 메모가 손으로 성벽을 그리지 말고(평면 벽이 된다) 「아직 없다」고 말하게 한다 — 그림 공백.
+- 성벽 마을: `walls:true`(또는 이름에 성벽·성곽·성문·요새) — 아래 「마을 성벽」 절. 예전의 「성벽 그림이 없다」 안내는 지웠다.
 - seed 를 생략하면 `defaultTownSeed`(시스템 설정의 무작위 오프닝 id·맵 목록·이름의 해시) — 같은 프로젝트 상태면 같은 값, 프로젝트나 맵이
   다르면 다른 값. form·terrain·roofs 를 생략하면 그 seed 로 고른다. 결과 `data.seed`·`data.roofs` 로 재현한다.
 - 경로 메모(`beodeulTownRoute.ts`)는 「마을의 정체 한 줄 → theme·form·terrain·roofs·forestType·크기」, 요청이 말하지 않은 선택과 seed 는 보내지 않기.
@@ -113,6 +113,36 @@
 실제 편집기 조수가 기존 두 나무를 보정하고 ‘버들쉼터’ 집 5채를 만든 뒤 화면을 보며 녹지를 보강했다.
 SQLite revision 7 저장·재로드와 전용 플레이어 8비트(모든 집 문 앞 도보 이동·우물 복귀)의 근거는
 `verify-shots/beodeul-small-village/README.md`. 기존 문 이벤트·실내·통행은 보존됐다.
+
+## 마을 성벽 bd-wall (2026-10-22) — 3/4 성벽 길·성문루·망루·계단, 칸 28,544~28,671
+
+- **그림**: `scripts/content/beodeul-wall/wall_art.py` 행 문자열 손 도트 88조각(생성 이미지 없음). 돌 색은 버들항 시트에 있는 색만
+  (o #2b203f · O #403a31 · m #54504e · M #6d6863 · s #86827f · S #99968c · B #a7a7a1 · w #9f9a8d · L #bcbbb1 · H #c8c5ba), 망루 지붕은 집 기와 색.
+  3/4: 성벽 위 통로(걷는 윗면)가 면으로 보이고 그 아래 앞면 두 줄. 북쪽 성벽은 마을 쪽 앞면 + 뒤 흉벽, 남쪽은 바깥 앞면 + 앞 흉벽, 서·동은 윗면만.
+- **굽기**: `bake_wall.py` — `bake_dungeon_ceiling.py` 끝에서 이어 부른다(체인 picks → farm → dungeon_ceiling → wall). 시트 꼬리 128칸
+  28,544~28,671(덧붙이기만, 앞 칸 화소 동일 확인). 칸 이름표·통행(통로 걸음, 앞면·흉벽·망루 막힘, 성문루 가운데 두 열 걸음, 닫힌 성문 막힘),
+  키트 9(`bd-wall-gatehouse`·`-gatehouse-closed`·`-tower`·`-stairs`·`-run-{south,north,west,east}-4`·`-ring-sample`), 그룹 3(`beodeul:town_wall*`).
+  조각 이름 → 칸 번호는 `src/assets/beodeulTownWallPieces.json`. 성문루 바닥은 투명이라 1층 길이 아치 밑으로 보인다(아래층 조각은 2층).
+- **둘레 규칙**: `src/editor/tools/beodeulTownWall.ts` `planTownWallRing`(= bake_wall.py `plan_ring`). 가로 성벽을 길이 지나는 곳은 4×4 성문루,
+  세로 성벽을 지나는 곳은 끝 마감 틈, 망루 2×7 은 가로 성벽에, 계단은 북쪽 성벽 앞면에. `stampTownWall` 은 위 조각 3층·아래 조각 2층.
+- **조수**: `author_beodeul_town` `walls:true`(이름에 성벽·성곽·성문·요새면 자동). 평지로, river 테마는 강 없이, 크기 +2×+4.
+  `beodeulVillage.ts` 12d 단계가 둘레 띠를 집·나무 자리에서 빼고, 남·북 성벽을 지나는 길이 없으면 남쪽 길을 하나 낸다(치울 수 있는 소품만 치움).
+  결과 `data.walls = {gates, gaps, towers, stairs, blockedRoads, southGateRoad?}`. 경로 메모(`beodeulTownRoute.ts`)도 walls:true 를 가르친다.
+- **성문 고르기(조수 시험 r1 뒤 수리)**: `wallGate` S(기본)·N·NS — 그 쪽마다 성문루 하나. 가운데에서 폭 12% 안에 지나는 길이 있으면 그 길,
+  없으면 가운데 쪽으로 안쪽 길에서 맵 끝까지 새 길을 낸다. 그 밖에서 성벽을 지나던 길은 성벽 띠에서 끊고 안쪽 줄기를 갈림목까지 지운다.
+  서·동 틈은 `wallSideGaps:true` 일 때만. 성문 길은 마을 길망까지 빈 땅 최단 경로로 잇고 길 재료로 칠한다. 입구(`data.entrance`)는 성문 바깥 끝.
+  r1(수리 전): 「남쪽에 성문 하나」인데 서·동 틈 셋, 성문이 남동 모서리 곁. r5(수리 뒤): 남쪽 가운데 성문 하나, 옆 틈 0, 문 앞 4/4.
+- **조수 시험**: 시드 `scene-lessons-seed.json` 의 `walled-beodeul-town`. 실행 `qa-runs/harnesses/assistant-capability/2026-10-22-beodeul-wall-r1..r5`
+  (Claude Code Sonnet 5.5 high **조수 대용**, 실제 입력창 경로, SQLite 저장·재로드 일치). 성문 걷기 영상은 출하 player 에서 r5 저장본을 실제 방향키로
+  (`r5/.../gatefilm/gatewalk.mp4`). 남은 것: 집 수 요청(5)이 성벽 띠 때문에 3~4채로 덜 지어지기도 한다(r3·r4).
+- **참고문서**: 번들 `beodeulCityReferences.json` 용도 `beodeul-town-wall`(출처 `tiledata/beodeul-town-wall/`, 그림 `public/assets/beodeul-town-wall/`,
+  생성 `wall_refs.py` — 예시 둘레·정상/오류 그림 4종·좌표 검사 `wrong-layer`·`face-missing`·`wall-gap`·`gate-blocked`).
+- **기존 프로젝트 한계**: 접목(tileGrafts)이 이미 28,544 이후 칸을 쓰는 프로젝트(대부분, count 30,080)는 꼬리를 덮지 않으려고 성벽을 싣지 않는다 —
+  `townWallAvailable` 이 거짓이 되어 성벽 없이 짓고, 참고문서 용도도 넣지 않는다. 새 프로젝트는 접목이 28,672 뒤로 간다.
+- **검수**: 새 Opus 적대 VQA 5판(`harness-data/object-gate/vqa/beodeul-town-wall-r1..r5/receipt.json` — r1 FAIL 회색·매끈·끝 마감, r3 FAIL T자 이음,
+  r4·r5 PASS). object-gate 그림 6장은 프로필 미보정이라 AI 판정은 참고(둘레·망루·동쪽 틈 FAIL 화풍/정면 인상, 부품·열린 성문 REFER, 닫힌 성문 PASS)이고,
+  Opus VQA 뒤 「delegated by user to supervisor 2026-10-21」 허용을 18323 API 로 기록했다. 3/4 관문 정식 통과(보정 프로필 영수증)는 아니다.
+- 화면: http://mdc-server:18301/beodeul-town-wall-1.html
 
 ## 민가·성당 외장: 원본 보존 보정 (2026-10-04 사용자 정정)
 
