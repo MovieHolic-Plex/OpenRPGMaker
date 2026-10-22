@@ -55,7 +55,21 @@ export interface DungeonSpec {
   /** 맵 가로·세로 바람(칸). 방 구성을 정할 때 방 수·크기를 이 넓이에 맞추고, 배치가 이 비율에 가깝게 자란다. */
   readonly width?: number;
   readonly height?: number;
+  /**
+   * 층 계단 종류(2026-10-22 여러 층 던전). entryStair = 이 층에 들어오는 계단: up(기본, 북쪽 벽에 올라가는 계단 — 바깥·위층으로 나간다)
+   * · down(입구 방 바닥에 내려가는 계단 — 탑 위층에서 아래층으로) · door(북쪽 벽 아치 문 — 탑 1층 출입문).
+   * exitStair = 다음 층으로 가는 계단: down(기본, 보스·가장 깊은 방 바닥 구멍) · up(가장 깊은 방 북쪽 벽 올라가는 계단 — 탑) · none.
+   */
+  readonly entryStair?: "up" | "down" | "door" | "none";
+  readonly exitStair?: "down" | "up" | "none";
+  /** true 면 보물 방(없으면 가장 깊은 곁방) 북쪽 벽에 아치 문을 낸다 — 퍼즐 방·곁 맵과 잇는 문(sideDoor). */
+  readonly sideDoor?: boolean;
+  /** 물에 잠긴 던전(신전·지하묘지·성): 큰 방 바닥에 물이 차고 걸을 길(둑·가운데 길)만 남는다. 다리는 코드가 잇는다. */
+  readonly flooded?: boolean;
 }
+
+/** 층 계단·문 하나: x,y = 이동 이벤트를 둘 칸(계단 그림 칸), front = 들어서는 앞 칸(도착 칸). */
+export interface DungeonStairCell { x: number; y: number; front: { x: number; y: number }; kind: "up" | "down" | "door" }
 
 export interface Rect { x: number; y: number; w: number; h: number }
 export interface PlacedRoom extends Rect { id: string; kind: DungeonRoomKind; from: string | null; dir: DungeonDir | null; depth: number }
@@ -79,6 +93,11 @@ export interface DungeonCompose {
   readonly entrance: { x: number; y: number };
   readonly stairsUp: { x: number; y: number; front: { x: number; y: number } } | null;
   readonly stairsDown: { x: number; y: number } | null;
+  /** 이 층에 들어오는 계단·문과 다음 층으로 가는 계단(여러 층 던전이 잇는다). 옛 stairsUp/stairsDown 은 기본 종류일 때 같은 칸이다. */
+  readonly entryStair?: DungeonStairCell | null;
+  readonly exitStair?: DungeonStairCell | null;
+  /** 곁 맵(퍼즐 방)으로 가는 아치 문(spec.sideDoor). */
+  readonly sideDoor?: (DungeonStairCell & { room: string }) | null;
   /** 서사 앵커: 보스방(입구에서 가장 깊은 방 또는 kind boss)·보물 방·잠긴 문 자리(보스·보물 방으로 들어가는 통로 한가운데 칸). */
   readonly anchors: { boss: string | null; treasure: string | null; gate: { x: number; y: number; to: string } | null };
   readonly spots: Record<string, { x: number; y: number }[]>;

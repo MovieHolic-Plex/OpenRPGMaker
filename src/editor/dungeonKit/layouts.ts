@@ -140,11 +140,11 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
   const seed = spec.seed ?? 7;
   const random = rng(seed * 40503 + 17);
   const si = sizeIndex(spec);
-  const [dw, dh] = [[72, 52], [88, 62], [112, 78]][si]! as [number, number];
+  const [dw, dh] = [[56, 44], [88, 62], [112, 78]][si]! as [number, number];   // small 은 방 3개짜리 작은 굴(2026-10-22 「작은 동굴」이 64×49 로 나오던 것)
   const W = spec.width ? clamp(spec.width, 48, 200) : dw;
   const H = spec.height ? clamp(spec.height, 40, 150) : dh;
   const g = new Grid(W, H);
-  const wantN = spec.roomCount ? clamp(spec.roomCount, 2, 14) : spec.width && spec.height ? clamp((W * H) / 640, 4, 14) : [4, 7, 10][si]!;
+  const wantN = spec.roomCount ? clamp(spec.roomCount, 2, 14) : spec.width && spec.height ? clamp((W * H) / 640, 4, 14) : [3, 7, 10][si]!;
   const ENT_W = 13, ENT_H = 6;
   const entX = Math.floor(W / 2) - 6, entY = H - MARGIN - 1 - ENT_H;
   const entrance: Rect = { x: entX, y: entY, w: ENT_W, h: ENT_H };
@@ -229,7 +229,15 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
       if (d < 1 + wob) { g.floor[g.idx(x, y)] = 1; g.roomAt[g.idx(x, y)] = c.index; }
     }
   });
-  for (let y = entY; y < entY + ENT_H; y += 1) for (let x = entX; x < entX + ENT_W; x += 1) { g.floor[g.idx(x, y)] = 1; g.roomAt[g.idx(x, y)] = 0; }
+  // 입구 굴: 자연 동굴이라 네모가 아니다 — 가운데 심(위쪽 가운데 줄·통로 목)은 남기고 둘레를 잡음 타원으로 깎는다.
+  {
+    const ecx = entX + (ENT_W - 1) / 2, ecy = entY + (ENT_H - 1) / 2;
+    for (let y = entY - 1; y < entY + ENT_H + 1; y += 1) for (let x = entX - 1; x < entX + ENT_W + 1; x += 1) {
+      const core = Math.abs(x - ecx) <= 3 && y >= entY && y < entY + ENT_H - 1;
+      const d = ((x - ecx) / (ENT_W / 2 + 0.6)) ** 2 + ((y - ecy) / (ENT_H / 2 + 0.6)) ** 2;
+      if (core || d < 1 + (vnoise(x, y, 3.5, seed + 991) - 0.5) * 0.6) { g.floor[g.idx(x, y)] = 1; g.roomAt[g.idx(x, y)] = 0; }
+    }
+  }
   // 가장자리 안쪽으로 강제
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) if (x < MARGIN || y < MARGIN + 4 || x >= W - MARGIN || y >= H - MARGIN) { g.floor[g.idx(x, y)] = 0; g.roomAt[g.idx(x, y)] = -1; }
   smooth(g, 2, (x, y) => x >= entX - 2 && x < entX + ENT_W + 2 && y >= stubTop - 1 && y < entY + ENT_H + 2);

@@ -6,16 +6,18 @@ import { isPassable } from "@/project/collision";
 import { groundSupportIssues } from "@/project/groundSupport";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
-import type { EncounterTableEntry, GameMap, Project } from "@/project/types";
+import type { Command, EncounterTableEntry, GameEvent, GameMap, Project } from "@/project/types";
 import { DUNGEON_DIRS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGEON_STYLES, DUNGEON_TYPES, type DungeonRoomInput, type DungeonSpec } from "../dungeonKit/types";
 import { DungeonComposeError } from "../dungeonKit/errors";
 import { capabilityTableText } from "../dungeonKit/capabilities";
-import { DUNGEON_GENRES, GENRE_PRESETS, planPopulation } from "../dungeonKit/genres";
+import { DUNGEON_GENRES, GENRE_PRESETS, genreOfProject, planPopulation } from "../dungeonKit/genres";
 import { GRAMMAR } from "../dungeonKit/grammar";
 import { composeRouted, routeDungeon } from "../dungeonKit/route";
 import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS } from "./mapTools";
-import { ToolError, type ToolDefinition } from "./types";
+import { upsertEventIntoMap } from "./eventTools";
+import { asCell, asRoom, chestLoot, field, list, nested, pickTroops, placeRoamer, text, type Room } from "./jrpgVolumeTools";
+import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { DUNGEON_ENTRANCE_TAG, ENTRANCE_OPTION_SCHEMA, linkEntranceInDraft, parseEntranceOption } from "./dungeonLinkTools";
 
 const createMapTool = MAP_TOOLS.find((tool) => tool.name === "create_map")!;
@@ -34,6 +36,302 @@ function isBlankMap(map: GameMap): boolean {
   return [map.upperTiles, map.lowerOverlayTiles, map.upperOverlayTiles].every((layer) => !layer || layer.every((tile) => tile < 0));
 }
 
+interface FloorOpts {
+  readonly seed: number;
+  readonly entry: "up" | "down" | "door" | "none";
+  readonly exit: "up" | "down" | "none";
+  readonly sideDoor?: boolean;
+}
+
+/** 던전 한 층을 짓는다(옛 author_dungeon 본체). 계단 종류·시드는 floor 가 정한다 — 여러 층 잇기·채우기는 authorDungeon. */
+function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorOpts): ToolExecResult {
+  const rooms = Array.isArray(args.rooms) ? (args.rooms as DungeonRoomInput[]) : [];
+  const int = (v: unknown) => (Number.isInteger(v) && (v as number) > 0 ? (v as number) : undefined);
+  const typeArg = (DUNGEON_TYPES as readonly string[]).includes(String(args.type)) ? (args.type as DungeonSpec["type"]) : undefined;
+  const spec: DungeonSpec = {
+    ...(rooms.length ? { rooms } : {}),
+    ...(typeArg ? { type: typeArg } : {}),
+    style: (DUNGEON_STYLES as readonly string[]).includes(String(args.style)) ? (args.style as DungeonSpec["style"]) : undefined,
+    seed: floor.seed,
+    size: (DUNGEON_SIZES as readonly string[]).includes(String(args.size)) ? (args.size as DungeonSpec["size"]) : undefined,
+    width: int(args.width), height: int(args.height),
+    entryStair: floor.entry, exitStair: floor.exit, ...(floor.sideDoor ? { sideDoor: true } : {}), ...(args.flooded === true ? { flooded: true } : {}),
+  };
+  const entranceOpt = args.entrance === undefined ? undefined : parseEntranceOption(args.entrance);
+  if (entranceOpt) {
+    if (!draft.maps[entranceOpt.fromMapId]) throw new ToolError(`entrance.fromMapId 맵이 없다: ${entranceOpt.fromMapId} — 야외·월드맵 id 를 확인하라(list_maps).`, { code: "map-not-found", mapId: entranceOpt.fromMapId });
+  }
+  const requestedMapId = typeof args.mapId === "string" && args.mapId.trim() ? args.mapId.trim() : "";
+  if (requestedMapId && !draft.maps[requestedMapId]) throw new ToolError(`맵이 없습니다: ${requestedMapId}`, { code: "map-not-found", mapId: requestedMapId });
+  let composed, route;
+  try {
+    route = routeDungeon(draft, {
+      type: typeof args.type === "string" ? args.type : undefined, variant: typeof args.variant === "string" ? args.variant : undefined,
+      adapter: typeof args.adapter === "string" ? args.adapter : undefined, genre: typeof args.genre === "string" ? args.genre : undefined,
+      ...(requestedMapId ? { mapId: requestedMapId } : {}),
+    });
+    const tileset = route.addTileset ?? draft.tilesets[route.tilesetId]!;
+    composed = composeRouted(route, tileset, spec);
+    if (route.addTileset) draft.tilesets[route.addTileset.id] = route.addTileset;
+  } catch (error) {
+    if (error instanceof DungeonComposeError) throw new ToolError(error.message, { code: error.code, ...(requestedMapId ? { mapId: requestedMapId } : {}) });
+    throw error;
+  }
+  const tilesetId = route.tilesetId;
+  const tileset = draft.tilesets[tilesetId]!;
+  if (composed.width > MAX_TOOL_MAP_DIMENSION || composed.height > MAX_TOOL_MAP_DIMENSION) {
+    throw new ToolError(`방 배치가 ${composed.width}×${composed.height} 라 한 맵 한도(${MAX_TOOL_MAP_DIMENSION})를 넘는다 — 방 수나 크기를 줄여라.`, { code: "invalid-args" });
+  }
+  const notes: string[] = [...route.notes];
+  let mapId = requestedMapId;
+  if (mapId) {
+    const existing = draft.maps[mapId]!;
+    if (typeof args.name === "string" && args.name.trim()) existing.name = args.name.trim();
+    if (existing.tilesetId !== tilesetId) throw new ToolError(`맵 ${mapId} 은 ${route.adapter === "monster" ? "이 종류가 쓰는 몬스터 시트" : "버들항"} 맵이 아니다(${existing.tilesetId}) — mapId 를 빼고 새 맵으로 짓는다.`, { code: "tileset-family-mismatch", mapId });
+    if (!isBlankMap(existing)) throw new ToolError(`맵 ${mapId} 에는 이미 내용이 있어 덮어쓰지 않는다 — mapId 를 빼고 새 맵으로 짓는다.`, { code: "map-not-blank", mapId });
+    if (existing.width !== composed.width || existing.height !== composed.height) {
+      resizeMapTool.run(draft, { mapId, width: composed.width, height: composed.height });
+      notes.push(`빈 맵 ${mapId} 을 ${composed.width}×${composed.height} 로 넓혀 그 자리에 지었다.`);
+    }
+  } else {
+    mapId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : "";
+    if (mapId) assertMapIdAvailable(draft, mapId);
+    const created = createMapTool.run(draft, {
+      ...(mapId ? { id: mapId } : {}), name: typeof args.name === "string" && args.name.trim() ? args.name.trim() : "지하 던전",
+      width: composed.width, height: composed.height, tilesetId, border: "none",
+    });
+    mapId = (created.data as { mapId?: string; id?: string } | undefined)?.mapId ?? (created.data as { id?: string } | undefined)?.id ?? mapId;
+    if (!mapId || !draft.maps[mapId]) throw new ToolError("던전 맵 생성에 실패했다.", { code: "create-map-failed" });
+  }
+  const map = draft.maps[mapId]!;
+  if (map.lowerTiles.length !== composed.lower.length) throw new ToolError(`맵 크기 불일치(${map.width}×${map.height} ≠ ${composed.width}×${composed.height}).`, { code: "resize-failed" });
+  map.lowerTiles = composed.lower.slice();
+  map.upperTiles = composed.upper.slice();
+  for (const layer of ["lowerOverlayTiles", "upperOverlayTiles"] as const) if (map[layer]) map[layer] = new Array<number>(map.width * map.height).fill(-1);
+  map.mapRole = "dungeon";
+  // 방마다 이름표 + composed-layout 표식: 큰 홀·통로의 빈 바닥은 필드 적이 돌아다닐 용도로 비운 칸이다.
+  // 표식이 없으면 조수 실행기의 배치 품질 권고(빈 바닥 ≤30%)가 던전을 「빈 방」으로 보고 clear_map 으로 지우려 했다(2026-10-14 재시험 실측).
+  map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes("dungeon-room"));
+  const population = planPopulation(route.genre, composed, spec.seed ?? 7);
+  const wildRooms = new Set(population.wildZones.map((z) => z.room));
+  const wildLocationIds: Record<string, string> = {};
+  for (const room of composed.rooms) {
+    const wild = wildRooms.has(room.id);
+    const res = addMapLocation(map, { name: `${wild ? "야생 조우 " : ""}${ROOM_LABEL[room.kind]} ${room.id}`, x: room.x, y: room.y, w: room.w, h: room.h,
+      note: `바닥 ${room.w}×${room.h} · 이벤트 자리 ${(composed.spots[room.id] ?? []).map((p) => `(${p.x},${p.y})`).join(" ")}`,
+      tags: ["dungeon-room", COMPOSED_LAYOUT_TAG, room.kind, ...(wild ? ["야생 조우"] : [])] });
+    if (wild && res.ok) wildLocationIds[room.id] = res.location.id;
+  }
+  // 야생 조우(pokemon): 구역마다 locationId 조건 항목. 기존 같은 구역 항목은 갈아 끼운다.
+  const encounters = Array.isArray(args.encounters) ? (args.encounters as { troopId?: unknown; weight?: unknown }[]).filter((e) => typeof e.troopId === "string" && e.troopId) : [];
+  if (route.genre === "pokemon" && population.wildZones.length) {
+    if (encounters.length && Object.keys(wildLocationIds).length) {
+      const missing = encounters.filter((e) => !draft.database.troops.some((t) => t.id === e.troopId)).map((e) => String(e.troopId));
+      if (missing.length) throw new ToolError(`encounters 의 troopId 가 데이터베이스에 없다: ${missing.join(", ")} — upsert_troop 먼저.`, { code: "troop-not-found", mapId });
+      const table: EncounterTableEntry[] = Object.values(wildLocationIds).flatMap((locationId) => encounters.map((e) => ({ troopId: String(e.troopId), weight: Math.max(1, Number(e.weight) || 5), conditions: { locationId } })));
+      map.encounterTable = table;
+      map.encounterRate = Number.isInteger(args.encounterRate) ? Math.max(0, args.encounterRate as number) : (map.encounterRate && map.encounterRate > 0 ? map.encounterRate : 12);
+      notes.push(`야생 조우 ${encounters.length}종 × 구역 ${table.length / encounters.length}곳을 encounterTable 에 깔았다(확률 ${map.encounterRate}%).`);
+    } else {
+      notes.push("야생 조우 구역 이름표만 만들었다 — set_encounter_table 의 conditions.locationId 로 이 구역(이름 「야생 조우 …」)에 야생을 잇는다.");
+    }
+  }
+  // 입구 표식: 야외 맵과 잇는 문 칸(stairsUp 이 있으면 그 칸, 없으면 입구 칸)과 도착 칸. link_world_entrance 가 이 표식을 읽는다.
+  {
+    const entry = composed.entryStair ?? (composed.stairsUp ? { ...composed.stairsUp, kind: "up" as const } : null);
+    const gate = entry ? { x: entry.x, y: entry.y } : composed.entrance;
+    const land = entry ? entry.front : undefined;
+    map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(DUNGEON_ENTRANCE_TAG));
+    addMapLocation(map, { name: "던전 입구", x: gate.x, y: gate.y, w: 1, h: 1, note: `야외로 나가는 문 칸 (${gate.x},${gate.y})${land ? ` · 도착 칸 (${land.x},${land.y})` : ""}`,
+      tags: [DUNGEON_ENTRANCE_TAG, COMPOSED_LAYOUT_TAG, `gate:${gate.x},${gate.y}`, ...(land ? [`land:${land.x},${land.y}`] : [])] });
+  }
+  let entranceLink: ReturnType<typeof linkEntranceInDraft> | undefined;
+  if (entranceOpt) {
+    try {
+      entranceLink = linkEntranceInDraft(draft, { ...entranceOpt, toMapId: mapId });
+    } catch (error) {
+      if (error instanceof ToolError) throw new ToolError(`던전은 지었지만 야외 입구 연결에 실패했다: ${error.message} — 연결만 link_world_entrance({worldMapId:"${entranceOpt.fromMapId}", links:[{${entranceOpt.place ? `place:"${entranceOpt.place}"` : `x:${entranceOpt.x},y:${entranceOpt.y}`}, toMapId:"${mapId}"}]}) 로 다시 하라.`, { code: error.code ?? "entrance-link-failed", mapId });
+      throw error;
+    }
+    notes.push(`야외 ${entranceOpt.fromMapId}(${entranceLink.fromGate.x},${entranceLink.fromGate.y}) ↔ 이 던전을 양방향으로 이었다.`);
+  }
+  // 만든 결과를 한 번 더, 실제 맵으로 검사한다(조립기 내부 검사와 같은 규칙).
+  const bad = groundSupportIssues(map, tileset, { events: false }).filter((issue) => issue.severity === "error");
+  if (bad.length) throw new ToolError(`시공 결과에 받침 없는 물체 ${bad.length}건: ${bad[0]!.message}`, { code: "support-violation", mapId });
+  if (draft.startMapId === mapId) {
+    const start = { x: composed.entrance.x, y: composed.entrance.y };
+    if (isPassable(draft, map, start.x, start.y)) {
+      draft.startPos = { ...draft.startPos, ...start };
+      notes.push(`시작 위치를 입구 (${start.x},${start.y}) 로 옮겼다.`);
+    }
+  }
+  const data = {
+    mapId, adapter: route.adapter, genre: route.genre, type: composed.type, ...(route.variant ? { variant: route.variant } : {}), tilesetId,
+    liquid: composed.liquid, width: composed.width, height: composed.height,
+    entrance: composed.entrance, stairsUp: composed.stairsUp, stairsDown: composed.stairsDown, anchors: composed.anchors,
+    entryStair: composed.entryStair ?? null, exitStair: composed.exitStair ?? null, sideDoor: composed.sideDoor ?? null,
+    rooms: composed.rooms.map((room) => ({ id: room.id, kind: room.kind, x: room.x, y: room.y, w: room.w, h: room.h, from: room.from, spots: composed.spots[room.id] ?? [] })),
+    corridors: composed.corridors.map((c) => ({ from: c.a, to: c.b, dir: c.dir, ...(c.loop ? { loop: true } : {}), ...c.rect })),
+    population, counts: composed.counts, warnings: composed.warnings,
+    ...(entranceLink ? { entranceLink: { fromMapId: entranceOpt!.fromMapId, fromGate: entranceLink.fromGate, toGate: entranceLink.toGate, outEvent: entranceLink.link.eventIdA, backEvent: entranceLink.link.eventIdB, landing: entranceLink.link.landingB } } : {}),
+  };
+  const dressed = Object.values(composed.counts).reduce((a, b) => a + b, 0);
+  return {
+    summary: `${notes.join(" ")} ${GRAMMAR[composed.type].label}(${route.adapter === "monster" ? "몬스터 키트" : "버들항"}·${GENRE_PRESETS[route.genre].label}) 던전 ${mapId} ${composed.width}×${composed.height}: 방 ${composed.rooms.length}개를 통로 ${composed.corridors.length}개로 이었다(장식 ${dressed}점, 받침 없는 물체 0${composed.liquid.kind ? `, ${composed.liquid.kind === "lava" ? "용암" : "물"} ${composed.liquid.cells}칸은 걸을 수 없고 다리 ${composed.liquid.bridges}칸` : ""}, 입구에서 모든 방 도달${composed.anchors.boss ? `, 보스방 ${composed.anchors.boss}` : ""}${composed.anchors.treasure ? `, 보물 방 ${composed.anchors.treasure}` : ""}${composed.anchors.gate ? `, 잠긴 문 자리 (${composed.anchors.gate.x},${composed.anchors.gate.y})` : ""}). 이벤트·적·상자는 data.rooms[].spots 좌표에만 두고, data.population 의 계획을 따른다.`.trim(),
+    data,
+    warnings: composed.warnings.length ? composed.warnings : undefined,
+  };
+}
+
+type Pt = { x: number; y: number };
+type Stair = Pt & { front: Pt; kind: string };
+const DIR_OF = (from: Pt, to: Pt): "up" | "down" | "left" | "right" => {
+  const dx = to.x - from.x, dy = to.y - from.y;
+  return Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "right" : "left") : dy < 0 ? "up" : "down";
+};
+
+/** 기본 시드: 7 고정이면 시드를 안 준 던전이 전부 같은 배치였다(2026-10-22 기준 시험). 맵 id·이름·맵 수로 정한다(같은 프로젝트 상태 = 같은 결과). */
+function defaultSeed(draft: Project, args: Record<string, unknown>): number {
+  if (Number.isInteger(args.seed)) return args.seed as number;
+  const key = `${String(args.id ?? "")}|${String(args.name ?? "")}|${String(args.type ?? "")}|${Object.keys(draft.maps).length}`;
+  let h = 2166136261;
+  for (let i = 0; i < key.length; i += 1) h = Math.imul(h ^ key.charCodeAt(i), 16777619) >>> 0;
+  return 1 + (h % 9973);
+}
+
+/** 계단 칸 이동 이벤트(계단 계약: 이벤트는 계단 그림 칸, 도착은 상대 계단 앞 칸에서 계단을 등지고). */
+function stairEvent(map: GameMap, id: string, at: Stair, name: string, to: { mapId: string; land: Pt; facing: "up" | "down" | "left" | "right" }): void {
+  const bump = at.kind === "door";
+  const event: GameEvent = {
+    id, x: at.x, y: at.y, trigger: { kind: "playerTouch" }, commands: [],
+    pages: [{
+      id: `${id}_page`, name, conditions: [], graphic: { transparent: true }, trigger: { kind: "playerTouch" },
+      priority: bump ? "same" : "below", overlapForbidden: false, movement: { type: "fixed", speed: 3, frequency: 3 },
+      commands: [{ kind: "transfer", mapId: to.mapId, x: to.land.x, y: to.land.y, direction: to.facing, fade: "black" } as Command],
+    }],
+  } as GameEvent;
+  upsertEventIntoMap(map, event);
+}
+
+/** 층 하나를 채운다(rpg): 계획된 자리의 보이는 적·상자, 보스방 수호자/층 수문장, 보스 앞 방의 회복 세이브 포인트. 실패한 자리는 경고로 넘긴다. */
+function populateFloor(draft: Project, mapId: string, data: Record<string, unknown>, troops: ReturnType<typeof pickTroops>, role: { boss: boolean; guardian: boolean; rest: boolean }, salt: number, warnings: string[]): string {
+  const map = draft.maps[mapId]!;
+  const rooms = list(data, "rooms").map(asRoom).filter((r): r is Room => !!r);
+  const anchors = field(data, "anchors");
+  const bossId = text(anchors, "boss"), vaultId = text(anchors, "treasure");
+  const population = field(data, "population");
+  const planned = (k: string): Array<Pt & { room?: string }> => list(population, k).flatMap((v) => { const c = asCell(v); if (!c) return []; const room = text(v, "room"); return [room ? { ...c, room } : c]; });
+  const bossRoom = rooms.find((r) => r.id === bossId) ?? (role.guardian || role.boss ? rooms[rooms.length - 1] : undefined);
+  // 쉼터는 방이 많은 층(5+)·여러 층의 마지막 층에만 — 작은 동굴에 세이브 결정이 서면 어색하다.
+  const restRoom = role.rest && bossRoom ? rooms.find((r) => r.id === bossRoom.from && r.id !== vaultId) : undefined;
+  const free = (c: Pt): boolean => isPassable(draft, map, c.x, c.y) && !map.events.some((e) => Math.abs(e.x - c.x) + Math.abs(e.y - c.y) <= 1);
+  const attempt = (label: string, fn: () => void): boolean => {
+    try { fn(); return true; } catch (error) { if (error instanceof ToolError) { warnings.push(`${map.name}: ${label} — ${error.message}`); return false; } throw error; }
+  };
+  const out: string[] = [];
+  const foes: string[] = [];
+  if (troops.field.length) {
+    planned("enemies").filter((e) => e.room !== bossRoom?.id && e.room !== restRoom?.id).slice(0, 4).forEach((e, i) => {
+      if (!free(e)) return;
+      if (attempt(`보이는 적 (${e.x},${e.y})`, () => placeRoamer(draft, { mapId, x: e.x, y: e.y, troopId: troops.field[(i + salt) % troops.field.length], behavior: "patrol", id: `ev_${mapId}_foe${i + 1}` }, i % 2 === 1))) foes.push(`(${e.x},${e.y})`);
+    });
+  } else warnings.push(`${map.name}: 데이터베이스에 적 그룹이 없어 보이는 적을 두지 않았다 — upsert_troop 뒤 troops 로 다시 짓거나 place_field_enemy.`);
+  if (foes.length) out.push(`보이는 적 ${foes.join(" ")}`);
+  // 상자: 보물 방이 먼저(보물 방이 빈 방으로 읽히지 않게), 그다음 곁방 하나.
+  const chestPlan = planned("chests").sort((a, b) => Number(b.room === vaultId) - Number(a.room === vaultId));
+  const chests: string[] = [];
+  for (const c of chestPlan) {
+    if (chests.length >= 2) break;   // 같은 그림 조사물 3개부터 린트가 「임시 표식」으로 본다
+    if (!free(c)) continue;
+    if (attempt(`상자 (${c.x},${c.y})`, () => nested(draft, "place_chest", { mapId, x: c.x, y: c.y, id: `ev_${mapId}_chest${chests.length + 1}`, name: c.room === vaultId ? "보물상자" : "던전 상자", contents: chestLoot(draft, salt * 5 + chests.length) }))) chests.push(`(${c.x},${c.y})`);
+  }
+  if (chests.length) out.push(`상자 ${chests.join(" ")}`);
+  const guard = (troopId: string | undefined, id: string, label: string): void => {
+    if (!bossRoom || !troopId) { warnings.push(`${map.name}: ${label} 자리를 찾지 못했다(${!troopId ? "적 그룹 없음" : "보스방 없음"})`); return; }
+    for (const at of bossRoom.spots.filter(free).slice(0, 4)) {
+      if (attempt(`${label} (${at.x},${at.y})`, () => nested(draft, "place_field_enemy", { mapId, x: at.x, y: at.y, troopId, behavior: "stationary", canEscape: false, alert: "anger", id }))) { out.push(`${label} ${troopId} (${at.x},${at.y})`); return; }
+    }
+  };
+  if (role.boss) guard(troops.boss, `ev_${mapId}_boss`, "보스");
+  else if (role.guardian) guard(troops.midBoss, `ev_${mapId}_guardian`, "층 수문장");
+  if (restRoom) {
+    const at = restRoom.spots.find(free);
+    if (at && attempt(`세이브 포인트 (${at.x},${at.y})`, () => nested(draft, "place_savepoint", { mapId, x: at.x, y: at.y, heal: true, name: "쉼터 결정", id: `ev_${mapId}_rest` }))) out.push(`쉼터(회복 세이브) ${restRoom.id} (${at.x},${at.y})`);
+  }
+  return out.join(" · ");
+}
+
+const FLOOR_NAME = (base: string, dir: "down" | "up", k: number, n: number): string => (n === 1 ? base : `${base} ${dir === "down" ? `지하 ${k}층` : `${k}층`}`);
+/** 탑 한 층(성 문법, 좁은 층): 입구 홀 → 큰 홀 → 곁방 둘. 꼭대기 층은 큰 홀 북쪽 보스방 + 보물 방. 감방·묘실은 넣지 않는다(지하 감옥처럼 읽혔다). */
+function towerRooms(top: boolean, k: number): DungeonRoomInput[] {
+  const side = k % 2 === 0 ? ["W", "E"] as const : ["E", "W"] as const;
+  return top
+    ? [{ id: "landing", kind: "entrance", w: 13, h: 7 }, { id: "hall", kind: "hall", w: 17, h: 11, from: "landing", dir: "N", shift: 0 }, { id: "throne", kind: "boss", w: 17, h: 11, from: "hall", dir: "N", shift: 0 }, { id: "vault", kind: "vault", from: "hall", dir: side[0] }]
+    : [{ id: "landing", kind: "entrance", w: 13, h: 7 }, { id: "hall", kind: "hall", w: 17, h: 11, from: "landing", dir: "N", shift: 0 }, { id: "store", kind: "storage", from: "hall", dir: side[0] }, { id: "stair", kind: "shrine", w: 11, h: 9, from: "hall", dir: side[1] }];
+}
+
+/** author_dungeon 본체: 층 수만큼 짓고(계단 잇기), rpg 장르면 적·상자·보스·쉼터까지 채운다. */
+function authorDungeon(draft: Project, args: Record<string, unknown>): ToolExecResult {
+  const floors = Number.isInteger(args.floors) ? Math.max(1, Math.min(5, args.floors as number)) : 1;
+  const direction: "down" | "up" = args.direction === "up" ? "up" : "down";
+  const baseSeed = defaultSeed(draft, args);
+  const linked = args.entrance !== undefined;
+  const genreHint = args.genre === "pokemon" || args.genre === "rpg" ? args.genre : genreOfProject(draft);
+  if (floors > 1 && args.adapter === "monster") throw new ToolError("여러 층 던전은 버들항 어댑터만 잇는다 — 몬스터 키트는 floors 를 빼고 층마다 따로 지은 뒤 link 도구로 잇는다.", { code: "invalid-args" });
+  const results: ToolExecResult[] = [];
+  const warnings: string[] = [];
+  const baseName = typeof args.name === "string" && args.name.trim() ? args.name.trim() : direction === "up" && floors > 1 ? "탑" : "지하 던전";
+  const baseId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : "";
+  for (let k = 1; k <= floors; k += 1) {
+    const first = k === 1, last = k === floors;
+    // 들어오는 계단: 1층은 바깥과 이을 때만(안 이으면 죽은 계단이 된다). 다음 층부터는 아래층(지하)·위층(탑)에서 오는 계단.
+    const entry: FloorOpts["entry"] = first ? (linked ? (direction === "up" && floors > 1 ? "door" : "up") : "none") : direction === "down" ? "up" : "down";
+    const exit: FloorOpts["exit"] = last ? (genreHint === "pokemon" && floors === 1 ? "down" : "none") : direction === "down" ? "down" : "up";
+    const floorArgs: Record<string, unknown> = { ...args, name: FLOOR_NAME(baseName, direction, k, floors) };
+    delete floorArgs.floors; delete floorArgs.direction; delete floorArgs.populate; delete floorArgs.troops; delete floorArgs.seed;
+    if (!first) { delete floorArgs.entrance; delete floorArgs.mapId; floorArgs.id = baseId ? `${baseId}_f${k}` : undefined; }
+    if (floors > 1 && direction === "up" && !args.rooms) { floorArgs.rooms = towerRooms(last, k); floorArgs.type = args.type ?? "castle"; }
+    else if (floors > 1 && !args.rooms && !args.size) floorArgs.size = last ? "medium" : "small";
+    results.push(buildFloor(draft, floorArgs, { seed: baseSeed + (k - 1) * 101, entry, exit }));
+  }
+  const datas = results.map((r) => r.data as Record<string, unknown>);
+  const mapIds = datas.map((d) => String(d.mapId));
+  // 층 잇기: k 층 나가는 계단 ↔ k+1 층 들어오는 계단. 도착은 상대 계단 앞 칸, 계단을 등진다.
+  const links: string[] = [];
+  for (let k = 0; k + 1 < datas.length; k += 1) {
+    const a = datas[k]!.exitStair as Stair | null, b = datas[k + 1]!.entryStair as Stair | null;
+    const ma = draft.maps[mapIds[k]!]!, mb = draft.maps[mapIds[k + 1]!]!;
+    if (!a || !b) { warnings.push(`${ma.name} ↔ ${mb.name}: 계단 자리가 없어 잇지 못했다 — create_transfer_pair 로 잇는다.`); continue; }
+    stairEvent(ma, `ev_${ma.id}_stair_next`, a, `${mb.name}(으)로`, { mapId: mb.id, land: b.front, facing: DIR_OF(b, b.front) });
+    stairEvent(mb, `ev_${mb.id}_stair_back`, b, `${ma.name}(으)로`, { mapId: ma.id, land: a.front, facing: DIR_OF(a, a.front) });
+    links.push(`${ma.id}(${a.x},${a.y}) ↔ ${mb.id}(${b.x},${b.y})`);
+  }
+  // 채우기(rpg): 생략하면 켠다. 몬스터 수집(pokemon)은 야생 조우 구역이 정본이라 건너뛴다.
+  const populate = args.populate !== false && datas.every((d) => d.genre === "rpg");
+  const filled: string[] = [];
+  if (populate) {
+    const troops = pickTroops(draft, args.troops);
+    datas.forEach((d, i) => {
+      const last = i === datas.length - 1;
+      const line = populateFloor(draft, mapIds[i]!, d, troops, { boss: last, guardian: !last && i === datas.length - 2, rest: last && (datas.length > 1 || list(d, "rooms").length >= 5) }, baseSeed + i, warnings);
+      if (line) filled.push(`${draft.maps[mapIds[i]!]!.name}: ${line}`);
+    });
+  }
+  const floorWarnings = results.flatMap((r) => r.warnings ?? []);
+  const head = results.length === 1 ? results[0]!.summary : `${results.length}층 ${direction === "up" ? "탑" : "지하"} 던전: ${results.map((r, i) => `[${i + 1}] ${r.summary}`).join(" ")}`;
+  const tail = [
+    links.length ? `층 계단을 이었다: ${links.join(" / ")}(도착은 계단 앞 칸, 계단을 등진다).` : "",
+    filled.length ? `채움 — ${filled.join(" / ")}.` : populate ? "" : "채우기는 끔(populate:false) — data.population 계획대로 직접 놓는다.",
+    !linked ? "바깥 맵과 아직 잇지 않아 1층에 바깥 계단을 그리지 않았다 — 마을·필드와 이으려면 entrance 를 주거나 link_world_entrance." : "",
+  ].filter(Boolean).join(" ");
+  const all = [...floorWarnings, ...warnings];
+  return {
+    summary: `${head} ${tail}`.trim(),
+    data: results.length === 1 ? { ...datas[0], floors: [mapIds[0]], populated: populate } : { ...datas[0], floors: mapIds, floorData: datas, links, populated: populate },
+    ...(all.length ? { warnings: all } : {}),
+  };
+}
+
 export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
   name: "author_dungeon",
   description:
@@ -50,6 +348,7 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
     "data.anchors: boss(보스방 id), treasure(보물 방 id), gate(그 방으로 들어가는 통로 칸 — 잠긴 문·열쇠 이벤트 자리). " +
     "data.population 은 장르별 채우기 계획이다: pokemon = wildZones(야생 조우 구역 — 이 도구가 방마다 「야생 조우」 이름표 구역을 만들고, encounters:[{troopId,weight}] 를 주면 구역별 encounterTable 도 깐다) · enemies(시선 있는 트레이너 자리: 같은 좌표·sightRange·face 로 place_field_enemy 를 부른다) · shortcut(깊은 방 구멍 → 입구 앞 칸 이동 이벤트) · boss(선택) / rpg = enemies(필드 적) · chests · boss · lockedGate(문 칸+열쇠 방). 계획의 이벤트는 기존 도구로 직접 놓는다. " +
     "entrance:{fromMapId, place|x,y} 를 주면 야외·월드맵 입구와 이 던전을 자동으로 양방향 잇는다(고아 맵이 안 남는다) — 월드맵 「광산 입구」 장소에 place 로 바로 붙여라. 나중에 잇거나 여러 곳을 한 번에 이으려면 link_world_entrance. "
+    + "층 수(floors)·방향(direction)을 주면 여러 층을 한 번에 짓고 계단을 잇는다. rpg 장르는 기본으로 적·상자·보스·쉼터까지 채운다(populate) — 채운 뒤 따로 place_field_enemy·place_chest 를 또 부르지 말고 결과 요약을 확인만 한다. 바깥 맵과 잇지 않은 1층에는 바깥 계단을 그리지 않고, 마지막 층에는 내려가는 계단을 그리지 않는다(어디로도 안 가는 장식 계단 금지). "
     + "mapId 없으면 새 맵을 만든다. mapId 가 있으면 비어 있는 같은 계열 맵을 방 배치 크기로 넓혀 그 자리에 짓는다(내용이 있는 맵이면 거부 — 새 맵으로). 시작 맵이면 시작 위치를 입구로 옮긴다.",
   mode: "write",
   domains: ["map", "tile"],
@@ -69,7 +368,12 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
       encounters: { type: "array", description: "야생 조우(pokemon): [{troopId, weight}] — 야생 조우 구역(방)마다 locationId 조건으로 encounterTable 에 깐다. 생략하면 구역 이름표만 만들고 set_encounter_table 로 잇는다.", items: { type: "object", properties: { troopId: { type: "string" }, weight: { type: "integer" } }, required: ["troopId"] } },
       encounterRate: { type: "integer", description: "야생 조우 확률(걸음당 %, 기본 12). encounters 를 줄 때만." },
       style: { type: "string", enum: [...DUNGEON_STYLES], description: "catacomb·castle 방 문법의 벽 양식(선택)" },
-      seed: { type: "integer", description: "배치·장식 변주 시드(같은 값 = 같은 층). 기본 7" },
+      seed: { type: "integer", description: "배치·장식 변주 시드(같은 값 = 같은 층). 생략하면 맵 id·이름으로 정한다(던전마다 다르다)" },
+      floors: { type: "integer", description: "층 수 1~5(기본 1). 2 이상이면 층마다 맵을 하나씩 짓고 계단으로 잇는다(이동 이벤트는 계단 그림 칸, 도착은 상대 계단 앞 칸에서 계단을 등진다). 「3층 탑」「지하 2층까지」는 이 인자 하나로 — 층마다 author_dungeon 을 따로 부르고 create_transfer_pair 로 잇지 말 것. 버들항만." },
+      direction: { type: "string", enum: ["down", "up"], description: "floors 가 2 이상일 때 층 방향: down(기본) 지하로 내려가는 던전(이름 「지하 N층」, 입구 방 북벽 오르는 계단 ↔ 깊은 방 바닥 내려가는 계단) · up 탑(이름 「N층」, 깊은 방 북벽 오르는 계단 ↔ 위층 입구 방 바닥 내려가는 계단, 꼭대기 층에 보스방·보물 방)." },
+      populate: { type: "boolean", description: "rpg 장르 채우기(기본 true): 계획된 자리에 보이는 적(순찰)·상자(보물 방 먼저)·마지막 층 보스방 보스(도망 불가)·보스 앞 방 회복 세이브 포인트·그 아래층 층 수문장. 적 그룹은 troops 또는 데이터베이스에서 세기 순으로 고른다. false 면 data.population 계획만 돌려준다." },
+      troops: { type: "object", additionalProperties: false, description: "채우기에 쓸 적 그룹 id(선택 — 요청한 적이 있으면 upsert_troop 으로 먼저 만들고 여기 준다. 고블린 굴이면 고블린 무리)", properties: { field: { type: "array", items: { type: "string" }, description: "돌아다니는 잡몹 무리" }, midBoss: { type: "string", description: "층 수문장" }, boss: { type: "string", description: "마지막 방 보스" } } },
+      flooded: { type: "boolean", description: "물에 잠긴 던전(신전·묘지·성 등 방 문법 종류): 큰 방 바닥 대부분이 물이고 3칸 폭 마른 길(가운데 축)이 방을 가로지른다. 「물에 잠긴 신전」은 type temple + flooded:true — fill_region 으로 물을 직접 칠하지 말 것." },
       size: { type: "string", enum: [...DUNGEON_SIZES], description: "rooms 를 생략했을 때 층 크기: small 방 4 · medium 6(기본) · large 9" },
       width: { type: "integer", description: "바라는 맵 가로(칸, 선택). rooms 생략 시 방 수를 이 넓이에 맞추고, 배치가 이 비율로 자란다." },
       height: { type: "integer", description: "바라는 맵 세로(칸, 선택)." },
@@ -96,138 +400,7 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
   },
   invalidArgsExample: { size: "medium" },
   run(draft: Project, args) {
-    const rooms = Array.isArray(args.rooms) ? (args.rooms as DungeonRoomInput[]) : [];
-    const int = (v: unknown) => (Number.isInteger(v) && (v as number) > 0 ? (v as number) : undefined);
-    const typeArg = (DUNGEON_TYPES as readonly string[]).includes(String(args.type)) ? (args.type as DungeonSpec["type"]) : undefined;
-    const spec: DungeonSpec = {
-      ...(rooms.length ? { rooms } : {}),
-      ...(typeArg ? { type: typeArg } : {}),
-      style: (DUNGEON_STYLES as readonly string[]).includes(String(args.style)) ? (args.style as DungeonSpec["style"]) : undefined,
-      seed: Number.isInteger(args.seed) ? (args.seed as number) : 7,
-      size: (DUNGEON_SIZES as readonly string[]).includes(String(args.size)) ? (args.size as DungeonSpec["size"]) : undefined,
-      width: int(args.width), height: int(args.height),
-    };
-    const entranceOpt = args.entrance === undefined ? undefined : parseEntranceOption(args.entrance);
-    if (entranceOpt) {
-      if (!draft.maps[entranceOpt.fromMapId]) throw new ToolError(`entrance.fromMapId 맵이 없다: ${entranceOpt.fromMapId} — 야외·월드맵 id 를 확인하라(list_maps).`, { code: "map-not-found", mapId: entranceOpt.fromMapId });
-    }
-    const requestedMapId = typeof args.mapId === "string" && args.mapId.trim() ? args.mapId.trim() : "";
-    if (requestedMapId && !draft.maps[requestedMapId]) throw new ToolError(`맵이 없습니다: ${requestedMapId}`, { code: "map-not-found", mapId: requestedMapId });
-    let composed, route;
-    try {
-      route = routeDungeon(draft, {
-        type: typeof args.type === "string" ? args.type : undefined, variant: typeof args.variant === "string" ? args.variant : undefined,
-        adapter: typeof args.adapter === "string" ? args.adapter : undefined, genre: typeof args.genre === "string" ? args.genre : undefined,
-        ...(requestedMapId ? { mapId: requestedMapId } : {}),
-      });
-      const tileset = route.addTileset ?? draft.tilesets[route.tilesetId]!;
-      composed = composeRouted(route, tileset, spec);
-      if (route.addTileset) draft.tilesets[route.addTileset.id] = route.addTileset;
-    } catch (error) {
-      if (error instanceof DungeonComposeError) throw new ToolError(error.message, { code: error.code, ...(requestedMapId ? { mapId: requestedMapId } : {}) });
-      throw error;
-    }
-    const tilesetId = route.tilesetId;
-    const tileset = draft.tilesets[tilesetId]!;
-    if (composed.width > MAX_TOOL_MAP_DIMENSION || composed.height > MAX_TOOL_MAP_DIMENSION) {
-      throw new ToolError(`방 배치가 ${composed.width}×${composed.height} 라 한 맵 한도(${MAX_TOOL_MAP_DIMENSION})를 넘는다 — 방 수나 크기를 줄여라.`, { code: "invalid-args" });
-    }
-    const notes: string[] = [...route.notes];
-    let mapId = requestedMapId;
-    if (mapId) {
-      const existing = draft.maps[mapId]!;
-      if (existing.tilesetId !== tilesetId) throw new ToolError(`맵 ${mapId} 은 ${route.adapter === "monster" ? "이 종류가 쓰는 몬스터 시트" : "버들항"} 맵이 아니다(${existing.tilesetId}) — mapId 를 빼고 새 맵으로 짓는다.`, { code: "tileset-family-mismatch", mapId });
-      if (!isBlankMap(existing)) throw new ToolError(`맵 ${mapId} 에는 이미 내용이 있어 덮어쓰지 않는다 — mapId 를 빼고 새 맵으로 짓는다.`, { code: "map-not-blank", mapId });
-      if (existing.width !== composed.width || existing.height !== composed.height) {
-        resizeMapTool.run(draft, { mapId, width: composed.width, height: composed.height });
-        notes.push(`빈 맵 ${mapId} 을 ${composed.width}×${composed.height} 로 넓혀 그 자리에 지었다.`);
-      }
-    } else {
-      mapId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : "";
-      if (mapId) assertMapIdAvailable(draft, mapId);
-      const created = createMapTool.run(draft, {
-        ...(mapId ? { id: mapId } : {}), name: typeof args.name === "string" && args.name.trim() ? args.name.trim() : "지하 던전",
-        width: composed.width, height: composed.height, tilesetId, border: "none",
-      });
-      mapId = (created.data as { mapId?: string; id?: string } | undefined)?.mapId ?? (created.data as { id?: string } | undefined)?.id ?? mapId;
-      if (!mapId || !draft.maps[mapId]) throw new ToolError("던전 맵 생성에 실패했다.", { code: "create-map-failed" });
-    }
-    const map = draft.maps[mapId]!;
-    if (map.lowerTiles.length !== composed.lower.length) throw new ToolError(`맵 크기 불일치(${map.width}×${map.height} ≠ ${composed.width}×${composed.height}).`, { code: "resize-failed" });
-    map.lowerTiles = composed.lower.slice();
-    map.upperTiles = composed.upper.slice();
-    for (const layer of ["lowerOverlayTiles", "upperOverlayTiles"] as const) if (map[layer]) map[layer] = new Array<number>(map.width * map.height).fill(-1);
-    map.mapRole = "dungeon";
-    // 방마다 이름표 + composed-layout 표식: 큰 홀·통로의 빈 바닥은 필드 적이 돌아다닐 용도로 비운 칸이다.
-    // 표식이 없으면 조수 실행기의 배치 품질 권고(빈 바닥 ≤30%)가 던전을 「빈 방」으로 보고 clear_map 으로 지우려 했다(2026-10-14 재시험 실측).
-    map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes("dungeon-room"));
-    const population = planPopulation(route.genre, composed, spec.seed ?? 7);
-    const wildRooms = new Set(population.wildZones.map((z) => z.room));
-    const wildLocationIds: Record<string, string> = {};
-    for (const room of composed.rooms) {
-      const wild = wildRooms.has(room.id);
-      const res = addMapLocation(map, { name: `${wild ? "야생 조우 " : ""}${ROOM_LABEL[room.kind]} ${room.id}`, x: room.x, y: room.y, w: room.w, h: room.h,
-        note: `바닥 ${room.w}×${room.h} · 이벤트 자리 ${(composed.spots[room.id] ?? []).map((p) => `(${p.x},${p.y})`).join(" ")}`,
-        tags: ["dungeon-room", COMPOSED_LAYOUT_TAG, room.kind, ...(wild ? ["야생 조우"] : [])] });
-      if (wild && res.ok) wildLocationIds[room.id] = res.location.id;
-    }
-    // 야생 조우(pokemon): 구역마다 locationId 조건 항목. 기존 같은 구역 항목은 갈아 끼운다.
-    const encounters = Array.isArray(args.encounters) ? (args.encounters as { troopId?: unknown; weight?: unknown }[]).filter((e) => typeof e.troopId === "string" && e.troopId) : [];
-    if (route.genre === "pokemon" && population.wildZones.length) {
-      if (encounters.length && Object.keys(wildLocationIds).length) {
-        const missing = encounters.filter((e) => !draft.database.troops.some((t) => t.id === e.troopId)).map((e) => String(e.troopId));
-        if (missing.length) throw new ToolError(`encounters 의 troopId 가 데이터베이스에 없다: ${missing.join(", ")} — upsert_troop 먼저.`, { code: "troop-not-found", mapId });
-        const table: EncounterTableEntry[] = Object.values(wildLocationIds).flatMap((locationId) => encounters.map((e) => ({ troopId: String(e.troopId), weight: Math.max(1, Number(e.weight) || 5), conditions: { locationId } })));
-        map.encounterTable = table;
-        map.encounterRate = Number.isInteger(args.encounterRate) ? Math.max(0, args.encounterRate as number) : (map.encounterRate && map.encounterRate > 0 ? map.encounterRate : 12);
-        notes.push(`야생 조우 ${encounters.length}종 × 구역 ${table.length / encounters.length}곳을 encounterTable 에 깔았다(확률 ${map.encounterRate}%).`);
-      } else {
-        notes.push("야생 조우 구역 이름표만 만들었다 — set_encounter_table 의 conditions.locationId 로 이 구역(이름 「야생 조우 …」)에 야생을 잇는다.");
-      }
-    }
-    // 입구 표식: 야외 맵과 잇는 문 칸(stairsUp 이 있으면 그 칸, 없으면 입구 칸)과 도착 칸. link_world_entrance 가 이 표식을 읽는다.
-    {
-      const gate = composed.stairsUp ? { x: composed.stairsUp.x, y: composed.stairsUp.y } : composed.entrance;
-      const land = composed.stairsUp ? composed.stairsUp.front : undefined;
-      map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(DUNGEON_ENTRANCE_TAG));
-      addMapLocation(map, { name: "던전 입구", x: gate.x, y: gate.y, w: 1, h: 1, note: `야외로 나가는 문 칸 (${gate.x},${gate.y})${land ? ` · 도착 칸 (${land.x},${land.y})` : ""}`,
-        tags: [DUNGEON_ENTRANCE_TAG, COMPOSED_LAYOUT_TAG, `gate:${gate.x},${gate.y}`, ...(land ? [`land:${land.x},${land.y}`] : [])] });
-    }
-    let entranceLink: ReturnType<typeof linkEntranceInDraft> | undefined;
-    if (entranceOpt) {
-      try {
-        entranceLink = linkEntranceInDraft(draft, { ...entranceOpt, toMapId: mapId });
-      } catch (error) {
-        if (error instanceof ToolError) throw new ToolError(`던전은 지었지만 야외 입구 연결에 실패했다: ${error.message} — 연결만 link_world_entrance({worldMapId:"${entranceOpt.fromMapId}", links:[{${entranceOpt.place ? `place:"${entranceOpt.place}"` : `x:${entranceOpt.x},y:${entranceOpt.y}`}, toMapId:"${mapId}"}]}) 로 다시 하라.`, { code: error.code ?? "entrance-link-failed", mapId });
-        throw error;
-      }
-      notes.push(`야외 ${entranceOpt.fromMapId}(${entranceLink.fromGate.x},${entranceLink.fromGate.y}) ↔ 이 던전을 양방향으로 이었다.`);
-    }
-    // 만든 결과를 한 번 더, 실제 맵으로 검사한다(조립기 내부 검사와 같은 규칙).
-    const bad = groundSupportIssues(map, tileset, { events: false }).filter((issue) => issue.severity === "error");
-    if (bad.length) throw new ToolError(`시공 결과에 받침 없는 물체 ${bad.length}건: ${bad[0]!.message}`, { code: "support-violation", mapId });
-    if (draft.startMapId === mapId) {
-      const start = { x: composed.entrance.x, y: composed.entrance.y };
-      if (isPassable(draft, map, start.x, start.y)) {
-        draft.startPos = { ...draft.startPos, ...start };
-        notes.push(`시작 위치를 입구 (${start.x},${start.y}) 로 옮겼다.`);
-      }
-    }
-    const data = {
-      mapId, adapter: route.adapter, genre: route.genre, type: composed.type, ...(route.variant ? { variant: route.variant } : {}), tilesetId,
-      liquid: composed.liquid, width: composed.width, height: composed.height,
-      entrance: composed.entrance, stairsUp: composed.stairsUp, stairsDown: composed.stairsDown, anchors: composed.anchors,
-      rooms: composed.rooms.map((room) => ({ id: room.id, kind: room.kind, x: room.x, y: room.y, w: room.w, h: room.h, from: room.from, spots: composed.spots[room.id] ?? [] })),
-      corridors: composed.corridors.map((c) => ({ from: c.a, to: c.b, dir: c.dir, ...(c.loop ? { loop: true } : {}), ...c.rect })),
-      population, counts: composed.counts, warnings: composed.warnings,
-      ...(entranceLink ? { entranceLink: { fromMapId: entranceOpt!.fromMapId, fromGate: entranceLink.fromGate, toGate: entranceLink.toGate, outEvent: entranceLink.link.eventIdA, backEvent: entranceLink.link.eventIdB, landing: entranceLink.link.landingB } } : {}),
-    };
-    const dressed = Object.values(composed.counts).reduce((a, b) => a + b, 0);
-    return {
-      summary: `${notes.join(" ")} ${GRAMMAR[composed.type].label}(${route.adapter === "monster" ? "몬스터 키트" : "버들항"}·${GENRE_PRESETS[route.genre].label}) 던전 ${mapId} ${composed.width}×${composed.height}: 방 ${composed.rooms.length}개를 통로 ${composed.corridors.length}개로 이었다(장식 ${dressed}점, 받침 없는 물체 0${composed.liquid.kind ? `, ${composed.liquid.kind === "lava" ? "용암" : "물"} ${composed.liquid.cells}칸은 걸을 수 없고 다리 ${composed.liquid.bridges}칸` : ""}, 입구에서 모든 방 도달${composed.anchors.boss ? `, 보스방 ${composed.anchors.boss}` : ""}${composed.anchors.treasure ? `, 보물 방 ${composed.anchors.treasure}` : ""}${composed.anchors.gate ? `, 잠긴 문 자리 (${composed.anchors.gate.x},${composed.anchors.gate.y})` : ""}). 이벤트·적·상자는 data.rooms[].spots 좌표에만 두고, data.population 의 계획을 따른다.`.trim(),
-      data,
-      warnings: composed.warnings.length ? composed.warnings : undefined,
-    };
+    return authorDungeon(draft, args);
   },
 };
 

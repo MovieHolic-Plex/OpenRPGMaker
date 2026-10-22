@@ -694,7 +694,9 @@ export function formatIntentNote(
         "[의도] 던전 층 시공이다. 칩셋 어댑터(몬스터 키트 / 버들항)와 장르(포켓몬풍 짧은 던전 / 일반 RPG 긴 던전)는 author_dungeon 이 프로젝트에서 읽어 정한다 — type·genre 는 사용자 낱말이 분명할 때만 준다. 종류: 하수도·수로=sewer · 광산·갱도=mine · 화산·용암=volcano · 동굴·지하 호수=cave · 신전·사원·유적=temple · 미궁·미로=labyrinth · 성 지하·성채=castle · 얼음 동굴=ice · 지하묘지·감옥·던전=catacomb(버들항 기본, 몬스터 키트 기본은 cave). 버들항 sewer·temple·mine·catacomb·castle 은 author_dungeon({type,rooms:[{kind:'entrance'},{kind:'hall'},{kind:'crypt'},{kind:'cell',from:'hall'},{kind:'boss'},{kind:'vault',from:'boss'}]}) 또는 방 구성을 맡기려면 author_dungeon({type,size:'medium'}), cave·volcano·ice·labyrinth 는 author_dungeon({type}) 만(방 목록 없이) 한 호출로 방·통로·벽·바닥·장식·계단을 깐다 — "
         + "월드맵·야외의 입구(예: 산기슭 동굴 아이콘)와 이어야 하면 entrance:{fromMapId, place:장소 이름|x,y} 를 같이 주어 양방향 이동까지 한 번에 건다 — create_transfer_pair 로 따로 잇지 않는다. "
         + "빈 시작 맵이면 mapId 에 그 id 를 준다. 좌표를 계산하지 말고, 참고문서·build_hand_interior_room·stamp_object·paint_tiles 로 벽·소품을 따로 깔지 않는다. "
-        + "적·상자·NPC 는 결과 data.rooms[].spots 좌표에만, 보스는 data.anchors.boss 방, 잠긴 문은 data.anchors.gate 칸에 두고, 장르별 채우기 계획 data.population(야생 조우 구역·시선 트레이너·지름길 / 필드 적·상자·잠긴 문)을 기존 도구로 놓는다. 도구가 type-unsupported-by-tileset 으로 거절하면 사용자에게 알리고 권한 종류로 다시 부르거나 묻는다. 이미 확인된 의도이므로 야외/실내를 다시 묻지 말고 진행하라.",
+        + "「작은」 던전·동굴은 size:'small'. 여러 층(「3층 탑」「지하 2층」)은 floors·direction('up' 탑 / 'down' 지하) 한 호출로 짓고 계단까지 잇는다 — 층마다 따로 부르고 create_transfer_pair 로 잇지 않는다. 물에 잠긴 신전·묘지는 flooded:true(fill_region 으로 물 칠하지 않는다). "
+        + "일반 RPG(rpg) 던전은 이 도구가 보이는 적·상자(보물 방 먼저)·보스(마지막 방)·보스 앞 쉼터 세이브까지 채운다 — 사용자가 말한 적(고블린 등)이 있으면 upsert_enemy·upsert_troop 으로 먼저 만들고 troops:{field,boss} 로 넘긴다. 채운 결과를 다시 place_field_enemy·place_chest 로 덧놓지 말 것. "
+        + "포켓몬풍(pokemon)은 data.population(야생 조우 구역·시선 트레이너·지름길)을 기존 도구로 놓는다. 도구가 type-unsupported-by-tileset 으로 거절하면 사용자에게 알리고 권한 종류로 다시 부르거나 묻는다. 이미 확인된 의도이므로 야외/실내를 다시 묻지 말고 진행하라.",
       );
     } else if (intent.space === "both") {
       const how = facilityHow
