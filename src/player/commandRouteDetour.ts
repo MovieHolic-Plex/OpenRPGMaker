@@ -69,10 +69,12 @@ export function detourAroundPlayer(input: DetourInput): MoveCommand[] | null {
 }
 
 /**
- * 비켜 갈 길이 아예 없을 때(인물이 통·선반 사이 한 칸 틈에 서 있고 그 틈 앞이 말을 건 주인공 자리) 주인공이 한 칸 비켜 설 방향.
+ * 비켜 갈 길이 아예 없을 때 주인공이 인물의 남은 경로 밖으로 비켜 서는 걸음들(가장 가까운 칸, 최대 8걸음).
  * 왜(2026-10-22 r3 npc-walk-out): 여관 주인이 술통 진열대와 통 사이 틈에 섰고, 유일한 출구 칸에 주인공이 서 있었다. 경로는
- * 기다리기(wait)라 이벤트가 30초 멈췄고 주인공도 움직일 수 없었다. 주인공을 인물의 남은 경로 밖 빈 칸으로 한 칸 옮기면 둘 다 풀린다.
- * 인물의 남은 걸음 칸을 피하고, 인물이 처음 가려는 방향과 직각인 쪽을 먼저 고른다.
+ * 기다리기(wait)라 이벤트가 30초 멈췄고 주인공도 움직일 수 없었다.
+ * 왜 여러 걸음(r4): 카운터와 벽 사이 한 칸 폭 통로에서 주인이 문으로 내려가는데 말을 건 주인공이 바로 아래에 서 있었다. 옆 칸이 모두
+ * 막혀 한 칸 비켜서기를 못 찾았고, 막힌 걸음이 하나씩 버려져 주인이 제자리에서 사라졌다. 통로 끝까지 앞서 걸어 비켜 서면 둘 다 풀린다.
+ * 인물의 현재 칸과 남은 걸음 칸은 목적지가 될 수 없다(지나갈 수는 있다). 같은 거리면 인물이 처음 가려는 방향과 직각인 쪽을 먼저 고른다.
  */
 export function sidestepForPlayer(input: {
   readonly moves: readonly MoveCommand[];
@@ -80,7 +82,8 @@ export function sidestepForPlayer(input: {
   readonly from: { readonly x: number; readonly y: number };
   readonly player: { readonly x: number; readonly y: number };
   readonly canPlayerStand: (x: number, y: number) => boolean;
-}): Dir | null {
+  readonly maxSteps?: number;
+}): Dir[] | null {
   const path = new Set<string>([`${input.from.x},${input.from.y}`]);
   let cur = { x: input.from.x, y: input.from.y };
   let first: Dir | null = null;
@@ -93,10 +96,25 @@ export function sidestepForPlayer(input: {
   }
   const vertical = first === "up" || first === "down";
   const order: Dir[] = vertical ? ["left", "right", "down", "up"] : ["down", "up", "left", "right"];
-  for (const dir of order) {
-    const x = input.player.x + DELTA[dir].x, y = input.player.y + DELTA[dir].y;
-    if (path.has(`${x},${y}`) || !input.canPlayerStand(x, y)) continue;
-    return dir;
+  const limit = input.maxSteps ?? 8;
+  const start = `${input.player.x},${input.player.y}`;
+  const prev = new Map<string, { at: string; dir: Dir }>();
+  const queue: Array<{ x: number; y: number; d: number }> = [{ x: input.player.x, y: input.player.y, d: 0 }];
+  const seen = new Set<string>([start, `${input.from.x},${input.from.y}`]);
+  for (let head = 0; head < queue.length && head < 400; head++) {
+    const c = queue[head]!;
+    if (c.d >= limit) continue;
+    for (const dir of order) {
+      const x = c.x + DELTA[dir].x, y = c.y + DELTA[dir].y, id = `${x},${y}`;
+      if (seen.has(id) || !input.canPlayerStand(x, y)) continue;
+      seen.add(id); prev.set(id, { at: `${c.x},${c.y}`, dir });
+      if (!path.has(id)) {
+        const steps: Dir[] = [];
+        for (let k = id; k !== start;) { const p = prev.get(k)!; steps.unshift(p.dir); k = p.at; }
+        return steps;
+      }
+      queue.push({ x, y, d: c.d + 1 });
+    }
   }
   return null;
 }
