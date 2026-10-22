@@ -45,9 +45,9 @@ export function paletteFromImages(images: readonly { readonly image: RgbaImage; 
   const covered = (bin: number) => chosen.some((color) => { const [h, , sat] = hls(color); return sat >= 0.45 && binOf(h, sat) === bin; });
   const missing = [...bins].filter(([bin]) => !covered(bin)).sort((a, b) => b[1].reduce((s, [, n]) => s + n, 0) - a[1].reduce((s, [, n]) => s + n, 0));
   for (const [, list] of missing) {
-    const byLuma = [...list].sort((a, b) => luma(a[0]) - luma(b[0]));
-    const third = (k: number) => byLuma.slice(Math.floor(byLuma.length * k / 3), Math.max(Math.floor(byLuma.length * k / 3) + 1, Math.floor(byLuma.length * (k + 1) / 3)));
-    for (const k of [1, 0, 2]) { const best = third(k).sort((a, b) => b[1] - a[1])[0]; if (best) take(best[0]); }
+    // 어두운(l<0.4)·가운데·밝은(l>0.65) 띠마다 가장 흔한 색 하나 — 명암 셋이 있어야 덩어리가 입체로 읽힌다.
+    const band = (color: number) => { const l = hls(color)[1]; return l < 0.4 ? 0 : l > 0.65 ? 2 : 1; };
+    for (const want of [1, 0, 2]) { const best = list.find(([color]) => band(color) === want); if (best) take(best[0]); }
   }
   // 3) 남은 칸은 다시 빈도 순.
   for (const [color] of ranked) { if (chosen.length >= limit) break; take(color); }
@@ -56,9 +56,9 @@ export function paletteFromImages(images: readonly { readonly image: RgbaImage; 
 
 /** 빠진 색상을 채울 칸 수(팔레트 끝) */
 const HUE_RESERVE = 12;
-const HUE_BINS = 12;
-/** 색상 칸 × 채도 단(0.45~0.7 · 0.7 이상) — 흙빛 황갈색이 있다고 금빛 노랑이 있는 것은 아니다 */
-const binOf = (h: number, sat: number): number => (Math.floor(h * HUE_BINS) % HUE_BINS) * 2 + (sat >= 0.7 ? 1 : 0);
+const HUE_BINS = 24;
+/** 색상 칸 × 채도 단(0.45~0.6 · 0.6 이상) — 흙빛 황갈색이 있다고 금빛 노랑이 있는 것은 아니다 */
+const binOf = (h: number, sat: number): number => (Math.floor(h * HUE_BINS) % HUE_BINS) * 2 + (sat >= 0.6 ? 1 : 0);
 function hls(c: number): [number, number, number] {
   const r = ((c >> 16) & 255) / 255, g = ((c >> 8) & 255) / 255, b = (c & 255) / 255;
   const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2, d = max - min;
