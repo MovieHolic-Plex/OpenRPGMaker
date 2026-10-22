@@ -104,6 +104,8 @@ export interface IntentDeclaration {
    */
   readonly referenceWork?: string | null;
   readonly summary: string;
+  /** 요청이 이름으로 말한 장소인데 아직 없는 것(템플릿 빈 풀밭을 대상으로 잡았던 선언을 코드가 돌린 경우) — 「작은 마을」. */
+  readonly placeToBuild?: string;
   readonly source: IntentSource;
 }
 
@@ -145,7 +147,7 @@ const INTERIOR_PLACE = /방|실내|가게|상점|여관|교회|성당|학교|사
  * 빈 맵에 놓으라는 경고(seedMapPlacementNote)는 놓은 뒤라 조수가 무시했다 — 계획 단계에서 바로잡는다.
  * 그 이름의 맵이 이미 있으면(사용자가 지은 「마을」 맵) 건드리지 않는다.
  */
-export function retargetNamedPlaceOffBlankMap<T extends Pick<IntentDeclaration, "mode" | "space" | "targetMapId" | "needsPlan">>(intent: T, facts: Pick<IntentFacts, "userText" | "maps" | "untouchedMapIds">): T {
+export function retargetNamedPlaceOffBlankMap<T extends Pick<IntentDeclaration, "mode" | "space" | "targetMapId" | "needsPlan" | "placeToBuild">>(intent: T, facts: Pick<IntentFacts, "userText" | "maps" | "untouchedMapIds">): T {
   if (intent.mode !== "create" && intent.mode !== "modify") return intent;
   if (!intent.targetMapId || !facts.untouchedMapIds?.includes(intent.targetMapId)) return intent;
   const match = NAMED_PLACE_MAP.exec(facts.userText.normalize("NFKC"));
@@ -155,7 +157,8 @@ export function retargetNamedPlaceOffBlankMap<T extends Pick<IntentDeclaration, 
   const place = words.join(" ");
   const named = facts.maps.some((map) => !facts.untouchedMapIds!.includes(map.id) && (map.name.includes(place) || place.includes(map.name)));
   if (named) return intent;
-  return { ...intent, targetMapId: null, needsPlan: true, space: intent.space === "none" || intent.space === "unclear" ? (INTERIOR_PLACE.test(place) ? "interior" : "outdoor") : intent.space };
+  return { ...intent, targetMapId: null, needsPlan: true, placeToBuild: place,
+    space: intent.space === "none" || intent.space === "unclear" ? (INTERIOR_PLACE.test(place) ? "interior" : "outdoor") : intent.space };
 }
 
 export const INTENT_MODES: readonly IntentMode[] = ["create", "modify", "question", "other"];
@@ -384,7 +387,7 @@ export function parseIntentDeclaration(raw: string, facts: IntentFacts): IntentP
   const actionCombat = authoring && parsed.actionCombat !== undefined
     ? parseActionCombatRequirements(parsed.actionCombat) : undefined;
   if (actionCombat === null) return { intent: null, error: "actionCombat targets are missing or malformed" };
-  const retargeted = retargetNamedPlaceOffBlankMap({ mode: mode as IntentMode, space, targetMapId, needsPlan: parsed.needsPlan === true }, facts);
+  const retargeted: Pick<IntentDeclaration, "mode" | "space" | "targetMapId" | "needsPlan" | "placeToBuild"> = retargetNamedPlaceOffBlankMap({ mode: mode as IntentMode, space, targetMapId, needsPlan: parsed.needsPlan === true }, facts);
   return {
     intent: {
       mode: mode as IntentMode,
@@ -395,8 +398,12 @@ export function parseIntentDeclaration(raw: string, facts: IntentFacts): IntentP
       clarify,
       clarifyOptions,
       needsPlan: retargeted.needsPlan,
+      ...(retargeted.placeToBuild ? { placeToBuild: retargeted.placeToBuild } : {}),
       resetsContext: parsed.resetsContext === true,
-      tools,
+      // 지어야 할 장소가 있으면 시공 도구를 처음부터 보이게 한다 — 선언 목록은 인물 도구뿐이었다(r5 npc-portrait-match).
+      tools: retargeted.placeToBuild
+        ? [...new Set([...(retargeted.space === "interior" ? ["build_hand_interior_room", "list_hand_interior_parts"] : ["author_beodeul_town"]).filter((name) => knownTools.has(name)), ...tools])]
+        : tools,
       viewNavigation: parsed.viewNavigation === true && clarify === null,
       ...(isRecord(parsed.readBeforeWrite) ? { readBeforeWrite: {
         project: parsed.readBeforeWrite.project === true,
@@ -658,6 +665,11 @@ export function formatIntentNote(
   }
   if (intent.clarify && options.clarifyBypassed) {
     lines.push(`[의도] 모호한 점: ${intent.clarify} — 자율 모드라 되묻지 않는다. 가장 그럴듯한 해석으로 진행하고 첫 문장에 어느 쪽을 택했는지 밝혀라.`);
+  }
+  if (intent.placeToBuild && intent.mode !== "question") {
+    // 코드가 찾은 사실: 요청한 장소가 아직 없고 지금 맵은 템플릿 빈 풀밭이다(retargetNamedPlaceOffBlankMap).
+    lines.push(`[장소 먼저] 요청한 「${intent.placeToBuild}」 맵이 아직 없다 — 지금 열린 맵은 아무것도 칠하지 않은 템플릿 풀밭이다. `
+      + `인물·이벤트를 놓기 전에 그 장소를 먼저 지어라(야외 마을·거리는 author_beodeul_town 등, 실내는 build_hand_interior_room). 빈 풀밭에 인물만 세우면 요청한 장면이 없다.`);
   }
   if (intent.mode === "question") {
     lines.push("[의도] 질문·조회다. 프로젝트를 바꾸지 말고 조회 툴로 답한다.");
