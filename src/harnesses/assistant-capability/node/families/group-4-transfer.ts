@@ -3,7 +3,7 @@ import type { Project } from '../../../../project/types';
 import { MAP, clone, fail, mapOf, pass, runOn, sameExcept } from '../matrixNativeSpec';
 import { numArg, strArg, type Family, type FamilyOutcome } from './types';
 import {
-  DOOR, HAMLET, HOUSE, PLAZA, SOUTH, attempt, distinct, eventEditOn, eventOn, facesGate, gatesTo, manhattan,
+  DOOR, HAMLET, HOUSE, PLAZA, SOUTH, attempt, distinct, eventEditOn, eventOn, facingAway, facesGate, gatesTo, manhattan,
   pageWithTransfer, passableCell, transfersOfEvent, walkableIn, withHamlet,
 } from './group-4-shared';
 
@@ -344,11 +344,20 @@ const chainCreateThenLink: Family = {
     const back = gatesTo(input.after, newId, from.mapId);
     if (!out.length) return fail(`${from.mapId} → ${name} 전이가 없다`);
     if (!back.length) return fail(`${name} → ${from.mapId} 전이가 없다(왕복이어야 한다)`);
-    // 기존 문과 이어 달라는 요청은 그 문을 고치는 일이다 — 새 맵으로 가는 전이가 그 문에 생겼거나, 있던 전이가 새 맵으로 갈아졌으면 맞다.
-    if (from.eventId) {
-      const source = eventOn(input.after, from.mapId, from.eventId);
-      if (!source) return fail(`${from.eventId} 문이 사라졌다`);
-      if (!transfersOfEvent(source).some((command: any) => command.mapId === newId)) return fail(`${from.eventId} 에서 ${name} 로 가는 전이가 없다`);
+    // 「그 문과 이어 달라」의 문은 프롬프트가 가리키는 자리에 서 있는 이벤트다 — args 가 id 를 주지 않아도 자리로 찾는다.
+    // 그 문을 고치든(기존 이벤트에 전이를 달기), 「기존 이벤트는 그대로 두세요」를 지켜 그 옆에 새 문을 놓든 둘 다 맞다.
+    const sourceEventId = from.eventId ?? (mapOf(input.before, from.mapId)?.events ?? [])
+      .find((event: any) => event.x === from.x && event.y === from.y)?.id;
+    const sourceBefore = sourceEventId ? eventOn(input.before, from.mapId, sourceEventId) : undefined;
+    if (sourceEventId) {
+      const sourceAfter = eventOn(input.after, from.mapId, sourceEventId);
+      if (!sourceAfter) return fail(`${sourceEventId} 문이 사라졌다`);
+      if (sourceBefore) {
+        const doorLinked = transfersOfEvent(sourceAfter).some((command: any) => command.mapId === newId);
+        const gateBesideDoor = out.some(entry => entry.event.id !== sourceEventId
+          && Math.max(Math.abs(entry.event.x - sourceBefore.x), Math.abs(entry.event.y - sourceBefore.y)) <= 1);
+        if (!doorLinked && !gateBesideDoor) return fail(`${sourceEventId} 에서 ${name} 로 가는 전이가 없다`);
+      }
     }
     if (!walkableIn(input.after, newId, out[0]!.command.x, out[0]!.command.y)) {
       return fail(`${name} 착지 (${out[0]!.command.x},${out[0]!.command.y}) 가 통행 가능 칸이 아니다`);
@@ -356,8 +365,7 @@ const chainCreateThenLink: Family = {
     if (manhattan(out[0]!.command, back[0]!.event) > 2) return fail(`${name} 쪽 착지가 출입구 앞이 아니다`);
     if (manhattan(back[0]!.command, out[0]!.event) > 2) return fail(`${from.mapId} 쪽 착지가 출입구 앞이 아니다`);
     const gateIds = new Set([...out, ...back].map(entry => entry.event.id));
-    // 「기존 문과 이어라」는 그 문 자체를 고치는 일이다 — 그 문의 전이만 갈아끼우고 나머지(대사·페이지·위치)는 그대로여야 한다.
-    const sourceEventId = (args.from as { eventId?: string }).eventId;
+    // 「그 문과 이어라」는 그 문 자체(또는 그 옆에 놓은 새 문)를 고치는 일이다 — 그 문의 전이만 갈아끼우고 나머지(대사·페이지·위치)는 그대로여야 한다.
     const sourceAt = sourceEventId ? eventOn(input.after, from.mapId, sourceEventId) : undefined;
     const blank = (doc: any) => {
       for (const id of added) delete doc.maps[id];
@@ -365,9 +373,11 @@ const chainCreateThenLink: Family = {
       if (sourceEventId) {
         const source = (doc.maps[from.mapId]?.events ?? []).find((event: any) => event.id === sourceEventId);
         for (const page of source?.pages ?? []) page.commands = (page.commands ?? []).filter((command: any) => command.kind !== 'transfer');
-        // 문이 막힌 칸에 서 있으면 바로 옆 통행 칸으로 옮기는 것까지가 「연결」이다 — 2칸 안, 새 자리는 걸을 수 있어야 한다.
+        // 문이 막힌 칸(또는 덤불에 둘러싸여 걸어 닿지 않는 칸)에 서 있으면 옮기는 것까지가 「연결」이다 — 편집기 도구도 그렇게 한다.
+        // 2칸 안, 새 자리는 걸을 수 있어야 한다.
         const original = (input.before as any).maps[from.mapId]?.events?.find((event: any) => event.id === sourceEventId);
-        if (source && original && !passableCell(input.before, from.mapId, original.x, original.y)
+        if (source && original && (!passableCell(input.before, from.mapId, original.x, original.y)
+          || !walkableIn(input.before, from.mapId, original.x, original.y))
           && passableCell(input.after, from.mapId, source.x, source.y)
           && Math.max(Math.abs(source.x - original.x), Math.abs(source.y - original.y)) <= 2) {
           source.x = original.x;
@@ -375,15 +385,25 @@ const chainCreateThenLink: Family = {
         }
       }
       // 그 문이 막힌 칸에 서 있으면 앞 칸을 여는 것까지가 「연결」이다 — 문에서 2칸 안, 막힘→통행만.
+      // 문턱에 계단·문 그림을 까는 것도 그 문을 통행 가능하게 만드는 일이라 함께 인정한다(칸은 여전히 걸을 수 있다).
       if (sourceAt) {
         const map = doc.maps[from.mapId];
         const was = (input.before as any).maps[from.mapId];
+        const meta = (input.after as any).tilesets?.[map.tilesetId]?.tileMeta ?? {};
+        const threshold = (tile: number): boolean => {
+          const entry = meta[tile] ?? meta[String(tile)];
+          const tags: string[] = entry?.tags ?? [];
+          const label = String(entry?.label ?? '');
+          return tags.some(tag => /stair|door|gate/u.test(tag)) || /계단|문|출입구/u.test(label);
+        };
         for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
           const x = sourceAt.x + dx, y = sourceAt.y + dy;
           if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
           const index = y * map.width + x;
           if (map.lowerTiles?.[index] === was.lowerTiles?.[index]) continue;
-          if (passableCell(input.before, from.mapId, x, y) || !passableCell(input.after, from.mapId, x, y)) continue;
+          const openedApproach = !passableCell(input.before, from.mapId, x, y) && passableCell(input.after, from.mapId, x, y);
+          const thresholdArt = threshold(map.lowerTiles?.[index]) && passableCell(input.after, from.mapId, x, y);
+          if (!openedApproach && !thresholdArt) continue;
           map.lowerTiles[index] = was.lowerTiles[index];
         }
       }
@@ -399,13 +419,50 @@ const chainCreateThenLink: Family = {
       : fail('새 맵·전이 밖의 내용(기존 맵·이벤트)이 바뀌었다');
   },
   reference(project, args) {
-    const from = args.from as { mapId: string; x: number; y: number };
+    const from = args.from as { mapId: string; x: number; y: number; eventId?: string };
     const to = args.to as { x: number; y: number };
     const beforeIds = new Set(Object.keys((project as any).maps));
     const created = runOn(project, 'create_map', { name: strArg(args, 'name'), width: numArg(args, 'width'), height: numArg(args, 'height') });
     const newId = Object.keys((created as any).maps).find(id => !beforeIds.has(id));
     if (!newId) throw new Error('create_map 이 새 맵을 만들지 않았다');
-    return runOn(created, 'create_transfer_pair', { a: { mapId: from.mapId, x: from.x, y: from.y }, b: { mapId: newId, x: to.x, y: to.y } });
+    if (!from.eventId) return runOn(created, 'create_transfer_pair', { a: { mapId: from.mapId, x: from.x, y: from.y }, b: { mapId: newId, x: to.x, y: to.y } });
+    // 「그 출입구와 연결」은 그 문을 고치는 일이다 — create_transfer_pair 는 옛 문을 그대로 두고 새 문을 짓는다.
+    const source = eventOn(created, from.mapId, from.eventId);
+    if (!source) throw new Error(`fixture 에 ${from.eventId} 이벤트가 없다`);
+    const pageIndex = Math.max(0, pageWithTransfer(source));
+    const gate = { x: source.x, y: source.y };
+    const returnGate = { x: to.x, y: to.y + 1 };
+    // 픽스처의 남쪽 출입구는 덤불에 막혀 있어 이웃 네 칸이 모두 통행 불가다 — 실제 모델도 그 문을 쓰려면 한 칸을 연다.
+    // 문에서 2칸 안의 막힘 칸을 옆 통행 칸 바닥으로 바꾸는 것까지가 「연결」이고, 판정기의 동반 수정 허용과 같은 경계다.
+    let opened = created;
+    const neighbours = [[0, -1], [-1, 0], [1, 0], [0, 1]] as const;
+    let landing = neighbours
+      .map(([dx, dy]) => ({ x: gate.x + dx, y: gate.y + dy }))
+      .find(cell => passableCell(opened, from.mapId, cell.x, cell.y));
+    if (!landing) {
+      const donors = [[-1, -1], [0, -2], [1, -2], [-2, 0], [2, 0], [-2, -1], [2, -1]] as const;
+      const donor = donors.map(([dx, dy]) => ({ x: gate.x + dx, y: gate.y + dy })).find(cell => passableCell(opened, from.mapId, cell.x, cell.y));
+      const target = { x: gate.x, y: gate.y - 1 };
+      if (!donor || !mapOf(opened, from.mapId)?.lowerTiles) throw new Error(`${from.mapId} 의 ${from.eventId} 주변에 통행 칸이 없어 착지를 고를 수 없다`);
+      const map = mapOf(opened, from.mapId);
+      const tile = map.lowerTiles[donor.y * map.width + donor.x];
+      opened = runOn(opened, 'paint_tiles', { mapId: from.mapId, layer: 'lower', mode: 'cells', tile, cells: [target] });
+      landing = target;
+    }
+    const forward = { kind: 'transfer', mapId: newId, x: to.x, y: to.y, direction: facingAway(returnGate, to), fade: 'black' };
+    const page = source.pages[pageIndex];
+    const commands = (page.commands ?? []).some((command: any) => command.kind === 'transfer')
+      ? (page.commands as any[]).map((command: any) => (command.kind === 'transfer' ? { ...command, ...forward } : command))
+      : [...(page.commands ?? []), forward];
+    const linked = runOn(opened, 'patch_event_page', { mapId: from.mapId, eventId: from.eventId, pageIndex, set: { commands } });
+    const back = { kind: 'transfer', mapId: from.mapId, x: landing.x, y: landing.y, direction: facingAway(gate, landing), fade: 'black' };
+    return runOn(linked, 'upsert_event', { mapId: newId, event: {
+      id: 'ev_return_gate', name: `${strArg(args, 'name')} 출구`, x: returnGate.x, y: returnGate.y, trigger: { kind: 'playerTouch' },
+      pages: [{
+        id: 'ev_return_gate_page', name: '출구', conditions: [], graphic: { transparent: true }, trigger: { kind: 'playerTouch' },
+        priority: 'below', overlapForbidden: false, movement: { type: 'fixed', speed: 3, frequency: 3 }, commands: [back],
+      }],
+    } });
   },
   wrongs(project, args): FamilyOutcome[] {
     const from = args.from as { mapId: string; x: number; y: number };

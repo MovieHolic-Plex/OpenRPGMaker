@@ -79,8 +79,18 @@ function checkVariant(family: Family, project: Project, variant: Family['variant
   return { key: variant.key, sound: reasons.length === 0, reasons, reference, wrongs, ...(unchanged ? { unchanged } : {}) };
 }
 
+/** `MATRIX500_ONLY=a,b` re-runs the gate on a subset after a judge fix; an unknown id fails instead of silently shrinking the run. */
+function familiesToCheck(): readonly Family[] {
+  const all = allFamilies();
+  const only = (process.env.MATRIX500_ONLY ?? '').split(',').map(entry => entry.trim()).filter(Boolean);
+  if (!only.length) return all;
+  const unknown = only.filter(id => !all.some(family => family.id === id));
+  if (unknown.length) throw new Error(`MATRIX500_ONLY: 없는 가족 ${unknown.join(',')}`);
+  return all.filter(family => only.includes(family.id));
+}
+
 export async function runMatrix500Selfcheck(root: string): Promise<number> {
-  const families = allFamilies();
+  const families = familiesToCheck();
   const structural = familyProblems(families);
   const rows: FamilyRow[] = families.map(family => {
     const project = family.prepare ? family.prepare(cachedNativeProject()) : cachedNativeProject();

@@ -303,9 +303,10 @@ const interiorRoomDoorway: Family = {
     const door = shape.doorways[0]!;
     if (door.width !== width) return fail(`출입구 폭 ${door.width}칸 (요청 ${width}칸)`);
     const centre = door.start + (door.width - 1) / 2;
-    // 「서쪽/동쪽」은 방의 3분면을 말한다 — 픽스처의 픽셀 하나가 아니라.
-    const side = shape.width / 3;
-    if (keep === 'west' ? centre > side : centre < shape.width - side) return fail(`출입구가 ${keep === 'west' ? '서쪽' : '동쪽'}이 아니라 x=${door.start} 에 있다`);
+    // 「서쪽/동쪽」은 방의 중심선을 말한다 — 두 칸 문을 가장 서쪽 틈(x=5)에 두면 중심 5.5 가 3분면 경계(16/3=5.33)를
+    // 넘어 「서쪽이 아니다」로 정답이 실패했다. 폭 2 문이 가장자리에서 자연스럽게 놓이는 자리를 3분면이 거부하면 안 된다.
+    const west = centre < shape.width / 2;
+    if (keep === 'west' ? !west : west) return fail(`출입구가 ${keep === 'west' ? '서쪽' : '동쪽'}이 아니라 x=${door.start} 에 있다`);
     if (shape.borderOpen.length) return fail(`옆·위 외곽에도 뚫린 칸 ${shape.borderOpen.length}개`);
     if (shape.reachable < Math.ceil(shape.open * 0.9)) return fail(`문에서 닿는 칸 ${shape.reachable}/${shape.open}`);
     const above = Array.from({ length: width }, (_, offset) => ({ x: door.start + offset, y: door.y - 1 }));

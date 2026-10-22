@@ -920,7 +920,10 @@
           "h": 1
         },
         "material": "버들항 모랫길",
-        "tag": "sand"
+        "tag": "sand",
+        "accept": [
+          "farm_lane"
+        ]
       },
       "setup": {
         "select": {
@@ -948,7 +951,10 @@
           "h": 2
         },
         "material": "버들항 모랫길",
-        "tag": "sand"
+        "tag": "sand",
+        "accept": [
+          "farm_lane"
+        ]
       },
       "setup": {
         "select": {
@@ -976,7 +982,10 @@
           "h": 1
         },
         "material": "버들항 길 포석",
-        "tag": "road"
+        "tag": "road",
+        "accept": [
+          "plaza"
+        ]
       },
       "setup": {
         "select": {
@@ -1004,7 +1013,10 @@
           "h": 3
         },
         "material": "버들항 모랫길",
-        "tag": "sand"
+        "tag": "sand",
+        "accept": [
+          "farm_lane"
+        ]
       },
       "setup": {
         "select": {
@@ -1032,7 +1044,10 @@
           "h": 1
         },
         "material": "버들항 모랫길",
-        "tag": "sand"
+        "tag": "sand",
+        "accept": [
+          "farm_lane"
+        ]
       },
       "setup": {
         "select": {
@@ -1192,7 +1207,10 @@
           "x": 6,
           "y": 16
         },
-        "tag": "road"
+        "tag": "road",
+        "accept": [
+          "plaza"
+        ]
       },
       "setup": {
         "select": {
@@ -1375,7 +1393,10 @@
           "w": 1,
           "h": 6
         },
-        "tag": "sand"
+        "tag": "sand",
+        "accept": [
+          "farm_lane"
+        ]
       },
       "setup": {
         "select": {
@@ -1402,7 +1423,10 @@
           "w": 1,
           "h": 5
         },
-        "tag": "road"
+        "tag": "road",
+        "accept": [
+          "sand"
+        ]
       },
       "setup": {
         "select": {
@@ -1496,7 +1520,10 @@
             "y": 5
           }
         ],
-        "tag": "road"
+        "tag": "road",
+        "accept": [
+          "plaza"
+        ]
       },
       "setup": {
         "select": {
@@ -6214,7 +6241,8 @@
       "prompt": "문이 열릴 때 효과음을 재생해줘.",
       "args": {
         "eventId": "ev_test_door",
-        "resourceId": "cc0-se-osx-door-open"
+        "resourceId": "cc0-se-osx-door-open",
+        "allowWait": true
       },
       "setup": {
         "event": "ev_test_door"
@@ -6231,7 +6259,8 @@
       "prompt": "남쪽 출입구로 이동하기 직전에 문 여는 소리를 넣어 주세요.",
       "args": {
         "eventId": "ev_south_gate",
-        "resourceId": "cc0-se-osx-door-open"
+        "resourceId": "cc0-se-osx-door-open",
+        "allowWait": true
       },
       "setup": {
         "event": "ev_south_gate"
@@ -6249,7 +6278,14 @@
       "args": {
         "eventId": "ev_plaza_back",
         "mapId": "map_plaza",
-        "resourceId": "cc0-se-osx-door-close-01"
+        "resourceId": "cc0-se-osx-door-close-01",
+        "allowWait": true,
+        "alsoAccept": [
+          {
+            "mapId": "map_ember_village",
+            "eventId": "ev_test_door"
+          }
+        ]
       },
       "setup": {
         "event": "ev_plaza_back"
@@ -6283,7 +6319,8 @@
       "prompt": "출입구 밟으면 소리 나게 해줘.",
       "args": {
         "eventId": "ev_south_gate",
-        "resourceId": "cc0-se-osx-door-open"
+        "resourceId": "cc0-se-osx-door-open",
+        "allowWait": true
       },
       "setup": {
         "event": "ev_south_gate"
@@ -7093,7 +7130,8 @@
         "from": {
           "mapId": "map_ember_village",
           "x": 12,
-          "y": 16
+          "y": 16,
+          "eventId": "ev_south_gate"
         },
         "to": {
           "x": 8,
@@ -7120,7 +7158,8 @@
         "from": {
           "mapId": "map_hamlet",
           "x": 10,
-          "y": 12
+          "y": 12,
+          "eventId": "ev_hamlet_gate"
         },
         "to": {
           "x": 9,
@@ -7168,8 +7207,10 @@
       "title": "적 그룹 하나 생성(구성 일치)",
       "prompt": "슬라임 셋으로 이루어진 「슬라임 삼인방」 적 그룹을 만들어줘.",
       "args": {
-        "troopId": "troop_g4_slime_trio",
+        "refId": "troop_g4_slime_trio",
         "name": "슬라임 삼인방",
+        "nameStated": true,
+        "enemyName": "슬라임",
         "enemyIds": [
           "enemy_slime",
           "enemy_slime",
@@ -7187,8 +7228,9 @@
       "title": "적 그룹 하나 생성(구성 일치)",
       "prompt": "동굴 박쥐 두 마리짜리 적 그룹을 새로 만들어 주세요. 이름은 「박쥐 한 쌍」입니다.",
       "args": {
-        "troopId": "troop_g4_bat_pair",
+        "refId": "troop_g4_bat_pair",
         "name": "박쥐 한 쌍",
+        "nameStated": true,
         "enemyIds": [
           "enemy_cave_bat",
           "enemy_cave_bat"
@@ -7205,7 +7247,7 @@
       "title": "적 그룹 하나 생성(구성 일치)",
       "prompt": "슬라임+초원 슬라임 섞인 그룹 하나 추가.",
       "args": {
-        "troopId": "troop_g4_mixed",
+        "refId": "troop_g4_mixed",
         "name": "슬라임 혼성",
         "enemyIds": [
           "enemy_slime",
@@ -7223,8 +7265,9 @@
       "title": "적 그룹 하나 생성(구성 일치)",
       "prompt": "돌 골렘 하나로만 구성된 「골렘 파수꾼」 적 그룹을 추가해 주세요. 기존 적 그룹은 건드리지 마세요.",
       "args": {
-        "troopId": "troop_g4_golem",
+        "refId": "troop_g4_golem",
         "name": "골렘 파수꾼",
+        "nameStated": true,
         "enemyIds": [
           "enemy_stone_golem"
         ]
@@ -7240,8 +7283,9 @@
       "title": "적 그룹 하나 생성(구성 일치)",
       "prompt": "붉은 드래곤 두 마리 그룹 「쌍룡」 만들어.",
       "args": {
-        "troopId": "troop_g4_dragon_pair",
+        "refId": "troop_g4_dragon_pair",
         "name": "쌍룡",
+        "nameStated": true,
         "enemyIds": [
           "enemy_dragon",
           "enemy_dragon"
@@ -7259,7 +7303,8 @@
       "prompt": "투기장 문지기가 말을 걸면 슬라임 정찰대와 전투가 시작되게 해줘.",
       "args": {
         "eventId": "ev_arena_keeper",
-        "troopId": "troop_slime"
+        "troopId": "troop_slime",
+        "allowLeadText": true
       },
       "setup": {
         "event": "ev_arena_keeper"
@@ -7293,7 +7338,8 @@
       "prompt": "수문장이 동굴 박쥐 떼와 싸우게 해줘.",
       "args": {
         "eventId": "ev_arena_guard",
-        "troopId": "troop_bat_swarm"
+        "troopId": "troop_bat_swarm",
+        "allowLeadText": true
       },
       "setup": {
         "event": "ev_arena_guard"
@@ -7327,7 +7373,8 @@
       "prompt": "문지기 → 슬라임 정찰대 전투.",
       "args": {
         "eventId": "ev_arena_keeper",
-        "troopId": "troop_slime"
+        "troopId": "troop_slime",
+        "allowLeadText": true
       },
       "setup": {
         "event": "ev_arena_keeper"
@@ -8422,9 +8469,9 @@
       "area": "media",
       "mode": "write",
       "title": "시스템 전투 BGM만 교체",
-      "prompt": "전투 BGM → 선봉의 신호.",
+      "prompt": "전투 BGM → 재의 왕관.",
       "args": {
-        "track": "cc0-bgm-rtp-btl-001"
+        "track": "cc0-bgm-rtp-btl-002"
       }
     },
     {
@@ -8980,7 +9027,9 @@
       "mode": "read",
       "title": "아이템 id 와 가격",
       "prompt": "뭐뭐 팔고 각각 얼마인지 보여줘.",
-      "args": {}
+      "args": {
+        "allowShop": true
+      }
     },
     {
       "id": "read-troop-list__troops-plain",
@@ -9604,8 +9653,7 @@
       "prompt": "이 방을 좀 어둡게 해줘. ambient 0.45.",
       "args": {
         "mapId": "map_interior_house",
-        "ambient": 0.45,
-        "color": "#2a2438"
+        "ambient": 0.45
       },
       "setup": {
         "select": {

@@ -312,7 +312,8 @@ const mediaBattleBgm: Family = {
   variants: [
     { key: 'amber-plain', prompt: '전투 BGM을 호박빛 초원의 끝으로 바꿔줘.', args: { track: 'cc0-bgm-rtp-fld-003' } },
     { key: 'ledger-polite', prompt: '전투 음악을 새벽의 의뢰서로 바꿔 주세요. 다른 음악은 그대로 두세요.', args: { track: 'cc0-bgm-rtp-ttl-001' } },
-    { key: 'battle-terse', prompt: '전투 BGM → 선봉의 신호.', args: { track: 'cc0-bgm-rtp-btl-001' } },
+    // 픽스처의 현재 전투 BGM 은 「선봉의 신호」(cc0-bgm-rtp-btl-001)다 — 그 곡을 요청하면 아무것도 바꾸지 않은 답도 통과한다.
+    { key: 'battle-terse', prompt: '전투 BGM → 재의 왕관.', args: { track: 'cc0-bgm-rtp-btl-002' } },
     { key: 'boss-explain', prompt: '보스전 분위기에 맞게 시스템 전투 BGM 만 「새벽의 의뢰서」로 바꾸고, 맵 음악과 기본 BGM 은 유지해 주세요.', args: { track: 'cc0-bgm-rtp-ttl-001' } },
     { key: 'amber-casual', prompt: '전투 들어갈 때 나오는 음악, 호박빛 초원의 끝으로 해줘.', args: { track: 'cc0-bgm-rtp-fld-003' } },
   ],

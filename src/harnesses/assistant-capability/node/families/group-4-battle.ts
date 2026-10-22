@@ -65,11 +65,11 @@ const battleTroopCreate: Family = {
   mode: 'write',
   title: '적 그룹 하나 생성(구성 일치)',
   variants: [
-    { key: 'slime-trio', prompt: '슬라임 셋으로 이루어진 「슬라임 삼인방」 적 그룹을 만들어줘.', args: { refId: 'troop_g4_slime_trio', name: '슬라임 삼인방', enemyIds: ['enemy_slime', 'enemy_slime', 'enemy_slime'] } },
-    { key: 'bat-pair-polite', prompt: '동굴 박쥐 두 마리짜리 적 그룹을 새로 만들어 주세요. 이름은 「박쥐 한 쌍」입니다.', args: { refId: 'troop_g4_bat_pair', name: '박쥐 한 쌍', enemyIds: ['enemy_cave_bat', 'enemy_cave_bat'] } },
-    { key: 'mixed-terse', prompt: '슬라임+초원 슬라임 섞인 그룹 하나 추가.', args: { refId: 'troop_g4_mixed', name: '슬라임 혼성', enemyIds: ['enemy_slime', 'enemy_meadow_slime'], nameContains: ['슬라임'] } },
-    { key: 'golem-explained', prompt: '돌 골렘 하나로만 구성된 「골렘 파수꾼」 적 그룹을 추가해 주세요. 기존 적 그룹은 건드리지 마세요.', args: { refId: 'troop_g4_golem', name: '골렘 파수꾼', enemyIds: ['enemy_stone_golem'] } },
-    { key: 'dragon-pair', prompt: '붉은 드래곤 두 마리 그룹 「쌍룡」 만들어.', args: { refId: 'troop_g4_dragon_pair', name: '쌍룡', enemyIds: ['enemy_dragon', 'enemy_dragon'] } },
+    { key: 'slime-trio', prompt: '슬라임 셋으로 이루어진 「슬라임 삼인방」 적 그룹을 만들어줘.', args: { refId: 'troop_g4_slime_trio', name: '슬라임 삼인방', nameStated: true, enemyName: '슬라임', enemyIds: ['enemy_slime', 'enemy_slime', 'enemy_slime'] } },
+    { key: 'bat-pair-polite', prompt: '동굴 박쥐 두 마리짜리 적 그룹을 새로 만들어 주세요. 이름은 「박쥐 한 쌍」입니다.', args: { refId: 'troop_g4_bat_pair', name: '박쥐 한 쌍', nameStated: true, enemyIds: ['enemy_cave_bat', 'enemy_cave_bat'] } },
+    { key: 'mixed-terse', prompt: '슬라임+초원 슬라임 섞인 그룹 하나 추가.', args: { refId: 'troop_g4_mixed', name: '슬라임 혼성', enemyIds: ['enemy_slime', 'enemy_meadow_slime'] } },
+    { key: 'golem-explained', prompt: '돌 골렘 하나로만 구성된 「골렘 파수꾼」 적 그룹을 추가해 주세요. 기존 적 그룹은 건드리지 마세요.', args: { refId: 'troop_g4_golem', name: '골렘 파수꾼', nameStated: true, enemyIds: ['enemy_stone_golem'] } },
+    { key: 'dragon-pair', prompt: '붉은 드래곤 두 마리 그룹 「쌍룡」 만들어.', args: { refId: 'troop_g4_dragon_pair', name: '쌍룡', nameStated: true, enemyIds: ['enemy_dragon', 'enemy_dragon'] } },
   ],
   judge(input, args) {
     const name = strArg(args, 'name');
@@ -80,11 +80,21 @@ const battleTroopCreate: Family = {
     if (added.length !== 1) return fail(`새 적 그룹이 ${added.length}개다(하나여야 한다)`);
     const created = added[0]!;
     // The prompt names the troop and its composition, never an id — the editor assigns that itself.
-    const nameWords = (args.nameContains as string[] | undefined) ?? [];
-    const named = created.name === name || (nameWords.length > 0 && nameWords.every(word => String(created.name ?? '').includes(word)));
+    // A variant whose prompt never states a name accepts any name (requiring one would fail a correct answer);
+    // one that does state a name requires exactly that name (a different name is then a wrong answer, not a valid one).
+    const named = args.nameStated === true ? String(created.name ?? '').trim() === name : true;
     if (!named) return fail(`이름이 「${created.name}」 — 「${name}」 여야 한다`);
     const got = [...(created.enemyIds ?? [])].sort();
-    if (!isDeepStrictEqual(got, want)) return fail(`구성이 ${got.join(',')} — ${want.join(',')} 여야 한다`);
+    // 프롬프트가 종을 이름으로 집지 않으면(「슬라임 셋」) 같은 이름 계열의 적이면 된다 — 붉은·푸른·초록 슬라임도 슬라임 셋이다.
+    // 이름을 집었으면(「동굴 박쥐 두 마리」) 그 종이어야 한다.
+    const enemyName = typeof args.enemyName === 'string' ? args.enemyName : undefined;
+    if (enemyName) {
+      const members = created.enemyIds ?? [];
+      if (members.length !== want.length) return fail(`구성이 ${members.length}마리 — ${want.length}마리여야 한다`);
+      const names = new Map<string, string>(((input.after as any).database.enemies ?? []).map((enemy: any) => [enemy.id, String(enemy.name ?? '')]));
+      const off = members.filter((id: string) => !(names.get(id) ?? '').includes(enemyName));
+      if (off.length) return fail(`구성에 ${enemyName} 이(가) 아닌 적(${off.join(',')})이 있다`);
+    } else if (!isDeepStrictEqual(got, want)) return fail(`구성이 ${got.join(',')} — ${want.join(',')} 여야 한다`);
     for (const old of before) {
       const now = after.find(troop => troop.id === old.id);
       if (!now || !isDeepStrictEqual(now, old)) return fail(`기존 적 그룹 ${old.id} 가 바뀌었다`);
@@ -103,12 +113,18 @@ const battleTroopCreate: Family = {
     const enemyIds = args.enemyIds as string[];
     const reference = battleTroopCreate.reference!(clone(project), args) as Project;
     const oneLess = enemyIds.length > 1 ? enemyIds.slice(0, -1) : ['enemy_meadow_slime'];
+    // 요청한 구성에서 한 마리만 다른 종으로 바꾼 답 — 「슬라임+초원 슬라임」을 「슬라임+박쥐」로 채우면 구성이 틀렸다.
+    const swapped = [...enemyIds.slice(0, -1), enemyIds[enemyIds.length - 1] === 'enemy_meadow_slime' ? 'enemy_cave_bat' : 'enemy_meadow_slime'];
+    // 종 이름으로 판정하는 변형(「슬라임 셋」)에서는 다른 종이 섞인 답이 그 축의 오답이다 — 슬라임 종을 바꾸는 것은 정답이다.
+    const offSpecies = [...enemyIds.slice(0, -1), 'enemy_cave_bat'];
     const created = (ids: string[], label = name, id = refId) => attempt(() =>
       runOn(clone(project), 'upsert_troop', { troop: { id, name: label, enemyIds: ids } }));
     return distinct(reference, [
       created(oneLess),
       created([...enemyIds, 'enemy_meadow_slime']),
-      created(enemyIds, `${name} 대장`),
+      created(typeof args.enemyName === 'string' ? offSpecies : swapped),
+      // 이름을 말하지 않은 요청에 「다른 이름」을 오답으로 두면 정답을 오답으로 판정한다 — 이름을 말한 변형에서만 쓴다.
+      args.nameStated === true ? created(enemyIds, `${name} 대장`) : undefined,
       attempt(() => runOn(clone(project), 'upsert_troop', { troop: { id: 'troop_slime', name: '슬라임 정찰대', enemyIds: ['enemy_cave_bat'] } })),
     ]);
   },
