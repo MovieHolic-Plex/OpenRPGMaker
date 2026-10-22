@@ -237,7 +237,8 @@
 .ai-composer-popover {
   bottom: calc(100% + 6px);
   position: absolute;
-  z-index: 5;
+  /* AI 미연결 잠금 막(.ai-lock-scrim, z-index 6)보다 위 — 막 아래에 깔리면 「설정」 항목이 눌리지 않는다. */
+  z-index: 7;
 }
 
 .ai-composer-popover[hidden] {

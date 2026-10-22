@@ -193,7 +193,7 @@
 
 .help-modal-paragraph {
   margin: 0 0 10px;
-  color: rgba(233, 236, 243, 0.88);
+  color: var(--text-2, #5C5348);
   font: 500 13.5px/1.75 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
 }
 
@@ -233,7 +233,7 @@
   border-left-width: 3px;
   border-radius: var(--radius-s, 6px);
   background: var(--accent-muted, var(--accent-muted));
-  color: rgba(233, 236, 243, 0.9);
+  color: var(--text-1, #2A2521);
   font: 500 12.5px/1.6 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
 }
 
