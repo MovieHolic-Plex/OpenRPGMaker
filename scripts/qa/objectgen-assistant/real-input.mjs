@@ -189,18 +189,32 @@ for (const job of cases) {
   const before = new Set(await workshopKits());
   const eventStart = await page.evaluate(() => window.__capEvents.length);
   log(`== ${job.id}: ${job.prompt}`);
+  const cardsBefore = await page.locator('[data-testid="ai-objectgen-card"]').count();
   await page.getByTestId("ai-input").fill(job.prompt);
   await page.getByTestId("ai-send").click();
-  let kit = null, placedAt = 0, lastShot = 0;
+  let kit = null, placedAt = 0, lastShot = 0, noCardSince = null;
   const deadline = Date.now() + Number(process.env.CASE_TIMEOUT_MS ?? 45 * 60_000);
   while (Date.now() < deadline) {
     await page.waitForTimeout(5000);
     const kits = await workshopKits();
     const fresh = kits.filter((id) => !before.has(id));
+    // 조수가 그리지 않고 끝낸 턴(있는 기물을 썼거나 거절) — 턴이 끝나고 2분 동안 새 카드가 없으면 다음 요청으로.
+    if (!kit && Date.now() - started > 120_000 && await sendIdle() && await page.locator('[data-testid="ai-objectgen-card"]').count() === cardsBefore) {
+      const ended = await page.evaluate((from) => window.__capEvents.slice(from).some((e) => e.type === "done" || e.type === "stream_closed"), eventStart);
+      if (ended) { noCardSince ??= Date.now(); if (Date.now() - noCardSince > 120_000) { log(`${job.id}: turn ended without a drawing card`); break; } }
+    }
     if (fresh.length && !kit) { kit = fresh.at(-1); log(`baked ${kit} after ${Math.round((Date.now() - started) / 1000)}s`); }
     if (!lastShot && await page.locator('[data-testid="ai-objectgen-card"]').count() && Date.now() - started > 60_000) {
       await page.locator('[data-testid="ai-objectgen-card"]').last().screenshot({ path: resolve(out, `${job.id}-card.png`) }).catch(() => {});
       lastShot = Date.now();
+    }
+    // 알아서 고르기가 통과 후보를 못 찾으면 사람이 고를 차례다 — 감독 대역이 다 그린 후보 중 첫 장을 고르고 기록한다(SUPERVISOR_PICK=1).
+    if (!kit && process.env.SUPERVISOR_PICK === "1") {
+      const waiting = await page.locator('[data-testid="ai-objectgen-card"]').last().locator('[role="status"]').textContent().catch(() => "");
+      if (/통과한 후보가 없어/u.test(waiting ?? "")) {
+        const pick = page.locator('[data-testid="ai-objectgen-card"]').last().locator('[data-testid="ai-objectgen-pick"]:not([disabled])').first();
+        if (await pick.count()) { await pick.click().catch(() => pick.evaluate((el) => el.click())); log("supervisor pick (no candidate passed the blind review)"); appendFileSync(resolve(out, `${job.id}-supervisor-pick.txt`), new Date().toISOString() + "\n"); }
+      }
     }
     if (kit) {
       const stamped = await page.evaluate(({ mapId, kit }) => {

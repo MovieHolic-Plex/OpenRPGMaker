@@ -30,6 +30,7 @@ export function mapItemFromDefinition(def: ItemDefinition): WorkshopItem {
     isNew: true, refs: def.refs, use: def.use, ...(def.tilesetId ? { tilesetId: def.tilesetId } : {}),
     ...(def.setting ? { setting: def.setting } : {}), ...(def.gateKind ? { gateKind: def.gateKind } : {}),
     ...(def.passage ? { passage: def.passage } : {}), ...(def.refTop ? { refTop: def.refTop } : {}), ...(def.footprintNote ? { footprintNote: def.footprintNote } : {}),
+    ...(def.noReference ? { noReference: true } : {}),
   };
 }
 

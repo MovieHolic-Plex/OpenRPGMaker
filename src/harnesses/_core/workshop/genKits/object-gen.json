@@ -1,7 +1,7 @@
 {
  "kit": "object-gen",
  "repo": "https://github.com/MovieHolic-Plex/object-gen.git",
- "commit": "7ec06606063b73c33de79222ebfdb75a0b0ca592",
+ "commit": "bcab2ed825ca16d6d3bf94015fc34b1e79768a0f",
  "constants": {
   "checks": {
    "STANDING": [
@@ -39,6 +39,7 @@
      "measured": [
       "beodeul:guild banner pole 1x1+3 [*|*|*|X]"
      ],
+     "reference": false,
      "top": "the top of the pole and the upper edge of the cloth",
      "typ": {
       "foot": 1,
@@ -306,6 +307,7 @@
       "beodeul:crooked street lamp 1x1+2 [*|*|X]",
       "beodeul:double lamp 2x1+2"
      ],
+     "reference": false,
      "top": "the lamp head and its cap seen from above",
      "typ": {
       "foot": 1,
@@ -395,6 +397,7 @@
       "beodeul:signpost 1x1+1 [*|X]",
       "beodeul:chalk sandwich board 1x1+0"
      ],
+     "reference": false,
      "top": "the top edge of the board and the post cap",
      "typ": {
       "foot": 1,

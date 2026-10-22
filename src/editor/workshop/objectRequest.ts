@@ -40,6 +40,8 @@ export interface ObjectGenRequest {
     readonly top: string | null;
     readonly reason: string;
     readonly adjusted: readonly string[];
+    /** false = 참고 그림 없이 그린다(가는 기둥). 없으면 true. */
+    readonly reference?: boolean;
   };
 }
 
@@ -77,7 +79,7 @@ export function objectGenDefinition(request: ObjectGenRequest, takenKeys: Readon
     refs: [],
     ...(request.setting ? { setting: request.setting } : {}),
     ...(request.gateKind ? { gateKind: request.gateKind } : {}),
-    ...(request.footprint ? { passage: request.footprint.passage, footprintNote: request.footprint.reason, ...(request.footprint.top ? { refTop: request.footprint.top } : {}) } : {}),
+    ...(request.footprint ? { passage: request.footprint.passage, footprintNote: request.footprint.reason, ...(request.footprint.top ? { refTop: request.footprint.top } : {}), ...(request.footprint.reference === false ? { noReference: true } : {}) } : {}),
   };
   return request.harnessId === "map-objects" ? { ...base, tilesetId: request.tilesetId, palette } : base;
 }

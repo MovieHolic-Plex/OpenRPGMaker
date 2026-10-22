@@ -64,8 +64,8 @@ export const REF_DRAW_NOTE = "「참고 그림」은 이 물건이 이 시점에
   + "윗면 행 수·크기는 아래 「크기」「윗면」 절이 정한다(참고 그림의 비율보다 우선).";
 
 /** 공방 기물 → 참고 그림 지시문의 Object: 설명. 바닥 무늬·벽 걸이는 참고 단계가 없다(시점 지시문이 서 있는 물건용). */
-export function workshopRefDescribe(item: { readonly kind: string; readonly title: string; readonly description: string; readonly setting?: string; readonly width: number; readonly height: number; readonly padTop: number }): string | null {
-  if (item.kind === "flat" || item.kind === "hang") return null;
+export function workshopRefDescribe(item: { readonly noReference?: boolean; readonly kind: string; readonly title: string; readonly description: string; readonly setting?: string; readonly width: number; readonly height: number; readonly padTop: number }): string | null {
+  if (item.kind === "flat" || item.kind === "hang" || item.noReference) return null;
   const cells = refCells(item);
   // 배경(나라·시대)의 실제 모양으로 — 설명이 다른 나라 모양(영국식 빨간 부스 등)을 적었어도 배경을 따른다(object-gen rules 와 같은 뜻).
   // 크기는 칸 수와 사람(1×2칸) 기준(object-gen SIZE_NOTE). 옛 「약 W by H pixels」 문장은 척도가 없어 2×1 벤치가 3.4:1, 1×1 상자가 화면을 채웠다(2026-10-22 A/B).

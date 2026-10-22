@@ -236,7 +236,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
   async function makeReference(round: WorkshopRound, item: WorkshopItem, run: WorkshopRun, signal: AbortSignal): Promise<string[]> {
     const describe = runner.referenceDescribe?.(item) ?? null;
     if (!describe || !env.referenceImage) {
-      round.reference = { status: "none", tries: 0, note: describe ? "참고 그림 없이 그림 — 그림을 만들 수 있는 계정이 연결되지 않았다" : "참고 그림 없이 그림 — 이 종류는 참고 단계가 없다" };
+      round.reference = { status: "none", tries: 0, note: describe ? "참고 그림 없이 그림 — 그림을 만들 수 있는 계정이 연결되지 않았다" : item.noReference ? "참고 그림 없이 그림 — 가는 기둥(가로등·깃대·팻말)은 윗면이 없어 참고 그림이 시점 검사를 못 넘는다(크기 사전 reference:false)" : "참고 그림 없이 그림 — 이 종류는 참고 단계가 없다" };
       void save(round);
       return [];
     }

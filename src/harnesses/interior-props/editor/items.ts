@@ -78,6 +78,7 @@ export function itemFromDefinition(def: ItemDefinition): WorkshopItem {
     width: def.tilesW * TILE, height, padTop: height - drawn, footRows: def.tilesH, risePx: def.rise, isNew: true, refs: def.refs, use: def.use,
     ...(def.setting ? { setting: def.setting } : {}), ...(def.gateKind ? { gateKind: def.gateKind } : {}),
     ...(def.passage ? { passage: def.passage } : {}), ...(def.refTop ? { refTop: def.refTop } : {}), ...(def.footprintNote ? { footprintNote: def.footprintNote } : {}),
+    ...(def.noReference ? { noReference: true } : {}),
   };
 }
 

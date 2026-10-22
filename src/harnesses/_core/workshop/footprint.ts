@@ -20,6 +20,8 @@ type KitClass = {
   readonly note?: string;
   readonly measured: readonly string[];
   readonly rise_px?: number;
+  /** false = 참고 그림을 만들지 않는다(가는 기둥 — 윗면이 없어 시점 검사가 늘 front 로 떨어진다) */
+  readonly reference?: boolean;
 };
 
 const CLASSES = kitConstant<Readonly<Record<string, KitClass>>>(objectGenKit, "footprint", "CLASSES");
@@ -55,6 +57,8 @@ export type FootprintDecision = {
   readonly reason: string;
   /** 크기 사전의 실측 예(최대 3) */
   readonly measured: readonly string[];
+  /** 참고 그림을 만들지(가는 기둥 lamp·banner·signpost 는 false, object-gen bcab2ed) */
+  readonly reference: boolean;
 };
 
 /** 머리 낱말(이름 끝 낱말)이 먼저 — 「나무 벌통」은 나무가 아니다. 그다음 이름 전체, 그다음 설명. */
@@ -122,7 +126,7 @@ export function decideFootprint(name: string, brief: string, ask: { readonly w?:
   const risePx = ask.interior && c?.rise_px !== undefined && over <= 1 ? c.rise_px : over * 16;
   const passage = [...Array.from({ length: over }, () => "*".repeat(w)), ...Array.from({ length: foot }, () => "X".repeat(w))];
   return {
-    building: false, cls, w, foot, over, risePx, passage, top: c?.top ?? null, adjusted, measured: c?.measured.slice(0, 3) ?? [],
+    building: false, cls, w, foot, over, risePx, passage, top: c?.top ?? null, adjusted, measured: c?.measured.slice(0, 3) ?? [], reference: c?.reference ?? true,
     reason: `${why}; ${w}×${foot + over}칸 = 발밑 ${foot}줄(막힘) + 위 ${over}줄(캐릭터 위에 그려짐)`,
   };
 }

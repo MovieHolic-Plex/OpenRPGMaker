@@ -53,6 +53,8 @@ export type WorkshopItem = {
   readonly refTop?: string;
   /** 크기 결정 한 줄(왜 이 칸 수인가) — 카드·그리기 지시문에 보인다 */
   readonly footprintNote?: string;
+  /** 참고 그림을 만들지 않는다(크기 사전 reference:false — 가는 기둥) */
+  readonly noReference?: boolean;
 };
 
 /** 사용자가 공방에서 정의한 새 기물 */
@@ -82,6 +84,8 @@ export type ItemDefinition = {
   readonly refTop?: string;
   /** 크기 결정 한 줄 */
   readonly footprintNote?: string;
+  /** 참고 그림을 만들지 않는다(가는 기둥) */
+  readonly noReference?: boolean;
 };
 
 export type Direction = { readonly letter: string; readonly text: string };

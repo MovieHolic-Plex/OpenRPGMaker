@@ -213,7 +213,7 @@ const generateMissingObject: ToolDefinition = {
       title, description, objectKind, tilesW, tilesH, rise, base, need,
       setting: objectSetting(tileset, map.name ?? ""),
       ...(gateKind ? { gateKind } : {}),
-      footprint: { cls: decided.cls, passage, top: decided.top, reason: decided.reason, adjusted: decided.adjusted },
+      footprint: { cls: decided.cls, passage, top: decided.top, reason: decided.reason, adjusted: decided.adjusted, ...(decided.reference ? {} : { reference: false }) },
     };
     const sizeLine = `크기 ${tilesW}×${tilesH + overRows}칸 = 발밑 ${tilesH}줄(막힘)${overRows ? ` + 위 ${overRows}줄(캐릭터 위에 그려짐${rise !== overRows * TILE ? `, ${rise}px` : ""})` : ""}`
       + `${decided.adjusted.length ? ` — 조정: ${decided.adjusted.join(", ")}` : ""}. 이유: ${decided.reason}`;
