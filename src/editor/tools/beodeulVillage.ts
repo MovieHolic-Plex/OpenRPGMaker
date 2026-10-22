@@ -2252,6 +2252,12 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
           const ends = [dc, dc - 1, dc + 1, dc + W].filter((n) => n >= 0 && n < W * H && prev[n] !== -2);
           const end = ends[0]; if (end === undefined) continue;
           for (let c = end; c >= 0; c = prev[c]!) front.add(c); }
+        // 길은 두 칸 폭으로 그려진다 — 지킨 줄기 옆 길 칸도 지켜야 한 칸 폭으로 깎여 풀밭처럼 그려지지 않는다(2026-10-22 VQA: 북쪽 집 문 앞이 풀로 보였다)
+        // 지킨 칸과 2×2 길 덩이를 이루는 칸만 더한다 — 한 칸 폭 오솔길(설원·사막)의 곁가지·한 칸 혹은 지키지 않는다
+        const sq = (x: number, y: number) => x >= 0 && y >= 0 && x + 1 < W && y + 1 < H && [idx(x, y), idx(x + 1, y), idx(x, y + 1), idx(x + 1, y + 1)].every(pathy);
+        for (const c of [...front]) { const x = c % W, y = (c - x) / W;
+          for (const [ox, oy] of [[-1, -1], [0, -1], [-1, 0], [0, 0]] as const) if (sq(x + ox, y + oy))
+            for (const n of [idx(x + ox, y + oy), idx(x + ox + 1, y + oy), idx(x + ox, y + oy + 1), idx(x + ox + 1, y + oy + 1)]) front.add(n); }
       }
       const peeled: number[] = [];
       for (let pass = 0; pass < 48; pass += 1) {
