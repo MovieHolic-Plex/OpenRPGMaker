@@ -414,7 +414,7 @@ const interiorRoomLight: Family = {
   mode: 'write',
   title: '실내 밝기·광원만',
   variants: [
-    { key: 'dim-plain', prompt: '이 방을 좀 어둡게 해줘. ambient 0.45.', args: { mapId: ROOM, ambient: 0.45, color: '#2a2438' }, setup: { select: { x: 0, y: 0, w: 16, h: 9 } } },
+    { key: 'dim-plain', prompt: '이 방을 좀 어둡게 해줘. ambient 0.45.', args: { mapId: ROOM, ambient: 0.45 }, setup: { select: { x: 0, y: 0, w: 16, h: 9 } } },
     { key: 'warm-polite', prompt: '방 안을 따뜻한 등불 빛으로 만들어 주세요. ambient 0.6, 색 #ffd9a0.', args: { mapId: ROOM, ambient: 0.6, color: '#ffd9a0' } },
     { key: 'candle-terse', prompt: '촛불 분위기로. 0.35, #ffb060.', args: { mapId: ROOM, ambient: 0.35, color: '#ffb060' }, setup: { select: { x: 0, y: 0, w: 16, h: 9 } } },
     { key: 'dark-explain', prompt: '창고라 어둡습니다. 이 방의 기본 조명만 ambient 0.25, 색 #1c2230 으로 낮추고, 다른 맵과 가구는 건드리지 마세요.', args: { mapId: ROOM, ambient: 0.25, color: '#1c2230' } },
@@ -436,9 +436,8 @@ const interiorRoomLight: Family = {
   wrongs(project, args): FamilyOutcome[] {
     const mapId = strArg(args, 'mapId');
     const right = this.reference(project, args) as Project;
-    void right;
     return [
-      runOn(project, 'set_lighting_volume', { mapId: MAP, ambient: 0.3, color: '#1c2230', applyMode: 'map' }),
+      runOn(project, 'set_lighting_volume', { mapId: 'map_plaza', ambient: 0.3, color: '#1c2230', applyMode: 'map' }),
       runOn(right, 'set_scene_mood', { mapId, weather: { kind: 'rain' } }),
       runOn(project, 'set_lighting_volume', { mapId, ambient: 0.95, color: '#fff6e0', applyMode: 'map' }),
       runOn(project, 'set_lighting_volume', { mapId, ambient: (typeof args.ambient === 'number' ? args.ambient : 0.4) + 0.3, color: '#fff6e0', applyMode: 'map' }),
