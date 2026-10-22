@@ -261,9 +261,9 @@ function fillDirt(b: Board): void {
   for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) b.setLower(x, y, b.field(DIRT, x, y, [10, 3, 3]));
 }
 function fillSlab(b: Board, x0: number, y0: number, w: number, h: number): void {
-  // 판석 가장자리 오토타일(wl-…slab…)이 있으면 판 둘레는 맵을 다 짠 뒤 finishSlab 이 깨진 가장자리로 덮는다 — 그땐 이 빠짐을 만들지 않는다
+  // 판석 깨짐 덧칠(wl-…slab-break…)이 있으면 판은 곧은 네모로 깔고, 맵을 다 짠 뒤 finishSlab 이 둘레 칸 위층 덧칠로 흙에 먹힌 끝을 그린다
   // (r3: 이 빠진 판 끝이 계단·외딴 칸 구멍으로 읽혔다). 없으면 예전처럼 이 빠진 네모.
-  const edged = b.hasAutotile("slab");
+  const edged = b.hasAutotile("slab-break");
   for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) {
     if (!b.inb(x, y)) continue;
     const edge = (x === x0 || x === x0 + w - 1 ? 1 : 0) + (y === y0 || y === y0 + h - 1 ? 1 : 0);
@@ -273,13 +273,22 @@ function fillSlab(b: Board, x0: number, y0: number, w: number, h: number): void 
   }
 }
 
-/** 판석 칸 둘레(4방향 중 하나라도 판석 아님)만 판석 가장자리 오토타일로 — 속은 slab-a/b/c 결 그대로. */
+/** 판석 둘레 칸(4방향 중 하나라도 판석 아님)에 깨짐 덧칠(위층 평면) — 아래층 판석 결은 끝까지 이어진다. 위에 기물이 선 칸은 건너뛴다. */
 function finishSlab(b: Board): void {
-  if (!b.hasAutotile("slab")) return;
-  // 판석 결 칸 위에만 — 그 위에 바닥째 찍힌 기물(건물 껍데기 아래줄 등)은 덮지 않는다.
+  const g = (b.ts.autotileGroups ?? []).find((group) => group.id.startsWith("wl") && group.id.includes("slab-break"));
+  if (!g) return;
   const slabTiles = new Set<number>();
   for (const id of SLAB) for (const r of b.kit(id)?.rows ?? []) for (const t of r.tiles) if (t >= 0) slabTiles.add(t);
-  b.paint("slab", b.slab.map((v, i) => v && slabTiles.has(b.map.lowerTiles[i] ?? -1)), true);
+  const on = (x: number, y: number) => b.inb(x, y) && b.slab[b.idx(x, y)]! && slabTiles.has(b.map.lowerTiles[b.idx(x, y)] ?? -1);
+  for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) {
+    if (!on(x, y)) continue;
+    const m = (on(x, y - 1) ? N : 0) | (on(x + 1, y) ? E : 0) | (on(x, y + 1) ? S : 0) | (on(x - 1, y) ? W : 0);
+    if (m === 15) continue;
+    const t = g.variantMap[String(m)];
+    const i = b.idx(x, y);
+    if (t === undefined || (layerTileAt(b.map, 2, i) ?? -1) >= 0) continue;
+    setLayerTileAt(b.map, 2, i, t);
+  }
 }
 /** 길·광장이 아닌 빈 땅·길 가장자리에 잔해·잡초·웅덩이 덧그림을 흩는다. */
 function scatterDecals(b: Board, density: number, road: readonly boolean[]): void {
