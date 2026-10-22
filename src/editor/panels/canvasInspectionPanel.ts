@@ -3,6 +3,7 @@ import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
 import { openRegionInAssistant } from "@/editor/aiRegionHandoff";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import type { MapId, Project } from "@/project/types";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { el } from "@/util/dom";
 
 export interface CanvasInspectionDeps {
@@ -59,7 +60,7 @@ export function openCanvasInspectionPanel(options: CanvasInspectionOptions): HTM
             class: "canvas-inspection-close",
             text: "닫기",
             attrs: { "aria-label": "검사 결과 닫기", type: "button" },
-            on: { click: () => panel.remove() },
+            on: { click: () => closePanel() },
           }),
         ],
       }),
@@ -75,7 +76,13 @@ export function openCanvasInspectionPanel(options: CanvasInspectionOptions): HTM
         }),
     ],
   });
+  // Esc 로도 닫힌다 — 모달 스택에 올려 다른 창과 같은 규칙(맨 위 한 장만)을 따른다.
+  function closePanel(): void {
+    unregisterModal(panel);
+    panel.remove();
+  }
   document.body.append(panel);
+  registerModal(panel, closePanel);
   return panel;
 }
 
