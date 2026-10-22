@@ -244,7 +244,7 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       // 엘리베이터 앞 첫 만남: 서하는 elevatorOut, 팀장은 두 칸 아래(트인 사무실 쪽), 지후는 그 옆 — 전부 석재 로비 바닥 위, 벽·엘리베이터 그림에 안 가린다.
       // 사용자 r2: 「대화를 너무 멀리서 한다」 — 팀장은 서하 바로 오른쪽(같은 줄, 한 칸), 민호는 바로 왼쪽, 지후는 두 칸 앞에서 서하를 마주 본다.
       // 위아래로 붙어 서면 3/4 시점에서 그림이 겹치므로(VQA r14) 바로 앞 칸은 비운다.
-      meetLead: { x: 17, y: 5 }, meetJihu: { x: 16, y: 7 },
+      meetLead: { x: 17, y: 4 }, meetJihu: { x: 16, y: 6 },
       // 한 팀 책상 무리(3열 6자리) 옆에 서하·지후, 팀장 책상은 그 동쪽.
       heroDesk: nearestFree(project, officeRoom, { x: 13, y: 9 }),
       jihuDesk: nearestFree(project, officeRoom, { x: 17, y: 9 }),

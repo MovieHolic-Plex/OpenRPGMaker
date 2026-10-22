@@ -340,10 +340,10 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   const office = project.maps[FL_MAP.office]!;
   const roof = project.maps[FL_MAP.rooftop]!;
   const o = a.office;
-  // 서하는 승강기 문 바로 앞(elevatorOut)이 아니라 한 칸 더 나와 선다 — 문 칸 앞에서는 승강기 문틀(늘 위에 그려지는 칸)이
-  // 머리를 덮었다(#3231 리뷰). 만남 무리는 이 칸을 기준으로 선다.
-  const heroMeet: Cell = { x: o.elevatorOut.x, y: o.elevatorOut.y + 1 };
-  const taken: Cell[] = [o.elevatorOut, heroMeet, o.heroDesk, o.stairsOut];
+  // 만남 무리는 승강기에서 내린 서하(elevatorOut)를 기준으로 선다. 문턱을 지날 때 문틀이 머리를 덮던 것은 렌더러가 고쳤다
+  // (playSceneMapRuntime isWallFaceCell — 벽면 기물 맨 아래 줄은 캐릭터와 y 정렬).
+  const heroMeet: Cell = o.elevatorOut;
+  const taken: Cell[] = [o.elevatorOut, o.heroDesk, o.stairsOut];
   const minhoSpot = spot(project, FL_MAP.office, o.pantry, taken);
   const jihuSeat = o.jihuDesk;
   taken.push(jihuSeat, o.leadDesk);
@@ -447,7 +447,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     playSe(SE_ELEVATOR), wait(400),
     quiet(SE_SLIDE, 0.45), ...doorFx(elev, true, 700),
     { kind: "moveEvent", eventId: "@player", route: { moves: [
-      { kind: "setThrough", enabled: true }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }, { kind: "setThrough", enabled: false }, { kind: "move", dir: "down" },
+      { kind: "setThrough", enabled: true }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }, { kind: "setThrough", enabled: false },
     ], repeat: false, wait: true, skippable: true } } as unknown as Command,
     quiet(SE_SLIDE, 0.4), ...doorFx(elev, false, 700, false),
     walkRoute(project, FL_MAP.office, "ev_fl_lead", leadSpot, leadMeetStop, [heroMeet], true, dirToward(leadMeetStop, heroMeet)),
