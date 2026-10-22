@@ -271,8 +271,8 @@ BOULDER = {
           ['.mgm.', 'mcccb', 'ccbbd', '.ddd.'], ['mc', 'bd']),
     'B': (['...llll...', '.llmmmmcc.', 'lmmmmmmccp', 'mmmmmmcccp', '.cmmcccpp.', '..pppppp..'],
           ['.ll.', 'lmmc', 'mmcp', '.pp.'], ['lm', 'cp']),
-    'C': (['..cccm....', '.cccccmcc.', 'cccccmccccm', '.mbbmcccccm', '.kkkkmbbbm.', '.....kkkk..'],
-          ['.ccm.', 'ccccm', '.mbm.', '.kkk.'], ['cm', 'bk']),
+    'C': (['..whcm....', '.hhccmmcb.', 'hcccmmmcbbm', '.mbbmcmbbbk', '.kkkkmbbbk.', '.....kxxk..'],   # 5단: w h c·m b k x
+          ['.hcm.', 'hccmb', '.mbk.', '.kxk.'], ['hm', 'bk']),
 }
 # 층(C1): 가는 층 줄 — 위 옅은 빛(m) + 줄(k). 가로 변은 y=4·11 에서만 건넌다.
 def strata_line(rows, pts):
