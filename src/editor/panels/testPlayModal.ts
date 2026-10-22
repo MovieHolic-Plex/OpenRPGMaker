@@ -408,7 +408,7 @@ function openTestPlayShell(
   }) as HTMLButtonElement;
   const maximizeButton = el("button", {
     class: "test-play-close window-control maximize",
-    text: "전체",
+    text: "전체 화면",
     attrs: { title: "전체 화면", "aria-label": "시연 실행 전체 화면" },
     dataset: { testid: "test-play-window-maximize" },
   }) as HTMLButtonElement;

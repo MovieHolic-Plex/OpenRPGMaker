@@ -3519,7 +3519,7 @@ function titleScreenWorkbenchPreview(
           play,
           stop,
           replay,
-          el("code", {
+          el("span", {
             class: "db-title-workbench-music-id",
             text: musicId ? systemResourceName("music", musicId) : "BGM 없음",
             dataset: { testid: "db-title-workbench-music-id" },

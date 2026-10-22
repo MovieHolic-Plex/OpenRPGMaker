@@ -136,7 +136,8 @@ export function renderAuthoringJourney(
     }
     item.append(el("span", {
       class: "authoring-journey-evidence",
-      text: complete ? `✓ ${stage.detail}` : acknowledged ? `확인 · ${stage.detail}` : stage.detail,
+      // ✓ 는 따로 둔다 — 한 문자열로 이으면 카탈로그의 정확 일치 키(「새 프로젝트 · 1 map」 등)가 깨진다.
+      children: complete ? ["✓ ", stage.detail] : [acknowledged ? `확인 · ${stage.detail}` : stage.detail],
       attrs: {
         "aria-label": `${stage.label}: ${complete ? "완료" : acknowledged ? "확인됨, 완료 증거 아님" : "진행 전"}, ${stage.detail}`,
       },

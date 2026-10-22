@@ -255,8 +255,9 @@ export function makeOverflowDropdown(model: TileToolbarModel): HTMLElement {
   }
 
   menu.append(makeOverflowSectionLabel("빠른 검사 고정"));
-  const labels = { inspector: "인스펙터", ruleAudit: "규칙 감사", history: "작업 기록" };
-  for (const id of INSPECTION_COMMANDS) menu.append(makeOptionItem(`${labels[id]} 고정`, pins.includes(id), false, () => {
+  // 완성 문장 리터럴로 둔다 — 조각을 이어 붙이면 번역기가 「작업 {0}」 템플릿에 잘못 걸린다(VQA B11·C09).
+  const labels = { inspector: "인스펙터 고정", ruleAudit: "규칙 감사 고정", history: "작업 기록 고정" };
+  for (const id of INSPECTION_COMMANDS) menu.append(makeOptionItem(labels[id], pins.includes(id), false, () => {
       toggleInspectionPin(id);
       openMenu = "overflow";
       model.rerender();

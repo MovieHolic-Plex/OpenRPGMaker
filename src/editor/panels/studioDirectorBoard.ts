@@ -254,7 +254,8 @@ export function createStudioDirectorBoard(options: StudioDirectorBoardOptions = 
         el("div", {
           class: "ai-studio-director-stage-hud",
           children: [
-            el("span", { text: `♪ ${bgmName}` }),
+            // ♪ 는 따로 둔다 — 이으면 「프로젝트 기본 BGM」 같은 정확 일치 키가 깨진다.
+            el("span", { children: ["♪ ", bgmName] }),
             el("span", { text: `${LIGHTING_PRESETS[beat.lightingPreset === "custom" ? "day" : beat.lightingPreset].label}${beat.lightingPreset === "custom" ? "(사용자 조명)" : ""}` }),
             ...(beat.encounterCount > 0 ? [el("span", { text: `조우 ${beat.encounterCount}종 · ${beat.encounterRate}` })] : []),
           ],
@@ -790,7 +791,8 @@ export function createStudioDirectorBoard(options: StudioDirectorBoardOptions = 
     root.dataset.genre = genre;
     root.dataset.genreSource = genreOverride ? "override" : "detected";
     root.dataset.tab = activeTab;
-    subtitleLine.textContent = `${GENRE_META[genre].label}${genreOverride ? " (수동)" : " (자동 판정)"} · ${GENRE_META[genre].subtitle}`;
+    // 부제는 긴 문장 키가 따로 있다 — 한 문자열로 이으면 문장 속 쉼표에서 쪼개져 반만 번역된다.
+    subtitleLine.replaceChildren(GENRE_META[genre].label, genreOverride ? " (수동)" : " (자동 판정)", " · ", GENRE_META[genre].subtitle);
     genreButtons.forEach((btn, i) => {
       const active = GENRES[i] === genre;
       btn.classList.toggle("is-active", active);
