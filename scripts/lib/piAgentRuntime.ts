@@ -1215,7 +1215,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         emitFeatureChecklist(round.verdicts.every((v) => v.state === "pass"));
         return round;
       };
-      let previousFailing = "", unchanged = 0;
+      let previousFailing = "", unchanged = 0, longestRepair = 0;
       for (let rebuild = 0; ; rebuild++) {
         if (fatal || rejected || options.signal?.aborted || turns >= maxTurns) break;
         const targets = targetIds();
@@ -1225,7 +1225,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         const open = round.verdicts.filter((v) => v.state !== "pass");
         if (!open.length) break;
         const failing = round.verdicts.filter((v) => v.state === "fail");
-        const overBudget = Date.now() - started > FEATURE_REVIEW_SOFT_BUDGET_MS;
+        // 고치기 한 바퀴가 3~6분 걸린다(Sonnet high 의 평면 다시 쓰기) — 지난 바퀴 길이(처음은 3분)를 더해 한도를 넘길 바퀴는 시작하지 않는다.
+        const overBudget = Date.now() - started + Math.max(180_000, longestRepair) > FEATURE_REVIEW_SOFT_BUDGET_MS;
         // 같은 항목이 두 번 고친 뒤에도 그대로 실패면 더 돌려도 같은 자리를 맴돈다 — 바퀴를 아껴 보고로 넘긴다.
         const failingKey = failing.map((v) => v.id).sort().join("|");
         unchanged = failingKey && failingKey === previousFailing ? unchanged + 1 : 0;
@@ -1237,7 +1238,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           if (!fatal && !rejected && turns < maxTurns && !options.signal?.aborted) await promptResuming(featureShortfallPrompt(featureChecklist.allItems, round.verdicts, reason));
           break;
         }
+        const repairStarted = Date.now();
         await promptResuming(featureRepairPrompt(rebuild + 1, FEATURE_REVIEW_MAX_REBUILDS, featureChecklist.allItems, round.verdicts));
+        longestRepair = Math.max(longestRepair, Date.now() - repairStarted);
       }
       if (featureChecklist.roundCount) { featureChecklist.finish(); emitFeatureChecklist(featureChecklist.latest()?.verdicts.every((v) => v.state === "pass") ?? false); }
     }

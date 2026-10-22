@@ -10,8 +10,8 @@
 // 빈 바닥(실내)은 판정자 대신 bareFloor.ts 의 보정된 자로 잰 숫자를 항목 하나로 붙인다.
 
 export const FEATURE_REVIEW_MAX_REBUILDS = 3;
-/** 이 시간이 지나면 새 고치기 바퀴를 시작하지 않고 남은 항목을 보고한다(방 하나 10분 안팎 목표). */
-export const FEATURE_REVIEW_SOFT_BUDGET_MS = 11 * 60_000;
+/** 턴 시작부터 이 시간 안에 끝나지 않을 고치기 바퀴는 시작하지 않고 남은 항목을 보고한다(방 하나 10분 안팎 목표, 하네스 턴 상한 15분). */
+export const FEATURE_REVIEW_SOFT_BUDGET_MS = 12 * 60_000;
 const MAX_ITEMS = 8;
 export const FEATURE_REVIEW_MAX_CROPS = 4;
 const MEASURED_BY_RUNNER = /맨\s*바닥|빈\s*바닥|bare\s*floor|empty\s*floor/iu;
