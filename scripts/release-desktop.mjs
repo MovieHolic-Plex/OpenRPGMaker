@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 // 최신 vX.Y.Z GitHub Release 에 리눅스 AppImage · 윈도우 zip · 윈도우 단일 exe(portable)가 없으면
 // 그 태그에서 빌드해 올린다. 이미 있으면 바로 끝난다.
-// 20분짜리 버전 제안과 분리한다. 패키징은 CPU 를 한 차례 다 쓴다.
+// 기본 경로는 GitHub Actions(.github/workflows/desktop-release.yml)다. 이 스크립트는
+// OPRN_DESKTOP_LOCAL=1 일 때만 빌드한다. 20분짜리 버전 제안과 분리한다.
 
 import { execFileSync } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const repo = process.cwd();
 const buildRoot = process.env.OPRN_DESKTOP_BUILD || join(homedir(), ".cache", "oprn-desktop-release");
@@ -18,7 +20,9 @@ const deliverDir = process.env.OPRN_WIN_DELIVER_DIR ?? "Downloads/oprn-app";
 const deliverWinDir = process.env.OPRN_WIN_DELIVER_WINDIR ?? "C:\\Users\\ubbio\\Downloads\\oprn-app";
 // Android Dev 는 tag:android-dev 라 Tailscale 으로 Windows 에 직접 붙지 못한다.
 // 빌드 산출물을 여기에 두면 Windows 가 가져간다.
-const dropDir = process.env.OPRN_DESKTOP_DROP || join(homedir(), "oprn-desktop-drop");
+// 빈 문자열이면 로컬 복사본을 만들지 않는다(Actions 러너).
+const dropDir = process.env.OPRN_DESKTOP_DROP === "" ? "" : (process.env.OPRN_DESKTOP_DROP || join(homedir(), "oprn-desktop-drop"));
+const inPlace = process.env.OPRN_DESKTOP_IN_PLACE === "1";
 
 function run(command, args, { cwd = repo, allowFailure = false } = {}) {
   try {
@@ -132,41 +136,58 @@ function hasDesktop(names) {
   return appImage && winZip && winExe;
 }
 
+if (process.env.OPRN_DESKTOP_LOCAL !== "1") {
+  console.log("[release-desktop] 건너뜀. 데스크톱 패키지는 GitHub Actions desktop-release 가 호스티드 러너에서 만들어 릴리스에 올린다. 이 머신에서 빌드하려면 OPRN_DESKTOP_LOCAL=1.");
+  process.exit(0);
+}
+
+function resolveTag() {
+  const given = process.env.OPRN_DESKTOP_TAG?.trim();
+  if (!given) return latestVersionTag();
+  if (!/^v\d+\.\d+\.\d+$/.test(given)) throw new Error(`태그가 vX.Y.Z 가 아님: ${given}`);
+  return given;
+}
+
 takeLock();
 process.on("exit", releaseLock);
 try {
-  run("git", ["fetch", "origin", "--tags", "--quiet"], { allowFailure: true });
-  const tag = latestVersionTag();
+  if (!inPlace) run("git", ["fetch", "origin", "--tags", "--quiet"], { allowFailure: true });
+  const tag = resolveTag();
   const names = assetNames(tag);
   if (hasDesktop(names)) {
     console.log(`[release-desktop] ${tag} 에 AppImage·윈도우 zip·단일 exe 가 이미 있음`);
     process.exit(0);
   }
 
-  console.log(`[release-desktop] ${tag} 데스크톱 빌드 시작`);
-  run("git", ["worktree", "prune"]);
-  if (existsSync(buildRoot)) run("git", ["worktree", "remove", "--force", buildRoot], { allowFailure: true });
-  if (existsSync(buildRoot)) rmSync(buildRoot, { recursive: true, force: true });
-  run("git", ["worktree", "add", "--detach", buildRoot, tag]);
+  const buildDir = inPlace ? repo : buildRoot;
+  console.log(`[release-desktop] ${tag} 데스크톱 빌드 시작${inPlace ? " (현재 체크아웃)" : ""}`);
+  if (!inPlace) {
+    run("git", ["worktree", "prune"]);
+    if (existsSync(buildRoot)) run("git", ["worktree", "remove", "--force", buildRoot], { allowFailure: true });
+    if (existsSync(buildRoot)) rmSync(buildRoot, { recursive: true, force: true });
+    run("git", ["worktree", "add", "--detach", buildRoot, tag]);
+  }
 
   const env = {
     ...process.env,
-    VITE_CACHE_DIR: join(buildRoot, ".vite-cache"),
+    VITE_CACHE_DIR: join(buildDir, ".vite-cache"),
     npm_config_fund: "false",
     npm_config_audit: "false",
+    // -mx=9 가 코어 수만큼 사전을 잡아 메모리를 먹는다. 래퍼가 -mmemuse 를 붙인다.
+    ELECTRON_BUILDER_7ZIP_PATH: join(dirname(fileURLToPath(import.meta.url)), "7za-memcap.sh"),
   };
-  execFileSync("npm", ["ci"], { cwd: buildRoot, stdio: "inherit", env });
-  execFileSync("node", ["scripts/build-electron.mjs"], { cwd: buildRoot, stdio: "inherit", env });
-  execFileSync("npx", ["vite", "build", "--configLoader", "runner"], { cwd: buildRoot, stdio: "inherit", env });
+  execFileSync("npm", ["ci"], { cwd: buildDir, stdio: "inherit", env });
+  execFileSync("node", ["scripts/build-electron.mjs"], { cwd: buildDir, stdio: "inherit", env });
+  execFileSync("npx", ["vite", "build", "--configLoader", "runner"], { cwd: buildDir, stdio: "inherit", env });
   // icon-tool.js is CJS. Without this, Node walks up to ~/package.json ("type":"module") and dies on require.
   writeFileSync(join(homedir(), ".cache/electron-builder/package.json"), "{\"type\":\"commonjs\"}\n");
   execFileSync(
     "npx",
     ["electron-builder", "--config", "scripts/electron-builder.config.mjs", "--linux", "AppImage", "--win", "zip", "portable", "--x64"],
-    { cwd: buildRoot, stdio: "inherit", env },
+    { cwd: buildDir, stdio: "inherit", env },
   );
 
-  const outDir = join(buildRoot, "dist-packages");
+  const outDir = join(buildDir, "dist-packages");
   const files = readdirSync(outDir)
     .filter((name) => name.endsWith(".AppImage") || (name.endsWith(".zip") && name.includes("win")) || name.endsWith(".exe"))
     .map((name) => join(outDir, name));
@@ -190,11 +211,13 @@ try {
   runInherit("gh", ["release", "upload", tag, ...files, ...stable, "--clobber"], repo);
   console.log(`[release-desktop] ${tag} 업로드 완료: ${[...files, ...stable].map((file) => file.split("/").pop()).join(", ")}`);
 
-  const winFiles = [...files, ...stable].filter((file) => file.endsWith(".zip") || file.endsWith(".exe"));
-  mkdirSync(dropDir, { recursive: true });
-  for (const file of winFiles) copyFileSync(file, join(dropDir, file.split("/").pop()));
-  writeFileSync(join(dropDir, "VERSION"), `${tag.slice(1)}\n`);
-  console.log(`[release-desktop] Windows 가 가져갈 파일: ${dropDir}`);
+  if (dropDir) {
+    const winFiles = [...files, ...stable].filter((file) => file.endsWith(".zip") || file.endsWith(".exe"));
+    mkdirSync(dropDir, { recursive: true });
+    for (const file of winFiles) copyFileSync(file, join(dropDir, file.split("/").pop()));
+    writeFileSync(join(dropDir, "VERSION"), `${tag.slice(1)}\n`);
+    console.log(`[release-desktop] Windows 가 가져갈 파일: ${dropDir}`);
+  }
 
   const winZip = files.find((file) => file.endsWith(".zip"));
   if (deliverHost && winZip) {
@@ -218,6 +241,6 @@ try {
   console.error(`[release-desktop] ${error instanceof Error ? error.message : String(error)}`);
   process.exit(1);
 } finally {
-  run("git", ["worktree", "remove", "--force", buildRoot], { allowFailure: true });
+  if (!inPlace) run("git", ["worktree", "remove", "--force", buildRoot], { allowFailure: true });
   releaseLock();
 }
