@@ -153,11 +153,12 @@ def write_refs(path, theme, seed, rid=None):
     os.makedirs(d, exist_ok=True)
     for ref in seed.get('refs', []):
         try:
-            im = beodeul.kit(ref['kit']).img()
+            im = beodeul.ref_image(ref).img()
         except SystemExit:
             continue
-        im.save(os.path.join(d, f'{ref["kit"]}-1x.png'))
-        im.resize((im.width * 4, im.height * 4), Image.NEAREST).save(os.path.join(d, f'{ref["kit"]}-4x.png'))
+        name = beodeul.ref_name(ref)
+        im.save(os.path.join(d, f'{name}-1x.png'))
+        im.resize((im.width * 4, im.height * 4), Image.NEAREST).save(os.path.join(d, f'{name}-4x.png'))
     if AS.requires_gable_front(theme, rid):
         projection.write_guides(d)
     act = beodeul.actor1_frame(1, 0, 0)
@@ -168,7 +169,8 @@ def write_refs(path, theme, seed, rid=None):
 def references(theme, seed, rid=None):
     out = []
     for ref in seed.get('refs', []):
-        out.append(f'  - refs/{ref["kit"]}-1x.png · refs/{ref["kit"]}-4x.png — {ref.get("label", "")} ({ref.get("use", "")})')
+        name = beodeul.ref_name(ref)
+        out.append(f'  - refs/{name}-1x.png · refs/{name}-4x.png — {ref.get("label", "")} ({ref.get("use", "")})')
     if AS.requires_gable_front(theme, rid):
         for name in projection.NAMES:
             out.append(f'  - refs/projection-{name}-1x.png · refs/projection-{name}-4x.png — 박공 정면 투영 안내도(회색 구조 도형, 화풍 기준 아님)')
@@ -293,6 +295,11 @@ def projection_section(theme, rid, seed):
 """
 
 
+def line_ramps(seed, line):
+    mats = seed['lines'][line].get('materials') or []
+    return f"- 이 줄의 램프: {' · '.join(mats)}\n" if mats else ''
+
+
 def brief(theme, rid, seed, key, items, line):
     names = ', '.join(func_name(it['id'], key) for it in items)
     return f"""# building-kit 그리기 — {seed['theme']['name']} · 판 {rid} · 후보 {key} (항목 {len(items)}개)
@@ -333,7 +340,7 @@ def brief(theme, rid, seed, key, items, line):
 ## 줄 {line}
 - 이름: {seed['lines'][line]['name']}
 - 화풍: {seed['lines'][line]['concept']}
-
+{line_ramps(seed, line)}
 ## 잠긴 팔레트 (글자 → (램프, 단); 단 0 = 가장 어두움)
 {palette_legend(theme)}
 

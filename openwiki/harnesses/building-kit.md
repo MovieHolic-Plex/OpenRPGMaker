@@ -50,6 +50,9 @@
   (출처 칸/조각 → 거르기 → 밝기 구간 k 등분 → 구간 최빈 실제 색 → 공용 시트 `public/assets/beodeul-city/beodeul-city-chipset.png` 에 있는지 대조).
 - **테마 램프**: seed `palette.ramps.<이름>` 에 출처를 적는다. 둘 중 하나:
   - `from: beodeul` + 출처(버들항 칸 범위·조각) — 버들항 귀족 구역은 **이것만** 쓴다.
+    출처 하나 = `{tile}` · `{kit, rows?}` · `{group}` · `{file: '<저장소 기준 PNG>'}`(버들항 계열 손 도트 그림, 예: 설원 변형 부품).
+    어느 출처든 `pred` 를 달면 그 출처 화소만 먼저 거르고, `k` 를 달면 그 출처만 따로 k 단을 뽑아 밝기순으로 합친다.
+    file 출처도 뽑은 색이 공용 시트에 있어야 한다 — 없으면 실패하고 그 색을 낸 출처를 적는다. 검사를 풀지 말고 그 출처를 시드에서 뺀다.
   - `hex: [...]` 손으로 지은 램프(사막 흙벽·돔, 북방 통나무·눈 지붕 등 버들항에 없는 재료) — 단마다 밝기가 버들항 공유 램프들의 같은 단 밝기 범위 ±0.04 안이어야 한다(무림 조선 호환 규칙과 같은 검사). 벗어나면 `palette` 가 실패.
 - 다시 잠그면 모든 후보 해시가 바뀌어 pick 이 VOID 가 된다.
 
@@ -533,6 +536,52 @@ python3 src/harnesses/building-kit/harness.py village northern-snow style-r3 --l
   기준 줄(버들항)은 이 판에서 투영이 아니라 품질·화풍 기준이다.
 - 숨긴 함정 **`flat_elevation`**: 후보 **자기 부품**(그 판의 ridge_side 지붕 + 벽)으로 조립한 6칸 1층 평평한 정면 입면. 통과시키면
   다른 함정처럼 그 회차는 무효. 옛 판(r1~r4)의 보드·프롬프트는 바뀌지 않는다.
+
+## 북방 팔레트 확장과 style-r6 (2026-10-22, 버들항 설원 마을 비교)
+
+사용자가 Opus 가 깔 우리 북방 마을과 버들항 설원 마을(`tiledata/beodeul-variants/snowfield/render-1x.png`, 번들 손 도트)을 비교해
+「버들항 설원 쪽이 확실히 낫다」고 판정했다. 원인은 둘이다.
+
+1. **팔레트** — 북방 팔레트에 눈·너와·통나무·회벽뿐이고, 기준 마을의 짙은 청록 연못·푸른 얼음·청록 전나무·
+   붉은/슬레이트 지붕·분홍 벽돌·푸른 회색 판석·흙길 색이 없었다.
+2. **집** — 통나무 오두막뿐이었다. 기준 마을은 통나무(hut·w3)·반목조 흰 회벽(hall·w2·e2)·분홍 벽돌(w1·e1·s1·n2) 세 계열이다.
+
+### 새 테마 램프 (출처 = `tiledata/beodeul-variants/snowfield/parts/*.png`, 모두 공용 시트에 있는 색)
+
+| 램프 | 색 | 출처 · 거름 |
+|---|---|---|
+| `water` | 5 | `ground-hot`(연못 물) · `teal` |
+| `ice` | 5 | `ground-ice`(얼어붙은 항구) |
+| `pine` | 8 | `pine` 잎 `green` k7 + 줄기 `darkwarm` k2(출처별 k) |
+| `roofred` | 7 | `w2`·`s1`·`n2` · `roofred` |
+| `roofslate` | 6 | `w1`·`e1` · `slate` |
+| `brick` | 6 | `w1`·`e1` · `brick` |
+| `plaster` | 7 | `w2`·`e2` · `plasterish` |
+| `plaza` | 4 | `ground-plaza` |
+| `dirt` | 2 | `ground-road` · `warm` |
+
+`snow` 는 `ground-snow` + 설원 회관·오두막 지붕 눈에서 다시 뽑았다(색은 전과 같다). 옛 램프(`snow`·`shake`·`log`·`hplaster`
+및 공유 다섯)는 한 색도 바뀌지 않았고 `hplaster` 는 옛 판 그림이 쓰므로 남긴다. 북방 팔레트 47색·램프 9 → 91색·램프 18.
+설원 렌더(`render-1x.png`)는 합성·그림자 섞인 색 78개가 공용 시트에 없어서 팔레트 출처로 쓰지 않는다 — 기준 그림(refs)으로만 쓴다.
+
+### refs 의 file 기준 그림
+
+seed `refs` 항목은 `{kit}` 또는 `{file, crop?: [x, y, w, h], id?}` 다. file 은 저장소 기준 경로만 받고(`beodeul.ref_image`),
+샌드박스에는 `refs/<id>-1x.png`·`-4x.png` 로, `preview/compare.png`·시트 기준 카드에도 같이 나온다. 북방은 설원 회관·오두막 키트
+(`parts/hall.png`·`hut.png` 와 화소가 같다) + `snowfield-w2`·`snowfield-w1`·`snowfield-s1` + 렌더 집 크롭 `snowfield-village-houses`(472×285).
+
+### style-r6 시드
+
+- 줄이 설원 세 집 계열이 됐다 — **A** 통나무 오두막(log·shake·snow·stone·iron) · **B** 반목조 흰 회벽 + 붉은 지붕
+  (plaster·wood·roofred·snow·brick·stone) · **C** 분홍 벽돌 + 붉은/슬레이트 지붕(brick·wood·roofred·roofslate·snow·stone).
+  줄마다 `materials` 에 램프를 적고 그리기 BRIEF 의 「이 줄의 램프」 줄로 나간다. 모든 줄 화풍에 「지붕 위 눈이 두껍게, 처마에 고드름」.
+- 문법은 style-r5 와 같다(`grammar: r5`, `requireGableFront`). 건물은 r5 와 같은 질량의 `cottage.r6`·`lhouse.r6`·`hall.r6` —
+  앞 벽은 줄 재질을 따르는 `wall.storey`(통나무 `wall.log` 는 회관 옆 헛간만), **모든 건물에 지붕 위 굴뚝**(고정 조각으로 A14 통과 확인).
+- `compare` 는 preview/compare.png 를 위 refs 와, 그리고 투영 안내도와 견주라고 적는다.
+- style-r3·r5 는 `superseded: style-r6`(+ `supersededWhy`). `validate` 는 superseded 판을 안내로만 적고, 그 판에 묶인 원장 해시 기록 수를
+  「옛 판 기록」으로 보고한다 — 실패로 세지 않는다. 판 모듈 `style_r6.py` 는 아직 없다(그리기 전). 감독·에이전트는 고르지 않는다.
+- 시험 `tests/test_palette_sources.py` — file 출처·출처별 pred/k·저장소 밖 경로 거절·시트에 없는 색이 출처를 적고 실패(임시 폴더),
+  새 램프 출처·색상, file refs·크롭·샌드박스, style-r6 줄·굴뚝·superseded 안내.
 
 ### 시험 (`tests/test_projection.py`, 37개)
 

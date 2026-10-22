@@ -77,6 +77,74 @@
    "#c4c6c3",
    "#ecd6c6",
    "#dee0dd"
+  ],
+  "water": [
+   "#125870",
+   "#1c8090",
+   "#38a8a4",
+   "#70cdb8",
+   "#b0eccc"
+  ],
+  "ice": [
+   "#3e84b8",
+   "#6cb4d8",
+   "#9ce0ee",
+   "#cff4f8",
+   "#f2ffff"
+  ],
+  "pine": [
+   "#2a1a0f",
+   "#0e3020",
+   "#312210",
+   "#154531",
+   "#175034",
+   "#237048",
+   "#38925a",
+   "#5cb476"
+  ],
+  "roofred": [
+   "#4a1e1e",
+   "#432721",
+   "#70302a",
+   "#93443a",
+   "#b45c46",
+   "#d27a58",
+   "#f0a07c"
+  ],
+  "roofslate": [
+   "#11131f",
+   "#222636",
+   "#383e52",
+   "#505870",
+   "#6a7490",
+   "#8a94b0"
+  ],
+  "brick": [
+   "#2b203f",
+   "#5b334d",
+   "#703f57",
+   "#8b716f",
+   "#aa8a7e",
+   "#c1afaf"
+  ],
+  "plaster": [
+   "#746969",
+   "#74696b",
+   "#928484",
+   "#9a8b8d",
+   "#bcaaa0",
+   "#c1afaf",
+   "#ecd6c6"
+  ],
+  "plaza": [
+   "#525a6e",
+   "#727a8e",
+   "#949cae",
+   "#b4bccb"
+  ],
+  "dirt": [
+   "#c0b0aa",
+   "#dccfca"
   ]
  },
  "sources": {
@@ -166,6 +234,9 @@
    "kind": "beodeul",
    "from": [
     {
+     "file": "tiledata/beodeul-variants/snowfield/parts/ground-snow.png"
+    },
+    {
      "kit": "bd-pick-snowfield-hall",
      "rows": [
       0,
@@ -182,9 +253,9 @@
      ]
     }
    ],
-   "pixels": 2827,
+   "pixels": 5131,
    "pred": "snowy",
-   "why": "지붕 위 눈 — 버들항 설원 회관·오두막 지붕"
+   "why": "눈 — 버들항 설원 눈 바닥(ground-snow)과 설원 회관·오두막 지붕 위 눈(밝은 단·푸른 그늘·고드름 빛)"
   },
   "shake": {
    "kind": "beodeul",
@@ -240,6 +311,127 @@
    "pixels": 3155,
    "pred": "warmcream",
    "why": "반목조 회벽 — 버들항 설원 회관 벽(고드름 빛은 뺀다)"
+  },
+  "water": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "file": "tiledata/beodeul-variants/snowfield/parts/ground-hot.png"
+    }
+   ],
+   "pixels": 2271,
+   "pred": "teal",
+   "why": "연못 물 — 버들항 설원 마을 왼쪽 위 짙은 청록 연못(ground-hot 물 표본, 가장자리 눈은 teal 조건으로 뺀다)"
+  },
+  "ice": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "file": "tiledata/beodeul-variants/snowfield/parts/ground-ice.png"
+    }
+   ],
+   "pixels": 2304,
+   "pred": null,
+   "why": "푸른 얼음 — 버들항 설원 얼어붙은 항구(ground-ice: 짙은 금·물빛·흰 반사)"
+  },
+  "pine": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "file": "tiledata/beodeul-variants/snowfield/parts/pine.png",
+     "pred": "green",
+     "k": 7
+    },
+    {
+     "file": "tiledata/beodeul-variants/snowfield/parts/pine.png",
+     "pred": "darkwarm",
+     "k": 2
+    }
+   ],
+   "pixels": 370,
+   "pred": null,
+   "why": "전나무 — 버들항 설원 전나무의 청록 바늘잎 7단 + 짙은 줄기 2단(줄기는 화소가 적어 따로 뽑는다, 잎 눈은 뺀다)"
+  },
+  "roofred": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "file": "tiledata/beodeul-variants/snowfield/parts/w2.png"
+    },
+    {
+     "file": "tiledata/beodeul-variants/snowfield/parts/s1.png"
+    },
+    {
+     "file": "tiledata/beodeul-variants/snowfield/parts/n2.png"
+    }
+   ],
+   "pixels": 4901,
+   "pred": "roofred",
+   "why": "붉은 기와 지붕 — 버들항 설원 반목조 집(w2)·벽돌 집(s1·n2) 지붕(눈·벽돌 면·나무는 roofred 조건으로 뺀다)"
+  },
+  "roofslate": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "file": "tiledata/beodeul-variants/snowfield/parts/w1.png"
+    },
+    {
+     "file": "tiledata/beodeul-variants/snowfield/parts/e1.png"
+    }
+   ],
+   "pixels": 3459,
+   "pred": "slate",
+   "why": "푸른 슬레이트 지붕 — 버들항 설원 벽돌 집(w1·e1) 청회색 지붕(창 유리·벽돌 줄눈·눈 그늘은 slate 조건으로 뺀다)"
+  },
+  "brick": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "file": "tiledata/beodeul-variants/snowfield/parts/w1.png"
+    },
+    {
+     "file": "tiledata/beodeul-variants/snowfield/parts/e1.png"
+    }
+   ],
+   "pixels": 2402,
+   "pred": "brick",
+   "why": "분홍 벽돌 벽 — 버들항 설원 벽돌 집(w1·e1)의 분홍 벽돌 면과 자주 줄눈(문·창틀 나무와 지붕은 brick 조건으로 뺀다)"
+  },
+  "plaster": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "file": "tiledata/beodeul-variants/snowfield/parts/w2.png"
+    },
+    {
+     "file": "tiledata/beodeul-variants/snowfield/parts/e2.png"
+    }
+   ],
+   "pixels": 2065,
+   "pred": "plasterish",
+   "why": "흰 회벽 — 버들항 설원 반목조 집(w2·e2) 기둥 사이 흰 회벽과 그 그늘(눈·회색 기초돌·갈색 지붕은 뺀다)"
+  },
+  "plaza": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "file": "tiledata/beodeul-variants/snowfield/parts/ground-plaza.png"
+    }
+   ],
+   "pixels": 2304,
+   "pred": null,
+   "why": "광장 판석 — 버들항 설원 마을 가운데 푸른 회색 판석(ground-plaza)"
+  },
+  "dirt": {
+   "kind": "beodeul",
+   "from": [
+    {
+     "file": "tiledata/beodeul-variants/snowfield/parts/ground-road.png"
+    }
+   ],
+   "pixels": 2232,
+   "pred": "warm",
+   "why": "다져진 흙길 — 버들항 설원 마을 길(ground-road, 길 가장자리 눈은 warm 조건으로 뺀다)"
   }
  },
  "envelope": [
@@ -282,29 +474,58 @@
   "why": "버들항 시트에 실제로 있는 반투명 바닥 그림자(윗칸 기물·처마 전용)"
  },
  "allowed": [
+  "#0e3020",
+  "#11131f",
+  "#125870",
+  "#154531",
+  "#175034",
   "#1a1009",
+  "#1c8090",
   "#22150c",
+  "#222636",
+  "#237048",
   "#262729",
+  "#2a1a0f",
+  "#2b203f",
+  "#312210",
   "#37383c",
   "#374243",
+  "#383e52",
+  "#38925a",
+  "#38a8a4",
   "#3a2a20",
   "#3c1700",
   "#3e403d",
+  "#3e84b8",
   "#3f723e",
+  "#432721",
   "#452a17",
+  "#4a1e1e",
   "#4e2620",
+  "#505870",
+  "#525a6e",
   "#565755",
   "#574234",
   "#5a5b62",
+  "#5b334d",
   "#5b6667",
   "#5c4738",
+  "#5cb476",
   "#5e3a1c",
   "#618c3b",
   "#653f23",
+  "#6a7490",
+  "#6cb4d8",
   "#6e9943",
   "#6f4725",
+  "#70302a",
+  "#703f57",
+  "#70cdb8",
+  "#727a8e",
   "#729c44",
   "#744c2a",
+  "#746969",
+  "#74696b",
   "#765c48",
   "#777579",
   "#797a84",
@@ -312,23 +533,38 @@
   "#806e68",
   "#84ab52",
   "#885a26",
+  "#8a94b0",
+  "#8b716f",
   "#8bb14e",
+  "#928484",
   "#929491",
+  "#93443a",
+  "#949cae",
   "#9a5d39",
+  "#9a8b8d",
+  "#9ce0ee",
   "#a08e84",
   "#a26e36",
   "#a6bcdc",
+  "#aa8a7e",
+  "#b0eccc",
+  "#b45c46",
+  "#b4bccb",
   "#bcaaa0",
+  "#c0b0aa",
   "#c1afaf",
   "#c4c6c3",
   "#c69250",
   "#cadaee",
   "#cff4f8",
+  "#d27a58",
+  "#dccfca",
   "#dee0dd",
   "#e6f0fa",
   "#ecd6c6",
+  "#f0a07c",
   "#f2ffff",
   "#ffffff"
  ],
- "count": 47
+ "count": 91
 }

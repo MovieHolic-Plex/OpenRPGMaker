@@ -161,7 +161,7 @@ def preview_compare(theme, assembled, out, scale=COMPARE_SCALE):
     refs = []
     for ref in dot.seed(theme).get('refs', []):
         try:
-            refs.append((ref['kit'], beodeul.kit(ref['kit']).img()))
+            refs.append((beodeul.ref_name(ref), beodeul.ref_image(ref).img()))
         except SystemExit:
             continue
     tiles = [(bid, im, 'candidate') for bid, im in assembled] + [(kid, im, 'beodeul') for kid, im in refs]

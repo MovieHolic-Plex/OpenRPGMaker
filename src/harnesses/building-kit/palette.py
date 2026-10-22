@@ -6,7 +6,12 @@
      src/assets/beodeulCityTileset.json 의 structureKits(tiles/upperTiles 칸 번호)다. 필요하면 색상 조건(pred)으로
      그 재료 화소만 거른다(예: 기단 줄에서 회색 돌만 — 문기둥 나무색은 뺀다).
   2. 테마 램프: seed palette.ramps.<이름> 의 출처를 쓴다.
-     - from: beodeul → 출처 칸/키트 줄. 버들항 귀족 구역은 이것만 쓴다.
+     - from: beodeul → 출처 칸/키트 줄/버들항 그림 파일. 버들항 귀족 구역은 이것만 쓴다.
+       출처 하나 = {'tile': n} · {'kit': id, 'rows': [...]} · {'group': id} · {'file': '<저장소 기준 PNG>'}.
+       file 은 버들항 계열 손 도트 그림(예: tiledata/beodeul-variants/snowfield/parts/*.png — 공용 시트 꼬리에 구워진 것)이고,
+       어느 출처든 'pred' 를 달면 그 출처 화소만 먼저 거른다(램프의 pred 는 그 뒤 모은 화소 전체에 건다).
+       출처에 'k' 를 달면 그 출처만 따로 k 단을 뽑아 램프에 합친다(침엽수 잎 7 + 줄기 2 처럼 화소 수가 크게 다른 재료).
+       뽑은 색이 공용 시트에 없으면 실패하고 그 색을 낸 출처를 적는다 — 검사를 풀지 말고 그 출처를 시드에서 뺀다.
      - hex: [...] 손으로 지은 램프(사막 흙벽·돔, 북방 통나무·눈 지붕처럼 버들항에 없는 재료).
        단마다 밝기가 공유 7단 램프의 같은 단 범위 ±0.04 안이어야 한다(무림·조선 호환 규칙과 같은 검사). 벗어나면 실패.
   3. 출처의 불투명 화소를 밝기순으로 세우고 화소 수 기준 k 등분 → 칸마다 **가장 많이 쓰인 실제 색 하나**(평균을 내지 않는다).
@@ -89,8 +94,35 @@ def warmcream(c):
     return cream(c) and c[0] >= c[2]
 
 
+def roofred(c):
+    """붉은 기와 — 빨강이 초록의 1.4배 이상이고 초록≈파랑(갈색 나무는 초록이 파랑보다 훨씬 크고,
+    자주 벽돌 줄눈은 파랑이 크며, 분홍 벽돌 면은 빨강/초록이 1.4 아래다)."""
+    r, g, b = c
+    return r * 10 >= g * 14 and r > b + 12 and 2 * (g - b) <= r - g and b <= g + 6
+
+
+def slate(c):
+    """푸른 슬레이트 — 파랑이 가장 크고 초록 ≥ 빨강 ≥ 0.8×초록(자주 줄눈은 빨강이 초록보다 크고,
+    창 유리는 빨강이 거의 없다), 눈 그늘보다 어둡다."""
+    r, g, b = c
+    return b > r + 10 and b > g + 8 and g >= r and r * 10 >= g * 8 and lum(c) <= 150
+
+
+def brick(c):
+    """분홍 벽돌·자주 줄눈 — 빨강 > 초록이고 초록이 파랑보다 많이 크지 않다(나무·문은 초록-파랑이 크다)."""
+    r, g, b = c
+    return r > g + 8 and g - b <= 14 and not roofred(c)
+
+
+def plasterish(c):
+    """흰 회벽과 그 그늘 — 따뜻한 무채색(빨강 > 파랑), 채도 낮음(최대-최소 ≤ 40), 중간 이상 밝기.
+    눈(파랑 ≥ 빨강)·회색 기초돌(초록 > 빨강)·갈색 지붕/나무(채도 높음)는 빠진다."""
+    return c[0] > c[2] and c[0] >= c[1] and max(c) - min(c) <= 40 and lum(c) > 100
+
+
 PRED = {'grey': grey, 'warm': warm, 'cream': cream, 'cool': cool, 'dark': dark, 'darkwarm': darkwarm, 'green': green,
-        'ironish': ironish, 'teal': teal, 'red': red, 'light': light, 'snowy': snowy, 'warmcream': warmcream}
+        'ironish': ironish, 'teal': teal, 'red': red, 'light': light, 'snowy': snowy, 'warmcream': warmcream,
+        'roofred': roofred, 'slate': slate, 'brick': brick, 'plasterish': plasterish}
 
 
 # 공유 램프 — 테마 넷이 같은 출처를 쓴다. cells: {'tile': 칸 번호} 또는 {'kit': 키트 id, 'rows': [줄]} 또는 {'group': 타일 그룹 id}
@@ -121,8 +153,36 @@ def cell_pixels(sheet, per, idx):
     return a[a[:, :, 3] == 255][:, :3]
 
 
+def file_pixels(rel):
+    """저장소 기준 PNG 의 불투명 화소. 저장소 밖 경로·절대 경로는 받지 않는다."""
+    if os.path.isabs(rel):
+        raise SystemExit(f'file 출처 {rel}: 저장소 기준 상대 경로여야 한다')
+    root = os.path.realpath(REPO)
+    path = os.path.realpath(os.path.join(root, rel))
+    if not path.startswith(root + os.sep):
+        raise SystemExit(f'file 출처 {rel}: 저장소 밖이다')
+    if not os.path.exists(path):
+        raise SystemExit(f'file 출처 {rel} 이 없다')
+    a = np.array(Image.open(path).convert('RGBA'))
+    return a[a[:, :, 3] == 255][:, :3]
+
+
+def keep(px, pred):
+    if not pred or not len(px):
+        return px
+    mask = [PRED[pred](c) for c in map(tuple, px.astype(int).tolist())]
+    return px[np.array(mask, bool)]
+
+
 def source_pixels(sheet, ts, src):
+    """출처 하나의 불투명 화소 — 출처에 pred 가 있으면 그것으로 먼저 거른다."""
+    return keep(_source_pixels(sheet, ts, src), src.get('pred'))
+
+
+def _source_pixels(sheet, ts, src):
     per = ts['tilesPerRow']
+    if 'file' in src:
+        return file_pixels(src['file'])
     if 'tile' in src:
         return cell_pixels(sheet, per, src['tile'])
     if 'group' in src:
@@ -177,6 +237,30 @@ def hx(c):
     return '#%02x%02x%02x' % tuple(c)
 
 
+def _label(src):
+    return json.dumps(src, ensure_ascii=False, sort_keys=True)
+
+
+def theme_ramp(sheet, ts, spec):
+    """테마 램프 하나 → (밝기순 색, 화소 수, {hex: [그 색을 낸 출처]}).
+    k 없는 출처는 모아서 램프의 k·pred 로 한 번에, k 있는 출처는 따로 뽑아 합친다(밝기순, 같은 색은 하나)."""
+    pooled, alone = [], []
+    for src in spec['cells']:
+        (alone if 'k' in src else pooled).append(src)
+    cols, npx, by = [], 0, {}
+    groups = ([(pooled, spec.get('k', 7))] if pooled else []) + [([s], s['k']) for s in alone]
+    for group, k in groups:
+        each = [(s, source_pixels(sheet, ts, s).astype(int)) for s in group]
+        got, n = ramp_from(np.concatenate([p for _, p in each]), k, spec.get('pred'))
+        npx += n
+        for c in got:
+            who = by.setdefault(hx(c), [])
+            who.extend(s for s, p in each if len(p) and (p == c).all(axis=1).any() and s not in who)
+            if c not in cols:
+                cols.append(c)
+    return sorted(cols, key=lum), npx, by
+
+
 def envelope(ramps):
     """공유 7단 램프의 단별 밝기 범위 ±0.04 — 손 램프(hex)가 지켜야 하는 호환 범위."""
     seven = [v for v in ramps.values() if len(v) == 7]
@@ -191,7 +275,7 @@ def build(theme):
     seed = json.load(open(os.path.join(DATA, theme, 'seed.json'), encoding='utf-8'))
     sheet, ts = _sheet(), _tileset()
     sheet_cols = set(map(tuple, sheet[sheet[:, :, 3] == 255][:, :3].astype(int).tolist()))
-    ramps, srcs, fail = {}, {}, []
+    ramps, srcs, fail, origin = {}, {}, [], {}
 
     for name, spec in SHARED.items():
         px = np.concatenate([source_pixels(sheet, ts, c) for c in spec['cells']]) if spec['cells'] else np.zeros((0, 3), np.uint8)
@@ -211,20 +295,25 @@ def build(theme):
         if spec.get('from') != 'beodeul':
             fail.append(f'테마 램프 {name}: from 은 beodeul 이거나 hex 여야 한다')
             continue
-        px = np.concatenate([source_pixels(sheet, ts, c) for c in spec['cells']])
-        cols, npx = ramp_from(px, spec.get('k', 7), spec.get('pred'))
+        try:
+            cols, npx, by = theme_ramp(sheet, ts, spec)
+        except SystemExit as e:
+            fail.append(f'테마 램프 {name}: {e}')
+            continue
         if not cols:
             fail.append(f'테마 램프 {name}: 출처에서 고를 화소가 없다')
             continue
         ramps[name] = [hx(c) for c in cols]
         srcs[name] = {'kind': 'beodeul', 'from': spec['cells'], 'pixels': npx, 'pred': spec.get('pred'), 'why': spec.get('why', '')}
+        origin[name] = by
 
     for name, cols in ramps.items():
         if srcs[name]['kind'] == 'hex':
             continue
         for c in cols:
             if tuple(int(c[i:i + 2], 16) for i in (1, 3, 5)) not in sheet_cols:
-                fail.append(f'{name}: 공용 시트에 없는 색 {c}')
+                who = [_label(s) for s in origin.get(name, {}).get(c, [])]
+                fail.append(f'{name}: 공용 시트에 없는 색 {c}' + (f' — 출처 {", ".join(who)} 를 시드에서 뺀다(검사를 풀지 않는다)' if who else ''))
 
     shared7 = {k: v for k, v in ramps.items() if srcs[k]['kind'] == 'shared' and len(v) == 7}
     if not shared7:

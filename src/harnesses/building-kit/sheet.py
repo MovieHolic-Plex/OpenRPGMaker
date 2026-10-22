@@ -78,10 +78,11 @@ def code_cmd(text):
 
 _REF = {}
 
-def ref_image(kit_id):
-    if kit_id not in _REF:
-        _REF[kit_id] = beodeul.kit(kit_id).img()
-    return _REF[kit_id]
+def ref_image(ref):
+    name = beodeul.ref_name(ref)
+    if name not in _REF:
+        _REF[name] = beodeul.ref_image(ref).img()
+    return _REF[name]
 
 def ref_for_item(theme, item_id, refs):
     for b in dot.seed(theme)['buildings']:
@@ -208,11 +209,12 @@ def write(theme, rid, show_failed=False):
              '후보는 이 옆에서 같은 배율로 본다.</p><div class="row">')
     for r in refs:
         try:
-            im = ref_image(r['kit'])
+            im = ref_image(r)
         except SystemExit:
             continue
-        H.append(f'<div class="card ref"><h3>{html_mod.escape(r.get("label", r["kit"]))}</h3>'
-                 f'<div class="sub">kit {html_mod.escape(r["kit"])} · use {html_mod.escape(str(r.get("use", "")))}</div>'
+        src = f'kit {r["kit"]}' if r.get('kit') else f'file {r["file"]}' + (f' crop {r["crop"]}' if r.get('crop') else '')
+        H.append(f'<div class="card ref"><h3>{html_mod.escape(r.get("label", beodeul.ref_name(r)))}</h3>'
+                 f'<div class="sub">{html_mod.escape(src)} · use {html_mod.escape(str(r.get("use", "")))}</div>'
                  f'<div class="imgs">{figure(im, 1, "1배")}{figure(im, 2, "2배")}</div></div>')
     act = beodeul.actor1_frame(1, 0, 0)
     H.append(f'<div class="card ref"><h3>Actor1 정면</h3><div class="sub">24×32 — 사람은 그리지 않는다</div>'
@@ -252,7 +254,7 @@ def write(theme, rid, show_failed=False):
             ref = ref_for_item(theme, item_id, refs)
             if ref:
                 try:
-                    H.append(figure(ref_image(ref['kit']), 2, '버들항 기준 2배'))
+                    H.append(figure(ref_image(ref), 2, '버들항 기준 2배'))
                 except SystemExit:
                     pass
             H.append(figure(act, 2, 'Actor1 2배'))

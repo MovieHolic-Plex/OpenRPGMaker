@@ -59,6 +59,32 @@ def kit(kit_id):
                     out.paste(c, i * T, j * T)
     return out
 
+def ref_name(ref):
+    """시드 refs 항목의 파일 이름 줄기 — kit 이면 키트 id, file 이면 id(없으면 파일 이름)."""
+    if ref.get('kit'):
+        return ref['kit']
+    return ref.get('id') or os.path.splitext(os.path.basename(ref['file']))[0]
+
+def ref_image(ref):
+    """시드 refs 항목 하나 → Cv. {'kit': id} 는 공용 시트 키트, {'file': 저장소 기준 PNG, 'crop': [x, y, w, h]?} 는
+    버들항 계열 손 도트 그림(예: 설원 변형 부품·렌더 일부). 저장소 밖 경로는 받지 않는다."""
+    if ref.get('kit'):
+        return kit(ref['kit'])
+    rel = ref.get('file') or ''
+    root = os.path.realpath(REPO)
+    path = os.path.realpath(os.path.join(root, rel))
+    if not rel or os.path.isabs(rel) or not path.startswith(root + os.sep):
+        raise SystemExit(f'기준 그림 file {rel!r}: 저장소 기준 상대 경로여야 한다')
+    if not os.path.exists(path):
+        raise SystemExit(f'기준 그림 file {rel} 이 없다')
+    im = Image.open(path).convert('RGBA')
+    if ref.get('crop'):
+        x, y, w, h = ref['crop']
+        if x < 0 or y < 0 or w <= 0 or h <= 0 or x + w > im.width or y + h > im.height:
+            raise SystemExit(f'기준 그림 {rel}: crop {ref["crop"]} 이 그림 {im.width}×{im.height} 밖이다')
+        im = im.crop((x, y, x + w, y + h))
+    return Cv.of(im)
+
 def actor1_frame(col=1, row=0, who=0):
     a = np.array(Image.open(ACTOR).convert('RGBA'))
     key = a[0, 0, :3].copy()

@@ -434,16 +434,34 @@ def cmd_validate(theme):
         if any('base' in m and m['base'] for m in ms) and not b.get('masses'):
             errs.append(f'건물 {bid}: base 는 선택 부품이다 — 기단이 필요 없으면 빼고 벽 맨 아래 1~3px 을 기단으로 그린다')
     kit_ids = {k['id'] for k in beodeul.tileset()['structureKits']}
+    ref_names = set()
     for ref in s.get('refs', []):
-        if ref.get('kit') not in kit_ids:
+        if bool(ref.get('kit')) == bool(ref.get('file')):
+            errs.append(f'기준 그림 {ref}: kit 이나 file 중 하나만 적는다')
+            continue
+        if ref.get('kit') and ref['kit'] not in kit_ids:
             errs.append(f'기준 그림 {ref.get("kit")} 가 버들항 structureKits 에 없다')
+        if ref.get('file'):
+            try:
+                beodeul.ref_image(ref)
+            except SystemExit as e:
+                errs.append(str(e))
+        name = beodeul.ref_name(ref)
+        if name in ref_names:
+            errs.append(f'기준 그림 이름 {name} 중복 — file 참조는 id 를 적는다(refs/<이름>-1x.png)')
+        ref_names.add(name)
     if not s.get('rounds') and not s.get('plan'):
         errs.append('rounds 도 plan 도 없다 — 첫 판을 적는다')
 
     for rid, rd in s.get('rounds', {}).items():
         if rd.get('superseded'):
-            notes.append(f'판 {rid}: superseded by {rd["superseded"]} — 옛 문법(3칸 지붕·전폭 기단 행)으로 그린 판이다. '
-                         f'gate/dry/assemble·시트 대상이 아니다')
+            if rd['superseded'] not in s.get('rounds', {}):
+                errs.append(f'판 {rid}: superseded 대상 {rd["superseded"]} 가 rounds 에 없다')
+            why = rd.get('supersededWhy') or '옛 문법(3칸 지붕·전폭 기단 행)으로 그린 판이다'
+            held = superseded_records(theme, rid)
+            notes.append(f'판 {rid}: superseded by {rd["superseded"]} — {why}. gate/dry/assemble·시트 대상이 아니다'
+                         + (f'. 원장의 이 판 해시 기록 {held} 건은 옛 판 기록이다(지금 팔레트·줄로 다시 그리면 해시가 달라질 수 있고, '
+                            f'실패로 세지 않는다)' if held else ''))
             continue
         for bid in rd.get('buildings') or []:
             if bid not in {b['id'] for b in s.get('buildings', [])}:
@@ -496,6 +514,15 @@ def cmd_validate(theme):
         print('·', n)
     print(f'{theme}: 시드·팔레트·부품·조립·판 점검 ' + ('통과' if not errs else f'{len(errs)}건 실패') + (f' (안내 {len(notes)})' if notes else ''))
     return 1 if errs else 0
+
+
+def superseded_records(theme, rid):
+    """원장에서 이 판의 그림 해시에 묶인 기록 수(고름·버림·관문 해시·시트). superseded 판은 안내로만 센다."""
+    L = ledger(theme)
+    n = sum(1 for k in ('picks', 'rejects') for r in L.get(k, []) if r.get('round') == rid)
+    n += sum(sum(len(v) for v in (r.get('hashes') or {}).values()) for r in L.get('runs', []) if r.get('round') == rid)
+    n += sum(1 for r in L.get('sheets', []) if r.get('round') == rid)
+    return n
 
 
 def _r4_grammar(s, items, rid):

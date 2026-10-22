@@ -39,11 +39,14 @@
   "projection": "박공 정면(gable-front) 투영 — 사용자 판정 2026-10-22: 「집이 이 각도로 보여야 한다 — 지금은 전혀 아니다」. style-r1~r4 의 '정면과 나란한 용마루 지붕 + 평평한 정면 입면'은 반려됐다. ① 박공 끝(삼각 벽, 계단 박공이면 크로스텝)이 남쪽(보는 쪽)을 본다 — 앞 박공 삼각형은 질량 아래 벽 띠 바로 위에 선다. ② 용마루는 북쪽으로 물러난다 — 화면에서는 앞 박공 꼭대기에서 위로 뒤 꼭대기까지 곧은 세로선(질량 가운데 2px)이다. ③ 용마루 왼쪽·오른쪽에 두 사면이 세로로 긴 면으로 보인다(사면 길이 = depth_rows = 지붕이 물러나는 깊이). ④ 뒤 끝은 맨 위의 ^ 모양 — 가운데 용마루 끝이 가장 높고 양 처마 쪽으로 내려간다. 다른 지붕에 박히면 그 ^ 선이 골(valley)이다. ⑤ 높은 3/4 카메라: 지붕이 실루엣의 대부분(질량 높이의 50~85%)이고 벽은 질량 아래 띠다. 옆벽은 처마에 가려 거의 안 보인다. ⑥ 조합: L·T 평면 — 정면과 나란한 용마루의 본채 앞에 박공 정면 날개, 지붕이 만나는 골, 작은 박공 현관, 지붕에서 솟는 굴뚝, 옆의 외쪽(한쪽 경사) 지붕."
  },
  "palette": {
-  "note": "공유 램프(grass·cobble·stone·wood·iron)는 palette.py 가 모든 테마에 똑같이 뽑는다. 여기는 테마 램프만.",
+  "note": "공유 램프(grass·cobble·stone·wood·iron)는 palette.py 가 모든 테마에 똑같이 뽑는다. 여기는 테마 램프만. 2026-10-22 사용자 비교(버들항 설원 마을 tiledata/beodeul-variants/snowfield 가 우리 북방 마을보다 낫다) 뒤 설원 부품 파일에서 water·ice·pine·roofred·roofslate·brick·plaster·plaza·dirt 를 더했다. hplaster 는 옛 판(style-r1~r5) 그림이 쓰므로 남긴다.",
   "ramps": {
    "snow": {
     "from": "beodeul",
     "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/ground-snow.png"
+     },
      {
       "kit": "bd-pick-snowfield-hall",
       "rows": [
@@ -63,7 +66,7 @@
     ],
     "k": 7,
     "pred": "snowy",
-    "why": "지붕 위 눈 — 버들항 설원 회관·오두막 지붕"
+    "why": "눈 — 버들항 설원 눈 바닥(ground-snow)과 설원 회관·오두막 지붕 위 눈(밝은 단·푸른 그늘·고드름 빛)"
    },
    "shake": {
     "from": "beodeul",
@@ -119,6 +122,124 @@
     "k": 7,
     "pred": "warmcream",
     "why": "반목조 회벽 — 버들항 설원 회관 벽(고드름 빛은 뺀다)"
+   },
+   "water": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/ground-hot.png"
+     }
+    ],
+    "k": 7,
+    "pred": "teal",
+    "why": "연못 물 — 버들항 설원 마을 왼쪽 위 짙은 청록 연못(ground-hot 물 표본, 가장자리 눈은 teal 조건으로 뺀다)"
+   },
+   "ice": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/ground-ice.png"
+     }
+    ],
+    "k": 7,
+    "why": "푸른 얼음 — 버들항 설원 얼어붙은 항구(ground-ice: 짙은 금·물빛·흰 반사)"
+   },
+   "pine": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/pine.png",
+      "pred": "green",
+      "k": 7
+     },
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/pine.png",
+      "pred": "darkwarm",
+      "k": 2
+     }
+    ],
+    "k": 7,
+    "why": "전나무 — 버들항 설원 전나무의 청록 바늘잎 7단 + 짙은 줄기 2단(줄기는 화소가 적어 따로 뽑는다, 잎 눈은 뺀다)"
+   },
+   "roofred": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/w2.png"
+     },
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/s1.png"
+     },
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/n2.png"
+     }
+    ],
+    "k": 7,
+    "pred": "roofred",
+    "why": "붉은 기와 지붕 — 버들항 설원 반목조 집(w2)·벽돌 집(s1·n2) 지붕(눈·벽돌 면·나무는 roofred 조건으로 뺀다)"
+   },
+   "roofslate": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/w1.png"
+     },
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/e1.png"
+     }
+    ],
+    "k": 7,
+    "pred": "slate",
+    "why": "푸른 슬레이트 지붕 — 버들항 설원 벽돌 집(w1·e1) 청회색 지붕(창 유리·벽돌 줄눈·눈 그늘은 slate 조건으로 뺀다)"
+   },
+   "brick": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/w1.png"
+     },
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/e1.png"
+     }
+    ],
+    "k": 7,
+    "pred": "brick",
+    "why": "분홍 벽돌 벽 — 버들항 설원 벽돌 집(w1·e1)의 분홍 벽돌 면과 자주 줄눈(문·창틀 나무와 지붕은 brick 조건으로 뺀다)"
+   },
+   "plaster": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/w2.png"
+     },
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/e2.png"
+     }
+    ],
+    "k": 7,
+    "pred": "plasterish",
+    "why": "흰 회벽 — 버들항 설원 반목조 집(w2·e2) 기둥 사이 흰 회벽과 그 그늘(눈·회색 기초돌·갈색 지붕은 뺀다)"
+   },
+   "plaza": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/ground-plaza.png"
+     }
+    ],
+    "k": 7,
+    "why": "광장 판석 — 버들항 설원 마을 가운데 푸른 회색 판석(ground-plaza)"
+   },
+   "dirt": {
+    "from": "beodeul",
+    "cells": [
+     {
+      "file": "tiledata/beodeul-variants/snowfield/parts/ground-road.png"
+     }
+    ],
+    "k": 7,
+    "pred": "warm",
+    "why": "다져진 흙길 — 버들항 설원 마을 길(ground-road, 길 가장자리 눈은 warm 조건으로 뺀다)"
    }
   }
  },
@@ -129,56 +250,91 @@
  "refs": [
   {
    "kit": "bd-pick-snowfield-hall",
-   "label": "버들항 설원 회관 8×7 — 눈 지붕·반목조",
+   "label": "버들항 설원 회관 8×7 — 눈 지붕·반목조 (parts/hall.png 와 같은 화소)",
    "use": "hall"
   },
   {
    "kit": "bd-pick-snowfield-hut",
-   "label": "버들항 설원 오두막 4×5 — 눈 지붕·통나무",
+   "label": "버들항 설원 오두막 4×5 — 눈 지붕·통나무 (parts/hut.png 와 같은 화소)",
    "use": "home"
+  },
+  {
+   "file": "tiledata/beodeul-variants/snowfield/parts/w2.png",
+   "id": "snowfield-w2",
+   "label": "버들항 설원 w2 — 반목조 흰 회벽 + 붉은 지붕(줄 B)",
+   "use": "home"
+  },
+  {
+   "file": "tiledata/beodeul-variants/snowfield/parts/w1.png",
+   "id": "snowfield-w1",
+   "label": "버들항 설원 w1 — 분홍 벽돌 + 슬레이트 지붕(줄 C)",
+   "use": "home"
+  },
+  {
+   "file": "tiledata/beodeul-variants/snowfield/parts/s1.png",
+   "id": "snowfield-s1",
+   "label": "버들항 설원 s1 — 분홍 벽돌 + 붉은 지붕(줄 C)",
+   "use": "home"
+  },
+  {
+   "file": "tiledata/beodeul-variants/snowfield/render-1x.png",
+   "crop": [
+    200,
+    215,
+    472,
+    285
+   ],
+   "id": "snowfield-village-houses",
+   "label": "버들항 설원 마을 렌더 일부 — 회관·벽돌·반목조·통나무 집, 광장 판석·흙길·전나무",
+   "use": "village"
   }
  ],
  "lines": {
-  "note": "줄 = 화풍 하나. 첫 판 style-r1 의 후보 글자가 곧 줄이다.",
+  "note": "줄 = 화풍 하나. style-r6 부터 줄은 버들항 설원 마을(tiledata/beodeul-variants/snowfield)의 세 집 계열이다 — A 통나무 오두막 · B 반목조 흰 회벽 + 붉은 지붕 · C 분홍 벽돌 + 붉은/슬레이트 지붕. 옛 줄 C(돌 장벽)는 style-r5 까지.",
   "A": {
-   "name": "눈 지붕 통나무",
-   "concept": "굵은 통나무(log) 벽과 마구리, 너와(shake) 위에 두껍게 쌓인 눈(snow) 지붕, 고드름 처마. 북방 마을 민가 줄.",
+   "name": "눈 지붕 통나무 오두막",
+   "concept": "굵은 통나무(log) 벽과 마구리, 너와(shake) 지붕 — 지붕 위에 눈이 두껍게 얹히고(snow 밝은 단 + 푸른 그늘) 처마 끝에 고드름이 늘어진다. 돌 굴뚝(stone)·쇠 문고리(iron). 버들항 설원 오두막(hut·w3)처럼. 램프: log · shake · snow · stone · iron.",
    "materials": [
     "log",
     "shake",
     "snow",
-    "stone"
+    "stone",
+    "iron"
    ],
    "origin": {
-    "round": "style-r3",
+    "round": "style-r6",
     "key": "A"
    }
   },
   "B": {
-   "name": "눈 지붕 반목조",
-   "concept": "반목조 회벽(hplaster) + 나무 기둥(wood), 가파른 눈 지붕. 북방 도시 줄.",
+   "name": "반목조 흰 회벽 + 붉은 지붕",
+   "concept": "흰 회벽(plaster) 사이로 짙은 나무 기둥·가새(wood), 붉은 기와 지붕(roofred) — 지붕 위에 눈이 두껍게 얹히고(snow 밝은 단 + 푸른 그늘) 처마 끝에 고드름이 늘어진다. 벽돌 굴뚝(brick). 버들항 설원 회관(hall)의 반목조와 w2 집처럼. 램프: plaster · wood · roofred · snow · brick · stone.",
    "materials": [
-    "hplaster",
+    "plaster",
     "wood",
+    "roofred",
     "snow",
+    "brick",
     "stone"
    ],
    "origin": {
-    "round": "style-r3",
+    "round": "style-r6",
     "key": "B"
    }
   },
   "C": {
-   "name": "돌 장벽 집",
-   "concept": "두꺼운 돌(stone) 벽과 작은 창, 눈 덮인 낮고 넓은 지붕. 성채·장벽 마을 줄.",
+   "name": "분홍 벽돌 + 붉은·슬레이트 지붕",
+   "concept": "분홍 벽돌(brick) 벽과 자주 줄눈, 나무 창틀·문(wood), 붉은 기와(roofred) 또는 푸른 슬레이트(roofslate) 지붕 — 지붕 위에 눈이 두껍게 얹히고(snow 밝은 단 + 푸른 그늘) 처마 끝에 고드름이 늘어진다. 버들항 설원 벽돌 집(w1·e1 슬레이트, s1·n2 붉은 지붕)처럼. 램프: brick · wood · roofred · roofslate · snow · stone.",
    "materials": [
-    "stone",
+    "brick",
+    "wood",
+    "roofred",
+    "roofslate",
     "snow",
-    "shake",
-    "iron"
+    "stone"
    ],
    "origin": {
-    "round": "style-r3",
+    "round": "style-r6",
     "key": "C"
    }
   }
@@ -548,10 +704,9 @@
    ],
    "layer": "lower",
    "walk": "X 막힘 · 문 칸만 o",
-   "brief": "한 층(2행). 왼끝·가운데(반복)·창·문·오른끝. **재질은 줄을 따른다** — 줄 A 통나무(log 단·마구리), 줄 B 반목조(hplaster 회벽 + wood 기둥·가새), 줄 C 두꺼운 돌(stone 마름돌·작은 깊은 창). 처마 그늘은 맨 위 1~2행에 벽 재질의 어두운 단으로 불투명하게. 왼끝·오른끝 조각은 바깥 2~3px 을 투명(inset 2)으로 둔다. 창은 틀·유리·창턱이 1배에서 읽히게(작은 점 금지). 벽 조각의 맨 아래 1~3px 은 그 벽 재질의 어두운 단(또는 돌)으로 그린 기초다 — 건물은 땅에 바로 닿고 별도 기단 행을 두지 않는다.",
+   "brief": "한 층(2행). 왼끝·가운데(반복)·창·문·오른끝. **재질은 줄을 따른다** — 줄 A 통나무(log 단·마구리), 줄 B 반목조(plaster 흰 회벽 + wood 기둥·가새), 줄 C 분홍 벽돌(brick 벽돌 면·자주 줄눈, wood 창틀·문). style-r5 까지의 줄 B 는 hplaster, 줄 C 는 돌(stone)이었다. 처마 그늘은 맨 위 1~2행에 벽 재질의 어두운 단으로 불투명하게. 왼끝·오른끝 조각은 바깥 2~3px 을 투명(inset 2)으로 둔다. 창은 틀·유리·창턱이 1배에서 읽히게(작은 점 금지). 벽 조각의 맨 아래 1~3px 은 그 벽 재질의 어두운 단(또는 돌)으로 그린 기초다 — 건물은 땅에 바로 닿고 별도 기단 행을 두지 않는다.",
    "accept": [
-    "통나무 단이 조각 경계를 넘어 이어진다",
-    "끝 마구리 단면이 보인다",
+    "줄 재질(A 통나무 단과 마구리 · B 흰 회벽과 나무 기둥·가새 · C 벽돌 줄눈)이 조각 경계를 넘어 이어진다",
     "처마 그늘이 맨 위 1~2행에 불투명하게 있고, 왼끝·오른끝 바깥 2~3px 은 투명이다"
    ],
    "pieces": [
@@ -784,16 +939,17 @@
    "id": "extra.chimney",
    "wave": "extra",
    "kind": "set",
-   "title": "돌 굴뚝",
+   "title": "굴뚝",
    "size": [
     1,
     2
    ],
    "layer": "upper",
    "walk": "★",
-   "brief": "눈 지붕 위 돌 굴뚝(갓돌에 눈).",
+   "brief": "눈 지붕 위 굴뚝 — 줄 A 돌(stone), 줄 B·C 벽돌(brick, 버들항 설원 집의 붉은 벽돌 굴뚝처럼). 갓돌 윗면에 눈(snow)이 얹힌다. 밑동은 지붕 사면 위에 앉는다(A14).",
    "accept": [
-    "갓돌 윗면이 보인다"
+    "갓돌 윗면이 보인다",
+    "갓돌 위에 눈이 얹힌다"
    ],
    "pieces": [
     {
@@ -1558,6 +1714,157 @@
     }
    ],
    "note": "5칸 계단 박공(크로스텝) 회관 — 앞 g5·뒤 b5 가 계단 박공, 사면 4행, 2층 돌벽. 오른쪽에 낮은 외쪽 헛간(높은 쪽이 회관 벽에 붙는다)"
+  },
+  {
+   "id": "cottage.r6",
+   "title": "박공 정면 집 + 굴뚝",
+   "use": "home",
+   "masses": [
+    {
+     "id": "house",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 3,
+     "storeys": 1,
+     "x": 0,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.back",
+     "back_end": "gable",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L W D R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        1,
+        1
+       ],
+       "on": "roof"
+      }
+     ]
+    }
+   ],
+   "note": "style-r5 cottage 와 같은 질량(b4·사면 3행·g4·1층), 벽은 줄 재질(wall.storey), 왼쪽 사면 위 굴뚝"
+  },
+  {
+   "id": "lhouse.r6",
+   "title": "ㄱ자 집(본채 + 박공 날개 + 굴뚝)",
+   "use": "home",
+   "masses": [
+    {
+     "id": "main",
+     "kind": "ridge_side",
+     "cols": 7,
+     "storeys": 2,
+     "x": 0,
+     "depth": 1,
+     "roof": "roof.steep",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L W M W M W R"
+      },
+      {
+       "item": "wall.storey",
+       "letters": "L W M W M W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        5,
+        -1
+       ],
+       "on": "roof"
+      }
+     ]
+    },
+    {
+     "id": "wing",
+     "kind": "gable_front",
+     "cols": 3,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 2,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.back",
+     "back_end": "valley",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L D R"
+      }
+     ]
+    }
+   ],
+   "note": "style-r5 lhouse 와 같은 질량, 벽은 줄 재질(wall.storey) — 굴뚝은 본채 지붕 위"
+  },
+  {
+   "id": "hall.r6",
+   "title": "계단 박공 회관 + 옆 외쪽 + 굴뚝",
+   "use": "hall",
+   "masses": [
+    {
+     "id": "hall",
+     "kind": "gable_front",
+     "cols": 5,
+     "depth_rows": 4,
+     "storeys": 2,
+     "x": 0,
+     "depth": 0,
+     "gable": "gable.step",
+     "roof": "roof.gf.slope",
+     "back": "gable.step",
+     "back_end": "gable",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L W M W R"
+      },
+      {
+       "item": "wall.storey",
+       "letters": "L W D W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        1,
+        1
+       ],
+       "on": "roof"
+      }
+     ]
+    },
+    {
+     "id": "shed",
+     "kind": "lean_to",
+     "cols": 2,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 5,
+     "depth": 0,
+     "low": "right",
+     "roof": "roof.lean.side",
+     "walls": [
+      {
+       "item": "wall.log",
+       "letters": "M R"
+      }
+     ]
+    }
+   ],
+   "note": "style-r5 hall 과 같은 질량(5칸 계단 박공 2층 + 오른쪽 통나무 외쪽 헛간), 회관 왼쪽 사면 위 굴뚝"
   }
  ],
  "rounds": {
@@ -1605,7 +1912,9 @@
     "longhouse",
     "hall"
    ],
-   "lead": "줄 A·B·C 마다 부품 전부를 한 에이전트가 그리고, 이번 판의 건물 전부(여러 질량 포함)를 dry 로 조립해 refs/ 와 나란히 본다. 사용자 반려(지붕·접지면·색감·ㅁ자)를 문법으로 고친 판이다."
+   "lead": "줄 A·B·C 마다 부품 전부를 한 에이전트가 그리고, 이번 판의 건물 전부(여러 질량 포함)를 dry 로 조립해 refs/ 와 나란히 본다. 사용자 반려(지붕·접지면·색감·ㅁ자)를 문법으로 고친 판이다.",
+   "superseded": "style-r6",
+   "supersededWhy": "줄 C 가 돌 장벽 → 분홍 벽돌로 바뀌고 북방 팔레트에 버들항 설원 램프가 더해졌다(사용자 2026-10-22, 버들항 설원 마을 비교). 그린 그림·원장 해시는 옛 판 기록으로만 남는다"
   },
   "style-r5": {
    "wave": "style",
@@ -1633,13 +1942,44 @@
    "projection": "박공 정면(gable-front) 투영 — 사용자 판정 2026-10-22: 「집이 이 각도로 보여야 한다 — 지금은 전혀 아니다」. style-r1~r4 의 '정면과 나란한 용마루 지붕 + 평평한 정면 입면'은 반려됐다. ① 박공 끝(삼각 벽, 계단 박공이면 크로스텝)이 남쪽(보는 쪽)을 본다 — 앞 박공 삼각형은 질량 아래 벽 띠 바로 위에 선다. ② 용마루는 북쪽으로 물러난다 — 화면에서는 앞 박공 꼭대기에서 위로 뒤 꼭대기까지 곧은 세로선(질량 가운데 2px)이다. ③ 용마루 왼쪽·오른쪽에 두 사면이 세로로 긴 면으로 보인다(사면 길이 = depth_rows = 지붕이 물러나는 깊이). ④ 뒤 끝은 맨 위의 ^ 모양 — 가운데 용마루 끝이 가장 높고 양 처마 쪽으로 내려간다. 다른 지붕에 박히면 그 ^ 선이 골(valley)이다. ⑤ 높은 3/4 카메라: 지붕이 실루엣의 대부분(질량 높이의 50~85%)이고 벽은 질량 아래 띠다. 옆벽은 처마에 가려 거의 안 보인다. ⑥ 조합: L·T 평면 — 정면과 나란한 용마루의 본채 앞에 박공 정면 날개, 지붕이 만나는 골, 작은 박공 현관, 지붕에서 솟는 굴뚝, 옆의 외쪽(한쪽 경사) 지붕.",
    "light": "빛은 왼쪽 위 — 왼쪽 사면이 밝은 단, 오른쪽 사면이 어두운 단(조립 A12 가 사면 띠의 평균 밝기를 재서 왼쪽이 8 이상 밝아야 통과). 용마루는 가운데 2px 의 곧은 세로선으로, 모든 행에서 양옆 사면과 밝기가 6 이상 다르다(보통 가장 밝은 단 한 줄 + 그늘 쪽 어두운 단).",
    "compare": "끝내기 전에 preview/compare.png 를 refs/ 의 버들항 기준 건물과, 그리고 refs/projection-gable-front-4x.png · refs/projection-l-combo-4x.png 투영 안내도(회색 도형 — 하네스가 그린 구조 안내, 화풍 기준 아님)와 나란히 견준다.",
-   "lead": "r1~r4 의 정면과 나란한 용마루 + 평평한 정면 입면은 사용자 반려(2026-10-22). 모든 건물이 박공 정면 질량을 하나 이상 갖고(A15), 용마루 세로선·사면 빛(A12)·골(A13)·지붕 위 굴뚝(A14)을 조립 관문이 잰다. 사용자가 준 참고 그림은 저장소·샌드박스에 넣지 않는다 — 구조 안내는 하네스가 그린 회색 투영 안내도(projection.py)."
+   "lead": "r1~r4 의 정면과 나란한 용마루 + 평평한 정면 입면은 사용자 반려(2026-10-22). 모든 건물이 박공 정면 질량을 하나 이상 갖고(A15), 용마루 세로선·사면 빛(A12)·골(A13)·지붕 위 굴뚝(A14)을 조립 관문이 잰다. 사용자가 준 참고 그림은 저장소·샌드박스에 넣지 않는다 — 구조 안내는 하네스가 그린 회색 투영 안내도(projection.py).",
+   "superseded": "style-r6",
+   "supersededWhy": "줄 C 가 돌 장벽 → 분홍 벽돌로 바뀌고 북방 팔레트에 버들항 설원 램프가 더해졌다(사용자 2026-10-22, 버들항 설원 마을 비교). 그린 그림·원장 해시는 옛 판 기록으로만 남는다"
+  },
+  "style-r6": {
+   "wave": "style",
+   "title": "화풍 판 6 — 버들항 설원 세 집 계열(통나무 · 반목조 붉은 지붕 · 분홍 벽돌) × 박공 정면 투영 · 모든 집 굴뚝",
+   "module": "src/harnesses/building-kit/rounds/northern-snow/style_r6.py",
+   "keys": "letter",
+   "items": [
+    "gable.front",
+    "gable.step",
+    "roof.gf.slope",
+    "roof.gf.back",
+    "roof.lean.side",
+    "roof.steep",
+    "wall.log",
+    "wall.storey",
+    "extra.chimney"
+   ],
+   "buildings": [
+    "cottage.r6",
+    "lhouse.r6",
+    "hall.r6"
+   ],
+   "grammar": "r5",
+   "requireGableFront": true,
+   "projection": "박공 정면(gable-front) 투영 — 사용자 판정 2026-10-22: 「집이 이 각도로 보여야 한다 — 지금은 전혀 아니다」. style-r1~r4 의 '정면과 나란한 용마루 지붕 + 평평한 정면 입면'은 반려됐다. ① 박공 끝(삼각 벽, 계단 박공이면 크로스텝)이 남쪽(보는 쪽)을 본다 — 앞 박공 삼각형은 질량 아래 벽 띠 바로 위에 선다. ② 용마루는 북쪽으로 물러난다 — 화면에서는 앞 박공 꼭대기에서 위로 뒤 꼭대기까지 곧은 세로선(질량 가운데 2px)이다. ③ 용마루 왼쪽·오른쪽에 두 사면이 세로로 긴 면으로 보인다(사면 길이 = depth_rows = 지붕이 물러나는 깊이). ④ 뒤 끝은 맨 위의 ^ 모양 — 가운데 용마루 끝이 가장 높고 양 처마 쪽으로 내려간다. 다른 지붕에 박히면 그 ^ 선이 골(valley)이다. ⑤ 높은 3/4 카메라: 지붕이 실루엣의 대부분(질량 높이의 50~85%)이고 벽은 질량 아래 띠다. 옆벽은 처마에 가려 거의 안 보인다. ⑥ 조합: L·T 평면 — 정면과 나란한 용마루의 본채 앞에 박공 정면 날개, 지붕이 만나는 골, 작은 박공 현관, 지붕에서 솟는 굴뚝, 옆의 외쪽(한쪽 경사) 지붕.",
+   "light": "빛은 왼쪽 위 — 왼쪽 사면이 밝은 단, 오른쪽 사면이 어두운 단(조립 A12 가 사면 띠의 평균 밝기를 재서 왼쪽이 8 이상 밝아야 통과). 용마루는 가운데 2px 의 곧은 세로선으로, 모든 행에서 양옆 사면과 밝기가 6 이상 다르다(보통 가장 밝은 단 한 줄 + 그늘 쪽 어두운 단).",
+   "compare": "끝내기 전에 preview/compare.png 를 refs/ 의 버들항 설원 기준 그림과 견준다 — refs/bd-pick-snowfield-hall·bd-pick-snowfield-hut(설원 회관·오두막), refs/snowfield-w2·snowfield-w1·snowfield-s1(반목조 붉은 지붕·벽돌 슬레이트·벽돌 붉은 지붕 집), refs/snowfield-village-houses(설원 마을 렌더의 집들). 눈이 지붕에 두껍게 얹히고 처마에 고드름이 늘어졌는지, 지붕 색(roofred·roofslate·shake)과 벽 재질(log·plaster+wood·brick)이 그 그림과 같은 비율로 읽히는지 본다. 그리고 refs/projection-gable-front-4x.png · refs/projection-l-combo-4x.png 투영 안내도(회색 도형 — 하네스가 그린 구조 안내, 화풍 기준 아님)와 나란히 견준다.",
+   "lead": "사용자 2026-10-22: 우리 북방 마을보다 버들항 설원 마을(tiledata/beodeul-variants/snowfield)이 확실히 낫다 — 원인은 팔레트(청록 물·푸른 얼음·청록 전나무·붉은/슬레이트 지붕·분홍 벽돌·푸른 회색 판석·흙길이 없었다)와 통나무 오두막뿐인 집. style-r6 은 설원 부품에서 램프를 뽑아 더하고 줄을 세 집 계열로 바꾼다. 문법은 style-r5 와 같다(박공 정면 · requireGableFront). 모든 건물에 굴뚝이 있고, 지붕 위에 눈이 두껍게 얹히고(snow 밝은 단 + 푸른 그늘) 처마 끝에 고드름이 늘어진다."
   }
  },
  "plan": {
   "style-r1": "줄 A·B·C × 눈 지붕·통나무 벽 한 층·기단 + 통나무 오두막",
   "civic-r1": "장작 헛간·롱하우스·망루",
   "style-r3": "기단 없는 접지 · 2칸 끝 모임지붕 · 층별 벽 재질 · 질량 합성 (사용자 2026-10-22 반려 뒤)",
-  "frame-r2": "남긴 줄마다 후보 2: 지붕 변형 전부 · 층별 벽 재질 변형 · 층 띠 · 굴뚝/돔/탑 같은 extras"
+  "frame-r2": "남긴 줄마다 후보 2: 지붕 변형 전부 · 층별 벽 재질 변형 · 층 띠 · 굴뚝/돔/탑 같은 extras",
+  "style-r6": "버들항 설원 세 집 계열 줄 A 통나무 · B 반목조 흰 회벽 + 붉은 지붕 · C 분홍 벽돌 + 붉은/슬레이트 지붕, 박공 정면 문법, 모든 집 굴뚝"
  }
 }
