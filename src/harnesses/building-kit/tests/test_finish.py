@@ -171,7 +171,7 @@ class SandboxTest(FinishBase):
         self.assertEqual((len(rows[0]), len(rows)), base.size)
         leg = json.load(open(os.path.join(path, 'legend.json'), encoding='utf-8'))
         self.assertTrue(set(''.join(rows)) <= set(leg['chars']) | {'.', '~'})
-        self.assertIn('~', ''.join(rows))
+        self.assertNotIn('~', ''.join(rows), '골 이음 ㅜ자 집 그림자는 본채 벽에만 — 반투명 땅 그림자 글자가 없다')
         self.assertTrue(np.array(Image.open(os.path.join(path, 'shade.png'))).any())
         for phrase in ('버들항 수준은 아니다', '16px', '꽃상자', '징', '왼쪽 위', 'finish_draw.py', 'check.py'):
             self.assertIn(phrase, text)
