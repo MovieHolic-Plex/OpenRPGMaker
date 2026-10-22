@@ -20,7 +20,7 @@ export const INTERIOR_BARE_FLOOR_MAX = INTERIOR_BARE_FLOOR_LIMIT;
  * 검수 합격 판(폴른 r28)도 쓰임별 묶음 안에서 도표 탁자 셋·유물 진열장 여섯을 반복했다. 「작은 주인공 물건을 여럿 흩뿌려 크기를 대신하기」는 스킬 규칙이다.
  */
 const HANG_REPEAT_MAX = 3;
-const HANG_REPEATABLE = /^(window|wall torch|wall sconce|banner|tapestry|lantern|sconce|torch)/u;
+const HANG_REPEATABLE = /^(window|wall torch|wall sconce|banner|tapestry|lantern|sconce|torch|dome cornice|dome shell)/u;
 
 /** 방 밖 허공 한도(%). 검수 합격 판(폴른 r28) 화로 방·지하 방 10%, 돔 그림으로 덮은 관측 홀 24%. */
 const VOID_MAX = 20;

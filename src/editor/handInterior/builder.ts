@@ -425,6 +425,8 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
         const top = Math.min(...d.cells.map(([, dy]) => dy));
         const bad = d.cells.some(([dx, dy]) => { const x = o.x + dx, y = o.y + dy; return !inBounds(x, y) || A.isFloor(x, y) || (dy === top && A.inn(x, y)); })
           || (ceil === "face-below" && !cols.every((x) => A.face[o.y + 1]?.[x] === 1));
+        // 맵 맨 윗줄에 붙은 관측 틈은 위로 지붕이 없어 「벽의 창」으로 읽힌다(2026-10-22 다듬기 7바퀴: 틈은 놓였지만 판정자가 매번 「지붕까지 트인 틈이 안 보인다」).
+        if (!bad && ceil === "face-below" && o.id === "dome slit tall" && o.y < 2) issues.push({ severity: "warning", code: "dome-slit-no-roof", message: `${label} 위로 천장 띠가 ${o.y}줄뿐이라 지붕이 보이지 않는다 — plan 맨 위에 '#' 줄을 2~3개 더해 북벽 위 천장 띠를 남기고, 그 줄에 dome cornice(벽면 바로 위)·dome shell(그 위)을 걸어야 틈이 지붕까지 트여 읽힌다`, x: o.x, y: o.y });
         if (bad) {
           const ft = faceTop(o.x);
           issues.push({ severity: "error", code: "hang-not-on-face", message: `${label} 는 천장 걸이 — y 는 벽면 윗줄 바로 위 천장 줄(막힌 칸)${ceil === "face-below" ? ", 아래 두 줄이 벽면" : ""}${ft > 0 ? ` — 이 열(x=${o.x})은 y=${ft - 1}` : ""}`, x: o.x, y: o.y });
