@@ -78,6 +78,27 @@ export function renderActorStudioList(options: ActorStudioListOptions): ActorStu
     table.append(row);
   }
 
+  // roving tabindex: 표는 Tab 정지점 하나(선택 행, 없으면 첫 행)이고 행 이동은 방향키로 한다.
+  const rowList = [...rows.values()];
+  const setTabStop = (stop: HTMLElement | undefined): void => {
+    for (const candidate of rowList) candidate.tabIndex = candidate === stop ? 0 : -1;
+  };
+  setTabStop((options.selectedId ? rows.get(options.selectedId) : undefined) ?? rowList[0]);
+  for (const row of rowList) row.addEventListener("click", () => setTabStop(row));
+  table.addEventListener("keydown", (event) => {
+    const current = rowList.indexOf(document.activeElement as HTMLElement);
+    if (current < 0) return;
+    const next = event.key === "ArrowDown" ? current + 1
+      : event.key === "ArrowUp" ? current - 1
+      : event.key === "Home" ? 0
+      : event.key === "End" ? rowList.length - 1
+      : -1;
+    if (next < 0 || next >= rowList.length) return;
+    event.preventDefault();
+    setTabStop(rowList[next]);
+    rowList[next].focus();
+  });
+
   if (options.filteredActors.length === 0) {
     table.append(el("p", { class: "db-actor-table-empty", text: "검색 조건에 맞는 주인공이 없습니다." }));
   }
