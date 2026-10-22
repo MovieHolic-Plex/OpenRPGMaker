@@ -24,6 +24,8 @@ export interface ZoneSpec {
   /** 이 구역의 주인공 물건(낱말): 「망원경」「벽난로」「바 카운터」「계단」. 빌더가 부품 사전에서 찾아 놓는다. */
   readonly anchors?: readonly string[];
   readonly size?: PlaceSize;
+  /** 몇 층의 구역인가(실내·집, 기본 1). 2 이면 위층에 짓는다. */
+  readonly floor?: number;
   /** 고치기에서 가리킬 이름(생략하면 kind). */
   readonly id?: string;
 }

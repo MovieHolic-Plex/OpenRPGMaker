@@ -193,6 +193,8 @@ export interface PiAssistantV2Env {
   readonly sideChat: (messages: readonly unknown[], signal?: AbortSignal) => Promise<string>;
   /** 맵 한 구역을 약 1배 PNG(data URL)로. 렌더 경로가 없으면 undefined. */
   readonly render?: (mapId: string, x: number, y: number, w: number, h: number) => Promise<string>;
+  /** 동사 안에서 중간 결과를 편집기에 바로 싣는다(첫 짓기를 비평 전에 보이게). */
+  readonly checkpoint: (label: string) => Promise<void>;
   readonly signal?: AbortSignal;
 }
 export interface PiAssistantV2Hooks {
@@ -798,6 +800,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // v2 동사 — wrapTool 을 거쳐 쓰기마다 체크포인트(실시간 적용·시공 재생)가 v1 과 같은 길로 간다.
   const v2Env: PiAssistantV2Env | undefined = options.v2 ? {
     ctx, request, emit, record: recordCall,
+    checkpoint: (label: string) => request.applyMode !== "step" ? checkpoint(label, label, options.signal) : Promise.resolve(),
     sideChat: async (messages, signal) => {
       const reply = await eventAssistChat(null, { messages, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
       return typeof reply.message.content === "string" ? reply.message.content : "";
