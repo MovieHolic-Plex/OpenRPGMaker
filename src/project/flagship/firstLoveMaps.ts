@@ -314,6 +314,10 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
 
   // ── 낮·밤 복사 ──
   const streetPm = cloneMap(project, FL_MAP.street, FL_MAP.streetPm, "늘봄 빌딩 앞 거리 · 밤");
+  // 편의점 문 앞(konbiniOut)이 맵 맨 아래 둘째 줄이라 카메라가 서하를 화면 아래 끝 대화창 뒤에 뒀다(VQA r22).
+  // 맨 아랫줄(보도·차도, 위층 없음)을 네 줄 더 이어 거리가 남쪽으로 계속되게 한다 — 카메라가 서하를 화면 가운데 둘 수 있다.
+  const streetH = streetPm.height;
+  padMapBottom(streetPm, 4, () => streetH - 1);
   const officePm = cloneMap(project, FL_MAP.office, FL_MAP.officePm, "스튜디오 늘봄 · 야근");
   const officeFri = cloneMap(project, FL_MAP.office, FL_MAP.officeFri, "스튜디오 늘봄 · 금요일");
   // 금요일 회의실은 사무층 맨 아래(y 13~20)라 카메라가 맵 끝에 걸려 다섯 사람이 흉상·대화창 사이에 끼었다(VQA r10).
