@@ -7,30 +7,28 @@
  "name": "jp-in-as-stairwell-down",
  "label": "jp_city/interior/jp-in-as-stairwell-down",
  "profileHash": "4d8774b517f41638",
- "verdict": "fail",
- "reasons": [
-  "화풍: 판정자 fail (4/4)",
-  "화풍: 평면 채움 (1/4)",
-  "화풍: 질감 없음 (1/4)"
- ],
+ "verdict": "pass",
+ "reasons": [],
  "view34": {
   "verdict": "pass",
   "reasons": []
  },
  "style": {
-  "verdict": "fail",
-  "reasons": [
-   "판정자 fail (4/4)",
-   "평면 채움 (1/4)",
-   "질감 없음 (1/4)"
-  ],
+  "verdict": "pass",
+  "reasons": [],
   "styleKind": "ground",
   "refs": [
-   "grass",
-   "paving"
+   "floor-flooring",
+   "floor-tatami"
   ],
   "scale": 2,
-  "score": 5
+  "score": 7,
+  "refSet": {
+   "id": "jp_city",
+   "chipset": "jp_city",
+   "fallback": false,
+   "hash": "d1f5720172be07de"
+  }
  },
  "metrics": {
   "tileColorsMedian": 11,
@@ -48,76 +46,65 @@
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "top lip / frame edge",
-      "rows": "9-10",
+      "part": "descending stair treads (lighter stepped area)",
+      "rows": "29-42",
       "evidence": "none",
-      "front_edge_line_row": 10,
+      "front_edge_line_row": null,
       "eave_shadow_rows": null
      },
      {
-      "part": "back wall face above opening",
-      "rows": "11-19",
-      "evidence": "none",
-      "front_edge_line_row": 17,
-      "eave_shadow_rows": "18-19"
-     },
-     {
-      "part": "dark stairwell opening (void)",
-      "rows": "20-25",
+      "part": "dark stairwell opening / pit",
+      "rows": "17-28",
       "evidence": "d",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
      },
      {
-      "part": "descending steps (treads and risers)",
-      "rows": "26-42",
-      "evidence": "a",
-      "front_edge_line_row": 28,
-      "eave_shadow_rows": "29"
+      "part": "back wall strip behind the opening",
+      "rows": "11-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
      },
      {
-      "part": "lower landing / bottom flat step",
-      "rows": "39-42",
-      "evidence": "a",
-      "front_edge_line_row": 38,
+      "part": "top rim / lintel",
+      "rows": "9-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
       "eave_shadow_rows": null
      }
     ],
     "main_top_rows": 14,
-    "front_face_rows": 9,
+    "front_face_rows": 0,
     "side_face_visible": false,
     "all_major_parts_have_top": true,
     "round_cap": null,
-    "reads_as": "three_quarter",
-    "evidence": "A stairwell opening is seen from the south at an angle. A back wall (rows 11-19) with an edge line at row 17 and shadow at rows 18-19 sits above a dark void (rows 20-25). Below it, rows 26-42 show stair steps as alternating 1-row lighter treads and darker risers (rows 28-38), ending in a lighter 4-row landing (rows 39-42). The treads are horizontal surfaces and the vertical riser/wall faces are 3+ rows, so it reads as a 3/4 view and not a flat slab. As terrain, the full-width tile body is judged by its stepped treads, with no side face drawn."
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat terrain tile. The silhouette is a uniform 30px-wide block (rows 19-40) with no widening or narrowing. Inside it, a dark pit (rows 20-25) sits above a flight of stairs (rows 29-42) drawn as thin alternating light and dark horizontal bands, seen from above. The back wall (rows 11-16) is the north face seen face-on, and the rim at rows 9-10 is only a 2-row lip. There is no south face of 3 or more rows under a top surface, so it reads as a top-down slab and not as a 3/4 standing object."
    },
    "styleAnswer": {
-    "ref_kind_matches": false,
-    "shading_steps": 4,
+    "ref_kind_matches": true,
+    "shading_steps": 6,
     "reference_steps": 5,
-    "outline": "mixed",
+    "outline": "dark_material_tone",
     "texture": "some",
     "flat_fills": false,
-    "density": "slightly_lower",
-    "score": 5,
-    "evidence": "The candidate is a small object, roughly 1.5 tiles across, that looks like a stove or stairwell frame. It is not a 4x3-tile ground patch like the grass and paving references, so the comparison is only partly valid. The measured facts are acceptable: 9 visible tones per tile against 3 for grass and 7 for paving, and 0% near-flat coverage. Only 24% of its dark edge pixels are neutral, so the outline is partly tinted. Judged by eye, the grey-brown metal frame and the very dark opening read as a fairly uniform dark sticker-like outline. The grey and brown ramps have only about 4 steps, against 5-6 for Beodeul. Nothing in the dark opening or on the frame shows paving-style per-stone shading or grain. When in doubt, fail.",
-    "verdict": "fail"
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a stone/metal stairwell-down patch. It has about 6 distinguishable lightness steps across the frame, the step treads and the dark void, which is at or above the references (flooring has 3 tones, tatami 6). Measured facts back this up. Visible tones per tile are 9 against 3 and 6 for the references. Near-flat coverage is 0%, matching tatami and below flooring's 2%. Only 24% of dark edge pixels are neutral, so the outline mostly leans toward the cool grey-blue of the adjacent material rather than being a uniform black sticker line. The step treads and frame show banding and highlight edges rather than large single-colour areas. It is slightly more graphic than the grain-heavy floor references, but it is not thinner or flatter than them.",
+    "verdict": "pass"
    },
-   "pass": false,
-   "reasons": [
-    "판정자 fail (1/1)"
-   ],
+   "pass": true,
+   "reasons": [],
    "view34": {
     "pass": true,
     "reasons": []
    },
    "style": {
-    "pass": false,
-    "reasons": [
-     "판정자 fail (1/1)"
-    ]
+    "pass": true,
+    "reasons": []
    },
-   "ms": 16797
+   "ms": 18326
   },
   {
    "judge": "sonnet",
@@ -127,52 +114,59 @@
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "top rim of the stairwell frame",
+      "part": "top lintel/rim of the wall above the opening",
       "rows": "9-10",
-      "evidence": "none",
+      "evidence": "a",
       "front_edge_line_row": 10,
+      "eave_shadow_rows": "10"
+     },
+     {
+      "part": "back wall face above the opening",
+      "rows": "11-19",
+      "evidence": "none",
+      "front_edge_line_row": null,
       "eave_shadow_rows": null
      },
      {
-      "part": "back wall face inside the frame",
-      "rows": "11-19",
-      "evidence": "none",
-      "front_edge_line_row": 17,
-      "eave_shadow_rows": "18-19"
-     },
-     {
-      "part": "dark void of the stairwell opening",
-      "rows": "20-27",
+      "part": "dark stairwell opening (void)",
+      "rows": "20-25",
       "evidence": "d",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
      },
      {
-      "part": "descending steps with tread bands and riser edge lines",
-      "rows": "28-42",
+      "part": "descending steps (treads with riser lines)",
+      "rows": "26-42",
       "evidence": "a",
       "front_edge_line_row": 28,
+      "eave_shadow_rows": "28-29"
+     },
+     {
+      "part": "small orange torch/ember details",
+      "rows": "23-25, 39-41",
+      "evidence": "decor",
+      "front_edge_line_row": null,
       "eave_shadow_rows": null
      }
     ],
-    "main_top_rows": 15,
+    "main_top_rows": 14,
     "front_face_rows": 9,
     "side_face_visible": false,
     "all_major_parts_have_top": true,
     "round_cap": null,
     "reads_as": "three_quarter",
-    "evidence": "This is a terrain tile of a stairwell going down. The frame has a lighter top rim at rows 9-10. Below it is a back wall face at rows 11-16, closed by an edge line at row 17 and shadow at rows 18-19. A dark opening follows at rows 20-27. The steps at rows 28-42 are horizontal treads separated by 1-row edge lines at rows 28, 30, 32, 33, 34 and 37. These lines show the treads as horizontal surfaces seen from above, with the openings and risers giving depth. The stairs are visible inside the open shaft (evidence d). No isometric side face is drawn."
+    "evidence": "This is a terrain stairwell tile seen from the south. The back wall (rows 11-19) is a vertical face under a light rim (rows 9-10) with a dark edge line at row 10. Below it a dark opening (rows 20-25) leads to a staircase. Rows 26-42 alternate light treads (L=130-158) with darker riser lines (rows 28, 29, 31, 34, 36, 38), so the horizontal tread surfaces are visible from above, about 14 rows. The wall face has 9 rows, so the tile shows both a top and a front face."
    },
    "styleAnswer": {
     "ref_kind_matches": false,
-    "shading_steps": 4,
-    "reference_steps": 6,
+    "shading_steps": 5,
+    "reference_steps": 4,
     "outline": "mixed",
     "texture": "some",
     "flat_fills": false,
-    "density": "slightly_lower",
-    "score": 5,
-    "evidence": "The candidate does not read as a 4x3 ground patch. It is a small, front-facing boxy object (a stove or furnace with a dark opening and a rail) on a plain backdrop. It has no surrounding paving or floor continuity and no top-down stairs. The measured facts are fine: 9 visible tones per tile against 7 for the paving and 3 for the grass, 0% near-flat coverage, and only 24% neutral dark edge pixels, so the outline is not a uniform black line. Even so, the visible shading is shallow, about 4 steps on the metal and body against roughly 6 on the references. There is little per-stone grain or per-tile highlight compared with the cobble paving reference. It reads as a bordered sticker-like prop rather than a textured ground surface. With the wrong kind, a missing ground patch and thinner shading, it fails when in doubt.",
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a grey stone stairwell with a metal grate and an ember glow, not a ground surface patch like the flooring and tatami references. Its structure differs from them, so the kind comparison is only partial. On the measured facts it is at or above the references: 9 visible tones per tile against 3 (flooring) and 6 (tatami), 0% near-flat coverage, and no 5x5 flat fills. Shading has roughly 5 steps on the stone frame and grate, against about 3-6 on the references. The outline is a dark edge around the frame, only 24% near-neutral, so it leans toward a tinted tone but is partly neutral, which I call mixed. Texture is present as grate bars and a lit interior, but there is no grain on the stone, so I rate it 'some'. The piece is not a floor patch at all, and it is drawn at a size that doesn't fit a 4x3 ground layout. Because the kind does not match the reference, the comparison can't confirm it is acceptable as a ground patch.",
     "verdict": "fail"
    },
    "pass": false,
@@ -189,7 +183,7 @@
      "판정자 fail (1/1)"
     ]
    },
-   "ms": 17411
+   "ms": 14025
   },
   {
    "judge": "sonnet",
@@ -199,15 +193,22 @@
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "top ledge / lintel band",
+      "part": "top lintel/rim strip",
       "rows": "9-10",
-      "evidence": "a",
+      "evidence": "none",
       "front_edge_line_row": 10,
-      "eave_shadow_rows": "10"
+      "eave_shadow_rows": null
      },
      {
-      "part": "dark pit opening",
-      "rows": "20-25",
+      "part": "back wall recess",
+      "rows": "11-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark stairwell opening (void)",
+      "rows": "18-25",
       "evidence": "d",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
@@ -216,49 +217,41 @@
       "part": "descending stair treads",
       "rows": "26-42",
       "evidence": "d",
-      "front_edge_line_row": null,
+      "front_edge_line_row": 28,
       "eave_shadow_rows": null
      }
     ],
     "main_top_rows": 17,
-    "front_face_rows": 6,
+    "front_face_rows": 0,
     "side_face_visible": false,
     "all_major_parts_have_top": true,
     "round_cap": null,
-    "reads_as": "three_quarter",
-    "evidence": "This is a recessed stairwell frame. A light ledge at rows 9-10 ends in a dark front-edge line at row 10. Below it is a wall face (rows 11-16, 6 rows), then a frame band at rows 17-19. Rows 20-25 are a dark pit opening, and rows 26-42 show stair treads with alternating light and dark step lines, getting lighter toward the bottom, so the stair contents read as horizontal surfaces seen from above. A front face of 3+ rows is present, so it is not a flat slab."
+    "reads_as": "top_down_slab",
+    "evidence": "This is a floor tile showing a stair opening seen from above. Rows 9-10 are a thin rim, and rows 11-16 are a narrow back-wall recess only 11 px wide. Rows 18-25 are a dark void, with a small orange torch-like detail at rows 24-25. Rows 26-42 are lighter stair treads that step up in lightness toward the bottom, separated by thin dark and light edge lines at rows 28, 30, 32 and 34. There is no vertical south face of 3 or more rows. The treads and void fill the tile as a plan-view slab, so there is no standing volume with a distinct top and front."
    },
    "styleAnswer": {
-    "ref_kind_matches": false,
-    "shading_steps": 4,
-    "reference_steps": 6,
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 4,
     "outline": "mixed",
-    "texture": "flat",
-    "flat_fills": true,
-    "density": "much_lower",
-    "score": 4,
-    "evidence": "The candidate is a small boxy object (a stove or hatch shape with a dark opening and a few orange accents) on a plain background, not a 4x3-tile ground patch like the grass and paving references. It is only about 25px wide, far short of the 64x48 expected. The tile facts (9 visible tones, 0% near-flat) read as higher than the references, but that likely comes from the compact object's contrast between its few distinct parts, not from surface texture. By eye, the metal and stone body has only about 4 lightness steps, with large smooth panels and no per-stone shading, grain or tufts like the paving and grass references. Dark edge pixels are only 24% neutral, so the outline is a mix of tinted and neutral. It does not give the continuous textured ground coverage the kind requires, and it looks flatter and more sticker-like than the references.",
-    "verdict": "fail"
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a grey metal stairwell hatch/stove-like object, not a ground patch, but it is still drawn at the same scale as the references. It has 9 visible tones per 16x16 tile against 3 for floor-flooring and 6 for floor-tatami. Near-flat coverage is 0%, so there are no large flat fills. Its shading ramp has about 5 grey steps, with a lighter frame, darker interior, a red/orange glow accent and horizontal slat detail. That is at or above the references' 3-6 steps. Dark edge pixels are only 24% neutral, so the outline leans toward a tinted dark blue-grey and is not a uniform black sticker line. I call it mixed because some edge pixels are near-neutral. Density and texture are equal to or richer than the references, so it holds up next to the shipped jp_city floors.",
+    "verdict": "pass"
    },
-   "pass": false,
-   "reasons": [
-    "판정자 fail (1/1)",
-    "평면 채움 (1/1)",
-    "질감 없음 (1/1)"
-   ],
+   "pass": true,
+   "reasons": [],
    "view34": {
     "pass": true,
     "reasons": []
    },
    "style": {
-    "pass": false,
-    "reasons": [
-     "판정자 fail (1/1)",
-     "평면 채움 (1/1)",
-     "질감 없음 (1/1)"
-    ]
+    "pass": true,
+    "reasons": []
    },
-   "ms": 16034
+   "ms": 14752
   },
   {
    "judge": "sonnet",
@@ -268,72 +261,61 @@
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "top lintel / back wall edge band",
-      "rows": "9-10",
-      "evidence": "a",
-      "front_edge_line_row": 10,
-      "eave_shadow_rows": null
-     },
-     {
-      "part": "back wall face above opening",
-      "rows": "11-16",
+      "part": "top frame lip and back wall band",
+      "rows": "9-16",
       "evidence": "none",
-      "front_edge_line_row": 17,
-      "eave_shadow_rows": "17-19"
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "10"
      },
      {
-      "part": "dark stairwell opening with depth",
-      "rows": "20-25",
+      "part": "dark stairwell opening",
+      "rows": "17-25",
       "evidence": "d",
-      "front_edge_line_row": null,
-      "eave_shadow_rows": null
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "20-25"
      },
      {
-      "part": "descending steps (treads with riser lines)",
+      "part": "descending stair treads",
       "rows": "26-42",
       "evidence": "d",
       "front_edge_line_row": 28,
-      "eave_shadow_rows": "28-29"
+      "eave_shadow_rows": null
      }
     ],
-    "main_top_rows": 17,
-    "front_face_rows": 6,
+    "main_top_rows": 34,
+    "front_face_rows": 0,
     "side_face_visible": false,
     "all_major_parts_have_top": true,
     "round_cap": null,
-    "reads_as": "three_quarter",
-    "evidence": "This is a terrain tile showing a stair opening. A back wall (rows 11-16) ends in an edge line at row 17 with shadow below it. Below that is a dark pit (rows 20-25), then a run of light stair treads (rows 26-42) separated by darker riser lines (rows 28, 31, 34, 38). The treads are horizontal surfaces and the contents of the open pit are visible (evidence d), so it is not a flat slab. The wall face is only 6 rows, so the three_quarter reading is moderate rather than strong."
+    "reads_as": "top_down_slab",
+    "evidence": "This is a floor opening seen from above, not a standing volume. Rows 9-10 are a stone lip, rows 11-16 are the inner back wall, and rows 17-25 are a dark pit. Rows 26-42 are stair treads that get lighter toward the bottom, separated by thin step lines (rows 28, 30, 32, 34, 37). The treads run to the bottom edge at rows 41-42 with no south-facing vertical face of 3 or more rows. The only vertical face is the interior back wall, so the drawing is a top-down plan of stairs, not a 3/4-view body with a front face."
    },
    "styleAnswer": {
-    "ref_kind_matches": false,
-    "shading_steps": 4,
-    "reference_steps": 5,
-    "outline": "mixed",
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 4,
+    "outline": "dark_material_tone",
     "texture": "some",
     "flat_fills": false,
-    "density": "slightly_lower",
-    "score": 5,
-    "evidence": "The candidate is a small, stove-like grey box with a dark opening and an orange accent, not a 4x3 ground patch. The references are wide grass and cobble-paving fields, so the kind match is weak. By the numbers it is not poor: 9 visible tones per tile against 3 for grass and 7 for paving, and 0% near-flat coverage. By eye, though, the grey body has only about 4 lightness steps, against 5-6 on the paving and grass. The 16 distinct colours in total are a thin ramp. The outline looks mostly dark grey and near-neutral, with only 24% of dark edge pixels measured as neutral, so I call it mixed. It reads as a sticker-like object with smooth panels, not as ground with per-stone shading or grass tufts. The paving reference carries visible stone-by-stone texture over a whole field, and the candidate has no equivalent. Because of the shallow ramp, the partly neutral outline and the weak kind match, I fail it when in doubt.",
-    "verdict": "fail"
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has about 9 visible tones per tile, against 3 for floor-flooring and 6 for floor-tatami. Near-flat coverage is 0%, so there are no large flat fills. Its grey metal frame, stepped light interior and small warm accents show about 5 lightness steps, which matches or beats the references' 3-4. Only 24% of its dark edge pixels are neutral, so the outline leans toward a tinted dark grey rather than a uniform black line. That reads as dark_material_tone, and it separates forms by value as the references do. Texture is moderate (step edges and small details). It is not as rich as the tatami weave, but it is clearly no thinner or flatter than either reference. A careful artist would accept it beside them.",
+    "verdict": "pass"
    },
-   "pass": false,
-   "reasons": [
-    "판정자 fail (1/1)"
-   ],
+   "pass": true,
+   "reasons": [],
    "view34": {
     "pass": true,
     "reasons": []
    },
    "style": {
-    "pass": false,
-    "reasons": [
-     "판정자 fail (1/1)"
-    ]
+    "pass": true,
+    "reasons": []
    },
-   "ms": 18098
+   "ms": 17433
   }
  ],
- "decidedAt": "2026-10-22T15:28:03.349Z",
+ "decidedAt": "2026-10-22T16:07:06.924Z",
  "cells": {
   "16": [
    "776bd32daf8d4ffe",

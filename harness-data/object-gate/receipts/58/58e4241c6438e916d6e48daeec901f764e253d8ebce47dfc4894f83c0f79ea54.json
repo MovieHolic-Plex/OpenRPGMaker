@@ -18,11 +18,17 @@
   "reasons": [],
   "styleKind": "ground",
   "refs": [
-   "grass",
-   "paving"
+   "floor-flooring",
+   "floor-tatami"
   ],
   "scale": 2,
-  "score": 6
+  "score": 7,
+  "refSet": {
+   "id": "jp_city",
+   "chipset": "jp_city",
+   "fallback": false,
+   "hash": "d1f5720172be07de"
+  }
  },
  "metrics": {
   "tileColorsMedian": 8,
@@ -40,52 +46,45 @@
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "top rail beam",
-      "rows": "10-11",
+      "part": "top rail beam and balusters (back railing)",
+      "rows": "10-19",
       "evidence": "none",
-      "front_edge_line_row": 11,
+      "front_edge_line_row": null,
       "eave_shadow_rows": null
      },
      {
-      "part": "balusters and back wall under the rail",
-      "rows": "12-19",
-      "evidence": "none",
-      "front_edge_line_row": 17,
+      "part": "dark stairwell opening (shaft)",
+      "rows": "20-29",
+      "evidence": "d",
+      "front_edge_line_row": null,
       "eave_shadow_rows": null
      },
      {
-      "part": "stair treads descending into the well, with dark riser lines",
-      "rows": "20-38",
+      "part": "wooden stair treads descending",
+      "rows": "30-41",
       "evidence": "a",
       "front_edge_line_row": 34,
-      "eave_shadow_rows": "34-35"
-     },
-     {
-      "part": "bottom landing floor",
-      "rows": "39-42",
-      "evidence": "none",
-      "front_edge_line_row": 42,
-      "eave_shadow_rows": null
+      "eave_shadow_rows": "38"
      }
     ],
-    "main_top_rows": 19,
-    "front_face_rows": 9,
-    "side_face_visible": true,
+    "main_top_rows": 12,
+    "front_face_rows": 10,
+    "side_face_visible": false,
     "all_major_parts_have_top": true,
     "round_cap": null,
     "reads_as": "three_quarter",
-    "evidence": "This is a wooden stairwell tile seen from above and in front. The dark pit and descending steps (rows 20-38) are horizontal tread surfaces. Dark riser lines at rows 34 and 38 and the alternating tread and riser bands in rows 30-38 mark front-edge lines and shadows. The railing at rows 10-19 stands at the back, and the wooden side walls at the left and right (about 3 px wide) show receding sides. The riser bands (rows 30-38) and the lower landing (rows 39-42) give a front face of 3 or more rows, so it is not a flat slab. The stair-edge lines are the only clear top-surface evidence, so this reading is moderately confident."
+    "evidence": "This is a stairwell seen from above. The back railing (rows 10-19) is a vertical face. Below it, the dark shaft opening (rows 20-29) shows depth inside an open container. The stair treads (rows 30-41) are horizontal bands separated by dark edge lines at rows 34 and 38, so the horizontal surface is visible and foreshortened. The silhouette is 32 px wide through rows 19-38 and narrows to 28 at the bottom. The vertical frame and railing above it give a front face of more than 3 rows, so the object is not a flat slab."
    },
    "styleAnswer": {
     "ref_kind_matches": true,
-    "shading_steps": 4,
+    "shading_steps": 6,
     "reference_steps": 5,
     "outline": "dark_material_tone",
     "texture": "some",
     "flat_fills": false,
     "density": "equal_or_richer",
-    "score": 6,
-    "evidence": "The candidate is a small wooden stairwell. Its dark edges are brown-tinted (only 1% near-neutral), so the outline follows the adjacent wood instead of using a black sticker line. The stair treads and frame are separated by value, with about 4 lightness steps on the wood ramp, slightly fewer than the 5-6 on the references. There are no flat fills (0% near-flat coverage, same as both references). Visible tones per tile are 7, matching the paving reference (7) and above the grass reference (3). Grain is modest, and the 10 total colours are few, but the structure is sound and it would sit acceptably next to the references.",
+    "score": 7,
+    "evidence": "The candidate has 7 visible tones per tile, against 3 for floor-flooring and 6 for floor-tatami. Near-flat coverage is 0%, so there are no large flat fills. Only 1% of its dark edge pixels are neutral, so the dark outlines lean brown and follow the wood. The stair treads and the railing step through about 6 brown values, which matches the tatami reference and is above the flooring reference. The texture is mostly plank and tread banding with few grain dots, so I rate it 'some' rather than 'rich'. It reads as a darker, shaded stairwell and is not a flat sticker. A careful artist would accept it next to these references.",
     "verdict": "pass"
    },
    "pass": true,
@@ -98,7 +97,7 @@
     "pass": true,
     "reasons": []
    },
-   "ms": 23566
+   "ms": 16500
   },
   {
    "judge": "sonnet",
@@ -108,124 +107,45 @@
     "kind_matches": true,
     "surfaces": [
      {
-      "part": "railing and top beam at stairwell opening",
-      "rows": "10-16",
+      "part": "back railing with balusters",
+      "rows": "10-17",
       "evidence": "none",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
      },
      {
-      "part": "stairwell floor frame / dark opening",
-      "rows": "18-29",
-      "evidence": "none",
-      "front_edge_line_row": null,
-      "eave_shadow_rows": null
+      "part": "wooden frame beam across top of opening",
+      "rows": "18-19",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "20-21"
      },
      {
-      "part": "descending wooden steps",
-      "rows": "30-42",
-      "evidence": "none",
-      "front_edge_line_row": null,
-      "eave_shadow_rows": null
-     }
-    ],
-    "main_top_rows": 0,
-    "front_face_rows": 13,
-    "side_face_visible": false,
-    "all_major_parts_have_top": false,
-    "round_cap": null,
-    "reads_as": "front_elevation",
-    "evidence": "This is a stairwell going down, seen from the front. A railing (rows 10-16) stands over a dark opening (rows 20-29), and wooden steps descend toward the viewer (rows 30-42). The steps show only narrow alternating light and dark bands (tread edges at rows 33-34 and 37-38), with no horizontal top surface of 3+ rows and no front-edge line that ends a top band. The railing is a vertical face. The whole image reads as a front elevation of the stairs and opening, not a 3/4 slab. Kind is terrain, so it plausibly matches a floor-level stairwell tile."
-   },
-   "styleAnswer": {
-    "ref_kind_matches": false,
-    "shading_steps": 4,
-    "reference_steps": 5,
-    "outline": "dark_material_tone",
-    "texture": "some",
-    "flat_fills": false,
-    "density": "slightly_lower",
-    "score": 5,
-    "evidence": "The candidate is a small wooden stair-well prop, about one tile wide, not a 4x3 ground patch, so the grass and paving references are only a loose match. On the measured facts it holds up: 7 visible tones per tile (paving also 7, grass 3), 0% near-flat coverage, and only 1% neutral dark edge pixels, so the outline is a tinted dark brown rather than a black sticker line. By eye, though, the wood has about 4 lightness steps against roughly 5-6 on Beodeul materials. The step treads and frame are mostly smooth horizontal bands with little grain, knots or per-plank highlights. The whole piece uses only 10 distinct colours. It reads cleaner and simpler than the references, which are carefully dotted, so it looks slightly thinner. With the kind mismatch and the shallow wood texture, and no clear evidence it matches the Beodeul bar, it fails.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "판정자 fail (1/1)"
-   ],
-   "view34": {
-    "pass": true,
-    "reasons": []
-   },
-   "style": {
-    "pass": false,
-    "reasons": [
-     "판정자 fail (1/1)"
-    ]
-   },
-   "ms": 18350
-  },
-  {
-   "judge": "sonnet",
-   "run": 3,
-   "answer": {
-    "facing": "south",
-    "kind_matches": true,
-    "surfaces": [
-     {
-      "part": "top rail beam",
-      "rows": "10-11",
-      "evidence": "none",
-      "front_edge_line_row": 11,
-      "eave_shadow_rows": null
-     },
-     {
-      "part": "balusters and railing",
-      "rows": "12-16",
-      "evidence": "none",
-      "front_edge_line_row": null,
-      "eave_shadow_rows": null
-     },
-     {
-      "part": "lower rail beam and ledge",
-      "rows": "17-19",
-      "evidence": "none",
-      "front_edge_line_row": 17,
-      "eave_shadow_rows": null
-     },
-     {
-      "part": "dark stairwell void and back wall",
-      "rows": "20-29",
+      "part": "stairwell opening with descending steps (treads and risers visible inside)",
+      "rows": "20-42",
       "evidence": "d",
       "front_edge_line_row": null,
-      "eave_shadow_rows": "20-29"
-     },
-     {
-      "part": "wooden stair treads descending",
-      "rows": "30-42",
-      "evidence": "a",
-      "front_edge_line_row": 34,
-      "eave_shadow_rows": "34-35"
+      "eave_shadow_rows": null
      }
     ],
-    "main_top_rows": 12,
-    "front_face_rows": 10,
+    "main_top_rows": 13,
+    "front_face_rows": 8,
     "side_face_visible": false,
     "all_major_parts_have_top": true,
     "round_cap": null,
     "reads_as": "three_quarter",
-    "evidence": "The stair treads in rows 30-42 are horizontal planes seen from above. Dark lines at rows 34 and 38 mark step edges, and the lightness steps from L=70 at row 30 up to L=144 at row 42 as the steps come toward the viewer. Rows 20-29 are a dark void with wall faces, which is the open pit seen from above (evidence d). The railing in rows 10-19 sits above it as a vertical front face. The silhouette is 32 px wide and about 33 rows tall, with a front face of 3+ rows, so it reads as three-quarter rather than a flat slab. The kind is terrain, so the tile reads as a floor opening with stairs."
+    "evidence": "The stairwell is a wooden-framed opening. A railing of vertical balusters sits at the back (rows 10-17), above a frame beam with an edge line at row 19. Below it the dark pit (rows 20-29) leads to stair treads and risers (rows 30-42), drawn as alternating light and dark bands. The treads and the pit interior act as visible contents seen from above (evidence d). The wooden side frames and step risers give a front face of about 8 rows. The two sides look like a flat frame rather than a receding side face. As terrain, this reads as a 3/4 view and not as a pure front elevation."
    },
    "styleAnswer": {
     "ref_kind_matches": true,
-    "shading_steps": 5,
+    "shading_steps": 6,
     "reference_steps": 5,
     "outline": "dark_material_tone",
     "texture": "some",
     "flat_fills": false,
     "density": "equal_or_richer",
-    "score": 7,
-    "evidence": "The candidate is a wooden stairwell-down with a plank frame and stepped treads. It has 7 visible tones per tile, equal to the paving reference and well above the grass reference (3). Near-flat coverage is 0%, so no 5x5 area is a flat fill. Only 1% of its dark edge pixels are neutral, so the outline is a dark brown tint of the wood rather than a black sticker line. The tread edges, frame and grain are separated by value, with about 5 lightness steps on the wood. It uses only 10 raw colours, which is expected under a locked palette, and the texture is less rich than the best references. A careful artist would accept it next to the references without it looking thinner or flatter.",
+    "score": 8,
+    "evidence": "The candidate is a wooden stairwell opening. Its descending steps and plank frame step through about 6 brown tones, from light wood on the rim to a deep shadow in the well. Measured visible tones per tile are 7, above floor-flooring (3) and above floor-tatami (6). Near-flat coverage is 0%, so there are no flat fills. Only 1% of dark edge pixels are neutral, so the edges are dark brown wood tones rather than a black sticker outline. Plank seams and step edges give grain comparable to the flooring reference. The piece is small and the references are plain floors, but it holds up next to them without looking thinner or flatter.",
     "verdict": "pass"
    },
    "pass": true,
@@ -238,13 +158,13 @@
     "pass": true,
     "reasons": []
    },
-   "ms": 20231
+   "ms": 14810
   },
   {
    "judge": "sonnet",
-   "run": 4,
+   "run": 3,
    "answer": {
-    "facing": "north",
+    "facing": "south",
     "kind_matches": true,
     "surfaces": [
      {
@@ -255,38 +175,45 @@
       "eave_shadow_rows": null
      },
      {
-      "part": "back railing with posts",
+      "part": "back railing with balusters",
       "rows": "12-19",
       "evidence": "none",
       "front_edge_line_row": 17,
-      "eave_shadow_rows": "18-19"
+      "eave_shadow_rows": null
      },
      {
-      "part": "stairwell opening with descending steps (treads seen from above)",
-      "rows": "20-42",
+      "part": "dark stairwell opening (pit)",
+      "rows": "20-29",
       "evidence": "d",
       "front_edge_line_row": null,
       "eave_shadow_rows": null
+     },
+     {
+      "part": "descending wooden steps (treads)",
+      "rows": "30-42",
+      "evidence": "a",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": "34"
      }
     ],
-    "main_top_rows": 23,
-    "front_face_rows": 0,
+    "main_top_rows": 13,
+    "front_face_rows": 8,
     "side_face_visible": false,
     "all_major_parts_have_top": true,
     "round_cap": null,
-    "reads_as": "top_down_slab",
-    "evidence": "The tile is a stairwell seen almost straight down. The wood frame surrounds a dark opening (rows 20-29) with step bands below it (rows 30-42). The treads are horizontal bands separated by 1-row dark risers, at x=16 for example rows 33, 34, 37, 38. There is no tall south-facing vertical face at the bottom. The only vertical element is the back railing (rows 12-16), which sits behind the opening. The side rails show the frame width, but no isometric receding side face is drawn. The silhouette is a flat plan-view floor piece, not a standing volume with a top and a front."
+    "reads_as": "three_quarter",
+    "evidence": "This is a stairwell seen from above and in front. Rows 30-42 show stepped treads: lighter wood bands closed by dark edge lines at rows 34 and 38, with darker risers between them. Rows 20-29 are a dark pit with the upper steps fading into it, so the opening reads as a horizontal surface seen from above. Rows 12-19 are a vertical railing and beam, drawn as a front face of about 8 rows with a dark edge line at row 17. The side walls are narrow vertical strips and are not isometric receding faces. Overall it reads as a three-quarter view with a top surface of 13 rows."
    },
    "styleAnswer": {
     "ref_kind_matches": true,
     "shading_steps": 5,
-    "reference_steps": 6,
+    "reference_steps": 4,
     "outline": "dark_material_tone",
     "texture": "some",
     "flat_fills": false,
     "density": "equal_or_richer",
-    "score": 6,
-    "evidence": "The candidate is a small wooden stair-down piece, which is a reasonable ground-kind prop even though the references are grass and paving. It measures 7 visible tones per tile, equal to the paving reference and well above the grass reference's 3. Near-flat coverage is 0%, the same as both references. Only 1% of its dark edge pixels are neutral, so the outlines lean brown and read as the dark tone of the adjacent wood rather than a black sticker line. I count about 5 lightness steps across the frame, the treads and the dark well. The weak point is texture: it has only 10 colours in total and little visible wood grain, so the treads read as fairly clean banded planks. That is still comparable to the paving reference, which also uses only 7 colours. On the primary facts it holds up against the references, so I pass it, with a note that the grain is modest.",
+    "score": 7,
+    "evidence": "The candidate is a wooden stairwell-down piece with stepped planks. Measured facts: 7 visible tones per tile, against 3 for floor-flooring and 6 for floor-tatami, so it is at or above both references. Near-flat coverage is 0%, and no large 5x5 area is one flat colour. Dark edge pixels are only 1% neutral, so the outline is a brown-tinted wood tone rather than black. It shows about 5 lightness steps across the brown planks, railing and dark opening, comparable to or above the flooring and tatami references. Texture comes from plank banding and step shading, with fewer grain dots than the references' plank seams but no sticker look. A careful artist would accept it beside these references.",
     "verdict": "pass"
    },
    "pass": true,
@@ -299,10 +226,71 @@
     "pass": true,
     "reasons": []
    },
-   "ms": 23349
+   "ms": 13861
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top frame beam / rail cap",
+      "rows": "10-11",
+      "evidence": "none",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "railing with balusters (front face)",
+      "rows": "12-19",
+      "evidence": "none",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "18-19"
+     },
+     {
+      "part": "stairwell opening with descending steps",
+      "rows": "20-42",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "20-29"
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The tile shows a stairwell seen from the south and above. A railing and front beam in rows 10-19 form a vertical front face about 8 rows tall. Behind it, rows 20-42 show the open pit as a dark void (rows 20-29) with horizontal tread and riser bands below (rows 30-42). This is the contents of an open container (evidence d), so a horizontal surface is visible. The side walls are plain wood frame. It is not a flat slab, because the railing gives a front face, and it is not a pure front elevation, because the steps are seen from above."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 7 visible tones per 16x16 tile, against 3 for floor-flooring and 6 for floor-tatami, so it is at or above both references. Near-flat coverage is 0%, so it has no flat 5x5 fills. Only 1% of its dark edge pixels are neutral, so the dark edges lean brown against the wood rather than reading as a black sticker line. The stair treads, the dark wells and the plank bands show about 6 lightness steps in the wood ramp. Texture is moderate: banded planks and tread highlights, but little grain. Overall it sits at the level of the shipped jp_city floors, with no sign of a flat or sticker look.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14063
   }
  ],
- "decidedAt": "2026-10-22T15:28:03.330Z",
+ "decidedAt": "2026-10-22T16:07:06.896Z",
  "cells": {
   "16": [
    "9501ab5979dbfae0",
