@@ -1646,7 +1646,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const x = (c % W) / grid, y = Math.floor(c / W) / grid + salt, x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0;
       return hv(x0, y0) * (1 - fx) * (1 - fy) + hv(x0 + 1, y0) * fx * (1 - fy) + hv(x0, y0 + 1) * (1 - fx) * fy + hv(x0 + 1, y0 + 1) * fx * fy;
     };
-    const roadGap = (c: number) => 2 + Math.floor(vnoise(c, 4, 0) * (denseWoods ? 1.99 : 2.99)); // 숲속 빈터는 숲이 길 가까이 붙는다
+    const roadGap = (c: number) => 2 + Math.floor(vnoise(c, denseWoods || highWoods ? 3 : 4, 0) * 2.99); // 3칸 격자 — 4칸 격자·숲속 빈터 2~3칸은 곧은 길 옆 숲 벽이 남았다(VQA r6 산골 남쪽 빈터)
     const okCell = (c: number, L: number) => occ[c] === FREE && distRoad[c]! >= roadGap(c) && lv[c] === L && !rampCells.has(c) && (c + W >= W * H || lv[c + W] === L);
     // 침엽·혼효 마을은 숲 덩이를 크게·넓게(독립 검수 D10 「덩어리 없이 듬성듬성」) — 활엽 마을은 그대로
     const bigGroves = canopyStyle === "leaf" && forestType !== "broadleaf";
@@ -1693,7 +1693,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         const c = q[h]!, x = c % W, y = (c - x) / W;
         for (const [dx, dy] of N4) { const n = idx(x + dx, y + dy); if (inMap(x + dx, y + dy) && forestSet.has(n) && dist[n] < 0) { dist[n] = dist[c]! + 1; q.push(n); } }
       }
-      const erode = (c: number) => Math.floor(vnoise(c, 3, 977) * (denseWoods ? 2 : 3)) - 1; // -1 깎지 않음 · 0~1 가장자리에서 그 깊이까지
+      // 잡음 칸 4 — 3칸 격자 한 칸 물림은 다듬기(이웃 셋 메우기)가 도로 메워 곧은 변이 남았다(VQA r6 산골 숲 빈터 벽)
+      const erode = (c: number) => Math.floor(vnoise(c, 3, 977) * (denseWoods || highWoods ? 3.4 : 3)) - 1; // -1 깎지 않음 · 0~2 가장자리에서 그 깊이까지
       for (const c of [...forestSet]) if (dist[c]! >= 0 && dist[c]! <= erode(c)) forestSet.delete(c);
     }
     // 숲 속 구멍(길 간격 잡음·깎기가 남긴 4칸 이하 빈 땅, 사방이 같은 단 숲)은 메운다 — 수관 속 검은 구멍으로 보였다(VQA r4)
