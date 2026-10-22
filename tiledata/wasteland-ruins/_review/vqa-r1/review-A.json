@@ -1,0 +1,153 @@
+{
+  "reviewer": "A",
+  "majors": [
+    {
+      "target": "wasteland_ruins/asphalt-c (all wasteland roads: settlement-1, settlement-4, ruined-city-2, shanty-3)",
+      "issue": "The road crack/weed decal carries a hard-edged 7x7 grey square slab with a bevel highlight, plus a yellow pixel mark that reads like a glyph. On every road it is stamped in identical side-by-side pairs, so it reads as pasted grey boxes with weeds stuck to them, not as cracked asphalt. At the 1x scale it shows as a regular dotted chain of dark squares along each road.",
+      "evidence": "/tmp/vqa-r1-A/asphalt-c-10x.png (square block above the weed at the left); /tmp/vqa-r1-A/s1-road-junction.png (two identical square+weed pairs at top-left and again at middle-right, the second partly under the scrap heap); /tmp/vqa-r1-A/sh-road.png (pairs on every road segment)",
+      "fix": "Remove the square chunk or redraw it as an irregular broken asphalt fragment with a jagged outline. Draw at least 3 non-mirrored crack/weed variants and stop the placer from putting the same decal on adjacent cells."
+    },
+    {
+      "target": "wasteland_ruins/dirt-a, wasteland_ruins/dirt-b (ground of all 4 wasteland maps)",
+      "issue": "The base ground is a high-frequency brown/grey dither with evenly spaced single light-grey speckle pixels. The 'Y' crack motif sits at the same spot in each 16px cell, so across the map the cracks form a visible diagonal lattice and the 16px grid shows through. Beodeul's yard dirt, and the flat modern-city ground it should be family-compatible with, are much calmer. This reads as noise, not a texture ramp.",
+      "evidence": "/tmp/vqa-r1-A/s4-ground.png (open dirt top half: the crack marks repeat in rows/columns on the 16px pitch); /tmp/vqa-r1-A/dirt-b-tiled-6x.png (2x2 tiling of dirt-b, same cracks in the same cell positions); /tmp/vqa-r1-A/g0.png (dirt-a: even speckle)",
+      "fix": "Lower the contrast and density of the base dither and use 2-3 large soft value clusters per 32px instead of per-pixel speckle. Make the cracks multi-cell, sparse decals with random offsets rather than a fixed per-cell motif."
+    },
+    {
+      "target": "settlement-1.png vs settlement-4.png (and shanty-3.png)",
+      "issue": "The two survivor-settlement seeds use the same template: the same road cross at the same x/y, the same fenced compound in the same place, the slab plaza, three shacks in a row, stalls along the plaza's bottom row, a water tank in the upper-right and lower-left of the compound, the same row of ruined husks along the north road, and a barricade pair at the same top gaps. shanty-3 reuses the same fenced shack-compound recipe without the plaza. A player who sees two of these will recognise the stamp.",
+      "evidence": "Compare /home/main/z-project/rpg-zzu-village-art/qa-runs/vqa1/settlement-1.png with settlement-4.png at 1x: the compound rectangle at about x 35-445, y 260-555 is identical in both, as are the road cross at x about 480-525 and y about 195-235 and the husk row at y about 80-175. shanty-3.png has the same fenced rectangle of shacks.",
+      "fix": "Randomise the compound shape (irregular, not a rectangle) and its position and road layout per seed. Give shanty towns a dense, organic cluster of shacks with alleys and no enclosing rectangle, and give settlements a walled perimeter with a gate."
+    },
+    {
+      "target": "settlement-1.png / ruined-city-2.png (vehicle placement)",
+      "issue": "The identical green jeep (car-rust-v) is stamped five times in settlement-1, every one facing the same way. Three of them sit in the open dirt in a loose grid, and two sit in the middle of the north-south road, blocking it. In ruined-city-2 a jeep also sits mid-lane on the vertical road. The repetition and the arbitrary orientation read as copy-paste, not as abandoned traffic.",
+      "evidence": "/tmp/vqa-r1-A/s1-se.png (five identical jeeps: two on the road strip at the left, three on dirt); /tmp/vqa-r1-A/s1-ne.png (jeep in the road at the top)",
+      "fix": "Limit the number of identical vehicles per map. Mix in car-rust-h and van-rust. Place wrecks along road edges or in groups at a crash point and keep one passable lane."
+    },
+    {
+      "target": "settlement-1.png / settlement-4.png / shanty-3.png (compound perimeter)",
+      "issue": "The perimeter mixes materials: wooden-post pipe fence on the north and south sides, a column of grey concrete wall-v slabs on the east and west sides. The corners do not join. The fence ends and the slab column starts one cell lower with dirt showing between them, so every corner is open and the two materials never meet. In shanty-3 one fence stub sits a row below the main fence line, out of alignment.",
+      "evidence": "/tmp/vqa-r1-A/s1-fence-corner.png (top-left corner: fence rail above, slab column below, not connected); /tmp/vqa-r1-A/s1-compound.png (the full perimeter); /tmp/vqa-r1-A/sh-west.png (fence stub at the top-left, below the fence row)",
+      "fix": "Use one perimeter material per side set and give it real corner pieces (fence corner post, or wall corner). Snap the fence ends to the wall column, and keep the gaps only as deliberate gates, using gate-scrap."
+    },
+    {
+      "target": "shanty-3.png (road)",
+      "issue": "The only road is three separate asphalt rectangles. Each has square-cut ends in open dirt, and between them are gaps of bare dirt. The road goes nowhere and connects to nothing, so it reads as stray asphalt patches.",
+      "evidence": "/tmp/vqa-r1-A/sh-road.png (two rectangles with hard vertical ends and a dirt gap between them); shanty-3.png at 1x, y about 85-125",
+      "fix": "Make the road continuous edge to edge, or break it with rubble or crater pieces that have ragged autotile ends, not square cuts."
+    },
+    {
+      "target": "ruined-city-2.png (vine-wall / wall-v placement)",
+      "issue": "Single vine-wall blocks (16x32 grey-capped green slabs) are dropped as free-standing objects in open dirt, three in a row near a ruin and others scattered. Detached from any wall, they read as green fridges or gravestones. Lone wall-v columns likewise stand in the middle of the central block.",
+      "evidence": "/tmp/vqa-r1-A/rc-top.png (four free-standing vine-wall blocks around the husk); ruined-city-2.png at 1x, x about 300-360, y about 270-370 (lone wall-v columns)",
+      "fix": "Place vine-wall only as a segment of a wall run, attached to husks or wall-h, or drop it from free scatter."
+    },
+    {
+      "target": "mining-2.png (mine entrance)",
+      "issue": "The mine portal is placed on the upper terrace with its door row directly on the cliff lip. The cliff face starts in the row below the doorway, so no walkable cell exists in front of the door, and the entrance opens onto a drop. The crate stack to the right also sits on the lip.",
+      "evidence": "/tmp/vqa-r1-A/m2-yard.png (portal at the centre: its bottom edge touches the cliff top band at about y 380-390 in the 3x crop)",
+      "fix": "Require at least one free walkable cell in front of door-bearing props. Move the portal up one or two rows, or place it on the lower terrace facing the open yard."
+    },
+    {
+      "target": "mining-7.png / mining-2.png / vineyard-3.png / vineyard-8.png / temple-ruins-5.png (village identity)",
+      "issue": "Outside the one yard patch, all five Beodeul villages are the same farm template: the same log or half-timber house set in a row along an east-west path, fenced wheat and tilled plots with scarecrows, a dirt cliff band with a bench at the path notch, a well, and hay. The 'vineyard' has only two small vine blocks inside one yard; the rest of the village is grain fields. The vineyard-3 and vineyard-8 yards have the same contents in the same relative positions: winery, two vine blocks, baskets at the bottom-left. Remove the yard and the village type cannot be told.",
+      "evidence": "/tmp/vqa-r1-A/v3-yard.png vs /tmp/vqa-r1-A/v8-yard.png (identical yard composition); vineyard-3.png and temple-ruins-5.png at 1x (the same house and field layout pattern)",
+      "fix": "Make the type drive the whole map. Vineyard: terraced vine rows over most of the slopes, with a press and cellar. Mining: spoil heaps, ore carts, rails, and timber stacks across the map. Temple ruins: a broken colonnade and scattered fallen columns beyond the yard. Randomise the yard's internal arrangement per seed."
+    }
+  ],
+  "minors": [
+    {
+      "target": "temple-ruins-5.png",
+      "issue": "The flagstone path enters the yard exactly where the small shrine's back roof sits, partly covering the path end and leaving only a one-cell squeeze. The main temple is clean and intact with one rubble block, so it reads as a 'temple', not as 'ruins'.",
+      "evidence": "/tmp/vqa-r1-A/tr-yard.png (path at the top-left meets the shrine roof)",
+      "fix": "Keep a clear 2-cell approach at the path mouth. Add broken or fallen column pieces and cracked flag variants for the ruin read."
+    },
+    {
+      "target": "settlement-1.png",
+      "issue": "bush-wild and scrap-heap are placed on the asphalt road surface.",
+      "evidence": "/tmp/vqa-r1-A/s1-ne.png (bush at the bottom-left on the road, scrap heap on the road at the bottom centre)",
+      "fix": "Exclude road cells from organic scatter; place debris at road edges."
+    },
+    {
+      "target": "beodeul_yard/dirt",
+      "issue": "The same 'two grey pebbles' cluster appears 5-6 times across the sample patch, a noticeable repeat stamp.",
+      "evidence": "/home/main/z-project/rpg-zzu-village-art/qa-runs/vqa1/yard_dirt-4x.png (grey pebble pairs at about (230,80), (265,107), (425,272), (490,272), (525,365))",
+      "fix": "Add more pebble variants or lower the frequency of that body variant."
+    },
+    {
+      "target": "wasteland_ruins/asphalt",
+      "issue": "The asphalt body is a blotchy blue-grey/brown camouflage pattern that reads closer to gravel or cave rock than to a paved road, and its blob pattern repeats per 16px.",
+      "evidence": "/tmp/vqa-r1-A/g0.png (asphalt sheet); /tmp/vqa-r1-A/s1-road-junction.png",
+      "fix": "Use a flatter, darker asphalt with sparse aggregate and occasional faded lane paint."
+    },
+    {
+      "target": "wasteland_ruins/slab-a/b/c",
+      "issue": "Every 16px slab has a full dark outline, so plazas read as a bathroom-tile grid with the 16px pitch exposed.",
+      "evidence": "/tmp/vqa-r1-A/s1-compound.png (plaza)",
+      "fix": "Vary slab sizes (2x1, 2x2) and break some joints."
+    },
+    {
+      "target": "wasteland_ruins/dead-tree, wasteland_ruins/weeds-c",
+      "issue": "The dead tree has bright yellow dots on its branch tips, which read as buds or lights on a 'dead' tree. weeds-c uses saturated pink flowers that pop out of the muted wasteland palette.",
+      "evidence": "/tmp/vqa-r1-A/g5.png (dead-tree); /tmp/vqa-r1-A/g1.png (weeds-c)",
+      "fix": "Change the tips to the bark-highlight colour; desaturate the flowers."
+    }
+  ],
+  "pieces": {
+    "wasteland_ruins/dirt-a": "fail",
+    "wasteland_ruins/dirt-b": "fail",
+    "wasteland_ruins/dirt-c": "pass",
+    "wasteland_ruins/dirt-d": "pass",
+    "wasteland_ruins/asphalt": "pass",
+    "wasteland_ruins/asphalt-c": "fail",
+    "wasteland_ruins/slab-a": "pass",
+    "wasteland_ruins/slab-b": "pass",
+    "wasteland_ruins/slab-c": "pass",
+    "wasteland_ruins/rubble-a": "pass",
+    "wasteland_ruins/rubble-b": "pass",
+    "wasteland_ruins/rubble-c": "pass",
+    "wasteland_ruins/weeds-a": "pass",
+    "wasteland_ruins/weeds-b": "pass",
+    "wasteland_ruins/weeds-c": "pass",
+    "wasteland_ruins/puddle": "pass",
+    "wasteland_ruins/husk-a": "pass",
+    "wasteland_ruins/husk-b": "pass",
+    "wasteland_ruins/husk-tall": "pass",
+    "wasteland_ruins/wall-h": "pass",
+    "wasteland_ruins/wall-v": "pass",
+    "wasteland_ruins/wall-stub": "pass",
+    "wasteland_ruins/shack-a": "pass",
+    "wasteland_ruins/shack-b": "pass",
+    "wasteland_ruins/lean-to": "pass",
+    "wasteland_ruins/barricade-h": "pass",
+    "wasteland_ruins/fence-h": "pass",
+    "wasteland_ruins/gate-scrap": "pass",
+    "wasteland_ruins/car-rust-h": "pass",
+    "wasteland_ruins/car-rust-v": "pass",
+    "wasteland_ruins/van-rust": "pass",
+    "wasteland_ruins/water-tank": "pass",
+    "wasteland_ruins/generator": "pass",
+    "wasteland_ruins/solar-scrap": "pass",
+    "wasteland_ruins/campfire-f1": "pass",
+    "wasteland_ruins/campfire-f2": "pass",
+    "wasteland_ruins/campfire-f3": "pass",
+    "wasteland_ruins/log-seat": "pass",
+    "wasteland_ruins/stall-a": "pass",
+    "wasteland_ruins/stall-b": "pass",
+    "wasteland_ruins/drums": "pass",
+    "wasteland_ruins/tyres": "pass",
+    "wasteland_ruins/crates": "pass",
+    "wasteland_ruins/scrap-heap": "pass",
+    "wasteland_ruins/rubble-pile": "pass",
+    "wasteland_ruins/dead-tree": "pass",
+    "wasteland_ruins/bush-wild": "pass",
+    "wasteland_ruins/vine-wall": "pass",
+    "wasteland_ruins/lamp-broken": "pass",
+    "wasteland_ruins/jersey-barrier": "pass",
+    "wasteland_ruins/sign-blank": "pass",
+    "beodeul_yard/cobble": "pass",
+    "beodeul_yard/dirt": "pass",
+    "beodeul_yard/flag": "pass"
+  }
+}

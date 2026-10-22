@@ -51,6 +51,14 @@ export const BEODEUL_DUNGEON_AUTOTILE_IDS: readonly string[] = ["beodeul_dungeon
  */
 export const BEODEUL_TOWN_WALL_BASE = 28544;
 export const BEODEUL_WALL_KIT_PREFIX = "bd-wall-";
+/**
+ * 쓰임 마당 바닥(2026-10-22 village-art, scripts/content/beodeul-yard/bake_yard.py · yard_art.py): 성벽 꼬리(~28,671) 바로 뒤 한 행 128칸(71칸 사용).
+ * 8방 오토타일 셋 — 자갈 마당 `beodeul_yard_cobble`·다진 흙 마당 `beodeul_yard_dirt`·판석 마당 `beodeul_yard_flag`(속 변형 8, 가장자리·바깥/안쪽 모서리).
+ * dress_village_quarter 가 광산·포도원·신전 폐허·성벽 장터 덩이 밑에 깐다. 키트 `bd-yard-*`, 칸 묶음 `beodeul:yard_*`. 번들 소유, 덧붙이기 전용.
+ */
+export const BEODEUL_YARD_BASE = 28672;
+export const BEODEUL_YARD_KIT_PREFIX = "bd-yard-";
+export const BEODEUL_YARD_AUTOTILE_IDS: readonly string[] = ["beodeul_yard_cobble", "beodeul_yard_dirt", "beodeul_yard_flag"];
 /** 고른 조각 키트 id 머리. 번들이 소유한다(기존 사본에서 같은 id 는 번들 것으로 바꾼다). */
 export const BEODEUL_PICK_KIT_PREFIX = "bd-pick-";
 /**
@@ -171,11 +179,13 @@ export function ensureBeodeulCityTileset(tileset: TilesetDef, project?: Relocati
     // 던전 천장 꼬리(28,416~)도 같은 이유: 그 자리에 이식 칸을 쓴 사본은 꼬리를 농장 끝까지만 받는다(던전은 테두리 없는 허공으로 물러선다).
     const dungeonBlocked = grafts.some(graft => graft.targetTile >= BEODEUL_DUNGEON_CEILING_BASE && graft.targetTile < BEODEUL_TOWN_WALL_BASE);
     // 성벽 꼬리(28,544~)도 같다: 그 자리에 이식 칸을 쓴 사본은 꼬리를 던전 천장 끝까지만 받고 성벽 키트·묶음도 받지 않는다(마을은 성벽 없이 지어진다).
-    const wallBlocked = dungeonBlocked || grafts.some(graft => graft.targetTile >= BEODEUL_TOWN_WALL_BASE && graft.targetTile < sheet.count);
-    const limit = dungeonBlocked ? BEODEUL_DUNGEON_CEILING_BASE : wallBlocked ? BEODEUL_TOWN_WALL_BASE : sheet.count;
+    const wallBlocked = dungeonBlocked || grafts.some(graft => graft.targetTile >= BEODEUL_TOWN_WALL_BASE && graft.targetTile < BEODEUL_YARD_BASE);
+    // 마당 바닥 꼬리(28,672~)도 같다: 그 자리에 이식 칸을 쓴 사본은 성벽 끝까지만 받고 마당 오토타일·키트를 받지 않는다(쓰임 덩이는 마당 없이 풀밭에 앉는다).
+    const yardBlocked = wallBlocked || grafts.some(graft => graft.targetTile >= BEODEUL_YARD_BASE && graft.targetTile < sheet.count);
+    const limit = dungeonBlocked ? BEODEUL_DUNGEON_CEILING_BASE : wallBlocked ? BEODEUL_TOWN_WALL_BASE : yardBlocked ? BEODEUL_YARD_BASE : sheet.count;
     const extended = extendPickedParts(tileset, limit);
-    const farm = mergeShippedFarm(tileset, !dungeonBlocked, !wallBlocked);
-    return mergeShippedKits(tileset, !wallBlocked) || extended || farm || familyFixed || !!moved;
+    const farm = mergeShippedFarm(tileset, !dungeonBlocked, !wallBlocked, !yardBlocked);
+    return mergeShippedKits(tileset, !wallBlocked, !yardBlocked) || extended || farm || familyFixed || !!moved;
   }
   const fresh = createBeodeulCityTileset();
   tileset.count = fresh.count;
@@ -222,13 +232,13 @@ function extendPickedParts(tileset: TilesetDef, limit: number = sheet.count): bo
 }
 
 /** Shipped kits the copy lacks are added (by id); bundle-owned `bd-pick-*` kits are replaced by the shipped ones. Others stay. */
-function mergeShippedKits(tileset: TilesetDef, withWall = true): boolean {
-  const shipped = (data().structureKits as unknown as StructureKitDef[]).filter(kit => withWall || !kit.id.startsWith(BEODEUL_WALL_KIT_PREFIX));
+function mergeShippedKits(tileset: TilesetDef, withWall = true, withYard = true): boolean {
+  const shipped = (data().structureKits as unknown as StructureKitDef[]).filter(kit => (withWall || !kit.id.startsWith(BEODEUL_WALL_KIT_PREFIX)) && (withYard || !kit.id.startsWith(BEODEUL_YARD_KIT_PREFIX)));
   const shippedById = new Map(shipped.map(kit => [kit.id, kit]));
   const current = tileset.structureKits ?? [];
   let changed = false;
   const kept = current.filter(kit => {
-    if (!kit.id.startsWith(BEODEUL_PICK_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_FARM_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_WALL_KIT_PREFIX)) return true;
+    if (!kit.id.startsWith(BEODEUL_PICK_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_FARM_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_WALL_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_YARD_KIT_PREFIX)) return true;
     const ship = shippedById.get(kit.id);
     if (!ship) { changed = true; return false; }                       // a pick that was dropped from the bundle
     if (JSON.stringify(ship) !== JSON.stringify(kit)) { changed = true; return false; }
@@ -245,11 +255,12 @@ function mergeShippedKits(tileset: TilesetDef, withWall = true): boolean {
  * 농장·던전 천장 오토타일과 칸 묶음은 번들 소유(같은 id 는 번들 것으로 바꾸고, 없으면 더한다). 칸 그림·표는 extendPickedParts 가 꼬리째 들여온다.
  * 이 단계가 없으면 칸만 생기고 `farmland` 그룹이 없어 기존 프로젝트의 농사 런타임이 단색 흙 폴백을 쓴다.
  */
-function mergeShippedFarm(tileset: TilesetDef, withDungeon = true, withWall = true): boolean {
+function mergeShippedFarm(tileset: TilesetDef, withDungeon = true, withWall = true, withYard = true): boolean {
   let changed = false;
   const groups = [...(tileset.autotileGroups ?? [])];
   for (const shipped of data().autotileGroups as unknown as AutotileGroup[]) {
-    if (!BEODEUL_FARM_AUTOTILE_IDS.includes(shipped.id) && !(withDungeon && BEODEUL_DUNGEON_AUTOTILE_IDS.includes(shipped.id))) continue;
+    if (!BEODEUL_FARM_AUTOTILE_IDS.includes(shipped.id) && !(withDungeon && BEODEUL_DUNGEON_AUTOTILE_IDS.includes(shipped.id))
+      && !(withYard && BEODEUL_YARD_AUTOTILE_IDS.includes(shipped.id))) continue;
     const i = groups.findIndex(group => group.id === shipped.id);
     if (i < 0) { groups.push(structuredClone(shipped)); changed = true; }
     else if (JSON.stringify(groups[i]) !== JSON.stringify(shipped)) { groups[i] = structuredClone(shipped); changed = true; }
@@ -259,7 +270,7 @@ function mergeShippedFarm(tileset: TilesetDef, withDungeon = true, withWall = tr
   let groupsChanged = false;
   for (const shipped of data().tileGroups as unknown as TileGroupMetadata[]) {
     if (!shipped.id.startsWith("beodeul:farm") && !(withDungeon && shipped.id === "beodeul:dungeon_ceiling")
-      && !(withWall && shipped.id.startsWith("beodeul:town_wall"))) continue;
+      && !(withWall && shipped.id.startsWith("beodeul:town_wall")) && !(withYard && shipped.id.startsWith("beodeul:yard"))) continue;
     const i = tileGroups.findIndex(group => group.id === shipped.id);
     if (i < 0) { tileGroups.push(structuredClone(shipped)); groupsChanged = true; }
     else if (JSON.stringify(tileGroups[i]) !== JSON.stringify(shipped)) { tileGroups[i] = structuredClone(shipped); groupsChanged = true; }

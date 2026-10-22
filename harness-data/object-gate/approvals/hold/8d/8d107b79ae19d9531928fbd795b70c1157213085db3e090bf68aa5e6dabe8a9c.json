@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "8d107b79ae19d9531928fbd795b70c1157213085db3e090bf68aa5e6dabe8a9c",
+ "profileHash": "4d8774b517f41638",
+ "kind": "frame",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-22T16:59:38.896Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/opus-vqa-r1.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "delegated by user to supervisor 2026-10-23 — wasteland_ruins/solar-scrap; gate AI pass + 3 fresh Opus adversarial reviewers r1 majority pass",
+ "sig": "90b353f689e4a65df4be293d00098492efb53801e8f98d051ff97eefc0a2d7fc"
+}

@@ -16,9 +16,9 @@ fs.mkdirSync(OUT, { recursive: true });
 const base = createBlankProject() as Project; ensureBundledTilesets(base);
 const baseJson = JSON.stringify(base);
 const TOWN: Record<string, Record<string, unknown>> = {
-  mining: { theme: "river", water: "none", terrain: "highland", form: "scatter", roofs: "log", forestType: "conifer", houseCount: 4, width: 60, height: 48 },
-  vineyard: { theme: "river", water: "none", form: "scatter", roofs: "red", houseCount: 4, width: 64, height: 48 },
-  "temple-ruins": { theme: "river", water: "none", form: "scatter", roofs: "red", houseCount: 4, width: 56, height: 44 },
+  mining: { theme: "river", water: "none", terrain: "highland", form: "street", roofs: "log", forestType: "conifer", woods: "dense", houseCount: 3, width: 60, height: 48 },
+  vineyard: { theme: "river", water: "none", terrain: "terraces", form: "scatter", roofs: "red", forestType: "broadleaf", houseCount: 4, width: 64, height: 48 },
+  "temple-ruins": { theme: "river", water: "none", terrain: "flat", form: "scatter", roofs: "moss", forestType: "mixed", houseCount: 3, width: 60, height: 46 },
   "walled-market": { theme: "river", water: "none", form: "scatter", roofs: "red", houseCount: 4, width: 56, height: 44 },
 };
 const rows: unknown[] = [];

@@ -205,6 +205,9 @@ def bake(dry=False, dev=False):
 
 
 def floor_rule(p):
+    if p['kind'] == 'terrain' and p['w'] * p['h'] > 1:
+        return ('이음 판(%d×%d칸, 주기 %d화소): 맵 칸 (x,y) 에는 키트 wl-%s 의 rows[y mod %d].tiles[x mod %d] 칸을 깐다 — 무작위로 고르면 이음이 끊긴다. '
+                '변형 판(B·C·D)은 같은 자리 칸만 바꿔 끼운다(10~20%%).') % (p['w'], p['h'], p['w'] * 16, p['id'], p['h'], p['w'])
     if p['kind'] == 'terrain': return '낱칸으로 이어 칠한다. 변형(A 밖)은 드물게(10~20%) 섞는다.'
     if p['kind'] == 'flat': return '바닥 위 투명 덧그림(위층, 캐릭터 밑) — 걷는다. 길·문 앞에 몰아 두지 말고 드문드문.'
     if p['id'] == 'fence-h': return '가로 울타리 한 칸 — 가로로 이어 찍는다. 끝은 벽·폐허·바리케이드에 붙인다.'

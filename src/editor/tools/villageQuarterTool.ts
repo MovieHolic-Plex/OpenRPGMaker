@@ -160,9 +160,10 @@ function nearestSlot(grid: Uint8Array, walk: Uint8Array, taken: Uint8Array, W: n
 }
 
 /** 마당 안을 북서 귀부터 읽는 순서로 훑어 첫 자리(skip 번째). 큰 조각 여럿이 한 마당에 빽빽이 들어가게. */
-function packSlot(grid: Uint8Array, walk: Uint8Array, taken: Uint8Array, W: number, H: number, w: number, h: number, box: Box, skip = 0): Box | null {
+function packSlot(grid: Uint8Array, walk: Uint8Array, taken: Uint8Array, W: number, H: number, w: number, h: number, box: Box, skip = 0, fromRight = false): Box | null {
   let n = 0;
-  for (let y = box.y; y + h <= box.y + box.h; y++) for (let x = box.x; x + w <= box.x + box.w; x++) {
+  for (let y = box.y; y + h <= box.y + box.h; y++) for (let k = 0; k + w <= box.w; k++) {
+    const x = fromRight ? box.x + box.w - w - k : box.x + k;
     const b = { x, y, w, h };
     if (boxFits(grid, walk, taken, W, H, b)) { if (n === skip) return b; n++; }
   }
@@ -199,6 +200,16 @@ function openPlaza(draft: Project, map: GameMap, plaza: NonNullable<QuarterDef["
   const softTiles = new Set(plaza.softTiles ?? []);
   const softOrOverlap = (t: number) => { if (softTiles.has(t)) return true; const k = kind(t) ?? "", k2 = (t >= 0 ? meta[t]?.tags?.[2] : undefined) ?? ""; return soft.has(k) || soft.has(k2) || k === "overlap"; };
   const freeOverlay = (t: number | undefined) => (t ?? -1) < 0 || softTiles.has(t!);
+  // 높이 지형(relief) 맵: 마당은 한 단 위에만(둘레 위 1줄·아래 2줄까지 같은 단) — 절벽이 마당을 가로지르거나 갱구가 절벽 끝에 붙지 않게.
+  const lv = (i: number) => map.relief?.levels?.[i] ?? 0;
+  const sameLevel = (x: number, y: number, w: number, h: number) => {
+    const at = lv(y * W + x);
+    for (let yy = y - 1; yy < y + h + 2; yy++) for (let xx = x - 1; xx < x + w + 1; xx++) {
+      if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue;
+      if (lv(yy * W + xx) !== at) return false;
+    }
+    return true;
+  };
   let best: { box: Box; score: number; clear: number[] } | null = null;
   for (let y = 1; y + plaza.h < H - 1; y++) for (let x = 1; x + plaza.w < W - 1; x++) {
     let ok = true;
@@ -208,6 +219,7 @@ function openPlaza(draft: Project, map: GameMap, plaza: NonNullable<QuarterDef["
         && freeOverlay(map.lowerOverlayTiles?.[i]) && freeOverlay(map.upperOverlayTiles?.[i]);
     }
     if (!ok) continue;
+    if (softTiles.size && map.relief && !sameLevel(x, y, plaza.w, plaza.h)) continue;
     const clear: number[] = [];
     for (let yy = y - RING; yy < y + plaza.h + RING && ok; yy++) for (let xx = x - RING; xx < x + plaza.w + RING && ok; xx++) {
       if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue;
@@ -268,7 +280,8 @@ function openPlaza(draft: Project, map: GameMap, plaza: NonNullable<QuarterDef["
   // r3 실측: 가운데 네 방향 직선만 보던 이전 판은 밭·숲을 돌아가야 하는 마당에서 길을 못 냈다.
   const b = best.box;
   const inBox = (x: number, y: number) => x >= b.x && x < b.x + b.w && y >= b.y && y < b.y + b.h;
-  const walkable = (i: number) => grass.has(map.lowerTiles[i]!) && upper(i) < 0 && !eventAt.has(i)
+  const boxLevel = lv(b.y * W + b.x);
+  const walkable = (i: number) => grass.has(map.lowerTiles[i]!) && upper(i) < 0 && !eventAt.has(i) && (!softTiles.size || lv(i) === boxLevel)
     && freeOverlay(map.lowerOverlayTiles?.[i]) && freeOverlay(map.upperOverlayTiles?.[i]);
   const prev = new Map<number, number>();
   let queue: number[] = [];
@@ -278,7 +291,7 @@ function openPlaza(draft: Project, map: GameMap, plaza: NonNullable<QuarterDef["
       const nx = xx + dx, ny = yy + dy;
       if (nx < 0 || ny < 0 || nx >= W || ny >= H || inBox(nx, ny)) continue;
       const ni = ny * W + nx;
-      if (isRoad(nx, ny)) touching = true; // 이미 길에 맞닿았다 — 길을 낼 필요 없다.
+      if (isRoad(nx, ny) && (!softTiles.size || lv(ni) === boxLevel)) touching = true; // 이미 길에 맞닿았다 — 길을 낼 필요 없다.
       else if (!prev.has(ni) && walkable(ni)) { prev.set(ni, -1); queue.push(ni); }
     }
   }
@@ -291,7 +304,7 @@ function openPlaza(draft: Project, map: GameMap, plaza: NonNullable<QuarterDef["
         const nx = x + dx, ny = y + dy;
         if (nx < 0 || ny < 0 || nx >= W || ny >= H || inBox(nx, ny)) continue;
         const ni = ny * W + nx;
-        if (isRoad(nx, ny)) { for (let c = i; c !== -1; c = prev.get(c)!) laneCells.push(c); break; }
+        if (isRoad(nx, ny) && (!softTiles.size || lv(ni) === boxLevel)) { for (let c = i; c !== -1; c = prev.get(c)!) laneCells.push(c); break; }
         if (prev.has(ni) || !walkable(ni)) continue;
         prev.set(ni, i); next.push(ni);
       }
@@ -380,7 +393,8 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
       yardGroup = y.group;
       const p = y.plaza;
       plazaBox = openPlaza(draft, map, p, opts.near ?? null) ?? openPlaza(draft, map, { ...p, w: p.w - 3, h: p.h - 2 }, opts.near ?? null)
-        ?? openPlaza(draft, map, { ...p, w: p.w - 6, h: p.h - 3 }, opts.near ?? null);
+        ?? openPlaza(draft, map, { ...p, w: p.w - 6, h: p.h - 3 }, opts.near ?? null)
+        ?? openPlaza(draft, map, { ...p, w: p.w - 8, h: p.h - 4 }, opts.near ?? null);
       if (!plazaBox) throw new ToolError(`「${quarter.ko}」 마당(${p.w}×${p.h}, 길에 맞닿은 풀밭·나무 자리)을 낼 곳이 없다 — 마을을 더 크게(width·height) 짓거나 near 를 준다.`, { code: "no-quarter-slot", mapId: map.id });
       shapeYard(map, yardGroup);
       opts = { ...opts, near: quarter.yard.pack === "corner" ? { x: plazaBox.x + 1, y: plazaBox.y } : { x: plazaBox.x + Math.floor(plazaBox.w / 2), y: plazaBox.y + Math.floor(plazaBox.h / 2) } };
@@ -400,8 +414,18 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
   const ok = plazaBox ? grid.map((v, i) => { const x = i % W, y = Math.floor(i / W); return v && x > plazaBox!.x && x < plazaBox!.x + plazaBox!.w - 1 && y >= plazaBox!.y && y < plazaBox!.y + plazaBox!.h - 1 ? 1 : 0; }) : grid;
   // 마당 밖 조각(밭·과수)은 마당 바닥을 피한 풀밭 격자에.
   const outsideOk = plazaBox ? grid.map((v, i) => { const x = i % W, y = Math.floor(i / W); return v && !(x >= plazaBox!.x - 1 && x <= plazaBox!.x + plazaBox!.w && y >= plazaBox!.y - 1 && y <= plazaBox!.y + plazaBox!.h) ? 1 : 0; }) : grid;
-  const pieces = quarter.pieces.slice(0, Math.max(2, Math.min(quarter.pieces.length, opts.count ?? quarter.pieces.length)))
-    .map((id) => ({ id, size: kitSize(draft, quarter.tilesetId, id) }))
+  // 같은 덩이가 맵마다 같은 배치로 찍히지 않게: 마당 자리(맵마다 다르다)로 섞는 순서와 채우는 귀(북서·북동)를 정한다. 첫 조각(덩이의 얼굴)은 그대로 맨 앞.
+  let mix = plazaBox ? ((plazaBox.x * 73856093) ^ (plazaBox.y * 19349663) ^ (W * 83492791)) >>> 0 : 0;
+  const rnd = () => { mix = (Math.imul(mix, 1664525) + 1013904223) >>> 0; return mix / 4294967296; };
+  const fromRight = plazaBox ? rnd() < 0.5 : false;
+  const oneOfDup = rnd() < 0.5;
+  const order = plazaBox && quarter.yard?.pack === "corner"
+    ? [quarter.pieces[0]!, ...quarter.pieces.slice(1).map((id) => { const z = kitSize(draft, quarter.tilesetId, id); return { id, r: (z ? z.w * z.h : 0) * (0.7 + 0.6 * rnd()) }; }).sort((a, b) => b.r - a.r).map((o) => o.id)]
+    : [...quarter.pieces];
+  // 되풀이 조각(포도밭 이랑 둘)은 맵마다 하나 또는 둘 — 같은 덩이가 늘 같은 구성으로 읽히지 않게(빈자리는 압착기·통 선반이 쓴다).
+  if (plazaBox && quarter.yard?.pack === "corner" && oneOfDup) { const dup = order.findIndex((id, i) => order.indexOf(id) !== i); if (dup > 0) order.splice(dup, 1); }
+  const pieces = order.slice(0, Math.max(2, Math.min(quarter.pieces.length, opts.count ?? quarter.pieces.length)))
+    .map((id: string) => ({ id, size: kitSize(draft, quarter.tilesetId, id) }))
     .filter((p): p is { id: string; size: { w: number; h: number } } => !!p.size);
   if (!pieces.length) throw new ToolError(`${quarter.tilesetId} 에 「${quarter.ko}」 조각이 없다.`, { code: "kit-missing", mapId: map.id });
 
@@ -433,7 +457,7 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
     for (let attempt = 0; attempt < 6; attempt++) {
       const outside = quarter.yard?.outside?.includes(piece.id) ?? false;
       const b = !outside && plazaBox && quarter.yard?.pack === "corner"
-        ? packSlot(ok, walk, taken, W, H, piece.size.w, piece.size.h, plazaBox, attempt)
+        ? packSlot(ok, walk, taken, W, H, piece.size.w, piece.size.h, plazaBox, attempt, fromRight)
         : nearestSlot(outside ? outsideOk : ok, walk, taken, W, H, piece.size.w, piece.size.h, anchor.x, anchor.y, attempt);
       if (!b) break;
       const objectId = `kit:${quarter.tilesetId}/${piece.id}`;
