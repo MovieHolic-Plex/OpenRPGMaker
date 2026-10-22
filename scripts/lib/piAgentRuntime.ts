@@ -19,6 +19,9 @@ import { normalizeBuildSpec, plannedGrowthForSpec, validateBuildSpec, type Build
 import { growthGuidanceLine } from "../../src/ai/session/buildSpecGate.ts";
 import type { ActivityVisual } from "../../src/ai/activityVisual";
 import { inspectPiLayoutQuality, piLayoutRepairPrompt, piLayoutShortfallPrompt } from "../../src/ai/piAgent/layoutQuality.ts";
+import { FEATURE_CHECKLIST_SYSTEM_PROMPT, FEATURE_REVIEW_MAX_CROPS, FEATURE_REVIEW_MAX_REBUILDS, FEATURE_REVIEW_SOFT_BUDGET_MS, PiFeatureChecklist, SET_FEATURE_CHECKLIST_DESCRIPTION, SET_FEATURE_CHECKLIST_PARAMETERS, featureChecklistSummary, featureJudgePrompt, featureRepairPrompt, featureShortfallPrompt, parseFeatureJudge, type FeatureJudgeImage, type FeatureVerdict } from "../../src/ai/piAgent/featureReview.ts";
+import { roomSpecOf } from "../../src/editor/handInterior/builder.ts";
+import { INTERIOR_BARE_FLOOR_LIMIT, measureInteriorBareFloor } from "../../src/editor/handInterior/bareFloor.ts";
 import { conceptSkipsLayoutQuality } from "../../src/ai/conceptCards.ts";
 import { PiRepeatBreaker } from "../../src/ai/piAgent/repeatBreaker.ts";
 import { inspectPromptPayload } from "../../src/ai/authoring/promptInspection.ts";
@@ -759,6 +762,25 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       return { content: [{ type: "text", text }] };
     },
   });
+  // 요청 특징 확인표(featureReview.ts) — 짓기 턴에서 조수가 적고, 끝에 실행기가 1배 그림으로 항목마다 확인한다.
+  // 팀 하위 실행(도구 목록 고정)·몬스터 캠페인·오프닝 제작은 각자 완료 검사가 따로 있어 뺀다.
+  const featureReviewEnabled = !request.readOnly && !options.readOnlyTools && spatialWork && !options.toolNames
+    && !monsterGameProduction.requested && !openingProduction.requested;
+  const featureChecklist = new PiFeatureChecklist();
+  const emitFeatureChecklist = (ok = true) => {
+    const snapshot = featureChecklist.snapshot();
+    emit({ type: "execution_status", name: "feature_checklist", ok, summary: featureChecklistSummary(snapshot), data: snapshot });
+  };
+  if (featureReviewEnabled) tools.push({
+    name: "set_feature_checklist", label: "확인표",
+    description: SET_FEATURE_CHECKLIST_DESCRIPTION,
+    parameters: SET_FEATURE_CHECKLIST_PARAMETERS as never,
+    async execute(_id, params) {
+      const text = featureChecklist.set(params, (mapId) => { const m = ctx.project.maps[mapId]; return m ? { width: m.width, height: m.height } : undefined; });
+      emitFeatureChecklist();
+      return { content: [{ type: "text", text }] };
+    },
+  });
   for (const tool of tools) exposed.add(tool.name);
   const selectedWriter = request.roleModels?.writer;
   const writerKeyFor = (role: RoleModel) => options.providerApiKeys?.[role.provider] ?? (role.provider === request.provider ? options.apiKey : undefined);
@@ -795,6 +817,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 이유를 모르면 쓰기를 시도하며 턴을 태운다.
   if (request.readOnly) systemPrompt.push(READ_ONLY_INSTRUCTION);
   if (!request.readOnly && !options.readOnlyTools && spatialWork) systemPrompt.push("집·마을처럼 여러 영역을 시공할 때는 먼저 set_build_spec으로 실제 좌표와 buildOrder를 제출하여 사용자가 맵에서 밑그림을 보게 하라. 밑그림은 타일 배치가 아니다. 제출 후 반드시 실제 시공 도구를 실행하라. 단순 한 영역 칠하기는 도구 좌표로 작업 영역을 표시하므로 생략할 수 있다.");
+  if (featureReviewEnabled) systemPrompt.push(FEATURE_CHECKLIST_SYSTEM_PROMPT);
   if (incremental && request.applyMode === "step") systemPrompt.push("작업을 지형, 건물·길, NPC·이벤트 등 의미 있는 단계로 나누고 각 단계를 끝낼 때 반드시 finish_stage를 호출하라. 승인 결과를 받기 전 다음 단계의 쓰기 도구를 호출하지 마라. 도구 호출마다 승인받지 말고 작업 단위로 묶어라.");
   if (request.applyMode === "yolo") systemPrompt.push("YOLO: 별도 검수·승인 요청 없이 요청한 변경을 최대한 실행하라. 사용자 범위와 데이터 형식은 지켜라.");
   if (writer && tools.some(tool => tool.name === "consult_writer")) systemPrompt.push("You are Deep, responsible for careful implementation and validation. For multi-scene story, lore, or quest prose, consult_writer delegates authorship to Writer. Pass relevant context, then apply its output using project tools. For a single NPC or short greeting/shop/inn lines, write the dialogue directly in place_npc without calling consult_writer. Do not call Writer for mechanical work.");
@@ -1095,6 +1118,111 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         await promptResuming(`${openingProduction.requiresPixelAnimatic ? '픽셀 애니메틱 완료 조건' : '컷신'}을 여러 번 시도했지만 다음 문제가 남았습니다: ${left.join(' / ')}\n더 고치지 못하면 지금 상태와 실패 원인을 사용자에게 크게 보고하세요. 통과했다고 쓰지 마세요.`);
       }
     }
+    // 요청 특징 1배 확인 루프(featureReview.ts) — 짓기 턴의 맵을 1배로 그려 항목마다 별도 판정 호출에 묻고, 안 읽히는 항목을 고치게 한다.
+    const reviewedMapIds = new Set<string>();
+    if (featureReviewEnabled && options.renderToolImage && !fatal && !rejected && !options.signal?.aborted) {
+      const mapChanged = (id: string): boolean => {
+        const now = ctx.project.maps[id], was = base.maps[id];
+        if (!now) return false;
+        if (!was || now.width !== was.width || now.height !== was.height || now.tilesetId !== was.tilesetId) return true;
+        for (let i = 0; i < now.lowerTiles.length; i++) if (now.lowerTiles[i] !== was.lowerTiles[i] || now.upperTiles[i] !== was.upperTiles[i]) return true;
+        return false;
+      };
+      const handInterior = (id: string): boolean => {
+        const map = ctx.project.maps[id];
+        return !!map && !!roomSpecOf(ctx.project.tilesets[map.tilesetId]) && map.climate?.mode === "indoor";
+      };
+      const targetIds = (): string[] => {
+        const named = featureChecklist.judgeItems.map((i) => i.mapId).filter((id): id is string => !!id && !!ctx.project.maps[id] && mapChanged(id));
+        const interiors = Object.keys(ctx.project.maps).filter((id) => handInterior(id) && mapChanged(id));
+        return [...new Set([...named, ...interiors])].slice(0, 3);
+      };
+      const render = async (mapId: string, x: number, y: number, w: number, h: number): Promise<string | undefined> => {
+        try { return `data:image/png;base64,${await options.renderToolImage!(cloneProjectSharingSharedDictionaries(ctx.project), "show_map_region", { mapId, x, y, w, h }, options.signal)}`; }
+        catch (error) { if (options.signal?.aborted) throw error; return undefined; }
+      };
+      const judgeRound = async (targets: readonly string[]) => {
+        const t0 = Date.now();
+        // 빈 바닥은 판정자가 아니라 보정된 자로 잰다(bareFloor.ts).
+        const measured: FeatureVerdict[] = [];
+        for (const id of targets) {
+          if (!handInterior(id)) continue;
+          const map = ctx.project.maps[id]!;
+          const bare = measureInteriorBareFloor(ctx.project, map);
+          if (!bare || bare.floorCells < 40) continue;
+          const itemId = `bare-floor:${id}`;
+          featureChecklist.setMeasured({ id: itemId, text: `${map.name}: 맨바닥 덩이 ≤${INTERIOR_BARE_FLOOR_LIMIT}% (1배)`, mapId: id });
+          const where = bare.regions.map((r) => `(${r.x},${r.y}) ${r.w}×${r.h}`).join(" · ");
+          measured.push(bare.pct <= INTERIOR_BARE_FLOOR_LIMIT
+            ? { id: itemId, state: "pass", why: `빈 바닥 ${bare.pct}%` }
+            : { id: itemId, state: "fail", why: `빈 바닥 ${bare.pct}% — 큰 빈 덩이 ${where}`, fix: "그 빈 띠를 평면에서 '#' 로 들여 방을 좁히거나, 그 자리에 쓰임 하나를 정해 가구 한 벌(앵커+짝, 깔개)을 둔다" });
+        }
+        const images: FeatureJudgeImage[] = [];
+        for (const id of targets) {
+          const map = ctx.project.maps[id]!;
+          const full = await render(id, 0, 0, map.width, map.height);
+          if (full) images.push({ label: `${map.name} (${id}) 맵 전체 ${map.width}×${map.height}칸 — 약 1배`, dataUrl: full });
+        }
+        let crops = 0;
+        for (const item of featureChecklist.judgeItems) {
+          if (crops >= FEATURE_REVIEW_MAX_CROPS || !item.mapId || !item.area || !targets.includes(item.mapId)) continue;
+          const map = ctx.project.maps[item.mapId]!;
+          const x = Math.max(0, item.area.x - 1), y = Math.max(0, item.area.y - 1);
+          const w = Math.min(map.width - x, item.area.w + 2), h = Math.min(map.height - y, item.area.h + 2);
+          const crop = await render(item.mapId, x, y, w, h);
+          if (crop) { images.push({ label: `항목 ${item.id} 자리 — ${item.mapId} 칸 (${x},${y}) ${w}×${h} 잘라 냄(2배)`, dataUrl: crop }); crops++; }
+        }
+        const derive = featureChecklist.size === 0;
+        let verdicts: FeatureVerdict[] = [];
+        let imagesSeen: number | undefined;
+        let judge = "none";
+        if (images.length) {
+          emit({ type: "execution_status", name: "feature_review.judging", ok: true, summary: `1배 그림 ${images.length}장으로 확인표 ${derive ? "(요청에서 항목 뽑기 포함) " : ""}판정 중` });
+          const prompt = featureJudgePrompt(request.task, featureChecklist.judgeItems, images, derive);
+          const messages = [{ role: "user", content: [{ type: "text", text: prompt }, ...images.map((img) => ({ type: "image_url", image_url: { url: img.dataUrl } }))] }];
+          try {
+            const reply = await eventAssistChat(null, { messages, ...(options.signal ? { signal: options.signal } : {}) });
+            const text = typeof reply.message.content === "string" ? reply.message.content : "";
+            const parsed = parseFeatureJudge(text, featureChecklist.judgeItems, images.length, derive);
+            if (derive && parsed.derived?.length) featureChecklist.set({ items: parsed.derived }, (mapId) => { const m = ctx.project.maps[mapId]; return m ? { width: m.width, height: m.height } : undefined; }, "derived");
+            verdicts = parsed.verdicts;
+            imagesSeen = parsed.imagesSeen;
+            judge = localCli ? `local-cli:${localCli}/${request.model ?? ""}` : `${request.provider}/${request.model ?? ""}`;
+            if (parsed.problem) emit({ type: "execution_status", name: "feature_review.unjudged", ok: false, summary: parsed.problem });
+          } catch (error) {
+            if (options.signal?.aborted) throw error;
+            verdicts = featureChecklist.judgeItems.map((i) => ({ id: i.id, state: "unjudged" as const, why: `판정 호출 실패: ${error instanceof Error ? error.message.slice(0, 160) : String(error)}` }));
+          }
+        } else {
+          verdicts = featureChecklist.judgeItems.map((i) => ({ id: i.id, state: "unjudged" as const, why: "1배 그림을 얻지 못했다" }));
+        }
+        const round = featureChecklist.record({ verdicts: [...verdicts, ...measured], imagesSent: images.length, ...(imagesSeen !== undefined ? { imagesSeen } : {}), judge, ms: Date.now() - t0 });
+        emit({ type: "execution_status", name: "feature_review", ok: round.verdicts.every((v) => v.state === "pass"),
+          summary: `1배 확인 ${round.round}바퀴 — 통과 ${round.verdicts.filter((v) => v.state === "pass").length} · 안 읽힘 ${round.verdicts.filter((v) => v.state === "fail").length} · 판정 불가 ${round.verdicts.filter((v) => v.state === "unjudged").length} (그림 ${images.length}장 보냄, 판정자가 받은 그림 ${imagesSeen ?? "?"}장, ${Math.round(round.ms / 1000)}초)`,
+          data: { round: round.round, imagesSent: images.length, imagesSeen, judge } });
+        emitFeatureChecklist(round.verdicts.every((v) => v.state === "pass"));
+        return round;
+      };
+      for (let rebuild = 0; ; rebuild++) {
+        if (fatal || rejected || options.signal?.aborted || turns >= maxTurns) break;
+        const targets = targetIds();
+        if (!targets.length) break;
+        targets.forEach((id) => reviewedMapIds.add(id));
+        const round = await judgeRound(targets);
+        const open = round.verdicts.filter((v) => v.state !== "pass");
+        if (!open.length) break;
+        const failing = round.verdicts.filter((v) => v.state === "fail");
+        const overBudget = Date.now() - started > FEATURE_REVIEW_SOFT_BUDGET_MS;
+        if (!failing.length || rebuild >= FEATURE_REVIEW_MAX_REBUILDS || overBudget || turns >= maxTurns) {
+          const reason = !failing.length ? "판정자가 일부 항목을 판정하지 못했다(확인 안 됨)." : rebuild >= FEATURE_REVIEW_MAX_REBUILDS ? `고치기 ${FEATURE_REVIEW_MAX_REBUILDS}바퀴를 다 썼다.` : overBudget ? "작업 시간 한도에 닿아 더 고치지 않는다." : "턴 한도에 닿았다.";
+          emit({ type: "execution_status", name: "feature_review.unresolved", ok: false, summary: `${reason} 남은 항목 ${open.length}개` });
+          if (!fatal && !rejected && turns < maxTurns && !options.signal?.aborted) await promptResuming(featureShortfallPrompt(featureChecklist.allItems, round.verdicts, reason));
+          break;
+        }
+        await promptResuming(featureRepairPrompt(rebuild + 1, FEATURE_REVIEW_MAX_REBUILDS, featureChecklist.allItems, round.verdicts));
+      }
+      if (featureChecklist.roundCount) { featureChecklist.finish(); emitFeatureChecklist(featureChecklist.latest()?.verdicts.every((v) => v.state === "pass") ?? false); }
+    }
     // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).
     // 개념 카드가 빈칸이 정상이라고 한 공간(미궁 통로 등)은 빈칸·대칭 수리를 시키지 않는다(src/ai/conceptCards.ts).
     // 구성기가 구역마다 쓰임을 정해 깐 맵(composed-layout 표식, 예: compose_steampunk_city_map)도 뺀다 — inspectPiLayoutQuality 가 isComposedLayoutMap 으로 스스로 건너뛴다.
@@ -1102,12 +1230,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     // 조수가 repair 를 한 번 더 부른 뒤 「마지막 변경 뒤 read/review_monster_game」 완료 검사에 걸려 실행 실패로 끝났다(2026-10-06 실측).
     if (!fatal && !rejected && !request.readOnly && turns < maxTurns && !options.signal?.aborted && !conceptSkipsLayoutQuality(request.task) && !monsterGameProduction.requested) {
       const describe = (issues: typeof layout) => issues.map(i => `${i.mapId} ${i.problems.join(", ")}`).join(" / ");
-      let layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds);
+      // 1배 특징 확인을 거친 맵은 빈 바닥(보정된 자)까지 그 루프가 봤다 — 옛 권고를 한 번 더 돌리지 않는다.
+      let layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds, reviewedMapIds);
       // 권고는 한 번뿐이다(팩 세트 맵 check_pack_map 재권고는 2026-10-07 팩 프리셋과 함께 지웠다).
       if (layout.length && turns < maxTurns && !options.signal?.aborted) {
         emit({ type: "execution_status", name: "layout_quality", ok: false, summary: `배치 품질 기준 미달 — 한 번 더 고칩니다: ${describe(layout)}`, data: layout });
         await promptResuming(piLayoutRepairPrompt(layout));
-        layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds);
+        layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds, reviewedMapIds);
         emit({ type: "execution_status", name: "layout_quality", ok: layout.length === 0,
           summary: layout.length ? `배치 품질 수리 뒤에도 기준 미달: ${describe(layout)}` : "배치 품질 기준 통과", data: layout });
         // 다시 잰 숫자는 조수가 모른다 — 수리 턴의 보고가 「이상 없음」으로 끝났다(2026-10-11 사막 2건). 미달이면 고치게 하지 않고 보고에 적게만 한다.

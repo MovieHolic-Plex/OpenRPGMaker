@@ -91,6 +91,7 @@ import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
 import { mapRunQueue, type MapRunTicket } from "@/editor/aiMapRunQueue";
 import { createMapRunCard, type MapRunCard } from "./aiMapRunCard";
+import { createFeatureChecklistView } from "./aiFeatureChecklist";
 import { sideThreads } from "./aiSideThreads";
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { genId } from "@/util/id";
@@ -2153,9 +2154,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 스토어·없는 기물 카드 — 조수가 generate_missing_object 를 한 턴에 여러 번 부르면 모두 모아 함께 줄 세운다.
     const storeCards: StoreCardRequest[] = [];
     const turnConversation = conversationId;
+    // 요청 특징 확인표 — 짓기 턴에서 조수가 적은 항목과 1배 확인 바퀴별 결과(aiFeatureChecklist.ts).
+    const featureChecklist = createFeatureChecklistView((element) => { log.append(element); followConversationLog(log); });
     try {
       await runPiCommand(command, {
-        onEvent: event => progress.event(event),
+        onEvent: event => { progress.event(event); featureChecklist.event(event); },
         getApprovedTilesetFamilies: () => approvedTilesetFamilies,
         onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
         onStoreCard: (request) => { storeCards.push(request); },
