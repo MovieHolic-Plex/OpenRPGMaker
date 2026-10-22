@@ -6,6 +6,8 @@ import {
   sameExcept, speakerless, tileAt, withoutTiles,
 } from '../matrixNativeSpec';
 import { rectArg, strArg, type Family, type FamilyOutcome } from './types';
+import { GROUP_1_READ } from './group-1-read';
+import { GROUP_1_TILES } from './group-1-tiles';
 
 const DIRT_MATERIAL = '버들항 모랫길';
 
@@ -158,4 +160,4 @@ const renameNpc: Family = {
   },
 };
 
-export const GROUP_1: readonly Family[] = [paintDirt, renameNpc];
+export const GROUP_1: readonly Family[] = [paintDirt, renameNpc, ...GROUP_1_TILES, ...GROUP_1_READ];
