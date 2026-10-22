@@ -13,4 +13,10 @@ export const BUILDER_CASES: BuilderCase[] = [
   { id: "cave-lair-chest", spec: { type: "cave", name: "고블린 굴", size: "small", features: ["goblin lair", "chests", "enemies"] } },
   { id: "dungeon-flooded-catacomb", spec: { type: "dungeon", name: "수몰 지하묘지", size: "small", floors: 2, theme: "catacomb", features: ["flooded", "boss", "enemies", "lever"] } },
   { id: "cave-ice-refusal", spec: { type: "cave", name: "얼음 동굴", size: "small", theme: "ice cave", features: ["enemies"] } },
+  { id: "jp-street-shops", spec: { type: "street", name: "상점가 골목", style: "jp-modern", features: ["shops", "vending machine", "houses"] } },
+  { id: "jp-street-park", spec: { type: "street", name: "공원 옆 주택가", style: "jp-modern", size: "medium", features: ["houses", "park", "crosswalk", "bus stop"] } },
+  { id: "jp-street-station", spec: { type: "street", name: "역전 거리", style: "jp-modern", features: ["station", "konbini", "tokyo tower"] } },
+  { id: "jp-house", spec: { type: "house", name: "다다미 집" } },
+  { id: "jp-house-2f", spec: { type: "house", name: "2층 단독주택", floors: 2 } },
+  { id: "jp-konbini", spec: { type: "house", name: "편의점", style: "jp-modern" } },
 ];
