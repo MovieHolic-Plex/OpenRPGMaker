@@ -21,7 +21,13 @@
 | `scene-moving-vehicle` | 켜진 `map.transit` 노선에 탈것이 있다 / 이름이 탈것인 이벤트의 첫 페이지 이동이 fixed 가 아니다 |
 | `scene-hang-on-floor` | 손 도트 실내 걸이 물건(handInteriorSpec kind `hang`, 칩셋 키트 `hand-interior:<id>`)의 위층 타일이 걸을 수 있는 칸에 있다(걸이 타일은 통행 가능, 벽면 1층은 막힘 — 칸이 통행 가능 = 바닥 위). 맵·물건마다 1건. Fallen 별자리표(fs_observatory)·거미줄(지하 화로의 방)을 잡았다 |
 | `scene-ceiling-tile` | 천장 구역 = 아래층이 천장·공허 이름표(`천장`·`ceiling`·`공허`·`void`, 막힘) 칸. ① 그 칸 어느 층이든 천장 아닌 타일이 있다 ② 천장 칸에 닿은 고립 통행 성분(아래층 통행만 본다, 이벤트·시작 칸 없음)이 있다. 맵마다 1건. Fallen fs_vault 의 방 밖 암반 바닥 값 칸(345칸)을 잡았다. 회색 디더 천장 재질(default·rock)은 천장 칸이라 못 잡는다 — 1배 실행 화면으로 본다(SKILL 3장 7) |
+| `scene-speaker-absent` | 대사 한 줄의 화자(이름 → 맵 인물, `project/staging/dialogueActors.ts`)나 명시 듣는 인물이 그 줄 시점에 **보이지 않는다** — 페이지를 명령 순서대로 재생(Set Event Location·moveEvent 경로 끝·approach 계획·Erase·스위치·모습 효과 투명 주인공), 분기는 사본으로. 선택지는 «방금 말한 인물»(lastSpoken)이 없으면 같은 코드 |
+| `scene-talk-far` | 화자–듣는 인물 체비쇼프 > 2(`TALK_DISTANCE_LIMIT`). 부르는 줄(`text.calling`·외침 context·말풍선)은 제외 |
+| `scene-talk-facing` | 자동 돌아보기(런타임과 같은 규칙) 뒤에도 듣는 인물의 방향 부채꼴(90°)에 화자가 없다(NPC 끼리, 듣는 쪽이 고정 방향일 때) |
 | `scene-actors-stacked` | 한 페이지 안에서 Set Event Location·moveEvent(경로 끝 모의)로 **보이는** 두 인물이 같은 칸에 선다. 명령 순서대로 무대에서 내린다: Erase Event, 경로 끝 투명화, 스위치를 켜 «떠남» 페이지가 되거나 보이는 페이지 모두의 «스위치 꺼짐» 조건이 깨짐(`switchesThatHide`, 사라짐 검사와 공유). 같은 문으로 차례로 떠나는 것은 통과 |
+
+인물 연출 셋(`src/project/lint/sceneStagingLint.ts`, 2026-10-22): 페이지 조건(스위치·변수·셀프 스위치, 어디서도 안 켜는 스위치는 꺼짐)으로 시작 시점 보이는 인물을 정하고, 주인공 위치는 그 맵으로 오는 유일한 이동 착지 → 조사 트리거 앞 칸 → 시작 위치 순.
+`npx --no-install tsx --import ./tiledata/jp-city/refs/css-stub.mjs scripts/qa/staging/lint-flagship-staging.mts`: 첫사랑 origin/main 8건(talk-far 9·4·5·12·3·3·3·3칸) → approach 이관 뒤 0, Fallen Star·Astra 0(이름 있는 화자 줄 96·125, 인물로 푼 줄 33·79).
 
 데모 검증(2026-10-21, `scripts/qa/scene-polish-lint.mts`): Fallen Star polish2 13건(방향 없는 이동 4·착지 2칸 3·문 아닌 칸 5·대사 뒤 사라짐 1), Astra fv 15건(문을 보는 착지 10 — 이후 손으로 고친 7fa8b2f3c2 와 같은 곳·한 칸 어긋난 출입 매트 2·표시 없는 출구 2·제자리 지우는 라이벌 1),
 「첫사랑」 수정 전 4건(움직이는 교통 2·내려가는 계단으로 옥상 1·맨바닥 출구 1) → 수정 뒤 r2 최신 2건(같은 칸으로 걷는 두 인물). 거짓 경고로 고친 것: 키트 문 부품의 풀밭 칸, 필드 길 출구(끝 2칸 안), 쓰러진 필드 적·합류 동료.

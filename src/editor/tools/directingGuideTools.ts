@@ -16,9 +16,15 @@ export const DIRECTING_GUIDE = `# 연출 지침 (script_cutscene 비트)
    distort{effect:"clear"}, look{target,reset:true}, weather{weather:"none"}. letterbox 는 자동으로 걷힌다.
 4. 카메라는 멈출 때 easing:"easeOut", 무게 있는 이동은 "easeInOut". 일정한 속도(생략)는 기계적으로 보인다.
 5. 인물 대상(target)은 "player", 이 맵 이벤트 id, 또는 이벤트 이름. 맵 칸이면 target 을 비우고 x,y.
+6. 대화는 «곁에서, 마주 보고». 말 걸기 전에 approach{actor,target}(대상 곁 빈 칸까지 길 찾기 + 대상 바라보기),
+   둘이 서로 보게 하려면 faceEachOther{a,b}. 걸음을 moves 로 손으로 늘어놓거나 방향을 "left" 처럼 손으로 고르지 않는다 —
+   누가 비켜 서거나 시작 칸이 달라지면 엉뚱한 칸에서 엉뚱한 데를 본다(2026-10-22 첫사랑). say 는 듣는 인물 쪽으로 저절로 돈다
+   (to 생략 = 주인공). 멀리서 부르는 줄은 say{…,calling:true} 뒤 approach. 2칸보다 멀리서 말하면 경고 scene-talk-far.
 
 ## 장면 레시피
 - 중요한 장면 시작: letterbox{size:12,durationMs:500} → camera{mode:"pan",target:인물,durationMs:900,easing:"easeOut"}.
+- 다가와 말 걸기: say{speaker:"민호",text:"서하 씨!",calling:true} → approach{actor:"민호",target:"player",wait:true} → say{speaker:"민호",…}.
+- 셋이 모이는 대화: approach{actor:A,target:"player"} → approach{actor:B,target:"player",distance:2} → faceEachOther{a:A,b:B} 로 마무리.
 - 놀람: emote{target,emote:"exclamation"} + moveActor 한 칸 뒤로(jump). 의문은 "question", 침묵은 "ellipsis".
 - 폭발·충돌: parallel[ particles{preset:"explosion",target 또는 x,y}, shake{intensity:6,axis:"both",durationMs:500}, flash{color:"white",durationMs:200} ].
 - 화산 열풍·용암 분출·불길 치솟음: 화면 붉은 tint 만으로는 «열풍이 안 보인다» 로 감점된다(2026-10-16). 최고 연출 순간에 parallel[ particles{preset:"fire",x,y}(용암 둘레 서로 다른 칸 3곳 이상, durationMs:1500) , particles{preset:"smoke",target:"player"}, shake, tint ] 로 솟아오르는 입자를 같은 화면에 함께 보인다.

@@ -1,5 +1,16 @@
 # Editor Event Commands & Tools
 
+## 인물 연출 — 다가가기·쪽으로 돌기·대사 자동 돌아보기 (2026-10-22)
+
+왜: 『첫사랑』 영상에서 인사 선택지가 상대 없이 뜨고, 막차 승강장 두 사람이 서로 다른 데를 보며 몇 칸 떨어져 말했다. 장면이 걸음(`moves`)과 방향을 손으로 늘어놓아 시작 칸이 한 칸만 달라도 어긋났다.
+
+- 이동 경로 단계 `{kind:"approach", target?|x,y, distance?}` — 그 단계에 닿은 순간의 실제 위치로 대상 곁(기본 1칸, 0~6)의 빈 칸을 BFS 로 찾아 보통 `move` 들 + `turnToward` 로 펼친다(`player/playSceneApproach.ts` → 순수 계획 `project/staging/approach.ts` `planApproach`). 같은 줄 칸 → 체비쇼프 안 칸 → 조금 먼 칸 순, 같으면 걸음 적은·가로 옆·출발 쪽. 늘 위에 그려지는 ★ 타일(기둥·수관)에 가려지는 칸은 다른 칸이 없을 때만 쓴다. 이미 곁이면 걷지 않는다. 길이 없으면 제자리에서 돈다. NPC(`mover.moves`)·주인공(`route.moves`) 모두. 속도는 인물 자신의 속도(`project/characterMotion.ts` 표, 보통 3 = 320ms/칸) — approach 가 속도를 바꾸지 않는다.
+- 경로 단계 `{kind:"turnToward", target?|x,y}` — 대상 쪽으로 돈다. 대상 `"@player"`/`"player"`, 이벤트 id, moveEvent 안에서는 `"@this"` = 이 이벤트.
+- 대사 `text` 의 `speakerActor?`(화자 인물 id, 생략 시 이름으로 찾음) · `addressee?`(듣는 인물, 생략 시 NPC 화자 → 주인공 / 주인공 화자 → 방금 말한 NPC) · `autoFace?: false`(끄기) · `calling?: true`(멀리서 부르기: 돌아보기 12칸, 거리 검사 제외). 런타임 `player/playSceneDialogueFacing.ts` 가 대사 직전에 화자를 듣는 인물 쪽으로 돌린다(4칸 안, 걷는 중·방향 고정·고정 그림은 안 돌림). 주인공이 듣는 쪽이면 주인공도 돌아본다.
+- 편집기: 이동 경로 대화상자 「대상 곁으로 다가가기…」·「대상 쪽으로 향함…」(대상·말 거리 입력), 문장 폼 「누가 누구에게」 묶음. 로드 검증 `project/io/shapeCommandFields.ts`, 초안 검증은 없는 대상 이벤트를 `reference.event.missing` 으로.
+- 컷신 비트(`script_cutscene`): `approach{actor,target|x,y,distance,wait}` · `faceEachOther{a,b}` · `faceToward{actor,target|x,y}` · `say{…,actor,to,autoFace,calling}`. 이름은 이벤트 id 로 풀린다(`resolveCutsceneActorTargets`).
+- 검사: `scene-speaker-absent`·`scene-talk-far`·`scene-talk-facing`(`openwiki/editor-validation.md`). 기존 좌표 길찾기 `m2-205-pathfind-move` 는 그대로 — approach 는 «누구 곁»을 선언한다.
+
 ## 장면 · 그림 갤러리 표시 · 줄 음성 (2026-09-25)
 
 빈 이벤트 템플릿 「장면」(`event-template-scene`, `src/editor/panels/eventEditor/sceneTemplate.ts`)은
