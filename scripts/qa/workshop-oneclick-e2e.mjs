@@ -85,7 +85,11 @@ try {
     for (let row = 0; row < 4; row++) for (let i = 0; i <= 8; i++) await page.mouse.move(cx - 80 + (row % 2 ? 8 - i : i) * 20, cy - 40 + row * 24, { steps: 3 });
     await page.mouse.up();
   } else {
-    await page.mouse.click(cx - 40, cy - 20);
+    // 캐릭터는 풀밭(용암·우물이 아닌 칸)에 세운다
+    const dx = kind === "character" ? -160 : -40;
+    await page.mouse.move(cx + dx, cy - 20, { steps: 6 });
+    await hold(400);
+    await page.mouse.click(cx + dx, cy - 20);
   }
   result.clicks += 1;
   mark("placed");

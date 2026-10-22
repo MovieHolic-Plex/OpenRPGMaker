@@ -24,7 +24,7 @@ export type RemoteGen = {
   readonly targetTilesetId?: string;
   jobId: string | null;
   /** 마지막으로 읽은 호스트 상태(짧게) */
-  status: { state: string; stage?: string; progress?: number; elapsedMs?: number; engine?: string; error?: string | null; reviewing?: boolean; attempts?: number } | null;
+  status: { state: string; stage?: string; progress?: number; elapsedMs?: number; expectMs?: number; engine?: string; error?: string | null; reviewing?: boolean; attempts?: number } | null;
 };
 /**
  * 보이는 단계. queued 줄 서는 중 · reference 참고 그림 · drawing 그리는 중 · review 검수 중 · ready 고를 차례(묶음은 넣을 차례)

@@ -3,6 +3,7 @@
  * 「한 번에 만들기」 결과를 맵에 놓을 준비 — 물건은 붓(기물 스탬프), 캐릭터는 다음 클릭 칸에 NPC, 지형은 자동 타일 붓.
  * 사용자는 「맵에 놓기」 한 번 + 맵 클릭 한 번이면 된다.
  */
+import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { editorState } from "@/editor/editorState";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { armMapPick } from "@/editor/mapPickHook";
@@ -22,19 +23,30 @@ export function armCharacterPlacement(input: { readonly textureKey: string; read
     void import("@/editor/tools/eventTools").then(({ EVENT_TOOLS }) => {
       const placeNpc = EVENT_TOOLS.find((tool) => tool.name === "place_npc");
       if (!placeNpc) { toast("NPC 를 놓지 못했어요.", "error"); return; }
-      let summary = "";
+      let placedId: string | null = null;
       try {
         recordProjectSnapshot("공방 캐릭터 놓기");
         store.update((draft) => {
-          const result = placeNpc.run(draft, {
+          const before = new Set((draft.maps[pickedMap]?.events ?? []).map((event) => event.id));
+          // place_npc 의 graphic 해석기는 번들·공용 칩만 안다 — 공방 캐릭터(프로젝트 업로드 시트)는 기본 칩으로 세운 뒤 그 이벤트의 그림을 바꾼다.
+          placeNpc.run(draft, {
             mapId: pickedMap, x, y, name: input.name, movement: "random",
-            graphic: { textureKey: input.textureKey, characterIndex: input.characterIndex },
             pages: [{ lines: [`안녕하세요. 저는 ${input.name}이에요.`] }],
           });
-          summary = (result as { summary?: string }).summary ?? "";
+          const created = (draft.maps[pickedMap]?.events ?? []).filter((event) => !before.has(event.id));
+          if (!created.length) throw new Error("NPC 를 놓지 못했어요.");
+          placedId = created[0]!.id;
+          for (const event of created) {
+            for (const page of event.pages ?? []) {
+              page.graphic = { sprite: { type: "uploaded", id: input.textureKey }, direction: "down", pattern: charsetFrameIndex({ characterIndex: input.characterIndex, direction: "down", pattern: 1 }) };
+              // 기본 칩에 맞춰 넣은 얼굴(changeFace)은 이 사람 얼굴이 아니다 — 뺀다.
+              if (Array.isArray(page.commands)) page.commands = page.commands.filter((command) => (command as { kind?: string }).kind !== "changeFace");
+            }
+          }
         }, { scope: "map", mapId: pickedMap });
+        // 타일 층에서는 이벤트가 「E」 배지로만 보인다 — 놓은 사람이 그림으로 보이게 이벤트 층으로 옮기고 고른다.
+        editorState.set({ layer: "event", selectedEventId: placedId });
         toast(`「${input.name}」을(를) 놓았어요. 더블클릭하면 대사를 고칠 수 있어요.`, "ok");
-        void summary;
       } catch (error) {
         toast(error instanceof Error ? error.message : String(error), "error");
       }

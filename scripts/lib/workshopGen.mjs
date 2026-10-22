@@ -186,7 +186,8 @@ async function runCharGen(job, input) {
   };
   writeFileSync(join(job.dir, "order.json"), JSON.stringify(order, null, 1));
   job.stage = "drawing";
-  job.expectMs = 150_000 * Math.ceil(n / 2);
+  // 실측(2026-10-23, Sonnet CLI): 1명 4.5~5.6분(검사 탈락 한 번 포함). --par 2 라 둘씩 함께 그린다.
+  job.expectMs = 300_000 * Math.ceil(n / 2);
   note(job, `바탕 칩 People1 ${slot}번에 「${input.text}」 ${n}명을 그려요(${job.engine})`);
   const env = { CHARGEN_DRAWER: cli, ...(model ? { CHARGEN_DRAWER_MODEL: model } : {}) };
   const draw = await run(job, "python3", [join(kit, "cli.py"), "draw", "order.json", "--out", "run", "--backend", "agent", "--par", "2"], { cwd: job.dir, env, timeoutMs: 45 * 60 * 1000 });
@@ -341,7 +342,7 @@ export function workshopGenStatus(jobId) {
   const progress = job.state === "done" ? 1 : Math.min(0.95, job.expectMs ? elapsedMs / job.expectMs : 0.05);
   return {
     ok: true, jobId: job.id, generator: job.generator, text: job.text, state: job.state, stage: job.stage, engine: job.engine,
-    progress, elapsedMs, attempts: job.attempts, detail: job.detail ?? null, reviewing: job.reviewing ?? false,
+    progress, elapsedMs, expectMs: job.expectMs, attempts: job.attempts, detail: job.detail ?? null, reviewing: job.reviewing ?? false,
     error: job.error, picked: job.picked ?? null, review: job.review ?? null,
     made: job.made ?? null, asked: job.asked ?? null, candidates: job.candidates ?? null,
     log: job.log.slice(-6), ...(job.state === "done" && job.pack ? { pack: job.pack } : {}),

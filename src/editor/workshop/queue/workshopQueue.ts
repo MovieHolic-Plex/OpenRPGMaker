@@ -332,7 +332,7 @@ class WorkshopQueue {
         }
         const before = JSON.stringify(remote.status);
         remote.status = {
-          state: status.state, ...(status.stage ? { stage: status.stage } : {}), progress: status.progress ?? 0, elapsedMs: status.elapsedMs ?? 0,
+          state: status.state, ...(status.stage ? { stage: status.stage } : {}), progress: status.progress ?? 0, elapsedMs: status.elapsedMs ?? 0, ...(status.expectMs ? { expectMs: status.expectMs } : {}),
           ...(status.engine ? { engine: status.engine } : {}), error: status.error ?? null,
           reviewing: status.reviewing ?? false, attempts: status.attempts ?? 0,
         };

@@ -10,6 +10,7 @@
  */
 import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { editorState } from "@/editor/editorState";
+import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 import { toast } from "@/util/toast";
@@ -215,12 +216,22 @@ function resultThumb(view: JobView): HTMLElement | null {
   }
   const chip = installed.characters?.[0];
   const asset = chip ? store.getCurrent().assets.uploaded[chip.textureKey] : undefined;
-  const url = asset && "dataUrl" in asset ? (asset as { dataUrl?: string }).dataUrl : undefined;
+  // 정본 호스트는 업로드 그림을 파일로 떼어 둔다(dataUrl 없음) — 주소는 접근자로.
+  const url = asset ? uploadedAssetUrl(asset) : undefined;
   if (!chip || !url) return null;
   const col = (chip.characterIndex % 4) * 72 + 24, row = Math.floor(chip.characterIndex / 4) * 128 + 64;
   return el("span", {
     class: "workshop-oneclick-thumb is-chip", attrs: { role: "img", "aria-label": view.job.title, style: `background-image:url(${url});background-position:${-col * 3}px ${-row * 3}px;background-size:${288 * 3}px ${256 * 3}px` },
   });
+}
+
+/** 남은 시간 한 줄. 호스트 작업은 호스트 어림(실측 기준)에서, 물건은 작업 줄 어림에서. 넘기면 「조금 더 걸려요」. */
+function remainingText(view: JobView): string {
+  const expect = view.job.remote?.status?.expectMs;
+  const left = expect ? expect - elapsedOf(view) : view.etaMs;
+  if (left === null || left === undefined) return "";
+  if (left <= 30_000) return "거의 다 됐어요 — 조금 더 걸릴 수 있어요.";
+  return `약 ${Math.max(1, Math.round(left / 60000))}분 남음.`;
 }
 
 function progressCard(view: JobView, render: () => void): HTMLElement {
@@ -244,7 +255,7 @@ function progressCard(view: JobView, render: () => void): HTMLElement {
     children.push(craftBar({ value: view.progress > 0 ? view.progress : null, hot: jobState !== "queued", label: `${job.title} 만드는 중` }));
     children.push(el("p", {
       class: "left-workshop-meta",
-      text: `${stage ? `${stage} · ` : ""}${job.generator === "tile-gen" ? "지형은 그리기·검수를 거쳐 오래 걸려요(20분 넘게)." : view.etaMs ? `약 ${Math.max(1, Math.round(view.etaMs / 60000))}분 남음.` : ""} 닫아도 계속 그려요.`,
+      text: `${stage ? `${stage} · ` : ""}${remainingText(view)} 닫아도 계속 그려요.`,
     }));
     children.push(el("button", {
       class: "left-workshop-link", text: "그만두기", attrs: { type: "button" }, dataset: { testid: "workshop-oneclick-cancel" },
@@ -366,7 +377,7 @@ export function renderOneClick(root: HTMLElement, rerender: () => void): void {
         el("div", {
           class: "left-workshop-card-body",
           children: [
-            el("p", { class: "left-workshop-description", text: generator.makes }),
+            el("p", { class: "left-workshop-description", text: kind === "terrain" && state.advanced.terrainMethod === "quick" ? "용암·눈·돌길 같은 바닥을 지금 맵 칩셋의 물·길 모양 그대로 새 재질로 넣어요. 몇 초면 돼요." : generator.makes }),
             input,
             examples,
             go,

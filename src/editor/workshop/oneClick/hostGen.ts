@@ -22,6 +22,8 @@ export interface HostGenStatus {
   readonly engine?: string;
   readonly progress?: number;
   readonly elapsedMs?: number;
+  /** 호스트가 어림한 전체 시간(실측 기준) — 남은 시간 표시용 */
+  readonly expectMs?: number;
   readonly attempts?: number;
   readonly detail?: string | null;
   readonly reviewing?: boolean;
