@@ -1643,9 +1643,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 길에서 띄우는 거리는 2~4칸으로 물결친다(3칸 격자 값 잡음) — 늘 2칸이면 곧은 길 옆 숲이 자로 그은 벽이 된다(VQA r1 「곧은 숲 벽」)
     const hv = (gx: number, gy: number) => { let h = Math.imul(gx * 73856093 ^ gy * 19349663 ^ seed * 83492791, 0x27d4eb2d); h ^= h >>> 15; return (h >>> 0) / 4294967296; };
     const roadGap = (c: number) => {
-      const x = (c % W) / 3, y = Math.floor(c / W) / 3, x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0;
+      const x = (c % W) / 4, y = Math.floor(c / W) / 4, x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0;
       const v = hv(x0, y0) * (1 - fx) * (1 - fy) + hv(x0 + 1, y0) * fx * (1 - fy) + hv(x0, y0 + 1) * (1 - fx) * fy + hv(x0 + 1, y0 + 1) * fx * fy;
-      return 2 + Math.floor(v * 2.99);
+      return 2 + Math.floor(v * 3.99);
     };
     const okCell = (c: number, L: number) => occ[c] === FREE && distRoad[c]! >= roadGap(c) && lv[c] === L && !rampCells.has(c) && (c + W >= W * H || lv[c + W] === L);
     // 침엽·혼효 마을은 숲 덩이를 크게·넓게(독립 검수 D10 「덩어리 없이 듬성듬성」) — 활엽 마을은 그대로
@@ -1672,13 +1672,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       if (blob.size >= (bigGroves ? 24 : 10)) for (const c of blob) forestSet.add(c);
     }
     for (const c of summit) forestSet.add(c);
-    // 단의 동서 끝(골·맵 쪽으로 끊긴 세로 가장자리)은 3/4 시점에서 1px 선으로만 보인다(남향 절벽 면만 그린다) —
-    // 그 가장자리 위 두 줄에 숲을 둘러 선을 덮는다(2026-10-22 독립 검수 「대지 동서 이음선」). 길·문 앞은 비운다.
-    if (hasTerrain) for (let c = 0; c < W * H; c += 1) {
-      const L = lv[c]!; if (L === 0) continue; const x = c % W;
-      const edge = (x > 0 && lv[c - 1]! < L) ? 1 : (x < W - 1 && lv[c + 1]! < L) ? -1 : 0; if (!edge) continue;
-      for (const n of [c, c + edge, c + 2 * edge]) if (n >= 0 && n < W * H && Math.abs((n % W) - x) <= 2 && okCell(n, L)) forestSet.add(n);
-    }
+    // (단 동서 끝 1px 선을 숲으로 둘러 덮던 단계는 걷었다 — 수관 오토타일은 단 너머로 잇지 못해 선 따라 곧게 썰린 숲 벽만 남았다, VQA r1·r2)
     // 다듬기: 이웃 숲이 하나 이하인 혹은 지우고, 셋 이상 숲에 둘러싸인 빈 칸(같은 단)은 메운다 — 가는 가지·바늘구멍 수관이 생기지 않게
     const n4 = (c: number) => { const x = c % W, y = (c - x) / W; let k = 0; for (const [dx, dy] of N4) if (!inMap(x + dx, y + dy) || forestSet.has(idx(x + dx, y + dy))) k += 1; return k; };
     for (let pass = 0; pass < 2; pass += 1) {
@@ -1686,7 +1680,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       for (let c = 0; c < W * H; c += 1) if (!forestSet.has(c) && n4(c) >= 3 && okCell(c, lv[c]!) && (!hasTerrain || N4.every(([dx, dy]) => { const x = (c % W) + dx, y = Math.floor(c / W) + dy; return !inMap(x, y) || lv[idx(x, y)] === lv[c]; }))) forestSet.add(c);
     }
     // 수관은 2×2 숲 덩이에만 선다 — 어떤 2×2 에도 못 드는 칸(한 칸 띠·뾰족한 끝)은 수관 없는 덤불 낱칸·칸 계단으로 보이니 지운다
-    shapeBeodeulCanopyMask(W, H, forestSet, (c) => okCell(c, lv[c]!) && (!hasTerrain || N4.every(([dx, dy]) => { const x = (c % W) + dx, y = Math.floor(c / W) + dy; return !inMap(x, y) || lv[idx(x, y)] === lv[c]; })), 16, 4);
+    const sameLv = (a: number, b: number) => lv[a] === lv[b];
+    shapeBeodeulCanopyMask(W, H, forestSet, { canFill: (c) => okCell(c, lv[c]!), joins: sameLv, minComponent: 16, minExtent: 4, block: 3 });
     for (let c = 0; c < W * H; c += 1) if (occ[c] === FOREST && !forestSet.has(c)) occ[c] = FREE; // 다듬기로 빠진 산마루(summit) 칸은 풀밭으로
     for (const c of forestSet) occ[c] = FOREST;
   }
@@ -1981,7 +1976,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 숲 수관(2026-10-22 「숲 오토타일을 제대로」): 풀밭·설원 숲 덩이 모두 이어진 수관 오토타일 한 장 — 숲 칸마다 이웃 비트·P×P 위상 수관(막힘 ×),
     // 숲 남쪽 바로 아래 빈 칸에는 물결치는 숲 그늘·이끼 치마(★). 짙은 풀 위 낱 나무(composer, 10-20)는 듬성듬성한 과수원·네모 짙은 풀 판으로 읽혀 걷었다.
     if (canopyStyle && forestSet.size) {
-      const plan = planBeodeulCanopy(W, H, canopyStyle, forestSet, (s) => occ[s] !== WATERC && occ[s] !== KEEP && occ[s] !== FOREST && layerTileAt(m, 2, s) < 0 && !want.has(s) && !rampCells.has(s));
+      const plan = planBeodeulCanopy(W, H, canopyStyle, forestSet, (s) => occ[s] !== WATERC && occ[s] !== KEEP && occ[s] !== FOREST && layerTileAt(m, 2, s) < 0 && !want.has(s) && !rampCells.has(s) && lv[s] === lv[s - W], (a, b) => lv[a] === lv[b]);
       for (const [c, t] of plan.canopy) canopyAt.set(c, t);
       for (const [c, t] of plan.shade) want.set(c, t);
     }

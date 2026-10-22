@@ -313,48 +313,66 @@ export function beodeulCanopyMask(W: number, H: number, c: number, isForest: (c:
   return mask;
 }
 
+export interface BeodeulCanopyShape {
+  /** 빈 칸을 숲으로 메워도 되는가(구멍·오목한 홈 메우기). */
+  readonly canFill?: (c: number) => boolean;
+  /** 두 이웃 칸의 수관이 이어지는가(기본 늘). 마을은 같은 단끼리만 — 단 동서 끝 너머로 이으면 두 단이 다른 높이로 그려져 수관이 칸 선에서 썰렸다(VQA r2). */
+  readonly joins?: (a: number, b: number) => boolean;
+  /** 이 칸 수 미만 덩이는 지운다(맵 가장자리에 닿으면 절반). */
+  readonly minComponent?: number;
+  /** 가로·세로 폭이 이 줄 수 미만인 덩이는 지운다 — 단 사이 2~3줄 띠는 산울타리로 읽힌다(VQA r1·r2). */
+  readonly minExtent?: number;
+  /** 열기 크기(2 또는 3): 모든 숲 칸은 다 숲인 block×block 덩이에 들어야 한다. 3 이면 좁은 목·한두 칸 혹이 없어 짙은 틈 홈이 덜 생긴다. */
+  readonly block?: number;
+}
+
 /**
  * 숲 칸 집합을 수관 오토타일이 받아 줄 모양으로 다듬는다(제자리). 수관은 «네 칸이 다 숲인 2×2 덩이» 에만 서므로,
- * 어떤 2×2 덩이에도 들지 못한 칸(한 칸 폭 띠·뾰족한 끝·외톨이)은 수관 없이 덤불 낱칸으로 남아 숲 끝이 칸 계단으로 보인다 —
- * 그런 칸은 지운다. 4이웃 셋 이상이 숲인 구멍은 canFill 이 허락하면 메운다. 맵 밖은 숲으로 본다.
+ * 어떤 덩이에도 들지 못한 칸(한 칸 폭 띠·뾰족한 끝·외톨이)은 수관 없이 덤불 낱칸으로 남아 숲 끝이 칸 계단으로 보인다 — 그런 칸은 지운다.
+ * 4이웃 셋 이상이 숲인 구멍은 canFill 이 허락하면 메운다. 맵 밖은 동·서·남으로 숲, 북쪽은 숲이 아니다(beodeulCanopyMask 와 같다).
  */
-export function shapeBeodeulCanopyMask(W: number, H: number, forest: Set<number>, canFill: (c: number) => boolean = () => false, minComponent = 0, minRows = 0): void {
+export function shapeBeodeulCanopyMask(W: number, H: number, forest: Set<number>, opt: BeodeulCanopyShape = {}): void {
+  const canFill = opt.canFill ?? (() => false), joins = opt.joins ?? (() => true), B = opt.block ?? 2;
   const inside = (x: number, y: number) => y >= 0 && (x < 0 || x >= W || y >= H || forest.has(y * W + x));
-  for (let pass = 0; pass < 4; pass++) {
+  const linked = (c: number, x: number, y: number) => x < 0 || x >= W || y >= H || joins(c, y * W + x);
+  const blockOk = (bx: number, by: number, c: number) => {
+    for (let j = 0; j < B; j++) for (let i = 0; i < B; i++) if (!inside(bx + i, by + j) || !linked(c, bx + i, by + j)) return false;
+    return true;
+  };
+  for (let pass = 0; pass < 6; pass++) {
     let changed = false;
     for (let c = 0; c < W * H; c++) {
       if (forest.has(c) || !canFill(c)) continue;
       const x = c % W, y = (c - x) / W;
-      if ((inside(x - 1, y) ? 1 : 0) + (inside(x + 1, y) ? 1 : 0) + (inside(x, y - 1) ? 1 : 0) + (inside(x, y + 1) ? 1 : 0) >= 3) { forest.add(c); changed = true; }
+      let k = 0;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) if (inside(x + dx, y + dy) && linked(c, x + dx, y + dy)) k++;
+      if (k >= 3) { forest.add(c); changed = true; }
     }
     for (const c of [...forest]) {
       const x = c % W, y = (c - x) / W;
       let ok = false;
-      for (const [ox, oy] of [[0, 0], [-1, 0], [0, -1], [-1, -1]] as const) {
-        const bx = x + ox, by = y + oy;
-        if (inside(bx, by) && inside(bx + 1, by) && inside(bx, by + 1) && inside(bx + 1, by + 1)) { ok = true; break; }
-      }
+      for (let oy = 0; oy < B && !ok; oy++) for (let ox = 0; ox < B; ox++) if (blockOk(x - ox, y - oy, c)) { ok = true; break; }
       if (!ok) { forest.delete(c); changed = true; }
     }
     if (!changed) break;
   }
-  // 작은 덩이(minComponent 칸 미만, 맵 가장자리에 닿으면 절반까지 봐 준다 — 맵 밖으로 이어지는 숲)는 숲이 아니라 덤불 뭉치로 읽힌다 — 지운다
-  if (minComponent > 0 || minRows > 0) {
+  const minComponent = opt.minComponent ?? 0, minExtent = opt.minExtent ?? 0;
+  if (minComponent > 0 || minExtent > 0) {
     const seen = new Set<number>();
     for (const c0 of [...forest]) {
       if (seen.has(c0)) continue;
       const comp = [c0]; seen.add(c0); let edge = false;
+      let x0 = W, x1 = -1, y0 = H, y1 = -1;
       for (let h = 0; h < comp.length; h++) {
         const c = comp[h]!, x = c % W, y = (c - x) / W;
+        if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
         if (x === 0 || y === 0 || x === W - 1 || y === H - 1) edge = true;
         for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
           const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
-          const n = ny * W + nx; if (forest.has(n) && !seen.has(n)) { seen.add(n); comp.push(n); }
+          const n = ny * W + nx; if (forest.has(n) && !seen.has(n) && joins(c, n)) { seen.add(n); comp.push(n); }
         }
       }
-      // 세 줄 이하 띠(단 사이에 낀 숲)는 덩이가 아니라 산울타리로 읽힌다(VQA r1) — 지운다
-      let y0 = H, y1 = -1; for (const c of comp) { const y = Math.floor(c / W); if (y < y0) y0 = y; if (y > y1) y1 = y; }
-      if (comp.length < (edge ? minComponent / 2 : minComponent) || y1 - y0 + 1 < minRows) for (const c of comp) forest.delete(c);
+      if (comp.length < (edge ? minComponent / 2 : minComponent) || x1 - x0 + 1 < minExtent || y1 - y0 + 1 < minExtent) for (const c of comp) forest.delete(c);
     }
   }
 }
@@ -371,13 +389,13 @@ export interface BeodeulCanopyPlan {
  * 칸 번호는 beodeul_nature 원본 번호 — 대상 칩셋으로는 writeBeodeulCanopy 가 옮긴다.
  */
 export function planBeodeulCanopy(W: number, H: number, style: BeodeulCanopyStyle, forest: ReadonlySet<number>,
-  shadeOk: (c: number) => boolean = () => true): BeodeulCanopyPlan {
+  shadeOk: (c: number) => boolean = () => true, joins: (a: number, b: number) => boolean = () => true): BeodeulCanopyPlan {
   const phases = BEODEUL_NATURE.forestCanopy[style], P = BEODEUL_NATURE.forestPeriod[style], shades = BEODEUL_NATURE.forestShade[style];
   const isF = (n: number) => forest.has(n);
   const canopy = new Map<number, number>(), shade = new Map<number, number>();
   for (const c of forest) {
     const x = c % W, y = (c - x) / W;
-    const t = phases[(x % P) + P * (y % P)]![beodeulCanopyMask(W, H, c, isF)]!;
+    const t = phases[(x % P) + P * (y % P)]![beodeulCanopyMask(W, H, c, (n) => isF(n) && joins(c, n))]!;
     if (t >= 0) canopy.set(c, t);
     const s = c + W;
     if (y + 1 < H && !isF(s) && shadeOk(s)) {
@@ -447,7 +465,7 @@ export function plantBeodeulCanopyArea(project: Project, map: GameMap, target: T
     forest.add(c);
   }
   const inArea = (c: number) => { const x = c % W, y = (c - x) / W; return x >= area.x && y >= area.y && x < area.x + area.w && y < area.y + area.h && groundOk(c); };
-  shapeBeodeulCanopyMask(W, H, forest, inArea, 6);
+  shapeBeodeulCanopyMask(W, H, forest, { canFill: inArea, minComponent: 9, minExtent: 3 });
   const plan = planBeodeulCanopy(W, H, style, forest, (s) => !forest.has(s) && groundOk(s));
   writeBeodeulCanopy(project, map, target, plan);
   return { forestCells: plan.canopy.size, shadeCells: plan.shade.size };
