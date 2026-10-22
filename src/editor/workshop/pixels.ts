@@ -85,11 +85,11 @@ export const WORKSHOP_FAKE_IMAGE_KEY = "__oprnWorkshopImage";
  * 참고 그림(object-gen ref 단계) — 사용자 자기 그림 계정(설정 「이미지」 칸, 용도 object-form-reference). 그림 계정이 없으면 null(참고 없이 그린다).
  * 돌려준 그림은 판 기록에만 둔다. 칩셋·스토어·공용으로 가지 않는다.
  */
-async function referenceImage(prompt: string, signal: AbortSignal): Promise<{ dataUrl: string; source: string } | null> {
+async function referenceImage(prompt: string, signal: AbortSignal, options?: { readonly image?: string }): Promise<{ dataUrl: string; source: string } | null> {
   if (import.meta.env.DEV) {
     const fake = (window as unknown as Record<string, unknown>)[WORKSHOP_FAKE_IMAGE_KEY];
     if (typeof fake === "function") {
-      const dataUrl = await (fake as (prompt: string) => Promise<string | null>)(prompt);
+      const dataUrl = await (fake as (prompt: string, image?: string) => Promise<string | null>)(prompt, options?.image);
       return dataUrl ? { dataUrl, source: "dev-hook" } : null;
     }
   }
@@ -98,7 +98,10 @@ async function referenceImage(prompt: string, signal: AbortSignal): Promise<{ da
   ]);
   const route = resolveImageRoute("object-form-reference", loadAiConfig());
   if (route.kind !== "generative" || await companionCredentialMissing(route.providerId)) return null;
-  const image = await generateAiImage({ prompt, purpose: "object-form-reference", signal });
+  // 견본(시점·화풍, 물체 비율 캔버스)을 붙인다 — 그림 경로는 붙인 그림의 비율·시점을 따른다(2026-10-22 A/B).
+  const attached = options?.image?.match(/^data:(image\/(?:png|jpeg|webp));base64,(.+)$/u);
+  const referenceImages = attached ? [{ mimeType: attached[1] as "image/png" | "image/jpeg" | "image/webp", data: attached[2]! }] : undefined;
+  const image = await generateAiImage({ prompt, purpose: "object-form-reference", signal, ...(referenceImages ? { referenceImages } : {}) });
   return { dataUrl: image.dataUrl, source: `${image.provider}/${image.model}` };
 }
 

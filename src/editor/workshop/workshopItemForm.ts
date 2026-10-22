@@ -34,7 +34,7 @@ export function renderItemForm(session: WorkshopSession, onSaved: (key: string) 
     attrs: { placeholder: mapObjects ? "어떻게 생겼는지 적어 주세요. 예: 이끼 낀 돌 이정표, 위에 작은 등불." : "어떻게 생겼는지 적어 주세요. 예: 나무 선반 3단, 말린 약초 다발이 걸려 있다." },
     dataset: { testid: "workshop-form-description" },
   }) as HTMLTextAreaElement;
-  const maxW = mapObjects ? MAX_TILES_W : 3, maxH = mapObjects ? MAX_TILES_H : 2;
+  const maxW = mapObjects ? MAX_TILES_W : 4, maxH = mapObjects ? MAX_TILES_H : 3;
   const tilesW = el("input", { value: 1, attrs: { type: "number", min: "1", max: String(maxW) } }) as HTMLInputElement;
   const tilesH = el("input", { value: 1, attrs: { type: "number", min: "1", max: String(maxH) } }) as HTMLInputElement;
   const kind = el("select", { children: Object.entries(PLACE_LABELS).map(([value, text]) => el("option", { value, text })) }) as HTMLSelectElement;

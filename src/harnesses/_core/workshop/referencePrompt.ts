@@ -8,6 +8,7 @@
  * - 검수(독립·블라인드)·3/4 관문 조언·굽기·스토어는 참고 그림을 보지 않는다. 칩셋에 들어가는 것은 모델이 찍은 격자뿐이다.
  * - 줄여 따라 그리기·화소 옮기기를 지시문에서 금한다(object-gen REFCOPY 와 같은 뜻).
  */
+import { sizeNote } from "./footprint";
 import { kitConstant, kitText, objectGenKit } from "./genKits";
 
 // 원문은 gen-kits 생성물(object-gen reference.py, lock 고정 커밋)에서 읽는다 — 손 사본을 두지 않는다(2026-10-22).
@@ -36,8 +37,9 @@ export function refMinTop(gateKind: string | undefined): number {
 }
 
 /** 원본 prompt_for(high view). describe = 물건 설명(이름·생김새·배경·크기 비율). */
-export function refPrompt(describe: string, gateKind?: string, styleNote?: string): string {
-  const top = TOP_WORDS[gateKind === "seat" ? "seat" : "default"]!;
+export function refPrompt(describe: string, gateKind?: string, styleNote?: string, topWords?: string): string {
+  // topWords = 크기 결정(footprint)의 종류별 윗면 낱말(원본 run --top). 없으면 원본 기본값.
+  const top = topWords?.trim() || TOP_WORDS[gateKind === "seat" ? "seat" : "default"]!;
   // styleNote = 원본 STYLE_NOTE(견본 묶음을 쓰는 흐름에서 원본 prompt_for 가 덧붙인다).
   return `${REF_VIEW.replace("{top}", top).replace("{d}", describe.trim())} Must NOT be: ${REF_NEGATIVE}.${styleNote ? ` ${styleNote}` : ""}`;
 }
@@ -62,9 +64,15 @@ export const REF_DRAW_NOTE = "「참고 그림」은 이 물건이 이 시점에
   + "윗면 행 수·크기는 아래 「크기」「윗면」 절이 정한다(참고 그림의 비율보다 우선).";
 
 /** 공방 기물 → 참고 그림 지시문의 Object: 설명. 바닥 무늬·벽 걸이는 참고 단계가 없다(시점 지시문이 서 있는 물건용). */
-export function workshopRefDescribe(item: { readonly kind: string; readonly title: string; readonly description: string; readonly setting?: string; readonly width: number; readonly height: number; readonly padTop: number }): string | null {
-  if (item.kind === "flat" || item.kind === "hang") return null;
-  const w = item.width, h = item.height - item.padTop;
+export function workshopRefDescribe(item: { readonly noReference?: boolean; readonly kind: string; readonly title: string; readonly description: string; readonly setting?: string; readonly width: number; readonly height: number; readonly padTop: number }): string | null {
+  if (item.kind === "flat" || item.kind === "hang" || item.noReference) return null;
+  const cells = refCells(item);
   // 배경(나라·시대)의 실제 모양으로 — 설명이 다른 나라 모양(영국식 빨간 부스 등)을 적었어도 배경을 따른다(object-gen rules 와 같은 뜻).
-  return `${item.title} — ${item.description}${item.setting ? ` Setting: ${item.setting}. Show the form this object really has in that setting (its country and era), not a form from another country.` : ""} One single object; in the game it is drawn about ${w} by ${h} pixels (width by height), so keep that proportion.`;
+  // 크기는 칸 수와 사람(1×2칸) 기준(object-gen SIZE_NOTE). 옛 「약 W by H pixels」 문장은 척도가 없어 2×1 벤치가 3.4:1, 1×1 상자가 화면을 채웠다(2026-10-22 A/B).
+  return `${item.title} — ${item.description}${item.setting ? ` Setting: ${item.setting}. Show the form this object really has in that setting (its country and era), not a form from another country.` : ""} One single object. ${sizeNote(cells.w, cells.h)}`;
+}
+
+/** 그릴 크기(칸): 폭, 키(위 패딩 뺀 높이, 올림). */
+export function refCells(item: { readonly width: number; readonly height: number; readonly padTop: number }): { readonly w: number; readonly h: number } {
+  return { w: Math.max(1, Math.round(item.width / 16)), h: Math.max(1, Math.ceil((item.height - item.padTop) / 16)) };
 }

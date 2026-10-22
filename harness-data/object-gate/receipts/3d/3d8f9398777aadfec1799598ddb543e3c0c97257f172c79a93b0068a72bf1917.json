@@ -1,0 +1,315 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3d8f9398777aadfec1799598ddb543e3c0c97257f172c79a93b0068a72bf1917",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "rope-tied cargo crate",
+ "label": "workshop-objectgen-3/c5-crate",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 69,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crate lid (top, with rope and two slot marks)",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "front face with rope cross",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The columns at x=4 and x=11 show a lighter tan band at rows 2-4, with slot marks at row 3. Row 5 is a 1-row light line (#d8caa8) that works as the front-edge line. Below it are dark rows 6-8 that start as eave shadow and continue into the dark front face. The front face runs rows 6-14, with a rope band crossing at rows 9-10 and an outline at row 15. The silhouette is a constant 14 wide, so the box reads as a lid seen from above over a vertical south face. It is not a flat slab, and the top is more than a 1-2 row rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The crate is a small prop with only 9 distinct colours in total, spread across wood, rope and outline. That leaves about 3-4 lightness steps on the wood, against roughly 5-6 on the well, stall and bench. The measured facts are acceptable: 9 visible tones per tile matches the hedge, near-flat coverage is 0%, and 0% of the dark edge pixels are neutral, so the outline is tinted brown rather than a black sticker line. So there are no flat fills and the outline is a dark material tone. But next to the stall (17 tones) and the well (20 tones), the plank faces and rope read as simple. They show little per-plank grain, no knot or speckle dots and no per-strand rope highlights, so the crate looks flatter and thinner than the richer references. With the doubt rule applied, it falls short of the Beodeul bar for shading depth and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17237
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crate lid (top surface)",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "crate front face with rope straps",
+      "rows": "6-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The columns at x=4 and x=11 show a light tan lid band in rows 2-4 (with darker slot or handle marks at row 3). Row 5 is a lighter 1-row front-edge line (L=202). Rows 6-8 are a dark eave shadow (L=74) directly below it, and the darker brown front face runs to row 15. The rope crosses the lid at x=8 (rows 2-15) and a horizontal strap crosses the face at rows 9-10. The silhouette is a constant 14 px wide, which fits a box. The lid is 4 rows with an edge line and shadow, and the front face is 10 rows, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The crate is a single-tile prop. It shows 9 visible tones per tile, the same as the prop-hedge reference. It is below the stall (17) and well (20), but those are much larger multi-material pieces. Near-flat coverage is 0%, so there are no 5x5 flat fills. The dark edge pixels are 0% neutral, so the outline leans brown and follows the wood and rope rather than being a black sticker line. The wood ramp has about 4 steps, with light plank faces, mid tone, dark edge and corner shading. The rope bands are separated by value. The 9 total colours are fewer than the richer references, so the shading is slightly shallower than Beodeul's 5-6 steps. It still sits at the level of the simple references (bench, hedge) and would not look thinner or more sticker-like beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24901
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crate lid (top)",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-8"
+     },
+     {
+      "part": "front face with rope bands",
+      "rows": "6-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a constant 14 px wide over rows 1-15. Rows 2-5 form a light tan lid band with two dark slits at rows 3-4. It ends in a lighter front-edge line at row 5 (#d8caa8 in the x=4 and x=11 scans), followed by dark brown shadow in rows 6-8. Below that, rows 6-15 are a darker front face crossed by a rope band at rows 9-10 and a central vertical rope strip. The top is 4 rows with a clear edge line and eave shadow, and the front face is about 10 rows, so this matches the 'cabinet: top 5 + edge + eave' reference pattern rather than a rim-only or flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The crate is about one tile in size. It has 9 visible tones per tile, matching the hedge but well below the well (20) and the cheese stall (17). It has only 9 distinct colours in total, against 11-40 for the references. The outline is tinted dark brown (0% neutral edge pixels), so it is not a near-black sticker line. There are no flat fills, since 5x5 flat coverage is 0%. The wood ramp has only about 4 steps (highlight, mid, dark, outline) plus a light rope tone. Grain and per-plank speckle are sparse, so next to the well and stall it reads thinner and flatter than the 5-6 step Beodeul standard. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 23511
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crate lid (top surface)",
+      "rows": "2-5",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "crate front face with rope cross",
+      "rows": "6-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a constant 14 px wide from row 1 to row 15. Rows 2-4 are a light tan band (L about 162-181) with two dark slot marks. Row 5 is a 1-row, very light front-edge line (L=202, #d8caa8) that is clearly lighter than the dark brown face below it. That makes a lid band of about 4 rows (rows 2-5) with a distinct edge line. Rows 6-15 are the vertical front face (10 rows), with rope bands crossing it. Rows 6-7 are slightly darker at x=8 and read as a short eave shadow. The lid is more than a 1-2 row rim, so the box has a top and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The crate is about one tile and has 9 visible tones in that tile. That matches prop-hedge (9) and is above the small bench and lamp, which are too thin to count per tile. It is below the stall (17) and the well (20), but those are much larger and busier pieces. Near-flat coverage is 0%, so no large area is a single flat fill. The edge pixels are 0% neutral, so the outline leans brown and follows the wood and rope tones instead of being a black sticker line. The crate shows plank edges, a rope band with a knot, and light and dark faces, which gives about 4 wood steps against the roughly 5-6 in Beodeul. The grain is lighter than on the references, which is why density is slightly lower. For a single small crate this is still acceptable next to the references and does not look flat or sticker-like. My read of the picture is limited because the piece is tiny at this scale, so this verdict leans on the measured facts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 27140
+  }
+ ],
+ "decidedAt": "2026-10-22T06:32:22.996Z",
+ "cells": {
+  "16": [
+   "4f5b0e542ba70c62"
+  ],
+  "24": [
+   "42b234843922cffc",
+   "7bb1bc4cb24ade0e",
+   "91f1b9ba53dd3847",
+   "d780da469ecae1f9",
+   "e37e19d6d3d3c714",
+   "e5a4bd83a61e37e1"
+  ],
+  "32": [
+   "08a9f2370123bd7f",
+   "4550ac884a0b7c30",
+   "57fe1401822500de",
+   "aeb85855a91c534e",
+   "d39ce85840f73775",
+   "dc5d64abc1a18a58"
+  ],
+  "48": [
+   "5de74ac53449b75f",
+   "83184835601f0237",
+   "8de8ce4cc9516ac2",
+   "9ba176236334d77a",
+   "9f71474809e76c01",
+   "fe4f77868a6cd1e3"
+  ]
+ }
+}

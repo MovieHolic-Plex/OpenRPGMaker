@@ -79,7 +79,7 @@
 
 - **원문 사본, 갈래(fork) 없음** — 지시문·판정 문장·고르기 문장·참고 지시문은 gen-kits 생성물 `src/harnesses/_core/workshop/genKits/object-gen.json`(lock 고정 커밋의 원본 모듈 상수 + 견본 묶음 `set.json`)에서 읽고, 견본·반려 PNG 는 `public/assets/gen-kits/object-gen/anchors/<set>/`. 다시 뽑기·올리기: `npm run gen-kits:sync`(아래 「생성기 저장소 고정」). 손 사본 `objectGenKit.json` 과 그 추출 스크립트는 2026-10-22 에 지웠다. 바꾼 것은 「그림판 파일을 Read 로 열라」는 JUDGE 첫 문단 한 곳(대화에는 그림이 붙는다)과 ANSWER 의 PNG 갈래뿐이다(원본 drawer.WORKFLOW 가 ANSWER 를 덮듯 「How to answer in this run」 절로 덮는다). 원본 문장이 바뀌어 그 자리를 못 찾으면 던진다.
 - **단계** (`objectGenFlow.ts`, 실행기 갈래 `referenceCount`·`referenceStyleNote`·`maxAttempts`·`looks`·`lookMessage`·`review` — 기물마다 다를 수 있다 `PerItem`):
-  1. 참고 그림 **2장**(장마다 시점 검사 4번까지, 원본 `STYLE_NOTE` 덧붙임) → 판 기록 `round.reference`(+`more`).
+  1. 참고 그림 **2장**(장마다 시점 검사 4번까지) → 판 기록 `round.reference`(+`more`, 붙인 견본 `anchor`). 견본(실행기 `referenceAnchor`)을 붙일 때만 원본 `STYLE_NOTE`(「붙인 그림은…」)를 덧붙인다 — 2026-10-22 전에는 그림 없이 그 문장만 갔다.
   2. 그리기: 원본 `draw_brief`(방향 A 칩셋 충실 · B 지시 충실 = 후보 둘, VIEW·RECIPE·6칸 이상이면 LARGE, 팔레트 단 요약 `ramps_of`), 칩셋 물체·참고 그림 2장·견본 묶음(oprn-interior-v5-large) 그림.
   3. **미리보기 고치기** 최대 3번(원본 drawer 의 `j.dry` + preview.png 고리): 8배·1배·2배 + 기계 검사(`ogCheck` = 원본 checks 의 SIZE·EMPTY·TOPPAD·GROUND·BG·STRAY·FOOTPRINT 는 막고, TONES·SPECKLE·INK·TOP 은 알린다) → 고친 격자 또는 `{"keep": true}`.
   4. **블라인드 판정**: 원본 JUDGE, GOOD/BAD 견본 6배+1배, 숨긴 반려 표본(flat/noise/foreign 중 하나 + slab + 견본 반려 하나)을 섞는다. 표본을 빠뜨리거나 반려 표본을 통과시킨 판은 무효, **유효 3판 다수결**(무효는 2번까지 더). 후보 하나씩 판정한다(원본은 그 판 후보 전부를 한 판에).
@@ -96,6 +96,12 @@
 
 - **참고 그림 단계** — object-gen(`MovieHolic-Plex/object-gen`, `objectgen/reference.py`)의 ref 단계를 옮겼다. 지시문 VIEW·NEGATIVE·TOP_WORDS, 이름 거부 IP_TERMS, 시점 검사 VIEW_PROMPT·`view_ok`(top34 + 윗면 ≥35%, 벽 앞 키 큰 가구·벽 걸이 15%), 시도 3번은 원본 문장 그대로다(`src/harnesses/_core/workshop/referencePrompt.ts` — 고치려면 원본부터).
   - 엔진 `makeReference`(판마다 한 번, 후보 셋이 같이 쓴다): 실행기 `referenceDescribe(item)`(바닥 무늬·벽 걸이는 없음) → `env.referenceImage(prompt)` → 512px 로 줄여 `workshop-review` 로 시점 검사 → 통과한 한 장을 그리기 지시문에 「참고 그림(모양만 — 참고용, 설치 안 됨)」으로 붙인다. 따라 그리기·줄이기·색 뽑기는 지시문이 금한다. 모든 화소는 모델이 팔레트 키로 찍는다.
+  - **견본·비율·크기(2026-10-22, 사용자 「참고 그림이 너무 못 그려졌다」)**: 블라인드 A/B(Opus 판정, 같은 6요청: 짐마차·분수·나무·노점·상자·벤치)에서 새안 N 13점 > 옛 편집기 E 11 > 견본만 F 8 > object-gen 옛 띠 견본 O 4.
+    원인 넷 — (a) 지시문은 「붙인 그림」을 말하는데 붙인 그림이 없었다, (b) 그림 경로 답의 절반이 투명 바탕 RGBA 이고 투명 칸 밑에 어두운 찌꺼기가 있어 알파를 버리는 쪽에는 검은 바탕·후광으로 보였다, (c) 「약 W×H 픽셀」 문장은 사람 척도가 없어 벤치 3.4:1·상자가 화면 가득, (d) object-gen 의 한 줄 띠 견본(약 4.6:1)을 붙이면 답도 그 비율이라 짐마차가 평면도·노점이 정면으로 나왔다.
+    고친 것: 실행기 `referenceAnchor` 가 **물체 비율 캔버스**(`objectGenFlow.aspectSheet`, 원본 `reference.aspect_sheet` — wide 1536×1024 · tall 1024×1536 · square 1254²)에 이름이 맞는 칩셋 물체 ≤2 + object-gen 견본을 깔아 `env.referenceImage(prompt, signal, {image})` 로 붙인다(`pixels.ts` → `generateAiImage({referenceImages})`). 이름이 안 맞는 칩셋 물체는 넣지 않는다(아무 화분을 붙였더니 나무가 화분을 베꼈다). 크기 문장은 원본 `SIZE_NOTE`(칸 수 + 사람 1×2칸), 윗면 낱말은 크기 결정의 종류별 `top`. 답은 `flattenImage` 로 회색(원본 `BACKGROUND` 200,200,200) 바탕에 합성한 뒤 줄여 보관·검사한다. object-gen 쪽 고침(aspect_sheet·flatten·SIZE_NOTE·footprint.py)은 PR #4·#5, lock 8d894eb.
+  - **견본 고르기·색(2026-10-22 VQA 2·3회차)**: 칩셋 물체는 이름이 맞는 것 → 크기 사전 종류가 같은 것(`classObjects` — 「건초 짐마차」↔「covered wagon」) → 칩셋의 여러 칸 물체 순이고, object-gen 실내 견본(침대·옷장)은 칩셋이 없을 때만 붙인다(야외 짐마차·분수 견본에 침대가 붙어 있었다).
+    맵 기물 팔레트(`paletteFromImages`, 48색)는 빈도 순 36색 뒤에 **칩셋에 있는데 빠진 진한 색상**(색상 24칸 × 채도 2단, 칸마다 어두운·가운데·밝은 하나)을 채운다 — 빈도만 보면 버들항의 금빛 노랑(#dcaa4c, 빈도 62위)·빨강이 땅·돌 색에 밀려 빠졌고, 건초 짐마차가 1배에서 베이지 덩어리로 읽혔다(VQA major).
+    그래도 그리는 쪽은 「참고 그림은 모양만」이라는 말에 색을 바래게 칠했다 — 그래서 첫 참고 그림의 물체 화소를 가장 가까운 팔레트 키로 옮긴 몫(`engine.referenceColors` → `round.reference.colors` → `DrawContext.referenceColors`)을 그리기 지시문 References 절에 한 줄로 넣고 「진한 부분을 베이지·회색으로 바래지 말 것」을 붙인다(화소를 베끼라는 뜻은 아니다).
   - 참고 그림은 **판 기록(`round.reference`, IndexedDB)에만** 둔다. 검수·3/4 조언·굽기·스토어는 보지 않는다. 칩셋에 들어가는 것은 격자뿐.
   - 그림 계정: 사용자 자기 생성형 이미지 계정(용도 `object-form-reference`, `src/ai/imageRoute.ts`, `pixels.ts` `referenceImage`). 계정이 없거나(`companionCredentialMissing`) 실패하면 참고 없이 그리고 카드에 「참고 그림 없이 그림 — 이유」를 적는다. 우리 주소·키·유료 대체 경로 없음.
   - dev QA: `window.__oprnWorkshopImage(prompt)` 가 있으면 그것으로 만든다(시험 구동기가 자기 경로를 env 로 잇는다 — 주소는 저장소에 없다). `window.__oprnWorkshopNoReference = true` 면 참고 단계를 끈다(있음/없음 비교). `engine.startRound(item, { reference: false })`.

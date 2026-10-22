@@ -1,0 +1,57 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "workshop-objectgen-5",
+ "title": "조수 공방 기물 8 (칸 정하기·큰 물건)",
+ "explainText": "편집기 조수가 공방(object-gen 흐름)으로 그려 시험 맵에 놓은 기물 8개: 건초 짐마차 3×3·분수 4×3·사과나무 2×3·과일 노점 5×4·상자 1×1·벤치 2×1·우물 2×3·가로등 1×3. 공방 그림은 그 게임에만 들어가며, 허용하면 공용·스토어 출구 관문도 통과한다.",
+ "createdAt": "2026-10-22T11:23:50.707Z",
+ "items": [
+  {
+   "sha": "12f5405a5986888fde2ee5056c12d250188bc86361b36f67b55e7638a70cc63c",
+   "kind": "other",
+   "label": "workshop-objectgen-5/c1-wagon",
+   "source": "/tmp/ogf/gate4/c1-wagon.png"
+  },
+  {
+   "sha": "c728f8825250be2330e0929462882be36ed5e1addd54f5a61d5292663a1953eb",
+   "kind": "container",
+   "label": "workshop-objectgen-5/c2-fountain",
+   "source": "/tmp/ogf/gate4/c2-fountain.png"
+  },
+  {
+   "sha": "b49084d18ce1b0a5f3046e8409d7d598e43b5b2a646c8a89c850f98404a4d066",
+   "kind": "organic",
+   "label": "workshop-objectgen-5/c3-tree",
+   "source": "/tmp/ogf/gate4/c3-tree.png"
+  },
+  {
+   "sha": "0eaf6b3159a834313536998b13dc6d9013755137646f81825b8b2ec266f1c28f",
+   "kind": "structure",
+   "label": "workshop-objectgen-5/c4-stall",
+   "source": "/tmp/ogf/gate4/c4-stall.png"
+  },
+  {
+   "sha": "3d8f9398777aadfec1799598ddb543e3c0c97257f172c79a93b0068a72bf1917",
+   "kind": "box",
+   "label": "workshop-objectgen-5/c5-crate",
+   "source": "/tmp/ogf/gate4/c5-crate.png"
+  },
+  {
+   "sha": "145ddd82d655c4a1ddcce1b7f84e9a19b5af6e9084aca4f1a51cb8c8cc4ca171",
+   "kind": "seat",
+   "label": "workshop-objectgen-5/c6-bench",
+   "source": "/tmp/ogf/gate4/c6-bench.png"
+  },
+  {
+   "sha": "3b2b6361dab51dbedd24e4bf46e319b11a59469869eccec83900f376fc931446",
+   "kind": "container",
+   "label": "workshop-objectgen-5/c7-well",
+   "source": "/tmp/ogf/gate4/c7-well.png"
+  },
+  {
+   "sha": "826dc57fa015331de2d3ffcd03a1f31fa10d9b7bc37531a6faba8ac5997afa82",
+   "kind": "column",
+   "label": "workshop-objectgen-5/c8-lamp",
+   "source": "/tmp/ogf/gate4/c8-lamp.png"
+  }
+ ]
+}

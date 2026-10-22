@@ -11,6 +11,11 @@
 // - 사람·동물 캐릭터: 사람은 그리지 않는다(캐릭터 칩은 따로).
 // - 지형·바닥·벽 칸: 칸 타일은 이 도구가 아니다(ask_missing_tiles).
 // - 16px 이 아닌 칩셋: 공방 격자·굽기가 16px 칸 기준이다.
+// - 건물(집·가게·탑…): 건물 외형은 손 도트 건물 킷 영역이다(object-gen 이 아니다).
+//
+// 크기(칸 수)는 도구가 정한다(2026-10-22): 조수가 준 칸 수를 크기 사전(object-gen footprint.py — 손 도트 실내 v5·버들항 소품 킷 실측)의
+// 그 종류 범위로 고치고, 발밑 줄(막힘)과 위로 솟은 줄(캐릭터 위에 그려짐)로 나눈다. 이유는 요청·카드·참고 그림 지시문에 실린다.
+import { decideFootprint, FOOTPRINT_GUIDE } from "@/harnesses/_core/workshop/footprint";
 import { ATLAS_BIOME_INTERIOR_ID } from "@/project/defaults/atlasBiomeInterior";
 import type { Project, TilesetDef } from "@/project/types";
 import {
@@ -108,7 +113,8 @@ const generateMissingObject: ToolDefinition = {
     + "사용자가 하나를 고르면(또는 사용자가 켜 둔 「알아서 고르기」가 검수 통과 후보를 고르면) 그 칩셋 끝에 공방 칸으로 들어가고, 물체 id(workshop:…)와 놓을 자리가 후속 요청으로 온다 — 그때 stamp_tileset_object 로 놓는다. "
     + "**먼저 있는 것을 찾아라**: list_tileset_objects·list_spatial_designs(kind:object)·list_hand_interior_parts(실내)로 찾아 비슷한 게 있으면 그것을 쓰고 이 도구는 부르지 마라. "
     + "이름이 맞는 기물이 이미 있으면 이 도구가 그 id 를 돌려주며 거부한다(봤는데 정말 다른 물건이면 notThese 에 그 id 를 적어 다시 부른다). "
-    + "사람·동물·캐릭터는 그리지 않는다(거부). 바닥·벽·물·길 같은 지형 칸도 이 도구가 아니다(ask_missing_tiles). 16px 칩셋 맵만. "
+    + "사람·동물·캐릭터는 그리지 않는다(거부). 바닥·벽·물·길 같은 지형 칸도 이 도구가 아니다(ask_missing_tiles). 건물(집·가게·탑)도 아니다(거부). 16px 칩셋 맵만. "
+    + `크기: ${FOOTPRINT_GUIDE} 이 도구가 크기 사전으로 칸 수를 확인·조정하고 이유를 돌려준다(큰 물건 5×4 노점·4×3 분수·3×2 짐마차까지). `
     + "없는 물건이 여럿이면 같은 턴에 물건마다 한 번씩 불러라 — 모두 공방 작업 줄에 함께 서서 동시에 그려진다(하나씩 기다리지 않는다). "
     + "다 부른 뒤에는 더 칠하지 말고 이 턴을 끝내라.",
   mode: "read",
@@ -121,9 +127,10 @@ const generateMissingObject: ToolDefinition = {
       title: { type: "string", description: "기물 이름, 짧은 한국어 명사구(예: 나무 벌통, 공중전화 부스, 놋쇠 혼천의). 사람·지형이면 거부된다" },
       description: { type: "string", description: "어떻게 생겼는지 한두 문장(재료·색·특징). 그 맵 배경(나라·시대)에서 실제로 보는 모양으로 쓴다 — 예: 조선 마을의 우물은 돌을 두른 우물이지 서양식 지붕 달린 우물이 아니다. 사용자가 다른 나라 모양을 떠올리게 하는 말을 써도 그 배경의 모양으로 바꿔 쓴다. 1배에서 그 물건임을 알아보게 하는 특징 2~3개를 적는다. 칩셋 화풍에 맞춰 그린다" },
       objectKind: { type: "string", enum: OBJECT_GEN_KINDS as unknown as string[], description: "놓는 방식: floor 바닥에 세움(발밑 막힘) · wall 북쪽 벽 앞 가구 · hang 벽에 거는 것 · flat 밟고 지나가는 바닥 무늬(깔개)" },
-      tilesW: { type: "integer", minimum: 1, maximum: 4, description: "가로 칸 수(실내 가구는 3까지)" },
-      tilesH: { type: "integer", minimum: 1, maximum: 3, description: "발밑(막히는) 세로 칸 수(실내 가구는 2까지). 위로 솟은 부분은 rise" },
-      rise: { type: "integer", minimum: 0, maximum: 48, description: "발밑 칸 위로 솟는 높이 px. 기본 0 = 그림 전체가 발밑 칸 안(1×1 이면 한 칸 높이 — 벌통·항아리·상자·어항). 사람 키보다 큰 것만: 옷장·부스 16, 가로등·큰 나무 32" },
+      tilesW: { type: "integer", minimum: 1, maximum: 6, description: "가로 칸 수(실내 가구는 4까지). 사람은 1칸 폭. 비우면 크기 사전의 흔한 폭" },
+      cellsTall: { type: "integer", minimum: 1, maximum: 6, description: "그림 전체 키(칸) = 발밑 줄 + 위로 솟은 줄. 사람은 2칸 키. 예: 짐마차 3×2, 분수 4×3, 나무 2×3, 노점 5×4, 상자 1×1, 벤치 2×1. 비우면 크기 사전의 흔한 키" },
+      tilesH: { type: "integer", minimum: 1, maximum: 4, description: "(선택) 발밑(막히는) 줄 수. 비우면 도구가 종류에 맞게 나눈다(깊은 물건은 발밑을, 키 큰 물건은 위를 늘린다)" },
+      rise: { type: "integer", minimum: 0, maximum: 64, description: "(옛 방식, 선택) 발밑 위로 솟는 px. cellsTall 을 쓰면 비운다" },
       gateKind: { type: "string", enum: GATE_KINDS as unknown as string[], description: "3/4 검사 종류(선택): tall_furniture 키 큰 가구·부스 · low_furniture 탁자·침대 · seat 의자 · frame 틀·걸대 · container 입구 있는 그릇(항아리·어항·우물) · round_body 통·북 · column 기둥·석등 · box 상자·궤·벌통 · structure 작은 건물·문 · figure 조각상 · organic 식물·바위 · flat 바닥 무늬 · wall_mounted 벽 걸이 · other" },
       base: {
         type: "object",
@@ -161,15 +168,35 @@ const generateMissingObject: ToolDefinition = {
     if (!objectKind) throw new ToolError(`objectKind 는 ${OBJECT_GEN_KINDS.join("·")} 중 하나다.`, { code: "invalid-args" });
     const harnessId: ObjectGenHarness = tileset.id === ATLAS_BIOME_INTERIOR_ID ? "interior-props" : "map-objects";
     const limits = objectGenLimits(harnessId);
-    const tilesW = intArg(args.tilesW, "tilesW", 1, limits.maxW, 1);
-    const tilesH = intArg(args.tilesH, "tilesH", 1, limits.maxH, 1);
-    const rise = intArg(args.rise, "rise", 0, limits.maxRise, Math.min(limits.maxRise, DEFAULT_RISE[objectKind]));
+    const askW = args.tilesW === undefined || args.tilesW === null ? undefined : intArg(args.tilesW, "tilesW", 1, limits.maxW, 1);
+    const askFoot = args.tilesH === undefined || args.tilesH === null ? undefined : intArg(args.tilesH, "tilesH", 1, limits.maxH, 1);
+    const askRise = args.rise === undefined || args.rise === null ? undefined : intArg(args.rise, "rise", 0, limits.maxRise, 0);
+    const askTall = args.cellsTall === undefined || args.cellsTall === null ? undefined
+      : intArg(args.cellsTall, "cellsTall", 1, limits.maxTall, 1);
+    const tall = askTall ?? (askFoot !== undefined ? askFoot + Math.ceil((askRise ?? DEFAULT_RISE[objectKind]) / TILE) : undefined);
+    const decided = decideFootprint(title, description, {
+      ...(askW !== undefined ? { w: askW } : {}), ...(tall !== undefined ? { h: tall } : {}), ...(askFoot !== undefined ? { foot: askFoot } : {}),
+      maxW: limits.maxW, maxH: limits.maxTall, interior: harnessId === "interior-props",
+    });
+    if (decided.building) throw new ToolError(`${decided.reason}. 있는 건물 킷(list_tileset_objects·list_spatial_designs)으로 짓는다.`, { code: "building-not-object" });
+    const flatKind = objectKind === "flat" || objectKind === "hang";
+    // 바닥 무늬·벽 걸이는 발밑/위 구분이 없다 — 그림 전체가 한 덩이(굽기가 통행을 따로 정한다).
+    const tilesW = decided.w;
+    const tilesH = flatKind ? decided.foot + decided.over : Math.min(limits.maxH, decided.foot);
+    const overRows = flatKind ? 0 : decided.foot + decided.over - tilesH;
+    // 위 줄 px: 조수가 rise 를 줬고 같은 줄 수면 그 px(정밀), 아니면 결정값.
+    const rise = flatKind ? 0 : Math.min(limits.maxRise, askRise !== undefined && Math.ceil(askRise / TILE) === overRows ? askRise : overRows === decided.over ? decided.risePx : overRows * TILE);
+    // 위 줄이 없어도 사전 px(벤치 등받이 8px)가 있으면 그 줄은 캐릭터 위에 그려지는 줄로 굽힌다.
+    const drawnOver = flatKind ? 0 : Math.max(overRows, Math.ceil(rise / TILE));
+    const passage = flatKind ? Array.from({ length: tilesH }, () => ".".repeat(tilesW))
+      : [...Array.from({ length: drawnOver }, () => "*".repeat(tilesW)), ...Array.from({ length: tilesH }, () => "X".repeat(tilesW))];
     const baseArg = args.base as { x?: unknown; y?: unknown } | undefined;
     let base: ObjectGenRequest["base"] = null;
     if (baseArg !== undefined) {
       const x = intArg(baseArg.x, "base.x", 0, map.width - 1, 0), y = intArg(baseArg.y, "base.y", 0, map.height - 1, 0);
-      if (x + tilesW > map.width || y - (tilesH - 1) < 0) {
-        throw new ToolError(`${tilesW}×${tilesH}칸 기물이 base (${x},${y}) 에서 맵(${map.width}×${map.height})을 벗어난다.`, { code: "out-of-bounds", mapId: map.id, x, y });
+      // 위로 솟은 줄까지 맵 안이어야 한다(잘린 나무 꼭대기는 굽기 후에야 보인다).
+      if (x + tilesW > map.width || y - (tilesH + drawnOver - 1) < 0) {
+        throw new ToolError(`${tilesW}×${tilesH + drawnOver}칸 기물(발밑 ${tilesH}줄)이 base (${x},${y}) 에서 맵(${map.width}×${map.height})을 벗어난다.`, { code: "out-of-bounds", mapId: map.id, x, y });
       }
       base = { x, y };
     }
@@ -188,9 +215,12 @@ const generateMissingObject: ToolDefinition = {
       title, description, objectKind, tilesW, tilesH, rise, base, need,
       setting: objectSetting(tileset, map.name ?? ""),
       ...(gateKind ? { gateKind } : {}),
+      footprint: { cls: decided.cls, passage, top: decided.top, reason: decided.reason, adjusted: decided.adjusted, ...(decided.reference ? {} : { reference: false }) },
     };
+    const sizeLine = `크기 ${tilesW}×${tilesH + drawnOver}칸 = 발밑 ${tilesH}줄(막힘)${drawnOver ? ` + 위 ${drawnOver}줄(캐릭터 위에 그려짐${rise !== drawnOver * TILE ? `, ${rise}px` : ""})` : ""}`
+      + `${decided.adjusted.length ? ` — 조정: ${decided.adjusted.join(", ")}` : ""}. 이유: ${decided.reason}`;
     return {
-      summary: `「${title}」 그리기 카드를 띄운다(발밑 ${tilesW}×${tilesH}칸${rise ? ` + 위로 ${rise}px` : " · 칸 안에 다 들어가는 크기"}, 칩셋 ${tileset.id}, 배경 ${request.setting}). 공방 작업 줄에 서서 다른 요청과 함께 그려진다. 후보를 사용자가 고르면 물체 id 가 후속 요청으로 온다 — 없는 물건이 더 있으면 지금 이어서 부르고, 그 밖에는 더 칠하지 말고 그렸다고 말하지 말고 이 턴을 끝내라.`,
+      summary: `「${title}」 그리기 카드를 띄운다(${sizeLine}; 칩셋 ${tileset.id}, 배경 ${request.setting}). 공방 작업 줄에 서서 다른 요청과 함께 그려진다. 후보를 사용자가 고르면 물체 id 가 후속 요청으로 온다 — 없는 물건이 더 있으면 지금 이어서 부르고, 그 밖에는 더 칠하지 말고 그렸다고 말하지 말고 이 턴을 끝내라.`,
       data: request,
     };
   },

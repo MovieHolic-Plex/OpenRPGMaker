@@ -1,0 +1,312 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "11017bbe94256a97fdbea91753a28c66bf28beaf3d2ec1621998f9b5341ffb4d",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "apple tree",
+ "label": "workshop-objectgen-3/c3-tree",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 8,
+  "darkV5": 63,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy (round mass with apples)",
+      "rows": "1-34",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk with flared roots",
+      "rows": "35-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The canopy (rows 1-34) is a round blob. Its width grows from 8 to 30 over rows 1-12 and shrinks from 30 to 18 over rows 26-34, so the outline is round. Inside, the leaf texture is mottled with apples scattered across it. There is no front-edge line, no eave shadow and no horizontal plane. The columns at x=8, 16 and 23 show only mixed greens, with no band that ends in an edge line. The highlight at rows 3-5 on the left is only leaf shading. The trunk (rows 35-47, 6 px wide, flaring to 14 px at the base) is a vertical face with no top. The whole tree reads as a frontal elevation, not a 3/4 view with a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 7 visible tones per tile, 0% near-flat coverage and 0% neutral dark edges. That matches tree-1a786c on the numbers, but it is well below tree-d43edd, which has 29 tones. By eye the canopy is a rounded, boxy blob with about 4 greens, a darker green rim and evenly scattered red apple dots. It lacks the layered leaf clumps, the lit-top-to-shadowed-underside modelling and the ragged silhouette of the references. The trunk is a short two-tone block with little bark grain and no roots or branches. The outline is tinted dark green and brown, which is good. Overall it reads as a simpler, stamped-looking tree that is flatter than both references, so with the numbers only matching the weaker reference I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16887
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy (rounded mass with apples)",
+      "rows": "1-34",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk with root flare",
+      "rows": "35-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "other",
+    "evidence": "The main body is a round leaf canopy (rows 1-34) on a narrow trunk (rows 35-47, width 6-14). The canopy silhouette widens smoothly from 8 to 30 px by row 12 and narrows to 18 by row 34. This is a spherical volume, not a lid or cap with a rim. No row has a front-edge line or eave shadow that marks off a flat top plane. The lighter leaf rows at the top (rows 3-5) are only highlight shading. Leaf tufts with dark undersides give some volume, but they do not form a horizontal top surface. The trunk is a plain vertical face with no top, which is normal for a tree. So the tree is a rounded organic mass: no distinct top surface (0 rows), a large body face, and no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small rounded-rectangle canopy with about 3-4 greens, scattered red apple dots and a short trunk of 2-3 browns. It has only 10 distinct colours in total. Its dark edge pixels are tinted (0% neutral), so the outline is a dark green or brown material tone, not a black sticker line. It has 0% near-flat coverage, so there are no large flat fills. The silhouette is a smooth blob, though, and the leaf clumps are small, regular and barely differentiated. The references have irregular, layered leaf clusters, 5-6 shading steps, and branches and roots visible through the foliage. tree-d43edd carries 29 visible tones per tile against the candidate's 7, and the candidate is clearly flatter and simpler than both references by eye. Its 7 tones match tree-1a786c on the numbers alone, but that reference still shows much more clumping and shadow structure. A careful artist would not accept the candidate next to these references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 20495
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy (round blob with apples)",
+      "rows": "1-34",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk with flared root base",
+      "rows": "35-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The canopy is a single rounded mass, rows 1-34, with width growing from 8 to 30 and narrowing again from row 26 to 34. It is a sphere silhouette, not a lid or ellipse cap. It has no front-edge line and no eave shadow band. The mottled leaf clumps and apples are drawn face-on, and the darker right edge is only volume shading, not a receding side face. Below it the trunk is a vertical 6-wide shaft in rows 35-47 that flares to 14 at the roots. No horizontal top plane is drawn on the canopy or the trunk, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate canopy is a smooth rounded-rectangle blob with only about 3-4 greens plus scattered red apple dots, and a plain 2-3 tone trunk. Its edge is a dark green tint, not black (0% neutral dark edge pixels), so it does not look like a sticker. The silhouette is regular and boxy. The references have ragged, clumped leaf masses with 5-6 steps and per-clump highlights, and tree-d43edd reaches 29 visible tones per tile against the candidate's 7. The candidate's measured facts (7 tones, 0% flat) match tree-1a786c exactly, but by eye its clump definition and highlight/shadow layering are visibly shallower than that reference. There is no large flat fill, but the craft sits below the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19595
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leaf canopy (round crown with apples)",
+      "rows": "1-34",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "31-34"
+     },
+     {
+      "part": "trunk with root flare",
+      "rows": "35-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 34,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the round canopy. Its width profile widens from 8 at row 1 to 30 at rows 12-25 and narrows again to 10 at row 35, so it is an ellipse-like mass. Lighter leaf tones sit at the top and left (rows 3-13), and darker tones sit at the right edge and bottom (rows 31-34, L=47-74). That shading gives it volume and an underside shadow. There is no flat top band with a front-edge line. The trunk (rows 35-47, width 6 widening to 14 at the roots) is the front face and is more than 3 rows tall. The canopy is a round volume rather than a flat slab or a flat elevation, so I read it as three_quarter, though the top surface is a judgment call for a tree."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small rounded-square canopy with about 3-4 greens plus scattered red apple dots, on a plain brown trunk. The outline is a dark green, visibly tinted (0% neutral edge pixels), so it is not a black sticker line. Measured facts: 7 visible tones per tile, 0% near-flat, and only 10 distinct colours in total. That matches the sparse reference tree-1a786c but is far below tree-d43edd (29 tones, 567 colours). By eye the canopy reads as one smooth blob with a nearly uniform leaf pattern. It has no distinct leaf clumps, no deep shadow underside, no highlight clusters, and no branch or root structure, which both references show. The trunk is a flat two-tone block. The shading is shallower than the 5-6 steps per material of the Beodeul bar, and the overall look is the simple, stamped silhouette the bar rejects. It is cleanly drawn but thinner and flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19270
+  }
+ ],
+ "decidedAt": "2026-10-22T06:32:22.990Z",
+ "cells": {
+  "16": [
+   "06455001937987ff",
+   "197a931a973060ed",
+   "1a1bc8840316107d",
+   "54517f07bcf4887a",
+   "842f28cfd74c8dc0",
+   "fb2403c77118a549"
+  ],
+  "24": [
+   "1aaba05532e2a175",
+   "1b43a7c27591d4f8",
+   "5043b685ffd825b8",
+   "772f1813e454d51d",
+   "8e5b81422578b4c3",
+   "a1c7a4cd7856e241",
+   "be5cdcf0f4fd6d7f",
+   "c6258ae3e094c5c6",
+   "d0c0513a10f3123f",
+   "def16326d57a3b6b",
+   "f0ecd79c0aece48d",
+   "fb394fa18a5c4aa5"
+  ],
+  "32": [
+   "073678cf33c669aa",
+   "1c7ccb5d338f6663",
+   "591043b2b21f6d22",
+   "c486a3b4b8e421e4"
+  ],
+  "48": [
+   "59115f6a0e02eaa2",
+   "6c2735f538a20dbe",
+   "8d023cce56f822db"
+  ]
+ }
+}
