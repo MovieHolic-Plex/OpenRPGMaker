@@ -1,6 +1,6 @@
 [
  {
-  "copy": "/tmp/bw2-proof/era-roman",
+  "copy": "<copy>/era-roman",
   "projectId": "9d8cf49b-640e-4f36-923e-492f2c5a258d",
   "revisionBefore": 3,
   "revisionAfter": 4,
@@ -47,7 +47,7 @@
   }
  },
  {
-  "copy": "/tmp/bw2-proof/field-enemy",
+  "copy": "<copy>/field-enemy",
   "projectId": "f837188a-87b0-4724-85ea-e83327305866",
   "revisionBefore": 8,
   "revisionAfter": 9,
@@ -92,7 +92,7 @@
   }
  },
  {
-  "copy": "/tmp/bw2-proof/house-entry",
+  "copy": "<copy>/house-entry",
   "projectId": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
   "revisionBefore": 25,
   "revisionAfter": 26,
@@ -152,7 +152,7 @@
   }
  },
  {
-  "copy": "/tmp/bw2-proof/pano-sunset",
+  "copy": "<copy>/pano-sunset",
   "projectId": "f8cfc48f-8c29-48a7-afc8-9580b1187d9d",
   "revisionBefore": 2,
   "revisionAfter": 3,
