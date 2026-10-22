@@ -210,6 +210,23 @@
 보정(`bun scripts/qa/interior-bare-floor-calibrate.mts <space-craft 실행 폴더>…`): 폴른 r28 세 방 15·7·12%, 3차 조수 판 32·32·15·27%. 한도 15%(vqa 축 1).
 `build_hand_interior_room` 의 구성 경고(compositionLint ④)도 이 자를 쓴다.
 
+## 방 루프 2차 — 천장 매달기·고친 곳만·속도 (2026-10-23)
+
+**천장 매달기(`builder.ts` `ceilingHang`).** 돔 조각의 y 는 천장 줄이다(문서 그대로). 옛 규칙은 y 가 벽면 줄이길 요구해 `dome slit tall` 이
+아홉 바퀴 내내 `hang-not-on-face` 로 거절됐다. 지금: `face-below`(dome slit tall·dome rib·rib west/east·dome cornice)는 칸 전부 비바닥·윗줄 막힘·바로 아래 줄이 벽면 1,
+`ceiling`(dome shell·rib top·dome vault)은 천장 칸이면 된다. 오류 문장은 맞는 y 를 알려 준다. 틈이 맵 꼭대기(y<2)에 붙으면 경고 `dome-slit-no-roof` —
+지붕 없이 하늘에 뜬 틈으로 읽혔다(판정자). `#` 두세 줄을 더하고 dome cornice/shell 로 지붕을 보이게 한다. dome cornice/shell 은 반복 허용(compositionLint).
+
+**고친 곳만(`edit.ts` `applyHandInteriorEdit`).** `build_hand_interior_room` 에 `edit:{remove, removeLines, add, set}` — 실행기(`withHandInteriorEdits`)가
+이 대화의 마지막 인자(다듬기 판은 `polish.lastBuilds`)에 합쳐 통째 인자로 바꾼다. 도구까지 edit 가 오면 `edit-without-base` 오류. set 은 plan·ceiling·start·exitWidth·name 만(스키마 크기).
+
+**속도.** 실내 만들기·고치기는 읽기 전용 계획 턴(Ultrabrain)을 건너뛴다(`skipPlanTurn`, 한 방에 10분을 쓰고 시공 도구 없이 끝났다).
+점검표 프롬프트에 `FEATURE_BUILD_PACE_PROMPT`(조회는 두 턴 안에 묶고 첫 시공은 초안). 손 도트 실내 맵의 `show_map_region` 은 그림이 있으면
+층 칸 배열을 빼고 막힌 칸 수만 준다(다듬기 한 판에 133K 자). 인게임 오프닝은 애니메틱 도구 40여 개 대신 12개(`IN_GAME_OPENING_TOOLS`).
+`stats.exposure` 에 systemSections·listTop·requests(턴별 대기·캐시)·results 가, `stats.review` 에 판정자·비평 호출 수·시간·토큰이 붙는다 — 시간·토큰 합계에 이것도 센다.
+
+**컷신 검토 그림.** 컷신 독립 판정의 시작 맵 그림도 `renderMapRegionImage`(show_map_region 칸 배열 → 렌더)로 얻는다. 맨 좌표를 넘기면 위 방 루프와 같은 `invalid region` 으로 판정 없이 끝났다.
+
 ## 출입구 도달·문앞 좌표 계약 (2026-10-07)
 
 한 칸 외부 문은 실내 출구도 한 칸이다. `build_hand_interior_room.exitWidth` 기본 1과 남쪽 평면 틈 폭을 대조해 두 칸 틈을 거부한다. `start`는 BFS 출발점이며 폭 선언이 아니다. 넓은 대문은 그 실제 폭을 명시한다. 결과 `exits`에 위치·폭을 돌려준다. `doorAt`으로 한 칸 문을 연결할 때 `create_transfer_pair`와 `link_maps`는 상대 실내의 설치된 1층 남쪽 틈 폭도 검사한다. 가구로 틈 한쪽을 막아 폭을 숨길 수 없다. 공용 손 도트 실내 참고문서의 예제 두세 칸 출구는 `exitWidth`를 명시하며 한 칸 집 문에 복사하지 않는다.
