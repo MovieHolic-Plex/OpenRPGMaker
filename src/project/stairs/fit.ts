@@ -57,6 +57,25 @@ export function fitStairTransfers(project: Project, mapIds: readonly string[]): 
     if (!v) { v = findPlacedStairs(project, m).filter((x) => x.contract.leads !== "same"); srcCache.set(m.id, v); }
     return v;
   };
+  // 짝 맞추기: 오르는 계단으로 위층의 「오르는」 계단 앞에 내리면, 위층에서 이 맵으로 돌아오는 「내려가는」 계단 앞으로 옮긴다.
+  for (const from of Object.values(project.maps)) {
+    for (const e of from.events ?? []) for (const t of transfersOf(e)) {
+      const list = stairs.get(t.mapId);
+      const dest = project.maps[t.mapId];
+      if (!list?.length || !dest || t.mapId === from.id) continue;
+      const src = sourceStairs(from).filter((st) => nearStair(st, e) <= 1).sort((a, b) => nearStair(a, e) - nearStair(b, e))[0];
+      const there = list.filter((st) => nearStair(st, t) <= 2).sort((a, b) => nearStair(a, t) - nearStair(b, t))[0];
+      if (!src || !there || there.contract.leads !== src.contract.leads) continue;
+      const opposite = list.filter((st) => st.contract.leads !== src.contract.leads);
+      const back = opposite.filter((st) => (dest.events ?? []).some((de) => nearStair(st, de) <= 1 && transfersOf(de).some((dt) => dt.mapId === from.id)));
+      const pick = back[0] ?? (opposite.length === 1 ? opposite[0] : undefined);
+      const land = pick && stairApproachCells(pick).filter((a) => walkableCell(project, dest, a.x, a.y)).sort((a, b) => dist(a, t) - dist(b, t))[0];
+      if (!pick || !land) continue;
+      const facing = stairArrivalFacing(pick.contract, land, stairTriggerCells(pick)[0]);
+      notes.push(`${from.id}/${e.id} 도착 ${t.mapId}(${t.x},${t.y}) 같은 쪽 계단 ${there.kitId} → 짝 계단 ${pick.kitId} 앞 (${land.x},${land.y}) ${facing}`);
+      t.x = land.x; t.y = land.y; t.direction = facing;
+    }
+  }
   for (const from of Object.values(project.maps)) {
     for (const e of from.events ?? []) for (const t of transfersOf(e)) {
       const list = stairs.get(t.mapId);

@@ -6,6 +6,7 @@
 //   도안 있는 타일 그룹 → stamp_object.
 import { isRetiredInteriorPlace, isRetiredInteriorTileset } from "@/project/retiredInteriorTilesets";
 import catalog from "@/assets/sharedObjectCatalog.json";
+import { describeStairContract, stairContractOf } from "@/project/stairs/contract";
 import { REGION_REFERENCES, PLACE_REFERENCES } from "@/project/regionReferences";
 import { sharedRegionReferences } from "@/project/sharedSpatialReferences";
 import { reviewedPlaceIndex } from "@/project/defaults/spatial/reviewedPlaceIndex";
@@ -44,6 +45,8 @@ export type SharedObjectEntry = {
   readonly tags: readonly string[]; readonly owner?: string; readonly preview?: string; readonly use: string;
   /** Place the object comes from (place kits): stamp_object loads it first. */
   readonly referenceId?: string;
+  /** 계단·사다리·에스컬레이터: 입구 계약 한 줄(앞 칸·이동 칸·도착 방향, 키트 왼쪽 위 기준) — project/stairs/contract.ts. */
+  readonly entrance?: string;
 };
 
 /** Ids published by PR #1499 before the catalog existed. */
@@ -118,7 +121,9 @@ function kitObjects(tileset: TilesetDef): SharedObjectEntry[] {
       ...(/분수|우물|수반|fountain|well/iu.test(label) ? ["분수", "분수대", "우물", "fountain"] : []),
       ...(/벤치|긴의자|bench/iu.test(label) ? ["벤치", "의자", "bench"] : []),
     ];
+    const stair = stairContractOf(tileset.id, kit as { id: string });
     return {
+      ...(stair ? { entrance: describeStairContract(stair) } : {}),
       id: `kit:${tileset.id}/${kit.id}`, kind: "object" as const, name: kit.name || kit.id, category: "project-kit" as const, tilesetId: tileset.id,
       width: kit.width, height: kit.height, tags: [tileset.name, "타일셋 킷", ...(kit.ai?.tags ?? []), ...extra], use: `stamp_object({objectId:'kit:${tileset.id}/${kit.id}', mapId, x, y})`,
     };
