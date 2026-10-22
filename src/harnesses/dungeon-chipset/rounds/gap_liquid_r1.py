@@ -162,16 +162,16 @@ def roll_rows(rows, rx, ry):
 
 
 # ================================================================================================ 줄 재료
-LIQ = {'A': ['water'], 'B': ['pool'], 'C': ['water']}
+LIQ = {'A': ['tide'], 'B': ['pool'], 'C': ['tide']}
 
 
 def water_leg(line):
     """q 가장 짙은 그늘 · a 깊은 바탕 · b 얕은 바탕 · c 물결 마루·잠긴 돌 · d 작은 반짝임.
-    A·C = 버들항 바다 굴 물과 같은 물 램프(0·1단이 거의 반반, 2단은 드문 마루, 4단 반짝임).
+    A·C = 버들항 바다 굴 웅덩이(parts/water_tide)와 같은 청록 tide 램프(0·1단 반반, 2단 드문 마루, 4단 반짝임).
     B = 고인 물(청록) — 0단이 거의 검어 그늘(q)에만 쓰고 한 단 올려 쓴다."""
     if line == 'B':
         return legend(q=('pool', 0), a=('pool', 1), b=('pool', 2), c=('pool', 4), d=('pool', 5))
-    return legend(q=('water', 0), a=('water', 0), b=('water', 1), c=('water', 2), d=('water', 4))
+    return legend(q=('tide', 0), a=('tide', 0), b=('tide', 1), c=('tide', 2), d=('tide', 4))
 
 
 def edge_leg(line, n):
@@ -181,12 +181,12 @@ def edge_leg(line, n):
     return dict(L, d=L['b'], c=L['b'])
 
 
-LIP = {'A': ('cfloor', 5), 'B': ('stone', 3), 'C': ('cata', 5)}     # 둑 위 턱 빛
+LIP = {'A': ('cfloor', 5), 'B': ('cfloor', 3), 'C': ('cata', 5)}     # 둑 위 턱 빛
 
 # 둑 앞면 층(물 쪽 → 위): J 물에 닿은 젖은 밑단 · H 가운데 · F 위 · (그 위 T 턱 빛). x = 바탕 단, y = 섞인 단(돌 알갱이·금).
 BANK = {
     'A': {'F': ('cfloor', 3, 4, 'xxyxxxxyxxxyxxxx'), 'H': ('cfloor', 1, 2, 'xxxyxxyxxxxxyxxx'), 'J': ('cfloor', 0, 1, 'xyxxxxxxyxxxxxyx')},
-    'B': {'F': ('stone', 2, 3, 'xyyxxxyxxxyyxxxx'), 'H': ('stone', 1, 2, 'xxxyxxxxyxxxxyxx'), 'J': ('stone', 0, 1, 'xxyxxxxyxxxxyxxx')},
+    'B': {'F': ('cfloor', 2, 1, 'xyyxxxyxxxyyxxxx'), 'H': ('cfloor', 1, 0, 'xxxyxxxxyxxxxyxx'), 'J': ('rim', 1, 0, 'xxyxxxxyxxxxyxxx')},
     'C': {'F': ('cata', 3, 4, 'xxxxyyxxxxxxyyxx'), 'H': ('cata', 1, 2, 'xxyxxxxxxyxxxxxx'), 'J': ('cata', 0, 1, 'xxxxxyxxxxxxxxyx')},
 }
 
@@ -222,16 +222,16 @@ for _ln in 'ABC':
 # 기호: ',' 마른 바닥 · 'm' 젖은 바닥 · 'n' 더 젖은 바닥(물에 닿음) · 'T' 둑 위 턱 빛 · 'F' 'H' 'J' 둑 앞면 층 · 'q'~'d' 물 · '.' 몸통.
 WATER_DESIGN = {
     1: dict(   # 맑은 얕은 웅덩이 — 둑 앞면 2~3줄, 물 그늘 a 한 줄, 남·서·동은 젖은 턱 + 가는 물금 d
-        N=(5, {2: 'JT', 3: 'JHT', 5: 'JJHT', 6: 'JJHFT', 8: 'JJJHFT'}, {'w': 'q', 'h': 'qa', 'c': 'q'}),
+        N=(6, {3: 'JHT', 4: 'JHHT', 6: 'JJHHT', 7: 'JJHHFT', 8: 'JJJHHFT'}, {'w': 'q', 'h': 'qa', 'c': 'q'}),
         S=(2, {1: 'n', 3: 'nm', 5: 'nmm'}, {'w': 'd', 'h': 'dc', 'c': ''}),
         W=(2, {1: 'n', 3: 'nm', 5: 'nmm'}, {'w': 'd', 'h': 'dc', 'c': ''}),
         NW=[',,,,,,,,',
             ',,,,,TTT',
-            ',,,TTHHH',
-            ',,THHJJJ',
-            ',,THJJJJ',
-            ',nTJJqqq',
-            ',nJqq...',
+            ',,,,THHH',
+            ',,,THHHH',
+            ',,nTHJJJ',
+            ',nnHJJJJ',
+            ',nJJqqqq',
             ',nd.....'],
         SW=[',nd.....',
             ',nd.....',
@@ -244,10 +244,10 @@ WATER_DESIGN = {
         INW=[',nd.....',
              'Tnnd....',
              'HTnd....',
-             'JHTnd...',
-             'JJHTd...',
-             'qJJJq...',
-             '.qqq....',
+             'HHTd....',
+             'JHHd....',
+             'JJJq....',
+             'qqq.....',
              '........'],
         ISW=['........',
              '........',
@@ -259,16 +259,16 @@ WATER_DESIGN = {
              ',nd.....'],
     ),
     2: dict(   # 깊고 어두운 웅덩이 — 둑 앞면 3~4줄 + 진한 그늘 q, 물가 얕은 턱 띠 d→c→b 뒤 깊은 바탕 a
-        N=(5, {2: 'JT', 3: 'JHT', 5: 'JJHT', 6: 'JJHFT', 8: 'JJJHFT'}, {'w': 'q', 'h': 'qq', 'c': 'q'}),
+        N=(6, {3: 'JHT', 5: 'JJHT', 6: 'JJHFT', 7: 'JJHHFT', 8: 'JJJHHFT'}, {'w': 'q', 'h': 'qq', 'c': 'q'}),
         S=(2, {1: 'n', 3: 'nm', 5: 'nmm'}, {'w': 'dc', 'h': 'dcb', 'c': 'c'}),
         W=(3, {1: 'n', 3: 'nm', 5: 'nmm'}, {'w': 'dcb', 'h': 'dcbb', 'c': 'cb'}),
         NW=[',,,,,,,,',
             ',,,,,TTT',
-            ',,,TTHHH',
-            ',,THHJJJ',
-            ',mTHJJJJ',
-            ',mTJJqqq',
-            ',mnJqb..',
+            ',,,,TFFF',
+            ',,,TFHHH',
+            ',,mTHJJJ',
+            ',mnHJJJJ',
+            ',mnJqqqq',
             ',mndcb..'],
         SW=[',mndcb..',
             ',mndcb..',
@@ -280,11 +280,11 @@ WATER_DESIGN = {
             ',,,,,,,,'],
         INW=[',mndcb..',
              'Tmndcb..',
-             'HTnndcb.',
-             'JHTTdcb.',
-             'JJHJqcb.',
-             'qJJqqbb.',
-             '.qq.....',
+             'FTndcb..',
+             'HFTdcb..',
+             'JHHqcb..',
+             'JJqqbb..',
+             'qqq.....',
              '........'],
         ISW=['........',
              '........',
@@ -305,7 +305,7 @@ RIPPLE = {   # 결 층 — 장면마다 감아 민다. <줄>1: 바탕 b 에 촘�
         '......cc........',
         'aa.........aaaa.',
         '....aaa.........',
-        '.........aa..d..',
+        '.........aa.....',
         'aaa.........aaa.',
         '.....aaaa.......',
         '..........cc....',
@@ -328,7 +328,7 @@ RIPPLE = {   # 결 층 — 장면마다 감아 민다. <줄>1: 바탕 b 에 촘�
         '.......bbbbb....',
         'bb..............',
         '....c......bbb..',
-        '..bbb.......d...',
+        '..bbb...........',
         '.........bbbb...',
         'b...............',
         '.....bbb.....bb.',
@@ -342,10 +342,10 @@ W_SPR = {
     'tw': [['.c.', 'cdc', '.c.'], ['d'], ['.'], ['.']], 'tw2': [['dd'], ['cd'], ['.'], ['c']],
 }
 W_STATICS = {
-    1: [[('p2', 3, 3), ('p1', 9, 9), ('tw', 10, 3)], [('p1', 9, 3), ('p4', 3, 9), ('tw2', 6, 6)],
-        [('p3', 4, 5), ('p4', 7, 8), ('tw', 11, 11)], [('p2', 8, 4), ('tw2', 3, 11)], [('tw', 4, 4), ('p3', 10, 9)]],
-    2: [[('sw', 3, 4), ('tw2', 9, 10)], [('sl', 6, 8), ('ss', 3, 3)], [('ss', 9, 5), ('sw', 4, 10), ('tw', 3, 3)],
-        [('sl', 4, 4), ('ss', 9, 10)], [('tw', 9, 4)]],
+    1: [[('p2', 3, 3), ('p1', 9, 9)], [('p1', 9, 3), ('p4', 3, 9), ('tw2', 6, 6)],
+        [('p3', 4, 5), ('p4', 7, 8)], [('p2', 8, 4)], [('tw', 4, 4), ('p3', 10, 9)], [('p3', 6, 11)]],
+    2: [[('sw', 3, 4)], [('sl', 6, 8), ('ss', 3, 3)], [('ss', 9, 5), ('sw', 4, 10), ('tw', 3, 3)],
+        [('sl', 4, 4), ('ss', 9, 10)], [], [('ss', 6, 6)]],
 }
 # <줄>1 은 결을 비스듬히(4,4) 민다 — 가로 획을 옆으로만 밀면 장면이 거의 같아 보였다. <줄>2 는 너울이 옆으로 흐른다.
 W_STEP = {('A', 1): (4, 4), ('B', 1): (4, 4), ('C', 1): (-4, 4), ('A', 2): (4, 0), ('B', 2): (4, 0), ('C', 2): (-4, 0)}
@@ -387,202 +387,186 @@ def water(line, n):
 
 
 # ================================================================================================ 용암 설계 (줄 B·C — A 는 시드 lines.A.skip)
-# 기호: ',' 마른 바닥 · 'y' 그을린 바닥(한 단) · 'z' 탄 바닥(두 단) · 'C' 식은 껍질 윗면 결 · 'V' 껍질 끝(화산암 1단)
-#       · 'Q' 빛 받는 껍질 턱 · 'M' 'L' 북쪽 껍질 앞면 · 'g' 앞면 밑이 용암 빛을 받음 · 'Y' 가장 뜨거움(용암 3단) · 'O' 주황(2단) · '.' 몸통.
-# 빛 띠는 기본이 없다(껍질이 몸통에 바로 닿음) — 열쇠 h 자리에만 달아오르고, c 자리는 껍질이 한 겹 더 두껍다.
-_LS = (2, {1: 'V', 3: 'Vz', 4: 'Vzy'}, {'w': '', 'h': 'O', 'c': 'V'})            # 남: 껍질 끝 1px, 빛은 드물게 주황 1px
-_LW = (3, {1: 'V', 3: 'Vz', 4: 'VCz', 5: 'VCzy'}, {'w': '', 'h': 'YO', 'c': 'V'})   # 서·동: 1~3px, 뜨거운 곳만 노랑+주황
-_LN = {'w': '', 'h': 'O', 'c': ''}                                                  # 북: 앞면 밑단(g)이 빛을 받고, 뜨거운 곳만 주황
-_LSW = [',zV.....',
-        ',zV.....',
-        ',zVV....',
-        ',,zVO...',
-        ',,zzVV..',
-        ',,,yzVV.',
-        ',,,,yzVV',
-        ',,,,,,,,']
-_LISW = ['........',
+# 기호: ',' 마른 바닥 · 'y' 달아오른 바닥(바닥 결을 따뜻한 갈색으로) · 'z' 탄 바닥 · 'C' 식은 껍질 윗면(손 결 + 실금처럼 빛나는 금)
+#       · 'V' 껍질 끝(용암에 닿음, 불씨 점) · 'Q' 북쪽 둑 빛 받는 턱 · 'M' 'L' 둑 앞면 · 'g' 앞면 밑단이 용암 빛을 받음 · '.' 몸통.
+# 빛 띠는 물가에 두지 않는다(칸마다 같은 자리에 노란 막대가 찍혀 칸 격자가 드러났다) — 빛은 몸통의 흐르는 맥과 껍질 실금이 낸다.
+_LN = {'w': '', 'h': '', 'c': ''}
+_LX = {'w': '', 'h': '', 'c': 'V'}        # c 자리는 껍질이 한 겹 더 두껍다
+LAVA_EDGE = dict(
+    N=(7, {4: 'gMQ', 5: 'gLMQ', 6: 'gLMMQ', 7: 'gLMMQz', 8: 'gLMMQzy'}, _LN),   # 북: 4~5줄 둑 앞면(3/4 낙차) + 탄 바닥
+    S=(3, {2: 'V', 3: 'Vz', 4: 'Vzy', 5: 'VCzy'}, _LX),                          # 남: 껍질 끝 1px + 달아오른 바닥
+    W=(4, {2: 'V', 3: 'Vz', 4: 'VCz', 5: 'VCzy', 6: 'VCCzy'}, _LX),              # 서·동: 껍질 1~3px + 탄 바닥
+    NW=[',,,,,,,,',
+        ',,,,zzzz',
+        ',,,zzQQQ',
+        ',,zzQMMM',
+        ',,zQMMMM',
+        ',zCQMLLL',
+        ',zCVLggg',
+        ',zCV....'],
+    SW=[',zCV....',
+        ',zCV....',
+        ',zCCV...',
+        ',yzCV...',
+        ',,yzCVV.',
+        ',,,yzzVV',
+        ',,,,,yzz',
+        ',,,,,,,,'],
+    INW=[',zCV....',
+         'zzCV....',
+         'QzCV....',
+         'MQCV....',
+         'MMQV....',
+         'LMMQ....',
+         'gLLg....',
+         '.gg.....'],
+    ISW=['........',
          '........',
          '........',
          '........',
          '........',
-         '........',
-         'VVV.....',
-         ',zV.....']
-LAVA_DESIGN = {
-    1: dict(   # 껍질 낀 느린 흐름 — 북쪽은 4줄 높이의 검은 화산암 벽(밑단에 용암 빛), 남·서·동은 깨진 얇은 껍질
-        N=(6, {3: 'gMQ', 4: 'gLMQ', 6: 'gLMMQ', 7: 'gLMMQz', 8: 'gLLMMQz'}, _LN),
-        S=_LS, W=_LW,
-        NW=[',,,,,,,,',
-            ',,,,QQQQ',
-            ',,,QMMMM',
-            ',,QMMMMM',
-            ',zQMLLLL',
-            ',zVLgggg',
-            ',zVgO...',
-            ',zV.....'],
-        SW=_LSW,
-        INW=[',zV.....',
-             'QzV.....',
-             'MQV.....',
-             'MMQV....',
-             'LMMQ....',
-             'gLLgO...',
-             '.ggg....',
-             '........'],
-        ISW=_LISW,
-    ),
-    2: dict(   # 흐르는 강 — 북쪽 화산암 벽 3줄, 남·서·동은 깨진 얇은 껍질
-        N=(5, {3: 'gMQ', 5: 'gLMQ', 7: 'gLMMQ'}, _LN),
-        S=_LS, W=_LW,
-        NW=[',,,,,,,,',
-            ',,,,QQQQ',
-            ',,,QMMMM',
-            ',,QMLLLL',
-            ',zQLgggg',
-            ',zVg....',
-            ',zVO....',
-            ',zV.....'],
-        SW=_LSW,
-        INW=[',zV.....',
-             'QzV.....',
-             'MQV.....',
-             'LMQO....',
-             'gLg.....',
-             '.gg.....',
-             '........',
-             '........'],
-        ISW=_LISW,
-    ),
-}
-for _n, _d in LAVA_DESIGN.items():
-    check_design(f'용암 {_n}', _d)
+         'VV......',
+         'zCVV....',
+         ',zCV....'],
+)
+check_design('용암 물가', LAVA_EDGE)
 
-LV_LEG = legend(V=('vrock', 1), Y=('lava', 3), O=('lava', 2))
-# 껍질 층 결(줄마다): g 용암 빛 받는 앞면 밑단(용암 0 + 화산암 1) · L 앞면 아래(화산암 1·2) · M 앞면 위(2·3) · Q 빛 받는 턱(3·4).
-CRUST_FACE = {
-    'B': {'g': ('aaxaaaaxaaaxaaaa', 'lava', 0, 'vrock', 1), 'L': ('xxyxxxxxyxxyxxxx', 'vrock', 1, 'vrock', 2),
-          'M': ('xyyxxxyyyxxxyyxx', 'vrock', 2, 'vrock', 3), 'Q': ('xxxyxxxxxxyxxxxx', 'vrock', 3, 'vrock', 4)},
-    # C: 푸르스름한 검은 층리 — 층마다 긴 가로 띠(같은 단이 6~9px 이어짐), 턱은 차가운 회청.
-    'C': {'g': ('aaaaxxaaaaaaaxaa', 'lava', 0, 'vrock', 1), 'L': ('xxxxxxxyyyyyyxxx', 'vrock', 1, 'vrock', 2),
-          'M': ('yyyyxxxxxxxxyyyy', 'vrock', 2, 'vrock', 1), 'Q': ('xxxxxxxxxyyyyyyx', 'vrock', 2, 'vrock', 3)},
+# 둑·껍질 결(줄마다). B = 따뜻한 검붉은 갈색 화산 껍질(rim·cfloor 어두운 단 + 용암 불씨). C = 푸르스름한 검은 층리(vrock).
+LAVA_FACE = {
+    'B': {'Q': ('xxyxxxxyyxxxxyxx', 'rim', 2, 'rim', 3), 'M': ('xxyyxxxxxyxxxyyx', 'rim', 1, 'cfloor', 0),
+          'L': ('xxxyxxxxxxyxxxxx', 'rim', 1, 'rim', 0), 'g': ('aaxaaaaxaaaxaaaa', 'lava', 0, 'rim', 0),
+          'V': ('xxyxxxxyxxxxxxyx', 'rim', 1, 'lava', 1)},
+    'C': {'Q': ('xxxxxxxxxyyyyyyx', 'vrock', 2, 'vrock', 3), 'M': ('yyyyxxxxxxxxyyyy', 'vrock', 2, 'vrock', 1),
+          'L': ('xxxxxxxyyyyyyxxx', 'vrock', 1, 'vrock', 2), 'g': ('aaaaxxaaaaaaaxaa', 'lava', 0, 'vrock', 1),
+          'V': ('xxxxxyxxxxxxxyxx', 'vrock', 1, 'lava', 1)},
 }
 
 
-def crust_face(line):
+def lava_face(line):
     out = {}
-    for ch, (pat, ra, ta, rb, tb) in CRUST_FACE[line].items():
+    for ch, (pat, ra, ta, rb, tb) in LAVA_FACE[line].items():
         leg = legend(a=(ra, ta), x=(rb, tb)) if ch == 'g' else legend(x=(ra, ta), y=(rb, tb))
         out[ch] = rowtex(pat, leg)
     return out
 
 
-LVR = legend(**{str(i): ('vrock', i) for i in range(5)})
-# 식은 껍질 윗면 결 — 바탕 화산암 2단에 손으로 찍은 덩이(위 3 빛 · 아래 1 그늘). B 둥근 덩이 · C 납작한 층 덩이.
-CRUST_LUMP = {'B': [(['.33.', '3221', '.11.'], 1, 1), (['33', '21'], 7, 3), (['.33.', '3221', '.11.'], 11, 6),
-                    (['33', '21'], 4, 9), (['.33.', '3221', '.11.'], 8, 12), (['33', '21'], 14, 13), (['3', '1'], 2, 14)],
-              'C': [(['33333332', '11111111'], 1, 2), (['3333332', '1111111'], 9, 7), (['333332', '111111'], 3, 12)]}
+# 식은 껍질 윗면 16×16(손). s 바탕 · r 그늘 · w 빛 받은 덩이 · k 실금(용암 0단) · h 달아오른 실금(용암 1단).
+CRUST = {
+    'B': (['ssrsssfsssksswss', 'swwssrsssskssssf', 'sssssfsssshkssss', 'fsssrssswssksssr', 'sssksssswwssssrw', 'sskksssswssfsssr', 'wsksssrssssssrss', 'wwsssrwwsssksssr', 'wssfsssrssskhsfs', 'ssrssssssssksssw', 'sssssskssrssssww', 'swwssshkssfssssw', 'sssrssskssssrsss', 'fsssssskssswwwss', 'ssrswsssssssrssf', 'sskswwssrfsssssr'],
+          legend(s=('rim', 1), r=('rim', 0), w=('rim', 2), f=('cfloor', 0), k=('lava', 0), h=('lava', 1))),
+    'C': (['nnnnnnnmmmmmmnnn', 'mmmmmmmmmkmmmmmm', 'nnnnooonnnknnnnn', 'mmmmmmmmmmmkmmmm', 'nnnnnnnnnnnnnooo',
+           'mmmkmmmmmmmmmmmm', 'nnnkhnnnnooonnnn', 'mmmmmmmmmmmmmmmm', 'oonnnnnnnnnnkknn', 'mmmmmmmmmmmmmhmm',
+           'nnnnnnoooonnnnnn', 'mmmmmmmmmmmmmmmm', 'nnnnnkknnnnnnnoo', 'mmmmmmmhmmmmmmmm', 'nnoooonnnnnnnnnn', 'mmmmmmmmmmmkmmmm'],
+          legend(m=('vrock', 1), n=('vrock', 2), o=('vrock', 3), k=('lava', 0), h=('lava', 1))),
+}
+for _ln, (_rows, _) in CRUST.items():
+    assert len(_rows) == 16 and all(len(r) == 16 for r in _rows), _ln
 
 
 def crust_tex(line):
-    cv = grid(['2' * 16] * 16, LVR)
-    for rows, x, y in CRUST_LUMP[line]:
-        SR.wrap2(cv, rows, LVR, x, y)
-    return cv
+    rows, leg = CRUST[line]
+    return grid(rows, leg, 16, 16)
 
 
-LL = legend(a=('lava', 0), b=('lava', 1), c=('lava', 2), d=('lava', 3), m=('vrock', 1), n=('vrock', 2), o=('vrock', 3))
-# 몸통 결 한 장(16×16, 감아 민다). <줄>1: 붉은 용암(b)에 크기·모양이 다른 껍질 판 넷(위 빛 n o · 몸 m · 아래 달아오른 c),
-# 판 둘레의 식은 어두운 용암(a), 드문 균열 c·뜨거운 점 d. <줄>2: 붉은 바탕에 주황 대리석 덩이, 노랑은 굽이치는 흐름 줄에만, 식은 점 m n.
-L_PAT = {   # 흐르는 결 층(감아 민다) — 성긴 빛 줄만. 껍질 판·샘은 변형마다 다른 고정 그림이 맡는다(같은 판이 칸마다 반복되지 않게).
-    1: ['aaaaaaaaaaaaaaaa',
-        'aaabbaaaaaaaaaaa',
-        'aaaaccbaaaaaaaaa',
-        'aaaaaaabaaaaaaaa',
-        'aaaaaaaaaaaaaaaa',
-        'aaaaaaaaaaaabbaa',
-        'aaaaaaaaaaaaabca',
-        'aaaaaaaaaaaaaaaa',
-        'aaaaaaaaaaaaaaaa',
-        'aaaaaabbaaaaaaaa',
-        'aaaaaaacbaaaaaaa',
-        'aaaaaaaaaaaaaaaa',
-        'aabaaaaaaaaaaaaa',
-        'aaabbaaaaaaaabba',
-        'aaaaaaaaaaaaaaab',
-        'aaaaaaaaaaaaaaaa'],
-    2: ['aaaaaaaaaaaaaaaa',
-        'aabbbbbaaaaaaaaa',
-        'aaaabccbbaaaaaaa',
-        'aaaaaaaaaaaaaaaa',
-        'aaaaaaaaaaaaaaaa',
-        'aaaaaaaaaaabbbaa',
-        'aaaaaaaaabbbcbba',
-        'aaaaaaaaaaaaaaaa',
-        'aaaaaaaaaaaaaaaa',
-        'abbaaaaaaaaaaaaa',
-        'aaaaaaaaaaaaaaaa',
-        'aaaaaabbbbaaaaaa',
-        'aaaaabbcbbbbaaaa',
-        'aaaaaaaaaaaaaaaa',
-        'aaaaaaaaaaaaabba',
-        'aaaaaaaaaaaaaaaa'],
-}
-_ANIM = {
-    'vent': [['.b.', 'bcb', '.b.'], ['.c.', 'cdc', '.c.'], ['.d.', 'ddd', '.c.'], ['.c.', 'bcb', '.b.']],
-    'vent_l': [['..b..', '.bcb.', '..b..'], ['..c..', '.cdc.', '..c..'], ['.cdc.', 'cdddc', '.cdc.'], ['..c..', '.cdc.', '..b..']],
-    'fissure': [['bb......', '.bbcbb..', '....bbcb', '......b.'], ['bb......', '.bccbb..', '....bccb', '......b.'],
-                ['bc......', '.bcdcbb.', '....bcdc', '......c.'], ['bb......', '.bccbb..', '....bbcb', '......b.']],
-    'well': [['..bb...', '.bbcb..', 'bbcccbb', '..bcbb.', '...bb..'], ['..bb...', '.bccb..', 'bccdccb', '..bccb.', '...bb..'],
-             ['..bcb..', '.bcdcb.', 'bcdddcb', '..bccb.', '...bb..'], ['..bb...', '.bccb..', 'bbcdcbb', '..bcbb.', '...bb..']],
-    'cool': [['.mm..', 'mnmm.', '.mmmm', '..mm.'], ['.mm..', 'mnmm.', '.mmmm', '..mm.'],
-             ['.mm..', 'mnmm.', '.mmmm', '..mm.'], ['.mm..', 'mnmm.', '.mmmm', '..mm.']],
-    'flare': [['....bbbb.', '.bbcccbb.', 'bb...bbb.'], ['....bbcb.', '.bcccccb.', 'bb...bcb.'],
-              ['...bcccb.', '.bcdddcbb', 'bbb..bcc.'], ['....bbbb.', '.bbcccbb.', 'bb...bbb.']],
-}
-# 껍질 판(고정): B 둥근 덩이 판(위 빛 n o · 몸 m) · C 푸르스름한 검은 층 판(가로로 납작, 위 한 줄만 빛).
-_PLATES = {
-    'B': {'pl1': ['.nno..', 'nmmmn.', 'mmmmmm', '.mmmm.'], 'pl2': ['.no.', 'nmmn', '.mm.'],
-          'pl3': ['..nnno.', '.nmmmmn', 'nmmmmm.', '.mmmm..', '..mm...'], 'pl4': ['no', 'mm']},
-    'C': {'pl1': ['nnnnno', 'mmmmmm', '.mmmm.'], 'pl2': ['nnno', 'mmmm'],
-          'pl3': ['.nnnnnn', 'nmmmmmm', 'mmmmmm.', '.mmmm..'], 'pl4': ['nn', 'mm']},
-}
-L_SPR = {ln: {**_ANIM, **_PLATES[ln]} for ln in 'BC'}
-L_STATICS = {   # 변형 다섯(본몸통 + 넷) — 판 자리·크기·수가 다 다르고, 하나는 비어 있다
-    1: [[('pl1', 3, 3), ('pl4', 10, 10)], [('pl3', 6, 7)], [('pl2', 9, 3), ('pl2', 3, 9), ('vent', 10, 10)],
-        [('pl4', 4, 5), ('fissure', 5, 8)], [('pl1', 7, 2), ('pl2', 3, 10)], []],
-    2: [[], [('well', 4, 5)], [('cool', 3, 3), ('vent', 9, 9)], [('flare', 3, 7), ('cool', 9, 3)], [('vent_l', 8, 3), ('cool', 4, 9)]],
-}
-L_STEP = {('B', 1): (4, 4), ('C', 1): (-4, 4), ('B', 2): (4, 0), ('C', 2): (-4, 0)}   # 4px·장면 — 8px 이면 장면 0·2 가 같아져 깜빡임만 보였다
-# 칸 창의 위상(결을 감아 밀어 둠) — 그림은 같고 16px 창이 어디서 시작하나만 다르다. 흐르며 결의 진한 경계가 칸 경계에 겹치면
-# 칸 격자가 드러나서(관문 S) 그런 위상을 피했다.
+# 바닥을 따뜻하게(달아오른 y · 탄 z): 바닥 화소의 밝기 단에 따라 rim 램프 단으로 옮긴다(모양은 그대로).
+HEAT = {'y': {'cfloor': [1, 2, 2, 3, 3, 3, 4, 4], 'stone': [1, 1, 2, 3, 3, 4], 'cata': [1, 1, 2, 2, 3, 3, 3], 'crock': [1, 1, 1, 2, 2, 3, 3]},
+        'z': {'cfloor': [0, 1, 1, 1, 2, 2, 2, 2], 'stone': [0, 1, 1, 1, 2, 2], 'cata': [0, 1, 1, 1, 1, 2, 2], 'crock': [0, 1, 1, 1, 1, 2, 2]}}
+
+
+def heat(cv, table):
+    out = Cv(cv.w, cv.h)
+    out.a[:] = cv.a
+    for y in range(cv.h):
+        for x in range(cv.w):
+            c = tuple(int(v) for v in cv.a[y, x, :3])
+            for r, tb in table.items():
+                t = ER.ramp_of(c, r)
+                if t is not None:
+                    out.a[y, x, :3] = dot.RAMPS['rim'][tb[t]]
+                    break
+    return out
+
+
+# ------------------------------------------------------------------------------------------------ 몸통: 칸 경계를 건너는 용암 맥
+# 맥은 칸 네 변의 정해진 나들목(북·남 x=4·11, 서·동 y=5·11)으로만 칸 밖에 나가고, 나들목에서는 2px 곧게 나간다 →
+# 이웃 칸의 어느 변형과도 맥이 이어진다. 변형마다 나들목 사이 길이 다르다(셋 + 좌우 뒤집기 셋 = 여섯).
+# 맥 빛은 칸 좌표 (x + y - 2k) mod 8 의 손 띠 — 8 이 16 을 나눠 칸 경계에서도 이어지고, 장면마다 2px 씩 흘러간다.
+VEINS = [
+    ['....v......v....', '....v......v....', '.....v......v...', '.....v......v...', '......v......v..', 'vvv....v......vv',
+     '...vvvvv........', '........v.......', '........v.......', '.........v......', '..........vvvv..', 'vv........v...vv',
+     '..vv.......v....', '....v......v....', '....v......v....', '....v......v....'],
+    ['....v......v....', '....v......v....', '...v......v.....', '...v.....v......', '..v......v......', 'vv......v.....vv',
+     '........v....v..', '.......v.....v..', '.......v....v...', '......v.....v...', '......v....vvv..', 'vvvvvv.....v..vv',
+     '.....v.....v....', '....v......v....', '....v......v....', '....v......v....'],
+    ['....v......v....', '....v......v....', '.....vv....v....', '.......vv..v....', '.........vvv....', 'vv.........vvvvv',
+     '..v.............', '...vv...........', '.....vv.........', '.......v........', '........v.......', 'vv.......vvvvvvv',
+     '..v.......v.....', '...v.......v....', '....v......v....', '....v......v....'],
+]
+VEINS = VEINS + [mirror_h(v) for v in VEINS]
+PORTS = {(4, 0), (11, 0), (4, 15), (11, 15), (0, 5), (0, 11), (15, 5), (15, 11)}
+for _v in VEINS:
+    assert len(_v) == 16 and all(len(r) == 16 for r in _v)
+    ring = {(x, y) for y in range(16) for x in range(16) if (x in (0, 15) or y in (0, 15)) and _v[y][x] == 'v'}
+    assert ring == PORTS, ring ^ PORTS
+
+
+def shoulders(vm):
+    return {(x, y) for y in range(16) for x in range(16) if vm[y][x] != 'v' and any(
+        0 <= x + dx < 16 and 0 <= y + dy < 16 and vm[y + dy][x + dx] == 'v' for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))}
+
+
+# 맥 띠(8칸 손 띠, 용암 단 글자). <줄>1 껍질 사이 가는 맥 — 붉게 흐르다 노랗게 달아오름. <줄>2 넓은 강 — 주황·노랑이 굽이쳐 흐름.
+VEIN_BAND = {1: ('bbccdcbb', 'aabbbbaa'), 2: ('ccddddcc', 'bccddccb')}
+# <줄>2 몸통 바탕 = 흐르는 붉은 결(감아 민다) + 그 위 떠 가는 껍질 판(변형마다 다른 자리). <줄>1 바탕 = 식은 껍질 결(고정).
+L2_BASE = ['bbbbbbbbbbbbbbbb', 'bbaaabbbbbbbbbbb', 'baaaaabbbbbcbbbb', 'bbaaabbbbbbbbbbb', 'bbbbbbbbbbbbbaab',
+           'bbbcbbbbbbbbaaaa', 'bbbbbbbbbbbbbaab', 'bbbbbbbaabbbbbbb', 'bbbbbbaaaabbbbbb', 'bbbbbbbaabbbbcbb',
+           'bcbbbbbbbbbbbbbb', 'bbbbbbbbbbbbbbbb', 'aabbbbbbbbcbbbaa', 'aaabbbbbbbbbbbaa', 'abbbbbbbbbbbbbbb', 'bbbbbcbbbbbbbbbb']
+LL = legend(a=('lava', 0), b=('lava', 1), c=('lava', 2), d=('lava', 3))
+PLATE = {'B': (['.ssw.', 'sssss', '.rsr.'], ['.sw.', 'rssr'], ['..ssw..', '.sssss.', 'rssssr.', '.rrr...'], ['sw', 'rs']),
+         'C': (['nnnoo', 'mmmmm', '.mmm.'], ['nnoo', 'mmmm'], ['.nnnoon', 'nmmmmmm', 'mmmmmm.'], ['no', 'mm'])}
+PLATE_LEG = {'B': legend(s=('rim', 1), r=('rim', 0), w=('rim', 2)), 'C': legend(m=('vrock', 1), n=('vrock', 2), o=('vrock', 3))}
+PLATE_AT = [[(0, 2, 3)], [(2, 7, 8)], [(1, 9, 3), (3, 3, 11)], [], [(0, 8, 9)], [(2, 3, 3)]]   # 변형마다 (판, x, y)
+L_STEP = {'B': (4, 0), 'C': (-4, 0)}
 L_PHASE = {}
 
 
+def lava_body(line, n, vi, k):
+    vm = VEINS[vi] if line == 'B' else VEINS[(vi + 3) % len(VEINS)]
+    sgn = 1 if line == 'B' else -1
+    if n == 1:
+        cv = crust_tex(line)
+    else:
+        base = roll_rows(L2_BASE if line == 'B' else mirror_h(L2_BASE), *L_PHASE.get((line, n), (0, 0)))
+        cv = make_body(base, [], ['.' * 16] * 16, LL, 0, {}, (0, 0))
+        from cave_r1 import shift
+        cv = shift(cv, L_STEP[line][0] * k, L_STEP[line][1] * k)
+        rows_set = PLATE[line]
+        for pi, x, y in PLATE_AT[vi]:
+            pr = rows_set[pi]
+            assert 2 <= x and x + len(pr[0]) <= 14 and 2 <= y and y + len(pr) <= 14
+            stamp(cv, pr, PLATE_LEG[line], x, y)
+    core, sh = VEIN_BAND[n]
+    for x, y in shoulders(vm):
+        ph = (sgn * x + y - 2 * k) % 8
+        cv.put(x, y, LL[sh[ph]])
+    for y in range(16):
+        for x in range(16):
+            if vm[y][x] == 'v':
+                cv.put(x, y, LL[core[(sgn * x + y - 2 * k) % 8]])
+    return cv
+
+
 def lava(line, n):
-    d = LAVA_DESIGN[n]
     fl = floor_body(line, n)
-    tex = {',': fl, 'y': soak(fl, WET_B if line == 'B' else WET), 'z': soak(fl, WET2_B if line == 'B' else WET2),
-           'C': crust_tex(line), **crust_face(line)}
-    if line == 'C':   # 심층굴: 탄 띠도 푸르스름한 검은 화산암 층(회색 판석을 태운 색이 아니라)
-        tex['z'] = rowtex('1112222211112221', LVR)
-        tex['y'] = soak(fl, WET2)
-    fr_rows, inn_rows = bank_frame(d, LAVA_WOB[line], KEYS[line])
+    tex = {',': fl, 'y': heat(fl, HEAT['y']), 'z': heat(fl, HEAT['z']), 'C': crust_tex(line), **lava_face(line)}
+    if line == 'C':   # 심층굴: 탄 띠는 푸르스름한 검은 화산암 층
+        tex['z'] = rowtex('1112222211112221', legend(**{'1': ('vrock', 1), '2': ('vrock', 2)}))
+    fr_rows, inn_rows = bank_frame(LAVA_EDGE, LAVA_WOB[line], KEYS[line])
     check_frame(f'용암 {line}{n} 틀', fr_rows, inn_rows)
-    fr, inn = ER.fill(fr_rows, inn_rows, LV_LEG, tex)
-    pat = roll_rows(L_PAT[n] if line == 'B' else mirror_h(L_PAT[n]), *L_PHASE.get((line, n), (0, 0)))
-    spr = L_SPR[line]
-    lays = place(L_STATICS[n], spr, line)
+    fr, inn = ER.fill(fr_rows, inn_rows, {}, tex)
     out = []
     for k in range(NF):
-        bodies = []
-        for lay in lays:
-            cv = make_body(['b' * 16] * 16, [], pat, LL, k, spr, L_STEP[(line, n)])
-            for nm, x, y, ph in lay:
-                rows = spr[nm][(k + ph) % NF] if isinstance(spr[nm][0], list) else spr[nm]
-                assert 2 <= x and x + len(rows[0]) <= 14 and 2 <= y and y + len(rows) <= 14, nm
-                stamp(cv, rows, LL, x, y)
-            bodies.append(cv)
+        bodies = [lava_body(line, n, vi, k) for vi in range(len(VEINS))]
         out.append(autotile_cv(bodies[0], fr, inn, bodies[1:]))
     return out
 

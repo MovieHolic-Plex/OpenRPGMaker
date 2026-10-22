@@ -7,14 +7,15 @@
   - 옆선 표: 바닥이 0~6px 파고드는 홈이 칸 안에서 부드럽게 크게 출렁이고(불룩 나옴·깊게 물림), 변마다·설계마다 표가 다르다.
     틀 규칙상 띠 이음점(0·7·8·15번)은 한 값(홈 2)이라 바깥 북서 귀는 반지름 5 의 둥근 귀. 변 띠 변형을 cellHash 로 고르는 것은
     dot.Autotile 이 몸통에만 변형을 두므로 이 모듈로는 못 한다(변마다 표 하나).
-  - 몸통 = 줄마다 손으로 찍은 잔 얼룩 암반(4~5 단) + 변형 8개: 얼룩을 뒤집어 돌려 쓰고, 큰 꼴(금·턱·덩이·기둥 머리)은 몇 변형에만.
-    금이 칸 끝을 건널 때는 정해진 자리(가로 변 y=4·11, 세로 변 x=5·12)에서만.
+  - 몸통 = 손으로 그린 큰 얼룩 틀(3~5px) + 손으로 고른 자리의 덩이(3~9px, 위·왼 빛·아래 그늘, 변형마다 2~8개) + 변형 8개.
+    큰 꼴(금·턱·덩이·층 줄)은 몇 변형에만, 칸 안에서 시작해 칸 안에서 끝난다.
   - 홈의 바닥색은 같은 줄·같은 번호 흙바닥 몸통 화소(cave_r1.on_base). 동 변(그늘 쪽)은 홈 0~1 을 그늘(0)로 채워 동쪽 바닥의
     서쪽 그늘 줄과 한 줄 그림자가 되고, A·B 동 테두리는 윗면 재질 단 그대로(어두운 세로 획이 생기지 않게).
 
 줄마다 두 벌은 다른 설계다: 1 = 턱 진 암반(드문 금·턱 / C1 층 줄), 2 = 돌무더기(드문 덩이·조약돌 / C2 기둥 머리 덩이). 옆선 표도 다르다.
 앞면(남쪽 2단)은 후보마다 새로 그린 dot.Face — 윗면 재질이 꺾여 내려간 더 어두운 세로 벽, 윗면 턱이 열마다 0~2px 늘어져
-두 면 경계가 자로 그은 줄이 되지 않고, 바닥 닿는 곳은 부스러기 + 접지 그림자, 끝은 먹 없이 둥글게. 줄 C 앞면은 둘 다 층벽.
+두 면 경계가 자로 그은 줄이 되지 않고, 바닥 닿는 곳은 부스러기 + 접지 그림자. 끝 마구리는 따로 칠하지 않아(바닥 귀 2px 만 둥글게)
+대각 계단 벽의 한 칸짜리 앞면들이 하나의 벼랑으로 이어진다. 줄 C 앞면은 둘 다 층벽.
 모든 화소는 이 파일의 행 문자열·옆선 깊이 표·손으로 고른 꼭짓점에서 온다(손 도트). 색은 잠금 팔레트 (램프, 단) 만.
 """
 import os
@@ -200,22 +201,51 @@ PROF2 = {'N': _prof([2, 3, 4, 5, 4, 3, 2, 2, 2, 1, 0, 0, 1, 3, 3, 2], 3),
 # 바탕 = 줄마다 손으로 찍은 잔 얼룩 암반(버들항 밀도, 4~5 단, 2~3화소 뭉치) — 조용해서 16px 되풀이가 드러나지 않는다.
 # 변형 8개(마지막 = 본몸통): 바탕을 뒤집어 돌려 쓰고, 큰 꼴(턱·금·바윗덩이·기둥 머리)은 몇 변형에만 드물게 둔다.
 # 금이 칸 끝을 건널 때는 정해진 자리(가로 변 y=4·11, 세로 변 x=5·12)에서만 — 이웃이 이으면 길게 이어지고, 안 이으면 거기서 끝난 금.
-A_MOT = [   # 어두운 갈색 사암(b) 바탕에 차가운 회녹(q) 뭉치 — 바닥(따뜻한 cfloor 2, 0.47)보다 한 단 어둡고 차가워 1배에서도 갈린다
-    'bqbbdbcbqqbbmbbq', 'qbbcbbbbqbdbbcbb', 'bbdmbqbcbbbbqbdb', 'cbbbbbqbbmcbbbbq',
-    'bqbcdbbbdbbqbcbb', 'bbbbmbqbmbbbbbdb', 'qbcbbbbbbqcbdbbb', 'bbbqbdbcbbbbmbqb',
-    'bdbbbmbbqbdbbbbc', 'bmbqbbbbbbmbqbbb', 'bbbbcbqdbbbbbcdb', 'qbdbbbbmbqbbbbmb',
-    'bbmbqbbbbbcbdbbq', 'cbbbbbdbqbbbmbbb', 'bqbcbbmbbbdbbbqb', 'bbbbqbbbcbmbqbbb']
-B_MOT = [   # 무채색 회색(m) 바탕에 b·c·p·l 잔 얼룩 5단
-    'mbmmpmlmbmmcmmbm', 'bmmlmmmbmmpmlmmc', 'mmpmbmcmmlmmmbmm', 'lmmmmbmmpmmbmmpm',
-    'mcmbmmlmmmcmmlmm', 'mmmpmmmbmlmmpmmb', 'bmlmmcmmmmbmmmcm', 'mmmmbmmpmcmmlmmm',
-    'mpmlmmbmmmmpmmbm', 'mmmmcmmlmbmmmcmm', 'lmbmmpmmmmlmbmmp', 'mmmmmmbmcmmmmmlm',
-    'mbmpmlmmmpmbmmmm', 'cmmmbmmmlmmmcmpm', 'mmlmmmpmmbmmmmmb', 'mpmmcmmbmmlmpmmm']
-C_MOT = [
-    'bbdbbbmbbbdbbbbb', 'bdddbbmmbbbbdbmb', 'bbdbbbbbbbbbbmmb', 'mbbbbdbbbmbbbbbb',
-    'mmbbbddbbmmbbbdb', 'bbbbbbbbbbbbbddb', 'bdbbmbbbbdbbbbbb', 'ddbbmmbbbddbbbmb',
-    'bbbbbbbcbbbbbbmm', 'bbmbbbbbbbbdbbbb', 'bbmmbdbbbbbddbbb', 'dbbbbddbbmbbbbbd',
-    'bbbbbbbbmmbbbbbb', 'bbdbbmbbbbbdbmbb', 'bmbbbbbbdbbbbbbb', 'bbbdbbbbbbmbbbdb']
-MOT = {'A': A_MOT, 'B': B_MOT, 'C': C_MOT}
+# 바탕 = 손으로 그린 큰 얼룩 틀(. 바탕 X · # 3~5px 얼룩 Y · + 드문 점 Z) 위에 손으로 고른 자리의 덩이(3~9px, 위·왼 빛 H ·
+# 몸 B · 아래·오른 그늘 S)를 감아 찍는다. 덩이 수(2~8개)와 크기를 변형마다 달리해 고른 잡음(카펫·TV 지직임) 대신
+# 크고 작은 바위 덩어리가 드문드문 모인 면으로 읽힌다.
+BLOTCH = [
+    '....##.....+#...', '...###.....###..', '.+..#.......##..', '.........#....+.',
+    '#.......###....#', '##..+....#.....#', '#..........+....', '.....##.........',
+    '..+.####....##..', '.....##....###..', '...........##.+.', '.##.....+.......',
+    '.###.......#....', '..#.......###...', '.......+..##....', '....#...........']
+# 줄마다 (X, Y, Z, H, B, S). A: 사암 b 바탕에 차가운 회녹 q 큰 얼룩 — 바닥(따뜻한 0.47 잔 점)과 결 크기·색온도가 다르다.
+TONES = {'A': 'bqdmcd', 'B': 'bcplmp', 'C': 'bdkmbk'}
+CLUMPS = {   # 크기 0 작은 → 3 큰. C 는 가로로 긴 층 판(층 진 바위)
+    'AB': (['HB', 'BS'], ['.HB.', 'HBBS', '.BS.'], ['.HHB.', 'HBBBS', 'BBBSS', '.SSS.'],
+           ['..HHB.', '.HBBBB', 'HBBBBS', 'BBBBSS', '.SSSS.']),
+    'C': (['HHB', 'BSS'], ['.HHHB', 'HBBBS', '.SSS.'], ['.HHHHB.', 'HBBBBBS', '.SSSSS.'],
+          ['..HHHHB..', '.HBBBBBBS', 'HBBBBBSS.', '.SSSS....']),
+}
+CLUMP_AT = [   # 변형 8개(마지막 = 본몸통)의 (x, y, 크기)
+    ((2, 1, 2), (9, 3, 1), (4, 8, 0), (11, 10, 3), (1, 12, 1)),
+    ((3, 2, 3), (12, 1, 0), (9, 9, 2)),
+    ((1, 1, 1), (6, 3, 0), (11, 2, 1), (3, 7, 2), (10, 7, 0), (6, 11, 1), (13, 12, 0), (1, 13, 0)),
+    ((5, 4, 3), (12, 11, 1)),
+    ((2, 2, 2), (10, 5, 1), (5, 10, 2), (12, 12, 0)),
+    ((8, 1, 1), (2, 6, 1), (7, 7, 3), (1, 12, 0), (12, 12, 1)),
+    ((4, 0, 0), (10, 2, 2), (3, 9, 1), (11, 10, 1)),
+    ((3, 3, 1), (10, 8, 2), (5, 12, 0)),
+]
+
+
+def base_rows(line, k):
+    X, Y, Z = TONES[line][:3]
+    return turn([r.replace('.', X).replace('#', Y).replace('+', Z) for r in BLOTCH], k)
+
+
+def clumped(line, rows, at):
+    H, B, S = TONES[line][3:]
+    spr = CLUMPS['C' if line == 'C' else 'AB']
+    g = [list(r) for r in rows]
+    for x, y, k in sorted(at, key=lambda t: t[1]):
+        for dy, r in enumerate(spr[k]):
+            for dx, ch in enumerate(r):
+                if ch != '.':
+                    g[(y + dy) % 16][(x + dx) % 16] = {'H': H, 'B': B, 'S': S}[ch]
+    return [''.join(r) for r in g]
+
+
 CRACK = {'A': ('d', 'q', 'm'), 'B': ('p', 'c', 'l'), 'C': ('k', 'd', 'm')}
 
 # 턱(설계 1): 위 판 끝 빛 입술 → 꺾인 앞면 → 아래 판 그늘. 길이·꺾임이 다른 둘.
@@ -252,53 +282,37 @@ def _crack(line, rows, paths):
     return cut(rows, paths, dark=d, shade=sh, lit=li)
 
 
-# 작은 꼴(A·B): 모인 홈(어두운 점 + 오른아래 빛), 빛 받는 혹(위 밝음 + 밑 그늘), 떨어져 나간 조각 — 조용하게.
-FORMS = {
-    'A': (['dd.', 'ddm', '.mm'], ['.mm.', 'mmmb', '.dd.'], ['md', 'dq'], ['d.d', '.m.']),
-    'B': (['pp.', 'ppl', '.ll'], ['.ll.', 'llmb', '.pp.'], ['lp', 'pb'], ['p.p', '.l.']),
-}
-FORM_AT = [((0, 3, 9), (1, 11, 3)), ((3, 12, 11),), ((2, 4, 2), (0, 10, 12), (3, 7, 6)), ((1, 2, 6),), (),
-           ((2, 9, 4), (1, 4, 11)), ((0, 12, 6),), ((3, 6, 12),)]
-
-
-def _forms(line, v):
-    if line not in FORMS:
-        return v
-    return [stampl(rows, [(FORMS[line][k], x, y) for k, x, y in at]) for rows, at in zip(v, FORM_AT)]
-
-
 def tops(line, n):
-    m = MOT[line]
-    t = [turn(m, k) for k in (1, 2, 3, 0, 1, 2, 3)]
-    if n == 1:
+    ks = (1, 2, 3, 0, 1, 2, 3, 0) if n == 1 else (2, 3, 0, 1, 2, 3, 0, 1)
+    t = [clumped(line, base_rows(line, k), at) for k, at in zip(ks, CLUMP_AT)]
+    if n == 1:   # 금·턱·층 줄은 칸 안에서 시작해 칸 안에서 끝난다(이웃 칸 앞에서 잘린 금이 생기지 않게)
         big, small = LEDGE[line]
         if line == 'C':
-            v = [strata_line(t[0], ((0, 4), (5, 5), (10, 3), (15, 4))),
+            v = [strata_line(t[0], ((1, 4), (5, 5), (10, 3), (14, 4))),
                  stampl(t[1], [(big, 2, 6)]),
                  t[2],
-                 strata_line(strata_line(t[3], ((0, 11), (4, 10), (9, 12), (15, 11))), ((3, 4), (8, 5))),
-                 _crack(line, stampl(t[4], [(small, 7, 2)]), [((5, 15), (6, 11), (3, 8))]),
+                 strata_line(t[3], ((1, 11), (4, 10), (9, 12), (14, 11))),
+                 _crack(line, stampl(t[4], [(small, 7, 2)]), [((5, 13), (6, 10), (3, 8))]),
                  t[5],
-                 _crack(line, t[6], [((12, 0), (11, 4), (13, 7))])]
+                 _crack(line, t[6], [((11, 2), (11, 5), (13, 7))])]
         else:
-            v = [_crack(line, t[0], [((0, 4), (4, 5), (7, 8), (12, 15))]),
+            v = [_crack(line, t[0], [((2, 3), (4, 5), (7, 8), (11, 13))]),
                  stampl(t[1], [(big, 2, 5)]),
                  t[2],
-                 _crack(line, t[3], [((5, 0), (6, 4), (3, 8), (0, 11))]),
+                 _crack(line, t[3], [((5, 2), (6, 4), (3, 8), (2, 12))]),
                  _crack(line, stampl(t[4], [(small, 7, 9)]), [((2, 2), (5, 3))]),
                  t[5],
-                 _crack(line, t[6], [((15, 11), (11, 10), (9, 6))])]
+                 _crack(line, t[6], [((13, 11), (11, 10), (9, 6))])]
     else:
         b1, b2, peb = BOULDER[line]
-        v = [stampl(t[0], [(peb, 3, 4), (peb, 11, 12)]),
-             stampl(t[1], [(b1, 2, 4), (peb, 12, 13)]),
+        v = [stampl(t[0], [(peb, 3, 4)]),
+             stampl(t[1], [(b1, 2, 4)]),
              t[2],
-             stampl(t[3], [(peb, 9, 2)]),
-             stampl(t[4], [(b2, 9, 3), (b2, 3, 10), (peb, 12, 12)]),
-             _crack(line, t[5], [((12, 15), (11, 12), (13, 9))]),
-             stampl(t[6], [(peb, 5, 8)])]
-    main = m if n == 1 else turn(m, 1)
-    return _forms(line, v + [main])
+             t[3],
+             stampl(t[4], [(b2, 9, 3), (b2, 3, 10)]),
+             _crack(line, t[5], [((12, 13), (11, 11), (13, 9))]),
+             t[6]]
+    return v + [t[7]]
 
 
 BUILD = {(ln, k): ({1: PROF1, 2: PROF2}[k], (lambda ln=ln, k=k: tops(ln, k))) for ln in 'ABC' for k in (1, 2)}
@@ -384,6 +398,9 @@ def face_cv(line, rows, left, right):
     """rows 16×32 → 32×32 표본. left/right = 끝 마구리 열 [(열0 글자열 32), …] — '.' 는 그대로."""
     leg = LEG[line]
     assert len(rows) == 32 and all(len(r) == 16 for r in rows), [len(r) for r in rows]
+    if line == 'B':   # B 앞면은 한두 단 밝게: 위 단 d→b·e→d, 아래 단 e→d (금 k 는 그대로) — 거의 검은 벽이 되지 않게
+        rows = [r.translate(str.maketrans('de', 'bd')) if 3 <= y < 15 else
+                r.translate(str.maketrans('e', 'd')) if 15 <= y < 28 else r for y, r in enumerate(rows)]
     cv = Cv(32, 32)
     for y, r in enumerate(rows):
         for x in range(32):
@@ -399,12 +416,10 @@ def face_cv(line, rows, left, right):
     return dot.Face(cv)
 
 
-def _cap(lit_col, inner_col, low='0'):
-    """둥근 끝: 바깥 열은 위 귀 한 줄·아래 귀 세 줄을 바닥으로, 안 열은 아래 귀 두 줄."""
-    a = '.' + lit_col * 28 + low * 3
-    b = '.' * 2 + (inner_col if inner_col != '.' else '.') * 28 + low * 2
-    c = '.' * 30 + low + '.'
-    return [a, b, c]
+def _cap(lit_col=None, inner_col=None, low='0'):
+    """끝 마구리: 끝 열을 따로 칠하지 않고(밝은·어두운 끝 줄이 칸마다 세로 이음처럼 서지 않게) 바닥 닿는 귀만 2px 둥글게.
+    lit_col·inner_col 은 예전 호출 모양을 위해 받기만 한다."""
+    return ['.' * 30 + low * 2, '.' * 31 + low]
 
 
 # ---- 줄 A: 사암(b 바탕 0.32 · d 그늘 · c/m 빛 턱) — 윗면(c·m 판, 평균 ≈0.37)보다 한 단 어둡다
@@ -437,7 +452,7 @@ def face_a2():
     """사암 벼랑: 지그재그 세로 금 하나와 짧은 비스듬한 금 둘로 크기가 다른 판이 갈린다(돌 쌓기·층리가 아니다)."""
     g = _fgrid(['bbbbbbbbbbbbbbbb', 'bbbbbbbcbbbbbbbb', 'bbbcbbbbbbbbbbbb', 'bbbbbbbbbbbbbcbb'], A_FTOP, A_FBOT,
                ['dddddddbdddddddd', 'ddbddddddddddddd', 'dddddddddddddbdd'], 15)
-    _cracks(g, [((2, 3), (4, 8), (3, 13), (5, 19), (4, 27)), ((4, 8), (9, 10), (12, 9)), ((5, 19), (11, 21))],
+    _cracks(g, [((10, 3), (12, 8), (11, 13), (13, 19), (12, 27)), ((12, 8), (17, 10), (20, 9)), ((13, 19), (19, 21))],
             'k', 'd', 'c')
     _specks(g, [(7, 5, 'g'), (8, 5, 'g'), (13, 6, 'c'), (1, 22, 'b'), (14, 24, 'b')])
     _lipline(g, 'A', '1100012210001210')
