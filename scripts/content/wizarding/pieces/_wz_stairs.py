@@ -90,7 +90,7 @@ def hand_rail(c, x, y0, y1, kind, lit):
 
 
 # ───────────────────────── 디딤판 ─────────────────────────
-def draw_steps(c, M, tx0, tx1, y, treads, warm=0):
+def draw_steps(c, M, tx0, tx1, y, treads, warm=0, span=None):
     """y 부터 아래로 단마다 디딤판 윗면 treads[i] px(맨 윗줄은 뒤 챌판 밑 그늘, 몸, 맨 아랫줄은 밝은 앞 모서리) → 챌판 2px(코 밑 그늘 · 앞면).
     위에서 본 수평면(디딤판) → 밝은 앞 모서리 → 어두운 앞면(챌판) 순서라 3/4 윗면으로 읽힌다.
     위(멀다)일수록 한 단 어둡다. warm>0 이면 맨 위 warm 단은 위층 빛(황동 램프)을 받는다. 반환 steps [(종류, y, h, i)], 끝 y."""
@@ -107,6 +107,17 @@ def draw_steps(c, M, tx0, tx1, y, treads, warm=0):
             lo = M['tread_lo'] - (1 if far >= n - 2 and not lit else 0)
             hi = M['tread_hi'] - (1 if far >= n - 1 and not lit else 0)
             if lit: lo, hi = 4, 5
+            if span:                                                                 # 원근: 줄마다 폭이 다르다
+                for k in range(h):
+                    a0, a1 = span(yy + k)
+                    col = K(tm, lo - 1) if k == 0 else K(tm, hi) if k == h - 1 else K(tm, lo)
+                    c.HL(a0, yy + k, a1 - a0, col)
+                    c.P(a0 - 1, yy + k, K(tm, hi) if k == h - 1 else K(M.get('side', 'stone'), 2))   # 서쪽 옆판 윗모서리
+                    c.P(a1, yy + k, K(tm, hi) if k == h - 1 else K(M.get('side', 'stone'), 3))       # 동쪽 옆판 윗모서리
+                    if 0 < k < h - 1:
+                        for x in range(a0 + 2, a1 - 2):
+                            if _hs(x, yy + k, 5) < 0.06: c.P(x, yy + k, K(tm, lo - 1))
+                continue
             c.R(tx0, yy, tx1 - tx0, h, K(tm, lo))
             c.HL(tx0, yy, tx1 - tx0, K(tm, lo - 1))                                  # 뒤 챌판 밑 그늘
             c.HL(tx0, yy + h - 1, tx1 - tx0, K(tm, hi))                              # 밝은 앞 모서리(코)
@@ -116,14 +127,30 @@ def draw_steps(c, M, tx0, tx1, y, treads, warm=0):
                 if h >= 4 and _hs(x, i, 5) < 0.08: c.P(x, yy + 1 + (x % (h - 2)), K(tm, lo - 1))
         else:
             rm = M['riser']
+            if span:
+                for k in range(2):
+                    a0, a1 = span(yy + k)
+                    c.HL(a0, yy + k, a1 - a0, K(rm, M['rise_lo']) if k == 0 else K(rm, M['rise_hi'] - (1 if far >= n - 2 else 0)))
+                    c.P(a0 - 1, yy + k, K(M.get('side', 'stone'), 0)); c.P(a1, yy + k, K(M.get('side', 'stone'), 1))   # 옆판이 챌판 높이에서 어둡게 꺾인다
+                continue
             c.HL(tx0, yy, tx1 - tx0, K(rm, M['rise_lo']))                            # 코 밑 그늘
             c.HL(tx0, yy + 1, tx1 - tx0, K(rm, M['rise_hi'] - (1 if far >= n - 2 else 0)))
             c.R(tx1 - 3, yy, 3, 2, K(rm, M['rise_lo']))
     return steps, y
 
 
-def _runner(c, m, steps):
-    """가운데 붉은 깔개(x12..19)와 챌판마다 황동 계단 막대."""
+def _runner(c, m, steps, span=None):
+    """가운데 붉은 깔개(x12..19)와 챌판마다 황동 계단 막대. span 이 있으면 원근 따라 폭이 줄마다 좁아진다."""
+    if span:
+        for kind_s, yy, h, i in steps:
+            for k in range(h):
+                a0, a1 = span(yy + k); w = max(4, round((a1 - a0) * 6 / 22)); x0 = (a0 + a1 - w) // 2
+                if kind_s == 't':                                   # 깔개는 디딤판과 같은 결로 접힌다: 윗면 중간 · 코 황동 막대 · 챌판 짙게
+                    col = K('brass', 3) if k == h - 1 else K(m, 1) if k == 0 else K(m, 2)
+                    c.HL(x0, yy + k, w, col)
+                else:
+                    c.HL(x0, yy + k, w, K(m, 0) if k == 0 else K(m, 1))
+        return
     x0, w = 12, 8
     for kind_s, yy, h, i in steps:
         if kind_s == 't':
@@ -169,14 +196,23 @@ def well_down(c, M):
     c.clear(0, 0, 32, 32)
     # 북쪽 안벽 정면(바닥 아래로 꺼진 벽, 가장 어둡다) y5..8 + 맨 윗줄 바닥 끝 모서리
     c.R(X0, Y0, X1 - X0, 4, K('night', 0)); c.HL(X0, Y0, X1 - X0, K('stone', 1))   # 줄눈 없는 민 어둠(벽돌 무늬는 아궁이로 읽혔다)
-    bands = M.get('bands') or [(('night', 1), ('stone', 2), 4), (('stone', 1), ('stone', 2), 4), (('stone', 2), ('stone', 3), 4),
-                               (('stone', 3), ('stone', 4), 4), (('stone', 3), ('stone', 5), 4)]
+    # 2026-10-23 다시 그림: 같은 4px 띠 다섯은 바닥 환기구·창살로 읽혔다(Argon 적대 검수). 단 높이가 남쪽(가까운 쪽)으로 갈수록 커지고
+    # (원근 2·3·4·5·6), 구덩이 양옆 안벽이 북쪽으로 갈수록 넓어지며(사다리꼴), 가까운 세 단에는 돌 줄눈이 엇갈려 박힌다.
+    bands = M.get('bands') or [(('night', 0), ('night', 1), 2), (('night', 1), ('stone', 1), 3), (('stone', 1), ('stone', 2), 4),
+                               (('stone', 2), ('stone', 3), 5), (('stone', 3), ('stone', 4), 6)]   # 가까운 단도 방 바닥보다 밝지 않게(밝은 띠 = 솟은 단상)
     y = Y0 + 4
+    nb = len(bands)
     for k, ((bm, bt), (nm, nt), h) in enumerate(bands):
         c.R(X0, y, X1 - X0, h, K(bm, bt))
         c.HL(X0, y, X1 - X0, K(nm, nt))                                   # 북쪽 끝 = 한 단 아래로 떨어지는 코(밝음)
-        if k < len(bands) - 1: c.HL(X0, y + h - 1, X1 - X0, K(bm, max(0, bt - 1)))   # 앞 단 코 밑 그늘
-        c.VL(X0, y, h, K(bm, max(0, bt - 1))); c.VL(X1 - 1, y, h, K(bm, max(0, bt - 1)))   # 양옆 안벽 1px(기울인 옆벽은 아궁이 옆면으로 읽혔다)
+        if k < nb - 1: c.HL(X0, y + h - 1, X1 - X0, K(bm, max(0, bt - 1)))   # 앞(가까운) 단 코 밑 그늘
+        if k >= nb - 3 and h >= 4:                                         # 가까운 세 단: 엇갈린 돌 줄눈(세로 1px)
+            for x in range(X0 + 3 + (k % 2) * 4, X1 - 2, 8): c.VL(x, y + 1, h - 2, K(bm, max(0, bt - 1)))
+        for yy in range(y, y + h):                                         # 구덩이 안벽: 북쪽(먼 단)일수록 곧게 넓어진다(원근선)
+            ww = 1 + round(4 * (28 - yy) / 19)
+            c.HL(X0, yy, ww, K('stone', 0) if yy == y else K(bm, max(0, bt - 2)))
+            c.HL(X1 - ww, yy, ww, K('stone', 1) if yy == y else K(bm, max(0, bt - 1)))
+            c.P(X0 + ww, yy, K('stone', 2) if yy == y else K(bm, max(0, bt - 1)))   # 안벽과 디딤판이 만나는 원근선
         if M.get('bits'): M['bits'](c, k, y, h)
         y += h
     assert y == 29, y
@@ -212,19 +248,31 @@ def up_into_doorway(c, M):
     (g0m, g0t), (g1m, g1t) = GLOW[M.get('glow', 'warm')]
     c.R(6, 7, 20, 3, K(g0m, g0t)); c.R(9, 8, 14, 2, K(g1m, g1t))
     c.HL(6, 6, 20, K('night', 1))
-    # 계단 몸: y10 맨 위 코부터 y47 까지 8단(위로 갈수록 얇다)
-    c.R(4, 10, 24, 38, K(M['riser'], M['rise_lo']))
-    steps, y = draw_steps(c, M, 6, 26, 10, [3, 4, 6, 7, 7], warm=1)
+    # 계단 몸(2026-10-23 다시 그림 — 고른 폭의 가로 띠는 선반·책장으로 읽혔다, object-gate 눈 거부권·3/4 FAIL):
+    # 계단 폭이 맨 아래 [5,27) 에서 맨 위 [10,22) 로 곧게 좁아진다(원근). 그 바깥은 계단통 양옆 벽 안면(사다리꼴, 서쪽 그늘·동쪽 빛),
+    # 단 끝 1px 는 옆판(stringer) — 디딤판·코 높이는 밝은 윗모서리, 챌판 높이는 어둡게 꺾여 원근선을 따라 모인다.
+    TY = 10
+    def span(yy):
+        t = (47 - yy) / (47 - TY)
+        return round(5 + 5 * t), round(27 - 5 * t)
+    sm = M.get('side', 'stone')
+    for yy in range(TY, 48):
+        x0, x1 = span(yy)
+        c.R(3, yy, x0 - 3, 1, K(sm, 1)); c.R(x1, yy, 29 - x1, 1, K(sm, 2))
+    steps, y = draw_steps(c, M, 0, 0, TY, [3, 4, 6, 7, 7], warm=1, span=span)
     assert y == 47, y
-    if M.get('runner'): _runner(c, M['runner'], [st for st in steps if st[1] >= 14])
+    if M.get('runner'): _runner(c, M['runner'], [st for st in steps if st[1] >= 14], span=span)
     if M.get('bits'): M['bits'](c, steps)
-    c.HL(4, 47, 24, K(M['riser'], 0))
-    for yy in range(10, 32):                       # 문 안 옆벽 그늘
-        c.P(5, yy, K('stone', 0)); c.P(26, yy, K('stone', 0))
-    # 맨 아래 줄(바닥 위): 양옆 투명 + 오른쪽 그림자, 손잡이·친주, 첫 단 밑 접지선
+    x0, x1 = span(47); c.HL(x0, 47, x1 - x0, K(M['riser'], 0))
+    # 맨 아래 줄(바닥 위): 양옆 투명 + 오른쪽 그림자, 원근 따라 비스듬히 오르는 손잡이, 친주, 첫 단 밑 접지선
     c.clear(0, 32, 3, 16); c.clear(29, 32, 3, 16)
     for yy in range(33, 48): c.R(29, yy, 1 + (47 - yy) // 6, 1, SHADOW2)
-    hand_rail(c, 3, 26, 41, kind, True); hand_rail(c, 26, 26, 41, kind, False)
+    rm = _rm(kind); top = 5 if rm != 'iron' else 4
+    capc = K('brass', 3) if kind == 'iron' else K(rm, top - 1)
+    for yy in range(26, 40):                       # 손잡이: 아래 단 옆으로만, 계단 끝 바깥 2px 를 원근선 따라(윗면 + 바깥 그늘)
+        x0, x1 = span(yy)
+        c.P(x0 - 2, yy, capc); c.P(x0 - 3, yy, K(rm, 0) if rm != 'iron' else K('iron', 1))
+        c.P(x1 + 1, yy, K(rm, top - 2) if kind != 'iron' else K('brass', 2)); c.P(x1 + 2, yy, K(rm, 0) if rm != 'iron' else K('iron', 1))
     c.VL(2, 32, 9, SHADOW); c.VL(29, 32, 9, SHADOW)
     newel(c, 3, 38, 10, kind); newel(c, 26, 38, 10, kind)
     # 문틀: 기둥 x0..2 · x29..31 (y0..31)

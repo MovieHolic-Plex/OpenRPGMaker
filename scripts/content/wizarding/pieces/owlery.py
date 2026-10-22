@@ -733,19 +733,16 @@ def _mbox(c):
 
 # ───────────────────────── 계단 ─────────────────────────
 def _owl_bits_up(c, steps):
-    """거친 돌 디딤판 결(밝은 알갱이·어두운 금)과 지푸라기 몇 가닥, 작은 새똥 점(부엉이 탑)."""
+    """거친 돌 디딤판 결(밝은 알갱이·어두운 금)과 작은 새똥 점(부엉이 탑) — 가까운 두 단에만, 계단 폭 안쪽(원근으로 좁아지는 단 밖으로 넘치지 않게).
+    밝은 지푸라기 가닥은 뺐다(선반 위 물건으로 읽혔다, Argon 적대 검수 2026-10-23)."""
+    n = len([s for s in steps if s[0] == 't'])
     for kind_s, yy, h, i in steps:
-        if kind_s != 't' or h < 3: continue
-        if i == 0: continue                                         # 맨 위 단은 위층 빛
-        for x in range(7, 23):
+        if kind_s != 't' or h < 5 or i < n - 2: continue
+        for x in range(9, 23):
             r = ((x * 73856093) ^ (yy * 19349663) ^ (i * 83492791)) & 0xff
-            if r < 14: c.P(x, yy + 1 + (r % max(1, h - 2)), K(ST, 4))
-            elif r < 26: c.P(x, yy + 1 + (r % max(1, h - 2)), K(ST, 2))
-        if h >= 5: c.HL(15, yy + 2, 3, K(ST, 2)); c.P(18, yy + 3, K(ST, 2))      # 갈라진 금
-        if i in (1, 3):
-            x = 9 + i * 2
-            c.HL(x, yy + 1, 4, K('brass', 4)); c.P(x + 4, yy + 2, K('brass', 3))
-        if i == 3: c.P(20, yy + 2, K('snow', 2))
+            if r < 10: c.P(x, yy + 1 + (r % max(1, h - 2)), K(ST, 4))
+            elif r < 20: c.P(x, yy + 1 + (r % max(1, h - 2)), K(ST, 2))
+        if i == n - 1: c.HL(15, yy + 2, 3, K(ST, 2)); c.P(18, yy + 3, K(ST, 2)); c.P(20, yy + 2, K('snow', 2))   # 갈라진 금 · 새똥 점
 
 
 def _owl_bits_down(c, k, y, h):
