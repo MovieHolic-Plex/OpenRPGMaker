@@ -10,16 +10,16 @@ import { PNG } from 'pngjs';
 import {
   OBJECT_GATE_EYE_OUTPUT_FORMAT, OBJECT_GATE_EYE_RUBRIC, OBJECT_GATE_KINDS, OBJECT_GATE_OUTPUT_FORMAT, OBJECT_GATE_PROFILE, OBJECT_GATE_RUBRIC, OBJECT_GATE_STYLE_KINDS, OBJECT_GATE_STYLE_OUTPUT_FORMAT, OBJECT_GATE_STYLE_RUBRIC,
   decideObjectGate, decideObjectGateBoth, decideObjectGateStyle, defaultObjectGateStyleKind, objectGatePixelSha256,
-  type ObjectGateKind, type ObjectGateReceipt, type ObjectGateRun, type ObjectGateStyleKind,
+  objectGateProfileHash, type ObjectGateKind, type ObjectGateReceipt, type ObjectGateRun, type ObjectGateStyleKind, type ObjectGateStyleRefSet,
 } from '../../_core/objectGate';
-import { GATE_DATA, gatePromptHash, gateProfileHash, readPng, readReceipt, styleRefs, writeHeldImage, writeProfile, writeReceipt } from './store';
+import { BASE_STYLE_REF_SET, GATE_DATA, chipsetOfLabel, gatePromptHash, gateProfileHash, readPng, readReceipt, resolveStyleRefs, writeHeldImage, writeProfile, writeReceipt } from './store';
 import { receiptCells } from './cells';
 import { auxMetrics } from './metrics';
 import { columnScan, factsLine, styleFacts, widthProfile } from './facts';
 import { REREVIEW_THEMES, collectPieces, loadOverrides } from './rereview';
 import { calibratedProfiles } from './store';
 
-type Item = { png: string; kind: ObjectGateKind; name: string; label?: string; styleKind?: ObjectGateStyleKind; /** 보정 전용: 라벨이 없는 반쪽은 부르지 않는다(영수증은 쓰지 않는다). */ skipHalves?: Half[] };
+type Item = { png: string; kind: ObjectGateKind; name: string; label?: string; styleKind?: ObjectGateStyleKind; /** 후보의 칩셋(화풍 기준 묶음을 고른다). 없으면 라벨 앞머리. */ chipset?: string; /** 보정 전용: 라벨이 없는 반쪽은 부르지 않는다(영수증은 쓰지 않는다). */ skipHalves?: Half[] };
 
 // 규칙 v6: 3/4 와 화풍은 따로 호출한다(서로의 약점이 번지지 않게).
 const SYSTEM_VIEW34 = `${OBJECT_GATE_RUBRIC}\n\n${OBJECT_GATE_OUTPUT_FORMAT}`;
@@ -113,11 +113,18 @@ export function styleBoard(candidate: { width: number; height: number; data: Uin
   return { png: PNG.sync.write(out), scale: S };
 }
 
-function userText(half: Half, item: Item, styleKind: ObjectGateStyleKind, refNames: string[], candidate: { width: number; height: number; data: Uint8Array }, refFacts: string[]) {
+function userText(half: Half, item: Item, styleKind: ObjectGateStyleKind, refNames: string[], candidate: { width: number; height: number; data: Uint8Array }, refFacts: string[], refSet?: ObjectGateStyleRefSet) {
   if (half === 'view34') {
     return `Object name: ${item.name}\nKind: ${item.kind} — ${OBJECT_GATE_KINDS[item.kind]?.meaning ?? 'other'}\n`
       + `Image 1 = the candidate magnified 10x with source row numbers on the left.\nImage 2 = REAL reference pairs (red frame = WRONG drawing, green frame = RIGHT drawing, same objects).\nImage 3 = the fixed synthetic GUIDE (green = right, red = wrong).\n\n`
       + `${columnScan(candidate)}\n\n${widthProfile(candidate)}`;
+  }
+  // 버들항 묶음(기본·대체)은 2026-10-23 이전과 바이트까지 같은 문구다 — 버들항 그림의 판정이 바뀌지 않게.
+  if (refSet && refSet.id !== BASE_STYLE_REF_SET) {
+    return `Object name: ${item.name}\nStyle kind: ${styleKind} — ${OBJECT_GATE_STYLE_KINDS[styleKind]}\nCandidate's chipset: ${refSet.id}\n`
+      + `Image 1 = COMPARISON BOARD at ${BOARD_SCALE}x: left of the magenta bar = reference(s) of the same kind taken from the art already shipped in the candidate's OWN chipset (${refSet.id}: ${refNames.join(', ')}), right of the bar = the candidate.\n`
+      + `For this candidate these ${refSet.id} references ARE the standard: wherever the instructions say "Beodeul", read "these ${refSet.id} references" — compare shading steps, outline treatment, texture and tile density with them, at the same scale. They are accepted shipped art of this chipset.\n\n`
+      + `MEASURED STYLE FACTS (exact):\n${factsLine('candidate', styleFacts(candidate))}\n${refFacts.join('\n')}`;
   }
   return `Object name: ${item.name}\nStyle kind: ${styleKind} — ${OBJECT_GATE_STYLE_KINDS[styleKind]}\n`
     + `Image 1 = COMPARISON BOARD at ${BOARD_SCALE}x: left of the magenta bar = Beodeul reference(s) of the same kind (${refNames.join(', ')}), right of the bar = the candidate.\n\n`
@@ -199,27 +206,32 @@ const STYLE_FLAG_DEFAULT = defaultObjectGateStyleKind;
 type JudgeOpts = { force: boolean; write: boolean; concurrency: number; runs?: number; cacheAnswers?: boolean; quiet?: boolean; offline?: boolean; anyProfile?: boolean };
 
 // front_prop(규칙 v8)는 종류 뜻이 사용자 문구에 들어가므로 같은 그림이라도 옛 종류의 답을 쓰면 안 된다 — 이름에 -fp 를 붙인다. 다른 종류의 프롬프트는 v7 과 같아 캐시를 그대로 쓴다.
-const answerCachePath = (half: Half, promptHash: string, sha: string, run: number, kind?: string) => resolve(GATE_DATA, 'calibration', 'answers', `${half}-${promptHash}`, `${sha.slice(0, 20)}${kind === 'front_prop' ? '-fp' : half === 'eye' && kind === 'seat' ? '-seat' : ''}-${run}.json`);
+const answerCachePath = (half: Half, promptHash: string, sha: string, run: number, kind?: string) => // 칩셋 묶음의 화풍 답은 promptHash 에 묶음 해시가 섞여 들어온다(judgeItems 의 stylePrompt)
+  resolve(GATE_DATA, 'calibration', 'answers', `${half}-${promptHash}`, `${sha.slice(0, 20)}${kind === 'front_prop' ? '-fp' : half === 'eye' && kind === 'seat' ? '-seat' : ''}-${run}.json`);
 
 async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateReceipt[]> {
   const profileHash = await gateProfileHash();
   const prompts: Record<Half, string> = { view34: await gatePromptHash('view34'), style: await gatePromptHash('style'), eye: await gatePromptHash('eye') };
   const runsPerJudge = opts.runs ?? OBJECT_GATE_PROFILE.runsPerJudge;
-  type Job = { half: Half; kind?: string; sha: string; images: Buffer[]; text: string; judge: (typeof OBJECT_GATE_PROFILE.judges)[number]; run: number };
+  type Job = { half: Half; kind?: string; sha: string; images: Buffer[]; text: string; judge: (typeof OBJECT_GATE_PROFILE.judges)[number]; run: number; promptHash?: string };
   const jobs: Job[] = [];
-  const prepared: Array<{ item: Item; styleKind: ObjectGateStyleKind; sha: string; width: number; height: number; cells?: Record<string, string[]>; metrics: ReturnType<typeof auxMetrics>; refNames: string[]; scale: number; cached?: ObjectGateReceipt }> = [];
+  const prepared: Array<{ item: Item; styleKind: ObjectGateStyleKind; sha: string; width: number; height: number; cells?: Record<string, string[]>; metrics: ReturnType<typeof auxMetrics>; refNames: string[]; refSet: ObjectGateStyleRefSet; scale: number; cached?: ObjectGateReceipt }> = [];
   for (const item of items) {
     if (!OBJECT_GATE_KINDS[item.kind]) throw Error(`모르는 종류 ${item.kind} (${item.png}). 종류: ${Object.keys(OBJECT_GATE_KINDS).join(', ')}`);
     const styleKind = item.styleKind ?? STYLE_FLAG_DEFAULT(item.kind);
     if (!OBJECT_GATE_STYLE_KINDS[styleKind]) throw Error(`모르는 화풍 종류 ${styleKind} (${item.png}). 종류: ${Object.keys(OBJECT_GATE_STYLE_KINDS).join(', ')}`);
     const { width, height, data } = readPng(item.png);
     const sha = await objectGatePixelSha256(width, height, data);
-    const refs = styleRefs(styleKind);
+    // 화풍 기준 그림은 후보 칩셋의 묶음에서 고른다(2026-10-23). 묶음이 없으면 버들항으로 떨어지고 영수증 style.refSet 에 적는다.
+    const { refs, refSet } = resolveStyleRefs(styleKind, item.chipset ?? chipsetOfLabel(item.label));
     if (!refs.length) throw Error(`화풍 종류 ${styleKind} 의 버들항 기준 그림이 없다`);
+    if (refSet.fallback && !opts.quiet) console.error(`  화풍 기준: ${item.label ?? item.name} → 버들항 대체(${refSet.reason})`);
+    const stylePrompt = refSet.id === BASE_STYLE_REF_SET ? prompts.style : await objectGateProfileHash({ base: prompts.style, refSet: refSet.id, refSetHash: refSet.hash });
     const refNames = refs.map(r => r.name);
     const metrics = auxMetrics(width, height, data);
     const cached = readReceipt(sha);
-    if (!opts.force && cached && (cached.profileHash === profileHash || opts.anyProfile) && cached.kind === item.kind) {
+    // 옛 영수증(style.refSet 없음)은 버들항 묶음으로 판정한 것이다 — 다른 묶음으로 판정해야 하는 그림이면 다시 판정한다.
+    if (!opts.force && cached && (cached.profileHash === profileHash || opts.anyProfile) && cached.kind === item.kind && (cached.style?.refSet?.id ?? BASE_STYLE_REF_SET) === refSet.id) {
       // 같은 그림을 다른 여백으로 다시 받았으면 칸 해시만 보탠다(판정은 그대로).
       const more = receiptCells(width, height, data), cells = { ...(cached.cells ?? {}) };
       let grew = false;
@@ -229,11 +241,11 @@ async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateRec
       // 판정받은 그림은 검토 화면(serve-holds)이 보여 주고 사람 결정 때 해시를 다시 잴 수 있게 따로 둔다(영수증에는 그림이 없다).
       // 2026-10-20 부터 사람 허용이 최종이므로 보류뿐 아니라 모든 판정의 그림을 둔다.
       if (opts.write) writeHeldImage(sha, width, height, data);
-      prepared.push({ item, styleKind, sha, width, height, metrics, refNames, scale: BOARD_SCALE, cached: receipt }); continue;
+      prepared.push({ item, styleKind, sha, width, height, metrics, refNames, refSet, scale: BOARD_SCALE, cached: receipt }); continue;
     }
     const image = magnify(width, height, data).png;
     const board = styleBoard({ width, height, data }, refs.map(r => r.path));
-    prepared.push({ item, styleKind, sha, width, height, cells: receiptCells(width, height, data), metrics, refNames, scale: board.scale });
+    prepared.push({ item, styleKind, sha, width, height, cells: receiptCells(width, height, data), metrics, refNames, refSet, scale: board.scale });
     const cand = { width, height, data };
     const refFacts = refs.map(r => factsLine(`reference ${r.name}`, styleFacts(readPng(r.path))));
     for (const judge of OBJECT_GATE_PROFILE.judges) for (let run = 1; run <= runsPerJudge; run++) {
@@ -241,13 +253,13 @@ async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateRec
       // 주의(2026-10-20 실측): 눈 호출은 판정 회차 루프 안에 있어 같은 답 3개(캐시 run 1~3)가 회차마다 다시 들어가 12표로 센다 — 거부권 문턱 2 는 실제로 「고유 답 3개 중 wrong 1개」다.
       // 이것을 문서대로(3개 중 2개)로 고치면 개발 확실 위반 slot_machine__w46-A 가 통과해 버린다(규칙 v9 조정 실측). 그래서 지금 동작을 유지한다 — 바꾸려면 문턱·보정을 함께 다시.
       if (!item.skipHalves?.includes('view34') && !OBJECT_GATE_KINDS[item.kind]?.exempt) for (let e = 1; e <= OBJECT_GATE_PROFILE.eyeRuns; e++) jobs.push({ half: 'eye', sha, images: [plainMagnify(width, height, data), pairsPng()], text: item.kind === 'seat' ? 'The object is a seat (chair, sofa, bench, pew or stool). Candidate (image 1) and references (image 2). Verdict?' : 'Candidate (image 1) and references (image 2). Verdict?', judge, run: e, ...(item.kind === 'seat' ? { kind: 'seat' } : {}) });
-      if (!item.skipHalves?.includes('style')) jobs.push({ half: 'style', sha, images: [board.png], text: userText('style', item, styleKind, refNames, cand, refFacts), judge, run });
+      if (!item.skipHalves?.includes('style')) jobs.push({ half: 'style', sha, images: [board.png], text: userText('style', item, styleKind, refNames, cand, refFacts, refSet), judge, run, promptHash: stylePrompt });
     }
   }
   let done = 0;
   const results = await pool(jobs, opts.concurrency, async job => {
     const t = Date.now();
-    const cachePath = opts.cacheAnswers ? answerCachePath(job.half, prompts[job.half], job.sha, job.run, job.kind) : '';
+    const cachePath = opts.cacheAnswers ? answerCachePath(job.half, job.promptHash ?? prompts[job.half], job.sha, job.run, job.kind) : '';
     try {
       let answer: unknown = null;
       if (cachePath && existsSync(cachePath)) answer = JSON.parse(readFileSync(cachePath, 'utf8'));
@@ -287,7 +299,7 @@ async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateRec
       ...(p.item.label ? { label: p.item.label } : {}), profileHash, verdict: decision.state,
       reasons: decision.reasons,
       view34: { verdict: decision.view34.state, reasons: decision.view34.reasons },
-      style: { verdict: decision.style.state, reasons: decision.style.reasons, styleKind: p.styleKind, refs: p.refNames, scale: p.scale, ...(scores.length ? { score: scores[Math.floor(scores.length / 2)] } : {}) },
+      style: { verdict: decision.style.state, reasons: decision.style.reasons, styleKind: p.styleKind, refs: p.refNames, scale: p.scale, ...(scores.length ? { score: scores[Math.floor(scores.length / 2)] } : {}), refSet: p.refSet },
       metrics: p.metrics, ...(ey.length ? { eye: { verdicts: ey.map(r => String((r.answer as { verdict?: string } | null)?.verdict ?? 'unread')) } } : {}), runs, decidedAt: new Date().toISOString(), cells: p.cells,
     };
     if (opts.write) writeReceipt(receipt);
@@ -308,16 +320,17 @@ const readBatch = (path: string): Item[] => readFileSync(path, 'utf8').split('\n
 });
 
 const half = (h?: { verdict: string }) => (h ? (h.verdict === 'pass' ? 'ok ' : h.verdict === 'refer' ? '?? ' : 'NO ') : '-- ');
-const line = (r: ObjectGateReceipt) => `${r.verdict === 'pass' ? 'PASS' : r.verdict === 'refer' ? 'REFER' : 'FAIL'}  3/4:${half(r.view34)}화풍:${half(r.style)}${r.kind.padEnd(14)} ${(r.label ?? r.name).padEnd(40)} ${r.pixelSha256.slice(0, 12)}  ${r.verdict === 'pass' ? '' : r.reasons.slice(0, 3).join(' · ')}`;
+const line = (r: ObjectGateReceipt) => `${r.verdict === 'pass' ? 'PASS' : r.verdict === 'refer' ? 'REFER' : 'FAIL'}  3/4:${half(r.view34)}화풍:${half(r.style)}${r.kind.padEnd(14)} ${(r.label ?? r.name).padEnd(40)} ${r.pixelSha256.slice(0, 12)}  [기준 ${r.style?.refSet ? `${r.style.refSet.id}${r.style.refSet.fallback ? '(대체)' : ''}` : 'beodeul_city'}]  ${r.verdict === 'pass' ? '' : r.reasons.slice(0, 3).join(' · ')}`;
 
 if (stage === 'review' || stage === 'audit') {
   const batch = option('batch');
-  const items: Item[] = batch ? readBatch(batch) : [{ png: resolve(option('png') ?? ''), kind: option('kind') as ObjectGateKind, name: option('name') ?? basename(option('png') ?? ''), label: option('label'), styleKind: option('style-kind') as ObjectGateStyleKind | undefined }];
-  if (!batch && (!option('png') || !option('kind'))) throw Error('review --png <그림> --kind <3/4 종류> [--style-kind building|roof|wall|tree|ground|water|prop] [--name 이름] [--label 표식] | --batch items.jsonl({png,kind,styleKind?,name,label})');
+  const items: Item[] = batch ? readBatch(batch) : [{ png: resolve(option('png') ?? ''), kind: option('kind') as ObjectGateKind, name: option('name') ?? basename(option('png') ?? ''), label: option('label'), styleKind: option('style-kind') as ObjectGateStyleKind | undefined, chipset: option('chipset') }];
+  if (!batch && (!option('png') || !option('kind'))) throw Error('review --png <그림> --kind <3/4 종류> [--style-kind building|roof|wall|tree|ground|water|prop] [--chipset jp_city|wizarding_world|…] [--name 이름] [--label 표식] [--no-write] | --batch items.jsonl({png,kind,styleKind?,chipset?,name,label})');
   // --advisory: 사람 검토 대기열을 채우는 용도. 이미 어느 프로필로든 판정받은 그림은 다시 부르지 않고(그림만 검토 화면용으로 둔다),
   // 눈 호출은 보정과 같은 답 캐시를 쓴다. 판정 규칙·프로필은 그대로다 — 영수증의 효력은 출구 규칙(사람 허용 또는 보정 프로필 pass)이 정한다.
   const advisory = flag('advisory');
-  const receipts = await judgeItems(items, { force: flag('force'), write: true, concurrency, ...(advisory ? { anyProfile: true, cacheAnswers: true } : {}) });
+  // --no-write: 영수증·그림을 쓰지 않고 판정만 본다(기존 영수증과 대조할 때). --offline: 판정자를 부르지 않고 답 캐시만 쓴다(같은 프롬프트면 같은 답 → 같은 판정).
+  const receipts = await judgeItems(items, { force: flag('force'), write: !flag('no-write'), concurrency, ...(advisory ? { anyProfile: true, cacheAnswers: true } : {}), ...(flag('offline') ? { cacheAnswers: true, offline: true } : {}) });
   for (const r of receipts) console.log(line(r));
   const passed = receipts.filter(r => r.verdict === 'pass').length;
   if (!calibratedProfiles().has(await gateProfileHash())) console.log(`\n현재 프로필은 보정되지 않았다 — 아래 숫자는 AI 조언이다. 최종 통과는 검토 화면(serve-holds, 18323)의 사람 허용이다.`);
@@ -338,7 +351,7 @@ if (stage === 'preview') {
   const out = resolve(option('out') ?? png.replace(/\.png$/, '.gate.png'));
   writeFileSync(out, magnify(width, height, data).png); console.log(out);
   const styleKind = (option('style-kind') as ObjectGateStyleKind | undefined) ?? (option('kind') ? STYLE_FLAG_DEFAULT(option('kind') as ObjectGateKind) : undefined);
-  if (styleKind) { const board = out.replace(/\.png$/, '.board.png'); writeFileSync(board, styleBoard({ width, height, data }, styleRefs(styleKind).map(r => r.path)).png); console.log(board); }
+  if (styleKind) { const board = out.replace(/\.png$/, '.board.png'); const { refs, refSet } = resolveStyleRefs(styleKind, option('chipset') ?? chipsetOfLabel(option('label'))); writeFileSync(board, styleBoard({ width, height, data }, refs.map(r => r.path)).png); console.log(board, `기준 묶음 ${refSet.id}${refSet.fallback ? ` (대체: ${refSet.reason})` : ''}`); }
   process.exit(0);
 }
 
@@ -377,7 +390,8 @@ if (stage === 'calibrate') {
   // 보정은 영수증을 덮어쓰지 않는다(표본 그림은 고치기 전 판이라 출구에 쓰이지 않는다). 답은 프로필 해시별 캐시에 남아 이어 돌릴 수 있다.
   // 적대 시험(adv-*)은 원본과 같은 그림(화소 해시)을 다른 종류로 선언한 것이라 같은 호출에 섞으면 해시로 합쳐져 서로의 판정이 섞인다 — 따로 부른다.
   const judgeOpts = { force: true, write: false, concurrency, runs, cacheAnswers: true, offline: flag('offline') };
-  const toItem = (c: Cal) => ({ ...c, skipHalves: [...(c.view34 ? [] : ['view34' as const]), ...(c.style ? [] : ['style' as const])] });
+  // 보정은 버들항 묶음으로만 돈다(칩셋 묶음은 보정 프로필 밖이다 — 보정 결과가 묶음 추가로 바뀌지 않게).
+  const toItem = (c: Cal) => ({ ...c, chipset: BASE_STYLE_REF_SET, skipHalves: [...(c.view34 ? [] : ['view34' as const]), ...(c.style ? [] : ['style' as const])] });
   const receipts = [...await judgeItems(picked.filter(c => !c.set.startsWith('adv-')).map(toItem), judgeOpts), ...await judgeItems(picked.filter(c => c.set.startsWith('adv-')).map(toItem), judgeOpts)];
   const byLabel = new Map(receipts.map(r => [r.label!, r]));
   type Truth = 'bad' | 'good' | null;
