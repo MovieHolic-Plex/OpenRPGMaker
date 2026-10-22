@@ -98,7 +98,14 @@ export function decideFootprint(name: string, brief: string, ask: { readonly w?:
     const clamp = (v: number, [lo, hi]: readonly [number, number]) => Math.min(Math.max(v, lo), hi);
     if (w !== clamp(w, c.w)) { adjusted.push(`폭 ${w} → ${clamp(w, c.w)}칸(${cls} 는 ${c.w[0]}~${c.w[1]}칸 폭)`); w = clamp(w, c.w); }
     if (h !== clamp(h, c.h)) { adjusted.push(`키 ${h} → ${clamp(h, c.h)}칸(${cls} 는 전체 ${c.h[0]}~${c.h[1]}칸)`); h = clamp(h, c.h); }
-    [foot, over] = ask.foot !== undefined && ask.foot >= 1 && ask.foot <= h && !adjusted.length ? [ask.foot, h - ask.foot] : split(c, h);
+    [foot, over] = split(c, h);
+    // 요청한 발밑/위 나눔은 그 종류가 자라는 쪽을 지킬 때만 따른다(object-gen 7ec0660): 깊은 물건(짐마차·노점·분수)은 발밑을,
+    // 키 큰 물건(나무·가로등)은 위를 늘린다. 실측: 3×3 건초 짐마차를 1+2 로 받아 한 줄 수레 위에 두 줄 덮개가 됐다(버들항 4×3 짐마차는 2+1).
+    if (ask.foot !== undefined && ask.foot >= 1 && ask.foot <= h && !adjusted.length) {
+      const keeps = c.grow === "foot" ? h - ask.foot <= over : ask.foot <= foot;
+      if (keeps) [foot, over] = [ask.foot, h - ask.foot];
+      else if (ask.foot !== foot) adjusted.push(`나눔 ${ask.foot}+${h - ask.foot} → ${foot}+${over}(${cls} 는 ${c.grow === "foot" ? "발밑 줄" : "위 줄"}이 자란다)`);
+    }
     why = `${cls}: 흔한 크기 ${c.typ.w}×${c.typ.foot}+${c.typ.over} (${c.measured.slice(0, 2).join("; ")})`;
   } else {
     w = ask.w ?? 1;
