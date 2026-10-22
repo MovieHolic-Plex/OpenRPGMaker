@@ -940,10 +940,10 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 ## 마당 바닥 오토타일 (2026-10-23, village-art)
 
 - **오토타일 셋:** `beodeul_yard_cobble`(자갈) · `beodeul_yard_dirt`(다진 흙) · `beodeul_yard_flag`(판석).
-  - 위치: 시트 줄 224, `BEODEUL_YARD_BASE` = 28672, 칸 28672~28742.
+  - 위치: 시트 줄 231, `BEODEUL_YARD_BASE` = 29568, 칸 29568~29638(성벽 3판 8행 28,544~29,567 바로 뒤).
   - 한 면은 21칸이다: 몸 8, 변 4, 모서리 4, 외딴 1, 안쪽 모서리 4. 자갈·판석은 변 칸이 둘씩 있다.
-- **굽기:** `scripts/content/beodeul-wall/bake_wall.py` 끝에서 `bake_yard.py` 를 잇는다(`--dev` 전달). 이 굽기로 버들항 시트가 2048×3600, 28800칸이 됐다.
-- **이식 칸 이동:** 원래 28416 에 있던 자연 이식 칸은 28800 으로 옮겼다.
+- **굽기:** `scripts/content/beodeul-wall/bake_wall.py` 끝에서 `bake_yard.py` 를 잇는다(`--dev` 전달). 이 굽기로 버들항 시트가 2048×3712, 29696칸이 됐다. 마당만 다시 구울 때는 `bake_yard.py` 하나로 된다(시트를 BASE 에서 자르고 한 행을 붙인다).
+- **이식 칸 이동:** 기존 사본의 이식 칸은 `relocateLocalTail` 이 새 번들 끝(29696) 뒤로 민다. 증명 사본은 28800→29696(2560칸, 맵 2장 화소 같음, 저장·재로드 같음): `verify-shots/beodeul-yard-graft-relocation/proof.json`.
   - 증명: `scripts/qa/beodeul-graft-relocation-proof.mts`. 기존 프로젝트 사본으로 이동 후 모든 맵이 화소까지 같음을 보였다.
 - **배선:** `src/project/defaults/beodeulCity.ts` 의 `mergeShippedFarm(…, withYard)` · `mergeShippedKits(…, withYard)`.
   - 타일 묶음은 `beodeul:yard_*`, 견본 킷은 `bd-yard-*-sample` 이다.

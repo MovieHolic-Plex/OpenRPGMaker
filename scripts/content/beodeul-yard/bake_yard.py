@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""버들항 마당 바닥 — 버들항 시트 꼬리(28,672~, 한 행 128칸)에 마당 오토타일 세 벌(자갈·다진 흙·판석)을 덧붙여 굽는다.
+"""버들항 마당 바닥 — 버들항 시트 꼬리(29,568~, 한 행 128칸)에 마당 오토타일 세 벌(자갈·다진 흙·판석)을 덧붙여 굽는다.
 
   python3 scripts/content/beodeul-yard/bake_yard.py --gate-export DIR   # 3/4 관문에 낼 표본 PNG + items.jsonl 만 쓴다
   python3 scripts/content/beodeul-yard/bake_yard.py --samples DIR       # 확인용 표본(1배·3배) + 비교판만 쓴다
@@ -7,7 +7,7 @@
   python3 scripts/content/beodeul-yard/bake_yard.py --dev               # 관문이 막혀도 굽는다(크게 경고) — 감독 로컬 개발 전용, 번들 커밋 금지
 
 입력  yard_art.py (행 문자열 손 도트)
-출력  public/assets/beodeul-city/beodeul-city-chipset.png — 앞 224행(28,672칸)은 그대로, 뒤 1행(128칸)
+출력  public/assets/beodeul-city/beodeul-city-chipset.png — 앞 231행(29,568칸)은 그대로, 뒤 1행(128칸)
       src/assets/beodeulCityTileset.json · beodeulCitySheet.json — 칸 표 + 오토타일 beodeul_yard_* + 칸 묶음 beodeul:yard_* + 키트 bd-yard-*
 덧붙이기 전용: 앞 칸 번호는 바뀌지 않는다. 다시 돌려도 같은 결과(멱등).
 bake_wall.py(28,544~)가 시트를 다시 쓰면 이 꼬리가 사라지므로 그 끝에서 이 스크립트를 다시 부른다.
@@ -30,7 +30,7 @@ TS_PATH = ROOT / "src/assets/beodeulCityTileset.json"
 SHEET_JSON = ROOT / "src/assets/beodeulCitySheet.json"
 T = 16
 COLS = 128
-BASE = 28672          # 성벽 꼬리(28,544~28,671) 끝 = 마당 시작
+BASE = 29568          # 성벽 꼬리(28,544~29,567, 3판 8행) 끝 = 마당 시작
 BASE_ROW = BASE // COLS
 ROWS_ADDED = 1
 COUNT = BASE + ROWS_ADDED * COLS

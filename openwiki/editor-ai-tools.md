@@ -3623,7 +3623,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
     해당 종류는 로마 도시와 폐허 셋(포스트아포칼립스·좀비 도시·황무지)이다.
     실측: 대안이 다른 종류 맵의 복사본(공장 도시 판박이)이거나 흩뿌린 소품 마을로 읽혔다.
   - ~~버들항 쓰임 덩이 종류는 needs-art~~ → **2026-10-23 ready (village-art).** 마당 바닥 오토타일 셋을 그렸다.
-    - 그림: 버들항 시트 줄 224, 칸 28672~28742.
+    - 그림: 버들항 시트 줄 231, 칸 29568~29638.
     - 오토타일: `beodeul_yard_cobble`(자갈) · `beodeul_yard_dirt`(다진 흙) · `beodeul_yard_flag`(판석).
     - 견본 킷: `bd-yard-*-sample`. `mergeShippedFarm`·`mergeShippedKits` 가 붙인다.
     - `dress_village_quarter` 가 마당을 개간해 깔고, 덩이를 그 안에 앉힌다.
@@ -3640,7 +3640,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
       - 포도원은 26×15 마당 북서·북동 귀부터 채운다(`packSlot`). 올리브는 마당 밖 반경 20에 둔다. 찍은 뒤 `varyVineRows` 가 포도 칸을 자리마다 같은 갈래(위 줄·속·아래 줄·좌우 끝) 안에서 바꾼다 — 같은 밭 넷이 도장으로 읽혔다(r4).
     - 장터 마을은 아직 walled-market 덩이 없이 광장 마을만 짓는다.
   - ~~폐허 셋(포스트아포칼립스·좀비 도시·황무지)은 needs-art~~ → **2026-10-23 ready.** 새 칩셋 `wasteland_ruins` + `compose_wasteland_map` 을 쓴다. `openwiki/wasteland-ruins.md` 참고.
-  - 마당 그래프트 이동(버들항 자연 이식 칸 28416→28800, 1536칸) 증명은 `scripts/qa/beodeul-graft-relocation-proof.mts` 에 있다. 기존 프로젝트 사본에서 맵 화소가 같은지를 본다.
+  - 마당 꼬리 뒤 이식 칸 이동(증명 사본 28800→29696, 2560칸, `verify-shots/beodeul-yard-graft-relocation/proof.json`) 증명은 `scripts/qa/beodeul-graft-relocation-proof.mts` 에 있다. 기존 프로젝트 사본에서 맵 화소가 같은지를 본다.
   - 달 기지 작곡기(`sfStationComposer` composeMoonbase)를 다시 짰다. 지붕을 1줄에 붙인 건물 줄 → 큰길 → 세로 연결 둘 → 설비 길 순서다.
     설비 길 위·아래에 전력·연료·화물·통신 마당과 착륙장을 둔다. 크레이터·바위는 놓인 기물 둘레 1칸을 피한다.
     기본 크기는 38×22, 하한은 34×20 이다.

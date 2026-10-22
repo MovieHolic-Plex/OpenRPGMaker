@@ -527,7 +527,7 @@ def main():
     _SH.clear()
     write_tables()
     print(json.dumps(dict(count=COUNT, pieces=len(PIECES), kits=[k["id"] for k in kits()]), ensure_ascii=False))
-    # 다음 꼬리: 마당 바닥(row 224, BASE 28672). 성벽이 시트를 다시 쓰면 마당 줄도 이어서 다시 굽는다.
+    # 다음 꼬리: 마당 바닥(row 231, BASE 29568). 성벽이 시트를 다시 쓰면 마당 줄도 이어서 다시 굽는다.
     import subprocess
     subprocess.run([sys.executable, str(HERE.parent / "beodeul-yard" / "bake_yard.py")] + (["--dev"] if "--dev" in sys.argv else []), check=True)
 
