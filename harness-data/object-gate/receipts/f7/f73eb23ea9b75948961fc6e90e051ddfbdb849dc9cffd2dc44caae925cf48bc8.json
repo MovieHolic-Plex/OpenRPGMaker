@@ -1,0 +1,286 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f73eb23ea9b75948961fc6e90e051ddfbdb849dc9cffd2dc44caae925cf48bc8",
+ "width": 48,
+ "height": 48,
+ "kind": "flat",
+ "name": "a long thin wandering dark grey-black crack with three short side branches and one dirt-filled opening, drawn as a transparent decal on old asphalt",
+ "label": "wasteland_ruins/road-crack-a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 9,
+  "darkV5": 71,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt patch with crack decal, seen from above",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The image is a flat 48x48 square patch of grey asphalt with a brown dirt border, and the crack and its branches are drawn on it. The column scans show no front-edge line, no eave shadow and no vertical face. The columns are mostly uniform grey (L about 77) with scattered speckles. The brown rows at the top and bottom edges (rows 0-2 and 45-47) are border outline, not a front face. The silhouette is a constant 48 wide on every row. This matches the flat-decal kind and has no front face, so it is a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are fine: 8 visible tones per tile (grass 3, paving 7), 0% near-flat coverage, and only 13% neutral dark edge pixels, so the dark tones lean tinted rather than sticker-black. By eye, though, the candidate reads as a mottled grey asphalt field with a small, thin crack mark near the centre. The crack uses about 2-3 lightness steps, with no per-segment highlights or chipped edges, and the dirt-filled opening is barely distinguishable. The brief asks for a long wandering crack with three side branches, but I can see little of that structure at this scale. The paving reference has cobbles shaded one by one with light edges, deep joints and a clear 5-step ramp, and the candidate's crack looks thinner and flatter than that. Texture is only a light speckle, so it is 'some' rather than rich. With the doubt on structure and shading depth, it falls short of the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13150
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt patch with crack decal, seen from directly above",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 45,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 48x48 sprite is one flat, evenly textured grey asphalt plate with a brown dirt border. Column scans at x=12, 24 and 35 show only speckled asphalt (L about 77) from row 0 to row 44, with no front-edge line and no eave shadow. Rows 45-47 are a thin dark brown edge strip at the border, not a vertical front face. The crack and its branches are drawn flat on the surface. There is no front face of 3 or more rows, so this is a flat top-down decal, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate has 8 visible tones per tile, against 7 for the paving reference and 3 for the grass reference. Near-flat coverage is 0%, the same as both references, so the asphalt is mottled with speckle and has no flat fills. Only 13% of its dark edge pixels are neutral, so the crack and edge darks lean toward a tinted grey-brown rather than a uniform black sticker line. The asphalt shows roughly 4-5 lightness steps, a little under Beodeul's 5-6. The crack itself is thin and sparse, with a dark core and a dirt-filled opening, so I judged it by eye. It reads as integrated into the asphalt and not as a pasted-on line. Total distinct colours are low (11), and the branches are faint at this scale, but the visible density matches the paving reference. A careful artist would accept it next to the reference, though it is not especially rich.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16226
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt slab with crack decal and dirt border",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 48x48 square, 48 px wide on every row. The column scans show a uniform grey asphalt fill (L~77) with lighter patches around rows 3-20 and dark blue-grey crack pixels around rows 22-27. A thin brown dirt border runs along the edges, and rows 44-47 are only a darker brown strip of that border. There is no front-edge line, no eave shadow, and no vertical face of 3 or more rows. It is a flat ground decal seen from directly above, matching the flat kind, with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The measured facts support the candidate. It has 8 visible tones per tile against 7 for the paving reference and 3 for the grass reference. Near-flat coverage is 0%, the same as both references. Only 13% of its dark edge pixels are neutral, so the crack and edges lean toward a tinted dark grey-brown rather than a neutral black sticker line. By eye, the asphalt shows a mottled grey ramp of about 4 steps with speckled grain and no 5x5 flat areas. The crack is a dark, slightly tinted line that sits in the surface rather than being outlined. It is thinner and sparser than the references' scale of detail, and the shading ramp is a little shallower than Beodeul's 5-6 steps. As a sparse decal it still reads as equal in density and craft to the references, so a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16172
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt patch with crack decal, filling the whole 48x48 canvas",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a flat plate seen straight from above. The silhouette is 48 px wide on every row (rows 0-47). A brown dirt border runs around all four edges, and the bottom rows 45-47 (#2f2418, #7b5d48, #916f57) match the left and right borders (#7b5d48), so they are not a front face. The interior is grey asphalt (#524b49, #7b7270) with a darker blue-grey crack, most visible around rows 22-28. There is no front-edge line, no eave shadow and no vertical face of 3 or more rows. This is the intended look for a flat floor decal, which has no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate's asphalt is mottled with speckle and patchy lighter and darker greys, not a flat fill. It shows about 8 visible tones per tile, above the grass reference (3) and the paving reference (7). Near-flat coverage is 0%, the same as both references. Only 13% of its dark edge pixels are neutral, so the crack and edge darks lean toward a tinted material tone rather than a uniform black sticker line. The shading ramp is about 5 steps, a little narrower than Beodeul's 5-6. The crack itself reads small and thin at this scale, but it is a sparse decal element, so I did not fail it for that. By eye it sits acceptably next to the paving reference without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18312
+  }
+ ],
+ "decidedAt": "2026-10-22T23:12:58.190Z",
+ "cells": {
+  "16": [
+   "1b9ff118672d0870",
+   "2b26b6e38c05ede8",
+   "442178e80c150716",
+   "569e46610ebe15fe",
+   "5d27e5b790dd249d",
+   "68a768bcdc506e6d",
+   "b893a0856db295f3",
+   "bc1c9357c36402c1",
+   "e991ccb29dd7c29f"
+  ],
+  "24": [
+   "5bae74d469412c64",
+   "83affeb66d6bf425",
+   "b12020e423542b1f",
+   "d4dda3c07a8e48e7"
+  ],
+  "32": [
+   "00800c56dd4bac20",
+   "16f8d4ff6ca2a8f0",
+   "1961fdcdfaa0d7eb",
+   "1d5a62cf9035809f",
+   "24923a532c1b0a59",
+   "24a57f5fe1b7fc95",
+   "2609f475b2738fd7",
+   "299a174c9ff6a9d4",
+   "31817067b4456431",
+   "44ee57067fc1f5af",
+   "4f19e22581fce781",
+   "5901de0a08358f51",
+   "6931d5509df12e52",
+   "6d67492af375bd6a",
+   "8a8737d57c568179",
+   "9cfb64b5b0911628",
+   "a62ca98e5871aeff",
+   "b2e3e939571bb67a",
+   "bdcc1bb4e0e02355",
+   "c56ca33305a6b11f",
+   "d78d9cf81d2af6b7",
+   "dbb4856ed8b87243",
+   "e02eec752ed2fa01",
+   "fd6a93ac0763cf22"
+  ],
+  "48": [
+   "7a11808e1aef884b"
+  ]
+ }
+}

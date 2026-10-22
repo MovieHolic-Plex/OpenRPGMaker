@@ -1,0 +1,299 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f64770f6b1989e2f5346c9c3264a4d83fc60f868839e023d537c3e39dcede910",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "a smaller irregular broken-asphalt pothole with a dirt bottom, a shadowed far inner wall, a chipped lighter near rim, a short crack running out of it and a couple of loose chips; transparent decal on old asphalt",
+ "label": "wasteland_ruins/pothole-b",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (3/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (3/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pothole opening with dirt bottom and shadowed far wall",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is an irregular blob 4-13 rows tall (width 5,7,10,10,11,9,10,7,4,1). It lies flat as a decal. The column scan shows a dark far-wall band (rows 5-7), then brown dirt getting lighter toward the near rim (rows 9-12). It is a single plate with no vertical front face of 3 or more rows, so it reads as a flat top-down shape, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny decal, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. At this scale it shows roughly 3 brown tones with a dark rim and a lighter chip, and only 7 distinct colours in total. The paving reference shows about 7 visible tones per tile with chipped highlights and speckled grain, and the grass reference shows about 3 tones plus tufts and clumps. The candidate has no visible grain, speckle or per-chip shading. The pothole is a blob with a dark interior and a light edge. The crack and the loose chips are barely readable. Dark edge pixels are 37% neutral, so the outline is partly tinted and partly neutral rather than a clean dark material tone. That reads thinner and more sticker-like than the references, and a careful artist would not accept it beside the paving as it stands.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9342
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pothole body (dirt bottom, far inner wall shadow, near rim) with crack and chips",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a flat irregular decal about 10 rows tall (rows 4-13) with a width profile of 5, 7, 10, 10, 11, 9, 10, 7, 4, 1. It is seen from above. The column scan shows a gray-blue crack or edge at the top (L=71), then a dark far inner wall shadow (L=38, rows 5-7), then dirt tones getting lighter toward the near side (L=60 to about 108), which fits a chipped lighter near rim. There is no vertical front face of 3 or more rows and no front-edge line with eave shadow. The shaded interior is a depression, not a standing volume. For a flat decal this is the expected top-down appearance."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny brown blob, well under one 16x16 tile (visible tones per tile = 0). It uses only 7 colours in total, against 80 for the grass and a dense stone pattern in the paving. By eye it shows roughly 3-4 tones: a dark inner wall, a dirt bottom and a lighter rim. The crack and loose chips are barely readable at this scale, so it looks like a small sticker rather than a shaded patch. Dark edge pixels are 37% neutral, so the outline is mixed and partly grey-black rather than consistently the dark tone of the adjacent asphalt or dirt. There are no large flat fills, since the object is so small. It lacks the per-stone shading and grain of the paving reference and is shallower than both references. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11174
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pothole body (dirt bottom, shadowed far wall, lighter near rim)",
+      "rows": "4-13",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is an irregular blob in rows 4-13, with width 5, 7, 10, 10, 11, 9, 10, 7, 4, 1. It has no vertical south face. The column scans show a smooth vertical gradient: dark far wall (#2f2418, rows 5-7), then mid brown, then lighter brown (#7b5d48) toward the near edge. That is a recessed floor seen from above, with the near rim lighter, and not a front face under a top. The crack and chips are small flat details. It is a flat ground decal with no standing front face, which suits the 'flat' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny decal, roughly 12x6 source pixels and well under one tile, so the per-tile facts read 0 and I judged by eye. It has only 7 distinct colours in total. It reads as a brown blob with a darker top edge and a lighter lower rim, about 3 lightness steps. The references carry about 6 steps, plus per-stone and per-tuft grain. The brief asks for a shadowed far wall, a chipped near rim, a crack and loose chips, but I can't make out the crack, chips or any grain at this size. The dark edge pixels are 37% neutral, so the outline is mixed: partly tinted brown, partly neutral dark. That is closer to the dark sticker-edge look than to Beodeul's selective material-tone outlines. Because the piece is sparse I did not penalise the density fact. By eye, though, it is flatter and thinner than the paving reference, and nothing here suggests old asphalt. A careful artist would not accept it next to the reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16035
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pothole decal (dirt bottom, shadowed far wall, lighter near rim, crack and chips)",
+      "rows": "4-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a flat ground decal about 10 rows tall (rows 4-13) and 11 px wide at most. The silhouette is irregular, going 5, 7, 10, 11, 9, 10, 7, 4, 1 wide, with no ellipse and no vertical front face. The column scan shows a dark shadow at the far wall (rows 5-7), a mid-brown dirt bottom, and a lighter brown near rim (rows 10-12). This is a depression seen from above, with no standing volume, no front-edge line, and no south face of 3 or more rows. It is a flat top-down decal, which is appropriate for kind flat."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny blob of roughly 10x5 source pixels, far smaller than one 16x16 tile. Its tile-level facts are therefore 0 and cannot be used for or against it, so I judged by eye. It uses only 7 distinct colours in total, against 80 for the grass and 7 for the paving, which has far more visible structure. Its dark edge pixels are only 37% near-neutral, so the outline is a mix of tinted and neutral. It reads as a dark rim around a brown fill with roughly 3 visible tones. I cannot see the shadowed far wall, the lighter chipped near rim, the crack or the loose chips as separate shapes. The grain, per-stone shading and tonal variety of the references are missing. Next to the grass and paving it looks thinner and more sticker-like. Because I cannot confirm the requested structure, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 11268
+  }
+ ],
+ "decidedAt": "2026-10-22T23:08:27.569Z",
+ "cells": {
+  "16": [
+   "317aff984141c7a8"
+  ],
+  "24": [
+   "08d292fd981950fe",
+   "4bf14ef37eef4229",
+   "75a027ee8c02c413",
+   "9aaa0861154fcc98",
+   "9e7ecec8e6c2fdfc",
+   "a5400e9d7071c60a"
+  ],
+  "32": [
+   "229ad62f516a4670",
+   "2f1597de8d8ca251",
+   "461dca573739e864",
+   "6ecec79553de8d0f",
+   "816535ec9ea94483",
+   "82a0e966207bb7df"
+  ],
+  "48": [
+   "37e6bd422d35d22e",
+   "4776c6741b9f2f56",
+   "584b0007fe4ea6e5",
+   "cbe5cdc4e164f178",
+   "d4ff1ecb19b63371",
+   "fdb9e4145e0155f7"
+  ]
+ }
+}

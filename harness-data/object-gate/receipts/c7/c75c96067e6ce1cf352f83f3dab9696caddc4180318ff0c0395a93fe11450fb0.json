@@ -1,0 +1,284 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c75c96067e6ce1cf352f83f3dab9696caddc4180318ff0c0395a93fe11450fb0",
+ "width": 48,
+ "height": 48,
+ "kind": "flat",
+ "name": "a small patch of alligator cracking — a net of three or four small polygons outlined by dark grey-black cracks, one plate slightly lifted, drawn as a transparent decal on old asphalt",
+ "label": "wasteland_ruins/road-crack-c",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "beodeul_city",
+   "chipset": "wasteland_ruins",
+   "fallback": true,
+   "reason": "칩셋 wasteland_ruins 의 화풍 기준 묶음이 없다",
+   "hash": "8cecb3a70460aa86"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 9,
+  "darkV5": 65,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 9
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt patch with crack net and lifted plate, seen from above",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 46,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 48x48 sprite is a flat, uniformly grey asphalt field with a brown border that is the same on all four sides. The column scans show a texture of mid-grey #524b49 with lighter and darker speckles and a small dark crack net around rows 19-29. There is no front-edge line, no eave shadow, no ellipse and no vertical face. The brown rows at the bottom (45-47) match the top rows (0-1) and the left and right edges, so they read as a frame rather than a south face. This is a flat decal seen from directly above, which matches the 'flat' kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate's measured facts match or beat the references. It has 8 visible tones per tile against 7 for paving and 3 for grass, and 0% near-flat coverage, so no 5x5 flat fills. Only 13% of its dark edge pixels are neutral, so the crack lines lean warm/brown-grey instead of being a black sticker line, which counts as dark_material_tone. By eye, the asphalt is mottled with speckle and tonal variation, and the cracks form a small polygon net with a lifted plate. The shading is shallower than the paving reference, at about 4 clear steps against 5-6, and the crack net is small and low-contrast. That is acceptable for a sparse decal on old asphalt, so I rate it slightly below the reference but passable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17525
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt patch with alligator crack net (flat decal seen from above)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 48x48 sprite is a uniform grey asphalt plate with a brown dirt border and scattered dark crack pixels. The column scans show grey L=77 runs with lighter speckles and no front-edge line, no eave shadow and no vertical face. The only darker band is rows 45-47, a brown ground edge at the bottom, which reads as a border and not a front face. This is a flat ground decal seen from above, matching the flat kind, with no front face of 3+ rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate carries 8 visible tones per 16x16 tile, against 7 for the paving reference and 3 for the grass. Near-flat coverage is 0%, the same as both references, so the asphalt is mottled with speckle and has no flat 5x5 areas. Only 13% of its dark edge pixels are neutral, so the crack lines lean warm or brown-grey and read as a tinted dark material tone, not a sticker-style black outline. Visually I count about 5 lightness steps on the asphalt and crack ramp, a little under the references' 5-6. The crack net is small and low-contrast, and the lifted plate reads only faintly. Texture is therefore 'some' rather than rich, and density is slightly below the references. It still holds up next to the paving reference on every primary fact, so I pass it narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13995
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt patch with crack net (flat decal)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a 48x48 flat decal seen straight from above: grey asphalt with lighter mottling, a dark crack net around rows 19-29 (x~22-34), and a brown dirt border on the edges. The only horizontal dark/brown band is at rows 44-47, and this is a ground edge, not a vertical face. There is no front face, no eave shadow and no side face. Reads as a flat plate, as expected for a flat floor decal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are fine: 8 visible tones per tile against 7 for the paving reference and 3 for the grass, 0% near-flat coverage, and only 13% neutral dark edge pixels, so the dark pixels carry a tint. By eye the piece is weaker than the numbers suggest. The asphalt is a murky dark grey-brown field with only about 3-4 lightness steps and light speckle, while the paving reference has distinct per-stone highlights, mid tones and dark joints. The crack net is tiny, low-contrast and reads as one faint ringed mark in the centre, not three or four clear polygons with one lifted plate. The lifted plate has no visible highlight or shadow step. The brown frame around the patch looks like a sticker border, not a transparent decal edge. It is not flat, but it is thinner and less crafted than the Beodeul references, so I fail it on the benefit of the doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15490
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "asphalt patch with crack network (flat decal)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a uniform 48px-wide square for all rows 0-47. It is a flat ground decal seen from above: grey asphalt with a net of dark cracks around rows 19-28. There is no front face, no front-edge line, no eave shadow and no ellipse. The brown border and the dark strip near rows 45-46 read as a ground edge, not a vertical south face. This matches the flat kind and has no front face of 3 or more rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 8 visible tones per 16x16 tile, against 7 for the paving reference and 3 for the grass reference. Near-flat coverage is 0%, the same as both references, so the asphalt is mottled with speckle and grain rather than filled flat. Only 13% of its dark edge pixels are neutral, so the crack lines and the border lean warm or tinted, not neutral black. That reads as dark material tone, unlike the paving reference at 80% neutral. The asphalt shows about 5 lightness steps, close to the references' 5-6. The small crack net in the centre has a lifted plate with a lighter lip, and it is shaded by value instead of drawn as a uniform black sticker outline. Weaknesses: the crack net is small and low-contrast, and the total palette is only 11 colours. Even so, the patch matches the references on the primary facts and does not look flatter or thinner next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17439
+  }
+ ],
+ "decidedAt": "2026-10-22T23:12:58.200Z",
+ "cells": {
+  "16": [
+   "1b9ff118672d0870",
+   "2b26b6e38c05ede8",
+   "442178e80c150716",
+   "569e46610ebe15fe",
+   "68a768bcdc506e6d",
+   "b893a0856db295f3",
+   "bc1c9357c36402c1",
+   "e991ccb29dd7c29f",
+   "f83b9f6d3c5581aa"
+  ],
+  "24": [
+   "51567feb33eccf8f",
+   "6907c633430c87fc",
+   "bdbda98aec0e23f8",
+   "cb22120b86f7dfac"
+  ],
+  "32": [
+   "00800c56dd4bac20",
+   "114db8afecace97f",
+   "1961fdcdfaa0d7eb",
+   "24923a532c1b0a59",
+   "2609f475b2738fd7",
+   "299a174c9ff6a9d4",
+   "44ee57067fc1f5af",
+   "5901de0a08358f51",
+   "6931d5509df12e52",
+   "74ab93265fbedb0a",
+   "8af66c11a16248db",
+   "9cfb64b5b0911628",
+   "a6ef3f27a5efe153",
+   "ab9d5b515b616491",
+   "b2cb74672d2f8200",
+   "b2e3e939571bb67a",
+   "bdcc1bb4e0e02355",
+   "c56ca33305a6b11f",
+   "d3a3bf0fa7daef5d",
+   "d78d9cf81d2af6b7",
+   "dbb4856ed8b87243",
+   "e02eec752ed2fa01",
+   "f415e2dfcdc48feb",
+   "fd6a93ac0763cf22"
+  ],
+  "48": [
+   "25dffc7cbbb9d3aa"
+  ]
+ }
+}
