@@ -148,6 +148,20 @@ class Board {
   autotile(key: string, cells: readonly boolean[]): void {
     this.road = cells;
     this.paint(key, cells);
+    // 안쪽 모서리 덧그림(asphalt-in-ne/nw/se/sw): 4방 마스크로는 T·十 자리의 오목한 귀를 못 그린다(r50·r51: «배관 같은 네모 귀»).
+    // 길 칸의 두 이웃(예: 북·동)이 길인데 그 사이 대각(북동)이 흙이면 그 칸 위층에 귀 덧그림을 얹는다.
+    const corner = { ne: this.cells(`${key}-in-ne`), nw: this.cells(`${key}-in-nw`), se: this.cells(`${key}-in-se`), sw: this.cells(`${key}-in-sw`) };
+    if (!corner.ne.length) return;
+    const on = (x: number, y: number) => !this.inb(x, y) || cells[this.idx(x, y)]!;
+    for (let y = 0; y < this.h; y++) for (let x = 0; x < this.w; x++) {
+      if (!cells[this.idx(x, y)]) continue;
+      const pick = (c: number[]) => c[Math.floor(hash2(x, y, this.seed + 307) * c.length)]!;
+      const t = on(x, y - 1) && on(x + 1, y) && !on(x + 1, y - 1) ? pick(corner.ne)
+        : on(x, y - 1) && on(x - 1, y) && !on(x - 1, y - 1) ? pick(corner.nw)
+        : on(x, y + 1) && on(x + 1, y) && !on(x + 1, y + 1) ? pick(corner.se)
+        : on(x, y + 1) && on(x - 1, y) && !on(x - 1, y + 1) ? pick(corner.sw) : -1;
+      if (t >= 0) this.setDecal(x, y, t);
+    }
   }
   /** 길 표시(road)는 그대로 두고 오토타일만 깐다 — 판잣집 촌 발길(track)처럼 «길 위에 기물 금지»가 아닌 바닥. */
   /** 판석 칸(fillSlab) — 맵을 다 짠 뒤 가장자리 오토타일을 덮는다. */
@@ -339,7 +353,7 @@ function scatterDecals(b: Board, density: number, road: readonly boolean[]): voi
     const used: number[] = [];
     for (let y = 1; y < b.h - 1; y++) for (let x = 1; x < b.w - 1; x++) {
       const i = b.idx(x, y);
-      if (!road[i] || roadEdge(x, y) || b.taken[i] || hash2(x * 7 + 3, y * 13 + 5, b.seed + 211) > 0.07) continue;
+      if (!road[i] || roadEdge(x, y) || b.taken[i] || layerTileAt(b.map, 2, i) >= 0 || hash2(x * 7 + 3, y * 13 + 5, b.seed + 211) > 0.07) continue;
       if (used.some((j) => Math.abs(j % b.w - x) + Math.abs(Math.floor(j / b.w) - y) < 3)) continue;
       b.setDecal(x, y, roadMarks[Math.floor(hash2(y, x * 5, b.seed + 223) * roadMarks.length)]!); used.push(i);
     }
