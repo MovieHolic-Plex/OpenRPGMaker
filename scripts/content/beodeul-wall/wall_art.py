@@ -210,7 +210,8 @@ def face_column(var, *, left="", right="", seed=0):
         cv.set(7, 30, MOSS[0]); cv.set(8, 30, MOSS[1])
     if var == 1 and not left and not right:      # 비계 구멍 둘(어두운 네모 + 아래 빛 턱)
         for (px, py) in ((10, 23),):
-            cv.rect(px, py, px + 1, py + 1, OUT); cv.set(px, py + 2, COOL[10]); cv.set(px + 1, py + 2, COOL[9])
+            cv.set(px, py, WOOD[4]); cv.set(px + 1, py, WOOD[3]); cv.set(px, py + 1, WOOD[2]); cv.set(px + 1, py + 1, WOOD[1])
+            cv.set(px + 2, py + 1, MORT); cv.set(px, py + 2, MORT); cv.set(px + 1, py + 2, MORT)
     if var == 2 and not left and not right:      # 화살 구멍(갓돌 밑 세 켜)
         arrow_slit(cv, 7, 8, 14)
     if left == "end": _quoins(cv, "L")
@@ -267,7 +268,7 @@ def flags(cv, x0, y0, x1, y1, seed, rows=(7, 6), shift=0):
             a, b = bounds[i] + 1, bounds[i + 1] - 1
             if a > b: continue
             key = (seed, r, a % 16, i)
-            tone = FLAG[[6, 6, 5, 7, 6, 4, 5, 6, 7][h(*key, "t") % 9]]
+            tone = FLAG[[6, 6, 5, 7, 6, 5, 5, 6, 7][h(*key, "t") % 9]]
             crack = h(*key, "c") % 7 == 0 and b - a >= 5
             cx = a + 2 + h(*key, "cx") % max(1, b - a - 3)
             for yy in range(ya, yb + 1):
@@ -309,14 +310,13 @@ def front_parapet(cv, x0, x1, y_top, seed):
                 elif i == 3: c = COOL[9] if k == 0 else (COOL[8] if k < MER_W - 1 else COOL[6])
                 else:
                     c = COOL[8] if k == 0 else (COOL[7] if k < MER_W - 1 else COOL[6])
-                    if i == 6 and k in (1, 3): c = COOL[6]
                     if i == 9: c = MORT
                 if k == MER_W - 1 and i >= 3: c = COOL[5] if i < 9 else MORT
             else:
                 if i <= 2: continue                       # 총안 사이로 통로가 보인다
                 if i == 3: c = COOL[10] if k == MER_W else COOL[9]
-                elif i == 4: c = COOL[8]
-                elif i == 5: c = COOL[6] if k != MER_W else COOL[7]      # 총안 바닥 그늘(왼쪽 톱니 그림자)
+                elif i == 4: c = COOL[6]
+                elif i == 5: c = COOL[4] if k != MER_W else COOL[5]      # 총안 바닥 그늘(왼쪽 톱니 그림자)
                 else:
                     c = COOL[7] if k != MER_W else COOL[6]
                     if i == 9: c = MORT
@@ -337,7 +337,6 @@ def back_parapet(cv, x0, x1, seed, base_y=0):
                 elif i == 3: c = COOL[9] if k == 0 else COOL[8]
                 else:
                     c = COOL[8] if k == 0 else (COOL[7] if k < MER_W - 1 else COOL[5])
-                    if i == 7 and k in (1, 2, 3): c = MORT2 if k == 2 else COOL[6]
                 if i == 11: c = OUT2
                 if k == 0 and i > 0: c = step(c, 1) if c not in (OUT2,) else c
             else:
@@ -409,9 +408,9 @@ def north_top(var=0, stair=False):
         cv.set(x, 30, FLAG[7] if x % 5 else FLAG[8]); cv.set(x, 31, OUT2)
     if stair:
         # 계단 머리: 앞 턱을 끊고 판석이 계단 맨 윗단으로 이어진다
-        for x in range(10, 16):
-            cv.set(x, 30, FLAG[6]); cv.set(x, 31, FLAG[5])
-        cv.set(9, 30, FLAG[3]); cv.set(9, 31, OUT2)
+        for x in range(4, 16):
+            cv.set(x, 30, FLAG[6] if x % 6 else FLAG[5]); cv.set(x, 31, FLAG[5])
+        cv.set(3, 30, FLAG[3]); cv.set(3, 31, OUT2)
     return cv
 
 
@@ -435,7 +434,10 @@ def vert_end_south(side):
     cv = vert_wall(side, 0, 9)
     for y in range(6, 16):
         for x in range(32): cv.set(x, y, CLEAR)
-    flags(cv, 1 if side == "E" else 8, 6, 30 if side == "W" else 23, 7, ("ve", side))
+    flags(cv, 1 if side == "E" else 8, 6, 30 if side == "W" else 23, 8, ("ve", side))
+    for x in range(32):      # 앞 흉벽 총안 사이로 보이는 것은 통로 판석(풀이 비치지 않게)
+        for y in range(6, 9):
+            if not cv.get(x, y)[3]: cv.set(x, y, FLAG[5] if y < 8 else FLAG[4])
     front_parapet(cv, 0, 31, 6, ("ves", side))
     _close_sides(cv, 6, 15)
     return cv
@@ -484,9 +486,10 @@ def corner(kind):
                 cv.set(x, y, c)
         for y in range(32): cv.set(0 if west else 31, y, OUT2)
         # 안쪽 가장자리: 아래로 세로 성벽의 안쪽 턱이 이어진다
-        xi = 30 if west else 1
-        for y in range(12, 32): cv.set(xi, y, FLAG[3] if west else FLAG[7]); cv.set(31 if west else 0, y, OUT2)
-        cv.set(31 if west else 0, 12, OUT2)
+        # 안쪽 꺾임 점(오른쪽 아래): 세로 성벽의 안쪽 턱과 북쪽 성벽 앞 턱이 여기서 만난다 — 그 밖은 판석이 그대로 잇는다
+        xo, xi = (31, 30) if west else (0, 1)
+        cv.set(xi, 30, FLAG[3] if west else FLAG[7]); cv.set(xo, 30, OUT2)
+        cv.set(xi, 31, OUT2); cv.set(xo, 31, OUT2)
     else:
         flags(cv, fx0, 0, fx1, 24, ("c", kind), rows=(7, 7), shift=2 if west else 9)
         side_parapet(cv, 0 if west else 31, 0, 21, "W" if west else "E")
@@ -504,8 +507,10 @@ def corner(kind):
                     if yy == 15: c = MORT
                 cv.set(x, y, c)
         for y in range(32): cv.set(0 if west else 31, y, OUT2)
-        xi = 30 if west else 1
-        for y in range(0, 16): cv.set(xi, y, FLAG[3] if west else FLAG[7]); cv.set(31 if west else 0, y, OUT2)
+        # 안쪽 꺾임 점(오른쪽 위): 세로 성벽 안쪽 턱과 남쪽 성벽 뒤 가장자리가 만난다
+        xo, xi = (31, 30) if west else (0, 1)
+        cv.set(xi, 0, OUT2); cv.set(xo, 0, OUT2)
+        cv.set(xi, 1, FLAG[3] if west else FLAG[7]); cv.set(xo, 1, OUT2)
     return cv
 
 
@@ -518,7 +523,7 @@ def stairs():
     디딤판 3행(앞 모서리 빛 + 따뜻한 판석), 계단 몸 옆면은 짙은 돌(켜 줄눈), 챌판 모서리 1열 빛. 뒤는 앞면 마름돌 그대로."""
     cv = Canvas(16 * STAIR_W, FACE_H)
     for i in range(STAIR_W):
-        cv.paste(face_column((i + 1) % FACE_VARS), 16 * i, 0)
+        cv.paste(face_column(0 if i != 1 else 3), 16 * i, 0)      # 화살 구멍 변형(2)은 계단 뒤에 두지 않는다
     Wd = 16 * STAIR_W
     for i in range(8):
         x0 = 6 * i
@@ -533,10 +538,12 @@ def stairs():
                     if y < ty + 3: continue                    # 더 높은 단이 그린다
                     # 계단 몸 옆면(그늘): 짙은 돌, 6행 켜·엇갈린 세로 줄눈
                     k = (y - 3) // 6
-                    c = OUT2
-                    if (y - 3) % 6 == 5: c = OUT
-                    elif (x + (k % 2) * 5) % 10 == 0: c = OUT
-                    elif h("sf", x, y) % 13 == 0: c = MORT
+                    c = MORT
+                    if (y - 3) % 6 == 5: c = OUT2
+                    elif (x + (k % 2) * 5) % 10 == 0: c = OUT2
+                    elif (y - 3) % 6 == 0: c = MORT2          # 켜 윗모서리 빛
+                    elif h("sf", x, y) % 7 == 0: c = OUT2
+                    elif h("sf2", x, y) % 9 == 0: c = MORT2
                 cv.set(x, y, c)
         # 챌판 모서리(단 앞 끝) 빛 한 열
         for y in range(ty + 3, min(FACE_H, ty + 6)):
@@ -713,8 +720,8 @@ def tower():
 
 # ================================================================ 성문루 4×7 (64×112)
 ARCH_CX = 31.5          # 아치 가운데(x 31|32 사이)
-ARCH_R = 13             # 열린 반폭: x 19~44
-ARCH_SPRING = 26        # 앞면 y(0=앞면 위) — 이 줄 아래는 곧은 문설주
+ARCH_R = 16             # 열린 반폭: x 16~47 = 통로 두 칸(cx 1·2)과 정확히 같다
+ARCH_SPRING = 28        # 앞면 y(0=앞면 위) — 이 줄 아래는 곧은 문설주
 RING = 5                # 홍예 두께
 
 
@@ -742,9 +749,9 @@ def gatehouse(closed=False):
     lo = Canvas(W, 112)
     up.paste(platform(W, ("gh",), hatch=False), 0, 0)
     # 쇠창살 내리는 틈(통로 위 바닥에 가로로 난 홈) + 들창
-    for x in range(20, 44):
+    for x in range(17, 47):
         up.set(x, 27, OUT); up.set(x, 28, IRON[1] if x % 3 else OUT); up.set(x, 29, FLAG[3])
-    for x in range(20, 44, 3): up.set(x, 26, FLAG[3])
+    for x in range(17, 47, 3): up.set(x, 26, FLAG[3])
     face = Canvas(W, 64)
     masonry(face, 1, W - 2, 6, 53, ("ghf",))
     corbel_band(face, 0, W - 1, 0, ("ghc",))
@@ -772,19 +779,19 @@ def gatehouse(closed=False):
             if (frac < 1.3 or frac > 12.55) and ARCH_R + 1 <= rr < ARCH_R + RING - 1: c = MORT
             face.set(x, fy, c)
     # 받침돌(홍예가 시작하는 내민 돌)
-    for (a, b) in ((13, 18), (45, 50)):
+    for (a, b) in ((10, 15), (48, 53)):
         for x in range(a, b + 1):
             face.set(x, ARCH_SPRING - 1, MORT); face.set(x, ARCH_SPRING, COOL[10] if x < 32 else COOL[8])
             face.set(x, ARCH_SPRING + 1, COOL[8] if x < 32 else COOL[6]); face.set(x, ARCH_SPRING + 2, OUT2)
     # 문설주: 열림 바깥 3px 돌(왼쪽 빛·오른쪽 그늘), 켜마다 줄눈
     for fy in range(ARCH_SPRING + 3, 54):
-        for i, x in enumerate((16, 17, 18)):
-            face.set(x, fy, [COOL[8], COOL[10], COOL[9]][i] if (fy - ARCH_SPRING) % 6 else MORT)
-        for i, x in enumerate((45, 46, 47)):
-            face.set(x, fy, [COOL[6], COOL[7], COOL[5]][i] if (fy - ARCH_SPRING) % 6 else MORT)
+        for i, x in enumerate((12, 13, 14, 15)):
+            face.set(x, fy, [COOL[7], COOL[8], COOL[10], COOL[9]][i] if (fy - ARCH_SPRING) % 6 else MORT)
+        for i, x in enumerate((48, 49, 50, 51)):
+            face.set(x, fy, [COOL[5], COOL[7], COOL[6], COOL[5]][i] if (fy - ARCH_SPRING) % 6 else MORT)
     # 횃불
-    torch(face, 7, 34); torch(face, 56, 34)
-    banner(face, 4, 7); banner(face, 53, 7)
+    torch(face, 6, 36); torch(face, 57, 36)
+    banner(face, 2, 7); banner(face, 54, 7)
     # 열림: 위층에서 비우고 아래층(터널)에 그린다. 터널 안 = 궁륭 밑면(갈빗대) + 좌우 안벽 + 바닥 그늘
     for fy in range(64):
         ho = _arch_half(fy)
@@ -812,9 +819,9 @@ def gatehouse(closed=False):
                 c = (COOL[5] if inner >= 1 else COOL[6]) if left else (COOL[3] if inner >= 1 else COOL[4])
                 if inner >= 2: c = OUT2
                 if fy >= ARCH_SPRING + 30: c = SH1 if inner >= 1 else c
-            elif far < 8.5 and fy <= ARCH_SPRING + 12:
+            elif far < 11.5 and fy <= ARCH_SPRING + 12:
                 # 터널 저쪽 출구: 밖의 밝은 땅이 비친다(아래 길이 반투명하게 보인다)
-                c = SH2 if far < 7.5 else OUT2
+                c = SH2 if far < 10.5 else OUT2
             elif fy <= ARCH_SPRING + 12:
                 c = OUT if fy < ARCH_SPRING - 2 else OUT2
             elif fy < ARCH_SPRING + 20: c = SH0
@@ -831,7 +838,7 @@ def gatehouse(closed=False):
                 d = abs(x + 0.5 - (ARCH_CX + 0.5))
                 if d >= ho - 1: continue
                 Y = 48 + fy
-                k = (x - 20) % 4
+                k = (x - 17) % 4
                 if fy in (ARCH_SPRING - 6, ARCH_SPRING - 1): lo.set(x, Y, IRON[2] if k != 3 else IRON[1])
                 elif k == 1: lo.set(x, Y, IRON[2] if fy < ARCH_SPRING + 2 else IRON[1])
                 elif k == 2 and fy < ARCH_SPRING + 1: lo.set(x, Y, IRON[1])
@@ -851,16 +858,16 @@ def gatehouse(closed=False):
                     c = COOL[6] if dx < 0 else COOL[4]
                     if (fy <= ARCH_SPRING and rr < ARCH_R - 2) or (fy > ARCH_SPRING and inner >= 2): c = OUT2
                 else:
-                    k = (x - 19) % 4
+                    k = (x - 16) % 4
                     c = WOOD[5] if k == 0 else (WOOD[4] if k in (1, 2) else WOOD[2])
                     if x in (31, 32): c = WOOD[0] if x == 32 else WOOD[2]
                     if fy in (ARCH_SPRING - 2, ARCH_SPRING + 18): c = IRON[2] if k == 1 else IRON[1]
                     if fy in (ARCH_SPRING - 1, ARCH_SPRING + 19): c = IRON[0]
                     if fy >= 62: c = WOOD[0]
                 face.set(x, fy, c)
-        for (x, y) in ((27, 40), (36, 40)):
+        for (x, y) in ((27, 42), (36, 42)):
             face.set(x, y, IRON[2]); face.set(x - 1, y + 1, IRON[1]); face.set(x + 1, y + 1, IRON[1]); face.set(x, y + 2, IRON[1])
-        for x in range(21, 43, 4):
+        for x in range(19, 46, 4):
             for y in (ARCH_SPRING + 8, ARCH_SPRING + 28):
                 if face.get(x, y) in WOOD: face.set(x, y, IRON[2])
     up.paste(face, 0, 48)
@@ -939,7 +946,7 @@ def pieces():
         for i, r in enumerate(rows):
             P(f"f_{r}_{'abcd'[v]}", cut(f, 0, i), "", f"성벽 앞면 {'위 가운데 아래'.split()[i]} 칸(변형 {'abcd'[v]})")
     for tag, kw, d in (("endL", dict(left="end"), "왼쪽 끝(모서리 돌·윤곽)"), ("endR", dict(right="end"), "오른쪽 끝"), ("shL", dict(left="shadow"), "왼쪽 물체 그늘")):
-        f = face_column(1 if tag == "endR" else 2, **kw)
+        f = face_column(1 if tag == "endR" else 0, **kw)
         for i, r in enumerate(rows):
             P(f"f_{r}_{tag}", cut(f, 0, i), "", f"성벽 앞면 {'위 가운데 아래'.split()[i]} 칸 — {d}")
     # --- 계단
@@ -975,6 +982,20 @@ def pieces():
     # --- 땅 그림자(2층)
     for k, d in (("s", "앞면 밑 땅"), ("e", "세로 성벽·망루 오른쪽 땅"), ("se", "앞면 밑 + 오른쪽 모서리")):
         P(f"sh_{k}", shadow(k), "LRUD", f"성벽 그림자(2층 반투명, {d}). 걸음", layer="lower")
+    # --- 통로 판석 변형 2·3(3판 r3 덧붙임 — 반복 무늬를 깬다. 앞 조각 번호는 그대로)
+    for v in (2, 3):
+        s = south_top(v)
+        P(f"hs{v}_a", cut(s, 0, 0), "LRD", f"남쪽 성벽 윗면 위 줄(통로 판석, 변형 {v}). 동서로 걷는다")
+        P(f"hs{v}_b", cut(s, 0, 1), "LRU", f"남쪽 성벽 윗면 아래 줄(통로 앞쪽 + 앞 흉벽 톱니, 변형 {v})")
+        n = north_top(v)
+        P(f"hn{v}_a", cut(n, 0, 0), "LRD", f"북쪽 성벽 윗면 위 줄(뒤 흉벽 안쪽 면 + 통로, 변형 {v})")
+        P(f"hn{v}_b", cut(n, 0, 1), "LRU", f"북쪽 성벽 윗면 아래 줄(통로 + 앞 턱, 변형 {v})")
+    for side in ("W", "E"):
+        nm = "vw" if side == "W" else "ve"
+        for r in (2, 3):
+            v = vert_wall(side, 0, r)
+            P(f"{nm}{r}_0", cut(v, 0, 0), "UDR", f"{'서' if side == 'W' else '동'}쪽 성벽 윗면 왼쪽 열(변형 {r})")
+            P(f"{nm}{r}_1", cut(v, 1, 0), "UDL", f"{'서' if side == 'W' else '동'}쪽 성벽 윗면 오른쪽 열(변형 {r})")
     return out
 
 

@@ -55,8 +55,12 @@ def layer_of(name): return PIECES[INDEX[name]]["layer"]
 
 # ---------------------------------------------------------------- 둘레 계획(편집기 beodeulTownWall.ts 와 같은 규칙)
 def hsh(x, y, salt):
-    """beodeulTownWall.ts 의 hsh 와 같은 값(Math.imul 하위 32비트)."""
-    return ((((x * 31 + y * 17 + salt * 101 + 7) * 2654435761) & 0xFFFFFFFF) >> 13) & 0xFFFF
+    """beodeulTownWall.ts 의 hsh 와 같은 값(Math.imul 하위 32비트 + 섞기 — 곱셈만 쓰면 6칸 주기로 같은 변형이 돌아왔다)."""
+    h = ((x * 31 + y * 17 + salt * 101 + 7) * 2654435761) & 0xFFFFFFFF
+    h ^= h >> 15
+    h = (h * 0x2C1B3C6D) & 0xFFFFFFFF
+    h ^= h >> 12
+    return h & 0xFFFF
 
 
 FACE_ROWS = ("u", "m", "l")
@@ -68,24 +72,25 @@ def plan_ring(x0, y0, x1, y1, gates=(), closed=(), vgaps=(), towers=(), stairs=(
     vgaps: [('W'|'E', gy, rows)] 세로 성벽 틈. towers: [('S'|'N', tx)] 망루 tx..tx+2. stairs: [sx] 북쪽 성벽 안쪽 계단."""
     up, lo = {}, {}
 
-    def face(x, y, k, kind=""):
-        up[(x, y)] = f"f_{k}_{kind}" if kind else f"f_{k}_{'abcd'[hsh(x, 0, 3) % 4]}"
+    def face(x, y, k, kind="", town=False):
+        # 마을 쪽(북쪽 성벽 안쪽) 앞면에는 화살 구멍 변형 c 를 쓰지 않는다
+        up[(x, y)] = f"f_{k}_{kind}" if kind else (f"f_{k}_{'abd'[hsh(x, 0, 3) % 3]}" if town else f"f_{k}_{'abcd'[hsh(x, 0, 3) % 4]}")
 
     for x in range(x0, x1 + 1):
         if x0 + 1 < x < x1 - 1:
-            v = hsh(x, y0, 1) % 2
+            v = hsh(x, y0, 1) % 4
             up[(x, y0)] = f"hn{v}_a"; up[(x, y0 + 1)] = f"hn{v}_b"
-            v = hsh(x, y1, 1) % 2
+            v = hsh(x, y1, 1) % 4
             up[(x, y1)] = f"hs{v}_a"; up[(x, y1 + 1)] = f"hs{v}_b"
-            for i, k in enumerate(FACE_ROWS): face(x, y0 + 2 + i, k, "shL" if x == x0 + 2 else "")
+            for i, k in enumerate(FACE_ROWS): face(x, y0 + 2 + i, k, "shL" if x == x0 + 2 else "", town=True)
         for i, k in enumerate(FACE_ROWS): face(x, y1 + 2 + i, k, "endL" if x == x0 else "endR" if x == x1 else "")
     for (k, cx0, cy0) in (("nw", x0, y0), ("ne", x1 - 1, y0), ("sw", x0, y1), ("se", x1 - 1, y1)):
         for cy in range(2):
             for cx in range(2): up[(cx0 + cx, cy0 + cy)] = f"c_{k}_{cx}{cy}"
     for y in range(y0 + 2, y1):
-        r = hsh(0, y, 2) % 2
+        r = hsh(0, y, 2) % 4
         up[(x0, y)] = f"vw{r}_0"; up[(x0 + 1, y)] = f"vw{r}_1"
-        r = hsh(1, y, 2) % 2
+        r = hsh(1, y, 2) % 4
         up[(x1 - 1, y)] = f"ve{r}_0"; up[(x1, y)] = f"ve{r}_1"
 
     def shade_right(x, yw):

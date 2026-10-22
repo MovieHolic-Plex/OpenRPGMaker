@@ -66,7 +66,7 @@ def check(up, lo, W, H):
         # 가로 성벽 윗면 아래 줄 밑에는 앞면 세 칸(위·가운데·아래) — 또는 계단·성문루·망루
         if (n.startswith(("hs", "hn")) and n.endswith("_b")) or n in ("c_sw_01", "c_sw_11", "c_se_01", "c_se_11"):
             got = [name(x, y + 1 + i) for i in range(3)]
-            ok = all(g.startswith((f"f_{k}", f"stair_{k}", "gate", "tower")) for g, k in zip(got, ("u", "m", "l")))
+            ok = all(g.startswith((f"f_{k}", "gate", "tower")) or (g.startswith("stair_") and g.endswith(f"_{k}")) for g, k in zip(got, ("u", "m", "l")))
             if not ok: out.append(dict(code="face-missing", x=x, y=y + 1, note=f"{n} 밑에 앞면 세 칸(f_u_* · f_m_* · f_l_*)이 없다({', '.join(g or '빈칸' for g in got)})"))
         # 통로 잇기: 걸음 방향마다 이웃이 성벽 윗면(또는 성문루·망루)이어야 한다
         if is_walk(n):
@@ -99,7 +99,7 @@ def main():
     a2.alpha_composite(atlas.crop((0, 0, half * T, T)), (0, 0)); a2.alpha_composite(atlas.crop((half * T, 0, n * T, T)), (0, T))
     a2.resize((a2.width * 3, a2.height * 3), Image.NEAREST).save(IMG / "atlas.png")
 
-    # ---- 완전 조립 예: 둘레 18×16 ----
+    # ---- 완전 조립 예: 둘레 24×20 ----
     (up, lo), W, H = B.ring_sample()
     ground = set(B.ring_ground())
     lower, l2, l3 = arrays(up, lo, W, H, ground)
@@ -109,7 +109,7 @@ def main():
     assert not defects, defects
     example = dict(tilesetId="beodeul_city", width=W, height=H, tileSize=16, lowerTiles=lower, lowerOverlayTiles=l2, upperTiles=l3,
                    gates=[dict(side="S", x=10, open=True, passage=[[x, y] for y in range(12, 19) for x in (10, 11)]), dict(side="N", x=15, open=False)],
-                   gap=dict(side="W", rows=[8, 9]), towers=[[3, 12], [16, 12], [5, 1]], stairs=[[11, 3]])
+                   gap=dict(side="W", rows=[8, 9]), towers=[[3, 12], [16, 12], [5, 1]], stairs=[dict(head=[12, 3], cells=[10, 4, 3, 3], foot=[10, 7])])
     (DATA / "example.json").write_text(json.dumps(example) + "\n")
     pu, pl, PW, PH = B.parts_plan()
     assert not check(pu, pl, PW, PH), check(pu, pl, PW, PH)
@@ -171,7 +171,7 @@ def main():
 | 서·동 성벽 두 열(_0 왼쪽 열 · _1 오른쪽 열, 변형 0·1) | {ids(["vw0_0", "vw0_1", "vw1_0", "vw1_1", "ve0_0", "ve0_1", "ve1_0", "ve1_1"])} | 3 | 남북 + 두 열 사이 | 반복 |
 | 세로 성벽 끝 마감(틈 위 _endS · 틈 아래 _endN) | {ids(["vw_endS_0", "vw_endS_1", "vw_endN_0", "vw_endN_1", "ve_endS_0", "ve_endS_1", "ve_endN_0", "ve_endN_1"])} | 3 | 한 방향 | 고정 |
 | 앞면(u 위 · m 가운데 · l 아래 굽도리) × 변형 a·b·c·d + 끝 endL·endR + 그늘 shL | {ids(face)} | 3 | 막힘 | 반복(a~d 섞기), 끝·그늘 고정 |
-| 계단(북쪽 성벽 안쪽 앞면 세 칸 자리) | {ids(["stair_u", "stair_m", "stair_l"])} | 3 | 남북 | 고정(키트 bd-wall-stairs) |
+| 옆 계단 3×3(북쪽 성벽 안쪽 앞면 세 줄 자리, `stair_cx_k` cx 0~2 · k u/m/l) | {ids([f"stair_{c}_{k}" for k in ("u", "m", "l") for c in range(3)])} | 3 | 모든 방향(★ 아님) | 고정(키트 bd-wall-stairs) |
 | 성문루 4×7 (열림) | `gate_cx_cy` {tid("gate_0_0")}~{tid("gate_3_6")} (cx 0~3, cy 0~6). cx 1·2 의 cy 0~3 = ★ 걸음, cy 4~6 = 2층 터널 | 3 + 2 | cx 1·2 = 남북, cx 0·3 막힘 | 고정(키트 bd-wall-gatehouse) |
 | 성문루 닫힘 | `gatec_cx_cy` (cx 1·2, cy 3~6) {tid("gatec_1_3")}~{tid("gatec_2_6")} | 3 | 막힘 | 고정(키트 bd-wall-gatehouse-closed) |
 | 망루 3×7 | `tower_cx_cy` {tid("tower_0_0")}~{tid("tower_2_6")} — cy 1·2 = 성벽 통로가 지나는 ★ 칸 | 3 | cy 1·2 동서, 나머지 막힘 | 고정(키트 bd-wall-tower) |
@@ -191,7 +191,7 @@ def main():
 5. 길이 가로 성벽을 지나는 곳 = 성문루 4×7: 왼쪽 위 = (gx−1, yw−1), yw = 그 성벽 윗면 첫 줄. 통로 = gx·gx+1 두 열(위 네 줄 ★, 아래 세 줄 2층 터널). 성문루 오른쪽 성벽 칸은 그늘 판(`hs_sh_*` + `f_*_shL`).
 6. 길이 세로 성벽을 지나는 곳 = 틈(길 줄 gy..): gy−4 줄 `*_endS_0/1`, gy−3..gy−1 줄 끝 앞면(`f_*_endL` + `f_*_endR`), 길 줄 다음에 `*_endN_0/1`.
 7. 망루 3×7: 왼쪽 위 = (tx, yw−1). 성문루와 한 칸 이상 떨어뜨린다. 모서리에는 두지 않는다. 성벽 통로가 망루 cy 1·2 줄(★)로 지나간다.
-8. 계단은 북쪽 성벽에만: (sx, y0+1) = `hn_stair`, (sx, y0+2..y0+4) = `stair_u/m/l`. 그 아래 땅 칸(sx, y0+5)은 걸을 수 있어야 한다.
+8. 계단은 북쪽 성벽에만, 3×3 옆 계단(왼쪽 아래 땅에서 오른쪽 위 통로로 오른다): (sx..sx+2, y0+2..y0+4) = `stair_0_u`…`stair_2_l`, 머리 (sx+2, y0+1) = `hn_stair`. 발치 땅 칸(sx, y0+5)은 걸을 수 있어야 한다.
 9. 땅 그림자(2층): 북쪽 앞면 밑 줄 y0+5 · 남쪽 앞면 밑 줄 y1+5 에 `sh_s`, 서쪽 성벽 오른쪽 열 x0+2 와 동쪽 성벽 오른쪽 열 x1+1 에 `sh_e`, 겹치는 칸은 `sh_se`. 이미 2·3층에 무엇이 있는 칸에는 두지 않는다.
 10. 성벽 칸의 2·4층(풀꽃·그림자 덧그림)은 비운다. 성벽 안팎 한 칸에는 나무·집을 붙이지 않는다(성벽 마을 도구는 띠를 비워 둔다).
 

@@ -28,31 +28,39 @@ export interface TownWallPlan {
 }
 export type Cells = Map<string, string>;
 const key = (x: number, y: number) => `${x},${y}`;
-/** bake_wall.py 의 hsh 와 같은 값. */
-const hsh = (x: number, y: number, salt: number) => ((Math.imul(x * 31 + y * 17 + salt * 101 + 7, 2654435761) >>> 0) >>> 13) & 0xffff;
+/** bake_wall.py 의 hsh 와 같은 값(곱셈 뒤 섞기 — 곱셈만 쓰면 6칸 주기로 같은 변형이 돌아왔다). */
+const hsh = (x: number, y: number, salt: number) => {
+  let h = Math.imul(x * 31 + y * 17 + salt * 101 + 7, 2654435761) >>> 0;
+  h = (h ^ (h >>> 15)) >>> 0;
+  h = Math.imul(h, 0x2c1b3c6d) >>> 0;
+  h = (h ^ (h >>> 12)) >>> 0;
+  return h & 0xffff;
+};
 const FACE_ROWS = ["u", "m", "l"] as const;
 
 /** 둘레 계획 → 위층(3층)·아래층(2층) 칸별 조각 이름. 성문 터널 칸과 땅 그림자는 아래층이다. */
 export function planTownWallRing(p: TownWallPlan): { up: Cells; lo: Cells } {
   const up: Cells = new Map(), lo: Cells = new Map();
   const { x0, y0, x1, y1 } = p;
-  const face = (x: number, y: number, k: string, kind = "") => up.set(key(x, y), kind ? `f_${k}_${kind}` : `f_${k}_${"abcd"[hsh(x, 0, 3) % 4]}`);
+  // 마을 쪽(북쪽 성벽 안쪽) 앞면에는 화살 구멍 변형 c 를 쓰지 않는다
+  const face = (x: number, y: number, k: string, kind = "", town = false) =>
+    up.set(key(x, y), kind ? `f_${k}_${kind}` : town ? `f_${k}_${"abd"[hsh(x, 0, 3) % 3]}` : `f_${k}_${"abcd"[hsh(x, 0, 3) % 4]}`);
   for (let x = x0; x <= x1; x += 1) {
     if (x0 + 1 < x && x < x1 - 1) {
-      let v = hsh(x, y0, 1) % 2;
+      let v = hsh(x, y0, 1) % 4;
       up.set(key(x, y0), `hn${v}_a`); up.set(key(x, y0 + 1), `hn${v}_b`);
-      v = hsh(x, y1, 1) % 2;
+      v = hsh(x, y1, 1) % 4;
       up.set(key(x, y1), `hs${v}_a`); up.set(key(x, y1 + 1), `hs${v}_b`);
-      FACE_ROWS.forEach((k, i) => face(x, y0 + 2 + i, k, x === x0 + 2 ? "shL" : ""));
+      FACE_ROWS.forEach((k, i) => face(x, y0 + 2 + i, k, x === x0 + 2 ? "shL" : "", true));
     }
     FACE_ROWS.forEach((k, i) => face(x, y1 + 2 + i, k, x === x0 ? "endL" : x === x1 ? "endR" : ""));
   }
   for (const [k, cx0, cy0] of [["nw", x0, y0], ["ne", x1 - 1, y0], ["sw", x0, y1], ["se", x1 - 1, y1]] as const)
     for (let cy = 0; cy < 2; cy += 1) for (let cx = 0; cx < 2; cx += 1) up.set(key(cx0 + cx, cy0 + cy), `c_${k}_${cx}${cy}`);
   for (let y = y0 + 2; y < y1; y += 1) {
-    let r = hsh(0, y, 2) % 2;
+    let r = hsh(0, y, 2) % 4;
     up.set(key(x0, y), `vw${r}_0`); up.set(key(x0 + 1, y), `vw${r}_1`);
-    r = hsh(1, y, 2) % 2;
+    r = hsh(1, y, 2) % 4;
     up.set(key(x1 - 1, y), `ve${r}_0`); up.set(key(x1, y), `ve${r}_1`);
   }
   const shadeRight = (x: number, yw: number) => {
