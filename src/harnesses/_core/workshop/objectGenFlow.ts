@@ -259,6 +259,7 @@ const GEOMETRIC_ELLIPSE = kitValue<number>("checks", "GEOMETRIC_ELLIPSE");
 const GEOMETRIC_MIN_ROWS = kitValue<number>("checks", "GEOMETRIC_MIN_ROWS");
 const GEOMETRIC_MIRROR = kitValue<number>("checks", "GEOMETRIC_MIRROR");
 const GEOMETRIC_MIRROR_ROWS = kitValue<number>("checks", "GEOMETRIC_MIRROR_ROWS");
+const CROWN_SOLIDITY_MAX = kitValue<number>("checks", "CROWN_SOLIDITY_MAX");
 const LEAF_MIN_PIXELS = kitValue<number>("checks", "LEAF_MIN_PIXELS");
 const LEAF_CAST_MAX = kitValue<number>("checks", "LEAF_CAST_MAX");
 const LEAF_DARK_MIN = kitValue<number>("checks", "LEAF_DARK_MIN");
@@ -336,14 +337,14 @@ export function leafTone(image: RgbaImage): { leafPixels: number; leafLone: numb
  * 타원·돔은 한 번 꺾인다. ellipse = 가장 넓은 줄의 절반 이상인 띠와 거기 맞춘 타원의 IoU. 실측: 버들항 나무·덤불 0.25~0.45 / 0.82~0.87,
  * 반려된 달걀 사과나무 0.085 / 0.92.
  */
-export function silhouetteGeometry(image: RgbaImage): { rows: number; turns: number; ellipse: number; mirror: number } {
+export function silhouetteGeometry(image: RgbaImage): { rows: number; turns: number; ellipse: number; mirror: number; solidity: number } {
   const rows: [number, number, number, number][] = [];
   for (let y = 0; y < image.height; y++) {
     let first = -1, last = -1, n = 0;
     for (let x = 0; x < image.width; x++) if (image.data[(y * image.width + x) * 4 + 3]! > 0) { if (first < 0) first = x; last = x; n++; }
     if (n) rows.push([y, first, last, n]);
   }
-  if (rows.length < 4) return { rows: rows.length, turns: 1, ellipse: 0, mirror: 0 };
+  if (rows.length < 4) return { rows: rows.length, turns: 1, ellipse: 0, mirror: 0, solidity: 0 };
   const turns = (seq: number[]) => {
     const d: number[] = [];
     for (let i = 1; i < seq.length; i++) if (seq[i] !== seq[i - 1]) d.push(seq[i]! - seq[i - 1]!);
@@ -373,8 +374,24 @@ export function silhouetteGeometry(image: RgbaImage): { rows: number; turns: num
     if (p && q) mi++;
     if (p || q) mu++;
   }
+  // 수관(넓은 띠 아래끝까지) 면적 / 볼록 껍질 면적(원본 geometry 의 solidity) — 견본 참나무 0.86~0.89, 「막대 위 달걀」 0.91~0.93.
+  const corners = new Set<string>();
+  let crown = 0;
+  for (let y = rows[0]![0]; y <= by1; y++) for (let x = 0; x < image.width; x++) if (image.data[(y * image.width + x) * 4 + 3]! > 0) {
+    crown++;
+    for (const [dx, dy] of [[0, 0], [1, 0], [0, 1], [1, 1]] as const) corners.add(`${x + dx},${y + dy}`);
+  }
+  const pts = [...corners].map((k) => k.split(",").map(Number) as [number, number]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const cross = (o: [number, number], a: [number, number], b: [number, number]) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lo: [number, number][] = [], up: [number, number][] = [];
+  for (const p of pts) { while (lo.length >= 2 && cross(lo.at(-2)!, lo.at(-1)!, p) <= 0) lo.pop(); lo.push(p); }
+  for (const p of [...pts].reverse()) { while (up.length >= 2 && cross(up.at(-2)!, up.at(-1)!, p) <= 0) up.pop(); up.push(p); }
+  const hull = [...lo.slice(0, -1), ...up.slice(0, -1)];
+  let area2 = 0;
+  for (let i = 0; i < hull.length; i++) { const a = hull[i]!, b = hull[(i + 1) % hull.length]!; area2 += a[0] * b[1] - b[0] * a[1]; }
+  const harea = Math.abs(area2) / 2;
   const round3 = (v: number) => Math.round(v * 1000) / 1000;
-  return { rows: rows.length, turns: round3(t), ellipse: union ? round3(inter / union) : 0, mirror: mu ? round3(mi / mu) : 0 };
+  return { rows: rows.length, turns: round3(t), ellipse: union ? round3(inter / union) : 0, mirror: mu ? round3(mi / mu) : 0, solidity: harea ? round3(crown / harea) : 0 };
 }
 
 export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgCheck {
@@ -433,6 +450,9 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
     }
     if (footprintClass(item.title, item.description ?? "") === "tree" && g.rows >= GEOMETRIC_MIRROR_ROWS && g.mirror > GEOMETRIC_MIRROR) {
       hard.push({ code: "SYMMETRIC", msg: `the crown is nearly mirror-symmetric (left/right match ${g.mirror}, exemplars 0.80-0.85) - make one shoulder 3+ px higher, one side wider, lobes and notches at different heights` });
+    }
+    if (footprintClass(item.title, item.description ?? "") === "tree" && g.rows >= GEOMETRIC_MIRROR_ROWS && g.solidity > CROWN_SOLIDITY_MAX) {
+      hard.push({ code: "CROWNFULL", msg: `the crown fills its outline like an egg (solidity ${g.solidity}, exemplar oaks 0.86-0.89) - cut 1-2 deep notches (3+ px) into the rim and push one lobe out to one side` });
     }
     const shown = renderGrid(grid, palette);
     let opaque = 0, deep = 0;
