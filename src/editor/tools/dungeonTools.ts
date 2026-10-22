@@ -290,11 +290,24 @@ function populateFloor(draft: Project, mapId: string, data: Record<string, unkno
   } else warnings.push(`${map.name}: 데이터베이스에 적 그룹이 없어 보이는 적을 두지 않았다 — upsert_troop 뒤 troops 로 다시 짓거나 place_field_enemy.`);
   if (foes.length) out.push(`보이는 적 ${foes.join(" ")}`);
   // 상자: 보물 방이 먼저(보물 방이 빈 방으로 읽히지 않게), 그다음 곁방 하나.
-  const chestPlan = planned("chests").sort((a, b) => Number(b.room === vaultId) - Number(a.room === vaultId));
+  // 둘째 상자는 보스로 가는 길 위 방(입구→보스방 조상 방)에 둔다 — 두 상자가 모두 보스방 뒤 보물 방에 있으면 「가는 길 중간 보물」 요청이
+  // 안 읽혔다(2026-10-23 dg2-r1 boss-run VQA). 계획 자리가 길 위에 없으면 보스 앞 방(쉼터 아님)의 자리를 하나 더 후보로 넣는다.
+  const byId = new Map(rooms.map((r) => [r.id, r] as const));
+  const onRoute = new Set<string>();
+  for (let r = bossRoom ? byId.get(bossRoom.from ?? "") : undefined, guard = 0; r && guard < 40; r = byId.get(r.from ?? ""), guard += 1) onRoute.add(r.id);
+  const behindBoss = (id: string | undefined): boolean => { for (let r = byId.get(id ?? ""), guard = 0; r && guard < 40; r = byId.get(r.from ?? ""), guard += 1) if (r.id === bossRoom?.id) return true; return false; };
+  const routeExtra: Array<Pt & { room?: string }> = [...onRoute].map((id) => byId.get(id)!).filter((r) => r.kind !== "entrance" && r.id !== restRoom?.id)
+    .flatMap((r) => r.spots.slice(-2).map((c) => ({ ...c, room: r.id })));
+  const chestRank = (c: { room?: string }): number => (c.room === vaultId ? 0 : onRoute.has(c.room ?? "") ? 1 : behindBoss(c.room) ? 3 : 2);
+  const chestPlan = [...planned("chests"), ...routeExtra].sort((a, b) => chestRank(a) - chestRank(b));
+  let routeChest = false;
   const chests: string[] = [];
   for (const c of chestPlan) {
     if (chests.length >= 2) break;   // 같은 그림 조사물 3개부터 린트가 「임시 표식」으로 본다
     if (!free(c)) continue;
+    // 보물 방 상자 하나 다음엔 길 위 상자를 먼저 기다린다(길 위 후보가 있으면 다른 곁방은 건너뛴다).
+    if (chests.length === 1 && !routeChest && chestRank(c) !== 1 && chestPlan.some((q) => chestRank(q) === 1 && free(q))) continue;
+    if (chestRank(c) === 1) routeChest = true;
     if (attempt(`상자 (${c.x},${c.y})`, () => nested(draft, "place_chest", { mapId, x: c.x, y: c.y, id: `ev_${mapId}_chest${chests.length + 1}`, name: c.room === vaultId ? "보물상자" : "던전 상자", contents: chestLoot(draft, salt * 5 + chests.length) }))) chests.push(`(${c.x},${c.y})`);
   }
   if (chests.length) out.push(`상자 ${chests.join(" ")}`);

@@ -469,6 +469,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         put(K.brazier, r.x + 1 + Math.floor(rs() * 2), r.y + r.h - 2);
         put(K.brazier, r.x + r.w - 2 - Math.floor(rs() * 2), r.y + r.h - 2);
         for (const [x, y] of e.slice(3, 7)) if (rs() < 0.6) put(weighted(rs, litter), x, y);
+        // 입구 앵커: 계단 앞 길 양옆 기둥 한 쌍 — 「거의 빈 10×8 바닥」으로 읽혔다(2026-10-23 dg2-r1 VQA 지하 묘지). 길(계단 앞 세로 줄)은 비운다.
+        if (s && r.w >= 9 && r.h >= 5) { const y = Math.min(r.y + r.h - 3, s.y + 3); if (put(K.column, s.x - 2, y - 1)) put(K.column, s.x + 2, y - 1); }
         break;
       }
       case "hall": {

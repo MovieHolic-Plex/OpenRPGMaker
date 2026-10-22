@@ -266,7 +266,7 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
   // ---- 역할 ----
   const byDepth = [...chambers].sort((a, b) => depth[b.index]! - depth[a.index]!);
   const boss = byDepth[0]!;
-  boss.kind = "boss"; boss.rx = Math.max(boss.rx, 8); boss.ry = Math.max(boss.ry, 6);
+  boss.kind = "boss"; boss.rx = Math.max(boss.rx, 7); boss.ry = Math.max(boss.ry, 5);   // 8×6 반지름은 제단 하나 말고 맨바닥인 큰 방이었다(2026-10-23 dg2-r1 VQA)
   const vault = spec.vault === false ? undefined : byDepth.find((c) => c !== boss && edges.filter(([a, b]) => a === c.index || b === c.index).length <= 1) ?? byDepth[1];
   if (vault && vault !== boss) { vault.kind = "vault"; vault.rx = Math.min(vault.rx, 6); vault.ry = Math.min(vault.ry, 5); }
   const rest = chambers.filter((c) => c.kind === "cavern");
@@ -336,13 +336,18 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
       for (let y = c.cy - c.ry; y <= c.cy + c.ry; y += 1) for (let x = c.cx - c.rx; x <= c.cx + c.rx; x += 1) {
         if (!g.inb(x, y) || g.roomAt[g.idx(x, y)] !== c.index) continue;
         if (ed[g.idx(x, y)]! < 2) continue;
-        if (vnoise(x, y, 5, seed + c.index * 7) < 0.22) continue;
+        if (profile.liquid === "lava") {
+          // 용암 못은 흔들리는 타원 덩이(흔들림 ≤0.15) — 방 바닥을 가장자리 2칸만 남기고 다 채우면 둥근 네모 「용암 도장」으로 읽혔다(2026-10-23 dg2-r1 VQA).
+          const d = ((x - c.cx) / Math.max(2.5, c.rx - 1.5)) ** 2 + ((y - c.cy) / Math.max(2, c.ry - 1.2)) ** 2;
+          if (d > 1 + (vnoise(x, y, 2.5, seed + c.index * 7) - 0.5) * 0.3) continue;
+        } else if (vnoise(x, y, 5, seed + c.index * 7) < 0.22) continue;
         g.liquid[g.idx(x, y)] = 1; count += 1;
       }
       if (!count) c.kind = "cavern";
     }
     // 큰 방에 작은 못 하나씩(화산은 용암 웅덩이가 더 많다)
-    const pools = profile.id === "volcano" ? 0.6 : spec.lair ? 0 : 0.3;
+    // 화산은 작은 웅덩이를 두지 않는다 — 용암 못·줄기로 충분하고, 작은 웅덩이는 가장자리 그림이 없어 「네모 용암 도장」으로 읽혔다(2026-10-23 dg2-r1 VQA).
+    const pools = profile.id === "volcano" ? 0 : spec.lair ? 0 : 0.3;
     for (const c of chambers) {
       if (c.kind !== "cavern" && c.kind !== "grotto") continue;
       if (c.rx < 6 || random() > pools) continue;

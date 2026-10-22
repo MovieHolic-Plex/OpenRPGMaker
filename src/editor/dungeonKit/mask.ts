@@ -132,9 +132,20 @@ export function carveFlood(g: Grid, rooms: readonly PlacedRoom[], seed: number):
   let cells = 0;
   rooms.forEach((r, ri) => {
     if (r.kind === "entrance" || r.kind === "vault" || r.w < 7 || r.h < 5) return;
-    const cx = r.x + (r.w - 1) / 2, cy = r.y + (r.h - 1) / 2;
+    // 중심·크기는 방 사각형이 아니라 그 방의 실제 바닥 상자로 잰다 — 방 사각형은 북쪽 벽 앞면 줄을 품어 물 덩이가 북벽에 붙어 잘렸고,
+    // 그 잘린 곧은 윗변이 「돌 테 수조」로 읽혔다(2026-10-23 dg2-r1 VQA).
+    let fx0 = Infinity, fy0 = Infinity, fx1 = -1, fy1 = -1;
+    for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
+      const i = g.idx(x, y);
+      if (!g.floor[i] || g.roomAt[i] !== ri) continue;
+      fx0 = Math.min(fx0, x); fx1 = Math.max(fx1, x); fy0 = Math.min(fy0, y); fy1 = Math.max(fy1, y);
+    }
+    if (fx1 < 0) return;
+    const fw = fx1 - fx0 + 1, fh = fy1 - fy0 + 1;
+    if (fw < 7 || fh < 5) return;
+    const cx = fx0 + (fw - 1) / 2, cy = fy0 + (fh - 1) / 2;
     // 둑길: 긴 축 방향 한 줄은 늘 남기고, 짧은 축 둑은 큰 방에만(방이 네 웅덩이로 갈린다)
-    const along = r.w >= r.h;
+    const along = fw >= fh;
     // 가로지르는 둘째 둑길은 뺐다 — 방이 네모 웅덩이 넷으로 갈려 「잠긴 방」이 아니라 수조로 읽혔다(2026-10-23). 갈린 문은 settle 의 다리가 잇는다.
     const cross = false;
     for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
@@ -149,9 +160,20 @@ export function carveFlood(g: Grid, rooms: readonly PlacedRoom[], seed: number):
       if (onSpine || onCross) continue;
       // 물 가장자리는 방 모양(네모)이 아니라 흔들리는 타원 덩이다(2026-10-23 assistant-dungeons-2, VQA 「사각 수조」).
       // 흔들림은 0.15 이하(PR #1450: 0.25 이상이면 덩이가 부서진다). 모서리·벽 쪽은 마른 바닥으로 남는다.
-      const rx = Math.max(2.5, r.w / 2 + 0.3), ry = Math.max(2.5, r.h / 2 + 0.3);
-      const d = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2;
-      if (d > 1.08 + (vnoise(x, y, 3.5, seed * 19 + ri) - 0.5) * 0.3) continue;
+      // 둑길 양쪽 반쪽마다 엇갈린 타원 두 덩이(잎)를 겹친다 — 방 하나를 꽉 채운 한 타원은 벽을 따라 곧은 가장자리가 생겨 「돌 테 수조」로 읽혔다
+      // (2026-10-23 dg2-r1 VQA). 잎 사이·모서리는 마른 바닥으로 남아 가장자리가 들쭉날쭉하다.
+      const side = along ? (y < cy ? -1 : 1) : (x < cx ? -1 : 1);
+      let dMin = Infinity;
+      for (let lobe = 0; lobe < 2; lobe += 1) {
+        const jit = (vnoise(lobe * 7 + side * 3, ri, 1, seed * 31) - 0.5) * 0.25;
+        const off = (lobe === 0 ? -1 : 1) * (0.2 + jit);
+        const lx = along ? cx + off * fw : cx + side * fw / 4;
+        const ly = along ? cy + side * fh / 4 : cy + off * fh;
+        const lrx = along ? Math.max(2.4, fw * 0.34) : Math.max(2, fw / 4 + 1.1);
+        const lry = along ? Math.max(2, fh / 4 + 1.1) : Math.max(2.4, fh * 0.34);
+        dMin = Math.min(dMin, ((x - lx) / lrx) ** 2 + ((y - ly) / lry) ** 2);
+      }
+      if (dMin > 1 + (vnoise(x, y, 2.5, seed * 19 + ri) - 0.5) * 0.3) continue;
       g.liquid[i] = 1; cells += 1;
     }
   });

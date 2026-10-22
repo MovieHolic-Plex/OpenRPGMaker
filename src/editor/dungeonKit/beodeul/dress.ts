@@ -384,6 +384,18 @@ function lairCamp(c: DressCtx, r: PlacedRoom, rs: () => number, edge: [number, n
   c.counts["lair-camp"] = (c.counts["lair-camp"] ?? 0) + 1;
 }
 
+/** 입구 앵커: 먼저 온 이들의 야영 흔적(모닥불 + 자루·궤짝) — 동굴·화산 입구 굴이 맨바닥으로 읽혔다(2026-10-23 dg2-r1 VQA). 계단 앞 세로 길(계단 x±2)은 비운다. */
+function entranceCamp(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null): void {
+  const FIRE = c.hasKit("bd-pick-deep-forest-path-campfire") ? "bd-pick-deep-forest-path-campfire" : "bd-pick-shipwreck-reef-campfire";
+  const inner = c.shuffle(rs, c.floorCells(r, 1)).filter(([x]) => !s || Math.abs(x - s.x) >= 3);
+  for (const [x, y] of inner) {
+    if (!lonely(c, x, y, 2) || !stand(c, FIRE, x, y)) continue;
+    for (const [ax, ay] of c.shuffle(rs, [[x - 2, y], [x + 2, y], [x - 1, y + 1], [x + 1, y - 1]] as [number, number][]).slice(0, 2)) if (lonely(c, ax, ay, 0)) stand(c, c.weighted(rs, [["bd-pick-walled-market-sack-pile", 2], [SW("crate"), 2], [SW("barrel"), 1]]), ax, ay);
+    c.counts["entrance-camp"] = (c.counts["entrance-camp"] ?? 0) + 1;
+    return;
+  }
+}
+
 function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null, slots: Slot[]): boolean {
   const spikes = () => c.weighted(rs, [[CV("stalagmite-1"), 4], [CV("rock-pillar-2"), 1], [CV("rubble-cave"), 3]]);
   const glow = () => c.weighted(rs, [[MUSH, 4], [CV("glow-moss-floor"), 2]]);
@@ -399,6 +411,7 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
       const e = c.edgeCells(r, rs);
       for (const [x, y] of e.slice(0, 8)) if (rs() < 0.45 && lonely(c, x, y, 1)) stand(c, spikes(), x, y);
       mossPatch(e, 3);
+      entranceCamp(c, r, rs, s);
       return true;
     }
     case "cavern": {
@@ -437,6 +450,23 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
       // 보스 동굴: 가장자리 석순 둘레, 뼈 더미, 가운데는 비움, 벽 덩굴
       const e = c.edgeCells(r, rs);
       for (const [x, y] of e.slice(0, 12)) if (rs() < 0.6 && lonely(c, x, y, 1)) stand(c, c.weighted(rs, [[CV("stalagmite-1"), 4], [CV("rock-pillar-2"), 2]]), x, y);
+      // 보스 자리 앵커: 북쪽 벽 앞 가운데 — 소굴은 우두머리 깃발 한 쌍 사이 약탈품 더미, 그 밖은 뼈 더미 제단. 가운데 맨바닥이
+      // 「보스방인지 안 읽힌다」·「우두머리가 졸개와 구별되지 않는다」(2026-10-23 dg2-r1 VQA 작은 동굴·고블린 굴).
+      {
+        const fc = c.floorCells(r, 1).filter(([x, y]) => c.isWall(x, y - 1) && c.isWall(x, y - 2));
+        const mid = r.x + Math.floor(r.w / 2);
+        fc.sort((a, b) => Math.abs(a[0] - mid) - Math.abs(b[0] - mid));
+        for (const [x, y] of fc) {
+          if (c.lair && c.hasKit("bd-pick-walled-market-banner-red")) {
+            if (!lonely(c, x, y, 1) || !stand(c, "bd-pick-walled-market-sack-pile", x, y)) continue;
+            stand(c, "bd-pick-walled-market-banner-red", x - 2, y); stand(c, "bd-pick-walled-market-banner-red", x + 2, y);
+            stand(c, SW("crate-stack"), x - 1, y); stand(c, SW("barrel"), x + 1, y);
+            c.counts["chief-seat"] = (c.counts["chief-seat"] ?? 0) + 1;
+            break;
+          }
+          if (lonely(c, x, y, 1) && stand(c, SW("bone-heap"), x, y)) { stand(c, SW("skulls"), x - 2, y); stand(c, SW("skulls"), x + 2, y); break; }
+        }
+      }
       if (e[0]) stand(c, SW("bone-heap"), e[0][0], e[0][1]);
       if (c.lair) lairCamp(c, r, rs, e.slice(1), true);
       sprinkle(c, rs, r, 0.04, () => c.weighted(rs, [[SW("bones"), 2], [SW("skulls"), 2]]), { inset: 2, max: 5 });
@@ -470,6 +500,7 @@ function dressVolcano(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | nu
       const e = c.edgeCells(r, rs);
       for (const [x, y] of e.slice(0, 8)) if (rs() < 0.4 && lonely(c, x, y, 1)) stand(c, spikes(), x, y);
       heat(e.slice(4), 2);
+      entranceCamp(c, r, rs, s);
       return true;
     }
     case "cavern": {
