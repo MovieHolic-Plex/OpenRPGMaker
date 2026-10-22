@@ -195,7 +195,8 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
   const vault = spec.vault === false ? undefined : byDepth.find((c) => c !== boss && edges.filter(([a, b]) => a === c.index || b === c.index).length <= 1) ?? byDepth[1];
   if (vault && vault !== boss) { vault.kind = "vault"; vault.rx = Math.min(vault.rx, 6); vault.ry = Math.min(vault.ry, 5); }
   const rest = chambers.filter((c) => c.kind === "cavern");
-  const lakeWant = profile.liquid ? (si === 0 ? 1 : si === 1 ? 2 : 3) : 0;
+  // 소굴(lair)은 사는 굴이라 호수 대신 마른 바닥(야영지)을 남긴다.
+  const lakeWant = profile.liquid && !spec.lair ? (si === 0 ? 1 : si === 1 ? 2 : 3) : 0;
   // 작은 판에서 반지름 6 이상 방이 하나도 없어도 액체 종류(화산·동굴)는 못이 하나는 있어야 한다 — 그 땐 가장 큰 방을 쓴다.
   const bySize = [...rest].sort((a, b) => b.rx * b.ry - a.rx * a.ry);
   const lakeCands = bySize.filter((c) => c.rx >= 6).length ? bySize.filter((c) => c.rx >= 6) : bySize;
@@ -257,7 +258,7 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
       if (!count) c.kind = "cavern";
     }
     // 큰 방에 작은 못 하나씩(화산은 용암 웅덩이가 더 많다)
-    const pools = profile.id === "volcano" ? 0.6 : 0.3;
+    const pools = profile.id === "volcano" ? 0.6 : spec.lair ? 0 : 0.3;
     for (const c of chambers) {
       if (c.kind !== "cavern" && c.kind !== "grotto") continue;
       if (c.rx < 6 || random() > pools) continue;

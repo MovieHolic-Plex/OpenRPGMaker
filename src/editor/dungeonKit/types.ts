@@ -66,6 +66,8 @@ export interface DungeonSpec {
   readonly sideDoor?: boolean;
   /** 물에 잠긴 던전(신전·지하묘지·성): 큰 방 바닥에 물이 차고 걸을 길(둑·가운데 길)만 남는다. 다리는 코드가 잇는다. */
   readonly flooded?: boolean;
+  /** 무리가 사는 소굴(고블린·도적·짐승): 동굴 방에 모닥불·가죽 걸이·궤짝·뼈 무더기를 깐다(버들항 cave). */
+  readonly lair?: boolean;
 }
 
 /** 층 계단·문 하나: x,y = 이동 이벤트를 둘 칸(계단 그림 칸), front = 들어서는 앞 칸(도착 칸). */
