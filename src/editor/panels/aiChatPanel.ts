@@ -80,7 +80,8 @@ import type { TilesetChangeQuestion } from "@/editor/tools/tilesetChangeTools";
 import { createAssistantWide } from "./aiAssistantWide";
 import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
-import { DEFAULT_PI_TEAM, type PiRunPlan } from "@/ai/piAgent/executionRoute";
+import { DEFAULT_PI_TEAM, resolvePiRunPlan, type PiRunPlan } from "@/ai/piAgent/executionRoute";
+import { isAssistantV2Enabled } from "@/ai/v2/switch";
 import { classifyPlainPiTurn, clarifyFollowUpText, selectedEventFact } from "@/ai/piAgent/plainTurn";
 import { applyMonsterIntentStart, needsMonsterKitStart } from "@/project/genrePresets";
 import { resolveContextWindow } from "@/ai/contextCompaction";
@@ -2281,6 +2282,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 실제로 1.2~7.5s 를 삼킨다(2026-09-16 실측). 이걸 벽시계 밖에 두면 표의 total 이 그만큼 짧게 나와
     // 「어느 단계도 오래 안 걸렸는데 턴은 느렸다」는 모순이 생긴다.
     const timing = createTurnTiming();
+    // 조수 v2(기본 꺼짐): 의도 선언 모델 호출을 건너뛴다 — v2 는 실행 모델이 요청을 짓기 명세로 바로 해석한다(src/ai/v2).
+    if (isAssistantV2Enabled() && turnOptions?.team !== true) {
+      return { command: plainPiCommand(text, "single", turnMapId), plan: { ...resolvePiRunPlan(currentAutonomy()), routingAudit: "assistant-v2" }, questionPromoted: false, intentNote: null, timing };
+    }
     timing.start("intent");
     // 순수 부분(선언 → 계획·노출 툴·의도 노트)은 plainTurn.ts 가 소유한다 — 헤드리스 생성기(scripts/qa-game/gen.mts)와 같은 함수다.
     let classified: Awaited<ReturnType<typeof classifyPlainPiTurn>>;

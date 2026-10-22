@@ -93,6 +93,11 @@ export interface PiAgentRequest {
    */
   readonly monsterTurn?: boolean;
   readonly project: Project;
+  /**
+   * 조수 v2(src/ai/v2) — 판단은 모델, 짓기는 결정론 빌더, 검수는 독립 비평가. 설정 스위치(기본 꺼짐)가 켰을 때만 실린다.
+   * 워커는 이 값이 "v2" 이면 runAssistantV2 로 보낸다. 비우면 v1 그대로.
+   */
+  readonly assistantVersion?: "v2";
   /** 기본 시스템 프롬프트를 대체한다(테스트·CLI 용). */
   readonly systemPrompt?: readonly string[];
   readonly maxTurns?: number;
