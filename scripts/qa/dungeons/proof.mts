@@ -8,6 +8,7 @@ import { getTool } from "../../../src/editor/tools/toolRegistry.ts";
 import { renderMapPng } from "../../qa-game/render.mts";
 import { store } from "../../../src/project/store.ts";
 import { projectLint as lintProject } from "../../../src/project/lint/projectLint.ts";
+import { measureSpace } from "./space.mts";
 
 const out = process.argv[2] ?? "/tmp/dg-proof2";
 fs.mkdirSync(out, { recursive: true });
@@ -38,7 +39,7 @@ for (const [name, args] of Object.entries(CASES)) {
       events: project.maps[id]!.events.map((e) => `${e.id}@${e.x},${e.y}${JSON.stringify(e.pages?.[0]?.commands ?? []).includes('"transfer"') ? "→" + JSON.stringify((e.pages![0]!.commands as any[]).find((c) => c.kind === "transfer")) : ""}`) }));
     fs.writeFileSync(path.join(out, `${name}.json`), JSON.stringify({ summary: res.summary, warnings: res.warnings, events, issues: issues.map((i) => `${i.severity} ${i.code} ${i.message}`) }, null, 1));
     console.log(`== ${name} ${ms}ms floors=${floors.length} start=${project.startMapId}@${project.startPos.x},${project.startPos.y}`);
-    for (const f of events) console.log(" ", f.id, f.name, f.size, f.events.length, "events");
+    for (const f of events) { const m = measureSpace(project, project.maps[f.id]!); console.log(" ", f.id, f.name, f.size, f.events.length, "events", `void ${m.voidPct}% screen≤${m.worstScreenVoidPct}%(avg ${m.meanScreenVoidPct}) bare ${m.bareFloorPct}% rect ${m.maxBareRect.w}x${m.maxBareRect.h}`); }
     console.log("  lint:", issues.filter((i) => i.severity !== "info").map((i) => i.code).join(",") || "0");
     if (res.warnings?.length) console.log("  warn:", res.warnings.slice(0, 6).join(" | ").slice(0, 600));
   } catch (e) { console.log(`== ${name} ERR`, (e as Error).message.slice(0, 400)); }

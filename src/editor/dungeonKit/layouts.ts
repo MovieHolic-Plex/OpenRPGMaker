@@ -136,9 +136,33 @@ export function layoutMaze(spec: DungeonSpec, thin = false): DungeonLayout & { g
 
 interface Chamber { cx: number; cy: number; rx: number; ry: number; kind: DungeonRoomKind; index: number }
 
+/**
+ * 동굴·화산: 방 덩이를 여러 번 흔들어 놓고, 잘라 낸 맵에서 허공(바닥·벽 앞면이 아닌 칸)이 가장 적은 판을 고른다(2026-10-23 assistant-dungeons-2).
+ * 한 판만 놓으면 방이 상자 안에 흩어져 잘라도 맵의 55~60%가 검은 허공이었다.
+ */
 export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayout & { grid: Grid } {
+  let best: { layout: DungeonLayout & { grid: Grid }; score: number } | null = null;
+  let lastError: unknown = null;
+  for (let salt = 0; salt < 10; salt += 1) {
+    let layout: DungeonLayout & { grid: Grid };
+    try { layout = layoutBlobOnce(spec, profile, salt); } catch (error) { lastError = error; continue; }
+    const g = layout.grid;
+    let used = 0;
+    for (let x = 0; x < g.W; x += 1) for (let y = 0; y < g.H; y += 1) {
+      if (g.floor[g.idx(x, y)]) { used += 1; continue; }
+      // 벽 앞면 3줄(바닥 바로 위)은 허공이 아니다
+      for (let k = 1; k <= 3; k += 1) if (y + k < g.H && g.floor[g.idx(x, y + k)]) { used += 1; break; }
+    }
+    const score = 1 - used / (g.W * g.H);
+    if (!best || score < best.score - 1e-9) best = { layout, score };
+  }
+  if (!best) throw lastError;
+  return best.layout;
+}
+
+function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): DungeonLayout & { grid: Grid } {
   const seed = spec.seed ?? 7;
-  const random = rng(seed * 40503 + 17);
+  const random = rng(seed * 40503 + 17 + salt * 7717);
   const si = sizeIndex(spec);
   const [dw, dh] = [[56, 44], [88, 62], [112, 78]][si]! as [number, number];   // small 은 방 3개짜리 작은 굴(2026-10-22 「작은 동굴」이 64×49 로 나오던 것)
   const W = spec.width ? clamp(spec.width, 48, 200) : dw;
@@ -151,14 +175,21 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
 
   // ---- 방 자리(타원) ----
   const chambers: Chamber[] = [];
-  const yLo = MARGIN + 6, yHi = entY - 10;
-  for (let attempt = 0; attempt < 600 && chambers.length < wantN; attempt += 1) {
+  const yLo = MARGIN + 6, yHi = entY - 7;
+  // 덩이로 모은다: 새 방은 이미 놓은 방(첫 방은 입구 굴) 곁에 2~5칸 틈을 두고 붙는다 — 상자 안 아무 데나 흩으면 방 사이가 검은 허공이었다.
+  const seedNode = { cx: entX + 6, cy: entY - 4, rx: 4, ry: 3 };
+  for (let attempt = 0; attempt < 1500 && chambers.length < wantN; attempt += 1) {
     const rx = 5 + Math.floor(random() * 4);
     const ry = Math.max(4, Math.round(rx * (0.62 + random() * 0.22)));
-    const cx = MARGIN + rx + 3 + Math.floor(random() * (W - 2 * (MARGIN + rx + 3)));
-    const cy = yLo + ry + Math.floor(random() * Math.max(1, yHi - yLo - ry * 2));
+    const pool = chambers.length ? chambers : [seedNode];
+    const a = pool[Math.floor(random() * pool.length)]!;
+    const th = chambers.length ? random() * Math.PI * 2 : -Math.PI * (0.2 + random() * 0.6);
+    const gap = 1 + random() * 2.5;
+    const cx = Math.round(a.cx + Math.cos(th) * (a.rx + rx + gap));
+    const cy = Math.round(a.cy + Math.sin(th) * (a.ry + ry + gap + 1));
+    if (cx - rx < MARGIN + 3 || cx + rx > W - MARGIN - 4 || cy - ry < yLo) continue;
     if (cy + ry > yHi + 2) continue;
-    if (chambers.some((c) => ((cx - c.cx) / (rx + c.rx + 3)) ** 2 + ((cy - c.cy) / (ry + c.ry + 3)) ** 2 < 1)) continue;
+    if (chambers.some((c) => ((cx - c.cx) / (rx + c.rx + 1.5)) ** 2 + ((cy - c.cy) / (ry + c.ry + 2.5)) ** 2 < 1)) continue;
     if (((cx - (entX + 6)) / (rx + 11)) ** 2 + ((cy - (entY + 2)) / (ry + 12)) ** 2 < 1) continue;
     chambers.push({ cx, cy, rx, ry, kind: "cavern", index: chambers.length + 1 });
   }
@@ -196,11 +227,13 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
   if (vault && vault !== boss) { vault.kind = "vault"; vault.rx = Math.min(vault.rx, 6); vault.ry = Math.min(vault.ry, 5); }
   const rest = chambers.filter((c) => c.kind === "cavern");
   // 소굴(lair)은 사는 굴이라 호수 대신 마른 바닥(야영지)을 남긴다.
-  const lakeWant = profile.liquid && !spec.lair ? (si === 0 ? 1 : si === 1 ? 2 : 3) : 0;
+  const lakeWant = profile.liquid && !spec.lair ? (profile.id === "volcano" ? (si === 2 ? 2 : 1) : si === 0 ? 1 : si === 1 ? 2 : 3) : 0;
   // 작은 판에서 반지름 6 이상 방이 하나도 없어도 액체 종류(화산·동굴)는 못이 하나는 있어야 한다 — 그 땐 가장 큰 방을 쓴다.
   const bySize = [...rest].sort((a, b) => b.rx * b.ry - a.rx * a.ry);
   const lakeCands = bySize.filter((c) => c.rx >= 6).length ? bySize.filter((c) => c.rx >= 6) : bySize;
-  for (const c of lakeCands.slice(0, lakeWant)) { c.kind = "lake"; c.rx = Math.max(c.rx, 10); c.ry = Math.max(c.ry, 7); }
+  // 화산 용암 못은 한 단 작게(10×7 둘이 붙어 맵 가운데가 용암 한 덩이가 됐다 — 2026-10-23), 그 사이를 흐르는 줄기가 잇는다.
+  const lakeR = profile.id === "volcano" ? [8, 6] : [10, 7];
+  for (const c of lakeCands.slice(0, lakeWant)) { c.kind = "lake"; c.rx = Math.max(c.rx, lakeR[0]!); c.ry = Math.max(c.ry, lakeR[1]!); }
   const others = rest.filter((c) => c.kind === "cavern");
   if (profile.id === "volcano" && others[0]) others[0].kind = "forge";
   others.filter((c) => c.kind === "cavern").forEach((c, i) => { if (i % 2 === 1) c.kind = "grotto"; });
@@ -263,10 +296,13 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
     for (const c of chambers) {
       if (c.kind !== "cavern" && c.kind !== "grotto") continue;
       if (c.rx < 6 || random() > pools) continue;
+      const cells: number[] = [];
       for (let y = c.cy - 2; y <= c.cy + 2; y += 1) for (let x = c.cx - 3; x <= c.cx + 3; x += 1) {
         if (!g.inb(x, y) || g.roomAt[g.idx(x, y)] !== c.index || ed[g.idx(x, y)]! < 3) continue;
-        if (((x - c.cx) / 3) ** 2 + ((y - c.cy) / 2) ** 2 + (vnoise(x, y, 3, seed + c.index) - 0.5) * 0.5 < 1) g.liquid[g.idx(x, y)] = 1;
+        if (((x - c.cx) / 3) ** 2 + ((y - c.cy) / 2) ** 2 + (vnoise(x, y, 3, seed + c.index) - 0.5) * 0.3 < 1) cells.push(g.idx(x, y));
       }
+      // 너무 작은 웅덩이(2×1 같은 네모 조각)는 두지 않는다 — 「사각 용암 칸」으로 읽혔다(2026-10-23).
+      if (cells.length >= 10) for (const i of cells) g.liquid[i] = 1;
     }
     // 용암 못 가장자리가 계단처럼 각져 보이던 것을 다듬는다(용암은 가장자리 그림이 없어 모양이 곧 가장자리다): 이웃 8칸 다수결 두 번. 물(호수)은 운하 오토타일이 테두리를 그리니 건드리지 않는다.
     if (profile.liquid === "lava") for (let pass = 0; pass < 2; pass += 1) {
@@ -312,6 +348,8 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
         const path: number[] = [];
         for (let c = t0; c >= 0; c = prev[c]!) path.push(c);
         if (path.length < 10) return false;
+        // 못 안을 지나는 줄기는 보이지 않는다 — 새로 용암이 되는 칸이 8칸 이상인 줄기만 쓴다(2026-10-23: 붙은 못 둘 사이 줄기가 못에 묻혔다).
+        if (path.filter((c) => !g.liquid[c]).length < 8) return false;
         for (const c of path) {
           g.liquid[c] = 1;   // 좁은 목에서 길이 끊기면 settle 이 다리를 놓는다
           if (ed[c]! >= 2 && g.roomAt[c]! > 0) { const r = c + 1; if (ed[r]! >= 2) g.liquid[r] = 1; }
@@ -320,8 +358,11 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
       };
       const pairs: [Chamber, Chamber][] = [];
       for (const a of lakes.length ? lakes : plain) for (const b of plain) if (a !== b) pairs.push([a, b]);
-      pairs.sort((p, q) => Number(q[1].kind === "lake") - Number(p[1].kind === "lake") || Math.hypot(p[1].cx - p[0].cx, p[1].cy - p[0].cy) - Math.hypot(q[1].cx - q[0].cx, q[1].cy - q[0].cy));
-      for (const [a, b] of pairs) if (tryStream(a, b)) break;
+      // 못끼리 먼저, 그다음 먼 방부터 — 가까운 방을 고르면 줄기가 못 가장자리에 묻혀 보이지 않았다(2026-10-23).
+      pairs.sort((p, q) => Number(q[1].kind === "lake") - Number(p[1].kind === "lake") || Math.hypot(q[1].cx - q[0].cx, q[1].cy - q[0].cy) - Math.hypot(p[1].cx - p[0].cx, p[1].cy - p[0].cy));
+      // 줄기 둘(작은 판은 하나): 못에서 먼 방들로 흘러 나간다.
+      let streams = 0;
+      for (const [a, b] of pairs) { if (streams >= (si === 0 ? 1 : 2)) break; if (tryStream(a, b)) streams += 1; }
     }
   }
   // 문 앞 칸은 액체가 아니다

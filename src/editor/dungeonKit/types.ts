@@ -36,6 +36,8 @@ export interface DungeonRoomInput {
   /** 통로 길이(칸)와 앞 방 가운데에서의 옆 어긋남(칸) — 지정하면 그 값만 시도한다(대칭 신전·곧은 갱도). */
   readonly len?: number;
   readonly shift?: number;
+  /** round = 네 모서리를 비스듬히 깎은 팔각 방(탑 층 — 둥근 탑 안으로 읽히게, 2026-10-23). apse = 아래 두 모서리만 깎는다(북쪽 벽은 문·계단을 달 만큼 평평하게). */
+  readonly shape?: "round" | "apse";
 }
 
 export interface DungeonSpec {
@@ -74,7 +76,7 @@ export interface DungeonSpec {
 export interface DungeonStairCell { x: number; y: number; front: { x: number; y: number }; kind: "up" | "down" | "door" }
 
 export interface Rect { x: number; y: number; w: number; h: number }
-export interface PlacedRoom extends Rect { id: string; kind: DungeonRoomKind; from: string | null; dir: DungeonDir | null; depth: number }
+export interface PlacedRoom extends Rect { id: string; kind: DungeonRoomKind; from: string | null; dir: DungeonDir | null; depth: number; shape?: "round" | "apse" }
 export interface PlacedCorridor { a: string; b: string; dir: DungeonDir; rect: Rect; loop?: boolean }
 
 

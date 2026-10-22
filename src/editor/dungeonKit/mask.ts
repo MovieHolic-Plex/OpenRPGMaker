@@ -65,6 +65,18 @@ export function buildMask(layout: DungeonLayout, profile: GrammarInfo, type: Dun
   const partitions: { room: string; x: number; y: number; h: number }[] = [];
   (layout.grid ? [] : rooms).forEach((r, i) => {
     const rs = rng(seed * 31 + i * 977 + 5);
+    // 둥근 방(탑 층): 네 모서리를 비스듬히 깎아 팔각으로 — 탑이 「넓은 지하 감옥」으로 읽히던 것(2026-10-23 VQA). 문 앞 칸은 깎지 않는다.
+    if (r.shape === "round" || r.shape === "apse") {
+      const k = Math.max(2, Math.floor(Math.min(r.w, r.h) / 3));
+      for (let dy = 0; dy < k; dy += 1) for (let dx = 0; dx + dy < k; dx += 1) {
+        const top = r.shape === "round" ? [[r.x + dx, r.y + dy], [r.x + r.w - 1 - dx, r.y + dy]] as const : [];
+        for (const [x, y] of [...top, [r.x + dx, r.y + r.h - 1 - dy], [r.x + r.w - 1 - dx, r.y + r.h - 1 - dy]] as const) {
+          if (!inb(x, y) || doorstep[idx(x, y)]) continue;
+          markRect({ x, y, w: 1, h: 1 }, -1, 0);
+        }
+      }
+      return;
+    }
     // 모서리 모따기: 큰 방의 모서리 한두 곳을 1~2칸 깎는다(벽이 한 단 앞으로 나온다). 같은 종류 방이 판박이가 되지 않게.
     if (r.w >= 10 && r.h >= 7 && r.kind !== "cell") {
       const corners: [number, number, boolean][] = [[r.x, r.y, true], [r.x + r.w, r.y, true], [r.x, r.y + r.h, false], [r.x + r.w, r.y + r.h, false]];
@@ -123,7 +135,8 @@ export function carveFlood(g: Grid, rooms: readonly PlacedRoom[], seed: number):
     const cx = r.x + (r.w - 1) / 2, cy = r.y + (r.h - 1) / 2;
     // 둑길: 긴 축 방향 한 줄은 늘 남기고, 짧은 축 둑은 큰 방에만(방이 네 웅덩이로 갈린다)
     const along = r.w >= r.h;
-    const cross = r.w >= 12 && r.h >= 9;
+    // 가로지르는 둘째 둑길은 뺐다 — 방이 네모 웅덩이 넷으로 갈려 「잠긴 방」이 아니라 수조로 읽혔다(2026-10-23). 갈린 문은 settle 의 다리가 잇는다.
+    const cross = false;
     for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
       const i = g.idx(x, y);
       if (!g.floor[i] || g.roomAt[i] !== ri || g.protect[i]) continue;
@@ -134,7 +147,11 @@ export function carveFlood(g: Grid, rooms: readonly PlacedRoom[], seed: number):
       const onSpine = along ? Math.abs(y - (cy + bend(x, 1))) <= 1 : Math.abs(x - (cx + bend(y, 2))) <= 1;
       const onCross = cross && (along ? Math.abs(x - (cx + bend(y, 3))) <= 1 : Math.abs(y - (cy + bend(x, 4))) <= 1);
       if (onSpine || onCross) continue;
-      if (ed[i]! < 3 && vnoise(x, y, 2.5, seed * 19 + ri) < (ed[i]! < 2 ? 0.38 : 0.2)) continue;
+      // 물 가장자리는 방 모양(네모)이 아니라 흔들리는 타원 덩이다(2026-10-23 assistant-dungeons-2, VQA 「사각 수조」).
+      // 흔들림은 0.15 이하(PR #1450: 0.25 이상이면 덩이가 부서진다). 모서리·벽 쪽은 마른 바닥으로 남는다.
+      const rx = Math.max(2.5, r.w / 2 + 0.3), ry = Math.max(2.5, r.h / 2 + 0.3);
+      const d = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2;
+      if (d > 1.08 + (vnoise(x, y, 3.5, seed * 19 + ri) - 0.5) * 0.3) continue;
       g.liquid[i] = 1; cells += 1;
     }
   });
