@@ -195,7 +195,8 @@ export function page(id: string, conditions: EventPageCondition[], commands: Com
     graphic: who
       ? { sprite: { type: "bundled", id: who.tex }, direction: dir, pattern: charsetFrameIndex({ characterIndex: who.index, direction: dir, pattern: 1 }), transparent: false }
       : { direction: dir, pattern: 0, transparent: true },
-    movement: { type: "fixed", speed: 3, frequency: 3 },
+    // 사용자 r2: 「팀장이 너무 느리게 걷는다」 — 걷는 사람은 주인공과 같은 보통 속도(4)로 걷는다.
+    movement: { type: "fixed", speed: who ? 4 : 3, frequency: 3 },
     priority: opts.priority ?? (who ? "same" : "below"),
     // 「같은 층」을 명시한 빈 그림 이벤트(문)는 몸이 있다 — 막고, 부딪히면 발동한다.
     overlapForbidden: !!who || opts.priority === "same",

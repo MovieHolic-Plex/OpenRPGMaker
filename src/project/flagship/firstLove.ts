@@ -133,7 +133,6 @@ const panBack = (ms = 900): Command => m2("Camera Control", { mode: "return", ta
  */
 function leave(project: Project, mapId: string, eventId: string, from: Cell, exit: { stand: Cell; door: Cell }, hideSw: string, hero: Cell, alsoAvoid: readonly Cell[] = [], pan?: Cell, returnTo?: Cell): { begin: Command; end: Command[] } {
   const walkOut = walkRoute(project, mapId, eventId, from, exit.stand, [hero, ...alsoAvoid], false) as unknown as Record<string, unknown>;
-  walkOut.routeHead = [{ kind: "changeSpeed", delta: 1 }];
   walkOut.routeTail = [{ kind: "turn", dir: dirToward(exit.stand, exit.door) }];
   const door = elevDoor(exit.door);
   const ride = { kind: "moveEvent", eventId, route: { moves: [
@@ -349,7 +348,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   const named = o as typeof o & { meetLead?: Cell; meetJihu?: Cell };
   const leadMeetStop = named.meetLead ?? spot(project, FL_MAP.office, { x: o.elevatorOut.x, y: o.elevatorOut.y + 2 }, taken);
   const jihuMeetStop = named.meetJihu ?? spot(project, FL_MAP.office, { x: leadMeetStop.x + 1, y: leadMeetStop.y }, taken);
-  const minhoMeetStop = spot(project, FL_MAP.office, { x: leadMeetStop.x - 1, y: leadMeetStop.y }, taken);
+  const minhoMeetStop = spot(project, FL_MAP.office, { x: o.elevatorOut.x - 1, y: o.elevatorOut.y }, [...taken, leadMeetStop, jihuMeetStop]);
   // 둘 다 자기 자리에서 걸어 나온다(빈 바닥에서 솟아나지 않는다).
   const leadSpot = o.leadDesk;
   const jihuMeet = jihuSeat;
@@ -450,26 +449,31 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     quiet(SE_SLIDE, 0.4), ...doorFx(elev, false, 700, false),
     walkRoute(project, FL_MAP.office, "ev_fl_lead", leadSpot, leadMeetStop, [o.elevatorOut]),
     face("ev_fl_lead", dirToward(leadMeetStop, o.elevatorOut)),
-    ...say("lead", "base", "윤서하 씨? 오정민이에요. 프로덕트팀 팀장."),
+    face("@player", dirToward(o.elevatorOut, leadMeetStop)),
+    ...sayAt("lead", "right", "base", "윤서하 씨? 오정민이에요. 프로덕트팀 팀장."),
     ...say("seoha", "happy", "안녕하세요! 오늘부터 출근하는 윤서하입니다. 잘 부탁드립니다."),
-    ...say("lead", "happy", "긴장 풀어요. 우리 팀 다섯 명이에요. 한 명은 휴가 중이고, 한 명은 벌써 탕비실에서 간식 먹고 있고."),
+    ...sayAt("lead", "right", "happy", "긴장 풀어요. 우리 팀 다섯 명이에요. 한 명은 휴가 중이고, 한 명은 벌써 탕비실에서 간식 먹고 있고."),
     // 민호는 탕비실에서 걸어 나와 인사한다(VQA2: 「탕비실 안에서 자기소개」).
     walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoSpot, minhoMeetStop, [o.elevatorOut, leadMeetStop]),
     face("ev_fl_minho", dirToward(minhoMeetStop, o.elevatorOut)),
-    ...say("minho", "happy", "아, 들켰다. 차민호예요! 지난주에 들어온 백엔드 신입. 동기라고 해도 되죠?"),
-    ...say("seoha", "happy", "네, 그럼요. 반가워요."),
+    face("@player", dirToward(o.elevatorOut, minhoMeetStop)),
+    ...sayAt("minho", "left", "happy", "아, 들켰다. 차민호예요! 지난주에 들어온 백엔드 신입. 동기라고 해도 되죠?"),
+    ...sayAt("seoha", "right", "happy", "네, 그럼요. 반가워요."),
     { kind: "changeFriendship", npcKey: "lead", delta: 60 } as Command,
     { kind: "changeFriendship", npcKey: "minho", delta: 60 } as Command,
-    listenTo("jihu"),
-    ...say("lead", "base", "그리고 서하 씨 사수. 지후 씨, 잠깐 와 볼래요?"),
+    face("@player", dirToward(o.elevatorOut, leadMeetStop)),
+    listenTo("jihu", "base", "left"),
+    ...sayAt("lead", "right", "base", "그리고 서하 씨 사수. 지후 씨, 잠깐 와 볼래요?"),
     walkRoute(project, FL_MAP.office, "ev_fl_jihu_meet", jihuMeet, jihuMeetStop, [o.elevatorOut, leadMeetStop, minhoMeetStop]),
     face("ev_fl_jihu_meet", dirToward(jihuMeetStop, o.elevatorOut)),
+    // 지후가 서하 앞에 서면 서하도 그를 본다 — 선택지 「처음 뵙겠습니다」는 마주 선 채로 뜬다.
+    face("@player", dirToward(o.elevatorOut, jihuMeetStop)),
     stopBgm(),
     ...emote("player", "exclamation", 1300),
     ...think("…어?", "회색 후드. 조금 길어진 앞머리. 목소리를 듣기도 전에 알았다."),
     flash("white", 250),
     ...think("금요일 점심, 방송실 창가. 스피커에서 흘러나오던 그 목소리."),
-    ...say("lead", "base", "강지후 선임. 앱 개발 4년 차고, 이번 ‘하루끝’ 리뉴얼 메인 개발자예요. 모르는 건 이 사람한테 물어봐요."),
+    ...sayAt("lead", "right", "base", "강지후 선임. 앱 개발 4년 차고, 이번 ‘하루끝’ 리뉴얼 메인 개발자예요. 모르는 건 이 사람한테 물어봐요."),
     ...say("jihu", "base", "…처음 뵙겠습니다. 강지후입니다."),
     ...think("처음… 뵙겠습니다?"),
     choices([
@@ -480,7 +484,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
       ] },
       { text: "“…지후 선배?”", then: [
         ...say("seoha", "surprised", "…지후 선배?"),
-        ...say("lead", "surprised", "어머, 아는 사이예요?"),
+        ...sayAt("lead", "right", "surprised", "어머, 아는 사이예요?"),
         ...emote("ev_fl_jihu_meet", "ellipsis", 1200),
         // 「대답하기 전에 눈을 피했다」 — 대답하기 전에 지후가 실제로 고개를 돌렸다가, 다시 보고 말한다.
         face("ev_fl_jihu_meet", "right"),
@@ -493,9 +497,11 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
       ] },
     ]),
     bgm(BGM_OFFICE),
-    ...say("lead", "base", "서하 씨 자리는 지후 씨 맞은편이에요. 오늘 숙제는 금요일 발표 자료 읽어 두기."),
-    ...say("lead", "base", "금요일 오후 세 시에 ‘소리결’ 박 본부장님 앞에서 리뉴얼 시안 발표가 있어요. 신입한테 미안하지만, 첫 주부터 바빠요."),
-    ...say("minho", "happy", "서하 씨, 이따 탕비실로 와요! 커피 머신 쓰는 법 알려 줄게요."),
+    face("@player", dirToward(o.elevatorOut, leadMeetStop)),
+    ...sayAt("lead", "right", "base", "서하 씨 자리는 지후 씨 맞은편이에요. 오늘 숙제는 금요일 발표 자료 읽어 두기."),
+    ...sayAt("lead", "right", "base", "금요일 오후 세 시에 ‘소리결’ 박 본부장님 앞에서 리뉴얼 시안 발표가 있어요. 신입한테 미안하지만, 첫 주부터 바빠요."),
+    face("@player", dirToward(o.elevatorOut, minhoMeetStop)),
+    ...sayAt("minho", "left", "happy", "서하 씨, 이따 탕비실로 와요! 커피 머신 쓰는 법 알려 줄게요."),
     walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoMeetStop, minhoSpot, [o.elevatorOut], false, "up"),
     // 만남 자리의 둘은 그 자리에서 사라지지 않고 각자 자리까지 걸어간다 — 자리의 지후·팀장 페이지가 같은 칸에서 이어받는다.
     walkRoute(project, FL_MAP.office, "ev_fl_jihu_meet", jihuMeetStop, jihuSeat, [o.elevatorOut], false),
@@ -653,7 +659,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
   // 계산대 손님 쪽(점원 두 칸 아래) — 계산은 거기 가서 한다(VQA r3: 매장 건너 10칸에서 점원과 말함).
   const registerFront = nearestFree(project, kon, { x: clerkSpot.x, y: clerkSpot.y + 2 }, 1, [clerkSpot, jihuStop, coolerFront]);
   // 지후는 계산대 바로 앞 줄이 아니라 서하 오른쪽 뒤 칸 — 계산대 위 소품(상층 그림)이 머리를 덮지 않는다(VQA r4 M1).
-  const jihuRegister = nearestFree(project, kon, { x: registerFront.x + 1, y: registerFront.y }, 1, [clerkSpot, registerFront, jihuStop, coolerFront]);
+  const jihuRegister = nearestFree(project, kon, { x: registerFront.x + 1, y: registerFront.y + 1 }, 1, [clerkSpot, registerFront, jihuStop, coolerFront]);
   add(kon,
     event("ev_fl_clerk", "편의점 점원", clerkSpot, [page("c", [], [
       ...voice("점원", "어서 오세요~ 바나나우유 원 플러스 원이에요."),
@@ -928,14 +934,15 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
         face("ev_fl_w_lead", dirToward(leadSeat, jihuSeat)),
         face("ev_fl_w_jihu", dirToward(jihuSeat, leadSeat)),
         ...sayAt("lead", "left", "base", "지후 씨, 서하 씨 좀 도와줄래요?"),
-        ...sayAt("jihu", "left", "base", "네."),
+        // 지후는 열 칸 밖 자리에 있다 — 멀리서 「네.」로 대답하지 않고 일어나 오는 걸음으로 대답한다(사용자 r2: 너무 멀리서 대화).
+        // 팀장의 작별 인사도 서하가 팀장 앞에 서 있을 때 한다.
+        face("ev_fl_w_lead", dirToward(leadSeat, leadFront)),
+        ...sayAt("lead", "left", "base", "본부장님 전화는 가면서 할게요. 둘 다 너무 늦지 말아요."),
         walkRoute(project, FL_MAP.officePm, "@player", leadFront, o.heroDesk, [jihuBeside]),
         ...comeBeside(),
         ...think("지후 선배가 내 옆으로 와 모니터를 들여다봤다. 아주 잠깐, 웃은 것 같았다."),
         ...like(1, "ev_fl_w_jihu"),
         // 팀장은 화면 안에서 걸어 나간다 — 시간 건너뛰기(반쯤 어두운 화면)에 자리에서 사라지지 않는다(VQA r12).
-        faceHero("ev_fl_w_lead"),
-        ...say("lead", "base", "본부장님 전화는 가면서 할게요. 둘 다 너무 늦지 말아요."),
         leadOut.begin,
         ...leadOut.end,
       ] },
@@ -1002,7 +1009,9 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
   const elevatorView = { x: 13, y: 8 };
   // 회의 장면 카메라: 회의실이 화면 위쪽(흉상 머리 위)에 오게 맵 아래 덧댄 줄 쪽으로 내려 잡는다(VQA r10 금요일 회의가 화면 아래 구석).
   const meetView = { x: 13, y: 19 };
-  const clientOut = leave(project, FL_MAP.officeFri, "ev_fl_f_client", clientSpot, exit, "sw_fl_client_left", o.meetingSeat, [], elevatorView, meetView);
+  // 본부장은 발표자 바로 앞(아래) 칸을 스치지 않고 탁자 동쪽으로 돌아 나간다(VQA r15: 서하·지후 하반신에 겹침).
+  const presenterFront = [{ x: o.meetingSeat.x, y: o.meetingSeat.y + 1 }, { x: jihuSpot.x, y: jihuSpot.y + 1 }];
+  const clientOut = leave(project, FL_MAP.officeFri, "ev_fl_f_client", clientSpot, exit, "sw_fl_client_left", o.meetingSeat, [jihuSpot, ...presenterFront], elevatorView, meetView);
   const jihuOut = leave(project, FL_MAP.officeFri, "ev_fl_f_jihu", jihuSpot, exit, "sw_fl_jihu_left", o.meetingSeat, [], elevatorView, meetView);
   add(fri,
     event("ev_fl_f_client", "박 본부장", clientSpot, [page("fc", [swOff("sw_fl_client_left")], [], { who: "client", dir: "down" })]),
@@ -1208,12 +1217,13 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...say("jihu", "sad", "근데 지금 대답하면, 그건 또 도망치는 대답 같아요. 떠나는 사람이 할 말이 아니라서."),
           ...say("jihu", "base", "답장은 여기 써 뒀어요. 열차 떠나면 읽어요."),
           playSe(SE_PAPER),
-          // 열차를 타러 선로 쪽으로 걸어가 화면에서 떠난다 — 「열차가 떠나고」가 그림으로 바로 잘리지 않는다(VQA r13).
+          // 지후는 승강장 끝(안전선)까지 걸어가 선로를 보고 선다 — 닫힌 객차 옆구리로 걸어 들어가지 않는다(VQA r15). 떠나는 건 검은 화면 뒤다.
           face("ev_fl_p_jihu", "down"),
-          { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [{ kind: "setThrough", enabled: true }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
+          { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [{ kind: "move", dir: "down" }, { kind: "move", dir: "down" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
+          ...fadeOut(1200),
           setSw("sw_fl_jihu_boarded", true),
-          // 에필로그는 혼자 남은 승강장 위로 흐른다 — 두 사람 그림은 「혼자 남았다」와 어긋났다(VQA r14).
           stopBgm(),
+          ...endingOpenNight(),
           { kind: "triggerEnding", endingId: END_B } as Command,
         ]),
       ] },
@@ -1222,11 +1232,13 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
         ...say("jihu", "sad", "…응. 잘 지내, 서하야."),
         ...say("jihu", "base", "이거. 답장이에요. 10년 늦었지만."),
         playSe(SE_PAPER),
-        // 열차를 타러 선로 쪽으로 걸어가 화면에서 떠난다 — 「열차가 떠나고」가 그림으로 바로 잘리지 않는다(VQA r13).
+        // 지후는 승강장 끝(안전선)까지 걸어가 선로를 보고 선다 — 닫힌 객차 옆구리로 걸어 들어가지 않는다(VQA r15). 떠나는 건 검은 화면 뒤다.
         face("ev_fl_p_jihu", "down"),
-        { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [{ kind: "setThrough", enabled: true }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
+        { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [{ kind: "move", dir: "down" }, { kind: "move", dir: "down" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
+        ...fadeOut(1200),
         setSw("sw_fl_jihu_boarded", true),
         stopBgm(),
+        ...endingOpenNight(),
           { kind: "triggerEnding", endingId: END_B } as Command,
       ] },
     ]),
@@ -1237,6 +1249,13 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
  * 엔딩 직전 — 검게 덮은(fadeOut) 화면에서 에필로그 그림을 먼저 깔고 덮개를 걷는다. 엔딩의 에필로그 그림은 페이드의 검은 색조 아래에
  * 그려져 글이 검은 화면에 떴다(VQA r10). 같은 그림·자리(fl_epilogue)라 에필로그의 그림 명령은 그대로 이어진다.
  */
+/** 엔딩 B — 열차가 떠난 뒤 지상으로 올라와 본 밤하늘(320×256 파노라마를 화면 가득). */
+function endingOpenNight(): Command[] {
+  return [
+    { kind: "showPicture", pictureId: "fl_epilogue", resourceId: "oprn-pano-night", x: 0, y: -8, scale: 150, opacity: 255, waitForPicture: false } as Command,
+    ...fadeIn(900),
+  ];
+}
 function endingOpen(resourceId: string): Command[] {
   return [
     { kind: "showPicture", pictureId: "fl_epilogue", resourceId, x: -4, y: -3, scale: 29, opacity: 255, waitForPicture: false } as Command,
@@ -1282,7 +1301,7 @@ function defineEndings(project: Project): void {
     conditions: [],
     presentation: { musicResourceId: BGM_END_B, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", credits: ENDING_CREDITS, backgroundResourceId: "oprn-title-romance-campus" },
     epilogue: [
-      { kind: "say", text: "열차 문이 닫혔다. 승강장에 혼자 서서, 연두색 편지지를 뒤집었다. 낯익은 글씨." },
+      { kind: "say", text: "열차가 떠났다. 혼자 지상으로 올라와 밤하늘을 봤다. 연두색 편지지 뒤에, 낯익은 글씨." },
       { kind: "say", text: "‘바나나우유 님께. 그 금요일 방송, 이제야 읽어요.’" },
       { kind: "say", text: "‘나도 금요일마다 사연함을 제일 먼저 열었어요. 당신 글씨가 있는지 보려고.’" },
       { kind: "say", text: "‘잘 지내요. 진심으로. — 강지후’" },

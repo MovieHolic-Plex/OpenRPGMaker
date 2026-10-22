@@ -242,7 +242,9 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       elevator: { x: 16, y: 3 }, elevatorOut: { x: 16, y: 4 }, npcExit: { x: 21, y: 3 },
       stairs: { x: 10, y: 3 }, stairsOut: { x: 10, y: 4 },
       // 엘리베이터 앞 첫 만남: 서하는 elevatorOut, 팀장은 두 칸 아래(트인 사무실 쪽), 지후는 그 옆 — 전부 석재 로비 바닥 위, 벽·엘리베이터 그림에 안 가린다.
-      meetLead: { x: 16, y: 6 }, meetJihu: { x: 17, y: 6 },
+      // 사용자 r2: 「대화를 너무 멀리서 한다」 — 팀장은 서하 바로 오른쪽(같은 줄, 한 칸), 민호는 바로 왼쪽, 지후는 두 칸 앞에서 서하를 마주 본다.
+      // 위아래로 붙어 서면 3/4 시점에서 그림이 겹치므로(VQA r14) 바로 앞 칸은 비운다.
+      meetLead: { x: 17, y: 4 }, meetJihu: { x: 16, y: 6 },
       // 한 팀 책상 무리(3열 6자리) 옆에 서하·지후, 팀장 책상은 그 동쪽.
       heroDesk: nearestFree(project, officeRoom, { x: 13, y: 9 }),
       jihuDesk: nearestFree(project, officeRoom, { x: 17, y: 9 }),
@@ -354,7 +356,7 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   }
   for (const id of [FL_MAP.platformAm, FL_MAP.platformPm]) {
     try {
-      exec("set_map_transit", { mapId: id, auto: { subway: { vehicle: "jp-subway", name: "한결선", stopName: "한결역", headwaySec: 90, waitSec: 45 } } });
+      exec("set_map_transit", { mapId: id, auto: { subway: { vehicle: "jp-subway", name: "한결선", stopName: "한결역", headwaySec: 50, waitSec: 10 } } });
     } catch (error) {
       console.warn(`[first-love] ${id} 열차를 깔지 못했다: ${(error as Error).message}`);
     }
