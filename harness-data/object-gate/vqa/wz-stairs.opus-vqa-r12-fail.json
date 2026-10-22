@@ -1,0 +1,191 @@
+{
+ "date": "2026-10-23",
+ "reviewers": "3 fresh Opus 5.5, parallel; a major counts only if 2 of 3 raise it",
+ "round": 12,
+ "majorityMajors": {
+  "wz-clock-stair": 2,
+  "wz-hd-stairs-down": 3,
+  "wz-castle-stair-down": 3,
+  "wz-owl-stair-down": 3
+ },
+ "note": "hd-stairs-down majority was caused by a wrong brief (it was described as DOWN); the clock/stairwell majors were real and led to the redraw judged in r13.",
+ "reviews": {
+  "wz-clock-stair": [
+   {
+    "reviewer": "A",
+    "verdict": "major",
+    "majors": [
+     "Bottom two treads are big brown rectangles with gold outline trim and dot specks inside a framed alcove, under a glowing gold bar: at 1x and 3x the whole thing reads as a dresser/chest of drawers in a wardrobe niche (same wood as the shipped wardrobe), not a climbing stair"
+    ],
+    "minors": [
+     "Gold-studded blue frame is busier than the shipped wizarding kits"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "The two bottom treads are boxed by gold/blue outline rectangles that read like drawer fronts; the whole framed alcove is close to a chest of drawers",
+     "The bright gold band at the top reads like lamp/hearth glow more than a landing"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "major",
+    "majors": [
+     "at 1x, and still at 3x, the stack of equal brown slabs with dark gaps inside a studded box frame with a top lintel reads as a chest of drawers or bookshelf, not a stair; there is no runner, side rail or clear narrowing to signal a climb"
+    ],
+    "minors": [
+     "the gold studs along the frame read as furniture trim, which adds to the cabinet impression"
+    ]
+   }
+  ],
+  "wz-castle-stair-up": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "Bottom treads protrude beyond the door jambs; acceptable but frame posts then appear to float above the outer treads",
+     "Glowing gold strip at the top is shared with all UP pieces and reads a bit like a lamp/oven glow"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "The red runner carries the read; without it the grey treads in an arched dark frame would look like a shelf"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "the frame header and posts give it a furniture-box silhouette; only the red runner tells the player it is a stair"
+    ]
+   }
+  ],
+  "wz-owl-stair-up": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "Wooden L-brackets at the bottom treads make the lower steps read like stacked crates",
+     "Stray single light pixel on the bottom tread"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "Grey treads are low-contrast against the grey interior; at 1x the steps merge into one slab",
+     "Single white speck on a bottom tread reads as a stray pixel"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "at 1x the grey bands inside the wood frame lean toward a shelf; the rough stone speckle is barely visible",
+     "the white speck at the lower right reads as a stray pixel or object"
+    ]
+   }
+  ],
+  "wz-hd-stairs-down": [
+   {
+    "reviewer": "A",
+    "verdict": "major",
+    "majors": [
+     "Drawn with the exact UP composition (glowing gold landing at the top/back, treads widening toward the viewer, inside the same arched alcove as wz-clock-stair); nothing indicates descent into a hole, so a player reads it as an up staircase (or the same drawer-cabinet as clock-stair)"
+    ],
+    "minors": []
+   },
+   {
+    "reviewer": "B",
+    "verdict": "major",
+    "majors": [
+     "Labelled DOWN but drawn exactly like the UP pieces: arched frame, glowing gold landing at the top (north), treads stacking up toward it with the bottom steps protruding forward. A player reads it as stairs going UP; nothing shows a hole or descent (compare castle/owl-stair-down)"
+    ],
+    "minors": []
+   },
+   {
+    "reviewer": "C",
+    "verdict": "major",
+    "majors": [
+     "laid out identically to the UP pieces (bright gold landing band at the top, treads growing toward the viewer), so the player reads it as an up stair; nothing shows descent into a hole"
+    ],
+    "minors": [
+     "the dark brown right side wall is heavier than the left, so the piece looks unbalanced"
+    ]
+   }
+  ],
+  "wz-castle-stair-down": [
+   {
+    "reviewer": "A",
+    "verdict": "major",
+    "majors": [
+     "The hole rim is drawn as an upright frame with posts reaching the ground and horizontal dark slats in the upper interior; at 1x/3x it reads as a fireplace/stove or floor grate, not a stairwell opening in the floor"
+    ],
+    "minors": [
+     "Only the bottom 2 steps are legible; the rest is near-black bars"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "major",
+    "majors": [
+     "A square stone frame around a dark interior, with horizontal grey bars and a light slab at the bottom: at 1x and 3x it reads as a fireplace/oven mouth or a floor grate, not a stairwell. No tread/riser alternation is legible in the dark top half, and the light bottom slab reads as a hearth stone"
+    ],
+    "minors": [
+     "It is shorter than the UP pieces and sits on the floor like a free-standing box rather than a cut into the floor"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "major",
+    "majors": [
+     "a stone-framed dark opening with a few grey steps at the bottom reads as a fireplace or hearth (or an oven grate), not a stairwell going down north; at 1x it is a dark framed box"
+    ],
+    "minors": [
+     "the steps are low-contrast grey on dark, so the tread top and riser split is barely visible"
+    ]
+   }
+  ],
+  "wz-owl-stair-down": [
+   {
+    "reviewer": "A",
+    "verdict": "major",
+    "majors": [
+     "Wooden upright frame around a dark box with gray slabs at the bottom reads as a hearth/oven or open crate at 1x and 3x rather than a hole in the floor descending north"
+    ],
+    "minors": [
+     "Stray white pixel on the bottom step"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "major",
+    "majors": [
+     "Same hearth/grate read as castle-stair-down: a wooden frame, a dark mouth with horizontal slats, and a white fleck on the bottom slab that reads as ash or ember. It looks like a fireplace or stove, not a descending stair"
+    ],
+    "minors": []
+   },
+   {
+    "reviewer": "C",
+    "verdict": "major",
+    "majors": [
+     "a wood-framed dark box with grey steps at the bottom and a white speck reads as a fireplace with an ember or bone, not a descending stair"
+    ],
+    "minors": [
+     "the white speck in the lower middle looks like a stray object"
+    ]
+   }
+  ]
+ }
+}

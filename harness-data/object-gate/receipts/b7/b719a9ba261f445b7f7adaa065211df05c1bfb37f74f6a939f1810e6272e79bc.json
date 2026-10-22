@@ -1,0 +1,325 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b719a9ba261f445b7f7adaa065211df05c1bfb37f74f6a939f1810e6272e79bc",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "wz-castle-stair-down",
+ "label": "wizarding_world stairs wz-castle-stair-down (DOWN)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "floor-flag",
+   "floor-oak"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "wizarding_world",
+   "chipset": "wizarding_world",
+   "fallback": false,
+   "hash": "47c4526a955e3fa6"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 35,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stairwell frame with balustrade strip at top",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "descending steps inside the opening (alternating light and dark treads)",
+      "rows": "8-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full-width rectangle (30 px wide from row 1 to row 30). A balustrade strip fills rows 1-7. Below it is a dark opening in rows 8-13, then horizontal tread bands in rows 14-28, with a light landing in rows 29-31. The whole drawing is seen straight down as a plate. There is no south vertical face of 3 or more rows, no eave shadow and no ellipse. The steps are stacked treads read from above, not a front elevation. It fits a flat floor stair-down decal, so it reads as top_down_slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 3,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a stone stair-down with a frame, a recessed dark opening and step treads in light-to-dark stone tones. It shows about 6 distinct lightness steps and 7 visible tones per tile, versus 3 and 2 for the shipped floor-flag and floor-oak references. Near-flat coverage is 0%, against 41% and 17% for the references, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline leans toward the material tint, like the references. It reads as a stone stair and is at least as rich as the shipped wizarding_world ground pieces, and it would sit next to them without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12385
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper frame / balustrade with bars",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark stairwell opening",
+      "rows": "8-13",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "descending steps (treads with dark riser lines)",
+      "rows": "14-30",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 17,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole piece is a stairwell seen from above. It has a frame at rows 1-7, a dark pit at rows 8-13, and steps at rows 14-30. Each step is a 2-row tread followed by a 1-row dark line (rows 16, 19, 22, 25, 28), and the treads get lighter toward the bottom. The steps are horizontal plates with no tall south face, so the drawing is a flat plate rather than a standing volume with a top and a front face. The silhouette is a near-full 30px-wide rectangle."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 3,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a stair-down piece with a frame and descending steps. It measures 7 visible tones per tile against 3 for floor-flag and 2 for floor-oak. Near-flat coverage is 0%, against 41% and 17% for the references. Dark edge pixels are 0% neutral, so the outline is tinted like the references and is not a black sticker line. The stone steps show about 5 lightness steps (light tread edges, mid faces, dark risers, deep shadow in the opening) and a frame with highlight and shade. Texture is moderate: step edges and shading variation, with no large flat fills. The candidate is at least as rich as the shipped references, which are simple 2-3 tone tile patterns.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13993
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel and bar strip (rows 1-7)",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stairwell steps (alternating light treads and dark riser lines)",
+      "rows": "8-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full-width 30px plate with a thin frame. Rows 3-6 are a vertical bar or balustrade strip between two 1-row lines at rows 2 and 7. Rows 8-13 are a dark opening. Rows 14-29 are stacked horizontal tread bands (L=83, 114, 155, 196) separated by 1-row dark riser lines at rows 16, 19, 22, 25 and 28. The treads get lighter toward the bottom, so it reads as a staircase going down, seen from above. There is no vertical south face of 3 or more rows, no eave shadow and no ellipse. The bottom rows 29-31 are a light floor or landing strip, not a front face. This matches a flat floor decal or plate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 6,
+    "reference_steps": 3,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a stair-down piece with a stone frame, a dark opening and light steps descending. It uses 7 visible tones per tile, against 3 for floor-flag and 2 for floor-oak. Near-flat coverage is 0%, against 41% and 17% for the references. The step treads show a clear lightness ramp from light to dark, and the frame has highlight and shadow edges. The 0% near-neutral share of dark edge pixels means the edges are tinted rather than black, so the outline reads as a dark tone of the adjacent stone. The shipped references are simple, with 2-3 tones, so the candidate matches or exceeds them in shading depth and information density without looking like a flat sticker. The kind matches, as a ground patch of stairs sits alongside floor tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13947
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top frame with balusters/railing band",
+      "rows": "1-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark stairwell opening",
+      "rows": "8-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "descending step treads",
+      "rows": "14-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom light landing/threshold",
+      "rows": "29-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 30-wide, 31-row sprite is a plate seen from above. A frame with balusters (rows 1-7) sits above a dark opening (rows 8-13), and horizontal step bands alternate light and dark down to a light landing (rows 29-31). Column scans at x=8, 16 and 23 show only stacked horizontal bands. There is no vertical south face of 3 or more rows, no front-edge line with eave shadow, and no ellipse. This fits the flat-on-the-ground kind and reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 3,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a stair-down with a stone frame, and its steps shade from light to dark. It shows 7 visible tones per tile against 3 for floor-flag and 2 for floor-oak. Near-flat coverage is 0% against 41% and 17% for the references, so no flat fills. The dark edge pixels are 0% neutral, matching the references, so the outlines lean toward a material tone and not a black sticker line. The step treads have several lightness steps and some grain. Shading depth and density are at or above both shipped wizarding_world references, so a careful artist would accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12437
+  }
+ ],
+ "decidedAt": "2026-10-22T17:12:39.831Z",
+ "cells": {
+  "16": [
+   "47be960c6ad84716",
+   "578d9787ac54ce3e",
+   "d8f2d23462c31dee",
+   "e395379a2f45853e"
+  ],
+  "24": [
+   "005206b18efe771f",
+   "0060cbc8c8c747e8",
+   "035a7d1719d8b3bd",
+   "0876672fd386b039",
+   "1c10aca09c9b90c8",
+   "20a8797ab6b79a69",
+   "235750b50bd31aa9",
+   "2428308484eb09b9",
+   "37c08f15bc59c8db",
+   "37d928de5b10de5a",
+   "38fabb78d633d9c2",
+   "488479da5fced861",
+   "65a4c3f80bfa717b",
+   "6d54d8d352649a8b",
+   "8083c3000bb26926",
+   "8b6f7e1c5d7f9ed3",
+   "920f99890debe874",
+   "9d679e2a19776dad",
+   "9fca3dace1946270",
+   "a379ddd5cb785c70",
+   "a6e8dce8c97caa88",
+   "cbdc1036e78c8fa9",
+   "cbf878909d195502",
+   "f03293d8c21ae010"
+  ],
+  "32": [
+   "76fad275525d292b"
+  ],
+  "48": [
+   "405f80e915528f55",
+   "407f669606095aa1",
+   "8c27410b73f5e840",
+   "95ec6f987944991f",
+   "d70530fcc17e6809",
+   "e273b313f76d748b"
+  ]
+ }
+}
