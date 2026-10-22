@@ -149,20 +149,29 @@ export function planApproach(world: ApproachWorld, from: StageCell, target: Stag
     const stay: ApproachPlan = { goal: from, steps: [], face: d === 0 ? null : dirToward(from, target), fallback: false };
     if (fromTier === 0) return stay;
     const searchUntil = fromTier > 0 ? fromTier : tiers.length;
+    // 겹침 없는 자리 우선: 말 거리 안 단계들 중 길·자리 모두 다른 인물과 안 겹치는(clean) 첫 단계를 고른다. 없으면 겹쳐도
+    // 가장 앞 단계(2026-10-22 VQA: 좁은 승강장·엘리베이터 앞에서 바로 옆 칸으로 가느라 다른 인물 머리 위를 지났다).
+    let firstAny: ApproachPlan | null = null;
     for (let tier = 0; tier < searchUntil; tier += 1) {
-      let best: { cell: StageCell; cost: number; rank: number } | null = null;
+      let best: { cell: StageCell; cost: number; rank: number; steps: Dir[]; clean: boolean } | null = null;
       for (const c of tiers[tier]!) {
         if (!inBounds(c) || isTarget(c) || !standable(c) || !ok(c)) continue;
         const cost = reach.dist.get(key(c));
         if (cost === undefined) continue;
+        const steps = pathTo(reach, world.width, from, c);
+        const clean = d === 0 || !world.crowded || (cost === steps.length && !world.crowded(c));
         const toward = Math.abs(c.x - from.x) + Math.abs(c.y - from.y); // 출발 쪽
-        const rank = cost * 1000 + Math.min(999, toward);
-        if (!best || rank < best.rank) best = { cell: c, cost, rank };
+        const rank = (clean ? 0 : 1_000_000) + cost * 1000 + Math.min(999, toward);
+        if (!best || rank < best.rank) best = { cell: c, cost, rank, steps, clean };
       }
       if (!best) continue;
       if (fromTier > 0 && best.cost > 2) continue; // 이미 말 거리 안 — 멀리 돌아가며 자리 바꾸지 않는다
-      return { goal: best.cell, steps: pathTo(reach, world.width, from, best.cell), face: d === 0 ? null : dirToward(best.cell, target), fallback: tier >= talkTiers || allowHidden };
+      const plan: ApproachPlan = { goal: best.cell, steps: best.steps, face: d === 0 ? null : dirToward(best.cell, target), fallback: tier >= talkTiers || allowHidden };
+      if (tier >= talkTiers) return firstAny ?? plan; // 말 거리 안에 자리가 하나도 없을 때만 먼 칸
+      if (best.clean) return plan;
+      firstAny ??= plan;
     }
+    if (firstAny) return firstAny;
     if (fromTier > 0) return stay;
   }
   return null;

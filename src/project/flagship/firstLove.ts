@@ -239,7 +239,9 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   add(office, scene("ev_fl_meet", { x: 1, y: 1 }, S.STREET, [
     ...caption("스튜디오 늘봄, 7층."),
     // 인물 연출은 관계로 선언한다(approach·faceToward) — 주인공이 어디서 들어오든 실제 위치로 길을 찾는다.
-    approach("ev_fl_lead", "@player"),
+    // 팀장은 주인공 왼쪽에 선다 — 오른쪽은 지후가 자리에서 내려오는 통로(엘리베이터 사이 한 칸 폭)라 비워 둔다.
+    walkTo("ev_fl_lead", { x: o.elevatorOut.x - 1, y: o.elevatorOut.y }),
+    faceToward("ev_fl_lead", "@player"),
     ...say("lead", "base", "윤서하 씨? 오정민이에요. 프로덕트팀 팀장."),
     ...say("seoha", "happy", "안녕하세요! 오늘부터 출근하는 윤서하입니다. 잘 부탁드립니다."),
     ...say("lead", "happy", "긴장 풀어요. 우리 팀 다섯 명이에요. 한 명은 휴가 중이고, 한 명은 벌써 탕비실에서 간식 먹고 있고."),
