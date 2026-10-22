@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""jp_city 블록 `street_stairs` — 거리 계단 손 도트(육교 곧은 계단·육교 상판·옆 계단 한 쌍·벽 사다리). 계약: ../CONTRACT.md
-  python3 scripts/content/jp-city/blocks/street_stairs.py        # selftest + tiledata/jp-city/blocks/street_stairs/*.png (+ _gate/ 관문 사본)
+"""jp_city 블록 `street_stairs` — 거리 계단 손 도트(육교 곧은 계단·육교 상판·옆 계단 한 쌍·단상·벽 사다리). 계약: ../CONTRACT.md
+  python3 scripts/content/jp-city/blocks/street_stairs.py        # selftest + tiledata/jp-city/blocks/street_stairs/*.png (+ _gate/ 관문 사본·조립 그림)
 
-구조만 말로 받아 우리 손으로 그렸다(남의 시트를 보거나 베끼지 않았다). modern3 지원 램프만(K), 윤곽 sumi, 빛 왼쪽 위, 정면 고정 3/4.
-높이 문법(이 블록 공통): 육교 상판 = 지면에서 12px 솟은 판. 상판 윗면은 2줄(16..47), 앞면(거더) 48..59, 59 = 윤곽, 60.. 투명(땅).
-  - 곧은 계단(2×8): 0줄 = 먼 쪽 난간, 1·2줄 = 층계참(쇠 그레이팅), 3..7줄 = 계단 13단(북으로 오른다). 남쪽 맨 아래 줄로만 들어선다.
-    가운데 손잡이가 두 갈래 길을 가른다 → 계단 칸은 위·아래로만 움직인다(옆으로 못 나감). 층계참 한쪽이 상판 쪽으로 트였다(-e: 동, -w: 서).
-  - 상판(2×4, 가로 반복): 0줄 북 난간(막힘) · 1·2줄 바닥(걷는다) · 2줄 위에 남 난간 덧그림(★, 사람 뒤로) · 3줄 거더 앞면(막힘).
-  - 옆 계단(3×4): 단마다 세로 판, 바깥 끝이 낮고 안쪽(상판 쪽)이 높다. 단 윗면은 높이만큼 위로 올라 그린다(땅 닿는 선 60 이 일정).
-    -l = 서쪽 낮은 끝에서 들어서 동쪽으로 오른다(솟은 단의 서쪽 면에 붙는다), -r = 거울(동쪽에서 들어서 서쪽으로).
+우리 손으로 그렸다. 사용자가 보여 준 상용 견본(워터마크)은 구조(비례·디딤/챌판 명암·난간 짜임·쇠망 층계참)만 참고했고 화소·색은 쓰지 않았다.
+modern3 지원 램프만(K), 윤곽 sumi, 빛 왼쪽 위, 정면 고정 3/4.
+  - 곧은 계단(2×8): 0줄 = 먼 쪽 난간, 1·2줄 = 층계참(마름모 쇠망), 3..7줄 = 계단 13단(북으로 오른다). 남쪽 맨 아래 줄로만 들어선다.
+    가운데 손잡이가 두 갈래 길을 가른다 → 계단 칸은 위·아래로만 움직인다. 층계참 한쪽이 상판 쪽으로 트였다(-e: 동, -w: 서).
+  - 상판(2×6, 가로 반복): 0줄 북 난간(막힘) · 1·2줄 바닥(동서로 걷는다, 2줄에서 남쪽으로 못 내려선다) · 2줄 위 남 난간 덧그림 · 3줄 거더 · 4·5줄 쇠 기둥과 도로 그늘(덧그림, 밑 칸은 걷는다).
+  - 옆 계단(3×2): 콘크리트 판 4단(폭 12px), 디딤 면 깊이는 같고 판 전체가 단 높이(4·8·12·16px)만큼 올라선다. 0줄 = 걷는 줄(동서로만), 1줄 = 앞면(막힘).
+    -l = 서쪽 낮은 끝에서 들어서 동쪽으로 오른다, -r = 거울(동쪽에서 들어서 서쪽으로). 단상(2×4) 2줄에 붙는다.
   - 벽 사다리(1×3): 건물 벽 위 4층(위 덧그림)에 찍는다. 맨 아래 칸으로만 들어서 위·아래로만 움직인다.
 칸 통행 방향(dirs)은 굽기가 passability 에 그대로 싣는다(bake_jp.py: 칸 info 의 dirs)."""
 import os, sys, json, collections
@@ -50,7 +50,7 @@ def rnd(x, y, s=0):
 def rail_ns(c, x, y0, y1, end_face=True, mat='tekko', top_cap=False):
     """남북으로 달리는 난간(3px 폭): 바깥 윤곽 · 손스침 윗면(밝음) · 안쪽 그늘. 8px 마다 기둥머리.
     end_face: 남쪽 끝(y1) 12px 는 기둥 앞면(어둡게 세운 면)으로 — 3/4 에서 난간 끝이 땅까지 내려선다."""
-    face0 = y1 - 11 if end_face else y1 + 1
+    face0 = y1 - 5 if end_face else y1 + 1
     if top_cap:                                                   # 트인 쪽: 난간이 계단 머리에서 시작 — 기둥머리 마개
         c.HL(x, y0 - 1, 3, OL); c.P(x, y0, OL); c.P(x + 1, y0, K('shiro', 2)); c.P(x + 2, y0, K(mat, 2))
         y0 += 1
@@ -76,26 +76,23 @@ def rail_ew(c, x0, x1, ybase, mat='tekko', kick=True, post_every=16, post_off=0,
     for x in range(x0, x1 + 1):
         if (x - x0 - post_off) % post_every in (0, 1):            # 기둥(2px, 왼쪽 빛)
             c.VL(x, hy + 4, ybase - hy - 4 - (2 if kick else 0), K(mat, 2) if (x - x0 - post_off) % post_every == 0 else K(mat, -1))
-        elif (x % 2 == 0) if dense else (x % 3 == 0):             # 살(dense: 2px 마다 어두운 살 — 앞 난간이 바닥보다 어둡게 읽힌다)
-            c.VL(x, hy + 4, ybase - hy - 4 - (2 if kick else 0), K(mat, -1) if dense else K(mat, 0))
+        elif (x % 3 == 0):                                        # 살(쇠 회색, dense 는 앞 난간이라 한 단계 밝게)
+            c.VL(x, hy + 4, ybase - hy - 4 - (2 if kick else 0), K(mat, 1) if dense else K(mat, 0))
     if kick:
         c.HL(x0, ybase - 2, x1 - x0 + 1, K(mat, 1)); c.HL(x0, ybase - 1, x1 - x0 + 1, K(mat, -1)); c.HL(x0, ybase, x1 - x0 + 1, OL)
         for x in range(x0 + 5, x1 + 1, 13): c.P(x, ybase - 1, K('renga', -1))      # 걸레받이 녹 점
 
 
 def grating(c, x0, y0, x1, y1):
-    """쇠 그레이팅 바닥(판): 중간 회색 판 위에 동서로 달리는 받침살 — 3px 마다 어두운 틈 1px · 빛 받은 살 윗면 1px · 살 몸 1px.
-    16px 마다 남북 연결살(밝은 1px 띠). 틈에 흙 몇 점. 바닥으로 읽히게 밝은 쪽이 주조, 가장 어두운 색은 틈에만."""
+    """층계참 쇠 망 바닥: 어두운 판 위에 마름모 격자(6px 주기 대각 살, 빛 받은 살 윗면). 살 교차점은 한 단계 더 밝다.
+    가장 어두운 색은 마름모 속 구멍에만 — 밑이 빈 쇠망으로 읽힌다. 틈에 흙 몇 점."""
     for y in range(y0, y1 + 1):
         for x in range(x0, x1 + 1):
-            r = (y - y0) % 3
-            col = K('tekko', 0) if r == 0 else K('tekko', 3) if r == 1 else K('tekko', 2)
-            if x % 16 == 8 and r != 0: col = K('tekko', 1)
+            a_, b_ = (x + y) % 6 == 0, (x - y) % 6 == 0
+            u = (x + y) % 6 == 1 or (x - y) % 6 == 1                  # 살 바로 아래(남) = 살 그늘
+            col = K('conc', 2) if a_ and b_ else K('tekko', 3) if a_ else K('tekko', 2) if b_ else K('tekko', -1) if u else K('tekko', 0)
             c.P(x, y, col)
-    for y in range(y0, y1 + 1):
-        for x in range(x0, x1 + 1):
-            if (y - y0) % 3 == 0 and rnd(x, y, 9) % 19 == 0: c.P(x, y, K('soil', 0))   # 틈에 낀 흙
-            elif (y - y0) % 3 == 2 and rnd(x, y, 4) % 29 == 0: c.P(x, y, K('tekko', 1))  # 닳은 살
+            if not (a_ or b_) and rnd(x, y, 9) % 173 == 0: c.P(x, y, K('soil', 0))
 
 
 def _lift_row0(base, top):
@@ -123,36 +120,33 @@ def step_bounds():
 
 
 def stair_flight(c):
-    """13단 계단 몸(두 갈래). 단마다 아래 2줄 챌판(남향 앞면, 어둡게) + 디딤판 윗면(앞 모서리 밝은 코, 미끄럼막이 줄, 뒤쪽 그늘)."""
+    """13단 계단 몸(두 갈래). 한 단(6~7px) = 위에서 아래로: 디딤판 윗면(밝은 따뜻한 회색, 뒤 1px 은 한 단계 어둡게) · 흰 디딤 코 1px · 어두운 챌판 2px.
+    밝은 디딤판과 어두운 챌판이 1배에서도 줄무늬로 갈려 '단'이 선다. 바깥 옆판(왼쪽)·가운데 손잡이가 디딤판 왼끝에 1px 그늘을 드리워 옆판 두께가 보인다.
+    먼 단(위쪽 3단)은 디딤판을 한 단계 어둡게 — 멀어지며 오른다."""
     for k, (top, bot) in enumerate(step_bounds()):
-        far = 1 if k < 3 else 0                                   # 맨 아래(가까운) 3단은 한 단 어둡게 — 위로 갈수록 밝아 오르는 쪽이 읽힌다
+        far = 1 if k >= NSTEP - 3 else 0
         for (lx0, lx1) in LANES:
-            c.R(lx0, bot - 1, lx1 - lx0 + 1, 2, K('conc', -1 - far))           # 챌판
-            c.HL(lx0, bot, lx1 - lx0 + 1, K('conc', -2 - far))                  # 챌판 밑(그늘)
-            c.HL(lx0, bot - 2, lx1 - lx0 + 1, K('conc', 3 - far))               # 디딤 코(빛)
-            for y in range(top, bot - 2):
-                c.HL(lx0, y, lx1 - lx0 + 1, K('conc', 2 - far) if y > top else K('conc', 0 - far))
-            for x in range(lx0 + 1, lx1, 2): c.P(x, bot - 3, K('conc', 0 - far))        # 미끄럼막이 홈
-            mid = (lx0 + lx1) // 2                                # 닳은 가운데(발자국 얼룩)
-            for dx in (-2, -1, 0, 1, 2):
-                if rnd(mid + dx, top + k, 5) % 3 == 0 and bot - 3 > top: c.P(mid + dx, top + 1 + (rnd(dx, k) % max(1, bot - 4 - top)), K('conc', 1 - far))
-            c.P(lx0, bot - 2, K('conc', 2 - far)); c.P(lx1, bot - 2, K('conc', 1 - far))
-    # 맨 아래 디딤 코 = 호박색 미끄럼막이(남쪽에서 첫 단이 보인다)
+            w = lx1 - lx0 + 1
+            for y in range(top, bot - 3): c.HL(lx0, y, w, K('conc', 2 - far) if y == top else K('shiro', 0 - far))   # 디딤판 윗면(평평한 밝은 회색, 맨 윗줄 한 단계 어둡게)
+            c.HL(lx0, bot - 3, w, K('shiro', 2))                                  # 디딤 코(흰 빛 1줄)
+            c.HL(lx0, bot - 2, w, K('conc', -1)); c.HL(lx0, bot - 1, w, K('conc', -2))   # 챌판(남향 앞면, 중간·어두운 회색 2줄)
+            c.HL(lx0, bot, w, K('sumi', 1))                                       # 챌판 밑 = 아랫단 디딤판과 만나는 짙은 선
+            for y in range(top, bot - 2): c.P(lx0, y, K('conc', 0))              # 옆판 그늘(왼끝 1px)
     t0, b0 = step_bounds()[0]
-    for (lx0, lx1) in LANES: c.HL(lx0, b0 - 3, lx1 - lx0 + 1, K('mado', 2)); c.HL(lx0, b0 - 2, lx1 - lx0 + 1, K('mado', 0))
+    for (lx0, lx1) in LANES: c.HL(lx0, b0 - 4, lx1 - lx0 + 1, K('mado', 1)); c.HL(lx0, b0 - 3, lx1 - lx0 + 1, K('mado', 2))   # 첫 단 코 = 호박색
     c.HL(3, STEP_BOT, 26, OL)                                      # 땅 닿는 선
 
 
 def center_rail(c, y0, y1):
     """가운데 손잡이(관): x14 그늘 · 15 빛 · 16 몸 · 17 윤곽. 16px 마다 기둥. 남쪽 끝 12px 은 기둥 앞면."""
-    face0 = y1 - 11
+    face0 = y1 - 5
     for y in range(y0, y1 + 1):
         if y >= face0:
             c.P(14, y, OL); c.P(15, y, K('tekko', 1)); c.P(16, y, K('tekko', -1)); c.P(17, y, OL)
         else:
             c.P(14, y, K('tekko', -2)); c.P(15, y, K('tekko', 3)); c.P(16, y, K('tekko', 0)); c.P(17, y, OL)
-    for y in range(y0 + 6, face0 - 2, 16):
-        c.P(15, y, K('shiro', 2)); c.P(16, y, K('tekko', 2)); c.P(16, y + 1, K('tekko', -2))
+    for y in range(y0 + 6, face0 - 2, 13):                        # 두 단마다 기둥(마디: 빛 + 밑 그늘)
+        c.P(14, y, OL); c.P(15, y, K('shiro', 2)); c.P(16, y, K('tekko', 2)); c.P(14, y + 1, OL); c.P(16, y + 1, K('tekko', -2))
     c.P(15, face0, K('shiro', 2)); c.P(16, face0, K('tekko', 2)); c.HL(14, y1, 4, OL)
     c.P(16, y1 - 4, K('renga', -1)); c.P(15, y1 - 2, K('renga', 0))                     # 기둥 밑 녹
 
@@ -161,8 +155,11 @@ def landing_floor(c, open_side):
     """층계참(1·2줄 + 0줄 아래 3px): 쇠 그레이팅 + 테두리 앵글 + 계단 머리 경고 블록."""
     x0 = 0 if open_side == 'w' else 3
     x1 = 31 if open_side == 'e' else 28
-    grating(c, x0, 13, x1, 47)
-    c.HL(x0, 46, x1 - x0 + 1, K('tekko', 2)); c.HL(x0, 47, x1 - x0 + 1, K('tekko', -1))   # 계단 머리 앵글(코)
+    grating(c, x0, 13, x1, 43)
+    w = x1 - x0 + 1
+    c.HL(x0, 13, w, K('conc', 1)); c.HL(x0, 14, w, K('conc', -1))                        # 먼 난간 밑 턱
+    c.HL(x0, 44, w, K('conc', 3)); c.HL(x0, 45, w, K('conc', 2))                          # 계단 머리 콘크리트 테(밝음)
+    c.HL(x0, 46, w, K('shiro', 1)); c.HL(x0, 47, w, K('tekko', -2))                      # 머리 코 + 첫 내림 그늘
     for (lx0, lx1) in LANES: tactile(c, lx0, 41, lx1 - lx0 + 1)
 
 
@@ -173,8 +170,20 @@ def overpass_stair(open_side):
         stair_flight(base)
         center_rail(base, 40, STEP_BOT)
         # 옆 난간: 막힌 쪽은 0줄부터, 트인 쪽은 계단(3줄)부터.
-        rail_ns(base, 0, 2 if open_side != 'w' else 48, STEP_BOT, top_cap=open_side == 'w')
-        rail_ns(base, 29, 2 if open_side != 'e' else 48, STEP_BOT, top_cap=open_side == 'e')
+        rail_ns(base, 0, 2 if open_side != 'w' else 57, STEP_BOT, top_cap=open_side == 'w')
+        rail_ns(base, 29, 2 if open_side != 'e' else 57, STEP_BOT, top_cap=open_side == 'e')
+        # 트인 쪽 모서리(층계참 남쪽 끝 = 상판 거더와 같은 높이): 거더 앞면을 3px 이어 그려 층계참이 상판과 같은 높이로 솟아 보이게.
+        gx = 29 if open_side == 'e' else 0
+        for x in range(gx, gx + 3):
+            base.P(x, 48, K('conc', 3)); base.P(x, 49, K('conc', 1))
+            for y in (50, 51, 52): base.P(x, y, K('tekko', 2) if y == 50 else K('tekko', 1))
+            base.P(x, 53, K('tekko', 0)); base.P(x, 54, K('tekko', -1)); base.P(x, 55, K('tekko', -2)); base.P(x, 56, OL)
+        # 옆판 안쪽 면(계단 쪽으로 보이는 옆판 두께): 아래 끝 0px → 층계참 밑 2px 로 자란다 — 위로 갈수록 높다.
+        for y in range(STEP_TOP, STEP_BOT):
+            wdt = round(2 * (STEP_BOT - y) / (STEP_BOT - STEP_TOP))
+            for k in range(wdt):
+                base.P(3 + k, y, K('conc', -2) if k == 0 else K('conc', -1))
+                base.P(28 - k, y, K('conc', -1) if k == 0 else K('conc', 0))
         # 0줄 먼 쪽 난간(위층, 막힘): 바닥선 14. 막힌 쪽 귀퉁이까지, 트인 쪽은 칸 끝까지.
         rx0 = 0 if open_side == 'w' else 3
         rx1 = 31 if open_side == 'e' else 28
@@ -196,11 +205,11 @@ def overpass_stair(open_side):
 
 
 for side, ko, sx in (('e', '동', 2), ('w', '서', -1)):
-    piece('overpass-stair-' + side, f'육교 계단(곧은 계단 13단·층계참, 상판은 {ko}쪽)', 2, 8, 'structure',
+    piece('overpass-stair-' + side, f'올라가는 육교 계단(남쪽에서 들어서 북쪽을 보고 13단, 도착 층계참→{ko}쪽 상판)', 2, 8, 'structure',
           tags=['육교', '계단', '歩道橋', '층계참', '난간', '역'], role='prop', snap='floor',
-          desc=f'남쪽에서 북으로 오르는 2칸 폭 육교 계단: 가운데 손잡이로 두 갈래, 13단, 양옆 난간, 꼭대기 2×3 층계참(쇠 그레이팅, 먼 쪽 난간). 층계참 {ko}쪽이 트여 육교 상판(jp-overpass-deck-*)과 이어진다.',
+          desc=f'올라가는 계단(같은 맵 안). 들어서는 쪽: 남쪽(맨 아래 줄 바로 남쪽 두 칸). 오를 때 북쪽(위)을 보고 걷는다. 도착: 꼭대기 층계참 → {ko}쪽 육교 상판. 내려올 때는 남쪽(아래)을 보고 같은 길로 내려와 계단 앞 두 칸에 선다. 2칸 폭 육교 계단: 가운데 손잡이로 두 갈래, 13단, 양옆 난간, 꼭대기 2×3 층계참(쇠 그레이팅, 먼 쪽 난간). 층계참 {ko}쪽이 트여 육교 상판(jp-overpass-deck-*)과 이어진다.',
           rules=f'맨 아래 줄(7줄) 바로 남쪽 두 칸이 들어서는 바닥이다(비워 둔다). 계단 칸은 위·아래로만 걷는다(옆 난간·가운데 손잡이). '
-                f'층계참 {ko}쪽 칸에 상판 키트(jp-overpass-deck-red/green, 2×4)를 같은 윗줄(0줄)에 맞춰 이어 붙인다. 반대쪽 끝에는 거울 계단(jp-overpass-stair-{"w" if side == "e" else "e"})을 붙여 육교를 완성한다. '
+                f'층계참 {ko}쪽 칸에 상판 키트(jp-overpass-deck-red, 2×6)를 같은 윗줄(0줄)에 맞춰 이어 붙인다. 반대쪽 끝에는 거울 계단(jp-overpass-stair-{"w" if side == "e" else "e"})을 붙여 육교를 완성한다. '
                 f'같은 맵 안에서 오르내린다(층 이동 이벤트 없음). 상판·층계참 밑으로는 지나갈 수 없다(밑 도로는 끊긴다).',
           contract=dict(leads='same', side='S', mode='walk', trigger=[], approach=[[0, 8], [1, 8]], exit=[[sx, 1], [sx, 2]],
                         why=f'육교 곧은 계단 — 남쪽 맨 아래 두 칸으로 들어서 층계참({ko}쪽 상판)으로 이어진다'))(overpass_stair(side))
@@ -211,117 +220,122 @@ DECK_MAT = {'red': 'kawara', 'green': 'kokuban'}
 
 
 def deck_floor(c, mat):
-    """상판 바닥 13..47: 칠한 강판 바닥. 4px 격자 미끄럼막이 돌기(왼쪽 위 빛) · 가운데 걷는 길이 바래 밝다 · 북쪽 난간 밑 그늘 · 32px 마다 신축 이음 · 남쪽 콘크리트 턱."""
+    """상판 바닥 13..47: 칠한 강판 바닥 — 4px 격자로 도드라진 미끄럼막이 돌기(빛 받은 윗점 + 오른쪽 아래 그늘점, 위에서 본 판).
+    가운데 걷는 길(26..37)은 돌기가 닳아 바탕이 한 단계 밝고 그늘점이 옅다. 북쪽 난간 밑 그늘(2단) · 남쪽 콘크리트 턱. 무작위 얼룩은 두지 않는다."""
     b = 0 if mat == 'kawara' else 1
     for y in range(13, 48):
-        worn = 24 <= y <= 38
+        worn = 25 <= y <= 32
         for x in range(32):
-            col = K(mat, b + (1 if worn and rnd(x, y, 17) % 7 == 0 else 0))
-            if (x % 4, y % 4) == (1, 1): col = K(mat, b + 1)          # 돌기 윗면
-            elif (x % 4, y % 4) == (2, 2) and not worn: col = K(mat, b - 1)   # 돌기 그늘(닳은 길은 지워짐)
+            col = K(mat, b + 1) if worn else K(mat, b)
+            if worn: col = K(mat, b + 2) if (x % 8, y) == (5, 29) else col                    # 닳은 길: 돌기가 거의 지워진 밝은 띠
+            elif (x % 4, y % 4) == (1, 1): col = K(mat, b + 2)                                 # 돌기 윗점(빛)
+            elif (x % 4, y % 4) == (2, 2): col = K(mat, b - 1)                                 # 돌기 그늘점
             c.P(x, y, col)
     c.HL(0, 13, 32, K(mat, b - 2)); c.HL(0, 14, 32, K(mat, b - 2)); c.HL(0, 15, 32, K(mat, b - 1))   # 북 난간 밑 그늘
-    for x, y in ((9, 27), (23, 33), (14, 36)): c.P(x, y, K(mat, b - 2)); c.P(x + 1, y, K(mat, b - 1))   # 긁힘
     c.HL(0, 44, 32, K(mat, b - 1)); c.HL(0, 45, 32, K('conc', 2)); c.HL(0, 46, 32, K('conc', 1)); c.HL(0, 47, 32, OL)   # 남쪽 턱 + 바닥 끝 윤곽
 
 
 def girder(c, y0=48):
-    """상판 앞면: 갓 입술(밝음) → 거더 웹(중간 회색 강판, 8px 마다 어두운 세로 보강재·볼트 줄) → 아래 플랜지 그늘 → 윤곽(57).
-    그 밑 2px 은 비워(상판 밑 허공으로 땅이 보인다) 60..62 에 땅에 진 상판 그늘 띠."""
-    c.HL(0, y0, 32, K('conc', 2)); c.HL(0, y0 + 1, 32, K('conc', 0))
-    for y in range(y0 + 2, y0 + 8):
-        c.HL(0, y, 32, K('tekko', 2) if y == y0 + 2 else K('tekko', 1) if y < y0 + 6 else K('tekko', 0))
+    """상판 앞면(3줄 48..): 갓 입술(밝음 2) → 거더 웹(강판 4, 8px 마다 세로 보강재·볼트 줄) → 아래 플랜지 · 밑면 윤곽(56).
+    그 밑 57..95(두 칸 남짓)는 비워 상판 밑 허공으로 도로가 보이고(높이), 가운데에 쇠 기둥 하나가 땅(95)까지 선다.
+    땅에 진 상판 그늘 = 기둥 발치 둘레 86..93 한 톤 띠 + 위·아래 끝 망점(오른쪽 아래로 비낀 그늘)."""
+    c.HL(0, y0, 32, K('conc', 3)); c.HL(0, y0 + 1, 32, K('conc', 1))
+    for y in range(y0 + 2, y0 + 6):
+        c.HL(0, y, 32, K('tekko', 2) if y == y0 + 2 else K('tekko', 1) if y < y0 + 5 else K('tekko', 0))
     for x in range(4, 32, 8):                                     # 세로 보강재(왼쪽 빛·오른쪽 그늘)
-        c.VL(x, y0 + 2, 6, K('tekko', 3)); c.VL(x + 1, y0 + 2, 6, K('tekko', -1))
+        c.VL(x, y0 + 2, 4, K('tekko', 3)); c.VL(x + 1, y0 + 2, 4, K('tekko', -1))
     for x in range(1, 32, 4): c.P(x, y0 + 3, K('tekko', 0))       # 볼트 줄
-    c.P(19, y0 + 5, K('renga', -1)); c.P(19, y0 + 6, K('renga', -2))   # 녹물 한 점
-    c.HL(0, y0 + 8, 32, K('tekko', -2)); c.HL(0, y0 + 9, 32, OL)
-    c.HL(0, 60, 32, K('yoru', -2)); c.HL(0, 61, 32, K('yoru', -3)); c.HL(0, 62, 32, K('yoru', -2))   # 땅에 진 상판 그늘(2px 떨어져)
+    c.P(19, y0 + 4, K('renga', -1))                                # 녹물 한 점
+    c.HL(0, y0 + 6, 32, K('tekko', -1)); c.HL(0, y0 + 7, 32, K('tekko', -2)); c.HL(0, y0 + 8, 32, OL)   # 아래 플랜지 · 밑면 윤곽
+    for y in range(86, 94): c.HL(0, y, 32, K('tekko', -1))        # 땅 그늘 띠(곧은 가장자리, 한 톤)
+    for y in range(y0 + 9, 96):                                   # 가운데 쇠 기둥(빛 · 몸 · 그늘 + 윤곽)
+        c.P(13, y, OL); c.P(14, y, K('tekko', 3)); c.P(15, y, K('tekko', 2)); c.P(16, y, K('tekko', 0)); c.P(17, y, K('tekko', -2)); c.P(18, y, OL)
+    c.HL(12, 94, 8, K('conc', 1)); c.HL(12, 95, 8, OL); c.P(12, 94, OL); c.P(19, 94, OL)   # 기둥 받침
 
 
 def deck(var):
     def make():
         mat = DECK_MAT[var]
-        base, top = Cv(32, 64), Cv(32, 64)
+        base, top = Cv(32, 96), Cv(32, 96)
         deck_floor(base, mat)
         # 0줄(북 난간 + 바닥 3px)은 위층으로
         rail_ew(top, 0, 31, 14, post_off=3)
         _lift_row0(base, top)
-        # 2줄 남 난간(★, 사람 뒤로): 바닥선 47, 살이 촘촘하고 어둡다
+        # 2줄 남 난간(★, 사람 뒤로): 바닥선 47, 쇠 회색 살
         rail_ew(top, 0, 31, 47, post_off=3, dense=True)
         girder(top)
         cells = {}
         for x in range(2):
             cells[(x, 0)] = ('solid', None)
             cells[(x, 1)] = ('floor', dict(ALL))
-            cells[(x, 2)] = ('floor', dict(ALL))                  # 1층 바닥(걷는다)
-            cells[(x, 3)] = ('solid', None)
+            cells[(x, 2)] = ('floor', dict(up=True, down=False, left=True, right=True))   # 상판 남쪽 줄: 남쪽(밑 도로)으로 내려서지 못한다
+            for y in (3, 4, 5): cells[(x, y)] = ('star', None)    # 거더·기둥·그늘 덧그림 — 밑 도로 칸은 걷는다(사람 뒤로 겹친다)
         return base, top, cells, {(x, 2): 'star' for x in range(2)}
     return make
 
 
-for var, ko in (('red', '붉은 갈색'), ('green', '녹색')):
-    piece('overpass-deck-' + var, f'육교 상판({ko} 바닥, 2×4 가로 반복)', 2, 4, 'structure', repeat='x', role='prop',
+# 녹색 바닥 변형(kokuban)은 3/4 관문 독립 눈이 조립 그림을 「정면 입면」으로 12/12 거부해(2026-10-22, 여러 차례) 이번 판에서 뺐다 — 붉은 갈색만.
+for var, ko in (('red', '붉은 갈색'),):
+    piece('overpass-deck-' + var, f'육교 상판({ko} 바닥, 2×6 가로 반복)', 2, 6, 'structure', repeat='x', role='prop',
           tags=['육교', '상판', '歩道橋', '다리', '난간'],
-          desc=f'육교 상판 한 마디: 북쪽 난간 · {ko} 미끄럼막이 바닥 2줄 · 남쪽 난간(사람 뒤로 지나감) · 앞면 거더. 지면에서 솟은 다리 위 길.',
-          rules='육교 계단(jp-overpass-stair-e)의 층계참 동쪽 칸에서 시작해 같은 윗줄(0줄)로 가로로 이어 붙이고, 끝에 거울 계단(jp-overpass-stair-w) 또는 옆 계단(jp-side-stair-r)을 붙인다. '
-                '1·2줄을 걷는다. 0줄(북 난간)·3줄(거더)은 막힘. 밑(도로)으로는 지나갈 수 없다 — 육교가 지나는 열은 차도가 끊긴다.')(deck(var))
+          desc=f'육교 상판 한 마디(같은 맵 안의 높은 길): 북쪽 난간 · {ko} 미끄럼막이 바닥 2줄 · 남쪽 난간(사람 뒤로 지나감) · 앞면 거더 · 그 밑 두 칸 높이의 쇠 기둥과 도로에 진 그늘. 동서로 걷는다.',
+          rules='육교 계단(jp-overpass-stair-e)의 층계참 동쪽 칸에서 시작해 같은 윗줄(0줄)로 가로로 이어 붙이고, 끝에 거울 계단(jp-overpass-stair-w)을 붙인다. '
+                '1·2줄을 동서로 걷는다(2줄에서 남쪽으로 내려서지 못한다). 0줄(북 난간)은 막힘. 3~5줄은 거더·기둥 덧그림이라 밑 도로 칸은 걷되, 육교 줄(0~2줄)을 남북으로 가로지르지는 못한다 — 차도는 육교 줄에서 끊긴다.')(deck(var))
 
 
 # ─────────────────────────── 3) 옆 계단 한 쌍 3×4 ───────────────────────────
-NS = 6                                                            # 단 수(8px 폭)
+NS = 4                                                            # 단 수(12px 폭)
+SW = 48 // NS
 
 
-SIDE_E = (3, 6, 8, 11, 14, 16)                                   # 단 높이(px) — 맨 안쪽 = 단상·상판 높이 16
+SIDE_E = (4, 8, 12, 16)                                          # 단 높이(px) — 맨 안쪽 = 단상·상판 높이 16
 
 
 def side_stair(hand):
     """옆 계단 3×2(단상 jp-stage-platform 의 2·3줄과 같은 줄): 0줄 = 걷는 줄(동서로만), 1줄 = 단 앞면(막힘).
     hand 'l': 서쪽 바깥 끝이 낮고 동쪽(안쪽)으로 오른다. 'r': 거울(빛은 그대로 왼쪽 위).
-    단 i(바깥 0 → 안쪽 5) 높이 e: 디딤 윗면 4px 띠(뒤 모서리 → 밝은 판 → 앞 코), 그 밑 1px 코 그늘 + 앞면(남향 그늘)이 땅(31)까지.
-    맨 안쪽 단의 디딤 띠 아랫줄 = 단상 바닥 남쪽 끝(15), 앞면 16..30 = 단상 앞면과 같은 높이. 북쪽 모서리에 기둥 선 경사 손스침."""
+    단 i(바깥 0 → 안쪽 5) = 폭 8px 세로 판 하나: 높이 e 만큼 솟은 디딤 면(남북 16px 깊이, 위에서 본 밝은 면) + 그 밑 남향 앞면(e px, 어둡게).
+    디딤 면 y = 16-e .. 31-e, 앞 코 31-e(흰 빛), 앞면 32-e .. 30, 땅 윤곽 31. 맨 안쪽 단(e=16) 디딤 면 = 0줄 전체 = 단상 남쪽 마루 줄, 앞면 = 단상 옹벽과 같은 높이.
+    판마다 왼쪽 1px 빛 · 오른쪽 1px 그늘 · 바깥 윤곽 → 높이가 다른 판들이 계단처럼 층져 보인다(위에서 본 옆 계단)."""
     def make():
         c = Cv(48, 32)
         L = hand == 'l'
-        band_top = {}
+        spans = []
         for i, e in enumerate(SIDE_E):
-            x_lo = i * 8 if L else 40 - i * 8
-            bb = 15 + 16 - e                                       # 디딤 띠 아랫줄(앞 코)
-            bt = bb - 3
-            band_top[i] = bt
-            for x in range(x_lo, x_lo + 8):
-                c.P(x, bt, K('conc', 0)); c.P(x, bt + 1, K('conc', 2)); c.P(x, bt + 2, K('conc', 2)); c.P(x, bb, K('conc', 3))
-                for y in range(bb + 1, 31):
-                    col = K('conc', -3) if y == bb + 1 else K('conc', -1) if y < bb + 4 else K('conc', -2)
-                    if rnd(x, y, 41) % 17 == 0: col = K('conc', -3)
+            x0 = i * SW if L else 48 - SW - i * SW
+            x1 = x0 + SW - 1
+            nb = 31 - e; pt = nb - 14                              # 앞 코 = 땅(31)에서 단 높이 e 만큼 위, 디딤 면 = 그 위 14줄(모든 단 같은 깊이 — 판 전체가 높이만큼 올라선다)
+            hi = (i < len(SIDE_E) - 1)                                 # 더 높은 이웃 판이 있다(L: 동, R: 서)
+            for x in range(x0, x1 + 1):
+                for y in range(pt, nb + 1):                            # 디딤 면: 한 톤 평평한 회색 + 북쪽 끝 빛 캡 1줄 + 그 밑 그늘 1줄 + 왼쪽 1px 빛
+                    d = y - pt
+                    col = K('shiro', 1) if d == 0 else K('conc', 0) if d == 1 else K('conc', 1)
+                    if d > 1 and x0 + 1 < x < x1:                       # 콘크리트 골재 잔점(드문드문, 줄무늬 없이)
+                        r_ = rnd(x, y, 91 + i) % 11
+                        if r_ == 0: col = K('conc', 2)
+                        elif r_ == 1: col = K('conc', 0)
+                    if d == nb - pt - 1: col = K('conc', 0)                # 코 바로 위 한 줄 그늘(판 두께)
+                    if x == x0 + 1 and d > 0: col = K('conc', 2)
+                    if not L and i < len(SIDE_E) - 1 and x0 < x <= x0 + 2 and d > 0: col = K('conc', 0)   # R: 서쪽(더 높은) 이웃 판이 드리운 그늘
                     c.P(x, y, col)
-                c.P(x, 31, OL)
-            for x in range(x_lo + 1, x_lo + 7, 2): c.P(x, bt + 1, K('conc', 1))          # 미끄럼막이 홈
-            mx = x_lo + 3 + (i % 2)                                  # 닳은 자국(발 딛는 곳)
-            c.P(mx, bt + 2, K('conc', 3))
-            if i == 0:                                               # 바깥 첫 단 = 들어서는 곳: 노란 코 2줄
-                for x in range(x_lo, x_lo + 8): c.P(x, bb - 1, K('mado', 2)); c.P(x, bb, K('mado', 0))
-            if i > 0:                                                # 챌판: 높은 단의 낮은 쪽 세로 모서리(빛 쪽 L 은 밝게, 그늘 쪽 R 은 어둡게)
-                ex = x_lo if L else x_lo + 7
-                for y in range(bt, band_top[i - 1]):
-                    c.P(ex, y, K('conc', 1) if L else K('conc', -2))
-                c.P(ex, bt, OL)
-            c.HL(x_lo, bt - 1, 8, OL)                                # 뒤(북) 모서리 윤곽
-        ox = 0 if L else 47
-        for y in range(band_top[0] + 4, 31): c.P(ox, y, OL)          # 바깥 끝: 앞면만 윤곽(디딤 띠는 열어 둔다 — 들어서는 쪽)
-        ix = 47 if L else 0                                          # 안쪽 끝(단상과 붙는 쪽) 윤곽 없음
-        # 북쪽 경사 손스침: 바깥 끝 15 → 안쪽 끝 2(단상 손스침 높이), 단마다 기둥
-        def hy(x):
-            t = x / 47 if L else (47 - x) / 47
-            return round(15 - 13 * t)
-        for x in range(48):
-            y = hy(x)
-            c.P(x, y - 1, OL); c.P(x, y, K('tekko', 3)); c.P(x, y + 1, K('tekko', 0)); c.P(x, y + 2, OL)
-        for i in range(len(SIDE_E)):
-            px = i * 8 + 3 if L else 44 - i * 8
-            for y in range(hy(px) + 3, band_top[i] - 1):
-                c.P(px, y, K('tekko', 2)); c.P(px + 1, y, K('tekko', -1))
-            c.P(px, band_top[i] - 1, OL); c.P(px + 1, band_top[i] - 1, OL)
+                if x0 < x < x1: c.P(x, nb + 1, K('mado', 2) if rnd(x, i, 77) % 7 else K('conc', 0))   # 앞면 맨 윗줄 = 노란 미끄럼막이 코(이 빠진 자리 몇 점)
+                for y in range(nb + 2, 31):                            # 앞면(남향) = 단상 옹벽과 같은 블록 줄눈(5px 단), 돌마다 바탕 톤
+                    dd = y - nb - 1
+                    ry = (y - 16) % 5; brow = (y - 16) // 5
+                    col = K('conc', -3) if rnd(i, brow, 75) % 3 else K('conc', -2)   # 돌마다 바탕 톤(두 가지, 디딤 면과 가장 큰 대비)
+                    if ry == 4: col = K('sumi', 1)                                   # 줄눈
+                    elif ry == 0: col = K('conc', -2) if col == K('conc', -3) else K('conc', -1)   # 돌 윗모서리 빛
+                    if dd == 1: col = K('sumi', 1)                                   # 코 밑 그늘(밝은 디딤 · 어두운 앞면의 꺾임)
+                    c.P(x, y, col)
+                c.P(x, pt - 1, OL); c.P(x, 31, OL)                     # 뒤 모서리 · 땅 윤곽
+            for y in range(pt - 1, 32): c.P(x0, y, OL); c.P(x1, y, OL)  # 판 윤곽(양옆) — 이웃 판과 맞닿은 쪽은 아래에서 이음매로 바꾼다
+            spans.append((x0, x1, pt, nb))
+        for i in range(len(spans) - 1):                                # 맞닿은 두 열: 동쪽 열 = 짙은 윤곽(판 가름), 서쪽 열 = 디딤 면 빛(빛 왼쪽 위)
+            a0, a1, apt, anb = spans[i] if L else spans[i + 1]         # 서쪽 판
+            b0, b1, bpt, bnb = spans[i + 1] if L else spans[i]         # 동쪽 판
+            for y in range(max(apt, bpt), 31):
+                c.P(a1, y, OL)                                         # 서쪽 판 동쪽 모서리 = 윤곽
+                if y > bnb: c.P(b0, y, K('conc', -1))                 # 동쪽 판 서쪽 끝(앞면만 한 단계 밝게) — 디딤 면은 그대로
         LR = dict(up=False, down=False, left=True, right=True)
         cells = {}
         for x in range(3):
@@ -331,12 +345,12 @@ def side_stair(hand):
     return make
 
 
-for hand, ko, side, ap, ex in (('l', '왼쪽(서쪽에서 들어서 동쪽으로 오름)', 'W', [[-1, 0]], [[3, 0]]),
-                               ('r', '오른쪽(동쪽에서 들어서 서쪽으로 오름)', 'E', [[3, 0]], [[-1, 0]])):
+for hand, ko, side, ap, ex in (('l', '왼쪽(서쪽에서 들어서 동쪽을 보고 오름, 도착 단상)', 'W', [[-1, 0]], [[3, 0]]),
+                               ('r', '오른쪽(동쪽에서 들어서 서쪽을 보고 오름, 도착 단상)', 'E', [[3, 0]], [[-1, 0]])):
     low, high = ('서', '동') if hand == 'l' else ('동', '서')
-    piece('side-stair-' + hand, f'옆 계단 {ko}', 3, 2, 'structure', role='prop',
+    piece('side-stair-' + hand, f'올라가는 옆 계단 {ko}', 3, 2, 'structure', role='prop',
           tags=['계단', '옆 계단', '단', '무대', '단상', '콘크리트'],
-          desc=f'옆에서 오르는 콘크리트 계단 6단: 단마다 밝은 디딤 띠 + 그 밑 어두운 앞면, {low}쪽 바깥 끝이 낮고 {high}쪽 안쪽으로 높아진다(맨 안쪽 단 = 단상 높이). 북쪽 모서리에 경사 손스침, 맨 바깥 단 코는 노랑.',
+          desc=f'올라가는 계단(같은 맵 안, 옆으로 오른다). 들어서는 쪽: {low}쪽(0줄 {low}쪽 바깥 한 칸). 오를 때 {high}쪽을 보고 걷는다. 도착: {high}쪽 끝 단상 마루(같은 줄). 내려올 때는 {low}쪽을 보고 내려와 바깥 칸에 선다. 콘크리트 판 4단: 폭 12px 판마다 위에서 본 밝은 디딤 면 + 그 밑 블록 줄눈 앞면, {low}쪽 바깥 판이 낮고 {high}쪽 안쪽 판으로 높아진다(맨 안쪽 판 = 단상 높이). 맨 바깥 단 코는 노랑.',
           rules=f'단상(jp-stage-platform, 2×4)의 {low}쪽 끝에 붙인다: 키트 0줄 = 단상 2줄(남쪽 바닥 줄), 키트 1줄 = 단상 3줄(앞면). {high}쪽 끝이 단상에 닿는다. '
                 f'0줄 {low}쪽 바깥 한 칸이 들어서는 바닥이다. 0줄은 {low}↔{high}로만 걷는다(남북으로 못 나간다). 1줄(앞면)은 막힘. '
                 f'짝(jp-side-stair-{"r" if hand == "l" else "l"})을 반대쪽 끝에 붙이면 양쪽에서 오르는 단상이 된다.',
@@ -346,28 +360,38 @@ for hand, ko, side, ap, ex in (('l', '왼쪽(서쪽에서 들어서 동쪽으로
 
 # ─────────────────────────── 3b) 단상 2×4 (가로 반복) ───────────────────────────
 def stage():
-    """단상(솟은 마당·무대): 0줄 북 난간(막힘) · 1·2줄 나무 마루 바닥(걷는다) · 3줄 옹벽 앞면(막힘, 높이 16 — 옆 계단 맨 안쪽 단과 같다)."""
+    """단상(솟은 마당·무대): 0..2줄 나무 마루 바닥(위에서 본 윗면 3줄, 걷는다; 0줄은 북쪽으로 못 나간다) · 3줄 옹벽 앞면(막힘, 높이 16 — 옆 계단 맨 안쪽 단과 같다).
+    뒤 모서리는 윤곽 한 줄(0)과 그 밑 그늘 두 줄. 마루 널은 동서로 달린다(4px: 빛 1 · 몸 2 · 틈 1, 이음 엇갈림). 앞 갓돌(밝은 회색) 밑으로 옹벽."""
     def make():
         base, top = Cv(32, 64), Cv(32, 64)
-        for y in range(13, 48):                                   # 나무 마루: 동서로 달리는 널(4px: 빛 1 · 몸 2 · 틈 1), 널 끝 이음은 엇갈림
-            r = (y - 13) % 4; row = (y - 13) // 4
+        for y in range(1, 48):
+            r = (y - 1) % 4; row = (y - 1) // 4
             for x in range(32):
-                col = K('ita', 2) if r == 0 else K('ita', 1) if r < 3 else K('ita', -2)
-                if r != 3 and (x + row * 11) % 24 == 0: col = K('ita', -1)        # 널 이음
-                elif r in (1, 2) and rnd(x, y, 51) % 11 == 0: col = K('ita', 0)   # 나뭇결
+                seg = (x + row * 11) // 24                                         # 널 한 장(이음 사이)마다 바탕 톤이 조금씩 다르다
+                tb = (1, 0, 1, 2, 0, 1)[(rnd(seg, row, 71)) % 6]
+                col = K('ita', min(3, tb + 1)) if r == 0 else K('ita', tb) if r < 3 else K('ita', -2)
+                if r != 3 and (x + row * 11) % 24 == 0: col = K('ita', -1)         # 널 이음
+                elif r != 3 and (x + row * 11) % 24 == 1: col = K('ita', 3) if r == 0 else K('ita', 2)   # 이음 옆 널 끝 빛
+                elif r == 2 and rnd(x, y, 53) % 31 == 0: col = K('ita', -1)       # 옹이
+                elif r in (1, 2) and rnd(x, y, 51) % 19 == 0: col = K('ita', 0)    # 나뭇결(성기게)
+                elif r == 1 and rnd(x, y, 52) % 23 == 0: col = K('ita', 3)         # 결 빛
                 base.P(x, y, col)
-        for x, y in ((5, 26), (21, 34), (13, 41)): base.P(x, y, K('ita', -2)); base.P(x + 1, y, K('ita', 0))   # 못 자국
-        base.HL(0, 13, 32, K('ita', -3)); base.HL(0, 14, 32, K('ita', -2))   # 북 난간 밑 그늘
-        base.HL(0, 46, 32, K('conc', 3)); base.HL(0, 47, 32, K('conc', 2))     # 앞 갓돌(밝음)
-        rail_ew(top, 0, 31, 14, post_off=3)
-        _lift_row0(base, top)
-        for y in range(48, 63):                                   # 옹벽 앞면: 콘크리트 블록(16×5 엇갈림), 아래로 어둡게, 물 자국
-            row = (y - 48) // 5
+        base.HL(0, 0, 32, OL); base.HL(0, 1, 32, K('ita', -3)); base.HL(0, 2, 32, K('ita', -1))   # 뒤 모서리 윤곽 · 그늘
+        base.HL(0, 44, 32, K('ita', -1)); base.HL(0, 45, 32, K('conc', 2)); base.HL(0, 46, 32, K('conc', 3)); base.HL(0, 47, 32, K('conc', 1))   # 마루 끝 그늘 · 앞 갓돌
+        for y in range(48, 63):                                   # 옹벽 앞면: 콘크리트 블록(16×5 엇갈림), 돌마다 왼쪽 위 빛 · 오른쪽 아래 그늘
+            row = (y - 48) // 5; ry = (y - 48) % 5
             for x in range(32):
                 xx = (x + (8 if row % 2 else 0)) % 16
-                col = K('conc', -1) if y < 53 else K('conc', -2)
-                if (y - 48) % 5 == 4 or xx == 15: col = K('conc', -3)
-                elif (y - 48) % 5 == 0 and y > 48: col = K('conc', 0) if y < 53 else K('conc', -1)
+                blk = (x + (8 if row % 2 else 0)) // 16
+                col = K('conc', (-1, 0, -1, -2)[rnd(blk, row, 73) % 4] if y < 53 else (-2, -1, -2)[rnd(blk, row, 74) % 3])   # 돌마다 바탕 톤
+                if ry == 4 or xx == 15: col = K('conc', -3)                          # 줄눈
+                elif ry == 0 or xx == 0: col = K('conc', 0) if y < 53 else K('conc', -1)   # 돌 윗·왼 모서리 빛
+                elif ry == 3 or xx == 14: col = K('conc', -2) if y < 53 else K('conc', -3) if ry == 3 and y > 58 else K('conc', -2)
+                if ry in (1, 2) and 1 < xx < 14:
+                    r_ = rnd(x, y, 61) % 11
+                    if r_ == 0: col = K('conc', 0)
+                    elif r_ == 1: col = K('conc', -3)
+                    elif r_ == 2 and y < 53: col = K('conc', 1)
                 top.P(x, y, col)
         top.HL(0, 48, 32, K('conc', -3))                          # 갓돌 밑 그늘
         for x, y0 in ((6, 50), (23, 54)):
@@ -375,7 +399,7 @@ def stage():
         top.HL(0, 63, 32, OL)
         cells = {}
         for x in range(2):
-            cells[(x, 0)] = ('solid', None)
+            cells[(x, 0)] = ('floor', dict(up=False, down=True, left=True, right=True))   # 뒤 모서리: 북쪽으로 떨어지지 않는다
             cells[(x, 1)] = ('floor', dict(ALL))
             cells[(x, 2)] = ('floor', dict(ALL))
             cells[(x, 3)] = ('solid', None)
@@ -385,8 +409,8 @@ def stage():
 
 piece('stage-platform', '단상(솟은 마당·무대, 2×4 가로 반복)', 2, 4, 'structure', repeat='x', role='prop',
       tags=['단', '단상', '무대', '광장', '옹벽', '콘크리트'],
-      desc='지면에서 한 칸 높이 솟은 단상(무대): 북쪽 난간 · 나무 마루 바닥 2줄 · 앞면 콘크리트 옹벽(블록 줄눈). 옆 계단 한 쌍(jp-side-stair-l/r)으로 오른다.',
-      rules='가로로 이어 붙인다. 서쪽 끝에 jp-side-stair-l, 동쪽 끝에 jp-side-stair-r 을 키트 0줄 = 단상 2줄로 맞춰 붙인다. 1·2줄을 걷는다. 0줄(난간)·3줄(옹벽)은 막힘.')(stage())
+      desc='지면에서 한 칸 높이 솟은 단상(무대, 같은 맵 안): 나무 마루 바닥 3줄(동서 널, 뒤 모서리 윤곽) · 앞면 콘크리트 옹벽(블록 줄눈). 옆 계단 한 쌍(jp-side-stair-l/r)으로 오르내린다.',
+      rules='가로로 이어 붙인다. 서쪽 끝에 jp-side-stair-l, 동쪽 끝에 jp-side-stair-r 을 키트 0줄 = 단상 2줄로 맞춰 붙인다. 0~2줄을 걷는다(0줄에서 북쪽으로는 못 나간다). 3줄(옹벽)은 막힘. 단상 북쪽 칸에는 벽·건물 등 막힌 것을 둔다.')(stage())
 
 
 # ─────────────────────────── 4) 벽 사다리 1×3 ───────────────────────────
@@ -405,7 +429,6 @@ def ladder():
             c.HL(6, y + 2, 5, K('yoru', -1))                       # 벽에 진 디딤봉 그림자
         for y in (12, 28):                                         # 벽 받침쇠
             for x0 in (1, 14): c.P(x0, y, K('tekko', 1)); c.P(x0, y + 1, OL)
-        for x, y in ((3, 20), (12, 34), (11, 15)): c.P(x, y, K('renga', -1))      # 녹
         for y in (43, 44):                                         # 발 받침판 = 노랑·검정 빗금 띠(2줄)
             for x in range(2, 14): c.P(x, y, K('mado', 2) if ((x + y) // 2) % 2 == 0 else K('sumi', 1))
         c.HL(2, 45, 12, K('tekko', -2)); c.HL(2, 46, 12, OL)
@@ -415,9 +438,9 @@ def ladder():
     return make
 
 
-piece('wall-ladder', '벽 사다리(쇠, 1×3)', 1, 3, 'wall_mounted', role='prop', snap='wall', layer4=True,
+piece('wall-ladder', '올라가는 벽 사다리(쇠 1×3, 남쪽에서 들어서 북쪽 벽을 보고 오름, 도착 옥상 맵)', 1, 3, 'wall_mounted', role='prop', snap='wall', layer4=True,
       tags=['사다리', '벽', '옥상', '쇠', '점검'],
-      desc='건물 벽에 붙인 쇠 사다리: 두 레일·디딤봉 8개·벽 받침쇠, 꼭대기는 지붕 난간 위로 굽은 손잡이, 발밑에 노랑·검정 경고 띠.',
+      desc='올라가는 사다리(옥상 등 다른 맵으로). 들어서는 쪽: 남쪽(맨 아래 칸 바로 남쪽 칸). 오를 때 북쪽(벽)을 본다. 도착: 이동 이벤트가 정한 옥상 맵 칸, 사다리를 등지고 남쪽을 본다. 건물 벽에 붙인 쇠 사다리: 두 레일·디딤봉 7개·벽 받침쇠, 꼭대기는 지붕 난간 위로 굽은 손잡이, 발밑에 노랑·검정 경고 띠.',
       rules='건물 남쪽 벽 위에 4층(위 덧그림)으로 찍는다(3층에 찍으면 벽 그림을 지운다). 맨 아래 칸이 지면 줄(건물 맨 아래 줄)이고 그 바로 남쪽 칸이 들어서는 바닥이다. '
             '사다리 칸은 위·아래로만 움직인다. 옥상 맵으로 가는 이동 이벤트는 맨 아래 칸에.',
       contract=dict(leads='up', side='S', mode='walk', trigger=[[0, 2]], approach=[[0, 3]],
@@ -480,9 +503,9 @@ def _finalize():
     return _CACHE['r']
 
 
-NOTES = ('거리 계단 %d키트: 육교 곧은 계단(-e/-w, 2×8) + 상판(붉은 갈색·녹색, 2×4 가로 반복) + 옆 계단 한 쌍(-l/-r, 3×4) + 벽 사다리(1×3, 4층). '
-         '높이 문법: 상판 = 지면에서 12px, 윗면 2줄 + 거더 앞면 1줄. 계단 칸은 위·아래로만(dirs), 옆 계단 1·2줄은 투명 덧그림(flat). '
-         '한계: 육교 밑 통행 없음(차도가 끊긴다) · 그림자는 땅 칸에 따로 없다.')
+NOTES = ('거리 계단 %d키트: 육교 곧은 계단(-e/-w, 2×8) + 상판(붉은 갈색, 2×6 가로 반복, 거더·쇠 기둥·도로 그늘) + 옆 계단 한 쌍(-l/-r, 3×2, 콘크리트 판 4단) + 단상(2×4 가로 반복) + 벽 사다리(1×3, 4층). '
+         '높이 문법: 상판·단상 = 지면에서 16px, 윗면은 제 칸 줄, 앞면(거더·옹벽)은 그 밑 줄. 계단 칸은 위·아래로만, 옆 계단 0줄은 동서로만(dirs). '
+         '3/4 관문: 부품은 조립 그림(육교·단상)이 덮는다(_gate/assembled.json). 한계: 육교 줄은 남북으로 못 지난다(차도가 끊긴다).')
 
 
 def build():
@@ -491,9 +514,27 @@ def build():
             'autotiles': [], 'groups': groups, 'kits': kits, 'notes': NOTES % len(kits)}
 
 
+# 조립 그림(3/4 관문용): 상판·단상·옆 계단·곧은 계단은 혼자서는 다리·단상 전체의 윗면+앞면을 보일 수 없는 부품이라,
+# 실제로 찍는 그대로 합친 조립 그림(kind structure, 같은 판정자·같은 기준)이 통과해야 덮인다. 부품을 한 화소라도 다시 그리면
+# 조립 그림이 부품을 화소 그대로 품지 않게 되어 덮임이 풀린다(gate_rooms.covering 이 _gate/assembled.json 을 읽는다).
+ASSEMBLIES = {   # (폭, 높이, [(부품, x, y)]) — 투명 배경(땅 없이 부품만)
+    'jp-overpass-assembled-red': (8, 8, [('overpass-stair-e', 0, 0), ('overpass-deck-red', 2, 0), ('overpass-deck-red', 4, 0), ('overpass-stair-w', 6, 0)]),
+    'jp-stage-assembled': (10, 4, [('side-stair-l', 0, 2), ('stage-platform', 3, 0), ('stage-platform', 5, 0), ('side-stair-r', 7, 2)]),
+}
+
+
 def kinds():
-    """object-gate 종류(키트 id → kind)."""
-    return {'jp-' + p['id']: p['kind'] for p in P}
+    """object-gate 종류(키트 id → kind). 벽 사다리만 혼자 판정, 나머지는 조립 그림이 덮는 부품(part). 조립 그림 = structure."""
+    out = {'jp-' + p['id']: ('part' if p['id'] != 'wall-ladder' else p['kind']) for p in P}
+    out.update({a: 'structure' for a in ASSEMBLIES})
+    return out
+
+
+def assembly_image(aid):
+    w, h, parts = ASSEMBLIES[aid]
+    im = Image.new('RGBA', (w * 16, h * 16))
+    for pid, x, y in parts: im.alpha_composite(kit_image(pid), (x * 16, y * 16))
+    return im
 
 
 def contracts():
@@ -517,6 +558,13 @@ def render_all():
         im.save(os.path.join(OUTDIR, '_gate', 'jp-' + p['id'] + '.png'))          # 관문 사본(투명 배경)
         bg = Image.new('RGBA', im.size, (104, 103, 122, 255)); bg.alpha_composite(im)
         bg.resize((im.width * 4, im.height * 4), Image.NEAREST).save(os.path.join(OUTDIR, 'jp-%s-x4.png' % p['id']))
+    man = {}
+    for aid, (w, h, parts) in ASSEMBLIES.items():
+        ap = os.path.join(OUTDIR, '_gate', aid + '.png'); assembly_image(aid).save(ap)
+        for pid, x, y in parts:
+            key = '%s::jp-%s' % (aid, pid)
+            if key not in man: man[key] = dict(png=os.path.relpath(ap, ROOT), part='jp-' + pid, block=BLOCK, x=x * 16, y=y * 16, source=aid)
+    json.dump(man, open(os.path.join(OUTDIR, '_gate', 'assembled.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     json.dump(kinds(), open(os.path.join(OUTDIR, '_gate', 'kinds.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     return len(P)
 

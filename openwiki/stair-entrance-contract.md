@@ -8,6 +8,7 @@
 - 생성: `npx --no-install tsx scripts/content/stairs/build-stair-contracts.mts [--dump out.json]`. 키트 106개(번들 칩셋 + 몬스터·에메랄드), 사양 물건 47개.
   고르는 규칙(INCLUDE/EXCLUDE 정규식)과 유도: 1×1 밟는 칸은 side any, 그 밖은 맨 아래 밟는 줄 = 이동 칸, 그 아래 = 앞 칸(남쪽), 맨 아래 줄이 막혔으면 bump.
 - 사람 확인: `tiledata/stairs/overrides.json` — 4배 그림을 보고 키트마다 확인(`{}`) 또는 고침(`why` 필수). `drop` 은 계단이 아닌 것. 에메랄드 사본은 `monster_*` 고침을 물려받는다.
+- 설명 규칙(2026-10-22): 계단 키트의 이름·설명·계약 `note` 는 «올라가는 계단/내려가는 계단 · 들어서는 쪽 · 오를 때 보는 쪽 · 도착 자리»를 글로 적는다. 같은 맵 안의 육교·옆 계단은 `leads: same` + `exit`(위 끝).
 - 필드(키트 왼쪽 위 기준): `w h` · `trigger`(이동 이벤트 칸) · `approach`/`side`(들어서는 앞 칸, 키트 밖) · `passable` · `mode` walk|bump · `leads` up|down|same · `exit`(same 의 위 끝) · `note`(조수가 읽는 한 줄).
 - 조립기 사양 물건 → 키트: `objects[ts][objId] = {kit, lift}`, 키트 원점 = (o.x, o.y − lift). 벽에 붙는 travel 조각(h1, up ≤ 16)은 한 줄 올려 그려 lift = −minDy + 1.
 - 코드: `src/project/stairs/contract.ts`(읽기·문장), `detect.ts`(맵 네 층 칸 번호로 깔린 계단 찾기, 75% 일치 + 겹침 제거), `fit.ts`(이동·도착 맞추기·짝 맞추기), `placement.ts`(찍을 때 앞 칸 검사).

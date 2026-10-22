@@ -1,10 +1,11 @@
 {
- "jp-overpass-stair-e": "structure",
- "jp-overpass-stair-w": "structure",
- "jp-overpass-deck-red": "structure",
- "jp-overpass-deck-green": "structure",
- "jp-side-stair-l": "structure",
- "jp-side-stair-r": "structure",
- "jp-stage-platform": "structure",
- "jp-wall-ladder": "wall_mounted"
+ "jp-overpass-stair-e": "part",
+ "jp-overpass-stair-w": "part",
+ "jp-overpass-deck-red": "part",
+ "jp-side-stair-l": "part",
+ "jp-side-stair-r": "part",
+ "jp-stage-platform": "part",
+ "jp-wall-ladder": "wall_mounted",
+ "jp-overpass-assembled-red": "structure",
+ "jp-stage-assembled": "structure"
 }

@@ -489,3 +489,18 @@ object-gen 흐름(시점 판정 통과 참고 그림 → Opus 손 도트 A/B →
 - 참고문서 용도 `jp-forest`(4쪽·그림 8장 — 접지 비교 그림은 접지가 늘 켜져 뺐다)는 **따로 굽는다** — `forest_refs_scenes.mts`(실제 도구 결과·변조 검출 JSON) → `bake_forest_refs.py` → `src/assets/jpForestReferences.json` + `public/assets/jp-city-references/forest-*.png`. `jpCity.ts` 가 `jpCityReferences.json` 뒤에 붙여 `ensureJpCityReferences` 로 기존 프로젝트에도 심는다(bake_refs.py 재굽기가 숲 문서를 지우지 않게 파일을 나눴다). 숲 칸이 구워진 시트로만 굽는다(시트 칸 수 확인).
 - 실조수 시험 `scripts/qa/jp-forest-assistant-run.mts`(Pi 실행기, `argonproxy/gemini-4-argon-high` 강도 medium, 새 SQLite 폴더 저장·재로드·1배 그림 → `verify-shots/jp-forest-assistant/<label>/`).
 - **옛 번호는 옛 그림을 지킨다 (2026-10-21):** 핀은 덧붙이기만이다. 같은 키로 그림만 바뀐 칸(예: #3098 깊은 지붕·차량 다시 그리기)이 옛 번호에 덮어써지면 이미 깔린 맵이 바뀐다. `bake_jp.py` 의 `Cells._frozen_key` 가 옛 시트(정의 count 미만 번호)의 화소와 새 그림(야외는 색 계약 적용 후)을 비교해 다르면 키를 `<키>@r<sha8>` 로 바꿔 새 번호를 받게 한다. 굽기 보고 `tiles.rekeyed_art`(바꾼 키 수)·`tiles.old_cells_changed`(옛 번호 중 화소가 바뀐 칸, 0 이 아니면 굽기 거절). 실측(origin/main 핀 기준 임시 굽기): 칸 19,614 · legacy 1,837 · 다시 키 344 · 옛 칸 화소 변경 0 · 핀 이동 0. 전에 적었던 「옛 칸 1,493」은 이동이 아니라 legacy(이번 굽기가 만들지 않는 번호)였고, 그중 344칸이 제자리에서 그림이 바뀌고 있었다 — 이 규칙으로 막았다.
+
+## 거리 계단 — 육교·옆 계단·단상·벽 사다리 (블록 `street_stairs`, `BLOCK_ORDER` 끝, 2026-10-22)
+
+- 원본 `scripts/content/jp-city/blocks/street_stairs.py` (코드 손 도트, modern3 잠긴 팔레트, 빛 왼쪽 위). 칸 20071~20129(59칸, 덧붙이기만 — 옛 핀·화소 불변).
+  사용자 견본(`.herdr-web-ui/paste-…png`)은 **구조만** 읽었다(두 갈래·층계참·그레이팅). 화소·색을 따거나 커밋·게시하지 않는다.
+- 키트 7: `jp-overpass-stair-e/-w`(2×8, 13단 + 2×3 층계참, 가운데 손잡이) · `jp-overpass-deck-red`(2×6 가로 반복: 북 난간·바닥 2줄·남 난간·거더·기둥·그늘) ·
+  `jp-side-stair-l/-r`(3×2, 콘크리트 판 4단, 짝) · `jp-stage-platform`(2×4 가로 반복, 나무 마루 + 옹벽) · `jp-wall-ladder`(1×3, 4층 덧그림).
+  초록 상판(`kokuban`)은 관문 눈이 12/12 「정면 입면」으로 막아 이번에 넣지 않았다.
+- 이름·설명은 모두 «올라가는 계단/사다리 · 들어서는 쪽 · 오를 때 보는 쪽 · 도착»을 적는다. 육교와 옆 계단은 같은 맵 안의 오르내림(`leads: same`, 층 이동 이벤트 없음), 사다리는 다른 맵(옥상)으로 가는 `up`.
+- 통행은 칸 방향(`dirs`)으로 굽는다(`bake_jp.py` 의 dirs 패치): 육교 계단 칸은 위·아래만, 층계참 0줄(먼 난간) 막힘, 상판 2줄은 남쪽으로 못 나간다(남 난간),
+  옆 계단 0줄은 동서만·1줄(앞면) 막힘, 단상 0줄은 북쪽으로 못 나간다. 엔진 `canMove` 가 나가는 칸·들어오는 칸 양쪽 방향을 다 보므로 옆으로 새지 않는다.
+- 3/4 관문: 부품(계단·상판·옆 계단·단상)은 kind `part` 이고 조립 그림 `_gate/jp-overpass-assembled-red.png`·`jp-stage-assembled.png`(kind `structure`)의 영수증이 화소 그대로 덮는다
+  (`_gate/assembled.json` → `gate_rooms.EXTRA_MANIFESTS`). 육교 조립·사다리 PASS(미보정 프로필 임시통과), 단상 조립은 눈 4/12 로 REFER → Opus 적대 VQA r24(major 0) 뒤 위임 허용
+  (`harness-data/object-gate/vqa/jp-street-stairs.opus-vqa-r24.json`).
+- 출하 플레이어 걷기: `scripts/qa/runtime/jp-street-stairs-fixture.mts` → `jp-street-stairs.scenario.mjs`(육교 오르기·층계참 막힘·상판 건너기·내려오기·옆 막힘·옆 계단으로 단상 건너기·사다리).

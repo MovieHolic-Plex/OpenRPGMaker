@@ -1,0 +1,20 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "2b110ab8dd7f63edc41b28494b5f23c3092423ff9973838b2cd000158328ca31",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-22)",
+ "decidedAt": "2026-10-22T12:03:11.114Z",
+ "by": "delegated",
+ "delegatedBy": "user (2026-10-22, gate decisions delegated to supervisor)",
+ "evidence": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/jp-street-stairs.opus-vqa-r24.json",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "note": "jp_city street stage assembly: 3/4 fact judge pass, eye veto 4/12 only; Opus VQA r24 0 majors — delegated by user to supervisor 2026-10-22",
+ "sig": "1948c507b784f3d4ea07aec4fea396215450eb417b8cc9e298996c9771033fce"
+}
