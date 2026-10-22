@@ -1235,8 +1235,7 @@ function checkActorUnderFurniture(project: Project, issues: LintIssue[]): void {
       const tags = tileset.tileMeta?.[tile]?.tags ?? [];
       // 지나갈 수 있는 위층 칸(★)도 그림이 늘 인물 위에 그려진다 — 밟고 오르는 계단·밑동 정렬 기물만 빼고 같은 문제다(첫사랑 수요일 의자, VQA r22).
       if (isPassable(project, map, event.x, event.y) && tags.some((tag) => /stair/i.test(tag) || tag.includes("계단") || tag.includes("사다리") || /^foot-dy:/.test(tag))) continue;
-      // 등을 화면 쪽으로 앉힌 인물(위를 봄)은 등받이가 등·허리만 가린다 — 얼굴은 어차피 안 보이고 «뒤에서 본 앉은 사람»으로 읽힌다
-      // (첫사랑 금요일 회의: 듣는 셋이 탁자 남쪽 의자에 앉아 발표자를 본다, VQA r22).
+      // 위를 보고 앉힌 인물도 같은 층이면 등받이가 머리를 가로질러 고글을 쓴 것처럼 보였다(첫사랑 r28 중대) — 방향으로 면제하지 않는다.
       // 「위 층」 쪽 인물은 가구 위에 그려진다 — 의자에 앉힌 모습(첫사랑 수요일 야근, VQA r25). 같은 이벤트에 «일어선 뒤» 쪽(스위치가 켜져야
       // 보이는 같은 층 쪽)이 더 있으면 그 쪽은 장면이 옆 바닥으로 걸어 나온 뒤에야 켜지므로 시작 칸에서 그려지지 않는다고 본다.
       const drawnHere = pagesOf(event).filter((p) => visibleGraphic(p)).filter((p) => {
@@ -1245,10 +1244,10 @@ function checkActorUnderFurniture(project: Project, issues: LintIssue[]): void {
         const seatedTwin = pagesOf(event).some((q) => q !== p && (q as { priority?: string }).priority === "above" && visibleGraphic(q));
         return !(seatedTwin && conds.some((c) => c.kind === "switch" && c.value === true));
       });
-      if (drawnHere.every((p) => (p as { graphic?: { direction?: string } }).graphic?.direction === "up")) continue;
+      if (drawnHere.length === 0) continue;
       issues.push({
         severity: "warning", code: "scene-actor-under-furniture", mapId: map.id, eventId: event.id, x: event.x, y: event.y,
-        message: `인물 ${event.id} 가 (${event.x},${event.y}) 의 위층 가구(지나갈 수 없는 칸, 인물보다 앞에 그려짐) 위에 서 있다 — 등받이·탁자가 얼굴을 덮는다. 가구 옆 빈 바닥 칸에 세운다. 앉힌 것이면 책상 아래쪽(화면 쪽) 의자에 위를 보고(등받이가 허리를 가린 «뒤에서 본 앉은 사람») 세운다.`,
+        message: `인물 ${event.id} 가 (${event.x},${event.y}) 의 위층 가구(지나갈 수 없는 칸, 인물보다 앞에 그려짐) 위에 서 있다 — 등받이·탁자가 얼굴을 덮는다. 가구 옆 빈 바닥 칸에 세운다. 앉힌 것이면 책상 아래쪽(화면 쪽) 의자에 위를 보고 세우고 그 쪽을 priority \"above\"(의자 위에 그림)로 둔다 — 같은 층이면 등받이가 머리를 가로지른다. 일어설 때 스위치로 같은 층 쌍둥이 쪽으로 바꾼다.`,
       });
     }
   }
