@@ -1444,8 +1444,10 @@
   left: 10px;
   right: auto;
 }
-/* 미연시 룩은 선택지를 가운데에 띄운다(카드·막대 선택지가 화면 가운데 줄에 서는 관례). */
-.dialogue-overlay[data-vn-look].choices-active.choices-framed > .dialogue-box.choices {
+/* 미연시 룩은 선택지를 가운데에 띄운다(카드·막대 선택지가 화면 가운데 줄에 서는 관례). 흉상은 양옆에 서므로 오른쪽 흉상이
+   있어도 가운데를 지킨다 — 왼쪽으로 비키면 선택지마다 자리가 좌↔가운데로 튀고 왼쪽 듣는 흉상을 덮었다(첫사랑 VQA r21). */
+.dialogue-overlay[data-vn-look].choices-active.choices-framed > .dialogue-box.choices,
+.dialogue-overlay[data-vn-look].choices-active.choices-framed:has(> .choices-frame.bust-right) > .dialogue-box.choices {
   left: 10px;
   margin-inline: auto;
   right: 10px;

@@ -721,7 +721,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
           setSw(SW_MILK, true),
           // 둘이 계산대 앞까지 걸어가고, 점원은 계산하러 온 서하를 보고 묻는다.
           walkRoute(project, FL_MAP.konbini, "@player", coolerFront, registerFront, [jihuStop], true, dirToward(registerFront, clerkSpot)),
-          walkRoute(project, FL_MAP.konbini, "ev_fl_jihu_kon", jihuStop, jihuRegister, [registerFront, coolerFront], true, dirToward(jihuRegister, registerFront)),
+          walkRoute(project, FL_MAP.konbini, "ev_fl_jihu_kon", jihuStop, jihuRegister, [registerFront, { x: registerFront.x, y: registerFront.y + 1 }, coolerFront], true, dirToward(jihuRegister, registerFront)),
           waitMoves(),
           faceHero("ev_fl_clerk"),
           ...say("clerk", "happy", "원 플러스 원이라 두 개 맞으시죠?"),
@@ -948,7 +948,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
         ...say("lead", "base", "서하 씨는 최종본 다시 정리하고."),
         face("ev_fl_w_lead", dirToward(leadSeat, jihuSeat)),
         face("ev_fl_w_jihu", dirToward(jihuSeat, leadSeat)),
-        ...say("lead", "base", "지후 씨, 서하 씨 좀 도와줄래요?"),
+        ...sayTo("lead", "base", "ev_fl_w_jihu", "지후 씨, 서하 씨 좀 도와줄래요?"),
         // 지후는 열 칸 밖 자리에 있다 — 멀리서 「네.」로 대답하지 않고 일어나 오는 걸음으로 대답한다(사용자 r2: 너무 멀리서 대화).
         // 팀장의 작별 인사도 서하가 팀장 앞에 서 있을 때 한다.
         face("ev_fl_w_lead", dirToward(leadSeat, leadFront)),
