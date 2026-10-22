@@ -1,7 +1,7 @@
 {
  "kit": "object-gen",
  "repo": "https://github.com/MovieHolic-Plex/object-gen.git",
- "commit": "bcab2ed825ca16d6d3bf94015fc34b1e79768a0f",
+ "commit": "95a68cd0082cc523eed00d03aaee3bbc1af333a1",
  "constants": {
   "checks": {
    "STANDING": [
@@ -101,12 +101,13 @@
      "grow": "over",
      "h": [
       1,
-      2
+      1
      ],
      "measured": [
       "beodeul:wooden bench 2x1+0 [XX]",
       "interior-v5:bench 2x1"
      ],
+     "note": "one row even with a backrest - the backrest is the top few pixels of the cell; a 2-row bench stands as tall as a person",
      "top": "the seat slab",
      "typ": {
       "foot": 1,
