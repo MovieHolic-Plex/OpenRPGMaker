@@ -254,7 +254,7 @@ export const VILLAGE_TYPES: readonly VillageType[] = [
     recipe: "create_map({tilesetId:\"sf_station\", width:48, height:30}) → compose_sf_station_map({kind:\"street\"})",
     words: /사이버\s*펑크|네온\s*(?:거리|도시|마을|골목)|미래\s*(?:도시|거리|마을)|cyberpunk|neon\s*(?:street|city)/iu }),
   T({ id: "moon-colony", ko: "달·행성 정착지", era: "future", chipset: "sf_station", status: "ready",
-    recipe: "create_map({tilesetId:\"sf_station\", width:38, height:22}) → compose_sf_station_map({kind:\"moonbase\"}) — 더 크면 아래 띠가 빈 월면으로 남는다(적대 검수)",
+    recipe: "create_map({tilesetId:\"sf_station\", width:38, height:20}) → compose_sf_station_map({kind:\"moonbase\"}) — 더 크면 아래 띠가 빈 월면으로 남는다(적대 검수)",
     words: /(?:달|화성|행성|우주)(?:\s*(?:위|표면|속)의?)?\s*(?:정착지|식민지|기지|콜로니|마을)|콜로니|정착지\s*\(?우주|space\s*colony|moon\s*base|mars\s*colony/iu }),
   T({ id: "station-habitat", ko: "우주 정거장 거주구", era: "future", chipset: "sf_station", status: "ready",
     recipe: "create_map({tilesetId:\"sf_station\", width:44, height:32}) → compose_sf_station_map({kind:\"station\"})",

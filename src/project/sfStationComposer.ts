@@ -20,10 +20,10 @@ import type { GameMap, StructureKitDef, TilesetDef } from "@/project/types";
 export type SfMapKind = "station" | "lab" | "street" | "moonbase";
 export const SF_MAP_KINDS: readonly SfMapKind[] = ["station", "lab", "street", "moonbase"];
 export const SF_MIN_SIZE: Readonly<Record<SfMapKind, { w: number; h: number }>> = {
-  station: { w: 34, h: 26 }, lab: { w: 32, h: 24 }, street: { w: 36, h: 26 }, moonbase: { w: 34, h: 20 },
+  station: { w: 34, h: 26 }, lab: { w: 32, h: 24 }, street: { w: 36, h: 26 }, moonbase: { w: 34, h: 18 },
 };
 export const SF_DEFAULT_SIZE: Readonly<Record<SfMapKind, { w: number; h: number }>> = {
-  station: { w: 44, h: 32 }, lab: { w: 40, h: 30 }, street: { w: 48, h: 30 }, moonbase: { w: 38, h: 22 },
+  station: { w: 44, h: 32 }, lab: { w: 40, h: 30 }, street: { w: 48, h: 30 }, moonbase: { w: 38, h: 20 },
 };
 
 export interface SfPlaced { readonly id: string; readonly x: number; readonly y: number }
@@ -549,7 +549,9 @@ function composeMoonbase(b: Board): { areas: SfArea[]; spawn: { x: number; y: nu
   const mainY = foot + 3;
   // 북쪽 건물 줄 — 연구 모듈은 꼭 하나
   const doorFronts: { x: number; y: number }[] = [];
-  const order = ["lab-module", ...MOON_BUILDINGS.filter((id) => id !== "lab-module").sort(() => b.rng() - 0.5)];
+  // 돔 하나는 꼭(적대 검수: 상자 건물만 줄지으면 «사는 곳»으로 안 읽힘) — 연구 모듈 다음 자리에 돔을 둔다.
+  const dome = b.pick(["hab-dome", "hab-dome-l", "greenhouse-dome"]);
+  const order = ["lab-module", dome, ...MOON_BUILDINGS.filter((id) => id !== "lab-module" && id !== dome).sort(() => b.rng() - 0.5)];
   let x = b.int(1, 3);
   for (const id of order) {
     const s = b.kitSize(id); if (!s) continue;
@@ -565,10 +567,14 @@ function composeMoonbase(b: Board): { areas: SfArea[]; spawn: { x: number; y: nu
   // 큰길(2줄) + 남쪽 «설비 길»(2줄) — 두 길을 세로 연결로 잇고, 설비 길 위·아래에 쓰임 마당(전력·연료·화물·통신)과 착륙장을 줄지어 놓는다.
   for (let y = mainY; y < mainY + 2; y++) for (let xx = 1; xx < Wd - 1; xx++) path[b.idx(xx, y)] = true;
   // 설비 길: 위 설비(≤3줄)가 큰길과 2줄 띄우고, 아래 설비·착륙장(≤3줄) 밑에 1~2줄만 남게(적대 검수: 아래 띠 빈 월면). 큰 맵은 남는 아래 띠를 바위·크레이터가 맡는다.
-  const svcY = Math.max(mainY + 6, Math.min(Hd - 6, mainY + 7));
+  const svcY = Math.max(mainY + 5, Math.min(Hd - 6, mainY + 5));
   for (let y = svcY; y < svcY + 2; y++) for (let xx = 2; xx < Wd - 2; xx++) path[b.idx(xx, y)] = true;
   const links = [Math.floor(Wd * 0.25), Math.floor(Wd * 0.75)];
   for (const lx of links) for (let y = mainY + 2; y < svcY; y++) for (const dx of [0, 1]) path[b.idx(lx + dx, y)] = true;
+  const road = path.slice(); // 설비는 길(road) 위에 서지 않는다. 마당 포장(path)은 그 아래 바닥일 뿐.
+  const segW = Math.floor((Wd - 4) / 4);
+  // 마당마다 다진 바닥을 깐다 — 설비가 «진열된 줄»이 아니라 울 없는 작업 마당 위에 서도록(적대 검수 r8).
+  for (let k = 0; k < 4; k++) { const x0 = 2 + k * segW; for (let y = svcY - 3; y <= Math.min(Hd - 2, svcY + 5); y++) for (let xx = x0; xx < x0 + segW - 1; xx++) if (b.inb(xx, y)) path[b.idx(xx, y)] = true; }
   b.autotile("at-regolith-path", path);
   const spawn = { x: 2, y: mainY };
   const must = [...doorFronts, { x: Wd - 3, y: mainY }, { x: 3, y: svcY }, { x: Wd - 4, y: svcY }];
@@ -580,10 +586,9 @@ function composeMoonbase(b: Board): { areas: SfArea[]; spawn: { x: number; y: nu
     { name: "화물 마당", tag: "cargo-yard", up: ["container", "crate-stack", "container-stack"], down: ["rover", "crate-stack", "container"] },
     { name: "통신 마당", tag: "comms-yard", up: ["dish", "radome-tower", "antenna-mast"], down: ["comms-relay", "dish"] },
   ].sort(() => b.rng() - 0.5);
-  const segW = Math.floor((Wd - 4) / 4);
   const padSeg = b.int(1, 2);
   const free = (xx: number, yy: number, w: number, h: number) => {
-    for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) if (!b.inb(xx + dx, yy + dy) || path[b.idx(xx + dx, yy + dy)]) return false;
+    for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) if (!b.inb(xx + dx, yy + dy) || road[b.idx(xx + dx, yy + dy)]) return false;
     return true;
   };
   const row = (ids: readonly string[], x0: number, x1: number, above: boolean): number => {
