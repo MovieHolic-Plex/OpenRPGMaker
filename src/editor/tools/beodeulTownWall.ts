@@ -7,7 +7,7 @@
  *   세로 성벽(서·동)은 두 열 폭 윗면(x0·x0+1, x1−1·x1). 모서리는 2×2.
  * - 북쪽 성벽은 마을 쪽 앞면(뒤 흉벽 hn), 남쪽 성벽은 바깥 앞면(앞 흉벽 hs). 서·동 성벽은 위만 보인다(3/4).
  * - 가로 성벽을 길이 지나는 곳은 4×8 성문루(가운데 두 열이 통로, yw−1 부터 — 안쪽 길 칸에 터널 입 그늘 mo_n),
- *   세로 성벽을 길이 지나는 곳은 쪽문 문루(성벽 위로 한 줄 솟은 네모 문루 *_pg_*·*_pgw_*, ★ — 3판 r11, 덮개돌만 이으면 「길이 성벽에 박혔다」로 읽혔다) + 양옆 땅에 터널 입 그늘 mo_w·mo_e.
+ *   세로 성벽을 길이 지나는 곳은 쪽문 문루(성벽 위로 솟은 네모 문루 — 윗면 *_pgw_* 는 길 위 두 줄, 앞면 *_pg_* 는 길 줄, ★ — 3판 r11·r12) + 양옆 땅에 터널 입 그늘 mo_w·mo_e.
  * - 망루 3×9 는 가로 성벽 줄에(윗면 플랫폼이 통로 줄 위로 두 줄 솟고, 앞면이 성벽 앞으로 한 줄 내민다 — 망루 윗면이 성벽 흉벽보다 한 줄 위에 선다.
  *   통로가 망루 밑을 ★ 로 지난다). 망루·성문루 윗면 소품은 자리마다 변형(tower·tower1·tower2, gate·gate1).
  * - 기후 변형: 같은 조각 이름 앞에 snow:(눈 덮인 성벽) · desert:(사막 사암 성벽). stampTownWall 의 biome 으로 고른다.
@@ -50,13 +50,12 @@ const towerName = (v: number, cx: number, cy: number, corner = "") => {
   const c = corner && (cy === 2 || cy === 3) && cx === (corner === "w" ? 0 : 2) ? corner : "";
   return `tower${v === 0 ? "" : v}${c}_${cx}_${cy}`;
 };
-/** 쪽문 문루 줄(3판 r11, bake_wall.py postern_rows 와 같다): 윗면 max(2, rows) 줄(t·m…·b) + 앞면 f(마지막 길 줄). 길 줄은 pg, 길 없는 성벽 줄은 pgw. */
+/** 쪽문 문루 줄(3판 r12, bake_wall.py postern_rows 와 같다): 윗면 두 줄(gy−2 t · gy−1 b, 길 위 성벽 줄 pgw) + 앞면 길 줄(pg — 한 줄이면 f1, 아니면 fu·fm…·fl). */
 const posternRows = (e: string, gy: number, rows: number): Array<[number, (cx: number) => string]> => {
-  const top = Math.max(2, rows), fy = gy + rows - 1, out: Array<[number, (cx: number) => string]> = [];
-  for (let i = 0; i <= top; i += 1) {
-    const y = fy - top + i, k = i === top ? "f" : i === 0 ? "t" : i === top - 1 ? "b" : "m";
-    const kind = gy <= y && y < gy + rows ? "pg" : "pgw";
-    out.push([y, (cx) => `${e}_${kind}_${cx}_${k}`]);
+  const out: Array<[number, (cx: number) => string]> = [[gy - 2, (cx) => `${e}_pgw_${cx}_t`], [gy - 1, (cx) => `${e}_pgw_${cx}_b`]];
+  for (let i = 0; i < rows; i += 1) {
+    const k = rows === 1 ? "f1" : i === 0 ? "fu" : i === rows - 1 ? "fl" : "fm";
+    out.push([gy + i, (cx) => `${e}_pg_${cx}_${k}`]);
   }
   return out;
 };
@@ -135,7 +134,12 @@ export function planTownWallRing(p: TownWallPlan): { up: Cells; lo: Cells } {
   // 옆 계단 3×4: 왼쪽 아래(sx, y0+5) 땅에서 오른쪽 위(sx+2, y0+2) → 통로(sx+2, y0+1)
   for (const sx of p.stairs) {
     up.set(key(sx + 2, y0 + 1), "hn_stair");
-    FACE_ROWS.forEach((k, i) => { for (let cx = 0; cx < 3; cx += 1) up.set(key(sx + cx, y0 + 2 + i), `stair_${cx}_${k}`); });
+    FACE_ROWS.forEach((k, i) => {
+      for (let cx = 0; cx < 3; cx += 1) up.set(key(sx + cx, y0 + 2 + i), `stair_${cx}_${k}`);
+      // 계단 몸이 오른쪽 앞면에 드리운 그늘(빛이 왼쪽 위, r12)
+      const n = up.get(key(sx + 3, y0 + 2 + i));
+      if (n?.startsWith("f_") && !n.endsWith("endL") && !n.endsWith("endR")) up.set(key(sx + 3, y0 + 2 + i), `f_${k}_shL`);
+    });
   }
   // 땅 그림자(2층): 성벽 칸이 아닌 땅에만
   const sh = new Map<string, string>();

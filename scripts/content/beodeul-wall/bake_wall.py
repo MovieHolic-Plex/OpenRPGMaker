@@ -80,14 +80,11 @@ def tower_name(v, cx, cy, corner=""):
 
 
 def postern_rows(e, gy, rows):
-    """쪽문 문루 줄(3판 r11): 윗면 max(2, rows) 줄(t·m…·b) + 앞면 f(마지막 길 줄). 길 줄은 pg, 길 없는 성벽 줄은 pgw. 이름의 {} 는 열(0·1)."""
-    top = max(2, rows)
-    fy = gy + rows - 1
-    out = []
-    for i in range(top + 1):
-        y = fy - top + i
-        k = "f" if i == top else "t" if i == 0 else "b" if i == top - 1 else "m"
-        out.append((y, f"{e}_{'pg' if gy <= y < gy + rows else 'pgw'}_{{}}_{k}"))
+    """쪽문 문루 줄(3판 r12): 윗면 두 줄(gy−2 t · gy−1 b, 길 위 성벽 줄 pgw) + 앞면 길 줄(gy..gy+rows−1, pg — 한 줄이면 f1, 아니면 fu·fm…·fl). 이름의 {} 는 열(0·1)."""
+    out = [(gy - 2, f"{e}_pgw_{{}}_t"), (gy - 1, f"{e}_pgw_{{}}_b")]
+    for i in range(rows):
+        k = "f1" if rows == 1 else "fu" if i == 0 else "fl" if i == rows - 1 else "fm"
+        out.append((gy + i, f"{e}_pg_{{}}_{k}"))
     return out
 
 
@@ -174,6 +171,8 @@ def plan_ring(x0, y0, x1, y1, gates=(), closed=(), vgaps=(), towers=(), stairs=(
         up[(sx + 2, y0 + 1)] = "hn_stair"
         for i, k in enumerate(FACE_ROWS):
             for cx in range(3): up[(sx + cx, y0 + 2 + i)] = f"stair_{cx}_{k}"
+            n = up.get((sx + 3, y0 + 2 + i), "")      # 계단 몸이 오른쪽 앞면에 드리운 그늘(빛이 왼쪽 위, r12)
+            if n.startswith("f_") and not n.endswith(("endL", "endR")): up[(sx + 3, y0 + 2 + i)] = f"f_{k}_shL"
     # 땅 그림자(2층): 성벽 칸이 아닌 땅에만
     sh = {}
 
@@ -204,8 +203,8 @@ def plan_ring(x0, y0, x1, y1, gates=(), closed=(), vgaps=(), towers=(), stairs=(
 
 
 def ring_sample():
-    """조립 예 둘레(26×23): 남문(열림)·북문(닫힘, 윗면 변형 1)·망루 셋(남서 모서리 망루 포함, 윗면 변형 0·1·2)·계단·서쪽 쪽문 터널."""
-    return plan_ring(2, 3, 23, 14, gates=[("S", 10, 0), ("N", 15, 1)], closed=[("N", 15)], vgaps=[("W", 10, 2)],
+    """조립 예 둘레(26×23): 남문(열림)·북문(닫힘, 윗면 변형 1)·망루 셋(남서 모서리 망루 포함, 윗면 변형 0·1·2)·계단·서쪽 쪽문 문루(길 두 줄)·동쪽 쪽문 문루(길 한 줄)."""
+    return plan_ring(2, 3, 23, 14, gates=[("S", 10, 0), ("N", 15, 1)], closed=[("N", 15)], vgaps=[("W", 10, 2), ("E", 10, 1)],
                      towers=[("S", 2, 0), ("S", 17, 1), ("N", 6, 2)], stairs=[11]), 26, 23
 
 
@@ -231,7 +230,7 @@ def ring_ground():
     """조립 예 둘레의 길: 서쪽 쪽문에서 동서 길(10·11행) · 남문 통로 두 열 · 닫힌 북문 안쪽 길(닫힌 문 밖에는 길을 내지 않는다).
     길은 그림 테두리에 닿지 않는다(테두리 화소는 윤곽이 아니다 — 관문 화풍 사실이 길 자갈을 윤곽으로 셌다)."""
     return ([(x, y) for x in range(1, 17) for y in (10, 11)] + [(x, y) for x in (10, 11) for y in range(10, 22)]
-            )
+            + [(x, 10) for x in range(17, 25)])
 
 
 def sheet_tile(n):
