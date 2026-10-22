@@ -415,9 +415,13 @@ export function anchorMenuToViewport(menu: HTMLElement, trigger: HTMLElement): v
   // (스크롤·내용 변화 때마다) 메뉴 왼쪽 끝이 튀었다.
   const rightEdge = Math.round(rect.right);
   const keptLeft = menu.dataset.anchorRight === String(rightEdge) ? Number(menu.dataset.anchorLeft) : Number.NaN;
+  // 왼쪽 경계는 트리거가 속한 팔레트 패널이다 — 툴바 왼쪽 끝 트리거(되돌리기 기록 ▾)의 메뉴가 레일까지 뻗지 않게 한다.
+  const panelLeft = trigger.closest<HTMLElement>('[data-testid="left-palette-root"]')?.getBoundingClientRect().left ?? 0;
+  const minLeft = Math.max(margin, panelLeft + 4);
+  const maxLeft = Math.max(minLeft, viewportW - margin - width);
   const left = Number.isFinite(keptLeft)
-    ? Math.min(keptLeft, Math.max(margin, viewportW - margin - width))
-    : Math.min(Math.max(margin, rect.right - width), Math.max(margin, viewportW - margin - width));
+    ? Math.min(Math.max(keptLeft, minLeft), maxLeft)
+    : Math.min(Math.max(minLeft, rect.right - width), maxLeft);
   menu.dataset.anchorRight = String(rightEdge);
   menu.dataset.anchorLeft = String(left);
   menu.style.left = `${left}px`;
