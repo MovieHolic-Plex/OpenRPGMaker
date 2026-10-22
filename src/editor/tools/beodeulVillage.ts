@@ -2377,7 +2377,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       if (peeled.length) logConstructionTiles(mw, "tidy", "성벽이 끊은 길 토막 정리");
     }
     const used = (side: "N" | "S", x0: number, x1: number) => gates.some((g) => g.side === side && x1 >= g.x - 2 && x0 <= g.x + 3);
-    const towers = L.towers.filter((t) => t.x >= L.x0 + 3 && t.x + 2 <= L.x1 - 3 && !used(t.side, t.x - 1, t.x + 3)
+    const towers = L.towers.filter((t) => (t.corner === true || (t.x >= L.x0 + 3 && t.x + 2 <= L.x1 - 3)) && !used(t.side, t.x - 1, t.x + 3)
       && [0, 1, 2].every((i) => [...Array(9).keys()].every((j) => { const y = (t.side === "S" ? L.y1 : L.y0) - 2 + j; return !roadAt(t.x + i, y) && (!inMap(t.x + i, y) || occ[idx(t.x + i, y)] === WALLB); })));
     const stairs: number[] = [];
     // 옆 계단 3×4(x..x+2, 북쪽 앞면 네 줄): 왼쪽 아래(x, y0+5)에서 땅(x, y0+6 → y0+7)으로 내려선다

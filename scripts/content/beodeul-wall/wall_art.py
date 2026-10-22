@@ -243,11 +243,16 @@ def face_column(var, *, left="", right="", seed=0):
         for (dx, dy) in ((0, 0), (1, 0), (0, 1), (1, 1), (2, 1), (-1, 1)):
             if h(s, n, dx, dy, "mk") % 4: cv.set(mx + dx, my + dy, MOSS[(dx + dy + n) % 3])
     if var == 3 and not left and not right:      # 물빼기 구멍 + 그 밑으로 흘러내린 물때
+        # 내민 돌 물받이(빛 받는 윗면 · 몸 · 짙은 구멍) + 그 밑으로 번진 물때 띠
         dy = course_top(3)
-        cv.rect(6, dy + 1, 8, dy + 2, OUT); cv.set(6, dy, MORT); cv.set(7, dy, MORT)
-        for y in range(dy + 3, PLINTH_Y):
-            if cv.get(7, y) not in (MORT, MORT2): cv.shade(7, y, -1)
-            if y < dy + 8 and cv.get(8, y) not in (MORT, MORT2): cv.shade(8, y, -1)
+        cv.rect(4, dy, 10, dy, COOL[11]); cv.rect(4, dy + 1, 10, dy + 2, COOL[8]); cv.rect(4, dy + 3, 10, dy + 3, COOL[5])
+        cv.set(4, dy + 1, COOL[10]); cv.set(10, dy + 1, COOL[6]); cv.set(10, dy + 2, COOL[6])
+        cv.rect(6, dy + 1, 8, dy + 2, OUT); cv.set(7, dy + 1, OUT2)
+        for x in range(5, 11): cv.shade(x, dy + 4, -2)
+        for y in range(dy + 5, PLINTH_Y):
+            for x in (6, 7, 8):
+                if cv.get(x, y) in (MORT, MORT2): continue
+                if x == 7 or (y < dy + 14 and h(s, x, y, "wt") % 3): cv.shade(x, y, -1)
     if var == 1 and not left and not right:      # 보수한 돌(다른 결의 따뜻한 돌 두 개 — 나중에 갈아 끼운 자리)
         k = 2; y0 = course_top(k); y1 = y0 + COURSE_H[k] - 1
         stone(cv, 4, y0, 9, y1, WARM[5], ("patch", var))
@@ -873,7 +878,7 @@ def torch(cv, x, y):
 # ================================================================ 망루 3×8 (48×128)
 TOWER_TONES = [WARM[6], WARM[5], COOL[8], WARM[6], WARM[4], COOL[7], WARM[7], WARM[5]]
 TOWER_DRESS = (                     # 망루 윗면 변형: (들창 자리, 소품)
-    (True, (("crate", 30, 29),)),
+    (True, (("barrel", 33, 33),)),
     (10, (("brazier", 33, 24),)),
     (False, (("balls", 11, 26), ("crate2", 27, 25), ("barrel", 20, 32))),
 )
@@ -896,8 +901,10 @@ def tower(var=0):
     arrow_slit(face, 23, 46, 12)
     arrow_slit(face, 23, 70, 9)
     # 앞면 오른쪽 끝 두 열은 그늘(빛이 왼쪽 위), 위 받침돌 띠 바로 밑은 내민 플랫폼이 드리운 그늘
+    # 모서리 빛·그늘: 왼쪽 두 열 한 단 밝게, 오른쪽 네 열 한 단 · 끝 두 열 두 단 어둡게(네모 탑이 납작한 판으로 읽혔다, r9)
     for y in range(6, FB_):
-        face.shade(W - 3, y, -1)
+        for x in (1, 2): face.set(x, y, step(face.get(x, y), 1))
+        for x in range(W - 6, W - 1): face.shade(x, y, -1 if x < W - 3 else -2)
     for x in range(1, W - 1):
         face.shade(x, 6, -1)
     cv.paste(face, 0, 48)
@@ -1121,9 +1128,6 @@ def vert_postern(side):
         stone(cv, fx0, y0, fx1, y1, tone, ("pt", side, y0))
         for yy in range(y0, y1 + 1): cv.set(fx1, yy, FLAG[2])
     for x in range(fx0, fx1 + 1): cv.set(x, 6, FLAG[1])
-    # 덮개돌 사이 쇠창살 홈(위에서 본 어두운 틈 + 쇠살)
-    for x in range(fx0 + 2, fx1 - 1):
-        cv.set(x, 9, FLAG[1]); cv.set(x, 10, OUT if x % 3 else IRON[2]); cv.set(x, 11, OUT2 if x % 3 else IRON[1]); cv.set(x, 12, FLAG[8])
     return cv
 
 
@@ -1143,7 +1147,7 @@ def mouth(kind):
 # ================================================================ 기후 변형(3판 r8): 눈 덮인 성벽 · 사막 사암 성벽 — 같은 그림을 색 규칙으로 옮긴다(버들항 눈·사막 마을이 쓰는 색만)
 SNOW = [hx(c) for c in ("#a6bcdc", "#b3bbc3", "#cadaee", "#e6f0fa", "#f6faff", "#ffffff")]
 SAND_COOL = [hx(c) for c in ("#3a261c", "#4e3d30", "#7d6249", "#87806a", "#9b8a73", "#b7a471", "#c2b082", "#cbb87c", "#d3c088", "#eccb86", "#f6d498", "#fff0c0")]
-SAND_WARM = [hx(c) for c in ("#4e3d30", "#7d6249", "#ac7044", "#cf9558", "#d49a58", "#dcaf6c", "#e8b672", "#f6d498", "#fff0c0")]
+SAND_WARM = [hx(c) for c in ("#4e3d30", "#7d6249", "#87806a", "#c2b082", "#cbb87c", "#dcaf6c", "#d3c088", "#eccb86", "#fff0c0")]   # 앞면 돌은 사암 한 결(주황·카키 조각보로 읽혔다, r9) — 따뜻한 돌 하나만 주황
 SAND_FLAG = [hx(c) for c in ("#4e3d30", "#724a28", "#7e4a34", "#94562e", "#ac7044", "#cf9558", "#dcaf6c", "#e8b672", "#f6d498")]
 DRY = [hx(c) for c in ("#7f725d", "#87806a", "#b7a471", "#c2b082")]
 BIOMES = ("snow", "desert")
@@ -1187,8 +1191,12 @@ def biome_image(img, name, biome):
         return im
     top = is_top_piece(name)
     src = img.load()
+    import re as _re
+    name = _re.sub(r"^(tower\d?)[we]_", r"\1_", name.split(":")[-1])     # 모서리 망루 바깥 열은 같은 그림 — 같은 눈 결
     # 판석 결은 지운다(눈이 덮는다) — 흉벽 그늘이 만든 어두운 판석만 옅은 파랑 그늘로 남는다(r8: 「판석 격자 위 서리 + 먼지 점」)
-    snow_flag = {FLAG[8]: SNOW[3], FLAG[7]: SNOW[3], FLAG[6]: SNOW[3], FLAG[5]: SNOW[3], FLAG[4]: SNOW[2], FLAG[3]: SNOW[2], FLAG[2]: SNOW[3], FLAG[1]: SNOW[3], FLAG[0]: SNOW[1]}
+    # 통로 눈은 밟혀 다져진 옅은 파랑(SNOW[2]) — 땅 눈(SNOW[3])과 같으면 성벽 윗면이 땅에 녹아 보였다(r9). 흉벽 그늘 쪽은 한 단 더 짙게
+    snow_flag = {FLAG[8]: SNOW[2], FLAG[7]: SNOW[2], FLAG[6]: SNOW[2], FLAG[5]: SNOW[2], FLAG[4]: SNOW[1], FLAG[3]: SNOW[1], FLAG[2]: SNOW[2], FLAG[1]: SNOW[2], FLAG[0]: SNOW[0]}
+    lintel = "_pt_" in name
     for y in range(H):
         row = [src[x, y] for x in range(W)]
         ledge = sum(1 for c in row if c in (COOL[9], COOL[10], COOL[11])) >= 12
@@ -1198,14 +1206,15 @@ def biome_image(img, name, biome):
             if c in MOSS: px[x, y] = SNOW[2 + MOSS.index(c) % 2]; continue
             if top:
                 if c == COOL[11]: px[x, y] = SNOW[5]
+                elif c == COOL[9] and y > 0 and src[x, y - 1] in (COOL[10], COOL[11]): px[x, y] = SNOW[3]     # 톱니 머리에 두툼히 얹힌 눈
                 elif c == COOL[10]: px[x, y] = SNOW[4]
-                elif c in snow_flag:
+                elif c in snow_flag and not (lintel and h("lt", x // 4, y // 3) % 3):
                     v = snow_flag[c]
                     # 눈 결: 판석 격자 대신 바람에 쌓인 넓고 부드러운 덩이(3×2 칸 덩이 해시) + 드문 반짝임
-                    if v == SNOW[3]:
-                        if h("drift", name, x // 3, y // 2) % 3 == 0: v = SNOW[4]
-                        elif h("hollow", name, x // 4, y // 3) % 7 == 0: v = SNOW[2]
-                        if h("spark", name, x, y) % 41 == 0: v = SNOW[5]
+                    if v == SNOW[2]:
+                        if h("drift", name, x // 3, y // 2) % 3 == 0: v = SNOW[3]
+                        elif h("hollow", name, x // 4, y // 3) % 7 == 0: v = SNOW[1]
+                        if h("spark", name, x, y) % 41 == 0: v = SNOW[4]
                     px[x, y] = v
             elif ledge and c in (COOL[9], COOL[10], COOL[11]):
                 px[x, y] = SNOW[5] if c != COOL[9] else SNOW[4]
@@ -1358,6 +1367,12 @@ def pieces():
         fc = face_column(v)
         for r in ("u", "m", "n", "l"):
             P(f"f_{r}_{'abcdefgh'[v]}", cut(fc, 0, ROWN[r]), "", f"성벽 앞면 {ROWD[r]} 칸(변형 {'abcdefgh'[v]})")
+    # 3판 r9: 모서리 망루 바깥 열 — 성벽 통로 두 줄(cy 2·3)의 바깥쪽 걸음을 막은 조각(그림은 같다). 안 막으면 성 밖 땅에서 망루 밑 통로로 들어왔다
+    for cn, cx, drop in (("w", 0, "L"), ("e", 2, "R")):
+        for v in range(3):
+            t = tw if v == 0 else tower(v)
+            P(f"tower{v or ''}{cn}_{cx}_2", cut(t, cx, 2), "LRD".replace(drop, ""), "모서리 망루 바깥 열 — 성벽 통로가 망루 밑을 지나간다(★, 바깥쪽 막힘)", star=True)
+        P(f"tower{cn}_{cx}_3", cut(tw, cx, 3), "LRUD".replace(drop, ""), "모서리 망루 바깥 열 — 성벽 통로가 망루 밑을 지나간다(★, 바깥쪽 막힘)", star=True)
     g1u, _g1l = gatehouse(False, 1)
     for cy in (3, 4):
         for cx in (0, 3):

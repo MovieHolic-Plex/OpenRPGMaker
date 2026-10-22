@@ -73,8 +73,10 @@ GT = GH + 1                      # 망루 높이(줄): 플랫폼이 두 줄 솟�
 TOWER_VARS, GATE_VARS = 3, 2     # 윗면 소품 변형 수(망루 tower·tower1·tower2, 성문루 gate·gate1)
 
 
-def tower_name(v, cx, cy):
-    return f"tower{'' if v == 0 or cy >= 3 else v}_{cx}_{cy}"
+def tower_name(v, cx, cy, corner=""):
+    """corner = 'w'(서쪽 모서리 망루) · 'e'(동쪽): 바깥 열의 통로 두 줄(cy 2·3)은 바깥쪽 걸음을 막은 조각."""
+    c = corner if corner and cy in (2, 3) and cx == (0 if corner == "w" else 2) else ""
+    return f"tower{'' if v == 0 or cy >= 3 else v}{c}_{cx}_{cy}"
 
 
 def gate_name(v, cx, cy, shut=False):
@@ -147,7 +149,7 @@ def plan_ring(x0, y0, x1, y1, gates=(), closed=(), vgaps=(), towers=(), stairs=(
         for cx in range(3):
             for cy in range(GT):
                 up.pop((tx + cx, yw - 2 + cy), None)
-                up[(tx + cx, yw - 2 + cy)] = tower_name(tv, cx, cy)
+                up[(tx + cx, yw - 2 + cy)] = tower_name(tv, cx, cy, "w" if tx == x0 else "e" if tx == x1 - 2 else "")
         shade_right(tx + 3, yw)
     for (side, gy, rows) in vgaps:      # 쪽문 터널: 성벽 윗면은 덮개돌로 잇고, 양옆 땅에 터널 입 그늘
         xa = x0 if side == "W" else x1 - 1
@@ -188,9 +190,9 @@ def plan_ring(x0, y0, x1, y1, gates=(), closed=(), vgaps=(), towers=(), stairs=(
 
 
 def ring_sample():
-    """조립 예 둘레(26×23): 남문(열림)·북문(닫힘, 윗면 변형 1)·망루 셋(윗면 변형 0·1·2)·계단·서쪽 쪽문 터널."""
+    """조립 예 둘레(26×23): 남문(열림)·북문(닫힘, 윗면 변형 1)·망루 셋(남서 모서리 망루 포함, 윗면 변형 0·1·2)·계단·서쪽 쪽문 터널."""
     return plan_ring(2, 3, 23, 14, gates=[("S", 10, 0), ("N", 15, 1)], closed=[("N", 15)], vgaps=[("W", 10, 2)],
-                     towers=[("S", 4, 0), ("S", 17, 1), ("N", 6, 2)], stairs=[11]), 26, 23
+                     towers=[("S", 2, 0), ("S", 17, 1), ("N", 6, 2)], stairs=[11]), 26, 23
 
 
 ROAD_TILE = 3221  # 버들항 자갈길(시트 앞쪽 원본 칸) — 조립 그림에서 성문 통로 밑 땅으로만 쓴다
@@ -212,10 +214,10 @@ RETIRED = {f"{e}_{k}_{c}" for e in ("vw", "ve") for k in ("endS", "endN") for c 
 
 
 def ring_ground():
-    """조립 예 둘레의 길: 서쪽 쪽문에서 동서 길(10·11행) · 남문 통로 두 열 · 닫힌 북문 안쪽 길 · 북문 밖 한 칸.
+    """조립 예 둘레의 길: 서쪽 쪽문에서 동서 길(10·11행) · 남문 통로 두 열 · 닫힌 북문 안쪽 길(닫힌 문 밖에는 길을 내지 않는다).
     길은 그림 테두리에 닿지 않는다(테두리 화소는 윤곽이 아니다 — 관문 화풍 사실이 길 자갈을 윤곽으로 셌다)."""
     return ([(x, y) for x in range(1, 17) for y in (10, 11)] + [(x, y) for x in (10, 11) for y in range(10, 22)]
-            + [(x, y) for x in (15, 16) for y in (1,)])
+            )
 
 
 def sheet_tile(n):
@@ -252,7 +254,7 @@ def render_plan(up, lo, W, H, bg=None, ground=(), biome=None):
 
 def parts_plan():
     """작은 둘레 표본(16×23): 모서리 넷·동쪽 쪽문 터널(덮개돌 + 터널 입 그늘)·계단·망루 하나(윗면 변형 1). 반환 (위층, 아래층, 가로, 세로)."""
-    up, lo = plan_ring(2, 3, 13, 14, vgaps=[("E", 10, 2)], towers=[("N", 4, 1)], stairs=[8])
+    up, lo = plan_ring(2, 3, 13, 14, vgaps=[("E", 10, 2)], towers=[("N", 4, 1), ("N", 11, 0)], stairs=[7])
     return up, lo, 16, 23
 
 
@@ -476,6 +478,11 @@ def main():
             r = OG.refusal(im, kind=GATE_KIND, context="bundle")
             if r: why[name] = r
             else: covered |= keys
+        # 화소가 똑같은 조각(모서리 망루 바깥 열 = 통행만 다른 같은 그림)은 그 그림의 영수증이 덮는다
+        same = {}
+        for p in PIECES: same.setdefault(p["img"].tobytes(), set()).add(p["name"])
+        for names in same.values():
+            if names & covered: covered |= names
         missing = sorted(set(INDEX) - covered - RETIRED)
         if missing:
             print("3/4 관문 미통과 — 굽지 않는다:", file=sys.stderr)

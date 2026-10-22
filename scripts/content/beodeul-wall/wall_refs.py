@@ -110,7 +110,7 @@ def main():
     assert not defects, defects
     example = dict(tilesetId="beodeul_city", width=W, height=H, tileSize=16, lowerTiles=lower, lowerOverlayTiles=l2, upperTiles=l3,
                    gates=[dict(side="S", x=10, open=True, passage=[[x, y] for y in range(13, 21) for x in (10, 11)]), dict(side="N", x=15, open=False)],
-                   postern=dict(side="W", cols=[2, 3], rows=[10, 11]), towers=[[4, 12], [17, 12], [6, 1]], stairs=[dict(head=[13, 4], cells=[11, 5, 3, 4], foot=[11, 9])])
+                   postern=dict(side="W", cols=[2, 3], rows=[10, 11]), towers=[[2, 12], [17, 12], [6, 1]], stairs=[dict(head=[13, 4], cells=[11, 5, 3, 4], foot=[11, 9])])
     (DATA / "example.json").write_text(json.dumps(example) + "\n")
     pu, pl, PW, PH = B.parts_plan()
     assert not check(pu, pl, PW, PH), check(pu, pl, PW, PH)
@@ -195,7 +195,7 @@ def main():
 4. 세로 성벽: x0·x0+1 열 y0+2~y1−1 은 `vw?_0`·`vw?_1`, x1−1·x1 열은 `ve?_0`·`ve?_1`. 앞면 없음(3/4 에서 위만 보인다).
 5. 길이 가로 성벽을 지나는 곳 = 성문루 4×8: 왼쪽 위 = (gx−1, yw−1), yw = 그 성벽 윗면 첫 줄. 통로 = gx·gx+1 두 열(위 네 줄 ★, 아래 네 줄 2층 터널). 성문루 오른쪽 성벽 칸은 그늘 판(`hs_sh_*` + `f_*_shL`). 열린 성문루 뒤(yw−2 줄) 길 두 칸에 2층 `mo_n`.
 6. 길이 세로 성벽을 지나는 곳 = 쪽문 터널(길 줄마다): 성벽 두 열에 `*_pt_0`·`*_pt_1`(★, 성벽 윗면이 끊기지 않는다), 성벽 왼쪽 땅 칸 2층 `mo_w`, 오른쪽 땅 칸 2층 `mo_e`. 1층은 길.
-7. 망루 3×9: 왼쪽 위 = (tx, yw−2). 성문루와 한 칸 이상 떨어뜨린다. 모서리에는 두지 않는다. 성벽 통로가 망루 cy 2·3 줄(★) 밑으로 지나간다. 남쪽 망루 윗면 첫 줄(y1−2)은 마을 안 땅 칸이다 — 집·나무를 붙이지 않는다.
+7. 망루 3×9: 왼쪽 위 = (tx, yw−2). 성문루와 한 칸 이상 떨어뜨린다. 모서리 망루는 tx = x0(서쪽) 또는 x1−2(동쪽) — 모서리 2×2·세로 성벽 끝·앞면 끝을 덮는다. 성벽 통로가 망루 cy 2·3 줄(★) 밑으로 지나간다. 남쪽 망루 윗면 첫 줄(y1−2)은 마을 안 땅 칸이다 — 집·나무를 붙이지 않는다.
 8. 계단은 북쪽 성벽에만, 3×4 옆 계단(왼쪽 아래 땅에서 오른쪽 위 통로로 오른다): (sx..sx+2, y0+2..y0+5) = `stair_0_u`…`stair_2_l`(줄 u·m·n·l), 머리 (sx+2, y0+1) = `hn_stair`. 발치 땅 칸(sx, y0+6)은 걸을 수 있어야 한다.
 9. 땅 그림자(2층): 북쪽 앞면 밑 줄 y0+6 · 남쪽 앞면 밑 줄 y1+6 에 `sh_s`, 서쪽 성벽 오른쪽 열 x0+2 와 동쪽 성벽 오른쪽 열 x1+1 에 `sh_e`, 겹치는 칸은 `sh_se`. 이미 2·3층에 무엇이 있는 칸에는 두지 않는다.
 10. 성벽 칸의 2·4층(풀꽃·그림자 덧그림)은 비운다. 성벽 안팎 한 칸에는 나무·집을 붙이지 않는다(성벽 마을 도구는 띠를 비워 둔다).
@@ -204,7 +204,7 @@ def main():
 없는 것: 강·운하가 성벽을 지나는 수문, 성벽 위 경사로, 비스듬한 성벽, 오목 모서리·갈림목(2판의 cc_*·t_* 는 3판에 없다), 성벽 위 사람(병사는 Actor1 캐릭터 이벤트로).
 
 ## 3. 완전 조립 예제
-- **둘레 {W}×{H}**(키트 `bd-wall-ring-sample`과 같다): 남쪽 열린 성문루(통로 x 10·11), 북쪽 닫힌 성문루(x 15·16, 윗면 변형 1), 망루 셋(남 4·17, 북 6 — 윗면 변형 0·1·2), 북쪽 계단 x 11, 서쪽 쪽문 터널(줄 10·11). 전체 1·2·3층 배열은 문서 「성벽 조립 예제 배열」과 tiledata/beodeul-town-wall/example.json, 원본 그림 `/assets/beodeul-town-wall/ring.png`.
+- **둘레 {W}×{H}**(키트 `bd-wall-ring-sample`과 같다): 남쪽 열린 성문루(통로 x 10·11), 북쪽 닫힌 성문루(x 15·16, 윗면 변형 1), 망루 셋(남서 모서리 2·남 17·북 6 — 윗면 변형 0·1·2), 북쪽 계단 x 11, 서쪽 쪽문 터널(줄 10·11). 전체 1·2·3층 배열은 문서 「성벽 조립 예제 배열」과 tiledata/beodeul-town-wall/example.json, 원본 그림 `/assets/beodeul-town-wall/ring.png`.
 - **작은 둘레**(모서리 넷·동쪽 쪽문 터널·계단·망루): `/assets/beodeul-town-wall/parts.png`.
 - 키트: {" · ".join(f"`{k['id']}` {k['width']}×{k['height']}" for k in B.kits())}.
 
@@ -214,7 +214,7 @@ scripts/content/beodeul-wall/wall_refs.py 의 `check`: wrong-layer · face-missi
 """
     example_md = f"""# 성벽 조립 예제 배열 — 둘레 {W}×{H} (beodeul_city)
 
-입력: 통로 사각형 x0=2 y0=3 x1=23 y1=14 · 성문 S x=10(열림) · N x=15(닫힘) · 쪽문 W 줄 10·11 · 망루 S 4·S 17·N 6 · 계단 11.
+입력: 통로 사각형 x0=2 y0=3 x1=23 y1=14 · 성문 S x=10(열림) · N x=15(닫힘) · 쪽문 W 줄 10·11 · 망루 S 2(모서리)·S 17·N 6 · 계단 11.
 -1 은 그 층이 비었다는 뜻이다. lowerTiles = 1층(풀 737·길 {B.ROAD_TILE}), lowerOverlayTiles = 2층(성문 터널·그림자), upperTiles = 3층(성벽).
 
 ```json

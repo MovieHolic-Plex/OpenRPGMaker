@@ -24,7 +24,7 @@ export const BEODEUL_TOWN_WALL_FIRST_TILE = (pieces as { base: number }).base;
 
 export interface WallGate { side: "N" | "S"; x: number; closed?: boolean }
 export interface WallGap { side: "W" | "E"; y: number; rows: number }
-export interface WallTower { side: "N" | "S"; x: number }
+export interface WallTower { side: "N" | "S"; x: number; corner?: boolean }
 export type TownWallBiome = "snow" | "desert" | null;
 export interface TownWallPlan {
   x0: number; y0: number; x1: number; y1: number;
@@ -45,7 +45,11 @@ const FACE_ROWS = ["u", "m", "n", "l"] as const;
 const NF = FACE_ROWS.length, GH = 2 + NF + 2, FB = 2 + NF;
 /** 망루 높이(9): 플랫폼이 두 줄 솟는다. 윗면 소품 변형 수(망루 3 · 성문루 2) — bake_wall.py 와 같다. */
 const GT = GH + 1, TOWER_VARS = 3, GATE_VARS = 2;
-const towerName = (v: number, cx: number, cy: number) => `tower${v === 0 || cy >= 3 ? "" : v}_${cx}_${cy}`;
+/** corner = "w"(서쪽 모서리 망루) · "e"(동쪽): 바깥 열의 통로 두 줄(cy 2·3)은 바깥쪽 걸음을 막은 조각 — 안 막으면 성 밖 땅에서 망루 밑 통로로 들어온다. */
+const towerName = (v: number, cx: number, cy: number, corner = "") => {
+  const c = corner && (cy === 2 || cy === 3) && cx === (corner === "w" ? 0 : 2) ? corner : "";
+  return `tower${v === 0 || cy >= 3 ? "" : v}${c}_${cx}_${cy}`;
+};
 const gateName = (v: number, cx: number, cy: number, shut = false) => {
   if (shut && cy >= 3 && (cx === 1 || cx === 2)) return `gatec_${cx}_${cy}`;
   const own = cy < 3 || ((cy === 3 || cy === 4) && (cx === 0 || cx === 3)); // 변형 1 은 윗면 + 방패 건 앞면 기둥
@@ -108,7 +112,8 @@ export function planTownWallRing(p: TownWallPlan): { up: Cells; lo: Cells } {
   }
   for (const [ti, t] of p.towers.entries()) {
     const yw = t.side === "S" ? y1 : y0, v = (t0 + ti) % TOWER_VARS;
-    for (let cx = 0; cx < 3; cx += 1) for (let cy = 0; cy < GT; cy += 1) up.set(key(t.x + cx, yw - 2 + cy), towerName(v, cx, cy));
+    const corner = t.x === x0 ? "w" : t.x === x1 - 2 ? "e" : "";
+    for (let cx = 0; cx < 3; cx += 1) for (let cy = 0; cy < GT; cy += 1) up.set(key(t.x + cx, yw - 2 + cy), towerName(v, cx, cy, corner));
     shadeRight(t.x + 3, yw);
   }
   for (const g of p.gaps) {
@@ -189,6 +194,9 @@ export function townWallLayout(W: number, H: number, seed = 0): { x0: number; y0
   const towers: WallTower[] = [];
   for (const [side, opts, salt] of [["S", SOUTH, 1], ["N", NORTH, 2]] as const)
     for (const f of opts[hsh(seed & 0xffff, salt, 9) % opts.length]!) towers.push({ side, x: Math.round(W * f) - 1 + j(towers.length) });
+  // 모서리 망루(seed 로 없음 · 남쪽 둘 · 넷 · 북쪽 둘): 모서리 2×2 와 이어진 앞면·세로 성벽 끝을 망루 3×9 가 덮는다(r9 「모서리에 망루가 없다」)
+  const corners = [[], ["S"], ["S", "N"], ["N"]][hsh(seed & 0xffff, 3, 9) % 4] as ("S" | "N")[];
+  for (const side of corners) towers.push({ side, x: x0, corner: true }, { side, x: x1 - 2, corner: true });
   // 남쪽 망루 윗면은 성벽 통로 위로 두 줄 솟는다(y1−2) — 그 세 칸에도 집·나무를 앉히지 않는다
   const southTop = (x: number, y: number) => y === y1 - 2 && towers.some((t) => t.side === "S" && x >= t.x && x <= t.x + 2);
   return { x0, y0, x1, y1, towers, inBand: (x, y) => x <= x0 + 1 || x >= x1 - 1 || y <= y0 + FB || y >= y1 - 1 || southTop(x, y) };
