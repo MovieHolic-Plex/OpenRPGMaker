@@ -178,20 +178,34 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
   const yLo = MARGIN + 6, yHi = entY - 7;
   // 덩이로 모은다: 새 방은 이미 놓은 방(첫 방은 입구 굴) 곁에 2~5칸 틈을 두고 붙는다 — 상자 안 아무 데나 흩으면 방 사이가 검은 허공이었다.
   const seedNode = { cx: entX + 6, cy: entY - 4, rx: 4, ry: 3 };
-  for (let attempt = 0; attempt < 1500 && chambers.length < wantN; attempt += 1) {
+  // 방마다 후보 자리 여럿 중 덩이 바깥 상자가 가장 덜 커지는 자리를 고른다(방+통로 문법의 점수와 같은 생각) — 한 자리만 뽑으면 덩이가 사방으로 뻗어
+  // 한 화면이 90% 허공인 구석이 생겼다(2026-10-23 dg2-r1 고블린 굴).
+  const box = () => {
+    let x0 = entX, x1 = entX + ENT_W, y0 = entY, y1 = entY + ENT_H;
+    for (const c of chambers) { x0 = Math.min(x0, c.cx - c.rx); x1 = Math.max(x1, c.cx + c.rx); y0 = Math.min(y0, c.cy - c.ry - 4); y1 = Math.max(y1, c.cy + c.ry); }
+    return { x0, x1, y0, y1 };
+  };
+  for (let round = 0; round < 40 && chambers.length < wantN; round += 1) {
     const rx = 5 + Math.floor(random() * 4);
     const ry = Math.max(4, Math.round(rx * (0.62 + random() * 0.22)));
-    const pool = chambers.length ? chambers : [seedNode];
-    const a = pool[Math.floor(random() * pool.length)]!;
-    const th = chambers.length ? random() * Math.PI * 2 : -Math.PI * (0.2 + random() * 0.6);
-    const gap = 1 + random() * 2.5;
-    const cx = Math.round(a.cx + Math.cos(th) * (a.rx + rx + gap));
-    const cy = Math.round(a.cy + Math.sin(th) * (a.ry + ry + gap + 1));
-    if (cx - rx < MARGIN + 3 || cx + rx > W - MARGIN - 4 || cy - ry < yLo) continue;
-    if (cy + ry > yHi + 2) continue;
-    if (chambers.some((c) => ((cx - c.cx) / (rx + c.rx + 1.5)) ** 2 + ((cy - c.cy) / (ry + c.ry + 2.5)) ** 2 < 1)) continue;
-    if (((cx - (entX + 6)) / (rx + 11)) ** 2 + ((cy - (entY + 2)) / (ry + 12)) ** 2 < 1) continue;
-    chambers.push({ cx, cy, rx, ry, kind: "cavern", index: chambers.length + 1 });
+    let best: { cx: number; cy: number; score: number } | null = null;
+    for (let attempt = 0; attempt < 160; attempt += 1) {
+      const pool = chambers.length ? chambers : [seedNode];
+      const a = pool[Math.floor(random() * pool.length)]!;
+      const th = chambers.length ? random() * Math.PI * 2 : -Math.PI * (0.2 + random() * 0.6);
+      const gap = 1 + random() * 2.5;
+      const cx = Math.round(a.cx + Math.cos(th) * (a.rx + rx + gap));
+      const cy = Math.round(a.cy + Math.sin(th) * (a.ry + ry + gap + 1));
+      if (cx - rx < MARGIN + 3 || cx + rx > W - MARGIN - 4 || cy - ry < yLo) continue;
+      if (cy + ry > yHi + 2) continue;
+      if (chambers.some((c) => ((cx - c.cx) / (rx + c.rx + 1.5)) ** 2 + ((cy - c.cy) / (ry + c.ry + 2.5)) ** 2 < 1)) continue;
+      if (((cx - (entX + 6)) / (rx + 9)) ** 2 + ((cy - (entY + 2)) / (ry + 8)) ** 2 < 1) continue;
+      const b = box();
+      const area = (Math.max(b.x1, cx + rx) - Math.min(b.x0, cx - rx)) * (Math.max(b.y1, cy + ry) - Math.min(b.y0, cy - ry - 4));
+      const score = area + random() * 30;
+      if (!best || score < best.score) best = { cx, cy, score };
+    }
+    if (best) chambers.push({ cx: best.cx, cy: best.cy, rx, ry, kind: "cavern", index: chambers.length + 1 });
   }
   if (chambers.length < 2) throw new DungeonComposeError("동굴 방을 놓을 자리가 없다 — 맵 크기를 키워라.", "layout-failed");
   // ---- 연결: 입구 → 가장 가까운 방 → 최소 신장 트리(+ 고리) ----

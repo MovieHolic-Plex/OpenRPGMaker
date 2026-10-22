@@ -322,11 +322,11 @@ const FLOOR_NAME = (base: string, dir: "down" | "up", k: number, n: number): str
  * 2026-10-23(assistant-dungeons-2): 옛 층은 홀 양옆으로 곁방을 단 43×32 판이라 「탑이 아니라 넓은 지하 감옥」으로 읽혔다(VQA). 층마다 크기·계단 쪽을 바꾼다.
  */
 function towerRooms(top: boolean, k: number): DungeonRoomInput[] {
-  const side = k % 2 === 0 ? "W" as const : "E" as const;
-  const hallW = 15 + (k % 2) * 2, hallH = 11 + ((k + 1) % 2);
+  // 2026-10-23 r1: 둥근 방이 15×11 이라 가운데가 맨바닥이었다(조수 비평·VQA) — 한 단 줄인다. 공간이 남으면 방이 너무 큰 것이다.
+  const hallW = 13 + (k % 2) * 2, hallH = 9 + ((k + 1) % 2);
   return top
-    ? [{ id: "landing", kind: "entrance", w: 11, h: 6, shape: "round" }, { id: "throne", kind: "boss", w: 15, h: 11, from: "landing", dir: "N", shift: 0, len: 4, shape: "round" }, { id: "vault", kind: "vault", w: 7, h: 6, from: "throne", dir: side, len: 2 }]
-    : [k === 1 ? { id: "gate", kind: "entrance", w: 15, h: 7, shape: "apse" } : { id: "landing", kind: "entrance", w: 11, h: 7, shape: "round" }, { id: "hall", kind: "hall", w: hallW, h: hallH, from: k === 1 ? "gate" : "landing", dir: "N", shift: 0, len: 4, shape: "round" }];
+    ? [{ id: "landing", kind: "entrance", w: 9, h: 6, shape: "round" }, { id: "throne", kind: "boss", w: 13, h: 10, from: "landing", dir: "N", shift: 0, len: 4, shape: "round" }, { id: "vault", kind: "vault", w: 7, h: 5, from: "throne", dir: "N", shift: 0, len: 4 }]
+    : [k === 1 ? { id: "gate", kind: "entrance", w: 13, h: 6, shape: "apse" } : { id: "landing", kind: "entrance", w: 9, h: 6, shape: "round" }, { id: "hall", kind: "hall", w: hallW, h: hallH, from: k === 1 ? "gate" : "landing", dir: "N", shift: 0, len: 4, shape: "round" }];
 }
 
 /** 채우기 적 그룹: 준 것은 그대로, 안 준 역할은 던전 주제(dungeonThemeTroops.ts)의 그림으로 만든다 — 세기는 원래 고르던 그룹에 맞춘다. */
