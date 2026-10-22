@@ -75,7 +75,7 @@
 
 /* shell/figma-editor/03-layout-left-palette.css:213-217 */
 .structure-stamp-panel .tile-brush-label,
-  .tile-brush-assist,
+  .structure-stamp-panel .tile-brush-assist,
   .quick-tile-picker {
     display: none;
   }
