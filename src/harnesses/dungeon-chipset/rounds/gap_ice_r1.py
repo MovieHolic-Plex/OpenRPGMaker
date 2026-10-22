@@ -295,7 +295,7 @@ WOB_TOP2 = check_wob({
 L1 = legend(d=('ice', 0), m=('ice', 1), b=('ice', 2), c=('ice', 3), W=('ice', 4),
             S=('rim', 6), I=('iron', 5), H=('iron', 4), h=('iron', 3), j=('iron', 2), i=('iron', 1),
             e=('stone', 1), g=('stone', 2), G=('stone', 4), Z=('stone', 5),
-            k=('iron', 5), n=('stone', 5), p=('rim', 6), a=('iron', 4),
+            k=('iron', 5), n=('stone', 5), p=('rim', 6), a=('iron', 4), w=('water', 3),
             **{str(i): ('vrock', i) for i in range(1, 5)})
 
 # ---- 얼음굴 바닥 A1 — 다진 눈 회청색: k(iron 5) 바탕에 아주 가까운 n(stone 5) 잔 얼룩, 밝은 눈 p 드문드문.
@@ -324,33 +324,46 @@ G1_VARS = [
     [(['a'], 12, 11), (['pn'], 6, 5)],
 ]
 
-# ---- 바위 윗면 A1 — 바닥(밝은 눈 회색)보다 어둡고 찬 바위 윗면: H(iron 4) 바탕에 느슨한 h(iron 3) 무리(낮은 주파수 명암),
-#      칸마다 2~5px 서리 앉은 돌 덩이 네 개(왼·위 S·I, 밑 h·j 그늘) — 크기·자리 제각각, 한 점에 눈이 쏠리지 않게.
-#      덩이 모양은 틀이 정한다: 북·서 가장자리 = 흰 서리 모자 R(W·S), 동 가장자리 = 그늘 D(j·h, 채도 낮음). 본몸통(가장자리 칸에 쓰임)은 얼룩뿐이고,
-#      굽은 틈 j(위 = 푸른 그늘 m, 아래 = 서리 턱 W)는 안쪽 칸 변형에만 — 칸 가장자리에 닿지 않아 16px 도장이 생기지 않는다.
-KINDS_T1 = {'M': ('h', None, None)}   # 바탕 H 보다 한 단 어두운 회청 h, 빛·테두리 없음
-TOP1_BASE = sq([
-    'HHHHHhHHHHHHHHHh',
-    'HHSIHHHHhhHHHHHH',
-    'HIIIhHHHHhhHHHHH',
-    'HHhjHHHhHHHHHSIH',
-    'hHHHHHHHHHHhIIIh',
-    'hhHHHhHHHHHHhhjH',
-    'HhHHHHHHhHHHHHHH',
-    'HHHHhHHHHHhhHHHH',
-    'HHHHHHSIHHHhHHHh',
-    'HhHHHIIIhHHHhHHH',
-    'HHHHHHhhjHHHHHIH',
-    'HHHhHHHHHHHHhHHH',
-    'hhHHHHHhHHSIHHHH',
-    'HhHHHHHhhIIhHHhH',
-    'HHhHHHHHHHhjHHHH',
-    'HHHHHHhHHHHHHHIH',
-], 16, 16, 'TOP1')
-TOP1_PATHS = [[([(4, 5), (6, 6), (7, 9), (9, 10)], 'M')]]
-TOP1_SPECKS = [[(['hh', '.h'], 5, 3), (['I'], 11, 11)], [(['.h', 'hh'], 10, 7), (['j'], 3, 12)], [(['I.', 'hI'], 7, 12)]]
-TOP1_BODIES = ([TOP1_BASE] + [crack_body(TOP1_BASE, p, KINDS_T1, (), set()) for p in TOP1_PATHS]
-               + [stamp(TOP1_BASE, v, inner=True) for v in TOP1_SPECKS])
+# ---- 바위 윗면 A1(r12) — 조용한 얼음 낀 바위 바탕(H iron 4 + 손으로 그린 3~5px 푸른 서리 얼룩 w water 3 · 드문 h 점)
+#      위에 모난 돌 다섯 꼴(쐐기·기운 판·덩이·긴 조각·큰 덩이)을 변형마다 1~3개, 고르지 않은 자리에. 돌마다 북서 1~2px 흰·옅은 청록
+#      서리 모자(W·c) → 빛 I → 몸 G → 푸른 회색 밑 그늘 h → j → i(일곱 단). 본몸통(가장자리 칸이 모두 씀)은 작은 쐐기 하나뿐.
+A1_BLOTCH = [
+    '....###.....+...', '...#####........', '....###.........', '.+..##.......##.',
+    '............####', '#..........####.', '##.....+.....#..', '#...............',
+    '......+.........', '.........###....', '..##....######..', '.####....####...',
+    '..###.....##..+.', '...#............', '................', '.+.....##.......']
+A1_GRAIN = [
+    '..-.......^.....', '.........-......', '-...........-...', '......^.........',
+    '...........-....', '.......-.......^', '....^...........', '-...............',
+    '..........-.....', '....-.......^...', '..........-.....', '.-..............',
+    '.......^.....-..', '..........-.....', '.-..............', '.........^....-.']
+STONES_A1 = (['WH..', 'HMMS', '.SSD'],
+             ['.WVH..', 'VHMMMB', '.HMMBS', '..BSSD', '....D.'],
+             ['..WV...', '.VHHM..', 'VHMMMB.', 'HMMMMBS', '.MMBBSS', '..BSSD.'],
+             ['WVH.....', '.HMMMB..', '..HMMMBS', '...BBSSD'],
+             ['...WVV....', '..VHHMMB..', '.VHMMMMMBS', 'VHMMMMMBBS', '.HMMMBBSSD', '..BBSSSD..', '....DD....'],
+             ['HM.', 'MMS', '.S.'])   # 5 = 본몸통의 조용한 작은 쐐기(서리 모자 없음)
+STONE_A1 = {'W': 'W', 'V': 'c', 'H': 'I', 'M': 'G', 'B': 'h', 'S': 'j', 'D': 'i'}
+AT_A1 = [((5, 9, 9),),   # 본몸통
+         ((4, 1, 2),), ((1, 2, 7),), ((3, 2, 9), (0, 11, 2)),
+         ((4, 5, 6),), ((2, 1, 2),), ((2, 8, 7), (0, 2, 11))]   # 변형마다 큰 돌 하나(+ 가끔 작은 쐐기) — 고른 자갈 깔개가 되지 않게
+
+
+def stone_top(blotch, grain, tones, stones, smap, at):
+    """바탕 얼룩('.' X · '#' Y · '+' Z) + 잔결('-' 한 단 어둡게 · '^' 한 단 밝게) + 손으로 고른 자리의 모난 돌(둘레 1px 안)."""
+    X, Y, Z, G1, G2 = tones
+    rows = [r.replace('.', X).replace('#', Y).replace('+', Z) for r in blotch]
+    g = [list(r) for r in rows]
+    for y, r in enumerate(grain):
+        for x, ch in enumerate(r):
+            if ch != '.' and g[y][x] == X:
+                g[y][x] = G1 if ch == '-' else G2
+    rows = [''.join(r) for r in g]
+    spr = [([''.join(smap.get(c, c) for c in r) for r in stones[k]], x, y) for k, x, y in at]
+    return sq(stamp(rows, spr, inner=True), 16, 16, 'stone_top')
+
+
+TOP1_BODIES = [stone_top(A1_BLOTCH, A1_GRAIN, ('H', 'w', 'h', 'h', 'w'), STONES_A1, STONE_A1, at) for at in AT_A1]
 R1_TEX = ['WSWWSWWSWWWSWSWW', 'SWWSWWWSWSWWSWWS', 'WWSWSWWWSWWSWWWS', 'SWWWSWSWWWSWWSWW'] * 4
 D1R_TEX = ['jhjjhjjhjjjhjhjj', 'hjjhjjjhjhjjhjjh', 'jjhjhjjjhjjhjjjh', 'jhjjjhjhjjjhjjhj'] * 4
 
@@ -396,15 +409,40 @@ def face_strata(rows, polys, ch, lit):
     return [''.join(r) for r in g]
 
 
-# ---- 앞면 A1 — 조용한 16px 주기(dot.Face 는 가운데 한 장만 되풀이한다). 두 단 전체에 이어지는 낙차:
-#      서리 턱(0~1행 S·I) → H/4 → 4/h → 3/h → j/3 → 2/j → 2/i → i/1 밑동. 줄마다 손으로 찍은 섞임 자리로 두 톤을 섞어 5×5 평면이 없다.
-#      끊긴 바위 턱 여섯 토막(완만히 기움, 칸 이음을 건넘): 윗줄 한 화소는 빛, 밑 한 화소는 그늘. 가운데 고드름 없음(양 끝 마구리에만).
-FACE1_BASE = sq(face_ledges(face_ramp(
-    ['SSSWSSSSSSSSISSS', 'IISIIHIIIISIIHII'],
-    [(2, 4, '4', 'H'), (5, 9, 'h', '4'), (10, 14, '3', 'h'), (15, 19, 'j', '3'), (20, 24, '2', 'j'), (25, 28, '2', 'i'),
-     (29, 31, 'i', '1')], FACE_MASK),
-    [([(1, 7), (6, 8), (9, 8)], 'H', '3'), ([(11, 5), (16, 6), (19, 6)], 'H', '3'), ([(5, 12), (10, 13), (13, 13)], '4', 'j'),
-     ([(14, 17), (20, 18), (23, 18)], 'h', '2'), ([(2, 21), (7, 22)], '3', 'i'), ([(9, 25), (14, 26)], 'j', '1')]),
+DARKER = {'F': 'G', 'G': 'h', 'H': 'h', '4': 'h', 'h': '3', '3': 'j', 'j': '2', '2': 'i', 'i': 'i'}
+LIGHTER = {'G': 'F', 'h': 'H', '4': 'H', '3': 'h', 'j': '3', '2': 'j', 'i': '2'}
+
+
+def face_facets(rows, beds, joints, lit, lit_alt, crease='i', lighter=None):
+    """C2 식 물결 지층을 2~3px 면으로: (y0, 열마다 높이 '0'~'2') — 위 층 밑 그늘(한 단 어둡게) · 주름 · 아래 층 빛 턱(lit, 4열마다 lit_alt) ·
+    그 밑 한 단 밝게. 가로 16 주기로 감겨 칸 이음을 건넌다. joints = [(x, y0, 길이)] 짧은 세로 금(왼 그늘 · 금 · 오른 빛)."""
+    lighter = lighter or LIGHTER
+    g = [list(r) for r in rows]
+    for y0, offs in beds:
+        for x, o in enumerate(offs):
+            if o == '.':   # 층이 거기서 끝난다
+                continue
+            y = y0 + int(o)
+            g[y - 2][x] = DARKER.get(g[y - 2][x], g[y - 2][x])
+            g[y - 1][x] = crease
+            g[y][x] = lit_alt if x % 5 == 2 else lit
+            g[y + 1][x] = lighter.get(g[y + 1][x], g[y + 1][x])
+    for x, y0, n in joints:
+        for y in range(y0, y0 + n):
+            g[y][x - 1] = DARKER.get(g[y][x - 1], g[y][x - 1])
+            g[y][x] = crease
+            g[y][x + 1] = lighter.get(g[y][x + 1], g[y][x + 1])
+    return [''.join(r) for r in g]
+
+
+# ---- 앞면 A1(r12) — 위 서리 줄(0행 W·c 섞임 = 얼어붙은 긴 벽) → 서리 턱 I·H → 낙차 H/h → 3/h → j/3 → 2/j → i/2.
+#      C2 식 길고 완만한 물결 지층 넷(칸 이음을 감아 건넘): 위 층 밑 그늘 · 주름 i · 아래 층 빛 턱(푸른 얼음빛 w, 4열마다 H) · 한 단 밝게.
+#      16px 마다 짧은 세로 금 둘씩(층 사이). 고드름은 벽 줄 양 끝 마구리에만.
+FACE1_BASE = sq(face_facets(face_ramp(
+    ['cWccWcccWccWcWcc', 'IIHIIIHIIIIHIIHI'],
+    [(2, 7, 'H', 'h'), (8, 13, 'h', '3'), (14, 19, '3', 'j'), (20, 25, 'j', '2'), (26, 31, '2', 'i')], FACE_MASK),
+    [(8, '0001111122211100'), (17, '111000.....01111'), (24, '....1111000.....')],
+    [(12, 10, 4), (5, 19, 3)], 'H', 'w'),
     16, 32, 'FACE1b')
 FACE1_MID = FACE1_BASE
 FACE1_L = [(col('S' + '3' * 29 + '21'), 0, 0),
@@ -444,33 +482,22 @@ G2_VARS = [
 
 # ---- 얼음 A2 「흰 서리 더미 밑 맑고 짙은 얼음」(버들항 설원 호수 말씨) — A1 의 금 그물과 다른 생각.
 #      바탕 = 맑은 푸른 얼음 m(ice 1) + 조금 짙은 물길 w(water 3) 몇 점. 그 위에 b 를 성기게 흩뿌린 넓고 흐린 서리 더미 둘이
-#      칸의 약 30% 를 덮으며 칸 이음(왼·오른, 위·아래)을 건너 이어진다(본몸통엔 c·W 없음 — 대비가 낮아 되풀이가 보이지 않게).
+#      칸의 약 30% 를 덮으며 칸 이음(왼·오른, 위·아래)을 건너 이어진다(본몸통엔 W 없음 — 더미 속은 b·c 를 성기게 엇갈려 찍어 덩이 윤곽이 생기지 않는다).
+#      짙은 물길 w 는 고르지 않은 짧은 토막으로 흐른다(얼음 면 4단: w m b c).
 #      변형마다 더미 속 다른 자리에 c·W 로 짙어진 서리 덩이가 생긴다.
 #      금은 거의 없다 — 변형 두 개에만 칸 안의 가늘고 옅은 금 하나(d, 변에 닿지 않음). 본몸통(가장자리 칸)은 금 없는 가장 조용한 것.
 KINDS2 = {'M': ('d', None, None)}
-ICE2_BASE = sq([
-    'mbmbmbbbmbmmmmmm',
-    'bmbbbbbmbmbmmwmm',
-    'mbmbbbbbmbmmmmmm',
-    'bmbmbbmmbmmmmmmb',
-    'mbmmbmbmmmmmmmbm',
-    'mmmmmmmmmwmmmbmm',
-    'mwmmmmmmmmmmbmbm',
-    'bmmmmmmmmmmmmbbb',
-    'mmmmmmmmmmbmbbbb',
-    'bbmmmmmwmmmmmbbb',
-    'bbbmmmmmmmmmbmbb',
-    'mbmbmmmmmmmmmbmb',
-    'mmmmmmmmmmmmmmmm',
-    'mmmmmmmwmmmmmmmm',
-    'mmmmmmmmmmmmbmmm',
-    'mmbmbmmbmbmmmmmm',
-], 16, 16, 'ICE2')
-ICE2_DRIFTS = [
-    [(['.bcc.', 'bcWcb', '..bb.'], 2, 1), (['bb', '.b'], 9, 12)],
-    [(['bccb', '.cWcb', '..bb.'], 10, 7)],
-    [(['cb', 'Wc', 'b.'], 13, 8)],
-    [(['.bc', 'bcW', '.cb'], 4, 2), (['b.b', '.bb'], 6, 12)],
+ICE2_BASE = sq([   # 본몸통(가장자리 칸이 모두 씀) = 조용하되 평면이 아니게: 맑은 얼음 m 에 넓고 흐린 어두운 물길 w(가장자리는 m 과 엇갈림,
+    #   속에 한 단 더 깊은 d 두세 화소), 아주 옅은 b 서리 자국 몇 — 큰 서리 더미는 안쪽 칸 변형에만(본몸통에 두면 바둑판으로 되풀이된다)
+    'mmmwmmmmmmmmwwmm', 'mmwmwmmmmmmwwdwm', 'mwmwwmmmmbbmwwmm', 'mwwdwmmmbmmmmwmm',
+    'mmwwmwmmmmmmmmmm', 'mmmwmmmmmwmwmmmm', 'mmmmmmmmwwwwmmmb', 'bmmmmmmmmwdwwmmm',
+    'mmmmmwmmmmwmwmmm', 'mmmmwwwmmmmmmmmm', 'mmmwwdwwmmmmmmbm', 'mbmmwwmwmmmmmbbm',
+    'bmbmmwmmmmmwmmmm', 'mmmmmmmmmmwwwmmm', 'mmmwmmmmmwwdwmmm', 'mmwmwmmmmmwwmmwm'], 16, 16, 'ICE2')
+ICE2_DRIFTS = [   # 변형마다 다른 큰 서리 더미(칸의 30~50%): 속 c·W, 가장자리는 b 를 성기게 엇갈려 찍어 흐리게 번진다
+    [(['......b.b...', '...b.bcbbb..', '..bbccccWcb.', '.bccWWccccb.', 'bcbccccbcb..', '.b.bcbbb.b..', '...b.b......'], 1, 3)],
+    [(['..b.b........', '.bcbcb...b.b.', 'bccWccb.bcbcb', '.bccccbbccWcb', '..bbcbbcccccb', '...b.bbccbcb.', '.......b.b.b.'], 1, 5)],
+    [(['...b.b.b...', '..bcbcbcb..', '.bccccWcbb.', 'bccWWcccccb', 'bcccccccbcb', '.bccbcccbb.', '..bbbcbb.b.', '...b.b.....'], 3, 2)],
+    [(['...b.b.b.b....', '.bbcbcccbcbb..', 'bcccWWcccccbb.', '.b.bbcbbcbb.b.', '.....b...b....'], 1, 8)],
 ]
 ICE2_CRACKS = [None, None, [([(3, 11), (6, 10), (9, 12), (12, 11)], 'M')], [([(9, 3), (11, 6), (10, 9)], 'M')]]
 ICE2_BODIES = [ICE2_BASE] + [crack_body(stamp(ICE2_BASE, d, inner=True), c, KINDS2, (), set()) if c else stamp(ICE2_BASE, d, inner=True)
@@ -480,44 +507,38 @@ ICE2_BODIES = [ICE2_BASE] + [crack_body(stamp(ICE2_BASE, d, inner=True), c, KIND
 #      돌 덩이 네 개(S, 밑 G·h 그늘). 동 가장자리 턱은 1~2px 로 굵기가 바뀌는 바깥 j·h + 안쪽 G·h 두 겹. 본몸통은 얼룩뿐,
 #      곧게 꺾인 틈 i(위 = 푸른 그늘 m, 아래 = 북서 서리 턱 S)는 안쪽 칸 변형에만 있고 칸 가장자리에 닿지 않는다.
 #      북·서 가장자리 = 서리 턱 R(S·W), 동 가장자리 = 그늘 D(j·i).
-KINDS_T2 = {'M': ('G', None, None)}   # 바탕 F 보다 한 단 어두운 회청 G, 빛·테두리 없음
-TOP2_BASE = sq([
-    'FFGFFFFFcFGFFFFF',
-    'FFSSFFGFFFFFFGFF',
-    'FSSFGFFFFcFFGGFF',
-    'GFGhFFFGFFFFFFFc',
-    'FFFFFcFFGFFFFSSF',
-    'FGFFFFFFFFGFSSFG',
-    'FFFGFFGFFFFFFGhF',
-    'cFFFFFFFFGFFcFFF',
-    'FFGFFSSFFFFGFFFF',
-    'GFFFSSSFFcFFFGFF',
-    'FFcFFGGhFFFFFFGF',
-    'FGFFFFFFGFGFcFFF',
-    'FFGFFcFFFFFFSFFG',
-    'FFFFGFFFFFFSSGFF',
-    'FcFFFFGFFGFFGhFF',
-    'FFFGFFFFFFFFFFcF',
-], 16, 16, 'TOP2')
-TOP2_PATHS = [[([(9, 3), (8, 5), (10, 6), (9, 9)], 'M')]]
-TOP2_SPECKS = [[(['GG', 'G.'], 4, 9), (['S'], 12, 3)], [(['.G', 'GG'], 11, 11), (['h'], 2, 5)], [(['S.', 'GS'], 6, 6)]]
-TOP2_BODIES = ([TOP2_BASE] + [crack_body(TOP2_BASE, p, KINDS_T2, (), set()) for p in TOP2_PATHS]
-               + [stamp(TOP2_BASE, v, inner=True) for v in TOP2_SPECKS])
+# ---- 바위 윗면 A2(r12) — A1 과 다른 돌 말씨: 눈 덮인 바탕(넓고 매끈한 옅은 면 S rim 6, 손으로 그린 큰 푸른 눈 그늘 c, 드문 W)에
+#      크고 납작한 바위 판(평면 G iron 4 · 북서 빛 테 F · 남쪽 앞 한 줄 h · 오른 끝 틈 j · 판 밑 푸른 눈 그림자 b, 판 위 눈 조각 S)이
+#      변형마다 1~3개 드러난다 — 눈은 판 사이 우묵한 곳에 쌓인다. 잔 점 없음. 본몸통은 작은 판 하나뿐.
+SNOW2 = [
+    'SSSScccSSSSSSSSS', 'SSScccccSSSSSSSS', 'SSSSccSSSSSSSSSS', 'SWSSSSSSSSScSSSS',
+    'SSSSSSSSSSccccSS', 'SSSSSSScSSSccccS', 'ccSSSSSSSSSSccSS', 'cccSSSSSSSSSSSSc',
+    'ccSSSSSSSSSSSSSc', 'SSSSSSSSccSSSSSS', 'SSSSSSScccccSSSS', 'SSWSSSSSccccSSSS',
+    'SSSSSSSSSccSSSSS', 'SSSScSSSSSSSSSSS', 'SSScccSSSSSSSSSS', 'SSSSccSSSSSScSSS']
+SLABS_A2 = (['.LLLLLLLLLL...', 'LPPPPPPPPPPL..', 'LPPPPPPPPPPPL.', 'EEPPPPPPPPPPPK', '.CEEEEEEPPPPEK', '...CCCCCEEEEKC'],
+            ['LLLLLL......', 'LPPPPPLLLL..', 'EEPPPPPPPPL.', '.CEEEPPPPPPK', '...CCEEEEEEK'],
+            ['LLLL..', 'LPPPPK', 'CEEEKC'],
+            ['LLLLLL...', 'LPPPPPLL.', 'LPPPPPPPK', 'LPPPPPPEK', 'EEPPPPEK.', 'CCEEEEKC.'],
+            ['LLLL.', 'LPPPL', 'CCCC.'])   # 4 = 본몸통의 조용한 납작 판 — 모난 판들(곧은 변), 눈은 판 사이 우묵한 곳에만
+SLAB_A2 = {'L': 'F', 'P': 'G', 's': 'S', 'E': 'h', 'K': 'j', 'C': 'b'}
+AT_A2 = [((4, 10, 10),),   # 본몸통
+         ((0, 1, 3),), ((1, 2, 9), (2, 9, 2)), ((3, 5, 4),),
+         ((0, 1, 7), (2, 3, 1)), ((1, 3, 2), (3, 1, 8))]
+TOP2_BODIES = [stone_top(SNOW2, ['.' * 16] * 16, ('S', 'c', 'W', 'c', 'W'), SLABS_A2, SLAB_A2, at) for at in AT_A2]
 R2_TEX = ['SWSSWSSSWSSSWSWS', 'WSSSSWSWSSWSSSSW', 'SSWSSSSSSWSSWSSS', 'SWSSWSSWSSSSSWSS'] * 4
 D2R_TEX = ['jhjjhjhjjhjjhjhj', 'hjjhjjjhjhjjjhjj', 'jjhjhjjjhjjhjjhj', 'jhjjjhjhjjhjhjjh'] * 4
 Q2R_TEX = ['GhGGhGGhGGGhGhGG', 'hGGhGGGhGhGGhGGh', 'GGhGhGGGhGGhGGGh', 'GhGGGhGhGGhGGhGG'] * 4
 
-# ---- 앞면 A2 — A1 보다 어둡고 반대로 기운 턱. 낙차: 서리 처마(0~1행 F·S·G) → 3/4 → j/3 → 2/3 → 2/i → i/2 → i/1 → 1/i 밑동.
-#      섞임 자리는 A1 의 것을 좌우·위아래로 뒤집어 쓴다(같은 자리 무늬가 겹치지 않게). 끊긴 바위 턱 다섯 토막: 위 빛 · 밑 그늘.
-#      가운데엔 짧은 고드름 하나(2px, 열 4)뿐, 굵고 긴 고드름 무리는 벽 줄 양 끝 마구리에만.
-FACE2_BASE = sq(face_ledges(face_ramp(
-    ['FFSFFFFFFSFFFFFF', 'GFGGGFGGGGGFGGGG'],
-    [(2, 4, '3', '4'), (5, 9, 'j', '3'), (10, 14, '2', '3'), (15, 19, '2', 'i'), (20, 24, 'i', '2'), (25, 28, 'i', '1'),
-     (29, 31, '1', 'i')], [r[::-1] for r in FACE_MASK[::-1]]),
-    [([(2, 9), (8, 8), (12, 7)], '4', '2'), ([(13, 12), (19, 11), (22, 10)], '3', 'i'), ([(4, 17), (10, 16)], 'j', 'i'),
-     ([(11, 21), (17, 20), (21, 19)], '3', '1'), ([(1, 25), (6, 24), (9, 24)], '2', '1')]),
+# ---- 앞면 A2(r12) — A1 보다 밝게 시작해 윗면 눈과의 낙차를 줄인다: 위 서리 줄(0행 c·W) → 처마 F·G → G/h → h/4 → 3/h → j/3 → 2/j.
+#      A1 과 반대로 기운 두꺼운 물결 지층 셋(빛 턱 F, 4열마다 서리 c) + 16px 마다 짧은 세로 금. 가운데 고드름 없음(양 끝 마구리에만).
+FACE2_BASE = sq(face_facets(face_ramp(
+    ['ccWcccWcWcccWccc', 'FGFFFGFFFFGFFGFF'],
+    [(2, 8, 'G', 'h'), (9, 15, 'h', '4'), (16, 22, '3', 'h'), (23, 28, 'j', '3'), (29, 31, '2', 'j')], [r[::-1] for r in FACE_MASK[::-1]]),
+    [(9, '0000000111112221'), (19, '22211100.....222')],
+    [(6, 12, 4)], 'F', 'c',
+    lighter={'G': 'F', 'h': 'G', '4': 'G', '3': 'h', 'j': '3', '2': 'j', 'i': '2'}),
     16, 32, 'FACE2b')
-FACE2_MID = sq(stamp(FACE2_BASE, [(['Wc', 'c.'], 4, 2)], wrap=True), 16, 32, 'FACE2')
+FACE2_MID = FACE2_BASE
 FACE2_L = [(col('F' + '3' * 29 + '21'), 0, 0),
            (['WWcb', 'WWcb', 'Wccb', 'Wcb.', 'Wcb.', 'Wcb.', 'Wc..', 'Wc..', '.c..', '.c..', '.c..', '.W..'], 2, 2),
            (['Wc', 'Wc', 'c.'], 6, 2)]
