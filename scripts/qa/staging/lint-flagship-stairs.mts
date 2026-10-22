@@ -6,7 +6,13 @@ const { findPlacedStairs } = await import("../../../src/project/stairs/detect");
 const demos = [["first-love", "첫사랑"], ["chrono-bell", "Fallen Star"], ["emerald-crown", "Astra Horizon"]] as const;
 const out: Record<string, unknown> = {};
 for (const [id, label] of demos) {
-  const project = createFlagshipDemoProject(id as never).project;
+  let project;
+  try { project = createFlagshipDemoProject(id as never).project; } catch (e) {
+    // 데모 빌더 자체가 실패하면(계단과 무관한 빌더 단언 등) 그 데모만 건너뛰고 적는다.
+    out[label] = { error: String(e).slice(0, 300) };
+    if (!process.argv.includes("--json")) console.log(`\n== ${label} (${id}) — 데모 빌드 실패: ${String(e).slice(0, 200)}`);
+    continue;
+  }
   const stairs = Object.values(project.maps).flatMap((m) => findPlacedStairs(project, m).map((s) => ({ map: m.id, kit: s.kitId, x: s.x, y: s.y, leads: s.contract.leads })));
   const issues = lintStairEntrances(project);
   out[label] = { stairs, issues };
