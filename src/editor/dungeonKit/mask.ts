@@ -147,8 +147,9 @@ export function carveFlood(g: Grid, rooms: readonly PlacedRoom[], seed: number):
     if (fw < 7 || fh < 5) return;
     const rnd = rng(seed * 977 + ri * 131 + 5);
     // 덩이는 회랑(벽 둘레 2칸) 안쪽 넓이보다 작아야 가장자리가 둥글다 — 크면 회랑에 잘려 다시 네모가 됐다.
-    const iw = fw - 4, ih = fh - 4;
-    if (iw < 6 || ih < 4) return;   // 안쪽이 좁은 방(보스 제단방·곁방)은 마른 채로 — 작은 못은 네모 수조로만 읽혔다
+    // 회랑: 북쪽(벽 앞면 아래) 두 줄, 나머지 세 변은 한 줄.
+    const iw = fw - 2, ih = fh - 3;
+    if (iw < 8 || ih < 5) return;   // 안쪽이 좁은 방(보스 제단방·곁방)은 마른 채로 — 작은 못은 네모 수조로만 읽혔다
     // 덩이 묶음 후보 12개 중 안쪽 넓이의 8할쯤을 덮는 묶음을 고른다 — 다 덮으면 안쪽 사각형 그대로(네모 수조)였다.
     const inBlob = (bs: { x: number; y: number; r: number }[], x: number, y: number) => bs.some((b) => Math.hypot(x - b.x, (y - b.y) * 1.15) / b.r < 1 + (vnoise(x, y, 2.2, seed * 19 + ri) - 0.5) * 0.3);
     let blobs: { x: number; y: number; r: number }[] = [];
@@ -157,11 +158,11 @@ export function carveFlood(g: Grid, rooms: readonly PlacedRoom[], seed: number):
       const n = 3 + Math.floor(rnd() * 2) + (iw * ih >= 60 ? 1 : 0);
       const cand = Array.from({ length: n }, () => {
         const r0 = Math.max(1.6, (Math.min(iw, ih) / 2) * (0.45 + rnd() * 0.35) + 0.5);
-        return { x: fx0 + 2 + rnd() * (iw - 1), y: fy0 + 2 + rnd() * (ih - 1), r: r0 };
+        return { x: fx0 + 1 + rnd() * (iw - 1), y: fy0 + 2 + rnd() * (ih - 1), r: r0 };
       });
       let cov = 0;
-      for (let y = fy0 + 2; y < fy0 + 2 + ih; y += 1) for (let x = fx0 + 2; x < fx0 + 2 + iw; x += 1) if (inBlob(cand, x, y)) cov += 1;
-      const d = Math.abs(cov / (iw * ih) - 0.78);
+      for (let y = fy0 + 2; y < fy0 + 2 + ih; y += 1) for (let x = fx0 + 1; x < fx0 + 1 + iw; x += 1) if (inBlob(cand, x, y)) cov += 1;
+      const d = Math.abs(cov / (iw * ih) - 0.72);
       if (d < bestCov) { bestCov = d; blobs = cand; }
     }
     for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
@@ -169,7 +170,7 @@ export function carveFlood(g: Grid, rooms: readonly PlacedRoom[], seed: number):
       if (!g.floor[i] || g.roomAt[i] !== ri || g.protect[i]) continue;
       // 벽 둘레 두 칸은 마른 회랑으로 남기고(문·벽가 길), 물은 방 가운데 둥근 덩이로 고인다. 둑길로 방을 가르면 물이 벽에 붙은 곧은 띠 둘이 되어
       // 「돌 테 수조」로 읽혔다(2026-10-23 dg2-r1·r4 VQA). 회랑이 늘 이어지므로 다리 없이도 모든 문에 닿는다.
-      if (ed[i]! < 2 || y < fy0 + 2) continue;
+      if (ed[i]! < 1 || y < fy0 + 2) continue;
       // 물은 방 안에 겹친 둥근 덩이 여럿(메타볼)의 합집합이다 — 한 타원·두 잎은 직사각형 방 안에서 곧은 변이 생겨 「돌 테 수조」로 읽혔다
       // (2026-10-23 dg2-r1·r4 VQA). 덩이 가장자리 흔들림은 ≤0.15(PR #1450). 같은 운하 오토타일로 동굴 호수는 불규칙하게 읽혔다.
       if (!inBlob(blobs, x, y)) continue;
