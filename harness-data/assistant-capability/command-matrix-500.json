@@ -131,7 +131,8 @@
           "y": 5,
           "w": 4,
           "h": 2
-        }
+        },
+        "accept": "sand"
       },
       "setup": {
         "select": {
