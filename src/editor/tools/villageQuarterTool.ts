@@ -18,11 +18,11 @@ interface QuarterDef {
    * 마당을 새로 낸다 — 빽빽한 완성 마을(조선 마을 20호)에는 좌판 덩이가 들어갈 빈 땅이 없다(r2 시험: 좌판 7개가 큰길·관아 옆에 흩어졌다).
    * 큰길에 맞닿은 w×h 풀밭(나무·덤불만 있는 곳)을 골라 나무를 통째로 걷고 마당 흙을 깐 뒤 좌판을 두 줄로 세운다. 집·담·소품·길·물은 건드리지 않는다.
    */
-  readonly plaza?: { readonly w: number; readonly h: number; readonly ground: readonly number[]; readonly grass: readonly number[]; readonly soft: readonly string[] };
+  readonly plaza?: { readonly w: number; readonly h: number; readonly ground: readonly number[]; readonly grass: readonly number[]; readonly soft: readonly string[]; /** 길로 치는 바닥 tileMeta tags[2](밭·논은 길이 아니다) */ readonly roads?: readonly string[] };
 }
 
 export const VILLAGE_QUARTERS: Record<string, QuarterDef> = {
-  "joseon-market": { tilesetId: "joseon_baram", ko: "조선 장터 좌판", plaza: { w: 13, h: 9, ground: [4, 5], grass: [0, 1, 2, 3], soft: ["tree", "bush", "sapling", "tuft"] }, pieces: ["jb-market_stall", "jb-market_stall_cloth", "jb-market_stall_pots", "jb-market_stall", "jb-market_stall_cloth", "jb-market_stall_pots", "jb-market_stall", "jb-market_stall_pots"] },
+  "joseon-market": { tilesetId: "joseon_baram", ko: "조선 장터 좌판", plaza: { w: 13, h: 9, ground: [4, 5], grass: [0, 1, 2, 3], soft: ["tree", "bush", "sapling", "tuft"], roads: ["road16", "yard16", "yard"] }, pieces: ["jb-market_stall", "jb-market_stall_cloth", "jb-market_stall_pots", "jb-market_stall", "jb-market_stall_cloth", "jb-market_stall_pots", "jb-market_stall", "jb-market_stall_pots"] },
   mining: { tilesetId: "beodeul_city", ko: "광산 갱구 마당", pieces: ["bd-pick-mining-valley-adit", "bd-pick-mining-valley-headframe", "bd-pick-mining-valley-smelt", "bd-pick-mining-valley-slagheap", "bd-pick-mining-valley-cart-h", "bd-pick-mining-valley-ore", "bd-pick-mining-valley-pile", "bd-pick-mining-valley-kiln", "bd-pick-mining-valley-lamp", "bd-pick-mining-valley-crates", "bd-pick-mining-valley-slagrock", "bd-pick-mining-valley-barrel"] },
   vineyard: { tilesetId: "beodeul_city", ko: "포도원", pieces: ["bd-pick-vineyard-winery", "bd-pick-vineyard-vine-field", "bd-pick-vineyard-vine-field", "bd-pick-vineyard-wine-press", "bd-pick-vineyard-pergola", "bd-pick-vineyard-cask-rack", "bd-pick-vineyard-barrels-standing", "bd-pick-vineyard-grape-baskets", "bd-pick-vineyard-olive-a", "bd-pick-vineyard-olive-b", "bd-pick-vineyard-olive-c"] },
   "temple-ruins": { tilesetId: "beodeul_city", ko: "신전 폐허", pieces: ["bd-pick-temple-ruins-roof-naiskos-pediment", "bd-pick-temple-ruins-roof-hip-shrine", "bd-pick-temple-ruins-column-temple-tall", "bd-pick-temple-ruins-column-temple-tall", "bd-pick-temple-ruins-column-temple", "bd-pick-temple-ruins-column-temple-broken", "bd-pick-temple-ruins-fallen-column-temple", "bd-pick-temple-ruins-ruined-wall-2", "bd-pick-temple-ruins-ruined-wall-2", "bd-pick-temple-ruins-cypress-ruin", "bd-pick-temple-ruins-cypress-ruin", "bd-pick-temple-ruins-rubble-temple", "bd-pick-temple-ruins-rubble-temple"] },
@@ -150,7 +150,13 @@ function openPlaza(draft: Project, map: GameMap, plaza: NonNullable<QuarterDef["
   const grass = new Set(plaza.grass), soft = new Set(plaza.soft);
   const eventAt = new Set(map.events.map((e) => e.y * W + e.x));
   const upper = (i: number) => map.upperTiles[i] ?? -1;
-  const isRoad = (x: number, y: number) => { const i = y * W + x; return !grass.has(map.lowerTiles[i]!) && upper(i) < 0 && isPassable(draft, map, x, y); };
+  const roadTags = new Set(plaza.roads ?? []);
+  const isRoad = (x: number, y: number) => {
+    if (x < 0 || y < 0 || x >= W || y >= H) return false;
+    const i = y * W + x, t = map.lowerTiles[i]!;
+    if (roadTags.size && !roadTags.has(t >= 0 ? meta[t]?.tags?.[2] ?? "" : "")) return false;
+    return !grass.has(t) && upper(i) < 0 && isPassable(draft, map, x, y);
+  };
   // 숲 속 나무는 서로 겹쳐 «겹침 칸»으로 이어져 한 그루씩 떼기 어렵다 — 마당과 그 둘레 2칸(RING)의 위층(나무·덤불·겹침)을 통째로 걷는다.
   // 둘레에 집·담·소품(built·prop·wall)이 하나라도 있으면 그 자리는 고르지 않는다(남의 그림을 반쪽 내지 않는다).
   const RING = 1;
@@ -200,25 +206,42 @@ function openPlaza(draft: Project, map: GameMap, plaza: NonNullable<QuarterDef["
     frontier = next;
   }
   for (const i of cleared) map.upperTiles[i] = -1;
-  // 마당에서 가장 가까운 길·흙 칸까지 2칸 폭 흙길을 낸다(풀밭·걷은 칸만 지난다) — 외딴 마당이 아니라 길가 장터로.
+  // 마당 테두리 어디서든 가장 가까운 길·흙 칸까지 흙길을 낸다(BFS, 나무 없는 풀밭만 지난다 — 나무를 반쪽 내지 않는다) — 외딴 마당이 아니라 길가 장터로.
+  // r3 실측: 가운데 네 방향 직선만 보던 이전 판은 밭·숲을 돌아가야 하는 마당에서 길을 못 냈다.
   const b = best.box;
-  const starts = [
-    { x: b.x + Math.floor(b.w / 2), y: b.y - 1, dx: 0, dy: -1 }, { x: b.x + Math.floor(b.w / 2), y: b.y + b.h, dx: 0, dy: 1 },
-    { x: b.x - 1, y: b.y + Math.floor(b.h / 2), dx: -1, dy: 0 }, { x: b.x + b.w, y: b.y + Math.floor(b.h / 2), dx: 1, dy: 0 },
-  ];
-  let lane: { cells: number[] } | null = null;
-  for (const st of starts) {
-    const cells: number[] = [];
-    let x = st.x, y = st.y, hit = false;
-    for (let k = 0; k < 14; k++, x += st.dx, y += st.dy) {
-      if (x < 0 || y < 0 || x + Math.abs(st.dy) >= W || y + Math.abs(st.dx) >= H) break;
-      const pair = [y * W + x, (y + Math.abs(st.dx)) * W + (x + Math.abs(st.dy))];
-      if (pair.every((i) => isRoad(i % W, Math.floor(i / W)))) { hit = true; break; }
-      if (!pair.every((i) => grass.has(map.lowerTiles[i]!) && (upper(i) < 0 || softOrOverlap(upper(i))) && !eventAt.has(i))) break;
-      cells.push(...pair);
+  const inBox = (x: number, y: number) => x >= b.x && x < b.x + b.w && y >= b.y && y < b.y + b.h;
+  const walkable = (i: number) => grass.has(map.lowerTiles[i]!) && upper(i) < 0 && !eventAt.has(i)
+    && (map.lowerOverlayTiles?.[i] ?? -1) < 0 && (map.upperOverlayTiles?.[i] ?? -1) < 0;
+  const prev = new Map<number, number>();
+  let queue: number[] = [];
+  let touching = false;
+  for (let yy = b.y; yy < b.y + b.h; yy++) for (let xx = b.x; xx < b.x + b.w; xx++) {
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = xx + dx, ny = yy + dy;
+      if (nx < 0 || ny < 0 || nx >= W || ny >= H || inBox(nx, ny)) continue;
+      const ni = ny * W + nx;
+      if (isRoad(nx, ny)) touching = true; // 이미 길에 맞닿았다 — 길을 낼 필요 없다.
+      else if (!prev.has(ni) && walkable(ni)) { prev.set(ni, -1); queue.push(ni); }
     }
-    if (hit && (!lane || cells.length < lane.cells.length)) lane = { cells };
   }
+  let laneCells: number[] = [];
+  for (let depth = 0; !touching && queue.length && depth < 24 && !laneCells.length; depth++) {
+    const next: number[] = [];
+    for (const i of queue) {
+      const x = i % W, y = Math.floor(i / W);
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const nx = x + dx, ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= W || ny >= H || inBox(nx, ny)) continue;
+        const ni = ny * W + nx;
+        if (isRoad(nx, ny)) { for (let c = i; c !== -1; c = prev.get(c)!) laneCells.push(c); break; }
+        if (prev.has(ni) || !walkable(ni)) continue;
+        prev.set(ni, i); next.push(ni);
+      }
+      if (laneCells.length) break;
+    }
+    queue = next;
+  }
+  const lane = laneCells.length ? { cells: laneCells } : null;
   for (const i of lane?.cells ?? []) { map.lowerTiles[i] = plaza.ground[i % plaza.ground.length]!; map.upperTiles[i] = -1; }
   let k = 0;
   for (let yy = best.box.y; yy < best.box.y + best.box.h; yy++) for (let xx = best.box.x; xx < best.box.x + best.box.w; xx++) {

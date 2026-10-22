@@ -38,6 +38,7 @@ export const VILLAGE_ERA_LABEL: Record<VillageEra, string> = {
 };
 
 export const ART_GAPS: Record<string, string> = {
+  "roman-civic-kit": "로마 공공 건물 — 신전 정면·원형극장·열주 거리·수도교(버들항 계열)",
   "beodeul-town-wall": "버들항 성벽·성문·망루(마을을 두르는 벽)",
   "murim-kit": "무림(중국 무협) 칩셋 굽기 — 객잔·문파 산문·수향 다리",
   "post-apoc-kit": "폐허(포스트아포칼립스) 칩셋 — 무너진 건물·녹슨 차·판잣집",
@@ -63,8 +64,10 @@ export const VILLAGE_TYPES: readonly VillageType[] = [
   T({ id: "prehistoric-volcano", ko: "화산 골짜기 부족", era: "ancient", chipset: "prehistoric", status: "ready",
     recipe: "create_map({tilesetId:\"prehistoric\"}) → compose_prehistoric_map({style:\"volcano\"})",
     words: /(?:원시|선사|공룡)\S*\s*화산|화산\s*(?:골짜기\s*)?부족/iu }),
-  T({ id: "roman-city", ko: "고대 로마 도시", era: "ancient", chipset: "beodeul_city", status: "ready",
-    recipe: "author_beodeul_town({theme:\"city\"}) — 블록 격자 도시(60×60), 항구는 harbour:true·가로 83 이상",
+  T({ id: "roman-city", ko: "고대 로마 도시", era: "ancient", chipset: "beodeul_city", status: "partial",
+    recipe: "author_beodeul_town({theme:\"city\"}) — 블록 격자 도시(60×60), 항구는 harbour:true·가로 83 이상 → 트인 공원이 있으면 dress_village_quarter({mapId, quarter:\"temple-ruins\"})",
+    gap: "로마 전용 건물(신전 정면·원형극장·열주 거리·수도교) 그림이 없어 블록 도시는 목골집·성당이 섞인 중세 도시처럼 보인다 — 답에서 이를 말한다",
+    gapId: "roman-civic-kit",
     words: /로마(?:풍|식)?\s*(?:도시|마을|시가)|고대\s*(?:로마|그리스)|그리스(?:풍)?\s*(?:도시|폴리스)|폴리스|roman\s*(?:city|town)/iu }),
   T({ id: "ruins-village", ko: "고대 신전 폐허 마을", era: "ancient", chipset: "beodeul_city", status: "partial",
     recipe: "author_beodeul_town({theme:\"river\", water:\"none\", form:\"scatter\", roofs:\"red\", houseCount:4, width:56, height:44}) → dress_village_quarter({mapId, quarter:\"temple-ruins\"}) — 소신전·사당·기둥·무너진 벽·사이프러스",
@@ -251,7 +254,7 @@ export const VILLAGE_TYPES: readonly VillageType[] = [
     words: /사이버\s*펑크|네온\s*(?:거리|도시|마을|골목)|미래\s*(?:도시|거리|마을)|cyberpunk|neon\s*(?:street|city)/iu }),
   T({ id: "moon-colony", ko: "달·행성 정착지", era: "future", chipset: "sf_station", status: "ready",
     recipe: "create_map({tilesetId:\"sf_station\", width:48, height:32}) → compose_sf_station_map({kind:\"moonbase\"})",
-    words: /(?:달|화성|행성|우주)\s*(?:정착지|식민지|기지|콜로니|마을)|콜로니|정착지\s*\(?우주|space\s*colony|moon\s*base|mars\s*colony/iu }),
+    words: /(?:달|화성|행성|우주)(?:\s*(?:위|표면|속)의?)?\s*(?:정착지|식민지|기지|콜로니|마을)|콜로니|정착지\s*\(?우주|space\s*colony|moon\s*base|mars\s*colony/iu }),
   T({ id: "station-habitat", ko: "우주 정거장 거주구", era: "future", chipset: "sf_station", status: "ready",
     recipe: "create_map({tilesetId:\"sf_station\", width:44, height:32}) → compose_sf_station_map({kind:\"station\"})",
     words: /우주\s*정거장|거주구|우주\s*도시|space\s*station/iu }),
