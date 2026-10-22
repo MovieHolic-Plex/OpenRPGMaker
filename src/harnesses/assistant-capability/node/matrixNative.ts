@@ -10,7 +10,7 @@ import { sharedContentFile } from '../../../../scripts/lib/sharedContentSqlite';
 import { createOpenAiCompatStore } from '../../../../scripts/lib/openAiCompatStore';
 import { startHost, newEditor, stored, writeRuntimeProject } from './editorDriver.mjs';
 import type { Project } from '../../../project/types';
-import { judge, nativeProject, setupFor, fixtureProblems, MAP, normalizeContent, type Rect, type ToolRecord } from './matrixNativeSpec';
+import { judge, nativeProject, cachedNativeProject, setupFor, fixtureProblems, MAP, normalizeContent, type Rect, type ToolRecord } from './matrixNativeSpec';
 import { findFamily } from './families';
 
 type MatrixCommand = {
@@ -106,6 +106,12 @@ const aiConfig = () => {
 
 const toSelection = (rect: Rect) => ({ mapId: MAP, x: rect.x, y: rect.y, width: rect.w, height: rect.h });
 
+/** The 500 spec saves a fresh document per command; rebuilding the 30k-tile fixture each time costs ~8s per row. */
+const fixtureFor = (family?: { prepare?: (project: Project) => Project }): Project => {
+  const base = spec500 ? cachedNativeProject() : nativeProject();
+  return family?.prepare ? family.prepare(base) : base;
+};
+
 async function saveFresh(root: string, projectDir: string, project: Project = nativeProject()): Promise<void> {
   const local = await initLocalProjectStore({ projectDir });
   try { await local.saveProject(project); }
@@ -167,7 +173,7 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
       const family = command.family ? findFamily(command.family) : undefined;
       const variant = family?.variants.find(entry => entry.key === command.variant);
       if (spec500 && (!family || !variant)) throw new Error(`${command.id}: 가족 ${command.family ?? '?'} / 변형 ${command.variant ?? '?'} 를 찾을 수 없다 — matrix500-spec 로 명세를 다시 만드세요.`);
-      await saveFresh(root, projectDir, family?.prepare ? family.prepare(nativeProject()) : nativeProject());
+      await saveFresh(root, projectDir, fixtureFor(family));
       // One host per command. The relay keeps a map claim for up to RESUME_GRACE_MS after the browser
       // disconnects so a real user can reconnect; sharing a host would let one hung command turn every
       // following command into a 409 map-busy that is not the model's fault.
