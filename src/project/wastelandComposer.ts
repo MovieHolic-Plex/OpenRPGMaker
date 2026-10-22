@@ -156,10 +156,15 @@ class Board {
     for (let y = 0; y < this.h; y++) for (let x = 0; x < this.w; x++) {
       if (!cells[this.idx(x, y)]) continue;
       const pick = (c: number[]) => c[Math.floor(hash2(x, y, this.seed + 307) * c.length)]!;
-      const t = on(x, y - 1) && on(x + 1, y) && !on(x + 1, y - 1) ? pick(corner.ne)
-        : on(x, y - 1) && on(x - 1, y) && !on(x - 1, y - 1) ? pick(corner.nw)
-        : on(x, y + 1) && on(x + 1, y) && !on(x + 1, y + 1) ? pick(corner.se)
-        : on(x, y + 1) && on(x - 1, y) && !on(x - 1, y + 1) ? pick(corner.sw) : -1;
+      // 한 칸에 귀가 둘 이상(T 줄기·十 가운데)이면 묶음 조각 asphalt-in-ne-nw 처럼 이름을 이어 찾는다(없으면 첫 귀 하나).
+      const has = {
+        ne: on(x, y - 1) && on(x + 1, y) && !on(x + 1, y - 1), nw: on(x, y - 1) && on(x - 1, y) && !on(x - 1, y - 1),
+        se: on(x, y + 1) && on(x + 1, y) && !on(x + 1, y + 1), sw: on(x, y + 1) && on(x - 1, y) && !on(x - 1, y + 1),
+      };
+      const names = (["ne", "nw", "se", "sw"] as const).filter((k) => has[k]);
+      if (!names.length) continue;
+      const combo = names.length > 1 ? this.cells(`${key}-in-${names.join("-")}`) : [];
+      const t = combo.length ? pick(combo) : pick(corner[names[0]!]);
       if (t >= 0) this.setDecal(x, y, t);
     }
   }
