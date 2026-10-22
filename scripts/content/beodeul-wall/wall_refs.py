@@ -63,11 +63,11 @@ def check(up, lo, W, H):
             if P[n]["layer"] != layer: out.append(dict(code="wrong-layer", x=x, y=y, note=f"{n} 은 {P[n]['layer']} 층 조각인데 {layer} 층에 있다"))
     name = lambda x, y: up.get((x, y)) or lo.get((x, y)) or ""
     for (x, y), n in up.items():
-        # 가로 성벽 윗면 아래 줄 밑에는 앞면 세 칸(위·가운데·아래) — 또는 계단·성문루·망루
+        # 가로 성벽 윗면 아래 줄 밑에는 앞면 네 칸(위·가운데·아래·굽도리) — 또는 계단·성문루·망루
         if (n.startswith(("hs", "hn")) and n.endswith("_b")) or n in ("c_sw_01", "c_sw_11", "c_se_01", "c_se_11"):
-            got = [name(x, y + 1 + i) for i in range(3)]
-            ok = all(g.startswith((f"f_{k}", "gate", "tower")) or (g.startswith("stair_") and g.endswith(f"_{k}")) for g, k in zip(got, ("u", "m", "l")))
-            if not ok: out.append(dict(code="face-missing", x=x, y=y + 1, note=f"{n} 밑에 앞면 세 칸(f_u_* · f_m_* · f_l_*)이 없다({', '.join(g or '빈칸' for g in got)})"))
+            got = [name(x, y + 1 + i) for i in range(B.NF)]
+            ok = all(g.startswith((f"f_{k}_", "gate", "tower")) or (g.startswith("stair_") and g.endswith(f"_{k}")) for g, k in zip(got, B.FACE_ROWS))
+            if not ok: out.append(dict(code="face-missing", x=x, y=y + 1, note=f"{n} 밑에 앞면 네 칸(f_u_* · f_m_* · f_n_* · f_l_*)이 없다({', '.join(g or '빈칸' for g in got)})"))
         # 통로 잇기: 걸음 방향마다 이웃이 성벽 윗면(또는 성문루·망루)이어야 한다
         if is_walk(n):
             for d, (dx, dy) in (("U", (0, -1)), ("D", (0, 1)), ("L", (-1, 0)), ("R", (1, 0))):
@@ -76,11 +76,11 @@ def check(up, lo, W, H):
                 nb = name(x + dx, y + dy)
                 if not (is_walk(nb) or nb.startswith(("gate", "tower"))):
                     out.append(dict(code="wall-gap", x=x + dx, y=y + dy, note=f"{n} 의 통로가 {d} 쪽에서 끊겼다({nb or '빈칸'}) — 끝 마감 조각(*_endS_* · *_endN_*)으로 닫아야 한다"))
-    # 열린 성문 통로: 가운데 두 열 일곱 줄이 모두 걸음
+    # 열린 성문 통로: 가운데 두 열 여덟 줄이 모두 걸음
     for (x, y), n in list(up.items()) + list(lo.items()):
         if n == "gate_1_0":
             for gx in (x, x + 1):
-                for gy in range(y, y + 7):
+                for gy in range(y, y + B.GH):
                     for nm in (up.get((gx, gy)), lo.get((gx, gy))):
                         if nm and not P[nm]["pass_"] and not nm.startswith("gatec"):
                             out.append(dict(code="gate-blocked", x=gx, y=gy, note=f"열린 성문 통로 칸에 막힌 조각 {nm}"))
@@ -108,8 +108,8 @@ def main():
     defects = check(up, lo, W, H)
     assert not defects, defects
     example = dict(tilesetId="beodeul_city", width=W, height=H, tileSize=16, lowerTiles=lower, lowerOverlayTiles=l2, upperTiles=l3,
-                   gates=[dict(side="S", x=10, open=True, passage=[[x, y] for y in range(12, 19) for x in (10, 11)]), dict(side="N", x=15, open=False)],
-                   gap=dict(side="W", rows=[8, 9]), towers=[[3, 12], [16, 12], [5, 1]], stairs=[dict(head=[12, 3], cells=[10, 4, 3, 3], foot=[10, 7])])
+                   gates=[dict(side="S", x=10, open=True, passage=[[x, y] for y in range(12, 20) for x in (10, 11)]), dict(side="N", x=15, open=False)],
+                   gap=dict(side="W", rows=[9, 10]), towers=[[3, 12], [16, 12], [5, 1]], stairs=[dict(head=[12, 3], cells=[10, 4, 3, 4], foot=[10, 8])])
     (DATA / "example.json").write_text(json.dumps(example) + "\n")
     pu, pl, PW, PH = B.parts_plan()
     assert not check(pu, pl, PW, PH), check(pu, pl, PW, PH)
@@ -149,12 +149,12 @@ def main():
     # ---- 문서 ----
     tid = B.tid
     def ids(names): return " · ".join(f"`{n}` {tid(n)}" for n in names)
-    face = [f"f_{k}_{v}" for k in "uml" for v in ("a", "b", "c", "d", "endL", "endR", "shL")]
+    face = [f"f_{k}_{v}" for k in "umnl" for v in ("a", "b", "c", "d", "endL", "endR", "shL")]
     guide = f"""# 버들항 마을 성벽 3판 — 윗면 통로·흉벽·앞면·성문루·망루·계단·그림자 (beodeul_town_wall, 2026-10-22)
 
 타일셋 `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chipset.png`(텍스처 `tex_beodeul_city`) · **16px 칸, 한 줄 128칸**.
-번호 n 의 칸 = 행 ⌊n/128⌋, 열 n mod 128. 성벽 칸은 시트 꼬리 **{B.BASE}~{B.BASE + len(B.PIECES) - 1}**(행 {B.BASE_ROW}, 열 0~{len(B.PIECES) - 1})이다. 다른 칩셋 번호를 섞지 않는다.
-그림은 코드 손 도트(scripts/content/beodeul-wall/wall_art.py), 3/4 탑뷰: 성벽 윗면(판석 통로 + 흉벽 톱니)은 위에서 본 면 **두 줄 깊이**, 그 아래 마름돌 앞면 **세 줄**(48px).
+번호 n 의 칸 = 행 ⌊n/128⌋, 열 n mod 128. 성벽 칸은 시트 꼬리 **{B.BASE}~{B.BASE + len(B.PIECES) - 1}**(행 {B.BASE_ROW}~{B.BASE_ROW + (len(B.PIECES) - 1) // 128})이다. 조각 이름 → 칸 번호는 아래 사전과 `src/assets/beodeulTownWallPieces.json`. 다른 칩셋 번호를 섞지 않는다.
+그림은 코드 손 도트(scripts/content/beodeul-wall/wall_art.py), 3/4 탑뷰: 성벽 윗면(판석 통로 + 흉벽 톱니)은 위에서 본 면 **두 줄 깊이**, 그 아래 마름돌 앞면 **네 줄**(64px — 단층 민가 벽보다 높다. 고르지 않은 켜·빗물 자국·이끼 낀 굽도리).
 세로 성벽은 **두 칸 폭** 윗면만 보인다. 망루·성문루는 윗면 플랫폼(사방 흉벽)이 보이고 성벽보다 16px 높으며 한 줄 앞으로 내민다.
 색은 모두 버들항 시트에 있는 값(돌 = 왕성 성벽 회색, 통로 = 왕성 안뜰 판석).
 
@@ -165,16 +165,16 @@ def main():
 
 | 무엇 | 조각 `이름` 칸 번호 | 층 | 통행 | 반복 |
 |---|---|---|---|---|
-| 남쪽 성벽 윗면(위 줄 _a 판석 · 아래 줄 _b 판석 + 앞 흉벽) | {ids(["hs0_a", "hs0_b", "hs1_a", "hs1_b", "hs_sh_a", "hs_sh_b"])} | 3 | 동서 + 두 줄 사이 | 반복(변형 0·1 섞기), _sh = 왼쪽 망루·성문루 그늘 |
-| 북쪽 성벽 윗면(위 줄 _a 뒤 흉벽 안쪽 면 + 판석 · 아래 줄 _b 판석 + 앞 턱) | {ids(["hn0_a", "hn0_b", "hn1_a", "hn1_b", "hn_stair"])} | 3 | 동서 + 두 줄 사이, hn_stair 는 남쪽 계단으로도 | 반복 |
+| 남쪽 성벽 윗면(위 줄 _a 판석 · 아래 줄 _b 판석 + 앞 흉벽) | {ids([f"hs{v}_{r}" for v in range(4) for r in "ab"] + ["hs_sh_a", "hs_sh_b"])} | 3 | 동서 + 두 줄 사이 | 반복(변형 0~3 섞기), _sh = 왼쪽 망루·성문루 그늘 |
+| 북쪽 성벽 윗면(위 줄 _a 뒤 흉벽 안쪽 면 + 판석 · 아래 줄 _b 판석 + 앞 턱) | {ids([f"hn{v}_{r}" for v in range(4) for r in "ab"] + ["hn_stair"])} | 3 | 동서 + 두 줄 사이, hn_stair 는 남쪽 계단으로도 | 반복(변형 0~3) |
 | 볼록 모서리 2×2 (`c_nw_00`·`c_nw_10`·`c_nw_01`·`c_nw_11` = 열·줄) | {ids([f"c_{k}_{c}" for k in ("nw", "ne", "sw", "se") for c in ("00", "10", "01", "11")])} | 3 | 이어지는 방향 | 고정 |
-| 서·동 성벽 두 열(_0 왼쪽 열 · _1 오른쪽 열, 변형 0·1) | {ids(["vw0_0", "vw0_1", "vw1_0", "vw1_1", "ve0_0", "ve0_1", "ve1_0", "ve1_1"])} | 3 | 남북 + 두 열 사이 | 반복 |
+| 서·동 성벽 두 열(_0 왼쪽 열 · _1 오른쪽 열, 변형 0~3) | {ids([f"{e}{v}_{c}" for e in ("vw", "ve") for v in range(4) for c in (0, 1)])} | 3 | 남북 + 두 열 사이 | 반복 |
 | 세로 성벽 끝 마감(틈 위 _endS · 틈 아래 _endN) | {ids(["vw_endS_0", "vw_endS_1", "vw_endN_0", "vw_endN_1", "ve_endS_0", "ve_endS_1", "ve_endN_0", "ve_endN_1"])} | 3 | 한 방향 | 고정 |
-| 앞면(u 위 · m 가운데 · l 아래 굽도리) × 변형 a·b·c·d + 끝 endL·endR + 그늘 shL | {ids(face)} | 3 | 막힘 | 반복(a~d 섞기), 끝·그늘 고정 |
-| 옆 계단 3×3(북쪽 성벽 안쪽 앞면 세 줄 자리, `stair_cx_k` cx 0~2 · k u/m/l) | {ids([f"stair_{c}_{k}" for k in ("u", "m", "l") for c in range(3)])} | 3 | 모든 방향(★ 아님) | 고정(키트 bd-wall-stairs) |
-| 성문루 4×7 (열림) | `gate_cx_cy` {tid("gate_0_0")}~{tid("gate_3_6")} (cx 0~3, cy 0~6). cx 1·2 의 cy 0~3 = ★ 걸음, cy 4~6 = 2층 터널 | 3 + 2 | cx 1·2 = 남북, cx 0·3 막힘 | 고정(키트 bd-wall-gatehouse) |
-| 성문루 닫힘 | `gatec_cx_cy` (cx 1·2, cy 3~6) {tid("gatec_1_3")}~{tid("gatec_2_6")} | 3 | 막힘 | 고정(키트 bd-wall-gatehouse-closed) |
-| 망루 3×7 | `tower_cx_cy` {tid("tower_0_0")}~{tid("tower_2_6")} — cy 1·2 = 성벽 통로가 지나는 ★ 칸 | 3 | cy 1·2 동서, 나머지 막힘 | 고정(키트 bd-wall-tower) |
+| 앞면(u 위 · m 가운데 · n 아래 · l 굽도리) × 변형 a·b·c·d + 끝 endL·endR + 그늘 shL | {ids(face)} | 3 | 막힘 | 반복(a~d 섞기, 북쪽 안쪽 면은 화살 구멍 c 빼고), 끝·그늘 고정 |
+| 옆 계단 3×4(북쪽 성벽 안쪽 앞면 네 줄 자리, `stair_cx_k` cx 0~2 · k u/m/n/l) | {ids([f"stair_{c}_{k}" for k in ("u", "m", "n", "l") for c in range(3)])} | 3 | 모든 방향(★ 아님) | 고정(키트 bd-wall-stairs) |
+| 성문루 4×8 (열림) | `gate_cx_cy` (cx 0~3, cy 0~7) {tid("gate_0_0")}~{tid("gate_3_6")} + 여덟째 줄 {tid("gate_0_7")}~{tid("gate_3_7")}. cx 1·2 의 cy 0~3 = ★ 걸음, cy 4~7 = 2층 터널 | 3 + 2 | cx 1·2 = 남북, cx 0·3 막힘 | 고정(키트 bd-wall-gatehouse) |
+| 성문루 닫힘 | `gatec_cx_cy` (cx 1·2, cy 3~7) {tid("gatec_1_3")}~{tid("gatec_2_6")} + {tid("gatec_1_7")}·{tid("gatec_2_7")} | 3 | 막힘 | 고정(키트 bd-wall-gatehouse-closed) |
+| 망루 3×8 | `tower_cx_cy` (cx 0~2, cy 0~7) {tid("tower_0_0")}~{tid("tower_2_6")} + {tid("tower_0_7")}~{tid("tower_2_7")} — cy 1·2 = 성벽 통로가 지나는 ★ 칸 | 3 | cy 1·2 동서, 나머지 막힘 | 고정(키트 bd-wall-tower) |
 | 땅 그림자(반투명) | {ids(["sh_s", "sh_e", "sh_se"])} | 2 | 걸음 | 앞면 밑 줄(s) · 세로 성벽·망루 오른쪽(e) · 둘 다(se) |
 
 - 성문 터널 칸(2층)은 **바닥이 투명**하다 — 아치 밑으로 맵의 길이 그대로 보인다. 성문 통로 열의 1층은 반드시 길로 깐다.
@@ -184,15 +184,15 @@ def main():
 
 **먼저: 마을 둘레 성벽은 손으로 줄을 긋지 말고 `author_beodeul_town` 에 `walls:true` 를 준다** — 같은 규칙으로 맵 크기에 맞춰 짓는다(평지·강 없는 마을, theme river·desert·snow). 아래는 손으로 고칠 때·작은 성채를 지을 때의 규칙이다.
 
-1. 통로 사각형을 정한다: 북 y0 · 남 y1 · 서 x0 · 동 x1. 성벽 마을 도구는 x0=1, y0=2, x1=W−2, y1=H−7(바깥 띠는 풀).
+1. 통로 사각형을 정한다: 북 y0 · 남 y1 · 서 x0 · 동 x1. 성벽 마을 도구는 x0=1, y0=2, x1=W−2, y1=H−8(바깥 띠는 풀).
 2. 모서리 2×2: (x0, y0) `c_nw_*`, (x1−1, y0) `c_ne_*`, (x0, y1) `c_sw_*`, (x1−1, y1) `c_se_*`.
-3. 북쪽 성벽: x0+2..x1−2 의 y0 줄 `hn?_a`, y0+1 줄 `hn?_b`, 그 아래 세 줄 앞면(`f_u_*`·`f_m_*`·`f_l_*`, 맨 왼쪽 x0+2 는 `_shL`). 남쪽 성벽: y1 줄 `hs?_a`, y1+1 줄 `hs?_b`, 그 아래 세 줄 앞면은 x0..x1 전체(x0 = `_endL`, x1 = `_endR`).
+3. 북쪽 성벽: x0+2..x1−2 의 y0 줄 `hn?_a`, y0+1 줄 `hn?_b`, 그 아래 네 줄 앞면(`f_u_*`·`f_m_*`·`f_n_*`·`f_l_*`, 맨 왼쪽 x0+2 는 `_shL`). 남쪽 성벽: y1 줄 `hs?_a`, y1+1 줄 `hs?_b`, 그 아래 네 줄 앞면은 x0..x1 전체(x0 = `_endL`, x1 = `_endR`).
 4. 세로 성벽: x0·x0+1 열 y0+2~y1−1 은 `vw?_0`·`vw?_1`, x1−1·x1 열은 `ve?_0`·`ve?_1`. 앞면 없음(3/4 에서 위만 보인다).
-5. 길이 가로 성벽을 지나는 곳 = 성문루 4×7: 왼쪽 위 = (gx−1, yw−1), yw = 그 성벽 윗면 첫 줄. 통로 = gx·gx+1 두 열(위 네 줄 ★, 아래 세 줄 2층 터널). 성문루 오른쪽 성벽 칸은 그늘 판(`hs_sh_*` + `f_*_shL`).
-6. 길이 세로 성벽을 지나는 곳 = 틈(길 줄 gy..): gy−4 줄 `*_endS_0/1`, gy−3..gy−1 줄 끝 앞면(`f_*_endL` + `f_*_endR`), 길 줄 다음에 `*_endN_0/1`.
-7. 망루 3×7: 왼쪽 위 = (tx, yw−1). 성문루와 한 칸 이상 떨어뜨린다. 모서리에는 두지 않는다. 성벽 통로가 망루 cy 1·2 줄(★)로 지나간다.
-8. 계단은 북쪽 성벽에만, 3×3 옆 계단(왼쪽 아래 땅에서 오른쪽 위 통로로 오른다): (sx..sx+2, y0+2..y0+4) = `stair_0_u`…`stair_2_l`, 머리 (sx+2, y0+1) = `hn_stair`. 발치 땅 칸(sx, y0+5)은 걸을 수 있어야 한다.
-9. 땅 그림자(2층): 북쪽 앞면 밑 줄 y0+5 · 남쪽 앞면 밑 줄 y1+5 에 `sh_s`, 서쪽 성벽 오른쪽 열 x0+2 와 동쪽 성벽 오른쪽 열 x1+1 에 `sh_e`, 겹치는 칸은 `sh_se`. 이미 2·3층에 무엇이 있는 칸에는 두지 않는다.
+5. 길이 가로 성벽을 지나는 곳 = 성문루 4×8: 왼쪽 위 = (gx−1, yw−1), yw = 그 성벽 윗면 첫 줄. 통로 = gx·gx+1 두 열(위 네 줄 ★, 아래 네 줄 2층 터널). 성문루 오른쪽 성벽 칸은 그늘 판(`hs_sh_*` + `f_*_shL`).
+6. 길이 세로 성벽을 지나는 곳 = 틈(길 줄 gy..): gy−5 줄 `*_endS_0/1`, gy−4..gy−1 줄 끝 앞면(`f_*_endL` + `f_*_endR`), 길 줄 다음에 `*_endN_0/1`.
+7. 망루 3×8: 왼쪽 위 = (tx, yw−1). 성문루와 한 칸 이상 떨어뜨린다. 모서리에는 두지 않는다. 성벽 통로가 망루 cy 1·2 줄(★)로 지나간다.
+8. 계단은 북쪽 성벽에만, 3×4 옆 계단(왼쪽 아래 땅에서 오른쪽 위 통로로 오른다): (sx..sx+2, y0+2..y0+5) = `stair_0_u`…`stair_2_l`(줄 u·m·n·l), 머리 (sx+2, y0+1) = `hn_stair`. 발치 땅 칸(sx, y0+6)은 걸을 수 있어야 한다.
+9. 땅 그림자(2층): 북쪽 앞면 밑 줄 y0+6 · 남쪽 앞면 밑 줄 y1+6 에 `sh_s`, 서쪽 성벽 오른쪽 열 x0+2 와 동쪽 성벽 오른쪽 열 x1+1 에 `sh_e`, 겹치는 칸은 `sh_se`. 이미 2·3층에 무엇이 있는 칸에는 두지 않는다.
 10. 성벽 칸의 2·4층(풀꽃·그림자 덧그림)은 비운다. 성벽 안팎 한 칸에는 나무·집을 붙이지 않는다(성벽 마을 도구는 띠를 비워 둔다).
 
 금지: 바닥 칸(1층)에 돌 줄을 칠해 성벽 흉내 내기(3/4 가 깨진 납작한 선), 앞면 없이 윗면만 깔기(face-missing), 끝 마감 없이 통로 끊기(wall-gap), 성문 터널 칸을 위층에 놓기(wrong-layer), 열린 성문 통로에 막힌 조각(gate-blocked).

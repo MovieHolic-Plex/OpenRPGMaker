@@ -2,14 +2,14 @@
 
 2판(#3250)은 사용자 반려·적대 VQA 4/10: 통로가 6~8px 띠, 흉벽이 점선, 망루·성문루가 정면도, 성벽 전체 16색, 그림자 없음.
 3판의 기하(한 칸 = 16px, 화면 기준):
-  가로 성벽(북·남) = 윗면 2줄(통로 판석 + 흉벽) + 앞면 3줄(48px, 버들항 민가 벽 약 30px 보다 높은 마을 성벽).
+  가로 성벽(북·남) = 윗면 2줄(통로 판석 + 흉벽) + 앞면 4줄(64px — 단층 민가 벽·지붕보다 높이 솟은 마을 성벽, r5 에서 3줄 → 4줄).
   세로 성벽(서·동) = 2열 폭 윗면(앞면 없음 — 3/4 에서 옆면은 안 보인다).
-  망루 3×7, 성문루 4×7 = 윗면 플랫폼 3줄(흉벽이 네 변을 두른다) + 앞면 4줄(성벽보다 16px 높고 한 줄 앞으로 내민다).
+  망루 3×8, 성문루 4×8 = 윗면 플랫폼 3줄(흉벽이 네 변을 두른다) + 앞면 5줄(성벽보다 16px 높고 한 줄 앞으로 내민다).
   성문 아치는 두께 있는 터널(안쪽 볼·궁륭 갈빗대·들어 올린 쇠창살·앞쪽이 밝아지는 바닥).
   땅 그림자 조각(2층, 반투명): 앞면 밑·세로 성벽 오른쪽.
 
 빛은 왼쪽 위. 돌은 버들항 왕성 성벽(차가운 밝은 회색·짙은 줄눈), 통로 판석은 왕성 안뜰(따뜻한 분홍 회색).
-돌은 켜마다 5px + 줄눈 1px, 돌마다 윗변 빛·아랫변/오른변 그늘·얼룩·금·이끼. 칸 경계를 넘는 돌은 모든 변형이 같은 모양이라
+돌은 고르지 않은 켜(5~7px) + 줄눈 1px, 아래로 갈수록 얼룩·빗물 자국·이끼, 돌마다 윗변 빛·아랫변/오른변 그늘·얼룩·금·이끼. 칸 경계를 넘는 돌은 모든 변형이 같은 모양이라
 어느 변형끼리 붙어도 이어진다. 그림은 행 문자열 대신 규칙 함수가 점을 찍는다(농장 3판과 같은 코드 손 도트, 생성 이미지 없음).
 """
 import math
@@ -147,18 +147,26 @@ def mortar_row(cv, y, x0, x1, seed):
         cv.set(x, y, MORT2 if h(seed, x, y, "mo") % 7 == 0 else MORT)
 
 
-# ================================================================ 앞면 (한 열 16×48 = 위·가운데·아래 칸)
-FACE_H = 48
+# ================================================================ 앞면 (한 열 16×64 = 네 칸: 위 u · 가운데 m · 아래 n · 굽도리 l)
+FACE_H = 64
+FACE_ROWS = ("u", "m", "n", "l")
 COURSE_TOP = 4            # 0~3 = 갓돌 띠(string course)
-COURSES = 6               # 켜 6 × 6px = y4~39
-PLINTH_Y = 40             # 40~47 = 굽도리(내민 기초 켜)
-# 칸 경계를 넘는 돌(켜 0·2·4): (돌 왼끝 x, 돌 오른끝 x) — 왼끝은 이 칸, 오른끝은 다음 칸(+16)
-CROSS = {0: (12, 19), 2: (10, 17), 4: (14, 21)}
-CROSS_TONE = {0: COOL[8], 2: WARM[6], 4: COOL[7]}
+# 켜 높이(돌 높이, 밑에 줄눈 1px) — 고르지 않은 켜가 손으로 쌓은 성벽처럼 읽힌다. y4 ~ y51
+COURSE_H = (6, 5, 7, 5, 6, 7, 5)
+COURSES = len(COURSE_H)
+PLINTH_Y = COURSE_TOP + sum(COURSE_H) + COURSES       # 52 — 52~63 굽도리(내민 기초 켜)
+# 칸 경계를 넘는 돌(켜 0·2·4·6): (돌 왼끝 x, 돌 오른끝 x) — 왼끝은 이 칸, 오른끝은 다음 칸(+16)
+CROSS = {0: (12, 19), 2: (10, 17), 4: (13, 21), 6: (11, 18)}
+CROSS_TONE = {0: COOL[8], 2: WARM[6], 4: COOL[7], 6: COOL[6]}
+
+
+def course_top(k):
+    return COURSE_TOP + sum(COURSE_H[:k]) + k
 
 
 def face_column(var, *, left="", right="", seed=0):
-    """앞면 한 열(16×48). var 0~3 은 칸 안쪽 돌 배치·색·금·이끼만 다르고, 칸 경계를 넘는 돌은 모든 변형이 같다.
+    """앞면 한 열(16×64). var 0~3 은 칸 안쪽 돌 배치·색·금·이끼·빗물 자국만 다르고, 칸 경계를 넘는 돌은 모든 변형이 같다.
+    아래로 갈수록 돌이 어둡고 얼룩지며(빗물·흙), 맨 아래 켜와 굽도리에 이끼가 낀다.
     left: 'end' 모서리 돌 + 윤곽 · 'shadow' 왼쪽 물체 그늘. right: 'end'."""
     cv = Canvas(16, FACE_H)
     s = ("face", var, seed)
@@ -167,53 +175,79 @@ def face_column(var, *, left="", right="", seed=0):
         cv.set(x, 0, COOL[10]); cv.set(x, 1, COOL[9] if (x + 5) % 8 else COOL[8]); cv.set(x, 2, COOL[7] if (x + 5) % 8 else COOL[6])
         cv.set(x, 3, OUT2 if (x + 5) % 8 in (0, 1) else MORT)
     for k in range(COURSES):
-        y0 = COURSE_TOP + 6 * k
-        mortar_row(cv, y0 + 5, 0, 15, (s, k))
-        lower = k >= 4
+        y0 = course_top(k); hh = COURSE_H[k]; y1 = y0 + hh - 1
+        mortar_row(cv, y1 + 1, 0, 15, (s, k))
+        depth = k / (COURSES - 1)                 # 0 위 → 1 아래
         if k in CROSS:
             a, b = CROSS[k]
-            # 이 칸의 넘는 돌(오른쪽)과 앞 칸에서 넘어온 돌(왼쪽) — 모양·색 고정
             for off in (0, -16):
-                stone(cv, a + off, y0, b + off, y0 + 4, CROSS_TONE[k], ("cross", k), clip=(0, 15))
-            cv.rect(a - 1, y0, a - 1, y0 + 4, MORT); cv.rect(b - 15, y0, b - 15, y0 + 4, MORT)   # 넘는 돌 양 끝 줄눈
-            xs = [b - 15 + 1, a - 2]              # 가운데 돌 하나(또는 둘)
-            if xs[1] - xs[0] >= 8 and h(s, k, "split") % 2:
-                m = xs[0] + 3 + h(s, k, "sp") % (xs[1] - xs[0] - 5)
-                cv.rect(m, y0, m, y0 + 4, MORT)
+                stone(cv, a + off, y0, b + off, y1, CROSS_TONE[k], ("cross", k), clip=(0, 15), weather=1 if depth > 0.5 else 0)
+            cv.rect(a - 1, y0, a - 1, y1, MORT); cv.rect(b - 15, y0, b - 15, y1, MORT)
+            xs = [b - 15 + 1, a - 2]
+            if xs[1] - xs[0] >= 7 and h(s, k, "split") % 3:
+                m = xs[0] + 3 + h(s, k, "sp") % max(1, xs[1] - xs[0] - 5)
+                cv.rect(m, y0, m, y1, MORT)
                 parts = [(xs[0], m - 1), (m + 1, xs[1])]
             else: parts = [tuple(xs)]
         else:
-            cv.rect(15, y0, 15, y0 + 4, MORT)     # 칸 경계 줄눈
-            j = 5 + h(s, k, "j") % 6
-            cv.rect(j, y0, j, y0 + 4, MORT)
-            parts = [(0, j - 1), (j + 1, 14)]
+            cv.rect(15, y0, 15, y1, MORT)          # 칸 경계 줄눈
+            # 큰 돌 하나 + 작은 돌, 또는 세 덩이 — 변형마다 다르다
+            if h(s, k, "three") % 3 == 0:
+                j1 = 3 + h(s, k, "j1") % 4; j2 = j1 + 4 + h(s, k, "j2") % 4
+                j2 = min(j2, 12)
+                cv.rect(j1, y0, j1, y1, MORT); cv.rect(j2, y0, j2, y1, MORT)
+                parts = [(0, j1 - 1), (j1 + 1, j2 - 1), (j2 + 1, 14)]
+            else:
+                j = 3 + h(s, k, "j") % 10
+                cv.rect(j, y0, j, y1, MORT)
+                parts = [(0, j - 1), (j + 1, 14)]
         for i, (p0, p1) in enumerate(parts):
+            if p1 < p0: continue
             tone = STONE_TONES[h(s, k, i, "t") % len(STONE_TONES)]
-            if lower and h(s, k, i, "dk") % 3 == 0: tone = step(tone, -1)
-            stone(cv, p0, y0, p1, y0 + 4, tone, (s, k, i), crack=h(s, k, i, "cr") % 9 == 0,
-                  moss=(1 + h(s, k, i, "mo") % 2) if (k == COURSES - 1 and h(s, k, i, "m") % 3 == 0) else 0, weather=1 if lower else 0)
-    # 굽도리: 내민 턱(빛) + 큰 돌 + 짙은 밑
+            if depth > 0.6 and h(s, k, i, "dk") % 2 == 0: tone = step(tone, -1)
+            if depth > 0.9 and h(s, k, i, "dk2") % 3 == 0: tone = step(tone, -1)
+            stone(cv, p0, y0, p1, y1, tone, (s, k, i), crack=h(s, k, i, "cr") % 7 == 0,
+                  moss=(1 + h(s, k, i, "mo") % 2) if (k == COURSES - 1 and h(s, k, i, "m") % 2 == 0) else 0,
+                  weather=1 if depth > 0.4 else 0)
+            # 깨진 모서리(돌 귀퉁이 한 점이 줄눈 색)
+            if p1 - p0 >= 4 and h(s, k, i, "chip") % 4 == 0:
+                cx = p0 if h(s, k, i, "cs") % 2 else p1
+                cv.set(cx, y0 if h(s, k, i, "cy") % 2 else y1, MORT)
+    # 빗물 자국: 갓돌 밑에서 흘러내린 짙은 줄 1~2개(변형마다 자리·길이 다름) — 돌·줄눈 모두 한 단 어둡게, 끝은 성기게
+    for n in range(1 + var % 2):
+        sx = 2 + h(s, n, "rx") % 12
+        ln = 10 + h(s, n, "rl") % 22
+        for y in range(COURSE_TOP, min(PLINTH_Y, COURSE_TOP + ln)):
+            if y > COURSE_TOP + ln - 6 and y % 2: continue
+            cv.shade(sx, y, -1)
+            if h(s, n, y, "rw") % 3 == 0: cv.shade(sx + 1, y, -1)
+    # 굽도리 12행: 내민 턱(빛 2행 + 그늘 1행) + 큰 돌 7행(흙물·이끼) + 줄눈 + 짙은 밑
     py = PLINTH_Y
     for x in range(16):
-        cv.set(x, py, COOL[10] if x % 8 else COOL[9]); cv.set(x, py + 1, COOL[7])
+        cv.set(x, py, COOL[10] if x % 8 else COOL[9]); cv.set(x, py + 1, COOL[8]); cv.set(x, py + 2, COOL[5])
     for (p0, p1) in ((0, 6), (8, 14)):
         tone = [COOL[6], COOL[7], WARM[4], COOL[5]][h(s, p0, "pl") % 4]
-        stone(cv, p0, py + 2, p1, py + 5, tone, (s, "pl", p0), moss=h(s, p0, "plm") % 3, weather=1)
-    cv.rect(7, py + 2, 7, py + 5, MORT); cv.rect(15, py + 2, 15, py + 5, MORT)
+        stone(cv, p0, py + 3, p1, py + 9, tone, (s, "pl", p0), moss=1 + h(s, p0, "plm") % 3, weather=1)
+        for x in range(p0, p1 + 1):          # 흙물: 아래 두 행이 한 단 더 어둡다
+            for y in (py + 8, py + 9):
+                if h(s, x, y, "mud") % 3: cv.shade(x, y, -1)
+    cv.rect(7, py + 3, 7, py + 9, MORT); cv.rect(15, py + 3, 15, py + 9, MORT)
     for x in range(16):
-        cv.set(x, py + 6, MORT if h(s, x, "b") % 5 else OUT2); cv.set(x, py + 7, OUT2)
+        cv.set(x, py + 10, MORT if h(s, x, "b") % 5 else OUT2); cv.set(x, py + 11, OUT2)
+        if h(s, x, "tuft") % 6 == 0: cv.set(x, py + 10, MOSS[1 + h(s, x, "tc") % 2])    # 기초 밑 풀·이끼
     if var == 3 and not left and not right:      # 물빼기 구멍 + 그 밑으로 흘러내린 물때
-        cv.rect(6, 28, 8, 29, OUT); cv.set(6, 27, MORT); cv.set(7, 27, MORT)
-        for y in range(30, 39):
+        dy = course_top(3)
+        cv.rect(6, dy + 1, 8, dy + 2, OUT); cv.set(6, dy, MORT); cv.set(7, dy, MORT)
+        for y in range(dy + 3, PLINTH_Y):
             if cv.get(7, y) not in (MORT, MORT2): cv.shade(7, y, -1)
-            if y < 34 and cv.get(8, y) not in (MORT, MORT2): cv.shade(8, y, -1)
-        cv.set(7, 30, MOSS[0]); cv.set(8, 30, MOSS[1])
-    if var == 1 and not left and not right:      # 비계 구멍 둘(어두운 네모 + 아래 빛 턱)
-        for (px, py) in ((10, 23),):
-            cv.set(px, py, WOOD[4]); cv.set(px + 1, py, WOOD[3]); cv.set(px, py + 1, WOOD[2]); cv.set(px + 1, py + 1, WOOD[1])
-            cv.set(px + 2, py + 1, MORT); cv.set(px, py + 2, MORT); cv.set(px + 1, py + 2, MORT)
-    if var == 2 and not left and not right:      # 화살 구멍(갓돌 밑 세 켜)
-        arrow_slit(cv, 7, 8, 14)
+            if y < dy + 8 and cv.get(8, y) not in (MORT, MORT2): cv.shade(8, y, -1)
+        cv.set(7, dy + 3, MOSS[0]); cv.set(8, dy + 3, MOSS[1])
+    if var == 1 and not left and not right:      # 비계 들보 끝(나무)
+        px, py2 = 10, course_top(3) + 1
+        cv.set(px, py2, WOOD[4]); cv.set(px + 1, py2, WOOD[3]); cv.set(px, py2 + 1, WOOD[2]); cv.set(px + 1, py2 + 1, WOOD[1])
+        cv.set(px + 2, py2 + 1, MORT); cv.set(px, py2 + 2, MORT); cv.set(px + 1, py2 + 2, MORT)
+    if var == 2 and not left and not right:      # 화살 구멍(갓돌 밑 네 켜)
+        arrow_slit(cv, 7, 8, 18)
     if left == "end": _quoins(cv, "L")
     if right == "end": _quoins(cv, "R")
     if left == "shadow": _cast_shadow_left(cv)
@@ -223,21 +257,20 @@ def face_column(var, *, left="", right="", seed=0):
 def _quoins(cv, side):
     """모서리 돌: 켜마다 긴 돌(9px)·짧은 돌(5px)을 번갈아, 바깥 열은 윤곽."""
     for k in range(COURSES):
-        y0 = COURSE_TOP + 6 * k
+        y0 = course_top(k); y1 = y0 + COURSE_H[k] - 1
         w = 9 if k % 2 == 0 else 5
         if side == "L":
             x0, x1 = 1, w
-            cv.rect(x1 + 1, y0, x1 + 1, y0 + 4, MORT)
+            cv.rect(x1 + 1, y0, x1 + 1, y1, MORT)
         else:
             x0, x1 = 15 - w, 14
-            cv.rect(x0 - 1, y0, x0 - 1, y0 + 4, MORT)
-        stone(cv, x0, y0, x1, y0 + 4, COOL[9] if k % 2 == 0 else COOL[8], ("q", side, k))
+            cv.rect(x0 - 1, y0, x0 - 1, y1, MORT)
+        stone(cv, x0, y0, x1, y1, COOL[9] if k % 2 == 0 else COOL[8], ("q", side, k))
         if side == "R":
-            for y in range(y0, y0 + 5): cv.shade(x1, y, -1)
+            for y in range(y0, y1 + 1): cv.shade(x1, y, -1)
     xo = 0 if side == "L" else 15
     for y in range(FACE_H):
         cv.set(xo, y, OUT2 if y < FACE_H - 1 else OUT)
-    # 갓돌·굽도리 끝을 둥글게 닫는다
     xi = 1 if side == "L" else 14
     cv.set(xi, 0, COOL[9] if side == "L" else COOL[7]); cv.set(xi, PLINTH_Y, COOL[9] if side == "L" else COOL[7])
 
@@ -527,7 +560,7 @@ def stairs():
     Wd = 16 * STAIR_W
     for i in range(8):
         x0 = 6 * i
-        ty = FACE_H - 6 * (i + 1)
+        ty = FACE_H - 8 * (i + 1)
         for x in range(x0, Wd):
             for y in range(ty, FACE_H):
                 if y < ty + 3 and x < x0 + 6:          # 디딤판(이 단 위)
@@ -546,7 +579,7 @@ def stairs():
                     elif h("sf2", x, y) % 9 == 0: c = MORT2
                 cv.set(x, y, c)
         # 챌판 모서리(단 앞 끝) 빛 한 열
-        for y in range(ty + 3, min(FACE_H, ty + 6)):
+        for y in range(ty + 3, min(FACE_H, ty + 8)):
             cv.set(x0, y, MORT)
     for x in range(Wd): cv.set(x, FACE_H - 1, OUT)
     return cv
@@ -611,37 +644,47 @@ def corbel_band(cv, x0, x1, y0, seed):
             cv.set(x, y0 + i, c)
 
 
-def masonry(cv, x0, x1, y0, y1, seed, course=6, tones=None):
-    """[x0,x1]×[y0,y1] 에 켜 돌쌓기(돌 6~11px, 켜마다 엇갈림)."""
+def masonry(cv, x0, x1, y0, y1, seed, course=None, tones=None):
+    """[x0,x1]×[y0,y1] 에 켜 돌쌓기(돌 5~12px, 켜 높이는 성벽 앞면과 같은 고르지 않은 줄, 켜마다 엇갈림, 아래로 갈수록 얼룩)."""
     k = 0
     y = y0
-    while y + 4 <= y1:
-        mortar_row(cv, y + 5, x0, x1, (seed, k))
+    while y <= y1:
+        ch = COURSE_H[k % COURSES]
+        if y1 - (y + ch) < 4: ch = y1 - y + 1          # 남은 줄이 한 켜가 못 되면 이 켜를 늘려 끝까지 채운다
+        mortar_row(cv, y + ch, x0, x1, (seed, k))
         x = x0 - (h(seed, k, "o") % 7)
         i = 0
         while x <= x1:
-            w = 6 + h(seed, k, i, "w") % 6
+            w = 5 + h(seed, k, i, "w") % 8
             a, b = x, x + w - 1
             tl = tones or STONE_TONES
             tone = tl[h(seed, k, i, "t") % len(tl)]
-            stone(cv, a, y, b, y + 4, tone, (seed, k, i), clip=(x0, x1), crack=h(seed, k, i, "c") % 11 == 0, weather=1 if y > y1 - 14 else 0)
-            if b + 1 <= x1 and b + 1 >= x0: cv.rect(b + 1, y, b + 1, y + 4, MORT)
+            low = y > y1 - 20
+            if low and h(seed, k, i, "dk") % 2 == 0: tone = step(tone, -1)
+            stone(cv, a, y, b, y + ch - 1, tone, (seed, k, i), clip=(x0, x1), crack=h(seed, k, i, "c") % 8 == 0, weather=1 if low else 0,
+                  moss=1 if (y + ch > y1 - 2 and h(seed, k, i, "m") % 2 == 0) else 0)
+            if b - a >= 4 and h(seed, k, i, "chip") % 4 == 0 and x0 <= a and b <= x1:
+                cv.set(a if h(seed, k, i, "cs") % 2 else b, y if h(seed, k, i, "cy") % 2 else y + ch - 1, MORT)
+            if b + 1 <= x1 and b + 1 >= x0: cv.rect(b + 1, y, b + 1, y + ch - 1, MORT)
             x = b + 2; i += 1
-        y += course; k += 1
+        y += ch + 1; k += 1
 
 
 def quoin_edges(cv, x0, x1, y0, y1):
     """양 끝 모서리 돌(긴 돌·짧은 돌 번갈아)과 윤곽."""
     k = 0
-    for y in range(y0, y1 - 4, 6):
+    y = y0
+    while y <= y1:
+        ch = COURSE_H[k % COURSES]
+        if y1 - (y + ch) < 4: ch = y1 - y + 1
         for side in ("L", "R"):
             w = 8 if (k + (side == "R")) % 2 == 0 else 5
             a, b = (x0 + 1, x0 + w) if side == "L" else (x1 - w, x1 - 1)
-            stone(cv, a, y, b, y + 4, COOL[9] if w == 8 else COOL[8], ("qe", side, k))
+            stone(cv, a, y, b, y + ch - 1, COOL[9] if w == 8 else COOL[8], ("qe", side, k))
             if side == "R":
-                for yy in range(y, y + 5): cv.shade(b, yy, -1)
-            cv.rect(b + 1 if side == "L" else a - 1, y, b + 1 if side == "L" else a - 1, y + 4, MORT)
-        k += 1
+                for yy in range(y, y + ch): cv.shade(b, yy, -1)
+            cv.rect(b + 1 if side == "L" else a - 1, y, b + 1 if side == "L" else a - 1, y + ch - 1, MORT)
+        y += ch + 1; k += 1
     for y in range(y0, y1 + 1):
         cv.set(x0, y, OUT2); cv.set(x1, y, OUT2)
 
@@ -697,31 +740,31 @@ def torch(cv, x, y):
         if c[3] == 255 and c in COOL: cv.set(x + dx, y + dy, WARM[7] if c in COOL[8:] else WARM[5])
 
 
-# ================================================================ 망루 3×7 (48×112)
+# ================================================================ 망루 3×8 (48×128)
 TOWER_TONES = [WARM[6], WARM[5], COOL[8], WARM[6], WARM[4], COOL[7], WARM[7], WARM[5]]
 def tower():
-    """망루: 윗면 플랫폼(0~47) + 받침돌 띠 + 앞면 64px(48~111, 화살 구멍 둘·모서리 돌·굽도리). 성벽보다 16px 높고 한 줄 앞으로 내민다."""
+    """망루 3×8: 윗면 플랫폼(0~47) + 받침돌 띠 + 앞면 80px(48~127, 화살 구멍 둘·모서리 돌·굽도리). 성벽보다 16px 높고 한 줄 앞으로 내민다."""
     W = 48
-    cv = Canvas(W, 112)
+    cv = Canvas(W, 128)
     cv.paste(platform(W, ("tw",)), 0, 0)
-    face = Canvas(W, 64)
-    masonry(face, 1, W - 2, 6, 53, ("twf",), tones=TOWER_TONES)
+    face = Canvas(W, 80)
+    masonry(face, 1, W - 2, 6, 69, ("twf",), tones=TOWER_TONES)
     corbel_band(face, 0, W - 1, 0, ("twc",))
-    quoin_edges(face, 0, W - 1, 6, 53)
-    plinth(face, 0, W - 1, 54, ("twp",))
-    arrow_slit(face, 23, 14, 11)
-    arrow_slit(face, 23, 38, 8)
+    quoin_edges(face, 0, W - 1, 6, 69)
+    plinth(face, 0, W - 1, 70, ("twp",))
+    arrow_slit(face, 23, 15, 12)
+    arrow_slit(face, 23, 44, 10)
     # 앞면 오른쪽 끝 두 열은 그늘(빛이 왼쪽 위)
-    for y in range(6, 54):
+    for y in range(6, 70):
         face.shade(W - 3, y, -1)
     cv.paste(face, 0, 48)
     return cv
 
 
-# ================================================================ 성문루 4×7 (64×112)
+# ================================================================ 성문루 4×8 (64×128)
 ARCH_CX = 31.5          # 아치 가운데(x 31|32 사이)
 ARCH_R = 16             # 열린 반폭: x 16~47 = 통로 두 칸(cx 1·2)과 정확히 같다
-ARCH_SPRING = 28        # 앞면 y(0=앞면 위) — 이 줄 아래는 곧은 문설주
+ARCH_SPRING = 44        # 앞면 y(0=앞면 위) — 이 줄 아래는 곧은 문설주
 RING = 5                # 홍예 두께
 
 
@@ -745,19 +788,19 @@ def gatehouse(closed=False):
     """성문루 64×112: 윗면 플랫폼(0~47) + 앞면(48~111). 반환 (위층 그림, 아래층 그림 — 통로 칸(cx 1·2, cy 4~6)의 터널 안).
     아래층 그림의 바닥은 투명(맵 길이 보인다)이고 안쪽으로 갈수록 반투명 그늘이 짙다."""
     W = 64
-    up = Canvas(W, 112)
-    lo = Canvas(W, 112)
+    up = Canvas(W, 128)
+    lo = Canvas(W, 128)
     up.paste(platform(W, ("gh",), hatch=False), 0, 0)
     # 쇠창살 내리는 틈(통로 위 바닥에 가로로 난 홈) + 들창
     for x in range(17, 47):
         up.set(x, 27, OUT); up.set(x, 28, IRON[1] if x % 3 else OUT); up.set(x, 29, FLAG[3])
     for x in range(17, 47, 3): up.set(x, 26, FLAG[3])
-    face = Canvas(W, 64)
-    masonry(face, 1, W - 2, 6, 53, ("ghf",))
+    face = Canvas(W, 80)
+    masonry(face, 1, W - 2, 6, 69, ("ghf",))
     corbel_band(face, 0, W - 1, 0, ("ghc",))
-    quoin_edges(face, 0, W - 1, 6, 53)
-    plinth(face, 0, W - 1, 54, ("ghp",))
-    for y in range(6, 54): face.shade(W - 3, y, -1)
+    quoin_edges(face, 0, W - 1, 6, 69)
+    plinth(face, 0, W - 1, 70, ("ghp",))
+    for y in range(6, 70): face.shade(W - 3, y, -1)
     # 홍예(아치 테): 쐐기돌 13개(방사 줄눈), 바깥 테 줄눈, 안쪽 모서리 왼쪽 빛·오른쪽 그늘, 맨 위 쐐기돌은 가장 밝다
     import math
     CX = 32.0
@@ -784,16 +827,16 @@ def gatehouse(closed=False):
             face.set(x, ARCH_SPRING - 1, MORT); face.set(x, ARCH_SPRING, COOL[10] if x < 32 else COOL[8])
             face.set(x, ARCH_SPRING + 1, COOL[8] if x < 32 else COOL[6]); face.set(x, ARCH_SPRING + 2, OUT2)
     # 문설주: 열림 바깥 3px 돌(왼쪽 빛·오른쪽 그늘), 켜마다 줄눈
-    for fy in range(ARCH_SPRING + 3, 54):
+    for fy in range(ARCH_SPRING + 3, 70):
         for i, x in enumerate((12, 13, 14, 15)):
             face.set(x, fy, [COOL[7], COOL[8], COOL[10], COOL[9]][i] if (fy - ARCH_SPRING) % 6 else MORT)
         for i, x in enumerate((48, 49, 50, 51)):
             face.set(x, fy, [COOL[5], COOL[7], COOL[6], COOL[5]][i] if (fy - ARCH_SPRING) % 6 else MORT)
     # 횃불
-    torch(face, 6, 36); torch(face, 57, 36)
-    banner(face, 2, 7); banner(face, 54, 7)
+    torch(face, 6, 50); torch(face, 57, 50)
+    banner(face, 2, 9); banner(face, 54, 9)
     # 열림: 위층에서 비우고 아래층(터널)에 그린다. 터널 안 = 궁륭 밑면(갈빗대) + 좌우 안벽 + 바닥 그늘
-    for fy in range(64):
+    for fy in range(80):
         ho = _arch_half(fy)
         if ho < 0: continue
         for x in range(W):
@@ -818,16 +861,16 @@ def gatehouse(closed=False):
                 # 문설주 안벽(터널 옆벽): 왼쪽 조금 밝은 돌, 오른쪽 그늘 돌, 줄눈 없이 — 안쪽 끝 1px 윤곽
                 c = (COOL[5] if inner >= 1 else COOL[6]) if left else (COOL[3] if inner >= 1 else COOL[4])
                 if inner >= 2: c = OUT2
-                if fy >= ARCH_SPRING + 30: c = SH1 if inner >= 1 else c
-            elif far < 11.5 and fy <= ARCH_SPRING + 12:
+                if fy >= ARCH_SPRING + 26: c = SH1 if inner >= 1 else c
+            elif far < 11.5 and fy <= ARCH_SPRING + 8:
                 # 터널 저쪽 출구: 밖의 밝은 땅이 비친다(아래 길이 반투명하게 보인다)
                 c = SH2 if far < 10.5 else OUT2
-            elif fy <= ARCH_SPRING + 12:
+            elif fy <= ARCH_SPRING + 8:
                 c = OUT if fy < ARCH_SPRING - 2 else OUT2
-            elif fy < ARCH_SPRING + 20: c = SH0
-            elif fy < ARCH_SPRING + 28: c = SH1
-            elif fy < ARCH_SPRING + 34: c = SH2
-            elif fy < ARCH_SPRING + 38: c = SH3 if (x + fy) % 2 else CLEAR
+            elif fy < ARCH_SPRING + 16: c = SH0
+            elif fy < ARCH_SPRING + 24: c = SH1
+            elif fy < ARCH_SPRING + 30: c = SH2
+            elif fy < ARCH_SPRING + 34: c = SH3 if (x + fy) % 2 else CLEAR
             else: c = CLEAR
             lo.set(x, Y, c)
     if not closed:
@@ -844,7 +887,7 @@ def gatehouse(closed=False):
                 elif k == 2 and fy < ARCH_SPRING + 1: lo.set(x, Y, IRON[1])
     else:
         # 닫힌 문: 아치 안 한 단 뒤로 물린 널 문짝 두 짝(돌 안벽 2px이 둘레에 보인다), 쇠띠·징·고리
-        for fy in range(64):
+        for fy in range(80):
             ho = _arch_half(fy)
             if ho < 0: continue
             for x in range(W):
@@ -863,12 +906,12 @@ def gatehouse(closed=False):
                     if x in (31, 32): c = WOOD[0] if x == 32 else WOOD[2]
                     if fy in (ARCH_SPRING - 2, ARCH_SPRING + 18): c = IRON[2] if k == 1 else IRON[1]
                     if fy in (ARCH_SPRING - 1, ARCH_SPRING + 19): c = IRON[0]
-                    if fy >= 62: c = WOOD[0]
+                    if fy >= 78: c = WOOD[0]
                 face.set(x, fy, c)
-        for (x, y) in ((27, 42), (36, 42)):
+        for (x, y) in ((27, 58), (36, 58)):
             face.set(x, y, IRON[2]); face.set(x - 1, y + 1, IRON[1]); face.set(x + 1, y + 1, IRON[1]); face.set(x, y + 2, IRON[1])
         for x in range(19, 46, 4):
-            for y in (ARCH_SPRING + 8, ARCH_SPRING + 28):
+            for y in (ARCH_SPRING + 4, ARCH_SPRING + 28):
                 if face.get(x, y) in WOOD: face.set(x, y, IRON[2])
     up.paste(face, 0, 48)
     return up, lo
@@ -939,46 +982,63 @@ def pieces():
         for cx in (0, 1):
             P(f"{nm}_endS_{cx}", cut(es, cx, 0), "UR" if cx == 0 else "UL", f"{'서' if side == 'W' else '동'}쪽 성벽 남쪽 끝(아래에 끝 앞면 세 줄), 열 {cx}")
             P(f"{nm}_endN_{cx}", cut(en, cx, 0), "DR" if cx == 0 else "DL", f"{'서' if side == 'W' else '동'}쪽 성벽 북쪽 끝(뒤 흉벽이 감싼다), 열 {cx}")
-    # --- 앞면(위 u · 가운데 m · 아래 l) × 변형 4 + 끝·그늘
-    rows = ("u", "m", "l")
-    for v in range(FACE_VARS):
-        f = face_column(v)
-        for i, r in enumerate(rows):
-            P(f"f_{r}_{'abcd'[v]}", cut(f, 0, i), "", f"성벽 앞면 {'위 가운데 아래'.split()[i]} 칸(변형 {'abcd'[v]})")
-    for tag, kw, d in (("endL", dict(left="end"), "왼쪽 끝(모서리 돌·윤곽)"), ("endR", dict(right="end"), "오른쪽 끝"), ("shL", dict(left="shadow"), "왼쪽 물체 그늘")):
-        f = face_column(1 if tag == "endR" else 0, **kw)
-        for i, r in enumerate(rows):
-            P(f"f_{r}_{tag}", cut(f, 0, i), "", f"성벽 앞면 {'위 가운데 아래'.split()[i]} 칸 — {d}")
-    # --- 계단
+    # 앞면은 네 줄(u 위 · m 가운데 · n 아래 · l 굽도리). n 줄은 3판 r5 에서 덧붙였다 — 앞 조각 번호를 지키려고 맨 끝에 놓는다.
+    ROWN = {"u": 0, "m": 1, "n": 2, "l": 3}
+    ROWD = {"u": "위", "m": "가운데", "n": "아래", "l": "굽도리"}
+    fcols = {v: face_column(v) for v in range(FACE_VARS)}
+    ends = [("endL", face_column(0, left="end"), "왼쪽 끝(모서리 돌·윤곽)"), ("endR", face_column(1, right="end"), "오른쪽 끝"),
+            ("shL", face_column(0, left="shadow"), "왼쪽 물체 그늘")]
     st = stairs()
-    for i, r in enumerate(rows):
-        for cx in range(STAIR_W):
-            P(f"stair_{cx}_{r}", cut(st, cx, i), "UDLR", f"북쪽 성벽 안쪽 옆 계단 3×3({'위 가운데 아래'.split()[i]} 줄, 열 {cx}) — 왼쪽 아래 땅에서 오른쪽 위 통로로 오른다")
-    # --- 성문루 4×7
     gu, gl = gatehouse(False)
     cu, _cl = gatehouse(True)
-    for cy in range(7):
-        for cx in range(4):
-            passage = cx in (1, 2)
-            if passage:
-                merged = cut(gl, cx, cy); merged.paste(cut(gu, cx, cy), 0, 0)
-            if passage and cy >= 4:
-                P(f"gate_{cx}_{cy}", merged, "UD", "성문루 아치 안 터널(아래층, 걸음 — 바닥은 투명해 길이 보인다)", layer="lower")
-            elif passage:
-                P(f"gate_{cx}_{cy}", merged, "UD", "성문루 " + ("윗면 플랫폼" if cy < 3 else "아치 머리") + " — 통로 위(★, 사람이 밑으로 지나간다)", star=True)
-            else:
-                P(f"gate_{cx}_{cy}", cut(gu, cx, cy), "", "성문루 " + ("윗면 플랫폼(막힘)" if cy < 3 else "앞면 기둥(막힘)"))
-    for cy in range(3, 7):
-        for cx in (1, 2):
-            P(f"gatec_{cx}_{cy}", cut(cu, cx, cy), "", "닫힌 성문(아치 안 널 문짝 두 짝, 막힘)")
-    # --- 망루 3×7
     tw = tower()
-    for cy in range(7):
-        for cx in range(3):
-            if cy in (1, 2):
-                P(f"tower_{cx}_{cy}", cut(tw, cx, cy), "LRUD" if cy == 2 else "LRD", "망루 윗면 — 성벽 통로가 망루를 지나간다(★, 동서)", star=True)
-            else:
-                P(f"tower_{cx}_{cy}", cut(tw, cx, cy), "", "망루 " + ("윗면 플랫폼" if cy < 3 else "앞면(화살 구멍·모서리 돌)"))
+
+    def face_pieces(rows):
+        for v in range(FACE_VARS):
+            for r in rows:
+                P(f"f_{r}_{'abcd'[v]}", cut(fcols[v], 0, ROWN[r]), "", f"성벽 앞면 {ROWD[r]} 칸(변형 {'abcd'[v]})")
+        for tag, f, d in ends:
+            for r in rows:
+                P(f"f_{r}_{tag}", cut(f, 0, ROWN[r]), "", f"성벽 앞면 {ROWD[r]} 칸 — {d}")
+
+    def stair_pieces(rows):
+        for r in rows:
+            for cx in range(STAIR_W):
+                P(f"stair_{cx}_{r}", cut(st, cx, ROWN[r]), "UDLR", f"북쪽 성벽 안쪽 옆 계단 3×4({ROWD[r]} 줄, 열 {cx}) — 왼쪽 아래 땅에서 오른쪽 위 통로로 오른다")
+
+    def gate_pieces(cys):
+        for cy in cys:
+            for cx in range(4):
+                passage = cx in (1, 2)
+                if passage:
+                    merged = cut(gl, cx, cy); merged.paste(cut(gu, cx, cy), 0, 0)
+                if passage and cy >= 4:
+                    P(f"gate_{cx}_{cy}", merged, "UD", "성문루 아치 안 터널(아래층, 걸음 — 바닥은 투명해 길이 보인다)", layer="lower")
+                elif passage:
+                    P(f"gate_{cx}_{cy}", merged, "UD", "성문루 " + ("윗면 플랫폼" if cy < 3 else "아치 머리") + " — 통로 위(★, 사람이 밑으로 지나간다)", star=True)
+                else:
+                    P(f"gate_{cx}_{cy}", cut(gu, cx, cy), "", "성문루 " + ("윗면 플랫폼(막힘)" if cy < 3 else "앞면 기둥(막힘)"))
+
+    def gatec_pieces(cys):
+        for cy in cys:
+            for cx in (1, 2):
+                P(f"gatec_{cx}_{cy}", cut(cu, cx, cy), "", "닫힌 성문(아치 안 널 문짝 두 짝, 막힘)")
+
+    def tower_pieces(cys):
+        for cy in cys:
+            for cx in range(3):
+                if cy in (1, 2):
+                    P(f"tower_{cx}_{cy}", cut(tw, cx, cy), "LRUD" if cy == 2 else "LRD", "망루 윗면 — 성벽 통로가 망루를 지나간다(★, 동서)", star=True)
+                else:
+                    P(f"tower_{cx}_{cy}", cut(tw, cx, cy), "", "망루 " + ("윗면 플랫폼" if cy < 3 else "앞면(화살 구멍·모서리 돌)"))
+
+    face_pieces(("u", "m", "l"))
+    stair_pieces(("u", "m", "l"))
+    # --- 성문루 4×8
+    gate_pieces(range(7))
+    gatec_pieces(range(3, 7))
+    # --- 망루 3×8
+    tower_pieces(range(7))
     # --- 땅 그림자(2층)
     for k, d in (("s", "앞면 밑 땅"), ("e", "세로 성벽·망루 오른쪽 땅"), ("se", "앞면 밑 + 오른쪽 모서리")):
         P(f"sh_{k}", shadow(k), "LRUD", f"성벽 그림자(2층 반투명, {d}). 걸음", layer="lower")
@@ -996,6 +1056,12 @@ def pieces():
             v = vert_wall(side, 0, r)
             P(f"{nm}{r}_0", cut(v, 0, 0), "UDR", f"{'서' if side == 'W' else '동'}쪽 성벽 윗면 왼쪽 열(변형 {r})")
             P(f"{nm}{r}_1", cut(v, 1, 0), "UDL", f"{'서' if side == 'W' else '동'}쪽 성벽 윗면 오른쪽 열(변형 {r})")
+    # --- 3판 r5: 앞면 네 줄째(n)·계단 네 줄째·성문루·망루 여덟 줄째(앞 조각 번호는 그대로)
+    face_pieces(("n",))
+    stair_pieces(("n",))
+    gate_pieces((7,))
+    gatec_pieces((7,))
+    tower_pieces((7,))
     return out
 
 

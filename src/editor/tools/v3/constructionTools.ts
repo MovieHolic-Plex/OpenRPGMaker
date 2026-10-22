@@ -1076,7 +1076,8 @@ const fillRegion: ToolDefinition = {
     const maskCells = pathCells ?? cellsInFillShape(map, rect, shape);
     // 벽과의 1칸 틈 메우기는 MV 팩에서 끈다 — 건물·울타리·물체가 모두 「벽」이라 옥상이 울타리 쪽으로 혹처럼 자라고
     // 이웃 건물과 붙어 버린다(2026-09-25 헤드리스 실측: 7×3 옥상이 30칸). 조수가 준 사각형 그대로 칠한다.
-    const allCells = tileset.mvPack || tileset.autotileGroups?.some(g => g.id === 'worldmap-brush-grass-sea')
+    // _exactCells(내부 호출 전용, 스키마에 없다): 마을 시공기가 성문 길처럼 정확한 칸만 칠할 때 — 틈 메우기가 옆 칸에 길 가장자리를 번지게 했다
+    const allCells = tileset.mvPack || tileset.autotileGroups?.some(g => g.id === 'worldmap-brush-grass-sea') || (args as { _exactCells?: unknown })._exactCells === true
       ? maskCells : expandCellsAgainstWalls(draft, map, maskCells);
     const gapCells = allCells.length - maskCells.length;
     if (allCells.length === 0) {

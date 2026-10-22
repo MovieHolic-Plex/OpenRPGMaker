@@ -3,12 +3,12 @@
  * 버들항 시트 꼬리 28,544~ 에 구웠다. 조각 이름 → 칸 번호는 src/assets/beodeulTownWallPieces.json(굽기가 쓴다).
  *
  * 둘레 규칙은 bake_wall.py 의 plan_ring 과 같다(조립 예 키트 bd-wall-ring-sample 이 그 결과다):
- * - 통로 사각형 북 y0 · 남 y1 · 서 x0 · 동 x1. 가로 성벽(북·남)은 윗면 두 줄(판석 통로 + 흉벽) + 그 아래 앞면 세 줄,
+ * - 통로 사각형 북 y0 · 남 y1 · 서 x0 · 동 x1. 가로 성벽(북·남)은 윗면 두 줄(판석 통로 + 흉벽) + 그 아래 앞면 네 줄(64px — 단층 민가보다 높다),
  *   세로 성벽(서·동)은 두 열 폭 윗면(x0·x0+1, x1−1·x1). 모서리는 2×2.
  * - 북쪽 성벽은 마을 쪽 앞면(뒤 흉벽 hn), 남쪽 성벽은 바깥 앞면(앞 흉벽 hs). 서·동 성벽은 위만 보인다(3/4).
- * - 가로 성벽을 길이 지나는 곳은 4×7 성문루(가운데 두 열이 통로, yw−1 부터), 세로 성벽을 길이 지나는 곳은 끝 마감 틈(끝 앞면 세 줄).
- * - 망루 3×7 은 가로 성벽 줄에(윗면 플랫폼이 통로 줄 위로 한 줄 솟고, 앞면이 성벽 앞으로 한 줄 내민다 — 통로가 망루 윗면을 ★ 로 지난다),
- *   계단은 북쪽 성벽 앞면 세 줄에 붙인 3×3 옆 계단(왼쪽 아래 땅 → 오른쪽 위 통로, 머리 = 윗면 아래 줄 sx+2).
+ * - 가로 성벽을 길이 지나는 곳은 4×8 성문루(가운데 두 열이 통로, yw−1 부터), 세로 성벽을 길이 지나는 곳은 끝 마감 틈(끝 앞면 네 줄).
+ * - 망루 3×8 은 가로 성벽 줄에(윗면 플랫폼이 통로 줄 위로 한 줄 솟고, 앞면이 성벽 앞으로 한 줄 내민다 — 통로가 망루 윗면을 ★ 로 지난다),
+ *   계단은 북쪽 성벽 앞면 네 줄에 붙인 3×4 옆 계단(왼쪽 아래 땅 → 오른쪽 위 통로, 머리 = 윗면 아래 줄 sx+2).
  * - 땅 그림자 sh_* 는 2층(앞면 밑 줄 · 세로 성벽 오른쪽 열), 이미 2·3층에 무엇이 있는 칸에는 두지 않는다.
  */
 import type { GameMap, TilesetDef } from "@/project/types";
@@ -36,7 +36,9 @@ const hsh = (x: number, y: number, salt: number) => {
   h = (h ^ (h >>> 12)) >>> 0;
   return h & 0xffff;
 };
-const FACE_ROWS = ["u", "m", "l"] as const;
+const FACE_ROWS = ["u", "m", "n", "l"] as const;
+/** 앞면 줄 수(4)와 성문루·망루 높이(8 = 플랫폼이 한 줄 솟고 + 윗면 둘 + 앞면 넷 + 한 줄 앞으로 내민다). */
+const NF = FACE_ROWS.length, GH = 2 + NF + 2, FB = 2 + NF;
 
 /** 둘레 계획 → 위층(3층)·아래층(2층) 칸별 조각 이름. 성문 터널 칸과 땅 그림자는 아래층이다. */
 export function planTownWallRing(p: TownWallPlan): { up: Cells; lo: Cells } {
@@ -72,7 +74,7 @@ export function planTownWallRing(p: TownWallPlan): { up: Cells; lo: Cells } {
   };
   for (const g of p.gates) {
     const yw = g.side === "S" ? y1 : y0;
-    for (let cx = 0; cx < 4; cx += 1) for (let cy = 0; cy < 7; cy += 1) {
+    for (let cx = 0; cx < 4; cx += 1) for (let cy = 0; cy < GH; cy += 1) {
       const k = key(g.x - 1 + cx, yw - 1 + cy);
       up.delete(k); lo.delete(k);
       const n = g.closed && cy >= 3 && (cx === 1 || cx === 2) ? `gatec_${cx}_${cy}` : `gate_${cx}_${cy}`;
@@ -82,17 +84,17 @@ export function planTownWallRing(p: TownWallPlan): { up: Cells; lo: Cells } {
   }
   for (const t of p.towers) {
     const yw = t.side === "S" ? y1 : y0;
-    for (let cx = 0; cx < 3; cx += 1) for (let cy = 0; cy < 7; cy += 1) up.set(key(t.x + cx, yw - 1 + cy), `tower_${cx}_${cy}`);
+    for (let cx = 0; cx < 3; cx += 1) for (let cy = 0; cy < GH; cy += 1) up.set(key(t.x + cx, yw - 1 + cy), `tower_${cx}_${cy}`);
     shadeRight(t.x + 3, yw);
   }
   for (const g of p.gaps) {
     const xa = g.side === "W" ? x0 : x1 - 1, e = g.side === "W" ? "vw" : "ve";
-    up.set(key(xa, g.y - 4), `${e}_endS_0`); up.set(key(xa + 1, g.y - 4), `${e}_endS_1`);
-    FACE_ROWS.forEach((k, i) => { up.set(key(xa, g.y - 3 + i), `f_${k}_endL`); up.set(key(xa + 1, g.y - 3 + i), `f_${k}_endR`); });
+    up.set(key(xa, g.y - 1 - NF), `${e}_endS_0`); up.set(key(xa + 1, g.y - 1 - NF), `${e}_endS_1`);
+    FACE_ROWS.forEach((k, i) => { up.set(key(xa, g.y - NF + i), `f_${k}_endL`); up.set(key(xa + 1, g.y - NF + i), `f_${k}_endR`); });
     for (let i = 0; i < g.rows; i += 1) { up.delete(key(xa, g.y + i)); up.delete(key(xa + 1, g.y + i)); }
     up.set(key(xa, g.y + g.rows), `${e}_endN_0`); up.set(key(xa + 1, g.y + g.rows), `${e}_endN_1`);
   }
-  // 옆 계단 3×3: 왼쪽 아래(sx, y0+4) 땅에서 오른쪽 위(sx+2, y0+2) → 통로(sx+2, y0+1)
+  // 옆 계단 3×4: 왼쪽 아래(sx, y0+5) 땅에서 오른쪽 위(sx+2, y0+2) → 통로(sx+2, y0+1)
   for (const sx of p.stairs) {
     up.set(key(sx + 2, y0 + 1), "hn_stair");
     FACE_ROWS.forEach((k, i) => { for (let cx = 0; cx < 3; cx += 1) up.set(key(sx + cx, y0 + 2 + i), `stair_${cx}_${k}`); });
@@ -105,13 +107,13 @@ export function planTownWallRing(p: TownWallPlan): { up: Cells; lo: Cells } {
     const old = sh.get(c);
     sh.set(c, old && old !== k ? "se" : k);
   };
-  for (let x = x0 + 2; x < x1 - 1; x += 1) putSh(x, y0 + 5, "s");
-  for (let x = x0; x <= x1; x += 1) putSh(x, y1 + 5, "s");
+  for (let x = x0 + 2; x < x1 - 1; x += 1) putSh(x, y0 + FB, "s");
+  for (let x = x0; x <= x1; x += 1) putSh(x, y1 + FB, "s");
   const gapRow = (side: "W" | "E", y: number) => p.gaps.some((g) => g.side === side && y >= g.y && y < g.y + g.rows);
-  for (let y = y0 + 5; y < y1; y += 1) if (!gapRow("W", y)) putSh(x0 + 2, y, "e");
-  for (let y = y0; y < y1 + 5; y += 1) if (!gapRow("E", y)) putSh(x1 + 1, y, "e");
-  for (const t of p.towers) { const yw = t.side === "S" ? y1 : y0; for (let cx = 0; cx < 3; cx += 1) putSh(t.x + cx, yw + 6, "s"); putSh(t.x + 3, yw + 5, "se"); }
-  for (const g of p.gates) { const yw = g.side === "S" ? y1 : y0; for (let cx = 0; cx < 4; cx += 1) putSh(g.x - 1 + cx, yw + 6, "s"); putSh(g.x + 3, yw + 5, "se"); }
+  for (let y = y0 + FB; y < y1; y += 1) if (!gapRow("W", y)) putSh(x0 + 2, y, "e");
+  for (let y = y0; y < y1 + FB; y += 1) if (!gapRow("E", y)) putSh(x1 + 1, y, "e");
+  for (const t of p.towers) { const yw = t.side === "S" ? y1 : y0; for (let cx = 0; cx < 3; cx += 1) putSh(t.x + cx, yw + FB + 1, "s"); putSh(t.x + 3, yw + FB, "se"); }
+  for (const g of p.gates) { const yw = g.side === "S" ? y1 : y0; for (let cx = 0; cx < 4; cx += 1) putSh(g.x - 1 + cx, yw + FB + 1, "s"); putSh(g.x + 3, yw + FB, "se"); }
   for (const g of p.gaps) { const xa = g.side === "W" ? x0 : x1 - 1; putSh(xa, g.y, "s"); putSh(xa + 1, g.y, "s"); }
   for (const [c, k] of sh) lo.set(c, `sh_${k}`);
   return { up, lo };
@@ -150,14 +152,14 @@ export function stampTownWall(map: GameMap, plan: TownWallPlan): number {
 }
 
 /**
- * 둘레 자리: 통로 사각형(서 1 · 북 2 · 동 W-2 · 남 H-7)과 망루 후보 자리. inBand = 마을 시공이 집·나무·소품을 앉히지 않는 칸
- * (세로 성벽 두 열과 그 밖 + 북쪽 윗면·앞면 다섯 줄과 그 앞 땅 한 줄 + 남쪽 성문루·망루 머리 한 줄부터 아래). 길은 이 띠를 지나도 된다 — 지나는 곳이 성문·틈이 된다.
+ * 둘레 자리: 통로 사각형(서 1 · 북 2 · 동 W-2 · 남 H-8)과 망루 후보 자리. inBand = 마을 시공이 집·나무·소품을 앉히지 않는 칸
+ * (세로 성벽 두 열과 그 밖 + 북쪽 윗면·앞면 여섯 줄과 그 앞 땅 한 줄 + 남쪽 성문루·망루 머리 한 줄부터 아래). 길은 이 띠를 지나도 된다 — 지나는 곳이 성문·틈이 된다.
  */
 export function townWallLayout(W: number, H: number): { x0: number; y0: number; x1: number; y1: number; towers: WallTower[]; inBand: (x: number, y: number) => boolean } {
-  const x0 = 1, y0 = 2, x1 = W - 2, y1 = H - 7;
+  const x0 = 1, y0 = 2, x1 = W - 2, y1 = H - 2 - FB;
   const towers: WallTower[] = [
     { side: "S", x: Math.round(W * 0.2) - 1 }, { side: "S", x: Math.round(W * 0.8) - 2 },
     { side: "N", x: Math.round(W * 0.28) - 1 }, { side: "N", x: Math.round(W * 0.72) - 2 },
   ];
-  return { x0, y0, x1, y1, towers, inBand: (x, y) => x <= x0 + 1 || x >= x1 - 1 || y <= y0 + 5 || y >= y1 - 1 };
+  return { x0, y0, x1, y1, towers, inBand: (x, y) => x <= x0 + 1 || x >= x1 - 1 || y <= y0 + FB || y >= y1 - 1 };
 }
