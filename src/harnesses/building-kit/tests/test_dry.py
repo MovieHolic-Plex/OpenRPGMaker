@@ -33,7 +33,7 @@ def _bad():
     return dot.grid(['a' * 16 for _ in range(48)], {'a': (255, 0, 255)}), {}
 
 
-CANDIDATES = {'roof.gable': {'A': _bad}}
+CANDIDATES = {'roof.hip': {'A': _bad}}
 '''
 
 class DryTest(unittest.TestCase):
@@ -93,7 +93,7 @@ class DryTest(unittest.TestCase):
         r = subprocess.run([sys.executable, 'dry.py'], cwd=sandbox, capture_output=True, text=True, env=env, timeout=600)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertIn('preview', r.stdout)
-        for name in ('compare.png', 'cottage.png', 'longhouse.png', 'roof.gable.png'):
+        for name in ('compare.png', 'cottage.png', 'inn.png', 'roof.hip.png'):
             self.assertTrue(os.path.exists(os.path.join(sandbox, 'preview', name)), name)
 
     def test_sandbox_dry_fails_on_a_broken_sandbox_module(self):
@@ -114,7 +114,8 @@ class DryTest(unittest.TestCase):
     def test_dry_skips_buildings_that_need_parts_from_another_round(self):
         seed_path = os.path.join(dot.DATA, H.THEME, 'seed.json')
         s = json.load(open(seed_path, encoding='utf-8'))
-        s['buildings'].append(dict(s['buildings'][0], id='needs-band', band='band.trim'))
+        s['buildings'].append(dict(s['buildings'][0], id='needs-chimney', extras=[{'part': 'extra.chimney', 'at': [1, 0]}]))
+        s['rounds'][H.ROUND]['buildings'].append('needs-chimney')
         json.dump(s, open(seed_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
         dot._PAL.clear()
         rc, text = self.run_quiet(out=os.path.join(self.tmp, 'preview-skip'))

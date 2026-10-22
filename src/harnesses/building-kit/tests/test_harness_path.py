@@ -50,7 +50,7 @@ class HarnessPathTest(unittest.TestCase):
         self.assertEqual(harness.cmd_draw(H.THEME, H.ROUND, quiet=True), 0)
         man = json.load(open(os.path.join(dot.RUNS, H.THEME, H.ROUND, 'manifest.json')))
         self.assertEqual(sorted(man['items']), sorted(H.round_items()))
-        self.assertEqual(sorted(man['items']['roof.gable']), ['A', 'B', 'C'])
+        self.assertEqual(sorted(man['items']['roof.hip']), ['A', 'B', 'C'])
 
         rendered, res, fails = harness.cmd_gate(H.THEME, H.ROUND, quiet=True)
         self.assertEqual(fails, [], [(i, k, r['msg']) for i, k, r in fails][:3])
@@ -91,11 +91,11 @@ class HarnessPathTest(unittest.TestCase):
         harness.cmd_draw(H.THEME, H.ROUND, quiet=True)
         harness.cmd_gate(H.THEME, H.ROUND, quiet=True)
         harness.cmd_sheet(H.THEME, H.ROUND, False)
-        sha = json.load(open(os.path.join(dot.RUNS, H.THEME, H.ROUND, 'manifest.json')))['items']['roof.gable']['B']['sha256']
-        harness.cmd_pick(H.THEME, H.ROUND, 'roof.gable', 'B', sha[:8], '')
+        sha = json.load(open(os.path.join(dot.RUNS, H.THEME, H.ROUND, 'manifest.json')))['items']['roof.hip']['B']['sha256']
+        harness.cmd_pick(H.THEME, H.ROUND, 'roof.hip', 'B', sha[:8], '')
         self.assertEqual(harness.cmd_status(H.THEME), 0)
         state = harness.pick_state(H.THEME)
-        self.assertEqual(state[('roof.gable', 'B')][1], 'current')
+        self.assertEqual(state[('roof.hip', 'B')][1], 'current')
 
     def test_validate_accepts_all_four_themes(self):
         for theme in dot.THEMES:
@@ -114,9 +114,9 @@ class HarnessPathTest(unittest.TestCase):
         _, rendered = harness.render_round(H.THEME, H.ROUND)
         from PIL import Image
         import numpy as np
-        a = np.array(rendered['roof.gable']['B'][0].convert('RGBA'))
+        a = np.array(rendered['roof.hip']['B'][0].convert('RGBA'))
         a[5, 5] = [255, 0, 255, 255]
-        rendered['roof.gable']['B'] = (Image.fromarray(a, 'RGBA'), {})
+        rendered['roof.hip']['B'] = (Image.fromarray(a, 'RGBA'), {})
         res = harness.run_gate(H.THEME, H.ROUND, rendered)
         fails, _ = harness.gate_summary(res)
         self.assertTrue(any(r['code'] == 'P' for _, _, r in fails))

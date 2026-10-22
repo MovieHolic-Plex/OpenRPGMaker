@@ -12,10 +12,11 @@ import dot  # noqa: E402
 import fixtures as F  # noqa: E402
 
 THEME = 'fantasy-kingdom'
-ROUND = 'style-r1'
-PIECE_SOURCE = {'roof.gable': 'ROOFS', 'wall.storey': 'WALLS', 'base.stone': 'BASES'}
+ROUND = 'style-r3'
 ROOFS = F.ROOFS
+ROOFS_TALL = F.ROOFS_TALL
 WALLS = F.WALLS
+BANDS = F.BANDS
 BASES = F.BASES
 LEGEND = F.LEGEND
 
@@ -33,8 +34,16 @@ def round_items():
 
 
 def piece_rows(item_id, line):
-    src = getattr(F, PIECE_SOURCE[item_id])
-    return src[line]
+    """항목 id + 줄 → 조각 id 별 행 목록(지붕·벽) 또는 단일 행 목록(층 띠·기단)."""
+    if item_id in F.ROOF_CELLS:
+        return F.roof(line, item_id)
+    if item_id in F.WALL_MATS:
+        return {role: F.wall(line, item_id, role) for role in 'lmwdr'}
+    if item_id.startswith('band.'):
+        return F.band(line)
+    if item_id.startswith('base.'):
+        return F.base(line)
+    raise KeyError(item_id)
 
 
 def compose(item_id, line):
@@ -49,9 +58,9 @@ def compose(item_id, line):
     return sheet.img()
 
 
-def parts(line, overrides=None):
+def parts(line, overrides=None, extra=()):
     out = {}
-    for item_id in round_items():
+    for item_id in list(round_items()) + [i for i in extra if i not in round_items()]:
         out[item_id] = {'item': items()[item_id], 'img': compose(item_id, line)}
     for item_id, im in (overrides or {}).items():
         out[item_id] = {'item': items()[item_id], 'img': im}
@@ -60,6 +69,10 @@ def parts(line, overrides=None):
 
 def buildings():
     return {b['id']: b for b in seed()['buildings']}
+
+def round_buildings(rid=ROUND):
+    ids = seed()['rounds'][rid].get('buildings')
+    return {b['id']: b for b in seed()['buildings'] if not ids or b['id'] in ids}
 
 
 ROUND_MODULE = '''import os

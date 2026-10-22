@@ -172,18 +172,49 @@ def _piece_h(item, role):
             return pc['size'][1]
     return 0
 
-def targets(seed):
+def round_buildings(seed, rid):
+    ids = ((seed.get('rounds') or {}).get(rid or '') or {}).get('buildings')
+    if not ids:
+        return seed.get('buildings', [])
+    by = {b['id']: b for b in seed.get('buildings', [])}
+    return [by[i] for i in ids if i in by]
+
+def _mass_size(items, m):
+    rh = _piece_h(items[m['roof']], 'l')
+    h = rh
+    desc = [f'지붕 {rh}']
+    for s, row in enumerate(m['walls']):
+        item_id = row['item'] if isinstance(row, dict) else m.get('wall')
+        wh = _piece_h(items.get(item_id, {'pieces': []}), 'l')
+        h += wh
+        desc.append(f'{s}층 벽 {wh}칸({item_id})')
+    if m.get('band'):
+        bh = _piece_h(items[m['band']], 'l')
+        h += bh * max(0, len(m['walls']) - 1)
+        desc.append(f'층 띠 {bh}×{max(0, len(m["walls"]) - 1)}')
+    if m.get('base'):
+        bb = _piece_h(items[m['base']], 'l')
+        h += bb
+        desc.append(f'기단 {bb}')
+    return h, ' + '.join(desc)
+
+def targets(theme, rid):
+    import assemble as AS
+    seed = dot.seed(theme)
     items = {it['id']: it for it in seed['items']}
     out = []
-    for b in seed.get('buildings', []):
-        rh = _piece_h(items[b['roof']], 'l')
-        wh = _piece_h(items[b['wall']], 'l')
-        bh = _piece_h(items[b['base']], 'l')
-        band = items.get(b.get('band') or '')
-        band_h = _piece_h(band, 'l') if band else 0
-        h = rh + b['storeys'] * wh + max(0, b['storeys'] - 1) * band_h + bh
-        out.append(f'  - {b["id"]} "{b.get("title", "")}": {b["cols"]}칸 폭 {b["storeys"]}층 → 조립하면 가로 {b["cols"]}칸 × 세로 {h}칸 '
-                   f'(지붕 {rh} + 벽 {wh}×{b["storeys"]} + 기단 {bh})')
+    for b in round_buildings(seed, rid):
+        ms = AS.masses(b)
+        width = height = 0
+        rows = []
+        for m in ms:
+            h, desc = _mass_size(items, m)
+            width = max(width, m['x'] + m['cols'])
+            height = max(height, m['depth'] + h)
+            rows.append(f'      질량 {m["id"]}: {m["cols"]}칸 폭 {m["storeys"]}층 x={m["x"]} depth={m["depth"]} → 세로 {h}칸 ({desc})')
+        head = (f'  - {b["id"]} "{b.get("title", "")}" ({b.get("use", "")}): 질량 {len(ms)}개 → 가로 {width}칸 × 세로 {height}칸, '
+                + ('기단 행 있음' if any(m.get('base') for m in ms) else '기단 행 없음(벽이 땅에 닿는다)'))
+        out.append(head + '\n' + '\n'.join(rows))
     return '\n'.join(out) or '  - (레시피 없음)'
 
 def rejected(theme):
@@ -236,22 +267,30 @@ def brief(theme, rid, seed, key, items, line):
 {item_sections(seed, items)}
 
 ## 3/4 지붕 — 여기서 갈린다
-- 박공 지붕을 3/4 탑뷰로 보면 위에서부터: ① 용마루가 위쪽 가까이에 **밝은 선**으로 지나가고
-  ② 그 아래 **큰 사면**이 면으로 보이며(2칸 이상) 기와 줄이 가로로 흐르고 ③ 맨 아래 처마 띠는 더 어둡다.
-  ④ l·r 끝은 박공 삼각벽 또는 널 끝(끝판)으로 닫힌다.
+- 모임지붕(hip)을 3/4 탑뷰로 보면 위에서부터: ① 용마루가 위쪽 가까이 **짧고 밝은 선**으로 지나가고
+  ② 그 아래 **큰 사면**이 면으로 보이며(2행 이상) 기와 줄이 가로로 흐르고 ③ 맨 아래 처마 띠는 더 어둡다.
+  ④ 왼끝·오른끝 조각(각 2칸 폭) 안에 처마 모서리에서 용마루 끝으로 올라가는 **모임 사선**을 어두운 단으로 긋고
+  사선 바깥 삼각형은 지붕 그늘이다 — 이 사선이 없으면 지붕이 세운 판(네모 상자)으로 읽힌다(사용자 반려 이유 1).
+- 지붕 색: **중간·어두운 단이 대부분**이고 가장 밝은 단은 한 화소 하이라이트로 드문드문. 밝은 단을 넓게 깔면
+  지붕이 떠 보인다(사용자 반려 「색감이 어색하다」). 버들항 지붕은 어두운 테라코타가 주이고 용마루만 밝다.
 - 지붕을 한 가지 색·한 가지 무늬의 **평평한 사각형**으로 채우면 벽돌 담으로 읽힌다(실패). 용마루·사면·처마
   세 띠는 밝기와 줄 방향이 서로 달라야 하고, 윗면(용마루+사면)은 처마보다 밝다.
 - 지붕 **맨 아래 2행은 칸 경계까지 불투명**하게 찍는다. '~'(반투명 그림자)를 지붕 아래에 쓰면 바닥이 비쳐
   조립했을 때 지붕과 벽 사이가 벌어진다(A2 FAIL). '~' 는 건물 발치 바닥 그림자에만 쓴다.
-- 처마(overhang)는 지붕 l·r 조각의 **바깥 2~3px** 에 그린다 — 조립에서 지붕 폭 = 벽 폭(0칸)이다.
+- 처마(overhang)는 지붕 끝 조각의 **바깥 2~3px** 에 그린다 — 조립에서 지붕 폭 = 벽 폭(0칸)이다.
   벽 l·r 조각은 바깥 2~3px 을 투명하게 두어(시드 inset) 지붕 처마가 벽보다 튀어나와 보이게 한다.
 - 처마 그늘은 벽 조각 **맨 위 1~2행**에 벽 재질의 어두운 단으로 **불투명하게** 찍는다.
-- 지붕 끝 조각에 qMin·qTopRow 가 선언돼 있으면 박공 윤곽을 위해 바깥 위 귀퉁이를 비울 수 있다(불투명 비율 ≥ qMin).
+- 지붕 끝 조각에 qMin·qTopRow 가 선언돼 있으면 모임 사선·삼각 그늘로 바깥 위 귀퉁이를 비울 수 있다(불투명 비율 ≥ qMin).
   가운데 조각은 윗줄까지 꽉 차야 한다(불투명 90% 이상). 어느 조각이든 맨 아래 2행은 꽉 찬다.
-- refs/ 의 버들항 기준 건물 지붕과 같은 배율로 견줘라(색·기와 줄 간격·처마 두께).
+- refs/ 의 버들항 기준 건물 지붕과 같은 배율로 견줘라(색·기와 줄 간격·처마 두께·사선 기울기).
+
+## 접지 — 기단 행을 깔지 않는다
+- 건물은 땅에 **바로** 닿는다. 벽 조각의 맨 아래 1~3px 을 그 벽 재질의 어두운 단(또는 돌)으로 그려 기초를 만든다.
+  별도 기단(base) 행은 이번 판 부품이 아니다 — 전폭 보도블록 띠로 읽히면 사용자가 반려한다(반려 이유 2).
+- 조립 관문 A4 는 건물의 맨 아래 불투명 행이 그림 맨 아래 칸 경계인지 본다 — 벽이 땅에 닿아야 통과한다.
 
 ## 조립 목표 크기 (dry.py 가 이 레시피로 조립해 preview/ 에 보여 준다)
-{targets(seed)}
+{targets(theme, rid)}
 
 ## 줄 {line}
 - 이름: {seed['lines'][line]['name']}
@@ -262,6 +301,14 @@ def brief(theme, rid, seed, key, items, line):
 
 ## 샌드박스 그림 — Read 로 열어 본다 (보기·비율용, 화소 베끼기 금지)
 {references(theme, seed)}
+
+## 질량 합성 — 한 채가 여러 덩어리다
+- 레시피가 `masses` 로 여러 질량을 적으면, 앞줄(depth 0) 질량이 뒤 질량(depth 1)을 **덮는다** — 3/4 깊이.
+  버들항 여관 = 석조 1층 + 반목조 2층 본채 + 낮은 날개, 사막 칸 = 총안 탑 둘 + 한 칸 물러난 가운데.
+- 층마다 벽 재질이 다를 수 있다(`walls` 의 층별 `item`+`letters`) — 그 경우 위층 벽 부품도 이번 판에 같이 그린다.
+- 문은 건물 전체(질량 전부)에 **하나**다(A1). 질량끼리 닿거나 겹쳐야 하고(A7), 여러 질량이면 실루엣이
+  네모 판이 아니어야 한다(A8) — 꼭대기 높이가 칸 하나 이상 갈려야 한다.
+- dry.py 는 이번 판의 **모든 건물**을 조립해 preview/ 에 낸다(여러 질량 포함).
 
 ## 이번 판 규칙
 {json.dumps(seed['rules'], ensure_ascii=False, indent=1)}

@@ -38,8 +38,8 @@ class FixtureGateTest(unittest.TestCase):
 
     def test_line_material_accepts_own_line_and_rejects_other_line(self):
         style = {item: H.parts('A')[item]['img'] for item in H.round_items()}
-        own = G.check_line_material(H.parts('A')['roof.gable']['img'], list(style.values()), [], PAL)
-        other = G.check_line_material(H.parts('B')['roof.gable']['img'], list(style.values()), [], PAL)
+        own = G.check_line_material(H.parts('A')['roof.hip']['img'], list(style.values()), [], PAL)
+        other = G.check_line_material(H.parts('B')['roof.hip']['img'], list(style.values()), [], PAL)
         self.assertTrue(own['ok'], own['msg'])
         self.assertFalse(other['ok'], '줄 B 후보가 줄 A 재료 검사를 통과하면 안 된다')
 
@@ -48,7 +48,7 @@ class AssemblyTest(unittest.TestCase):
     def setUp(self):
         self.parts = H.parts('A')
 
-    def test_cottage_and_longhouse_assemble_without_failures(self):
+    def test_cottage_inn_guild_assemble_without_failures(self):
         for bid, recipe in H.buildings().items():
             with self.subTest(building=bid):
                 res = AS.assemble(recipe, self.parts, PAL, H.THEME)
@@ -56,7 +56,7 @@ class AssemblyTest(unittest.TestCase):
                 self.assertEqual(fails(res['checks']), [])
 
     def test_kit_contract_walk_grid_and_single_door(self):
-        res = AS.assemble(H.buildings()['longhouse'], self.parts, PAL, H.THEME)
+        res = AS.assemble(H.buildings()['inn'], self.parts, PAL, H.THEME)
         kit = res['kit']
         self.assertEqual(len(kit['lower']), kit['rows'])
         self.assertTrue(all(len(r) == kit['cols'] for r in kit['lower']))
@@ -76,7 +76,7 @@ class AssemblyTest(unittest.TestCase):
 
     def test_missing_part_is_reported_not_crashed(self):
         parts = dict(self.parts)
-        del parts['base.stone']
+        del parts['wall.storey']
         res = AS.assemble(H.buildings()['cottage'], parts, PAL, H.THEME)
         self.assertIsNone(res['img'])
         self.assertEqual([c['code'] for c in AS.run_checks(res)], ['A0'])
@@ -88,14 +88,16 @@ class AssemblyTest(unittest.TestCase):
                     self.assertEqual(b.get('overhang', 0), 0)
 
     def test_zero_overhang_assembly_has_no_a2_gap_and_roof_width_equals_walls(self):
-        for bid, recipe in H.buildings().items():
+        for bid, recipe in H.round_buildings().items():
             res = AS.assemble(recipe, self.parts, PAL, H.THEME)
             codes_ = {c['code'] for c in AS.run_checks(res)}
+            cols = res['masses'][0]['cols'] if len(res['masses']) == 1 else recipe['cols']
             with self.subTest(building=bid):
                 self.assertNotIn('A2', codes_, [c['msg'] for c in AS.run_checks(res)])
                 self.assertNotIn('A3', codes_)
-                self.assertEqual(res['width'], recipe['cols'])
+                self.assertEqual(res['width'], max(m['x'] + m['cols'] for m in AS.masses(recipe)))
                 self.assertEqual(res['wall_x'], 0)
+                self.assertGreaterEqual(cols, AS.MIN_COLS)
 
     def test_declared_eave_inset_allows_a_transparent_wall_edge(self):
         wall = H.compose('wall.storey', 'A')

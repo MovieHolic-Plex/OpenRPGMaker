@@ -127,19 +127,23 @@ def parts_for(theme, rendered):
     return {item_id: {'item': items[item_id], 'img': im} for item_id, (im, _) in rendered.items()}
 
 def needed(recipe):
-    need = {recipe['roof'], recipe['wall'], recipe['base']}
-    if recipe.get('band'):
-        need.add(recipe['band'])
-    need |= {ex['part'] for ex in recipe.get('extras') or []}
-    return need
+    return AS.needed(recipe)
 
-def assemble_all(theme, parts):
+def assemble_all(theme, parts, rid=None):
     rows = []
-    for recipe in dot.seed(theme)['buildings']:
+    for recipe in harness_round_buildings(theme, rid):
         missing = sorted(needed(recipe) - set(parts))
         res = None if missing else AS.assemble(recipe, parts, dot.palette(theme), theme)
         rows.append({'recipe': recipe, 'res': res, 'missing': missing, 'fails': AS.run_checks(res) if res else []})
     return rows
+
+def harness_round_buildings(theme, rid):
+    s = dot.seed(theme)
+    ids = ((s.get('rounds') or {}).get(rid or '') or {}).get('buildings')
+    if not ids:
+        return s['buildings']
+    by = {b['id']: b for b in s['buildings']}
+    return [by[i] for i in ids if i in by]
 
 def _scene(cols, rows, theme, ground_line):
     scene = beodeul.ground_scene(cols, rows, theme, 'grass')
@@ -217,7 +221,7 @@ def run(theme, rid, key, module=None, out=None, quiet=False):
                   + ('통과' if not bad else ' · '.join(f'{r["level"]} {r["code"]}: {r["msg"]}' for r in bad)))
         preview_item(im, out, item_id)
     parts = parts_for(theme, rendered)
-    rows = assemble_all(theme, parts)
+    rows = assemble_all(theme, parts, rid)
     assembled = []
     if not quiet:
         print('조립:')

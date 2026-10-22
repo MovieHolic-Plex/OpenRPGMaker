@@ -23,6 +23,7 @@ sys.path.insert(0, HERE)
 
 from PIL import Image  # noqa: E402
 
+import assemble as AS  # noqa: E402
 import beodeul  # noqa: E402
 import dot  # noqa: E402
 import review  # noqa: E402
@@ -84,17 +85,20 @@ def ref_image(kit_id):
 
 def ref_for_item(theme, item_id, refs):
     for b in dot.seed(theme)['buildings']:
-        used = {b.get('roof'), b.get('wall'), b.get('base'), b.get('band')}
-        used |= {ex.get('part') for ex in (b.get('extras') or [])}
+        used = set()
+        for m in AS.masses(b):
+            used |= {m.get('roof'), m.get('wall'), m.get('base'), m.get('band')}
+            used |= {row['item'] for row in m['walls']}
+            used |= {ex.get('part') for ex in (m.get('extras') or [])}
         if item_id in used:
             for r in refs:
                 if r.get('use') == b.get('use'):
                     return r
     return refs[0] if refs else None
 
-def key_buildings(theme, cands, key):
+def key_buildings(theme, cands, key, rid=None):
     out = []
-    for recipe in dot.seed(theme)['buildings']:
+    for recipe in AS.round_buildings(theme, rid):
         bid = f'{key}.{recipe["id"]}'
         if bid in cands:
             out.append((bid, recipe, cands[bid]))
@@ -121,7 +125,7 @@ def review_state(theme, rid, cands, keys):
     out = {}
     for key in keys:
         st = {'pass': True, 'bids': [], 'receipts': [], 'reasons': []}
-        for bid, recipe, c in key_buildings(theme, cands, key):
+        for bid, recipe, c in key_buildings(theme, cands, key, rid):
             rec = review.receipt(theme, rid, bid)
             st['bids'].append(bid)
             st['receipts'].append((bid, rec, c))
@@ -218,7 +222,7 @@ def write(theme, rid, show_failed=False):
         st = state[key]
         ln = key[0] if key and key[0] in s['lines'] else None
         votes, judges = _vote_summary(theme, rid, st)
-        scene = street_scene(theme, key_buildings(theme, cands, key))
+        scene = street_scene(theme, key_buildings(theme, cands, key, rid))
         scene_tags = figure(scene, 1, f'거리 장면 1배 — {len(st["bids"])}채 + Actor1') + figure(scene, 3, '거리 장면 3배')
         H.append(f'<h2>부품 번호 {key} — 검수 PASS</h2>')
         if ln and isinstance(s['lines'].get(ln), dict):
@@ -254,7 +258,7 @@ def write(theme, rid, show_failed=False):
             H.append(figure(act, 2, 'Actor1 2배'))
             H.append(figure(im, 1, '후보 1배'))
             H.append(figure(im, 3, '후보 3배'))
-            for bid, recipe, c in key_buildings(theme, cands, key):
+            for bid, recipe, c in key_buildings(theme, cands, key, rid):
                 H.append(figure(c['img'], 2, f'조립 {recipe["id"]} 2배'))
             H.append(scene_tags)
             H.append('</div>')
@@ -281,7 +285,7 @@ def write(theme, rid, show_failed=False):
             for item_id in rd.get('items', []):
                 if item_id in rendered and key in rendered[item_id]:
                     H.append(figure(rendered[item_id][key][0], 1, f'{item_id} 1배'))
-            for bid, recipe, c in key_buildings(theme, cands, key):
+            for bid, recipe, c in key_buildings(theme, cands, key, rid):
                 H.append(figure(c['img'], 2, f'조립 {recipe["id"]} 2배'))
             H.append('</div></div>')
         H.append('</div>')

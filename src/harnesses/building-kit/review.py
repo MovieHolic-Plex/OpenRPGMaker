@@ -128,17 +128,20 @@ def _thin_roof(im, roof_px):
 
 def _second_door(im, kit, parts, recipe):
     door = kit.get('door')
-    wall = parts[recipe['wall']]['item']
-    door_pc = next((pc for pc in wall['pieces'] if pc.get('role') == 'd'), None)
-    if not door or door_pc is None:
+    mass = next((m for m in kit.get('masses') or [] if m['id'] == kit.get('doorMass')), None)
+    if not door or not mass or not mass.get('walls'):
         return None
-    sheet = parts[recipe['wall']]['img']
+    wall = parts[mass['walls'][0]]['item']
+    door_pc = next((pc for pc in wall['pieces'] if pc.get('role') == 'd'), None)
+    if door_pc is None:
+        return None
+    sheet = parts[mass['walls'][0]]['img']
     crop = np.array(sheet.crop((door_pc['at'][0] * dot.T, door_pc['at'][1] * dot.T,
                                 (door_pc['at'][0] + door_pc['size'][0]) * dot.T,
                                 (door_pc['at'][1] + door_pc['size'][1]) * dot.T)))
     a = np.array(im.convert('RGBA')).copy()
     dx, dy = door
-    tx = kit['wallX'] + (0 if dx - kit['wallX'] > 1 else kit['wallCols'] - 1)
+    tx = mass['x'] + (0 if dx - mass['x'] > 1 else mass['cols'] - 1)
     a[dy * dot.T:dy * dot.T + crop.shape[0], tx * dot.T:tx * dot.T + crop.shape[1]] = crop
     return Image.fromarray(a, 'RGBA')
 
@@ -292,7 +295,7 @@ def _runs(rnd):
 def candidates_for(theme, rid, parts_by_key, only=None):
     out = {}
     for key, parts in parts_by_key.items():
-        for recipe in dot.seed(theme)['buildings']:
+        for recipe in AS.round_buildings(theme, rid):
             if only and recipe['id'] != only:
                 continue
             res = AS.assemble(recipe, parts, dot.palette(theme), theme)

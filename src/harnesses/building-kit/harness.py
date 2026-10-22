@@ -208,9 +208,18 @@ def parts_for(theme, rid, key, rendered):
     return out
 
 
-def assemble_all(theme, parts, only=None, quiet=False):
+def round_buildings(theme, rid=None):
+    """그 판이 조립하는 레시피 목록 — rounds.<판>.buildings 가 있으면 그것만, 없으면 시드 전체(옛 판)."""
+    s = seed(theme)
+    ids = (s.get('rounds', {}).get(rid or '', {}) or {}).get('buildings')
+    if not ids:
+        return s['buildings']
+    by = {b['id']: b for b in s['buildings']}
+    return [by[i] for i in ids if i in by]
+
+def assemble_all(theme, parts, only=None, quiet=False, rid=None):
     out = []
-    for recipe in seed(theme)['buildings']:
+    for recipe in round_buildings(theme, rid):
         if only and recipe['id'] != only:
             continue
         res = AS.assemble(recipe, parts, dot.palette(theme), theme)
@@ -269,7 +278,7 @@ def cmd_assemble(theme, rid, line='A', key=None, quiet=False):
     parts = resolve_parts(theme, rid, line, key if key else None)
     if not parts:
         raise SystemExit(f'{theme}: 조립할 부품이 없다 — 먼저 그려서 사람이 고르거나 --key 로 판 후보를 지정한다')
-    rows = assemble_all(theme, parts, quiet=quiet)
+    rows = assemble_all(theme, parts, quiet=quiet, rid=rid)
     fails = [f for r in rows for f in r['fails']]
     base = os.path.join(dot.RUNS, theme, rid, 'buildings')
     os.makedirs(base, exist_ok=True)
@@ -351,6 +360,9 @@ def cmd_validate(theme):
             have = {pc.get('role') for pc in it.get('pieces', [])}
             if not {'l', 'm', 'd', 'r'} <= have:
                 errs.append(f'{it["id"]}: wall 세트에 role {sorted({"l", "m", "d", "r"} - have)} 가 없다')
+        if it.get('wave') == 'roof':
+            for why in AS.roof_problems(it):
+                errs.append(f'{it["id"]}: {why}')
 
     for ln, info in lines(theme).items():
         if len(ln) != 1 or not ln.isupper():
@@ -370,28 +382,48 @@ def cmd_validate(theme):
         notes.append(f'줄 {len(lines(theme))}개 — style-r1 은 셋(A·B·C)을 권한다')
 
     for b in s.get('buildings', []):
-        for k in ('id', 'title', 'use', 'cols', 'storeys', 'roof', 'wall', 'base', 'walls'):
+        bid = b.get('id')
+        for k in ('id', 'title', 'use'):
             if k not in b:
-                errs.append(f'건물 {b.get("id")}: {k} 없음')
-        for k in ('roof', 'wall', 'base', 'band'):
-            if b.get(k) and b[k] not in ids:
-                errs.append(f'건물 {b["id"]}: 부품 {b[k]} 가 items 에 없다')
-        if len(b.get('walls', [])) != b.get('storeys'):
-            errs.append(f'건물 {b["id"]}: walls 는 층마다 하나({b.get("storeys")}개)')
-        for i, row in enumerate(b.get('walls', [])):
-            row = row.replace(' ', '')
-            if len(row) != b.get('cols'):
-                errs.append(f'건물 {b["id"]} {i}층: "{row}" 길이 {len(row)} ≠ cols {b.get("cols")}')
-            if set(row) - set('LMWDR'):
-                errs.append(f'건물 {b["id"]} {i}층: 모르는 글자 {sorted(set(row) - set("LMWDR"))}')
-        doors = sum(r.replace(' ', '').count('D') for r in b.get('walls', []))
+                errs.append(f'건물 {bid}: {k} 없음')
+        ms = AS.masses(b)
+        if len(ms) > 1 and not b.get('masses'):
+            errs.append(f'건물 {bid}: 질량이 여럿인데 masses 로 적지 않았다')
+        for m in ms:
+            tag = f'건물 {bid} 질량 {m["id"]}'
+            for k in ('cols', 'storeys', 'roof'):
+                if not m.get(k):
+                    errs.append(f'{tag}: {k} 없음')
+            if m.get('cols') and int(m['cols']) < AS.MIN_COLS:
+                errs.append(f'{tag}: cols {m["cols"]} < {AS.MIN_COLS} — 모임지붕 끝 l·r 이 2칸씩이다')
+            for k in ('roof', 'band', 'base'):
+                if m.get(k) and m[k] not in ids:
+                    errs.append(f'{tag}: 부품 {m[k]} 가 items 에 없다')
+            if len(m['walls']) != int(m.get('storeys') or 0):
+                errs.append(f'{tag}: walls 는 층마다 하나({m.get("storeys")}개)')
+            for i, row in enumerate(m['walls']):
+                if row.get('item') and row['item'] not in ids:
+                    errs.append(f'{tag} {i}층: 벽 부품 {row["item"]} 가 items 에 없다')
+                letters = row['letters'].replace(' ', '')
+                if m.get('cols') and len(letters) != int(m['cols']):
+                    errs.append(f'{tag} {i}층: "{letters}" 길이 {len(letters)} ≠ cols {m["cols"]}')
+                if set(letters) - set('LMWDR'):
+                    errs.append(f'{tag} {i}층: 모르는 글자 {sorted(set(letters) - set("LMWDR"))}')
+            rows_ = [r['letters'].replace(' ', '') for r in m['walls']]
+            if rows_ and 'D' in ''.join(rows_[:-1]):
+                errs.append(f'{tag}: 문은 맨 아래 층에 있어야 한다')
+            for ex in m.get('extras') or []:
+                if ex.get('part') not in ids:
+                    errs.append(f'{tag}: extra {ex.get("part")} 가 items 에 없다')
+        doors = sum(r['letters'].replace(' ', '').count('D') for m in ms for r in m['walls'])
         if doors != 1 and not b.get('doorTwice'):
-            errs.append(f'건물 {b["id"]}: 문 {doors}개 — 건물 하나에 문은 정확히 하나')
-        if b.get('walls') and not b.get('doorTwice') and 'D' not in b['walls'][-1].replace(' ', ''):
-            errs.append(f'건물 {b["id"]}: 문은 맨 아래 층에 있어야 한다')
-        for ex in b.get('extras') or []:
-            if ex.get('part') not in ids:
-                errs.append(f'건물 {b["id"]}: extra {ex.get("part")} 가 items 에 없다')
+            errs.append(f'건물 {bid}: 문 {doors}개 — 건물 하나(질량 전부)에 문은 정확히 하나')
+        for why in AS.mass_problems(ms):
+            errs.append(f'건물 {bid}: {why}')
+        if len(ms) > 1 and not any(int(m.get('depth') or 0) == 0 for m in ms):
+            errs.append(f'건물 {bid}: 앞줄(depth 0) 질량이 없다 — 질량마다 depth 를 적는다')
+        if any('base' in m and m['base'] for m in ms) and not b.get('masses'):
+            errs.append(f'건물 {bid}: base 는 선택 부품이다 — 기단이 필요 없으면 빼고 벽 맨 아래 1~3px 을 기단으로 그린다')
     kit_ids = {k['id'] for k in beodeul.tileset()['structureKits']}
     for ref in s.get('refs', []):
         if ref.get('kit') not in kit_ids:
@@ -400,6 +432,13 @@ def cmd_validate(theme):
         errs.append('rounds 도 plan 도 없다 — 첫 판을 적는다')
 
     for rid, rd in s.get('rounds', {}).items():
+        if rd.get('superseded'):
+            notes.append(f'판 {rid}: superseded by {rd["superseded"]} — 옛 문법(3칸 지붕·전폭 기단 행)으로 그린 판이다. '
+                         f'gate/dry/assemble·시트 대상이 아니다')
+            continue
+        for bid in rd.get('buildings') or []:
+            if bid not in {b['id'] for b in s.get('buildings', [])}:
+                errs.append(f'판 {rid}: buildings 의 {bid} 레시피가 시드에 없다')
         path = os.path.join(REPO, rd.get('module', ''))
         if not os.path.exists(path):
             notes.append(f'판 {rid}: 모듈이 아직 없다({rd.get("module")}) — 그리기 전')
@@ -573,7 +612,10 @@ def cmd_list(theme):
         print(f'{marks}  {it["wave"]:6} {it["id"]:20} {it["size"][0]}×{it["size"][1]} {it["kind"] if "kind" in it else "":8} {it["title"]}  [{roles}]')
     print('조립 레시피:')
     for b in seed(theme)['buildings']:
-        print(f'  {b["id"]:18} {b["cols"]}칸 {b["storeys"]}층  {" / ".join(b["walls"])}  ({b["use"]})')
+        ms = AS.masses(b)
+        shape = ' + '.join(f'{m["id"]} {m["cols"]}칸 {m["storeys"]}층 x{m["x"]} d{m["depth"]}' for m in ms)
+        base = ' + 기단' if any(m.get('base') for m in ms) else ''
+        print(f'  {b["id"]:18} {shape}{base}  ({b["use"]})')
 
 
 def cmd_status(theme=None):

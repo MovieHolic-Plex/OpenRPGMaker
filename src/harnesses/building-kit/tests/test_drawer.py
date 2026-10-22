@@ -24,6 +24,9 @@ class DrawerTest(unittest.TestCase):
         self._data, self._sandbox = dot.DATA, drawer.SANDBOX
         self._env = dict(os.environ)
         shutil.copytree(os.path.join(self._data, H.THEME), os.path.join(self.tmp, 'data', H.THEME))
+        ledger = os.path.join(self.tmp, 'data', H.THEME, 'ledger.json')
+        if os.path.exists(ledger):
+            os.remove(ledger)
         dot.DATA = os.path.join(self.tmp, 'data')
         drawer.SANDBOX = os.path.join(self.tmp, 'sandbox')
         os.environ['BK_TESTS_DIR'] = HERE
@@ -68,7 +71,7 @@ class DrawerTest(unittest.TestCase):
                 name = drawer.func_name(item, line)
                 self.assertIn(drawer.BEGIN.format(name=name), text)
                 self.assertIn(f'def {name}():', text)
-        self.assertIn("'roof.gable': {'A': cand_roof_gable_A,", text.replace('"', "'"))
+        self.assertIn("'roof.hip': {'A': cand_roof_hip_A,", text.replace('"', "'"))
 
     def test_one_job_per_candidate_key_and_each_job_covers_every_item(self):
         calls = []
@@ -117,10 +120,10 @@ class DrawerTest(unittest.TestCase):
         drawer.run(H.THEME, H.ROUND, lines_=['A'], jobs=1, runner=self.edit_own_block(calls), cmd=['fake'])
         prompt = calls[0][3]
         self.assertIn('3/4 지붕', prompt)
-        for word in ('용마루', '사면', '처마', '벽돌 담'):
+        for word in ('용마루', '사면', '처마', '벽돌 담', '모임 사선', '보도블록'):
             self.assertIn(word, prompt)
-        self.assertIn('3칸 폭 1층', prompt)
-        self.assertIn('5칸 폭 2층', prompt)
+        self.assertIn('4칸 폭 1층', prompt)
+        self.assertIn('질량 2개', prompt)
         self.assertIn('preview/compare.png', prompt)
         self.assertIn('python3 dry.py', prompt)
         self.assertIn('refs/actor1-front-4x.png', prompt)
@@ -137,14 +140,14 @@ class DrawerTest(unittest.TestCase):
     def test_fake_runner_changes_only_its_own_function(self):
         before = open(self.module, encoding='utf-8').read()
         calls = []
-        runner = self.edit_own_block(calls, items=['roof.gable'])
+        runner = self.edit_own_block(calls, items=['roof.hip'])
         rc = drawer.run(H.THEME, H.ROUND, lines_=['A'], jobs=1, runner=runner, cmd=['fake'], timeout=11)
         self.assertEqual(rc, 1)
         self.assertEqual(calls[0][0], ['fake'])
         self.assertEqual(calls[0][2], 11)
         after = open(self.module, encoding='utf-8').read()
-        self.assertIn("H.compose('roof.gable', 'A')", after)
-        self.assertNotIn("H.compose('roof.gable', 'B')", after)
+        self.assertIn("H.compose('roof.hip', 'A')", after)
+        self.assertNotIn("H.compose('roof.hip', 'B')", after)
         self.assertIn(drawer.func_name('wall.storey', 'A') + '():\n    raise NotImplementedError', after)
         self.assertIn(drawer.func_name('wall.storey', 'B') + '():\n    raise NotImplementedError', after)
         self.assertNotEqual(before, after)
