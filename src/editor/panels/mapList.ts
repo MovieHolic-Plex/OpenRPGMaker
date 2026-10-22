@@ -515,7 +515,7 @@ function renderNode(spec: RenderNodeSpec): void {
         nameLine,
         el("span", {
           class: "map-tree-meta" + (isUnlinked ? " is-unlinked" : ""),
-          text: isFolder || isBasicRow ? metaBits.join(" · ") : `${metaBits.join(" · ")} · 문 ${links?.playLinkCount ?? 0}개`,
+          text: isFolder || isBasicRow ? metaBits.join(" · ") : `${metaBits.join(" · ")} · 문 ${links?.outgoingTransfers ?? 0}개`,
           attrs: {
             title: isFolder
               ? "플레이 맵이 아닙니다. 정리용 폴더입니다."
