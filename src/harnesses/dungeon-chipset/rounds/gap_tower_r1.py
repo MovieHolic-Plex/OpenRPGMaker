@@ -78,7 +78,8 @@ A1 = {
                   K=('brick', 0), J=('brick', 1), B=('brick', 2), C=('brick', 3), D=('brick', 4), X=('brick', 5), Y=('brick', 6),
                   n=('wood', 1), r=('wood', 4), o=('wood', 3), p=('wood', 2), z=('wood', 0), s=('wood', 5),
                   b=('stone', 1), m=('cata', 0), i=('cata', 1), G=('cata', 2), h=('cata', 3), a=('cata', 5), L=('cata', 4),
-                  R=('stone', 4), S=('cata', 5), T=('cata', 4), E=('cata', 3), U=('cata', 1), V=('stone', 1)),
+                  R=('stone', 4), S=('cata', 5), T=('cata', 4), E=('cata', 3), U=('cata', 1), V=('stone', 1),
+                  A=('rim', 5), F=('rim', 4), I=('rim', 3), M=('rim', 2), N=('rim', 1), O=('rim', 0)),   # 벽 계단: 따뜻한 다듬은 돌(띠의 회색과 갈린다)
     'chain': 'KJBCDXY',
     'band_chain': 'mijwylqQ',
     'contact': [4, 3, 2, 1, 1],   # 북 안벽 밑 둘레: 벽에서 q px 떨어진 줄을 몇 단 어둡게(맨 밑 1~2px = 접지 그늘)
@@ -621,16 +622,14 @@ def light_patch(sc, kind, c, Ro, u0, top=0):
 #   A1 = 벽을 따라 오르는 좁은 돌 디딤판 7 + 계단참(설계 2): 단마다 둘레 6°(약 7px 깊이), 2px 씩 오르고, 계단참 옆 안벽에 문틀 문.
 #   A2 = 쇠 기둥을 도는 나무 나선 계단(설계 1, 버들항 나선 계단 말): 둥근 돌 받침 위 디딤판 7(40° 씩, 3px 씩), 북쪽 맨 위 판이 벽에 닿는다.
 STAIR_RO = 96
-RUN = {'A1': {'steps': 5, 'a_lo': 84, 'deg': 8, 'rise': 3, 'land': 14, 'w': 11,
-              # 단마다 (몸, 어두운 얼룩·이음, 밝은 얼룩, 앞 턱) — 벽 돌의 어두운 가운데 색조, 이웃 단은 엇갈린 색조
-              'tones': [('w', 'j', 'y', 'l'), ('y', 'w', 'l', 'l'), ('w', 'j', 'y', 'l'), ('y', 'w', 'l', 'l'),
-                        ('w', 'j', 'y', 'l'), ('y', 'w', 'l', 'l')],
-              'riser': ['j', 'j', 'i'],    # 챌판 3줄: 디딤판(w·y)보다 두 단 이상 어둡다
-              'side': ['m', 'i'],          # 챌판 밑 돌 몸: 몸 m(가장 어두운 돌) + 세로 이음 i
-              # 계단참 뒤 안벽 문(16열): 돌 문설주(왼 l·y, 오른 y·w, 4줄마다 이음) + 2줄 상인방 + 어두운 문 안(K 그늘 · D 빛)
+RUN = {'A1': {'steps': 3, 'a_lo': 84, 'deg': 11, 'rise': 4, 'land': 14, 'w': 12,
+              # 단마다 (몸, 어두운 얼룩·이음, 밝은 얼룩, 앞 턱) — 따뜻한 다듬은 돌, 이웃 단은 엇갈린 색조. 앞 턱 A 가 가장 밝다
+              'tones': [('F', 'I', 'A', 'A'), ('I', 'M', 'F', 'A'), ('F', 'I', 'A', 'A'), ('I', 'M', 'F', 'A')],
+              'riser': ['M', 'N', 'N', 'O'],   # 남쪽을 보는 챌판 4줄(디딤판보다 두~세 단 어둡게) — 이것만 보이고 옆 벽은 없다
+              # 계단참 뒤 안벽 문(16열): 돌 문설주 + 2줄 상인방 + 어두운 문 안. 문 밑이 계단참 뒤 끝보다 위라 가려지지 않는다
               'door': ['.llllllwlllllll.', '.yyyyyywyyyyyyy.', '.lyKKKKKKKKKKyw.', '.lyK,,,,,,,,Dyw.',
                        '.lyK;;;;;;;;Dyw.', '.wyK;;;;;;;;Dyw.', '.lyK;;;;;;;;Dyw.', '.lyK;;;;;;;;Dyw.',
-                       '.lyK;;;;;;;;Dyw.', '.wyK;;;;;;;;Dyw.', '.lyK;;;;;;;;Dyw.', '.lyK;;;;;;;;Dyw.']}}
+                       '.lyK;;;;;;;;Dyw.', '.lyyyyyyyyyyyyw.']}}
 SPIRAL = {'A2': {'ang': 50, 'off': 21, 'R': 18, 'n': 7, 'span': 40, 'start': 100, 'rise': 3, 'post': 2}}
 
 
@@ -706,10 +705,7 @@ def _run_fn(P, i, fcx, fcy, a0, a1, rin, rout, e):
 
     def f(fx, fy, k, fp):
         if k > 0:
-            if k <= 3 and k < e:
-                return P['riser'][k - 1]
-            # 챌판보다 낮은 돌 몸(동쪽을 보는 그늘): 가로 줄무늬 없이 어두운 몸 + 엇갈린 세로 돌 이음
-            return P['side'][1] if (fx + 3 * ((k - 1) // 3)) % 7 == 0 else P['side'][0]
+            return P['riser'][min(k, len(P['riser'])) - 1]
         if (fx, fy + 1) not in fp:
             return lip
         if (fx, fy - 1) not in fp:
@@ -743,25 +739,27 @@ def stair_layer(key, c):
     if key in RUN:
         P = RUN[key]
         px = lambda r, a: (fcx - r * math.sin(math.radians(a)), fcy - r * math.cos(math.radians(a)))
-        rout, rin = Ri + 1, Ri - P['w']               # 좁은 띠(11px) — 벽 밑선에 딱 붙인다
-        items = []
+        rout, rin = Ri + 1, Ri - P['w']               # 좁은 띠(12px) — 벽 밑선에 딱 붙인다
+        items, fps = [], []
         n = P['steps']
         for i in range(n + 1):
             a0 = P['a_lo'] - i * P['deg']
             a1 = P['land'] if i == n else a0 - P['deg']
             fp = _sector(px, a0, a1, rin, rout)
             e = P['rise'] * (i + 1)
-            items.append((fp, e, e, _run_fn(P, i, fcx, fcy, a0, a1, rin, rout, e)))   # 바닥까지 찬 돌 단(쌓은 돌)
+            items.append((fp, e, P['rise'], _run_fn(P, i, fcx, fcy, a0, a1, rin, rout, e)))   # 판 두께 = 챌판 높이(밑 옆 벽 없음)
+            fps.append(fp)
         am = math.radians((P['a_lo'] - n * P['deg'] + P['land']) / 2)   # 문: 계단참 한가운데 뒤 안벽
         u_door = -Ri * math.asin(min(1.0, math.sin(am) * (Ri + 1) / Ri))
         e = P['rise'] * (n + 1)
         door = P['door']
-        carve(cv, kind, geo, Ro, door, u_door, leg, v0=WALL_H - e - len(door) + 1)
+        carve(cv, kind, geo, Ro, door, u_door, leg, v0=WALL_H - e - 3 - len(door) + 1)   # 문 밑 = 계단참 뒤 끝 3px 위
         owner = _stack(cv, kind, items, leg)
-        for (x, y) in list(owner):                    # 남동쪽 바닥 그림자 2px(돌 몸 밖, 바닥 자리에만)
-            for p in ((x + 1, y), (x + 1, y + 1), (x + 2, y + 1), (x, y + 1)):
-                if p not in owner and kind.get(p) in ('floor', 'course') and cv.a[p[1], p[0], 3] == 0:
-                    cv.shadow(*p)
+        for fp in fps:                                # 바닥 그림자: 들린 디딤판 밑 바닥 + 남동 1px(돌 밖, 바닥 자리에만)
+            for (fx, fy) in fp:
+                for p in ((fx, fy), (fx + 1, fy), (fx + 1, fy + 1)):
+                    if p not in owner and kind.get(p) in ('floor', 'course') and cv.a[p[1], p[0], 3] == 0:
+                        cv.shadow(*p)
         return cv
     P = SPIRAL[key]
     am = math.radians(P['ang'])
