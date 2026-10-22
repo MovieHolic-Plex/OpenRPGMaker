@@ -565,10 +565,20 @@ export function aggregateJudge(results: readonly JudgeRunResult[], need = OG_JUD
 /** 원본 vqa.review: 유효 3판이 모일 때까지(무효는 2번까지 더) 새 판정 호출. */
 export async function ogReview(ctx: ReviewContext, env: WorkshopEnv, style: OgStyle, anchors: OgAnchors | null, ask: (messages: ChatMessage[]) => Promise<string>, rand: Rand = Math.random): Promise<Verdict> {
   const results: JudgeRunResult[] = [];
-  for (let i = 0; i < OG_JUDGE_RUNS + OG_JUDGE_RETRIES; i++) {
+  const one = async (): Promise<JudgeRunResult> => {
     const run = ogJudgeRun(ctx, env, style, anchors, rand);
-    results.push(scoreJudge(await ask(run.messages), run.key));
+    return scoreJudge(await ask(run.messages), run.key);
+  };
+  // 첫 두 판은 함께 묻는다(2026-10-23 「한 번에 만들기」 속도). 둘 다 유효하고 판정이 같으면 셋째 판은 3판 다수결을 바꿀 수 없다 —
+  // 2:0 이면 셋째가 무엇이든 같은 결론이라 호출 하나를 아낀다. 갈리거나 무효가 있으면 원본처럼 유효 3판까지 더 묻는다.
+  results.push(...await Promise.all([one(), one()]));
+  const firstValid = results.filter((r) => !r.void);
+  if (firstValid.length === 2 && Boolean(firstValid[0]!.view34 && firstValid[0]!.quality) === Boolean(firstValid[1]!.view34 && firstValid[1]!.quality)) {
+    return aggregateJudge(results, 2);
+  }
+  for (let i = results.length; i < OG_JUDGE_RUNS + OG_JUDGE_RETRIES; i++) {
     if (results.filter((r) => !r.void).length >= OG_JUDGE_RUNS) break;
+    results.push(await one());
   }
   return aggregateJudge(results);
 }
