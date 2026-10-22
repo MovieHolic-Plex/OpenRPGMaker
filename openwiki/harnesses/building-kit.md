@@ -764,6 +764,15 @@ FAIL) ② 원본 check.py 결과를 본다. 샌드박스의 check.py·pixels.txt
   때만 `picked/<줄>/finished/<건물>.png` 와 원장 `finishedPicks`(마감 해시 + 바탕 해시)에 적는다.
 - `village --finished`: 마감 검수 PASS 마감 건물로 마을을 놓는다(`--all` 은 마감본 전부). 결과 이름에 `-finished`.
 
+### 시연 (2026-10-22, 실제 Opus 5.5 high 1회)
+
+`finish fantasy-kingdom style-r7 --line A --building thouse.r7` → 하네스 재검사 **통과**, 재실행 출력 = 에이전트 finished.png(재현 같음),
+save 되풀이 7회, exit 0. 바탕 `0b9e645e` → 마감 `4eb598be`. 바뀐 불투명 화소 7607/19941 = **38.1%** · 16px 자기상관 지붕 **0.438 → 0.362**,
+벽 **0.379 → 0.344** · 문짝 램프 448/460 = 97.4% · 처마 경계 192점 모두 ±1px 안 · 팔레트 밖 0 · 알파 차이 0.
+더한 것: 회벽 점묘, 기와 낱장 변화와 왼쪽 모임 사선 밝은 선, 1층 막돌, 창턱 꽃상자·덧문·유리 반짝임, 아치에 징 박힌 문, 등불, 담쟁이, 통.
+간판 받침은 넣지 않았다(에이전트 보고). 비교 그림(버들항 여관 | r7 바탕 | 마감, 4배): `qa-runs/harnesses/building-kit/_finish-demo.png`.
+검수(`review --finished`)·시트·고르기는 아직 돌리지 않았다 — 통과는 합격이 아니다.
+
 ### 시험 (`tests/test_finish.py`)
 
 임시 폴더 + 가짜 에이전트(runner 주입), 시험용 r7 판 모듈(줄 A, `reuseParts` 뺌): 샌드박스 내용(파일·알파·격자 크기·범례·그림자 글자·
