@@ -903,3 +903,28 @@ save 되풀이 7회, exit 0. 바탕 `0b9e645e` → 마감 `4eb598be`. 바뀐 불
 **실행 사고(기록):** 감독 쉘의 실행 도우미가 명령을 두 번 불러 r8 그리기가 키마다 두 프로세스로 같은 샌드박스에서
 돌았다(두 Opus 가 같은 `round_module.py` 를 고침). 저장소로 옮겨진 함수는 둘 중 나중에 끝난 쪽의 블록이고, 관문·조립·검수는 그 최종 그림으로 돌았다.
 
+### 마감 시연 2 (2026-10-22, 실제 Opus 5.5 high 각 1회)
+
+앞 「시연」 절의 `_finish-demo.png` 는 실제로 만들어지지 않았다. 골 이음 ㅜ자 집으로 다시 돌렸다.
+
+| 건물 | 바탕 → 마감 | 바뀜 | 16px 자기상관 지붕 · 벽 | 되풀이 | 하네스 재검사 |
+|---|---|---|---|---|---|
+| fantasy `style-r8` A.thouse.r7(검수 PASS 그림) | `c5929f3c` → `9af9b18f` | 28.4% | 0.413→0.318 · 0.362→0.223 | 5 | a~g 통과, 재현 같음 |
+| northern `style-r7` A.cottage.r7 | `0860cdfd` → `e355706c` | 35.0% | 0.370→0.331 · 0.203→0.061 | 7 | a~g 통과, 재현 같음 |
+
+비교: http://mdc-server:18301/bk-finish-demo.html(전후 1배·4배 + 버들항 기준 | 바탕 | 마감), 판타지 비교 그림은
+`qa-runs/harnesses/building-kit/_finish-demo.png`. **고침:** 북방 팔레트(설원 램프 포함 91색)는 마감 범례 글자(ASCII 84자)를 넘어
+`finish` 가 시작도 못 했다(「팔레트 색이 82개를 넘는다」) — `finish.CHARS` 뒤에 라틴과 헷갈리지 않는 그리스 글자를 더했다
+(앞 순서는 그대로라 색이 적은 테마의 범례는 안 바뀐다). `review --finished`·사람 고르기는 아직 없다.
+
+## 북방 마을 r2 — 버들항 설원 원본 조각으로 깔기 (2026-10-22)
+
+사용자: 원래 버들항 설원 마을 쪽이 낫다. `qa-runs/harnesses/building-kit/northern-snow/village-r2/`(gitignore) — `BRIEF.md` 를
+`claude -p --model claude-opus-5-5 --effort high` 한 명이 `run.sh`(setsid nohup, 게이트웨이 5xx·시간 초과 재시도 최대 5회)로 깐다.
+재료는 `tiledata/beodeul-variants/snowfield/parts/*`(땅 표본 칸·집·소품 그대로)와 독립 검수 PASS 인 `style-r7` cottage.r7 줄 A·B·C
+뿐이고 **새 화소는 0**이다(r1 village-opus 는 땅·소품을 새로 찍었다). r3 집은 반려된 투영이라 넣지 않았다.
+결과 48×40칸(768×640): 집 12채(원본 9 + 우리 오두막 3), 소품 186, 에이전트의 `check.py` (a) 화소 일치 · (b) 비겹침 ·
+(c) 재료·팔레트 밖 색 0 · (d) 문 12개 BFS · (e) 크기 · (f) 땅 칸 = 표본 칸 모두 PASS(감독이 다시 돌려 확인).
+남은 어색함: 연못·광장·길 가장자리가 칸 단위 직선(표본에 가장자리 칸이 없다), 우리 오두막이 원본 집보다 키가 크고 지붕이 엳다.
+보기: http://mdc-server:18301/northern-snow-village-r2.html(r2 | r1 village-opus, r2 | 원본 「서리목」).
+
