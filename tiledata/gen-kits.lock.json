@@ -5,7 +5,7 @@
       "repo": "https://github.com/MovieHolic-Plex/object-gen.git",
       "visibility": "public",
       "branch": "main",
-      "commit": "00212aefaa94f2f9a9d3452305a72686e157a5ca",
+      "commit": "8d894ebc7898cd5d6ef670381a01967db8dcb760",
       "vendor": {
         "out": "src/harnesses/_core/workshop/genKits/object-gen.json",
         "modules": [
