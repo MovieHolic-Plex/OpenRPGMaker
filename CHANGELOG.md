@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.318.0 — 2026-10-22
+
+### 기능
+
+- **fallen-star** — act 1 rooms (VQA r28) on current main — Beodeul woodland from main (#3234) (`0c62bc8`)
+
+### 수정
+
+- **runtime** — hide the current-map HUD chip when the map has no name (#3233) (`ee61771`)
+
 ## 0.317.1 — 2026-10-22
 
 ### 수정
