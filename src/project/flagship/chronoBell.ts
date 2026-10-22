@@ -763,6 +763,8 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   // 포고 동안 주인공(과 동료)은 발렌 쪽을 본다 — 화면만 보고 서 있었다(VQA r6 major).
   const begin = list.findIndex((c) => c.kind === "cutsceneControl");
   const towardValen: Step = valen.x > (project.startPos?.x ?? 0) ? "right" : "left";
+  // 발렌의 포고 넉 줄은 남쪽 백성에게 하는 말이다 — 대사 자동 돌아보기가 그를 서쪽 주인공 쪽으로 돌려 백성에게 옆모습을 보였다.
+  for (const c of list.slice(0, after + 1)) if (c.kind === "text" && /발렌/.test(String((c as { speaker?: string }).speaker ?? ""))) (c as { autoFace?: boolean }).autoFace = false;
   // 광장 둘레 붙박이 주민(할머니 등)도 포고 동안 발렌을 본다 — 카메라를 보고 서 있었다(VQA r22).
   const listeners: Command[] = hub.events.filter((e) => !marchers.has(e.id) && !String(e.id).startsWith("ev_gate_") && !String(e.id).startsWith(`ev_${FS_PREFIX}_crowd_`)
     && Math.abs(e.x - valen.x) <= 7 && Math.abs(e.y - valen.y) <= 5 && (e.pages?.[0]?.graphic as { sprite?: unknown } | undefined)?.sprite
@@ -779,6 +781,15 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   // 주인공이 옆으로 두 걸음 비켜서면 뒤따르던 엘레나가 곁(같은 줄)으로 와 서로 옆모습으로 마주 본다.
   const startX = project.startPos?.x ?? 24, startY = project.startPos?.y ?? 23;
   // 비켜설 두 칸에 묘목·풀 포기 같은 덧그림이 있으면 그 위에 선 것처럼 그려졌다(VQA r22) — 덧그림 없는 칸만.
+  // 시작 칸과 비켜설 줄의 낮은 풀 덧그림(헤더·고사리·풀 포기)은 걷는다 — 주인공이 헤더 덤불 위에 서서 시작하고, 비켜선 칸의 고사리에
+  // 발이 묻혔다(VQA r22·r23). 나무·덤불(묘목)은 그대로 두고, 그런 칸으로는 비켜서지 않는다.
+  {
+    const metaH = (project.tilesets[hub.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+    for (let dx = -2; dx <= 2; dx += 1) for (const layer of [hub.upperTiles, hub.upperOverlayTiles]) {
+      const i = startY * hub.width + startX + dx, t = layer?.[i] ?? -1;
+      if (t >= 0 && /헤더|고사리|풀 포기|들꽃|버섯|잔돌/.test(metaH[t]?.label ?? "")) layer![i] = -1;
+    }
+  }
   const bareCell = (x: number, y: number): boolean => [hub.lowerOverlayTiles, hub.upperTiles, hub.upperOverlayTiles].every((l) => (l?.[y * hub.width + x] ?? -1) < 0);
   const sideOpen = (dx: number): boolean => [1, 2].every((k) => isPassable(project, hub, startX + dx * k, startY) && bareCell(startX + dx * k, startY)
     && !hub.events.some((e) => e.x === startX + dx * k && e.y === startY && !marchers.has(e.id)));

@@ -14,7 +14,7 @@ const look = (id, note, x, y, dir = "down") => ({
 
 export default {
   id: "fallen-town",
-  projectFixture: process.env.RES_FIXTURE ?? "/tmp/fs-town83.json",
+  projectFixture: process.env.RES_FIXTURE ?? "/tmp/fs-town85.json",
   viewport: { width: vw, height: vh },
   beats: [
     { id: "title", note: "타이틀", ops: [
@@ -28,10 +28,12 @@ export default {
       { kind: "waitForRuntime", timeoutMs: 120000 },
       { kind: "hold", dir: null, ms: 1500 },
     ], shot: true },
-    { id: "procl-1", note: "포고 1", ops: [...closeDialogue()], shot: true },
-    { id: "procl-2", note: "포고 2", ops: [...closeDialogue()], shot: true },
-    { id: "procl-3", note: "포고 3", ops: [...closeDialogue()], shot: true },
-    { id: "procl-4", note: "포고 4 — 행진 시작", ops: [...closeDialogue()], shot: true },
+    // 포고 넉 줄은 한 줄씩 넘겨 그 줄이 떠 있을 때 찍는다 — 대사창이 줄 사이에 잠깐 사라지면 closeDialogue 가 넉 줄을 한 번에
+    // 넘겨 「포고 1」 샷이 이미 행진이 시작된 화면이었다(VQA r22·r23 이 그 샷을 포고 중 군중으로 읽었다).
+    { id: "procl-1", note: "포고 1", ops: [{ kind: "waitForText", testid: "dialogue-box", text: "백성은 들어라", timeoutMs: 8000 }, { kind: "hold", dir: null, ms: 600 }], shot: true },
+    { id: "procl-2", note: "포고 2", ops: [{ kind: "pressUntilText", key: "Enter", testid: "dialogue-box", text: "불경한 하늘의 물건", maxPresses: 6, settleMs: 300 }, { kind: "hold", dir: null, ms: 900 }], shot: true },
+    { id: "procl-3", note: "포고 3", ops: [{ kind: "pressUntilText", key: "Enter", testid: "dialogue-box", text: "이단으로 다스린다", maxPresses: 6, settleMs: 300 }, { kind: "hold", dir: null, ms: 900 }], shot: true },
+    { id: "procl-4", note: "포고 4 — 행진 시작", ops: [{ kind: "pressUntilText", key: "Enter", testid: "dialogue-box", text: "마찬가지다", maxPresses: 6, settleMs: 300 }, { kind: "hold", dir: null, ms: 900 }, ...closeDialogue()], shot: true },
     ...Array.from({ length: 10 }, (_, i) => ({ id: `march-${i + 1}`, note: "발렌 일행이 성문으로(화면이 행렬을 따라간다)", ops: [{ kind: "hold", dir: null, ms: 1400 }], shot: true })),
     { id: "march-done", note: "행진 끝", ops: [{ kind: "hold", dir: null, ms: 4000 }, ...closeDialogue()], shot: true },
     look("v-bridge", "아치 돌다리 · 운하 · 천문대 탑", 21, 21),

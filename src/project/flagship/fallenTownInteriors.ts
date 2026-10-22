@@ -97,7 +97,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
         // 가게 바닥 가운데가 비었다(VQA r7 minor) — 물약 진열대 하나와 약초 바구니를 더 둔다(문에서 계산대 가는 길은 비운다).
         ["herb drying rack", 21, 14], ["basket:herb", 23, 16], ["basket:mushroom", 24, 16],
         // 위 왼쪽 조제실이 빈 마루였다(VQA r16) — 약초 건조대·조제 탁자·약초 바구니.
-        ["herb drying rack", 13, 4], ["table:potion+flask", 7, 5], ["basket:herb", 10, 7], ["basket:mushroom", 11, 7], ["book pile", 9, 4],
+        ["herb drying rack", 13, 4], ["herb drying rack", 14, 4], ["table:potion+flask", 7, 5], ["basket:herb", 9, 5], ["basket:mushroom", 9, 6], ["book pile", 9, 4],
         ["herb drying rack", 4, 7], ["basket:potion+potionb+potiong", 14, 7],
         // 가게 아랫단·조제실 가운데 줄이 아직 빈 마루였다(VQA r17) — 진열 탁자·약초 걸이·바구니(문~계산대 길은 비운다).
         ["herb drying rack", 27, 17], ["basket:herb", 24, 18],
@@ -137,7 +137,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       // 방마다 한 묶음: 서고(위 오른쪽) 별 지도 책상·천구의, 진열실(위 왼쪽) 천구의·두루마리, 서재(아래 왼쪽) 관측 책상·부엉이 횃대,
       // 거실(아래 가운데) 찻상. 문(18,19)~벽난로 길(x17~19)은 비운다. 지구본·책 더미를 고르게 흩지 않는다(VQA r22).
       dress: [["desk 2x2", 20, 6], ["chair N", 20, 8], ["orrery", 25, 6], ["book pile", 23, 8], ["scroll rack", 16, 8],
-        ["orrery", 3, 5], ["globe", 11, 6], ["scroll rack", 1, 7],
+        ["orrery", 3, 5], ["globe", 11, 6], ["scroll rack", 1, 7], ["wall map", 5, 1], ["picture", 9, 1],
         ["desk 3x1", 3, 16], ["chair N", 4, 17], ["owl perch", 9, 17], ["book pile", 1, 17],
         ["tea 2x2", 22, 16], ["chair E", 21, 16], ["chair W", 24, 16], ["orrery", 14, 16]],
       people: [
@@ -208,7 +208,10 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       const metaX = (project.tilesets[im.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
       const drop = home.mapId === "fs_stargazer_home"
         // 진열실의 갑옷·투구·왕관·검 진열은 무기고·박물관으로 읽혔다(VQA r16) — 별 유물(천구의·별 지도)만 남긴다.
-        ? /^(나선 계단|마법진|망원경|검 유리 진열장|왕관 받침|받침대 위 고대 투구|청동 원형 방패 걸이|장신구 진열장)/
+        // 벽 진열장(투구·왕관이 든 유물 벽 진열장)도 무기고처럼 읽혔다(VQA r23) — 걷는다.
+        ? /^(나선 계단|마법진|망원경|검 유리 진열장|왕관 받침|받침대 위 고대 투구|청동 원형 방패 걸이|장신구 진열장|넓은 유물 벽 진열장|유물 벽 진열장)/
+        // 약방 조제실(위 왼쪽)의 부엉이 횃대·천체 모형·마법서 받침은 마법사 서재 물건이라 흩어진 잡동사니로 읽혔다(VQA r23).
+        : home.mapId === "fs_apothecary" ? /^(나선 계단|마법진|망원경|부엉이 횃대|천체 모형|마법서 받침)/
         : /^(나선 계단|마법진|망원경)/;
       for (const layer of [im.lowerOverlayTiles, im.upperTiles, im.upperOverlayTiles]) {
         if (!layer) continue;
@@ -231,7 +234,9 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
           after.lowerOverlayTiles?.forEach((t, i) => { if (snap.lowerOverlay && t !== snap.lowerOverlay[i]) changed.push(i); });
           after.upperOverlayTiles?.forEach((t, i) => { if (snap.upperOverlay && t !== snap.upperOverlay[i]) changed.push(i); });
           // 이미 놓인 가구 위에 겹쳐 찍으면 가구가 반쯤 지워진 덩이가 됐다 — 비어 있던 바닥 칸에만.
-          const onFloor = changed.every((i) => (metaD[after.lowerTiles[i]!]?.label ?? "").startsWith("바닥")
+          // 벽 걸이(벽 지도 등)는 벽면 칸에만 — 바닥 가구는 바닥 칸에만.
+          const onWall = /^(wall map|picture|star chart)$/.test(kit);
+          const onFloor = changed.every((i) => (metaD[after.lowerTiles[i]!]?.label ?? "").startsWith(onWall ? "벽면" : "바닥")
             && (snap.upper[i] ?? -1) < 0 && (snap.upperOverlay?.[i] ?? -1) < 0);
           if (onFloor) Object.assign(project, ctx.project);
           else {
@@ -438,6 +443,20 @@ function dressShopFronts(project: Project, hubId: string, homes: readonly Home[]
     fs_bakery_home: ["bd-prop-bread_rack", "bd-prop-sandwich_board"],
   };
   const HANGING_SIGN = 23605;
+  // 잠긴 집이 가게 간판(걸이 간판 10287)·차양 진열창(6046)을 달고 있으면 손님은 그 문을 두드리고 「굳게 잠겨 있다」를 듣는다 —
+  // 빵집 옆 잠긴 집이 그랬다(VQA r23). 잠긴 집의 간판·진열창은 같은 반쪽 목조 벽(버팀대 벽 5742·버팀대 아랫벽 6041)으로 바꾼다.
+  {
+    const hub = project.maps[hubId]!;
+    const plain: Record<number, number> = { 10287: 5742, 6046: 6041 };
+    // 잠긴 문 이벤트는 이 뒤에 달린다 — 집 문 가운데 들어가는 집(homes)이 아닌 문이 잠긴 문이다.
+    for (const lock of townDoors(project, hub).filter((d) => !homes.some((h) => h.door.x === d.x && h.door.y === d.y))) {
+      for (let y = lock.y - 1; y <= lock.y; y += 1) for (let x = lock.x - 2; x <= lock.x + 3; x += 1) {
+        if (x < 0 || y < 0 || x >= hub.width || y >= hub.height) continue;
+        const i = y * hub.width + x;
+        for (const layer of [hub.upperTiles, hub.upperOverlayTiles]) { const to = plain[layer?.[i] ?? -1]; if (layer && to !== undefined) layer[i] = to; }
+      }
+    }
+  }
   for (const home of homes) {
     const hub = project.maps[hubId]!;
     const { door } = home;
@@ -476,7 +495,8 @@ function dressShopFronts(project: Project, hubId: string, homes: readonly Home[]
       const kit = tileset.structureKits?.find((k) => k.id === kitId);
       if (!kit) continue;
       const spots: Cell[] = [];
-      for (let r = 2; r <= 5; r += 1) for (const dx of [-r, r, -r + 1, r - 1]) for (const dy of [0, 1, -1, 2]) spots.push({ x: door.x + dx, y: door.y + dy - (kit.height - 1) });
+      // 문 앞이 바로 길이면(빵집) 길 건너 풀밭(두세 줄 아래)까지 본다 — 가게 앞 진열이 하나도 못 섰다(VQA r23).
+      for (let r = 2; r <= 5; r += 1) for (const dx of [-r, r, -r + 1, r - 1]) for (const dy of [0, 1, -1, 2, 3]) spots.push({ x: door.x + dx, y: door.y + dy - (kit.height - 1) });
       const spot = spots.find((s) => {
         for (let ky = 0; ky < kit.height; ky += 1) for (let kx = 0; kx < kit.width; kx += 1) if (!free(s.x + kx, s.y + ky) || taken.has(`${s.x + kx},${s.y + ky}`)) return false;
         return true;
