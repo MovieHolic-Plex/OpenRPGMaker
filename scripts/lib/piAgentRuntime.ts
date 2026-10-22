@@ -700,14 +700,14 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         // 2026-10-22 다듬기 실행: show_map_region 18번 결과 글 13만 자가 대부분 이 배열이었다.
         const shownMap = tool.name === "show_map_region" && data && typeof data === "object" ? ctx.project.maps[String((data as { mapId?: unknown }).mapId)] : undefined;
         if (png && shownMap && roomSpecOf(ctx.project.tilesets[shownMap.tilesetId])) {
-          for (const part of result.content) {
+          for (const [index, part] of result.content.entries()) {
             if (part.type !== "text") continue;
             try {
               const parsed = JSON.parse(part.text) as { data?: Record<string, unknown> };
               if (!parsed.data || !Array.isArray(parsed.data.lower)) continue;
               const { lower: _l, upper: _u, layer2: _2, layer4: _4, shadow: _s, blockedCells, ...rest } = parsed.data;
               parsed.data = { ...rest, blockedCount: Array.isArray(blockedCells) ? blockedCells.length : 0, note: "손 도트 실내 — 칸 번호 배열은 뺐다(그림을 본다). 고칠 때는 build_hand_interior_room 인자로." };
-              part.text = JSON.stringify(parsed);
+              result.content[index] = { type: "text", text: JSON.stringify(parsed) };
             } catch { /* JSON 이 아니면 그대로 */ }
           }
         }
