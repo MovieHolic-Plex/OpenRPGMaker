@@ -56,7 +56,7 @@ def cell_pcs(p, a):
     return out
 
 
-SKIP = {'dirt-a', 'asphalt-b', 'asphalt-c', 'track', 'slab-edge', 'slab-break'}          # 키트에서 뺀 조각(감독 결정) — 표본 바탕으로만 남고 굽지 않는다(번호도 새로 잡지 않는다)
+SKIP = {'dirt-a', 'dirt-b64', 'dirt-c64', 'dirt-d64', 'asphalt-b', 'asphalt-c', 'track', 'slab-edge', 'slab-break'}          # 키트에서 뺀 조각(감독 결정) — 표본 바탕으로만 남고 굽지 않는다(번호도 새로 잡지 않는다)
 
 
 def adopt(dev):
@@ -86,7 +86,7 @@ def bake(dry=False, dev=False):
         auto = p['id'] in G.AUTO
         for (x, y), pc in sorted(pcs.items(), key=lambda kv: (kv[0][1], kv[0][0])):
             crop = BL.norm(im.crop((x * 16, y * 16, x * 16 + 16, y * 16 + 16)))
-            where = (f" (이웃 {y * 4 + x})" if y < 4 else (f" (이웃 {(y - 4) * 4 + x} · 변형 2)" if p['id'] == 'slab-break' else f" (속 변형 {(y - 4) * 4 + x + 1})")) if auto else (f" ({x + 1},{y + 1})" if p['w'] * p['h'] > 1 else '')
+            where = (f" (이웃 {y * 4 + x})" if y < 4 else (f" (이웃 {((y - 6) % 4) * 4 + x} · 가장자리 세트 {'BC'[(y - 6) // 4]})" if p['id'] == 'asphalt' and y >= 6 else (f" (이웃 {(y - 4) * 4 + x} · 변형 2)" if p['id'] == 'slab-break' else f" (속 변형 {(y - 4) * 4 + x + 1})"))) if auto else (f" ({x + 1},{y + 1})" if p['w'] * p['h'] > 1 else '')
             tags = ['황무지', '폐허', GROUP_KO[p['group']]] + p['tags']
             meta = dict(label=f"{p['name']}{where}"[:80], desc=f"{p['desc'] or p['name']} — {BL.PCNOTE[pc]}.", role=role_of(p), tags=tags,
                         rep='auto' if auto else ('repeat' if p['kind'] in ('terrain', 'flat') else 'fixed'))
@@ -129,10 +129,15 @@ def bake(dry=False, dev=False):
         ac = piece_cells.get(aid)
         if not ac or not all((m % 4, m // 4) in ac for m in range(16)): continue
         vm = {str(m): ac[(m % 4, m // 4)][0] for m in range(16)}
-        var = [] if aid == 'slab-break' else [ac[(x, y)][0] for y in range(4, 8) for x in range(4) if (x, y) in ac]          # 5번째 줄부터 = 꽉 찬 칸 속 변형(slab-break 는 5~8번째 줄 = 같은 마스크의 변형 2)
+        var = [] if aid == 'slab-break' else [ac[(x, y)][0] for y in range(4, 6 if aid == 'asphalt' else 8) for x in range(4) if (x, y) in ac]          # 5번째 줄부터 = 꽉 찬 칸 속 변형(slab-break 는 5~8번째 줄 = 같은 마스크의 변형 2)
         mem = sorted(set(vm.values()) | set(var))
+        mv = {}
+        if aid == 'asphalt':                              # 가장자리 세트 B(7~10번째 줄)·C(11~14번째 줄): 같은 마스크의 다른 깨짐 — 조합기가 칸 자리 해시로 A/B/C 를 고른다
+            mv = {str(m): [ac[(m % 4, r0 + m // 4)][0] for r0 in (6, 10)] for m in range(15) if all((m % 4, r0 + m // 4) in ac for r0 in (6, 10))}
+            mem = sorted(set(mem) | {t for ts in mv.values() for t in ts})
         g = dict(id='wl-' + aid, name=ad['name'], neighborhood=4, memberTileIds=mem, connectTileIds=mem, variantMap=vm, edgeConnects=True)
         if var: g['interiorVariants'] = [var]
+        if mv: g['maskVariants'] = mv
         autotile_groups.append(g)
 
     # 타일 그룹·키트

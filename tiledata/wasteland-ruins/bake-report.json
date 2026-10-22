@@ -3,7 +3,7 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 536,
+  "tiles_checked": 712,
   "kits_checked": 49,
   "groups_checked": 20,
   "autotiles_checked": 1
@@ -17,8 +17,8 @@
   "cells_off_palette": 0
  },
  "tiles": {
-  "count": 536,
-  "rows": 12,
+  "count": 712,
+  "rows": 15,
   "kits": 49,
   "groups": 20,
   "autotiles": 1,
@@ -36,14 +36,29 @@
   }
  },
  "dev_only_adopted": [
-  "shack-c",
-  "container-home",
-  "tent-tarp"
+  "dirt-b",
+  "dirt-d",
+  "asphalt"
  ],
  "mode": "dev",
  "rejected": [
   {
    "id": "dirt-a",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "dirt-b64",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "dirt-c64",
+   "status": "skipped",
+   "why": "감독 결정으로 키트에서 뺌"
+  },
+  {
+   "id": "dirt-d64",
    "status": "skipped",
    "why": "감독 결정으로 키트에서 뺌"
   },
