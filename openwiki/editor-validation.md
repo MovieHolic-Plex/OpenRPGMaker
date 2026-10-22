@@ -18,13 +18,13 @@
 | `scene-transfer-pair` | 돌아오는 문형 이동이 있는데 착지가 그 문에서 체비쇼프 2칸 이상 / 방향이 «문 → 착지» 쪽이 아니다 |
 | `scene-transfer-facing` | transfer 에 direction 이 없다(장면 전환 포함) |
 | `scene-stair-direction` | 맵 이름의 층(옥상·N층·지하)으로 위/아래가 갈리는데 계단 이름표가 반대(내려가는·구멍 ↔ 올라가는) |
-| `scene-npc-vanish` | 첫 페이지가 보이는 NPC 가 Erase Event 또는 스위치 «떠남» 빈 투명 페이지로 사라지는데, 바로 앞 경로가 출구(가장자리·이동 이벤트 1칸 안·문 칸) 앞에서 끝나지 않는다. 예외: 검은 화면 뒤, 동료 합류 뒤, 전투 직후 대사 없이(쓰러진 필드 적). 경로 속 불투명도 -200 이하도 같은 판정 |
+| `scene-npc-vanish` | 첫 페이지가 보이는 NPC 가 Erase Event 또는 스위치 «떠남» 빈 투명 페이지로 사라지는데, 바로 앞 경로가 출구(가장자리·이동 이벤트 1칸 안·문 칸) 앞에서 끝나지 않는다. 예외: 검은 화면 뒤, 동료 합류 뒤, 전투 직후 대사 없이(쓰러진 필드 적). 경로 속 불투명도 -200 이하도 같은 판정(여러 번 나눈 옅어짐 -85×3 은 누적해 본다, 2026-10-23) |
 | `scene-dialogue-position-mixed` | text.position·displayTextSettings 위치(preventObscuringPlayer 아래 = auto)가 둘 이상(sign·system·letter 줄 제외). 프로젝트당 1건 |
 | `scene-dialogue-context-mixed` | sign·system·letter 밖의 context 가 둘 이상, 또는 box 밖의 container(말풍선) |
 | `scene-map-no-bgm` | 시작 맵·이동 목적지인데 bgm 이 비었다(명시 `none` 은 의도). 자동/병렬 페이지의 BGM 재생이나 이동 직전 BGM 재생이 있으면 통과 |
 | `scene-moving-vehicle` | 켜진 `map.transit` 노선에 탈것이 있다 / 이름이 탈것인 이벤트의 첫 페이지 이동이 fixed 가 아니다 |
-| `scene-hang-on-floor` | 손 도트 실내 걸이 물건(handInteriorSpec kind `hang`, 칩셋 키트 `hand-interior:<id>`)의 위층 타일이 걸을 수 있는 칸에 있다(걸이 타일은 통행 가능, 벽면 1층은 막힘 — 칸이 통행 가능 = 바닥 위). 맵·물건마다 1건. Fallen 별자리표(fs_observatory)·거미줄(지하 화로의 방)을 잡았다 |
-| `scene-ceiling-tile` | 천장 구역 = 아래층이 천장·공허 이름표(`천장`·`ceiling`·`공허`·`void`, 막힘) 칸. ① 그 칸 어느 층이든 천장 아닌 타일이 있다 ② 천장 칸에 닿은 고립 통행 성분(아래층 통행만 본다, 이벤트·시작 칸 없음)이 있다. 맵마다 1건. Fallen fs_vault 의 방 밖 암반 바닥 값 칸(345칸)을 잡았다. 회색 디더 천장 재질(default·rock)은 천장 칸이라 못 잡는다 — 1배 실행 화면으로 본다(SKILL 3장 7) |
+| `scene-hang-on-floor` | 손 도트 실내 걸이 물건(handInteriorSpec kind `hang`, 칩셋 키트 `hand-interior:<id>`)의 위층 타일이 걸을 수 있는 칸에 있다(걸이 타일은 통행 가능, 벽면 1층은 막힘 — 칸이 통행 가능 = 바닥 위). 맵·물건마다 1건. Fallen 별자리표(fs_observatory)·거미줄(지하 화로의 방)을 잡았다. 이름에 문틀·arch 가 든 물건은 통로 위에 거는 것이 제자리라 뺀다(2026-10-23) |
+| `scene-ceiling-tile` | 천장 구역 = 아래층이 천장·공허 이름표(`천장`·`ceiling`·`공허`·`void`, 막힘) 칸. ① 그 칸 어느 층이든 천장 아닌 타일이 있다 ② 천장 칸에 닿은 고립 통행 성분(아래층 통행만 본다, 이벤트·시작 칸 없음)이 있다. 맵마다 1건. Fallen fs_vault 의 방 밖 암반 바닥 값 칸(345칸)을 잡았다. 회색 디더 천장 재질(default·rock)은 천장 칸이라 못 잡는다 — 1배 실행 화면으로 본다(SKILL 3장 7). 이름표가 「천장 띠」「천장 줄」인 걸이 그림(천문대 둥근 지붕 띠 등)은 통행 가능이어도 천장 타일로 친다(2026-10-23) |
 | `scene-speaker-absent` | 대사 한 줄의 화자(이름 → 맵 인물, `project/staging/dialogueActors.ts`)나 명시 듣는 인물이 그 줄 시점에 **보이지 않는다** — 페이지를 명령 순서대로 재생(Set Event Location·moveEvent 경로 끝·approach 계획·Erase·스위치·모습 효과 투명 주인공), 분기는 사본으로. 선택지는 «방금 말한 인물»(lastSpoken)이 없으면 같은 코드 |
 | `scene-talk-far` | 화자–듣는 인물 체비쇼프 > 2(`TALK_DISTANCE_LIMIT`). 부르는 줄(`text.calling`·외침 context·말풍선)은 제외 |
 | `scene-talk-facing` | 자동 돌아보기(런타임과 같은 규칙) 뒤에도 듣는 인물의 방향 부채꼴(90°)에 화자가 없다(NPC 끼리, 듣는 쪽이 고정 방향일 때) |
