@@ -1263,23 +1263,35 @@ def postern_block(side):
         for x in range(cx - 2, cx + 2): f.set(x, y_spring - R - 1, COOL[10] if x < cx else COOL[8])   # 이맛돌
     # r15: 앞면은 늘 두 줄 이상(32px) — 한 줄 앞면의 6px 아치는 「하수구 구멍」, 48px 판의 가운데 줄을 건너뛴 두 줄 길은 「납작한 검은 네모」였다.
     # 아치 모양은 하나(반폭 7·홍예 3, 머리는 아래에서 30px 위) — 두 줄 판·세 줄 판이 같은 아치를 쓴다
-    f2 = face(32, 1, torches=True)
-    arch(f2, 18, 31, half=7, ring=3)
-    tall = face(48, 2, slit=(4, 7), torches=True)
-    arch(tall, 34, 47, half=7, ring=3)
+    # r19: 남쪽 면에는 아치를 내지 않는다 — 길은 동서로 문루 밑을 지나므로 터널 입은 (보이지 않는) 동·서 면에 있다.
+    # 남쪽 아치는 「성벽 통로로 열린 문, 길은 옆 벽에 막힘」으로 읽혔다(r19 Argon·Opus). 앞면은 화살 구멍과 방패, 길 입구는 땅의 짙은 터널 입(mo_w·mo_e)이 보인다
+    f2 = face(32, 1, slit=(5, 11))
+    shield(f2, 16, 23)
+    tall = face(48, 2, slit=(4, 9))
+    arrow_slit(tall, 15, 22, 9); shield(tall, 16, 39)
     return top, f2, tall
 
 
 def mouth(kind):
-    """터널 입 그늘(2층 반투명, 길 위): w = 성벽 왼쪽 칸(오른쪽 끝이 짙다) · e = 오른쪽 칸(왼쪽 끝이 짙다) · n = 성문루 뒤(안쪽) 칸(아래 끝이 짙다)."""
+    """터널 입(2층, 길 위): w = 성벽 왼쪽 칸(오른쪽 끝이 성벽) · e = 오른쪽 칸(왼쪽 끝이 성벽) · n = 성문루 뒤(안쪽) 칸(아래 끝이 짙다).
+    3판 r19: w·e 는 성벽 쪽 두 열에 밝은 문설주 돌(터널 테)과 그 안쪽으로 거의 검은 네 열, 다시 열 열에 걸쳐 옅어진다 —
+    2~4px 옅은 띠는 「길이 벽에 막혔다」로 읽혔다."""
     cv = Canvas(16, 16)
-    # 8단 감쇠(시트에 있는 반투명 그늘 값) — 6px 고른 띠는 이음매 줄로 읽혔다(r8)
     ramp = (SH0, SH1, SH2, (12, 14, 20, 90), (12, 14, 20, 70), (10, 8, 16, 55), (26, 22, 30, 40), (26, 22, 30, 30))
-    for a in range(16):
-        for i, c in enumerate(ramp):
-            if kind == "w": cv.set(15 - i, a, c)
-            elif kind == "e": cv.set(i, a, c)
-            else: cv.set(a, 15 - i, c)
+    if kind == "n":
+        for a in range(16):
+            for i, c in enumerate(ramp): cv.set(a, 15 - i, c)
+        return cv
+    deep = ((6, 5, 8, 255), (6, 6, 10, 255), (8, 6, 6, 255), (26, 18, 30, 170), (26, 18, 30, 140), (26, 18, 30, 105),
+            (12, 14, 20, 96), (12, 14, 20, 88), (10, 8, 16, 80), (12, 14, 20, 70), (10, 8, 16, 60), (26, 22, 30, 50), (10, 8, 16, 50), (26, 22, 30, 30))   # 시트에 있는 RGBA 만(팔레트 잠금)
+    for y in range(16):
+        for i in range(16):
+            x = 15 - i if kind == "w" else i
+            if i == 0: c = COOL[9] if y % 6 else MORT              # 문설주 돌(성벽 바로 옆)
+            elif i == 1: c = COOL[6] if y % 6 else MORT
+            elif i - 2 < len(deep): c = deep[i - 2]
+            else: continue
+            cv.set(x, y, c)
     return cv
 
 
@@ -1288,6 +1300,7 @@ SNOW = [hx(c) for c in ("#a6bcdc", "#b3bbc3", "#cadaee", "#e6f0fa", "#f6faff", "
 SAND_COOL = [hx(c) for c in ("#3a261c", "#4e3d30", "#7d6249", "#87806a", "#9b8a73", "#b7a471", "#c2b082", "#d3c088", "#eccb86", "#f6d498", "#fff0c0", "#fff0c0")]   # r17: 가운데 두 단(cbb87c·d3c088, 8 차이)이 붙어 앞면이 뭉개졌다 — 한 칸씩 벌림
 SAND_WARM = [hx(c) for c in ("#4e3d30", "#7d6249", "#87806a", "#c2b082", "#cbb87c", "#dcaf6c", "#d3c088", "#eccb86", "#fff0c0")]   # 앞면 돌은 사암 한 결(주황·카키 조각보로 읽혔다, r9) — 따뜻한 돌 하나만 주황
 SAND_FLAG = [hx(c) for c in ("#4e3d30", "#724a28", "#7e4a34", "#94562e", "#ac7044", "#cf9558", "#dcaf6c", "#e8b672", "#f6d498")]
+SNOW_SH = [hx(c) for c in ("#b0bcd2", "#a6bcdc", "#96aacc")]   # 눈 그늘 세 색(시트 눈밭 그늘에 있는 값)
 DRY = [hx(c) for c in ("#7f725d", "#87806a", "#b7a471", "#c2b082")]
 BIOMES = ("snow", "desert")
 
@@ -1310,8 +1323,11 @@ def shade_biome(im):
             if not n or c[3] != 255: continue
             for r in ramps:
                 if c in r:
-                    if r is SNOW:       # 눈 그늘은 푸른 SNOW[0] 한 색(SNOW[1] 은 회색이라 그늘이 「회색 돌」로 읽혔다, r16)
-                        px[x, y] = SNOW[0] if (n <= -2 or r.index(c) <= 2) else SNOW[2]
+                    if r is SNOW:       # 눈 그늘: 눈 결을 살린 푸른 세 색(r19 Argon: 한 색 그늘 덩이) — 밝은 눈더미 b0bcd2 · 다진 눈 a6bcdc · 패임 96aacc
+                        i = r.index(c)
+                        tone = SNOW_SH[0] if i >= 3 else (SNOW_SH[1] if i == 2 else SNOW_SH[2])
+                        if n >= -1: tone = SNOW_SH[0] if i >= 2 else SNOW_SH[1]
+                        px[x, y] = tone
                     else:
                         px[x, y] = r[max(0, min(len(r) - 1, r.index(c) + n))]
                     break

@@ -208,8 +208,8 @@ def plan_ring(x0, y0, x1, y1, gates=(), closed=(), vgaps=(), towers=(), stairs=(
 
 def ring_sample():
     """조립 예 둘레(26×23): 남문(열림)·북문(닫힘, 윗면 변형 1)·망루 셋(남서 모서리 망루 포함, 윗면 변형 0·1·2)·계단·서쪽 쪽문 문루(길 두 줄)·동쪽 쪽문 문루(길 한 줄)."""
-    return plan_ring(2, 3, 23, 14, gates=[("S", 10, 0), ("N", 15, 1)], closed=[("N", 15)], vgaps=[("W", 10, 2), ("E", 10, 1)],
-                     towers=[("S", 2, 0), ("S", 17, 1), ("N", 6, 2)], stairs=[11]), 26, 23
+    return plan_ring(2, 3, 23, 14, gates=[("S", 10, 0), ("N", 15, 1)], closed=[("N", 15)], vgaps=[("W", 9, 2), ("E", 10, 1)],
+                     towers=[("S", 2, 0), ("S", 17, 1), ("N", 6, 2)], stairs=[10]), 26, 23
 
 
 ROAD_TILE = 3221  # 버들항 자갈길(시트 앞쪽 원본 칸) — 조립 그림에서 성문 통로 밑 땅으로만 쓴다
@@ -233,7 +233,7 @@ RETIRED = {f"{e}_{k}_{c}" for e in ("vw", "ve") for k in ("endS", "endN") for c 
 def ring_ground():
     """조립 예 둘레의 길: 서쪽 쪽문에서 동서 길(10·11행) · 남문 통로 두 열 · 닫힌 북문 안쪽 길(닫힌 문 밖에는 길을 내지 않는다).
     길은 그림 테두리에 닿지 않는다(테두리 화소는 윤곽이 아니다 — 관문 화풍 사실이 길 자갈을 윤곽으로 셌다)."""
-    return ([(x, y) for x in range(1, 17) for y in (10, 11)] + [(x, y) for x in (10, 11) for y in range(10, 22)]
+    return ([(x, y) for x in range(1, 17) for y in (9, 10)] + [(x, y) for x in (10, 11) for y in range(9, 22)]
             + [(x, 10) for x in range(17, 25)])
 
 
@@ -254,7 +254,7 @@ def render_plan(up, lo, W, H, bg=None, ground=(), biome=None):
     up = {k: biome_name(v, biome) for k, v in up.items()}
     lo = {k: biome_name(v, biome) for k, v in lo.items()}
     bg = {"snow": SNOW_GROUND_KIT, "desert": SAND_GROUND_KIT}.get(biome, bg) if bg is not None else None
-    road = {"snow": SNOW_ROAD, "desert": SAND_ROAD}.get(biome, ROAD_TILE)
+    road = ROAD_TILE      # r19: 조립 그림의 길은 늘 자갈길(눈·모래 길 칸은 한 색 면이라 「자리표시 채움」으로 잡혔다)
     im = Image.new("RGBA", (W * T, H * T), (0, 0, 0, 0))
     if bg is not None:
         # 기후 땅은 그 마을 바탕 키트 3×3 을 돌려 깐다(가운데 한 칸만 깔면 판판한 면이 관문 「평면 채움」으로 잡혔다)
@@ -271,7 +271,7 @@ def render_plan(up, lo, W, H, bg=None, ground=(), biome=None):
 
 def parts_plan():
     """작은 둘레 표본(16×23): 모서리 넷·서쪽 쪽문 문루(길 세 줄 — fu·fm·fl 앞면, r18: 동쪽은 모서리 망루와 겹쳤다)·계단·망루 하나(윗면 변형 1). 반환 (위층, 아래층, 가로, 세로)."""
-    up, lo = plan_ring(2, 3, 13, 14, vgaps=[("W", 10, 3)], towers=[("N", 4, 1), ("N", 11, 0)], stairs=[7])
+    up, lo = plan_ring(2, 3, 13, 14, vgaps=[("W", 10, 3)], towers=[("N", 11, 0)], stairs=[6])
     return up, lo, 16, 23
 
 

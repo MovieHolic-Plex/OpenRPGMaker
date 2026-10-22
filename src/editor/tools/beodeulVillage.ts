@@ -2263,7 +2263,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const x = side === "W" ? L.x0 : L.x1;
       for (const [a, b] of runs(H, (y) => roadAt(x, y), L.y0 + 2, L.y1 - 1)) {
         // 쪽문 문루(윗면이 길 위 두세 줄까지 올라간다)가 모서리 망루(북 y0−2..y0+6, 남 y1−2..)와 겹치지 않게 — 모서리에 붙은 길은 성벽이 막는다(r18)
-        if (a < L.y0 + 10 || b > L.y1 - 3) continue;
+        if (a < L.y0 + 10 || b > L.y1 - 4) continue;   // r19: 남쪽 모서리 망루(y1−2 부터)와 한 줄 이상 띄운다
         if (gaps.some((g) => g.side === side && a - 4 <= g.y + g.rows)) continue;
         gaps.push({ side, y: a, rows: b - a + 1 });
       }
