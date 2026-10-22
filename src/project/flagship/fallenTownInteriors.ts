@@ -95,7 +95,10 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       dress: [["table:potion+flask", 12, 15], ["herb drying rack", 26, 15], ["basket:herb", 9, 17], ["basket:mushroom", 10, 17],
         ["basket:potion+potionb+potiong", 13, 17],
         // 가게 바닥 가운데가 비었다(VQA r7 minor) — 물약 진열대 하나와 약초 바구니를 더 둔다(문에서 계산대 가는 길은 비운다).
-        ["table:potion+flask", 21, 14], ["basket:herb", 23, 16], ["basket:mushroom", 24, 16], ["book pile", 14, 16]],
+        ["table:potion+flask", 21, 14], ["basket:herb", 23, 16], ["basket:mushroom", 24, 16], ["book pile", 14, 16],
+        // 위 왼쪽 조제실이 빈 마루였다(VQA r16) — 약초 건조대·조제 탁자·약초 바구니.
+        ["herb drying rack", 13, 4], ["table:potion+flask", 7, 5], ["basket:herb", 10, 7], ["basket:mushroom", 11, 7], ["book pile", 9, 4],
+        ["herb drying rack", 4, 7], ["basket:potion+potionb+potiong", 14, 7]],
       people: [
         {
           id: "ev_fs_apothecary", name: "약재상 오든", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 7], behindCounter: true,
@@ -131,7 +134,9 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
         ["tea 2x2", 6, 15], ["chair E", 5, 15], ["chair W", 8, 15],
         // 거실 아랫단·서고 아랫단·진열실 남쪽이 빈 마루였다(VQA r13 minor 「35~40% 빈 바닥」).
         ["tea 2x2", 4, 7], ["chair E", 3, 7], ["chair W", 6, 7], ["globe", 24, 7], ["book pile", 27, 8], ["scroll rack", 16, 8],
-        ["tea 2x2", 27, 17], ["chair E", 26, 17], ["chair W", 29, 17], ["book pile", 21, 18]],
+        ["tea 2x2", 27, 17], ["chair E", 26, 17], ["chair W", 29, 17], ["book pile", 21, 18],
+        // 진열실(왼쪽 아래) — 걷어 낸 갑옷 진열 대신 천구의·지구본·두루마리·관측 책상.
+        ["orrery", 3, 14], ["globe", 11, 14], ["scroll rack", 2, 17], ["desk 3x1", 6, 17], ["book pile", 11, 17], ["owl perch", 12, 18]],
       people: [
         {
           id: "ev_fs_old_stargazer", name: "늙은 별지기 오스본", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 6],
@@ -193,6 +198,19 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       if (overlay) for (let i = 0; i < overlay.length; i += 1) if (overlay[i] === 3964 || overlay[i] === 3965) overlay[i] = -1;
     }
     run(project, "set_map_properties", { mapId: home.mapId, bgm: { mode: "custom", resourceId: home.bgm } });
+    // 약방 뒷방의 나선 계단(어디로도 안 가고 시점이 달랐다)·마법진, 바닥에 누운 망원경은 걷는다(VQA r13 minor).
+    {
+      const im = project.maps[home.mapId]!;
+      const metaX = (project.tilesets[im.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+      const drop = home.mapId === "fs_stargazer_home"
+        // 진열실의 갑옷·투구·왕관·검 진열은 무기고·박물관으로 읽혔다(VQA r16) — 별 유물(천구의·별 지도)만 남긴다.
+        ? /^(나선 계단|마법진|망원경|검 유리 진열장|왕관 받침|받침대 위 고대 투구|청동 원형 방패 걸이|장신구 진열장)/
+        : /^(나선 계단|마법진|망원경)/;
+      for (const layer of [im.lowerOverlayTiles, im.upperTiles, im.upperOverlayTiles]) {
+        if (!layer) continue;
+        for (let i = 0; i < layer.length; i += 1) if (layer[i]! >= 0 && drop.test(metaX[layer[i]!]?.label ?? "")) layer[i] = -1;
+      }
+    }
     for (const [kit, x, y] of home.dress ?? []) {
       const ctx = { project, assistantRun: false };
       try {
@@ -220,16 +238,6 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
     }
     // 부엌의 수도꼭지 개수대·쇠 레인지는 중세 집에 어울리지 않았고 세 집에 똑같이 깔렸다(VQA r5) — 물동이와 화덕·조리대로 바꾼다.
     periodKitchen(project.maps[home.mapId]!);
-    // 약방 뒷방의 나선 계단(어디로도 안 가고 시점이 달랐다)·마법진, 바닥에 누운 망원경은 걷는다(VQA r13 minor).
-    {
-      const im = project.maps[home.mapId]!;
-      const metaX = (project.tilesets[im.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
-      const drop = /^(나선 계단|마법진|망원경)/;
-      for (const layer of [im.lowerOverlayTiles, im.upperTiles, im.upperOverlayTiles]) {
-        if (!layer) continue;
-        for (let i = 0; i < layer.length; i += 1) if (layer[i]! >= 0 && drop.test(metaX[layer[i]!]?.label ?? "")) layer[i] = -1;
-      }
-    }
     // 출구 바로 앞(두 칸 안)의 모피 깔개는 들어오자마자 주인공 뒤에 자루처럼 놓였다(VQA r9 minor) — 걷는다.
     {
       const im = project.maps[home.mapId]!;
