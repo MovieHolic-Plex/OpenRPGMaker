@@ -599,6 +599,13 @@ export function evaluateExpect(expected, observed) {
       );
     }
   }
+  // 타일·이벤트 그림까지: 지워진 타일셋을 가리키는 맵은 플레이어만 멀쩡하고 바닥 전체가 __MISSING 이다(#2586).
+  if (expected.noMissingTextures) {
+    const health = observed.missingTextures;
+    if (!health) failures.push("noMissingTextures: 텍스처 관측 훅 없음");
+    else if (health.textured === 0) failures.push("noMissingTextures: 그려진 텍스처 객체가 0개다");
+    else if (health.missing > 0) failures.push(`noMissingTextures: __MISSING 텍스처 ${health.missing}/${health.textured}개`);
+  }
   // 체공 판정. liftPx 는 원점 채널을 되읽은 값이고, playerSpriteY 는 접지선이다.
   // 체공 중에도 접지선이 타일 경계에 남아야 깊이·카메라·조명이 깨지지 않는다.
   const lift = observed.playerLiftPx;

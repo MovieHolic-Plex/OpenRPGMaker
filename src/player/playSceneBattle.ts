@@ -24,7 +24,7 @@ import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { store } from "@/project/store";
 import { markBattleEntry } from "@/app/perfMetrics";
-import { nextSessionRandom } from "@/project/session";
+import { clearAudioState, nextSessionRandom, setAudioState } from "@/project/session";
 import type { MonsterInstance, PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
@@ -185,15 +185,19 @@ export async function playBattle(
       // Terrain at the player's tile feeds battle backdrop when troop has no preview.
       captureLocation: { mapId: scene.session.currentMapId, x: scene.session.x, y: scene.session.y },
       rng: () => current() ? nextSessionRandom(session, "battle") : 0.5,
-      playAudio: (resourceId, loop) => {
+      // 필드 인터프리터(playSceneInterpreter 의 playAudio/stopAudio)와 같은 규칙: 저작한 채널·볼륨·페이드를
+      // 그대로 싣고 그 채널의 상태만 바꾼다. 채널을 고른 정지는 그 채널만 멈춘다(#2586).
+      playAudio: (resourceId, loop, command) => {
         if (!current()) return;
-        playAudioCommand({ resourceId, loop }, project);
-        session.audio.bgm = { resourceId, loop };
+        const step = command ?? { resourceId, loop };
+        setAudioState(session, step);
+        playAudioCommand(step, project);
       },
-      stopAudio: () => {
+      stopAudio: (channel) => {
         if (!current()) return;
-        stopAudioCommand();
-        session.audio.bgm = undefined;
+        clearAudioState(session, channel);
+        if (channel === undefined) stopAudioCommand();
+        else stopAudioChannel(channel);
       },
     });
     initializedRuntime = runtime;

@@ -1634,7 +1634,9 @@ npm run qa:runtime -- --scenario checkpoints --checkpoint-set astra-horizon --ch
 `getImageData` 로 다시 읽으면 플레이 중에도 `distinct=1` 이므로 색 다양성은
 `scripts/lib/runtimeQaRun.mjs:435` 처럼 pngjs 로 스크린샷 PNG 를 읽어 잰다.
 `test/fixtures/projects/battle-v3.json` 은 거의 검으므로 렌더 여부 판정에는
-`editor-authored-demo-v3.json` 을 쓴다.
+`editor-authored-demo-v3.json` 을 쓰지 **않는다** — 2026-10-07 에 지운 EasyRPG ChipSet 을 가리켜 필드 타일이
+전부 `__MISSING` 이다(#2586). 스모크는 커밋된 예제 게임 `examples/saesol-red/project.json.gz` 를 쓴다
+(`runRuntimeQa` 가 `.json.gz` 를 풀어 싣는다).
 
 - 결과는 `verify-shots/runtime-qa/<시나리오>/SUMMARY.md` 를 **먼저** 읽고 "즉시 확인" 으로
   표시된 PNG 만 열어라. `shot` 은 옵트인이고 실패 비트는 자동 캡처된다. 출력 디렉터리는
@@ -1753,9 +1755,14 @@ npm run qa:runtime -- --scenario checkpoints --checkpoint-set astra-horizon --ch
   상호작용 비트는 취약하다.
 - `__oprnPlayerSprite().resourceId` 가 채워져 있어도 `textureKey` 는 `__MISSING` 일 수 있다
   (Phaser 초록 와이어프레임). 게이트는 `playerSpriteTextureLoaded` 축으로 봐야 한다.
+- **타일까지 `__MISSING` 인지는 `expect.noMissingTextures`** (2026-10-22, #2586). `window.__oprnMissingTextures()`
+  (`src/player/playSceneTestHooks.ts`)가 표시 목록을 컨테이너 안까지 훑어 `{ textured, missing }` 를 돌려준다.
+  플레이어 축(`playerSpriteTextureLoaded`)만 보던 스모크는 지워진 타일셋을 가리키는 픽스처에서 바닥 1,450/1,457 칸이
+  초록 와이어프레임인데도 통과했다. 스모크의 모든 필드 비트가 이 축을 건다.
 - `test/fixtures/projects/oprn-sample-v3.json` 은 플레이어 캐릭셋이 `__MISSING` 으로 그려진다
-  (픽스처 4개 중 이것만, 같은 `resourceId`, 실패 요청 0건). 원인 미규명. 기본 픽스처는
-  `editor-authored-demo-v3.json` 을 쓴다.
+  (픽스처 4개 중 이것만, 같은 `resourceId`, 실패 요청 0건). 원인 미규명. 시나리오 기본값
+  `DEFAULT_PROJECT_FIXTURE` 는 아직 `editor-authored-demo-v3.json` 이지만(위 이유로 타일이 없다), 스모크는
+  `examples/saesol-red/project.json.gz` 를 명시한다.
 
 ## sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
 
