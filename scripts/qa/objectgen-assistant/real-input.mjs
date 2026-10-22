@@ -235,7 +235,12 @@ for (const job of cases) {
         for (const layer of map.extraLayers ?? []) (layer.tiles ?? []).forEach((id, i) => { if (ids.has(id)) hits.push(i); });
         return hits.length ? { cells: [...new Set(hits)].map((i) => [i % map.width, Math.floor(i / map.width)]) } : null;
       }, { mapId, kit });
-      if (stamped && !placedAt) { placedAt = Date.now(); log(`placed ${kit} at ${JSON.stringify(stamped.cells.slice(0, 3))}…`); }
+      if (stamped && !placedAt) {
+        placedAt = Date.now(); log(`placed ${kit} at ${JSON.stringify(stamped.cells.slice(0, 3))}…`);
+        // 놓자마자 판·프로젝트를 먼저 받아 둔다 — 메모리가 빠듯한 박스에서 턴 끝을 기다리다 렌더러가 죽어 둘 다 잃었다(2026-10-22).
+        try { await dumpRound("map-objects", resolve(out, `${job.id}-round.json`)); } catch (error) { log(`early round dump failed: ${error.message}`); }
+        try { writeFileSync(resolve(out, "project.json"), await page.evaluate(() => JSON.stringify(window.__oprnEditorStore.getCurrent()))); log("project exported"); } catch (error) { log(`early export failed: ${error.message}`); }
+      }
       if (placedAt && Date.now() - placedAt > 15_000 && await sendIdle()) break;
     }
   }

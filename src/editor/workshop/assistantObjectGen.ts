@@ -4,7 +4,7 @@
  * 새 기물 정의 → 공방 판(후보 그리기·검수, 사용자 자기 AI 계정) → 사용자가 고르거나 「알아서 고르기」 → 그 맵 칩셋에 굽기.
  * 공방 화면(workshopWorkspace)과 같은 세션·저장소를 쓰므로 판은 공방 「물건·가구」에서도 그대로 보인다.
  */
-import { exemplarSheet, loadAnchors, ogPickerPrompt } from "@/harnesses/_core/workshop/objectGenFlow";
+import { exemplarSheet, loadAnchors, ogPickerPrompt, ogStyleSetFor } from "@/harnesses/_core/workshop/objectGenFlow";
 import { parsePicker, pickerMajority, pickerMessages, PICK_RUNS } from "@/harnesses/_core/workshop/picker";
 import type { Rgba, RgbaImage, WorkshopItem, WorkshopRound } from "@/harnesses/_core/workshop/types";
 import { store as projectStore } from "@/project/store";
@@ -94,7 +94,7 @@ export function autoPickLetter(run: ObjectGenRun): string | null {
 async function ogPickerExtras(item: WorkshopItem, session: ObjectGenRun["session"]): Promise<{ prompt: string; exemplars: RgbaImage | null; floor: Rgba }> {
   const floor: Rgba = [149, 107, 68, 255];
   try {
-    const anchors = await loadAnchors(session.env);
+    const anchors = await loadAnchors(session.env, ogStyleSetFor(item));
     return { prompt: ogPickerPrompt(item), exemplars: exemplarSheet(anchors, floor, 8), floor };
   } catch {
     return { prompt: ogPickerPrompt(item), exemplars: null, floor };

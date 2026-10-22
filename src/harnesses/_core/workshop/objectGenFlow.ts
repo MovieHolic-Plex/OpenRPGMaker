@@ -15,11 +15,12 @@
  * 판정은 후보 한 장 + 숨긴 반려 표본으로 한다(원본은 그 판 후보 전부를 한 판에).
  */
 import type { ChatMessage, ContentPart } from "@/ai/llmClient";
+import { isOrganicObject } from "./footprint";
 import { kitConstant, kitFile, objectGenKit } from "./genKits";
 import { gridToAnswer, onBackground, renderGrid, scaleImage } from "./grid";
 import type { DrawContext, Grid, Palette, Rgba, RgbaImage, ReviewContext, Verdict, WorkshopEnv, WorkshopItem } from "./types";
 
-type KitSection = "prompts" | "reference" | "picker" | "vqa" | "drawer" | "exemplars" | "footprint";
+type KitSection = "prompts" | "reference" | "picker" | "vqa" | "drawer" | "exemplars" | "footprint" | "checks";
 type AnchorSet = { examples?: { file: string; label: string }[]; good: { file: string; label: string; why?: string }[]; bad: { file: string; label: string; why?: string }[]; rejects?: { file: string }[] };
 
 /**
@@ -37,6 +38,16 @@ const anchorSet = (set: string): AnchorSet | undefined => {
 };
 /** 원본 flow.DEFAULT_STYLE */
 export const OG_STYLE = "oprn-interior-v5-large";
+/**
+ * 원본 flow.ORGANIC_STYLE — 자연물(나무·덤불·식물·꽃·더미·동물·바위)은 버들항 손 도트 나무(#3223·#3229)를 견본·GOOD 으로,
+ * 도형으로 그린 사과나무를 BAD 로, 도형 반려 표본을 숨겨 판정한다. 왜(2026-10-22 사용자): 2×3 사과나무가 달걀 수관·네모 줄기·
+ * 격자 네모 사과로 나왔다 — 가구 지시문(윗면 3줄·받침)과 가구 견본(침대·옷장)으로 그렸고, 판정도 가구와 비교했다.
+ */
+export const OG_STYLE_ORGANIC = "oprn-beodeul-organic";
+/** 자연물인가 — 3/4 관문 종류 organic 이거나 이름(크기 사전 종류·머리 낱말)이 자연물(object-gen footprint.is_organic). */
+export const ogIsOrganic = (item: Pick<WorkshopItem, "title"> & { readonly gateKind?: string | null }): boolean => isOrganicObject(item.title, item.gateKind ?? null);
+/** 그 물건을 그리고 판정할 견본 묶음 */
+export const ogStyleSetFor = (item: Pick<WorkshopItem, "title"> & { readonly gateKind?: string | null }): string => (ogIsOrganic(item) ? OG_STYLE_ORGANIC : OG_STYLE);
 export const OG_JUDGE_RUNS = 3;
 export const OG_JUDGE_RETRIES = 2;
 export const OG_PICK_RUNS = kitValue<number>("picker", "RUNS");
@@ -243,6 +254,46 @@ export function topPlaneRows(image: RgbaImage): number {
   return rows.length ? rows[Math.floor(rows.length / 2)]! : 0;
 }
 
+const GEOMETRIC_TURNS = kitValue<number>("checks", "GEOMETRIC_TURNS");
+const GEOMETRIC_ELLIPSE = kitValue<number>("checks", "GEOMETRIC_ELLIPSE");
+const GEOMETRIC_MIN_ROWS = kitValue<number>("checks", "GEOMETRIC_MIN_ROWS");
+/**
+ * 원본 checks.geometry: 윤곽이 도형인가. turns = 왼/오른 가장자리가 들어갔다 나왔다 꺾이는 횟수(줄당) — 손으로 뭉친 수관은 자주 꺾이고
+ * 타원·돔은 한 번 꺾인다. ellipse = 가장 넓은 줄의 절반 이상인 띠와 거기 맞춘 타원의 IoU. 실측: 버들항 나무·덤불 0.25~0.45 / 0.82~0.87,
+ * 반려된 달걀 사과나무 0.085 / 0.92.
+ */
+export function silhouetteGeometry(image: RgbaImage): { rows: number; turns: number; ellipse: number } {
+  const rows: [number, number, number, number][] = [];
+  for (let y = 0; y < image.height; y++) {
+    let first = -1, last = -1, n = 0;
+    for (let x = 0; x < image.width; x++) if (image.data[(y * image.width + x) * 4 + 3]! > 0) { if (first < 0) first = x; last = x; n++; }
+    if (n) rows.push([y, first, last, n]);
+  }
+  if (rows.length < 4) return { rows: rows.length, turns: 1, ellipse: 0 };
+  const turns = (seq: number[]) => {
+    const d: number[] = [];
+    for (let i = 1; i < seq.length; i++) if (seq[i] !== seq[i - 1]) d.push(seq[i]! - seq[i - 1]!);
+    let t = 0;
+    for (let i = 1; i < d.length; i++) if ((d[i]! > 0) !== (d[i - 1]! > 0)) t++;
+    return t;
+  };
+  const t = (turns(rows.map((r) => r[1])) + turns(rows.map((r) => r[2]))) / rows.length;
+  const mw = Math.max(...rows.map((r) => r[3]));
+  const band = rows.filter((r) => r[3] >= 0.5 * mw);
+  const by0 = band[0]![0], by1 = band.at(-1)![0];
+  const bx0 = Math.min(...band.map((r) => r[1])), bx1 = Math.max(...band.map((r) => r[2]));
+  const ea = (bx1 - bx0 + 1) / 2, eb = (by1 - by0 + 1) / 2, cx = (bx0 + bx1 + 1) / 2, cy = (by0 + by1 + 1) / 2;
+  let inter = 0, union = 0;
+  for (let y = by0; y <= by1; y++) for (let x = bx0; x <= bx1; x++) {
+    const e = ((x + 0.5 - cx) / ea) ** 2 + ((y + 0.5 - cy) / eb) ** 2 <= 1;
+    const f = image.data[(y * image.width + x) * 4 + 3]! > 0;
+    if (e && f) inter++;
+    if (e || f) union++;
+  }
+  const round3 = (v: number) => Math.round(v * 1000) / 1000;
+  return { rows: rows.length, turns: round3(t), ellipse: union ? round3(inter / union) : 0 };
+}
+
 export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgCheck {
   const hard: OgIssue[] = [], warn: OgIssue[] = [];
   const { width: w, height: h, cells } = grid;
@@ -291,7 +342,13 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
   const ink = edge.filter(([x, y]) => { const e = palette.byKey.get(at(x, y)!); return e ? (e.rgba[0] + e.rgba[1] + e.rgba[2]) / 3 <= 30 : false; });
   if (edge.length && ink.length > 0.6 * edge.length) warn.push({ code: "INK", msg: `${ink.length}/${edge.length} edge pixels are near-black - outline with the material's darkest shade` });
   const topRows = topPlaneRows(renderGrid(grid, palette));
-  if (TOP_KINDS.has(item.gateKind ?? "") && STANDING.has(anchor) && topRows < 3) warn.push({ code: "TOP", msg: `measured top plane is ${topRows} row(s) (column scan) - a 3/4 top needs >= 3 lit rows above the front` });
+  if (ogIsOrganic(item)) {
+    const g = silhouetteGeometry(renderGrid(grid, palette));
+    if (g.turns < GEOMETRIC_TURNS && g.ellipse > GEOMETRIC_ELLIPSE) {
+      const issue = { code: "GEOMETRIC", msg: `the silhouette is a smooth primitive (edge turn-backs ${g.turns}/row, ellipse match ${g.ellipse}) - break it into irregular leaf clumps / lumps with notches, as in the exemplars` };
+      (g.rows >= GEOMETRIC_MIN_ROWS ? hard : warn).push(issue);
+    }
+  } else if (TOP_KINDS.has(item.gateKind ?? "") && STANDING.has(anchor) && topRows < 3) warn.push({ code: "TOP", msg: `measured top plane is ${topRows} row(s) (column scan) - a 3/4 top needs >= 3 lit rows above the front` });
   return { ok: hard.length === 0, hard, warn, topRows };
 }
 export const describeCheck = (check: OgCheck): string => [
@@ -321,6 +378,7 @@ export function ogDrawBrief(ctx: DrawContext, opts: { readonly hasReference: boo
   const item = ctx.item;
   const letter = ctx.direction.letter;
   const anchor = ogAnchorOf(item);
+  const organic = ogIsOrganic(item);
   const cellsW = item.width / 16, cellsH = item.height / 16;
   const brief = `${item.title} — ${item.description}${item.setting ? ` Setting: ${item.setting}` : ""}`;
   const lines = [
@@ -361,9 +419,10 @@ export function ogDrawBrief(ctx: DrawContext, opts: { readonly hasReference: boo
       ...(ctx.referenceColors?.length ? [`Its main colours, mapped to the nearest palette keys (share of the object): ${ctx.referenceColors.map((c) => `${c.key} ${c.hex} ${c.share}%`).join(", ")}.`,
         "Keep these hues for the matching parts (shade them with darker/lighter keys of the same ramp) - do not wash a saturated part out to beige or grey."] : []),
       ""] : [""]),
-    anchor === "flat" || anchor === "hang" ? `## View\n- This object ${ANCHOR_TEXT[anchor]}.\n` : `${kitValue("prompts", "VIEW")}\n`,
-    kitValue("prompts", "RECIPE"),
-    ...(cellsW * cellsH >= LARGE_CELLS ? ["", kitValue("prompts", "LARGE")] : []),
+    anchor === "flat" || anchor === "hang" ? `## View\n- This object ${ANCHOR_TEXT[anchor]}.\n` : `${kitValue("prompts", organic ? "VIEW_ORGANIC" : "VIEW")}\n`,
+    kitValue("prompts", organic ? "RECIPE_ORGANIC" : "RECIPE"),
+    // 큰 물건 지시(윗면 25~35%·받침)는 가구용이다 — 자연물에는 넣지 않는다(원본 draw_brief 와 같다).
+    ...(cellsW * cellsH >= LARGE_CELLS && !organic ? ["", kitValue("prompts", "LARGE")] : []),
     "",
     "## Palette ramps (taken from the chipset; ramp:step, dark to light)",
     rampSummary(ctx.palette),

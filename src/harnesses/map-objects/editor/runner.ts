@@ -11,7 +11,7 @@ import type { AnchorSample, Grid, ItemDefinition, Palette, Rgba, RgbaImage, Work
 import { gateAdviceMessages, parseGateAdvice } from "@/harnesses/_core/workshop/gateAdvice";
 import { refCells, workshopRefDescribe } from "@/harnesses/_core/workshop/referencePrompt";
 import {
-  aspectOf, aspectSheet, kitValue, loadAnchors, OG_DIRECTIONS, OG_LOOKS, ogCheck, ogDrawMessages, ogLookMessage, ogReview, type OgAnchors, type OgStyle,
+  aspectOf, aspectSheet, kitValue, loadAnchors, ogStyleSetFor, OG_DIRECTIONS, OG_LOOKS, ogCheck, ogDrawMessages, ogLookMessage, ogReview, type OgAnchors, type OgStyle,
 } from "@/harnesses/_core/workshop/objectGenFlow";
 import { parseMapObjectVerdict } from "./checks";
 import { mapItemFromDefinition, paletteFromHexes } from "./items";
@@ -61,9 +61,17 @@ export function createMapObjectRunner(): WorkshopRunner {
   }
 
   /** 원본 견본 묶음(oprn-interior-v5-large). 못 읽으면 칩셋 물체를 GOOD 으로 쓴다(원본 anchor_cards 의 견본 없는 갈래). */
-  let anchorsPending: Promise<OgAnchors | null> | null = null;
-  const anchorsFor = (env: WorkshopEnv): Promise<OgAnchors | null> =>
-    (anchorsPending ??= loadAnchors(env).catch((error) => { console.warn("[workshop] object-gen 견본을 못 읽음:", error); anchorsPending = null; return null; }));
+  // 견본 묶음은 물건마다 고른다: 자연물(나무·덤불·꽃·바위…)은 버들항 손 도트 나무(oprn-beodeul-organic), 나머지는 실내 v5 가구.
+  const anchorsPending = new Map<string, Promise<OgAnchors | null>>();
+  const anchorsFor = (env: WorkshopEnv, item: WorkshopItem): Promise<OgAnchors | null> => {
+    const set = ogStyleSetFor(item);
+    let pending = anchorsPending.get(set);
+    if (!pending) {
+      pending = loadAnchors(env, set).catch((error) => { console.warn("[workshop] object-gen 견본을 못 읽음:", error); anchorsPending.delete(set); return null; });
+      anchorsPending.set(set, pending);
+    }
+    return pending;
+  };
 
   const runner: WorkshopRunner = {
     harnessId: "map-objects",
@@ -101,7 +109,7 @@ export function createMapObjectRunner(): WorkshopRunner {
     },
     async drawMessages(ctx, env) {
       const style = await styleFor(ctx.item, env);
-      return ogDrawMessages(ctx, env, ogStyle(style), await anchorsFor(env));
+      return ogDrawMessages(ctx, env, ogStyle(style), await anchorsFor(env, ctx.item));
     },
     async lookMessage(ctx, grid, env, look, max) {
       const style = await styleFor(ctx.item, env);
@@ -109,7 +117,7 @@ export function createMapObjectRunner(): WorkshopRunner {
     },
     async review(ctx, env, ask) {
       const style = await styleFor(ctx.item, env);
-      return ogReview(ctx, env, ogStyle(style), await anchorsFor(env), ask);
+      return ogReview(ctx, env, ogStyle(style), await anchorsFor(env, ctx.item), ask);
     },
     async reviewMessages(ctx, env) {
       const style = await styleFor(ctx.item, env);
@@ -127,7 +135,7 @@ export function createMapObjectRunner(): WorkshopRunner {
     // 참고 그림 견본(원본 reference 흐름의 exemplar_sheet + job refs, 물체 비율 캔버스): 이름이 맞는 칩셋 물체 ≤2(대상 게임의 시점·결) + object-gen 견본.
     // 이름이 안 맞는 칩셋 물체는 넣지 않는다 — 2026-10-22 A/B 에서 아무 화분이나 붙였더니 나무 참고 그림이 화분을 베꼈다.
     async referenceAnchor(item, env) {
-      const anchors = await anchorsFor(env);
+      const anchors = await anchorsFor(env, item);
       const id = item.tilesetId ?? "";
       const source = id && env.tilesetSource ? await env.tilesetSource(id) : null;
       // 칩셋 안 같은 종류(이름이 맞거나 크기 사전 종류가 같은 것) → 없으면 칩셋의 여러 칸 물체. 실내 예시(침대·옷장)는 칩셋이 없을 때만 —
