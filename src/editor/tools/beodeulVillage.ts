@@ -2384,8 +2384,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const stairOk = (x: number) => x > L.x0 + 2 && x + 2 < L.x1 - 2 && !used("N", x - 1, x + 3) && !towers.some((t) => t.side === "N" && x <= t.x + 3 && x + 2 >= t.x - 1)
       && !stairs.some((s) => Math.abs(s - x) < 6) && [FREE, ROAD, PLAZAC, CLEAR].includes(occ[idx(x, L.y0 + 7)]!) && (lv[idx(x, L.y0 + 7)] ?? 0) === 0;
     // 계단 자리도 seed 로(늘 양 끝 대칭 둘이면 마을마다 같은 틀로 보였다, r8)
-    const STAIR_SETS = [[0.14, 0.86], [0.14], [0.86], [0.4, 0.86], [0.14, 0.6]];
-    for (const want of STAIR_SETS[(Math.imul(seed | 0, 2654435761) >>> 0) % STAIR_SETS.length]!.map((f) => Math.round(W * f) - (f > 0.5 ? 2 : 0))) for (let d = 0; d <= 6; d += 1) { const x = want + (d % 2 ? -1 : 1) * Math.ceil(d / 2); if (stairOk(x)) { stairs.push(x); break; } }
+    const sh = (k: number) => (Math.imul((seed | 0) + k * 7919, 2654435761) >>> 0);
+    const STAIR_SETS = [[0.1 + (sh(1) % 34) / 100, 0.56 + (sh(2) % 34) / 100], [0.1 + (sh(3) % 70) / 100]];
+    for (const want of STAIR_SETS[sh(4) % 3 === 0 ? 1 : 0]!.map((f) => Math.round(W * f) - (f > 0.5 ? 2 : 0))) for (let d = 0; d <= 6; d += 1) { const x = want + (d % 2 ? -1 : 1) * Math.ceil(d / 2); if (stairOk(x)) { stairs.push(x); break; } }
     const plan: TownWallPlan = { x0: L.x0, y0: L.y0, x1: L.x1, y1: L.y1, gates, gaps, towers, stairs };
     // 성문 통로 두 칸의 바닥은 길로(폭 1 길이면 옆 칸도), 성문 앞뒤 한 칸도 길에 잇는다
     const roadTile = (() => { for (let c = 0; c < W * H; c += 1) if (occ[c] === ROAD) return mw.lowerTiles[c]!; return -1; })();

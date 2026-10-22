@@ -116,9 +116,9 @@ def plan_ring(x0, y0, x1, y1, gates=(), closed=(), vgaps=(), towers=(), stairs=(
         for cy in range(2):
             for cx in range(2): up[(cx0 + cx, cy0 + cy)] = f"c_{k}_{cx}{cy}"
     for y in range(y0 + 2, y1):
-        r = hsh(y, 0, 6) % 4
+        r = hsh(y, 0, 6) % 8
         up[(x0, y)] = f"vw{r}_0"; up[(x0 + 1, y)] = f"vw{r}_1"
-        r = hsh(y, 1, 6) % 4
+        r = hsh(y, 1, 6) % 8
         up[(x1 - 1, y)] = f"ve{r}_0"; up[(x1, y)] = f"ve{r}_1"
 
     def shade_right(x, yw):
@@ -180,7 +180,8 @@ def plan_ring(x0, y0, x1, y1, gates=(), closed=(), vgaps=(), towers=(), stairs=(
     for (side, tx, _tv) in towers:
         yw = y1 if side == "S" else y0
         for cx in range(3): put_sh(tx + cx, yw + FB + 1, "s")
-        put_sh(tx + 3, yw + FB, "se")
+        put_sh(tx + 3, yw + FB, "e" if tx + 3 > x1 else "se")
+        for dy in (-2, -1): put_sh(tx + 3, yw + dy, "e")
     for (side, gx, _gv) in gates:
         yw = y1 if side == "S" else y0
         for cx in range(4): put_sh(gx - 1 + cx, yw + FB + 1, "s")
@@ -307,6 +308,13 @@ def gate_items():
                       f"{what} town gatehouse, 3/4 top-down: crenellated top platform seen from above (windlass drum, portcullis pit, stone balls, barrel), "
                       "front face with a round arch closed by two iron-banded wooden doors",
                       keys(cu)))
+        ru = {}
+        for y in range(8):
+            ru[(1, y)] = f"vw{y}_0"; ru[(2, y)] = f"vw{y}_1"; ru[(4, y)] = f"ve{y}_0"; ru[(5, y)] = f"ve{y}_1"
+        items.append(("wall_runs" + sfx, render_plan(ru, {}, 7, 8, bg=GRASS if biome is None else None, biome=biome),
+                      f"{what} town wall, 3/4 top-down: two short runs of the west and east walls (two tiles wide) seen from above — "
+                      "flagstone wall-walk with the outer crenellated parapet strip, eight walk variants each",
+                      keys(ru)))
         tu = {(cx, cy): f"tower_{cx}_{cy}" for cx in range(3) for cy in range(GT)}
         items.append(("tower" + sfx, render_plan(tu, {}, 3, GT, bg=GRASS, biome=biome),
                       f"{what} square wall tower, 3/4 top-down: crenellated top platform seen from above with a wooden trapdoor and a crate, corbel band, "

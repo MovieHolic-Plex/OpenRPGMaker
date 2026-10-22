@@ -1125,7 +1125,14 @@ def vert_postern(side):
     cv = vert_wall(side, 0, 5)
     fx0, fx1 = (8, 29) if side == "W" else (2, 23)
     for (y0, y1, tone) in ((0, 5, FLAG[6]), (7, 15, FLAG[7])):
-        stone(cv, fx0, y0, fx1, y1, tone, ("pt", side, y0))
+        stone(cv, fx0, y0, fx1, y1, tone, ("pt", side, y0), crack=True, weather=1)
+        # 덮개돌 결: 성긴 쪼은 자국(±1 단)과 아랫변 짙은 그늘 — 판판한 널로 읽혔다(r10)
+        for yy in range(y0 + 1, y1):
+            for xx in range(fx0 + 1, fx1):
+                k = h("ptx", side, xx, yy) % 9
+                if k == 0: cv.set(xx, yy, step(tone, -1))
+                elif k == 1: cv.set(xx, yy, step(tone, 1))
+        for xx in range(fx0, fx1 + 1): cv.set(xx, y1, FLAG[3])
         for yy in range(y0, y1 + 1): cv.set(fx1, yy, FLAG[2])
     for x in range(fx0, fx1 + 1): cv.set(x, 6, FLAG[1])
     return cv
@@ -1182,6 +1189,14 @@ def biome_image(img, name, biome):
             for x in range(W):
                 c = px[x, y]
                 if 0 < c[3] < 255 and c in darker: px[x, y] = darker[c]
+        # 판판한 눈·모래 길 위에도 터널 바닥 돌 결이 보이게: 엇갈린 돌 줄눈(6×5)을 그늘 한 단 짙게(r10 「터널 바닥 두 색」)
+        deeper = {(12, 14, 20, 88): SH2, SH1: SH0, SH0: SH0, SH2: SH1}
+        for y in range(H):
+            for x in range(W):
+                c = px[x, y]
+                if not (0 < c[3] < 255 and c in deeper): continue
+                row = y // 5
+                if y % 5 == 4 or (x + (row % 2) * 3) % 6 == 5: px[x, y] = deeper[c]
     if biome == "desert":
         m = _desert_map()
         for y in range(H):
@@ -1212,9 +1227,8 @@ def biome_image(img, name, biome):
                     v = snow_flag[c]
                     # 눈 결: 판석 격자 대신 바람에 쌓인 넓고 부드러운 덩이(3×2 칸 덩이 해시) + 드문 반짝임
                     if v == SNOW[2]:
-                        if h("drift", name, x // 3, y // 2) % 3 == 0: v = SNOW[3]
-                        elif h("hollow", name, x // 4, y // 3) % 7 == 0: v = SNOW[1]
-                        if h("spark", name, x, y) % 41 == 0: v = SNOW[4]
+                        if h("drift", name, x // 4, y // 3) % 6 == 0: v = SNOW[3]
+                        if h("spark", name, x, y) % 67 == 0: v = SNOW[3]
                     px[x, y] = v
             elif ledge and c in (COOL[9], COOL[10], COOL[11]):
                 px[x, y] = SNOW[5] if c != COOL[9] else SNOW[4]
@@ -1384,6 +1398,13 @@ def pieces():
         P(f"{nm}_pt_1", cut(v, 1, 0), "LRUD", f"{'서' if side == 'W' else '동'}쪽 성벽 쪽문 터널 위 덮개돌(오른쪽 열) — 길이 밑으로 지난다(★)", star=True)
     for k, d in (("w", "성벽 왼쪽 칸 — 오른쪽이 짙다"), ("e", "성벽 오른쪽 칸 — 왼쪽이 짙다"), ("n", "성문루 안쪽 칸 — 아래가 짙다")):
         P(f"mo_{k}", mouth(k), "LRUD", f"터널 입 그늘(2층 반투명, {d}). 걸음", layer="lower")
+    # 3판 r10: 세로 성벽 윗면 변형 4~7(27줄에 다섯 줄만 되풀이됐다)
+    for side in ("W", "E"):
+        nm = "vw" if side == "W" else "ve"
+        for r in range(4, 8):
+            v = vert_wall(side, 0, r)
+            P(f"{nm}{r}_0", cut(v, 0, 0), "UDR", f"{'서' if side == 'W' else '동'}쪽 성벽 윗면 왼쪽 열(변형 {r})")
+            P(f"{nm}{r}_1", cut(v, 1, 0), "UDL", f"{'서' if side == 'W' else '동'}쪽 성벽 윗면 오른쪽 열(변형 {r})")
     # --- 3판 r8: 기후 변형 — 눈 덮인 성벽(snow:) · 사막 사암 성벽(desert:). 그림자·터널 입 그늘은 기후와 무관해 복사하지 않는다
     base = list(out)
     for biome in BIOMES:

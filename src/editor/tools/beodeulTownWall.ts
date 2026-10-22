@@ -84,9 +84,9 @@ export function planTownWallRing(p: TownWallPlan): { up: Cells; lo: Cells } {
   for (const [k, cx0, cy0] of [["nw", x0, y0], ["ne", x1 - 1, y0], ["sw", x0, y1], ["se", x1 - 1, y1]] as const)
     for (let cy = 0; cy < 2; cy += 1) for (let cx = 0; cx < 2; cx += 1) up.set(key(cx0 + cx, cy0 + cy), `c_${k}_${cx}${cy}`);
   for (let y = y0 + 2; y < y1; y += 1) {
-    let r = hsh(y, 0, 6) % 4;
+    let r = hsh(y, 0, 6) % 8;
     up.set(key(x0, y), `vw${r}_0`); up.set(key(x0 + 1, y), `vw${r}_1`);
-    r = hsh(y, 1, 6) % 4;
+    r = hsh(y, 1, 6) % 8;
     up.set(key(x1 - 1, y), `ve${r}_0`); up.set(key(x1, y), `ve${r}_1`);
   }
   const shadeRight = (x: number, yw: number) => {
@@ -142,7 +142,14 @@ export function planTownWallRing(p: TownWallPlan): { up: Cells; lo: Cells } {
   const gapRow = (side: "W" | "E", y: number) => p.gaps.some((g) => g.side === side && y >= g.y && y < g.y + g.rows);
   for (let y = y0 + FB; y < y1; y += 1) if (!gapRow("W", y)) putSh(x0 + 2, y, "e");
   for (let y = y0; y < y1 + FB; y += 1) if (!gapRow("E", y)) putSh(x1 + 1, y, "e");
-  for (const t of p.towers) { const yw = t.side === "S" ? y1 : y0; for (let cx = 0; cx < 3; cx += 1) putSh(t.x + cx, yw + FB + 1, "s"); putSh(t.x + 3, yw + FB, "se"); }
+  for (const t of p.towers) {
+    const yw = t.side === "S" ? y1 : y0;
+    for (let cx = 0; cx < 3; cx += 1) putSh(t.x + cx, yw + FB + 1, "s");
+    // 망루 오른쪽: 성벽 밖으로 나간 모서리 망루는 「s」 띠가 허공에 뜨니(r10) 세로 그늘만. 솟은 윗면(yw−2·yw−1)도 오른쪽 땅에 그늘을 드리운다
+    const out = t.x + 3 > x1;
+    putSh(t.x + 3, yw + FB, out ? "e" : "se");
+    for (const dy of [-2, -1]) putSh(t.x + 3, yw + dy, "e");
+  }
   for (const g of p.gates) { const yw = g.side === "S" ? y1 : y0; for (let cx = 0; cx < 4; cx += 1) putSh(g.x - 1 + cx, yw + FB + 1, "s"); putSh(g.x + 3, yw + FB, "se"); }
   for (const [c, k] of sh) lo.set(c, `sh_${k}`);
   return { up, lo };
