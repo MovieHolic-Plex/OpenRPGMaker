@@ -131,20 +131,15 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       door: { x: 4, y: 20 }, mapId: "fs_stargazer_home", name: "아스텔 · 늙은 별지기의 집", bgm: "cc0-bgm-rtp-mys-002",
       // 별 지도 서고 + 관측 일지 서재 + 침실 + 지하 저장고 + 벽난로 거실(괘종시계) — 부엌·열 사람 식탁은 두지 않는다(혼자 사는 노인, VQA r6).
       // 지하 저장고 대신 별 유물 진열실(천구의·운석 진열장) — 별지기 집만의 방(VQA r11 major).
-      layout: { rooms: [{ kind: "library", w: 18, h: 8 }, { kind: "study", w: 9, h: 7 }, { kind: "bedroom" }, { kind: "museum_relics" }, { kind: "living", w: 8, h: 6 }], seed: 21, variant: 0, styleVariant: "D" },
-      // 책 더미 여섯·지구본 다섯이 고르게 흩어져 복사한 채움으로 읽혔다(VQA r22) — 지구본·책 더미는 방마다 한 묶음만 남긴다.
-      dress: [["orrery", 15, 15], ["desk 3x1", 22, 16], ["owl perch", 27, 16], ["scroll rack", 13, 16],
-        ["desk 2x2", 14, 4],
-        // 서고 가운데·거실 아랫단이 빈 마루로 남았다(VQA r7 minor) — 읽는 탁자와 의자, 거실 찻상.
-        ["tea 2x2", 17, 15], ["chair E", 16, 15], ["chair W", 19, 15],
-        ["tea 2x2", 6, 15], ["chair E", 5, 15], ["chair W", 8, 15],
-        // 거실 아랫단·서고 아랫단·진열실 남쪽이 빈 마루였다(VQA r13 minor 「35~40% 빈 바닥」).
-        ["tea 2x2", 4, 7], ["chair E", 3, 7], ["chair W", 6, 7], ["globe", 24, 7], ["scroll rack", 16, 8],
-        ["tea 2x2", 27, 17], ["chair E", 26, 17], ["chair W", 29, 17],
-        // 진열실(왼쪽 아래) — 걷어 낸 갑옷 진열 대신 천구의·지구본·두루마리·관측 책상.
-        ["orrery", 3, 14], ["scroll rack", 2, 17], ["desk 3x1", 6, 17], ["book pile", 7, 16], ["owl perch", 12, 18],
-        // 위 서고 한가운데가 빈 마루였다(VQA r17) — 별 지도 책상·천구의·지구본.
-        ["desk 2x2", 15, 7], ["chair N", 15, 9], ["orrery", 19, 7]],
+      // 거실 8×6 배치는 들어서자마자 왼쪽 아래 방 사이 큰 어둠(7×4)이 보였다(VQA r22) — 거실을 12×6 으로 넓히면 다섯 방이 맞물리고
+      // 남는 어둠은 오른쪽 아래 침실 밑 구석뿐이다.
+      layout: { rooms: [{ kind: "library", w: 18, h: 8 }, { kind: "study", w: 9, h: 7 }, { kind: "bedroom" }, { kind: "museum_relics" }, { kind: "living", w: 12, h: 6 }], seed: 21, variant: 0, styleVariant: "D" },
+      // 방마다 한 묶음: 서고(위 오른쪽) 별 지도 책상·천구의, 진열실(위 왼쪽) 천구의·두루마리, 서재(아래 왼쪽) 관측 책상·부엉이 횃대,
+      // 거실(아래 가운데) 찻상. 문(18,19)~벽난로 길(x17~19)은 비운다. 지구본·책 더미를 고르게 흩지 않는다(VQA r22).
+      dress: [["desk 2x2", 20, 6], ["chair N", 20, 8], ["orrery", 25, 6], ["book pile", 23, 8], ["scroll rack", 16, 8],
+        ["orrery", 3, 5], ["globe", 11, 6], ["scroll rack", 1, 7],
+        ["desk 3x1", 3, 16], ["chair N", 4, 17], ["owl perch", 9, 17], ["book pile", 1, 17],
+        ["tea 2x2", 22, 16], ["chair E", 21, 16], ["chair W", 24, 16], ["orrery", 14, 16]],
       people: [
         {
           id: "ev_fs_old_stargazer", name: "늙은 별지기 오스본", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 6],
@@ -157,11 +152,12 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       door: { x: 32, y: 20 }, mapId: "fs_lisa_home", name: "아스텔 · 리사네 집", bgm: "cc0-bgm-rtp-emo-002",
       // 가족 집: 거실(벽난로) + 식당 + 부엌 + 침실 둘(부부·아이) + 식료품 광 + 헛간 광 + 지하 저장고(흰 도기 욕조는 중세 집에 안 맞았다, VQA r6).
       // 여덟 방(여덟 자리 식탁·식료품 광·헛간·지하 저장고)은 작은 오두막에 안 맞았다(VQA r11 major) — 거실·부엌·침실 둘·바느질 방(리사의 일감).
-      // 거실 12칸은 오른쪽 아래가 큰 어둠으로 남았다(VQA r20 minor, 화면 19% 허공) — 거실을 16×7 로 넓혀 집 폭을 채운다.
-      layout: { rooms: [{ kind: "living", w: 16, h: 7 }, { kind: "kitchen", w: 8, h: 7 }, { kind: "master_bedroom", w: 8, h: 7 }, { kind: "bedroom", w: 8, h: 7 }, { kind: "tailor_work", w: 9, h: 7 }], seed: 29, variant: 0, styleVariant: "A" },
-      // 넓힌 거실 오른쪽·왼쪽 아랫단에 찻상·짐 궤짝, 아이 방·바느질 방 아랫단에 궤짝·책 더미(문~벽난로 길은 비운다).
-      dress: [["tea 2x2", 23, 13], ["chair E", 22, 13], ["chair W", 25, 13], ["book pile", 27, 15], ["luggage trunk", 13, 15], ["basket:herb", 14, 15],
-        ["luggage trunk", 26, 7], ["book pile", 21, 7], ["luggage trunk", 17, 7]],
+      // 거실 12칸은 오른쪽 아래가 큰 어둠으로 남았고(VQA r20), 16칸으로 넓혀도 부부 침실 왼쪽·아래 왼쪽에 검은 띠가 남았다(VQA r22) —
+      // 부부 침실을 11칸으로 넓히면 다섯 방이 30×17 에 빈틈 없이 맞물린다(허공 0).
+      layout: { rooms: [{ kind: "living", w: 16, h: 7 }, { kind: "kitchen", w: 8, h: 7 }, { kind: "master_bedroom", w: 11, h: 7 }, { kind: "bedroom", w: 8, h: 7 }, { kind: "tailor_work", w: 9, h: 7 }], seed: 29, variant: 0, styleVariant: "A" },
+      // 거실(아래 왼쪽) 동쪽에 찻상과 의자, 서쪽 구석에 짐 궤짝 — 문(8,16)에서 벽난로로 가는 길은 비운다. 아이 방·바느질 방 아랫단에 궤짝·책 더미.
+      dress: [["tea 2x2", 12, 13], ["chair E", 11, 13], ["chair W", 14, 13], ["book pile", 16, 15], ["luggage trunk", 2, 15], ["basket:herb", 1, 14],
+        ["luggage trunk", 7, 7], ["book pile", 2, 7], ["luggage trunk", 18, 7]],
       people: [
         {
           id: "ev_fs_lisa", name: "리사", query: "젊은 여성", chip: ["tex_easyrpg_charset_people3", 3],
