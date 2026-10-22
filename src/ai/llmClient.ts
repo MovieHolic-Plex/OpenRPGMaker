@@ -1,7 +1,7 @@
 import { inspectPromptPayload, publishPromptInspection, inspectionEpoch } from "./authoring/promptInspection";
 import { applyAssistantEngine, loadAssistantEngine } from "./localCliEngine";
 import { DEFAULT_PI_APPLY, normalizePiApplyMode, type PiApplyMode } from "./piAgent/applyMode";
-import { configForRole, parseRoleModels, type RoleModel, type SpecialistModels } from "./modelRoles";
+import { configForRole, parseRoleModels, type RoleModel, type SpecialistModels, type ThinkingEffort } from "./modelRoles";
 import { DEFAULT_PIXEL_MODEL, parsePixelModel } from "./pixelModel";
 // ai/llmClient.ts
 // OpenAI Chat Completions 호환 LLM 클라이언트(의존성 추가 없이 fetch 직접 구현).
@@ -68,12 +68,12 @@ export interface AiConfig {
   modelSelectionOverrides?: Partial<Record<"ultrabrain" | "vision" | "writer" | "deep" | "build" | "image" | "pixel", true>>;
   ultrabrainProviderId?: string;
   ultrabrainModel?: string;
-  ultrabrainReasoningEffort?: "low" | "medium" | "high";
+  ultrabrainReasoningEffort?: ThinkingEffort;
   apiKey: string;
   // 라운드 안전핀. 기본은 후하게 잡고(2000), 설정 UI 에 노출하지 않는다. 사용자 제한은 maxTokens.
   maxToolCalls: number;
   maxTokens: number;
-  reasoningEffort?: "off" | "low" | "medium" | "high";
+  reasoningEffort?: ThinkingEffort;
   // 자율성 다이얼(설정 모달·컴포저 공용). agentMode·예산·planOnly 의 원천 — 다이얼 선택 시
   // 호출자가 resolveAutonomy 프리셋을 reasoningEffort·agentMode 에 함께 저장하므로, 세션은
   // reasoningEffort 수동값을 그대로 쓴다(다이얼 덮어쓰기 없음). 미지정(구형 blob/
@@ -406,6 +406,7 @@ function loadStoredAiConfig(): AiConfig {
         parseOhMyPiProvider(parsed.ultrabrainProviderId, DEFAULT_ULTRABRAIN_PROVIDER),
       ) || DEFAULT_ULTRABRAIN_MODEL,
       ultrabrainReasoningEffort: parsed.ultrabrainReasoningEffort === "low" || parsed.ultrabrainReasoningEffort === "medium"
+        || parsed.ultrabrainReasoningEffort === "xhigh" || parsed.ultrabrainReasoningEffort === "max"
         ? parsed.ultrabrainReasoningEffort : DEFAULT_ULTRABRAIN_EFFORT,
       // OAuth 는 클라이언트 키를 쓰지 않는다 — 저장된 키도, env 키도 싣지 않는다.
       apiKey: "",
@@ -420,6 +421,7 @@ function loadStoredAiConfig(): AiConfig {
         : base.maxTokens,
       reasoningEffort:
         parsed.reasoningEffort === "off" || parsed.reasoningEffort === "low" || parsed.reasoningEffort === "medium" || parsed.reasoningEffort === "high"
+          || parsed.reasoningEffort === "xhigh" || parsed.reasoningEffort === "max"
           ? parsed.reasoningEffort
           : base.reasoningEffort,
       // agentMode 백필(위 liteModel 패턴과 동일): 필드가 없는 옛 blob과 이상한 값은

@@ -121,7 +121,7 @@ npm run harness -- assistant-capability aggregate --sources <실행1>,<실행2> 
 - **판정은 계약 + 보존이다.** 도구 이름은 보고만 하고 판정하지 않는다 — `judge()` 가 명령 문장이 말한 결과(예: 선택 영역 안 8칸만 흙, 이벤트 이름을 하린으로, 상점 명령이 생기고 기존 대사·이동은 그대로)와 나머지 내용의 보존을 저장 문서 전/후로 비교한다. 읽기 명령은 사실에 맞는 답과 무변경을 본다. `ok = 턴 완료 && 판정 && SQLite 재로드 일치`.
 - **사람이 먼저 한 일(setup).** 「이 이벤트/문」은 `__oprnRegionTaskHarness.selectEvent` 로 이벤트를 고른 상태에서 보내고(`plainTurn.selectedEventFact` 가 `[선택한 이벤트]` 줄로 모델에 전달 — 요청 영수증의 `context` 로 확인), 「방금 한 일」 명령(undo-preview·summarize-diff·show-tool-log·rewind-turn)은 같은 입력창으로 실제 선행 턴(나무 한 그루)을 먼저 돌린다.
 - **되돌리기·기록 도구는 워커에서 편집기 기록을 쓴다.** Pi 워커는 편집기 히스토리 스택이 없으므로 요청의 `editHistory`(라벨·steps·가까운 5건의 바뀐 타일 칸/이벤트 id)로 `list_edit_history` 가 답하고, `revert_last_edit` 는 초안을 건드리지 않고 `data.clientUndo` 만 돌려준다. 다른 변경이 없는 턴에서만 편집기가 끝에 `undoMapEdit()` 로 실제 되돌린다(`aiPiAgentCommand.ts`).
-- 모델 고정: `MATRIX_NATIVE_MODEL=<Antigravity 모델 id>`(+`MATRIX_NATIVE_EFFORT`, 기본 low)가 에이전트 루프·의도 선언을 그 모델 하나로 묶는다. 비우면 제품 기본(gemini-3.8-flash). `gemini-4-argon` 은 `scripts/lib/ohMyPiModel.ts` 확장으로 풀리지만(agy 목록의 gemini-4-argon-{low,medium,high}) **아직 실행으로 검증하지 않았다** — 쓰기 전에 요청 로그의 model 이 실제로 그 id 인지 먼저 확인한다.
+- 모델 고정: `MATRIX_NATIVE_MODEL=<Antigravity 모델 id>`(+`MATRIX_NATIVE_EFFORT`, 기본 low — 허용 `off|low|medium|high|xhigh|max`, 그 밖의 값은 실패)가 에이전트 루프·의도 선언을 그 모델 하나로 묶는다. 비우면 제품 기본(gemini-3.8-flash). `gemini-4-argon` 은 `scripts/lib/ohMyPiModel.ts` 확장으로 풀리지만(agy 목록의 gemini-4-argon-{low,medium,high}) **아직 실행으로 검증하지 않았다** — 쓰기 전에 요청 로그의 model 이 실제로 그 id 인지 먼저 확인한다.
 - 환경 변수: `MATRIX_NATIVE_ONLY=id,id`·`MATRIX_NATIVE_START/LIMIT`·`MATRIX_NATIVE_TIMEOUT_MS`, 미리 빌드한 `dist` 를 쓰려면 `HARNESS_DIST_DIR`(빌드: `vite build --mode packaged --configLoader runner --outDir <dir>`, 워크트리면 `VITE_CACHE_DIR` 필수).
 - **오프라인 재판정:** 판정기만 고쳤으면 모델을 다시 부르지 않고 저장된 `before/after/original/trace.json` 으로 다시 채점한다 — `npx vite-node --script src/harnesses/assistant-capability/node/matrixNativeRescore.ts -- <결과 폴더…>`.
 `/v1/chat/completions`는 읽기 답변의 완료 신호로만 기록한다. 각 명령 뒤 실제 SQLite 저장, 새 브라우저 context 재로드, project ID·SHA 일치를 검사한다. `matrix-native.json`에서 `nativeAgentCalls`·`chatCompletions`·`sqliteReloads`와 명령별 실패를 확인하며, 시각 검수는 별도 `review` 영수증으로 남긴다(이 단계의 `visualReviews` 는 0).
@@ -153,8 +153,21 @@ npm run harness -- assistant-capability aggregate --sources <실행1>,<실행2> 
 **실측(2026-10-22):** `field` 는 `thinkingLevel: low` 와 함께 그대로 통과한다(HTTP 200, 도구 호출 10회). 서버가 죽이는 것은
 `off` 하나다 — `Thinking effort off is not supported … Supported efforts: low, high, max` 를 200 스트림 error 이벤트로 싣고
 첫 턴이 끝난다(도구 0회). 그래서 고정 실행의 기본 강도는 `low` 이고, compat 에서 `MATRIX_NATIVE_EFFORT=off` 는 명시적으로 거절한다.
-실제 요청 영수증은 각 명령의 `native-result.json` 의 `requests[]`(`provider` 헤더·`model` 본문)와 `matrix-native.json` 의
-`modelPin` 에 남는다. `MATRIX_NATIVE_SPEC=500` 실행은 `dist-electron/browser-bridge.js` 도 필요하다 — 워크트리면
+실제 요청 영수증은 각 명령의 `native-result.json` 의 `requests[]`(`provider` 헤더·`model` 본문, 그리고 스트림의
+`prompt_inspection` 스냅샷에서 뽑은 `providerReasoningEffort`)와 `matrix-native.json` 의 `modelPin` 에 남는다.
+
+**추론 강도(`MATRIX_NATIVE_EFFORT`)는 `off|low|medium|high|xhigh|max` 전부를 받는다.** 알 수 없는 값은 `low` 로
+떨어지지 않고 **실패한다** — 「max」라고 적힌 실행이 실제로 low 를 보냈다면 그 실행의 라벨이 거짓이기 때문이다(2026-10-22 실측:
+이전 화이트리스트가 `max` 를 low 로 낮춰 `modelPin.thinkingLevel` 이 low 로 남았다). 값을 실제로 나르는 길은
+`AiConfig.reasoningEffort`/`roleModels.*.thinkingLevel`/`ultrabrainReasoningEffort` → `plainTurn.ts` 의
+`buildPiRunRequest` → `PiAgentRequest.thinkingLevel` → `scripts/lib/piAgentRuntime.ts` 의 `Agent` 초기 상태 → pi-ai
+`openai-completions` 의 `reasoning_effort` 다. 그래서 `RoleModel.thinkingLevel`(`ThinkingEffort`)·`AiConfig.reasoningEffort`·
+`PiAgentThinkingLevel` 세 타입을 pi-ai 의 `Effort` 와 같은 어휘로 넓혔고, `llmClient.ts` 의 설정 파서도 `xhigh|max` 를
+보존한다(제품 UI 가 보여 주는 선택지는 그대로다 — 넓힌 것은 저장·전송 경로다). compat 모델의 사다리는 서버가 정한다:
+InferHub `deepseek-v4.1-flash` 는 `low, high, max` 라 `max` 는 그대로 통과하고 `xhigh` 는 pi-ai 가
+`requireSupportedEffort` 로 거절한다.
+
+`MATRIX_NATIVE_SPEC=500` 실행은 `dist-electron/browser-bridge.js` 도 필요하다 — 워크트리면
 `npm run build:electron` 을 먼저 돌린다(`HARNESS_DIST_DIR` 만으로는 호스트가 뜨지 않는다).
 
 ## 시각 검수

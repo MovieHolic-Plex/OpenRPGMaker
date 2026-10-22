@@ -11,6 +11,7 @@ import { createOpenAiCompatStore } from '../../../../scripts/lib/openAiCompatSto
 import { startHost, newEditor, stored, writeRuntimeProject } from './editorDriver.mjs';
 import type { Project } from '../../../project/types';
 import { judge, nativeProject, cachedNativeProject, setupFor, fixtureProblems, MAP, normalizeContent, type Rect, type ToolRecord } from './matrixNativeSpec';
+import type { ThinkingEffort } from '../../../ai/modelRoles';
 import { findFamily } from './families';
 
 type MatrixCommand = {
@@ -22,7 +23,7 @@ type MatrixCommand = {
 };
 type EventRecord = { type?: string; id?: string; name?: string; args?: unknown; ok?: boolean; text?: string; message?: string; summary?: string };
 
-type ProviderPin = { provider: string; model: string; thinkingLevel: 'off' | 'low' | 'medium' | 'high' };
+type ProviderPin = { provider: string; model: string; thinkingLevel: ThinkingEffort };
 
 const specName = process.env.MATRIX_NATIVE_SPEC?.trim();
 if (specName && specName !== '500') throw new Error(`MATRIX_NATIVE_SPEC 은 500 만 받습니다(받은 값: ${specName}). 비우면 50개 기본 행렬입니다.`);
@@ -41,17 +42,24 @@ const expandProject = (projectDir: string, snapshot: Project, file: string): Pro
 };
 
 /** MATRIX_NATIVE_MODEL alone pins every role to one Antigravity model (product default when unset). */
+const PIN_EFFORTS = ['off', 'low', 'medium', 'high', 'xhigh', 'max'] as const;
+
+/**
+ * Pins every role to one provider/model. An unreadable MATRIX_NATIVE_EFFORT is an error, not a silent
+ * fallback: a run labelled 「max」 that actually sent 「low」 is worse than one that refused to start.
+ */
 function providerPin(): ProviderPin | null {
   const provider = process.env.MATRIX_NATIVE_PROVIDER?.trim();
   const model = process.env.MATRIX_NATIVE_MODEL?.trim();
   if (!provider) return null;
   if (!model) throw new Error('MATRIX_NATIVE_PROVIDER 를 지정하면 MATRIX_NATIVE_MODEL 도 지정해야 합니다 — 모델을 다른 것으로 대체하지 않습니다.');
-  const effort = process.env.MATRIX_NATIVE_EFFORT?.trim();
-  const level = effort === 'off' || effort === 'low' || effort === 'medium' || effort === 'high' ? effort : undefined;
+  const raw = process.env.MATRIX_NATIVE_EFFORT?.trim();
+  const level = raw ? PIN_EFFORTS.find(value => value === raw) : undefined;
+  if (raw && !level) throw new Error(`MATRIX_NATIVE_EFFORT=${raw} 는 알 수 없는 값입니다 — ${PIN_EFFORTS.join('|')} 중 하나를 쓰세요.`);
   // InferHub accepts only low|high|max and kills the turn on 「off」 (2026-10-22 local proof), so a compat
   // pin never sends it: the default is the cheapest accepted effort and an explicit 「off」 is refused.
   if (provider.startsWith('openai-compat:') && level === 'off') {
-    throw new Error('MATRIX_NATIVE_EFFORT=off 는 openai-compat 고정에서 쓸 수 없습니다 — InferHub 는 low|high|max 만 받습니다. low 를 쓰세요.');
+    throw new Error('MATRIX_NATIVE_EFFORT=off 는 openai-compat 고정에서 쓸 수 없습니다 — InferHub 는 low|high|max 만 받습니다.');
   }
   return { provider, model, thinkingLevel: level ?? 'low' };
 }
@@ -96,6 +104,8 @@ const aiConfig = () => {
     return {
       ...base, authMode: 'chatgpt', apiKey: '', providerId: pin.provider, model: pin.model, liteModel: pin.model,
       reasoningEffort: pin.thinkingLevel, roleModels: { deep: role, build: role, writer: role, vision: role },
+      // Plan and team turns read the Ultrabrain slot, not deep — pin it too or 「every role」 is false.
+      ultrabrainProviderId: pin.provider, ultrabrainModel: pin.model, ultrabrainReasoningEffort: pin.thinkingLevel,
     };
   }
   const model = process.env.MATRIX_NATIVE_MODEL?.trim();
@@ -151,6 +161,9 @@ async function sendTurn(page: any, prompt: string, timeoutMs: number): Promise<E
 
 export async function runMatrixNative(root: string, timeoutMs = 240000): Promise<number> {
   if (existsSync(root)) throw new Error(`기존 실행 덮어쓰기 거부: ${root}`);
+  // Resolve the pin first: a bad effort must fail before a fixture is written or a host is spawned.
+  const pin = providerPin();
+  const compat = pin ? prepareCompatEndpoint(pin) : null;
   mkdirSync(root, { recursive: true });
   if (!spec500) {
     const problems = fixtureProblems(nativeProject());
@@ -159,8 +172,6 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
   const projectDir = resolve(root, 'project');
   mkdirSync(projectDir, { recursive: true });
   await saveFresh(root, projectDir);
-  const pin = providerPin();
-  const compat = pin ? prepareCompatEndpoint(pin) : null;
   let browser: any;
   const checks: any[] = [];
   let nativeModelCalls = 0, nativeAgentCalls = 0, chatCompletions = 0, sqliteReloads = 0;
@@ -211,7 +222,15 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
           const request = [...requests].reverse().find(entry => entry.endpoint === endpoint && entry.status === undefined);
           if (!request) return;
           request.status = response.status();
-          void response.text().then((body: string) => { request.responseBytes = body.length; request.responsePreview = body.slice(0, 240); }).catch(() => {});
+          void response.text().then((body: string) => {
+            request.responseBytes = body.length;
+            request.responsePreview = body.slice(0, 240);
+            // The provider payload is built inside the worker, so the only receipt of what was actually
+            // sent is the prompt_inspection snapshot in this stream. Its sections are JSON text inside the
+            // event, so the quotes arrive escaped (\"reasoning_effort\": \"max\") — match either form.
+            const efforts = [...new Set([...body.matchAll(/\\?"reasoning_effort\\?"\s*:\s*\\?"([a-z]+)\\?"/gu)].map(match => match[1]))];
+            if (efforts.length) request.providerReasoningEffort = efforts;
+          }).catch(() => {});
         });
         // A command about "what you just did" needs a real earlier turn, run through the same input.
         if (setup.prior) {
@@ -232,8 +251,14 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
         }, { select: setup.select ? toSelection(setup.select) : null, event: setup.event ?? null });
         events = await sendTurn(page, command.prompt, timeoutMs);
         await saveThroughUi(page);
+        // A renderer stall (heavy machine load) must not erase a finished turn's verdict: the screenshot is
+        // evidence, the saved document is the result. A missing capture is recorded, never silently claimed.
+        const missingShots: string[] = [];
+        const capture = async (name: string, shot: () => Promise<unknown>) => {
+          try { await shot(); } catch (error) { missingShots.push(`${name}: ${error instanceof Error ? error.message.split('\n')[0] : String(error)}`); }
+        };
         // Reviewers must see which command this screen answers: bring the user's bubble to the top of the chat, keep the end-of-chat view as well.
-        await page.screenshot({ path: resolve(dir, 'after-chat-end.png') });
+        await capture('after-chat-end.png', () => page.screenshot({ path: resolve(dir, 'after-chat-end.png') }));
         // The panel re-sticks to the bottom while card images load, so bring the bubble up repeatedly until it stays in view.
         for (let attempt = 0; attempt < 6; attempt++) {
           const placed = await page.evaluate((text: string) => {
@@ -255,7 +280,7 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
           }, command.prompt);
           if (placed && still) break;
         }
-        await page.screenshot({ path: resolve(dir, 'after.png') });
+        await capture('after.png', () => page.screenshot({ path: resolve(dir, 'after.png') }));
         const applied = stored(projectDir);
         writeFileSync(resolve(dir, 'after.json'), JSON.stringify(applied.project));
         writeFileSync(resolve(dir, 'trace.json'), JSON.stringify(events, null, 2));
@@ -278,7 +303,7 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
         editor = undefined;
         const reloadedEditor = await newEditor(browser, host.url, projectDir, aiConfig());
         const reloaded = stored(projectDir);
-        await reloadedEditor.page.screenshot({ path: resolve(dir, 'reloaded.png') });
+        await capture('reloaded.png', () => reloadedEditor.page.screenshot({ path: resolve(dir, 'reloaded.png') }));
         await reloadedEditor.context.close();
         const persistence = applied.sha256 === reloaded.sha256 && applied.projectId === reloaded.projectId;
         sqliteReloads++;
@@ -289,7 +314,7 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
         // A command passes only when the real turn finished, the document judged correct, and the
         // persisted row reloads identically. Which tool the model chose is reported, never gated.
         const ok = turnOk && verdict.ok && persistence;
-        const row = { n: command.n, id: command.id, ok, turnOk, commandCorrect: verdict.ok, verdict: verdict.note, persistence, changed, mode: command.mode, referenceTools: command.toolNames, toolCalls: toolEnds.map(event => event.name), toolRecords: records, requests: commandRequests, assistantText: answer, elapsedMs: Date.now() - started, failure };
+        const row = { n: command.n, id: command.id, ok, turnOk, commandCorrect: verdict.ok, verdict: verdict.note, persistence, changed, mode: command.mode, referenceTools: command.toolNames, toolCalls: toolEnds.map(event => event.name), toolRecords: records, requests: commandRequests, assistantText: answer, elapsedMs: Date.now() - started, failure, ...(missingShots.length ? { missingShots } : {}) };
         checks.push(row);
         writeFileSync(resolve(dir, 'native-result.json'), JSON.stringify(row, null, 2));
         console.error(`[matrix-native] #${command.n}/${matrix.commands.length} ${command.id} ${ok ? 'ok' : 'fail'} requests=${commandRequests.length} tools=${toolEnds.length} persisted=${persistence} :: ${verdict.note}`);
