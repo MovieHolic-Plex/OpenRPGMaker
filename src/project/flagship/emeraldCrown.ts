@@ -126,7 +126,7 @@ const LINE_REWRITES: Readonly<Record<string, string>> = {
   "다우닝 시티에 온 걸 환영해요. 북동쪽 집이 천문박사의 연구소예요. 북쪽의 안내원이 다음 길을 알려 줍니다.":
     "다우닝 시티에 온 걸 환영해요. 광장 오른쪽 위 초록 지붕의 큰 건물이 오르비스 천문 연구소예요. 북쪽 길로 나가면 1번 도로예요.",
   "새벽이면 언덕의 등대와 몬스터들이 함께 눈을 뜬다.":
-    "요즘 새벽마다 등대 불빛이 깜빡여. 그래서인지 여명의 날개 새들이 바다 위에서 자꾸 길을 잃는대.",
+    "요즘 새벽마다 등대 불빛이 깜빡여. 그래서인지 「여명의 날개」 새들이 바다 위에서 자꾸 길을 잃는대.",
   "연구소 친구가 기다릴 거예요.\n북동쪽 파란 지붕을 찾아보세요.":
     "나루가 아침부터 연구소 앞을 서성이던데요.\n광장 오른쪽 위 초록 지붕의 큰 건물이에요.",
   "실바나 마을에 온 걸 환영해요. 북동쪽 건물에서 지역의 관장에게 도전할 수 있어요. 북쪽의 안내원이 다음 길을 알려 줍니다.":
@@ -480,7 +480,7 @@ function rebuildDawningCity(project: Project): GameMap {
         trigger: { kind: "action" },
         commands: [
           textCommand("오늘은 준비 중이에요. 등대가 다시 밝아지면 새벽 바다를 보며 문을 열 거예요.", "전망 카페 바리스타"),
-          textCommand("여명의 날개 새들은 등대 불빛을 보고 섬을 건너요. 불빛이 흐려지니 다들 이 광장 위만 맴돌고 있죠.", "전망 카페 바리스타"),
+          textCommand("「여명의 날개」 새들은 등대 불빛을 보고 섬을 건너요. 불빛이 흐려지니 다들 이 광장 위만 맴돌고 있죠.", "전망 카페 바리스타"),
         ],
       },
     ],
@@ -847,6 +847,8 @@ function closeVoidEdges(project: Project): void {
   if (gym) { gym.lowerTiles[gym.width] = 1235; gym.lowerTiles[2 * gym.width - 1] = 1235; }
   for (const id of ["mx_map_lab", "mx_map_school", "mx_map_league_0"]) ring(id, { left: 209, right: 210, bottom: 208 });
   ring("mx_map_observatory", { left: 1811, right: 1811, bottom: 1811 });
+  // 실바나 체육관은 하늘이 트인 정원(덤불·풀밭)인데 체육관 시트라 전투가 실내 벽 배경이었고, 챔피언 전당 전투와 똑같아 보였다(2026-10-23 적대 VQA) → 풀밭 배경.
+  if (gym) gym.battleBackground = "emerald:grass";
 }
 
 /**

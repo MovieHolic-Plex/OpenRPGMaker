@@ -49,7 +49,7 @@ function polishBedroom(project: Project): void {
     page.commands = [
       // 한 쪽에 한 생각(적대 검수 m1: 문장 가운데서 쪽이 넘어갔다).
       text("드디어 오늘! 박사님께 첫 동료를 받는 날이다."),
-      text("창밖에서는 여명의 날개 새들이 길을 잃은 듯 맴돌고 있다."),
+      text("창밖에서는 「여명의 날개」 새들이 길을 잃은 듯 맴돌고 있다."),
       text("〔방향키〕 걷기 · 〔Z〕 말 걸기 · 〔X〕 메뉴"),
       { kind: "setSwitch", switchId: "mx_intro", value: true },
     ];
@@ -147,7 +147,8 @@ function polishLab(project: Project): void {
       kind: "fork",
       condition: { kind: "switch", switchId: "mx_starter", value: true },
       then: [
-        text("왔다! 나도 방금 볼트온을 받았어. 박사님이 우리 둘에게 똑같이 맡기셨대.", "나루"),
+        // 볼트온은 세 스타터 밖의 몬스터라 「똑같이 맡기셨대」가 선택지와 어긋났다(2026-10-23 적대 VQA) — 연구소에서 지내던 아이로 말한다.
+        text("왔다! 나도 방금 박사님께 볼트온을 받았어. 연구소에서 지내던 전기 몬스터래.", "나루"),
         text("누구 동료가 더 센지 지금 확인해 보자. 봐주기 없기다!", "나루"),
         { kind: "m2Command", commandId: "m2-027-change-system-bgm", fields: { cue: "battle", operation: "set", resourceId: "mx_audio_trainerBattle", volume: 100 } },
         battle,
@@ -253,7 +254,9 @@ function quickerHealing(project: Project): void {
 
 /** 체육관 수련생 — 필드에서 이름을 밝힌 사람이 전투 문장에서는 「수련생」·「견습 조련사」로 불렸다. */
 function nameGymTrainers(project: Project): void {
-  const names: Record<string, string> = { mx_troop_mx_map_grove_gym_grunt_0: "덩굴지기 하람", mx_troop_mx_map_grove_gym_grunt_1: "정원사 소이", mx_troop_mx_map_grove_gym_grunt_2: "수련생 도윤" };
+  const names: Record<string, string> = { mx_troop_mx_map_grove_gym_grunt_0: "덩굴지기 하람", mx_troop_mx_map_grove_gym_grunt_1: "정원사 소이", mx_troop_mx_map_grove_gym_grunt_2: "수련생 도윤",
+    // 관장 승부 문장이 「유림이 승부를 걸어왔다!」로 수련생과 구별되지 않았다(2026-10-23 적대 VQA) — 신전·챔피언처럼 직함을 붙인다.
+    mx_troop_mx_map_grove_gym_leader: "관장 · 유림" };
   for (const troop of project.database.troops) if (names[troop.id]) troop.name = names[troop.id]!;
   // 정원사 소이의 전투 그림이 분홍 원피스 어린 소녀였다(2026-10-21 적대 검수) — 초록 작업복 그림(bug_catcher)으로.
   const soi = project.database.troops.find((t) => t.id === "mx_troop_mx_map_grove_gym_grunt_1");
@@ -442,8 +445,17 @@ function gymBloomPuzzle(project: Project): void {
   gym.events.splice(Math.min(at, gym.events.length), 0, ...standEvents);
   for (const page of guide.pages ?? []) {
     page.commands = [
-      text("관장님 정원의 새싹은 해를 따라 깨어나요.", "체육관 안내원"),
-      text("해가 뜨는 쪽부터 차례로 물을 주면 덩굴 문이 열리고, 안쪽 가시 덤불은 정원 가위로 정리할 수 있대요.", "체육관 안내원"),
+      // 퍼즐 힌트는 풀기 전만 — 풀고 나서도 같은 긴 힌트를 두 번 더 읽었고, 둘째 문장이 상자를 넘쳐 「있대요.」만 따로 남았다(2026-10-23 적대 VQA).
+      {
+        kind: "fork",
+        condition: { kind: "switch", switchId: "mx_gym_1_puzzle", value: true },
+        then: [text("덩굴 문이 열렸네요! 관장님이 안쪽 꽃 무대에서 기다리세요.", "체육관 안내원")],
+        else: [
+          text("관장님 정원의 새싹은 해를 따라 깨어나요.", "체육관 안내원"),
+          text("해가 뜨는 쪽부터 차례로 물을 주면 덩굴 문이 열린대요.", "체육관 안내원"),
+          text("안쪽 가시 덤불은 정원 가위로 정리할 수 있어요.", "체육관 안내원"),
+        ],
+      },
       // 관장(Lv8·9) 앞에서 센터까지 되돌아가지 않아도 되게 — 수련생 셋을 이긴 뒤 체력이 바닥난 채 관장에게 들어가 졌다(2026-10-21 스타터 3종 봇).
       text("관장님께 도전하기 전에 동료들을 쉬게 해 줄까요?", "체육관 안내원"),
       {
