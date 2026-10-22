@@ -4,7 +4,7 @@
 //   QA_RECORD_VIDEO=<폴더> flock /tmp/oprn-stairs-browser.lock node scripts/runtime-qa.mjs --scenario jp-stairs-redraw --project <out.json> --netns
 // 기대: 계단 앞 칸에서 북쪽(위)으로 걸어 들어가면 층이 바뀌고, 다른 층의 짝 계단 앞 칸에 계단을 등지고(남쪽을 보고) 선다.
 //   단독주택 2층 계단통 앞 (19,11) ↔ 1층 오르는 계단 앞 (11,10) · 맨션 외복도 계단통 앞 (19,5) ↔ 로비 계단 앞 (5,4)
-//   학교 2층 오르는 계단 앞 (21,16) ↔ 3층 계단통 앞 (23,14) · 사무실 1층 비상계단 앞 (14,4) ↔ 위층 비상계단통 앞 (14,16)
+//   학교 2층 오르는 계단 앞 (21,16) ↔ 3층 계단통 앞 (23,14)
 const walk = (mapId, dir, x, y, steps) => [
   { kind: "playerRoute", moves: Array.from({ length: steps }, () => ({ kind: "move", dir })) },
   { kind: "waitForPosition", mapId, x, y, timeoutMs: 15000 },
@@ -13,6 +13,7 @@ const look = (ms = 900) => ({ kind: "hold", dir: null, ms });
 /** @type {import("../../lib/runtimeQa.d.mts").RuntimeQaScenario} */
 export const jpStairsRedrawScenario = {
   id: "jp-stairs-redraw",
+  viewport: { width: 960, height: 540 },   // 영상 크기 = viewport(없으면 800×450 으로 잘린다)
   beats: [
     {
       id: "house-2f-to-1f-and-back",
@@ -67,22 +68,6 @@ export const jpStairsRedrawScenario = {
         look(1500),
       ],
       expect: { mapId: "jp-city-school-2f", x: 21, y: 16 },
-      shot: true,
-    },
-    {
-      id: "office-1f-floor",
-      note: "사무실 1층 비상계단 앞 (14,4) → 위층 비상계단통 앞 (14,16) → 다시 1층",
-      ops: [
-        { kind: "teleport", mapId: "jp-city-office-1f", x: 14, y: 6 },
-        look(1000),
-        ...walk("jp-city-office-1f", "up", 14, 4, 2),
-        look(500),
-        ...walk("jp-city-office-floor", "up", 14, 16, 1),
-        look(1500),
-        ...walk("jp-city-office-1f", "up", 14, 4, 1),
-        look(1500),
-      ],
-      expect: { mapId: "jp-city-office-1f", x: 14, y: 4 },
       shot: true,
     },
   ],

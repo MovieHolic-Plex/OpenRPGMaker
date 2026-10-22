@@ -1,0 +1,87 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "jp-in-stairs-13",
+ "title": "jp_city 실내 계단 13 (오르는 계단·내려가는 계단통 다시 그리기, VQA r30)",
+ "explainImage": "jp-in-stairs-13.png",
+ "createdAt": "2026-10-22T15:12:26.966Z",
+ "items": [
+  {
+   "sha": "44246dbd68b0ddf7cbb1b26ccfea5bbc0b83a6383377ca6d43f29a304cd1abf1",
+   "kind": "structure",
+   "label": "jp_city/interior/jp-in-stairs-up-wood",
+   "source": "/home/main/jpi-work/gate/jp-in-stairs-up-wood.png"
+  },
+  {
+   "sha": "d10fa1586eb66ab235bd9f12f8d7dd0af44c22aa7ac9302d38d4557a4d650fa7",
+   "kind": "structure",
+   "label": "jp_city/interior/jp-in-stairs-up-wood-wide",
+   "source": "/home/main/jpi-work/gate/jp-in-stairs-up-wood-wide.png"
+  },
+  {
+   "sha": "58e4241c6438e916d6e48daeec901f764e253d8ebce47dfc4894f83c0f79ea54",
+   "kind": "terrain",
+   "label": "jp_city/interior/jp-in-stairwell-down-wood",
+   "source": "/home/main/jpi-work/gate/jp-in-stairwell-down-wood.png"
+  },
+  {
+   "sha": "7a498153df2976b10f11e800e1ec2f46e216a588176bab31f651b21d18aa404b",
+   "kind": "structure",
+   "label": "jp_city/interior/jp-in-sc-stairs-up",
+   "source": "/home/main/jpi-work/gate/jp-in-sc-stairs-up.png"
+  },
+  {
+   "sha": "f55976f8bd82941f2d14baf9646be56f63e2f18ec256d408b7ede47798a6f8f4",
+   "kind": "terrain",
+   "label": "jp_city/interior/jp-in-sc-stairwell-down",
+   "source": "/home/main/jpi-work/gate/jp-in-sc-stairwell-down.png"
+  },
+  {
+   "sha": "0ba427b29c992cd7be9a027501ed295c29dd1e231bdb43ac0767e23d37dd22e2",
+   "kind": "structure",
+   "label": "jp_city/interior/jp-in-mc-stairs-up",
+   "source": "/home/main/jpi-work/gate/jp-in-mc-stairs-up.png"
+  },
+  {
+   "sha": "9e73cdd472fbca07e94cef143f40f0a09b745a28d20934ffdf6a922dc6e4cc28",
+   "kind": "terrain",
+   "label": "jp_city/interior/jp-in-mc-stairwell-down",
+   "source": "/home/main/jpi-work/gate/jp-in-mc-stairwell-down.png"
+  },
+  {
+   "sha": "d119db9a69ed80469a6044774a7a49815c286ce74e608a78581332a55bf2e7f2",
+   "kind": "structure",
+   "label": "jp_city/interior/jp-in-of-stairs-up",
+   "source": "/home/main/jpi-work/gate/jp-in-of-stairs-up.png"
+  },
+  {
+   "sha": "f55976f8bd82941f2d14baf9646be56f63e2f18ec256d408b7ede47798a6f8f4",
+   "kind": "terrain",
+   "label": "jp_city/interior/jp-in-of-stairwell-down",
+   "source": "/home/main/jpi-work/gate/jp-in-of-stairwell-down.png"
+  },
+  {
+   "sha": "d02763da2ce9c1c474f7651fa26b9508a0dd3e8c29eb60e99650610a9f1336d3",
+   "kind": "structure",
+   "label": "jp_city/interior/jp-in-as-stairs-up-broken",
+   "source": "/home/main/jpi-work/gate/jp-in-as-stairs-up-broken.png"
+  },
+  {
+   "sha": "93d9a22a63398fcea95730d57e41eb6e3d10351be6bea8a372cc320333c61b8c",
+   "kind": "terrain",
+   "label": "jp_city/interior/jp-in-as-stairwell-down",
+   "source": "/home/main/jpi-work/gate/jp-in-as-stairwell-down.png"
+  },
+  {
+   "sha": "8fd28192d88b68771eb3d9dd59fe8d2c7eb776ac2011cf7bd3e0e6523fa8674b",
+   "kind": "structure",
+   "label": "jp_city/interior/jp-in-cs-stairs-up-bare",
+   "source": "/home/main/jpi-work/gate/jp-in-cs-stairs-up-bare.png"
+  },
+  {
+   "sha": "d572cfe3dc843d0853c000a11801f9d00e721d089173bb946356ae3b535ac106",
+   "kind": "terrain",
+   "label": "jp_city/interior/jp-in-cs-stairwell-down",
+   "source": "/home/main/jpi-work/gate/jp-in-cs-stairwell-down.png"
+  }
+ ]
+}

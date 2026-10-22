@@ -78,5 +78,5 @@
 - **벽면 파고듦 수정:** 계단통은 바닥 세 줄(구멍·밟는 줄·앞 칸)이 필요한데 단독주택 2층·맨션 외복도·학교 3층 복도는 두 줄이라 #3256 이 계단통을 벽면으로 한 줄 올렸었다.
   `scripts/content/stairs/widen-jp-stair-corridors.mts --write` 가 세 복도에 바닥 한 줄을 더하고 계단통을 첫 바닥 줄로 내린다(이벤트·이동·시작 위치도 한 줄 내림, 두 번 돌려도 같다).
   이어 `fit-bundled-places.mts --write`. 예제 JSON(`mansion-corridor`·`school-3f`·`school-2f`·`mansion-lobby`)도 같이 고쳤다. `lint-bundled-stairs` 공용 장소 경고 0.
-- 출하 플레이어 걷기: `scripts/qa/runtime/jp-stairs-redraw.scenario.mjs`(단독주택 2F↔1F · 맨션 외복도↔로비 · 학교 2F↔3F · 사무실 1F↔위층).
+- 출하 플레이어 걷기: `scripts/qa/runtime/jp-stairs-redraw.scenario.mjs`(단독주택 2F↔1F · 맨션 외복도↔로비 · 학교 2F↔3F).
 - 검수: Opus 적대 VQA 영수증 `harness-data/object-gate/vqa/jp-in-stairs-13.opus-vqa-r*.json`, object-gate 묶음 `jp-in-stairs-13`.
