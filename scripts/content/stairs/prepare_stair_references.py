@@ -156,7 +156,7 @@ def main():
 ## 계산 예제 — {ex['id']} 를 (10,4) 에
 - 키트 {c['w']}×{c['h']}, {LEAD_KO[c['leads']]}, 들어서는 쪽 {SIDE_KO[c['side']]}, mode `{c['mode']}`.
 - 이동 칸(맵 좌표) {abs_(c['trigger'])} · 앞 칸(맵 좌표, 비워 둘 바닥) {abs_(c['approach'])}.
-- 이벤트: `{{"x": {ox + c['trigger'][0][0] if c['trigger'] else ox}, "y": {oy + c['trigger'][0][1] if c['trigger'] else oy}, "pages": [{{"trigger": "{'touch' if c['mode'] == 'walk' else 'action'}"{', "priority": "same"' if c['mode'] == 'bump' else ''}, "commands": [{{"kind": "transfer", "mapId": "<짝 층>", "x": "<짝 계단 앞 칸 x>", "y": "<짝 계단 앞 칸 y>", "direction": "<짝 계단 arrivalFacing>"}}]}}]}}`
+- 이벤트: `{{"x": {ox + c['trigger'][0][0] if c['trigger'] else ox}, "y": {oy + c['trigger'][0][1] if c['trigger'] else oy}, "pages": [{{"trigger": {{"kind": "playerTouch"}}, {'"priority": "same", "overlapForbidden": true' if c['mode'] == 'bump' else '"priority": "below"'}, "commands": [{{"kind": "transfer", "mapId": "<짝 층>", "x": "<짝 계단 앞 칸 x>", "y": "<짝 계단 앞 칸 y>", "direction": "<짝 계단 arrivalFacing>"}}]}}]}}`
 - 짝 층에서 이 계단으로 오는 transfer: `{{"x": {abs_(c['approach'])[0][0] if c['approach'] else ox}, "y": {abs_(c['approach'])[0][1] if c['approach'] else oy}, "direction": "{FACING.get(c['side'], 'down')}"}}`.
 
 ## 하위/상위 칸 배열(정답)
