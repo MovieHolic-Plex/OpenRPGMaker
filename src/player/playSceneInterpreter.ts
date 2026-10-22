@@ -558,6 +558,8 @@ async function consumeBlockingStep(
     case "tacticsBattle": {
       dialogue.hide();
       const result = await playTacticsBattle(scene, step);
+      // null = 전투 도중 플레이가 끝났다. 이벤트를 더 진행하지 않는다(battleProcessing 의 null 과 같다).
+      if (result === null) return { kind: "done" };
       if (result === undefined) return resumeAfterSurface(scene, interpreter);
       // 패배 불허 전투의 패배는 게임 오버다(battleProcessing 과 같은 규칙).
       if (result === "defeat" && !step.canLose) { applyBattleDefeat(scene); return { kind: "done" }; }
