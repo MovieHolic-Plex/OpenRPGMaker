@@ -309,9 +309,9 @@ source 737의 빈 잔디와 검증된 집/나무만 대상. 이벤트·전이 �
 
 ### 집 3~5채 작은 잔디 마을
 
-`author_beodeul_town({houseCount:5,name,seed})`는 기본 40×30 맵에 서로 다른 원본 집 5종을 놓는다.
-별채 박공(h101_0)·이층(h104_0)·돌벽 박공(h112_0)·ㄱ자(h109_1)·낮은 집(h107_0), 굽은 큰길/샛길과 우물 마당을 사용한다.
-3~5채 지정 가능하며 houseCount를 생략하면 기존 큰 테마 마을/도시 경로다. 작은 배치의 집 좌표는 고정이고 seed는 꾸밈을 바꾼다.
+2026-10-22 부터 `author_beodeul_town({houseCount})` 는 theme 마을의 살림집 상한이다(크기 생략 시 40×32 안팎, theme·form·terrain·`roofs` 와 함께).
+옛 고정 배치 40×30(별채 박공 h101_0·이층 h104_0·돌벽 h112_0·ㄱ자 h109_1·낮은 집 h107_0, 집 좌표 고정)은 `church:true` 일 때만 —
+모든 「작은 마을」이 같은 그림이 되던 원인이었다. 자세한 내용은 `openwiki/beodeul-city.md` 「마을마다 다르게」.
 mapId 생략은 새 맵, 지정은 기존 맵 전체 재시공이다. 기존 마을을 꾸미기만 할 때는 `dress_beodeul_ground`를 쓴다.
 작은 잔디 모드에는 기후 theme을 생략한다. 포구·사막·눈·늪은 기존 theme 생성기를 사용한다.
 소유 파일 `tools/beodeulSmallVillage.ts`; 반환 `housePlacements`, `doors`, `start`를 실제 통행으로 확인한다.

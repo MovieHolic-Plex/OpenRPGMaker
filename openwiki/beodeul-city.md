@@ -77,12 +77,27 @@
 기존 source 0~40은 유지하며 현재 팩은 48칸 슬롯·42개 그림·16레시피다. 연결 칸은 ★로 원래 수관 통행을 따른다.
 `dress_beodeul_ground`는 이미 꾸민 맵에서도 빠진 밑동·연결만 보충하고 다른 꾸밈을 중복하지 않는다.
 
-`author_beodeul_town({houseCount:5,name,seed})`는 별도 40×30 밝은 잔디 마을을 만든다(3~5채 지정 가능).
-`beodeulSmallVillage.ts`가 원본 키트 h101_0·h104_0·h112_0·h109_1·h107_0으로
-별채 박공·넓은 이층·돌벽 박공·ㄱ자·낮은 집을 배치한다. 굽은 큰길 2칸과 샛길 1칸,
-우물 마당, 집 곁 살림과 나무를 배치한 뒤 공용 꾸밈을 적용한다. seed는 꾸밈 변주에 쓰며 이 작은 배치의 집 좌표는 고정이다.
-새 마을 요청에는 mapId를 생략해 원래 맵을 보존한다. 이 모드는 외장 전용이며 실내·출입 이벤트는 별도 저작한다.
-houseCount 생략 시 기존 기후/도시 생성 경로다. 포구·사막·눈·늪 요청에는 해당 경로를 쓴다.
+### 마을마다 다르게 (2026-10-22)
+
+사용자 지적 「마을 만들어 달라 하면 다 비슷하게 만들어 버리는 게 충격」. 원인 셋(조수 능력 루프 1 의 마을 15장 중 10장이 같은 그림):
+1. `houseCount` 모드(`beodeulSmallVillage.ts`)가 **고정 배치**였다 — 집 좌표·길·우물이 상수라 seed 를 바꿔도 같은 세 집. 경로 메모와
+   `BEODEUL_GROUND_POLICY_LINE` 이 「작은 마을 = houseCount 40×30」을 시켜 「작은 마을」 요청이 전부 여기로 갔다.
+2. 모델이 매번 `seed: 7` 을 보냈다(도구 설명이 「생략하면 7」, 메모가 seed 를 인자 예시에 넣음). 같은 선택 + 같은 seed = 같은 마을.
+3. 의도 선언 「새 맵이면 이 크기를 그대로 써라」가 작은 마을을 모두 44×28 로 묶었다. 집은 강가·포구 모두 붉은 기와(CITY_HOUSES)뿐.
+
+고친 것(실험 H7 — AI 는 이름 붙은 선택지, 함수가 조화):
+- `houseCount` 는 이제 theme 마을(`buildBeodeulVillage`)의 **살림집 상한**이다. 크기를 생략하면 40×32~44×36. 옛 고정 배치는
+  `church:true`(예제 마을+교회, 공동마당 예제의 시작점)에만 남는다.
+- `roofs`(river·coast): `red` 붉은 기와 · `slate` 청회색 · `moss` 이끼 초가·너와 · `log` 통나무. 사람이 허용한 건물(`bd-house-rv-*`)에서
+  살림집만 골라 주색 80%·둘째(돌벽 작은 집) 20%, 앵커(여관 등)는 강조색으로 남는다. 허용 건물은 그림자(2층)·기초(4층)를 같은 원점에
+  모든 키트를 찍은 뒤 빈 칸에만 놓는다. 문은 두 칸 높이라 아랫칸 기준으로 맞춘다. 팔레트 집은 키가 커 좁은 띠에 안 들어가면
+  같은 자리에서 더 낮은 집을 한 번 더 본다(붉은 기와 기본 마을의 난수열은 그대로).
+- seed 를 생략하면 `defaultTownSeed`(시스템 설정의 무작위 오프닝 id·맵 목록·이름의 해시) — 같은 프로젝트 상태면 같은 값, 프로젝트나 맵이
+  다르면 다른 값. form·terrain·roofs 를 생략하면 그 seed 로 고른다. 결과 `data.seed`·`data.roofs` 로 재현한다.
+- 경로 메모(`beodeulTownRoute.ts`)는 「마을의 정체 한 줄 → theme·form·terrain·roofs·forestType·크기」, 요청이 말하지 않은 선택과 seed 는 보내지 않기.
+- 작은 포구에서 생선 시장 좌판이 발(막힌 줄)을 물에 둬 매번 「찍기 실패」하던 것을 자리 고르기에서 거른다(`feetOnWater`).
+프로브: `bun scripts/qa/beodeul-village-forms-probe.mts --cases river:scatter:flat:5:42x32:moss:4` (6·7번째 칸 = roofs·houseCount).
+결과·전후 비교: http://mdc-server:18301/village-diversity-1.html
 
 공용 참고문서에 `SMALL-VILLAGE.md`의 집 전체 배열과 `small-village-example.json`의 네 층 전체 배열,
 실제 표본 그림을 추가했다. 생성은 기본 ground 스크립트 뒤 `bun scripts/content/prepare-beodeul-small-village-references.mts`;
