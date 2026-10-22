@@ -22,6 +22,7 @@
 //  - scene-seated-cannot-stand     의자·소품 칸(나가는 방향이 막힌 칸)에 앉힌 인물의 첫걸음이 통과 없이 그 칸을 나가려 한다 — 엔진이 첫걸음부터 막아 건너뛰기 경로가 통째로 사라지고 인물이 제자리에서 사라진다
 //  - scene-tint-clears-fade        화면을 검게 덮은(fadeOut) 뒤 fadeIn 전에 「Tint Screen」 으로 색조를 바꾼다 — 페이드도 같은 색조 칸이라 검은 덮개가 걷혀 다음 장면 전에 화면이 드러난다
 //  - scene-actor-head-under-upper  인물이 걸어가 선 칸 바로 위에 «항상 위» 위층 소품(★, 계산대 위 물건 등)이 있다 — 소품이 머리를 덮은 채 대화한다
+//  - scene-bust-side-switch        한 장면(페이지, 장소 이동·fadeOut 사이) 안에서 같은 인물 흉상이 왼쪽·오른쪽을 오간다
 //  - scene-actor-under-furniture   보이는 인물을 «위층(upper)» 가구 칸(의자 등받이·탁자처럼 인물보다 앞에 그려지는 막힌 칸)에 세운다 — 가구가 얼굴을 덮는다
 //  - scene-route-interrupted       기다리지 않는 긴 경로(퇴장 등)가 도는 인물에게 같은 장면이 다시 이동·돌기를 시킨다 — 뒤 명령이 앞 경로를 갈아 끼워 인물이 길 한가운데 멈춘다
 
@@ -1270,6 +1271,42 @@ function checkActorHeadUnderUpper(project: Project, issues: LintIssue[]): void {
   }
 }
 
+/**
+ * 흉상 자리는 한 장면 안에서 고정이다. 상대가 선 쪽을 대사마다 따라가면 주인공 흉상이 왼쪽·오른쪽을 오가 시선이 흔들린다
+ * (첫사랑 VQA r16 메이저: 첫 출근·수요일 사무실). 장면 경계는 장소 이동과 fadeOut 으로 본다. 인물은 흉상 id 에서 표정 꼬리를 뗀 것.
+ */
+function checkBustSideSwitch(project: Project, issues: LintIssue[]): void {
+  const person = (resourceId: string): string => resourceId.replace(/-[a-z]+$/, "");
+  for (const map of Object.values(project.maps)) {
+    for (const host of map.events ?? []) {
+      for (const page of pagesOf(host)) {
+        let sides = new Map<string, string>();
+        const reported = new Set<string>();
+        for (const command of walk(page.commands)) {
+          if (command.kind === "transfer") { sides = new Map(); continue; }
+          if (command.kind === "m2Command" && (command.commandId === "m2-202-screen-effect" || m2Title(command) === "Screen Effect")) {
+            if (fieldStr(command, "effect") === "fadeOut") sides = new Map();
+            continue;
+          }
+          if (command.kind !== "changeFace") continue;
+          const face = command as { resourceId?: string; position?: string; presentation?: string };
+          if (!face.resourceId || face.presentation !== "bust" || (face.position !== "left" && face.position !== "right")) continue;
+          const who = person(face.resourceId);
+          const before = sides.get(who);
+          if (before && before !== face.position && !reported.has(who)) {
+            reported.add(who);
+            issues.push({
+              severity: "warning", code: "scene-bust-side-switch", mapId: map.id, eventId: host.id, x: host.x, y: host.y,
+              message: `이벤트 ${host.id} 의 한 장면 안에서 흉상 ${who} 가 ${before} → ${face.position} 로 자리를 바꾼다 — 흉상 자리는 장면 내내 고정한다(주인공 한쪽, 상대 반대쪽). 상대가 선 쪽이 맞지 않으면 인물 자리를 옮긴다.`,
+            });
+          }
+          sides.set(who, face.position);
+        }
+      }
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------- 흉상 시선
 
 /**
@@ -1446,6 +1483,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkTintClearsFade);
   guard(checkActorUnderFurniture);
   guard(checkActorHeadUnderUpper);
+  guard(checkBustSideSwitch);
   guard(checkMapSmallerThanScreen);
   guard(checkLetterboxDialogue);
   guard(checkCommandsAfterTransfer);

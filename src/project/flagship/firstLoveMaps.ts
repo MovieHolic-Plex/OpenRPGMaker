@@ -308,21 +308,22 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   streetPm.defaultLighting = { ambient: 0.62, color: "#0e1630", sources: lamps };
   officePm.defaultLighting = {
     // 야근 밤: 너무 어두우면 인물이 안 읽힌다(VQA r3) — 어둠은 한 단계 줄이고 책상·탕비실·회의 자리 불을 넓힌다.
-    ambient: 0.3, color: "#1c1a34",
+    // 밤 10시대 사무실이 낮과 같은 밝기로 읽혔다(VQA r16) — 한 단계 더 어둡게, 책상 불은 그대로.
+    ambient: 0.42, color: "#18183a",
     sources: [
       light("fl_desk_hero", anchors.office.heroDesk, 5, "#ffe6b8"), light("fl_desk_jihu", anchors.office.jihuDesk, 5, "#ffe6b8"),
       light("fl_pantry", anchors.office.pantry, 5, "#fff2d0"), light("fl_meeting", anchors.office.meetingSeat, 5, "#ffeecc", 0.8),
     ],
   };
   platformPm.defaultLighting = {
-    ambient: 0.48, color: "#121a36",
+    // 지하 승강장은 형광등으로 고르게 밝다 — 바닥의 큰 빛 웅덩이 사이가 구름 그림자처럼 얼룩졌다(VQA r16). 고른 밤색만 얇게 깔고 간판 불만 둔다.
+    ambient: 0.22, color: "#121a36",
     // 승강장에는 가로등이 없다 — 실제로 빛나는 것(발차 LED 판·자판기·매표기·벽시계·역명 간판)만 켠다.
     sources: [
       light("fl_led_a", { x: 6, y: 3 }, 4, "#bfe0ff", 0.8), light("fl_led_b", { x: 20, y: 3 }, 4, "#bfe0ff", 0.8),
       light("fl_vend_a", { x: 3, y: 4 }, 3, "#d9f4ff", 0.85), light("fl_vend_b", { x: 4, y: 4 }, 3, "#d9f4ff", 0.85),
       light("fl_kiosk", { x: 16, y: 4 }, 4, "#fff0c8", 0.8),
       light("fl_sign_a", { x: 10, y: 8 }, 4, "#fff0c8", 0.8), light("fl_sign_b", { x: 24, y: 8 }, 4, "#fff0c8", 0.8),
-      light("fl_plat_a", { x: 6, y: 8 }, 5, "#e8f0ff", 0.6), light("fl_plat_b", { x: 16, y: 8 }, 5, "#e8f0ff", 0.6), light("fl_plat_c", { x: 26, y: 8 }, 5, "#e8f0ff", 0.6),
     ],
   };
   // 편의점은 밤에만 들른다 — 바깥 광장은 어두운 밤, 가게 안은 형광등이 켜진 밝은 바닥. 거리의 어두운 조명을 물려받지 않게 따로 건다.

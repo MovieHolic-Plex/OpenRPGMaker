@@ -351,7 +351,8 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   const named = o as typeof o & { meetLead?: Cell; meetJihu?: Cell };
   const leadMeetStop = named.meetLead ?? spot(project, FL_MAP.office, { x: heroMeet.x, y: heroMeet.y + 2 }, taken);
   const jihuMeetStop = named.meetJihu ?? spot(project, FL_MAP.office, { x: leadMeetStop.x + 1, y: leadMeetStop.y }, taken);
-  const minhoMeetStop = spot(project, FL_MAP.office, { x: heroMeet.x - 1, y: heroMeet.y }, [...taken, leadMeetStop, jihuMeetStop]);
+  // 흉상 자리는 장면 내내 고정(서하 왼쪽, 상대 오른쪽, VQA r16) — 민호도 서하 오른쪽(팀장 옆)에 선다.
+  const minhoMeetStop = spot(project, FL_MAP.office, { x: leadMeetStop.x + 1, y: leadMeetStop.y }, [...taken, leadMeetStop, jihuMeetStop]);
   // 둘 다 자기 자리에서 걸어 나온다(빈 바닥에서 솟아나지 않는다).
   const leadSpot = o.leadDesk;
   const jihuMeet = jihuSeat;
@@ -460,12 +461,11 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoSpot, minhoMeetStop, [heroMeet, leadMeetStop], true, dirToward(minhoMeetStop, heroMeet)),
     face("ev_fl_minho", dirToward(minhoMeetStop, heroMeet)),
     face("@player", dirToward(heroMeet, minhoMeetStop)),
-    ...sayAt("minho", "left", "happy", "아, 들켰다. 차민호예요! 지난주에 들어온 백엔드 신입. 동기라고 해도 되죠?"),
-    ...sayAt("seoha", "right", "happy", "네, 그럼요. 반가워요."),
+    ...sayAt("minho", "right", "happy", "아, 들켰다. 차민호예요! 지난주에 들어온 백엔드 신입. 동기라고 해도 되죠?"),
+    ...say("seoha", "happy", "네, 그럼요. 반가워요."),
     { kind: "changeFriendship", npcKey: "lead", delta: 60 } as Command,
     { kind: "changeFriendship", npcKey: "minho", delta: 60 } as Command,
     face("@player", dirToward(heroMeet, leadMeetStop)),
-    listenTo("jihu", "base", "left"),
     ...sayAt("lead", "right", "base", "그리고 서하 씨 사수. 지후 씨, 잠깐 와 볼래요?"),
     walkRoute(project, FL_MAP.office, "ev_fl_jihu_meet", jihuMeet, jihuMeetStop, [heroMeet, leadMeetStop, minhoMeetStop], true, dirToward(jihuMeetStop, heroMeet)),
     face("ev_fl_jihu_meet", dirToward(jihuMeetStop, heroMeet)),
@@ -504,7 +504,8 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     ...sayAt("lead", "right", "base", "서하 씨 자리는 지후 씨 맞은편이에요. 오늘 숙제는 금요일 발표 자료 읽어 두기."),
     ...sayAt("lead", "right", "base", "금요일 오후 세 시에 ‘소리결’ 박 본부장님 앞에서 리뉴얼 시안 발표가 있어요. 신입한테 미안하지만, 첫 주부터 바빠요."),
     face("@player", dirToward(heroMeet, minhoMeetStop)),
-    ...sayAt("minho", "left", "happy", "서하 씨, 이따 탕비실로 와요! 커피 머신 쓰는 법 알려 줄게요."),
+    listenTo("seoha"),
+    ...sayAt("minho", "right", "happy", "서하 씨, 이따 탕비실로 와요! 커피 머신 쓰는 법 알려 줄게요."),
     walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoMeetStop, minhoSpot, [heroMeet], false, "up"),
     // 만남 자리의 둘은 그 자리에서 사라지지 않고 각자 자리까지 걸어간다 — 자리의 지후·팀장 페이지가 같은 칸에서 이어받는다.
     walkRoute(project, FL_MAP.office, "ev_fl_jihu_meet", jihuMeetStop, jihuSeat, [heroMeet], false),
@@ -801,7 +802,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
   const minhoStart = spot(project, FL_MAP.officePm, { x: o.heroDesk.x + 2, y: o.heroDesk.y }, taken);
   const jihuSeat = spot(project, FL_MAP.officePm, { x: o.heroDesk.x + 1, y: o.heroDesk.y - 2 }, taken);
   const jihuPantry = spot(project, FL_MAP.officePm, o.pantry, taken);
-  // 「내 옆으로 와 모니터를 들여다봤다」(앉는 그림이 없어 의자 이야기는 뺐다, VQA r10) — 지후는 서하 왼쪽 옆 칸으로 와서 마주 본다(대사가 말하는 자리를 화면도 보인다).
+  // 「내 옆으로 와 모니터를 들여다봤다」(앉는 그림이 없어 의자 이야기는 뺐다, VQA r10) — 지후는 서하 왼쪽 옆 칸으로 와서 마주 본다(오른쪽 칸은 탕비실로 가는 길이 의자 칸을 지나 막힌다). 흉상 자리는 장면 내내 서하 왼쪽·지후 오른쪽으로 고정(VQA r16)(대사가 말하는 자리를 화면도 보인다).
   const jihuBeside = nearestFree(project, off, { x: o.heroDesk.x - 1, y: o.heroDesk.y }, 1, taken);
   taken.push(jihuBeside);
   // 정직 분기: 통화 중인 팀장에게 자리에서 소리쳐 말하지 않고, 팀장 책상 앞까지 걸어가서 말한다.
@@ -929,18 +930,18 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
         // 팀장 책상 앞까지 걸어가 말하고, 팀장도 통화를 멈추고 서하를 본다.
         walkRoute(project, FL_MAP.officePm, "@player", o.heroDesk, leadFront, [], true, dirToward(leadFront, leadSeat)),
         faceHero("ev_fl_w_lead"),
-        ...sayAt("seoha", "right", "sad", "팀장님. 제가 소리결에 시안을 잘못 보냈습니다. 지난주 버전으로요."),
-        ...sayAt("lead", "left", "base", "…몇 시에 보냈어요?"),
-        ...sayAt("seoha", "right", "sad", "여섯 시 반쯤이요. 죄송합니다."),
-        ...sayAt("lead", "left", "happy", "좋아요. 숨기지 않고 바로 말해 줘서 다행이에요. 본부장님한텐 내가 지금 전화할게요."),
-        ...sayAt("lead", "left", "base", "서하 씨는 최종본 다시 정리하고."),
+        ...say("seoha", "sad", "팀장님. 제가 소리결에 시안을 잘못 보냈습니다. 지난주 버전으로요."),
+        ...say("lead", "base", "…몇 시에 보냈어요?"),
+        ...say("seoha", "sad", "여섯 시 반쯤이요. 죄송합니다."),
+        ...say("lead", "happy", "좋아요. 숨기지 않고 바로 말해 줘서 다행이에요. 본부장님한텐 내가 지금 전화할게요."),
+        ...say("lead", "base", "서하 씨는 최종본 다시 정리하고."),
         face("ev_fl_w_lead", dirToward(leadSeat, jihuSeat)),
         face("ev_fl_w_jihu", dirToward(jihuSeat, leadSeat)),
-        ...sayAt("lead", "left", "base", "지후 씨, 서하 씨 좀 도와줄래요?"),
+        ...say("lead", "base", "지후 씨, 서하 씨 좀 도와줄래요?"),
         // 지후는 열 칸 밖 자리에 있다 — 멀리서 「네.」로 대답하지 않고 일어나 오는 걸음으로 대답한다(사용자 r2: 너무 멀리서 대화).
         // 팀장의 작별 인사도 서하가 팀장 앞에 서 있을 때 한다.
         face("ev_fl_w_lead", dirToward(leadSeat, leadFront)),
-        ...sayAt("lead", "left", "base", "본부장님 전화는 가면서 할게요. 둘 다 너무 늦지 말아요."),
+        ...say("lead", "base", "본부장님 전화는 가면서 할게요. 둘 다 너무 늦지 말아요."),
         walkRoute(project, FL_MAP.officePm, "@player", leadFront, o.heroDesk, [jihuBeside]),
         ...comeBeside(),
         ...think("지후 선배가 내 옆으로 와 모니터를 들여다봤다. 아주 잠깐, 웃은 것 같았다."),
@@ -969,25 +970,25 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     setSw("sw_fl_lead_left", true),
     ...caption("밤 10시 40분."),
     ...fadeIn(700),
-    ...sayAt("jihu", "left", "base", "다 됐어요. 다시 보냈고, 본부장님 답장도 왔어요. ‘확인했습니다, 감사합니다.’"),
-    ...sayAt("seoha", "right", "happy", "…감사합니다. 진짜로요."),
-    ...sayAt("jihu", "left", "base", "서하 씨 시안, 좋았어요. 버튼 누르면 사연 종이가 반으로 접히는 거."),
+    ...say("jihu", "base", "다 됐어요. 다시 보냈고, 본부장님 답장도 왔어요. ‘확인했습니다, 감사합니다.’"),
+    ...say("seoha", "happy", "…감사합니다. 진짜로요."),
+    ...say("jihu", "base", "서하 씨 시안, 좋았어요. 버튼 누르면 사연 종이가 반으로 접히는 거."),
     choices([
       { text: "“선배라면 알아볼 줄 알았어요.”", then: [
-        ...sayAt("seoha", "right", "embarrassed", "…선배라면 알아볼 줄 알았어요. 방송실 사연함 모양이에요, 그거."),
+        ...say("seoha", "embarrassed", "…선배라면 알아볼 줄 알았어요. 방송실 사연함 모양이에요, 그거."),
         ...emote("ev_fl_w_jihu", "exclamation", 900),
-        ...sayAt("jihu", "left", "embarrassed", "…역시. 어디서 본 것 같더라. 투입구가 비뚤어진 것까지."),
+        ...say("jihu", "embarrassed", "…역시. 어디서 본 것 같더라. 투입구가 비뚤어진 것까지."),
         ...like(1, "ev_fl_w_jihu"),
       ] },
       { text: "“그냥, 회사 앱이니까요.”", then: [
-        ...sayAt("seoha", "right", "base", "그냥, 회사 앱이니까요. 열심히 했을 뿐이에요."),
-        ...sayAt("jihu", "left", "base", "…그렇죠."),
+        ...say("seoha", "base", "그냥, 회사 앱이니까요. 열심히 했을 뿐이에요."),
+        ...say("jihu", "base", "…그렇죠."),
         ...think("거짓말이다. 사연 종이가 접히는 그 버튼은, 그 방송실에서 가져온 거였다."),
       ] },
     ]),
     ifCond({ kind: "variable", variableId: V_JIHU, op: ">=", value: 3 } as never,
-      sayAt("jihu", "left", "happy", "라면 먹을래요? 탕비실에 컵라면 있어요. 먼저 가 있을게요. …오늘은 도망 안 가요."),
-      sayAt("jihu", "left", "base", "…배고프면 탕비실에 컵라면 있어요. 물은 내가 올려 둘게요."),
+      say("jihu", "happy", "라면 먹을래요? 탕비실에 컵라면 있어요. 먼저 가 있을게요. …오늘은 도망 안 가요."),
+      say("jihu", "base", "…배고프면 탕비실에 컵라면 있어요. 물은 내가 올려 둘게요."),
     ),
     walkRoute(project, FL_MAP.officePm, "ev_fl_w_jihu", jihuBeside, jihuPantry, [o.heroDesk], false, "up"),
     ...think("(탕비실로 가자.)"),
@@ -1220,9 +1221,9 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...say("jihu", "sad", "근데 지금 대답하면, 그건 또 도망치는 대답 같아요. 떠나는 사람이 할 말이 아니라서."),
           ...say("jihu", "base", "답장은 여기 써 뒀어요. 열차 떠나면 읽어요."),
           playSe(SE_PAPER),
-          // 지후는 승강장 끝(안전선)까지 걸어가 선로를 보고 선다 — 닫힌 객차 옆구리로 걸어 들어가지 않는다(VQA r15). 떠나는 건 검은 화면 뒤다.
+          // 지후는 제자리에서 선로(열차) 쪽으로 돌아선다 — 자동 운행 열차는 멈춤·출발을 장면이 정할 수 없어 걸어 들어가면 움직이는 열차로 들어간다(VQA r15·r16). 떠나는 건 검은 화면 뒤다.
           face("ev_fl_p_jihu", "down"),
-          { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [{ kind: "move", dir: "down" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
+          wait(900),
           ...fadeOut(1200),
           setSw("sw_fl_jihu_boarded", true),
           stopBgm(),
@@ -1235,9 +1236,9 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
         ...say("jihu", "sad", "…응. 잘 지내, 서하야."),
         ...say("jihu", "base", "이거. 답장이에요. 10년 늦었지만."),
         playSe(SE_PAPER),
-        // 지후는 승강장 끝(안전선)까지 걸어가 선로를 보고 선다 — 닫힌 객차 옆구리로 걸어 들어가지 않는다(VQA r15). 떠나는 건 검은 화면 뒤다.
+        // 지후는 제자리에서 선로(열차) 쪽으로 돌아선다 — 자동 운행 열차는 멈춤·출발을 장면이 정할 수 없어 걸어 들어가면 움직이는 열차로 들어간다(VQA r15·r16). 떠나는 건 검은 화면 뒤다.
         face("ev_fl_p_jihu", "down"),
-        { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [{ kind: "move", dir: "down" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
+        wait(900),
         ...fadeOut(1200),
         setSw("sw_fl_jihu_boarded", true),
         stopBgm(),
