@@ -227,6 +227,8 @@ function simulateRoute(start: Cell, moves: readonly MoveCommand[] | undefined, m
   let cur = { ...start };
   let fades = false;
   let viaDoor = false;
+  // 여러 번에 나눠 옅어지는 퇴장(-85 ×3)도 사라짐이다 — 누적으로 본다.
+  let fade = 0;
   for (const m of moves ?? []) {
     if (!m || typeof m !== "object") continue;
     // 문으로 나가기: 문 칸 위로 걸어 들어가 사라진다 — 문을 못 찾으면(런타임도 제자리에서 사라진다) 제자리.
@@ -235,7 +237,7 @@ function simulateRoute(start: Cell, moves: readonly MoveCommand[] | undefined, m
     if (m.kind === "move") cur = { x: cur.x + STEP[m.dir].x, y: cur.y + STEP[m.dir].y };
     else if (m.kind === "moveDiagonal") cur = { x: cur.x + (m.horizontal === "left" ? -1 : 1), y: cur.y + (m.vertical === "up" ? -1 : 1) };
     else if (m.kind === "jump") cur = { x: cur.x + (m.dx || 0), y: cur.y + (m.dy || 0) };
-    else if (m.kind === "changeOpacity" && m.delta <= -200) fades = true;
+    else if (m.kind === "changeOpacity") { fade = Math.min(0, fade + m.delta); if (fade <= -200) fades = true; }
     else if (m.kind === "npcTransfer") return { end: cur, fades: true, viaDoor: false };
   }
   cur = { x: Math.max(0, Math.min(map.width - 1, cur.x)), y: Math.max(0, Math.min(map.height - 1, cur.y)) };

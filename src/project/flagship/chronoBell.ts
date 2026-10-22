@@ -518,6 +518,41 @@ function walkPath(
  * 걷고(적대 VQA r2: 혼자 풀밭을 가로질렀다), 길은 포석(큰길·광장)만 밟는다. 대사가 이어지는 동안(기다리지 않음) 걷고,
  * 성문 통로에 닿으면 루트 끝의 각자 스위치로 지운다(떠남 페이지).
  */
+/**
+ * 행진 길을 막고 선 떠도는 주민(movement random)을 길 밖 빈 칸으로 비켜 세운다. 마을 배치는 버들항 구성기(seed)가 정하고
+ * 동문 곁 이정표가 문 앞을 한 칸 목으로 좁힌다 — #3240 이후 seed 7 마을에서는 꼬마 토비가 그 목에 서서 기사·발렌의
+ * 동문 길이 없어졌다(#3253). 떠도는 주민은 어차피 움직이므로 처음 자리만 옮긴다(고정 NPC·문·조사 칸은 건드리지 않는다).
+ */
+function clearMarchRoute(project: Project, hub: GameMap, exit: { x: number; y: number }, marcherIds: readonly string[]): void {
+  const marcherSet = new Set(marcherIds);
+  const roamers = hub.events.filter((e) => !marcherSet.has(e.id) && (e.pages ?? []).some((p) => p.movement?.type === "random"));
+  const roamerIds = new Set(roamers.map((e) => e.id));
+  for (const id of marcherIds) {
+    const npc = hub.events.find((e) => e.id === id);
+    if (!npc || walkPath(project, hub, npc, exit, id, { ignore: marcherSet })) continue;
+    const through = walkPath(project, hub, npc, exit, id, { ignore: new Set([...marcherSet, ...roamerIds]) });
+    if (!through) continue;
+    const onPath = new Set<string>([`${npc.x},${npc.y}`]);
+    let x = npc.x, y = npc.y;
+    for (const dir of through) { x += dir === "right" ? 1 : dir === "left" ? -1 : 0; y += dir === "down" ? 1 : dir === "up" ? -1 : 0; onPath.add(`${x},${y}`); }
+    for (const roamer of roamers) {
+      if (!onPath.has(`${roamer.x},${roamer.y}`)) continue;
+      const others = hub.events.filter((e) => e !== roamer);
+      let spot: { x: number; y: number } | undefined;
+      for (let r = 2; r <= 10 && !spot; r += 1) for (let dy = -r; dy <= r && !spot; dy += 1) for (let dx = -r; dx <= r && !spot; dx += 1) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+        const cx = roamer.x + dx, cy = roamer.y + dy;
+        if (cx < 1 || cy < 1 || cx >= hub.width - 1 || cy >= hub.height - 1 || !isPassable(project, hub, cx, cy)) continue;
+        if (onPath.has(`${cx},${cy}`) || others.some((e) => Math.abs(e.x - cx) + Math.abs(e.y - cy) <= 1)) continue;
+        // 옮긴 자리에서 마을 본체로 이어져야 한다(나무 사이 섬에 갇히지 않게).
+        if (!walkPath(project, hub, { x: cx, y: cy }, exit, roamer.id, { ignore: new Set([...marcherIds, ...roamerIds]) })) continue;
+        spot = { x: cx, y: cy };
+      }
+      if (spot) { roamer.x = spot.x; roamer.y = spot.y; }
+    }
+  }
+}
+
 function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   // 동문 = 숲으로 나가는 성문 통로 가운데 칸(reworkFallenTown). 일행은 통로 안까지 걸어 들어가 사라진다.
   const gate = hub.events.find((e) => String(e.id).startsWith("ev_gate_") && JSON.stringify(e).includes('"mapId":"fs_forest"'));
@@ -688,6 +723,7 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   const arrivals: number[] = [];
   // 뒤에 출발할 사람의 제자리는 막힌 칸으로 친다 — 한가운데 발렌이 바로 위 기사 칸을 지나가는 길을 고르면 그 기사는
   // 몇 걸음을 기다려도 겹침이 풀리지 않아 뒤 다섯이 60걸음 상한에 걸렸다. 앞서 떠난 사람 칸만 비었다고 본다.
+  clearMarchRoute(project, hub, exit, order.map(([npc]) => npc.id));
   const departed = new Set<string>();
   for (const [npc] of order) {
     const path = walkPath(project, hub, { x: npc.x, y: npc.y }, exit, npc.id, { allow, ignore: departed })
