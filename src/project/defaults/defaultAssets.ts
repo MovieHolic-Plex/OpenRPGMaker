@@ -212,7 +212,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
         changed = ensureBeodeulGroundReferences(project.tilesets[id]) || changed;
       // 버들항 v6 (tiledata/beodeul-city): the shipped city guidance for older copies.
       if (asset.textureKey === BEODEUL_CITY_TEXTURE) {
-        changed = ensureBeodeulCityTileset(project.tilesets[id]) || changed;
+        changed = ensureBeodeulCityTileset(project.tilesets[id], project) || changed;
         changed = ensureBeodeulCityReferences(project.tilesets[id]) || changed;
         changed = ensureBeodeulFacilityKits(project.tilesets[id]) || changed;
         changed = ensureBeodeulForms(project.tilesets[id]) || changed;

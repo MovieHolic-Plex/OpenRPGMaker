@@ -15,6 +15,10 @@ import {beodeulFormsHostReferences,ensureBeodeulForms} from './beodeulForms';
 import {beodeulReviewedHostReferences,ensureBeodeulReviewed} from './beodeulReviewed';
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
+import { copyBundleEnd, relocateLocalTail, type LocalTailRelocation, type RelocationProject } from "./localTailRelocation";
+
+/** 이번 실행에서 옮긴 사본 꼬리(진단용 — 로드 로그·증거 스크립트가 읽는다). */
+export const beodeulTailRelocations: (LocalTailRelocation & { projectTileset: string })[] = [];
 
 export const BEODEUL_CITY_TEXTURE = "tex_beodeul_city";
 export const BEODEUL_CITY_ID = "beodeul_city";
@@ -145,19 +149,25 @@ export function ensureBeodeulCityReferences(tileset: TilesetDef): boolean {
  * range), animation strips in that range are replaced, bundle-owned `bd-pick-*` kits are replaced/added, and every other kit,
  * group and authored entry stays. Cells 0..base-1 are not touched, so maps painted on the city sheet do not change.
  */
-export function ensureBeodeulCityTileset(tileset: TilesetDef): boolean {
+export function ensureBeodeulCityTileset(tileset: TilesetDef, project?: RelocationProject): boolean {
   if (tileset.id !== BEODEUL_CITY_ID || tileset.image.type !== "bundled" || tileset.image.id !== BEODEUL_CITY_TEXTURE) return false;
   // 옛 사본은 계열이 "easyrpg" 로 들어 있다 — 생성 칩셋 계열로 고친다.
   const familyFixed = tileset.family !== BEODEUL_CITY_FAMILY;
   if (familyFixed) tileset.family = BEODEUL_CITY_FAMILY;
   const citySheet = tileset.autotileGroups?.some(group => group.id === "beodeul_road_autotile") ?? false;
   if (citySheet && tileset.count >= BEODEUL_CITY_BASE_COUNT) {
-    // 더 새 번들에서 저장된 사본(꼬리가 더 긴 것)은 칸 표를 줄이지 않는다.
-    if (tileset.count > sheet.count) return familyFixed;
+    // 사본의 번들 끝 = 바탕 이후 첫 이식 칸(없으면 칸 수). 더 새 번들에서 저장된 사본(번들 끝이 지금보다 뒤)은 칸 표를 줄이지 않는다.
+    const copyEnd = copyBundleEnd(tileset, BEODEUL_CITY_BASE_COUNT);
+    if (copyEnd > sheet.count) return familyFixed;
+    // 그 뒤 프로젝트 이식 칸(민가·형태·허용 건물·바닥·공방 칸)이 지금 번들 꼬리(농장·던전 천장·성벽 …)와 겹치면 새 번들 끝 뒤로 통째로 민다 —
+    // 이 칩셋을 쓰는 맵·킷·오토타일·changeTile 의 번호도 같이 고친다(localTailRelocation.ts). 그래야 기존 프로젝트도 새 꼬리를 받는다.
+    const moved = project && copyEnd < sheet.count ? relocateLocalTail(project, tileset.id, BEODEUL_CITY_BASE_COUNT, sheet.count) : null;
+    if (moved) beodeulTailRelocations.push({ projectTileset: tileset.id, ...moved });
+    // 옮기지 못한 사본(프로젝트 없이 부른 경우)은 예전처럼 겹치는 꼬리를 받지 않는다.
     // 농장 꼬리(27,648~28,415)가 생기기 전에 저장된 사본은 그 자리에 공방·기물 이식 칸(tileGrafts)을 이미 쓰고 있을 수 있다.
     // 번들 꼬리를 덮으면 그 칸의 통행·그림이 바뀌므로 그 사본은 농장 칸을 받지 않는다(밭은 단색 흙 폴백).
     const grafts = tileset.tileGrafts ?? [];
-    if (grafts.some(graft => graft.targetTile >= BEODEUL_FARM_BASE && graft.targetTile < BEODEUL_DUNGEON_CEILING_BASE)) return familyFixed;
+    if (grafts.some(graft => graft.targetTile >= BEODEUL_FARM_BASE && graft.targetTile < BEODEUL_DUNGEON_CEILING_BASE)) return familyFixed || !!moved;
     // 던전 천장 꼬리(28,416~)도 같은 이유: 그 자리에 이식 칸을 쓴 사본은 꼬리를 농장 끝까지만 받는다(던전은 테두리 없는 허공으로 물러선다).
     const dungeonBlocked = grafts.some(graft => graft.targetTile >= BEODEUL_DUNGEON_CEILING_BASE && graft.targetTile < BEODEUL_TOWN_WALL_BASE);
     // 성벽 꼬리(28,544~)도 같다: 그 자리에 이식 칸을 쓴 사본은 꼬리를 던전 천장 끝까지만 받고 성벽 키트·묶음도 받지 않는다(마을은 성벽 없이 지어진다).
@@ -165,7 +175,7 @@ export function ensureBeodeulCityTileset(tileset: TilesetDef): boolean {
     const limit = dungeonBlocked ? BEODEUL_DUNGEON_CEILING_BASE : wallBlocked ? BEODEUL_TOWN_WALL_BASE : sheet.count;
     const extended = extendPickedParts(tileset, limit);
     const farm = mergeShippedFarm(tileset, !dungeonBlocked, !wallBlocked);
-    return mergeShippedKits(tileset, !wallBlocked) || extended || farm || familyFixed;
+    return mergeShippedKits(tileset, !wallBlocked) || extended || farm || familyFixed || !!moved;
   }
   const fresh = createBeodeulCityTileset();
   tileset.count = fresh.count;
@@ -198,14 +208,16 @@ function extendPickedParts(tileset: TilesetDef, limit: number = sheet.count): bo
     && JSON.stringify(tileset.priority.slice(base, end)) === JSON.stringify(data().priority.slice(base, end))
     && JSON.stringify((tileset.tileMeta ?? []).slice(base, end)) === JSON.stringify(shippedMeta.slice(base, end));
   const shippedStrips = data().animationStrips.filter(strip => strip.baseTile >= base && strip.baseTile < end);
-  const ownStrips = (tileset.animationStrips ?? []).filter(strip => strip.baseTile >= base);
+  // end 뒤 띠는 그 사본의 이식 칸 것이다(옮긴 꼬리) — 두고, [base, end) 만 번들 것으로 맞춘다
+  const ownStrips = (tileset.animationStrips ?? []).filter(strip => strip.baseTile >= base && strip.baseTile < end);
   if (same && JSON.stringify(ownStrips) === JSON.stringify(shippedStrips)) return false;
   tileset.count = count;
   tileset.passability = [...tileset.passability.slice(0, base), ...structuredClone(shippedPass.slice(base, end)), ...tileset.passability.slice(end)];
   tileset.priority = [...tileset.priority.slice(0, base), ...(data().priority.slice(base, end) as ("lower" | "upper")[]), ...tileset.priority.slice(end)];
   tileset.terrain = [...tileset.terrain.slice(0, base), ...data().terrain.slice(base, end), ...tileset.terrain.slice(end)];
   tileset.tileMeta = [...(tileset.tileMeta ?? []).slice(0, base), ...structuredClone(shippedMeta.slice(base, end)), ...(tileset.tileMeta ?? []).slice(end)];
-  tileset.animationStrips = [...(tileset.animationStrips ?? []).filter(strip => strip.baseTile < base), ...structuredClone(shippedStrips)];
+  tileset.animationStrips = [...(tileset.animationStrips ?? []).filter(strip => strip.baseTile < base), ...structuredClone(shippedStrips),
+    ...(tileset.animationStrips ?? []).filter(strip => strip.baseTile >= end)];
   return true;
 }
 
