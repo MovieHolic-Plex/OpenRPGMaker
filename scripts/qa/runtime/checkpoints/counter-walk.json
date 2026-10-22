@@ -1,0 +1,19 @@
+{
+  "set": "counter-walk",
+  "projectFixture": "tmp/cw-fix/inn-counter-walk.json",
+  "viewport": { "width": 960, "height": 640 },
+  "checkpoints": [
+    {
+      "id": "counter-shop",
+      "label": "여관 카운터 앞 — 카운터 너머 주인에게 말 걸기",
+      "note": "픽스처: scripts/qa/runtime/counter-walk-fixture.py. 주인 (2,3) 카운터 뒤, (2,4) 카운터 발밑. 주인공은 (2,6) 에서 한 칸 올라간다.",
+      "mapId": "map_small_inn", "x": 2, "y": 6, "facing": "up", "switches": {}, "variables": {}
+    },
+    {
+      "id": "porter-walk",
+      "label": "짐꾼이 문 쪽으로 7칸 걸어 나감",
+      "note": "sw_0001 이 켜져 짐꾼 (1,3) 자동 실행. 대사를 넘기면 아래 4칸·오른쪽 3칸 걷는다. 주인공 (7,7) 은 비교용으로 위로 2칸 걷는다.",
+      "mapId": "map_small_inn", "x": 7, "y": 7, "facing": "left", "switches": { "sw_0001": true }, "variables": {}
+    }
+  ]
+}

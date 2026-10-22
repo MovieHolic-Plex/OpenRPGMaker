@@ -7,7 +7,8 @@ import {
 } from "@/editor/panels/tilesetAutotileEditor";
 import { renderChipsetPreviewPanel } from "@/editor/panels/tilesetChipsetPreview";
 import { renderTileGroupPanel } from "@/editor/panels/tilesetGroupEditor";
-import { textControl } from "@/editor/panels/databaseControls";
+import { textControl, toggleSwitch } from "@/editor/panels/databaseControls";
+import { isCounterTile, setCounterTile } from "@/project/counterTiles";
 import {
   ensureTileMeta,
   listUnlabeledTileIds,
@@ -378,6 +379,7 @@ function renderPassageInspector(tileset: TilesetDef, rerender: () => void): HTML
         });
         return details;
       })(),
+      renderCounterToggle(tileset, rerender),
       ...renderRuleControls(tileset, rerender).filter((node) => String(node.className ?? "").includes("tileset-rule-layer")),
       el("div", {
         class: "tileset-legend-sheet-info",
@@ -394,6 +396,29 @@ function renderPassageInspector(tileset: TilesetDef, rerender: () => void): HTML
       }),
     ],
   });
+}
+
+/**
+ * RPG Maker 「카운터」 속성. 켜면 주인공이 이 칸을 마주 보고 조사할 때 너머 칸의 이벤트(카운터 뒤 주인·식탁 건너편 사람)에
+ * 말이 걸린다. 칩셋이 정한 적 없으면 이름표(카운터·탁자·책상) 기본값이 보인다 — 처음 고치면 그 기본값을 목록으로 굳힌다.
+ */
+function renderCounterToggle(tileset: TilesetDef, rerender: () => void): HTMLElement {
+  const wrap = el("div", {
+    class: "tileset-rule-counter",
+    dataset: { testid: "tileset-rule-counter" },
+    attrs: { title: "카운터·탁자 칸: 마주 보고 조사하면 너머 칸의 사람에게 말을 겁니다 (상점 카운터 뒤 주인)" },
+    children: [
+      toggleSwitch("카운터 (너머로 말 걸기)", "tileset-counter-toggle", isCounterTile(tileset, selectedTile), (on) => {
+        recordProjectSnapshot();
+        store.update((project) => {
+          const target = project.tilesets[tileset.id];
+          if (target) setCounterTile(target, selectedTile, on);
+        }, { scope: "project", label: "타일 카운터 속성" });
+        rerender();
+      }),
+    ],
+  });
+  return wrap;
 }
 
 function renderTileZoom(tileset: TilesetDef, tile: number): HTMLElement {

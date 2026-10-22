@@ -4,6 +4,7 @@ import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes"
 import { yieldingLivingMovers, livingRouteKeyTarget, livingRouteTargetKey, routeForLivingMovement } from "@/player/npcLivingTravel";
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 import { terrainRevision } from "@/project/tilePassabilityComponents";
+import { clampNpcSetting, npcMoveDurationMs, npcPageMoveIntervalMs } from "@/project/characterMotion";
 
 type PageMoveRouteSceneContext = Pick<
   PlaySceneContext,
@@ -153,26 +154,8 @@ function livingRouteRevisionsOf(scene: object): Readonly<Record<string, number>>
   return livingRouteRevisions.get(scene) ?? {};
 }
 
-export function clampNpcSetting(value: number): number {
-  if (!Number.isFinite(value)) return 3;
-  return Math.min(8, Math.max(1, Math.trunc(value)));
-}
-
-export function npcMoveDurationMs(speed: number): number {
-  const rank = clampNpcSetting(speed);
-  return Math.max(80, 640 - rank * 80);
-}
-
-export function npcMoveIntervalMs(frequency: number): number {
-  const rank = clampNpcSetting(frequency);
-  return Math.max(80, 1040 - rank * 160);
-}
-
-export function npcPageMoveIntervalMs(movement: EventPageMovement): number {
-  return movement.moveIntervalMs !== undefined
-    ? Math.max(80, Math.min(10000, Math.round(movement.moveIntervalMs)))
-    : npcMoveIntervalMs(movement.frequency);
-}
+// 속도·빈도 표의 정본은 @/project/characterMotion — 조수 도구·게임 점검이 같은 수를 쓴다.
+export { clampNpcSetting, npcMoveDurationMs, npcMoveIntervalMs, npcPageMoveIntervalMs } from "@/project/characterMotion";
 
 function routeForPageMovement(
   movement: EventPageMovement
