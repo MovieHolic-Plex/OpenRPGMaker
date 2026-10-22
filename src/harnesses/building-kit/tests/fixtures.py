@@ -199,3 +199,147 @@ WALLS = {line: {role: _wall_rows(line, 'timber', role) for role in 'lmwdr'} for 
 WALLS_STONE = {line: {role: _wall_rows(line, 'stone', role) for role in 'lmwdr'} for line in 'ABC'}
 BANDS = {line: _band_row(line) for line in 'ABC'}
 BASES = {line: _base_rows(line) for line in 'ABC'}
+
+
+# --- 박공 정면 투영(style-r5) 시험 부품 — 좌표 규칙으로만 찍는다 -----------------------------------
+# 사면 띠: 왼쪽 사면 = 밝은 두 단(줄눈 4행마다), 오른쪽 사면 = 어두운 두 단, 가운데 2px 용마루 = 가장 밝은 단.
+# 뒤 끝·앞 박공: 가운데 꼭대기에서 양 처마로 내려가는 ^ 빗선(d = 가운데에서의 거리 비율).
+
+def _roof_tones(line):
+    return [_let(line, ROOF_RAMP[line], t) for t in range(5)]
+
+def _slope_px(line, side, y):
+    r = _roof_tones(line)
+    if side == 'L':
+        return r[2] if y % 4 == 0 else r[3]
+    return r[0] if y % 4 == 0 else r[1]
+
+def _gf_row_px(line, gx, W, y):
+    """박공 정면 사면 한 화소 — 전체 폭 W 안 gx. 가운데 2px(W/2-1, W/2) 는 용마루."""
+    c = W // 2
+    if gx in (c - 1, c):
+        return _roof_tones(line)[4]
+    return _slope_px(line, 'L' if gx < c else 'R', y)
+
+def gf_slope(line):
+    r = _roof_tones(line)
+    out = {}
+    for role, w in (('l', 16), ('ml', 16), ('k', 16), ('k2', 32), ('mr', 16), ('r', 16)):
+        rows = []
+        for y in range(16):
+            row = []
+            for x in range(w):
+                if role in ('l', 'ml'):
+                    ch = _slope_px(line, 'L', y)
+                    if role == 'l' and x < 2:
+                        ch = r[2]
+                elif role in ('mr', 'r'):
+                    ch = _slope_px(line, 'R', y)
+                    if role == 'r' and x >= 14:
+                        ch = r[0]
+                else:
+                    ch = _gf_row_px(line, x, w, y)
+                row.append(ch)
+            rows.append(''.join(row))
+        out[role] = rows
+    return out
+
+def _edge(x, W, H, step=0):
+    d = abs(x + 0.5 - W / 2) / (W / 2)
+    e = int(round(d * (H - 1)))
+    if step:
+        e = (e // step) * step
+    return e
+
+def _back_rows(line, cells, rows_, step=0):
+    W, H = cells * 16, rows_ * 16
+    r = _roof_tones(line)
+    out = []
+    for y in range(H):
+        row = []
+        for x in range(W):
+            e = _edge(x, W, H, step)
+            if y < e:
+                row.append('.')
+            elif y == e:
+                row.append(r[0])
+            else:
+                row.append(_gf_row_px(line, x, W, y))
+        out.append(''.join(row))
+    return out
+
+def _gable_rows(line, cells, rows_, step=0):
+    W, H = cells * 16, rows_ * 16
+    ramp, tone = LINE_BODY[line]
+    body, speck = _let(line, ramp, tone), _let(line, ramp, tone - 1)
+    r = _roof_tones(line)
+    out = []
+    for y in range(H):
+        row = []
+        for x in range(W):
+            e = _edge(x, W, H, step)
+            if y >= H - 2:
+                row.append(_beam(line, y))
+            elif y < e:
+                row.append(_slope_px(line, 'L' if x < W // 2 else 'R', y))
+            elif y <= e + 1:
+                row.append(r[0])
+            else:
+                row.append(speck if (x * 5 + y) % 7 == 0 else body)
+        out.append(''.join(row))
+    return out
+
+def gable_set(line, item_id):
+    if item_id == 'gable.step':
+        return {'g5': _gable_rows(line, 5, 2, step=4), 'b5': _back_rows(line, 5, 2, step=4)}
+    return {'g3': _gable_rows(line, 3, 1), 'g4': _gable_rows(line, 4, 2)}
+
+def gf_back(line):
+    return {'b4': _back_rows(line, 4, 2), 'v3': _back_rows(line, 3, 1)}
+
+def lean(line):
+    """외쪽(오른쪽이 낮다) — 그늘 쪽이라 중간·어두운 단. 뒤·앞 끝 빗선은 왼쪽(높음)→오른쪽(낮음)."""
+    r = _roof_tones(line)
+
+    def body(x, y, role):
+        if role == 'hi' and x < 2:
+            return r[3]
+        if role == 'lo' and x >= 14:
+            return r[0]
+        return r[1] if y % 4 == 0 else r[2]
+    out = {role: [''.join(body(x, y, role) for x in range(16)) for y in range(16)] for role in ('hi', 'm', 'lo')}
+    ramp, tone = LINE_BODY[line]
+    wall_c = _let(line, ramp, tone)
+    lb, lf = [], []
+    for y in range(16):
+        b, f = [], []
+        for x in range(32):
+            e = int(round(x / 31 * 15))
+            b.append('.' if y < e else r[0] if y == e else body(x % 16, y, 'm'))
+            if y >= 14:
+                f.append(_beam(line, y))
+            elif y < e:
+                f.append(body(x % 16, y, 'm'))
+            elif y <= e + 1:
+                f.append(r[0])
+            else:
+                f.append(wall_c)
+        lb.append(''.join(b))
+        lf.append(''.join(f))
+    out['lb2'], out['lf2'] = lb, lf
+    return out
+
+def chimney(line):
+    stone, cap, dark = _let(line, 'stone', 3), _let(line, 'stone', 5), _let(line, 'stone', 1)
+    rows = []
+    for y in range(32):
+        row = []
+        for x in range(16):
+            if y < 4:
+                row.append(cap if 3 <= x <= 12 else '.')
+            elif 4 <= x <= 11:
+                row.append(dark if x == 11 or y % 6 == 0 else stone)
+            else:
+                row.append('.')
+        rows.append(''.join(row))
+    return {'c': rows}

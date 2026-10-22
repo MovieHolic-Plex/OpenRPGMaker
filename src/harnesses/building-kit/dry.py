@@ -138,12 +138,7 @@ def assemble_all(theme, parts, rid=None):
     return rows
 
 def harness_round_buildings(theme, rid):
-    s = dot.seed(theme)
-    ids = ((s.get('rounds') or {}).get(rid or '') or {}).get('buildings')
-    if not ids:
-        return s['buildings']
-    by = {b['id']: b for b in s['buildings']}
-    return [by[i] for i in ids if i in by]
+    return AS.round_buildings(theme, rid)
 
 def _scene(cols, rows, theme, ground_line):
     scene = beodeul.ground_scene(cols, rows, theme, 'grass')

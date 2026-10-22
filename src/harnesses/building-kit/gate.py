@@ -4,11 +4,13 @@
   P 팔레트 잠금   불투명 화소는 palette.json 색만, 반투명은 그림자 (12,14,20,α88) 하나만            FAIL
   Z 크기          조각이 선언한 at/size 칸과 화소가 정확히 같고, 세트 그림이 시드 size 와 같다          FAIL
   Q 불투명 계약    roof: 윗줄 불투명(조각이 qTopRow:false 면 안 봄)·불투명 비율 ≥ qMin(기본 0.90)
+                  slope(박공 정면·외쪽 사면 띠)·gable(앞 박공·외쪽 앞): 전부 불투명
+                  roofend(뒤 끝·골): 맨 아래 행 불투명, 위 귀퉁이가 투명(^ 꼭대기), 불투명 ≥ 40%
                   wall·band·base: 발자국 안이 전부 불투명(조각이 inset 을 선언하면 그 바깥 화소만 처마 자리로 빼고 본다)
                   / extra: 위 귀퉁이 투명·채움 0.15~0.95                                                   FAIL
   F 윗면 띠       윗면이 있는 조각(roof, top 을 선언한 extra)의 선언 띠가 2행 이상·폭 50% 이상이고
                   바로 아래(앞 모서리) 줄보다 밝다. 벽에는 윗면이 없다 — 벽의 지붕 비율은 조립 A6 이 본다 FAIL
-  S 반복 이음      tileable 조각의 감은 이음(마지막 열→첫 열)이 안쪽 열 경계 중 가장 큰 차 + 8(0~255 밝기) 이하    FAIL
+  S 반복 이음      tileable(x·y·xy) 조각의 감은 이음(마지막 열→첫 열, 마지막 행→첫 행)이 안쪽 열 경계 중 가장 큰 차 + 8(0~255 밝기) 이하    FAIL
   J 세트 이음      시드 joins 로 맞닿는 두 조각의 맞닿는 열(줄) 밝기 차가 두 조각 안쪽 경계 최대 차 + 8 이하 FAIL
   G 바닥 닿음      foot:true 조각(기단)의 불투명 맨 아래 행이 칸 아래 경계다                          FAIL
   Y 줄 재료       후보 불투명 화소의 8% 이상을 차지하는 램프가 그 줄 style-r1 조각에 쓰인 램프 ∪ extraRamps 안  FAIL
@@ -166,6 +168,15 @@ def check_piece(pc, im, pal, open_sides_=None):
         need_top = pc.get('qTopRow', True)
         ok = (bool(op[0].all()) or not need_top) and op.mean() >= qmin
         res.append(_r('Q', 'FAIL', ok, f'{pc["id"]} 윗줄 불투명 {bool(op[0].all())}{"" if need_top else "(안 봄)"}, 불투명 {op.mean():.0%} (하한 {qmin:.0%})'))
+    elif kind in ('slope', 'gable'):
+        ok = bool(op.all())
+        what = '사면 띠(반복)' if kind == 'slope' else '앞 박공(삼각 벽 + 모서리 사면)'
+        res.append(_r('Q', 'FAIL', ok, f'{pc["id"]} {what} ' + ('전부 불투명' if ok else f'투명·반투명 화소 {int((~op).sum())}')))
+    elif kind == 'roofend':
+        corners = [op[0, 0], op[0, w - 1]]
+        ok = bool(op[-1].all()) and not all(corners) and op.mean() >= 0.4
+        res.append(_r('Q', 'FAIL', ok, f'{pc["id"]} 뒤 끝 — 맨 아래 행 불투명 {bool(op[-1].all())}, '
+                      f'위 귀퉁이 투명 {not all(corners)}(꼭대기 ^ 모양), 불투명 {op.mean():.0%}(하한 40%)'))
     elif kind in ('wall', 'band', 'base'):
         eave = _eave_px(pc, w)
         body = [i for i in range(w) if i not in eave]
@@ -201,8 +212,9 @@ def check_piece(pc, im, pal, open_sides_=None):
         res.append(_r('G', 'FAIL', bot == h - 1, f'{pc["id"]} 불명확 맨 아래 행 {bot} (칸 아래 경계 {h - 1})' if bot != h - 1
                       else f'{pc["id"]} 바닥에 닿음'))
 
-    if 'x' in (pc.get('tileable') or ''):
-        b, i = _seam_res(pc['id'], dot.Cv.of(im), 'x')
+    axes = ''.join(ax for ax in 'xy' if ax in (pc.get('tileable') or ''))
+    if axes:
+        b, i = _seam_res(pc['id'], dot.Cv.of(im), axes)
         res.append(_r('S', 'FAIL', not b, ('이음 없음 — ' if not b else '; '.join(b) + ' — ') + i))
 
     L = lum(a)
@@ -361,6 +373,8 @@ def _rings(op, kind, tileable, open_sides_):
         sides = set(open_sides_) if open_sides_ is not None else {'N', 'S', 'W', 'E'}
         if 'x' in tileable:
             sides -= {'W', 'E'}
+        if 'y' in tileable:
+            sides -= {'N', 'S'}
         band = np.zeros_like(op)
         if 'N' in sides:
             band[:2] = True

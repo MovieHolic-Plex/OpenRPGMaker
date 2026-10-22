@@ -335,19 +335,19 @@ def cmd_validate(theme):
             if pc.get('id') in pids:
                 errs.append(f'{it["id"]}: 조각 {pc["id"]} 중복')
             pids.add(pc.get('id'))
-            if pc.get('kind') not in ('roof', 'wall', 'band', 'base', 'extra'):
+            if pc.get('kind') not in ('roof', 'wall', 'band', 'base', 'extra', 'slope', 'roofend', 'gable'):
                 errs.append(f'{it["id"]}.{pc.get("id")}: 모르는 kind {pc.get("kind")}')
             at, sz = pc.get('at', [0, 0]), pc.get('size', [0, 0])
             if at[0] + sz[0] > it['size'][0] or at[1] + sz[1] > it['size'][1]:
                 errs.append(f'{it["id"]}.{pc["id"]}: 조각이 세트 그림({it["size"]}) 밖으로 나간다')
-            if pc.get('tileable') not in (None, '', 'x'):
-                errs.append(f'{it["id"]}.{pc["id"]}: tileable 은 "" 또는 "x"')
+            if pc.get('tileable') not in (None, '', 'x', 'y', 'xy'):
+                errs.append(f'{it["id"]}.{pc["id"]}: tileable 은 "" · "x" · "y" · "xy"')
         for j in it.get('joins', []):
             if len(j) != 3 or j[2] not in ('x', 'y'):
                 errs.append(f'{it["id"]}: joins {j} 는 [a,b,"x"|"y"]')
             elif j[0] not in pids or j[1] not in pids:
                 errs.append(f'{it["id"]}: joins {j} 의 조각이 없다')
-        if it.get('wave') in ('roof', 'band', 'base'):
+        if it.get('wave') in ('roof', 'band', 'base') and not it.get('form'):
             need = {'roof': ('l', 'm', 'r'), 'band': ('l', 'm', 'r'), 'base': ('l', 'm', 'r')}[it['wave']]
             have = {pc.get('role') for pc in it.get('pieces', [])}
             if not set(need) <= have:
@@ -356,7 +356,9 @@ def cmd_validate(theme):
             have = {pc.get('role') for pc in it.get('pieces', [])}
             if not {'l', 'm', 'd', 'r'} <= have:
                 errs.append(f'{it["id"]}: wall 세트에 role {sorted({"l", "m", "d", "r"} - have)} 가 없다')
-        if it.get('wave') == 'roof':
+        if it.get('wave') == 'gable' and not it.get('form'):
+            errs.append(f'{it["id"]}: gable 세트는 form(gable_front) 을 적는다')
+        if it.get('wave') in ('roof', 'gable'):
             for why in AS.roof_problems(it):
                 errs.append(f'{it["id"]}: {why}')
 
@@ -391,12 +393,16 @@ def cmd_validate(theme):
                 if not m.get(k):
                     errs.append(f'{tag}: {k} 없음')
             spire = bool((items.get(m.get('roof')) or {}).get('spire'))
-            if spire:
+            if m['kind'] not in AS.KINDS:
+                errs.append(f'{tag}: 모르는 kind {m["kind"]} ({"·".join(AS.KINDS)})')
+            elif m['kind'] in AS.RECEDING:
+                errs += _receding_problems(tag, m, items)
+            elif spire:
                 if int(m.get('cols') or 0) not in (1, 2):
                     errs.append(f'{tag}: 첨탑 질량 폭 {m["cols"]}칸 — 탑은 1~2칸')
             elif m.get('cols') and int(m['cols']) < AS.MIN_COLS:
                 errs.append(f'{tag}: cols {m["cols"]} < {AS.MIN_COLS} — 모임지붕 끝 l·r 이 2칸씩이다')
-            for k in ('roof', 'band', 'base'):
+            for k in ('roof', 'band', 'base', 'gable', 'back'):
                 if m.get(k) and m[k] not in ids:
                     errs.append(f'{tag}: 부품 {m[k]} 가 items 에 없다')
             if len(m['walls']) != int(m.get('storeys') or 0):
@@ -415,6 +421,8 @@ def cmd_validate(theme):
             for ex in m.get('extras') or []:
                 if ex.get('part') not in ids:
                     errs.append(f'{tag}: extra {ex.get("part")} 가 items 에 없다')
+                if ex.get('on') not in (None, 'roof'):
+                    errs.append(f'{tag}: extra on {ex.get("on")!r} — "roof" 만 안다')
         doors = sum(r['letters'].replace(' ', '').count('D') for m in ms for r in m['walls'])
         if doors != 1 and not b.get('doorTwice'):
             errs.append(f'건물 {bid}: 문 {doors}개 — 건물 하나(질량 전부)에 문은 정확히 하나')
@@ -439,8 +447,10 @@ def cmd_validate(theme):
         for bid in rd.get('buildings') or []:
             if bid not in {b['id'] for b in s.get('buildings', [])}:
                 errs.append(f'판 {rid}: buildings 의 {bid} 레시피가 시드에 없다')
-        if rd.get('grammar') == 'r4':
+        if rd.get('grammar') in ('r4', 'r5'):
             errs += _r4_grammar(s, items, rid)
+        if rd.get('requireGableFront'):
+            errs += _gable_front_round(s, items, rid)
         path = os.path.join(REPO, rd.get('module', ''))
         if not os.path.exists(path):
             notes.append(f'판 {rid}: 모듈이 아직 없다({rd.get("module")}) — 그리기 전')
@@ -498,7 +508,7 @@ def _r4_grammar(s, items, rid):
         ms = AS.masses(recipe)
         for m in ms:
             it = items.get(m['roof'])
-            if not it or it.get('spire'):
+            if not it or it.get('spire') or m['kind'] != AS.RIDGE_SIDE:
                 continue
             rows = it['pieces'][0]['size'][1]
             want = 2 if int(m['storeys']) == 1 else 3
@@ -508,12 +518,85 @@ def _r4_grammar(s, items, rid):
                 errs.append(f'판 {rid} {bid}/{m["id"]}: 모임지붕 몸통 {m["cols"]}칸 — 용마루가 남으려면 5칸 이상')
         spires = [m for m in ms if (items.get(m['roof']) or {}).get('spire')]
         plain = [m for m in ms if not (items.get(m['roof']) or {}).get('spire')]
+        try:
+            [AS.mass_rows(m, items) for m in ms]
+        except KeyError:
+            continue  # 조각 계약 오류는 _receding_problems 가 따로 적는다
         if spires and plain:
             main = max(plain, key=lambda m: int(m['cols']) * int(m['storeys']))
             main_h = AS.mass_rows(main, items)
             for sp in spires:
                 if AS.mass_rows(sp, items) - main_h < 1:
                     errs.append(f'판 {rid} {bid}/{sp["id"]}: 첨탑 탑이 주 지붕 용마루보다 1칸 이상 높아야 한다')
+    return errs
+
+
+def _receding_problems(tag, m, items):
+    """박공 정면·외쪽 질량 레시피 계약(부품 그림 없이)."""
+    errs = []
+    kind = m['kind']
+    lo, hi = AS.GF_COLS if kind == AS.GABLE_FRONT else AS.LEAN_COLS
+    if not lo <= int(m['cols']) <= hi:
+        errs.append(f'{tag}: {kind} 폭 {m["cols"]}칸 — {lo}~{hi}칸')
+    d0, d1 = AS.DEPTH_ROWS
+    if not d0 <= int(m.get('depth_rows') or 0) <= d1:
+        errs.append(f'{tag}: depth_rows {m.get("depth_rows")} — {d0}~{d1}')
+    slope = items.get(m.get('roof')) or {}
+    if kind == AS.GABLE_FRONT:
+        if slope.get('form') != 'gf_slope':
+            errs.append(f'{tag}: roof {m.get("roof")} 는 사면 띠 세트(form gf_slope)여야 한다')
+        if (items.get(m.get('gable')) or {}).get('form') != 'gable_front':
+            errs.append(f'{tag}: gable {m.get("gable")} 는 앞 박공 세트(form gable_front)여야 한다')
+        if (items.get(m.get('back')) or {}).get('form') not in ('gf_back', 'gable_front'):
+            errs.append(f'{tag}: back {m.get("back")} 는 뒤 끝 세트(form gf_back 또는 gable_front)여야 한다')
+        if m.get('back_end') not in ('gable', 'valley'):
+            errs.append(f'{tag}: back_end {m.get("back_end")!r} — gable|valley')
+    else:
+        if slope.get('form') != 'lean_to':
+            errs.append(f'{tag}: roof {m.get("roof")} 는 외쪽 세트(form lean_to)여야 한다')
+        elif slope.get('low') != m.get('low'):
+            errs.append(f'{tag}: low {m.get("low")} ≠ 세트 low {slope.get("low")}')
+    if errs:
+        return errs
+    back_role, front_role = AS.end_roles(m)
+    back = AS._piece_of(items[m['back']], back_role)
+    front = AS._piece_of(items[m['gable']], front_role)
+    for name, pc, item in ((back_role, back, m['back']), (front_role, front, m['gable'])):
+        if pc is None:
+            errs.append(f'{tag}: {item} 에 {name} 조각이 없다(폭 {m["cols"]}칸 변형)')
+    for r in AS.body_roles(m):
+        if AS._piece_of(slope, r) is None:
+            errs.append(f'{tag}: {m["roof"]} 에 {r} 조각이 없다')
+    if kind == AS.GABLE_FRONT and back and front and back['size'][1] != front['size'][1]:
+        errs.append(f'{tag}: 뒤 끝 {back_role} {back["size"][1]}행 ≠ 앞 박공 {front_role} {front["size"][1]}행(같은 물매)')
+    return sorted(set(errs), key=errs.index)
+
+
+def _gable_front_round(s, items, rid):
+    """requireGableFront 판 — 건물마다 gable_front 질량, 판 항목이 레시피 부품을 다 덮고, flat_elevation 함정을
+    만들 용마루-정면 지붕(ridge_side) 항목이 판에 있다. 지붕 위 extras 는 on: roof 를 적는다."""
+    errs = []
+    rd = s['rounds'][rid]
+    by = {b['id']: b for b in s.get('buildings', [])}
+    have = set(rd.get('items') or [])
+    for bid in rd.get('buildings') or []:
+        recipe = by.get(bid)
+        if not recipe:
+            continue
+        ms = AS.masses(recipe)
+        if not any(m['kind'] == AS.GABLE_FRONT for m in ms):
+            errs.append(f'판 {rid} {bid}: requireGableFront — gable_front 질량이 없다(평평한 정면 입면만)')
+        miss = sorted(AS.needed(recipe) - have)
+        if miss:
+            errs.append(f'판 {rid} {bid}: 판 items 에 없는 부품 {miss}')
+        for m in ms:
+            for ex in m.get('extras') or []:
+                if ex.get('on') != 'roof':
+                    errs.append(f'판 {rid} {bid}/{m["id"]}: extra {ex.get("part")} 는 on: "roof" 를 적는다(A14)')
+    ridge = [i for i in have if (items.get(i) or {}).get('wave') == 'roof' and not items[i].get('form')
+             and not items[i].get('spire') and int(items[i].get('end', AS.ROOF_END)) == AS.ROOF_END]
+    if not ridge:
+        errs.append(f'판 {rid}: flat_elevation 함정을 만들 용마루-정면 지붕(ridge_side) 항목이 판에 없다')
     return errs
 
 

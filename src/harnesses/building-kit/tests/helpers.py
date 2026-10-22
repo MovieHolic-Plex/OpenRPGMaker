@@ -35,6 +35,16 @@ def round_items():
 
 def piece_rows(item_id, line):
     """항목 id + 줄 → 조각 id 별 행 목록(지붕·벽) 또는 단일 행 목록(층 띠·기단)."""
+    if item_id in ('gable.front', 'gable.step'):
+        return F.gable_set(line, item_id)
+    if item_id == 'roof.gf.slope':
+        return F.gf_slope(line)
+    if item_id == 'roof.gf.back':
+        return F.gf_back(line)
+    if item_id == 'roof.lean.side':
+        return F.lean(line)
+    if item_id == 'extra.chimney':
+        return F.chimney(line)
     if item_id in F.ROOF_CELLS:
         return F.roof(line, item_id)
     if item_id in F.WALL_MATS:
@@ -53,6 +63,8 @@ def compose(item_id, line):
     rows_by_piece = piece_rows(item_id, line)
     for pc in it['pieces']:
         rows = rows_by_piece[pc['id']] if isinstance(rows_by_piece, dict) else rows_by_piece
+        if not rows:
+            continue
         cv = dot.grid(rows, leg)
         sheet.paste(cv, pc['at'][0] * dot.T, pc['at'][1] * dot.T)
     return sheet.img()
