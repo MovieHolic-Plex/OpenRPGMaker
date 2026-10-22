@@ -1,0 +1,10 @@
+{
+ "jp-overpass-stair-e": "structure",
+ "jp-overpass-stair-w": "structure",
+ "jp-overpass-deck-red": "structure",
+ "jp-overpass-deck-green": "structure",
+ "jp-side-stair-l": "structure",
+ "jp-side-stair-r": "structure",
+ "jp-stage-platform": "structure",
+ "jp-wall-ladder": "wall_mounted"
+}
