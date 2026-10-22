@@ -1697,6 +1697,39 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const erode = (c: number) => Math.floor(vnoise(c, 3, 977) * (denseWoods || highWoods ? 3.4 : 3)) - 1; // -1 깎지 않음 · 0~2 가장자리에서 그 깊이까지
       for (const c of [...forestSet]) if (dist[c]! >= 0 && dist[c]! <= erode(c)) forestSet.delete(c);
     }
+    const notchCut = new Set<number>();
+    // 곧은 변 끊기(VQA r6·r7 「자로 그은 숲 벽·평평한 윗변」): 잡음 깎기가 못 끊은 5칸 이상 곧은 숲 변에 5~8칸마다 너비 2~3·깊이 1~2칸 홈을 판다.
+    // 3칸 미만 홈은 다듬기(이웃 셋 메우기)가 도로 메우므로 너비 2 이상·깊이 방향 셀까지 함께 판다.
+    {
+      const edgeIn = (c: number, dx: number, dy: number) => {
+        const x = c % W, y = (c - x) / W, nx = x + dx, ny = y + dy;
+        return forestSet.has(c) && inMap(nx, ny) && (!forestSet.has(idx(nx, ny)) || !sameLv(c, idx(nx, ny)));
+      };
+      const cut: number[] = [];
+      for (const [dx, dy] of N4) {
+        const ax = dy === 0 ? 0 : 1, ay = dy === 0 ? 1 : 0; // 변을 따라가는 축
+        const done = new Set<number>();
+        for (let c0 = 0; c0 < W * H; c0 += 1) {
+          if (done.has(c0) || !edgeIn(c0, dx, dy)) continue;
+          let sx = c0 % W, sy = (c0 - sx) / W;
+          while (inMap(sx - ax, sy - ay) && edgeIn(idx(sx - ax, sy - ay), dx, dy)) { sx -= ax; sy -= ay; }
+          const run: number[] = [];
+          for (let x = sx, y = sy; inMap(x, y) && edgeIn(idx(x, y), dx, dy); x += ax, y += ay) run.push(idx(x, y));
+          for (const c of run) done.add(c);
+          if (run.length < 5) continue;
+          let i = 1 + Math.floor(hv(run[0]!, dx * 3 + dy + 11) * 2);
+          while (i + 2 <= run.length - 1) {
+            const len = 2 + Math.floor(hv(run[i]!, 5) * 2), dep = 1 + Math.floor(hv(run[i]!, 9) * 2);
+            for (let k = 0; k < len && i + k < run.length - 1; k += 1) {
+              const c = run[i + k]!, x = c % W, y = (c - x) / W;
+              for (let d = 0; d < dep; d += 1) { const xx = x - dx * d, yy = y - dy * d; if (inMap(xx, yy)) cut.push(idx(xx, yy)); }
+            }
+            i += len + 3 + Math.floor(hv(run[i]!, 13) * 3);
+          }
+        }
+      }
+      for (const c of cut) { forestSet.delete(c); notchCut.add(c); }
+    }
     // 숲 속 구멍(길 간격 잡음·깎기가 남긴 4칸 이하 빈 땅, 사방이 같은 단 숲)은 메운다 — 수관 속 검은 구멍으로 보였다(VQA r4)
     {
       const seen = new Set<number>();
@@ -1716,7 +1749,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         if (!open && comp.length <= 4) for (const c of comp) forestSet.add(c);
       }
     }
-    shapeBeodeulCanopyMask(W, H, forestSet, { canFill: (c) => okCell(c, lv[c]!), joins: sameLv, minComponent: canopyStyle === "snow" ? 12 : 16, minExtent: canopyStyle === "snow" ? 3 : 4, block: 2 });
+    shapeBeodeulCanopyMask(W, H, forestSet, { canFill: (c) => okCell(c, lv[c]!) && !notchCut.has(c), joins: sameLv, minComponent: canopyStyle === "snow" ? 12 : 16, minExtent: canopyStyle === "snow" ? 3 : 4, block: 2 });
     for (let c = 0; c < W * H; c += 1) if (occ[c] === FOREST && !forestSet.has(c)) occ[c] = FREE; // 다듬기로 빠진 산마루(summit) 칸은 풀밭으로
     for (const c of forestSet) occ[c] = FOREST;
   }
