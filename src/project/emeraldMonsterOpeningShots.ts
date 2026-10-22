@@ -156,13 +156,15 @@ function gymShot(cast: EmeraldOpeningCast): OpeningAnimatic {
   ], { x: 272, keys: { y: [{ atMs: 0, value: 470 }, { atMs: 2600, value: 228, ease: 'ease-in-out' }] } });
 }
 
-/** 출발: 주인공과 첫 동료가 마을 길을 내려와 모험을 떠난다. */
+/**
+ * 출발: 주인공이 마을 길을 내려와 연구소로 향한다. 첫 동료를 고르기 전의 내레이션이라 동료는 따라오지 않는다 —
+ * 풀 스타터가 뒤따라 걸어 불·물을 고를 플레이어에게 다른 동료를 미리 보여 줬다(아스트라 호라이즌 2026-10-23 적대 VQA).
+ */
 function townShot(cast: EmeraldOpeningCast): OpeningAnimatic {
-  const from = standAt(10, 4), to = standAt(10, 13), partner = cast.starters[0]?.chip;
+  const from = standAt(10, 4), to = standAt(10, 13);
   const flock: EmeraldOpeningChip = { resourceId: cast.flyer.resourceId, index: 3 };
   return shot([
     backdrop('town'),
-    ...(partner ? [walking('partner', partner, 'down', [{ atMs: 0, x: from.x, y: from.y - TILE * 2 }, { atMs: 4300, x: to.x, y: to.y - TILE }])] : []),
     walking('hero', cast.hero, 'down', [{ atMs: 0, x: from.x, y: from.y }, { atMs: 4300, x: to.x, y: to.y }]),
     // 새 두 마리는 화면 맨 위 줄로 같은 빠르기로 줄지어 난다 — 내려오며 날면 2.7초쯤 동료·주인공 머리와 겹쳤다(2026-10-20 겹침 검사).
     walking('flyer', cast.flyer, 'left', [{ atMs: 0, x: 440, y: -18 }, { atMs: 4500, x: 40, y: -14 }], { space: 'screen' }),
