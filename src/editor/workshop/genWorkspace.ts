@@ -82,7 +82,7 @@ export function openGenWorkspace(generator: LocalGenerator): void {
       el("header", {
         class: "workshop-head",
         children: [
-          el("h2", { children: [workshopEmblem(22), el("span", { text: TITLES[generator] })] }),
+          el("h2", { children: [workshopEmblem(32), el("span", { text: TITLES[generator] })] }),
           el("button", { class: "workshop-close", text: "닫기", attrs: { type: "button", "aria-label": "공방 닫기" }, on: { click: closeGenWorkspace } }),
         ],
       }),
@@ -90,8 +90,10 @@ export function openGenWorkspace(generator: LocalGenerator): void {
         class: "workshop-gen-body",
         children: [
           // 머리 무대 — 왼쪽 카드와 같은 그림(이 생성기가 만든 도트). 견본이 없는 생성기는 모눈 빈 작업대.
-          ...WORKSHOP_GENERATORS.filter((g) => g.id === generator).map((g) => generatorStage(g, "hero")),
-          el("p", { class: "workshop-gen-lead", text: LEADS[generator] }),
+          el("div", {
+            class: "workshop-intro",
+            children: [...WORKSHOP_GENERATORS.filter((g) => g.id === generator).map((g) => generatorStage(g, "hero")), el("p", { class: "workshop-gen-lead", text: LEADS[generator] })],
+          }),
           ...steps,
         ],
       }),

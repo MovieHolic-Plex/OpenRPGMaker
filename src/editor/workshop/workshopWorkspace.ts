@@ -157,9 +157,7 @@ function targetSwitch(s: WorkshopSession): HTMLElement {
 function signature(s: WorkshopSession): string {
   return JSON.stringify([filter, query, selectedKey, showForm, view, s.picks.map((p) => `${p.itemKey}|${p.roundId}|${p.letter}`), s.defs.length,
     s.rounds.map((r) => [r.id, r.runs.map((run) => [run.status, run.attempt, run.verdict?.verdict, run.grid?.cells.length])]), s.engine.status(),
-    queueSummary(),
-    // 고른 물건의 진행(20칸) — 진행 막대가 장이 끝날 때만이 아니라 그리는 동안에도 차오르게
-    selectedKey ? Math.round((workshopQueue().itemView(s.harnessId, selectedKey)?.progress ?? 0) * 20) : 0]);
+    queueSummary()]);
 }
 
 /** 작업 줄 요약(머리줄·막힘 띠가 읽는다) */
@@ -254,7 +252,8 @@ function stepper(s: WorkshopSession, item: WorkshopItem | null, eta: number): HT
         class: "workshop-drawing", dataset: { testid: "workshop-drawing" },
         children: [
           // 막대는 작업 줄의 진행(장 안의 그리기·검수까지 센다) — 장 수만 세면 다 될 때까지 0 에 머물렀다
-          craftBar({ value: Math.max(0.04, workshopQueue().itemView(s.harnessId, item!.key)?.progress ?? progress.done / Math.max(1, progress.total)), hot: true, label: "후보 그리기" }),
+          // 막대와 글이 같은 수를 말한다: 다 그린 장 수. 아직 한 장도 없으면 끝을 모르는 막대(채움 없이 불씨가 오간다).
+          craftBar({ value: progress.done > 0 ? progress.done / Math.max(1, progress.total) : null, hot: true, label: "후보 그리기", max: progress.total }),
           el("span", { class: "workshop-drawing-text", text: `후보 ${progress.done}/${progress.total}장 다 그림 · 약 ${Math.max(1, eta)}분 남음. 창을 닫아도 계속 그려요.` }),
         ],
       })] : []),
@@ -307,7 +306,7 @@ function render(force: boolean): void {
       el("header", {
         class: "workshop-head",
         children: [
-          el("h2", { children: [workshopEmblem(22), el("span", { text: "공방 · 물건·가구" })] }),
+          el("h2", { children: [workshopEmblem(32), el("span", { text: "공방 · 물건·가구" })] }),
           targetSwitch(s),
           el("span", {
             class: "workshop-progress", dataset: { testid: "workshop-progress" },

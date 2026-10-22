@@ -45,7 +45,7 @@ export const WORKSHOP_GENERATORS: readonly WorkshopGenerator[] = [
     id: "object-gen", title: "물건·가구", status: "ready",
     makes: "가구·상자·표지판 같은 물건을 지금 맵의 그림 느낌에 맞춰 그려요.",
     // 무대: object-gen 견본 기물 셋(object-gen-sample.png 에서 뒷판을 뗌)을 손 도트 실내 v5 칩셋의 판자벽·마루 위에(2026-10-22).
-    sample: { src: "/assets/workshop/object-gen-stage.png", width: 124, height: 62, alt: "물건 생성기가 그린 진열장·냉장고·보관함", twinkles: [[12, 13], [76, 20], [112, 15]] },
+    sample: { src: "/assets/workshop/object-gen-stage.png", width: 124, height: 52, alt: "물건 생성기가 그린 진열장·냉장고·보관함", twinkles: [[11, 4], [75, 10], [112, 5]] },
   },
   {
     id: "char-gen", title: "캐릭터", status: "local",

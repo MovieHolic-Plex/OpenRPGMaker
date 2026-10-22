@@ -149,7 +149,7 @@ export function markReveal(node: HTMLElement, phase: string | null): HTMLElement
   return node;
 }
 
-const GLINT_PERIOD_MS = 1600;
+const GLINT_PERIOD_MS = 2600;
 const SWEEP_PERIOD_MS = 4400;
 
 /**

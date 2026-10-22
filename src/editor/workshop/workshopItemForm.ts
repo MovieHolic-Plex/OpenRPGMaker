@@ -100,9 +100,19 @@ export function renderItemForm(session: WorkshopSession, onSaved: (key: string) 
     on: { submit: (event) => { event.preventDefault(); runAction(save, (message) => { error.textContent = `만들지 못했어요: ${message}`; }); } },
     children: [
       // 머리 무대 — 이 생성기가 그린 물건들(왼쪽 카드와 같은 그림)
-      ...WORKSHOP_GENERATORS.filter((g) => g.id === "object-gen").map((g) => generatorStage(g, "hero")),
-      el("h3", { text: "무엇을 그릴까요?" }),
-      el("p", { class: target && target.harnessId !== "map-objects" ? "workshop-blocked" : "workshop-item-meta", dataset: { testid: "workshop-form-target" }, text: destination }),
+      el("div", {
+        class: "workshop-intro",
+        children: [
+          ...WORKSHOP_GENERATORS.filter((g) => g.id === "object-gen").map((g) => generatorStage(g, "hero")),
+          el("div", {
+            class: "workshop-intro-text",
+            children: [
+              el("h3", { text: "무엇을 그릴까요?" }),
+              el("p", { class: target && target.harnessId !== "map-objects" ? "workshop-blocked" : "workshop-item-meta", dataset: { testid: "workshop-form-target" }, text: destination }),
+            ],
+          }),
+        ],
+      }),
       field("무엇", title),
       field("어떻게 생겼나요", description),
       el("div", { class: "workshop-form-row", children: [field("가로 칸", tilesW), field("세로 칸", tilesH), field("놓는 방식", kind), field("후보", count)] }),

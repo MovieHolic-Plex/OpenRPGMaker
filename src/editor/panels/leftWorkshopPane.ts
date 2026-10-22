@@ -107,7 +107,7 @@ export function createLeftWorkshopPane(): { root: HTMLElement; show(): void; dis
     const ready = workshopAiReady();
     const hostOff = !ready && getAiConnectionStatus(loadAiConfig()).hostAiDisabled === true;
     root.append(
-      el("div", { class: "left-workshop-heading", children: [workshopEmblem(28), el("h2", { class: "left-workshop-title", text: "공방" })] }),
+      el("div", { class: "left-workshop-heading", children: [workshopEmblem(32), el("h2", { class: "left-workshop-title", text: "공방" })] }),
       el("p", { class: "left-workshop-lead", text: "새 그림을 만들어 이 게임에 넣어요. 후보 중 마음에 드는 것은 내가 골라요." }),
       el("ul", { class: "left-workshop-list", children: WORKSHOP_GENERATORS.filter((g) => g.status === "ready" || g.status === "local").map((generator) => generatorCard(generator, { ready, hostOff })) }),
       el("h3", { class: "left-workshop-subtitle", text: "곧 들어올 생성기" }),

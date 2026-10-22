@@ -90,13 +90,14 @@
 /* 알약 표: 그리는 중 = 깜박이는 불씨(도트 셋), 고를 차례 = 놋쇠 칸, 그 밖 = 빈 칸 */
 .wq-dock .wq-pill-icon, .wq-dock .wq-pill-icon:not(.is-spinning) { position: relative; width: 12px; height: 12px; border: 0; border-radius: 2px; background: var(--craft-stage); box-shadow: inset 0 0 0 1px var(--craft-stage-edge); animation: none; }
 .wq-dock .wq-pill-icon::before { content: ""; position: absolute; left: 4px; top: 4px; width: 4px; height: 4px; background: var(--text-3); }
-.wq-dock .wq-pill.is-active .wq-pill-icon::before { background: var(--craft-ember-hot); box-shadow: 0 2px var(--craft-ember), -2px 2px var(--craft-ember-deep), 2px 2px var(--craft-ember-deep);
-  animation: craft-flicker 900ms steps(3) infinite; }
-@keyframes craft-flicker { 0% { transform: translateY(0); opacity: 1; } 50% { transform: translateY(-1px); opacity: 0.75; } 100% { transform: translateY(0); opacity: 1; } }
-.wq-dock .wq-pill.has-ready:not(.is-active) .wq-pill-icon { background: var(--craft-brass); box-shadow: inset 0 0 0 1px var(--craft-brass-ink); }
-.wq-dock .wq-pill.has-ready:not(.is-active) .wq-pill-icon::before { background: #fff3c4; }
-.wq-dock .wq-pill.has-ready { border-color: var(--craft-brass-line); box-shadow: var(--shadow-pop), inset 0 0 0 1px var(--craft-brass-line); }
-.wq-dock .wq-pill.has-ready .wq-pill-count { color: color-mix(in srgb, var(--craft-brass) 45%, var(--text-1)); }
+/* 그리는 중 = 불씨색 고리가 돈다(알아보기 쉬운 「진행 중」) */
+.wq-dock .wq-pill.is-active .wq-pill-icon { border-radius: 50%; background: none; box-shadow: none; border: 2px solid var(--craft-ember); border-right-color: transparent; animation: wq-spin 0.9s linear infinite; }
+.wq-dock .wq-pill.is-active .wq-pill-icon::before { display: none; }
+/* 고를 차례 = 꽉 찬 놋쇠 점 + 놋쇠 테 */
+.wq-dock .wq-pill.has-ready:not(.is-active) .wq-pill-icon { border-radius: 50%; background: var(--craft-brass); box-shadow: 0 0 0 3px rgb(212 162 63 / 0.3); }
+.wq-dock .wq-pill.has-ready:not(.is-active) .wq-pill-icon::before { display: none; }
+.wq-dock .wq-pill.has-ready { border-color: var(--craft-brass); box-shadow: var(--shadow-pop), inset 0 0 0 1px var(--craft-brass); }
+.wq-dock .wq-pill.has-ready .wq-pill-count { color: var(--craft-brass-ink); font-weight: var(--font-weight-semibold, 600); }
 .wq-dock .wq-pill.is-revealing { animation: craft-pill-ready 1400ms ease-out both; animation-delay: var(--reveal-delay, 0ms); }
 @keyframes craft-pill-ready { 0% { transform: translateY(0); } 12% { transform: translateY(-4px); } 24% { transform: translateY(0); } 34% { transform: translateY(-2px); } 44%, 100% { transform: translateY(0); } }
 /* 줄 */
@@ -113,5 +114,5 @@
 .wq-dock .wq-row.is-revealing .wq-candidate img { animation: craft-reveal-wipe 640ms steps(8, end) both; animation-delay: var(--reveal-delay, 0ms); }
 
 @media (prefers-reduced-motion: reduce) {
-  .wq-dock .wq-pill-icon::before, .wq-dock .wq-pill.is-revealing, .wq-dock .wq-row.is-revealing, .wq-dock .wq-row.is-revealing .wq-candidate img { animation: none !important; }
+  .wq-dock .wq-pill.is-active .wq-pill-icon, .wq-dock .wq-pill.is-revealing, .wq-dock .wq-row.is-revealing, .wq-dock .wq-row.is-revealing .wq-candidate img { animation: none !important; }
 }
