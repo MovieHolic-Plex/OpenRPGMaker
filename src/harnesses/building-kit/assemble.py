@@ -52,8 +52,13 @@ band/base l·m·r. 지붕 폭 = 벽 폭 = cols, 최소 4칸(l 2 + r 2).
     앞으로 튀어나온 날개 = depth 0 질량, 본채 = depth ≥ 1.
   - 질량 사이(뒤 질량의 땅 행 ~ 앞 땅 행)에서 아무 질량도 덮지 않는 칸은 **투명**으로 둔다 — 지도 바닥이 마당 띠로 비친다
     (테마 땅 램프로 칠하지 않는다: 건물 그림이 길·잔디·눈 어느 바닥에도 놓이게).
-  - 그림자: 앞 질량마다 뒤 질량 벽·마당 띠 위에 버들항 그림자(12,14,20,α88)를 얹는다 — 앞 질량 실루엣을 오른쪽으로
-    w = round(겹친 높이/3) px, 아래로 EAVE_DROP px 민 모양에서 앞 질량 자신을 뺀 것(빛은 왼쪽 위). 지붕·앞 질량 위에는 없다.
+  - 그림자: 앞 질량마다 뒤 질량 **벽에만** 버들항 그림자(12,14,20,α88)를 얹는다 — 앞 질량 실루엣을 오른쪽으로
+    w = round(겹친 높이/3) px, 아래로 EAVE_DROP px 민 모양에서 앞 질량 자신을 뺀 것(빛은 왼쪽 위). 지붕·땅·앞 질량 위에는
+    없다(2026-10-22 사용자 승인안: 그림자는 날개 옆 본채 벽에만, 사이 땅 띠 없음).
+  - 날개 이음(2026-10-22 사용자 판정 「ㅜ자 집이 한 채로 안 보인다」): 더 뒤 질량과 가로로 겹치는 박공 정면 = 날개.
+    날개 뒤 끝이 본채 앞벽이다 — 본채 depth = 날개 depth + 1, 날개 뒤 끝은 언제나 골(back_end valley, v<폭>).
+  A16(깊이, 날개 있는 레시피) 날개 열 폭 × [본채 벽 꼭대기, 날개 처마) 가 전부 날개·본채 화소(합친 윤곽 안에 땅 없음) ·
+       날개 지붕 맨 윗행이 본채 처마 행보다 위(본채 지붕 속으로 올라간다) · 위 두 계약(depth + 1, valley)
   A10(깊이) 질량마다 자기 벽 바닥이 자기 땅 행(그림 맨 아래 − depth 칸)의 모든 열을 덮고 그 아래에 자기 화소가 없다(뜨지도
        묻히지도 않는다) · 층은 모두 2칸
   A7(깊이) 가로로 닿거나 겹치고, depth > 0 질량마다 그보다 앞 질량 하나가 가로로 겹치며 화면에서 맞닿는다(빈 하늘 띠 금지)
@@ -604,6 +609,9 @@ def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=N
                          '이 판은 requireGableFront — 모든 질량이 용마루가 정면과 나란한 지붕(평평한 정면 입면)이다. '
                          'gable_front 질량이 하나 이상 있어야 한다'))
 
+    if depth_ground and wing_mains([p['m'] for p in plans]):
+        checks.append(_a16(plans, op, owner_plan, roof_px))
+
     shadow = cast_shadows(cv.a, plans, owner_plan, owner_kind, height) if depth_ground else np.zeros(op.shape, bool)
     door_at = [d['at'] for d in doors]
     kit = _kit(recipe, plans, placed, width, height, doors, depth_ground)
@@ -921,16 +929,54 @@ def _a1_depth(plans, doors, op, height):
               f'문은 가장 앞 질량(depth {front}), 문 앞 칸은 땅' if not bad else '; '.join(bad))
 
 
+def _a16(plans, op, owner_plan, roof_px):
+    """날개 이음(사용자 판정 2026-10-22 「ㅜ자 집이 한 채로 안 보인다 — 날개와 본채 사이에 풀이 보이고 날개 뒤 박공이
+    본채 벽 앞에서 끝난다」). 날개 W(박공 정면)와 그 본채 B(wing_mains)마다:
+      ① 계약: B depth = W depth + 1, W back_end = valley(wing_problems)
+      ② 사이 땅: W 열 폭 전체(왼·오른 옆단 열 포함) × [B 벽 꼭대기, W 처마(W 벽 꼭대기)) 의 모든 화소가 불투명이고
+         W 나 B 의 것 — 투명(땅)이나 다른 질량이면 FAIL(합친 윤곽 안에 땅이 비친다)
+      ③ 지붕 오름: W 지붕 맨 윗행이 B 처마 행(B 벽 꼭대기 바로 위)보다 아래면 FAIL(날개 지붕이 본채 지붕으로
+         올라가지 않고 벽 앞에서 끝난다)"""
+    T = dot.T
+    by_id = {p['m']['id']: p for p in plans}
+    bad, msgs = [], []
+    for wm, mains in wing_mains([p['m'] for p in plans]):
+        W = by_id[wm['id']]
+        bad += wing_problems(wm, mains)
+        if not W.get('storey_rows'):
+            continue
+        w_eave = W['storey_rows'][0][1] * T
+        x0, x1 = W['x'] * T, (W['x'] + W['cols']) * T
+        ys = np.nonzero(roof_px[W['idx']].any(axis=1))[0]
+        w_top = int(ys.min()) if len(ys) else w_eave
+        for bm in mains:
+            B = by_id[bm['id']]
+            if not B.get('storey_rows'):
+                continue
+            b_wall = B['storey_rows'][0][1] * T
+            tag = f'{W["m"]["id"]}→{B["m"]["id"]}'
+            if b_wall < w_eave:
+                own = owner_plan[b_wall:w_eave, x0:x1]
+                holes = ~op[b_wall:w_eave, x0:x1] | ((own != W['idx']) & (own != B['idx']))
+                if holes.any():
+                    hy, hx = np.nonzero(holes)
+                    bad.append(f'{tag} 날개와 본채 사이 합친 윤곽 안에 땅(투명)·남의 화소 {int(holes.sum())}px '
+                               f'(예 열 {x0 + int(hx[0])} 행 {b_wall + int(hy[0])}) — 날개 옆단 열은 날개 처마(행 {w_eave})부터 '
+                               f'본채 벽 꼭대기(행 {b_wall})까지 날개나 본채로 덮여야 한다')
+            if w_top >= b_wall:
+                bad.append(f'{tag} 날개 지붕 맨 윗행 {w_top} 이 본채 처마 행 {b_wall - 1} 보다 아래 — 날개 지붕은 본채 '
+                           '지붕 속으로 올라가 V자 골에서 만난다(벽 앞에서 끝나면 두 채로 읽힌다)')
+            msgs.append(f'{tag} 붙음(depth {W["depth"]}→{B["depth"]}), 골 꼭대기 행 {w_top} < 처마 {b_wall}, 사이 땅 0px')
+    return _r('A16', 'FAIL', not bad, '; '.join(msgs) if not bad else '; '.join(dict.fromkeys(bad)))
+
+
 def cast_shadows(a, plans, owner_plan, owner_kind, height):
-    """앞 질량 F 마다, 더 뒤 질량 B 의 보이는 벽(벽·층 띠·기단) 화소와 B 앞 마당 띠(투명, B 땅 행 ~ F 땅 행, B 열)에
-    버들항 그림자를 얹는다. 모양 = F 실루엣을 오른쪽으로 w, 아래로 EAVE_DROP px 민 것 − F 자신.
-    w = round(겹친 높이 / 3), 겹친 높이 = F 화면 행 ∩ [B 벽 꼭대기, F 땅 행). 반환: 그림자 화소 마스크."""
+    """앞 질량 F 마다, 더 뒤 질량 B 의 보이는 벽(벽·층 띠·기단) 화소에만 버들항 그림자를 얹는다(땅·지붕에는 없다 —
+    사용자 승인안 2026-10-22: 그림자는 날개 옆 본채 벽에만). 모양 = F 실루엣을 오른쪽으로 w, 아래로 EAVE_DROP px
+    민 것 − F 자신. w = round(겹친 높이 / 3), 겹친 높이 = F 화면 행 ∩ [B 벽 꼭대기, F 땅 행). 반환: 그림자 화소 마스크."""
     T = dot.T
     H, W = owner_plan.shape
-    transparent = a[:, :, 3] == 0
     is_wall = (owner_kind == 'wall') | (owner_kind == 'band') | (owner_kind == 'base')
-    rows = np.arange(H)[:, None]
-    cols = np.arange(W)[None, :]
     out = np.zeros((H, W), bool)
     for F in plans:
         fmask = owner_plan == F['idx']
@@ -947,19 +993,13 @@ def cast_shadows(a, plans, owner_plan, owner_kind, height):
             w = max(1, int(round(overlap / 3)))
             sh = np.zeros((H, W), bool)
             sh[EAVE_DROP:, w:] = fmask[:H - EAVE_DROP, :W - w]
-            bx0, bx1 = B['x'] * T, (B['x'] + B['cols']) * T
             bwall = (owner_plan == B['idx']) & is_wall
-            yard = transparent & (rows >= B['ground'] * T) & (rows < f_bot) & (cols >= bx0) & (cols < bx1)
-            out |= sh & ~fmask & (bwall | yard)
+            out |= sh & ~fmask & bwall
     if out.any():
         k = SHADOW_ALPHA / 255.0
-        op = out & ~transparent
         rgb = a[:, :, :3].astype(float)
-        rgb[op] = rgb[op] * (1 - k) + np.array(SHADOW_RGB, float) * k
+        rgb[out] = rgb[out] * (1 - k) + np.array(SHADOW_RGB, float) * k
         a[:, :, :3] = np.round(rgb).astype(np.uint8)
-        clear = out & transparent
-        a[clear, :3] = SHADOW_RGB
-        a[clear, 3] = SHADOW_ALPHA
     return out
 
 
