@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.323.1 — 2026-10-22
+
+### 수정
+
+- **stairs** — shipped stairwells no longer face the south wall; school 2F lands at the 3F down-stairwell (#3256) (`daa1f6e`)
+- **fallen-star** — move a roaming townsperson out of the east-gate throat so the knight and Valen can march out (#3253) (`f18785c`)
+
 ## 0.323.0 — 2026-10-22
 
 ### 기능
