@@ -86,7 +86,7 @@ def bake(dry=False, dev=False):
         auto = p['id'] in G.AUTO
         for (x, y), pc in sorted(pcs.items(), key=lambda kv: (kv[0][1], kv[0][0])):
             crop = BL.norm(im.crop((x * 16, y * 16, x * 16 + 16, y * 16 + 16)))
-            where = (f" (이웃 {y * 4 + x})" if y < 4 else f" (속 변형 {x + 1})") if auto else (f" ({x + 1},{y + 1})" if p['w'] * p['h'] > 1 else '')
+            where = (f" (이웃 {y * 4 + x})" if y < 4 else f" (속 변형 {(y - 4) * 4 + x + 1})") if auto else (f" ({x + 1},{y + 1})" if p['w'] * p['h'] > 1 else '')
             tags = ['황무지', '폐허', GROUP_KO[p['group']]] + p['tags']
             meta = dict(label=f"{p['name']}{where}"[:80], desc=f"{p['desc'] or p['name']} — {BL.PCNOTE[pc]}.", role=role_of(p), tags=tags,
                         rep='auto' if auto else ('repeat' if p['kind'] in ('terrain', 'flat') else 'fixed'))
@@ -129,7 +129,7 @@ def bake(dry=False, dev=False):
         ac = piece_cells.get(aid)
         if not ac or not all((m % 4, m // 4) in ac for m in range(16)): continue
         vm = {str(m): ac[(m % 4, m // 4)][0] for m in range(16)}
-        var = [ac[(x, 4)][0] for x in range(4) if (x, 4) in ac]
+        var = [ac[(x, y)][0] for y in range(4, 8) for x in range(4) if (x, y) in ac]          # 5번째 줄부터 = 꽉 찬 칸 속 변형
         mem = sorted(set(vm.values()) | set(var))
         g = dict(id='wl-' + aid, name=ad['name'], neighborhood=4, memberTileIds=mem, connectTileIds=mem, variantMap=vm, edgeConnects=True)
         if var: g['interiorVariants'] = [var]
@@ -141,7 +141,7 @@ def bake(dry=False, dev=False):
         cells = piece_cells[p['id']]; tids = sorted({t for t, _ in cells.values()} | {t for (pid, _, _), ids in frames_of.items() if pid == p['id'] for t in ids})
         if p['id'] in G.AUTO:
             groups['auto:' + p['id']] = dict(id='wl:auto:' + p['id'], name=p['name'], role='terrain', defaultLayer='lower', tileIds=set(tids),
-                                             description=f"{p['name']}. {p['desc']}", placementRules='오토타일 — 붓·fill_region 이 이웃에 맞는 칸을 고른다. ' + ('도로는 2칸 폭 이상을 권한다.' if p['id'] == 'asphalt' else '판잣집 사이 1칸 폭 발길로 깐다.'))
+                                             description=f"{p['name']}. {p['desc']}", placementRules='오토타일 — 붓·fill_region 이 이웃에 맞는 칸을 고른다. ' + {'asphalt': '도로는 2칸 폭 이상을 권한다.', 'slab-edge': '판 영역 테두리에 깔고, 꽉 찬 안쪽은 slab-a/b/c 이음 판을 (x mod 8, y mod 8) 자리로 깐다.'}.get(p['id'], '판잣집 사이 1칸 폭 발길로 깐다.'))
         elif p['id'] in FLOOR_GROUP_IDS or p['kind'] == 'terrain':
             groups['floor:' + p['id']] = dict(id='wl:floor:' + p['id'], name=p['name'], role=role_of(p) if p['kind'] in ('terrain', 'flat') else 'wall',
                                               defaultLayer='lower' if p['kind'] == 'terrain' else 'upper', tileIds=set(tids), description=f"{p['name']}. {p['desc']}",

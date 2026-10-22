@@ -138,6 +138,11 @@ export interface BeodeulVillageOptions {
   wallGate?: "S" | "N" | "NS";
   /** true 면 서·동 성벽을 지나는 길에 쪽문 터널을 낸다(기본 false — 「성문 하나」 요청에 옆 구멍이 생기지 않게). */
   wallSideGaps?: boolean;
+  /**
+   * 쓰임 덩이 마당 자리(dress_village_quarter 가 깔 마당, 둘레 포함 칸 수). 밭·숲·덤불을 놓기 전에 길에 맞닿은 한 단 풀밭을 비워 둔다(CLEAR).
+   * 2026-10-23 village-art r3: 다 지은 마을에서 마당을 내면 숲을 칸 선으로 베어 계단·반쪽 나무가 남았다 — 숲이 서기 전에 자리를 남긴다.
+   */
+  yard?: { w: number; h: number };
 }
 const LEAF_TREES = ["bd-tree-03a8f7", "bd-tree-a80c85", "bd-tree-e9d9b3", "bd-tree-cc0fcb", "bd-tree-47e17a", "bd-tree-d43edd", "bd-tree-5844f6", "bd-tree-3e8732", "bd-tree-1a786c", "bd-tree-d61d7e", "bd-tree-7ecdb8", "bd-tree-1e09f0", "bd-tree-bdd36e", "bd-tree-b1d104"];
 // 침엽·혼효 마을(forestType, woodland r3): 낱 나무도 숲과 같은 계열로 — 둥근 활엽 덤불이 침엽 마을을 덮지 않게(독립 검수 D10).
@@ -1595,6 +1600,27 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
   }
 
+  // 쓰임 덩이 마당 자리(options.yard): 밭·숲보다 먼저. 한 단 FREE 사각형이고, 테두리 바깥 한 칸이 길에 닿을수록·가운데에 가까울수록 좋다.
+  if (options.yard) {
+    // 큰 자리부터, 없으면 dress_village_quarter 의 줄인 마당 크기(가로 −3·세로 −2, −6·−3)에 맞춰 줄여 찾는다.
+    for (const [dw, dh] of [[0, 0], [3, 2], [6, 3]] as const) {
+      const yw = Math.min(W - 2, options.yard.w - dw), yh = Math.min(H - 2, options.yard.h - dh);
+      let best: { x: number; y: number; s: number } | null = null;
+      for (let y = 1; y + yh < H - 1; y += 1) for (let x = 1; x + yw < W - 1; x += 1) {
+        const l0 = lv[idx(x, y)] ?? 0; let ok = true;
+        for (let j = 0; j < yh && ok; j += 1) for (let i = 0; i < yw; i += 1) { const c = idx(x + i, y + j); if (occ[c] !== FREE || (lv[c] ?? 0) !== l0) { ok = false; break; } }
+        if (!ok) continue;
+        let road = 0;
+        for (let i = 0; i < yw; i += 1) { if (occ[idx(x + i, y - 1)] === ROAD) road += 1; if (occ[idx(x + i, y + yh)] === ROAD) road += 1; }
+        for (let j = 0; j < yh; j += 1) { if (occ[idx(x - 1, y + j)] === ROAD) road += 1; if (occ[idx(x + yw, y + j)] === ROAD) road += 1; }
+        const sc = Math.min(road, 12) * 4 - Math.hypot(x + yw / 2 - W / 2, y + yh / 2 - H / 2) * 0.4 + rand();
+        if (!best || sc > best.s) best = { x, y, s: sc };
+      }
+      if (!best) continue;
+      for (let j = 0; j < yh; j += 1) for (let i = 0; i < yw; i += 1) occ[idx(best.x + i, best.y + j)] = CLEAR;
+      break;
+    }
+  }
   let fields = 0;
   if (spec.field) {
     // 풀밭 마을의 높은 단(오르막·윗길을 낸 곳)은 밭 자리 — 그 단 안에서 먼저 두 번까지 고른다(단 위의 쓰임). 나머지는 예전처럼 맵 전체에서.

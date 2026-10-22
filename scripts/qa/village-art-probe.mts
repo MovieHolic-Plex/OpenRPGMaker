@@ -16,7 +16,7 @@ fs.mkdirSync(OUT, { recursive: true });
 const base = createBlankProject() as Project; ensureBundledTilesets(base);
 const baseJson = JSON.stringify(base);
 const TOWN: Record<string, Record<string, unknown>> = {
-  mining: { theme: "river", water: "none", terrain: "terraces", form: "scatter", roofs: "log", forestType: "conifer", woods: "dense", houseCount: 3, width: 60, height: 48 },
+  mining: { theme: "river", water: "none", terrain: "terraces", form: "scatter", roofs: "log", forestType: "conifer", houseCount: 3, width: 60, height: 48 },
   vineyard: { theme: "river", water: "none", terrain: "terraces", form: "scatter", roofs: "red", forestType: "broadleaf", houseCount: 4, width: 64, height: 48 },
   "temple-ruins": { theme: "river", water: "none", terrain: "flat", form: "scatter", roofs: "moss", forestType: "mixed", houseCount: 3, width: 60, height: 46 },
   "walled-market": { theme: "river", water: "none", form: "scatter", roofs: "red", houseCount: 4, width: 56, height: 44 },
@@ -29,7 +29,7 @@ for (const c of arg("cases", "mining:7,vineyard:3,temple-ruins:5,settlement:1,ru
   const ctx = { project: JSON.parse(baseJson) as Project };
   let mapId = ""; const log: string[] = [];
   if (TOWN[kind!]) {
-    const r = runTool(ctx, "author_beodeul_town", { ...TOWN[kind!], seed, id: `v_${kind}` } as never);
+    const r = runTool(ctx, "author_beodeul_town", { ...TOWN[kind!], ...(kind === "walled-market" ? {} : { quarter: kind }), seed, id: `v_${kind}` } as never);
     log.push(`town ${r.ok} ${r.summary.slice(0, 160)}`);
     if (!r.ok) { rows.push({ c, log }); console.log(c, log); continue; }
     mapId = (r.data as { mapId: string }).mapId;
