@@ -1696,7 +1696,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         for (const [dx, dy] of N4) { const n = idx(x + dx, y + dy); if (inMap(x + dx, y + dy) && forestSet.has(n) && dist[n] < 0) { dist[n] = dist[c]! + 1; q.push(n); } }
       }
       // 잡음 칸 4 — 3칸 격자 한 칸 물림은 다듬기(이웃 셋 메우기)가 도로 메워 곧은 변이 남았다(VQA r6 산골 숲 빈터 벽)
-      const erode = (c: number) => Math.floor(vnoise(c, 3, 977) * (denseWoods || highWoods ? 3 : 0)) - 1; // -1 깎지 않음 · 빈터·산골만 0~2(작은 숲 덩이는 홈만 — 깎으면 작은 덩이가 사라졌다) 가장자리에서 그 깊이까지
+      const erode = (c: number) => Math.floor(vnoise(c, 3, 977) * (highWoods ? 3 : 0)) - 1; // -1 깎지 않음 · 빈터·산골만 0~2(작은 숲 덩이는 홈만 — 깎으면 작은 덩이가 사라졌다) 가장자리에서 그 깊이까지
       for (const c of [...forestSet]) if (dist[c]! >= 0 && dist[c]! <= erode(c)) { forestSet.delete(c); carved.add(c); }
     }
     // 숲 속 구멍(길 간격 잡음·깎기가 남긴 4칸 이하 빈 땅, 사방이 같은 단 숲)은 메운다 — 수관 속 검은 구멍으로 보였다(VQA r4)
