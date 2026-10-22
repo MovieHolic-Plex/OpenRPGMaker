@@ -283,7 +283,7 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   const officeFri = cloneMap(project, FL_MAP.office, FL_MAP.officeFri, "스튜디오 늘봄 · 금요일");
   // 금요일 회의실은 사무층 맨 아래(y 13~20)라 카메라가 맵 끝에 걸려 다섯 사람이 흉상·대화창 사이에 끼었다(VQA r10).
   // 바깥 채움 두 줄(맨 아래 두 줄 무늬)을 FRI_PAD 줄 더 덧대 카메라가 회의실을 화면 위쪽에 둘 수 있게 한다 — 덧댄 줄은 대화창 뒤다.
-  const FRI_PAD = 4, friH = officeFri.height;
+  const FRI_PAD = 2, friH = officeFri.height;
   padMapBottom(officeFri, FRI_PAD, (y) => friH - 2 + ((y - friH) % 2));
   // 덧댄 줄은 빈 칸(맵 밖과 같은 어둠)이다 — 바깥벽 무늬를 되풀이하면 대화창이 없을 때 빈 띠가 화면 1/3을 채웠다(VQA r12).
   for (let y = friH; y < friH + FRI_PAD; y++) for (let x = 0; x < officeFri.width; x++) clearMapCellForBackground(officeFri, y * officeFri.width + x);
@@ -352,7 +352,7 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   }
   for (const id of [FL_MAP.platformAm, FL_MAP.platformPm]) {
     try {
-      exec("set_map_transit", { mapId: id, auto: { subway: { vehicle: "jp-subway", name: "한결선", stopName: "한결역", headwaySec: 50, waitSec: 10 } } });
+      exec("set_map_transit", { mapId: id, auto: { subway: { vehicle: "jp-subway", name: "한결선", stopName: "한결역", headwaySec: 90, waitSec: 45 } } });
     } catch (error) {
       console.warn(`[first-love] ${id} 열차를 깔지 못했다: ${(error as Error).message}`);
     }

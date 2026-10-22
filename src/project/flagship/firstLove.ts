@@ -580,7 +580,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
         ...say("jihu", "surprised", "…"),
         ...say("jihu", "sad", "기억해요. 그래서 그래요.", "첫 출근 날이잖아요. 나 때문에 망치게 하고 싶지 않았어요."),
         ...say("seoha", "base", "이미 좀 망쳤어요."),
-        ...say("jihu", "happy", "…미안해요."),
+        ...say("jihu", "sad", "…미안해요."),
         ...like(2, "ev_fl_jihu_roof"),
       ] },
       { text: "(말없이 캔커피 하나를 내민다)", then: [
@@ -652,7 +652,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
   // 계산대 손님 쪽(점원 두 칸 아래) — 계산은 거기 가서 한다(VQA r3: 매장 건너 10칸에서 점원과 말함).
   const registerFront = nearestFree(project, kon, { x: clerkSpot.x, y: clerkSpot.y + 2 }, 1, [clerkSpot, jihuStop, coolerFront]);
   // 지후는 계산대 바로 앞 줄이 아니라 서하 오른쪽 뒤 칸 — 계산대 위 소품(상층 그림)이 머리를 덮지 않는다(VQA r4 M1).
-  const jihuRegister = nearestFree(project, kon, { x: registerFront.x + 1, y: registerFront.y + 1 }, 1, [clerkSpot, registerFront, jihuStop, coolerFront]);
+  const jihuRegister = nearestFree(project, kon, { x: registerFront.x + 1, y: registerFront.y }, 1, [clerkSpot, registerFront, jihuStop, coolerFront]);
   add(kon,
     event("ev_fl_clerk", "편의점 점원", clerkSpot, [page("c", [], [
       ...voice("점원", "어서 오세요~ 바나나우유 원 플러스 원이에요."),
@@ -919,14 +919,14 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
         // 팀장 책상 앞까지 걸어가 말하고, 팀장도 통화를 멈추고 서하를 본다.
         walkRoute(project, FL_MAP.officePm, "@player", o.heroDesk, leadFront, [], true, dirToward(leadFront, leadSeat)),
         faceHero("ev_fl_w_lead"),
-        ...say("seoha", "sad", "팀장님. 제가 소리결에 시안을 잘못 보냈습니다. 지난주 버전으로요."),
-        ...say("lead", "base", "…몇 시에 보냈어요?"),
-        ...say("seoha", "sad", "여섯 시 반쯤이요. 죄송합니다."),
-        ...say("lead", "happy", "좋아요. 숨기지 않고 바로 말해 줘서 다행이에요. 본부장님한텐 내가 지금 전화할게요."),
-        ...say("lead", "base", "서하 씨는 최종본 다시 정리하고."),
+        ...sayAt("seoha", "right", "sad", "팀장님. 제가 소리결에 시안을 잘못 보냈습니다. 지난주 버전으로요."),
+        ...sayAt("lead", "left", "base", "…몇 시에 보냈어요?"),
+        ...sayAt("seoha", "right", "sad", "여섯 시 반쯤이요. 죄송합니다."),
+        ...sayAt("lead", "left", "happy", "좋아요. 숨기지 않고 바로 말해 줘서 다행이에요. 본부장님한텐 내가 지금 전화할게요."),
+        ...sayAt("lead", "left", "base", "서하 씨는 최종본 다시 정리하고."),
         face("ev_fl_w_lead", dirToward(leadSeat, jihuSeat)),
         face("ev_fl_w_jihu", dirToward(jihuSeat, leadSeat)),
-        ...say("lead", "base", "지후 씨, 서하 씨 좀 도와줄래요?"),
+        ...sayAt("lead", "left", "base", "지후 씨, 서하 씨 좀 도와줄래요?"),
         ...say("jihu", "base", "네."),
         walkRoute(project, FL_MAP.officePm, "@player", leadFront, o.heroDesk, [jihuBeside]),
         ...comeBeside(),
@@ -958,25 +958,25 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     setSw("sw_fl_lead_left", true),
     ...caption("밤 10시 40분."),
     ...fadeIn(700),
-    ...say("jihu", "base", "다 됐어요. 다시 보냈고, 본부장님 답장도 왔어요. ‘확인했습니다, 감사합니다.’"),
-    ...say("seoha", "happy", "…감사합니다. 진짜로요."),
-    ...say("jihu", "base", "서하 씨 시안, 좋았어요. 버튼 누르면 사연 종이가 반으로 접히는 거."),
+    ...sayAt("jihu", "left", "base", "다 됐어요. 다시 보냈고, 본부장님 답장도 왔어요. ‘확인했습니다, 감사합니다.’"),
+    ...sayAt("seoha", "right", "happy", "…감사합니다. 진짜로요."),
+    ...sayAt("jihu", "left", "base", "서하 씨 시안, 좋았어요. 버튼 누르면 사연 종이가 반으로 접히는 거."),
     choices([
       { text: "“선배라면 알아볼 줄 알았어요.”", then: [
-        ...say("seoha", "embarrassed", "…선배라면 알아볼 줄 알았어요. 방송실 사연함 모양이에요, 그거."),
+        ...sayAt("seoha", "right", "embarrassed", "…선배라면 알아볼 줄 알았어요. 방송실 사연함 모양이에요, 그거."),
         ...emote("ev_fl_w_jihu", "exclamation", 900),
-        ...say("jihu", "embarrassed", "…역시. 어디서 본 것 같더라. 투입구가 비뚤어진 것까지."),
+        ...sayAt("jihu", "left", "embarrassed", "…역시. 어디서 본 것 같더라. 투입구가 비뚤어진 것까지."),
         ...like(1, "ev_fl_w_jihu"),
       ] },
       { text: "“그냥, 회사 앱이니까요.”", then: [
-        ...say("seoha", "base", "그냥, 회사 앱이니까요. 열심히 했을 뿐이에요."),
-        ...say("jihu", "base", "…그렇죠."),
+        ...sayAt("seoha", "right", "base", "그냥, 회사 앱이니까요. 열심히 했을 뿐이에요."),
+        ...sayAt("jihu", "left", "base", "…그렇죠."),
         ...think("거짓말이다. 사연 종이가 접히는 그 버튼은, 그 방송실에서 가져온 거였다."),
       ] },
     ]),
     ifCond({ kind: "variable", variableId: V_JIHU, op: ">=", value: 3 } as never,
-      say("jihu", "happy", "라면 먹을래요? 탕비실에 컵라면 있어요. 먼저 가 있을게요. …오늘은 도망 안 가요."),
-      say("jihu", "base", "…배고프면 탕비실에 컵라면 있어요. 물은 내가 올려 둘게요."),
+      sayAt("jihu", "left", "happy", "라면 먹을래요? 탕비실에 컵라면 있어요. 먼저 가 있을게요. …오늘은 도망 안 가요."),
+      sayAt("jihu", "left", "base", "…배고프면 탕비실에 컵라면 있어요. 물은 내가 올려 둘게요."),
     ),
     walkRoute(project, FL_MAP.officePm, "ev_fl_w_jihu", jihuBeside, jihuPantry, [o.heroDesk], false, "up"),
     ...think("(탕비실로 가자.)"),
@@ -994,7 +994,8 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
   // 탁자 둘레(meetSeats): [0]=주인공(동쪽 끝) [1]=지후(주인공 오른쪽 옆 — 발표자 둘이 나란히) [2]=민호(탁자 북서 모서리 바닥) [3]=팀장(서쪽 끝) [4]=본부장(탁자 북동 모서리 바닥 — 먼저 나가는 손님이 바로 옆 유리문으로 나간다).
   // 의자 칸에는 세우지 않는다: 의자는 upper 타일이라 등받이가 얼굴을 덮고(VQA r7), 남쪽 의자 줄은 맵 맨 아래라 대화창에 가린다(VQA r5).
   const seats = o.meetSeats;
-  const jihuSpot = seats[1]!; const clientSpot = seats[4]!; const leadSpot = seats[3]!; const minhoSpot = seats[2]!;
+  // 지후는 서하 바로 뒤(동쪽)가 아니라 서하 북쪽 칸 — 둘 다 서쪽(팀장)을 볼 때 서하 뒤통수를 보고 서지 않는다(VQA r13).
+  const jihuSpot = nearestFree(project, fri, { x: o.meetingSeat.x, y: o.meetingSeat.y - 1 }, 1, [o.meetingSeat, seats[2]!, seats[3]!, seats[4]!]); const clientSpot = seats[4]!; const leadSpot = seats[3]!; const minhoSpot = seats[2]!;
   // 손님·지후는 두 번째 엘리베이터(주인공이 내린 칸이 아닌 문)로 나간다 — 엘리베이터 문 바로 앞에서 사라진다.
   const exit = { stand: { x: o.npcExit.x, y: o.npcExit.y + 1 }, door: o.npcExit };
   // 회의실에서는 승강기가 화면 밖이다 — 탑승하는 동안 카메라가 승강기 쪽으로 올라갔다가 돌아온다.
@@ -1149,7 +1150,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
 
   const jihuSpot = p.jihu;
   // 열차를 기다리는 사람은 선로(아래)를 본다 — 벽을 보고 서 있지 않는다.
-  add(plat, event("ev_fl_p_jihu", "강지후", jihuSpot, [page("pj", [], [], { who: "jihu", dir: "down" })]));
+  add(plat, event("ev_fl_p_jihu", "강지후", jihuSpot, [page("pj", [swOff("sw_fl_jihu_boarded")], [], { who: "jihu", dir: "down" })]));
   const meet = { x: jihuSpot.x - 1, y: jihuSpot.y };
   add(plat, scene("ev_fl_platform", { x: 1, y: 1 }, S.RUN, [
     { kind: "setWeather", weather: "none", transitionMs: 0 } as Command,
@@ -1207,9 +1208,13 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...say("jihu", "sad", "근데 지금 대답하면, 그건 또 도망치는 대답 같아요. 떠나는 사람이 할 말이 아니라서."),
           ...say("jihu", "base", "답장은 여기 써 뒀어요. 열차 떠나면 읽어요."),
           playSe(SE_PAPER),
+          // 열차를 타러 선로 쪽으로 걸어가 화면에서 떠난다 — 「열차가 떠나고」가 그림으로 바로 잘리지 않는다(VQA r13).
+          face("ev_fl_p_jihu", "down"),
+          { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [{ kind: "setThrough", enabled: true }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
+          setSw("sw_fl_jihu_boarded", true),
           ...fadeOut(1200),
           stopBgm(),
-          ...endingOpen("oprn-title-romance-school"),
+          ...endingOpen("oprn-title-romance-campus"),
           { kind: "triggerEnding", endingId: END_B } as Command,
         ]),
       ] },
@@ -1218,9 +1223,13 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
         ...say("jihu", "sad", "…응. 잘 지내, 서하야."),
         ...say("jihu", "base", "이거. 답장이에요. 10년 늦었지만."),
         playSe(SE_PAPER),
+        // 열차를 타러 선로 쪽으로 걸어가 화면에서 떠난다 — 「열차가 떠나고」가 그림으로 바로 잘리지 않는다(VQA r13).
+        face("ev_fl_p_jihu", "down"),
+        { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [{ kind: "setThrough", enabled: true }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
+        setSw("sw_fl_jihu_boarded", true),
         ...fadeOut(1200),
         stopBgm(),
-        ...endingOpen("oprn-title-romance-school"),
+        ...endingOpen("oprn-title-romance-campus"),
           { kind: "triggerEnding", endingId: END_B } as Command,
       ] },
     ]),
@@ -1274,9 +1283,9 @@ function defineEndings(project: Project): void {
     id: END_B,
     name: "늦은 답장",
     conditions: [],
-    presentation: { musicResourceId: BGM_END_B, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", credits: ENDING_CREDITS, backgroundResourceId: "oprn-title-romance-school" },
+    presentation: { musicResourceId: BGM_END_B, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", credits: ENDING_CREDITS, backgroundResourceId: "oprn-title-romance-campus" },
     epilogue: [
-      epiloguePicture("oprn-title-romance-school"),
+      epiloguePicture("oprn-title-romance-campus"),
       { kind: "say", text: "열차가 떠나고, 승강장에 혼자 남았다. 연두색 편지지 뒤에, 낯익은 글씨." },
       { kind: "say", text: "‘바나나우유 님께. 그 금요일 방송, 이제야 읽어요.’" },
       { kind: "say", text: "‘나도 금요일마다 사연함을 제일 먼저 열었어요. 당신 글씨가 있는지 보려고.’" },
@@ -1291,7 +1300,7 @@ function defineEndings(project: Project): void {
     conditions: [],
     presentation: { musicResourceId: BGM_END_C, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-pano-night" },
     epilogue: [
-      { kind: "say", text: "회식 자리로 가는 길. 다들 앞서 걸어가고, 나는 회사 앞에서 우산을 폈다." },
+      { kind: "say", text: "회식 자리로 가는 길. 회사 앞에 혼자 서서, 비 오는 길을 한참 봤다." },
       { kind: "say", text: "오후 9시 41분, 그 열차가 떠난 시각. 밤 열 시, ‘하루끝’ 오늘의 사연이 울렸다." },
       { kind: "say", text: "보낸 사람: 익명. 사연 제목은, ‘바나나우유 님께’." },
       { kind: "say", text: "‘10년 전 금요일의 사연, 이제야 답장해요. 이번에도 인사는 못 했네요.’" },
@@ -1357,7 +1366,7 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
     [SW_TOLD_MINHO, "민호에게 털어놓음"], [SW_HONEST, "실수를 팀장에게 보고함"], [SW_SAW_LETTER, "수첩 속 편지를 봄"],
     [SW_KNOWS_WHY, "지후가 떠난 이유를 들음"], [SW_COFFEE, "옥상 캔커피"], [SW_MILK, "바나나우유 두 개"], [SW_STORY, "발표에서 내 이야기를 함"],
     ["sw_fl_jihu_in_konbini", "편의점에 지후 등장"], ["sw_fl_flashback", "회상 중"], ["sw_fl_jihu_gone", "회상: 지후 퇴장"],
-    ["sw_fl_lead_left", "수요일: 팀장 퇴근"], ["sw_fl_minho_left", "수요일: 민호 퇴근"], ["sw_fl_closed_note", "수첩을 덮어 둠"],
+    ["sw_fl_lead_left", "수요일: 팀장 퇴근"], ["sw_fl_jihu_boarded", "막차: 지후 탑승"], ["sw_fl_minho_left", "수요일: 민호 퇴근"], ["sw_fl_closed_note", "수첩을 덮어 둠"],
     ["sw_fl_client_left", "금요일: 본부장 퇴장"], ["sw_fl_jihu_left", "금요일: 지후 퇴장"], ["sw_fl_admitted", "옥상: 지후가 기억한다고 말함"],
   ] as const) ensureSw(id, name);
 
