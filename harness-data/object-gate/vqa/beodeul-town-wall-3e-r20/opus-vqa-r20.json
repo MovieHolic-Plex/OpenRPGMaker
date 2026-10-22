@@ -1,0 +1,60 @@
+{
+  "reviewer": "opus fresh r20",
+  "verdict": "FAIL",
+  "score": 6.5,
+  "majors": [
+    {
+      "file": "/tmp/bw3/rv20/scene-3x.png (also scene-1x.png ~x128-160,y270)",
+      "where": "log annex of the left house, x385-480 y665-815 at 3x; south-wall inner tower top x433-575 starting y815",
+      "issue": "Structural logic: the annex's door opens directly onto the crenellated top of the south-wall tower with zero clearance (door at x~430,y~810, tower parapet begins y815). The building also abuts the tower volume edge to edge. The door is unreachable and the house reads as wedged against the tower. The right-hand houses (x865-1390) likewise sit flush on the y815 line, touching the east inner tower top at x1058-1200 and the east wall walkway at x1390-1395."
+    },
+    {
+      "file": "/tmp/bw3/rv20/scene-3x.png",
+      "where": "road strip y815-860 between x575 and x1058",
+      "issue": "Structural logic: the east-west road dead-ends flush against the side faces of the two inner towers (left tower ends x575, right tower starts x1058). It is squeezed into a one-tile slot between the house fronts and the tower tops, so the road looks like it runs into solid tower masonry rather than to a destination."
+    },
+    {
+      "file": "/tmp/bw3/town/snow-77.png",
+      "where": "main N-S road x270-305 y440-740 and the E-W road at y~430-445 (zoomed crop at 4x: road segments split every ~48px)",
+      "issue": "Biome consistency (d): the snow road is a near-flat mauve/tan fill with only a few speckles. Hard horizontal seam ridges repeat every 3 tiles (approx. y480, y528, y576 at 1x). It reads as an untextured placeholder strip with visible tiling seams, far below the cobble road quality of the default biome."
+    }
+  ],
+  "minors": [
+    {
+      "file": "/tmp/bw3/rv20/scene-3x.png, kit-wall_ring-3x.png, kit-wall_parts-3x.png",
+      "where": "west postern, scene x50-145 y430-525; wall_ring x97-195 y430-525 and x1058-1150 y430-525",
+      "issue": "The postern's south face sits directly on the road rows with no plinth or ground contact shadow. The tunnel-mouth cue is only a thin 1-2px black bar on each side (scene x35-45 and x145-155), so at 1x it reads more like a stone block parked on the road than a passage under the wall. A deeper dark gradient on the road tiles beside the wall would sell the tunnel."
+    },
+    {
+      "file": "/tmp/bw3/rv20/kit-wall_ring_snow-3x.png, /tmp/bw3/town/snow-77.png",
+      "where": "cast shadows below the south wall (e.g. wall_ring_snow y960-1040) and right of the towers (x430-470)",
+      "issue": "The snow cast shadows are 3-4 evenly stepped grey-blue bands instead of a soft falloff, which looks slightly mechanical. They are not flat blocks, though, and the direction (right/below) is correct."
+    },
+    {
+      "file": "/tmp/bw3/rv20/kit-wall_parts_snow-3x.png, kit-wall_runs_snow-3x.png",
+      "where": "walkway tops vs inner courtyard (wall_parts_snow x190-578 y430-675)",
+      "issue": "The snow walkway top and the snow ground are almost the same white. Height separation depends on a single dark 1px line and a faint shadow on the west side, so the elevated walkway reads almost flush with the ground."
+    },
+    {
+      "file": "/tmp/bw3/rv20/kit-wall_runs_snow-3x.png, kit-wall_runs_desert-3x.png",
+      "where": "whole preview",
+      "issue": "Preview inconsistency: the snow and desert run previews render with a transparent background (alpha 0) where the default preview has grass. The courtyard hole and the outside therefore show no cast shadows, which makes these kits hard to judge against the default."
+    },
+    {
+      "file": "/tmp/bw3/rv20/kit-wall_ring_snow-3x.png",
+      "where": "x862-1058 y430-480",
+      "issue": "The strip of snow ground between the north-east wall face, the north gatehouse and the road is framed by shadow on three sides and reads like a separate boxed tile patch."
+    },
+    {
+      "file": "/tmp/bw3/rv20/scene-3x.png",
+      "where": "north wall stairs x150-290 and x580-720, y190-380",
+      "issue": "The stair flights are only 1 tile wide and their dark substructure triangle is heavy. They read as stairs, but the top landing just touches the light ledge under the walkway with no clear landing tile."
+    },
+    {
+      "file": "/tmp/bw3/town/desert-29.png",
+      "where": "oasis grass x50-335 y145-300",
+      "issue": "The oasis grass patch runs flush against the inner edge of the west wall walkway with no sand margin. This is a placement issue, not a kit issue."
+    }
+  ],
+  "summary": "The wall kit itself has largely fixed the earlier 'toy' complaint. Horizontal runs show a crenellated walkway top plus a coursed 4-row front face with plinth. Towers and gatehouses read as volumes with tops and projecting front faces. Shadows fall right and below, and the default, snow and desert stone variants are comparable in quality. No isometric side faces or flat stamps were seen in the kit pieces. It still fails on structural and biome criteria. In the scene, a house door opens straight onto a tower top, and the buildings and a road abut tower volumes with zero clearance. In the snow town, the road is a flat, seam-striped fill. Minor issues are the thin postern tunnel cue, mechanically banded snow shadows, weak walkway-vs-ground separation in snow, and transparent snow/desert run previews."
+}

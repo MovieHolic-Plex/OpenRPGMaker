@@ -1,0 +1,44 @@
+{
+  "reviewer": "opus fresh r21",
+  "verdict": "PASS",
+  "score": 8,
+  "majors": [],
+  "minors": [
+    {
+      "file": "scene-3x.png, kit-wall_ring-3x.png, kit-wall_parts-3x.png (+_snow/_desert)",
+      "where": "scene-3x west postern x~35-155, y~580-770; wall_ring postern W x~50-205 and E x~1040-1200, y~340-525; wall_parts x~50-205, y~385-620",
+      "issue": "The postern's visible south face is only ~2 rows tall, while every horizontal wall face is 4 rows, and the vertical walkway resumes straight under it. So in 3/4 the postern reads lower than the wall it sits on. The tunnel mouth is shown only by 1-tile-wide black seams on the road, which read more like a gap or seam than an opening. The concept holds and the road visibly passes through, but it is the weakest volume in the kit."
+    },
+    {
+      "file": "kit-wall_ring_desert-3x.png, kit-wall_parts_desert-3x.png",
+      "where": "postern edges x~85-95 and x~185-195 (zoomed crop), y~430-525 / 480-620",
+      "issue": "In the desert variant the postern tunnel seams have a light grey/white 1px vertical frame. On warm sandstone it looks like a palette glitch, not a stone reveal."
+    },
+    {
+      "file": "scene-3x.png",
+      "where": "NW stair foot x~145-180,y~360-380 vs road column x~193-290; NE stair foot x~1260-1295 vs road column x~1295-1390",
+      "issue": "The road columns end against the dark stair underside, not at the stair foot, so the stair lands on grass about one tile to the side of the road. It is still walkable but looks slightly misaligned. (wall_ring and wall_parts land the stair on the road or grass correctly.)"
+    },
+    {
+      "file": "kit-wall_ring_snow-3x.png, snow-77.png, kit-wall_parts_snow-3x.png",
+      "where": "wall_ring_snow just right of the SE tower on the walkway, x~960-990,y~670-760; snow-77 right of the NE inner tower x~718-730,y~30-60 (1x) and right of the SE tower x~752-765,y~755-785 (1x)",
+      "issue": "Tower shadows falling on the snowy walkway are flat, hard-edged pale-blue rectangles with no texture or falloff. The ground shadows are clean 2-3 tone stepped bands, not noisy. They are acceptable, but flatter than the default-biome shading."
+    },
+    {
+      "file": "snow-77.png, kit-wall_ring_snow-3x.png",
+      "where": "west/east vertical walls snow-77 x~15-50 and x~910-945; wall_ring_snow x~100-190 and x~1058-1150",
+      "issue": "Snow-covered vertical walkways are almost the same value as the snow ground. Only the thin parapet line and a dark inner edge separate them, so at 1x the vertical walls read weaker than in default/desert."
+    },
+    {
+      "file": "scene-3x.png",
+      "where": "x~1390, y~670-770",
+      "issue": "The E-W road runs flat into the east vertical wall walkway with no postern or end treatment. It is a plausible dead end, but it looks unfinished next to the west postern."
+    }
+  ],
+  "outOfScope": [
+    "river-7 / river-11 / desert-29 / snow-77: interior paths do not lead to the wall stairs (stair feet land on open ground); generator layout, not kit art.",
+    "snow-77: tree clusters and the frozen pond have hard rectangular-ish outlines in places (pre-existing chipset art).",
+    "desert-29: the sand path tiles are very low contrast against the sand ground (pre-existing road art)."
+  ],
+  "summary": "3/4 view holds throughout. Horizontal walls show crenellated walkway tops plus 4-row coursed stone faces. North walls correctly show their inner (south) face, and vertical walls are 2-wide walkways with an outer parapet. Towers and gatehouses read as projecting volumes, with tops, machicolation rows, front faces stepping one row forward, and cast shadows to the right and below. Stone texture is good: varied block tones, mortar, weathering, vines, arrow slits, banners and torches. It is in the same visual family as the Beodeul castle reference and not toy-like. Rings close with no gaps. The gatehouse road enters the roof edge and exits through the arch. Stairs descend the inner north face onto walkable ground. Snow and desert match default in quality. Remaining issues are minor: the postern is under-height relative to the 4-row wall and its tunnel is shown only as seams; a light seam frame on the desert postern; road/stair-foot offset in the scene; flat pale shadow blocks on snowy walkways; low-contrast snow vertical walls. No majors, so PASS."
+}

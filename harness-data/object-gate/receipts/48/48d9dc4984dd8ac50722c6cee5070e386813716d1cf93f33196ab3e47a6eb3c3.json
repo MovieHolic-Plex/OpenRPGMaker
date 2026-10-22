@@ -1,0 +1,412 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "48d9dc4984dd8ac50722c6cee5070e386813716d1cf93f33196ab3e47a6eb3c3",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "wz-owl-stair-down",
+ "label": "wizarding_world stairs wz-owl-stair-down (DOWN)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 3 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 3 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "wall",
+  "refs": [
+   "castle-door2-closed",
+   "castle-wall-n-window2"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "wizarding_world",
+   "chipset": "wizarding_world",
+   "fallback": false,
+   "hash": "1a0f54905a7352a0"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 11,
+  "darkV5": 35,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lintel beam across the top of the frame",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side posts of the wooden frame",
+      "rows": "1-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair steps inside the opening (small detail)",
+      "rows": "18-23",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "22"
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a framed doorway seen straight on. The lintel is a front-facing strip: rows 1-3 run light tan, then brown, then dark, with no sloped roof plane and no front-edge line with eave shadow. The posts are also plain vertical faces. The dark opening (rows 6-17) shows a stair with a tread edge line at row 23, but that is a small interior detail and does not give the frame a top surface. The frame has only a 1-2 row rim at the top and a front face of about 27 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small wall-set stair opening: a wooden frame with highlight, mid and dark edges, around a dark recess with several grey stair-step bands and a small plate. It has about 5 visible ramp steps against about 6 in the references. Measured visible tones per tile are 8, which is between the references (7 for the window wall, 15 for the door) and above the closer window-wall reference. Near-flat coverage is 4%, below the window wall's 9% and close to the door's 1%, so there are no large flat fills. The dark edge pixels are 100% near-neutral, but both shipped references measure the same 100%, so this matches accepted wizarding_world art rather than being a sticker-style regression. The frame edges lean brown beside the wood, so I call the outline mixed. The piece is slightly simpler than the richly detailed door, but a careful artist would accept it beside the window wall without it looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17574
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lintel / top beam of gate frame",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side posts of frame",
+      "rows": "1-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "descending stair steps (treads are 1-row light lines at rows 14, 18 and 23)",
+      "rows": "14-29",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 1,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat front view of a dark doorway with a tan/brown frame. The lintel (rows 1-3) is a front-facing strip: row 1 is light, row 2 brown, row 3 dark. It has no top slope and no separate edge line with an eave shadow beneath it. The posts are vertical faces. Inside, the stairs are stacked front faces separated by 1-row light tread lines (rows 14, 18, 23), each followed by a 3-5 row riser. No tread is deeper than 1 row, so none counts as a top surface. The frame has no roof, slab or ellipse. The lintel and the treads are rims or edge lines only, so the drawing reads as a front elevation without a visible top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small framed stair opening. It reads as a wall piece with a wooden frame (light, mid and dark brown) around an interior of stepped greys. It measures 8 visible tones per 16x16 tile, which is above castle-wall-n-window2 (7) and below castle-door2-closed (15). Near-flat coverage is 4%, between the two references (1% and 9%), so there are no large flat fills; the stair treads and frame bevels carry variation. The dark edge pixels are 100% neutral, but both shipped references measure the same, so this outline treatment is the accepted standard of this chipset rather than a flaw. Shading is slightly shallower than the door (about 5 steps against 6), and the piece is simpler and smaller, so density is slightly lower. A careful artist would still accept it beside the references, since it does not look flatter or more sticker-like than the window wall.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 1행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 1행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 19346
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lintel beam (top of frame)",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "3"
+     },
+     {
+      "part": "side posts of frame",
+      "rows": "1-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark stairwell opening",
+      "rows": "3-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "descending stair steps inside opening",
+      "rows": "14-29",
+      "evidence": "d",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a rectangular doorway frame seen face-on. The lintel (rows 1-3) is a thin front-facing strip: a light row 1, a brown row 2 and a dark row 3. It has no band ending in a front-edge line and no sloped roof, so it counts as a 1-2 row rim. The posts are vertical faces with no top surface. The dark opening below (rows 3-13) is a vertical void. The stairs inside (rows 14-29) show some step edges at rows 14, 18 and 23, but they are small details within the opening. The frame itself reads as a flat front elevation with no real top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small stair-down alcove: a brown wood frame around a dark opening with grey steps. It reads cleanly and has 8 visible tones per tile, which is between the two references (15 for the door, 7 for the window wall). Near-flat coverage is 4%, so there are no large flat fills. The dark edge pixels are 100% near-neutral, but the references show the same value (100%), so this matches the shipped wizarding_world standard. The wood frame has a light and a dark edge, and the steps have 3-4 grey values with a small plaque detail. The piece is much smaller than a full wall tile, and the references have richer stone-course texture, per-block highlights and metal studs. The candidate's frame is thin with few shading steps, and the surrounding area is the flat background. It is a little flatter than the door reference but comparable to the window wall. It is close to acceptable next to the references without looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15901
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lintel/top beam of the frame",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side posts of the frame",
+      "rows": "1-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper step (tread line)",
+      "rows": "14-14",
+      "evidence": "none",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle step block",
+      "rows": "18-22",
+      "evidence": "none",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom step / landing",
+      "rows": "23-29",
+      "evidence": "none",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The structure is a doorframe seen face-on. The lintel (rows 1-3) is a front-facing strip: tan row 1, brown row 2, dark row 3, with no edge line and no roof slope. The posts are vertical faces. The opening (rows 4-13) is a flat dark panel. The stairs inside appear as stacked 1-row light lines at rows 14, 18 and 23 over risers of 3-5 rows. Each tread is only a 1-2 row lip, so it reads as a rim and not as a foreshortened top plane. No major part shows a horizontal surface of 3+ rows, so this is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small wall alcove: a wood frame with a lit top edge and darker sides, around a dark interior with stepped grey stairs and a light tread highlight. The frame has about 3 wood tones and the stairs about 3-4 grey steps, so roughly 5 steps overall. That is slightly below the references' 6-7, but the piece is much smaller. Measured facts: 8 visible tones per tile against 15 for the door and 7 for the window wall, so it sits between the two and above the wall reference. Near-flat coverage is 4%, lower than the window wall's 9% and close to the door's 1%, so there are no large flat fills. The dark edge pixels are 100% neutral, but both shipped references are also 100% neutral, so that is the chipset's accepted treatment. Because the references use the same neutral dark edges, I call the outline mixed rather than a sticker line. The frame and step lines separate forms by value, much like the references. A careful artist would accept it next to these references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18004
+  }
+ ],
+ "decidedAt": "2026-10-22T16:30:52.552Z",
+ "cells": {
+  "16": [
+   "257fb39539e6b984",
+   "43a02e44f8bef388",
+   "6618c4ccf005deee",
+   "cecc92ae2e043bb9"
+  ],
+  "24": [
+   "028e53929608ed5d",
+   "03deb0bd55c1e5ff",
+   "05f022117958bfdf",
+   "1120fa5d6a1a2753",
+   "1b741e9ce60e72fc",
+   "35a546df49c3ee2d",
+   "412ab21558d28933",
+   "42169987e2bbbd56",
+   "54b33223771e1909",
+   "685e091a0873e8ea",
+   "70c8a1188d337879",
+   "8236dd281fb3679d",
+   "8926b32a9e454165",
+   "adad3a896b3d116e",
+   "b23b59e1238f0ca9",
+   "b28d9ebe5f89f3fe",
+   "b73478526459ad7f",
+   "be490e2d96985f2c",
+   "bf7093b6684cc127",
+   "cdf8fd47b08e573e",
+   "dc6553473250a066",
+   "e3c7dad2a1ec7c67",
+   "e833bae11b8383d9",
+   "ff50dfc114a53a01"
+  ],
+  "32": [
+   "9dfb7e8f23a82640"
+  ],
+  "48": [
+   "030dba95c202886b",
+   "1d7b91976cf04ec1",
+   "407779a6c8c4ec68",
+   "4cb0beb55c23b906",
+   "59a4ac740d3fb88b",
+   "b3131268ed4a0f5b"
+  ]
+ }
+}
