@@ -414,7 +414,7 @@ def eligible(theme, rid, line, building=None, parts_by_key=None):
                 continue
             res = AS.assemble(recipe, parts_by_key[key], dot.palette(theme), theme)
             if res['img'] is None:
-                skipped.append((bid, '조립 불가'))
+                skipped.append((bid, f'needs drawing: {", ".join(res["needsDrawing"])}' if res.get('needsDrawing') else '조립 불가'))
                 continue
             bad = AS.run_checks(res)
             if bad:

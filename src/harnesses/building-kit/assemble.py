@@ -225,6 +225,24 @@ def needed(recipe):
             out.add(ex['part'])
     return out
 
+def needs_drawing(recipe, have):
+    """레시피가 쓰는데 have(부품 id 모음 — parts dict·후보 항목 집합)에 없는 부품을 「항목 조각」으로(예 'roof.gf.valley v4').
+    물러나는 지붕은 쓰는 조각 role(뒤 끝 v<폭>·앞 g<폭>·사면 띠)까지, 나머지는 항목 id 만 적는다."""
+    out = []
+    for m in masses(recipe):
+        roles = {}
+        if m['kind'] in RECEDING:
+            back_role, front_role = end_roles(m)
+            for item, rs in ((m.get('back'), [back_role]), (m.get('gable'), [front_role]),
+                             (m.get('roof'), list(dict.fromkeys(body_roles(m))))):
+                roles.setdefault(item, []).extend(r for r in rs if r not in roles.get(item, []))
+        used = [m.get(k) for k in ('roof', 'wall', 'band', 'base', 'gable', 'back')]
+        used += [r.get('item') for r in m['walls']] + [ex.get('part') for ex in m.get('extras') or []]
+        for item in used:
+            if item and item not in have:
+                out += [f'{item} {r}' for r in roles[item]] if roles.get(item) else [item]
+    return list(dict.fromkeys(out))
+
 def _mass_height(plan):
     return plan['rh'] + sum(w['h'] for w in plan['walls']) + plan['bands'] * plan['band_h'] + plan['base_h']
 
@@ -257,8 +275,10 @@ def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=N
     lift = (lambda p: p['depth']) if depth_ground else (lambda p: 0)
     missing = sorted(needed(recipe) - set(items))
     if missing:
-        return {'img': None, 'kit': None, 'pieces': [], 'door': None, 'masses': [],
-                'checks': [_r('A0', 'FAIL', False, f'부품이 없다: {", ".join(missing)}')]}
+        nd = needs_drawing(recipe, items)
+        return {'img': None, 'kit': None, 'pieces': [], 'door': None, 'masses': [], 'needsDrawing': nd,
+                'checks': [_r('A0', 'FAIL', False, f'부품이 없다 — needs drawing: {", ".join(nd)} '
+                              '(이 판에서 아직 안 그렸거나 고른 그림이 없다 — 이 건물만 건너뛰고 다른 건물은 그대로 조립한다)')]}
 
     plans = []
     for m in masses(recipe):

@@ -225,7 +225,8 @@ def plan(theme, rid, line, seed=0, size=DEFAULT_SIZE, all_=False, parts=None, fi
     for recipe in recipes:
         res = AS.assemble(recipe, parts, dot.palette(theme), theme)
         if res['img'] is None or AS.run_checks(res):
-            skipped.append((recipe['id'], '조립 관문 FAIL'))
+            skipped.append((recipe['id'], f'needs drawing: {", ".join(res["needsDrawing"])}' if res.get('needsDrawing')
+                            else '조립 관문 FAIL'))
             continue
         im = res['img'].img()
         bid = f'{line}.{recipe["id"]}'

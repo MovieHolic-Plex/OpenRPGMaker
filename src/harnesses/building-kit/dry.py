@@ -135,7 +135,8 @@ def assemble_all(theme, parts, rid=None):
     for recipe in harness_round_buildings(theme, rid):
         missing = sorted(needed(recipe) - set(parts))
         res = None if missing else AS.assemble(recipe, parts, dot.palette(theme), theme)
-        rows.append({'recipe': recipe, 'res': res, 'missing': missing, 'fails': AS.run_checks(res) if res else []})
+        rows.append({'recipe': recipe, 'res': res, 'missing': missing, 'needs': AS.needs_drawing(recipe, parts) if missing else [],
+                     'fails': AS.run_checks(res) if res else []})
     return rows
 
 def harness_round_buildings(theme, rid):
@@ -232,7 +233,11 @@ def run(theme, rid, key, module=None, out=None, quiet=False):
         recipe = row['recipe']
         if row['missing']:
             if not quiet:
-                print(f'  {recipe["id"]:18} 건너뜀 — 이번 판 밖 부품 {", ".join(row["missing"])}')
+                todo = [n for n in row['needs'] if n.split(' ')[0] in rd['items']]
+                other = [i for i in row['missing'] if i not in rd['items']]
+                print(f'  {recipe["id"]:18} 건너뜀 — '
+                      + ' · '.join(([f'needs drawing: {", ".join(todo)}'] if todo else [])
+                                   + ([f'이번 판 밖 부품 {", ".join(other)}'] if other else [])))
             continue
         bad_total += len(row['fails'])
         if row['res']['img'] is not None:

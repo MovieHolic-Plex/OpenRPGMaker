@@ -326,7 +326,9 @@ def cmd_assemble(theme, rid, line='A', key=None, quiet=False):
     L['assemblies'] = L['assemblies'][-40:]
     save_ledger(theme, L)
     if not quiet:
-        print(f'조립 {len(rows)}채 · FAIL {len(fails)} → {os.path.relpath(base, REPO)}/')
+        needs = [f'{r["recipe"]["id"]} ({", ".join(r["res"]["needsDrawing"])})' for r in rows if r['res'].get('needsDrawing')]
+        print(f'조립 {len(rows)}채 · FAIL {len(fails)} → {os.path.relpath(base, REPO)}/'
+              + (f' · needs drawing {len(needs)}채: {"; ".join(needs)}' if needs else ''))
     return rows, fails
 
 
@@ -536,7 +538,12 @@ def cmd_validate(theme):
                 continue
             if item not in mod.CANDIDATES:
                 if reuse:
-                    notes.append(f'판 {rid}: {item} 은 {reuse} 에 없어 이 판에서 그려야 한다(다시 그릴 것)')
+                    users = [b for b in AS.round_buildings(theme, rid) if item in AS.needed(b)]
+                    nd = list(dict.fromkeys(n for b in users for n in AS.needs_drawing(b, set(mod.CANDIDATES))
+                                            if n.split(' ')[0] == item))
+                    notes.append(f'판 {rid}: {item} 은 {reuse} 에 없어 이 판에서 그려야 한다(다시 그릴 것)'
+                                 + (f' — needs drawing: {", ".join(nd)}; 그릴 때까지 {", ".join(b["id"] for b in users)} 는 '
+                                    '조립을 건너뛰고 다른 건물은 그대로 조립된다' if nd else ''))
                 else:
                     errs.append(f'판 {rid}: 모듈에 {item} 후보가 없다')
                 continue
