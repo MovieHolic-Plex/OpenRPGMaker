@@ -37,3 +37,11 @@
 - `scripts/content/stairs/fit-bundled-places.mts [--write]` — 공용 장소의 이동·도착만 계약대로(그림·지형은 안 바꾼다).
 - 2026-10-22 결과: 공용 장소 경고 13 → 7(남은 것은 계단 그림이 남쪽 벽에 붙은 배치 5곳 + 학교 2층→3층 짝: 3층 내려가는 계단통이 막혀 짝을 못 옮김).
   방 견본 원 좌표 11건(예제 맵에서 자른 견본이 계단을 방 남쪽 끝에 둠) — 실제 조립은 furnish 가 막힌 자리를 피한다.
+- 2026-10-22 후속: 공용 장소 경고 7 → 0. `scripts/content/stairs/move-shipped-stairs.mts --write` 가 남쪽 벽에 붙은 계단 그림 5곳
+  (단독주택 2층 · 맨션 외복도 · 학교 3층 · 시계탑 · 부엉이 탑)을 한 줄 위로 옮기고(계단 칸만, 비운 줄은 그 방 바닥),
+  `fit-bundled-places.mts --write` 가 층 이동·도착을 다시 맞췄다 — 학교 2층 오르는 계단은 이제 3층 내려가는 계단통 앞 (23,13) 에 내린다.
+  마법 학교 두 곳은 정본 `tiledata/wizarding/spaces/*.json` 을 고치고 같은 층 값을 게시본(`public/…/wz-space-*.oprn.json`·`src/project/regionReferences/wz-space-*.json`·미리보기 PNG)에 옮겼다
+  (`publish_places_wz.py` 는 지금 없는 템플릿 `interior-inn-tavern-1f.oprn.json` 을 읽어 멈춘다).
+  남은 것: 일본 예제 JSON(`tiledata/jp-city/interior/examples/school-3f.json`·`mansion-corridor.json`)과 마법 학교 레시피(`space_recipes.py` 의 계단 `corner`·`access=False`)는
+  옛 자리 그대로다 — 다시 지어 게시하면 조립기 검사(`stair-entrance-blocked`)가 먼저 막는다. 검사 ①(짝 방향)은 도착 칸에 가장 가까운 계단을 본다(나란한 두 계단에서 첫 계단을 잡던 것).
+  출하 플레이어 걷기: `scripts/qa/runtime/stair-moved.scenario.mjs`(다섯 곳을 모은 픽스처, 6비트).
