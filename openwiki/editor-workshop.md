@@ -6,8 +6,15 @@
 - **같은 날 2차(「허접하다」 지적 → 상용 수준 재디자인, PR workshop-gens-2):** 쓸 수 있는 카드(물건·캐릭터)는 위에 크게 —
   **실제 견본 도트 띠**(원래 크기 PNG 124×58 를 2배 정수 배율, 견본 바탕 #181b22) + 제목·상태 + 한 줄 소개 + **주 단추 하나**(보조는 글자 단추).
   곧 들어올 카드(아이템)는 「곧 들어올 생성기」 아래 작게, 단추 없음. 견본이 없는 생성기는 그림 띠 대신 「견본은 첫 결과가 나오면 올라와요」 빈 띠를 쓴다. 지형(tile-gen) 카드는 견본을 비워 둔다 — 한때 실었던 풀밭 견본(tile-gen 첫 세션)은 겨냥한 beodeul_city 의 땅·나무·길·물 칸이 EasyRPG 계열이라 그 화풍 흉내가 되어 tile-gen 쪽이 거둬들였고 카드에서도 뺐다(2026-10-21). jp_city·코드 도트 버들항 키트를 겨냥한 결과가 독립 검수를 통과하면 그때 싣는다(카드 띠 모서리 표 `sample.caption` 은 그때 「견본 출력」 등으로 쓴다). 색·간격·모서리는 편집기 토큰(`--accent`·`--success-muted`·`--radius-m` …)만 쓴다.
-  견본 출처: object-gen 저장소 `docs/images/hero.png` 에서 고른 기물 3개(같은 조직 1차 그림) · char-gen 저장소 자체 더미 칩 `examples/bases/dummy_a/b` 와 그 편집 결과
-  (`public/assets/workshop/*-sample.png`). char-gen 갤러리 그림은 Scarloxy(제3자) 바탕이라 쓰지 않았다.
+  견본 출처: object-gen 저장소 `docs/images/hero.png` 에서 고른 기물 3개(같은 조직 1차 그림) · char-gen 은 실제 결과물(2026-10-22 교체):
+  데모 캐릭터 상반신(정수 1/7 칸 평균) + char-gen 칩 셋(정수 2배)(Scarloxy People1 바탕, CC BY 4.0 — 저장소에 이미 번들된 팩, 출처 `public/assets/ATTRIBUTION.md`
+  「Workshop character card sample」)을 버들항 마당 길 위에 세운 그림(`public/assets/workshop/*-sample.png`). 전 견본(char-gen 더미 바탕 칩
+  `examples/bases/dummy_a/b`, 윤곽·명암 없음)은 사용자가 「사람이 어색하다, 고급지게」라고 해서 뺐다.
+- **부탁 글 칸(2026-10-22):** 글칸에는 사람이 읽는 부탁만 보이고, 「생성기 판」 줄(git 명령·커밋)은 복사할 때 붙는다(`requestBox`). 글칸 위 이름표는 「내 AI 에이전트에게 보낼 부탁」, 판은 복사 단추 풀이말에만. 사람 화면이 열려 있는 동안 작업 줄 알약은 숨는다(공방 큰 화면과 같게).
+- **사람 묶음 미리 보기(2026-10-22, `castPreview.ts`):** `content.characters` 가 있는 묶음은 파일을 늘어놓지 않고 사람 하나에 한 칸 —
+  앞모습(아래 방향)을 정수 3배로 걷게(1·0·1·2, 190ms, reduced-motion 이면 멈춤) + 짝 얼굴 48×48 정수 2배 + 「얼굴·초상 N장 · 표정 N개」.
+  작업 줄 작은 그림은 앞모습 머리~허리 2배(칸 아래 가장자리에 붙임)(밝은 바탕 `.wq-thumb.is-cast`). 전에는 시트(288×256)를 통째로 0.8배 흐리게 줄이고
+  700px 초상도 흐리게 줄여 물건용 갈색 바닥에 올렸다 — 그림이 아니라 보여 주기가 싸 보인 원인. 캡처 `scripts/qa/workshop-people-capture.mjs`.
 
 | 카드 | 생성기 | 상태 | 하는 일 |
 |---|---|---|---|
