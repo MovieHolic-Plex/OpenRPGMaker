@@ -653,11 +653,15 @@ for mp in MAPS:
     for li, ln in enumerate(m.get('links', ())):
         if ln['to'] not in MAP_ID: continue
         tgt = next(t for t in MAPS if t['key'] == ln['to'])
-        # arrive on the walkable cell just south of the target stairs (not on the stairs: no bounce)
-        tx, ty = ln['toX'] + 1, ln['toY'] + 1
+        # arrive on the walkable cell just south of the target stairs (not on the stairs: no bounce), back to the stairs.
+        # Stair entrance contract (src/assets/stairContracts.json): an up stair's link row is its floor row (approach = row + 1);
+        # a stairwell-down hole is 2 rows deep — its move cells are the bottom row (y + 1) and its approach is y + 2.
+        back_down = any(l2['kind'] == 'stairs_down' for l2 in tgt['m'].get('links', ()) if l2.get('to') == mp['key'])
+        tx, ty = ln['toX'] + 1, ln['toY'] + (2 if back_down else 1)
+        ey = ln['y'] + (1 if ln['kind'] == 'stairs_down' else 0)
         for dx in range(ln.get('w', 1)):
             events.append(transfer_event(f'{MAP_ID[mp["key"]]}-stairs-{li}-{dx}', ('위층으로' if ln['kind'] == 'stairs_up' else '아래층으로'),
-                                         ln['x'] + dx, ln['y'], MAP_ID[ln['to']], tx, ty, 'down'))
+                                         ln['x'] + dx, ey, MAP_ID[ln['to']], tx, ty, 'down'))
     start = [tuple(s) for s in (m.get('start') or [(x, H - 1) for x in range(W) if (x, H - 1) in mp['seen']])]
     out_maps[MAP_ID[mp['key']]] = {'id': MAP_ID[mp['key']], 'name': f'손 도트 · {m["name"]}', 'width': W, 'height': H, 'tilesetId': 'atlas_biome_interior', 'tileSize': 16,
                                     'lowerTiles': mp['lower'], 'lowerOverlayTiles': mp['L2'], 'upperTiles': mp['L3'], 'upperOverlayTiles': mp['L4'], 'events': events,

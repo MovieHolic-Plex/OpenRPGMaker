@@ -1,0 +1,16 @@
+{
+ "round": 1,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "abi-stairs-v5",
+ "images": "http://mdc-server:18301/jp-stairs-1/interior-v5/r1/kits-4x.png (+ scene 1x/3x and before/)",
+ "pieces": [
+  "stairs up stone",
+  "stairs up wood",
+  "stairs down",
+  "stairwell down"
+ ],
+ "rubric": "axis 2 (style/palette/3/4 fit) + axis 6 (1x readability incl. up/down direction)",
+ "majors": 9,
+ "verdict": "FAIL",
+ "summary": "PIECE 1 stairs-up-stone: reads yes (weakly); direction yes. [major] cool blue-steel palette vs warm purple-grey dungeon; [major] risers boxed in near-black outlines read as drawers; [minor] taper stutters; [minor] opening flat black, no lintel; [minor] handrail 1px seam.\nPIECE 2 stairs-up-wood: reads yes; direction yes. [minor] newel caps mid-height read as landing; [minor] speckled outer panels; [minor] no contact row.\nPIECE 3 stairs-down: reads NO. [major] reads as oven/cabinet: thick light frame, bands like louvres; [major] treads no planar read, highlight on north edge; [major] steel palette, speckled south strip.\nPIECE 4 stairwell-down: reads NO (ambiguous). [major] reads as crib/fireplace; [major] sandy south strip reads as doormat; [minor] north balustrade flush.\nSCENE: [major] cellar box no shadow reads free-standing; [major] dungeon stair foreign palette; [minor] wood up best.\nAXIS2 5, AXIS6 5. MAJORS TOTAL: 9\n"
+}

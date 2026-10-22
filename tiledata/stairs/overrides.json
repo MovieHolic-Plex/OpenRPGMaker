@@ -1,17 +1,29 @@
 {
  "atlas_biome_interior": {
-  "hand-interior:stairs down": {},
-  "hand-interior:stairs up stone": {},
-  "hand-interior:stairs up wood": {},
-  "hand-interior:stairwell down": {},
+  "hand-interior:stairs down": {
+   "why": "내려가는 계단(바닥 구멍). 들어서는 쪽 남쪽, 내려갈 때 북쪽을 본다. 도착: 아래층 올라가는 계단 남쪽 앞 칸, 계단을 등지고 남쪽을 본다."
+  },
+  "hand-interior:stairs up stone": {
+   "why": "올라가는 계단. 들어서는 쪽 남쪽, 오를 때 북쪽을 본다. 도착: 위층 내려가는 계단통 남쪽 앞 칸, 계단을 등지고 남쪽을 본다."
+  },
+  "hand-interior:stairs up wood": {
+   "why": "올라가는 계단. 들어서는 쪽 남쪽, 오를 때 북쪽을 본다. 도착: 위층 내려가는 계단통(같은 x·y) 남쪽 앞 칸, 계단을 등지고 남쪽을 본다."
+  },
+  "hand-interior:stairwell down": {
+   "why": "내려가는 계단(위층 바닥 구멍). 들어서는 쪽 남쪽, 내려갈 때 북쪽을 본다. 도착: 아래층 올라가는 계단(같은 x·y) 남쪽 앞 칸, 계단을 등지고 남쪽을 본다."
+  },
   "hand-interior:spiral stair": {
    "trigger": [[0,3]],
    "approach": [[0,4]],
    "mode": "bump",
-   "why": "맨 아래 디딤돌은 왼쪽 아래 칸 하나 — 오른쪽 아래 칸은 빈 기둥 밑"
+   "why": "올라가는 나선 계단. 맨 아래 디딤돌은 왼쪽 아래 칸 하나 — 오른쪽 아래 칸은 빈 기둥 밑. 들어서는 쪽 남쪽(왼쪽 아래 앞 칸에서 부딪힌다), 오를 때 북쪽. 도착: 위층 내려가는 계단 남쪽 앞 칸, 계단을 등지고 남쪽을 본다."
   },
-  "hand-interior:trapdoor": {},
-  "hand-interior:ship ladder": {},
+  "hand-interior:trapdoor": {
+   "why": "내려가는 뚜껑문. 들어서는 쪽 어느 옆이든, 밟으면 내려간다. 도착: 아래층 올라가는 계단·사다리 앞 칸, 그것을 등진다."
+  },
+  "hand-interior:ship ladder": {
+   "why": "올라가는 사다리. 들어서는 쪽 남쪽(앞 칸에서 부딪힌다), 오를 때 북쪽. 도착: 위 갑판 내려가는 승강구 남쪽 앞 칸, 등지고 남쪽을 본다."
+  },
   "hand-interior:star seal open": {},
   "hand-interior:dais steps stone": {
    "leads": "same",

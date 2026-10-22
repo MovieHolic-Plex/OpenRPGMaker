@@ -1,0 +1,18 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "bc05701165e5d112a6270925f8476996900894fca0ed7a0e42533e0e4f78dab4",
+ "profileHash": "4d8774b517f41638",
+ "kind": "flat",
+ "decision": "allow",
+ "decidedBy": "supervisor (stairs-interior-v5 worker)",
+ "decidedAt": "2026-10-22T12:36:04.988Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/abi-stairs-v5.opus-vqa-r17.json",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 종류 판정이 갈림(맞다 2/4) — 면제 종류는 과반이 아니라 3/4 이상이 맞다고 해야 통과"
+ ],
+ "note": "delegated by user to supervisor 2026-10-22 — Opus adversarial VQA majors=0",
+ "sig": "ee46bf1bd1c5a217c102b2e4c77dcdd4dc424bde0060eb0491c3921d7049a02b"
+}

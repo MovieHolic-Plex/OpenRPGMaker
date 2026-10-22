@@ -1,0 +1,16 @@
+{
+ "round": 16,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "abi-stairs-v5",
+ "images": "http://mdc-server:18301/jp-stairs-1/interior-v5/r16/kits-4x.png (+ scene 1x/3x and before/)",
+ "pieces": [
+  "stairs up stone",
+  "stairs up wood",
+  "stairs down",
+  "stairwell down"
+ ],
+ "rubric": "axis 2 (style/palette/3/4 fit) + axis 6 (1x readability incl. up/down direction)",
+ "majors": 1,
+ "verdict": "FAIL",
+ "summary": "P1 up stone yes/yes: minors (dotted opening reads as grate, tread value jump, speckled pillar bases).\nP2 up wood yes/yes: minors (dotted opening, corner trim around bottom step).\nP3 stairs down yes/yes: minors (rail gaps, south curb band with seams, W/E rails without posts).\nP4 stairwell down NO at 1x / direction yes: [major] reads as fireplace/dark alcove — only one light step, steps 2-4 dark brown on black; dark south plinth band. minors: W/E rails no posts.\nAXIS2 7, AXIS6 6. MAJORS 1\n"
+}

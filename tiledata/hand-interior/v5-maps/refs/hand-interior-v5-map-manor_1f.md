@@ -2,7 +2,7 @@
 
 맵 hand-manor-1f · 25×20 · 바닥 dplank · 벽 plaster · 천장 default. 방: 하녀 방 · 창고 · 현관 홀 · 부엌 · 뒤 복도(서) · 뒤 복도(동) · 응접실 · 식당.
 원본 검사(build_tileset.py): 원본 합성과 픽셀 차 0(12프레임 전부) · 통행 격자 불일치 0 · 닿는 칸 178.
-층 이동: (11,3) → hand-manor-2f (12,4) · (12,3) → hand-manor-2f (12,4) · (13,3) → hand-manor-2f (12,4)
+층 이동: (11,3) → hand-manor-2f (12,5) · (12,3) → hand-manor-2f (12,5) · (13,3) → hand-manor-2f (12,5)
 그림: `hand-interior-manor_1f`. 좌표를 그대로 복사하지 말고 방 짜임(칸막이·문·동선·가구 무리)을 배운다.
 
 ## 평면
