@@ -149,6 +149,8 @@ SQLite revision 7 저장·재로드와 전용 플레이어 8비트(모든 집 �
   성벽 마을은 street 로 바꾼다(강이 성벽을 뚫었다). 12d 가 성벽에 끊긴 길 토막을 `analyzeCityForm` 막다른 끝 기준으로 깎는다 —
   성문에서 각 집 문 앞까지 길 경로는 보호하고, 그 경로와 2×2 길 덩이를 이루는 옆 칸도 지킨다(길은 두 칸 폭으로 그려져 한 칸만 남기면 풀밭처럼 보였다 —
   Opus VQA r6). 6개 시험에서 남은 막다른 끝은 집 문 앞에서 끝나는 길과 설원 바위 앞 2칸뿐. 증명 사본의 성벽 마을 그림(seed 7)은 riverbank→street 규칙 전이라 강이 성벽을 지났다 — 지금 코드는 street·강 없음.
+  Opus VQA r7(`harness-data/object-gate/vqa/beodeul-town-wall-layout-r7/receipt.json`): 넓혀 다시 짓기·강 없음 통과, 성벽 앞 토막 없음. 남은 것: 갈래길은 원래 한 칸 폭(성벽 없는 마을과 같음),
+  남문 새 길(southGateRoad)을 칠할 때 옆 열에 길 가장자리 오토타일이 번져 그 위에 들꽃이 놓인다(seed 7 (23,31)), 사막 성벽 마을 아래쪽 빈 모래 띠.
   미해결 별건(VQA r6): 설원 오두막(snowfield-hut)에서 문 그림 바로 아래 칸에 장작이 놓이고 문 앞 길이 한 칸 옆에서 시작한다 — 도구가 계산한 문 앞(칸 메타)과 그림 문 열이 어긋나는 것으로 보이며 성벽 단계와 무관, 따로 확인할 것.
 - **검수**: 새 Opus 적대 VQA 5판(`harness-data/object-gate/vqa/beodeul-town-wall-r1..r5/receipt.json` — r1 FAIL 회색·매끈·끝 마감, r3 FAIL T자 이음,
   r4·r5 PASS). object-gate 그림 6장은 프로필 미보정이라 AI 판정은 참고(둘레·망루·동쪽 틈 FAIL 화풍/정면 인상, 부품·열린 성문 REFER, 닫힌 성문 PASS)이고,
