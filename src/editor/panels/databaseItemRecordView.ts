@@ -565,7 +565,7 @@ function equipmentRedirect(form: HTMLElement): HTMLElement {
  */
 export function itemSummarySentence(project: Project, record: ItemRecord): string {
   const story = itemEffectStory(project, record);
-  if (story.occasion === "사용 불가") return `사용하는 물건이 아닙니다 · ${story.consumption}.`;
+  if (story.occasion === "사용 불가") return "사용하는 물건이 아닙니다.";
   const target = story.target === "대상 없음" ? "" : `${story.target}에게 `;
   return `사용하면 ${target}${story.effects.join(", ")} · ${story.occasion}에서 · ${story.consumption}.`;
 }
