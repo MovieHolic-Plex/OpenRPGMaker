@@ -350,7 +350,7 @@ function authorDungeon(draft: Project, args: Record<string, unknown>): ToolExecR
       if (line) filled.push(`${draft.maps[mapIds[i]!]!.name}: ${line}`);
       // 계획 자리(enemies 7·chests 7 같은 후보 목록)를 그대로 두면 조수가 그 수를 「상자 7개」로 답했다(2026-10-23 VQA). 채운 뒤에는 실제로 놓인 수만 남긴다.
       const plan = field(d, "population");
-      d.population = { ...(plan.lockedGate && args.puzzle === "lever" ? { lockedGate: plan.lockedGate } : {}), note: "채움 완료 — 놓인 이벤트 수는 placed 에 있다. 계획 후보 자리는 지웠다." };
+      d.population = { ...(field(plan, "lockedGate") && args.puzzle === "lever" ? { lockedGate: field(plan, "lockedGate") } : {}), note: "채움 완료 — 놓인 이벤트 수는 placed 에 있다. 계획 후보 자리는 지웠다." };
       d.placed = placed;
       placedTotal.enemies += placed.enemies; placedTotal.chests += placed.chests; placedTotal.boss += placed.boss; placedTotal.guardian += placed.guardian; placedTotal.save += placed.save;
     });

@@ -14,7 +14,8 @@ const transferOf = (e: GameMap["events"][number]) => (e.pages?.[0]?.commands ?? 
 const blockers = (map: GameMap) => map.events.filter((e) => e.pages?.[0]?.priority === "same" && !e.pages?.[0]?.graphic?.transparent);
 function bfs(map: GameMap, from: P, goal: (p: P) => boolean, avoid: Set<string>, allowGoalBlocked: Set<string>): P[] | null {
   const key = (p: P) => `${p.x},${p.y}`;
-  const block = new Set(blockers(map).map((e) => `${e.x},${e.y}`));
+  // 다른 이동 이벤트 칸(아래층으로 돌아가는 계단 등)도 밟지 않는다 — 밟으면 영상 중간에 층이 바뀐다.
+  const block = new Set([...blockers(map), ...map.events.filter((e) => transferOf(e))].map((e) => `${e.x},${e.y}`));
   const prev = new Map<string, string>([[key(from), ""]]);
   const q: P[] = [from];
   while (q.length) {
