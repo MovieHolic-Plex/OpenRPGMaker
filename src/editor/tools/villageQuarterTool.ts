@@ -210,6 +210,20 @@ function openPlaza(draft: Project, map: GameMap, plaza: NonNullable<QuarterDef["
     }
     return true;
   };
+  // 마당(자연 이식 칸을 아는 경우): 나무 덩이 크기를 먼저 잰다. 숲(24칸 넘는 덩이)을 건드리는 자리는 고르지 않는다 — 숲을 깎으면 계단처럼 잘린 수관·반쪽 나무가 남는다.
+  const compSize = new Int32Array(W * H);
+  if (softTiles.size) {
+    const seen = new Uint8Array(W * H);
+    for (let i0 = 0; i0 < W * H; i0++) {
+      if (seen[i0] || upper(i0) < 0 || !softOrOverlap(upper(i0))) continue;
+      const comp = [i0]; seen[i0] = 1;
+      for (let q = 0; q < comp.length; q++) { const i = comp[q]!, x = i % W, y = (i - x) / W;
+        for (const j of [x > 0 ? i - 1 : -1, x < W - 1 ? i + 1 : -1, y > 0 ? i - W : -1, y < H - 1 ? i + W : -1]) {
+          if (j < 0 || seen[j] || upper(j) < 0 || !softOrOverlap(upper(j))) continue; seen[j] = 1; comp.push(j); } }
+      for (const i of comp) compSize[i] = comp.length;
+    }
+  }
+  const FOREST = 24;
   let best: { box: Box; score: number; clear: number[] } | null = null;
   for (let y = 1; y + plaza.h < H - 1; y++) for (let x = 1; x + plaza.w < W - 1; x++) {
     let ok = true;
@@ -221,11 +235,13 @@ function openPlaza(draft: Project, map: GameMap, plaza: NonNullable<QuarterDef["
     if (!ok) continue;
     if (softTiles.size && map.relief && !sameLevel(x, y, plaza.w, plaza.h)) continue;
     const clear: number[] = [];
+    let forestCut = 0;
     for (let yy = y - RING; yy < y + plaza.h + RING && ok; yy++) for (let xx = x - RING; xx < x + plaza.w + RING && ok; xx++) {
       if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue;
       const i = yy * W + xx;
       if (upper(i) < 0) continue;
       if (!softOrOverlap(upper(i))) { ok = false; break; }
+      if (softTiles.size && compSize[i]! > FOREST) forestCut++;
       clear.push(i);
     }
     if (!ok) continue;
@@ -234,7 +250,7 @@ function openPlaza(draft: Project, map: GameMap, plaza: NonNullable<QuarterDef["
     for (let xx = x; xx < x + plaza.w; xx++) { if (isRoad(xx, y - 1)) road++; if (isRoad(xx, y + plaza.h)) road++; }
     for (let yy = y; yy < y + plaza.h; yy++) { if (isRoad(x - 1, yy)) road++; if (isRoad(x + plaza.w, yy)) road++; }
     const c = near ?? { x: W / 2, y: H / 2 };
-    const score = road * 4 - Math.hypot(x + plaza.w / 2 - c.x, y + plaza.h / 2 - c.y) * 0.5 - clear.length * 0.15;
+    const score = road * 4 - Math.hypot(x + plaza.w / 2 - c.x, y + plaza.h / 2 - c.y) * 0.5 - clear.length * 0.15 - forestCut * 2; // r2: 숲 가장자리를 베면 계단 모양 끝이 남는다 — 숲을 덜 베는 자리를 고른다.
     if (!best || score > best.score) best = { box: { x, y, w: plaza.w, h: plaza.h }, score, clear };
   }
   if (!best) return null;
@@ -352,7 +368,11 @@ function yardPlaza(draft: Project, map: GameMap, yard: NonNullable<QuarterDef["y
   if (!grass.size || !ground.length) return null;
   // 버들항 자연 시트에서 이식한 칸(나무·꽃·풀 무늬)은 tileMeta 태그가 비어 있다 — 출처 시트로 «걷어도 되는 칸»을 가린다.
   const softTiles = (ts.tileGrafts ?? []).filter((g) => g.sourceChipset === "tex_beodeul_nature").map((g) => g.targetTile);
-  return { group, plaza: { w: yard.w, h: yard.h, ground, grass: [...grass], soft: BEODEUL_YARD_SOFT, softTiles, roads: BEODEUL_YARD_ROADS } };
+  // 귀 채우기가 아닌 마당(신전 폐허)은 맵마다 크기를 조금 달리한다 — 같은 크기면 같은 조각이 같은 자리에만 들어가 두 맵이 한 도장으로 읽혔다(r2).
+  let hsh = 2166136261;
+  for (let i = 0; i < map.lowerTiles.length; i += 7) hsh = Math.imul(hsh ^ (map.lowerTiles[i]! + 1), 16777619) >>> 0;
+  const jw = yard.pack === "corner" ? 0 : (hsh % 5) - 1, jh = yard.pack === "corner" ? 0 : ((hsh >>> 8) % 3) - 1;
+  return { group, plaza: { w: yard.w + jw, h: yard.h + jh, ground, grass: [...grass], soft: BEODEUL_YARD_SOFT, softTiles, roads: BEODEUL_YARD_ROADS } };
 }
 
 /** 마당 칸(그룹 멤버)을 8방 이웃으로 다시 맞춘다 — 가장자리·바깥 모서리·안쪽 모서리. 꽉 찬 칸은 속 변형을 해시로 섞는다. */
@@ -386,6 +406,7 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
   const W = map.width, H = map.height;
   // 마당을 새로 내는 덩이(조선 장터)는 먼저 마당을 깔고 그 안에 좌판을 세운다.
   let plazaBox: Box | null = null;
+  let yardFreeAnchor = false;
   let yardGroup: YardGroup | null = null;
   if (quarter.yard) {
     const y = yardPlaza(draft, map, quarter.yard);
@@ -397,7 +418,8 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
         ?? openPlaza(draft, map, { ...p, w: p.w - 8, h: p.h - 4 }, opts.near ?? null);
       if (!plazaBox) throw new ToolError(`「${quarter.ko}」 마당(${p.w}×${p.h}, 길에 맞닿은 풀밭·나무 자리)을 낼 곳이 없다 — 마을을 더 크게(width·height) 짓거나 near 를 준다.`, { code: "no-quarter-slot", mapId: map.id });
       shapeYard(map, yardGroup);
-      opts = { ...opts, near: quarter.yard.pack === "corner" ? { x: plazaBox.x + 1, y: plazaBox.y } : { x: plazaBox.x + Math.floor(plazaBox.w / 2), y: plazaBox.y + Math.floor(plazaBox.h / 2) } };
+      if (quarter.yard.pack === "corner") opts = { ...opts, near: { x: plazaBox.x + 1, y: plazaBox.y } };
+      else if (!opts.near) yardFreeAnchor = true;
     }
   }
   if (quarter.plaza) {
@@ -419,11 +441,15 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
   const rnd = () => { mix = (Math.imul(mix, 1664525) + 1013904223) >>> 0; return mix / 4294967296; };
   const fromRight = plazaBox ? rnd() < 0.5 : false;
   const oneOfDup = rnd() < 0.5;
-  const order = plazaBox && quarter.yard?.pack === "corner"
+  const order = plazaBox
     ? [quarter.pieces[0]!, ...quarter.pieces.slice(1).map((id) => { const z = kitSize(draft, quarter.tilesetId, id); return { id, r: (z ? z.w * z.h : 0) * (0.7 + 0.6 * rnd()) }; }).sort((a, b) => b.r - a.r).map((o) => o.id)]
     : [...quarter.pieces];
   // 되풀이 조각(포도밭 이랑 둘)은 맵마다 하나 또는 둘 — 같은 덩이가 늘 같은 구성으로 읽히지 않게(빈자리는 압착기·통 선반이 쓴다).
   if (plazaBox && quarter.yard?.pack === "corner" && oneOfDup) { const dup = order.findIndex((id, i) => order.indexOf(id) !== i); if (dup > 0) order.splice(dup, 1); }
+  // 마당이 있는 다른 덩이(신전 폐허): 되풀이 조각 몇 개를 맵마다 다르게 뺀다 — r2 에서 두 맵이 같은 도장으로 읽혔다.
+  if (plazaBox && quarter.yard?.pack !== "corner") {
+    for (let n = 0; n < 2; n++) if (rnd() < 0.6) { const dups = order.map((id, i) => (i > 0 && order.indexOf(id) !== i ? i : -1)).filter((i) => i > 0); if (dups.length) order.splice(dups[Math.floor(rnd() * dups.length)]!, 1); }
+  }
   const pieces = order.slice(0, Math.max(2, Math.min(quarter.pieces.length, opts.count ?? quarter.pieces.length)))
     .map((id: string) => ({ id, size: kitSize(draft, quarter.tilesetId, id) }))
     .filter((p): p is { id: string; size: { w: number; h: number } } => !!p.size);
@@ -431,6 +457,14 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
 
   // 덩이 중심: near 가 있으면 그 자리, 없으면 앞 조각들이 가장 많이 들어가는 자리(격자 3칸마다 시험).
   let anchor = opts.near ?? null;
+  // 마당(귀 채우기 아님)이 있으면 덩이 중심을 마당 안 아무 자리로 — 늘 같은 귀에서 자라지 않게.
+  if (!anchor && plazaBox && yardFreeAnchor) {
+    for (let t = 0; t < 12 && !anchor; t++) {
+      const x = plazaBox.x + 1 + Math.floor(rnd() * Math.max(1, plazaBox.w - 2)), y = plazaBox.y + 1 + Math.floor(rnd() * Math.max(1, plazaBox.h - 3));
+      if (ok[y * W + x]) anchor = { x, y };
+    }
+  }
+  if (!anchor && plazaBox && yardFreeAnchor) anchor = { x: plazaBox.x + Math.floor(plazaBox.w / 2), y: plazaBox.y + Math.floor(plazaBox.h / 2) };
   if (!anchor) {
     let best = -1;
     for (let y = 2; y < H - 2; y += 3) for (let x = 2; x < W - 2; x += 3) {
@@ -458,7 +492,9 @@ export function dressVillageQuarter(draft: Project, mapId: string, quarterId: st
       const outside = quarter.yard?.outside?.includes(piece.id) ?? false;
       const b = !outside && plazaBox && quarter.yard?.pack === "corner"
         ? packSlot(ok, walk, taken, W, H, piece.size.w, piece.size.h, plazaBox, attempt, fromRight)
-        : nearestSlot(outside ? outsideOk : ok, walk, taken, W, H, piece.size.w, piece.size.h, anchor.x, anchor.y, attempt);
+        : nearestSlot(outside ? outsideOk : ok, walk, taken, W, H, piece.size.w, piece.size.h, anchor.x, anchor.y, attempt)
+          // 마당 안 아무 자리에서 자라게 했더니 귀퉁이 기준점이면 반경 밖 빈 마당을 못 썼다 — 마당 안 남은 자리를 훑어 채운다.
+          ?? (!outside && plazaBox && yardFreeAnchor ? packSlot(ok, walk, taken, W, H, piece.size.w, piece.size.h, plazaBox, attempt, fromRight) : null);
       if (!b) break;
       const objectId = `kit:${quarter.tilesetId}/${piece.id}`;
       const snapshot = structuredClone(draft.maps[map.id]!);

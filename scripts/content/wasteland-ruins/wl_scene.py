@@ -37,12 +37,12 @@ ROWS = [
 # (조각, x, y) 칸 좌표 — 왼쪽 위
 PLACE = [
     ('husk-a', 1, 1), ('husk-tall', 9, 1), ('husk-b', 21, 1), ('wall-h', 14, 4),
-    ('car-rust-h', 9, 7), ('car-burnt', 21, 10), ('car-rust-v', 18, 10), ('jersey-barrier', 12, 10), ('lamp-broken', 5, 10),
+    ('car-rust-h', 9, 7), ('car-rust-v', 18, 10), ('jersey-barrier', 12, 10), ('lamp-broken', 5, 10),
     ('fence-h', 9, 11), ('fence-h', 10, 11), ('gate-scrap', 11, 10), ('fence-h', 13, 11), ('fence-h', 14, 11), ('fence-h', 15, 11),
-    ('fence-v', 16, 11), ('fence-v', 16, 12), ('fence-v', 16, 13), ('fence-v', 16, 14), ('fence-v', 16, 15),
-    ('barricade-v', 8, 12), ('barricade-h', 8, 16),
+    ('wall-v', 16, 11), ('wall-v', 16, 14),
+    ('wall-v', 8, 12), ('barricade-h', 8, 16),
     ('shack-a', 9, 13), ('shack-b', 12, 13), ('lean-to', 1, 11), ('campfire', 4, 12), ('log-seat', 3, 13), ('stall-a', 1, 15), ('stall-b', 4, 15),
-    ('water-tank', 23, 13), ('watchtower', 21, 15), ('generator', 18, 16), ('solar-scrap', 18, 15), ('drums', 17, 14), ('tyres', 20, 14), ('crates', 1, 18),
+    ('water-tank', 23, 13), ('generator', 18, 16), ('solar-scrap', 18, 15), ('drums', 17, 14), ('tyres', 20, 14), ('crates', 1, 18),
     ('scrap-heap', 23, 17), ('rubble-pile', 15, 7), ('dead-tree', 23, 10), ('bush-wild', 4, 17), ('vine-wall', 7, 18), ('sign-blank', 20, 12), ('wall-stub', 15, 1),
     ('rubble-a', 8, 6), ('rubble-b', 16, 9), ('weeds-a', 2, 10), ('weeds-b', 25, 10), ('weeds-c', 14, 18), ('puddle', 13, 9), ('rubble-c', 20, 10),
 ]
@@ -62,9 +62,8 @@ def build():
             if ch == '#':
                 m = ms[(x, y)]
                 t = cell('asphalt', m % 4, m // 4)
-                if m == 15 and C.hsh(x, y, 3) % 5 == 0: t = cell('asphalt-b' if C.hsh(x, y, 4) % 2 else 'asphalt-c')
-            elif ch == 's': t = cell('slab-' + 'aaaabc'[C.hsh(x, y, 5) % 6])
-            else: t = cell('dirt-' + 'aaaaaabcd'[C.hsh(x, y, 6) % 9])
+            elif ch == 's': t = cell('slab-' + 'aaaaaabbcc'[C.hsh(x, y, 5) % 10], x % 8, y % 8)       # 이음 판: 자리 (x mod 4, y mod 4)
+            else: h = C.hsh(x, y, 6) % 100; t = cell('dirt-' + ('a' if h < 85 else 'bcd'[h % 3]), x % 4, y % 4)
             img[y * 16:(y + 1) * 16, x * 16:(x + 1) * 16] = t
     im = Image.fromarray(img, 'RGBA')
     for (pid, x, y) in sorted(PLACE, key=lambda p: (p[2] + C.PIECES[p[0]]['h'], p[1])):

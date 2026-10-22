@@ -62,7 +62,8 @@ def adopt(dev):
         why = C.refusal_of(p, 'bundle')
         if why is None: adopted.append(p); continue
         st = C.status_of(p)
-        if dev and st == 'pass': adopted.append(p); devonly.append(p['id']); continue
+        # --dev-refer(검수 패널용 미리보기 전용): AI 보류(refer) 조각도 넣어 맵을 그려 본다. 출하 금지 — 실제 굽기는 출구 허용만 쓴다.
+        if dev and (st == 'pass' or (st == 'refer' and '--dev-refer' in sys.argv)): adopted.append(p); devonly.append(p['id']); continue
         rejected.append(dict(id=p['id'], status=st, why=why[:200]))
     return adopted, rejected, devonly
 
@@ -226,7 +227,7 @@ def placement_rule(p):
 
 
 if __name__ == '__main__':
-    ap = argparse.ArgumentParser(); ap.add_argument('--dry', action='store_true'); ap.add_argument('--dev', action='store_true'); a = ap.parse_args()
+    ap = argparse.ArgumentParser(); ap.add_argument('--dry', action='store_true'); ap.add_argument('--dev', action='store_true'); ap.add_argument('--dev-refer', action='store_true'); a = ap.parse_args()
     o = bake(dry=a.dry, dev=a.dev); r = o['report']
     print(json.dumps({k: r[k] for k in ('mode', 'tiles', 'adopted', 'reassembly', 'palette')}, ensure_ascii=False))
     print('정의 검사 위반', r['definition']['violations'], r['definition']['by_code'], r['definition']['examples'] if r['definition']['violations'] else '')
