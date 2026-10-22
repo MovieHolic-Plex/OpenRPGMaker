@@ -25,7 +25,7 @@ const CHIPSET_TOOLS: Record<string, readonly string[]> = {
   sf_station: SF_STATION_EXPOSED_TOOLS,
   prehistoric: PREHISTORIC_EXPOSED_TOOLS,
   desert_east: DESERT_EAST_EXPOSED_TOOLS,
-  snow_north: SNOW_NORTH_EXPOSED_TOOLS,
+  snow_north: [...SNOW_NORTH_EXPOSED_TOOLS, "dress_village_quarter"],
   sengoku_edo: SENGOKU_EXPOSED_TOOLS,
   steampunk_city: STEAMPUNK_EXPOSED_TOOLS,
   pirate_isles: PIRATE_ISLES_EXPOSED_TOOLS,

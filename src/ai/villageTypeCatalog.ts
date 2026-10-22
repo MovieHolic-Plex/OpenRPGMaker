@@ -38,6 +38,7 @@ export const VILLAGE_ERA_LABEL: Record<VillageEra, string> = {
 };
 
 export const ART_GAPS: Record<string, string> = {
+  "viking-kit": "바이킹 롱십(용머리 배)·용머리 회관(설원 계열)",
   "roman-civic-kit": "로마 공공 건물 — 신전 정면·원형극장·열주 거리·수도교(버들항 계열)",
   "beodeul-town-wall": "버들항 성벽·성문·망루(마을을 두르는 벽)",
   "murim-kit": "무림(중국 무협) 칩셋 굽기 — 객잔·문파 산문·수향 다리",
@@ -64,11 +65,10 @@ export const VILLAGE_TYPES: readonly VillageType[] = [
   T({ id: "prehistoric-volcano", ko: "화산 골짜기 부족", era: "ancient", chipset: "prehistoric", status: "ready",
     recipe: "create_map({tilesetId:\"prehistoric\"}) → compose_prehistoric_map({style:\"volcano\"})",
     words: /(?:원시|선사|공룡)\S*\s*화산|화산\s*(?:골짜기\s*)?부족/iu }),
-  T({ id: "roman-city", ko: "고대 로마 도시", era: "ancient", chipset: "beodeul_city", status: "partial",
-    recipe: "author_beodeul_town({theme:\"city\"}) — 블록 격자 도시(60×60), 항구는 harbour:true·가로 83 이상 → 트인 공원이 있으면 dress_village_quarter({mapId, quarter:\"temple-ruins\"})",
-    gap: "로마 전용 건물(신전 정면·원형극장·열주 거리·수도교) 그림이 없어 블록 도시는 목골집·성당이 섞인 중세 도시처럼 보인다 — 답에서 이를 말한다",
-    gapId: "roman-civic-kit",
-    words: /로마(?:풍|식)?\s*(?:도시|마을|시가)|고대\s*(?:로마|그리스)|그리스(?:풍)?\s*(?:도시|폴리스)|폴리스|roman\s*(?:city|town)/iu }),
+  T({ id: "roman-city", ko: "고대 로마 도시", era: "ancient", chipset: null, status: "needs-art",
+    recipe: "그림 없음 — 버들항 블록 도시(author_beodeul_town theme:\"city\")는 목골집·성당·깃발이 섞인 중세 도시로 읽힌다(적대 검수 r4)",
+    words: /로마(?:풍|식)?\s*(?:도시|마을|시가)|고대\s*(?:로마|그리스)|그리스(?:풍)?\s*(?:도시|폴리스)|폴리스|roman\s*(?:city|town)/iu,
+    gap: "로마 공공 건물(신전 정면·원형극장·열주 거리·수도교) 그림이 없다", gapId: "roman-civic-kit", nearest: ["ruins-village"] }),
   T({ id: "ruins-village", ko: "고대 신전 폐허 마을", era: "ancient", chipset: "beodeul_city", status: "partial",
     recipe: "author_beodeul_town({theme:\"river\", water:\"none\", form:\"scatter\", roofs:\"red\", houseCount:4, width:56, height:44}) → dress_village_quarter({mapId, quarter:\"temple-ruins\"}) — 소신전·사당·기둥·무너진 벽·사이프러스",
     words: /신전\s*(?:폐허|유적)|고대\s*(?:유적|폐허)\s*(?:마을|옆)?|유적\s*마을|폐허가?\s*된\s*신전|temple\s*ruins?/iu,
@@ -253,7 +253,7 @@ export const VILLAGE_TYPES: readonly VillageType[] = [
     recipe: "create_map({tilesetId:\"sf_station\", width:48, height:30}) → compose_sf_station_map({kind:\"street\"})",
     words: /사이버\s*펑크|네온\s*(?:거리|도시|마을|골목)|미래\s*(?:도시|거리|마을)|cyberpunk|neon\s*(?:street|city)/iu }),
   T({ id: "moon-colony", ko: "달·행성 정착지", era: "future", chipset: "sf_station", status: "ready",
-    recipe: "create_map({tilesetId:\"sf_station\", width:48, height:32}) → compose_sf_station_map({kind:\"moonbase\"})",
+    recipe: "create_map({tilesetId:\"sf_station\", width:38, height:26}) → compose_sf_station_map({kind:\"moonbase\"}) — 48×32 는 월면이 절반 넘게 빈다(적대 검수)",
     words: /(?:달|화성|행성|우주)(?:\s*(?:위|표면|속)의?)?\s*(?:정착지|식민지|기지|콜로니|마을)|콜로니|정착지\s*\(?우주|space\s*colony|moon\s*base|mars\s*colony/iu }),
   T({ id: "station-habitat", ko: "우주 정거장 거주구", era: "future", chipset: "sf_station", status: "ready",
     recipe: "create_map({tilesetId:\"sf_station\", width:44, height:32}) → compose_sf_station_map({kind:\"station\"})",
@@ -265,7 +265,7 @@ export const VILLAGE_TYPES: readonly VillageType[] = [
   T({ id: "post-apocalypse", ko: "포스트아포칼립스 폐허 마을", era: "future", chipset: null, status: "needs-art",
     recipe: "그 종류로는 짓지 않는다 — 폐허 칩셋이 없다(멀쩡한 거리에 잔해를 흩뿌려 흉내 내지 않는다)",
     words: /포스트\s*아포칼립스|아포칼립스|종말\s*(?:이후|후)?\s*(?:마을|도시|세계)|핵\s*전쟁\s*(?:이후|후)|폐허\s*마을|post[-\s]?apocalyp/iu,
-    gap: "폐허(무너진 건물·녹슨 차·판잣집) 칩셋이 없다", gapId: "post-apoc-kit", nearest: ["cyberpunk-street"] }),
+    gap: "폐허(무너진 건물·녹슨 차·판잣집) 칩셋이 없다", gapId: "post-apoc-kit", nearest: ["steampunk-factory-town"] }),
 
   T({ id: "ruined-city", ko: "좀비 폐허 도시", era: "future", chipset: null, status: "needs-art",
     recipe: "그 종류로는 짓지 않는다 — 무너진 빌딩·녹슨 차 그림이 없다(멀쩡한 거리에 잔해를 흩뿌려 흉내 내지 않는다)",
@@ -277,8 +277,9 @@ export const VILLAGE_TYPES: readonly VillageType[] = [
     gap: "폐허(무너진 건물·녹슨 차·판잣집) 칩셋이 없다", gapId: "post-apoc-kit", nearest: ["oasis-village"] }),
 
   // ── 북방 ──
-  T({ id: "viking-village", ko: "북방 바이킹 마을", era: "medieval", chipset: "snow_north", status: "ready",
-    recipe: "create_map({tilesetId:\"snow_north\"}) → compose_snow_north_map({style:\"village\"})",
+  T({ id: "viking-village", ko: "북방 바이킹 마을", era: "medieval", chipset: "snow_north", status: "partial",
+    recipe: "compose_snow_north_map({style:\"village\", newMap:{name}}) → dress_village_quarter({mapId, quarter:\"viking\"}) — 룬석·방패 걸이·오로라 깃발을 광장 둘레에",
+    gap: "롱십(용머리 배)·용머리 회관 그림이 없어 바이킹 표지는 룬석·방패 걸이·깃발뿐이다 — 답에서 이를 말한다", gapId: "viking-kit",
     words: /바이킹|노르딕|북방\s*마을|북쪽\s*마을|툰드라\s*마을|viking|nordic\s*village/iu }),
   T({ id: "frozen-lake-village", ko: "얼음 호수 낚시 마을", era: "medieval", chipset: "snow_north", status: "ready",
     recipe: "create_map({tilesetId:\"snow_north\"}) → compose_snow_north_map({style:\"lake\"})",
@@ -339,6 +340,7 @@ export function formatVillageTypeNote(type: VillageType): string {
       head,
       `이 종류는 그림이 없다: ${type.gap}. ${type.ko}을(를) 다른 칩셋 타일·평면 선·잔해 흩뿌리기로 흉내 내지 않는다.`,
       `대신 가장 가까운 종류를 그 종류의 이름으로 짓는다(맵 이름에 「${type.ko}」를 쓰지 않는다): ${nearestText(type)}.`,
+      "대안 시공 도구에 seed 를 1 이상 아무 수로 준다 — 그 대안 종류를 직접 요청한 맵과 똑같은 그림이 되지 않게.",
       `답의 첫 문장에 「${type.ko}은(는) 필요한 그림이 아직 없다 — ${type.gap}. 그래서 가장 가까운 ○○를 지었다」고 분명히 말한다.`,
     ].join("\n");
   }

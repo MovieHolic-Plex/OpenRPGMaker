@@ -26,6 +26,8 @@ export const VILLAGE_QUARTERS: Record<string, QuarterDef> = {
   mining: { tilesetId: "beodeul_city", ko: "광산 갱구 마당", pieces: ["bd-pick-mining-valley-adit", "bd-pick-mining-valley-headframe", "bd-pick-mining-valley-smelt", "bd-pick-mining-valley-slagheap", "bd-pick-mining-valley-cart-h", "bd-pick-mining-valley-ore", "bd-pick-mining-valley-pile", "bd-pick-mining-valley-kiln", "bd-pick-mining-valley-lamp", "bd-pick-mining-valley-crates", "bd-pick-mining-valley-slagrock", "bd-pick-mining-valley-barrel"] },
   vineyard: { tilesetId: "beodeul_city", ko: "포도원", pieces: ["bd-pick-vineyard-winery", "bd-pick-vineyard-vine-field", "bd-pick-vineyard-vine-field", "bd-pick-vineyard-wine-press", "bd-pick-vineyard-pergola", "bd-pick-vineyard-cask-rack", "bd-pick-vineyard-barrels-standing", "bd-pick-vineyard-grape-baskets", "bd-pick-vineyard-olive-a", "bd-pick-vineyard-olive-b", "bd-pick-vineyard-olive-c"] },
   "temple-ruins": { tilesetId: "beodeul_city", ko: "신전 폐허", pieces: ["bd-pick-temple-ruins-roof-naiskos-pediment", "bd-pick-temple-ruins-roof-hip-shrine", "bd-pick-temple-ruins-column-temple-tall", "bd-pick-temple-ruins-column-temple-tall", "bd-pick-temple-ruins-column-temple", "bd-pick-temple-ruins-column-temple-broken", "bd-pick-temple-ruins-fallen-column-temple", "bd-pick-temple-ruins-ruined-wall-2", "bd-pick-temple-ruins-ruined-wall-2", "bd-pick-temple-ruins-cypress-ruin", "bd-pick-temple-ruins-cypress-ruin", "bd-pick-temple-ruins-rubble-temple", "bd-pick-temple-ruins-rubble-temple"] },
+  // 북방 바이킹: 눈 마을(compose_snow_north_map village)에 북방 표지(룬석·방패 무기 걸이·오로라 깃발, 자리가 나면 통널 교회)를 광장 둘레에 한 덩이로. 장옥(7×5)은 작곡기가 빈 눈밭을 마당 덩이로 채워 들어갈 자리가 없다 — r2 적대 검수 «바이킹 표지가 없어 그냥 눈 마을» 수정.
+  viking: { tilesetId: "snow_north", ko: "바이킹 표지(룬석·방패 걸이·오로라 깃발)", pieces: ["sn-rune-stone", "sn-weapon-rack", "sn-banner-aurora", "sn-rune-stone", "sn-weapon-rack", "sn-banner-aurora-b", "sn-cairn", "sn-rune-stone", "sn-weapon-rack", "sn-stave-church"] },
   "walled-market": { tilesetId: "beodeul_city", ko: "장터 좌판·짐수레", pieces: ["bd-pick-walled-market-cloth-stall", "bd-pick-walled-market-cloth-stall", "bd-pick-walled-market-wagon", "bd-pick-walled-market-cloth-stall", "bd-pick-walled-market-banner-red", "bd-pick-walled-market-banner-teal", "bd-pick-walled-market-sack-pile", "bd-pick-walled-market-hay-bales", "bd-pick-walled-market-trough", "bd-pick-walled-market-hitching-rail", "bd-pick-walled-market-forge-yard", "bd-pick-walled-market-toll-booth"] },
 };
 
@@ -95,6 +97,11 @@ function buildGrids(project: Project, map: GameMap, reach: Set<number>): { ok: U
   const grass = new Set<number>();
   let covered = 0;
   for (const [tile, n] of [...counts.entries()].sort((p, q) => q[1] - p[1])) { if (covered >= walkN / 2) break; grass.add(tile); covered += n; }
+  // 같은 바닥의 변주(눈밭 물결·발자국·마른 풀 끝 등)도 풀밭이다 — tileMeta 태그 앞 네 개가 같으면 같은 바닥. 실측(설원): 눈밭 1번만 풀밭으로 치면 2·3·4번 변주가 «길»로 잡혀 7×5 장옥 자리가 하나도 없었다.
+  const meta = (project.tilesets[map.tilesetId] as unknown as { tileMeta?: readonly ({ tags?: readonly string[] } | null)[] }).tileMeta ?? [];
+  const sig = (t: number) => { const tags = t >= 0 ? meta[t]?.tags : undefined; return tags && tags.length >= 3 ? tags.slice(0, 4).join("|") : null; };
+  const grassSigs = new Set([...grass].map(sig).filter((k): k is string => !!k));
+  if (grassSigs.size) for (const tile of counts.keys()) { const k = sig(tile); if (k && grassSigs.has(k)) grass.add(tile); }
   const isGrass = (i: number) => grass.has(map.lowerTiles[i]!);
   const run = (x: number, y: number, dx: number, dy: number) => {
     let n = 0;
@@ -352,7 +359,7 @@ export const DRESS_VILLAGE_QUARTER_TOOL: ToolDefinition = {
   domains: ["map"],
   description:
     "지은 마을 맵의 트인 땅에 마을의 쓰임 한 덩이를 번들 조각 그대로 한 번에 앉힌다 — 마을 종류 표(find_village_type)의 recipe 가 부른다. "
-    + "quarter: mining 광산 갱구 마당(갱구·권양탑·제련소·광재 더미·광차 — 광산촌) · vineyard 포도원(포도주 창고·포도밭 이랑·압착기·올리브 — 포도원 마을) · temple-ruins 신전 폐허(소신전·기둥·무너진 벽 — 고대 유적 마을) · "
+    + "quarter: mining 광산 갱구 마당(갱구·권양탑·제련소·광재 더미·광차 — 광산촌) · vineyard 포도원(포도주 창고·포도밭 이랑·압착기·올리브 — 포도원 마을) · temple-ruins 신전 폐허(소신전·기둥·무너진 벽 — 고대 유적 마을) · viking 북방 표지(룬석·방패 걸이·오로라 깃발 — 바이킹 마을, snow_north 맵) · "
     + "walled-market 장터 좌판·짐수레·통행세 초소(중세 장터) — 버들항(beodeul_city) 맵 · joseon-market 조선 장터 좌판 — 조선(joseon_baram) 맵. "
     + "조각 칸은 빈 풀밭·트인 흙 마당에만, 길을 덮지 않고, 조각 사이 1칸·앞줄 통행을 지키며, 찍을 때마다 통행을 다시 재서 길·문 앞을 끊는 자리는 되돌린다. near 를 주면 그 둘레, 생략하면 덩이가 가장 크게 들어가는 자리. "
     + "조각을 stamp_object 로 하나씩 흩어 찍지 말 것. 자리가 모자라면 마을을 더 크게 짓는다.",
