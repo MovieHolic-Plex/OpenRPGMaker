@@ -219,7 +219,11 @@ function stairEvent(map: GameMap, id: string, at: Stair, name: string, to: { map
 function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unknown>, warnings: string[]): string {
   const lock = field(field(data, "population"), "lockedGate");
   const gate = asCell(lock);
-  const key = asCell(field(lock, "keySpot"));
+  const planKey = asCell(field(lock, "keySpot"));
+  // 레버는 그 방 북쪽 벽 바로 앞 칸으로 옮긴다 — 방 한가운데 바닥에 선 작은 레버가 소품 사이에 묻혀 조수가 「레버가 안 보인다」며 던전을 세 번 다시 지었다(2026-10-23 dg-r2 puzzle).
+  const keyRoom = planKey ? list(data, "rooms").find((v) => { const x = Number(field(v, "x")), y = Number(field(v, "y")), w = Number(field(v, "w")), h = Number(field(v, "h")); return planKey.x >= x && planKey.x < x + w && planKey.y >= y && planKey.y < y + h; }) : undefined;
+  const wallFront = keyRoom ? (asRoom(keyRoom)?.spots ?? []).filter((c) => c.y === Number(field(keyRoom, "y")) && isPassable(draft, map, c.x, c.y) && !map.events.some((e) => Math.abs(e.x - c.x) + Math.abs(e.y - c.y) <= 1)) : [];
+  const key = planKey ? (wallFront.sort((a, b) => Math.abs(a.x - planKey.x) - Math.abs(b.x - planKey.x))[0] ?? planKey) : undefined;
   if (!gate || !key) { warnings.push(`${map.name}: 레버 퍼즐 자리(잠긴 통로·열쇠 방)가 없는 배치라 레버를 두지 않았다 — 방을 늘리거나 vault 방을 넣는다.`); return ""; }
   if (map.events.some((e) => (e.x === gate.x && e.y === gate.y) || (e.x === key.x && e.y === key.y))) { warnings.push(`${map.name}: 레버·창살 자리에 이미 이벤트가 있다`); return ""; }
   const sw = `sw_${map.id}_lever`;
@@ -239,7 +243,7 @@ function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unkno
     { id: `ev_${map.id}_lever_p2`, name: "당긴 레버", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { ...lever, direction: "up" }, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixed,
       commands: [{ kind: "text", body: "레버는 이미 당겨져 있다." } as Command] },
   ] as GameEvent["pages"]));
-  return `레버 퍼즐: 레버 (${key.x},${key.y}) → 쇠창살 (${gate.x},${gate.y}) 스위치 ${sw}`;
+  return `레버 퍼즐: 레버 (${key.x},${key.y}${key !== planKey ? ", 북쪽 벽 앞" : ""}) → 쇠창살 (${gate.x},${gate.y}) 스위치 ${sw}. 레버는 한 칸짜리 벽 레버 그림이 정상이다 — 다시 짓거나 다른 칩셋의 레버 기물을 찍지 않는다`;
 }
 
 /** 층 하나를 채운다(rpg): 계획된 자리의 보이는 적·상자, 보스방 수호자/층 수문장, 보스 앞 방의 회복 세이브 포인트. 실패한 자리는 경고로 넘긴다. */

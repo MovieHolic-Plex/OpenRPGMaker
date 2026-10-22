@@ -46,7 +46,7 @@ const K = {
   grate: "bd-pick-aqueduct-sewer-grate-floor", ironMaiden: "bd-pick-castle-catacombs-iron-maiden", rack: "bd-pick-castle-catacombs-rack-32",
   anvilTable: "bd-pick-castle-catacombs-anvil-table", lantern: "bd-pick-aqueduct-sewer-lantern-post",
   floorBone: "bd-pick-aqueduct-sewer-floor-bone", floorCell: "bd-pick-castle-catacombs-floor-cell",
-  doorWood: "bd-pick-temple-ruins-door-wood",
+  doorWood: "bd-pick-temple-ruins-door-wood", ritual: "bd-pick-temple-ruins-mosaic-medallion-5x5",
 } as const;
 /** 천장 오토타일(bake_dungeon_ceiling.py). 없는 옛 사본이면 테두리 없는 허공 한 칸으로 물러선다. */
 export const DUNGEON_CEILING_GROUPS = ["beodeul_dungeon_ceiling", "beodeul_dungeon_ceiling_b"] as const;
@@ -455,6 +455,13 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
           x += 3 + Math.floor(rs() * 2);
         }
         if (ruined) { const f = shuffle(rs, floorCells(r, 2))[0]; if (f) put(K.fallenColumn, f[0], f[1]); }
+        // 기둥 줄 사이 가운데 줄: 가운데 길 양옆 화로 한 쌍 + 잔해 한 무더기 — 기둥 두 줄 사이가 맨바닥 띠로 읽혔다(2026-10-23 VQA 「빈 바닥」).
+        if (r.h >= 7 && r.w >= 11) {
+          const my = r.y + Math.floor(r.h / 2);
+          if (put(K.brazier, cx - 3, my)) put(K.brazier, cx + 3, my);
+          const side = rs() < 0.5 ? r.x + 2 : r.x + r.w - 4;
+          cluster(rs, side, my, 3, litter);
+        }
         hangAlong(slots, rs, 4, () => (rs() < 0.75 ? K.torch : K.banner));
         // 벽 장식 아치는 쇠창살 아치만 — 열린 검은 아치는 어디로도 안 가는 가짜 문으로 읽혔다(2026-10-23 VQA boss-run).
         if (rs() < 0.5) { const a = centerFirst.find((q) => isWall(q.x + 2, q.y) && wallB[idx(q.x + 2, q.y)] === 1); if (a) put(K.archBars, a.x, a.y); }
@@ -515,7 +522,9 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         }
         hangAlong(slots, rs, 3, torch);
         if (isBoss) {
-          // 보스방: 기둥이 바닥 가운데를 둘러싸고(싸울 자리는 비운다) 구석에 뼈 더미
+          // 보스방: 가운데 의식 원(모자이크) — 넓은 맨바닥이 「목적 없는 빈 방」으로 읽혔다(2026-10-23 VQA). 보스는 그 위에 선다.
+          put(K.ritual, cx - 2, r.y + Math.floor(r.h / 2) - 1);
+          // 기둥이 바닥 가운데를 둘러싸고(싸울 자리는 비운다) 구석에 뼈 더미
           const ys = [r.y + 2, r.y + r.h - 2];
           for (const y of ys) for (const x of [r.x + 2, r.x + r.w - 3]) put(K.column, x, y - 1);
           const e = edgeCells(r, rs);
