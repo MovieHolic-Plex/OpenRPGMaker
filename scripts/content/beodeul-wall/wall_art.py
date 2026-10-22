@@ -1252,11 +1252,13 @@ def postern_block(side):
         for x in range(cx - half + 2, cx + half - 1, 3):
             for i in range(3): f.set(x, y_spring - half + 3 + i, IRON[2] if i < 2 else IRON[1])
         for x in range(cx - 2, cx + 2): f.set(x, y_spring - R - 1, COOL[10] if x < cx else COOL[8])   # 이맛돌
-    f1 = face(16, 1)
-    arch(f1, 10, 15, half=5, ring=2)
+    # r15: 앞면은 늘 두 줄 이상(32px) — 한 줄 앞면의 6px 아치는 「하수구 구멍」, 48px 판의 가운데 줄을 건너뛴 두 줄 길은 「납작한 검은 네모」였다.
+    # 아치 모양은 하나(반폭 7·홍예 3, 머리는 아래에서 30px 위) — 두 줄 판·세 줄 판이 같은 아치를 쓴다
+    f2 = face(32, 1, torches=True)
+    arch(f2, 18, 31, half=7, ring=3)
     tall = face(48, 2, slit=(4, 7), torches=True)
-    arch(tall, 26, 47, half=7, ring=3)
-    return top, f1, tall
+    arch(tall, 34, 47, half=7, ring=3)
+    return top, f2, tall
 
 
 def mouth(kind):
@@ -1310,7 +1312,7 @@ def shade_biome(im):
 def is_top_piece(name):
     """윗면(위에서 본 면) 조각인가 — 눈이 쌓이는 판석·톱니 윗면."""
     base = name.split(":")[-1]
-    if "_pg" in base: return "_pgw_" in base               # 쪽문 문루: 윗면 pgw · 앞면 pg
+    if "_pg" in base: return "_pgw_" in base and not base.endswith("_f2u")   # 쪽문 문루: 윗면 pgw t·b · 앞면 pg·pgw f2u
     if base.startswith(("hs", "hn", "c_", "vw", "ve")): return True
     for pre in ("tower", "gate"):
         if base.startswith(pre) and not base.startswith("gatec"):
@@ -1542,18 +1544,19 @@ def pieces():
         for cx in (0, 3):
             P(f"gate1_{cx}_{cy}", cut(g1u, cx, cy), "", "성문루 앞면 기둥(막힘) — 방패를 건 변형")
     # 3판 r12: 쪽문 문루 — 윗면 t·b 는 길 위 성벽 줄(pgw, ★ 남북 걸음), 앞면은 길 줄(pg, ★ 사방): 한 줄 길 f1, 두 줄 이상 fu·fm…·fl
-    PG_D = {"t": "윗면 뒤 흉벽", "b": "윗면 앞 흉벽·살인구멍", "f1": "앞면(길 한 줄)", "fu": "앞면 위(갓돌·화살 구멍)", "fm": "앞면 가운데", "fl": "앞면 아래(횃불·굽도리)"}
+    PG_D = {"t": "윗면 뒤 흉벽", "b": "윗면 앞 흉벽·살인구멍", "f2u": "두 줄 앞면 위(아치 머리)", "f2l": "두 줄 앞면 아래(아치 문·횃불)",
+            "fu": "세 줄 앞면 위(화살 구멍)", "fm": "세 줄 앞면 가운데(아치 머리)", "fl": "세 줄 앞면 아래(아치 문·횃불)"}
     for side in ("W", "E"):
         nm = "vw" if side == "W" else "ve"
-        tp, f1, tall = postern_block(side)
+        tp, f2, tall = postern_block(side)
         sd = "서" if side == "W" else "동"
         for cx in (0, 1):
             walk = "UDR" if cx == 0 else "UDL"
             for k, cy in (("t", 0), ("b", 1)):
                 P(f"{nm}_pgw_{cx}_{k}", cut(tp, cx, cy), walk, f"{sd}쪽 성벽 쪽문 문루 {PG_D[k]}(열 {cx}) — 길 위 성벽 줄(★)", star=True)
-            P(f"{nm}_pg_{cx}_f1", cut(f1, cx, 0), "LRUD", f"{sd}쪽 성벽 쪽문 문루 {PG_D['f1']}(열 {cx}) — 길이 밑으로 지난다(★)", star=True)
-            for k, cy in (("fu", 0), ("fm", 1), ("fl", 2)):
-                P(f"{nm}_pg_{cx}_{k}", cut(tall, cx, cy), "LRUD", f"{sd}쪽 성벽 쪽문 문루 {PG_D[k]}(열 {cx}) — 길이 밑으로 지난다(★)", star=True)
+            P(f"{nm}_pgw_{cx}_f2u", cut(f2, cx, 0), walk, f"{sd}쪽 성벽 쪽문 문루 {PG_D['f2u']}(열 {cx}) — 길 한 줄일 때 길 바로 위 성벽 줄(★)", star=True)
+            for k, cv_, cy in (("f2u", f2, 0), ("f2l", f2, 1), ("fu", tall, 0), ("fm", tall, 1), ("fl", tall, 2)):
+                P(f"{nm}_pg_{cx}_{k}", cut(cv_, cx, cy), "LRUD", f"{sd}쪽 성벽 쪽문 문루 {PG_D[k]}(열 {cx}) — 길이 밑으로 지난다(★)", star=True)
     # 3판 r11: 망루 앞면 변형 1·2(구멍 배치·돌 켜가 다르다) + 그 모서리 망루 바깥 열 첫 앞면 줄
     for v in (1, 2):
         t = tower(v)

@@ -80,10 +80,13 @@ def tower_name(v, cx, cy, corner=""):
 
 
 def postern_rows(e, gy, rows):
-    """쪽문 문루 줄(3판 r12): 윗면 두 줄(gy−2 t · gy−1 b, 길 위 성벽 줄 pgw) + 앞면 길 줄(gy..gy+rows−1, pg — 한 줄이면 f1, 아니면 fu·fm…·fl). 이름의 {} 는 열(0·1)."""
+    """쪽문 문루 줄(3판 r15): 앞면은 늘 두 줄 이상. 길 한 줄: gy−3 t · gy−2 b · gy−1 f2u(성벽 줄, pgw) · gy f2l. 길 두 줄: gy−2 t · gy−1 b · gy f2u · gy+1 f2l.
+    길 세 줄 이상: gy−2 t · gy−1 b · gy fu · 사이 fm · 끝 fl. 이름의 {} 는 열(0·1)."""
+    if rows == 1:
+        return [(gy - 3, f"{e}_pgw_{{}}_t"), (gy - 2, f"{e}_pgw_{{}}_b"), (gy - 1, f"{e}_pgw_{{}}_f2u"), (gy, f"{e}_pg_{{}}_f2l")]
     out = [(gy - 2, f"{e}_pgw_{{}}_t"), (gy - 1, f"{e}_pgw_{{}}_b")]
     for i in range(rows):
-        k = "f1" if rows == 1 else "fu" if i == 0 else "fl" if i == rows - 1 else "fm"
+        k = ("f2u" if i == 0 else "f2l") if rows == 2 else ("fu" if i == 0 else "fl" if i == rows - 1 else "fm")
         out.append((gy + i, f"{e}_pg_{{}}_{k}"))
     return out
 

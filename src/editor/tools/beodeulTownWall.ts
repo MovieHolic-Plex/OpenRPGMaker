@@ -50,11 +50,13 @@ const towerName = (v: number, cx: number, cy: number, corner = "") => {
   const c = corner && (cy === 2 || cy === 3) && cx === (corner === "w" ? 0 : 2) ? corner : "";
   return `tower${v === 0 ? "" : v}${c}_${cx}_${cy}`;
 };
-/** 쪽문 문루 줄(3판 r12, bake_wall.py postern_rows 와 같다): 윗면 두 줄(gy−2 t · gy−1 b, 길 위 성벽 줄 pgw) + 앞면 길 줄(pg — 한 줄이면 f1, 아니면 fu·fm…·fl). */
+/** 쪽문 문루 줄(3판 r15, bake_wall.py postern_rows 와 같다): 앞면은 늘 두 줄 이상.
+ *  길 한 줄: gy−3 t · gy−2 b · gy−1 f2u(성벽 줄, pgw) · gy f2l. 길 두 줄: gy−2 t · gy−1 b · gy f2u · gy+1 f2l. 세 줄 이상: t · b · fu · fm… · fl. */
 const posternRows = (e: string, gy: number, rows: number): Array<[number, (cx: number) => string]> => {
+  if (rows === 1) return [[gy - 3, (cx) => `${e}_pgw_${cx}_t`], [gy - 2, (cx) => `${e}_pgw_${cx}_b`], [gy - 1, (cx) => `${e}_pgw_${cx}_f2u`], [gy, (cx) => `${e}_pg_${cx}_f2l`]];
   const out: Array<[number, (cx: number) => string]> = [[gy - 2, (cx) => `${e}_pgw_${cx}_t`], [gy - 1, (cx) => `${e}_pgw_${cx}_b`]];
   for (let i = 0; i < rows; i += 1) {
-    const k = rows === 1 ? "f1" : i === 0 ? "fu" : i === rows - 1 ? "fl" : "fm";
+    const k = rows === 2 ? (i === 0 ? "f2u" : "f2l") : i === 0 ? "fu" : i === rows - 1 ? "fl" : "fm";
     out.push([gy + i, (cx) => `${e}_pg_${cx}_${k}`]);
   }
   return out;
