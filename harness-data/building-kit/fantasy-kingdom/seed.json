@@ -1734,6 +1734,119 @@
      "x"
     ]
    ]
+  },
+  {
+   "id": "roof.lean.left",
+   "wave": "roof",
+   "form": "lean_to",
+   "low": "left",
+   "kind": "set",
+   "title": "옆 외쪽 지붕(왼쪽이 낮다 — 빛 쪽)",
+   "size": [
+    7,
+    1
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감(그림이 사람 위)",
+   "brief": "큰 질량 왼쪽 옆(빛 쪽)에 붙는 외쪽(한쪽 경사) 헛간 지붕 — 높은 쪽(hi)이 오른쪽 본 질량 벽에 붙고 낮은 처마(lo)가 왼쪽 바깥이다. 지붕 면은 북쪽으로 물러나는 평행사변형으로, 왼쪽으로 내려가는 면이라 빛(왼쪽 위)을 받아 본 질량 오른쪽 사면보다 밝다. hi·m·lo 는 1칸 사면 띠(세로 반복, m 은 가로도 반복) — 널·기와 줄은 경사 방향(오→왼)으로 흐른다. lb2(2칸 1행)는 뒤 끝: 위 가장자리가 오른쪽 높고 왼쪽 낮은 빗선(왼쪽 위 귀퉁이 투명). lf2(2칸 1행)는 앞 끝: 지붕 앞 처마가 오른쪽 높게 왼쪽으로 내려가는 빗선이고 그 아래는 벽 재질(사다리꼴 벽 윗부분), 맨 아래 행은 전부 불투명. 처마 높이는 붙는 질량의 처마보다 낮다(1층 헛간). style-r7 깊이 땅 문법의 회관 왼쪽 외쪽 — roof.lean.side(오른쪽이 낮다)를 뒤집어 쓰면 빛 방향이 뒤집히므로 따로 그린다.",
+   "accept": [
+    "높은 쪽이 오른쪽 본 질량에 붙고 처마가 왼쪽으로 내려간다",
+    "세로로 쌓아도 행 경계가 안 보인다",
+    "본 질량 지붕과 같은 재료 램프",
+    "왼쪽으로 내려가는 면이 본 질량 오른쪽 사면보다 밝다"
+   ],
+   "pieces": [
+    {
+     "id": "lb2",
+     "role": "lb2",
+     "title": "외쪽 뒤 끝 2칸",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      1
+     ],
+     "kind": "roofend"
+    },
+    {
+     "id": "hi",
+     "role": "hi",
+     "title": "높은 쪽",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "slope",
+     "tileable": "y"
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데",
+     "at": [
+      3,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "slope",
+     "tileable": "xy"
+    },
+    {
+     "id": "lo",
+     "role": "lo",
+     "title": "낮은 처마 쪽",
+     "at": [
+      4,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "slope",
+     "tileable": "y"
+    },
+    {
+     "id": "lf2",
+     "role": "lf2",
+     "title": "외쪽 앞 끝 2칸",
+     "at": [
+      5,
+      0
+     ],
+     "size": [
+      2,
+      1
+     ],
+     "kind": "gable"
+    }
+   ],
+   "joins": [
+    [
+     "hi",
+     "lo",
+     "x"
+    ],
+    [
+     "hi",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "lo",
+     "x"
+    ]
+   ]
   }
  ],
  "buildings": [
@@ -2099,6 +2212,139 @@
     }
    ],
    "note": "5칸 계단 박공(크로스텝) 회관 — 앞 g5·뒤 b5 가 계단 박공, 사면 4행, 2층 돌벽. 오른쪽에 낮은 외쪽 헛간(높은 쪽이 회관 벽에 붙는다)"
+  },
+  {
+   "id": "cottage.r7",
+   "title": "박공 정면 오두막(짧은 지붕)",
+   "use": "home",
+   "masses": [
+    {
+     "id": "house",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 0,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.back",
+     "back_end": "gable",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W D R"
+      }
+     ]
+    }
+   ],
+   "note": "style-r7 깊이 땅 문법 — 박공 정면 지붕 2행(사용자 2026-10-22 「머리가 길다」), 뒤 끝 b4·사면 2행·앞 박공 g4·1층. style-r5/r6 부품 그대로 조립된다"
+  },
+  {
+   "id": "thouse.r7",
+   "title": "ㅜ자 집(앞 날개 + 물러난 본채 + 굴뚝)",
+   "use": "home",
+   "masses": [
+    {
+     "id": "main",
+     "kind": "ridge_side",
+     "cols": 8,
+     "storeys": 2,
+     "x": 0,
+     "depth": 4,
+     "roof": "roof.hip",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W M W W M W R"
+      },
+      {
+       "item": "wall.stone",
+       "letters": "L W M M M M W R"
+      }
+     ],
+     "band": "band.trim",
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        6,
+        -1
+       ],
+       "on": "roof"
+      }
+     ]
+    },
+    {
+     "id": "wing",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 2,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.back",
+     "back_end": "gable",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W D R"
+      }
+     ]
+    }
+   ],
+   "note": "사용자 반려(2026-10-22 rejected-T-house-no-depth.png 「공간감이 전혀 없다」)를 깊이 땅 문법으로 고친 판 — 앞으로 튀어나온 4칸 날개(depth 0, 문)와 depth 4 로 물러난 본채. 본채 벽 바닥은 앞 땅보다 4칸 위에 서고, 날개 양옆으로 본채 벽 밑과 마당 띠(투명 — 지도 바닥)가 보이며, 날개 오른쪽으로 그림자가 진다. 날개 지붕은 b4·사면 2행·g4(6행)라 1층 날개 용마루가 본채 처마(5칸)보다 낮다 — 뒤 박공이 본채 벽 앞에 서는 가장 얕은 물림이 depth 4다(depth 1 이면 뒤 끝이 본채 지붕 속에 박혀 A13 FAIL, 4칸 골 조각 v4 는 r5/r6 에 없다)"
+  },
+  {
+   "id": "hall.r7",
+   "title": "계단 박공 회관 + 왼쪽 외쪽",
+   "use": "hall",
+   "masses": [
+    {
+     "id": "hall",
+     "kind": "gable_front",
+     "cols": 5,
+     "depth_rows": 3,
+     "storeys": 2,
+     "x": 2,
+     "depth": 0,
+     "gable": "gable.step",
+     "roof": "roof.gf.slope",
+     "back": "gable.step",
+     "back_end": "gable",
+     "walls": [
+      {
+       "item": "wall.stone",
+       "letters": "L W W W R"
+      },
+      {
+       "item": "wall.stone",
+       "letters": "L W D W R"
+      }
+     ],
+     "band": "band.trim"
+    },
+    {
+     "id": "shed",
+     "kind": "lean_to",
+     "cols": 2,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 0,
+     "depth": 0,
+     "low": "left",
+     "roof": "roof.lean.left",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L M"
+      }
+     ]
+    }
+   ],
+   "note": "5칸 계단 박공 회관 — 사면 3행(짧은 지붕), 박공 정면 위층 창 셋(L W W W R). 외쪽 헛간은 왼쪽(빛 쪽)에 1층으로 붙어 회관 처마보다 낮다(roof.lean.left — 새로 그린다). 박공 다락 창은 r7 에서 gable.step 을 다시 그릴 때 g5 에 넣는다(reuseParts 로 옛 g5 를 쓰면 다락 창은 없다)"
   }
  ],
  "rounds": {
@@ -2186,6 +2432,41 @@
    "light": "빛은 왼쪽 위 — 왼쪽 사면이 밝은 단, 오른쪽 사면이 어두운 단(조립 A12 가 사면 띠의 평균 밝기를 재서 왼쪽이 8 이상 밝아야 통과). 용마루는 가운데 2px 의 곧은 세로선으로, 모든 행에서 양옆 사면과 밝기가 6 이상 다르다(보통 가장 밝은 단 한 줄 + 그늘 쪽 어두운 단).",
    "compare": "끝내기 전에 preview/compare.png 를 refs/ 의 버들항 기준 건물과, 그리고 refs/projection-gable-front-4x.png · refs/projection-l-combo-4x.png 투영 안내도(회색 도형 — 하네스가 그린 구조 안내, 화풍 기준 아님)와 나란히 견준다.",
    "lead": "r1~r4 의 정면과 나란한 용마루 + 평평한 정면 입면은 사용자 반려(2026-10-22). 모든 건물이 박공 정면 질량을 하나 이상 갖고(A15), 용마루 세로선·사면 빛(A12)·골(A13)·지붕 위 굴뚝(A14)을 조립 관문이 잰다. 사용자가 준 참고 그림은 저장소·샌드박스에 넣지 않는다 — 구조 안내는 하네스가 그린 회색 투영 안내도(projection.py)."
+  },
+  "style-r7": {
+   "wave": "style",
+   "title": "화풍 판 7 — 깊이 땅(물러난 질량은 화면에서 더 높이 선다) · 마당 띠 · 앞 질량 그림자 · 짧은 박공 지붕",
+   "module": "src/harnesses/building-kit/rounds/fantasy-kingdom/style_r7.py",
+   "keys": "letter",
+   "items": [
+    "gable.front",
+    "gable.step",
+    "roof.gf.slope",
+    "roof.gf.back",
+    "roof.lean.left",
+    "roof.hip",
+    "wall.timber",
+    "wall.stone",
+    "band.trim",
+    "extra.chimney"
+   ],
+   "buildings": [
+    "cottage.r7",
+    "thouse.r7",
+    "hall.r7"
+   ],
+   "grammar": "r7",
+   "requireGableFront": true,
+   "reuseParts": "style-r5",
+   "projection": "박공 정면(gable-front) 투영 — 사용자 판정 2026-10-22: 「집이 이 각도로 보여야 한다 — 지금은 전혀 아니다」. style-r1~r4 의 '정면과 나란한 용마루 지붕 + 평평한 정면 입면'은 반려됐다. ① 박공 끝(삼각 벽, 계단 박공이면 크로스텝)이 남쪽(보는 쪽)을 본다 — 앞 박공 삼각형은 질량 아래 벽 띠 바로 위에 선다. ② 용마루는 북쪽으로 물러난다 — 화면에서는 앞 박공 꼭대기에서 위로 뒤 꼭대기까지 곧은 세로선(질량 가운데 2px)이다. ③ 용마루 왼쪽·오른쪽에 두 사면이 세로로 긴 면으로 보인다(사면 길이 = depth_rows = 지붕이 물러나는 깊이). ④ 뒤 끝은 맨 위의 ^ 모양 — 가운데 용마루 끝이 가장 높고 양 처마 쪽으로 내려간다. 다른 지붕에 박히면 그 ^ 선이 골(valley)이다. ⑤ 높은 3/4 카메라: 지붕이 실루엣의 대부분(질량 높이의 50~85%)이고 벽은 질량 아래 띠다. 옆벽은 처마에 가려 거의 안 보인다. ⑥ 조합: L·T 평면 — 정면과 나란한 용마루의 본채 앞에 박공 정면 날개, 지붕이 만나는 골, 작은 박공 현관, 지붕에서 솟는 굴뚝, 옆의 외쪽(한쪽 경사) 지붕.",
+   "depth": "깊이 땅 문법(사용자 반려 2026-10-22 「ㅜ자 집 — 공간감이 전혀 없다」): depth d 인 질량의 벽 바닥은 앞 땅 행보다 정확히 d 칸 위에 선다. 앞으로 튀어나온 날개 = depth 0, 본채 = depth ≥ 1. 질량 사이 덮이지 않은 칸은 투명(지도 바닥이 마당 띠로 비친다). 조립이 앞 질량 오른쪽·처마 아래 그림자(12,14,20,α88)를 뒤 질량 벽과 마당 띠에만 얹는다. 문은 가장 앞 질량, 문 앞 칸은 땅.",
+   "light": "빛은 왼쪽 위 — 왼쪽 사면이 밝은 단, 오른쪽 사면이 어두운 단(조립 A12 가 사면 띠의 평균 밝기를 재서 왼쪽이 8 이상 밝아야 통과). 용마루는 가운데 2px 의 곧은 세로선으로, 모든 행에서 양옆 사면과 밝기가 6 이상 다르다(보통 가장 밝은 단 한 줄 + 그늘 쪽 어두운 단).",
+   "compare": "끝내기 전에 preview/compare.png 를 refs/ 의 버들항 기준 건물과, refs/projection-gable-front-4x.png · refs/projection-wing-depth-4x.png 투영 안내도(회색 도형 — 깊이 계단·마당 띠·그림자 구조 안내, 화풍 기준 아님)와 나란히 견준다.",
+   "redraw": {
+    "roof.lean.left": "새 항목 — 회관 왼쪽(빛 쪽) 외쪽. 옛 판에 없다",
+    "gable.step": "(선택) g5 박공 정면에 다락 창 — 다시 그리면 이 판 모듈 것이 옛 판 것을 이긴다"
+   },
+   "lead": "style-r5/r6 부품을 reuseParts(style-r5)로 다시 조립해 깊이를 먼저 본다 — 이 판 모듈에 (항목, 줄) 함수가 있으면 그것이, 없으면 style-r5 의 같은 항목 함수가 쓰인다. 다시 그릴 것은 redraw 의 항목뿐이다. 박공 정면 지붕은 짧게(오두막·날개 depth_rows 2, 회관 3), 날개는 4칸 이상."
   }
  },
  "plan": {
