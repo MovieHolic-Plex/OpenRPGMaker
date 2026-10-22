@@ -1184,7 +1184,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         }
         const derive = featureChecklist.size === 0;
         // 방 전체 구성(vqa 축 1) — 조수가 적은 항목은 이름 붙은 특징뿐이라, 쓰임 없는 구역·허공은 실행기가 항목 하나로 붙여 묻는다.
-        if (!derive) for (const id of targets) if (handInterior(id)) featureChecklist.ensureRunnerItem(`whole-room:${id}`, `${ctx.project.maps[id]!.name}: 방 전체가 요청한 장소로 한눈에 읽히고, 구역마다 쓰임이 보이며 쓰임 없는 빈 구역·검은 허공이 없다`, id);
+        if (!derive) targets.forEach((id, n) => { if (handInterior(id)) featureChecklist.ensureRunnerItem(`whole-room-${n + 1}`, `${ctx.project.maps[id]!.name}: 방 전체가 요청한 장소로 한눈에 읽히고, 구역마다 쓰임이 보이며 쓰임 없는 빈 구역·검은 허공이 없다`, id); });
         let verdicts: FeatureVerdict[] = [];
         let imagesSeen: number | undefined;
         let judge = "none";

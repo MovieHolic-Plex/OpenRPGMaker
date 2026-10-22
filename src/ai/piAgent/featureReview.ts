@@ -181,6 +181,7 @@ export function featureJudgePrompt(task: string, items: readonly FeatureItem[], 
     "",
     derive ? "" : `Checklist:\n${list}`,
     "",
+    "Answer every checklist id exactly as written (copy the id string).",
     `Reply with JSON only: {"imagesSeen": <how many images you actually received>, "images": ["<one short phrase describing each image>"], ${derive ? `"items": [{"id": "short-id", "text": "항목(한국어)", "mapId": "...", "pass": true|false, "why": "한국어", "fix": "한국어"}]` : `"items": [{"id": "<checklist id>", "pass": true|false, "why": "한국어 한 줄", "fix": "한국어 한 줄(실패만)"}]`}}`,
   ].filter((line) => line !== "").join("\n");
 }
@@ -237,7 +238,8 @@ export function featureRepairPrompt(round: number, maxRebuilds: number, items: r
   return `[1배 특징 확인 ${round}바퀴] 지은 맵을 1배 그림으로 항목마다 확인했더니 다음 항목이 1배에서 읽히지 않는다(고치기 ${round}/${maxRebuilds}).\n`
     + lines.join("\n") + "\n"
     + (passing.length ? `이미 읽히는 항목(바꾸지 마라): ${passing.join(" · ")}\n` : "")
-    + "고치는 법: 실패 항목만 고친다. build_hand_interior_room 을 같은 mapId·replace:true 로 다시 불러 평면(plan) 모양·방 크기·위치를 바꾸거나 큰 조각·단·앞 턱을 쓴다(작은 물건을 흩뿌려 메우지 않는다). "
+    + "고치는 법: 실패 항목만 고친다. 그 맵을 지은 짓기 도구를 같은 mapId 로 한 번 다시 부른다(손 도트 실내면 build_hand_interior_room replace:true) — 평면(plan) 모양·방 크기·위치를 바꾸거나 큰 조각·단·앞 턱을 쓴다. "
+    + "작은 물건을 흩뿌려 메우거나 stamp_object 를 수십 번 낱개로 부르지 않는다(2026-10-22 도서관: 고치기 세 바퀴에 낱개 찍기 111번, 15분). "
     + "빈 바닥이면 그 빈 띠를 평면에서 '#' 로 들여 방을 좁히거나 그 자리에 쓰임 있는 가구 한 벌을 둔다. 그런 그림이 칩셋에 없으면 흉내 내지 말고 없다고 보고한다. "
     + "고친 뒤 show_map_region 으로 전체를 보고, 항목 자리가 바뀌었으면 set_feature_checklist 로 area 를 갱신한다. 실행기가 다시 1배로 확인한다.";
 }
