@@ -469,8 +469,10 @@ export function plantBeodeulCanopyArea(project: Project, map: GameMap, target: T
     const ex = (x - cx) / rx, ey = (y - cy) / ry;
     // 둥근 덩이: 각도 물결(3·5배) + 칸 잡음으로 가장자리를 흔든다 — 작은 area 에서 2×2 열기만 하면 상자가 됐다(VQA r5)
     const ang = Math.atan2(ey, ex), jitter = ((treeHash(x, y, seed + 41) % 1000) / 1000 - 0.5) * 0.3;
-    const lim = (density === "dense" ? 0.8 : 1.05) + 0.22 * Math.sin(ang * 3 + wob) + 0.12 * Math.sin(ang * 5 + wob * 2) + jitter;
-    if ((density === "dense" ? ex * ex + ey * ey : Math.pow(Math.abs(ex), 3) + Math.pow(Math.abs(ey), 3)) > lim) continue;
+    // impassable 은 더 꽉 찬 타원(초타원은 area 상자에 잘려 윗변이 곧은 상자로 읽혔다, VQA r10)
+    const amp = density === "dense" ? 1 : 1.2;
+    const lim = (density === "dense" ? 0.8 : 0.95) + amp * (0.22 * Math.sin(ang * 3 + wob) + 0.12 * Math.sin(ang * 5 + wob * 2)) + jitter;
+    if (ex * ex + ey * ey > lim) continue;
     forest.add(c);
   }
   const inArea = (c: number) => { const x = c % W, y = (c - x) / W; return x >= area.x && y >= area.y && x < area.x + area.w && y < area.y + area.h && groundOk(c); };

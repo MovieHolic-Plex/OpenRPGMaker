@@ -722,7 +722,7 @@ refine_beodeul_courtyard_vegetation({mapId})는 인식된 54×34 예제의 건�
 - 침엽·혼효 마을은 숲 덩이 남·동·서 바로 바깥에 그 마을 나무(전나무·측백)를 띄엄띄엄 세운다. 낱 나무는 자기 칸과 좌우 한 칸이 모두 같은 높이일 때만 선다(단 선에 썰린 나무 방지). **남은 것:** 수관 오토타일은 leaf(활엽+전나무 약 30%)·snow 두 벌뿐이라
   `forestType: conifer` 숲 덩이 속은 여전히 활엽이 많다. 침엽 수관 한 벌을 굽는 일은 새 그림이라 3/4 관문(object-gate)을 거쳐야 한다.
 - 붓 경로: `place_props` 를 버들항 맵에서 material 나무·숲·활엽수·침엽수, density dense·impassable 로 부르면 `plantBeodeulCanopyArea` 가 같은 수관으로 area 안 둥근 덩이를 깐다.
-  dense 는 각도 물결 타원, impassable 은 초타원(거듭제곱 3)에 물결·칸 흔들림을 더한 덩이이고, 길·집·물·2~4층에 무엇이 있는 칸은 건너뛴다. 예전에는 「count 가 필요」로 실패했다.
+  dense 는 각도 물결 타원, impassable 은 더 꽉 찬 물결 타원이고(초타원은 area 상자에 잘려 상자로 읽혔다), 길·집·물·2~4층에 무엇이 있는 칸은 건너뛴다. 예전에는 「count 가 필요」로 실패했다.
 - `author_wild_route` 도로 숲 벽·이야기 산책·공동마당은 아래 composer 그대로다(이번 변경 밖).
 - 수관 그림 자체의 성질: 덩이 속 수관 사이 어두운 그늘과 가장자리 수관 사이 작은 검은 틈은 원본 수관 칸 그림이다(배치 결함 아님). 칸별 지표로 골라내려 했으나 구별이 안 됐다.
 - 프로브: `bun scripts/qa/beodeul-village-forest-probe.mts --out <dir>` 는 village-diversity 8건 인자로 LLM 없이 다시 짓는다. 비교 그림 http://mdc-server:18301/village-forest-1.html
