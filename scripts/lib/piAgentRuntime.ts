@@ -1213,6 +1213,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         emitFeatureChecklist(round.verdicts.every((v) => v.state === "pass"));
         return round;
       };
+      let previousFailing = "", unchanged = 0;
       for (let rebuild = 0; ; rebuild++) {
         if (fatal || rejected || options.signal?.aborted || turns >= maxTurns) break;
         const targets = targetIds();
@@ -1223,8 +1224,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         if (!open.length) break;
         const failing = round.verdicts.filter((v) => v.state === "fail");
         const overBudget = Date.now() - started > FEATURE_REVIEW_SOFT_BUDGET_MS;
-        if (!failing.length || rebuild >= FEATURE_REVIEW_MAX_REBUILDS || overBudget || turns >= maxTurns) {
-          const reason = !failing.length ? "판정자가 일부 항목을 판정하지 못했다(확인 안 됨)." : rebuild >= FEATURE_REVIEW_MAX_REBUILDS ? `고치기 ${FEATURE_REVIEW_MAX_REBUILDS}바퀴를 다 썼다.` : overBudget ? "작업 시간 한도에 닿아 더 고치지 않는다." : "턴 한도에 닿았다.";
+        // 같은 항목이 두 번 고친 뒤에도 그대로 실패면 더 돌려도 같은 자리를 맴돈다 — 바퀴를 아껴 보고로 넘긴다.
+        const failingKey = failing.map((v) => v.id).sort().join("|");
+        unchanged = failingKey && failingKey === previousFailing ? unchanged + 1 : 0;
+        previousFailing = failingKey;
+        const stuck = unchanged >= 2;
+        if (!failing.length || rebuild >= FEATURE_REVIEW_MAX_REBUILDS || overBudget || stuck || turns >= maxTurns) {
+          const reason = !failing.length ? "판정자가 일부 항목을 판정하지 못했다(확인 안 됨)." : rebuild >= FEATURE_REVIEW_MAX_REBUILDS ? `고치기 ${FEATURE_REVIEW_MAX_REBUILDS}바퀴를 다 썼다.` : stuck ? "같은 항목이 두 번 고친 뒤에도 그대로 안 읽힌다." : overBudget ? "작업 시간 한도에 닿아 더 고치지 않는다." : "턴 한도에 닿았다.";
           emit({ type: "execution_status", name: "feature_review.unresolved", ok: false, summary: `${reason} 남은 항목 ${open.length}개` });
           if (!fatal && !rejected && turns < maxTurns && !options.signal?.aborted) await promptResuming(featureShortfallPrompt(featureChecklist.allItems, round.verdicts, reason));
           break;

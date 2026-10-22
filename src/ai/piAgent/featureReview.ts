@@ -14,6 +14,7 @@ export const FEATURE_REVIEW_MAX_REBUILDS = 3;
 export const FEATURE_REVIEW_SOFT_BUDGET_MS = 11 * 60_000;
 const MAX_ITEMS = 8;
 export const FEATURE_REVIEW_MAX_CROPS = 4;
+const MEASURED_BY_RUNNER = /맨\s*바닥|빈\s*바닥|bare\s*floor|empty\s*floor/iu;
 
 export interface FeatureArea { readonly x: number; readonly y: number; readonly w: number; readonly h: number }
 export interface FeatureItem {
@@ -44,6 +45,7 @@ export interface FeatureChecklistSnapshot {
 
 export const SET_FEATURE_CHECKLIST_DESCRIPTION =
   "짓기 요청(방·건물·실내·장소)을 받으면 첫 쓰기 전에 한 번 부른다. 사용자가 이름 붙인 특징을 1배 그림만 보고 예/아니오로 확인할 수 있는 항목 3~6개로 적는다 " +
+  "(빈 바닥·통로·도달은 실행기가 따로 재므로 적지 않는다) " +
   "(예: 「둥근 관측 홀이 둥글게 읽힌다」「망원경 위 지붕 틈이 보인다」「남쪽 사당이 입구가 아니라 사당으로 읽힌다」「가운데 홀이 곁방보다 확실히 크다」). " +
   "물건 이름만 적지 말고 그것이 「어떻게 보여야 하는지」를 적는다. 짓고 나서 다시 불러 항목마다 mapId 와 그 특징이 있는 칸 범위(area)를 채우면 확인할 때 그 자리를 잘라 본다. " +
   "다시 부를 때 이미 적은 항목을 빼거나 낮출 수 없다(같은 id 는 덮어쓴다). 실행기가 짓기 뒤에 1배 그림으로 항목마다 확인하고, 안 읽히는 항목은 고칠 점과 함께 돌려준다.";
@@ -100,6 +102,9 @@ export class PiFeatureChecklist {
       const id = typeof e.id === "string" && e.id.trim() ? e.id.trim().slice(0, 40) : slug(text, index);
       const existing = this.items.find((i) => i.id === id);
       if (!text && !existing) { notes.push(`${id}: 문장이 없어 뺐다`); return; }
+      // 빈 바닥·통행은 실행기가 숫자로 잰다(bareFloor·도달 검사) — 그림 판정 항목으로 두면 판정자 눈과 자가 갈려 고치기 바퀴를 태운다
+      // (2026-10-22 여관: 잰 빈 바닥은 통과인데 「맨바닥 ≤15%」 판정 항목이 세 바퀴 내내 실패해 방을 18×16 → 14×14 로 줄였다).
+      if (!existing && MEASURED_BY_RUNNER.test(text)) { notes.push(`${id}: 빈 바닥은 실행기가 따로 잰다 — 항목에서 뺐다`); return; }
       const mapId = typeof e.mapId === "string" && e.mapId ? e.mapId : existing?.mapId;
       const size = mapId ? mapExists(mapId) : undefined;
       if (mapId && !size) notes.push(`${id}: 맵 ${mapId} 이 아직 없다 — 지은 뒤 다시 채운다`);
@@ -156,6 +161,7 @@ export function featureJudgePrompt(task: string, items: readonly FeatureItem[], 
   const list = items.map((i) => `- ${i.id}: ${i.text}${i.mapId ? ` (맵 ${i.mapId}${i.area ? `, 칸 (${i.area.x},${i.area.y}) ${i.area.w}×${i.area.h}` : ""})` : ""}`).join("\n");
   return [
     "You are a strict, independent visual reviewer for a 16px top-down (3/4 view) RPG map editor. You did NOT build these maps and you owe the builder nothing.",
+    "Judge only whether each feature visibly reads. Ignore claims about walkability, reachability or bare-floor percentages inside an item — the runner measures those separately.",
     "Judge ONLY from the attached images (the real map rendered at about 1x; some are crops of one feature at 2x). There are no labels in the game — a feature that only exists in a name, a plan or a description does not count.",
     "For each checklist item decide: would a first-time player looking at the 1x full-map image recognise it without being told? Pass only if it clearly reads. A tiny 1-tile stand-in for a big hero object, a shape that reads as a square when 'round' was asked, a 'shrine' that reads as an entrance or corridor, a 'large hall' no larger than side rooms, or a feature hidden in a dark corner: fail.",
     "For each failing item give why (what is actually visible, with tile coordinates if you can) and ONE concrete layout fix the builder can make. The builder cannot draw new art or cut holes into the void: fixes must change the room plan shape or size, positions, framing (walls, pillars, dais with front riser, rugs, paired statues/lights) or swap in a larger existing piece. Do not suggest changing the request.",

@@ -167,6 +167,23 @@
 **수리 뒤에도 미달이면** `piAgentRuntime` 이 `piLayoutShortfallPrompt` 를 한 번 더 보낸다 — 더 고치지 말고 최종 보고에 미달 숫자와 남긴 이유를 적게 하며
 「이상 없음·기준 통과·모두 고쳤다」를 금한다(권고는 여전히 한 번, 거부·되돌리기 없음). 다시 잰 숫자를 조수가 모른 채 보고하던 구멍을 막는다.
 
+**요청 특징 확인표 + 1배 확인 루프 (2026-10-22, `src/ai/piAgent/featureReview.ts`).** 공간 짓기 턴(`spatialWork`, 팀 하위 실행·몬스터 캠페인·오프닝 제작 제외)에는
+실행기 도구 `set_feature_checklist` 가 붙는다. 조수는 첫 쓰기 전에 사용자가 이름 붙인 특징을 「1배 그림에서 어떻게 읽혀야 하는지」 항목 3~6개로 적고(최대 8),
+지은 뒤 같은 도구로 항목마다 `mapId`·칸 범위를 채운다. 문장은 처음 적은 것이 이긴다(같은 id 로 다시 불러도 조건을 낮추지 못한다).
+패널에는 `execution_status feature_checklist`(data = 확인표 스냅숏)를 받아 `aiFeatureChecklist.ts` 가 메인 대화·맵별 실행 카드에 짧은 확인표(□/✓/✗/?, 바퀴별 이력)를 고쳐 쓴다.
+턴 끝에서 실행기(`piAgentRuntime`)가 이번 턴에 바뀐 손 도트 실내 맵과 항목이 가리키는 맵(최대 3)을 `show_map_region` 결과로 약 1배 렌더하고,
+좌표가 있는 항목은 둘레 1칸을 붙여 잘라 낸 그림(최대 4장)을 더해 **별도 판정 호출**(같은 엔진 — 로컬 CLI 면 `claude -p` 한 번짜리, 아니면 같은 제공자)에 보인다.
+판정자는 항목마다 예/아니오·보이는 것·고칠 점 하나를 JSON 으로 낸다. 판정자가 센 그림 수(`imagesSeen`)가 보낸 수보다 적으면 그 바퀴는 「판정 불가」다(그림 없이 글만 보고 한 판정을 쓰지 않는다).
+빈 바닥은 판정자 대신 보정된 자(`src/editor/handInterior/bareFloor.ts`, 아래)로 잰 항목 하나로 붙는다. 실패 항목이 있으면 이유·고칠 점을 붙여 고치게 하고(`featureRepairPrompt` — 실패 항목만,
+읽히는 항목은 건드리지 말 것), 최대 3바퀴 뒤에도 남거나 턴 11분이 지나면 `featureShortfallPrompt` 로 더 고치지 말고 남은 항목을 그대로 보고하게 한다.
+이 루프를 거친 맵은 끝의 배치 품질 권고(`inspectPiLayoutQuality` skip)를 다시 받지 않는다.
+렌더러는 좌표만이 아니라 `show_map_region` 결과(칸 배열)를 받아야 한다 — `{mapId,x,y,w,h}` 만 넘기면 `map-rendering-unavailable: invalid region` 으로 거절한다(첫 시험에서 그림 0장으로 돌았다).
+
+**실내 빈 바닥 자 (2026-10-22, `bareFloor.ts`).** 빈 칸 = 1층이 통행 바닥이고 2·3·4층이 없는 칸, 빈 덩이 = 빈 칸으로만 된 2×2 에 드는 칸,
+빈 바닥 % = 빈 덩이 ÷ (방 바닥 + 그 위 벽면 두 줄). 옛 자(3×3 이웃에 아무것도 없는 바닥)는 #3242 3차 조수 판을 9~21% 로 쟀고 검수자는 25~30% 로 봤다.
+보정(`bun scripts/qa/interior-bare-floor-calibrate.mts <space-craft 실행 폴더>…`): 폴른 r28 세 방 15·7·12%, 3차 조수 판 32·32·15·27%. 한도 15%(vqa 축 1).
+`build_hand_interior_room` 의 구성 경고(compositionLint ④)도 이 자를 쓴다.
+
 ## 출입구 도달·문앞 좌표 계약 (2026-10-07)
 
 한 칸 외부 문은 실내 출구도 한 칸이다. `build_hand_interior_room.exitWidth` 기본 1과 남쪽 평면 틈 폭을 대조해 두 칸 틈을 거부한다. `start`는 BFS 출발점이며 폭 선언이 아니다. 넓은 대문은 그 실제 폭을 명시한다. 결과 `exits`에 위치·폭을 돌려준다. `doorAt`으로 한 칸 문을 연결할 때 `create_transfer_pair`와 `link_maps`는 상대 실내의 설치된 1층 남쪽 틈 폭도 검사한다. 가구로 틈 한쪽을 막아 폭을 숨길 수 없다. 공용 손 도트 실내 참고문서의 예제 두세 칸 출구는 `exitWidth`를 명시하며 한 칸 집 문에 복사하지 않는다.
