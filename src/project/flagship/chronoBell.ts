@@ -1454,13 +1454,19 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       };
       // 옛 돌 관(하수도 관 2×2)은 구덩이 계산 전에 걷는다 — 남겨 두면 옛 관 자리가 「덧그림 있는 칸」으로 빠져 구덩이 북쪽에 풀 구멍이 났다.
       fm.upperTiles.forEach((t, i) => { if (t >= 26599 && t <= 26602) { fm.upperTiles[i] = -1; hadCoffin = true; } });
-      const SHIFT = 2;
-      let ok = pod.y + SHIFT < fm.height - 4;
-      for (let y = pod.y; ok && y <= pod.y + SHIFT; y += 1) for (let x = pod.x - 1; x <= pod.x + 1; x += 1) if (!ground(x, y)) ok = false;
+      // 맵 위 끝에 붙은 구덩이는 1배 화면 위 테두리에 뒷벽이 잘려 「빈터에 판 밭」으로 읽혔다(VQA r21 major) — 빈터가 허락하는
+      // 만큼(최대 네 칸) 내려 구덩이 뒤로 숲이 보이게 한다. 잔돌·풀 포기 덧그림은 막지 않는다(큰 나무만 막는다).
+      const open = (x: number, y: number): boolean => ground(x, y) || ((grassFloor(y * fm.width + x) || (metaS[fm.lowerTiles[y * fm.width + x]!]?.label ?? "").startsWith("버들항 · 모랫길")) && !treeAt(y * fm.width + x));
+      const SHIFT = [4, 3, 2].find((d) => {
+        if (pod.y + d >= fm.height - 4) return false;
+        for (let y = pod.y; y <= pod.y + d; y += 1) for (let x = pod.x - 1; x <= pod.x + 1; x += 1) if (!open(x, y)) return false;
+        return true;
+      }) ?? 0;
+      const ok = SHIFT > 0;
       if (ok) {
         pod.y += SHIFT;
         const iris = fm.events.find((e) => e.id === `ev_${FS_PREFIX}_iris_field`);
-        if (iris && ground(iris.x, iris.y + SHIFT)) iris.y += SHIFT;
+        if (iris && open(iris.x, iris.y + SHIFT)) iris.y += SHIFT;
       }
     }
     // 관(별의 배) 가운데 — 관은 pod 바로 위 두 칸 너비. 구덩이는 관을 품고 사방으로 그을린 자국이 뻗는 불규칙한 모양이다:
@@ -1470,7 +1476,6 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     // 타원으로 줄이고 가운데를 반 칸 내려 위쪽 나무 줄에 잘리지 않게 한다. 그을음은 구덩이 밖 풀 위의 불씨·숯 줄기로 뻗는다.
     const cx = pod.x + 0.5, cy = pod.y - 1, rx = 5.2, ry = 3.4; // 관(조사 칸 위 두 줄) 한가운데
     const pit = new Set<number>();
-    const rays = [0.35, 1.2, 2.05, 2.75, 3.6, 4.55, 5.5];
     const metaPit = (project.tilesets[fm.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
     const isSand = (i: number): boolean => (metaPit[fm.lowerTiles[i]!]?.label ?? "").startsWith("버들항 · 모랫길");
     for (let y = Math.max(1, Math.floor(cy - ry * 1.6)); y <= Math.min(fm.height - 2, Math.ceil(cy + ry * 1.6)); y += 1) {
@@ -1518,6 +1523,20 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         }
       }
     }
+    // 북쪽 맨 윗줄을 가운데 다섯 칸으로 좁힌다 — 윗줄이 구덩이 폭 그대로면 흙벽이 곧은 한 줄(네모 밭의 뒷담)로 읽혔다(VQA r21 major).
+    // 좁히면 양 끝은 한 줄 아래에서 벽이 되어 뒷벽이 둥글게 휜 사발로 그려진다.
+    {
+      const topY = pit.size ? Math.min(...[...pit].map((c) => Math.floor(c / fm.width))) : 0;
+      const row = [...pit].filter((c) => Math.floor(c / fm.width) === topY);
+      if (row.length > 5) for (const c of row) if (Math.abs((c % fm.width) + 0.5 - cx) > 2.6) pit.delete(c);
+      for (let changed = true; changed;) {
+        changed = false;
+        for (const c of [...pit]) {
+          const [u, d, l, r] = [c - fm.width, c + fm.width, c - 1, c + 1].map((k) => pit.has(k));
+          if ([u, d, l, r].filter(Boolean).length < 2 || (!l && !r) || (!u && !d)) { pit.delete(c); changed = true; }
+        }
+      }
+    }
     // 구덩이 칸의 잔돌·풀 포기·꽃 덧그림은 걷는다(관은 아직 안 놓였다) — 갓 파인 흙 위에 풀숲 장식이 남으면 안 된다.
     for (const c of pit) for (const layer of [fm.lowerOverlayTiles, fm.upperTiles, fm.upperOverlayTiles]) if (layer && (layer[c] ?? -1) >= 0 && !treeAt(c)) layer[c] = -1;
     // 빈터에 먼저 깔려 있던 네모 모랫길 마당(숲길 끝)이 구덩이와 합쳐져 네모 흙 마당으로 보였다(VQA r7 major) — 구덩이 아래쪽
@@ -1552,9 +1571,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     ];
     const around: Array<[string, number]> = [
       // 둘레 통나무 셋은 갈래 끝 통나무와 합쳐 여섯이 같은 가로줄로 늘어서 의자처럼 읽혔다(VQA r19) — 둘레엔 그루터기·덤불만.
-      ["bd-pick-deep-forest-path-stump", 0.9], ["bd-pick-deep-forest-path-stump", 3.3], ["bd-pick-deep-forest-path-heath-a", 1.6],
-      ["bd-pick-deep-forest-path-heath-b", 4.6], ["bd-pick-deep-forest-path-fern-c", 5.4], ["bd-pick-deep-forest-path-stump", 5.9],
-      ["bd-pick-deep-forest-path-heath-c", 2.2],
+      // 고른 각도로 그루터기·덤불을 두르면 격자처럼 늘어선 벌목지로 읽혔다(VQA r21) — 덤불 셋만 남기고, 꺾인 나무는 아래에서 둑에 붙여 둔다.
+      ["bd-pick-deep-forest-path-heath-a", 1.6], ["bd-pick-deep-forest-path-fern-c", 5.4], ["bd-pick-deep-forest-path-heath-c", 2.6],
       // (통나무를 고르게 더 둘렀더니 목재 야적장처럼 읽혔다 — VQA r13. 쓰러진 나무는 위 셋과 갈래 끝 그루터기로 충분하다.)
     ];
     // 흙길 오토타일이 오목한 모서리 칸을 스스로 채운다 — 실제로 바뀐 칸을 다시 모아 둑을 얹는다.
@@ -1590,7 +1608,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       const smoke = (x: number, y: number, ms: number) => ({ kind: "m2Command", commandId: "m2-224-particle-effect", fields: { preset: "smoke", target: "tile", x, y, durationMs: ms, wait: false } } as unknown as Command);
       live.events = live.events.filter((e) => e.id !== `ev_${FS_PREFIX}_crash_smoke`);
       live.events.push({
-        id: `ev_${FS_PREFIX}_crash_smoke`, name: "추락지 연기", x: pod.x - 3, y: pod.y - 3, trigger: { kind: "parallel" }, commands: [],
+        // 이벤트 칸은 구덩이 안(관 발치) — 둑 밖 풀에 두면 둑 곁 마른 고목이 그 곁을 피해 못 섰다(연기는 좌표로 따로 피운다).
+        id: `ev_${FS_PREFIX}_crash_smoke`, name: "추락지 연기", x: pod.x, y: pod.y + 1, trigger: { kind: "parallel" }, commands: [],
         pages: [{
           id: `ev_${FS_PREFIX}_crash_smoke_page`, name: "연기", conditions: [], graphic: { transparent: true },
           movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "below", trigger: { kind: "parallel" },
@@ -1627,20 +1646,52 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
         if (r > 3.2) break;
       }
     }
-    // 그을음 줄기 — 일곱 갈래 끝마다 구덩이 둑 바로 밖 풀 위에 불씨·숯 자국을 하나씩(충격이 사방으로 튄 자리).
-    // 통나무는 서쪽 하나만 — 갈래 끝마다 가로 통나무를 두면 넷이 두 가로줄로 마주 놓여 의자처럼 읽혔고(VQA r20),
-    // 동·서 하나씩이어도 같은 줄에 마주 놓인 긴 의자 한 쌍이었다.
-    const logSide = new Set<number>();
-    for (const [k, r0] of rays.entries()) {
-      const angle = r0 - Math.PI;
-      const side = Math.sign(Math.cos(angle));
-      const wantLog = Math.abs(Math.cos(angle)) > 0.6 && side < 0 && logSide.size === 0;
-      for (let r = 1; r < 3; r += 0.2) {
-        const x = Math.round(cx + Math.cos(angle) * rx * r), y = Math.round(cy + Math.sin(angle) * ry * r);
-        if (x < 1 || y < 1 || x >= live.width - 1 || y >= live.height - 1 || pit.has(y * live.width + x)) continue;
-        // 불씨 자국은 풀 위에서 검은 돌무더기로 읽혔다(VQA r10) — 충격에 꺾인 나무(그루터기·쓰러진 통나무)로 바꾼다.
-        // 동서로 뻗은 갈래 끝엔 바깥으로 누운 통나무(쓰러진 나무), 남북 갈래 끝엔 그루터기 — 그루터기만 고르게 두르면 벌목지로 읽혔다(VQA r17).
-        if (tryStamp(project, M(ids.forest), `kit:beodeul_city/${wantLog ? "bd-pick-deep-forest-path-log-fallen" : k % 2 ? "bd-pick-deep-forest-path-heath-b" : "bd-pick-deep-forest-path-stump"}`, x, y)) { if (wantLog) logSide.add(side); break; }
+    // 충격에 꺾인 나무 — 둑 바로 밖에 밑동(그루터기)이 남고 줄기는 바깥으로 쓰러져 그 곁에 눕는다(서쪽·동쪽, 서로 다른 줄).
+    // 북쪽 둑 너머엔 불에 그을린 마른 고목 둘. 갈래 끝마다 통나무·그루터기를 고르게 두면 벌목지·긴 의자로 읽혔다(VQA r19~r21).
+    {
+      const lv = M(ids.forest);
+      const rowsOf = (y: number): number[] => [...pit].filter((c) => Math.floor(c / lv.width) === y).map((c) => c % lv.width);
+      const snapped = (y: number, side: -1 | 1): boolean => {
+        const xs = rowsOf(y);
+        if (!xs.length) return false;
+        const edge = side < 0 ? Math.min(...xs) : Math.max(...xs);
+        const stumpX = edge + side, logX = side < 0 ? edge - 3 : edge + 2;
+        if (!grassish(y * lv.width + stumpX) || !grassish(y * lv.width + logX) || !grassish(y * lv.width + logX + 1)) return false;
+        if (!tryStamp(project, M(ids.forest), "kit:beodeul_city/bd-pick-deep-forest-path-stump", stumpX, y)) return false;
+        tryStamp(project, M(ids.forest), "kit:beodeul_city/bd-pick-deep-forest-path-log-fallen", logX, y);
+        return true;
+      };
+      const mid = Math.round(cy);
+      // 서·동 꺾인 나무는 서로 다른 줄에 — 같은 줄이면 마주 놓인 긴 의자 한 쌍으로 읽혔다.
+      const westRow = [mid, mid - 1, mid + 1].find((y) => snapped(y, -1));
+      for (const y of [mid + 1, mid - 1, mid + 2, mid - 2]) if (y !== westRow && snapped(y, 1)) break;
+      const top = pit.size ? Math.min(...[...pit].map((c) => Math.floor(c / lv.width))) : 0;
+      // 마른 고목(3×4, 밑동은 맨 아래 줄 왼쪽 두 칸) — 북서·북동 둑 바로 바깥 풀 위(구덩이 위쪽 절반 높이).
+      for (const side of [-1, 1] as const) {
+        let done = false;
+        for (let by = top + (side > 0 ? 2 : 0); by <= mid + 1 && !done; by += 1) { // 동쪽 고목은 두 줄 아래 — 좌우 대칭이면 문 기둥처럼 읽힌다
+          const xs = rowsOf(by);
+          if (!xs.length) continue;
+          for (const gap of [1, 2]) {
+            const bx = side < 0 ? Math.min(...xs) - gap - 1 : Math.max(...xs) + gap;
+            const base = by * lv.width + bx;
+            // 빈터 가장자리 바닥은 나무 그늘(「나무·덤불」 이름표 바닥)이라 풀밭 판정에 안 걸렸다 — 걸을 수 있고 덧그림 없는 칸이면 된다.
+            const cur = M(ids.forest);
+            const bare = (i: number): boolean => isPassable(project, cur, i % cur.width, Math.floor(i / cur.width)) && (cur.upperTiles[i] ?? -1) < 0 && (cur.upperOverlayTiles?.[i] ?? -1) < 0;
+            if (by - 3 < 1 || pit.has(base) || pit.has(base + 1) || !bare(base) || !bare(base + 1)) continue;
+            // 키트 그림 칸(왼쪽 두 열 · 아래 세 줄)만 직접 얹는다 — 빈 윗줄·오른쪽 열까지 통행 검사하는 찍기 도구는 빈터 가장자리
+            // 나무 그늘 칸에 막혀 한 번도 서지 못했다. 칸 번호는 번들 키트 그대로(새 그림 없음).
+            const kit = (project.tilesets[lv.tilesetId] as unknown as { structureKits?: { id: string; rows: { upperTiles?: number[] }[] }[] }).structureKits?.find((k) => k.id === "bd-pick-swamp-stilt-snag");
+            if (!kit) break;
+            const cells: [number, number][] = [];
+            kit.rows.forEach((r, ry) => (r.upperTiles ?? []).forEach((t, rx) => { if (t >= 0) cells.push([(by - 3 + ry) * lv.width + bx + rx, t]); }));
+            // 찍기 도구가 맵 객체를 바꿔 끼우므로(위 통나무) 지금 맵에 쓴다.
+            const now = M(ids.forest);
+            if (cells.some(([i]) => (now.upperTiles[i] ?? -1) >= 0 || (now.upperOverlayTiles?.[i] ?? -1) >= 0 || pit.has(i))) continue;
+            for (const [i, t] of cells) now.upperTiles[i] = t;
+            done = true; break;
+          }
+        }
       }
     }
     // 구덩이 북쪽 위로 맵 끝까지 붙은 모랫길 토막 둘은 아무 데로도 안 갔다(VQA r6 m13) — 풀로 되돌린다.

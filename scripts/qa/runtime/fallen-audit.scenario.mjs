@@ -144,7 +144,7 @@ export default {
     { id: "bram", note: "숲지기 브람", ops: [{ kind: "teleport", mapId: "fs_forest", x: 14, y: 19 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "bram-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "pod-intro", note: "은빛 관 — 첫 선택지", ops: [
-      { kind: "teleport", mapId: "fs_forest", x: 14, y: 6 }, { kind: "hold", dir: null, ms: 400 },
+      { kind: "teleport", mapId: "fs_forest", x: 14, y: 8 }, { kind: "hold", dir: null, ms: 400 },
       ...talk("up"),
       { kind: "pressUntil", key: "Enter", testid: "runtime-choices", state: "present", maxPresses: 20, timeoutMs: 900 },
     ], shot: true },
