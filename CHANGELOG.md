@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.323.0 — 2026-10-22
+
+### 기능
+
+- **beodeul** — hand-pixel town wall kit + walled villages (walls:true, wallGate) (#3250) (`14d9fc9`)
+- **stairs** — stair entrance contract, lint and contract-driven placement (#3247) (`bee4306`)
+
 ## 0.322.0 — 2026-10-22
 
 ### 기능
