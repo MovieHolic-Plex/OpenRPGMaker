@@ -41,6 +41,13 @@ jobs:
           node-version: 24
           cache: npm
 
+      # 호스티드 러너에는 bun 이 없다. AI 워커(oh-my-pi-worker)를 이 단계에서 컴파일한다.
+      - name: bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo "$HOME/.bun/bin" >> "$GITHUB_PATH"
+          "$HOME/.bun/bin/bun" --version
+
       # 체크아웃은 릴리스 태그다. 빌드 절차는 이 파일에 둔다 — 태그 쪽 스크립트가
       # 이 워크플로보다 옛 것이어도 호스티드 러너에서 같은 산출물이 나오게.
       - name: 패키지 빌드 후 릴리스에 업로드
