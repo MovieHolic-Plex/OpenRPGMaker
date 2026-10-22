@@ -510,7 +510,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoMeetStop, minhoSpot, [heroMeet, leadMeetStop, jihuMeetStop], false, "up"),
     // 만남 자리의 둘은 그 자리에서 사라지지 않고 각자 자리까지 걸어간다 — 자리의 지후·팀장 페이지가 같은 칸에서 이어받는다.
     walkRoute(project, FL_MAP.office, "ev_fl_jihu_meet", jihuMeetStop, jihuSeat, [heroMeet], false),
-    wait(700), // 민호가 팀장 앞(아래) 칸을 지나간 뒤에 팀장이 걷는다.
+    wait(1200), // 민호가 팀장 앞(아래) 칸을 지나간 뒤에 팀장이 걷는다(동시에 걸으면 서로 막혀 걸음이 건너뛰어진다, r40).
     walkRoute(project, FL_MAP.office, "ev_fl_lead", leadMeetStop, o.leadDesk, [heroMeet], false, "down"),
     ...think("(탕비실에서 민호 씨를 찾아보자. 자리와 화이트보드도 한번 볼까.)"),
     waitMoves(),

@@ -165,6 +165,7 @@ description: Use when authoring or reviewing story scenes, events, cutscenes, NP
 | `scene-ending-under-fade` | 검게 덮은 채 그림 있는 에필로그 엔딩을 부른다 → 글만 검은 화면. 그림을 먼저 띄우고 fadeIn |
 | `scene-actor-head-under-upper` | 장면 경로가 인물을 세우는 칸 바로 위에 「항상 위」(★) 위층 소품이 있다 → 소품이 머리를 덮는다. 위 칸이 빈 바닥이거나 막힌 가구인 칸에 세운다 |
 | `scene-bust-side-switch` | 한 장면(장소 이동·fadeOut 사이) 안에서 같은 인물 흉상이 왼쪽·오른쪽을 오간다 → 장면 내내 한쪽으로 고정하고, 맞지 않으면 인물이 서는 칸을 옮긴다 |
+| `scene-route-through-actor` | 장면 경로가 그 장면이 세워 둔(지금 서 있는) 다른 인물의 칸을 지나간다 → 막힌 걸음이 건너뛰어져 엉뚱한 칸에서 멈춘다. 피할 칸에 그 자리를 넣거나 먼저 비키게 한다. 함께 걷는 두 경로가 엇갈리면 한쪽을 잠깐 늦춘다 |
 
 ## 새 교훈 넣기
 

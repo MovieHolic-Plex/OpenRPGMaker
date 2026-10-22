@@ -23,6 +23,7 @@
 //  - scene-tint-clears-fade        화면을 검게 덮은(fadeOut) 뒤 fadeIn 전에 「Tint Screen」 으로 색조를 바꾼다 — 페이드도 같은 색조 칸이라 검은 덮개가 걷혀 다음 장면 전에 화면이 드러난다
 //  - scene-actor-head-under-upper  인물이 걸어가 선 칸 바로 위에 «항상 위» 위층 소품(★, 계산대 위 물건 등)이 있다 — 소품이 머리를 덮은 채 대화한다
 //  - scene-bust-side-switch        한 장면(페이지, 장소 이동·fadeOut 사이) 안에서 같은 인물 흉상이 왼쪽·오른쪽을 오간다
+//  - scene-route-through-actor     장면 경로가 그 자리에 서 있는(움직이지 않는) 다른 인물의 칸을 지나간다 — 엔진이 그 걸음을 건너뛰어 엉뚱한 칸에서 멈춘다
 //  - scene-actor-under-furniture   보이는 인물을 «위층(upper)» 가구 칸(의자 등받이·탁자처럼 인물보다 앞에 그려지는 막힌 칸)에 세운다 — 가구가 얼굴을 덮는다
 //  - scene-route-interrupted       기다리지 않는 긴 경로(퇴장 등)가 도는 인물에게 같은 장면이 다시 이동·돌기를 시킨다 — 뒤 명령이 앞 경로를 갈아 끼워 인물이 길 한가운데 멈춘다
 
@@ -1307,6 +1308,57 @@ function checkBustSideSwitch(project: Project, issues: LintIssue[]): void {
   }
 }
 
+/**
+ * 경로 걸음은 막히면 건너뛰어진다(skippable). 그 자리에 서 있는 인물의 칸을 지나는 경로는 걸음 몇 개가 빠져 엉뚱한 칸에서 멈추고,
+ * 다음 장면이 기대한 자리에 인물이 없다(첫사랑 r40: 팀장 오른쪽에 선 민호가 팀장 칸을 지나 탕비실로 가다 복도에 멈춰 탕비실 장면이 안 열림).
+ * 기다리지 않는 경로로 함께 걷고 있는 인물은 비켜 갈 수 있으므로 세지 않는다. 지나감(through) 구간도 세지 않는다.
+ */
+function checkRouteThroughActor(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    const byId = new Map((map.events ?? []).map((e) => [e.id, e] as const));
+    const hiddenBySwitch = switchesThatHide(map, false);
+    for (const host of map.events ?? []) {
+      for (const page of pagesOf(host)) {
+        // 이 장면이 움직인 인물만 센다 — 페이지 조건(단계)으로 지금 안 보이는 인물을 서 있다고 여기지 않는다.
+        const pos = new Map<string, Cell>();
+        const moving = new Set<string>();
+        const reported = new Set<string>();
+        for (const command of walk(page.commands)) {
+          if (command.kind === "transfer") break;
+          if (m2Title(command) === "Wait for All Movement") { moving.clear(); continue; }
+          if (m2Title(command) === "Erase Event") { pos.delete(fieldStr(command, "eventId") || host.id); continue; }
+          if (command.kind === "setSwitch" && command.value === true) {
+            for (const npc of hiddenBySwitch.get(command.switchId) ?? []) pos.delete(npc.id);
+            continue;
+          }
+          const routeId = routeTarget(command, host);
+          if (!routeId || command.kind !== "moveEvent" || !byId.has(routeId)) continue;
+          let cur = pos.get(routeId) ?? { x: byId.get(routeId)!.x, y: byId.get(routeId)!.y };
+          let through = false;
+          for (const m of command.route?.moves ?? []) {
+            if (!m || typeof m !== "object") continue;
+            if (m.kind === "setThrough") { through = m.enabled; continue; }
+            if (m.kind !== "move") continue;
+            cur = { x: cur.x + STEP[m.dir].x, y: cur.y + STEP[m.dir].y };
+            if (through) continue;
+            for (const [other, at] of pos) {
+              if (other === routeId || moving.has(other) || at.x !== cur.x || at.y !== cur.y || reported.has(routeId + other)) continue;
+              reported.add(routeId + other);
+              issues.push({
+                severity: "warning", code: "scene-route-through-actor", mapId: map.id, eventId: host.id, x: cur.x, y: cur.y,
+                message: `이벤트 ${host.id} 의 경로가 ${routeId} 를 (${cur.x},${cur.y}) 에 서 있는 ${other} 의 칸으로 지나가게 한다 — 막힌 걸음은 건너뛰어져 ${routeId} 가 엉뚱한 칸에서 멈춘다. 경로의 피할 칸에 그 인물 자리를 넣거나, 그 인물이 먼저 비키게 한다.`,
+              });
+            }
+          }
+          const end = simulateRoute(pos.get(routeId) ?? byId.get(routeId)!, command.route?.moves, map);
+          if (end.fades) pos.delete(routeId); else pos.set(routeId, end.end);
+          if (command.route?.wait === false) moving.add(routeId); else moving.delete(routeId);
+        }
+      }
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------- 흉상 시선
 
 /**
@@ -1484,6 +1536,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkActorUnderFurniture);
   guard(checkActorHeadUnderUpper);
   guard(checkBustSideSwitch);
+  guard(checkRouteThroughActor);
   guard(checkMapSmallerThanScreen);
   guard(checkLetterboxDialogue);
   guard(checkCommandsAfterTransfer);

@@ -36,6 +36,7 @@
 | `scene-ending-under-fade` | 페이지를 차례로 읽어 fadeOut 뒤 fadeIn 없이 `triggerEnding` 이 오고, 그 엔딩 에필로그에 `picture` 비트가 있으면 경고. 에필로그 그림이 페이드 색조 아래에 그려진다. 첫사랑 r10 |
 | `scene-actor-head-under-upper` | 장면 페이지를 차례로 읽어 moveEvent 경로 끝 칸(지나갈 수 있는 칸)마다 바로 위 칸의 upperTiles·upperOverlayTiles 가 ★(항상 위, 계단·foot-dy 제외)이면 경고. 소품이 머리를 덮는다. 첫사랑 r15 편의점 |
 | `scene-bust-side-switch` | 페이지를 차례로 읽어 흉상 changeFace(presentation bust)의 인물(흉상 id 에서 표정 꼬리를 뗀 것)마다 자리를 기억하고, 장소 이동·fadeOut 전에 반대 자리로 나오면 경고. 첫사랑 VQA r16 |
+| `scene-route-through-actor` | 페이지를 차례로 읽어 그 페이지가 움직인 인물의 자리를 기억하고, 다른 인물의 경로 걸음(지나감 구간 제외)이 기다림 없이 서 있는 인물 칸을 밟으면 경고. 기다리지 않는 경로로 걷는 중인 인물은 세지 않는다. 첫사랑 r40 |
 | `scene-arrival-faces-exit` | 짝 없는 한쪽 이동(문형 왕복 짝은 `scene-transfer-pair` 몫)의 도착 방향 1~2칸 앞에 이동 칸이나 문·계단 그림이 있다 — 막 지나온 문을 보고 선다 |
 
 데모 검증(2026-10-21, `scripts/qa/scene-polish-lint.mts`): Fallen Star polish2 13건(방향 없는 이동 4·착지 2칸 3·문 아닌 칸 5·대사 뒤 사라짐 1), Astra fv 15건(문을 보는 착지 10 — 이후 손으로 고친 7fa8b2f3c2 와 같은 곳·한 칸 어긋난 출입 매트 2·표시 없는 출구 2·제자리 지우는 라이벌 1),
