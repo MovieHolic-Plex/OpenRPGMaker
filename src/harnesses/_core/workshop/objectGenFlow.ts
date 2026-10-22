@@ -262,6 +262,8 @@ const GEOMETRIC_MIRROR_ROWS = kitValue<number>("checks", "GEOMETRIC_MIRROR_ROWS"
 const LEAF_MIN_PIXELS = kitValue<number>("checks", "LEAF_MIN_PIXELS");
 const LEAF_CAST_MAX = kitValue<number>("checks", "LEAF_CAST_MAX");
 const LEAF_DARK_MIN = kitValue<number>("checks", "LEAF_DARK_MIN");
+const LEAF_CONTRAST_MIN = kitValue<number>("checks", "LEAF_CONTRAST_MIN");
+const LEAF_BAND_MAX = kitValue<number>("checks", "LEAF_BAND_MAX");
 const ORGANIC_LEAF_RAMP = kitValue<readonly string[]>("prompts", "ORGANIC_LEAF_RAMP");
 const ORGANIC_LEAF_SHARES = kitValue<readonly number[]>("prompts", "ORGANIC_LEAF_SHARES");
 
@@ -286,14 +288,31 @@ export function leafRampLine(palette: Palette): string {
   ].join("\n");
 }
 
-/** 원본 checks.leaves: 잎 초록(초록이 빨강보다 10+ 크고 파랑 이상) 화소 수, 평균(빨강-파랑), 명도 60 미만 몫. */
-export function leafTone(image: RgbaImage): { leafPixels: number; leafCast: number; leafDark: number } {
-  let n = 0, cast = 0, dark = 0;
+/**
+ * 원본 checks.leaves: 잎 초록(초록이 빨강보다 10+ 크고 파랑 이상) 화소 수, 평균(빨강-파랑), 명도 60 미만 몫,
+ * 이웃 명도 차 평균(contrast — 덩이마다 밝은 획 옆에 어두운 구멍이면 크다), 명도와 높이의 상관(band — 위 밝고 아래 띠로 어두우면 더 음수).
+ */
+export function leafTone(image: RgbaImage): { leafPixels: number; leafCast: number; leafDark: number; leafContrast: number; leafBand: number } {
+  const lum = new Map<number, number>();
+  let cast = 0, dark = 0;
   for (let i = 0; i < image.data.length; i += 4) {
     const r = image.data[i]!, g = image.data[i + 1]!, b = image.data[i + 2]!;
-    if (image.data[i + 3]! > 0 && g >= r + 10 && g >= b) { n++; cast += r - b; if (0.299 * r + 0.587 * g + 0.114 * b < 60) dark++; }
+    if (image.data[i + 3]! > 0 && g >= r + 10 && g >= b) { const l = 0.299 * r + 0.587 * g + 0.114 * b; lum.set(i / 4, l); cast += r - b; if (l < 60) dark++; }
   }
-  return n ? { leafPixels: n, leafCast: Math.round((cast / n) * 10) / 10, leafDark: Math.round((dark / n) * 1000) / 1000 } : { leafPixels: 0, leafCast: 0, leafDark: 0 };
+  const n = lum.size;
+  if (!n) return { leafPixels: 0, leafCast: 0, leafDark: 0, leafContrast: 0, leafBand: 0 };
+  const w = image.width;
+  let steps = 0, stepSum = 0, sumY = 0, sumL = 0;
+  for (const [i, l] of lum) {
+    sumY += Math.floor(i / w); sumL += l;
+    for (const j of [(i % w) + 1 < w ? i + 1 : -1, i + w]) { const m = j >= 0 ? lum.get(j) : undefined; if (m !== undefined) { steps++; stepSum += Math.abs(m - l); } }
+  }
+  const my = sumY / n, ml = sumL / n;
+  let sy = 0, sl = 0, cov = 0;
+  for (const [i, l] of lum) { const dy = Math.floor(i / w) - my, dl = l - ml; sy += dy * dy; sl += dl * dl; cov += dy * dl; }
+  const band = sy && sl ? cov / Math.sqrt(sy * sl) : 0;
+  return { leafPixels: n, leafCast: Math.round((cast / n) * 10) / 10, leafDark: Math.round((dark / n) * 1000) / 1000,
+    leafContrast: steps ? Math.round((stepSum / steps) * 10) / 10 : 0, leafBand: Math.round(band * 100) / 100 };
 }
 /**
  * 원본 checks.geometry: 윤곽이 도형인가. turns = 왼/오른 가장자리가 들어갔다 나왔다 꺾이는 횟수(줄당) — 손으로 뭉친 수관은 자주 꺾이고
@@ -400,7 +419,9 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
     }
     const lv = leafTone(renderGrid(grid, palette));
     if (lv.leafPixels >= LEAF_MIN_PIXELS) {
-      if (lv.leafCast > LEAF_CAST_MAX) hard.push({ code: "LEAFHUE", msg: `the leaves are olive/yellow (red-blue ${lv.leafCast}, exemplars -9..-4) - paint them with the listed leaf-green keys` });
+      if (lv.leafCast > LEAF_CAST_MAX) hard.push({ code: "LEAFHUE", msg: `the leaves are olive/yellow (red-blue ${lv.leafCast}, exemplars -9..-4, limit -1) - paint them with the listed leaf-green keys` });
+      if (lv.leafContrast < LEAF_CONTRAST_MIN) hard.push({ code: "LEAFFLAT", msg: `the leaves are a smooth gradient, not clumps (neighbour contrast ${lv.leafContrast}, exemplars 12-18) - build separate clumps: a 2-4 px light dash on each clump's upper left right next to dark pockets` });
+      if (lv.leafBand < LEAF_BAND_MAX) hard.push({ code: "LEAFBAND", msg: `light and dark change by height (luma-height correlation ${lv.leafBand}, exemplars -0.44..-0.53) - light every clump on its own upper left, put dark pockets between clumps at every height` });
       if (lv.leafDark < LEAF_DARK_MIN) hard.push({ code: "LEAFLIGHT", msg: `the crown is too light (${Math.round(lv.leafDark * 100)}% dark leaf pixels, exemplars 28-38%) - more dark interior, shadow under lobes, darker lower right` });
     }
   } else if (TOP_KINDS.has(item.gateKind ?? "") && STANDING.has(anchor) && topRows < 3) warn.push({ code: "TOP", msg: `measured top plane is ${topRows} row(s) (column scan) - a 3/4 top needs >= 3 lit rows above the front` });
