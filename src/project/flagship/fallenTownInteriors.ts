@@ -117,11 +117,12 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
     {
       door: { x: 13, y: 11 }, mapId: "fs_bakery_home", name: "아스텔 · 빵집 뒤채", bgm: "cc0-bgm-rtp-caf-001",
       // 빵 진열 가게 + 빵 굽는 방(화덕이 부엌을 겸한다) + 식료품 광 + 지하 저장고 + 침실 + 식당.
-      layout: { rooms: [{ kind: "bakery_shop", w: 14, h: 8 }, { kind: "bakery_oven", w: 8, h: 5 }, { kind: "pantry" }, { kind: "cellar" }, { kind: "bedroom" }, { kind: "dining" }], seed: 21, variant: 0, styleVariant: "C" },
-      dress: [["table:loaf+bun", 13, 13], ["basket:loaf", 11, 14], ["basket:bun", 12, 14], ["basket:baguette", 11, 13],
-        ["roundtable", 27, 13], ["chair E", 26, 13], ["chair W", 28, 13],
-        // 가게 아랫단이 빈 대리석 띠였다(VQA r20 minor) — 빵 진열 탁자 하나와 바구니(문~계산대 길 x22~24 는 비운다).
-        ["table:loaf+bun", 16, 13]],
+      // 침실이 리사네 아이 방과 같은 견본(초록 침대·옷걸이)이었다(VQA r31) — 4×4 로 주면 난로·작은 밥상이 있는 제빵사 방 견본을 쓴다.
+      // 가게 8줄은 아랫단 두 줄이 빈 대리석이었다 — 6줄로 줄인다.
+      layout: { rooms: [{ kind: "bakery_shop", w: 14, h: 6 }, { kind: "bakery_oven", w: 8, h: 5 }, { kind: "pantry" }, { kind: "cellar" }, { kind: "bedroom", w: 4, h: 4 }, { kind: "dining" }], seed: 21, variant: 0, styleVariant: "C" },
+      // 29×15: 가게(아래 왼쪽 x1~18, 문 (13,14) 길 x12~14 는 비운다) 아랫단 바구니·빵 진열 탁자, 오른쪽 끝에 빵 맛보는 작은 탁자.
+      dress: [["basket:loaf", 1, 12], ["basket:bun", 2, 12], ["table:loaf+bun", 5, 12],
+        ["roundtable", 16, 12], ["chair E", 15, 12], ["chair W", 17, 12]],
       people: [
         {
           id: "ev_fs_baker_husband", name: "빵집 아저씨 토마", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people1", 4], behindCounter: true,
@@ -143,7 +144,9 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       // 거실(아래 오른쪽, 바닥 x14~25·y9~14)은 벽난로 앞 안락의자뿐이라 아랫단이 비었다 — 찻상 하나(문 x18 길은 비운다).
       dress: [["star lens", 8, 1], ["orrery", 5, 3], ["globe", 12, 5], ["tea 2x2", 21, 12], ["chair E", 20, 12], ["chair W", 23, 12],
         // 서고(아래 왼쪽) 왼쪽 아래가 빈 마루였다(VQA r28) — 별 지도를 펴 보는 읽기 책상.
-        ["desk 2x1", 2, 11], ["chair N", 2, 12]],
+        ["desk 2x1", 2, 11], ["chair N", 2, 12],
+        // 응접실 아래 왼쪽·서재 아래 왼쪽이 빈 마루였다(VQA r31) — 별지기다운 해도 탁자·지도 두루마리 통, 렌즈 작업대(문 x18 길은 비운다).
+        ["chart table", 14, 12], ["map rolls", 16, 12], ["lens bench", 4, 13]],
       people: [
         {
           // 거실 오른쪽 아래 구석에 서 있었다(VQA r30) — 진열실의 큰 별 렌즈 곁(왼쪽)에 선다.
@@ -161,13 +164,19 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       // 부부 침실을 11칸으로 넓히면 다섯 방이 30×17 에 빈틈 없이 맞물린다(허공 0).
       // 거실 16×7 은 별지기 집 거실과 같은 벽난로·붉은 안락의자 셋·괘종시계·분홍 찻상 묶음이었다(VQA r30) — 거실을 8×7 로 줄이고
       // 가족 식당(8×7, 긴 식탁)을 더한다. 여섯 방이 31×17 에 맞물린다(허공 3%).
-      layout: { rooms: [{ kind: "living", w: 8, h: 7 }, { kind: "dining", w: 8, h: 7 }, { kind: "kitchen", w: 8, h: 7 }, { kind: "master_bedroom", w: 11, h: 7 }, { kind: "bedroom", w: 8, h: 7 }, { kind: "tailor_work", w: 9, h: 7 }], seed: 29, variant: 0, styleVariant: "A" },
+      // 가족 식당(8×7)은 빵집 뒤채 식당과 같은 견본(붉은 양탄자·아홉 자리 식탁·금 꽃병)이었다(VQA r31 major) — 식당을 빼고
+      // 부엌의 둘러앉는 식탁으로 끼니를 먹게 한다. 그 자리에 바느질 집다운 옷 맞추는 방(거울 화장대·옷장·마네킹)을 둔다.
+      layout: { rooms: [{ kind: "living", w: 8, h: 7 }, { kind: "dressing", w: 4, h: 7 }, { kind: "kitchen", w: 8, h: 7 }, { kind: "master_bedroom", w: 11, h: 7 }, { kind: "bedroom", w: 8, h: 7 }, { kind: "tailor_work", w: 9, h: 7 }], seed: 29, variant: 0, styleVariant: "A" },
       // 거실(아래 왼쪽) 동쪽에 찻상과 의자, 서쪽 구석에 짐 궤짝 — 문(8,16)에서 벽난로로 가는 길은 비운다. 아이 방·바느질 방 아랫단에 궤짝·책 더미.
       // 방마다 쓰임 묶음: 거실(아래 가운데, 문 (13,16) 길 x13 은 비운다) 나무 둥근 탁자·걸상(별지기 집 분홍 찻상과 겹치지 않게), 부엌(아래 왼쪽) 통·자루·바구니,
       // 바느질 방(아래 오른쪽) 옷감 탁자·바구니, 아이 방(위 오른쪽) 둥근 양탄자·상자·책 더미, 부부 침실 오른쪽 상자·화분.
-      dress: [["roundtable", 15, 13], ["stool", 14, 13], ["stool", 16, 13], ["luggage trunk", 10, 15],
-        ["barrel", 1, 15], ["sack", 2, 15], ["basket:herb", 3, 15], ["table:bolt+yarn", 23, 14], ["basket:herb", 26, 15],
-        ["chest", 28, 7], ["book pile", 22, 7], ["round rug", 25, 6], ["chest", 20, 7], ["plant", 19, 3]],
+      // 29×17: 부엌(위 왼쪽) 아랫단 통·자루·바구니, 바느질 방(위 가운데) 옷감 탁자·바구니(문 x16 길은 비운다),
+      // 아이 방(위 오른쪽) 둥근 양탄자·상자·책 더미, 부부 침실(아래 왼쪽) 짐 궤짝, 거실(아래 가운데, 문 x18 길은 비운다) 둥근 탁자·걸상.
+      dress: [["barrel", 1, 7], ["sack", 2, 7], ["basket:herb", 3, 7],
+        ["table:bolt+yarn", 12, 6], ["basket:herb", 18, 7],
+        ["round rug", 24, 5], ["chest", 27, 7], ["book pile", 25, 7],
+        ["luggage trunk", 10, 14],
+        ["roundtable", 15, 14], ["stool", 14, 14], ["stool", 16, 14]],
       people: [
         {
           id: "ev_fs_lisa", name: "리사", query: "젊은 여성", chip: ["tex_easyrpg_charset_people3", 3],
@@ -189,7 +198,16 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       const im = project.maps[home.mapId]!;
       const metaC = (project.tilesets[im.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
       const beam = metaC.findIndex((t) => t?.label === "천장(wood) 이웃00");
-      if (beam >= 0) for (let i = 0; i < im.lowerTiles.length; i += 1) if (/^공허/.test(metaC[im.lowerTiles[i]!]?.label ?? "")) im.lowerTiles[i] = beam;
+      if (beam >= 0) {
+        const wasVoid = im.lowerTiles.map((t) => /^공허/.test(metaC[t]?.label ?? ""));
+        for (let i = 0; i < im.lowerTiles.length; i += 1) if (wasVoid[i]) im.lowerTiles[i] = beam;
+        // 천장 자동 타일의 「북쪽이 허공」 비트(16)는 위 테두리 선을 긋는다 — 허공을 들보로 메웠으니 그 선을 뗀다
+        // (별지기 집 천장 덩이 속에 1px 검은 가로줄이 남았다, VQA r31).
+        for (let i = im.width; i < im.lowerTiles.length; i += 1) {
+          const nb = /^천장\(wood\) 이웃(\d\d)$/u.exec(metaC[im.lowerTiles[i]!]?.label ?? "");
+          if (nb && Number(nb[1]) >= 16 && wasVoid[i - im.width]) im.lowerTiles[i] = beam + Number(nb[1]) - 16;
+        }
+      }
     }
     const exitsRaw = (room.data as { exits?: { x: number; y: number; width?: number }[] } | undefined)?.exits ?? [];
     const exit = exitsRaw[0];
