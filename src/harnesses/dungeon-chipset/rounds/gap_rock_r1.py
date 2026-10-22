@@ -41,7 +41,7 @@ LEG = {
     # B 산속 바위굴 — 무채색 회색 화강암(crock 3~5 · stone 1·2 — 녹회 단은 쓰지 않는다). 바닥 cfloor 1(갈색) 과 색상이 갈린다.
     # 어두운 금·그늘 단(k e · d p)은 차가운 푸른 회색(vrock 1 · iron 1)으로 — 무채색 검정 윤곽으로 읽히지 않게(object-gate 화풍 반려, r8)
     'B': legend(k=('vrock', 1), d=('iron', 1), b=('crock', 3), c=('stone', 2), m=('crock', 4), l=('crock', 5),
-                h=('stone', 4), w=('stone', 5), g=('moss', 2), n=('moss', 3), y=('moss', 4), e=('vrock', 1), p=('iron', 1),
+                h=('stone', 4), w=('stone', 5), g=('moss', 2), n=('moss', 3), y=('moss', 4), e=('vrock', 1), p=('iron', 1), v=('stone', 3),
                 **{'0': ('cfloor', 0)}),
     # C 검푸른 심층굴 — 검푸른 화산암(vrock) + 푸른 쇠빛(iron) 결. 바닥 cata 3(차가운 회색)보다 확실히 어둡되 허공(void)은 아니다.
     'C': legend(x=('vrock', 0), k=('vrock', 1), d=('iron', 1), b=('vrock', 2), c=('iron', 2), m=('vrock', 3), l=('iron', 3),
@@ -384,14 +384,14 @@ GRAIN = ['.-......^...-...',
 
 
 def quiet_top(line, k, at, q=None, base=None, big=None, grain_y=False):
-    X, Y, Z, W, H, M, B, S, D, G1, G2 = q or QUIET[line]
+    X, Y, Z, W, H, M, B, S, D, G1, G2, *V = q or QUIET[line]
     big = big or BIG
     g = [list(r.replace('.', X).replace('#', Y).replace('+', Z)) for r in turn(base or BLOTCH, k)]
     for y, r in enumerate(turn(GRAIN, (k + 1) % 4)):
         for x, ch in enumerate(r):
             if ch != '.' and (g[y][x] == X or (grain_y and g[y][x] == Y)):
                 g[y][x] = G1 if ch == '-' else G2
-    mp = {'W': W, 'H': H, 'M': M, 'B': B, 'S': S, 'D': D}
+    mp = {'W': W, 'H': H, 'M': M, 'B': B, 'S': S, 'D': D, 'V': V[0] if V else H}
     for x, y, sz in sorted(at, key=lambda t: t[1]):
         for dy, r in enumerate(big[sz]):
             for dx, ch in enumerate(r):
@@ -417,6 +417,18 @@ AT_B1 = [((2, 3, 1),), ((4, 6, 1), (1, 1, 0)), ((1, 1, 1), (11, 11, 0)), ((3, 8,
 # C1 윗면(r8): 바탕은 가까운 두 단(b·d)과 어두운 잔결 k 만, 덩이는 적고 크게, 가장 밝은 h 는 빼서 빛 화소를 절반으로.
 QUIET_C1 = ('b', 'd', 'b', 'h', 'c', 'm', 'b', 'k', 'x', 'k', 'm')   # 가장 밝은 h 는 덩이 꼭대기 한두 화소(W)만
 AT_C1 = BIG_AT[:7] + [((10, 9, 0),)]   # r7 에서 화풍을 통과한 덩이 배치 그대로, 본몸통만 조용하게
+
+
+# B2 윗면(r8b): 크기·모양이 제각각인 모난 바윗덩이(조각·쐐기·납작 판·선 덩이·큰 덩이) — 둥근 도장 되풀이 대신.
+# 위·왼 빛면에 한 단 더(V = stone 3, 푸른 기 도는 밝은 회색) → h v l m b d k 여섯~일곱 단. B1 의 넓은 판과 달리 바탕은 잔 얼룩 그대로.
+BIG_B2 = (['.HM.', 'HMBS', '.SD.'],
+          ['..VHM.', '.VHMMB', 'HMMBBS', '.BSSD.'],
+          ['.WVVHH..', 'VHHMMMMB', 'HMMMMBBS', '.MBBBBSS', '...SSDD.'],
+          ['..WV..', '.VHHM.', 'VHHMMB', 'HMMMBS', 'MMBBBS', '.BBSSD', '..SD..'],
+          ['...WVH....', '..VHHMMM..', '.VHHMMMMB.', 'HHMMMMMBBS', '.MMMBBBBSS', '..BBBSSSD.', '.....SDD..'])
+AT_B2 = [((1, 3, 4), (12, 12, 0)), ((7, 2, 2), (2, 10, 1)), ((2, 1, 3), (10, 9, 1)), ((4, 6, 4), (12, 2, 0)),
+         ((1, 2, 1), (3, 9, 2), (11, 4, 0)), ((6, 5, 3), (1, 1, 0)), ((8, 3, 2), (2, 7, 4)), ((9, 9, 1),)]
+QUIET_B2 = QUIET['B'] + ('v',)
 
 
 def tops(line, n):
@@ -463,7 +475,8 @@ def tops(line, n):
                  t[5],
                  _crack(line, t[6], [((13, 11), (11, 10), (9, 6))])]
     elif line != 'A':   # B2·C2: 큰 덩이 자체가 둥근 바위 — 따로 찍는 평평한 바위 조각은 겹쳐 붐비게 해서 뺐다. 덩이 배치만 다르게.
-        t = [quiet_top(line, k, at) for k, at in zip(ks, BIG_AT2)]
+        t = ([quiet_top('B', k, at, QUIET_B2, big=BIG_B2) for k, at in zip(ks, AT_B2)] if line == 'B' else
+             [quiet_top(line, k, at) for k, at in zip(ks, BIG_AT2)])
         if line == 'C':   # 검은 화산암은 덩이만이면 같은 도장이 되풀이돼 보인다 — 칸 절반에 짧은 갈래 금을 섞는다
             v = [_crack(line, t[0], [((9, 10), (11, 13), (10, 15))]), t[1],
                  _crack(line, t[2], [((12, 2), (13, 5)), ((13, 5), (11, 6))]), t[3],
@@ -787,7 +800,7 @@ NOTES = {
     'A1': '조용한 사암 암반 — 어두운 사암 바탕(회녹 얼룩·이웃 단 잔결)에 칸마다 큰 덩이 1~2개, 몇 칸에만 짧은 금. 계단 턱 줄은 모서리에서 끊기고 동 변은 고르지 않은 밝은 테두리. 앞면 = 물결 층리 사암',
     'A2': '사암 돌무더기 — 어두운 잔 얼룩 윗면에 작은 홈·혹·덩이. 앞면 = 이음을 감아 넘는 가로 층 둘과 가운데를 벗어난 짧은 비스듬 금(세로 금 없음), 평평한 입술',
     'B1': '넓은 회색 판 암반 — 넓고 부드러운 밝은 판 위에 칸마다 아주 큰 납작 덩이 하나(가끔 작은 덩이), 금 없음. 앞면 = 한 단 밝은 화강암, 계단처럼 꺾인 가로 판 경계(세로 금 없음)',
-    'B2': '회색 바윗덩이 — 같은 조용한 바탕에 더 크고 고르지 않은 둥근 바위 덩이. 앞면 = 두 단 어두운 지그재그 금 화강암 벼랑, 맨 위 밝은 턱 줄',
+    'B2': '모난 회색 바윗덩이 — 조용한 잔 얼룩 바탕에 크기·모양이 제각각인 조각·쐐기·납작 판·선 덩이(위·왼 빛면 한 단 더, 푸른 회색 그늘). 앞면 = 두 단 어두운 지그재그 금 화강암 벼랑, 맨 위 밝은 턱 줄',
     'C1': '갈라진 현무암 — 가까운 두 단 바탕과 어두운 잔결에 덩이 몇 개(가장 밝은 빛은 덩이 꼭대기 한두 화소)와 갈래 금. 앞면 = 세로 이음 없는 길고 가는 물결 층 다섯',
     'C2': '현무암 바윗덩이 — 같은 바탕에 크고 고르지 않은 덩이와 짧은 금. 앞면 = 한층 어두운 두꺼운 층 턱 벽, 맨 위 밝은 턱 줄',
 }
