@@ -6,6 +6,8 @@ import { store } from "@/project/store";
 import { dismissToastsByKey, toast } from "@/util/toast";
 
 const recoveryToastKey = Symbol("persistence-recovery");
+// 「저장 중...」은 결과 토스트가 뜨면 걷는다 — 둘이 함께 남아 상태가 모순돼 보였다.
+const saveProgressToastKey = Symbol("save-progress");
 
 export async function saveProjectNow(): Promise<boolean> {
   // 공용 데모 세션에서 저장은 "편집용 사본 만들기"로 연결한다 — 원본은 절대 못 바꾼다.
@@ -19,9 +21,10 @@ export async function saveProjectNow(): Promise<boolean> {
     toast("이미 최신 상태입니다", "ok");
     return true;
   }
-  toast("저장 중...", "info");
+  toast("저장 중...", { kind: "info", key: saveProgressToastKey });
   try {
     const result = await store.flush();
+    dismissToastsByKey(saveProgressToastKey);
     switch (result.kind) {
       case "saved": {
         const recovery = store.getPersistenceRecovery();
@@ -55,6 +58,7 @@ export async function saveProjectNow(): Promise<boolean> {
         return false;
     }
   } catch (error) {
+    dismissToastsByKey(saveProgressToastKey);
     if (error instanceof SpatialPersistenceError || error instanceof ProjectRoutingError) {
       toast(persistenceRecoveryCopy(error).title, { kind: "error", key: recoveryToastKey });
       openPersistenceRecovery();

@@ -90,6 +90,8 @@ function buildElement(message: string, kind: ToastKind, action: ToastAction | un
   const messageEl = document.createElement("span");
   messageEl.className = "toast-message";
   messageEl.textContent = message;
+  // 좁은 폭에서 말줄임으로 잘려도 전문을 볼 수 있게 한다.
+  messageEl.title = message;
   element.append(messageEl);
 
   if (action) {

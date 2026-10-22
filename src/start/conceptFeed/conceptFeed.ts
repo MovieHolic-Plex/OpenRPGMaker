@@ -97,6 +97,16 @@ export type ConceptFeed = {
 const SKELETON_COUNT = 12;
 const SEARCH_DEBOUNCE_MS = 250;
 
+/** 「#태그」 — '#' 과 태그 본문을 다른 노드로 나눠 태그 본문이 카탈로그 키(「웹소설」 등)로 번역되게 한다. */
+function hashtagSpan(tags: readonly string[]): HTMLElement {
+  const parts: (Node | string)[] = [];
+  tags.forEach((tag, index) => {
+    if (index > 0) parts.push(" ");
+    parts.push("#", el("span", { text: tag }));
+  });
+  return el("span", { children: parts });
+}
+
 function presetLabel(presetId: GameConcept["presetId"]): string {
   return NEW_PROJECT_CHOICES.find((choice) => choice.id === presetId)?.label ?? presetId;
 }
@@ -356,7 +366,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
           el("h3", { class: "cf-title", text: local.title, attrs: { translate: "no" } }),
           el("p", { class: "cf-hook", text: local.hook, attrs: { translate: "no" } }),
           el("p", { class: "cf-tags", children: [
-            el("span", { text: concept.tags.map((tag) => `#${tag}`).join(" ") }),
+            hashtagSpan(concept.tags),
             ...(concept.madeCount ? [el("span", { class: "cf-made", text: `${concept.madeCount}명이 만들었어요` })] : []),
           ] }),
         ] }),
@@ -531,7 +541,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
         on: { click: () => openDetail(other) },
         children: [thumbImage(other, "card", "cf-mini-img"), el("span", { class: "cf-mini-meta", children: [
           el("strong", { text: localizedConcept(other, locale).title, attrs: { translate: "no" } }),
-          el("span", { class: "cf-tags", text: other.tags.map((tag) => `#${tag}`).join(" ") }),
+          el("span", { class: "cf-tags", children: [hashtagSpan(other.tags)] }),
         ] })],
       })),
     );

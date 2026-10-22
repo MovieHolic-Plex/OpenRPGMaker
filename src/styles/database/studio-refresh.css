@@ -317,7 +317,12 @@
   margin: 0;
   max-width: min(420px, 40%);
   min-height: 26px;
+  min-width: 0;
+  overflow: hidden;
   padding: 2px 10px 2px 9px;
+  /* 좁은 폭에서 안내문이 글자 중간에서 잘리지 않고 말줄임으로 끝나게 한다. */
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* 오류는 잘리면 쓸모없다(studio-theme 의 error 규칙) — 헤더 안에서도 두 줄까지 보인다. */
@@ -326,6 +331,7 @@
   -webkit-line-clamp: 2;
   display: -webkit-box;
   max-width: min(520px, 50%);
+  white-space: normal;
 }
 
 /* 발 단추 줄 — 상태가 빠졌으니 단추만 오른쪽에 붙는 얇은 줄. 확인 줄(dirty prompt)이 뜨면 기존 규칙이 늘린다. */

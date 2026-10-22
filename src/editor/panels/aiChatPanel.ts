@@ -50,6 +50,7 @@ import {
 } from "@/editor/agentBlueprint";
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
+import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { filterToolCategories, openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
 import type { RegionTaskOptions, RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
@@ -4028,6 +4029,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const onCommandPaletteKeyDown = (event: KeyboardEvent): void => {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
       event.preventDefault();
+      // 모달(자료집·리소스 관리자 등)이 떠 있으면 열지 않는다 — 입력과 Esc 를 가로채기만 한다.
+      if (hasOpenModalLayer()) return;
       openCommandPalette();
     }
   };

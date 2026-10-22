@@ -383,6 +383,17 @@ export function openHelpModal(sectionId?: string): void {
   }
 
   closeButton.addEventListener("click", close);
+  // aria-modal 이므로 Tab/Shift+Tab 이 창 안의 첫·마지막 단추 사이에서만 돈다(뒤 톱바로 새지 않게).
+  backdrop.addEventListener("keydown", (event) => {
+    if (event.key !== "Tab") return;
+    const focusables = [...backdrop.querySelectorAll<HTMLElement>("button:not(:disabled), [href], input:not(:disabled), [tabindex]:not([tabindex='-1'])")];
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (!first || !last) return;
+    const active = document.activeElement;
+    if (event.shiftKey && (active === first || !backdrop.contains(active))) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && (active === last || !backdrop.contains(active))) { event.preventDefault(); first.focus(); }
+  });
   backdrop.addEventListener("mousedown", (event) => {
     if (event.target === backdrop) close();
   });
