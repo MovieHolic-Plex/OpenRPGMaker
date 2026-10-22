@@ -1,0 +1,389 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3b2b6361dab51dbedd24e4bf46e319b11a59469869eccec83900f376fc931446",
+ "width": 32,
+ "height": 48,
+ "kind": "container",
+ "name": "pulley-roof stone well",
+ "label": "workshop-objectgen-3/c7-well",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 13,
+  "darkV5": 64,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pulley roof (plank slope)",
+      "rows": "1-13",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "wooden posts and crossbeam",
+      "rows": "14-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "well mouth with water inside, stone rim around it",
+      "rows": "25-34",
+      "evidence": "d",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bucket and rope",
+      "rows": "17-30",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The well body is a stone drum. Rows 25-34 show a rim that narrows at the back (width 16 at row 25, then 24-28). Teal water is visible inside the opening at rows 27-33, which is evidence (d). A light front rim line at about row 34 separates it from the brick front face at rows 35-47, which is about 12 rows. The pulley roof at rows 1-13 is a sloped plank plane with a dark eave line at rows 12-13, which is evidence (c). The posts are thin vertical supports. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The closest reference, prop-well-roofed, shows 20 visible tones per 16x16 tile and 38 distinct colours in total. The candidate shows only 5 visible tones per tile and 14 colours in total, so it is much lower on the primary density fact. By eye, the stone body is built from a few grey-blue values with simple block seams. The reference shades its stones one by one and adds moss and water detail. The candidate's roof is a brown plank block with only 2-3 steps and no per-tile highlights or scallops. Its dark edges are 43% near-neutral, so the outline is mixed: partly tinted, partly a flat dark line. That leans toward the sticker look next to the reference's tinted outlines. Near-flat coverage is 0%, so there are no large flat fills, but the small tone count shows shallow shading and thin texture. A careful artist would see it as flatter and less rich than the reference well beside it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 19594
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone well rim with water opening",
+      "rows": "25-34",
+      "evidence": "d",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden plank roof",
+      "rows": "1-13",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": "14"
+     },
+     {
+      "part": "crossbeam with pulley and rope",
+      "rows": "15-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stone well body is rows 25-47. Its top is rows 25-34: a back rim at 25-27, teal water visible inside the opening at about rows 27-32, and a light front rim band ending at row 34. Below that is a stone brick front face of about 13 rows (35-47). The plank roof (rows 1-13) is a sloped plane with stepped width growth and a dark eave line at row 13. The posts and pulley are thin vertical supports. The well shows an open container with water seen from above and a front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The closest reference, prop-well-roofed, shows 20 visible tones per 16x16 tile and 38 distinct colours. The candidate shows only 5 visible tones per tile and 14 colours in total, even though it is drawn larger. Its stone body and wooden roof each read as about 3 steps: a base tone, a darker joint or line, and a light edge. The reference has per-stone shading, roof-plank highlights and a layered water basin. The candidate has no flat 5x5 blocks (0%), so it is not flat-filled. Its grey brick pattern and plank lines are only sparse texture, with no per-stone variation or grain. Dark edge pixels are 43% neutral, so the outline is partly neutral dark and partly tinted, which I call mixed. That is not the dark-material-tone outlining the reference uses. Overall it looks thinner and more sticker-like than prop-well-roofed beside it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 18026
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "shingled pulley roof",
+      "rows": "1-13",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "well basin top with rim and water opening",
+      "rows": "25-34",
+      "evidence": "d",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden posts",
+      "rows": "14-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bucket and rope",
+      "rows": "17-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 13,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The well basin has a stone rim with a dark teal water area visible inside the opening (rows 28-33, evidence d). A light front-edge line at about row 34 sits above the stone block front face (rows 35-47, 13 rows). The sloped shingle roof (rows 1-13) is a roof plane with its own top surface. The posts are thin vertical supports, which is acceptable. The bucket sits in the opening and counts as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The closest reference, prop-well-roofed, has 20 visible tones per tile and 38 colours in total. The candidate has 5 visible tones per tile and only 14 colours in total, so it is far below the same-kind reference. The roof and stone body use roughly 3 lightness steps each, against about 5-6 in the reference, and the roof planks and stone blocks are drawn with simple lines rather than per-tile or per-stone highlights. Near-flat coverage is 0%, so there are no large flat fills, but that comes from sparse line work rather than rich grain. Dark edge pixels are 43% neutral, so the outline is partly near-black and partly tinted, which I call mixed. This is the flatter, more sticker-like version of the reference well, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15558
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "pulley roof (sloped shingle plane)",
+      "rows": "1-13",
+      "evidence": "c",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "well basin opening with water and stone rim",
+      "rows": "25-35",
+      "evidence": "d",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden posts and crossbeam with pulley",
+      "rows": "14-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the stone well basin. Rows 25-27 are the back rim and rows 28-33 show dark teal water with highlights inside the opening, which is evidence (d). A light front rim line at about rows 34-35 follows, then the stone-brick front face on rows 36-47, about 12 rows. The silhouette is not an ellipse (width goes 16, 24, 26, 28), but the visible water contents count as a top surface. The shingled roof on rows 1-13 is a sloped plane (c) with a dark eave line on row 13. The posts are thin supports and do not need tops."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is the same kind as prop-well-roofed, but it is much thinner in craft. It has only 5 visible tones per 16x16 tile against 20 for the roofed-well reference, and only 14 distinct colours in total against 38. Each material ramp (the brown roof and posts, the grey stone, the dark water) shows about 3 steps, where Beodeul uses 5-6. The roof reads as a few plank bands with little per-plank grain or highlight. The stone courses are regular and lightly shaded, with little stone-by-stone variation. Near-flat coverage is 0%, so there are no large flat fills, and the bricks and planks give some texture, but it is simpler than the reference. 43% of the dark edge pixels are near-neutral, so the outline is mixed: part dark-material tone and part greyish dark line, which gives a slight sticker feel. Taken together, the piece is cleanly drawn but shallower than the reference and would look flatter beside it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16701
+  }
+ ],
+ "decidedAt": "2026-10-22T06:32:22.999Z",
+ "cells": {
+  "16": [
+   "2f3d8dca1676cbfa",
+   "7a1e8e284b89dda0",
+   "863e93bcf4675c4e",
+   "8ec4021bcae57fe7",
+   "cb39aa6db095ac97",
+   "fe4db7d18cb5b558"
+  ],
+  "24": [
+   "244b99fef3fa77f9",
+   "2ea5060030dcf18c",
+   "53c5b1839786f54b",
+   "65232daf2b67470f",
+   "704a50f98bba99ac",
+   "7ffa67ef4086fcc6",
+   "91327f0ebe49edf6",
+   "931b970cf9ae443a",
+   "9eb7f8a9c5189a13",
+   "b3060bae0df4f063",
+   "c84c28889ea12e6f",
+   "dc622129690bce57"
+  ],
+  "32": [
+   "53ed610d5d9e3b28",
+   "589fed7fafc936bc",
+   "84ece113320531e6",
+   "df3d5a5b0dbc54ce"
+  ],
+  "48": [
+   "4208d13254b8b339",
+   "96994fb7636dd610",
+   "dc52e07247f08ab1"
+  ]
+ }
+}

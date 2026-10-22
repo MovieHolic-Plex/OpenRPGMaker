@@ -1,0 +1,489 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0eaf6b3159a834313536998b13dc6d9013755137646f81825b8b2ec266f1c28f",
+ "width": 80,
+ "height": 64,
+ "kind": "structure",
+ "name": "striped fruit market stall",
+ "label": "workshop-objectgen-3/c4-stall",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 12,
+  "darkV5": 42,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 20
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "striped awning canopy (sloped plane with scalloped valance)",
+      "rows": "3-22",
+      "evidence": "c",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23-26"
+     },
+     {
+      "part": "counter top surface",
+      "rows": "38-45",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "46"
+     },
+     {
+      "part": "fruit crates and fruit on counter",
+      "rows": "30-45",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter front panels and side posts",
+      "rows": "46-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The awning is a large sloped canopy over rows 3-22. Its silhouette flares from 70 to 76 px wide, and the stripes run down to a scalloped front edge at rows 22-23. Dark eave shadow follows at rows 23-31, with the back wall visible beneath it. The counter top at rows 38-45 shows the orange surface, a light front-edge line at row 45 and a dark line at row 46. Below that is a front face of about 18 rows (rows 46-63) with panels and posts. Crates and fruit sit on the counter as decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate's striped awning is built from flat red and cream bands with only a scalloped hem. It has no per-tile highlights or grain, whereas the references have scalloped roof tiles with highlights, plaster speckle and individually shaded stones. The counter and back wall are largely single flat browns with little wood grain. The fruit crates have small clusters but only 2-3 tones each. Measured facts agree: 8 visible tones per tile against 10-12 in the references, and 48% near-flat coverage against 0% in both. The outline is a tinted dark brown/red-brown (0% neutral), so it is not a sticker-style black line, but this does not offset the shallow ramps (about 3 steps per material against 5-6) and the large flat fills. A careful artist would see it as thinner and flatter than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13015
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "striped awning (sloped canopy plane)",
+      "rows": "3-22",
+      "evidence": "c",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "24-27"
+     },
+     {
+      "part": "counter top",
+      "rows": "38-45",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "46-46"
+     },
+     {
+      "part": "fruit baskets and fruit on the counter",
+      "rows": "30-44",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 41,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The awning fills rows 3-22 as a sloped striped canopy plane. It widens from 70 to 76 px going down and ends in a scalloped front edge at rows 22-23. A dark eave shadow follows at rows 24-27, with the stall's front face below it. The counter has its own top surface at rows 38-45, ending in a light front-edge line at row 45 (L=162). The crate front face runs from rows 46 to 62, with posts on both sides and a base. The fruit baskets are decor on the counter. The stall has a canopy top and a front face of well over 3 rows, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has 8 visible tones per tile against 10-12 in the references, and 48% near-flat coverage against 0% in both references. By eye, the striped awning is flat alternating cream and red bands with no per-stripe shading or fabric texture. The wooden counter and the back wall are mostly flat brown fills with little grain. The fruit crates are small and carry only a few dots. Each material has about 2-3 steps, where the references have 5-6 with scalloped tiles, plaster speckle and stones shaded one by one. The outline is tinted (0% neutral dark edge pixels), a dark red-brown or brown beside the matching material, so it is not a sticker line. The stall is cleanly drawn, but it is flatter and shallower than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 11935
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "striped awning roof",
+      "rows": "2-23",
+      "evidence": "c",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-27"
+     },
+     {
+      "part": "counter top",
+      "rows": "38-45",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "46"
+     },
+     {
+      "part": "fruit baskets and goods on counter",
+      "rows": "30-44",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front counter panel",
+      "rows": "47-62",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The striped awning is a sloped canopy plane over rows 3-22. It ends in a scalloped valance edge at rows 22-23, with dark eave shadow in the rows below (24-32). Under it, the counter top is an orange band at rows 38-45, with a light front-edge line at row 45 and a dark line at row 46. The front counter panel (rows 47-62, 16 rows) is a vertical south face with plank dividers. The fruit baskets are decor on the counter. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate stall has about 3 lightness steps per material: the awning is red/cream stripes with one shade, and the counter is a flat wood tone with a darker edge. The references use 5-6 steps with per-tile scallops, plaster speckle and stone shaded one by one. Measured facts agree: 8 visible tones per tile against 10-12 for the references, and 48% near-flat coverage against 0% for both references. The awning stripes, the back wall and the counter front are large single-colour fills with no grain or highlight dots. Outlines are tinted dark brown/red-brown (0% neutral), so that part is fine. The small fruit crates have a little detail, but overall the piece is flatter and simpler than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13478
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "striped awning",
+      "rows": "3-22",
+      "evidence": "c",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-28"
+     },
+     {
+      "part": "counter top with fruit crates",
+      "rows": "38-45",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "46-46"
+     },
+     {
+      "part": "fruit in crates (apples, pears, oranges, grapes)",
+      "rows": "30-44",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 20,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The striped awning is a sloped canopy plane over rows 3-22. Its silhouette widens from 70 to 76 px going down, and it ends in a scalloped hem at row 23 with dark eave shadow below, rows 24-28. Below it is the dark back wall, then a counter top with a lighter front-edge line at row 45 and a dark line at row 46. The counter's front face is rows 47-62, with a plank panel and vertical dividers. The fruit crates stand on the counter and count as decor. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate has 8 visible tones per tile against 12 and 10 in the references, and 48% near-flat coverage against 0% in both references. By eye, the awning stripes are flat red and cream bands with only a thin shadow along the scalloped edge. There are no per-tile highlights or grain, so it reads as 2-3 steps against the references' 5-6. The counter front is a flat tan-brown with little wood grain, and the back wall is a flat dark fill. The outline is a tinted dark red-brown, not neutral (0% neutral edge pixels), so it is not the sticker look. The produce crates have some small color dots, but the overall piece is simpler and flatter than the roof tiles and stone texture of the references, and the large flat fills push it to fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 13273
+  }
+ ],
+ "decidedAt": "2026-10-22T06:32:22.993Z",
+ "cells": {
+  "16": [
+   "04103218b5479c0e",
+   "1cf29e60c8cd2d68",
+   "22b09988a6ec62ce",
+   "2392dcc84468c33d",
+   "2565d00f1f23bbdc",
+   "262de0d400719adc",
+   "291bd90da7caf69b",
+   "2a31ad88fb42ef24",
+   "49cc60324023acb1",
+   "5ce5950e41231b9b",
+   "73fd3175e831aae6",
+   "963b53ff022ae7d6",
+   "a7d9ab4708e932a3",
+   "ac835751b55ca804",
+   "adbcccb1cd45fbfd",
+   "c15d4aebd64a6d17",
+   "c55bae7e70c7caac",
+   "ddfe16e698d52cff",
+   "f813274c705dae6d",
+   "f8cf65223132175e"
+  ],
+  "24": [
+   "02534ec2d6284c9d",
+   "0632ebfd6f82ff81",
+   "1361887fe7d1e22a",
+   "19e150cb6d54747e",
+   "28ff73121f66e31b",
+   "2a0cab49bd2609b1",
+   "2a474017056dcd5d",
+   "2d301c0b879fe6c3",
+   "2ee18c798e6599b9",
+   "325f784cd9c6524e",
+   "351aeb227a3453fe",
+   "397d5e67dfeb371e",
+   "4315d952a2604654",
+   "447775b7826521e1",
+   "471962d0fb99b660",
+   "4ada9c326a8d89b9",
+   "50ac95cbd3919806",
+   "512ed0d1862d54e6",
+   "5165eb0ece46e2af",
+   "5207574d9d628a30",
+   "52305509f63feab8",
+   "53561a79fe416ce5",
+   "54f08dd40013a82d",
+   "588b82ea7e2ae997",
+   "5d8d11f425a03fcd",
+   "646b0891a879d614",
+   "656c964bc8549b3e",
+   "6b203d0cd8ba0d48",
+   "6befe10aa51893b4",
+   "6f039c03fb71f255",
+   "75d568b462c84ffe",
+   "776765139d5394de",
+   "7e7b2a0723ff18f2",
+   "7f2875e38e5f7feb",
+   "825248309c109c95",
+   "83445ff96564a1a8",
+   "89eabccd1390b8e9",
+   "8b3be492d6ae0188",
+   "9109bc77dd6a826b",
+   "924d2369c935cb38",
+   "96fb357da4735d0d",
+   "9776b5e1fa3e2bc0",
+   "9a7bf56b162abd9a",
+   "9f4716b301763b10",
+   "a02f8a8bb93da7b7",
+   "a2a315e8c6875ce5",
+   "a2edb6236d35a605",
+   "a9fe8c0d05ae8f07",
+   "ab70c8e63fc5b450",
+   "ad8c0221817cb46c",
+   "ba500b9726445382",
+   "c5276ffdacfd828d",
+   "cdf9776ef9cbbdc6",
+   "d3c4754f61194bc5",
+   "d42aa6b01647067c",
+   "d592bce8e24a9349",
+   "daf2a918d360bb50",
+   "dd8420b09d3a5b8c",
+   "ea6280373e5a040b",
+   "eb07860c8ee7c44a",
+   "ec1a61c906275247",
+   "f29bb751ba6a8438",
+   "f782b50a6aea2136",
+   "f9d216dae7f8adea",
+   "fabcb45be5217d7e",
+   "fba28b33336f82cb"
+  ],
+  "32": [
+   "050112ca076b06e6",
+   "0c33ba7a9fd56521",
+   "1a64ef2f1e632d62",
+   "23be0366f62e6aa7",
+   "2637577662129640",
+   "298075d495ec471f",
+   "2a98af6ad2690895",
+   "2fe5cf0485fa8828",
+   "366c8c4a75197b57",
+   "420038972e5eab56",
+   "4400f0f4a67053a6",
+   "4d389c0eb790c869",
+   "585ecf2542e1dda4",
+   "bb9f3e234f561cd2",
+   "dfb4f3bfe109766d",
+   "e738ab706e82e998",
+   "e818af4c3ef9c1ba",
+   "f8ca89513a385cb0"
+  ],
+  "48": [
+   "06c296c730ff51a0",
+   "16787766b02dad4b",
+   "183d85cc5d6b5442",
+   "1b95fc1f00c143a8",
+   "380b88b26fdcfc05",
+   "408b2ad13ac4b103",
+   "4d6d21bda76c7226",
+   "53fbc6c848e6d604",
+   "59bb8154cab30b23",
+   "661745af4c4c55a3",
+   "72fb293e4b8cad79",
+   "76d2feb8afc53eac",
+   "8ca9fa0dfd42bfbc",
+   "9d0e137ac4acb1f6",
+   "a24f02b454c25855",
+   "aa86a7ce0602919e",
+   "af66842a9c73dd9b",
+   "d60492062ee6ccb3",
+   "e6cf110a0c3d13d7",
+   "ec7530b0cc940826",
+   "efcccbd0771e387f",
+   "f14eea417aa27bb2",
+   "f3c6fbd2810ab253",
+   "fc259c9adaf77f6d"
+  ]
+ }
+}

@@ -1,0 +1,475 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "826dc57fa015331de2d3ffcd03a1f31fa10d9b7bc37531a6faba8ac5997afa82",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "iron street lamp",
+ "label": "workshop-objectgen-4/c8-lamp",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 9 튀어나옴 < 6) (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+   "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 9 튀어나옴 < 6) (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 9,
+  "tileColorsP90": 9,
+  "darkV5": 57,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "finial tip and lamp-head peak",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "horizontal crossbar arm at top of pole",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging lantern with glowing glass",
+      "rows": "7-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole shaft with collar ring",
+      "rows": "19-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper stone plinth tier top",
+      "rows": "37-40",
+      "evidence": "a",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "43"
+     },
+     {
+      "part": "lower stone plinth tier top",
+      "rows": "44-45",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 2,
+     "cap_width": 11,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The stone base is a stepped plinth with a real top surface. The upper tier has top rows 37-40 (L=197, edge line 223 at row 40) and front face rows 41-43 (L=147 down to 118). The lower tier has top rows 44-45, a highlight at row 45, and front rows 46-47. The thin pole (width 2, rows 19-35) has a collar at rows 26-27. At the top, the pole ends in a flat crossbar at rows 5-6 (width 11 over a shaft of 2, about 2 rows). It is a front-facing strip with no ellipse: widths go 4, then 11, then 4, but the bar is a vertical strip with no edge line or eave shadow. The lantern (rows 7-18, width 8) is drawn only as a vertical face with glowing glass, so the lamp head has no top surface. The top end therefore lacks the elliptical cap plate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin iron lamp post with a lantern head, a collar and a stepped stone base, so it matches the prop-lamp-crook reference. It shows 9 visible tones on a full tile and 0% near-flat coverage. The post carries a highlight, mid and dark column, and the base has a light face, a shadow side and a top edge. The 72% near-neutral dark edge share is mixed rather than a pure sticker outline. The reference lamp's own outline is 100% neutral, and neutral dark is natural beside grey iron. The post is thin, as expected for a lamp, but it is not flatter than the reference lamp. The base and lantern add more information than the reference's thin crook. Compared with the richer well and stall, it is simpler, but that is fair for a single thin prop. I see no large flat fills.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 9 튀어나옴 < 6) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+     "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 9 튀어나옴 < 6) (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23857
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "finial at top",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossbar arm (flat band, width 11)",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging lantern",
+      "rows": "8-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "thin iron pole with small collar",
+      "rows": "7-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper stone base block",
+      "rows": "37-40",
+      "evidence": "a",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "41-42"
+     },
+     {
+      "part": "lower base step",
+      "rows": "44-45",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "46-47"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 2,
+     "cap_width": 11,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The stone base (rows 36-47) has a light top band at rows 37-40 with a brighter front-edge line at row 40, then darker front face at rows 41-43. The lower step repeats this at rows 44-45 with the edge at 45. The pole is a 2px-wide vertical strip, and the top end of the lamp is a flat 2-row rectangular crossbar (rows 5-6, width 11) above a narrow finial. There is no elliptical cap plate overhanging the shaft. The lantern is drawn as a vertical face with no top. The crossbar is only a flat band, not an ellipse, so the column cap criterion is not met, although the base itself reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 4,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The closest reference is prop-lamp-crook, a thin pole with a lantern. The candidate matches it in structure: pole, lantern with a lit glow, and a stepped stone base. The base block has several visible light steps, and the pole has a highlight and shadow side. Measured facts support this. The candidate has 9 visible tones per full tile, level with the hedge, while the lamp reference reads 0 because it is sparse. Near-flat coverage is 0%, with no 5x5 flat fills. The dark edge pixels are 72% neutral, less than the lamp reference's 100%, so the outline is mixed rather than a pure sticker line. A careful artist would accept it next to the lamp-crook without it looking thinner or flatter. It is still simpler than the stall and well, which is expected for a thin prop.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 9 튀어나옴 < 6) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+     "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 9 튀어나옴 < 6) (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22260
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "finial at top of pole",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "horizontal crossbar arm",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hanging lantern (glass face-on)",
+      "rows": "8-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "thin pole with collar band",
+      "rows": "19-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper stone plinth tier top",
+      "rows": "37-40",
+      "evidence": "a",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "41"
+     },
+     {
+      "part": "lower stone plinth step top",
+      "rows": "44-45",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "46"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": {
+     "cap_rows": 2,
+     "cap_width": 11,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The stone base (rows 36-47, width 10-12) is the largest volume. Rows 37-39 are a light top surface, row 40 is a brighter front-edge line, and rows 41-43 are the darker front face. A lower step repeats this: rows 44-45 are the top with an edge line at row 45, and rows 46-47 are the face. The base therefore reads as three-quarter. The top end of the lamp is different. The finial and crossbar (rows 3-7, widest 11 at rows 5-6) form a flat 2-row horizontal bar, not an ellipse cap. The width profile goes 4, 11, 4, but the bar is a rectangular arm with no front-edge line or shadow. The lantern (rows 8-18) is drawn as a face-on vertical panel with no top plate. The pole is only 2 px wide. So the column has no elliptical cap plate overhanging the shaft."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 4,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a thin lamp post, so the closest reference is prop-lamp-crook. Both have a slim dark pole, a lantern and a small base. The candidate has 13 distinct colours against 14 for the crook lamp, and 9 visible tones in a full tile where the crook lamp is too thin to measure any. Near-flat coverage is 0%, so there are no flat fills. The stepped stone base, the lantern glow and the pole highlight give about 4 lightness steps, the same as the reference lamp. 72% of the dark edge pixels are near-neutral, which is below the crook lamp's 100%, so I call the outline mixed. The reference lamp has the same near-neutral edges, so this does not read as a sticker look against it. A careful artist would accept it next to the crook lamp without it looking thinner or flatter. It is not as rich as the well or the stall, but those are much bulkier objects.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 9 튀어나옴 < 6) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+     "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 9 튀어나옴 < 6) (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21913
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "finial",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "crossbar arm / lamp head bracket",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lantern roof",
+      "rows": "7-8",
+      "evidence": "c",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lantern glass body",
+      "rows": "9-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pole shaft with collar",
+      "rows": "19-35",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base upper tier",
+      "rows": "37-40",
+      "evidence": "a",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "41-42"
+     },
+     {
+      "part": "stone base lower tier",
+      "rows": "44-45",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": "46"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": {
+     "cap_rows": 2,
+     "cap_width": 11,
+     "shaft_width": 2,
+     "rounded_at_both_edges": false
+    },
+    "reads_as": "three_quarter",
+    "evidence": "The tallest element is a 2px-wide pole (rows 19-35) topped by a 2-row flat crossbar (rows 5-6, width 11) and a hanging lantern. The crossbar is a flat bracket arm, not an elliptical cap plate overhanging the shaft, so the column's top end has no ellipse. The stepped stone base (rows 36-47) is the largest volume. Its upper tier has a light top band at rows 37-40 with a lighter edge line at row 40, then darker rows 41-43 as the front face. Its lower tier has a top band at rows 44-45 with an edge line at row 45, then front rows 46-47. The base therefore reads as three-quarter, while the pole top has no cap."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The closest reference is prop-lamp-crook, a thin iron pole. The candidate has a similar build: a lantern with a lit pane, a pole with a highlight edge, and a stepped base with 3-4 stone tones. It has 13 distinct colours against the reference's 14. Measured facts are 9 visible tones per 16x16 tile, 0% near-flat coverage and no 5x5 flat fills, so there are no flat areas. Dark edges are 72% near-neutral. That is less neutral than lamp-crook's 100%, and the iron and stone materials are naturally grey, so I read the outline as mixed. It is not a uniform black sticker line. The piece is thin, so density is judged by eye. Beside prop-lamp-crook it does not look thinner or flatter, and the stepped base adds some detail. It reads as equal to the reference rather than richer, and a careful artist could accept it next to it.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+    "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 9 튀어나옴 < 6) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "판정자 의견이 갈림(분명한 3/4 0/1, 분명한 위반 0/1)",
+     "기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 9 튀어나옴 < 6) (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26144
+  }
+ ],
+ "decidedAt": "2026-10-22T09:29:37.707Z",
+ "cells": {
+  "16": [
+   "71c0fe3659f62d6c",
+   "ed725bde47463a02",
+   "fc24ac9f177b9870"
+  ],
+  "24": [
+   "11b9f18ce413e7aa",
+   "676c0053f4da2dda",
+   "6ccffe580887cc6e",
+   "9afb448ccdc4e6b4",
+   "ab2656c4cde3e6b6",
+   "fb9e60aec6eb3dbf"
+  ],
+  "32": [
+   "0364333b93fda5c0",
+   "132c953126d385c1",
+   "389d585a9fee5ab0",
+   "4596368ea97de29c",
+   "6b5cf6c37b5f3102",
+   "a87d241953e6577b",
+   "abcf82de6e13c795",
+   "adb7cb9cc29c0afd",
+   "ae9b69286772b700",
+   "c2b2882fbbfa62c2",
+   "c548d6a0ae5f43e4",
+   "fa215d8d458c7dea"
+  ],
+  "48": [
+   "03cd1b2fb294013b",
+   "207b350b2d70b1f4",
+   "651064a5860edb0e"
+  ]
+ }
+}

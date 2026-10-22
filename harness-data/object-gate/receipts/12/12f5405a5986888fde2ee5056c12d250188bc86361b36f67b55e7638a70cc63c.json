@@ -1,0 +1,431 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "12f5405a5986888fde2ee5056c12d250188bc86361b36f67b55e7638a70cc63c",
+ "width": 48,
+ "height": 48,
+ "kind": "other",
+ "name": "hay wagon",
+ "label": "workshop-objectgen-5/c1-wagon",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 0행 < 3 (3/4)",
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 0행 < 3 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 10,
+  "darkV5": 68,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 7
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "right",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hay load (heap with two straps)",
+      "rows": "6-33",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wagon bed front plank face",
+      "rows": "34-43",
+      "evidence": "none",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side wheels",
+      "rows": "31-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top post/handle",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The hay load (rows 6-33) is drawn face-on. Its rounded dome (rows 6-9, widths 14-32) is only a silhouette taper. There is no back-to-front ellipse and no front-edge line with eave shadow. Horizontal straps at rows 15-16 and 24-25 run across the front face and do not mark a top. The wagon bed (rows 34-43) is a vertical plank face with a single lighter line at row 34. The wheels at the sides are flat profile strips with no top. Nothing shows a horizontal surface seen from above, so this reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate hay wagon is a prop of the same kind as the references. Measured facts: 7 visible tones per 16x16 tile, 0% near-flat coverage, and only 2% neutral dark edge pixels, so the outline is tinted, a dark brown beside the wood and hay. That matches the hedge (9 tones) and is well below the stall (17) and well (20). By eye, the hay body has about 4 steps (pale highlight, yellow, orange, dark shadow) with some dotted grain and rope lines. The wood frame and wheels have fewer steps, about 3, and the wheels look fairly plain. The overall silhouette is chunky and readable but a bit simple next to the stall and well, which carry more clusters and per-material ramps. The piece has no flat fills and no sticker outline, but the shading depth and detail are somewhat below the better references, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19806
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hay load (heap with two binding straps)",
+      "rows": "6-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wagon bed front board",
+      "rows": "32-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side posts and wheels",
+      "rows": "6-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The whole wagon is drawn face-on. The hay is a dome silhouette (width 14, 22, then 32 across rows 6-8) whose texture and two horizontal straps at rows 15-16 and 24-25 are vertical-face detail. It has no front-edge line, no eave shadow and no ellipse. The wagon bed (rows 32-43, width 44) is a plain front board with no top band above it. The wheels at the sides are flat side profiles. Nothing shows a horizontal surface seen from above, so the object reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The outline is a tinted dark brown beside the wood and hay, and only 2% of dark edge pixels are neutral, so it is not a sticker outline. Near-flat coverage is 0% and the hay has visible straw flecks, so there are no flat fills. The shading is shallow, though. The whole wagon uses only 12 distinct colours, which leaves roughly 3-4 steps each for the hay, the wood and the wheel. The Beodeul references use about 5-6 steps per material (stall 40 colours, well 38). At 7 visible tones per tile, the candidate sits below the hedge (9), the stall (17) and the well (20). The planks, wheel and hay clumps read as simplified, with no per-plank grain or per-clump highlights. It is cleanly drawn but thinner than the same-kind references, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18321
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hay heap (load piled on the wagon bed)",
+      "rows": "6-33",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wagon bed (front board)",
+      "rows": "34-43",
+      "evidence": "none",
+      "front_edge_line_row": 34,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wheels (left and right)",
+      "rows": "32-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rope straps across the hay",
+      "rows": "15-16, 24-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "drawbar or handle post on top",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The wagon is drawn as a flat front view. The wagon bed (rows 34-43) is a vertical plank face with a thin lighter line at row 34 and no horizontal top surface behind it. The hay load above it (rows 6-33) is a tall block with a domed top. Its tonal stripes and the two rope straps (rows 15-16 and 24-25) run straight across the front, so it reads as a face-on volume with no front-edge line or eave shadow. I counted the hay as decor (goods on the bed), so it does not supply a top surface. The wheels at the sides (rows 32-47) are vertical strips with no horizontal top. No ellipse is drawn and no part has a visible receding top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The outline is a tinted dark brown beside the wood and hay (only 2% of dark edge pixels are near-neutral), so it is not a sticker line. There are no flat 5x5 areas (0% near-flat). The hay has some strand and highlight marks and the wagon box has plank lines. Depth is the weak point: the whole wagon uses only 12 distinct colours, against 38-40 for the stall and well references. It shows 7 visible tones per tile, against 9 for the hedge, 17 for the stall and 20 for the well. Each material (hay, wood, wheel) gets only about 3-4 lightness steps, where Beodeul uses 5-6. The hay mound and wheels read as simple, with few per-clump highlights and little grain. Next to the stall and well it looks thinner and flatter, so I am failing it on density and shading depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22280
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "hay load (heap strapped with two bands)",
+      "rows": "6-33",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wagon bed / cart body front",
+      "rows": "34-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right wheels (side profile)",
+      "rows": "31-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top post / hitch",
+      "rows": "1-5",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The hay heap (rows 6-33) is a face-on mound. Its silhouette widens 14, 22, 32 over rows 6-8, but this is a dome with no front-edge line or eave shadow, and it is not an ellipse. The two horizontal bands at rows 15 and 24 are straps on the front face, not edges of a top surface. The wagon bed below (rows 34-43) is a plain front plank face with no top band or edge line, and the wheels are pure side profiles. No horizontal surface is visible anywhere on the main body, so it is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The outline is tinted: only 2% of dark edge pixels are neutral, and the lines read as dark brown beside the wood and dark ochre beside the hay, not black. The hay has speckle and rope lines, and the wood has plank lines, so there are no big flat fills (0% near-flat). The ramps are shallow, though. The hay has about 4 steps and the wood about 3, against roughly 6 per material on the stall and well. The whole piece uses only 12 distinct colours, with 7 visible tones per tile. The comparable large props, the cheese stall (17) and the roofed well (20), carry far more, and only the small hedge is close at 9. At this size the wagon body and wheels look flatter and simpler than those references, so a careful artist would not accept it beside them without more shading. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21440
+  }
+ ],
+ "decidedAt": "2026-10-22T11:24:36.687Z",
+ "cells": {
+  "16": [
+   "35ad6be12aa11f0a",
+   "4341916552f1b9aa",
+   "4fd9ee7f303d7f19",
+   "5caf7ecdd5a146eb",
+   "6d9031d8ac71d33d",
+   "8096f8bcaa92cb48",
+   "ac8ce78ac51dee96",
+   "adf9b9c7fcdda29e",
+   "b57f01d7caf33d54"
+  ],
+  "24": [
+   "231ad979263ac2c0",
+   "cdd640c7eeb0849a",
+   "e87eb9daaab65720",
+   "f224e42a3228cdc0"
+  ],
+  "32": [
+   "1966d508b14209e6",
+   "1a89e5dd49024349",
+   "1b52624d481f7f6d",
+   "1e8190d6d341c0a3",
+   "217330d82deb0ab1",
+   "22ef2eec097164e6",
+   "23612b959e1f5e83",
+   "245847166cc328ac",
+   "2529e1d903ccf8e3",
+   "29b6c5d614880cc0",
+   "46b00395fc35aea3",
+   "5b31584b1f1f4000",
+   "634f19a415de9db8",
+   "6ca83fd3bbd01453",
+   "7bd13e3fcc85862a",
+   "8a7ec25e0fb44893",
+   "a2d9b6a1c8b25a25",
+   "ac3675cd8e752467",
+   "b6aee9ef0bc49536",
+   "ba122fc80294b9f6",
+   "bc0884d6bf3cc830",
+   "cb8085fae2e18f15",
+   "d83b0b3812a8de19",
+   "fe30713aad022a60"
+  ],
+  "48": [
+   "413752c5e99d3edb"
+  ]
+ }
+}
