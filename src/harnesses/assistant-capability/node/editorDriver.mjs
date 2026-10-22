@@ -91,12 +91,14 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
       loads.push({sha256:body.sha256,revision:body.revision,maps:document.maps,database:document.database});
     }).catch(()=>{});
   });
-  await page.addInitScript(({assistantEngine,hideStartMarker,...config})=>{
+  await page.addInitScript(({assistantEngine,hideStartMarker,assistantVersion,...config})=>{
     // 검수 그림에서 편집기 전용 시작 위치 표시를 뺀다(기본). HARNESS_START_MARKER=1 이면 그대로 둔다.
     if(hideStartMarker)window.__oprnHideStartMarker=true;
     localStorage.setItem('oprn:ai-config',JSON.stringify({configVersion:2,piTeam:false,piApply:'default',piApplyPolicyVersion:1,...config}));
     // 조수 엔진(로컬 CLI) 선택은 설정과 따로 저장된다 — 제품 설정 화면이 쓰는 그 칸(src/ai/localCliEngine.ts).
     if(assistantEngine)localStorage.setItem('oprn:assistant-engine',JSON.stringify(assistantEngine));
+    // 조수 v2 비교(ai-config 의 assistantVersion:"v2") — 제품 스위치(src/ai/v2/switch.ts)와 같은 칸.
+    if(assistantVersion==='v2')localStorage.setItem('oprn:assistant-v2','1');
     window.__capEvents=[];
     const original=window.fetch;
     window.fetch=async function(...args){

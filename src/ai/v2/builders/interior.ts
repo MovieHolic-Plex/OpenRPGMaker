@@ -7,7 +7,7 @@
 import { HAND_INTERIOR_TILESET_ID, MODERN_CITY_INTERIOR_TILESET_ID, SENGOKU_INTERIOR_TILESET_ID, WIZARDING_INTERIOR_TILESET_ID, roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
 import { roomTemplates } from "@/editor/handInterior/templates";
 import { INTERIOR_BARE_FLOOR_LIMIT, measureInteriorBareFloor } from "@/editor/handInterior/bareFloor";
-import type { BuildRun, PlaceBuilder, PlaceBuildResult, PlaceRecord, PlaceSpec, ZoneSpec } from "../types";
+import type { BuildRun, PlaceBuilder, PlaceBuildResult, PlaceRecord, ZoneSpec } from "../types";
 
 type Obj = { id: string; x: number; y: number };
 type Room = { id: string; x0: number; y0: number; x1: number; y1: number; floor?: string; wall?: string };
