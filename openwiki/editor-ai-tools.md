@@ -3622,11 +3622,27 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
   - 대안 `nearest` 가 빈 needs-art 종류는 맵을 만들지 않는다. 답 첫 문장에 빠진 그림을 말하고, 같은 시대의 지을 수 있는 종류 2~3개만 알린다.
     해당 종류는 로마 도시와 폐허 셋(포스트아포칼립스·좀비 도시·황무지)이다.
     실측: 대안이 다른 종류 맵의 복사본(공장 도시 판박이)이거나 흩뿌린 소품 마을로 읽혔다.
-  - 버들항 쓰임 덩이 종류(신전 폐허·광산촌·포도원)는 needs-art(`beodeul-quarter-yard`)다. 조각이 마당 바닥·길 없이 덤불 사이에 흩어진다.
-    `dress_village_quarter` 의 그 덩이들은 도구에 남아 있지만 표의 recipe 는 부르지 않는다. 장터 마을도 walled-market 덩이 없이 광장 마을만 짓는다.
+  - ~~버들항 쓰임 덩이 종류는 needs-art~~ → **2026-10-23 ready (village-art).** 마당 바닥 오토타일 셋을 그렸다.
+    - 그림: 버들항 시트 줄 224, 칸 28672~28742.
+    - 오토타일: `beodeul_yard_cobble`(자갈) · `beodeul_yard_dirt`(다진 흙) · `beodeul_yard_flag`(판석).
+    - 견본 킷: `bd-yard-*-sample`. `mergeShippedFarm`·`mergeShippedKits` 가 붙인다.
+    - `dress_village_quarter` 가 마당을 개간해 깔고, 덩이를 그 안에 앉힌다.
+    - recipe:
+      - 신전 폐허: `terrain flat, form scatter`
+      - 광산촌: `terrain terraces, form scatter, woods dense` — highland·street 는 마당 자리가 없어 14×9 로 줄었다
+      - 포도원: `terrain terraces, form scatter`
+    - 마당 규칙(검수 r1~r3):
+      - 개간 칸·위 1줄·아래 2줄·좌우 1열이 모두 같은 단이어야 한다.
+      - 24칸 이하 덤불·나무 덩이는 통째로 걷는다. 더 큰 숲 덩이를 벨수록 자리 점수가 깎인다(계단 모양 숲 끝 방지).
+      - 마당 네 귀는 원래 바닥으로 둥글린다. 샛길은 2칸 폭이다.
+      - 귀 채우기가 아닌 마당(신전 폐허, 광산)은 맵마다 크기를 −1~+3 / −1~+1 흔든다. 덩이 중심도 마당 안 아무 자리로 잡고, 되풀이 조각을 몇 개 뺀다. 두 맵이 한 도장으로 읽혔기 때문이다.
+      - 포도원은 북서·북동 귀부터 채운다(`packSlot`). 올리브는 마당 밖 반경 20에 둔다.
+    - 장터 마을은 아직 walled-market 덩이 없이 광장 마을만 짓는다.
+  - ~~폐허 셋(포스트아포칼립스·좀비 도시·황무지)은 needs-art~~ → **2026-10-23 ready.** 새 칩셋 `wasteland_ruins` + `compose_wasteland_map` 을 쓴다. `openwiki/wasteland-ruins.md` 참고.
+  - 마당 그래프트 이동(버들항 자연 이식 칸 28416→28800, 1536칸) 증명은 `scripts/qa/beodeul-graft-relocation-proof.mts` 에 있다. 기존 프로젝트 사본에서 맵 화소가 같은지를 본다.
   - 달 기지 작곡기(`sfStationComposer` composeMoonbase)를 다시 짰다. 지붕을 1줄에 붙인 건물 줄 → 큰길 → 세로 연결 둘 → 설비 길 순서다.
     설비 길 위·아래에 전력·연료·화물·통신 마당과 착륙장을 둔다. 크레이터·바위는 놓인 기물 둘레 1칸을 피한다.
     기본 크기는 38×22, 하한은 34×20 이다.
   - 바이킹은 partial이다. 롱십·용머리 회관 그림이 없다.
   - needs-art 대안은 seed를 1 이상으로 준다. 기본 seed 0이면 대안 맵이 그 종류를 직접 요청한 맵과 바이트까지 같았다.
-- **시험 시드:** `harness-data/assistant-capability/village-eras-seed.json`(18건, 조수 대용 Sonnet 5.5 high, 포트 19640~19657).
+- **시험 시드:** `harness-data/assistant-capability/village-eras-seed.json`(v2 23건, 조수 대용 Sonnet 5.5 high, 포트 19640~19662). era-ruins-village·era-mining·era-vineyard·era-ruined-city·era-wasteland·era-postapoc 가 village-art 로 새로 지을 수 있게 된 종류다.
