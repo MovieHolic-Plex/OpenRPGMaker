@@ -106,14 +106,16 @@ export function planSewer(spec: { size?: "small" | "medium" | "large"; width?: n
  * 2026-10-23(assistant-dungeons-2): 통로를 위아래 4·옆 2칸으로 줄이고 보물 방을 성소 뒤가 아니라 옆에 붙였다 — 세로로 길게 늘어선
  * 십자형이라 맵의 57%가 검은 허공이었다. 신랑도 17×19 → 15×13(맨바닥이 넓었다).
  */
-export function planTemple(spec: { size?: "small" | "medium" | "large"; width?: number; height?: number; seed?: number }): DungeonRoomInput[] {
+export function planTemple(spec: { size?: "small" | "medium" | "large"; width?: number; height?: number; seed?: number; flooded?: boolean }): DungeonRoomInput[] {
   const n = sized(spec);
+  // 잠긴 신전은 본당·예배실을 한 단 크게 — 물이 차지하는 방이라 맨바닥이 남지 않고, 작은 방 안쪽(회랑 2칸 안)은 둥근 못을 담기에 좁아 네모 수조로 읽혔다(2026-10-23 dg2-r4 VQA).
+  const f = spec.flooded === true;
   const rooms: DungeonRoomInput[] = [
     { id: "porch", kind: "entrance", w: 13, h: 6 },
-    { id: "nave", kind: "nave", w: 15, h: 13, from: "porch", dir: "N", shift: 0, len: 4 },
+    { id: "nave", kind: "nave", w: f ? 19 : 15, h: f ? 16 : 13, from: "porch", dir: "N", shift: 0, len: 4 },
     { id: "sanctum", kind: "boss", w: 15, h: 9, from: "nave", dir: "N", shift: 0, len: 4 },
   ];
-  if (n >= 4) { rooms.push({ id: "chapelW", kind: "shrine", w: 9, h: 9, from: "nave", dir: "W", shift: 0, len: 2 }, { id: "chapelE", kind: "shrine", w: 9, h: 9, from: "nave", dir: "E", shift: 0, len: 2 }); }
+  if (n >= 4) { const cw = f ? 12 : 9, ch = f ? 12 : 9; rooms.push({ id: "chapelW", kind: "shrine", w: cw, h: ch, from: "nave", dir: "W", shift: 0, len: 2 }, { id: "chapelE", kind: "shrine", w: cw, h: ch, from: "nave", dir: "E", shift: 0, len: 2 }); }
   if (n >= 6) rooms.push({ id: "vault", kind: "vault", w: 9, h: 7, from: "sanctum", dir: "W", shift: 0, len: 2 });
   if (n >= 6) rooms.push({ id: "ossuaryE", kind: "crypt", w: 9, h: 7, from: "sanctum", dir: "E", shift: 0, len: 2 });
   return rooms;

@@ -6,7 +6,7 @@
 // 불변식은 grid.ts(fixThickness·thinWalls·settle)가 지킨다. compose.ts 에서 옮겨 왔을 뿐 rooms 문법의 출력은 그대로다.
 import type { DungeonLayout, DungeonSpec, DungeonType, PlacedRoom } from "./types";
 import { DungeonComposeError } from "./errors";
-import { Grid, edgeDistance, rng, settle, vnoise, type Rect } from "./grid";
+import { Grid, WALL_ROWS, edgeDistance, rng, settle, vnoise, type Rect } from "./grid";
 import { addCrossings, carveSewer } from "./layouts";
 import type { GrammarInfo } from "./grammar";
 
@@ -124,8 +124,8 @@ export function buildMask(layout: DungeonLayout, profile: GrammarInfo, type: Dun
 
 /**
  * 물에 잠긴 던전(2026-10-22, 「물에 잠긴 옛 신전」 기준선: 조수가 fill_region 으로 네모 물웅덩이를 벽에 붙여 칠했다).
- * 큰 방(가로 8·세로 6 이상, 입구·보물 방 제외) 바닥 안쪽이 물에 잠긴다: 벽에서 두 칸 안쪽, 잡음으로 가장자리가 흔들리고,
- * 방 가운데를 가로·세로로 지나는 폭 3 둑길과 문 앞(protect)은 마른 땅으로 남는다. 갈라진 바닥은 settle 이 다리로 잇는다.
+ * 큰 방(입구·보물 방 제외, 벽 둘레 2칸 안쪽이 6×4 이상) 가운데가 겹친 둥근 덩이(메타볼)로 잠긴다. 벽 둘레 두 칸 회랑과 문 앞(protect)은
+ * 마른 땅으로 남아 모든 문이 이어진다(2026-10-23 assistant-dungeons-2: 둑길로 가르던 판은 「돌 테 수조」로 읽혔다).
  */
 export function carveFlood(g: Grid, rooms: readonly PlacedRoom[], seed: number): number {
   const ed = edgeDistance(g, 4);
@@ -141,40 +141,60 @@ export function carveFlood(g: Grid, rooms: readonly PlacedRoom[], seed: number):
       fx0 = Math.min(fx0, x); fx1 = Math.max(fx1, x); fy0 = Math.min(fy0, y); fy1 = Math.max(fy1, y);
     }
     if (fx1 < 0) return;
+    // 이 단계의 바닥 마스크는 방 사각형 맨 위 벽 앞면 줄(WALL_ROWS)까지 품는다 — 그 줄은 벽이 된다. 걷는 바닥은 그 아래부터.
+    fy0 += WALL_ROWS;
     const fw = fx1 - fx0 + 1, fh = fy1 - fy0 + 1;
     if (fw < 7 || fh < 5) return;
-    const cx = fx0 + (fw - 1) / 2, cy = fy0 + (fh - 1) / 2;
-    // 둑길: 긴 축 방향 한 줄은 늘 남기고, 짧은 축 둑은 큰 방에만(방이 네 웅덩이로 갈린다)
-    const along = fw >= fh;
-    // 가로지르는 둘째 둑길은 뺐다 — 방이 네모 웅덩이 넷으로 갈려 「잠긴 방」이 아니라 수조로 읽혔다(2026-10-23). 갈린 문은 settle 의 다리가 잇는다.
-    const cross = false;
+    const rnd = rng(seed * 977 + ri * 131 + 5);
+    // 덩이는 회랑(벽 둘레 2칸) 안쪽 넓이보다 작아야 가장자리가 둥글다 — 크면 회랑에 잘려 다시 네모가 됐다.
+    const iw = fw - 4, ih = fh - 4;
+    if (iw < 6 || ih < 4) return;   // 안쪽이 좁은 방(보스 제단방·곁방)은 마른 채로 — 작은 못은 네모 수조로만 읽혔다
+    // 덩이 묶음 후보 12개 중 안쪽 넓이의 8할쯤을 덮는 묶음을 고른다 — 다 덮으면 안쪽 사각형 그대로(네모 수조)였다.
+    const inBlob = (bs: { x: number; y: number; r: number }[], x: number, y: number) => bs.some((b) => Math.hypot(x - b.x, (y - b.y) * 1.15) / b.r < 1 + (vnoise(x, y, 2.2, seed * 19 + ri) - 0.5) * 0.3);
+    let blobs: { x: number; y: number; r: number }[] = [];
+    let bestCov = Infinity;
+    for (let t = 0; t < 12; t += 1) {
+      const n = 3 + Math.floor(rnd() * 2) + (iw * ih >= 60 ? 1 : 0);
+      const cand = Array.from({ length: n }, () => {
+        const r0 = Math.max(1.6, (Math.min(iw, ih) / 2) * (0.45 + rnd() * 0.35) + 0.5);
+        return { x: fx0 + 2 + rnd() * (iw - 1), y: fy0 + 2 + rnd() * (ih - 1), r: r0 };
+      });
+      let cov = 0;
+      for (let y = fy0 + 2; y < fy0 + 2 + ih; y += 1) for (let x = fx0 + 2; x < fx0 + 2 + iw; x += 1) if (inBlob(cand, x, y)) cov += 1;
+      const d = Math.abs(cov / (iw * ih) - 0.78);
+      if (d < bestCov) { bestCov = d; blobs = cand; }
+    }
     for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
       const i = g.idx(x, y);
       if (!g.floor[i] || g.roomAt[i] !== ri || g.protect[i]) continue;
-      // 벽 앞 한 줄만 마른 턱으로 남긴다 — 두 줄을 남기면 물이 방 가운데 웅덩이 몇 개로만 읽혔다(2026-10-23 VQA 「물에 잠긴 신전으로 안 읽힘」).
-      if (ed[i]! < 1) continue;
-      // 둑길은 곧은 줄이 아니라 굽이친다(물에 잠긴 바닥 위로 남은 옛 길) — 반듯한 수조 넷처럼 읽히던 것(2026-10-22 VQA).
-      const bend = (t: number, k: number) => Math.round((vnoise(t, k, 5, seed * 23 + ri) - 0.5) * 3);
-      const onSpine = along ? Math.abs(y - (cy + bend(x, 1))) <= 1 : Math.abs(x - (cx + bend(y, 2))) <= 1;
-      const onCross = cross && (along ? Math.abs(x - (cx + bend(y, 3))) <= 1 : Math.abs(y - (cy + bend(x, 4))) <= 1);
-      if (onSpine || onCross) continue;
-      // 물 가장자리는 방 모양(네모)이 아니라 흔들리는 타원 덩이다(2026-10-23 assistant-dungeons-2, VQA 「사각 수조」).
-      // 흔들림은 0.15 이하(PR #1450: 0.25 이상이면 덩이가 부서진다). 모서리·벽 쪽은 마른 바닥으로 남는다.
-      // 둑길 양쪽 반쪽마다 엇갈린 타원 두 덩이(잎)를 겹친다 — 방 하나를 꽉 채운 한 타원은 벽을 따라 곧은 가장자리가 생겨 「돌 테 수조」로 읽혔다
-      // (2026-10-23 dg2-r1 VQA). 잎 사이·모서리는 마른 바닥으로 남아 가장자리가 들쭉날쭉하다.
-      const side = along ? (y < cy ? -1 : 1) : (x < cx ? -1 : 1);
-      let dMin = Infinity;
-      for (let lobe = 0; lobe < 2; lobe += 1) {
-        const jit = (vnoise(lobe * 7 + side * 3, ri, 1, seed * 31) - 0.5) * 0.25;
-        const off = (lobe === 0 ? -1 : 1) * (0.2 + jit);
-        const lx = along ? cx + off * fw : cx + side * fw / 4;
-        const ly = along ? cy + side * fh / 4 : cy + off * fh;
-        const lrx = along ? Math.max(2.4, fw * 0.34) : Math.max(2, fw / 4 + 1.1);
-        const lry = along ? Math.max(2, fh / 4 + 1.1) : Math.max(2.4, fh * 0.34);
-        dMin = Math.min(dMin, ((x - lx) / lrx) ** 2 + ((y - ly) / lry) ** 2);
-      }
-      if (dMin > 1 + (vnoise(x, y, 2.5, seed * 19 + ri) - 0.5) * 0.3) continue;
+      // 벽 둘레 두 칸은 마른 회랑으로 남기고(문·벽가 길), 물은 방 가운데 둥근 덩이로 고인다. 둑길로 방을 가르면 물이 벽에 붙은 곧은 띠 둘이 되어
+      // 「돌 테 수조」로 읽혔다(2026-10-23 dg2-r1·r4 VQA). 회랑이 늘 이어지므로 다리 없이도 모든 문에 닿는다.
+      if (ed[i]! < 2 || y < fy0 + 2) continue;
+      // 물은 방 안에 겹친 둥근 덩이 여럿(메타볼)의 합집합이다 — 한 타원·두 잎은 직사각형 방 안에서 곧은 변이 생겨 「돌 테 수조」로 읽혔다
+      // (2026-10-23 dg2-r1·r4 VQA). 덩이 가장자리 흔들림은 ≤0.15(PR #1450). 같은 운하 오토타일로 동굴 호수는 불규칙하게 읽혔다.
+      if (!inBlob(blobs, x, y)) continue;
       g.liquid[i] = 1; cells += 1;
+    }
+    // 한 칸 폭 물줄(물 이웃이 하나 이하)은 마른 바닥으로 — 덩이 가장자리 잡음이 남긴 실선 물길(두 번).
+    for (let pass = 0; pass < 2; pass += 1) for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
+      const i0 = g.idx(x, y);
+      if (!g.liquid[i0] || g.roomAt[i0] !== ri) continue;
+      const nb = [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => g.inb(x + dx!, y + dy!) && g.liquid[g.idx(x + dx!, y + dy!)]).length;
+      const hz = (g.inb(x - 1, y) && g.liquid[g.idx(x - 1, y)]) || (g.inb(x + 1, y) && g.liquid[g.idx(x + 1, y)]);
+      const vt = (g.inb(x, y - 1) && g.liquid[g.idx(x, y - 1)]) || (g.inb(x, y + 1) && g.liquid[g.idx(x, y + 1)]);
+      if (nb <= 1 || !hz || !vt) { g.liquid[i0] = 0; cells -= 1; }
+    }
+    // 한두 칸짜리 웅덩이(6칸 미만)는 마른 바닥으로 — 「외딴 한 칸 물웅덩이」(2026-10-23 dg2-r4 VQA).
+    const seenL = new Set<number>();
+    for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
+      const i0 = g.idx(x, y);
+      if (!g.liquid[i0] || seenL.has(i0) || g.roomAt[i0] !== ri) continue;
+      const comp = [i0]; seenL.add(i0);
+      for (let k = 0; k < comp.length; k += 1) {
+        const c = comp[k]!, X = c % g.W, Y = (c / g.W) | 0;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const n = g.idx(X + dx, Y + dy); if (g.inb(X + dx, Y + dy) && g.liquid[n] && !seenL.has(n)) { seenL.add(n); comp.push(n); } }
+      }
+      if (comp.length < 6) for (const c of comp) { g.liquid[c] = 0; cells -= 1; }
     }
   });
   return cells;

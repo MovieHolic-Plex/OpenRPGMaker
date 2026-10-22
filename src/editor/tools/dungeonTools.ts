@@ -526,7 +526,7 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
       troops: { type: "object", additionalProperties: false, description: "채우기에 쓸 적 그룹 id(선택). 비우면 이 도구가 던전 주제(이름 낱말·소굴·잠김·탑·종류)에 맞는 적·보스 그룹을 만든다 — 지하 묘지 = 언데드·리치, 탑 = 흑기사, 화산 = 화염 짐승·붉은 용, 고블린 굴 = 고블린·대장. 사용자가 적을 직접 말했을 때만 upsert_troop 으로 만들어 여기 준다. 요청에 없는 용·드래곤 그룹을 보스로 고르지 말 것", properties: { field: { type: "array", items: { type: "string" }, description: "돌아다니는 잡몹 무리" }, midBoss: { type: "string", description: "층 수문장" }, boss: { type: "string", description: "마지막 방 보스" } } },
       puzzle: { type: "string", enum: ["lever"], description: "같은 칩셋 안의 퍼즐(마지막 층): lever = 보물 방(없으면 보스방)으로 들어가는 통로를 닫힌 쇠창살로 막고, 먼 곁방에 레버를 둔다(당기면 열림). 「레버로 문을 여는 퍼즐 던전」은 이것 하나 — 다른 칩셋(손 도트 실내) 퍼즐 방을 따로 만들어 잇지 말 것(화풍이 갈린다)." },
       lair: { type: "boolean", description: "무리가 사는 소굴(고블린·도적·오크·짐승 굴): 버들항 cave 방마다 모닥불·가죽 걸이·궤짝·통·자루·뼈 무더기를 깔아 「누가 사는 굴」로 읽히게 한다. 보스방은 우두머리 자리로 더 쌓는다. 「고블린 굴」은 type cave + lair:true + troops." },
-      flooded: { type: "boolean", description: "물에 잠긴 던전(신전·묘지·성 등 방 문법 종류): 큰 방 바닥 대부분이 물이고 3칸 폭 마른 길(가운데 축)이 방을 가로지른다. 「물에 잠긴 신전」은 type temple + flooded:true — fill_region 으로 물을 직접 칠하지 말 것." },
+      flooded: { type: "boolean", description: "물에 잠긴 던전(신전·묘지·성 등 방 문법 종류): 큰 방(본당·예배실) 가운데가 둥글고 들쭉날쭉한 못으로 잠기고 벽 둘레 두 칸은 마른 회랑으로 남는다(모든 문이 이어진다). 「물에 잠긴 신전」은 type temple + flooded:true — fill_region 으로 물을 직접 칠하지 말 것." },
       size: { type: "string", enum: [...DUNGEON_SIZES], description: "rooms 를 생략했을 때 층 크기: small 방 4 · medium 6(기본) · large 9" },
       width: { type: "integer", description: "바라는 맵 가로(칸, 선택). rooms 생략 시 방 수를 이 넓이에 맞추고, 배치가 이 비율로 자란다." },
       height: { type: "integer", description: "바라는 맵 세로(칸, 선택)." },
