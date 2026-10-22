@@ -309,7 +309,7 @@ function authorDungeon(draft: Project, args: Record<string, unknown>): ToolExecR
   if (floors > 1 && args.adapter === "monster") throw new ToolError("여러 층 던전은 버들항 어댑터만 잇는다 — 몬스터 키트는 floors 를 빼고 층마다 따로 지은 뒤 link 도구로 잇는다.", { code: "invalid-args" });
   const results: ToolExecResult[] = [];
   const warnings: string[] = [];
-  const baseName = typeof args.name === "string" && args.name.trim() ? args.name.trim().replace(/\s*(지하\s*)?\d+\s*층$/u, "") || "탑" : direction === "up" && floors > 1 ? "탑" : "지하 던전";
+  const baseName = typeof args.name === "string" && args.name.trim() ? (floors > 1 ? args.name.trim().replace(/\s*(지하\s*)?\d+\s*층$/u, "") || "탑" : args.name.trim()) : direction === "up" && floors > 1 ? "탑" : "지하 던전";
   const baseId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : "";
   for (let k = 1; k <= floors; k += 1) {
     const first = k === 1, last = k === floors;
