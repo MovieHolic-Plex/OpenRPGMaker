@@ -797,7 +797,12 @@ def platform(W, seed, hatch=True, dress=None):
 def corbel_band(cv, x0, x1, y0, seed):
     """흉벽 밑 내민 받침돌 띠(6행): 윗줄 갓돌 빛, 받침돌 사이는 짙은 그늘 — 플랫폼이 앞면 위로 내민 두께."""
     for x in range(x0, x1 + 1):
-        cv.set(x, y0, COOL[10]); cv.set(x, y0 + 1, COOL[8])
+        # 갓돌: 8px 돌마다 다른 빛(r17 Argon: 84px 한 색 띠), 돌 사이 줄눈·가끔 이 빠진 모서리
+        blk = (x - x0) // 8
+        t = h(seed, "cap", blk) % 3
+        cv.set(x, y0, (COOL[10], COOL[11], COOL[9])[t] if (x - x0) % 8 else COOL[8])
+        cv.set(x, y0 + 1, (COOL[8], COOL[9], COOL[7])[t] if (x - x0) % 8 else MORT)
+        if h(seed, "chip", x) % 11 == 0: cv.set(x, y0, COOL[8])
         k = (x - x0) % 8
         for i in range(2, 6):
             if k in (0, 1, 2, 3):
@@ -856,7 +861,11 @@ def quoin_edges(cv, x0, x1, y0, y1):
 def plinth(cv, x0, x1, y0, seed):
     """굽도리 10행: 내민 턱 빛 2행 + 큰 돌 5행(이끼) + 줄눈 + 짙은 밑 2행."""
     for x in range(x0, x1 + 1):
-        cv.set(x, y0, COOL[10] if (x - x0) % 8 else COOL[9]); cv.set(x, y0 + 1, COOL[8]); cv.set(x, y0 + 2, COOL[6])
+        # 굽도리 턱: 돌마다 빛이 다르고 줄눈이 있다(r17 Argon: 74px 한 색 띠)
+        t = h(seed, "plt", (x - x0) // 8) % 3
+        j = (x - x0) % 8 == 7
+        cv.set(x, y0, MORT if j else (COOL[10], COOL[9], COOL[11])[t]); cv.set(x, y0 + 1, MORT if j else (COOL[8], COOL[7], COOL[9])[t]); cv.set(x, y0 + 2, COOL[6] if not j else COOL[5])
+        if h(seed, "plc", x) % 9 == 0: cv.set(x, y0 + 1, COOL[6])
     for a in range(x0, x1 + 1, 8):
         b = min(x1, a + 6)
         tone = [COOL[6], COOL[7], WARM[4], COOL[5]][h(seed, a, "pl") % 4]
@@ -1276,7 +1285,7 @@ def mouth(kind):
 
 # ================================================================ 기후 변형(3판 r8): 눈 덮인 성벽 · 사막 사암 성벽 — 같은 그림을 색 규칙으로 옮긴다(버들항 눈·사막 마을이 쓰는 색만)
 SNOW = [hx(c) for c in ("#a6bcdc", "#b3bbc3", "#cadaee", "#e6f0fa", "#f6faff", "#ffffff")]
-SAND_COOL = [hx(c) for c in ("#3a261c", "#4e3d30", "#7d6249", "#87806a", "#9b8a73", "#b7a471", "#c2b082", "#cbb87c", "#d3c088", "#eccb86", "#f6d498", "#fff0c0")]
+SAND_COOL = [hx(c) for c in ("#3a261c", "#4e3d30", "#7d6249", "#87806a", "#9b8a73", "#b7a471", "#c2b082", "#d3c088", "#eccb86", "#f6d498", "#fff0c0", "#fff0c0")]   # r17: 가운데 두 단(cbb87c·d3c088, 8 차이)이 붙어 앞면이 뭉개졌다 — 한 칸씩 벌림
 SAND_WARM = [hx(c) for c in ("#4e3d30", "#7d6249", "#87806a", "#c2b082", "#cbb87c", "#dcaf6c", "#d3c088", "#eccb86", "#fff0c0")]   # 앞면 돌은 사암 한 결(주황·카키 조각보로 읽혔다, r9) — 따뜻한 돌 하나만 주황
 SAND_FLAG = [hx(c) for c in ("#4e3d30", "#724a28", "#7e4a34", "#94562e", "#ac7044", "#cf9558", "#dcaf6c", "#e8b672", "#f6d498")]
 DRY = [hx(c) for c in ("#7f725d", "#87806a", "#b7a471", "#c2b082")]
@@ -1342,6 +1351,8 @@ def biome_image(img, name, biome):
                 if not (0 < c[3] < 255 and c in deeper): continue
                 row = y // 5
                 if y % 5 == 4 or (x + (row % 2) * 3) % 6 == 5: px[x, y] = deeper[c]
+                elif h("tst", name.split(":")[-1], (x + (row % 2) * 3) // 6, row) % 3 == 0: px[x, y] = deeper[c]     # 돌마다 짙기가 다르다(r17 Argon: 542px 한 색)
+                elif h("tsp", name.split(":")[-1], x, y) % 13 == 0: px[x, y] = deeper[c]
     if biome == "desert":
         m = _desert_map()
         for y in range(H):
@@ -1380,6 +1391,10 @@ def biome_image(img, name, biome):
                     else:
                         r_ = h("drift", name, (x + 2 * ((y // 4) % 2)) // 4, y // 4) % 9
                         v = SNOW[3] if r_ < 3 else SNOW[2]
+                        # 바람 결: 3px 짧은 사선 눈 물결(밝게)과 드문 푸른 발자국 점 — 한 색 판(r17 Argon: 306px·5,944px 한 색)
+                        if h("rip", name, (x + y) // 3, y // 2) % 5 == 0 and v == SNOW[2]: v = SNOW[3]
+                        if h("rip2", name, (x - y) // 4, y // 3) % 7 == 0: v = SNOW[4] if v == SNOW[3] else SNOW[3]
+                        if h("step", name, x // 2, y // 2) % 23 == 0 and (x + y) % 2 == 0: v = SNOW[0]
                         if v == SNOW[3] and h("drift", name, (x + 2 * (((y - 1) // 4) % 2)) // 4, (y - 1) // 4) % 9 >= 2 and y % 4 == 0: v = SNOW[4]   # 눈더미 윗가장자리 빛
                         if h("spark", name, x, y) % 71 == 0: v = SNOW[4]
                     px[x, y] = v
