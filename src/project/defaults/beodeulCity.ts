@@ -40,6 +40,13 @@ export const BEODEUL_FARM_AUTOTILE_IDS: readonly string[] = ["farmland", "farmla
  */
 export const BEODEUL_DUNGEON_CEILING_BASE = 28416;
 export const BEODEUL_DUNGEON_AUTOTILE_IDS: readonly string[] = ["beodeul_dungeon_ceiling", "beodeul_dungeon_ceiling_b"];
+/**
+ * 마을 성벽(2026-10-22, scripts/content/beodeul-wall/bake_wall.py · wall_art.py): 던전 천장 꼬리(~28,543) 바로 뒤 한 행 128칸(조각 88).
+ * 3/4 성벽 통로·앞면·모서리·갈림목·끝 마감, 4×4 성문루(열림·닫힘), 2×6 망루, 계단. 키트 `bd-wall-*`, 칸 묶음 `beodeul:town_wall*`.
+ * author_beodeul_town walls:"ring" 이 마을 둘레에 쓴다(beodeulTownWall.ts). 번들 소유, 덧붙이기 전용.
+ */
+export const BEODEUL_TOWN_WALL_BASE = 28544;
+export const BEODEUL_WALL_KIT_PREFIX = "bd-wall-";
 /** 고른 조각 키트 id 머리. 번들이 소유한다(기존 사본에서 같은 id 는 번들 것으로 바꾼다). */
 export const BEODEUL_PICK_KIT_PREFIX = "bd-pick-";
 /**
@@ -109,7 +116,10 @@ export function ensureBeodeulCityReferences(tileset: TilesetDef): boolean {
   const own = (id: string) => id.startsWith("bd-");
   const cats = [...(tileset.referenceDocuments ?? [])];
   let changed = false;
+  // 성벽 꼬리를 받지 못한 사본(그 자리에 이식 칸이 있던 옛 사본)에는 성벽 참고문서를 심지 않는다 — 없는 칸을 가리키게 된다
+  const hasWall = (tileset.tileMeta?.[BEODEUL_TOWN_WALL_BASE]?.label ?? "").includes("성벽");
   for (const shipped of REFERENCES) {
+    if (shipped.id === "beodeul-town-wall" && !hasWall) continue;
     const i = cats.findIndex(existing => existing.id === shipped.id);
     if (i < 0) { cats.push(structuredClone(shipped)); changed = true; continue; }
     const cur = cats[i]!;
@@ -149,10 +159,13 @@ export function ensureBeodeulCityTileset(tileset: TilesetDef): boolean {
     const grafts = tileset.tileGrafts ?? [];
     if (grafts.some(graft => graft.targetTile >= BEODEUL_FARM_BASE && graft.targetTile < BEODEUL_DUNGEON_CEILING_BASE)) return familyFixed;
     // 던전 천장 꼬리(28,416~)도 같은 이유: 그 자리에 이식 칸을 쓴 사본은 꼬리를 농장 끝까지만 받는다(던전은 테두리 없는 허공으로 물러선다).
-    const dungeonBlocked = grafts.some(graft => graft.targetTile >= BEODEUL_DUNGEON_CEILING_BASE && graft.targetTile < sheet.count);
-    const extended = extendPickedParts(tileset, dungeonBlocked ? Math.max(tileset.count, BEODEUL_DUNGEON_CEILING_BASE) : sheet.count);
-    const farm = mergeShippedFarm(tileset, !dungeonBlocked);
-    return mergeShippedKits(tileset) || extended || farm || familyFixed;
+    const dungeonBlocked = grafts.some(graft => graft.targetTile >= BEODEUL_DUNGEON_CEILING_BASE && graft.targetTile < BEODEUL_TOWN_WALL_BASE);
+    // 성벽 꼬리(28,544~)도 같다: 그 자리에 이식 칸을 쓴 사본은 꼬리를 던전 천장 끝까지만 받고 성벽 키트·묶음도 받지 않는다(마을은 성벽 없이 지어진다).
+    const wallBlocked = dungeonBlocked || grafts.some(graft => graft.targetTile >= BEODEUL_TOWN_WALL_BASE && graft.targetTile < sheet.count);
+    const limit = dungeonBlocked ? BEODEUL_DUNGEON_CEILING_BASE : wallBlocked ? BEODEUL_TOWN_WALL_BASE : sheet.count;
+    const extended = extendPickedParts(tileset, Math.max(Math.min(tileset.count, sheet.count), limit));
+    const farm = mergeShippedFarm(tileset, !dungeonBlocked, !wallBlocked);
+    return mergeShippedKits(tileset, !wallBlocked) || extended || farm || familyFixed;
   }
   const fresh = createBeodeulCityTileset();
   tileset.count = fresh.count;
@@ -195,13 +208,13 @@ function extendPickedParts(tileset: TilesetDef, limit: number = sheet.count): bo
 }
 
 /** Shipped kits the copy lacks are added (by id); bundle-owned `bd-pick-*` kits are replaced by the shipped ones. Others stay. */
-function mergeShippedKits(tileset: TilesetDef): boolean {
-  const shipped = data().structureKits as unknown as StructureKitDef[];
+function mergeShippedKits(tileset: TilesetDef, withWall = true): boolean {
+  const shipped = (data().structureKits as unknown as StructureKitDef[]).filter(kit => withWall || !kit.id.startsWith(BEODEUL_WALL_KIT_PREFIX));
   const shippedById = new Map(shipped.map(kit => [kit.id, kit]));
   const current = tileset.structureKits ?? [];
   let changed = false;
   const kept = current.filter(kit => {
-    if (!kit.id.startsWith(BEODEUL_PICK_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_FARM_KIT_PREFIX)) return true;
+    if (!kit.id.startsWith(BEODEUL_PICK_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_FARM_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_WALL_KIT_PREFIX)) return true;
     const ship = shippedById.get(kit.id);
     if (!ship) { changed = true; return false; }                       // a pick that was dropped from the bundle
     if (JSON.stringify(ship) !== JSON.stringify(kit)) { changed = true; return false; }
@@ -218,7 +231,7 @@ function mergeShippedKits(tileset: TilesetDef): boolean {
  * 농장·던전 천장 오토타일과 칸 묶음은 번들 소유(같은 id 는 번들 것으로 바꾸고, 없으면 더한다). 칸 그림·표는 extendPickedParts 가 꼬리째 들여온다.
  * 이 단계가 없으면 칸만 생기고 `farmland` 그룹이 없어 기존 프로젝트의 농사 런타임이 단색 흙 폴백을 쓴다.
  */
-function mergeShippedFarm(tileset: TilesetDef, withDungeon = true): boolean {
+function mergeShippedFarm(tileset: TilesetDef, withDungeon = true, withWall = true): boolean {
   let changed = false;
   const groups = [...(tileset.autotileGroups ?? [])];
   for (const shipped of data().autotileGroups as unknown as AutotileGroup[]) {
@@ -231,7 +244,8 @@ function mergeShippedFarm(tileset: TilesetDef, withDungeon = true): boolean {
   const tileGroups = [...(tileset.tileGroups ?? [])];
   let groupsChanged = false;
   for (const shipped of data().tileGroups as unknown as TileGroupMetadata[]) {
-    if (!shipped.id.startsWith("beodeul:farm") && !(withDungeon && shipped.id === "beodeul:dungeon_ceiling")) continue;
+    if (!shipped.id.startsWith("beodeul:farm") && !(withDungeon && shipped.id === "beodeul:dungeon_ceiling")
+      && !(withWall && shipped.id.startsWith("beodeul:town_wall"))) continue;
     const i = tileGroups.findIndex(group => group.id === shipped.id);
     if (i < 0) { tileGroups.push(structuredClone(shipped)); groupsChanged = true; }
     else if (JSON.stringify(tileGroups[i]) !== JSON.stringify(shipped)) { tileGroups[i] = structuredClone(shipped); groupsChanged = true; }

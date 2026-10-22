@@ -1,0 +1,397 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ff93eb822df0f5cbb2a16f2fce67a47dbd8755d0f8e24309517582d224c22fd4",
+ "width": 64,
+ "height": 64,
+ "kind": "structure",
+ "name": "stone town gatehouse, 3/4 top-down: crenellated walkable top seen from above, front face with a round arch closed by two iron-banded wooden doors",
+ "label": "beodeul_town_wall/gatehouse_closed",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 14,
+  "darkV5": 35,
+  "nearBlackEdge": 0.11,
+  "opaqueTiles": 16
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crenellated walkable top (merlons and paved walkway)",
+      "rows": "1-15",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "16"
+     },
+     {
+      "part": "stone front wall with arch and iron-banded doors",
+      "rows": "17-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-15 form a top band: merlons in rows 1-4, then paved walkway in rows 7-14. The band ends in a dark front-edge line at rows 15-16 (L=131 then L=81). Below it the south face runs from row 17 to 63, with a stone wall, an arched door opening and two plank doors with iron bands. The top band is much deeper than a 1-2 row rim and is separated from the front face by the edge line, so the main body shows a top surface and a front face. The doors are vertical faces, which is correct for a gate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts put the candidate level with the references. It has 11 visible tones per tile against 12 and 10, 0% near-flat coverage like both references, and 0% neutral dark edge pixels, so the outlines are tinted rather than a black sticker line. By eye, the stone walls have per-block highlight and shadow variation in about 4-5 grey steps, and the crenellated top shows a lit top face against a darker front face. The arch voussoirs are shaded separately from the wall. The doors have plank grain, iron bands and rivets in about 4 browns. No large flat fills appear. It is slightly simpler than the roof-tile references, with fewer total colours (22), and the stone texture is a little regular. That regularity is a modest shortfall, not shallow, so the piece holds up next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16096
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crenellated walkable top with merlons",
+      "rows": "0-15",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "front face with arch and iron-banded double doors",
+      "rows": "17-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wall torches",
+      "rows": "42-48",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-15 form a top band: merlons with crenel gaps in rows 0-4, then paved stone-block walkway in rows 5-14. A darker front-edge line at row 16 (L=81, with row 15 at L=131 just above) closes the band, and the vertical south face runs below it from row 17 to 63. That face has stone courses, the arched door opening with its voussoirs, and two iron-banded wooden doors. No receding side face is drawn. The top band is deep enough to be a real horizontal surface and is not a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts match the references. The candidate has 11 visible tones per tile against 12 and 10 for the references. Near-flat coverage is 0%, the same as both references. Dark edge pixels are 0% neutral, so the outlines carry a tint. By eye, the outlines are a darker bluish-grey beside stone and dark brown beside the doors, and forms are separated by value, not by a uniform black line. The stone is built from individually shaded blocks in about 5 grey steps. The arch has voussoir blocks, and the crenellations have lit and shadowed faces. The doors have plank grain and iron bands in about 4 brown steps, and the small lamps add detail. The 22 total raw colours are low next to the references, but this is a locked-palette piece and the visible tones are on par, so I do not mark it down. It is a little less varied than the references' per-tile speckle and tile scallops, but it is not a sticker or flat fill and would sit acceptably beside them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16851
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crenellated battlement top / walkway",
+      "rows": "0-6",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "16"
+     },
+     {
+      "part": "parapet front face (stone blocks)",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "arched double wooden doors in front wall",
+      "rows": "26-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wall torches",
+      "rows": "42-48",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-6 show merlons with a walkway band behind them (the notches at the top and the darker rows 5-6 are the walkway). Rows 7-15 are the parapet's stone face, and a dark front-edge line at row 16 closes the whole top band. Below it the south wall runs rows 17-63, about 47 rows, with an arch and two iron-banded doors. The wall has no isometric side face and is a normal south face. The top is shallow but clearly more than a 1-2 row rim, so this reads as a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a whole building (crenellated top, arch, banded doors), so it matches the reference kind. It has 11 visible tones per 16x16 tile against 12 and 10 for the references, and 0% near-flat coverage like both references. Its dark edge pixels are 0% neutral, so the outline leans toward the material (dark grey-blue beside stone, dark brown beside wood) and is not a uniform black sticker line. Stone blocks are shaded individually with light and dark faces, and the arch voussoirs and merlons are separated by value. The doors show several wood tones, plank grain and iron bands. Only 22 distinct colours in total is expected for a locked palette and is not a flaw by itself. It is a little less rich than the references: the stone ramp has roughly 5 steps against about 6, and the stone texture is somewhat regular. Next to the references it does not look thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19077
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "crenellated parapet and walkable top",
+      "rows": "0-16",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "16-16"
+     },
+     {
+      "part": "stone front wall with arch and doors",
+      "rows": "17-63",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 47,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-4 show merlons with notches against the dark outline. Rows 5-14 are a stone walkway band with shadow tints from the merlons, so it reads as a horizontal top. Row 15 (L=131) is a lighter front-edge line, and row 16 (L=81) is a dark eave shadow line. Below that, rows 17-63 (about 47 rows) are the vertical south face: stone courses, a round arch, two iron-banded wooden doors and two torches. The top reading is somewhat ambiguous, since the merlon fronts and the walkway blend, but the edge line and shadow under the band support a top surface. No side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts match the references. The candidate has 11 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage like both references. The 0% neutral share of dark edge pixels means the outlines carry a tint, which fits the board: the arch voussoirs and block joints read as dark grey-brown stone tones and the door edges as dark brown. No near-black sticker outline surrounds the whole building. The stone is built from individually shaded blocks in about 4-5 lightness steps. The crenellated parapet has lit and shaded faces, and the arch ring is separated from the wall by value alone. The doors show planks, grain and iron bands in several wood tones, and the two small lamps add detail. The total distinct colour count (22) is lower than the references (66 and 185), but that follows from the locked palette and not from visible shallowness. It is slightly simpler than the references in the regularity of its block pattern, yet it has no large flat fills and its density by eye is comparable to the stone reference house-h112_0.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18500
+  }
+ ],
+ "decidedAt": "2026-10-22T06:43:33.574Z",
+ "cells": {
+  "16": [
+   "36d912e1a185eeb4",
+   "54bfc5bf574762be",
+   "5e64f96e6d022b85",
+   "700dfa59c69ccce2",
+   "7e0fcbb8aa768ab0",
+   "a07e86572122c542",
+   "a0915c6cda78443b",
+   "ace9b95a2adb07bb",
+   "b01b72637ee916f6",
+   "b4961f7606c6f67a",
+   "b51cabe201d348e0",
+   "c4458738a27703b4",
+   "db120c606b632ef8",
+   "eb602e4abce93dda",
+   "fafa7f878bc23677"
+  ],
+  "24": [
+   "040dfd127c69113e",
+   "12342db0884b1a05",
+   "160355ff76636e19",
+   "16a35c2a47a9bd29",
+   "25da830f77f0bb67",
+   "273ac6b67add90ff",
+   "2832eb50e3ad9b66",
+   "2e2188abf3f6350e",
+   "355bec0a2a6dd4f2",
+   "3dd45c2733902b37",
+   "4d820fcdc512f792",
+   "5206c040b61ae617",
+   "54b64b5f134d1bc6",
+   "5ad544f31e3b444c",
+   "5e9bfa619b1382ad",
+   "5fdf3bd5651d479d",
+   "625c9f43a76eea40",
+   "70619fb0e8a59d02",
+   "747f12ab035c28fc",
+   "77cb20f474c94629",
+   "788d398185626d83",
+   "7e23cfaca410d071",
+   "7ecd8c40941a4035",
+   "7f03abb53101c252",
+   "815a2a4bac84f03a",
+   "822f3f54abe555d3",
+   "829be274342b33f0",
+   "835619d3672c0dee",
+   "8aaba947d3cf0561",
+   "8e162f1e1bfbb219",
+   "91b5c177f893d52e",
+   "93626183f24ff6be",
+   "94b0e63a6d95e2d2",
+   "974c5b8223601443",
+   "a0c5c9eda32965bf",
+   "a30e28ed6082f6cb",
+   "a5edf9191b9be869",
+   "a9a56dbce9adc5d6",
+   "aa805df21ea4870b",
+   "ad882a0471837766",
+   "b1d57b9cc1d22a55",
+   "c1e01ca267aafd19",
+   "cea484306151bbdf",
+   "ced00ce31d9ce9bf",
+   "d0fc97ec390dfbaa",
+   "d7cf9c9f2babeace",
+   "d94997d5b301d896",
+   "da8c00d6893c9262",
+   "daec2aa4fa5f067f",
+   "eca3aa28e5316c07",
+   "ed7d1533ebf4c5a3",
+   "f6fa10841ef5aa5c",
+   "fcf830ae549ce302",
+   "febf693c2afa4684"
+  ],
+  "32": [
+   "0e42220a316f956e",
+   "359d3f70b2a68296",
+   "4e182f6a0710b2cd",
+   "b1abb9055bb362c0"
+  ],
+  "48": [
+   "0774621d3b191501",
+   "0c1337bff4cba451",
+   "2b11985024e6da3e",
+   "33905422722ca20e",
+   "33bd0cea8868dc30",
+   "423d33f1015de067",
+   "500bd51fb6cfe789",
+   "522cce61531755cc",
+   "53d6fde3db8f9254",
+   "5cda5357fe8ccda9",
+   "72a3a80412648816",
+   "730632c357859bce",
+   "812cb8b92c3ee9af",
+   "8e53b847cafa2ff8",
+   "b8c639a675ae35d3",
+   "c82149059e287988",
+   "d26e39e048decd28",
+   "d2a2a7bda62b0135",
+   "db52b21f395c26c3",
+   "e321112c0e84f610",
+   "e6dff8cbcc302c4a",
+   "ece6983dc724e4a9",
+   "f36093f46f21ae6b",
+   "f74a3dc3c4eec77e"
+  ]
+ }
+}
