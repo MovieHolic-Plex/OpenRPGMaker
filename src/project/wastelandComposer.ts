@@ -158,11 +158,15 @@ class Board {
     if (!g) return;
     const conn = (x: number, y: number) => !this.inb(x, y) || cells[this.idx(x, y)]!;
     const interior = (g as { interiorVariants?: number[][] }).interiorVariants?.flat() ?? [];
+    // 가장자리 칸 변형(마스크마다 2~3장) — 곧은 길에서 같은 16px 가장자리가 되풀이되어 «애벌레 띠»로 읽혔다(아스팔트 r44).
+    const maskVariants = (g as { maskVariants?: Record<string, number[]> }).maskVariants ?? {};
     for (let y = 0; y < this.h; y++) for (let x = 0; x < this.w; x++) {
       if (!cells[this.idx(x, y)]) continue;
       const m = (conn(x, y - 1) ? N : 0) | (conn(x + 1, y) ? E : 0) | (conn(x, y + 1) ? S : 0) | (conn(x - 1, y) ? W : 0);
       if (edgesOnly && m === 15) continue;
       let t = g.variantMap[String(m)];
+      const mv = m !== 15 ? maskVariants[String(m)] : undefined;
+      if (t !== undefined && mv?.length) { const pool = [t, ...mv]; t = pool[Math.floor(hash2(x * 3 + 1, y * 5 + 2, this.seed + 11) * pool.length)]; }
       if (m === 15 && interior.length && hash2(x, y, this.seed + 7) < 0.3) t = interior[Math.floor(hash2(y, x, this.seed) * interior.length)];
       if (t !== undefined) this.setLower(x, y, t);
     }
