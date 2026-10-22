@@ -601,7 +601,7 @@ def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=N
     door_at = [d['at'] for d in doors]
     kit = _kit(recipe, plans, placed, width, height, doors, depth_ground)
     kit['shadowPx'] = int(shadow.sum())
-    return {'img': cv, 'kit': kit, 'checks': checks, 'pieces': placed, 'shadow': shadow,
+    return {'img': cv, 'kit': kit, 'checks': checks, 'pieces': placed, 'shadow': shadow, 'owner_kind': owner_kind,
             'door': door_at[0] if door_at else None, 'height': height, 'width': width,
             'masses': [{'id': p['m']['id'], 'kind': p['kind'], 'x': p['x'], 'depth': p['depth'], 'cols': p['cols'],
                         'rows': p['h'], 'top': p['top'], 'ground': p['ground'], 'roof': p['roof'],
