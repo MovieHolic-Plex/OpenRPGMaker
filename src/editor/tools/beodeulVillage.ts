@@ -71,7 +71,7 @@ interface ThemeSpec {
   label: string;
   size: [number, number];
   base: Surface; road: Surface; plaza: Surface;
-  feature: "river" | "coast" | "pond" | "bog";
+  feature: "river" | "coast" | "pond" | "bog" | "none";
   pond?: { water: Surface; ring?: Surface; ringTrees: string[] };
   houses: string[]; anchors: string[];
   plazaCenter: string[]; plazaRing: string[]; plazaLamps: string[];
@@ -108,7 +108,20 @@ export function resolveRoofPalette(theme: BeodeulVillageTheme, seed: number, roo
   if (!(BEODEUL_ROOF_PALETTES as readonly string[]).includes(roofs)) throw new ToolError(`roofs 는 ${BEODEUL_ROOF_PALETTES.join("·")} 중 하나다(받은 값: ${roofs}).`, { code: "invalid-args" });
   return roofs as BeodeulRoofPalette;
 }
+/** 강가 마을(theme river)의 물: river 강이 맵을 세로로 지나고 다리 · none 강 없는 숲 빈터·언덕 마을(물레방아·나루 없음). 생략하면 seed 로(셋에 하나꼴 none). */
+export const BEODEUL_VILLAGE_WATERS = ["river", "none"] as const;
+export function resolveVillageWater(theme: BeodeulVillageTheme, seed: number, form: BeodeulVillageForm, water?: string): "river" | "none" | null {
+  if (theme !== "river") return null;
+  if (water !== undefined && water !== "") {
+    if (!(BEODEUL_VILLAGE_WATERS as readonly string[]).includes(water)) throw new ToolError(`water 는 ${BEODEUL_VILLAGE_WATERS.join("·")} 중 하나다(받은 값: ${water}).`, { code: "invalid-args" });
+    return form === "riverbank" ? "river" : water as "river" | "none";
+  }
+  if (form === "riverbank") return "river";
+  return rng(seed * 6007 + 401)() < 0.34 ? "none" : "river";
+}
 export interface BeodeulVillageOptions {
+  /** 강가 마을의 물(river·none). 생략하면 seed 로. */
+  water?: string;
   /** 지붕 팔레트(river·coast 만). 생략하면 seed 로. */
   roofs?: string;
   /** 살림집 상한(앵커 제외) — 「집 3~5채」 작은 마을. */
@@ -209,6 +222,7 @@ export interface VillageResult {
 export function buildBeodeulVillage(draft: Project, mapId: string, theme: BeodeulVillageTheme, seed: number, formArg?: string, terrainArg?: string, forestType: BeodeulForestType = "broadleaf", options: BeodeulVillageOptions = {}): VillageResult {
   const form = resolveVillageForm(theme, seed, formArg);
   const roofs = resolveRoofPalette(theme, seed, options.roofs);
+  const water = resolveVillageWater(theme, seed, form, options.water);
   const houseLimit = options.houseLimit !== undefined && Number.isInteger(options.houseLimit) && options.houseLimit > 0 ? options.houseLimit : Infinity;
   let terrainName: ReturnType<typeof resolveVillageTerrain>;
   let terrainNote = "";
@@ -222,7 +236,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     terrainSwapped = true;
     terrainNote = `요청한 지형 ${terrainArg}(${TERRAIN_LABEL[terrainArg as keyof typeof TERRAIN_LABEL]}) 는 이 테마(${theme})에서 못 쓴다 → ${terrainName}(${TERRAIN_LABEL[terrainName]}) 으로 지었다(가능: ${allowedVillageTerrains(theme).join("·")}).`;
   }
-  const base = THEMES[theme];
+  // 강 없는 마을(water none): 강가 마을 문법에서 물만 뺀다 — 큰길이 맵을 가로지르고, 일터는 물레방아 대신 타작마당
+  const base: ThemeSpec = water === "none" ? { ...THEMES[theme], label: "숲 빈터 마을", feature: "none" } : THEMES[theme];
   // 흩어진 마을의 길은 포석이 아니라 모랫길(재료 길만 — 모래·눈·늪 표본 길은 그대로 폭 1)
   const spec0: ThemeSpec = form === "scatter" && "mat" in base.road ? { ...base, road: { mat: SAND_PATH } } : base;
   const spec: ThemeSpec = spec0.trees !== LEAF_TREES || forestType === "broadleaf" ? spec0
@@ -1285,7 +1300,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 사막 대상 마당·설원 얼음낚시·늪 고기 말림: 못 가장자리
     const pc = pondCells.length ? pondCells[Math.floor(pondCells.length / 2)]! : idx(Math.round(W * 0.8), Math.round(H * 0.3));
     const pcx = pc % W, pcy = (pc - pcx) / W;
-    workAt = { x: pcx + (pondSide === "w" ? 9 : -9), y: pcy + 2, name: theme === "desert" ? "대상 마당" : theme === "snow" ? "얼음낚시터" : "고기 말림터" };
+    workAt = { x: pcx + (pondSide === "w" ? 9 : -9), y: pcy + 2, name: theme === "desert" ? "대상 마당" : theme === "snow" ? "얼음낚시터" : spec.feature === "none" ? "타작마당" : "고기 말림터" };
     cluster(spec.work, workAt.x, workAt.y, 5, 4);
   }
   planStep("일터");
@@ -1295,7 +1310,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const retryShorter = !!palette && roofs !== "red" || houseLimit !== Infinity;
   /** 같은 자리에 들어가는 더 낮은 주색(없으면 둘째) 집 — 키 순. */
   const shorterAlternative = (k0: Kit, maxW: number, ok: (k: Kit) => boolean): Kit | null => {
-    for (const ids of [houses, accentHouses]) {
+    // 둘째(돌벽 작은 집)는 대신 들어가도 집의 40% 까지만 — 넘치면 팔레트가 둘째 색으로 뒤집힌다(청회색 마을이 돌집 마을이 됐다)
+    const accentRoom = placedHouses.filter((p) => accentHouses.includes(p.id)).length < 0.4 * (placedHouses.length + 1);
+    for (const ids of accentRoom ? [houses, accentHouses] : [houses]) {
       const alt = ids.map(K).filter((k) => k.id !== k0.id && k.w <= maxW && k.h < k0.h && k.id !== lastIds[lastIds.length - 1]).sort((a, b) => a.h - b.h || a.w - b.w);
       for (const k of alt) if (ok(k)) return k;
     }
@@ -2113,7 +2130,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       `${workAt ? `, 일터 「${workAt.name}」` : ""}, 밭 ${fields}${fenceAt.size ? `(울타리 ${fenceAt.size}칸)` : ""}, 나무 ${treeCount}, ${form === "plaza" ? "광장" : "모이는 곳"} 소품 ${plazaProps}. 문 앞 ${doorFronts.length - unreached.length}/${doorFronts.length} 도달. ` +
       "다음: check_city_form·check_reachability 로 점검하고, NPC·출입구 이벤트는 문 앞 칸(data.doors)에 얹는다.",
     data: {
-      mapId, width: W, height: H, seed, theme, form, ...(roofs ? { roofs } : {}), tilesetId: TS_ID,
+      mapId, width: W, height: H, seed, theme, form, ...(roofs ? { roofs } : {}), ...(water ? { water } : {}), tilesetId: TS_ID,
       streets: streetNames, ...(form === "plaza" ? { plaza: { x: plazaX, y: Math.round(plazaCy), rx: prx, ry: pry } } : {}),
       gathering: { why: gather.why, ...(gatherDoor ? { door: gatherDoor } : {}) }, fenceCells: fenceAt.size, ...(ferry ? { ferry } : {}),
       anchors, work: workAt, ...(coastWork.length ? { coastWork } : {}), houses: placedHouses.length, distinctHouses: distinct,

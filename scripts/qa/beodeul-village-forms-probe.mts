@@ -26,9 +26,9 @@ const base = createBlankProject() as Project; ensureBundledTilesets(base);
 const baseJson = JSON.stringify(base);
 const rows: Record<string, unknown>[] = [];
 // --cases river:street:terraces:7:88x56,coast:street:terraces:42:64x40 — 정한 판만(조수 실입력창 검수에서 짚인 판 다시 재기)
-// 6·7번째 칸(선택): roofs(red·slate·moss·log)·houseCount(3~5) — 예: river:scatter:flat:5:42x32:moss:4
-const cases = arg("cases", "").split(",").filter(Boolean).map((c) => { const [t, f, tr, sd, sz, rf, hc] = c.split(":"); return { theme: t as BeodeulVillageTheme, form: f!, terrain: tr!, seed: Number(sd), size: sz ?? "", roofs: rf || undefined, houseCount: hc ? Number(hc) : undefined }; });
-const plan: { theme: BeodeulVillageTheme; form: string; terrain: string; seed: number; size: string; roofs?: string; houseCount?: number }[] = [];
+// 6·7·8번째 칸(선택): roofs(red·slate·moss·log)·houseCount(3~5)·water(river·none) — 예: river:scatter:flat:5:42x32:moss:4:none
+const cases = arg("cases", "").split(",").filter(Boolean).map((c) => { const [t, f, tr, sd, sz, rf, hc, wa] = c.split(":"); return { theme: t as BeodeulVillageTheme, form: f!, terrain: tr!, seed: Number(sd), size: sz ?? "", roofs: rf || undefined, houseCount: hc ? Number(hc) : undefined, water: wa || undefined }; });
+const plan: { theme: BeodeulVillageTheme; form: string; terrain: string; seed: number; size: string; roofs?: string; houseCount?: number; water?: string }[] = [];
 if (cases.length) plan.push(...cases);
 else for (const theme of themes) for (const form of allowedVillageForms(theme)) {
   if (forms.length && !forms.includes(form)) continue;
@@ -37,8 +37,8 @@ else for (const theme of themes) for (const form of allowedVillageForms(theme)) 
     plan.push({ theme, form, terrain, seed, size });
   }
 }
-for (const { theme, form, terrain, seed, size, roofs, houseCount } of plan) {
-  const extra = { ...(roofs ? { roofs } : {}), ...(houseCount ? { houseCount } : {}) };
+for (const { theme, form, terrain, seed, size, roofs, houseCount, water } of plan) {
+  const extra = { ...(roofs ? { roofs } : {}), ...(houseCount ? { houseCount } : {}), ...(water ? { water } : {}) };
   const [sw, sh] = size ? size.split("x").map(Number) : [];
   {
     const ctx = { project: JSON.parse(baseJson) as Project };
@@ -51,7 +51,7 @@ for (const { theme, form, terrain, seed, size, roofs, houseCount } of plan) {
       const m0 = ctx.project.maps[id]; if (m0) { m0.structurePlacements = []; console.log("rebuild: old relief", !!m0.relief); }
     }
     const r = runTool(ctx, "author_beodeul_town", rebuild ? { theme, form, terrain, seed, mapId: id } as never : { theme, form, terrain, seed, id, ...extra, ...(sw ? { width: sw, height: sh } : {}) } as never);
-    const name = `${theme}-${form}-${terrain}-${seed}${size ? `-${size}` : ""}${roofs ? `-${roofs}` : ""}${houseCount ? `-h${houseCount}` : ""}${rebuild ? "-rebuild" : ""}`;
+    const name = `${theme}-${form}-${terrain}-${seed}${size ? `-${size}` : ""}${roofs ? `-${roofs}` : ""}${houseCount ? `-h${houseCount}` : ""}${water ? `-${water}` : ""}${rebuild ? "-rebuild" : ""}`;
     if (!r.ok) { rows.push({ name, ok: false, summary: r.summary }); console.log(name, "FAIL", r.summary); continue; }
     const d = r.data as any; const map = ctx.project.maps[d.mapId]!;
     fs.writeFileSync(`${OUT}/${name}.png`, renderMapPng(ctx.project, map).png);
