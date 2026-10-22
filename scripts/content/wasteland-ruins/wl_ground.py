@@ -306,7 +306,7 @@ def soft_stain(c, ox, oy, cx, cy, rx, ry, seed):
             if d < 1.0 and r > d * 0.9 + 0.15: c.P(ox + x, oy + y, TAR_LO)
 
 
-def crumble(c, m, ox, oy, dep, seed, chunk_cols, lip, chunks=0, face=None):
+def crumble(c, m, ox, oy, dep, seed, chunk_cols, lip, chunks=0, face=None, bites=2, deep=2, lip_all=False, lip_cont=False, jagf=jag, spread=False, wmin=3, wspan=3, gap=1, dmin=1, lip_run=1):
     """이웃 없는 쪽: 가장자리를 따라 2~4화소 크기의 물어뜯긴 자리(변마다 2~3개, 크기·깊이·간격이 제각각)가 몸을 파고들어 흙이 드러난다.
     외톨이 화소는 지운다(흙 속 떠 있는 몸 화소·몸 속 낱 흙 화소). 깨진 자리 아래(남쪽 앞)만 1화소 어두운 턱 — 군데군데 끊겨 이어진 선이 아니다.
     chunks>0 이면 흙 쪽에 떨어진 조각(3×2, 몸에서 한 칸 이상 떨어짐). 반환: 흙 판정 함수."""
@@ -315,20 +315,26 @@ def crumble(c, m, ox, oy, dep, seed, chunk_cols, lip, chunks=0, face=None):
     for side, bit in ((0, N), (1, E), (2, Sb), (3, W)):
         if m & bit: continue
         pos = 2 + h2(seed, side, 945) % 5
-        for j in range(2):
+        nb = bites
+        if spread == 'wide': nb = 1 + (h2(seed, side, 944) % 3 == 0)                # 넓은 덩이 1개(가끔 2개) — 사이는 얕고 넓은 판 끝
+        for j in range(nb):
+            if spread == 'wide': pos = (2 + h2(seed, side * 3 + j, 946) % 6) if nb == 1 else ((1, 8)[j] + h2(seed, side * 3 + j, 946) % 2)
+            elif spread and bites == 1: pos = (2 if side in (0, 3) else 9) + h2(seed, side, 946) % 3          # 덩이 하나: 북·서는 앞쪽, 남·동은 뒤쪽 — 마주 보는 변과 겹치지 않게
+            elif spread: pos = ((1, 6, 10) if bites == 3 else ((2, 8) if side in (0, 3) else (4, 10)))[j % 3] + h2(seed, side * 3 + j, 946) % 3 - (1 if j == 0 and h2(seed, side, 948) % 2 else 0)     # 변을 나눠 하나씩 — 마주 보는 변(북↔남, 서↔동)은 자리를 엇갈려 띠가 구슬처럼 잘록해지지 않게
             if pos > 12: break
-            w = 3 + h2(j, side, 947 + seed) % 3; dd = 1 + h2(j, side, 949 + seed) % 2      # 둥근 물어뜯긴 자리(폭 3~5, 깊이 1~2 더)
+            w = (wmin + h2(j, side, 947 + seed) % wspan) if nb == 1 or spread != 'wide' else min(wmin, 6); dd = dmin + h2(j, side, 949 + seed) % deep      # 둥근 물어뜯긴 자리(기본 폭 3~5, 깊이 1~2 더)
             for t in range(w):
                 i = pos + t
                 if i > 14: continue
-                prof = int(round(dd * math.sin(math.pi * (t + 0.5) / w) + (h2(i, side, 955 + seed) % 3 - 1) * 0.4))
+                sn = math.sin(math.pi * (t + 0.5) / w); sn = sn ** 0.5 if spread else sn          # spread: 바닥이 둥근(납작한 U) 덩이
+                prof = int(round(dd * sn + (0 if spread == 'wide' else (h2(i, side, 955 + seed) % 3 - 1) * 0.4)))
                 for u in range(max(0, prof)):
-                    base = jag(i, side, m) + u
+                    base = jagf(i, side, m) + u
                     x, y = {0: (i, base), 2: (i, 15 - base), 3: (base, i), 1: (15 - base, i)}[side]
                     if 0 <= x < 16 and 0 <= y < 16:
                         S[y][x] = True
                         if side == 2: bit_s.add((x, y))       # 남쪽 변의 물어뜯긴 자리 — 그 위 몸 화소가 깨진 앞면(턱)
-            pos += w + 3 + h2(j, side, 951 + seed) % 5
+            pos += w + (3 + h2(j, side, 951 + seed) % 5 if bites <= 2 else 1 + h2(j, side, 951 + seed) % 3)
     for _ in range(2):                                    # 외톨이 정리
         for y in range(16):
             for x in range(16):
@@ -339,11 +345,25 @@ def crumble(c, m, ox, oy, dep, seed, chunk_cols, lip, chunks=0, face=None):
     for y in range(16):
         for x in range(16):
             if soil(x, y): c.P(ox + x, oy + y, dirt_col(dirt_base(x, y)))
+    LP = {(x, y) for y in range(16) for x in range(16)
+          if not soil(x, y) and soil(x, y + 1) and (((x, y + 1) in bit_s and h2(x, y, seed + 5) % 3) or (lip_all and h2(x, y, seed + 5) % 5) or lip_cont)}
+    if lip_run > 1:                                       # 턱은 lip_run 화소 이상 이어진 토막만(대각 계단 이음 포함) — 낱점 턱이 점선으로 보이지 않게
+        keep = set(); seen = set()
+        for p0 in sorted(LP):
+            if p0 in seen: continue
+            comp, todo = [], [p0]
+            while todo:
+                q = todo.pop()
+                if q in seen or q not in LP: continue
+                seen.add(q); comp.append(q)
+                todo += [(q[0] + dx, q[1] + dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1)]
+            if len(comp) >= lip_run: keep |= set(comp)
+        LP = keep
     for y in range(16):                                   # 깨진 자리 밑 1화소 턱: 남쪽으로 물어뜯긴 자리(bite) 바로 위에만, 1~3화소 토막(끊김 있음) + 판 두께 앞면(선택)
         for x in range(16):
-            if not soil(x, y) and soil(x, y + 1) and (x, y + 1) in bit_s and h2(x, y, seed + 5) % 3:
+            if (x, y) in LP:
                 c.P(ox + x, oy + y, lip)
-                if face is not None and y > 0 and not soil(x, y - 1) and h2(x, y, seed + 6) % 3: c.P(ox + x, oy + y - 1, face)
+                if face is not None and y > 0 and not soil(x, y - 1) and (lip_cont or h2(x, y, seed + 6) % 3): c.P(ox + x, oy + y - 1, face)
     for y in range(1, 16):                                # 턱 아래 흙 그늘(군데군데)
         for x in range(16):
             if soil(x, y) and not soil(x, y - 1) and h2(x, y, seed + 7) % 3 == 0: c.P(ox + x, oy + y, K('dirt', 2))
@@ -352,7 +372,7 @@ def crumble(c, m, ox, oy, dep, seed, chunk_cols, lip, chunks=0, face=None):
         if placed >= chunks: break
         x = h2(k, seed, 951) % 13; y = h2(k, seed, 953) % 14
         cells = [(x + dx, y + dy) for dx in range(3) for dy in range(2)]
-        ring = [(px + dx, py + dy) for px in range(x - 1, x + 4) for py in range(y - 1, y + 3) for dx, dy in ((0, 0),)]
+        ring = [(px, py) for px in range(x - gap, x + 3 + gap) for py in range(y - gap, y + 2 + gap)]
         if all(soil(px, py) or not (0 <= px < 16 and 0 <= py < 16) for px, py in ring) and all(0 <= px < 16 and 0 <= py < 16 for px, py in cells):
             for (px, py) in cells: c.P(ox + px, oy + py, chunk_cols[0] if py == y else chunk_cols[1])
             for px in range(x, x + 3):
@@ -710,18 +730,54 @@ def _slab_body():
     return B
 
 
-def at_slab_edge(c, m, ox, oy):
-    """판 영역 가장자리 칸: 몸은 slab-a 이음 판의 한 칸(마스크마다 다른 자리)을 그대로 — 안쪽 slab-a/b/c 판과 같은 값·결.
-    이웃 없는 쪽은 아스팔트와 같은 방식으로 2~4화소 덩이째 깨져 흙이 드러나고, 깨진 자리 아래만 1화소 어두운 턱(판 두께), 흙엔 떨어진 콘크리트 조각."""
+_SA = []
+
+
+def _slab_calm():
+    """slab-a 몸(이음·금·구멍 지운 판 _slab_body)에서 고른 칸 창 후보: 평균 색(R·G·B 따로)이 안쪽 판 평균에 가깝고 얼룩 변화가 작은 16×16 창 —
+    둘레가 더 밝거나 더 누렇게 띠지지 않고, 같은 마스크 칸이 줄지어 반복돼도 눈에 띄는 무늬(금·이음 토막)가 없어 16화소 박자가 안 보이게."""
+    if _SA: return _SA[0]
+    import numpy as np
     B = _slab_body()
-    offx, offy = h2(m, 1, 971) % SP, h2(m, 2, 971) % SP          # slab-a 몸(이음·구멍을 지운 판) 한 칸 — 안쪽 판과 같은 값·결
+    arr = np.array([[[(B[x][y] >> 16) & 255, (B[x][y] >> 8) & 255, B[x][y] & 255] for x in range(SP)] for y in range(SP)], float)
+    A = render(PIECES['slab-a'])[..., :3].astype(float)
+    target = A.reshape(-1, 3).mean(0)
+    ext = np.concatenate([np.concatenate([arr, arr], 1)] * 2, 0)
+    cand = []
+    for oy in range(0, SP, 2):
+        for ox in range(0, SP, 2):
+            w = ext[oy:oy + 16, ox:ox + 16].reshape(-1, 3)
+            cand.append((float(np.abs(w.mean(0) - target).sum()), float(w.std(0).mean()), ox, oy))
+    near = sorted(cand)[:len(cand) // 5]
+    near.sort(key=lambda t: t[1])
+    ok = [(ox, oy) for (_, _, ox, oy) in near[:max(8, len(near) // 2)]]
+    _SA.append(ok)
+    return ok
+
+
+def at_slab_edge(c, m, ox, oy):
+    """판 영역 가장자리 칸 = 둘레 경계석 줄: 몸은 slab-a 몸결(이음·금 없는 고른 창, 밝기·얼룩 slab-a 가운데) — 금·이음 토막을 칸마다 찍지 않아 줄지어도 박자가 안 보인다.
+    한 변만 트인 곧은 둘레 칸은 맞은편(안쪽 판과 맞닿는) 경계에 slab-a 와 같은 이음(conc 1, 위·왼 그늘 conc 3, 아래·오른 빛 conc 7)을 둘러
+    안쪽 판 이음이 T 자로 와 닿는다(모서리·띠 칸엔 이음 없음 — 칸 격자가 안 보이게). 이웃 없는 쪽은 아스팔트와 같은 방식으로 2~4화소 덩이째 깨져(변마다 둥근 물어뜯긴 자리 3개) 흙이 드러나고,
+    깨진 자리 아래엔 끊긴 1화소 어두운 턱(판 두께), 흙엔 떨어진 콘크리트 조각."""
+    B = _slab_body(); ok = _slab_calm()
+    offx, offy = ok[h2(m, 1, 971) % len(ok)]
     for y in range(16):
         for x in range(16):
             c.P(ox + x, oy + y, B[(x + offx) % SP][(y + offy) % SP])
-    if m not in (0, 15) and h2(m, 3, 973) % 2:                 # 몇 칸엔 판을 가로지르는 가는 금(conc 3)
-        for (x, y) in wander(m + 80, 1 + m % 5, 4 + m % 7, 4, 1, 0):
-            if 0 <= x < 16 and 0 <= y < 16: c.P(ox + x, oy + y, K('conc', 3))
-    crumble(c, m, ox, oy, soil_depth(m), 60 + m, (K('conc', 5), K('conc', 3)), K('conc', 1), chunks=h2(m, 4, 975) % 2, face=K('conc', 3))
+    n_, e_, s_, w_ = bool(m & N), bool(m & E), bool(m & Sb), bool(m & W)
+    seam = set()
+    if m in (7, 11, 13, 14):                                       # 한 변만 트인 곧은 둘레 칸: 맞은편(안쪽 판과 맞닿는) 경계에만 이음 — 모서리·띠 칸은 이음 없음(격자가 안 보이게)
+        if not n_: seam = {(x, 15) for x in range(16)}
+        elif not s_: seam = {(x, 0) for x in range(16)}
+        elif not w_: seam = {(15, y) for y in range(16)}
+        else: seam = {(0, y) for y in range(16)}
+    for (x, y) in seam: c.P(ox + x, oy + y, K('conc', 1))
+    for (x, y) in seam:
+        for (dx, dy, t) in ((1, 0, 7), (0, 1, 7), (-1, 0, 3), (0, -1, 3)):
+            px, py = x + dx, y + dy
+            if 0 <= px < 16 and 0 <= py < 16 and (px, py) not in seam: c.P(ox + px, oy + py, K('conc', t))
+    crumble(c, m, ox, oy, soil_depth(m), 60 + m, (K('conc', 5), K('conc', 3)), K('conc', 1), chunks=h2(m, 4, 975) % 2, face=K('conc', 3), bites=3, deep=3, lip_all=True)
 
 
 piece('slab-edge', '깨진 콘크리트 판 가장자리 (오토타일)', 4, 4, TERRAIN,
@@ -730,6 +786,101 @@ piece('slab-edge', '깨진 콘크리트 판 가장자리 (오토타일)', 4, 4, 
       desc='깨진 콘크리트 판 영역의 가장자리 오토타일(4방향, N1 E2 S4 W8, 칸 (m%4, m//4)). 몸은 slab-a 와 같은 값·결이고, 이웃 없는 쪽은 2~4화소 덩이째 깨져 흙으로 끝난다(깨진 자리 아래만 1화소 턱). 꽉 찬 칸(마스크 15)은 slab-a/b/c 이음 판을 (x mod 8, y mod 8) 자리로 깐다.',
       sample=auto_sample('slab-edge', inner=False, field='slab-a'))(autosheet(at_slab_edge))
 AUTO['slab-edge'] = dict(name='깨진 콘크리트 판 가장자리', kind=TERRAIN)
+
+
+# ------------------------------------------------------------------ 콘크리트 판 깨진 가장자리 덧그림(위층 오토타일) — slab-a/b/c 판을 판 영역 전체에 깔고 그 위 가장자리 칸에만 얹는다
+def jag_slab(i, side, m):
+    """판 깨진 가장자리 기본 깊이 1..3(주기 5 잡음, 마스크·변·변형마다 다름 — m 에 변형 번호가 섞여 들어온다). 끝 0·15 는 2 고정(이웃 칸과 잇는다)."""
+    if i <= 0 or i >= 15: return 2
+    v = vnoise(i + m * 7 + side * 13, side * 5 + m, 131 + side, 8, 64)
+    return 1 + int(v * 2.99)
+
+
+def at_slab_break(c, m, ox, oy, var=0):
+    """투명 덧그림 칸(마스크 m, 변형 var 0·1 — 같은 마스크가 줄지어도 깨진 모양이 16화소마다 되풀이되지 않게 두 벌):
+    판 몸은 그리지 않는다(밑의 slab-a/b/c 가 그대로 보여 이음·금·얼룩이 깨진 끝까지 이어진다).
+    이웃 없는 쪽 윤곽은 조절점(3~6화소 간격, 얕은 1~2 · 깊은 4~6 번갈아, 자리는 변·마스크·변형마다 다름)을 코사인으로 이은 둥근 굴곡 — 톱니·곧은 칸 변이 없다.
+    마주 보는 두 변이 다 트인 띠 칸은 덩이를 얕게(변마다 3 이하, 마주 보는 변과 엇갈림) — 가운데 판이 10화소 이상 남는다. 외딴 칸(0)은 네 변이 고르지 않게.
+    남쪽으로 깨진 자리 위엔 3화소 이상 이어진 1화소 어두운 턱(판 두께, conc 1)과 그 위 앞면(conc 3), 북쪽 깨진 판 끝은 군데군데 빛(conc 6),
+    흙 쪽엔 가끔 떨어진 콘크리트 조각. 마스크 15(안쪽)는 덧그림 없음 자리 — 칸이 비지 않게 가는 금 한 줄만."""
+    if m == 15:
+        for (x, y) in wander(97 + var * 5, 3 + var * 2, 9 - var * 4, 4, 1, 0):
+            if 0 <= x < 16 and 0 <= y < 16 and h2(x, y, 977 + var) % 4: c.P(ox + x, oy + y, K('conc', 2))
+        return
+    strip = m != 0 and ((not m & N and not m & Sb) or (not m & E and not m & W))
+    sd = 60 + m + 131 * var
+    prof = {}
+    for side, bit in ((0, N), (1, E), (2, Sb), (3, W)):
+        if m & bit: continue
+        # 윤곽 = 조절점(3~6화소 간격) 사이를 코사인으로 이은 둥근 굴곡 — 얕은 자리(1~2)와 깊은 자리(4~6, 띠 칸은 3~4)가 번갈아, 끝 0·15 는 2(이웃 칸과 잇는다)
+        ew = side in (1, 3)                                       # 동·서 변: 바깥 2화소는 늘 흙(판 끝 이음이 세로 줄로 남지 않게), 깊은 자리 5~7
+        hi = (3, 4) if m == 0 else (3, 5) if strip else ((5, 7) if ew else (4, 6))
+        lo = 1 if m == 0 else 2                                  # 얕은 자리도 2 — 판 끝 바깥 2화소는 늘 흙(북·남 변도 곧은 칸 변이 안 남게)
+        pts = [(0, 3)]; i = 0; k = 0; deep = h2(sd, side, 1201) % 2 == 0      # 끝 0·15 = 가운데 깊이 3(이웃 칸과 같은 깊이로 이어져 칸 이음에 불룩한 마디가 없다)
+        while True:
+            i += (3 if var == 0 else 4) + h2(k, side, sd + 1203) % 3            # 변형마다 굴곡 간격이 다르다(긴 변에서 박자가 안 맞게)
+            if i >= 13: break
+            lo_v = lo + h2(k, side, sd + 1205) % 2
+            hi_v = hi[0] + h2(k, side, sd + 1207) % (hi[1] - hi[0] + 1)
+            pts.append((i, hi_v if deep else lo_v)); deep = not deep; k += 1
+        pts.append((15, 3))
+        d = []
+        for x in range(16):
+            for (x0, v0), (x1, v1) in zip(pts, pts[1:]):
+                if x0 <= x <= x1:
+                    t = (x - x0) / max(1, x1 - x0); d.append(v0 + (v1 - v0) * (1 - math.cos(math.pi * t)) / 2); break
+        prof[side] = d
+    tip = {1: 2, 2: 3, 4: 0, 8: 1}.get(m)                         # 끝 칸(이웃 하나): 이웃 맞은편 변은 둥근 끝(가운데 얕고 양 모서리 깊게) — 갈라진 꼬리 모양이 되지 않게
+    if tip is not None:
+        nc = 4 + h2(m, var, sd + 1211) % 6                          # 둥근 끝에도 한 군데 3화소 넘게 파인 자리
+        prof[tip] = [1.5 + 4.5 * ((i - 7.5) / 7.5) ** 2 + (h2(i // 3, tip, sd + 1209) % 2) * 0.6 + (2.2 * math.cos(math.pi * (i - nc - 1) / 4) if abs(i - nc - 1) < 2 else 0) for i in range(16)]
+    if strip:                                                    # 띠 칸: 마주 보는 변은 엇갈린 굴곡(한쪽이 깊으면 다른 쪽은 얕게) — 합쳐 6 이하, 판이 10화소 이상 남는다
+        for (a_, b_) in ((0, 2), (3, 1)):
+            if a_ in prof and b_ in prof:
+                tot = 7.0                                          # 두 변은 따로 굽이친다(폭이 달라진다) — 합이 7 을 넘는 자리만 뒤 변을 줄여 판이 9화소 이상 남는다
+                prof[b_] = [3.0 if i in (0, 15) else max(1.0, min(prof[b_][i], tot - prof[a_][i])) for i in range(16)]
+    jf = lambda i, side, mm: int(round(prof[side][i])) if side in prof else 2
+    soil = crumble(c, m, ox, oy, soil_depth(m, jf), sd, (K('conc', 6), K('conc', 3)), K('conc', 1), chunks=1 if h2(m, 4 + var, 975) % 3 == 0 else 0,
+                   face=K('conc', 3), lip_cont=True, jagf=jf, gap=2, lip_run=3, bites=0)
+    for y in range(1, 16):                                       # 흙이 위(북)에 있는 판 끝: 깨진 윗모서리가 빛을 받는다(군데군데)
+        for x in range(16):
+            if not soil(x, y) and soil(x, y - 1) and h2(x, y, 979 + sd) % 3 and not c.has(ox + x, oy + y): c.P(ox + x, oy + y, K('conc', 6))
+    for y in range(16):                                          # 옆(동·서)으로 깨진 판 끝: 1화소 그늘(오른쪽 깨짐) · 빛(왼쪽 깨짐) — 군데군데
+        for x in range(16):
+            if soil(x, y) or c.has(ox + x, oy + y): continue
+            if soil(x + 1, y) and h2(x, y, 981 + sd) % 4 == 0: c.P(ox + x, oy + y, K('conc', 3))
+            elif soil(x - 1, y) and h2(x, y, 983 + sd) % 3: c.P(ox + x, oy + y, K('conc', 6))
+
+
+def break_sample(pid, field='slab-a', fper=8):
+    """덧그림 오토타일 표본(실제 쓰임 그대로): 판 자리(#)엔 아래층 slab-a 이음 판을 (x mod 8, y mod 8) 자리로, 그 밖은 흙.
+    위층 덧그림은 꽉 찬 칸(15)이 아닌 가장자리 칸에만 얹는다(불투명 화소만 덮는다)."""
+    def f(_=0):
+        lay = AUTO_SAMPLE_LAYOUT; H, Wd = len(lay), len(lay[0])
+        a = np.zeros((H * 16, Wd * 16, 4), np.uint8)
+        ms = auto_masks(lay)
+        da_full = render(PIECES['dirt-b']); fa = render(PIECES[field]); ov = render(PIECES[pid])
+        for y in range(H):
+            for x in range(Wd):
+                blk = a[y * 16:(y + 1) * 16, x * 16:(x + 1) * 16]
+                if (x, y) in ms:
+                    fx, fy = x % fper, y % fper
+                    blk[:] = fa[fy * 16:(fy + 1) * 16, fx * 16:(fx + 1) * 16]
+                    m = ms[(x, y)]
+                    if m != 15:
+                        vy = 4 * (hsh(x, y, 13) % 2) if ov.shape[0] > 64 else 0          # 변형 두 벌을 칸 자리 해시로 섞는다(실제 깔기와 같게)
+                        o = ov[(vy + m // 4) * 16:(vy + m // 4 + 1) * 16, (m % 4) * 16:(m % 4 + 1) * 16]; op = o[..., 3] == 255; blk[op] = o[op]
+                else: blk[:] = da_full[(y % 4) * 16:(y % 4 + 1) * 16, (x % 4) * 16:(x % 4 + 1) * 16]
+        return a
+    return f
+
+
+piece('slab-break', '콘크리트 판 깨진 가장자리 덧그림 (오토타일)', 4, 8, FLAT,
+      en='transparent overlay autotile for the edges of a cracked concrete slab pavement on dirt: only the broken edge is drawn — rounded dirt bites eaten into the concrete from the open sides, a dark 1px broken lip under south breaks, lit broken rims, and loose concrete chunks lying on the dirt; the slab field underneath shows through so its seams and cracks run right up to the break',
+      group='ground', tags=['콘크리트', '광장', '오토타일', '덧그림'],
+      desc='깨진 콘크리트 판 가장자리 덧그림(위층·투명, 4방향 N1 E2 S4 W8, 칸 (m%4, m//4) = 변형 1, 칸 (m%4, 4 + m//4) = 같은 마스크의 변형 2 — 칸 자리 해시로 둘을 섞어 깨진 모양이 16화소마다 되풀이되지 않게). 판 영역 전체에 slab-a/b/c 를 아래층으로 깔고, 가장자리 칸(마스크 15 가 아닌 칸)의 위층에만 이 칸을 얹는다. 이웃 없는 쪽이 둥근 덩이째 깨져 흙이 드러나고 남쪽 깨진 자리엔 어두운 턱, 흙엔 떨어진 조각. 마스크 15 칸은 가는 금 하나뿐(안쪽엔 덧그림을 두지 않는다).',
+      sample=break_sample('slab-break'))(autosheet(at_slab_break, lambda c, v, ox, oy: at_slab_break(c, v, ox, oy, var=1), 16))
+AUTO['slab-break'] = dict(name='콘크리트 판 깨진 가장자리 덧그림', kind=FLAT)
 
 
 # ------------------------------------------------------------------ 투명 덧그림(flat)

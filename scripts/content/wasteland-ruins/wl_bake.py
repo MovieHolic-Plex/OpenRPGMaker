@@ -31,7 +31,7 @@ P = dict(png=os.path.join(ROOT, 'public/assets/wasteland-ruins/wasteland-ruins-c
 GROUP_KO = dict(ground='바닥', ruins='폐허', shacks='판잣집', defense='방어·울타리', props='기물')
 FLOOR_GROUP_IDS = {'dirt-a', 'dirt-b', 'dirt-c', 'dirt-d', 'slab-a', 'slab-b', 'slab-c', 'rubble-a', 'rubble-b', 'rubble-c',
                    'weeds-a', 'weeds-b', 'weeds-c', 'puddle', 'fence-h', 'fence-v'}
-BUILDING_IDS = {'husk-a', 'husk-b', 'husk-tall', 'shack-a', 'shack-b', 'lean-to'}
+BUILDING_IDS = {'husk-a', 'husk-b', 'husk-tall', 'shack-a', 'shack-b', 'lean-to', 'shack-c', 'container-home', 'tent-tarp'}
 ANIM_FPS = 6
 
 
@@ -56,7 +56,7 @@ def cell_pcs(p, a):
     return out
 
 
-SKIP = {'dirt-a', 'asphalt-b', 'asphalt-c', 'track'}          # 키트에서 뺀 조각(감독 결정) — 표본 바탕으로만 남고 굽지 않는다(번호도 새로 잡지 않는다)
+SKIP = {'dirt-a', 'asphalt-b', 'asphalt-c', 'track', 'slab-edge', 'slab-break'}          # 키트에서 뺀 조각(감독 결정) — 표본 바탕으로만 남고 굽지 않는다(번호도 새로 잡지 않는다)
 
 
 def adopt(dev):
@@ -86,7 +86,7 @@ def bake(dry=False, dev=False):
         auto = p['id'] in G.AUTO
         for (x, y), pc in sorted(pcs.items(), key=lambda kv: (kv[0][1], kv[0][0])):
             crop = BL.norm(im.crop((x * 16, y * 16, x * 16 + 16, y * 16 + 16)))
-            where = (f" (이웃 {y * 4 + x})" if y < 4 else f" (속 변형 {(y - 4) * 4 + x + 1})") if auto else (f" ({x + 1},{y + 1})" if p['w'] * p['h'] > 1 else '')
+            where = (f" (이웃 {y * 4 + x})" if y < 4 else (f" (이웃 {(y - 4) * 4 + x} · 변형 2)" if p['id'] == 'slab-break' else f" (속 변형 {(y - 4) * 4 + x + 1})")) if auto else (f" ({x + 1},{y + 1})" if p['w'] * p['h'] > 1 else '')
             tags = ['황무지', '폐허', GROUP_KO[p['group']]] + p['tags']
             meta = dict(label=f"{p['name']}{where}"[:80], desc=f"{p['desc'] or p['name']} — {BL.PCNOTE[pc]}.", role=role_of(p), tags=tags,
                         rep='auto' if auto else ('repeat' if p['kind'] in ('terrain', 'flat') else 'fixed'))
@@ -129,7 +129,7 @@ def bake(dry=False, dev=False):
         ac = piece_cells.get(aid)
         if not ac or not all((m % 4, m // 4) in ac for m in range(16)): continue
         vm = {str(m): ac[(m % 4, m // 4)][0] for m in range(16)}
-        var = [ac[(x, y)][0] for y in range(4, 8) for x in range(4) if (x, y) in ac]          # 5번째 줄부터 = 꽉 찬 칸 속 변형
+        var = [] if aid == 'slab-break' else [ac[(x, y)][0] for y in range(4, 8) for x in range(4) if (x, y) in ac]          # 5번째 줄부터 = 꽉 찬 칸 속 변형(slab-break 는 5~8번째 줄 = 같은 마스크의 변형 2)
         mem = sorted(set(vm.values()) | set(var))
         g = dict(id='wl-' + aid, name=ad['name'], neighborhood=4, memberTileIds=mem, connectTileIds=mem, variantMap=vm, edgeConnects=True)
         if var: g['interiorVariants'] = [var]
@@ -140,8 +140,8 @@ def bake(dry=False, dev=False):
     for p in adopted:
         cells = piece_cells[p['id']]; tids = sorted({t for t, _ in cells.values()} | {t for (pid, _, _), ids in frames_of.items() if pid == p['id'] for t in ids})
         if p['id'] in G.AUTO:
-            groups['auto:' + p['id']] = dict(id='wl:auto:' + p['id'], name=p['name'], role='terrain', defaultLayer='lower', tileIds=set(tids),
-                                             description=f"{p['name']}. {p['desc']}", placementRules='오토타일 — 붓·fill_region 이 이웃에 맞는 칸을 고른다. ' + {'asphalt': '도로는 2칸 폭 이상을 권한다.', 'slab-edge': '판 영역 테두리에 깔고, 꽉 찬 안쪽은 slab-a/b/c 이음 판을 (x mod 8, y mod 8) 자리로 깐다.'}.get(p['id'], '판잣집 사이 1칸 폭 발길로 깐다.'))
+            groups['auto:' + p['id']] = dict(id='wl:auto:' + p['id'], name=p['name'], role='terrain', defaultLayer='upper' if p['kind'] == 'flat' else 'lower', tileIds=set(tids),
+                                             description=f"{p['name']}. {p['desc']}", placementRules='오토타일 — 붓·fill_region 이 이웃에 맞는 칸을 고른다. ' + {'asphalt': '도로는 2칸 폭 이상을 권한다.', 'slab-edge': '판 영역 테두리에 깔고, 꽉 찬 안쪽은 slab-a/b/c 이음 판을 (x mod 8, y mod 8) 자리로 깐다.', 'slab-break': '위층 투명 덧그림. 판 영역 전체(가장자리 포함)에 slab-a/b/c 를 아래층으로 깔고, 가장자리 칸(마스크 15 가 아닌 칸)의 위층에만 마스크(N1 E2 S4 W8)에 맞는 칸을 얹는다 — 시트 칸 (m%4, m//4) 또는 같은 마스크 변형 2 칸 (m%4, 4+m//4)(라벨 「변형 2」)을 칸 자리 해시로 섞는다. 안쪽(15)엔 얹지 않는다.'}.get(p['id'], '판잣집 사이 1칸 폭 발길로 깐다.'))
         elif p['id'] in FLOOR_GROUP_IDS or p['kind'] == 'terrain':
             groups['floor:' + p['id']] = dict(id='wl:floor:' + p['id'], name=p['name'], role=role_of(p) if p['kind'] in ('terrain', 'flat') else 'wall',
                                               defaultLayer='lower' if p['kind'] == 'terrain' else 'upper', tileIds=set(tids), description=f"{p['name']}. {p['desc']}",

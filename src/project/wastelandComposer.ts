@@ -267,7 +267,8 @@ function fillSlab(b: Board, x0: number, y0: number, w: number, h: number): void 
   for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) {
     if (!b.inb(x, y)) continue;
     const edge = (x === x0 || x === x0 + w - 1 ? 1 : 0) + (y === y0 || y === y0 + h - 1 ? 1 : 0);
-    if (!edged && edge && w > 2 && h > 2 && hash2(x, y, b.seed + 57) < (edge === 2 ? 0.7 : 0.3)) continue;
+    // 깨짐 덧칠이 없으면 귀퉁이 칸만 떼어 둥글린다(변 칸 이 빠짐은 r3 에서 계단·외딴 구멍으로 읽혔다).
+    if (!edged && edge === 2 && w > 2 && h > 2 && hash2(x, y, b.seed + 57) < 0.7) continue;
     b.setLower(x, y, b.field(SLAB, x, y, [6, 2, 2]));
     b.slab[b.idx(x, y)] = true;
   }
