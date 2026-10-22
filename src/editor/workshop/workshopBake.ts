@@ -27,8 +27,22 @@ function reviewOf(options: { readonly autoPicked?: boolean; readonly gate?: Gate
   const at = new Date().toISOString();
   const pick = options.autoPicked ? undefined : { by: "human" as const, at };
   const gate = options.gate;
-  const vqa = gate && gate.kind ? { verdict: gate.state === "refer" ? "none" as const : gate.state, judge: `workshop-object-gate-advice/${gate.kind}`, calibrated: false, at } : undefined;
+  // 영수증 판(「한 번에 만들기」 알아서 고르기): 영수증 자체는 spec.gate 에 적고(gateOf), 여기에는 REFER 를 정한 적대 검사만 남긴다.
+  const receipt = gate?.receipt;
+  const vqa = receipt
+    ? receipt.refer ? { verdict: receipt.refer.verdict, judge: `object-gate-refer-check/${receipt.refer.judge}`, calibrated: false, at } : undefined
+    : gate && gate.kind ? { verdict: gate.state === "refer" ? "none" as const : gate.state, judge: `workshop-object-gate-advice/${gate.kind}`, calibrated: false, at } : undefined;
   return pick || vqa ? { ...(pick ? { pick } : {}), ...(vqa ? { vqa } : {}) } : undefined;
+}
+
+/**
+ * 설명서 gate: 관문 영수증 요약(호스트 판정기가 낸 것 — 화소 해시·프로필). 프로필이 보정되지 않았으므로 번들·공용·스토어 출구는 이것을 통과로 치지 않는다
+ * (그 출구는 영수증 원본·보정 프로필로 다시 본다). 영수증이 없으면(사람이 고른 판 등) 적지 않는다.
+ */
+function gateOf(gate: GateAdvice | null | undefined): ObjectSpecV1["gate"] | undefined {
+  const receipt = gate?.receipt;
+  if (!gate || !receipt) return undefined;
+  return { kind: gate.kind as NonNullable<ObjectSpecV1["gate"]>["kind"], verdict: receipt.verdict, pixelSha256: receipt.pixelSha256, profileHash: receipt.profileHash, decidedAt: new Date().toISOString() };
 }
 
 /** 구워 넣을 칩셋: 맵 기물은 정의할 때 적은 칩셋, 실내 기물은 손 도트 실내. */
@@ -93,10 +107,11 @@ export function bakeWorkshopPick(item: WorkshopItem, grid: Grid, palette: Palett
         gridHash: workshopGridHash(grid),
         asset: { id: workshopAssetId(dataUrl), dataUrl, width: sheet.width, height: sheet.height },
         cells,
-        // 설명서(ObjectSpec): 공방 판에서 사람이 고른 후보다. 3/4 영수증은 아직 공방 굽기에 배선되지 않았다(object-gate 문서).
+        // 설명서(ObjectSpec): 공방 판에서 고른 후보다. 「한 번에 만들기」 알아서 고르기는 3/4 관문 영수증(호스트 판정기)이 통과한 것만 여기 온다.
         provenance: { aiGenerated: true, tool: `oprn-workshop/${item.tilesetId ? "map-objects" : "interior-props"}${options.autoPicked ? "/auto-pick" : ""}` },
         // 3/4 관문 조언(1표, 미보정)은 review.vqa 에 calibrated:false 로만 남긴다 — 출구 효력 없음(관문 영수증이 아니다).
         ...(reviewOf(options) ? { review: reviewOf(options) } : {}),
+        ...(gateOf(options.gate) ? { gate: gateOf(options.gate) } : {}),
       });
     }, { scope: "project", origin: "human", label: `공방 기물 칩셋에 넣기: ${item.title}` });
   });

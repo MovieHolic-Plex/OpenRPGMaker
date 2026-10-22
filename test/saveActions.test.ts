@@ -93,11 +93,25 @@ describe("saveProjectNow", () => {
 
     const savePromise = saveProjectNow();
 
-    expect(mocks.toast).toHaveBeenNthCalledWith(1, "저장 중...", "info");
+    expect(mocks.toast).toHaveBeenNthCalledWith(1, "저장 중...", { kind: "info", key: expect.any(Symbol) });
 
     pendingSave.resolve({ kind: "saved" });
     await expect(savePromise).resolves.toBe(true);
-    expect(mocks.toast).toHaveBeenNthCalledWith(2, "저장 완료", "ok");
+    expect(mocks.toast).toHaveBeenNthCalledWith(2, "저장 완료", { kind: "ok", key: expect.any(Symbol) });
+  });
+
+  it("reuses the in-flight save so a repeated Ctrl+S shows one result toast", async () => {
+    const pendingSave = deferred<MockFlushResult>();
+    mocks.flush.mockReturnValueOnce(pendingSave.promise);
+
+    const first = saveProjectNow();
+    const second = saveProjectNow();
+    expect(second).toBe(first);
+    expect(mocks.flush).toHaveBeenCalledTimes(1);
+
+    pendingSave.resolve({ kind: "saved" });
+    await expect(first).resolves.toBe(true);
+    expect(mocks.toast.mock.calls.filter(([message]) => message === "저장 완료")).toHaveLength(1);
   });
 });
 

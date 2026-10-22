@@ -243,7 +243,7 @@ export function tileRectToScreenRect(rect: TileRect, camera: CameraView, tileSiz
 
 // 위치 헬퍼는 selectionOverlayAnchor.ts — 테스트/재사용용 re-export
 import { tileRectToClientRect } from "@/editor/selectionOverlayAnchor";
-import { consumeMapPick, isMapPickArmed } from "@/editor/mapPickHook";
+import { consumeMapPick, hasMapPickGhost, isMapPickArmed, placeMapPickGhost } from "@/editor/mapPickHook";
 export { anchoredBuildPalettePosition, anchoredSelectionChipsPosition } from "@/editor/selectionOverlayAnchor";
 
 export function regionTaskBadgeText(phase: "running" | "pending"): string | null {
@@ -1583,6 +1583,12 @@ export class EditScene extends PhaserRuntime.Scene {
     }
     this.lastPointerTile = pointerTile;
     this.updateEventMarkerTooltip(x, y);
+    // 공방 캐릭터 놓기 중: 바닥 칸 대신 그 캐릭터를 커서 칸에(DOM 그림, mapPickHook).
+    if (hasMapPickGhost()) {
+      this.clearHoverPreviewLayer();
+      placeMapPickGhost(this.regionClientRect({ x, y, width: 1, height: 1 }));
+      return;
+    }
     if (!this.shouldRenderPaintHover()) {
       this.clearHoverPreviewLayer();
       return;
@@ -1591,6 +1597,7 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private clearHoverPreview(): void {
+    placeMapPickGhost(null);
     this.lastPointerTile = null;
     this.clearEventMarkerTooltip();
     this.clearHoverPreviewLayer();
@@ -2087,6 +2094,8 @@ export class EditScene extends PhaserRuntime.Scene {
     // Ctrl+S: 저장(맵 컨텍스트와 무관하게 항상 동작).
     if (key === "s") {
       event.preventDefault();
+      // 키를 누르고 있으면 반복 keydown 이 와서 저장·토스트가 겹쳤다 — 첫 누름만 저장한다.
+      if (event.repeat) return;
       void saveProjectNow();
       return;
     }

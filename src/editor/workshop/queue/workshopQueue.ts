@@ -93,6 +93,11 @@ class WorkshopQueue {
   private readonly listeners = new Set<() => void>();
   private readonly starting = new Set<string>();
   private readonly installing = new Set<string>();
+  /**
+   * 「한 번에 만들기」 다시 그리기를 시작한 판의 장 서명(글자·끝난 때·시도 수). 같은 서명이면 아직 다시 그리기가 판에 닿지 않은 것이다 —
+   * 그 사이 판 알림이 또 오면 「이미 다시 그렸다」로 읽혀 바로 실패로 끝냈다(2026-10-23 실측: 관문 불통과 뒤 다시 그리기 없이 「못 그림」).
+   */
+  private readonly rerollFrom = new Map<string, string>();
   private readonly pendingInstall = new Map<string, { letter: string | null; auto: boolean; reason?: string }>();
   /** 「알아서 고르기」 고르기 호출이 도는 작업 */
   private readonly choosing = new Set<string>();
@@ -751,11 +756,23 @@ class WorkshopQueue {
     let on = job.source === "oneclick" && job.autoPick !== false;
     try { on ||= localStorage.getItem("oprn:assistant-objectgen-autopick") === "1"; } catch { /* restricted */ }
     if (!on || job.timeline.some((entry) => entry.note === "알아서 고르기: 통과 후보 없음")) return;
+    const runSignature = round.runs.map((run) => `${run.letter}:${run.status}:${run.finishedAt ?? ""}:${run.attempts.length}`).join("|");
+    if (this.rerollFrom.get(job.id) === runSignature) return;
     if (!autoPickRun(usableRuns(round))) {
       // 「한 번에 만들기」는 사람에게 관문을 넘기지 않는다(2026-10-23): 판정 이유를 주고 한 번 더 그리고, 그래도 없으면 못 그림.
       if (job.source === "oneclick" && job.harnessId) {
         const rerolled = job.timeline.some((entry) => entry.note === ONE_CLICK_REROLL_NOTE);
+        // 그림 확인기(관문)를 이 컴퓨터에서 돌릴 수 없으면 다시 그려도 소용없다 — 바로 알린다(관문 없이 넣지 않는다).
+        const unavailable = round.runs.map((run) => run.verdict?.codes.includes("GATE_UNAVAILABLE") ? run.gate?.reasons[0] ?? "" : null).find((reason) => reason !== null);
+        if (unavailable !== undefined) {
+          job.error = `그림을 확인하지 못해 넣지 않았어요. ${unavailable}`.trim().slice(0, 200);
+          job.finishedAt = now();
+          this.mark(job, "failed", job.error);
+          void this.persist(job);
+          return;
+        }
         if (!rerolled) {
+          this.rerollFrom.set(job.id, runSignature);
           this.mark(job, "drawing", ONE_CLICK_REROLL_NOTE);
           void this.persist(job);
           const session = peekWorkshopSession(job.harnessId);
@@ -858,7 +875,7 @@ class WorkshopQueue {
       if (job.cancelled) return;
       // 판을 열기 전에 판 id 를 알 수 없으므로, 열리는 동안 낸 호출은 onChange 가 판을 넘겨 줄 때 이어 붙인다.
       // 「한 번에 만들기」: 미리 보기 고치기 1번만(object-gen 기본 3번) — 그리기 호출이 첫 결과 시간의 대부분이다. 검수(3/4·품질 판정)는 그대로.
-      const round = await session.engine.startRound(item, { ...(job.count ? { count: job.count } : {}), ...(job.note ? { note: job.note } : {}), ...(job.source === "oneclick" ? { looks: 1 } : {}) });
+      const round = await session.engine.startRound(item, { ...(job.count ? { count: job.count } : {}), ...(job.note ? { note: job.note } : {}), ...(job.source === "oneclick" ? { looks: 1 } : {}), ...(job.source === "oneclick" && job.autoPick !== false ? { gate: "receipt" as const } : {}) });
       job.roundId = round.id;
       job.startedAt = now();
       this.byRound.set(round.id, job.id);
