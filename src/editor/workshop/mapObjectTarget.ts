@@ -7,7 +7,8 @@ import { editorState } from "@/editor/editorState";
 import type { WorkshopEnv } from "@/harnesses/_core/workshop/types";
 import { ATLAS_BIOME_INTERIOR_ID } from "@/project/defaults/atlasBiomeInterior";
 import { store } from "@/project/store";
-import { paletteFromImages, similarObjects } from "@/harnesses/map-objects/editor/sheet";
+import { footprintClass } from "@/harnesses/_core/workshop/footprint";
+import { classObjects, paletteFromImages, similarObjects } from "@/harnesses/map-objects/editor/sheet";
 
 export type DrawTarget =
   | { readonly harnessId: "interior-props"; readonly tilesetId: string; readonly name: string }
@@ -28,11 +29,19 @@ export function currentDrawTarget(): DrawTarget {
   return { harnessId: "map-objects", tilesetId, name: tileset.name };
 }
 
-/** 새 맵 기물의 팔레트 — 칩셋에서 닮은 물체 색을 먼저(가중치 8), 시트 전체 색으로 채운다. 칩셋을 못 읽으면 빈 배열. */
+/**
+ * 새 맵 기물의 팔레트 — 칩셋에서 닮은 물체 색을 먼저(가중치 8), 시트 전체 색으로 채운다. 칩셋을 못 읽으면 빈 배열.
+ * 닮은 물체 = 이름이 맞는 것 + 크기 사전 종류가 같은 것(classObjects). 이름만 보면 「사과나무」가 버들항 나무 킷(oak·olive tree…)을
+ * 못 찾아, 팔레트 48색이 잔디색으로 차고 나무 잎 단(#497f3c·#296535·#104c2f…, 시트에 1.5만 화소씩 있다)이 빠졌다 —
+ * 조수 나무가 잔디색으로 그려져 풀밭에 묻혔다(2026-10-22 Opus VQA major). 맞는 것이 하나도 없을 때만 여러 칸 물체로 채운다.
+ */
 export async function mapObjectPalette(env: WorkshopEnv, tilesetId: string, title: string, description: string): Promise<string[]> {
   const source = env.tilesetSource ? await env.tilesetSource(tilesetId) : null;
   if (!source) return [];
-  const similar = similarObjects(source, title, description, 6).map((object) => ({ image: object.image, weight: 8 }));
+  const picked = similarObjects(source, title, description, 6, true);
+  const cls = footprintClass(title, description);
+  if (cls) for (const object of classObjects(source, cls, 6)) if (picked.length < 8 && !picked.some((o) => o.name === object.name)) picked.push(object);
+  const similar = (picked.length ? picked : similarObjects(source, title, description, 6)).map((object) => ({ image: object.image, weight: 8 }));
   return paletteFromImages([...similar, { image: source.image, weight: 1 }]);
 }
 

@@ -417,7 +417,10 @@ export function ogDrawBrief(ctx: DrawContext, opts: { readonly hasReference: boo
       "pixel yourself with the palette keys (a REFCOPY warning means the drawing looks like a shrunken reference).",
       // 모양만 보라는 말에 색까지 버려 금빛 건초를 연한 베이지로 칠했다(2026-10-22 VQA major) — 색 몫만은 따르게 한다.
       ...(ctx.referenceColors?.length ? [`Its main colours, mapped to the nearest palette keys (share of the object): ${ctx.referenceColors.map((c) => `${c.key} ${c.hex} ${c.share}%`).join(", ")}.`,
-        "Keep these hues for the matching parts (shade them with darker/lighter keys of the same ramp) - do not wash a saturated part out to beige or grey."] : []),
+        organic
+          // 자연물: 생성 그림의 초록은 칩셋 나무보다 밝고 노래서 가장 가까운 키가 잔디색이 된다 — 잔디색 잎은 풀밭에 묻힌다(2026-10-22 Opus VQA major, 사과나무 잎 #618c3b = 잔디).
+          ? "Use these only for the fruit, flower or accent hues. Leaves, bark and stone take the ramps of this chipset's own trees and rocks (ref-*.png, darker blue-greens) - the reference picture's greens map to the GRASS keys, and leaves in grass green vanish on the lawn."
+          : "Keep these hues for the matching parts (shade them with darker/lighter keys of the same ramp) - do not wash a saturated part out to beige or grey."] : []),
       ""] : [""]),
     anchor === "flat" || anchor === "hang" ? `## View\n- This object ${ANCHOR_TEXT[anchor]}.\n` : `${kitValue("prompts", organic ? "VIEW_ORGANIC" : "VIEW")}\n`,
     kitValue("prompts", organic ? "RECIPE_ORGANIC" : "RECIPE"),
