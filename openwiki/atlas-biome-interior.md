@@ -384,3 +384,24 @@ v5 의 작은 삼각대 망원경·천체 모형·지구본·1칸 별자리표·
   반복해서 효과가 있었던 것: 빈 바닥은 가구로 메우지 말고 벽을 들여 방을 줄인다, 칸 격자는 한 띠만 한 줄 어긋나게, 소품 하나하나에 「왜 여기?」 답이 있게.
   짓기 전 확인: 벽 등 가구(서가·찬장·세면대·두루마리 선반·목록 서랍·쇠사슬 서가·통 선반)는 벽면 바로 아래 첫 줄에만 선다. 한 줄 통로에 가구를 잇대면 칸이 닫힌다(「닿지 못한 빈 바닥」).
 - 함정: `c.shadow()` 를 먼저 깔면 그 칸이 4-튜플로 차서 `c.get(x,y) is not None` 검사가 통과한다 — 몸에만 결을 넣으려면 `len(c.get(x,y) or ()) == 3`.
+||||||| parent of ec9663587f (docs(openwiki): assistant interior capability test vs Fallen rooms)
+
+## 조수 실력 시험 — 폴른 스타 세 방 (2026-10-22)
+
+같은 세 방(별빛 천문대·네 화로의 방·옛 별지기의 지하 방)을 코딩 에이전트는 평면·좌표를 손으로 쓰고 새 조각을 그려 독립 Opus VQA 28바퀴(8.2/8.2/8.1)로,
+조수는 실제 입력창에서 자연어 요청 한 번(Sonnet 5.5 high 대용, `local-claude-sonnet-high.json`)으로 지었다. 과제는 space-craft `fallen-*` 세 개.
+
+- 조수 판을 깎은 것 중 도구로 잡을 수 있던 것을 `build_hand_interior_room` 결과 경고로 옮겼다 — `src/editor/handInterior/compositionLint.ts`:
+  빈 바닥 >15%(3×3 안에 가구·깔개 없는 바닥, 합격 판 7~15%) · 방 밖 허공 >20% · 평면 '#' 덩이 속 허공(지붕 틈을 홈으로 흉내) ·
+  같은 걸이 4번 이상 · 돌 바닥 재질 가족 섞기(flag·grey ↔ dungeon·wetstone ↔ marble) · 빈 큰 단(가구 <20%) · 앞 턱 없는 돌 단 — 경고. 단 위 바닥 무늬(마법진·봉인·앞 턱)는 빌더가 3층으로 올려 단 위에 얹는다(`builder.ts` Entry.base; 줄 자동 타일 깔개는 올리지 않아 v5 예제 26장 결과는 그대로).
+  구성기 맵(layout program·청사진)은 빈 바닥을 묻지 않는다.
+- 끝 검사(`src/ai/piAgent/layoutQuality.ts`)는 지은 실내(역할표 칩셋 + climate indoor)에 좌우 대칭을 묻지 않는다 — 합격 판도 대칭 3.0·3.1배였고,
+  이 권고를 받은 조수가 기둥 넷 중 하나·석상 한 쌍 중 하나를 지워 「누락」 지적을 새로 만들었다.
+- 규칙은 참고문서 `hand-interior-v5-rules` 「주인공 물건이 있는 큰 방」 절과 스킬 21~26: 방마다 쓰임 + 앵커 세 점, 주인공 하나(작은 것을 흩뿌리지 않고 단·축·짝으로 키움),
+  단 크기, 대칭은 설계, 없는 건축을 평면 홈으로 흉내 내지 않기, 한 돌 가족, 「사당」≠교회 제단, 확인 바퀴(최대 3번).
+- 시험 도중 폴른 판 큰 조각이 main 에 들어왔다(#3234: great telescope·dome slit tall·great stone brazier·star lens·star seal·dais riser/steps stone). before·after1·after2 는 그 전 main(6195e4d50c)에서 돌아 1칸 그림 + 단으로 대신했다.
+  조수 문서·도구 설명·스킬은 이제 큰 조각 이름을 직접 안내한다. 조명(`set_lighting_volume`)·퍼즐 changeTile 배선은 조수가 하지 않았다(정지 그림 VQA 밖).
+- 점수(매번 새 Opus 검수, 축 1·2·6): 전 5/5/5 → 1차 5.5/6/5.5 → 2차 5/6/6 → 3차(#3234 조각 반영 뒤) 5/5/6, 같은 검수자의 폴른 판 7~8.
+  3차에서 큰 망원경·별 렌즈·돌 단 앞 턱·별 봉인은 나왔다. 남은 major 는 배치다 — 둥근 홀·지붕 틈이 1배로 안 읽힘, 사당이 현관처럼, 「넓은 가운데 홀」이 곁방만 함, 빈 바닥 25~30%(도구 계산 11~21% 와 검수자 눈이 다르다).
+  퍼즐 도구 경로(`author_map_puzzle`)로 지은 화로 방은 큰 화로 대신 1칸 화로를 썼다. 다음 후보: 조수 끝 검수를 「요청 낱말이 1배로 읽히나」로 바꾸기.
+- 결과·비교: `~/claude-viz/assistant-rooms-1.html`. 증거 `qa-runs/harnesses/space-craft/fallen-{before,after1,after2}`(저장소 밖으로 커밋하지 않음).

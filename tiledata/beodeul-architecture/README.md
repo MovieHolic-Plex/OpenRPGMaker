@@ -3,7 +3,7 @@
 집당 문 하나, 벽 재질/색 콘셉트 하나. 창문은 집마다 다르다. 기와는 원본 픽셀 그대로 유지한다. stone의 삼각형 박공 벽 전체를 아래층과 같은 돌 재질로 정리하고 나무 기둥/사각 창 흔적을 제거해 중앙 원형창 하나만 둔다. 측면은 필수가 아니며 전체 재저작하지 않는다.
 공용 source tilesetId beodeul_architecture, image tex_beodeul_architecture, 16px/16열/336칸. source 칸 n의 픽셀 원점 (n%16*16, floor(n/16)*16).
 민가 5종과 교회 1종은 투명 배경 고정 키트. 홈은 3층 윗층, 아래층은 모두 -1로 기존 풀/포석을 보존한다. 기초는 원본 sourceKit별 공용 ground 레시피로 모든 집에 보강한다.
-작업 순서: 기존 맵/참고문서 읽기 → 새 마을은 author_beodeul_town({houseCount:5,church:true}), 기존 예제는 refine_beodeul_village({mapId,church:true}) → 화면 → 실제 canMove → 저장·재로드.
+작업 순서: 기존 맵/참고문서 읽기 → 예제 마을+교회는 author_beodeul_town({houseCount:5,church:true}), 기존 예제는 refine_beodeul_village({mapId,church:true}) → 화면 → 실제 canMove → 저장·재로드.
 새 작은 마을에 church:true를 주면 오른쪽 빈 띠에 교회와 마당을 연결하고 폭 54×30이 된다. 집 5채의 기존 원점과 문 앞은 그대로다.
 기존 보정은 원본 또는 이전 공용 보정 집 전체 배열이 정확히 맞는 것만 국소 보정한다. 이벤트가 달렸거나 새 지붕 자리/교회 띠가 점유돼 있으면 거부한다. 원래 문 열림/실내 시험 맵은 보정하지 않는다.
 이식은 translateTiles로 한다. source 칸 번호를 현재 map 번호로 추측하지 않는다. priority와 passability는 카탈로그 전체 표를 따른다. ★ 지붕/몸체 X와 문앞 접근은 별개다.

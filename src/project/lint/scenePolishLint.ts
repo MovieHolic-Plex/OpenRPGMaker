@@ -18,6 +18,7 @@
 //  - scene-actors-stacked          한 페이지가 두 인물을 같은 칸에 세운다
 //  - scene-hang-on-floor           벽 걸이(액자·별자리표·시계…) 키트가 바닥 칸에 서 있다
 //  - scene-speaker-absent / scene-talk-far / scene-talk-facing  인물 연출 — sceneStagingLint.ts
+//  - stair-entrance-blocked / stair-misfacing / stair-trigger-off  계단 입구 계약 — stairEntranceLint.ts
 //  - scene-ceiling-tile            천장 구역(방 밖·벽면도 벽 윗면도 아닌 칸)에 천장이 아닌 칸이 있다 — 바닥·소품이 얹혔거나, 방 밖에 고립 통행 바닥이 깔렸다
 //  - scene-arrival-faces-exit      도착 방향이 막 지나온 문·계단(또는 다른 이동 칸)을 본다 — 들어서면 문을 등진다
 //  - scene-speaker-faces-away      대사 줄의 화자가 곁(3칸 안)의 대화 상대 누구도 보지 않는다(걸어 온 쪽·벽·카메라를 본다)
@@ -39,6 +40,7 @@ import handInteriorSpec from "@/assets/handInteriorSpec.json";
 import { sharedPortraitNativeGaze } from "@/assets/sharedPortraitAssets";
 import type { LintIssue } from "./projectLint";
 import { checkSceneStaging } from "./sceneStagingLint";
+import { checkStairEntrances } from "./stairEntranceLint";
 import { cellIs, doorCacheKey, isDoorArtCell, LAYERS, type TileMetaLike } from "../staging/doorCells";
 
 export { isDoorArtCell };
@@ -1537,6 +1539,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkCommandsAfterTransfer);
   guard(checkEndingUnderFade);
   guard((p, out) => checkSceneStaging(p, out)); // 인물 연출: 화자 부재·먼 대화·서로 안 봄(sceneStagingLint.ts)
+  guard((p, out) => checkStairEntrances(p, out)); // 계단 입구: 앞 칸 막힘·방향 어긋남·이동 칸 어긋남(stairEntranceLint.ts)
   return issues;
 }
 

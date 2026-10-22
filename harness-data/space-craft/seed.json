@@ -264,6 +264,45 @@
         "복도",
         "횃불"
       ]
+    },
+    {
+      "id": "fallen-observatory",
+      "category": "fantasy-interior",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "별을 관측하는 오래된 천문대 실내를 지어 줘. 지붕까지 트인 관측 틈 아래 큰 굴절 망원경이 있는 둥근 관측 홀이 중심이고, 그 아래층에 서고와 천문대장의 서재가 있어.",
+      "requires": [
+        "큰 망원경",
+        "지붕 관측 틈",
+        "서고 책장",
+        "서재(책상·벽난로)"
+      ]
+    },
+    {
+      "id": "fallen-brazier-vault",
+      "category": "fantasy-interior",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "네 개의 화로 퍼즐 방을 만들어 줘. 가운데 돌 단 위에 화로 넷, 그 사이에 룬 비석 둘이 있고, 남쪽에는 불씨를 모신 사당, 양옆에는 벽감들이 있는 고대 석실이야.",
+      "requires": [
+        "돌 단",
+        "화로 넷",
+        "룬 비석 둘",
+        "남쪽 사당",
+        "양옆 벽감"
+      ]
+    },
+    {
+      "id": "fallen-starkeeper-vault",
+      "category": "fantasy-interior",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "옛 별지기의 지하 방을 지어 줘. 북쪽에는 별 렌즈를 모신 성소가 있고, 가운데 넓은 홀과 그 옆 곁방들이 이어진 지하 석실이야.",
+      "requires": [
+        "북쪽 렌즈 성소",
+        "가운데 홀",
+        "곁방"
+      ]
     }
   ],
   "gates": {

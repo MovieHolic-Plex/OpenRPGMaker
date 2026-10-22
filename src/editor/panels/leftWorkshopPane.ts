@@ -14,14 +14,18 @@ import { GENERATOR_STATUS_LABELS, WORKSHOP_GENERATORS, type WorkshopGenerator } 
 import { objectWorkshopHarness } from "@/editor/workshop/mapObjectTarget";
 import { WORKSHOP_CHANGED_EVENT } from "@/editor/workshop/workshopSession";
 import { workshopQueue } from "@/editor/workshop/queue/workshopQueue";
+import { craftBar, generatorStage, workshopEmblem } from "@/editor/workshop/workshopArt";
 import { clearChildren, el } from "@/util/dom";
 
 /** 물건 그리기 진행 — 두 실행기(실내 가구·지금 맵 칩셋)를 합쳐 센다. 아직 연 적 없으면 null. */
 /** 물건 카드의 진행 수 — 작업 줄과 같은 수(알약·판 머리와 어긋나지 않게, 2026-10-21 VQA). */
-function objectProgress(): { drawing: number; choose: number; paused: number } | null {
+function objectProgress(): { drawing: number; active: number; choose: number; paused: number; progress: number | null } | null {
   const { counts, jobs } = workshopQueue().snapshot();
   if (!jobs.length) return null;
-  return { drawing: counts.active + counts.queued, choose: counts.ready, paused: counts.paused };
+  // 막대는 지금 그리는 작업들의 평균 진행(20칸으로 끊어 다시 그리기를 줄인다). 그리는 것 없이 줄만 서 있으면 끝을 모르는 막대.
+  const working = jobs.filter((view) => view.state === "reference" || view.state === "drawing" || view.state === "review");
+  const progress = working.length ? Math.round((working.reduce((sum, view) => sum + view.progress, 0) / working.length) * 20) / 20 : null;
+  return { drawing: counts.active + counts.queued, active: counts.active, choose: counts.ready, paused: counts.paused, progress };
 }
 
 function button(text: string, testid: string, onClick: () => void, primary = false): HTMLButtonElement {
@@ -42,17 +46,6 @@ function openGen(generator: "char-gen" | "tile-gen" | "object-gen"): void {
   });
 }
 
-/** 견본 띠 — 그 생성기가 실제로 만든 도트를 정수 배율(기본 2배, sample.scale)로 보여 준다(견본이 있는 카드만). */
-function sampleBand(sample: NonNullable<WorkshopGenerator["sample"]>): HTMLElement {
-  return el("div", {
-    class: "left-workshop-art",
-    children: [
-      el("img", { attrs: { src: sample.src, alt: sample.alt, width: String(sample.width * (sample.scale ?? 2)), height: String(sample.height * (sample.scale ?? 2)), loading: "lazy", decoding: "async" } }),
-      ...(sample.caption ? [el("span", { class: "left-workshop-art-caption", text: sample.caption })] : []),
-    ],
-  });
-}
-
 function generatorCard(generator: WorkshopGenerator, ai: { ready: boolean; hostOff: boolean }): HTMLElement {
   const actions: HTMLElement[] = [];
   const notes: HTMLElement[] = [];
@@ -61,10 +54,14 @@ function generatorCard(generator: WorkshopGenerator, ai: { ready: boolean; hostO
       actions.push(button("새 물건 그리기", "workshop-gen-open-object-gen", openObjectWorkshop, true));
       const progress = objectProgress();
       if (progress && progress.drawing + progress.choose + progress.paused > 0) {
-        notes.push(el("span", {
+        const meta = el("span", {
           class: "left-workshop-meta", dataset: { testid: "left-workshop-progress" },
           text: progress.paused ? `그리는 중 ${progress.drawing} · 고를 차례 ${progress.choose} · 멈춤 ${progress.paused}` : `그리는 중 ${progress.drawing} · 고를 차례 ${progress.choose}`,
-        }));
+        });
+        // 그리는 작업이 있으면 대장간 막대(진행 평균), 줄만 서 있으면 끝을 모르는 막대
+        notes.push(progress.drawing > 0
+          ? el("div", { class: "left-workshop-forge", children: [craftBar({ value: progress.active ? progress.progress : null, hot: progress.active > 0, label: "후보 그리기" }), meta] })
+          : meta);
       }
     } else if (ai.hostOff) {
       notes.push(el("p", { class: "left-workshop-note", dataset: { testid: "left-workshop-no-ai" }, text: "이 서버는 AI를 꺼 두어 여기서 그릴 수 없어요. 만든 묶음은 가져올 수 있어요." }));
@@ -81,8 +78,8 @@ function generatorCard(generator: WorkshopGenerator, ai: { ready: boolean; hostO
     class: `left-workshop-card is-${generator.status}`,
     dataset: { testid: `workshop-gen-card-${generator.id}`, status: generator.status },
     children: [
-      ...(generator.sample ? [sampleBand(generator.sample)] : generator.status === "local" || generator.status === "ready"
-        ? [el("div", { class: "left-workshop-art is-empty", children: [el("span", { text: "견본은 첫 결과가 나오면 올라와요" })] })] : []),
+      // 무대: 그 생성기가 실제로 만든 도트(정수 배율, 캐릭터는 제자리 걸음). 견본이 없으면 모눈 빈 작업대.
+      ...(generator.sample || generator.status === "local" || generator.status === "ready" ? [generatorStage(generator, "card")] : []),
       el("div", {
         class: "left-workshop-card-body",
         children: [
@@ -110,7 +107,7 @@ export function createLeftWorkshopPane(): { root: HTMLElement; show(): void; dis
     const ready = workshopAiReady();
     const hostOff = !ready && getAiConnectionStatus(loadAiConfig()).hostAiDisabled === true;
     root.append(
-      el("h2", { class: "left-workshop-title", text: "공방" }),
+      el("div", { class: "left-workshop-heading", children: [workshopEmblem(32), el("h2", { class: "left-workshop-title", text: "공방" })] }),
       el("p", { class: "left-workshop-lead", text: "새 그림을 만들어 이 게임에 넣어요. 후보 중 마음에 드는 것은 내가 골라요." }),
       el("ul", { class: "left-workshop-list", children: WORKSHOP_GENERATORS.filter((g) => g.status === "ready" || g.status === "local").map((generator) => generatorCard(generator, { ready, hostOff })) }),
       el("h3", { class: "left-workshop-subtitle", text: "곧 들어올 생성기" }),

@@ -48,3 +48,9 @@ npm run harness -- space-craft status --out <실행>
 
 전용 칩셋이 없다(2026-10-07). 기대 계열을 비워 두고 쓰인 계열만 기록한다. 처음에는 품질이 아니라 정직성(없다고 말하는지,
 다른 화풍을 섞어 가짜로 만들지 않는지, 스토어를 찾는지)을 본다. 품질 측정은 무림 칩셋을 만든 뒤에 한다.
+
+## 폴른 스타 세 방 과제 (2026-10-22)
+
+`fallen-observatory`·`fallen-brazier-vault`·`fallen-starkeeper-vault` — 코딩 에이전트가 28바퀴 다듬은 같은 세 방을 조수에게 자연어로만 시킨다(좌표·평면 없음).
+판정은 새 Opus 적대 VQA(`~/claude-viz/vqa-rubric.md` 축 1·2·6)와 폴른 r28 그림 나란히. Argon 이 막히면 `ai-configs/local-claude-sonnet-high.json`(Sonnet 5.5 high, 「조수 대용」 표기).
+결과와 도구 수리는 `openwiki/atlas-biome-interior.md` 「조수 실력 시험 — 폴른 스타 세 방」.

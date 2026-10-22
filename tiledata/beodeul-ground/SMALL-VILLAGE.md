@@ -1,9 +1,9 @@
 # 작은 버들 마을 — 서로 다른 집 5채
 
-author_beodeul_town({houseCount:5,seed:1004})는 40×30의 잔디 마을을 만든다. 3~5채를 지정할 수 있다.
+author_beodeul_town({houseCount:5,church:true,seed:1004})는 이 문서의 40×30 예제 잔디 마을(고정 배치)을 만든다. church:true 없이 houseCount 만 주면 고정 배치가 아니라 theme·form·terrain·roofs 를 고른 작은 테마 마을(집 수 상한, 기본 40×32 안팎)이다 — 새 마을은 그쪽을 쓴다(2026-10-22, 고정 배치가 모든 마을을 같게 만들었다).
 3/4 탑뷰는 원본 지붕 윗면을 보존한다. 측면은 필수 아님. 집 윤곽·도트 질감을 다시 그리지 않는다. 집당 문 1개, 벽 재질/색 콘셉트 1개, 기초 포함.
 원본 회벽·목골 별채집 7×6, 이층집 7×8, 사암 돌벽 박공집 4×6, 회벽·목골 ㄱ자집 8×8, 낮은 집 6×6. 원본 창틀 안의 창문과 중복 문만 고친다.
-기존 예제 5채는 refine_beodeul_village({mapId,church:true})로 보정한다. 새 마을은 author_beodeul_town({houseCount:5,church:true})로 교회를 추가할 수 있다(폭 54칸).
+기존 예제 5채는 refine_beodeul_village({mapId,church:true})로 보정한다. 이 예제 마을+교회를 그대로 원할 때만 author_beodeul_town({houseCount:5,church:true})(폭 54칸).
 새 마을 요청은 기존 맵을 지우지 않고 mapId를 생략한다. 집 count를 생략하면 기존 큰 테마 마을 경로다.
 원본 도시 칸 16px/128열. 공용 beodeul_architecture 16열과 beodeul_ground 8열 그림을 translateTiles로 이식한다. source와 map 번호는 다르다.
 순서: 밝은 잔디 → 원본 건물 → 우물·살림·나무 → 접지·잔디 꾸밈 → naturalize_beodeul_hamlet 큰길/광장·흙 접근로/마당·식생 구도 → 일광 보정.

@@ -2,6 +2,10 @@
 
 # Editor Validation Expectations
 
+## 계단 입구 검사 `stair-*` (2026-10-22)
+
+`stair-entrance-blocked` · `stair-misfacing` · `stair-trigger-off` — 장면 다듬기 검사(`lintScenePolish`)에 붙은 warning. 계약·배치·참고문서는 `openwiki/stair-entrance-contract.md`.
+
 ## 장면 다듬기 경고 `scene-*` (2026-10-21)
 
 `src/project/lint/scenePolishLint.ts` — 세 데모를 사람이 손으로 고친 결함 중 기계로 잡히는 것. 전부 warning(커밋을 막지 않는다).

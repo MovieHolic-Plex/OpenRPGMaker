@@ -642,7 +642,8 @@ function formatConstructionNote(intent: IntentDeclaration, targetMap: IntentNote
       + `resize_map({mapId:"${targetMap.id}", width:${width}, height:${height}}) 를 먼저 호출해 키운 뒤 시공하라 — `
       + `좌상단 기준 확장이라 기존 타일·이벤트는 그대로고 늘어난 칸만 잔디가 된다. 요청한 수량을 줄여 기존 크기에 우겨넣지 말 것.`;
   }
-  return `${head} 새 맵이면 이 크기를 그대로 써라 — author_beodeul_town(width:${size.width}, height:${size.height}) 또는 create_map 에 같은 값을 넣는다.`;
+  // 2026-10-22 「마을이 다 비슷하다」: 「그대로 써라」가 모든 작은 마을을 같은 44×28 로 묶었다. 규모는 지키되 모양은 마을의 정체에서.
+  return `${head} 새 맵이면 이 넓이(가로×세로) 안팎으로 — author_beodeul_town·create_map 의 width·height 는 마을의 정체에 맞춰 ±20% 안에서 고른다(강을 따라 늘어선 마을은 세로로 길게, 포구 길가는 가로로 길게). 버들항 마을은 최소 36×30.`;
 }
 
 export function formatIntentNote(
