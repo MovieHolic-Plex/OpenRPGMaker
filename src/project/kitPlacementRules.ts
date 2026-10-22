@@ -3,6 +3,7 @@
 //
 // 왜: 사용자 지적 — 물레방아·배·잔교·다리는 「물 위에만 건설 가능」 같은 규칙이 있어야 하고 AI 가 반드시 따라야 한다.
 // 판정은 찍을 맵의 1층 칸 그림 뜻(tileMeta.tags 의 water / 이름의 「얼음」)으로 한다. 2층 덧그림(물가 둑)은 보지 않는다.
+import { stairApproachProblem } from "./stairs/placement";
 import type { GameMap, StructureKitDef, TilesetDef } from "./types";
 import { reliefLevel, rampAt } from "./relief/walk";
 import { passageMarkForTile } from "./tilesetPassage";
@@ -81,6 +82,9 @@ export function checkKitPlacement(map: GameMap, ts: TilesetDef, kitId: string, k
   // 받침 규칙(2026-10-14, groundSupport.ts): 던전 키트는 허공(천장) 위·벽 위에 놓지 않고, 벽 앞면은 바닥을 마주 본다.
   const unsupported = checkGroundSupportForStamp(map, ts, kit, x, y);
   if (unsupported) return unsupported;
+  // 계단 입구 계약(project/stairs): 들어서는 앞 칸이 바닥으로 열려 있어야 한다.
+  const stair = stairApproachProblem(map, ts, { id: kitId, name: kit.name }, x, y);
+  if (stair) return stair;
   const rule = KIT_PLACEMENT_RULES[kitId];
   if (rule) {
     for (const r of rule.rules) {

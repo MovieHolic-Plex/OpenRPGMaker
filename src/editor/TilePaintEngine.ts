@@ -22,6 +22,7 @@ import { beginKitStampCapture, checkKitStampConditions, commitKitStampCapture } 
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import { layerTilePickAt, visibleTilePickAt, type VisibleTilePick } from "@/editor/tilePicking";
 import { store } from "@/project/store";
+import { stairApproachProblem } from "@/project/stairs/placement";
 import type { MapId, TilesetDef } from "@/project/types";
 import { reliefInverseMode } from "@/editor/reliefBrushMode";
 import { paintRoughRelief, tidyReliefStroke } from "@/editor/reliefActions";
@@ -204,6 +205,13 @@ export class TilePaintEngine {
             if (conditions && conditions.verdict.warnings.length > 0 && !this.placementNoticeShown) {
               this.placementNoticeShown = true;
               toast(conditions.verdict.warnings.map((failure) => failure.text).join(" / "), "info");
+            }
+            // 계단 키트: 들어서는 앞 칸이 막혔으면 알린다(찍기는 막지 않는다 — 앞 칸을 나중에 비울 수 있다). project/stairs/placement.ts
+            if (firstStrokeTile && activePaletteStamp.kitId && !this.placementNoticeShown && comboMap) {
+              const ts = store.getCurrent().tilesets[comboMap.tilesetId];
+              const kit = ts?.structureKits?.find((k) => k.id === activePaletteStamp.kitId);
+              const stairProblem = ts && kit ? stairApproachProblem(comboMap, ts, kit, x, y) : null;
+              if (stairProblem) { this.placementNoticeShown = true; toast(stairProblem, "info"); }
             }
             // 구조물 배치 기록은 **스트로크의 첫 타일에서 한 번만** — 드래그로 배치가 수십 개 생기는 것을 막는다.
             // 구조물 킷이 아닌 스탬프(일반 드래그 선택·실내 오브젝트)는 beginKitStampCapture 가 null 을 준다.
