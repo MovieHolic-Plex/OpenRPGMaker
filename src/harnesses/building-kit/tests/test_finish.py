@@ -176,6 +176,18 @@ class SandboxTest(FinishBase):
         for phrase in ('버들항 수준은 아니다', '16px', '꽃상자', '징', '왼쪽 위', 'finish_draw.py', 'check.py'):
             self.assertIn(phrase, text)
 
+    def test_legend_has_a_glyph_for_every_northern_colour(self):
+        """북방은 설원 램프를 더해 91색 — ASCII 범례(84자)로는 모자랐다(마감이 시작도 못 했다)."""
+        shutil.copytree(os.path.join(self._dot[0], 'northern-snow'), os.path.join(dot.DATA, 'northern-snow'),
+                        ignore=shutil.ignore_patterns('ledger.json', 'picked'))
+        leg = finish.legend('northern-snow')
+        pal = dot.palette('northern-snow')
+        colours = {c.lower() for r in pal['ramps'].values() for c in r} | {c.lower() for c in pal['allowed']}
+        self.assertEqual({v['hex'] for v in leg['chars'].values()}, colours)
+        self.assertEqual(len(leg['chars']), len(set(leg['chars'])))
+        self.assertFalse({'.', '~'} & set(leg['chars']))
+        self.assertEqual(list(finish.legend(H.THEME)['chars'])[:5], list(finish.CHARS[:5]))
+
     def test_untouched_grid_renders_back_to_the_exact_base(self):
         path, _, _ = self.sandbox()
         write_and_run(path, 'from finish_lib import load, save\npx = load()\nsave(px)\n')

@@ -55,7 +55,10 @@ MIN_ITERATIONS = 4
 LEAF_RAMPS = ('wood', 'timber', 'iron')
 STEP_RAMPS = ('stone', 'cobble', 'ashlar')
 WALL_KINDS = ('wall', 'band', 'base')
-CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*+=?<>^/|:;,_-'
+# ASCII 뒤는 라틴 글자와 헷갈리지 않는 그리스 글자(ο·υ·Α 등 빠짐) — 북방은 설원 램프를 더해 91색이다. 파일은 모두 UTF-8.
+# 앞쪽 순서는 바꾸지 않는다(색이 적은 테마의 범례·pixels.txt 가 그대로다).
+CHARS = ('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*+=?<>^/|:;,_-'
+         'αβγδεζηθικλμνξπρστφχψωΓΔΘΛΞΠΣΦΨΩ')
 TOOLS = 'Read,Write,Edit,Bash(python3:*)'
 SCHEMA = 'oprn-building-kit-finish/1'
 
