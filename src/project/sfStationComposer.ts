@@ -20,10 +20,10 @@ import type { GameMap, StructureKitDef, TilesetDef } from "@/project/types";
 export type SfMapKind = "station" | "lab" | "street" | "moonbase";
 export const SF_MAP_KINDS: readonly SfMapKind[] = ["station", "lab", "street", "moonbase"];
 export const SF_MIN_SIZE: Readonly<Record<SfMapKind, { w: number; h: number }>> = {
-  station: { w: 34, h: 26 }, lab: { w: 32, h: 24 }, street: { w: 36, h: 26 }, moonbase: { w: 36, h: 26 },
+  station: { w: 34, h: 26 }, lab: { w: 32, h: 24 }, street: { w: 36, h: 26 }, moonbase: { w: 34, h: 20 },
 };
 export const SF_DEFAULT_SIZE: Readonly<Record<SfMapKind, { w: number; h: number }>> = {
-  station: { w: 44, h: 32 }, lab: { w: 40, h: 30 }, street: { w: 48, h: 30 }, moonbase: { w: 48, h: 32 },
+  station: { w: 44, h: 32 }, lab: { w: 40, h: 30 }, street: { w: 48, h: 30 }, moonbase: { w: 38, h: 22 },
 };
 
 export interface SfPlaced { readonly id: string; readonly x: number; readonly y: number }
@@ -545,7 +545,7 @@ function composeMoonbase(b: Board): { areas: SfArea[]; spawn: { x: number; y: nu
   for (let y = 0; y < Hd; y++) for (let x = 0; x < Wd; x++) b.setLower(x, y, b.floor("regolith"));
   const path = new Array<boolean>(Wd * Hd).fill(false);
   const tallest = Math.max(1, ...MOON_BUILDINGS.map((id) => b.kitSize(id)?.h ?? 0));
-  const foot = Math.min(Math.floor(Hd * 0.55) + b.int(-1, 1) - 3, tallest + 1); // 북쪽 건물 발 줄(문 앞 2칸 가지길)
+  const foot = Math.min(Math.floor(Hd * 0.55) + b.int(-1, 1) - 3, tallest); // 북쪽 건물 발 줄(문 앞 2칸 가지길) — 가장 큰 건물 지붕이 1줄에 닿는다
   const mainY = foot + 3;
   // 북쪽 건물 줄 — 연구 모듈은 꼭 하나
   const doorFronts: { x: number; y: number }[] = [];
@@ -564,7 +564,8 @@ function composeMoonbase(b: Board): { areas: SfArea[]; spawn: { x: number; y: nu
   }
   // 큰길(2줄) + 남쪽 «설비 길»(2줄) — 두 길을 세로 연결로 잇고, 설비 길 위·아래에 쓰임 마당(전력·연료·화물·통신)과 착륙장을 줄지어 놓는다.
   for (let y = mainY; y < mainY + 2; y++) for (let xx = 1; xx < Wd - 1; xx++) path[b.idx(xx, y)] = true;
-  const svcY = Math.min(Hd - 7, mainY + Math.max(6, Math.floor((Hd - mainY) / 2) - 1));
+  // 설비 길: 위 설비(≤3줄)가 큰길과 2줄 띄우고, 아래 설비·착륙장(≤3줄) 밑에 1~2줄만 남게(적대 검수: 아래 띠 빈 월면). 큰 맵은 남는 아래 띠를 바위·크레이터가 맡는다.
+  const svcY = Math.max(mainY + 6, Math.min(Hd - 6, mainY + 7));
   for (let y = svcY; y < svcY + 2; y++) for (let xx = 2; xx < Wd - 2; xx++) path[b.idx(xx, y)] = true;
   const links = [Math.floor(Wd * 0.25), Math.floor(Wd * 0.75)];
   for (const lx of links) for (let y = mainY + 2; y < svcY; y++) for (const dx of [0, 1]) path[b.idx(lx + dx, y)] = true;
@@ -612,6 +613,8 @@ function composeMoonbase(b: Board): { areas: SfArea[]; spawn: { x: number; y: nu
     const id = b.pick(["rock-regolith-s", "rock-regolith-m", "rock-regolith-l", "boulder-cluster", "crater"]); const s = b.kitSize(id); if (!s) continue;
     const xx = b.int(0, Wd - s.w), yy = b.int(0, Hd - s.h);
     let near = false; for (let dy = -1; dy <= s.h; dy++) for (let dx = -1; dx <= s.w; dx++) if (b.inb(xx + dx, yy + dy) && path[b.idx(xx + dx, yy + dy)]) near = true;
+    // 크레이터·바위는 바닥 그림이라 다른 기물 밑으로도 찍힌다 — 놓인 기물(건물·착륙장) 둘레 1칸 안에는 두지 않는다(적대 검수: 착륙장·건물 모서리를 파먹음).
+    for (const q of b.placed) { const qs = b.kitSize(q.id); if (qs && xx - 1 < q.x + qs.w && xx + s.w + 1 > q.x && yy - 1 < q.y + qs.h && yy + s.h + 1 > q.y) near = true; }
     if (near) continue;
     if (b.stampSafe(id, xx, yy, spawn, must)) k++;
   }
