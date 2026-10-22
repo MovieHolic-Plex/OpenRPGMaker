@@ -704,7 +704,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     ...sayTo("jihu", "embarrassed", "ev_fl_f_lead", "…재킷은 가방에 있어요. 이게 머리가 더 잘 돌아가서요."),
     ...emote("ev_fl_f_minho", "sweat"),
     ...say("client", "base", "그럼 시작하시죠. 이번 리뉴얼, 핵심이 뭡니까?"),
-    ...say("jihu", "base", "재생 엔진을 새로 짜서, 하루끝 방송이 1초 안에 시작됩니다. 그리고 화면은—"),
+    ...sayTo("jihu", "base", "ev_fl_f_client", "재생 엔진을 새로 짜서, 하루끝 방송이 1초 안에 시작됩니다. 그리고 화면은—"),
     faceToward("ev_fl_f_jihu", "@player"),
     ...say("jihu", "happy", "윤서하 디자이너가 설명드리겠습니다."),
     ...think("숨을 한 번 고른다."),
