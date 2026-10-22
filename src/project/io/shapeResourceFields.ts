@@ -239,6 +239,12 @@ export function validateTileset(id: string, value: unknown): void {
       assert(["up", "down", "left", "right", "ice", "stop"].includes(rule as string), `tileset ${id}: slideTiles[${tile}] 규칙 오류`);
     }
   }
+  if (tileset.counterTiles !== undefined) {
+    // 위 한계는 걸지 않는다 — 공방 칸을 떼었다 붙이는 동안 count 가 잠시 줄 수 있고, 범위 밖 번호는 그냥 안 맞을 뿐이다.
+    for (const tile of requireArray(`tileset ${id}.counterTiles`, tileset.counterTiles)) {
+      assert(Number.isInteger(tile) && (tile as number) >= 0, `tileset ${id}: counterTiles 타일 ${String(tile)} 오류`);
+    }
+  }
   if (tileset.suppressedHarnessGroupIds !== undefined) {
     for (const groupId of requireArray(`tileset ${id}.suppressedHarnessGroupIds`, tileset.suppressedHarnessGroupIds)) {
       requireString(`tileset ${id}.suppressedHarnessGroupIds[]`, groupId);
