@@ -11,7 +11,7 @@ import type { AnchorSample, Grid, ItemDefinition, Palette, Rgba, RgbaImage, Work
 import { gateAdviceMessages, parseGateAdvice } from "@/harnesses/_core/workshop/gateAdvice";
 import { refCells, workshopRefDescribe } from "@/harnesses/_core/workshop/referencePrompt";
 import {
-  aspectOf, aspectSheet, kitValue, loadAnchors, ogStyleSetFor, OG_DIRECTIONS, OG_LOOKS, ogCheck, ogDrawMessages, ogLookMessage, ogReview, type OgAnchors, type OgStyle,
+  aspectOf, aspectSheet, kitValue, loadAnchors, ogIsOrganic, ogStyleSetFor, OG_DIRECTIONS, OG_LOOKS, ogCheck, ogDrawMessages, ogLookMessage, ogReview, type OgAnchors, type OgStyle,
 } from "@/harnesses/_core/workshop/objectGenFlow";
 import { parseMapObjectVerdict } from "./checks";
 import { mapItemFromDefinition, paletteFromHexes } from "./items";
@@ -80,7 +80,8 @@ export function createMapObjectRunner(): WorkshopRunner {
     candidates: OG_DIRECTIONS.length,
     referenceCount: 2,
     referenceStyleNote: kitValue("reference", "STYLE_NOTE"),
-    maxAttempts: 2,
+    // 자연물은 시도 3번(2026-10-23 감독 결정): 잎 질감 검사 하나를 고치면 다른 검사에 걸리는 일이 잦아 두 번으로는 후보가 안 남았다.
+    maxAttempts: (item) => (ogIsOrganic(item) ? 3 : 2),
     looks: OG_LOOKS,
     async prepare() { /* 시트는 기물마다 그릴 때 읽는다 */ },
     items(next) {

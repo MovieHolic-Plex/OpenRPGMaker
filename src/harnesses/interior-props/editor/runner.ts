@@ -11,7 +11,7 @@ import type {
 import { gateAdviceMessages, parseGateAdvice } from "@/harnesses/_core/workshop/gateAdvice";
 import { REF_DRAW_NOTE, refCells, workshopRefDescribe } from "@/harnesses/_core/workshop/referencePrompt";
 import {
-  aspectOf, aspectSheet, kitValue, loadAnchors, ogStyleSetFor, OG_DIRECTIONS, OG_LOOKS, ogCheck, ogDrawMessages, ogLookMessage, ogReview, type OgAnchors, type OgStyle,
+  aspectOf, aspectSheet, kitValue, loadAnchors, ogIsOrganic, ogStyleSetFor, OG_DIRECTIONS, OG_LOOKS, ogCheck, ogDrawMessages, ogLookMessage, ogReview, type OgAnchors, type OgStyle,
 } from "@/harnesses/_core/workshop/objectGenFlow";
 import { interiorGate, interiorHardCheck, parseInteriorVerdict } from "./checks";
 import { cropCells, FLAT_KINDS, itemFromDefinition, itemFromSpec, SHEET_PATH, specObjects, VIEW_FAIL } from "./items";
@@ -81,7 +81,7 @@ export function createInteriorRunner(): WorkshopRunner {
     // 새 기물(object-gen 흐름): 후보 A·B 두 장(directions), 참고 그림 2장, 그리기 + 다시 그리기 1번, 미리보기 고치기.
     referenceCount: (item) => (og(item) ? 2 : 1),
     referenceStyleNote: (item) => (og(item) ? kitValue("reference", "STYLE_NOTE") : undefined),
-    maxAttempts: (item) => (og(item) ? 2 : 3),
+    maxAttempts: (item) => (og(item) && !ogIsOrganic(item) ? 2 : 3),
     looks: (item) => (og(item) ? OG_LOOKS : 0),
     prepare(env) {
       if (prepared) return prepared;
