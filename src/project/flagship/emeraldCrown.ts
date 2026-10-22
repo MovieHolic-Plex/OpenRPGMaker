@@ -739,8 +739,10 @@ const TEMPLE_STAT_SCALE = [1, 1.04, 1] as const;
 const CHAMPION_LEVELS = { bug: 8, rock: 8, ace: 12 } as const;
 const CHAMPION_ACE_STAT_SCALE = 0.76;
 const CHAMPION_ROCK_STAT_SCALE = 1.06;
-/** 모의전 n=150: 풀 74% · 불 67% · 물 67%, 가장 불리한 동료와도 50% 이상. */
-const CHAMPION_BUG_TUNE = { scale: 0.88, level: 11, delta: { attack: 1, maxHp: 2 } } as const;
+/** 모의전 n=150: 풀 74% · 불 67% · 물 67%, 가장 불리한 동료와도 50% 이상.
+ * 2026-10-23 정직 여정(풀 Lv12 + 1번 도로 새 Lv8)이 선봉 베르카부의 두 배 벌레 기술 한 방에 풀 스타터가 눕혀 두 번 졌다 → 공격 +1 → -1
+ * (모의전 n=80: 풀 83%·새 동료 89%, 불·물은 그대로 69·73%). */
+const CHAMPION_BUG_TUNE = { scale: 0.88, level: 11, delta: { attack: -1, maxHp: 2 } } as const;
 const CHAMPION_ROCK_TUNE = { scale: 0.75, level: 11, delta: { maxHp: 2 } } as const;
 
 /**
