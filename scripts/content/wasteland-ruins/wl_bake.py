@@ -69,6 +69,9 @@ def adopt(dev):
         # --dev-refer(검수 패널용 미리보기 전용): AI 보류(refer) 조각도 넣어 맵을 그려 본다. 출하 금지 — 실제 굽기는 출구 허용만 쓴다.
         if dev and (st == 'pass' or (st == 'refer' and '--dev-refer' in sys.argv)): adopted.append(p); devonly.append(p['id']); continue
         rejected.append(dict(id=p['id'], status=st, why=why[:200]))
+    if any(p['id'] == 'asphalt-ph' for p in adopted):             # 위상 아스팔트가 채택되면 옛 마스크 아스팔트는 굽지 않는다(같은 wl-asphalt 그룹을 대신한다)
+        adopted = [p for p in adopted if p['id'] != 'asphalt']; devonly = [i for i in devonly if i != 'asphalt']
+        rejected.append(dict(id='asphalt', status='replaced', why='asphalt-ph(위상 칸)로 대체'))
     return adopted, rejected, devonly
 
 
@@ -86,7 +89,7 @@ def bake(dry=False, dev=False):
         auto = p['id'] in G.AUTO
         for (x, y), pc in sorted(pcs.items(), key=lambda kv: (kv[0][1], kv[0][0])):
             crop = BL.norm(im.crop((x * 16, y * 16, x * 16 + 16, y * 16 + 16)))
-            where = (f" (이웃 {y * 4 + x})" if y < 4 else (f" (이웃 {((y - 6) % 4) * 4 + x} · 가장자리 세트 {'BC'[(y - 6) // 4]})" if p['id'] == 'asphalt' and y >= 6 else (f" (이웃 {(y - 4) * 4 + x} · 변형 2)" if p['id'] == 'slab-break' else f" (속 변형 {(y - 4) * 4 + x + 1})"))) if auto else (f" ({x + 1},{y + 1})" if p['w'] * p['h'] > 1 else '')
+            where = f" (마스크 {y} · 위상 {x % 4},{x // 4})" if p['id'] == 'asphalt-ph' else (f" (이웃 {y * 4 + x})" if y < 4 else (f" (이웃 {((y - 6) % 4) * 4 + x} · 가장자리 세트 {'BC'[(y - 6) // 4]})" if p['id'] == 'asphalt' and y >= 6 else (f" (이웃 {(y - 4) * 4 + x} · 변형 2)" if p['id'] == 'slab-break' else f" (속 변형 {(y - 4) * 4 + x + 1})"))) if auto else (f" ({x + 1},{y + 1})" if p['w'] * p['h'] > 1 else '')
             tags = ['황무지', '폐허', GROUP_KO[p['group']]] + p['tags']
             meta = dict(label=f"{p['name']}{where}"[:80], desc=f"{p['desc'] or p['name']} — {BL.PCNOTE[pc]}.", role=role_of(p), tags=tags,
                         rep='auto' if auto else ('repeat' if p['kind'] in ('terrain', 'flat') else 'fixed'))
@@ -140,11 +143,19 @@ def bake(dry=False, dev=False):
         if mv: g['maskVariants'] = mv
         autotile_groups.append(g)
 
+    ph = piece_cells.get('asphalt-ph')
+    if ph and all((k, m) in ph for m in range(16) for k in range(16)):  # 위상 오토타일: 칸 (위상 k, 마스크 m) — 조합기가 phaseTiles[m][(x%4)+4*(y%4)] 를 깐다
+        autotile_groups = [g for g in autotile_groups if g['id'] != 'wl-asphalt']
+        pt = {str(m): [ph[(k, m)][0] for k in range(16)] for m in range(16)}
+        mem = sorted({t for ts in pt.values() for t in ts})
+        autotile_groups.append(dict(id='wl-asphalt', name='금 간 아스팔트', neighborhood=4, memberTileIds=mem, connectTileIds=mem,
+                                    variantMap={str(m): pt[str(m)][0] for m in range(16)}, edgeConnects=True, phase=4, phaseTiles=pt))
+
     # 타일 그룹·키트
     groups = collections.OrderedDict(); kits = []
     for p in adopted:
         cells = piece_cells[p['id']]; tids = sorted({t for t, _ in cells.values()} | {t for (pid, _, _), ids in frames_of.items() if pid == p['id'] for t in ids})
-        if p['id'] in G.AUTO:
+        if p['id'] in G.AUTO or p['id'] == 'asphalt-ph':
             groups['auto:' + p['id']] = dict(id='wl:auto:' + p['id'], name=p['name'], role='terrain', defaultLayer='upper' if p['kind'] == 'flat' else 'lower', tileIds=set(tids),
                                              description=f"{p['name']}. {p['desc']}", placementRules='오토타일 — 붓·fill_region 이 이웃에 맞는 칸을 고른다. ' + {'asphalt': '도로는 2칸 폭 이상을 권한다.', 'slab-edge': '판 영역 테두리에 깔고, 꽉 찬 안쪽은 slab-a/b/c 이음 판을 (x mod 8, y mod 8) 자리로 깐다.', 'slab-break': '위층 투명 덧그림. 판 영역 전체(가장자리 포함)에 slab-a/b/c 를 아래층으로 깔고, 가장자리 칸(마스크 15 가 아닌 칸)의 위층에만 마스크(N1 E2 S4 W8)에 맞는 칸을 얹는다 — 시트 칸 (m%4, m//4) 또는 같은 마스크 변형 2 칸 (m%4, 4+m//4)(라벨 「변형 2」)을 칸 자리 해시로 섞는다. 안쪽(15)엔 얹지 않는다.'}.get(p['id'], '판잣집 사이 1칸 폭 발길로 깐다.'))
         elif p['id'] in FLOOR_GROUP_IDS or p['kind'] == 'terrain':
@@ -158,7 +169,7 @@ def bake(dry=False, dev=False):
                                    role=role_of(p), defaultLayer='upper', tileIds=set(), description=f"{GROUP_KO[p['group']]} 조각 칸 모음.",
                                    placementRules='다칸 조각은 낱칸으로 칠하지 않고 같은 이름의 키트(wl-…)로 찍는다.')
             groups[key]['tileIds'] |= set(tids)
-        if p['id'] in G.AUTO or (p['kind'] == 'terrain' and p['w'] * p['h'] == 1): continue
+        if p['id'] in G.AUTO or p['id'] == 'asphalt-ph' or (p['kind'] == 'terrain' and p['w'] * p['h'] == 1): continue
         rows = []
         for y in range(p['h']):
             lo = [-1] * p['w']; up = [-1] * p['w']

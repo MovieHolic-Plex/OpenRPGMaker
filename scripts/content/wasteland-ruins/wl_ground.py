@@ -771,6 +771,141 @@ AUTO['asphalt'] = dict(name='금 간 아스팔트', kind=TERRAIN)
 assert len(set(auto_masks(AUTO_LAYOUT).values())) == 16, sorted(set(auto_masks(AUTO_LAYOUT).values()))
 
 
+# ------------------------------------------------------------------ 아스팔트 위상 칸(r48): 전역 좌표로 그린 64×64 이음 결 + 전역 일렁이는 가장자리
+# 조합기는 마스크 m 칸 (x,y) 에 phaseTiles[m][(x%4) + 4*(y%4)] 를 깐다 — 결·금·가장자리 일렁임이 칸 경계를 넘어 이어진다(칸마다 같은 덩이·이 빠짐 없음).
+AP = 64
+BAYER2 = ((0.0, 0.5), (0.75, 0.25))
+
+
+def _ap_tex():
+    """64×64 이음 결 T: 넓은 얼룩(주기 64 값 잡음 두 겹, 칸 경계를 넘는 덩이) → 524b49 바탕 / 68605e 닳은 자리 / 7b7270 성긴 디더, 단 경계는 2×2 차례 디더.
+    드문 밝은 알, 칸 경계를 넘어 구불구불 이어지는 흙 메운 2화소 금 3줄(dirt 1 속 + dirt 2 그늘 + 드문 빛 턱, 그늘 속에만 3d4b51 몇 화소)."""
+    T = {}
+    for y in range(AP):
+        for x in range(AP):
+            f = 0.62 * vnoise(x, y, 1601, 32, AP) + 0.38 * vnoise(x, y, 1603, 16, AP)
+            f += (BAYER2[y % 2][x % 2] - 0.375) * 0.07
+            if f < 0.572: col = TAR
+            elif f < 0.60: col = TAR_HI if (x + y) % 2 == 0 else TAR
+            elif f < 0.665: col = TAR_HI
+            elif f < 0.69: col = K('asph', 6) if (x + y) % 2 == 0 and (x // 2 + y) % 2 else TAR_HI
+            else: col = K('asph', 6) if (x + y) % 2 == 0 else TAR_HI
+            T[(x, y)] = col
+    for i in range(14):                                   # 드문 밝은 알(64×64 에 14개 — 칸당 1개 남짓, 자리 고르지 않음)
+        x = h2(i, 1, 1605) % AP; y = h2(i, 2, 1605) % AP
+        T[(x, y)] = K('conc', 4) if i % 3 == 0 else K('asph', 6)
+    def crack(pts, seed):
+        core = []
+        for (p0, p1) in zip(pts, pts[1:]):
+            n = max(abs(p1[0] - p0[0]), abs(p1[1] - p0[1]), 1)
+            for i in range(n + 1):
+                core.append((round(p0[0] + (p1[0] - p0[0]) * i / n), round(p0[1] + (p1[1] - p0[1]) * i / n), abs(p1[0] - p0[0]) >= abs(p1[1] - p0[1])))
+        cs = {(x % AP, y % AP) for x, y, _ in core}
+        for k, (x, y, hz) in enumerate(core):
+            q = ((x, y + 1) if hz else (x + 1, y)); q = (q[0] % AP, q[1] % AP)
+            if q not in cs: T[q] = K('asph', 2) if h2(k, seed, 1607) % 9 == 0 else K('dirt', 2)
+            q2 = ((x, y - 1) if hz else (x - 1, y)); q2 = (q2[0] % AP, q2[1] % AP)
+            if q2 not in cs and h2(k, seed, 1609) % 3 == 0: T[q2] = TAR_HI
+        for x, y, _ in core: T[(x % AP, y % AP)] = K('dirt', 1)
+    crack([(5, 9), (9, 11), (12, 11), (15, 14), (19, 15), (22, 18)], 1)                       # 칸 경계(16)를 넘어 비스듬히
+    crack([(38, 30), (40, 34), (39, 38), (42, 42), (44, 45)], 2)                              # 세로로 짧게, 경계(32·48) 근처
+    crack([(50, 56), (54, 55), (57, 58), (61, 58), (66, 61), (70, 61)], 3)                   # 64 경계를 넘어 감싼다(이음)
+    return T
+
+
+_APT = {}
+
+
+def ap_tex(x, y):
+    if not _APT: _APT.update(_ap_tex())
+    return _APT[(x % AP, y % AP)]
+
+
+def ap_depth(side, g):
+    """변(side)의 전역 깨짐 깊이 1..4: 주기 64 매끈한 1차 잡음 + 64 마다 2~3곳 넓은 물어뜯긴 자리(같은 함수 안, 폭 5~7, +1~2)."""
+    v = 0.65 * vnoise(g, side * 7, 1611 + side, 16, AP) + 0.35 * vnoise(g, side * 7 + 3, 1613 + side, 8, AP)
+    d = 1.3 + v * 1.9
+    for j in range(2 + side % 2):
+        c0 = (h2(side, j, 1615) % 20) + j * (AP // (2 + side % 2)); w = 5 + h2(side, j, 1617) % 3; a = 1.2 + (h2(side, j, 1619) % 2) * 0.8
+        t = min((g - c0) % AP, (c0 - g) % AP)
+        if t < w / 2: d += a * math.cos(math.pi * t / w) ** 2
+    return max(1, min(4, int(round(d))))
+
+
+def at_asphalt_phase(c, m, ph, ox, oy):
+    """마스크 m · 위상 ph(px=ph%4, py=ph//4) 칸: T 를 (px*16, py*16) 에서 잘라 깔고, 이웃 없는 변은 전역 좌표 일렁임으로 흙까지 깎는다.
+    볼록 모서리는 반지름 5~6 으로 둥글게(막다른 끝·외딴 칸은 둥근 끝). 남쪽은 마른 흙빛 턱(dirt 1, 전역 해시로 가끔 2화소) + 흙 그늘(dirt 2)."""
+    px, py = ph % 4, ph // 4
+    gx0, gy0 = px * 16, py * 16
+    for y in range(16):
+        for x in range(16): c.P(ox + x, oy + y, ap_tex(gx0 + x, gy0 + y))
+    miss = [sd for sd, bit in ((0, N), (1, E), (2, Sb), (3, W)) if not m & bit]
+    dN = [ap_depth(0, gx0 + i) for i in range(16)]; dS = [ap_depth(2, gx0 + i) for i in range(16)]
+    dW = [ap_depth(3, gy0 + i) for i in range(16)]; dE = [ap_depth(1, gy0 + i) for i in range(16)]
+    S = [[False] * 16 for _ in range(16)]
+    for y in range(16):
+        for x in range(16):
+            if (0 in miss and y < dN[x]) or (2 in miss and y > 15 - dS[x]) or (3 in miss and x < dW[y]) or (1 in miss and x > 15 - dE[y]): S[y][x] = True
+    for (sa, sb), (cx, cy) in (((0, 3), (0, 0)), ((0, 1), (15, 0)), ((2, 3), (0, 15)), ((2, 1), (15, 15))):
+        if sa in miss and sb in miss:
+            r = 5 + (h2(m, ph * 4 + sa + sb, 1621) % 2)
+            px0 = r + 1 if cx == 0 else 14 - r; py0 = r + 1 if cy == 0 else 14 - r
+            for y in range(16):
+                for x in range(16):
+                    if ((cx == 0 and x < px0) or (cx == 15 and x > px0)) and ((cy == 0 and y < py0) or (cy == 15 and y > py0)):
+                        if (x - px0) ** 2 + (y - py0) ** 2 > (r + (h2(gx0 + x, gy0 + y, 1623) % 3 - 1) * 0.35) ** 2: S[y][x] = True
+    for _ in range(2):
+        for y in range(16):
+            for x in range(16):
+                nb4 = [S[y + dy][x + dx] if 0 <= x + dx < 16 and 0 <= y + dy < 16 else None for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))]
+                if not S[y][x] and sum(1 for v in nb4 if v) >= 3: S[y][x] = True
+                elif S[y][x] and sum(1 for v in nb4 if v is False) >= 3: S[y][x] = False
+    soil = lambda x, y: 0 <= x < 16 and 0 <= y < 16 and S[y][x]
+    road = lambda x, y: 0 <= x < 16 and 0 <= y < 16 and not S[y][x]
+    for y in range(16):
+        for x in range(16):
+            if soil(x, y): c.P(ox + x, oy + y, dirt_col(dirt_base(x, y)))
+    for x in range(16):
+        for y in range(15, -1, -1):
+            if road(x, y) and soil(x, y + 1):
+                if y < 6: break
+                c.P(ox + x, oy + y, K('dirt', 1))
+                if h2(gx0 + x, 7, 1625) % 4 == 0 and road(x, y - 1) and road(x, y - 2): c.P(ox + x, oy + y - 1, K('dirt', 1))
+                c.P(ox + x, oy + y + 1, K('dirt', 2))
+                break
+
+
+def asphalt_phase_sheet(c):
+    for m in range(16):
+        for ph in range(16): at_asphalt_phase(c, m, ph, ph * 16, m * 16)
+
+
+AP_LAYOUT = [r[:17] + ('#' if 1 <= i <= 12 else '.') + '.' + ('###' if 1 <= i <= 12 else '...') + '.' for i, r in enumerate([r + '.' * 7 for r in AUTO_SAMPLE_LAYOUT + ['.' * 16]])] + \
+    ['.' + '#' * 12 + '.' * 10, '.' * 23, '.' + '#' * 12 + '.' * 10, '.' + '#' * 12 + '.' * 10, '.' + '#' * 12 + '.' * 10, '.' * 23]
+
+
+def ap_sample(_=0):
+    """표본: 교차로·T·굽이·막다른 길·외딴 칸·넓은 판 + 1칸 폭·3칸 폭 12칸 직선(가로·세로) — 칸 (x,y) 는 조합기처럼 위상 (x%4, y%4) 칸."""
+    lay = AP_LAYOUT; H, Wd = len(lay), len(lay[0])
+    a = np.zeros((H * 16, Wd * 16, 4), np.uint8)
+    ms = auto_masks(lay); da = render(PIECES['dirt-b']); at = render(PIECES['asphalt-ph'])
+    for y in range(H):
+        for x in range(Wd):
+            if (x, y) in ms:
+                m = ms[(x, y)]; ph = (x % 4) + 4 * (y % 4)
+                src = at[m * 16:(m + 1) * 16, ph * 16:(ph + 1) * 16]
+            else: src = da[(y % 8) * 16:(y % 8 + 1) * 16, (x % 8) * 16:(x % 8 + 1) * 16]
+            a[y * 16:(y + 1) * 16, x * 16:(x + 1) * 16] = src
+    return a
+
+
+piece('asphalt-ph', '금 간 아스팔트 (위상 오토타일)', 16, 16, TERRAIN,
+      en='old asphalt road of warm charcoal grey with broad soft worn mottling that flows across tiles (four grey steps joined by fine dither), a few isolated light aggregate pixels and a few thin dirt-filled cracks that wander across tile borders; its unconnected edges are a continuous gently wavy broken rim into dirt with occasional wider bites, rounded at corners and dead ends, and a dry dark-brown ledge on the south side; laid as a road network with crossroads, dead ends and long straight 1-wide and 3-wide runs',
+      group='ground', tags=['아스팔트', '도로', '오토타일'],
+      desc='낡은 옛 아스팔트 도로 — 위상 오토타일(주기 64): 칸 (위상 ph, 마스크 m), ph = (x mod 4) + 4·(y mod 4). 결·금·가장자리 일렁임이 전역 좌표로 이어져 직선 길에 칸마다 같은 덩이가 서지 않는다. 남쪽은 마른 흙빛 턱.',
+      sample=ap_sample)(asphalt_phase_sheet)
+
+
 # asphalt-b/-c(패인 구멍·균열 낱칸)는 감독 결정으로 뺐다 — 속 변형은 asphalt 5·6번째 줄이 맡는다.
 
 
