@@ -11,7 +11,7 @@ import numpy as np
 from PIL import Image
 
 GW, GH = 26, 20
-# 바닥: . 흙(변형 해시) · # 도로 · s 콘크리트 판
+# 바닥: . 흙(변형 해시) · # 도로 · t 발길 · s 콘크리트 판
 ROWS = [
     '..........................',
     '..........................',
@@ -30,7 +30,7 @@ ROWS = [
     '......##..................',
     '......##..................',
     '......#####...............',
-    '..........................',
+    '.tttttttttttttttt.........',
     '..........................',
     '..........................',
 ]
@@ -55,6 +55,7 @@ def cell(pid, cx=0, cy=0):
 def build():
     lay = ['' .join('#' if ch == '#' else '.' for ch in r) for r in ROWS]
     ms = G.auto_masks(lay)
+    mt = G.auto_masks(['' .join('#' if ch == 't' else '.' for ch in r) for r in ROWS])
     img = np.zeros((GH * 16, GW * 16, 4), np.uint8)
     for y in range(GH):
         for x in range(GW):
@@ -62,8 +63,11 @@ def build():
             if ch == '#':
                 m = ms[(x, y)]
                 t = cell('asphalt', m % 4, m // 4)
+                if m == 15 and C.hsh(x, y, 7) % 10 < 3: t = cell('asphalt', C.hsh(y, x, 8) % 4, 4)   # 구성기처럼 꽉 찬 칸 30% 속 변형
+            elif ch == 't':
+                m = mt[(x, y)]; t = cell('track', m % 4, m // 4)
             elif ch == 's': t = cell('slab-' + 'aaaaaabbcc'[C.hsh(x, y, 5) % 10], x % 8, y % 8)       # 이음 판: 자리 (x mod 4, y mod 4)
-            else: h = C.hsh(x, y, 6) % 100; t = cell('dirt-' + ('a' if h < 85 else 'bcd'[h % 3]), x % 4, y % 4)
+            else: h = C.hsh(x, y, 6) % 16; t = cell('dirt-' + ('b' if h < 10 else 'c' if h < 13 else 'd'), x % 4, y % 4)   # 구성기와 같은 무게 b:c:d = 10:3:3 (dirt-a 는 뺐다)
             img[y * 16:(y + 1) * 16, x * 16:(x + 1) * 16] = t
     im = Image.fromarray(img, 'RGBA')
     for (pid, x, y) in sorted(PLACE, key=lambda p: (p[2] + C.PIECES[p[0]]['h'], p[1])):

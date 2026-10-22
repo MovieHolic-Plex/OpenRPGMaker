@@ -56,9 +56,13 @@ def cell_pcs(p, a):
     return out
 
 
+SKIP = {'dirt-a', 'asphalt-b', 'asphalt-c', 'track'}          # 키트에서 뺀 조각(감독 결정) — 표본 바탕으로만 남고 굽지 않는다(번호도 새로 잡지 않는다)
+
+
 def adopt(dev):
     adopted, rejected, devonly = [], [], []
     for p in C.PIECES.values():
+        if p['id'] in SKIP: rejected.append(dict(id=p['id'], status='skipped', why='감독 결정으로 키트에서 뺌')); continue
         why = C.refusal_of(p, 'bundle')
         if why is None: adopted.append(p); continue
         st = C.status_of(p)
@@ -82,7 +86,7 @@ def bake(dry=False, dev=False):
         auto = p['id'] in G.AUTO
         for (x, y), pc in sorted(pcs.items(), key=lambda kv: (kv[0][1], kv[0][0])):
             crop = BL.norm(im.crop((x * 16, y * 16, x * 16 + 16, y * 16 + 16)))
-            where = f" (이웃 {y * 4 + x})" if auto else (f" ({x + 1},{y + 1})" if p['w'] * p['h'] > 1 else '')
+            where = (f" (이웃 {y * 4 + x})" if y < 4 else f" (속 변형 {x + 1})") if auto else (f" ({x + 1},{y + 1})" if p['w'] * p['h'] > 1 else '')
             tags = ['황무지', '폐허', GROUP_KO[p['group']]] + p['tags']
             meta = dict(label=f"{p['name']}{where}"[:80], desc=f"{p['desc'] or p['name']} — {BL.PCNOTE[pc]}.", role=role_of(p), tags=tags,
                         rep='auto' if auto else ('repeat' if p['kind'] in ('terrain', 'flat') else 'fixed'))
@@ -119,16 +123,16 @@ def bake(dry=False, dev=False):
         elif home == 'upper': m['layerBacking'] = 'none'
         tile_meta.append(m)
 
-    # 오토타일: 금 간 아스팔트(4방향, 시트 칸 = 마스크) — 변형 asphalt-b/-c 는 이어진 이웃이자 속 칸 변형
+    # 오토타일(4방향, 시트 칸 (m%4, m//4) = 마스크 m): G.AUTO 마다 `wl-<id>` 그룹. 5번째 줄이 있으면 꽉 찬 칸(15)에 섞는 속 변형.
     autotile_groups = []
-    ac = piece_cells.get('asphalt')
-    if ac:
+    for aid, ad in G.AUTO.items():
+        ac = piece_cells.get(aid)
+        if not ac or not all((m % 4, m // 4) in ac for m in range(16)): continue
         vm = {str(m): ac[(m % 4, m // 4)][0] for m in range(16)}
-        mem = sorted(set(vm.values()))
-        var = [piece_cells[v][(0, 0)][0] for v in ('asphalt-b', 'asphalt-c') if v in piece_cells]
-        g = dict(id='wl-asphalt', name='금 간 아스팔트', neighborhood=4, memberTileIds=sorted(set(mem) | set(var)), connectTileIds=sorted(set(mem) | set(var)),
-                 variantMap=vm, edgeConnects=True)
-        if var: g['interiorVariants'] = [var, var]
+        var = [ac[(x, 4)][0] for x in range(4) if (x, 4) in ac]
+        mem = sorted(set(vm.values()) | set(var))
+        g = dict(id='wl-' + aid, name=ad['name'], neighborhood=4, memberTileIds=mem, connectTileIds=mem, variantMap=vm, edgeConnects=True)
+        if var: g['interiorVariants'] = [var]
         autotile_groups.append(g)
 
     # 타일 그룹·키트
@@ -137,7 +141,7 @@ def bake(dry=False, dev=False):
         cells = piece_cells[p['id']]; tids = sorted({t for t, _ in cells.values()} | {t for (pid, _, _), ids in frames_of.items() if pid == p['id'] for t in ids})
         if p['id'] in G.AUTO:
             groups['auto:' + p['id']] = dict(id='wl:auto:' + p['id'], name=p['name'], role='terrain', defaultLayer='lower', tileIds=set(tids),
-                                             description=f"{p['name']}. {p['desc']}", placementRules='오토타일 — 붓·fill_region 이 이웃에 맞는 칸을 고른다. 도로는 2칸 폭 이상을 권한다.')
+                                             description=f"{p['name']}. {p['desc']}", placementRules='오토타일 — 붓·fill_region 이 이웃에 맞는 칸을 고른다. ' + ('도로는 2칸 폭 이상을 권한다.' if p['id'] == 'asphalt' else '판잣집 사이 1칸 폭 발길로 깐다.'))
         elif p['id'] in FLOOR_GROUP_IDS or p['kind'] == 'terrain':
             groups['floor:' + p['id']] = dict(id='wl:floor:' + p['id'], name=p['name'], role=role_of(p) if p['kind'] in ('terrain', 'flat') else 'wall',
                                               defaultLayer='lower' if p['kind'] == 'terrain' else 'upper', tileIds=set(tids), description=f"{p['name']}. {p['desc']}",

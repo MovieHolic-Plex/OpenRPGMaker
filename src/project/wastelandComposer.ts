@@ -618,69 +618,53 @@ function composeShanty(b: Board): { areas: WlArea[]; spawn: Pt; road: boolean[] 
   const areas: WlArea[] = [];
   fillDirt(b);
   const road = new Array<boolean>(Wd * Hd).fill(false);
-  // 북쪽 옛 도로 한 줄기(3줄, 맵을 가로지른다) — 판잣집 촌은 울 없이 그 아래로 흩어진다(정착지의 네모 울·광장과 다르게).
+  // 북쪽 옛 도로 한 줄기(3줄) — 판잣집 촌은 울 없이 그 아래 골목을 따라 선다(정착지의 네모 울·장터 길과 다르게).
   const ry = 2 + b.int(0, 2);
   for (let xx = 0; xx < Wd; xx++) for (let y = ry; y < ry + 3; y++) road[b.idx(xx, y)] = true;
   b.autotile("asphalt", road);
   const spawn = { x: 1, y: ry + 1 };
   const must: Pt[] = [{ x: Wd - 2, y: ry + 1 }];
   b.markKeep(0, ry + 3, Wd, 1);
-  // 가운데 고물 장터: 급수탑 + 노점 + 모닥불 — 촌의 한가운데(조금 비켜)
-  const mx = Math.floor(Wd / 2) + b.int(-5, 5), my = Math.floor((ry + 4 + Hd) / 2) + b.int(-2, 2);
-  must.push({ x: mx, y: my });
-  // 장터 둘레 4칸은 판잣집이 들어오지 않게 비운다(장터를 나중에 앉힌다)
-  b.markKeep(mx - 4, my - 3, 9, 7);
-  // 판잣집 무리: 장터 둘레로 4~6 덩이, 덩이마다 2~4채를 비뚤게(줄 맞추지 않는다)
-  const shackIds = ["shack-a", "shack-b", "lean-to"] as const;
-  const clusters = b.int(4, 6);
-  // 발길(r2: 흩어진 집만 있고 짜임이 없다): 도로→장터 한 줄기, 장터→덩이마다 꺾인 한 줄기. 발길 칸엔 집이 서지 않는다.
-  const track = new Array<boolean>(Wd * Hd).fill(false);
-  const lay = (x: number, y: number) => { if (b.inb(x, y) && !road[b.idx(x, y)] && !(x >= mx - 4 && x <= mx + 4 && y >= my - 4 && y <= my + 3)) { track[b.idx(x, y)] = true; b.markKeep(x, y); } };
-  const walkTo = (x0: number, y0: number, x1: number, y1: number, wide: boolean) => {
-    const vFirst = b.int(0, 1) === 1;
-    const hx = (yy: number) => { for (let x = Math.min(x0, x1); x <= Math.max(x0, x1); x++) { lay(x, yy); if (wide) lay(x, yy + 1); } };
-    const vy = (xx: number) => { for (let y = Math.min(y0, y1); y <= Math.max(y0, y1); y++) { lay(xx, y); if (wide) lay(xx + 1, y); } };
-    if (vFirst) { vy(x0); hx(y1); } else { hx(y0); vy(x1); }
-  };
-  walkTo(mx, ry + 3, mx, my, true);
-  const centres: Pt[] = [];
-  for (let c = 0; c < clusters; c++) {
-    const ang = (c / clusters) * Math.PI * 2 + (b.int(0, 100) / 100);
-    const rr = b.int(8, 13);
-    centres.push({ x: Math.max(3, Math.min(Wd - 4, Math.round(mx + Math.cos(ang) * rr * 1.3))), y: Math.max(ry + 7, Math.min(Hd - 4, Math.round(my + Math.sin(ang) * rr * 0.8))) });
-  }
-  for (const c of centres) walkTo(mx, my, c.x, c.y, false);
-  b.paint("track", track);
-  let placedShacks = 0;
-  for (const { x: ccx, y: ccy } of centres) {
-    const n = b.int(2, 4);
-    let k = 0;
-    for (let t = 0; t < 40 && k < n; t++) {
-      const id = b.pick(shackIds); const sz = b.kitSize(id); if (!sz) continue;
-      const x = ccx + b.int(-5, 5) - Math.floor(sz.w / 2), y = ccy + b.int(-3, 3) - sz.h + 1;
-      if (y < ry + 5 || x < 1 || x + sz.w > Wd - 1 || y + sz.h > Hd - 2) continue;
-      if (!b.free(x - 1, y - 1, sz.w + 2, sz.h + 2)) continue;
-      if (!b.stampSafe(id, x, y, spawn, must)) continue;
-      const d = b.door(id, x, y);
-      areas.push({ name: "판잣집", x, y, w: sz.w, h: sz.h, tag: id, door: d });
-      if (b.inb(d.x, d.y + 1)) { must.push({ x: d.x, y: d.y + 1 }); b.markKeep(d.x, d.y + 1); }
-      k++; placedShacks++;
+  // 골목 짜임(r2·r3: 흩어진 집만 있고 짜임이 없다): 도로에서 내려오는 큰 골목(2칸) 하나 + 가로 골목 2~3줄.
+  // 집 앞면(문)이 골목을 보고 줄지어 서서 골목이 읽힌다. 골목 칸은 비워 둔다(바닥 그림은 같은 흙).
+  const ax = Math.floor(Wd / 2) + b.int(-8, 8);
+  const nLanes = b.int(2, 3);
+  const lanesY: number[] = [];
+  const span = Hd - (ry + 9) - 3;
+  for (let k = 0; k < nLanes; k++) lanesY.push(ry + 9 + Math.floor(((k + 0.5) / nLanes) * span) + b.int(-1, 1));
+  const lanes: { y: number; x0: number; x1: number }[] = lanesY.map((y) => {
+    const left = b.int(0, 3) === 0 ? 2 : b.int(2, Math.max(2, ax - 10)), right = b.int(0, 3) === 0 ? Wd - 3 : b.int(Math.min(Wd - 3, ax + 10), Wd - 3);
+    return { y, x0: left, x1: right };
+  });
+  for (let y = ry + 3; y <= lanesY[lanesY.length - 1]! + 1; y++) b.markKeep(ax, y, 2, 1);
+  for (const l of lanes) { b.markKeep(l.x0, l.y, l.x1 - l.x0 + 1, 2); must.push({ x: l.x0, y: l.y }, { x: l.x1, y: l.y }); }
+  // 장터: 큰 골목과 한 가로 골목이 만나는 곳 옆 빈터
+  const ml = lanes[b.int(0, lanes.length - 1)]!;
+  const mSide = b.int(0, 1) ? 1 : -1;
+  const mx = ax + (mSide > 0 ? 3 : -8), my = ml.y + 2;
+  const shackIds = ["shack-a", "shack-b", "lean-to", "lean-to", "shack-a", "shack-b", "lean-to"];
+  const name = () => "판잣집";
+  for (const l of lanes) {
+    // 골목 북쪽 줄: 앞면이 골목 윗줄에 닿게(발 = l.y-1). 큰 골목 칸은 건너뛴다.
+    for (const [x0, x1] of [[l.x0, ax - 2], [ax + 3, l.x1]] as const) {
+      if (x1 - x0 < 3) continue;
+      const placed = rowOf(b, noRepeat(b.shuffle(shackIds)), x0 + b.int(0, 2), x1, l.y - 1, spawn, must, [1, 3], areas, name);
+      for (const p of placed) { const d = b.door(p.id, p.x, p.y); if (b.inb(d.x, d.y + 1)) b.markKeep(d.x, d.y + 1); }
+      // 골목 남쪽 줄: 뒤가 골목을 보는 헛간·살림(장터 자리는 빼고)
+      if (l === ml) continue;
+      rowOf(b, noRepeat(b.shuffle(["lean-to", "crates", "drums", "solar-scrap", "shack-b", "tyres", "generator"])), x0 + b.int(0, 3), x1, l.y + 2 + 2, spawn, must, [1, 4]);
     }
-    // 덩이 마당 살림: 드럼통·상자·타이어·태양판·발전기 하나둘
-    sprinkle(b, ["drums", "crates", "tyres", "solar-scrap", "generator", "log-seat"], b.int(1, 2), ccx - 6, ccy - 4, ccx + 6, ccy + 4, spawn, must);
   }
+  // 장터: 급수탑 + 노점 둘 + 모닥불·통나무 의자
+  for (let yy = my; yy < my + 6; yy++) for (let xx = mx; xx < mx + 6; xx++) if (b.inb(xx, yy)) b.keep[b.idx(xx, yy)] = false;
+  b.stampSafe("water-tank", mx, my, spawn, must) || b.stampSafe("water-tank", mx + 3, my, spawn, must);
+  b.stampSafe("stall-a", mx + 2, my + 1, spawn, must); b.stampSafe("stall-b", mx, my + 4, spawn, must);
+  b.stampSafe("campfire", mx + 4, my + 4, spawn, must); b.stampSafe("log-seat", mx + 3, my + 5, spawn, must);
+  areas.push({ name: "고물 장터", x: mx, y: my, w: 6, h: 6, tag: "market", door: { x: mx + 3, y: my - 1 } });
   areas.push({ name: "판잣집 촌", x: 1, y: ry + 4, w: Wd - 2, h: Hd - ry - 5, tag: "shanty" });
-  // 장터 앉히기(비워 둔 자리를 풀고)
-  for (let yy = my - 3; yy < my + 4; yy++) for (let xx = mx - 4; xx < mx + 5; xx++) if (b.inb(xx, yy)) b.keep[b.idx(xx, yy)] = false;
-  b.stampSafe("water-tank", mx - 4, my - 4, spawn, must) || b.stampSafe("water-tank", mx + 3, my - 4, spawn, must);
-  b.stampSafe("campfire", mx, my - 1, spawn, must);
-  b.stampSafe("stall-a", mx - 4, my + 1, spawn, must); b.stampSafe("stall-b", mx + 2, my + 1, spawn, must);
-  areas.push({ name: "고물 장터", x: mx - 4, y: my - 4, w: 9, h: 7, tag: "market", door: { x: mx, y: my } });
-  // 촌 가장자리: 고철 더미·타이어·바리케이드를 듬성듬성(울타리 대신 쓰레기 둔덕)
-  sprinkle(b, ["scrap-heap", "tyres", "rubble-pile", "barricade-h", "scrap-heap", "car-rust-h"], Math.floor(Wd / 5), 0, ry + 4, Wd - 1, Hd - 1, spawn, must);
-  sprinkle(b, ["dead-tree", "bush-wild", "sign-blank"], Math.floor(Wd / 9), 0, ry + 4, Wd - 1, Hd - 1, spawn, must);
+  // 촌 가장자리·빈터: 고철 더미·타이어·고사목(골목은 비운 채)
+  sprinkle(b, ["scrap-heap", "tyres", "rubble-pile", "scrap-heap", "car-rust-h", "dead-tree", "bush-wild", "sign-blank"], Math.floor(Wd / 4), 0, ry + 4, Wd - 1, Hd - 1, spawn, must);
   wrecksOnRoad(b, [{ x0: 1, y0: ry, x1: Wd - 2, y1: ry + 2, horizontal: true }], 2, spawn, must, { h: ["van-rust", "car-rust-h"], v: [] });
-  void placedShacks;
   return { areas, spawn, road };
 }
 
