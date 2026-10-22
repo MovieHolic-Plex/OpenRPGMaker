@@ -435,7 +435,11 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
     const light = [...cc].some((c) => { const e = c ? palette.byKey.get(c) : undefined; return e ? (e.rgba[0] + e.rgba[1] + e.rgba[2]) / 3 > 60 : false; });
     if (cc.size === 1 && (light || share > 0.3)) hard.push({ code: "BG", msg: "all four corners are painted with one fill colour - leave everything outside the object transparent" });
   }
-  const stray = painted.filter(([x, y]) => [[1, 0], [-1, 0], [0, 1], [0, -1]].every(([dx, dy]) => at(x + dx!, y + dy!) === null));
+  // 실제 버들항 나무(object-gen calibration/)는 뿌리 끝이 대각선 화소, 땅 줄에 홀로 선 풀 한 점이다 — 자연물은 맨 아래 줄 위에서
+  // 8방향 이웃이 하나도 없는 화소만 먼지로 본다(object-gen stray_pixels 와 같다).
+  const ring8 = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
+  const stray = painted.filter(([x, y]) => [[1, 0], [-1, 0], [0, 1], [0, -1]].every(([dx, dy]) => at(x + dx!, y + dy!) === null))
+    .filter(([x, y]) => !ogIsOrganic(item) || (y !== bottom && ring8.every(([dx, dy]) => at(x + dx!, y + dy!) === null)));
   if (stray.length) hard.push({ code: "STRAY", msg: `${stray.length} isolated pixel(s), e.g. x=${stray[0]![0]} y=${stray[0]![1]} - remove dust` });
   if (STANDING.has(anchor)) {
     const tile = 16, foot = item.footRows ?? 1;
@@ -468,30 +472,38 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
       (g.rows >= GEOMETRIC_MIN_ROWS ? hard : warn).push(issue);
     }
     if (footprintClass(item.title, item.description ?? "") === "tree" && g.rows >= GEOMETRIC_MIRROR_ROWS && g.mirror > GEOMETRIC_MIRROR) {
-      hard.push({ code: "SYMMETRIC", msg: `the crown is nearly mirror-symmetric (left/right match ${g.mirror}, exemplars 0.80-0.85) - make one shoulder 3+ px higher, one side wider, lobes and notches at different heights` });
+      hard.push({ code: "SYMMETRIC", msg: `the crown is nearly mirror-symmetric (left/right match ${g.mirror}, Beodeul trees 0.75-0.93) - make one shoulder 3+ px higher, one side wider, lobes and notches at different heights` });
     }
     const isTree = footprintClass(item.title, item.description ?? "") === "tree";
     if (isTree && g.rows >= GEOMETRIC_MIRROR_ROWS && g.solidity > CROWN_SOLIDITY_MAX) {
-      hard.push({ code: "CROWNFULL", msg: `the crown fills its outline like an egg (solidity ${g.solidity}, exemplar oaks 0.86-0.89) - cut 1-2 deep notches (3+ px) into the rim and push one lobe out to one side` });
+      hard.push({ code: "CROWNFULL", msg: `the crown fills its outline like an egg (solidity ${g.solidity}, Beodeul trees 0.86-0.91) - cut 1-2 deep notches (3+ px) into the rim and push one lobe out to one side` });
     }
     const shown = renderGrid(grid, palette);
     let opaque = 0, deep = 0;
     for (let i = 0; i < shown.data.length; i += 4) if (shown.data[i + 3]! > 0) { opaque++; if (0.299 * shown.data[i]! + 0.587 * shown.data[i + 1]! + 0.114 * shown.data[i + 2]! < DEEP_LUMA) deep++; }
     // 원본 checks NODEEP: 견본 나무·덤불은 덩이 사이 깊은 그늘이 14~20%, 「바랜 베개 돌」로 반려된 돌무더기는 0~4%.
-    if (g.rows >= GEOMETRIC_MIN_ROWS && opaque && deep / opaque < DEEP_MIN) hard.push({ code: "NODEEP", msg: `no deep shadow (${Math.round((deep / opaque) * 100)}% of pixels below luma ${DEEP_LUMA}, exemplars 14-18%) - put near-black pockets in the gaps between clumps / stones and under the object` });
+    if (g.rows >= GEOMETRIC_MIN_ROWS && opaque && deep / opaque < DEEP_MIN) hard.push({ code: "NODEEP", msg: `no deep shadow (${Math.round((deep / opaque) * 100)}% of pixels below luma ${DEEP_LUMA}, Beodeul 14-54%) - put near-black pockets in the gaps between clumps / stones and under the object` });
     const lv = leafTone(shown);
     if (lv.leafPixels >= LEAF_MIN_PIXELS) {
-      if (lv.leafCast > LEAF_CAST_MAX) hard.push({ code: "LEAFHUE", msg: `the leaves are olive/yellow (red-blue ${lv.leafCast}, exemplars -9..-4, limit -1) - paint them with the listed leaf-green keys` });
-      if (!isTree && g.rows >= GEOMETRIC_MIN_ROWS && g.solidity > MASS_SOLIDITY_MAX) hard.push({ code: "BLOBBY", msg: `the leafy mass fills its outline like a ball or dome (solidity ${g.solidity}, exemplar bushes 0.89-0.91) - bite 1-2 deep notches into the outline and let one clump stick out to one side` });
-      if (lv.leafHoles < LEAF_HOLES_MIN) hard.push({ code: "LEAFHOLES", msg: `too few dark holes inside the crown (${lv.leafHoles} per 100 leaf px, exemplars 2.7-3.3) - break big lobes into many small clusters with 1-3 px dark holes all through the interior` });
-      if (lv.leafLone > LEAF_LONE_MAX) hard.push({ code: "LEAFSPECK", msg: `the highlights are single sprinkled pixels (${Math.round(lv.leafLone * 100)}% of the lightest leaf tone stands alone, exemplars 0-12%) - group the lightest green into 2-4 px dashes on the upper-left lobes only` });
-      if (lv.leafContrast < LEAF_CONTRAST_MIN) hard.push({ code: "LEAFFLAT", msg: `the leaves are a smooth gradient, not clumps (neighbour contrast ${lv.leafContrast}, exemplars 12-18) - build separate clumps: a 2-4 px light dash on each clump's upper left right next to dark pockets` });
-      if (lv.leafBand < LEAF_BAND_MAX) hard.push({ code: "LEAFBAND", msg: `light and dark change by height (luma-height correlation ${lv.leafBand}, exemplars -0.44..-0.53) - light every clump on its own upper left, put dark pockets between clumps at every height` });
+      if (lv.leafCast > LEAF_CAST_MAX) hard.push({ code: "LEAFHUE", msg: `the leaves are olive/yellow (red-blue ${lv.leafCast}, Beodeul -16..+14) - paint them with the listed leaf-green keys` });
+      if (!isTree && g.rows >= GEOMETRIC_MIN_ROWS && g.solidity > MASS_SOLIDITY_MAX) hard.push({ code: "BLOBBY", msg: `the leafy mass fills its outline like a ball or dome (solidity ${g.solidity}, Beodeul bushes 0.89-0.91) - bite 1-2 deep notches into the outline and let one clump stick out to one side` });
+      if (lv.leafHoles < LEAF_HOLES_MIN) hard.push({ code: "LEAFHOLES", msg: `too few dark holes inside the crown (${lv.leafHoles} per 100 leaf px, Beodeul 0.9-3.2) - break big lobes into many small clusters with 1-3 px dark holes all through the interior` });
+      if (lv.leafLone > LEAF_LONE_MAX) hard.push({ code: "LEAFSPECK", msg: `the highlights are single sprinkled pixels (${Math.round(lv.leafLone * 100)}% of the lightest leaf tone stands alone, Beodeul 0-35%) - group the lightest green into 2-4 px dashes on the upper-left lobes only` });
+      if (lv.leafContrast < LEAF_CONTRAST_MIN) hard.push({ code: "LEAFFLAT", msg: `the leaves are a smooth gradient, not clumps (neighbour contrast ${lv.leafContrast}, Beodeul 15-25) - build separate clumps: a 2-4 px light dash on each clump's upper left right next to dark pockets` });
+      if (lv.leafBand < LEAF_BAND_MAX) hard.push({ code: "LEAFBAND", msg: `light and dark change by height (luma-height correlation ${lv.leafBand}, Beodeul -0.19..-0.71) - light every clump on its own upper left, put dark pockets between clumps at every height` });
       const art = renderGrid(grid, palette);
       const widths: number[] = [];
-      for (let y = 0; y < art.height; y++) { let n = 0; for (let x = 0; x < art.width; x++) if (art.data[(y * art.width + x) * 4 + 3]! > 0) n++; if (n) widths.push(n); }
-      if (widths.length && widths.at(-1)! / Math.max(...widths) > LEAF_BASE_MAX) hard.push({ code: "FLATBASE", msg: `the base is cut flat along the ground (lowest row ${widths.at(-1)} of ${Math.max(...widths)} px wide) - let the lower edge come down unevenly: leaves hanging lower in places, gaps, a rounded tuck` });
-      if (lv.leafDark < LEAF_DARK_MIN) hard.push({ code: "LEAFLIGHT", msg: `the crown is too light (${Math.round(lv.leafDark * 100)}% dark leaf pixels, exemplars 28-38%) - more dark interior, shadow under lobes, darker lower right` });
+      let lowLeaf = 0; // 가장 아래 칠한 줄에서 잎 초록의 비율 — 줄기·뿌리·화분이 바닥이면 FLATBASE 를 보지 않는다(실제 버들항 화분 가로수)
+      for (let y = 0; y < art.height; y++) {
+        let n = 0, leaf = 0;
+        for (let x = 0; x < art.width; x++) {
+          const i = (y * art.width + x) * 4;
+          if (art.data[i + 3]! > 0) { n++; const r = art.data[i]!, gg = art.data[i + 1]!, b = art.data[i + 2]!; if (gg >= r + 10 && gg >= b) leaf++; }
+        }
+        if (n) { widths.push(n); lowLeaf = leaf / n; }
+      }
+      if (widths.length && lowLeaf > 0.5 && widths.at(-1)! / Math.max(...widths) > LEAF_BASE_MAX) hard.push({ code: "FLATBASE", msg: `the base is cut flat along the ground (lowest row ${widths.at(-1)} of ${Math.max(...widths)} px wide) - let the lower edge come down unevenly: leaves hanging lower in places, gaps, a rounded tuck` });
+      if (lv.leafDark < LEAF_DARK_MIN) hard.push({ code: "LEAFLIGHT", msg: `the crown is too light (${Math.round(lv.leafDark * 100)}% dark leaf pixels, Beodeul 22-73%) - more dark interior, shadow under lobes, darker lower right` });
     }
   } else if (TOP_KINDS.has(item.gateKind ?? "") && STANDING.has(anchor) && topRows < 3) warn.push({ code: "TOP", msg: `measured top plane is ${topRows} row(s) (column scan) - a 3/4 top needs >= 3 lit rows above the front` });
   return { ok: hard.length === 0, hard, warn, topRows };
