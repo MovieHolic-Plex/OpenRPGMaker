@@ -80,7 +80,11 @@ export function readHudWidget(widget: HudWidget, project: Project, session: Play
       const left = socialSlotsLeft(session, loop);
       return { ...read(left, loop.slotsPerDay), text: `오늘 남은 시간 ${left}/${loop.slotsPerDay}` };
     }
-    case "map": return { ...read(1), text: project.maps[session.currentMapId]?.name ?? "" };
+    case "map": {
+      // 이름 없는 맵이면 빈 상자를 띄우지 않는다(available=false → 위젯이 숨는다).
+      const name = project.maps[session.currentMapId]?.name?.trim() ?? "";
+      return { ...read(name ? 1 : undefined), text: name };
+    }
     default: return read(undefined);
   }
 }
