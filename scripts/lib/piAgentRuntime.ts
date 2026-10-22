@@ -1137,9 +1137,19 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         const interiors = Object.keys(ctx.project.maps).filter((id) => handInterior(id) && mapChanged(id));
         return [...new Set([...named, ...interiors])].slice(0, 3);
       };
+      // 그림 렌더러는 show_map_region 결과(칸 배열 포함)를 받는다 — 좌표만 넘기면 「invalid region」으로 거절한다. 읽기 도구를 그대로 돌려 그 결과를 넘긴다.
+      const renderErrors: string[] = [];
       const render = async (mapId: string, x: number, y: number, w: number, h: number): Promise<string | undefined> => {
-        try { return `data:image/png;base64,${await options.renderToolImage!(cloneProjectSharingSharedDictionaries(ctx.project), "show_map_region", { mapId, x, y, w, h }, options.signal)}`; }
-        catch (error) { if (options.signal?.aborted) throw error; return undefined; }
+        try {
+          const project = cloneProjectSharingSharedDictionaries(ctx.project);
+          const shown = runTool({ project, assistantRun: false }, "show_map_region", { mapId, x, y, w, h }, { dryRun: true });
+          if (!shown.ok) throw new Error(shown.summary);
+          return `data:image/png;base64,${await options.renderToolImage!(project, "show_map_region", shown.data, options.signal)}`;
+        } catch (error) {
+          if (options.signal?.aborted) throw error;
+          renderErrors.push(`${mapId} (${x},${y}) ${w}×${h}: ${error instanceof Error ? error.message.slice(0, 160) : String(error)}`);
+          return undefined;
+        }
       };
       const judgeRound = async (targets: readonly string[]) => {
         const t0 = Date.now();
@@ -1194,11 +1204,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
             verdicts = featureChecklist.judgeItems.map((i) => ({ id: i.id, state: "unjudged" as const, why: `판정 호출 실패: ${error instanceof Error ? error.message.slice(0, 160) : String(error)}` }));
           }
         } else {
-          verdicts = featureChecklist.judgeItems.map((i) => ({ id: i.id, state: "unjudged" as const, why: "1배 그림을 얻지 못했다" }));
+          verdicts = featureChecklist.judgeItems.map((i) => ({ id: i.id, state: "unjudged" as const, why: `1배 그림을 얻지 못했다 — ${renderErrors.slice(-1)[0] ?? "렌더 경로 없음"}` }));
         }
         const round = featureChecklist.record({ verdicts: [...verdicts, ...measured], imagesSent: images.length, ...(imagesSeen !== undefined ? { imagesSeen } : {}), judge, ms: Date.now() - t0 });
         emit({ type: "execution_status", name: "feature_review", ok: round.verdicts.every((v) => v.state === "pass"),
-          summary: `1배 확인 ${round.round}바퀴 — 통과 ${round.verdicts.filter((v) => v.state === "pass").length} · 안 읽힘 ${round.verdicts.filter((v) => v.state === "fail").length} · 판정 불가 ${round.verdicts.filter((v) => v.state === "unjudged").length} (그림 ${images.length}장 보냄, 판정자가 받은 그림 ${imagesSeen ?? "?"}장, ${Math.round(round.ms / 1000)}초)`,
+          summary: `1배 확인 ${round.round}바퀴 — 통과 ${round.verdicts.filter((v) => v.state === "pass").length} · 안 읽힘 ${round.verdicts.filter((v) => v.state === "fail").length} · 판정 불가 ${round.verdicts.filter((v) => v.state === "unjudged").length} (그림 ${images.length}장 보냄, 판정자가 받은 그림 ${imagesSeen ?? "?"}장, ${Math.round(round.ms / 1000)}초)${renderErrors.length ? ` · 렌더 실패 ${renderErrors.length}: ${renderErrors.slice(-2).join(" / ")}` : ""}`,
           data: { round: round.round, imagesSent: images.length, imagesSeen, judge } });
         emitFeatureChecklist(round.verdicts.every((v) => v.state === "pass"));
         return round;
