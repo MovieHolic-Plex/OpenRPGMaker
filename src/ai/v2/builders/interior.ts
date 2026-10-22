@@ -353,7 +353,14 @@ export const interiorBuilder: PlaceBuilder = {
     let upperArgs: Record<string, unknown> | undefined;
     if (stairsUp) {
       const upperZones = (spec.zones ?? []).filter((z) => z.floor === 2);
-      const upKinds = upperZones.length ? upperZones.map((z) => resolveKind(tilesetId, z, notes)) : ["inn_room", "inn_room", "corridor"].filter((k) => roomTemplates(tilesetId).some((t) => t.kind === k));
+      const known = (k: string) => roomTemplates(tilesetId).some((t) => t.kind === k);
+      let upKinds = upperZones.length ? upperZones.map((z) => resolveKind(tilesetId, z, notes)) : ["inn_room", "inn_room", "corridor"].filter(known);
+      // 위층에는 계단통을 놓을 복도·홀이 있어야 한다 — 방 하나(객실)만 달라고 해도 복도를 붙인다(2026-10-23 실조수: 객실 하나뿐이라 내려가는 계단 자리가 없었다).
+      if (!upKinds.some((k) => /corridor|hall|landing/u.test(k)) && known("corridor")) {
+        // 방 하나 + 복도면 견본이 2칸 폭 복도를 골라 계단통이 안 들어간다 — 방을 둘 이상으로 채워 넓은 복도 견본을 받는다.
+        while (upKinds.length < 2) upKinds = [...upKinds, upKinds[0] ?? "inn_room"];
+        upKinds = [...upKinds, "corridor"];
+      }
       const upBase: Record<string, unknown> = { tileset: tilesetId, ...(upperMapId ? { mapId: upperMapId, replace: true } : {}), name: `${spec.name} 2층`,
         layout: { rooms: (upKinds.length ? upKinds : ["bedroom"]).map((kind, i) => ({ id: `${kind}${i + 1}`, kind })) } };
       const up = build(run, upBase);
@@ -365,8 +372,9 @@ export const interiorBuilder: PlaceBuilder = {
         urb = { ...urb, exit: uargs.exit, objects: urb.objects.filter((o) => !/doormat|door mat/u.test(o.id)) };
         uargs = { ...uargs, objects: urb.objects };
         const down = findPart(roomSpec, "stairwell down");
-        const hub = urb.rooms.find((r) => /corridor|hall/u.test(r.id)) ?? urb.rooms[0]!;
-        const placedDown = down ? placeAnchor(run, roomSpec, uargs, urb, hub.id, down, undefined, true, new Set(), openingColumns(urb, up.data)) : undefined;
+        const hubs = [...urb.rooms].sort((a, b) => Number(/corridor|hall/u.test(b.id)) - Number(/corridor|hall/u.test(a.id)) || (b.x1 - b.x0) * (b.y1 - b.y0) - (a.x1 - a.x0) * (a.y1 - a.y0));
+        let placedDown: ReturnType<typeof placeAnchor> | undefined;
+        for (const hub of hubs) { placedDown = down ? placeAnchor(run, roomSpec, uargs, urb, hub.id, down, undefined, true, new Set(), openingColumns(urb, up.data)) : undefined; if (placedDown) break; }
         if (placedDown) {
           uargs = placedDown.args; urb = placedDown.rb;
           const d = urb.objects[urb.objects.length - 1]!;

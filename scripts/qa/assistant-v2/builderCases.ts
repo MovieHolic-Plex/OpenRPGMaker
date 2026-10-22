@@ -2,6 +2,7 @@
 import type { PlaceSpec } from "../../../src/ai/v2/types.ts";
 export interface BuilderCase { readonly id: string; readonly spec: PlaceSpec; readonly startTileset?: string; readonly before?: readonly { tool: string; args: Record<string, unknown> }[] }
 export const BUILDER_CASES: BuilderCase[] = [
+  { id: "int-tavern-upper-one-room", spec: { type: "interior", name: "버들항 선술집", style: "fantasy", size: "medium", floors: 2, zones: [{ id: "hall", kind: "tavern", floor: 1, size: "large", purpose: "홀", anchors: ["바 카운터", "식탁", "식탁", "벽난로", "올라가는 계단"] }, { id: "upper", kind: "inn_room", floor: 2, purpose: "객실", anchors: ["침대", "내려가는 계단"] }] } },
   { id: "int-tavern", spec: { type: "interior", name: "선술집", zones: [{ kind: "tavern", purpose: "손님 홀", anchors: ["바 카운터", "벽난로", "올라가는 계단"] }, { kind: "kitchen", purpose: "주방" }], floors: 2 } },
   { id: "int-observatory", spec: { type: "interior", name: "천문대", size: "large", zones: [{ kind: "observatory", purpose: "관측실", anchors: ["큰 망원경", "별자리 원판", "책장"] }] } },
   { id: "int-cosy", spec: { type: "interior", name: "아늑한 선술집", zones: [{ kind: "tavern" }, { kind: "kitchen" }], hints: { dressing: 1 } } },
