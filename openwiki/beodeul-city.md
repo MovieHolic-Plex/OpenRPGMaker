@@ -947,5 +947,5 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
   - 증명: `scripts/qa/beodeul-graft-relocation-proof.mts`. 기존 프로젝트 사본으로 이동 후 모든 맵이 화소까지 같음을 보였다.
 - **배선:** `src/project/defaults/beodeulCity.ts` 의 `mergeShippedFarm(…, withYard)` · `mergeShippedKits(…, withYard)`.
   - 타일 묶음은 `beodeul:yard_*`, 견본 킷은 `bd-yard-*-sample` 이다.
-- **쓰는 곳:** `dress_village_quarter` 의 temple-ruins(판석) · mining · vineyard(다진 흙) 마당. 규칙은 `openwiki/editor-ai-tools.md` 「마을 종류 표」 절에 있다.
+- **쓰는 곳:** `dress_village_quarter` 의 temple-ruins(판석) · mining · vineyard(다진 흙) 마당. `author_beodeul_town({quarter})` 가 빌더 `yard` 옵션으로 마당 자리를 먼저 비운다(다른 마을은 옵션이 없어 그대로). 규칙은 `openwiki/editor-ai-tools.md` 「마을 종류 표」 절에 있다.
 - **검수 증거:** `tiledata/beodeul-yard/_gate/`

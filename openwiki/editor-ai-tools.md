@@ -3627,16 +3627,17 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
     - 오토타일: `beodeul_yard_cobble`(자갈) · `beodeul_yard_dirt`(다진 흙) · `beodeul_yard_flag`(판석).
     - 견본 킷: `bd-yard-*-sample`. `mergeShippedFarm`·`mergeShippedKits` 가 붙인다.
     - `dress_village_quarter` 가 마당을 개간해 깔고, 덩이를 그 안에 앉힌다.
-    - recipe:
+    - recipe: 셋 다 `author_beodeul_town({quarter:"<종류>", ...})` 로 시작한다.
+      - `quarter` 를 주면 빌더(`beodeulVillage.ts` 의 `yard` 옵션)가 집·밭을 놓기 전에 마당 자리(마당 가로+3 × 세로+3, 안 되면 3×2·6×3 줄여 재시도)를 단이 같은 빈 땅에 먼저 비워 둔다. 길에 붙은 자리를 우선한다.
       - 신전 폐허: `terrain flat, form scatter`
-      - 광산촌: `terrain terraces, form scatter, woods dense` — highland·street 는 마당 자리가 없어 14×9 로 줄었다
+      - 광산촌: `terrain terraces, form scatter`, 60×48. woods 는 기본(가장자리)이다. dense 는 마당 자리를 없앴다.
       - 포도원: `terrain terraces, form scatter`
-    - 마당 규칙(검수 r1~r3):
+    - 마당 규칙(검수 r1~r4):
       - 개간 칸·위 1줄·아래 2줄·좌우 1열이 모두 같은 단이어야 한다.
-      - 24칸 이하 덤불·나무 덩이는 통째로 걷는다. 더 큰 숲 덩이를 벨수록 자리 점수가 깎인다(계단 모양 숲 끝 방지).
-      - 마당 네 귀는 원래 바닥으로 둥글린다. 샛길은 2칸 폭이다.
-      - 귀 채우기가 아닌 마당(신전 폐허, 광산)은 맵마다 크기를 −1~+3 / −1~+1 흔든다. 덩이 중심도 마당 안 아무 자리로 잡고, 되풀이 조각을 몇 개 뺀다. 두 맵이 한 도장으로 읽혔기 때문이다.
-      - 포도원은 북서·북동 귀부터 채운다(`packSlot`). 올리브는 마당 밖 반경 20에 둔다.
+      - 숲 덩이(`FOREST` = 90칸)보다 큰 덩이에는 마당이 들어가지 않는다. 테두리가 큰 덩이에 걸리면 그 칸은 베지 않고 건너뛴다. 90칸 이하 덩이는 통째로 걷는다. 줄기가 남지 않게 아래 겹 있는 칸 옆이 큰 숲이면 그 칸도 뺀다.
+      - 마당 네 귀는 원래 바닥으로 둥글린다. 샛길은 2칸 폭이다. 마당이 이미 길에 닿으면 마당 가운데에 가까운 길 2칸을 마당 바닥으로 칠해 입구로 쓴다.
+      - 귀 채우기가 아닌 마당(신전 폐허, 광산)은 맵마다 크기를 −2~+1 / −1~0 흔든다. 덩이 중심도 마당 안 아무 자리로 잡고, 조각 순서를 섞고, 되풀이 조각을 몇 개 뺀다. 두 맵이 한 도장으로 읽혔기 때문이다.
+      - 포도원은 26×15 마당 북서·북동 귀부터 채운다(`packSlot`). 올리브는 마당 밖 반경 20에 둔다. 찍은 뒤 `varyVineRows` 가 포도 칸을 자리마다 같은 갈래(위 줄·속·아래 줄·좌우 끝) 안에서 바꾼다 — 같은 밭 넷이 도장으로 읽혔다(r4).
     - 장터 마을은 아직 walled-market 덩이 없이 광장 마을만 짓는다.
   - ~~폐허 셋(포스트아포칼립스·좀비 도시·황무지)은 needs-art~~ → **2026-10-23 ready.** 새 칩셋 `wasteland_ruins` + `compose_wasteland_map` 을 쓴다. `openwiki/wasteland-ruins.md` 참고.
   - 마당 그래프트 이동(버들항 자연 이식 칸 28416→28800, 1536칸) 증명은 `scripts/qa/beodeul-graft-relocation-proof.mts` 에 있다. 기존 프로젝트 사본에서 맵 화소가 같은지를 본다.

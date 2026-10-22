@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **182쪽 / 6764KB / 약 1,980,607 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **182쪽 / 6765KB / 약 1,981,182 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,10 +16,10 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/atlas-biome-interior.md` | 77KB | 16KB | 439 | ~23,044 |
-| `openwiki/beodeul-city.md` | 158KB | 10KB | 905 | ~48,071 |
+| `openwiki/beodeul-city.md` | 159KB | 10KB | 905 | ~48,114 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,135 |
 | `openwiki/editor-ai-panel.md` | 712KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4604 | ~208,981 |
-| `openwiki/editor-ai-tools.md` | 508KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3629 | ~148,298 |
+| `openwiki/editor-ai-tools.md` | 508KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3630 | ~148,554 |
 | `openwiki/editor-database.md` | 445KB | 64KB ⚠상한 초과 — 절을 더 쪼개라 | 2601 | ~130,556 |
 | `openwiki/editor-event-authoring.md` | 181KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1108 | ~53,027 |
 | `openwiki/editor-event-commands.md` | 72KB | 32KB | 315 | ~19,933 |
@@ -395,7 +395,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L131` 함정 목록
 - `L161` 실린 자산의 실측값
 
-### `openwiki/beodeul-city.md` — 158KB · 905줄 · ~48,071 토큰 · 통째읽기 잘림
+### `openwiki/beodeul-city.md` — 159KB · 905줄 · ~48,114 토큰 · 통째읽기 잘림
 
 - `L3` 출처 정정 (2026-10-22) — RTP 파생 칸은 크레딧, 나무는 다시 그렸다
 - `L46` 2026-10-05 건물 반려와 사람의 허용/거절 대기열
@@ -732,7 +732,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L4591` 왼쪽 사이드바(그리기·지형·활동 막대) 탭 전환 계약 (2026-10-17)
 - `L4599` UX 2차 — 도크 배치·서버 AI 꺼짐 문구 (2026-10-21, F24)
 
-### `openwiki/editor-ai-tools.md` — 508KB · 3629줄 · ~148,298 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-ai-tools.md` — 508KB · 3630줄 · ~148,554 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L3` 계단 입구 계약 — 조립기·stamp_object·create_transfer_pair (2026-10-22)
 - `L7` 없는 기물 그리기 `generate_missing_object` (2026-10-21)
@@ -3406,13 +3406,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L191` 조밀한 소형 주택 마을로 수정 (2026-09-13)
 - `L210` 저장된 소규모 집 구성 (2026-09-13)
 
-### `openwiki/wasteland-ruins.md` — 5KB · 72줄 · ~1,594 토큰
+### `openwiki/wasteland-ruins.md` — 6KB · 77줄 · ~1,870 토큰
 
 - `L6` 파일
 - `L23` 조각
-- `L42` 구성 규칙 (검수 r1~r3 에서 배운 것)
-- `L58` 검수 기록
-- `L68` 마을 종류 표 연결
+- `L43` 구성 규칙 (검수 r1~r3 에서 배운 것)
+- `L62` 검수 기록
+- `L73` 마을 종류 표 연결
 
 ### `openwiki/wizarding-world.md` — 17KB · 145줄 · ~5,103 토큰
 
