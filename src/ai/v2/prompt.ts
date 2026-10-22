@@ -1,0 +1,38 @@
+// 조수 v2 시스템 지시문 — 역할·고리·규칙 한 쪽 + 요청 종류별 지식 카드 + 지금 프로젝트 요약. 전체 8k 토큰 안(카드 합 ≈ 6천 자).
+import type { Project } from "@/project/types";
+import { INTERIOR_CARD } from "./builders/interior";
+import { VILLAGE_CARD } from "./builders/village";
+import { DUNGEON_CARD } from "./builders/dungeon";
+import { JP_CITY_CARD } from "./builders/jpCity";
+import { PEOPLE_CARD } from "./people";
+import { EVENT_CARD } from "./events";
+import { DRAW_OBJECT_CARD } from "./drawObject";
+
+export const V2_CORE_PROMPT = [
+  "너는 OPRN RPG 편집기의 조수(v2)다. 역할 분담: 너는 «무엇을» 정한다(명세), 함수가 «어떻게» 짓는다(결정론 빌더), 다른 눈(독립 비평가)이 1배 그림을 본다.",
+  "고리: 1) 요청을 읽고 명세를 쓴다 → 2) 동사(make_place·add_people·add_event·draw_object)를 부른다 → 3) 결과의 그림·기계 검사·비평 major 를 본다 → 4) 고칠 수 있는 major 는 edit_place 패치로 고친다(맵당 3바퀴) → 5) 짧게 보고한다.",
+  "규칙:",
+  "- 칸 좌표·타일 번호·평면 문자열을 지어내지 않는다. 자리는 낱말(입구·광장·카운터 앞…)로 말하고, 비평가가 짚은 좌표만 near/at 으로 넘긴다.",
+  "- 요청의 모든 부분(장소·사람·대사·사건·물건)을 빠짐없이 동사로 옮긴다. 이미 있는 맵을 고치라는 요청이면 make_place 로 새로 짓지 말고 edit_place(mapId=그 맵)를 쓴다.",
+  "- 한 동사에 한 번에 담는다(같은 장소를 make_place 로 두 번 짓지 않는다). 여러 층은 floors/zones.floor 로 한 번에.",
+  "- 「다 됐다」는 비평 major 0 이고 기계 검사가 통과했을 때만 말한다. 아니면 남은 문제를 그대로 적는다.",
+  "- 그림·부품이 없어 못 한 것(missingArt)은 보고에 반드시 적는다. 비슷한 다른 물건으로 몰래 바꿔 넣지 않는다. 칩셋에 없는 물건을 사용자가 원하면 draw_object 를 쓴다.",
+  "- 묻는 것은 정말 갈림길일 때만(ask_user). 보통은 합리적으로 정해서 짓고 보고에 「이렇게 정했다」고 쓴다.",
+  "- 보고는 한국어 3~6줄: 지은 것(맵 이름), 검사 결과(통과/남은 문제), 못 한 것.",
+].join("\n");
+
+export const V2_CARDS: readonly string[] = [INTERIOR_CARD, VILLAGE_CARD, DUNGEON_CARD, JP_CITY_CARD, PEOPLE_CARD, EVENT_CARD, DRAW_OBJECT_CARD];
+
+/** 지금 프로젝트를 모델이 알 만큼만 — 맵(이름·칩셋·크기·사람 수·비었는지), 지금 보는 맵, 시작 맵. */
+export function projectBrief(project: Project, currentMapId?: string): string {
+  const maps = Object.values(project.maps).slice(0, 24).map((m) => {
+    const filled = m.lowerTiles.some((t) => (t ?? -1) >= 0);
+    const people = (m.events ?? []).filter((e) => e.pages?.[0]?.graphic).length;
+    return `- ${m.id} 「${m.name}」 ${m.tilesetId} ${m.width}×${m.height}${filled ? "" : " (빈 맵)"}${people ? ` 사람·물체 ${people}` : ""}${m.id === currentMapId ? " ← 지금 보는 맵" : ""}${m.id === project.startMapId ? " (시작 맵)" : ""}`;
+  });
+  return ["[지금 프로젝트]", ...maps, Object.keys(project.maps).length > 24 ? `…맵 ${Object.keys(project.maps).length}개 중 24개만` : ""].filter(Boolean).join("\n");
+}
+
+export function buildV2SystemPrompt(project: Project, currentMapId?: string): string[] {
+  return [V2_CORE_PROMPT, "[지식 카드]", ...V2_CARDS, projectBrief(project, currentMapId)];
+}

@@ -291,6 +291,20 @@ export const interiorBuilder: PlaceBuilder = {
       first = build(run, fresh);
       if (!first.ok) return { ok: false, mapIds: [], summary: `실내를 짓지 못했다: ${first.summary}`, warnings: notes, missingArt: missing, calls: run.calls };
     }
+    // 올라가는 계단이 든 방은 건물 맨 북쪽 바깥 벽에 붙어야 한다(칸막이 속 계단 경고) — 그런 배치 후보를 고른다.
+    const stairZone = rooms.find((r) => (r.zone.anchors ?? []).some((a) => /계단|stair/iu.test(a) && /올라|위층|2층|up/iu.test(a)));
+    const northmost = (a: Attempt) => {
+      const rr = (a.data?.rebuild as Rebuild | undefined)?.rooms ?? [];
+      const top = Math.min(...rr.map((r) => r.y0));
+      return rr.find((r) => r.id === stairZone?.id)?.y0 === top;
+    };
+    if (stairZone && first.ok && !northmost(first) && !seed) {
+      for (let v = 1; v <= 3; v++) {
+        const alt = build(run, { ...base, mapId: String(first.data?.mapId ?? mapId), layout: { ...(base.layout as object), variant: (variant + v) % 4 } });
+        if (alt.ok && northmost(alt)) { first = alt; break; }
+      }
+      if (!northmost(first)) first = build(run, { ...base, mapId: String(first.data?.mapId ?? mapId) });
+    }
     const builtMapId = String(first.data?.mapId ?? mapId);
     let rb = first.data?.rebuild as Rebuild;
     let args = argsFromRebuild({ tileset: tilesetId, mapId: builtMapId, name: spec.name }, rb);
@@ -304,9 +318,14 @@ export const interiorBuilder: PlaceBuilder = {
       const part = findPart(roomSpec, /계단|stair/iu.test(what) && /올라|위층|2층|up/iu.test(what) ? "stairs up wood" : what);
       if (!part) { missing.push(`${what}(${room.id}) — 부품 사전에 없다`); continue; }
       if (rb.objects.some((o) => o.id === part.id) && !/계단|stair/iu.test(what)) { placed.push({ zone: room.id, what, id: part.id }); continue; }
-      const done = placeAnchor(run, roomSpec, args, rb, room.id, part, undefined, true, protect(), openings);
+      // 올라가는 계단: 이 방이 맨 북쪽 바깥 벽에 닿지 않으면(위에 다른 방) 맨 북쪽 방 벽에 단다 — 칸막이 속으로 오르는 계단은 틀린 그림이다.
+      const isUp = part.stairs === "up" || /stairs up/u.test(part.id);
+      const top = Math.min(...rb.rooms.map((r) => r.y0));
+      const hostId = isUp && rb.rooms.find((r) => r.id === room.id)?.y0 !== top ? (rb.rooms.find((r) => r.y0 === top)?.id ?? room.id) : room.id;
+      if (hostId !== room.id) notes.push(`${what}: ${room.id} 위에 다른 방이 있어 맨 북쪽 ${hostId} 벽에 달았다`);
+      const done = placeAnchor(run, roomSpec, args, rb, hostId, part, undefined, true, protect(), openings);
       if (!done) { missing.push(`${what}(${room.id}) — 놓을 빈 자리가 없다`); continue; }
-      args = done.args; rb = done.rb; placed.push({ zone: room.id, what, id: part.id });
+      args = done.args; rb = done.rb; placed.push({ zone: hostId, what, id: part.id });
       const last = rb.objects[rb.objects.length - 1]!; anchorKeys.add(`${last.id}@${last.x},${last.y}`);
       if (part.stairs === "up" || /stairs up/u.test(part.id)) { const o = rb.objects[rb.objects.length - 1]!; stairsUp = { id: part.id, x: o.x, y: o.y, w: part.w }; }
     }
@@ -341,7 +360,10 @@ export const interiorBuilder: PlaceBuilder = {
       if (up.ok) {
         upperMapId = String(up.data?.mapId);
         let urb = up.data?.rebuild as Rebuild;
-        let uargs = argsFromRebuild({ tileset: tilesetId, mapId: upperMapId, name: `${spec.name} 2층` }, urb);
+        // 위층은 바깥으로 나가는 남쪽 문이 없다(계단으로만 오간다).
+        let uargs: Record<string, unknown> = { ...argsFromRebuild({ tileset: tilesetId, mapId: upperMapId, name: `${spec.name} 2층` }, urb), exitWidth: 0, exit: { ...(urb.exit as object), width: 0 } };
+        urb = { ...urb, exit: uargs.exit, objects: urb.objects.filter((o) => !/doormat|door mat/u.test(o.id)) };
+        uargs = { ...uargs, objects: urb.objects };
         const down = findPart(roomSpec, "stairwell down");
         const hub = urb.rooms.find((r) => /corridor|hall/u.test(r.id)) ?? urb.rooms[0]!;
         const placedDown = down ? placeAnchor(run, roomSpec, uargs, urb, hub.id, down, undefined, true, new Set(), openingColumns(urb, up.data)) : undefined;
@@ -350,6 +372,9 @@ export const interiorBuilder: PlaceBuilder = {
           const d = urb.objects[urb.objects.length - 1]!;
           // 위층 계단통 → 아래층 계단 앞, 아래층 계단 → 위층 계단통 앞. 칸은 도구의 계단 계약(fitStairTransfers)이 맞춘다.
           uargs = { ...uargs, links: [{ x: d.x + 1, y: d.y, toMapId: builtMapId, toX: stairsUp.x + 1, toY: stairsUp.y + 1, direction: "down" }] };
+          build(run, uargs);
+          const ufill = fillBare(run, roomSpec, uargs, urb, new Map(urb.rooms.map((r) => [r.id, r.id.replace(/\d+$/u, "")] as const)), INTERIOR_BARE_FLOOR_LIMIT);
+          uargs = ufill.args; urb = ufill.rb;
           const upFinal = build(run, uargs);
           if (upFinal.ok) {
             args = { ...args, links: [{ x: stairsUp.x + 1, y: stairsUp.y, toMapId: upperMapId, toX: d.x + 1, toY: d.y + 2, direction: "up" }] };

@@ -95,3 +95,27 @@ export function summarizeChecks(checks: readonly MachineCheck[]): string {
   const bad = checks.filter((c) => !c.ok);
   return bad.length ? `기계 검사 ${checks.length - bad.length}/${checks.length} 통과 — 문제: ${bad.map((c) => `[${c.id}] ${c.detail}`).join(" / ").slice(0, 900)}` : `기계 검사 ${checks.length}개 모두 통과`;
 }
+
+/** 플레이어 시작 칸이 이 맵의 큰 덩이(걸어서 이어진 가장 넓은 땅)에 있지 않으면 그 덩이의 아래 가운데에 가까운 칸으로 옮긴다.
+ * 마을 도구는 시작 칸을 옮기지 않는다 — 빈 프로젝트의 기본 시작 칸이 지붕 옆 막힌 틈에 남았다(2026-10-23 v2 연기 시험: 닿는 칸 5%). */
+export function fixPlayerStart(project: Project, mapIds: readonly string[]): { project: Project; note?: string } {
+  const map = project.maps[project.startMapId];
+  if (!map || !mapIds.includes(map.id)) return { project };
+  const seen = new Uint8Array(map.width * map.height);
+  let best: number[] = [];
+  for (let i = 0; i < seen.length; i++) {
+    if (seen[i] || !isPassable(project, map, i % map.width, Math.floor(i / map.width))) continue;
+    const reach = terrainReachability(project, map, { x: i % map.width, y: Math.floor(i / map.width) });
+    const cells: number[] = [];
+    for (let j = 0; j < reach.length; j++) if (reach[j]) { cells.push(j); seen[j] = 1; }
+    seen[i] = 1;
+    if (cells.length > best.length) best = cells;
+    if (best.length > seen.length / 2) break;
+  }
+  const s = project.startPos;
+  if (!best.length || best.includes(s.y * map.width + s.x)) return { project };
+  const tx = map.width / 2, ty = map.height - 1;
+  const pick = best.reduce((a, b) => (Math.hypot(b % map.width - tx, Math.floor(b / map.width) - ty) < Math.hypot(a % map.width - tx, Math.floor(a / map.width) - ty) ? b : a));
+  const startPos = { ...s, x: pick % map.width, y: Math.floor(pick / map.width) };
+  return { project: { ...project, startPos }, note: `시작 칸 (${s.x},${s.y})이 막힌 틈이라 큰 땅의 (${startPos.x},${startPos.y})로 옮겼다` };
+}

@@ -182,26 +182,8 @@ export interface RunPiAgentOptions {
   readonly v2?: PiAssistantV2Hooks;
 }
 
-/** 조수 v2 가 runPiAgent 에 끼우는 두 갈고리. 환경은 이 실행의 사본·기록·보조 호출·1배 렌더를 그대로 넘긴다. */
-export interface PiAssistantV2Env {
-  readonly ctx: ToolContext;
-  readonly request: PiAgentRequest;
-  readonly emit: (event: PiAgentEvent) => void;
-  /** 쓰기 기록 — 시공 재생 단계(constructionLogs)를 다음 체크포인트에 싣고 tool_end 요약을 채운다. */
-  readonly record: (record: PiToolCallRecord) => void;
-  /** 조수와 같은 모델로 따로 부르는 한 번짜리 호출(비평가·해석) — 사용량은 stats.review 로 따로 모인다. */
-  readonly sideChat: (messages: readonly unknown[], signal?: AbortSignal) => Promise<string>;
-  /** 맵 한 구역을 약 1배 PNG(data URL)로. 렌더 경로가 없으면 undefined. */
-  readonly render?: (mapId: string, x: number, y: number, w: number, h: number) => Promise<string>;
-  /** 동사 안에서 중간 결과를 편집기에 바로 싣는다(첫 짓기를 비평 전에 보이게). */
-  readonly checkpoint: (label: string) => Promise<void>;
-  readonly signal?: AbortSignal;
-}
-export interface PiAssistantV2Hooks {
-  readonly tools: (env: PiAssistantV2Env) => PiToolShape[];
-  /** 주 지시가 끝난 뒤 한 번 — 글을 돌려주면 그 글로 한 차례 더 돈다(완료 조건 미충족 보고 등). */
-  readonly afterMain?: (env: PiAssistantV2Env) => Promise<string | undefined> | string | undefined;
-}
+export type { PiAssistantV2Env, PiAssistantV2Hooks } from "../../src/ai/v2/env.ts";
+import type { PiAssistantV2Env, PiAssistantV2Hooks } from "../../src/ai/v2/env.ts";
 
 const DEFAULT_MAX_TURNS = 200;
 const DEFAULT_TIMEOUT_MS = PI_AGENT_DEFAULT_TIMEOUT_MS;
