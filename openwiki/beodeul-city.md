@@ -148,6 +148,11 @@ SQLite revision 7 저장·재로드와 전용 플레이어 8비트(모든 집 �
 - **조수 시험**: 시드 `scene-lessons-seed.json` 의 `walled-beodeul-town`. 실행 `qa-runs/harnesses/assistant-capability/2026-10-22-beodeul-wall-r1..r5`
   (Claude Code Sonnet 5.5 high **조수 대용**, 실제 입력창 경로, SQLite 저장·재로드 일치). 성문 걷기 영상은 출하 player 에서 r5 저장본을 실제 방향키로
   (`r5/.../gatefilm/gatewalk.mp4`). r3·r4 의 집 수 부족(3~4채)은 위 「집 수·길 토막」에서 넓혀 다시 짓기로 고쳤다.
+  3판 다시 그림 뒤 `2026-10-22-beodeul-wall3-r1`: 60×46·집 5·광장·망루 5·계단 2, 문 6곳 도달, 저장·재로드 해시 일치. 출하 player 성문 걷기 `.../attempt-1/gatewalk2/film.mp4`(막힌 걸음 0).
+- **3판 검수(r11~r21)**: 새 Opus 적대 VQA 를 판마다 새로 띄워 0 major 까지(r17 PASS 뒤 r18~r20 배치 major 로 다시 FAIL, r21 PASS 8/10 —
+  `harness-data/object-gate/vqa/beodeul-town-wall-3e-r21/` 공용 관문 자료). `object-gate review` 18장(gate18): 13 PASS · REFER 4 · FAIL 1(망루 화풍) —
+  그 5장은 새 Argon 재검수 전부 PASS. 프로필이 미보정이라 18장 모두 「delegated by user to supervisor 2026-10-23」 위임 허용(근거 파일 경로)으로 기록하고,
+  옛 판 허용 6장은 `supersede-holds` 로 물렸다. 굽기는 관문을 켠 채(`--no-gate` 없이) 통과한다. 정식 보정 프로필 영수증은 아니다.
 - **참고문서**: 번들 `beodeulCityReferences.json` 용도 `beodeul-town-wall`(출처 `tiledata/beodeul-town-wall/`, 그림 `public/assets/beodeul-town-wall/`,
   생성 `wall_refs.py` — 예시 둘레·정상/오류 그림 4종·좌표 검사 `wrong-layer`·`face-missing`·`wall-gap`·`gate-blocked`).
 - **기존 프로젝트 — 이식 칸 옮기기(2026-10-22)**: 예전에는 접목(tileGrafts)이 28,544 이후를 쓰는 프로젝트(대부분)가 성벽을 못 받았다.
