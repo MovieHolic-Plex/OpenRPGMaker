@@ -11,6 +11,7 @@ import assemble as AS  # noqa: E402
 import dot  # noqa: E402
 import gate as G  # noqa: E402
 import helpers as H  # noqa: E402
+import roofband  # noqa: E402
 from PIL import Image  # noqa: E402
 import numpy as np  # noqa: E402
 
@@ -67,12 +68,19 @@ class AssemblyTest(unittest.TestCase):
         self.assertTrue(all(c == '★' for row in kit['upper'][:kit['roofRows']] for c in row if c != '.'))
 
     def test_roof_ratio_inside_design_range(self):
+        band = roofband.band()
+        items = H.items()
         for bid, recipe in H.buildings().items():
             res = AS.assemble(recipe, self.parts, PAL, H.THEME)
-            ratio = res['kit']['roofRows'] / res['kit']['rows']
             with self.subTest(building=bid):
-                self.assertGreaterEqual(ratio, AS.TOP_MIN)
-                self.assertLessEqual(ratio, AS.TOP_MAX)
+                for m in AS.masses(recipe):
+                    if items[m['roof']].get('spire'):
+                        continue
+                    rows = items[m['roof']]['pieces'][0]['size'][1]
+                    ratio = rows / AS.mass_rows(m, items)
+                    self.assertGreaterEqual(ratio, band['ratio_min'], m['id'])
+                    self.assertLessEqual(ratio, band['ratio_max'], m['id'])
+                self.assertNotIn('A6', {c['code'] for c in AS.run_checks(res)})
 
     def test_missing_part_is_reported_not_crashed(self):
         parts = dict(self.parts)

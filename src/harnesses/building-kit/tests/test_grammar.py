@@ -116,12 +116,12 @@ class MassingTest(unittest.TestCase):
         res = AS.assemble(two_mass(), self.parts, PAL, H.THEME)
         self.assertEqual([m['id'] for m in res['masses']], ['front', 'back'])
         self.assertEqual(res['width'], 6)
-        self.assertEqual(res['height'], max(m['depth'] + m['rows'] for m in res['masses']))
+        self.assertEqual(res['height'], max(m['rows'] for m in res['masses']))
         front = next(m for m in res['masses'] if m['id'] == 'front')
         back = next(m for m in res['masses'] if m['id'] == 'back')
         self.assertEqual(back['top'], 0)
-        self.assertEqual(front['top'], res['height'] - front['rows'] - front['depth'])
-        self.assertGreater(front['top'], back['top'])
+        self.assertEqual(front['top'], res['height'] - front['rows'])
+        self.assertEqual(front['top'], back['top'], 'depth 는 세로로 밀지 않는다 — 같은 땅 행')
 
     def test_front_mass_pixels_win_where_masses_overlap(self):
         parts = H.parts('A')
@@ -264,7 +264,7 @@ class SeedGrammarTest(unittest.TestCase):
         for theme in dot.THEMES:
             rounds = dot.seed(theme)['rounds']
             for rid, rd in rounds.items():
-                if rid == 'style-r3':
+                if rid in ('style-r3', 'style-r4'):
                     continue
                 with self.subTest(theme=theme, round=rid):
                     self.assertEqual(rd.get('superseded'), 'style-r3')
@@ -311,7 +311,7 @@ class SeedGrammarTest(unittest.TestCase):
     def test_old_rounds_are_marked_superseded(self):
         for theme in dot.THEMES:
             for rid, rd in dot.seed(theme)['rounds'].items():
-                if rid == 'style-r3':
+                if rid in ('style-r3', 'style-r4'):
                     continue
                 with self.subTest(theme=theme, round=rid):
                     self.assertEqual(rd.get('superseded'), 'style-r3')

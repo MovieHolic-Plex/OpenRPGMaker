@@ -68,7 +68,7 @@ def parts(line, overrides=None, extra=()):
 
 
 def buildings():
-    return {b['id']: b for b in seed()['buildings']}
+    return {b['id']: b for b in seed()['buildings'] if b['id'] in seed()['rounds'][ROUND].get('buildings', [])}
 
 def round_buildings(rid=ROUND):
     ids = seed()['rounds'][rid].get('buildings')

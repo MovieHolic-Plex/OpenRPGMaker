@@ -23,19 +23,31 @@ band/base l·m·r. 지붕 폭 = 벽 폭 = cols, 최소 4칸(l 2 + r 2).
   A4 건물의 맨 아래 불투명 행이 그림 맨 아래 칸 경계 — 질량마다 칸 열의 맨 아래 불투명 화소가 그 질량의
      바닥 행이다(기단이 없으면 벽이, 있으면 기단이 바닥에 닿는다)
   A5 질량마다 맞닿은 조각 쌍의 이음(gate.check_join)
-  A6 질량마다 지붕 윗면 높이 비율 0.30~0.62 (버들항 기준 건물 실측 0.30~0.60 — 1층은 3행 지붕이면 3/5)
+  A6 질량마다 지붕 윗면 높이 비율이 버들항 기준 실측 밴드(roofband) 안 — 모임·박공 0.37~0.62,
+     평지붕·외쪽 0.30~0.62, 첨탑·원뿔은 세로 특징이라 밴드 밖(2행 이상만 본다)
   A7 질량들이 서로 닿거나 겹친다(가로로 빈틈 없이 이어지고 depth 차 ≤ 1, 앞줄 질량이 있다) — 떨어진 별개 건물 금지
   A8 masses 가 둘 이상이면 실루엣이 네모 판이 아니다(칸 열의 꼭대기 높이가 한 칸 이상 갈린다)
+  A9 모임·박공 지붕은 용마루(지붕 맨 윗행의 가장 긴 불투명 구간)가 처마 폭의 0.35 이상 — 뾰족한 피라미드 금지
+  A10 질량이 모두 같은 땅 행에 선다 — depth 는 앞뒤 순서만 정하지 세로로 밀지 않는다. 질량마다 맨 아래 불투명 행이
+     같아야 하고, 건물 발자국 안에 질량 밑으로 투명(땅)이 비치면 안 된다. 층 높이도 질량마다 같다(벽 조각 높이 균일)
 """
 import numpy as np
 
 import dot
 import gate as G
+import roofband
 
 LETTER_ROLE = {'L': 'l', 'M': 'm', 'W': 'w', 'D': 'd', 'R': 'r'}
 ROOF_END = 2
 MIN_COLS = 4
-TOP_MIN, TOP_MAX = 0.30, 0.62
+FLAT_MIN, FLAT_MAX = 0.30, 0.62
+STOREY_CELLS = 2
+
+
+def roof_kind(item):
+    if item.get('spire') or item.get('cone'):
+        return 'spire'
+    return 'pitched' if int(item.get('end', ROOF_END)) == 2 else 'flat'
 
 def _r(code, level, ok, msg):
     return {'code': code, 'level': level, 'ok': bool(ok), 'msg': msg}
@@ -114,7 +126,10 @@ def assemble(recipe, items, pal, theme):
     plans = []
     for m in masses(recipe):
         roof_item = items[m['roof']]['item']
-        rl, rm, rr = (_role(roof_item, r) for r in ('l', 'm', 'r'))
+        if roof_item.get('spire'):
+            rl = rm = rr = next((pc for pc in roof_item['pieces'] if pc.get('role') in ('m', 'x')), None)
+        else:
+            rl, rm, rr = (_role(roof_item, r) for r in ('l', 'm', 'r'))
         if not (rl and rm and rr):
             checks.append(_r('A0', 'FAIL', False, f'질량 {m["id"]}: 지붕 세트 {m["roof"]} 에 l·m·r 조각이 없다'))
             return {'img': None, 'kit': None, 'pieces': [], 'door': None, 'masses': [], 'checks': checks}
@@ -146,11 +161,12 @@ def assemble(recipe, items, pal, theme):
         plans.append(plan)
 
     width = max(p['x'] + p['cols'] for p in plans)
-    height = max(p['depth'] + p['h'] for p in plans)
+    height = max(p['h'] for p in plans)
     cv = dot.Cv(width * dot.T, height * dot.T)
     owner = np.full((height * dot.T, width * dot.T), -1, int)
     placed = []
     doors = []
+    bad3_pre = []
 
     def put(plan, item_id, sheet_img, pc, cx, cy, kind):
         crop = _piece_crop(sheet_img, pc)
@@ -158,7 +174,9 @@ def assemble(recipe, items, pal, theme):
         a = np.array(crop.convert('RGBA'))
         op = a[:, :, 3] == 255
         y0, x0 = cy * dot.T, cx * dot.T
-        owner[y0:y0 + a.shape[0], x0:x0 + a.shape[1]][op] = plan['depth']
+        h_, w_ = min(a.shape[0], owner.shape[0] - y0), min(a.shape[1], owner.shape[1] - x0)
+        if h_ > 0 and w_ > 0:
+            owner[y0:y0 + h_, x0:x0 + w_][op[:h_, :w_]] = plan['depth']
         rec = {'item': item_id, 'piece': pc['id'], 'role': pc.get('role'), 'kind': kind,
                'at': [cx, cy], 'size': pc['size'], 'crop': crop, 'inset': int(pc.get('inset') or 0),
                'mass': plan['m']['id'], 'depth': plan['depth']}
@@ -166,18 +184,26 @@ def assemble(recipe, items, pal, theme):
         return rec
 
     for plan in sorted(plans, key=lambda p: -p['depth']):
-        y = height - plan['depth'] - plan['h']
+        y = height - plan['h']
         top = y
         nm = plan['cols'] - plan['lw'] - plan['rw']
+        spire = roof_kind(plan['roof_item']) == 'spire'
+        if spire:
+            nm = plan['cols'] - 2 if plan['cols'] > 1 else 0
         if nm < 0:
             checks.append(_r('A3', 'FAIL', False,
                              f'질량 {plan["m"]["id"]}: cols {plan["cols"]} < 지붕 끝 {plan["lw"]}+{plan["rw"]}칸 — 최소 {MIN_COLS}칸'))
             return {'img': None, 'kit': None, 'pieces': placed, 'door': None, 'masses': [], 'checks': checks}
-        roles = ['l'] + ['m'] * nm + ['r']
+        roles = ['m'] if (spire and plan['cols'] == 1) else ['l'] + ['m'] * nm + ['r']
+        roof_w = sum(_role(plan['roof_item'], r)['size'][0] for r in roles)
+        if roof_w > plan['cols']:
+            bad3_pre.append(f'{plan["m"]["id"]} 지붕 폭 {roof_w}칸 > 몸통 {plan["cols"]}칸')
+            roles = roles[:max(1, plan['cols'])]
         cx = plan['x']
+        plan['roof_recs'] = []
         for role in roles:
             pc = _role(plan['roof_item'], role)
-            put(plan, plan['roof'], plan['roof_img'], pc, cx, y, 'roof')
+            plan['roof_recs'].append(put(plan, plan['roof'], plan['roof_img'], pc, cx, y, 'roof'))
             cx += pc['size'][0]
         plan['roof_at'] = (plan['x'], y)
         y += plan['rh']
@@ -271,10 +297,17 @@ def assemble(recipe, items, pal, theme):
                      '지붕·층 사이 틈 없음' if not gaps else f'지붕/벽·층 사이 틈 {gaps[:6]}'))
 
     bad3 = []
+    bad3 += bad3_pre
     if int(recipe.get('overhang', 0)) != 0:
         bad3.append(f'overhang {recipe.get("overhang")} — 처마는 지붕 l·r 조각 안쪽 2~3px 에 그린다')
     for plan in plans:
         tag = plan['m']['id']
+        if roof_kind(plan['roof_item']) == 'spire':
+            if plan['cols'] not in (1, 2):
+                bad3.append(f'{tag} 첨탑 질량 폭 {plan["cols"]}칸 — 탑은 1~2칸')
+            if plan['lw'] != 1 or plan['rw'] != 1:
+                bad3.append(f'{tag} 첨탑 지붕 끝 폭 l {plan["lw"]} r {plan["rw"]} (1칸)')
+            continue
         if plan['cols'] < MIN_COLS:
             bad3.append(f'{tag} cols {plan["cols"]} < {MIN_COLS}(모임지붕 사선 l·r 2칸씩)')
         if plan['lw'] != plan['end'] or plan['rw'] != plan['end']:
@@ -289,14 +322,15 @@ def assemble(recipe, items, pal, theme):
     if not op[bottom].any():
         off.append('그림 맨 아래 행이 비었다 — 건물이 뜬다')
     for plan in plans:
-        base = bottom - plan['depth'] * dot.T
         for i in range(plan['cols']):
             x = (plan['x'] + i) * dot.T
-            if not op[base, x:x + dot.T].any() and not op[base + 1:, x:x + dot.T].any():
-                off.append(f'{plan["m"]["id"]} {plan["x"] + i}열이 자기 바닥(행 {base // dot.T})에도 앞 질량에도 안 닿는다')
+            if not op[bottom, x:x + dot.T].any() and not op[bottom + 1:, x:x + dot.T].any():
+                off.append(f'{plan["m"]["id"]} {plan["x"] + i}열이 자기 바닥(행 {bottom // dot.T})에도 안 닿는다')
     checks.append(_r('A4', 'FAIL', not off,
                      '맨 아래 불투명 행이 칸 경계 — 기단 없으면 벽이 땅에 닿는다' if not off
                      else f'건물이 뜬다/바닥보다 아래: {off[:4]}'))
+
+    checks.append(_a10(plans, op, height))
 
     a5 = [_a5([p for p in placed if p['mass'] == plan['m']['id']]) for plan in plans]
     bad5 = [x for x in a5 if not x['ok']]
@@ -304,13 +338,36 @@ def assemble(recipe, items, pal, theme):
                      a5[0]['msg'] if len(a5) == 1 and not bad5 else
                      (', '.join(x['msg'] for x in bad5) if bad5 else f'질량 {len(a5)}개 맞닿은 조각 이음 통과')))
 
+    band = roofband.band()
     for plan in plans:
         ratio = plan['rh'] / max(plan['h'], 1)
-        checks.append(_r('A6', 'FAIL', TOP_MIN <= ratio <= TOP_MAX,
-                         f'{plan["m"]["id"]} 지붕 {plan["rh"]}행 / 질량 {plan["h"]}행 = {ratio:.2f} '
-                         f'({TOP_MIN:.2f}~{TOP_MAX:.2f}; 버들항 기준 건물 실측 0.30~0.60)'))
+        kind = roof_kind(plan['roof_item'])
+        if kind == 'spire':
+            ok = plan['rh'] >= 2
+            span = '첨탑·원뿔은 세로 특징 — 비율 밴드 밖(2행 이상)'
+        elif kind == 'pitched':
+            ok = band['ratio_min'] <= ratio <= band['ratio_max']
+            span = f"{band['ratio_min']:.2f}~{band['ratio_max']:.2f} (버들항 기준 실측)"
+        else:
+            ok = FLAT_MIN <= ratio <= FLAT_MAX
+            span = f'{FLAT_MIN:.2f}~{FLAT_MAX:.2f} (평지붕·외쪽)'
+        checks.append(_r('A6', 'FAIL', ok,
+                         f'{plan["m"]["id"]} 지붕 {plan["rh"]}행 / 질량 {plan["h"]}행 = {ratio:.2f} ({span})'))
 
     checks.append(_a7(plans, len(masses(recipe)) > 1))
+
+    ridge_bad = []
+    for plan in plans:
+        if roof_kind(plan['roof_item']) != 'pitched':
+            continue
+        frac, w = _ridge_frac(plan.get('roof_recs') or [])
+        if frac < band['ridge_min']:
+            ridge_bad.append(f'{plan["m"]["id"]} 용마루 {int(round(frac * w))}px / 처마 {w}px = {frac:.2f}')
+    checks.append(_r('A9', 'FAIL', not ridge_bad,
+                     f'용마루가 처마 폭의 {band["ridge_min"]:.2f} 이상' if not ridge_bad
+                     else f'뾰족한 지붕(용마루 하한 {band["ridge_min"]:.2f}): ' + '; '.join(ridge_bad)))
+
+    checks.append(_a11(plans, pal))
 
     if len(plans) > 1:
         tops = []
@@ -328,6 +385,16 @@ def assemble(recipe, items, pal, theme):
             'masses': [{'id': p['m']['id'], 'x': p['x'], 'depth': p['depth'], 'cols': p['cols'],
                         'rows': p['h'], 'top': p['top'], 'roof': p['roof'],
                         'walls': [w['item'] for w in p['walls']]} for p in plans]}
+
+def mass_rows(m, items):
+    """레시피 질량 하나의 세로 칸 수(지붕 + 층 벽 + 층 띠 + 기단). 부품 그림 없이 계약만으로 센다."""
+    roof = items[m['roof']]['pieces'][0]['size'][1]
+    walls = sum(items[row['item'] if isinstance(row, dict) else m.get('wall')]['pieces'][0]['size'][1]
+                for row in (m.get('walls') or []))
+    band = items[m['band']]['pieces'][0]['size'][1] if m.get('band') else 0
+    base = items[m['base']]['pieces'][0]['size'][1] if m.get('base') else 0
+    return roof + walls + band * max(0, int(m.get('storeys') or len(m.get('walls') or [])) - 1) + base
+
 
 def mass_problems(ms):
     if len(ms) < 2:
@@ -348,6 +415,20 @@ def mass_problems(ms):
     return bad
 
 def roof_problems(item):
+    if item.get('spire'):
+        bad = []
+        pcs = item['pieces']
+        if len(pcs) != 3 or {pc.get('role') for pc in pcs} != {'l', 'm', 'r'}:
+            return ['첨탑 세트는 l·m·r 세 조각(각 1칸)이다']
+        if any(pc['size'][0] != 1 for pc in pcs):
+            bad.append('첨탑 조각 폭이 1칸이 아니다')
+        if len({pc['size'][1] for pc in pcs}) != 1:
+            bad.append('조각 높이가 다르다')
+        if pcs[0]['size'][1] < 3:
+            bad.append(f'첨탑 {pcs[0]["size"][1]}행 — 3행 이상의 가늘고 긴 첨탑')
+        if item['size'][0] != 3:
+            bad.append(f'첨탑 세트 폭 {item["size"][0]} — 3칸(l 1 + m 1 + r 1)')
+        return bad
     rl, rm, rr = (_role(item, r) for r in ('l', 'm', 'r'))
     if not (rl and rm and rr):
         return ['l·m·r 조각이 없다']
@@ -361,11 +442,99 @@ def roof_problems(item):
         bad.append(f'가운데 폭 {rm["size"][0]} — 1칸 반복이다')
     if len({rl['size'][1], rm['size'][1], rr['size'][1]}) != 1:
         bad.append('조각 높이가 다르다')
-    if rl['size'][1] not in (3, 4):
-        bad.append(f'지붕 {rl["size"][1]}행 — 1층 3행, 2층 4행(.tall)')
+    rows = rl['size'][1]
+    if rows not in (2, 3, 4):
+        bad.append(f'지붕 {rows}행 — 2~4행(style-r4 부터 1층 2행·2층 3행, 옛 판은 3·4행)')
     if item['size'][0] != end * 2 + 1:
         bad.append(f'세트 폭 {item["size"][0]} — l {end} + m 1 + r {end} = {end * 2 + 1}칸')
     return bad
+
+def _ridge_frac(recs):
+    """질량의 지붕 조각을 왼쪽부터 이어 붙여 맨 윗행의 가장 긴 불투명 구간을 잰다(가림 영향 없음)."""
+    if not recs:
+        return 0.0, 0
+    strip = np.concatenate([np.array(r['crop'].convert('RGBA'))
+                            for r in sorted(recs, key=lambda r: r['at'][0])], axis=1)
+    op = strip[:, :, 3] == 255
+    w = int(op.shape[1])
+    best = 0
+    for a, b in _row_runs(op[0]):
+        best = max(best, b - a + 1)
+    return best / max(w, 1), w
+
+
+def _row_runs(row):
+    idx = np.nonzero(row)[0]
+    if not len(idx):
+        return []
+    out, start, prev = [], int(idx[0]), int(idx[0])
+    for x in idx[1:]:
+        x = int(x)
+        if x != prev + 1:
+            out.append((start, prev))
+            start = x
+        prev = x
+    out.append((start, prev))
+    return out
+
+
+def _a10(plans, op, height):
+    bad = []
+    grounds = {}
+    for plan in plans:
+        x0, x1 = plan['x'] * dot.T, (plan['x'] + plan['cols']) * dot.T
+        rows = np.nonzero(op[:, x0:x1].any(axis=1))[0]
+        g = int(rows.max()) if len(rows) else -1
+        grounds[plan['m']['id']] = g
+        if g >= 0 and not op[g + 1:, x0:x1].all():
+            holes = int((~op[g + 1:, x0:x1]).sum())
+            bad.append(f'{plan["m"]["id"]} 밑으로 빈 칸(땅) {holes}px — 질량이 땅에서 떴다')
+    if len(set(grounds.values())) > 1:
+        bad.append('질량마다 맨 아래 불투명 행이 다르다: '
+                   + ', '.join(f'{k} 행 {v // dot.T}' for k, v in grounds.items()))
+    heights = {}
+    for plan in plans:
+        hs = {w['h'] for w in plan['walls']}
+        if len(hs) > 1:
+            bad.append(f'{plan["m"]["id"]} 층 높이가 층마다 다르다 {sorted(hs)}')
+        if hs and hs != {STOREY_CELLS}:
+            bad.append(f'{plan["m"]["id"]} 벽 높이 {sorted(hs)} — 층은 {STOREY_CELLS}칸이다')
+        heights[plan['m']['id']] = max(hs) if hs else 0
+    if len(set(heights.values())) > 1:
+        bad.append(f'질량마다 층 높이가 다르다 {heights}')
+    return _r('A10', 'FAIL', not bad,
+              f'질량 {len(plans)}개가 같은 땅 행(행 {height - 1})에 서고 질량 밑에 땅이 비치지 않는다'
+              if not bad else '; '.join(bad))
+
+
+def _a11(plans, pal):
+    """탑 지붕(첨탑·원뿔) — 탑 몸통보다 좌우 2px 썩만 넓고, 건물 주 지붕과 같은 재료 램프."""
+    bad = []
+    main = max((p for p in plans if roof_kind(p['roof_item']) != 'spire'),
+               key=lambda p: p['cols'] * p['h'], default=None)
+    main_ramp = G.dominant_ramp(np.array(main['roof_img'].convert('RGBA')), pal) if main else None
+    for plan in plans:
+        kind = roof_kind(plan['roof_item'])
+        if kind != 'spire' or plan is main:
+            continue
+        tag = plan['m']['id']
+        recs = plan.get('roof_recs') or []
+        if recs:
+            strip = np.concatenate([np.array(r['crop'].convert('RGBA'))
+                                    for r in sorted(recs, key=lambda r: r['at'][0])], axis=1)
+            xs = np.nonzero((strip[:, :, 3] == 255).any(axis=0))[0]
+            width = int(xs.max() - xs.min() + 1) if len(xs) else 0
+            limit = plan['cols'] * dot.T + 4
+            if width > limit:
+                kindname = '첨탑' if plan['roof_item'].get('spire') else '원뿔'
+                bad.append(f'{tag} {kindname} 폭 {width}px > 탑 몸통 '
+                           f'{plan["cols"] * dot.T}px + 4px')
+            ramp = G.dominant_ramp(strip, pal)
+            if main_ramp and ramp != main_ramp:
+                bad.append(f'{tag} 탑 지붕 재료 램프 {ramp} ≠ 주 지붕 {main_ramp}')
+    return _r('A11', 'FAIL', not bad,
+              '탑 지붕은 탑 몸통 + 좌우 2px 이내이고 주 지붕과 같은 램프' if not bad else '; '.join(bad))
+
 
 def _a7(plans, multi):
     if not multi:

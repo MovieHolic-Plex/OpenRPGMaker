@@ -144,19 +144,43 @@ def _base_rows(line):
 
 ROOF_CELLS = {'roof.hip': 3, 'roof.hip.tall': 4, 'roof.flat': 3, 'roof.crenel': 3,
               'roof.steep': 3, 'roof.steep.tall': 4, 'roof.lean': 3,
-              'roof.mansard': 3, 'roof.mansard.tall': 4, 'roof.cone': 3}
-ROOF_ENDS = {'roof.flat': 1, 'roof.crenel': 1, 'roof.lean': 1}
+              'roof.mansard': 3, 'roof.mansard.tall': 4, 'roof.cone': 3,
+              'roof.hip.low': 2, 'roof.mansard.low': 2, 'roof.spire': 4}
+ROOF_ENDS = {'roof.flat': 1, 'roof.crenel': 1, 'roof.lean': 1, 'roof.spire': 1}
 WALL_MATS = {'wall.storey': 'timber', 'wall.timber': 'timber', 'wall.stone': 'stone',
              'wall.log': 'timber', 'wall.ivy': 'timber'}
 
 def roof(line, item_id):
     cells = ROOF_CELLS[item_id]
     end = ROOF_ENDS.get(item_id, 2)
+    if item_id == 'roof.spire':
+        rows = _spire_rows(line, cells)
+        return {'l': rows, 'm': rows, 'r': rows}
     rows = _roof_rows(line, cells, end)
     w = 16 * end
     out = {'l': [r[:w] for r in rows], 'r': [r[-w:] for r in rows]}
     out['m'] = [r[w:w + 16] for r in rows]
     return out
+
+def _spire_rows(line, cells):
+    ramp = ROOF_RAMP[line]
+    r = [_let(line, ramp, t) for t in range(5)]
+    h = cells * 16
+    rows = []
+    for y in range(h):
+        half = 1 + (7 * y) // (h - 1)
+        out = []
+        for x in range(16):
+            d = abs(x - 7.5)
+            if d > half:
+                out.append('.')
+            elif d > half - 1.5:
+                out.append(r[0])
+            else:
+                out.append(r[4] if x < 8 else r[2])
+        rows.append(''.join(out))
+    return rows
+
 
 def wall(line, item_id, role):
     return _wall_rows(line, WALL_MATS.get(item_id, 'timber'), role)
@@ -169,6 +193,8 @@ def base(line):
 
 ROOFS = {line: _roof_rows(line) for line in 'ABC'}
 ROOFS_TALL = {line: _roof_rows(line, 4) for line in 'ABC'}
+ROOFS_LOW = {line: _roof_rows(line, 2) for line in 'ABC'}
+SPIRES = {line: _spire_rows(line, 4) for line in 'ABC'}
 WALLS = {line: {role: _wall_rows(line, 'timber', role) for role in 'lmwdr'} for line in 'ABC'}
 WALLS_STONE = {line: {role: _wall_rows(line, 'stone', role) for role in 'lmwdr'} for line in 'ABC'}
 BANDS = {line: _band_row(line) for line in 'ABC'}

@@ -996,6 +996,190 @@
     ]
    ],
    "end": 2
+  },
+  {
+   "id": "roof.mansard.low",
+   "wave": "roof",
+   "kind": "set",
+   "title": "낮은 지붕(1층)",
+   "size": [
+    5,
+    2
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감(그림이 사람 위)",
+   "brief": "1층용 2행 낮은 망사드. 3행(roof.mansard)은 2층용으로 남긴다 — 버들항 저택 기준 실측 지붕 높이 비율 안에 든다.",
+   "accept": [
+    "모임 사선(hip edge)이 처마 모서리에서 용마루 끝까지 대각선으로 보인다",
+    "용마루가 짧고 밝으며 사면이 2행 이상 면으로 보인다",
+    "지붕은 중간·어두운 단이 대부분이고 가장 밝은 단은 한 화소 하이라이트로 드문드문하다",
+    "가운데를 1~6번 반복해도 기와 줄이 끝 조각까지 이어진다",
+    "맨 아래 2행이 칸 경계까지 불투명하고 처마가 끝 조각 바깥 2~3px 에 있다",
+    "버들항 기준 지붕과 같은 배율로 나란히 놓아 같은 게임으로 보인다"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝(모임 사선)",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "roof",
+     "tileable": "x"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝(모임 사선)",
+     "at": [
+      3,
+      0
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "r",
+     "x"
+    ]
+   ],
+   "end": 2
+  },
+  {
+   "id": "roof.spire",
+   "wave": "roof",
+   "kind": "set",
+   "title": "첨탑",
+   "size": [
+    3,
+    4
+   ],
+   "layer": "upper",
+   "walk": "★ 지나감(그림이 사람 위)",
+   "brief": "탑 위에 선 가늘고 긴 첨탑. 폭 1칸(l·m·r 각 1칸), 높이 4행. 왼쪽은 밝은 단, 오른쪽은 어두운 단으로 기울기를 주고, 맨 위 1~2행은 끝이 뾰족하게 좁아진다(그래서 qMin 0.30·qTopRow false). 재료는 그 줄의 주 지붕 램프와 **같은 램프**다 — 원뿔·첨탑만 다른 재료를 쓰면 검수에서 「따로 노는 지붕」이 된다(A11). 버들항 귀족 구역은 붉은 기와(roof 램프)만 쓴다 — 첨탑도 같은 기와, 다른 재료 금지(A11).",
+   "accept": [
+    "탑 몸통(1~2칸) 위에 얹었을 때 좌우로 2px 넘게 튀어나오지 않는다",
+    "주 지붕과 같은 재료 램프다(A11 재료 대조)",
+    "왼쪽 위가 밝고 오른쪽 아래가 어두운 3~4단 그라데이션이 보인다",
+    "1배에서 뾰족한 첨탑으로 읽힌다(뭉툭한 탑 지붕이 아니다)"
+   ],
+   "spire": true,
+   "end": 1,
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      4
+     ],
+     "kind": "roof",
+     "qMin": 0.3,
+     "qTopRow": false,
+     "spire": true
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      4
+     ],
+     "kind": "roof",
+     "qMin": 0.3,
+     "qTopRow": false,
+     "spire": true
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      4
+     ],
+     "kind": "roof",
+     "qMin": 0.3,
+     "qTopRow": false,
+     "spire": true
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ]
+   ]
   }
  ],
  "buildings": [
@@ -1101,6 +1285,108 @@
     }
    ],
    "note": "2층 본채 + 한 층짜리 마구간 날개 — 문은 낮은 날개에 하나"
+  },
+  {
+   "id": "coachhouse.r4",
+   "title": "마차 차고(낮은 지붕)",
+   "use": "stable",
+   "cols": 5,
+   "storeys": 1,
+   "roof": "roof.mansard.low",
+   "wall": "wall.storey",
+   "walls": [
+    "L W M D R"
+   ],
+   "note": "style-r4 — 5칸 폭 1층 + 2행 낮은 망사드. 문 하나, 기단 행 없음"
+  },
+  {
+   "id": "townhouse.r4",
+   "title": "귀족 저택(모서리 탑 + 첨탑)",
+   "use": "manor",
+   "masses": [
+    {
+     "id": "body",
+     "cols": 6,
+     "storeys": 2,
+     "x": 0,
+     "depth": 0,
+     "roof": "roof.mansard",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "L W M W M R"
+      },
+      {
+       "item": "wall.storey",
+       "letters": "L W M W D R"
+      }
+     ]
+    },
+    {
+     "id": "tower",
+     "cols": 2,
+     "storeys": 3,
+     "x": 5,
+     "depth": 0,
+     "roof": "roof.spire",
+     "walls": [
+      {
+       "item": "wall.ivy",
+       "letters": "W R"
+      },
+      {
+       "item": "wall.ivy",
+       "letters": "W R"
+      },
+      {
+       "item": "wall.ivy",
+       "letters": "W R"
+      }
+     ]
+    }
+   ],
+   "note": "2층 본채 + 모서리에 붙은 2칸 탑(3층 + 4행 첨탑). 탑 지붕 꼭대기는 본채 용마루보다 2칸 위. 두 질량 같은 땅 행"
+  },
+  {
+   "id": "chapel.r4",
+   "title": "예배당 문루",
+   "use": "chapel",
+   "masses": [
+    {
+     "id": "nave",
+     "cols": 6,
+     "storeys": 1,
+     "x": 0,
+     "depth": 0,
+     "roof": "roof.mansard.low",
+     "walls": [
+      {
+       "item": "wall.ivy",
+       "letters": "L W M M D R"
+      }
+     ]
+    },
+    {
+     "id": "gate",
+     "cols": 2,
+     "storeys": 2,
+     "x": 0,
+     "depth": 1,
+     "roof": "roof.spire",
+     "walls": [
+      {
+       "item": "wall.storey",
+       "letters": "M W"
+      },
+      {
+       "item": "wall.storey",
+       "letters": "M W"
+      }
+     ]
+    }
+   ],
+   "note": "낮은 예배당 몸체 + 왼쪽 뒤 문루 탑(2층 + 4행 첨탑). 문은 몸체 하나, 탑은 종루다"
   }
  ],
  "rounds": {
@@ -1138,6 +1424,27 @@
     "mews"
    ],
    "lead": "줄 A·B·C 마다 부품 전부를 한 에이전트가 그리고, 이번 판의 건물 전부(여러 질량 포함)를 dry 로 조립해 refs/ 와 나란히 본다. 사용자 반려(지붕·접지면·색감·ㅁ자)를 문법으로 고친 판이다."
+  },
+  "style-r4": {
+   "wave": "style",
+   "title": "화풍 판 4 — 낮은 지붕(1층 2행·2층 3행) · 넓은 몸통(용마루) · 첨탑",
+   "module": "src/harnesses/building-kit/rounds/beodeul-noble/style_r4.py",
+   "keys": "letter",
+   "items": [
+    "roof.mansard.low",
+    "roof.mansard",
+    "roof.spire",
+    "wall.storey",
+    "wall.ivy",
+    "band.trim"
+   ],
+   "buildings": [
+    "coachhouse.r4",
+    "townhouse.r4",
+    "chapel.r4"
+   ],
+   "grammar": "r4",
+   "lead": "반려(탑 바닥이 본채보다 아래로 내려가 잔디가 깔리고 층이 어긋남 · 원뿔이 다른 재료로 넓게 퍼짐)를 문법으로 고친 판 — 모든 질량이 같은 땅 행, 1층 2행·2층 3행 지붕, 원뿔 대신 몸통 2칸 탑 + 같은 기와 첨탑."
   }
  },
  "plan": {

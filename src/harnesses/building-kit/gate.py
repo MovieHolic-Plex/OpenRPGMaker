@@ -179,7 +179,7 @@ def check_piece(pc, im, pal, open_sides_=None):
         res.append(_r('Q', 'FAIL', ok, f'{pc["id"]} 위 귀퉁이 투명 {all(c != 255 for c in corners)}, 채움 {fill:.0%}'))
 
     top = pc.get('top')
-    if top or kind == 'roof':
+    if top or (kind == 'roof' and not pc.get('spire')):
         y0, y1 = top if top else (0, h // dot.T - 1)
         y0, y1 = y0 * dot.T, y1 * dot.T
         rows = list(range(y0, y1))

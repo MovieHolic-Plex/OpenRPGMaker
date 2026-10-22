@@ -29,14 +29,11 @@ def answer_for(run_dir, verdict='PASS', probe_verdict='FAIL', skip=()):
 class ReviewTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.mkdtemp(prefix='bk-review-')
-        self._runs = review.RUNS
         self._dot_runs = dot.RUNS
-        review.RUNS = self.tmp
         dot.RUNS = self.tmp
         self.parts = {line: H.parts(line) for line in 'ABC'}
 
     def tearDown(self):
-        review.RUNS = self._runs
         dot.RUNS = self._dot_runs
         shutil.rmtree(self.tmp, ignore_errors=True)
 

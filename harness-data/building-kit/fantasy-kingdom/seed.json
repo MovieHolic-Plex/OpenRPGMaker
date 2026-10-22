@@ -1124,6 +1124,190 @@
      "x"
     ]
    ]
+  },
+  {
+   "id": "roof.hip.low",
+   "wave": "roof",
+   "kind": "set",
+   "title": "낮은 지붕(1층)",
+   "size": [
+    5,
+    2
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감(그림이 사람 위)",
+   "brief": "1층용 2행 낮은 모임지붕. 3행(roof.hip)은 2층용으로 남긴다 — 버들항 기준 실측 지붕 44px(2.75행)와 건물 높이 비율 0.41~0.58 에 맞춘다.",
+   "accept": [
+    "모임 사선(hip edge)이 처마 모서리에서 용마루 끝까지 대각선으로 보인다",
+    "용마루가 짧고 밝으며 사면이 2행 이상 면으로 보인다",
+    "지붕은 중간·어두운 단이 대부분이고 가장 밝은 단은 한 화소 하이라이트로 드문드문하다",
+    "가운데를 1~6번 반복해도 기와 줄이 끝 조각까지 이어진다",
+    "맨 아래 2행이 칸 경계까지 불투명하고 처마가 끝 조각 바깥 2~3px 에 있다",
+    "버들항 기준 지붕과 같은 배율로 나란히 놓아 같은 게임으로 보인다"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝(모임 사선)",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "roof",
+     "tileable": "x"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝(모임 사선)",
+     "at": [
+      3,
+      0
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "r",
+     "x"
+    ]
+   ],
+   "end": 2
+  },
+  {
+   "id": "roof.spire",
+   "wave": "roof",
+   "kind": "set",
+   "title": "첨탑",
+   "size": [
+    3,
+    4
+   ],
+   "layer": "upper",
+   "walk": "★ 지나감(그림이 사람 위)",
+   "brief": "탑 위에 선 가늘고 긴 첨탑. 폭 1칸(l·m·r 각 1칸), 높이 4행. 왼쪽은 밝은 단, 오른쪽은 어두운 단으로 기울기를 주고, 맨 위 1~2행은 끝이 뾰족하게 좁아진다(그래서 qMin 0.30·qTopRow false). 재료는 그 줄의 주 지붕 램프와 **같은 램프**다 — 원뿔·첨탑만 다른 재료를 쓰면 검수에서 「따로 노는 지붕」이 된다(A11). 판타지 왕국은 붉은 기와(roof 램프)다 — 첨탑도 같은 기와.",
+   "accept": [
+    "탑 몸통(1~2칸) 위에 얹었을 때 좌우로 2px 넘게 튀어나오지 않는다",
+    "주 지붕과 같은 재료 램프다(A11 재료 대조)",
+    "왼쪽 위가 밝고 오른쪽 아래가 어두운 3~4단 그라데이션이 보인다",
+    "1배에서 뾰족한 첨탑으로 읽힌다(뭉툭한 탑 지붕이 아니다)"
+   ],
+   "spire": true,
+   "end": 1,
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      4
+     ],
+     "kind": "roof",
+     "qMin": 0.3,
+     "qTopRow": false,
+     "spire": true
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      4
+     ],
+     "kind": "roof",
+     "qMin": 0.3,
+     "qTopRow": false,
+     "spire": true
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      4
+     ],
+     "kind": "roof",
+     "qMin": 0.3,
+     "qTopRow": false,
+     "spire": true
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ]
+   ]
   }
  ],
  "buildings": [
@@ -1221,6 +1405,141 @@
     }
    ],
    "note": "앞으로 내민 박공 날개(교차 박공) — 뒤 본채가 한 칸 물러나 앞 질량이 덮는다"
+  },
+  {
+   "id": "cottage.r4",
+   "title": "작은 집(넓은 몸통)",
+   "use": "home",
+   "cols": 5,
+   "storeys": 1,
+   "roof": "roof.hip.low",
+   "wall": "wall.storey",
+   "walls": [
+    "L W M D R"
+   ],
+   "note": "style-r4 — 5칸 폭 1층 + 2행 낮은 지붕. 4칸은 지붕이 머리만 커 보였고 용마루가 남지 않았다"
+  },
+  {
+   "id": "inn.r4",
+   "title": "여관(낮은 지붕)",
+   "use": "inn",
+   "masses": [
+    {
+     "id": "main",
+     "cols": 5,
+     "storeys": 2,
+     "x": 0,
+     "depth": 0,
+     "roof": "roof.hip",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.stone",
+       "letters": "L W M W R"
+      },
+      {
+       "item": "wall.timber",
+       "letters": "L W M W R"
+      }
+     ]
+    },
+    {
+     "id": "wing",
+     "cols": 5,
+     "storeys": 1,
+     "x": 5,
+     "depth": 0,
+     "roof": "roof.hip.low",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W M D R"
+      }
+     ]
+    }
+   ],
+   "note": "석조 1층 + 반목조 2층 위 3행 지붕, 옆에 5칸 낮은 날개(문은 날개). 모든 질량이 같은 땅 행에 선다"
+  },
+  {
+   "id": "guild.r4",
+   "title": "길드 회관(낮은 지붕)",
+   "use": "guild",
+   "masses": [
+    {
+     "id": "body",
+     "cols": 5,
+     "storeys": 2,
+     "x": 0,
+     "depth": 1,
+     "roof": "roof.hip",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.stone",
+       "letters": "L W M W R"
+      },
+      {
+       "item": "wall.timber",
+       "letters": "L W M W R"
+      }
+     ]
+    },
+    {
+     "id": "bay",
+     "cols": 5,
+     "storeys": 1,
+     "x": 1,
+     "depth": 0,
+     "roof": "roof.hip.low",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W M D R"
+      }
+     ]
+    }
+   ],
+   "note": "한 칸 물러난 5칸 본채 + 앞으로 내민 5칸 박공 날개(오른쪽 한 칸이 본채 밖으로 나와 실루엣이 갈린다). 문은 날개 하나"
+  },
+  {
+   "id": "bellhouse.r4",
+   "title": "종루 딸린 집",
+   "use": "chapel",
+   "masses": [
+    {
+     "id": "hall",
+     "cols": 6,
+     "storeys": 1,
+     "x": 0,
+     "depth": 0,
+     "roof": "roof.hip.low",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W M M D R"
+      }
+     ]
+    },
+    {
+     "id": "turret",
+     "cols": 1,
+     "storeys": 2,
+     "x": 4,
+     "depth": 1,
+     "roof": "roof.spire",
+     "walls": [
+      {
+       "item": "wall.stone",
+       "letters": "M"
+      },
+      {
+       "item": "wall.stone",
+       "letters": "M"
+      }
+     ]
+    }
+   ],
+   "note": "낮은 1층 회관 + 뒤에 선 1칸 종탑(2층 + 4행 첨탑). 첨탑은 주 지붕보다 2칸 높다"
   }
  ],
  "rounds": {
@@ -1256,6 +1575,29 @@
     "guild"
    ],
    "lead": "줄 A·B·C 마다 부품 전부를 한 에이전트가 그리고, 이번 판의 건물 전부(여러 질량 포함)를 dry 로 조립해 refs/ 와 나란히 본다. 사용자 반려(지붕·접지면·색감·ㅁ자)를 문법으로 고친 판이다."
+  },
+  "style-r4": {
+   "wave": "style",
+   "title": "화풍 판 4 — 낮은 지붕(1층 2행·2층 3행) · 넓은 몸통(용마루) · 첨탑",
+   "module": "src/harnesses/building-kit/rounds/fantasy-kingdom/style_r4.py",
+   "keys": "letter",
+   "items": [
+    "roof.hip.low",
+    "roof.hip",
+    "roof.spire",
+    "wall.storey",
+    "wall.stone",
+    "wall.timber",
+    "band.trim"
+   ],
+   "buildings": [
+    "cottage.r4",
+    "inn.r4",
+    "guild.r4",
+    "bellhouse.r4"
+   ],
+   "grammar": "r4",
+   "lead": "지붕이 뾰족한 피라미드였다는 반려를 문법으로 고친 판 — 1층 2행·2층 3행, 몸통을 5~6칸으로 넓혀 용마루를 남기고, 종탑 첨탑을 한 채 더한다. 모든 질량은 같은 땅 행에 선다."
   }
  },
  "plan": {

@@ -6,9 +6,10 @@
   draw <테마> <판> [--agent] [--lines A,B,C] [--jobs N]  후보 키마다(화풍 판 = 줄, 이후 판 = <줄><번호>) 그 벌 전체를 그리고 판 모듈로 옮긴다
   dry <테마> <판> <후보> [--module <판 모듈>] [--out <폴더>]  후보 한 벌의 관문·조립 + preview/ PNG(자체 점검 입구)
   gate <테마> <판>                draw + 기계 관문(P Z Q F S J G Y R / WARN OUTLINE CONTRAST T L N). FAIL 이면 종료코드 1
-  assemble <테마> <판> [--line A] [--key A1]   부품을 레시피대로 조립하고 조립 관문 A1~A6
+  assemble <테마> <판> [--line A] [--key A1]   부품을 레시피대로 조립하고 조립 관문 A1~A11
   review <테마> <판> [--runs 3]   독립 Opus 검수(숨긴 함정·무효 회차·다수결·영수증)
   sheet <테마> <판>               검수 PASS 후보만 ~/claude-viz/bk-<테마>-<판>.html 자체완결 시트
+  village <테마> <판> --line A [--seed N] [--size 52x40] [--all]  그 줄의 조립 건물을 길·마당·광장·나무가 있는 마을로 놓는다
   pick <테마> <판> <항목> <후보> --sha <앞 8자리>   사람이 고른 후보를 그림 해시에 묶어 기록
   reject <테마> <판> <항목> <후보> --why …          사람이 버린 후보와 이유
   objgate <테마>                  사람이 고른 부품으로 조립한 건물의 3/4 관문(object-gate kind structure) 영수증
@@ -318,6 +319,7 @@ def cmd_validate(theme):
         errs.append('rules.family 는 oprn-atlas 여야 한다')
 
     ids = set()
+    items = {it['id']: it for it in s.get('items', [])}
     for it in s.get('items', []):
         for k in ('id', 'wave', 'title', 'size', 'pieces', 'brief', 'accept'):
             if k not in it:
@@ -388,7 +390,11 @@ def cmd_validate(theme):
             for k in ('cols', 'storeys', 'roof'):
                 if not m.get(k):
                     errs.append(f'{tag}: {k} 없음')
-            if m.get('cols') and int(m['cols']) < AS.MIN_COLS:
+            spire = bool((items.get(m.get('roof')) or {}).get('spire'))
+            if spire:
+                if int(m.get('cols') or 0) not in (1, 2):
+                    errs.append(f'{tag}: 첨탑 질량 폭 {m["cols"]}칸 — 탑은 1~2칸')
+            elif m.get('cols') and int(m['cols']) < AS.MIN_COLS:
                 errs.append(f'{tag}: cols {m["cols"]} < {AS.MIN_COLS} — 모임지붕 끝 l·r 이 2칸씩이다')
             for k in ('roof', 'band', 'base'):
                 if m.get(k) and m[k] not in ids:
@@ -433,6 +439,8 @@ def cmd_validate(theme):
         for bid in rd.get('buildings') or []:
             if bid not in {b['id'] for b in s.get('buildings', [])}:
                 errs.append(f'판 {rid}: buildings 의 {bid} 레시피가 시드에 없다')
+        if rd.get('grammar') == 'r4':
+            errs += _r4_grammar(s, items, rid)
         path = os.path.join(REPO, rd.get('module', ''))
         if not os.path.exists(path):
             notes.append(f'판 {rid}: 모듈이 아직 없다({rd.get("module")}) — 그리기 전')
@@ -477,6 +485,36 @@ def cmd_validate(theme):
         print('·', n)
     print(f'{theme}: 시드·팔레트·부품·조립·판 점검 ' + ('통과' if not errs else f'{len(errs)}건 실패') + (f' (안내 {len(notes)})' if notes else ''))
     return 1 if errs else 0
+
+
+def _r4_grammar(s, items, rid):
+    """style-r4 문법 — 1층 지붕 2행·2층 3행, 모임지붕 몸통 5칸 이상, 첨탑 탑은 1~2칸에 용마루보다 1칸 이상 높다."""
+    errs = []
+    by = {b['id']: b for b in s.get('buildings', [])}
+    for bid in (next(r for r in s['rounds'] if r == rid) and s['rounds'][rid].get('buildings')) or []:
+        recipe = by.get(bid)
+        if not recipe:
+            continue
+        ms = AS.masses(recipe)
+        for m in ms:
+            it = items.get(m['roof'])
+            if not it or it.get('spire'):
+                continue
+            rows = it['pieces'][0]['size'][1]
+            want = 2 if int(m['storeys']) == 1 else 3
+            if rows != want:
+                errs.append(f'판 {rid} {bid}/{m["id"]}: {m["storeys"]}층 지붕 {rows}행 — {want}행이어야 한다')
+            if int(it.get('end', AS.ROOF_END)) == AS.ROOF_END and int(m['cols']) < 5:
+                errs.append(f'판 {rid} {bid}/{m["id"]}: 모임지붕 몸통 {m["cols"]}칸 — 용마루가 남으려면 5칸 이상')
+        spires = [m for m in ms if (items.get(m['roof']) or {}).get('spire')]
+        plain = [m for m in ms if not (items.get(m['roof']) or {}).get('spire')]
+        if spires and plain:
+            main = max(plain, key=lambda m: int(m['cols']) * int(m['storeys']))
+            main_h = AS.mass_rows(main, items)
+            for sp in spires:
+                if AS.mass_rows(sp, items) - main_h < 1:
+                    errs.append(f'판 {rid} {bid}/{sp["id"]}: 첨탑 탑이 주 지붕 용마루보다 1칸 이상 높아야 한다')
+    return errs
 
 
 def pick_state(theme):
@@ -595,6 +633,11 @@ def cmd_review(theme, rid, runs=3, judge_cmd=None):
     return review.run(theme, rid, runs, judge_cmd)
 
 
+def cmd_village(theme, rid, line='A', seed=0, size=None, all_=False, quiet=False):
+    import village
+    return village.write(theme, rid, line, seed, size or village.DEFAULT_SIZE, all_, quiet)
+
+
 def cmd_list(theme):
     ps = pick_state(theme)
     print(f'{theme} — {seed(theme)["theme"]["name"]} · 계열 {seed(theme)["family"]}')
@@ -693,6 +736,13 @@ def main(argv=None):
     p.add_argument('--by', default='user')
     p = sub.add_parser('objgate')
     p.add_argument('theme')
+    p = sub.add_parser('village')
+    p.add_argument('theme')
+    p.add_argument('round')
+    p.add_argument('--line', default='A')
+    p.add_argument('--seed', type=int, default=0)
+    p.add_argument('--size')
+    p.add_argument('--all', action='store_true')
     p = sub.add_parser('status')
     p.add_argument('theme', nargs='?')
     a = ap.parse_args(argv)
@@ -729,6 +779,17 @@ def main(argv=None):
         return 0
     if a.cmd == 'objgate':
         return cmd_objgate(a.theme)
+    if a.cmd == 'village':
+        size = None
+        if a.size:
+            try:
+                w, h = (int(v) for v in a.size.lower().split('x'))
+            except ValueError:
+                raise SystemExit('--size 는 40x28 처럼 WxH 칸이다')
+            size = (w, h)
+        _, html_path = cmd_village(a.theme, a.round, a.line, a.seed, size, a.all)
+        print(f'  HTML {html_path}')
+        return 0
     if a.cmd == 'status':
         return cmd_status(a.theme)
     return 2
