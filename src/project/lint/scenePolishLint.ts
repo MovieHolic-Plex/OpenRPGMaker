@@ -415,7 +415,8 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
         if (!npc || command.kind !== "moveEvent") continue;
         // 한 인물이 여러 번 걸으면 앞 걸음이 끝난 칸에서 이어 걷는다(옆자리로 갔다가 탕비실로 가는 지후).
         const { end, fades, viaDoor } = simulateRoute(routeEnd.get(npc.id) ?? npc, command.route?.moves, map, doorOf);
-        routeEnd.set(npc.id, end);
+        // 사라지는 걸음 뒤에 같은 인물이 또 걸으면 그건 다른 갈래(엔딩 A·B 처럼 형제 분기)다 — 사라진 칸에서 잇지 않는다.
+        if (fades) routeEnd.delete(npc.id); else routeEnd.set(npc.id, end);
         if (isExit(end) || viaDoor) {
           routedToExit.add(npc.id);
           if (!viaDoor && !isExitStrict(end) && !isHeldTrain(end)) shortOfExit.set(npc.id, end); else shortOfExit.delete(npc.id);
@@ -1034,7 +1035,13 @@ function checkSpeakerFacing(project: Project, issues: LintIssue[]): void {
                 const hero = st.get("@player");
                 const toward = hero && id !== "@player" ? facingToward(cur.at, hero.at)[0] ?? null : null;
                 cur.dir = toward && m.kind === "turnAwayFromPlayer" ? ({ up: "down", down: "up", left: "right", right: "left" } as const)[toward] : toward;
-              } else if (m.kind === "turnRelative" || m.kind === "turnRandom") cur.dir = null;
+              } else if (m.kind === "turnToward") {
+                // 인물 연출 기본기(faceToward·faceEachOther): 대상의 지금 칸 쪽으로.
+                const at = m.target ? st.get(m.target.trim() === "@player" ? "@player" : m.target)?.at
+                  : typeof m.x === "number" && typeof m.y === "number" ? { x: m.x, y: m.y } : undefined;
+                cur.dir = at ? facingToward(cur.at, at)[0] ?? null : null;
+              } else if (m.kind === "approach" || m.kind === "exitVia" || m.kind === "enterVia") cur.dir = null; // 실행 순간 길 찾기 — 끝 칸·방향은 모른다
+              else if (m.kind === "turnRelative" || m.kind === "turnRandom") cur.dir = null;
               else if (m.kind === "changeOpacity") { faded += m.delta; if (faded <= -200) { st.delete(id); break; } }
             }
             return;

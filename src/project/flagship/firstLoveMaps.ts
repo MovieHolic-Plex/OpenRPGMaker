@@ -171,6 +171,14 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   // 도구가 맵 이름에서 「승강장」 같은 낱말을 보면 평면을 버리고 무작위 씨앗의 역 구성으로 바꾼다 — 짓는 동안은 낱말 없는 이름으로 짓고 뒤에 이름을 붙인다.
   buildRoom(exec, FL_MAP.platformAm, "한결 플랫폼", ROOMS.platform);
   project.maps[FL_MAP.platformAm]!.name = "한결역 승강장 · 아침";
+  // 승강장은 선로 아래가 바로 바깥이다 — 화면(17칸)보다 낮으면 아래가 검은 둘레로 남는다. 어두운 천장 줄을 덧대 화면 높이를 채운다.
+  {
+    const pl = project.maps[FL_MAP.platformAm]!, h0 = pl.height, pad = Math.max(0, 17 - h0);
+    if (pad > 0) {
+      padMapBottom(pl, pad, () => h0 - 1);
+      for (let y = h0; y < h0 + pad; y++) for (let x = 0; x < pl.width; x++) clearMapCellForBackground(pl, y * pl.width + x);
+    }
+  }
   buildRoom(exec, FL_MAP.broadcast, "성하고 방송실 · 10년 전", ROOMS.broadcast);
 
   // ── 거리 (modern_city 구성기) ──
@@ -226,11 +234,13 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   const anchors: FirstLoveAnchors = {
     platform: {
       // 내린 자리: 아침 승강장 가운데쯤 — 한 화면에 노란 점자 끝선과 선로가 같이 보인다(끝선은 아래 두 줄).
-      arrive: nearestFree(project, platform, { x: 8, y: 8 }),
+      arrive: nearestFree(project, platform, { x: 14, y: 8 }),
       // 나가는 계단은 승강장 동쪽 끝 북쪽 벽에 박혀 있다(나무 계단 2칸 폭 그림, 그림 칸을 밟을 수 있다) — 왼 칸이 계단 칸, 바로 아래가 나오는 칸.
-      exit: { x: 28, y: 3 }, exitOut: { x: 28, y: 4 },
-      jihu: nearestFree(project, platform, { x: 12, y: 8 }),
-      heroMeet: nearestFree(project, platform, { x: 10, y: 8 }),
+      // 사용자 r2: 「승강장이 작고 답답하다」 — 50칸 길이 승강장(양 끝 벽까지 보인다)·선로 두 줄. 계단은 동쪽 끝.
+      exit: { x: 46, y: 3 }, exitOut: { x: 46, y: 4 },
+      // 막차 장면의 지후는 서 있는 열차 몸(가운데 x≈25) 앞 — 열린 문으로 걸어 들어갈 수 있는 자리.
+      jihu: nearestFree(project, platform, { x: 25, y: 8 }),
+      heroMeet: nearestFree(project, platform, { x: 23, y: 8 }),
     },
     street: {
       // 문 칸 = 건물 정면의 문 그림 칸(막혀 있다 — 부딪히면 이동이 발동한다), 나오는 칸 = 그 바로 아래(바깥) 접근칸.
@@ -243,7 +253,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
     office: {
       // 엘리베이터·계단 그림은 북쪽 벽면에 박혀 있고 그림 칸 자체를 밟을 수 있다 — 문 칸 = 그림 칸, 나오는 칸 = 바로 아래(안쪽) 칸.
       elevator: { x: 16, y: 3 }, elevatorOut: { x: 16, y: 4 }, npcExit: { x: 21, y: 3 },
-      stairs: { x: 10, y: 3 }, stairsOut: { x: 10, y: 4 },
+      // 계단(옥상으로)은 엘리베이터 홀 옆 계단실 자리(사용자 r2: 사무실 한가운데 벽의 계단이 어색하다) — 바로 아래 칸이 바닥.
+      stairs: { x: 12, y: 3 }, stairsOut: { x: 12, y: 4 },
       // 엘리베이터 앞 첫 만남: 서하는 elevatorOut, 팀장은 두 칸 아래(트인 사무실 쪽), 지후는 그 옆 — 전부 석재 로비 바닥 위, 벽·엘리베이터 그림에 안 가린다.
       // 사용자 r2: 「대화를 너무 멀리서 한다」 — 팀장은 서하 바로 오른쪽(같은 줄, 한 칸), 민호는 바로 왼쪽, 지후는 두 칸 앞에서 서하를 마주 본다.
       // 위아래로 붙어 서면 3/4 시점에서 그림이 겹치므로(VQA r14) 바로 앞 칸은 비운다.
@@ -323,10 +334,10 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
     ambient: 0.22, color: "#121a36",
     // 승강장에는 가로등이 없다 — 실제로 빛나는 것(발차 LED 판·자판기·매표기·벽시계·역명 간판)만 켠다.
     sources: [
-      light("fl_led_a", { x: 6, y: 3 }, 4, "#bfe0ff", 0.8), light("fl_led_b", { x: 20, y: 3 }, 4, "#bfe0ff", 0.8),
-      light("fl_vend_a", { x: 3, y: 4 }, 3, "#d9f4ff", 0.85), light("fl_vend_b", { x: 4, y: 4 }, 3, "#d9f4ff", 0.85),
-      light("fl_kiosk", { x: 16, y: 4 }, 4, "#fff0c8", 0.8),
-      light("fl_sign_a", { x: 10, y: 8 }, 4, "#fff0c8", 0.8), light("fl_sign_b", { x: 24, y: 8 }, 4, "#fff0c8", 0.8),
+      light("fl_led_a", { x: 10, y: 3 }, 4, "#bfe0ff", 0.8), light("fl_led_b", { x: 24, y: 3 }, 4, "#bfe0ff", 0.8), light("fl_led_c", { x: 38, y: 3 }, 4, "#bfe0ff", 0.8),
+      light("fl_vend_a", { x: 2, y: 4 }, 3, "#d9f4ff", 0.85), light("fl_vend_b", { x: 4, y: 4 }, 3, "#d9f4ff", 0.85),
+      light("fl_kiosk", { x: 19, y: 4 }, 4, "#fff0c8", 0.8),
+      light("fl_sign_a", { x: 11, y: 8 }, 4, "#fff0c8", 0.8), light("fl_sign_b", { x: 25, y: 8 }, 4, "#fff0c8", 0.8), light("fl_sign_c", { x: 39, y: 8 }, 4, "#fff0c8", 0.8),
     ],
   };
   // 편의점은 밤에만 들른다 — 바깥 광장은 어두운 밤, 가게 안은 형광등이 켜진 밝은 바닥. 거리의 어두운 조명을 물려받지 않게 따로 건다.
@@ -360,17 +371,26 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   }
   for (const id of [FL_MAP.platformAm, FL_MAP.platformPm]) {
     try {
-      exec("set_map_transit", { mapId: id, auto: { subway: { vehicle: "jp-subway", name: "한결선", stopName: "한결역", headwaySec: 50, waitSec: 10 } } });
+      exec("set_map_transit", { mapId: id, auto: { subway: { vehicle: "jp-subway", name: "한결선", stopName: "한결역", headwaySec: 50, waitSec: 10, centerX: 25 } } });
     } catch (error) {
       console.warn(`[first-love] ${id} 열차를 깔지 못했다: ${(error as Error).message}`);
     }
   }
   // 금요일 밤 막차는 장면이 부른다 — 대화 도중 아무 열차나 드나들면 「지후가 탈 열차가 지후를 두고 떠난다」(VQA r17).
   // 안내 방송에서 FL_TRAIN_CALL 을 켜면 한 대가 들어와 서고, 지후가 탄 뒤 FL_TRAIN_GO 를 켜야 문을 닫고 떠난다.
-  for (const route of project.maps[FL_MAP.platformPm]?.transit?.routes ?? []) {
+  // 들어오는 열차가 맵 밖 먼 데서 출발하면 부른 뒤 10초 넘게 빈 선로를 보게 된다 — 머리가 맵 왼쪽 끝 바로 밖에서 출발하게 경로 앞을 자른다
+  // (정류장 번호도 같은 만큼 당긴다). 건너편 선로(반대 방향)는 이 장면에서 끈다 — 대화 중 다른 열차가 지나가지 않게.
+  const pmRoutes = project.maps[FL_MAP.platformPm]?.transit?.routes ?? [];
+  pmRoutes.forEach((route) => {
+    const head = route.path[0];
+    // 승강장 바로 앞 선로(위 두 줄, 머리 행 y=11)를 동쪽으로 달리는 노선만 막차다.
+    if (!head || head.y !== 11 || route.path.length < 2 || route.path[1]!.y !== head.y || route.path[1]!.x <= head.x) { route.enabled = false; return; }
+    const cut = Math.max(0, -1 - head.x);
+    route.path[0] = { x: head.x + cut, y: head.y };
+    for (const stop of route.stops ?? []) { stop.index -= cut; stop.departSwitch = FL_TRAIN_GO; }
     route.callSwitch = FL_TRAIN_CALL;
     route.headwaySec = 600;
-    for (const stop of route.stops ?? []) stop.departSwitch = FL_TRAIN_GO;
-  }
+    route.speed = 8;
+  });
   return anchors;
 }

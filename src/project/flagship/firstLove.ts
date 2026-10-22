@@ -104,6 +104,7 @@ const SE_BUTTON = "cc0-se-osx-switch-01"; // 호출 단추 딸깍
 const SE_SLIDE = "easyrpg-sound-evade2"; // 승강기·로비 문이 미끄러지는 바람 소리
 const SE_GLASS_OPEN = "easyrpg-sound-teleport2"; // 유리문 손잡이 걸쇠가 풀리는 소리
 const SE_GLASS_SHUT = "cc0-se-osx-door-close-03"; // 유리문 걸쇠 딸깍
+const SE_TRAIN = "easyrpg-sound-earth2"; // 열차가 선로를 울리며 들어오고 나가는 낮은 굉음
 const SE_CHIME = "easyrpg-sound-song"; // 편의점 자동문 입점 차임(네 음 상행)
 const waitMoves = (): Command => m2("Wait for All Movement");
 
@@ -1182,12 +1183,14 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
     setSw("sw_fl_jihu_boarded", true),
     face("@player", "down"),
     wait(500),
+    quiet(SE_SLIDE, 0.45), // 문이 닫힌다
     setSw(FL_TRAIN_GO, true),
-    wait(3200),
+    wait(1500),
+    quiet(SE_TRAIN, 0.4), // 떠나는 열차
+    wait(2600),
   ];
   add(plat, scene("ev_fl_platform", { x: 1, y: 1 }, S.RUN, [
     { kind: "setWeather", weather: "none", transitionMs: 0 } as Command,
-    setSw(FL_TRAIN_CALL, true),
     ...voice("안내 방송", "‘이번 열차는 서울역행입니다. 열차가 곧 도착하오니—’"),
     // 밤엔 계단으로 뛰어 내려온다 — 계단 발치에 도착해 지후에게 걸어간다(VQA r10: 승강장 한가운데에 서서 나타남).
     walk("@player", route(project, FL_MAP.platformPm, p.exitOut, meet)),
@@ -1212,7 +1215,17 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
       say("jihu", "base", "그래서 계속 갖고 있었어요. 답장 못 한 사연이라, 버릴 수가 없었어요."),
     ),
     ifCond(swOn(SW_STORY), say("jihu", "embarrassed", "…발표 때 그 얘기 할 줄은 몰랐어요. 본부장님 앞에서 우는 줄 알았어요.")),
-    ...voice("안내 방송", "‘서울역행 열차, 잠시 후 출발합니다. 타실 분은 서둘러 주십시오.’"),
+    // 막차가 실제로 들어온다 — 안내 방송에 맞춰 부르고, 둘이 선로 쪽을 보는 사이 열차가 미끄러져 들어와 서고 문이 열린다(사용자 r2).
+    setSw(FL_TRAIN_CALL, true),
+    ...voice("안내 방송", "‘열차가 들어오고 있습니다. 안전선 뒤로 한 걸음 물러서 주십시오.’"),
+    quiet(SE_TRAIN, 0.5),
+    face("@player", "down"),
+    face("ev_fl_p_jihu", "down"),
+    shake(600),
+    wait(6400),
+    quiet(SE_SLIDE, 0.45), // 문이 열린다
+    wait(500),
+    ...faceEachOther("@player", "ev_fl_p_jihu"),
     choices([
       { text: "“이번엔, 내가 먼저 말할게요.”", then: [
         ifCond({ kind: "variable", variableId: V_JIHU, op: ">=", value: TRUE_END_AT } as never, [
