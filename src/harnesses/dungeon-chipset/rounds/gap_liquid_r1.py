@@ -98,13 +98,14 @@ def land_at(land, d):
 
 
 def side_strips(side, wob, keys):
-    p0, land, water = side
+    p0, land, water = side[:3]
+    landk = side[3] if len(side) > 3 else {}   # 열쇠별 땅 층 바꿔치기(용암 뜨거운 자리의 바닥 빛 번짐)
     assert len(wob) == 16 and all(wob[i] == 0 for i in (0, 7, 8, 15)), wob
     assert len(keys) == 16 and all(keys[i] == 'w' for i in (0, 7, 8, 15)), keys
     out = []
     for dv, kc in zip(wob, keys):
         d = max(1, p0 + dv)
-        ld, wt = land_at(land, d), water[kc]
+        ld, wt = landk.get(kc, land_at(land, d)), water[kc]
         s = ''
         for i in range(8):
             if i < d:
@@ -401,11 +402,12 @@ def water(line, n):
 #       · 'V' 껍질 끝(용암에 닿음, 불씨 점) · 'Q' 북쪽 둑 빛 받는 턱 · 'M' 'L' 둑 앞면 · 'g' 앞면 밑단이 용암 빛을 받음 · '.' 몸통.
 # 빛 띠는 물가에 두지 않는다(칸마다 같은 자리에 노란 막대가 찍혀 칸 격자가 드러났다) — 빛은 몸통의 흐르는 맥과 껍질 실금이 낸다.
 _LN = {'w': '', 'h': '', 'c': ''}
-_LX = {'w': '', 'h': 'V', 'c': 'VCV'}     # h 한 겹 · c 세 겹 더 두꺼운 껍질 혀(폭이 1~5px 로 들쭉날쭉)
+_LX = {'w': '', 'h': '', 'c': 'VCCV'}     # c 자리는 껍질 혀가 4px 웅덩이로 들어간다(폭 1~6px 로 들쭉날쭉)
+_LHOT = {'h': 'Voo'}                       # h 자리(뜨거움)는 껍질이 1px 로 얇아지고 바깥 바닥 2px 에 주황 빛이 번진다
 LAVA_EDGE = dict(
     N=(7, {4: 'gMQ', 5: 'gLMQ', 6: 'gLMMQ', 7: 'gLMMQz', 8: 'gLMMQzy'}, _LN),   # 북: 4~5줄 둑 앞면(3/4 낙차) + 탄 바닥
-    S=(3, {2: 'V', 3: 'Vz', 4: 'Vzy', 5: 'VCzy'}, _LX),                          # 남: 껍질 끝 1px + 달아오른 바닥
-    W=(4, {2: 'V', 3: 'Vz', 4: 'VCz', 5: 'VCzy', 6: 'VCCzy'}, _LX),              # 서·동: 껍질 1~3px + 탄 바닥
+    S=(3, {2: 'V', 3: 'Vz', 4: 'Vzy', 5: 'VCzy'}, _LX, _LHOT),                          # 남: 껍질 끝 1px + 달아오른 바닥
+    W=(4, {2: 'V', 3: 'Vz', 4: 'VCz', 5: 'VCzy', 6: 'VCCzy'}, _LX, _LHOT),              # 서·동: 껍질 1~3px + 탄 바닥
     NW=[',,,,,,,,',
         ',,,,zzzz',
         ',,,zzQQQ',
@@ -481,7 +483,8 @@ def crust_tex(line):
 # 바닥을 따뜻하게(달아오른 y · 탄 z): 바닥 화소의 밝기 단에 따라 rim 램프 단으로 옮긴다(모양은 그대로).
 HEAT = {'y': {'cfloor': [1, 2, 2, 3, 3, 3, 4, 4], 'stone': [1, 1, 2, 3, 3, 4], 'cata': [1, 1, 2, 2, 3, 3, 3], 'crock': [1, 1, 1, 2, 2, 3, 3]},
         'z': {'cfloor': [1, 1, 1, 2, 2, 2, 3, 3], 'stone': [1, 1, 2, 2, 3, 3], 'cata': [1, 1, 2, 2, 2, 3, 3], 'crock': [1, 1, 1, 2, 2, 3, 3]}}
-HEAT_RAMP = {'y': 'rim', 'z': 'wood'}   # 달아오른 바닥 = 따뜻한 회갈색 · 탄 바닥 = 짙은 밤색
+HEAT['o'] = {'cfloor': [3, 3, 4, 4, 4, 5, 5, 5], 'stone': [3, 3, 4, 4, 5, 5], 'cata': [3, 3, 4, 4, 4, 5, 5], 'crock': [3, 3, 3, 4, 4, 5, 5]}
+HEAT_RAMP = {'y': 'rim', 'z': 'wood', 'o': 'wood'}   # o = 용암 빛이 번진 바닥(주황 갈색)   # 달아오른 바닥 = 따뜻한 회갈색 · 탄 바닥 = 짙은 밤색
 
 
 def heat(cv, table, ramp='rim'):
@@ -498,77 +501,99 @@ def heat(cv, table, ramp='rim'):
     return out
 
 
-# ------------------------------------------------------------------------------------------------ 몸통: 녹은 얼룩 들판(버들항 lava-strip 결)
-# 몸통 = 손으로 적은 16×16 녹은 들판(붉은·주황 얼룩, 크기·가장자리 제각각) + 그 위 떠 가는 층(식은 껍질 섬·뜨거운 얼룩·어두운 점).
-# 둘 다 16 주기라 칸 좌표 그대로 깔면 이웃 칸과 이어지고, 장면마다 들판 전체를 흐름 쪽으로 4px 감아 민다(세계 위치 기준 이동 —
-# 모든 칸이 같이 밀리므로 칸 경계가 장면마다 맞는다). 변형(여섯)은 가운데(둘레 2px 밖)에서 제자리로 끓는 뜨거운 얼룩 자리가 다르다.
-LAVA_FIELD = {
-    1: ['bbbccccbbbbbbccb', 'bbccccccbbbbcccc', 'bcccbbccbbabbccc', 'bbcbbbbbbaaabbcb', 'abbbbbccbbabbbbb', 'aabbbcccccbbbbba',
-        'abbbccccccbbcbbb', 'bbbbbcccbbbcccbb', 'bccbbbbbbbccccbb', 'ccccbbbaabbcccbb', 'cccbbbaaaabbbbbc', 'bcbbbbbaabbbbbcc',
-        'bbbbcbbbbbbccbbb', 'bbbcccbbbbcccccb', 'bbbccccbbbbcccbb', 'bbbbcccbbbbbcccb'],
-    # 흐르는 강: 서남서 → 동북동으로 오르는 열린 줄기(4px 마다 한 줄 오름), 길이·자리 제각각, 고리 없음.
-    2: ['bbbbbbbbbbbbbbbb', 'bbbbbbbbbbbccccb', 'bbbbbbbccccddcbb', 'aabbcccccbbbbbbb', 'abccdcbbbbbbbbaa', 'bcbbbbbbbbbbbaaa',
-        'bbbbbbbbbbbbbbab', 'bbbbbbbbbbcccbbb', 'bbbbbbccccdcbbbb', 'bbbcccccbbbbbbbb', 'bbccbbbbbbbbbbbb', 'bbbbbbbbbbbbbbbb',
-        'baabbbbbbbbbbbcc', 'aaabbbbbbbccccdc', 'abbbbbbcccdccbbb', 'bbbbcccccbbbbbbb'],
-}
-# 떠 가는 층('.' 투명): n m 식은 껍질 섬(위 빛 n · 몸 m, 2~6px, 몇은 칸 경계에 걸림) · d c 뜨거운 얼룩 · a 어두운 점(<줄>1 만).
-LAVA_DRIFT = {
-    1: ['................', '...........mm...', '..........nmmm..', '.cd........mm...', '................', '........a.......',
-        '..............nm', 'm.............mm', 'mm..............', '................', '................', '..nmm.........a.',
-        '.nmmmm..........', '..mmm...........', '...........cdd..', '.....a..........'],
-    2: ['.....nmm........', '....nmmmm.......', '.....mmm........', '................', '................', '..........nm....',
-        '.........nmmm...', '................', '................', '................', '.............nmm', 'm...........nmmm',
-        '..............mm', '................', '................', '................'],
+# ------------------------------------------------------------------------------------------------ 몸통: 녹은 들판(버들항 lava-strip 결)
+# 칸 몸통은 16×16 한 장(+ 엔진이 칸 해시로 고르는 변형) — 16px 보다 긴 세계 주기 결은 오토타일에 담을 수 없다.
+# 그래서 두 겹으로 짓는다:
+#   바탕 = 모든 칸이 같은 16 주기 손 결(큰 덩이 6~10px, 붉음·주황 두 단, 대비 낮게)을 세계 위치 기준으로 장면마다 4px 감아 민다
+#          → 칸 경계가 장면마다 이어지고, 들판 전체가 한쪽으로 흐른다.
+#   변형 겹 = 변형마다 다른 손 그림을 칸 둘레 2px 안쪽 창에서만 보인다(둘레는 늘 바탕) → 어느 변형끼리 붙어도 경계가 맞는다.
+#     <줄>1: 제자리에서 끓는 큰 노란 얼룩(장면 넷이 모양을 바꿈). <줄>2: 가로 흐름 줄기(변형마다 줄 수·길이·자리 다름)를
+#     바탕과 같이 흘려 창 안으로 들어왔다 나간다.
+# 껍질은 몸통에 두지 않는다 — 식은 껍질은 물가 테두리(혀·판)에만, 웅덩이 가운데가 가장 뜨겁다.
+LAVA_FIELD = {   # 바탕은 거의 한 단(대비 낮은 가는 결만) — 칸 주기가 드러나지 않게, 무늬는 변형 겹이 낸다
+    1: ['cccccccccbbccccc', 'ccccccccccbbcccc', 'cbbccccccccbcccc', 'cccbbccccccccccc', 'cccccbcccccccccc', 'cccccccccccccbbc', 'ccccccccccccbbcc', 'cccccccbbcccbccc', 'cccccccccbbbcccc', 'cccccccccccccccc', 'bcccccccccccccbb', 'cbbcccccccccccbc', 'cccbbccccbcccccc', 'cccccbbbbccccccc', 'cccccccccccccccc', 'ccccccccccccbccc'],
+    2: ['bbbbbbbbbbbbbbbb', 'bbbbbbbbbaabbbbb', 'bbbbbbbbbbbabbbb', 'bbbbbbbbbbbbbbbb', 'bbabbbbbbbbbbbbb', 'bbbaabbbbbbbbbbb', 'bbbbbbbbbbbbbbbb', 'bbbbbbbbbbbbbbab', 'bbbbbbbbbbbbbbba', 'bbbbbbbbbbbbbbbb', 'bbbbbbbabbbbbbbb', 'bbbbbbbbaabbbbbb', 'bbbbbbbbbbbbbbbb', 'abbbbbbbbbbbbbbb', 'bbbbbbbbbbbbbaab', 'bbbbbbbbbbbbbbbb'],
 }
 for _n in (1, 2):
-    assert len(LAVA_FIELD[_n]) == 16 and all(len(r) == 16 for r in LAVA_FIELD[_n] + LAVA_DRIFT[_n]), _n
-# 제자리에서 끓는 뜨거운 얼룩(장면 넷 — 부풀었다 가라앉음). 고리·점 고정 없음.
+    assert len(LAVA_FIELD[_n]) == 16 and all(len(r) == 16 for r in LAVA_FIELD[_n]), _n
+# <줄>1 끓는 얼룩(장면 넷 — 부풀었다 터졌다 가라앉음, 5~8px).
 BOIL = {
-    'hot': [['.c.', 'cdc', '.c.'], ['.cc', 'cdd', '.c.'], ['.d.', 'ddc', '.cc'], ['.c.', 'cdc', '.c.']],
-    'hot_l': [['..cc.', '.cddc', 'ccdc.', '.cc..'], ['..cc.', '.cdddc'[:5], 'cddc.', '.cc..'],
-              ['.ccc.', 'cdddc', 'cddc.', '.cc..'], ['..c..', '.cdc.', 'ccdc.', '.cc..']],
-    'flare': [['....cc', '..cdd.', 'cdc...'], ['...ccd', '..cdc.', 'cdc...'], ['....cd', '.cddc.', 'dcc...'], ['....cc', '..cdc.', 'ccc...']],
+    'big': [['..ccc...', '.ccddcc.', 'ccdddcc.', '.ccdcc..', '..cc....'], ['..cccc..', '.cdddcc.', 'ccddddc.', '.cdddc..', '..cc....'],
+            ['.ccddc..', 'cdddddc.', 'cdddddcc', '.cdddc..', '..ccc...'], ['..ccc...', '.ccdcc..', 'ccdddcc.', '.ccddc..', '...cc...']],
+    'mid': [['.cc..', 'cddc.', '.cdcc', '..c..'], ['.cc..', 'cdddc', '.cddc', '..c..'], ['.ccc.', 'cdddc', 'cdddc', '.cc..'],
+            ['.cc..', 'ccdc.', '.cdcc', '..c..']],
+    'sml': [['.c.', 'cdc', '.c.'], ['.cc', 'cdc', '.c.'], ['cc.', 'cdc', '.cc'], ['.c.', 'cdc', '.c.']],
 }
-BOIL_AT = {
-    1: [[('hot', 4, 4)], [('hot_l', 8, 7)], [('hot', 9, 3), ('hot', 3, 10)], [], [('hot_l', 3, 4)], [('hot', 10, 10)]],
-    2: [[('flare', 3, 4)], [], [('flare', 7, 9)], [('hot', 5, 6)], [('flare', 8, 3), ('hot', 3, 10)], [('flare', 4, 8)]],
-}
+BOIL['red'] = [['..bbb...', '.bbbbbb.', 'bbbbbbbb', '.bbbbbb.', '...bb...'], ['..bbbb..', '.bbbbbb.', 'bbbbbbb.', '.bbbbbb.', '...bb...'],
+               ['...bbb..', '.bbbbbbb', 'bbbbbbbb', '..bbbbb.', '...bb...'], ['..bbb...', 'bbbbbbb.', 'bbbbbbbb', '.bbbbb..', '...bb...']]
+BOIL['red_s'] = [['.bbb.', 'bbbbb', '.bbb.'], ['.bbbb', 'bbbbb', '.bb..'], ['bbbb.', 'bbbbb', '..bb.'], ['.bbb.', 'bbbbb', '.bbb.']]
+# 변형마다: 식어 붉게 가라앉은 큰 얼룩(5~8px) 하나 + 노랗게 끓는 얼룩 — 자리·크기 모두 다르다(먼저 붉은 것, 그 위 노랑).
+BOIL_AT = [[('red', 5, 7), ('big', 3, 3)], [('red_s', 8, 3), ('mid', 4, 9)], [('red', 3, 3), ('mid', 9, 9)],
+           [('red_s', 4, 9), ('big', 6, 3)], [('red', 6, 8), ('sml', 3, 4)], [('red_s', 3, 4), ('big', 6, 7)]]
+# <줄>2 흐름 줄기(행, x, 그림) — 변형마다 다르게, 행 2~13 만.
+STREAKS = [[(3, 3, 'ccddddcc'), (7, 9, 'ccdcc'), (11, 1, 'cccdccc')],
+           [(2, 6, 'cdddcc'), (6, 0, 'cccdddcc'), (10, 8, 'ccdc'), (12, 3, 'ccc')],
+           [(4, 10, 'ccdddcc'), (9, 2, 'ccdcccc')],
+           [(3, 1, 'ccc'), (5, 7, 'cddddc'), (9, 10, 'cccdc'), (12, 4, 'ccddcc')],
+           [(6, 4, 'ccdddddcc'), (11, 9, 'cdc')],
+           [(2, 2, 'ccdc'), (8, 6, 'ccddcc'), (13, 10, 'cccc')]]
+STREAK_PATCH = [[('red_s', 8, 8)], [('red', 4, 3)], [], [('red_s', 3, 9)], [('red', 6, 6)], [('red_s', 9, 3)]]
 LL = legend(a=('lava', 0), b=('lava', 1), c=('lava', 2), d=('lava', 3))
-CRUST_ISLE = {'B': legend(m=('wood', 1), n=('rim', 1)), 'C': legend(m=('vrock', 1), n=('vrock', 2))}
 L_STEP = {'B': (4, 0), 'C': (-4, 0)}
-L_PHASE = {('B', 1): (0, 1), ('C', 1): (0, 1)}
+L_PHASE = {('B', 1): (1, 1), ('C', 1): (2, 1)}
 
 
 def lava_body(line, n, vi, k):
     flip = (lambda r: r) if line == 'B' else mirror_h
     rx, ry = L_PHASE.get((line, n), (0, 0))
     dx, dy = L_STEP[line]
-    sx, sy = rx + dx * k, ry + dy * k
-    field = roll_rows(flip(LAVA_FIELD[n]), sx % 16, sy % 16)
-    drift = roll_rows(flip(LAVA_DRIFT[n]), sx % 16, sy % 16)
-    leg = dict(LL, **CRUST_ISLE[line])
-    cv = grid(field, leg, 16, 16)
-    stamp(cv, drift, leg, 0, 0)
-    for nm, x, y in BOIL_AT[n][vi]:
-        rows = BOIL[nm][(k + x + y) % NF]
-        if line == 'C':
-            rows, x = mirror_h(rows), 16 - x - len(rows[0])
-        assert 2 <= x and x + len(rows[0]) <= 14 and 2 <= y and y + len(rows) <= 14, nm
-        stamp(cv, rows, leg, x, y)
+    sx, sy = (rx + dx * k) % 16, (ry + dy * k) % 16
+    cv = grid(roll_rows(flip(LAVA_FIELD[n]), sx, sy), LL, 16, 16)
+    if n == 1:
+        for nm, x, y in BOIL_AT[vi]:
+            rows = BOIL[nm][(k + x + y) % NF]
+            if line == 'C':
+                rows, x = mirror_h(rows), 16 - x - len(rows[0])
+            assert 2 <= x and x + len(rows[0]) <= 14 and 2 <= y and y + len(rows) <= 14, nm
+            stamp(cv, rows, LL, x, y)
+    else:
+        lay = ['.' * 16 for _ in range(16)]
+        for nm, x, y in STREAK_PATCH[vi]:   # 변형마다 다른 자리의 주황 얼룩(줄기 밑, 고정·숨 쉼)
+            rows = BOIL[nm][(k + x) % NF]
+            rows = [r.replace('b', 'c') for r in rows]
+            if line == 'C':
+                rows, x = mirror_h(rows), 16 - x - len(rows[0])
+            stamp(cv, rows, LL, x, y)
+        for y, x, st in STREAKS[vi]:
+            r = list(lay[y])
+            for i, ch in enumerate(st):
+                r[(x + i) % 16] = ch
+            lay[y] = ''.join(r)
+        lay = roll_rows(flip(lay), (dx * k) % 16, 0)
+        for y in range(2, 14):
+            for x in range(2, 14):
+                ch = lay[y][x]
+                if ch == '.':
+                    continue
+                if x in (2, 13) and ch == 'd':
+                    ch = 'c'
+                cv.put(x, y, LL[ch])
     return cv
 
 
 def lava(line, n):
     fl = floor_body(line, n)
-    tex = {',': fl, 'y': heat(fl, HEAT['y']), 'z': heat(fl, HEAT['z'], 'wood'), 'C': crust_tex(line), **lava_face(line)}
+    tex = {',': fl, 'y': heat(fl, HEAT['y']), 'z': heat(fl, HEAT['z'], 'wood'), 'o': heat(fl, HEAT['o'], 'wood'),
+           'C': crust_tex(line), **lava_face(line)}
     if line == 'C':   # 심층굴: 탄 띠는 푸르스름한 검은 화산암 층
         tex['z'] = rowtex('1112222211112221', legend(**{'1': ('vrock', 1), '2': ('vrock', 2)}))
     fr_rows, inn_rows = bank_frame(LAVA_EDGE, LAVA_WOB[line], LAVA_KEYS[line])
     check_frame(f'용암 {line}{n} 틀', fr_rows, inn_rows)
     fr, inn = ER.fill(fr_rows, inn_rows, {}, tex)
+    nv = len(BOIL_AT) if n == 1 else len(STREAKS)
     out = []
     for k in range(NF):
-        bodies = [lava_body(line, n, vi, k) for vi in range(len(BOIL_AT[n]))]
+        bodies = [lava_body(line, n, vi, k) for vi in range(nv)]
         out.append(autotile_cv(bodies[0], fr, inn, bodies[1:]))
     return out
 
@@ -623,7 +648,7 @@ def cand(kind, line, n):
     def fn():
         fs = water(line, n) if kind == 'water' else lava(line, n)
         anim = scene(fs, line, n)
-        liquid = list(LIQ[line]) if kind == 'water' else (['lava', 'vrock'] if line == 'C' else ['lava', 'wood', 'rim'])   # 떠 가는 껍질 섬 색까지
+        liquid = list(LIQ[line]) if kind == 'water' else ['lava', 'vrock']
         return ER.a2_frames(fs), {
             'kind': 'autotile', 'autotiles': {kind: fs[0]}, 'frames': {kind: fs}, 'liquid': liquid,
             'vignette': anim[0], 'anim': anim, 'note': NOTES[kind][f'{line}{n}'],
