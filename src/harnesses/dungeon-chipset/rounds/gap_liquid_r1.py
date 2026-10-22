@@ -216,24 +216,14 @@ KEYS = {
 # 용암 물가 굴곡·열쇠는 물과 따로 — 남·서·동 껍질 폭이 1~5px 로 크게 오르내리게(검수: 「고른 얇은 띠」).
 # 칸 양끝 3열(0~2·13~15)은 굴곡 0·열쇠 w — 1칸 줄기가 칸 경계마다 조여 구슬 사슬로 읽히지 않게, 변화는 칸 안쪽에만.
 # 남쪽엔 껍질 혀를 두지 않는다(칸마다 같은 자리 이빨 빗). 열쇠 k = 빛나는 금이 껍질 띠를 가로질러 끊는다(1~2열).
-LAVA_KEYS = {   # 칸 양끝 3열·사분면 경계(7·8)는 w. 빛은 토막·세기 제각각, 구간마다 끊김. C 는 껍질 틈(g) 3~4px 를 변마다.
-    'B': {'N': 'w' * 16, 'S': 'wwwmhhwwwwffwwww', 'W': 'wwwwfmwwwhhmwwww', 'E': 'wwwhmwwwwwwfmwww'},
-    'C': {'N': 'w' * 16, 'S': 'wwwggggwwmhhwwww', 'W': 'wwwmmwwwwggggwww', 'E': 'wwwggggwwwfmwwww'},
+LAVA_KEYS = {   # 사분면 경계(0·7·8·15)는 w. g = 4~5px 껍질 틈, h = 노란 빛 토막. 변·줄마다 자리가 다르다.
+    'B': {'N': 'w' * 16, 'S': 'wwhhhwwwwggggwww', 'W': 'wggggwwwwwhhhwww', 'E': 'wwwhhwwwwgggggww'},
+    'C': {'N': 'w' * 16, 'S': 'wggggwwwwwhhwwww', 'W': 'wwwhhhwwwggggwww', 'E': 'wgggggwwwwhhhwww'},
 }
-# 굴곡: 1px 만, 변마다 한 군데 짧게(비대칭) — 1칸 줄기가 소시지처럼 조였다 부풀지 않게.
-LAVA_WOB = {
-    'B': {'N': [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'S': [0] * 10 + [1, 1, 0, 0, 0, 0],
-          'W': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, 0, 0, 0], 'E': [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]},
-    'C': {'N': [0] * 9 + [1, 1, 0, 0, 0, 0, 0], 'S': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, 0, 0, 0, 0],
-          'W': [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'E': [0] * 10 + [1, 1, 0, 0, 0, 0]},
-}
+LAVA_WOB = WOB   # 물가와 같은 굴곡(검수 통과)
 for _ln in 'BC':
     for _s in 'NSWE':
-        assert all(LAVA_WOB[_ln][_s][i] == 0 for i in (0, 1, 2, 13, 14, 15)), (_ln, _s)
-        assert all(LAVA_KEYS[_ln][_s][i] == 'w' for i in (0, 1, 2, 13, 14, 15)), (_ln, _s)
-for _ln in 'ABC':
-    for _s in 'NSWE':
-        assert len(KEYS[_ln][_s]) == 16 and len(WOB[_ln][_s]) == 16, (_ln, _s)
+        assert all(LAVA_KEYS[_ln][_s][i] == 'w' for i in (0, 7, 8, 15)), (_ln, _s)
 
 
 # ================================================================================================ 물 설계
@@ -408,48 +398,28 @@ def water(line, n):
 # 기호: ',' 마른 바닥 · 'y' 달아오른 바닥(바닥 결을 따뜻한 갈색으로) · 'z' 탄 바닥 · 'C' 식은 껍질 윗면(손 결 + 실금처럼 빛나는 금)
 #       · 'V' 껍질 끝(용암에 닿음, 불씨 점) · 'Q' 북쪽 둑 빛 받는 턱 · 'M' 'L' 둑 앞면 · 'g' 앞면 밑단이 용암 빛을 받음 · '.' 몸통.
 # 빛 띠는 물가에 두지 않는다(칸마다 같은 자리에 노란 막대가 찍혀 칸 격자가 드러났다) — 빛은 몸통의 흐르는 맥과 껍질 실금이 낸다.
-# 남·서·동: 닫힌 테두리 고리가 없다. 기본(w — 칸 양끝·가운데 이음)은 1px 깨진 껍질(V) + 달아오른 바닥(y)뿐, 빛 줄 없음.
-# 빛 줄은 칸 안쪽 구간에만 토막으로: h 굵은 노랑 2px · m 노랑 1px · f 약한 붉은 주황 1px. g = 껍질 틈(바닥이 몸통에 바로 닿음, 빛 없음).
-_LN = {'w': ''}
-_LX = {'w': '', 'h': 'HG', 'm': 'G', 'f': 'R', 'g': ''}
-_LK = {'g': 'y'}
-LAVA_EDGE = dict(
-    N=(6, {4: 'gMQ', 5: 'gLMQ', 6: 'gLMQz', 7: 'gLMMQz', 8: 'gLMMQzy'}, _LN),   # 북: 두꺼운 둑 앞면(3/4 낙차)
-    S=(3, {2: 'Vy', 3: 'Vy', 4: 'Vyy'}, _LX, _LK),
-    W=(3, {2: 'Vy', 3: 'Vy', 4: 'Vyy'}, _LX, _LK),
-    NW=[',,,,,,,,',          # 바깥 모서리 반지름 약 5px
-        ',,,,,,zz',
-        ',,,,zzQQ',
-        ',,,zQQMM',
-        ',,yzQMLL',
-        ',,yVMLgg',
-        ',yVgg...',
-        ',yV.....'],
-    SW=[',yV.....',
-        ',yV.....',
-        ',yVV....',
-        ',,yV....',
-        ',,yyVV..',
-        ',,,yyyVV',
-        ',,,,,yyy',
-        ',,,,,,,,'],
-    INW=[',yV.....',
-         'zyV.....',
-         'QzV.....',
-         'MQV.....',
-         'LMQ.....',
-         'gLg.....',
-         '.gg.....',
-         '........'],
-    ISW=['........',
-         '........',
-         '........',
-         '........',
-         '........',
-         'VV......',
-         'yyVV....',
-         ',yV.....'],
-)
+# 물가 1 설계(검수 통과)의 기하를 그대로 쓴다 — 모서리 넷·변 굴곡(WOB)·북쪽 둑 구조는 같고, 재료만 바꾼다:
+#   둑 위 턱 T → 껍질 빛 받는 턱 Q · 둑 앞면 F/H/J → M/L/g(밑단은 용암 빛) · 물 그늘 q → 용암 그늘 S
+#   젖은 바닥 n/m → 바닥 자기 어두운 단(그을린 덩이, C 는 검푸른 덩이) · 물금 d → 빛 줄 R(약한 붉은 주황)
+# 남·서·동에 이어진 어두운 고리가 없다: 열쇠 g 는 4~5px 틈 — 바닥이 몸통에 바로 닿는다. h 는 노란 빛 토막.
+_WMAP = str.maketrans({'T': 'Q', 'F': 'M', 'H': 'M', 'J': 'L', 'q': 'g', 'd': 'R'})
+
+
+def _lava_from_water(d):
+    out = {}
+    for k, v in d.items():
+        if isinstance(v, list):
+            out[k] = [r.translate(_WMAP) for r in v]
+        else:
+            p0, land = v[0], {dd: ly.translate(_WMAP) for dd, ly in v[1].items()}
+            out[k] = (p0, land) + tuple(v[2:])
+    out['N'] = (out['N'][0], out['N'][1], {'w': 'g'})
+    out['S'] = (out['S'][0], out['S'][1], {'w': 'R', 'h': 'GR', 'g': ''}, {'g': ''})
+    out['W'] = (out['W'][0], out['W'][1], {'w': 'R', 'h': 'GR', 'g': ''}, {'g': ''})
+    return out
+
+
+LAVA_EDGE = _lava_from_water(WATER_DESIGN[1])
 check_design('용암 물가', LAVA_EDGE)
 
 # 둑·껍질 결(줄마다). B = 따뜻한 검붉은 갈색 화산 껍질(rim·cfloor 어두운 단 + 용암 불씨). C = 푸르스름한 검은 층리(vrock).
@@ -483,7 +453,7 @@ for _ln, (_rows, _) in CRUST.items():
 
 
 # 껍질 안쪽 끝 빛 줄(정지) — G 주황(군데군데 붉음) · H 노랑(군데군데 주황) · R 붉음.
-GLOW = {'G': ('xxyxxxxyxxxxyxxx', 3, 2), 'H': ('xxxxxxxxxxxxxxxx', 3, 3), 'R': ('xxyxxxyxxxyxxxyx', 2, 1)}
+GLOW = {'G': ('xxyxxxxyxxxxyxxx', 3, 2), 'H': ('xxxxxxxxxxxxxxxx', 3, 3), 'R': ('xxyxxxxyxxyxxxxy', 1, 2)}
 
 
 def glow_tex():
@@ -516,46 +486,45 @@ def heat(cv, table, ramp='rim'):
 
 
 # ------------------------------------------------------------------------------------------------ 몸통: 녹은 들판(버들항 lava-strip 결)
-# 몸통 = 16×16 세계 주기 손 결 한 장(변형 없음) — 물 몸통처럼 **대비 낮은** 결이라야 16px 주기가 격자로 안 읽힌다.
-# 면적 85% 이상을 가까운 두 중간 단(주황 c · 붉은 주황 r 또는 호박 f)의 넓고 부드러운 얼룩으로, 검붉음(b)은 식는 자국 몇 줄,
-# 가장 밝은 노랑(d)은 몸통에 칸마다 1~2 점만 — 노랑은 껍질 안쪽 빛 줄(가장자리 조각)이 맡는다.
-#   <줄>1 「붉은 흐름」: 붉은 주황 62 · 주황 34% — 크기·모양이 다른 주황 얼룩 다섯, 같은 모양 되풀이 없음.
-#          식는 자국은 더 어둡지 않은 붉음(red 3, k) 낱점·2px 조각 4~6개, 노란 불티 셋은 얼룩 가장자리·붉은 바탕에.
-#   <줄>2 「밝은 흐름」: 주황 67 · 호박 17 · 붉은 주황 16% — 가운데 큰 덩이 없이 1~4px 작은 얼룩 여럿(일부는 칸 경계를 넘음).
-# 움직임: 결 전체가 작은 고리로 흔들린다(버들항 원운동) — 감아 미는 흐름이 아니다.
+# 몸통 = 16×16 세계 주기 결 한 장(변형 없음) — 중간 대비의 **흐름 줄기**: 주황(c) 바탕을 검붉은 골(b, 면적 약 30%)이
+# 2~4px 굵기로 굽이쳐 지나고, 노랑(d)은 한두 줄기의 마루에만. 줄기는 칸 경계를 넘어 들어온 자리와 다른 자리로 나가며
+# (원환 위 한 곡선이 칸을 여러 번 감음) 칸 낱 그림이 아니라 이어진 흐름으로 읽힌다. 덩이·점·잔무늬 없음.
+#   <줄>1 「넓은 비탈 흐름」: 한 곡선이 (가로 2, 세로 1)로 감겨 칸 안에선 완만한 비탈 줄기 둘(8px 간격, 굵기 2~4).
+#   <줄>2 「가는 가파른 흐름」: 한 곡선이 (가로 1, 세로 3)으로 감겨 칸 안에선 가파른 가는 줄기 셋(굵기 1~2, 살짝 굽이침).
+# 움직임: 결 전체가 작은 고리로 흔들린다(버들항 원운동).
 LAVA_FIELD = {1: [
-    'rrrccccrrrccccrr',
-    'rrrrcccrrccccccr',
-    'rrrrrrkrrccccccc',
-    'rrrrrrrrrdcccccr',
-    'cccrrrrrrrrcccrd',
-    'rcccrrrrrrrrrrrr',
-    'rcccccrrrrkkrrrr',
-    'rrccccccrrrrrrrr',
-    'rrrcccrrrrrrrrcc',
-    'ccrrrrrrkrrrcccc',
-    'ccrrrdrrrrrccccc',
-    'rrkrrrrrrrrrccrr',
-    'rrkrrrccrrrrrrrr',
-    'rrrrrccccrrrrkrr',
-    'rrrrcccccrrrrrkr',
-    'rrrccccrrrrcccrr'], 2: [
-    'ccrrrcccffcccccr',
-    'crrcccccfffcrrcr',
-    'cccccccccffcrrcc',
-    'fccrrcccccccccff',
-    'ffcrrrcccccfcccf',
-    'fcccrcccccfffccc',
-    'cccccccrcccffccc',
-    'cffccccrrcccccrc',
-    'ccfffccrrrcccccc',
-    'cccfccccrcccdffc',
-    'crrcccccccccfffc',
-    'rrrccfcdccccccrr',
-    'rccccffcccrrcccr',
-    'ccccccffcrrrcccc',
-    'cfccccccccrccffc',
-    'cffcccccccccffcc']}
+    'bcccddcccccccbbb',
+    'bbccccdddddccbbb',
+    'bbbbcccccccddccc',
+    'cbbbbbcccccccccc',
+    'ccbbbbbbbbbccccc',
+    'cccbbbbbbbbbbccc',
+    'ccccbbbbcccbbbbc',
+    'cccccccccccbbbbb',
+    'bccccdcccccccbbb',
+    'bbccccdddddccbbb',
+    'bbbbcccccccccccc',
+    'cbbbbbcccccccccc',
+    'ccbbbbbbbbbccccc',
+    'cccbbbbbbbbbbccc',
+    'ccccbbbbcccbbbbc',
+    'cccdcccccccbbbbb'], 2: [
+    'bccccbcccdcbcccc',
+    'cbcccbccccdcbccc',
+    'cbbccbbcccdcbbcc',
+    'ccbbccbbccccbbcc',
+    'ccbbcdbbccccbbcc',
+    'ccbccdcbccccbccc',
+    'cccbccdbccccbccc',
+    'cccbccdbcccccbcc',
+    'cccbbcdcbbcccbbc',
+    'ccccbbcdcbbccbbc',
+    'ccccbccdcbcccbcc',
+    'ccccbcccccbcccbc',
+    'ccccbcccccbcccbc',
+    'bcccbbccccbbcccb',
+    'bcccbbcccdcbbccb',
+    'cccccbcccdcbcccb']}
 for _n in (1, 2):
     assert len(LAVA_FIELD[_n]) == 16 and all(len(r) == 16 for r in LAVA_FIELD[_n]), _n
 # 장면마다 맥이 깜박이고 덩이가 부푸는 손 고침(결 좌표, 감기 전): (x, y, 화소 줄).
@@ -577,7 +546,7 @@ def lava_legend(line):
 
 
 L_LOOP = {1: [(0, 0), (2, 1), (3, 3), (1, 2)], 2: [(0, 0), (1, 2), (3, 3), (2, 1)]}   # 장면마다 결 전체를 작은 고리로(C 는 좌우 거울)
-L_PHASE = {}
+L_PHASE = {('B', 1): (6, 0), ('C', 1): (1, 0), ('B', 2): (0, 0), ('C', 2): (0, 0)}
 
 
 def lava_rows(line, n, k, vi=0):
@@ -612,11 +581,14 @@ def lava_body(line, n, k, vi=0):
 
 def lava(line, n):
     fl = floor_body(line, n)
-    tex = {',': fl, 'y': heat(fl, HEAT['y']), 'z': heat(fl, HEAT['z'], 'wood'),
-           'C': crust_tex(line), **glow_tex(), **lava_face(line)}
+    ft = floor_tex(line, n)
+    tex = {',': fl, 'm': ft['m'], 'n': ft['n'], 'y': heat(fl, HEAT['y']), 'z': heat(fl, HEAT['z'], 'wood'),
+           'C': crust_tex(line), **glow_tex(), **lava_face(line),
+           'S': rowtex('xxyxxxxxyxxxxyxx', legend(x=('lava', 1), y=('lava', 0)))}
     if line == 'C':   # 심층굴: 탄 띠 = 바닥 결을 그을린 푸른 검정으로(줄무늬 돌 턱이 아니게)
         tex['z'] = heat(fl, HEAT['z'], 'vrock')
-        tex['y'] = fl   # 틈·껍질 바깥은 그냥 회색 바닥 — 검푸른 껍질만 남아 군데군데 끊긴다(이중 윤곽 없음)
+        tex['y'] = fl
+        tex['n'] = heat(fl, HEAT['z'], 'vrock')   # 심층굴: 물가 덩이는 검푸른 껍질(바닥 결 그대로, 틈에서 끊김)
     fr_rows, inn_rows = bank_frame(LAVA_EDGE, LAVA_WOB[line], LAVA_KEYS[line])
     check_frame(f'용암 {line}{n} 틀', fr_rows, inn_rows)
     fr, inn = ER.fill(fr_rows, inn_rows, {}, tex)
