@@ -52,6 +52,9 @@ function renderMoveRouteDialog(body: HTMLElement, close: () => void, request: Pa
   let hopDy = initialHop.hopDy;
   let hopHeightPx = initialHop.hopHeightPx;
   let hopDurationMs = initialHop.hopDurationMs;
+  const lastStage = [...moves].reverse().find((m) => m.kind === "approach" || m.kind === "turnToward") as Extract<MoveCommand, { kind: "approach" | "turnToward" }> | undefined;
+  let stageTarget = lastStage?.target ?? "@player";
+  let talkDistance = lastStage?.kind === "approach" ? lastStage.distance ?? 1 : 1;
 
   const commandList = el("div", {
     class: "event-page-move-route-command-list",
@@ -109,6 +112,11 @@ function renderMoveRouteDialog(body: HTMLElement, close: () => void, request: Pa
     if (move?.kind === "setSwitch") { switchId = move.switchId; editedIndex = index; }
     else if (move?.kind === "changeGraphic") { spriteId = move.spriteId; editedIndex = index; }
     else if (move?.kind === "playSe") { soundId = move.resourceId; editedIndex = index; }
+    else if (move?.kind === "approach" || move?.kind === "turnToward") {
+      stageTarget = move.target ?? "@player";
+      if (move.kind === "approach") talkDistance = move.distance ?? 1;
+      editedIndex = index;
+    }
     else if (move?.kind === "npcTransfer") {
       npcTargetMapId = move.mapId; npcTargetX = move.x; npcTargetY = move.y;
       npcTargetDirection = move.direction ?? "down"; editedIndex = index;
@@ -193,6 +201,16 @@ function renderMoveRouteDialog(body: HTMLElement, close: () => void, request: Pa
       onHopDurationMs: (next) => {
         hopDurationMs = next;
       },
+      stageTarget,
+      talkDistance,
+      onStageTarget: (next) => {
+        stageTarget = next;
+        editSelected(move => move.kind === "approach" || move.kind === "turnToward" ? { ...move, target: next || "@player" } : move);
+      },
+      onTalkDistance: (next) => {
+        talkDistance = Math.max(1, next);
+        editSelected(move => move.kind === "approach" ? { ...move, distance: talkDistance } : move);
+      },
     }
   );
   const topBar = renderTop();
@@ -221,6 +239,8 @@ function renderMoveRouteDialog(body: HTMLElement, close: () => void, request: Pa
               hopDy,
               hopHeightPx,
               hopDurationMs,
+              stageTarget,
+              talkDistance,
             })),
           ],
         }),

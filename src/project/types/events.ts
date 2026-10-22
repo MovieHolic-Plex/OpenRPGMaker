@@ -176,6 +176,14 @@ export type MoveCommand =
   | { kind: "turnRandom" }
   | { kind: "turnTowardPlayer" }
   | { kind: "turnAwayFromPlayer" }
+  /**
+   * 대상 곁의 빈 칸까지 길을 찾아 걸어간 뒤 대상을 본다(인물 연출 기본기 — 걸음을 손으로 늘어놓지 않는다).
+   * target: "@player"(주인공)·이벤트 id·"" 또는 생략이면 x,y 칸. distance: 말 거리(칸, 기본 1 = 바로 옆).
+   * 다른 인물·지형을 피하고, 대상과 같은 줄(위·아래·왼쪽·오른쪽)에 서는 칸을 먼저 고른다. 걷는 속도는 그 인물의 보통 속도다.
+   */
+  | { kind: "approach"; target?: string; x?: number; y?: number; distance?: number }
+  /** 대상(주인공 "@player"·이벤트 id·x,y 칸) 쪽으로 돈다. */
+  | { kind: "turnToward"; target?: string; x?: number; y?: number }
   | { kind: "setDirectionFix"; enabled: boolean }
   | { kind: "setThrough"; enabled: boolean }
   | { kind: "setAnimation"; enabled: boolean }
@@ -348,6 +356,15 @@ export type Command =
        * auto = 화면 속 주인공을 가리지 않는 쪽으로 자동, top·center·bottom = 고정(주인공이 가려져도 그대로).
        */
       position?: "auto" | "top" | "center" | "bottom";
+      /**
+       * 이 줄을 말하는 인물(맵 위). "@player" 또는 이벤트 id. 비우면 speaker 이름으로 맵의 보이는 인물을 찾는다
+       * (주인공 이름 → 주인공, 이벤트 이름·인물 프로필 이름 → 그 이벤트). project/staging/dialogueActors.ts.
+       */
+      speakerActor?: string;
+      /** 듣는 인물. 비우면 NPC 가 말할 때는 주인공, 주인공이 말할 때는 방금 말한 NPC(없으면 이 이벤트). */
+      addressee?: string;
+      /** false 면 말하는 인물이 듣는 인물 쪽으로 돌지 않는다(등 돌린 채 말하기 같은 의도된 연출). 기본 켬. */
+      autoFace?: boolean;
     }
   | ({ kind: "changeFace"; appearanceId?: string } & FaceGraphic)
   | {

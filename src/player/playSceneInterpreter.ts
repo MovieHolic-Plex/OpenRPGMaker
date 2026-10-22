@@ -22,6 +22,7 @@ import { playAudioCommand, stopAudioChannel, stopAudioCommand } from "@/player/a
 import { resolveEventPage } from "@/project/io";
 import { createInterpreter, type StepResult } from "@/player/interpreter";
 import type { Interpreter } from "@/player/interpreter";
+import { applyDialogueFacing } from "@/player/playSceneDialogueFacing";
 import { playInn, playShop } from "@/player/playSceneCommerce";
 import { playOpenChest } from "@/player/playSceneChest";
 import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
@@ -34,7 +35,7 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { assertNever } from "@/player/playSceneTypes";
 import { tryBoardVehicle, tryGetOffVehicle } from "@/player/playSceneVehicles";
-import type { Command, MessageWindowSettings } from "@/project/types";
+import type { Command, MessageWindowSettings, MoveCommand } from "@/project/types";
 import { characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { waitForEventKey } from "@/player/eventInput";
 import { abortHop, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
@@ -410,6 +411,8 @@ async function consumeBlockingStep(
         ? runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions).find((view) => view.event.id === currentEventId)?.event
         : undefined;
       const speaker = step.speaker ?? getCharacterProfile(project, event?.characterId)?.displayName;
+      // 말하는 인물이 듣는 인물 쪽으로 돈다(둘 다 맵에 있고 가까울 때, text.autoFace=false 면 안 돈다).
+      applyDialogueFacing(scene, step, currentEventId);
       await dialogue.showText({
         speaker,
         look: resolveDialogueLook(project, {
@@ -587,14 +590,15 @@ async function consumeBlockingStep(
     }
     case "moveEvent": {
       const target = resolveMoveEventTarget(step.eventId, currentEventId);
+      const moves = bindStageTargets(step.moves, currentEventId);
       if (target === PLAYER_MOVE_TARGET) {
         // 주인공 강제 이동: 이벤트 무버가 아니라 플레이어를 한 칸씩 걷게 한다.
-        startPlayerRoute(scene, step.moves, step.repeat);
+        startPlayerRoute(scene, moves, step.repeat);
         if (step.wait) {
           await Promise.race([waitForPlayerRouteComplete(scene), skipController.waitForSkip()]);
         }
       } else {
-        scene.registerAutonomousMover(target, step.moves, step.repeat);
+        scene.registerAutonomousMover(target, moves, step.repeat);
         scene.commandMoveRouteEventIds.add(target);
         if (step.wait) {
           await Promise.race([waitForMoverComplete(scene, target), skipController.waitForSkip()]);
@@ -938,4 +942,11 @@ function playerScreenYOf(scene: PlaySceneContext): { playerScreenY?: number } {
   // 화면 가운데 주인공을 1.00(맨 아래)으로 읽어 창을 위로 보냈다.
   const ratio = ((centerY - cameraViewOrigin(camera).top) * camera.zoom) / camera.height;
   return Number.isFinite(ratio) ? { playerScreenY: Math.max(0, Math.min(1, ratio)) } : {};
+}
+
+/** 다가가기·쪽으로 돌기의 대상 "@this"(이 이벤트)를 실제 id 로 묶는다 — 경로를 받는 인물은 명령을 실행한 이벤트를 모른다. */
+function bindStageTargets(moves: MoveCommand[], currentEventId: string | undefined): MoveCommand[] {
+  if (!moves.some((m) => (m.kind === "approach" || m.kind === "turnToward") && (m.target === "@this" || m.target === "this-event"))) return moves;
+  return moves.map((m) => (m.kind === "approach" || m.kind === "turnToward") && (m.target === "@this" || m.target === "this-event")
+    ? { ...m, target: currentEventId ?? "" } : m);
 }

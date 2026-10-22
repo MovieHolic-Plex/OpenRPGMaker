@@ -230,6 +230,19 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
     text: voiceResourceId ? resourceDisplayName(voiceResourceId, voiceResourceId) : "없음",
     dataset: { testid: "event-command-text-voice-name" },
   });
+  // 누가 누구에게 — 말하는 인물이 듣는 인물 쪽으로 돈다(런타임 player/playSceneDialogueFacing.ts). 비우면 이름으로 찾는다.
+  const speakerActorIn = el("input", {
+    attrs: { type: "text", placeholder: "자동(이름으로)", title: "이 줄을 말하는 맵 위 인물. @player = 주인공, 또는 이벤트 id." },
+    value: cmd.speakerActor ?? "",
+    dataset: { testid: "event-command-text-speaker-actor" },
+  });
+  const addresseeIn = el("input", {
+    attrs: { type: "text", placeholder: "자동", title: "듣는 인물. 비우면 NPC 대사는 주인공, 주인공 대사는 방금 말한 NPC." },
+    value: cmd.addressee ?? "",
+    dataset: { testid: "event-command-text-addressee" },
+  });
+  const autoFaceIn = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "event-command-text-auto-face" } });
+  autoFaceIn.checked = cmd.autoFace !== false;
   const readDraft = (): Extract<Command, { kind: "text" }> => {
     const nextEmotion = emotion.select.value;
     const nextContext = lineContext.select.value;
@@ -244,6 +257,9 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
       ...(lineContainer.select.value ? { container: lineContainer.select.value } : {}),
       ...(linePosition.select.value ? { position: linePosition.select.value as "auto" | "top" | "center" | "bottom" } : {}),
       ...(voiceResourceId ? { voiceResourceId } : {}),
+      ...(speakerActorIn.value.trim() ? { speakerActor: speakerActorIn.value.trim() } : {}),
+      ...(addresseeIn.value.trim() ? { addressee: addresseeIn.value.trim() } : {}),
+      ...(autoFaceIn.checked ? {} : { autoFace: false }),
     };
   };
   // 연출은 **바뀐 순간에만** 프리뷰에서 재생한다. 프리뷰는 본문을 한 글자 칠 때마다 다시
@@ -283,6 +299,8 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
   };
   speaker.addEventListener("change", apply);
   speaker.addEventListener("input", apply);
+  for (const input of [speakerActorIn, addresseeIn]) input.addEventListener("input", apply);
+  autoFaceIn.addEventListener("change", apply);
   body.addEventListener("change", apply);
   body.addEventListener("input", apply);
   emotion.select.addEventListener("change", apply);
@@ -467,6 +485,17 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
               },
             }),
             el("small", { text: "이 대사가 뜰 때 한 번 재생합니다. 배경음은 그대로 두고, 글자 소리는 내지 않습니다." }),
+          ],
+        }),
+        el("div", {
+          class: "event-command-text-staging-field",
+          attrs: { style: "display:flex;flex-wrap:wrap;gap:6px;align-items:center;" },
+          dataset: { testid: "event-command-text-staging" },
+          children: [
+            el("span", { class: "event-command-text-body-label", text: "누가 누구에게" }),
+            el("label", { children: [el("span", { text: "말하는 인물 " }), speakerActorIn] }),
+            el("label", { children: [el("span", { text: "듣는 인물 " }), addresseeIn] }),
+            el("label", { children: [autoFaceIn, el("span", { text: " 말할 때 듣는 쪽을 본다" })] }),
           ],
         }),
         easyTools,

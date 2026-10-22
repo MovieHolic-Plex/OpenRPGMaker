@@ -583,6 +583,9 @@ export function executeCommand(
         ...(command.position ? { position: command.position } : {}),
         ...(command.voiceResourceId ? { voiceResourceId: command.voiceResourceId } : {}),
         ...(ENDING_EPILOGUE_TEXT.has(command) ? { endingEpilogue: true } : {}),
+        ...(command.speakerActor ? { speakerActor: command.speakerActor } : {}),
+        ...(command.addressee ? { addressee: command.addressee } : {}),
+        ...(command.autoFace === false ? { autoFace: false } : {}),
       });
     case "choices":
       return pause("choices", {

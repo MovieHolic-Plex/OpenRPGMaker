@@ -944,6 +944,14 @@ function validateMoveCommandShape(label: string, value: unknown): void {
     case "playSe":
       requireString(`${label}.resourceId`, command.resourceId);
       return;
+    case "approach":
+    case "turnToward":
+      // 대상은 target("@player"·이벤트 id) 또는 x,y 칸. 둘 다 없어도 형식 오류는 아니다(런타임이 건너뛴다).
+      if (command.target !== undefined) requireString(`${label}.target`, command.target);
+      if (command.x !== undefined) requireNumber(`${label}.x`, command.x);
+      if (command.y !== undefined) requireNumber(`${label}.y`, command.y);
+      if (kind === "approach" && command.distance !== undefined) requireNumber(`${label}.distance`, command.distance);
+      return;
     case "moveRandom":
     case "moveTowardPlayer":
     case "moveAwayFromPlayer":

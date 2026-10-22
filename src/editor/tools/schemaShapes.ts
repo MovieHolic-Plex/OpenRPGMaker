@@ -210,6 +210,7 @@ const CUTSCENE_BEAT_BASE_SCHEMA: JsonSchema = {
       enum: [
         "say", "moveActor", "camera", "picture", "music", "fade", "tint", "distort", "background", "flash", "animation", "shake", "changeTile", "wait", "parallel",
         "label", "jump", "switch", "transfer", "ending", "letterbox", "particles", "look", "emote", "weather", "text", "narrate",
+        "approach", "faceEachOther", "faceToward",
       ],
     },
     // 선언하지 않은 칸은 일부 공급자(Gemini)가 아예 보내지 않는다 — 비트가 실제로 읽는 칸은 전부 여기 둔다(2026-10-02:
@@ -224,10 +225,15 @@ const CUTSCENE_BEAT_BASE_SCHEMA: JsonSchema = {
     loop: { type: "boolean", description: "music 비트: 반복" },
     moves: {
       type: "array",
-      description: "moveActor 비트: 이동 명령 [{kind:'move',dir:'up'},{kind:'turn',dir:'left'},{kind:'jump',dx,dy}]",
+      description: "moveActor 비트: 이동 명령 [{kind:'move',dir:'up'},{kind:'turn',dir:'left'},{kind:'jump',dx,dy}]. 누구에게 다가가 말 걸기는 걸음을 늘어놓지 말고 approach 비트(또는 {kind:'approach',target:'@player'|이벤트 id,distance})·{kind:'turnToward',target} 를 쓴다",
       items: { type: "object", additionalProperties: true, properties: { kind: { type: "string" }, dir: { type: "string" } } },
     },
-    actor: { type: "string", description: "moveActor 비트: target 대신 인물 이름" },
+    actor: { type: "string", description: "moveActor 비트: target 대신 인물 이름. approach·faceToward 비트: 움직이는 인물('player' 또는 이벤트 id·이름). say 비트: 말하는 맵 위 인물(비우면 speaker 이름으로 찾음)." },
+    to: { type: "string", description: "say 비트: 듣는 인물('player'·이벤트 id). 비우면 NPC 대사는 주인공, 주인공 대사는 방금 말한 NPC. 말하는 인물이 이쪽으로 자동으로 돈다." },
+    autoFace: { type: "boolean", description: "say 비트: false 면 말하는 인물이 듣는 쪽으로 돌지 않는다(등 돌린 채 말하기 같은 의도된 연출만)." },
+    distance: { type: "integer", minimum: 1, maximum: 6, description: "approach 비트: 대상에서 몇 칸 떨어져 설지(기본 1 = 바로 옆, 대화 거리)." },
+    a: { type: "string", description: "faceEachOther 비트: 첫 인물('player'·이벤트 id)." },
+    b: { type: "string", description: "faceEachOther 비트: 둘째 인물('player'·이벤트 id)." },
     ms: { type: "integer", description: "wait 비트: 기다릴 밀리초" },
     name: { type: "string", description: "label·jump 비트: 라벨 이름" },
     color: { type: "string", description: "flash 비트: 번쩍일 색(white·red·#rrggbb). tint 비트: 색조 이름(sepia·night·neutral …)." },

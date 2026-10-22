@@ -1,4 +1,5 @@
 import { defaultChaseSight, defaultChasePursuit } from "@/project/npcBehavior";
+import { stageTargetLabel } from "./moveRouteCommandCatalog";
 import { renderMovementSight } from "./pageNpcBehavior";
 import { renderChaseSettings } from "./pageHorror";
 import { updateEventPage } from "@/editor/eventPages";
@@ -182,6 +183,10 @@ function moveLabel(command: MoveCommand): string {
       return "플레이어 쪽으로 향함";
     case "turnAwayFromPlayer":
       return "플레이어 반대로 향함";
+    case "approach":
+      return `${stageTargetLabel(command)} 곁으로 다가가기`;
+    case "turnToward":
+      return `${stageTargetLabel(command)} 쪽으로 향함`;
     case "setDirectionFix":
       return `방향 고정 ${onOff(command.enabled)}`;
     case "setThrough":

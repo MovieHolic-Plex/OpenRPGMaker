@@ -18,6 +18,8 @@ import { loopStepTarget, wrapLoopPosition } from "@/project/mapLoop";
 // 경로 세팅은 잎 모듈에 있다(가벼운 소비자가 이 파일 전체를 끌어오지 않도록) — 기존
 // 임포트 경로를 깨지 않기 위해 여기서 다시 내보낸다.
 export { startPlayerRoute } from "@/player/playerRouteState";
+import { expandApproach, turnTowardDir } from "@/player/playSceneApproach";
+import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { footprintBounds, nearestCellInRect } from "@/project/footprint";
 import { playerPassageRect, resolvePlayerBody, type PlayerBody } from "@/project/playerFootprint";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
@@ -607,6 +609,18 @@ function applyPlayerRouteCommand(scene: PlaySceneContext, route: PlayerRouteStat
     case "turn":
       scene.facing = command.dir;
       return false;
+    case "approach": {
+      // 다가가기: 지금 칸에서 목적 칸까지의 보통 걸음 + 대상 쪽 돌기로 이 단계를 갈아 끼운다(playSceneApproach).
+      const expansion = expandApproach(scene, PLAYER_MOVE_TARGET, { x: scene.tileX, y: scene.tileY }, command);
+      route.moves = [...route.moves.slice(0, route.index - 1), ...expansion, ...route.moves.slice(route.index)];
+      route.index -= 1;
+      return false;
+    }
+    case "turnToward": {
+      const dir = turnTowardDir(scene, { x: scene.tileX, y: scene.tileY }, command);
+      if (dir) scene.facing = dir;
+      return false;
+    }
     case "turnRelative":
       scene.facing = rotatedFacing(scene.facing, command.turn);
       return false;

@@ -3943,6 +3943,18 @@ function resolveCutsceneActorTargets(map: GameMap, beats: readonly CutsceneBeat[
       warnings.push(`컷신 ${beat.kind} 대상 '${named}' 를 같은 맵의 이벤트 id '${found[0]!.id}' 로 바꿨습니다.`);
       return { ...beat, target: found[0]!.id, eventId: undefined };
     }
+    // 인물 연출 비트(다가가기·서로 보기·쪽으로 돌기·대사의 actor/to)도 이름을 받는다.
+    const byName = (ref: string | undefined, field: string): string | undefined => {
+      const named = (ref ?? "").trim();
+      if (!named || ["player", "@player", "this-event", "@this"].includes(named) || ids.has(named)) return ref;
+      const found = map.events.filter((event) => event.name?.trim() === named || event.characterId === named);
+      if (found.length !== 1) return ref;
+      warnings.push(`컷신 ${beat.kind}.${field} '${named}' 를 같은 맵의 이벤트 id '${found[0]!.id}' 로 바꿨습니다.`);
+      return found[0]!.id;
+    };
+    if (beat.kind === "approach" || beat.kind === "faceToward") return { ...beat, actor: byName(beat.actor, "actor") ?? beat.actor, target: byName(beat.target, "target") };
+    if (beat.kind === "faceEachOther") return { ...beat, a: byName(beat.a, "a") ?? beat.a, b: byName(beat.b, "b") ?? beat.b };
+    if (beat.kind === "say" && (beat.actor || beat.to)) return { ...beat, actor: byName(beat.actor, "actor"), to: byName(beat.to, "to") };
     if (beat.kind !== "moveActor") return beat;
     const raw = (beat.target ?? beat.eventId ?? beat.actor ?? "player").trim();
     if (raw === "player" || raw === "this-event" || ids.has(raw)) return beat;
@@ -3957,13 +3969,13 @@ function resolveCutsceneActorTargets(map: GameMap, beats: readonly CutsceneBeat[
   let moves = 0;
   const scan = (items: readonly CutsceneBeat[]): void => items.forEach((beat) => {
     if (beat.kind === "parallel") scan(beat.beats);
-    else if (beat.kind === "moveActor") moves += 1;
+    else if (beat.kind === "moveActor" || beat.kind === "approach" || beat.kind === "faceToward" || beat.kind === "faceEachOther") moves += 1;
     else if (beat.kind === "say" && typeof beat.speaker === "string") speakers.add(beat.speaker.trim());
   });
   scan(resolved);
   const onMap = [...speakers].filter((name) => name && map.events.some((event) => event.name?.trim() === name));
   if (moves === 0 && onMap.length >= 2) {
-    warnings.push(`컷신에 맵 위 인물 ${onMap.join("·")} 이 말하지만 moveActor 비트가 하나도 없어 아무도 움직이지 않습니다 — 다가가기·돌아서기 같은 동작이 필요하면 moveActor{target:이름 또는 이벤트 id} 를 넣으세요.`);
+    warnings.push(`컷신에 맵 위 인물 ${onMap.join("·")} 이 말하지만 moveActor 비트가 하나도 없어 아무도 움직이지 않습니다 — 말 걸기 전에 approach{actor,target}(곁으로 걸어가 바라봄)·faceEachOther{a,b} 를 넣으세요(걸음을 손으로 늘어놓지 말 것).`);
   }
   return resolved;
 }

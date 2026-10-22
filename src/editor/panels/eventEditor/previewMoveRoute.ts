@@ -1,4 +1,5 @@
 import { el } from "@/util/dom";
+import { stageTargetLabel } from "./moveRouteCommandCatalog";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
@@ -278,6 +279,10 @@ function chipLabel(move: MoveCommand): string {
       return "↻접근";
     case "turnAwayFromPlayer":
       return "↻회피";
+    case "approach":
+      return `다가가기→${stageTargetLabel(move)}`;
+    case "turnToward":
+      return `↻${stageTargetLabel(move)}`;
     case "setDirectionFix":
       return `방향고정 ${onOff(move.enabled)}`;
     case "setThrough":

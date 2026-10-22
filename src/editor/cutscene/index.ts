@@ -47,7 +47,29 @@ export type CutsceneBeat =
   | CutsceneParticlesBeat
   | CutsceneLookBeat
   | CutsceneEmoteBeat
-  | CutsceneWeatherBeat;
+  | CutsceneWeatherBeat
+  | CutsceneApproachBeat
+  | CutsceneFaceEachOtherBeat
+  | CutsceneFaceTowardBeat;
+
+/**
+ * 인물 연출 기본기(2026-10-22). 걸음을 손으로 늘어놓지 말고 «누구 곁으로»·«서로 본다»를 선언한다 —
+ * 실행 순간의 실제 위치로 길을 찾고 방향을 계산한다(player/playSceneApproach.ts).
+ */
+export type CutsceneApproachBeat = {
+  readonly kind: "approach";
+  /** 걸어가는 인물: "player" 또는 이벤트 id. */
+  readonly actor: string;
+  /** 다가갈 대상: "player"·이벤트 id. 칸이면 x,y. */
+  readonly target?: string;
+  readonly x?: number;
+  readonly y?: number;
+  /** 말 거리(칸). 기본 1 = 바로 옆. */
+  readonly distance?: number;
+  readonly wait?: boolean;
+};
+export type CutsceneFaceEachOtherBeat = { readonly kind: "faceEachOther"; readonly a: string; readonly b: string };
+export type CutsceneFaceTowardBeat = { readonly kind: "faceToward"; readonly actor: string; readonly target?: string; readonly x?: number; readonly y?: number };
 
 export type CutsceneSayBeat = {
   readonly kind: "say";
@@ -65,6 +87,12 @@ export type CutsceneSayBeat = {
   readonly container?: string;
   /** 대화창 위치 — auto(주인공을 가리지 않게 자동)·top·center·bottom. 인물이 화면 아래쪽에 있으면 top. 흉상·전신 초상이 있는 줄은 항상 아래. */
   readonly position?: "auto" | "top" | "center" | "bottom";
+  /** 말하는 맵 위 인물("player"·이벤트 id). 비우면 speaker 이름으로 찾는다. */
+  readonly actor?: string;
+  /** 듣는 인물("player"·이벤트 id). 비우면 NPC 대사는 주인공, 주인공 대사는 방금 말한 NPC. */
+  readonly to?: string;
+  /** false 면 말하는 인물이 듣는 쪽으로 돌지 않는다(등 돌린 채 말하기). */
+  readonly autoFace?: boolean;
 };
 
 export type CutsceneMoveActorBeat = {
@@ -627,6 +655,12 @@ function compileBeat(
       return compileSayBeat(beat, state);
     case "moveActor":
       return [compileMoveActorBeat(beat, options.forceNonBlocking)];
+    case "approach":
+      return [compileApproachBeat(beat, options.forceNonBlocking)];
+    case "faceToward":
+      return [compileFaceTowardBeat(beat, options.forceNonBlocking)];
+    case "faceEachOther":
+      return compileFaceEachOtherBeat(beat, options.forceNonBlocking);
     case "camera":
       return [compileCameraBeat(beat, state, options.forceNonBlocking)];
     case "picture":
@@ -754,9 +788,44 @@ function compileSayBeat(beat: CutsceneSayBeat, state: CompileState): Command[] {
       ...(beat.style ? { style: beat.style } : {}),
       ...(beat.container ? { container: beat.container } : {}),
       ...(beat.position ? { position: beat.position } : {}),
+      ...(beat.actor ? { speakerActor: stageRef(beat.actor) } : {}),
+      ...(beat.to ? { addressee: stageRef(beat.to) } : {}),
+      ...(beat.autoFace === false ? { autoFace: false } : {}),
     });
   }
   return commands;
+}
+
+/** 비트의 인물 지칭 → 이동 경로 대상: "player" → "@player", "this-event" → "@this". */
+function stageRef(ref: string): string {
+  const r = ref.trim();
+  return r === "player" ? PLAYER_MOVE_TARGET : r === "this-event" ? "@this" : r;
+}
+
+function stageMoveEvent(actor: string, moves: MoveCommand[], wait: boolean): Command {
+  const a = actor.trim();
+  return { kind: "moveEvent", eventId: a === "player" || a === PLAYER_MOVE_TARGET ? PLAYER_MOVE_TARGET : a === "this-event" ? "" : a, route: { moves, repeat: false, wait, skippable: true } };
+}
+
+function compileApproachBeat(beat: CutsceneApproachBeat, forceNonBlocking: boolean): Command {
+  const move: MoveCommand = {
+    kind: "approach",
+    ...(beat.target ? { target: stageRef(beat.target) } : { x: beat.x ?? 0, y: beat.y ?? 0 }),
+    ...(beat.distance && beat.distance > 1 ? { distance: beat.distance } : {}),
+  };
+  return stageMoveEvent(beat.actor, [move], forceNonBlocking ? false : beat.wait ?? true);
+}
+
+function compileFaceTowardBeat(beat: CutsceneFaceTowardBeat, forceNonBlocking: boolean): Command {
+  const move: MoveCommand = { kind: "turnToward", ...(beat.target ? { target: stageRef(beat.target) } : { x: beat.x ?? 0, y: beat.y ?? 0 }) };
+  return stageMoveEvent(beat.actor, [move], !forceNonBlocking);
+}
+
+function compileFaceEachOtherBeat(beat: CutsceneFaceEachOtherBeat, forceNonBlocking: boolean): Command[] {
+  return [
+    stageMoveEvent(beat.a, [{ kind: "turnToward", target: stageRef(beat.b) }], false),
+    stageMoveEvent(beat.b, [{ kind: "turnToward", target: stageRef(beat.a) }], !forceNonBlocking),
+  ];
 }
 
 function compileMoveActorBeat(beat: CutsceneMoveActorBeat, forceNonBlocking: boolean): Command {
@@ -971,6 +1040,7 @@ function compileParallelBeat(beat: CutsceneParallelBeat, state: CompileState): C
 
 function needsWaitAllMovement(beat: CutsceneBeat): boolean {
   if (beat.kind === "moveActor") return beat.wait ?? beat.route?.wait ?? true;
+  if (beat.kind === "approach") return beat.wait ?? true;
   if (beat.kind === "parallel") return beat.beats.some(needsWaitAllMovement);
   return false;
 }
@@ -1079,6 +1149,14 @@ function validateKnownBeat(beat: CutsceneBeat, path: string, errors: string[]): 
   if (beat.kind === "parallel" && (!Array.isArray(beat.beats) || beat.beats.length === 0)) {
     errors.push(`${path}.beats: parallel 비트에는 함께 실행할 beat 배열이 필요합니다(예: {kind:'parallel',beats:[{kind:'picture',action:'move',…},{kind:'shake'}]}). 함께 할 일이 없으면 parallel 을 빼세요.`);
   }
+  if (beat.kind === "approach" || beat.kind === "faceToward") {
+    if (typeof beat.actor !== "string" || !beat.actor.trim()) errors.push(`${path}.actor: 움직일 인물('player' 또는 이벤트 id)이 필요합니다.`);
+    const hasTarget = typeof beat.target === "string" && beat.target.trim() !== "";
+    if (!hasTarget && (typeof beat.x !== "number" || typeof beat.y !== "number")) errors.push(`${path}: ${beat.kind} 에는 target('player'·이벤트 id) 또는 칸 x,y 가 필요합니다.`);
+  }
+  if (beat.kind === "faceEachOther" && (typeof beat.a !== "string" || !beat.a.trim() || typeof beat.b !== "string" || !beat.b.trim())) {
+    errors.push(`${path}: faceEachOther 에는 두 인물 a·b('player' 또는 이벤트 id)가 필요합니다.`);
+  }
   // fade 는 색을 못 고른다(검정뿐). 모델이 tint/fade/color 로 흰색을 요청하면 조용히 검정이 됐다.
   if (beat.kind === "fade") {
     const stray = (["color", "tint", "fade"] as const).filter((key) => (beat as Record<string, unknown>)[key] !== undefined);
@@ -1140,6 +1218,12 @@ function referencedEventIds(beat: CutsceneBeat): readonly string[] {
   if (beat.kind === "moveActor") {
     const target = beat.target ?? beat.eventId ?? beat.actor;
     return target && target !== "player" && target !== "this-event" ? [target] : [];
+  }
+  if (beat.kind === "approach" || beat.kind === "faceToward" || beat.kind === "faceEachOther" || beat.kind === "say") {
+    const refs = beat.kind === "faceEachOther" ? [beat.a, beat.b]
+      : beat.kind === "say" ? [beat.actor, beat.to]
+      : [beat.actor, beat.target];
+    return refs.filter((r): r is string => typeof r === "string" && r.trim() !== "" && !["player", "@player", "this-event", "@this"].includes(r.trim())).map((r) => r.trim());
   }
   if (beat.kind === "camera") {
     if (beat.eventId) return [beat.eventId];
@@ -1291,6 +1375,9 @@ const KNOWN_BEAT_KINDS: ReadonlySet<string> = new Set([
   "look",
   "emote",
   "weather",
+  "approach",
+  "faceEachOther",
+  "faceToward",
 ]);
 
 function isCameraObjectTarget(value: unknown): value is { readonly eventId?: string; readonly x?: number; readonly y?: number } {
