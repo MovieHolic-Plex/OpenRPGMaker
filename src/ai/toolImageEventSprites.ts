@@ -4,6 +4,7 @@ import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { mapTileSize } from "@/project/tileGeometry";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { CC0_ICON_ASSETS, resolveCc0IconAssetUrl } from '@/assets/cc0IconAssets';
+import { generatedMonsterSpriteUrl } from "@/assets/generatedMonsterSprites";
 import {
   charsetFrameSource,
   decodeCharsetFrameIndex,
@@ -34,6 +35,8 @@ export type RegionEventSprite = {
   readonly imageUrl: string;
   readonly preserveAlpha?: boolean;
   readonly frame: CharsetFrameSource;
+  /** true = draw the whole image (frame size is the field box, not a source rect) — generated monster field sprites. */
+  readonly wholeImage?: boolean;
   /** Destination top-left in region canvas pixels (origin at authored ground anchor). */
   readonly destX: number;
   readonly destY: number;
@@ -54,6 +57,7 @@ type ClaimedPageVisual = {
   readonly imageUrl: string;
   readonly preserveAlpha?: boolean;
   readonly frame: CharsetFrameSource;
+  readonly wholeImage?: boolean;
   readonly scale: number;
   readonly footprint: CharacterFootprint;
   readonly priority: EventPriority;
@@ -95,10 +99,10 @@ export async function drawRegionEventSprites(
     const image = sprite.preserveAlpha ? await loadUnkeyedSpriteImage(sprite.imageUrl) : await loadKeyedCharsetImage(sprite.imageUrl);
     context.drawImage(
       image,
-      sprite.frame.x,
-      sprite.frame.y,
-      sprite.frame.width,
-      sprite.frame.height,
+      sprite.wholeImage ? 0 : sprite.frame.x,
+      sprite.wholeImage ? 0 : sprite.frame.y,
+      sprite.wholeImage ? image.naturalWidth : sprite.frame.width,
+      sprite.wholeImage ? image.naturalHeight : sprite.frame.height,
       sprite.destX,
       sprite.destY,
       sprite.destW,
@@ -139,6 +143,7 @@ function resolveEventSprite(
       imageUrl: visual.imageUrl,
       preserveAlpha: visual.preserveAlpha,
       frame: visual.frame,
+      ...(visual.wholeImage ? { wholeImage: true } : {}),
       destX: feetX - destW * (visual.origin?.x ?? 0.5),
       destY: feetY - destH * (visual.origin?.y ?? 1),
       destW,
@@ -242,10 +247,14 @@ function anchorInRegion(event: GameEvent, region: RegionBox): boolean {
     && event.y >= region.y && event.y < region.y + region.h;
 }
 
-function graphicVisual(project: Project, graphic: EventPageGraphic): { imageUrl: string; frame: CharsetFrameSource; preserveAlpha?: boolean; fitScale?: number; origin?: SpriteFrameOrigin } | null {
+function graphicVisual(project: Project, graphic: EventPageGraphic): { imageUrl: string; frame: CharsetFrameSource; preserveAlpha?: boolean; fitScale?: number; origin?: SpriteFrameOrigin; wholeImage?: boolean } | null {
   const id = graphic.sprite?.id;
   if (!id) return null;
   const def = project.assets.sprites[id];
+  // 필드 적의 생성 몬스터 그림(generated-enemy-*): 런타임은 초상 한 장을 32px 상자에 맞춰 그린다(eventSpriteResources fitSize 32).
+  // 여기서 모르면 필드 적이 하나만 있어도 show_map_region 전체가 거절돼 조수가 던전을 한 번도 못 봤다(2026-10-22 assistant-dungeons 기준선).
+  const monsterUrl = !def && !project.assets.uploaded[id] ? generatedMonsterSpriteUrl(id) : null;
+  if (monsterUrl) return { imageUrl: monsterUrl, frame: { x: 0, y: 0, width: 32, height: 32 }, preserveAlpha: true, wholeImage: true };
   const iconUrl = resolveCc0IconAssetUrl(id);
   const icon = CC0_ICON_ASSETS.find(asset => asset.id === id);
   if (!def && iconUrl && icon) return { imageUrl: iconUrl,

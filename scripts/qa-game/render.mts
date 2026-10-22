@@ -13,6 +13,7 @@ import jpeg from "jpeg-js";
 import { drawCharsetPreview, type CharsetPreviewCandidate } from '../../src/ai/charsetPreview.ts';
 import { charsetFrameSource, decodeCharsetFrameIndex } from '../../src/assets/easyrpgRtp.ts';
 import { findCharsetAsset } from '../../src/assets/charsetCatalog.ts';
+import { generatedMonsterSpriteUrl } from '../../src/assets/generatedMonsterSprites.ts';
 import { resolveAssetResourceUrl } from '../../src/assets/generatedAssetResourceResolver.ts';
 import { drawMapTileLayer } from "../../src/editor/mapTileDraw.ts";
 import { reliefMapView } from "../../src/editor/reliefMapView.ts";
@@ -345,6 +346,14 @@ function drawEventCharset(context: PngContext, project: Project, event: GameMap[
     // RTP 캐릭터셋은 좌상단(0,0) 배경색이 투명 키색이다.
     if (raster.data[3] === 255) {
       applyTransparentColorKey(raster.data, [raster.data[0]!, raster.data[1]!, raster.data[2]!]);
+    }
+    // 필드 적의 생성 몬스터 그림(generated-enemy-*): 런타임은 초상 한 장을 32px(2칸) 상자에 맞춰 발밑 가운데로 그린다(eventSpriteResources fitSize 32).
+    // 칩 칸으로 자르면 투명 구석만 잘려 적이 안 보였다(2026-10-23 assistant-dungeons VQA 「투명 적」).
+    if (!asset && !uploaded && generatedMonsterSpriteUrl(spriteId)) {
+      const scale = (size * 2) / Math.max(raster.width, raster.height);
+      const dw = Math.max(1, Math.round(raster.width * scale)), dh = Math.max(1, Math.round(raster.height * scale));
+      context.drawImage(raster, 0, 0, raster.width, raster.height, ex + Math.round((size - dw) / 2), ey + size - dh, dw, dh);
+      return true;
     }
     const rawPattern = pageGraphic?.pattern ?? event.graphic?.pattern;
     const selection = typeof rawPattern === "number" && rawPattern >= 3

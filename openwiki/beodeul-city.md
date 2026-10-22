@@ -908,6 +908,30 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 
 **검증:** `bun scripts/content/dungeon-proof.mts <dir>` — 종류 × 어댑터 × 장르 × 시드를 `author_dungeon` 으로 실제 시공하고 `run_lint`·`check_reachability`·`check_terrain_access` 를 같이 돌려 PNG(원 해상도)와 `proof.json` 을 쓴다(2026-10-15: 42판, lint error 0, 전부 도달, check_terrain_access 전부 true). 기존 beodeul 24판 sha1 기준선: 안 건드린 5종은 전부 동일, 고친 동굴·광산·화산만 의도적으로 바뀜.
 
+**조수 던전 시험 후 고친 것(2026-10-22, assistant-dungeons, 기준 시험 9건 Opus 적대 VQA 평균 4.5):**
+- **죽은 계단** — 8맵 전부 계단이 장식뿐이었다. 이제 1층 바깥 계단은 `entrance` 를 줄 때만 그리고(`entryStair:"none"`), 마지막 층에는 내려가는 계단을 그리지 않는다(`exitStair:"none"`).
+- **여러 층** — `floors`(1~5)·`direction`(down 지하 / up 탑). 층마다 맵을 짓고 계단 칸에 이동 이벤트(`ev_<map>_stair_next/back`, 걷는 계단 priority below, 문 same)를 직접 깐다. 도착은 상대 계단 앞 칸, 계단을 등진다(계단 계약 `stairContracts.json`). 탑은 1층 입구 = 나무 문, 위층 입구 = 바닥 내려가는 계단, 깊은 방 북벽 = 오르는 계단, 꼭대기 층 = 큰 홀 → 보스방 + 보물 방(`towerRooms`, 감방·묘실 없음). 조립기 `compose.ts` 의 `entryStair`/`exitStair`/`sideDoor`.
+- **빈 방** — `populate`(rpg 기본 켜짐): 계획 자리의 순찰 적(≤4), 상자 2(보물 방 먼저 — 같은 그림 3개부터 린트 경고), 마지막 층 보스(도망 불가)·보스 앞 방 회복 세이브, 그 아래층 층 수문장. `troops:{field,midBoss,boss}` 로 요청한 적을 넘긴다. 도구가 그림을 스스로 고르므로 `choosesOwnGraphic`(없으면 Pi 의 그림 선택 검사가 세 번 거부했다). `expand_jrpg_campaign_volume`·`author_jrpg_chapter` 는 자기 채우기가 있어 `populate:false` 로 부른다.
+- **물에 잠긴 신전** — `flooded:true`: 큰 방(입구·보물 방 제외) 바닥 대부분을 물로, 굽이치는 3칸 둑길(긴 축 + 큰 방은 가로 축)을 남긴다(`mask.ts carveFlood`). 조수가 `fill_region` 으로 네모 웅덩이를 칠하던 것을 대신한다.
+- **레버 퍼즐** — `puzzle:"lever"`: 보물 방(없으면 보스방) 통로 칸에 쇠창살(object1#5), 먼 곁방에 레버(object2#0), 스위치 `sw_<map>_lever`. 손 도트 실내 퍼즐 방(다른 화풍)을 따로 잇던 것을 대신한다.
+- **작은 동굴** — `size:"small"` 동굴은 56×44 상자·방 3개(옛 64×49·방 4), 입구 굴은 네모가 아니라 잡음 타원. 기본 시드는 7 고정이 아니라 맵 id·이름·맵 수에서 뽑는다(시드를 안 준 던전이 전부 같았다).
+- **흐르는 용암** — 화산은 용암 못끼리(없으면 가장 가까운 일반 방까지) 바닥을 따라가는 BFS 최단 길 위에 폭 1~2 용암 줄기를 판다(보스·보물·입구 방 제외, 좁은 목은 settle 이 다리). 용암 가장자리 그림은 여전히 없다.
+- **소굴** — `lair:true`(버들항 cave): 호수·웅덩이 없이 마른 굴, 큰 방엔 천막(desert-oasis-tent), 모닥불 둘레 자루·궤짝·가죽 걸이, 벽가 통·뼈 무더기, 이끼 수정 대신(`dress.ts lairCamp`). 「고블린 굴」이 수정 동굴로 읽히던 것.
+- **2026-10-23 2·3차(같은 요청 다시, Opus 적대 VQA):**
+  - 채운 뒤 `data.population` 의 계획 후보(적·상자 7자리)를 지우고 `data.placed` 에 실제 수만 남긴다. 요약 끝에 「실제로 놓인 수 … 이 수와 좌표만 말한다」를 붙인다. 조수가 계획 자리 수를 「상자 7개」로 답했고, `lockedGate` 문장을 「열쇠로 여는 잠긴 문」으로 지어냈다(레버 퍼즐이 아니면 그 문장도 뺀다).
+  - 생성 몬스터 필드 심볼(`generated-enemy-*`)은 헤드리스 렌더(`scripts/qa-game/render.mts`)에서도 그린다. 게임에서는 보였지만 측정 그림에서는 투명했다.
+  - 홀 벽의 장식 아치(열린·쇠창살 둘 다)를 뺐다. 「어디로도 안 가는 문」으로 읽혔다.
+  - 큰 방 기본 크기를 한 단 줄였다: 홀 13×8, 보스 13×9, 묘실 11×7, 감방 10×6, 입구 10×6, 탑 층 13×9.
+  - 홀 가운데 줄에 화로 한 쌍과 잔해 무더기를 두고, 보스방 가운데에 의식 원(`temple-ruins-mosaic-medallion-5x5`)을 깐다.
+  - 물에 잠긴 방은 벽 앞 한 줄만 마른 턱으로 남긴다.
+  - 레버 퍼즐의 쇠창살은 통로 폭 전체를 막는다. 3칸 통로 가운데 한 칸만 막으면 옆으로 지나갔다. 창살 칸들은 이름 「쇠창살」 하나라 린트의 「같은 그림 조사물」에 걸리지 않는다. 레버는 그 방 북쪽 벽 앞 칸으로 옮기고, 「한 칸 레버가 정상」이라고 알린다. 조수가 「레버가 안 보인다」며 던전을 세 번 다시 짓고 실내 칩셋 레버를 찍었다.
+  - `rebuild:true`: 이 도구가 지은 던전 맵(`mapRole: dungeon`)을 같은 mapId 에서 다시 짓는다. 거절되자 조수가 새 맵을 또 만들어 같은 이름 던전 두 장이 남았다.
+  - 동굴의 닫힌 작은 벽 덩어리(넓이 30 이하)는 바닥으로 메운다(`fillWallIslands`). 「벽돌 기둥 위 검은 구멍」으로 그려졌다.
+  - 용암 줄기는 잡음 비용 최단 길로 굽이친다.
+  - 「던전」이라고 부른 지하 묘지·카타콤은 `author_dungeon` 이다. 고딕 납골당 방 여러 장을 `create_transfer_pair` 로 잇던 경로를 막았다(`intentDeclaration`·`gothicPlaceTools`·`toolCapabilityIndex`).
+  - 남은 가장 큰 감점은 방 사이·바깥의 검은 허공(맵의 40~60%)이다. 허공을 채울 동굴 천장 바위 결 그림이 없고, 용암·물 가장자리 전이, 탑 전용 조각, 버들항 화풍 문·레버도 없다. 모두 사람 선택이 필요한 그림이라 코드로 메우지 않았다.
+- 증명: `bun scripts/qa/dungeons/proof.mts <dir>`(레지스트리 경로라 중첩 도구까지 돈다), 걷기 영상 경로 `scripts/qa/dungeons/walk-route.mts` + `scripts/qa/runtime/dungeon-walk.scenario.mjs`.
+
 **없는 그림(다음 타일 작업자 몫, `capabilities.ts` `missingArt` 가 정본):**
 - beodeul: 선로 타일(가로·세로·모서리·T) / 갱목 지지대(벽 걸이 1×2·바닥 기둥 1×2) / 광석 박힌 벽·바닥 / 현무암·재 바닥 변형 · 현무암 벽 앞면 3h/2h · 용암 식은 껍질 가장자리 / 갈색 테두리 동굴 천장 오토타일 / 얼음 동굴 일체.
 - monster: catacomb·castle·sewer·mine 일체 / 마른 동굴 안 물·용암 조각 / 유적 신전 안쪽 칸막이 / 화산 제단·보스 연출 / 얼음 판 퍼즐 문.
