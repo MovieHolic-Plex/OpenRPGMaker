@@ -2107,6 +2107,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const owner = new Map<number, Stamp>();
     for (const [st, u] of undo) if (st.v === PROP) for (let j = 0; j < u.h; j += 1) for (let i = 0; i < u.w; i += 1) if (inMap(st.x + i, st.y + j)) owner.set(idx(st.x + i, st.y + j), st);
     const open = (c: number) => occ[c] === FREE || occ[c] === CLEAR || occ[c] === WALLB || occ[c] === ROAD || occ[c] === PLAZAC || (occ[c] === PROP && owner.has(c));
+    const doorFrontsSet = new Set(doorFronts.map((d) => idx(d.x, d.y)));
     const rt = (() => { for (let c = 0; c < W * H; c += 1) if (occ[c] === ROAD) return mw.lowerTiles[c]!; return -1; })();
     const dropProps = (cells: number[]) => {
       const drop = new Set<Stamp>();
@@ -2208,6 +2209,27 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const repaint = [...cut, ...trimmed];
       if ("mat" in spec.base) for (const c of repaint) fill({ x: c % W, y: Math.floor(c / W), w: 1, h: 1 }, spec.base.mat);
       else paintCells(repaint, spec.base);
+    }
+    // 성문 길이 마을 길망에 닿게(2026-10-22 r3: 끊긴 길을 줄기째 지우자 성문 안쪽 두 칸 길만 섬처럼 남았다):
+    // 성문 머리 위 칸에서 성벽 안쪽 길·광장까지 빈 땅으로 가장 짧은 길을 찾아 두 칸 폭으로 깐다(걷어 낼 수 있는 소품만 치움).
+    for (const g of gates) {
+      const inner = g.side === "S" ? L.y1 - 2 : L.y0 + 3, dir = g.side === "S" ? -1 : 1;
+      const target = (c: number) => (occ[c] === ROAD || occ[c] === PLAZAC) && !keep.has(c);
+      const inside = (x: number, y: number) => x > L.x0 && x < L.x1 - 1 && y > L.y0 + 2 && y < L.y1 - 1;
+      const starts = [idx(g.x, inner), idx(g.x + 1, inner)];
+      if ([g.x - 1, g.x, g.x + 1, g.x + 2].some((x) => inMap(x, inner + dir) && target(idx(x, inner + dir))) || [g.x - 1, g.x + 2].some((x) => target(idx(x, inner)))) continue;
+      const prev = new Map<number, number>(); const q = [...starts]; for (const c of starts) prev.set(c, -1);
+      let hit = -1;
+      for (let h = 0; h < q.length && hit < 0; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W;
+        for (const [dx, dy] of [[0, dir], [-1, 0], [1, 0], [0, -dir]] as const) { const nx = x + dx, ny = y + dy; if (!inside(nx, ny) || !inside(nx + 1, ny)) continue;
+          const n = idx(nx, ny); if (prev.has(n)) continue;
+          if (target(n) || target(idx(nx + 1, ny))) { prev.set(n, c); hit = n; break; }
+          if (!open(n) || !open(idx(nx + 1, ny)) || (lv[n] ?? 0) !== 0 || (lv[idx(nx + 1, ny)] ?? 0) !== 0 || doorFrontsSet.has(n)) continue;
+          prev.set(n, c); q.push(n); } }
+      if (hit < 0) { warnings.push(`${g.side === "S" ? "남" : "북"}문 안쪽 길을 마을 길에 잇지 못했다(빈 땅이 막혔다).`); continue; }
+      const path: number[] = [];
+      for (let c = prev.get(hit)!; c >= 0; c = prev.get(c)!) { path.push(c, c + 1); }
+      dropProps(path); paveCells(path);
     }
     const used = (side: "N" | "S", x0: number, x1: number) => gates.some((g) => g.side === side && x1 >= g.x - 2 && x0 <= g.x + 3);
     const towers = L.towers.filter((t) => t.x > L.x0 + 1 && t.x + 1 < L.x1 - 1 && !used(t.side, t.x - 1, t.x + 2)
