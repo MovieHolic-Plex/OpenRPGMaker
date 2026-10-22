@@ -1640,7 +1640,14 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   if (canopyStyle) {
     const N4 = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
     // 숲 칸은 한 단 위에만(남쪽 칸도 같은 단 — 절벽 끝에 수관이 걸치지 않게), 길·집에서 한 칸(그늘 줄)을 띄운다
-    const okCell = (c: number, L: number) => occ[c] === FREE && distRoad[c]! >= 2 && lv[c] === L && !rampCells.has(c) && (c + W >= W * H || lv[c + W] === L);
+    // 길에서 띄우는 거리는 2~4칸으로 물결친다(3칸 격자 값 잡음) — 늘 2칸이면 곧은 길 옆 숲이 자로 그은 벽이 된다(VQA r1 「곧은 숲 벽」)
+    const hv = (gx: number, gy: number) => { let h = Math.imul(gx * 73856093 ^ gy * 19349663 ^ seed * 83492791, 0x27d4eb2d); h ^= h >>> 15; return (h >>> 0) / 4294967296; };
+    const roadGap = (c: number) => {
+      const x = (c % W) / 3, y = Math.floor(c / W) / 3, x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0;
+      const v = hv(x0, y0) * (1 - fx) * (1 - fy) + hv(x0 + 1, y0) * fx * (1 - fy) + hv(x0, y0 + 1) * (1 - fx) * fy + hv(x0 + 1, y0 + 1) * fx * fy;
+      return 2 + Math.floor(v * 2.99);
+    };
+    const okCell = (c: number, L: number) => occ[c] === FREE && distRoad[c]! >= roadGap(c) && lv[c] === L && !rampCells.has(c) && (c + W >= W * H || lv[c + W] === L);
     // 침엽·혼효 마을은 숲 덩이를 크게·넓게(독립 검수 D10 「덩어리 없이 듬성듬성」) — 활엽 마을은 그대로
     const bigGroves = canopyStyle === "leaf" && forestType !== "broadleaf";
     // 숲속 빈터(woods dense): 빈 땅의 절반 가까이를 숲으로 — 씨앗은 길에서 3칸, 덩이는 더 크게, 더 여러 번
@@ -1679,7 +1686,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       for (let c = 0; c < W * H; c += 1) if (!forestSet.has(c) && n4(c) >= 3 && okCell(c, lv[c]!) && (!hasTerrain || N4.every(([dx, dy]) => { const x = (c % W) + dx, y = Math.floor(c / W) + dy; return !inMap(x, y) || lv[idx(x, y)] === lv[c]; }))) forestSet.add(c);
     }
     // 수관은 2×2 숲 덩이에만 선다 — 어떤 2×2 에도 못 드는 칸(한 칸 띠·뾰족한 끝)은 수관 없는 덤불 낱칸·칸 계단으로 보이니 지운다
-    shapeBeodeulCanopyMask(W, H, forestSet, (c) => okCell(c, lv[c]!) && (!hasTerrain || N4.every(([dx, dy]) => { const x = (c % W) + dx, y = Math.floor(c / W) + dy; return !inMap(x, y) || lv[idx(x, y)] === lv[c]; })), 16);
+    shapeBeodeulCanopyMask(W, H, forestSet, (c) => okCell(c, lv[c]!) && (!hasTerrain || N4.every(([dx, dy]) => { const x = (c % W) + dx, y = Math.floor(c / W) + dy; return !inMap(x, y) || lv[idx(x, y)] === lv[c]; })), 16, 4);
     for (let c = 0; c < W * H; c += 1) if (occ[c] === FOREST && !forestSet.has(c)) occ[c] = FREE; // 다듬기로 빠진 산마루(summit) 칸은 풀밭으로
     for (const c of forestSet) occ[c] = FOREST;
   }
@@ -1691,6 +1698,20 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) if (distRoad[idx(x + i, y + j)]! < gap) return false;
     return true;
   };
+  // 숲 둘레 나무(침엽·혼효 마을): 수관 오토타일은 활엽·전나무가 섞인 한 장이라 침엽 마을 숲도 활엽으로 읽혔다(VQA r1) —
+  // 숲 덩이 남·동·서 바로 바깥 풀밭에 그 마을 나무(전나무·측백)를 띄엄띄엄 세워 숲 가장자리가 침엽 숲으로 읽히게 한다.
+  if (forestType !== "broadleaf" && forestSet.size && trees.length) {
+    const rim = [...forestSet].filter((c) => { const x = c % W, y = (c - x) / W; return [[0, 1], [1, 0], [-1, 0]].some(([dx, dy]) => inMap(x + dx!, y + dy!) && occ[idx(x + dx!, y + dy!)] === FREE); });
+    rim.sort((a, b) => ((Math.imul(a, 2654435761) ^ seed) >>> 0) - ((Math.imul(b, 2654435761) ^ seed) >>> 0));
+    let budget = Math.ceil(rim.length / 5);
+    for (const c of rim) {
+      if (budget <= 0) break;
+      const x = c % W, y = (c - x) / W; const k = K(choice(trees));
+      for (const [tx, ty] of [[x - Math.floor(k.w / 2), y + 1], [x + 1, y - k.h + 1], [x - k.w, y - k.h + 1]] as const) {
+        if (treeFits(k, tx, ty, 2) && LV(tx, ty + k.h - 1) === lv[c]) { claim(k, tx, ty, PROP, false); treeCount += 1; budget -= 1; break; }
+      }
+    }
+  }
   if (spec.pond?.ringTrees.length && pondCells.length) {
     const ringIds = have(spec.pond.ringTrees);
     for (let t = 0; t < 120 && ringIds.length; t += 1) {
@@ -1988,7 +2009,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         ts.passability[to] = blocked.has(from) ? { up: false, down: false, left: false, right: false } : { up: true, down: true, left: true, right: true };
       }
       for (const [c, t] of want) setLayerTileAt(m, 2, c, tr.map.get(t)!);
-      for (const [c, t] of canopyAt) setLayerTileAt(m, 2, c, tr.map.get(t)!);
+      // 남쪽도 숲인 수관 칸은 3층 — 2층은 높이 지형 동서 끝 1px 선보다 먼저 그려져 그 선이 숲을 갈랐다(writeBeodeulCanopy 와 같은 규칙)
+      for (const [c, t] of canopyAt) setLayerTileAt(m, c + W < W * H && canopyAt.has(c + W) ? 3 : 2, c, tr.map.get(t)!);
       logConstructionTiles(m, "stamp", canopyAt.size ? "물가·숲 수관·그림자" : "물가·그림자", { major: false });
     }
     natureStats = { overlay: want.size + canopyAt.size, shadowCells, forestCells: canopyAt.size };

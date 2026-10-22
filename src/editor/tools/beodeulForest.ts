@@ -298,13 +298,16 @@ export function composeBeodeulForest(project: Project, map: GameMap, target: Til
 
 export type BeodeulCanopyStyle = "leaf" | "snow";
 
-/** 8이웃 비트(북서1 북2 북동4 서8 동16 남서32 남64 남동128) — 맵 밖은 숲으로 본다(숲이 맵 밖으로 이어진다). */
+/**
+ * 8이웃 비트(북서1 북2 북동4 서8 동16 남서32 남64 남동128). 맵 밖은 동·서·남으로는 숲으로 본다(숲이 맵 밖으로 이어진다).
+ * 북쪽 맵 밖은 숲이 아니다 — 숲으로 보면 맨 윗줄이 맵 밖 덩이의 아래 반쪽(뒤집힌 듯 잘린 꼭대기·줄기만 남은 줄)으로 그려졌다(VQA r1).
+ */
 export function beodeulCanopyMask(W: number, H: number, c: number, isForest: (c: number) => boolean): number {
   const x = c % W, y = (c - x) / W; let mask = 0, b = 0;
   for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
     if (!dx && !dy) continue;
     const nx = x + dx, ny = y + dy;
-    if (nx < 0 || ny < 0 || nx >= W || ny >= H || isForest(ny * W + nx)) mask |= 1 << b;
+    if (ny >= 0 && (nx < 0 || nx >= W || ny >= H || isForest(ny * W + nx))) mask |= 1 << b;
     b++;
   }
   return mask;
@@ -315,8 +318,8 @@ export function beodeulCanopyMask(W: number, H: number, c: number, isForest: (c:
  * 어떤 2×2 덩이에도 들지 못한 칸(한 칸 폭 띠·뾰족한 끝·외톨이)은 수관 없이 덤불 낱칸으로 남아 숲 끝이 칸 계단으로 보인다 —
  * 그런 칸은 지운다. 4이웃 셋 이상이 숲인 구멍은 canFill 이 허락하면 메운다. 맵 밖은 숲으로 본다.
  */
-export function shapeBeodeulCanopyMask(W: number, H: number, forest: Set<number>, canFill: (c: number) => boolean = () => false, minComponent = 0): void {
-  const inside = (x: number, y: number) => x < 0 || y < 0 || x >= W || y >= H || forest.has(y * W + x);
+export function shapeBeodeulCanopyMask(W: number, H: number, forest: Set<number>, canFill: (c: number) => boolean = () => false, minComponent = 0, minRows = 0): void {
+  const inside = (x: number, y: number) => y >= 0 && (x < 0 || x >= W || y >= H || forest.has(y * W + x));
   for (let pass = 0; pass < 4; pass++) {
     let changed = false;
     for (let c = 0; c < W * H; c++) {
@@ -336,7 +339,7 @@ export function shapeBeodeulCanopyMask(W: number, H: number, forest: Set<number>
     if (!changed) break;
   }
   // 작은 덩이(minComponent 칸 미만, 맵 가장자리에 닿으면 절반까지 봐 준다 — 맵 밖으로 이어지는 숲)는 숲이 아니라 덤불 뭉치로 읽힌다 — 지운다
-  if (minComponent > 0) {
+  if (minComponent > 0 || minRows > 0) {
     const seen = new Set<number>();
     for (const c0 of [...forest]) {
       if (seen.has(c0)) continue;
@@ -349,7 +352,9 @@ export function shapeBeodeulCanopyMask(W: number, H: number, forest: Set<number>
           const n = ny * W + nx; if (forest.has(n) && !seen.has(n)) { seen.add(n); comp.push(n); }
         }
       }
-      if (comp.length < (edge ? minComponent / 2 : minComponent)) for (const c of comp) forest.delete(c);
+      // 세 줄 이하 띠(단 사이에 낀 숲)는 덩이가 아니라 산울타리로 읽힌다(VQA r1) — 지운다
+      let y0 = H, y1 = -1; for (const c of comp) { const y = Math.floor(c / W); if (y < y0) y0 = y; if (y > y1) y1 = y; }
+      if (comp.length < (edge ? minComponent / 2 : minComponent) || y1 - y0 + 1 < minRows) for (const c of comp) forest.delete(c);
     }
   }
 }
@@ -402,8 +407,14 @@ export function writeBeodeulCanopy(project: Project, map: GameMap, target: Tiles
     target.priority[to] = "upper";
     target.passability[to] = blocked.has(from) ? { up: false, down: false, left: false, right: false } : { up: true, down: true, left: true, right: true };
   }
+  // 남쪽도 숲인 수관 칸은 3층(위층 묶음) — 2층(아래층 묶음)은 높이 지형의 동서 끝 1px 선(relief over 띠)보다 먼저 그려져 그 선이 숲을 세로로 갈랐다(VQA r1).
+  // 남쪽이 숲인 칸 앞(남쪽)에는 인물이 설 수 없으니 3층 상위여도 머리를 가리지 않는다. 숲 남쪽 끝 줄(줄기·뿌리)은 2층 — 그 앞에 선 인물이 수관 위로 그려진다.
   let n = 0;
-  for (const src of [plan.shade, plan.canopy]) for (const [c, t] of src) { setLayerTileAt(map, 2, c, tr.map.get(t)!); n++; }
+  for (const [c, t] of plan.shade) { setLayerTileAt(map, 2, c, tr.map.get(t)!); n++; }
+  for (const [c, t] of plan.canopy) {
+    const s = c + map.width;
+    setLayerTileAt(map, s < map.width * map.height && plan.canopy.has(s) ? 3 : 2, c, tr.map.get(t)!); n++;
+  }
   return n;
 }
 
