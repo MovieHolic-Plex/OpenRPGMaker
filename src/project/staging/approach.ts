@@ -84,66 +84,80 @@ export type ApproachPlan = {
 };
 
 /**
- * 다가가기 계획. 후보 칸 순서:
- *  ① 대상과 같은 줄(가로·세로)로 정확히 distance 칸 떨어진 칸(마주 보기가 정확하다),
- *  ② 체비쇼프 distance 안의 모든 칸(대각 포함 — 비좁은 곳),
- *  ③ 거리 distance+1 ~ distance+3 의 칸(대상이 벽에 둘러싸였을 때).
- * distance 0 은 대상 칸 자체(칸 대상 «저기로 걸어가»), 막혔으면 가장 가까운 칸.
- * 같은 단계 안에서는 걸음 수가 적은 칸, 같으면 가로 옆(대화가 3/4 시점에서 잘 읽힌다), 같으면 출발 쪽 칸.
- * 이미 ①·② 칸에 서 있으면 걷지 않는다. 길이 없으면 null.
+ * 다가가기 계획. 후보 칸을 단계(tier)로 나눠 앞 단계부터 찾는다:
+ *  ① 대상과 같은 가로줄로 distance 칸 옆(3/4 시점에서 둘이 나란히 읽힌다),
+ *  ② 대각(체비쇼프 distance 안),
+ *  ③ 같은 세로줄로 distance 칸 위·아래 — distance 1 이면 맨 뒤로: 24×32 인물은 두 칸 높이라 바로 위아래에 서면
+ *     아래 인물 머리가 위 인물 발·몸을 덮는다(2026-10-22 승강장, 장면 다듬기 SKILL 3장 2),
+ *  ④ 거리 distance+1 ~ distance+3 의 칸(대상이 벽에 둘러싸였을 때 — fallback).
+ * distance 2 이상이면 ①③ 을 한 단계로 합친다(겹치지 않는다).
+ * distance 0 은 대상 칸 자체(칸 대상 «저기로 걸어가»).
+ * 같은 단계 안에서는 걸음 수가 적은 칸, 같으면 출발 쪽 칸.
+ * 이미 말 거리 안(①~③)에 서 있으면, 더 앞 단계 칸이 두 걸음 안에 있을 때만 옮긴다.
+ * world.hidden 이 있으면 가려지는 칸은 다른 칸이 하나도 없을 때만 쓴다. 길이 없으면 null.
  */
 export function planApproach(world: ApproachWorld, from: StageCell, target: StageCell, distance = DEFAULT_TALK_DISTANCE): ApproachPlan | null {
   const d = clampTalkDistance(distance);
   const reach = bfs(world, from, 4096);
   const key = (c: StageCell) => c.y * world.width + c.x;
   const inBounds = (c: StageCell) => c.x >= 0 && c.y >= 0 && c.x < world.width && c.y < world.height;
-  const standable = (c: StageCell) => (c.x === from.x && c.y === from.y) || (inBounds(c) && world.canStand(c));
-  // distance 0 = 그 칸 자체로 걸어간다(칸 대상일 때 «저기로 가»). 인물 대상이면 그 칸은 차 있어 바로 옆으로 물러난다.
-  const isTarget = (c: StageCell) => d > 0 && c.x === target.x && c.y === target.y;
+  const same = (a: StageCell, b: StageCell) => a.x === b.x && a.y === b.y;
+  const standable = (c: StageCell) => same(c, from) || (inBounds(c) && world.canStand(c));
+  // 인물 대상이면 대상 칸은 차 있다. distance 0(칸 대상)만 그 칸으로 간다.
+  const isTarget = (c: StageCell) => d > 0 && same(c, target);
 
-  const tiers: StageCell[][] = [[], [], []];
-  if (d === 0) tiers[0]!.push({ x: target.x, y: target.y });
-  else for (const dir of DIRS) {
-    const c = { x: target.x + DIR_DELTA[dir].x * d, y: target.y + DIR_DELTA[dir].y * d };
-    tiers[0]!.push(c);
-  }
-  for (let r = 1; r <= Math.max(1, d) + 3; r += 1) {
-    for (let y = target.y - r; y <= target.y + r; y += 1) {
-      for (let x = target.x - r; x <= target.x + r; x += 1) {
-        if (Math.max(Math.abs(x - target.x), Math.abs(y - target.y)) !== r) continue;
+  const tiers: StageCell[][] = [];
+  if (d === 0) {
+    tiers.push([{ x: target.x, y: target.y }]);
+  } else {
+    const horizontal = [{ x: target.x - d, y: target.y }, { x: target.x + d, y: target.y }];
+    const vertical = [{ x: target.x, y: target.y - d }, { x: target.x, y: target.y + d }];
+    const inner: StageCell[] = [];
+    for (let y = target.y - d; y <= target.y + d; y += 1) {
+      for (let x = target.x - d; x <= target.x + d; x += 1) {
         const c = { x, y };
-        if (tiers[0]!.some((t) => t.x === x && t.y === y)) continue;
-        (r <= Math.max(1, d) ? tiers[1]! : tiers[2]!).push(c);
+        if (same(c, target) || horizontal.some((h) => same(h, c)) || vertical.some((v) => same(v, c))) continue;
+        inner.push(c);
       }
     }
+    if (d === 1) tiers.push(horizontal, inner, vertical);
+    else tiers.push([...horizontal, ...vertical], inner);
   }
-  // 가려지는 칸(기둥 뒤 등)은 먼저 빼고 찾는다. 가려지지 않는 칸이 하나도 없을 때만 가려지는 칸을 쓴다.
-  // 칸 대상(distance 0)은 저자가 그 칸을 골랐으니 그대로 간다.
+  const talkTiers = tiers.length; // 여기까지가 «말 거리 안»
+  // 칸 대상(distance 0)이 막혔으면 가장 가까운 칸부터. 고리마다 한 단계 — 걸음이 적어도 먼 고리를 먼저 고르지 않는다.
+  for (let r = d === 0 ? 1 : d + 1; r <= Math.max(1, d) + 3; r += 1) {
+    const ring: StageCell[] = [];
+    for (let y = target.y - r; y <= target.y + r; y += 1) {
+      for (let x = target.x - r; x <= target.x + r; x += 1) {
+        if (Math.max(Math.abs(x - target.x), Math.abs(y - target.y)) === r) ring.push({ x, y });
+      }
+    }
+    tiers.push(ring);
+  }
+
   const hiddenAt = (c: StageCell) => d > 0 && Boolean(world.hidden?.(c));
   for (const allowHidden of [false, true]) {
     if (allowHidden && !world.hidden) break;
     const ok = (c: StageCell) => allowHidden || !hiddenAt(c);
-    // 이미 같은 줄 말 거리에 섰으면 그대로. 대각(말 거리 안)이면 한 걸음으로 같은 줄에 설 수 있을 때만 옮긴다.
-    const stay: ApproachPlan = { goal: from, steps: [], face: dirToward(from, target), fallback: false };
-    if (ok(from) && tiers[0]!.some((t) => t.x === from.x && t.y === from.y)) return d === 0 ? { ...stay, face: null } : stay;
-    const nearAlready = d > 0 && ok(from) && !isTarget(from) && chebyshev(from, target) <= d;
-    for (let tier = 0; tier < tiers.length; tier += 1) {
-      if (nearAlready && tier > 0) return stay;
+    const fromTier = ok(from) && !isTarget(from) ? tiers.slice(0, talkTiers).findIndex((t) => t.some((c) => same(c, from))) : -1;
+    const stay: ApproachPlan = { goal: from, steps: [], face: d === 0 ? null : dirToward(from, target), fallback: false };
+    if (fromTier === 0) return stay;
+    const searchUntil = fromTier > 0 ? fromTier : tiers.length;
+    for (let tier = 0; tier < searchUntil; tier += 1) {
       let best: { cell: StageCell; cost: number; rank: number } | null = null;
       for (const c of tiers[tier]!) {
         if (!inBounds(c) || isTarget(c) || !standable(c) || !ok(c)) continue;
         const cost = reach.dist.get(key(c));
         if (cost === undefined) continue;
-        const side = c.y === target.y ? 0 : 1; // 가로 옆 우선
         const toward = Math.abs(c.x - from.x) + Math.abs(c.y - from.y); // 출발 쪽
-        const rank = cost * 1000 + side * 100 + Math.min(99, toward);
+        const rank = cost * 1000 + Math.min(999, toward);
         if (!best || rank < best.rank) best = { cell: c, cost, rank };
       }
-      if (best && nearAlready && best.cost > 1) return stay;
-      if (best) {
-        return { goal: best.cell, steps: pathTo(reach, world.width, from, best.cell), face: d === 0 ? null : dirToward(best.cell, target), fallback: tier > 0 || allowHidden };
-      }
+      if (!best) continue;
+      if (fromTier > 0 && best.cost > 2) continue; // 이미 말 거리 안 — 멀리 돌아가며 자리 바꾸지 않는다
+      return { goal: best.cell, steps: pathTo(reach, world.width, from, best.cell), face: d === 0 ? null : dirToward(best.cell, target), fallback: tier >= talkTiers || allowHidden };
     }
+    if (fromTier > 0) return stay;
   }
   return null;
 }
