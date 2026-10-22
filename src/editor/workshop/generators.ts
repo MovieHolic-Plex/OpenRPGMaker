@@ -9,7 +9,9 @@
  *   묶음은 `oprn-store-pack/1` tileset 하나 + autotileGroups(·animationStrips) — 가져오기가 그대로 보존한다.
  * - item-gen: 저장소가 없다(2026-10-21 조직·홈 확인) → 「준비 중」. 가짜로 채우지 않는다.
  * 견본 그림(sample)은 그 생성기가 실제로 만든 그림이다: object-gen 은 그 저장소 docs/images/hero.png 의 고른 기물,
- * char-gen 은 그 저장소의 자체 더미 칩(examples/bases/dummy_*)과 같은 칩의 편집 결과. 제3자 그림은 쓰지 않는다.
+ * char-gen 은 실제 결과물(2026-10-22 교체): 데모 캐릭터 상반신(정수 1/7 칸 평균) + char-gen 칩 셋(정수 2배)(Scarloxy People1 바탕, CC BY 4.0 — 출처는
+ * public/assets/ATTRIBUTION.md 「Workshop character card sample」)을 버들항 마당 위에 세운 그림. 전에는 그 저장소의 더미 바탕 칩
+ * (examples/bases/dummy_*, 윤곽·명암 없는 자리표시용)이라 사용자가 「사람이 어색하다」고 했다.
  * tile-gen 견본은 비워 둔다: 첫 풀밭 견본(2026-10-21)은 겨냥한 beodeul_city 의 땅·나무·길·물 칸이 EasyRPG 계열이라 그 화풍 흉내가 돼
  * tile-gen 쪽이 거둬들였다. jp_city·코드 도트 버들항 키트를 겨냥한 결과가 독립 검수를 통과하면 그때 싣는다.
  */
@@ -27,7 +29,11 @@ export interface WorkshopGenerator {
   readonly makes: string;
   readonly status: GeneratorStatus;
   /** 그 생성기가 실제로 만든 견본 그림(원래 크기 도트, 화면에서 정수 배율로 키운다). 없으면 견본 자리만 비워 둔다. */
-  readonly sample?: { readonly src: string; readonly width: number; readonly height: number; readonly alt: string; readonly caption?: string };
+  readonly sample?: {
+    readonly src: string; readonly width: number; readonly height: number; readonly alt: string; readonly caption?: string;
+    /** 화면 배율(정수, 기본 2). 이미 정수 배율로 짜 맞춘 그림(칩 2배 + 상반신 1/7 칸 평균)은 1. */
+    readonly scale?: number;
+  };
 }
 
 export const WORKSHOP_GENERATORS: readonly WorkshopGenerator[] = [
@@ -39,7 +45,7 @@ export const WORKSHOP_GENERATORS: readonly WorkshopGenerator[] = [
   {
     id: "char-gen", title: "캐릭터", status: "local",
     makes: "걷는 캐릭터의 옷·머리·색을 바꿔 새 사람을 만들어요.",
-    sample: { src: "/assets/workshop/char-gen-sample.png", width: 124, height: 58, alt: "캐릭터 생성기가 옷을 바꾼 전후 두 쌍" },
+    sample: { src: "/assets/workshop/char-gen-sample.png", width: 248, height: 116, scale: 1, alt: "캐릭터 생성기가 만든 상반신 초상과 걷는 캐릭터 셋" },
   },
   { id: "tile-gen", title: "지형·바닥", status: "local", makes: "이음매 없는 바닥, 물가·절벽 가장자리, 칠해 넣는 숲과 물을 내 타일셋 색으로 그려요." },
   { id: "item-gen", title: "아이템 아이콘", status: "soon", makes: "물약·열쇠·무기 같은 아이템 아이콘을 그려 줄 거예요." },
@@ -80,7 +86,8 @@ export function charGenRequest(what: string, count: number): string {
   return charGenText(what, count) + generatorPinLine("char-gen");
 }
 
-function charGenText(what: string, count: number): string {
+/** 부탁 글 본문(판 고정 줄 없이) — 화면 글칸에 보이는 부분. 복사할 때 generatorPinLine 이 붙는다. */
+export function charGenText(what: string, count: number): string {
   const subject = what.trim() || defaultWhat();
   const n = Math.max(1, Math.min(4, Math.round(count) || 1));
   switch (getLocale()) {
@@ -137,7 +144,7 @@ export function tileGenRequest(mode: TerrainMode | TerrainPreset, brief: string,
   return tileGenText(mode, brief, tilesetFile, ref) + generatorPinLine("tile-gen");
 }
 
-function tileGenText(mode: TerrainMode | TerrainPreset, brief: string, tilesetFile: string, ref: string): string {
+export function tileGenText(mode: TerrainMode | TerrainPreset, brief: string, tilesetFile: string, ref: string): string {
   const what = brief.trim() || defaultTerrain(mode);
   const cell = /^\s*\d+\s*,\s*\d+\s*$/.test(ref) ? ref.replace(/\s+/g, "") : "";
   switch (getLocale()) {

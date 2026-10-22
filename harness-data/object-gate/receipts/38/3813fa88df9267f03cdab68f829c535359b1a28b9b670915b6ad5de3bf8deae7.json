@@ -1,0 +1,297 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3813fa88df9267f03cdab68f829c535359b1a28b9b670915b6ad5de3bf8deae7",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "둥근 지붕 안쪽 면(천장 줄 1칸, 처마 위) (dome shell)",
+ "label": "atlas_biome_interior/plus/dome shell",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 4,
+  "tileColorsP90": 4,
+  "darkV5": 23,
+  "nearBlackEdge": 0.52,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dome shell interior tile pattern (flat wall-mounted panel of dark blocks)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The 16x16 tile is a full-bleed flat pattern of dark brick-like blocks in a grid with slightly tinted squares. The width is 16 for every row. There is no front-edge line, no eave shadow, no ellipse and no roof plane. It reads as a flat face-on wall or ceiling panel, which is acceptable for a wall_mounted kind, but it has no top surface. The column scan shows only small lightness changes (rows 0-2 slightly lighter, then dark), which are block pattern and not a horizontal surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a single dark grey brick-pattern tile with only 4 raw and visible tones per tile, against 9 to 20 visible tones on the hedge, stall and well references. It has no flat fills (0% near-flat) and a simple brick grid, so it is not blank. The shading is shallow, with about 3 lightness steps against the references' 5-6 on their main materials. All of its dark edge pixels are near-neutral (100%), so the grey-black mortar and edge lines read as neutral rather than as a dark tone of the material. The hedge and well references, which carry tinted outlines and per-element highlights, show much richer ramps and texture. The piece looks thinner and more sticker-like beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 9345
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dome inner ceiling panel (dark field with a grid of tile squares)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The 16x16 tile is one uniform dark field (L about 25-42) with rows of small square tiles. The width is 16 in every row, so there is no silhouette change and no ellipse. The column scans show no front-edge line, no eave shadow, and no lighter or darker band that would mark a horizontal surface. No roof or awning plane, and no contents are visible. It reads as a flat, face-on wall-mounted ceiling texture, so there is no top surface and the whole tile is a vertical face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a single dark brick-like tile with only 4 visible tones per 16x16 tile, against 9 to 20 for the richer references (hedge 9, cheese stall 17, roofed well 20). Its dark edge pixels are 100% near-neutral, so the palette reads as grey-black with no tint from the neighbouring material. That is the sticker-like outline, unlike the tinted dark-material edges on the hedge and stall. It has a faint checker or brick pattern and no 5x5 flat fill, so some texture exists. But it has only about 3 shading steps, with no per-brick highlights and no grain variation, which is clearly shallower than the 5-6 steps of the references. It looks thinner and flatter than the roofed well or stall beside it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13411
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dark tiled ceiling panel (grid of small square tiles)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tile is a fully opaque 16x16 block with a constant width of 16 across rows 0-15. It shows a grid of slightly lighter square tiles on a near-black ground, drawn flat and face-on. No row has a front-edge line, eave shadow, ellipse or roof plane, and no contents are visible, so there is no top surface. The whole tile reads as one vertical panel, which is acceptable for a flat wall_mounted piece. It has no side face and no depth cue."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a dark grey brick-pattern tile with only 4 visible tones per 16x16 tile. The hedge reference shows 9, the roofed well 20 and the cheese stall 17, so it sits far below the richer references. 100% of its dark edge pixels are near-neutral, which reads as a neutral black/grey mortar line rather than a dark tint of the adjacent material. The references that carry tinted outlines (hedge 0%, stall 1%) show the dark-material-tone approach. It has no flat 5x5 areas, and the brick pattern gives a little structure. But there are only about 3-4 lightness steps and no per-brick highlights, grain or speckle, so it looks shallow next to Beodeul's 5-6 steps per material. The lamp reference also has neutral edges, but it is a thin object, and the candidate's density is still too low for a full-tile piece.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 13089
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dark tiled dome interior wall panel (grid of slightly lighter squares on near-black background)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat 16x16 tile of dark squares in a brick-like grid, filling the full width and height. The silhouette is 16 wide on every row and the column scan shows only slight lightness changes (rows 0-2 slightly lighter, then uniform dark). There is no front-edge line, eave shadow, ellipse or roof plane, so no top surface is drawn. It is a flat face-on wall-mounted panel, which is plausible for the wall_mounted kind, and it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a dark grey brick/tile grid with only 4 colours. That gives about 3 lightness steps on its one material, against about 5-6 on the Beodeul references. It shows 4 visible tones per tile, while the hedge shows 9, the cheese stall 17 and the roofed well 20. All of its dark edge pixels are near-neutral (100%), so the joints read as a neutral black/grey line with no material tint. The hedge, stall and well sit at 0-33%. The brick pattern does break up the surface (0% near-flat coverage), so it is not a flat fill. But there are no per-tile highlights, no scallop shading and no grain variation like the references carry. Because the tile is so tonally thin and the outline is neutral, it looks flatter and more sticker-like than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12695
+  }
+ ],
+ "decidedAt": "2026-10-21T16:24:33.538Z",
+ "cells": {
+  "16": [
+   "aafb55ecc6ffeaf3"
+  ],
+  "24": [
+   "15567c8585423536",
+   "64a7a31cf42b8680",
+   "9426e8de157159f8",
+   "b825ef26ce8c1df0",
+   "c75804da1956e49b",
+   "f6089e9bc00d8b75"
+  ],
+  "32": [
+   "3df30c2e23759f9f",
+   "6656cdc82ff37848",
+   "849bac3c6805ebe0",
+   "94f1134c1f3e7d49",
+   "954a611ccfb64334",
+   "f874a0208ff06891"
+  ],
+  "48": [
+   "3743810d743161cd",
+   "4b1179d497a3687e",
+   "5c1d986d859fd32d",
+   "6f6c0e610a62fdc6",
+   "784c6caae0e22fcc",
+   "c8ef3717316cb5d6"
+  ]
+ }
+}

@@ -1,0 +1,20 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "0a58ff50e5c89e6aee599a2df2e2f6482a950051bda490642ce40cee56971170",
+ "profileHash": "4d8774b517f41638",
+ "kind": "other",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T16:30:25.856Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 윗면 증거가 안쪽 내용물뿐이고 앞면/윗면 18/4 — 정면 단면 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "note": "묶음 허용: Fallen Star 네 화로의 방 — 버들항 돌 화로 꺼짐·켜짐 (r11) — fallen-rooms-r11 (stone brazier · stone brazier lit) — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/falle",
+ "sig": "bd873f3bc1345503ea3d0356ff94af83e32a3dc8199035bf78a72f84b3387237"
+}

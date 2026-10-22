@@ -1,0 +1,34 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-21",
+  "batch": "fallen-rooms-r7",
+  "commit": "2dadaef22b",
+  "overall": "PASS",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed with src/harnesses/_core/object_gate on both 32x32 PNGs at review time; hashes recorded per item below. Closed/open differ only inside bbox x4..27,y5..27 (510 px); kerb frame and the 1px transparent margin are identical in both states (154 transparent px each).",
+    "1_topdown_view": "Both are flush floor pieces seen from above: kerb top plane with a lit top row (b9ab9d) and a dark south lip (3a3530/645c54). The closed lid is a flat plane with a 1-row dark front lip at the bottom (y26-27), and the star groove is lit from the upper left, which is consistent. Open: the steps descend north, each step drawn as top plane plus darker riser, darkening and narrowing toward the north wall as in v5 stairs down. No side or iso faces.",
+    "2_style_fit": "Kerb uses a 4-step warm-grey ramp (3a3530/645c54/8e8378/b9ab9d) with sparse speckle, which matches v5 stone texture density. The lid's black (131317/1e1e24/2a2a32/41414c), purple sigil (violet rune dots, star core) and gold match the seal-stone steles' material. The open steps are the v5 stairs-down construction recoloured into the kerb ramp, with near-black (08080a/131317) depth at the top. Closed has 16 colours and open has 9; no stray hues.",
+    "3_readability_1x": "At 1x in the archive mockup the closed piece reads immediately as a sealed stone hatch with a gold/purple star. The open piece reads unambiguously as stairs going down: pale near steps, dark void at the top.",
+    "4_placement": "Sits between the two seal-stone steles, centred, with clear wood floor around it. The kerb's warm grey separates it from the wood planks without glowing, and the purple/gold ties it visually to the flanking steles. It does not stand out against the existing v5 art in either state.",
+    "5_silhouette_outline": "Clean rectangular outline (3a3530) with a full 1px border; no jaggies, orphan pixels or AA fuzz. One cosmetic nit: the lower-right inner corner has a lone near-black pixel at (27,27) in the closed state and (27,26) in the open state. It sits below or inside the opening's bottom edge and breaks left/right symmetry with x=4. It is invisible at 1x, so it is not blocking."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/star seal",
+      "name": "별 봉인 돌뚜껑(닫힘, 2×2) (star seal)",
+      "kind": "flat",
+      "pixelSha256": "bd93f1da9bab4fa56a7c7c383aea5f1cd101c3748c3bb3bedb775534e1e40d12",
+      "verdict": "PASS",
+      "reasons": "Reads as a black stone lid set flush in a warm stone kerb, with a carved five-point star (gold rim, purple core with a light centre) and an octagonal rune-dot ring. The material matches the seal-stone steles exactly. The lid's front lip gives the correct 3/4 depth for a flush-set slab. Shading of the star groove (pale gold on the upper-left facets, deeper gold lower right) is consistent with top-left light. Optional polish: make (27,27) 3a3530 to match (4,27) so the lip ends square."
+    },
+    {
+      "id": "atlas_biome_interior/plus/star seal open",
+      "name": "별 봉인 돌계단(열림, 2×2) (star seal open)",
+      "kind": "flat",
+      "pixelSha256": "9a2c65f211f237e51409fc91610293a1e62d169b385a5c45233ad8e26bda587e",
+      "verdict": "PASS",
+      "reasons": "Kerb frame is pixel-identical to the closed state, so the swap is seamless. Stone steps follow v5 stairs-down construction: tread top plane plus darker riser, narrowing and darkening northward into a near-black void, side walls in shadow. Reads as stairs going down at 1x. Optional polish: (27,26) is 08080a while the mirrored (4,26) is 131317; make it 131317 for symmetry."
+    }
+  ]
+}

@@ -1,0 +1,380 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e70dec8175c067f5b6354756ba9cf35395a2cf988dfd2b171935f171bb85439d",
+ "width": 32,
+ "height": 48,
+ "kind": "other",
+ "name": "관측 발판(난간 두른 높은 단과 사다리, 2×2) (observing platform)",
+ "label": "atlas_biome_interior/plus/observing platform",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 13,
+  "darkV5": 44,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back railing (top rail, posts, balusters)",
+      "rows": "1-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "raised deck/platform top",
+      "rows": "10-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-23"
+     },
+     {
+      "part": "front face with X-bracing frame",
+      "rows": "24-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ladder (vertical face on right)",
+      "rows": "17-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 23,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The wooden deck occupies rows 10-20 (about 11 rows). It ends in a light front-edge line at row 20 (#d59147), followed by darker eave shadow in rows 21-23. Below it is a front face of about 23 rows (rows 24-46) with a dark X-braced opening and side posts. The back railing at rows 1-9 sits behind the deck, and the ladder on the right is a vertical element lying on the front face. The deck's top surface plus the front face give a three-quarter reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a wooden platform with railing and ladder, drawn as a prop at the same scale as the references. Its dark edge pixels are 0% near-neutral, so the outlines lean dark brown beside the wood, as in the stall and hedge references, rather than a black sticker line. Near-flat coverage is 0%, and the plank lines, the cross-bracing and the ladder rungs break up the surfaces. It shows 10 visible tones per 16x16 tile, level with the hedge (9) and below the stall (17) and well (20). Its 18 total colours are below the richest references (38-40). The wood ramp has roughly 4 steps against 5-6 in the references, so it is slightly lower in density, but it is not shallow or flat. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17109
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back and side railing (rails and posts)",
+      "rows": "1-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "platform deck planks (top surface)",
+      "rows": "11-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-23"
+     },
+     {
+      "part": "open understructure with X-brace under the deck (front face)",
+      "rows": "22-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ladder on right",
+      "rows": "17-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The deck is a band of plank rows 11-20 (about 10 rows) that ends in a lighter orange front-edge line at row 20. Dark eave shadow follows in rows 21-23, then a front face of about 22 rows (rows 22-43) with supports and an X-brace over a dark opening. The railing in rows 1-10 is a thin structure, with gaps showing the background at rows 5-6 and 9, and it stands on the deck. The ladder is a vertical element on the front. The structure reads as a raised platform seen in 3/4 view, with a visible top surface and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a wooden platform with a railing, a roof-beam frame and a ladder. It reads as 4-5 wood tones: highlight on the plank tops, mid planks, dark side and under-deck shadow, and deep brown gaps. The outline is a dark brown that leans toward the wood, not neutral black, and the measured near-neutral share of dark edge pixels is 0%. Plank seams and rung and rail highlights give some texture, and there are no large flat fills (near-flat coverage 0%). It carries 10 visible tones per 16x16 tile, which matches the hedge (9) and is below the stall (17) and well (20). Its 18 total distinct colours are well under the 38-40 of the richest references, so it is a little thinner than those. Even so, it is not sticker-like and a careful artist would accept it beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16526
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back railing with posts and rails",
+      "rows": "1-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "platform deck (wood planks seen from above)",
+      "rows": "10-21",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-23"
+     },
+     {
+      "part": "under-platform front face with X bracing",
+      "rows": "22-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ladder on right side",
+      "rows": "17-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 25,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a raised platform. Rows 11-21 form a wide deck of horizontal plank bands, with a dark outline at row 10. The deck ends in a lighter orange front-edge line at row 20, followed by darker eave shadow at rows 21-23 (column x=8 reads L=101 then 65 then 28). Below it, rows 22-46 are a vertical south face of 25 rows with X cross-bracing. The back railing (rows 1-9) and the ladder are drawn as vertical faces, but they are thin structure and not the main volume. The silhouette narrows from 32 to 30 px at row 22, which suggests a slight inset under the deck, and there is no isometric side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a 2x2 wooden platform with a railing and a ladder. Its dark edge pixels are fully tinted (0% neutral), so the outlines lean brown beside the wood, which matches the Beodeul material-tone approach and is not a black sticker line. The measured 10 visible tones per tile is on par with the hedge reference (9) but well below the roofed well (20) and cheese stall (17), the closest structural references. Near-flat coverage is 0%, so there are no big flat fills, and the planks and posts show some grain. By eye, though, the wood ramp has only about 3-4 steps, the planks and posts read fairly uniform, and the lower structure is sparse with little per-plank highlight or knot detail. Compared with the stall and the well, it looks thinner and flatter, with fewer shading steps than the 5-6 Beodeul uses per material. It is cleanly drawn and structurally sound, but it falls just short of the reference richness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19861
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "back railing (top rail, posts, lower rail)",
+      "rows": "1-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "platform deck (horizontal plank bands)",
+      "rows": "10-20",
+      "evidence": "a",
+      "front_edge_line_row": 20,
+      "eave_shadow_rows": "21-23"
+     },
+     {
+      "part": "front face / open frame under deck with X brace",
+      "rows": "22-43",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ladder on the right",
+      "rows": "17-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a raised deck. Rows 10-20 are horizontal plank bands, 11 rows tall, ending in a lighter orange front-edge line at row 20 (#d59147). Dark eave shadow follows at rows 21-23. Below it is a front face of about 22 rows (rows 22-43), drawn as an open frame with posts, an X brace and a dark interior. The back railing (rows 1-9) and the ladder are thin vertical structures. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a 2x2 wooden platform with a railing and ladder. Its outline is a dark brown tint, with 0% neutral dark-edge pixels, so it is not a black sticker line. It carries 10 visible tones per tile against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so the planks and posts are not flat fills. By eye the wood ramp is about 4 steps (light plank, mid, dark, deep shadow) against about 5-6 on the stall and well. Plank grain and the underside's cross-bracing are fairly sparse and regular. It is clearly lower than the stall and well in tonal richness and texture variety, but it matches the hedge and is not a flat sticker. The tinted outline and the measured tones keep it just short of the references' detail, not far below them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 21612
+  }
+ ],
+ "decidedAt": "2026-10-21T06:51:30.046Z",
+ "cells": {
+  "16": [
+   "0dad975912c92e83",
+   "3a94ad3bb15375aa",
+   "599ce9af8718f91f",
+   "682a2c8f8744d06b",
+   "b0c09ae183c2d9ec",
+   "e5c34922505d566f"
+  ],
+  "24": [
+   "11c9e218f684dde3",
+   "193d8483a7404648",
+   "2e530ac0aa249142",
+   "413f78a80c9f4002",
+   "4a9a2087b30ea2fd",
+   "638b6bd79aafe9e8",
+   "8dbb1fa012382edc",
+   "968511681c7ce04c",
+   "9d0fb41b980d3694",
+   "c0e7d0e0eb044826",
+   "cd856f851224e9cb",
+   "f369a75e08071fe2"
+  ],
+  "32": [
+   "2f458032812b71c3",
+   "35ace46ae5268f82",
+   "57b0b7f07b5e89af",
+   "5c621e9d38e9c44e"
+  ],
+  "48": [
+   "aa27ffc0fa955b0a",
+   "e6914c879b6bf736",
+   "f1fc1f1e21a44ffd"
+  ]
+ }
+}

@@ -1,0 +1,20 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "fallen-rooms-r11",
+ "title": "Fallen Star 네 화로의 방 — 버들항 돌 화로 꺼짐·켜짐 (r11)",
+ "createdAt": "2026-10-21T15:40:35.068Z",
+ "items": [
+  {
+   "sha": "0a58ff50e5c89e6aee599a2df2e2f6482a950051bda490642ce40cee56971170",
+   "kind": "other",
+   "label": "atlas_biome_interior/plus/stone brazier",
+   "source": "/tmp/fsrooms/gate-r11/stone_brazier.png"
+  },
+  {
+   "sha": "eae915cfae02d12e6eeb30f55cc4f22c72c0f65f79f7d09c6192999736729dcf",
+   "kind": "other",
+   "label": "atlas_biome_interior/plus/stone brazier lit",
+   "source": "/tmp/fsrooms/gate-r11/stone_brazier_lit.png"
+  }
+ ]
+}

@@ -1,0 +1,402 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0a58ff50e5c89e6aee599a2df2e2f6482a950051bda490642ce40cee56971170",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "돌 화로(꺼짐, 버들항 돌 받침 화로) (stone brazier)",
+ "label": "atlas_biome_interior/plus/stone brazier",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+  "3/4: 윗면 증거가 안쪽 내용물뿐이고 앞면/윗면 18/4 — 정면 단면 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 2/4)",
+   "윗면 증거가 안쪽 내용물뿐이고 앞면/윗면 18/4 — 정면 단면 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 5,
+  "darkV5": 36,
+  "nearBlackEdge": 0.63,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brazier bowl mouth (dark interior with ash/ember highlights)",
+      "rows": "9-12",
+      "evidence": "d",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "pedestal stem",
+      "rows": "17-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth top",
+      "rows": "24-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is an hourglass pedestal: bowl at rows 9-16 (width 12-14), stem at rows 17-23 (width 6), base at rows 24-30 (width 12). The bowl opening at rows 9-12 is a lighter-streaked, dark interior with an orange ember pixel at row 11, and a lighter line at row 12 (x=8, x=11) marks its front rim. Below it the bowl front face runs rows 13-16 and the stem continues the front face to row 23. The base has a top band at rows 24-26 (dark edge at row 24, lighter rows 25-26 as the lit top) over a front face at rows 27-30. The bowl mouth is shallow (about 4 rows), but the bowl, stem and base all read as a 3/4 view, not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small grey stone pedestal brazier with a dark bowl top. It shows about 5 visible tones per tile and only 9 distinct colours in total. Stone shading is shallow, roughly 3 steps (light, mid, dark), against 5-6 steps on the well, stall and hedge. 86% of its dark edge pixels are near-neutral, so the outline reads as a neutral dark grey/black line, not a tinted dark stone tone. This is the sticker look, unlike the well, hedge and stall, which have tinted outlines. Texture is minimal: there are no per-stone shading dots, no grain, no cracks or speckle on the pedestal, and the bowl is a smooth dark mass. The 0% near-flat figure comes from the piece's small size and its few tone changes, not from real texture. Next to the well (20 tones) and the stall (17 tones) it is clearly thinner and flatter. The single pedestal has no extra detail such as ash, embers or rim stones.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16460
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brazier bowl mouth (dark interior with rim highlights)",
+      "rows": "9-12",
+      "evidence": "b",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "bowl front face",
+      "rows": "13-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pedestal shaft",
+      "rows": "17-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base plinth top",
+      "rows": "24-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bowl's width profile is 12, 14, then 12 (rows 9-16), so the mouth widens and narrows slightly. Column x=8 has a dark interior at rows 9-11 and a lighter front rim line at rows 12-13, with the bowl's front face below at rows 14-16. The shaft (rows 17-23, width 6) is a vertical face. The base (rows 24-30, width 12) has a top band at rows 24-26 whose lighter line at row 26 reads as a front edge, then a front face at rows 27-28 and shadow at rows 29-30. The main top is a short but legible 4-row mouth over a clear front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small grey stone pedestal brazier with only about 9 colours in total and about 5 visible tones per tile. Its stone ramp has roughly 3 lightness steps (light top, mid body, dark edge). The measured near-neutral share of dark edge pixels is 86%, and by eye the outline is a uniform dark grey/black line around the form with no material tint. That is the sticker look, not Beodeul's dark-material-tone outlining. The stone is not shaded block by block and carries no grain, speckle or chips. The pedestal is a smooth, simple silhouette. The rich references (well-roofed 20 tones, stall-cheese 17, hedge 9) carry far more visible information per tile, with per-stone shading and texture dots. The candidate has 0% near-flat coverage only because it is so small and its tones are broken into bands, not because it has real texture. Next to the well and stall it looks thinner, flatter and more sticker-like. Fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 18507
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brazier bowl: dark open mouth with ember and ash inside, front rim line below",
+      "rows": "9-12",
+      "evidence": "d",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "14-16"
+     },
+     {
+      "part": "bowl front face (rim and body)",
+      "rows": "13-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "narrow pedestal shaft",
+      "rows": "17-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stepped base: top band with a lighter front-edge line, then front face",
+      "rows": "24-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is an hourglass: the bowl is 14 wide on rows 10-15, the shaft is 6 wide on rows 17-23, and the base is 12 wide on rows 24-30. At x=8, rows 9-11 are very dark (#1e1e24), which reads as the open bowl mouth with coals and ash. An orange ember pixel sits at row 11 and light highlights at row 10. A lighter rim line at rows 12-13 (x=4, 8 and 11) closes the opening, and darker front-face rows 13-17 sit below it. This is the weakest call: the opening is only about 4 rows deep, and the contents read is partly inferred. The base shows a top band on rows 24-26 with a lighter edge line at row 26 (x=4 and x=11), then a front face on rows 27-30. Both the bowl and the base therefore show a top surface above a front face. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small grey stone pedestal brazier with only 9 distinct colours and about 5 visible tones per tile. The well, stall and hedge references show 9-20 visible tones. Shading on the stone is about 3 steps (light top, mid body, dark base) and does not show stones shaded one by one. The dark edge pixels are 86% near-neutral, so the outline reads as a neutral dark line with no tint toward the stone, which is the sticker look. The Beodeul well and hedge use tinted dark edges (0-33% neutral). The surfaces have no visible grain, chips, cracks or speckle, so the stone reads as smooth, simplified blocks. Near-flat coverage is 0% only because the piece is small. It is clearly shallower and flatter than the same-kind references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 증거가 안쪽 내용물뿐이고 앞면/윗면 18/4 — 정면 단면 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "윗면 증거가 안쪽 내용물뿐이고 앞면/윗면 18/4 — 정면 단면 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17922
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bowl mouth with ash and ember contents",
+      "rows": "9-12",
+      "evidence": "d",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-13"
+     },
+     {
+      "part": "bowl front wall",
+      "rows": "13-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "narrow stem",
+      "rows": "17-23",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stepped base top",
+      "rows": "24-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a bowl (rows 9-16, 14 wide), a 6-wide stem (rows 17-23) and a 12-wide base (rows 24-30). The bowl has a dark opening in rows 9-12. It holds light ash pixels at row 10, an orange ember pixel and a lighter lip at row 12 (x=8 L=101, x=11 L=98), so the contents read as seen from above (evidence d). The bowl's front wall is rows 13-16 in dark tones. The base has an outline at row 24, then lighter rows 25-26 (L=98, then L=126 at row 26 as the edge line), then a 27-28 face and 29-30 shadow. That gives it a small top step above its front face. The top is shallow and not a clean ellipse, because the width is nearly rectangular (14 wide through rows 10-15). The bowl mouth still shows contents and the base shows an edge line, so I read it as three_quarter with moderate confidence."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a small grey stone pedestal brazier with only about 9 raw colours in total. Its main stone ramp reads as roughly 3 steps (light top rim, mid body, dark base), against about 5-6 in the references. Its dark edge pixels are 86% near-neutral, so the outline is a near-black grey line with no material tint. The references mostly lean toward the material tone (hedge 0%, cheese 1%, well 33%). The candidate shows no per-stone shading, grain or speckle, only smooth bands on the stem and bowl, which reads as a sticker-like simple form. At 5 visible tones per tile it is well below the well (20), cheese stall (17) and hedge (9). Near-flat coverage is 0%, but that comes from the small size and banding, not from real texture. Side by side it looks thinner and flatter than the Beodeul props, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 증거가 안쪽 내용물뿐이고 앞면/윗면 18/4 — 정면 단면 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "윗면 증거가 안쪽 내용물뿐이고 앞면/윗면 18/4 — 정면 단면 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17190
+  }
+ ],
+ "decidedAt": "2026-10-21T15:41:25.546Z",
+ "cells": {
+  "16": [
+   "048e578de59d8080",
+   "f9a1a943d5ed4334"
+  ],
+  "24": [
+   "1a972da92a653550",
+   "2b1c5e8e88e984a5",
+   "2f1ce2b17c58d9ea",
+   "37095047949a3a15",
+   "41f80a72e664c8a3",
+   "501556b754d0dd97",
+   "9f19cce5522604a6",
+   "a7e9df2a72405c1a",
+   "ecce0e44e94451ab"
+  ],
+  "32": [
+   "337c270fcd9d49ca",
+   "36baf7762fe779b5",
+   "b02932bfa385e422"
+  ],
+  "48": [
+   "2fbf1c2316e9b164",
+   "46cbfce3071a35f3",
+   "6d522c47c35ce5e5",
+   "84ce57daae3d912e",
+   "9edabad439be0ce6",
+   "b799d95c56ffcf03"
+  ]
+ }
+}

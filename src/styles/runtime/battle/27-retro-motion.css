@@ -126,7 +126,8 @@
 }
 @keyframes retro-thrust {
   0%, 100% { translate: var(--retro-travel) var(--retro-travel-y, 0px); }
-  40% { translate: calc(var(--retro-travel) - 8px) var(--retro-travel-y, 0px); }
+  /* --retro-face: 아군 1(왼쪽을 보고 찌른다), 사람 적 -1(오른쪽). */
+  40% { translate: calc(var(--retro-travel) - 8px * var(--retro-face, 1)) var(--retro-travel-y, 0px); }
 }
 /* 걸음 구간 = 비트의 앞 60% 안팎(battleRetroMotion 의 swingMs 240ms 를 뺀 나머지). 도착 뒤에는 서서 휘두른다.
    대상 적의 발 높이까지 세로로도 걷는다(--retro-travel-y, retroWalk 가 잰다). */
@@ -172,8 +173,9 @@
   20%, 60% { translate: 0 -10px; }
 }
 @keyframes retro-enemy-windup {
-  0%, 30%, 60%, 100% { filter: none; }
-  15%, 45% { filter: brightness(0) invert(1); }
+  /* 흰 실루엣(brightness(0) invert(1))은 몸을 흰 덩어리로 뭉갰다(VQA r11) — 윤곽·명암이 남는 밝기 혼합 한 번만. */
+  0%, 24%, 100% { filter: none; }
+  12% { filter: brightness(1.5) saturate(0.75) contrast(0.95); }
 }
 @keyframes retro-enemy-strike {
   0%, 100% { translate: 0 0; }
@@ -443,10 +445,10 @@
   text-shadow: 2px 2px 0 #101020;
   white-space: nowrap;
 }
-.battle-scene[data-battle-motion="retro"] .battle-enemy.retro-skill-struck .battle-enemy-image { filter: brightness(0) invert(1); }
+.battle-scene[data-battle-motion="retro"] .battle-enemy.retro-skill-struck .battle-enemy-image { filter: brightness(1.5) saturate(0.75) contrast(0.95); }
 .battle-scene[data-battle-motion="retro"] .battle-actor.retro-skill-blessed .battle-actor-sprite { filter: brightness(1.7) saturate(0.6); }
 /* 몬스터 스킬(retroMonsterSkills): 편이 반대다 — 맞는 쪽은 아군, 축복받는 쪽은 몬스터 편. */
-.battle-scene[data-battle-motion="retro"] .battle-actor.retro-skill-struck .battle-actor-sprite { filter: brightness(0) invert(1); }
+.battle-scene[data-battle-motion="retro"] .battle-actor.retro-skill-struck .battle-actor-sprite { filter: brightness(1.5) saturate(0.75) contrast(0.95); }
 .battle-scene[data-battle-motion="retro"] .battle-enemy.retro-skill-blessed .battle-enemy-image { filter: brightness(1.6) saturate(0.7); }
 /* 몬스터 스킬 재생기가 translate 를 소유한다. 비트 키프레임(retro-enemy-windup·strike)을 끄고 파고들 때 아군 위에 그린다. */
 .battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-retro-class-skill],
@@ -498,4 +500,72 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .battle-scene[data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor[data-pixel-party] .battle-actor-sprite[data-pixel-sheet][data-pixel-cell="idle"] { animation: none; }
+}
+
+/* ── 사람 적: 걷기 칩 전투 시트(charset-battler-*)를 쓰는 적 ─────────────────────────────────────
+   battleFieldDom.enemyButton 이 아군과 같은 actorBattleImage 스프라이트(.battle-actor-sprite)를 만들고 .battle-enemy-image 도 단다.
+   크기는 아군과 같은 인라인 96px 칸(48px 셀 × 2)이다 — 스킨의 적 그림 상자(56×64·104×128·배율)를 따르지 않는다.
+   시트는 왼쪽을 보고 그려졌으므로 적 진영(왼쪽)에서는 transform 으로 좌우를 뒤집는다. 숨쉬기 scale·밀림 translate 와 겹치지 않는다. */
+.battle-scene[data-battle-skin][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-charset-enemy="true"][data-battler-extended="true"] .battle-enemy-image.battle-actor-sprite {
+  width: var(--battle-sprite-frame-width) !important;
+  height: var(--battle-sprite-frame-height) !important;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  /* 적 레코드의 battleScalePercent 를 따른다(발밑 기준) — 예전엔 96px 칸에 고정돼 보스 사람 적이 졸개만 했다(폴른 스타 가혹 검수 r7).
+     칸 상자는 그대로라 이름·체력 판과 맞춤 규칙은 움직이지 않는다. */
+  transform: scaleX(-1) scale(var(--battle-enemy-scale, 1));
+  transform-origin: 50% 100%;
+  scale: 1;
+  rotate: none;
+}
+.battle-scene[data-battle-skin][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-charset-enemy="true"][data-battler-extended="true"]:not(.defeated) .battle-enemy-image.battle-actor-sprite {
+  /* 통짜 그림용 숨쉬기(비정수 scale)·흰 점멸 예비동작은 쓰지 않는다 — 도트 칸이 동작을 그린다. */
+  animation: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .battle-scene[data-battle-motion="retro"][data-battle-skin][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-charset-enemy="true"][data-battler-extended="true"][data-battle-pose-frame="idle"]:not([data-retro-beat]):not(.defeated) .battle-enemy-image.battle-actor-sprite {
+    animation: retro-pixel-breathe 1600ms steps(1, end) infinite;
+    animation-delay: var(--breathe-delay, 0ms);
+  }
+}
+/* 격파: 쓰러지는 칸(dying → dead)을 잠깐 보인 뒤 줄무늬로 사라진다. */
+.battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-skin][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-charset-enemy="true"].defeated .battle-enemy-image.battle-actor-sprite {
+  animation: retro-enemy-dissolve 500ms steps(8, end) 420ms forwards;
+}
+/* 걸음·찌르기·복귀는 아군과 같은 키프레임. 이동량(--retro-travel)이 양수라 오른쪽(아군 쪽)으로 간다. */
+.battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-charset-enemy="true"][data-retro-beat] {
+  --retro-face: -1;
+  animation: retro-walk var(--retro-beat-ms) linear both;
+  animation-play-state: running;
+  transition: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-charset-enemy="true"][data-retro-action="attack"][data-retro-beat="approach"] {
+  animation-name: retro-walk-up;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-charset-enemy="true"][data-retro-beat="impact"] {
+  animation-name: retro-thrust;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-charset-enemy="true"][data-retro-action="cast"][data-retro-beat="impact"] {
+  animation-name: retro-cast-hold;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-charset-enemy="true"][data-retro-beat="recover"] {
+  animation-name: retro-return;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-charset-enemy="true"][data-retro-action="cast"][data-retro-beat="recover"] {
+  animation-name: retro-enemy-cast-return;
+}
+@keyframes retro-enemy-cast-return { from { translate: var(--retro-travel) 0; } to { translate: 0 0; } }
+/* 대상 아군 앞까지 걸어가는 동안에는 아군 위로 겹쳐 그린다. */
+.battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-enemy-group:has(.battle-enemy[data-charset-enemy="true"][data-retro-reach="melee"][data-retro-beat]) {
+  z-index: 6;
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-charset-enemy="true"][data-retro-beat][data-retro-beat] {
+    animation: none;
+    translate: 0 0;
+  }
+  .battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-skin][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-charset-enemy="true"].defeated .battle-enemy-image.battle-actor-sprite {
+    animation: none;
+    opacity: 0;
+  }
 }

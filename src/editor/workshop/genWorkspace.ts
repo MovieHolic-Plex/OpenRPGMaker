@@ -12,13 +12,15 @@ import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 import { t } from "@/i18n";
-import { charGenRequest, TERRAIN_MODES, TERRAIN_PRESETS, tileGenRequest, type GeneratorId } from "./generators";
+import { charGenText, generatorPinLine, TERRAIN_MODES, TERRAIN_PRESETS, tileGenText, type GeneratorId } from "./generators";
 import { browserWorkshopEnv } from "./pixels";
 import { localPackPreviews, readLocalPack, revokeLocalPackPreviews, type LocalPack, type LocalPackPreview } from "./genPackImport";
 import { workshopQueue } from "./queue/workshopQueue";
+import { castLineup, packCast } from "./castPreview";
 
 let host: HTMLElement | null = null;
 let previews: LocalPackPreview[] = [];
+let stopCast: (() => void) | null = null;
 
 export function isGenWorkspaceOpen(): boolean {
   return host !== null;
@@ -28,6 +30,10 @@ export function closeGenWorkspace(): void {
   document.removeEventListener("keydown", onKeydown);
   revokeLocalPackPreviews(previews);
   previews = [];
+  stopCast?.();
+  stopCast = null;
+  // 공방 큰 화면처럼, 닫히면 작업 줄 알약을 다시 보인다.
+  if (host) void import("./queue/queueDock").then(({ collapseWorkshopQueue }) => collapseWorkshopQueue(false));
   host?.remove();
   host = null;
 }
@@ -54,7 +60,7 @@ const LEADS: Readonly<Record<LocalGenerator, string>> = {
 export function openGenWorkspace(generator: LocalGenerator): void {
   closeGenWorkspace();
   host = el("div", {
-    class: "workshop-host", dataset: { testid: "workshop-gen-host" },
+    class: "workshop-host is-gen", dataset: { testid: "workshop-gen-host" },
     on: { click: (event) => { if (event.target === host) closeGenWorkspace(); } },
   });
   if (document.querySelector('[data-testid="left-activity-bar"]')) host.style.left = "48px";
@@ -89,6 +95,9 @@ export function openGenWorkspace(generator: LocalGenerator): void {
   }));
   document.body.append(host);
   document.addEventListener("keydown", onKeydown);
+  // 떠 있는 작업 줄 알약이 이 창 오른쪽 아래(사람 줄·넣기 단추)를 덮었다(2026-10-22 적대 검수) — 열려 있는 동안 숨긴다.
+  // 가져온 묶음은 작업 줄에 「넣을 차례」로 서고, 창을 닫으면 알약이 다시 보인다.
+  void import("./queue/queueDock").then(({ collapseWorkshopQueue }) => collapseWorkshopQueue(true));
 }
 
 function stepBox(n: number, title: string, children: HTMLElement[], testid: string): HTMLElement {
@@ -104,39 +113,47 @@ function requestStep(): HTMLElement {
     attrs: { "aria-label": "몇 명" }, dataset: { testid: "workshop-gen-count" },
     children: [1, 2, 3, 4].map((n) => el("option", { value: n, text: `${n}명`, attrs: n === 3 ? { selected: "" } : {} })),
   }) as HTMLSelectElement;
-  // 언어는 generators.charGenRequest 가 고른다.
-  const { request, copied, row } = requestBox();
-  const update = (): void => { request.value = charGenRequest(what.value, Number(count.value)); copied.textContent = ""; };
+  // 언어는 generators.charGenText 가 고른다. 판 고정 줄은 복사할 때 붙는다(requestBox).
+  const { request, copied, row } = requestBox("char-gen");
+  const update = (): void => { request.value = charGenText(what.value, Number(count.value)); copied.textContent = ""; };
   what.addEventListener("input", update);
   count.addEventListener("change", update);
   update();
   return stepBox(1, "무엇을 만들까요?", [
     el("div", { class: "workshop-form-row", children: [el("label", { class: "workshop-gen-grow", children: ["어떤 캐릭터", what] }), el("label", { children: ["몇 명", count] })] }),
-    request,
+    el("label", { class: "workshop-gen-request-label", children: ["내 AI 에이전트에게 보낼 부탁", request] }),
     row,
     // char-gen 저장소는 비공개가 됐다(2026-10-21, tiledata/gen-kits.lock.json) — 설치 링크는 받은 사람 말고는 404 라 내지 않는다.
-    el("p", { class: "workshop-item-meta", text: "char-gen 이 깔린 내 AI 에이전트가 만들어요(저장소는 아직 비공개라 받은 사람만 쓸 수 있어요). 그림은 내 계정으로만 만들고, 마지막에 사람이 직접 골라요." }),
+    el("p", { class: "workshop-item-meta", text: "char-gen 을 설치한 내 AI 에이전트가 내 계정으로 그리고, 마지막 선택은 내가 해요. char-gen 은 아직 초대받은 사람만 설치할 수 있어요." }),
   ], "workshop-gen-step-request");
 }
 
-/** 부탁 글 칸 + 복사 단추 — 에이전트에게 가는 글이라 화면 번역기가 건드리지 않게 한다(data-i18n-skip). */
-function requestBox(): { request: HTMLTextAreaElement; copied: HTMLElement; row: HTMLElement } {
+/**
+ * 부탁 글 칸 + 복사 단추 — 에이전트에게 가는 글이라 화면 번역기가 건드리지 않게 한다(data-i18n-skip).
+ * 글칸에는 사람이 읽는 부탁만 보이고, 「이 편집기가 맞춘 생성기 판」 줄(git 명령·커밋)은 복사할 때 붙는다 —
+ * 사람에게 git 지시문을 들이밀지 않는다(2026-10-22, 공방 캐릭터 적대 검수). 복사한 글은 전과 같다.
+ */
+function requestBox(kit: "char-gen" | "tile-gen"): { request: HTMLTextAreaElement; copied: HTMLElement; row: HTMLElement; fullText(): string } {
   const request = el("textarea", {
     class: "workshop-gen-request", attrs: { readonly: "", rows: "3", "aria-label": "부탁 글", "data-i18n-skip": "" }, dataset: { testid: "workshop-gen-request" },
   }) as HTMLTextAreaElement;
+  const pin = generatorPinLine(kit);
+  const fullText = (): string => request.value + pin;
   const copied = el("span", { class: "workshop-item-meta", attrs: { role: "status" } });
   const copy = el("button", {
     text: "부탁 글 복사", attrs: { type: "button" }, dataset: { testid: "workshop-gen-copy" },
     on: {
       click: () => {
-        void navigator.clipboard?.writeText(request.value).then(
+        void navigator.clipboard?.writeText(fullText()).then(
           () => { copied.textContent = "복사했어요. 내 AI 에이전트(터미널)에 붙여 넣으세요."; },
-          () => { request.select(); copied.textContent = "복사하지 못했어요. 글을 직접 골라 복사해 주세요."; },
+          () => { request.value = fullText(); request.select(); copied.textContent = "복사하지 못했어요. 글을 직접 골라 복사해 주세요."; },
         );
       },
     },
   });
-  return { request, copied, row: el("div", { class: "workshop-form-actions", children: [copy, copied] }) };
+  // 판 고정 줄은 단추 풀이말(title)로만 알린다 — 커밋 번호를 화면 글로 내지 않는다.
+  if (pin) copy.title = `복사하면 끝에 이 편집기가 맞춘 생성기 판이 붙어요:${pin}`;
+  return { request, copied, fullText, row: el("div", { class: "workshop-form-actions", children: [copy, copied] }) };
 }
 
 /** 지금 맵의 칩셋(바탕 시트) — tile-gen 이 색을 잠글 타일셋 파일. 맵이 없으면 null. */
@@ -164,11 +181,11 @@ function terrainRequestStep(): HTMLElement {
   }) as HTMLSelectElement;
   const what = el("input", { attrs: { type: "text", placeholder: TERRAIN_MODES[0]!.example, "aria-label": "어떤 지형" }, dataset: { testid: "workshop-gen-what" } }) as HTMLInputElement;
   const ref = el("input", { attrs: { type: "text", placeholder: "예: 0,3", inputmode: "numeric", "aria-label": "참고 칸" }, dataset: { testid: "workshop-gen-ref" } }) as HTMLInputElement;
-  const { request, copied, row } = requestBox();
+  const { request, copied, row } = requestBox("tile-gen");
   const update = (): void => {
     const chosen = [...TERRAIN_MODES, ...TERRAIN_PRESETS].find((m) => m.mode === mode.value) ?? TERRAIN_MODES[0]!;
     what.placeholder = chosen.example;
-    request.value = tileGenRequest(chosen.mode, what.value, target?.fileName ?? "tileset.png", ref.value);
+    request.value = tileGenText(chosen.mode, what.value, target?.fileName ?? "tileset.png", ref.value);
     copied.textContent = "";
   };
   mode.addEventListener("change", update);
@@ -266,6 +283,13 @@ function importStep(generator: LocalGenerator, n: number): HTMLElement {
     revokeLocalPackPreviews(previews);
     previews = localPackPreviews(pack);
     current = pack;
+    stopCast?.();
+    stopCast = null;
+    const members = packCast(pack.manifest, pack.blobs);
+    const cast = members.length ? castLineup(members) : null;
+    stopCast = cast?.dispose ?? null;
+    const castCount = members.length;
+    const portraitCount = members.reduce((sum, member) => sum + member.portraits, 0);
     clearChildren(result);
     const add = el("button", {
       class: "workshop-primary", text: "이 게임에 넣기", attrs: { type: "button" }, dataset: { testid: "workshop-gen-add" },
@@ -309,31 +333,40 @@ function importStep(generator: LocalGenerator, n: number): HTMLElement {
         class: "workshop-gen-pack-head",
         children: [
           el("strong", { text: pack.manifest.title, attrs: { translate: "no" } }),
-          el("span", { class: "workshop-chip", text: pack.manifest.license, attrs: { translate: "no" } }),
           ...(pack.manifest.aiGenerated ? [el("span", { class: "workshop-chip", text: "AI 생성" })] : []),
-          el("span", { class: "workshop-chip", text: `그림 ${previews.length}장` }),
+          el("span", { class: "workshop-chip", text: cast ? `${castCount}명` : `그림 ${previews.length}장` }),
         ],
       }),
-      ...(pack.manifest.credits ? [el("p", { class: "workshop-gen-credits", attrs: { translate: "no" }, text: pack.manifest.credits })] : []),
-      // 그림이 많으면(캐릭터 묶음 38장 등) 같은 크기 칸 11개 + 「나머지 N장」 — 칸 안에 통째로 보이고 잘리지 않는다.
-      // 한두 장이면 크게 한 장씩.
-      el("div", {
-        class: "workshop-gen-previews" + (previews.length > 2 ? " is-grid" : ""),
-        children: previews.length
-          ? [
-            ...(previews.length > 12 ? previews.slice(0, 11) : previews).map((preview) => el("figure", {
-              children: [el("div", {
-                class: "workshop-gen-preview-art",
-                children: [el("img", {
-                  attrs: { src: preview.url, alt: preview.name },
-                  on: { load: (event) => (previews.length > 2 ? fitPreview(event.target as HTMLImageElement, 128, 104) : fitPreview(event.target as HTMLImageElement)) },
-                })],
-              }), el("figcaption", { attrs: { translate: "no", title: preview.name }, text: preview.name })],
-            })),
-            ...(previews.length > 12 ? [el("figure", { class: "is-more", children: [el("div", { class: "workshop-gen-preview-art", text: `+${previews.length - 11}` }), el("figcaption", { text: `나머지 ${previews.length - 11}장도 같이 들어가요` })] })] : []),
-          ]
-          : [el("p", { class: "workshop-item-meta", text: "미리 볼 그림이 없어요." })],
+      // 라이선스·출처(생성기·바탕 그림 저작자)는 접어 둔다 — 넣으면 프로젝트 출처 기록에 그대로 남는다.
+      el("details", {
+        class: "workshop-gen-source", dataset: { testid: "workshop-gen-source" },
+        children: [
+          el("summary", { text: "출처·라이선스" }),
+          el("p", { class: "workshop-gen-credits", attrs: { translate: "no" }, text: [pack.manifest.license, pack.manifest.credits].filter(Boolean).join(" · ") }),
+        ],
       }),
+      // 사람 묶음(content.characters)은 사람 하나에 한 칸 — 걷는 앞모습(정수 배율) + 짝 얼굴. 시트를 통째로 흐리게 줄여 보이지 않는다.
+      ...(cast ? [cast.root, el("p", { class: "workshop-item-meta workshop-cast-files", text: `사람 ${castCount}명 · 그림 파일 ${previews.length}장(걷는 칩 시트${portraitCount ? `, 얼굴·초상 ${portraitCount}장` : ""})이 함께 들어가요.` })] : [
+        // 그림이 많으면(물건·지형 묶음) 같은 크기 칸 11개 + 「나머지 N장」 — 칸 안에 통째로 보이고 잘리지 않는다.
+        // 한두 장이면 크게 한 장씩.
+        el("div", {
+          class: "workshop-gen-previews" + (previews.length > 2 ? " is-grid" : ""),
+          children: previews.length
+            ? [
+              ...(previews.length > 12 ? previews.slice(0, 11) : previews).map((preview) => el("figure", {
+                children: [el("div", {
+                  class: "workshop-gen-preview-art",
+                  children: [el("img", {
+                    attrs: { src: preview.url, alt: preview.name },
+                    on: { load: (event) => (previews.length > 2 ? fitPreview(event.target as HTMLImageElement, 128, 104) : fitPreview(event.target as HTMLImageElement)) },
+                  })],
+                }), el("figcaption", { attrs: { translate: "no", title: preview.name }, text: preview.name })],
+              })),
+              ...(previews.length > 12 ? [el("figure", { class: "is-more", children: [el("div", { class: "workshop-gen-preview-art", text: `+${previews.length - 11}` }), el("figcaption", { text: `나머지 ${previews.length - 11}장도 같이 들어가요` })] })] : []),
+            ]
+            : [el("p", { class: "workshop-item-meta", text: "미리 볼 그림이 없어요." })],
+        }),
+      ]),
       el("div", { class: "workshop-gen-add-row", children: [add, el("span", { class: "workshop-item-meta", text: "이 게임에만 들어가요. 공용(스토어)에 올리려면 생성기에서 검사를 거쳐 올려 주세요." })] }),
       status,
     );

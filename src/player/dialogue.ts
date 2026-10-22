@@ -901,6 +901,8 @@ export function createDialogueUI(
       const segmentsAll = parseDialogueText(request.body, request.textContext);
 
       const mount = (balloon: boolean): void => {
+        // 오버레이는 줄마다 재사용된다 — 앞 줄이 맞춘 높이를 지워야 다음 줄이 처음부터 잰다.
+        overlay.style.removeProperty("height");
         const behindPortraits: HTMLElement[] = [];
         let glideFromPrevious = false;
         box = dialogueBox("", "dialogue-box");
@@ -1134,6 +1136,8 @@ export function createDialogueUI(
           for (let shrink = 1; shrink <= 8 && dialoguePagesOverflowBody(bodyEl, pages); shrink += 1) {
             pages = paginateDialogueSegments(segmentsAll, { maxWidth: Math.max(1, baseWidth - shrink * 4), measure, maxLines, fallbackCharWidth: DIALOGUE_FALLBACK_CHAR_WIDTH });
           }
+          // 페이지를 나눈 **뒤에** 높이를 줄인다 — 줄 수 계산이 상자 높이를 먼저 봐야 하므로 순서가 바뀌면 순환한다.
+          if (!face) fitDialogueBoxToPages(overlay, box, bodyEl, pages);
         }
       };
 
@@ -2266,6 +2270,31 @@ function logicalHostWidth(host: HTMLElement): number {
  * 확정돼 있어야 값이 나온다. jsdom 처럼 레이아웃이 없는 환경에서는 0 이 나오므로
  * 그때만 상수로 되돌린다.
  */
+/**
+ * 한 줄짜리 대사가 화면의 22% 를 덮지 않게, 가장 긴 페이지의 줄 수만큼으로 상자 높이를 맞춘다.
+ * 위·아래 자리의 일반 상자만 건드린다. 말풍선·에메랄드·VN 페이지·전신 무대·초상 상자는 저작한 높이를 그대로 둔다.
+ */
+function fitDialogueBoxToPages(
+  overlay: HTMLElement,
+  box: HTMLElement,
+  bodyEl: HTMLElement,
+  pages: ReadonlyArray<{ lines: ReadonlyArray<unknown> }>,
+): void {
+  if (!overlay.classList.contains("position-top") && !overlay.classList.contains("position-bottom")) return;
+  if (bodyEl.closest('[data-monster-style="emerald"], [data-vn-layout="page"]') || overlay.dataset.dialogueStage) return;
+  const view = bodyEl.ownerDocument?.defaultView;
+  if (!view || bodyEl.clientHeight <= 0) return;
+  const needed = Math.max(1, ...pages.map((page) => page.lines.length));
+  const computed = view.getComputedStyle(bodyEl);
+  const lineHeight = parseFloat(computed.lineHeight) || parseFloat(computed.fontSize) * 1.2;
+  if (!Number.isFinite(lineHeight) || lineHeight <= 0) return;
+  if (needed * lineHeight >= bodyEl.clientHeight - 0.5) return;
+  overlay.style.height = "auto";
+  box.style.minHeight = "0";
+  bodyEl.style.flex = "0 0 auto";
+  bodyEl.style.minHeight = `${Math.ceil(needed * lineHeight)}px`;
+}
+
 function dialogueMaxLines(bodyEl: HTMLElement): number {
   // 풀스크린 글 페이지(vnLook layout=page)는 상자가 화면을 채우므로 한 페이지에 여러 줄(상한 9)이 들어간다.
   const cap = bodyEl.closest('[data-monster-style="emerald"]') ? 2 : bodyEl.closest('[data-vn-layout="page"]') ? 9 : DIALOGUE_VISIBLE_LINES;

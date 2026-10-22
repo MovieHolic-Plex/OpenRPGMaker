@@ -1,0 +1,32 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r23",
+  "commit": "2d0dd28dbc",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "dome_vault.png 480x128 RGBA, alpha strictly 0/255, 30 opaque colours; pixel_sha256 = 4c8e558db370a98b2d0098e6974926691c1da4983cc8667fc927a3b78d2e5c9f (computed with object_gate.pixel_sha256).",
+    "1_topdown_view": "Dome interior reads correctly as seen from the room: curved cornice ring, concentric courses darkening upward, ribs converging on a meridian slit. Consistent with the 3/4 room below. No iso/side faces.",
+    "2_style_fit": "Dome courses, ribs (top-left lit, brass collars) and slit match the sheet's palette ramps and outline weight. BUT the drum band below the cornice uses the dome masonry (large blocks, fill (74,74,88)/(91,89,96), mortar (28,20,24)) while the existing v5 wall faces it abuts use small pinkish bricks ((108,92,102)/(118,110,116), mortar (46,38,48)). Two masonry styles on what reads as one round wall.",
+    "3_readability_1x": "At 1x the hall now clearly reads as a round domed observatory hall; the slit and ribs read well.",
+    "4_placement": "Cornice meets the side edges cleanly and the slit continues through the brass rail into 'dome slit tall' with matching sky width. Failure: at every step notch the drum's blue-grey big-block texture butts against the pinkish wall-face brick with a hard vertical/horizontal texture seam and no wall-top cap or ledge, so the old boxy stepped outline remains visible as rectangles of different brick under the round cornice.",
+    "5_silhouette_outline": "Mostly clean, binary alpha. Minor: outer dome silhouette has no dark rim and the outermost course band (outside the outer ribs, x0..40 / x440..479) is low-contrast and mushy; left edge columns x0..1 start at y=117 while x=2 starts at y=107 (10px step stub)."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/dome vault",
+      "name": "천문대 둥근 지붕(큰 방 천장 띠 전체, 30×8) (dome vault)",
+      "kind": "wall_mounted",
+      "pixelSha256": "4c8e558db370a98b2d0098e6974926691c1da4983cc8667fc927a3b78d2e5c9f",
+      "verdict": "FAIL",
+      "reasons": [
+        "Drum/wall seam (main blocker): the drum region below the cornice (piece rows ~64..127, the opaque area left of x=192 and right of x=288 down to the notches at x=48/96/144/192 and 288/336/384/432, y=64/80/96/112) is drawn in the dome's big-block masonry with near-black mortar (28,20,24), while the v5 wall faces it meets use small pinkish brick (108,92,102)/(118,110,116) with mortar (46,38,48). In mock-obs.png the seams are plainly visible at 1x (e.g. mock x~113..160,y~80..96 and the mirrored right side), and the stepped boxy outline still shows through as rectangles of a different wall. Fix: redraw the drum with the v5 wall-face brick (same ramp, brick size and mortar colour, running bond aligned to the wall-face tiles) so drum and wall faces read as one curved wall, OR keep a distinct drum but add a 1-2px wall-top cap/ledge (light top line + dark underside) along each step edge so the notches read as wall tops meeting the drum behind them, not a texture swap on one plane.",
+        "Drum value: the brief says a lighter stone drum, but the drum ((74,74,88) dominant) is darker than the wall faces below and about the same value as the dome courses; lift it one ramp step so the cornice/drum/wall order reads light-to-dark upward like candlelight from below.",
+        "Outer silhouette: add a 1px dark rim along the dome's outer curve against the black ceiling and give the outermost course band (outside the outer ribs, x0..~40 and x~440..479, rows ~60..117) the same course-line contrast as the inner courses; currently it reads as a soft, smudged fringe.",
+        "Stub at the left edge: columns x=0..1 start at y=117 while x=2 starts at y=107; extend x0..1 to follow the curve (~y=109..112) or trim, and mirror-check the right edge (x=476..479).",
+        "Crown: the 'timber crown ring' is not readable; the four ribs simply stop against the slit jambs at y~0..10 and the outer/inner ribs run side by side with a 1-2px gap near the crown (x~140..170 and x~310..340, y~4..14) reading as a doubled line. Either draw a short visible ring segment/collar block where they join the jambs or let the inner ribs merge into the outer ones before the crown."
+      ]
+    }
+  ]
+}

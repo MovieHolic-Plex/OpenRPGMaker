@@ -1,0 +1,31 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r38",
+  "commit": "231e64016f",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 of /tmp/fsrooms/gate-r38/star_seal.png computed fresh = 95b6b023791ddaa81a37b0ad09fefb008376397d1a87bb7fd9e0aafc2e10a9a2.",
+    "1_topdown_view": "Correct: flat floor piece seen straight from above, no side faces, frame is a flush flat band. Hinges and ring are drawn flat on the lid plane. OK.",
+    "2_style_fit": "Frame uses the warm grey stone ramp (A/L/C/B) with speckle like v5 floor stone; lid has a two-tone dark ramp, gold rim lit top-left/dark bottom-right, purple star with highlight. Matches the archive steles (black + purple). No flat fills, no noise. OK.",
+    "3_readability_1x": "At 1x in the archive it reads as a heavy sealed stone lid with a star keyhole; hinges (two pale tabs on the north seam) and the south pull ring push it toward 'trapdoor'. Acceptable, though it is dark and the hinges are only just legible.",
+    "4_placement": "Frame sits flush on the plank floor in the mockup, 2 transparent rows top / 1 bottom is not visible against the floor and matches the open-stair state; looks grounded. OK.",
+    "5_silhouette_outline": "Square silhouette clean. Defect inside: the rune ring is broken. Only three rune dots exist: (9,22), (22,22) and (9,10). The top-right dot is missing - its slot (22,10) is overwritten by the right hinge strap tip. The top-left dot (9,10) sits directly under the left strap column (strap x8-9 rows 6-9, tip at (8,10)), so it reads as a purple stray pixel on the end of the iron strap, not as a rune. The ring is asymmetric and the left strap looks glitched."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/star seal",
+      "name": "별 봉인 돌뚜껑(닫힘, 2×2) (star seal)",
+      "kind": "flat",
+      "pixelSha256": "95b6b023791ddaa81a37b0ad09fefb008376397d1a87bb7fd9e0aafc2e10a9a2",
+      "verdict": "FAIL",
+      "reasons": [
+        "View, palette, placement and 1x read as a hinged lid with a star keyhole are fine; the only failing point is the rune dots colliding with the hinge straps.",
+        "Rune ring broken: only 3 of the claimed 4 diagonal dots exist. Top-right dot missing - (22,10) is the right strap tip (I).",
+        "Top-left rune M at (9,10) touches the left strap (column x9 rows 6-9 is strap I, tip at (8,10)) so the strap appears to end in a purple stray pixel.",
+        "FIX: keep the straps rows 6-10 as is and move both top rune dots clear of them and mirrored to the bottom pair: put M at (11,11) and (20,11) (both currently O; (10,11)/(21,11) would still touch the right strap tip at (22,10)), restore (9,10) to J. Alternatively shorten both straps to end at row 9 and place the top runes at (9,11)/(22,11) - either way no rune pixel may be 8-adjacent to a strap pixel and the four dots must be mirror-symmetric about x=15.5."
+      ]
+    }
+  ]
+}

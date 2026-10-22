@@ -524,3 +524,12 @@ Head and body donor (script chips) or base character (Argon chips) per chip are 
 - Sheets 11-13 (22 chips, added 2026-10-17 at the user's decision after review of the char-gen gallery 4): **new sheets are combinations of existing Scarloxy characters' parts with colour shifts only** — the head rows (hair, hat, face) of one Scarloxy People1/People2 character are transplanted onto the body rows (clothes, arms, legs) of another, frame by frame, and hair/hat, top, bottom and shoe colours (and the eye colour, which follows the hair hue) are hue-shifted inside part masks. No model call, no newly drawn pixel; head donor and body donor per chip are recorded in `harness-data/charset-actor/scarloxy-people/gallery4.json` (`head`/`body`), the original recipes in `gallery4-recipes.json`, and the pixel hash of every installed chip in the roster (`source.slotRgbaSha256`). They passed a blind three-reviewer majority vote plus a set-level duplicate check before installation.
 - No image-generation output and no pixel of any other game is used.
 License: Scarloxy parts keep CC BY 4.0; the derived edits follow OPRN default-asset terms (free in games, no standalone redistribution; `openwiki/licensing.md`).
+
+## Workshop character card sample (2026-10-22)
+
+`workshop/char-gen-sample.png` (248×116, shown at 1× on the editor's 공방 「캐릭터」 card) is a composite of real char-gen output:
+- Left, the base bust of the char-gen demo character "Harbor herbalist", reduced by an exact 1/7 block average (portrait drawn by an image model through the char-gen portrait step, then judged and picked; char-gen `docs/img/set-demo.png`).
+- Right, front-facing walking frames (at 2×) of three char-gen chips (the herbalist, a travelling merchant, a harbor sailor). Each chip is a char-gen `edit.json` (written by Claude Opus) applied to a **Scarloxy People1** base chip (`scarloxy/scarloxy-charset-people1.png`) inside part masks; face, skin, hands and walk are pixel-locked to the base.
+- Ground: a crop of `beodeul-ground/courtyard-native.png` at 2× (OPRN hand-pixel 버들항 courtyard).
+- Upstream for the chip bodies: Scarloxy (Ismael Garcia), "Monster Taming Game Essentials" (MyPixelWorld Special Packs #01), https://scarloxy.itch.io/mpwsp01 — Creative Commons Attribution 4.0 International; changes were made (clothes, hair and hats recoloured/repainted).
+License: Scarloxy parts keep CC BY 4.0; the rest follows OPRN default-asset terms (`openwiki/licensing.md`). The image-model portrait is AI-generated.

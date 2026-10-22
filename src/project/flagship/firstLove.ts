@@ -20,8 +20,8 @@ import { deserialize, serialize } from "@/project/io";
 import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types";
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
-  bgm, caption, CAST, choices, m2, clearTintKeepBlack, emote, event, face, fadeIn, fadeOut, flash, hidePlayer, ifCond, page,
-  playSe, say, sayAt, listenTo, setSw, textAtBottom, faceHero, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk,
+  approach, bgm, call, callTo, caption, CAST, choices, m2, clearTintKeepBlack, emote, event, exitVia, face, faceEachOther, faceToward, fadeIn, fadeOut, flash, hidePlayer, ifCond, page,
+  playSe, say, sayAt, sayTo, listenTo, setSw, textAtBottom, faceHero, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk, walkTo,
 } from "./firstLoveKit";
 import { buildFirstLoveMaps, FL_MAP, FL_TRAIN_CALL, FL_TRAIN_GO, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
 import { buildFirstLoveOpening } from "./firstLoveOpening";
@@ -517,7 +517,8 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     stage(S.MET),
   ]));
   // 만남 장면에만 서 있는 지후(그 뒤엔 자리의 지후가 대신한다).
-  add(office, event("ev_fl_jihu_meet", "강지후", jihuMeet, [
+  // 지후는 자기 자리에서 불려 온다(엘리베이터 문틀 안에 서 있으면 소품처럼 보였다 — 2026-10-22 VQA).
+  add(office, event("ev_fl_jihu_meet", "강지후", jihuSeat, [
     page("jm", [stageIs(V_STAGE, S.STREET)], [], { who: "jihu", dir: "left" }),
   ]));
 
@@ -676,7 +677,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
     event("ev_fl_jihu_kon", "강지후", jihuEnter, [page("jk", [swOn("sw_fl_jihu_in_konbini")], [], { who: "jihu", dir: "up" })]),
   );
   add(kon, scene("ev_fl_kon_enter", { x: 1, y: 1 }, S.EVENING, [
-    ...say("clerk", "happy", "어서 오세요~"),
+    ...call("clerk", "happy", "어서 오세요~"),
     ...think("(냉장고 쪽을 보자.)"),
     stage(S.KONBINI),
   ]));
@@ -801,7 +802,8 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
   const o = a.office;
   const taken: Cell[] = [o.heroDesk, o.jihuDesk, o.elevatorOut];
   const leadSeat = spot(project, FL_MAP.officePm, o.leadDesk, taken);
-  const minhoStart = spot(project, FL_MAP.officePm, { x: o.heroDesk.x + 2, y: o.heroDesk.y }, taken);
+  // 민호는 지후 자리와 다른 줄에 — 같은 칸 줄 바로 아래면 두 그림이 한 덩어리로 겹친다(2026-10-22 VQA).
+  const minhoStart = spot(project, FL_MAP.officePm, { x: o.heroDesk.x - 2, y: o.heroDesk.y }, taken);
   const jihuSeat = spot(project, FL_MAP.officePm, { x: o.heroDesk.x + 1, y: o.heroDesk.y - 2 }, taken);
   const jihuPantry = spot(project, FL_MAP.officePm, o.pantry, taken);
   // 「내 옆으로 와 모니터를 들여다봤다」(앉는 그림이 없어 의자 이야기는 뺐다, VQA r10) — 지후는 서하 왼쪽 옆 칸으로 와서 마주 본다(오른쪽 칸은 탕비실로 가는 길이 의자 칸을 지나 막힌다). 흉상 자리는 장면 내내 서하 왼쪽·지후 오른쪽으로 고정(VQA r16)(대사가 말하는 자리를 화면도 보인다).
@@ -961,7 +963,8 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
         ...say("jihu", "base", "근데 서하 씨. 숨기는 거, 생각보다 오래 무거워요. 나중에 꼭 말씀드려요."),
         ...think("그 말이 이상하게 오래 남았다."),
         faceHero("ev_fl_w_lead"),
-        ...say("lead", "base", "둘 다 너무 늦게까지 있지 말아요. 먼저 갈게요."),
+        // 팀장은 자기 자리에서 퇴근 인사를 건넨다 — 멀리서 부르는 한마디(calling).
+        ...call("lead", "base", "둘 다 너무 늦게까지 있지 말아요. 먼저 갈게요."),
         leadOut.begin,
         ...like(1, "ev_fl_w_jihu"),
         ...leadOut.end,
@@ -971,6 +974,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     // 정직 분기의 팀장은 통화를 마치고 시간이 건너뛰는 동안(화면 검정) 퇴근한다 — 보이는 데서 사라지지 않는다.
     setSw("sw_fl_lead_left", true),
     ...caption("밤 10시 40분."),
+    approach("ev_fl_w_jihu", "@player"),
     ...fadeIn(700),
     ...say("jihu", "base", "다 됐어요. 다시 보냈고, 본부장님 답장도 왔어요. ‘확인했습니다, 감사합니다.’"),
     ...say("seoha", "happy", "…감사합니다. 진짜로요."),
@@ -1005,7 +1009,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
 function buildFriday(project: Project, a: FirstLoveAnchors): void {
   const fri = project.maps[FL_MAP.officeFri]!;
   const o = a.office;
-  // 탁자 둘레(meetSeats): [0]=주인공(동쪽 끝) [1]=지후(주인공 오른쪽 옆 — 발표자 둘이 나란히) [2]=민호(탁자 북서 모서리 바닥) [3]=팀장(서쪽 끝) [4]=본부장(탁자 북동 모서리 바닥 — 먼저 나가는 손님이 바로 옆 유리문으로 나간다).
+  // 탁자 동쪽 빈 바닥(meetSeats, 듣는 셋은 발표자와 한 줄 띄워 두 칸 거리 — scene-talk-far): [0]=주인공(동쪽 끝) [1]=지후(주인공 오른쪽 옆 — 발표자 둘이 나란히) [2]=민호(탁자 북서 모서리 바닥) [3]=팀장(서쪽 끝) [4]=본부장(탁자 북동 모서리 바닥 — 먼저 나가는 손님이 바로 옆 유리문으로 나간다).
   // 의자 칸에는 세우지 않는다: 의자는 upper 타일이라 등받이가 얼굴을 덮고(VQA r7), 남쪽 의자 줄은 맵 맨 아래라 대화창에 가린다(VQA r5).
   const seats = o.meetSeats;
   const jihuSpot = seats[1]!; const clientSpot = seats[4]!; const leadSpot = seats[3]!; const minhoSpot = seats[2]!;

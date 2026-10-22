@@ -1,0 +1,44 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r20",
+  "commit": "2d0dd28dbc",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed with src/harnesses/_core/object_gate on both PNGs: dome_vault 42c6086c...bbd2, stone_brazier f6817fb8...622d. Verdicts below are bound to these hashes.",
+    "1_topdown_view": "Dome: reads as the inside of a dome rising over the stepped round room (drum, curved cornice ring, courses darkening upward, ribs converging); consistent with the 3/4 room below and with the op3 illustration. Brazier: top face of bowl and front face of pedestal, no side faces; heap sits above/inside the rim.",
+    "2_style_fit": "Both use sheet-like stone ramps (1e1e24/2a2a32/344655/596470/76808a family) and the brass/timber ramps of the sheet. Dome texture breaks down into colour stipple at the crown and the outer band (see dome reasons).",
+    "3_readability_1x": "mock-obs 1x: hall now clearly reads as a round domed observatory, not a boxy hall. mock-gate 1x / dais x4: cold brazier reads as a brazier holding a coal/ash heap with embers, no longer a post.",
+    "4_placement": "Dome cornice meets the stepped wall tops along the whole outline; slit notch at y>=48 is filled by the dome slit tall piece with a brass sill, no gap. Brazier pedestal tile (rows 16-31) is byte-identical to an existing sheet tile; bowl/pedestal match the lit state in the pair image.",
+    "5_silhouette_outline": "Dome: outer edge against the black ceiling is a stippled, broken fringe with no edge line, and the two outer ribs end in blunt horizontal stubs at the top edge. Brazier: no stray pixels."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/dome vault",
+      "name": "천문대 둥근 지붕(큰 방 천장 띠 전체, 30×8) (dome vault)",
+      "kind": "wall_mounted",
+      "pixelSha256": "42c6086cca07a18cfaa8d31da2c1eb0a5fe1943b16f31248f4ebe1fd1483bbd2",
+      "verdict": "FAIL",
+      "reasons": [
+        "Overall read is good: at 1x the hall now reads as a round domed observatory (drum + curved cornice + darkening courses + ribs + star slit), matching the op3 reference far better than a boxy hall. Fails only on silhouette/texture cleanliness.",
+        "Outer silhouette fringe: the outermost course band outside the outer rib (left approx x=8..50, y=35..95; mirrored on the right approx x=430..472) dissolves into a stipple of single dark pixels and broken half-bricks against the black ceiling, with no edge line. Every other v5 piece has a crisp outline. Fix: draw a continuous 1px dark rim (1e1e24) along the dome's outer curve and fill the band inside it with whole bricks with continuous mortar lines; no stipple.",
+        "Crown texture noise: in the top courses (approx y=0..22, x=150..228 and x=252..330) mortar lines break into scattered 1px dark flecks and dashes, so the courses read as noise instead of masonry. Fix: keep the darkening by stepping the brick ramp per course (as the lower courses already do) and redraw mortar as continuous horizontal lines with regular vertical joints; remove isolated flecks.",
+        "Rib stubs: the two outer ribs bend horizontal at the top edge and stop with square ends in mid-stone (left rib ends approx x=174..189, y=2..6; right mirror approx x=290..305), about 40px short of the slit jambs; visible at 1x as short orange bars cut off at the top. Fix: either carry each rib on into the slit jamb (meeting it with a brass collar) or let it run off the top edge at an angle (still rising) instead of turning flat and ending blunt."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/stone brazier",
+      "name": "돌 화로(꺼짐, 버들항 돌 받침 화로) (stone brazier)",
+      "kind": "other",
+      "pixelSha256": "f6817fb811ed76e11b5e5b1fa2b94df0416f8b1e8d4c1f4a930140c59adb622d",
+      "verdict": "PASS",
+      "reasons": [
+        "Reads at 1x (mock-gate, dais x4, pair x1) as a stone brazier holding a cold coal/ash heap with a couple of embers; the bollard/post misread of the approved cold version is gone.",
+        "Heap rows 6-9 rise above the bowl rim, lit top-left (d0c4b6 ash highlight at x5-7), warm-black charcoal 2a180b/3a2210/1a0e06 and one bright ember ea8e3f next to a dark one plus dim a84d0a embers, as briefed.",
+        "Pedestal (rows 16-31) is byte-identical to the existing sheet tile and the bowl/pedestal match the lit state in brazier-pair-x8, so the in-place swap will not jump.",
+        "Minor, not blocking: the heap is mostly pale ash; a little more dark charcoal at rows 8-10 (x6-10) would make 'cold coals' read even faster. No stray pixels."
+      ]
+    }
+  ]
+}

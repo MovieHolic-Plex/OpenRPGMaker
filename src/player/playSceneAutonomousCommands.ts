@@ -28,6 +28,8 @@ import {
   playMoveRouteSound,
 } from "@/player/playSceneAutonomousRouteEffects";
 import { nextSessionRandom } from "@/project/session";
+import { expandApproach, turnTowardDir } from "@/player/playSceneApproach";
+import { applyDoorCue, applyPlaceAt, expandEnterVia, expandExitVia } from "@/player/playSceneDoorway";
 
 const DEFAULT_JUMP_DISTANCE = 2;
 
@@ -98,6 +100,12 @@ export function movementDeltaForCommand(
     case "turnRandom":
     case "turnTowardPlayer":
     case "turnAwayFromPlayer":
+    case "approach":
+    case "turnToward":
+    case "exitVia":
+    case "enterVia":
+    case "doorCue":
+    case "placeAt":
     case "setDirectionFix":
     case "setThrough":
     case "setAnimation":
@@ -151,6 +159,37 @@ export function executeInstantCommand(
       if (dir) turnNpc(routeContext, target, dir);
       return true;
     }
+    case "approach": {
+      // 이 순간의 실제 위치로 목적 칸을 고르고, 이 단계 자리에 보통 걸음들 + 대상 쪽 돌기를 끼운다(같은 속도·막힘 처리).
+      const expansion = expandApproach(routeContext.scene, routeContext.eventId, { x: target.view.x, y: target.view.y }, command);
+      const at = target.mover.step - 1;
+      target.mover.moves = [...target.mover.moves.slice(0, at), ...expansion, ...target.mover.moves.slice(at + 1)];
+      target.mover.step = at;
+      return true;
+    }
+    case "turnToward": {
+      const dir = turnTowardDir(routeContext.scene, { x: target.view.x, y: target.view.y }, command);
+      if (dir) turnNpc(routeContext, target, dir);
+      return true;
+    }
+    case "exitVia":
+    case "enterVia": {
+      // 문으로 나가기·들어오기 — approach 처럼 이 자리에 걸음·문 단계를 펼친다(playSceneDoorway).
+      const from = { x: target.view.x, y: target.view.y };
+      const expansion = command.kind === "exitVia"
+        ? expandExitVia(routeContext.scene, routeContext.eventId, from, command)
+        : expandEnterVia(routeContext.scene, routeContext.eventId, from, command);
+      const at = target.mover.step - 1;
+      target.mover.moves = [...target.mover.moves.slice(0, at), ...expansion, ...target.mover.moves.slice(at + 1)];
+      target.mover.step = at;
+      return true;
+    }
+    case "doorCue":
+      applyDoorCue(routeContext.scene, command, (id) => playMoveRouteSound(routeContext.scene, id));
+      return true;
+    case "placeAt":
+      applyPlaceAt(routeContext.scene, routeContext.eventId, target.mover, target.sprite, target.view, command);
+      return true;
     case "setDirectionFix":
       target.mover.directionFix = command.enabled;
       return true;

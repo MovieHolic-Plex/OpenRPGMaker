@@ -16,9 +16,16 @@ export const DIRECTING_GUIDE = `# 연출 지침 (script_cutscene 비트)
    distort{effect:"clear"}, look{target,reset:true}, weather{weather:"none"}. letterbox 는 자동으로 걷힌다.
 4. 카메라는 멈출 때 easing:"easeOut", 무게 있는 이동은 "easeInOut". 일정한 속도(생략)는 기계적으로 보인다.
 5. 인물 대상(target)은 "player", 이 맵 이벤트 id, 또는 이벤트 이름. 맵 칸이면 target 을 비우고 x,y.
+6. 대화는 «곁에서, 마주 보고». 말 걸기 전에 approach{actor,target}(대상 곁 빈 칸까지 길 찾기 + 대상 바라보기),
+   둘이 서로 보게 하려면 faceEachOther{a,b}. 걸음을 moves 로 손으로 늘어놓거나 방향을 "left" 처럼 손으로 고르지 않는다 —
+   누가 비켜 서거나 시작 칸이 달라지면 엉뚱한 칸에서 엉뚱한 데를 본다(2026-10-22 첫사랑). say 는 듣는 인물 쪽으로 저절로 돈다
+   (to 생략 = 주인공). 멀리서 부르는 줄은 say{…,calling:true} 뒤 approach. 2칸보다 멀리서 말하면 경고 scene-talk-far.
 
 ## 장면 레시피
 - 중요한 장면 시작: letterbox{size:12,durationMs:500} → camera{mode:"pan",target:인물,durationMs:900,easing:"easeOut"}.
+- 다가와 말 걸기: say{speaker:"민호",text:"서하 씨!",calling:true} → approach{actor:"민호",target:"player",wait:true} → say{speaker:"민호",…}.
+- 퇴장·등장: exitVia{actor:"민호"}(가장 가까운 문 칸 위까지 걸어가 문 소리와 함께 사라짐 — 그 뒤 switch 로 «떠남» 페이지) · enterVia{actor:"점원",door:"뒷문"}(문 칸에 나타나 한 걸음 들어섬). 걸음을 세어 문 앞에서 지우면 한 칸 앞에서 사라진다.
+- 셋이 모이는 대화: approach{actor:A,target:"player"} → approach{actor:B,target:"player",distance:2} → faceEachOther{a:A,b:B} 로 마무리.
 - 놀람: emote{target,emote:"exclamation"} + moveActor 한 칸 뒤로(jump). 의문은 "question", 침묵은 "ellipsis".
 - 폭발·충돌: parallel[ particles{preset:"explosion",target 또는 x,y}, shake{intensity:6,axis:"both",durationMs:500}, flash{color:"white",durationMs:200} ].
 - 화산 열풍·용암 분출·불길 치솟음: 화면 붉은 tint 만으로는 «열풍이 안 보인다» 로 감점된다(2026-10-16). 최고 연출 순간에 parallel[ particles{preset:"fire",x,y}(용암 둘레 서로 다른 칸 3곳 이상, durationMs:1500) , particles{preset:"smoke",target:"player"}, shake, tint ] 로 솟아오르는 입자를 같은 화면에 함께 보인다.
@@ -79,7 +86,7 @@ export const DIRECTING_GUIDE = `# 연출 지침 (script_cutscene 비트)
 - 적이 쓰러지는 모습 upsert_enemy collapseEffect: 잡몹 "pixelBreak"(FF6 보랏빛 픽셀 분해) 또는 "flash"(하얀 세 번 점멸),
   보스 "bossSink"(떨며 붉게 깜빡이고 땅속으로 가라앉음, 1.8초), 환영·소환수 "instant". 생략 = 기본 소멸.
 - 전투마다 분위기 upsert_troop backdropLayers(최대 4): 동굴 fog, 하늘 성 clouds, 늪 mist, 폭풍 전야 rain, 설원 snow,
-  화산·불타는 성 embers, 밤 stars, 성당 lightRays. 앞 장막은 front:true + opacity 50 이하(숫자가 가려지지 않게).
+  화산·불타는 성 embers, 밤 stars, 성당 lightRays, 수정·마법진 등 중앙 광원 뒤 glow(정지, 청백색 빛무리). 앞 장막은 front:true + opacity 50 이하(숫자가 가려지지 않게).
   backdropAnimation(배경 한 장 흐르기)은 도트 측면 전투(기본)에서 지형 겹 배경에 가려 안 보인다 — 분위기는 backdropLayers 로.
 - 상태가 몸에 보이게 upsert_state battleAura: sleep-zzz(Z) · paralyze-spark(전기) · silence-mute(…) · confuse-stars(별) ·
   charm-heart(하트) · burn-ember(불티) · poison-bubble · freeze-grey · petrify-still · regen-sparkle · dark-fog · berserk-pulse.

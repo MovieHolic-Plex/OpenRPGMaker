@@ -5,6 +5,33 @@
 
 <!-- releases -->
 
+## 0.319.0 — 2026-10-22
+
+### 기능
+
+- **workshop** — people packs shown per person — walking chip at integer 3x, bust at integer 1/4, real char-gen card sample (#3237) (`c579805`)
+
+## 0.318.0 — 2026-10-22
+
+### 기능
+
+- **fallen-star** — act 1 rooms (VQA r28) on current main — Beodeul woodland from main (#3234) (`0c62bc8`)
+
+### 수정
+
+- **runtime** — hide the current-map HUD chip when the map has no name (#3233) (`ee61771`)
+
+## 0.317.1 — 2026-10-22
+
+### 수정
+
+- **beodeul** — forest canopy and trees separate from the lawn (darker, hue-shifted leaf ramps) (#3229) (`e5c1f3d`)
+- **battle** — battle runtime audio, tactics lifetime/clock, snapshot ownership and smoke fixture (#2586) (#3228) (`5c3769b`)
+
+### 기타
+
+- Runtime: talk across counters + natural NPC walk speed (#3231) (`6195e4d`)
+
 ## 0.317.0 — 2026-10-22
 
 ### 기능

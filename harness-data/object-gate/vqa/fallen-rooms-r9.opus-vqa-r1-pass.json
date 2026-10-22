@@ -1,0 +1,34 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-21",
+  "batch": "fallen-rooms-r9",
+  "commit": "3e825135ac",
+  "overall": "PASS",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 (src/harnesses/_core/object_gate) computed on the reviewed PNGs: great_brazier.png a5f32047...e87533 (32x32), great_brazier_lit.png f4d87011...fd63a1da (32x48). Lit rows 16-47 vs cold rows 0-31 diffed by palette mapping: pedestal, neck and gold band identical; only the bowl contents and rim row 12 (one ember-orange px at x16) differ, so the lit swap keeps the same silhouette.",
+    "1_topdown_view": "Both pieces are correct 3/4 top-down. The bowl rim is an ellipse (rows 5-13 cold) with the ash/flame bed seen as a plane from above. The gold band curves down one row at the front centre (row 14 x12-20 grey, row 15 gold), which follows the front of the ellipse. The pedestal shows a light top face (rows 20-23) over a bricked front face (rows 24-29). No side or iso faces.",
+    "2_style_fit": "Uses the v5 stone greys (outline 29,34,40 / 34,40,46, ramps 73->96->130->165->200) and the same gold ramp as v5 gold trim. The flame ramp (168,77,10 -> 224,106,16 -> 234,142,63 -> 244,179,112 -> 255,216,160 -> 255,248,176) matches the lava brazier and wall-torch flames. The alpha-58 contact shadow is the sheet's own convention (2594 px at alpha 58 on the sheet). Minor: the neck underside right half (rows 16-18, x20-26) is a flat 14,18,22 block, darker than the outline colour. It reads as a cast shadow at 1x, so it is not blocking.",
+    "3_readability_1x": "In mock-gate-mixed 1x/x3 and the dais x4 close-up, both read as braziers on stone plinths. Cold reads as a dark dish of charcoal with two ember pixels (rows 9-10, x15 and x21). Lit reads as a full bonfire rising about 1 tile. Cold vs lit is obvious at 1x, which fixes the failure of the old 1-tile tripod.",
+    "4_placement": "The pedestal base sits on the bottom row of the 2x1 footprint (row 30 outline) with a contact shadow, so the piece is grounded on the dais. The bowl (2 tiles wide) overhangs the pedestal symmetrically and does not clip the dais edge or the neighbouring stelae in the mocks. Flames stay inside the 32x48 frame.",
+    "5_silhouette_outline": "Clean silhouettes and no orphan stubs. Lit sparks at (20,3), (9,5) and (25,8) are intentional single-pixel embers, as on v5 brazier 4212. Only nit: the shadow pixel at x4 rows 28-29 sits on the lit side, but it is alpha-58 and invisible at 1x."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/great brazier",
+      "name": "큰 꺼진 화로(2칸, 돌 받침) (great brazier)",
+      "kind": "other",
+      "pixelSha256": "a5f320472ceeb1031073c9b907a9dc28bf52a7ea45298c62ec157acd63e87533",
+      "verdict": "PASS",
+      "reasons": "Correct 3/4 view: elliptical rim, ash bed seen as a plane from above, and a gold band that curves down at the front. The plinth shows a top face and a bricked front face. Palette and outline match v5 stone and gold. At 1x on the light dais it reads as a cold brazier: a dark charcoal dish with two dying embers. It is grounded with a contact shadow and has no stray pixels. Optional polish only: break up the flat near-black neck block (rows 16-18, x20-26) with one 34,40,46 row, and add a few more grey ash pixels (F/G) in the bed (rows 8-11) so it reads less like a hole. Not required."
+    },
+    {
+      "id": "atlas_biome_interior/plus/great brazier lit",
+      "name": "큰 켜진 화로(2칸, 돌 받침, 불꽃) (great brazier lit)",
+      "kind": "other",
+      "pixelSha256": "f4d870119eb923a2af34d26a64f5ed1c1dd2304cce07aa27ebb287a6fd63a1da",
+      "verdict": "PASS",
+      "reasons": "Lower 32px match the cold piece: same pedestal, neck and band, with the rim and bed swapped to glowing coals, so the swap does not jump. The flame uses the v5 lava-brazier ramp with a hot core (255,248,176 at rows 22-23) and two main tongues plus sparks. It reads as a lit brazier at 1x and is clearly distinct from the cold state in the mixed mock. It fits the 32x48 frame, is grounded, and has a clean outline. Same optional neck-shadow nit as the cold piece."
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+ "schema": "bdg-vqa/1",
+ "judge": "claude-opus-5-5",
+ "date": "2026-10-21",
+ "batch": "fallen-observatory-r3",
+ "commit": "d0e710679b",
+ "overall": "PASS",
+ "criteriaNotes": {
+  "0_hash_check": "Recomputed with object_gate.pixel_sha256 at d0e710679b. telescope eb0068b5…, dome slit b22ba20d…, chart 9609d1a2… and lens bench 17f0d7ef… are unchanged from r2. The platform is e70dec81…, matching queue fallen-observatory-r3, and the platform embedded in the comparison page hashes to the same value.",
+  "1_topdown_view": "Platform r3 is in 3/4 view, not a flat front elevation. A 10-row plank top face (rows ~11-20) is visible as a horizontal plane behind the front lip. The brass railing runs along the back edge, with side rails down the left and right edges of the deck, and the gaps between rail bars are transparent. Below that is a deck-front lip and a 24-row leg frame: corner posts, a centre post, and X braces over a dark under-deck shade. A ladder leans on the front edge with its foot forward on the floor, and there is a floor shadow. The other four pieces are unchanged and keep their r2 3/4 verdicts.",
+  "2_style_fit": "The platform now uses only v5 wood and brass ramps with #411e05 dark-brown outline. It has no near-black and no greys: the r2 #a3acb5 nail flecks are gone. The ladder rails and rungs are outlined in dark brown like the v5 library ladder, so they hold against the planks. The chart's grey 'text' squiggle row is still a minor carry-over note.",
+  "3_readability_1x": "At 1x in the room, the platform reads as a raised wooden observing loft or scaffold with a railing and a ladder, standing right beside the telescope's eyepiece. It no longer reads as a crate or crib. The X-braced dark frame reads as open space under the deck, not a planked crate side. Residual risk: out of context it could read as a loft bed, but next to the telescope its function is clear. The telescope remains an impressive centrepiece. The slit, chart and bench read as in r2.",
+  "4_placement": "Whole room at 1x re-checked. The platform's 2-tile frame stands on the floor with a shadow, and only the railing rises above. The eyepiece sits level with the deck and rail on the platform's right, about 10px away. The slit sits inside the wall rows above and ahead of the objective, with the cap rail unbroken. Both charts sit on the wall rows. The bench sits against the right wall. Nothing floats or clips. The band around the rooms is dark ceiling, and the rocky surround beyond it is pre-existing map context that is unchanged from 'before'.",
+  "5_silhouette_outline": "The platform is one connected 1303px component with no stubs or flecks. The railing has an outer dark outline with open gaps. Footprint: the art is 32×48, a 2×2 standing base (deck plus frame, rows ~11-47) with a railing overhang above, which is consistent with a 2×2 footprint in the brief."
+ },
+ "items": [
+  {
+   "id": "great_telescope",
+   "name": "큰 굴절 망원경(5×6 — 천문대 중심) (great telescope)",
+   "kind": "other",
+   "pixelSha256": "eb0068b5020f14e93ba9dad5d4295caa37efda2ec4552fb4b718a016b7e3ac9d",
+   "verdict": "PASS",
+   "reasons": "Pixels unchanged from r2 (hash recomputed and matching), r2 PASS stands. All r1 defects are fixed: no stray diagonal line, no black or orange stub, no near-black eyepiece blob (now a brass rim with a dark-brown lens), and the wood tube is clean. 3/4 reading is strong: pier cap ellipse, floor ellipse with gold ring and shadow, tilted objective lens. It is one clean component with v5-matching brass and wood ramps. At 1x it is a convincing, impressive centrepiece."
+  },
+  {
+   "id": "dome_slit",
+   "name": "관측 틈(별 하늘 창, 2칸) (dome slit)",
+   "kind": "wall_mounted",
+   "pixelSha256": "b22ba20ddd8eb3e16607d596c8f3e193a3083344418f0b63c725775b317ce190",
+   "verdict": "PASS",
+   "reasons": "Pixels unchanged from r2 (hash recomputed and matching), r2 PASS stands. It now fits the two wall-face rows, with the cap rail unbroken above and the stone sill at the floor edge. The checker dither is replaced by stepped blue bands. It has a stone frame, banded wooden shutters, a moon and stars. It sits above and ahead of the telescope objective. Note: it reads as a shuttered night window rather than a narrow dome slit, but it is clearly the observing opening."
+  },
+  {
+   "id": "celestial_chart",
+   "name": "별자리 원판 도표(2칸) (celestial chart)",
+   "kind": "wall_mounted",
+   "pixelSha256": "9609d1a28b0d588a16bce8fc4bdc6500cebfd0784480440f031a5237c94aea90",
+   "verdict": "PASS",
+   "reasons": "Pixels unchanged from r2 (hash recomputed and matching), r2 PASS stands. Unchanged from r1 (same sha). A hanging parchment scroll with dark-brown rods and a blue star disc with a constellation. It reads as a star chart at 1x, both placements sit on the wall rows, and the palette matches v5. Minor: the grey 1px 'text' squiggles on the bottom row are slightly noisy."
+  },
+  {
+   "id": "lens_bench",
+   "name": "렌즈 작업대(3×2) (lens bench)",
+   "kind": "low_furniture",
+   "pixelSha256": "17f0d7ef4a7094e3f69db90a5104270a6b9e2506ecb4db139904c1ee53802e16",
+   "verdict": "PASS",
+   "reasons": "Pixels unchanged from r2 (hash recomputed and matching), r2 PASS stands. Unchanged from r1 (same sha), and it passes again on a fresh check. Clean 3/4: light top face with framed lens, lens pieces and a standing magnifier, over a darker two-drawer front with legs and shadow. Outline and wood ramp match the v5 alchemy and chart tables. The brief now says 3×2, which matches the 48×32 art. Minor: the right-hand tools (gold rod, grey clamp, red bar) are still muddy at 1x."
+  },
+  {
+   "id": "observing_platform",
+   "name": "관측 발판(난간 두른 높은 단과 사다리, 2×2) (observing platform)",
+   "kind": "other",
+   "pixelSha256": "e70dec8175c067f5b6354756ba9cf35395a2cf988dfd2b171935f171bb85439d",
+   "verdict": "PASS",
+   "reasons": "Every r2 defect is fixed. Deck height: the plank top now sits on a 24-row leg frame with corner and centre posts and X braces, so it reads as clearly raised, not knee-high. Rail: a posted brass railing on the back and both sides, outlined in dark brown, with transparent gaps. Ladder: rails and rungs are outlined in v5 dark brown and contrast with the planks and frame. Grey nails: none left (no grey pixels in the piece). Footprint: a 2×2 standing base plus a railing overhang. Explicit 3/4 verdict: PASS. The top face is a visible plank plane behind the front lip, the frame is the front face, and there is no side or iso face; it is not a flat elevation. At 1x it reads as an observing loft with a ladder next to the eyepiece, not a crate or crib. Minor: out of context it could pass for a loft bed."
+  }
+ ]
+}

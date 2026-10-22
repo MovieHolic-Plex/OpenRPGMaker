@@ -1070,7 +1070,7 @@ export interface BattleBackdropAnimation {
 
 export interface BattleBackdropLayer {
   /** 그림 없이 그리는 프리셋. resourceId 가 있으면 그림이 먼저다. */
-  preset?: "fog" | "clouds" | "mist" | "rain" | "snow" | "embers" | "stars" | "lightRays";
+  preset?: "fog" | "clouds" | "mist" | "rain" | "snow" | "embers" | "stars" | "lightRays" | "glow";
   /** 바둑판으로 깔 그림(투명 PNG 권장). */
   resourceId?: string;
   /** true = 배틀러·이펙트 앞(덤불·안개 장막). 생략 = 배경 바로 위. */
@@ -1715,6 +1715,8 @@ export interface TitleScreenSettings {
   /** 로고 아래 부제(최대 60자). */
   logoSubtitle?: string;
   menuStyle?: TitleMenuStyle;
+  /** 메뉴 글자 크기(논리 px, 10..24). 생략 = 스킨 기본(11px). 480 폭 화면에서 11px 은 작다(폴른 스타 가혹 검수 r12). */
+  menuFontPx?: number;
   /** Optional title-screen BGM (music resource id). Empty/undefined = silent. */
   musicResourceId?: string;
   layout: TitleScreenLayout;
@@ -2195,6 +2197,17 @@ export interface CompanionConfig {
    * 따라온다(크로노 트리거식). 새 게임·불러오기·changeParty 마다 다시 맞춘다. 생략 = 기존 동작.
    */
   fromParty?: boolean;
+  /**
+   * true 면 궤적에 설 칸이 없는 동료를 숨기지 않고, 주인공에게서 걸어서 닿는 가장 가까운 빈 칸
+   * (주인공·다른 동료·NPC 와 몸 길이만큼 떨어진 칸)에 세운다. 좁은 방에서 순간이동·장면 진입 직후
+   * 동료가 사라지거나 한 칸에 겹쳐 보이던 문제(폴른 스타 가혹 검수 r8·r9). 생략 = 기존 동작(숨김).
+   */
+  spreadWhenBlocked?: boolean;
+  /**
+   * true 면 이벤트(대화·장면)가 도는 동안 둘째 동료부터 앞 동료 **옆**(몸 길이만큼 떨어진 칸)에 선다 — 한 줄 세로 대열 대신
+   * ㄴ자 두 줄 대형. 장면이 끝나고 주인공이 걸으면 궤적 자리로 돌아온다(폴른 스타 가혹 검수 r11). 생략 = 기존 동작.
+   */
+  fanOutInScenes?: boolean;
 }
 
 export interface MonsterCareConfig {

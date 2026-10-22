@@ -1,0 +1,26 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "fallen-rooms-r3",
+ "title": "Fallen Star 방 — 꺼진 화로·높은 관측 틈·별 렌즈 (r3)",
+ "createdAt": "2026-10-21T12:02:20.328Z",
+ "items": [
+  {
+   "sha": "ee2cf6ab01d0077d1d9a681b825f6bd687b5904141ec3a4615f199c88e9a2acf",
+   "kind": "other",
+   "label": "atlas_biome_interior/plus/cold brazier",
+   "source": "/tmp/fsrooms/gate-r3/cold_brazier.png"
+  },
+  {
+   "sha": "1c650c07725ec7bd5e0e30530e513cb0368c6cd1824828997380f0998676c0cf",
+   "kind": "wall_mounted",
+   "label": "atlas_biome_interior/plus/dome slit tall",
+   "source": "/tmp/fsrooms/gate-r3/dome_slit_tall.png"
+  },
+  {
+   "sha": "ac7606b32e8ba4bd70bb39d7e3b089d558a398e70f293cdb2e1eb9e4d644ebbc",
+   "kind": "other",
+   "label": "atlas_biome_interior/plus/star lens",
+   "source": "/tmp/fsrooms/gate-r3/star_lens.png"
+  }
+ ]
+}

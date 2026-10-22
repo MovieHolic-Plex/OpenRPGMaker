@@ -1,0 +1,374 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f4d870119eb923a2af34d26a64f5ed1c1dd2304cce07aa27ebb287a6fd63a1da",
+ "width": 32,
+ "height": 48,
+ "kind": "other",
+ "name": "큰 켜진 화로(2칸, 돌 받침, 불꽃) (great brazier lit)",
+ "label": "atlas_biome_interior/plus/great brazier lit",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (2/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 32,
+  "nearBlackEdge": 0.03,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flames",
+      "rows": "3-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl mouth with gold rim, fire visible inside",
+      "rows": "28-31",
+      "evidence": "d",
+      "front_edge_line_row": 30,
+      "eave_shadow_rows": "32-34"
+     },
+     {
+      "part": "stone pedestal",
+      "rows": "35-46",
+      "evidence": "none",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": "35-37"
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The flames (rows 3-28) are decor. The main body is a bowl on a stone pedestal. The bowl's open mouth sits at rows 28-31: a dark back rim at 28-29, a gold front rim line at 30-31, and fire contents visible inside (evidence d). Under the rim the bowl tapers from width 25 at row 31 to 17 at row 34, then the pedestal widens to 22 for rows 36-45. The pedestal front face runs rows 35-46 with a light band at 38-39 and dark shadow above it at 35-37. The pedestal's own top is hidden by the bowl and reads only as that band, so the top surface rests mainly on the bowl mouth with its contents. The result is a marginal three-quarter reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The flames are the strongest part, with roughly 5 steps from dark orange through yellow to a white core, and the tongues read as separate clumps. The bowl and stone base are shallower. The bowl is a dark rim with only 2-3 steps, and the grey brick base has about 3 tones with little per-stone shading or grain. 78% of the dark edge pixels are near-neutral. That fits the black-grey outline around the bowl and base, a sticker look, not the tinted outlines of the references (hedge 0%, cheese 1%, well 33%). Measured density is acceptable: 14 visible tones per tile against 9-20 for the references, and 0% near-flat. Total distinct colours are only 23, against 38-40 for the richer references (well, cheese stall). The base and bowl therefore carry fewer steps than Beodeul's 5-6 per material. The neutral outline and shallow stone and bowl ramps make this fall short of the reference bar, even though the flame is good.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 24125
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flame",
+      "rows": "3-28",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brazier bowl mouth with gray rim and dark opening",
+      "rows": "26-29",
+      "evidence": "b",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "28"
+     },
+     {
+      "part": "gold bowl band and tapering bowl front",
+      "rows": "30-34",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base top",
+      "rows": "35-37",
+      "evidence": "a",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base front face",
+      "rows": "38-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The flame (rows 3-28) is decor. The bowl widens from 22 to 29 px (rows 19-24) and narrows again to 17 px (rows 29-34), so it has an elliptical, bowl-like silhouette. Its mouth spans rows 26-29, with a gray rim, a dark opening at row 28 and fire inside it. Below it are a gold band (rows 30-33) and the tapering bowl front. The stone base has a lighter top strip (rows 35-37) ending in a light edge line (rows 38-39), then a darker block front face (rows 40-45) with an outline at row 46. The top surfaces are partly hidden by the bowl, but a top and a front face of 3+ rows are both present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The flames are well made, with about 4-5 steps from deep orange through orange and yellow to a pale core, and no flat fills (0% near-flat). The rest is shallower than the references. The stone base reads as a few grey block tones with dark joint lines, not stones shaded one by one. The bowl and its rim are a dark, nearly flat band with little grain. Only 23 distinct colours in total, against 38-40 for the well and the stall, and 14 visible tones per tile against 17-20 for those two. The dark edge pixels are 78% near-neutral, which leans toward a neutral black/grey sticker outline on the bowl and base, not a tinted dark tone of the adjacent material. Overall it sits slightly below the well and stall in shading depth and texture, and since the rule is to fail when in doubt, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 23350
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flame",
+      "rows": "3-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brazier bowl mouth with gold front rim and fire inside",
+      "rows": "26-31",
+      "evidence": "b",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "32-34"
+     },
+     {
+      "part": "stone pedestal",
+      "rows": "35-45",
+      "evidence": "a",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": "35-37"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 12,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The flame (rows 3-28) is decor, drawn on top of the bowl. The bowl is the main body. Its width profile widens to 29 at rows 24-28 and narrows again through 27, 25, 23, 21 and 17 by row 34. Its mouth shows a gray back rim at rows 26-28 and a gold front rim at rows 30-31, with dark shadow below at rows 32-34, so it reads as an open ellipse with fire inside. The stone pedestal at rows 35-46 is 22 wide and has a light edge band at rows 38-39 above a stone face at rows 40-45. That gives a front face of about 12 rows below the bowl, so the object reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The flame is well built, with yellow, orange and red tongues and 14 visible tones per tile. That is within the reference range of 9-20, and near-flat coverage is 0%. The weak points are the bowl and the stone base. The bowl rim and plate are outlined in a neutral near-black. 78% of the dark edge pixels are near-neutral, while the tinted references (hedge 0%, cheese 1%) lean toward their material colour. The 2-tile stone base reads as a grey block with only about 3-4 tones and little stone-by-stone shading, mortar texture or per-stone highlight, unlike the well's individually shaded stones. The candidate has 23 distinct colours in total, against 38-40 for the richer references (well, cheese stall). The flame is rich, but the bowl and base have the shallow sticker-outline look and fewer shading steps than the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 21670
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "flame",
+      "rows": "3-27",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bowl mouth with fire contents and gold rim",
+      "rows": "26-31",
+      "evidence": "d",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": "32-33"
+     },
+     {
+      "part": "stone pedestal top",
+      "rows": "35-37",
+      "evidence": "a",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The flame (rows 3-27) is decor sitting on the bowl. The bowl mouth (rows 26-31) holds fire, so the contents are visible (d). A gold front rim line sits at rows 30-31, with dark bowl shadow below it. The silhouette widens to 29 at rows 24-28, then narrows to 17 at row 34, which reads as a bowl body. Under the bowl is a stone pedestal with a darker top at rows 35-37. A light front-edge band at rows 38-39 sits above the front face at rows 40-45. The bowl underside and pedestal give about 15 rows of front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The flame is the richest part. It has about 5 steps (pale yellow core, yellow, orange, red, dark red) and ragged, clumped tongues with tinted edges, not a black sticker line. The stone base has about 3-4 grey tones with block seams and per-block highlights, and the iron bowl is dark with a lighter rim. The 78% neutral dark edges mostly sit on the grey stone and iron, where a neutral dark is the material's own shade, and the lamp-crook reference is 100% neutral in the same way. The flame edges are warm-tinted, so I call the outline mixed, not near_black. Measured facts: 14 visible tones per tile against 9-20 for the references with tiles, and 0% near-flat coverage, so there are no flat fills. Total distinct colours (23) is below the richest references (38-40), and the base is a little plain, which keeps texture at 'some'. Overall it holds up next to the well and the stall at the same scale without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 27249
+  }
+ ],
+ "decidedAt": "2026-10-21T14:41:13.507Z",
+ "cells": {
+  "16": [
+   "55e5d22fc1af6489",
+   "7edbe3e8b6470c3f",
+   "84ca3fa6571fd10c",
+   "cd3500535dbd5f8e",
+   "d8f91dbf2d9072f5",
+   "fd26a7646e16d605"
+  ],
+  "24": [
+   "23af93b382c7e0d5",
+   "42a5401c3759441b",
+   "49aa25372c082c39",
+   "72e1ed6abd8a5b10",
+   "7bd141889459008c",
+   "ab7565c5959a7259",
+   "abf495c8db8dfa0a",
+   "ba7bb6b542501ef6",
+   "c0059013897f07eb",
+   "da06463b6a920180",
+   "da20ba3bdfd1329d",
+   "e5acf5a03e30325a"
+  ],
+  "32": [
+   "22a04f5f558a7dbe",
+   "253d043af23714da",
+   "3bb53d27bd4a75a2",
+   "b381a7f5ea0b1bd4"
+  ],
+  "48": [
+   "22a788eb7ff5f113",
+   "49d6f0bd7d5aedbe",
+   "5a19402348888359"
+  ]
+ }
+}

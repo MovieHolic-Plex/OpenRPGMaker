@@ -1,5 +1,7 @@
 /* 공방 큰 화면(물건·가구, 생성기 가져오기) — 편집기 토큰만 쓴다. 그림 칸 바탕(#967a5a)은 칩셋 바닥색과 비슷하게 둔 판정용 바탕이다. */
 .workshop-host { position: fixed; inset: 0; z-index: 900; display: grid; place-items: center; background: var(--bg-scrim, rgb(15 23 42 / 0.4)); }
+/* 생성기 창(캐릭터·지형·묶음 가져오기)은 뒤 화면을 더 가라앉힌다 — 반쯤 가려진 왼쪽 카드 글이 창과 겹쳐 보였다(2026-10-22 적대 검수). */
+.workshop-host.is-gen { background: rgb(15 23 42 / 0.58); backdrop-filter: blur(2px); }
 .workshop-loading { padding: var(--space-3) var(--space-4); border-radius: var(--radius-m); background: var(--bg-raised); color: var(--text-1); font-size: 14px; box-shadow: var(--shadow-pop); }
 .workshop { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; width: min(1320px, 96vw); height: min(880px, 94vh); background: var(--bg-raised); color: var(--text-1); border: 1px solid var(--border-default); border-radius: var(--radius-l, 14px); box-shadow: var(--shadow-modal); overflow: hidden; font-size: 13px; }
 
@@ -122,7 +124,7 @@
 .workshop-gen-step label { display: grid; gap: var(--space-1); font-size: 12px; font-weight: var(--font-weight-medium, 500); color: var(--text-2); }
 .workshop-gen-grow { flex: 1 1 260px; }
 .workshop-gen-grow input { width: 100%; }
-.workshop .workshop-gen-request { width: 100%; font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; background: var(--bg-inset); }
+.workshop .workshop-gen-request { width: 100%; font-family: inherit; font-size: 12px; line-height: 1.5; color: var(--text-2); background: var(--bg-inset); resize: none; }
 .workshop .workshop-drop { display: grid; justify-items: center; gap: var(--space-1); width: 100%; min-height: 128px; padding: var(--space-4); border: 2px dashed var(--border-strong); border-radius: var(--radius-m); background: var(--bg-inset); text-align: center; color: var(--text-2); }
 .workshop .workshop-drop strong { color: var(--text-1); font-size: 14px; font-weight: var(--font-weight-semibold, 600); }
 .workshop .workshop-drop:hover, .workshop .workshop-drop.is-over { border-color: var(--accent); background: var(--accent-muted); color: var(--accent-active); }
@@ -202,3 +204,28 @@
   color: var(--text-muted, #6b6f80);
   word-break: keep-all;
 }
+
+/* 사람 묶음 미리 보기(castPreview.ts) — 사람 하나에 한 칸. 칩·얼굴은 캔버스에 정수 배율로 그린다(번지지 않게).
+   열 수(--cast-columns)는 줄마다 같은 수가 되게 스크립트가 정한다(7명 = 4+3). */
+.workshop-cast { --cast-columns: 6; --cast-card: 112px; --cast-gap: 12px; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--cast-gap);
+  /* 한 줄에 --cast-columns 명만 들어가게 안쪽 여백으로 폭을 묶는다 — 마지막 줄도 가운데로 모인다. */
+  padding: 16px max(12px, calc((100% - var(--cast-columns) * var(--cast-card) - (var(--cast-columns) - 1) * var(--cast-gap)) / 2)); border-radius: var(--radius-m); background: #23262e; }
+.workshop-cast > .workshop-cast-member { width: var(--cast-card); box-sizing: border-box; }
+.workshop-cast.has-portraits { padding: 16px 12px; }
+.workshop-cast.has-portraits > .workshop-cast-member { width: auto; }
+.workshop-cast-member { margin: 0; display: grid; gap: 7px; align-content: start; min-width: 0; padding: 8px 8px 10px; border-radius: var(--radius-m); background: #2d3039; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 6%); }
+.workshop-cast-art { display: flex; align-items: stretch; justify-content: center; gap: 10px; }
+.workshop-cast-stage { display: grid; place-items: end center; width: 96px; min-height: 112px; padding-bottom: 7px; box-sizing: border-box; border-radius: var(--radius-s);
+  background: radial-gradient(ellipse 34px 7px at 50% calc(100% - 10px), rgb(28 22 14 / 30%), transparent 70%), linear-gradient(180deg, #f3eee4 0%, #e6dccb 100%); }
+.workshop-cast-chip, .workshop-cast-face, .workshop-cast-bust { display: block; image-rendering: pixelated; }
+.workshop-cast-portrait { display: grid; place-items: end center; border-radius: var(--radius-s); overflow: hidden; line-height: 0; }
+.workshop-cast-portrait.is-bust { min-width: 120px; background: linear-gradient(180deg, #3a3e4a 0%, #2a2d36 100%); box-shadow: inset 0 0 0 1px rgb(214 190 140 / 55%); }
+.workshop-cast-portrait.is-face { place-items: center; padding: 2px; align-self: center; background: #d6be8c; box-shadow: 0 0 0 2px #26201a; }
+.workshop-cast-member figcaption { display: grid; gap: 1px; min-width: 0; color: #eef0f5; font-size: 12px; text-align: center; }
+.workshop-cast-member figcaption strong { overflow-wrap: anywhere; font-weight: 600; line-height: 1.3; }
+.workshop-cast-member figcaption span { color: #a9afbd; font-size: 11px; }
+.workshop-cast-files { margin: 6px 0 0; }
+.workshop-gen-source { font-size: 11.5px; color: var(--text-3); }
+.workshop-gen-source summary { cursor: pointer; width: max-content; }
+.workshop-gen-source p { margin: 4px 0 0; line-height: 1.45; }
+.workshop-gen-request-label { display: grid; gap: 4px; font-size: 12px; color: var(--text-2); }

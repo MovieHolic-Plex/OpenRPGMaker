@@ -42,12 +42,12 @@ function openGen(generator: "char-gen" | "tile-gen" | "object-gen"): void {
   });
 }
 
-/** 견본 띠 — 그 생성기가 실제로 만든 도트를 2배 정수 배율로 보여 준다(견본이 있는 카드만). */
+/** 견본 띠 — 그 생성기가 실제로 만든 도트를 정수 배율(기본 2배, sample.scale)로 보여 준다(견본이 있는 카드만). */
 function sampleBand(sample: NonNullable<WorkshopGenerator["sample"]>): HTMLElement {
   return el("div", {
     class: "left-workshop-art",
     children: [
-      el("img", { attrs: { src: sample.src, alt: sample.alt, width: String(sample.width * 2), height: String(sample.height * 2), loading: "lazy", decoding: "async" } }),
+      el("img", { attrs: { src: sample.src, alt: sample.alt, width: String(sample.width * (sample.scale ?? 2)), height: String(sample.height * (sample.scale ?? 2)), loading: "lazy", decoding: "async" } }),
       ...(sample.caption ? [el("span", { class: "left-workshop-art-caption", text: sample.caption })] : []),
     ],
   });

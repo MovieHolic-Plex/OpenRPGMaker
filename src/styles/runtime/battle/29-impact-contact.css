@@ -44,7 +44,7 @@
 .battle-scene[data-battle-motion="retro"].battle-hit-stop .battle-motion-knockback :is(.battle-enemy-image, .battle-actor-image, .battle-actor-sprite, .battle-skin-actor-image),
 .battle-scene[data-battle-motion="retro"] .battle-enemy.retro-skill-struck .battle-enemy-image,
 .battle-scene[data-battle-motion="retro"] .battle-actor.retro-skill-struck .battle-actor-sprite {
-  filter: brightness(2.1) saturate(0.55) !important;
+  filter: brightness(1.5) saturate(0.75) contrast(0.95) !important;
 }
 .battle-scene[data-battle-motion="retro"].battle-hit-stop-critical .battle-motion-knockback :is(.battle-enemy-image, .battle-actor-image, .battle-actor-sprite, .battle-skin-actor-image) {
   filter: brightness(2.4) saturate(0.4) drop-shadow(0 0 6px rgba(255, 214, 120, 0.9)) !important;
@@ -261,8 +261,31 @@
   animation: bf-defeat-ash 900ms ease-out both;
 }
 @keyframes bf-defeat-ash {
-  to { filter: grayscale(0.85) brightness(0.55) sepia(0.25); }
+  to { filter: grayscale(0.85) brightness(0.32) sepia(0.25); }
 }
+/* 전멸 결과에서는 적 머리 위 이름·체력 판을 걷는다 — 식은 무대 뒤로 「…/380」이 비쳐 보였다(폴른 스타 가혹 검수 r7). */
+.battle-scene[data-battle-motion="retro"][data-battle-director-step="result"]:has(.battle-result-panel[data-battle-result="defeat"]) .battle-enemy .battle-enemy-chrome {
+  display: none !important;
+}
+.battle-scene[data-battle-motion="retro"] .battle-result-panel .battle-result-subtitle {
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.4;
+  opacity: 0.85;
+  margin: 2px 0 6px;
+}
+/* 전멸 창 읽는 순서 = 「패배」 → 한 줄 → 확인. 격자 칸 이름이 없는 부제가 확인 단추 아래로 밀려났다(폴른 스타 fallen-late). */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-result-panel[data-battle-result="defeat"] {
+  align-items: center;
+  display: flex !important;
+  flex-direction: column;
+}
+.battle-scene[data-battle-motion="retro"] .battle-result-panel[data-battle-result="defeat"] > .battle-result-crest { order: 0; }
+.battle-scene[data-battle-motion="retro"] .battle-result-panel[data-battle-result="defeat"] > .battle-result-title { order: 1; }
+.battle-scene[data-battle-motion="retro"] .battle-result-panel[data-battle-result="defeat"] > .battle-result-subtitle { order: 2; }
+.battle-scene[data-battle-motion="retro"] .battle-result-panel[data-battle-result="defeat"] > .battle-result-cards { order: 3; }
+.battle-scene[data-battle-motion="retro"] .battle-result-panel[data-battle-result="defeat"] > .battle-result-confirm { order: 4; }
+.battle-scene[data-battle-motion="retro"] .battle-result-panel[data-battle-result="defeat"] > .battle-result-next-prompt { order: 5; }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-result-panel[data-battle-result="defeat"]:not(.battle-result-pixel) {
   animation: bf-defeat-window 700ms cubic-bezier(0.3, 0.6, 0.3, 1) 300ms both;
 }

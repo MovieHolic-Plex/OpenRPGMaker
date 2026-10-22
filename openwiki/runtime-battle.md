@@ -104,6 +104,16 @@ r3:
 - 검증: `bun scripts/qa/poke-depth/weather.probe.mts`(엔진 7항목), `scripts/qa/runtime/poke-depth-weather.capture.mjs`(출하 플레이어, MODE=sun|sand, LEGACY=1 이 「전」). 단위 `test/battleWeather.test.ts`(미실행).
 - 남은 것: 맵·트루프·이벤트로 거는 날씨(필드 날씨→전투 시작 날씨), 날씨를 켜는 특성, 날씨 의존 기술(번개·솔라빔 등), 날씨 연장 도구(지닌 도구), DB 편집기 기술 폼의 날씨 칸, 예측(`battlePredict`) 반영, 날씨 그림 효과(비·모래 입자)는 없다. rm2k3 모델은 지원하지 않는다.
 
+## 사람 적 = 걷기 칩 전투 시트 (2026-10-20)
+
+적 레코드의 `monsterResourceId` 에 아군과 같은 `charset-battler-*`(144×384, 48px 셀 3열×8행 24포즈)를 적으면 인간 보스가 필드 모습 그대로 전투에 선다.
+
+- **그리기**: `battleFieldDom.enemyButton` 이 아군과 같은 `actorBattleImage`(.battle-actor-sprite, 인라인 96px 칸·배경 시트)를 만들고 `.battle-enemy-image` 도 단다 — HP·이름·조준·히트스톱·쓰러짐 규칙이 그대로 문다. 노드에 `data-charset-enemy` + `data-battler-extended` 를 달아 `applyBattlerPose` 의 확장 칸(EXTENDED_POSE_FRAME)·시전 시트 경로를 아군과 공유한다. 업로드 그림이 같은 id 를 덮으면 이 경로를 타지 않는다(통짜 그림).
+- **크기·방향**: 스킨의 적 상자(56×64·104×128)는 따르지 않고 아군과 같은 96px 칸이다. 시트는 왼쪽을 보고 그렸으므로 적 진영(왼쪽)에서 `transform: scaleX(-1)` 로 뒤집는다(27-retro-motion.css 끝 절). `battleScalePercent` 는 그 칸 그림을 발밑 기준 `scale(var(--battle-enemy-scale))` 로 키운다(2026-10-21, 폴른 스타 보스 발렌 200%) — 칸 상자·맞춤(`battleEnemyFit`)·이름/HP 판 위치는 바뀌지 않는다. 상태 배지 높이는 대기 칸의 위쪽 빈 줄(`--battle-sprite-top-pad`)로 맞춘다.
+- **도트 측면 동작**(`battleRetroMotion`): 근접이면 `retroEnemyReach`(사람 적은 몸 앞 34/48·발 44/48 거울 비율)로 대상 아군 앞까지 걷고(`retro-walk-up`, 이동량 양수) 걷기 → 젖힘 → 휘두름 → 착탄 `attack` → `retro-return` 으로 돌아간다. 근접이 아닌 적 기술은 반 걸음 나와 `castTypeForSkill` 시전 칸(cast 시트)을 쓴다. `retro-thrust` 의 찌르기 방향은 `--retro-face`(사람 적 -1). 맞으면 `retroDamage` → hit/guard_hit 칸을 히트스톱 동안 붙들고 `retroHitRelease` 가 푼다(`ownsRetroHurtFrame`), 빗나가면 evade, 격파면 dying → dead 칸 뒤 420ms 지연 줄무늬 소멸(저작 `collapseEffect` 가 있으면 그것).
+- **적에게 안 쓰는 칸**: 승리(victory·victory_b, 적이 이기면 전투가 끝난다), 아이템(item), 방어(defend·guard_hit — 적 노드에는 방어 상태 `data-battler-defending` 을 싣지 않는다), 빈사 weak·front·revive(아군과 같은 이유로 안 씀). 직업 스킬 재생기의 좌우 반전(`retro-skill-flip`)은 아군 전용이다.
+- **확인**: `scripts/qa/runtime/charset-enemy.scenario.mjs`(폴른 스타 v9 사본에서 발렌을 `charset-battler-actor1-4` 로, 대기·대상 선택·맞음·걷기·휘두름·쓰러짐 6장 + `.omo/charset-enemy/*.json` 수치). netns 안에서 `npm run qa:runtime -- --scenario charset-enemy`.
+
 ## 필드 적 접촉 전투 진형 (2026-10-14)
 
 접촉 트리거(eventTouch·touch·playerTouch) 이벤트의 `battleProcessing` 은 `playCommandBattle` 의 `contactEventFormation` 으로
@@ -2126,6 +2136,14 @@ an empty gauge rather than reading editor start-state or guessing XP from Lv.
 Owned64×64 trainer fronts and waist-up player back are rendered at exact2× (128×128) using the existing bottom platform anchors. Explicit legacy64×96 custom portraits remain supported as128×192; that transport is not Emerald native. The native image dimensions are validated after decode as well as authored metadata. Original rawtrainer paintings are normalized by the reviewed portrait lifecycle; source art and pixels are not painted by the converter. Standalone game QA verifies actual trainer visibility, handoff, Continue and victory; colored-rectangle dimension fixtures are separate layout checks.
 
 Native trainer assets must also survive `webExportAssets.collectProjectStrings`: implicit owned trainer pictures accept64×64 and explicitly authored legacy64×96, matching the renderer. The former96-only collector silently pruned all17native pictures while leaving a functioning monster-battle fallback. `emerald-native-dependencies.mjs` guards the actual collector against this regression, and `emerald-native-battle.mjs` verifies the actual compiled export with a genuine previous Continue slot, native trainer handoff, victory reward and level-up. Private party/teleport preparation is recorded; it does not claim a natural whole-campaign playthrough.
+
+### 경험치 바닥 — 시작 레벨 > 1·중간 합류 (2026-10-21)
+
+- 새 게임의 `session.actorExperience` 는 시작 파티를 0 으로 채우고, 중간에 합류한 동료는 값이 없다. 그런데 레벨 업은
+  배우 곡선의 누적 문턱(`totalExpForLevel(actor.expCurve, level+1)`)과 비교하므로, `initialLevel` 이 6 인 파티는 보스를 잡아도
+  0+보상이 Lv7 문턱에 못 미쳐 레벨이 오르지 않았고 결과 창은 「다음 Lv까지」를 엉뚱하게 셌다(폴른 스타 가혹 검수).
+- 이제 `battleRewardsToSession` 은 적립 전에 현재 레벨의 바닥(`totalExpForLevel(normalizeActorRecord(record).expCurve, level)`)까지 올린 뒤
+  보상을 더하고, 결과 파티 카드(`battleDirectorDom.resultPartyCard`)도 같은 바닥에서 센다. 레벨 1 로 시작하는 게임은 바닥이 0 이라 그대로다.
 
 ### 도망 불가 안내와 경험치 분배 expSplitAlive (2026-10-16)
 

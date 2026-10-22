@@ -105,6 +105,8 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
     if (executeInstantCommand(routeContext, commandTarget, command)) {
       // 경로 안 `wait` 는 빈도 간격만큼 쉰다. 방향 바꾸기 같은 즉시 명령은 쉬지 않는다.
       if (routeForced && command.kind === "wait") mover.routeWaitMs = mover.moveIntervalMs;
+      // 문 단계(doorCue)는 문 프레임 사이를 잠깐 쉰다 — 소리와 문 그림이 걸음과 겹치지 않게.
+      else if (routeForced && command.kind === "doorCue") mover.routeWaitMs = Math.max(0, Math.min(1000, command.ms ?? 0));
       mover.carryMs = 0;
       completeRouteCommand(mover);
       continue;

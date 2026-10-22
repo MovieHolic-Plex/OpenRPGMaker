@@ -712,11 +712,11 @@
   {
    "id": "d4-fri-c8",
    "label": "금요일 역/회식 선택",
-   "note": "WED_TALK 10: ev_fl_fri after presentation choice, c8 역으로 vs 회식",
+   "note": "WED_TALK 10: ev_fl_fri after presentation choice, c8 역으로 vs 회식 — r2: 발표자 (8,16)·(9,16), 듣는 셋 (8..10,18)",
    "mapId": "fl_office_fri",
    "x": 8,
-   "y": 18,
-   "facing": "left",
+   "y": 16,
+   "facing": "down",
    "switches": {},
    "variables": {
     "var_fl_stage": 10,
@@ -978,11 +978,11 @@
   {
    "id": "end-c",
    "label": "엔딩 C (회식)",
-   "note": "END_C: fl_office_fri c8 option 1 (회식에 간다)",
+   "note": "END_C: fl_office_fri c8 option 1 (회식에 간다) — r2: 발표자 (8,16)·(9,16), 듣는 셋 (8..10,18)",
    "mapId": "fl_office_fri",
    "x": 8,
-   "y": 18,
-   "facing": "left",
+   "y": 16,
+   "facing": "down",
    "switches": {},
    "variables": {
     "var_fl_stage": 10,

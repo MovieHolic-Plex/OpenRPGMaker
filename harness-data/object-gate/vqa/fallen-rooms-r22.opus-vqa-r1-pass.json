@@ -1,0 +1,31 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r22",
+  "commit": "2d0dd28dbc",
+  "overall": "PASS",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 of /tmp/fsrooms/gate-r22/dome_vault.png computed with object_gate.pixel_sha256 = ee3c91486d2655f948250973c6873139f11e062a6ddb0a03259339c0e504b929; 480x128 RGBA, alpha strictly 0/255 (33400 opaque, 28040 transparent), 25 colours.",
+    "1_topdown_view": "Reads as the inside of a dome seen from the room: drum band above the stepped wall tops, a continuous curved cornice ring that follows the stepped round plan, courses darkening upward, four ribs springing from the cornice and converging toward the crown, slit on the centre meridian. No side/iso faces; geometry agrees with the stepped 3/4 room plan below. Crown is cut flat by the 8-row band (x~150..330, y0) - acceptable, the timber top band reads as the crown ring/upper rim.",
+    "2_style_fit": "Stone ramps sit in the v5 grey-mauve family, dark plum outline (28,20,24) as in the sheet, 3-4 step shading, ribs with lit top-left edge and brass collars matching v5 brass. 45 isolated outline-colour pits in the dome stone; v5 itself carries ~3000 such single-pixel pits, so this is consistent texture, not noise. Drum bricks are slightly bluer than the mauve wall-face bricks below - reads as a separate lighter drum course, tolerable.",
+    "3_readability_1x": "In mock-obs.png at 1x the great hall now clearly reads as a round domed observatory hall (silhouette, ribs, cornice ring, star slit), matching ref-op3-observatory.png; no longer boxy.",
+    "4_placement": "Cornice meets the stepped wall tops with no gaps or floating; rib feet land on the cornice with dark base pixels; transparent wall-face cells and top corners let existing art/ceiling show. Slit: dome sky and the dome-slit-tall piece share width; the tall piece's brass sill sits at cornice height and reads as the ring passing the slit. Jamb material changes from thin stone (dome) to wooden posts (tall piece) - minor, acceptable.",
+    "5_silhouette_outline": "Outer silhouette is a clean stepped arc on transparent; no stray pixels outside the dome. Minor: tiny 1px mortar stubs where drum bricks compress at the far ends (x0..5 and x474..479, y118..127) and the inner/outer ribs merge tangentially into the top band leaving a 1-2px stone wedge (x~128..160 and mirror x~320..352, y2..18). Not visible at 1x."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/dome vault",
+      "name": "천문대 둥근 지붕(큰 방 천장 띠 전체, 30×8) (dome vault)",
+      "kind": "wall_mounted",
+      "pixelSha256": "ee3c91486d2655f948250973c6873139f11e062a6ddb0a03259339c0e504b929",
+      "verdict": "PASS",
+      "reasons": [
+        "Reads at 1x as the interior of a round dome over the stepped round hall, consistent with the 3/4 room plan and the opening illustration.",
+        "Palette, plum outline, shading steps and brass/timber ramps match v5; pit texture density is below the sheet's own norm.",
+        "Cornice meets the stepped wall tops and the slit piece without gaps; transparent cells are correct.",
+        "Optional polish (not blocking): open the 1-2px stone wedge where inner and outer ribs merge near the crown (x~128..160, y2..18 and mirror) into a single clean join under one collar; clean the 1px mortar stubs at the drum ends (x0..5 / x474..479, y118..127); optionally carry a 1px stone jamb down into the top of the dome-slit-tall piece so the slit material does not switch from stone to wood at the cornice."
+      ]
+    }
+  ]
+}

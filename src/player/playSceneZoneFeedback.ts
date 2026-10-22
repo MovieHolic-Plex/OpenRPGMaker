@@ -196,7 +196,7 @@ function renderFeedback(
   setLine(elements.banner, view.banner);
   setLine(elements.toast, view.toast);
   setLine(elements.objective, view.objective);
-  setLine(elements.prompt, view.prompt);
+  setPromptLine(elements.prompt, view.prompt);
   const hasContent = Boolean(view.banner || view.toast || view.objective || view.prompt);
   if (view.suppressed || !hasContent) {
     elements.root.remove();
@@ -206,6 +206,19 @@ function renderFeedback(
   for (const effect of effects) {
     if (effect.kind === "checkpointChime") host.dispatchEvent(new Event(CHECKPOINT_EVENT, { bubbles: true }));
   }
+}
+
+/**
+ * 「Z 조사」 같은 상호작용 안내는 처음 보일 때만 또렷하고 몇 초 뒤 옅어진다(zoneFeedback.css 의 zone-prompt-settle).
+ * 같은 이벤트 앞에 서 있는 내내 화면 아래에 남아 시각 소음이 됐다(폴른 스타 가혹 검수 r3~r5). 글이 바뀌면 다시 또렷해진다.
+ */
+function setPromptLine(element: HTMLElement, message: string | null): void {
+  const changed = element.textContent !== (message ?? "") || element.hidden !== (message === null);
+  setLine(element, message);
+  if (!changed || message === null) return;
+  element.style.animation = "none";
+  void element.offsetWidth;
+  element.style.animation = "";
 }
 
 function setLine(element: HTMLElement, message: string | null): void {
@@ -244,7 +257,29 @@ function facingPrompt(scene: ZoneFeedbackScene): string | null {
   const events = scene.activeRuntimeEvents("action");
   const target = events.find((event) => footprintContains(event.x, event.y, event.footprint, targetX, targetY))
     ?? events.find((event) => footprintContains(event.x, event.y, event.footprint, scene.tileX, scene.tileY));
-  return promptForEvent(target);
+  const label = promptForEvent(target);
+  return rememberPrompt(scene.session, label && target ? `${(scene.session as { currentMapId?: string }).currentMapId ?? ""}:${target.event.id}:${target.pageId ?? ""}:${label}` : null) ? label : null;
+}
+
+/**
+ * 같은 대상(맵·이벤트·페이지·문구) 앞의 안내는 세션에 한 번만 보인다 — 한 번 등을 돌리면 다음부터는 띄우지 않는다.
+ * 후퇴 뒤 보스 앞·금고 문 앞에 「Z 전투」가 다시 떠 「상시 표시」로 읽혔다(폴른 스타 가혹 검수 r6·r7).
+ * 페이지가 바뀌면(새 상태) 키가 달라져 다시 한 번 보인다.
+ */
+const PROMPT_SHOW_MS = 4000;
+const promptMemory = new WeakMap<object, { readonly seen: Set<string>; current: string | null; show: boolean; since: number }>();
+function rememberPrompt(session: object, key: string | null): boolean {
+  let memory = promptMemory.get(session);
+  if (!memory) { memory = { seen: new Set(), current: null, show: false, since: 0 }; promptMemory.set(session, memory); }
+  const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+  if (memory.current !== key) {
+    memory.current = key;
+    memory.show = key !== null && !memory.seen.has(key);
+    memory.since = now;
+    if (key !== null) memory.seen.add(key);
+  }
+  // 같은 대상 앞에 계속 서 있어도 처음 몇 초만 — 대화·전투가 끝나 창이 다시 비어도 또 띄우지 않는다(r9 「재도전 뒤 Z 전투」).
+  return memory.show && now - memory.since < PROMPT_SHOW_MS;
 }
 
 function promptForEvent(event: RuntimeEventView | undefined): string | null {

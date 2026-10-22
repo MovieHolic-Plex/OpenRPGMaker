@@ -66,7 +66,7 @@ function applyBattleLookArgs(current: BattleLookSettings | undefined, raw: unkno
   oneOf("command", BATTLE_LOOK_COMMAND_IDS);
   oneOf("field", BATTLE_LOOK_FIELD_IDS);
   oneOf("window", BATTLE_LOOK_WINDOW_IDS);
-  for (const key of ["turnOrder", "enemyNames", "letterbox", "grade"] as const) {
+  for (const key of ["turnOrder", "enemyNames", "enemyHp", "letterbox", "grade"] as const) {
     if (look[key] === undefined) continue;
     if (typeof look[key] !== "boolean") throw new ToolError(`battle.look.${key} 는 true/false 여야 합니다.`, { code: "invalid-args" });
     patch[key] = look[key];
@@ -250,6 +250,7 @@ const setProjectSettings: ToolDefinition = {
               accent: { type: "string", description: "강조색 #rrggbb(커서·선택·테두리). 빈 문자열 = 창 꾸밈 기본" },
               turnOrder: { type: "boolean", description: "왼쪽 위 차례 순서 줄" },
               enemyNames: { type: "boolean", description: "적 발밑 이름표" },
+              enemyHp: { type: "boolean", description: "적 머리 위 체력 막대(보스전에 남은 체력을 보여 줄 때)" },
               letterbox: { type: "boolean", description: "위아래 영화 띠" },
               light: { type: "integer", enum: [0, 1, 2], description: "빛내림 0 끔 · 1 약하게 · 2 강하게" },
               dust: { type: "integer", enum: [0, 1, 2], description: "떠다니는 먼지 0~2" },

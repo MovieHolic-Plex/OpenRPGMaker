@@ -1,0 +1,18 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "bd93f1da9bab4fa56a7c7c383aea5f1cd101c3748c3bb3bedb775534e1e40d12",
+ "profileHash": "4d8774b517f41638",
+ "kind": "flat",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T13:20:47.378Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 질감 없음 (1/4)"
+ ],
+ "note": "묶음 허용: Fallen Star 방 — 별 봉인 돌뚜껑(닫힘·열림) (r7) — fallen-rooms-r7 (star seal · star seal open) — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/fallen-rooms-",
+ "sig": "f07436f2689f37c8f30e0d076527aee593223763f4764e35dde59eff9b90f9a5"
+}

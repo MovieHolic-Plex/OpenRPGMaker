@@ -1,0 +1,34 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r31",
+  "commit": "2d0dd28dbc",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed with src/harnesses/_core/object_gate: unlit 4a367a22278412232e6d65a27fa88d2e1f424c811dac40b3e6bff8f80ad0cb97, lit 5034ac6dbcd5f68bb2cdb8f5729fc9c4995ed80f3e75ef1a49b01c52fc9e038c. Lit rows 29-47 are pixel-identical to unlit rows 13-31 (foot, column, bowl underside), so the swap does not jump.",
+    "1_topdown_view": "Both pieces are front + top-face only, no side/iso faces. Bowl top is an ellipse, foot shows a 2-row top face over a 4-row front. Pass on view, but the bowl is so shallow it reads as a plate/dish rather than a bowl.",
+    "2_style_fit": "Palette is the harbour slate ramp of tile 7513 (only 4 non-7513 colours in unlit, all sheet ramps). Foot and column are pure horizontal flat bands with no stone texture; the fuel is drawn with a regular 4-px notch pattern; charcoal at the right of the bowl is a speckle of 6 colours.",
+    "3_readability_1x": "Unlit at 1x in mock-gate: two equal-length parallel red-brown bars in a flat dish on a thin stand read as a grill with sausages/steaks or a cake stand, not as 'a brazier laid with logs to light'. Lit at 1x reads clearly as a burning brazier.",
+    "4_placement": "Grounded: foot at the bottom row with an alpha-70 shadow, no floating or clipping; on the dais in mock-gate all four sit properly. Shadow is asymmetric (1 px left at x5 row 30, 2 px right at x26-27).",
+    "5_silhouette_outline": "Bowl rim edge is inconsistent: left outline is 2 px thick (x0-1, unlit rows 10-11 / lit 26-27) with a notch '0d00' at x0-3 row 12 / 28; right side has an interior dark column at x29 rows 10-11 with a 1-px blue strip outside it at x30. Lit: flame base covers the left rim corner (x2-3, row 22-23) while the right rim corner pixel (27,23) and back-rim '2220' (x25-28,row 24) remain, making the top rim asymmetric."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/great stone brazier",
+      "name": "큰 돌 화로(꺼짐, 2칸, 버들항 돌) (great stone brazier)",
+      "kind": "other",
+      "pixelSha256": "4a367a22278412232e6d65a27fa88d2e1f424c811dac40b3e6bff8f80ad0cb97",
+      "verdict": "FAIL",
+      "reasons": "FAIL on readability and silhouette. Fixes (coords in the 32x32 PNG): (1) Fuel: the two logs are identical horizontal bars, row 8 x6-17 and row 10 x6-18, with notches every 4 px (dark 109,59,21 at x10/14 row 8 and x9/13/17 row 10). At 1x they read as sausages on a grill. Lay the two logs crossing at an angle instead, e.g. one from about (6,10) rising to (19,7) and one from (11,7) falling to (25,11). Make each 2 px thick: bark 154,84,53 on top, 99,49,11 under, with irregular bark highlights. Give each a clear 2x2 light cut end (208,196,182 centre, 185,171,157 rim) on the exposed end. (2) Charcoal: replace the speckle patch at x18-27 rows 8-12 (mix of 26,14,6 / 30,28,26 / 58,53,48 / 142,131,120 / 185,171,157 / 208,196,182) with calm 2-3 px clumps of 30,28,26 and 58,53,48. Use only 3-4 pale ash pixels, and also show charcoal under the logs on the left (x3-5 rows 8-11), so the whole opening reads as a fuel bed. (3) The bowl is a flat plate: the opening is a 5-row slit (rows 7-12) and the underside rows 13-17 tapers at once. Deepen the bowl wall by 2 rows below the lip and widen the column from inner x12-19 to about x10-21, so the piece reads as a fire bowl, not a dish on a thin stem. (4) Rim outline: make the left edge a single 1-px outline (x0-1 rows 10-11 is 2 px thick) and remove the '0d00' notch at x0-3 row 12. On the right, remove the inner dark column at x29 rows 10-11 and the outer blue strip at x30, so both lip ends mirror each other. (5) Foot rows 25-29 are flat horizontal bands. Add a lit front edge on the top face and 2-3 chip/mortar pixels on the front face, as in the slate stone of 7513. (6) Make the shadow symmetric: row 30 has 1 px at x5 but 2 px at x26-27."
+    },
+    {
+      "id": "atlas_biome_interior/plus/great stone brazier lit",
+      "name": "큰 돌 화로(켜짐, 2칸, 버들항 돌, 불꽃) (great stone brazier lit)",
+      "kind": "other",
+      "pixelSha256": "5034ac6dbcd5f68bb2cdb8f5729fc9c4995ed80f3e75ef1a49b01c52fc9e038c",
+      "verdict": "FAIL",
+      "reasons": "Reads clearly as a burning brazier at 1x, and foot/column/bowl underside (rows 29-47) match the unlit piece exactly. It still fails: it carries the same bowl defects, and it must be re-derived from the corrected unlit bowl so the swap stays stable. Fixes (coords in the 32x48 PNG): (1) Apply the unlit rim fixes: the 2-px left outline at x0-1 rows 26-27, the notch at x0-3 row 28, and the inner dark column at x29 rows 26-27 with the blue strip at x30. Also apply the deeper bowl and wider column (both must stay identical to the unlit). (2) The flame base at rows 22-23 starts at x2, over the left rim's outer corner, which erases the top-left rim outline. On the right the rim corner (27,23) and back-rim '2220' (x25-28, row 24) remain, so the top rim is asymmetric and (27,23) looks like a stray dark pixel beside the flame. Either keep both rim corners (start the flame at x4) or cover both. (3) Re-seat the coal bed (rows 24-28) inside the corrected opening, so glowing coals do not sit on the light front lip pixels. Keep the approved flame tongues and the embers unchanged."
+    }
+  ]
+}

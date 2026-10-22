@@ -8,6 +8,7 @@
 import "@/styles/database/workshop/queue.css";
 import { clearChildren, el } from "@/util/dom";
 import { toast } from "@/util/toast";
+import { castThumbDataUrl, packCast } from "../castPreview";
 import { gridDataUrl } from "../pixels";
 import { armWorkshopStamp } from "../workshopBake";
 import { jobStateLabel, pauseParts, SOURCE_LABELS, type JobState } from "./jobModel";
@@ -23,6 +24,8 @@ let unsubscribe: (() => void) | null = null;
 let ticker: ReturnType<typeof setInterval> | null = null;
 let lastSignature = "";
 const packThumbs = new Map<string, string>();
+/** 작은 그림이 사람 묶음(얼굴·앞모습)인 작업 */
+const packCastThumbs = new Set<string>();
 const busy = new Set<string>();
 
 /** 편집기 셸에 작업 줄 단추를 붙인다(여러 번 불러도 하나). */
@@ -231,7 +234,8 @@ function thumb(view: JobView): HTMLElement {
   if (job.pack) {
     const url = packThumbs.get(job.id);
     if (!url) void loadPackThumb(job.id);
-    return el("div", { class: "wq-thumb", children: url ? [el("img", { attrs: { src: url, alt: "" } })] : [] });
+    // 사람 묶음은 밝은 바탕(물건용 갈색 바닥이 아니라) — 얼굴이나 앞모습 머리~가슴을 정수 배율로.
+    return el("div", { class: "wq-thumb" + (packCastThumbs.has(job.id) ? " is-cast" : ""), children: url ? [el("img", { attrs: { src: url, alt: "" } })] : [] });
   }
   const run = round?.runs.find((candidate) => candidate.status === "done" && candidate.grid) ?? round?.runs.find((candidate) => candidate.grid);
   if (run?.grid && item && session) {
@@ -250,10 +254,18 @@ async function loadPackThumb(jobId: string): Promise<void> {
   const queue = workshopQueue();
   const view = queue.snapshot().jobs.find((candidate) => candidate.job.id === jobId);
   const sha = view?.job.pack?.previewBlob;
-  if (!view || !sha) return;
+  if (!view) return;
   try {
     const pack = await queue.packOf(view.job);
-    const bytes = pack.blobs.get(sha);
+    // 사람 묶음: 시트 통째(288×256)를 52px 로 찌그러뜨리지 않고 첫 사람의 얼굴·앞모습을 쓴다.
+    const castUrl = await castThumbDataUrl(packCast(pack.manifest, pack.blobs)).catch(() => null);
+    if (castUrl) {
+      packCastThumbs.add(jobId);
+      packThumbs.set(jobId, castUrl);
+      render(true);
+      return;
+    }
+    const bytes = sha ? pack.blobs.get(sha) : undefined;
     if (!bytes) return;
     packThumbs.set(jobId, URL.createObjectURL(new Blob([bytes.slice()], { type: "image/png" })));
     render(true);

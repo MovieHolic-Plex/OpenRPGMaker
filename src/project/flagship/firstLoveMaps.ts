@@ -260,7 +260,7 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       // 금요일 발표(VQA r14 M: 발표자 둘이 위아래로 겹쳐 섰다): 발표자 서하·지후는 탁자 동쪽 끝 북쪽 줄(y16)에 나란히 서서
       // 아래를 보고, 본부장·팀장·민호는 남쪽 줄(y19)에 나란히 서서 위를 본다. 아무도 위아래로 붙어 서지 않고, 모두 x≥7 이라 왼쪽 흉상에 가리지 않는다.
       meetingSeat: { x: 8, y: 16 },
-      meetSeats: [{ x: 8, y: 16 }, { x: 9, y: 16 }, { x: 9, y: 19 }, { x: 7, y: 19 }, { x: 8, y: 19 }],
+      meetSeats: [{ x: 8, y: 16 }, { x: 9, y: 16 }, { x: 10, y: 18 }, { x: 8, y: 18 }, { x: 9, y: 18 }],
       whiteboard: nearestFree(project, officeRoom, { x: 23, y: 10 }),
     },
     rooftop: {
