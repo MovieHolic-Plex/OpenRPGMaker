@@ -1,0 +1,42 @@
+[
+ {
+  "id": "car-burnt",
+  "label": "wasteland_ruins/car-burnt",
+  "kind": "other",
+  "name": "burnt-out car wreck lying east-west seen from above: charred roof and hood, empty window frames, scorched rusty body on flat tyres",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/car-burnt.png",
+  "sha": "d4ae04151d43735ac67e8cd2a057872d1f38ff55817e0a961f75a6c532db30ef",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/d4/d4ae04151d43735ac67e8cd2a057872d1f38ff55817e0a961f75a6c532db30ef.json",
+  "verdict": "refer",
+  "reasons": [
+   "3/4: 독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ {
+  "id": "watchtower",
+  "label": "wasteland_ruins/watchtower",
+  "kind": "structure",
+  "name": "scrap scaffold watchtower seen from above: sloped corrugated tin roof with a tarp patch and rust, lit plank lookout floor with sandbag parapet, braced wooden legs, ladder and concrete footings",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/watchtower.png",
+  "sha": "eb2cf4fbcc21fab371046b1f67f2e353459829afbe55b10eb314912acd0f8643",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/eb/eb2cf4fbcc21fab371046b1f67f2e353459829afbe55b10eb314912acd0f8643.json",
+  "verdict": "refer",
+  "reasons": [
+   "3/4: 독립 눈이 「3/4 아님」 11/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ {
+  "id": "asphalt-b",
+  "label": "wasteland_ruins/asphalt-b",
+  "kind": "terrain",
+  "name": "cracked asphalt road tile with a water-filled pothole and weeds, laid among plain asphalt",
+  "png": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_gate/asphalt-b.png",
+  "sha": "e2cda1a8638a77149f07dfcedc6f4a714f33a1045112c5a4b7f05891ff1c0202",
+  "receipt": "/home/main/z-project/rpg-zzu-village-art/harness-data/object-gate/receipts/e2/e2cda1a8638a77149f07dfcedc6f4a714f33a1045112c5a4b7f05891ff1c0202.json",
+  "verdict": "refer",
+  "reasons": [
+   "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+   "화풍: 판정자 fail (2/4)"
+  ]
+ }
+]

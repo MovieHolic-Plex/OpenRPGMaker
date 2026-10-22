@@ -1,0 +1,278 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9450dd21090494452f9e31e5ba553724bab2cf84fece1665c6cdaafe0e0b1b27",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "broken glass shards and a bent rusty metal scrap lying on the ground",
+ "label": "wasteland_ruins/rubble-c",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (1/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 21,
+  "tileColorsP90": 21,
+  "darkV5": 34,
+  "nearBlackEdge": 0.29,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "glass shards and rusty scrap lying flat on the ground",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a scatter of glass shards and a bent rusty scrap seen from above, 16 rows tall and up to 16 px wide. The column scans show only mixed colours (grey-blue glass, rust brown, dark outline, white highlights) with no front-edge line, eave shadow or ellipse. No vertical south face of 3 or more rows is drawn. It reads as a flat decal on the ground, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny prop of about 10x9 source pixels on a flat dark grey backdrop. It is not a 4x3-tile ground patch like the grass and paving references, which fill their whole areas with continuous surface texture. Its 21 visible tones per tile are measured over a very small footprint and do not mean a whole tile carries that much information. The dark edge pixels are tinted (2% neutral), so the outline is not a plain black sticker line. The shards and the rust scrap have only about 3-4 lightness steps each and little grain or dot texture. Most of the intended ground area is empty, so it reads as a small sticker-like object rather than a textured ground surface. Next to the references it looks thinner and much less dense, and a careful artist would not accept it as a ground patch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 12007
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "scattered glass shards and bent rusty scrap lying on the ground",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The sprite is a flat debris cluster seen from above. The silhouette widens from 5 px at row 0 to 16 px by row 3 and stays at 14-16 px through row 13, then narrows to 6 px at row 15. This is an irregular blob with no front-edge line, no eave shadow and no vertical south face. The column scans show mixed shard, rust and dark pixels, not a stacked top band over a front face. It has no front face of 3+ rows, so it reads as a flat decal lying on the ground, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate on the board is a tiny object sprite of roughly 12x10 source pixels, not a 4x3-tile ground patch. It shows a rusty scrap and a few shards on a dark backdrop, with no continuous ground surface, so it can't be compared fairly with the grass and paving references. The numbers look fine: 21 visible tones, 0% near-flat coverage, and only 2% neutral dark edge pixels, so the outlines lean brown/red rather than black. But the small area gives only about 4 shading steps on the metal and glass, against 5-6 on the references. There is no ground base with grass tufts, soil grain or paving stones, which is the main content of a ground patch. The piece reads as a small prop and doesn't deliver the required ground-patch coverage or texture. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13174
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken glass shards and rusty metal scrap scattered on ground",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is an irregular scatter about 16 px wide and 16 rows tall. The column scans show mixed shard and rust colors, with no front-edge line, eave shadow, vertical front face or ellipse. The pieces are seen from above as a flat decal, which matches the flat kind. There is no 3+ row south face, so it reads as a top-down slab, as a flat ground object should."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a single small sprite of about one tile, set on a plain background. It is not the 4x3-tile ground patch the kind calls for. The grass and paving references both fill and tile the whole area with grain and per-stone shading. The candidate has no surrounding ground, so it reads as an isolated sticker-like prop and not a ground surface. The measured facts do not count against it: 21 visible tones per tile is above the references (3 and 7), near-flat coverage is 0%, and only 2% of dark edge pixels are neutral, so the outline is tinted. But the 21 tones sit in a tiny cluster. The metal scrap and glass show only about 4 value steps and little grain, and they sit against a lot of empty background. By eye it is thinner and flatter than the references. It does not work as a ground patch laid beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12032
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "glass shards and bent rusty scrap scattered flat on the ground",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is an irregular scatter 16 px wide that grows from 5 px wide at row 0 to 16 px at rows 3-13, then tapers to 6 px at row 15. It is drawn as a ground decal seen from above. The column scans show only scattered colour patches (rust brown, teal-grey, light glass highlights, dark gaps). They show no front-edge line, no eave shadow, no vertical south face and no stacked volume. This matches a flat decal, so there is no front face of 3 or more rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The references are full ground surfaces: grass with tufts and paving with per-stone shading, each filling whole tiles. The candidate is a tiny sprite, under one tile wide, that shows only a few dark, reddish and pale pixels with no ground surface around it. It does not cover a 4x3 patch, so it is not the same kind of piece. The measured facts do not penalise it: 21 visible tones per tile, 0% near-flat coverage, and only 2% neutral dark edge pixels, so the outline is tinted rather than near-black. But those figures come from a very small, sparse object. By eye it has about 4 ramp steps on the metal and glass, little grain, and no surrounding ground texture such as soil or grass. Next to the references it looks like a sticker-like prop, thinner than the grass and paving. Because the kind mismatches and I am unsure it holds up, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 16526
+  }
+ ],
+ "decidedAt": "2026-10-22T15:35:18.332Z",
+ "cells": {
+  "16": [
+   "4375d8852377b3eb"
+  ],
+  "24": [
+   "0bb663bcfef46977",
+   "0fa3a06180c175fd",
+   "6a6e81f19dc9bc18",
+   "7a99cb231f77b0cd",
+   "8ca4589f1ec8ba45",
+   "c062e8c1c6f67429"
+  ],
+  "32": [
+   "08a6724eab14e94d",
+   "5b467e81010bdaf1",
+   "6c2be86c51a50b8a",
+   "7b7d9cde526e9011",
+   "a9ccd618571db71c",
+   "f3b10d282146b11f"
+  ],
+  "48": [
+   "12659ac2bcc356d5",
+   "42a4c3cbcc0ed913",
+   "43393d413179f0c1",
+   "e896311ac1689c10",
+   "f2e22c81755a484d",
+   "f422040ca23c88e2"
+  ]
+ }
+}

@@ -1,0 +1,21 @@
+{
+  "surface": "dirt",
+  "image": "tiledata/beodeul-yard/_gate/yard_dirt.png",
+  "pixel_sha256": "f77569d7a6f1547d8aad0934150ca856f192b803d93e6e167b0db0c1d60ebfc3",
+  "verdict": "pass",
+  "view34": "pass",
+  "autotile": "pass",
+  "quality": "pass",
+  "material": "pass",
+  "defects": [
+    "Minor, not blocking: /home/main/.cache/yard/vqa-r4/dirt_full8x.png the 'hollow + grey pebble pair' motif recurs three times (8x (550,165)/(530,220), (165,550)/(145,605), (1060,680)/(1050,735)) and the pebble pair repeats at 16px spacing at (840,545)/(970,545); spread out enough not to read as a stamp at 4x.",
+    "Minor: /home/main/.cache/yard/vqa-r4/dirt_neck.png south bank lip notches repeat every 16px along straight runs (8x y~350 and y~990), expected from the single edge tile and not objectionable at 4x."
+  ],
+  "evidence": "r3 edge stamping is fixed: straight edge tiles no longer carry clods/straw/pebbles, so long edges are plain tufted grass rims (N/W/E) and a darker south bank lip. Body is a fine 4-tone red-brown dither with sparse clods lit top-left, straw dashes and shallow hollows distributed irregularly; 16px self-similarity 51/42% vs 42-45% at 4/8px, so no cell lattice. Hole, corners, neck and isolated mound join cleanly. Colour is clearly redder than Beodeul sand and sits next to the stone house in compare-3x at chipset quality.",
+  "crops": [
+    "/home/main/.cache/yard/vqa-r4/dirt_full8x.png",
+    "/home/main/.cache/yard/vqa-r4/dirt_a.png",
+    "/home/main/.cache/yard/vqa-r4/dirt_neck.png"
+  ],
+  "reviewer": "claude-opus independent adversarial review 2026-10-23 r4"
+}

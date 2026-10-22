@@ -1,0 +1,321 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "797913ebfa99aadd3e7d356cad01321d7726f0e6ccac7210b651acb44c1c725e",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "small scrap-metal shack: patched corrugated sheet roof seen from above as a sloped top plane, front wall of mixed scrap sheets with a plank door",
+ "label": "wasteland_ruins/shack-a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 19,
+  "darkV5": 36,
+  "nearBlackEdge": 0.1,
+  "opaqueTiles": 9
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "wrong",
+   "borderline",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "corrugated scrap sheet roof (sloped plane with patches)",
+      "rows": "1-23",
+      "evidence": "c",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-26"
+     },
+     {
+      "part": "front wall of mixed scrap sheets with plank door",
+      "rows": "27-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The roof is a large sloped plane in rows 1-23, with corrugation lines and patches. It ends in a light front-edge line at row 23 (L=155 in every scanned column). Rows 24-26 are a dark eave shadow (L about 50, 21, 50). Below that, rows 27-46 are a 20-row vertical front wall with scrap sheets, a plank door and a window. No isometric side face is drawn. The shape is a roof with an eave over a front face, which matches the green cabinet and building references rather than the front-elevation or rim-only ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small building (roof plane, scrap-sheet wall, plank door), so it matches the reference kind, though it is drawn much smaller than the references. Measured facts are at or above the references: 14 visible tones per tile against 12 and 10, 1% near-flat coverage against 0%, and 0% neutral dark edge pixels, so the outlines carry a tint. By eye, the outlines are dark teal-grey beside the sheet metal and dark brown beside the planks, not a uniform black line. The roof shows corrugation stripes with per-sheet highlights. The rust patches and the mixed wall panels give varied tones, and the plank door has its own grain. The ramps are somewhat shallower than Beodeul's 5-6 steps, with about 4 on the metal, but there are no large flat fills. A careful artist would accept it beside the references without it looking like a sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13232
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "patched corrugated sheet roof",
+      "rows": "1-23",
+      "evidence": "c",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-26"
+     },
+     {
+      "part": "scrap-sheet front wall with plank door",
+      "rows": "27-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-23 form a large sloped corrugated roof plane with patches. It ends in a light front-edge line at row 23 (L=155), followed by dark eave shadow in rows 24-26 (L 50, 21, 50). Below it, rows 27-46 (20 rows) show the vertical front wall of scrap sheets with a plank door and a small window. The silhouette widens slightly toward the eave, from 40 to 48 px. The roof top and the front face are both clearly present, so the building reads as 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small shack, but it is the same kind of piece as the references (a roof plane over a front wall with a door). Measured facts are at or above the references: 14 visible tones per 16x16 tile against 12 and 10, 1% near-flat coverage against 0%, and 0% neutral dark edge pixels, so the outline carries a tint. By eye, the roof has corrugation lines with light and dark bands and rust-red patch sheets. The wall mixes several scrap panels, and the plank door has a darker frame and plank separations. The ramps look like about 5 steps on the roof and wall metal, slightly fewer than the roughly 6 on the reference tile roofs. Outlines look like dark tinted tones (brown-grey, rust) rather than a uniform black line, and forms are often separated by value. No large flat fills are visible, and the piece does not read as a sticker next to the references. Its scrap-metal texture is a little less fine-grained than the tile scallops and plaster speckle of the references, hence 'some' rather than 'rich'. It would be accepted next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12830
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "patched corrugated sheet roof",
+      "rows": "1-23",
+      "evidence": "c",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-26"
+     },
+     {
+      "part": "scrap-sheet front wall with plank door and window",
+      "rows": "27-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top 23 rows (1-23) are a sloped roof plane with horizontal sheet ribs and rust and teal patches. It ends in a light front-edge line at row 23 (L=155), followed by dark eave shadow in rows 24-26 (L=50, 21, 50). Below, rows 27-45 are the vertical front wall of scrap sheets with a plank door and a small window, 19 rows tall. The silhouette stays 40-48 px wide throughout, so there is no receding side face. The roof is a large top surface over the front face, which matches the cabinet and fireplace RIGHT references rather than the rim-only WRONG ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The measured facts favour the candidate: 14 visible tones per tile against 12 and 10 for the references, 1% near-flat coverage, and 0% neutral dark edge pixels, so the outlines are tinted rather than black. By eye the candidate is small and the roof reads as a blue-grey corrugated plane with rust-orange patches, which gives some variation. The material ramps are shallower than the references' tile roofs, which carry highlight, light, mid, dark and deep with per-tile scallops. The roof has about 3-4 steps, and the walls are a few flat-ish scrap panels with minimal grain. The plank door is simple. The object is a small shack, so it is not penalised for size. It has no large flat fills, but it also lacks the stone-by-stone shading and the grain of the references. It would look slightly thinner and simpler beside them, so it is not clearly equal in craft. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13027
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "corrugated scrap sheet roof (sloped top plane with patches and a teal patch)",
+      "rows": "1-23",
+      "evidence": "c",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "24-26"
+     },
+     {
+      "part": "front wall of mixed scrap sheets with plank door and small window",
+      "rows": "27-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 23,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-23 are a large sloped corrugated roof plane with horizontal sheet seams and patches. It ends in a light front-edge line at row 23 (L=155 in all three scanned columns). Rows 24-26 are a dark eave shadow (L=50, 21, 50). Below that, rows 27-46 (20 rows) are the vertical front wall with a plank door, a window and scrap sheets. The roof top is far more than a 1-2 row rim, so this is a three-quarter view with a top surface and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 14 visible tones per 16x16 tile against 12 and 10 for the references. Near-flat coverage is 1%, so there are no large flat fills. The dark edge pixels are 0% neutral, so the outline leans toward the material colour (dark brown or rust beside the sheets) and is not a sticker-style black line. By eye, the corrugated roof shows rows of ridges in several blue-grey tones with rust and red-brown patches. The wall mixes differently toned scrap sheets, and the plank door has visible grain. The ramps are a little shallower than the references' 5-6 steps, at about 4 per material, but the piece is small and the patchwork adds variation. It would sit acceptably next to the references without looking flatter or thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14725
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.352Z",
+ "cells": {
+  "16": [
+   "2f578aa97fdb4114",
+   "428228c3c4ebf671",
+   "51196d4cf8300e6f",
+   "73b7ed19367976b8",
+   "b2b257a72c433034",
+   "be0548291c505b8e",
+   "dd46bdfbe253f14f",
+   "e7336bac657a20e9",
+   "faaa5e98801200e0"
+  ],
+  "24": [
+   "5cbe962149a64408",
+   "8cf62a1f9518fb14",
+   "ca4e689e19f6619e",
+   "d2e78233fefd8533"
+  ],
+  "32": [
+   "01c0928cecc2eb22",
+   "02d7c9fe5ec411e4",
+   "0521bd7c75e95395",
+   "13db278fa57ce2cf",
+   "182c95398db66f10",
+   "183b1604c695c0c0",
+   "46c2986bcd838600",
+   "52ba66d6d1c0567f",
+   "5676b0109e95360e",
+   "5a3c5dded86c18ea",
+   "603155eadcd66e80",
+   "6333aa4d61795671",
+   "6db53383b456eb3b",
+   "7f1d6863a127e97c",
+   "8cc7005ce8c61804",
+   "99c2f4f7748060dc",
+   "b3e1efb61dd07b71",
+   "c85ebb7c012e6c86",
+   "d898b25e42d2945e",
+   "e287741459df61b6",
+   "e5ff52c52399c0cf",
+   "f3e77afa0d6ff39c",
+   "fc850fe54e33ec3e",
+   "fc86ccd4d9abfd62"
+  ],
+  "48": [
+   "06e787d56438454b"
+  ]
+ }
+}

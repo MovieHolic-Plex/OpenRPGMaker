@@ -1,0 +1,17 @@
+{
+  "surface": "dirt",
+  "image": "/home/main/z-project/rpg-zzu-village-art/tiledata/beodeul-yard/_gate/yard_dirt.png",
+  "verdict": "fail",
+  "view34": "pass",
+  "autotile": "fail",
+  "quality": "fail",
+  "material": "pass",
+  "defects": [
+    "Every NE convex corner: a light-tan rim pixel spikes 1px up/right out of the edge into the grass (1x approx (123,17), (139,33), (171,49)); same corner-mask bug as cobble/flag.",
+    "Isolated single cell (1x ~(150-158,0-10)): pentagon outline with a notched NW corner and a spike at (155,1); does not read as a round earth patch.",
+    "Wheel 'rut' is short stamped double dashes that stop abruptly at cell boundaries (e.g. 1x ~(65-95,37-40) in the lower right region, and ~(33-45,10-12)); reads as stray scratches, not a continuous rut.",
+    "Decals (straw pair + pebble cluster, footprint dots) are repeated identical stamps; body texture is uniform high-frequency speckle with little large-scale value structure (~75% identical pixels between body cells)."
+  ],
+  "evidence": "Earth body is flat top-down, with a slight dark bank on the south rim and grass tufts on the north rim, so the view reads correctly. The NE convex corners and isolated cell show the same stray rim pixel. The rut decal is broken into disconnected dash pairs and decals visibly repeat. Colour is clearly redder/darker than Beodeul sand path and lacks farmland rows, so the material is distinct.",
+  "reviewer": "claude-opus independent adversarial review 2026-10-23"
+}

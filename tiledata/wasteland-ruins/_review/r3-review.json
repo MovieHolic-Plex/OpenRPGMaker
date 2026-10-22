@@ -1,0 +1,171 @@
+{
+ "boards": [
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-board-asphalt-c.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-board-barricade-v.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-board-car-burnt.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-board-crates.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-board-husk-b.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-board-lamp-broken.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-board-lean-to.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-board-log-seat.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-board-tyres.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-board-van-rust.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-board-watchtower.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-zoom-asphalt-c.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-zoom-barricade-v.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-zoom-car-burnt.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-zoom-crates.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-zoom-husk-b.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-zoom-lamp-broken.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-zoom-lean-to.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-zoom-log-seat.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-zoom-tyres.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-zoom-van-rust.png",
+  "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/r3-zoom-watchtower.png"
+ ],
+ "reviews": [
+  {
+   "id": "asphalt-c",
+   "sha": "e2eb9d239e963937c3b1204e0bfce9e133bf2394775709b35f9524337bdad7fd",
+   "verdict": "fail",
+   "view34": "pass",
+   "quality": "fail",
+   "reasons": [
+    "Reads as ground (terrain exempt from top rule).",
+    "The same weed + yellow lane-dash cluster is stamped 3 times (top-right ~x30-38,y3-12; right ~x40-48,y14-22; bottom-left ~x14-24,y26-34) with identical shape: obvious copy-paste repetition that will tile visibly.",
+    "No 'long crack': the only break is a dark blob/pothole at left (~x2-12,y16-22); asphalt base is uniform salt-and-pepper noise with no wear direction, tyre tracks or patch seams. Flatter and noisier than Beodeul paving, which has structured slabs and edge highlights."
+   ],
+   "fix": "Draw one continuous branching crack (dark core + 1px lighter lip) across the tile, weeds growing only out of the crack at varied sizes, a single worn lane-paint fragment, and break the noise into larger worn/patched areas with 2-3 value bands."
+  },
+  {
+   "id": "husk-b",
+   "sha": "207f83fdce563e43223521bc2510e64aa17e52cf11fe7e51967e975eca72f4b7",
+   "verdict": "fail",
+   "view34": "fail",
+   "quality": "fail",
+   "reasons": [
+    "Overall silhouette reads as a two-storey front elevation: a row of dark window slots at rows 3-8 along the back wall, a cornice band at rows ~36-38, then ground-floor windows and door below. The 'interior floor' (rows ~10-34) has the same grey-speckle value and texture as the walls, so it reads as façade wall, not a floor seen from above.",
+    "Collapsed corner (right middle, ~x52-80,y14-44) is a transparent hole: the floor just ends into void instead of showing rubble/ground, which breaks the 3/4 volume.",
+    "Quality: whole surface is single-scale speckle noise; wall-top rim, floor and front face differ by at most ~1 value step. Beodeul house next to it has clear roof/wall value separation and structured material; this looks flat and dirty rather than ruined."
+   ],
+   "fix": "Make the wall tops a thin light rim (2px) with a darker inner wall face, give the interior floor a distinct darker/warmer value with debris and floor tiles, remove windows from the back-wall strip (or show them as holes in a thin wall top), and fill the collapse with a rubble slope that meets the ground, not transparency."
+  },
+  {
+   "id": "lean-to",
+   "sha": "d04ebaec12d025ffbf58bf96e7b6e2e623fbdb725189f153f3b99ad759dd50bf",
+   "verdict": "fail",
+   "view34": "fail",
+   "quality": "fail",
+   "reasons": [
+    "Tarp (rows ~2-20) has a uniform diamond crease lattice and straight vertical side edges with a horizontal beam across row 0-1, so it reads as a hanging curtain/backdrop in front elevation, not a sloped roof plane seen from above (independent eyes 12/12 agree).",
+    "No visible tarp thickness/front lip or sag, no shadow the roof casts on the opening; poles only appear in the bottom rows.",
+    "Bedroll (lower-left) is a side-view cylinder; crate shows a tan top only 1-2 rows. Tarp uses ~4 teal values with flat fill; texture is a regular pattern rather than cloth folds."
+   ],
+   "fix": "Foreshorten the tarp into a trapezoid sloping toward the viewer (wider and lighter at the back ridge, darker at the front edge), add a 1-2px front hem with sag between poles, drop the top beam, let poles show tops at the front corners, and cast a shadow band inside the opening."
+  },
+  {
+   "id": "barricade-v",
+   "sha": "c3849942e5e0aa32ec56da31a1446d3ef7d2fbdf1d8cd1211d122f693342a14a",
+   "verdict": "fail",
+   "view34": "fail",
+   "quality": "fail",
+   "reasons": [
+    "16x48 column of identical brown rectangles with grey tick marks: reads as a brick wall/ladder or bookshelf, not sandbags. Each 'bag' is a flat brown fill with one grey highlight dash; no bulge, no tied ends, no rounded top-to-front transition.",
+    "Only ~10 colours; the 'bulging top + short front' is not legible (top and front are the same brown). No distinct end face at the bottom (rows 44-47 are just a dark line).",
+    "Dark near-black outline along both long sides reads as a sticker edge."
+   ],
+   "fix": "Draw individual pillow-shaped bags with a lighter rounded top (3-4 rows), a darker front 1-2 rows, staggered courses with gaps, a visible tie/seam, and a proper end stack at the south end showing the bag ends; outline in dark burlap tone, not near-black."
+  },
+  {
+   "id": "car-burnt",
+   "sha": "f29d45aeb57f3b8622bee4a66e4838dfe0843109a05caceb90c155fd619f65ae",
+   "verdict": "fail",
+   "view34": "fail",
+   "quality": "fail",
+   "reasons": [
+    "Body is a single mottled brown mass; the 'roof' (rows ~2-11 centre) has nearly the same value as hood/sides, so no top plane separates from a front/side face.",
+    "Two black vertical bars + two black slots read as a car seen from the front/back (pillars and headlights) or a face, not an east-west car from above. Wheels are dark half-ellipses on the bottom edge, side-view style (independent eyes 12/12 'not 3/4').",
+    "Quality: uniform rust speckle noise everywhere, 19 colours, max luminance 132 - the whole object is murky and lacks highlights; Beodeul props have clear lit tops."
+   ],
+   "fix": "Lay the car out like the modern-city police car reference: long lighter roof slab in the upper half with empty window-frame outlines around it, hood/trunk planes lighter than the side, a 4-6 row darker side band with door seams, and only the tyre bottoms peeking under the side. Add scorched black areas as shapes, not uniform noise."
+  },
+  {
+   "id": "van-rust",
+   "sha": "98f94793575217b688f8bed54207adbb439b8f73531b78bc560d65759218f869",
+   "verdict": "fail",
+   "view34": "fail",
+   "quality": "fail",
+   "reasons": [
+    "Side windows and a cab windshield sit in the upper band (rows ~4-10 and right end), so the upper band is the vehicle's side, not its roof: this is a side profile with a sliding-door outline, not a 3/4 top view (12/12 independent eyes).",
+    "Wheels are round-topped side-view tyres at the bottom edge.",
+    "Rust is scattered orange flecks on a flat grey fill; 'long flat roof top' has no lighter plane or roof edge."
+   ],
+   "fix": "Add a clearly lighter roof slab (6-8 rows) occupying the top, with the windshield as a thin foreshortened strip at the cab end of the roof, then a darker side band below it with door seam; rust as patches with darker edges; tyres only as bottoms under the side."
+  },
+  {
+   "id": "watchtower",
+   "sha": "d3982d389a179ec559d82f636251de8d2b61360f5ce10e921d474d3b78b2e506",
+   "verdict": "fail",
+   "view34": "fail",
+   "quality": "fail",
+   "reasons": [
+    "Leg section (rows ~26-64) is a straight front elevation, which is acceptable, but the platform top (rows 0-17) is illegible: the left object reads as a small person (brown hair rows ~9-12, blue torso rows ~13-16) rather than a sandbag/crate - characters must not be baked into chipset props.",
+    "'Tarp roof corner' (top-right teal block) is a flat rectangle with no thickness or edge, and the plank floor of the platform is only visible as a few rows; sandbag rim is not readable.",
+    "Legs and braces are flat 3-4 tone brown with wide transparent gaps; footings ok. Next to the Beodeul well it looks thin and schematic."
+   ],
+   "fix": "Replace the person-like object with clearly bag-shaped sandbags along the rim, show the platform plank floor as a lighter foreshortened plane with plank lines, give the tarp a lip and shadow, and add value steps/grain to legs and bracing."
+  },
+  {
+   "id": "log-seat",
+   "sha": "0380b2bc7c9307226144878f4da14e32d9d1a70e58be27779727780babf2e629",
+   "verdict": "fail",
+   "view34": "fail",
+   "quality": "fail",
+   "reasons": [
+    "Seat surface (bark top) is a single light row (row ~3); the rest is a side-view cylinder, so the 'seat seen from above' is not given 3-8 rows of top plane.",
+    "Sawn end ring is shown full-face on the west end, which is a side/end view; from a south-above camera it should be a foreshortened ellipse partly hidden.",
+    "Quality: only 11 colours, flat brown fill with sparse dots, near-black bottom outline; Beodeul wood bench beside it has more value steps and grain."
+   ],
+   "fix": "Make the top bark band 4-6 rows with a lighter, slightly worn flat sitting strip, the front band 3-4 rows darker, end cut as a narrow foreshortened ellipse with rings, bark grain lines along the length, and outline in dark wood tone."
+  },
+  {
+   "id": "tyres",
+   "sha": "b31285d8208d7823a13742f2fcf177ae0e608f69862b0feb309096c3c05eeaa6",
+   "verdict": "fail",
+   "view34": "fail",
+   "quality": "fail",
+   "reasons": [
+    "At 16x16 the stack is a dark muddle: max luminance 141, 12 colours, top ring and tread sides differ by ~1 step so the top ellipse barely separates from the stack.",
+    "Weeds in the hole read as a green 'face' (three dots) in the top ring; the leaning tyre is a 1-2px sliver at the right edge.",
+    "Tread bands are flat horizontal stripes with no ribbing; looks like a dark barrel/robot rather than tyres."
+   ],
+   "fix": "Give the top tyre a clearly lighter rubber top surface ring (worn grey) around a dark hole, add tread blocks on the side bands, separate each tyre with a dark gap line, make the leaning tyre show its ellipse, and let weeds spill over the rim irregularly."
+  },
+  {
+   "id": "crates",
+   "sha": "0d5231628f483eebdcfd49c028377d542ad78ef7b341b8c28e6da99946714168",
+   "verdict": "fail",
+   "view34": "fail",
+   "quality": "fail",
+   "reasons": [
+    "Two crates side by side; no 'crate on top' visible as described. Lids occupy only rows ~0-5 and are barely lighter than the fronts (right green crate lid is the same green as its front with a dark slot), so they read as chests/cabinets in front view (8/12 independent eyes).",
+    "Front faces are flat 3-tone fills with two dots as handles; plank seams barely shown; little weathering for 'salvage'.",
+    "Tan highlight strip on left lid is partial and reads as a drawer edge."
+   ],
+   "fix": "Make lids 5-7 rows clearly lighter with plank lines running across and nail dots, darken fronts with slat gaps and corner battens, stack a smaller crate on top so its own lid and front show, add chips/stencil/rust nails for wear."
+  },
+  {
+   "id": "lamp-broken",
+   "sha": "3b7c20cafa179e952700f807088ff353f3c036730fcbd224b9b747156f9a11a3",
+   "verdict": "fail",
+   "view34": "fail",
+   "quality": "fail",
+   "reasons": [
+    "Pole is short and almost straight; the 'bent over to the side' is not readable - at 1x it reads as a desk lamp/mushroom with a teal blob, toy-like.",
+    "Hood oval (rows ~7-11) is a cap plate that overhangs, which satisfies the column cap rule, but the base plate at bottom and the hood are similar size/value so the read of height is lost; 58% of the canvas is empty.",
+    "Few value steps on the rusty pole (2-3), large flat fills on hood and base."
+   ],
+   "fix": "Use the full 32px height: tall pole rising from the base ellipse, sharp kink near the top with the pole bending sideways and down, hood plate hanging angled with a dark underside and broken glass shard; add 4-5 values of rust/metal along the pole."
+  }
+ ]
+}

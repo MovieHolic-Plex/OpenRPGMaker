@@ -1,0 +1,311 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8d107b79ae19d9531928fbd795b70c1157213085db3e090bf68aa5e6dabe8a9c",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "salvaged solar panel tilted on a scrap frame: cracked blue cell grid top surface facing the sky, metal edge and short legs",
+ "label": "wasteland_ruins/solar-scrap",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 45,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tilted solar panel cell grid (main body)",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "scrap frame lower bar and legs",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-9 are a blue cell-grid panel that widens from 26 to 32 px going down, which reads as a tilted top surface. Row 10 is a light metal front-edge line (#8ca29d) in all three scanned columns, followed by a dark shadow row 11 (#516268). Below that, rows 11-13 form the frame's front bar, and rows 14-15 are narrow 8 px legs, so the front face and supports total about 5 rows. The panel is the main body, and its top is clearly visible. This matches the green reference examples, where a top surface ends in an edge line and shadow above the front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The measured facts support the candidate. It has 14 visible tones per 16x16 tile, against 9 for the hedge, 17 for the cheese stall and 20 for the roofed well. Near-flat coverage is 0%, so there are no 5x5 flat fills. Its dark edge pixels are 0% neutral, so the outline is tinted. By eye, the outline is a dark navy that leans toward the blue cells, and the metal frame is separated by value rather than a black line. The blue cell grid is built from about 4-5 lightness steps, with lighter highlight cells, dark grid seams and crack marks that give grain. The frame edge and the short legs have their own highlight and shadow tones. It is slightly shallower than the best references, with fewer steps on the legs and frame. At this scale, though, it sits comfortably next to the hedge and bench in richness and does not read as a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15267
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "tilted solar panel cell grid",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "scrap frame crossbar and short legs",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The blue cell grid fills rows 0-9, a large sky-facing plane. It ends in a light metal edge line at row 10 (#8ca29d) and a darker shadow row at 11. Below that, the frame bar (rows 11-13) and short legs (rows 14-15) form the front face of about 5 rows. The silhouette widens from 26 to 32 px going down, which fits a tilted plane. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small tilted panel. Its blue cell grid has about 4-5 blue steps plus lighter crack highlights, and a metal rim and short legs sit in separate tones. The dark edge pixels are tinted dark blue or brown, and the measured neutral share is 0%, so this is a material-tone outline and not a black sticker line. It measures 14 visible tones per 16x16 tile and 0% near-flat coverage. That is comparable to prop-hedge (9 tones, 0% flat) and below prop-well-roofed (20) and prop-stall-cheese (17), but fair for such a thin object. No 5x5 area is one flat colour, because the cell grid and cracks break up the surface. It would sit acceptably next to the references, although its total of 15 colours is modest and the texture is more regular than the references' grain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12704
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "solar panel cell grid (tilted top plane)",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11"
+     },
+     {
+      "part": "scrap frame lower beam / front strip",
+      "rows": "11-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "short legs",
+      "rows": "14-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The blue cell grid fills rows 0-9. It widens from 26 to 32 px going down, which gives a foreshortened plane seen from above. A light metal edge line at row 10 (#8ca29d) ends it, and a darker shadow band at row 11 follows. Below that are a front frame strip (rows 11-13) and short legs (rows 14-15, 8 px wide), so the front face is about 6 rows. The panel is the main body and has a clear top surface of about 10 rows. The frame beam is only a thin front strip and the legs are small, so I do not count them as major parts missing a top."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small, tilted panel. Its blue cell grid has about 4-5 lightness steps, with crack highlights and a lighter metal rim. The dark edges lean dark blue and carry a tint; the measured near-neutral share is 0%, so this is not a sticker-style black outline. The measured 14 visible tones per tile is above the hedge (9) and close to the cheese stall (17) and well (20), and near-flat coverage is 0%. The bench and lamp references are too thin to give a per-tile count. The short legs are simple, and the total of 15 colours is modest, so the texture is 'some' rather than 'rich'. Next to the bench, hedge and lamp it would not look thinner or flatter, so it passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15301
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "solar panel cell grid (tilted top)",
+      "rows": "0-9",
+      "evidence": "a",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": "11-12"
+     },
+     {
+      "part": "scrap frame apron and short legs",
+      "rows": "11-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-9 are a large blue cell-grid panel. Its silhouette widens from 26 to 32 px, which shows the plane tilted up toward the sky. Row 10 is a light metal front-edge line (#8ca29d), and rows 11-12 are dark eave shadow. Below that, rows 11-15 show the frame apron and the short legs (width 8 at rows 14-15) as the south face, so there is a top surface of about 10 rows over a front face of 5 rows. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small, wide prop. It shows 14 visible tones per full tile, which is above prop-hedge (9) and close to prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so there are no flat fills. The panel top has a cell grid with per-cell highlights and cracks, and the metal edge is lighter. The dark edge pixels are 0% neutral, so the outline is a dark blue-tinted tone of the adjacent material rather than a black sticker line. The weaker points are the 15 total colours against 38-40 for the richer references, and the blue cell ramp, which reads as about 4 steps against Beodeul's 5-6. The legs and frame are also fairly simple. Overall it would sit acceptably beside the references without looking sticker-like or flat.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15114
+  }
+ ],
+ "decidedAt": "2026-10-22T15:35:18.428Z",
+ "cells": {
+  "16": [
+   "3d0198864596f6a6",
+   "46a4aac8e6e74e5b"
+  ],
+  "24": [
+   "057896293a89d77e",
+   "06faceaf95d84226",
+   "1ef9d07e3c9a1fc9",
+   "253f9882a5c010eb",
+   "2feca1d639553605",
+   "5d21f57463f725df",
+   "91ad918dc22d75f7",
+   "971ab47a96a90a87",
+   "da088e8f8d426ee8",
+   "e55fcdf95621147a",
+   "f1bbc8b62f08f80b",
+   "f8e212d0ecd1b646"
+  ],
+  "32": [
+   "282b1ad84f6c2492",
+   "5fff8c2ad4031155"
+  ],
+  "48": [
+   "208db57e5329e1a6",
+   "4ab2c6c2204b1e1c",
+   "56d85f9081798c05",
+   "8d1c0afb6b0b8e1c",
+   "be7837587cd1fa13",
+   "e4b3f7d6204c1e2f"
+  ]
+ }
+}

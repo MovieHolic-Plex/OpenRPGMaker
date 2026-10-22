@@ -1,0 +1,343 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4ab4389b7c8997732f6fb6992f077d3ccf4861e57363c66e8066e480479918e2",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "green weed tufts pushing through the ground",
+ "label": "wasteland_ruins/weeds-a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "left green weed tuft",
+      "rows": "6-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small right green tuft",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "yellow flower on a thin stem",
+      "rows": "2-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 11,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a loose ground decal, not a standing volume. Two leafy green clumps (rows 6-14) are shaded light to dark from the top downward. A yellow flower on a stem sits at rows 2-8. The silhouette is irregular, widening to 12 px at row 10 and narrowing to 1 px at row 14. There is no front-edge line, eave shadow, vertical south face or receding side face. The whole sprite reads as a flat top-down plate, so there is no front face of 3 or more rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny single prop of about 20x20 px (a green leaf tuft with a yellow-orange bud), not a 4x3 ground patch. It is smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. The references are full ground surfaces: grass with mottled tufts and dark-green patches (3 visible tones per tile), and paving with individually shaded stones (7 tones per tile). The candidate has only 11 distinct colours and about 3 green steps, against roughly 5 steps in the references. Its dark edge pixels are tinted dark green rather than neutral, so the outline leans toward dark material tone, but it still reads as a sticker-like outlined sprite. It has no ground coverage, no soil or grass grain, and no tiling surface, so it is far thinner than the references and does not deliver the requested 4x3 ground patch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14194
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "green weed tuft cluster (main, left)",
+      "rows": "6-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small weed tuft (lower right)",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "yellow flower head with stem (upper right)",
+      "rows": "2-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a ground decal of grass tufts with a yellow flower, drawn as irregular leafy clumps with no box-like volume. There is no front-edge line, no eave shadow, no ellipse and no vertical south face. Rows 6-12 are leaf blades in mid-green with a dark outline, and rows 2-8 hold the flower head and stem. It matches the flat kind, so it reads as a flat top-down decal with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 4,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sprite, smaller than one 16x16 tile, with a couple of green leaves and a yellow bud. It is not a 4x3-tile ground patch, so it can't be compared tile for tile with the grass and paving references, which fill whole tiles with tufts, speckle and several greens. The facts show 0 visible tones per tile because the piece is under one tile. Its 11 distinct colours are far below the grass reference's 80. By eye it has about 3 green steps and a dark green, tinted edge (0% neutral dark edge pixels), so it is not a black sticker outline. It shows no ground surface, no grass or soil grain and no tiling area. It reads as a small isolated prop, thinner and flatter than the reference ground, and it does not deliver the requested ground patch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13218
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "leafy weed tuft clump, large left one (rows 6-13) and small right one (rows 9-14)",
+      "rows": "6-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "yellow flower on a thin stem above the tuft",
+      "rows": "2-7",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The tufts are an irregular leaf cluster with light-to-dark shading, widest at rows 9-11 and tapering to a point at rows 13-14. There is no front-edge line, no eave shadow and no ellipse. There is also no vertical south face of 3 or more rows. The yellow flower and its stem at rows 2-7 are decor. The piece reads as a flat ground decal, so I classed it as top_down_slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny single sprite (about 10x10 px) with a yellow bud, on a transparent background. It is not a 4x3-tile ground patch like the grass and paving references, which cover the whole area with grain and tufts. The measured facts show 0 visible tones per tile because the piece is smaller than one tile, so I judged by eye. It has roughly 3 green steps plus a yellow accent, against 5-6 steps in the references. The edges look dark green, a tinted material tone rather than neutral black, but the piece is too small to show real texture or clump variation. It does not deliver a ground surface, so it reads as a sparse sticker-like object beside the references. It fails on kind mismatch and on much lower coverage and density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16187
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "large green leaf tuft (left)",
+      "rows": "5-13",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "small green leaf tuft (lower right)",
+      "rows": "9-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "yellow flower head on a stem",
+      "rows": "2-8",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a small cluster of leaf tufts with a yellow flower, with a dark outline and a lighter highlight on the upper edge of each tuft. It has no front-edge line, no eave shadow, no ellipse and no roof plane. There is also no vertical south face of 3+ rows, only leaf blobs lying on the ground. This fits a flat ground decal rather than a standing volume. The kind is flat, so the lack of a top-plus-front structure is expected, and the nearest category is top_down_slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny single sprite of a weed tuft with a yellow-orange flower, about 11 distinct colours, and smaller than one 16x16 tile. It is not a 4x3-tile ground patch like the grass and paving references, so the per-tile facts (0 tones, 0% flat) cannot be used and I judged by eye. The tuft has roughly 3 green steps with a dark green edge that leans toward the leaf colour, so the outline is tinted rather than near-black. The references are full tiled ground surfaces with about 3 visible tones per tile on grass and 7 on paving, plus grain, tufts and per-stone shading. The candidate has no ground fill, no tiling, and no grain or soil texture, so it does not deliver the ground patch the brief asks for. It is much thinner than the references and fails as a ground surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13517
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.177Z",
+ "cells": {
+  "16": [
+   "d15bc26d37313e87"
+  ],
+  "24": [
+   "077725616bf71949",
+   "1a9cd283f9720bb9",
+   "42885f3e434467e8",
+   "4f801c12dbe320e9",
+   "9f89213d04db6648",
+   "f5b771abc2cb8595"
+  ],
+  "32": [
+   "22c68a459afdcc96",
+   "6fd53f3197f4530b",
+   "c2f1202156f41ad3",
+   "cc26421f37407dbe",
+   "edba3420845e889e",
+   "ee4920b94ad3662c"
+  ],
+  "48": [
+   "0ad4f9e9b559e989",
+   "5e25a63336d4d9c3",
+   "74ad4f11851e794b",
+   "c21af95025878bdc",
+   "e2ff52f4349309cb",
+   "ee65fd83e4ad577f"
+  ]
+ }
+}

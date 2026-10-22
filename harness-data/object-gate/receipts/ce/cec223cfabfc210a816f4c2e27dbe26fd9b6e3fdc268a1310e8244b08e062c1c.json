@@ -1,0 +1,308 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cec223cfabfc210a816f4c2e27dbe26fd9b6e3fdc268a1310e8244b08e062c1c",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "small oily rain puddle on the ground with a rainbow sheen",
+ "label": "wasteland_ruins/puddle",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 질감 없음 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "질감 없음 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 32,
+  "nearBlackEdge": 1,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "puddle oval surface with rainbow sheen",
+      "rows": "5-13",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a flat oval puddle. The width profile (7, 11, 13, 15, 15, 15, 13, 11, 7 over rows 5-13) widens then narrows again, which makes an ellipse seen from above. Rows 5-13 are the whole object. It has no vertical front face, no eave, and no edge line. The multicolored pixels (yellow, teal, blue, white) are sheen details inside the surface. This is a flat ground decal with no front face, which suits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny dark oval, about 20x12 source pixels, which is smaller than one 16x16 tile. It is not the 4x3-tile ground patch the kind calls for, and the references are full ground surfaces (grass, paving). Measured facts give 0 tones per tile because the piece is under one tile, so I judged by eye. It has only 9 distinct colours and shows about 3 steps: a dark rim, a blue-ish fill and a small highlight. The rim looks like a uniform dark outline, a sticker look, with no visible grain, tufts or per-tone variation, unlike the grass (about 3 visible tones with tufts) and the paving (7 tones with stone-by-stone shading). The rainbow sheen is barely visible. It is not a ground surface patch at all, and it would look thinner, flatter and more sticker-like beside the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 10301
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "puddle body (dark oily ellipse seen from above)",
+      "rows": "5-13",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rainbow sheen specks (teal, yellow, blue, white highlights)",
+      "rows": "8-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette widens from 7 px at row 5 to 15 px at rows 8-10 and narrows back to 7 px at row 13, forming a single flat ellipse blob 9 rows tall. It has no vertical front face, no edge line and no eave shadow. It is a flat ground decal seen from above, which matches the flat kind. The small colored pixels are sheen highlights on the puddle surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny dark oval blob of roughly 9 colours, smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. The brief calls for a puddle patch laid 4x3 tiles, but this is a small sticker-like ellipse on a flat grey-blue background. It has a dark outline and a few blue/teal highlight pixels, with no visible rainbow sheen, no ground texture, no grain and no edge shading blending into the surroundings. Both references are full tile-filled patches with grass tufts or stone-by-stone shading, 3 to 7 visible tones per tile and a layered ramp. The candidate has about 3 steps and is far thinner and flatter than either reference, so it does not match the Beodeul standard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 8690
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "puddle (oval flat pool with rainbow sheen specks)",
+      "rows": "5-13",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette widths run 7, 11, 13, 15, 15, 15, 13, 11, 7 over rows 5-13. This is a single flat oval that widens and then narrows, and it is all top surface. There is no front face, no vertical wall, no edge line and no eave shadow. The dark fill with a few colored sheen pixels at rows 8-11 lies flat on the ground, which is what a flat decal should look like. With no front face of 3 or more rows, it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 2,
+    "evidence": "The candidate is a tiny dark oval blob, about 20x12 px at 2x, so smaller than one 16x16 tile. It is not a 4x3 tile ground patch like the grass and paving references, which fill whole tiles with tiled texture. The measured visible-tone count is 0 because the piece is under one tile, so I judged by eye. It shows only about 9 raw colours, a dark rim around a navy-teal fill with a small highlight, and no grain or surface variation. The rim looks dark and nearly colourless, a sticker-like outline, although the 0% neutral figure suggests a slight tint. It carries no ground texture, no tile continuity and no ground context, so it is far thinner than the references (grass about 3 visible tones with tufts, paving 7 tones with per-stone shading). It does not deliver the 4x3 tile ground patch that was asked for.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 10133
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "round",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "puddle body (flat elliptical oily water patch)",
+      "rows": "5-13",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rainbow sheen highlights (small colored pixels on the water)",
+      "rows": "9-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 9,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette width profile runs 7, 11, 13, 15, 15, 15, 13, 11, 7 over rows 5-13, a single flat ellipse lying on the ground. There is no vertical front face (0 rows), no front-edge line and no eave shadow. The column scans show only dark water with small colored sheen pixels. This is a flat ground decal seen from above, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny oval puddle, roughly 20x12 px, with no ground surface around it. The references are full tiles of grass and paving. It has only 9 distinct colours and no full 16x16 tile, so the per-tile facts read 0 and I judged by eye. The dark rim is tinted (0% neutral edge pixels), so the outline is not near-black. Even so, the puddle reads as a dark-rimmed sticker with a small blue body and a few sheen dots. I count about 3 lightness steps, against 5-6 on the references. There is no grain, no ripple variation, no wet-edge soil or ground texture, and no per-pixel clustering like the grass tufts or the individually shaded paving stones. Beside the references it is flatter and much less dense. The brief was a 4x3 ground patch, and this piece does not carry that ground-surface richness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 15391
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.216Z",
+ "cells": {
+  "16": [
+   "66a9a46cbcb70b21"
+  ],
+  "24": [
+   "1207efd8cbf7866b",
+   "846929cbe6948b22",
+   "897eda92e8ad08f6",
+   "bc8ad0adb947e6f7",
+   "c354405b76a03ce6",
+   "eb5bed4e359e1885"
+  ],
+  "32": [
+   "3838ab5f8903a77d",
+   "661762c3536dc2f9",
+   "7f368c017af28a4a",
+   "8dccdf9b8476f568",
+   "c30869947b821bdb",
+   "f0f61fa297357286"
+  ],
+  "48": [
+   "1c01b7437e9bad13",
+   "34e8773ff1d33db4",
+   "47b5359971b76753",
+   "708037a5454d1c64",
+   "c375c3b9be920978",
+   "ebda19de3d83dd69"
+  ]
+ }
+}

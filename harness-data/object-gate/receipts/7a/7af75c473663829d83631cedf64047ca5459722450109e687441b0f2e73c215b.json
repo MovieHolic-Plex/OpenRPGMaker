@@ -1,0 +1,319 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7af75c473663829d83631cedf64047ca5459722450109e687441b0f2e73c215b",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "north-south barricade line of sandbags seen from above: a long band of stacked bag tops, with the end face at the bottom",
+ "label": "wasteland_ruins/barricade-v",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 8,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 3
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "right",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sandbag stack top band (long north-south run of bag tops)",
+      "rows": "0-39",
+      "evidence": "d",
+      "front_edge_line_row": 39,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south end face of the barricade (bag-end front)",
+      "rows": "40-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 40,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-39 are a long band of stacked bag tops. The columns repeat a lighter-gray/brown/dark pattern with a scalloped width profile (12-16 px), so the top plane is seen from above and is clearly more than a rim. At row 40 the band ends against a distinct south end face. That face is a flat brown panel with a lighter edge at its top, a darker bottom rim at rows 46-47, and a uniform body in rows 40-45, so the front face is about 8 rows. No receding isometric side face is drawn; the dark side columns are outline only."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a narrow stack of sandbag tops, about 1.5 tiles wide, with dark brownish-grey edges. The edge pixels are 0% near-neutral, so the outline is tinted rather than a black sticker line. Each bag has a highlight and a shade, and flat coverage is only 4%, so large flat fills are not a problem. The ramps are still shallow. The whole piece uses only 8 distinct colours, giving about 4 usable steps against roughly 6 on the references' roofs and stone. It shows 7 visible tones per tile against 12 and 10 on the references. By eye, the bags are repeated near-identical blobs with a single highlight dot each. They lack the per-unit shading variety of the stones in house-h112 and the grain of the roof tiles. Beside the references it looks thinner and flatter, and a careful artist would not clearly accept it as equal. In doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18345
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sandbag stack top band (long run of bag tops)",
+      "rows": "0-39",
+      "evidence": "a",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south end face of the barricade",
+      "rows": "40-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 40,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-39 are a long top surface of stacked bag tops. Each bag repeats a light grey top strip (L~125-134) over a brown body (L~100), with narrow width changes of 12-16 px. At about row 40 a lighter edge line separates it from the end face. The end face is a boxy front of about 8 rows (rows 40-47), with a darker base at rows 46-47. The top is clearly larger than a rim, and a front face of 3+ rows is present. The reading is 3/4 view, though the end-face edge line and shadow are only weakly marked."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin, sparse sandbag column. It has about 7 visible tones per tile against 10-12 for the references, so it is lower but not drastically. Near-flat coverage is 4% against 0% for the references. The dark edge pixels are 0% neutral, so the outline is tinted, not pure black. By eye, the bags show roughly 4 lightness steps: a light top, a mid body and a dark underside. The references show about 6 steps per material, with per-tile highlights, grain and speckle. Each bag is wrapped in a fairly uniform dark contour, and the bags are lumpy and repetitive. That reads as slightly sticker-like next to the references, which separate forms by value. Per-bag texture dots and extra highlight or shadow steps are missing. Placed beside the references, it looks flatter and thinner, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 29179
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sandbag stack top band (long N-S run of bag tops)",
+      "rows": "0-38",
+      "evidence": "a",
+      "front_edge_line_row": 38,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south end face of the barricade",
+      "rows": "39-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 39,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a long band of stacked bag tops (rows 0-38), each with a light gray highlight of 2 rows, a brown body of 3 rows and a dark shadow. That is the top surface, and it is foreshortened as a receding plane. It ends in a light edge line at about rows 37-39. Below it, rows 39-47 form a brown end face of about 9 rows, with a dark base at rows 46-47. This gives a top surface plus a front face of 3 or more rows. The right-hand dark strip is shading, not an isometric side face. The top is very long for a 3/4 view, so it reads partly as a top-down view, but the end face makes it three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a narrow vertical stack of sandbags, not a whole building with roof, walls and door, so it does not match the reference kind. The board shows it as a small, thin prop. Stones read as individually shaded grey-brown lumps with about 4 visible light steps (highlight, mid, shadow, dark), against 5-6 in the references. The outline pixels lean brown (0% near-neutral), so they are dark material tone rather than a black sticker line. Texture is present as per-bag shading, with only 4% flat coverage. Measured visible tones per tile are 7, below the references' 12 and 10, and a thin object makes that fact less decisive. By eye it is a bit thinner and flatter than the stone wall of house-h112 and has less grain. Fail on the cautious rule (when in doubt, fail): it is lower in density and fewer shading steps than the references, and a careful artist would see it as slightly thinner.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 24368
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "sandbag stack top band (long N-S run of bag tops)",
+      "rows": "0-39",
+      "evidence": "a",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "south end face of the barricade",
+      "rows": "40-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 40,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-39 are a long band of staggered bag tops. Each bag has a light grey 2-row highlight over 3-6 rows of brown, and the width zig-zags between 12 and 16. This reads as a horizontal surface seen from above. A light edge line at about row 40 ends the band. Below it, rows 40-47 form a grey-brown end face 8 rows tall with a dark base at rows 46-47. That is the south face, so the object has both a top and a front. There is no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a narrow prop, not a whole building, so I judged it by eye against the stone wall reference. Each sandbag is shaded individually, with a light top, a mid body and a dark underside, which gives about 5 steps. That is close to the stone wall's per-stone shading. The dark edge pixels are 0% neutral, so the outlines lean brown and grey-brown like the adjacent material rather than forming a black sticker line. Near-flat coverage is 4%, against 0% for both references, and no large area is a single flat colour. It has 7 visible tones per tile against 10-12 for the references. That is slightly lower, but the piece is thin and sparse, and the stacked-bag lumps still carry clustered texture. A careful artist would accept it beside the stone wall without it looking clearly flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18797
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.406Z",
+ "cells": {
+  "16": [
+   "9c05fc7781a4b8b0",
+   "a41c2a35a851f441",
+   "d2d33456ed61734d"
+  ],
+  "24": [
+   "01c7369f58592bcd",
+   "053738a9da83e631",
+   "47a0799a3b9cf9bf",
+   "50c0bfe47a39c0c8",
+   "e55bff7dcec717e1",
+   "effd141022fb58a7"
+  ],
+  "32": [
+   "182eef6b706f78cd",
+   "28cea1023e5a4512",
+   "4e3e8b0f0c02769e",
+   "50477c829df055ad",
+   "5fd7b69a72f1f69a",
+   "7e00a41e888127c7",
+   "87b0bdcaf9fd1185",
+   "9496071077bca03a",
+   "a468be57ca18857e",
+   "bdab78fa289efc8d",
+   "c84cf72e3d0b2382",
+   "f535732a870ed4e8"
+  ],
+  "48": [
+   "1348d38a0090ef19",
+   "5e354e49a7a50eb7",
+   "eff6725b98e28c35"
+  ]
+ }
+}

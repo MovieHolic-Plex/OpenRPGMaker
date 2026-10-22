@@ -1,0 +1,468 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5f24e688bec7cb8f6bb6480bf382af35623d79956b352adf922e3ac5d68e41b0",
+ "width": 32,
+ "height": 48,
+ "kind": "other",
+ "name": "abandoned rusted car facing south seen from above: trunk, roof and hood tops with cracked glass, front grille and bumper below",
+ "label": "wasteland_ruins/car-rust-v",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 윗면/앞면 40/6 — 앞면이 거의 없는 평면도 (2/4)",
+  "3/4: 윗면/앞면 39/6 — 앞면이 거의 없는 평면도 (1/4)",
+  "3/4: 윗면/앞면 39/7 — 앞면이 거의 없는 평면도 (1/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 평면 채움 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "윗면/앞면 40/6 — 앞면이 거의 없는 평면도 (2/4)",
+   "윗면/앞면 39/6 — 앞면이 거의 없는 평면도 (1/4)",
+   "윗면/앞면 39/7 — 앞면이 거의 없는 평면도 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "평면 채움 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 17,
+  "darkV5": 32,
+  "nearBlackEdge": 0.14,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk lid top",
+      "rows": "2-11",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "rear window glass",
+      "rows": "11-14",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "roof",
+      "rows": "15-27",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "28-31"
+     },
+     {
+      "part": "windshield glass",
+      "rows": "28-31",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hood top",
+      "rows": "32-40",
+      "evidence": "a",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "41-42"
+     },
+     {
+      "part": "front grille and bumper",
+      "rows": "41-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 39,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The car body is mostly a tall stack of horizontal top surfaces: trunk (rows 2-11), rear glass (11-14), roof (15-27, with a light edge line at row 15), windshield (28-31) and hood (32-40). Each part is separated by an edge line or dark band. Below the hood, a darker band at rows 41-44 leads into a grille (about rows 42-44) and a bumper (rows 45-47). Together these give a vertical south face of about 6 rows. The drawing leans strongly toward top-down, but it has a front face of 3 or more rows and clear top planes. The dark strips at the left and right edges are wheels and arches, not receding side faces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate has 15 visible tones per tile, which is in line with the stall (17), well (20) and hedge (9). Its dark edge pixels are 0% neutral, so the outline is tinted dark green-grey, not a black sticker line. Near-flat coverage is 25%, the highest on the board (stall 13%, others 0%), and by eye the large teal body panels (hood, roof, trunk) read as broad, mostly flat fields. Rust speckles are scattered thinly on top. The glass cracks are only faint lines, and the grille and bumper are small and simple. Each material ramp shows about 3-4 steps (teal body, dark window, rust spots), compared with the 5-6 that Beodeul references use. There is no per-panel highlight/shadow modeling, panel edges are sparse, and there is little grain on the body. Overall it is competent and not a sticker, but it is flatter and thinner in shading than the stall and well, so it falls short of the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면/앞면 39/6 — 앞면이 거의 없는 평면도 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "윗면/앞면 39/6 — 앞면이 거의 없는 평면도 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16808
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk lid",
+      "rows": "2-11",
+      "evidence": "a",
+      "front_edge_line_row": 11,
+      "eave_shadow_rows": "12-13"
+     },
+     {
+      "part": "rear window (cracked glass)",
+      "rows": "11-14",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "roof",
+      "rows": "15-27",
+      "evidence": "a",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "windshield (cracked glass)",
+      "rows": "28-31",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hood",
+      "rows": "32-41",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "42-43"
+     },
+     {
+      "part": "front grille and bumper",
+      "rows": "42-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 40,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The car body (rows 1-41) is a tall stack of horizontal surfaces: trunk, roof and hood. Glass bands (rows 11-14 and 28-31) separate them, and a light edge line at row 15 and darker lines at rows 31 and 41 mark the transitions. Below row 41 there is a 6-row vertical front: grille, dark slot and bumper (rows 42-47), which meets the 3+ row front-face requirement. The dark strips at the left and right edges are wheel or shadow areas, not receding side faces. The view is steeper than 45 degrees, so it is close to plan view, but a top surface and a front face are both present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a teal-grey car seen from above with rust speckles, a cracked windshield and a grille. Measured facts: 15 visible tones per tile against 17-20 for the stall and well and 9 for the hedge, so it is within range. Near-flat coverage is 25%, against 0-13% for the references, so some large areas are flat. The roof and hood panels are big areas of one teal-grey with little grain, and the rust dots are sparse and scattered rather than shaded into the material. The body has only about 3-4 lightness steps (highlight edge, base, shade, dark edge), shallower than the 5-6 steps on the stall awning and well roof. The outline is a tinted dark teal-green with 0% neutral edge pixels, so it reads as a dark material tone and not a black sticker line, which is a strength. The structure is clear, but the panels need more tile-by-tile texture and a wider value ramp to match the reference richness. Flat fills and shallow body shading make it fall short, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면/앞면 40/6 — 앞면이 거의 없는 평면도 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "윗면/앞면 40/6 — 앞면이 거의 없는 평면도 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 16799
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk lid top",
+      "rows": "2-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "rear window glass",
+      "rows": "12-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "roof top",
+      "rows": "15-27",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": "28-31"
+     },
+     {
+      "part": "windshield glass",
+      "rows": "28-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hood top",
+      "rows": "32-40",
+      "evidence": "a",
+      "front_edge_line_row": 40,
+      "eave_shadow_rows": "41-42"
+     }
+    ],
+    "main_top_rows": 39,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The car is drawn mostly as a top-down plan. The trunk (rows 2-11), roof (15-27) and hood (32-40) are large horizontal surfaces, and the rear window (12-14) and windshield (28-31) are bands between them. The hood ends in a darker edge line at row 40, followed by 2 rows of shadow (41-42). Below that is a front face of about 7 rows (41-47): the grille with dark slots at rows 43-44, then the bumper at rows 45-47. The front face is 3+ rows, so this is not a flat slab. The side wheels are dark patches in the silhouette, not an isometric receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The outline passes: 0% of the dark edge pixels are neutral, and they lean dark teal or brown beside the body, so it is not a sticker-style black line. Density is close, with 15 visible tones per tile against 17 for the cheese stall and 20 for the well, and 9 for the hedge. The shading is the weak point. The body ramp reads as about 4 steps (a base teal, a lighter panel tone, a dark edge, and the rust and glass accents), against 5-6 on the references. Near-flat coverage is 25%, higher than every reference (0-13%). The roof, hood and trunk panels have blocks of one tone with only a few scattered rust dots and a crack line, and no grain or per-panel highlights. The total palette is 25 colours against 38-40 for the richer references. A careful artist would find the panels flatter and thinner than the stall and well next to them, so I fail it on the flat fills and shallower ramps.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면/앞면 39/7 — 앞면이 거의 없는 평면도 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "윗면/앞면 39/7 — 앞면이 거의 없는 평면도 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 22256
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk lid",
+      "rows": "2-9",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rear window glass",
+      "rows": "10-14",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "roof",
+      "rows": "15-27",
+      "evidence": "a",
+      "front_edge_line_row": 15,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "windshield glass",
+      "rows": "28-31",
+      "evidence": "a",
+      "front_edge_line_row": 31,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "hood",
+      "rows": "32-40",
+      "evidence": "a",
+      "front_edge_line_row": 41,
+      "eave_shadow_rows": "41-42"
+     },
+     {
+      "part": "front grille",
+      "rows": "41-44",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front bumper",
+      "rows": "45-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 40,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The car body, rows 1-40, is drawn from above as trunk, rear glass, roof, windshield and hood, separated by edge lines (row 14 dark, row 15 light, row 31 dark). The hood ends in a darker edge at row 41 and the grille shadow follows at rows 42-44. Below that is a vertical front face, grille and bumper, rows 42-47, about 6 rows. It has a large top surface and a front face of 3+ rows, so it measures as three_quarter, although the top is drawn nearly top-down with little foreshortening."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The outline passes: 0% of the candidate's dark edge pixels are neutral, and the line leans dark green-grey beside the body panels, so it is not a sticker line. Visible tones per tile (15) are close to the stall (17) and well (20) and above the hedge (9). The weak points are structural. Near-flat coverage is 25%, about double the highest reference (stall 13%, the others 0%). By eye, the roof, hood and trunk panels read as large smooth slabs with about 4 lightness steps, against 5-6 on the references. Texture is limited to scattered rust specks and a few crack lines. Those details sit on top of flat panels and are not worked into the panels as grain, clump or per-piece shading, as on the well stones, the stall wood or the hedge leaves. Next to the references it looks slightly flatter and thinner, so with the flat-fill evidence I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면/앞면 40/6 — 앞면이 거의 없는 평면도 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "윗면/앞면 40/6 — 앞면이 거의 없는 평면도 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)"
+    ]
+   },
+   "ms": 18617
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.556Z",
+ "cells": {
+  "16": [
+   "2a2e1591c2d46628",
+   "3c43e462d6b7e34a",
+   "9c0acc9dfafd6773",
+   "ba280c253ff7fbf0",
+   "e497f268fe94dc14",
+   "eba8fd1a527be276"
+  ],
+  "24": [
+   "3ffadfd56200f0ea",
+   "4e96cb5a903c991a",
+   "55a458673264841a",
+   "69729db147b18317",
+   "6a72ea08ef52379d",
+   "8c7a0d8b5925c275",
+   "9e2ef68d6b59c2bf",
+   "9e4be646156f6ba6",
+   "aaa4b4a34e6bb3e2",
+   "aebb2e508af9bf57",
+   "cd09089ea98c00f1",
+   "d9f61c864766c60b"
+  ],
+  "32": [
+   "33ddf7cf244e6eb0",
+   "c81c0bc1feaf58f5",
+   "d91ae2e258b9cc14",
+   "ea18d2619df13817"
+  ],
+  "48": [
+   "0c81c588fd58f3b2",
+   "945b7d99c0dd0d1f",
+   "a67e0aed68767d01"
+  ]
+ }
+}

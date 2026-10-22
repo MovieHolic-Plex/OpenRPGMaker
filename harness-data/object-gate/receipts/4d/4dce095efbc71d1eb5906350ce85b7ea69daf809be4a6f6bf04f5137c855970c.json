@@ -1,0 +1,308 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4dce095efbc71d1eb5906350ce85b7ea69daf809be4a6f6bf04f5137c855970c",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "a line of weeds growing along a crack with tiny wild flowers",
+ "label": "wasteland_ruins/weeds-c",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 0,
+  "tileColorsP90": 0,
+  "darkV5": 74,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 0
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "weed clump with leaves along crack",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tiny wild flowers (yellow, pink, white)",
+      "rows": "3-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a ground decal of a weed clump with a few small flowers. The silhouette is irregular and widens from 3px at row 1 to 12px at rows 7-9, then narrows to 4px at rows 14-15. There is no front-edge line, no eave shadow, no ellipse and no vertical front face. The column scans show only leaf greens with scattered flower and soil pixels, so nothing reads as a standing volume. It is seen from above as a flat plate, which suits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sprite of about 10x12 source pixels on a dark grey backdrop. It is not a 4x3-tile ground patch like the grass and paving references, which fill the tile area with continuous surface. The tile-based measured facts are 0 because the piece is smaller than one tile, so I judged by eye. It has only 12 distinct colours, with roughly 3 green steps plus small pink and red flower dots. The grass reference shows about 3 visible tones per tile with tufts and clumps, and the paving reference about 7 with per-stone shading. The edge pixels read as tinted dark green rather than neutral black, which is acceptable. There is no crack, no ground base, and no surface grain, so it reads as a small pasted-on clump. A careful artist would not accept it beside the references as a ground patch, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12286
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "weed clump with leaves along crack",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tiny flowers (yellow, pink, white)",
+      "rows": "2-11",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a flat patch of foliage with a few small flowers, drawn as a loose plant clump seen from above on the ground. It has no standing volume, no front-edge line, no eave shadow and no vertical south face, so it is a flat decal with no front face. This matches the flat kind. Dark brown pixels at the bottom (rows 10-15) are crack or soil bits rather than a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sprite, about 12 colours in total and smaller than one 16x16 tile, so the per-tile facts read 0 and I judged by eye. It is meant to be a 4x3-tile ground patch, but it is a small isolated clump of weeds on a dark transparent/grey background, not a laid ground surface. It does not cover the 4x3 area the way the grass and paving references do, so the kind does not match. The weeds show about 3 green steps with a few pink/red flower dots and a dark green-brown outline that looks tinted rather than neutral black. That is much shallower than the references, which have clustered grass tufts in several greens and paving stones shaded one by one with highlights. There is no crack, no soil or ground grain, and no tiling surface. A careful artist would not accept this beside the references: it looks thinner and more sticker-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 11246
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "weed clump with small flowers, drawn as upright leaf tufts",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette widens from 3px at row 1 to 12px at rows 7-9, then narrows to 4px at rows 14-15 where dark brown stems or soil show. This is an upright tuft of leaves seen from the front. The column scans show only green leaf shades, with yellow and pink flower pixels at rows 11 and 7-9. There is no band ending in an edge line, no ellipse, and no contents inside a container. It does not read as a flat plate seen from above, because the weeds stand up as a front-facing clump about 15 rows tall."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sprite, roughly 1 tile or less, on a dark transparent-looking background, not a 4x3 ground patch. It has only 12 distinct colours and measures 0 visible tones per full tile because it is smaller than a tile. By eye it shows a few green clumps with tiny red/pink flower dots and a dark outline, about 3 shading steps. The references are full seamless tiles: grass with about 3 visible tones and tufts, and paving with 7 tones and stone-by-stone shading. The candidate does not cover a ground area, has no ground base and no crack, and looks like a small sticker-like object next to the references. It is thinner and flatter than a same-kind ground reference, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "질감 없음 (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "질감 없음 (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)"
+    ]
+   },
+   "ms": 14338
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "weed clump with leaves and tiny flowers along a crack",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The drawing is a ground decal of leaves, a few small flowers and dark crack or soil pixels, spanning rows 1-15 with widths of 3-12 px. It has no front-edge line, no eave shadow, no ellipse, and no vertical south face. It is a flat patch seen from above, which fits the flat kind, so it reads as top_down_slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The brief asks for a 4x3-tile ground patch, but the candidate is a tiny sprite, smaller than one 16x16 tile (measured tones per tile = 0). It is a small clump of weeds with a few pink/red flower dots on a dark backdrop. It does not cover a ground surface, so it cannot be compared with the grass and paving references, which fill whole tiles with 3 and 7 visible tones. The ramps I can see are shallow: about 3 greens plus a couple of flower dots, 12 colours in total, against roughly 5 steps in the references. The edge pixels appear tinted dark green, with no neutral black line (0% near-neutral), and there is no flat-fill block. Because the piece has no extent and no ground texture, it falls well short of the reference's tile density and the requested form. This is a wrong-kind and under-scaled result, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 10957
+  }
+ ],
+ "decidedAt": "2026-10-22T15:35:18.347Z",
+ "cells": {
+  "16": [
+   "eeb62ccbdfc71d80"
+  ],
+  "24": [
+   "11912852e097f5d2",
+   "1e9bd360c1e5ea26",
+   "7871938650caab16",
+   "a827fa0db7584123",
+   "cd9693c23e5388a5",
+   "eacf6e8ac14aead0"
+  ],
+  "32": [
+   "1c731511c277a2ba",
+   "2d707ec504a1f7c3",
+   "4fbc6d0773564056",
+   "a3cb290afaee61d3",
+   "d14cb2266b539dea",
+   "fc77ce5ca6dc63e4"
+  ],
+  "48": [
+   "34b6271b164c634a",
+   "3c83a4f158fc848d",
+   "53ef1f341dcc5208",
+   "7613905fe29d171c",
+   "af58116610afb52e",
+   "c27001b8313b5c99"
+  ]
+ }
+}

@@ -1,0 +1,254 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e012eb6e1bb4cb74d15a59ddb40006db34b058d76e5f2cb2be5e210889d88500",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "a line of weeds, rosettes and tiny wild flowers growing along a diagonal crack of earth",
+ "label": "wasteland_ruins/weeds-c",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 8
+ },
+ "metrics": {
+  "tileColorsMedian": 26,
+  "tileColorsP90": 26,
+  "darkV5": 53,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "line of weeds, rosettes and flowers along a diagonal crack, drawn as a flat ground decal seen from above",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is an irregular organic scatter of leaves, rosettes and small flowers (widths 2-16 across rows 0-15) lying along a diagonal crack. There is no front-edge line, no eave shadow, no ellipse and no vertical south face of 3 or more rows. It is a flat ground decal seen from above, which matches the flat kind, so it reads as top_down_slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate renders very small on the board, so I judged it by eye as a sparse decal-style ground piece. It still reads as a dense cluster of leaf and rosette shapes in several greens, with a few yellow and pink flower dots. Measured facts support this: about 25 visible tones per tile against 3 for the grass reference and 7 for the paving. Near-flat coverage is 0%, with no 5x5 flat blocks. Dark edge pixels are 0% neutral, so the shadows lean dark green rather than black, which fits the Beodeul habit of using the adjacent material's dark tone instead of a sticker outline. Leaf clumps are shaded in roughly 4-5 steps, comparable to the reference foliage texture. The weakness is the small footprint. It does not show the full 4x3 diagonal crack, so I could not judge the crack's soil structure. On the evidence of the visible pixels, it is not thinner or flatter than the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13780
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "weeds, rosettes and wild flowers along a diagonal crack",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a flat ground decal seen from above: a scattered diagonal strip of foliage and small flowers across rows 0-15 (silhouette width 2-16 px). The column scans show no front-edge line, no eave shadow, no ellipse and no vertical south face. Colours change irregularly from leaf to flower to crack, not as a top band above a front face. There is no front face of 3 or more rows, so it reads as a flat top-down plate, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a small, dense cluster of weeds, rosettes and tiny flowers along a crack. I count about 5 green steps, from deep green to light leaf-tip highlights, plus small yellow and pale flower dots. The dark edges lean green, so they read as the dark tone of the neighbouring foliage and not as a neutral black line. The measured facts agree: 0% of dark edge pixels are near-neutral, and near-flat coverage is 0%. The candidate shows 25 visible tones per tile, against 3 for the reference grass and 7 for the reference paving, so it is clearly at or above both references on density. Leaf clumps vary in tone with no flat fills. Because the piece is small, I judged structure and shading by eye as well, and it holds up next to the grass reference without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 11389
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "weeds, rosettes and tiny flowers along a diagonal crack, seen as a ground decal",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a flat patch of foliage and small flowers about 16 px wide and 16 rows tall, drawn as a ground decal. The width profile changes irregularly (2, 6, 16, 11, 13, 11, 14, 12, 16, 12, 11, 9, 6, 2), which is an organic scattered shape with no ellipse, lid or cap. The column scans show no front-edge line and no eave shadow. There is no vertical front face and no standing volume, only leaves, flowers and earth seen from above. That fits the flat kind, so it reads as a top-down slab with no front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small clump of weeds, rosettes and tiny flowers. It shows several greens from deep green shadow to light highlight, plus small yellow and pink flower dots. Dark edge pixels are 0% near-neutral, so the outlines lean dark green rather than black. There is no sticker line, and forms separate by value. Near-flat coverage is 0%, so there are no flat fills. It has 25 visible tones per tile against 3 for the grass reference and 7 for the paving reference, so it is clearly at or above both on density. The board renders it quite small and the clump reads a little busy. That is a scale effect and not a structural weakness, and the measured facts and the visible leaf clumps and flower dots support a pass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23843
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "line of weeds, rosettes and flowers along a diagonal crack, drawn as a flat ground decal",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a flat ground decal of foliage and small flowers running diagonally across a roughly 16x16 area. The silhouette is irregular and widens to 16 px at rows 2 and 10. There is no front-edge line, no eave shadow, no ellipse and no vertical front face of 3 or more rows. The column scans show only scattered green, yellow and pink pixels with gaps. This matches the flat kind and has no standing volume, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "evidence": "The candidate renders very small on the board, so I rely partly on the measured facts. It shows 25 visible tones per full tile against 3 for the grass reference and 7 for the paving reference. Near-flat coverage is 0%, the same as both references. Its dark edge pixels are 0% neutral, so the outlines lean dark green and sit beside the leaves and rosettes. By eye, the clump has several greens, with light leaf highlights, darker green shadow pixels and small flower dots. This matches Beodeul's clustered, grainy texture and is not a flat sticker. The one caveat is that the piece reads as a compact decal on a transparent background and not a full 4x3 ground patch, but its shading and density are at or above the references.",
+    "score": 8,
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 13580
+  }
+ ],
+ "decidedAt": "2026-10-22T15:51:55.352Z",
+ "cells": {
+  "16": [
+   "f8b7002b910edab3"
+  ],
+  "24": [
+   "2cb0130f9def1b4e",
+   "3a6a740656ccc659",
+   "6eb7da4d5798b4a4",
+   "81d1bf8c4762d3d0",
+   "8ff8c49a4dbae104",
+   "f8a6ac675f42ed3f"
+  ],
+  "32": [
+   "05134189eef067d0",
+   "08649f89f3843797",
+   "6521b9328eeff759",
+   "a04b53873dc2cb4d",
+   "a83559dbff688621",
+   "a8386b91ca2b162c"
+  ],
+  "48": [
+   "26a232afb27a756b",
+   "5de104ca977100c6",
+   "729d7506829769c3",
+   "8823630e488053a0",
+   "a95157f71088e3e2",
+   "d4f96c374eb8148d"
+  ]
+ }
+}

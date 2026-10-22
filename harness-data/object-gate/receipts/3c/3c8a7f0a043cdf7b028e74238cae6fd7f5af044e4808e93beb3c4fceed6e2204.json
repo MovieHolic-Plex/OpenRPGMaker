@@ -1,0 +1,323 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3c8a7f0a043cdf7b028e74238cae6fd7f5af044e4808e93beb3c4fceed6e2204",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "short broken concrete wall stub: thick top surface seen from above and front face, rebar sticking out",
+ "label": "wasteland_ruins/wall-stub",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 10,
+  "tileColorsP90": 10,
+  "darkV5": 52,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete wall stub top (broken, stepped silhouette)",
+      "rows": "8-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "rebar sticking out of the top",
+      "rows": "10-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 17,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The light grey top band (L about 145-148) covers rows 8-13 at x=4 and rows 11-13 at x=8. The silhouette widens from 5 to 16 px over rows 7-15, which fits a broken, sloping top. Row 14 is a lighter front-edge line (L=189, #bcbdc3). Below it the face is darker (L about 112), so rows 15-16 read as eave shadow. The front face runs from row 15 to row 31, about 17 rows, with a lighter course line at row 22. The reddish-brown pixels at x=11, rows 10-13, are the rebar and count as decor. They are not the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a tiny prop beside two full houses, so it is judged mainly on the measured facts. It carries 10 visible tones per 16x16 tile, against 12 for h101 and 10 for the stone house h112, so it is level with the closest reference. Near-flat coverage is only 8%, so there are no large flat fills; the top slab, front face and broken edge each show grain and tone changes. Only 2% of its dark edge pixels are neutral, so the outline leans toward the material (dark tinted grey-brown beside the concrete and a reddish tone at the rebar) and does not read as a black sticker line. The concrete ramp has about 4 steps (top highlight, light, mid, dark crack/shadow), a little fewer than the roughly 6 steps in the references. The total palette is small (13 colours), but the visible texture is about as rich as the stone wall reference at this scale. A careful artist would accept it next to the references, so it passes, though it is slightly less rich than they are.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17935
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "concrete stub top surface (broken, stepped silhouette)",
+      "rows": "8-14",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "rebar sticking out of top at right",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 8-13 form a lighter gray top band (L about 145-148). It widens from 5 to 13 px as the broken top steps down. A 1-row light front-edge line at row 14 (L=189) ends it, and a darker front face (L about 110) follows. The face runs rows 15-30 and reaches the base at row 31, with a faint seam at row 22. The rebar at right (rows 10-14) is a small detail and not the main body. The top surface is about 7 rows including the edge line, so it is more than a rim. The south face is 16 rows tall, so this is a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a tiny prop, about one tile, so I judged it mostly on the measured facts. It has 10 visible tones per 16x16 tile against 12 and 10 for the references, so tile density is on par with house-h112_0-stone and only slightly under house-h101_0. Near-flat coverage is 8%, with only small areas of one colour, so there are no large flat fills. Only 2% of its dark edge pixels are neutral, so the outline leans towards the material tone (dark grey-brown beside concrete, reddish beside rebar) and is not a black sticker line. The concrete shows about 4 steps with a lighter top face, a darker front face and chipped, broken edges, which is a little shallower than the references' 5-6 steps. The total palette is small at 13 colours, but that is expected from a locked palette on a small piece. Against the references it does not look thinner or flatter, so I pass it, narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20607
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken concrete top slab (jagged, stepped upward to the left)",
+      "rows": "10-14",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "rebar sticking out of the top at the right",
+      "rows": "10-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "concrete front face with a horizontal seam at row 22",
+      "rows": "15-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The top band at rows 10-14 is lighter (L about 145-150) than the face below it. It ends in a 1-row light front-edge line at row 14 (L=189, #bcbdc3). Rows 15-16 are darker (L about 112), which reads as eave shadow. Below that is a 16-row front face (rows 15-30) with a seam line at row 22. The top is broken, stepping up on the left (the silhouette widens from 5 to 15 px over rows 7-14), which fits a broken stub. The rebar is dark red-brown at the right of the top band and is treated as decor. Rows 10-14 are only about 5 rows deep, but the edge line and shadow make this a real top surface and not just a rim."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small prop, under one tile in size, so I judged it partly by eye. It shows a lit top slab, a front face with a few grey steps, chipped broken edges and pinkish rebar. On the primary facts it is level with the references: 10 visible tones per tile against 10 for the stone house and 12 for h101. Near-flat coverage is only 8%. Only 2% of its dark edge pixels are neutral, so the outline leans toward the material's own dark tint and is not a black sticker line. Its 13 total colours are low, but that fits a locked palette on a tiny object and does not lower the visible density. It is less richly textured than the roof and stone of the references, but it is not a flat sticker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17583
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "broken concrete wall top",
+      "rows": "8-13",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-18"
+     },
+     {
+      "part": "wall front face",
+      "rows": "15-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rebar sticking out at top right",
+      "rows": "10-13",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rebar ends at base",
+      "rows": "30-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette steps out from 5 to 15 px wide over rows 7-14, which gives a broken, sloped top. That top is a lighter grey band at rows 8-13 (L about 145-148) with a 1-row light front-edge line at row 14 (#bcbdc3, L=189). Below it the darker front face (L about 107-112) runs rows 15-30, which is 16 rows, with a light seam at row 22. Rows 15-18 are slightly darker than the rows below and read as eave shadow. The reddish-brown rebar at rows 10-13 on the right and at the base is a small attached detail and is not the main body."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate is a tiny prop, only about one tile in size. It still reads as a top surface plus a front face, with chipped edges and rebar. On the primary facts it matches the references: 10 visible tones per tile against 12 and 10, and near-flat coverage of 8% (the references are 0%), so there are no large flat fills. Only 2% of its dark edge pixels are near-neutral, so the outline leans toward a tinted dark material tone rather than a black sticker line. The total of 13 distinct colours is low next to the references' 66 and 185, but that is expected for a small locked-palette prop. By eye I count about 5 lightness steps on the concrete, with some speckle and a broken edge. It would sit acceptably beside the references without looking noticeably thinner or flatter. My confidence is moderate because the piece is so small.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18574
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.339Z",
+ "cells": {
+  "16": [
+   "40475499ea2041a2",
+   "ae14121e7306801a"
+  ],
+  "24": [
+   "1ea748a4b99a6172",
+   "3952545b3c302c4e",
+   "3f0adc0484c6f224",
+   "4bf674ac0c46a705",
+   "51de13209ab20479",
+   "66848084b9787445",
+   "abc2774556e44e0e",
+   "cf910ba7ea19c540",
+   "d30fb19dda728b70",
+   "db7c7edbadea2750",
+   "dc1dd7c84d0068ec",
+   "f822c86296a3285a"
+  ],
+  "32": [
+   "4daf2589eef2621d",
+   "8d1bbcb520e511db",
+   "a8c11166f082d7da"
+  ],
+  "48": [
+   "1515d3efee20192a",
+   "395a23cb0abff0a3",
+   "9b20267eef5a3be1",
+   "e09dc67e16cb0d87",
+   "eea6f26075838c51",
+   "f18c0fba60ef1cb9"
+  ]
+ }
+}

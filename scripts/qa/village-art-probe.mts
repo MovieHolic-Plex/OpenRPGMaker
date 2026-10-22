@@ -16,8 +16,8 @@ fs.mkdirSync(OUT, { recursive: true });
 const base = createBlankProject() as Project; ensureBundledTilesets(base);
 const baseJson = JSON.stringify(base);
 const TOWN: Record<string, Record<string, unknown>> = {
-  mining: { theme: "river", water: "none", terrain: "highland", form: "scatter", roofs: "log", forestType: "conifer", houseCount: 4, width: 56, height: 44 },
-  vineyard: { theme: "river", water: "none", form: "scatter", roofs: "red", houseCount: 4, width: 56, height: 44 },
+  mining: { theme: "river", water: "none", terrain: "highland", form: "scatter", roofs: "log", forestType: "conifer", houseCount: 4, width: 60, height: 48 },
+  vineyard: { theme: "river", water: "none", form: "scatter", roofs: "red", houseCount: 4, width: 64, height: 48 },
   "temple-ruins": { theme: "river", water: "none", form: "scatter", roofs: "red", houseCount: 4, width: 56, height: 44 },
   "walled-market": { theme: "river", water: "none", form: "scatter", roofs: "red", houseCount: 4, width: 56, height: 44 },
 };
@@ -33,6 +33,13 @@ for (const c of arg("cases", "mining:7,vineyard:3,temple-ruins:5,settlement:1,ru
     mapId = (r.data as { mapId: string }).mapId;
     const q = runTool(ctx, "dress_village_quarter", { mapId, quarter: kind } as never);
     log.push(`quarter ${q.ok} ${q.summary.slice(0, 300)}`);
+  } else if (kind === "cyberpunk" || kind === "steampunk") {
+    // 비교용(다른 칩셋 시대 마을) — 폐허가 이들의 복사본처럼 보이지 않는지 나란히 본다.
+    const ts = kind === "cyberpunk" ? "sf_station" : "steampunk_city";
+    const m = runTool(ctx, "create_map", { name: kind, tilesetId: ts, width: 48, height: kind === "cyberpunk" ? 30 : 40 } as never);
+    mapId = (m.data as { mapId?: string; id?: string })?.mapId ?? (m.data as { id?: string })?.id ?? "";
+    const q = kind === "cyberpunk" ? runTool(ctx, "compose_sf_station_map", { mapId, kind: "street", seed } as never) : runTool(ctx, "compose_steampunk_city_map", { mapId, style: "industrial", seed } as never);
+    log.push(`compare ${q.ok} ${q.summary.slice(0, 160)}`);
   } else {
     const sz = WASTELAND_DEFAULT_SIZE[kind as WastelandKind];
     const m = runTool(ctx, "create_map", { name: kind, tilesetId: "wasteland_ruins", width: sz.w, height: sz.h } as never);

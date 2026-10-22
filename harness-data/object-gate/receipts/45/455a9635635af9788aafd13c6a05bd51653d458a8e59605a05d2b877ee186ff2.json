@@ -1,0 +1,342 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "455a9635635af9788aafd13c6a05bd51653d458a8e59605a05d2b877ee186ff2",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "freestanding collapsed concrete wall segment running east-west, top of the wall seen from above, broken stepped ends with rebar, front face below",
+ "label": "wasteland_ruins/wall-h",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 11,
+  "darkV5": 37,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top (broken concrete cap, light grey with rubble speckle)",
+      "rows": "6-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "rebar stubs at both ends of the top",
+      "rows": "7-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face of wall with dark opening and horizontal course line",
+      "rows": "13-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 6-11 form a lighter top band (L about 150-160) that is trapezoidal in the width profile, growing from 30 to 43 px wide. Row 12 is a bright front-edge line (L=189), and row 13 is darker (L about 98-114), acting as eave shadow. Below it the front face runs rows 13-31 (19 rows) with a dark opening at rows 17-21 and a lighter course line at row 22. The top surface is clearly shown above the front face, so this is a 3/4 view and not a front elevation. The rebar at the ends is small detail on the structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small gray concrete wall segment with a lighter top, a darker front face, a small dark opening and two pinkish rebar tips at the ends. I count about 4 gray steps on the concrete: top highlight, top mid, front face, and shadow. The references have 5-6 steps per material, with scalloped tile highlights and individually shaded stones. Measured: 8 visible tones per tile against 12 and 10 for the references, which is lower but not far off. Near-flat coverage is 7% against 0% for both references, so there are a few small flat patches. Only 3% of dark edge pixels are neutral, so the outline leans toward a tinted material tone rather than a black sticker line. Texture is some: there are speckle dots and cracks on the top, but the front face is fairly smooth. The piece is small and simple, but it still reads a bit flatter and thinner than the reference stone wall, whose stones are shaded one by one. The broken stepped ends are barely visible at this size.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 11869
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top (broken, stepped, rounded silhouette)",
+      "rows": "6-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-13"
+     },
+     {
+      "part": "wall front face with dark breach opening and a horizontal band at row 22",
+      "rows": "13-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "rebar sticking out at the broken ends",
+      "rows": "7-12",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 6-11 form a light grey top band that gets wider (30, 37, 43, 46 px) and ends in a bright 1-row front-edge line at row 12 (L=189 in all three scanned columns). Row 13 is a slightly darker shadow row. Below it a front face of about 19 rows (13-31) shows a dark opening at rows 17-21 and a lighter band at row 22. The top reads as a horizontal surface seen from above, so the main body has both a top and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, low concrete wall slab, not a whole building with roof, walls, door and windows, so it does not match the reference kind. It is roughly one tile tall and about two and a half tiles wide, with a grey top, a front face with one dark opening, and small rebar stubs. It has about 4 lightness steps on the concrete against 5-6 on the reference roofs and stone. Edge pixels are tinted (3% neutral), so the outline reads as dark_material_tone. Visible tones per tile are 8 against 12 and 10 for the references, which is lower but not far off. Near-flat coverage is 7% against 0%, so there are small flat patches. The references carry per-tile scallops, plaster speckle and individually shaded stones, and the candidate's concrete grain is thinner and less varied than that. It is competent but shallower than the Beodeul standard, and the reference kind does not match.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14265
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top (broken concrete top surface)",
+      "rows": "6-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "wall front face with dark opening",
+      "rows": "13-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 6-11 form a top band of speckled light concrete whose silhouette widens from 30 to 43 px at the stepped, broken ends. Row 12 is a bright 1-row front-edge line (L=189) across all three scanned columns, and row 13 is darker (L about 98-114), which acts as eave shadow. Below it the front face runs from row 13 to row 31 (19 rows), with a horizontal seam at row 22 and a dark opening at rows 17-21. The rebar at the broken ends is a small detail and does not change the main body reading."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small grey concrete wall segment with a lighter top slab, a darker front face, a dark opening, and rebar stubs at the ends. Its edges lean tinted rather than neutral black (3% near-neutral dark edge pixels, against 7-9% for the references). It has about 4 grey steps on the concrete, where the references have about 6 per material. Its 8 visible tones per tile are below the references' 10-12, and its near-flat coverage is 7% against 0%. It has some speckle and chipping, but less grain than the roof tile scallops and the stone-by-stone shading in the references. The wall is also small and simple, so these gaps are modest, but it sits a little thinner and flatter than the references next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12634
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wall top (broken stepped crown)",
+      "rows": "6-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13"
+     },
+     {
+      "part": "rebar sticking up at both broken ends",
+      "rows": "7-12",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wall front face with dark opening and ledge line at row 22",
+      "rows": "13-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 19,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette widens from 28 px at row 5 to 46 px at row 12, so the stepped, broken crown shows a lighter gray top slab in rows 6-11. A bright 1-row front-edge line (L=189) at row 12 ends that slab, and a darker row 13 (L about 98-114) follows as eave shadow. Below it the front face runs rows 13-31, about 19 rows. It has a dark opening at rows 17-21 and a light ledge line at row 22. The red-brown rebar at the ends is decor. The structure matches the green reference pairs, which have a top band, an edge line and a front face below."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small low concrete wall block, about one tile tall, set beside two full houses. It is not a whole building with roof, walls and door/windows, so the kind only loosely matches the references. It has about 4 visible lightness steps on the concrete (a light top, mid grey face, darker shadow, and a dark base), against about 5-6 on the reference roofs and stone. The tile facts are 8 visible tones against 10-12 in the references, which is lower but not far off, and the 7% near-flat coverage against 0% shows a few flat patches on the top and face. Dark edge pixels are only 3% near-neutral, so the outlines lean toward a tint rather than pure black. The small red rebar bits are a nice touch. The face carries only light speckle and a single dark opening, and it has none of the per-stone shading or grain of the references. A careful artist would see it as thinner and flatter than the Beodeul stone wall, and the wall top also reads as a flat slab with little stepped breakage. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 14668
+  }
+ ],
+ "decidedAt": "2026-10-22T14:22:06.302Z",
+ "cells": {
+  "16": [
+   "09b3e147c4ba406a",
+   "21a4913836d01b9a",
+   "5c41a2105e2b5c0d",
+   "aaddbd7b7e7898eb",
+   "b526b4494c901deb",
+   "b82f26dc4a2dd434"
+  ],
+  "24": [
+   "57e84b3486ba01ef",
+   "5fa763f0c8710981",
+   "664d8cc37511420e",
+   "6fe8766ffd59e9bd",
+   "81ff088f18344e64",
+   "94589e989553179c",
+   "c7253148c92e2bbe",
+   "f6a696d004203857"
+  ],
+  "32": [
+   "7fe559b39781c578",
+   "8cc4896c23a46c89",
+   "a79e0bff120f5bf2",
+   "c1644d89238558dd",
+   "e18c7fc153ee7860",
+   "e3a3573c4d908d14"
+  ],
+  "48": [
+   "0e57e5cab7ff30d9",
+   "b0b0ffde2666c1d8"
+  ]
+ }
+}

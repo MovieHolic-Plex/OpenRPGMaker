@@ -1,0 +1,24 @@
+{
+  "surface": "cobble",
+  "image": "tiledata/beodeul-yard/_gate/yard_cobble.png",
+  "pixel_sha256": "b44c738c26c139614cfd72ee3b9a8cfd74202a8ac2b9a37c097b7d1b586a40a6",
+  "verdict": "fail",
+  "view34": "pass",
+  "autotile": "pass",
+  "quality": "fail",
+  "material": "pass",
+  "defects": [
+    "/home/main/.cache/yard/vqa-r3/cobble_a.png: r2 lattice not fixed - stones sit in strict rows/columns at a fixed pitch (8x rows y~40,130,210,295,380,460; grey stones repeat at x~165/295/420 in rows y~40,170,295,420). Measured: body region 96..144,48..96 has 62% (h) / 70% (v) identical pixels at a 16px shift vs 15-20% at 4/8px, so cells are near-copies.",
+    "/home/main/.cache/yard/vqa-r3/cobble_a.png: the 4-px brown '+' sparkle fleck in the joints is still stamped identically (8x at (130,205),(260,205),(385,205),(515,325),(130,460),(260,460)).",
+    "/home/main/.cache/yard/vqa-r3/cobble_neck.png: stones are uniform 3-5px ovals evenly spaced (8x row y~40 and y~170: same-size oval every ~65px), reading as a gridded pebble pattern rather than laid river cobbles of mixed size; at 4x (yard_cobble-4x.png) the whole court is a visible checker lattice."
+  ],
+  "evidence": "Kerb rim, 2px south face, outer/inner corners, hole, 2-wide neck and isolated cell are seamless; no side faces; colours sit fine next to the Beodeul house in compare-3x. But the r2 quality defects are essentially unchanged: a rigid cell-period lattice of oval stones and stamped '+' flecks, quantitatively ~2/3 identical pixels at 16px shift.",
+  "crops": [
+    "/home/main/.cache/yard/vqa-r3/cobble_a.png",
+    "/home/main/.cache/yard/vqa-r3/cobble_b.png",
+    "/home/main/.cache/yard/vqa-r3/cobble_c.png",
+    "/home/main/.cache/yard/vqa-r3/cobble_neck.png",
+    "/home/main/.cache/yard/vqa-r3/cobble_iso.png"
+  ],
+  "reviewer": "claude-opus independent adversarial review 2026-10-23 r3"
+}

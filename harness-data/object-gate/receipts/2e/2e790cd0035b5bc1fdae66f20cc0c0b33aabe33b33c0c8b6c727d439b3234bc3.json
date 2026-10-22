@@ -1,0 +1,280 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2e790cd0035b5bc1fdae66f20cc0c0b33aabe33b33c0c8b6c727d439b3234bc3",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "a bent rusty metal sheet, broken concrete lumps, glass shards and a torn cable lying on an oil-stained patch of earth",
+ "label": "wasteland_ruins/rubble-c",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 26,
+  "tileColorsP90": 26,
+  "darkV5": 48,
+  "nearBlackEdge": 0.02,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "oil-stained earth patch with bent rusty sheet, concrete lumps, glass shards and cable",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette widens from 9 px (rows 1-2) to 16 px (rows 10-11) and then narrows to 7 px at row 15. This is an irregular ground patch. The column scans show only mixed debris colours (rust #a35f4c, grey #7b7270 and #bcbdc3, dark oil #2a3539). There is no front-edge line, no eave shadow and no vertical south face. No part stands up from the ground, so there is no front face of 3 or more rows. The whole drawing reads as a flat plate seen from above, which suits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small isolated sprite (about one tile or less) on a dark backdrop, not a continuous 4x3 ground patch like the grass and paving references. It has no seamless earth surface, so it fails the 'ground' kind. The measured facts are not shallow: 26 visible tones per tile, 0% near-flat coverage, and only 14% neutral dark edge pixels, so the outlines lean tinted rather than black. By eye the debris items (sheet, lumps, cable) show only about 4 value steps each and little grain on the earth. The references show a full ground texture across the whole area (grass tufts, per-stone shading), and the candidate does not. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13655
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "debris patch (rusty sheet, concrete lumps, glass shards, cable on stained earth)",
+      "rows": "0-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 16,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is an irregular patch about 15px wide and 16 rows tall, with widths 9-16 and a narrow bottom row (7px at row 15). The column scans show mixed colors (rust, grey, teal glass, dark oil) with no front-edge line, eave shadow or vertical face. It is a flat ground decal seen from above, with no front face of 3+ rows. That is the expected look for a flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate does not read as a ground patch. It is a small, isolated clump of objects (metal sheet, lumps, shards) about 20x20 source pixels, on a dark background. It is not a continuous 4x3-tile surface like the grass and paving references, which fill their whole area and tile seamlessly. There is no oil-stained earth base to judge, so it looks like a sticker prop. The measured facts are not a problem: 26 visible tones per tile is well above the grass reference (3) and the paving reference (7), flat coverage is 0%, and only 14% of dark edge pixels are neutral, so the outlines carry a tint. But the facts come from a tiny area, and by eye each material (rust, concrete, glass) has only about 3 shading steps against the references' 5-6. The tonal variation looks noisy rather than structured into ramps, and no earth or grain texture is visible. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 12288
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "oil-stained earth patch with debris (rusty bent sheet, concrete lumps, glass shards, cable), seen from above",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is an irregular blob about 15-16 px wide and rows 1-15 tall (width profile 9, 12, 14, 15, 16, 15, then 7 at row 15). It has no front-edge line, no eave shadow and no vertical south face. The column scans show mixed colour runs (rust #a35f4c, dark earth #2a3539, grey concrete #bcbdc3/#7b7270, a teal glass pixel) that read as scattered items on the ground rather than a volume with a top and a front. This matches a flat ground decal seen from above, so there is no front face of 3 or more rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate renders as a small isolated prop of about one tile or less, with a transparent or dark backdrop. It is not a continuous 4x3 ground patch like the grass and paving references, which fill their whole area edge to edge. The brief asks for a rusty sheet, concrete lumps, glass shards and a cable on oil-stained earth, but no earth surface is visible around the objects, so it does not read as a ground tile set. The measured 26 visible tones per tile are well above the grass reference (3) and the paving reference (7), and near-flat coverage is 0%. Only 14% of dark edge pixels are neutral, so the outlines lean toward tinted, material-tone lines. However, the small silhouette seems to have only about 3 shading steps per material, against about 5-6 in the references, and its objects look sticker-like. Because the piece is the wrong kind of asset and the ground surface is missing, it fails despite the high tone count.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 14845
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "oil-stained earth patch with debris (sheet, concrete lumps, glass shards, cable)",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 15,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a roughly 14-16 px wide irregular patch spanning rows 1-15. It has no front-edge line, no eave shadow and no vertical south face. The column scans show mixed debris colors (rust, grey concrete, teal glass, dark oil) with no face/top separation. The object lies flat and is seen from above, which matches the flat kind. It has no front face, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate on the board is a tiny object sprite of about 10x10 source pixels on a dark background, not a 4x3-tile ground patch. The references (grass, paving) fill their whole area edge to edge with continuous surface texture, but the candidate has no continuous earth surface to tile or compare. The measured facts (26 visible tones, 0% near-flat coverage, 14% neutral dark edges) look healthy, but they are computed on a very small sprite and do not describe a ground patch. By eye, the rust sheet, concrete and glass read as only about 3-4 tones each, with small clusters and mostly tinted dark edges. That is thinner than the paving reference's per-stone shading and the grass reference's tufts. With the wrong kind and thinner shading than the references, I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 11938
+  }
+ ],
+ "decidedAt": "2026-10-22T15:51:55.347Z",
+ "cells": {
+  "16": [
+   "370f0bfd29d10a32"
+  ],
+  "24": [
+   "046d73a14f2ea72a",
+   "0d42056eef7d9d4f",
+   "300644e9c7e21850",
+   "4b0f6529e89fe3eb",
+   "beddb197e1718b9b",
+   "eeb7aa223346b9df"
+  ],
+  "32": [
+   "47cc5cc136e3772a",
+   "89897544014beb88",
+   "8f5041ee03236341",
+   "96e572b510349d2f",
+   "db96180a77c8d621",
+   "e96041a43ba75a19"
+  ],
+  "48": [
+   "29197ab069876d78",
+   "55e060c4b17118cb",
+   "990ccee5e3f08afe",
+   "b1e2e8ef2a1eaff9",
+   "d8989e9b4ac0a1af",
+   "e935b344d1a8180e"
+  ]
+ }
+}
