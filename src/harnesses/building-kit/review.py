@@ -8,6 +8,9 @@
   requireGableFront 판(style-r5~)은 하나 더: flat_elevation — 후보 **자기 부품**(그 판의 용마루-정면 지붕 + 벽)으로
   조립한, 용마루가 정면과 나란한 지붕 아래 평평한 정면 입면(사용자가 반려한 투영). 판정자 프롬프트의 view34 에
   「박공 정면이 없으면 FAIL」 규칙이 붙는다.
+  깊이 땅 판(grammar r7~)은 하나 더: flat_depth — 여러 질량 후보 하나를 **질량 전부 depth 0** 으로 다시 조립한 것(사용자가
+  반려한 한 땅 선 — 깊이 계단·마당 띠·그림자 없음). view34 에 「여러 질량이 한 땅 선에 서 깊이가 안 보이면 FAIL」이
+  붙는다. 여러 질량 후보가 조립을 하나도 통과하지 못했으면 깊이로 판정할 표본이 없으므로 함정도 없다.
 정답(key.json)은 판정자 폴더(work/) 밖에 둔다. 판정자는 Read 로 그림만 보고 JSON 줄로 답한다.
 함정 하나라도 PASS(두 축 모두 PASS)하거나 표본을 빠뜨리면 그 회차는 무효 — 무효는 유효 회차 수에 세지 않고 다시 돌린다.
 유효 3회 다수결(두 축 view34·quality 모두 PASS 가 과반). 영수증 review/<판>/<후보>.json = 그림 화소 해시 + 판정 원문 해시.
@@ -50,6 +53,7 @@ JUDGE_TIMEOUT = int(os.environ.get('BUILDING_KIT_JUDGE_TIMEOUT', '3600'))
 REF_KITS = ('bd-house-h101_0', 'bd-house-inn', 'bd-out-cabin')
 PROBE_NAMES = ('roof_gap', 'two_doors', 'flat', 'noise', 'thin_roof', 'recolor_original')
 GABLE_FRONT_PROBES = ('flat_elevation',)
+DEPTH_PROBES = ('flat_depth',)
 
 
 def now():
@@ -166,7 +170,19 @@ def flat_elevation(parts, pal, theme):
     return res['img'].img() if res['img'] is not None else None
 
 
-def probes_for(base_im, kit, parts, recipe, pal, rng, gable_front=False, theme=None):
+def flat_depth(recipe, parts, pal, theme):
+    """깊이 땅 판의 숨긴 함정 — 후보 레시피를 질량 전부 depth 0 으로 다시 조립한 것(사용자가 반려한 「한 땅 선」:
+    깊이 계단·마당 띠·그림자 없음). 칠하는 순서(뒤 질량 먼저)는 원래 depth 를 따른다. 질량이 하나면 None."""
+    raw = recipe.get('masses') or []
+    if len(raw) < 2:
+        return None
+    order = sorted(range(len(raw)), key=lambda i: -int(raw[i].get('depth') or 0))
+    flat = dict(recipe, id=f'probe.flat_depth.{recipe["id"]}', masses=[dict(raw[i], depth=0) for i in order])
+    res = AS.assemble(flat, parts, pal, theme, depth_ground=True)
+    return res['img'].img() if res['img'] is not None else None
+
+
+def probes_for(base_im, kit, parts, recipe, pal, rng, gable_front=False, theme=None, depth_source=None):
     rh_px = kit['roofRows'] * dot.T
     out = [('roof_gap', _insert_gap(base_im, rh_px)),
            ('flat', _flat(base_im)),
@@ -184,6 +200,11 @@ def probes_for(base_im, kit, parts, recipe, pal, rng, gable_front=False, theme=N
         if fe is None:
             raise SystemExit('requireGableFront 판인데 flat_elevation 함정을 만들 용마루-정면 지붕·벽 부품이 없다')
         out.append(('flat_elevation', fe))
+    if depth_source is not None:
+        fd = flat_depth(depth_source['recipe'], depth_source['parts'], pal, theme)
+        if fd is None:
+            raise SystemExit('깊이 땅 판인데 flat_depth 함정을 조립하지 못했다')
+        out.append(('flat_depth', fd))
     return out
 
 
@@ -275,9 +296,18 @@ GABLE_FRONT_RULE = """
    ridge, the left slope lit and the right slope darker. The roof should be the majority of that mass's silhouette."""
 
 
-def judge_prompt(theme, ids, n_images, gable_front=False):
+DEPTH_RULE = """
+   DEPTH RULE (this round requires it): a building made of several masses (a wing projecting toward the viewer in front of
+   a main block, a corner tower, a side shed) must show SPACE in the 3/4 view. A mass that sits further north stands HIGHER
+   on screen: the main block's wall bottom is visibly ABOVE the front wing's wall bottom, with a strip of open ground/yard
+   between them beside the wing, and the wing casts a dark translucent shadow to its right onto the main wall and that
+   yard. FAIL view34 for a multi-mass building whose masses all stand on ONE ground line with no visible depth step, no
+   yard strip and no cast shadow - the wing then reads as a flat board glued onto the main wall - however well drawn."""
+
+
+def judge_prompt(theme, ids, n_images, gable_front=False, depth=False):
     return JUDGE.format(n_images=n_images, ref_scale=REF_SCALE, ids=', '.join(ids), theme=theme,
-                        projection=GABLE_FRONT_RULE if gable_front else '')
+                        projection=(GABLE_FRONT_RULE if gable_front else '') + (DEPTH_RULE if depth else ''))
 
 
 def claude_judge(prompt, images, workdir, model=None, effort=None, timeout=None):
@@ -351,7 +381,10 @@ def prepare(theme, rid, parts_by_key, runs=DEFAULT_RUNS, retries=DEFAULT_RETRIES
     rng = _rng(seed)
     base = next(iter(cands.values()))
     gable_front = AS.requires_gable_front(theme, rid)
-    probes = probes_for(base['img'], base['kit'], base['parts'], base['recipe'], pal, rng, gable_front, theme)
+    depth = AS.depth_ground(theme, rid)
+    multi = [c for c in cands.values() if len(c['recipe'].get('masses') or []) > 1]
+    probes = probes_for(base['img'], base['kit'], base['parts'], base['recipe'], pal, rng, gable_front, theme,
+                        depth_source=multi[0] if depth and multi else None)
     samples = [('candidate', bid, c['img']) for bid, c in cands.items()] + [('probe', n, im) for n, im in probes]
     rng.shuffle(samples)
     k = len(_runs(rnd)) + 1
@@ -371,7 +404,7 @@ def prepare(theme, rid, parts_by_key, runs=DEFAULT_RUNS, retries=DEFAULT_RETRIES
         path = os.path.join(work, f'board-{b // PER_BOARD + 1}.png')
         _stack([_row(ref_cards), _row(scards[b:b + PER_BOARD])]).save(path)
         images.append(path)
-    prompt = judge_prompt(theme, ids, len(images), gable_front)
+    prompt = judge_prompt(theme, ids, len(images), gable_front, depth)
     open(os.path.join(run, 'prompt.txt'), 'w', encoding='utf-8').write(prompt)
     json.dump(key, open(os.path.join(run, 'key.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     return {'round': rid, 'run': k, 'dir': run, 'work': work, 'prompt': prompt, 'images': images, 'ids': ids,
