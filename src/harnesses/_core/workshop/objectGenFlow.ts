@@ -484,7 +484,10 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
     if (footprintClass(item.title, item.description ?? "") === "tree" && g.rows >= GEOMETRIC_MIRROR_ROWS && g.mirror > GEOMETRIC_MIRROR) {
       hard.push({ code: "SYMMETRIC", msg: `the crown is nearly mirror-symmetric (left/right match ${g.mirror}, Beodeul trees 0.75-0.93) - make one shoulder 3+ px higher, one side wider, lobes and notches at different heights` });
     }
-    const isTree = footprintClass(item.title, item.description ?? "") === "tree";
+    const cls = footprintClass(item.title, item.description ?? "");
+    const isTree = cls === "tree";
+    // 잎 검사는 잎 덩이 종류(나무·덤불·화단)만 — 이끼 낀 돌무더기의 초록 이끼는 수관이 아니다(object-gen geometry_issues leafy)
+    const leafy = cls === "tree" || cls === "plant";
     if (isTree && g.rows >= GEOMETRIC_MIRROR_ROWS && g.solidity > CROWN_SOLIDITY_MAX) {
       hard.push({ code: "CROWNFULL", msg: `the crown fills its outline like an egg (solidity ${g.solidity}, Beodeul trees 0.86-0.91) - cut 1-2 deep notches (3+ px) into the rim and push one lobe out to one side` });
     }
@@ -494,7 +497,7 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
     // 원본 checks NODEEP: 견본 나무·덤불은 덩이 사이 깊은 그늘이 14~20%, 「바랜 베개 돌」로 반려된 돌무더기는 0~4%.
     if (g.rows >= GEOMETRIC_MIN_ROWS && opaque && deep / opaque < DEEP_MIN) hard.push({ code: "NODEEP", msg: `no deep shadow (${Math.round((deep / opaque) * 100)}% of pixels below luma ${DEEP_LUMA}, Beodeul 14-54%) - put near-black pockets in the gaps between clumps / stones and under the object` });
     const lv = leafTone(shown);
-    if (lv.leafPixels >= LEAF_MIN_PIXELS) {
+    if (leafy && lv.leafPixels >= LEAF_MIN_PIXELS) {
       if (lv.leafCast > LEAF_CAST_MAX) hard.push({ code: "LEAFHUE", msg: `the leaves are olive/yellow (red-blue ${lv.leafCast}, Beodeul -16..+14) - paint them with the listed leaf-green keys` });
       if (!isTree && g.rows >= GEOMETRIC_MIN_ROWS && g.solidity > MASS_SOLIDITY_MAX) hard.push({ code: "BLOBBY", msg: `the leafy mass fills its outline like a ball or dome (solidity ${g.solidity}, Beodeul bushes 0.89-0.91) - bite 1-2 deep notches into the outline and let one clump stick out to one side` });
       if (g.rows >= GEOMETRIC_MIN_ROWS && g.side > STRAIGHT_SIDE_MAX) hard.push({ code: "STRAIGHTSIDE", msg: `one side of the leafy mass runs straight down ${g.side} rows like a box wall (Beodeul 2-10) - let the side bulge in and out lobe by lobe, the edge moving every 1-3 rows` });
