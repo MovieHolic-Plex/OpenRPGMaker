@@ -192,7 +192,7 @@ for (const job of cases) {
   const cardsBefore = await page.locator('[data-testid="ai-objectgen-card"]').count();
   await page.getByTestId("ai-input").fill(job.prompt);
   await page.getByTestId("ai-send").click();
-  let kit = null, placedAt = 0, lastShot = 0, noCardSince = null;
+  let kit = null, placedAt = 0, lastShot = 0, noCardSince = null, redrawn = false;
   const deadline = Date.now() + Number(process.env.CASE_TIMEOUT_MS ?? 45 * 60_000);
   while (Date.now() < deadline) {
     await page.waitForTimeout(5000);
@@ -211,6 +211,12 @@ for (const job of cases) {
     // 알아서 고르기가 통과 후보를 못 찾으면 사람이 고를 차례다 — 감독 대역이 다 그린 후보 중 첫 장을 고르고 기록한다(SUPERVISOR_PICK=1).
     if (!kit && process.env.SUPERVISOR_PICK === "1") {
       const waiting = await page.locator('[data-testid="ai-objectgen-card"]').last().locator('[role="status"]').textContent().catch(() => "");
+      // 후보를 하나도 못 그렸으면(격자 줄 길이 깨짐 등) 사람처럼 「다시 그리기」를 한 번 누른다.
+      if (/후보를 그리지 못했어요/u.test(waiting ?? "") && !redrawn) {
+        redrawn = true;
+        await page.locator('[data-testid="ai-objectgen-card"]').last().locator('[data-testid="ai-objectgen-redraw"]').click().catch(() => {});
+        log("redraw pressed (no candidate drawn)"); appendFileSync(resolve(out, `${job.id}-redraw.txt`), new Date().toISOString() + "\n");
+      }
       if (/통과한 후보가 없어/u.test(waiting ?? "")) {
         const pick = page.locator('[data-testid="ai-objectgen-card"]').last().locator('[data-testid="ai-objectgen-pick"]:not([disabled])').first();
         if (await pick.count()) { await pick.click().catch(() => pick.evaluate((el) => el.click())); log("supervisor pick (no candidate passed the blind review)"); appendFileSync(resolve(out, `${job.id}-supervisor-pick.txt`), new Date().toISOString() + "\n"); }

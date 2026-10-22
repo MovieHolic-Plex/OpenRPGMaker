@@ -23,13 +23,49 @@ export function paletteFromImages(images: readonly { readonly image: RgbaImage; 
   for (const { image, weight } of images) {
     for (const [color, n] of colorCounts(image)) counts.set(color, (counts.get(color) ?? 0) + n * weight);
   }
+  const ranked = [...counts].sort((a, b) => b[1] - a[1] || a[0] - b[0]);
   const chosen: number[] = [];
-  for (const [color] of [...counts].sort((a, b) => b[1] - a[1] || a[0] - b[0])) {
-    if (chosen.length >= limit) break;
-    if (chosen.some((other) => distance(other, color) <= NEAR)) continue;
+  const take = (color: number): boolean => {
+    if (chosen.length >= limit || chosen.some((other) => distance(other, color) <= NEAR)) return false;
     chosen.push(color);
+    return true;
+  };
+  // 1) 자주 쓴 색 — 단, 끝 몇 칸은 비워 둔다.
+  for (const [color] of ranked) { if (chosen.length >= limit - HUE_RESERVE) break; take(color); }
+  // 2) 칩셋에 있는데 빠진 진한 색상(hue)마다 어두운·가운데·밝은 셋. 빈도만 보면 땅·돌 색이 자리를 다 차지해
+  //    밀밭의 금빛 노랑(버들항 빈도 62위 밖)이 빠지고 건초 짐마차가 베이지 덩어리로 그려졌다(2026-10-22 VQA major).
+  const total = ranked.reduce((sum, [, n]) => sum + n, 0);
+  const bins = new Map<number, [number, number][]>();
+  for (const [color, n] of ranked) {
+    const [h, l, sat] = hls(color);
+    if (sat < 0.45 || l < 0.18 || l > 0.86 || n < total * 0.0002) continue;
+    const bin = binOf(h, sat);
+    (bins.get(bin) ?? bins.set(bin, []).get(bin)!).push([color, n]);
   }
+  const covered = (bin: number) => chosen.some((color) => { const [h, , sat] = hls(color); return sat >= 0.45 && binOf(h, sat) === bin; });
+  const missing = [...bins].filter(([bin]) => !covered(bin)).sort((a, b) => b[1].reduce((s, [, n]) => s + n, 0) - a[1].reduce((s, [, n]) => s + n, 0));
+  for (const [, list] of missing) {
+    const byLuma = [...list].sort((a, b) => luma(a[0]) - luma(b[0]));
+    const third = (k: number) => byLuma.slice(Math.floor(byLuma.length * k / 3), Math.max(Math.floor(byLuma.length * k / 3) + 1, Math.floor(byLuma.length * (k + 1) / 3)));
+    for (const k of [1, 0, 2]) { const best = third(k).sort((a, b) => b[1] - a[1])[0]; if (best) take(best[0]); }
+  }
+  // 3) 남은 칸은 다시 빈도 순.
+  for (const [color] of ranked) { if (chosen.length >= limit) break; take(color); }
   return chosen.sort((a, b) => luma(a) - luma(b) || a - b).map(hex);
+}
+
+/** 빠진 색상을 채울 칸 수(팔레트 끝) */
+const HUE_RESERVE = 12;
+const HUE_BINS = 12;
+/** 색상 칸 × 채도 단(0.45~0.7 · 0.7 이상) — 흙빛 황갈색이 있다고 금빛 노랑이 있는 것은 아니다 */
+const binOf = (h: number, sat: number): number => (Math.floor(h * HUE_BINS) % HUE_BINS) * 2 + (sat >= 0.7 ? 1 : 0);
+function hls(c: number): [number, number, number] {
+  const r = ((c >> 16) & 255) / 255, g = ((c >> 8) & 255) / 255, b = (c & 255) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2, d = max - min;
+  if (d === 0) return [0, l, 0];
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  const h = max === r ? ((g - b) / d + (g < b ? 6 : 0)) / 6 : max === g ? ((b - r) / d + 2) / 6 : ((r - g) / d + 4) / 6;
+  return [h, l, s];
 }
 
 /** 그림 하나의 불투명 색 개수 — 같은 그림(시트 전체)은 한 번만 센다. */
