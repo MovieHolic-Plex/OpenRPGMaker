@@ -46,7 +46,7 @@
  },
  "wz-hd-stairs-down": {
   "verdict": "PASS",
-  "reason": "(2026-10-22 계단 다시 그림, 독립 Opus 검수) 지하 북벽 책장 두 개 사이에 밝은 돌 문틀과 어두운 안쪽, 그 안에서 위로 갈수록 좁아지고 맨 위 디딤판이 따뜻한 노란빛을 받는 오크 계단이 있어 한눈에 '북쪽 위층 가게로 올라가는 계단'으로 읽힌다. 남쪽 바닥으로 내려오는 첫 단과 옆판이 입구 방향도 분명하다. 시점은 벽에 박힌 3/4 정면으로 성 계단·시계탑 계단과 같은 문법이고, 돌 회색과 오크 갈색은 칩셋 팔레트(책장 나무·벽돌)와 맞는다. 축척은 2칸 폭에 사람 하나가 들어가 자연스럽고, 3배 장소 그림에서 벽돌 줄·책장 윤곽을 침범하지 않는다. 아쉬운 점은 아치 머리가 뾰족하지 않고 둥글게 보여 지시서의 '뾰족 아치'와 다르다는 것인데, 판독·품질을 해칠 정도는 아니다."
+  "reason": "2026-10-23 다시 그림(원근 디딤판·얇은 챌판/계단통 얇은 내림 단). Opus 적대 검수 r2 3명 중 다수 major 0 — 올라가는/내려가는 계단으로 1배·3배에서 읽힘, 3/4 윗면 일관, wizarding_world 화풍. {'wz-clock-stair': 'object-gate PASS (wizarding_world refs)', 'wz-castle-stair-up': 'object-gate PASS (wizarding_world refs)', 'wz-hd-stairs-down': 'object-gate PASS (wizarding_world refs)', 'wz-owl-stair-down': 'object-gate PASS (wizarding_world refs, kind flat)', 'wz-owl-stair-up': 'object-gate REFER → fresh Argon adversarial PASS → delegated allow 2026-10-23', 'wz-castle-stair-down': 'object-gate REFER (style split) → fresh Argon adversarial PASS → delegated allow 2026-10-23'}."
  },
  "wz-hd-workbench": {
   "verdict": "PASS",

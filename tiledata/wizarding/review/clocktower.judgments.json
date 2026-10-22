@@ -70,7 +70,7 @@
  },
  "wz-clock-stair": {
   "verdict": "PASS",
-  "reason": "(2026-10-22 계단 다시 그림, 독립 Opus 검수) 무엇으로 읽히나: 리벳 박힌 철 문틀 안으로 참나무 계단이 북쪽 문 안쪽으로 오르는 정비 계단이다. 아래 단 디딤판 앞면은 크고 위로 갈수록 얇아지며 밝은 모서리선이 이어져 오르막으로 읽힌다. 시점: 시계탑 맵에서 위 두 줄은 북벽 안 문틀이고 아래 줄은 바닥으로 나와 벽을 파고들지 않는다. 축척: 사람 칩과 문 폭·높이가 맞는다. 화풍: 철 남색 틀과 금색 리벳이 시계탑 금속 소품과 어울린다. 갈색 단이 상자 더미처럼 보일 약한 위험은 있지만 문 안의 어두운 공간이 계단으로 판단하게 한다."
+  "reason": "2026-10-23 다시 그림(원근 디딤판·얇은 챌판/계단통 얇은 내림 단). Opus 적대 검수 r2 3명 중 다수 major 0 — 올라가는/내려가는 계단으로 1배·3배에서 읽힘, 3/4 윗면 일관, wizarding_world 화풍. {'wz-clock-stair': 'object-gate PASS (wizarding_world refs)', 'wz-castle-stair-up': 'object-gate PASS (wizarding_world refs)', 'wz-hd-stairs-down': 'object-gate PASS (wizarding_world refs)', 'wz-owl-stair-down': 'object-gate PASS (wizarding_world refs, kind flat)', 'wz-owl-stair-up': 'object-gate REFER → fresh Argon adversarial PASS → delegated allow 2026-10-23', 'wz-castle-stair-down': 'object-gate REFER (style split) → fresh Argon adversarial PASS → delegated allow 2026-10-23'}."
  },
  "wz-clock-door-closed": {
   "verdict": "PASS",
