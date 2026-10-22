@@ -2624,7 +2624,7 @@ const removeMapTool: ToolDefinition = {
     // 에이전트 경로는 작업된 시작 맵 삭제를 차단(암묵 재배선 금지) — 먼저 시작 위치를 옮기게 한다.
     // 단, 손대지 않은 빈 시작 맵(isUntouchedMap)이고 다른 맵이 있으면 삭제와 함께 시작 맵을 자동 재배선한다.
     if (draft.startMapId === map.id && (!isUntouchedMap(map) || Object.keys(draft.maps).length <= 1)) {
-      throw new ToolError("시작 맵은 삭제할 수 없습니다 — 먼저 set_start_position으로 시작 맵을 옮기세요.", { code: "start-map" });
+      throw new ToolError("시작 맵은 삭제할 수 없습니다 — 먼저 set_start_position으로 시작 맵을 옮기세요. (빈 시드 맵에서 시작이 자동으로 옮겨진 맵을 다시 지으려는 것이면, 잠깐 옮겼다 지우고 새로 지으면 새 맵이 다시 시작 맵이 된다 — 보고 전 get_project_summary 의 startMapId 로 확인)", { code: "start-map" });
     }
     const wasStartMap = draft.startMapId === map.id;
     const plan = planMapDeletion(draft, map.id);

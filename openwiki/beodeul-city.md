@@ -134,11 +134,20 @@ SQLite revision 7 저장·재로드와 전용 플레이어 8비트(모든 집 �
   r1(수리 전): 「남쪽에 성문 하나」인데 서·동 틈 셋, 성문이 남동 모서리 곁. r5(수리 뒤): 남쪽 가운데 성문 하나, 옆 틈 0, 문 앞 4/4.
 - **조수 시험**: 시드 `scene-lessons-seed.json` 의 `walled-beodeul-town`. 실행 `qa-runs/harnesses/assistant-capability/2026-10-22-beodeul-wall-r1..r5`
   (Claude Code Sonnet 5.5 high **조수 대용**, 실제 입력창 경로, SQLite 저장·재로드 일치). 성문 걷기 영상은 출하 player 에서 r5 저장본을 실제 방향키로
-  (`r5/.../gatefilm/gatewalk.mp4`). 남은 것: 집 수 요청(5)이 성벽 띠 때문에 3~4채로 덜 지어지기도 한다(r3·r4).
+  (`r5/.../gatefilm/gatewalk.mp4`). r3·r4 의 집 수 부족(3~4채)은 위 「집 수·길 토막」에서 넓혀 다시 짓기로 고쳤다.
 - **참고문서**: 번들 `beodeulCityReferences.json` 용도 `beodeul-town-wall`(출처 `tiledata/beodeul-town-wall/`, 그림 `public/assets/beodeul-town-wall/`,
   생성 `wall_refs.py` — 예시 둘레·정상/오류 그림 4종·좌표 검사 `wrong-layer`·`face-missing`·`wall-gap`·`gate-blocked`).
-- **기존 프로젝트 한계**: 접목(tileGrafts)이 이미 28,544 이후 칸을 쓰는 프로젝트(대부분, count 30,080)는 꼬리를 덮지 않으려고 성벽을 싣지 않는다 —
-  `townWallAvailable` 이 거짓이 되어 성벽 없이 짓고, 참고문서 용도도 넣지 않는다. 새 프로젝트는 접목이 28,672 뒤로 간다.
+- **기존 프로젝트 — 이식 칸 옮기기(2026-10-22)**: 예전에는 접목(tileGrafts)이 28,544 이후를 쓰는 프로젝트(대부분)가 성벽을 못 받았다.
+  이제 `ensureBeodeulCityTileset(tileset, project)` 가 `localTailRelocation.ts` `relocateLocalTail` 로 사본의 로컬 꼬리
+  [사본 번들 끝 B, count) 를 지금 번들 끝 뒤로 통째로 민다(한 줄 폭 배수). 칸 표·이식 목록·애니메이션 띠·킷·오토타일·칸 묶음·팔레트·재료 슬롯·
+  카운터·턱·미끄럼, 그 칩셋 맵의 네 층·겹침 스택·두들 묶음·절벽 장식·지형 기록, 그 맵을 겨누는 changeTile(맵·공통 이벤트), 같은 칩셋 지형 도장까지 같은 변환.
+  B 앞 칸은 그대로, 비운 [B, E) 를 번들 표가 채운다. 앞으로 번들이 또 자라도 같은 함수가 다시 민다(예약 구간 없음). project 없이 부르면 예전처럼 막는다.
+  실제 프로젝트 사본 4개 증명(`scripts/qa/beodeul-graft-relocation-proof.mts`): 모든 맵 화소 동일(정규화 뒤·저장 재로드 뒤), 이식 그림 손실 0,
+  성벽 마을 332칸·집 5채, 시프트 128~1024. 시험 `test/beodeulGraftRelocation.test.ts`.
+- **집 수·길 토막(2026-10-22)**: 성벽 마을이 요청 집 수보다 적게 앉으면 같은 id 로 +8×+6 씩 두 번까지 넓혀 다시 짓고 가장 나은 크기를 남긴다.
+  그래도 모자라면 요약 머리에 「집 N채를 요청했지만 M채만 앉았다」를 정직하게 적는다(성벽 없는 마을도). 형태를 생략해 riverbank 가 나오면
+  성벽 마을은 street 로 바꾼다(강이 성벽을 뚫었다). 12d 가 성벽에 끊긴 길 토막을 `analyzeCityForm` 막다른 끝 기준으로 깎는다 —
+  성문에서 각 집 문 앞까지 길 경로는 보호(8개 시험 중 7개 막다른 끝 0, 1개는 집 문 앞 2칸 폭 길).
 - **검수**: 새 Opus 적대 VQA 5판(`harness-data/object-gate/vqa/beodeul-town-wall-r1..r5/receipt.json` — r1 FAIL 회색·매끈·끝 마감, r3 FAIL T자 이음,
   r4·r5 PASS). object-gate 그림 6장은 프로필 미보정이라 AI 판정은 참고(둘레·망루·동쪽 틈 FAIL 화풍/정면 인상, 부품·열린 성문 REFER, 닫힌 성문 PASS)이고,
   Opus VQA 뒤 「delegated by user to supervisor 2026-10-21」 허용을 18323 API 로 기록했다. 3/4 관문 정식 통과(보정 프로필 영수증)는 아니다.

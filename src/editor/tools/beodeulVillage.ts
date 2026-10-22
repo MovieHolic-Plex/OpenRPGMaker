@@ -2236,6 +2236,37 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       for (let c = prev.get(hit)!; c >= 0; c = prev.get(c)!) { path.push(c, c + 1); }
       dropProps(path); paveCells(path);
     }
+    // 성벽이 끊은 길이 성벽 안에서 토막으로 남는다(2026-10-22 r3 판정 「길 끝이 목적지 없이 끊기는 토막」 — 굽은 큰길은 옆 칸이 길이라
+    // 위 줄기 깎기가 갈림목으로 보고 멈췄다). 성벽 없는 같은 마을은 막다른 길이 0 이므로, 성벽 마을의 막다른 길은 성벽이 만든 것이다.
+    // 도시 형태 자가 짚는 끝 줄을 한 줄씩 걷어 갈림목·문 앞·광장에 닿을 때까지 되풀이한다(성문 길·문 앞은 두고).
+    {
+      const front = new Set([...doorFrontsSet, ...keepRoad, ...keep]);
+      // 집 문으로 가는 길은 막다른 길이어도 남긴다 — 성문 길에서 길을 따라 각 문 앞(과 그 옆 길 칸)까지 가장 짧은 줄기를 지킨다
+      {
+        const pathy = (c: number) => occ[c] === ROAD || occ[c] === PLAZAC;
+        const prev = new Int32Array(W * H).fill(-2); const q: number[] = [];
+        for (const c of keep) if (pathy(c)) { prev[c] = -1; q.push(c); }
+        for (let h = 0; h < q.length; h += 1) { const c = q[h]!, x = c % W;
+          for (const n of [c - 1, c + 1, c - W, c + W]) if (n >= 0 && n < W * H && Math.abs((n % W) - x) <= 1 && prev[n] === -2 && pathy(n)) { prev[n] = c; q.push(n); } }
+        for (const d of doorFronts) { const dc = idx(d.x, d.y);
+          const ends = [dc, dc - 1, dc + 1, dc + W].filter((n) => n >= 0 && n < W * H && prev[n] !== -2);
+          const end = ends[0]; if (end === undefined) continue;
+          for (let c = end; c >= 0; c = prev[c]!) front.add(c); }
+      }
+      const peeled: number[] = [];
+      for (let pass = 0; pass < 48; pass += 1) {
+        const report = analyzeCityForm(draft, mw);
+        const drop = new Set<number>();
+        for (const d of report.deadEnds) { const cap = (d.cells ?? [d.at]).map(([x, y]) => idx(x, y));
+          if (cap.some((c) => front.has(c))) continue;
+          for (const c of cap) if (occ[c] === ROAD) drop.add(c); }
+        if (!drop.size) break;
+        for (const c of drop) { occ[c] = FREE; peeled.push(c); }
+        if ("mat" in spec.base) for (const c of drop) fill({ x: c % W, y: Math.floor(c / W), w: 1, h: 1 }, spec.base.mat);
+        else paintCells([...drop], spec.base);
+      }
+      if (peeled.length) logConstructionTiles(mw, "tidy", "성벽이 끊은 길 토막 정리");
+    }
     const used = (side: "N" | "S", x0: number, x1: number) => gates.some((g) => g.side === side && x1 >= g.x - 2 && x0 <= g.x + 3);
     const towers = L.towers.filter((t) => t.x > L.x0 + 1 && t.x + 1 < L.x1 - 1 && !used(t.side, t.x - 1, t.x + 2)
       && [0, 1].every((i) => [...Array(7).keys()].every((j) => { const y = (t.side === "S" ? L.y1 : L.y0) - 3 + j; return !roadAt(t.x + i, y) && (!inMap(t.x + i, y) || occ[idx(t.x + i, y)] === WALLB); })));
