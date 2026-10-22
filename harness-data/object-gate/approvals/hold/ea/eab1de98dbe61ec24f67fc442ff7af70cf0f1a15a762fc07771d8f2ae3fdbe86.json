@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "eab1de98dbe61ec24f67fc442ff7af70cf0f1a15a762fc07771d8f2ae3fdbe86",
+ "profileHash": "4d8774b517f41638",
+ "kind": "organic",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-22T16:59:38.949Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/opus-vqa-r1.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "delegated by user to supervisor 2026-10-23 — wasteland_ruins/bush-wild; gate AI pass + 3 fresh Opus adversarial reviewers r1 majority pass",
+ "sig": "c89d0eaabe89b8e6dba9e900bc6e843ec949edc12eabed7b723e16a47f000df9"
+}

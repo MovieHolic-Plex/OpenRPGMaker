@@ -1,0 +1,350 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "71ded43e68fc37226a779e88e97b016609b09d8b60861707a135aba9ae4de223",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "dead leafless tree with gnarled bare branches and a thick trunk with exposed roots",
+ "label": "wasteland_ruins/dead-tree",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 8,
+  "darkV5": 47,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "17-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bare branches",
+      "rows": "0-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss/vine strip on left of trunk",
+      "rows": "26-43",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The trunk (rows 17-47) is a vertical column with a nearly constant width of 10-11 px. It flares at the base into roots in rows 43-47. It has no cap, no ellipse and no edge line with eave shadow. The branches are thin forked limbs drawn in flat side view. The moss on the left is a decor strip. For an organic dead tree this is a natural silhouette, but no horizontal top surface is drawn. The object is a front elevation, not a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, thin dead tree beside two full leafy trees. Its measured facts are acceptable: 8 visible tones per tile (tree-1a786c has 7, tree-d43edd has 29), 0% near-flat coverage, and 0% neutral dark edge pixels. The outline is a tinted dark brown beside the wood, not black. By eye, though, the trunk and branches read as only about 4 brown steps, with a thin dark edge, one lighter side and a mid fill. There are no bark grain clusters, no per-root shading, and no highlight dots, and the branches are one or two pixels wide and almost flat. The only extra detail is a small green moss strip on the trunk. Tree-d43edd has clumped leaves in many tones and shaded roots, and even the smaller tree-1a786c has varied clumps. Next to them the candidate looks thinner and more sticker-like. It needs more bark texture, more trunk and root shading steps, and more highlight variation to match the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 11809
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "17-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "branches",
+      "rows": "0-24",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss patch on trunk",
+      "rows": "26-43",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "exposed roots",
+      "rows": "43-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tree is a vertical trunk (rows ~17-45) with branches spreading from it, drawn as a flat front-facing silhouette. The trunk width stays 8-11 px through rows 24-42, with no widening and narrowing ellipse at the top, no front-edge line and no eave shadow. The branches are thin diagonal limbs with no horizontal surface. The roots at rows 43-47 flare out on the ground. The trunk top is hidden in the branch fork. No part shows a top surface, so this reads as front elevation. The green moss strip on the left of the trunk (rows 26-43) is decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a thin, sparse silhouette, so I judged it mostly by eye. The measured facts are not bad: 8 visible tones per tile against 7 for tree-1a786c, 0% near-flat coverage, and 0% neutral dark edge pixels. The outline is therefore a tinted dark brown rather than a black sticker line. However, the 8 colours include a small green moss strip, so the bark ramp has only about 4 steps (dark outline, mid brown, a lighter brown, a narrow highlight). The references use 5-6 steps per material. The thick trunk and root flare read as a mostly uniform mid-brown with few per-section highlights, grain dots or bark clumps. The thin branches are 1-2 px of one tone plus an outline. Next to tree-d43edd (29 tones, with shaded leaf clumps and a modelled trunk and roots) it looks flatter and thinner, and it only matches the much simpler tree-1a786c on tone count. A careful artist would likely ask for more bark shading and root texture, so I am failing it since the call is doubtful.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 15293
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "trunk",
+      "rows": "17-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper branches",
+      "rows": "0-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "moss strip on trunk",
+      "rows": "26-43",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The trunk (rows 17-47) is drawn as a vertical face, with the width profile staying steady at 10-11 px from rows 26-42 and flaring into roots at rows 43-46. There is no ellipse, no front-edge line and no eave shadow, and no horizontal surface shows. The branches are thin, near-flat strokes that fork upward, and none shows a top plane. The bare, leafless tree is a plausible organic object, but it is drawn as a flat front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small, thin dead tree with only 8 distinct colours in the whole piece. The trunk and branches have roughly 3-4 brown steps plus a couple of green moss pixels, against about 5-6 steps per material in the Beodeul references. The measured facts show 8 visible tones per tile, matching the small reference tree-1a786c (7) but far below tree-d43edd (29). Near-flat coverage is 0%, and the dark edge pixels carry a brown tint (0% neutral), so the outline is dark material tone and not a black sticker line. The branches are thin, mostly one pixel wide, with little per-branch highlight or bark grain. The roots and trunk base are only lightly shaded, so the tree reads thinner and flatter next to the clumped, multi-tone references. A careful artist would likely ask for a thicker trunk with more bark grain, shaded roots and more highlight steps, so I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13354
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "moss patch on trunk left side",
+      "rows": "26-43",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "trunk",
+      "rows": "17-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bare branches",
+      "rows": "0-22",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "exposed roots",
+      "rows": "43-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tree is drawn as a flat silhouette: a vertical trunk (rows 17-45) with branches forking upward and roots spreading at the base. The branches and trunk are shaded in vertical strips with no top-surface band, front-edge line, eave shadow or ellipse. The trunk is 10-11 px wide for rows 26-42 and has no cut or cap showing a horizontal surface. Organic plant shapes like this are not expected to show a flat top, but nothing in the drawing shows a horizontal plane, so it reads as a front elevation. The green moss strip on the left of the trunk (rows 26-43) is a surface detail."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate has 8 visible tones per tile, above tree-1a786c (7) but far below tree-d43edd (29). Near-flat coverage is 0%, the same as both references. Dark edge pixels are 0% neutral, so the outline leans brown, matching the dark-material-tone approach. By eye, the trunk and branches read as about 4 brown steps with only light bark grain, and there are no per-clump or per-root shaded details. The thin branches are mostly a single mid-tone with a dark edge, which looks flatter and more sticker-like than the references. The small green vine adds a little variation but does not close the gap. The piece is clean and tinted, but not as rich in shading steps or texture as a Beodeul tree, and given the doubt this fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 13150
+  }
+ ],
+ "decidedAt": "2026-10-22T16:59:41.745Z",
+ "cells": {
+  "16": [
+   "357921f3945d8bfb",
+   "66499dfb0a092962",
+   "9cae575416468f43",
+   "9d652f42758b398e",
+   "ad4696c1e3fc067b",
+   "dfd93c85aa69c6ff"
+  ],
+  "24": [
+   "06e55dda726b7195",
+   "29e139c692b7c143",
+   "36076008173e157f",
+   "4f620818a4232fc3",
+   "774cb7526653ecb0",
+   "7f0c6bdbecb1075f",
+   "7fda5454e021f272",
+   "85b84401ab1022c6",
+   "8c15da5df6005f36",
+   "9b689855b6520a4f",
+   "bce53878d2ae865e",
+   "e21edfc4f6d80c58"
+  ],
+  "32": [
+   "13bcfdfd19c8bc4d",
+   "23e4a919d2d109be",
+   "76832f3b09eaa85f",
+   "f2a4cb0f0a59f898"
+  ],
+  "48": [
+   "30e63c93a2c292b3",
+   "588e1b8814fc8f93",
+   "fff454921414b321"
+  ]
+ }
+}
