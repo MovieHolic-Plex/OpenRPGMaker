@@ -1,4 +1,5 @@
 import { jsonEqual } from "@/util/structuralJson";
+import { fitStairTransfers, stairPairMismatch } from "@/project/stairs/fit";
 import { npcMoveDurationMs, npcMoveIntervalMs, PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
 import { passageBlockWarning } from "../../project/eventPassageBlock";
 import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horrorBehaviorTools";
@@ -2880,12 +2881,17 @@ const createTransferPair: ToolDefinition = {
       if (fresh.length) sealedAfter.push(`${map.name}: ${fresh.join(", ")}`);
     }
     if (sealedAfter.length) throw new ToolError(`출입구 설치로 기존 문이 봉쇄됩니다: ${sealedAfter.join(' / ')}`, { code: 'transfer-sealed' });
+    // 계단 입구 계약(project/stairs/fit.ts): 계단에 건 출입구는 계단 그림 칸에서 발동하고, 도착은 앞 칸에서 계단을 등진다.
+    const stairNotes = fitStairTransfers(draft, a.mapId === b.mapId ? [a.mapId] : [a.mapId, b.mapId]);
+    const stairPair = stairPairMismatch(draft, { mapId: a.mapId, ...gateA }, { mapId: b.mapId, ...gateB });
     const adjustedA = gateA.x !== a.x || gateA.y !== a.y;
     const adjustedB = gateB.x !== b.x || gateB.y !== b.y;
     const warnings = [
       ...(adjustedA ? [`출입구 A 위치 자동 조정: (${a.x},${a.y}) → (${gateA.x},${gateA.y})`] : []),
       ...(adjustedB ? [`출입구 B 위치 자동 조정: (${b.x},${b.y}) → (${gateB.x},${gateB.y})`] : []),
       ...reachNotes,
+      ...stairNotes,
+      ...(stairPair ? [stairPair] : []),
       ...(sealedAfter.length > 0
         ? [`봉쇄 위험 — ${sealedAfter.join(" / ")} — 그 문은 밟아도 아무 데도 못 간다(벽·가구·이웃 문이 접근을 막음). move_event 로 문 자리를 옮기거나 빈 자리로 좌표를 바꿔 다시 create_transfer_pair 하세요.`]
         : []),

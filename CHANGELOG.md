@@ -5,6 +5,19 @@
 
 <!-- releases -->
 
+## 0.322.0 — 2026-10-22
+
+### 기능
+
+- **workshop** — craft-workshop look — pixel stages, ember progress, ready reveal (#3243) (`afe0ac4`)
+- **ai** — hand-interior composition lint, flat pieces on daises, focal-hall rules (assistant vs Fallen rooms test) (#3242) (`d986ce8`)
+
+## 0.321.0 — 2026-10-22
+
+### 기능
+
+- **village** — villages differ by request — roofs/water/woods/highland, varied default seed, no fixed small-village template (#3240) (`f5c7d1d`)
+
 ## 0.320.0 — 2026-10-22
 
 ### 기능

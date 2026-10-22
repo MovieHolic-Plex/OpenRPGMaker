@@ -15,6 +15,7 @@ import { store as projectStore } from "@/project/store";
 import type { WorkshopSession } from "./workshopSession";
 import { latestRound } from "./workshopStatus";
 import { workshopQueue } from "./queue/workshopQueue";
+import { markReveal, revealPhase } from "./workshopArt";
 
 export type RoundViewState = { selected: number; zoom: "fit" | "big"; rejectFor: string | null };
 
@@ -153,7 +154,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
       el("h3", { text: item.title }),
       el("span", { class: "workshop-chip", text: `${item.width}×${item.height}px` }),
       el("span", { class: "workshop-chip", text: item.category }),
-      ...(pick ? [el("span", { class: "workshop-chip is-pass", text: `고름: ${pick.letter}` })] : []),
+      ...(pick ? [el("span", { class: "workshop-chip is-picked", text: `고름: ${pick.letter}` })] : []),
       el("span", { class: "workshop-round-desc", text: item.description }),
     ],
   });
@@ -176,15 +177,20 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
       ...(run.attempt > 1 ? [el("span", { class: "workshop-chip", text: `다시 그림 ${run.attempt - 1}번` })] : []),
       ...(run.error ? [el("span", { class: "workshop-chip is-fail", text: run.error, attrs: { title: run.error } })] : []),
     ];
-    return el("article", {
+    const busy = run.status === "drawing" || run.status === "reviewing" || run.status === "queued";
+    // 그림이 처음 나온 그 순간에만 한 번 드러낸다(열 때 이미 다 된 카드는 그대로)
+    const reveal = revealPhase(`${round!.id}|${run.letter}`, !!run.grid);
+    return markReveal(el("article", {
       class: "workshop-card" + (index === state.selected ? " is-selected" : "") + (picked ? " is-picked" : ""),
       dataset: { testid: "workshop-card", letter: run.letter, status: run.status, zoom: state.zoom },
       on: { click: () => { state.selected = index; rerender(); } },
       children: [
         el("div", {
-          class: "workshop-card-art",
+          class: "workshop-card-art" + (!run.grid && (run.status === "drawing" || run.status === "reviewing") ? " is-forging" : !run.grid && run.status === "queued" ? " is-waiting" : ""),
+          // 그림이 나와도 카드 높이가 바뀌지 않게 그림 높이만큼 미리 잡는다(드러나는 순간 아래가 밀려 내려갔다)
+          attrs: { style: `min-height:${Math.max(168, item.height * scale + 16)}px` },
           children: run.grid ? [el("img", { attrs: { src: gridDataUrl(run.grid, palette, scale, BACKGROUND), alt: `후보 ${run.letter}` } })]
-            : [el("span", { class: "workshop-card-wait" + (run.status === "drawing" || run.status === "reviewing" || run.status === "queued" ? " is-busy" : ""), text: RUN_STATUS[run.status] })],
+            : [el("span", { class: "workshop-card-wait" + (busy ? " is-busy" : ""), text: RUN_STATUS[run.status] })],
         }),
         el("div", { class: "workshop-card-facts", children: facts }),
         ...(run.note ? [el("div", { class: "workshop-item-meta", text: run.note })] : []),
@@ -203,7 +209,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
           })),
         })] : []),
       ],
-    });
+    }), reveal);
   }
 
   function compare(run: WorkshopRun | null): HTMLElement {
@@ -233,7 +239,8 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
       head,
       ...bakeRow(),
       // 그린 장이 하나도 없으면(그리는 중·막힘) 검수·단축키 안내는 소음이다.
-      ...(!runs.some((r) => r.grid) ? [] : [el("p", { class: "workshop-keys", text: `「검수 통과」는 AI 판정일 뿐이에요. 직접 보고 고르세요. 단축키: 1~${runs.length} 카드, Enter 고르기, X 버리기, R 이 장 다시, F 확대.` })]),
+      // 그린 장이 하나도 없을 때는 감춰 두되 자리는 잡는다 — 첫 그림이 나올 때 카드가 아래로 밀리지 않게.
+      el("p", { class: "workshop-keys", attrs: runs.some((r) => r.grid) ? {} : { style: "visibility:hidden", "aria-hidden": "true" }, text: `「검수 통과」는 AI 판정일 뿐이에요. 직접 보고 고르세요. 단축키: 1~${runs.length} 카드, Enter 고르기, X 버리기, R 이 장 다시, F 확대.` }),
       el("div", { class: "workshop-cards" + (state.zoom === "big" ? " is-big" : ""), children: runs.map(card) }),
       ...(current ? [compare(selectedRun ?? null)] : []),
       pending

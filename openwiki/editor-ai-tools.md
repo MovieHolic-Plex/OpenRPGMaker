@@ -1,5 +1,9 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 계단 입구 계약 — 조립기·stamp_object·create_transfer_pair (2026-10-22)
+
+계단 키트는 앞 칸(approach)이 빈 바닥이어야 찍히고, 층 이동은 이동 칸(trigger)에, 도착은 앞 칸에 계단을 등지고 둔다. `list_hand_interior_parts`·`list_spatial_designs` 행의 `entrance`, 칩셋 참고문서 「계단 입구」. 상세 `openwiki/stair-entrance-contract.md`.
+
 ## 없는 기물 그리기 `generate_missing_object` (2026-10-21)
 
 조수가 기물 하나를 놓아 달라는 요청을 받았는데 칩셋에 그 물건이 없을 때, 공방 object-gen 실행기를 사용자 자기 AI 계정으로 돌려 후보를 그리고 고른 것을 **그 맵 칩셋의 공방 칸**으로 구워 놓는다. 스킬 `assistant-skills/missing-object-generation/SKILL.md`, 정책 한 줄 `OBJECT_GEN_POLICY_LINE`(`src/ai/promptPolicies.ts`, Pi 시스템 프롬프트 공간 작업에 실린다).

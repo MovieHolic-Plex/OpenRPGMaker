@@ -6,6 +6,7 @@
  * 타일셋 끝에 이식(tileGrafts)한다. 원래 칸의 통행·층은 건드리지 않는다(사양은 이식 칸만 가리킨다).
  * 픽셀 처리는 순수 함수다(RGBA 배열 in/out). PNG 인코딩·이미지 읽기는 호출하는 쪽(편집기 캔버스)이 한다.
  */
+import { stairContractOf } from "./stairs/contract";
 import type { PassFlag, TileAiMetadata, TilesetDef } from "./types";
 import { validateObjectSpec } from "./objectSpec";
 import { objectSpecHandKind } from "./objectSpecKits";
@@ -224,6 +225,8 @@ export interface KitHandObject {
   readonly ko: string; readonly category: string; readonly category_ko: string; readonly kind: "floor" | "wall" | "hang" | "flat";
   readonly w: number; readonly h: number; readonly up: number; readonly cells: readonly (readonly [number, number, number, number])[];
   readonly desc: string; readonly tags: readonly string[]; readonly place: string; readonly pair: readonly string[]; readonly use: readonly string[];
+  /** 층 이동 계단(입구 계약 project/stairs/contract.ts 가 있는 부품) — 조립기가 앞 칸·이동 칸을 계약대로 본다. */
+  readonly stairs?: "up" | "down";
 }
 /** 가구가 아닌 조립 부품(벽·바닥·지붕·울타리·건물·물) — 방 짓기 가구 목록에서 뺀다. */
 const NOT_FURNITURE = new Set(["wall", "terrain", "fence", "roof", "building", "water", "floor", "path", "cliff"]);
@@ -273,6 +276,11 @@ export function kitHandObjects(tileset: TilesetDef | undefined): Record<string, 
       desc: (kit.ai?.description ?? spec?.summary ?? "").slice(0, 60), tags, place: kit.ai?.placementRules ?? spec?.placement.rule ?? "", pair: [],
       use: spec?.placement.use ?? (kit.ai?.tags ?? []).filter((t) => t.startsWith("use:")).map((t) => t.slice(4)),
     };
+    const stair = stairContractOf(tileset.id, kit);
+    if (stair && stair.leads !== "same") {
+      const o = out[kit.id]!;
+      out[kit.id] = { ...o, stairs: stair.leads, use: o.use.includes("travel") ? o.use : [...o.use, "travel"], desc: `${o.desc} — ${stair.note}`.slice(0, 400) };
+    }
   }
   return out;
 }
