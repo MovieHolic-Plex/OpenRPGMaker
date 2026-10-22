@@ -7,7 +7,7 @@
 import { canMove, inBounds } from "@/project/collision";
 import { passageBounds, UNIT_FOOTPRINT } from "@/project/footprint";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
-import { findBlockingEventOverlappingRect, runtimeEventViewById } from "@/project/runtimeEventState";
+import { findBlockingEventOverlappingRect, runtimeEventViewById, runtimeEventViewsForMap } from "@/project/runtimeEventState";
 import { store } from "@/project/store";
 import { isAlwaysAboveCharacterUpperTile } from "@/player/characterDepth";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
@@ -80,6 +80,7 @@ export function expandApproach(scene: StageScene, actor: string, from: StageCell
       return true;
     },
     hidden: (c) => coveredRow(c.x, c.y) || coveredRow(c.x, c.y - 1),
+    crowded: crowdedCells(scene, actor),
   }, from, target, command.distance);
   const turn: MoveCommand = { kind: "turnToward", ...(targetId ? { target: targetId } : { x: target.x, y: target.y }) };
   if (!plan) {
@@ -87,6 +88,19 @@ export function expandApproach(scene: StageScene, actor: string, from: StageCell
     return [turn];
   }
   return [...plan.steps.map((dir): MoveCommand => ({ kind: "move", dir })), turn];
+}
+
+/**
+ * 걷는 인물(actor)이 지나면 그림이 겹치는 칸: 다른 보이는 인물(주인공 포함)의 바로 위·아래 칸.
+ * 인물 그림은 두 칸 높이라, 그 칸을 지나면 머리·발이 상대를 덮는다.
+ */
+export function crowdedCells(scene: StageScene, actor: string): (c: StageCell) => boolean {
+  const project = store.getCurrent();
+  const cells: StageCell[] = runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)
+    .filter((v) => v.event.id !== actor && !v.transparent && Boolean(v.sprite || v.page?.graphic.appearanceId))
+    .map((v) => ({ x: v.x, y: v.y }));
+  if (actor !== PLAYER_MOVE_TARGET) cells.push(playerCell(scene));
+  return (c) => cells.some((o) => o.x === c.x && Math.abs(o.y - c.y) === 1);
 }
 
 /** turnToward 의 방향(같은 칸·대상 없음이면 null). */

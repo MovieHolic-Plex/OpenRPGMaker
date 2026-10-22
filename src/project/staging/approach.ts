@@ -70,6 +70,11 @@ export type ApproachWorld = {
    * (2026-10-22 막차 승강장: 주인공이 지후 왼쪽 기둥 뒤에 서서 대화 내내 보이지 않았다).
    */
   readonly hidden?: (cell: StageCell) => boolean;
+  /**
+   * 이 칸을 지나면 다른 인물과 그림이 겹치는가(그 인물 바로 위·아래 칸 — 인물 그림은 두 칸 높이). 있으면 그 칸 걸음 값을
+   * 크게 매겨 비켜 돈다(2026-10-22 VQA: 걸어가는 인물이 다른 인물 머리 위를 지나 덮었다). 막지는 않는다.
+   */
+  readonly crowded?: (cell: StageCell) => boolean;
 };
 
 export type ApproachPlan = {
@@ -98,7 +103,7 @@ export type ApproachPlan = {
  */
 export function planApproach(world: ApproachWorld, from: StageCell, target: StageCell, distance = DEFAULT_TALK_DISTANCE): ApproachPlan | null {
   const d = clampTalkDistance(distance);
-  const reach = bfs(world, from, 4096);
+  const reach = bfs(world, from, 4096, world.crowded);
   const key = (c: StageCell) => c.y * world.width + c.x;
   const inBounds = (c: StageCell) => c.x >= 0 && c.y >= 0 && c.x < world.width && c.y < world.height;
   const same = (a: StageCell, b: StageCell) => a.x === b.x && a.y === b.y;
@@ -165,23 +170,31 @@ export function planApproach(world: ApproachWorld, from: StageCell, target: Stag
 
 type Reach = { dist: Map<number, number>; prev: Map<number, { at: number; dir: Dir }> };
 
-function bfs(world: ApproachWorld, from: StageCell, limit: number): Reach {
+/** 걸음 값: 보통 1, 겹치는 칸(crowded) 5. 값이 작은 정수라 칸 대기열(bucket)로 최단 경로를 찾는다. */
+const CROWDED_STEP_COST = 5;
+
+function bfs(world: ApproachWorld, from: StageCell, limit: number, crowded?: (c: StageCell) => boolean): Reach {
   const key = (c: StageCell) => c.y * world.width + c.x;
   const dist = new Map<number, number>([[key(from), 0]]);
   const prev = new Map<number, { at: number; dir: Dir }>();
-  const queue: StageCell[] = [from];
-  for (let head = 0; head < queue.length && head < limit; head += 1) {
-    const cur = queue[head]!;
-    const cd = dist.get(key(cur))!;
-    for (const dir of DIRS) {
-      const n = { x: cur.x + DIR_DELTA[dir].x, y: cur.y + DIR_DELTA[dir].y };
-      if (n.x < 0 || n.y < 0 || n.x >= world.width || n.y >= world.height) continue;
-      const k = key(n);
-      if (dist.has(k)) continue;
-      if (!world.canStand(n) || !world.canStep(cur, n)) continue;
-      dist.set(k, cd + 1);
-      prev.set(k, { at: key(cur), dir });
-      queue.push(n);
+  const buckets: StageCell[][] = [[from]];
+  let settled = 0;
+  for (let cost = 0; cost < buckets.length && settled < limit; cost += 1) {
+    for (const cur of buckets[cost] ?? []) {
+      if (dist.get(key(cur)) !== cost) continue; // 더 싼 값으로 이미 처리됨
+      settled += 1;
+      for (const dir of DIRS) {
+        const n = { x: cur.x + DIR_DELTA[dir].x, y: cur.y + DIR_DELTA[dir].y };
+        if (n.x < 0 || n.y < 0 || n.x >= world.width || n.y >= world.height) continue;
+        if (!world.canStand(n) || !world.canStep(cur, n)) continue;
+        const nc = cost + (crowded?.(n) ? CROWDED_STEP_COST : 1);
+        const k = key(n);
+        const old = dist.get(k);
+        if (old !== undefined && old <= nc) continue;
+        dist.set(k, nc);
+        prev.set(k, { at: key(cur), dir });
+        (buckets[nc] ??= []).push(n);
+      }
     }
   }
   return { dist, prev };

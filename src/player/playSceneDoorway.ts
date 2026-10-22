@@ -15,6 +15,7 @@ import {
 import { store } from "@/project/store";
 import { isDoorArtCell } from "@/project/staging/doorCells";
 import { chebyshev, DIR_DELTA, planApproach, type StageCell } from "@/project/staging/approach";
+import { crowdedCells } from "@/player/playSceneApproach";
 import { characterSpriteY, footprintSpriteX, updateCharacterDepth } from "@/player/characterDepth";
 import { mapTileSize } from "@/project/tileGeometry";
 import { setNpcIdleFrame } from "@/player/playSceneAutonomousSprites";
@@ -128,6 +129,7 @@ export function expandExitVia(scene: DoorScene, actorId: string, from: StageCell
     // 문 칸으로 들어서는 마지막 걸음은 통과로 걷는다(문 이벤트는 대개 막힌 벽 칸).
     canStep: (a, b) => isDoorCell(b) || canMove(project, map, a.x, a.y, b.x, b.y),
     canStand: (c) => isDoorCell(c) || standable(c),
+    crowded: crowdedCells(scene, actorId),
   }, from, door.cell, 0);
   const steps = plan?.steps ?? [];
   if (!plan || !isDoorCell(plan.goal)) {

@@ -164,7 +164,6 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   const o = a.office;
   const taken: Cell[] = [o.elevatorOut, o.heroDesk, o.stairsOut];
   const leadSpot = spot(project, FL_MAP.office, { x: o.elevatorOut.x - 1, y: o.elevatorOut.y - 2 }, taken);
-  const jihuMeet = spot(project, FL_MAP.office, { x: o.elevatorOut.x - 3, y: o.elevatorOut.y - 2 }, taken);
   const minhoSpot = spot(project, FL_MAP.office, o.pantry, taken);
   const jihuSeat = o.jihuDesk;
   taken.push(jihuSeat);
@@ -290,7 +289,8 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     stage(S.MET),
   ]));
   // 만남 장면에만 서 있는 지후(그 뒤엔 자리의 지후가 대신한다).
-  add(office, event("ev_fl_jihu_meet", "강지후", jihuMeet, [
+  // 지후는 자기 자리에서 불려 온다(엘리베이터 문틀 안에 서 있으면 소품처럼 보였다 — 2026-10-22 VQA).
+  add(office, event("ev_fl_jihu_meet", "강지후", jihuSeat, [
     page("jm", [stageIs(V_STAGE, S.STREET)], [], { who: "jihu", dir: "left" }),
   ]));
 
@@ -518,7 +518,8 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
   const o = a.office;
   const taken: Cell[] = [o.heroDesk, o.jihuDesk, o.elevatorOut];
   const leadSeat = spot(project, FL_MAP.officePm, o.leadDesk, taken);
-  const minhoStart = spot(project, FL_MAP.officePm, { x: o.heroDesk.x + 2, y: o.heroDesk.y }, taken);
+  // 민호는 지후 자리와 다른 줄에 — 같은 칸 줄 바로 아래면 두 그림이 한 덩어리로 겹친다(2026-10-22 VQA).
+  const minhoStart = spot(project, FL_MAP.officePm, { x: o.heroDesk.x - 2, y: o.heroDesk.y }, taken);
   const jihuSeat = spot(project, FL_MAP.officePm, { x: o.heroDesk.x + 1, y: o.heroDesk.y - 2 }, taken);
   const jihuPantry = spot(project, FL_MAP.officePm, o.pantry, taken);
 

@@ -429,10 +429,10 @@
   {
    "id": "d3-wed-choice1",
    "label": "수요일 팀장 선택",
-   "note": "FLASH 8: ev_fl_wed auto in fl_office_pm, arrive (13,9)",
+   "note": "FLASH 8: ev_fl_wed auto in fl_office_pm, arrive (13,7) = hero desk via ev_fl_flashback (real arrival cell)",
    "mapId": "fl_office_pm",
    "x": 13,
-   "y": 9,
+   "y": 7,
    "facing": "up",
    "switches": {},
    "variables": {
@@ -667,11 +667,11 @@
   {
    "id": "d4-fri-choice",
    "label": "금요일 발표 선택",
-   "note": "WED_TALK 10: ev_fl_fri auto in fl_office_fri, arrive (8,18) left",
+   "note": "WED_TALK 10: ev_fl_fri auto in fl_office_fri, arrive (8,15) = meeting seat via ev_fl_w_jihu_pantry (real arrival cell; (8,18) was Minho's cell)",
    "mapId": "fl_office_fri",
    "x": 8,
-   "y": 18,
-   "facing": "left",
+   "y": 15,
+   "facing": "up",
    "switches": {},
    "variables": {
     "var_fl_stage": 10,
