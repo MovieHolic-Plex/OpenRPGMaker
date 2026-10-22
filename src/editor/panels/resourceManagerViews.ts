@@ -1,6 +1,8 @@
 import { FACE_EXPRESSION_SETS, isFaceExpressionResource } from "@/assets/faceExpressionSets";
 import { renderExpressionSection } from "./resourceExpressionSection";
 import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { listAudioResources } from "@/assets/audioResourceCatalog";
+import { HARNESS_MONSTER_RESOURCE_IDS } from "@/assets/harnessMonsterArt";
 import { listMonsterResources, type MonsterResource } from "@/assets/monsterResourceCatalog";
 import { EASYRPG_MONSTER_ASSETS } from "@/assets/easyrpgRtp";
 import { SCARLOXY_MONSTER_ASSETS } from "@/assets/scarloxyPack";
@@ -75,6 +77,7 @@ function monsterIds(): ReadonlySet<string> {
       && !retiredGeneratedMonsters.has(a.resourceId)).map(a => a.resourceId),
     ...builtinGeneratedResourceIds().filter(id => id.startsWith("generated-enemy-") && !retiredGeneratedMonsters.has(id)),
     ...EASYRPG_MONSTER_ASSETS.map(a => a.id), ...SCARLOXY_MONSTER_ASSETS.map(a => a.id),
+    ...HARNESS_MONSTER_RESOURCE_IDS,
   ].filter(Boolean));
 }
 let uploadDependency: Project["assets"]["uploaded"] | undefined;
@@ -342,7 +345,10 @@ function resourceCategoryList(options: ResourceWorkbenchOptions, monsterTotal: n
     const selected = category.kind === options.selectedKind && !options.expressionView;
     const countProfiles = listedProfiles.filter(p => p.kind === category.kind && (category.kind !== "faceset" || !isFaceExpressionResource(p.assetId))).length;
     const countUploaded = options.uploaded.filter(u => resourceKindFromUpload(u.kind) === category.kind).length;
-    const totalCount = category.kind === "monster" ? monsterTotal : countProfiles + countUploaded;
+    // 음악·효과음 목록은 공용 음원 카탈로그가 정본이라 배지도 같은 출처로 센다.
+    const totalCount = category.kind === "monster" ? monsterTotal
+      : category.kind === "music" || category.kind === "sound" ? listAudioResources(category.kind, store.getCurrent()).length
+      : countProfiles + countUploaded;
 
     const icon = el("span", { class: "rm-category-icon", attrs: { "aria-hidden": "true" }, children: [makeSvgIcon(getCategoryIcon(category.kind))] });
     const labelSpan = el("span", { class: "rm-category-label", text: category.label });
@@ -360,6 +366,7 @@ function resourceCategoryList(options: ResourceWorkbenchOptions, monsterTotal: n
           role: "option",
           "aria-label": category.label,
           "aria-selected": selected ? "true" : "false",
+          title: category.label,
         },
         on: { click: () => options.onSelectKind(category.kind) },
       })
@@ -368,9 +375,9 @@ function resourceCategoryList(options: ResourceWorkbenchOptions, monsterTotal: n
       const active = options.selectedKind === "faceset" && options.expressionView;
       list.append(el("button", {
         class: `rm-category-row rm-expression-category${active ? " active" : ""}`,
-        attrs: { type: "button", role: "option", "aria-label": "표정 관리", "aria-selected": String(!!active) },
+        attrs: { type: "button", role: "option", "aria-label": "표정 관리", "aria-selected": String(!!active), title: "표정 관리" },
         dataset: { testid: "resource-category-expressions" },
-        children: [el("span", { text: "↳ 표정 관리" }), el("span", { class: "rm-category-badge", text: String(FACE_EXPRESSION_SETS.length) })],
+        children: [el("span", { class: "rm-category-label", text: "↳ 표정 관리" }), el("span", { class: "rm-category-badge", text: String(FACE_EXPRESSION_SETS.length) })],
         on: { click: options.onSelectExpressions },
       }));
     }
@@ -638,6 +645,10 @@ function renderProfileCard(profile: ResourceProfile, isSelected: boolean, onSele
       class: "rm-card-img",
       attrs: { src: previewUrl, alt: profile.name, loading: "lazy", decoding: "async" },
     }) as HTMLImageElement;
+    // 실행 중 합성되는 칩셋처럼 정적 URL 이 실제 파일이 아니면 깨진 그림 대신 빈 칸 문구를 보인다.
+    img.addEventListener("error", () => {
+      img.replaceWith(el("div", { class: "rm-card-no-img", text: missingProfilePreviewText(profile.assetId, "미리보기 없음") }));
+    }, { once: true });
     previewBox.append(img);
   } else if (isAudio) {
     previewBox.append(el("div", { class: "rm-card-audio-icon", text: profile.kind === "music" ? "🎵" : "🔊" }));
@@ -715,6 +726,23 @@ function resourceCommandPanel(
         "aria-label": "이미지 또는 오디오 URL",
       },
     }) as HTMLInputElement;
+    // 빈 입력으로는 가져올 수 없다 — 조용히 무시하지 않고 단추를 꺼 둔다.
+    const importButton = el("button", {
+      class: "btn primary",
+      text: "가져오기",
+      attrs: { type: "button" },
+      on: {
+        click: () => {
+          const val = input.value.trim();
+          if (val && options.onImportUrl) {
+            options.onImportUrl(val);
+            closeUrlModal();
+          }
+        },
+      },
+    }) as HTMLButtonElement;
+    importButton.disabled = true;
+    input.addEventListener("input", () => { importButton.disabled = input.value.trim().length === 0; });
 
     // 모달 스택에 올린 뒤에는 스택이 돌려준 close 로 닫는다 — 그래야 Escape 가 이 창만 닫고 부모 관리자는 남는다.
     let closeUrlModal = (): void => backdrop.remove();
@@ -748,20 +776,7 @@ function resourceCommandPanel(
                     attrs: { type: "button" },
                     on: { click: () => closeUrlModal() },
                   }),
-                  el("button", {
-                    class: "btn primary",
-                    text: "가져오기",
-                    attrs: { type: "button" },
-                    on: {
-                      click: () => {
-                        const val = input.value.trim();
-                        if (val && options.onImportUrl) {
-                          options.onImportUrl(val);
-                          closeUrlModal();
-                        }
-                      },
-                    },
-                  }),
+                  importButton,
                 ]}),
               ],
             }),
@@ -965,6 +980,9 @@ function renderInspector(
       class: "rm-inspector-img",
       attrs: { src: previewUrl, alt: name },
     });
+    img.addEventListener("error", () => {
+      img.replaceWith(el("div", { class: "rm-inspector-no-img", text: isUploaded ? "미리보기 이미지 없음" : missingProfilePreviewText(resourceId, "미리보기 이미지 없음") }));
+    }, { once: true });
     previewContainer.append(img);
   } else {
     previewContainer.append(el("div", { class: "rm-inspector-no-img", text: isUploaded ? "미리보기 이미지 없음" : missingProfilePreviewText(item.profile.assetId, "미리보기 이미지 없음") }));

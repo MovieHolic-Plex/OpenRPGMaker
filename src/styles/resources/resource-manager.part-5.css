@@ -165,7 +165,8 @@
 .rm-inspector-meta-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
+  gap: 8px;
   font: 400 11px/1.4 var(--font-ui);
 }
 
@@ -177,9 +178,8 @@
 
 .rm-meta-val {
   color: var(--text-1);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: normal;
   min-width: 0;
   text-align: right;
 }
