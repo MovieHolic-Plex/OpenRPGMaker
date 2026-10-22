@@ -65,8 +65,6 @@
 .workshop-step.is-blocked .workshop-step-no { background: var(--warning); }
 .workshop-step-flag { margin-left: auto; padding: 0 6px; border-radius: var(--radius-pill); background: var(--warning); color: #fff; font-size: 11px; }
 .workshop-drawing { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
-.workshop-bar { flex: 1 1 220px; max-width: 420px; height: 8px; border-radius: var(--radius-pill); background: var(--bg-active); overflow: hidden; }
-.workshop-bar span { display: block; height: 100%; border-radius: inherit; background: var(--accent); transition: width 0.4s ease; }
 .workshop-drawing-text { font-size: 12px; color: var(--text-2); }
 
 .workshop-round { display: grid; gap: var(--space-3); align-content: start; }
@@ -91,7 +89,7 @@
 .workshop-card-wait { padding: 4px 10px; border-radius: var(--radius-pill); background: rgba(24, 27, 34, 0.55); color: #fff; font-size: 12px; }
 .workshop-card-wait.is-busy { animation: workshop-pulse 1.6s ease-in-out infinite; }
 @keyframes workshop-pulse { 50% { opacity: 0.45; } }
-@media (prefers-reduced-motion: reduce) { .workshop-card-wait.is-busy { animation: none; } .workshop-bar span { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .workshop-card-wait.is-busy { animation: none; } }
 .workshop-card-facts { display: flex; flex-wrap: wrap; gap: var(--space-1); font-size: 11px; }
 .workshop-chip { padding: 1px 8px; border-radius: var(--radius-pill); background: var(--bg-active); color: var(--text-2); font-size: 11.5px; white-space: nowrap; }
 .workshop-chip.is-pass { background: var(--success-muted); color: var(--success); }
@@ -164,11 +162,8 @@
 .left-workshop-list.is-upcoming { gap: var(--space-2); }
 .left-workshop-card { display: grid; min-width: 0; overflow: hidden; border: 1px solid var(--border-default); border-radius: var(--radius-m, 10px); background: var(--bg-raised); }
 .left-workshop-card.is-next, .left-workshop-card.is-soon { background: var(--bg-inset); border-color: var(--border-subtle); }
-/* 견본 띠: 견본 바탕(#181b22)과 같은 색으로 채워 그림이 띠 가운데 놓인다. 2배 정수 배율, 흐리게 늘리지 않는다. */
-.left-workshop-art { display: grid; place-items: center; height: 124px; overflow: hidden; background: #181b22; }
-.left-workshop-art img { display: block; max-width: none; image-rendering: pixelated; }
-.left-workshop-art { position: relative; }
-.left-workshop-art-caption { position: absolute; right: 6px; bottom: 6px; padding: 1px 7px; border-radius: var(--radius-pill); background: rgb(24 27 34 / 78%); color: #fff; font-size: 11px; }
+/* 무대(workshopArt.generatorStage) 모서리 표 */
+.left-workshop-art-caption { position: absolute; z-index: 3; right: 6px; bottom: 6px; padding: 1px 7px; border-radius: var(--radius-pill); background: rgb(24 27 34 / 78%); color: #fff; font-size: 11px; }
 .left-workshop-card-body { display: grid; gap: var(--space-2); padding: var(--space-3); min-width: 0; }
 .is-upcoming .left-workshop-card-body { gap: var(--space-1); padding: 10px var(--space-3); }
 .left-workshop-card-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); min-width: 0; }
@@ -189,8 +184,6 @@
 .left-workshop-link { justify-self: center; padding: 6px var(--space-2); border: 0; border-radius: var(--radius-s, 6px); background: none; color: var(--accent); font: inherit; font-size: 12.5px; font-weight: var(--font-weight-medium, 500); cursor: pointer; }
 .left-workshop-link:hover { background: var(--accent-muted); }
 .left-workshop-primary:focus-visible, .left-workshop-link:focus-visible { outline: var(--focus-outline); outline-offset: 2px; }
-.left-workshop-art.is-empty { height: 56px; background: var(--bg-inset); border-bottom: 1px dashed var(--border-default); }
-.left-workshop-art.is-empty span { font-size: 11.5px; color: var(--text-3); }
 .workshop-gen-ref input { width: 96px; }
 
 /* 한국어는 낱말 중간에서 줄을 바꾸지 않는다(「그림 느|낌」 방지). 긴 영문·경로는 overflow-wrap 이 끊는다. */
