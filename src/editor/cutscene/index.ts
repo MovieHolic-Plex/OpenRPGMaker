@@ -93,6 +93,8 @@ export type CutsceneSayBeat = {
   readonly to?: string;
   /** false 면 말하는 인물이 듣는 쪽으로 돌지 않는다(등 돌린 채 말하기). */
   readonly autoFace?: boolean;
+  /** 멀리서 부르는 한마디(점원 인사·길 건너 부르기) — 거리 검사를 하지 않는다. */
+  readonly calling?: boolean;
 };
 
 export type CutsceneMoveActorBeat = {
@@ -791,6 +793,7 @@ function compileSayBeat(beat: CutsceneSayBeat, state: CompileState): Command[] {
       ...(beat.actor ? { speakerActor: stageRef(beat.actor) } : {}),
       ...(beat.to ? { addressee: stageRef(beat.to) } : {}),
       ...(beat.autoFace === false ? { autoFace: false } : {}),
+      ...(beat.calling === true ? { calling: true } : {}),
     });
   }
   return commands;
@@ -811,7 +814,7 @@ function compileApproachBeat(beat: CutsceneApproachBeat, forceNonBlocking: boole
   const move: MoveCommand = {
     kind: "approach",
     ...(beat.target ? { target: stageRef(beat.target) } : { x: beat.x ?? 0, y: beat.y ?? 0 }),
-    ...(beat.distance && beat.distance > 1 ? { distance: beat.distance } : {}),
+    ...(beat.distance !== undefined && beat.distance !== 1 ? { distance: beat.distance } : {}),
   };
   return stageMoveEvent(beat.actor, [move], forceNonBlocking ? false : beat.wait ?? true);
 }

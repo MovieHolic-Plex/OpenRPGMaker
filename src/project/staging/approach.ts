@@ -24,12 +24,14 @@ const DIRS: readonly Dir[] = ["left", "right", "down", "up"];
 export const DEFAULT_TALK_DISTANCE = 1;
 /** 대사 자동 돌아보기가 작동하는 최대 거리(체비쇼프). 이보다 멀면 «같은 대화»가 아니라고 본다. */
 export const AUTO_FACE_RANGE = 4;
+/** 멀리서 부르는 대사(text.calling)의 돌아보기 거리. */
+export const CALLING_FACE_RANGE = 12;
 /** 장면 검사가 «너무 멀리서 말한다»고 보는 거리(체비쇼프 초과). */
 export const TALK_DISTANCE_LIMIT = 2;
 
 export function clampTalkDistance(distance: number | undefined): number {
   const d = Math.round(Number(distance ?? DEFAULT_TALK_DISTANCE));
-  return Number.isFinite(d) ? Math.max(1, Math.min(6, d)) : DEFAULT_TALK_DISTANCE;
+  return Number.isFinite(d) ? Math.max(0, Math.min(6, d)) : DEFAULT_TALK_DISTANCE;
 }
 
 /** from 에서 to 를 보는 방향(가로·세로 중 더 먼 쪽, 같으면 가로). 같은 칸이면 null. */
@@ -81,6 +83,7 @@ export type ApproachPlan = {
  *  ① 대상과 같은 줄(가로·세로)로 정확히 distance 칸 떨어진 칸(마주 보기가 정확하다),
  *  ② 체비쇼프 distance 안의 모든 칸(대각 포함 — 비좁은 곳),
  *  ③ 거리 distance+1 ~ distance+3 의 칸(대상이 벽에 둘러싸였을 때).
+ * distance 0 은 대상 칸 자체(칸 대상 «저기로 걸어가»), 막혔으면 가장 가까운 칸.
  * 같은 단계 안에서는 걸음 수가 적은 칸, 같으면 가로 옆(대화가 3/4 시점에서 잘 읽힌다), 같으면 출발 쪽 칸.
  * 이미 ①·② 칸에 서 있으면 걷지 않는다. 길이 없으면 null.
  */
@@ -90,27 +93,29 @@ export function planApproach(world: ApproachWorld, from: StageCell, target: Stag
   const key = (c: StageCell) => c.y * world.width + c.x;
   const inBounds = (c: StageCell) => c.x >= 0 && c.y >= 0 && c.x < world.width && c.y < world.height;
   const standable = (c: StageCell) => (c.x === from.x && c.y === from.y) || (inBounds(c) && world.canStand(c));
-  const isTarget = (c: StageCell) => c.x === target.x && c.y === target.y;
+  // distance 0 = 그 칸 자체로 걸어간다(칸 대상일 때 «저기로 가»). 인물 대상이면 그 칸은 차 있어 바로 옆으로 물러난다.
+  const isTarget = (c: StageCell) => d > 0 && c.x === target.x && c.y === target.y;
 
   const tiers: StageCell[][] = [[], [], []];
-  for (const dir of DIRS) {
+  if (d === 0) tiers[0]!.push({ x: target.x, y: target.y });
+  else for (const dir of DIRS) {
     const c = { x: target.x + DIR_DELTA[dir].x * d, y: target.y + DIR_DELTA[dir].y * d };
     tiers[0]!.push(c);
   }
-  for (let r = 1; r <= d + 3; r += 1) {
+  for (let r = 1; r <= Math.max(1, d) + 3; r += 1) {
     for (let y = target.y - r; y <= target.y + r; y += 1) {
       for (let x = target.x - r; x <= target.x + r; x += 1) {
         if (Math.max(Math.abs(x - target.x), Math.abs(y - target.y)) !== r) continue;
         const c = { x, y };
         if (tiers[0]!.some((t) => t.x === x && t.y === y)) continue;
-        (r <= d ? tiers[1]! : tiers[2]!).push(c);
+        (r <= Math.max(1, d) ? tiers[1]! : tiers[2]!).push(c);
       }
     }
   }
   // 이미 같은 줄 말 거리에 섰으면 그대로. 대각(말 거리 안)이면 한 걸음으로 같은 줄에 설 수 있을 때만 옮긴다.
   const stay: ApproachPlan = { goal: from, steps: [], face: dirToward(from, target), fallback: false };
-  if (tiers[0]!.some((t) => t.x === from.x && t.y === from.y)) return stay;
-  const nearAlready = !isTarget(from) && chebyshev(from, target) <= d;
+  if (tiers[0]!.some((t) => t.x === from.x && t.y === from.y)) return d === 0 ? { ...stay, face: null } : stay;
+  const nearAlready = d > 0 && !isTarget(from) && chebyshev(from, target) <= d;
   for (let tier = 0; tier < tiers.length; tier += 1) {
     if (nearAlready && tier > 0) return stay;
     let best: { cell: StageCell; cost: number; rank: number } | null = null;
@@ -125,7 +130,7 @@ export function planApproach(world: ApproachWorld, from: StageCell, target: Stag
     }
     if (best && nearAlready && best.cost > 1) return stay;
     if (best) {
-      return { goal: best.cell, steps: pathTo(reach, world.width, from, best.cell), face: dirToward(best.cell, target), fallback: tier > 0 };
+      return { goal: best.cell, steps: pathTo(reach, world.width, from, best.cell), face: d === 0 ? null : dirToward(best.cell, target), fallback: tier > 0 };
     }
   }
   return null;

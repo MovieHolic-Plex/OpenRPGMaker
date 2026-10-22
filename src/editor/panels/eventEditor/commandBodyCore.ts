@@ -243,6 +243,8 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
   });
   const autoFaceIn = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "event-command-text-auto-face" } });
   autoFaceIn.checked = cmd.autoFace !== false;
+  const callingIn = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "event-command-text-calling" } });
+  callingIn.checked = cmd.calling === true;
   const readDraft = (): Extract<Command, { kind: "text" }> => {
     const nextEmotion = emotion.select.value;
     const nextContext = lineContext.select.value;
@@ -260,6 +262,7 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
       ...(speakerActorIn.value.trim() ? { speakerActor: speakerActorIn.value.trim() } : {}),
       ...(addresseeIn.value.trim() ? { addressee: addresseeIn.value.trim() } : {}),
       ...(autoFaceIn.checked ? {} : { autoFace: false }),
+      ...(callingIn.checked ? { calling: true } : {}),
     };
   };
   // 연출은 **바뀐 순간에만** 프리뷰에서 재생한다. 프리뷰는 본문을 한 글자 칠 때마다 다시
@@ -301,6 +304,7 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
   speaker.addEventListener("input", apply);
   for (const input of [speakerActorIn, addresseeIn]) input.addEventListener("input", apply);
   autoFaceIn.addEventListener("change", apply);
+  callingIn.addEventListener("change", apply);
   body.addEventListener("change", apply);
   body.addEventListener("input", apply);
   emotion.select.addEventListener("change", apply);
@@ -496,6 +500,7 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
             el("label", { children: [el("span", { text: "말하는 인물 " }), speakerActorIn] }),
             el("label", { children: [el("span", { text: "듣는 인물 " }), addresseeIn] }),
             el("label", { children: [autoFaceIn, el("span", { text: " 말할 때 듣는 쪽을 본다" })] }),
+            el("label", { attrs: { title: "가게 점원 인사·길 건너 이름 부르기처럼 멀리서 부르는 한마디. 거리 경고를 내지 않는다." }, children: [callingIn, el("span", { text: " 멀리서 부르기" })] }),
           ],
         }),
         easyTools,

@@ -117,7 +117,7 @@ export const MOVE_ROUTE_COMMAND_ROWS: readonly (readonly MoveRouteButton[])[] = 
     contextCommandButton("대상 곁으로 다가가기...", "approach-target", "⇥", (context) => ({
       kind: "approach",
       target: context.stageTarget?.trim() || "@player",
-      ...((context.talkDistance ?? 1) > 1 ? { distance: context.talkDistance } : {}),
+      ...(context.talkDistance !== undefined && context.talkDistance !== 1 ? { distance: Math.max(0, context.talkDistance) } : {}),
     })),
     contextCommandButton("대상 쪽으로 향함...", "turn-toward-target", "⊚", (context) => ({
       kind: "turnToward",
@@ -258,7 +258,7 @@ export function moveCommandLabel(command: MoveCommand): string {
     case "turnAwayFromPlayer":
       return "플레이어 반대로 향함";
     case "approach":
-      return `${stageTargetLabel(command)} 곁으로 다가가기${command.distance && command.distance > 1 ? ` (${command.distance}칸)` : ""}`;
+      return `${stageTargetLabel(command)} 곁으로 다가가기${command.distance === 0 ? " (그 칸으로)" : command.distance && command.distance > 1 ? ` (${command.distance}칸)` : ""}`;
     case "turnToward":
       return `${stageTargetLabel(command)} 쪽으로 향함`;
     case "setDirectionFix":

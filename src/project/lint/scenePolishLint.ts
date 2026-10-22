@@ -15,6 +15,7 @@
 //  - scene-moving-vehicle          움직이는 교통(map.transit)·움직이는 탈것 이벤트
 //  - scene-actors-stacked          한 페이지가 두 인물을 같은 칸에 세운다
 //  - scene-hang-on-floor           벽 걸이(액자·별자리표·시계…) 키트가 바닥 칸에 서 있다
+//  - scene-speaker-absent / scene-talk-far / scene-talk-facing  인물 연출 — sceneStagingLint.ts
 //  - scene-ceiling-tile            천장 구역(방 밖·벽면도 벽 윗면도 아닌 칸)에 천장이 아닌 칸이 있다 — 바닥·소품이 얹혔거나, 방 밖에 고립 통행 바닥이 깔렸다
 
 import { nestedCommandLists } from "../authoredCommandIndex";
@@ -22,6 +23,7 @@ import type { Command, Dir, EventPage, GameEvent, GameMap, MoveCommand, Project,
 import { isPassable } from "../collision";
 import handInteriorSpec from "@/assets/handInteriorSpec.json";
 import type { LintIssue } from "./projectLint";
+import { checkSceneStaging } from "./sceneStagingLint";
 
 type Cell = { x: number; y: number };
 
@@ -834,6 +836,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkStacking);
   guard(checkHangOnFloor);
   guard(checkCeilingTiles);
+  guard((p, out) => checkSceneStaging(p, out)); // 인물 연출: 화자 부재·먼 대화·서로 안 봄(sceneStagingLint.ts)
   return issues;
 }
 

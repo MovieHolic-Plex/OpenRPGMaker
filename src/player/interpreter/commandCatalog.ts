@@ -586,6 +586,7 @@ export function executeCommand(
         ...(command.speakerActor ? { speakerActor: command.speakerActor } : {}),
         ...(command.addressee ? { addressee: command.addressee } : {}),
         ...(command.autoFace === false ? { autoFace: false } : {}),
+        ...(command.calling === true ? { calling: true } : {}),
       });
     case "choices":
       return pause("choices", {

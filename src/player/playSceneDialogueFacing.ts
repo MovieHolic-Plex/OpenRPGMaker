@@ -6,8 +6,8 @@
 // 끄기: text.autoFace === false (등 돌린 채 말하기 같은 의도된 연출). 걷는 중·방향 고정·고정 그림 인물은 돌리지 않는다.
 import { store } from "@/project/store";
 import { runtimeEventViewsForMap, moveRuntimeEventPosition, type RuntimeEventView } from "@/project/runtimeEventState";
-import { AUTO_FACE_RANGE, chebyshev, dirToward, type StageCell } from "@/project/staging/approach";
-import { PLAYER_ACTOR, resolveAddressee, resolveSpeakerActor, type StageActorCandidate } from "@/project/staging/dialogueActors";
+import { AUTO_FACE_RANGE, CALLING_FACE_RANGE, chebyshev, dirToward, type StageCell } from "@/project/staging/approach";
+import { PLAYER_ACTOR, pushRecentSpeaker, resolveAddressee, resolveSpeakerActor, type StageActorCandidate } from "@/project/staging/dialogueActors";
 import { getCharacterProfile } from "@/project/characterProfiles";
 import { setNpcIdleFrame } from "@/player/playSceneAutonomousSprites";
 import type { AutonomousNpcSprite } from "@/player/playSceneAutonomousTypes";
@@ -21,10 +21,11 @@ export type DialogueFacingLine = {
   readonly speakerActor?: string;
   readonly addressee?: string;
   readonly autoFace?: boolean;
+  readonly calling?: boolean;
 };
 
 /** 장면(이벤트 실행)마다 «방금 말한 NPC» — 주인공 대사의 기본 청자. */
-const lastNpcSpeaker = new WeakMap<object, { runKey: string; id: string | null }>();
+const recentSpeakers = new WeakMap<object, { runKey: string; ids: string[] }>();
 
 export function playerNames(project: Project, session: PlaySceneContext["session"]): string[] {
   const leaderId = session.partyActorIds?.[0];
@@ -60,13 +61,14 @@ export function applyDialogueFacing(scene: FacingScene, line: DialogueFacingLine
       playerNames: playerNames(project, scene.session), visible: candidates, player,
     });
     const runKey = currentEventId ?? "";
-    const memo = lastNpcSpeaker.get(scene);
-    const last = memo && memo.runKey === runKey ? memo.id : null;
-    if (speakerId && speakerId !== PLAYER_ACTOR) lastNpcSpeaker.set(scene, { runKey, id: speakerId });
-    else if (!memo || memo.runKey !== runKey) lastNpcSpeaker.set(scene, { runKey, id: null });
+    const memo = recentSpeakers.get(scene);
+    const recent = memo && memo.runKey === runKey ? memo.ids : [];
+    if (speakerId && speakerId !== PLAYER_ACTOR) recentSpeakers.set(scene, { runKey, ids: pushRecentSpeaker(recent, speakerId) });
+    else if (!memo || memo.runKey !== runKey) recentSpeakers.set(scene, { runKey, ids: [] });
     if (line.autoFace === false || !speakerId) return null;
     const visibleIds = new Set(views.map((v) => v.event.id));
-    const addresseeId = resolveAddressee({ addressee: line.addressee, speakerActorId: speakerId, lastNpcSpeaker: last, currentEventId, visibleIds });
+    const playerPresent = scene.player.visible !== false && scene.player.alpha > 0.05;
+    const addresseeId = resolveAddressee({ addressee: line.addressee, speakerActorId: speakerId, recentNpcSpeakers: recent, currentEventId, visibleIds, playerPresent });
     if (!addresseeId || addresseeId === speakerId) return null;
     const cellOf = (id: string): StageCell | null => {
       if (id === PLAYER_ACTOR) return player;
@@ -74,23 +76,31 @@ export function applyDialogueFacing(scene: FacingScene, line: DialogueFacingLine
       return v ? { x: v.x, y: v.y } : null;
     };
     const from = cellOf(speakerId), to = cellOf(addresseeId);
-    if (!from || !to || chebyshev(from, to) > AUTO_FACE_RANGE) return null;
+    if (!from || !to || chebyshev(from, to) > (line.calling ? CALLING_FACE_RANGE : AUTO_FACE_RANGE)) return null;
     const dir = dirToward(from, to);
     if (!dir) return null;
+    const turnPlayer = (d: typeof dir): void => {
+      if (scene.moving || scene.playerRoute) return;
+      scene.facing = d;
+      scene.player.setFrame(scene.playerSprite.idleFrameFor(d));
+    };
     if (speakerId === PLAYER_ACTOR) {
-      if (scene.moving || scene.playerRoute) return null;
-      scene.facing = dir;
-      scene.player.setFrame(scene.playerSprite.idleFrameFor(dir));
+      turnPlayer(dir);
       return speakerId;
     }
     const view = views.find((v) => v.event.id === speakerId)!;
     const mover = scene.autonomousNPCs.get(speakerId);
-    if (mover?.activeMove || mover?.directionFix || view.animationType === "fixedGraphic") return null;
-    if (mover && scene.autonomousNPCs.has(speakerId) && mover.moves.length > 0 && mover.step < mover.moves.length && !mover.repeat) return null; // 명령 경로 중
-    if (mover) mover.facing = dir;
-    moveRuntimeEventPosition(scene.eventPositions, speakerId, view.x, view.y, dir);
-    setNpcIdleFrame(scene.eventSprites.get(speakerId) as unknown as AutonomousNpcSprite | undefined, view.page?.graphic.pattern ?? 0, dir, view.animationType, mover?.animationEnabled ?? true);
-    return speakerId;
+    const busy = Boolean(mover?.activeMove || mover?.directionFix || view.animationType === "fixedGraphic"
+      || (mover && mover.moves.length > 0 && mover.step < mover.moves.length && !mover.repeat)); // 걷는 중·방향 고정·명령 경로 중
+    if (!busy) {
+      if (mover) mover.facing = dir;
+      moveRuntimeEventPosition(scene.eventPositions, speakerId, view.x, view.y, dir);
+      setNpcIdleFrame(scene.eventSprites.get(speakerId) as unknown as AutonomousNpcSprite | undefined, view.page?.graphic.pattern ?? 0, dir, view.animationType, mover?.animationEnabled ?? true);
+    }
+    // 주인공이 듣는 쪽이면 주인공도 말하는 NPC 를 돌아본다 — 주인공 방향은 아무도 관리하지 않아, 여럿이 말하는 장면에서 딴 데를 보고 있었다.
+    // NPC 끼리의 대화는 말하는 쪽만 돈다(등 돌린 채 듣기 같은 연출을 지킨다 — 마주 보게 하려면 faceEachOther).
+    if (addresseeId === PLAYER_ACTOR && !line.calling) turnPlayer(dirToward(to, from) ?? scene.facing);
+    return busy ? null : speakerId;
   } catch (error) {
     console.warn("[player] dialogue facing skipped", error);
     return null;

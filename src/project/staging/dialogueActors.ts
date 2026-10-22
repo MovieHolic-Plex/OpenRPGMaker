@@ -6,7 +6,8 @@
 // 런타임 대사 자동 돌아보기(player/playSceneDialogueFacing.ts)와 장면 검사(lint/sceneStagingLint.ts)가 같은 규칙을 쓴다.
 //
 // 화자 찾는 순서: ① text.speakerActor ② 화자 이름 비었으면 이 이벤트 ③ 주인공 이름 → 주인공
-//               ④ 맵의 «보이는» 인물 중 이름이 맞는 것(같음 > 포함 > 글자 순서), 여럿이면 이 이벤트 → 주인공에 가까운 쪽.
+//               ④ 맵의 «보이는» 인물 중 이름이 맞는 것(같음 > 포함 > 글자 순서), 여럿이면 이 이벤트 → 주인공에 가까운 쪽
+//               ⑤ 아무 이름도 안 맞으면 이 이벤트(보이는 인물일 때 — 이름 없는 NPC 의 이름표).
 export const PLAYER_ACTOR = "@player";
 
 export type StageActorCandidate = {
@@ -74,7 +75,10 @@ export function resolveSpeakerActor(input: ResolveSpeakerInput): string | null {
   }
   if (playerScore >= 2 && (!best || playerScore >= best.score)) return PLAYER_ACTOR;
   if (best) return best.id;
-  return playerScore > 0 ? PLAYER_ACTOR : null;
+  if (playerScore > 0) return PLAYER_ACTOR;
+  // 이름이 어디에도 안 맞으면 지금 말을 건 인물(이 이벤트가 보이는 인물일 때)이 화자다 — 이름 없는 NPC 의 「센터 직원」 같은 이름표.
+  if (input.currentEventId && input.visible.some((v) => v.id === input.currentEventId)) return input.currentEventId;
+  return null;
 }
 
 /** 화자 이름이 맵의 어떤 인물(보이든 숨었든)과 맞는가 — 「무대에 없는 화자」 검사용. */
@@ -87,21 +91,30 @@ export function matchesAnyActor(speaker: string, candidates: readonly StageActor
 }
 
 /**
- * 듣는 인물. ① text.addressee ② 화자가 NPC 면 주인공 ③ 화자가 주인공이면 이 장면에서 방금 말한 NPC,
- * 없으면 이 이벤트(보이는 인물일 때), 없으면 null.
+ * 듣는 인물. ① text.addressee ② 화자가 NPC 면 주인공(주인공이 숨겨졌으면 방금 말한 다른 NPC)
+ * ③ 화자가 주인공이면 이 장면에서 방금 말한 NPC, 없으면 이 이벤트(보이는 인물일 때), 없으면 null.
+ * recentNpcSpeakers 는 최근 순(맨 앞이 방금).
  */
 export function resolveAddressee(input: {
   readonly addressee?: string;
   readonly speakerActorId: string | null;
-  readonly lastNpcSpeaker: string | null;
+  readonly recentNpcSpeakers: readonly string[];
   readonly currentEventId?: string;
   readonly visibleIds: ReadonlySet<string>;
+  /** 주인공이 무대에 보이는가(회상처럼 숨긴 장면이면 false). 기본 true. */
+  readonly playerPresent?: boolean;
 }): string | null {
   const explicit = input.addressee?.trim();
   if (explicit) return explicit === "player" ? PLAYER_ACTOR : explicit;
   if (!input.speakerActorId) return null;
-  if (input.speakerActorId !== PLAYER_ACTOR) return PLAYER_ACTOR;
-  if (input.lastNpcSpeaker && input.visibleIds.has(input.lastNpcSpeaker)) return input.lastNpcSpeaker;
+  const other = input.recentNpcSpeakers.find((id) => id !== input.speakerActorId && input.visibleIds.has(id)) ?? null;
+  if (input.speakerActorId !== PLAYER_ACTOR) return input.playerPresent === false ? other : PLAYER_ACTOR;
+  if (other) return other;
   if (input.currentEventId && input.visibleIds.has(input.currentEventId)) return input.currentEventId;
   return null;
+}
+
+/** 최근 NPC 화자 목록을 갱신한다(중복 없이 맨 앞에, 최대 4). */
+export function pushRecentSpeaker(list: readonly string[], id: string): string[] {
+  return [id, ...list.filter((x) => x !== id)].slice(0, 4);
 }

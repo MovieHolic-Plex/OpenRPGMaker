@@ -208,7 +208,7 @@ function renderMoveRouteDialog(body: HTMLElement, close: () => void, request: Pa
         editSelected(move => move.kind === "approach" || move.kind === "turnToward" ? { ...move, target: next || "@player" } : move);
       },
       onTalkDistance: (next) => {
-        talkDistance = Math.max(1, next);
+        talkDistance = Math.max(0, next);
         editSelected(move => move.kind === "approach" ? { ...move, distance: talkDistance } : move);
       },
     }

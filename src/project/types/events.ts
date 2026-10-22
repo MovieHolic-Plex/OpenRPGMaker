@@ -365,6 +365,8 @@ export type Command =
       addressee?: string;
       /** false 면 말하는 인물이 듣는 인물 쪽으로 돌지 않는다(등 돌린 채 말하기 같은 의도된 연출). 기본 켬. */
       autoFace?: boolean;
+      /** 멀리서 부르는 한마디(가게 점원의 인사, 길 건너 이름 부르기). 거리 검사(scene-talk-far)를 하지 않고, 멀어도 듣는 쪽을 돌아본다. */
+      calling?: boolean;
     }
   | ({ kind: "changeFace"; appearanceId?: string } & FaceGraphic)
   | {

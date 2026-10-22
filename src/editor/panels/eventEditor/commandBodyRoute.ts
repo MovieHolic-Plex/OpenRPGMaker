@@ -168,7 +168,7 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     dataset: { testid: "move-route-stage-target-input" },
   });
   const talkDistanceIn = el("input", {
-    attrs: { type: "number", min: "1", max: "6", title: "다가가기가 대상에서 몇 칸 떨어져 설지. 1 = 바로 옆(대화)." },
+    attrs: { type: "number", min: "0", max: "6", title: "다가가기가 대상에서 몇 칸 떨어져 설지. 1 = 바로 옆(대화), 0 = 그 칸으로." },
     value: parameterDraft.talkDistance ?? (lastStage?.kind === "approach" ? lastStage.distance ?? 1 : 1),
     dataset: { testid: "move-route-talk-distance-input" },
   });
@@ -213,7 +213,7 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     hopHeightPx: parseInt(hopHeightPx.value, 10) || 0,
     hopDurationMs: parseInt(hopDurationMs.value, 10) || 0,
     stageTarget: stageTargetIn.value.trim() || "@player",
-    talkDistance: Math.max(1, parseInt(talkDistanceIn.value, 10) || 1),
+    talkDistance: Math.max(0, Number.isFinite(parseInt(talkDistanceIn.value, 10)) ? parseInt(talkDistanceIn.value, 10) : 1),
   });
 
   const persistParameters = () => {
