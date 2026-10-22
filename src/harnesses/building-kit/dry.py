@@ -13,6 +13,7 @@ import json
 import os
 import re
 import sys
+import types
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -196,10 +197,17 @@ def run(theme, rid, key, module=None, out=None, quiet=False):
     s = dot.seed(theme)
     rd = s['rounds'][rid]
     path = module or os.path.join(dot.REPO, rd['module'])
-    if not os.path.exists(path):
+    reuse = rd.get('reuseParts')
+    if not os.path.exists(path) and not reuse:
         raise SystemExit(f'{theme} {rid}: 판 모듈이 없다 — {path}')
-    mod = load_module(path)
+    mod = load_module(path) if os.path.exists(path) else types.SimpleNamespace(CANDIDATES={})
     rendered = render(mod, rd['items'], key)
+    if reuse:
+        import harness  # reuseParts: 이 모듈에 없는 (항목, 후보) 는 그 판 그림으로 조립하고 관문도 같이 본다
+        base = harness.round_module(theme, reuse)
+        rendered.update(render(base, [i for i in rd['items'] if i not in rendered], key))
+        mod = types.SimpleNamespace(CANDIDATES={i: {**(base.CANDIDATES.get(i) or {}), **(mod.CANDIDATES.get(i) or {})}
+                                                for i in rd['items']})
     if not rendered:
         raise SystemExit(f'{theme} {rid}: 모듈 {path} 에 후보 {key} 함수가 없다')
     res = check(theme, rid, key, mod, rendered)

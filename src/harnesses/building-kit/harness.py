@@ -16,6 +16,9 @@
   status [<테마>]                 판·관문·검수·시트·고른 것·3/4 영수증 현황
   projection [--out <폴더>]       박공 정면 투영 안내도(회색) projection-*.png — 그리기 샌드박스 refs/ 에도 들어간다
 
+reuseParts — 시드 판에 `reuseParts: "<판>"` 을 적으면 (항목, 후보 키)마다 이 판 모듈에 없는 함수를 그 판 모듈의 같은 항목 id 함수로
+채운다(round_module). 옛 판 그림으로 새 레시피를 조립하고, 다시 그릴 항목만 그린다. 해시·관문·검수는 그린 그림과 같다.
+
 줄(line) — 테마마다 화풍이 셋이다(seed lines A·B·C). style-r1 의 후보 글자 A·B·C 가 곧 줄이고, 이후 판은 후보 키가
 <줄><번호>(A1 A2 B1 …)다. 고르기 단위는 (항목, 줄). 고른 그림은 picked/<줄>/<항목>.png.
 
@@ -107,8 +110,38 @@ def load_round(theme, rid):
     return mod
 
 
+def round_module(theme, rid):
+    """그 판의 후보 함수 모음. 시드 판에 `reuseParts: "<판>"` 이 있으면 (항목, 후보 키)마다 이 판 모듈의 함수가 있으면
+    그것을, 없으면 그 판 모듈의 같은 항목 id·키 함수를 쓴다(다시 그리지 않고 옛 부품을 새 레시피로 조립).
+    이 판의 items 에 없는 항목은 가져오지 않는다. 반환 객체: CANDIDATES · WAVE · REUSED {항목: {키: 원본 판}}.
+    그림은 그대로 그려지므로 해시·관문·검수는 이 판 그림과 똑같이 다룬다."""
+    s = seed(theme)
+    rd = (s.get('rounds') or {}).get(rid)
+    reuse = (rd or {}).get('reuseParts')
+    if not reuse:
+        return load_round(theme, rid)
+    if reuse == rid or reuse not in s['rounds']:
+        raise SystemExit(f'{theme} {rid}: reuseParts {reuse!r} 가 다른 판 id 가 아니다')
+    own = load_round(theme, rid) if os.path.exists(os.path.join(REPO, rd['module'])) else None
+    base = round_module(theme, reuse)
+    cands, reused = {}, {}
+    for item in rd.get('items', []):
+        mine = dict((own.CANDIDATES.get(item) or {}) if own else {})
+        theirs = base.CANDIDATES.get(item) or {}
+        src = dict(getattr(base, 'REUSED', {}).get(item) or {})
+        for key, fn in theirs.items():
+            if key not in mine:
+                mine[key] = fn
+                reused.setdefault(item, {})[key] = src.get(key, reuse)
+        if mine:
+            cands[item] = mine
+    import types
+    return types.SimpleNamespace(CANDIDATES=cands, WAVE=getattr(own, 'WAVE', None) or getattr(base, 'WAVE', None),
+                                 REUSED=reused, OWN=own, reuse=reuse)
+
+
 def render_round(theme, rid):
-    mod = load_round(theme, rid)
+    mod = round_module(theme, rid)
     out = {}
     for item, cands in mod.CANDIDATES.items():
         out[item] = {}
@@ -380,6 +413,8 @@ def cmd_validate(theme):
     if len(lines(theme)) < 3:
         notes.append(f'줄 {len(lines(theme))}개 — style-r1 은 셋(A·B·C)을 권한다')
 
+    depth_bids = {bid for rd in s.get('rounds', {}).values() if rd.get('grammar') == AS.DEPTH_GRAMMAR
+                  for bid in rd.get('buildings') or []}
     for b in s.get('buildings', []):
         bid = b.get('id')
         for k in ('id', 'title', 'use'):
@@ -427,7 +462,7 @@ def cmd_validate(theme):
         doors = sum(r['letters'].replace(' ', '').count('D') for m in ms for r in m['walls'])
         if doors != 1 and not b.get('doorTwice'):
             errs.append(f'건물 {bid}: 문 {doors}개 — 건물 하나(질량 전부)에 문은 정확히 하나')
-        for why in AS.mass_problems(ms):
+        for why in ([] if bid in depth_bids else AS.mass_problems(ms)):  # 깊이 땅 판 건물은 _depth_round 가 본다
             errs.append(f'건물 {bid}: {why}')
         if len(ms) > 1 and not any(int(m.get('depth') or 0) == 0 for m in ms):
             errs.append(f'건물 {bid}: 앞줄(depth 0) 질량이 없다 — 질량마다 depth 를 적는다')
@@ -466,26 +501,42 @@ def cmd_validate(theme):
         for bid in rd.get('buildings') or []:
             if bid not in {b['id'] for b in s.get('buildings', [])}:
                 errs.append(f'판 {rid}: buildings 의 {bid} 레시피가 시드에 없다')
-        if rd.get('grammar') in ('r4', 'r5'):
+        if rd.get('grammar') in ('r4', 'r5', AS.DEPTH_GRAMMAR):
             errs += _r4_grammar(s, items, rid)
         if rd.get('requireGableFront'):
             errs += _gable_front_round(s, items, rid)
+        if rd.get('grammar') == AS.DEPTH_GRAMMAR:
+            errs += _depth_round(s, items, rid)
+        reuse = rd.get('reuseParts')
+        if reuse and (reuse == rid or reuse not in s.get('rounds', {})):
+            errs.append(f'판 {rid}: reuseParts {reuse!r} 가 다른 판 id 가 아니다')
+            continue
         path = os.path.join(REPO, rd.get('module', ''))
-        if not os.path.exists(path):
+        if not os.path.exists(path) and not reuse:
             notes.append(f'판 {rid}: 모듈이 아직 없다({rd.get("module")}) — 그리기 전')
             continue
         try:
-            mod = load_round(theme, rid)
-        except Exception as e:  # noqa: BLE001
-            errs.append(f'판 {rid} 모듈 오류: {e}')
+            mod = round_module(theme, rid)
+        except (Exception, SystemExit) as e:  # noqa: BLE001
+            if reuse:
+                notes.append(f'판 {rid}: reuseParts {reuse} 를 아직 불러올 수 없다({e}) — 그 판을 먼저 그린다')
+            else:
+                errs.append(f'판 {rid} 모듈 오류: {e}')
             continue
         style = rd.get('wave') == 'style'
+        if reuse:
+            n = sum(len(v) for v in getattr(mod, 'REUSED', {}).values())
+            notes.append(f'판 {rid}: reuseParts {reuse} — 후보 함수 {n}개를 그 판에서 가져온다'
+                         + ('' if os.path.exists(path) else ' (이 판 모듈은 아직 없다)'))
         for item in rd.get('items', []):
             if item not in ids:
                 errs.append(f'판 {rid}: 항목 {item} 이 시드에 없다')
                 continue
             if item not in mod.CANDIDATES:
-                errs.append(f'판 {rid}: 모듈에 {item} 후보가 없다')
+                if reuse:
+                    notes.append(f'판 {rid}: {item} 은 {reuse} 에 없어 이 판에서 그려야 한다(다시 그릴 것)')
+                else:
+                    errs.append(f'판 {rid}: 모듈에 {item} 후보가 없다')
                 continue
             for key in mod.CANDIDATES[item]:
                 ln = line_of(theme, key)
@@ -493,9 +544,12 @@ def cmd_validate(theme):
                     errs.append(f'판 {rid} {item}: 후보 키 {key} — 화풍 판은 줄 글자, 이후 판은 <줄><번호>')
                 elif lines(theme).get(ln, {}).get('skip', {}).get(item):
                     errs.append(f'판 {rid} {item}: 줄 {ln} 에서 뺀 항목인데 후보 {key} 가 있다')
-        for item in mod.CANDIDATES:
+        own = getattr(mod, 'OWN', mod) if reuse else mod
+        for item in (own.CANDIDATES if own is not None else {}):
             if item not in rd.get('items', []):
                 errs.append(f'판 {rid}: 모듈 후보 {item} 이 시드 rounds.{rid}.items 에 없다')
+        if not os.path.exists(path):
+            continue
         src = open(path, encoding='utf-8').read()
         if re.search(r"['\"]#[0-9a-fA-F]{6}['\"]", src):
             errs.append(f'판 {rid}: 후보 코드에 hex 색이 있다(팔레트 램프만 쓴다)')
@@ -551,11 +605,64 @@ def _r4_grammar(s, items, rid):
         except KeyError:
             continue  # 조각 계약 오류는 _receding_problems 가 따로 적는다
         if spires and plain:
+            lift = (lambda m: int(m.get('depth') or 0)) if s['rounds'][rid].get('grammar') == AS.DEPTH_GRAMMAR \
+                else (lambda m: 0)
             main = max(plain, key=lambda m: int(m['cols']) * int(m['storeys']))
-            main_h = AS.mass_rows(main, items)
+            main_h = AS.mass_rows(main, items) + lift(main)
             for sp in spires:
-                if AS.mass_rows(sp, items) - main_h < 1:
+                if AS.mass_rows(sp, items) + lift(sp) - main_h < 1:
                     errs.append(f'판 {rid} {bid}/{sp["id"]}: 첨탑 탑이 주 지붕 용마루보다 1칸 이상 높아야 한다')
+    return errs
+
+
+def _depth_round(s, items, rid):
+    """깊이 땅 문법(grammar r7) 레시피 계약(부품 그림 없이): 질량이 화면에서 이어지고, 박공 정면은 폭 4~6·
+    depth_rows 2~3, 문은 가장 앞 질량, 외쪽은 옆 질량보다 낮고, 더 뒤 질량 앞 박공 날개의 뒤 끝은 (뒤 박공이면) 뒤 질량
+    처마보다 낮게 벽 앞에 서거나 (골이면) 뒤 질량 지붕 안에서 끝난다(A13 예측)."""
+    errs = []
+    by = {b['id']: b for b in s.get('buildings', [])}
+    for bid in s['rounds'][rid].get('buildings') or []:
+        recipe = by.get(bid)
+        if not recipe:
+            continue
+        ms = AS.masses(recipe)
+        tag = f'판 {rid} {bid}'
+        try:
+            rows = {m['id']: AS.mass_rows(m, items) for m in ms}
+            roof = {m['id']: AS.roof_rows(m, items) for m in ms}
+        except KeyError as e:
+            errs.append(f'{tag}: 조각 계약 오류 {e}')
+            continue
+        errs += [f'{tag}: {why}' for why in AS.mass_problems(ms, rows)]
+        for m in ms:
+            if m['kind'] in AS.RECEDING:
+                (c0, c1), (d0, d1) = AS.receding_limits(m['kind'], True)
+                if not c0 <= m['cols'] <= c1:
+                    errs.append(f'{tag}/{m["id"]}: {m["kind"]} 폭 {m["cols"]}칸 — 깊이 땅 문법은 {c0}~{c1}칸')
+                if not d0 <= int(m.get('depth_rows') or 0) <= d1:
+                    errs.append(f'{tag}/{m["id"]}: depth_rows {m.get("depth_rows")} — 깊이 땅 문법은 {d0}~{d1}(짧은 지붕)')
+        front = min(m['depth'] for m in ms)
+        for m in ms:
+            if any('D' in r['letters'] for r in m['walls']) and m['depth'] != front:
+                errs.append(f'{tag}: 문이 {m["id"]}(depth {m["depth"]}) — 가장 앞 질량(depth {front})에 둔다')
+        tallest = max(int(m['storeys']) for m in ms)
+        for m in ms:
+            if m['kind'] == AS.LEAN_TO and int(m['storeys']) >= tallest:
+                errs.append(f'{tag}/{m["id"]}: 외쪽 {m["storeys"]}층 — 붙는 본 질량({tallest}층)보다 낮아야 한다(처마 아래)')
+        for w in ms:
+            if w['kind'] != AS.GABLE_FRONT:
+                continue
+            top = w['depth'] + rows[w['id']]
+            for b in ms:
+                if b['depth'] <= w['depth'] or min(w['x'] + w['cols'], b['x'] + b['cols']) <= max(w['x'], b['x']):
+                    continue
+                eave = b['depth'] + rows[b['id']] - roof[b['id']]
+                btop = b['depth'] + rows[b['id']]
+                if w.get('back_end') == 'valley' and not eave < top <= btop:
+                    errs.append(f'{tag}/{w["id"]}: 골 날개 꼭대기(땅에서 {top}칸)가 {b["id"]} 지붕(처마 {eave}~용마루 {btop}) 안에 없다')
+                if w.get('back_end') != 'valley' and top >= eave:
+                    errs.append(f'{tag}/{w["id"]}: 뒤 박공 꼭대기(땅에서 {top}칸)가 {b["id"]} 처마({eave}칸)에 닿거나 넘는다 — '
+                                f'{b["id"]} depth 를 {top - (rows[b["id"]] - roof[b["id"]]) + 1} 이상으로 물리거나 골(valley)을 쓴다')
     return errs
 
 
@@ -652,7 +759,7 @@ def pick_state(theme):
 
 
 def current_hash(theme, rid, item, key):
-    mod = load_round(theme, rid)
+    mod = round_module(theme, rid)
     if item not in mod.CANDIDATES or key not in mod.CANDIDATES[item]:
         return None, None
     cv, _ = mod.CANDIDATES[item][key]()
