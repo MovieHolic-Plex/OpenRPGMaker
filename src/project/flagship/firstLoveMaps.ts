@@ -375,6 +375,17 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
     } catch (error) {
       console.warn(`[first-love] ${id} 열차를 깔지 못했다: ${(error as Error).message}`);
     }
+    // 건너편 선로 — 승강장 아래가 검은 허공으로 끝나지 않게 선로를 한 벌 더 깐다(열차는 안 다닌다). 탈것 도구가 선로 띠를 찾은 뒤에 칠한다
+    // (두 벌이 붙어 있으면 도구가 4줄 띠를 선로로 못 읽는다). 선로 칸은 막힘이라 걸을 수 있는 고립 바닥이 되지 않는다.
+    const m = project.maps[id]!;
+    for (const ty of [NEAR_TRACK_Y + 2]) {
+      if (ty + 1 >= m.height) continue;
+      for (let x = 0; x < m.width; x++) {
+        m.lowerTiles[ty * m.width + x] = TRACK_TOP;
+        m.lowerTiles[(ty + 1) * m.width + x] = TRACK_BOTTOM;
+        if (m.upperTiles) { m.upperTiles[ty * m.width + x] = -1; m.upperTiles[(ty + 1) * m.width + x] = -1; }
+      }
+    }
   }
   // 금요일 밤 막차는 장면이 부른다 — 대화 도중 아무 열차나 드나들면 「지후가 탈 열차가 지후를 두고 떠난다」(VQA r17).
   // 안내 방송에서 FL_TRAIN_CALL 을 켜면 한 대가 들어와 서고, 지후가 탄 뒤 FL_TRAIN_GO 를 켜야 문을 닫고 떠난다.
