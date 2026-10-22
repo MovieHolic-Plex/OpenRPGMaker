@@ -240,6 +240,8 @@
 .ai-team-settings-advanced { border-top: 1px solid var(--border-subtle); margin-top: 12px; padding-top: 14px; color: var(--text-2); font-size: 12px; }
 .ai-team-settings-advanced > summary { cursor: pointer; padding-bottom: 12px; }
 .ai-team-settings-advanced > .ai-team-field { margin: 12px 0; }
-.ai-team-form-actions { position: sticky; bottom: 0; padding: 12px 0; background: var(--bg-raised); }
+/* sticky 기준은 스크롤 상자의 내용 상자(패딩 12~18px 안쪽)라 bottom:0 이면 막대 아래 패딩 띒에 펼친 고급 설정(기능 태그 줄)이 비쳐 잌렸다
+   (2026-10-22 VQA SB10) — 패딩만큼 아래로 내려 막대가 스크롤 상자 바닥에 닿게 한다. */
+.ai-team-form-actions { position: sticky; bottom: -18px; z-index: 1; padding: 12px 0; background: var(--bg-raised); border-top: 1px solid var(--border-subtle); }
 .ai-team-form-actions .is-danger { margin-right: auto; }
 .ai-team-form-actions .ai-team-btn { padding: 7px 14px; }
