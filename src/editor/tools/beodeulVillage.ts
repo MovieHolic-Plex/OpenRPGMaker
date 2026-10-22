@@ -98,8 +98,9 @@ const ROOF_PALETTES: Record<BeodeulRoofPalette, { main: string[]; accent: string
   moss: { main: rv("r7-02 r8-02 r8-07 r9-02 r9-13 r9-18 r6-01 r6-06 r9-10"), accent: rv("r7-01 r9-01 r2-10") },
   log: { main: rv("r10-01 r10-03 r10-04 r10-05 r10-06"), accent: rv("r6-01 r8-07 r9-18") },
 };
-/** roofs 를 생략하면 seed 로 — 같은 「평범한 마을」 요청이 늘 붉은 기와가 되지 않게. 늪·사막·설원은 자기 집 키트가 있어 쓰지 않는다. */
-const DEFAULT_ROOFS: Partial<Record<BeodeulVillageTheme, BeodeulRoofPalette[]>> = { river: ["red", "red", "moss", "slate", "log"], coast: ["red", "red", "slate", "moss"] };
+/** roofs 를 생략하면 seed 로(붉은 기와 절반·이끼·청회색) — 같은 「평범한 마을」 요청이 늘 붉은 기와가 되지 않게. 늪·사막·설원은 자기 집 키트가 있어 쓰지 않는다. */
+// 통나무(log)는 산골·숲속을 말할 때만 — 장터·성벽 마을이 seed 로 통나무 마을이 되면 어색했다(after2 실측: 생략한 넷 중 셋이 통나무).
+const DEFAULT_ROOFS: Partial<Record<BeodeulVillageTheme, BeodeulRoofPalette[]>> = { river: ["red", "red", "moss", "slate"], coast: ["red", "red", "slate", "moss"] };
 export function roofPalettesFor(theme: BeodeulVillageTheme): BeodeulRoofPalette[] { return DEFAULT_ROOFS[theme] ? [...BEODEUL_ROOF_PALETTES] : []; }
 export function resolveRoofPalette(theme: BeodeulVillageTheme, seed: number, roofs?: string): BeodeulRoofPalette | null {
   const xs = DEFAULT_ROOFS[theme];
