@@ -137,9 +137,10 @@ async function saveFresh(root: string, projectDir: string, project: Project = na
   if (existsSync(pinned) && !existsSync(target)) linkSync(pinned, target);
 }
 
-async function saveThroughUi(page: any): Promise<void> {
+/** A save flush on a loaded box can exceed the generic 120s UI deadline; the caller's turn budget is the ceiling. */
+async function saveThroughUi(page: any, waitMs = 120000): Promise<void> {
   await page.getByTestId('toolbar-save').click();
-  await page.waitForFunction(() => ['idle', 'saved'].includes(document.querySelector('[data-testid="toolbar-save"]')?.getAttribute('data-autosave-kind') ?? ''), null, { timeout: 120000 });
+  await page.waitForFunction(() => ['idle', 'saved'].includes(document.querySelector('[data-testid="toolbar-save"]')?.getAttribute('data-autosave-kind') ?? ''), null, { timeout: waitMs });
 }
 
 /** Type one prompt into the real input and wait until that turn is over. */
@@ -201,7 +202,7 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
         const page = editor.page;
         // Boot migrations and bundled asset folding can rewrite the canonical document. Establish the
         // comparison baseline only after the real UI has loaded and flushed that normalization.
-        await saveThroughUi(page);
+        await saveThroughUi(page, Math.max(120000, timeoutMs));
         const original = stored(projectDir);
         writeFileSync(resolve(dir, 'original.json'), JSON.stringify(original.project));
         page.on('request', (request: any) => {
@@ -214,7 +215,7 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
           } catch { /* structural receipt only */ }
           // What the model was told about the editor: the receipt for "this event" / "this area" being a given referent.
           const context = [...raw.replace(/\\n/g, '\n').matchAll(/(\[선택한 이벤트\]|\[컨텍스트\])[^\n"]*/gu)].map(match => match[0].slice(0, 300)).join(' | ') || undefined;
-          requests.push({ endpoint: new URL(request.url()).pathname, model: body.model, provider: request.headers()['x-oprn-provider'], runId: body.runId, context });
+          requests.push({ endpoint: new URL(request.url()).pathname, model: body.model, provider: request.headers()['x-oprn-provider'], thinkingLevel: body.request?.thinkingLevel ?? body.thinkingLevel, runId: body.runId, context });
         });
         page.on('response', (response: any) => {
           const endpoint = new URL(response.url()).pathname;
@@ -225,10 +226,9 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
           void response.text().then((body: string) => {
             request.responseBytes = body.length;
             request.responsePreview = body.slice(0, 240);
-            // The provider payload is built inside the worker, so the only receipt of what was actually
-            // sent is the prompt_inspection snapshot in this stream. Its sections are JSON text inside the
-            // event, so the quotes arrive escaped (\"reasoning_effort\": \"max\") — match either form.
-            const efforts = [...new Set([...body.matchAll(/\\?"reasoning_effort\\?"\s*:\s*\\?"([a-z]+)\\?"/gu)].map(match => match[1]))];
+            // The provider payload is built inside the worker; its prompt_inspection event carries the scalar
+            // receipt (model·max_tokens·reasoning_effort). Take the effort from there, never from a guess.
+            const efforts = [...new Set([...body.matchAll(/"reasoning_effort"\s*:\s*\\?"([a-z]+)\\?"/gu)].map(match => match[1]))];
             if (efforts.length) request.providerReasoningEffort = efforts;
           }).catch(() => {});
         });
@@ -238,7 +238,7 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
           const priorEvents = await sendTurn(page, setup.prior.prompt, timeoutMs);
           writeFileSync(resolve(dir, 'prior-trace.json'), JSON.stringify(priorEvents, null, 2));
           if (!priorEvents.some(event => event.type === 'tool_end' && event.ok === true)) throw new Error('선행 턴이 변경을 만들지 못했다');
-          await saveThroughUi(page);
+          await saveThroughUi(page, Math.max(120000, timeoutMs));
         }
         const baseline = stored(projectDir);
         writeFileSync(resolve(dir, 'before.json'), JSON.stringify(baseline.project));
@@ -250,7 +250,7 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
           hook?.selectEvent?.(value.event, null);
         }, { select: setup.select ? toSelection(setup.select) : null, event: setup.event ?? null });
         events = await sendTurn(page, command.prompt, timeoutMs);
-        await saveThroughUi(page);
+        await saveThroughUi(page, Math.max(120000, timeoutMs));
         // A renderer stall (heavy machine load) must not erase a finished turn's verdict: the screenshot is
         // evidence, the saved document is the result. A missing capture is recorded, never silently claimed.
         const missingShots: string[] = [];
@@ -311,10 +311,15 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
         for (const request of commandRequests) request.endpoint === '/v1/agent/run' ? nativeAgentCalls++ : chatCompletions++;
         nativeModelCalls += commandRequests.length;
         const changed = !isDeepStrictEqual(normalizeContent(baseline.project as Project), normalizeContent(applied.project as Project));
+        // A pinned run must be able to show that the wire carried the pinned effort: without that receipt the
+        // run is unverified, not passing. An unpinned run has no such contract.
+        const wireEfforts = commandRequests.flatMap(request => request.providerReasoningEffort ?? []);
+        const effortOk = !pin || wireEfforts.includes(pin.thinkingLevel);
+        const effortNote = pin ? (effortOk ? `wire effort ${wireEfforts.join(',')}` : `wire effort 확인 불가/불일치(${wireEfforts.join(',') || '없음'} ≠ ${pin.thinkingLevel})`) : undefined;
         // A command passes only when the real turn finished, the document judged correct, and the
         // persisted row reloads identically. Which tool the model chose is reported, never gated.
-        const ok = turnOk && verdict.ok && persistence;
-        const row = { n: command.n, id: command.id, ok, turnOk, commandCorrect: verdict.ok, verdict: verdict.note, persistence, changed, mode: command.mode, referenceTools: command.toolNames, toolCalls: toolEnds.map(event => event.name), toolRecords: records, requests: commandRequests, assistantText: answer, elapsedMs: Date.now() - started, failure, ...(missingShots.length ? { missingShots } : {}) };
+        const ok = turnOk && verdict.ok && persistence && effortOk;
+        const row = { n: command.n, id: command.id, ok, turnOk, commandCorrect: verdict.ok, verdict: `${verdict.note}${effortNote ? ` · ${effortNote}` : ''}`, persistence, changed, mode: command.mode, referenceTools: command.toolNames, toolCalls: toolEnds.map(event => event.name), toolRecords: records, requests: commandRequests, providerReasoningEffort: wireEfforts, assistantText: answer, elapsedMs: Date.now() - started, failure, ...(missingShots.length ? { missingShots } : {}) };
         checks.push(row);
         writeFileSync(resolve(dir, 'native-result.json'), JSON.stringify(row, null, 2));
         console.error(`[matrix-native] #${command.n}/${matrix.commands.length} ${command.id} ${ok ? 'ok' : 'fail'} requests=${commandRequests.length} tools=${toolEnds.length} persisted=${persistence} :: ${verdict.note}`);
