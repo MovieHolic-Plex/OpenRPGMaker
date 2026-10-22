@@ -915,6 +915,8 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 - **물에 잠긴 신전** — `flooded:true`: 큰 방(입구·보물 방 제외) 바닥 대부분을 물로, 굽이치는 3칸 둑길(긴 축 + 큰 방은 가로 축)을 남긴다(`mask.ts carveFlood`). 조수가 `fill_region` 으로 네모 웅덩이를 칠하던 것을 대신한다.
 - **레버 퍼즐** — `puzzle:"lever"`: 보물 방(없으면 보스방) 통로 칸에 쇠창살(object1#5), 먼 곁방에 레버(object2#0), 스위치 `sw_<map>_lever`. 손 도트 실내 퍼즐 방(다른 화풍)을 따로 잇던 것을 대신한다.
 - **작은 동굴** — `size:"small"` 동굴은 56×44 상자·방 3개(옛 64×49·방 4), 입구 굴은 네모가 아니라 잡음 타원. 기본 시드는 7 고정이 아니라 맵 id·이름·맵 수에서 뽑는다(시드를 안 준 던전이 전부 같았다).
+- **흐르는 용암** — 화산은 용암 못끼리(없으면 가장 가까운 일반 방까지) 바닥을 따라가는 BFS 최단 길 위에 폭 1~2 용암 줄기를 판다(보스·보물·입구 방 제외, 좁은 목은 settle 이 다리). 용암 가장자리 그림은 여전히 없다.
+- **소굴** — `lair:true`(버들항 cave): 호수·웅덩이 없이 마른 굴, 큰 방엔 천막(desert-oasis-tent), 모닥불 둘레 자루·궤짝·가죽 걸이, 벽가 통·뼈 무더기, 이끼 수정 대신(`dress.ts lairCamp`). 「고블린 굴」이 수정 동굴로 읽히던 것.
 - 증명: `bun scripts/qa/dungeons/proof.mts <dir>`(레지스트리 경로라 중첩 도구까지 돈다), 걷기 영상 경로 `scripts/qa/dungeons/walk-route.mts` + `scripts/qa/runtime/dungeon-walk.scenario.mjs`.
 
 **없는 그림(다음 타일 작업자 몫, `capabilities.ts` `missingArt` 가 정본):**
