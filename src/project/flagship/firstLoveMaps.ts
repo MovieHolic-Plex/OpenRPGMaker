@@ -80,7 +80,20 @@ function buildRoom(exec: ExecTool, mapId: string, name: string, spec: RoomSpec):
 }
 
 /** origin 에서 가장 가까운, 걸어 들어갈 수 있는 빈 칸(이벤트 없는 칸). */
-export function nearestFree(project: Project, map: GameMap, origin: Cell, maxR = 8, avoid: readonly Cell[] = []): Cell {
+/**
+ * 지나갈 수는 있지만 위층(★) 그림이 늘 인물 위에 그려지는 칸(의자 등받이·수관·차양) — 거기 세운 인물은 그림에 덮인다.
+ * 밟고 오르는 계단 칸은 렌더러가 인물 아래에 그리므로 뺀다(characterDepth isWalkableStairTile 과 같은 규칙).
+ * 수요일 밤 지후가 의자 칸(★)에 서서 의자가 몸 위로 그려졌다(VQA r22).
+ */
+export function drawnOverActor(project: Project, map: GameMap, x: number, y: number): boolean {
+  const tileset = project.tilesets?.[map.tilesetId];
+  const tile = (map as { upperTiles?: readonly number[] }).upperTiles?.[y * map.width + x];
+  if (!tileset || tile === undefined || tile < 0 || tileset.priority?.[tile] !== "upper") return false;
+  const tags = tileset.tileMeta?.[tile]?.tags ?? [];
+  return !tags.some((tag) => /stair/i.test(tag) || tag.includes("계단") || tag.includes("사다리") || /^foot-dy:/.test(tag));
+}
+
+export function nearestFree(project: Project, map: GameMap, origin: Cell, maxR = 8, avoid: readonly Cell[] = [], allowCovered = false): Cell {
   for (let r = 0; r <= maxR; r++) {
     for (let dy = -r; dy <= r; dy++) {
       for (let dx = -r; dx <= r; dx++) {
@@ -88,6 +101,7 @@ export function nearestFree(project: Project, map: GameMap, origin: Cell, maxR =
         const x = origin.x + dx, y = origin.y + dy;
         if (x < 1 || y < 1 || x >= map.width - 1 || y >= map.height - 1) continue;
         if (!isPassable(project, map, x, y)) continue;
+        if (!allowCovered && drawnOverActor(project, map, x, y)) continue;
         if (map.events.some((e) => e.x === x && e.y === y)) continue;
         if (avoid.some((c) => c.x === x && c.y === y)) continue;
         const open = (["up", "down", "left", "right"] as const).some((d) => {
@@ -227,7 +241,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       clearMapCellForBackground(roofRoom, y * roofRoom.width + roofRoom.width - 1 - k);
     }
   }
-  roofRoom.background = mapBackgroundFromPanoramaSet("oprn-sky-day");
+  // 둘레 빌딩 숲(VQA r22: 하늘만 두르면 옥상이 공중에 뜬 상자로 읽혔다) — 옆 빈 칸과 난간 위로 이웃 빌딩이 보인다.
+  roofRoom.background = mapBackgroundFromPanoramaSet("oprn-sky-day-city");
   const broadcast = project.maps[FL_MAP.broadcast]!;
 
   // 사무층 좌표(예제 office-floor 평면 기준): 위 큰 방 = 자리, 아래 왼쪽 = 회의실, 가운데 = 탕비실, 계단실, 엘리베이터 홀.
@@ -313,15 +328,39 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   // 좌표는 거리 맵(modern_city, 시드 5)에 찍힌 mc-prop-lamp-a 기둥 윗칸 + 1 이다.
   const lamps: LightSource[] = [];
   const streetLamps: Array<[number, number]> = [[21, 2], [1, 21], [14, 21], [41, 21], [21, 26], [21, 33], [6, 4], [13, 4]];
-  for (const [i, [x, y]] of streetLamps.entries()) lamps.push(light(`fl_lamp_${i}`, { x, y }, 4, "#ffd98a", 0.95));
+  for (const [i, [x, y]] of streetLamps.entries()) lamps.push(light(`fl_lamp_${i}`, { x, y }, 5, "#ffd98a", 1));
   for (const [i, b] of streetData.buildings.entries()) {
     const d = b.access[0];
     if (d) lamps.push(light(`fl_shop_${i}`, d, 3, b.kind === "conv" ? "#e8fff4" : "#ffd9a0", 0.8));
   }
+  // 불 켜진 창(VQA r22: 「밤거리가 밤으로 덜 읽힌다」) — 건물마다 문 위 막힌 덩어리(건물 그림)를 찾아 앞면 아래 두 줄에
+  // 한 칸 건너 작은 따뜻한 빛을 둔다. 모든 창이 켜지지 않게 칸 좌표로 정한 절반만(같은 맵이면 늘 같은 창).
+  for (const [i, b] of streetData.buildings.entries()) {
+    const d = b.doors[0] ?? b.access[0];
+    if (!d) continue;
+    const seen = new Set<string>(), queue: Cell[] = [{ x: d.x, y: d.y - 1 }];
+    const cells: Cell[] = [];
+    while (queue.length && cells.length < 400) {
+      const c = queue.pop()!; const k = `${c.x},${c.y}`;
+      if (seen.has(k) || c.x < 0 || c.y < 0 || c.x >= streetPm.width || c.y >= streetPm.height) continue;
+      seen.add(k);
+      if (Math.abs(c.x - d.x) > 8 || d.y - c.y > 14 || c.y > d.y) continue;
+      if (isPassable(project, streetPm, c.x, c.y) && !(c.x === d.x && c.y === d.y)) continue;
+      cells.push(c);
+      queue.push({ x: c.x + 1, y: c.y }, { x: c.x - 1, y: c.y }, { x: c.x, y: c.y - 1 }, { x: c.x, y: c.y + 1 });
+    }
+    if (cells.length < 6) continue;
+    const minX = Math.min(...cells.map((c) => c.x)), maxX = Math.max(...cells.map((c) => c.x));
+    const bottom = Math.max(...cells.map((c) => c.y));
+    for (let y = bottom - 3; y <= bottom - 1; y++) for (let x = minX + 1; x < maxX; x += 2) {
+      if (x === d.x || !cells.some((c) => c.x === x && c.y === y) || ((x * 7 + y * 3 + i) % 3 === 0)) continue;
+      lamps.push(light(`fl_win_${i}_${x}_${y}`, { x, y }, 1.1, "#ffc86e", 0.75));
+    }
+  }
   lamps.push(light("fl_subway", anchors.street.subway, 3, "#cfe4ff", 0.8));
   // 편의점 문 앞 보도로 새어 나오는 따뜻한 가게 불빛(밤에 들르는 곳이 한눈에 읽히게).
   lamps.push(light("fl_kb_spill", anchors.street.konbiniOut, 5, "#fff0c4", 1), light("fl_kb_spill2", { x: anchors.street.konbiniOut.x, y: anchors.street.konbiniOut.y + 2 }, 4, "#ffe8b0", 0.7));
-  streetPm.defaultLighting = { ambient: 0.62, color: "#0e1630", sources: lamps };
+  streetPm.defaultLighting = { ambient: 0.74, color: "#0b1230", sources: lamps };
   officePm.defaultLighting = {
     // 야근 밤: 너무 어두우면 인물이 안 읽힌다(VQA r3) — 어둠은 한 단계 줄이고 책상·탕비실·회의 자리 불을 넓힌다.
     // 밤 10시대 사무실이 낮과 같은 밝기로 읽혔다(VQA r16) — 한 단계 더 어둡게, 책상 불은 그대로.

@@ -112,6 +112,32 @@ export function drawLightingMask(canvas: HTMLCanvasElement, params: LightingMask
     );
   }
   context.restore();
+
+  // 빛 색 — 어둠만 걷어 내면 가로등·창 불빛이 «덜 어두운 자리»로만 보이고 따뜻한 불빛으로 읽히지 않았다(첫사랑 밤거리, VQA r22).
+  // 색을 준 광원은 걷어 낸 자리에 그 색을 옅게 얹는다. 어두운 장면일수록(ambient) 진하다. 흰빛에 가까우면 거의 티가 안 난다.
+  context.save();
+  context.globalCompositeOperation = "source-over";
+  for (const light of params.gradients) {
+    const rgb = light.color ? hexRgb(light.color) : null;
+    if (!rgb || light.radiusPx <= 0 || light.intensity <= 0) continue;
+    const alpha = clamp01(light.intensity) * LIGHT_TINT_STRENGTH * params.ambient;
+    const gradient = context.createRadialGradient(light.centerX, light.centerY, 0, light.centerX, light.centerY, light.radiusPx);
+    gradient.addColorStop(0, `rgba(${rgb},${alpha})`);
+    gradient.addColorStop(0.6, `rgba(${rgb},${alpha * 0.45})`);
+    gradient.addColorStop(1, `rgba(${rgb},0)`);
+    context.fillStyle = gradient;
+    context.fillRect(light.centerX - light.radiusPx, light.centerY - light.radiusPx, light.radiusPx * 2, light.radiusPx * 2);
+  }
+  context.restore();
+}
+
+const LIGHT_TINT_STRENGTH = 0.4;
+
+function hexRgb(color: string): string | null {
+  const m = /^#([0-9a-f]{6})$/iu.exec(color.trim());
+  if (!m) return null;
+  const n = Number.parseInt(m[1]!, 16);
+  return `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}`;
 }
 
 function lightGradientParam(source: LightSource, context: LightingMaskContext): LightGradientParam | null {

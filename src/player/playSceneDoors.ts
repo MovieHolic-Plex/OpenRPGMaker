@@ -15,7 +15,7 @@
  * 그래서 승강기에 들어선 인물은 닫히는 문짝 뒤로 가려지고, 문 앞에 선 인물은 문 위에 그려진다.
  */
 import type Phaser from "phaser";
-import { characterDepth } from "@/player/characterDepth";
+import { characterDepth, characterSpriteX } from "@/player/characterDepth";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { DOOR_DEFAULT_MS, doorInteriorOf, doorKey, type MapDoorDef, type RuntimeDoorState } from "@/project/eventCommands/doorAnimation";
 import { playAudioCommand } from "@/player/audio";
@@ -308,9 +308,33 @@ export function syncDoors(scene: PlaySceneContext): void {
     view.t = view.from + (goal - view.from) * k;
     hideOriginalArt(scene, view);
     applyPose(scene, view);
+    centreCabinOccupant(scene, state);
   }
   // QA 기록기(runtimeQaRun recordUntilJs)가 문이 움직이는 동안 프레임을 찍도록 열림 정도를 남긴다.
   (scene as unknown as { __doorPose?: string }).__doorPose = [...byKey.values()].map((v) => v.t.toFixed(2)).join(",");
+}
+
+/**
+ * 두 칸 폭 승강기 칸(interior lit)에 혼자 선 인물은 칸 가운데로 반 칸 옮겨 그린다 — 칸 좌표는 왼쪽 칸이라
+ * 문이 열리고 닫히는 동안 인물이 문짝 한쪽에 치우쳐 보였다(첫사랑 VQA r22). 둘이 타면 두 칸을 채우므로 그대로 둔다.
+ * 멈춰 선 인물만 옮긴다(그림 x 가 칸 자리 그대로일 때) — 걷는 동안의 트윈은 건드리지 않는다. 논리 칸은 바뀌지 않는다.
+ */
+function centreCabinOccupant(scene: PlaySceneContext, door: RuntimeDoorState): void {
+  if (door.w % 2 !== 0 || doorInteriorOf(door) !== "lit") return;
+  const size = mapTileSize(scene.map);
+  const inside = (x: number, y: number): boolean => x >= door.x && x < door.x + door.w && y >= door.y && y < door.y + door.h;
+  const riders: Array<{ sprite: { x: number }; tileX: number }> = [];
+  const player = scene.player as unknown as { x: number; visible?: boolean } | undefined;
+  if (player && player.visible !== false && inside(scene.tileX, scene.tileY)) riders.push({ sprite: player, tileX: scene.tileX });
+  for (const [id, pos] of Object.entries(scene.eventPositions ?? {})) {
+    const sprite = scene.eventSprites?.get(id) as { x: number; visible?: boolean; alpha?: number } | undefined;
+    if (!sprite || sprite.visible === false || (sprite.alpha ?? 1) <= 0.05 || !inside(pos.x, pos.y)) continue;
+    riders.push({ sprite, tileX: pos.x });
+  }
+  if (riders.length !== 1) return;
+  const { sprite, tileX } = riders[0]!;
+  const centre = (door.x + door.w / 2) * size;
+  if (Math.abs(sprite.x - characterSpriteX(tileX, size)) < 0.5) sprite.x = centre;
 }
 
 /** 열리는·닫히는 중인 문이 있는가(QA·테스트용). */

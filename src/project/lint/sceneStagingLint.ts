@@ -9,6 +9,7 @@
 //  - scene-speaker-absent   대사의 화자(또는 선택지를 받는 NPC)가 이 맵 인물인데 그 순간 무대에 없다(페이지가 꺼짐·지워짐·투명)
 //  - scene-talk-far         화자와 듣는 인물이 TALK_DISTANCE_LIMIT(2) 칸보다 멀다(체비쇼프)
 //  - scene-talk-facing      대사 자동 돌아보기를 적용한 뒤에도 둘이 서로를 보지 않는다
+//  - scene-turn-overridden  말하기 직전에 손으로 돌려 세운 화자를 자동 돌아보기가 다른 상대(최근 화자) 쪽으로 되돌린다 — addressee 누락
 //
 // 되짚기 규칙: 페이지 조건으로 다른 이벤트의 켜진 페이지를 고른다(스위치·변수·셀프 스위치만, 나머지 조건은 «모름» → 그 인물 검사 생략).
 // 걸음은 지형에 막히면 버린다(런타임과 같다), 인물에 막히면 비켜 간다고 본다. 다가가기는 런타임과 같은 planApproach.
@@ -35,6 +36,8 @@ type Replay = {
   playerHidden: boolean;
   recent: string[]; // 최근 NPC 화자(맨 앞이 방금)
   lastSpoken: string | null; // 마지막으로 «소리 내어» 말한 인물(속마음·자막은 건너뜀). 선택지의 상대.
+  /** 다음 대사 직전에 손으로 돌려 둔 방향(turn·turnToward 만 있는 이동). 대사의 자동 돌아보기가 이걸 덮으면 경고한다. */
+  turned?: Map<string, Dir>;
 };
 
 const PLAYER_REFS = new Set(["@player", "player"]);
@@ -143,6 +146,7 @@ function cloneReplay(st: Replay): Replay {
     player: st.player ? { ...st.player } : null,
     playerHidden: st.playerHidden,
     recent: [...st.recent],
+    turned: new Map(st.turned ?? []),
     lastSpoken: st.lastSpoken,
   };
 }
@@ -350,7 +354,15 @@ function checkLine(ctx: Ctx, st: Replay, line: Extract<Command, { kind: "text" }
   stagingLintStats.measured += 1;
   // 자동 돌아보기(런타임과 같은 규칙): 말하는 쪽이 듣는 쪽을 본다.
   if (line.autoFace !== false && dist <= (line.calling ? CALLING_FACE_RANGE : AUTO_FACE_RANGE)) {
-    a.dir = dirToward(a, b) ?? a.dir;
+    const auto = dirToward(a, b) ?? a.dir;
+    const meant = st.turned?.get(speakerId);
+    // 말하기 직전에 일부러 돌려 세운 쪽을 자동 돌아보기가 다른 상대 쪽으로 되돌린다 — 듣는 상대를 못박지 않은 것이다
+    // (첫사랑 편의점: 점원과 말한 뒤 지후 쪽으로 돌려 세웠는데 「선임님, 하나 드세요」가 최근 화자인 점원에게 가서 위로 돌아섰다, VQA r22).
+    if (meant && meant !== auto && !line.addressee) {
+      report(ctx, "scene-turn-overridden", `${speakerId}>${addresseeId}`, a,
+        `${where}: ${nameOf(ctx, speakerId)} 를 ${meant} 로 돌려 세웠는데 이 대사의 듣는 사람이 ${nameOf(ctx, addresseeId)} 로 풀려 ${auto} 로 다시 돈다 — 돌려 세운 상대에게 하는 말이면 addressee(sayTo)로 못박는다.`);
+    }
+    a.dir = auto;
     // 듣는 쪽이 주인공이면 주인공도 돌아본다(런타임 playSceneDialogueFacing 과 같다).
     if (addresseeId === PLAYER_ACTOR && !line.calling) b.dir = dirToward(b, a) ?? b.dir;
   }
@@ -419,6 +431,7 @@ function replay(ctx: Ctx, st: Replay, commands: readonly Command[] | undefined, 
         break;
       case "text":
         checkLine(ctx, st, command, where);
+        st.turned?.clear();
         break;
       case "choices":
         checkChoice(ctx, st, where);
@@ -447,7 +460,13 @@ function replay(ctx: Ctx, st: Replay, commands: readonly Command[] | undefined, 
       }
       case "moveEvent": {
         const who = resolveRef(ctx, command.eventId);
-        if (who) simulateRoute(ctx, st, who, command.route?.moves ?? []);
+        if (who) {
+          simulateRoute(ctx, st, who, command.route?.moves ?? []);
+          const moves = command.route?.moves ?? [];
+          const me = cellOf(ctx, st, who);
+          if (me && moves.length > 0 && moves.every((m) => m && (m.kind === "turn" || m.kind === "turnToward"))) (st.turned ??= new Map()).set(who, me.dir);
+          else st.turned?.delete(who);
+        }
         break;
       }
       case "m2Command": {

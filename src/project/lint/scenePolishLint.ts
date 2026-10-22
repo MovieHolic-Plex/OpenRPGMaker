@@ -399,6 +399,8 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
     const byId = new Map((map.events ?? []).map((e) => [e.id, e] as const));
     const routedToExit = new Set<string>();
     const routeEnd = new Map<string, Cell>();
+    // 다가가기(approach)처럼 끝 칸을 여기서 셀 수 없는 걸음을 한 인물 — 그 뒤 끝 칸 추정은 믿지 않는다.
+    const endUnknown = new Set<string>();
     const reported = new Set<string>();
     const report = (event: GameEvent, why: string): void => {
       if (reported.has(event.id)) return;
@@ -420,6 +422,7 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
         const { end, fades, viaDoor } = simulateRoute(routeEnd.get(npc.id) ?? npc, command.route?.moves, map, doorOf);
         // 사라지는 걸음 뒤에 같은 인물이 또 걸으면 그건 다른 갈래(엔딩 A·B 처럼 형제 분기)다 — 사라진 칸에서 잇지 않는다.
         if (fades) routeEnd.delete(npc.id); else routeEnd.set(npc.id, end);
+        if ((command.route?.moves ?? []).some((m) => m && m.kind === "approach")) endUnknown.add(npc.id);
         if (isExit(end) || viaDoor) {
           routedToExit.add(npc.id);
           if (!viaDoor && !isExitStrict(end) && !isHeldTrain(end)) shortOfExit.set(npc.id, end); else shortOfExit.delete(npc.id);
@@ -482,7 +485,8 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
                 const was = activePageFor(npc, command.variableId, before), now = activePageFor(npc, command.variableId, command.value);
                 // 바꿔 끼우기는 사라짐이 아니다 — 그 인물이 걸어가 선 칸에 같은 순간 다른 이벤트(같은 인물의 다음 장면 판)가 나타난다.
                 const at = routeEnd.get(npc.id) ?? npc;
-                const handoff = (map.events ?? []).some((o) => o.id !== npc.id && o.x === at.x && o.y === at.y
+                // 끝 칸을 모르면(다가가기를 거친 걸음) 같은 이름의 인물이 같은 순간 나타나는 것으로 바꿔 끼우기를 본다.
+                const handoff = (map.events ?? []).some((o) => o.id !== npc.id && (endUnknown.has(npc.id) ? Boolean(npc.name) && o.name === npc.name : o.x === at.x && o.y === at.y)
                   && !visibleGraphic(activePageFor(o, command.variableId, before) ?? undefined) && visibleGraphic(activePageFor(o, command.variableId, command.value as number) ?? undefined));
                 if (!handoff && was && visibleGraphic(was) && (!now || !visibleGraphic(now))) report(npc, `${command.variableId} 를 ${command.value} 로 바꾸는 순간 보이던 페이지가 빈 페이지로 바뀌어 방 안에서 꺼진다(바꾸기 전 화면을 어둡게 하거나 먼저 출구로 걸려 내보낸다)`);
               }
@@ -1209,7 +1213,9 @@ function checkActorUnderFurniture(project: Project, issues: LintIssue[]): void {
       if (!pagesOf(event).some((p) => visibleGraphic(p))) continue;
       const tile = upper[event.y * map.width + event.x];
       if (tile === undefined || tile < 0 || tileset.priority?.[tile] !== "upper") continue;
-      if (isPassable(project, map, event.x, event.y)) continue;
+      const tags = tileset.tileMeta?.[tile]?.tags ?? [];
+      // 지나갈 수 있는 위층 칸(★)도 그림이 늘 인물 위에 그려진다 — 밟고 오르는 계단·밑동 정렬 기물만 빼고 같은 문제다(첫사랑 수요일 의자, VQA r22).
+      if (isPassable(project, map, event.x, event.y) && tags.some((tag) => /stair/i.test(tag) || tag.includes("계단") || tag.includes("사다리") || /^foot-dy:/.test(tag))) continue;
       // 등을 화면 쪽으로 앉힌 인물(위를 봄)은 등받이가 등·허리만 가린다 — 얼굴은 어차피 안 보이고 «뒤에서 본 앉은 사람»으로 읽힌다
       // (첫사랑 금요일 회의: 듣는 셋이 탁자 남쪽 의자에 앉아 발표자를 본다, VQA r22).
       if (pagesOf(event).filter((p) => visibleGraphic(p)).every((p) => (p as { graphic?: { direction?: string } }).graphic?.direction === "up")) continue;
