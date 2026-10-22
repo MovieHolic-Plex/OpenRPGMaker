@@ -34,13 +34,15 @@ import beodeul  # noqa: E402
 import dot  # noqa: E402
 
 REPO = dot.REPO
-PER_BOARD = 6
-SCALE = 2
+# 2026-10-22: 판당자(opus medium)가 표본 18개·2배·보드당 6개에서 1px 지붕·벽 틈 함정을 거듭 놓쳤다(판타지·귀족 r4 무효 4~5회).
+# 기준은 그대로 두고 보는 해상도를 올린다: 보드당 4개, 3배, 판당자 강도 high.
+PER_BOARD = 4
+SCALE = 3
 REF_SCALE = 2
 DEFAULT_RUNS = 3
 DEFAULT_RETRIES = 2
 JUDGE_MODEL = os.environ.get('BUILDING_KIT_JUDGE_MODEL', 'opus')
-JUDGE_EFFORT = os.environ.get('BUILDING_KIT_JUDGE_EFFORT', 'medium')
+JUDGE_EFFORT = os.environ.get('BUILDING_KIT_JUDGE_EFFORT', 'high')
 JUDGE_TIMEOUT = int(os.environ.get('BUILDING_KIT_JUDGE_TIMEOUT', '3600'))
 REF_KITS = ('bd-house-h101_0', 'bd-house-inn', 'bd-out-cabin')
 PROBE_NAMES = ('roof_gap', 'two_doors', 'flat', 'noise', 'thin_roof', 'recolor_original')
