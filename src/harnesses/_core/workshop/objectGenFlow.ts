@@ -268,6 +268,7 @@ const LEAF_CONTRAST_MIN = kitValue<number>("checks", "LEAF_CONTRAST_MIN");
 const LEAF_BAND_MAX = kitValue<number>("checks", "LEAF_BAND_MAX");
 const LEAF_BASE_MAX = kitValue<number>("checks", "LEAF_BASE_MAX");
 const LEAF_LONE_MAX = kitValue<number>("checks", "LEAF_LONE_MAX");
+const LEAF_HOLES_MIN = kitValue<number>("checks", "LEAF_HOLES_MIN");
 const DEEP_LUMA = kitValue<number>("checks", "DEEP_LUMA");
 const DEEP_MIN = kitValue<number>("checks", "DEEP_MIN");
 const ORGANIC_LEAF_RAMP = kitValue<readonly string[]>("prompts", "ORGANIC_LEAF_RAMP");
@@ -298,7 +299,7 @@ export function leafRampLine(palette: Palette): string {
  * 원본 checks.leaves: 잎 초록(초록이 빨강보다 10+ 크고 파랑 이상) 화소 수, 평균(빨강-파랑), 명도 60 미만 몫,
  * 이웃 명도 차 평균(contrast — 덩이마다 밝은 획 옆에 어두운 구멍이면 크다), 명도와 높이의 상관(band — 위 밝고 아래 띠로 어두우면 더 음수).
  */
-export function leafTone(image: RgbaImage): { leafPixels: number; leafLone: number; leafCast: number; leafDark: number; leafContrast: number; leafBand: number } {
+export function leafTone(image: RgbaImage): { leafPixels: number; leafHoles: number; leafLone: number; leafCast: number; leafDark: number; leafContrast: number; leafBand: number } {
   const lum = new Map<number, number>();
   let cast = 0, dark = 0;
   for (let i = 0; i < image.data.length; i += 4) {
@@ -306,7 +307,7 @@ export function leafTone(image: RgbaImage): { leafPixels: number; leafLone: numb
     if (image.data[i + 3]! > 0 && g >= r + 10 && g >= b) { const l = 0.299 * r + 0.587 * g + 0.114 * b; lum.set(i / 4, l); cast += r - b; if (l < 60) dark++; }
   }
   const n = lum.size;
-  if (!n) return { leafPixels: 0, leafLone: 0, leafCast: 0, leafDark: 0, leafContrast: 0, leafBand: 0 };
+  if (!n) return { leafPixels: 0, leafHoles: 0, leafLone: 0, leafCast: 0, leafDark: 0, leafContrast: 0, leafBand: 0 };
   const w = image.width;
   let steps = 0, stepSum = 0, sumY = 0, sumL = 0;
   for (const [i, l] of lum) {
@@ -330,7 +331,24 @@ export function leafTone(image: RgbaImage): { leafPixels: number; leafLone: numb
     for (const i of pts) if (!((i % w) + 1 < w && pts.has(i + 1)) && !(i % w > 0 && pts.has(i - 1)) && !pts.has(i + w) && !pts.has(i - w)) alone++;
     lone = alone / pts.size;
   }
-  return { leafPixels: n, leafLone: Math.round(lone * 100) / 100, leafCast: Math.round((cast / n) * 10) / 10, leafDark: Math.round((dark / n) * 1000) / 1000,
+  // 원본 checks.leaves 의 leafHoles: 수관 안쪽(2px 떨어진 여덟 칸이 모두 잎) 명도 60 미만 화소의 4-연결 덩이 수 / 잎 100화소.
+  // 견본 2.7~3.3, 큰 덩이마다 초승달 그늘 하나인 「구름 선반」 0.8~2.0.
+  const inner = (i: number) => { const x = i % w; for (const dy of [-2, 0, 2]) for (const dx of [-2, 0, 2]) { if (x + dx < 0 || x + dx >= w || !lum.has(i + dy * w + dx)) return false; } return true; };
+  const darkIn = new Set<number>();
+  for (const [i, l] of lum) if (l < 60 && inner(i)) darkIn.add(i);
+  let holes = 0;
+  const seen = new Set<number>();
+  for (const i of darkIn) {
+    if (seen.has(i)) continue;
+    holes++;
+    const stack = [i];
+    seen.add(i);
+    while (stack.length) {
+      const k = stack.pop()!;
+      for (const q of [(k % w) + 1 < w ? k + 1 : -1, k % w > 0 ? k - 1 : -1, k + w, k - w]) if (q >= 0 && darkIn.has(q) && !seen.has(q)) { seen.add(q); stack.push(q); }
+    }
+  }
+  return { leafPixels: n, leafHoles: Math.round((holes * 1000) / n) / 10, leafLone: Math.round(lone * 100) / 100, leafCast: Math.round((cast / n) * 10) / 10, leafDark: Math.round((dark / n) * 1000) / 1000,
     leafContrast: steps ? Math.round((stepSum / steps) * 10) / 10 : 0, leafBand: Math.round(band * 100) / 100 };
 }
 /**
@@ -465,6 +483,7 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
     if (lv.leafPixels >= LEAF_MIN_PIXELS) {
       if (lv.leafCast > LEAF_CAST_MAX) hard.push({ code: "LEAFHUE", msg: `the leaves are olive/yellow (red-blue ${lv.leafCast}, exemplars -9..-4, limit -1) - paint them with the listed leaf-green keys` });
       if (!isTree && g.rows >= GEOMETRIC_MIN_ROWS && g.solidity > MASS_SOLIDITY_MAX) hard.push({ code: "BLOBBY", msg: `the leafy mass fills its outline like a ball or dome (solidity ${g.solidity}, exemplar bushes 0.89-0.91) - bite 1-2 deep notches into the outline and let one clump stick out to one side` });
+      if (lv.leafHoles < LEAF_HOLES_MIN) hard.push({ code: "LEAFHOLES", msg: `too few dark holes inside the crown (${lv.leafHoles} per 100 leaf px, exemplars 2.7-3.3) - break big lobes into many small clusters with 1-3 px dark holes all through the interior` });
       if (lv.leafLone > LEAF_LONE_MAX) hard.push({ code: "LEAFSPECK", msg: `the highlights are single sprinkled pixels (${Math.round(lv.leafLone * 100)}% of the lightest leaf tone stands alone, exemplars 0-12%) - group the lightest green into 2-4 px dashes on the upper-left lobes only` });
       if (lv.leafContrast < LEAF_CONTRAST_MIN) hard.push({ code: "LEAFFLAT", msg: `the leaves are a smooth gradient, not clumps (neighbour contrast ${lv.leafContrast}, exemplars 12-18) - build separate clumps: a 2-4 px light dash on each clump's upper left right next to dark pockets` });
       if (lv.leafBand < LEAF_BAND_MAX) hard.push({ code: "LEAFBAND", msg: `light and dark change by height (luma-height correlation ${lv.leafBand}, exemplars -0.44..-0.53) - light every clump on its own upper left, put dark pockets between clumps at every height` });
