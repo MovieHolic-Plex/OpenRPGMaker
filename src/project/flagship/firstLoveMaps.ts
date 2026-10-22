@@ -358,6 +358,16 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   padMapBottom(officeFri, FRI_PAD, (y) => friH - 2 + ((y - friH) % 2));
   // 덧댄 줄은 빈 칸(맵 밖과 같은 어둠)이다 — 바깥벽 무늬를 되풀이하면 대화창이 없을 때 빈 띠가 화면 1/3을 채웠다(VQA r12).
   for (let y = friH; y < friH + FRI_PAD; y++) for (let x = 0; x < officeFri.width; x++) clearMapCellForBackground(officeFri, y * officeFri.width + x);
+  // 회의실 탁자 북쪽의 빈 의자 둘을 걷어 낸다 — 발표자(서하·본부장)는 서 있고 듣는 셋은 남쪽 의자에 앉으므로 북쪽 의자는 늘 비어
+  // «다들 서 있는데 의자는 비었다»로 읽혔고(VQA r29), 서하가 회의실을 나갈 때 그 의자 위로 걸었다. 탁자(y 17) 위 줄의 의자 그림만 지운다.
+  {
+    const up = (officeFri as { upperTiles?: number[] }).upperTiles;
+    const chairTop = up?.[15 * officeFri.width + 5];
+    if (up && chairTop !== undefined && chairTop >= 0) {
+      const chairIds = new Set([chairTop, up[16 * officeFri.width + 5]!]);
+      for (let y = 13; y < 17; y++) for (let x = 1; x < 12; x++) if (chairIds.has(up[y * officeFri.width + x]!)) up[y * officeFri.width + x] = -1;
+    }
+  }
   const platformPm = cloneMap(project, FL_MAP.platformAm, FL_MAP.platformPm, "한결역 승강장 · 막차");
 
   // 밤 거리: 푸른 어둠 + 실제 가로등(3칸 기둥의 머리 높이)·공원 가로등·간판 빛.

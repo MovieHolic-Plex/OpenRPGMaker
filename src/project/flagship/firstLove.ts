@@ -611,7 +611,12 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   add(roof, scene("ev_fl_roof", { x: 1, y: 1 }, S.PANTRY, [
     // 계단탑 철문을 밀고 막 나온 참 — 열린 문이 등 뒤에서 무겁게 닫힌다.
     ...doorFx(roofDoor, true, 1),
+    // 문간(문 칸)에서 시작해 한 걸음 걸어 나온다 — 문 앞 칸에 그냥 서 있으면 «문 옆에 나타났다»였다(VQA r29).
+    { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "placeAt", x: r.door.x, y: r.door.y }, { kind: "turn", dir: "down" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
     ...fadeIn(500),
+    { kind: "moveEvent", eventId: "@player", route: { moves: [
+      { kind: "setThrough", enabled: true }, { kind: "move", dir: "down" }, { kind: "setThrough", enabled: false },
+    ], repeat: false, wait: true, skippable: true } } as unknown as Command,
     quiet(SE_DOOR_SHUT, 0.7), ...doorFx(roofDoor, false, 500),
     bgm(BGM_ROOF),
     face("ev_fl_jihu_roof", "up"),
@@ -786,6 +791,7 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
           ...say("jihu", "base", "…네. 조심히 들어가요."),
           // 「먼저 들어가 보겠습니다」 뒤엔 실제로 문 쪽으로 걸어간다(VQA r28: 말만 하고 서 있다가 회상으로 넘어갔다).
           walkRoute(project, FL_MAP.konbini, "@player", coolerFront, { x: k.door.x, y: k.door.y - 1 }, [jihuStop], true, "down"),
+          quiet(SE_CHIME, 0.5), // 자동문이 열린다
         ] },
       ]),
       ...think("윤서하 씨.", "10년 전, 그 사람이 내 이름을 처음 불렀던 곳은 방송실 앞이었다."),
@@ -1195,7 +1201,8 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
       { text: "역으로 간다", then: [
         ...sayAt("seoha", "right", "base", "죄송해요, 먼저 가 볼게요!"),
         // 회의실 유리문으로 나가 승강기까지 걸어가 타고 내려간다 — 유리문에서 바로 거리로 옮기면 7층에서 승강기를 건너뛰었다(VQA r21·r22).
-        panBack(500),
+        // 배율 2 그대로 승강기 앞으로 옮겨 서하가 걸어 들어오게 한다 — 배율 1로 되돌리면 2→1 로 끊겼다(VQA r29).
+        panTo(elevatorView.x, elevatorView.y, 900, elevatorView.zoom),
         walkRoute(project, FL_MAP.officeFri, "@player", o.meetingSeat, o.elevatorOut, [leadSpot, minhoSpot, clientSpot], true, "up"),
         quiet(SE_BUTTON), wait(400),
         playSe(SE_ELEVATOR), wait(300),
@@ -1207,6 +1214,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
         quiet(SE_SLIDE, 0.45), ...doorFx(elevDoor(o.elevator), false, 700),
         wait(300),
         ...fadeOut(600),
+        panBack(0), // 승강기 카메라 배율(2)을 거리로 들고 가지 않는다
         stopBgm(),
         stage(S.FRI),
         transfer(FL_MAP.streetPm, a.street.officeOut.x, a.street.officeOut.y, "down"),
@@ -1225,6 +1233,10 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
         ...standUp("ev_fl_f_minho", minhoSpot, { x: minhoSpot.x, y: minhoSpot.y + 1 }, "sw_fl_f_minho_up"),
         face("ev_fl_f_minho", dirToward(minhoSpot, o.meetingSeat)),
         ...sayAt("minho", "left", "happy", "고깃집 2층이에요! 늦으면 서하 씨 몫 없어요~"),
+        // 둘은 회의실 유리문 쪽으로 걸어 나간다 — 일어서기만 하고 컷되면 «아무도 안 나간다»였다(VQA r29). 서하는 남아 정리한다.
+        walkRoute(project, FL_MAP.officeFri, "ev_fl_f_lead", { x: leadSpot.x, y: leadSpot.y + 1 }, o.meeting, [o.meetingSeat], false),
+        walkRoute(project, FL_MAP.officeFri, "ev_fl_f_minho", { x: minhoSpot.x, y: minhoSpot.y + 1 }, { x: o.meeting.x - 1, y: o.meeting.y }, [o.meetingSeat], false),
+        wait(2200),
         // 엔딩 C 의 비(VQA r8: 「비가 오기 시작했다」는 말뿐 비가 없다) — 검은 화면에서 빌딩 앞 밤거리로 옮기고, 비는 거기 장면이 내린다.
         // 실내에 비를 뿌리지 않는다. 옮긴 뒤의 명령은 이 맵 이벤트에서 돌지 않으므로 이어지는 연출은 밤거리의 ev_fl_dinner_rain 이 한다.
         ...fadeOut(700),
