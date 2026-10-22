@@ -243,7 +243,7 @@ function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unkno
 }
 
 /** 층 하나를 채운다(rpg): 계획된 자리의 보이는 적·상자, 보스방 수호자/층 수문장, 보스 앞 방의 회복 세이브 포인트. 실패한 자리는 경고로 넘긴다. */
-function populateFloor(draft: Project, mapId: string, data: Record<string, unknown>, troops: ReturnType<typeof pickTroops>, role: { boss: boolean; guardian: boolean; rest: boolean }, salt: number, warnings: string[]): string {
+function populateFloor(draft: Project, mapId: string, data: Record<string, unknown>, troops: ReturnType<typeof pickTroops>, role: { boss: boolean; guardian: boolean; rest: boolean }, salt: number, warnings: string[]): { line: string; placed: { enemies: number; chests: number; boss: number; guardian: number; save: number } } {
   const map = draft.maps[mapId]!;
   const rooms = list(data, "rooms").map(asRoom).filter((r): r is Room => !!r);
   const anchors = field(data, "anchors");
@@ -275,19 +275,22 @@ function populateFloor(draft: Project, mapId: string, data: Record<string, unkno
     if (attempt(`상자 (${c.x},${c.y})`, () => nested(draft, "place_chest", { mapId, x: c.x, y: c.y, id: `ev_${mapId}_chest${chests.length + 1}`, name: c.room === vaultId ? "보물상자" : "던전 상자", contents: chestLoot(draft, salt * 5 + chests.length) }))) chests.push(`(${c.x},${c.y})`);
   }
   if (chests.length) out.push(`상자 ${chests.join(" ")}`);
-  const guard = (troopId: string | undefined, id: string, label: string): void => {
-    if (!bossRoom || !troopId) { warnings.push(`${map.name}: ${label} 자리를 찾지 못했다(${!troopId ? "적 그룹 없음" : "보스방 없음"})`); return; }
+  const guard = (troopId: string | undefined, id: string, label: string): boolean => {
+    if (!bossRoom || !troopId) { warnings.push(`${map.name}: ${label} 자리를 찾지 못했다(${!troopId ? "적 그룹 없음" : "보스방 없음"})`); return false; }
     for (const at of bossRoom.spots.filter(free).slice(0, 4)) {
-      if (attempt(`${label} (${at.x},${at.y})`, () => nested(draft, "place_field_enemy", { mapId, x: at.x, y: at.y, troopId, behavior: "stationary", canEscape: false, alert: "anger", id }))) { out.push(`${label} ${troopId} (${at.x},${at.y})`); return; }
+      if (attempt(`${label} (${at.x},${at.y})`, () => nested(draft, "place_field_enemy", { mapId, x: at.x, y: at.y, troopId, behavior: "stationary", canEscape: false, alert: "anger", id }))) { out.push(`${label} ${troopId} (${at.x},${at.y})`); return true; }
     }
+    return false;
   };
-  if (role.boss) guard(troops.boss, `ev_${mapId}_boss`, "보스");
-  else if (role.guardian) guard(troops.midBoss, `ev_${mapId}_guardian`, "층 수문장");
+  let bosses = 0;
+  if (role.boss) bosses = guard(troops.boss, `ev_${mapId}_boss`, "보스") ? 1 : 0;
+  else if (role.guardian) bosses = guard(troops.midBoss, `ev_${mapId}_guardian`, "층 수문장") ? 1 : 0;
+  let saves = 0;
   if (restRoom) {
     const at = restRoom.spots.find(free);
-    if (at && attempt(`세이브 포인트 (${at.x},${at.y})`, () => nested(draft, "place_savepoint", { mapId, x: at.x, y: at.y, heal: true, name: "쉼터 결정", id: `ev_${mapId}_rest` }))) out.push(`쉼터(회복 세이브) ${restRoom.id} (${at.x},${at.y})`);
+    if (at && attempt(`세이브 포인트 (${at.x},${at.y})`, () => nested(draft, "place_savepoint", { mapId, x: at.x, y: at.y, heal: true, name: "쉼터 결정", id: `ev_${mapId}_rest` }))) { out.push(`쉼터(회복 세이브) ${restRoom.id} (${at.x},${at.y})`); saves = 1; }
   }
-  return out.join(" · ");
+  return { line: out.join(" · "), placed: { enemies: foes.length, chests: chests.length, boss: role.boss ? bosses : 0, guardian: role.boss ? 0 : bosses, save: saves } };
 }
 
 const FLOOR_NAME = (base: string, dir: "down" | "up", k: number, n: number): string => (n === 1 ? base : `${base} ${dir === "down" ? `지하 ${k}층` : `${k}층`}`);
@@ -295,8 +298,8 @@ const FLOOR_NAME = (base: string, dir: "down" | "up", k: number, n: number): str
 function towerRooms(top: boolean, k: number): DungeonRoomInput[] {
   const side = k % 2 === 0 ? ["W", "E"] as const : ["E", "W"] as const;
   return top
-    ? [{ id: "landing", kind: "entrance", w: 13, h: 7 }, { id: "hall", kind: "hall", w: 17, h: 11, from: "landing", dir: "N", shift: 0 }, { id: "throne", kind: "boss", w: 17, h: 11, from: "hall", dir: "N", shift: 0 }, { id: "vault", kind: "vault", from: "hall", dir: side[0] }]
-    : [{ id: "landing", kind: "entrance", w: 13, h: 7 }, { id: "hall", kind: "hall", w: 17, h: 11, from: "landing", dir: "N", shift: 0 }, { id: "store", kind: "storage", from: "hall", dir: side[0] }, { id: "stair", kind: "shrine", w: 11, h: 9, from: "hall", dir: side[1] }];
+    ? [{ id: "landing", kind: "entrance", w: 11, h: 6 }, { id: "hall", kind: "hall", w: 13, h: 9, from: "landing", dir: "N", shift: 0 }, { id: "throne", kind: "boss", w: 13, h: 9, from: "hall", dir: "N", shift: 0 }, { id: "vault", kind: "vault", from: "hall", dir: side[0] }]
+    : [{ id: "landing", kind: "entrance", w: 11, h: 6 }, { id: "hall", kind: "hall", w: 13, h: 9, from: "landing", dir: "N", shift: 0 }, { id: "store", kind: "storage", from: "hall", dir: side[0] }, { id: "stair", kind: "shrine", w: 10, h: 8, from: "hall", dir: side[1] }];
 }
 
 /** author_dungeon 본체: 층 수만큼 짓고(계단 잇기), rpg 장르면 적·상자·보스·쉼터까지 채운다. */
@@ -338,12 +341,18 @@ function authorDungeon(draft: Project, args: Record<string, unknown>): ToolExecR
   // 채우기(rpg): 생략하면 켠다. 몬스터 수집(pokemon)은 야생 조우 구역이 정본이라 건너뛴다.
   const populate = args.populate !== false && datas.every((d) => d.genre === "rpg");
   const filled: string[] = [];
+  const placedTotal = { enemies: 0, chests: 0, boss: 0, guardian: 0, save: 0 };
   if (populate) {
     const troops = pickTroops(draft, args.troops);
     datas.forEach((d, i) => {
       const last = i === datas.length - 1;
-      const line = populateFloor(draft, mapIds[i]!, d, troops, { boss: last, guardian: !last && i === datas.length - 2, rest: last && (datas.length > 1 || list(d, "rooms").length >= 5) }, baseSeed + i, warnings);
+      const { line, placed } = populateFloor(draft, mapIds[i]!, d, troops, { boss: last, guardian: !last && i === datas.length - 2, rest: last && (datas.length > 1 || list(d, "rooms").length >= 5) }, baseSeed + i, warnings);
       if (line) filled.push(`${draft.maps[mapIds[i]!]!.name}: ${line}`);
+      // 계획 자리(enemies 7·chests 7 같은 후보 목록)를 그대로 두면 조수가 그 수를 「상자 7개」로 답했다(2026-10-23 VQA). 채운 뒤에는 실제로 놓인 수만 남긴다.
+      const plan = field(d, "population");
+      d.population = { ...(plan.lockedGate && args.puzzle === "lever" ? { lockedGate: plan.lockedGate } : {}), note: "채움 완료 — 놓인 이벤트 수는 placed 에 있다. 계획 후보 자리는 지웠다." };
+      d.placed = placed;
+      placedTotal.enemies += placed.enemies; placedTotal.chests += placed.chests; placedTotal.boss += placed.boss; placedTotal.guardian += placed.guardian; placedTotal.save += placed.save;
     });
   }
   if (args.puzzle === "lever") {
@@ -353,11 +362,12 @@ function authorDungeon(draft: Project, args: Record<string, unknown>): ToolExecR
   }
   const floorWarnings = results.flatMap((r) => r.warnings ?? []);
   // 이미 채웠으면 「계획대로 직접 놓아라」는 문장을 빼고 채운 결과만 알린다(조수가 같은 자리에 적·상자를 또 놓았다).
-  const sums = results.map((r) => (populate ? r.summary.replace(" 이벤트·적·상자는 data.rooms[].spots 좌표에만 두고, data.population 의 계획을 따른다.", "") : r.summary));
+  // 채웠으면 「잠긴 문을 둘 수 있는 칸」도 뺀다 — 조수가 그 문장을 「열쇠로 여는 잠긴 문이 있다」로 답했다(2026-10-23 VQA boss-run).
+  const sums = results.map((r) => (populate ? r.summary.replace(" 이벤트·적·상자는 data.rooms[].spots 좌표에만 두고, data.population 의 계획을 따른다.", "").replace(/, 잠긴 문을 둘 수 있는 통로 칸 \(\d+,\d+\) — 문은 아직 없다/u, "") : r.summary));
   const head = results.length === 1 ? sums[0]! : `${results.length}층 ${direction === "up" ? "탑" : "지하"} 던전: ${sums.map((t, i) => `[${i + 1}] ${t}`).join(" ")}`;
   const tail = [
     links.length ? `층 계단을 이었다: ${links.join(" / ")}(도착은 계단 앞 칸, 계단을 등진다).` : "",
-    filled.length ? `채움 — ${filled.join(" / ")}.` : populate ? "" : "채우기는 끔(populate:false) — data.population 계획대로 직접 놓는다.",
+    filled.length ? `채움 — ${filled.join(" / ")}. 실제로 놓인 수: 보이는 적 ${placedTotal.enemies} · 상자 ${placedTotal.chests}${placedTotal.boss ? ` · 보스 ${placedTotal.boss}` : ""}${placedTotal.guardian ? ` · 층 수문장 ${placedTotal.guardian}` : ""}${placedTotal.save ? ` · 회복 세이브 ${placedTotal.save}` : ""} — 사용자에게는 이 수와 위 좌표만 말한다(열쇠·잠긴 문·함정은 따로 놓기 전에는 없다).` : populate ? "" : "채우기는 끔(populate:false) — data.population 계획대로 직접 놓는다.",
     !linked ? "바깥 맵과 아직 잇지 않아 1층에 바깥 계단을 그리지 않았다 — 마을·필드와 이으려면 entrance 를 주거나 link_world_entrance." : "",
   ].filter(Boolean).join(" ");
   const all = [...floorWarnings, ...warnings];

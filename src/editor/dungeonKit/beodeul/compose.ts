@@ -456,7 +456,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         }
         if (ruined) { const f = shuffle(rs, floorCells(r, 2))[0]; if (f) put(K.fallenColumn, f[0], f[1]); }
         hangAlong(slots, rs, 4, () => (rs() < 0.75 ? K.torch : K.banner));
-        if (rs() < 0.5) { const a = centerFirst.find((q) => isWall(q.x + 2, q.y) && wallB[idx(q.x + 2, q.y)] === 1); if (a) put(rs() < 0.5 ? K.archDark : K.archBars, a.x, a.y); }
+        // 벽 장식 아치는 쇠창살 아치만 — 열린 검은 아치는 어디로도 안 가는 가짜 문으로 읽혔다(2026-10-23 VQA boss-run).
+        if (rs() < 0.5) { const a = centerFirst.find((q) => isWall(q.x + 2, q.y) && wallB[idx(q.x + 2, q.y)] === 1); if (a) put(K.archBars, a.x, a.y); }
         const e = edgeCells(r, rs);
         for (let c = 0; c < 2 + Math.floor(rs() * 2); c += 1) { const p = e[c * 5]; if (p) cluster(rs, p[0], p[1], 2 + Math.floor(rs() * 2), litter); }
         break;
