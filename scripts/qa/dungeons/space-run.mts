@@ -16,5 +16,5 @@ for (const run of process.argv.slice(2)) {
     try { out[id] = { name: m.name, ...measureSpace(live, m) }; } catch (e) { out[id] = { error: String(e) }; }
   }
   fs.writeFileSync(path.join(run, "space.json"), JSON.stringify(out, null, 1));
-  console.log(path.basename(run), Object.entries(out).map(([id, v]: [string, any]) => `${v.name} ${v.w}x${v.h} void ${v.voidPct}% screen≤${v.worstScreenVoidPct}% bare ${v.bareFloorPct}%`).join(" | "));
+  console.log(path.basename(run), Object.entries(out).map(([id, v]: [string, any]) => `${v.name} ${v.w}x${v.h} void ${v.voidPct}% screen≤${v.worstScreenVoidPct}% v+b≤${v.worstScreenVoidOrBarePct}% bare ${v.bareFloorPct}%`).join(" | "));
 }

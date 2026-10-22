@@ -12,7 +12,7 @@ plus `overall` = min(mean of the three, lowest axis + 1). Apply the caps: any ma
 | id | major when | axis |
 |---|---|---|
 | M1 no-exit | Floor 1 (or the only map) has **no exit at all**: no transfer event on an entrance stair/door and no exit placeholder event. This is a **blocker** (rubric: "a map with no exit"). A working transfer to another map = OK. An exit placeholder event on the drawn entrance stair/door (event id ends `_exit_placeholder`, says the way out is not open yet) = OK for this test, record it as one **minor** ("exit not linked yet") — the requests never asked for a town to connect to. | 6 |
-| M2 void/bare | Any 20×15-cell screen of the map that contains walkable floor is **≥ 50 % black void or unfurnished floor** (use `space.json` → `worstScreenVoidPct`, and look at the picture). Also a room larger than ~10×8 floor cells with no props at all. | 1 |
+| M2 void/bare | (a) Black void: `space.json` → `worstScreenVoidPct` ≥ 50 on any map (the player's 20×15 camera, centred on walkable cells). (b) Unfurnished: a room or hall larger than ~10×8 floor cells whose floor has **no anchor or props at all** (open walking floor between props is not "unfurnished"). Judge (b) by looking at the picture. `worstScreenVoidOrBarePct` (void + floor with no object within one cell) is informational only — corridors and walking lanes always count as bare there, so do not raise M2 from it alone. | 1 |
 | M3 dead stair/door | A stair or door graphic that is not a working transfer (and is not the exit placeholder of M1). A transfer on a non-stair/non-door cell. | 6 |
 | M4 arrival | Arrival cell is not the walkable cell in front of the destination stair/door, or the player faces into the stair. | 6 |
 | M5 purpose | A room's purpose cannot be read: boss room without a boss, vault/treasure room without a chest, the "big hall" / entrance / landing that is bare floor with no anchor (altar, camp, hoard, lever, dais, stair, braziers). | 1 |
@@ -30,7 +30,7 @@ If art is missing (e.g. no lava edge tiles exist), still record the visible prob
 - `requests.json` (request text), `result.json` (`answer` = final answer), `trace.json` (tool calls — skim for rebuilds and leftovers),
 - `events.json` (per-map event digest: transfers with destination + facing, battles, chests, saves, x,y),
 - `render/<mapId>.png` (1× with event sprites), `.clean.png` (no editor start marker), `.q1`–`.q4` quadrants. Look at the PNGs at original size.
-- `space.json` (per map: `voidPct`, `worstScreenVoidPct`, `bareFloorPct`, `maxBareRect`).
+- `space.json` (per map: `voidPct`, `worstScreenVoidPct`, `worstScreenVoidOrBarePct` (informational), `bareFloorPct`, `maxBareRect`).
 
 ## Output
 

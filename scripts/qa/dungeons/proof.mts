@@ -16,6 +16,7 @@ const CASES: Record<string, Record<string, unknown>> = {
   // 2026-10-23 dg2-r3 실조수 호출 인자 그대로(시드가 이름·크기에서 나오므로 같은 판이 나온다). troops 는 조수가 만든 그룹이라 뺐다.
   "small-cave": { type: "cave", size: "small", name: "작은 동굴" },
   "tower3": { type: "castle", floors: 3, direction: "up", size: "medium", genre: "rpg", name: "탑" },
+  "tower3t": { type: "temple", floors: 3, direction: "up", name: "탑" },
   "catacomb": { type: "catacomb", name: "지하 묘지", rooms: [{ id: "entrance", kind: "entrance" }, { id: "hall", kind: "hall" }, { id: "crypt1", kind: "crypt", from: "hall" }, { id: "crypt2", kind: "crypt", from: "hall" }, { id: "crypt3", kind: "crypt", from: "crypt1" }, { id: "vault", kind: "vault", from: "crypt3" }] },
   "catacomb2": { type: "catacomb", floors: 2, name: "지하 묘지" },
   "flooded-temple": { type: "temple", flooded: true, name: "물에 잠긴 옛 신전" },
@@ -41,7 +42,7 @@ for (const [name, args] of Object.entries(CASES)) {
       events: project.maps[id]!.events.map((e) => `${e.id}@${e.x},${e.y}${JSON.stringify(e.pages?.[0]?.commands ?? []).includes('"transfer"') ? "→" + JSON.stringify((e.pages![0]!.commands as any[]).find((c) => c.kind === "transfer")) : ""}`) }));
     fs.writeFileSync(path.join(out, `${name}.json`), JSON.stringify({ summary: res.summary, warnings: res.warnings, events, issues: issues.map((i) => `${i.severity} ${i.code} ${i.message}`) }, null, 1));
     console.log(`== ${name} ${ms}ms floors=${floors.length} start=${project.startMapId}@${project.startPos.x},${project.startPos.y}`);
-    for (const f of events) { const m = measureSpace(project, project.maps[f.id]!); console.log(" ", f.id, f.name, f.size, f.events.length, "events", `void ${m.voidPct}% screen≤${m.worstScreenVoidPct}%(avg ${m.meanScreenVoidPct}) bare ${m.bareFloorPct}% rect ${m.maxBareRect.w}x${m.maxBareRect.h}`); }
+    for (const f of events) { const m = measureSpace(project, project.maps[f.id]!); console.log(" ", f.id, f.name, f.size, f.events.length, "events", `void ${m.voidPct}% screen≤${m.worstScreenVoidPct}%(avg ${m.meanScreenVoidPct}) v+b≤${m.worstScreenVoidOrBarePct}%@${m.worstScreenVoidOrBareAt.x},${m.worstScreenVoidOrBareAt.y} bare ${m.bareFloorPct}% rect ${m.maxBareRect.w}x${m.maxBareRect.h}`); }
     console.log("  lint:", issues.filter((i) => i.severity !== "info").map((i) => i.code).join(",") || "0");
     if (res.warnings?.length) console.log("  warn:", res.warnings.slice(0, 6).join(" | ").slice(0, 600));
   } catch (e) { console.log(`== ${name} ERR`, (e as Error).message.slice(0, 400)); }

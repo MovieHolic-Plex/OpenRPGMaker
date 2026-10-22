@@ -338,7 +338,8 @@ function towerRooms(top: boolean, k: number): DungeonRoomInput[] {
   // 2026-10-23 r1: 둥근 방이 15×11 이라 가운데가 맨바닥이었다(조수 비평·VQA) — 한 단 줄인다. 공간이 남으면 방이 너무 큰 것이다.
   const hallW = 13 + (k % 2) * 2, hallH = 9 + ((k + 1) % 2);
   return top
-    ? [{ id: "landing", kind: "entrance", w: 9, h: 6, shape: "round" }, { id: "throne", kind: "boss", w: 13, h: 10, from: "landing", dir: "N", shift: 0, len: 4, shape: "round" }, { id: "vault", kind: "vault", w: 7, h: 5, from: "throne", dir: "N", shift: 0, len: 4 }]
+    // 꼭대기 층은 계단참 → 왕좌 방 둘뿐 — 왕좌 위 7×5 보물 방은 좁은 방 둘레가 허공·맨바닥인 화면이 됐다(2026-10-23 dg2-r5 VQA). 상자는 왕좌 방 곁에 둔다.
+    ? [{ id: "landing", kind: "entrance", w: 9, h: 6, shape: "round" }, { id: "throne", kind: "boss", w: 13, h: 10, from: "landing", dir: "N", shift: 0, len: 4, shape: "round" }]
     : [k === 1 ? { id: "gate", kind: "entrance", w: 13, h: 6, shape: "apse" } : { id: "landing", kind: "entrance", w: 9, h: 6, shape: "round" }, { id: "hall", kind: "hall", w: hallW, h: hallH, from: k === 1 ? "gate" : "landing", dir: "N", shift: 0, len: 4, shape: "round" }];
 }
 

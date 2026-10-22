@@ -259,6 +259,15 @@ function dressTemple(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | nul
         c.put(SW("candles"), altar[0] - 1, altar[1] + 1); c.put(SW("candles"), altar[0] + 2, altar[1] + 1);
         mirrorPut(c, SW("brazier"), altar[0] + 1, 3, altar[1] + 2);
       }
+      // 보스가 설 무대: 가운데 의식 원(모자이크) — 둥근 탑 방처럼 북벽이 통로로 갈려 제단이 못 서면 화로 한 쌍이 원을 감싼다.
+      // 「왕좌 방인데 맨 체크무늬 바닥」(2026-10-23 dg2-r5 VQA 탑 3층).
+      {
+        const my = r.y + Math.floor(r.h / 2) - 1;
+        if (c.put(P("temple-ruins", "mosaic-medallion-5x5"), cx - 2, my)) {
+          c.seats[r.id] = { x: cx, y: my + 2 };
+          if (!altar) { c.put(SW("brazier"), cx - 4, my + 2); c.put(SW("brazier"), cx + 4, my + 2); }
+        }
+      }
       for (const d of [5, 7]) mirrorPut(c, TEMPLE_COL, cx, d, r.y + r.h - 3);
       c.hangAlong(slots, rs, 3, () => TORCH, 4);
       ruin(r, 1);

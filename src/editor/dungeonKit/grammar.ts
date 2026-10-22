@@ -113,11 +113,11 @@ export function planTemple(spec: { size?: "small" | "medium" | "large"; width?: 
   const rooms: DungeonRoomInput[] = [
     { id: "porch", kind: "entrance", w: 13, h: 6 },
     { id: "nave", kind: "nave", w: f ? 19 : 15, h: f ? 16 : 13, from: "porch", dir: "N", shift: 0, len: 4 },
-    { id: "sanctum", kind: "boss", w: 15, h: 9, from: "nave", dir: "N", shift: 0, len: 4 },
+    { id: "sanctum", kind: "boss", w: f ? 17 : 15, h: f ? 12 : 9, from: "nave", dir: "N", shift: 0, len: 4 },
   ];
   if (n >= 4) { const cw = f ? 12 : 9, ch = f ? 12 : 9; rooms.push({ id: "chapelW", kind: "shrine", w: cw, h: ch, from: "nave", dir: "W", shift: 0, len: 2 }, { id: "chapelE", kind: "shrine", w: cw, h: ch, from: "nave", dir: "E", shift: 0, len: 2 }); }
   if (n >= 6) rooms.push({ id: "vault", kind: "vault", w: 9, h: 7, from: "sanctum", dir: "W", shift: 0, len: 2 });
-  if (n >= 6) rooms.push({ id: "ossuaryE", kind: "crypt", w: 9, h: 7, from: "sanctum", dir: "E", shift: 0, len: 2 });
+  if (n >= 6) rooms.push({ id: "ossuaryE", kind: "crypt", w: f ? 12 : 9, h: f ? 11 : 7, from: "sanctum", dir: "E", shift: 0, len: 2 });
   return rooms;
 }
 
