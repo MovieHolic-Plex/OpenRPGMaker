@@ -405,10 +405,11 @@ python3 src/harnesses/building-kit/harness.py village northern-snow style-r3 --l
 
 ### 시험
 
-`python3 -m unittest discover -s src/harnesses/building-kit/tests -p 'test_*.py'` → **142 tests, OK** (모델 호출 없음).
+`python3 -m unittest discover -s src/harnesses/building-kit/tests -p 'test_*.py'` → **179 tests, OK** (모델 호출 없음, 2026-10-22 투영 개정 뒤).
 
 | 파일 | 수 | 범위 |
 |---|---|---|
+| `test_projection.py` | 37 | **박공 정면 투영(style-r5)**: gable_front·lean_to 쌓기·A12 용마루/사면 빛·A13 골·A14 지붕 위 부속·A15 requireGableFront·새 조각 kind·투영 안내도·flat_elevation 함정·그리기 기본 모델(아래 「투영 개정」 절) |
 | `test_roofband.py` | 8 | **지붕 밴드**: 기준 둘에서 잰 값(h101 44/76 = 0.579 · inn 44/108 = 0.407 · 용마루 0.438/0.391)·밴드가 옛 A6 보다 좁은지·기준 자체가 관문 통과·1층 2행·2층 3행이 밴드 안·**뾰족한 피라미드는 A9 FAIL**·기준 비율 지붕은 A9 통과·4행 지붕은 A6 FAIL |
 | `test_groundline.py` | 8 | **A10**: `depth` 가 질량을 세로로 밀지 않는다·질량마다 같은 땅 행·질량 밑에 땅이 비치면 FAIL·맨 아래 행이 다르면 FAIL(반려된 탑 사례)·층 3칸은 FAIL·테마 넷 r3 가 같은 지면선 |
 | `test_spire.py` | 13 | **첨탑**: 세트 1칸×4행·부품 관문·왼밝/오른어두·넓거나 짧으면 `roof_problems`·탑+첨탑 조립 통과·탑이 본채 용마루보다 위·탑보다 넓은 원뿔 A11 FAIL·다른 램프 첨탑 A11 FAIL·탑 4칸은 A3 FAIL·r3 원뿔 탑은 이제 A6·A9 FAIL·r4 판·r4 레시피 조립·r4 validate |
@@ -442,3 +443,101 @@ python3 src/harnesses/building-kit/harness.py village northern-snow style-r3 --l
 - `village` 단계가 결정성·비겹침·문 도달·PASS 만 놓기를 시험으로 보이고, 실제 실행으로 1배·2배 PNG 와 HTML 을 낸다. ✔
 - 시험은 `qa-runs` 를 건드리지 않는다(전부 임시 폴더). ✔
 
+## 사용자 반려와 투영 개정 (2026-10-22, r1~r4 투영 반려 → style-r5 박공 정면)
+
+### 사용자 판정
+
+사용자가 참고 그림 하나(제3자 그림, `qa-runs/harnesses/building-kit/_user-refs/` — **커밋·샌드박스 금지, 구조 참고로만**)를 주며
+「집이 이 각도로 보여야 한다 — 지금은 전혀 아니다」고 했다. style-r1~r4 는 모두 **용마루가 정면과 나란한 모임지붕 + 평평한 정면 입면**
+이었다. 이 투영은 반려다. 그림에서 읽은 구조:
+
+- **박공 정면 질량**: 박공 끝(삼각 벽, 계단 박공이면 크로스텝)이 남쪽(보는 쪽)을 본다. 용마루는 **북쪽으로 물러나고**, 화면에서는
+  앞 꼭대기에서 위로 뒤 꼭대기까지 **세로선**이다. 그 왼쪽·오른쪽에 두 사면이 세로로 긴 면으로 보인다(왼쪽 밝음, 오른쪽 어두움).
+  사면 길이 = 지붕이 물러나는 깊이.
+- **조합**: ㄱ·T 평면 — 정면과 나란한 용마루의 본채 앞에 박공 정면 날개, 지붕이 만나는 **골**, 작은 박공 현관·지붕창, 지붕에서 솟는
+  굴뚝, 옆의 외쪽 지붕. 박공 아래는 정면 벽이 보이고 옆벽은 처마에 가려 거의 안 보인다.
+- 높은 3/4 카메라: **지붕이 실루엣의 대부분**, 벽은 질량 아래 띠.
+
+### 투영 기하 (조립 문법이 따르는 것)
+
+폭 W·처마 높이 He·용마루 높이 Hr·길이 L 인 박공 상자를 화면에 놓으면(빛 왼쪽 위): 왼쪽 사면은 평행사변형
+(앞 처마 모서리 → 앞 꼭대기 → 뒤 꼭대기 → 뒤 처마 모서리)이고, 그 아래 변이 앞 박공 삼각형의 빗변, 위 변이 뒤 끝의 ^ 선이다.
+그래서 **뒤 끝 ^ 높이 = 앞 박공 삼각형 높이**(같은 물매)이고, 용마루 화면 길이 = 뒤 끝 높이 + 사면 깊이다. 지붕이 다른 지붕에
+박히면(날개 용마루가 본채 용마루보다 낮으면) 그 ^ 선이 **골**이 된다.
+
+### 질량 종류 `kind`
+
+| kind | 위→아래 쌓기 | 조각 |
+|---|---|---|
+| `ridge_side` (기본) | 지붕 l·m·r → 층마다 벽 | 옛 문법 그대로(모임·망사드·박공·첨탑). 옛 판은 전부 이것 |
+| `gable_front` | 뒤 끝 `back` 의 `b<폭>`(골이면 `v<폭>`) → 사면 띠 `roof` 의 l·ml·k\|k2·mr·r × `depth_rows` → 앞 박공 `gable` 의 `g<폭>` → 층마다 벽(→ 층 띠) | cols 2~6, depth_rows 2~6, `back_end` gable\|valley |
+| `lean_to` | `lb<폭>` → hi·m·lo × `depth_rows` → `lf<폭>` → 벽 | cols 2~3, `low` left\|right(세트의 `low` 와 같아야) |
+
+- 사면 띠 순서: 2칸 `k2` · 3칸 `l k r` · 4칸 `l k2 r` · 5칸 `l ml k mr r` · 6칸 `l ml k2 mr r` — 용마루가 늘 가운데 2px(폭 W 화소면
+  열 W/2-1, W/2)에 온다. `k` 는 칸 안 7·8열, `k2` 는 15·16열.
+- 폭별 조각(`g3`·`g4`·`b4`·`v3`·`lb2`…)은 role 끝 숫자 = 폭 칸 수(`form_problems` 가 본다). 같은 물매라 `b<c>`·`v<c>` 높이 = `g<c>` 높이(A3).
+- 부품 세트에는 `form` 이 붙는다: `gf_slope`(roof.gf.slope) · `gf_back`(roof.gf.back) · `gable_front`(gable.front·gable.step, 뒤 끝 `b<c>` 도
+  담을 수 있다 — 계단 박공 회관은 앞·뒤 모두 gable.step) · `lean_to`(roof.lean.side).
+- 조각 kind 셋을 더했다: `slope`(사면 띠, 전부 불투명, `tileable` y·xy 감은 이음 S) · `gable`(앞 박공·외쪽 앞, 전부 불투명) ·
+  `roofend`(뒤 끝·골, 맨 아래 행 불투명·위 귀퉁이 투명·불투명 40% 이상). 이 셋에는 F(윗면 띠)를 걸지 않는다 — 윗면은 사면 띠 전체다.
+- 지붕 위 부속: 레시피 `extras` 의 `{part, at, on: "roof"}`. `at[1]` 이 음수면 질량 위로 솟고(굴뚝), 그림 높이가 그만큼 커진다.
+  지붕창(dormer)도 같은 길이다(시험에서 박공 정면 사면 위 지붕창을 확인).
+- 그리기 순서는 뒤(depth 큼) → 앞. 골 화소는 앞 날개의 `v<c>` 조각 것이고 본채 지붕 위에 나중에 덮인다.
+
+### 새 조립 관문 (어떤 옛 관문도 넓히지 않았다)
+
+| 코드 | 무엇을 보나 |
+|---|---|
+| **A6** (종류별) | `ridge_side` 는 그대로(버들항 실측 밴드 0.367~0.619 등). 물러나는 지붕(`gable_front`·`lean_to`)은 **0.50~0.85** — 사용자 판정 「지붕이 실루엣의 대부분」. 옛 밴드는 정면과 나란한 지붕을 잰 것이라 이 투영에 쓰지 않는다 |
+| **A12** | 박공 정면 질량의 **용마루**(가운데 2px)가 뒤 끝 꼭대기(지붕 맨 윗행)에서 앞 박공 꼭대기까지 투명 틈 없이 이어지고, 사면 띠 **모든 행**에서 양옆 사면(열 c-3, c+2)과 밝기 6 이상 다르다 · **왼쪽 사면 평균 밝기가 오른쪽보다 8 이상 밝다**. 질량 자기 지붕 조각만 모아 잰다(앞 질량에 가려도 영향 없음) |
+| **A13** | 지붕 만남: `back_end: valley` 는 골 윗변 바로 위가 **전부 더 뒤 질량의 지붕** 화소이고 골 화소가 날개 것이어야 한다. 혼자 선 뒤 끝(gable·외쪽)의 윗변 바로 위에 더 뒤 질량의 지붕이 있으면 FAIL(지붕 속에 박힌 박공 — valley 를 쓴다) |
+| **A14** | `on: roof` 부속의 밑동(맨 아래 불투명 행) 화소가 전부 그 질량의 **지붕** 화소 위이고, 어느 화소도 그 질량 벽에 걸치지 않는다 |
+| **A15** | 판의 `requireGableFront: true`(style-r5~) — 건물마다 `gable_front` 질량이 하나 이상. `round_buildings` 가 레시피 사본에 `_requireGableFront` 를 붙여 조립·dry·검수·마을·시트 어느 경로든 같은 관문을 거친다 |
+| A2 (확장) | 물러나는 질량의 지붕 쌓기 이음(뒤 끝→사면→사면→앞 박공)마다 위·아래 행이 전폭 불투명 |
+| A5 (확장) | 쌓기 조각은 폭이 달라(뒤 끝 4칸 위 사면 띠 1~2칸) **실제로 맞닿는 열끼리만** 이음을 견준다. ridge_side 조각 쌍은 예전 그대로 |
+
+`validate` 는 r5 판에 r4 문법 검사(ridge_side 질량만: 1층 2행·2층 3행·몸통 5칸·첨탑 높이)와 `_gable_front_round`
+(건물마다 gable_front · 판 items 가 레시피 부품을 다 덮음 · flat_elevation 함정용 ridge_side 지붕 항목 · extras 는 `on: roof`),
+질량마다 `_receding_problems`(폭·depth_rows·세트 form·폭별 조각·물매 일치·lean low)를 건다.
+
+### style-r5 시드 (줄 A·B·C 그대로)
+
+| 테마 | 건물 |
+|---|---|
+| fantasy-kingdom | `cottage.r5`(박공 정면 4칸, 사면 3행, 1층) · `lhouse.r5`(정면 나란 2층 본채 7칸 `roof.hip` + 3칸 박공 날개 골 `v3` + 본채 지붕 굴뚝) · `hall.r5`(5칸 계단 박공 `gable.step` 앞·뒤, 사면 4행, 2층 돌벽 + 오른쪽 2칸 외쪽) |
+| northern-snow | 같은 셋(본채 `roof.steep`, 층 띠 없음 → 날개 사면 2행이어야 골이 본채 지붕 안에 든다) |
+| beodeul-noble | 같은 셋(본채 `roof.mansard`) + `townhouse.r5`(망사드 2층 본채 + 박공 날개 골 + 오른쪽 앞 모퉁이 3층 탑·첨탑) |
+
+새 부품(세 테마 공통): `gable.front`(g3·g4) · `gable.step`(g5·b5) · `roof.gf.slope`(l·ml·k·k2·mr·r) · `roof.gf.back`(b4·v3) ·
+`roof.lean.side`(lb2·hi·m·lo·lf2, low right). 귀족에는 `extra.chimney` 를 더했다. 판 시드에 `projection`·`light`·`compare`
+문구가 있고 그리기 BRIEF 에 그대로 들어간다. 판 모듈 `rounds/<테마>/style_r5.py` 는 **아직 없다**(그리기 전).
+
+### 투영 안내도 (`projection.py`) — 우리 그림, 사용자 그림 아님
+
+`npm run harness -- building-kit projection [--out <폴더>]` → `projection-gable-front-1x/4x.png`(5칸 박공 정면: 뒤 ^ → 세로 용마루 →
+왼 밝은·오른 어두운 사면 → 앞 박공 → 벽 띠) · `projection-l-combo-1x/4x.png`(ㄱ자: 본채 + 박공 날개 + 골 + 굴뚝).
+16px 칸 격자, **무채색(R=G=B)만**, 4배 그림 옆에 회색 견본·영어 이름표(PIL 기본 글꼴에 한글이 없다). 조립 문법과 같은 ^ 빗선 식을 쓴다.
+`requireGableFront` 판의 그리기 샌드박스는 이 안내도를 `refs/projection-*.png` 로 받고, BRIEF 의 「투영」 절이
+`preview/compare.png` 를 `refs/` 기준 건물 **그리고** 투영 안내도와 견주라고 한다. 사용자 참고 그림은 샌드박스·저장소 어디에도 없다.
+
+### 그리기 모델
+
+사용자 요구: 타일·건물을 그리거나 까는 에이전트는 **Opus 5.5 high**. `drawer.claude_command` 기본이 `--model claude-opus-5-5 --effort high`
+(`BUILDING_KIT_DRAWER_MODEL`·`BUILDING_KIT_DRAWER_EFFORT` 로만 바꾼다). 마을에 타일을 까는 에이전트도 같은 함수로 띄운다
+(하네스 안 `village` 단계는 결정적 합성이라 모델을 부르지 않는다). 판정자(review)는 그대로 `opus`·high.
+
+### 검수 (review) 추가
+
+- `requireGableFront` 판은 판정 프롬프트 view34 에 **GABLE-FRONT PROJECTION RULE** 이 붙는다: 모든 질량이 정면과 나란한 용마루 지붕 +
+  평평한 정면 입면이면 FAIL, PASS 는 보이는 박공 정면(남쪽 삼각 벽) + 북쪽으로 물러나는 세로 용마루 + 양 사면이 보여야 한다.
+  기준 줄(버들항)은 이 판에서 투영이 아니라 품질·화풍 기준이다.
+- 숨긴 함정 **`flat_elevation`**: 후보 **자기 부품**(그 판의 ridge_side 지붕 + 벽)으로 조립한 6칸 1층 평평한 정면 입면. 통과시키면
+  다른 함정처럼 그 회차는 무효. 옛 판(r1~r4)의 보드·프롬프트는 바뀌지 않는다.
+
+### 시험 (`tests/test_projection.py`, 37개)
+
+gable_front 쌓기 순서·폭별 사면 순서 · r5 레시피 셋 조립 무결 · A6 물러나는 밴드 · depth/폭/물매 A3 · lean low 불일치 ·
+A12(용마루가 사면에 묻힘·투명 구멍·뒤 꼭대기가 용마루 밖·오른쪽이 밝은 사면) · A13(골 무결·골 위가 하늘·지붕에 박힌 뒤 박공) ·
+A14(지붕 위 굴뚝·벽에 걸린 굴뚝·박공 사면 위 지붕창) · A15(round_buildings 플래그·필수일 때만 FAIL·validate 가 박공 없는 레시피와
+`on` 없는 extras 를 잡음·세 테마 레시피 계약과 골 높이) · 새 조각 kind 의 Q·`form_problems` · 투영 안내도(무채색·칸 격자·2px 세로
+용마루·왼 밝음·골·굴뚝) · flat_elevation(자기 부품 화소만·A15 FAIL·r5 보드에만·통과 시 무효) · 그리기 기본 모델·환경 변수·r5 샌드박스 안내도·r3 샌드박스엔 없음.

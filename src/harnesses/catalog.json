@@ -1438,7 +1438,7 @@
         {
           "id": "draw",
           "title": "후보 그리기",
-          "summary": "판 모듈 후보를 그려 qa-runs/harnesses/building-kit/<테마>/<판>/ 에 1배·4배·부품 PNG 와 manifest.json(해시)을 쓴다. --agent 는 (줄, 후보)마다 새 Opus 그리기 프로세스를 띄운다."
+          "summary": "판 모듈 후보를 그려 qa-runs/harnesses/building-kit/<테마>/<판>/ 에 1배·4배·부품 PNG 와 manifest.json(해시)을 쓴다. --agent 는 (줄, 후보)마다 새 그리기 프로세스(기본 claude-opus-5-5 · effort high, BUILDING_KIT_DRAWER_MODEL/EFFORT 로만 바꾼다)를 띄운다. requireGableFront 판은 샌드박스 refs/ 에 회색 투영 안내도가 들어간다."
         },
         {
           "id": "dry",
@@ -1453,12 +1453,12 @@
         {
           "id": "assemble",
           "title": "조립",
-          "summary": "조립 레시피대로 부품을 붙여 building.png·kit.json(칸 격자 lower/upper·walkGrid·door)을 만들고 조립 관문 A1~A11(문 하나·지붕/벽 틈 없음·지붕이 벽을 덮음·기단이 바닥에 닿음·맞닿은 조각 이음·지붕 비율이 버들항 실측 밴드 안·용마루 하한·같은 땅 행·탑 지붕 폭/재료)을 건다."
+          "summary": "조립 레시피대로 부품을 붙여 building.png·kit.json(칸 격자 lower/upper·walkGrid·door)을 만들고 조립 관문 A1~A15(문 하나·지붕/벽 틈 없음·지붕이 벽을 덮음·기단이 바닥에 닿음·맞닿은 조각 이음·지붕 비율 밴드·용마루 하한·같은 땅 행·탑 지붕 폭/재료·박공 정면 용마루 세로선과 왼쪽 밝은 사면·골이 뒤 지붕에 닿음·굴뚝이 지붕 위·requireGableFront 판은 박공 정면 질량 필수)을 건다. 질량 종류 ridge_side·gable_front·lean_to."
         },
         {
           "id": "review",
           "title": "독립 검수",
-          "summary": "관문을 통과한 조립 건물만. 버들항 기준 건물 + 섞인 후보 + 숨긴 함정(지붕/벽 틈·문 둘·평면 채우기·잡음·얇은 지붕 입면·색만 바꾼 원본) 보드를 새 Opus 판정자에게 보인다. 함정을 하나라도 통과시키면 그 회차 무효, 유효 3회 다수결, 영수증은 그림 해시+판정 원문 해시에 묶인다."
+          "summary": "관문을 통과한 조립 건물만. 버들항 기준 건물 + 섞인 후보 + 숨긴 함정(지붕/벽 틈·문 둘·평면 채우기·잡음·얇은 지붕 입면·색만 바꾼 원본, requireGableFront 판은 후보 자기 부품으로 만든 평평한 정면 입면 flat_elevation) 보드를 새 Opus 판정자에게 보인다. 함정을 하나라도 통과시키면 그 회차 무효, 유효 3회 다수결, 영수증은 그림 해시+판정 원문 해시에 묶인다."
         },
         {
           "id": "sheet",
@@ -1484,6 +1484,11 @@
           "id": "village",
           "title": "마을 놓기",
           "summary": "그 줄의 조립 건물(검수 PASS 영수증이 지금 그림 해시와 맞는 것만, --all 은 전부)을 테마 팔레트 색만으로 그린 잔디(북방은 눈) 바닥·구불구불한 길·광장·우물·나무 위에 놓는다. 문은 길을 향하고 마당 1~2칸을 거쳐 길까지 걸어갈 수 있다(BFS 확인). 건물끼리 겹치지 않고 같은 --seed 면 같은 마을이 나온다. PNG 1배·2배와 ~/claude-viz/bk-village-<테마>-<판>-<줄>.html."
+        },
+        {
+          "id": "projection",
+          "title": "투영 안내도",
+          "summary": "박공 정면 투영(앞 박공 → 북쪽으로 물러나는 세로 용마루 → 왼쪽 밝은·오른쪽 어두운 사면 → 뒤 꼭대기 ^, 그리고 ㄱ자 본채+날개+골+굴뚝)을 16px 칸 위 무채색 도형으로 그려 projection-*-1x/4x.png 로 쓴다. 사용자 참고 그림은 쓰지 않는다."
         },
         {
           "id": "status",
