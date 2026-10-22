@@ -635,6 +635,14 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     spots.push({ x: c.x, y: c.y }); standing.add(`${c.x},${c.y}`);
   }
   hub.events = hub.events.filter((e) => !String(e.id).startsWith(`ev_${FS_PREFIX}_crowd_`));
+  const face = (from: { x: number; y: number }, to: { x: number; y: number }): Step => {
+    const dx = to.x - from.x, dy = to.y - from.y;
+    return Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? "right" : "left") : (dy > 0 ? "down" : "up");
+  };
+  const chat = (spot: { x: number; y: number }): Step => {
+    const others = spots.filter((o) => o !== spot).sort((p, q) => Math.hypot(p.x - spot.x, p.y - spot.y) - Math.hypot(q.x - spot.x, q.y - spot.y));
+    return others[0] ? face(spot, others[0]) : "down";
+  };
   spots.forEach((spot, k) => {
     const [key, tex, index, name, line] = crowd[k]!;
     const dx = valen.x - spot.x, dy = valen.y - spot.y;
@@ -645,6 +653,12 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
       pages: [{
         id: `${id}_p0`, name: `${name} · 기본`, conditions: [],
         graphic: { sprite: { type: "bundled", id: tex }, direction, pattern: charsetFrameIndex({ characterIndex: index, direction, pattern: 1 }) },
+        trigger: { kind: "action" }, priority: "same", overlapForbidden: true, movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [{ kind: "text", speaker: name, body: line }],
+      }, {
+        // 발렌이 떠난 뒤에도 빈 자리를 보고 서 있었다(VQA r20 minor) — 행렬이 사라지면 가까운 이웃과 마주 보고 수군댄다.
+        id: `${id}_p1`, name: `${name} · 행렬 뒤`, conditions: [{ kind: "switch", switchId: SW_VALEN_MARCHED, value: true }],
+        graphic: { sprite: { type: "bundled", id: tex }, direction: chat(spot), pattern: charsetFrameIndex({ characterIndex: index, direction: chat(spot), pattern: 1 }) },
         trigger: { kind: "action" }, priority: "same", overlapForbidden: true, movement: { type: "fixed", speed: 3, frequency: 3 },
         commands: [{ kind: "text", speaker: name, body: line }],
       }],
@@ -732,7 +746,10 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     { kind: "wait", ms: 500 } as Command,
     camera({ mode: "return", durationMs: "1000", wait: "true" }),
   ];
-  list.splice(after + 1, 0, ...marches, ...follow);
+  // 행렬이 떠나면 백성은 성문 쪽으로 고개를 돌려 배웅한다 — 빈 연설 자리를 보고 서 있었다(VQA r20 minor).
+  const watch: Command[] = spots.map((spot, k) => ({ kind: "moveEvent", eventId: `ev_${FS_PREFIX}_crowd_${crowd[k]![0]}`,
+    route: { moves: [{ kind: "turn", dir: face(spot, exit) }], repeat: false, wait: false, skippable: true } } as unknown as Command));
+  list.splice(after + 1, 0, ...marches, ...watch, ...follow);
   // 포고 동안 주인공(과 동료)은 발렌 쪽을 본다 — 화면만 보고 서 있었다(VQA r6 major).
   const begin = list.findIndex((c) => c.kind === "cutsceneControl");
   const towardValen: Step = valen.x > (project.startPos?.x ?? 0) ? "right" : "left";
@@ -1611,14 +1628,19 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
       }
     }
     // 그을음 줄기 — 일곱 갈래 끝마다 구덩이 둑 바로 밖 풀 위에 불씨·숯 자국을 하나씩(충격이 사방으로 튄 자리).
+    // 통나무는 서쪽 하나만 — 갈래 끝마다 가로 통나무를 두면 넷이 두 가로줄로 마주 놓여 의자처럼 읽혔고(VQA r20),
+    // 동·서 하나씩이어도 같은 줄에 마주 놓인 긴 의자 한 쌍이었다.
+    const logSide = new Set<number>();
     for (const [k, r0] of rays.entries()) {
       const angle = r0 - Math.PI;
+      const side = Math.sign(Math.cos(angle));
+      const wantLog = Math.abs(Math.cos(angle)) > 0.6 && side < 0 && logSide.size === 0;
       for (let r = 1; r < 3; r += 0.2) {
         const x = Math.round(cx + Math.cos(angle) * rx * r), y = Math.round(cy + Math.sin(angle) * ry * r);
         if (x < 1 || y < 1 || x >= live.width - 1 || y >= live.height - 1 || pit.has(y * live.width + x)) continue;
         // 불씨 자국은 풀 위에서 검은 돌무더기로 읽혔다(VQA r10) — 충격에 꺾인 나무(그루터기·쓰러진 통나무)로 바꾼다.
         // 동서로 뻗은 갈래 끝엔 바깥으로 누운 통나무(쓰러진 나무), 남북 갈래 끝엔 그루터기 — 그루터기만 고르게 두르면 벌목지로 읽혔다(VQA r17).
-        if (tryStamp(project, M(ids.forest), `kit:beodeul_city/${Math.abs(Math.cos(angle)) > 0.6 ? "bd-pick-deep-forest-path-log-fallen" : k % 2 ? "bd-pick-deep-forest-path-heath-b" : "bd-pick-deep-forest-path-stump"}`, x, y)) break;
+        if (tryStamp(project, M(ids.forest), `kit:beodeul_city/${wantLog ? "bd-pick-deep-forest-path-log-fallen" : k % 2 ? "bd-pick-deep-forest-path-heath-b" : "bd-pick-deep-forest-path-stump"}`, x, y)) { if (wantLog) logSide.add(side); break; }
       }
     }
     // 구덩이 북쪽 위로 맵 끝까지 붙은 모랫길 토막 둘은 아무 데로도 안 갔다(VQA r6 m13) — 풀로 되돌린다.

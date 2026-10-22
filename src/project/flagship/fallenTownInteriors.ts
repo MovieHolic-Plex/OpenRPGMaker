@@ -63,11 +63,11 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
     {
       door: { x: 50, y: 31 }, mapId: "fs_inn", name: "아스텔 · 별빛 여관", bgm: "cc0-bgm-rtp-rst-001",
       // 선술집 홀 + 손님방 셋 + 부엌·저장고 — 「여관인데 침대가 없다」(VQA r5).
-      layout: { program: "inn", seed: 5, variant: 1, styleVariant: "A" },
-      // 위층 휴게 홀(비어 있었다)에 찻상 두 벌, 아래 선술집 남쪽에 식탁 두 벌·술통 걸이.
-      dress: [["tea 2x2", 9, 4], ["chair E", 8, 4], ["chair W", 11, 4], ["tea 2x2", 17, 4], ["chair E", 16, 4], ["chair W", 19, 4], ["luggage trunk", 26, 5],
-        ["dining 2x1", 18, 15], ["chair S", 18, 14], ["chair S", 19, 14], ["chair N", 18, 16], ["chair N", 19, 16],
-        ["dining 2x1", 28, 15], ["chair S", 28, 14], ["chair S", 29, 14], ["chair N", 28, 16], ["chair N", 29, 16], ["keg rack", 30, 17]],
+      // seed 5 배치는 손님방 셋이 홀과 떨어진 1칸 골방이고 그 아래가 큰 어둠이었다(VQA r20 minor, 화면 17% 허공) —
+      // 손님방이 위 왼쪽에 모이고 부엌이 아래 왼쪽에 붙는 seed 1 배치로 바꾼다. 홀 위쪽 빈 마루에 식탁 두 벌·술통 걸이.
+      layout: { program: "inn", seed: 1, variant: 1, styleVariant: "A" },
+      dress: [["dining 2x1", 15, 8], ["chair S", 15, 7], ["chair S", 16, 7], ["chair N", 15, 9], ["chair N", 16, 9],
+        ["dining 2x1", 20, 8], ["chair S", 20, 7], ["chair S", 21, 7], ["chair N", 20, 9], ["chair N", 21, 9], ["keg rack", 14, 16]],
       people: [
         {
           id: "ev_fs_inn_keeper", name: "여관 주인 마르타", query: "젊은 여성", chip: ["tex_easyrpg_charset_people1", 5], behindCounter: true,
@@ -116,7 +116,9 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       // 빵 진열 가게 + 빵 굽는 방(화덕이 부엌을 겸한다) + 식료품 광 + 지하 저장고 + 침실 + 식당.
       layout: { rooms: [{ kind: "bakery_shop", w: 14, h: 8 }, { kind: "bakery_oven", w: 8, h: 5 }, { kind: "pantry" }, { kind: "cellar" }, { kind: "bedroom" }, { kind: "dining" }], seed: 21, variant: 0, styleVariant: "C" },
       dress: [["table:loaf+bun", 13, 13], ["basket:loaf", 11, 14], ["basket:bun", 12, 14], ["basket:baguette", 11, 13],
-        ["roundtable", 27, 13], ["chair E", 26, 13], ["chair W", 28, 13]],
+        ["roundtable", 27, 13], ["chair E", 26, 13], ["chair W", 28, 13],
+        // 가게 아랫단이 빈 대리석 띠였다(VQA r20 minor) — 빵 진열 탁자 하나와 바구니(문~계산대 길 x22~24 는 비운다).
+        ["table:loaf+bun", 16, 13], ["basket:baguette", 18, 14], ["basket:loaf", 25, 12], ["basket:bun", 26, 12], ["basket:loaf", 10, 14]],
       people: [
         {
           id: "ev_fs_baker_husband", name: "빵집 아저씨 토마", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people1", 4], behindCounter: true,
@@ -154,11 +156,11 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       door: { x: 32, y: 20 }, mapId: "fs_lisa_home", name: "아스텔 · 리사네 집", bgm: "cc0-bgm-rtp-emo-002",
       // 가족 집: 거실(벽난로) + 식당 + 부엌 + 침실 둘(부부·아이) + 식료품 광 + 헛간 광 + 지하 저장고(흰 도기 욕조는 중세 집에 안 맞았다, VQA r6).
       // 여덟 방(여덟 자리 식탁·식료품 광·헛간·지하 저장고)은 작은 오두막에 안 맞았다(VQA r11 major) — 거실·부엌·침실 둘·바느질 방(리사의 일감).
-      layout: { rooms: [{ kind: "living", w: 12, h: 8 }, { kind: "kitchen", w: 8, h: 7 }, { kind: "master_bedroom", w: 8, h: 7 }, { kind: "bedroom", w: 8, h: 7 }, { kind: "tailor_work", w: 9, h: 7 }], seed: 29, variant: 0, styleVariant: "A" },
-      // 거실 아랫단·바느질 방 아랫단이 빈 마루였다 — 찻상과 의자, 옷감 상자.
-      dress: [["tea 2x2", 16, 14], ["chair E", 15, 14], ["chair W", 18, 14], ["book pile", 20, 15], ["luggage trunk", 5, 15], ["dining 2x1", 3, 13], ["chair S", 3, 12], ["chair N", 4, 14],
-        // 침실 둘이 똑같은 그림이고 아랫단이 비었다(VQA r13) — 부부 방엔 찻상, 아이 방엔 짐 궤짝·책 더미.
-        ["tea 2x2", 14, 6], ["chair E", 13, 6], ["chair W", 16, 6], ["luggage trunk", 21, 7], ["book pile", 26, 7], ["basket:herb", 25, 7]],
+      // 거실 12칸은 오른쪽 아래가 큰 어둠으로 남았다(VQA r20 minor, 화면 19% 허공) — 거실을 16×7 로 넓혀 집 폭을 채운다.
+      layout: { rooms: [{ kind: "living", w: 16, h: 7 }, { kind: "kitchen", w: 8, h: 7 }, { kind: "master_bedroom", w: 8, h: 7 }, { kind: "bedroom", w: 8, h: 7 }, { kind: "tailor_work", w: 9, h: 7 }], seed: 29, variant: 0, styleVariant: "A" },
+      // 넓힌 거실 오른쪽·왼쪽 아랫단에 찻상·짐 궤짝, 아이 방·바느질 방 아랫단에 궤짝·책 더미(문~벽난로 길은 비운다).
+      dress: [["tea 2x2", 23, 13], ["chair E", 22, 13], ["chair W", 25, 13], ["book pile", 27, 15], ["luggage trunk", 13, 15], ["basket:herb", 14, 15],
+        ["luggage trunk", 26, 7], ["book pile", 21, 7], ["luggage trunk", 17, 7]],
       people: [
         {
           id: "ev_fs_lisa", name: "리사", query: "젊은 여성", chip: ["tex_easyrpg_charset_people3", 3],
@@ -231,7 +233,9 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
           after.upperTiles.forEach((t, i) => { if (t !== snap.upper[i]) changed.push(i); });
           after.lowerOverlayTiles?.forEach((t, i) => { if (snap.lowerOverlay && t !== snap.lowerOverlay[i]) changed.push(i); });
           after.upperOverlayTiles?.forEach((t, i) => { if (snap.upperOverlay && t !== snap.upperOverlay[i]) changed.push(i); });
-          const onFloor = changed.every((i) => (metaD[after.lowerTiles[i]!]?.label ?? "").startsWith("바닥"));
+          // 이미 놓인 가구 위에 겹쳐 찍으면 가구가 반쯤 지워진 덩이가 됐다 — 비어 있던 바닥 칸에만.
+          const onFloor = changed.every((i) => (metaD[after.lowerTiles[i]!]?.label ?? "").startsWith("바닥")
+            && (snap.upper[i] ?? -1) < 0 && (snap.upperOverlay?.[i] ?? -1) < 0);
           if (onFloor) Object.assign(project, ctx.project);
           else {
             after.upperTiles.splice(0, after.upperTiles.length, ...snap.upper);
@@ -287,7 +291,12 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       // 이름 있는 사람마다 다른 칩 — 같은 낱말(노인 남성·젊은 여성)로 고르면 두 집에 같은 얼굴이 섰다(VQA r5).
       for (const page of npc.pages ?? []) {
         if (!page.graphic?.sprite) continue;
-        const direction = counter ? "down" : page.graphic.direction ?? "down";
+        // 계산대 밖 사람은 출구(손님이 들어오는 문) 쪽을 본다 — 리사가 들어오는 주인공에게 등을 보였다(VQA r20 minor).
+        const toward = (): "up" | "down" | "left" | "right" => {
+          const dx = exitCell.x - npc.x, dy = exitCell.y - npc.y;
+          return Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "right" : "left") : (dy > 0 ? "down" : "up");
+        };
+        const direction = counter ? "down" : toward();
         page.graphic = { ...page.graphic, sprite: { type: "bundled", id: person.chip[0] }, direction, pattern: charsetFrameIndex({ characterIndex: person.chip[1], direction, pattern: 1 }) };
         if (counter) page.movement = { type: "fixed", speed: 3, frequency: 3 };
       }
