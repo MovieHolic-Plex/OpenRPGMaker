@@ -9,7 +9,8 @@
     dot.Autotile 이 몸통에만 변형을 두므로 이 모듈로는 못 한다(변마다 표 하나).
   - 몸통 = 줄마다 손으로 찍은 잔 얼룩 암반(4~5 단) + 변형 8개: 얼룩을 뒤집어 돌려 쓰고, 큰 꼴(금·턱·덩이·기둥 머리)은 몇 변형에만.
     금이 칸 끝을 건널 때는 정해진 자리(가로 변 y=4·11, 세로 변 x=5·12)에서만.
-  - 홈의 바닥색은 같은 줄·같은 번호 흙바닥 몸통 화소(cave_r1.on_base). 동 홈은 바위 바로 밑 한 줄만 그늘(0).
+  - 홈의 바닥색은 같은 줄·같은 번호 흙바닥 몸통 화소(cave_r1.on_base). 동 변(그늘 쪽)은 홈 0~1 을 그늘(0)로 채워 동쪽 바닥의
+    서쪽 그늘 줄과 한 줄 그림자가 되고, A·B 동 테두리는 윗면 재질 단 그대로(어두운 세로 획이 생기지 않게).
 
 줄마다 두 벌은 다른 설계다: 1 = 턱 진 암반(드문 금·턱 / C1 층 줄), 2 = 돌무더기(드문 덩이·조약돌 / C2 기둥 머리 덩이). 옆선 표도 다르다.
 앞면(남쪽 2단)은 후보마다 새로 그린 dot.Face — 윗면 재질이 꺾여 내려간 더 어두운 세로 벽, 윗면 턱이 열마다 0~2px 늘어져
@@ -34,9 +35,10 @@ T = 16
 LEG = {
     # A 해안 흙굴 — 따뜻한 갈색 사암(rim) + 갈색 흙 어둠(cfloor 0·1) + 이끼(moss). 바닥 cfloor 2 보다 한 단 어둡다.
     'A': legend(k=('rim', 0), d=('cfloor', 0), b=('rim', 1), c=('cfloor', 1), m=('rim', 2), l=('rim', 3), h=('rim', 4),
-                w=('rim', 5), g=('moss', 3), n=('moss', 4), y=('moss', 5), e=('rim', 0), **{'0': ('cfloor', 0)}),
-    # B 산속 바위굴 — 회색 화강암(crock 녹회 + stone 밝은 단). 바닥 cfloor 1(갈색) 과 색상이 갈린다.
-    'B': legend(k=('stone', 0), d=('crock', 2), b=('crock', 3), c=('stone', 2), m=('crock', 4), l=('crock', 5),
+                w=('rim', 5), g=('moss', 3), n=('moss', 4), y=('moss', 5), e=('rim', 0), q=('moss', 2),
+                **{'0': ('cfloor', 0)}),
+    # B 산속 바위굴 — 무채색 회색 화강암(crock 3~5 · stone 1·2 — 녹회 단은 쓰지 않는다). 바닥 cfloor 1(갈색) 과 색상이 갈린다.
+    'B': legend(k=('crock', 1), d=('stone', 1), b=('crock', 3), c=('stone', 2), m=('crock', 4), l=('crock', 5),
                 h=('stone', 4), w=('stone', 5), g=('moss', 2), n=('moss', 3), y=('moss', 4), e=('crock', 1), p=('stone', 1),
                 **{'0': ('cfloor', 0)}),
     # C 검푸른 심층굴 — 검푸른 화산암(vrock) + 푸른 쇠빛(iron) 결. 바닥 cata 3(차가운 회색)보다 확실히 어둡되 허공(void)은 아니다.
@@ -47,7 +49,7 @@ LEG = {
 
 # 테두리 층(바깥 → 안). 북·서 = 빛 쪽, 동 = 그늘 쪽, 남 = 앞면 위 앞턱(아래 줄이 가장 밝다).
 LIT = {'A': 'hlm', 'B': 'hlm', 'C': 'mcb'}      # C: 먹 테두리·안쪽 밝은 띠 없이 재질 중간 단으로 — 스티커처럼 떠 보이지 않게
-SHADE = {'A': 'kd', 'B': 'kd', 'C': 'kd'}
+SHADE = {'A': 'bb', 'B': 'mm', 'C': 'kd'}   # A·B 동 테두리는 윗면 재질 단 그대로 — 어두운 띠가 먹 줄·틈처럼 보이지 않게
 LIP = {'A': 'hld', 'B': 'hmd', 'C': 'mcb'}   # 아래(앞면 닿는 줄)부터: 가장 밝은 앞턱 · 빛 · 위쪽 그늘 홈
 
 
@@ -74,14 +76,14 @@ def _lip(seq):
 # ================================================================================================ 틀(모서리·안 모서리)
 # 기호: , 바닥 몸통 · 0 바닥 그늘 · H L M 빛 쪽 테두리 세 단 · E D 그늘 쪽 두 단 · P Q R 앞턱(아래부터).
 # 표준 깊이: 북·서 (홈 2, 테두리 끝 5) · 동 (2, 4) · 남 (0, 3). 모서리 바깥 열/행은 그 표준과 같다(사분면 경계 이음).
-# 변 띠 이음점(0·7·8·15번)은 틀 규칙상 한 값(홈 2)이다. 바깥 북서 귀는 사분면을 거의 다 쓰는 반지름 5 의 둥근 귀.
+# 변 띠 이음점(0·7·8·15번)은 틀 규칙상 변마다 한 값(북·서 홈 2, 동 홈 1)이다. 바깥 북서 귀는 사분면을 거의 다 쓰는 반지름 5 의 둥근 귀.
 NW = [',,,,,,,,', ',,,,,,,,', ',,,,,HHH', ',,,,HLLL', ',,,HLMMM', ',,HLM...', ',,HLM...', ',,HLM...']
-NE = [',,,,,,,0', ',,,,HHE0', 'HHHHLLE0', 'LLLLMDE0', 'MMMMMDE0', '.....DE0', '....DE0,', '....DE0,']   # 동북 귀 오른쪽 끝은 칸 위 1줄까지 — 동쪽 바닥 칸의 서쪽 그늘(칸 맨 위부터)이 바위 없이 홀로 서지 않게
+NE = [',,,,,,,0', ',,,,HHE0', 'HHHHLLE0', 'LLLLMDE0', 'MMMMMDE0', '.....DE0', '.....DE0', '.....DE0']   # 동북 귀 오른쪽 끝은 칸 위 1줄까지 — 동쪽 바닥 칸의 서쪽 그늘(칸 맨 위부터)이 바위 없이 홀로 서지 않게
 SW = [',,HLM...', ',,HLM...', ',,HLM...', ',HLM....', ',HLM....', 'HLMRRRRR', 'HLQQQQQQ', 'PPPPPPPP']
-SE = ['....DE0,', '....DE0,', '....DE0,', '.....DE0', '.....DE0', 'RRRRRDE0', 'QQQQQQDE', 'PPPPPPQD']
-# 안 모서리(대각만 끊김). 북 쪽 둘은 바닥이 둥글게 파고든 오목한 귀, 남 쪽 둘은 앞면 윗단 위로 앞턱이 꺾여 들어오는 귀.
+SE = ['.....DE0', '.....DE0', '.....DE0', '.....DE0', '.....DE0', 'RRRRRDE0', 'QQQQQQDE', 'PPPPPPQD']
+# 안 모서리(대각만 끊김). 북 쪽 둘은 바닥이 둥글게 파고든 오목한 귀(그늘 획 대신 윗면 입술 단으로 꺾임), 남 쪽 둘은 앞면 윗단 위로 앞턱이 꺾여 들어오는 귀.
 IN_NW = [',,HLM...', ',HHLM...', 'HHLLM...', 'LLLMM...', 'MMMM....', '........', '........', '........']
-IN_NE = ['....DE0,', '....DE0,', '....DEHH', '....DLLL', '....MMMM', '........', '........', '........']
+IN_NE = ['.....DE0', '.....HH0', '....HHHH', '....LLLL', '....MMMM', '........', '........', '........']
 IN_SW = ['........', '........', '........', '........', '........', 'RRRR....', 'QQQQR...', 'PPPQR...']
 IN_SE = ['........', '........', '........', '........', '........', '....RRRR', '...RQQQQ', '...RQPPP']
 
@@ -102,10 +104,9 @@ def rock_frame(line, prof):
     lit, sh, lip = LIT[line], SHADE[line], LIP[line]
     n = CR.strips(prof['N'], _layer(lit), ',')
     w = CR.strips(prof['W'], _layer(lit), ',')
-    # 동 변 홈: 바위 바로 밑 한 줄만 그늘(0), 그 바깥은 바닥 몸통 — 깊은 홈이
-    # 검은 쐐기로 보이지 않게
-    e = [''.join(('0' if i == n - 1 else ',') if i < n else ch for i, ch in enumerate(row))
-         for row, (n, d) in zip(CR.strips(prof['E'], _layer(sh), '0'), prof['E'])]
+    # 동 변(그늘 쪽): 홈은 얕게(0~1)·그늘(0)로 채워 동쪽 바닥 칸의 서쪽 그늘 줄과 한 덩어리 그림자가 된다 — 홈 속에 홀로 선
+    # 검은 세로 획(틈·먹 줄처럼 읽힘)이 생기지 않게
+    e = CR.strips(prof['E'], _layer(sh), '0')
     s = CR.strips(prof['S'], _lip(lip), ',')
     fr = CR.frame(_sym(NW, line), _sym(NE, line), _sym(SW, line), _sym(SE, line), n, s, w, e)
     inner = [a + b for a, b in zip(_sym(IN_NW, line), _sym(IN_NE, line))] + \
@@ -189,33 +190,33 @@ def _prof(ns, rim):
 S_PROF = [(0, 3), (0, 4), (0, 4), (0, 3), (0, 3), (0, 2), (0, 2), (0, 3), (0, 3), (0, 3), (0, 4), (0, 5), (0, 4), (0, 3), (0, 3), (0, 3)]
 PROF1 = {'N': _prof([2, 1, 0, 0, 1, 1, 1, 2, 2, 3, 4, 5, 5, 4, 3, 2], 3),
          'W': _prof([2, 3, 4, 5, 6, 5, 3, 2, 2, 2, 1, 0, 0, 1, 1, 2], 3),
-         'E': _prof([2, 2, 3, 4, 4, 3, 3, 2, 2, 1, 1, 1, 2, 3, 3, 2], 2), 'S': S_PROF}
+         'E': _prof([1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1], 2), 'S': S_PROF}
 PROF2 = {'N': _prof([2, 3, 4, 5, 4, 3, 2, 2, 2, 1, 0, 0, 1, 3, 3, 2], 3),
          'W': _prof([2, 1, 0, 0, 1, 2, 2, 2, 2, 3, 5, 6, 5, 4, 3, 2], 3),
-         'E': _prof([2, 1, 1, 2, 3, 4, 3, 2, 2, 3, 3, 2, 1, 1, 1, 2], 2), 'S': S_PROF}
+         'E': _prof([1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1], 2), 'S': S_PROF}
 
 
 # ================================================================================================ 윗면
 # 바탕 = 줄마다 손으로 찍은 잔 얼룩 암반(버들항 밀도, 4~5 단, 2~3화소 뭉치) — 조용해서 16px 되풀이가 드러나지 않는다.
 # 변형 8개(마지막 = 본몸통): 바탕을 뒤집어 돌려 쓰고, 큰 꼴(턱·금·바윗덩이·기둥 머리)은 몇 변형에만 드물게 둔다.
 # 금이 칸 끝을 건널 때는 정해진 자리(가로 변 y=4·11, 세로 변 x=5·12)에서만 — 이웃이 이으면 길게 이어지고, 안 이으면 거기서 끝난 금.
-A_MOT = [
-    'ccbbccccmcccccbc', 'cbbcccmmcccbcccc', 'cccccccmccbbcccm', 'ccmccccccccbcccc',
-    'cmmcccbccccccmcc', 'ccccbbdcccmcccbc', 'bccccbccccmmcccb', 'bbcccccmccccccbb',
-    'ccccmcccccbccccc', 'ccmmcccbcccccmcc', 'cccccccbbccccmcc', 'cbccmccccccbcccc',
-    'cbbcccccmcccccmc', 'ccccccbccccdbccc', 'cmcccbbccmccbccc', 'cccccccccmcccccb']
-B_MOT = [
-    'mmcmmllmmmcmmmcm', 'mcccmlmmmmccmmlm', 'mmcmmmmmlmmmmllm', 'lmmmmcmmllmmcmmm',
-    'llmmccmmmmmmccmm', 'mmmmcmmmcmmlmmmm', 'mcmmmmllmmmllmcm', 'cccmmmmlmmmmmmcc',
-    'mmmmlmmmmcmmmmmm', 'mmllmmmcccmmlmmm', 'mmmlmmmmcmmmllmm', 'cmmmmmlmmmmmmmmc',
-    'ccmmmllmmmcmmmmm', 'mmmcmmmmmmccmlmm', 'mlmccmmmlmmmmllm', 'mmmmmmmmllmcmmmm']
+A_MOT = [   # 어두운 갈색 사암(b) 바탕에 차가운 회녹(q) 뭉치 — 바닥(따뜻한 cfloor 2, 0.47)보다 한 단 어둡고 차가워 1배에서도 갈린다
+    'bqbbdbcbqqbbmbbq', 'qbbcbbbbqbdbbcbb', 'bbdmbqbcbbbbqbdb', 'cbbbbbqbbmcbbbbq',
+    'bqbcdbbbdbbqbcbb', 'bbbbmbqbmbbbbbdb', 'qbcbbbbbbqcbdbbb', 'bbbqbdbcbbbbmbqb',
+    'bdbbbmbbqbdbbbbc', 'bmbqbbbbbbmbqbbb', 'bbbbcbqdbbbbbcdb', 'qbdbbbbmbqbbbbmb',
+    'bbmbqbbbbbcbdbbq', 'cbbbbbdbqbbbmbbb', 'bqbcbbmbbbdbbbqb', 'bbbbqbbbcbmbqbbb']
+B_MOT = [   # 무채색 회색(m) 바탕에 b·c·p·l 잔 얼룩 5단
+    'mbmmpmlmbmmcmmbm', 'bmmlmmmbmmpmlmmc', 'mmpmbmcmmlmmmbmm', 'lmmmmbmmpmmbmmpm',
+    'mcmbmmlmmmcmmlmm', 'mmmpmmmbmlmmpmmb', 'bmlmmcmmmmbmmmcm', 'mmmmbmmpmcmmlmmm',
+    'mpmlmmbmmmmpmmbm', 'mmmmcmmlmbmmmcmm', 'lmbmmpmmmmlmbmmp', 'mmmmmmbmcmmmmmlm',
+    'mbmpmlmmmpmbmmmm', 'cmmmbmmmlmmmcmpm', 'mmlmmmpmmbmmmmmb', 'mpmmcmmbmmlmpmmm']
 C_MOT = [
     'bbdbbbmbbbdbbbbb', 'bdddbbmmbbbbdbmb', 'bbdbbbbbbbbbbmmb', 'mbbbbdbbbmbbbbbb',
     'mmbbbddbbmmbbbdb', 'bbbbbbbbbbbbbddb', 'bdbbmbbbbdbbbbbb', 'ddbbmmbbbddbbbmb',
     'bbbbbbbcbbbbbbmm', 'bbmbbbbbbbbdbbbb', 'bbmmbdbbbbbddbbb', 'dbbbbddbbmbbbbbd',
     'bbbbbbbbmmbbbbbb', 'bbdbbmbbbbbdbmbb', 'bmbbbbbbdbbbbbbb', 'bbbdbbbbbbmbbbdb']
 MOT = {'A': A_MOT, 'B': B_MOT, 'C': C_MOT}
-CRACK = {'A': ('d', 'b', 'm'), 'B': ('p', 'c', 'l'), 'C': ('k', 'd', 'm')}
+CRACK = {'A': ('d', 'q', 'm'), 'B': ('p', 'c', 'l'), 'C': ('k', 'd', 'm')}
 
 # 턱(설계 1): 위 판 끝 빛 입술 → 꺾인 앞면 → 아래 판 그늘. 길이·꺾임이 다른 둘.
 LEDGE = {
@@ -251,6 +252,21 @@ def _crack(line, rows, paths):
     return cut(rows, paths, dark=d, shade=sh, lit=li)
 
 
+# 작은 꼴(A·B): 모인 홈(어두운 점 + 오른아래 빛), 빛 받는 혹(위 밝음 + 밑 그늘), 떨어져 나간 조각 — 조용하게.
+FORMS = {
+    'A': (['dd.', 'ddm', '.mm'], ['.mm.', 'mmmb', '.dd.'], ['md', 'dq'], ['d.d', '.m.']),
+    'B': (['pp.', 'ppl', '.ll'], ['.ll.', 'llmb', '.pp.'], ['lp', 'pb'], ['p.p', '.l.']),
+}
+FORM_AT = [((0, 3, 9), (1, 11, 3)), ((3, 12, 11),), ((2, 4, 2), (0, 10, 12), (3, 7, 6)), ((1, 2, 6),), (),
+           ((2, 9, 4), (1, 4, 11)), ((0, 12, 6),), ((3, 6, 12),)]
+
+
+def _forms(line, v):
+    if line not in FORMS:
+        return v
+    return [stampl(rows, [(FORMS[line][k], x, y) for k, x, y in at]) for rows, at in zip(v, FORM_AT)]
+
+
 def tops(line, n):
     m = MOT[line]
     t = [turn(m, k) for k in (1, 2, 3, 0, 1, 2, 3)]
@@ -282,7 +298,7 @@ def tops(line, n):
              _crack(line, t[5], [((12, 15), (11, 12), (13, 9))]),
              stampl(t[6], [(peb, 5, 8)])]
     main = m if n == 1 else turn(m, 1)
-    return v + [main]
+    return _forms(line, v + [main])
 
 
 BUILD = {(ln, k): ({1: PROF1, 2: PROF2}[k], (lambda ln=ln, k=k: tops(ln, k))) for ln in 'ABC' for k in (1, 2)}
@@ -408,7 +424,7 @@ def face_a1():
     _specks(g, [(7, 5, 'd'), (12, 11, 'd'), (14, 6, 'g'), (0, 12, 'g'), (6, 13, 'g')])
     _lipline(g, 'A', '0011210001221100')
     rows = [''.join(r) for r in g]
-    return face_cv('A', rows, _cap('c', '.'), _cap('d', '.'))
+    return face_cv('A', rows, _cap('c', '.'), _cap('.', '.'))
 
 
 A_FST1 = ['.cm.', 'cmcb', 'bcbd', '.dd.', '..k.']
@@ -418,16 +434,15 @@ A_FST4 = ['cm', 'bd']
 
 
 def face_a2():
-    g = _fgrid(['dbdddbddddbddddb', 'ddddbdddbdddbddd', 'bdddddbdddddddbd', 'ddbdddddbddbdddd'],
-               ['dkddkdddkddkdddk', 'gnmgcmngmcgnmcgm', 'cbgbbcbbgcbbcgbb'], A_FBOT)
-    for y in range(15, 28):   # 아래 단은 바탕을 한 단 어둡게
-        g[y] = ['k' if c == 'd' and (x * 3 + y) % 7 == 0 else 'd' if c == 'b' else c for x, c in enumerate(g[y])]
-    _stones(g, [(A_FST2, 1, 4), (A_FST1, 9, 3), (A_FST4, 13, 8), (A_FST3, 6, 10), (A_FST1, 12, 12), (A_FST4, 2, 12),
-                (A_FST2, 8, 16), (A_FST3, 0, 17), (A_FST1, 4, 22), (A_FST4, 13, 20), (A_FST3, 10, 22), (A_FST4, 6, 18),
-                (A_FST4, 15, 25), (A_FST1, 0, 24)])
+    """사암 벼랑: 지그재그 세로 금 하나와 짧은 비스듬한 금 둘로 크기가 다른 판이 갈린다(돌 쌓기·층리가 아니다)."""
+    g = _fgrid(['bbbbbbbbbbbbbbbb', 'bbbbbbbcbbbbbbbb', 'bbbcbbbbbbbbbbbb', 'bbbbbbbbbbbbbcbb'], A_FTOP, A_FBOT,
+               ['dddddddbdddddddd', 'ddbddddddddddddd', 'dddddddddddddbdd'], 15)
+    _cracks(g, [((2, 3), (4, 8), (3, 13), (5, 19), (4, 27)), ((4, 8), (9, 10), (12, 9)), ((5, 19), (11, 21))],
+            'k', 'd', 'c')
+    _specks(g, [(7, 5, 'g'), (8, 5, 'g'), (13, 6, 'c'), (1, 22, 'b'), (14, 24, 'b')])
     _lipline(g, 'A', '1100012210001210')
     rows = [''.join(r) for r in g]
-    return face_cv('A', rows, _cap('c', '.'), _cap('d', '.'))
+    return face_cv('A', rows, _cap('c', '.'), _cap('.', '.'))
 
 
 # ---- 줄 B: 화강암(d 바탕 0.29 · e 그늘 · k 금 · b 빛 턱)
@@ -459,22 +474,19 @@ def face_b1():
     _specks(g, [(5, 6, 'b'), (13, 9, 'e'), (6, 22, 'k'), (11, 24, 'd')])
     _lipline(g, 'B', '0012221000011100')
     rows = [''.join(r) for r in g]
-    return face_cv('B', rows, _cap('b', '.'), _cap('e', '.'))
-
-
-B_FM1 = ['...bbbm...', '.bbmmbbbd.', 'bbmbbbbdde', 'bbbbbbddde', 'dbbbbdddde', 'ddddddddee', '.eedddeek.', '...kkkk...']
-B_FM2 = ['..bmb..', '.bmbbd.', 'bbbbdde', 'dbbddde', '.eddee.', '..kkk..']
-B_FM3 = ['.bmbb.', 'bbbbdd', 'ddddde', '.ekke.']
+    return face_cv('B', rows, _cap('b', '.'), _cap('.', '.'))
 
 
 def face_b2():
-    g = _fgrid(['eeeeeeeeeeeeeeee', 'eekeeeeeeeeekeee', 'eeeeeeeekeeeeeee'], B_FTOP, B_FBOT,
-               ['eeekeeeeeeeeeeke', 'ekeeeeeekeeeeeee', 'eeeeeeekeeeekeee'], 16)
-    _stones(g, [(B_FM1, 0, 3), (B_FM2, 9, 4), (B_FM3, 12, 10), (B_FM2, 5, 11), (B_FM1, 8, 15), (B_FM3, 1, 16),
-                (B_FM2, 13, 19), (B_FM1, 2, 20), (B_FM3, 10, 23)])
+    """모난 화강암 벼랑: 지그재그 세로 금 하나가 벽을 가르고 짧은 턱·비스듬한 금이 몇 줄 — B1 과 금 자리·기울기가 다르다."""
+    g = _fgrid(['dddddddddddddddd', 'dddddbdddddddddd', 'dddddddddddbdddd'], B_FTOP, B_FBOT,
+               ['eeeeeeeeeeeeeeee', 'eeedeeeeeeeeeeee', 'eeeeeeeeeedeeeee'], 15)
+    _cracks(g, [((10, 3), (11, 9), (9, 15), (10, 21), (8, 27)), ((11, 9), (15, 10), (19, 9)), ((2, 17), (5, 24))],
+            'k', 'e', 'b')
+    _specks(g, [(3, 6, 'b'), (10, 6, 'b'), (14, 21, 'b')])
     _lipline(g, 'B', '1221000111000122')
     rows = [''.join(r) for r in g]
-    return face_cv('B', rows, _cap('b', '.'), _cap('e', '.'))
+    return face_cv('B', rows, _cap('b', '.'), _cap('.', '.'))
 
 
 # ---- 줄 C: 현무암(b 바탕 0.26 · k 그늘 · d 쇠빛 · m 빛 턱)
@@ -566,10 +578,10 @@ def cand(line, n):
 
 
 NOTES = {
-    'A1': '턱 진 사암 암반 — 잔 얼룩 사암 윗면에 드물게 긴 금·빛 입술 턱. 앞면 = 물결 층리 사암(아래로 어두움)',
-    'A2': '사암 돌무더기 — 같은 잔 얼룩 윗면에 드물게 중간 덩이·조약돌. 앞면 = 둥근 돌이 박힌 역암 벽',
-    'B1': '턱 진 회색 산 암반 — 무채색 잔 얼룩 윗면에 드물게 금·모난 턱. 앞면 = 비스듬한 금으로 갈린 큰 화강암 덩이',
-    'B2': '회색 돌무더기 — 무채색 잔 얼룩 윗면에 드물게 둥근 바윗덩이. 앞면 = 둥글게 부푼 바위 면',
+    'A1': '턱 진 사암 암반 — 바닥보다 한 단 어둡고 차가운(회녹 뭉치) 잔 얼룩 5단 윗면에 작은 홈·혹·조각, 드물게 긴 금·턱. 앞면 = 물결 층리 사암',
+    'A2': '사암 돌무더기 — 같은 어두운 잔 얼룩 윗면에 작은 홈·혹, 드물게 덩이·조약돌. 앞면 = 지그재그 세로 금으로 갈린 사암 벼랑',
+    'B1': '턱 진 회색 산 암반 — 무채색 잔 얼룩 5단 윗면에 작은 홈·혹·조각, 드물게 금·모난 턱. 앞면 = 비스듬한 금으로 갈린 큰 화강암 덩이(무채색)',
+    'B2': '회색 돌무더기 — 무채색 잔 얼룩 윗면에 작은 홈·혹, 드물게 둥근 바윗덩이. 앞면 = 지그재그 세로 금·짧은 턱으로 갈린 화강암 벼랑',
     'C1': '층 진 현무암 — 검푸른 잔 얼룩 윗면에 가는 층 줄·턱. 앞면 = 물결 층리',
     'C2': '현무암 돌무더기 — 검푸른 잔 얼룩 윗면에 드물게 기둥 머리 덩이. 앞면 = 두꺼운 층이 턱으로 튀어나온 층벽',
 }
