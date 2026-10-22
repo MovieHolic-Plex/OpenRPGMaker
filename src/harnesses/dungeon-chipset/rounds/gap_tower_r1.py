@@ -68,24 +68,27 @@ def _in(R, sx, sy):
 A1 = {
     'name': 'A1',
     # 띠(버들항 둥근 탑 윗띠처럼 둘레로 나눈 돌 덩이): w 바깥 끝 · j 덩이 이음 · l 덩이 몸 · y 엇갈린 덩이 몸 · Q 밝은 반점 · g 어두운 반점
-    #   k 안쪽 그늘 줄 · W 안쪽 턱(벽 윗면의 안 가장자리 — 남쪽에서는 이것이 방 바닥과 만나는 선)
+    #   k 안쪽 그늘 줄 · W 안쪽 턱. 덩이 몸은 빛(왼쪽 위)을 따라 북서가 한 단 밝고 남동이 한 단 어둡다(band_chain 으로 옮김).
     # 앞면(벽돌): K 줄눈 · J 그늘 · B 몸 · C 밝은 반점 · D 왼 끝 빛 · X 윗줄 빛
-    # 바닥·둘레(어두운 회색 깐 돌): b 줄눈 · m 깊은 그늘 · i 그늘 돌 · G 몸 · h 돌 윗·왼 가장자리 빛 · a 문턱 빛
-    # 계단(따뜻한 다듬은 돌 — 벽·띠·바닥과 다른 재질·명암): R 디딤판 앞 턱 · S 몸 · T 얼룩 · U 챌판 위 · V 챌판 · Z 챌판 밑 · H 계단 몸 앞면 줄
-    'leg': legend(w=('cata', 3), j=('cata', 4), l=('stone', 4), y=('cata', 6), Q=('stone', 5), g=('cata', 3), k=('cata', 5),
-                  W=('stone', 5), f=('stone', 1),
+    # 바닥(따뜻한 나무 널 — 버들항 탑 1층 서재 바닥 결): n 널 이음 · r 널 윗줄 빛 · o 몸 · p 나뭇결 · z 깊은 그늘
+    # 문턱·통로(회색 깐 돌): b 줄눈 · i · G · h · a · L
+    # 계단(탑 벽과 같은 회색 돌, 나무 바닥 위에서 또렷): R 디딤판 앞 턱 빛 · S 몸 · T 얼룩 · E 뒤 이음 · U 챌판 · V 챌판 밑
+    'leg': legend(w=('cata', 3), j=('cata', 4), y=('cata', 5), l=('cata', 6), q=('stone', 4), Q=('stone', 5), g=('cata', 3),
+                  k=('cata', 5), W=('stone', 5), f=('stone', 1),
                   K=('brick', 0), J=('brick', 1), B=('brick', 2), C=('brick', 3), D=('brick', 4), X=('brick', 5), Y=('brick', 6),
+                  n=('wood', 1), r=('wood', 4), o=('wood', 3), p=('wood', 2), z=('wood', 0), s=('wood', 5),
                   b=('stone', 1), m=('cata', 0), i=('cata', 1), G=('cata', 2), h=('cata', 3), a=('cata', 5), L=('cata', 4),
-                  R=('rim', 5), S=('rim', 4), T=('rim', 3), U=('rim', 2), V=('rim', 1), Z=('rim', 0), H=('rim', 0)),
+                  R=('stone', 4), S=('cata', 5), T=('cata', 4), E=('cata', 3), U=('cata', 1), V=('stone', 1)),
     'chain': 'KJBCDXY',
-    'band': [   # 0 = 바깥 끝 … 10 = 안 끝(턱). 덩이 길이 8(둘레), 이음 j — 버들항 탑 윗띠의 둘레 돌 덩이
+    'band_chain': 'wjylq',
+    'band': [   # 0 = 바깥 끝 … 10 = 안 끝(턱). 덩이 길이 8(둘레), 이음 j
         'wwwwwwwwwwwwwwww',
-        'jlllQllljyyyyyyy',
+        'jllllllljyyyyyyy',
         'jllllllljyyyyQyy',
         'jlllllgljyyyyyyy',
         'jllllllljyygyyyy',
         'jlQllllljyyyyyyy',
-        'jllllllljyyyyyQy',
+        'jllllllljyyyyyyy',
         'jllllllljyyyyQyy',
         'jllllglljyyyyyyy',
         'kkkkkkkkkkkkkkkk',
@@ -126,59 +129,48 @@ A1 = {
         'JJJJJJJJJJJJJJJJ',
         'KKKKKKKKKKKKKKKK',
     ],
-    'course': [   # 둘레 깐 돌(바닥과 같은 명암 — 턱이나 둘째 벽이 아니다): 0 = 벽 쪽(벽 밑 그늘), 7 = 바닥과 만나는 줄눈
-        'iiiiiiiiiiiiiiib',
-        'iGGGGGGGGGGGGGGb',
-        'hGGGGGGGGGGGGGGb',
-        'hGGGiGGGGGGGGGGb',
-        'hGGGGGGGGGGiGGGb',
-        'hGGGGGGGGGGGGGGb',
-        'hGiGGGGGGGGGGGGb',
-        'bbbbbbbbbbbbbbbb',
-    ],
-    'floor': [   # 8×8 깐 돌, 아랫줄은 4 밀림. 돌 윗·왼 가장자리 h(빛), 몸 G, 엇갈린 그늘 돌 i
-        'bbbbbbbbbbbbbbbb',
-        'bhhhhhhhbGGGGGGG',
-        'bhGGGGGGbGiiiiii',
-        'bhGGGGGGbGiiiiii',
-        'bhGGGiGGbGiiimii',
-        'bhGGGGGGbGiiiiii',
-        'bhGGGGGGbGiiiiii',
-        'bhGGGGGGbGiiiiii',
-        'bbbbbbbbbbbbbbbb',
-        'GGGGbhhhhhhhbGGG',
-        'iiiibhGGGGGGbGii',
-        'iimibhGGGGGGbGii',
-        'iiiibhGGGGiGbGii',
-        'iiiibhGGGGGGbGii',
-        'iiiibhGGGGGGbGim',
-        'iiiibhGGGGGGbGii',
+    'floor': [   # 나무 널 4줄 넷, 널마다 이음 자리가 다르다
+        'nnnnnnnnnnnnnnnn',
+        'rrrrrnrrrrrrrrrr',
+        'oopoonoooooppooo',
+        'ooooonoopoooooop',
+        'nnnnnnnnnnnnnnnn',
+        'rrrrrrrrrrrrnrrr',
+        'oooppooooooonooo',
+        'pooooooooppnoooo',
+        'nnnnnnnnnnnnnnnn',
+        'rrnrrrrrrrrrrrrr',
+        'oonoooopooooopoo',
+        'oonooooooppooooo',
+        'nnnnnnnnnnnnnnnn',
+        'rrrrrrrrrnrrrrrr',
+        'oooooppoonoooooo',
+        'opooooooonoooooo',
     ],
     'floor_var': [[
-        'bbbbbbbbbbbbbbbb',
-        'bhhhhhhhbGGGGGGG',
-        'bhGGGGGGbGiiiiii',
-        'bhGGmGGGbGiiiiii',
-        'bhGGGmGGbGiiiiii',
-        'bhGGGGmmbGiiiiii',
-        'bhGGGGGGbmiiiiii',
-        'bhGGGGGGbGmiiiii',
-        'bbbbbbbbbbbbbbbb',
-        'GGGGbhhhhhhhbGGG',
-        'iiiibhGGGGGGbGii',
-        'iiiibhGGGGGGbGii',
-        'iiiibhGGGGGGbGii',
-        'iiiibhGGGGGGbGii',
-        'iiiibhGGGGGGbGii',
-        'iiiibhGGGGGGbGii',
+        'nnnnnnnnnnnnnnnn',
+        'rrrrrnrrrrrrrrrr',
+        'ooooonoooppooooo',
+        'oopoonoooooooopo',
+        'nnnnnnnnnnnnnnnn',
+        'rrrrrrrrrrrrnrrr',
+        'ooooooooppoonooo',
+        'oooppooooooonooo',
+        'nnnnnnnnnnnnnnnn',
+        'rrnrrrrrrrrrrrrr',
+        'oonoooopnpoooooo',
+        'oonoooooppoooooo',
+        'nnnnnnnnnnnnnnnn',
+        'rrrrrrrrrnrrrrrr',
+        'oopoooooonoooopo',
+        'ooooopoooonooooo',
     ]],
+    'floor_mix': [0, 0, 1],
+    'dark': {'s': 'r', 'r': 'o', 'o': 'p', 'p': 'n', 'n': 'z', 'z': 'z'},
     'iface_shift': 0,
-    # 디딤판(윗면): 0행 = 앞 끝 턱(가장 밝음), 몸 S + 얼룩 T — 판마다 다른 자리
-    'tread': ['RRRRRRRRRRRRRRRR', 'SSSTSSSSSSSSSSSS', 'SSSSSSSSSTSSSSSS', 'STSSSSSSSSSSSSTS', 'SSSSSSTSSSSSSSSS',
-              'SSSSSSSSSSSSSTSS', 'SSSSSSSSSSSSSSSS', 'SSSSTSSSSSSSSSSS'],
-    'riser': ['U', 'V', 'V', 'Z', 'Z'],     # 챌판 줄(위 → 아래): 디딤판 턱 밑 한 줄, 그늘 두 줄, 밑 접지
-    'body': ['U', 'V', 'V', 'H'],            # 계단 몸 앞면(방 쪽, 남동을 봄): 4줄마다 H 줄(돌 켜), 맨 밑 Z
-    'base': 'Z',
+    # 계단(벽을 따라 오르는 좁은 디딤판 여럿): 윗면 몸 S + 얼룩 T, 앞(남) 끝 턱 R, 뒤 이음 E, 판 두께 줄 U U V
+    'tread': ['SSSTSSSSSSSSSSSS', 'SSSSSSSSSTSSSSSS', 'STSSSSSSSSSSSSTS', 'SSSSSSTSSSSSSSSS'],
+    'lip': 'R', 'joint': 'E', 'slab': ['U', 'U', 'V'],
 }
 
 A2 = {
@@ -190,7 +182,8 @@ A2 = {
                   A=('brick', 0), B=('brick', 1), D=('brick', 2), E=('brick', 3), F=('brick', 4), G=('brick', 5),
                   P=('cfloor', 0), M=('cfloor', 1), N=('cfloor', 3), R=('cfloor', 2), O=('cfloor', 5), Q=('cfloor', 6),
                   I=('wood', 5), H=('wood', 4), J=('wood', 3), K=('wood', 2), V=('wood', 1), Z=('wood', 0),
-                  x=('crock', 1), z=('crock', 0)),
+                  x=('crock', 1), z=('crock', 0),
+                  S=('iron', 4), T=('iron', 3), U=('iron', 2), W=('iron', 5), Y=('iron', 1)),
     'chain': 'ABDEFG',
     'band': [   # 갓돌 길이가 4~9열로 제각각, 줄눈 b, 위·왼 빛 e·f, 아래 그늘 c, 9 = 안쪽 빛 턱 줄, 10 = 턱 끝
         'cbccccbcccbcccbc',
@@ -239,16 +232,6 @@ A2 = {
         'DEEEEEDBBDEEEEED',
         'BDDDDDBBABDDDDDB',
         'AAAAAAAAAAAAAAAA',
-    ],
-    'course': [   # 둥근 판돌 둘레(바닥과 같은 베이지): 크기가 다른 돌 셋, 사이 줄눈 P. 0 = 벽 쪽
-        'PMMMPPPMMMMPPMMP',
-        'RONORPROONNRPRON',
-        'RNNMRPRONNNMRRNN',
-        'PRMRPRRNNMNMRPMR',
-        'PPPPPRONMRRRPPPP',
-        'RRORPRNMRPRROORP',
-        'RONMRPRRPRONNMRP',
-        'PRRPPPPPPRRRRRPP',
     ],
     'floor': [   # 닳은 큰 판돌 — 칸마다 나눔이 다르다(셋 중 하나). 판 윗·왼 가장자리 O, 몸 N·R, 얼룩 M, 줄눈 P
         'OOOOOOOOOPOOOOOP',
@@ -305,12 +288,10 @@ A2 = {
     ]],
     'floor_mix': [0, 1, 2, 0, 1],
     'iface_shift': 0,
-    # 나무 디딤판: 0행 = 앞 끝 턱(밝음), 몸 H + 나뭇결 J(판 길이 방향 = 둘레 방향)
-    'tread': ['IIIIIIIIIIIIIIII', 'HHHHJJHHHHHHHHHH', 'HHHHHHHHHHHJJJHH', 'JJHHHHHHHHHHHHHH', 'HHHHHHHJJHHHHHHH',
-              'HHHHHHHHHHHHHHJJ', 'HHHJJJHHHHHHHHHH', 'HHHHHHHHHHJHHHHH'],
-    'riser': ['K', 'V', 'V', 'Z', 'Z'],
-    'body': ['b', 'a', 'a', 'x'],            # 막돌 계단 몸 앞면 — 4줄마다 x 켜
-    'base': 'z',
+    'dark': {'Q': 'O', 'O': 'N', 'N': 'R', 'R': 'M', 'M': 'P', 'P': 'P'},
+    # 나선 계단(버들항 나선 계단 말): 나무 디딤판 — 앞 끝 턱 I · 몸 H · 결 J · 뒤 이음 K · 판 두께 V V Z
+    'tread': ['HHHHJHHHHHHHHHHH', 'HHHHHHHHHHHJHHHH', 'JHHHHHHHHHHHHHHH', 'HHHHHHHJHHHHHHHH'],
+    'lip': 'I', 'joint': 'K', 'slab': ['V', 'V', 'Z'],
 }
 
 # A1 지붕층 성가퀴: 바깥 끝 5행에 서는 머리. 세 가지 — 곧은 머리 · 귀 떨어진 머리 · 낮게 닳은 머리. '.' = 총안(낮은 띠 그대로)

@@ -433,9 +433,9 @@ check_design('용암 물가', LAVA_EDGE)
 
 # 둑·껍질 결(줄마다). B = 따뜻한 검붉은 갈색 화산 껍질(rim·cfloor 어두운 단 + 용암 불씨). C = 푸르스름한 검은 층리(vrock).
 LAVA_FACE = {
-    'B': {'Q': ('xxyxxxxyyxxxxyxx', 'rim', 2, 'rim', 3), 'M': ('xxyyxxxxxyxxxyyx', 'rim', 1, 'cfloor', 0),
-          'L': ('xxxyxxxxxxyxxxxx', 'rim', 1, 'rim', 0), 'g': ('aaxaaaaxaaaxaaaa', 'lava', 0, 'rim', 0),
-          'V': ('xxyxxxxyxxxxxxyx', 'rim', 1, 'lava', 1)},
+    'B': {'Q': ('xxyxxxxyyxxxxyxx', 'rim', 2, 'rim', 1), 'M': ('xxyyxxxxxyxxxyyx', 'wood', 1, 'rim', 1),
+          'L': ('xxxyxxxxxxyxxxxx', 'wood', 1, 'wood', 0), 'g': ('aaxaaaaxaaaxaaaa', 'lava', 0, 'wood', 1),
+          'V': ('xxyxxxxyxxxxxxyx', 'wood', 1, 'lava', 1)},
     'C': {'Q': ('xxxxxxxxxyyyyyyx', 'vrock', 2, 'vrock', 3), 'M': ('yyyyxxxxxxxxyyyy', 'vrock', 2, 'vrock', 1),
           'L': ('xxxxxxxyyyyyyxxx', 'vrock', 1, 'vrock', 2), 'g': ('aaaaxxaaaaaaaxaa', 'lava', 0, 'vrock', 1),
           'V': ('xxxxxyxxxxxxxyxx', 'vrock', 1, 'lava', 1)},
@@ -453,7 +453,7 @@ def lava_face(line):
 # 식은 껍질 윗면 16×16(손). s 바탕 · r 그늘 · w 빛 받은 덩이 · k 실금(용암 0단) · h 달아오른 실금(용암 1단).
 CRUST = {
     'B': (['ssrsssfsssksswss', 'swwssrsssskssssf', 'sssssfsssshkssss', 'fsssrssswssksssr', 'sssksssswwssssrw', 'sskksssswssfsssr', 'wsksssrssssssrss', 'wwsssrwwsssksssr', 'wssfsssrssskhsfs', 'ssrssssssssksssw', 'sssssskssrssssww', 'swwssshkssfssssw', 'sssrssskssssrsss', 'fsssssskssswwwss', 'ssrswsssssssrssf', 'sskswwssrfsssssr'],
-          legend(s=('rim', 1), r=('rim', 0), w=('rim', 2), f=('cfloor', 0), k=('lava', 0), h=('lava', 1))),
+          legend(s=('wood', 1), r=('wood', 0), w=('rim', 1), f=('rim', 0), k=('lava', 0), h=('lava', 1))),
     'C': (['nnnnnnnmmmmmmnnn', 'mmmmmmmmmkmmmmmm', 'nnnnooonnnknnnnn', 'mmmmmmmmmmmkmmmm', 'nnnnnnnnnnnnnooo',
            'mmmkmmmmmmmmmmmm', 'nnnkhnnnnooonnnn', 'mmmmmmmmmmmmmmmm', 'oonnnnnnnnnnkknn', 'mmmmmmmmmmmmmhmm',
            'nnnnnnoooonnnnnn', 'mmmmmmmmmmmmmmmm', 'nnnnnkknnnnnnnoo', 'mmmmmmmhmmmmmmmm', 'nnoooonnnnnnnnnn', 'mmmmmmmmmmmkmmmm'],
@@ -470,10 +470,11 @@ def crust_tex(line):
 
 # 바닥을 따뜻하게(달아오른 y · 탄 z): 바닥 화소의 밝기 단에 따라 rim 램프 단으로 옮긴다(모양은 그대로).
 HEAT = {'y': {'cfloor': [1, 2, 2, 3, 3, 3, 4, 4], 'stone': [1, 1, 2, 3, 3, 4], 'cata': [1, 1, 2, 2, 3, 3, 3], 'crock': [1, 1, 1, 2, 2, 3, 3]},
-        'z': {'cfloor': [0, 1, 1, 1, 2, 2, 2, 2], 'stone': [0, 1, 1, 1, 2, 2], 'cata': [0, 1, 1, 1, 1, 2, 2], 'crock': [0, 1, 1, 1, 1, 2, 2]}}
+        'z': {'cfloor': [1, 1, 1, 2, 2, 2, 3, 3], 'stone': [1, 1, 2, 2, 3, 3], 'cata': [1, 1, 2, 2, 2, 3, 3], 'crock': [1, 1, 1, 2, 2, 3, 3]}}
+HEAT_RAMP = {'y': 'rim', 'z': 'wood'}   # 달아오른 바닥 = 따뜻한 회갈색 · 탄 바닥 = 짙은 밤색
 
 
-def heat(cv, table):
+def heat(cv, table, ramp='rim'):
     out = Cv(cv.w, cv.h)
     out.a[:] = cv.a
     for y in range(cv.h):
@@ -482,7 +483,7 @@ def heat(cv, table):
             for r, tb in table.items():
                 t = ER.ramp_of(c, r)
                 if t is not None:
-                    out.a[y, x, :3] = dot.RAMPS['rim'][tb[t]]
+                    out.a[y, x, :3] = dot.RAMPS[ramp][tb[t]]
                     break
     return out
 
@@ -516,7 +517,7 @@ def shoulders(vm):
 
 
 # 맥 띠(8칸 손 띠, 용암 단 글자). <줄>1 껍질 사이 가는 맥 — 붉게 흐르다 노랗게 달아오름. <줄>2 넓은 강 — 주황·노랑이 굽이쳐 흐름.
-VEIN_BAND = {1: ('bbccdcbb', 'aabbbbaa'), 2: ('ccddddcc', 'bccddccb')}
+VEIN_BAND = {1: ('bccddccb', None), 2: ('ccddddcc', 'bccddccb')}   # <줄>1 은 어깨 없는 가는 맥
 # <줄>2 몸통 바탕 = 흐르는 붉은 결(감아 민다) + 그 위 떠 가는 껍질 판(변형마다 다른 자리). <줄>1 바탕 = 식은 껍질 결(고정).
 L2_BASE = ['bbbbbbbbbbbbbbbb', 'bbaaabbbbbbbbbbb', 'baaaaabbbbbcbbbb', 'bbaaabbbbbbbbbbb', 'bbbbbbbbbbbbbaab',
            'bbbcbbbbbbbbaaaa', 'bbbbbbbbbbbbbaab', 'bbbbbbbaabbbbbbb', 'bbbbbbaaaabbbbbb', 'bbbbbbbaabbbbcbb',
@@ -546,7 +547,7 @@ def lava_body(line, n, vi, k):
             assert 2 <= x and x + len(pr[0]) <= 14 and 2 <= y and y + len(pr) <= 14
             stamp(cv, pr, PLATE_LEG[line], x, y)
     core, sh = VEIN_BAND[n]
-    for x, y in shoulders(vm):
+    for x, y in (shoulders(vm) if sh else ()):
         ph = (sgn * x + y - 2 * k) % 8
         cv.put(x, y, LL[sh[ph]])
     for y in range(16):
@@ -558,7 +559,7 @@ def lava_body(line, n, vi, k):
 
 def lava(line, n):
     fl = floor_body(line, n)
-    tex = {',': fl, 'y': heat(fl, HEAT['y']), 'z': heat(fl, HEAT['z']), 'C': crust_tex(line), **lava_face(line)}
+    tex = {',': fl, 'y': heat(fl, HEAT['y']), 'z': heat(fl, HEAT['z'], 'wood'), 'C': crust_tex(line), **lava_face(line)}
     if line == 'C':   # 심층굴: 탄 띠는 푸르스름한 검은 화산암 층
         tex['z'] = rowtex('1112222211112221', legend(**{'1': ('vrock', 1), '2': ('vrock', 2)}))
     fr_rows, inn_rows = bank_frame(LAVA_EDGE, LAVA_WOB[line], KEYS[line])
