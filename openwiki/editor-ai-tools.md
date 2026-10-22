@@ -194,6 +194,14 @@
 반면 major 목록은 r28 화로 방 단 앞 검은 띠처럼 실제 결함을 칸 좌표로 짚었다. 실내 관례(방 윤곽 밖 검정 = 바깥, 남쪽 가장자리 출구 = 문)는 지시문에 적어 오탐을 막는다.
 `OPRN_FEATURE_CRITIC=0` 이면 끄고 옛 「방 전체가 요청한 장소로 읽힌다」 항목으로 돌아간다.
 
+**다듬기 모드 (2026-10-22, `request.polish`).** 확인이 끝났는데 안 읽히는 항목이 남으면 확인표 상자에 「다듬기 (최대 30분)」 단추(`ai-feature-polish`)가 뜬다.
+누르면 패널이 평소 Pi 턴을 하나 더 보낸다 — `polish: { maxRounds 8, budgetMs 30분, request: 처음 요청, mapIds: 확인표가 본 맵, lastBuilds: 맵마다 앞 턴이 마지막으로 성공시킨 짓기 호출(도구·인자) }`,
+계획 턴 없음, 차례·시간 상한을 다듬기 한도에 맞춤, 처음 도구는 앞 턴 도구 + `FEATURE_POLISH_TOOLS`. 앞 턴이 지은 맵 묶음(홀·아래층)은 **조수 하나**가 함께 고친다(`groups` 를 나누지 않음).
+워커는 첫 차례에 짓지 않고 확인표만 적게 한 뒤(`featurePolishSystemPrompt` — 마지막 짓기 인자에서 시작해 같은 mapId·replace:true 로), 바뀌지 않은 대상 맵도 1배 확인·독립 비평→고치기를 바퀴·시간 한도까지 돈다.
+진행은 `feature_review.repair`(다듬기 n/N바퀴 · 경과/한도 분)로 상자에 보인다. 평소 턴이라 맵 소유권·대기열·중지 단추가 그대로 적용되고, 중지하면 그때까지 체크포인트로 적용된 고침은 남는다(`aiPiAgentCommand` 중단 경로).
+실측 함정 셋(고친 것): ① 패널 「지금 맵」(빈 시작 맵)을 다듬었다 → 확인표가 본 맵으로. ② 맵마다 조수를 따로 띄워 서로의 맵을 고치려다 범위 밖 거절 → 묶음 하나. ③ 처음 도구를 안 실어 411개(스키마 83만 자)가 나가
+로컬 CLI 세션이 「Autocompact is thrashing」으로 멈췄다 → 처음 도구 목록. 시험: `HARNESS_POLISH=1 npm run harness -- space-craft run …` 이 단추를 실제로 눌러 두 번째 턴까지 기다린다.
+비평가는 여러 맵으로 지은 요청이면 다른 맵 그림을 맥락으로 함께 받는다 — 아래층만 보고 「망원경이 없다」 major 를 여덟 바퀴 반복했다.
 이 루프를 거친 맵은 끝의 배치 품질 권고(`inspectPiLayoutQuality` skip)를 다시 받지 않는다.
 렌더러는 좌표만이 아니라 `show_map_region` 결과(칸 배열)를 받아야 한다 — `{mapId,x,y,w,h}` 만 넘기면 `map-rendering-unavailable: invalid region` 으로 거절한다(첫 시험에서 그림 0장으로 돌았다).
 

@@ -274,7 +274,7 @@ export interface CriticVerdict {
  * 이 지시문으로 매겼더니 Sonnet 6·6·7.6 대 6·7.6·7, Opus 6·6.7·7 대 5.7·7·7.3 — 그림 한 장 절대 점수는 두 판을 가르지 못했다.
  * 반면 major 목록(좌표·고칠 점)은 r28 성문 방 단 앞 검은 띠처럼 실제 결함을 짚었다. 그래서 점수 문턱 대신 major 0 을 통과로 본다. */
 
-export function featureCriticPrompt(task: string, mapName: string, cells: { width: number; height: number }, imagePx: { width: number; height: number } | undefined): string {
+export function featureCriticPrompt(task: string, mapName: string, cells: { width: number; height: number }, imagePx: { width: number; height: number } | undefined, otherMaps: readonly string[] = []): string {
   const scale = imagePx ? ` The image is ${imagePx.width}×${imagePx.height}px, so one cell is about ${(imagePx.width / cells.width).toFixed(1)}px; give coordinates in CELLS (x from the left, y from the top, 0-based).` : " Give coordinates in CELLS (x from the left, y from the top, 0-based).";
   return [
     "You are a fresh, adversarial visual QA reviewer for a 16px 3/4-view (top-down JRPG) game map. You have never seen this map, its build notes or any earlier score. Score it once, strictly.",
@@ -284,7 +284,9 @@ export function featureCriticPrompt(task: string, mapName: string, cells: { widt
     "Axis 2 View and palette consistency: all art shares the same 3/4 view and palette feel.",
     "Axis 6 Doors and stairs: the exit door reads as a door in a wall; stairs face the way they lead.",
     "Genre conventions (do NOT count these as majors): an interior is drawn as a room shape inside a black map; black OUTSIDE the room's outer wall outline is the off-screen exterior, not void — count void only for black or bare holes INSIDE the room's outline, or when the room fills only a small part of the frame. The standard interior exit is an opening or mat in the south wall at the bottom edge that leads off the map; that reads as a door. A room may be non-rectangular.",
-    `Map: ${mapName}, ${cells.width}×${cells.height} cells, rendered at about 1x.${scale}`,
+    `Map: ${mapName}, ${cells.width}×${cells.height} cells, rendered at about 1x (image 1).${scale}`,
+    // 여러 층·방으로 지은 요청에서 맵 하나만 보이면 다른 맵에 있는 특징을 「없다」고 major 로 잡는다(2026-10-22 천문대 아래층: 망원경이 없다는 major 를 여덟 바퀴 반복).
+    ...(otherMaps.length ? [`This build has ${otherMaps.length + 1} maps. Images 2..${otherMaps.length + 1} are the other maps (${otherMaps.join(", ")}) for context only — judge and list majors for image 1 alone, and do not count a requested feature as missing if it is clearly on another map.`] : []),
     `What the user asked for: ${task.slice(0, 1200)}`,
     "List EVERY major with the cell rectangle it covers and ONE concrete layout fix. The builder cannot draw new art or cut holes into the void: fixes must change the room plan (shape, size, narrowing an empty strip with wall), positions, framing (walls, pillars, dais with a front riser, rugs, paired statues or lights) or swap in a larger existing piece. Do not suggest changing the request.",
     'Reply with JSON only: {"imagesSeen": <number of images you received>, "axes": {"composition": n, "view": n, "doors": n}, "score": n, "majors": [{"axis": 1|2|6, "x": n, "y": n, "w": n, "h": n, "what": "한국어 한 줄 — 보이는 것", "fix": "한국어 한 줄"}], "minors": ["한국어 한 줄"]}',
@@ -324,3 +326,31 @@ export function criticToVerdict(itemId: string, critic: CriticVerdict): FeatureV
     : { id: itemId, state: "fail", why: `독립 비평(참고 점수 ${critic.score}) — major ${critic.majors.length}: ${majors || "(목록 없음, 점수 미달)"}`.slice(0, 600), ...(fixes ? { fix: fixes.slice(0, 600) } : {}) };
 }
 
+// ── 다듬기 모드 ─────────────────────────────────────────────────────────────────
+/** 다듬기 실행 설정 — 패널의 「다듬기」 단추가 싣는다(PiAgentRequest.polish). */
+export interface FeaturePolishOptions {
+  /** 고치기 바퀴 상한(1~20). */
+  readonly maxRounds: number;
+  /** 작업 시간 한도(ms) — 이 안에 끝나지 않을 바퀴는 시작하지 않는다. */
+  readonly budgetMs: number;
+  /** 처음 사용자가 요청한 문장 — 판정자·비평가가 이 요청에 비춰 본다. */
+  readonly request: string;
+  /** 다듬을 맵 — 앞 턴의 확인표가 본 맵. 비우면 요청 범위(mapIds·지금 맵). */
+  readonly mapIds?: readonly string[];
+  /** 맵마다 앞 턴이 마지막으로 성공시킨 짓기 호출(도구 이름·인자). 다듬기는 새 세션이라 이것 없이는 평면을 처음부터 다시 짠다. */
+  readonly lastBuilds?: Readonly<Record<string, { readonly tool: string; readonly args: unknown }>>;
+}
+export const FEATURE_POLISH_DEFAULT: Omit<FeaturePolishOptions, "request"> = { maxRounds: 8, budgetMs: 30 * 60_000 };
+/** 다듬기 턴에 처음 내보이는 도구. 비우면 레지스트리 전부(411개·스키마 83만 자)가 나가 로컬 CLI 세션이 문맥을 다 채우고 멈췄다(2026-10-22 실측). */
+export const FEATURE_POLISH_TOOLS: readonly string[] = ["show_map_region", "set_feature_checklist", "list_hand_interior_parts", "build_hand_interior_room",
+  "check_reachability", "list_tileset_references", "read_tileset_reference", "create_transfer_pair", "stamp_object"];
+
+export function featurePolishSystemPrompt(polish: FeaturePolishOptions): string {
+  return `[다듬기 모드] 이번 실행은 이미 지은 맵을 다듬는 실행이다(최대 ${polish.maxRounds}바퀴 · ${Math.round(polish.budgetMs / 60_000)}분). `
+    + "처음 차례에는 아무것도 짓거나 고치지 마라: show_map_region 으로 맵을 보고, 아직 확인표가 없으면 set_feature_checklist 로 처음 요청의 특징을 적은 뒤 짧게 끝낸다. "
+    + "그다음 실행기가 1배 확인과 독립 비평을 돌려 고칠 목록을 주면 그 목록만 고친다. 맵을 새로 만들거나 다른 맵을 건드리지 않는다. "
+    + "참고문서·스킬을 처음부터 다시 읽지 마라 — 아래 「마지막 짓기 호출」 인자에서 시작해 고칠 곳만 바꿔 같은 도구를 같은 mapId·replace:true 로 다시 부른다.\n"
+    + `처음 요청: ${polish.request.slice(0, 1200)}`
+    + (polish.mapIds?.length ? `\n다듬을 맵: ${polish.mapIds.join(", ")}` : "")
+    + Object.entries(polish.lastBuilds ?? {}).map(([mapId, b]) => `\n마지막 짓기 호출 — ${mapId}: ${b.tool}(${JSON.stringify(b.args).slice(0, 12000)})`).join("");
+}

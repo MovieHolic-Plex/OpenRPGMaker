@@ -219,9 +219,25 @@ export async function execute(entry, dir, timeoutMs, config, diagnostics={}) {
       await page.evaluate(()=>window.__oprnAiBridge.abort()).catch(()=>{});
       throw Error(`Turn did not settle within ${timeoutMs}ms: ${error.message.slice(0,120)}`);
     }
+    // 다듬기 모드 시험(HARNESS_POLISH=1): 확인표 상자의 「다듬기」 단추를 실제로 눌러 두 번째 턴을 끝까지 돌린다.
+    let polish;
+    if(process.env.HARNESS_POLISH==='1') {
+      const button=page.getByTestId('ai-feature-polish');
+      if(await button.count()) {
+        const mark=await page.evaluate(()=>window.__capEvents.length);
+        const polishStart=Date.now();
+        await button.first().click();
+        await page.waitForFunction((mark)=>{
+          const events=window.__capEvents.slice(mark);
+          return events.some(e=>['stream_closed','error'].includes(e.type)) && !window.__oprnAiBridge.status().turnBusy;
+        },mark,{timeout:Number(process.env.HARNESS_POLISH_TIMEOUT_MS??2_700_000),polling:1000});
+        polish={clicked:true,fromEvent:mark,elapsedMs:Date.now()-polishStart};
+      } else polish={clicked:false,reason:'no polish button (all items passed or no checklist)'};
+      console.log(`${entry.id}: polish ${JSON.stringify(polish)}`);
+    }
     const events=await page.evaluate(()=>window.__capEvents);
     const answer=events.filter(e=>e.type==='assistant').map(e=>e.text??'').join('\n');
-    writeFileSync(resolve(dir,'trace.json'),JSON.stringify({requests,events,errors,elapsedMs:Date.now()-start},null,2));
+    writeFileSync(resolve(dir,'trace.json'),JSON.stringify({requests,events,errors,elapsedMs:Date.now()-start,...(polish?{polish}:{})},null,2));
     phase='save';
     const flush=await saveThroughUi(page);
     const applied=stored(projectDir);

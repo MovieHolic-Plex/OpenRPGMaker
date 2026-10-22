@@ -224,6 +224,8 @@ export interface PiRunOptions {
   readonly intentNote?: string | null;
   /** 의도 판정 한 줄 — 활동 로그에만 싣는다(`PiRunPlan.routingAudit`). 모델에는 가지 않는다. */
   readonly routingAudit?: string;
+  /** 다듬기 모드 — 계획 턴 없이 1배 검토→고치기만 N바퀴·M분 돈다(src/ai/piAgent/featureReview.ts). */
+  readonly polish?: import("@/ai/piAgent/featureReview").FeaturePolishOptions;
 }
 
 /** 적용 뒤 영수증(지금 → 적용 후) 재료. 렌더는 패널이 한다 — 되돌리기와 스튜디오 「변경」 탭이 거기 있다. */
@@ -397,7 +399,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   const routineEdit = options.routineEdit === true && !readOnly && !team
     && command.mapIds.length === 1 && Boolean(base.maps[command.mapIds[0]!]);
   const mapRoots = independentMapRunRoots(base, command.mapIds);
-  const groups = team || options.planOnly ? [mapRoots] : mapRoots.length > 0 ? mapRoots.map((id) => [id]) : [[] as string[]];
+  // 다듬기는 앞 턴이 지은 맵 묶음(층으로 이어진 홀·아래층 등)을 조수 하나가 함께 고친다 — 맵마다 나누면 서로의 맵을 고치려다 범위 밖으로 거절된다(2026-10-22 실측).
+  const groups = team || options.planOnly || options.polish ? [mapRoots] : mapRoots.length > 0 ? mapRoots.map((id) => [id]) : [[] as string[]];
   // 병합 여부 한 곳 — 체크포인트 발행·최종 병합·요청의 가드 신호(mapBundleMerge)가 같은 값을 쓴다.
   // 가드가 꺼진 채 병합만 하면 범위 밖 맵 변경이 도구에선 성공하고 병합에서 버려진다.
   const mergedFromBundles = mergesMapBundles({ team, mapIds: command.mapIds, scopedByUser: command.scopedByUser === true, groupCount: groups.length });
@@ -659,7 +662,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   try {
     // 모델이 읽는 지시문 = 사용자 문장 + 의도 노트. 계획 턴도 같은 것을 읽어야 계획에 author_village 같은
     // 이름이 남고, 실행 턴이 그 이름을 따라간다(노트 없이는 산문 계획 → paint_road 손작업으로 흘렀다).
-    if (needsUltrabrainPlanTurn({ readOnly, team, routineEdit, applyMode })) {
+    if (!options.polish && needsUltrabrainPlanTurn({ readOnly, team, routineEdit, applyMode })) {
       surface.setStatus("어떻게 바꿀지 정리하고 있어요.");
       let plan = "";
       let planError = "";
@@ -706,6 +709,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         ...(effectiveTeamSpec ? { teamSpec: effectiveTeamSpec } : {}),
         preferCallerThinking,
         ...(options.thinkingLevel ? { callerThinkingLevel: options.thinkingLevel } : {}),
+        ...(options.polish ? { polish: options.polish } : {}),
       }), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) },
       { signal: surface.signal, returnIncompleteResult: command.goalMode === true, onEvent: wrap(mapIds, index),
         onCheckpoint: readOnly || applyMode === "review" ? undefined : async checkpoint => stage("checkpoint", async () => {
