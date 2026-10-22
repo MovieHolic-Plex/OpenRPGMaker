@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.321.0 — 2026-10-22
+
+### 기능
+
+- **village** — villages differ by request — roofs/water/woods/highland, varied default seed, no fixed small-village template (#3240) (`f5c7d1d`)
+
 ## 0.320.0 — 2026-10-22
 
 ### 기능
