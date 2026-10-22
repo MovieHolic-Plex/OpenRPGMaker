@@ -61,7 +61,8 @@ const END_C = "end_fl_normal_team";
 const SE_HEART = "cc0-se-orp-interface-interface3";
 const SE_MAIL = "cc0-se-orp-interface-interface1";
 const SE_PAPER = "cc0-se-orp-inventory-cloth";
-const SE_CAN = "cc0-se-orp-inventory-bottle";
+// 옛 inventory-bottle 은 8비트 칩튠 소리라 현실 사무실에서 튀었다(VQA r26) — 둔탁한 2단 «탁» 소리(캔을 내려놓는 소리).
+const SE_CAN = "cc0-se-osx-wooden-01";
 
 // 음악(사용자 r2: 「BGM 쓰레기」) — 판타지 RPG 마을곡(fld-003·town·inn)과 합성 원곡 둘을 버리고, CC0 카탈로그에서
 // 귀 판정(Gemini 4 Argon, 곡마다 2회, 60초 발췌)으로 현대 연애 장면에 맞는 곡만 여섯 곡 고른다. 근거: openwiki/runtime-pre-edit-routing.md.
@@ -103,7 +104,8 @@ const SE_ELEVATOR = "cc0-se-osx-bell-01"; // 승강기 도착 «딩»
 const SE_DOOR = "cc0-se-orp-misc-random4"; // 철문 걸쇠가 당겨지며 풀리는 소리(옥상 문 열기)
 const SE_DOOR_SHUT = "cc0-se-osx-door-close-02"; // 묵직한 철문이 닫히며 걸쇠가 물리는 소리
 const SE_BUTTON = "cc0-se-osx-switch-01"; // 호출 단추 딸깍
-const SE_SLIDE = "easyrpg-sound-evade2"; // 승강기·로비 문이 미끄러지는 바람 소리
+// 승강기·로비 문 — 옛 evade2 는 청취 설명이 «휙 피하기»라 전투 회피로 읽혔다(VQA r26). 걸쇠·공압·미끄러짐·잠김의 기계 문 소리.
+const SE_SLIDE = "cc0-se-orp-misc-random6";
 const SE_GLASS_OPEN = "easyrpg-sound-teleport2"; // 유리문 손잡이 걸쇠가 풀리는 소리
 const SE_GLASS_SHUT = "cc0-se-osx-door-close-03"; // 유리문 걸쇠 딸깍
 // 열차: 옛 earth2 는 카탈로그 청취 설명이 「심장 박동 쿵-쿵」이라 열차로 읽히지 않았다(VQA r25) — 저음 럼블이 부풀었다 빠지는 fire1,
@@ -129,7 +131,7 @@ function doorFx(d: DoorSpec, open: boolean, ms = 600, block = true): Command[] {
 }
 const quiet = (resourceId: string, volume = 0.6): Command => ({ ...(playSe(resourceId) as object), volume } as unknown as Command);
 /** 카메라를 화면 칸(x, y)로 옮겼다가 / 주인공에게 되돌린다. */
-const panTo = (x: number, y: number, ms = 900): Command => m2("Camera Control", { mode: "panTo", target: "screen", x, y, zoom: 1, durationMs: ms, wait: true, easing: "easeInOut" });
+const panTo = (x: number, y: number, ms = 900, zoom = 1): Command => m2("Camera Control", { mode: "panTo", target: "screen", x, y, zoom, durationMs: ms, wait: true, easing: "easeInOut" });
 const panBack = (ms = 900): Command => m2("Camera Control", { mode: "return", target: "player", x: 0, y: 0, zoom: 1, durationMs: ms, wait: true, easing: "easeInOut" });
 
 /**
@@ -138,7 +140,7 @@ const panBack = (ms = 900): Command => m2("Camera Control", { mode: "return", ta
  * pan 을 주면 문이 화면 밖일 때 카메라가 승강기로 갔다가 돌아온다(회의실에서 보는 퇴장).
  * firstLoveProbe(scripts/qa/runtime/first-love-probes.mts)가 「사라지기 직전 칸 = 출구 앞」을 검사한다.
  */
-function leave(project: Project, mapId: string, eventId: string, from: Cell, exit: { stand: Cell; door: Cell }, hideSw: string, hero: Cell, alsoAvoid: readonly Cell[] = [], pan?: Cell, returnTo?: Cell): { begin: Command; end: Command[] } {
+function leave(project: Project, mapId: string, eventId: string, from: Cell, exit: { stand: Cell; door: Cell }, hideSw: string, hero: Cell, alsoAvoid: readonly Cell[] = [], pan?: Cell, returnTo?: Cell & { zoom?: number }): { begin: Command; end: Command[] } {
   const walkOut = walkRoute(project, mapId, eventId, from, exit.stand, [hero, ...alsoAvoid], false) as unknown as Record<string, unknown>;
   walkOut.routeTail = [{ kind: "turn", dir: dirToward(exit.stand, exit.door) }];
   const door = elevDoor(exit.door);
@@ -158,7 +160,7 @@ function leave(project: Project, mapId: string, eventId: string, from: Cell, exi
       quiet(SE_SLIDE, 0.45), ...doorFx(door, false, 700),
       setSw(hideSw, true),
       wait(300),
-      ...(pan ? [returnTo ? panTo(returnTo.x, returnTo.y) : panBack()] : []),
+      ...(pan ? [returnTo ? panTo(returnTo.x, returnTo.y, 900, returnTo.zoom ?? 1) : panBack()] : []),
     ],
   };
 }
@@ -1069,10 +1071,10 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
   const exit = { stand: { x: o.npcExit.x, y: o.npcExit.y + 1 }, door: o.npcExit };
   // 회의실에서는 승강기가 화면 밖이다 — 탑승하는 동안 카메라가 승강기 쪽으로 올라갔다가 돌아온다.
   const elevatorView = { x: 13, y: 8 };
-  // 회의 장면 카메라: 회의실이 화면 위쪽(흉상 머리 위)에 오게 맵 아래 덧댄 줄 쪽으로 내려 잡는다(VQA r10 금요일 회의가 화면 아래 구석).
-  // 맵 폭(26)이 화면(30)보다 좁아 가로는 맵 가운데에 고정된다 — 서쪽 끝 회의실을 가운데로 못 옮기므로, 세로로 더 내려 회의실을
-  // 화면 위 절반에 두고 아래 왼쪽 흉상이 탁자 둘레 사람 위에 겹치지 않게 한다(VQA r25). 맵 아래 덧댄 줄(FRI_PAD)이 그만큼 있다.
-  const meetView = { x: 13, y: 21 };
+  // 회의 장면 카메라: 두 배로 당겨 회의실을 화면에 채운다. 맵 폭(26)이 화면(30)보다 좁아 배율 1 에서는 카메라가 맵 가운데에 고정돼
+  // 서쪽 끝 회의실이 늘 화면 구석이었고(VQA r10·r25), 아래로 내려 잡으면 빈 띠가 화면을 채웠다(VQA r26). 배율 2 면 보이는 폭이 15칸이라
+  // 회의실(x 1~11)을 가운데 쪽으로 잡을 수 있고, 발표자 줄(y 16)이 화면 위에 다 들어오며 아래 앉은 둘(y 19)이 대화창 바로 위, 본부장(탁자 서쪽 머리)이 왼쪽 흉상 위에 온다.
+  const meetView = { x: 7, y: 18, zoom: 2 };
   // 회의실 유리문(1×2, 문 그림은 회의실 문 칸 바로 위 두 줄) — 회의 동안 열어 둔다. 닫힌 문을 사람이 그대로 지나갔다(VQA r25).
   const meetDoor: DoorSpec = { x: o.meeting.x, y: o.meeting.y - 1, w: 1, h: 2, style: "slide", hinge: "left", interior: "lit", frame: { l: 2, r: 2, t: 3, b: 1 } };
   // 본부장은 발표자 바로 앞(아래) 칸을 스치지 않고 탁자 동쪽으로 돌아 나간다(VQA r15: 서하·지후 하반신에 겹침).
@@ -1087,7 +1089,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     door("ev_fl_f_elev2", o.npcExit, [stageIs(V_STAGE, 999)], [], think("…"), "down"),
   );
   add(fri, scene("ev_fl_fri", { x: 1, y: 1 }, S.WED_TALK, [
-    panTo(meetView.x, meetView.y, 0),
+    panTo(meetView.x, meetView.y, 0, meetView.zoom),
     ...doorFx(meetDoor, true, 1),
     ...fadeIn(800),
     bgm(BGM_OFFICE),
@@ -1200,6 +1202,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
         // 엔딩 C 의 비(VQA r8: 「비가 오기 시작했다」는 말뿐 비가 없다) — 검은 화면에서 빌딩 앞 밤거리로 옮기고, 비는 거기 장면이 내린다.
         // 실내에 비를 뿌리지 않는다. 옮긴 뒤의 명령은 이 맵 이벤트에서 돌지 않으므로 이어지는 연출은 밤거리의 ev_fl_dinner_rain 이 한다.
         ...fadeOut(700),
+        panBack(0), // 회의 카메라 배율(2)을 밤거리로 들고 가지 않는다
         stage(S.DINNER),
         transfer(FL_MAP.streetPm, a.street.officeOut.x, a.street.officeOut.y, "down", "none"),
       ] },
@@ -1256,12 +1259,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
 
   const jihuSpot = p.jihu;
   // 열차를 기다리는 사람은 선로(아래)를 본다 — 벽을 보고 서 있지 않는다.
-  // 탈 때만 「위 층」 쪽(pj_board) — 열차 그림은 차체 아래 가장자리로 깊이를 잡아 같은 층 인물이 문 칸으로 내려가면 지붕 밑에 묻혔다(VQA r19).
-  // 위 층이면 열린 문 앞에 그려진 채로 문 안으로 두 걸음 들어가며 흐려진다(VQA r25: 「승강장에서 흐려질 뿐 문으로 타지 않는다」).
-  add(plat, event("ev_fl_p_jihu", "강지후", jihuSpot, [
-    page("pj", [swOff("sw_fl_jihu_boarded"), swOff("sw_fl_jihu_boarding")], [], { who: "jihu", dir: "down" }),
-    page("pj_board", [swOff("sw_fl_jihu_boarded"), swOn("sw_fl_jihu_boarding")], [], { who: "jihu", dir: "down", priority: "above" }),
-  ]));
+  add(plat, event("ev_fl_p_jihu", "강지후", jihuSpot, [page("pj", [swOff("sw_fl_jihu_boarded")], [], { who: "jihu", dir: "down" })]));
   const meet = { x: jihuSpot.x - 1, y: jihuSpot.y };
   // 지후가 탄다 — 막차는 장면이 부르고(FL_TRAIN_CALL) 문을 연 채 붙잡아 둔다(FL_TRAIN_GO 가 꺼진 동안). 지후가 안전선을 지나
   // 탑승 표시에서 사라진 뒤에야 문을 닫고 떠난다(VQA r17: 「열차가 지후를 두고 떠난다」).
@@ -1270,19 +1268,16 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   const jihuBoards = (): Command[] => [
     face("ev_fl_p_jihu", "down"),
     walk("ev_fl_p_jihu", route(project, FL_MAP.platformPm, jihuSpot, edge, [meet])),
-    // 탑승 표시에서 「위 층」 쪽으로 바꾸고(문 그림 앞에 그려진다) 열린 문 칸으로 두 걸음 — 첫 걸음(y10)에 발이 문 가운데, 둘째(y11)에 문턱.
-    // 걸음마다 흐려져 문턱에서 사라진다.
-    setSw("sw_fl_jihu_boarding", true),
-    { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [
-      { kind: "setThrough", enabled: true },
-      { kind: "move", dir: "down" }, { kind: "changeOpacity", delta: -55 },
-      { kind: "move", dir: "down" }, { kind: "changeOpacity", delta: -90 },
-      { kind: "wait" }, { kind: "changeOpacity", delta: -70 }, { kind: "wait" }, { kind: "changeOpacity", delta: -40 },
-      { kind: "setThrough", enabled: false },
-    ], repeat: false, wait: true, skippable: true } } as Command,
+    // 승강장은 선로 북쪽이고 차량 그림의 문은 화면 쪽(남쪽) 옆면이다 — 3/4 시점에서 승강장에서 열차로 걸어 들어가면 지붕 위로
+    // 올라섰다가 지붕 속으로 가라앉아 보였다(VQA r19·r26 중대). 탑승 표시(문 앞)에 서서 서하를 한 번 돌아보고, 짧게 화면이
+    // 검어지는 동안 탄다(검은 동안 사라짐). 다시 밝아지면 문이 닫히고 열차가 떠난다.
+    face("ev_fl_p_jihu", "up"),
+    wait(900),
+    ...fadeOut(500),
     setSw("sw_fl_jihu_boarded", true),
     face("@player", "down"),
-    wait(600),
+    wait(400),
+    ...fadeIn(600),
     quiet(SE_TRAIN_DOOR, 0.55), // 문이 닫힌다
     setSw(FL_TRAIN_GO, true),
     wait(1500),
@@ -1516,7 +1511,7 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
     [SW_TOLD_MINHO, "민호에게 털어놓음"], [SW_HONEST, "실수를 팀장에게 보고함"], [SW_SAW_LETTER, "수첩 속 편지를 봄"],
     [SW_KNOWS_WHY, "지후가 떠난 이유를 들음"], [SW_COFFEE, "옥상 캔커피"], [SW_MILK, "바나나우유 두 개"], [SW_STORY, "발표에서 내 이야기를 함"],
     ["sw_fl_jihu_in_konbini", "편의점에 지후 등장"], ["sw_fl_flashback", "회상 중"], ["sw_fl_jihu_gone", "회상: 지후 퇴장"],
-    ["sw_fl_lead_left", "수요일: 팀장 퇴근"], ["sw_fl_jihu_boarded", "막차: 지후 탑승"], ["sw_fl_jihu_boarding", "막차: 지후 문으로"], ["sw_fl_w_jihu_up", "수요일: 지후 일어남"], ["sw_fl_w_minho_up", "수요일: 민호 일어남"], [FL_TRAIN_CALL, "막차: 열차 부르기"], [FL_TRAIN_GO, "막차: 문 닫고 출발"], ["sw_fl_minho_left", "수요일: 민호 퇴근"], ["sw_fl_closed_note", "수첩을 덮어 둠"],
+    ["sw_fl_lead_left", "수요일: 팀장 퇴근"], ["sw_fl_jihu_boarded", "막차: 지후 탑승"], ["sw_fl_w_jihu_up", "수요일: 지후 일어남"], ["sw_fl_w_minho_up", "수요일: 민호 일어남"], [FL_TRAIN_CALL, "막차: 열차 부르기"], [FL_TRAIN_GO, "막차: 문 닫고 출발"], ["sw_fl_minho_left", "수요일: 민호 퇴근"], ["sw_fl_closed_note", "수첩을 덮어 둠"],
     ["sw_fl_client_left", "금요일: 본부장 퇴장"], ["sw_fl_jihu_left", "금요일: 지후 퇴장"], ["sw_fl_admitted", "옥상: 지후가 기억한다고 말함"],
   ] as const) ensureSw(id, name);
 

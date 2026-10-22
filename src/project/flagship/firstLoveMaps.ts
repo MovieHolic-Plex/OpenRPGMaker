@@ -248,6 +248,29 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   }
   // 둘레 빌딩 숲(VQA r22: 하늘만 두르면 옥상이 공중에 뜬 상자로 읽혔다) — 옆 빈 칸과 난간 위로 이웃 빌딩이 보인다.
   roofRoom.background = mapBackgroundFromPanoramaSet("oprn-sky-day-city");
+  // 옥상 양옆의 검은 벽 열(원래 맵 바깥벽)과 덧댄 하늘 열이 «하늘에 뜬 액자»로 읽혔다(VQA r25·r26). 옥상 바닥과 철망 난간을
+  // 화면 양 끝까지 이어 «화면 밖으로 이어지는 넓은 옥상»으로 만든다 — 같은 줄의 빈 바닥 칸·난간 칸 그림을 그대로 복사한다.
+  {
+    const W = roofRoom.width, H = roofRoom.height;
+    const copyCell = (from: number, to: number): void => {
+      roofRoom.lowerTiles[to] = roofRoom.lowerTiles[from]!;
+      roofRoom.upperTiles[to] = roofRoom.upperTiles[from]!;
+      if (roofRoom.lowerOverlayTiles) roofRoom.lowerOverlayTiles[to] = roofRoom.lowerOverlayTiles[from]!;
+      if (roofRoom.upperOverlayTiles) roofRoom.upperOverlayTiles[to] = roofRoom.upperOverlayTiles[from]!;
+      if (roofRoom.shadowBits) roofRoom.shadowBits[to] = 0;
+    };
+    const edgeCols = [...Array.from({ length: ROOF_PAD + 1 }, (_, k) => k), ...Array.from({ length: ROOF_PAD + 1 }, (_, k) => W - 1 - k)];
+    for (let y = ROOF_FENCE_Y; y < H - 2; y++) {
+      // 같은 줄 가운데 쪽에서 위층 그림이 없는 칸(난간 줄은 난간 칸)을 고른다.
+      let src = -1;
+      for (let x = ROOF_PAD + 7; x < W - ROOF_PAD - 1 && src < 0; x++) {
+        const i = y * W + x;
+        if (y === ROOF_FENCE_Y ? roofRoom.upperTiles[i]! >= 0 || !isPassable(project, roofRoom, x, y) : roofRoom.upperTiles[i]! < 0 && isPassable(project, roofRoom, x, y)) src = i;
+      }
+      if (src < 0) continue;
+      for (const x of edgeCols) copyCell(src, y * W + x);
+    }
+  }
   const broadcast = project.maps[FL_MAP.broadcast]!;
 
   // 사무층 좌표(예제 office-floor 평면 기준): 위 큰 방 = 자리, 아래 왼쪽 = 회의실, 가운데 = 탕비실, 계단실, 엘리베이터 홀.
@@ -258,11 +281,11 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       // 나가는 계단은 승강장 동쪽 끝 북쪽 벽에 박혀 있다(나무 계단 2칸 폭 그림, 그림 칸을 밟을 수 있다) — 왼 칸이 계단 칸, 바로 아래가 나오는 칸.
       // 사용자 r2: 「승강장이 작고 답답하다」 — 50칸 길이 승강장(양 끝 벽까지 보인다)·선로 두 줄. 계단은 동쪽 끝.
       exit: { x: 46, y: 3 }, exitOut: { x: 46, y: 4 },
-      // 막차 장면의 지후는 계단(동쪽 끝) 가까이, 서는 열차의 문 하나(머리 칸 x≈38.1) 바로 앞 — 열린 문으로 걸어 들어간다.
+      // 막차 장면의 지후는 계단(동쪽 끝) 가까이, 서는 열차의 머리 칸 문 앞 탑승 표시(x 37) 바로 위.
       // 옛 자리(x≈25)는 계단에서 23칸이라 서하가 텅 빈 승강장을 한참 걸었고(VQA r25), 문 가운데와도 반 칸 어긋났다.
       // 열차 몸은 x 10~39(정류장 머리 x=39, 길이 30), 문 가운데는 그림 기준 x≈11.8·15.0·18.1·…·38.1.
-      jihu: nearestFree(project, platform, { x: 38, y: 8 }),
-      heroMeet: nearestFree(project, platform, { x: 37, y: 8 }),
+      jihu: nearestFree(project, platform, { x: 37, y: 8 }),
+      heroMeet: nearestFree(project, platform, { x: 36, y: 8 }),
     },
     street: {
       // 문 칸 = 건물 정면의 문 그림 칸(막혀 있다 — 부딪히면 이동이 발동한다), 나오는 칸 = 그 바로 아래(바깥) 접근칸.
@@ -330,7 +353,7 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   const officeFri = cloneMap(project, FL_MAP.office, FL_MAP.officeFri, "스튜디오 늘봄 · 금요일");
   // 금요일 회의실은 사무층 맨 아래(y 13~20)라 카메라가 맵 끝에 걸려 다섯 사람이 흉상·대화창 사이에 끼었다(VQA r10).
   // 바깥 채움 두 줄(맨 아래 두 줄 무늬)을 FRI_PAD 줄 더 덧대 카메라가 회의실을 화면 위쪽에 둘 수 있게 한다 — 덧댄 줄은 대화창 뒤다.
-  const FRI_PAD = 7, friH = officeFri.height; // r25: 3 → 7 — 회의실을 화면 위 절반에 둔다(맵 폭이 화면보다 좁아 가로로는 못 옮긴다)
+  const FRI_PAD = 3, friH = officeFri.height;
   padMapBottom(officeFri, FRI_PAD, (y) => friH - 2 + ((y - friH) % 2));
   // 덧댄 줄은 빈 칸(맵 밖과 같은 어둠)이다 — 바깥벽 무늬를 되풀이하면 대화창이 없을 때 빈 띠가 화면 1/3을 채웠다(VQA r12).
   for (let y = friH; y < friH + FRI_PAD; y++) for (let x = 0; x < officeFri.width; x++) clearMapCellForBackground(officeFri, y * officeFri.width + x);
