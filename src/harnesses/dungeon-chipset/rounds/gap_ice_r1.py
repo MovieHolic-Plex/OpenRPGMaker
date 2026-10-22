@@ -240,14 +240,14 @@ G2_W = [2, 2, 1, 1, 2, 2, 2, 3, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 
 
 # ---- 얼음 속에 언 돌 A2(얼음 안쪽 칸 덧그림).
 ICE2_FROZEN = [
-    sq(['mmmmmmmmmmmm', 'mmmmddddmmmm', 'mmmd2222dmmm', 'mmd234432dmm', 'md23443321dm', 'md2343W321dm',
-        'md22332211dm', 'mmd122211dmm', 'mmmd1111dmmm', 'mmmmddddmmmm', 'mmmmmmmmmbmm', 'mmmmmmmmmmmm'], 12, 12),
-    sq(['mmmmmmmmmmmm', 'mmmmmmmmmmmm', 'mmmmmmmmmmmm', 'mmmmmddddmmm', 'mmmmd2344dmm', 'mmmmd3W32dmm',
-        'mmmmd2221dmm', 'mmmmmddddmmm', 'mmmmmmmmmmmm', 'mmmmmmmmmmmm', 'mmmmmmmmmmmm', 'mmmmmmmmmmmm'], 12, 12),
+    sq(['cccccccccccc', 'ccccbbbbcccc', 'cccb2222bccc', 'ccb234432bcc', 'cb23443321bc', 'cb2343W321bc',
+        'cb22332211bc', 'ccb122211bcc', 'cccb1111bccc', 'ccccbbbbcccc', 'cccccccccWcc', 'cccccccccccc'], 12, 12),
+    sq(['cccccccccccc', 'cccccccccccc', 'cccccccccccc', 'cccccbbbbccc', 'ccccb2344bcc', 'ccccb3W32bcc',
+        'ccccb2221bcc', 'cccccbbbbccc', 'cccccccccccc', 'cccccccccccc', 'cccccccccccc', 'cccccccccccc'], 12, 12),
 ]
 
-# ---- 얼음 가장자리 A2 — 북·서 = 한 줄 빛 받는 끝 P(b·c, 끊김), 남 = 얼음판 앞 두께 D D(d) + E(d·m), 동 = 그늘 D 한 줄.
-P2_TEX = ['bcbbcbbbcbbcbbbc', 'cbbcbbcbbbcbbcbb', 'bbcbbbbcbcbbbbcb', 'bcbbcbbbbbbcbcbb'] * 4
+# ---- 얼음 가장자리 A2 — 북·서 = 한 줄 빛 받는 끝 P(W·c, 끊김), 남 = 얼음판 앞 두께 D D(d) + E(d·m), 동 = 그늘 D 한 줄.
+P2_TEX = ['WcWWcWWWcWWcWWWc', 'cWWcWWcWWWcWWcWW', 'WWcWWWWcWcWWWWcW', 'WcWWcWWWWWWcWcWW'] * 4
 D2_TEX = ['dddddddmdddddddd', 'dddmdddddddddmdd', 'ddddddddddmddddd', 'dmdddddddddddddm'] * 4
 E2_TEX = ['mdmmdmmmdmmmmdmm', 'mmmdmmdmmmdmmmmd', 'dmmmmmmdmmmmdmmm', 'mmdmmdmmmmmmmmdm'] * 4
 IF2_N = ',P......'
@@ -258,16 +258,16 @@ IF2_NE = [',,,,,,,,', 'PPPP,,,,', '....D,,,', '.....D,,', '......D,', '......D,'
 IF2_SW = [',P......', ',P......', ',P......', ',P......', ',,DEEEEE', ',,DDDDDD', ',,,,DDDD', ',,,,,,,,']
 IF2_SE = ['......D,', '......D,', '......D,', '......D,', 'EEEEEDD,', 'DDDDDD,,', 'DDDD,,,,', ',,,,,,,,']
 IF2_FRAME = frame(IF2_NW, IF2_NE, IF2_SW, IF2_SE, uni(IF2_N), uni(IF2_S), uni(IF2_N), uni(IF2_E))
-IF2_INNER = inner4([',P......', 'P.......'] + ['........'] * 6,
-                   ['......D,', '.......D'] + ['........'] * 6,
-                   ['........'] * 5 + ['E.......', 'DE......', ',D......'],
-                   ['........'] * 5 + ['.......E', '......DD', '.....DD,'])
+IF2_INNER = inner4([',,,P....', ',,P.....', ',P......', 'P.......'] + ['........'] * 4,
+                   ['....D,,,', '.....D,,', '......D,', '.......D'] + ['........'] * 4,
+                   ['........'] * 4 + ['E.......', 'DE......', ',DD.....', ',,DD....'],
+                   ['........'] * 4 + ['.......E', '......ED', '.....DD,', '....DD,,'])
 check_frame('A2 얼음 틀', IF2_FRAME, IF2_INNER, strict_inner=False)
-WOB_ICE2 = check_wob({
-    'N': [0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 2, 2, 1, 0, 0],
-    'S': [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
-    'W': [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
-    'E': [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 0, 0, 0, 0]})
+WOB_ICE2 = check_wob({   # 1~3px 의 고르지 않은 물림 — 16px 계단 윤곽이 네모나게 보이지 않게
+    'N': [0, 1, 2, 2, 1, 0, 0, 0, 0, 0, 1, 3, 2, 1, 1, 0, 0, 1, 1, 0, 0, 2, 3, 0, 0, 0, 1, 1, 3, 2, 1, 0],
+    'S': [0, 0, 1, 2, 3, 1, 0, 0, 0, 1, 1, 0, 0, 2, 1, 0, 0, 2, 3, 2, 1, 0, 0, 0, 0, 1, 0, 0, 1, 2, 1, 0],
+    'W': [0, 2, 3, 1, 0, 0, 1, 0, 0, 0, 0, 1, 2, 3, 1, 0, 0, 1, 0, 0, 1, 2, 1, 0, 0, 0, 2, 3, 2, 1, 0, 0],
+    'E': [0, 0, 1, 1, 2, 3, 1, 0, 0, 1, 0, 0, 0, 2, 1, 0, 0, 1, 3, 2, 0, 0, 1, 0, 0, 2, 3, 2, 1, 0, 0, 0]})
 
 TOP2_N = strips([(1, 2), (1, 2), (1, 2), (1, 2), (2, 3), (2, 3), (1, 2), (1, 2),
                  (1, 2), (0, 1), (0, 1), (1, 2), (1, 2), (1, 2), (2, 3), (1, 2)], _TN1, ',')
@@ -320,25 +320,37 @@ G1_VARS = [
     [(['a'], 12, 11), (['pn'], 6, 5)],
 ]
 
-# ---- 바위 윗면 A1 — 둥근 바윗덩이 무더기. 덩이마다 흰 서리 모자 S·W(왼·위), 몸 I·H, 아래 h, 오른·아래 그늘 j, 덩이 사이 틈 i.
-#      큰 덩이가 칸 경계를 넘어 걸치고(바탕), 변형은 안쪽 덩이를 다른 모양·자리로 다시 얹는다.
-LUMP_B = ['..SSSSS..', '.SWSSSSI.', 'SSSSSSIIH', 'SSSSIIIHh', 'ISIIIHHhj', '.IHHHhhj.', '..hhjjj..']
-LUMP_M = ['.SSSS..', 'SWSSSI.', 'SSSIIHh', 'IIIHHhj', '.HHhhj.', '..jjj..']
-LUMP_S = ['.SSS.', 'SSSIH', 'IIHhj', '.hjj.']
-LUMP_T = ['SS.', 'SIh', '.j.']
-TOP1_BASE = sq(stamp(['jjjijjjjjjjjijjj', 'jjjjjjjijjjjjjjj'] * 8,
-                     [(LUMP_M, 12, 5), (LUMP_B, 3, 6), (LUMP_S, 14, 11), (LUMP_M, 5, 13), (LUMP_B, 10, 14),
-                      (LUMP_S, 1, 1), (LUMP_T, 2, 12)]), name='TOP1')
-TOP1_VARS = [
-    [],
-    [(LUMP_M, 4, 3), (LUMP_T, 9, 10)],
-    [(LUMP_S, 2, 9), (['.SSS', 'SWSI', 'SIHh', '.hj.'], 9, 2)],
-    [(LUMP_B, 3, 6)],
-    [(LUMP_T, 6, 2), (LUMP_S, 9, 6), (['SS', 'Ij'], 3, 11)],
+# ---- 바위 윗면 A1 — 한 덩이로 읽히는 서리 앉은 바위 윗면(S rim 6 · 푸른 서리 c · 바위 I 얼룩). 덩이 모양은 틀이 정한다:
+#      북·서 가장자리 = 흰 서리 모자 R(W·S), 동 가장자리 = 푸른 그늘 D(d·j). 본몸통(가장자리 칸에 쓰임)은 얼룩뿐이고,
+#      굽은 틈 j(위 = 푸른 그늘 m, 아래 = 서리 턱 W)는 안쪽 칸 변형에만 — 칸 가장자리에 닿지 않아 16px 도장이 생기지 않는다.
+KINDS_T1 = {'M': ('j', 'm', 'W'), 'F': ('h', None, None)}
+TOP1_BASE = sq([
+    'IIIIIIIIIIIIHIII',
+    'IIcIIIIIIIIHHIII',
+    'IIIIIIHIIIIIHIII',
+    'HIIIIHHHIIIIIIIc',
+    'HHIIIIHIIIIcIIII',
+    'IIIIIIIIIIIIIIII',
+    'IIIIcIIIIIIIIHHI',
+    'IIIIIIIIIHIIHHHI',
+    'IIIIIIIIHHIIIIII',
+    'IcIIIIIIIIIIIIIc',
+    'IIIIIIIIIIIcIIII',
+    'IIHHIIIIIIIIIIII',
+    'IHHHHIIIIcIIIIII',
+    'IIIHIIIIIIIIIHII',
+    'IIIIIIIcIIIHHIII',
+    'IIIIIIIIIIIIHIII',
+], 16, 16, 'TOP1')
+TOP1_PATHS = [
+    [([(2, 4), (5, 6), (9, 6), (12, 9)], 'M'), ([(9, 6), (11, 3)], 'F')],
+    [([(3, 12), (4, 9), (8, 8), (13, 10)], 'M'), ([(9, 2), (11, 4)], 'F')],
+    [([(6, 2), (5, 6), (7, 10), (6, 13)], 'M'), ([(7, 10), (12, 11)], 'M')],
+    [([(2, 7), (6, 5), (10, 5)], 'M'), ([(8, 10), (11, 12), (13, 12)], 'M'), ([(3, 11), (4, 13)], 'F')],
 ]
-TOP1_BODIES = [stamp(TOP1_BASE, v, inner=True) for v in TOP1_VARS]
-R1_TEX = ['SSWSISSSSWSSISSS', 'SISSSSWSSSSISSWS', 'SSSISSSSISSSSSIS', 'WSSSSISSSSWSSISS'] * 4
-D1R_TEX = ['hjhHhjhhjHhjhhjh', 'jhhjhHjhhjhhHjhh', 'hhjhjhhHhjhhjhjh', 'Hjhhhjhjhhjhhhjh'] * 4
+TOP1_BODIES = [TOP1_BASE] + [crack_body(TOP1_BASE, p, KINDS_T1, (), set()) for p in TOP1_PATHS]
+R1_TEX = ['WSWWSWWSWWWSWSWW', 'SWWSWWWSWSWWSWWS', 'WWSWSWWWSWWSWWWS', 'SWWWSWSWWWSWWSWW'] * 4
+D1R_TEX = ['djdmdjddjmdjddjd', 'jddjdmjddjddmjdd', 'ddjdjddmdjddjdjd', 'mjdddjdjddjdddjd'] * 4
 
 
 def face_cracks(rows, polys, ch, lit):
@@ -353,21 +365,24 @@ def face_cracks(rows, polys, ch, lit):
     return [''.join(r) for r in g]
 
 
-# ---- 앞면 A1 — 어두운 청회색 바위: vrock 3 바탕에 아주 가까운 j(iron 2) 잔 얼룩, 드문 빛 4. 세로 균열(2, 오른쪽 빛 4) 길이 제각각.
-#      0행 눈 처마, 1행 처마 밑. 고드름: 열 1 물방울 2px · 열 4~7 긴 것 11px · (틈) · 열 12 짧게 4px · 열 14 2px.
-MOT1 = [
-    '33j3333j33333j33', '3jj33333333j3333', '33333j3333jj3333', '3333jj333333333j', 'j333333334333333',
-    '3333333j33333j33', '33j33333333jj333', '3jj333j333333333', '333333jj3333333j', '33333333333j3333',
-    '3j3333333j3jj333', '333343333jj33333', '33333j3333333j33', '3333jj33333333jj', 'j33333333j333333',
-    '33333333jj333333', '33j333333333j333', '3jj3333j33333333', '3333333jj3333j33', '333j33333333jj33',
-    '33333333433333j3', '3333jj3333333333', 'jj3333333j33333j', '3333333j3jj33333', '3333j3333333j333',
-    '333jj33333333333', '33333333j33333j3', 'j333j33333333333']
-FACE1_BASE = sq(face_cracks(['SSWSSSSSSISSSSSS', 'ISIIISIIIIISIISI'] + MOT1 + ['2222j22222222j22', '1112111111211111'],
-                            [[(2, 3), (2, 8), (3, 11), (3, 16)], [(10, 13), (11, 18), (10, 23), (11, 28)],
-                             [(14, 5), (14, 10)], [(6, 19), (7, 25)], [(0, 22), (0, 26)]], '2', '4'), 16, 32, 'FACE1b')
-ICI_LONG1 = ['Wcbm', 'Wcbm', 'cbm.', 'cbm.', 'cb..', 'cm..', '.c..', '.b..', '.b..', '.m..', '.b..']
-FACE1_MID = sq(stamp(FACE1_BASE, [(['c', 'b'], 1, 1), (ICI_LONG1, 4, 1), (['Wcm', 'cb.', 'b..', 'm..'], 11, 1),
-                                  (['cm', 'b.'], 14, 1)], wrap=True), 16, 32, 'FACE1')
+# ---- 앞면 A1 — 불룩한 바위 지층 세 단: 단마다 위는 빛 받는 서리 턱(I, 끊김 없는 한 줄), 가운데 vrock 3 + iron 2 얼룩, 아래는 그늘(j·2)로 둥글게 넘어간다.
+#      단 경계는 열마다 높이가 다른 계단 물결. 맨 아래 두 줄은 바닥과 만나는 어두운 밑동(2·1).
+#      고드름(밝은 왼쪽 한 화소 W · 몸 b · 오른쪽 그늘 m): 처마에 9px·3px 무리 + 2px, 첫 단 밑 불룩한 곳에 4px, 둘째 단 밑에 3px.
+FACE1_BASE = sq([
+    'SSWSSSSSSISSSSSS', 'ISIIISIIIIISIISI',
+    '4443344444333444', '4333333443333334', '333333j333333333', '3333j33333333j33', '33333333333j3333',
+    'j333333j33333333', '333j3333333333j3', '3jj3333j3jj33333', 'jjj3jj3jjjj3jjjj', 'jjjjjjjjjj222222',
+    '22222jjjjjIIIIII', 'IIIII22222433333', '33333IIIII33j333', '33j3333333333333', '3333333j33333j33',
+    '33333333333j3333', 'j3333j3333333333', '33j333333jj333j3', 'jjjjjjj2222jjjjj', '2222222IIIIIjjjj',
+    'IIIIIII333332222', '333333333333IIII', '333j333333333333', '3333333j333j3333', 'j33j333333333j33',
+    'jj3jjj33jjjj3jjj', '2jj2jjj2jj2jjj2j', '2222222222222222',
+    '2222122221222212', '1112111111211111'], 16, 32, 'FACE1b')
+ICI_9 = ['Wbm', 'Wbm', 'Wbm', 'Wb.', 'Wb.', 'Wb.', '.b.', '.b.', '.c.']
+ICI_4 = ['Wbm', 'Wb.', 'Wb.', 'b..']
+ICI_3 = ['Wb', 'Wb', 'b.']
+ICI_2 = ['Wb', 'c.']
+FACE1_MID = sq(stamp(FACE1_BASE, [(ICI_9, 2, 1), (ICI_3, 6, 1), (ICI_2, 13, 1), (ICI_4, 11, 12),
+                                  (ICI_3, 8, 21)], wrap=True), 16, 32, 'FACE1')
 FACE1_L = [(col('S' + '4' * 29 + '32'), 0, 0)]
 FACE1_R = [(col('3' + '2' * 29 + '11'), 7, 0)]
 
@@ -402,79 +417,119 @@ G2_VARS = [
     [(['GG', '4j'], 11, 2)],
 ]
 
-# ---- 얼음 A2 — 맑고 짙은 푸른 얼음: m(ice 1) 바탕 + 아주 가까운 w(water 3) 얼룩. 긴 균열 d 가 칸 왼·오른 변 행 7 에서만 이어지고,
-#      안쪽 가지는 짧고 변에 닿지 않는다 — 위·아래로 크게 물결치는 긴 금이 칸을 건너 이어지고, 위·아래 이음이 없어 닫힌 칸이 생기지 않는다.
-PORTS2 = ports_of((), (7,))
-KINDS2 = {'M': ('d', None, None)}
+# ---- 얼음 A2 — 걸을 수 있는 불투명 서리 얼음: 옅은 c(ice 3) 바탕에 큰 흰 서리 자리 W, 그늘진 얼음 면 b.
+#      각진 균열 두 무게: 굵은 금 d(위 한 화소 빛 W · 아래 한 화소 그늘 면 b) · 가는 금 m(칸 안에서만). 값 4단(W c b m/d).
+#      금은 위·아래 열 11, 왼·오른 행 4 에서만 칸을 건너고(A1 과 다른 자리), 칸 가장자리 2px 안에서는 가는 금 m 으로 가늘어진다.
+#      곧은 토막과 날카롭게 꺾인 모서리.
+PORTS2 = ports_of((11,), (4,))
+KINDS2 = {'M': ('d', 'W', 'b', 'm'), 'F': ('m', None, None)}   # 칸 가장자리 2px 안은 가는 금 m — 이음 자리가 격자로 보이지 않게
 ICE2_BASE = sq([
-    'mmmmmmmmmmmmmmmm',
-    'mmwwmmmmmmmmmmmm',
-    'mmwwwmmmmmmwmmmm',
-    'mmmwmmmmmmwwwwmm',
-    'mmmmmmmmmmmwwmmm',
-    'wmmmmmmmmmmmmmmw',
-    'wwmmmmwmmmmmmmmm',
-    'mmmmmwwwwmmmmmmm',
-    'mmmmmmwwmmmmmmmm',
-    'mmmmmmmmmmmmwmmm',
-    'mmwmmmmmmmmwwwmm',
-    'mwwwwmmmmmmmwwwm',
-    'mmwwmmmmmmmmmmmm',
-    'mmmmmmmmwmmmmmmm',
-    'mmmmmmmwwwwmmmmm',
-    'mmmmmmmmmmmmmmmm',
-], name='ICE2')
+    'ccccccWWWccccccc',
+    'cccccWWWWWcccccc',
+    'ccccccWWWccccbbc',
+    'cccccccccccbbbbc',
+    'cccccccccccccbcc',
+    'cWWccccccccccccc',
+    'WWWWcccccccccccW',
+    'cWWWcccbbccccccc',
+    'ccccccbbbbcccccc',
+    'cccccccbbbcccccc',
+    'cccccccccccWWWcc',
+    'ccccccccccWWWWWc',
+    'cbbccccccccWWWcc',
+    'bbbbcccccccccccc',
+    'cbbccccccccccccc',
+    'ccccccccWccccccc',
+], 16, 16, 'ICE2')
 ICE2_PATHS = [
-    [([(0, 7), (3, 4), (8, 3), (12, 6), (15, 7)], 'M'), ([(8, 3), (9, 1)], 'M')],
-    [([(0, 7), (4, 10), (9, 12), (13, 9), (15, 7)], 'M'), ([(9, 12), (8, 14)], 'M')],
-    [([(0, 7), (5, 6), (9, 9), (12, 8), (15, 7)], 'M'), ([(5, 6), (4, 2)], 'M')],
-    [([(0, 7), (2, 9), (6, 11), (11, 10), (13, 6), (15, 7)], 'M')],
-    [([(0, 7), (4, 3), (7, 2), (11, 4), (15, 7)], 'M'), ([(11, 4), (12, 9), (10, 12)], 'M')],
+    [([(11, 0), (9, 5), (15, 4)], 'M'), ([(0, 4), (5, 6), (9, 5)], 'M'), ([(11, 15), (8, 10), (9, 5)], 'M'),
+     ([(3, 10), (6, 13)], 'F')],
+    [([(0, 4), (6, 3), (11, 0)], 'M'), ([(15, 4), (12, 9), (11, 15)], 'M'), ([(6, 3), (4, 8)], 'F'), ([(12, 9), (7, 11)], 'F')],
+    [([(11, 0), (12, 6), (11, 15)], 'M'), ([(0, 4), (4, 4), (7, 8), (12, 6)], 'M'), ([(12, 6), (15, 4)], 'M'),
+     ([(4, 4), (3, 1)], 'F')],
+    [([(0, 4), (5, 2), (10, 5), (15, 4)], 'M'), ([(11, 0), (10, 5)], 'M'), ([(11, 15), (13, 9), (10, 5)], 'M'),
+     ([(4, 9), (7, 12)], 'F')],
+    [([(11, 0), (8, 4), (0, 4)], 'M'), ([(15, 4), (13, 7), (11, 15)], 'M'), ([(8, 4), (6, 9)], 'F'), ([(3, 11), (5, 13)], 'F')],
 ]
-ICE2_FACETS = [
-    [(['.W', 'Wc'], 12, 12)],
-    [(['cW'], 12, 3)],
-    [(['W'], 3, 3), (['.c', 'cW'], 10, 10)],
-    [(['Wc'], 9, 3)],
-    [(['W'], 3, 11), (['c'], 13, 12)],
-]
+ICE2_FACETS = [[], [], [], [], []]
 ICE2_BODIES = [crack_body(ICE2_BASE, p, KINDS2, f, PORTS2) for p, f in zip(ICE2_PATHS, ICE2_FACETS)]
-check_ports(ICE2_BODIES, PORTS2, 'd')
+check_ports(ICE2_BODIES, PORTS2, 'm')
 
-# ---- 바위 윗면 A2 — 각진 바위 토막 무더기: 평평한 윗면 서리 S·F(왼·위 밝음), 앞 띠 G·h, 오른·아래 그늘 j, 토막 사이 틈 i.
-BLK_A = ['SSSSFF.', 'SFFFFFG', 'FFFFFGh', 'GGGGGhh', 'hhhhhhj', 'jjjjjj.']
-BLK_B = ['.SSF.', 'SFFFG', 'GGGGh', 'hhhhj', '.jjj.']
-BLK_C = ['...SSSFF.', '.SSFFFFFG', 'SFFFFFGGh', 'GGGGGhhhj', 'hhhhhhjj.']
-BLK_D = ['SF', 'Gh', 'j.']
-TOP2_BASE = sq(stamp(['iijiiiiiiijiiiii', 'iiiiiijiiiiiiiji'] * 8,
-                     [(BLK_C, 5, 12), (BLK_A, 12, 14), (BLK_B, 3, 1), (BLK_D, 9, 2), (BLK_C, 14, 4), (BLK_A, 6, 6),
-                      (BLK_B, 10, 9)]), name='TOP2')
-TOP2_VARS = [
-    [],
-    [(BLK_B, 3, 3), (BLK_D, 11, 11)],
-    [(BLK_A, 5, 6)],
-    [(BLK_D, 2, 10), (['.SSF', 'SFFG', 'GGhj'], 9, 4)],
-    [(BLK_B, 8, 8), (BLK_D, 3, 2)],
+# ---- 바위 윗면 A2 — 각진 큰 바위 판: 서리 앉은 윗면(F iron 5 · G iron 4 얼룩 · 푸른 서리 c · 빛 S). 본몸통은 얼룩뿐,
+#      곧게 꺾인 틈 i(위 = 푸른 그늘 m, 아래 = 북서 서리 턱 S)는 안쪽 칸 변형에만 있고 칸 가장자리에 닿지 않는다.
+#      북·서 가장자리 = 서리 턱 R(S·W), 동 가장자리 = 그늘 D(j·i).
+KINDS_T2 = {'M': ('i', 'm', 'S'), 'F': ('G', None, None)}
+TOP2_BASE = sq([
+    'FFFFFFFFFFFGFFFF',
+    'FFFFFFcFFFGGGFFF',
+    'FGFFFFFFFFFGGFFF',
+    'GGGFFFFFFFFFFFFF',
+    'FGGFFFFFSFFFFFFF',
+    'FFFFFFFFFFFFFcFF',
+    'FFFFcFFFFFFFFFFF',
+    'FFFFFFFFFGGFFFFF',
+    'FFFFFFFFGGGGFFFF',
+    'FFSFFFFFFGFFFFFF',
+    'FFFFFFFFFFFFFFcF',
+    'FFFFFFcFFFFFFFFF',
+    'FFFFFFFFFFFFGGFF',
+    'GFFFFFFFFFFGGGFG',
+    'GGFFFFFFSFFFFFFF',
+    'FFFFFFFFFFFFFFFF',
+], 16, 16, 'TOP2')
+TOP2_PATHS = [
+    [([(2, 3), (5, 5), (6, 9), (10, 11), (13, 12)], 'M'), ([(6, 9), (3, 12)], 'F')],
+    [([(12, 2), (10, 6), (11, 9), (7, 12), (4, 13)], 'M')],
+    [([(3, 8), (7, 6), (9, 3), (13, 2)], 'M'), ([(7, 6), (9, 10)], 'F')],
+    [([(1, 12), (4, 10), (8, 11), (11, 7), (14, 6)], 'M')],
 ]
-TOP2_BODIES = [stamp(TOP2_BASE, v, inner=True) for v in TOP2_VARS]
-R2_TEX = ['SFSSFSSSFSSSFSFS', 'FSSSSFSFSSFSSSSF', 'SSFSSSSSSFSSFSSS', 'SFSSFSSFSSSSSFSS'] * 4
-D2R_TEX = ['hjhGhjhhjGhjhhjh', 'jhhjhGjhhjhhGjhh', 'hhjhjhhGhjhhjhjh', 'Gjhhhjhjhhjhhhjh'] * 4
+TOP2_BODIES = [TOP2_BASE] + [crack_body(TOP2_BASE, p, KINDS_T2, (), set()) for p in TOP2_PATHS]
+R2_TEX = ['SWSSWSSSWSSSWSWS', 'WSSSSWSWSSWSSSSW', 'SSWSSSSSSWSSWSSS', 'SWSSWSSWSSSSSWSS'] * 4
+D2R_TEX = ['ijijjijjiijjijij', 'jiijjjijjjiijjji', 'jjiijjjiijjjijji', 'ijjjiijjjijijjij'] * 4
 
-# ---- 앞면 A2 — 더 어두운 바위: vrock 2 바탕에 아주 가까운 i(iron 1) 잔 얼룩. 세로 균열 1(오른쪽 빛 3).
-#      0행 서리 처마 F, 1행 처마 밑. 고드름: 열 2 짧게 3px · 열 4 2px · (틈) · 열 9~12 굵고 긴 것 12px.
-MOT2 = [
-    '22i2222222i22222', '2ii22222i2222222', '22222i2222222ii2', '222222ii22222222', 'i2222222222i2222',
-    '2222i2222222ii22', '222ii22222222222', '22222222i222222i', '2i222222ii222222', '2ii22222222222i2',
-    '2222222i22222222', '22222i222222ii22', '22222ii222222222', '2i22222222i22222', '222222222ii2222i',
-    '22i22222222222i2', '2222222i22222222', '22222222ii22i222', 'i2222i222222ii22', '2222ii2222222222',
-    '222222222i22222i', '22i2222222222222', '2ii2222ii2222i22', '22222222i2222222', '22222i222222ii22',
-    '2222ii22222i2222', 'i222222222222222', '2222222i2222i222']
-FACE2_BASE = sq(face_cracks(['FFSFFFSFFFFSFFFF', 'GFGjGFGGjGFGjGGF'] + MOT2 + ['1111i11111i11111', '1111111111111111'],
-                            [[(2, 6), (2, 12), (4, 15), (4, 22)], [(13, 3), (14, 10), (13, 16)], [(8, 17), (8, 23), (9, 29)],
-                             [(15, 21), (15, 27)]], '1', '3'), 16, 32, 'FACE2b')
-ICI_LONG2 = ['WWcm', 'WWcm', 'Wccm', 'Wcm.', 'Wcm.', '.cm.', '.cm.', '.cm.', '.c..', '.c..', '.b..', '.b..']
-FACE2_MID = sq(stamp(FACE2_BASE, [(['cm', 'c.', 'b.'], 2, 1), (['c', 'b'], 4, 1), (ICI_LONG2, 9, 1)], wrap=True),
-               16, 32, 'FACE2')
+# ---- 앞면 A2 — 각지게 불거진 어두운 바위 지층 네 단(vrock 2 + iron 1 얼룩): 단마다 위는 서리 턱(G, 끊김 없는 한 줄), 밑은 그늘 1.
+#      단 경계는 A1 과 다른 자리·높이로 각지게 꺾인다. 맨 아래 네 줄은 바닥과 만나는 가장 어두운 밑동.
+#      고드름(밝은 왼쪽 W · 몸 c · 그늘 b): 처마 가운데 오른쪽에 굵은 12px + 3px + 2px 무리, 셋째 단 밑에 4px, 둘째 단 밑에 2px.
+FACE2_BASE = sq([
+    'FFSFFFSFFFFSFFFF',
+    'GFGjGFGGjGFGjGGF',
+    '3332333333332333',
+    '2222i22222222222',
+    '22i2222222i22222',
+    '22222222222222i2',
+    '1122222211111111',
+    'GG22i222GGGGGGGG',
+    '2211111122222i22',
+    '22GGGGGG22222222',
+    '222222222i222222',
+    '22i2222222222222',
+    '2222222i2222i222',
+    '2i22222222222222',
+    '22222i22222222i2',
+    '112222i222221111',
+    'GG1122222222GGGG',
+    '22GG111111112222',
+    '2222GGGGGGGG2222',
+    '2222222222222i22',
+    'i22222i222222222',
+    '222i22222222i222',
+    '22222222i2222222',
+    '2211111111222i22',
+    '11GGGGGGGG111111',
+    'GG22222222GGGGGG',
+    '22i222222222222i',
+    'i2222i2222i22222',
+    'i1i11i1ii11i1i1i',
+    '1111111111111111',
+    '1111i11111i11111',
+    '1111111111111111',
+], 16, 32, 'FACE2b')
+ICI2_12 = ['WWcb', 'WWcb', 'Wccb', 'Wcb.', 'Wcb.', 'Wcb.', 'Wc..', 'Wc..', '.c..', '.c..', '.c..', '.W..']
+ICI2_4 = ['Wcb', 'Wc.', 'Wc.', 'c..']
+ICI2_3 = ['Wc', 'Wc', 'c.']
+ICI2_2 = ['Wc', 'c.']
+FACE2_MID = sq(stamp(FACE2_BASE, [(ICI2_12, 8, 1), (ICI2_3, 12, 1), (ICI2_2, 14, 1), (ICI2_4, 5, 18), (ICI2_2, 1, 17)],
+                     wrap=True), 16, 32, 'FACE2')
 FACE2_L = [(col('F' + '3' * 29 + '21'), 0, 0)]
 FACE2_R = [(col('G' + '1' * 29 + '11'), 7, 0)]
 
