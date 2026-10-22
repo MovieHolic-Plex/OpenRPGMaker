@@ -55,10 +55,13 @@ const COLOURS: readonly (readonly [RegExp, Ramp])[] = [
 export interface QuickMaterial { readonly name: string; readonly liquid: boolean; readonly hard: boolean; readonly ramp: Ramp }
 
 /** 글 → 재질(색 단계·물 같은 것인지). 모르는 글은 색 낱말 → 그래도 없으면 흙. */
+/** 「바닥·땅·길」이라고 하면 물가(둑·벽이 있는 웅덩이)가 아니라 땅 모양을 쓴다 — 「용암 바닥」이 벽돌 운하로 나왔다(2026-10-23 UX 검수). */
+const FLOOR_WORDS = /(바닥|땅|길|들판|지면|floor|ground|path|field)/iu;
+
 export function quickMaterialOf(text: string): QuickMaterial {
   const hit = MATERIALS.find((m) => m.words.test(text));
   const colour = COLOURS.find(([pattern]) => pattern.test(text))?.[1];
-  if (hit) return { name: hit.name, liquid: hit.liquid, hard: hit.hard === true, ramp: colour && !/(용암|lava|magma)/iu.test(text) ? colour : hit.ramp };
+  if (hit) return { name: hit.name, liquid: hit.liquid && !FLOOR_WORDS.test(text), hard: hit.hard === true, ramp: colour && !/(용암|lava|magma)/iu.test(text) ? colour : hit.ramp };
   if (colour) return { name: "색 바닥", liquid: false, hard: false, ramp: colour };
   return { name: "흙", liquid: false, hard: false, ramp: MATERIALS.find((m) => m.name === "흙")!.ramp };
 }

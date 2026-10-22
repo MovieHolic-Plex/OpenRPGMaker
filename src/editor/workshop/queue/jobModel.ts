@@ -280,6 +280,11 @@ export const JOB_STATE_LABELS: Readonly<Record<JobState, string>> = {
 
 /** 묶음 작업의 「고를 차례」는 「넣을 차례」로 읽는다. */
 export function jobStateLabel(job: WorkshopJob, state: JobState): string {
+  // 「한 번에 만들기」는 사람이 고르지 않는다 — 「고를 차례」·「검수 중」이 사람 차례로 읽히지 않게(2026-10-23 UX 검수).
+  if (job.source === "oneclick" && job.autoPick !== false) {
+    if (state === "ready") return "마무리 중";
+    if (state === "review") return "확인 중";
+  }
   if (state === "ready" && job.generator !== "object-gen") return "넣을 차례";
   if (state === "ready" && job.pack) return "넣을 차례";
   return JOB_STATE_LABELS[state];

@@ -8,6 +8,7 @@ import { editorState } from "@/editor/editorState";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { armMapPick } from "@/editor/mapPickHook";
 import { store } from "@/project/store";
+import { josa } from "@/util/josa";
 import { toast } from "@/util/toast";
 
 /** 캐릭터: 다음 맵 클릭 칸에 그 캐릭터 칩으로 NPC 를 세운다(조수 place_npc 와 같은 길 — 통행 못 하는 칸이면 가까운 칸에 선다). */
@@ -46,7 +47,7 @@ export function armCharacterPlacement(input: { readonly textureKey: string; read
         }, { scope: "map", mapId: pickedMap });
         // 타일 층에서는 이벤트가 「E」 배지로만 보인다 — 놓은 사람이 그림으로 보이게 이벤트 층으로 옮기고 고른다.
         editorState.set({ layer: "event", selectedEventId: placedId });
-        toast(`「${input.name}」을(를) 놓았어요. 더블클릭하면 대사를 고칠 수 있어요.`, "ok");
+        toast(`「${input.name}」${josa(input.name, "을/를")} 놓았어요. 더블클릭하면 대사를 고칠 수 있어요.`, "ok");
       } catch (error) {
         toast(error instanceof Error ? error.message : String(error), "error");
       }

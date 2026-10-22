@@ -13,6 +13,7 @@ import { editorState } from "@/editor/editorState";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
+import { josa } from "@/util/josa";
 import { toast } from "@/util/toast";
 import { workshopAiReady } from "../chat";
 import { WORKSHOP_GENERATORS, type GeneratorId } from "../generators";
@@ -37,7 +38,9 @@ const state = {
   text: { object: "", character: "", terrain: "" } as Record<OneClickKind, string>,
   advanced: { count: 1, w: null, tall: null, manual: false, mode: "auto", terrainMethod: "quick" } as Advanced,
   /** 지형 빠른 길의 마지막 결과(작업 줄을 거치지 않는다 — 몇 초면 끝난다) */
-  quick: null as (QuickTerrainDone & { readonly at: number; readonly id: string }) | null,
+  quick: null as (QuickTerrainDone & { readonly at: number; readonly id: string; readonly clickMs: number }) | null,
+  /** 「만들기」를 누른 시각(빠른 지형의 걸린 시간·진행 카드) */
+  clickedAt: 0,
   advancedOpen: false,
   /** 종류마다 마지막으로 시작한 작업 */
   lastJob: {} as Partial<Record<OneClickKind, string>>,
@@ -69,7 +72,7 @@ export function placeOneClickResult(jobId: string): void {
   if (installed.characters?.length) {
     const reason = armCharacterPlacement(installed.characters[0]!);
     if (reason) { toast(reason, "info"); return; }
-    toast(`「${view.job.title}」을(를) 세울 칸을 맵에서 누르세요. Esc 로 그만둬요.`, "info");
+    toast(`「${view.job.title}」${josa(view.job.title, "을/를")} 세울 칸을 맵에서 누르세요. Esc 로 그만둬요.`, "info");
     return;
   }
   if (installed.terrain && installed.terrain.brushTile !== null) {
@@ -117,7 +120,7 @@ async function make(text: string): Promise<string> {
     const { makeQuickTerrain } = await import("./quickTerrain");
     const done = await makeQuickTerrain(text, tileset.id);
     const id = `quick:${done.groupId}:${Date.now().toString(36)}`;
-    state.quick = { ...done, at: Date.now(), id };
+    state.quick = { ...done, at: Date.now(), id, clickMs: Date.now() - (state.clickedAt || Date.now()) };
     toast(`「${done.title}」 완성!`, { kind: "ok", durationMs: 15000, action: { label: "맵에 놓기", testid: "workshop-oneclick-place-toast", onClick: () => placeQuickTerrain(done) } });
     return id;
   }
@@ -225,13 +228,16 @@ function resultThumb(view: JobView): HTMLElement | null {
   });
 }
 
-/** 남은 시간 한 줄. 호스트 작업은 호스트 어림(실측 기준)에서, 물건은 작업 줄 어림에서. 넘기면 「조금 더 걸려요」. */
+/**
+ * 걸리는 시간 한 줄 — 카운트다운이 아니라 보통 범위(실측). 남은 분을 세면 모델 호출마다 늘었다 줄었다 해서(1→6→11→1분) 믿음을 깎았다(2026-10-23 UX 검수).
+ * 범위를 넘기면 「평소보다 오래」만 말한다.
+ */
+const USUAL_MINUTES: Readonly<Record<string, readonly [number, number]>> = { "object-gen": [2, 6], "char-gen": [2, 6], "tile-gen": [20, 30] };
 function remainingText(view: JobView): string {
-  const expect = view.job.remote?.status?.expectMs;
-  const left = expect ? expect - elapsedOf(view) : view.etaMs;
-  if (left === null || left === undefined) return "";
-  if (left <= 30_000) return "거의 다 됐어요 — 조금 더 걸릴 수 있어요.";
-  return `약 ${Math.max(1, Math.round(left / 60000))}분 남음.`;
+  const range = USUAL_MINUTES[view.job.generator];
+  if (!range) return "";
+  if (elapsedOf(view) > range[1] * 60_000) return "평소보다 오래 걸리고 있어요.";
+  return `보통 ${range[0]}~${range[1]}분 걸려요.`;
 }
 
 function progressCard(view: JobView, render: () => void): HTMLElement {
@@ -251,7 +257,7 @@ function progressCard(view: JobView, render: () => void): HTMLElement {
   }));
   if (working) {
     const remote = job.remote?.status;
-    const stage = remote?.stage === "packing" ? "묶는 중" : remote?.reviewing ? "검수 중" : null;
+    const stage = remote?.stage === "packing" ? "묶는 중" : remote?.reviewing ? "확인 중" : null;
     children.push(craftBar({ value: view.progress > 0 ? view.progress : null, hot: jobState !== "queued", label: `${job.title} 만드는 중` }));
     children.push(el("p", {
       class: "left-workshop-meta",
@@ -269,7 +275,7 @@ function progressCard(view: JobView, render: () => void): HTMLElement {
   } else if (jobState === "ready" && job.autoPick !== false) {
     // 알아서 고르는 중(검수 통과 후보 고르기·굽기) — 사람에게 묻지 않는다.
     children.push(craftBar({ value: null, hot: true, label: `${job.title} 고르는 중` }));
-    children.push(el("p", { class: "left-workshop-meta", text: "검수를 통과한 그림을 골라 넣는 중이에요." }));
+    children.push(el("p", { class: "left-workshop-meta", text: "다 그렸어요. 칩셋에 넣는 중이에요." }));
   } else if (jobState === "ready") {
     // 「자세히 → 후보를 내가 직접 고르기」를 켠 작업만 여기에 온다.
     children.push(el("p", { class: "left-workshop-note", text: "후보가 나왔어요. 마음에 드는 하나를 골라 주세요." }));
@@ -289,7 +295,7 @@ function progressCard(view: JobView, render: () => void): HTMLElement {
   return el("div", { class: `workshop-oneclick-card is-${jobState}`, dataset: { testid: "workshop-oneclick-card", state: jobState, job: job.id }, children });
 }
 
-function quickCard(done: QuickTerrainDone & { readonly id: string }, render: () => void): HTMLElement {
+function quickCard(done: QuickTerrainDone & { readonly id: string; readonly clickMs: number }, render: () => void): HTMLElement {
   const close = el("button", {
     class: "workshop-oneclick-close", text: "×", attrs: { type: "button", "aria-label": "닫기" },
     dataset: { testid: "workshop-oneclick-close" }, on: { click: () => { state.dismissed.add(done.id); render(); } },
@@ -297,15 +303,26 @@ function quickCard(done: QuickTerrainDone & { readonly id: string }, render: () 
   return el("div", {
     class: "workshop-oneclick-card is-installed", dataset: { testid: "workshop-oneclick-card", state: "installed", job: done.id },
     children: [
-      el("div", { class: "workshop-oneclick-card-head", children: [el("strong", { text: done.title }), el("span", { class: "left-workshop-meta", text: `완성 · ${(done.ms / 1000).toFixed(1)}초` }), close] }),
+      el("div", { class: "workshop-oneclick-card-head", children: [el("strong", { text: done.title }), el("span", { class: "left-workshop-meta", text: `완성 · ${Math.max(1, Math.round(done.clickMs / 1000))}초` }), close] }),
       el("div", {
         class: "workshop-oneclick-done",
         children: [
           el("img", { class: "workshop-oneclick-thumb", attrs: { src: done.thumbUrl, alt: done.title } }),
-          el("p", { class: "left-workshop-meta", text: `지금 맵 칩셋에 넣었어요(「${done.sourceName}」 모양 · ${done.material}). 「맵에 놓기」를 누르고 맵을 칠하세요.` }),
+          el("p", { class: "left-workshop-meta", text: "지금 맵 칩셋에 넣었어요. 「맵에 놓기」를 누르고 맵을 칠하세요." }),
         ],
       }),
       el("button", { class: "left-workshop-primary", text: "맵에 놓기", attrs: { type: "button" }, dataset: { testid: "workshop-oneclick-place" }, on: { click: () => placeQuickTerrain(done) } }),
+    ],
+  });
+}
+
+function quickBusyCard(title: string): HTMLElement {
+  return el("div", {
+    class: "workshop-oneclick-card is-drawing", dataset: { testid: "workshop-oneclick-card", state: "drawing" },
+    children: [
+      el("div", { class: "workshop-oneclick-card-head", children: [el("strong", { text: title }), el("span", { class: "left-workshop-meta", text: "만드는 중" })] }),
+      craftBar({ value: null, hot: true, label: `${title} 만드는 중` }),
+      el("p", { class: "left-workshop-meta", text: "지금 맵 칩셋에 맞춰 칠하는 중이에요. 몇 초면 돼요." }),
     ],
   });
 }
@@ -347,7 +364,11 @@ export function renderOneClick(root: HTMLElement, rerender: () => void): void {
     if (state.busy) return;
     state.busy = true;
     state.error = "";
+    state.clickedAt = Date.now();
     go.disabled = true;
+    input.blur(); // 왼쪽 창은 입력에 초점이 있으면 다시 그리지 않는다 — 진행 카드가 바로 보이게
+    // 빠른 지형은 작업 줄을 거치지 않는다 — 몇 초 동안 아무 표시가 없으면 「안 눌렸다」로 읽혀(UX 검수) 바로 진행 카드를 그린다.
+    if (kind === "terrain" && state.advanced.terrainMethod === "quick") rerender();
     void make(text).then((jobId) => {
       state.lastJob[kind] = jobId;
       state.dismissed.delete(jobId);
@@ -367,7 +388,8 @@ export function renderOneClick(root: HTMLElement, rerender: () => void): void {
   const views = workshopQueue().snapshot().jobs.filter((view) => kindOfJob(view) === kind && !state.dismissed.has(view.job.id) && view.state !== "cancelled");
   const current = views.find((view) => view.job.id === state.lastJob[kind]) ?? views.at(-1);
   const quick = kind === "terrain" && state.quick && !state.dismissed.has(state.quick.id) && (!current || state.lastJob.terrain === state.quick.id) ? state.quick : null;
-  const card = quick ? quickCard(quick, rerender) : current ? progressCard(current, rerender) : null;
+  const quickBusy = kind === "terrain" && state.busy && state.advanced.terrainMethod === "quick";
+  const card = quickBusy ? quickBusyCard(state.text.terrain || def.examples[0]!) : quick ? quickCard(quick, rerender) : current ? progressCard(current, rerender) : null;
   root.append(
     el("div", {
       class: "left-workshop-card workshop-oneclick", dataset: { testid: "workshop-oneclick", kind },
@@ -394,7 +416,7 @@ export function renderOneClick(root: HTMLElement, rerender: () => void): void {
 
 /** 왼쪽 창이 다시 그릴지 가늠할 서명 — 이 창이 보이는 작업들의 상태·진행만. */
 export function oneClickSignature(): string {
-  return JSON.stringify(workshopQueue().snapshot().jobs.filter((view) => view.job.source === "oneclick").map((view) => [view.job.id, view.state, Math.round(view.progress * 20), view.job.remote?.status?.stage ?? "", Math.floor(elapsedOf(view) / 30000)]));
+  return JSON.stringify(workshopQueue().snapshot().jobs.filter((view) => view.job.source === "oneclick").map((view) => [view.job.id, view.state, Math.round(view.progress * 20), view.job.remote?.status?.stage ?? "", Math.floor(elapsedOf(view) / 5000)]));
 }
 
 export function clearOneClick(root: HTMLElement): void {

@@ -106,6 +106,8 @@ try {
   await page.getByTestId("sidebar-workshop").waitFor({ timeout: 240_000 });
   await page.waitForFunction(() => !document.body.innerText.includes("도구 준비 중"), null, { timeout: 300_000 });
   await hold(4000);
+  // 타일 층에서는 이벤트가 「E」 배지로만 보인다 — NPC 그림을 다시 보려면 이벤트 층(F7)
+  if (kind === "character") { await page.keyboard.press("F7"); await hold(1500); }
   await page.mouse.move(cx - 40, cy - 20, { steps: 4 });
   await hold(800);
   await page.screenshot({ path: resolve(out, `${kind}-5-reloaded.png`) });
