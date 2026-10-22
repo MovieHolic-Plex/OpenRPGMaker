@@ -75,6 +75,7 @@ def up_stairs(c, w, mat, left='wall', right='balustrade'):
     단마다 밝은 디딤판(결) → 가장 밝은 코 → 확실히 어두운 챌판 → 그늘 한 줄. 아래 단은 깊고 밝으며 위로 갈수록 얕고 어두워져
     맨 위 10px 는 위층 바닥 밑 어둠이다 — 오르는 방향(북)이 그림만으로 보인다.
     left = 'wall' | 'stringer', right = 'balustrade'(옆판 위 난간동자 + 손잡이 + 아래 기둥) | 'pipe'(쇠파이프 손잡이 + 아래 기둥) | 'stringer'(난간 없는 맨 콘크리트 옆벽)."""
+    return up_stairs_persp(c, w, mat, right)               # 2026-10-23: 한 칸·두 칸 폭 모두 원근 계단(아래 옛 짜임은 쓰지 않는다)
     M = MATS[mat]
     pw = w * 16
     sw = 2 if w == 1 else 3                                       # 옆판 폭
@@ -224,3 +225,92 @@ def down_well(c, mat, rails=True):
         c.VL(xo, T, cap + 11 - T, OL); c.VL(xh, T, cap - T, _k(M['railH']))
         for y in range(T + 5, cap - 1, 5): c.P(xh, y, _k(M['railD']))  # 동자 이음
         c.R(min(xo, xh), cap, 2, 2, _k(M['railH'])); c.R(min(xo, xh), cap + 2, 2, 9, _k(M['post'])); c.P(xh, cap + 2, _k(M['railD']))   # 기둥 몸 9px, 발 그늘 없음
+
+
+# 올라가는 계단 원근판(2026-10-23 다시 그림) — 고른 폭의 가로줄 띠는 셔터·환기구·선반·마룻바닥으로 읽혔다
+# (object-gate 3/4 FAIL·눈 거부권, Argon 적대 검수: 「아래는 평평한 마루, 위는 셔터」·「잘린 난간 토막」·「세로 기둥 사이 선반」).
+# 원근: 계단 폭이 아래(가까운) 끝에서 위(먼) 끝으로 곧게 좁아진다 — 양옆 옆판(stringer)이 원근선으로 안쪽에 모이고,
+# 그 바깥은 양옆 벽 안면(사다리꼴, 서쪽 그늘·동쪽 한 단 밝게). 단마다 위에서 아래로: 디딤판 윗면(수평면, 뒤 절반은 한 단 어둡고
+# 앞 절반은 밝게) → 가장 밝은 코 1행 → 확실히 어두운 챌판 1~2행. 위 단 챌판이 아래 단 디딤판 뒤 끝에 바로 선다(단마다 테를 두르면 서랍).
+# 손잡이는 벽 안면 위를 원근선 따라 비스듬히 오른다(곧은 세로 기둥은 장·선반 옆판으로 읽힌다).
+PERSP_STEPS = (9, 8, 7, 6, 6)                                      # 단 높이 아래 → 위(먼 단일수록 낮다), 합 36
+PERSP_SPAN = {1: (1, 15, 5, 11), 2: (3, 29, 10, 22)}              # 칸 폭 → 디딤판 [아래 x0, x1) · [위 x0, x1)
+
+
+def _line(c, xa, ya, xb, yb, col):
+    n = max(abs(xb - xa), abs(yb - ya))
+    for t in range(n + 1):
+        c.P(round(xa + (xb - xa) * t / n), round(ya + (yb - ya) * t / n), col)
+
+
+def persp_span(w, yy):
+    BL, BR, TL, TR = PERSP_SPAN[w]
+    top = 48 - sum(PERSP_STEPS)
+    t = (47 - yy) / (47 - top)
+    return round(BL + (TL - BL) * t), round(BR + (TR - BR) * t)
+
+
+def persp_noses(w):
+    """(코 y, 디딤판 x0, x1) 아래 → 위 — 잔해·깨진 코 덧그림이 단 위치를 따르게."""
+    out, y = [], 47
+    for h in PERSP_STEPS:
+        top = y - h + 1; ri = 2 if h >= 7 else 1; ny = top + h - 1 - ri
+        out.append((ny,) + persp_span(w, ny)); y = top - 1
+    return out
+
+
+def up_stairs_persp(c, w, mat, right='balustrade'):
+    M = MATS[mat]
+    wood = mat == 'wood'
+    pw = w * 16
+    tr = lambda d: _k(M['tr'], d)
+    TOP = 48 - sum(PERSP_STEPS)                                    # 가장 먼 단 윗선
+    span = lambda yy: persp_span(w, yy)
+    for j in range(TOP):                                           # 위층 바닥 밑 어둠
+        c.HL(0, j, pw, K('sumi', -1) if j < TOP - 3 else (K('sumi', 0), K('sumi', 1), K('yoru', -3))[j - (TOP - 3)])
+    if mat == 'bare':                                              # 맨 콘크리트 옆벽: 빛 받는 서쪽 덩이 · 그늘 동쪽 덩이
+        WF, EF = K('conc', -3), K('yoru', 1)
+    else:
+        WF = K('ita', -3) if wood else K('yoru', -1)               # 서쪽 벽 안면(그늘)
+        EF = K('ita', -2) if wood else K('yoru', 1)                # 동쪽 벽 안면(빛 왼쪽 위를 받아 한 단 밝다)
+    y = 47
+    for i, h in enumerate(PERSP_STEPS):
+        d = (0, 0, -1, -1, -2)[i]
+        top = y - h + 1
+        ri = 2 if h >= 7 else 1
+        tdepth = h - 1 - ri                                        # 디딤판 윗면 행 수(코 1 · 챌판 ri 제외)
+        cols = [tr(d - 1)] * ((tdepth + 1) // 2) + [tr(d)] * (tdepth // 2) + [_k(M['nose'], d)] + [_k(M['ri'], d - k) for k in range(ri)]
+        for k, col in enumerate(cols):
+            yy = top + k
+            x0, x1 = span(yy)
+            c.HL(1, yy, x0 - 1, WF); c.HL(x1, yy, pw - 1 - x1, EF)
+            c.HL(x0, yy, x1 - x0, col)
+            if k < tdepth and k >= (tdepth + 1) // 2:               # 앞 절반에 결(나무 = 짧은 결, 콘크리트 = 잔 점)
+                for xx in range(x0 + 1, x1 - 1):
+                    r = _h(xx, yy, 31 + i)
+                    if r < 7: c.P(xx, yy, tr(d - 1))
+                    elif not wood and r < 10: c.P(xx, yy, tr(d + 1))
+            nose, riser = k == tdepth, k > tdepth
+            # 옆판(stringer): 원근선 1px — 디딤판·코 높이는 밝은 윗모서리, 챌판 높이는 어둡게 꺾인다(단을 따라 톱니)
+            c.P(x0 - 1, yy, (K('ita', 0) if wood else K('conc', 1) if mat == 'bare' else K('yoru', 3)) if nose else
+                (K('ita', -4) if wood else K('conc', -3) if mat == 'bare' else K('yoru', -3)) if riser else
+                (K('ita', -1) if wood else K('conc', 0) if mat == 'bare' else K('yoru', 1)))
+            c.P(x1, yy, (K('ita', 1) if wood else _k(M['side'], 1)) if nose else
+                (K('ita', -2) if wood else K('yoru', 0)) if riser else (K('ita', 0) if wood else _k(M['side'], 0)))
+        y = top - 1
+    c.VL(0, 0, 48, OL); c.VL(pw - 1, 0, 48, OL); c.HL(0, 0, pw, OL)  # 바깥 문틀 윤곽 + 윗막이
+    if mat != 'bare':
+        # 왼쪽 벽 손잡이: 서쪽 벽 안면 위를 원근선 따라 비스듬히(밑에 그늘 1px)
+        HR = K('ita', 1) if wood else K('tekko', 2)
+        bx0 = PERSP_SPAN[w][0]
+        _line(c, max(1, bx0 - 1), 36, max(2, PERSP_SPAN[w][2] - 1), TOP + 2, K('ita', -4) if wood else K('yoru', -3))
+        _line(c, max(1, bx0 - 1), 35, max(2, PERSP_SPAN[w][2] - 1), TOP + 1, HR)
+        if w > 1 and right in ('balustrade', 'pipe'):
+            # 오른쪽(트인 쪽) 난간: 동쪽 벽 안면 위를 원근선 따라 오르는 손잡이 + 맨 아래 기둥 하나(발칸 바닥에 선다)
+            RH = K('ita', 1) if wood else _k(M['railH'], 1)
+            RD = K('ita', -3) if wood else K('yoru', -2)
+            bx1, tx1 = PERSP_SPAN[w][1], PERSP_SPAN[w][3]
+            _line(c, bx1 + 1, 30, tx1 + 1, TOP + 1, RH); _line(c, bx1 + 1, 31, tx1 + 1, TOP + 2, RD)
+            c.R(bx1, 30, 2, 1, RH); c.R(bx1, 31, 2, 15, K('ita', -1) if wood else _k(M['rail'])); c.VL(bx1, 31, 15, RH)
+            c.HL(bx1 - 1, 46, 3, K('yoru', -2))
+    c.HL(1, 47, pw - 2, K('yoru', -1) if not wood else K('ita', -3))  # 맨 아래 단 발 그늘

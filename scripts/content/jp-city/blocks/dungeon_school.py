@@ -537,17 +537,16 @@ def _debris(c):
 def _stairs_broken(c):
     SC._conc_stairs(c, 2)
     age(c, -1, (0, 0, 32, 48))
-    # 이 빠진 디딤판 코(코 줄 y = 42·34·28·22): 코가 떨어져 나가 챌판 어둠이 위로 먹어 들고, 깨진 뒤 모서리만 밝다
-    for (x, yn, w) in ((6, 42, 4), (18, 34, 5), (9, 22, 3)):
-        rc(c, x, yn - 1, w, 2, K('yoru', -2))
-        for k in range(w): px(c, x + k, yn - 2 - (k % 2), K('conc', 2))
-        px(c, x - 1, yn, K('conc', -2))
-    # 잔해: 맨 아래 단 위 콘크리트 덩이 둘 + 낙엽 둘(적게)
-    for (x, y) in ((13, 44), (21, 45)): rc(c, x, y, 2, 1, K('conc', 1)); px(c, x, y + 1, K('conc', -3)); px(c, x + 1, y - 1, K('conc', 2))
-    for (x, y) in ((5, 45), (23, 30)): leaf(c, x, y, -1, 'daidai')
-    # 처진 쇠파이프 손잡이(가운데가 한 칸 안쪽으로 휜다) + 녹 점 셋
-    for y in range(14, 21): px(c, 29, y, ST(1)); px(c, 30, y, K('yoru', -2))
-    for (x, y) in ((29, 15), (30, 24), (28, 31)): px(c, x, y, K('daidai', -2))
+    # 이 빠진 디딤판 코(원근 계단의 코 줄을 따른다 — SA.persp_noses): 코가 떨어져 나가 챌판 어둠이 위로 먹어 들고, 깨진 뒤 모서리만 밝다
+    noses = SA.persp_noses(2)
+    for (k, off, w) in ((0, 3, 4), (1, 12, 4), (3, 2, 3)):
+        yn, x0, x1 = noses[k]; x = x0 + off
+        rc(c, x, yn - 1, w, 2, K('yoru', 0))
+        for j in range(w): px(c, x + j, yn - 2 - (j % 2), K('conc', 0))
+    # 잔해: 맨 아래 단 위 콘크리트 덩이 둘 + 낙엽 하나(적게, 어두운 톤 — 흰 점은 1x 에서 반짝이로 읽혔다)
+    for (x, y) in ((13, 41), (20, 42)): rc(c, x, y, 2, 1, K('conc', -1)); px(c, x, y + 1, K('conc', -3))
+    leaf(c, 6, 43, -1, 'daidai')
+    for (x, y) in ((27, 33), (25, 22)): px(c, x, y, K('daidai', -2))   # 녹 점(손잡이)
     ivy(c, 2, 30, 47, 87, dense=30, up=True)
 
 

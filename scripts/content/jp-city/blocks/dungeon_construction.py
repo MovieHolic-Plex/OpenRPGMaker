@@ -590,8 +590,9 @@ def _tarp(c):
        desc='공사장 북쪽 벽 앞에서 천장 구멍으로 오르는 2칸 폭 맨 콘크리트 계단 — 난간이 아직 없고 디딤판 모서리가 깨졌으며 부스러기가 있다. 올라가는 계단 — 들어서는 쪽: 남쪽 앞 칸(발칸 바로 아래 바닥). 오를 때 보는 방향: 북쪽(화면 위). 발칸에서 북쪽으로 걸으면 위층으로 이동하고, 위층 cs-stairwell-down(난간 없는 계단통) 남쪽 앞 칸에 계단을 등지고 남쪽(아래)을 보고 선다.')
 def _stairs_bare(c):
     SA.up_stairs(c, 2, 'bare', left='stringer', right='stringer')
-    for (x, y) in ((8, 42), (19, 34), (11, 28), (23, 22)):              # 깨진 코 몇 군데·부스러기
-        c.R(x, y, 3, 1, K('conc', -2)); c.P(x + 1, y + 1, K('conc', 2))
+    for k, off in ((0, 5), (1, 14), (2, 4), (3, 9)):                  # 깨진 코 몇 군데·부스러기(원근 계단의 코 줄을 따른다)
+        yn, x0, x1 = SA.persp_noses(2)[k]
+        c.R(x0 + off, yn, 3, 1, K('conc', -2)); c.P(x0 + off + 1, yn + 1, K('conc', 0))
 
 
 @R.obj('cs-stairwell-down', '콘크리트 계단통(내려가는, 난간 없음)', w=2, h=2, up=8, kind='floor', use=('travel',), stairs='down', walk=((0, 1), (1, 1)),
