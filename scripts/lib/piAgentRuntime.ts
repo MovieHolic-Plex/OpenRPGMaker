@@ -1135,12 +1135,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     const reviewInGameCutscene = async (): Promise<void> => {
       if (!openingProduction.inGame) return;
       const start = ctx.project.maps[ctx.project.startMapId];
-      const autoEvents = (start?.events ?? []).filter(e => (e.pages ?? []).some(pg => (pg.trigger as { kind?: string } | undefined)?.kind === 'auto' && pg.commands.some(c => c.kind === 'showPicture')));
+      // 그림(showPicture) 없는 script_cutscene 도 잰다 — 그림 있는 컷신만 재면 검증이 끝내 안 돌고 「객관 검증이 아직 실행되지 않았습니다」만
+      // 세 번 반복하다 실패로 끝났다(2026-10-23 실측, 컷신 4판). inspect 의 판단도 자동 실행 이벤트 존재 하나다.
+      const isCutscenePage = (pg: { trigger?: unknown; commands: readonly unknown[] }) => (pg.trigger as { kind?: string } | undefined)?.kind === 'auto' && pg.commands.length > 0;
+      const autoEvents = (start?.events ?? []).filter(e => (e.pages ?? []).some(isCutscenePage));
       if (!start || !autoEvents.length) return;
       const fingerprint = openingProduction.cutsceneFingerprint(ctx.project);
       if (openingProduction.hasCutsceneReview(fingerprint)) return;
       // 시작 맵의 자동 컷신은 전부 잰다 — 옛 컷신이 남은 채 새 이벤트가 따로 생기면(실측) 둘이 겹쳐 재생된다.
-      const probes = autoEvents.map(e => ({ event: e, page: e.pages.find(pg => (pg.trigger as { kind?: string } | undefined)?.kind === 'auto' && pg.commands.some(c => c.kind === 'showPicture'))! }))
+      const probes = autoEvents.map(e => ({ event: e, page: e.pages.find(isCutscenePage)! }))
         .map(({ event, page }) => ({ event, probe: probeCutscene(ctx.project, page.commands, ctx.project.system.playResolution ?? DEFAULT_PLAY_RESOLUTION) }));
       const merged = probes.flatMap(({ event, probe }) => probe.issues.map(issue => (probes.length > 1 ? `[이벤트 ${event.id}] ` : '') + issue));
       if (probes.length > 1) merged.push(`시작 맵에 자동 컷신 이벤트가 ${probes.length}개(${probes.map(p => p.event.id).join(', ')})라 겹쳐 재생됩니다. 하나만 남기세요 — script_cutscene_staged 에 eventId 를 주어 기존 것을 대체하거나, 쓸모없는 이벤트를 지우세요.`);
