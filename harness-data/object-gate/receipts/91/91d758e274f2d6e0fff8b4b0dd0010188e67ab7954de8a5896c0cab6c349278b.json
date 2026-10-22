@@ -1,0 +1,334 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "91d758e274f2d6e0fff8b4b0dd0010188e67ab7954de8a5896c0cab6c349278b",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "wz-owl-stair-down",
+ "label": "wizarding_world stairs wz-owl-stair-down (DOWN)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 명암 3단 < 4 (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "명암 3단 < 4 (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 4
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 13,
+  "darkV5": 35,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden frame border around the stairwell",
+      "rows": "3-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stairwell interior with descending steps",
+      "rows": "8-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 27,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The object is a square floor plate seen from above: a 30px-wide wooden frame (rows 3-29) around a dark stairwell. The steps are stacked horizontal bands with light edge lines at rows 19 and 24. They read as treads descending into the pit, not as a vertical front face. The bottom frame rows 26-29 are just the border. There is no south face of 3 or more rows, no eave shadow and no ellipse. It reads as a flat decal or plate, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small framed stairwell object: a wooden frame around a dark opening with a few steps. It is not a 4x3-tile ground patch, so it does not match the grass and paving references and cannot be judged as the same kind. The measured facts do not help it: 11 visible tones per tile beats the references' 3 and 7, but they come from a tiny, mostly dark object with a frame, and 100% of its dark edge pixels are near-neutral. That fits the near-black 'sticker' outline, not the tinted dark-material outlines of the grass (0% neutral). The paving reference is also 80% neutral, but its tones are dark grey stone shading, not a uniform outline. The interior uses about 4 lightness steps, against about 5-6 on the references. The steps, frame and interior are mostly flat, with no per-stone shading or grain like the paving. It reads as a small prop, not a ground surface patch with grass tufts or stone-by-stone shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 16029
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden frame border around the opening",
+      "rows": "3-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark stairwell pit with descending steps",
+      "rows": "8-28",
+      "evidence": "d",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 26,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "This is a flat floor tile: a 30x26 px square wooden frame (rows 3-28) around a dark opening. Inside, grey step treads at rows 15-18, 19-23 and 24-28 step down into darkness at rows 8-14. The frame has uniform thickness on all sides and no front (south) face. The bottom border is a thin dark outline (rows 28-29), and there is no standing volume, so it reads as a plate seen from above. This suits the kind 'flat'."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small framed stair opening, about 20x20 source pixels, with a wooden border and a dark interior. It is not a 4x3-tile ground patch like the grass and paving references, so it does not match the expected kind and cannot be compared fairly as ground. Measured facts: 11 visible tones per tile is above the grass (3) and paving (7), and near-flat coverage is 0%, so density by the numbers is not the problem. But 100% of the dark edge pixels are neutral, so the outline is a near-black line. The paving reference is 80% neutral, but its stone cracks and highlights are shaded stone by stone, while the candidate's step and frame ramps are only about 3 steps each. The stair interior is mostly a dark block with a few light bars. It looks like a sticker with a black outline and lacks the grain, speckle and per-element shading of the references. Because the piece is the wrong kind and its shading and outline are shallow, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16731
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "wooden frame / border around the stairwell opening",
+      "rows": "3-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "descending stair treads inside the opening (stepped bands)",
+      "rows": "8-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 27,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole sprite is a square plate, 29-30 px wide and rows 3-29 tall, seen from above. A wooden frame (rows 3-7 along the top, with side posts) surrounds a dark pit rows 8-18. Stepped grey treads fill rows 15-28. The bottom frame (rows 25-29) is only a border, with no vertical south face of 3 or more rows. The steps are stacked bands, not a standing body with a front face. This matches a flat floor decal, the intended kind, and it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a single-tile framed stair or hatch prop, about 16x20 source pixels. It is not the 4x3-tile ground patch the kind calls for, so the grass and paving references are not a like-for-like comparison. The measured facts are mixed: 11 visible tones per tile beats the grass at 3 and the paving at 7, and near-flat coverage is 0%. But 100% of its dark edge pixels are neutral, so the outline is a near-black line, whereas the grass reference is tinted (0% neutral). By eye, the wooden frame has only about 2-3 tan steps, and the dark interior and the grey steps are shallow, with little grain, speckle or per-element shading. The stone steps are nearly flat, and the piece looks sticker-like next to the textured grass and the stone-by-stone shaded paving. It has too few shading steps, a neutral black outline and thin texture, so it does not meet the Beodeul bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17007
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "outer floor frame (wood/stone border on all four sides)",
+      "rows": "3-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark stairwell opening with descending steps",
+      "rows": "8-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 26,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a near-uniform 29-30 px wide square from rows 3-29, with a continuous frame on all four sides (top band rows 3-7, bottom band rows 26-29). Inside is a dark pit (rows 8-18) with stacked step bands (edge lines at rows 15, 19 and 24, each followed by a 3-4 row face). These bands show the steps descending, not a standing volume. There is no outer front face below the frame and no eave shadow or ellipse. The whole object is a flat plate seen from above, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small framed stairwell object (wood frame, dark opening, a few grey steps), not a 4x3-tile ground patch like the grass and paving references, so the kind does not match. The measured facts do not count against it: 11 visible tones per tile against 3 for grass and 7 for paving, and 0% near-flat coverage. However, 100% of its dark edge pixels are neutral, which reads as a black/grey sticker-like outline. The references' outlines are tinted (grass 0% neutral) or mostly dark grey stone mortar (paving 80%). The steps and interior are shaded in about 3-4 grey steps with little per-stone grain, against the references' per-clump grass and individually shaded stones. As a ground surface it is not a rich tileable patch, and it looks flatter and more sticker-like than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 20608
+  }
+ ],
+ "decidedAt": "2026-10-22T11:46:21.874Z",
+ "cells": {
+  "16": [
+   "5a3665d6d1c95d79",
+   "85555048e4ba7acc",
+   "b32228516b5e38ab",
+   "e44a55836401a456"
+  ],
+  "24": [
+   "02ac3dae5c0725a9",
+   "0ee4364b91a19935",
+   "1f5fe45b86ed8f93",
+   "29a24e231b80518b",
+   "32fa8f4f4ae68242",
+   "3fbc6cf079d6ddd1",
+   "4c059dae7507d729",
+   "4f5b9c5ed62dd6dc",
+   "7482e392ab9c1aa5",
+   "75a36e64ec30287b",
+   "77cf2ab83fa87d25",
+   "86a406f95343169e",
+   "8c5a8b15a2beb206",
+   "942d719849d789f4",
+   "acaba9e768e864cf",
+   "ad8ca5d75d702626",
+   "bf3d5d601843866e",
+   "cf20ce66531715ad",
+   "cf67422f54db89a7",
+   "d3dd4c7df44c5112",
+   "d715ffd1b4d7fcc0",
+   "e57dbd6965f9dc78",
+   "e82a91186a674605",
+   "ef1df0b3b6d7b8c2"
+  ],
+  "32": [
+   "ba521ec663065686"
+  ],
+  "48": [
+   "40349a13a1418e81",
+   "9469fdb45bde9918",
+   "a344ac826ce01916",
+   "ac5460c34b22da49",
+   "c8948f9f3738c69e",
+   "e6472c107fd5fba5"
+  ]
+ }
+}

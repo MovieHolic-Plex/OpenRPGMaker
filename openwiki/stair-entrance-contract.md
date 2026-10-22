@@ -80,3 +80,19 @@
   이어 `fit-bundled-places.mts --write`. 예제 JSON(`mansion-corridor`·`school-3f`·`school-2f`·`mansion-lobby`)도 같이 고쳤다. `lint-bundled-stairs` 공용 장소 경고 0.
 - 출하 플레이어 걷기: `scripts/qa/runtime/jp-stairs-redraw.scenario.mjs`(단독주택 2F↔1F · 맨션 외복도↔로비 · 학교 2F↔3F).
 - 검수: Opus 적대 VQA 영수증 `harness-data/object-gate/vqa/jp-in-stairs-13.opus-vqa-r*.json`, object-gate 묶음 `jp-in-stairs-13`.
+
+## 마법 학교(wizarding_world) 계단 다시 그림 (2026-10-22)
+사용자 「계단들이 다 씹창」 → 여섯 키트를 공용 도우미 `scripts/content/wizarding/pieces/_wz_stairs.py` 두 형태로 다시 그렸다.
+- **올라가는 계단 2×3**(`wz-castle-stair-up` 돌 첨두 아치 · `wz-clock-stair` 리벳 무쇠 틀 · `wz-hd-stairs-down` 돌 아치 · `wz-owl-stair-up` 나무 틀, walk SS/FF/ff):
+  북벽에 붙인다. 위 두 줄이 북벽 정면 자리의 문틀이고, 디딤판(윗면 + 밝은 앞 모서리) · 챌판이 북쪽으로 올라가 위층 빛 속으로 사라진다.
+  들어서는 쪽 남쪽(맨 아래 줄 바로 남쪽 앞 칸) · 오를 때 북쪽을 본다 · 도착은 위층 내려가는 계단통의 남쪽 앞 칸, 계단을 등지고 남쪽.
+  방 가운데 홀로 선 계단은 「어디로 가는지 모르는 단상」으로 읽혀(적대 검수 r1·r2) 북벽 문틀형으로 바꿨다.
+- **내려가는 계단통 2×2**(`wz-castle-stair-down` 돌 난간 · `wz-owl-stair-down` 나무 난간, walk ff/ff): 바닥 구멍. 턱 없이 방 바닥이 구멍 끝까지 오고,
+  북·서·동에 위에서 본 얇은 손잡이(기둥 없음), 남쪽만 열림. 안은 민 어둠의 북쪽 안벽과 디딤판 다섯 단(밝은 코, 북쪽으로 갈수록 어둡다).
+  벽돌 줄눈·기울인 옆벽·솟은 기둥·밝은 둘레 턱은 「아궁이·문틀」로 읽혀 뺐다(적대 검수 r6~r10).
+  들어서는 쪽 남쪽 · 내려갈 때 북쪽을 본다 · 도착은 아래층 올라가는 계단 맨 아래 줄의 남쪽 앞 칸, 계단을 등지고 남쪽.
+- `wz-hd-stairs-down` 은 id 의 down 이 옛 이름이고 **올라가는** 계단(지하 창고 → 위층 가게)이다 — 이름표·설명·계약(`leads: up`) 모두 「올라가는」.
+- 계약 문장(`overrides.json` 의 `why`)에 들어서는 쪽·보는 방향·도착을 적었고, `prepare_stair_references.py` 가 키트 행에 `note`(계약 문장)를 함께 싣는다(모든 칩셋).
+- 출하 장소: 시계탑 기어실 계단을 방 서쪽 (1,11) → 북벽 (1,2)(그 자리 벽걸이 공구판 하나 뗌), 부엉이 탑 (1,8) 은 올라가는 계단 → **내려가는 계단통**(탑 꼭대기 방),
+  허니듀크 지하 (13,2) 는 그대로. 다시 찍기 `scripts/content/stairs/restamp-wz-stairs.py --write`. 조립기는 계단 키트를 깔개(전부 f 칸)로 보지 않는다(`builder.ts` flatOnly).
+- 출하 플레이어 걷기: `scripts/qa/runtime/wz-stairs.scenario.mjs`.

@@ -1,0 +1,356 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c3b20cd13dcd76b401b1fed953a16d6b9337fc74b544039dbc2ec7935d063415",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "wz-castle-stair-up",
+ "label": "wizarding_world stairs wz-castle-stair-up (UP)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 14,
+  "tileColorsP90": 14,
+  "darkV5": 39,
+  "nearBlackEdge": 0.06,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top wall/lintel band",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark archway/landing opening",
+      "rows": "3-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair treads (repeated steps with red carpet)",
+      "rows": "10-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 38,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The stair is drawn as a stack of horizontal stripes. Each step is a 1-row light nosing line (rows 19, 23, 28, 34), then 1-3 rows of mid-tone face (rows 20, 24-25, 29-31, 35-37), then 2 rows of dark shadow (rows 21-22, 26-27, 32-33, 38-39). The carpet runs down the middle with the same pattern: orange line, then red face. No tread has a band of 3 or more rows that reads as a horizontal surface seen from above. The top of the object (rows 0-9) is a flat wall strip and a dark arch with no visible top plane or roof slope. The result is a flat front elevation of the stair with at most 1-2 rows of tread top per step."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The measured facts are fine: 14 visible tones per tile against 12 and 10 for the references, 0% near-flat coverage, and only 24% neutral dark edge pixels, so the outline is mostly tinted. By eye the piece is weaker than the references. The stone arch frame has only about 3-4 lightness steps and no stone-by-stone shading or speckle like the h112 stone wall. The steps are regular horizontal bands of two or three tones with little grain, and the dark interior is a plain fill. The outline looks like a fairly uniform dark line around the frame, which leans toward the sticker look, not selective material-tone edges. The whole piece has only 17 distinct colours against 66 and 185, and it reads thinner and more schematic than the Beodeul houses. A careful artist would likely ask for more shading and texture before placing it next to them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 24257
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top wall / lintel band",
+      "rows": "0-3",
+      "evidence": "a",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": "4-9"
+     },
+     {
+      "part": "stair treads (repeated stone bands beside the carpet)",
+      "rows": "19-47",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "21-22, 26-27, 32-33, 38-39"
+     },
+     {
+      "part": "upper gate/doorway opening with gold step lines",
+      "rows": "10-18",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The side columns show a repeating stair pattern. Each step has a light front-edge line (rows 19, 23, 28, 34), then a 1-3 row mid-tone tread band (rows 20, 24-25, 29-31, 35-37), then 2 rows of dark shadow (rows 21-22, 26-27, 32-33, 38-39). The tread bands thicken toward the bottom, which reads as perspective on horizontal surfaces. Rows 0-3 form a top wall band that ends in a dark edge line at row 3, followed by dark eave shadow. The pink carpet runs down the centre as the riser face, and the stack of steps gives a tall front face. The structure reads as 3/4 view, with the weakest evidence being that individual treads are only 1-3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small stair-in-arch prop, not a full house, so I judged it by tile density and craft rather than size. It has 14 visible tones per tile against 12 and 10 for the references, and 0% near-flat coverage, the same as both references. Only 24% of its dark edge pixels are neutral, so the outline mostly leans toward the adjacent material: a dark stone tone around the arch and a dark red-brown around the steps. By eye the stone frame shows grain and speckle and the steps have banded highlight and shadow, with no flat fills. Each material ramp has about 4 steps, a little below the references' 5-6, and the regular stripes on the steps are somewhat mechanical. Overall it would sit acceptably next to the references without looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 23425
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel strip and wall cap",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark arch opening with gold stripes",
+      "rows": "4-16",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair treads (repeating step bands, red carpet down the middle)",
+      "rows": "19-47",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "21-22"
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a staircase. From row 19 down, each step repeats the same pattern: a 1-row light edge line (rows 19, 23, 28, 34), a 2-3 row mid-tone tread band (rows 20, 24-25, 29-31, 35-37), then 2 rows of dark shadow (rows 21-22, 26-27, 32-33, 38-39). That is a top band ending in an edge line, followed by shadow and a vertical riser, so evidence (a). The red carpet runs down the centre of every tread and riser. Rows 0-3 are a front-facing lintel strip and rows 4-16 are the dark arch with gold stripes. Neither has a separate top, but neither is a large unsupported vertical part. The structure reads as stepped treads with risers rather than a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small stair-up prop: a stone arch frame around a striped staircase. The references are full houses with roofs and walls, so the kind only loosely matches. The measured facts are not the problem: 14 visible tones per tile against 12 and 10, 0% near-flat coverage, and only 24% neutral dark edge pixels, so the outline is mostly tinted. By eye the piece is still shallower than the references. The frame has about 3-4 grey steps and no per-stone shading or speckle like the stone reference's cobbles. The steps are regular colour bands with little grain or per-step highlight. The whole piece uses only 17 distinct colours, against 66-185 in the references, and it reads as a clean, sticker-like icon beside the textured tile roofs. The darkest frame pixels also lean fairly neutral.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 22985
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel/cornice strip",
+      "rows": "0-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark arch recess",
+      "rows": "4-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair treads with red carpet runner (repeated steps)",
+      "rows": "10-47",
+      "evidence": "a",
+      "front_edge_line_row": 19,
+      "eave_shadow_rows": "21-22"
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 44,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is the staircase, rows 10-47. Each step repeats about every 4-5 rows: a light nosing line (rows 19, 23, 28, 34), then 1-3 mid-tone tread rows (20, 24-25, 29-31, 35-37), then 2 dark shadow rows (21-22, 26-27, 32-33, 38-39). That is a top band ending in an edge line with eave shadow under it, followed by a front face, so the treads read as horizontal surfaces seen from above. The gold lit edges at rows 10, 13 and 16 act the same way. The lintel at rows 0-3 is a plain front-facing strip. The stair is therefore taken as three_quarter, though the lintel and arch recess are drawn flat, and the stair rows could also be read as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 6,
+    "evidence": "The candidate is a single-tile stair-up arch: a stone frame around a stepped staircase in warm bands. On the primary facts it matches or beats both references. It has 14 visible tones per tile against 12 and 10, and 0% near-flat coverage, the same as the references. Only 24% of its dark edge pixels are neutral, so most of the outline leans toward the material tone rather than being a uniform black line, though some of the frame edge is darker and flatter. That is higher than the references' 7-9%, so I call the outline mixed. Each material ramp has about 4 steps (stone highlight, mid, dark, deep; stair tread, riser and shadow), a little under Beodeul's 5-6. The total palette is only 17 colours and there is little grain, so texture is some rather than rich. There are no large flat fills, and the stairs carry visible step banding. A careful artist would probably accept it next to the references, though it is simpler than the houses.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 26571
+  }
+ ],
+ "decidedAt": "2026-10-22T11:11:07.465Z",
+ "cells": {
+  "16": [
+   "2821683a04d8ec39",
+   "38bbac3a9fd9d63f",
+   "40cf1a908691b19f",
+   "4aa837bc9e89589c",
+   "72ebe2b9fb2e6d58",
+   "a8b25c0ef491a8ab"
+  ],
+  "24": [
+   "0e12efb412187f34",
+   "2b1ccd8b1ef31785",
+   "2e9cff1773cb7a5d",
+   "30f9ee326dba4df9",
+   "4d16cd729ed574d1",
+   "611f3ba289725d35",
+   "63710affd7736ac0",
+   "63c232d6a7df8ab8",
+   "6ea8742706ed808d",
+   "93be94c042c8d4b7",
+   "a4211fe4d2dd649b",
+   "df24eff9f9eefc61"
+  ],
+  "32": [
+   "3e87cdc6a69e2514",
+   "49f5aeced00517ec",
+   "c8f7d2c72c82a86e",
+   "f72221401b181560"
+  ],
+  "48": [
+   "6b766d677964d648",
+   "b3f53c0425c412bf",
+   "e937c7ad3aaa80bd"
+  ]
+ }
+}

@@ -1,0 +1,22 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "wz-stairs-r4",
+ "title": "마법 학교 계단 r4 (허니듀크 올라가는 계단 · 부엉이 탑 계단통)",
+ "explainImage": "/tmp/wzst/g11/wz-stairs-r4.png",
+ "explainText": "wz-stairs-r3 다음 판: 허니듀크 지하 올라가는 계단의 문틀을 책장과 구별되는 돌 첨두 아치로, 부엉이 탑 계단통의 노란 지푸라기를 흰 깃털로 바꿨다. 남쪽에서 들어서 북쪽을 보며 오르거나 내려간다.",
+ "createdAt": "2026-10-22T11:47:50.197Z",
+ "items": [
+  {
+   "sha": "9a0114279ef8f7cc48b73a1d2a35a5d521271e9203f5fbd4b1b8d69a098d242f",
+   "kind": "structure",
+   "label": "wizarding_world stairs wz-hd-stairs-down (UP)",
+   "source": "/tmp/wzst/g11/wz-hd-stairs-down.png"
+  },
+  {
+   "sha": "afc702cbd20b2bfbcb053fe6f3c655d75f9d82facc0b174c852af789a51ca671",
+   "kind": "flat",
+   "label": "wizarding_world stairs wz-owl-stair-down (DOWN)",
+   "source": "/tmp/wzst/g11/wz-owl-stair-down.png"
+  }
+ ]
+}

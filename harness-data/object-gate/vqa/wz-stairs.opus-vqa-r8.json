@@ -1,0 +1,20 @@
+{"schema":"wz-stairs-vqa/1","round":8,"judge":"claude-opus fresh adversarial subagent","pieces":{
+"wz-castle-stair-up":{"reads_as_described":true,"direction_correct":true,"findings":[
+{"severity":"minor","finding":"The 'pointed arch' reads as a flat lintel with slightly rounded inner corners; at 1x the Gothic point is not visible.","fix":"Step the inner top edge up 1px per column toward the centre over the middle 4 columns so a 2-3px peak forms; keep the 1px dark outline following the peak."},
+{"severity":"minor","finding":"Bottom-row newels/steps sit on the floor with no contact shadow, so the first step looks pasted onto the flagstones.","fix":"Add a 1px darkest-floor shadow row directly south of the bottom tread and 1px on the east side of the east newel."}]},
+"wz-castle-stair-down":{"reads_as_described":true,"direction_correct":true,"findings":[
+{"severity":"minor","finding":"The west/east rails are drawn as full-length light bars with post heads at both ends; at 1x the three-sided light frame borders on reading as an upright door frame/fireplace rather than a floor-level rail.","fix":"Give each side rail a 1px darker inner face line (rail height seen from above) and add a 1px floor-shadow on the hole side; shrink the south post heads to 2x2 so they read as caps, not jambs."},
+{"severity":"minor","finding":"Tread darkening is visible but the widening west/east inner walls are barely perceptible; only ~3 distinct bands read at 1x.","fix":"Increase each inner-wall wedge by 1px per tread northward in the second-darkest stone colour and push the third/fourth tread one palette step darker."}]},
+"wz-clock-stair":{"reads_as_described":true,"direction_correct":true,"findings":[
+{"severity":"minor","finding":"Iron frame is near-black navy, darker than any outline weight in the existing chipset art, so the doorway reads slightly as a black cut-out at 1x.","fix":"Lift the frame body one palette step (dark slate) and keep only the 1px outer outline at the darkest colour; leave brass rivets as is."}]},
+"wz-hd-stairs-down":{"reads_as_described":true,"direction_correct":true,"findings":[
+{"severity":"minor","finding":"Oak steps are the same hue/value as the adjacent bookcases, so in the shop cellar the stair body partly merges with the shelves below the stone arch.","fix":"Shift step risers one step cooler/darker and add a 1px dark gap column between the arch jamb and each bookcase."}]},
+"wz-owl-stair-up":{"reads_as_described":true,"direction_correct":true,"findings":[
+{"severity":"minor","finding":"Grey stone treads have low contrast against the dark interior; at 1x the flight reads a bit like a grey shelf/ladder.","fix":"Make each tread's front-edge highlight a full 1px row in the lightest stone and darken risers one more step."}]},
+"wz-owl-stair-down":{"reads_as_described":true,"direction_correct":true,"findings":[
+{"severity":"minor","finding":"Same upright-frame ambiguity as the castle stairwell; the wooden rails with corner caps resemble a small fireplace surround at 1x.","fix":"Add a 1px darker wood inner face on the rails and a 1px shadow on the hole side; keep the south caps 2x2."}]}},
+"places":[
+{"severity":"minor","finding":"Clocktower: stair cleanly replaces the wall section at the west end and the base cornice is cut correctly as a doorway; the bottom step lacks a floor contact shadow.","fix":"Add a 1px dark floor-shadow row south of the bottom step."},
+{"severity":"minor","finding":"Owlery: down stairwell sits on the floor near the west wall and reads as an opening; slightly small and frame-like at 1x among the perches.","fix":"Apply the rail inner-face/shadow fix above."},
+{"severity":"minor","finding":"Honeydukes cellar: stone arch between bookcases reads as a lit doorway going up; oak steps blend with bookcase wood.","fix":"Separate with a 1px dark gap column and cooler riser tone."}],
+"axis2":8,"axis6":8,"majors_total":0,"overall":"PASS"}

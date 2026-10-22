@@ -2053,7 +2053,15 @@
 "roomkit/ceiling/default/29!": 2665,
 "roomkit/ceiling/default/30!": 2666,
 "roomkit/ceiling/default/31!": 2667,
-"roomkit/void!": 2668
+"roomkit/void!": 2668,
+"castle_kit/wz-castle-stair-up/0.2": 2669,
+"castle_kit/wz-castle-stair-up/1.2": 2670,
+"clocktower/wz-clock-stair/0.1": 2671,
+"clocktower/wz-clock-stair/1.1": 2672,
+"clocktower/wz-clock-stair/0.2": 2673,
+"clocktower/wz-clock-stair/1.2": 2674,
+"owlery/wz-owl-stair-up/0.2": 2675,
+"owlery/wz-owl-stair-up/1.2": 2676
 },
 "strips": {
 "native/wz-nv-wand-wand-response-extra-seq-anim/0.0": [

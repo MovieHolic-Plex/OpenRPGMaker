@@ -5,6 +5,7 @@
 import os, sys, math
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from wzlib import REG, Cv, K, OL, OL2, run_module   # noqa: E402
+import _wz_stairs as S   # noqa: E402
 
 MODULE = 'owlery'
 SP = 'owlery'
@@ -731,92 +732,40 @@ def _mbox(c):
 
 
 # ───────────────────────── 계단 ─────────────────────────
-def _stair_up(c):
-    """정면으로 오르는 돌계단: 단마다 디딤판 3px(밝게)+코 그림자 1px+챌판 4px. 위로 갈수록 좁고 밝다.
-    좌우 옆벽은 단마다 넓어져 안쪽 윤곽이 지그재그로 꺾인다."""
-    c.R(0, 0, 32, 32, K(ST, 1))
-    tread = {0: (4, 5, 5), 1: (4, 5, 5), 2: (3, 4, 5), 3: (3, 4, 4)}
-    riser = {0: 3, 1: 3, 2: 3, 3: 2}
-    for i in range(4):
-        y0 = i * 8
-        e = 3 + (3 - i)            # 옆벽 폭(위 단일수록 넓다)
-        for x in range(e, 32 - e):
-            for r, t in enumerate(tread[i]):
-                col = K(ST, t)
-                if x == e: col = K(ST, min(5, t + 1))
-                elif x >= 32 - e - 2: col = K(ST, t - 1)
-                c.P(x, y0 + r, col)
-            c.P(x, y0 + 3, K(ST, 1))                     # 코 그림자
-            for y in range(y0 + 4, y0 + 8):
-                col = K(ST, riser[i] if y < y0 + 7 else riser[i] - 1)
-                if x >= 32 - e - 2: col = K(ST, riser[i] - 1)
-                c.P(x, y, col)
-            if hsh(x, i, 4) < 0.07 and e < x < 32 - e - 3: c.P(x, y0 + 1, K(ST, tread[i][1] - 1))   # 드문 마모점
-        for jx in ((9 + 7 * i) % 13 + e + 2, (17 + 5 * i) % 9 + 16):      # 챌판 석재 이음
-            if e < jx < 32 - e - 1: c.VL(jx, y0 + 4, 3, K(ST, riser[i] - 1))
-        # 옆벽: 단마다 위 3px 갓돌(윗면) + 아래 앞면, 안쪽 모서리 진하게
-        for x in list(range(0, e)) + list(range(32 - e, 32)):
-            left = x < e
-            for y in range(y0, y0 + 8):
-                if y < y0 + 3: col = K(ST, 4 if left else 3)
-                elif y == y0 + 3: col = K(ST, 2)
-                else: col = K(ST, 3 if left else 2)
-                if y == y0: col = K(ST, 5 if left else 4)
-                c.P(x, y, col)
-        c.VL(e - 1, y0, 8, K(ST, 2)); c.VL(32 - e, y0, 8, K(ST, 1))
-        c.P(e - 1, y0 + 3, K(ST, 1))
-    c.VL(0, 0, 32, K(ST, 1)); c.VL(31, 0, 32, K(ST, 1))
-    c.VL(1, 0, 32, K(ST, 4)); c.HL(0, 31, 32, K(ST, 1))
+def _owl_bits_up(c, steps):
+    """거친 돌 디딤판 결(밝은 알갱이·어두운 금)과 지푸라기 몇 가닥, 작은 새똥 점(부엉이 탑)."""
+    for kind_s, yy, h, i in steps:
+        if kind_s != 't' or h < 3: continue
+        if i == 0: continue                                         # 맨 위 단은 위층 빛
+        for x in range(7, 23):
+            r = ((x * 73856093) ^ (yy * 19349663) ^ (i * 83492791)) & 0xff
+            if r < 14: c.P(x, yy + 1 + (r % max(1, h - 2)), K(ST, 4))
+            elif r < 26: c.P(x, yy + 1 + (r % max(1, h - 2)), K(ST, 2))
+        if h >= 5: c.HL(15, yy + 2, 3, K(ST, 2)); c.P(18, yy + 3, K(ST, 2))      # 갈라진 금
+        if i in (1, 3):
+            x = 9 + i * 2
+            c.HL(x, yy + 1, 4, K('brass', 4)); c.P(x + 4, yy + 2, K('brass', 3))
+        if i == 3: c.P(20, yy + 2, K('snow', 2))
 
 
-def _stair_down(c):
-    """바닥에 뚫린 내려가는 계단: 둘레 바닥 테두리(밝은 1px 가장자리), 단마다 밝은 디딤판+코 그림자,
-    북쪽(위)으로 갈수록 어둡고, 좌우 안쪽 벽은 단마다 넓어져 지그재그."""
-    c.R(0, 0, 32, 32, K(ST, 0))
-    # 둘레 테두리(바닥 높이)
-    for y in range(32):
-        for x in range(32):
-            if x <= 2 or x >= 29 or y <= 1 or y >= 28:
-                col = K(ST, 3)
-                if (x + 3 * (y // 8)) % 11 == 0 and y % 8 != 7: col = K(ST, 2)
-                if y % 8 == 7 and (x <= 2 or x >= 29): col = K(ST, 2)
-                c.P(x, y, col)
-    c.HL(2, 1, 28, K(ST, 4)); c.HL(0, 0, 32, K(ST, 2))
-    c.VL(2, 1, 28, K(ST, 5)); c.VL(29, 1, 28, K(ST, 4))
-    c.HL(2, 28, 28, K(ST, 5)); c.HL(0, 31, 32, K(ST, 2))
-    c.VL(0, 0, 32, K(ST, 2)); c.VL(31, 0, 32, K(ST, 2))
-    # 북쪽 안벽(구멍 너머 벽 정면, 가장 어둡다)
-    c.R(3, 2, 26, 3, K('night', 0)); c.HL(3, 2, 26, K(ST, 1))
-    tone = {0: (1, 2), 1: (2, 3), 2: (3, 4), 3: (4, 5)}      # (디딤판, 코 밝은 가장자리)
-    for i in range(4):
-        y0 = 5 + 6 * i
-        hh = 6 if i < 3 else 5
-        t, hi = tone[i]
-        w = 1 + (3 - i)              # 안쪽 옆벽 폭(깊을수록 넓다)
-        for y in range(y0, y0 + hh):
-            for x in range(3, 29):
-                if x < 3 + w: col = K('night', 0) if i < 2 else K(ST, 0)
-                elif x > 28 - w: col = K(ST, 1) if i < 2 else K(ST, 2)
-                else:
-                    r = y - y0
-                    col = K(ST, hi) if r == 0 else (K(ST, max(0, t - 2)) if r == hh - 1 else K(ST, t))
-                    if r in (1, 2, 3, 4) and x >= 28 - w - 1: col = K(ST, max(0, t - 1))
-                c.P(x, y, col)
-        c.VL(3 + w, y0 + 1, hh - 2, K(ST, max(0, t - 1)))          # 옆벽과 디딤판 사이 그늘
-        c.P(3 + w - 1, y0, K(ST, 1)); c.P(28 - w + 1, y0, K(ST, 2) if i >= 2 else K(ST, 1))
-        jx = (11, 19, 14, 22)[i]
-        c.VL(jx, y0 + 1, hh - 2, K(ST, max(0, t - 1)))     # 석판 이음(단마다 다른 자리)
+def _owl_bits_down(c, k, y, h):
+    if k == 4:                                                                   # 떨어진 흰 깃털 한 올(깃대 + 깃)
+        c.P(10, y + 3, K('wood', 2)); c.P(11, y + 2, K('snow', 2)); c.P(12, y + 2, K('snow', 3)); c.P(13, y + 1, K('snow', 2))
 
 
-@REG.piece('wz-owl-stair-up', '탑 계단(위, 정면)', 2, 2, ['FF', 'FF'], 'architecture', SP,
-           desc='정면으로 오르는 직선 돌계단 2×2(나선 아님). 디딤판 8px 4단. 위로.', rules='탑 벽 앞이나 중앙 공터 가장자리에 붙인다.',
-           tags=['계단', '위'], role='terrain')
-def _su(c): _stair_up(c)
+@REG.piece('wz-owl-stair-up', '탑 돌계단(올라가는 계단)', 2, 3, ['SS', 'FF', 'ff'], 'architecture', SP,
+           desc='올라가는 계단. 탑 북벽의 나무 문틀 안으로 거친 돌 디딤판 8단이 북쪽으로 올라가 위층 빛 속으로 사라진다(나선 아님). 남쪽에서 들어서서 북쪽(벽 쪽)을 보며 오른다. 밝은 디딤판·어두운 챌판, 위로 갈수록 얇고 꼭대기 두 단이 밝다. 디딤판에 지푸라기와 흰 새똥, 바닥으로 나온 첫 단 양옆에 나무 손잡이·친주. 다른 층에서 이 계단으로 도착하면(그 층의 내려가는 계단을 탄 경우) 맨 아래 줄 남쪽 앞 칸에 서서 계단을 등지고 남쪽(아래)을 본다.',
+           rules='북벽에 붙인다: 위 두 줄이 북벽 정면 자리(맨 위 줄은 벽 위에 덮는 막힌 칸, 둘째 줄은 벽을 걷어낸 계단 칸), 맨 아래 줄이 바닥. 들어서는 쪽 = 남쪽: 바로 남쪽 두 칸은 비운 바닥. 층 이동 이벤트는 맨 아래 줄(이동 칸)에. 방 가운데에 홀로 세우지 않는다(어디로 가는지 안 보인다).', tags=['계단', '위', '올라가는 계단'], role='prop')
+def _su(c):
+    S.up_into_doorway(c, dict(tread=ST, tread_hi=4, tread_lo=3, riser=ST, rise_hi=2, rise_lo=1, rail='wood', frame='wood', glow='cool', bits=_owl_bits_up))
 
 
-@REG.piece('wz-owl-stair-down', '탑 계단(아래, 정면)', 2, 2, ['FF', 'FF'], 'architecture', SP,
-           desc='정면으로 내려가는 직선 돌계단 2×2. 아래로 갈수록 어두워진다.', rules='탑 벽 앞에 붙인다.', tags=['계단', '아래'], role='terrain')
-def _sd(c): _stair_down(c)
+@REG.piece('wz-owl-stair-down', '탑 계단통(내려가는 계단)', 2, 2, ['ff', 'ff'], 'architecture', SP,
+           desc='내려가는 계단. 탑 아래층으로 내려가는 바닥 구멍: 북·서·동 세 쪽에 나무 난간, 남쪽만 열려 있다. 남쪽은 턱도 난간도 없이 열려 있어 바닥 높이의 첫 디딤판으로 그대로 들어서서 북쪽을 보며 내려가고, 돌 디딤판이 북쪽으로 갈수록 한 단씩 어두워져 끝은 어두운 북쪽 안벽이다. 가까운 디딤판에 흰 깃털 한 올. 다른 층에서 이 계단통으로 도착하면(그 층의 올라가는 계단을 탄 경우) 남쪽 앞 칸에 서서 계단통을 등지고 남쪽(아래)을 본다.',
+           rules='들어서는 쪽 = 남쪽: 바로 남쪽 두 칸은 비운 바닥. 층 이동 이벤트는 맨 아래 줄(이동 칸)에. 바닥 위에 구멍처럼 놓는다(난간 바깥·맨 아래 띠는 투명). 북·서·동 쪽으로는 들어설 수 없다. 부엉이 탑(탑 꼭대기 방)에서는 이 계단통으로 아래층에 내려간다.',
+           tags=['계단', '아래', '내려가는 계단', '계단통'], role='prop')
+def _sd(c):
+    S.well_down(c, dict(rail='wood', bits=_owl_bits_down))
 
 
 # ───────────────────────── 문(3상태) ─────────────────────────
