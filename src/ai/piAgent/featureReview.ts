@@ -323,3 +323,22 @@ export function criticToVerdict(itemId: string, critic: CriticVerdict): FeatureV
     ? { id: itemId, state: "pass", why: `독립 비평 major 0 (참고 점수 ${critic.score})` }
     : { id: itemId, state: "fail", why: `독립 비평(참고 점수 ${critic.score}) — major ${critic.majors.length}: ${majors || "(목록 없음, 점수 미달)"}`.slice(0, 600), ...(fixes ? { fix: fixes.slice(0, 600) } : {}) };
 }
+
+// ── 다듬기 모드 ─────────────────────────────────────────────────────────────────
+/** 다듬기 실행 설정 — 패널의 「다듬기」 단추가 싣는다(PiAgentRequest.polish). */
+export interface FeaturePolishOptions {
+  /** 고치기 바퀴 상한(1~20). */
+  readonly maxRounds: number;
+  /** 작업 시간 한도(ms) — 이 안에 끝나지 않을 바퀴는 시작하지 않는다. */
+  readonly budgetMs: number;
+  /** 처음 사용자가 요청한 문장 — 판정자·비평가가 이 요청에 비춰 본다. */
+  readonly request: string;
+}
+export const FEATURE_POLISH_DEFAULT: Omit<FeaturePolishOptions, "request"> = { maxRounds: 8, budgetMs: 30 * 60_000 };
+
+export function featurePolishSystemPrompt(polish: FeaturePolishOptions): string {
+  return `[다듬기 모드] 이번 실행은 이미 지은 맵을 다듬는 실행이다(최대 ${polish.maxRounds}바퀴 · ${Math.round(polish.budgetMs / 60_000)}분). `
+    + "처음 차례에는 아무것도 짓거나 고치지 마라: show_map_region 으로 맵을 보고, 아직 확인표가 없으면 set_feature_checklist 로 처음 요청의 특징을 적은 뒤 짧게 끝낸다. "
+    + "그다음 실행기가 1배 확인과 독립 비평을 돌려 고칠 목록을 주면 그 목록만 고친다. 맵을 새로 만들거나 다른 맵을 건드리지 않는다.\n"
+    + `처음 요청: ${polish.request.slice(0, 1200)}`;
+}

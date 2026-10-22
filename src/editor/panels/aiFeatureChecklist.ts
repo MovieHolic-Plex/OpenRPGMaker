@@ -11,8 +11,15 @@ export interface FeatureChecklistView {
   event(event: PiAgentEvent): void;
 }
 
-export function createFeatureChecklistView(mount: (element: HTMLElement) => void): FeatureChecklistView {
+export interface FeatureChecklistViewOptions {
+  /** 「다듬기」 단추 — 확인이 끝났는데 안 읽히는 항목이 남았을 때 보인다. 누르면 패널이 다듬기 실행(request.polish)을 보낸다. */
+  readonly onPolish?: () => void;
+}
+
+export function createFeatureChecklistView(mount: (element: HTMLElement) => void, options: FeatureChecklistViewOptions = {}): FeatureChecklistView {
   let box: HTMLDetailsElement | null = null;
+  let progress = "";
+  let lastSnapshot: FeatureChecklistSnapshot | null = null;
   const render = (snapshot: FeatureChecklistSnapshot) => {
     if (!snapshot.items.length) return;
     const fresh = !box;
@@ -40,16 +47,31 @@ export function createFeatureChecklistView(mount: (element: HTMLElement) => void
       if (verdict && verdict.state !== "pass" && verdict.why) li.append(el("div", { class: "ai-feature-checklist-why", text: verdict.why }));
       list.append(li);
     }
+    const unresolved = !!last && snapshot.final === true && last.verdicts.some((v) => v.state !== "pass");
+    const polishButton = unresolved && options.onPolish
+      ? el("button", { class: "ai-feature-checklist-polish", text: "다듬기 (최대 30분)", dataset: { testid: "ai-feature-polish" },
+        attrs: { type: "button", title: "1배 확인·독립 비평→고치기를 더 오래 돌린다. 진행 중 중지 단추로 멈추면 그때까지 고친 것은 남는다." } })
+      : null;
+    polishButton?.addEventListener("click", () => { polishButton.disabled = true; polishButton.textContent = "다듬기 시작함"; options.onPolish?.(); });
     box.replaceChildren(el("summary", { text: title }), list,
-      ...(last ? [el("p", { class: "ai-feature-checklist-note", text: `1배 그림 ${last.imagesSent}장 · 판정자가 받은 그림 ${last.imagesSeen ?? "?"}장 · 조수가 아닌 별도 판정 호출` })] : []));
+      ...(progress && !snapshot.final ? [el("p", { class: "ai-feature-checklist-progress", text: progress })] : []),
+      ...(last ? [el("p", { class: "ai-feature-checklist-note", text: `1배 그림 ${last.imagesSent}장 · 판정자가 받은 그림 ${last.imagesSeen ?? "?"}장 · 조수가 아닌 별도 판정·비평 호출` })] : []),
+      ...(polishButton ? [polishButton] : []));
     if (fresh) mount(box);
   };
   return {
     event(raw) {
       let event = raw;
       while (event.type === "agent_event") event = event.event;
-      if (event.type !== "execution_status" || event.name !== "feature_checklist" || !event.data) return;
-      render(event.data as FeatureChecklistSnapshot);
+      if (event.type !== "execution_status") return;
+      if (event.name === "feature_review.repair" || event.name === "feature_review.judging") {
+        progress = event.summary;
+        if (lastSnapshot) render(lastSnapshot);
+        return;
+      }
+      if (event.name !== "feature_checklist" || !event.data) return;
+      lastSnapshot = event.data as FeatureChecklistSnapshot;
+      render(lastSnapshot);
     },
   };
 }

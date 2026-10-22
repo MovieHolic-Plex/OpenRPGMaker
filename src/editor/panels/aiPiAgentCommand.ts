@@ -224,6 +224,8 @@ export interface PiRunOptions {
   readonly intentNote?: string | null;
   /** 의도 판정 한 줄 — 활동 로그에만 싣는다(`PiRunPlan.routingAudit`). 모델에는 가지 않는다. */
   readonly routingAudit?: string;
+  /** 다듬기 모드 — 계획 턴 없이 1배 검토→고치기만 N바퀴·M분 돈다(src/ai/piAgent/featureReview.ts). */
+  readonly polish?: { readonly maxRounds: number; readonly budgetMs: number; readonly request: string };
 }
 
 /** 적용 뒤 영수증(지금 → 적용 후) 재료. 렌더는 패널이 한다 — 되돌리기와 스튜디오 「변경」 탭이 거기 있다. */
@@ -659,7 +661,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   try {
     // 모델이 읽는 지시문 = 사용자 문장 + 의도 노트. 계획 턴도 같은 것을 읽어야 계획에 author_village 같은
     // 이름이 남고, 실행 턴이 그 이름을 따라간다(노트 없이는 산문 계획 → paint_road 손작업으로 흘렀다).
-    if (needsUltrabrainPlanTurn({ readOnly, team, routineEdit, applyMode })) {
+    if (!options.polish && needsUltrabrainPlanTurn({ readOnly, team, routineEdit, applyMode })) {
       surface.setStatus("어떻게 바꿀지 정리하고 있어요.");
       let plan = "";
       let planError = "";
@@ -706,6 +708,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         ...(effectiveTeamSpec ? { teamSpec: effectiveTeamSpec } : {}),
         preferCallerThinking,
         ...(options.thinkingLevel ? { callerThinkingLevel: options.thinkingLevel } : {}),
+        ...(options.polish ? { polish: options.polish } : {}),
       }), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) },
       { signal: surface.signal, returnIncompleteResult: command.goalMode === true, onEvent: wrap(mapIds, index),
         onCheckpoint: readOnly || applyMode === "review" ? undefined : async checkpoint => stage("checkpoint", async () => {

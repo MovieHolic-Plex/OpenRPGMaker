@@ -423,6 +423,8 @@ export function buildPiRunRequest(input: {
   readonly callerThinkingLevel?: PiAgentThinkingLevel;
   /** 다이얼을 역할·Ultrabrain 설정보다 앞세운다. 두 입력을 다 비운 옛 호출자는 예전 그대로 역할 값을 쓴다. */
   readonly preferCallerThinking?: boolean;
+  /** 다듬기 모드 — 그대로 요청에 싣는다(featureReview.ts). */
+  readonly polish?: PiAgentRequest["polish"];
 }): PiAgentRequest {
   const brainRun = input.planOnly || input.team;
   const effectiveProvider = brainRun ? input.brain.providerId! : input.deep.provider;
@@ -455,5 +457,6 @@ export function buildPiRunRequest(input: {
     ...(input.toolDomains && input.toolDomains.length > 0 ? { toolDomains: input.toolDomains } : {}),
     ...(input.initialToolNames ? { initialToolNames: input.initialToolNames } : {}),
     ...(input.teamSpec ? { team: input.teamSpec } : {}),
+    ...(input.polish ? { polish: input.polish } : {}),
   };
 }

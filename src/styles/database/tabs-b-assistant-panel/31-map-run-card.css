@@ -33,3 +33,7 @@
 .ai-feature-checklist-history { color: var(--text-3); letter-spacing: 1px; }
 .ai-feature-checklist-why { grid-column: 2 / 4; color: var(--text-3); font-size: 11px; }
 .ai-feature-checklist-note { margin: 6px 0 0; color: var(--text-3); font-size: 11px; }
+
+.ai-feature-checklist-progress { margin: 4px 0 0; font-size: 12px; opacity: 0.85; }
+.ai-feature-checklist-polish { margin-top: 6px; font-size: 12px; padding: 3px 10px; border-radius: 6px; cursor: pointer; }
+.ai-feature-checklist-polish:disabled { opacity: 0.6; cursor: default; }
