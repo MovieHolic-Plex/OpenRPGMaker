@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 1,
+  "suite": "assistant-command-matrix-500",
+  "description": "100개 명령 가족 × 5개 변형. 가족이 args 로 판정기·정답·오답을 함께 매개변수화한다.",
+  "expected": {
+    "families": 100,
+    "rows": 500
+  },
+  "counts": {
+    "families": 2,
+    "rows": 10
+  },
+  "complete": false,
+  "commands": [
+    {
+      "id": "paint-dirt__selection-plain",
+      "n": 1,
+      "family": "paint-dirt",
+      "variant": "selection-plain",
+      "area": "tiles",
+      "mode": "write",
+      "title": "선택 영역의 바닥을 흙으로",
+      "prompt": "선택 영역의 바닥을 흙으로 바꿔줘.",
+      "args": {
+        "rect": {
+          "x": 12,
+          "y": 13,
+          "w": 4,
+          "h": 2
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 12,
+          "y": 13,
+          "w": 4,
+          "h": 2
+        }
+      }
+    },
+    {
+      "id": "paint-dirt__rect-polite",
+      "n": 2,
+      "family": "paint-dirt",
+      "variant": "rect-polite",
+      "area": "tiles",
+      "mode": "write",
+      "title": "선택 영역의 바닥을 흙으로",
+      "prompt": "선택한 4×2 영역의 바닥을 흙길로 바꿔 주세요.",
+      "args": {
+        "rect": {
+          "x": 8,
+          "y": 12,
+          "w": 4,
+          "h": 2
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 8,
+          "y": 12,
+          "w": 4,
+          "h": 2
+        }
+      }
+    },
+    {
+      "id": "paint-dirt__terse-3x2",
+      "n": 3,
+      "family": "paint-dirt",
+      "variant": "terse-3x2",
+      "area": "tiles",
+      "mode": "write",
+      "title": "선택 영역의 바닥을 흙으로",
+      "prompt": "여기 3×2, 흙으로.",
+      "args": {
+        "rect": {
+          "x": 16,
+          "y": 12,
+          "w": 3,
+          "h": 2
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 16,
+          "y": 12,
+          "w": 3,
+          "h": 2
+        }
+      }
+    },
+    {
+      "id": "paint-dirt__scope-explained",
+      "n": 4,
+      "family": "paint-dirt",
+      "variant": "scope-explained",
+      "area": "tiles",
+      "mode": "write",
+      "title": "선택 영역의 바닥을 흙으로",
+      "prompt": "선택한 3×3 영역의 지면을 전부 흙으로 만들어 주세요. 영역 밖 칸은 그대로 두세요.",
+      "args": {
+        "rect": {
+          "x": 18,
+          "y": 12,
+          "w": 3,
+          "h": 3
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 18,
+          "y": 12,
+          "w": 3,
+          "h": 3
+        }
+      }
+    },
+    {
+      "id": "paint-dirt__other-area",
+      "n": 5,
+      "family": "paint-dirt",
+      "variant": "other-area",
+      "area": "tiles",
+      "mode": "write",
+      "title": "선택 영역의 바닥을 흙으로",
+      "prompt": "선택 영역 바닥을 모랫길로 깔아줘. 다른 칸은 건드리지 마.",
+      "args": {
+        "rect": {
+          "x": 12,
+          "y": 5,
+          "w": 4,
+          "h": 2
+        }
+      },
+      "setup": {
+        "select": {
+          "x": 12,
+          "y": 5,
+          "w": 4,
+          "h": 2
+        }
+      }
+    },
+    {
+      "id": "rename-npc__villager-polite",
+      "n": 6,
+      "family": "rename-npc",
+      "variant": "villager-polite",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 이름 변경(대사 화자 포함)",
+      "prompt": "이 NPC 이름을 하린으로 바꿔 주세요.",
+      "args": {
+        "eventId": "ev_utility_npc",
+        "name": "하린"
+      },
+      "setup": {
+        "event": "ev_utility_npc"
+      }
+    },
+    {
+      "id": "rename-npc__inn-short",
+      "n": 7,
+      "family": "rename-npc",
+      "variant": "inn-short",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 이름 변경(대사 화자 포함)",
+      "prompt": "여관 주인 이름을 마사로.",
+      "args": {
+        "eventId": "ev_ember_inn",
+        "name": "마사"
+      },
+      "setup": {
+        "event": "ev_ember_inn"
+      }
+    },
+    {
+      "id": "rename-npc__child-casual",
+      "n": 8,
+      "family": "rename-npc",
+      "variant": "child-casual",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 이름 변경(대사 화자 포함)",
+      "prompt": "얘 이름 미루로 바꿔줘.",
+      "args": {
+        "eventId": "ev_ember_child",
+        "name": "미루"
+      },
+      "setup": {
+        "event": "ev_ember_child"
+      }
+    },
+    {
+      "id": "rename-npc__guard-explained",
+      "n": 9,
+      "family": "rename-npc",
+      "variant": "guard-explained",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 이름 변경(대사 화자 포함)",
+      "prompt": "파수꾼 이벤트의 표시 이름을 데릭으로 바꾸고, 대사창에 뜨는 화자 이름도 전부 데릭으로 맞춰 주세요.",
+      "args": {
+        "eventId": "ev_ember_guard",
+        "name": "데릭"
+      },
+      "setup": {
+        "event": "ev_ember_guard"
+      }
+    },
+    {
+      "id": "rename-npc__cutscene-rename",
+      "n": 10,
+      "family": "rename-npc",
+      "variant": "cutscene-rename",
+      "area": "npc",
+      "mode": "write",
+      "title": "NPC 이름 변경(대사 화자 포함)",
+      "prompt": "장면 연출 이벤트 이름을 「오프닝 연출」로 바꿔 주세요.",
+      "args": {
+        "eventId": "ev_test_cutscene",
+        "name": "오프닝 연출"
+      },
+      "setup": {
+        "event": "ev_test_cutscene"
+      }
+    }
+  ]
+}

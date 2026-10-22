@@ -128,6 +128,35 @@ npm run harness -- assistant-capability aggregate --sources <실행1>,<실행2> 
 
 `npm run harness -- assistant-capability matrix-score --out <새 폴더>`는 50개 명령 각각의 canonical tool·범위·인자를 실제 provider 모델에 묻고 자연어 이해력과 판단 품질을 계산한다. 현재 실행 설정은 텍스트·비전 모두 `cbcn/glm-5.3-flash`이며, provider가 바뀌어도 결과 JSON에 실제 provider/model을 기록한다. 같은 50개에 대해 도구 적용 전후 PNG 100장을 생성하고, 2개씩 묶은 25회의 실제 비전 모델 호출로 시각 품질을 채점한다. 텍스트·비전 응답이 비거나 항목을 누락하면 같은 입력을 최대 3회 재시도하며, 재시도 뒤에도 점수가 없으면 정적 픽셀 점수로 승격하지 않고 `incomplete`로 기록한다. `matrix-score.json`에는 모델 응답 원문, 호출 수, 실패, 명령별 점수와 전후 이미지 SHA를 남긴다. `status: scored`는 50개 채점 완료를, `qualityGate: pass|fail`는 자연어 ≥60/100·판단 ≥60/100·시각 ≥2/5 기준을 각각 뜻한다. 운영 목표인 시각 평균 4.5/5는 이 파일의 `aggregate.visualQuality`로 확인한다. 시각 모델 점수는 사람 검수의 대체가 아니며, 이 단계는 실제 모델이 도구를 호출했다는 뜻이 아니라 모델의 해석·판단 품질을 별도로 측정한다.
 
+## 명령 가족 500개 (가족 100 × 변형 5)
+
+50개 행렬은 명령마다 문장 하나와, 픽스처 좌표를 코드에 박은 판정기 하나다. 500개 행렬은 **가족(family)** 으로
+그 계약을 매개변수화한다 — 판정기·정답·오답이 모두 같은 `args` 를 읽으므로 변형은 대상·인자·말투를 바꾼다.
+
+- 형식 `src/harnesses/assistant-capability/node/families/types.ts` · 등록 `families/index.ts`(group-1..5)
+- 배분표 `families/GROUPS.md`: 50개 기존 id + 50개 새 가족(실내·전이·전투·모호한 지시·연쇄 지시·선택 모양·
+  DB 스킬/적/클래스/troop·BGM/날씨/틴트·분기/변수/autorun·읽기 질문)을 group-1..5 에 20개씩. 픽스처 추가도 표에 적었다.
+- 명세 `npm run harness -- assistant-capability matrix500-spec` → `harness-data/assistant-capability/command-matrix-500.json`
+  (행 id `<가족>__<변형>`, `counts`·`complete`). 가족이 100 미만이면 `complete=false` 이고 그만큼만 실행한다.
+- 판정기 자기검사 `matrix500-selfcheck --out <새 폴더>`: 가족마다 **정답 통과 · 오답 전부 실패 · 쓰기 가족은 무변경 실패**를
+  모델·브라우저 없이 확인해 `selfcheck.json` 에 `sound` 와 이유를 남긴다. 판정기가 정답/오답을 구분하지 못하면 실모델 점수는 의미가 없다.
+- 실행 `MATRIX_NATIVE_SPEC=500 npm run harness -- assistant-capability matrix-native --out <새 폴더>`. `MATRIX_NATIVE_START/LIMIT/ONLY`
+  는 새 id 로 그대로 동작하고, 가족 `prepare()` 가 픽스처를 덧붙인다. 50개 기본 경로는 변형·가족이 없으면 예전 그대로 돈다.
+
+### InferHub DeepSeek V4.1 Flash 고정
+
+`MATRIX_NATIVE_PROVIDER=openai-compat:inferhub MATRIX_NATIVE_MODEL=deepseek-v4.1-flash` 는 에이전트 루프·의도 선언·
+깊은/빌드/작문/비전 역할을 그 하나로 묶는다. 실행기는 임시 폴더에 `openAiCompatStore` 스키마 그대로 엔드포인트를 쓰고
+(주소 `https://api.inferhub.dev/v1`, 허용 모델 `deepseek-v4.1-flash`, 이미지 입력 켜짐, 추론 강도 `field`)
+각 호스트에 `OPRN_OPENAI_COMPAT_PATH` 를 넘긴 뒤 끝나면 폴더를 지운다. 키는 환경 변수 `INFERHUB_API_KEY` 에서만 읽고
+실행 폴더·요약에 쓰지 않는다(없으면 명확히 실패). `MATRIX_NATIVE_REASONING=none|field|suffix` 로 방식을 바꿀 수 있고 기본은 `field` 다.
+**실측(2026-10-22):** `field` 는 `thinkingLevel: low` 와 함께 그대로 통과한다(HTTP 200, 도구 호출 10회). 서버가 죽이는 것은
+`off` 하나다 — `Thinking effort off is not supported … Supported efforts: low, high, max` 를 200 스트림 error 이벤트로 싣고
+첫 턴이 끝난다(도구 0회). 그래서 고정 실행의 기본 강도는 `low` 이고, compat 에서 `MATRIX_NATIVE_EFFORT=off` 는 명시적으로 거절한다.
+실제 요청 영수증은 각 명령의 `native-result.json` 의 `requests[]`(`provider` 헤더·`model` 본문)와 `matrix-native.json` 의
+`modelPin` 에 남는다. `MATRIX_NATIVE_SPEC=500` 실행은 `dist-electron/browser-bridge.js` 도 필요하다 — 워크트리면
+`npm run build:electron` 을 먼저 돌린다(`HARNESS_DIST_DIR` 만으로는 호스트가 뜨지 않는다).
+
 ## 시각 검수
 
 검수자는 먼저 요청과 실제 그림을 비교한다. 조수의 자기평가를 시각 판정의 근거로 대신 쓰지 않는다. 런타임은 이동/대화 중 가림, 잘림, 글자·분기·금액을 본다. 결함은 위치·재현 장면을 적는다. 실제로 본 파일만 다음처럼 기록한다.

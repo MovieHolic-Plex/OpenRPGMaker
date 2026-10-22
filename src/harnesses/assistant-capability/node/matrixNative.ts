@@ -1,19 +1,35 @@
-import { mkdirSync, writeFileSync, readFileSync, existsSync, linkSync, rmSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { mkdirSync, mkdtempSync, writeFileSync, readFileSync, existsSync, linkSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 import { backup, DatabaseSync } from 'node:sqlite';
 import { isDeepStrictEqual } from 'node:util';
 import { gunzipSync } from 'node:zlib';
 import { firefox } from 'playwright';
 import { initLocalProjectStore } from '../../../../electron/local-store/store';
 import { sharedContentFile } from '../../../../scripts/lib/sharedContentSqlite';
+import { createOpenAiCompatStore } from '../../../../scripts/lib/openAiCompatStore';
 import { startHost, newEditor, stored, writeRuntimeProject } from './editorDriver.mjs';
 import type { Project } from '../../../project/types';
 import { judge, nativeProject, setupFor, fixtureProblems, MAP, normalizeContent, type Rect, type ToolRecord } from './matrixNativeSpec';
+import { findFamily } from './families';
 
-type MatrixCommand = { id: string; n: number; prompt: string; mode: string; runtime: string; visual: string; toolNames: string[] };
+type MatrixCommand = {
+  id: string; n: number; prompt: string; mode: string;
+  runtime?: string; visual?: string; toolNames?: string[];
+  family?: string; variant?: string; area?: string;
+  args?: Record<string, unknown>;
+  setup?: { select?: Rect; event?: string; prior?: { prompt: string; select?: Rect } };
+};
 type EventRecord = { type?: string; id?: string; name?: string; args?: unknown; ok?: boolean; text?: string; message?: string; summary?: string };
 
-const matrix = JSON.parse(readFileSync(resolve('harness-data/assistant-capability/command-matrix.json'), 'utf8')) as { commands: MatrixCommand[] };
+type ProviderPin = { provider: string; model: string; thinkingLevel: 'off' | 'low' | 'medium' | 'high' };
+
+const specName = process.env.MATRIX_NATIVE_SPEC?.trim();
+if (specName && specName !== '500') throw new Error(`MATRIX_NATIVE_SPEC 은 500 만 받습니다(받은 값: ${specName}). 비우면 50개 기본 행렬입니다.`);
+const spec500 = specName === '500';
+const matrix = JSON.parse(readFileSync(resolve(spec500
+  ? 'harness-data/assistant-capability/command-matrix-500.json'
+  : 'harness-data/assistant-capability/command-matrix.json'), 'utf8')) as { commands: MatrixCommand[] };
 const commandStart = Number(process.env.MATRIX_NATIVE_START ?? 0);
 const commandLimit = process.env.MATRIX_NATIVE_LIMIT ? Number(process.env.MATRIX_NATIVE_LIMIT) : matrix.commands.length;
 const only = process.env.MATRIX_NATIVE_ONLY ? new Set(process.env.MATRIX_NATIVE_ONLY.split(',')) : null;
@@ -24,10 +40,65 @@ const expandProject = (projectDir: string, snapshot: Project, file: string): Pro
   return JSON.parse(readFileSync(file, 'utf8')) as Project;
 };
 
-/** MATRIX_NATIVE_MODEL pins every role (agent loop, intent declaration) to one Antigravity model; unset = product default. */
-const aiConfig = () => {
+/** MATRIX_NATIVE_MODEL alone pins every role to one Antigravity model (product default when unset). */
+function providerPin(): ProviderPin | null {
+  const provider = process.env.MATRIX_NATIVE_PROVIDER?.trim();
   const model = process.env.MATRIX_NATIVE_MODEL?.trim();
+  if (!provider) return null;
+  if (!model) throw new Error('MATRIX_NATIVE_PROVIDER 를 지정하면 MATRIX_NATIVE_MODEL 도 지정해야 합니다 — 모델을 다른 것으로 대체하지 않습니다.');
+  const effort = process.env.MATRIX_NATIVE_EFFORT?.trim();
+  const level = effort === 'off' || effort === 'low' || effort === 'medium' || effort === 'high' ? effort : undefined;
+  // InferHub accepts only low|high|max and kills the turn on 「off」 (2026-10-22 local proof), so a compat
+  // pin never sends it: the default is the cheapest accepted effort and an explicit 「off」 is refused.
+  if (provider.startsWith('openai-compat:') && level === 'off') {
+    throw new Error('MATRIX_NATIVE_EFFORT=off 는 openai-compat 고정에서 쓸 수 없습니다 — InferHub 는 low|high|max 만 받습니다. low 를 쓰세요.');
+  }
+  return { provider, model, thinkingLevel: level ?? 'low' };
+}
+
+/**
+ * Writes the InferHub endpoint into a throwaway store outside the run folder and points every
+ * spawned host at it. The key lives only in that 0600 file, never in the run output, and the
+ * directory is deleted when the pass ends.
+ */
+function prepareCompatEndpoint(pin: ProviderPin): { dir: string; reasoningMode: string } {
+  if (pin.provider !== 'openai-compat:inferhub') {
+    throw new Error(`MATRIX_NATIVE_PROVIDER: 지금은 openai-compat:inferhub 만 지원합니다(받은 값: ${pin.provider}).`);
+  }
+  if (pin.model !== 'deepseek-v4.1-flash') throw new Error(`inferhub 는 deepseek-v4.1-flash 만 허용합니다(받은 값: ${pin.model}).`);
+  const apiKey = process.env.INFERHUB_API_KEY?.trim();
+  if (!apiKey) throw new Error('INFERHUB_API_KEY 가 설정되지 않았습니다 — 셸 환경 변수로 넘기세요. 키는 실행 폴더·로그에 쓰지 않습니다.');
+  const reasoningMode = process.env.MATRIX_NATIVE_REASONING?.trim() || 'field';
+  if (!['field', 'none', 'suffix'].includes(reasoningMode)) throw new Error(`MATRIX_NATIVE_REASONING 은 field|none|suffix 입니다(받은 값: ${reasoningMode}).`);
+  const dir = mkdtempSync(join(tmpdir(), 'oprn-ac500-'));
+  const path = join(dir, 'openai-compat-endpoints.json');
+  const store = createOpenAiCompatStore(path);
+  const saved = store.upsert({
+    name: 'inferhub',
+    baseUrl: 'https://api.inferhub.dev/v1',
+    apiKey,
+    allowModels: ['deepseek-v4.1-flash'],
+    blockModels: [],
+    reasoningMode: reasoningMode as 'field' | 'none' | 'suffix',
+    supportsImages: true,
+    defaultModel: pin.model,
+  });
+  if (saved.id !== pin.provider) throw new Error(`엔드포인트 id 가 ${saved.id} 로 만들어졌습니다 — ${pin.provider} 여야 합니다.`);
+  process.env.OPRN_OPENAI_COMPAT_PATH = path;
+  return { dir, reasoningMode };
+}
+
+const aiConfig = () => {
   const base = { piApply: 'yolo', piApplyPolicyVersion: 1, piTeam: false, autonomyLevel: 'balanced' };
+  const pin = providerPin();
+  if (pin) {
+    const role = { provider: pin.provider, model: pin.model, thinkingLevel: pin.thinkingLevel };
+    return {
+      ...base, authMode: 'chatgpt', apiKey: '', providerId: pin.provider, model: pin.model, liteModel: pin.model,
+      reasoningEffort: pin.thinkingLevel, roleModels: { deep: role, build: role, writer: role, vision: role },
+    };
+  }
+  const model = process.env.MATRIX_NATIVE_MODEL?.trim();
   if (!model) return base;
   const role = { provider: 'google-antigravity', model, thinkingLevel: process.env.MATRIX_NATIVE_EFFORT?.trim() || 'low' };
   return { ...base, providerId: 'google-antigravity', model, liteModel: model, roleModels: { deep: role, build: role, writer: role, vision: role } };
@@ -35,9 +106,9 @@ const aiConfig = () => {
 
 const toSelection = (rect: Rect) => ({ mapId: MAP, x: rect.x, y: rect.y, width: rect.w, height: rect.h });
 
-async function saveFresh(root: string, projectDir: string): Promise<void> {
+async function saveFresh(root: string, projectDir: string, project: Project = nativeProject()): Promise<void> {
   const local = await initLocalProjectStore({ projectDir });
-  try { await local.saveProject(nativeProject()); }
+  try { await local.saveProject(project); }
   finally { local.close(); }
   const sharedSource = sharedContentFile();
   const pinned = resolve(root, 'shared-content.sqlite');
@@ -75,11 +146,15 @@ async function sendTurn(page: any, prompt: string, timeoutMs: number): Promise<E
 export async function runMatrixNative(root: string, timeoutMs = 240000): Promise<number> {
   if (existsSync(root)) throw new Error(`기존 실행 덮어쓰기 거부: ${root}`);
   mkdirSync(root, { recursive: true });
-  const problems = fixtureProblems(nativeProject());
-  if (problems.length) throw new Error(`fixture 가 명령을 검증할 수 없다:\n - ${problems.join('\n - ')}`);
+  if (!spec500) {
+    const problems = fixtureProblems(nativeProject());
+    if (problems.length) throw new Error(`fixture 가 명령을 검증할 수 없다:\n - ${problems.join('\n - ')}`);
+  }
   const projectDir = resolve(root, 'project');
   mkdirSync(projectDir, { recursive: true });
   await saveFresh(root, projectDir);
+  const pin = providerPin();
+  const compat = pin ? prepareCompatEndpoint(pin) : null;
   let browser: any;
   const checks: any[] = [];
   let nativeModelCalls = 0, nativeAgentCalls = 0, chatCompletions = 0, sqliteReloads = 0;
@@ -89,7 +164,10 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
     for (const command of selected) {
       const dir = resolve(root, command.id);
       mkdirSync(dir, { recursive: true });
-      await saveFresh(root, projectDir);
+      const family = command.family ? findFamily(command.family) : undefined;
+      const variant = family?.variants.find(entry => entry.key === command.variant);
+      if (spec500 && (!family || !variant)) throw new Error(`${command.id}: 가족 ${command.family ?? '?'} / 변형 ${command.variant ?? '?'} 를 찾을 수 없다 — matrix500-spec 로 명세를 다시 만드세요.`);
+      await saveFresh(root, projectDir, family?.prepare ? family.prepare(nativeProject()) : nativeProject());
       // One host per command. The relay keeps a map claim for up to RESUME_GRACE_MS after the browser
       // disconnects so a real user can reconnect; sharing a host would let one hung command turn every
       // following command into a 409 map-busy that is not the model's fault.
@@ -99,7 +177,7 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
       let events: EventRecord[] = [];
       let failure: string | undefined;
       const started = Date.now();
-      const setup = setupFor(command.id);
+      const setup = variant?.setup ?? setupFor(command.id);
       try {
         host = await startHost(projectDir, root);
         editor = await newEditor(browser, host.url, projectDir, aiConfig());
@@ -182,12 +260,13 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
           && events.some(event => event.type === 'done')
           && !events.some(event => ['error', 'cancelled', 'stream_error'].includes(event.type ?? ''));
         const scratch = resolve(dir, 'expanded.json');
-        const verdict = judge(command.id, {
+        const input = {
           original: expandProject(projectDir, original.project as Project, scratch),
           before: expandProject(projectDir, baseline.project as Project, scratch),
           after: expandProject(projectDir, applied.project as Project, scratch),
           tools: records, answer,
-        });
+        };
+        const verdict = family && variant ? family.judge(input, variant.args ?? {}) : judge(command.id, input);
         rmSync(scratch, { force: true });
         await editor.context.close();
         editor = undefined;
@@ -207,7 +286,7 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
         const row = { n: command.n, id: command.id, ok, turnOk, commandCorrect: verdict.ok, verdict: verdict.note, persistence, changed, mode: command.mode, referenceTools: command.toolNames, toolCalls: toolEnds.map(event => event.name), toolRecords: records, requests: commandRequests, assistantText: answer, elapsedMs: Date.now() - started, failure };
         checks.push(row);
         writeFileSync(resolve(dir, 'native-result.json'), JSON.stringify(row, null, 2));
-        console.error(`[matrix-native] #${command.n}/50 ${command.id} ${ok ? 'ok' : 'fail'} requests=${commandRequests.length} tools=${toolEnds.length} persisted=${persistence} :: ${verdict.note}`);
+        console.error(`[matrix-native] #${command.n}/${matrix.commands.length} ${command.id} ${ok ? 'ok' : 'fail'} requests=${commandRequests.length} tools=${toolEnds.length} persisted=${persistence} :: ${verdict.note}`);
       } catch (error) {
         failure = error instanceof Error ? error.message : String(error);
         const page = editor?.page;
@@ -218,28 +297,32 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
         const row = { n: command.n, id: command.id, ok: false, turnOk: false, commandCorrect: false, persistence: false, mode: command.mode, referenceTools: command.toolNames, toolCalls: late.filter(event => event.type === 'tool_end').map(event => event.name), requests, assistantText: late.filter(event => event.type === 'assistant').map(event => event.text ?? '').join('\n'), elapsedMs: Date.now() - started, failure };
         checks.push(row);
         writeFileSync(resolve(dir, 'native-result.json'), JSON.stringify(row, null, 2));
-        console.error(`[matrix-native] #${command.n}/50 ${command.id} fail: ${failure}`);
+        console.error(`[matrix-native] #${command.n}/${matrix.commands.length} ${command.id} fail: ${failure}`);
       } finally {
         await host?.close();
       }
     }
   } finally {
     await browser?.close().catch(() => {});
+    if (compat) rmSync(compat.dir, { recursive: true, force: true });
   }
-  const complete = !only && commandStart === 0 && commandLimit >= matrix.commands.length;
+  const complete = !only && commandStart === 0 && commandLimit >= matrix.commands.length && (!spec500 || matrix.commands.length >= 500);
   const outcome = {
     schemaVersion: 2,
-    kind: 'assistant-small-command-native',
+    kind: spec500 ? 'assistant-command-matrix-500' : 'assistant-small-command-native',
     transport: 'real-editor-input',
     status: checks.length === selected.length && checks.every(row => row.ok) ? (complete ? 'pass' : 'partial-pass') : 'fail',
     total: checks.length,
     pass: checks.filter(row => row.ok).length,
     fail: checks.filter(row => !row.ok).length,
     execution: { inputPosts: checks.length, nativeModelCalls, nativeAgentCalls, chatCompletions, sqliteReloads, visualReviews: 0 },
+    ...(spec500 ? { spec: '500' } : {}),
+    ...(pin ? { modelPin: { provider: pin.provider, model: pin.model, thinkingLevel: pin.thinkingLevel, ...(compat ? { reasoningMode: compat.reasoningMode, endpoint: 'temp-store' } : {}) } } : {}),
     checks,
     limitations: ['시각 검수는 별도 review 영수증이 필요하다.', '읽기 명령도 성공한 tool_end 와 사실에 맞는 답변이 있어야 통과한다.', '도구 이름은 판정하지 않는다 — 명령이 말한 결과와 나머지 내용의 보존을 판정한다.'],
   };
   writeFileSync(resolve(root, 'matrix-native.json'), JSON.stringify(outcome, null, 2));
-  writeFileSync(resolve(root, 'SUMMARY.md'), `# 50개 작은 명령 실제 모델 검증\n\n상태: **${outcome.status}**\n\n실제 입력 ${outcome.execution.inputPosts}건 · native 모델 호출 ${nativeModelCalls}건 · agent ${nativeAgentCalls}건 · chat ${chatCompletions}건 · SQLite 새 context 재로드 ${sqliteReloads}건 · 독립 시각 검수 0건\n\n통과 ${outcome.pass}/${outcome.total} · 실패 ${outcome.fail}/${outcome.total}\n\n${checks.map(row => `- ${row.ok ? '✅' : '❌'} #${row.n} ${row.id} — ${row.verdict ?? row.failure ?? ''}`).join('\n')}\n`);
+  const title = spec500 ? `# 명령 가족 ${matrix.commands.length}개 실제 모델 검증` : '# 50개 작은 명령 실제 모델 검증';
+  writeFileSync(resolve(root, 'SUMMARY.md'), `${title}\n\n상태: **${outcome.status}**\n\n실제 입력 ${outcome.execution.inputPosts}건 · native 모델 호출 ${nativeModelCalls}건 · agent ${nativeAgentCalls}건 · chat ${chatCompletions}건 · SQLite 새 context 재로드 ${sqliteReloads}건 · 독립 시각 검수 0건\n\n통과 ${outcome.pass}/${outcome.total} · 실패 ${outcome.fail}/${outcome.total}\n\n${checks.map(row => `- ${row.ok ? '✅' : '❌'} #${row.n} ${row.id} — ${row.verdict ?? row.failure ?? ''}`).join('\n')}\n`);
   return outcome.status === 'fail' ? 1 : 0;
 }
