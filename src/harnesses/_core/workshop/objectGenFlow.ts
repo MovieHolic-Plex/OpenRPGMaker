@@ -424,7 +424,8 @@ export function ogLookMessage(ctx: DrawContext, grid: Grid, env: WorkshopEnv, st
     content: [
       txt(`Look ${look}/${max}. preview: your drawing at 8x, then 1x (what the player sees), then 2x, on the floor colour.`),
       img(env.encodePng(scaleImage(art, 8))), img(env.encodePng(art)), img(env.encodePng(scaleImage(art, 2))),
-      txt(`j.dry: ${describeCheck(check)}\n\nFix every FAIL code; look honestly - would it sit next to the exemplars in the same game, and read at 1x? `
+      txt(`j.dry: ${describeCheck(check)}\n\n${ctx.gated && check.warn.some((w) => w.code === "THIN" || w.code === "FLAT")
+        ? "THIN/FLAT matter here: the final style gate measures exactly these numbers against this chipset's props and has failed drawings with fewer than about 17 visible tones per tile. Do not keep it as is - redraw the shading (more steps per material, textured roof and stones) and answer the whole JSON.\n\n" : ""}Fix every FAIL code; look honestly - would it sit next to the exemplars in the same game, and read at 1x? `
         + "Compare with the reference pictures (FORM only) and the exemplars above. If anything should change, answer the whole improved JSON "
         + "(same format). If it is done, answer exactly {\"keep\": true, \"note\": \"<what you drew, and anything that still does not read>\"}."),
     ],

@@ -105,6 +105,8 @@ try {
   else await click(page.getByTestId("workshop-oneclick-example-0"));
   await hold(600);
   await page.screenshot({ path: resolve(out, `${kind}-1-ready.png`) });
+  // 부팅 직후 AI 연결 확인이 아직 안 끝났으면 물건 단추가 「내 AI 연결하고 만들기」(설정 창)다 — 확인이 끝날 때까지 기다린다(부하 높은 기기에서 실측).
+  await page.waitForFunction(() => document.querySelector("[data-testid=workshop-oneclick-make]")?.textContent?.trim() === "만들기", null, { timeout: 120_000 }).catch(() => {});
   const made = Date.now();
   mark("make");
   await click(page.getByTestId("workshop-oneclick-make"));

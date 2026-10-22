@@ -379,7 +379,7 @@ function actions(view: JobView): HTMLElement[] {
         if (reason) { toast(reason, "info"); return; }
         open = false;
         render(true);
-        toast(`「${job.title}」 붓을 들었어요. 맵에서 놓을 곳을 누르세요. Esc 로 내려놓아요.`, "info");
+        toast(`「${job.title}」 붓을 들었어요. 맵에서 놓을 곳을 누르세요. Esc로 그만둬요.`, "info");
       }, true, disabled));
     }
     out.push(actionButton("줄에서 빼기", "remove", () => act(id, () => queue.remove(id), "작업을 바꾸지 못했어요"), false, disabled, true));

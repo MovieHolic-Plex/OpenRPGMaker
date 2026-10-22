@@ -50,6 +50,7 @@ const state = {
   dismissed: new Set<string>(),
   error: "",
   busy: false,
+  busyKind: null as OneClickKind | null,
 };
 
 // ── 빠른 지형 결과(작업 줄 밖) — 새로고침 뒤에도 카드가 남게 이 기기에 둔다 ──
@@ -89,13 +90,13 @@ export function placeOneClickResult(jobId: string): void {
     if (!view.item || !grid) { toast("그림을 찾지 못했어요. 공방에서 다시 열어 주세요.", "error"); return; }
     const reason = armWorkshopStamp(view.item, grid);
     if (reason) { toast(reason, "info"); return; }
-    toast(`「${view.job.title}」 붓을 들었어요. 맵에서 놓을 곳을 누르세요. Esc 로 내려놓아요.`, "info");
+    toast(`「${view.job.title}」 붓을 들었어요. 맵에서 놓을 곳을 누르세요. Esc로 그만둬요.`, "info");
     return;
   }
   if (installed.characters?.length) {
     const reason = armCharacterPlacement(installed.characters[0]!);
     if (reason) { toast(reason, "info"); return; }
-    toast(`「${view.job.title}」${josa(view.job.title, "을/를")} 세울 칸을 맵에서 누르세요. Esc 로 그만둬요.`, "info");
+    toast(`「${view.job.title}」${josa(view.job.title, "을/를")} 세울 칸을 맵에서 누르세요. Esc로 그만둬요.`, "info");
     return;
   }
   if (installed.terrain && installed.terrain.brushTile !== null) {
@@ -224,9 +225,9 @@ function advancedBox(render: () => void): HTMLElement {
 }
 
 function elapsedOf(view: JobView): number {
-  const remote = view.job.remote?.status?.elapsedMs;
-  if (remote !== undefined && remote > 0) return remote;
-  const start = view.job.startedAt ?? view.job.createdAt;
+  // 사람이 기다린 시간 = 「만들기」를 누른 때부터(작업 줄에 선 때). 호스트 시간·그리기 시작 시각으로 재면 준비·넣기가 빠져
+  // 「4분 반」이라 했는데 실제 5분이었다(2026-10-23 UX 검수 2차).
+  const start = view.job.createdAt;
   const end = view.job.finishedAt ?? Date.now();
   return Math.max(0, end - start);
 }
@@ -310,7 +311,7 @@ function progressCard(view: JobView, render: () => void): HTMLElement {
   } else if (jobState === "ready" && job.autoPick !== false) {
     // 알아서 고르는 중(검수 통과 후보 고르기·굽기) — 사람에게 묻지 않는다.
     children.push(craftBar({ value: null, hot: true, label: `${job.title} 고르는 중` }));
-    children.push(el("p", { class: "left-workshop-meta", text: "다 그렸어요. 칩셋에 넣는 중이에요." }));
+    children.push(el("p", { class: "left-workshop-meta", text: job.generator === "object-gen" ? "다 그렸어요. 칩셋에 넣는 중이에요." : job.generator === "char-gen" ? "다 그렸어요. 캐릭터 목록에 넣는 중이에요." : "다 그렸어요. 넣는 중이에요." }));
   } else if (jobState === "ready") {
     // 「자세히 → 후보를 내가 직접 고르기」를 켠 작업만 여기에 온다.
     children.push(el("p", { class: "left-workshop-note", text: "후보가 나왔어요. 마음에 드는 하나를 골라 주세요." }));
@@ -352,6 +353,17 @@ function quickCard(done: QuickTerrainDone & { readonly id: string; readonly clic
         ],
       }),
       el("button", { class: "left-workshop-primary", text: "맵에 놓기", attrs: { type: "button" }, dataset: { testid: "workshop-oneclick-place" }, on: { click: () => placeQuickTerrain(done) } }),
+    ],
+  });
+}
+
+function startingCard(title: string): HTMLElement {
+  return el("div", {
+    class: "workshop-oneclick-card is-drawing", dataset: { testid: "workshop-oneclick-card", state: "drawing", key: "starting" },
+    children: [
+      el("div", { class: "workshop-oneclick-card-head", children: [el("strong", { text: title }), el("span", { class: "left-workshop-meta", text: "준비 중" })] }),
+      craftBar({ value: null, hot: true, label: `${title} 준비 중` }),
+      el("p", { class: "left-workshop-meta", text: "그릴 준비를 하고 있어요." }),
     ],
   });
 }
@@ -401,6 +413,7 @@ export function renderOneClick(root: HTMLElement, rerender: () => void): void {
   }) as HTMLInputElement;
   input.value = state.text[kind];
   const go = el("button", { class: "left-workshop-primary", text: "만들기", attrs: { type: "button" }, dataset: { testid: "workshop-oneclick-make" } }) as HTMLButtonElement;
+  if (state.busy) go.disabled = true;
   const needsAi = kind === "object" && !aiReady;
   if (needsAi) go.textContent = "내 AI 연결하고 만들기";
   const submit = (): void => {
@@ -409,12 +422,13 @@ export function renderOneClick(root: HTMLElement, rerender: () => void): void {
     state.text[kind] = text;
     if (state.busy) return;
     state.busy = true;
+    state.busyKind = kind;
     state.error = "";
     state.clickedAt = Date.now();
     go.disabled = true;
     input.blur(); // 왼쪽 창은 입력에 초점이 있으면 다시 그리지 않는다 — 진행 카드가 바로 보이게
     // 빠른 지형은 작업 줄을 거치지 않는다 — 몇 초 동안 아무 표시가 없으면 「안 눌렸다」로 읽혀(UX 검수) 바로 진행 카드를 그린다.
-    if (kind === "terrain" && state.advanced.terrainMethod === "quick") rerender();
+    rerender();
     void make(text).then((jobId) => {
       state.lastJob[kind] = jobId;
       state.dismissed.delete(jobId);
@@ -466,6 +480,8 @@ function currentCard(rerender: () => void): { key: string; build: () => HTMLElem
   const quick = kind === "terrain" && state.quick && !state.dismissed.has(state.quick.id) && (!current || state.lastJob.terrain === state.quick.id) ? state.quick : null;
   const quickBusy = kind === "terrain" && state.busy && state.advanced.terrainMethod === "quick";
   if (quickBusy) return { key: "quick-busy", build: () => quickBusyCard(state.text.terrain || def.examples[0]!), view: null };
+  // 「만들기」 → 작업이 줄에 서기까지(물건은 판 준비로 몇 초) 아무 표시가 없어 다시 누르게 됐다(2026-10-23 UX 검수 2차) — 바로 진행 카드를 보인다.
+  if (state.busy && state.busyKind === kind) return { key: "starting", build: () => startingCard(state.text[kind] || def.examples[0]!), view: null };
   if (quick) { const q = quick; return { key: `quick:${q.id}`, build: () => quickCard(q, rerender), view: null }; }
   if (current) return { key: cardKey(current), build: () => progressCard(current, rerender), view: current };
   return null;

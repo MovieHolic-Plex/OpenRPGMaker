@@ -19,7 +19,7 @@ export function armCharacterPlacement(input: { readonly textureKey: string; read
   armMapPick((pickedMap, x, y) => {
     const map = store.getCurrent().maps[pickedMap];
     if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) {
-      toast("맵 안쪽 칸을 눌러 주세요. Esc 로 그만둬요.", "info");
+      toast("맵 안쪽 칸을 눌러 주세요. Esc로 그만둬요.", "info");
       return false;
     }
     void import("@/editor/tools/eventTools").then(({ EVENT_TOOLS }) => {

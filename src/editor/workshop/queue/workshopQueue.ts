@@ -187,6 +187,8 @@ class WorkshopQueue {
       if (holding) counts.paused += 1;
       else if (ACTIVE_STATES.has(state)) counts.active += 1;
       else if (state === "queued") counts.queued += 1;
+      // 「한 번에 만들기」의 고르기·넣기는 사람 차례가 아니다 — 알약에 「고를 차례」로 잠깐 떴다(2026-10-23 UX 검수 2차). 진행으로 센다.
+      else if ((state === "ready" || state === "installing") && job.source === "oneclick" && job.autoPick !== false) counts.active += 1;
       else if (state === "ready" || state === "installing") counts.ready += 1;
       else if (state === "paused") counts.paused += 1;
       else if (state === "failed") counts.failed += 1;
