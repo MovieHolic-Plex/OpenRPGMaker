@@ -1,0 +1,199 @@
+[
+ {
+  "copy": "/tmp/bw2-proof/era-roman",
+  "projectId": "9d8cf49b-640e-4f36-923e-492f2c5a258d",
+  "revisionBefore": 3,
+  "revisionAfter": 4,
+  "sha256": "f5e1c4b56b6dc853d3ea9d48c336f17564580f685566866dc641f582d86ce7d3",
+  "countBefore": 30848,
+  "countAfter": 30976,
+  "graftsBefore": 1973,
+  "graftsAfter": 1973,
+  "graftRangeBefore": [
+   28544,
+   30805
+  ],
+  "graftRangeAfter": [
+   28672,
+   30933
+  ],
+  "relocations": [
+   {
+    "projectTileset": "beodeul_city",
+    "from": 28544,
+    "to": 28672,
+    "shift": 128,
+    "cells": 2304,
+    "maps": 2
+   }
+  ],
+  "beodeulMaps": 2,
+  "mapsCompared": 2,
+  "mapDiffsAfterNormalize": {
+   "map_blank_start": "same",
+   "map_beodeul_55937_62x44": "same"
+  },
+  "mapDiffsAfterReload": {
+   "map_blank_start": "same",
+   "map_beodeul_55937_62x44": "same"
+  },
+  "sampleRenumbered": null,
+  "walledTown": {
+   "mapId": "map_wall_relocation_proof",
+   "size": "46x40",
+   "wallCells": 332,
+   "houses": 5,
+   "summary": "\ubc84\ub4e4\ud56d \uac15\uac00 \ub9c8\uc744 \u00b7 \ubb3c\uac00 \ub760 \ub9c8\uc744(form riverbank) \u00b7 \uc9c0\ud615 \ud3c9\uc9c0(terrain flat) 46\u00d740 (\ub9f5 map_wall_relocation_proof, seed 7): \uac15 \ub3d9\ucabd \ub451\uc744 \ub530\ub77c \ub0a8\ubd81 \ub451\uae38(\ud3ed 2)\u00b7\ub4b7\uae38 \uace0\ub9ac\u00b7\ub3d9\ucabd \ub4e4\uae38(\uc785\uad6c), \ubaa8\uc774\ub294 \uacf3 = \ub4e4\uae38\uc774 \ub451\uae38\uacfc \ub9cc\ub098\ub294 \uc5b4\uadc0(29,21), \uc9d1 5\ucc44(4\uc885, \uc9c0\ubd95 \ubd89\uc740 \uae30\uc640(roofs red)), \uc575\ucee4 h124_0\u00b7h109_0, \uc77c\ud130 \u300c\ubc29\uc557\uac04\u300d, \ubc2d 0, \ub098\ubb34 0, \ubaa8\uc774\ub294 \uacf3 \uc18c\ud488 1. \ubb38 \uc55e 7/7 \ub3c4\ub2ec. \uc131\ubcbd \ub458\ub808: \uc131\ubb38\ub8e8 1\u00b7\ud2c8 0\u00b7\ub9dd\ub8e8 1\u00b7\uacc4\ub2e8 2(data.w"
+  }
+ },
+ {
+  "copy": "/tmp/bw2-proof/field-enemy",
+  "projectId": "f837188a-87b0-4724-85ea-e83327305866",
+  "revisionBefore": 8,
+  "revisionAfter": 9,
+  "sha256": "b5d413b1b63d49066fb6a6b1051730369329afcabf052a5be692f5ae4a349114",
+  "countBefore": 30592,
+  "countAfter": 30848,
+  "graftsBefore": 1876,
+  "graftsAfter": 1876,
+  "graftRangeBefore": [
+   28416,
+   30580
+  ],
+  "graftRangeAfter": [
+   28672,
+   30836
+  ],
+  "relocations": [
+   {
+    "projectTileset": "beodeul_city",
+    "from": 28416,
+    "to": 28672,
+    "shift": 256,
+    "cells": 2176,
+    "maps": 1
+   }
+  ],
+  "beodeulMaps": 1,
+  "mapsCompared": 1,
+  "mapDiffsAfterNormalize": {
+   "map_blank_start": "same"
+  },
+  "mapDiffsAfterReload": {
+   "map_blank_start": "same"
+  },
+  "sampleRenumbered": null,
+  "walledTown": {
+   "mapId": "map_wall_relocation_proof",
+   "size": "46x40",
+   "wallCells": 332,
+   "houses": 5,
+   "summary": "\ubc84\ub4e4\ud56d \uac15\uac00 \ub9c8\uc744 \u00b7 \ubb3c\uac00 \ub760 \ub9c8\uc744(form riverbank) \u00b7 \uc9c0\ud615 \ud3c9\uc9c0(terrain flat) 46\u00d740 (\ub9f5 map_wall_relocation_proof, seed 7): \uac15 \ub3d9\ucabd \ub451\uc744 \ub530\ub77c \ub0a8\ubd81 \ub451\uae38(\ud3ed 2)\u00b7\ub4b7\uae38 \uace0\ub9ac\u00b7\ub3d9\ucabd \ub4e4\uae38(\uc785\uad6c), \ubaa8\uc774\ub294 \uacf3 = \ub4e4\uae38\uc774 \ub451\uae38\uacfc \ub9cc\ub098\ub294 \uc5b4\uadc0(29,21), \uc9d1 5\ucc44(4\uc885, \uc9c0\ubd95 \ubd89\uc740 \uae30\uc640(roofs red)), \uc575\ucee4 h124_0\u00b7h109_0, \uc77c\ud130 \u300c\ubc29\uc557\uac04\u300d, \ubc2d 0, \ub098\ubb34 0, \ubaa8\uc774\ub294 \uacf3 \uc18c\ud488 1. \ubb38 \uc55e 7/7 \ub3c4\ub2ec. \uc131\ubcbd \ub458\ub808: \uc131\ubb38\ub8e8 1\u00b7\ud2c8 0\u00b7\ub9dd\ub8e8 1\u00b7\uacc4\ub2e8 2(data.w"
+  }
+ },
+ {
+  "copy": "/tmp/bw2-proof/house-entry",
+  "projectId": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
+  "revisionBefore": 25,
+  "revisionAfter": 26,
+  "sha256": "7009569b839e3ba3b50c64ab3a4bac4dc3fa79a3cd936614c80129a3c1641b01",
+  "countBefore": 30464,
+  "countAfter": 32384,
+  "graftsBefore": 1831,
+  "graftsAfter": 2646,
+  "graftRangeBefore": [
+   27648,
+   30366
+  ],
+  "graftRangeAfter": [
+   28672,
+   32302
+  ],
+  "relocations": [
+   {
+    "projectTileset": "beodeul_city",
+    "from": 27648,
+    "to": 28672,
+    "shift": 1024,
+    "cells": 2816,
+    "maps": 5
+   }
+  ],
+  "beodeulMaps": 5,
+  "mapsCompared": 6,
+  "mapDiffsAfterNormalize": {
+   "map_blank_start": "same",
+   "map_beodeul_small_home": "same",
+   "map_beodeul_rest": "same",
+   "map_beodeul_river_town": "same",
+   "map_beodeul_village50": "same",
+   "map_beodeul_forms_village": "same"
+  },
+  "mapDiffsAfterReload": {
+   "map_blank_start": "same",
+   "map_beodeul_small_home": "same",
+   "map_beodeul_rest": "same",
+   "map_beodeul_river_town": "same",
+   "map_beodeul_village50": "same",
+   "map_beodeul_forms_village": "same"
+  },
+  "sampleRenumbered": {
+   "map": "map_blank_start",
+   "cell": 110,
+   "before": 27648,
+   "after": 28672
+  },
+  "walledTown": {
+   "mapId": "map_wall_relocation_proof",
+   "size": "46x40",
+   "wallCells": 332,
+   "houses": 5,
+   "summary": "\ubc84\ub4e4\ud56d \uac15\uac00 \ub9c8\uc744 \u00b7 \ubb3c\uac00 \ub760 \ub9c8\uc744(form riverbank) \u00b7 \uc9c0\ud615 \ud3c9\uc9c0(terrain flat) 46\u00d740 (\ub9f5 map_wall_relocation_proof, seed 7): \uac15 \ub3d9\ucabd \ub451\uc744 \ub530\ub77c \ub0a8\ubd81 \ub451\uae38(\ud3ed 2)\u00b7\ub4b7\uae38 \uace0\ub9ac\u00b7\ub3d9\ucabd \ub4e4\uae38(\uc785\uad6c), \ubaa8\uc774\ub294 \uacf3 = \ub4e4\uae38\uc774 \ub451\uae38\uacfc \ub9cc\ub098\ub294 \uc5b4\uadc0(29,21), \uc9d1 5\ucc44(4\uc885, \uc9c0\ubd95 \ubd89\uc740 \uae30\uc640(roofs red)), \uc575\ucee4 h124_0\u00b7h109_0, \uc77c\ud130 \u300c\ubc29\uc557\uac04\u300d, \ubc2d 0, \ub098\ubb34 0, \ubaa8\uc774\ub294 \uacf3 \uc18c\ud488 1. \ubb38 \uc55e 7/7 \ub3c4\ub2ec. \uc131\ubcbd \ub458\ub808: \uc131\ubb38\ub8e8 1\u00b7\ud2c8 0\u00b7\ub9dd\ub8e8 1\u00b7\uacc4\ub2e8 2(data.w"
+  }
+ },
+ {
+  "copy": "/tmp/bw2-proof/pano-sunset",
+  "projectId": "f8cfc48f-8c29-48a7-afc8-9580b1187d9d",
+  "revisionBefore": 2,
+  "revisionAfter": 3,
+  "sha256": "e049128b89299e163df9a1a22b9185dbc29d8cee277fc513b5924a9385b404b0",
+  "countBefore": 30080,
+  "countAfter": 30208,
+  "graftsBefore": 1247,
+  "graftsAfter": 1247,
+  "graftRangeBefore": [
+   28544,
+   29998
+  ],
+  "graftRangeAfter": [
+   28672,
+   30126
+  ],
+  "relocations": [
+   {
+    "projectTileset": "beodeul_city",
+    "from": 28544,
+    "to": 28672,
+    "shift": 128,
+    "cells": 1536,
+    "maps": 1
+   }
+  ],
+  "beodeulMaps": 1,
+  "mapsCompared": 1,
+  "mapDiffsAfterNormalize": {
+   "map_blank_start": "same"
+  },
+  "mapDiffsAfterReload": {
+   "map_blank_start": "same"
+  },
+  "sampleRenumbered": null,
+  "walledTown": {
+   "mapId": "map_wall_relocation_proof",
+   "size": "46x40",
+   "wallCells": 332,
+   "houses": 5,
+   "summary": "\ubc84\ub4e4\ud56d \uac15\uac00 \ub9c8\uc744 \u00b7 \ubb3c\uac00 \ub760 \ub9c8\uc744(form riverbank) \u00b7 \uc9c0\ud615 \ud3c9\uc9c0(terrain flat) 46\u00d740 (\ub9f5 map_wall_relocation_proof, seed 7): \uac15 \ub3d9\ucabd \ub451\uc744 \ub530\ub77c \ub0a8\ubd81 \ub451\uae38(\ud3ed 2)\u00b7\ub4b7\uae38 \uace0\ub9ac\u00b7\ub3d9\ucabd \ub4e4\uae38(\uc785\uad6c), \ubaa8\uc774\ub294 \uacf3 = \ub4e4\uae38\uc774 \ub451\uae38\uacfc \ub9cc\ub098\ub294 \uc5b4\uadc0(29,21), \uc9d1 5\ucc44(4\uc885, \uc9c0\ubd95 \ubd89\uc740 \uae30\uc640(roofs red)), \uc575\ucee4 h124_0\u00b7h109_0, \uc77c\ud130 \u300c\ubc29\uc557\uac04\u300d, \ubc2d 0, \ub098\ubb34 0, \ubaa8\uc774\ub294 \uacf3 \uc18c\ud488 1. \ubb38 \uc55e 7/7 \ub3c4\ub2ec. \uc131\ubcbd \ub458\ub808: \uc131\ubb38\ub8e8 1\u00b7\ud2c8 0\u00b7\ub9dd\ub8e8 1\u00b7\uacc4\ub2e8 2(data.w"
+  }
+ }
+]

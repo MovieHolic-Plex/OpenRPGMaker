@@ -1,0 +1,47 @@
+{
+ "copy": "/tmp/bw2-proof/era-roman",
+ "projectId": "9d8cf49b-640e-4f36-923e-492f2c5a258d",
+ "revisionBefore": 3,
+ "revisionAfter": 4,
+ "sha256": "f5e1c4b56b6dc853d3ea9d48c336f17564580f685566866dc641f582d86ce7d3",
+ "countBefore": 30848,
+ "countAfter": 30976,
+ "graftsBefore": 1973,
+ "graftsAfter": 1973,
+ "graftRangeBefore": [
+  28544,
+  30805
+ ],
+ "graftRangeAfter": [
+  28672,
+  30933
+ ],
+ "relocations": [
+  {
+   "projectTileset": "beodeul_city",
+   "from": 28544,
+   "to": 28672,
+   "shift": 128,
+   "cells": 2304,
+   "maps": 2
+  }
+ ],
+ "beodeulMaps": 2,
+ "mapsCompared": 2,
+ "mapDiffsAfterNormalize": {
+  "map_blank_start": "same",
+  "map_beodeul_55937_62x44": "same"
+ },
+ "mapDiffsAfterReload": {
+  "map_blank_start": "same",
+  "map_beodeul_55937_62x44": "same"
+ },
+ "sampleRenumbered": null,
+ "walledTown": {
+  "mapId": "map_wall_relocation_proof",
+  "size": "46x40",
+  "wallCells": 332,
+  "houses": 5,
+  "summary": "버들항 강가 마을 · 물가 띠 마을(form riverbank) · 지형 평지(terrain flat) 46×40 (맵 map_wall_relocation_proof, seed 7): 강 동쪽 둑을 따라 남북 둑길(폭 2)·뒷길 고리·동쪽 들길(입구), 모이는 곳 = 들길이 둑길과 만나는 어귀(29,21), 집 5채(4종, 지붕 붉은 기와(roofs red)), 앵커 h124_0·h109_0, 일터 「방앗간」, 밭 0, 나무 0, 모이는 곳 소품 1. 문 앞 7/7 도달. 성벽 둘레: 성문루 1·틈 0·망루 1·계단 2(data.w"
+ }
+}
