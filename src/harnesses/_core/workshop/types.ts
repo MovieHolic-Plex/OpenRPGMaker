@@ -177,6 +177,8 @@ export type WorkshopRound = {
   runs: WorkshopRun[];
   /** 참고 그림 단계 결과(실행기가 referenceDescribe 를 주고 env 에 그림 경로가 있을 때). 옛 판에는 없다. */
   reference?: RoundReference;
+  /** 미리 보기 고치기(look) 상한 — 실행기 looks 보다 작게만. 「한 번에 만들기」는 1(2026-10-23, 첫 결과 시간 줄이기). 옛 판에는 없다. */
+  looks?: number;
 };
 export type WorkshopPick = { readonly projectKey: string; readonly itemKey: string; readonly roundId: string; readonly letter: string; readonly at: number };
 export type WorkshopFeedback = {

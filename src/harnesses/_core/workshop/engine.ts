@@ -47,7 +47,7 @@ export type WorkshopEngineOptions = {
 export interface WorkshopEngine {
   /** count = 이번 판 후보 수(1 ~ runner.candidates). 없으면 runner.candidates. */
   /** reference:false = 참고 그림 단계를 건너뛴다(참고 있음/없음 비교·사용자가 끈 경우). */
-  startRound(item: WorkshopItem, options?: { note?: string; count?: number; reference?: boolean }): Promise<WorkshopRound>;
+  startRound(item: WorkshopItem, options?: { note?: string; count?: number; reference?: boolean; looks?: number }): Promise<WorkshopRound>;
   redrawRun(roundId: string, letter: string, note: string): Promise<void>;
   cancelRound(roundId: string): Promise<void>;
   resume(): Promise<number>;
@@ -374,7 +374,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
   async function lookLoop(ctx: DrawContext, messages: ChatMessage[], text: string, first: { grid: Grid; note: string; topRows: number | null }, run: WorkshopRun, round: WorkshopRound, signal: AbortSignal): Promise<{ grid: Grid; note: string; topRows: number | null }> {
     let best = { grid: first.grid, note: first.note, topRows: first.topRows };
     let lastText = text;
-    const max = perItem(runner.looks ?? 0, ctx.item);
+    const max = Math.min(perItem(runner.looks ?? 0, ctx.item), round.looks ?? Number.POSITIVE_INFINITY);
     for (let look = 1; look <= max; look++) {
       messages.push({ role: "assistant", content: lastText }, await runner.lookMessage!(ctx, best.grid, env, look, max));
       lastText = await call("workshop-draw", messages, run, round, signal);
@@ -528,6 +528,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       const round: WorkshopRound = {
         id: newId(), projectKey, harnessId: runner.harnessId, itemKey: item.key, note: startOptions.note ?? "", created: now(),
         runs: runner.directions(item).slice(0, Math.max(1, Math.min(runner.candidates, Math.round(startOptions.count ?? runner.candidates)))).map((d) => freshRun(d.letter, d.text)),
+        ...(startOptions.looks !== undefined ? { looks: Math.max(0, Math.round(startOptions.looks)) } : {}),
         ...(startOptions.reference === false ? { reference: { status: "none" as const, tries: 0, note: "참고 그림 없이 그림 — 이 판은 참고 단계를 껐다" } } : {}),
       };
       await save(round);

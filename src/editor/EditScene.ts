@@ -243,6 +243,7 @@ export function tileRectToScreenRect(rect: TileRect, camera: CameraView, tileSiz
 
 // 위치 헬퍼는 selectionOverlayAnchor.ts — 테스트/재사용용 re-export
 import { tileRectToClientRect } from "@/editor/selectionOverlayAnchor";
+import { consumeMapPick, isMapPickArmed } from "@/editor/mapPickHook";
 export { anchoredBuildPalettePosition, anchoredSelectionChipsPosition } from "@/editor/selectionOverlayAnchor";
 
 export function regionTaskBadgeText(phase: "running" | "pending"): string | null {
@@ -1134,6 +1135,12 @@ export class EditScene extends PhaserRuntime.Scene {
         const tile = this.pointerToTile(ptr);
         this.handlePastePreviewPointerDown(this.isRightClick(ptr), tile);
         return;
+      }
+      // 칸 한 번 고르기(공방 새 캐릭터 놓기 등) — 붓·이벤트 도구보다 먼저.
+      if (!this.isRightClick(ptr) && isMapPickArmed()) {
+        const mid = this.mapId();
+        const tile = this.pointerToTile(ptr);
+        if (mid && consumeMapPick(mid, tile.x, tile.y)) return;
       }
       if (this.isRightClick(ptr) && editorState.get().tool !== "relief") {
         // 우클릭: 드래그 시작하면 영역 AI, 클릭만이면 스포이트(아래 pointerup).

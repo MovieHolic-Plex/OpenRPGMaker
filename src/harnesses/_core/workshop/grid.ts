@@ -119,6 +119,28 @@ const LOOKALIKE: Readonly<Record<string, string>> = {
   "ο": "o", "α": "a", "ν": "v", "Ο": "O", "Α": "A", "Β": "B", "Ε": "E", "Κ": "K", "Μ": "M", "Ν": "N", "Ρ": "P", "Τ": "T", "Χ": "X",
 };
 
+/**
+ * legend 색 이름이 팔레트 키와 조금 다를 때 하나로만 읽히면 고쳐 읽는다(2026-10-23 실화면: Sonnet 이 팔레트 줄 이름표 「grey:」를 키 앞에 붙여
+ * 「grey:7」로 써서 세 번 다 「팔레트에 없다」로 떨어졌다). 꼭 하나로 정해질 때만 — 접미사(`:7`)가 같은 키가 하나뿐이거나, `#rrggbb` 가 팔레트 색과 같을 때.
+ */
+function resolvePaletteKey(key: unknown, palette: Palette): string | null {
+  if (typeof key !== "string") return null;
+  const trimmed = key.trim();
+  if (palette.byKey.has(trimmed)) return trimmed;
+  const hexMatch = /^#?([0-9a-f]{6})$/iu.exec(trimmed);
+  if (hexMatch) {
+    const value = hexMatch[1]!.toLowerCase();
+    const hits = palette.entries.filter((entry) => entry.rgba.slice(0, 3).map((v) => v.toString(16).padStart(2, "0")).join("") === value);
+    if (hits.length === 1) return hits[0]!.key;
+  }
+  const suffix = /:([^:\s]+)$/u.exec(trimmed)?.[1];
+  if (suffix) {
+    const hits = palette.entries.filter((entry) => entry.key.endsWith(`:${suffix}`));
+    if (hits.length === 1) return hits[0]!.key;
+  }
+  return null;
+}
+
 export function parseDrawAnswer(text: string, palette: Palette): ParsedDraw {
   let raw: unknown;
   try {
@@ -138,8 +160,9 @@ export function parseDrawAnswer(text: string, palette: Palette): ParsedDraw {
   for (const [char, key] of Object.entries(legend as Record<string, unknown>)) {
     if ([...char].length !== 1) return fail(`legend 의 글자 「${char}」는 한 글자가 아니다`);
     if (char === TRANSPARENT) return fail("「.」은 투명 칸이라 legend 에 쓸 수 없다");
-    if (typeof key !== "string" || !palette.byKey.has(key)) return fail(`legend 「${char}」의 색 ${String(key)} 은 팔레트에 없다`);
-    keys.set(char, key);
+    const resolved = resolvePaletteKey(key, palette);
+    if (!resolved) return fail(`legend 「${char}」의 색 ${String(key)} 은 팔레트에 없다`);
+    keys.set(char, resolved);
   }
   // 생김새가 같은 다른 문자(키릴 「о」 ↔ 라틴 「o」)는 legend 에 그 글자가 따로 없을 때만 같은 글자로 읽는다
   for (const [look, latin] of Object.entries(LOOKALIKE)) {
@@ -177,8 +200,9 @@ export function parseDrawAnswer(text: string, palette: Palette): ParsedDraw {
       if (!Array.isArray(partRows) || partRows.some((row) => typeof row !== "string")) return fail(`parts[${index}].rows 가 글자열 배열이 아니다`);
       const local = new Map<string, string>();
       for (const [char, key] of Object.entries(partLegend as Record<string, unknown>)) {
-        if (typeof key !== "string" || !palette.byKey.has(key)) return fail(`parts[${index}].legend 「${char}」의 색 ${String(key)} 은 팔레트에 없다`);
-        local.set(char, key);
+        const resolved = resolvePaletteKey(key, palette);
+        if (!resolved) return fail(`parts[${index}].legend 「${char}」의 색 ${String(key)} 은 팔레트에 없다`);
+        local.set(char, resolved);
       }
       const [left, bottomY] = at as number[];
       const top = bottomY! - (partRows as string[]).length + 1;

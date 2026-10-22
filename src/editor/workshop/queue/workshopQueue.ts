@@ -29,6 +29,8 @@ import {
   type JobGenerator, type JobPause, type JobState, type WorkshopJob,
 } from "./jobModel";
 import { openJobStore, type JobStore } from "./jobStore";
+import type { RemoteGen } from "./jobModel";
+import type { HostGenStatus } from "../oneClick/hostGen";
 
 export const QUEUE_LIMIT_KEY = "oprn:workshop-queue-limit";
 export const QUEUE_MAX_LIMIT = 10;
@@ -39,6 +41,8 @@ const RUNS_PER_JOB = 3;
 /** 시간표에 남기는 연결 끊김 기록(재시도 횟수를 센다) */
 const NETWORK_PAUSE_NOTE = "연결이 끊김";
 const NETWORK_REDRAW_NOTE = "연결이 끊긴 후보를 잠깐 뒤 다시 그림";
+/** 「한 번에 만들기」 물건이 검수 통과 없이 끝나 판정 이유로 한 번 더 그린다 */
+const ONE_CLICK_REROLL_NOTE = "검수 불통과 — 이유를 주고 한 번 더 그림";
 export const WORKSHOP_JOB_INSTALLED_EVENT = "oprn:workshop-job-installed";
 export type WorkshopJobInstalledDetail = { readonly jobId: string; readonly job: WorkshopJob; readonly baked: WorkshopBakedDetail | null; readonly auto: boolean; readonly reason?: string };
 
@@ -150,6 +154,7 @@ class WorkshopQueue {
     await Promise.all([...harnesses].map((id) => this.attach(id).catch((error) => console.warn("[workshop-queue] 세션을 열지 못했다:", id, error))));
     this.emit();
     this.pump();
+    this.pollRemote();
   }
 
   subscribe(listener: () => void): () => void {
@@ -205,12 +210,12 @@ class WorkshopQueue {
   // ── 넣기(줄 세우기) ─────────────────────────────────────
 
   /** 공방 화면에서 정의한 기물의 새 판을 줄 세운다. */
-  async enqueueObject(input: { harnessId: string; itemKey: string; title: string; count?: number; note?: string; source?: "workshop" | "assistant"; request?: ObjectGenRequest }): Promise<WorkshopJob> {
+  async enqueueObject(input: { harnessId: string; itemKey: string; title: string; count?: number; note?: string; source?: "workshop" | "assistant" | "oneclick"; request?: ObjectGenRequest; autoPick?: boolean }): Promise<WorkshopJob> {
     await this.ensure();
     const job: WorkshopJob = {
       id: newJobId(), projectKey: this.projectKey, generator: "object-gen", source: input.source ?? "workshop", title: input.title, createdAt: now(),
       harnessId: input.harnessId, itemKey: input.itemKey, ...(input.count ? { count: input.count } : {}), ...(input.note ? { note: input.note } : {}),
-      ...(input.request ? { request: input.request } : {}),
+      ...(input.request ? { request: input.request } : {}), ...(input.autoPick !== undefined ? { autoPick: input.autoPick } : {}),
       roundId: null, startedAt: null, finishedAt: null, pause: null, cancelled: false, installWait: null, installed: null, error: null, calls: 0,
       timeline: [{ at: now(), state: "queued" }],
     };
@@ -231,7 +236,7 @@ class WorkshopQueue {
   }
 
   /** 조수의 generate_missing_object 요청: 기물을 정의하고(그 맵 칩셋의 팔레트를 뽑는다) 줄 세운다. 여러 요청이 오면 모두 함께 돈다. */
-  async enqueueAssistantRequest(request: ObjectGenRequest): Promise<WorkshopJob> {
+  async enqueueAssistantRequest(request: ObjectGenRequest, options: { source?: "assistant" | "oneclick"; count?: number; autoPick?: boolean } = {}): Promise<WorkshopJob> {
     const { store: projectStore } = await import("@/project/store");
     const project = projectStore.getCurrent();
     const map = project.maps[request.mapId];
@@ -247,8 +252,127 @@ class WorkshopQueue {
     const def = objectGenDefinition(request, new Set(session.items().map((item) => item.key)), palette);
     await session.store.putItemDef(session.projectKey, def);
     await session.reload();
-    return this.enqueueObject({ harnessId: request.harnessId, itemKey: def.key, title: request.title, source: "assistant", request });
+    return this.enqueueObject({
+      harnessId: request.harnessId, itemKey: def.key, title: request.title, source: options.source ?? "assistant", request,
+      ...(options.count ? { count: options.count } : {}), ...(options.autoPick !== undefined ? { autoPick: options.autoPick } : {}),
+    });
   }
+
+  // ── 「한 번에 만들기」 — 캐릭터·지형(호스트 생성기) ──────────────────────
+
+  /**
+   * 호스트에서 도는 생성기 작업을 줄에 세우고 바로 보낸다(지형은 칩셋 그림이 커서 줄에 저장하지 않고 보낼 때만 만든다).
+   * 다 그리면 묶음을 받아 알아서 넣는다 — 지형은 지금 맵 칩셋에 합치고, 캐릭터는 캐릭터 목록에 들어간다.
+   */
+  async enqueueRemote(input: { kind: "char-gen" | "tile-gen"; text: string; count?: number; mode?: string; targetTilesetId?: string }): Promise<WorkshopJob> {
+    await this.ensure();
+    const remote: RemoteGen = {
+      kind: input.kind, text: input.text, ...(input.count ? { count: input.count } : {}), ...(input.mode ? { mode: input.mode } : {}),
+      ...(input.targetTilesetId ? { targetTilesetId: input.targetTilesetId } : {}), jobId: null, status: null,
+    };
+    const job: WorkshopJob = {
+      id: newJobId(), projectKey: this.projectKey, generator: input.kind, source: "oneclick", title: input.text, createdAt: now(), remote, autoPick: true,
+      roundId: null, startedAt: null, finishedAt: null, pause: null, cancelled: false, installWait: null, installed: null, error: null, calls: 0,
+      timeline: [{ at: now(), state: "queued" }],
+    };
+    this.jobs.set(job.id, job);
+    await this.persist(job);
+    this.emit();
+    await this.startRemote(job);
+    return job;
+  }
+
+  private async startRemote(job: WorkshopJob): Promise<void> {
+    const remote = job.remote;
+    if (!remote) return;
+    try {
+      const { startHostGen } = await import("../oneClick/hostGen");
+      let tileset: { png: string; refs: [number, number][] } | undefined;
+      if (remote.kind === "tile-gen") {
+        const { terrainTilesetInput } = await import("../oneClick/remoteInput");
+        tileset = await terrainTilesetInput(remote.targetTilesetId ?? "");
+      }
+      remote.jobId = await startHostGen({ generator: remote.kind, text: remote.text, ...(remote.count ? { count: remote.count } : {}), ...(remote.mode ? { mode: remote.mode } : {}), ...(tileset ? { tileset } : {}) });
+      remote.status = { state: "running", stage: "starting", progress: 0 };
+      job.startedAt = now();
+      this.mark(job, "drawing", remote.kind === "char-gen" ? "캐릭터 그리기 시작" : "지형 그리기 시작");
+    } catch (error) {
+      job.error = error instanceof Error ? error.message : String(error);
+      job.finishedAt = now();
+      this.mark(job, "failed", job.error);
+    }
+    await this.persist(job);
+    this.emit();
+    this.pollRemote();
+  }
+
+  private pollTimer: ReturnType<typeof setTimeout> | null = null;
+  private polling = false;
+
+  /** 호스트 작업 상태를 몇 초마다 읽는다(도는 것이 있을 때만). */
+  private pollRemote(): void {
+    if (this.pollTimer || this.polling) return;
+    const live = [...this.jobs.values()].some((job) => job.remote?.jobId && !job.pack && !job.error && !job.cancelled && job.projectKey === this.projectKey);
+    if (!live) return;
+    this.pollTimer = setTimeout(() => { this.pollTimer = null; void this.pollOnce(); }, 3000);
+  }
+
+  private async pollOnce(): Promise<void> {
+    this.polling = true;
+    try {
+      const { hostGenStatus } = await import("../oneClick/hostGen");
+      for (const job of [...this.jobs.values()]) {
+        const remote = job.remote;
+        if (!remote?.jobId || job.pack || job.error || job.cancelled || job.projectKey !== this.projectKey) continue;
+        let status: HostGenStatus;
+        try {
+          status = await hostGenStatus(remote.jobId);
+        } catch {
+          continue; // 잠깐 끊김 — 다음에 다시 읽는다
+        }
+        const before = JSON.stringify(remote.status);
+        remote.status = {
+          state: status.state, ...(status.stage ? { stage: status.stage } : {}), progress: status.progress ?? 0, elapsedMs: status.elapsedMs ?? 0, ...(status.expectMs ? { expectMs: status.expectMs } : {}),
+          ...(status.engine ? { engine: status.engine } : {}), error: status.error ?? null,
+          reviewing: status.reviewing ?? false, attempts: status.attempts ?? 0,
+        };
+        if (status.state === "done" && status.pack) {
+          await this.finishRemote(job, status);
+        } else if (status.state === "failed" || status.state === "missing") {
+          job.error = status.error ?? "못 그렸어요.";
+          job.finishedAt = now();
+          this.mark(job, "failed", job.error);
+          await this.persist(job);
+        } else if (JSON.stringify(remote.status) !== before) {
+          await this.persist(job);
+        }
+        this.emit();
+      }
+    } finally {
+      this.polling = false;
+      this.pollRemote();
+    }
+  }
+
+  private async finishRemote(job: WorkshopJob, status: HostGenStatus): Promise<void> {
+    const { packFromHost } = await import("../oneClick/hostGen");
+    try {
+      const pack = await packFromHost(status.pack!, job.title);
+      const firstImage = Object.values(pack.manifest.content.assets).find((asset) => pack.blobs.has(asset.blob))?.blob;
+      await this.store!.putPackBlobs(job.id, pack.blobs);
+      job.pack = { folder: job.title, manifest: pack.manifest, ...(firstImage ? { previewBlob: firstImage } : {}) };
+      job.finishedAt = now();
+      this.mark(job, "ready", status.picked ? `검수 통과 후보 ${status.picked}` : undefined);
+      await this.persist(job);
+      if (job.autoPick !== false) await this.install(job.id, null, { auto: true, reason: "검수 통과" });
+    } catch (error) {
+      if (error instanceof WorkshopInstallBusy) return;
+      job.error = error instanceof Error ? error.message : String(error);
+      this.mark(job, "failed", job.error);
+      await this.persist(job);
+    }
+  }
+
 
   /** 생성기 묶음(char-gen·tile-gen·object-gen pack)을 「넣을 차례」 작업으로 둔다. 그림 바이트도 이 기기에 남겨 새로 고침 뒤에도 넣을 수 있다. */
   async enqueuePack(pack: LocalPack, generator: JobGenerator): Promise<WorkshopJob> {
@@ -299,6 +423,7 @@ class WorkshopQueue {
     job.finishedAt = now();
     this.mark(job, "cancelled");
     if (job.roundId && job.harnessId) await (await getWorkshopSession(job.harnessId)).engine.cancelRound(job.roundId);
+    if (job.remote?.jobId && !job.pack) await import("../oneClick/hostGen").then(({ cancelHostGen }) => cancelHostGen(job.remote!.jobId!)).catch(() => undefined);
     await this.persist(job);
     this.emit();
     this.pump();
@@ -312,7 +437,24 @@ class WorkshopQueue {
     job.error = null;
     job.pause = null;
     job.finishedAt = null;
-    await this.redrawStuckRuns(job);
+    if (job.remote && !job.pack) {
+      job.remote.jobId = null;
+      job.remote.status = null;
+      this.mark(job, "queued", "다시");
+      await this.persist(job);
+      this.emit();
+      await this.startRemote(job);
+      return;
+    }
+    if (job.source === "oneclick" && job.roundId) {
+      // 새 판으로 처음부터(검수 불통과 장은 redrawStuckRuns 가 다시 그리지 않는다)
+      this.byRound.delete(job.roundId);
+      job.roundId = null;
+      job.startedAt = null;
+      job.timeline = job.timeline.filter((entry) => entry.note !== ONE_CLICK_REROLL_NOTE);
+    } else {
+      await this.redrawStuckRuns(job);
+    }
     this.mark(job, "queued", "다시");
     await this.persist(job);
     this.emit();
@@ -386,8 +528,10 @@ class WorkshopQueue {
     try {
       let baked: WorkshopBakedDetail | null = null;
       if (job.pack) {
-        const added = await addLocalPackToProject(await this.packOf(job), job.generator as GeneratorId);
-        job.installed = { kind: "pack", title: added.title, assetIds: added.assetIds, tilesetIds: added.tilesetIds, at: now() };
+        const pack = await this.packOf(job);
+        const added = await addLocalPackToProject(pack, job.generator as GeneratorId);
+        const extra = await (await import("../oneClick/afterInstall")).afterPackInstalled(job, pack.manifest, added);
+        job.installed = { kind: "pack", title: added.title, assetIds: added.assetIds, tilesetIds: added.tilesetIds, at: now(), ...extra };
       } else {
         if (!letter || !job.harnessId || !job.roundId) throw new Error("고른 후보가 없어요.");
         const session = await getWorkshopSession(job.harnessId);
@@ -580,17 +724,17 @@ class WorkshopQueue {
         this.mark(job, state);
         void this.persist(job);
       }
-      // 공방 화면(판 화면)에서 고르고 구운 경우 — 줄에도 「넣음」으로 맞춘다.
+      // 공방 화면(판 화면)에서 고르고 구운 경우 — 줄에도 「넣음」으로 맞춘다(이 줄이 지금 넣는 중이면 install 이 알린다 — 두 번 알리지 않게).
       if (state === "ready") {
         const pick = session.picks.find((candidate) => candidate.roundId === round.id);
         const item = session.items().find((candidate) => candidate.key === job.itemKey);
         const grid = pick ? round.runs.find((run) => run.letter === pick.letter)?.grid : undefined;
-        if (pick && item && grid && isWorkshopPickBaked(item, grid)) {
+        if (pick && item && grid && !this.installing.has(job.id) && isWorkshopPickBaked(item, grid)) {
           job.installed = { kind: "object", letter: pick.letter, objectId: `workshop:${item.key.replace(/^new:/, "")}`, tilesetId: item.tilesetId ?? "atlas_biome_interior", auto: false, at: now() };
           this.mark(job, "installed", `${pick.letter} 를 넣음(공방 화면)`);
           void this.persist(job);
           window.dispatchEvent(new CustomEvent<WorkshopJobInstalledDetail>(WORKSHOP_JOB_INSTALLED_EVENT, { detail: { jobId: job.id, job: structuredClone(job), baked: null, auto: false } }));
-        } else if (job.source === "assistant" && !this.installing.has(job.id) && !this.pendingInstall.has(job.id) && !this.choosing.has(job.id)) {
+        } else if ((job.source === "assistant" || (job.source === "oneclick" && job.autoPick !== false)) && !this.installing.has(job.id) && !this.pendingInstall.has(job.id) && !this.choosing.has(job.id)) {
           this.maybeAutoPick(job, round);
         }
       }
@@ -604,10 +748,26 @@ class WorkshopQueue {
    * 통과가 둘 이상이면 object-gen 고르기(assistantObjectGen.chooseAutoPick — 고르기 3번 다수결)를 한 번 거친다.
    */
   private maybeAutoPick(job: WorkshopJob, round: WorkshopRound): void {
-    let on = false;
-    try { on = localStorage.getItem("oprn:assistant-objectgen-autopick") === "1"; } catch { /* restricted */ }
+    let on = job.source === "oneclick" && job.autoPick !== false;
+    try { on ||= localStorage.getItem("oprn:assistant-objectgen-autopick") === "1"; } catch { /* restricted */ }
     if (!on || job.timeline.some((entry) => entry.note === "알아서 고르기: 통과 후보 없음")) return;
     if (!autoPickRun(usableRuns(round))) {
+      // 「한 번에 만들기」는 사람에게 관문을 넘기지 않는다(2026-10-23): 판정 이유를 주고 한 번 더 그리고, 그래도 없으면 못 그림.
+      if (job.source === "oneclick" && job.harnessId) {
+        const rerolled = job.timeline.some((entry) => entry.note === ONE_CLICK_REROLL_NOTE);
+        if (!rerolled) {
+          this.mark(job, "drawing", ONE_CLICK_REROLL_NOTE);
+          void this.persist(job);
+          const session = peekWorkshopSession(job.harnessId);
+          if (session) for (const run of round.runs) void session.engine.redrawRun(round.id, run.letter, run.verdict?.fix ?? "");
+          return;
+        }
+        job.error = "검수를 통과한 그림이 나오지 않았어요. 설명을 조금 바꿔 다시 만들어 보세요.";
+        job.finishedAt = now();
+        this.mark(job, "failed", job.error);
+        void this.persist(job);
+        return;
+      }
       this.mark(job, "ready", "알아서 고르기: 통과 후보 없음");
       return;
     }
@@ -697,7 +857,8 @@ class WorkshopQueue {
       if (!item) throw new Error("기물 정의를 찾지 못했어요(다른 기기에서 지웠을 수 있어요).");
       if (job.cancelled) return;
       // 판을 열기 전에 판 id 를 알 수 없으므로, 열리는 동안 낸 호출은 onChange 가 판을 넘겨 줄 때 이어 붙인다.
-      const round = await session.engine.startRound(item, { ...(job.count ? { count: job.count } : {}), ...(job.note ? { note: job.note } : {}) });
+      // 「한 번에 만들기」: 미리 보기 고치기 1번만(object-gen 기본 3번) — 그리기 호출이 첫 결과 시간의 대부분이다. 검수(3/4·품질 판정)는 그대로.
+      const round = await session.engine.startRound(item, { ...(job.count ? { count: job.count } : {}), ...(job.note ? { note: job.note } : {}), ...(job.source === "oneclick" ? { looks: 1 } : {}) });
       job.roundId = round.id;
       job.startedAt = now();
       this.byRound.set(round.id, job.id);
