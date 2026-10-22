@@ -5,8 +5,8 @@
   "examples": {},
   "tiles_checked": 712,
   "kits_checked": 49,
-  "groups_checked": 19,
-  "autotiles_checked": 0
+  "groups_checked": 20,
+  "autotiles_checked": 1
  },
  "reassembly": {
   "kits": 49,
@@ -20,15 +20,15 @@
   "count": 712,
   "rows": 15,
   "kits": 49,
-  "groups": 19,
-  "autotiles": 0,
+  "groups": 20,
+  "autotiles": 1,
   "animationStrips": 1
  },
  "animation_noncontiguous": [],
  "adopted": {
-  "pieces": 49,
+  "pieces": 50,
   "by_group": {
-   "ground": 13,
+   "ground": 14,
    "ruins": 6,
    "shacks": 6,
    "defense": 3,
@@ -37,7 +37,8 @@
  },
  "dev_only_adopted": [
   "dirt-b",
-  "dirt-d"
+  "dirt-d",
+  "asphalt"
  ],
  "mode": "dev",
  "rejected": [
@@ -65,11 +66,6 @@
    "id": "dirt-b45",
    "status": "skipped",
    "why": "감독 결정으로 키트에서 뺌"
-  },
-  {
-   "id": "asphalt",
-   "status": "fail",
-   "why": "판정 프로필 4d8774b517f41638 가 보정되지 않았다 — AI 판정(fail)은 조언일 뿐이다. Opus 최종 판정(object-gate final-review)을 받아라"
   },
   {
    "id": "track",
