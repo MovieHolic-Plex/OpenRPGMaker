@@ -46,6 +46,19 @@ band/base l·m·r. 지붕 폭 = 벽 폭 = cols, 최소 4칸(l 2 + r 2).
       뒤 박공·외쪽 뒤 끝 윗변 바로 위에 더 뒤 질량의 지붕이 있으면 FAIL(지붕 속에 박힌 박공 — valley 를 쓴다)
   A14 on: roof 부속: 밑동(맨 아래 불투명 행)의 화소가 전부 그 질량 지붕 화소 위이고, 어느 화소도 그 질량 벽에 걸치지 않는다
   A15 시드 판의 requireGableFront 가 켜져 있으면 건물마다 gable_front 질량이 하나 이상(round_buildings 가 표시)
+
+깊이 땅 문법(grammar "r7", 2026-10-22 사용자 반려 「ㅜ자 집 — 공간감이 전혀 없다」) — round_buildings 가 `_depthGround` 를 붙인다:
+  - depth d 질량의 맨 아래 행은 앞줄 땅 행보다 정확히 d 칸 위다(3/4 탑뷰: 북쪽으로 물러난 질량은 화면에서 더 높이 선다).
+    앞으로 튀어나온 날개 = depth 0 질량, 본채 = depth ≥ 1.
+  - 질량 사이(뒤 질량의 땅 행 ~ 앞 땅 행)에서 아무 질량도 덮지 않는 칸은 **투명**으로 둔다 — 지도 바닥이 마당 띠로 비친다
+    (테마 땅 램프로 칠하지 않는다: 건물 그림이 길·잔디·눈 어느 바닥에도 놓이게).
+  - 그림자: 앞 질량마다 뒤 질량 벽·마당 띠 위에 버들항 그림자(12,14,20,α88)를 얹는다 — 앞 질량 실루엣을 오른쪽으로
+    w = round(겹친 높이/3) px, 아래로 EAVE_DROP px 민 모양에서 앞 질량 자신을 뺀 것(빛은 왼쪽 위). 지붕·앞 질량 위에는 없다.
+  A10(깊이) 질량마다 자기 벽 바닥이 자기 땅 행(그림 맨 아래 − depth 칸)의 모든 열을 덮고 그 아래에 자기 화소가 없다(뜨지도
+       묻히지도 않는다) · 층은 모두 2칸
+  A7(깊이) 가로로 닿거나 겹치고, depth > 0 질량마다 그보다 앞 질량 하나가 가로로 겹치며 화면에서 맞닿는다(빈 하늘 띠 금지)
+  A1(깊이) 문 하나 · 문 질량이 가장 앞 depth · 문 앞 칸(문 바로 아래)이 그림 밖이거나 어느 질량도 덮지 않은 땅이다
+  A3·A6(깊이) 박공 정면은 폭 4~6칸, depth_rows 2~3, 지붕 비율은 projection.gable_front_band() 실측 밴드
 """
 import numpy as np
 
@@ -68,6 +81,12 @@ DEPTH_ROWS = (2, 6)
 # 물러나는 지붕(박공 정면·외쪽)은 지붕이 실루엣의 대부분이다(사용자 판정 2026-10-22, 높은 3/4 카메라) —
 # 벽은 질량 아래 띠. 옛 A6 밴드(버들항 모임지붕 실측)는 용마루가 정면과 나란한 지붕의 것이라 여기 쓰지 않는다.
 RECEDING_MIN, RECEDING_MAX = 0.50, 0.85
+# 깊이 땅 문법(r7): 박공 정면 지붕을 짧게(오두막·날개 2행, 회관 3행), 날개 최소 4칸.
+DEPTH_GRAMMAR = 'r7'
+GF_COLS_DEPTH = (4, 6)
+GF_DEPTH_ROWS_DEPTH = (2, 3)
+EAVE_DROP = 2
+SHADOW_RGB, SHADOW_ALPHA = (12, 14, 20), 88
 RIDGE_STEP = 6.0
 SLOPE_STEP = 8.0
 ROOF_KINDS = ('roof',)
@@ -132,9 +151,13 @@ def requires_gable_front(theme, rid):
     """시드 판의 requireGableFront(style-r5 부터) — 건물마다 gable_front 질량이 있어야 한다(A15)."""
     return bool(((dot.seed(theme).get('rounds') or {}).get(rid or '') or {}).get('requireGableFront'))
 
+def depth_ground(theme, rid):
+    """판이 깊이 땅 문법(grammar r7)이면 True — 옛 판(r3~r6)은 A10(한 땅 행)을 그대로 둔다(영수증의 조립 해시가 바뀌지 않게)."""
+    return ((dot.seed(theme).get('rounds') or {}).get(rid or '') or {}).get('grammar') == DEPTH_GRAMMAR
+
 def round_buildings(theme, rid=None):
-    """그 판의 레시피. 판이 requireGableFront 면 사본에 `_requireGableFront` 를 붙여 assemble 이 A15 를 본다 —
-    조립·검수·마을·시트 어느 경로로 조립해도 같은 관문을 거친다."""
+    """그 판의 레시피. 판이 requireGableFront 면 사본에 `_requireGableFront` 를, 깊이 땅 문법(r7)이면 `_depthGround` 를
+    붙여 assemble 이 A15·깊이 규칙을 본다 — 조립·검수·마을·시트 어느 경로로 조립해도 같은 관문을 거친다."""
     s = dot.seed(theme)
     ids = ((s.get('rounds') or {}).get(rid or '') or {}).get('buildings')
     if not ids:
@@ -143,6 +166,8 @@ def round_buildings(theme, rid=None):
     out = [by[i] for i in ids if i in by]
     if requires_gable_front(theme, rid):
         out = [dict(b, _requireGableFront=True) for b in out]
+    if depth_ground(theme, rid):
+        out = [dict(b, _depthGround=True) for b in out]
     return out
 
 
@@ -207,13 +232,17 @@ def _receding_roof(m, items):
             'back_h': back_pc['size'][1], 'front_h': front_pc['size'][1], 'body_h': max(body_h),
             'body_hs': body_h}, None
 
-def assemble(recipe, items, pal, theme, require_gable_front=None):
+def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=None):
     """items = {항목 id: {'item': 시드 항목, 'img': PIL}}. 반환 {img, kit, checks, pieces, door, height, width, masses}.
 
-    require_gable_front 가 None 이면 레시피의 `_requireGableFront`(round_buildings 가 판 플래그로 붙인다)를 따른다."""
+    require_gable_front·depth_ground 가 None 이면 레시피의 `_requireGableFront`·`_depthGround`(round_buildings 가 판
+    플래그로 붙인다)를 따른다."""
     checks = []
     if require_gable_front is None:
         require_gable_front = bool(recipe.get('_requireGableFront'))
+    if depth_ground is None:
+        depth_ground = bool(recipe.get('_depthGround'))
+    lift = (lambda p: p['depth']) if depth_ground else (lambda p: 0)
     missing = sorted(needed(recipe) - set(items))
     if missing:
         return {'img': None, 'kit': None, 'pieces': [], 'door': None, 'masses': [],
@@ -272,7 +301,7 @@ def assemble(recipe, items, pal, theme, require_gable_front=None):
         plans.append(plan)
 
     width = max(p['x'] + p['cols'] for p in plans)
-    height = max(p['h'] + p['rise'] for p in plans)
+    height = max(p['h'] + p['rise'] + lift(p) for p in plans)
     cv = dot.Cv(width * dot.T, height * dot.T)
     owner = np.full((height * dot.T, width * dot.T), -1, int)
     owner_plan = np.full((height * dot.T, width * dot.T), -1, int)
@@ -358,8 +387,9 @@ def assemble(recipe, items, pal, theme, require_gable_front=None):
         plan['top'] = top
 
     for plan in sorted(plans, key=lambda p: -p['depth']):
-        y = height - plan['h']
+        y = height - plan['h'] - lift(plan)
         top = y
+        plan['y0'], plan['ground'] = y, y + plan['h']
         if plan['kind'] in RECEDING:
             m = plan['m']
             plan['roof_recs'] = []
@@ -429,6 +459,8 @@ def assemble(recipe, items, pal, theme, require_gable_front=None):
     if doors:
         checks.append(_r('A1', 'FAIL', not hidden,
                          '문이 보인다' if not hidden else f'문이 앞 질량에 가려진다: {sorted(set(hidden))}'))
+    if doors and depth_ground:
+        checks.append(_a1_depth(plans, doors, op, height))
 
     gaps = []
     for plan in plans:
@@ -464,7 +496,7 @@ def assemble(recipe, items, pal, theme, require_gable_front=None):
     for plan in plans:
         tag = plan['m']['id']
         if plan['kind'] in RECEDING:
-            bad3 += _a3_receding(plan)
+            bad3 += _a3_receding(plan, depth_ground)
             continue
         if roof_kind(plan['roof_item']) == 'spire':
             if plan['cols'] not in (1, 2):
@@ -486,15 +518,17 @@ def assemble(recipe, items, pal, theme, require_gable_front=None):
     if not op[bottom].any():
         off.append('그림 맨 아래 행이 비었다 — 건물이 뜬다')
     for plan in plans:
+        own_bottom = bottom - lift(plan) * dot.T
+        mine = wall_px[plan['idx']] if depth_ground else op
         for i in range(plan['cols']):
             x = (plan['x'] + i) * dot.T
-            if not op[bottom, x:x + dot.T].any() and not op[bottom + 1:, x:x + dot.T].any():
-                off.append(f'{plan["m"]["id"]} {plan["x"] + i}열이 자기 바닥(행 {bottom // dot.T})에도 안 닿는다')
+            if not mine[own_bottom, x:x + dot.T].any() and not mine[own_bottom + 1:, x:x + dot.T].any():
+                off.append(f'{plan["m"]["id"]} {plan["x"] + i}열이 자기 바닥(행 {own_bottom // dot.T})에도 안 닿는다')
     checks.append(_r('A4', 'FAIL', not off,
                      '맨 아래 불투명 행이 칸 경계 — 기단 없으면 벽이 땅에 닿는다' if not off
                      else f'건물이 뜬다/바닥보다 아래: {off[:4]}'))
 
-    checks.append(_a10(plans, op, height))
+    checks.append(_a10_depth(plans, wall_px, height) if depth_ground else _a10(plans, op, height))
 
     a5 = [_a5([p for p in placed if p['mass'] == plan['m']['id']]) for plan in plans]
     bad5 = [x for x in a5 if not x['ok']]
@@ -506,7 +540,11 @@ def assemble(recipe, items, pal, theme, require_gable_front=None):
     for plan in plans:
         ratio = plan['rh'] / max(plan['h'], 1)
         kind = plan['roof_kind']
-        if kind in RECEDING:
+        if kind == GABLE_FRONT and depth_ground:
+            lo, hi = gable_front_band()
+            ok = lo - 1e-9 <= ratio <= hi + 1e-9
+            span = f'{lo:.2f}~{hi:.2f} (박공 정면 — 투영 안내도 오두막·날개·회관 비율 실측, 짧은 지붕)'
+        elif kind in RECEDING:
             ok = RECEDING_MIN <= ratio <= RECEDING_MAX
             span = (f'{RECEDING_MIN:.2f}~{RECEDING_MAX:.2f} ({kind} — 물러나는 지붕이 실루엣의 대부분, '
                     '벽은 아래 띠)')
@@ -522,7 +560,7 @@ def assemble(recipe, items, pal, theme, require_gable_front=None):
         checks.append(_r('A6', 'FAIL', ok,
                          f'{plan["m"]["id"]} 지붕 {plan["rh"]}행 / 질량 {plan["h"]}행 = {ratio:.2f} ({span})'))
 
-    checks.append(_a7(plans, len(masses(recipe)) > 1))
+    checks.append(_a7(plans, len(masses(recipe)) > 1, depth_ground))
 
     ridge_bad = []
     for plan in plans:
@@ -559,12 +597,14 @@ def assemble(recipe, items, pal, theme, require_gable_front=None):
                          '이 판은 requireGableFront — 모든 질량이 용마루가 정면과 나란한 지붕(평평한 정면 입면)이다. '
                          'gable_front 질량이 하나 이상 있어야 한다'))
 
+    shadow = cast_shadows(cv.a, plans, owner_plan, owner_kind, height) if depth_ground else np.zeros(op.shape, bool)
     door_at = [d['at'] for d in doors]
-    kit = _kit(recipe, plans, placed, width, height, doors)
-    return {'img': cv, 'kit': kit, 'checks': checks, 'pieces': placed,
+    kit = _kit(recipe, plans, placed, width, height, doors, depth_ground)
+    kit['shadowPx'] = int(shadow.sum())
+    return {'img': cv, 'kit': kit, 'checks': checks, 'pieces': placed, 'shadow': shadow,
             'door': door_at[0] if door_at else None, 'height': height, 'width': width,
             'masses': [{'id': p['m']['id'], 'kind': p['kind'], 'x': p['x'], 'depth': p['depth'], 'cols': p['cols'],
-                        'rows': p['h'], 'top': p['top'], 'roof': p['roof'],
+                        'rows': p['h'], 'top': p['top'], 'ground': p['ground'], 'roof': p['roof'],
                         'walls': [w['item'] for w in p['walls']]} for p in plans]}
 
 def _piece_of(item, role):
@@ -598,13 +638,36 @@ def mass_rows(m, items):
     return roof + walls + band * max(0, int(m.get('storeys') or len(m.get('walls') or [])) - 1) + base
 
 
-def mass_problems(ms):
+def mass_problems(ms, rows=None):
+    """질량 배치 계약. rows(질량 id → 세로 칸 수)를 주면 깊이 땅 문법: 질량마다 화면 사각형(가로 x~x+cols,
+    세로 땅에서 depth~depth+rows 칸)이 서로 겹치거나 변을 맞대어 하나로 이어진다(질량 사이 빈 하늘 띠 금지).
+    없으면 옛 규칙(depth 차 ≤ 1)."""
     if len(ms) < 2:
         return []
     bad = []
     depths = [int(m.get('depth') or 0) for m in ms]
-    if max(depths) - min(depths) > 1:
+    if rows is None and max(depths) - min(depths) > 1:
         bad.append(f'depth 차 {max(depths) - min(depths)} > 1 — 질량 사이에 빈 칸 행이 생긴다')
+    if rows is not None:
+        rect = {m['id']: (int(m.get('x') or 0), int(m.get('x') or 0) + int(m['cols']),
+                          int(m.get('depth') or 0), int(m.get('depth') or 0) + int(rows[m['id']])) for m in ms}
+
+        def touch(a, b):
+            ax0, ax1, ay0, ay1 = rect[a]
+            bx0, bx1, by0, by1 = rect[b]
+            h, v = min(ax1, bx1) - max(ax0, bx0), min(ay1, by1) - max(ay0, by0)
+            return h >= 0 and v >= 0 and (h > 0 or v > 0)
+        seen, todo = set(), [ms[0]['id']]
+        while todo:
+            a = todo.pop()
+            if a in seen:
+                continue
+            seen.add(a)
+            todo += [m['id'] for m in ms if m['id'] not in seen and touch(a, m['id'])]
+        for m in ms:
+            if m['id'] not in seen:
+                bad.append(f'{m["id"]}(depth {m.get("depth") or 0}) 가 다른 질량과 화면에서 닿지 않는다 — '
+                           '질량 사이에 빈 하늘 띠가 생긴다')
     spans = sorted((int(m.get('x') or 0), int(m.get('x') or 0) + int(m['cols']), m['id']) for m in ms)
     end = spans[0][1]
     for x0, x1, mid in spans[1:]:
@@ -775,6 +838,101 @@ def _a10(plans, op, height):
               if not bad else '; '.join(bad))
 
 
+def _a10_depth(plans, wall_px, height):
+    """깊이 땅(A10 대체): 질량마다 자기 벽(벽·층 띠·기단) 화소가 자기 땅 행(그림 맨 아래 − depth 칸)의 모든 칸을
+    덮고, 그 아래에는 자기 화소가 없다. 다른 질량에 가려진 화소도 자기 것으로 잔다(가림은 뜨는 것이 아니다)."""
+    T = dot.T
+    bad = []
+    for p in plans:
+        tag = p['m']['id']
+        want = height - p['depth']
+        if p['ground'] != want:
+            bad.append(f'{tag} 땅 행 {p["ground"]} ≠ 그림 맨 아래 {height} − depth {p["depth"]}')
+        g = p['ground'] * T - 1
+        own = wall_px[p['idx']]
+        for i in range(p['cols']):
+            x = (p['x'] + i) * T
+            if not own[g, x:x + T].any():
+                bad.append(f'{tag} {p["x"] + i}열 자기 땅 행({p["ground"] - 1})에 벽 바닥이 없다 — 질량이 떴다')
+        if own[g + 1:].any():
+            bad.append(f'{tag} 자기 땅 행 아래로 벽 화소 {int(own[g + 1:].sum())}px — 땅에 묻혔다')
+    for p in plans:
+        hs = {w['h'] for w in p['walls']}
+        if hs and hs != {STOREY_CELLS}:
+            bad.append(f'{p["m"]["id"]} 벽 높이 {sorted(hs)} — 층은 {STOREY_CELLS}칸이다')
+    return _r('A10', 'FAIL', not bad,
+              '질량마다 자기 땅 행(맨 아래 − depth)에 벽 바닥이 선다: '
+              + ', '.join(f'{p["m"]["id"]} d{p["depth"]}→행 {p["ground"] - 1}' for p in plans)
+              if not bad else '; '.join(bad))
+
+
+def _a1_depth(plans, doors, op, height):
+    """깊이 땅의 문: 문 질량이 가장 앞 depth 이고, 문 바로 아래 칸(문 앞)이 그림 밖이거나 빈 땅이다."""
+    T = dot.T
+    front = min(p['depth'] for p in plans)
+    bad = []
+    for d in doors:
+        if d['depth'] != front:
+            bad.append(f'문이 {d["mass"]}(depth {d["depth"]}) — 가장 앞 질량(depth {front})에 둔다')
+        fx, fy = d['at'][0], d['at'][1] + d['rec']['size'][1]
+        if fy < height:
+            cell = op[fy * T:(fy + 1) * T, fx * T:(fx + 1) * T]
+            if cell.any():
+                bad.append(f'문 앞 칸 ({fx},{fy}) 이 막혔다(불투명 {int(cell.sum())}px) — 문 앞은 걸을 수 있는 땅')
+    return _r('A1', 'FAIL', not bad,
+              f'문은 가장 앞 질량(depth {front}), 문 앞 칸은 땅' if not bad else '; '.join(bad))
+
+
+def cast_shadows(a, plans, owner_plan, owner_kind, height):
+    """앞 질량 F 마다, 더 뒤 질량 B 의 보이는 벽(벽·층 띠·기단) 화소와 B 앞 마당 띠(투명, B 땅 행 ~ F 땅 행, B 열)에
+    버들항 그림자를 얹는다. 모양 = F 실루엣을 오른쪽으로 w, 아래로 EAVE_DROP px 민 것 − F 자신.
+    w = round(겹친 높이 / 3), 겹친 높이 = F 화면 행 ∩ [B 벽 꼭대기, F 땅 행). 반환: 그림자 화소 마스크."""
+    T = dot.T
+    H, W = owner_plan.shape
+    transparent = a[:, :, 3] == 0
+    is_wall = (owner_kind == 'wall') | (owner_kind == 'band') | (owner_kind == 'base')
+    rows = np.arange(H)[:, None]
+    cols = np.arange(W)[None, :]
+    out = np.zeros((H, W), bool)
+    for F in plans:
+        fmask = owner_plan == F['idx']
+        if not fmask.any():
+            continue
+        f_top, f_bot = F['y0'] * T, F['ground'] * T
+        for B in plans:
+            if B['depth'] <= F['depth'] or not B.get('storey_rows'):
+                continue
+            b_wall_top = B['storey_rows'][0][1] * T
+            overlap = f_bot - max(f_top, b_wall_top)
+            if overlap <= 0:
+                continue
+            w = max(1, int(round(overlap / 3)))
+            sh = np.zeros((H, W), bool)
+            sh[EAVE_DROP:, w:] = fmask[:H - EAVE_DROP, :W - w]
+            bx0, bx1 = B['x'] * T, (B['x'] + B['cols']) * T
+            bwall = (owner_plan == B['idx']) & is_wall
+            yard = transparent & (rows >= B['ground'] * T) & (rows < f_bot) & (cols >= bx0) & (cols < bx1)
+            out |= sh & ~fmask & (bwall | yard)
+    if out.any():
+        k = SHADOW_ALPHA / 255.0
+        op = out & ~transparent
+        rgb = a[:, :, :3].astype(float)
+        rgb[op] = rgb[op] * (1 - k) + np.array(SHADOW_RGB, float) * k
+        a[:, :, :3] = np.round(rgb).astype(np.uint8)
+        clear = out & transparent
+        a[clear, :3] = SHADOW_RGB
+        a[clear, 3] = SHADOW_ALPHA
+    return out
+
+
+def gable_front_band():
+    """깊이 땅 문법의 박공 정면 A6 밴드 — 투영 안내도(오두막·날개·회관)를 그려 잰 지붕/질량 비율의 최소~최대."""
+    if not hasattr(gable_front_band, 'cache'):
+        import projection
+        gable_front_band.cache = projection.gable_front_band()['band']
+    return gable_front_band.cache
+
+
 def _a11(plans, pal):
     """탑 지붕(첨탑·원뿔) — 탑 몸통보다 좌우 2px 썩만 넓고, 건물 주 지붕과 같은 재료 램프."""
     bad = []
@@ -804,15 +962,22 @@ def _a11(plans, pal):
               '탑 지붕은 탑 몸통 + 좌우 2px 이내이고 주 지붕과 같은 램프' if not bad else '; '.join(bad))
 
 
-def _a3_receding(plan):
+def receding_limits(kind, depth_ground=False):
+    """(폭 범위, depth_rows 범위). 깊이 땅 문법의 박공 정면은 폭 4~6·depth_rows 2~3(짧은 지붕, 넓은 날개)."""
+    if kind == GABLE_FRONT:
+        return (GF_COLS_DEPTH, GF_DEPTH_ROWS_DEPTH) if depth_ground else (GF_COLS, DEPTH_ROWS)
+    return LEAN_COLS, DEPTH_ROWS
+
+
+def _a3_receding(plan, depth_ground=False):
     m = plan['m']
     tag = m['id']
     bad = []
-    lo, hi = GF_COLS if plan['kind'] == GABLE_FRONT else LEAN_COLS
+    (lo, hi), (d0, d1) = receding_limits(plan['kind'], depth_ground)
     if not lo <= plan['cols'] <= hi:
         bad.append(f'{tag} {plan["kind"]} 폭 {plan["cols"]}칸 — {lo}~{hi}칸')
-    if not DEPTH_ROWS[0] <= m['depth_rows'] <= DEPTH_ROWS[1]:
-        bad.append(f'{tag} depth_rows {m["depth_rows"]} — {DEPTH_ROWS[0]}~{DEPTH_ROWS[1]}행(지붕이 물러나는 길이)')
+    if not d0 <= m['depth_rows'] <= d1:
+        bad.append(f'{tag} depth_rows {m["depth_rows"]} — {d0}~{d1}행(지붕이 물러나는 길이)')
     if plan['back_pc']['size'][0] != plan['cols'] or plan['front_pc']['size'][0] != plan['cols']:
         bad.append(f'{tag} 뒤 끝 {plan["back_pc"]["size"][0]}칸·앞 조각 {plan["front_pc"]["size"][0]}칸 ≠ 몸통 {plan["cols"]}칸')
     body_w = sum(pc['size'][0] for pc in plan['body'])
@@ -976,10 +1141,11 @@ def _a14(plans, roof_px, wall_px):
     return _r('A14', 'FAIL', not bad, f'지붕 위 부속 {n}개가 지붕 면에 얹힌다' if not bad else '; '.join(bad))
 
 
-def _a7(plans, multi):
+def _a7(plans, multi, depth_ground=False):
     if not multi:
         return _r('A7', 'FAIL', True, '질량 하나 — 떨어짐 없음')
-    bad = mass_problems([p['m'] for p in plans])
+    bad = mass_problems([p['m'] for p in plans],
+                        {p['m']['id']: p['h'] for p in plans} if depth_ground else None)
     if not any(p['depth'] == 0 for p in plans):
         bad.append('앞줄(depth 0) 질량이 없다 — 건물이 떠 있다')
     return _r('A7', 'FAIL', not bad,
@@ -1014,7 +1180,7 @@ def _a5(placed):
         return _r('A5', 'FAIL', False, '맞닿은 조각 쌍이 없다 — 배치가 잘못됐다')
     return _r('A5', 'FAIL', not bad, '맞닿은 조각 이음 어긋남 ' + ', '.join(bad) if bad else f'맞닿은 조각 {pairs}쌍 이음 통과')
 
-def _kit(recipe, plans, placed, width, height, doors):
+def _kit(recipe, plans, placed, width, height, doors, depth_ground=False):
     lower = [['.'] * width for _ in range(height)]
     upper = [['.'] * width for _ in range(height)]
     walk = [['.'] * width for _ in range(height)]
@@ -1050,9 +1216,10 @@ def _kit(recipe, plans, placed, width, height, doors):
         'walkGrid': [''.join(r) for r in walk],
         'door': list(doors[0]['at']) if doors else None,
         'masses': [{'id': p['m']['id'], 'x': p['x'], 'depth': p['depth'], 'cols': p['cols'], 'rows': p['h'],
-                    'top': p['top'], 'roof': p['roof'], 'walls': [w['item'] for w in p['walls']],
+                    'top': p['top'], 'ground': p['ground'], 'roof': p['roof'], 'walls': [w['item'] for w in p['walls']],
                     'storeys': p['m']['storeys'], 'band': p.get('band'), 'base': p.get('base')} for p in plans],
         'walkNote': 'X 막힘 · ★ 지나감(그림이 사람 위 — 처마·지붕) · o 문 칸 · . 지나감',
+        'depthGround': bool(depth_ground),
     }
 
 def d_belongs(plan, doors):

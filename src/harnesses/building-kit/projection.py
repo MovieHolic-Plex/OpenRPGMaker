@@ -25,7 +25,7 @@ import dot  # noqa: E402
 
 T = dot.T
 SCALE = 4
-NAMES = ('gable-front', 'l-combo')
+NAMES = ('gable-front', 'l-combo', 'wing-depth')
 
 BG = 58
 GRID = 66
@@ -46,7 +46,9 @@ TONE = {
     'hip_ridge': 236,
     'chimney': 132,
     'chimney_top': 224,
+    'yard': 112,
 }
+SHADOW_GREY, SHADOW_K = 14, 88 / 255.0   # 버들항 그림자 (12,14,20,α88) 의 무채색 근사
 LEGEND = {
     'gable-front': (('ridge', 'ridge: 2px vertical line, front apex -> back apex'), ('slope_l', 'left slope (lit, upper-left light)'),
                     ('slope_r', 'right slope (shade)'), ('edge', 'back end ^ / gable verge'),
@@ -54,6 +56,9 @@ LEGEND = {
     'l-combo': (('hip_top', 'main roof, ridge parallel to front (behind)'), ('hip_ridge', 'main ridge'),
                 ('ridge', 'wing ridge (recedes north)'), ('slope_l', 'wing left slope (lit)'), ('slope_r', 'wing right slope (shade)'),
                 ('valley', 'valley ^ = wing pixels over main roof'), ('chimney', 'chimney standing on the roof')),
+    'wing-depth': (('hip_top', 'main block set back (depth 5): stands 5 rows higher'), ('wall', 'main wall bottom visible'),
+                   ('yard', 'yard strip = open ground (transparent in kit)'), ('ridge', 'front wing (depth 0, door)'),
+                   ('shadow', 'wing shadow: right of wing on main wall + yard'), ('edge', 'wing back ^ in front of main wall')),
 }
 
 
@@ -63,14 +68,14 @@ def _edge(x, w, h):
     return int(round(d * (h - 1)))
 
 
-def gable_front(cv, x0, y0, cols, pitch, depth, storeys, back='gable'):
-    """박공 정면 질량 하나를 (x0, y0) 칸에 그린다. 반환: 질량 높이(칸)."""
+def gable_front(cv, x0, y0, cols, pitch, depth, storeys, back='gable', band=0):
+    """박공 정면 질량 하나를 (x0, y0) 칸에 그린다. band = 층 띠 행 수(층 사이마다). 반환: 질량 높이(칸)."""
     w, p = cols * T, pitch * T
     X0, Y0 = x0 * T, y0 * T
     c = w // 2
     body0, front0 = p, p + depth * T
     wall0 = front0 + p
-    total = wall0 + storeys * 2 * T
+    total = wall0 + storeys * 2 * T + band * T * max(0, storeys - 1)
     for x in range(w):
         e = _edge(x, w, p)
         side = 'slope_l' if x < c else 'slope_r'
@@ -90,6 +95,9 @@ def gable_front(cv, x0, y0, cols, pitch, depth, storeys, back='gable'):
             cv[Y0 + y, X0 + x] = TONE[tone]
     for y in range(wall0, wall0 + 2):
         cv[Y0 + y, X0:X0 + w] = TONE['beam']
+    for s in range(1, storeys):
+        by = wall0 + s * 2 * T + (s - 1) * band * T
+        cv[Y0 + by:Y0 + by + band * T, X0:X0 + w] = TONE['beam']
     door_x = X0 + c - 6
     cv[Y0 + total - 26:Y0 + total, door_x:door_x + 12] = TONE['door']
     return total // T
@@ -128,6 +136,27 @@ def ridge_side(cv, x0, y0, cols, roof_rows, storeys):
     return total // T
 
 
+# 깊이 땅 문법(r7)의 박공 정면 비율 기준 — (이름, 폭, 물매 행, depth_rows, 층, 층 띠 행). 사용자 판정 2026-10-22
+# 「박공 지붕이 너무 길다(머리가 길다)」: 오두막·날개 2행, 회관 3행. 물매 2행 = g4·b4·g5 조각 높이.
+BAND_CONFIGS = (('cottage', 4, 2, 2, 1, 0), ('wing', 4, 2, 2, 1, 0), ('hall', 5, 2, 3, 2, 1))
+ROOF_TONES = ('ridge', 'slope_l', 'slope_r', 'edge', 'valley', 'gable')
+
+
+def gable_front_band():
+    """기준 질량을 안내도 기하로 그려 가운데 열에서 지붕 톤 화소 / 질량 화소를 잔다.
+    반환 {'ratios': {이름: 비율}, 'band': (최소, 최대)} — assemble A6(깊이 땅 문법) 박공 정면 밴드."""
+    roof = {TONE[k] for k in ROOF_TONES}
+    ratios = {}
+    for name, cols, pitch, dr, storeys, band in BAND_CONFIGS:
+        rows = 2 * pitch + dr + 2 * storeys + band * max(0, storeys - 1)
+        cv = np.full(((rows + 2) * T, (cols + 2) * T), BG, np.uint8)
+        gable_front(cv, 1, 1, cols, pitch, dr, storeys, band=band)
+        col = cv[T:(rows + 1) * T, T + cols * T // 2 - 1]
+        n_roof = int(sum(1 for v in col if int(v) in roof))
+        ratios[name] = n_roof / len(col)
+    return {'ratios': ratios, 'band': (min(ratios.values()), max(ratios.values()))}
+
+
 def chimney(cv, x0, y0):
     X0, Y0 = x0 * T, y0 * T
     cv[Y0 + 4:Y0 + 2 * T, X0 + 4:X0 + 12] = TONE['chimney']
@@ -152,11 +181,50 @@ def render(name):
         chimney(cv, 6, ground - main_h - 1)
         wing_h = 1 + 2 + 1 + 2
         gable_front(cv, 3, ground - wing_h, 3, 1, 2, 1, back='valley')
+    elif name == 'wing-depth':
+        cv = wing_depth()
     else:
         raise KeyError(f'모르는 안내도 {name!r} — {", ".join(NAMES)}')
     rgb = np.repeat(cv[:, :, None], 3, axis=2)
     a = np.dstack([rgb, np.full(cv.shape, 255, np.uint8)])
     return Image.fromarray(a, 'RGBA')
+
+
+WING_DEPTH = {'cols': 10, 'rows': 14, 'main_x': 1, 'main_cols': 8, 'main_roof': 3, 'main_storeys': 2, 'depth': 5,
+              'wing_x': 3, 'wing_cols': 4, 'pitch': 2, 'depth_rows': 2, 'eave_drop': 2}
+
+
+def wing_depth(geo=None):
+    """깊이 계단 안내도(깊이 땅 문법 r7): 앞 날개(depth 0) 뒤에 depth 칸 물러난 본채가 화면에서 그만큼 더 높이 서고,
+    날개 양옆에 본채 벽 밑과 마당 띠가 보이며, 날개가 오른쪽(빛은 왼쪽 위)으로 본채 벽·마당에 그림자를 드리운다.
+    날개 뒤 박공 꼭대기(땅에서 8칸)는 본채 처마(5+4 = 9칸) 아래 벽 앞에 선다. 반환: 무채색 uint8 배열."""
+    g = dict(WING_DEPTH, **(geo or {}))
+    cv = np.full((g['rows'] * T, g['cols'] * T), BG, np.uint8)
+    _grid(cv)
+    ground = g['rows'] - 1
+    d = g['depth']
+    main_h = g['main_roof'] + g['main_storeys'] * 2
+    yard = np.zeros(cv.shape, bool)
+    yard[(ground - d) * T:ground * T, g['main_x'] * T:(g['main_x'] + g['main_cols']) * T] = True
+    cv[yard] = TONE['yard']
+    ridge_side(cv, g['main_x'], ground - d - main_h, g['main_cols'], g['main_roof'], g['main_storeys'])
+    chimney(cv, g['main_x'] + g['main_cols'] - 2, ground - d - main_h - 1)
+    main_wall = np.zeros(cv.shape, bool)
+    main_wall[(ground - d - g['main_storeys'] * 2) * T:(ground - d) * T, g['main_x'] * T:(g['main_x'] + g['main_cols']) * T] = True
+    wing_h = 2 * g['pitch'] + g['depth_rows'] + 2
+    probe = np.full(cv.shape, 0, np.uint8)
+    gable_front(probe, g['wing_x'], ground - wing_h, g['wing_cols'], g['pitch'], g['depth_rows'], 1)
+    wing = probe > 0
+    gable_front(cv, g['wing_x'], ground - wing_h, g['wing_cols'], g['pitch'], g['depth_rows'], 1)
+    overlap = ground * T - max((ground - wing_h) * T, (ground - d - g['main_storeys'] * 2) * T)
+    w = max(1, int(round(overlap / 3)))
+    sh = np.zeros(cv.shape, bool)
+    e = g['eave_drop']
+    sh[e:, w:] = wing[:-e, :-w]
+    sh &= ~wing & (main_wall | yard)
+    cv[sh] = np.round(cv[sh] * (1 - SHADOW_K) + SHADOW_GREY * SHADOW_K).astype(np.uint8)
+    wing_depth.last = {'shadow': sh, 'wing': wing, 'yard': yard, 'main_wall': main_wall, 'w': w, 'ground': ground}
+    return cv
 
 
 def _grid(cv):
@@ -176,7 +244,7 @@ def labelled(name, scale=SCALE):
     d = ImageDraw.Draw(out)
     for i, (key, text) in enumerate(legend):
         y = pad + i * lh
-        g = TONE[key]
+        g = TONE[key] if key in TONE else int(round(TONE['wall'] * (1 - SHADOW_K) + SHADOW_GREY * SHADOW_K))
         d.rectangle([big.width + pad, y, big.width + pad + sw, y + sw], fill=(g, g, g, 255), outline=(200, 200, 200, 255))
         d.text((big.width + pad * 2 + sw, y + 8), text, fill=(232, 232, 232, 255))
     return out
