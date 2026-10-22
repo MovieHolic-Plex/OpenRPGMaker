@@ -252,8 +252,10 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       meeting: nearestFree(project, officeRoom, { x: 10, y: 14 }),
       // 발표 배치(VQA r4 M3): 발표자 둘은 탁자 동쪽 끝에 나란히 서서 서쪽(탁자)을 본다 — 한 열로 쌓이지 않는다.
       // 본부장은 유리문 가까운 북쪽 의자(6,16), 민호는 남쪽 의자(5,19)에 앉고, 팀장은 서쪽 끝(3,17)에 선다.
-      meetingSeat: { x: 8, y: 17 },
-      meetSeats: [{ x: 8, y: 17 }, { x: 9, y: 17 }, { x: 4, y: 16 }, { x: 3, y: 17 }, { x: 7, y: 16 }],
+      // 금요일 발표(VQA r14 M: 발표자 둘이 위아래로 겹쳐 섰다): 발표자 서하·지후는 탁자 동쪽 끝 북쪽 줄(y16)에 나란히 서서
+      // 아래를 보고, 본부장·팀장·민호는 남쪽 줄(y19)에 나란히 서서 위를 본다. 아무도 위아래로 붙어 서지 않고, 모두 x≥7 이라 왼쪽 흉상에 가리지 않는다.
+      meetingSeat: { x: 8, y: 16 },
+      meetSeats: [{ x: 8, y: 16 }, { x: 9, y: 16 }, { x: 9, y: 19 }, { x: 7, y: 19 }, { x: 8, y: 19 }],
       whiteboard: nearestFree(project, officeRoom, { x: 23, y: 10 }),
     },
     rooftop: {
@@ -283,7 +285,7 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   const officeFri = cloneMap(project, FL_MAP.office, FL_MAP.officeFri, "스튜디오 늘봄 · 금요일");
   // 금요일 회의실은 사무층 맨 아래(y 13~20)라 카메라가 맵 끝에 걸려 다섯 사람이 흉상·대화창 사이에 끼었다(VQA r10).
   // 바깥 채움 두 줄(맨 아래 두 줄 무늬)을 FRI_PAD 줄 더 덧대 카메라가 회의실을 화면 위쪽에 둘 수 있게 한다 — 덧댄 줄은 대화창 뒤다.
-  const FRI_PAD = 2, friH = officeFri.height;
+  const FRI_PAD = 4, friH = officeFri.height;
   padMapBottom(officeFri, FRI_PAD, (y) => friH - 2 + ((y - friH) % 2));
   // 덧댄 줄은 빈 칸(맵 밖과 같은 어둠)이다 — 바깥벽 무늬를 되풀이하면 대화창이 없을 때 빈 띠가 화면 1/3을 채웠다(VQA r12).
   for (let y = friH; y < friH + FRI_PAD; y++) for (let x = 0; x < officeFri.width; x++) clearMapCellForBackground(officeFri, y * officeFri.width + x);

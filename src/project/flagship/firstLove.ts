@@ -460,6 +460,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     ...say("seoha", "happy", "네, 그럼요. 반가워요."),
     { kind: "changeFriendship", npcKey: "lead", delta: 60 } as Command,
     { kind: "changeFriendship", npcKey: "minho", delta: 60 } as Command,
+    listenTo("jihu"),
     ...say("lead", "base", "그리고 서하 씨 사수. 지후 씨, 잠깐 와 볼래요?"),
     walkRoute(project, FL_MAP.office, "ev_fl_jihu_meet", jihuMeet, jihuMeetStop, [o.elevatorOut, leadMeetStop, minhoMeetStop]),
     face("ev_fl_jihu_meet", dirToward(jihuMeetStop, o.elevatorOut)),
@@ -927,7 +928,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
         face("ev_fl_w_lead", dirToward(leadSeat, jihuSeat)),
         face("ev_fl_w_jihu", dirToward(jihuSeat, leadSeat)),
         ...sayAt("lead", "left", "base", "지후 씨, 서하 씨 좀 도와줄래요?"),
-        ...say("jihu", "base", "네."),
+        ...sayAt("jihu", "left", "base", "네."),
         walkRoute(project, FL_MAP.officePm, "@player", leadFront, o.heroDesk, [jihuBeside]),
         ...comeBeside(),
         ...think("지후 선배가 내 옆으로 와 모니터를 들여다봤다. 아주 잠깐, 웃은 것 같았다."),
@@ -994,8 +995,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
   // 탁자 둘레(meetSeats): [0]=주인공(동쪽 끝) [1]=지후(주인공 오른쪽 옆 — 발표자 둘이 나란히) [2]=민호(탁자 북서 모서리 바닥) [3]=팀장(서쪽 끝) [4]=본부장(탁자 북동 모서리 바닥 — 먼저 나가는 손님이 바로 옆 유리문으로 나간다).
   // 의자 칸에는 세우지 않는다: 의자는 upper 타일이라 등받이가 얼굴을 덮고(VQA r7), 남쪽 의자 줄은 맵 맨 아래라 대화창에 가린다(VQA r5).
   const seats = o.meetSeats;
-  // 지후는 서하 바로 뒤(동쪽)가 아니라 서하 북쪽 칸 — 둘 다 서쪽(팀장)을 볼 때 서하 뒤통수를 보고 서지 않는다(VQA r13).
-  const jihuSpot = nearestFree(project, fri, { x: o.meetingSeat.x, y: o.meetingSeat.y - 1 }, 1, [o.meetingSeat, seats[2]!, seats[3]!, seats[4]!]); const clientSpot = seats[4]!; const leadSpot = seats[3]!; const minhoSpot = seats[2]!;
+  const jihuSpot = seats[1]!; const clientSpot = seats[4]!; const leadSpot = seats[3]!; const minhoSpot = seats[2]!;
   // 손님·지후는 두 번째 엘리베이터(주인공이 내린 칸이 아닌 문)로 나간다 — 엘리베이터 문 바로 앞에서 사라진다.
   const exit = { stand: { x: o.npcExit.x, y: o.npcExit.y + 1 }, door: o.npcExit };
   // 회의실에서는 승강기가 화면 밖이다 — 탑승하는 동안 카메라가 승강기 쪽으로 올라갔다가 돌아온다.
@@ -1212,9 +1212,8 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           face("ev_fl_p_jihu", "down"),
           { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [{ kind: "setThrough", enabled: true }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
           setSw("sw_fl_jihu_boarded", true),
-          ...fadeOut(1200),
+          // 에필로그는 혼자 남은 승강장 위로 흐른다 — 두 사람 그림은 「혼자 남았다」와 어긋났다(VQA r14).
           stopBgm(),
-          ...endingOpen("oprn-title-romance-campus"),
           { kind: "triggerEnding", endingId: END_B } as Command,
         ]),
       ] },
@@ -1227,9 +1226,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
         face("ev_fl_p_jihu", "down"),
         { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [{ kind: "setThrough", enabled: true }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }], repeat: false, wait: true, skippable: true } } as unknown as Command,
         setSw("sw_fl_jihu_boarded", true),
-        ...fadeOut(1200),
         stopBgm(),
-        ...endingOpen("oprn-title-romance-campus"),
           { kind: "triggerEnding", endingId: END_B } as Command,
       ] },
     ]),
@@ -1285,8 +1282,7 @@ function defineEndings(project: Project): void {
     conditions: [],
     presentation: { musicResourceId: BGM_END_B, tone: "warm", kicker: "엔딩 B · 10년 늦은 인사", credits: ENDING_CREDITS, backgroundResourceId: "oprn-title-romance-campus" },
     epilogue: [
-      epiloguePicture("oprn-title-romance-campus"),
-      { kind: "say", text: "열차가 떠나고, 승강장에 혼자 남았다. 연두색 편지지 뒤에, 낯익은 글씨." },
+      { kind: "say", text: "열차 문이 닫혔다. 승강장에 혼자 서서, 연두색 편지지를 뒤집었다. 낯익은 글씨." },
       { kind: "say", text: "‘바나나우유 님께. 그 금요일 방송, 이제야 읽어요.’" },
       { kind: "say", text: "‘나도 금요일마다 사연함을 제일 먼저 열었어요. 당신 글씨가 있는지 보려고.’" },
       { kind: "say", text: "‘잘 지내요. 진심으로. — 강지후’" },
