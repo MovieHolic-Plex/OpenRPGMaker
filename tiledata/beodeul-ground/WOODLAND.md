@@ -33,6 +33,10 @@ woodland-normal-error.png 왼쪽은 앞 나무가 뒤 나무를 가린 정상 �
 
 ## 붓으로 까는 숲 — 나무 composer·짙은 풀·숲 종류 (2026-10-20 r2 ~ 10-21 r5)
 
+> 2026-10-22: `author_beodeul_town` 마을 숲과 버들항 `place_props` 숲(dense·impassable)은 composer 가 아니라 이어진 수관 오토타일(`BEODEUL_NATURE.forestCanopy`)로 깐다 —
+> 사용자 「숲 오토타일을 제대로 적용해야 함」. 정본 `src/editor/tools/beodeulForest.ts` `shapeBeodeulCanopyMask`·`planBeodeulCanopy`·`writeBeodeulCanopy`·`plantBeodeulCanopyArea`,
+> 규칙은 `openwiki/beodeul-city.md` 「마을·붓 숲 = 이어진 수관 오토타일」. 아래 composer 는 도로 숲 벽(`author_wild_route`)·이야기 산책·공동마당 경로다.
+
 위 숲 조각(north/west/east…)은 공동마당 예제 전용 고정 그림이다. 도로 숲 벽(`author_wild_route`, 이야기 산책 맵)과 강가·해안 마을(`author_beodeul_town` river/coast) 숲은
 나무 composer(`src/project/defaults/treeComposer.ts` `composeTreesPlaced`, jp 숲 r6 와 같은 칸 쌓기)가 짓는다. 밑동은 `planBeodeulForest` 가 고른다(r3, 아래) — 칸마다 남쪽(앞) 나무부터 4·3·2층에 쌓는다 —
 앞 나무 수관이 뒤 나무 줄기를 가리고 숲 남쪽 끝 줄만 줄기·뿌리가 보인다. 정의 `src/assets/beodeulForestComposer.json`(빌더 `scripts/content/build-beodeul-forest-composer.py`), 도구 쪽 입구 `src/editor/tools/beodeulForest.ts` `composeBeodeulForest`.
