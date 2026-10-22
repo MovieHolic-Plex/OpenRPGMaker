@@ -69,6 +69,8 @@ const SE_CAN = "cc0-se-osx-wooden-01";
 // r4(사용자: 「무드에 맞게」): 귀 판정(agy Gemini)은 할당량 소진으로 못 했다 — 아래 r4 곡은 카탈로그 설명·AI 청취 설명·측정(밝기·빌드)으로
 // 골랐고 귀 점수가 없다. 옛 곡(괄호)은 Argon 귀 판정 점수가 있던 것.
 const BGM_OFFICE = "cc0-bgm-rtp-qui-001"; // 휘파람·어쿠스틱 셔플 — 월요일 아침 사무실의 밝은 빛(r4, 귀 미판정; 옛 wks-001 8.0 은 측정상 가장 어두운 곡)
+// 금요일 발표 — 쓸쓸한 기타·다운템포 비트의 «차분한 긴장»(VQA r27: 휘파람 사무실 곡이 긴장한 회의 밑에 깔렸다)
+const BGM_MEETING = "cc0-bgm-rtp-prt-001";
 const BGM_ROOF = "cc0-bgm-rtp-rad-002"; // 로파이 재즈합 — 노을 옥상(9.0)
 const BGM_NIGHT = "cc0-bgm-rtp-pon-001"; // 라운지 피아노·브러시 — 밤거리·편의점·야근(9.0)
 const BGM_MEMORY = "cc0-bgm-rtp-rst-001"; // 피아노·어쿠스틱 기타 발라드 — 회상·타이틀(9.0 / 8.0)
@@ -140,7 +142,7 @@ const panBack = (ms = 900): Command => m2("Camera Control", { mode: "return", ta
  * pan 을 주면 문이 화면 밖일 때 카메라가 승강기로 갔다가 돌아온다(회의실에서 보는 퇴장).
  * firstLoveProbe(scripts/qa/runtime/first-love-probes.mts)가 「사라지기 직전 칸 = 출구 앞」을 검사한다.
  */
-function leave(project: Project, mapId: string, eventId: string, from: Cell, exit: { stand: Cell; door: Cell }, hideSw: string, hero: Cell, alsoAvoid: readonly Cell[] = [], pan?: Cell, returnTo?: Cell & { zoom?: number }): { begin: Command; end: Command[] } {
+function leave(project: Project, mapId: string, eventId: string, from: Cell, exit: { stand: Cell; door: Cell }, hideSw: string, hero: Cell, alsoAvoid: readonly Cell[] = [], pan?: Cell & { zoom?: number }, returnTo?: Cell & { zoom?: number }): { begin: Command; end: Command[] } {
   const walkOut = walkRoute(project, mapId, eventId, from, exit.stand, [hero, ...alsoAvoid], false) as unknown as Record<string, unknown>;
   walkOut.routeTail = [{ kind: "turn", dir: dirToward(exit.stand, exit.door) }];
   const door = elevDoor(exit.door);
@@ -150,7 +152,7 @@ function leave(project: Project, mapId: string, eventId: string, from: Cell, exi
   return {
     begin: walkOut as unknown as Command,
     end: [
-      ...(pan ? [panTo(pan.x, pan.y)] : []),
+      ...(pan ? [panTo(pan.x, pan.y, 900, pan.zoom ?? 1)] : []),
       waitMoves(),
       quiet(SE_BUTTON), wait(500),
       playSe(SE_ELEVATOR), wait(300),
@@ -831,16 +833,16 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
   const o = a.office;
   const taken: Cell[] = [o.heroDesk, o.jihuDesk, o.elevatorOut];
   const leadSeat = spot(project, FL_MAP.officePm, o.leadDesk, taken);
-  // 야근하는 사람은 자리에 앉아 있다(VQA r25: 「수요일 밤 아무도 안 앉고 통로에 서 있다」). 책상 덩어리 위 의자 줄(★ 칸)에 앉히고
-  // 「위 층」 쪽으로 그려 의자 위에 앉은 모습이 된다 — 같은 층이면 ★ 의자가 몸 위에 그려졌다(VQA r22). 일어날 때 옆 바닥으로 한 걸음
-  // 나온 뒤 같은 층 쪽(스위치)으로 바꿔 걷는다(위 층 그대로 걸으면 가구 위로 지나가 보인다).
-  // 민호: 서하 책상 왼쪽 덩어리의 오른쪽 끝 의자.
-  const minhoChair = { x: o.heroDesk.x - 4, y: o.heroDesk.y - 2 };
-  const minhoStart = spot(project, FL_MAP.officePm, { x: minhoChair.x + 1, y: minhoChair.y }, taken);
+  // 야근하는 사람은 자리에 앉아 있다(VQA r25: 「수요일 밤 아무도 안 앉고 통로에 서 있다」). 책상 덩어리 아래 의자 줄(모니터 화면이
+  // 화면 쪽을 보는 줄)에 위를 보고 앉힌다 — 등받이가 허리를 가린 «뒤에서 본 앉은 사람». 위 의자 줄(★)에 아래를 보고 세우면 위 층으로
+  // 그려도 «의자 뒤에 서 있다»로 읽혔다(VQA r27). 일어날 때는 통과를 켜고 옆 바닥으로 한 걸음.
+  // 민호: 서하 책상 왼쪽 덩어리의 오른쪽 끝 아래 의자, 지후: 서하 책상 오른쪽 덩어리의 왼쪽 끝 아래 의자.
+  const minhoChair = { x: o.heroDesk.x - 4, y: o.heroDesk.y + 2 };
+  const minhoStart = { x: minhoChair.x + 1, y: minhoChair.y };
   // 지후 자리 의자(서하 책상 오른쪽 위) — 빈 의자 이벤트(후드)는 의자 칸에 두고, 지후는 그 왼쪽 바닥에 서서 일한다.
   // 의자 칸은 위층(★) 그림이라 거기 세운 인물은 의자가 몸 위로 그려졌다(VQA r22). nearestFree 는 이제 ★ 칸을 고르지 않는다.
-  const jihuChair = { x: o.heroDesk.x + 1, y: o.heroDesk.y - 2 };
-  const jihuSeat = spot(project, FL_MAP.officePm, { x: jihuChair.x - 1, y: jihuChair.y }, taken);
+  const jihuChair = { x: o.heroDesk.x + 1, y: o.heroDesk.y + 2 };
+  const jihuSeat = { x: jihuChair.x - 1, y: jihuChair.y };
   const jihuPantry = spot(project, FL_MAP.officePm, o.pantry, taken);
   // 「내 옆으로 와 모니터를 들여다봤다」(앉는 그림이 없어 의자 이야기는 뺐다, VQA r10) — 지후는 서하 왼쪽 옆 칸으로 와서 마주 본다(오른쪽 칸은 탕비실로 가는 길이 의자 칸을 지나 막힌다). 흉상 자리는 장면 내내 서하 왼쪽·지후 오른쪽으로 고정(VQA r16)(대사가 말하는 자리를 화면도 보인다).
   const jihuBeside = nearestFree(project, off, { x: o.heroDesk.x - 1, y: o.heroDesk.y }, 1, taken);
@@ -852,7 +854,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     ?? nearestFree(project, off, leadSeat, 2, taken);
   taken.push(leadFront);
   const comeBeside = (): Command[] => [
-    ...standUp("ev_fl_w_jihu", jihuChair, jihuSeat, "sw_fl_w_jihu_up"),
+    ...standUp("ev_fl_w_jihu", jihuChair, jihuSeat),
     walkRoute(project, FL_MAP.officePm, "ev_fl_w_jihu", jihuSeat, jihuBeside, [o.heroDesk], true, dirToward(jihuBeside, o.heroDesk)),
     face("@player", dirToward(o.heroDesk, jihuBeside)),
   ];
@@ -860,14 +862,13 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
   // 승강기 문(위 두 줄)이 화면 위에 잘리지 않게 퇴장 동안 카메라를 승강기 홀 쪽으로 올린다(VQA r8: 수요일 카메라가 승강기 윗부분을 자름).
   const liftView = { x: 13, y: 8 };
   const minhoOut = leave(project, FL_MAP.officePm, "ev_fl_w_minho", minhoStart, exit, "sw_fl_minho_left", o.heroDesk, [], liftView);
-  /** 의자에서 옆 바닥으로 일어선다(위 층 → 같은 층). */
-  const standUp = (eventId: string, chair: Cell, floor: Cell, sw: string): Command[] => {
+  /** 의자에서 옆 바닥으로 일어선다. */
+  const standUp = (eventId: string, chair: Cell, floor: Cell): Command[] => {
     if (Math.abs(chair.x - floor.x) + Math.abs(chair.y - floor.y) !== 1) throw new Error(`[first-love] ${eventId}: 의자 ${chair.x},${chair.y} 옆 바닥이 아니다 (${floor.x},${floor.y})`);
     return [
       { kind: "moveEvent", eventId, route: { moves: [
         { kind: "setThrough", enabled: true }, { kind: "move", dir: dirToward(chair, floor) }, { kind: "setThrough", enabled: false },
       ], repeat: false, wait: true, skippable: true } } as unknown as Command,
-      setSw(sw, true),
     ];
   };
   const leadOut = leave(project, FL_MAP.officePm, "ev_fl_w_lead", leadSeat, exit, "sw_fl_lead_left", o.heroDesk, [jihuBeside], liftView);
@@ -876,14 +877,8 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     event("ev_fl_w_lead", "오정민 팀장", leadSeat, [
       page("wl", [stageIs(V_STAGE, S.FLASH), swOff("sw_fl_lead_left")], [...say("lead", "base", "…네, 본부장님. 네. 내일 오전에요.")], { who: "lead", dir: "down" }),
     ]),
-    event("ev_fl_w_minho", "차민호", minhoChair, [
-      page("wm_sit", [swOff("sw_fl_minho_left"), swOff("sw_fl_w_minho_up")], [], { who: "minho", dir: "down", priority: "above" }),
-      page("wm", [swOff("sw_fl_minho_left"), swOn("sw_fl_w_minho_up")], [], { who: "minho", dir: "left" }),
-    ]),
-    event("ev_fl_w_jihu", "강지후", jihuChair, [
-      page("wj_sit", [stageIs(V_STAGE, S.FLASH), swOff("sw_fl_w_jihu_up")], [], { who: "jihu", dir: "down", priority: "above" }),
-      page("wj", [stageIs(V_STAGE, S.FLASH), swOn("sw_fl_w_jihu_up")], [], { who: "jihu", dir: "right" }),
-    ]),
+    event("ev_fl_w_minho", "차민호", minhoChair, [page("wm", [swOff("sw_fl_minho_left")], [], { who: "minho", dir: "up" })]),
+    event("ev_fl_w_jihu", "강지후", jihuChair, [page("wj", [stageIs(V_STAGE, S.FLASH)], [], { who: "jihu", dir: "up" })]),
     // 빈 자리는 따로 — 지후는 탕비실로 걸어가고(같은 이벤트가 위치를 들고 간다), 의자는 제자리에 남는다.
     event("ev_fl_w_chair", "강지후 자리", jihuChair, [
       page("wj_empty", [stageIs(V_STAGE, S.WED)], think(
@@ -968,7 +963,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     ...caption("수요일 오후 8시 3분."),
     // 민호는 자기 자리(서하 자리에서 네 칸)에서 일어나며 인사한다 — 멀리서 건네는 한마디.
     ...call("minho", "happy", "서하 씨, 나 먼저 가요! 내일 봐요—"),
-    ...standUp("ev_fl_w_minho", minhoChair, minhoStart, "sw_fl_w_minho_up"),
+    ...standUp("ev_fl_w_minho", minhoChair, minhoStart),
     minhoOut.begin,
     ...minhoOut.end,
     playSe(SE_MAIL),
@@ -1062,7 +1057,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
 function buildFriday(project: Project, a: FirstLoveAnchors): void {
   const fri = project.maps[FL_MAP.officeFri]!;
   const o = a.office;
-  // meetSeats: [0]=주인공(탁자 북서 끝, 발표) [1]=지후(탁자 북동 끝, 발표) [2]=민호 [3]=팀장 [4]=본부장 — 듣는 셋은 남쪽 의자에 앉아 위를 본다.
+  // meetSeats: [0]=주인공(탁자 북서 끝, 발표) [1]=지후(남쪽 의자 줄 동쪽 끝) [2]=민호 [3]=팀장 [4]=본부장 — 듣는 셋은 남쪽 의자에 앉아 위를 본다.
   // 남쪽 의자는 등이 화면 쪽이라 등받이가 하반신만 가린다(북쪽 의자는 얼굴을 덮었다, VQA r7). 맵 아래 덧댄 줄(FRI_PAD)로 카메라가
   // 회의실을 화면 위쪽에 두어 남쪽 의자 줄이 대화창에 가리지 않는다(VQA r5).
   const seats = o.meetSeats;
@@ -1070,7 +1065,8 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
   // 손님·지후는 두 번째 엘리베이터(주인공이 내린 칸이 아닌 문)로 나간다 — 엘리베이터 문 바로 앞에서 사라진다.
   const exit = { stand: { x: o.npcExit.x, y: o.npcExit.y + 1 }, door: o.npcExit };
   // 회의실에서는 승강기가 화면 밖이다 — 탑승하는 동안 카메라가 승강기 쪽으로 올라갔다가 돌아온다.
-  const elevatorView = { x: 13, y: 8 };
+  // 배율 2 그대로 승강기 쪽으로 옮긴다 — 나갈 때마다 2→1→2 로 끊겨 튀었다(VQA r27).
+  const elevatorView = { x: 19, y: 5, zoom: 2 };
   // 회의 장면 카메라: 두 배로 당겨 회의실을 화면에 채운다. 맵 폭(26)이 화면(30)보다 좁아 배율 1 에서는 카메라가 맵 가운데에 고정돼
   // 서쪽 끝 회의실이 늘 화면 구석이었고(VQA r10·r25), 아래로 내려 잡으면 빈 띠가 화면을 채웠다(VQA r26). 배율 2 면 보이는 폭이 15칸이라
   // 회의실(x 1~11)을 가운데 쪽으로 잡을 수 있고, 발표자 줄(y 16)이 화면 위에 다 들어오며 아래 앉은 둘(y 19)이 대화창 바로 위, 본부장(탁자 서쪽 머리)이 왼쪽 흉상 위에 온다.
@@ -1078,13 +1074,14 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
   // 회의실 유리문(1×2, 문 그림은 회의실 문 칸 바로 위 두 줄) — 회의 동안 열어 둔다. 닫힌 문을 사람이 그대로 지나갔다(VQA r25).
   const meetDoor: DoorSpec = { x: o.meeting.x, y: o.meeting.y - 1, w: 1, h: 2, style: "slide", hinge: "left", interior: "lit", frame: { l: 2, r: 2, t: 3, b: 1 } };
   // 본부장은 발표자 바로 앞(아래) 칸을 스치지 않고 탁자 동쪽으로 돌아 나간다(VQA r15: 서하·지후 하반신에 겹침).
-  const presenterFront = [{ x: o.meetingSeat.x, y: o.meetingSeat.y + 1 }, { x: jihuSpot.x, y: jihuSpot.y + 1 }];
+  // 지후는 남쪽 의자에 앉아 있어(r27) 발표자가 아니다 — 지후 앞(6,20)까지 막으면 탁자 남쪽 통로가 끊겨 경로가 직선(탁자 관통)으로 떨어졌다.
+  const presenterFront = [{ x: o.meetingSeat.x, y: o.meetingSeat.y + 1 }];
   const clientOut = leave(project, FL_MAP.officeFri, "ev_fl_f_client", clientSpot, exit, "sw_fl_client_left", o.meetingSeat, [jihuSpot, ...presenterFront], elevatorView, meetView);
   const jihuOut = leave(project, FL_MAP.officeFri, "ev_fl_f_jihu", jihuSpot, exit, "sw_fl_jihu_left", o.meetingSeat, [], elevatorView, meetView);
   add(fri,
     event("ev_fl_f_client", "박 본부장", clientSpot, [page("fc", [swOff("sw_fl_client_left")], [], { who: "client", dir: "right" })]),
     event("ev_fl_f_lead", "오정민 팀장", leadSpot, [page("fl", [], [], { who: "lead", dir: "up" })]),
-    event("ev_fl_f_jihu", "강지후", jihuSpot, [page("fj", [swOff("sw_fl_jihu_left")], [], { who: "jihu", dir: "down" })]),
+    event("ev_fl_f_jihu", "강지후", jihuSpot, [page("fj", [swOff("sw_fl_jihu_left")], [], { who: "jihu", dir: "up" })]),
     event("ev_fl_f_minho", "차민호", minhoSpot, [page("fm", [], [], { who: "minho", dir: "up" })]),
     door("ev_fl_f_elev2", o.npcExit, [stageIs(V_STAGE, 999)], [], think("…"), "down"),
   );
@@ -1092,7 +1089,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     panTo(meetView.x, meetView.y, 0, meetView.zoom),
     ...doorFx(meetDoor, true, 1),
     ...fadeIn(800),
-    bgm(BGM_OFFICE),
+    bgm(BGM_MEETING),
     ...caption("금요일 오후 3시. 회의실."),
     ...sayAt("lead", "left", "base", "지후 씨, 본부장님 앞인데 오늘도 후드예요?"),
     ...say("jihu", "embarrassed", "…재킷은 가방에 있어요. 이게 머리가 더 잘 돌아가서요."),
@@ -1234,8 +1231,8 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   add(street, scene("ev_fl_dinner_rain", { x: 3, y: 1 }, S.DINNER, [
     // 앞 맵에서 옮긴 카메라 좌표가 남아 빈 길을 비췄다(VQA r11) — 화면이 검을 때 서하에게 돌려 둔다.
     panBack(0),
-    // 비가 거의 안 보였다(VQA r22) — 놓친 밤은 굵은 비로.
-    { kind: "setWeather", weather: "rain", intensity: 1, transitionMs: 0 } as Command,
+    // 비가 거의 안 보였다(VQA r22·r27) — 놓친 밤은 굵고 긴 빗줄기(storm)로.
+    { kind: "setWeather", weather: "storm", intensity: 1, transitionMs: 0 } as Command,
     bgm(BGM_RAIN, 1200),
     ...fadeIn(700),
     ...think("회사 앞, 비가 오기 시작했다. 9시 40분까지, 아직 시간은 있었다.", "…있었는데."),
@@ -1511,7 +1508,7 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
     [SW_TOLD_MINHO, "민호에게 털어놓음"], [SW_HONEST, "실수를 팀장에게 보고함"], [SW_SAW_LETTER, "수첩 속 편지를 봄"],
     [SW_KNOWS_WHY, "지후가 떠난 이유를 들음"], [SW_COFFEE, "옥상 캔커피"], [SW_MILK, "바나나우유 두 개"], [SW_STORY, "발표에서 내 이야기를 함"],
     ["sw_fl_jihu_in_konbini", "편의점에 지후 등장"], ["sw_fl_flashback", "회상 중"], ["sw_fl_jihu_gone", "회상: 지후 퇴장"],
-    ["sw_fl_lead_left", "수요일: 팀장 퇴근"], ["sw_fl_jihu_boarded", "막차: 지후 탑승"], ["sw_fl_w_jihu_up", "수요일: 지후 일어남"], ["sw_fl_w_minho_up", "수요일: 민호 일어남"], [FL_TRAIN_CALL, "막차: 열차 부르기"], [FL_TRAIN_GO, "막차: 문 닫고 출발"], ["sw_fl_minho_left", "수요일: 민호 퇴근"], ["sw_fl_closed_note", "수첩을 덮어 둠"],
+    ["sw_fl_lead_left", "수요일: 팀장 퇴근"], ["sw_fl_jihu_boarded", "막차: 지후 탑승"], [FL_TRAIN_CALL, "막차: 열차 부르기"], [FL_TRAIN_GO, "막차: 문 닫고 출발"], ["sw_fl_minho_left", "수요일: 민호 퇴근"], ["sw_fl_closed_note", "수첩을 덮어 둠"],
     ["sw_fl_client_left", "금요일: 본부장 퇴장"], ["sw_fl_jihu_left", "금요일: 지후 퇴장"], ["sw_fl_admitted", "옥상: 지후가 기억한다고 말함"],
   ] as const) ensureSw(id, name);
 
@@ -1527,7 +1524,7 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
 
   // 맵 BGM(장면이 바꾸지 않을 때의 바탕).
   const mapBgm: Record<string, string> = {
-    [FL_MAP.platformAm]: BGM_OFFICE, [FL_MAP.street]: BGM_OFFICE, [FL_MAP.office]: BGM_OFFICE, [FL_MAP.officeFri]: BGM_OFFICE,
+    [FL_MAP.platformAm]: BGM_OFFICE, [FL_MAP.street]: BGM_OFFICE, [FL_MAP.office]: BGM_OFFICE, [FL_MAP.officeFri]: BGM_MEETING,
     [FL_MAP.rooftop]: BGM_ROOF, [FL_MAP.streetPm]: BGM_NIGHT, [FL_MAP.konbini]: BGM_NIGHT, [FL_MAP.officePm]: BGM_NIGHT,
     [FL_MAP.broadcast]: BGM_MEMORY,
   };

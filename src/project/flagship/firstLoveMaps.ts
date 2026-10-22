@@ -319,7 +319,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       // 듣는 셋(팀장·민호·본부장)은 탁자 남쪽 의자(4·5·6,19)에 앉아 위를 본다 — 탁자를 사이에 둔 맞은편 3칸(scene-talk-far 의 탁자 건너편).
       meetingSeat: { x: 4, y: 16 },
       // 본부장은 탁자 서쪽 머리(3,17)에 서서 탁자 쪽(동)을 본다 — 남쪽 의자에 팀원과 어깨를 붙여 앉히면 손님이 팀원 줄에 끼어 보였다(VQA r23).
-      meetSeats: [{ x: 4, y: 16 }, { x: 7, y: 16 }, { x: 5, y: 19 }, { x: 4, y: 19 }, { x: 3, y: 17 }],
+      // r27: 지후는 발표자 줄(북쪽, 의자 없는 칸)이 아니라 남쪽 의자 줄 끝 의자(6,19)에 앉는다 — 빈 의자 둘 사이에 선 사람으로 읽혔다.
+      meetSeats: [{ x: 4, y: 16 }, { x: 6, y: 19 }, { x: 5, y: 19 }, { x: 4, y: 19 }, { x: 3, y: 17 }],
       whiteboard: nearestFree(project, officeRoom, { x: 23, y: 10 }),
     },
     rooftop: {
@@ -364,7 +365,7 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   const lamps: LightSource[] = [];
   const streetLamps: Array<[number, number]> = [[21, 2], [1, 21], [14, 21], [41, 21], [21, 26], [21, 33], [6, 4], [13, 4]];
   // 반지름 5 는 화면 밖 가로등의 빛 웅덩이가 잔디·지붕까지 번져 «광원 없는 빛»으로 읽혔다(VQA r25) — 기둥 둘레만 밝힌다.
-  for (const [i, [x, y]] of streetLamps.entries()) lamps.push(light(`fl_lamp_${i}`, { x, y }, 3.5, "#ffd98a", 1));
+  for (const [i, [x, y]] of streetLamps.entries()) lamps.push(light(`fl_lamp_${i}`, { x, y }, 3.5, "#ffd98a", 0.7)); // 세기 1 은 흰 원반 얼룩(VQA r27)
   for (const [i, b] of streetData.buildings.entries()) {
     const d = b.access[0];
     if (d) lamps.push(light(`fl_shop_${i}`, d, 3, b.kind === "conv" ? "#e8fff4" : "#ffd9a0", 0.8));

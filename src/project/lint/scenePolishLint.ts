@@ -1248,7 +1248,7 @@ function checkActorUnderFurniture(project: Project, issues: LintIssue[]): void {
       if (drawnHere.every((p) => (p as { graphic?: { direction?: string } }).graphic?.direction === "up")) continue;
       issues.push({
         severity: "warning", code: "scene-actor-under-furniture", mapId: map.id, eventId: event.id, x: event.x, y: event.y,
-        message: `인물 ${event.id} 가 (${event.x},${event.y}) 의 위층 가구(지나갈 수 없는 칸, 인물보다 앞에 그려짐) 위에 서 있다 — 등받이·탁자가 얼굴을 덮는다. 가구 옆 빈 바닥 칸에 세우거나, 앉힌 것이면 그 쪽을 priority \"above\"(가구 위에 그림)로 두고 일어설 때 옆 바닥으로 걸어 나온 뒤 같은 층 쪽으로 바꾼다.`,
+        message: `인물 ${event.id} 가 (${event.x},${event.y}) 의 위층 가구(지나갈 수 없는 칸, 인물보다 앞에 그려짐) 위에 서 있다 — 등받이·탁자가 얼굴을 덮는다. 가구 옆 빈 바닥 칸에 세운다. 앉힌 것이면 책상 아래쪽(화면 쪽) 의자에 위를 보고(등받이가 허리를 가린 «뒤에서 본 앉은 사람») 세운다.`,
       });
     }
   }

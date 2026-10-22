@@ -3,7 +3,7 @@
 재료는 모두 저장소 안의 그림이다(새로 생성하지 않는다):
   - 배경: public/assets/generated/title/romance-office.jpg 의 왼쪽(사람이 없는 도시 전경)을 잘라 밤으로 색보정
   - 인물: public/assets/shared/portraits/{modern-casual-girl-lavender, modern-casual-boy-hoodie}/full-*.png (공용 전신 초상, 서하·지후)
-A = 노을 아래 두 사람, B = 맑은 밤 서하 혼자(허리 위), C = 빗속 멀리 선 지후.
+A = 노을 아래 두 사람, B = 맑은 밤 서하 혼자(왼쪽·허리 위), C = 비 오는 밤 서하 혼자(오른쪽·어깨 위·슬픈 얼굴).
 글자(「끝」·제목)는 엔딩 카드가 가운데에 쓰므로 인물은 오른쪽 1/3, 가운데는 어둡게 비운다.
 실행: python3 scripts/content/first-love/bake_ending_cards.py  (결정적)
 """
@@ -140,12 +140,12 @@ def card_b() -> Image.Image:
 
 
 def card_c() -> Image.Image:
-    """엔딩 C — 비 오는 밤, 떠난 사람. 멀리 작게 선 지후(오른쪽) 앞으로 굵은 비가 그어진다(B 와 다른 사람·구도)."""
+    """엔딩 C — 비 오는 회사 앞에 혼자 선 서하. B(맑은 밤·왼쪽·허리 위·담담)와 다르게 오른쪽에 어깨 위로 크게, 슬픈 얼굴,
+    인물 앞으로도 굵은 비. 지후를 그리면 «서하 혼자 비 속»인 장면과 어긋났다(VQA r27)."""
     out = night_city(True).convert("RGBA")
-    jihu = light(figure(JIHU, "sad", flip=False, height=0.72), (0.34, 0.40, 0.56), (20, 30, 50), rim_left=False)
-    jihu = jihu.filter(ImageFilter.GaussianBlur(1.6))  # 빗속 먼 데 사람 — 조금 흐리게
-    out.alpha_composite(jihu, (int(W * 0.76) - jihu.width // 2, H - int(jihu.height * 0.97)))
-    out.alpha_composite(rain_layer(97, 1400, (70, 150)))  # 인물 앞으로도 비
+    seoha = light(figure(SEOHA, "sad", flip=False, height=0.95, keep=0.42), (0.38, 0.44, 0.60), (20, 30, 50), rim_left=False)
+    out.alpha_composite(seoha, (int(W * 0.74) - seoha.width // 2, H - seoha.height))
+    out.alpha_composite(rain_layer(97, 1700, (80, 165)))  # 인물 앞으로도 비
     return out.convert("RGB")
 
 
