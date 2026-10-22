@@ -140,11 +140,11 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
   const seed = spec.seed ?? 7;
   const random = rng(seed * 40503 + 17);
   const si = sizeIndex(spec);
-  const [dw, dh] = [[72, 52], [88, 62], [112, 78]][si]! as [number, number];
+  const [dw, dh] = [[56, 44], [88, 62], [112, 78]][si]! as [number, number];   // small 은 방 3개짜리 작은 굴(2026-10-22 「작은 동굴」이 64×49 로 나오던 것)
   const W = spec.width ? clamp(spec.width, 48, 200) : dw;
   const H = spec.height ? clamp(spec.height, 40, 150) : dh;
   const g = new Grid(W, H);
-  const wantN = spec.roomCount ? clamp(spec.roomCount, 2, 14) : spec.width && spec.height ? clamp((W * H) / 640, 4, 14) : [4, 7, 10][si]!;
+  const wantN = spec.roomCount ? clamp(spec.roomCount, 2, 14) : spec.width && spec.height ? clamp((W * H) / 640, 4, 14) : [3, 7, 10][si]!;
   const ENT_W = 13, ENT_H = 6;
   const entX = Math.floor(W / 2) - 6, entY = H - MARGIN - 1 - ENT_H;
   const entrance: Rect = { x: entX, y: entY, w: ENT_W, h: ENT_H };
@@ -195,7 +195,8 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
   const vault = spec.vault === false ? undefined : byDepth.find((c) => c !== boss && edges.filter(([a, b]) => a === c.index || b === c.index).length <= 1) ?? byDepth[1];
   if (vault && vault !== boss) { vault.kind = "vault"; vault.rx = Math.min(vault.rx, 6); vault.ry = Math.min(vault.ry, 5); }
   const rest = chambers.filter((c) => c.kind === "cavern");
-  const lakeWant = profile.liquid ? (si === 0 ? 1 : si === 1 ? 2 : 3) : 0;
+  // 소굴(lair)은 사는 굴이라 호수 대신 마른 바닥(야영지)을 남긴다.
+  const lakeWant = profile.liquid && !spec.lair ? (si === 0 ? 1 : si === 1 ? 2 : 3) : 0;
   // 작은 판에서 반지름 6 이상 방이 하나도 없어도 액체 종류(화산·동굴)는 못이 하나는 있어야 한다 — 그 땐 가장 큰 방을 쓴다.
   const bySize = [...rest].sort((a, b) => b.rx * b.ry - a.rx * a.ry);
   const lakeCands = bySize.filter((c) => c.rx >= 6).length ? bySize.filter((c) => c.rx >= 6) : bySize;
@@ -229,10 +230,19 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
       if (d < 1 + wob) { g.floor[g.idx(x, y)] = 1; g.roomAt[g.idx(x, y)] = c.index; }
     }
   });
-  for (let y = entY; y < entY + ENT_H; y += 1) for (let x = entX; x < entX + ENT_W; x += 1) { g.floor[g.idx(x, y)] = 1; g.roomAt[g.idx(x, y)] = 0; }
+  // 입구 굴: 자연 동굴이라 네모가 아니다 — 가운데 심(위쪽 가운데 줄·통로 목)은 남기고 둘레를 잡음 타원으로 깎는다.
+  {
+    const ecx = entX + (ENT_W - 1) / 2, ecy = entY + (ENT_H - 1) / 2;
+    for (let y = entY - 1; y < entY + ENT_H + 1; y += 1) for (let x = entX - 1; x < entX + ENT_W + 1; x += 1) {
+      const core = Math.abs(x - ecx) <= 3 && y >= entY && y < entY + ENT_H - 1;
+      const d = ((x - ecx) / (ENT_W / 2 + 0.6)) ** 2 + ((y - ecy) / (ENT_H / 2 + 0.6)) ** 2;
+      if (core || d < 1 + (vnoise(x, y, 3.5, seed + 991) - 0.5) * 0.6) { g.floor[g.idx(x, y)] = 1; g.roomAt[g.idx(x, y)] = 0; }
+    }
+  }
   // 가장자리 안쪽으로 강제
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) if (x < MARGIN || y < MARGIN + 4 || x >= W - MARGIN || y >= H - MARGIN) { g.floor[g.idx(x, y)] = 0; g.roomAt[g.idx(x, y)] = -1; }
   smooth(g, 2, (x, y) => x >= entX - 2 && x < entX + ENT_W + 2 && y >= stubTop - 1 && y < entY + ENT_H + 2);
+  fillWallIslands(g, 30);
 
   // ---- 액체(호수·용암 못): 방 안쪽, 가장자리 두 칸은 걸을 수 있게 ----
   if (profile.liquid) {
@@ -249,7 +259,7 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
       if (!count) c.kind = "cavern";
     }
     // 큰 방에 작은 못 하나씩(화산은 용암 웅덩이가 더 많다)
-    const pools = profile.id === "volcano" ? 0.6 : 0.3;
+    const pools = profile.id === "volcano" ? 0.6 : spec.lair ? 0 : 0.3;
     for (const c of chambers) {
       if (c.kind !== "cavern" && c.kind !== "grotto") continue;
       if (c.rx < 6 || random() > pools) continue;
@@ -268,6 +278,50 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
         if (g.liquid[i] && n <= 3) next[i] = 0; else if (!g.liquid[i] && n >= 5) next[i] = 1;
       }
       g.liquid.set(next);
+    }
+    // 흐르는 용암(2026-10-22 VQA 「흐르는 용암인데 고인 못 셋뿐」): 용암 못에서 가장 먼 일반 방까지 굽이치는 폭 2 용암 줄기를 판다.
+    // 통로를 가로지르면 settle 이 가장 짧은 곳에 다리를 놓는다. 입구 방·보스방·보물 방·문 앞은 건드리지 않는다.
+    if (profile.id === "volcano") {
+      const ban = new Set(chambers.filter((c) => c.kind === "boss" || c.kind === "vault").map((c) => c.index));
+      const lakes = chambers.filter((c) => c.kind === "lake");
+      const plain = chambers.filter((c) => c.kind === "cavern" || c.kind === "grotto" || c.kind === "lake");
+      /** a→b 줄기: 금지 방·입구를 피해 바닥을 따라가는 최단 길(BFS) — 방 안(가장자리 2칸 안쪽)은 폭 2, 통로는 폭 1(settle 이 다리를 놓는다). */
+      const tryStream = (a: Chamber, b: Chamber): boolean => {
+        const s0 = g.idx(a.cx, a.cy), t0 = g.idx(b.cx, b.cy);
+        const okCell = (i: number) => g.floor[i] && g.roomAt[i] !== 0 && !ban.has(g.roomAt[i]!) && ((i / g.W) | 0) < entY - 6;
+        if (!okCell(s0) || !okCell(t0)) return false;
+        // 가중 최단 길(칸 비용 1~4, 잡음): 그냥 BFS 는 자로 그은 직선 줄기가 됐다(2026-10-23 VQA). 비용 바구니 큐로 굽이치게 한다.
+        const prev = new Int32Array(g.W * g.H).fill(-2); prev[s0] = -1;
+        const dist = new Int32Array(g.W * g.H).fill(1 << 30); dist[s0] = 0;
+        const buckets: number[][] = [[s0]];
+        for (let d = 0; d < buckets.length && prev[t0] === -2; d += 1) {
+          for (const c of buckets[d] ?? []) {
+            if (dist[c] !== d) continue;
+            const x = c % g.W, y = (c / g.W) | 0;
+            for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+              if (!g.inb(x + dx, y + dy)) continue;
+              const n = g.idx(x + dx, y + dy);
+              if (!okCell(n)) continue;
+              const nd = d + 1 + Math.floor(vnoise(x + dx, y + dy, 4, seed + 77) * 4);
+              if (nd >= dist[n]!) continue;
+              dist[n] = nd; prev[n] = c; (buckets[nd] ??= []).push(n);
+            }
+          }
+        }
+        if (prev[t0] === -2) return false;
+        const path: number[] = [];
+        for (let c = t0; c >= 0; c = prev[c]!) path.push(c);
+        if (path.length < 10) return false;
+        for (const c of path) {
+          g.liquid[c] = 1;   // 좁은 목에서 길이 끊기면 settle 이 다리를 놓는다
+          if (ed[c]! >= 2 && g.roomAt[c]! > 0) { const r = c + 1; if (ed[r]! >= 2) g.liquid[r] = 1; }
+        }
+        return true;
+      };
+      const pairs: [Chamber, Chamber][] = [];
+      for (const a of lakes.length ? lakes : plain) for (const b of plain) if (a !== b) pairs.push([a, b]);
+      pairs.sort((p, q) => Number(q[1].kind === "lake") - Number(p[1].kind === "lake") || Math.hypot(p[1].cx - p[0].cx, p[1].cy - p[0].cy) - Math.hypot(q[1].cx - q[0].cx, q[1].cy - q[0].cy));
+      for (const [a, b] of pairs) if (tryStream(a, b)) break;
     }
   }
   // 문 앞 칸은 액체가 아니다
@@ -358,4 +412,39 @@ export function addCrossings(g: Grid, rooms: readonly PlacedRoom[], seed: number
     }
   });
   return placed;
+}
+
+
+/**
+ * 방 안에 홀로 남은 작은 벽 덩어리(바깥 벽과 안 이어진 막힌 칸 무리, 넓이 maxArea 이하)를 바닥으로 메운다.
+ * 작은 덩어리는 벽 앞면 3줄을 다 못 세워 「벽돌 기둥 위에 검은 구멍」으로 그려졌다(2026-10-23 dg-r2 VQA 화산 동굴).
+ */
+export function fillWallIslands(g: Grid, maxArea: number): number {
+  const seen = new Uint8Array(g.W * g.H);
+  let filled = 0;
+  for (let y0 = 0; y0 < g.H; y0 += 1) for (let x0 = 0; x0 < g.W; x0 += 1) {
+    const i0 = g.idx(x0, y0);
+    if (g.floor[i0] || seen[i0]) continue;
+    const comp: number[] = [i0]; seen[i0] = 1;
+    let border = false;
+    for (let k = 0; k < comp.length; k += 1) {
+      const i = comp[k]!, x = i % g.W, y = (i - x) / g.W;
+      if (x === 0 || y === 0 || x === g.W - 1 || y === g.H - 1) border = true;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const nx = x + dx, ny = y + dy;
+        if (!g.inb(nx, ny)) continue;
+        const j = g.idx(nx, ny);
+        if (g.floor[j] || seen[j]) continue;
+        seen[j] = 1; comp.push(j);
+      }
+    }
+    if (border || comp.length > maxArea) continue;
+    for (const i of comp) {
+      const x = i % g.W, y = (i - x) / g.W;
+      let room = -1;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const r = g.inb(x + dx, y + dy) ? g.roomAt[g.idx(x + dx, y + dy)]! : -1; if (r >= 0) { room = r; break; } }
+      g.floor[i] = 1; g.roomAt[i] = room; filled += 1;
+    }
+  }
+  return filled;
 }

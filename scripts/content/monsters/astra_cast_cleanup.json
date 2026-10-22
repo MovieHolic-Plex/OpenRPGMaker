@@ -1,0 +1,215 @@
+{
+ "_": "hand cleanup of the 44x46 busts: landmarks read off the hi-res base picture on the 44x46 grid. eyes = [x, y, width] of each eye's lash row (viewer's left first), mouth = [x, y] centre. Every expression is the base bust with its own face stamps. 'edits' = extra per-expression pixels [x, y, '#rrggbb' | null]. hair = the chip's hair colours only (not cap or mask), used to flatten the hair to 3 cel tones and to draw the hair/skin line.",
+ "hero": {
+  "iris": "#a0602c",
+  "eyes": [
+   [
+    19,
+    21,
+    4
+   ],
+   [
+    29,
+    22,
+    3
+   ]
+  ],
+  "mouth": [
+   24,
+   31
+  ],
+  "edits": {},
+  "read": {
+   "zoom": 1.35,
+   "top": 0.06
+  },
+  "hair": [
+   "#55393b",
+   "#9b665c",
+   "#79504c"
+  ]
+ },
+ "mom": {
+  "iris": "#2aa898",
+  "eyes": [
+   [
+    20,
+    22,
+    4
+   ],
+   [
+    30,
+    24,
+    3
+   ]
+  ],
+  "mouth": [
+   26,
+   32
+  ],
+  "edits": {},
+  "read": {
+   "zoom": 1.35,
+   "top": 0.06
+  },
+  "hair": [
+   "#a86b3e",
+   "#3b2110",
+   "#754526"
+  ]
+ },
+ "professor": {
+  "iris": "#3a9a98",
+  "eyes": [
+   [
+    19,
+    19,
+    4
+   ],
+   [
+    28,
+    20,
+    3
+   ]
+  ],
+  "mouth": [
+   24,
+   28
+  ],
+  "glasses": "#6a4a9a",
+  "edits": {},
+  "read": {
+   "zoom": 1.35,
+   "top": 0.06
+  },
+  "hair": [
+   "#874b36",
+   "#381c14",
+   "#5c3022"
+  ]
+ },
+ "nurse": {
+  "iris": "#4a7ab0",
+  "eyes": [
+   [
+    18,
+    21,
+    4
+   ],
+   [
+    30,
+    22,
+    3
+   ]
+  ],
+  "mouth": [
+   25,
+   32
+  ],
+  "edits": {},
+  "read": {
+   "zoom": 1.35,
+   "top": 0.06
+  },
+  "hair": [
+   "#4a7a93",
+   "#2d4b5a",
+   "#3c6478",
+   "#548ca8",
+   "#2b4856"
+  ]
+ },
+ "naru": {
+  "iris": "#30cfa0",
+  "eyes": [
+   [
+    19,
+    20,
+    4
+   ],
+   [
+    30,
+    22,
+    3
+   ]
+  ],
+  "mouth": [
+   25,
+   30
+  ],
+  "edits": {},
+  "read": {
+   "zoom": 1.35,
+   "top": 0.06
+  },
+  "hair": [
+   "#b675d2",
+   "#552181",
+   "#8346ab",
+   "#dd9ff0"
+  ]
+ },
+ "yurim": {
+  "iris": "#3aa8a0",
+  "eyes": [
+   [
+    19,
+    19,
+    4
+   ],
+   [
+    28,
+    20,
+    3
+   ]
+  ],
+  "mouth": [
+   24,
+   28
+  ],
+  "edits": {},
+  "read": {
+   "zoom": 1.35,
+   "top": 0.06
+  },
+  "hair": [
+   "#50982d",
+   "#13491c",
+   "#247132",
+   "#80af23"
+  ]
+ },
+ "muyeong": {
+  "iris": "#c83a30",
+  "eyes": [
+   [
+    21,
+    22,
+    3
+   ],
+   [
+    29,
+    24,
+    2
+   ]
+  ],
+  "mouth": [
+   24,
+   31
+  ],
+  "brows": false,
+  "edits": {},
+  "sclera": true,
+  "read": {
+   "zoom": 1.3,
+   "top": 0.0
+  },
+  "hair": [
+   "#db3838",
+   "#7b1c2c",
+   "#a82931",
+   "#ec6e52"
+  ],
+  "lip": "#3a1a14"
+ }
+}

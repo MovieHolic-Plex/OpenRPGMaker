@@ -1,0 +1,362 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "145ddd82d655c4a1ddcce1b7f84e9a19b5af6e9084aca4f1a51cb8c8cc4ca171",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "iron-armrest park bench",
+ "label": "workshop-objectgen-4/c6-bench",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 57,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest slats",
+      "rows": "0-4",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat surface",
+      "rows": "6-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-10"
+     },
+     {
+      "part": "armrests",
+      "rows": "5-9",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The backrest (rows 0-4, width 26-28) is a vertical face and is exempt. The seat starts at row 5 (dark edge) with a wood-toned band at rows 6-8. The light front-edge line at row 9 (L=202) comes next, then a dark underside at rows 10-11. The seat band is about 4 rows (6-9) with a clear front-edge line and shadow below. The front face is the 2-row apron (rows 10-11) plus the narrow legs at rows 12-15, about 6 rows in total. This is a seat top above a front face, so it reads as three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The closest reference is prop-bench-wood. The candidate is the same kind of piece at a similar scale, and it reads clearly as a slatted bench with iron armrests. It has only 7 distinct colours in total, against 14 for the reference bench. That 7 has to cover wood slats, iron arms and outline together, so the wood ramp has about 3 steps (highlight, mid, dark), where the reference carries about 5. Its outline is mostly tinted dark brown or iron tone, and 26% of dark edge pixels are neutral, which is lower than the reference's 44%. That makes it mixed, leaning toward material-tone. Near-flat coverage is 0%, so there are no large flat fills, but the slats show little per-plank grain, knots or highlight dots next to the reference. The 16x16 tile facts are not usable here because the reference tile count is 0. By eye, the candidate looks thinner and flatter than the reference bench in shading depth. Since the rule is to fail when in doubt, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17797
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest with iron armrest ends (rows 0-4, width 26-28)",
+      "rows": "0-4",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat surface (slat planks)",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10-11"
+     },
+     {
+      "part": "legs",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The seat body (rows 5-11, width 30-32) has a plank top band in rows 5-8. Row 6 is a lighter highlight and rows 7-8 are mid-tone. Row 9 is a cream front-edge line (L=202 in all three scanned columns). Rows 10-11 below it are darker shadow and outline. Thin legs continue in rows 12-15 (width 4-6), so the front face totals about 6 rows. The backrest in rows 0-4 is a vertical slatted panel and is exempt as seat_back. The seat is seen from above with a front edge and a front face, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The nearest reference, prop-bench-wood, uses 14 distinct colours against the candidate's 7 in total. That reference shows about 5 wood steps (highlight, light, mid, dark, deep) with grain on the slats and legs. The candidate's slats and iron armrests read as roughly 3 steps: a light edge, a mid fill and a dark underside/outline. Per-tile tone counts are not usable here (the candidate gives 7, the bench reference 0), so I judged by eye, and the candidate looks thinner than the reference. The outline is partly tinted brown and partly dark grey, and only 26% of dark edge pixels are neutral, so I call it mixed. Flat coverage is 0%, but the slats are mostly clean fills with little grain, so the texture is only 'some'. Set beside the Beodeul bench it is cleaner and flatter, with fewer shading steps and less grain, so it fails on shading depth and density.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16182
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest",
+      "rows": "0-4",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat surface",
+      "rows": "5-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10"
+     },
+     {
+      "part": "legs/front face",
+      "rows": "10-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The backrest in rows 0-4 is a vertical face, which is exempt for a seat. The seat body in rows 5-11 is wider (30-32 px). Column x=16 has a dark outline at row 5, then mid-brown at rows 6-8. A cream front-edge line follows at row 9, with a dark shadow/apron at rows 10-11. That gives about 4 rows of seat top (rows 6-9). Narrow legs (width 4-6) run through rows 12-15, so the front face including the apron is about 6 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The closest reference is prop-bench-wood, which has 14 distinct colours. The candidate has only 7 in total, so its ramps are thinner. The slats show about 3 steps (a light top, a mid tone and a dark gap line) and the iron ends add roughly 2 more. The reference's wood grain and per-plank shading go further. The candidate has no flat 5x5 blocks (0%), and 26% of its dark edge pixels are neutral, so the outline is partly tinted and partly neutral dark, which I read as mixed. At 7 visible tones per tile it is below the richer references (hedge 9, well 20, stall 17). It is clean and readable, but it looks flatter and more sticker-like than the Beodeul bench, and with that doubt I fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15894
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "backrest slats",
+      "rows": "0-4",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "seat surface",
+      "rows": "6-9",
+      "evidence": "a",
+      "front_edge_line_row": 9,
+      "eave_shadow_rows": "10"
+     },
+     {
+      "part": "armrests (side ends of seat)",
+      "rows": "5-8",
+      "evidence": "seat_back",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The backrest (rows 0-4) is a vertical slatted face and is exempt. The seat starts at row 5 with a dark outline. Rows 6-8 form a brown seat plane, with a light highlight at some columns. Row 9 is a light cream front-edge line (#d8caa8), followed by dark shadow at row 10 and the outline at row 11. That is a 4-row top surface (rows 6-9). Below it are a 2-row front apron (rows 10-11) and narrow 4-6px iron legs (rows 12-15), about 6 front-face rows in total. The seat has an edge line and eave shadow, so it reads as a seat seen from above and not as a flat front band."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate bench is the same kind and scale as the prop-bench-wood reference, but it uses only 7 distinct colours in total against the reference's 14. Its wood slats show about 3 lightness steps (light top, mid, dark gap), while the reference carries roughly 5 steps with grain and per-slat highlights. The iron armrests are close to a flat dark fill with little highlight. Outlines are partly tinted (26% of dark edge pixels are neutral), so they are not a pure sticker line, but the dark edges look uniform around the slats and legs. Near-flat coverage is 0%, so there are no large flat fills, but the tone count and grain are visibly thinner than the reference. Next to the reference it reads as flatter and simpler, so it fails when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17378
+  }
+ ],
+ "decidedAt": "2026-10-22T09:29:37.703Z",
+ "cells": {
+  "16": [
+   "3b7c101e7888573f",
+   "cfa7501ae211edc6"
+  ],
+  "24": [
+   "014f5f60cf28613f",
+   "020486e110695723",
+   "0e4b0a9350b3a0c4",
+   "9019ffbd557490c1",
+   "9e80e2fe77e0fd6a",
+   "baf800bf21443d60",
+   "cc73750c55f0e988",
+   "cf391117f80f26ff",
+   "e30a6970311a4dc4",
+   "e924da03d09cb566",
+   "ef922e5508ecddfb",
+   "fabb9ae89a4a9477"
+  ],
+  "32": [
+   "30e5d83448942775",
+   "b74319116fd4d2f3"
+  ],
+  "48": [
+   "09757b576f0f4cd6",
+   "5fb07fdee098ec6f",
+   "647e9a649942618b",
+   "9b29409a941c90a4",
+   "c93b3b5cebed0df2",
+   "f8a4fbb16e7203be"
+  ]
+ }
+}

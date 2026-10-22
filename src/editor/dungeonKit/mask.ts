@@ -6,7 +6,7 @@
 // 불변식은 grid.ts(fixThickness·thinWalls·settle)가 지킨다. compose.ts 에서 옮겨 왔을 뿐 rooms 문법의 출력은 그대로다.
 import type { DungeonLayout, DungeonSpec, DungeonType, PlacedRoom } from "./types";
 import { DungeonComposeError } from "./errors";
-import { Grid, rng, settle, type Rect } from "./grid";
+import { Grid, edgeDistance, rng, settle, vnoise, type Rect } from "./grid";
 import { addCrossings, carveSewer } from "./layouts";
 import type { GrammarInfo } from "./grammar";
 
@@ -99,11 +99,44 @@ export function buildMask(layout: DungeonLayout, profile: GrammarInfo, type: Dun
     throw new DungeonComposeError("입구 방에 걸을 수 있는 바닥이 없다.", "no-entrance");
   })();
   if (type === "sewer") carveSewer(g, rooms as readonly PlacedRoom[], seed);
-  if ((profile.liquid || layout.grid) && !layout.thin) {
+  const flooded = !!spec.flooded && !profile.liquid && !layout.thin;
+  if (flooded) carveFlood(g, rooms as readonly PlacedRoom[], seed);
+  if ((profile.liquid || layout.grid || flooded) && !layout.thin) {
     const st = settle(g, entranceStart, rng(seed * 313 + 7));
     bridgeCount += st.bridges;
     if (st.removed) warnings.push(`닿지 않는 바닥 ${st.removed}칸을 막았다(액체로 갈라져 다리를 놓을 수 없는 조각).`);
   }
   if (type === "sewer") bridgeCount += addCrossings(g, rooms as readonly PlacedRoom[], seed);
   return { grid: g, partitions, bridgeCount, warnings, entranceStart };
+}
+
+/**
+ * 물에 잠긴 던전(2026-10-22, 「물에 잠긴 옛 신전」 기준선: 조수가 fill_region 으로 네모 물웅덩이를 벽에 붙여 칠했다).
+ * 큰 방(가로 8·세로 6 이상, 입구·보물 방 제외) 바닥 안쪽이 물에 잠긴다: 벽에서 두 칸 안쪽, 잡음으로 가장자리가 흔들리고,
+ * 방 가운데를 가로·세로로 지나는 폭 3 둑길과 문 앞(protect)은 마른 땅으로 남는다. 갈라진 바닥은 settle 이 다리로 잇는다.
+ */
+export function carveFlood(g: Grid, rooms: readonly PlacedRoom[], seed: number): number {
+  const ed = edgeDistance(g, 4);
+  let cells = 0;
+  rooms.forEach((r, ri) => {
+    if (r.kind === "entrance" || r.kind === "vault" || r.w < 7 || r.h < 5) return;
+    const cx = r.x + (r.w - 1) / 2, cy = r.y + (r.h - 1) / 2;
+    // 둑길: 긴 축 방향 한 줄은 늘 남기고, 짧은 축 둑은 큰 방에만(방이 네 웅덩이로 갈린다)
+    const along = r.w >= r.h;
+    const cross = r.w >= 12 && r.h >= 9;
+    for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
+      const i = g.idx(x, y);
+      if (!g.floor[i] || g.roomAt[i] !== ri || g.protect[i]) continue;
+      // 벽 앞 한 줄만 마른 턱으로 남긴다 — 두 줄을 남기면 물이 방 가운데 웅덩이 몇 개로만 읽혔다(2026-10-23 VQA 「물에 잠긴 신전으로 안 읽힘」).
+      if (ed[i]! < 1) continue;
+      // 둑길은 곧은 줄이 아니라 굽이친다(물에 잠긴 바닥 위로 남은 옛 길) — 반듯한 수조 넷처럼 읽히던 것(2026-10-22 VQA).
+      const bend = (t: number, k: number) => Math.round((vnoise(t, k, 5, seed * 23 + ri) - 0.5) * 3);
+      const onSpine = along ? Math.abs(y - (cy + bend(x, 1))) <= 1 : Math.abs(x - (cx + bend(y, 2))) <= 1;
+      const onCross = cross && (along ? Math.abs(x - (cx + bend(y, 3))) <= 1 : Math.abs(y - (cy + bend(x, 4))) <= 1);
+      if (onSpine || onCross) continue;
+      if (ed[i]! < 3 && vnoise(x, y, 2.5, seed * 19 + ri) < (ed[i]! < 2 ? 0.38 : 0.2)) continue;
+      g.liquid[i] = 1; cells += 1;
+    }
+  });
+  return cells;
 }

@@ -1,4 +1,5 @@
 import { renderGrowthTreeTab } from "@/editor/panels/growthTree/studio";
+import { t } from "@/i18n";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { renderCommonEventsTab } from "@/editor/panels/databaseCommonEventViews";
 import { renderCropTab } from "@/editor/panels/databaseCropView";
@@ -465,7 +466,7 @@ function applyEmptyTabFold(header: HTMLElement): void {
     const [count, text] = Array.from(child.children) as HTMLElement[];
     const hasProfileFold = group.tabs.some((id) => folded.has(id) && profileFolded.includes(id));
     if (count) count.textContent = hasProfileFold ? `숨긴 탭 ${folded.size}개 · 모두 보기` : `빈 탭 ${folded.size}개`;
-    if (text) text.textContent = names.join("·");
+    if (text) text.textContent = names.map((name) => t(name)).join("·");
     child.setAttribute("data-count", String(folded.size));
     child.setAttribute("title", hasProfileFold ? `숨긴 탭 모두 보기 — ${names.join(", ")}` : `비어 있는 탭 펼치기 — ${names.join(", ")}`);
     child.setAttribute("aria-label", hasProfileFold ? `${group.label}: 숨긴 탭 ${folded.size}개 모두 보기` : `${group.label}: 빈 탭 ${folded.size}개 펼치기`);

@@ -1,4 +1,4 @@
-import { evaluateAuthoringJourney, loadAuthoringJourneyProgress, setManualJourneyStage, saveAuthoringJourneyProgress, type AuthoringJourneyStage, type ManualJourneyStageId } from "@/editor/authoringJourney";
+import { evaluateAuthoringJourney, loadAuthoringJourneyProgress, setManualJourneyStage, saveAuthoringJourneyProgress, subscribeAuthoringJourneyProgress, type AuthoringJourneyStage, type ManualJourneyStageId } from "@/editor/authoringJourney";
 import { runAuthoringTask, type AuthoringTaskId } from "@/editor/authoringTasks";
 import { collectEditorProjectReferenceIssues } from "@/editor/projectReferenceIssues";
 import { isTileCellChange, store } from "@/project/store";
@@ -126,9 +126,11 @@ export function createLeftProgressPane(scope: () => string): { root: HTMLElement
     }
     schedule();
   });
+  // 테스트 부팅 성공은 진행 저장소만 바꾸고 프로젝트 변경을 내지 않는다 — 저장 알림으로도 다시 그린다.
+  const unsubscribeProgress = subscribeAuthoringJourneyProgress(schedule);
   return {
     root,
     show: () => { scheduleValidation(); render(); },
-    dispose: () => { disposed = true; clearTimeout(validationTimer); unsubscribe(); },
+    dispose: () => { disposed = true; clearTimeout(validationTimer); unsubscribe(); unsubscribeProgress(); },
   };
 }

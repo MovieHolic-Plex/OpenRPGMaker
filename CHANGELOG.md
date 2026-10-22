@@ -5,6 +5,25 @@
 
 <!-- releases -->
 
+## 0.325.0 — 2026-10-22
+
+### 기능
+
+- **jp-city** — hand-pixel street stairs (overpass, side stairs + stage, wall ladder) and explicit stair notes (#3263) (`c4edf79`)
+- **ai** — polish mode — opt-in longer 1x review/critic/fix loop from the checklist panel (#3261) (`363a31f`)
+- **workshop** — object-gen footprint decision, better reference pictures, multi-cell objects (#3260) (`70edc7c`)
+
+## 0.324.0 — 2026-10-22
+
+### 기능
+
+- **beodeul** — village and brush forests use the joined canopy autotile (#3259) (`016546a`)
+- **ai** — per-feature 1x review loop with an independent rubric critic for built interiors (#3258) (`ac9c8f8`)
+
+### 수정
+
+- **beodeul** — existing projects get town wall cells (graft relocation), delegated hold records, walled-village leftovers (#3255) (`445429c`)
+
 ## 0.323.1 — 2026-10-22
 
 ### 수정

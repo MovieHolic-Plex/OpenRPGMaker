@@ -122,7 +122,7 @@ export const BUILD_GOTHIC_PLACE_TOOL: ToolDefinition = {
   name: "build_gothic_place",
   mode: "write",
   domains: ["tile", "map"],
-  description: "호러·흉가·저택·공동묘지·예배당·미술관 맵을 짓는 길 — 번들 칩셋 gothic_manor 로 장소 한 장을 한 번에 짓는다(결정론 seed). "
+  description: "호러·흉가·저택·공동묘지·예배당·미술관 맵을 짓는 길 — 번들 칩셋 gothic_manor 로 장소 한 장을 한 번에 짓는다(결정론 seed). 「던전」인 지하 묘지·카타콤(묘실·복도·보물 방·적이 이어진 층)은 이 도구로 방을 여러 장 지어 잇지 말고 author_dungeon type:'catacomb' 를 쓴다. "
     + `place: ${placesLine()}. `
     + "야외(manor-grounds·graveyard·gallery-plaza)는 둘레 철책·돌담과 남쪽 정문, 북쪽 본 건물, 곁 건물·연못·묘비 줄·고사목·등불·안개까지 놓고, 모든 건물 문 앞까지 길을 잇는다. "
     + "실내(hall·library·bedroom·kitchen·cellar·chapel·crypt·gallery)는 벽 고리·문·바닥·러너·가구·덧그림을 짓는다(doors·furniture·density 로 조절). "

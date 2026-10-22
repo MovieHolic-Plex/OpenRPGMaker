@@ -1,0 +1,466 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b3ac7c1c3fc049296956aaa217a5c1c4b8c82e0476998b6b7fa90589b25dc667",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "wz-castle-stair-down",
+ "label": "wizarding_world stairs wz-castle-stair-down (DOWN)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (3/4)",
+  "3/4: 윗면 2행 < 3 (3/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 질감 없음 (4/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (3/4)",
+   "윗면 2행 < 3 (3/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "질감 없음 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 35,
+  "nearBlackEdge": 0.06,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "borderline",
+   "borderline",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice beam",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": 1,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "balustrade between posts",
+      "rows": "2-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lintel strip under the balustrade",
+      "rows": "5-7",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "descending steps inside the dark opening",
+      "rows": "9-26",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side posts and bottom threshold",
+      "rows": "8-27",
+      "evidence": "none",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 22,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The body is a stone portal frame seen face-on. Rows 0-1 are a 1-2 row cornice cap with a darker line at row 1, so it is a rim and not a real top plane. Rows 2-4 are narrower (width 18) balusters drawn as vertical faces. Rows 5-7 are a lintel strip with shadow in rows 6-7, but no sloped roof or deep top surface sits above it. The side posts and the bottom sill (light row 26, dark row 27) are vertical faces. Inside the opening (rows 8-25) the steps are flat horizontal bands that darken downward, with a front face but no clear foreshortened top. The frame has no ellipse and no roof plane, so the main body reads as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small stair-down prop (a grey stone frame with dark steps), not a whole building with roof, walls and door/windows, so it does not match the reference kind. Measured facts: 7 visible tones per tile against 12 and 10 for the references, and 72% of dark edge pixels are neutral against 7% and 9%. That backs the look of a neutral dark outline. By eye the frame and steps use only about 3 lightness steps. There are no per-stone highlights, no tile scallops and no grain, so it reads flatter and more sticker-like than the references. The near-flat coverage is 0%, but that comes from the tiny size and the banded stripes, not from real texture. A careful artist would not accept this next to the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 20677
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel strip",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": 1,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "baluster band / cornice with side gaps",
+      "rows": "2-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side pillars",
+      "rows": "8-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "descending steps in dark opening (drawn as front-facing bands)",
+      "rows": "13-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom ledge",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 27,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat, face-on frame around a dark stair opening. Rows 0-1 are a thin 2-row light strip, the same width as the body, with no eave shadow and no receding surface. Rows 2-4 are a narrower baluster band, and rows 5-7 a front-facing cornice beam with no edge line or shadow. Rows 8-28 are the front face: pillars, the dark opening, step bands and a bottom ledge. No roof slope, ellipse, or visible top plane appears. The steps are stacked as horizontal front bands, so they do not count as a top surface. This matches the 'rim only' and 'front elevation' wrong references."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small stair-down prop (grey stone frame, dark opening, a few steps), not a whole building with roof, walls and door/windows, so it is a different kind from the references. Even allowing for that, it carries only about 3 lightness steps per material. The measured 7 visible tones per tile compare with 10-12 in the references, and 72% of its dark edge pixels are near-neutral against 7-9% in the references, which points to a neutral dark outline that gives a sticker look. The interior steps and the frame are thin: there are no per-stone highlights, no grain and no clumps. The 0% flat coverage only reflects its small size, since the surfaces are simple and lightly varied. It would look flatter and thinner than the references beside them.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17910
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel beam",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "balustrade between the posts",
+      "rows": "2-4",
+      "evidence": "none",
+      "front_edge_line_row": 3,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "inner ledge under the lintel",
+      "rows": "5-7",
+      "evidence": "none",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "stair steps inside the dark opening",
+      "rows": "13-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom threshold bar",
+      "rows": "26-27",
+      "evidence": "none",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "28"
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 21,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The drawing is a flat frontal view of a stair opening in a frame. The top is a 2-row lintel strip (rows 0-1) drawn face-on. The balusters in rows 2-4 and the ledge in rows 5-7 are vertical faces with no clear horizontal surface. The side posts and the bottom bar (rows 26-27) are also front-facing strips. The stairs in rows 13-25 are stacked horizontal bands inside a dark opening, drawn as risers with no clear tread depth. No row range shows an ellipse, a sloped roof or a lid with its own front-edge line and eave shadow."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small stair-down opening: a grey stone frame with a dark interior and a few step lines. It is not a whole building with roof, walls and door, so it does not match the reference kind. It shows about 7 visible tones per tile against 10-12 for the references, with about 3 distinct steps on the stone frame against 5-6 for the references. 72% of its dark edge pixels are near-neutral, against 7-9% for the references, which points to a neutral dark outline rather than one tinted by the adjacent material. Its stone frame has little per-stone shading and no tile scallops, plaster speckle or grain, so it looks flatter and more sticker-like than the references. Near-flat coverage is 0%, so there are no large flat fills, but overall richness is clearly below the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16591
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel beam",
+      "rows": "0-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "baluster strip (vertical, gaps between posts)",
+      "rows": "2-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower lintel beam with shadow beneath",
+      "rows": "5-7",
+      "evidence": "a",
+      "front_edge_line_row": 5,
+      "eave_shadow_rows": "6-7"
+     },
+     {
+      "part": "descending stair treads in the opening (stepped horizontal surfaces)",
+      "rows": "13-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side posts of the frame",
+      "rows": "9-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 13,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stone frame (32 px wide, rows 5-28) holds a dark opening with stairs going down. Rows 13-26 hold stepped treads, each a lighter band ending in a darker edge, and the bottom step has a light front-edge line at row 26. The upper beam has a light edge line at row 5 with dark shadow at rows 6-7. The top strip at rows 0-4 is a front-facing lintel and balusters, but the treads and the beam shadow give horizontal surfaces and a front face of well over 3 rows, so the drawing is not flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a small stair-down prop, not a whole building with roof, walls and door, so it does not match the reference kind. It shows 3 grey-stone steps plus a dark outline and an almost black interior. Measured tones per tile are 7 against 10-12 for the references. 72% of its dark edge pixels are near-neutral, against 7-9% for the references, which fits the sticker-like neutral outline I see. There are no per-stone highlights, no grain, and no tile-scallop or plaster texture. The stair opening is a flat dark fill with thin horizontal bands. It looks thinner and flatter than either reference. The zero flat-coverage figure comes from the banding, not from real texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16650
+  }
+ ],
+ "decidedAt": "2026-10-22T11:11:07.498Z",
+ "cells": {
+  "16": [
+   "21cd0a82bf5c8556",
+   "62461c8edd06f569",
+   "8e803cb27c063f6e",
+   "b0455ac1504c37fd"
+  ],
+  "24": [
+   "178a7098ce950dbf",
+   "3ee0fe70ef71882d",
+   "447bd4e8b60744d3",
+   "47ac221e449dba39",
+   "4901333d9ece698d",
+   "4f5bf6bfbb5a5ada",
+   "4ffd335c75a53548",
+   "56f536bdf76ae4d0",
+   "5a6f1374d06536d5",
+   "6b70a5bc3f706844",
+   "6d0cc1d9e10f620c",
+   "7071e03ca6402d6a",
+   "7faa14a3bb6c06a0",
+   "8b0f9eab94478ff5",
+   "9f942786c70db752",
+   "a7025fb4da09239e",
+   "a7fb1c0d7100303e",
+   "aaf67e76e2f5f1a4",
+   "b78ce5bd116ff453",
+   "bebf01691e228f2b",
+   "d755ae7448ce41f0",
+   "d917789b6182db48",
+   "e18e63d7b5f3274b",
+   "e58f989f9281efcc"
+  ],
+  "32": [
+   "e27488ec81bbf3e9"
+  ],
+  "48": [
+   "045ebc1271cf55fd",
+   "5ec23e36e9d1a3bc",
+   "9c854590b8f2e635",
+   "9e238e1ae5b819d9",
+   "d8dabe6fe223e8ca",
+   "e930d0f682e35cd1"
+  ]
+ }
+}

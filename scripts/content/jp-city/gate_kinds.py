@@ -83,7 +83,7 @@ def gate_kits() -> list[str]:
     return sorted(f[:-4] for f in os.listdir(GATE_DIR) if f.endswith('.png'))
 
 
-INST_BLOCKS = ('interior_hospital', 'interior_school2', 'interior_office2')
+INST_BLOCKS = ('interior_hospital', 'interior_school2', 'interior_office2', 'street_stairs')   # street_stairs: 거리 계단(2026-10-22) — 새 그림, _gate/kinds.json
 
 
 def inst_items():

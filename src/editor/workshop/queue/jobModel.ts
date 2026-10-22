@@ -8,8 +8,24 @@ import type { WorkshopRound, WorkshopRun } from "@/harnesses/_core/workshop/type
 import type { ObjectGenRequest } from "../objectRequest";
 
 export type JobGenerator = "object-gen" | "char-gen" | "tile-gen";
-/** 누가 넣었나 — 공방 화면 · 조수(generate_missing_object) · 묶음 가져오기 */
-export type JobSource = "workshop" | "assistant" | "import";
+/** 누가 넣었나 — 공방 화면 · 조수(generate_missing_object) · 묶음 가져오기 · 공방 「한 번에 만들기」(알아서 고르고 넣는다) */
+export type JobSource = "workshop" | "assistant" | "import" | "oneclick";
+
+/**
+ * 호스트에서 도는 생성기 작업(캐릭터 char-gen · 지형 tile-gen, scripts/lib/workshopGen.mjs). 작업 줄이 상태를 물어 읽는다.
+ * jobId 가 없으면 아직 호스트에 보내기 전이다.
+ */
+export type RemoteGen = {
+  readonly kind: "char-gen" | "tile-gen";
+  readonly text: string;
+  readonly count?: number;
+  readonly mode?: string;
+  /** 지형: 합칠 지금 맵 칩셋 */
+  readonly targetTilesetId?: string;
+  jobId: string | null;
+  /** 마지막으로 읽은 호스트 상태(짧게) */
+  status: { state: string; stage?: string; progress?: number; elapsedMs?: number; expectMs?: number; engine?: string; error?: string | null; reviewing?: boolean; attempts?: number } | null;
+};
 /**
  * 보이는 단계. queued 줄 서는 중 · reference 참고 그림 · drawing 그리는 중 · review 검수 중 · ready 고를 차례(묶음은 넣을 차례)
  * · installing 넣는 중(조수 작업이 끝나기를 기다림 포함) · installed 넣음 · failed 못 그림 · paused 멈춤 · cancelled 그만둠
@@ -36,7 +52,13 @@ export type JobTimelineEntry = { readonly at: number; readonly state: JobState |
 
 export type JobInstalled =
   | { readonly kind: "object"; readonly letter: string; readonly objectId: string; readonly tilesetId: string; readonly auto: boolean; readonly at: number }
-  | { readonly kind: "pack"; readonly title: string; readonly assetIds: readonly string[]; readonly tilesetIds: readonly string[]; readonly at: number };
+  | {
+    readonly kind: "pack"; readonly title: string; readonly assetIds: readonly string[]; readonly tilesetIds: readonly string[]; readonly at: number;
+    /** 지형을 지금 맵 칩셋에 합쳤으면 그 칩셋·붓 칸 */
+    readonly terrain?: { readonly tilesetId: string; readonly brushTile: number | null; readonly groupIds: readonly string[] };
+    /** 캐릭터 칩(업로드 시트·칸) */
+    readonly characters?: readonly { readonly textureKey: string; readonly characterIndex: number; readonly name: string }[];
+  };
 
 export type WorkshopJob = {
   readonly id: string;
@@ -52,8 +74,12 @@ export type WorkshopJob = {
   readonly note?: string;
   /** 조수 요청이면 원래 요청(후속 요청·자리) */
   readonly request?: ObjectGenRequest;
-  /** 묶음 작업: 묶음 머리(그림 바이트는 따로 저장) */
-  readonly pack?: { readonly folder: string; readonly manifest: unknown; readonly previewBlob?: string };
+  /** 묶음 작업: 묶음 머리(그림 바이트는 따로 저장). 호스트 작업은 다 그린 뒤에 붙는다. */
+  pack?: { readonly folder: string; readonly manifest: unknown; readonly previewBlob?: string };
+  /** 호스트 생성기 작업(캐릭터·지형) */
+  readonly remote?: RemoteGen;
+  /** 「한 번에 만들기」: 검수 통과 첫 후보를 알아서 골라 넣는다(사람이 「자세히」에서 끄면 false) */
+  readonly autoPick?: boolean;
   roundId: string | null;
   startedAt: number | null;
   finishedAt: number | null;
@@ -103,6 +129,17 @@ export function jobState(job: WorkshopJob, round: WorkshopRound | null): JobStat
   if (job.cancelled) return "cancelled";
   if (job.installWait !== null) return "installing";
   if (job.pause) return "paused";
+  // 「한 번에 만들기」 물건이 다시 그려도 검수 통과 후보가 없으면 못 그림으로 끝낸다 — 사람에게 관문 판정을 넘기지 않는다(2026-10-23 사용자 규칙).
+  if (job.error && job.roundId && job.source === "oneclick") return "failed";
+  if (job.remote && !job.pack) {
+    if (job.error) return "failed";
+    const st = job.remote.status;
+    if (!job.remote.jobId || !st) return "queued";
+    if (st.state === "running") return st.reviewing ? "review" : "drawing";
+    if (st.state === "cancelled") return "cancelled";
+    if (st.state === "done") return "installing";
+    return "failed";
+  }
   if (job.generator !== "object-gen" || job.pack) return job.error ? "failed" : "ready";
   if (!job.roundId) return job.error ? "failed" : "queued";
   if (!round) return "queued";
@@ -124,6 +161,7 @@ export const OPEN_STATES: ReadonlySet<JobState> = new Set(["queued", "reference"
 export function jobProgress(job: WorkshopJob, round: WorkshopRound | null): number {
   const state = jobState(job, round);
   if (state === "ready" || state === "installed" || state === "installing") return 1;
+  if (job.remote) return Math.max(0, Math.min(0.95, job.remote.status?.progress ?? 0));
   if (!round || round.runs.length === 0) return 0;
   let sum = 0;
   for (const run of round.runs) {
@@ -242,9 +280,14 @@ export const JOB_STATE_LABELS: Readonly<Record<JobState, string>> = {
 
 /** 묶음 작업의 「고를 차례」는 「넣을 차례」로 읽는다. */
 export function jobStateLabel(job: WorkshopJob, state: JobState): string {
+  // 「한 번에 만들기」는 사람이 고르지 않는다 — 「고를 차례」·「검수 중」이 사람 차례로 읽히지 않게(2026-10-23 UX 검수).
+  if (job.source === "oneclick" && job.autoPick !== false) {
+    if (state === "ready") return "마무리 중";
+    if (state === "review") return "확인 중";
+  }
   if (state === "ready" && job.generator !== "object-gen") return "넣을 차례";
   if (state === "ready" && job.pack) return "넣을 차례";
   return JOB_STATE_LABELS[state];
 }
 
-export const SOURCE_LABELS: Readonly<Record<JobSource, string>> = { workshop: "공방", assistant: "조수", import: "가져옴" };
+export const SOURCE_LABELS: Readonly<Record<JobSource, string>> = { workshop: "공방", assistant: "조수", import: "가져옴", oneclick: "공방" };

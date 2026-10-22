@@ -32,6 +32,13 @@ export type ObjectGateAuxMetrics = { tileColorsMedian: number; tileColorsP90: nu
 /** 한쪽 판정 요약. 영수증은 3/4 와 화풍을 따로 적고, 둘 다 pass 일 때만 최상위 verdict 가 pass 다. */
 export type ObjectGateHalfVerdict = { verdict: ObjectGateState; reasons: string[] };
 
+/**
+ * 화풍 판정에 쓴 기준 그림 묶음(2026-10-23). 칩셋마다 그 칩셋 번들의 그림으로 비교한다.
+ * id = 쓴 묶음(버들항 기본 묶음은 "beodeul_city"), chipset = 후보의 칩셋(모르면 null), fallback = 후보 칩셋의 묶음이 없거나
+ * 그 묶음에 이 화풍 종류가 없어 버들항으로 떨어졌을 때 true(reason 에 이유), hash = 쓴 기준 그림 화소 해시들의 해시.
+ * 이 필드가 없는 옛 영수증은 버들항 묶음으로 판정한 것이다.
+ */
+export type ObjectGateStyleRefSet = { id: string; chipset: string | null; fallback: boolean; reason?: string; hash: string };
 export type ObjectGateReceipt = {
   schema: 'oprn-object-gate-receipt/1';
   pixelSha256: string;
@@ -46,7 +53,7 @@ export type ObjectGateReceipt = {
   reasons: string[];
   /** 규칙 v4 부터. 보고서가 어느 반쪽이 떨어졌는지 말할 수 있도록 따로 적는다. */
   view34?: ObjectGateHalfVerdict;
-  style?: ObjectGateHalfVerdict & { styleKind: ObjectGateStyleKind; refs: string[]; scale: number; score?: number };
+  style?: ObjectGateHalfVerdict & { styleKind: ObjectGateStyleKind; refs: string[]; scale: number; score?: number; refSet?: ObjectGateStyleRefSet };
   metrics?: ObjectGateAuxMetrics;
   /** 규칙 v7: 독립 눈(전체 인상) 답의 판정 목록(right|borderline|wrong). 거부권 계산에 쓰인 근거. */
   eye?: { verdicts: string[] };

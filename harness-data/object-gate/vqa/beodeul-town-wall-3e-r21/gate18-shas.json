@@ -1,0 +1,110 @@
+[
+ {
+  "name": "wall_ring",
+  "sha": "a4862d7b8cb8992e8a5aacb8fe291098326e9280192eaaeebb61142a4ea188f9",
+  "status": "PASS",
+  "held": true
+ },
+ {
+  "name": "wall_parts",
+  "sha": "76fab5416554189d4ecc8181bcbe54933c31dc170b64c02658da1aa33c0f7347",
+  "status": "PASS",
+  "held": true
+ },
+ {
+  "name": "gatehouse_open",
+  "sha": "02139eb18bfa09c224e63d1e47bc98acb7ddedac655d0d2509bae864b01aecc0",
+  "status": "PASS",
+  "held": true
+ },
+ {
+  "name": "gatehouse_closed",
+  "sha": "a8f78ffa66cf0e99214541624d91e5372b02103dab5a6753e61fe37f7116950e",
+  "status": "PASS",
+  "held": true
+ },
+ {
+  "name": "wall_runs",
+  "sha": "4b96d6a947111e0b5ea17771742a182c074f6671066a13041723cc10428ddcdd",
+  "status": "PASS",
+  "held": true
+ },
+ {
+  "name": "tower",
+  "sha": "ceedcf1362bdec54d718f1d31f65f970ba8383959b68bee98e55e50afd765722",
+  "status": "FAIL",
+  "held": true
+ },
+ {
+  "name": "wall_ring_snow",
+  "sha": "a9d6cd89ccfdd7767942abd85f69a13cf6a5593eced3370b697c43f50bbac1a0",
+  "status": "PASS",
+  "held": true
+ },
+ {
+  "name": "wall_parts_snow",
+  "sha": "fba3651e9d7e700dae6ced55523766c7279c60a4e70d847692fb4aba32097a4c",
+  "status": "PASS",
+  "held": true
+ },
+ {
+  "name": "gatehouse_open_snow",
+  "sha": "f410414e1d3f05969f9346684e063ff8e3117e2dc60b642c7575360de0874a02",
+  "status": "PASS",
+  "held": true
+ },
+ {
+  "name": "gatehouse_closed_snow",
+  "sha": "a728feeb60662b370d215a483472c09d335c8df26c14b23b91eef4355143e8a9",
+  "status": "PASS",
+  "held": true
+ },
+ {
+  "name": "wall_runs_snow",
+  "sha": "a5299f52dd6cb033a3786f01ec9cb2a299a4d2759fe9e26327ae41709472573b",
+  "status": "REFER",
+  "held": true
+ },
+ {
+  "name": "tower_snow",
+  "sha": "5d8f98a2868809e7a40af30c7edf5cdb6bee8c0c7ad62abfb7def035c599b802",
+  "status": "REFER",
+  "held": true
+ },
+ {
+  "name": "wall_ring_desert",
+  "sha": "13d167c9e0a16306bf452d147660b1c232dbb21ab73b3a8f641aa80cc1059cb0",
+  "status": "PASS",
+  "held": true
+ },
+ {
+  "name": "wall_parts_desert",
+  "sha": "4a34a803def83cbd6a031ce2eca066385e2a29d3d808c2f498a5c2f16d773601",
+  "status": "PASS",
+  "held": true
+ },
+ {
+  "name": "gatehouse_open_desert",
+  "sha": "7caf58ac606c20cc88b565c871d3e85b77220aa4691a6831b068287e8a71d18c",
+  "status": "PASS",
+  "held": true
+ },
+ {
+  "name": "gatehouse_closed_desert",
+  "sha": "150759fc1ae33581b59e8077874f400bb23787ced9c8b05947fdff01609b1873",
+  "status": "REFER",
+  "held": true
+ },
+ {
+  "name": "wall_runs_desert",
+  "sha": "dc7916e7ba567d7132522694063dece91f2c5243f1129591bbbdc283c2116e46",
+  "status": "REFER",
+  "held": true
+ },
+ {
+  "name": "tower_desert",
+  "sha": "ec49e5f45078c0df678feecdc9b12c14714471b84b131ec5e1bdd9a9a7c933ff",
+  "status": "PASS",
+  "held": true
+ }
+]

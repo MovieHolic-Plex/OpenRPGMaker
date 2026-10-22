@@ -3,7 +3,7 @@ import { actionFieldSlow } from "./actionFieldSlow";
 import { isDetectionEmoting } from "./npcDetectionEncounter";
 import { pursuitTarget } from "./horrorRuntime";
 import { pursuitPass, pursuitState } from "./pursuitNavigation";
-import { canMoveFootprint, isPassableLanding } from "@/project/collision";
+import { canMoveFootprint, isLedgeCell, isPassableLanding } from "@/project/collision";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import { yieldingLivingMovers, routeForLivingMovement } from "@/player/npcLivingTravel";
 import { passageBounds, rectsOverlap } from "@/project/footprint";
@@ -649,6 +649,7 @@ function repathBlockedLivingNpc(
   // 플레이어만 막는 경우에는 탐색하지 않는다(넓은 몸의 옆칸도 포함).
   if (!yieldingLivingMovers.has(mover) && !blocked(nextRect)
     && canMoveFootprint(project, scene.map, view.x, view.y, view.footprint, nx, ny, view.passRows)
+    && !isLedgeCell(project, scene.map, nx, ny)
     && !isSpatialPlacementBlocking(project, scene.session, scene.map.id, nextRect)) return;
   const canStep = (fx: number, fy: number, tx: number, ty: number) => {
     const rect = passageBounds(tx, ty, view.footprint, view.passRows);
@@ -657,6 +658,7 @@ function repathBlockedLivingNpc(
     }
     return !blocked(rect)
       && canMoveFootprint(project, scene.map, fx, fy, view.footprint, tx, ty, view.passRows)
+      && !isLedgeCell(project, scene.map, tx, ty)
       && !isSpatialPlacementBlocking(project, scene.session, scene.map.id, rect);
   };
   const yielding = livingYields.get(mover);

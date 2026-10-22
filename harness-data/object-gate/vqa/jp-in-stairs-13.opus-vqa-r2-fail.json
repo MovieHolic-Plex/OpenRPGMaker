@@ -1,0 +1,4 @@
+{"queue":"jp-in-stairs-13","round":2,"judge":"claude-opus-5.5 (fresh subagent, no prior scores)","date":"2026-10-22","verdict":"fail","majors":4,"axis2":6,"axis6":6,
+ "majorFindings":["stairs-up-wood: 1-cell treads + baluster rhythm read as ladder/shelf at 1x (house-1f)","cs-stairs-up-bare: even grey stripes, no stringer -> rolling shutter","cs-stairwell-down: thin frame + even slats -> floor vent / hatch","scene house-1f: same as stairs-up-wood"],
+ "minorFindings":["up stairs: taper pitch, darken top treads, bigger dark opening","stairwells: deeper near-black pit, thinner north bands","as-*: rubble/rail damage too subtle","cs cones stood on wainscot row"],
+ "action":"1-cell stairs get a single-line rail + newel only; 10px dark opening, 7 tapered steps darkening to -4; cs stair gets concrete side walls; stairwell pit 5 near-black rows and bands 3/4/5/6 px; cs well gets a 2px raw concrete lip, cones moved onto the lip"}

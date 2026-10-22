@@ -42,10 +42,30 @@ export function centerRuntimeCamera(
   player: Phaser.GameObjects.Sprite,
   viewZoom = 1,
 ): void {
+  snapCameraScrollToCanvasPixels(camera);
   authoredZooms.set(camera, 1);
   camera.setZoom(viewZoom);
   syncRuntimeCameraBounds(camera, map);
   camera.centerOn(player.x, player.y);
+}
+
+const snappedCameras = new WeakSet<Phaser.Cameras.Scene2D.Camera>();
+
+/**
+ * 스크롤을 캔버스 픽셀 격자(1/zoom 세계 픽셀)에 맞춘다. 따라가기 러프(0.2)가 만드는 소수 스크롤이 캔버스 반 픽셀에
+ * 떨어지면 타일 층이 반 픽셀 밀려 칸 줄마다 1px 실선(옆 칸 텍셀)이 생겼다 — zoom 2 에서 스크롤 9.25 세계 픽셀일 때
+ * 32px 마다 가로줄(아스트라 호라이즌 2026-10-23 적대 VQA, scripts/qa/astra-horizon/seam-probe.mjs 로 재현).
+ * Phaser 의 preRender 는 따라가기·패닝 뒤 경계가 있으면 clampX/Y 를 부르므로(경계는 syncRuntimeCameraBounds 가 늘 건다)
+ * 그 두 함수만 감싼다. 반올림이라 러프 끝에서 중심이 1/zoom 세계 픽셀 안쪽으로 멈출 수 있다.
+ */
+function snapCameraScrollToCanvasPixels(camera: Phaser.Cameras.Scene2D.Camera): void {
+  if (snappedCameras.has(camera)) return;
+  snappedCameras.add(camera);
+  const clampX = camera.clampX.bind(camera);
+  const clampY = camera.clampY.bind(camera);
+  const snap = (value: number, zoom: number) => (Number.isFinite(zoom) && zoom > 0 ? Math.round(value * zoom) / zoom : value);
+  camera.clampX = (x: number) => snap(clampX(x), camera.zoomX);
+  camera.clampY = (y: number) => snap(clampY(y), camera.zoomY);
 }
 
 /**

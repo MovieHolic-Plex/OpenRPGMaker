@@ -29,6 +29,8 @@ export interface DressCtx {
   upper: number[]; lower: number[];
   counts: Record<string, number>;
   litter: readonly (readonly [string, number])[];
+  /** spec.lair — 무리가 사는 소굴 장식. */
+  lair?: boolean;
 }
 
 type Slot = { x: number; y: number };
@@ -357,6 +359,31 @@ function vinesOnWalls(c: DressCtx, rs: () => number, slots: Slot[], n: number, k
   for (const q of c.shuffle(rs, slots)) { if (k >= n) break; if (lonely(c, q.x, q.y, 1) && c.put(kitId, q.x, q.y)) k += 1; }
 }
 
+/** 소굴 야영지: 방 바닥 가운데 쪽 모닥불, 벽가 가죽 걸이·궤짝·통·자루 무더기, 흩어진 뼈. 보스방(chief)은 무더기를 더 쌓는다. */
+function lairCamp(c: DressCtx, r: PlacedRoom, rs: () => number, edge: [number, number][], chief: boolean): void {
+  const FIRE = c.hasKit("bd-pick-deep-forest-path-campfire") ? "bd-pick-deep-forest-path-campfire" : "bd-pick-shipwreck-reef-campfire";
+  const inner = c.shuffle(rs, c.floorCells(r, 3));
+  // 큰 방(우두머리 방·넓은 굴)엔 천막 하나 — 「누가 사는 곳」이 한눈에 읽힌다.
+  if ((chief || r.w * r.h >= 150) && c.hasKit("bd-pick-desert-oasis-tent")) {
+    for (const [x, y] of inner) if (lonely(c, x, y, 3) && lonely(c, x + 3, y, 2) && stand(c, "bd-pick-desert-oasis-tent", x, y)) break;
+  }
+  // 모닥불 둘레 야영 무더기: 불 한 칸 + 곁에 자루·궤짝·가죽 걸이.
+  let fires = 0;
+  for (const [x, y] of inner) {
+    if (fires >= (chief ? 2 : 1)) break;
+    if (!lonely(c, x, y, 2) || !stand(c, FIRE, x, y)) continue;
+    fires += 1;
+    const around: [number, number][] = [[x - 2, y], [x + 2, y], [x, y - 2], [x - 2, y + 1], [x + 2, y - 1]];
+    let k = 0;
+    for (const [ax, ay] of c.shuffle(rs, around)) { if (k >= 2) break; if (lonely(c, ax, ay, 0) && stand(c, c.weighted(rs, [["bd-pick-walled-market-sack-pile", 2], [SW("crate"), 2], ["bd-pick-deep-forest-path-hide-rack", 1], [SW("barrel"), 2]]), ax, ay)) k += 1; }
+  }
+  const goods: readonly (readonly [string, number])[] = [["bd-pick-deep-forest-path-hide-rack", 2], [SW("crate-stack"), 3], [SW("barrel"), 3], ["bd-pick-walled-market-sack-pile", 2], [SW("bone-heap"), chief ? 2 : 1]];
+  let n = 0;
+  for (const [x, y] of edge) { if (n >= (chief ? 6 : 4)) break; if (rs() < 0.55 && lonely(c, x, y, 1) && stand(c, c.weighted(rs, goods), x, y)) n += 1; }
+  sprinkle(c, rs, r, 0.03, () => c.weighted(rs, [[SW("bones"), 3], [SW("skulls"), 1]]), { inset: 2, max: chief ? 4 : 2 });
+  c.counts["lair-camp"] = (c.counts["lair-camp"] ?? 0) + 1;
+}
+
 function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null, slots: Slot[]): boolean {
   const spikes = () => c.weighted(rs, [[CV("stalagmite-1"), 4], [CV("rock-pillar-2"), 1], [CV("rubble-cave"), 3]]);
   const glow = () => c.weighted(rs, [[MUSH, 4], [CV("glow-moss-floor"), 2]]);
@@ -376,9 +403,10 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
     }
     case "cavern": {
       const e = c.edgeCells(r, rs);
+      if (c.lair) lairCamp(c, r, rs, e, false);
       let n = 0; for (const [x, y] of e) { if (n >= 7) break; if (rs() < 0.5 && lonely(c, x, y, 1) && stand(c, spikes(), x, y)) n += 1; }
       sprinkle(c, rs, r, 0.03, spikes, { inset: 2, rad: 2, max: 3 });
-      mossPatch(e, 4); mossPatch(c.floorCells(r, 2), 3);
+      if (!c.lair) { mossPatch(e, 4); mossPatch(c.floorCells(r, 2), 3); }
       if (rs() < 0.7) { for (const [x, y] of shoreCells(c, r).slice(0, 3)) stand(c, MUSH, x, y); }
       vinesOnWalls(c, rs, slots, 3);
       c.hangAlong(slots, rs, 7, () => TORCH, 1);
@@ -398,6 +426,7 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
     }
     case "grotto": {
       const e = c.edgeCells(r, rs);
+      if (c.lair) { lairCamp(c, r, rs, e, false); return true; }
       mossPatch(e, 6); mossPatch(c.floorCells(r, 1), 5);
       for (const [x, y] of e.slice(0, 6)) if (rs() < 0.5 && lonely(c, x, y, 1)) stand(c, glow(), x, y);
       sprinkle(c, rs, r, 0.04, () => c.weighted(rs, [[SW("bones"), 2], [SW("skulls"), 1], [CV("rubble-cave"), 2]]), { max: 3 });
@@ -409,6 +438,7 @@ function dressCave(c: DressCtx, r: PlacedRoom, rs: () => number, s: Slot | null,
       const e = c.edgeCells(r, rs);
       for (const [x, y] of e.slice(0, 12)) if (rs() < 0.6 && lonely(c, x, y, 1)) stand(c, c.weighted(rs, [[CV("stalagmite-1"), 4], [CV("rock-pillar-2"), 2]]), x, y);
       if (e[0]) stand(c, SW("bone-heap"), e[0][0], e[0][1]);
+      if (c.lair) lairCamp(c, r, rs, e.slice(1), true);
       sprinkle(c, rs, r, 0.04, () => c.weighted(rs, [[SW("bones"), 2], [SW("skulls"), 2]]), { inset: 2, max: 5 });
       vinesOnWalls(c, rs, slots, 4);
       c.hangAlong(slots, rs, 5, () => TORCH, 2);

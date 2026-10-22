@@ -1,0 +1,412 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a5bad25ce002855996ec5338e05e1ae286c8fb8f806468e66a68623b414b204",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "wz-owl-stair-up",
+ "label": "wizarding_world stairs wz-owl-stair-up (UP)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "wall",
+  "refs": [
+   "castle-door2-closed",
+   "castle-wall-n-window2"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "wizarding_world",
+   "chipset": "wizarding_world",
+   "fallback": false,
+   "hash": "1a0f54905a7352a0"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 15,
+  "darkV5": 35,
+  "nearBlackEdge": 0.39,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top wooden lintel beam",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper stair tread (far flight)",
+      "rows": "15-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "stair tread 2",
+      "rows": "21-25",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27"
+     },
+     {
+      "part": "stair tread 3 (main, widest)",
+      "rows": "30-34",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36"
+     },
+     {
+      "part": "stair tread 4 (near)",
+      "rows": "39-43",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45"
+     },
+     {
+      "part": "side wooden posts",
+      "rows": "3-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Staircase inside a wooden frame. Each step repeats the same pattern: a 5-row stone tread (rows 21-25, 30-34, 39-43), a 1-row light front-edge line (rows 26, 35, 44), 1 row of dark shadow (rows 27, 36, 45), then a 2-row riser (rows 28-29, 37-38). Taken together these show top surfaces with front faces below. The lintel at the top (rows 0-2) and the side posts are vertical elements. The stair treads themselves have top surfaces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 11 visible tones per tile. That sits between the references (15 for the door, 7 for the window wall) and above the plain wall reference. Near-flat coverage is 14%, close to the window wall's 9% and far from a flat sticker. The stair block has about 5 lightness steps on the stone treads and risers. The timber frame and canopy have 3-4 steps and carry some grain and highlight dots. The dark edge pixels are 69% neutral, so the outline is mixed: partly tinted brown beside the wood and partly near-black. Both references are 100% neutral, so the candidate is no shallower than the shipped art. The one weakness is the small flat patches on the canopy and the dark stair void. Overall the candidate would sit acceptably beside these references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17549
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lintel beam",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair tread 1 (upper)",
+      "rows": "15-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "stair tread 2",
+      "rows": "21-25",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27"
+     },
+     {
+      "part": "stair tread 3",
+      "rows": "30-34",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36"
+     },
+     {
+      "part": "stair tread 4 (lowest)",
+      "rows": "39-43",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45"
+     },
+     {
+      "part": "wooden side posts",
+      "rows": "3-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a staircase set in a wooden doorway frame. Its steps repeat a 5-row stone tread (rows 21-25, 30-34, 39-43) that ends in a light front-edge line (rows 18, 26, 35, 44) followed by 1-2 rows of dark shadow (rows 19-20, 27, 36, 45), then a riser. This is evidence (a) for a top surface. The lintel at rows 0-2 and the side posts are vertical or front-facing structure, but they are minor next to the stairs. No isometric side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a stair-up alcove with a wooden frame and gray stone steps. It reads as a wall face of the same kind as the references, though it is a smaller object. It shows about 5 steps on the stone and wood ramps: highlight, light, mid, dark and deep. Its 11 visible tones per tile sit between the two references (15 for the door, 7 for the window wall). Near-flat coverage is 14%, slightly above the references (1% and 9%) but not a flat fill, since the steps and the lintel carry banding and dots. The dark edge pixels are 69% neutral, below the references' 100%. The edges lean slightly brown beside the wood and gray beside the stone, so the outline is mixed and not a uniform black sticker line. It is a little less textured than the door, with smoother step faces and a somewhat flat dark interior, but it is on par with the window wall. A careful artist would accept it next to these references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16089
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair treads (steps 2-4, grey bands each ending in a light front-edge line, then a dark shadow row, then a riser)",
+      "rows": "22-46",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27"
+     },
+     {
+      "part": "upper stair tread / landing",
+      "rows": "13-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "top landing, lit gold strip",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-15"
+     },
+     {
+      "part": "lintel beam across the top",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "side wooden posts",
+      "rows": "3-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a staircase set in a wooden frame. Each step has a grey tread band of 4-5 rows (rows 22-25, 30-34, 39-43) that ends in a light front-edge line (rows 18, 26, 35, 44). A dark shadow row follows the edge line, then a 2-row riser. That pattern is evidence (a) for a top surface, and it repeats down the stairs. Each riser is a 2-3 row front face. The lintel (rows 0-2) is only a thin front-facing strip, with a 1-row highlight at row 1 and a dark row at row 2, so it shows no real top slope. The side posts are vertical faces only. The stairs still read as a 3/4 view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a stair-up alcove with a wooden frame, a lintel and steps. It measures 11 visible tones per tile, between the references' 15 (door) and 7 (window wall), so density is at or above the lower reference. Near-flat coverage is 14%, slightly above the references' 1% and 9% but still low, and by eye I see no large flat fills. The steps show a clear light-to-dark ramp, the frame has wood grain and highlights, and the dark interior gives a good value contrast. Dark edge pixels are 69% near-neutral against 100% for both references, so the outline carries slightly more tint than the shipped art, which is the better side of that comparison. Structure and shading are comparable to the shipped castle pieces and would sit next to them without looking thinner or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17739
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lintel beam across the top",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": 1,
+      "eave_shadow_rows": "2"
+     },
+     {
+      "part": "side wooden frame posts",
+      "rows": "3-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stair tread (upper step)",
+      "rows": "21-25",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27"
+     },
+     {
+      "part": "stair tread (middle step)",
+      "rows": "30-34",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36"
+     },
+     {
+      "part": "stair tread (lower step)",
+      "rows": "39-43",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a staircase set in a wooden doorway frame. Each step has a tread band of about 5 rows (21-25, 30-34, 39-43). Each tread ends in a light front-edge line (rows 26, 35, 44), followed by a dark shadow row and a 2-3 row riser (rows 28-29, 37-38). That is evidence (a) for a top surface on every step. The lintel (rows 0-2) and the side posts are thin vertical frame parts, not the main volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 11 visible tones per tile, between the references' 15 (door) and 7 (window wall), so density is comparable to shipped art. Its wood frame and lintel show about 4-5 brown steps with grain and highlights. The stair interior has several grey steps, plus a lit top edge and a dark recess. Its near-flat coverage is 14%, slightly above the references' 1% and 9%, but no large area is a single flat colour. Its dark edges are 69% neutral against 100% for both references, so it carries somewhat more tint than the shipped pieces, and it reads as mixed outlining rather than a uniform black sticker line. It is a small framed prop rather than a full stone wall, but a careful artist would accept it next to these references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18348
+  }
+ ],
+ "decidedAt": "2026-10-22T16:30:52.547Z",
+ "cells": {
+  "16": [
+   "01dbc8de80b7b2f0",
+   "16665475a6437a35",
+   "74042cc2fcacd4c9",
+   "b5195e23e1606ab9",
+   "d25d5395ad5c7c76",
+   "ec162cacc016b2df"
+  ],
+  "24": [
+   "102fbf93f140fb7e",
+   "3534a4e4c85e0705",
+   "389d2b139f6844aa",
+   "774e99fba9e5d719",
+   "7d97a8ce10c58d51",
+   "954c44e7827128ea",
+   "a3ed591037cba66a",
+   "ad042ebc415794da",
+   "ad97bebe830cfb4c",
+   "dc59e7114b028578",
+   "e9ec574d6c0cc0b5",
+   "f937a1344de2e988"
+  ],
+  "32": [
+   "4d5a82538a29856d",
+   "c4c2ffbf1fccce16",
+   "df2702c2a814ee89",
+   "e9df1a36630f41ac"
+  ],
+  "48": [
+   "498410748e8290ee",
+   "a17b6ddc59868f98",
+   "c0a2d8e7c4a19ff0"
+  ]
+ }
+}

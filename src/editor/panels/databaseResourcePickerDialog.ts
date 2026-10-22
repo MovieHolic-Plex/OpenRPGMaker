@@ -285,14 +285,17 @@ export function resourcePickerControl(input: {
   readonly presentation?: "graphic";
 }): HTMLElement {
   const project = store.getCurrent();
-  const preview = resourceVisual(
-    input.resourceId ?? "",
-    input.kind,
-    project,
-    input.label,
-    "db-resource-picker-inline-thumb",
-    { characterIndex: input.currentCharacterIndex ?? 0 }
-  );
+  // 비어 있는 음악·효과음은 그림이 없어 40px 썸네일 칸에 "(없음)" 글자만 갇힌다 — 이름 칸의 "(미설정)" 이 대신한다.
+  const preview = !input.resourceId && (input.kind === "music" || input.kind === "sound")
+    ? null
+    : resourceVisual(
+      input.resourceId ?? "",
+      input.kind,
+      project,
+      input.label,
+      "db-resource-picker-inline-thumb",
+      { characterIndex: input.currentCharacterIndex ?? 0 }
+    );
   const optionName = listDatabaseResourceOptions(input.kind, project).find((option) => option.id === input.resourceId)?.name;
   const rawName = optionName ?? (input.resourceId ? prettyId(input.resourceId) : "");
   const graphic = input.presentation === "graphic";
@@ -375,7 +378,7 @@ export function resourcePickerControl(input: {
       el("div", {
         class: "db-resource-picker-control-body",
         children: [
-          preview,
+          ...(preview ? [preview] : []),
           el("div", {
             class: "db-resource-picker-control-meta",
             children: metaChildren,

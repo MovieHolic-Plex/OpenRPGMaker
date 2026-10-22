@@ -1,0 +1,201 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "astra-centre-mart-kits",
+ "title": "Astra 센터·마트 키트 32칸 (4d293f96db) — 사용자 위임·Opus 적대 VQA 통과 2026-10-21",
+ "note": "agent/astra-kits 4d293f96db, monster_overworld 시트 칸 2224~2239(센터)·2240~2255(마트), 16px 칸 단위. 독립 Opus 5.5 medium 적대 VQA r1 불합격 → 수정 → r2(새 판정자, 현재 화소) 두 키트 모두 통과(harness-data/object-gate/vqa/astra-centre-mart-kits.opus-vqa-r2.json).",
+ "createdAt": "2026-10-20T21:56:01.478Z",
+ "items": [
+  {
+   "sha": "04a96e2cd308307807ad8a54fa38e2d49e426aa95bb45a75b15133abdd216ea8",
+   "kind": "structure",
+   "label": "monster_overworld/astra-centre-kit-0 (칸 2224)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2224.png"
+  },
+  {
+   "sha": "36532fb45d222303d12550cbd22e28f733148ff9a0f3da08f31b8a01c5b3a132",
+   "kind": "structure",
+   "label": "monster_overworld/astra-centre-kit-1 (칸 2225)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2225.png"
+  },
+  {
+   "sha": "fd266bf7127719f1d595eda340ad603a3eb0ba2180ae37cefa0d25b022dda7b7",
+   "kind": "structure",
+   "label": "monster_overworld/astra-centre-kit-2 (칸 2226)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2226.png"
+  },
+  {
+   "sha": "ee03f98c94b74f0d24798625270f91b2429bbb9ed2717da00360d8279e452dd1",
+   "kind": "structure",
+   "label": "monster_overworld/astra-centre-kit-3 (칸 2227)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2227.png"
+  },
+  {
+   "sha": "3b3d375081073873c957823ae38144583cf10e5fde0b8c959a4ff3118e1656d8",
+   "kind": "structure",
+   "label": "monster_overworld/astra-centre-kit-4 (칸 2228)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2228.png"
+  },
+  {
+   "sha": "6e29ffb29c5448ab520b8078016da88dc9284c79c6d3ed1941e7949310c9f882",
+   "kind": "structure",
+   "label": "monster_overworld/astra-centre-kit-5 (칸 2229)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2229.png"
+  },
+  {
+   "sha": "20aecace893b8a75602ddbb79eb0d3cb6a82451ee4e2cdb41350a6d1d48bf5bd",
+   "kind": "structure",
+   "label": "monster_overworld/astra-centre-kit-6 (칸 2230)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2230.png"
+  },
+  {
+   "sha": "f2ea4ebb8a7d47455a13194ee51d4dbfd194c88d327386979279a79bc82618c3",
+   "kind": "structure",
+   "label": "monster_overworld/astra-centre-kit-7 (칸 2231)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2231.png"
+  },
+  {
+   "sha": "330bea177dec3323b4cfd1551918bbcecc098de8ba4e8671b23957f436c6affa",
+   "kind": "structure",
+   "label": "monster_overworld/astra-centre-kit-8 (칸 2232)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2232.png"
+  },
+  {
+   "sha": "ec201ca983fba8bced63f2f9fa571eb1ff46d4d92f074511320afe2351bea847",
+   "kind": "structure",
+   "label": "monster_overworld/astra-centre-kit-9 (칸 2233)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2233.png"
+  },
+  {
+   "sha": "8b341455302de39e1d15d2150da9398086fd1d8c5ea426e76f93b05a76d5affc",
+   "kind": "structure",
+   "label": "monster_overworld/astra-centre-kit-10 (칸 2234)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2234.png"
+  },
+  {
+   "sha": "9e17b644e5429e1105dd9b62ab15a445a2aacd9e4bfab3987bb95dd380e433d0",
+   "kind": "structure",
+   "label": "monster_overworld/astra-centre-kit-11 (칸 2235)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2235.png"
+  },
+  {
+   "sha": "02d4dbe41c094b96802b10a1bdf7bf4351f49825a4791ac641baf7ffad210e9d",
+   "kind": "structure",
+   "label": "monster_overworld/astra-centre-kit-12 (칸 2236)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2236.png"
+  },
+  {
+   "sha": "0d956818b3a363f6612370621287b95ac93e95effc3645ac88dba8dacfe0b28d",
+   "kind": "structure",
+   "label": "monster_overworld/astra-centre-kit-13 (칸 2237)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2237.png"
+  },
+  {
+   "sha": "3354714a651e575ef8d6ab69800951d101735dd58d6dedcb67f6cfc0b5141367",
+   "kind": "structure",
+   "label": "monster_overworld/astra-centre-kit-14 (칸 2238)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2238.png"
+  },
+  {
+   "sha": "1f58ec4bc8b7834633f6e37c561c40e6625c72b48d6d8601c1fa6b114bb744b8",
+   "kind": "structure",
+   "label": "monster_overworld/astra-centre-kit-15 (칸 2239)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2239.png"
+  },
+  {
+   "sha": "00605e3cd6db39d720d10d735596aff848d23f4954f5cdf4a45b73b1758ca5e2",
+   "kind": "structure",
+   "label": "monster_overworld/astra-mart-kit-0 (칸 2240)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2240.png"
+  },
+  {
+   "sha": "16e7b24789f4ab7122e66ed8b5df3ac9e4dcf70b0769b70d6d385e776ac8597e",
+   "kind": "structure",
+   "label": "monster_overworld/astra-mart-kit-1 (칸 2241)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2241.png"
+  },
+  {
+   "sha": "d051e523a0a4674ac020966616bfb53c29be8ad0d5591455c057d3525bede1cb",
+   "kind": "structure",
+   "label": "monster_overworld/astra-mart-kit-2 (칸 2242)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2242.png"
+  },
+  {
+   "sha": "9f7d7654ec4914ae36a135d66fff978dce2e7ce12b4b7478f0bc5e5a5133960b",
+   "kind": "structure",
+   "label": "monster_overworld/astra-mart-kit-3 (칸 2243)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2243.png"
+  },
+  {
+   "sha": "48b71cfefd6d2e9dcd50768cce140ff50e63fc0fbe6bd7c690033e37bd4b49c8",
+   "kind": "structure",
+   "label": "monster_overworld/astra-mart-kit-4 (칸 2244)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2244.png"
+  },
+  {
+   "sha": "1fc858db78f123b289a23153c3eb92c4096aac4bc7338456b5362fdea02ad145",
+   "kind": "structure",
+   "label": "monster_overworld/astra-mart-kit-5 (칸 2245)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2245.png"
+  },
+  {
+   "sha": "7951036d076c9a5ab694fef614b55d7e0ee08a330269ef14877a7a800221293f",
+   "kind": "structure",
+   "label": "monster_overworld/astra-mart-kit-6 (칸 2246)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2246.png"
+  },
+  {
+   "sha": "16a14ce19538bcf2a0f90006847d02ce6e74cfa1553053f564cb51070082b2bc",
+   "kind": "structure",
+   "label": "monster_overworld/astra-mart-kit-7 (칸 2247)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2247.png"
+  },
+  {
+   "sha": "a4c9f61fdbe4291609d769dbdbfe8807bd0585862486530fafd95bf8c5b43838",
+   "kind": "structure",
+   "label": "monster_overworld/astra-mart-kit-8 (칸 2248)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2248.png"
+  },
+  {
+   "sha": "e4c9c654ceb97635c36545e7bfc2999589c6818566aedf3bf3a3d805d5c2acd9",
+   "kind": "structure",
+   "label": "monster_overworld/astra-mart-kit-9 (칸 2249)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2249.png"
+  },
+  {
+   "sha": "04ef2f20eec96817881b3d80666c019dff945880b9d154c216be09e8898d7c2b",
+   "kind": "structure",
+   "label": "monster_overworld/astra-mart-kit-10 (칸 2250)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2250.png"
+  },
+  {
+   "sha": "17cbb06191e55002c44c9d3823c9c3c82ae1eda472df8a3a491e3da3df6bdc98",
+   "kind": "structure",
+   "label": "monster_overworld/astra-mart-kit-11 (칸 2251)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2251.png"
+  },
+  {
+   "sha": "207c3199ff49e169d85f9e5800640dcf06a8406b1117313f6ea4d629f88ee0a8",
+   "kind": "structure",
+   "label": "monster_overworld/astra-mart-kit-12 (칸 2252)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2252.png"
+  },
+  {
+   "sha": "31626af0b2ea3900c5b487f7de50692b955ad17ea2bd457cb86cb526c9972d6b",
+   "kind": "structure",
+   "label": "monster_overworld/astra-mart-kit-13 (칸 2253)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2253.png"
+  },
+  {
+   "sha": "97f10f79c69e8e46c99c4cfa2ba3e164f14d967fb2fa199d0f6b9ce09b41e2ba",
+   "kind": "structure",
+   "label": "monster_overworld/astra-mart-kit-14 (칸 2254)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2254.png"
+  },
+  {
+   "sha": "4bea26c3d3e7fb323b1bca75dfcfb03453f19e9fe4f8f46a8b916f4c532aafd2",
+   "kind": "structure",
+   "label": "monster_overworld/astra-mart-kit-15 (칸 2255)",
+   "source": "/home/main/.cache/astra-kits-cells/cell-2255.png"
+  }
+ ]
+}

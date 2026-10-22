@@ -117,8 +117,13 @@ export default {
     ], shot: true },
     { id: "proclamation", note: "심문관의 포고", ops: [
       ...[0, 1, 2, 3].flatMap(() => closeDialogue(20)),
+      // 포고 뒤 행렬이 성문으로 행진하고 화면이 따라간다 — 발렌(맨 뒤)이 통로로 사라질 때까지 기다린 뒤 엘레나의 대사를 닫는다.
+      { kind: "evalToFile", out: "/tmp/fs-marched.json",
+        fn: `async () => { for (let i = 0; i < 240; i++) { if (window.__oprnDebug.readState().switches.sw_fs_valen_marched) return true; await new Promise((r) => setTimeout(r, 250)); } return false; }` },
+      { kind: "hold", dir: null, ms: 1500 },
+      ...closeDialogue(20),
     ], shot: true },
-    { id: "to-observatory", note: "천문대 문을 밟는다", ops: [...stepInto("fs_hub", 26, 21, "up")], shot: true },
+    { id: "to-observatory", note: "천문대 문을 밟는다", ops: [...stepInto("fs_hub", 24, 21, "up")], shot: true },
     { id: "hanel-ask", note: "하넬의 부탁 → 선택지", ops: [
       ...approachFromEast("fs_observatory", 24, 21),
       ...talk("up"),
@@ -129,9 +134,9 @@ export default {
     { id: "scope", note: "큰 망원경", ops: [{ kind: "teleport", mapId: "fs_observatory", x: 13, y: 12 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "scope-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "out-to-hub", note: "천문대 문 → 광장", ops: [...stepInto("fs_observatory", 15, 21, "down")], shot: true },
-    { id: "gate-guard", note: "동문 문지기", ops: [{ kind: "teleport", mapId: "fs_hub", x: 53, y: 21 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
+    { id: "gate-guard", note: "동문 문지기", ops: [{ kind: "teleport", mapId: "fs_hub", x: 50, y: 17 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "gate-guard-close", note: "", ops: [...closeDialogue()], shot: false },
-    { id: "to-forest", note: "동문 → 숲", ops: [...stepInto("fs_hub", 54, 22, "right")], shot: true },
+    { id: "to-forest", note: "동문(성문 통로) → 숲", ops: [...stepInto("fs_hub", 48, 16, "up")], shot: true },
     { id: "forest-walk", note: "숲길을 걷는다(풀숲 조우)", ops: [
       ...walkFighting("up", 2200), ...walkFighting("up", 2200), ...walkFighting("up", 2200),
       dumpState("forest-walk"),
@@ -139,7 +144,7 @@ export default {
     { id: "bram", note: "숲지기 브람", ops: [{ kind: "teleport", mapId: "fs_forest", x: 14, y: 19 }, { kind: "hold", dir: null, ms: 400 }, ...talk("up")], shot: true },
     { id: "bram-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "pod-intro", note: "은빛 관 — 첫 선택지", ops: [
-      { kind: "teleport", mapId: "fs_forest", x: 14, y: 6 }, { kind: "hold", dir: null, ms: 400 },
+      { kind: "teleport", mapId: "fs_forest", x: 14, y: 8 }, { kind: "hold", dir: null, ms: 400 },
       ...talk("up"),
       { kind: "pressUntil", key: "Enter", testid: "runtime-choices", state: "present", maxPresses: 20, timeoutMs: 900 },
     ], shot: true },
@@ -156,7 +161,7 @@ export default {
     { id: "iris-joined", note: "합류", ops: [...closeDialogue(), dumpState("iris")], shot: true },
     { id: "back-to-hub", note: "숲 → 광장", ops: [...stepInto("fs_forest", 15, 38, "down")], shot: true },
     { id: "plaza-after", note: "광장 — 발렌 일행이 떠났는가", ops: [{ kind: "teleport", mapId: "fs_hub", x: 36, y: 27 }, { kind: "hold", dir: null, ms: 1200 }], shot: true },
-    { id: "back-to-obs", note: "천문대", ops: [...stepInto("fs_hub", 26, 21, "up")], shot: false },
+    { id: "back-to-obs", note: "천문대", ops: [...stepInto("fs_hub", 24, 21, "up")], shot: false },
     { id: "hanel-hint", note: "하넬 — 다음 갈 곳", ops: [...approachFromEast("fs_observatory", 24, 21), ...talk("up")], shot: true },
     { id: "hanel-hint-close", note: "", ops: [...closeDialogue()], shot: false },
     { id: "hatch", note: "서고 계단 → 화로의 방", ops: [...stepInto("fs_observatory", 3, 21, "up"), ...closeDialogue(10), { kind: "hold", dir: null, ms: 1200 }], shot: true },

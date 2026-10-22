@@ -1,0 +1,36 @@
+{
+ "queue": "jp-in-stairs-13",
+ "round": 21,
+ "judges": "3x claude-opus-5.5 fresh subagents in parallel, no prior scores; a major counts only if >=2 of 3 raise it",
+ "date": "2026-10-22",
+ "verdict": "fail",
+ "perReviewer": {
+  "A": {
+   "majors": 5,
+   "axis2": 6,
+   "axis6": 5
+  },
+  "B": {
+   "majors": 4,
+   "axis2": 6,
+   "axis6": 5
+  },
+  "C": {
+   "majors": 3,
+   "axis2": 6,
+   "axis6": 5
+  }
+ },
+ "majorityMajors": [
+  "stairwell-down-wood (A+B+C): pit is an even dark-brown box, tread tops unreadable -> reads as crate/hearth/bunk bed in house-2f",
+  "stairwell-down-wood (A+B+C): south edge looks closed (dark south rim line, posts reaching the south corners) -> entrance not readable"
+ ],
+ "minorityMajors": [
+  "mc-stairs-up (A only): 1-cell reads as shoe rack in lobby",
+  "house-1f stairs-up-wood scene contrast (A only)",
+  "as-stairs-up-broken / as-stairwell-down orange plus rust reads as sparkle (B only)"
+ ],
+ "upStairs": "all up stairs: no majority major",
+ "majoritycount": 2,
+ "action": "wood well: 4 light wood treads ramping from ~floor value to dark, 1px near-black drop per tread, near-black only at the far row; remove the south dark rim line; side rail posts end 4px north of the hole south edge; light 1px floor lip at the south"
+}

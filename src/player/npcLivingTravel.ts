@@ -1,6 +1,6 @@
 import { passageBounds } from "@/project/footprint";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
-import { canMoveFootprint, canMove } from "@/project/collision";
+import { canMoveFootprint, canMove, isLedgeCell } from "@/project/collision";
 import { armTerrainComponents, terrainMayReach } from "@/project/tilePassabilityComponents";
 import type { Dir, GameMap, MapConnection, MapId, MoveCommand, Project } from "@/project/types";
 import type { RuntimeEventView } from "@/project/runtimeEventState"
@@ -203,6 +203,7 @@ function livingPath(context: RouteContext, from: Point, to: Point): MoveCommand[
   // 공간 판정은 Like에도 있는 두 placement 컬렉션만 읽는다(actorRows는 읽지 않는다).
   const canStep = context.canStep ?? ((fx: number, fy: number, tx: number, ty: number) =>
     canMoveFootprint(project, map, fx, fy, view.footprint, tx, ty, view.passRows)
+    && !isLedgeCell(project, map, tx, ty)
     && !isSpatialPlacementBlocking(project, session as Parameters<typeof isSpatialPlacementBlocking>[1], map.id, passageBounds(tx, ty, view.footprint, view.passRows)));
   return pathTo(project, map, from, to, canStep, unit && !context.canStep);
 }

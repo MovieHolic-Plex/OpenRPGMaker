@@ -1,5 +1,5 @@
 import { inspectPromptPayload, publishPromptInspection, inspectionEpoch } from "./authoring/promptInspection";
-import { applyAssistantEngine, loadAssistantEngine } from "./localCliEngine";
+import { applyAssistantEngine, isLocalCliProviderId, loadAssistantEngine } from "./localCliEngine";
 import { DEFAULT_PI_APPLY, normalizePiApplyMode, type PiApplyMode } from "./piAgent/applyMode";
 import { configForRole, parseRoleModels, type RoleModel, type SpecialistModels, type ThinkingEffort } from "./modelRoles";
 import { DEFAULT_PIXEL_MODEL, parsePixelModel } from "./pixelModel";
@@ -938,6 +938,9 @@ export const LLM_RETRY_BACKOFF_MS = 1500;
 // 안 주면 턴이 영원히 대기했다. 게이트웨이 정상 응답은 50초 안팎까지 관측되므로 넉넉한
 // 180초로 매달림만 잡고 정상 체감은 해치지 않는다. 초과 시 504 로 일시 오류 처리(재시도 경로).
 export const LLM_REQUEST_TIMEOUT_MS = 180_000;
+/** 내 PC 의 에이전트 CLI(claude·codex·gemini -p) 경로는 프로세스 기동 + 생각이 붙어 도트 한 장 그리기에 3분을 넘긴다
+ * (2026-10-23 공방 실화면: Sonnet high 그리기가 180초에서 504 로 잘려 한 장도 못 그렸다). 그 경로만 10분. */
+export const LLM_LOCAL_CLI_TIMEOUT_MS = 600_000;
 
 // 재시도해 볼 만한 오류인가 — 네트워크(상태 없음)/요청 한도(429)/서버 오류(5xx).
 // 인증(401)/크레딧(402) 같은 영구 오류는 재시도하지 않는다.
@@ -1096,7 +1099,8 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest, captureEpo
     // 매달림을 일시 오류로 바꾸고 기존 재시도 경로로 넘긴다(공급자 상한 — 게이트웨이는 느려도
     // 정상 응답이 50초 안팎이라 넉넉히 잡는다). 호출자 signal(중단)과 합성한다.
     const controller = new AbortController();
-    const timeoutTimer = setTimeout(() => controller.abort(), LLM_REQUEST_TIMEOUT_MS);
+    const timeoutMs = isLocalCliProviderId(config.providerId) ? LLM_LOCAL_CLI_TIMEOUT_MS : LLM_REQUEST_TIMEOUT_MS;
+    const timeoutTimer = setTimeout(() => controller.abort(), timeoutMs);
     const onCallerAbort = () => controller.abort();
     req.signal?.addEventListener("abort", onCallerAbort, { once: true });
     try {
@@ -1117,7 +1121,7 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest, captureEpo
     if (isLlmTimeoutError(cause) && !req.signal?.aborted) {
       // 공급자 일시 오류로 취급해 재시도 가능하게 한다.
       reportTransportHealth(false, 504, "요청 시간 초과");
-      throw new LlmError(`요청 시간 초과(${LLM_REQUEST_TIMEOUT_MS / 1000}s): 공급자가 응답하지 않았습니다.`, 504);
+      throw new LlmError(`요청 시간 초과(${(isLocalCliProviderId(config.providerId) ? LLM_LOCAL_CLI_TIMEOUT_MS : LLM_REQUEST_TIMEOUT_MS) / 1000}s): 공급자가 응답하지 않았습니다.`, 504);
     }
     if (req.signal?.aborted || isLlmAbortError(cause)) throw new LlmAbortError();
     const target = usesOhMyPiCompanion(config) ? companionRequestBaseUrl() : config.baseUrl;

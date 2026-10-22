@@ -1,0 +1,426 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d2b27eda859da7d7a4b5c454995e28452852d8fd9bb1db8c09cc904eb13e353f",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "wz-castle-stair-down",
+ "label": "wizarding_world stairs wz-castle-stair-down (DOWN)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 투영이 3/4 아님(front_elevation) (1/4)",
+  "3/4: 윗면 2행 < 3 (1/4)",
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (2/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+   "투영이 3/4 아님(front_elevation) (1/4)",
+   "윗면 2행 < 3 (1/4)"
+  ]
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (2/4)"
+  ],
+  "styleKind": "wall",
+  "refs": [
+   "castle-door2-closed",
+   "castle-wall-n-window2"
+  ],
+  "scale": 2,
+  "score": 6,
+  "refSet": {
+   "id": "wizarding_world",
+   "chipset": "wizarding_world",
+   "fallback": false,
+   "hash": "1a0f54905a7352a0"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 7,
+  "darkV5": 35,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice/lintel strip",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "baluster railing under cornice",
+      "rows": "3-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark stairwell opening with far steps",
+      "rows": "8-17",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "middle step (tread with riser)",
+      "rows": "18-23",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "front step tread (main stair surface)",
+      "rows": "24-30",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a stair set in a frame. The nearest step has a light front-edge line at row 24 and a 6-row tread (rows 25-30) above the bottom. A 4-row riser (rows 19-22) sits above it, with a shadow row at 23. A second step has an edge line at row 18 and a 2-row tread at rows 15-16. The surrounding frame has a 2-row cornice (rows 1-2) and balusters (rows 3-6), both drawn as vertical faces with no top surface. The stair treads still give a clear top plus front-face structure."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a stone stair-down opening with a balustrade-like top lintel and stepped treads. Its stone ramp has about 5 visible lightness steps (light lintel, mid stone, shaded steps, dark recess). Measured facts: 7 visible tones per tile, equal to the window-wall reference (7) and below the door reference (15). Near-flat coverage is 13%, a little above the window wall (9%) and the door (1%), so there is no large flat fill. Dark edge pixels are 96% near-neutral, but both references are 100% neutral, so this outline treatment matches the shipped wizarding_world art and is not a sticker-style fault. The stair treads show banded shading and some grain, and the lintel has block variation, though it is plainer than the door's wood and iron detail. It would sit acceptably beside the window-wall reference, with slightly less texture than the richest reference.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17194
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "lintel/top beam band",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": 2,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "baluster/pillar strip under lintel",
+      "rows": "3-7",
+      "evidence": "none",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "descending steps (upper two treads)",
+      "rows": "11-17",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-16"
+     },
+     {
+      "part": "middle step",
+      "rows": "18-23",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "23-23"
+     },
+     {
+      "part": "front step/landing",
+      "rows": "24-30",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 24,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a front-facing stairwell frame. The lintel is only a 2-row band (row 1 light, row 2 edge) with no eave shadow, so it reads as a rim and not a roof slope. Below it a row of balusters (rows 3-6) and a beam (row 7) are vertical faces. A dark void (rows 8-13) holds stair steps drawn as stacked horizontal bands, each with a light edge line and a darker band below (rows 14-16, 18-23, 24-30). These bands read as flat step fronts, not foreshortened treads, and the top frame has no roof or top surface, so the whole drawing is a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small stone stair-down niche with a balustrade top, a dark opening and stepped treads. It shows about 5 grey-beige stone steps and 7 visible tones per tile. That equals castle-wall-n-window2 (7) but is well below castle-door2-closed (15). Near-flat coverage is 13%, a little above the references' 9% and 1%, and the piece has no large flat fills, since the treads and the baluster row carry banding and detail. The dark edge pixels are 96% neutral, but the references are 100% neutral, so the same near-black outline treatment is shipped in this chipset and it is not a deviation. Texture is lighter than the references: there are few per-stone dots and the wall blocks are less individually shaded. It sits slightly below the references in richness but is close to the wall-window reference in structure and tone count, and a careful artist would likely accept it beside them.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 20006
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel beam",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "balusters/pillars under lintel",
+      "rows": "3-7",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper steps (descending treads and risers)",
+      "rows": "14-23",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "nearest stair landing/tread",
+      "rows": "25-30",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a stair opening that descends into a dark void. The nearest tread (rows 25-30, 6 rows, L=155) has a light front-edge line at row 24 (#d0c3a6). Above it, rows 19-22 are a darker riser face with a light edge line at row 18 and a shadow at row 17. Rows 15-16 and the line at row 14 are a further step. Rows 8-13 are the dark void. The treads therefore read as horizontal surfaces and the risers as 5 rows of front face. The top lintel (rows 1-2) and the baluster strip (rows 3-6) are drawn as front-facing strips with no top slope or edge line, so not every major part shows a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate has 7 visible tones per tile, the same as the castle-wall-n-window2 reference (7), though well below the door reference (15). Near-flat coverage is 13%, close to the window wall's 9% and far from a flat-fill look. The stone frame has a dentil row and a lit rim. The steps have separate light, mid and dark faces inside a dark recess. The dark edge pixels are 96% near-neutral, but both shipped references are 100% neutral, because grey stone has no tint to lean on. This outline treatment is the standard for this chipset, so I do not count it against the piece. The step treads are somewhat plain and carry less grain than the door, but a careful artist would accept it next to the window-wall reference.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21119
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel/cornice with column strip",
+      "rows": "1-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper stair step (tread and riser)",
+      "rows": "11-17",
+      "evidence": "a",
+      "front_edge_line_row": 14,
+      "eave_shadow_rows": "15-17"
+     },
+     {
+      "part": "middle stair step",
+      "rows": "18-23",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "23-23"
+     },
+     {
+      "part": "front stair landing/tread",
+      "rows": "24-30",
+      "evidence": "a",
+      "front_edge_line_row": 24,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 6,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stair is drawn as stacked steps seen from above. Each step has a light front-edge line (rows 14, 18, 24) with a darker riser or shadow band below it (rows 15-17, 19-23). The bottom landing, rows 24-30, is the widest and lightest tread and the largest top surface. The rows 1-6 frame is a thin cornice with vertical column strips and no real top surface. It is a minor detail around the stair body. This is a borderline call: the stair could also be read as a flat front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a stone stair-down niche with a balustrade top, a dark opening and stepped treads. It has about 4 visible light-to-dark steps on the stone ramp. It has 7 visible tones per tile, equal to the window-wall reference (7) but well below the door reference (15). Near-flat coverage is 13% against 9% and 1% for the references, so it is slightly flatter. Dark edge pixels are 96% neutral, but the references are 100% neutral, so this outline treatment matches the shipped wizarding_world art and is not a deviation. The stone blocks show some grain, and the stair treads are stepped and shaded. The piece is simple and compact, and a careful artist would accept it next to the window wall. It is a little thinner than the door.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 20405
+  }
+ ],
+ "decidedAt": "2026-10-22T16:47:27.312Z",
+ "cells": {
+  "16": [
+   "55d60bc8716f8bbe",
+   "7aff3883c84fcc4e",
+   "ae5fe2e257b4e7dc",
+   "c649f6ab6e99cb90"
+  ],
+  "24": [
+   "0bce270707697444",
+   "0fd1964d15424ce5",
+   "1b10b5e122ed89e3",
+   "1c68c11e4d7562e6",
+   "1df47255266cf670",
+   "201bb1a764a65495",
+   "3091758826326b93",
+   "320d3d764c9f065f",
+   "4f7f33673df3b5b0",
+   "51f620c8fd59b386",
+   "562bd9a931ea0eaf",
+   "5ea5ea01f784faa5",
+   "6a60907bc46da75a",
+   "6fffd5c259ad9c88",
+   "8b36bbf67b634774",
+   "931b5844487927a8",
+   "9d7637eb05ca100c",
+   "a7c86c89b9fb6f5f",
+   "b0b0daff0eb5254b",
+   "b21de6c6a673b131",
+   "b84b5818d36fb14d",
+   "c9f8e2df602ff46b",
+   "d3871facd721b58f",
+   "da81b4f5ff653e9d"
+  ],
+  "32": [
+   "7fcd3a3ebb442b41"
+  ],
+  "48": [
+   "2d4577938927bdff",
+   "2e713da877e2b1b7",
+   "ae06e200ca1a8748",
+   "bed0e905789a4303",
+   "d2a819be8ff375f3",
+   "d41b5447b90833ab"
+  ]
+ }
+}

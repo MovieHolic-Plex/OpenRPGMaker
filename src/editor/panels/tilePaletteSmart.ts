@@ -205,7 +205,25 @@ function makeCatalogSearch(onRerender: () => void): HTMLElement {
       },
     },
   });
-  return el("div", { class: "palette-smart-search", children: [input] });
+  // 브라우저 기본 ✕ 는 눌러도 검색어·필터가 지워지지 않는 경우가 있어(VQA SB04) 편집기 자체 지우기 단추를 둔다.
+  const clear = el("button", {
+    class: "palette-catalog-clear",
+    text: "×",
+    attrs: { type: "button", "aria-label": "검색어 지우기", title: "검색어 지우기" },
+    dataset: { testid: "palette-catalog-clear" },
+    on: {
+      click: () => {
+        if (searchTimer !== null) clearTimeout(searchTimer);
+        searchTimer = null;
+        catalogQuery = "";
+        input.value = "";
+        onRerender();
+      },
+    },
+  });
+  clear.hidden = catalogQuery.length === 0;
+  input.addEventListener("input", () => { clear.hidden = input.value.length === 0; });
+  return el("div", { class: "palette-smart-search", children: [input, clear] });
 }
 
 function makeTerrainChips(catalog: PaletteCatalog, onRerender: () => void): HTMLElement {

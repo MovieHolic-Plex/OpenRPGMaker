@@ -10,8 +10,13 @@
 
 - **순서(조수)**: 찾기 → 있으면 `stamp_object`/`build_hand_interior_room` → 사용자가 콕 집은 물건이 정말 없을 때만 `generate_missing_object` → 턴 끝 → 카드가 그림 → 후속 요청 `[공방에서 그려 넣음] … 물체 id workshop:…` → `stamp_tileset_object({mapId, objectId, base})`.
   `list_tileset_objects` 는 팩·공방·mc 킷만 본다 — 결과가 비면 요약이 `list_spatial_designs({kind:"object", query})`(칩셋 소품 킷 `kit:…`·공용 `obj:…`)를 가리킨다.
-- **도구**(`src/editor/tools/objectGenTool.ts`, read 도구·`fillsCurrentMapId`): 인자 title·description·objectKind(`floor|wall|hang|flat`)·tilesW(1~4)·tilesH(1~3)·rise(0~48, **기본 0** — 2026-10-21 시험 2부터, 발밑 칸 안에 다 들어가는 크기)·gateKind(3/4 관문 종류 enum, 선택)·base `{x,y}`·need·notThese(string[]). 정의에 칩셋별 배경 `setting`(`objectSetting`)을 싣는다. 자유 키 객체·빈 enum 없음(CCA 400 함정).
-  거절: 16px 아닌 칩셋 `unsupported-tileset` · 머리 낱말이 사람·동물 `people-not-generated`(→ `place_npc`) · 바닥·벽·물·길 `terrain-not-object`(→ `ask_missing_tiles`) · 이름이 맞는 킷/손 도트 부품이 이미 있음 `object-exists`(그 id 를 돌려준다. 실제로 다른 물건이면 `notThese` 로 다시) · 크기 한도(실내 3×2·rise≤32, 맵 4×3·rise≤48).
+- **도구**(`src/editor/tools/objectGenTool.ts`, read 도구·`fillsCurrentMapId`): 인자 title·description·objectKind(`floor|wall|hang|flat`)·tilesW(1~6)·cellsTall(1~6, 그림 전체 키 = 발밑+위)·tilesH(선택, 발밑 줄)·rise(옛 방식, 선택)·gateKind(3/4 관문 종류 enum, 선택)·base `{x,y}`·need·notThese(string[]). 정의에 칩셋별 배경 `setting`(`objectSetting`)을 싣는다. 자유 키 객체·빈 enum 없음(CCA 400 함정).
+  거절: 16px 아닌 칩셋 `unsupported-tileset` · 머리 낱말이 사람·동물 `people-not-generated`(→ `place_npc`) · 바닥·벽·물·길 `terrain-not-object`(→ `ask_missing_tiles`) · 건물(집·가게·탑…) `building-not-object`(손 도트 건물 킷 영역) · 이름이 맞는 킷/손 도트 부품이 이미 있음 `object-exists`(그 id 를 돌려준다. 실제로 다른 물건이면 `notThese` 로 다시) · 크기 한도(실내 4×발밑 3·위 32px·전체 5칸, 맵 6×발밑 4·위 64px·전체 6칸).
+- **크기 결정(footprint, 2026-10-22)** — 칸 수는 도구가 정한다(`src/harnesses/_core/workshop/footprint.ts` `decideFootprint`, 정본 object-gen `objectgen/footprint.py` 의 `decide()` 를 gen-kits 상수로 그대로 옮김). 크기 사전 = 종류 26개(분수·우물·노점·천막·짐마차·수레·배·나무·석상·가로등·깃발·이정표·침대·옷장·카운터·화덕·벤치·탁자·의자·구유·상자·통·항아리·화분·더미·걸대)마다 흔한 크기(폭×발밑+위)·폭/키 범위·자라는 쪽(foot|over)·윗면 낱말. 숫자 출처는 `scripts/content/measure-object-footprints.py`(손 도트 실내 v5 + 버들항 소품 킷 칸 통행 실측). 사람 1칸 폭·2칸 키가 기준.
+  - 종류는 **머리 낱말(이름 끝 낱말) 먼저**, 그다음 이름 전체·설명(「나무 벌통」은 나무가 아니다). 범위를 벗어나면 고치고 `adjusted` 에 적는다. 깊은 물건(짐마차·노점·분수)은 발밑 줄을, 키 큰 물건(나무·가로등)은 위 줄을 늘린다.
+  - 결과 `request.footprint`(cls·passage(위→아래, X 막힘 · * 캐릭터 위에 그려짐)·top·reason·adjusted) → 정의 `passage`·`refTop`·`footprintNote` → 참고 그림 지시문(윗면 낱말·칸 크기 문장)·그리기 지시문 Footprint 줄·카드 「칸 정하기」 줄. 굽기(`bakeWorkshopObject`)는 발밑 줄 막힘·위 줄 지나감·upper 우선이라 passage 와 같은 칸 통행이 된다. `base` 검사는 위 줄까지 맵 안인지 본다.
+  - 요청한 발밑/위 나눔은 그 종류가 자라는 쪽을 지킬 때만 따른다(object-gen 7ec0660 — 3×3 건초 짐마차를 1+2 로 받으면 2+1 로 고친다). 가는 기둥(가로등·깃대·팻말)은 `reference:false` — 참고 그림을 건너뛴다(object-gen bcab2ed; 2026-10-22 실측 가로등 참고 그림 8장이 모두 시점 검사에서 front·윗면 2~8% 로 떨어졌고, 후보 둘은 참고 없이도 통과했다).
+  - 사전 px(`rise_px`, object-gen 8979bbc): 위 줄이 1줄 이하인 종류는 사전값만큼만 솟는다(침대 6 · 카운터·벤치 등받이 8 · 옷장 16px). 위 줄 0 인데 px 가 있으면(벤치) 그 줄을 `*` 한 줄로 굽는다 — 2×1 등받이 벤치를 16px 한 줄에 넣었더니 후보 4개가 모두 판자 더미로 읽혀 시점 검사에서 떨어졌다(2026-10-22). 예전엔 실내에만 적용했다.
   성공하면 data = `ObjectGenRequest`(`src/editor/workshop/objectRequest.ts`) 이고 요약이 턴을 끝내라고 한다.
 - **여러 개는 한 턴에 함께(2026-10-21 작업 줄)**: 없는 물건이 여럿이면 조수가 같은 턴에 물건마다 한 번씩 부른다(도구 설명·`promptPolicies.ts`). 채팅 패널(`aiChatPanel.ts` `showStoreCards`)이 그 턴의 요청을 **묶음 카드 하나**(`createObjectGenBatch`)로 받아 모두 공방 작업 줄(`openwiki/editor-workshop.md` 「작업 줄」)에 동시에 세운다. 묶음이 다 끝나면(넣음·그만둠) 후속 요청 **하나**로 물체 id·자리를 한꺼번에 보낸다(「넣은 것부터 놓게 하기」로 먼저 보낼 수 있다). 카드는 작업 줄의 작업을 비추기만 하고, 굽기·알아서 고르기는 작업 줄이 한다(카드가 닫혀도 계속). 아래 「카드」 줄의 `startObjectGenRound` 직접 시작은 이 길로 바뀌었다(`assistantObjectGen.ts` 는 고르기 규칙만 남음).
 - **카드**(`src/editor/panels/aiObjectGenCard.ts`, 스토어 카드와 같은 길 — `STORE_CARD_TOOLS`·`createStoreCard`): 붙자마자 공방 작업 줄에 선다(`workshopQueue().enqueueAssistantRequest` — 공방 세션에 새 기물 정의를 넣고 차례가 오면 `engine.startRound`, 실내는 `interior-props`, 그 밖 16px 은 `map-objects` + `mapObjectPalette`. `assistantObjectGen.startObjectGenRound` 는 더 쓰지 않는다). 후보 그림·검수 결과·「이걸로 넣기」, 「알아서 고르기」(기본 꺼짐, `oprn:assistant-objectgen-autopick`, 검수 PASS 후보만 — 하나면 그것, 둘 이상이면 object-gen picker 를 옮긴 고르기 `src/harnesses/_core/workshop/picker.ts`(원본 PROMPT + 견본 그림, 숫자 꼬리표를 섞어 3번 묻고 다수결, 이유 한 문장 → 카드 상태·피드백 메모). 고르기 답을 못 받으면 통과 첫 장). 그리기·검수 자체도 object-gen 흐름 그대로다 — `openwiki/editor-workshop.md` 「새 기물은 object-gen 흐름 그대로 그린다」, 「다시 그리기」(실패·불통과만), 「공방에서 보기」, 「있는 것으로 해 줘」(판 취소 + 대안 후속 요청). AI 미연결이면 「AI 연결하기」.
@@ -189,6 +194,14 @@
 반면 major 목록은 r28 화로 방 단 앞 검은 띠처럼 실제 결함을 칸 좌표로 짚었다. 실내 관례(방 윤곽 밖 검정 = 바깥, 남쪽 가장자리 출구 = 문)는 지시문에 적어 오탐을 막는다.
 `OPRN_FEATURE_CRITIC=0` 이면 끄고 옛 「방 전체가 요청한 장소로 읽힌다」 항목으로 돌아간다.
 
+**다듬기 모드 (2026-10-22, `request.polish`).** 확인이 끝났는데 안 읽히는 항목이 남으면 확인표 상자에 「다듬기 (최대 30분)」 단추(`ai-feature-polish`)가 뜬다.
+누르면 패널이 평소 Pi 턴을 하나 더 보낸다 — `polish: { maxRounds 8, budgetMs 30분, request: 처음 요청, mapIds: 확인표가 본 맵, lastBuilds: 맵마다 앞 턴이 마지막으로 성공시킨 짓기 호출(도구·인자) }`,
+계획 턴 없음, 차례·시간 상한을 다듬기 한도에 맞춤, 처음 도구는 앞 턴 도구 + `FEATURE_POLISH_TOOLS`. 앞 턴이 지은 맵 묶음(홀·아래층)은 **조수 하나**가 함께 고친다(`groups` 를 나누지 않음).
+워커는 첫 차례에 짓지 않고 확인표만 적게 한 뒤(`featurePolishSystemPrompt` — 마지막 짓기 인자에서 시작해 같은 mapId·replace:true 로), 바뀌지 않은 대상 맵도 1배 확인·독립 비평→고치기를 바퀴·시간 한도까지 돈다.
+진행은 `feature_review.repair`(다듬기 n/N바퀴 · 경과/한도 분)로 상자에 보인다. 평소 턴이라 맵 소유권·대기열·중지 단추가 그대로 적용되고, 중지하면 그때까지 체크포인트로 적용된 고침은 남는다(`aiPiAgentCommand` 중단 경로).
+실측 함정 셋(고친 것): ① 패널 「지금 맵」(빈 시작 맵)을 다듬었다 → 확인표가 본 맵으로. ② 맵마다 조수를 따로 띄워 서로의 맵을 고치려다 범위 밖 거절 → 묶음 하나. ③ 처음 도구를 안 실어 411개(스키마 83만 자)가 나가
+로컬 CLI 세션이 「Autocompact is thrashing」으로 멈췄다 → 처음 도구 목록. 시험: `HARNESS_POLISH=1 npm run harness -- space-craft run …` 이 단추를 실제로 눌러 두 번째 턴까지 기다린다.
+비평가는 여러 맵으로 지은 요청이면 다른 맵 그림을 맥락으로 함께 받는다 — 아래층만 보고 「망원경이 없다」 major 를 여덟 바퀴 반복했다.
 이 루프를 거친 맵은 끝의 배치 품질 권고(`inspectPiLayoutQuality` skip)를 다시 받지 않는다.
 렌더러는 좌표만이 아니라 `show_map_region` 결과(칸 배열)를 받아야 한다 — `{mapId,x,y,w,h}` 만 넘기면 `map-rendering-unavailable: invalid region` 으로 거절한다(첫 시험에서 그림 0장으로 돌았다).
 
@@ -196,6 +209,25 @@
 빈 바닥 % = 빈 덩이 ÷ (방 바닥 + 그 위 벽면 두 줄). 옛 자(3×3 이웃에 아무것도 없는 바닥)는 #3242 3차 조수 판을 9~21% 로 쟀고 검수자는 25~30% 로 봤다.
 보정(`bun scripts/qa/interior-bare-floor-calibrate.mts <space-craft 실행 폴더>…`): 폴른 r28 세 방 15·7·12%, 3차 조수 판 32·32·15·27%. 한도 15%(vqa 축 1).
 `build_hand_interior_room` 의 구성 경고(compositionLint ④)도 이 자를 쓴다.
+
+## 방 루프 2차 — 천장 매달기·고친 곳만·속도 (2026-10-23)
+
+**천장 매달기(`builder.ts` `ceilingHang`).** 돔 조각의 y 는 천장 줄이다(문서 그대로). 옛 규칙은 y 가 벽면 줄이길 요구해 `dome slit tall` 이
+아홉 바퀴 내내 `hang-not-on-face` 로 거절됐다. 지금: `face-below`(dome slit tall·dome rib·rib west/east·dome cornice)는 칸 전부 비바닥·윗줄 막힘·바로 아래 줄이 벽면 1,
+`ceiling`(dome shell·rib top·dome vault)은 천장 칸이면 된다. 오류 문장은 맞는 y 를 알려 준다. 틈이 맵 꼭대기(y<2)에 붙으면 경고 `dome-slit-no-roof` —
+지붕 없이 벽의 창으로 읽혔다(판정자). 경고는 폴른 r28 의 짜임을 가리킨다 — plan 맨 위 `#` 4줄 + 3칸마다 한 줄씩 오르는 계단식 북벽, `dome vault`(30×8 한 장) @(왼벽 다음 칸, 0), 틈은 그 x+14, y=3.
+칸 조각 dome cornice/shell 로 지붕 띠를 둘러도 판정자는 「벽 위 말뚝」「지붕 띠가 틈을 막는다」로 읽었다(2026-10-23 다듬기 9바퀴 내내 틈 항목 ✗, 틈 거절은 0건).
+걸이 그림이 덮은 천장 칸은 compositionLint 의 「방 밖 허공」에 세지 않는다(dome vault 를 건 r28 관측 홀이 40% 로 「맵을 줄여라」를 받았다).
+
+**고친 곳만(`edit.ts` `applyHandInteriorEdit`).** `build_hand_interior_room` 에 `edit:{remove, removeLines, add, set}` — 실행기(`withHandInteriorEdits`)가
+이 대화의 마지막 인자(다듬기 판은 `polish.lastBuilds`)에 합쳐 통째 인자로 바꾼다. 도구까지 edit 가 오면 `edit-without-base` 오류. set 은 plan·ceiling·start·exitWidth·name 만(스키마 크기).
+
+**속도.** 실내 만들기·고치기는 읽기 전용 계획 턴(Ultrabrain)을 건너뛴다(`skipPlanTurn`, 한 방에 10분을 쓰고 시공 도구 없이 끝났다).
+점검표 프롬프트에 `FEATURE_BUILD_PACE_PROMPT`(조회는 두 턴 안에 묶고 첫 시공은 초안). 손 도트 실내 맵의 `show_map_region` 은 그림이 있으면
+층 칸 배열을 빼고 막힌 칸 수만 준다(다듬기 한 판에 133K 자). 인게임 오프닝은 애니메틱 도구 40여 개 대신 12개(`IN_GAME_OPENING_TOOLS`).
+`stats.exposure` 에 systemSections·listTop·requests(턴별 대기·캐시)·results 가, `stats.review` 에 판정자·비평 호출 수·시간·토큰이 붙는다 — 시간·토큰 합계에 이것도 센다.
+
+**컷신 검토 그림.** 컷신 독립 판정의 시작 맵 그림도 `renderMapRegionImage`(show_map_region 칸 배열 → 렌더)로 얻는다. 맨 좌표를 넘기면 위 방 루프와 같은 `invalid region` 으로 판정 없이 끝났다.
 
 ## 출입구 도달·문앞 좌표 계약 (2026-10-07)
 
@@ -3376,6 +3408,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
   기본 preset `ruin` = 침수 3칸·자동 균열·바닥 갈아엎기·고사목·ruin 색 표·폐허 아이콘 70%. 라벨 「세계 변형판 만들기」.
 - `link_world_entrance {worldMapId, links:[{place|x,y, toMapId, toGate?}], autoMatch?, fade?}` — 월드맵 장소 입구 ↔ 던전·마을 양방향. 던전은 `던전 입구` 표식이 문 칸을 알려 준다.
   `autoMatch:true` 는 이름·id 가 같은 맵이 정확히 하나일 때만 잇는다. 결과 `data.unlinkedPlaces` = 입구 이벤트가 없는 장소. 라벨 「월드 입구 잇기」.
+- `author_dungeon` 2026-10-22 인자 추가: `floors`·`direction`(여러 층 + 계단 잇기) · `populate`(rpg 기본 켜짐: 적·상자·보스·쉼터) · `troops` · `flooded` · `puzzle:"lever"` · `lair` · 2026-10-23 `rebuild`(이 도구가 지은 던전 맵을 같은 자리에서 다시 짓기). 채운 뒤 결과의 `data.placed` 가 실제로 놓인 수다. 자세한 규칙은 `openwiki/beodeul-city.md` 「조수 던전 시험 후 고친 것」.
 - `author_dungeon.entrance:{fromMapId, place|x,y, fade?}` — 짓는 즉시 야외 입구와 양방향(고아 맵 방지). 모르는 키·없는 장소는 거절하며 `link_world_entrance` 로 우회하는 문장을 준다.
   `author_dungeon` 최상위도 이제 모르는 인자를 거절한다(`style` 추가). 의도 선언·capability index·contextBuilder 24번 줄에 같은 안내.
 - `set_encounter_table` 항목 조건: `terrainId`(지형 레코드 id)·`locationId`(구역 id·이름) 추가, 모르는 조건 키 거절. 세계 지도 `terrain_world_*` 레코드는 지도 빌드 때 생긴다.
@@ -3561,3 +3594,39 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - **심연·판자·추 그림 (r4):** 손 도트 실내 시트에 심연 가장자리 오토타일(`handInteriorSpec.json` `pits.abyss`, 8방향 마스크 47칸 — `puzzleRoomScenery.buildLayers` 가 `chasm` 칸마다 이웃을 보고 고른다), 심연 위 판자 프레임 넷(`plank bridge` → `cracked` → `falling 1` → `falling 2`, 2층 `overlays` — 판자 칸을 심연으로 파고 그 위에 얹으므로 판자를 떼면 저절로 막힌다), 저울 추 받침(`weight stand`, `weight stand 1..5` 무게 순 크기·재질·눈금)을 더했다. 칩셋에 그 조각이 없으면 옛 그림(마루 판자·투구 받침·검은 빈칸)으로 물러선다.
 - 실기 검증 러너: `bun scripts/qa/jrpg-puzzle-play.mts` 가 정본 `project.sqlite` 저장·재로드 무결성(`initLocalProjectStore` → `saveProject` → `openLocalProjectStore` → `loadSnapshot`, `--sqlite-only` 옵션 지원)을 검증한 뒤, 출하 플레이어(`player.html`)에서 실제 방향키 걸음·조사·선택지·숫자 입력·아이템 제시로 오답/리셋과 정답 해제를 끝까지 수행하고 GIF·핵심 프레임을 생성한다.
 - **소리·화면 적대 검수 r3 (2026-10-20):** 퍼즐 전용 원본 효과음 세트 `public/assets/puzzle-sfx/`(빌더 `scripts/content/puzzle-sfx/build.py`, 2026-10-20 부터 SNES 샘플 악기풍 합성 `snes.py` 변형 A — 32 kHz·BRR·가우스 보간·FIR 에코, 크기는 옛 칩튠판 게이트 RMS 에 맞춤, 비교 예제는 `python3 scripts/content/puzzle-sfx/snes.py`, id `cc0-sound-puzzle-<cue>`, 표 `src/assets/puzzleSfxAssets.ts`)를 `puzzleKit.sfx(cue)` 로 쓴다 — 해결 징글 `secret-solved`(`revealInWaves` 가 첫머리에 울리고 첫 물결에 낮은 굉음 `earth2`), 바위 밀기 `stone-push`, 발판 `plate-press`, 레버 `switch-clack`, 오답 `wrong`(옛 Buzzer1 대체), 수정·판 뒤집힘 `crystal-ping`, 오르간 발판 네 음 `organ-c/e/g/c2`(같은 음색·음높이만 다름). 밀기 소리는 엔진 계약 `EventObjectInteraction.sound`(pushable 전용, 밀기가 시작될 때 `playSoundEffect`)로 낸다. `revealInWaves` 와 옛 프리셋은 더 이상 Flash Screen(런타임이 800ms·85% 로 붙잡아 화면을 통째로 가림)을 쓰지 않고 색조 펄스를 쓴다. 화면 수정: 원소 제단은 원소마다 다른 기물(용암 화로·마나 결정·룬석·돌 구, 옛 판은 네 원소 모두 「포획 구슬 받침」), 두 수조는 쇠살 크기 = 수조 크기·빈 질항아리 ↔ 물동이, 판자 다리는 해제 연출에서 다리를 다시 놓는다(남쪽 출입문만 있는 방이라 옛 판은 북쪽 둑에 갇혔다), 미믹 오답은 주인공을 한 칸 뒤로 튕겨 미믹이 보이게 한다, 오르간 방은 회중석 줄을 채웠다.
+
+## 마을 종류 표 — `find_village_type` · `dress_village_quarter` · `dress_joseon_market` (2026-10-22, village-eras)
+
+「조선 장터 마을」「사이버펑크 거리」「엘프 숲 마을」처럼 **시대·세계가 담긴 마을 요청**을 칩셋 하나와 시공 도구 하나로 옮기는 단일 표.
+
+- **정본:** `src/ai/villageTypeCatalog.ts` — 65종, 시대 7(선사·고대 / 중세 서양 / 동아시아 옛날 / 근대·산업 / 오늘날 / 미래·SF / 판타지).
+  각 종류 = `chipset` · `recipe`(어느 도구를 어떤 선택지로) · `status`(ready / partial / needs-art) · `words`(요청 낱말 정규식) · `gap`(빠진 그림) · `nearest`(대안 종류).
+  `ART_GAPS` 가 빠진 그림 묶음(무림 키트·버들항 성벽·엘프 나무 키트·한국 현대 키트·폐허 키트…)이다. 그림이 생기면 그 묶음을 쓰는 종류의 status 를 올린다.
+- **경로:** `src/ai/villageTypeRoute.ts` → `plainTurn.ts`. 조건은 llm 의도 선언 · mode create · 실내 아님 · 문장에 정착지 낱말(마을/도시/거리/정착지…).
+  - `matchVillageType` 은 가장 긴 낱말 일치. 버들항이 아닌 칩셋에 +3을 주어 「조선 장터 마을」이 일반 「장터 마을」(버들항)을 이긴다.
+  - needs-art 종류는 **모든 칩셋 노트를 끈다**. 버들항 노트가 붙으면 모델이 버들항 마을을 지어 「엘프 마을」이라 부른다.
+    노트는 「그 종류로 흉내 내지 않는다 · 대안(nearest)을 **대안의 이름으로** 짓는다 · 답 첫 문장에 빠진 그림을 말한다」이다.
+  - 버들항이 아닌 칩셋의 종류는 버들항 마을 노트를 끈다. 그 칩셋 도구(+ nearest 칩셋 도구)를 첫 요청부터 노출한다.
+  - 칩셋 계열 규칙(`rejectTilesetFamilyChange`)은 그대로다. 빈 시작 맵은 기준이 아니다.
+  - 알려진 한계: Pi 경로는 되묻지 않는다(`clarifyBypassed`). 그래서 «그림 없음»은 묻기 카드가 아니라 답 첫 문장 + 대안 시공으로 처리한다.
+- **`find_village_type`**(읽기, `villageTypeTool.ts`): query 또는 era → 종류 행(recipe·missingArt·nearest). 짓지 않는다.
+- **`dress_village_quarter`**(`villageQuarterTool.ts`): 지은 마을 위에 쓰임 덩이 하나를 앉힌다.
+  덩이는 joseon-market(조선 좌판 8, 풀밭을 개간해 13×9 흙 마당 + 태그 `road16/yard16/yard` 길까지 BFS 샛길) · mining · vineyard · temple-ruins · walled-market(버들항 pick 키트) · viking(설원 룬석·방패 걸이·오로라 깃발)이다.
+  - 「풀밭」은 가장 흔한 바닥과 tileMeta 태그 앞 네 개가 같은 변주까지 포함한다. 설원에서 눈밭 1번만 풀밭으로 치면 물결·발자국 변주가 길로 잡혀 자리가 없었다.
+  - 설원 작곡기는 빈 눈밭을 마당 덩이로 채운다. 그래서 장옥(7×5)·통널 교회(5×8)는 지은 마을에 들어가지 않는다.
+  - 앵커 탐색은 첫 조각 3배 가중, CLUSTER 10 이다. 놓을 때마다 BFS 로 주 연결 성분을 확인하고, 길을 끊으면 되돌린다.
+  - 마당 개간은 고리 1칸 + 1단계 범람만 한다. 그보다 크면 숲을 지나치게 깎는다.
+  - `dress_joseon_market` 은 joseon-market 덩이를 부르는 얇은 포장이다.
+  - 한계: 버들항 덩이는 큰 조각이 들어갈 빈 땅이 부족해 성기다. 그래서 그 종류는 partial 로 둔다. 조선 마당에서 큰길로 가는 2칸 샛길은 자주 못 찾는다.
+- **적대 검수(Opus, 이전 점수 없이)가 바꾼 판정:** 고대 로마 도시는 needs-art다. 블록 도시가 목골집·성당·깃발이 섞인 중세 도시로 읽혔고, 대안도 없어 짓지 않는다.
+  - 대안 `nearest` 가 빈 needs-art 종류는 맵을 만들지 않는다. 답 첫 문장에 빠진 그림을 말하고, 같은 시대의 지을 수 있는 종류 2~3개만 알린다.
+    해당 종류는 로마 도시와 폐허 셋(포스트아포칼립스·좀비 도시·황무지)이다.
+    실측: 대안이 다른 종류 맵의 복사본(공장 도시 판박이)이거나 흩뿌린 소품 마을로 읽혔다.
+  - 버들항 쓰임 덩이 종류(신전 폐허·광산촌·포도원)는 needs-art(`beodeul-quarter-yard`)다. 조각이 마당 바닥·길 없이 덤불 사이에 흩어진다.
+    `dress_village_quarter` 의 그 덩이들은 도구에 남아 있지만 표의 recipe 는 부르지 않는다. 장터 마을도 walled-market 덩이 없이 광장 마을만 짓는다.
+  - 달 기지 작곡기(`sfStationComposer` composeMoonbase)를 다시 짰다. 지붕을 1줄에 붙인 건물 줄 → 큰길 → 세로 연결 둘 → 설비 길 순서다.
+    설비 길 위·아래에 전력·연료·화물·통신 마당과 착륙장을 둔다. 크레이터·바위는 놓인 기물 둘레 1칸을 피한다.
+    기본 크기는 38×22, 하한은 34×20 이다.
+  - 바이킹은 partial이다. 롱십·용머리 회관 그림이 없다.
+  - needs-art 대안은 seed를 1 이상으로 준다. 기본 seed 0이면 대안 맵이 그 종류를 직접 요청한 맵과 바이트까지 같았다.
+- **시험 시드:** `harness-data/assistant-capability/village-eras-seed.json`(18건, 조수 대용 Sonnet 5.5 high, 포트 19640~19657).

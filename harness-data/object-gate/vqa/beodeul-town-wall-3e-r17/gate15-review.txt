@@ -1,0 +1,20 @@
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/wall_ring              f62192cff0a4  
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/wall_parts             61976c5f9e16  
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/gatehouse_open         c513c0005260  
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/gatehouse_closed       15f0639cd078  
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/wall_runs              4b96d6a94711  
+REFER  3/4:ok 화풍:?? structure      beodeul_town_wall/tower                  ac9e467d34f4  화풍: 화풍 판정이 갈림(걸린 판정 2/4) · 화풍: 판정자 fail (2/4)
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/wall_ring_snow         52fa8305b916  
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/wall_parts_snow        1b66cacf3e14  
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/gatehouse_open_snow    447a47ec5b03  
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/gatehouse_closed_snow  07750719b04a  
+FAIL  3/4:ok 화풍:NO structure      beodeul_town_wall/wall_runs_snow         04666ed7b397  화풍: 판정자 fail (3/4) · 화풍: 평면 채움 (3/4)
+REFER  3/4:ok 화풍:?? structure      beodeul_town_wall/tower_snow             c9e26656615b  화풍: 화풍 판정이 갈림(걸린 판정 2/4) · 화풍: 판정자 fail (2/4)
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/wall_ring_desert       200436af43a9  
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/wall_parts_desert      2a3052649d5d  
+REFER  3/4:ok 화풍:?? structure      beodeul_town_wall/gatehouse_open_desert  75be5aaa7ec4  화풍: 화풍 판정이 갈림(걸린 판정 2/4) · 화풍: 판정자 fail (2/4)
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/gatehouse_closed_desert 54ba877b65ff  
+REFER  3/4:?? 화풍:ok structure      beodeul_town_wall/wall_runs_desert       0dc3fc65c254  3/4: 독립 눈이 「3/4 아님」 3/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면
+FAIL  3/4:ok 화풍:NO structure      beodeul_town_wall/tower_desert           88e8c90fb49d  화풍: 판정자 fail (4/4)
+현재 프로필은 보정되지 않았다 — 아래 숫자는 AI 조언이다. 최종 통과는 검토 화면(serve-holds, 18323)의 사람 허용이다.
+12/18 통과(보류 4 — 사람 확인 전에는 굽기·게시 불가; 3/4 통과 17, 화풍 통과 13) · 영수증 /home/main/z-project/rpg-zzu-beodeul-wall-3/harness-data/object-gate/receipts

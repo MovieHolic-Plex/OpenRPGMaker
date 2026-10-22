@@ -1,0 +1,388 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "16e7b24789f4ab7122e66ed8b5df3ac9e4dcf70b0769b70d6d385e776ac8597e",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "Astra mart kit cell 1 (r0 c1)",
+ "label": "monster_overworld/astra-mart-kit-1 (칸 2241)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 투영이 3/4 아님(front_elevation) (4/4)",
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+  "3/4: 윗면 2행 < 3 (2/4)",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "투영이 3/4 아님(front_elevation) (4/4)",
+   "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+   "윗면 2행 < 3 (2/4)"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 16,
+  "tileColorsP90": 16,
+  "darkV5": 88,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top purple trim band (cornice/eave strip)",
+      "rows": "1-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "3-4"
+     },
+     {
+      "part": "brown frame with cream panel (front wall)",
+      "rows": "5-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The crop is 16 px wide and shows rows 0-15 only. Rows 0-4 are a thin trim band: an outline row, two lighter blue-purple rows (1-2), then dark rows 3-4. It reads as a cornice or rim of about 2 rows, not a sloped roof plane or a foreshortened top surface. No ellipse is present, and the band has no distinct front-edge line separating a top surface from a face. Rows 5-6 are a brown frame edge, and rows 7-15 are a flat cream panel seen face-on, with a small yellow sparkle at rows 8-10 and blue and orange pieces on the right. The whole piece is a vertical front elevation with no visible top surface of any depth, so it reads as front_elevation rather than three_quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a single 16x16 icon-sized cell: a small framed board or notice with a pale panel and a blue-grey frame. It has no roof, walls, door or windows, so it is not a whole building like the references. Its measured numbers are fine (16 visible tones in the one tile, 0% near-flat, 0% neutral dark edges), but they come from one tiny tile and say nothing about building craft. Compared with the references, which have scalloped tile roofs with per-tile highlights, timber framing, plaster speckle and shaded stones across many tiles, the candidate has no roof ramp, no wall material and no multi-tile structure. By eye it reads as a small flat icon with only about 3 shading steps per material. It fails because it is the wrong kind of piece and far below the references in information at building scale.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 16408
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top border band (dark, blue and purple bevel rows)",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "brown frame strip",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cream front panel with small yellow ornament",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The column scans at x=4, 8 and 11 are identical. Rows 0-4 are a dark outline, then 2 blue rows, 1 purple row and a dark row. Rows 5-6 are a brown frame, and rows 7-15 are a flat cream panel. The width is a constant 16 in every row. The top bands look like a beveled frame border that also runs down the left side, not a horizontal surface. They have no front-edge line followed by eave shadow, no ellipse and no roof or awning plane. The cell reads as a flat front-facing panel in a frame, so it is front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a single tiny tile-sized sprite, about 16x16 source pixels. It looks like a small sign or board with a purple-blue top bar and a cream panel. It has no roof, walls or door, so it does not read as a whole building and does not match the reference kind. The measured facts (16 visible tones, 0% near-flat, 0% neutral dark edges) show a tinted outline and no big flat fills. They only describe one small tile, though, and cannot stand in for a building-scale piece. The references carry 5-6 shading steps per material: roof tile scallops with per-tile highlights, plaster speckle and stone shaded one by one. The candidate shows only about 3 steps per material, with no structural detail, and it does not reach the scale or richness of the references. A building cell should show a roof ramp, a wall with texture and an entrance, and this one shows none of them. It fails on kind mismatch and on much lower overall richness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17103
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top frame border (navy/blue/purple rows with orange trim)",
+      "rows": "0-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cream wall/panel interior with small yellow diamond motif",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "blue and orange object at right edge (partial)",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "This cell is a 16-wide, 16-row corner piece of a frame. Rows 0-4 are a dark navy and blue/purple border and rows 5-6 are an orange trim line. These are drawn as flat front-facing strips with no darker eave shadow beneath them and no sloped roof or awning plane. They read as a frame or cornice, not a horizontal top surface. Rows 7-15 are uniform cream face-on fill with a small yellow diamond motif. At most 2 rows (the orange trim) work as a rim. There is no ellipse, no visible contents, and no receding side face. The result is a front elevation with no real top slope."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is about one tile in size (roughly 16x20 source pixels). It reads as a small framed sign or panel with a blue header and a cream or white field, not a whole building with roof, walls and door. The references are full houses with scalloped, per-tile-highlighted roofs, timber and plaster speckle, and individually shaded stones, so the kinds do not match at this scale. The candidate has no roof ramp, wall texture or door/window structure. Its 16 visible tones per tile are mostly from a tiny, busy icon, not from shaded material ramps. By eye it shows about 3 distinct steps on any one material, against 5-6 on the references. The cream panel looks like a nearly flat fill with little grain. The measured 0% neutral dark-edge share points to tinted outlines, but there is too little edge to judge confidently. As a building it is far thinner and flatter than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 2행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 2행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16275
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "purple/blue top border band (frame edge)",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "orange inner frame line",
+      "rows": "5-6",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cream panel with yellow sparkle, vertical face",
+      "rows": "7-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cell is a corner fragment of a framed panel. Rows 0-4 are a flat purple/blue border band with a dark outline at rows 0 and 4, and rows 5-6 are an orange inner frame line. Rows 7-15 are a flat cream panel with a small yellow sparkle at rows 8-10. The right side shows blue and orange pieces from row 9 down, so it is a frame border rather than a sloped roof or awning. No front-edge line with eave shadow separates a receding top from a front face, no ellipse is present, and no contents are visible. This is a vertical panel face with a frame border, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a single tile-sized icon, about 16x16 source pixels. It looks like a small framed notice board or sign with a purple top, a cream panel and a few orange or blue marks. It has no roof, walls or door/windows, so it is not a whole building and does not match the reference kind. The measured facts are good: 16 visible tones in one tile against 12 and 10 for the references, 0% near-flat coverage, and 0% near-neutral dark edge pixels, which means the outline is tinted. But those tones are packed into one tiny tile. There are no tile scallops, plaster speckle or stone-by-stone shading, and each material ramp has only about 3 steps against roughly 6 on the references. Because the piece is the wrong kind and its material ramps are shallow, it cannot sit beside the references as a building.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 25850
+  }
+ ],
+ "decidedAt": "2026-10-20T22:08:46.665Z",
+ "cells": {
+  "16": [
+   "3d7db3ad74dfa4d8"
+  ],
+  "24": [
+   "1a857cbed56e80f9",
+   "213e059a3fc78a0e",
+   "70343399d2cd7de3",
+   "b6cf23da3401a3fe",
+   "b9a1840a64973756",
+   "db0d86f02009b8bd"
+  ],
+  "32": [
+   "3f445afac4cb36d1",
+   "6cdd785324963d74",
+   "6e5308be985cd67b",
+   "84edb95b66130fae",
+   "b282c2aea26d267e",
+   "d8b1a7aca08903cb"
+  ],
+  "48": [
+   "0061f0973b529e1c",
+   "2878a15ae9bbe98e",
+   "689b4991e4610dce",
+   "713ea9caaf5aa0b0",
+   "cbb44a8484e02dbb",
+   "f049a451356d052e"
+  ]
+ }
+}

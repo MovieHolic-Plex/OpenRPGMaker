@@ -1,0 +1,22 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "wz-stairs-r7",
+ "title": "마법 학교 계단 r7 (내려가는 계단통 2)",
+ "explainImage": "/tmp/wzst/g14/wz-stairs-r7.png",
+ "explainText": "wz-stairs-r6 다음 판: 내려가는 계단통의 벽돌 줄눈·기울인 옆벽을 빼고(아궁이로 읽혔다) 다섯 단 디딤판이 밝은 코를 달고 북쪽으로 한 단씩 어두워지게 했다. 남쪽에서 들어서 북쪽을 보며 내려간다.",
+ "createdAt": "2026-10-22T11:54:58.807Z",
+ "items": [
+  {
+   "sha": "a520f46178259b20b6eefd0ee360ec9b2507a6c0dd2a533860f75dd689c807ac",
+   "kind": "flat",
+   "label": "wizarding_world stairs wz-castle-stair-down (DOWN)",
+   "source": "/tmp/wzst/g14/wz-castle-stair-down.png"
+  },
+  {
+   "sha": "3640a6eeaedc237cf8a0c45078e2c8ae8e13f746b6f54cc5c532325dd70e871b",
+   "kind": "flat",
+   "label": "wizarding_world stairs wz-owl-stair-down (DOWN)",
+   "source": "/tmp/wzst/g14/wz-owl-stair-down.png"
+  }
+ ]
+}

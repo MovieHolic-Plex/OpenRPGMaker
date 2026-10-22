@@ -1,0 +1,40 @@
+{
+  "judge": "argon",
+  "images": {
+    "tower": {
+      "view34": "PASS",
+      "style": "PASS",
+      "structure": "PASS",
+      "pass": true,
+      "reasons": "Clear 3/4 top-down view with the roof platform, battlements, trapdoor, and flag visible from above (y=0..47) and the south-facing ashlar stone wall with three arrow slits and stepped plinth visible below (y=48..127). Stone shading, mortar lines, and upper-left lighting match the Beodeul castle reference."
+    },
+    "tower_snow": {
+      "view34": "PASS",
+      "style": "PASS",
+      "structure": "PASS",
+      "pass": true,
+      "reasons": "Valid 3/4 top-down geometry matching the base tower (top platform at y=0..47, south wall face at y=48..127). Snow accumulation on the platform, merlon caps, and base plinth uses crisp white highlights and cool blue-grey shadows with icicles along the corbel line (y=48..52) while preserving the ashlar masonry texture."
+    },
+    "wall_runs_snow": {
+      "view34": "PASS",
+      "style": "PASS",
+      "structure": "PASS",
+      "pass": true,
+      "reasons": "True 3/4 top-down perimeter wall loop: snow-covered walkway tops and side crenels are visible from above along all four runs, while south-facing vertical stone facades are rendered both inside the courtyard below the north run (x=29..50, y=30..75, with proper left-side cast shadow) and along the exterior south run (x=10..69, y=140..184)."
+    },
+    "wall_runs_desert": {
+      "view34": "PASS",
+      "style": "PASS",
+      "structure": "PASS",
+      "pass": true,
+      "reasons": "True 3/4 top-down perimeter wall loop, not a front elevation: the top walkways and crenellations are seen from above (y=14..28 on north, x=15..27 and x=52..64 on west/east, y=120..130 on south), paired with south-facing sandstone wall faces at x=29..50, y=30..75 (inner north wall with cast shadow) and x=10..69, y=140..184 (outer south wall with arrow slits)."
+    },
+    "gatehouse_closed_desert": {
+      "view34": "PASS",
+      "style": "PASS",
+      "structure": "PASS",
+      "pass": true,
+      "reasons": "Clear 3/4 top-down gatehouse with a visible rooftop platform (y=0..47) containing battlements, a wooden winch, portcullis grate slot, sandbags, and barrel, above a south-facing sandstone facade (y=48..127) with banners, torches, and a stone arch framing iron-strapped double wooden doors."
+    }
+  }
+}

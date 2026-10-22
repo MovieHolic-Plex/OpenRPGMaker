@@ -251,7 +251,11 @@ export function listStatusMenuCommandIds(project: Project, session: PlaySession)
   const authored = fieldMenu(project);
   return (authored ? authored.entries.map(row => row.command) : STATUS_MENU_COMMAND_GROUPS.flatMap((group) => group.commandIds)).filter((id) => {
     if (id === 'trainer-card') return Boolean(authored);
-    if (id === "monster-dex") return monsterDexSpeciesIds(project).length > 0;
+    if (id === "monster-dex") {
+      // 도감을 받는 이벤트가 있는 게임은 받기 전에는 항목 자체를 숨긴다(스위치가 정의되지 않은 게임은 그대로).
+      const gated = project.switches.some((sw) => sw.id === "mx_pokedex_received") && !session.switches["mx_pokedex_received"];
+      return !gated && monsterDexSpeciesIds(project).length > 0;
+    }
     if (id === "region-map" || id === "campaign-progress") return Boolean(monsterCampaign(project));
     if (usesMonsterParty(project) && (id === "equipment" || id === "row" || id === "formation")) return false;
     // 관계 중심 게임은 호감 기록이 아직 없어도 호감도 항목이 있다 — 비어 있어도 「아직 아무도」 가 보여야 한다. 일정은 퀘스트가 정의된 게임만.

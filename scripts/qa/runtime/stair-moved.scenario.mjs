@@ -80,20 +80,20 @@ export const stairMovedScenario = {
     },
     {
       id: "clocktower-stair",
-      note: "시계탑 기어실 — 서벽 정비 계단 앞(2,13)에서 위로 계단을 올라선다(예전엔 앞 칸이 남벽)",
+      note: "시계탑 기어실 — 북벽 정비 계단(2026-10-22 다시 그림, (1,2) 2×3) 앞(2,5)에서 위로 문틀 안 계단을 올라선다",
       ops: [
-        { kind: "teleport", mapId: "wz-place-space-clocktower", x: 5, y: 13 },
+        { kind: "teleport", mapId: "wz-place-space-clocktower", x: 5, y: 7 },
         { kind: "hold", dir: null, ms: 900 },
-        ...walkTo("wz-place-space-clocktower", "left", 2, 13, 3),
-        ...walkTo("wz-place-space-clocktower", "up", 2, 11, 2),
+        ...walkTo("wz-place-space-clocktower", "left", 2, 7, 3),
+        ...walkTo("wz-place-space-clocktower", "up", 2, 3, 4),
         { kind: "hold", dir: null, ms: 1000 },
       ],
-      expect: { mapId: "wz-place-space-clocktower", x: 2, y: 11 },
+      expect: { mapId: "wz-place-space-clocktower", x: 2, y: 3 },
       shot: true,
     },
     {
       id: "owlery-stair",
-      note: "부엉이 탑 — 서벽 탑 계단 앞(2,10)에서 위로 계단을 올라선다",
+      note: "부엉이 탑 — 서벽 내려가는 계단통(2026-10-22) 앞(2,10)에서 북쪽으로 계단통 안에 들어선다",
       ops: [
         { kind: "teleport", mapId: "wz-place-space-owlery", x: 5, y: 10 },
         { kind: "hold", dir: null, ms: 900 },

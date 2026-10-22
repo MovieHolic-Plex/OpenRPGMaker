@@ -85,25 +85,37 @@ export const WORKSHOP_FAKE_IMAGE_KEY = "__oprnWorkshopImage";
  * 참고 그림(object-gen ref 단계) — 사용자 자기 그림 계정(설정 「이미지」 칸, 용도 object-form-reference). 그림 계정이 없으면 null(참고 없이 그린다).
  * 돌려준 그림은 판 기록에만 둔다. 칩셋·스토어·공용으로 가지 않는다.
  */
-async function referenceImage(prompt: string, signal: AbortSignal): Promise<{ dataUrl: string; source: string } | null> {
+async function referenceImage(prompt: string, signal: AbortSignal, options?: { readonly image?: string }): Promise<{ dataUrl: string; source: string } | null> {
   if (import.meta.env.DEV) {
     const fake = (window as unknown as Record<string, unknown>)[WORKSHOP_FAKE_IMAGE_KEY];
     if (typeof fake === "function") {
-      const dataUrl = await (fake as (prompt: string) => Promise<string | null>)(prompt);
+      const dataUrl = await (fake as (prompt: string, image?: string) => Promise<string | null>)(prompt, options?.image);
       return dataUrl ? { dataUrl, source: "dev-hook" } : null;
     }
   }
-  const [{ generateAiImage }, { loadAiConfig }, { resolveImageRoute }, { companionCredentialMissing }] = await Promise.all([
-    import("@/ai/imageGenerationClient"), import("@/ai/llmClient"), import("@/ai/imageRoute"), import("@/ai/chatgptOAuthClient"),
+  const [{ generateAiImage }, { loadAiConfig }, { resolveImageRoute }, { companionCredentialMissing }, { loadAssistantEngine }] = await Promise.all([
+    import("@/ai/imageGenerationClient"), import("@/ai/llmClient"), import("@/ai/imageRoute"), import("@/ai/chatgptOAuthClient"), import("@/ai/localCliEngine"),
   ]);
+  // 조수 엔진이 내 PC 의 에이전트 CLI 면 그림 계정 경로가 없다 — 부르면 401 「AI 연결이 끊겼습니다」 알림만 뜬다(2026-10-23 실화면). 참고 없이 그린다.
+  if (loadAssistantEngine()) return null;
   const route = resolveImageRoute("object-form-reference", loadAiConfig());
   if (route.kind !== "generative" || await companionCredentialMissing(route.providerId)) return null;
-  const image = await generateAiImage({ prompt, purpose: "object-form-reference", signal });
+  // 견본(시점·화풍, 물체 비율 캔버스)을 붙인다 — 그림 경로는 붙인 그림의 비율·시점을 따른다(2026-10-22 A/B).
+  const attached = options?.image?.match(/^data:(image\/(?:png|jpeg|webp));base64,(.+)$/u);
+  const referenceImages = attached ? [{ mimeType: attached[1] as "image/png" | "image/jpeg" | "image/webp", data: attached[2]! }] : undefined;
+  const image = await generateAiImage({ prompt, purpose: "object-form-reference", signal, ...(referenceImages ? { referenceImages } : {}) });
   return { dataUrl: image.dataUrl, source: `${image.provider}/${image.model}` };
 }
 
+/** 3/4 관문 영수증(호스트 판정기, oneClick/hostGen.ts) — round.gate = "receipt" 판만 부른다. */
+const objectGate: NonNullable<WorkshopEnv["objectGate"]> = async (input, signal) => {
+  const { runHostGate } = await import("./oneClick/hostGen");
+  const result = await runHostGate(input, signal);
+  return { final: result.final, verdict: result.verdict, reasons: result.reasons, ...(result.fix ? { fix: result.fix } : {}), pixelSha256: result.pixelSha256, profileHash: result.profileHash, refer: result.refer ? { verdict: result.refer.verdict, judge: result.refer.judge } : null };
+};
+
 export function browserWorkshopEnv(): WorkshopEnv {
-  return { loadImage, encodePng, tilesetSource, referenceImage, assetUrl: (path) => `${import.meta.env.BASE_URL}${path}` };
+  return { loadImage, encodePng, tilesetSource, referenceImage, objectGate, assetUrl: (path) => `${import.meta.env.BASE_URL}${path}` };
 }
 
 const cache = new Map<string, string>();

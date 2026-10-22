@@ -114,18 +114,31 @@
 SQLite revision 7 저장·재로드와 전용 플레이어 8비트(모든 집 문 앞 도보 이동·우물 복귀)의 근거는
 `verify-shots/beodeul-small-village/README.md`. 기존 문 이벤트·실내·통행은 보존됐다.
 
-## 마을 성벽 bd-wall (2026-10-22) — 3/4 성벽 길·성문루·망루·계단, 칸 28,544~28,671
+## 마을 성벽 bd-wall (2026-10-22, 3판) — 3/4 성벽 길·성문루·망루·계단·쪽문, 눈·사막 변형, 칸 28,544~29,567
 
-- **그림**: `scripts/content/beodeul-wall/wall_art.py` 행 문자열 손 도트 88조각(생성 이미지 없음). 돌 색은 버들항 시트에 있는 색만
-  (o #2b203f · O #403a31 · m #54504e · M #6d6863 · s #86827f · S #99968c · B #a7a7a1 · w #9f9a8d · L #bcbbb1 · H #c8c5ba), 망루 지붕은 집 기와 색.
-  3/4: 성벽 위 통로(걷는 윗면)가 면으로 보이고 그 아래 앞면 두 줄. 북쪽 성벽은 마을 쪽 앞면 + 뒤 흉벽, 남쪽은 바깥 앞면 + 앞 흉벽, 서·동은 윗면만.
-- **굽기**: `bake_wall.py` — `bake_dungeon_ceiling.py` 끝에서 이어 부른다(체인 picks → farm → dungeon_ceiling → wall). 시트 꼬리 128칸
-  28,544~28,671(덧붙이기만, 앞 칸 화소 동일 확인). 칸 이름표·통행(통로 걸음, 앞면·흉벽·망루 막힘, 성문루 가운데 두 열 걸음, 닫힌 성문 막힘),
-  키트 9(`bd-wall-gatehouse`·`-gatehouse-closed`·`-tower`·`-stairs`·`-run-{south,north,west,east}-4`·`-ring-sample`), 그룹 3(`beodeul:town_wall*`).
-  조각 이름 → 칸 번호는 `src/assets/beodeulTownWallPieces.json`. 성문루 바닥은 투명이라 1층 길이 아치 밑으로 보인다(아래층 조각은 2층).
-- **둘레 규칙**: `src/editor/tools/beodeulTownWall.ts` `planTownWallRing`(= bake_wall.py `plan_ring`). 가로 성벽을 길이 지나는 곳은 4×4 성문루,
-  세로 성벽을 지나는 곳은 끝 마감 틈, 망루 2×7 은 가로 성벽에, 계단은 북쪽 성벽 앞면에. `stampTownWall` 은 위 조각 3층·아래 조각 2층.
-- **조수**: `author_beodeul_town` `walls:true`(이름에 성벽·성곽·성문·요새면 자동). 평지로, river 테마는 강 없이, 크기 +2×+4.
+1판(#3250, 88조각, 앞면 두 줄)은 사용자 반려(「너무 허접하다, 3/4 가 적용 안 된 것 같다」, 「애들 장난감 같다」). 3판은 처음부터 다시 그렸다.
+
+- **그림**: `scripts/content/beodeul-wall/wall_art.py` — 규칙 함수가 점을 찍는 코드 손 도트(생성 이미지 없음). 기본 296조각 + 눈 덮인 판 `snow:*` + 사막 사암 판 `desert:*`
+  (같은 그림을 색 규칙으로 옮긴다: 사막 = 사암 램프·마른 풀, 눈 = 윗면 판석·톱니 윗면·내민 턱에 눈·고드름, 이끼는 눈 덩이). 색은 모두 버들항 시트 앞 칸에 있는 값 —
+  `bake_wall.py` 가 조각마다 시트 팔레트 밖 색이 있으면 굽지 않는다(r8 에 넣은 잠금 검사). 빛은 왼쪽 위.
+- **기하(한 칸 16px)**: 가로 성벽(북·남) = 윗면 두 줄(판석 통로 + 흉벽) + 앞면 **네 줄(64px — 단층 집보다 높다)**. 세로 성벽(서·동) = 두 칸 폭 윗면만.
+  모서리 2×2. 성문루 4×8 = (왼쪽 위, yw−1)부터 윗면 플랫폼 세 줄 + 앞면 다섯 줄. **망루 3×9** = (왼쪽 위, yw−2)부터 플랫폼 세 줄 + 앞면 여섯 줄 —
+  한 줄 앞으로 내미니 높이가 두 줄 더 높아야 윗면이 성벽 흉벽 위로 보인다(r7 판정 「망루가 성벽보다 안 솟는다」). 성문 아치 안은 정확히 통로 두 칸(x 16~47).
+  플랫폼 윗면 소품(위에서 본 들창·물레·쇠창살 구덩이·돌 탄환·통·상자·화로)으로 윗면이 바닥으로 읽힌다(관문 「정면 입면」 판정 수리).
+  그늘: 망루·성문루·계단 오른쪽 성벽 앞면·통로에 짙은 그늘(9열 네 단, 잡색 돌도 가까운 램프로 붙여 어둡게 — 한두 단은 1배에서 묻혔다, r13), 땅 그림자 12행(r14).
+  변형: 망루 셋(tower·tower1·tower2 — 윗면 소품 깃대·화로·탄환과 상자, 앞면 구멍 배치·창이 다르다, r11 「모든 망루가 같은 도장」), 성문루 둘(gate1 = 다른 소품 + 깃발 대신 방패), 목록 순서로 돌려 써서 이웃이 같지 않다. 앞면 변형 여덟(a b c e f g h + 드문 d 물빼기 구멍,
+  넓은 물때·금·담쟁이·삭은 켜·갈아 끼운 돌) — 넷이면 긴 앞면이 4칸 주기로 보였다(r8). 칸 경계를 넘는 돌은 모든 변형이 같은 모양.
+- **쪽문 문루(r11~r15)**: 세로 성벽을 길이 지나는 곳은 성벽 위로 솟은 네모 문루 — 윗면(사방 흉벽·살인구멍 쇠창살, 톱니 사이로 성벽 통로가 보인다)은 길 위 성벽 두 줄,
+  앞면은 **늘 두 줄 이상**(r19 부터 아치 없이 화살 구멍·방패 — 길은 동서로 문루 밑을 지나므로 남쪽 아치는 「성벽 통로로 열린 문, 길은 옆 벽에 막힘」으로 읽혔다)이라 길 한 줄이면 앞면 윗줄이 길 바로 위 성벽 줄에 선다(`*_pgw_*_f2u`). 길 두 줄 = f2u·f2l, 세 줄 이상 = fu·fm…·fl.
+  덮개돌만 이은 판(r8)은 「길이 성벽에 박혔다」, 한 줄 앞면(r13)은 「하수구 구멍」, 48px 판을 건너뛴 두 줄(r14)은 「납작한 검은 네모」로 반려됐다. 양옆 땅 길 줄에 터널 입 `mo_w`·`mo_e`(성벽 쪽 문설주 돌 두 열 + 거의 검은 네 열에서 열 열에 걸쳐 옅어짐). 문루는 모서리 망루와 한 줄 이상 띄운다(길 끝 줄 ≤ y1−4). 눈 그늘은 시트 눈밭 그늘 세 푸른 색(b0bcd2·a6bcdc·96aacc), 조립 그림 길은 기후와 상관없이 자갈길.
+  열린 성문루 뒤 길 두 칸에 `mo_n`. 옛 끝 마감 `*_endS_*`·`*_endN_*` 는 칸 번호만 지킨다(쓰지 않음, 관문 덮개에서도 뺀다).
+- **굽기**: `bake_wall.py` — 시트 꼬리 여덟 행(28,544~29,567). 앞 조각 번호를 지키려고 새 조각은 목록 끝에 덧붙인다(기후 변형은 기본 조각 전부 뒤에 같은 순서).
+  `--gate-export DIR` = 관문에 낼 조립 그림 18장(기본·눈·사막 × 둘레·작은 둘레·열린/닫힌 성문루·세로 성벽 토막(좁은 둘레 안 — 따로 내면 「앞면 0행」 3/4 FAIL)·망루; 기후 둘레는 투명 바탕 — 한 색 땅이 「평면 채움」으로 잡혔다),
+  `--no-gate` = 관문 영수증 없이 굽기(개발용). 조각 이름 → 칸 번호는 `src/assets/beodeulTownWallPieces.json`.
+- **둘레 규칙**: `src/editor/tools/beodeulTownWall.ts` `planTownWallRing` = `bake_wall.py` `plan_ring`(해시 `hsh` 도 같은 값 — 곱셈 뒤 섞기).
+  `townWallLayout(W,H,seed)`: x0=1, y0=2, x1=W−2, y1=H−8, 망루 수·간격은 seed 로 고른 틀(남 2·4·2, 북 2·3·2)에 ±2칸. 남쪽 망루 윗면 줄(y1−2)도 집 자리에서 뺀다.
+  `stampTownWall(map, plan, biome)` 은 위 조각 3층, 성문 터널·땅 그림자·터널 입 그늘 2층(빈 땅에만). 설원 마을은 snow:, 사막 마을은 desert: 판. 계단은 seed 로 둘(0.1~0.44 · 0.56~0.9) 또는 하나, 자리가 다 막히면 가운데부터 훑어 하나는 둔다.
+- **조수**: `author_beodeul_town` `walls:true`(이름에 성벽·성곽·성문·요새면 자동). 평지로, river 테마는 강 없이, 크기 +4×+11(3판 성벽 띠).
   `beodeulVillage.ts` 12d 단계가 둘레 띠를 집·나무 자리에서 빼고, 남·북 성벽을 지나는 길이 없으면 남쪽 길을 하나 낸다(치울 수 있는 소품만 치움).
   결과 `data.walls = {gates, gaps, towers, stairs, blockedRoads, southGateRoad?}`. 경로 메모(`beodeulTownRoute.ts`)도 walls:true 를 가르친다.
 - **성문 고르기(조수 시험 r1 뒤 수리)**: `wallGate` S(기본)·N·NS — 그 쪽마다 성문루 하나. 가운데에서 폭 12% 안에 지나는 길이 있으면 그 길,
@@ -135,6 +148,11 @@ SQLite revision 7 저장·재로드와 전용 플레이어 8비트(모든 집 �
 - **조수 시험**: 시드 `scene-lessons-seed.json` 의 `walled-beodeul-town`. 실행 `qa-runs/harnesses/assistant-capability/2026-10-22-beodeul-wall-r1..r5`
   (Claude Code Sonnet 5.5 high **조수 대용**, 실제 입력창 경로, SQLite 저장·재로드 일치). 성문 걷기 영상은 출하 player 에서 r5 저장본을 실제 방향키로
   (`r5/.../gatefilm/gatewalk.mp4`). r3·r4 의 집 수 부족(3~4채)은 위 「집 수·길 토막」에서 넓혀 다시 짓기로 고쳤다.
+  3판 다시 그림 뒤 `2026-10-22-beodeul-wall3-r1`: 60×46·집 5·광장·망루 5·계단 2, 문 6곳 도달, 저장·재로드 해시 일치. 출하 player 성문 걷기 `.../attempt-1/gatewalk2/film.mp4`(막힌 걸음 0).
+- **3판 검수(r11~r21)**: 새 Opus 적대 VQA 를 판마다 새로 띄워 0 major 까지(r17 PASS 뒤 r18~r20 배치 major 로 다시 FAIL, r21 PASS 8/10 —
+  `harness-data/object-gate/vqa/beodeul-town-wall-3e-r21/` 공용 관문 자료). `object-gate review` 18장(gate18): 13 PASS · REFER 4 · FAIL 1(망루 화풍) —
+  그 5장은 새 Argon 재검수 전부 PASS. 프로필이 미보정이라 18장 모두 「delegated by user to supervisor 2026-10-23」 위임 허용(근거 파일 경로)으로 기록하고,
+  옛 판 허용 6장은 `supersede-holds` 로 물렸다. 굽기는 관문을 켠 채(`--no-gate` 없이) 통과한다. 정식 보정 프로필 영수증은 아니다.
 - **참고문서**: 번들 `beodeulCityReferences.json` 용도 `beodeul-town-wall`(출처 `tiledata/beodeul-town-wall/`, 그림 `public/assets/beodeul-town-wall/`,
   생성 `wall_refs.py` — 예시 둘레·정상/오류 그림 4종·좌표 검사 `wrong-layer`·`face-missing`·`wall-gap`·`gate-blocked`).
 - **기존 프로젝트 — 이식 칸 옮기기(2026-10-22)**: 예전에는 접목(tileGrafts)이 28,544 이후를 쓰는 프로젝트(대부분)가 성벽을 못 받았다.
@@ -151,7 +169,12 @@ SQLite revision 7 저장·재로드와 전용 플레이어 8비트(모든 집 �
   Opus VQA r6). 6개 시험에서 남은 막다른 끝은 집 문 앞에서 끝나는 길과 설원 바위 앞 2칸뿐. 증명 사본의 성벽 마을 그림(seed 7)은 riverbank→street 규칙 전이라 강이 성벽을 지났다 — 지금 코드는 street·강 없음.
   Opus VQA r7(`harness-data/object-gate/vqa/beodeul-town-wall-layout-r7/receipt.json`): 넓혀 다시 짓기·강 없음 통과, 성벽 앞 토막 없음. 남은 것: 갈래길은 원래 한 칸 폭(성벽 없는 마을과 같음),
   남문 새 길(southGateRoad)을 칠할 때 옆 열에 길 가장자리 오토타일이 번져 그 위에 들꽃이 놓인다(seed 7 (23,31)), 사막 성벽 마을 아래쪽 빈 모래 띠.
-  미해결 별건(VQA r6): 설원 오두막(snowfield-hut)에서 문 그림 바로 아래 칸에 장작이 놓이고 문 앞 길이 한 칸 옆에서 시작한다 — 도구가 계산한 문 앞(칸 메타)과 그림 문 열이 어긋나는 것으로 보이며 성벽 단계와 무관, 따로 확인할 것.
+  설원 오두막(snowfield-hut)에서 문 그림 바로 아래 칸에 장작이 놓이고 문 앞 길이 한 칸 옆에서 시작했다(VQA r6).
+- **r7 남은 것 수리(3판 작업)**: ① 성문 길 칠하기(`paveCells`)가 `fill_region` 의 「벽과 1칸 틈 메우기」로 옆 길 아닌 칸까지 길 가장자리를 칠했다 —
+  내부 전용 인자 `_exactCells`(스키마에 없음)로 정확한 칸만 칠한다. 걷어 낸 소품이 길 밖으로 걸친 칸은 찍기 전 1층(지운 옛 길 가장자리일 수 있다)
+  대신 바닥 재료로 다시 칠한다. ② 모래·눈 성벽 마을은 성벽 안쪽 발치 두세 줄(발치 한 줄은 비움)에 4~8칸마다 작은 덩이를 둔다(빈 덩이 채우기가
+  성벽 앞에 거의 닿지 않았다). 빈 화면 몫 계산에서 성벽 띠 칸은 뺀다. ③ 설원 오두막 문은 그림 판정이 2열을 골랐지만 문짝은 1열(x 22~32) —
+  `find_pick_doors.py` `DOOR_OVERRIDE` 와 `pick-doors.json`·번들 키트 parts 를 1열로(성벽과 무관, 성벽 없는 마을에도 적용).
 - **검수**: 새 Opus 적대 VQA 5판(`harness-data/object-gate/vqa/beodeul-town-wall-r1..r5/receipt.json` — r1 FAIL 회색·매끈·끝 마감, r3 FAIL T자 이음,
   r4·r5 PASS). object-gate 그림 6장은 프로필 미보정이라 AI 판정은 참고(둘레·망루·동쪽 틈 FAIL 화풍/정면 인상, 부품·열린 성문 REFER, 닫힌 성문 PASS)이고,
   Opus VQA 뒤 「delegated by user to supervisor 2026-10-21」 허용을 18323 API 로 기록했다. 3/4 관문 정식 통과(보정 프로필 영수증)는 아니다.
@@ -884,6 +907,30 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 - 안 바뀐 것: 천장 회색 윤곽선(오토타일 그림), 벽 앞면(성 벽돌 / 회색 석재), 화산 벽. 그림이 필요하다.
 
 **검증:** `bun scripts/content/dungeon-proof.mts <dir>` — 종류 × 어댑터 × 장르 × 시드를 `author_dungeon` 으로 실제 시공하고 `run_lint`·`check_reachability`·`check_terrain_access` 를 같이 돌려 PNG(원 해상도)와 `proof.json` 을 쓴다(2026-10-15: 42판, lint error 0, 전부 도달, check_terrain_access 전부 true). 기존 beodeul 24판 sha1 기준선: 안 건드린 5종은 전부 동일, 고친 동굴·광산·화산만 의도적으로 바뀜.
+
+**조수 던전 시험 후 고친 것(2026-10-22, assistant-dungeons, 기준 시험 9건 Opus 적대 VQA 평균 4.5):**
+- **죽은 계단** — 8맵 전부 계단이 장식뿐이었다. 이제 1층 바깥 계단은 `entrance` 를 줄 때만 그리고(`entryStair:"none"`), 마지막 층에는 내려가는 계단을 그리지 않는다(`exitStair:"none"`).
+- **여러 층** — `floors`(1~5)·`direction`(down 지하 / up 탑). 층마다 맵을 짓고 계단 칸에 이동 이벤트(`ev_<map>_stair_next/back`, 걷는 계단 priority below, 문 same)를 직접 깐다. 도착은 상대 계단 앞 칸, 계단을 등진다(계단 계약 `stairContracts.json`). 탑은 1층 입구 = 나무 문, 위층 입구 = 바닥 내려가는 계단, 깊은 방 북벽 = 오르는 계단, 꼭대기 층 = 큰 홀 → 보스방 + 보물 방(`towerRooms`, 감방·묘실 없음). 조립기 `compose.ts` 의 `entryStair`/`exitStair`/`sideDoor`.
+- **빈 방** — `populate`(rpg 기본 켜짐): 계획 자리의 순찰 적(≤4), 상자 2(보물 방 먼저 — 같은 그림 3개부터 린트 경고), 마지막 층 보스(도망 불가)·보스 앞 방 회복 세이브, 그 아래층 층 수문장. `troops:{field,midBoss,boss}` 로 요청한 적을 넘긴다. 도구가 그림을 스스로 고르므로 `choosesOwnGraphic`(없으면 Pi 의 그림 선택 검사가 세 번 거부했다). `expand_jrpg_campaign_volume`·`author_jrpg_chapter` 는 자기 채우기가 있어 `populate:false` 로 부른다.
+- **물에 잠긴 신전** — `flooded:true`: 큰 방(입구·보물 방 제외) 바닥 대부분을 물로, 굽이치는 3칸 둑길(긴 축 + 큰 방은 가로 축)을 남긴다(`mask.ts carveFlood`). 조수가 `fill_region` 으로 네모 웅덩이를 칠하던 것을 대신한다.
+- **레버 퍼즐** — `puzzle:"lever"`: 보물 방(없으면 보스방) 통로 칸에 쇠창살(object1#5), 먼 곁방에 레버(object2#0), 스위치 `sw_<map>_lever`. 손 도트 실내 퍼즐 방(다른 화풍)을 따로 잇던 것을 대신한다.
+- **작은 동굴** — `size:"small"` 동굴은 56×44 상자·방 3개(옛 64×49·방 4), 입구 굴은 네모가 아니라 잡음 타원. 기본 시드는 7 고정이 아니라 맵 id·이름·맵 수에서 뽑는다(시드를 안 준 던전이 전부 같았다).
+- **흐르는 용암** — 화산은 용암 못끼리(없으면 가장 가까운 일반 방까지) 바닥을 따라가는 BFS 최단 길 위에 폭 1~2 용암 줄기를 판다(보스·보물·입구 방 제외, 좁은 목은 settle 이 다리). 용암 가장자리 그림은 여전히 없다.
+- **소굴** — `lair:true`(버들항 cave): 호수·웅덩이 없이 마른 굴, 큰 방엔 천막(desert-oasis-tent), 모닥불 둘레 자루·궤짝·가죽 걸이, 벽가 통·뼈 무더기, 이끼 수정 대신(`dress.ts lairCamp`). 「고블린 굴」이 수정 동굴로 읽히던 것.
+- **2026-10-23 2·3차(같은 요청 다시, Opus 적대 VQA):**
+  - 채운 뒤 `data.population` 의 계획 후보(적·상자 7자리)를 지우고 `data.placed` 에 실제 수만 남긴다. 요약 끝에 「실제로 놓인 수 … 이 수와 좌표만 말한다」를 붙인다. 조수가 계획 자리 수를 「상자 7개」로 답했고, `lockedGate` 문장을 「열쇠로 여는 잠긴 문」으로 지어냈다(레버 퍼즐이 아니면 그 문장도 뺀다).
+  - 생성 몬스터 필드 심볼(`generated-enemy-*`)은 헤드리스 렌더(`scripts/qa-game/render.mts`)에서도 그린다. 게임에서는 보였지만 측정 그림에서는 투명했다.
+  - 홀 벽의 장식 아치(열린·쇠창살 둘 다)를 뺐다. 「어디로도 안 가는 문」으로 읽혔다.
+  - 큰 방 기본 크기를 한 단 줄였다: 홀 13×8, 보스 13×9, 묘실 11×7, 감방 10×6, 입구 10×6, 탑 층 13×9.
+  - 홀 가운데 줄에 화로 한 쌍과 잔해 무더기를 두고, 보스방 가운데에 의식 원(`temple-ruins-mosaic-medallion-5x5`)을 깐다.
+  - 물에 잠긴 방은 벽 앞 한 줄만 마른 턱으로 남긴다.
+  - 레버 퍼즐의 쇠창살은 통로 폭 전체를 막는다. 3칸 통로 가운데 한 칸만 막으면 옆으로 지나갔다. 창살 칸들은 이름 「쇠창살」 하나라 린트의 「같은 그림 조사물」에 걸리지 않는다. 레버는 그 방 북쪽 벽 앞 칸으로 옮기고, 「한 칸 레버가 정상」이라고 알린다. 조수가 「레버가 안 보인다」며 던전을 세 번 다시 짓고 실내 칩셋 레버를 찍었다.
+  - `rebuild:true`: 이 도구가 지은 던전 맵(`mapRole: dungeon`)을 같은 mapId 에서 다시 짓는다. 거절되자 조수가 새 맵을 또 만들어 같은 이름 던전 두 장이 남았다.
+  - 동굴의 닫힌 작은 벽 덩어리(넓이 30 이하)는 바닥으로 메운다(`fillWallIslands`). 「벽돌 기둥 위 검은 구멍」으로 그려졌다.
+  - 용암 줄기는 잡음 비용 최단 길로 굽이친다.
+  - 「던전」이라고 부른 지하 묘지·카타콤은 `author_dungeon` 이다. 고딕 납골당 방 여러 장을 `create_transfer_pair` 로 잇던 경로를 막았다(`intentDeclaration`·`gothicPlaceTools`·`toolCapabilityIndex`).
+  - 남은 가장 큰 감점은 방 사이·바깥의 검은 허공(맵의 40~60%)이다. 허공을 채울 동굴 천장 바위 결 그림이 없고, 용암·물 가장자리 전이, 탑 전용 조각, 버들항 화풍 문·레버도 없다. 모두 사람 선택이 필요한 그림이라 코드로 메우지 않았다.
+- 증명: `bun scripts/qa/dungeons/proof.mts <dir>`(레지스트리 경로라 중첩 도구까지 돈다), 걷기 영상 경로 `scripts/qa/dungeons/walk-route.mts` + `scripts/qa/runtime/dungeon-walk.scenario.mjs`.
 
 **없는 그림(다음 타일 작업자 몫, `capabilities.ts` `missingArt` 가 정본):**
 - beodeul: 선로 타일(가로·세로·모서리·T) / 갱목 지지대(벽 걸이 1×2·바닥 기둥 1×2) / 광석 박힌 벽·바닥 / 현무암·재 바닥 변형 · 현무암 벽 앞면 3h/2h · 용암 식은 껍질 가장자리 / 갈색 테두리 동굴 천장 오토타일 / 얼음 동굴 일체.

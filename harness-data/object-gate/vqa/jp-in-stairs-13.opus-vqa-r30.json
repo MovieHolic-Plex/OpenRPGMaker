@@ -1,0 +1,45 @@
+{
+ "queue": "jp-in-stairs-13",
+ "round": 30,
+ "judges": "3x claude-opus-5.5 fresh subagents in parallel, no prior scores; a major counts only if >=2 of 3 raise it",
+ "date": "2026-10-22",
+ "verdict": "pass",
+ "images": "/home/main/jpi-work/r30/pieces-4x.png + scene-*-1x.png + scene-*-3x.png (art = commit after this receipt)",
+ "perReviewer": {
+  "A": {
+   "majors": 0,
+   "axis2": 8,
+   "axis6": 8
+  },
+  "B": {
+   "majors": 0,
+   "axis2": 7,
+   "axis6": 8
+  },
+  "C": {
+   "majors": 3,
+   "axis2": 7,
+   "axis6": 6
+  }
+ },
+ "majorityMajors": [],
+ "minorityMajors": [
+  "C only: 1-cell up stairs (stairs-up-wood, mc-stairs-up, of-stairs-up) read as shelf/radiator at 1x in their scenes"
+ ],
+ "majoritycount": 0,
+ "kits": {
+  "stairs-up-wood": "0 majors by majority",
+  "stairs-up-wood-wide": "0 majors by majority",
+  "stairwell-down-wood": "0 majors by majority",
+  "sc-stairs-up": "0 majors by majority",
+  "sc-stairwell-down": "0 majors by majority",
+  "mc-stairs-up": "0 majors by majority",
+  "mc-stairwell-down": "0 majors by majority",
+  "of-stairs-up": "0 majors by majority",
+  "of-stairwell-down": "0 majors by majority",
+  "as-stairs-up-broken": "0 majors by majority",
+  "as-stairwell-down": "0 majors by majority",
+  "cs-stairs-up-bare": "0 majors by majority",
+  "cs-stairwell-down": "0 majors by majority"
+ }
+}

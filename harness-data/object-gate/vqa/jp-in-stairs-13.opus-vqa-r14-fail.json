@@ -1,0 +1,4 @@
+{"queue":"jp-in-stairs-13","round":14,"judge":"claude-opus-5.5 (fresh subagent, no prior scores)","date":"2026-10-22","verdict":"fail","majors":1,"axis2":7,"axis6":6,
+ "majorFindings":["mc-stairs-up (1 cell): thin uniform white/grey stripes read as a louvred vent/shelf in the lobby at 1x"],
+ "minorFindings":["1-cell wood crowded","wood treads cool","wells: framed mouth, south sill wide","sc bottom slab","as damage stamped","cs lip thin","up openings lack a lintel"],
+ "action":"1-cell up stairs: 6 thicker steps (10,9,7,5,4,2) with a clear value drop; light lintel line over every up-stair opening"}

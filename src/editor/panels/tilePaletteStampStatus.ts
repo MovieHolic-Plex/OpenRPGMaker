@@ -25,7 +25,7 @@ export function makeTileBrushControls(state: EditorState, rerender: () => void):
   const shape = { pen: "칠하기", rect: "사각형", round: "타원" }[state.paintShape];
   const action = state.tool === "paint"
     ? tileBrushActionLabel(stamp) ?? shape
-    : { erase: "지우기", fill: "채우기", select: "선택", eyedropper: "집기", pan: "화면 밀기", collision: "통행 표시", event: "이벤트", relief: "지형" }[state.tool];
+    : { erase: "지우기", fill: "채우기", select: "선택", eyedropper: "타일 집기", pan: "화면 밀기", collision: "통행 표시", event: "이벤트", relief: "지형" }[state.tool];
   const composite = isComboBrush(stamp);
   const row = el("div", { class: "sidebar-brush-controls", dataset: { testid: "tile-brush-controls" } });
   // 크기는 같은 타일을 되풀이하는 붓(칠하기 · 자유선)과 지우기에서만 뜻이 있다 — 다른 도구에선 숨긴다.

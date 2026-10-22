@@ -5,12 +5,14 @@
  * 사람만 고른다 — 엔진은 고르지 않는다. 판은 바뀔 때마다 통째로 저장해, 탭을 닫아도 resume() 로 잇는다.
  */
 import type { ChatMessage } from "@/ai/llmClient";
-import { applyRowFix, parseDrawAnswer, rowsNeedingFix } from "./grid";
+import { applyRowFix, parseDrawAnswer, renderGrid, rowsNeedingFix } from "./grid";
+import { cropOpaque, gateKindOf } from "./gateAdvice";
 import { parseRefViewCheck, REF_TRIES, REF_VIEW_PROMPT, refMinTop, refPrompt, refPromptNames } from "./referencePrompt";
+import { kitConstant, objectGenKit } from "./genKits";
 import type { WorkshopStore } from "./store";
 import { perItem } from "./types";
 import type {
-  AnchorSample, ChatFn, DrawContext, Grid, RejectedSample, RgbaImage, RoundReference, Verdict, WorkshopEnv, WorkshopItem, WorkshopRound, WorkshopRun,
+  AnchorSample, ChatFn, DrawContext, GateAdvice, Grid, Palette, PaletteEntry, ReferenceColor, RejectedSample, RgbaImage, RoundReference, Verdict, WorkshopEnv, WorkshopItem, WorkshopRound, WorkshopRun,
   WorkshopRunner, WorkshopSurface,
 } from "./types";
 
@@ -46,7 +48,7 @@ export type WorkshopEngineOptions = {
 export interface WorkshopEngine {
   /** count = 이번 판 후보 수(1 ~ runner.candidates). 없으면 runner.candidates. */
   /** reference:false = 참고 그림 단계를 건너뛴다(참고 있음/없음 비교·사용자가 끈 경우). */
-  startRound(item: WorkshopItem, options?: { note?: string; count?: number; reference?: boolean }): Promise<WorkshopRound>;
+  startRound(item: WorkshopItem, options?: { note?: string; count?: number; reference?: boolean; looks?: number; gate?: "receipt" }): Promise<WorkshopRound>;
   redrawRun(roundId: string, letter: string, note: string): Promise<void>;
   cancelRound(roundId: string): Promise<void>;
   resume(): Promise<number>;
@@ -66,8 +68,51 @@ function isKeepAnswer(text: string): boolean {
 /** 참고 그림을 판 기록에 담을 크기(긴 변 px). 모양만 보면 되니 원본(1024)을 다 담지 않는다. */
 const REF_STORE_PX = 512;
 const REJECTED_REF_PX = 160;
+/** 견본 기록 크기(긴 변) */
+const ANCHOR_STORE_PX = 256;
+/** 참고 그림 바탕색(object-gen reference.BACKGROUND) */
+const REF_BACKGROUND = kitConstant<readonly [number, number, number]>(objectGenKit, "reference", "BACKGROUND");
+
+/**
+ * 투명 바탕을 회색 바탕에 합성한다(object-gen reference.flatten). 그림 경로 답의 절반쯤은 투명 바탕 RGBA 이고 투명 칸 밑에
+ * 어두운 RGB 찌꺼기가 있다 — 알파를 버리고 읽는 쪽(검수·그리기 모델)에는 물체가 검은 바탕·후광 속에 보였다(2026-10-22 실측).
+ */
+export function flattenImage(image: RgbaImage, background: readonly [number, number, number] = REF_BACKGROUND): RgbaImage {
+  const data = new Uint8ClampedArray(image.data.length);
+  for (let i = 0; i < data.length; i += 4) {
+    const a = image.data[i + 3]! / 255;
+    for (let c = 0; c < 3; c++) data[i + c] = Math.round(image.data[i + c]! * a + background[c]! * (1 - a));
+    data[i + 3] = 255;
+  }
+  return { width: image.width, height: image.height, data };
+}
 
 /** 상자 평균으로 줄인다(참고 그림 보관용 — 칩셋 화소로 쓰지 않는다). */
+/**
+ * 참고 그림(회색 바탕)의 물체 화소를 가장 가까운 팔레트 색으로 옮겨 몫을 센다. 그리는 쪽은 참고 그림을 「모양만」 보라고 듣기 때문에
+ * 색을 제 마음대로 바래게 칠하곤 했다 — 실측(2026-10-22): 금빛 건초 참고 그림을 받고도 연한 베이지 덩어리로 그려 1배에서 건초로 안 읽혔다.
+ */
+export function referenceColors(image: RgbaImage, palette: Palette, background: readonly [number, number, number] = REF_BACKGROUND, limit = 8): ReferenceColor[] {
+  const entries = palette.entries.filter((e) => e.rgba[3] > 0);
+  if (!entries.length) return [];
+  const counts = new Map<string, number>();
+  let total = 0;
+  const d = image.data;
+  for (let i = 0; i < d.length; i += 4) {
+    if (d[i + 3]! < 128) continue;
+    const r = d[i]!, g = d[i + 1]!, b = d[i + 2]!;
+    if (Math.abs(r - background[0]) + Math.abs(g - background[1]) + Math.abs(b - background[2]) <= 24) continue;
+    let best = entries[0]!, bestD = Infinity;
+    for (const e of entries) { const dd = (e.rgba[0] - r) ** 2 + (e.rgba[1] - g) ** 2 + (e.rgba[2] - b) ** 2; if (dd < bestD) { bestD = dd; best = e; } }
+    counts.set(best.key, (counts.get(best.key) ?? 0) + 1);
+    total += 1;
+  }
+  if (!total) return [];
+  const hex = (e: PaletteEntry) => "#" + [e.rgba[0], e.rgba[1], e.rgba[2]].map((v) => v.toString(16).padStart(2, "0")).join("");
+  return [...counts].map(([key, n]) => ({ key, hex: hex(palette.byKey.get(key)!), share: Math.round((n / total) * 100) }))
+    .filter((c) => c.share >= 4).sort((a, b) => b.share - a.share).slice(0, limit);
+}
+
 function shrinkImage(image: RgbaImage, maxSide: number): RgbaImage {
   const factor = Math.max(image.width, image.height) / maxSide;
   if (factor <= 1) return image;
@@ -127,6 +172,8 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
   const rounds = new Map<string, WorkshopRound>();
   const queue: { roundId: string; letter: string }[] = [];
   const running = new Map<string, AbortController>();
+  /** 마무리 중인 장에 들어온 다시 그리기(장 키 → 고칠 점) */
+  const redrawAfter = new Map<string, string>();
   const writes = new Map<string, Promise<void>>();
   let idleWaiters: (() => void)[] = [];
 
@@ -164,7 +211,14 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       const controller = new AbortController();
       running.set(runKey(next.roundId, next.letter), controller);
       void runOne(round, runOf(round, next.letter), controller.signal).finally(() => {
-        running.delete(runKey(next.roundId, next.letter));
+        const key = runKey(next.roundId, next.letter);
+        running.delete(key);
+        // 마무리 중에 받은 다시 그리기(redrawRun) — 이제 돌린다.
+        const later = redrawAfter.get(key);
+        if (later !== undefined) {
+          redrawAfter.delete(key);
+          void api.redrawRun(next.roundId, next.letter, later);
+        }
         pump();
         settleIdle();
         options.onStatus?.();
@@ -217,11 +271,15 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
   async function makeReference(round: WorkshopRound, item: WorkshopItem, run: WorkshopRun, signal: AbortSignal): Promise<string[]> {
     const describe = runner.referenceDescribe?.(item) ?? null;
     if (!describe || !env.referenceImage) {
-      round.reference = { status: "none", tries: 0, note: describe ? "참고 그림 없이 그림 — 그림을 만들 수 있는 계정이 연결되지 않았다" : "참고 그림 없이 그림 — 이 종류는 참고 단계가 없다" };
+      round.reference = { status: "none", tries: 0, note: describe ? "참고 그림 없이 그림 — 그림을 만들 수 있는 계정이 연결되지 않았다" : item.noReference ? "참고 그림 없이 그림 — 가는 기둥(가로등·깃대·팻말)은 윗면이 없어 참고 그림이 시점 검사를 못 넘는다(크기 사전 reference:false)" : "참고 그림 없이 그림 — 이 종류는 참고 단계가 없다" };
       void save(round);
       return [];
     }
-    const prompt = refPrompt(describe, item.gateKind, runner.referenceStyleNote === undefined ? undefined : perItem(runner.referenceStyleNote, item));
+    // 견본(시점·화풍, 물체 비율 캔버스)을 붙일 때만 「붙인 그림」을 말하는 STYLE_NOTE 를 붙인다 — 예전에는 그림 없이 그 문장만 갔다.
+    const anchor = runner.referenceAnchor ? await runner.referenceAnchor(item, env).catch(() => null) : null;
+    const styleNote = anchor && runner.referenceStyleNote !== undefined ? perItem(runner.referenceStyleNote, item) : undefined;
+    const prompt = refPrompt(describe, item.gateKind, styleNote, item.refTop);
+    const anchorNote = anchor ? env.encodePng(shrinkImage(await env.loadImage(anchor), ANCHOR_STORE_PX)) : undefined;
     const names = refPromptNames(prompt);
     if (names.length) {
       round.reference = { status: "failed", prompt, tries: 0, note: `참고 그림 없이 그림 — 지시문에 쓰면 안 되는 이름(${names.join(", ")})이 들어 있다` };
@@ -238,19 +296,20 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
     let last: RoundReference["view"];
     let source = "";
     let tries = 0;
+    let colors: ReferenceColor[] = [];
     const finish = (): string[] => {
       const [first, ...more] = accepted;
       round.reference = first
-        ? { status: "ok", dataUrl: first.dataUrl, prompt, view: first.view, tries, ...(more.length ? { more } : {}), ...(rejected.length ? { rejected } : {}), source,
+        ? { status: "ok", dataUrl: first.dataUrl, prompt, view: first.view, tries, ...(more.length ? { more } : {}), ...(rejected.length ? { rejected } : {}), ...(anchorNote ? { anchor: anchorNote } : {}), ...(colors.length ? { colors } : {}), source,
           note: `참고 그림 ${accepted.length}장(시점 검사 통과, 윗면 ${accepted.map((a) => `${a.view.topShare}%`).join("·")}) — 참고용, 설치 안 됨` }
-        : { status: "failed", prompt, view: last, tries, rejected, source, note: `참고 그림 없이 그림 — 참고 그림 ${tries}장이 모두 시점 검사에서 떨어졌다(${last?.view ?? "?"}, 윗면 ${last?.topShare ?? 0}%)` };
+        : { status: "failed", prompt, view: last, tries, rejected, ...(anchorNote ? { anchor: anchorNote } : {}), source, note: `참고 그림 없이 그림 — 참고 그림 ${tries}장이 모두 시점 검사에서 떨어졌다(${last?.view ?? "?"}, 윗면 ${last?.topShare ?? 0}%)` };
       void save(round);
       return accepted.map((a) => a.dataUrl);
     };
     for (let n = 0; n < need; n++) {
       for (let attempt = 1; attempt <= triesEach; attempt++) {
         if (signal.aborted) throw new Cancelled();
-        const made = await env.referenceImage(prompt, signal);
+        const made = await env.referenceImage(prompt, signal, anchor ? { image: anchor } : undefined);
         if (!made) {
           if (accepted.length) return finish();
           round.reference = { status: "none", prompt, tries, note: "참고 그림 없이 그림 — 그림을 만들 수 있는 계정이 연결되지 않았다" };
@@ -259,7 +318,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
         }
         tries += 1;
         source = made.source;
-        const small = shrinkImage(await env.loadImage(made.dataUrl), REF_STORE_PX);
+        const small = shrinkImage(flattenImage(await env.loadImage(made.dataUrl)), REF_STORE_PX);
         const dataUrl = env.encodePng(small);
         const viewText = await call("workshop-review", [
           { role: "system", content: REF_VIEW_PROMPT },
@@ -267,6 +326,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
         ], run, round, signal);
         last = parseRefViewCheck(viewText, minTop);
         if (last.ok) {
+          if (!accepted.length) colors = referenceColors(small, runner.palette(item));
           accepted.push({ dataUrl, view: last });
           break;
         }
@@ -324,7 +384,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
   async function lookLoop(ctx: DrawContext, messages: ChatMessage[], text: string, first: { grid: Grid; note: string; topRows: number | null }, run: WorkshopRun, round: WorkshopRound, signal: AbortSignal): Promise<{ grid: Grid; note: string; topRows: number | null }> {
     let best = { grid: first.grid, note: first.note, topRows: first.topRows };
     let lastText = text;
-    const max = perItem(runner.looks ?? 0, ctx.item);
+    const max = Math.min(perItem(runner.looks ?? 0, ctx.item), round.looks ?? Number.POSITIVE_INFINITY);
     for (let look = 1; look <= max; look++) {
       messages.push({ role: "assistant", content: lastText }, await runner.lookMessage!(ctx, best.grid, env, look, max));
       lastText = await call("workshop-draw", messages, run, round, signal);
@@ -369,7 +429,40 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       notes: feedback.map((f) => f.note).filter(Boolean).slice(-5),
       reference: reference[0] ?? null,
       references: reference,
+      gated: round.gate === "receipt",
+      ...(reference.length && round.reference?.colors?.length ? { referenceColors: round.reference.colors } : {}),
     };
+  }
+
+  /**
+   * 관문 영수증 한 장(호스트). done 은 던지지 않는다: 통과 = pass, 영수증 불통과 = 코드 GATE, 돌릴 수 없음·오류 = 코드 GATE_UNAVAILABLE.
+   * 그만두기(signal)는 그대로 던진다.
+   */
+  function startGate(item: WorkshopItem, grid: Grid, palette: Palette, signal: AbortSignal): { done: Promise<{ pass: boolean; code: string; advice: GateAdvice; fix?: string }>; stop: () => void } {
+    const controller = new AbortController();
+    const onAbort = () => controller.abort();
+    signal.addEventListener("abort", onAbort, { once: true });
+    const kind = gateKindOf(item);
+    const done = (async (): Promise<{ pass: boolean; code: string; advice: GateAdvice; fix?: string }> => {
+      if (!env.objectGate) return { pass: false, code: "GATE_UNAVAILABLE", advice: { state: "refer" as const, kind, reasons: ["그림 확인기를 쓸 수 없는 환경"], topRows: null, readsAs: "" } };
+      try {
+        const png = env.encodePng(cropOpaque(renderGrid(grid, palette)));
+        const result = await env.objectGate({ png, kind, name: item.title, label: item.key, ...(item.tilesetId ? { chipset: item.tilesetId } : {}) }, controller.signal);
+        const advice: GateAdvice = {
+          state: result.final === "pass" ? "pass" : result.verdict === "refer" ? "refer" : "fail", kind, reasons: [...result.reasons].slice(0, 4), topRows: null, readsAs: "",
+          receipt: { final: result.final, verdict: result.verdict, reasons: [...result.reasons].slice(0, 4), pixelSha256: result.pixelSha256, profileHash: result.profileHash, refer: result.refer ? { verdict: result.refer.verdict, judge: result.refer.judge } : null },
+        };
+        return { pass: result.final === "pass", code: "GATE", advice, ...(result.fix ? { fix: result.fix } : {}) };
+      } catch (error) {
+        if (signal.aborted) throw error;
+        const message = error instanceof Error ? error.message : String(error);
+        return { pass: false, code: "GATE_UNAVAILABLE", advice: { state: "refer" as const, kind, reasons: [message.slice(0, 160)], topRows: null, readsAs: "" } };
+      } finally {
+        signal.removeEventListener("abort", onAbort);
+      }
+    })();
+    done.catch(() => undefined);
+    return { done, stop: () => controller.abort() };
   }
 
   async function runOne(round: WorkshopRound, run: WorkshopRun, signal: AbortSignal): Promise<void> {
@@ -408,6 +501,8 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
         run.topRows = drawn.topRows;
         run.status = "reviewing";
         void save(round);
+        // 관문 영수증(판이 요구할 때): 블라인드 검수와 **함께** 시작한다 — 검수가 떨어지면 끈다(호스트 호출을 아낀다). 순서대로 하면 첫 결과가 그만큼 늦다.
+        const gating = round.gate === "receipt" ? startGate(item, drawn.grid, ctx.palette, signal) : null;
         const reviewCtx = {
           item, palette: ctx.palette, direction: ctx.direction, attempt, maxAttempts,
           candidate: drawn.grid, current: ctx.current, anchors: ctx.anchors, previousVerdict: lastVerdict,
@@ -423,15 +518,29 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
             parsed = { verdict: "FAIL", codes: ["READ"], top: "", topRows: null, reasons: "검수 답을 읽지 못했다", fix: "", worse: false };
           }
         }
-        const verdict = runner.gate(item, parsed);
+        let verdict = runner.gate(item, parsed);
+        let gateStop = false;
+        if (gating) {
+          if (verdict.verdict !== "PASS") gating.stop();
+          else {
+            const checked = await gating.done;
+            run.gate = checked.advice;
+            if (!checked.pass) {
+              // 영수증 불통과·확인 불가 — 이 장은 여기서 끝(엔진 안에서 다시 그리지 않는다). 고칠 점은 영수증 이유.
+              verdict = { ...verdict, verdict: "FAIL", codes: [checked.code], reasons: `관문: ${checked.advice.reasons.join(" / ")}`, fix: checked.fix || checked.advice.reasons.join(" / ") };
+              gateStop = true;
+            }
+          }
+        }
         run.verdict = verdict;
         run.attempts.push({ attempt, hard: [], verdict, grid: drawn.grid });
-        if (verdict.verdict === "PASS") break;
+        if (verdict.verdict === "PASS" || gateStop) break;
         previousGrid = drawn.grid;
         lastVerdict = verdict;
       }
       // 3/4 관문 조언 배지(2026-10-21): 다 그린 후보를 object-gate 규칙으로 한 번 잰다. 굽기를 막지 않는다 — 실패해도 장은 끝난다.
-      if (run.grid && runner.adviseMessages && runner.parseAdvice) {
+      // 영수증 판(round.gate)은 위에서 영수증을 받았으므로 조언 호출을 하지 않는다(같은 질문을 두 번 묻지 않는다).
+      if (run.grid && round.gate !== "receipt" && runner.adviseMessages && runner.parseAdvice) {
         try {
           const adviceText = await call("workshop-review", await runner.adviseMessages(item, run.grid, runner.palette(item), env), run, round, signal);
           run.gate = runner.parseAdvice(item, adviceText);
@@ -471,12 +580,14 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
     error: null, errorKind: null, calls: 0, redrawNote: "", startedAt: null, finishedAt: null,
   });
 
-  return {
+  const api: WorkshopEngine = {
     async startRound(item, startOptions = {}) {
       blocked = null;
       const round: WorkshopRound = {
         id: newId(), projectKey, harnessId: runner.harnessId, itemKey: item.key, note: startOptions.note ?? "", created: now(),
         runs: runner.directions(item).slice(0, Math.max(1, Math.min(runner.candidates, Math.round(startOptions.count ?? runner.candidates)))).map((d) => freshRun(d.letter, d.text)),
+        ...(startOptions.looks !== undefined ? { looks: Math.max(0, Math.round(startOptions.looks)) } : {}),
+        ...(startOptions.gate ? { gate: startOptions.gate } : {}),
         ...(startOptions.reference === false ? { reference: { status: "none" as const, tries: 0, note: "참고 그림 없이 그림 — 이 판은 참고 단계를 껐다" } } : {}),
       };
       await save(round);
@@ -488,7 +599,14 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       const round = rounds.get(roundId) ?? (await store.getRound(roundId));
       if (!round) throw new Error(`판 ${roundId} 가 없다`);
       // 같은 글자가 진행 중이거나 줄 서 있으면 겹쳐 돌리지 않는다(두 번째 실행이 첫 실행의 취소 줄을 지운다).
-      if (running.has(runKey(roundId, letter)) || queue.some((q) => q.roundId === roundId && q.letter === letter)) return;
+      // 단, 이미 끝난(done·failed) 장이 아직 마무리(저장·running 해제) 중이면 그 마무리 뒤에 다시 그린다 — 끝남 알림을 받은 쪽(작업 줄)이
+      // 바로 부르면 running 에 아직 남아 있어 말없이 버려졌고, 「한 번에 만들기」 다시 그리기가 영영 시작되지 않았다(2026-10-23 실측).
+      if (queue.some((q) => q.roundId === roundId && q.letter === letter)) return;
+      if (running.has(runKey(roundId, letter))) {
+        const status = runOf(round, letter).status;
+        if (status === "done" || status === "failed") redrawAfter.set(runKey(roundId, letter), note);
+        return;
+      }
       const old = runOf(round, letter);
       const run = { ...freshRun(letter, old.direction), grid: old.grid, verdict: old.verdict, redrawNote: note };
       round.runs = round.runs.map((r) => (r.letter === letter ? run : r));
@@ -549,4 +667,5 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       queue.length = 0;
     },
   };
+  return api;
 }

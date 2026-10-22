@@ -64,7 +64,7 @@ for(const entry of cases){
     videoOrigin=Date.now();
     let editor=await newEditor(browser,host.url,projectDir,{}, {bootTimeoutMs:360000,recordVideo:{dir:resolve(dir,'raw-video'),size:{width:1440,height:960}},async onPage(p,c){
       page=p;context=c;video=p.video();const pending=new Set();
-      await p.addInitScript(()=>{localStorage.setItem('oprn:editor-ui-mode','standard');localStorage.setItem('oprn:first-edit-guide:seen','1');window.__capBootErrors=[];window.addEventListener('vite:preloadError',e=>window.__capBootErrors.push(String(e.payload?.stack??e.payload)));});
+      await p.addInitScript((hide)=>{if(hide)window.__oprnHideStartMarker=true;localStorage.setItem('oprn:editor-ui-mode','standard');localStorage.setItem('oprn:first-edit-guide:seen','1');window.__capBootErrors=[];window.addEventListener('vite:preloadError',e=>window.__capBootErrors.push(String(e.payload?.stack??e.payload)));},process.env.HARNESS_START_MARKER!=='1');
       p.on('pageerror',error=>{proof.errors.push(error.message);persist();});
       p.on('crash',()=>{proof.errors.push('Browser page crashed');persist();void p.close();});
       p.on('request',r=>{if(r.method()==='GET')pending.add(new URL(r.url()).pathname);});

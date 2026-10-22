@@ -118,9 +118,9 @@
    "x": 5,
    "y": 3,
    "toMapId": "jp-city-mansion-corridor",
-   "toX": 18,
-   "toY": 4,
-   "direction": "left"
+   "toX": 19,
+   "toY": 5,
+   "direction": "down"
   }
  ]
 }

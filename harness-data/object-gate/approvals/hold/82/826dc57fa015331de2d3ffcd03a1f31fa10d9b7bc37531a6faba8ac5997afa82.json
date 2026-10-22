@@ -1,0 +1,19 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "826dc57fa015331de2d3ffcd03a1f31fa10d9b7bc37531a6faba8ac5997afa82",
+ "profileHash": "4d8774b517f41638",
+ "kind": "column",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-22)",
+ "decidedAt": "2026-10-22T11:29:48.859Z",
+ "by": "delegated",
+ "delegatedBy": "user 2026-10-22",
+ "evidence": "harness-data/object-gate/vqa/workshop-objectgen-5.opus-vqa-r4.json",
+ "via": "review-page",
+ "reasons": [
+  "3/4: 큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)",
+  "3/4: 기둥 머리가 타원 판이 아님(위아래 둥글림 false, 몸통보다 9 튀어나옴 < 6) (3/4)"
+ ],
+ "note": "묶음 허용: 조수 공방 기물 8 (칸 정하기·큰 물건) — 조수 공방 기물 8 — 사용자 위임·fresh Opus 적대 VQA r4 major 0 (r3 major 4 수정 후) — delegated by user to supervisor 2026-10-22; Opus VQA receipt harness-data/object-",
+ "sig": "6481f61481f41945d3069328c9c0ed98ef88b999d3f459cdbe572ca2fef0ac88"
+}

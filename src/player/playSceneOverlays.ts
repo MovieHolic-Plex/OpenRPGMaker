@@ -7,7 +7,7 @@ import { store } from "@/project/store";
 import { gameOverOutcome, resolveGameOverSettings, type GameOverSettings, DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID } from "@/project/cinematicSettings";
 import { createTerminalScene, type TerminalScene } from "@/player/terminalScene";
 import type { EndingPresentation } from "@/project/cinematicSettings";
-import { isCinematicAdvanceKey, normalizeKey } from "@/player/keyBindings";
+import { isCancelKey, isCinematicAdvanceKey, normalizeKey } from "@/player/keyBindings";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
@@ -32,6 +32,10 @@ export function endingSegmentOf(endingId: string | undefined): { readonly kind: 
   if (!match) return undefined;
   return { kind: match[1]!.toLowerCase() === "act" ? "act" : "chapter", number: Number(match[2]) };
 }
+
+/** Credits read at roughly 24 px/s; holding a confirm key fast-forwards 4x. */
+const CREDITS_SPEED_PX_PER_SEC = 24;
+const CREDITS_FAST_RATE = 4;
 
 export function showRuntimeOverlay(
   scene: PlaySceneContext,
@@ -444,7 +448,13 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
       epilogue.append(badge);
     }
     epilogue.append(textNode("div", "ending-kicker", endingKicker(presentation)));
-    epilogue.append(textNode("h1", "ending-heading", title || endingText("ending.heading")));
+    // 「본제 · 부제」 이름은 구분점에서 줄을 나눈다 — 점이 줄 끝에 매달리지 않게 점은 빼고 부제를 둘째 줄로 보낸다.
+    const heading = textNode("h1", "ending-heading", "");
+    (title || endingText("ending.heading")).split(/\s+[·・•]\s+/).forEach((part, index) => {
+      if (index > 0) heading.append(document.createElement("br"));
+      heading.append(document.createTextNode(part));
+    });
+    epilogue.append(heading);
     const body = message || cg?.epilogue;
     if (body) epilogue.append(textNode("div", "ending-message", body));
     terminal.root.append(epilogue);
@@ -485,22 +495,30 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     const viewport = textNode("div", "ending-credits", "");
     const roll = textNode("div", "ending-credits-roll", copy);
     viewport.append(roll); terminal.root.append(viewport);
-    // 첫 줄이 화면 아래 절반에서 바로 보이게 시작한다 — 아래 끝에서 올라오면 처음 몇 초가 빈 화면이었다(폴른 스타 가혹 검수 r6).
-    const start = Math.round(viewport.clientHeight * 0.55);
-    const distance = start + roll.scrollHeight;
-    const duration = Math.max(12000, distance / 12 * 1000);
+    // 롤 첫 줄이 0초부터 마스크가 불투명한 구간 안에 보이게 아래 가장자리 밖이 아니라 위쪽 1/3 지점에서 출발한다(VQA R8).
+    const startOffset = Math.round(viewport.clientHeight * .3);
+    const distance = startOffset + roll.scrollHeight;
+    const duration = Math.max(8000, distance / CREDITS_SPEED_PX_PER_SEC * 1000);
     terminal.root.style.setProperty("--credits-duration", `${duration}ms`);
-    terminal.root.style.setProperty("--credits-start", `${start}px`);
+    terminal.root.style.setProperty("--credits-start", `${startOffset}px`);
     terminal.root.style.setProperty("--credits-end", `${-roll.scrollHeight}px`);
     const hint = textNode("div", "game-over-hint", endingText(terminal.reducedMotion ? "ending.creditsRead" : "ending.creditsSkip"));
     terminal.root.append(hint);
     let finished = false;
     const finishOnce = (): void => { if (finished || terminal.signal.aborted) return; finished = true; terminal.keys(); finish(); };
-    if (!terminal.reducedMotion) void terminal.wait(duration).then(alive => { if (alive) finishOnce(); });
+    const rollAnimation = terminal.reducedMotion ? undefined : roll.getAnimations()[0];
+    if (rollAnimation) void rollAnimation.finished.then(() => finishOnce(), () => undefined);
+    else if (!terminal.reducedMotion) void terminal.wait(duration).then(alive => { if (alive) finishOnce(); });
+    // Holding a confirm key fast-forwards the roll; releasing it returns to reading speed.
+    const setFast = (fast: boolean): void => { if (rollAnimation && rollAnimation.playState === "running") rollAnimation.playbackRate = fast ? CREDITS_FAST_RATE : 1; };
+    terminal.root.ownerDocument.addEventListener("keyup", event => { if (isCinematicAdvanceKey(normalizeKey(event.key))) setFast(false); }, { signal: terminal.signal });
     if (!await terminal.wait(800)) return;
     terminal.keys(event => {
       if (["PageDown", "PageUp"].includes(event.key) && terminal.reducedMotion) viewport.scrollTop += (event.key === "PageUp" ? -1 : 1) * viewport.clientHeight * .9;
-      if (isCinematicAdvanceKey(normalizeKey(event.key))) finishOnce();
+      const key = normalizeKey(event.key);
+      if (terminal.reducedMotion) { if (isCinematicAdvanceKey(key)) finishOnce(); return; }
+      if (isCancelKey(key)) finishOnce();
+      else if (isCinematicAdvanceKey(key)) setFast(true);
     });
   };
   void run();

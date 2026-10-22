@@ -1,0 +1,23 @@
+{
+ "round": 13,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "abi-stairs-v5",
+ "images": "http://mdc-server:18301/jp-stairs-1/interior-v5/r13/kits-4x.png (+ scene 1x/3x and before/)",
+ "pieces": [
+  "stairs up stone",
+  "stairs up wood",
+  "stairs down",
+  "stairwell down"
+ ],
+ "png_sha256": {
+  "stairs up stone": "2184e0fa6b30f14786a325a65618661658150649200c6bd01a1b8b7adbdf973a",
+  "stairs up wood": "dc560481d413eb739ffcaa81265f5a6abb1b9e8d57e8581465a3bca9d152c590",
+  "stairs down": "1144e4fd87dc5e39ef176df58bf462daa2e709afd28bafb8858c55db39710034",
+  "stairwell down": "4fe9ce2d3c495ee65dead824becf7a186e3278daf1f89d4f8250917f201ef980"
+ },
+ "rubric": "axis 2 (style/palette/3/4 fit) + axis 6 (1x readability incl. up/down direction)",
+ "majors": 0,
+ "verdict": "PASS",
+ "summary": "P1 up stone yes/yes: minors (tread:riser ~50/50 can look shutter-like, no inset of top treads, bottom tread nubs).\nP2 up wood yes/yes: minors (dark risers louvred, salmon nubs on newels, no beam shadow row). Clear improvement over BEFORE (no opening before).\nP3 stairs down yes/yes: minors (W/E rails thin, last row 1 value darker, slight purple tint). Value structure reads clearly as going down.\nP4 stairwell down yes/yes: minors (east rail stops earlier, entry band slightly dark, N rail crowds wainscot). Ramp + narrowing reads as going down.\nSCENE: all four better than BEFORE; no wall-face cutting; light consistent.\nAXIS2 7, AXIS6 7. MAJORS 0\n",
+ "superseded": "art changed after r13 to clear object-gate style FAILs; r13 does not cover the shipped pixels — see r17"
+}

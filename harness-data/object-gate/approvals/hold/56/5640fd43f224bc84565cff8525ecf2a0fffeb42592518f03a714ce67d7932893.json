@@ -14,5 +14,7 @@
  "note": "town wall r5 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/beodeul-town-wall-r5/receipt.json | 기록 정정 2026-10-22: by human → delegated (위임 허용을 옛 서버가 사람 클릭으로 적었다)",
  "delegatedBy": "user (2026-10-21, gate decisions delegated to supervisor)",
  "evidence": "harness-data/object-gate/vqa/beodeul-town-wall-r5/receipt.json",
- "sig": "12c93bc53ba438de9b85d7e3776dae4aaf840bea2b4080ee8a2e6886b6efec94"
+ "supersededBy": "beodeul town wall 3rd edition r21 (gate18 18 images, vqa/beodeul-town-wall-3e-r21)",
+ "supersededAt": "2026-10-22T17:04:51.261Z",
+ "sig": "3a7138097da3c8525b88e88a46f2f1e477e647eaf6cc84bf45d5456152a00032"
 }

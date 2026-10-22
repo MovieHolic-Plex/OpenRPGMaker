@@ -195,6 +195,8 @@ InferHub `deepseek-v4.1-flash` 는 `low, high, max` 라 `max` 는 그대로 통�
 
 ## 시각 검수
 
+검수 캡처와 matrix-score 그림은 편집기 전용 시작 위치 표시를 빼고 찍는다(`__oprnHideStartMarker`, `renderReviewMapPng`). 표시가 필요하면 `HARNESS_START_MARKER=1`.
+
 검수자는 먼저 요청과 실제 그림을 비교한다. 조수의 자기평가를 시각 판정의 근거로 대신 쓰지 않는다. 런타임은 이동/대화 중 가림, 잘림, 글자·분기·금액을 본다. 결함은 위치·재현 장면을 적는다. 실제로 본 파일만 다음처럼 기록한다.
 
 ```bash

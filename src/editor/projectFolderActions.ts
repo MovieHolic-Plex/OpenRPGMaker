@@ -28,7 +28,14 @@ export async function openProjectFolder(): Promise<boolean> {
   const bridge = startBridge();
   if (!bridge) {
     if (!("showDirectoryPicker" in window)) return false;
-    const directory = await (window as Window & { showDirectoryPicker: () => Promise<FileSystemDirectoryHandle> }).showDirectoryPicker();
+    let directory: FileSystemDirectoryHandle;
+    try {
+      directory = await (window as Window & { showDirectoryPicker: () => Promise<FileSystemDirectoryHandle> }).showDirectoryPicker();
+    } catch (error) {
+      // 사용자가 폴더 선택 창을 닫은 것 — 오류가 아니다. 브라우저 영문 예외 원문을 토스트로 보이지 않는다.
+      if (error instanceof DOMException && error.name === "AbortError") return false;
+      throw error;
+    }
     const file = await (await directory.getFileHandle("project.json")).getFile();
     const project = JSON.parse(await file.text()) as Project;
     if (!project || typeof project !== "object" || !project.meta) throw new Error("선택한 폴더에 올바른 project.json이 없습니다.");

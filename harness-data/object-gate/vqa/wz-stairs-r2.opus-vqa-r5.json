@@ -1,0 +1,22 @@
+{"schema":"wz-stairs-vqa/1","round":5,"judge":"claude-opus fresh adversarial subagent","pieces":{
+"wz-castle-stair-up":{"reads_as_described":true,"direction_correct":true,"findings":[
+{"severity":"minor","finding":"The door head reads as a flat stepped lintel with a dark band, not a pointed Gothic arch; at 1x the frame looks rectangular like the other UP kits.","fix":"Raise the frame's centre 2px and step the inner edge 1px per row toward the apex so it forms a visible point, using the stone highlight on the left slope and a mid shade on the right."},
+{"severity":"minor","finding":"No floor shadow at the foot of the bottom row, so the first steps look pasted on the flagstones instead of standing on them.","fix":"Add a 1px darkest-floor shade along the east side and a 1px band under the bottom riser (light comes from the upper left)."}]},
+"wz-castle-stair-down":{"reads_as_described":true,"direction_correct":true,"findings":[
+{"severity":"minor","finding":"The north balustrade stands frontally above the hole and the side rails run full height, so at 1x the 2x2 can be read as a stone hearth or fireplace before it reads as a floor opening.","fix":"Shorten the north balusters to 2px, give the north cap a 1px lit top plane, and continue the floor flagstone joints 1px inside the outer rim on the west and east sides so the rim sits in the floor plane."},
+{"severity":"minor","finding":"The inner west and east walls do not visibly widen with depth; the inside reads as a rectangular box.","fix":"Step the inner wall shade 1px inward on each side per tread going north (darkest at the north tread)."}]},
+"wz-clock-stair":{"reads_as_described":true,"direction_correct":true,"findings":[
+{"severity":"minor","finding":"At 1x the brass rivets in the frame read as a dotted stitch or string of lights, not rivets.","fix":"Space the rivets every 3px instead of every 2px and give each one a 1px dark iron pixel below it as a shadow."},
+{"severity":"minor","finding":"There is no shadow where the bottom row meets the floor.","fix":"Add a 1px dark floor band under the bottom tread and on the east side."}]},
+"wz-hd-stairs-down":{"reads_as_described":true,"direction_correct":true,"findings":[
+{"severity":"minor","finding":"The timber frame uses the same oak ramp as the bookshelves on either side, so the stair partly blends into the shelf row in the place.","fix":"Darken the frame posts one palette step, or add a 1px dark gap between the frame and each bookshelf; keep the warm lit top treads as the main cue."}]},
+"wz-owl-stair-up":{"reads_as_described":true,"direction_correct":true,"findings":[
+{"severity":"minor","finding":"The white dropping pixel on the middle tread is the brightest pixel in the piece and pulls the eye away from the lit top treads.","fix":"Change it to the light-stone tone and keep at most one white pixel."}]},
+"wz-owl-stair-down":{"reads_as_described":true,"direction_correct":true,"findings":[
+{"severity":"minor","finding":"Like the castle down stair, the wooden frame at 1x/3x can be read as a hearth or cage. The straw on the nearest tread is too small to help.","fix":"Shorten the north balusters, give the north rail a lit top plane, and run 1px of floor stone inside the outer rail on the west and east sides."}]}
+},
+"places":[
+{"severity":"minor","finding":"Clocktower: the stair sits correctly against the north wall at the west end, with no wall cut-through, but there is no floor shadow at its foot.","fix":"Add a 1px shade under and east of the bottom row, as for the piece."},
+{"severity":"minor","finding":"Owlery: the down stairwell at (1,8) is tight against the west wall pilaster, so its west rail nearly merges with the wall edge at 1x.","fix":"Leave a 1px floor gap, or darken the rail's west outline pixel so the rail separates from the pilaster."},
+{"severity":"minor","finding":"Honeydukes: the stair fits between the bookshelves cleanly. It looks slightly like a third shelf (see the piece finding).","fix":"See the wz-hd-stairs-down fix."}],
+"axis2":8,"axis6":8,"majors_total":0,"overall":"PASS"}

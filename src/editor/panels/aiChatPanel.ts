@@ -50,6 +50,7 @@ import {
 } from "@/editor/agentBlueprint";
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
+import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { filterToolCategories, openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
 import type { RegionTaskOptions, RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
@@ -92,6 +93,7 @@ import { el } from "@/util/dom";
 import { mapRunQueue, type MapRunTicket } from "@/editor/aiMapRunQueue";
 import { createMapRunCard, type MapRunCard } from "./aiMapRunCard";
 import { createFeatureChecklistView } from "./aiFeatureChecklist";
+import { FEATURE_POLISH_DEFAULT, FEATURE_POLISH_TOOLS } from "@/ai/piAgent/featureReview";
 import { sideThreads } from "./aiSideThreads";
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { genId } from "@/util/id";
@@ -2098,6 +2100,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     viewNavigation: plan.viewNavigation === true,
     readOnly: plan.readOnly,
     routineEdit: plan.routineEdit,
+    ...(plan.skipPlanTurn ? { skipPlanTurn: true } : {}),
     ...(plan.routingAudit ? { routingAudit: plan.routingAudit } : {}),
     planOnly: plan.planOnly,
     maxTurns: plan.maxTurns,
@@ -2117,7 +2120,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     /** 평문 턴의 단계 기록기 — 의도 선언까지 한 기록기에 담아야 total 이 턴 벽시계 전체를 덮는다.
      *  단계는 서로 중첩된다(checkpoint 는 exec·review 안에서 돌고, 병렬 그룹은 겹친다) —
      *  단계 합은 total 과 맞지 않는다. 표에서 더하지 마라. */
-    readonly timing?: TurnTimingRecorder }): Promise<void> => {
+    readonly timing?: TurnTimingRecorder;
+    /** 다듬기 실행(확인표의 「다듬기」 단추) — 계획 턴 없이 1배 확인·독립 비평→고치기를 길게 돈다. */
+    readonly polish?: import("@/ai/piAgent/featureReview").FeaturePolishOptions }): Promise<void> => {
     // slotClaimed: 호출자(평문 경로)가 의도 분류 전에 이미 슬롯을 잡았다. 그 경우 turnBusy=true 는
     // «다른 턴이 점유 중» 이 아니라 «이 턴의 분류 단계» 다 — 여기서 다시 거부하면 자기 턴을 죽인다.
     if (turnBusy && opts?.slotClaimed !== true) {
@@ -2155,7 +2160,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const storeCards: StoreCardRequest[] = [];
     const turnConversation = conversationId;
     // 요청 특징 확인표 — 짓기 턴에서 조수가 적은 항목과 1배 확인 바퀴별 결과(aiFeatureChecklist.ts).
-    const featureChecklist = createFeatureChecklistView((element) => { log.append(element); followConversationLog(log); });
+    const polishRequest = opts?.polish?.request ?? command.task;
+    const featureChecklist = createFeatureChecklistView((element) => { log.append(element); followConversationLog(log); }, {
+      // 다듬기는 같은 맵 범위로 평소 Pi 턴을 하나 더 보낸다 — 맵 소유권·대기열·중지 단추가 그대로 적용된다.
+      // 다듬을 맵은 앞 턴 확인표가 본 맵이고, 그 맵을 지은 마지막 호출 인자를 함께 넘긴다(다듬기는 새 세션이다).
+      onPolish: ({ mapIds, lastBuilds }) => {
+        if (disposed || turnConversation !== conversationId) return;
+        void runPiTurn({ ...command, task: `[다듬기] ${polishRequest}`, ...(mapIds.length ? { mapIds } : {}) }, "다듬기 — 1배 확인·독립 비평으로 더 고칩니다(최대 30분, 중지 단추로 멈춤)", plan,
+          { polish: { ...FEATURE_POLISH_DEFAULT, request: polishRequest, mapIds, lastBuilds },
+            initialToolNames: [...new Set([...(opts?.initialToolNames ?? []), ...FEATURE_POLISH_TOOLS, ...Object.values(lastBuilds).map((b) => b.tool)])] });
+      },
+    });
     try {
       await runPiCommand(command, {
         onEvent: event => { progress.event(event); featureChecklist.event(event); },
@@ -2196,6 +2211,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }, {
         ...piRunOptionsFor(plan, opts),
         ...(command.goalMode ? { maxTurns: GOAL_MAX_TURNS, timeoutMs: GOAL_TIMEOUT_MS } : {}),
+        // 다듬기: 바퀴마다 모델 차례가 10~20번 든다 — 차례·시간 상한을 다듬기 한도에 맞춘다.
+        ...(opts?.polish ? { polish: opts.polish, timeoutMs: opts.polish.budgetMs + 10 * 60_000, maxTurns: Math.max(plan?.maxTurns ?? 0, 40 + 20 * opts.polish.maxRounds) } : {}),
       });
     } finally {
       progress.finish();
@@ -4013,6 +4030,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const onCommandPaletteKeyDown = (event: KeyboardEvent): void => {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
       event.preventDefault();
+      // 모달(자료집·리소스 관리자 등)이 떠 있으면 열지 않는다 — 입력과 Esc 를 가로채기만 한다.
+      if (hasOpenModalLayer()) return;
       openCommandPalette();
     }
   };

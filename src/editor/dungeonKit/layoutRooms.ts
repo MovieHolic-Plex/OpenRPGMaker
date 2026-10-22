@@ -6,7 +6,8 @@ import type { DungeonDir, DungeonLayout, DungeonRoomInput, DungeonRoomKind, Dung
 import { DUNGEON_DIRS } from "./types";
 
 const DEFAULT_SIZE: Record<DungeonRoomKind, [number, number]> = {
-  entrance: [11, 7], hall: [15, 9], crypt: [12, 8], cell: [12, 7], shrine: [11, 8], boss: [15, 10], storage: [9, 6], vault: [9, 6],
+  // 2026-10-23: 큰 방을 한 단 줄였다 — 홀·보스방이 맨바닥 넓은 방으로 읽혔다(VQA 「빈 바닥 15% 초과」). 빈 바닥은 메우지 않고 줄인다.
+  entrance: [10, 6], hall: [13, 8], crypt: [11, 7], cell: [10, 6], shrine: [11, 8], boss: [13, 9], storage: [9, 6], vault: [9, 6],
   channel: [28, 11], cistern: [13, 10], pump: [10, 8], cavern: [14, 9], lake: [14, 9], grotto: [10, 8], forge: [11, 8], nave: [17, 19],
   junction: [9, 7], stope: [14, 8], depot: [11, 8],
 };

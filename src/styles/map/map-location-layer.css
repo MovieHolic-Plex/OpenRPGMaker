@@ -110,6 +110,7 @@ body[data-editor-tool="pan"] .map-location-layer.is-active:active { cursor: grab
   background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 .map-location-empty-ghost-label {
+  white-space: nowrap;
   padding: 0 var(--space-2);
   border-radius: var(--radius-s);
   background: var(--bg-overlay);

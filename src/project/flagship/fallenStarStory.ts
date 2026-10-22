@@ -60,9 +60,10 @@ export const FALLEN_STAR_ACT1: ChapterSpec = {
       { object: "kit:atlas_biome_interior/hand-interior:star chart", where: "north" },
       { object: "kit:atlas_biome_interior/hand-interior:orrery", where: "center", light: "#ffd890" },
     ],
-    // 숲 북쪽 끝 공터의 금속 「알」. 알 앞 칸이 단서 조사(퍼즐) 자리다. 그을린 흙 자국은 chronoBell.ts 가 둘레에 칠한다.
+    // 숲 북쪽 끝 공터에 누운 뚜껑 달린 별의 관(오프닝 crash 컷의 누운 관). 관 앞 칸이 단서 조사(퍼즐) 자리다. 그을린 흙 자국은 chronoBell.ts 가 둘레에 칠한다.
+    // 세워 둔 SF 냉동 캡슐은 화면 달린 금속 단말기·자판기로 읽혔고 숲 화풍과 어긋났다(VQA r5) — 버들항 돌 관 키트로 바꾼다.
     forest: [
-      { object: "kit:sf_station/sf-cryo-pod", where: "north", mark: "clue", light: "#8ff0ff" },
+      { object: "kit:beodeul_city/bd-pick-aqueduct-sewer-coffin", where: "north", mark: "clue", light: "#8ff0ff" },
     ],
     vault: [
       { object: "kit:beodeul_city/bd-pick-headland-lighthouse-lamp-lens", where: "boss", light: "#a8e0ff" },

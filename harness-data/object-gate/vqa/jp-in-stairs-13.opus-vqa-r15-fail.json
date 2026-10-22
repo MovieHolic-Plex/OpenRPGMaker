@@ -1,0 +1,4 @@
+{"queue":"jp-in-stairs-13","round":15,"judge":"claude-opus-5.5 (fresh subagent, no prior scores)","date":"2026-10-22","verdict":"fail","majors":3,"axis2":6,"axis6":6,
+ "majorFindings":["stairwell-down-wood: cool slate pit walls in a warm wood room read as a stove/box","mc-stairs-up (1 cell): white rack/ladder with louvre-like top steps","of-stairs-up (1 cell): shelf/vent column"],
+ "minorFindings":["even pitch on up stairs","funnel side walls vs oblique view","rails stop mid-hole","as/cs damage weak","cs cones on wainscot","sc east newel against the room wall"],
+ "action":"wood pit on a warm ita ramp to near-black brown; 1-cell up stairs: remove the light lintel (box top), solid 3px+ dark opening, west dark line"}

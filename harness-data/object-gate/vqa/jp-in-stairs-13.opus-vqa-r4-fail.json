@@ -1,0 +1,4 @@
+{"queue":"jp-in-stairs-13","round":4,"judge":"claude-opus-5.5 (fresh subagent, no prior scores)","date":"2026-10-22","verdict":"fail","majors":6,"axis2":7,"axis6":6,
+ "majorFindings":["stairwells (wood, sc, mc, of, as): outlined black box with a bright south sill reads as TV stand / radiator / appliance; only 1-2 treads visible","cs-stairs-up-bare: rolling shutter read"],
+ "minorFindings":["wood treads too saturated vs floor","north rail frame outline makes a wall shelf","side rails stop short of the hole corners","cs curb dashes across south entrance","up stairs pass in every scene"],
+ "action":"stairwell: 4 graded treads (lit nearest, darker north), 3-row pit, lit/dark inner side walls per band, no south sill or outline, rails run to the south corners with 2px newels, top outline removed; wood treads one value down; cs stairs darker raw concrete, 2px side walls, heavy first-riser shadow, fewer specks"}

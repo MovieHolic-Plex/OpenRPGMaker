@@ -119,6 +119,9 @@ export function attachDelayedTooltip(target: HTMLElement, spec: DelayedTooltipSp
     restoreNativeTitle();
   };
   const revealNow = (): void => {
+    // 마우스 클릭으로 생긴 포커스(:focus-visible 아님)나 이 단추가 연 메뉴 위에는 띄우지 않는다 —
+    // 방금 연 팝업의 첫 항목을 덮었다.
+    if (target.getAttribute("aria-expanded") === "true" || !target.matches(":focus-visible")) return;
     cancelPending();
     suppressNativeTitle();
     showDelayedTooltip(target, spec);
@@ -126,8 +129,10 @@ export function attachDelayedTooltip(target: HTMLElement, spec: DelayedTooltipSp
   const onKeyDown = (event: KeyboardEvent): void => {
     if (event.key !== "Escape") return;
     if (active?.target !== target && pendingTarget !== target) return;
-    event.stopPropagation();
     dismiss();
+    // 이 단추가 연 메뉴(aria-expanded)가 있으면 Escape 는 그 메뉴의 것이다 — 툴팁만 닫고 통과시킨다.
+    if (target.getAttribute("aria-expanded") === "true") return;
+    event.stopPropagation();
   };
 
   target.addEventListener("pointerenter", schedule);

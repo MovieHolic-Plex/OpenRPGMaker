@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "43710588c76bcf968bda39ab0d23921f8a48caf95c8366425eebac2413904c9b",
+ "profileHash": "4d8774b517f41638",
+ "kind": "flat",
+ "decision": "allow",
+ "decidedBy": "supervisor (stairs-interior-v5 worker)",
+ "decidedAt": "2026-10-22T12:36:04.745Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/abi-stairs-v5.opus-vqa-r17.json",
+ "via": "review-page",
+ "reasons": [],
+ "note": "delegated by user to supervisor 2026-10-22 — Opus adversarial VQA majors=0",
+ "sig": "1e9280daad969498faed4e9dd00418ad8d61fb34ff888ce47466e37c835d4c9c"
+}

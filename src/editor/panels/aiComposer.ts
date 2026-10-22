@@ -564,6 +564,14 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     if (resolved === "planning") options.onPlanningOpen?.();
     popoverResize?.disconnect();
     positionPopover();
+    if (resolved !== null) {
+      // 메뉴 노드는 재사용되므로 다시 열 때 이전 스크롤·「고급·진단」 펼침이 남지 않게 되돌린다.
+      const reopened = popoverOf(resolved);
+      if (reopened) {
+        reopened.scrollTop = 0;
+        reopened.querySelectorAll<HTMLDetailsElement>("details.ai-command-menu-advanced[open]").forEach((details) => { details.open = false; });
+      }
+    }
     if (resolved !== null && resolved !== "suggest") {
       const popover = popoverOf(resolved);
       if (popover) {

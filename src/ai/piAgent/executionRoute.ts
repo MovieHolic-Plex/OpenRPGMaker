@@ -11,6 +11,7 @@
 import { conceptCardsForText, formatConceptCardNote } from "../conceptCards";
 import { formatWorldmapChoiceNote } from '../worldmapChoiceNote';
 import { formatBeodeulTownNote, type BeodeulTownTarget } from "./beodeulTownRoute";
+import { formatVillageTypeNote, type VillageType } from "../villageTypeCatalog";
 import { formatJpCityNote, type JpCityTarget } from "@/ai/jpCityPolicy";
 import { formatGothicNote, type GothicTarget } from "@/ai/gothicPolicy";
 import { formatInteriorPlusNote, type InteriorPlusTarget } from "@/ai/interiorPlusPolicy";
@@ -55,6 +56,11 @@ export interface PiRunPlan {
   readonly routingAudit?: string;
   /** 기존 의도 선언이 확인한 단순 생성·수정. 별도 계획·시각 검토를 생략할 후보다. */
   readonly routineEdit?: boolean;
+  /**
+   * 별도 Ultrabrain 계획 턴을 건너뛴다 — 실내 짓기(space=interior)는 짓기 턴 안의 확인표 + 1배 검토 루프가 계획·검증을 한다.
+   * 2026-10-22 천문대: 의도 선언이 needsPlan 을 켜자 읽기 전용 계획 턴이 10분 동안 평면을 글로 짜고, 실행 턴이 처음부터 다시 짰다.
+   */
+  readonly skipPlanTurn?: boolean;
   /** 쓰기 툴 없이 조회·보고만 한다(읽기 전용 레벨·계획 턴). */
   readonly readOnly: boolean;
   /** 실행하지 않고 계획만 세운다. Pi 에는 세션 플래너가 없으므로 프롬프트 지시로 만들고, readOnly 와 함께 쓴다. */
@@ -121,6 +127,8 @@ export interface PiIntentNoteInput {
   readonly desertEast?: DesertEastTarget | null;
   /** 요청·대상 맵이 북방 설원(snow_north) 칩셋이고 프로젝트에 칩셋이 있으면 그 대상(snowNorthPolicy). 선사 다음, jp_city 보다 먼저 판정한다. */
   readonly snowNorth?: SnowNorthTarget | null;
+  /** 요청이 마을 종류 표(villageTypeCatalog)의 한 종류면 그 종류 — 칩셋 노트 뒤에 시공 순서·빠진 그림을 붙인다. */
+  readonly villageType?: VillageType | null;
   /**
    * 사용자 문장. 있으면 숲마을 노트에 요청에 가까운 완성 마을 사례([참고 마을])를 붙인다.
    * 2026-09-28: 사례 약 70곳이 Pi 프롬프트·노트·도구 결과 어디에도 없어 모델이 기본값(12채·강변촌)만 썼다.
@@ -164,7 +172,8 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
   const scopeNote = input.selection
     ? formatScopeNote({ mapId: input.selection.mapId, region: input.selection }, input.intent)
     : null;
-  const parts = [conceptNote, worldmapNote, intentNote, villageNote, scopeNote].filter((part): part is string => typeof part === "string" && part.length > 0);
+  const villageTypeNote = input.villageType ? formatVillageTypeNote(input.villageType) : null;
+  const parts = [conceptNote, worldmapNote, intentNote, villageNote, villageTypeNote, scopeNote].filter((part): part is string => typeof part === "string" && part.length > 0);
   return parts.length > 0 ? parts.join("\n") : null;
 }
 

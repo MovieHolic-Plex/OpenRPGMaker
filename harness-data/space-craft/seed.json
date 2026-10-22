@@ -48,7 +48,7 @@
       "families": [
         "oprn-atlas"
       ],
-      "note": "버들항(beodeul_city) 던전 키트로 지은 석조 던전. 허공에 뜬 기물·고아 벽 조각·떠 있는 횃불을 본다(2026-10-14 사용자 스크린샷)."
+      "note": "버들항(beodeul_city) 던전 키트로 지은 석조 던전. 허공에 뜬 기물·고아 벽 조각·떠 있는 횃불을 본다(2026-10-14 사용자 스크린샷). 2026-10-22 dg-* 9건: 조수 던전·동굴 품질 시험(assistant-dungeons)."
     }
   },
   "forbiddenFamilies": [
@@ -315,6 +315,110 @@
         "북쪽 렌즈 성소",
         "가운데 홀",
         "곁방"
+      ]
+    },
+    {
+      "id": "dg-small-cave",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "작은 동굴 하나 만들어 줘.",
+      "requires": [
+        "동굴 벽",
+        "입구"
+      ]
+    },
+    {
+      "id": "dg-goblin-den",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "고블린들이 사는 굴을 만들어 줘. 고블린 몇 마리가 돌아다니고 안쪽에 고블린 대장이 있었으면 해.",
+      "requires": [
+        "동굴",
+        "돌아다니는 적",
+        "대장 방"
+      ]
+    },
+    {
+      "id": "dg-tower3",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "3층짜리 탑 던전을 만들어 줘. 층마다 계단으로 올라가고 꼭대기 층에 보스가 있어.",
+      "requires": [
+        "층 3개",
+        "층 사이 계단",
+        "보스"
+      ]
+    },
+    {
+      "id": "dg-catacomb",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "지하 묘지 던전 만들어 줘. 석관이 놓인 묘실들과 복도가 있고, 가장 안쪽에 보물 방이 있었으면 해.",
+      "requires": [
+        "석관",
+        "복도",
+        "보물 방"
+      ]
+    },
+    {
+      "id": "dg-ice-cave",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "얼음 동굴 던전 만들어 줘.",
+      "requires": [
+        "얼음 바닥·벽"
+      ]
+    },
+    {
+      "id": "dg-lava-cave",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "용암이 흐르는 화산 동굴 던전 만들어 줘.",
+      "requires": [
+        "용암",
+        "다리"
+      ]
+    },
+    {
+      "id": "dg-flooded-temple",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "물에 잠긴 옛 신전 던전을 만들어 줘.",
+      "requires": [
+        "신전 기둥",
+        "물",
+        "걸을 길"
+      ]
+    },
+    {
+      "id": "dg-puzzle",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "레버를 당겨서 닫힌 문을 여는 퍼즐 던전 만들어 줘.",
+      "requires": [
+        "레버",
+        "닫힌 문",
+        "퍼즐 뒤 보상"
+      ]
+    },
+    {
+      "id": "dg-boss-run",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "입구부터 보스방까지 이어지는 던전 하나 만들어 줘. 중간에 보물상자랑 쉬어 가는 방도 있고, 마지막 방에서 보스가 기다려.",
+      "requires": [
+        "보물상자",
+        "쉬는 방",
+        "보스방"
       ]
     }
   ],

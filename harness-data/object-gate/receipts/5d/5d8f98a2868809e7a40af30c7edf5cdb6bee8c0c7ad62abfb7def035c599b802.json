@@ -1,0 +1,465 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5d8f98a2868809e7a40af30c7edf5cdb6bee8c0c7ad62abfb7def035c599b802",
+ "width": 48,
+ "height": 144,
+ "kind": "structure",
+ "name": "snow-covered Roman-style stone square wall tower, 3/4 top-down: crenellated top platform seen from above with a wooden trapdoor and a pennant on a pole, corbel band, tall ashlar front face with corner quoins and three cross-shaped arrow slits, plinth",
+ "label": "beodeul_town_wall/tower_snow",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 15,
+  "tileColorsP90": 19,
+  "darkV5": 57,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 27
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top platform with crenellated parapet (snow floor)",
+      "rows": "0-47",
+      "evidence": "a",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "50-53"
+     },
+     {
+      "part": "wooden trapdoor on platform",
+      "rows": "13-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pennant on pole",
+      "rows": "10-48",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "corbel band with dark openings",
+      "rows": "49-54",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ashlar front face with arrow slits and plinth",
+      "rows": "54-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 90,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-47 show a large snowy platform seen from above, with back and side parapet merlons, a trapdoor, and a pennant (decor). It ends in a bright front-edge line at about row 48, followed by dark corbel and eave shadow at rows 50-53. Below it is a tall ashlar south face of about 90 rows (54-143) with arrow slits and a plinth. The wide top surface and the tall front face make this a three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts are close to the references: 11 visible tones per tile vs 12 and 10, near-flat coverage 5% vs 0%, and only 4% of dark edge pixels are neutral, so the outline is tinted (a grey-blue/brown stone tone) rather than a black sticker line. The tower face has per-block ashlar shading, quoins and cross-shaped slits, and the snowy top has some speckle. Weaknesses: the stone ramp is about 4 steps against the references' 5-6, the stone blocks look uniformly pale grey and repetitive, the snow platform is fairly flat and bright with little internal shading, and the total palette is only 35 colours against 185 and 66. The plinth and corbel band are plain. It is close to the references but a little thinner and flatter, and the small flat patches on the snow top and the wide face leave it just below the bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 11744
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top platform (snow floor with crenellated parapet)",
+      "rows": "1-47",
+      "evidence": "a",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "50-53"
+     },
+     {
+      "part": "corbel band under the platform",
+      "rows": "48-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden trapdoor",
+      "rows": "11-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pennant on pole",
+      "rows": "8-41",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 47,
+    "front_face_rows": 90,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a tower with a large top platform seen from above in rows 1-47. It shows a snowy floor, a crenellated parapet at the back and the side walls, and a trapdoor and pennant standing on it. A bright front-edge line at row 48 is followed by the dark corbel openings in rows 50-53, which act as eave shadow. Below them is a tall ashlar front face in rows 54-143 with quoins, three cross-shaped arrow slits and a plinth. Both the top surface and the front face are clearly present."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is on par with the references on the measured primary facts: 11 visible tones per tile against 12 and 10, 5% near-flat coverage against 0%, and only 4% neutral dark edge pixels, so its outlines lean toward tinted dark grey-blue stone shades rather than a black sticker line. By eye, the ashlar face has individually shaded blocks, mortar lines, speckle, corner quoins, dark cross slits and a plinth, which gives about 5 stone steps. The snow platform has some crenel shading and a trapdoor and pennant, with little flat area. It is lower-contrast and has fewer raw colours (35 against 66 and 185) than the references, and the stone ramp is a bit narrower than the roof ramps. That is acceptable for a pale snow-stone theme, so it reads as slightly lower density rather than shallow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15063
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "snow-covered top platform with crenellated parapet",
+      "rows": "0-46",
+      "evidence": "a",
+      "front_edge_line_row": 47,
+      "eave_shadow_rows": "50-53"
+     },
+     {
+      "part": "corbel band with dark slots under the platform edge",
+      "rows": "47-53",
+      "evidence": "a",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "50-53"
+     },
+     {
+      "part": "wooden trapdoor on platform",
+      "rows": "11-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pennant on pole",
+      "rows": "10-48",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 47,
+    "front_face_rows": 89,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-46 show a large snow-covered platform seen from above, with a crenellated parapet at the back, left and right. The trapdoor and pennant stand on it and count as decor. The platform ends in a white front-edge line at rows 47-48. Corbel slot shadows follow at rows 50-53. Below that, a tall ashlar front face runs from row 54 to about row 142, with quoins, three arrow slits and a plinth. This matches the green top-plus-front-face references, not the rim-only or flat-slab ones."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The measured facts put the candidate in the reference range. It has 11 visible tones per tile against 12 and 10 for the references. Near-flat coverage is 5% against 0%, which is small and not a flat-fill problem. Only 4% of its dark edge pixels are neutral, so the outlines lean toward the material (grey-blue or brown-grey) and are not a uniform black sticker line. By eye, the ashlar face has individually outlined blocks, speckle dots, a darker left edge and light highlights on the quoins. The plinth and crenellations are stepped, and the snow top has a trapdoor and pennant with several tones. The stone ramp is about 5 steps (highlight, light, mid, dark, deep), a little shallower than the roof ramps of the references. The wall face is somewhat low in contrast, and the 35 total colours are far fewer than the references' 185 and 66, but the visible tones match. An artist would accept it next to the references without it looking noticeably thinner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15927
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top platform with crenellated parapet, snow floor",
+      "rows": "0-47",
+      "evidence": "a",
+      "front_edge_line_row": 48,
+      "eave_shadow_rows": "50-53"
+     },
+     {
+      "part": "wooden trapdoor on platform",
+      "rows": "13-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "pennant on pole",
+      "rows": "10-41",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "corbel band under platform",
+      "rows": "48-53",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "ashlar front face with arrow slits and plinth",
+      "rows": "54-143",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 90,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-47 show a large snowy platform seen from above. Its back parapet and merlons are at rows 1-10, the side parapets run along both edges, and the floor holds a trapdoor and a pennant. The platform ends in a bright front-edge line at rows 48-49, followed by a dark corbel and shadow band at rows 50-53. Below that, a tall vertical ashlar face (rows 54-143) carries three arrow slits, quoins and a plinth. This is a clear top surface above a front face of well over 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "Measured facts are close to the references: 11 visible tones per tile against 12 and 10, 5% near-flat coverage, and only 4% neutral dark edge pixels, so the outlines lean toward a tint rather than neutral black. By eye the stone face is a pale grey ashlar with a few block joints, a small number of speckle dots and dark slits. The material ramps have about 4 steps (white, light grey, mid grey, dark grey-brown), against 5-6 in the references, which show per-tile highlights, scalloped roof tiles, plaster speckle and stones shaded one by one. The large front face is fairly uniform and the blocks are mostly drawn with the same value and no individual shading, so it reads somewhat flatter and more regular than the reference stone wall. The snowy top platform is thin on form, with a few crenellation dots, a plain trapdoor and a pennant. The tower is a plain, tall, simple shape, but it is a competent piece. It is still below the reference on shading depth and per-block texture, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 12095
+  }
+ ],
+ "decidedAt": "2026-10-22T16:26:33.783Z",
+ "cells": {
+  "16": [
+   "1c9e3a2d9055e4d6",
+   "3c50e729fdd31c28",
+   "434be02a015aca4e",
+   "44a6af4a04739beb",
+   "44da565aec9b52ee",
+   "4ab6515ee02ed15f",
+   "5503da61a07eb209",
+   "5b66ec7672ba171e",
+   "649e4059d79852cb",
+   "754f714c9f6495f7",
+   "7643317f7b51750f",
+   "7a5675e09733209e",
+   "7c01df17fbef2f38",
+   "84f3ae45b0a22faf",
+   "97cf1fb9fecec3e4",
+   "9a65799fc421c1d6",
+   "a1637c4d92b007fe",
+   "a6a07fb9f2105725",
+   "b2d40b727dcdc19f",
+   "c52ed3e8a95cec76",
+   "c62657b6f68c31f3",
+   "c99a1f5f7b7e9d62",
+   "d047f806839dd734",
+   "d6e242883c8eee13",
+   "dd9544b573303766",
+   "ddc8814bd4d568c9",
+   "ecb04f9a1a80bd03"
+  ],
+  "24": [
+   "2e524b7479698105",
+   "3c97ae023c2e0f2a",
+   "3f5038399c8e1081",
+   "4ae22299bb2ec416",
+   "590a9297c0b8023d",
+   "64ed63dc9973d3ac",
+   "7bbf075b61ff59d7",
+   "8f4b23442bccb42f",
+   "abd7d5339254a6ed",
+   "bc22b61d105366a9",
+   "c8e7f96eb877eee1",
+   "e737d802faf7fd48"
+  ],
+  "32": [
+   "005da4b05e792b23",
+   "09fb6171431136a6",
+   "13b75dd1fde978e4",
+   "13b9d3ce5b2cd71c",
+   "18045b54e85746e4",
+   "1d3d11ad73e044bd",
+   "2052dc727792f690",
+   "21e7fde9ca45474b",
+   "29a12e9a711352c3",
+   "2cd13951b9d83588",
+   "39f8afaadffa2bbb",
+   "3a4988b91a315078",
+   "3a7796fbf7f08960",
+   "3b319c483dbf448f",
+   "3fc0772dd335ce59",
+   "4062723c21da37d9",
+   "42e6537adb8b5ea0",
+   "4482c28685fc5d3a",
+   "4dda18a6acec3839",
+   "5778bbe47948f284",
+   "580230a09157b0e2",
+   "5ee167c77cc25c44",
+   "634a6882bbe07518",
+   "67edd8d73a0dada0",
+   "707815045c8d524b",
+   "72b995077e129c16",
+   "77cde3f4e007d05d",
+   "7893acc6ceec0907",
+   "812f5b93c4c7d3f8",
+   "82005ff6edcac6f7",
+   "865415fb105b82a7",
+   "87d24e9f2006592c",
+   "88672db19fd7efd2",
+   "899fbbbab40440ff",
+   "8aae0e63b74b5c53",
+   "9304fe5371f07cab",
+   "97c3bdae442a9539",
+   "a868d321d66ef2c0",
+   "ad177f016d987f48",
+   "aef189def52e6761",
+   "b112430b862b1f37",
+   "b49e119cd66a63aa",
+   "b69574e446cefb5c",
+   "b72eab0563306cfa",
+   "b7daab2275ff30d4",
+   "bf0b674ea30b6e97",
+   "c6fca0c0a2c6b29a",
+   "ccfe00647344385c",
+   "d1a7135776c5c75b",
+   "d4e443150442bbf7",
+   "dc85192d99279009",
+   "e0d442d22e005373",
+   "e291aec828392b23",
+   "e3653aac4df5ecb7",
+   "e8c8c1354d544a38",
+   "e988a75ef72f7fac",
+   "ea1142f6178f31ee",
+   "f13f4455f8b1fab0",
+   "f60b7ac754b1ff81",
+   "f73105843f2a131e"
+  ],
+  "48": [
+   "1c71dd804a5eec01",
+   "9096b2c58d82d7f1",
+   "a0cffc88d479cca5"
+  ]
+ }
+}

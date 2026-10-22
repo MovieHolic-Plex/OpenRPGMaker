@@ -44,6 +44,8 @@ type HistoryDirection = "undo" | "redo";
 
 type DirectionSpec = {
   readonly label: string;
+  /** 확인문 서술어 — 명사형 label 에 「합니다」를 붙이면 비문(「되돌리기합니다」)이 된다. */
+  readonly verb: string;
   /** 툴팁은 두 플랫폼 표기를 함께 적는다 — 같은 빌드가 macOS 와 그 외를 모두 서비스한다. */
   readonly hotkey: string;
   readonly icon: SvgIconName;
@@ -65,6 +67,7 @@ type DirectionSpec = {
 const DIRECTIONS: Readonly<Record<HistoryDirection, DirectionSpec>> = {
   undo: {
     label: "되돌리기",
+    verb: "되돌립니다",
     hotkey: "Ctrl+Z / ⌘Z",
     icon: "undo",
     actionTestId: "oprn-tool-undo",
@@ -81,6 +84,7 @@ const DIRECTIONS: Readonly<Record<HistoryDirection, DirectionSpec>> = {
   },
   redo: {
     label: "다시실행",
+    verb: "다시 실행합니다",
     hotkey: "Ctrl+Shift+Z / ⌘⇧Z, Ctrl+Y",
     icon: "redo",
     actionTestId: "oprn-tool-redo",
@@ -277,7 +281,7 @@ function makeEntryRow(spec: DirectionSpec, entry: MapEditHistoryEntry, rerender:
         }
         void showConfirm({
           title: `${spec.label} ${entry.steps}단계`,
-          message: `'${entry.label}' 지점까지 ${entry.steps}단계를 한 번에 ${spec.label}합니다. 계속할까요?`,
+          message: `'${entry.label}' 지점까지 ${entry.steps}단계를 한 번에 ${spec.verb}. 계속할까요?`,
           confirmLabel: `${entry.steps}단계 ${spec.label}`,
         }).then((confirmed) => {
           if (!confirmed) return;
