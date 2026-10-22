@@ -1,0 +1,367 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "17f0d7ef4a7094e3f69db90a5104270a6b9e2506ecb4db139904c1ee53802e16",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "렌즈 작업대(3칸) (lens bench)",
+ "label": "atlas_biome_interior/plus/lens bench",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 58,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bench top (work surface)",
+      "rows": "9-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-19"
+     },
+     {
+      "part": "standing mirror on stand",
+      "rows": "1-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lens, spectacles and tool laid on the top",
+      "rows": "10-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with two drawers",
+      "rows": "19-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bench has a dark back outline at rows 7-8. Row 9 is a light back edge line. Rows 10-17 form a wide light-tan top surface that carries the goods, and row 18 is a light front-edge line. Row 19 is a slightly darker strip beneath it. Below that, rows 20-25 are a darker front face with two drawer panels and handles, and rows 26-27 are a dark base outline with feet at row 28. The top is about 10 rows deep and the front face is about 8 rows, so it reads as a 3/4 view. The mirror and the items on the top are decor."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a 3-tile wooden bench with a lit top edge, a plank top surface, a panelled drawer front and small lens items on top, with a brass mirror on a stand. Measured facts: 12 visible tones per tile, which is above the hedge (9) and below the cheese stall (17) and roofed well (20). Near-flat coverage is 0%. The dark edge pixels are 0% neutral, so the outlines lean brown and match the wood, not a black sticker line. The wood has about 5 steps (highlight, light, mid, dark, deep) with grain and panel shading, and no 5x5 areas of one flat colour. It is a little simpler than the stall and well, mainly in small-detail clustering, but it would sit acceptably next to the references and does not look sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18061
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bench top (work surface)",
+      "rows": "9-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "front face with two drawers",
+      "rows": "19-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "standing mirror on the bench top",
+      "rows": "0-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lenses and tools on the bench top",
+      "rows": "10-18",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bench top is a tan band at rows 9-18. Row 9 is a light back-edge line. Rows 10-17 are the flat work surface, with lenses, a mirror and tools on it. Row 18 is a lighter front-edge line (#f0d098), and row 19 is a slightly darker strip beneath it. Below that, rows 20-25 are a brown front face with two drawers and handles, and rows 26-27 are the dark base outline, with feet at row 28. The top is about 10 rows and the front face about 9 rows. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a three-tile wooden counter with a pale top, drawers with handles, and small lens, mirror and stand items on top. It measures 12 visible tones per 16x16 tile, above the hedge (9) and below the cheese stall (17) and roofed well (20). Near-flat coverage is 0%, so there are no flat fills, and the wood and top surfaces show grain and variation. The dark edge pixels are 0% neutral, so the outlines lean brown and follow the adjacent wood and material tones, like the hedge, stall and well. It is a little shallower than the richest references, with about 4 wood ramp steps against roughly 5 on the references, and its total of 24 distinct colours is lower than the 38-40 on the larger props. This reads as a small step down in richness, not a sticker-like or flat piece, and it would sit acceptably beside the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17803
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bench top (work surface)",
+      "rows": "9-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-19"
+     },
+     {
+      "part": "standing mirror on the top",
+      "rows": "0-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lens, glasses and tool items on the top",
+      "rows": "10-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "front face with two drawers and base",
+      "rows": "19-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a counter. Rows 9-18 form a wide, light tan top surface, with a lighter highlight on the back edge at row 9. Row 18 (#f0d098) is a 1-row front-edge line, and row 19 is slightly darker, like a thin shadow. Below, rows 19-27 form the south face: two drawers with handles at rows 23-24 and a dark base. The mirror and the items on the top are decor placed on the surface. The width profile is a constant 48 px from row 9 to row 25, which fits a box seen from the front with its top visible."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The bench is a wooden counter with a lighter top edge, a darker apron, a row of three drawers with handles, and small lens and instrument props on top. The wood carries about 5 steps (highlight, light, mid, dark, deep), close to the 5-6 on the stall and well. The dark edge pixels are 0% near-neutral, so the outline is tinted brown and follows the adjacent material rather than a black sticker line. Near-flat coverage is 0%, with no 5x5 flat fills, and the drawer fronts and tabletop show grain and variation. At 12 visible tones per tile it sits above the hedge (9) and well below only the stall (17) and well (20), so density is slightly lower than the richest references. The thin bench and lamp references read as 0 tones, so they do not count against it. Overall it would sit acceptably next to the references without looking flatter or more sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17871
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "mirror on stand",
+      "rows": "1-16",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lenses and tools on the bench top",
+      "rows": "10-17",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bench top",
+      "rows": "9-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19"
+     },
+     {
+      "part": "front face with two drawers",
+      "rows": "20-25",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "base and feet",
+      "rows": "26-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 10,
+    "front_face_rows": 9,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The bench top is a wide tan band on rows 9-18 under a dark back rim on rows 7-8. It ends in a lighter front-edge line on row 18, followed by a darker shadow row 19. Below it is a brown front face on rows 20-25 with two drawers and handles, and a dark base on rows 26-28. The mirror and the lenses and tools sit on the top as decor. The top is about 10 rows and the front face is 8-9 rows, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a wooden bench with a lighter top edge, a mid-brown drawer front with grain and drawer details, and small lens and instrument props on top, including a round lens on a stand. It shows about 5 lightness steps on the wood, a little fewer than the references' 5-6. The outlines lean dark brown and the measured neutral share of dark edge pixels is 0%, so this is a dark material tone rather than a black sticker line. Near-flat coverage is 0%, with no large single-colour areas. It has 12 visible tones per tile, above the hedge (9) and below the cheese stall (17) and roofed well (20). That is within the references' range for a small three-tile furniture prop. Texture is present but not as dense as the stall or well, which keeps it at 'some' rather than 'rich'. It would sit acceptably next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17426
+  }
+ ],
+ "decidedAt": "2026-10-21T05:58:00.930Z",
+ "cells": {
+  "16": [
+   "7e09e331cbe6a295",
+   "84864428922e9768",
+   "8dc36e09b0da537e",
+   "a8b748be12d9106e",
+   "b40832c1a9647a05",
+   "b5f7f1a2dfd8f89d"
+  ],
+  "24": [
+   "007e41733c684ebd",
+   "08c4e5cca442d707",
+   "101a71cc932cec2c",
+   "2e73f3bfe909a4d4",
+   "416dd78cc21f35f8",
+   "a58f4fc0f54bb41d",
+   "d3dc3014313a3d54",
+   "d70a50f6b4ef435d"
+  ],
+  "32": [
+   "165bc085935738ec",
+   "4ef587d26e304ab8",
+   "c4ea1cc2deef965f",
+   "c566e60460d04719",
+   "cfef98ed2a042757",
+   "dad08b134c10f2f1"
+  ],
+  "48": [
+   "443ab4c2a80c1e6c",
+   "a40fbe9af6104af6"
+  ]
+ }
+}

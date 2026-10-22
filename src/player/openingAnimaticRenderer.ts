@@ -42,15 +42,35 @@ function charsetSource(id: string, image: HTMLImageElement): HTMLImageElement | 
   keyedCache.set(id, source);
   return source;
 }
+/**
+ * 디코드가 끝난 오프닝 그림 캐시. 컷이 바뀔 때 새 캔버스는 그림이 다 읽힐 때까지 검게 비어 있어
+ * 큰 배경이 늦게 읽히면 「미디어 불러오는 중」 글자만 뜬 빈 화면이 컷 사이에 끼었다(r12 「첫 20초」).
+ * 다음 컷의 그림을 미리 디코드해 두면(warmAnimaticImages) 컷 전환이 바로 그려진다.
+ */
+const decodedImages = new Map<string, Promise<HTMLImageElement>>();
+function decodedImage(url: string): Promise<HTMLImageElement> {
+  const cached = decodedImages.get(url);
+  if (cached) return cached;
+  const image = new Image(); image.crossOrigin = 'anonymous';
+  const promise = (async () => { image.src = url; await image.decode(); return image; })();
+  promise.catch(() => { if (decodedImages.get(url) === promise) decodedImages.delete(url); });
+  if (decodedImages.size >= 24) { const oldest = decodedImages.keys().next().value; if (oldest !== undefined) decodedImages.delete(oldest); }
+  decodedImages.set(url, promise);
+  return promise;
+}
+export function warmAnimaticImages(project: Project, a: OpeningAnimatic): void {
+  for (const l of a.layers) {
+    if (l.kind !== 'image' || !l.resourceId) continue;
+    const url = resolveAssetResourceUrl(l.resourceId, { project });
+    if (url) void decodedImage(url).catch(() => undefined);
+  }
+}
 export async function loadAnimaticImages(project: Project, a: OpeningAnimatic, signal: AbortSignal): Promise<AnimaticImages> {
   const ids = [...new Set(a.layers.flatMap(l => l.kind === 'image' ? [l.resourceId!] : []))];
   keyedCache.clear();
   return new Map(await Promise.all(ids.map(async id => {
     signal.throwIfAborted(); const url = resolveAssetResourceUrl(id, { project }); if (!url) throw Error(`애니메틱 그림 없음: ${id}`);
-    const image = new Image(); image.crossOrigin = 'anonymous';
-    const abort = () => { image.removeAttribute('src'); }; signal.addEventListener('abort', abort, { once: true });
-    try { image.src = url; await image.decode(); signal.throwIfAborted(); return [id, image] as const; }
-    finally { signal.removeEventListener('abort', abort); }
+    const image = await decodedImage(url); signal.throwIfAborted(); return [id, image] as const;
   })));
 }
 const radians = (value: number) => value * Math.PI / 180;

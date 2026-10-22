@@ -77,6 +77,12 @@ function trailIndexFor(index: number, gap: number): number {
   return (index + 1) * gap - 1;
 }
 
+/** 동료 `count` 명이 각자 읽을 칸을 가지려면 궤적이 얼마나 길어야 하는가(resetFollowerTrailNearPlayer 가 깔아 두는 길이와 같다). */
+function requiredTrailLength(session: object, config: CompanionConfig | undefined, count: number): number {
+  const lay = Math.max(effectiveGap(session, config), typeof config?.gap === "number" ? 1 : MAX_FOLLOWER_BODY_SPAN);
+  return Math.min(trailIndexFor(count - 1, lay) + 1, MAX_TRAIL_POINTS);
+}
+
 function uniqueFollowerName(session: PlaySession, desired: string): string {
   const taken = new Set(session.followers.map((f) => f.name));
   if (!taken.has(desired)) return desired;
@@ -135,8 +141,12 @@ export function addFollowerToSession(
     keptActors = actorFollowers.slice(actorFollowers.length + 1 - rules.maxCompanions);
   }
   session.followers = [...keptActors, follower, ...monsterFollowers];
-  if (!session.followerTrail || session.followerTrail.length === 0) {
-    resetFollowerTrailNearPlayer(session, project.maps[session.currentMapId], project.system.companions, { project });
+  // 궤적이 비었거나, 새 동료가 읽을 칸까지 모자라면 다시 깐다 — 이미 동료가 있는 채로 한 명이 더 합류하면
+  // 궤적이 비어 있지 않아 예전엔 그대로 두었고, 새 동료는 읽을 칸이 없어 숨거나 플레이어 칸에 겹쳤다(3인 파티가 2명으로 보임).
+  const companions = project.system.companions;
+  const needed = requiredTrailLength(session, companions, session.followers.length);
+  if (!session.followerTrail || session.followerTrail.length < needed) {
+    resetFollowerTrailNearPlayer(session, project.maps[session.currentMapId], companions, { project });
   }
   return follower;
 }
@@ -238,7 +248,7 @@ export function syncPartyFollowers(project: Project, session: PlaySession): void
   const actorOthers = others.filter((entry) => entry.kind !== "monster" && !entry.monsterInstanceId);
   const monsterOthers = others.filter((entry) => entry.kind === "monster" || Boolean(entry.monsterInstanceId));
   session.followers = [...partyFollowers, ...actorOthers, ...monsterOthers];
-  const needed = session.followers.length * resolveCompanionRules(project.system.companions).gap;
+  const needed = requiredTrailLength(session, project.system.companions, session.followers.length);
   if (session.followers.length === 0) session.followerTrail = [];
   else if ((session.followerTrail?.length ?? 0) < needed) {
     resetFollowerTrailNearPlayer(session, project.maps[session.currentMapId], project.system.companions, { project });
@@ -398,7 +408,14 @@ function besideSlots(
   );
 }
 
-export type FollowerWorld = { readonly project: Project; readonly map: GameMap };
+export type FollowerWorld = {
+  readonly project: Project;
+  readonly map: GameMap;
+  /** 칸을 막는 런타임 이벤트(NPC·간판 등). 걷는 NPC 가 궤적 칸에 들어서도 동료를 그 위에 세우지 않는다. */
+  readonly blocked?: (x: number, y: number) => boolean;
+  /** 이벤트(대화·장면)가 도는 중 — companions.fanOutInScenes 가 켜져 있으면 둘째 동료부터 옆 줄에 선다. */
+  readonly inScene?: boolean;
+};
 
 export function followerPositions(
   session: Pick<PlaySession, "followers" | "followerTrail" | "x" | "y">,
@@ -423,22 +440,30 @@ export function followerPositions(
   const minDistance = followerMinDistance(session, config);
   // 옆자리(beside) 동료는 저작자가 고른 붙어 서기라 거리 판정에 넣지 않는다 — 그 대형의 기존 계약 그대로다.
   const taken: { x: number; y: number }[] = [{ x: session.x, y: session.y }];
+  const blocked = world?.blocked;
   const clear = (point: { readonly x: number; readonly y: number }): boolean =>
-    taken.every((other) => Math.max(Math.abs(other.x - point.x), Math.abs(other.y - point.y)) >= minDistance);
+    !blocked?.(point.x, point.y)
+    && taken.every((other) => Math.max(Math.abs(other.x - point.x), Math.abs(other.y - point.y)) >= minDistance);
   const trail = session.followerTrail ?? [];
   const followers = session.followers ?? [];
   // 같은 궤적·같은 주인공 칸이면 같은 답 — 조명·동료 공격이 한 프레임에 여러 번 물어도 「기다리기」가 흔들리지 않는다.
   const memo = followerPlacementMemo.get(session);
   if (memo && memo.trail === trail && memo.x === session.x && memo.y === session.y && memo.followers === followers
-    && memo.gap === gap && memo.minDistance === minDistance && slots.length === 0 && formation === "line") {
+    && memo.gap === gap && memo.minDistance === minDistance && slots.length === 0 && formation === "line" && !blocked) {
     return memo.result;
   }
   const previous = memo?.result;
   let cursor = -1;
+  const placed: { readonly x: number; readonly y: number; readonly direction?: Dir; readonly hidden?: boolean }[] = [];
   const result = followers.map((follower, index) => {
+    const entry = placeOne(follower, index);
+    placed.push(entry);
+    return entry;
+  });
+  function placeOne(follower: RuntimeFollower, index: number) {
     // 옆자리가 모자라면(인접 4칸 초과 인원, 또는 물·벽으로 막힌 칸) 그 동료는 일렬로 떨어진다.
     const slot = slots[index];
-    if (slot) return { follower, x: slot.x, y: slot.y, direction: slot.direction };
+    if (slot && !blocked?.(slot.x, slot.y)) return { follower, x: slot.x, y: slot.y, direction: slot.direction };
     // 1) 앞사람에게서 gap 칸 뒤 궤적 점.
     // 2) 그 점이 주인공·앞 동료와 붙어 있으면(모퉁이·되돌아오기) 지금 선 칸에서 **기다린다** — 그 칸이
     //    여전히 궤적 위·앞사람 뒤이고 붙어 있지 않을 때. 더 뒤 점으로 뛰었다 돌아오면 두 칸씩 미끄러진다.
@@ -455,16 +480,83 @@ export function followerPositions(
         while (at < trail.length && !clear(trail[at]!)) at += 1;
       }
     }
+    // 장면 중 ㄴ자 대형(companions.fanOutInScenes): 둘째 동료부터 앞 동료 옆 칸(몸 길이만큼)에 선다.
+    const front = index > 0 ? placed[index - 1] : undefined;
+    if (front && !front.hidden && config?.fanOutInScenes === true && world?.inScene) {
+      const side = besideOf(session, front, minDistance, world, clear);
+      if (side) {
+        taken.push(side);
+        return { follower, x: side.x, y: side.y, direction: front.direction ?? follower.graphic.direction };
+      }
+    }
     const point = trail[at];
     if (!point) {
+      const spread = config?.spreadWhenBlocked === true && world ? nearestSpreadCell(session, world, clear) : null;
+      if (spread) {
+        taken.push(spread);
+        return { follower, x: spread.x, y: spread.y, direction: follower.graphic.direction };
+      }
       return { follower, x: session.x, y: session.y, direction: follower.graphic.direction, hidden: true };
     }
     cursor = at;
     taken.push({ x: point.x, y: point.y });
     return { follower, x: point.x, y: point.y, direction: point.direction ?? follower.graphic.direction };
-  });
+  }
   followerPlacementMemo.set(session, { trail, x: session.x, y: session.y, followers, gap, minDistance, result });
   return result;
+}
+
+/**
+ * companions.fanOutInScenes: 앞 동료 옆(주인공→앞 동료 축에 수직으로 몸 길이만큼) 칸. 사이 칸까지 통행 가능해야 한다 —
+ * 벽 너머·기둥 위에 세우지 않는다. 왼쪽을 먼저 보고, 안 되면 오른쪽. 둘 다 안 되면 null(궤적 자리로 돌아간다).
+ */
+function besideOf(
+  hero: { readonly x: number; readonly y: number },
+  front: { readonly x: number; readonly y: number },
+  distance: number,
+  world: FollowerWorld,
+  clear: (point: { readonly x: number; readonly y: number }) => boolean,
+): { x: number; y: number } | null {
+  const vertical = front.x === hero.x;
+  for (const sign of [-1, 1]) {
+    const cells = Array.from({ length: distance }, (_, k) => vertical
+      ? { x: front.x + sign * (k + 1), y: front.y }
+      : { x: front.x, y: front.y + sign * (k + 1) });
+    const ok = cells.every((cell) => inBounds(world.map, cell.x, cell.y) && isPassable(world.project, world.map, cell.x, cell.y) && !world.blocked?.(cell.x, cell.y));
+    const target = cells[cells.length - 1]!;
+    if (ok && clear(target)) return target;
+  }
+  return null;
+}
+
+/**
+ * companions.spreadWhenBlocked: 궤적에 설 칸이 없을 때 쓰는 자리. 주인공 칸에서 통행 가능한 칸만 밟아 넓혀 가며
+ * (벽 너머로 건너뛰지 않는다) 처음 만나는 「떨어진」 칸(clear — 주인공·앞 동료·막는 이벤트와 몸 길이만큼)을 고른다.
+ * 6칸 안에 없으면 null(숨김으로 돌아간다).
+ */
+function nearestSpreadCell(
+  hero: { readonly x: number; readonly y: number },
+  world: FollowerWorld,
+  clear: (point: { readonly x: number; readonly y: number }) => boolean,
+): { x: number; y: number } | null {
+  const seen = new Set<string>([`${hero.x},${hero.y}`]);
+  let frontier: { x: number; y: number }[] = [{ x: hero.x, y: hero.y }];
+  for (let depth = 0; depth < 6 && frontier.length; depth += 1) {
+    const next: { x: number; y: number }[] = [];
+    for (const cell of frontier) {
+      for (const dir of ["down", "left", "right", "up"] as const) {
+        const x = cell.x + DIR_STEP[dir].dx, y = cell.y + DIR_STEP[dir].dy;
+        const key = `${x},${y}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        if (!inBounds(world.map, x, y) || !isPassable(world.project, world.map, x, y)) continue;
+        if (clear({ x, y })) return { x, y };
+        next.push({ x, y });
+      }
+    }
+    frontier = next;
+  }
+  return null;
 }
 
 type FollowerPlacement = ReturnType<typeof followerPositions>;

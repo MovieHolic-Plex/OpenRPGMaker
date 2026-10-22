@@ -1,0 +1,5 @@
+{"png": "great_telescope.png", "kind": "other", "name": "큰 굴절 망원경(5×6 — 천문대 중심) (great telescope)", "label": "atlas_biome_interior/plus/great telescope"}
+{"png": "dome_slit.png", "kind": "wall_mounted", "name": "관측 틈(별 하늘 창, 2칸) (dome slit)", "label": "atlas_biome_interior/plus/dome slit"}
+{"png": "celestial_chart.png", "kind": "wall_mounted", "name": "별자리 원판 도표(2칸) (celestial chart)", "label": "atlas_biome_interior/plus/celestial chart"}
+{"png": "lens_bench.png", "kind": "low_furniture", "name": "렌즈 작업대(3×2) (lens bench)", "label": "atlas_biome_interior/plus/lens bench"}
+{"png": "observing_platform.png", "kind": "other", "name": "관측 발판(난간 두른 높은 단과 사다리, 2×2) (observing platform)", "label": "atlas_biome_interior/plus/observing platform"}

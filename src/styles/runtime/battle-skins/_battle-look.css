@@ -1395,22 +1395,67 @@
   box-shadow: var(--look-panel-frame, var(--retro-frame));
   border-radius: var(--look-radius, 0);
   backdrop-filter: none;
-  padding: 1px 10px;
+  padding: 2px 12px;
   top: auto;
   bottom: calc(100% + 4px);
-  max-width: 172px;
+  max-width: 240px;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-names="on"]:has(.battle-command-menu > .battle-submenu-header) .battle-enemy:not(.defeated) .battle-enemy-chrome {
   display: none;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-names="on"] .battle-enemy .battle-enemy-name {
-  font-size: 13px;
+  /* 전투 무대는 화면에 약 0.55 배로 줄어 그려진다 — 13px 이 1배 화면에서 7px 로 흐렸다(가혹 검수 r6). */
+  font-size: 18px;
   letter-spacing: 0.04em;
   white-space: nowrap;
-  max-width: 152px;
+  max-width: 216px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* 적 체력 막대(battleLook.enemyHp) — 도트 측면 스킨은 원작처럼 적 체력을 숨기는데, 보스전에서 「얼마나 남았나」를 볼 수 없었다
+   (폴른 스타 가혹 검수). 숫자 없이 남은 비율만 머리 위에 띄운다. 이름표를 함께 켜면 이름표 아래에 붙는다. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"] .battle-enemy:not(.defeated) .battle-enemy-chrome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  /* 판은 발밑에 단다 — 머리 위에 두면 피해 숫자가 판 위로 떠 이름을 가렸다(폴른 스타 가혹 검수 r7). */
+  top: calc(100% + 2px);
+  bottom: auto;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"]:not([data-look-names="on"]) .battle-enemy:not(.defeated) .battle-enemy-chrome {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"]:not([data-look-names="on"]) .battle-enemy .battle-enemy-chrome > .battle-enemy-name { display: none; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"] .battle-enemy .battle-enemy-chrome > .battle-enemy-hud {
+  display: block;
+  width: 96px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"] .battle-enemy .battle-enemy-hud > :not(.battle-enemy-hp-bar):not(.battle-enemy-hp-text) { display: none; }
+/* 막대 위에 작은 수치 — 「바만 있고 수치가 없다」(가혹 검수 r4·r5). */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"] .battle-enemy .battle-enemy-hud > .battle-enemy-hp-text {
+  display: block;
+  color: #f4f6ff;
+  /* r6: 10px 는 1배 화면에서 5px 로 흐렸다(무대가 약 0.55 배로 줄어 그려진다) — 18px 굵게, 사방 그림자로. */
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 2px;
+  text-align: center;
+  text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -1px 0 #000, 1px 1px 0 #000;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"] .battle-enemy .battle-enemy-hud > .battle-enemy-hp-bar {
+  display: block;
+  height: 6px;
+  width: 100%;
+  box-shadow: 0 0 0 1px #10101a;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-enemy-hp="on"]:has(.battle-command-menu > .battle-submenu-header) .battle-enemy:not(.defeated) .battle-enemy-chrome { display: flex; }
 
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-look-letterbox {
   position: absolute;

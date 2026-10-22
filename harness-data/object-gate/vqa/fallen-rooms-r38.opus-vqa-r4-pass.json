@@ -1,0 +1,32 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r38",
+  "commit": "231e64016f",
+  "overall": "PASS",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 of /tmp/fsrooms/gate-r38/star_seal.png computed with src/harnesses/_core/object_gate.pixel_sha256 = e0b1674cae3e18c8a16ae025a874558ee8ccb654565d9eebf081101afc0c6875 (32x32 RGBA, 19 colours, opaque frame x1-30 y2-30).",
+    "1_topdown_view": "Flat floor piece seen straight from above: square frame, no side face, no perspective skew; lid bevel lit on N/W inner rim (G column x5, row y6) and frame highlight row y3 / shade row y29 match the top-down floor lighting. Consistent with floor.",
+    "2_style_fit": "Frame uses a warm grey stone ramp (A 58,53,48 outline / L / C / B) with sparse speckle like v5 stone; lid uses a cool 4-step dark ramp (E/N/J/G) with low-contrast texture, gold star ramp M/P and purple Q/O/S/R core. Dark outline + 3-4 step shading matches v5; no flat fills, speckle is low contrast and not noisy at 1x.",
+    "3_readability_1x": "In mock-archive at 1x it reads as a dark sealed stone hatch with a gold-purple star between the two seal steles. The north hinge knuckles (light grey at x6-9 / x21-24, y4-5) and the pull ring (x13-18, y22-26) are small but visible and push it from 'plaque/rug' toward 'lid that opens'. Readability as a trapdoor is adequate, not strong.",
+    "4_placement": "Frame is a flush inlay: full dark outline, no drop shadow, no raised side; sits on the wood floor in the mock without floating. The 2-row top / 1-row bottom transparent margin is not noticeable at 1x and matches the open-stair swap state.",
+    "5_silhouette_outline": "Clean square silhouette, closed outline, no jaggies. Minor nits (not blocking): the two lower corner seams (black E runs y21 x6-9 and x22-25) stop 2px short of the star legs and read slightly as stubs/slots; isolated lighter G specks beside the hinge straps (x7 y7, x7 y10, x20 y8-9, x19 y10) are faint noise; star is centred on x15 while runes/hinges mirror about x15.5 (half-pixel, inherent to the 32px cell)."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/star seal",
+      "name": "별 봉인 돌뚜껑(닫힘, 2×2) (star seal)",
+      "kind": "flat",
+      "pixelSha256": "e0b1674cae3e18c8a16ae025a874558ee8ccb654565d9eebf081101afc0c6875",
+      "verdict": "PASS",
+      "reasons": [
+        "Correct flat top-down floor inlay; frame and lid lighting consistent with the v5 floor.",
+        "Palette ramps, dark outline and shading steps fit v5 stone; no flat fills or harsh noise.",
+        "At 1x in the archive mock it reads as a sealed stone hatch with a star keyhole; hinges and pull ring are visible enough to suggest an opening lid.",
+        "Grounded flush with the floor; margin matches the open-stair swap state.",
+        "Optional polish (non-blocking): extend the y21 corner seams to meet the star legs or shorten them to 2px so they do not end in empty lid; remove the stray G specks at (7,7),(7,10),(20,8),(20,9),(19,10) or turn them into N."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "bd98e24580b867387972462febee466c43ccc9361b5b18187e543e9ebd441170",
+ "profileHash": "4d8774b517f41638",
+ "kind": "other",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T21:01:58.586Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (2/4)"
+ ],
+ "note": "묶음 허용: fallen rooms r34 great stone brazier — fallen-rooms-r34 (great stone brazier pair) — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/fallen-rooms-r",
+ "sig": "4eb304c185da1f07ae9ff0798ada661af6e86e0764f869e237d212931e54e3e8"
+}

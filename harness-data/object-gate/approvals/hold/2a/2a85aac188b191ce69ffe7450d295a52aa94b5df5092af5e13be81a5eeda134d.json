@@ -1,0 +1,17 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "2a85aac188b191ce69ffe7450d295a52aa94b5df5092af5e13be81a5eeda134d",
+ "profileHash": "4d8774b517f41638",
+ "kind": "wall_mounted",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T16:30:25.027Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+ ],
+ "note": "묶음 허용: Fallen Star 천문대 — 둥근 지붕 갈빗대·처마·안쪽 면 (r18) — fallen-rooms-r18 (dome rib · dome rib west · dome rib east · dome rib top west · dome rib top east · dome cornice · dome shell) — delegated by user to",
+ "sig": "576a49f12ce4adac104e855cb57b5dea84cf75e48b49dccad00c3966a78072e5"
+}

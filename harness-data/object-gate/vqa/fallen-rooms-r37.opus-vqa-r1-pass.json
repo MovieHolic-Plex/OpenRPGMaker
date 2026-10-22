@@ -1,0 +1,88 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r37",
+  "commit": "b71786b930",
+  "overall": "PASS",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed from /tmp/fsrooms/gate-r37/*.png via object_gate.pixel_sha256.",
+    "1_topdown_view": "All five pieces show top planes + front faces only; no side/iso faces.",
+    "2_style_fit": "Compared at 8x against harbour brazier tiles 7513/7514 and the v5 stone in the room renders; same slate ramp, outline weight and shading steps.",
+    "3_readability_1x": "Checked mock-gate.png and mock-vault.png at 1x plus 3x crops: unlit braziers read as laid fuel, dais reads raised with steps.",
+    "4_placement": "Riser rows match across centre/L/R/steps (row-by-row pixel check); braziers grounded on the dais.",
+    "5_silhouette_outline": "No stray pixels, stubs or jaggies found."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/great stone brazier",
+      "name": "큰 돌 화로(꺼짐, 2칸, 버들항 돌) (great stone brazier)",
+      "kind": "other",
+      "pixelSha256": "6bca421477f0da872fb65cd780e39e4687ebb207f7e42456c78cd95676290621",
+      "verdict": "PASS",
+      "reasons": [
+        "3/4 correct: elliptical rim top plane visible, bowl/column/foot show front faces only, foot slab has its own top face; no side faces.",
+        "Same blue-grey slate ramp and dark outline as the harbour brazier 7513/7514; 4-5 shading steps, light from upper left, no flat fills.",
+        "At 1x in mock-gate the four braziers clearly read as laid fuel: pale ash bed, dark charcoal, two crossed barked logs with light cut ends - 'ready to light', not an empty urn.",
+        "Grounded by foot slab and 1px contact shadow; sits on 2x2 dais checker without clipping.",
+        "Clean closed silhouette, symmetric, no stray pixels or stubs."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/dais riser stone",
+      "name": "돌 단 앞 턱(가운데, 1칸) (dais riser stone)",
+      "kind": "terrain",
+      "pixelSha256": "4b3a2a280c19a69c9377fe7c4652b85f5ae680c8a5cb2a30a8b10dc3b1c758d1",
+      "verdict": "PASS",
+      "reasons": [
+        "Front face only below a light top-edge line; rows 0-3 transparent so the dais top continues - correct 3/4 riser.",
+        "Mid slate grey courses (two courses, staggered joints at x5/x13 then x1/x9), lip highlight, dark joint lines and dark bottom shadow row; matches v5 stone walls/plinths.",
+        "In both mocks the dais now reads as a raised slab with a front face.",
+        "Tiles seamlessly: rows identical at both edges, joint stagger repeats every 8px so tiling has no seam.",
+        "No stray pixels."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/dais riser stone L",
+      "name": "돌 단 앞 턱(왼쪽 끝, 1칸) (dais riser stone L)",
+      "kind": "terrain",
+      "pixelSha256": "9e5e5c5c6c61808a48118047774316a2f4057d18787f2fa1928b849e4bb84caa",
+      "verdict": "PASS",
+      "reasons": [
+        "Same riser with a 1px dark end outline at x0 and a light inner column at x1 (lit from left) - correct end cap.",
+        "Matches centre piece ramps.",
+        "Reads as the dais's west corner in mock-gate/mock-vault.",
+        "Rows 4-15 align exactly with the centre piece; joins seamlessly.",
+        "Clean."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/dais riser stone R",
+      "name": "돌 단 앞 턱(오른쪽 끝, 1칸) (dais riser stone R)",
+      "kind": "terrain",
+      "pixelSha256": "81fcffa64921e7cecf4422d9931994c75b9365ee9f37083b3808ae064d7914eb",
+      "verdict": "PASS",
+      "reasons": [
+        "Dark end outline at x15 with a mid-tone inner column at x14 (shadow side) - consistent lighting with L.",
+        "Matches centre piece ramps.",
+        "Reads as the dais's east corner.",
+        "Rows align with centre piece; seamless join.",
+        "Clean."
+      ]
+    },
+    {
+      "id": "atlas_biome_interior/plus/dais steps stone",
+      "name": "돌 단 오르는 두 계단(2칸) (dais steps stone)",
+      "kind": "terrain",
+      "pixelSha256": "438bef0d3eb1fd5b40c7ca8bb2ca4ce3b5fdafb6573fe286468a6ccc4daa63ee",
+      "verdict": "PASS",
+      "reasons": [
+        "Two treads (rows 4-5 at lip level, rows 9-11 intermediate) with darker fronts (rows 6-8, 12-14) and 2px dark cheeks at x2-3 / x28-29 - reads as steps cut into the front, 3/4 correct.",
+        "Same ramp as the riser; short staggered joints; bottom shadow row continuous with riser.",
+        "At 1x the step notch is visible as a lighter break in the riser in the centre of the dais front, lined up with the carpet runner; at 3x it clearly reads as two shallow steps.",
+        "Outer columns x0-1 / x30-31 repeat the riser row pattern so it joins the riser pieces seamlessly; top line coincides with the dais edge.",
+        "Clean, symmetric, no jaggies."
+      ]
+    }
+  ]
+}

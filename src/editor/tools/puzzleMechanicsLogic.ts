@@ -286,7 +286,8 @@ export const brazierRelationalOrder: MechanicDef = {
       daises: BRAZIER_CELLS.map((c) => ({ id: "dais stone", x: c.x, y: c.y, w: 1, h: 1 })),
       props: {
         gate: GATE,
-        ...Object.fromEntries(BRAZIER_CELLS.map((c, i) => [`brazier_${i}`, [{ objects: [obj("cauldron", c.x, c.y)] }, { objects: [obj("brazier", c.x, c.y)] }]])),
+        // 꺼진 화로는 숯 통(가마솥은 초록 약이 끓어 「솥」으로 읽혔다 — 폴른 스타 감사 3차).
+        ...Object.fromEntries(BRAZIER_CELLS.map((c, i) => [`brazier_${i}`, [{ objects: [obj("coal bin", c.x, c.y)] }, { objects: [obj("brazier", c.x, c.y)] }]])),
       },
     };
     const b = buildRoom(ctx, spec, "brazier_ignition_order", [...BRAZIER_CELLS, { x: 10, y: 9 }]);

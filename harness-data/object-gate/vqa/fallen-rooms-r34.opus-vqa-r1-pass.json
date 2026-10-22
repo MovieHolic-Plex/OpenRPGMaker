@@ -1,0 +1,34 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r34",
+  "commit": "2d0dd28dbc",
+  "overall": "PASS",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed with src/harnesses/_core/object_gate on both PNGs: unlit bd98e245...1170 (32x32), lit f2d2d30b...3833 (32x48). Pixel diff of unlit vs lit (lit offset +16 rows): rows 12-31 (bowl wall, lip shadow, groove, column, foot, cast shadow) are identical; only rim/bowl interior rows 0-11 differ.",
+    "1_topdown_view": "Both: rim top is an ellipse plane 10 rows deep over a 26px width (~0.38 ratio), bowl inside seen from above, front wall below with lip shadow (row 13) and carved groove (row 15), foot shows a 2-row light top plane (rows 24-25) over a front face. No side/iso faces. Lit: back rim occluded by the flame band, front rim and inner left wall kept.",
+    "2_style_fit": "Same blue-grey slate ramp as the harbour 1-tile brazier (7513/7514) and the v5 stone, outline (30,30,36), light from upper left (P/N highlights left, D shade right), 4-5 shading steps per surface, no flat fills. Foot front carries joint/speck texture (col 12 rows 27-28, O specks row 26) at a density comparable to v5 stone. Flame is the already-approved great brazier lit flame ramp.",
+    "3_readability_1x": "In mock-gate (1x) and dais x3 the four unlit pieces read as stone braziers on plinths with a brown crossed-log X on dark charcoal, not as basins/planters/tables; the pale cut ends help. In mock-gate-mixed the lit ones read immediately as burning braziers and the single cold one is clearly 'the one to light'.",
+    "4_placement": "Grounded: foot base row 29 with a semi-transparent cast shadow rows 30-31, no floating. Swap is stable: foot, column and bowl wall are pixel-identical between states; only the rim interior and the flame above change.",
+    "5_silhouette_outline": "Unlit: closed outline, no stubs or jaggies; symmetric urn-on-plinth silhouette. Lit: three isolated 1px embers (lit rows 3, 5, 8) are intentional sparks from the approved flame; one flame pixel at lit (3,20) sits one pixel outside the rim's left outline - negligible at 1x."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/great stone brazier",
+      "name": "큰 돌 화로(꺼짐, 2칸, 버들항 돌) (great stone brazier)",
+      "kind": "other",
+      "pixelSha256": "bd98e24580b867387972462febee466c43ccc9361b5b18187e543e9ebd441170",
+      "verdict": "PASS",
+      "reasons": "Correct 3/4: elliptical rim top plane with dark interior, front bowl wall with lip shadow and groove, short column, slab foot with a light top strip and textured front. Slate ramp and outline match the harbour 1-tile brazier and v5 stone. At 1x in the room it reads as a brazier laid with crossed logs on charcoal (cut ends 2px pale at rows 5-6), not a basin or post. Grounded with soft shadow. Nits only (not blocking): the column is just 3 rows tall (rows 20-22), so it reads as an urn neck rather than a 'thick column'; acceptable for the silhouette."
+    },
+    {
+      "id": "atlas_biome_interior/plus/great stone brazier lit",
+      "name": "큰 돌 화로(켜짐, 2칸, 버들항 돌, 불꽃) (great stone brazier lit)",
+      "kind": "other",
+      "pixelSha256": "f2d2d30bf2f9666fe1f5def80da7aed08c17cbc685e68a7696cf4a60015f3833",
+      "verdict": "PASS",
+      "reasons": "Foot, column and bowl wall are pixel-identical to the unlit piece (rows 28-47 vs 12-31), so the in-place swap does not jump. Bowl interior shows glowing coals (E/I/K highlights rows 21-27) under the approved flame tongues rising 15px above the rim; reads at 1x as a burning brazier in mock-gate-mixed. Flame occludes the back rim, which is physically right. Nit (not blocking): flame pixel at (3,20) pokes one pixel past the rim's left outline; could be set to the outline colour (30,30,36) for a cleaner rim edge."
+    }
+  ]
+}

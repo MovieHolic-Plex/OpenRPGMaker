@@ -1,4 +1,5 @@
 import { BattleGimmickLedger, type BattleGimmick, type GimmickStatus } from "@/battle/battleGimmickRules";
+import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
 import { formationDamage, formationStartRow, rollBattleFormation, type BattleRow, type BattleStartFormation } from "@/battle/battleFormation";
 import { applyDifficultyToEnemyBattlers, difficultyRate, scaleByDifficulty } from "@/project/difficulty";
 import { applySkillLoadoutsToBattlers } from "@/project/skillLoadout";
@@ -5060,7 +5061,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       seen.add(actorId);
       const level = battleEventState.actorLevels?.[actorId] ?? 1;
       const adjustedExp = expForRewardActor(earnedExp, level, enemyLevel, options.project.system.rewardPolicy);
-      const totalExp = (battleEventState.actorExperience?.[actorId] ?? 0) + adjustedExp;
+      // 경험치 바닥: 시작 레벨 > 1 이거나 중간 합류해 세션 경험치가 현재 레벨 바닥보다 낮으면 바닥에서 센다 —
+      // 적립(battleRewardsToSession)·결과 카드와 같은 기준. 안 그러면 큰 보상에도 레벨이 안 오르고 「다음 Lv까지 0」이 떴다(가혹 검수 r6).
+      const record = options.project.database.actors.find((entry) => entry.id === actorId);
+      const floor = record ? totalExpForLevel(normalizeActorRecord(record).expCurve, level) : 0;
+      const totalExp = Math.max(battleEventState.actorExperience?.[actorId] ?? 0, floor) + adjustedExp;
       const result = computeActorLevelUp(options.project, actorId, level, totalExp, { classOverrides: battleEventState.classOverrides, equipment: currentEffectiveEquipment(actorId) });
       if (result) results.push(result);
     }

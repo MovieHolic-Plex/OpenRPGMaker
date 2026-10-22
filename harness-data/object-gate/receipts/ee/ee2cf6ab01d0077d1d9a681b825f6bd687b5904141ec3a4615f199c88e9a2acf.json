@@ -1,0 +1,349 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ee2cf6ab01d0077d1d9a681b825f6bd687b5904141ec3a4615f199c88e9a2acf",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "꺼진 화로(삼각대 쇠 화로, 숯·재) (cold brazier)",
+ "label": "atlas_biome_interior/plus/cold brazier",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (1/4)",
+  "화풍: 명암 3단 < 4 (1/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 12/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (1/4)",
+   "명암 3단 < 4 (1/4)"
+  ],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 22,
+  "nearBlackEdge": 0.37,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bowl mouth with ash and ember contents",
+      "rows": "1-4",
+      "evidence": "b",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "tapering bowl body",
+      "rows": "5-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tripod legs",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile runs 12, 14, 14, 14, 12 over rows 1-5, so the bowl mouth widens and then narrows again. That is an ellipse of about 4 rows, with a light rim on row 1. Rows 3-4 at x=8 show orange ember or charcoal contents inside the open bowl, which is evidence (d). Below the mouth the bowl tapers from width 12 down to 6 over rows 5-11, and tripod legs (width 8) fill rows 12-15. That gives a front face of 3+ rows under a visible top, so it reads as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a small tripod brazier with a charcoal and ash bowl. It has 11 visible tones per tile, which is above prop-hedge (9) and below prop-well-roofed (20) and prop-stall-cheese (17). Near-flat coverage is 0%, so there are no flat fills. However, only 12 distinct colours cover the whole object, the fewest of any reference (11 for the hedge, 14-40 for the others). The iron legs and rim read as about 3-4 lightness steps against Beodeul's 5-6. 61% of the dark edge pixels are near-neutral, so the outline leans toward a grey-black line rather than a clearly tinted dark material tone, and parts of the silhouette have a sticker-like look. Charcoal and ash have some dotted texture, but less per-piece shading and grain than the well or stall. A careful artist would likely ask for more ramp steps and a tinted outline before placing it next to the references, and the standard is to fail when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19580
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "brazier bowl mouth with charcoal and ember contents",
+      "rows": "1-4",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tapered bowl body",
+      "rows": "5-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tripod legs",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile goes 12, 14, 14, 14, 12 over rows 1-5, so the bowl mouth widens and then narrows, which is an ellipse. Row 1 is a light grey rim, and rows 3-4 show orange ember and charcoal contents inside the open bowl. Below it the body tapers from 12 to 6 px wide over rows 5-11 and sits on 8 px wide tripod legs in rows 12-15. That gives an ellipse mouth of about 4 rows above a front face of about 11 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small cold brazier with a dark tripod and a bowl holding grey ash. Only about 12 raw colours and 11 visible tones per tile, which is close to the hedge (9) but below the well (20) and the cheese stall (17). The metal has about 3 lightness steps (a dark body, a mid-grey rim, and a few highlight/ash dots), against 5-6 in the references. The outline reads as a near-black line around the whole silhouette, and 61% of the dark edge pixels are neutral. That is the sticker look, not a darker tone of the neighbouring material. Coverage is not flat (0% near-flat), and the ash and coal dots add some texture, but the legs and bowl are mostly flat dark masses without per-surface grain. A careful artist would find it thinner and more sticker-like than the well or the stall next to it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 13621
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bowl mouth with ash and coal contents",
+      "rows": "1-4",
+      "evidence": "b",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "bowl body tapering down",
+      "rows": "5-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "tripod legs",
+      "rows": "12-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The width profile runs 12, 14, 14, 14, 12 over rows 1-5, so the bowl mouth widens and then narrows, which is an ellipse. Row 1 is a light rim. Rows 3-4 show orange and ash contents inside the open bowl (evidence b and d), and the dark row 5 acts as the shadow under the front rim. Below that the bowl tapers over rows 5-11 (widths 12 down to 6), and tripod legs of width 8 fill rows 12-15. That gives about 11 rows of front body and legs under a 4-row top, so it reads as three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The brazier is a tiny, dark tripod-and-bowl silhouette with only 12 distinct colours in total. The references that carry full material ramps (well 38, cheese stall 40) have about three times as many. On the primary facts it holds up: 11 visible tones per tile is above the hedge (9) and below the well (20) and cheese stall (17), and near-flat coverage is 0%, so there are no flat fills. The weak point is the outline. 61% of the dark edge pixels are near-neutral, against 0-1% for the hedge and cheese stall, so much of the edge reads as a neutral dark line rather than a tinted dark tone of the adjacent iron, charcoal or ash. The iron has only about 3-4 lightness steps, and the ash and charcoal in the bowl are a few dots with little clumping or grain. Overall it looks thinner and more sticker-like than the references, so it fails narrowly.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 19197
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bowl mouth with embers and ash",
+      "rows": "1-4",
+      "evidence": "b",
+      "front_edge_line_row": 4,
+      "eave_shadow_rows": "5"
+     },
+     {
+      "part": "tapered bowl body and tripod legs",
+      "rows": "5-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 4,
+    "front_face_rows": 11,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 1-4 form a bowl mouth. The widths go 12, 14, 14, 14, then narrow to 12 at rows 5-6. Light rim pixels at row 1 and orange ember or coal pixels at rows 3-4 (x=8) show contents inside the open bowl, which counts as evidence (b) and (d). Rows 5-10 are the dark front of the bowl, tapering from width 12 to 8. Rows 11-15 are the tripod legs, about 8 wide with a gap at row 11. That gives a top of about 4 rows over a front face of about 11 rows. The bowl mouth is a little shallow, so this is a modest three_quarter read."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a one-tile iron tripod brazier with a bowl of charcoal and ash. It has 11 visible tones per tile, which is above prop-hedge (9) and below the stall and well (17-20). Near-flat coverage is 0%, so there are no flat fills. The iron has roughly 4 lightness steps (dark body, mid grey, highlight edge, charcoal and ash dots) against about 5 on the references. The dark edge pixels are 61% neutral, which I read as mixed. Neutral dark grey on iron is also what the Beodeul lamp-crook reference does (100% neutral), so that outline is acceptable for a metal object. The grain and ember dots break up the bowl and legs, so it does not read as a flat sticker. It is slightly simpler than the richest references, but a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20497
+  }
+ ],
+ "decidedAt": "2026-10-21T12:03:29.594Z",
+ "cells": {
+  "16": [
+   "6b80ce3ac08cc8b7"
+  ],
+  "24": [
+   "1044f26453eb8afc",
+   "4e9571cf1aa23f9c",
+   "53978f0ada3e9b2c",
+   "67c347291aa91c56",
+   "91ca9774eb0326e0",
+   "ce68188a26542231"
+  ],
+  "32": [
+   "3680e5a3cbf2abe8",
+   "643461689de01bb5",
+   "79df170b83bb7daf",
+   "a20a80235d6c0bd5",
+   "a3b9cccdc95c9e91",
+   "b1f981c991d7885f"
+  ],
+  "48": [
+   "109ec03d6cc7681e",
+   "229de707d7a8c151",
+   "5aa756d1d0169916",
+   "7970c8264a9e4a25",
+   "87156717ed23d04a",
+   "a09ea5f663ac4851"
+  ]
+ }
+}

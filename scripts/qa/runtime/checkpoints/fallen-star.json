@@ -44,10 +44,10 @@
   {
    "id": "observatory-entry",
    "label": "천문대 입구",
-   "note": "chronoBell.ts ~1112-1133 hub->observatory 착지 (11,20)",
+   "note": "fallenStarRooms.ts hub->observatory 착지 (15,21) — 거리 문(15,22) 앞",
    "mapId": "fs_observatory",
-   "x": 11,
-   "y": 20,
+   "x": 15,
+   "y": 21,
    "facing": "up",
    "switches": {
     "sw_fs_valen_marched": true
@@ -95,11 +95,11 @@
   {
    "id": "vault-gate-entry",
    "label": "화로의 방 입구(별빛 열쇠 뒤)",
-   "note": "chronoBell.ts observatory->vault_gate 착지 (16,16); 이리스 합류는 숲 관 이벤트(ev_fs_main_inspect1)",
+   "note": "fallenStarRooms.ts observatory->vault_gate 착지 (26,4) — 북동 돌 계단(25~27,3) 아래; 이리스 합류는 숲 관 이벤트(ev_fs_main_inspect1)",
    "mapId": "fs_vault_gate",
-   "x": 16,
-   "y": 16,
-   "facing": "up",
+   "x": 26,
+   "y": 4,
+   "facing": "down",
    "switches": {
     "sw_fs_main_started": true,
     "sw_fs_main_step0": true,
@@ -133,10 +133,10 @@
   {
    "id": "vault-entry",
    "label": "지하 등불 방 입구",
-   "note": "chronoBell.ts vault_gate->vault 착지 (30,57); 아직 발렌 도착 전(valen_arrived=false)",
+   "note": "fallenStarRooms.ts vault_gate->vault 착지 (15,25) — 남쪽 출구(15,26) 앞; 아직 발렌 도착 전(valen_arrived=false)",
    "mapId": "fs_vault",
-   "x": 30,
-   "y": 57,
+   "x": 15,
+   "y": 25,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -171,10 +171,10 @@
   {
    "id": "pre-boss",
    "label": "결전 직전 — 발렌 도착 뒤",
-   "note": "chronoBell.ts valenWalksIn: sw_fs_valen_arrived 가 서야 보스(25,24) 가 실체",
+   "note": "fallenStarRooms.ts FS_VAULT_BOSS (15,8) 바로 아래; valenWalksIn: sw_fs_valen_arrived 가 서야 보스가 실체",
    "mapId": "fs_vault",
-   "x": 25,
-   "y": 25,
+   "x": 15,
+   "y": 9,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -225,8 +225,8 @@
    "label": "결전 개시",
    "note": "ev_fs_main_kill2 troop_fs_finale",
    "mapId": "fs_vault",
-   "x": 25,
-   "y": 25,
+   "x": 15,
+   "y": 9,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -309,8 +309,8 @@
    "label": "결전 패배 카드와 물러섬",
    "note": "ev_fs_main_kill2 canLose=true, else recoverAll + 엘레나 「일단 물러서!」",
    "mapId": "fs_vault",
-   "x": 25,
-   "y": 25,
+   "x": 15,
+   "y": 9,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -458,10 +458,10 @@
   {
    "id": "report",
    "label": "하넬에게 보고",
-   "note": "ev_fs_main_report: 천문대 하넬(17,16), (17,17) 위쪽 대면, sw_fs_main_step2 뒤",
+   "note": "ev_fs_main_report: 천문대 하넬(24,20) — 서재 벽난로 앞, (24,21) 에서 위로 말 건다, sw_fs_main_step2 뒤",
    "mapId": "fs_observatory",
-   "x": 17,
-   "y": 17,
+   "x": 24,
+   "y": 21,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,
@@ -527,8 +527,8 @@
    "label": "엔딩 카드와 크레딧",
    "note": "ENDING_ID end_fs_act1 — 하넬 보고 대사 끝에 붙어 있다",
    "mapId": "fs_observatory",
-   "x": 17,
-   "y": 17,
+   "x": 24,
+   "y": 21,
    "facing": "up",
    "switches": {
     "sw_fs_main_started": true,

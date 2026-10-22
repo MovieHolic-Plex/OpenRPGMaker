@@ -1,0 +1,31 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r38",
+  "commit": "231e64016f",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 of /tmp/fsrooms/gate-r38/star_seal.png computed with object_gate.pixel_sha256 = 81ca1f15f7fdacdea5ae8b5350a9d8b3570c63ecf189b6504d55785757e4ee42.",
+    "1_topdown_view": "Flat floor piece seen straight from above; frame, lid and star are planar, no side faces. Consistent with the room floor. OK.",
+    "2_style_fit": "All 20 colours exist in the v5 sheet; frame has highlight row (y3) and dark base (y29), lid bevel lit top/left (H) and dark bottom/right (E). Weakness: the lid interior (x6-25, y9-25) is almost a flat near-black fill (30,30,36) with sparse single-pixel (42,42,50) specks; it reads as a hole more than a stone slab. Frame inner edge has a dark A line at the south (y27, x3-25) but none at the north - inconsistent rim.",
+    "3_readability_1x": "Fails the stated purpose of the revision. At 1x/3x in the archive mockup it still reads as an ornate star floor plaque/seal; the 'hinges' are two squat 4x6 grey lumps (x6-9 and x20-23, y4-9) that read as bolts/clamps or caps, not straps; the 'pull ring' (x13-18, y22-24) is a 5px grey U fused onto the bottom of the rune circle and flanked by its purple dots, so it reads as part of the circle ornament, not a ring you pull.",
+    "4_placement": "Frame is flush, transparent margin on all sides lets the floor show through; no floating, no cast shadow. OK.",
+    "5_silhouette_outline": "Clean rectangular outline, no stray pixels outside the frame. Minor: hinge blocks have a single dark D knuckle row (y4) sitting on the frame that reads as a notch rather than a cylinder."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/star seal",
+      "name": "별 봉인 돌뚜껑(닫힘, 2×2) (star seal)",
+      "kind": "flat",
+      "pixelSha256": "81ca1f15f7fdacdea5ae8b5350a9d8b3570c63ecf189b6504d55785757e4ee42",
+      "verdict": "FAIL",
+      "reasons": [
+        "Hinges do not read as hinges: replace the 4x6 grey blocks at x6-9/x20-23, y4-9 with (a) a 2px-tall knuckle cylinder straddling the frame/lid seam at y4-5 (dark D bottom row, light G top row, 3-4px wide) and (b) a thin 2px-wide strap running DOWN onto the lid from y6 to about y13, ending in a pointed/spade tip, with 1-2 rivet highlight pixels (G) on the strap. The strap must be long and narrow so it reads as iron band, not a lump.",
+        "Pull ring merges with the rune circle: move it off the circle into the clear lid band between the circle and the lid's south bevel (y23-26 area), make it a closed 5x4 ring (I/G top-left lit, D/E bottom-right) with a 1-2px staple pixel above it attaching to the lid, and remove/shift the purple O rune dots at x11 and x19 on y22 so nothing flanks the ring.",
+        "Lid reads as a dark hole rather than a stone slab: add slab structure on x6-25, y9-25 - e.g. a 1px seam cross or two plank/slab joints in K/H, or a subtle 2-step tone gradient (J to K toward the lit top-left) - instead of flat (30,30,36) with scattered specks.",
+        "Make the frame inner rim consistent: either add the dark A inner line along the north edge (y4 under the frame, x4-25) to match the south line at y27, or remove the south one."
+      ]
+    }
+  ]
+}

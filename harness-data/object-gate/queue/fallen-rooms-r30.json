@@ -1,0 +1,14 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "fallen-rooms-r30",
+ "title": "폴른 스타 꺼진 돌 화로 r30",
+ "createdAt": "2026-10-21T20:04:53.918Z",
+ "items": [
+  {
+   "sha": "e6f7799b320958af0ba19260127e0f95cb401604a6ff037a7bb31a0e87836948",
+   "kind": "other",
+   "label": "atlas_biome_interior/plus/stone brazier",
+   "source": "/tmp/fsrooms/gate-r30/stone_brazier.png"
+  }
+ ]
+}

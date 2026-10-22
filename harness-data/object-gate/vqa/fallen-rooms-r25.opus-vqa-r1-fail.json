@@ -1,0 +1,33 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r25",
+  "commit": "2d0dd28dbc",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed with src/harnesses/_core/object_gate on /tmp/fsrooms/gate-r25/dome_vault.png (480x128 RGBA, 38 opaque colours): e9d8b8bd8fadbdb7e355d2293f30c90020fd03b1a173b63cc2a3c91043ec1ae8.",
+    "1_topdown_view": "Reads as the inside of a dome rising over the hall from the room; transparent wall-face cells leave the existing stepped wall faces intact and the drum brick wedges above each step top are grid-aligned. But the cornice is two straight diagonals meeting in a short rounded peak at x~224-256: at 1x the base ring reads as a gable '^' line, not a ring around a round room. The stepped plan is matched literally (linear slope) instead of being curved into an ellipse arc (flatter near centre, steeper at the ends), which the illustration ref-op3 and the brief ('smooth curved cornice') ask for.",
+    "2_style_fit": "Drum brick matches the v5 wall-face brick. The dome masonry does not match v5 stone: each block is one flat fill (three tones (67,63,70)/(65,65,76)/(82,76,81) cover most of the dome) with no top-edge highlight, no bottom shadow, no speckle, and the mortar is near-black (28,20,24) 1px lines. v5 stone/brick (sheet rows 8-14) uses mid-dark mortar, a lit top edge per block and grain texture. Result: the dome looks like a flat vector tessellation glued on above textured walls. Timber ribs (3-tone ramp, top-left lit) and brass collars fit.",
+    "3_readability_1x": "At 1x (mock-obs.png) the hall now clearly reads as a domed observatory with a star slit; big improvement over a boxy hall. Weak points: the gable-shaped cornice, and the slit reads as two stacked windows (dark navy with moon above the brass rail, bright blue gradient below).",
+    "4_placement": "Dome meets the wall tops without gaps and the overlap cells (local x224-255, y48-63) carry the slit top row so the slit continues. Defects at the junction: a 2-row navy/blue checker dither at local x232-248, y57-59 directly above the brass rail (the only checker dither on the piece, reads as noise), and blotchy dark shading on the drum brick next to the jambs (local x~222-229 and x~250-257, y~49-62) that shows as dirty smudges in slit-x6.png.",
+    "5_silhouette_outline": "Outer silhouette is inconsistent: on the lower flanks it is a 1px near-black outline, but from about local x95 to the slit the top edge is the brown timber ring with no outline, stepping in a light-brown staircase (x95-125, y17-25 and mirrored x355-385). Around local x60-95, y24-36 (and mirror x385-420) the outline doubles to 2px with irregular step lengths where the outer rib runs tangent to the rim, giving jaggies. The mortar lines across the dome have many single-pixel kinks (broken course lines) that read as noise at 3x."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/dome vault",
+      "name": "천문대 둥근 지붕(큰 방 천장 띠 전체, 30×8) (dome vault)",
+      "kind": "wall_mounted",
+      "pixelSha256": "e9d8b8bd8fadbdb7e355d2293f30c90020fd03b1a173b63cc2a3c91043ec1ae8",
+      "verdict": "FAIL",
+      "reasons": [
+        "Stone style mismatch: dome blocks are flat single-colour fills with near-black (28,20,24) mortar. Fix: re-render the courses as v5 stone. Mortar one step darker than the block (not black), a 1px lit top edge and a 1px shadow bottom edge on every block, light grain/speckle as in the v5 wall-stone rows. Keep the upward darkening as a ramp shift per course.",
+        "Cornice reads as a gable '^'. Fix: bend the cornice from two straight diagonals into one continuous elliptical arc. Shallow over local x~150-330, steeper toward x<60 and x>420, still landing on the stepped wall tops at both ends (y~110-112) and at the slit (y~48). Bend the concentric courses above to follow the arc.",
+        "Silhouette and outline: give the whole outer rim one consistent 1px dark outline, including along the top timber ring from x~95 to the slit and mirrored, so the ring sits inside the outline. Remove the doubled 2px outline and irregular steps at local x60-95, y24-36 and mirror x385-420. Use even step runs (pixel-perfect arc).",
+        "Mortar course lines: smooth the single-pixel kinks so each course line is a clean arc with regular step lengths.",
+        "Slit junction: remove the navy/blue checker dither at local x232-248, y57-59 (use a solid 1-2 row ramp or end the dark sky directly on the brass rail). Bring the dome slit's sky colour toward the top of the lower 'dome slit tall' gradient (or add a matching gradient in the dome portion) so the slit reads as one opening, not two windows.",
+        "Clean the blotchy dark shading on the drum brick beside the jambs (local x~222-229 and x~250-257, y~49-62). Use a single 1px-2px even jamb shadow column consistent with the brick ramp."
+      ]
+    }
+  ]
+}

@@ -1,41 +1,41 @@
 /**
- * 『폴른 스타』 오프닝·타이틀의 내장 배경 그림.
- * 게임 안 실제 맵(왕도·천문대·숲)에서 이벤트를 지우고 1:1(16px 타일 그대로) 잘라 구운 그림이다.
- * 오프닝 레이어는 배경을 (crop.x, crop.y) 에 놓으므로 컷 안 좌표는 원본 맵의 px 좌표 그대로다.
- * 밤 컷은 구울 때 달빛 색으로 눌렀다(scripts/content/flagship/bake_fallen_star_backdrops.mts).
- * 생성 이미지가 아니다 — 맵을 그린 손 도트 타일 그대로다. 플레이어·내보내기는 generatedAssetResourceResolver 가 id 로 찾는다.
+ * 『폴른 스타』 타이틀·오프닝 그림 (2026-10-21 사용자 「타이틀·오프닝은 생성 이미지로 제대로」).
+ *
+ * 이미지 모델(god-tibo-imagen, 유료 대체 경로 끔)로 컷마다 셋을 만들고 감독이 골랐다(by: supervisor, 고른 번호는 아래 source).
+ * 프롬프트는 게임의 16px 3/4 탑뷰 칩셋 화풍을 지시하고 실제 맵 화면을 참고 그림으로 주었다(.omo 작업 스크립트 genart.mts).
+ * 원본(1672×941)을 게임 화면 배율에 맞춰 줄이고 64색 도트로 눌렀다 — 타이틀은 480×270(화면 1배), 오프닝 컷은
+ * 카메라가 천천히 흐를 수 있게 528×297(1.1배)이다. 무대에서는 nearest 로 1배 그대로 그린다.
+ * 후보 비교: ~/claude-viz/fallen-star-title-pick-1.html. 플레이어·내보내기는 generatedAssetResourceResolver 가 id 로 찾는다.
  */
-export type FallenStarBackdropId = 'hub-night' | 'hub-day' | 'observatory-night' | 'forest-night' | 'title';
-export type FallenStarBackdropGrade = 'day' | 'night' | 'candle';
+export type FallenStarArtId = 'title' | 'town' | 'fall' | 'observatory' | 'crash' | 'morning';
 
-export type FallenStarBackdrop = {
-  readonly id: FallenStarBackdropId;
+export type FallenStarArt = {
+  readonly id: FallenStarArtId;
   readonly resourceId: string;
   readonly fileName: string;
-  /** 구운 원본 맵(createChronoBellFlagshipDemo 의 맵 id). */
-  readonly mapId: string;
-  /** 맵 그림 위 자르기(px). width/height 가 곧 배경 그림 크기다. */
-  readonly crop: { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
-  readonly grade: FallenStarBackdropGrade;
+  readonly width: number;
+  readonly height: number;
+  /** 고른 후보(컷-번호)와 고른 사람. */
+  readonly source: string;
 };
 
-const backdrop = (id: FallenStarBackdropId, mapId: string, grade: FallenStarBackdropGrade, x: number, y: number, width: number, height: number): FallenStarBackdrop => ({
-  id, resourceId: `oprn_fallen_star_${id.replace(/-/g, '_')}`, fileName: `${id}.png`, mapId, crop: { x, y, width, height }, grade,
+const art = (id: FallenStarArtId, width: number, height: number, source: string): FallenStarArt => ({
+  id, resourceId: `oprn_fallen_star_art_${id}`, fileName: `art/${id}.png`, width, height, source,
 });
 
-export const FALLEN_STAR_BACKDROPS: readonly FallenStarBackdrop[] = [
-  backdrop('hub-night', 'fs_hub', 'night', 192, 48, 544, 432),
-  backdrop('hub-day', 'fs_hub', 'day', 48, 208, 688, 288),
-  backdrop('observatory-night', 'fs_observatory', 'candle', 0, 0, 288, 304),
-  backdrop('forest-night', 'fs_forest', 'night', 0, 0, 480, 320),
-  // 타이틀 — 운하 다리와 천문대 지붕이 보이는 밤 왕도 한 화면(480×270, 게임 화면과 같은 1배).
-  backdrop('title', 'fs_hub', 'night', 208, 176, 480, 270),
+export const FALLEN_STAR_ART: readonly FallenStarArt[] = [
+  art('title', 480, 270, 'title-3 · by: supervisor'),
+  art('town', 528, 297, 'town-2 · by: supervisor'),
+  art('fall', 528, 297, 'fall-2 · by: supervisor'),
+  art('observatory', 528, 297, 'observatory-2 · by: supervisor'),
+  art('crash', 528, 297, 'crash-2 · by: supervisor'),
+  art('morning', 528, 297, 'morning-2 · by: supervisor'),
 ];
 
 export const FALLEN_STAR_BACKDROP_URLS: Readonly<Record<string, string>> = Object.fromEntries(
-  FALLEN_STAR_BACKDROPS.map(entry => [entry.resourceId, `/assets/fallen-star/opening/${entry.fileName}`]),
+  FALLEN_STAR_ART.map(entry => [entry.resourceId, `/assets/fallen-star/opening/${entry.fileName}`]),
 );
 
-export function fallenStarBackdrop(id: FallenStarBackdropId): FallenStarBackdrop {
-  return FALLEN_STAR_BACKDROPS.find(entry => entry.id === id)!;
+export function fallenStarArt(id: FallenStarArtId): FallenStarArt {
+  return FALLEN_STAR_ART.find(entry => entry.id === id)!;
 }

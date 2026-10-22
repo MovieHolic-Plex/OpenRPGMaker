@@ -6,7 +6,7 @@ import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { characterSpriteX, characterSpriteY, placeCharacterSprite, updateCharacterDepth } from "@/player/characterDepth";
 import { eventSpriteScale, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
-import { followerMinDistance, followerPositions, getFollowerBodySpan, setFollowerBodySpan, type FollowerSlotMotion } from "@/project/followers";
+import { followerMinDistance, followerPositions, getFollowerBodySpan, setFollowerBodySpan, type FollowerSlotMotion, type FollowerWorld } from "@/project/followers";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
   NPC_MOVE_DURATION_MS,
@@ -17,6 +17,9 @@ import {
 } from "@/player/charsetMotion";
 import type { Dir } from "@/player/input";
 import { boardedVehicleId } from "@/project/vehicles";
+import { findBlockingRuntimeEventAtInMap } from "@/project/runtimeEventState";
+import { runtimeMap } from "@/project/runtimeMap";
+import type { Project } from "@/project/types";
 
 /**
  * 팔로워 슬롯 보간 상태(스프라이트 계층 전용). 슬롯(궤적 칸)은 플레이어 걸음이
@@ -72,6 +75,17 @@ function lerpFollower(motion: FollowerSlotMotion, now: number): { x: number; y: 
   return { x: lerp(motion.from.x, motion.to.x, progress), y: lerp(motion.from.y, motion.to.y, progress) };
 }
 
+/** NPC·간판이 선 칸은 동료 자리로 주지 않는다 — 걷는 NPC 와 같은 칸에 겹쳐 서는 것을 막는다. */
+function followerWorldFor(scene: PlaySceneContext, project: Project): FollowerWorld {
+  const map = runtimeMap(scene.map, scene.session);
+  return {
+    project,
+    map: scene.map,
+    blocked: (x, y) => findBlockingRuntimeEventAtInMap(project, map, scene.session, scene.eventPositions, x, y) !== undefined,
+    inScene: scene.running,
+  };
+}
+
 export function syncFollowerSprites(
   scene: PlaySceneContext,
   options?: {
@@ -88,7 +102,7 @@ export function syncFollowerSprites(
   // 완료 시점에 정확히 끝나 팔로워가 한 칸 뒤를 걷는다(옵션 없으면 NPC 기본값).
   const stepDurationMs = options?.stepDurationMs ?? NPC_MOVE_DURATION_MS;
   // 탈것에 탄 동안 파티는 탈것 안에 있다 — 동료를 그리지 않는다. 내리면 궤적이 새로 깔리며 돌아온다.
-  const followers = boardedVehicleId(scene.session) ? [] : followerPositions(scene.session, project.system.companions, { project, map: scene.map });
+  const followers = boardedVehicleId(scene.session) ? [] : followerPositions(scene.session, project.system.companions, followerWorldFor(scene, project));
   for (const position of followers) {
     const key = followerSpriteKey(position.follower);
     expected.add(key);

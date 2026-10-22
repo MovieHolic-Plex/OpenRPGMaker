@@ -1,0 +1,359 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "438bef0d3eb1fd5b40c7ca8bb2ca4ce3b5fdafb6573fe286468a6ccc4daa63ee",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "돌 단 오르는 두 계단(2칸) (dais steps stone)",
+ "label": "atlas_biome_interior/plus/dais steps stone",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 평면 채움 (3/4)",
+  "화풍: 질감 없음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (3/4)",
+   "평면 채움 (3/4)",
+   "질감 없음 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 6,
+  "tileColorsP90": 6,
+  "darkV5": 55,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 2
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper step tread",
+      "rows": "4-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "upper step riser (front face)",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower step tread",
+      "rows": "9-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "lower step riser (front face)",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Two stacked steps, each 32px wide. The upper tread is a light band at rows 4-5 (L≈206 then 171). It ends in a dark front-edge line at row 6 (L=76), and the riser below is rows 7-8 (L≈150 and 124). The lower tread is a light band at rows 9-11 (L≈206 then 171 at x=8, 16 and 23). It ends in a dark edge/eave line at row 12, and the riser is rows 13-14. Row 15 is the dark base outline. Each step shows a top band, an edge line and a front face, so the stair reads as 3/4 view. The treads are shallow (2 and 3 rows), but each has an edge line and shadow, so they are not just rims. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "By eye, the candidate is a large flat slate-grey field with one small stair sprite at the bottom centre. It does not read as a 4x3 ground patch like the grass and paving references. The stair has only about 3 grey-blue steps (light top edge, mid face, dark base) and no per-stone shading or grain. The surrounding field is one flat colour with no dots or variation. The measured facts (6 visible tones per tile, 0% near-flat) are in the reference range, but they do not match what the picture shows, so I weight the visual comparison more. The paving reference has individually shaded cobbles and tinted edges; the candidate has nothing comparable. Its dark edge pixels are only 20% neutral, so the outline is not a clean black sticker line, but the edge reads as a mixed grey. Overall it is flatter and sparser than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 17249
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper step tread",
+      "rows": "4-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "upper step riser",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower step tread",
+      "rows": "9-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "lower step riser and base shadow",
+      "rows": "13-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The silhouette is a full 32px-wide block over rows 4-15. Two stacked steps each show a light tread band, a dark front-edge line, and a mid-tone riser below. The upper tread is rows 4-5, with a dark edge at row 6 and a riser at rows 7-8. The lower tread is rows 9-11, with a dark edge at row 12 and a riser at rows 13-14, then the darkest base shadow at row 15. Both steps have a top surface and a front face, so it reads as three-quarter. The treads are shallow, 2 and 3 rows, so the top is only slightly foreshortened."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "slightly_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny two-step stair sprite on a large, uniform slate-grey field. By eye, that field has no speckle, grain or stone-by-stone shading. The stair has only about 4 lightness steps (light top edge, mid face, dark lines) and no per-stone highlights or texture dots, where the paving reference shows cobbles shaded one by one with light mortar edges. The measured 6 visible tones per tile is close to the paving reference's 7 and above the grass reference's 3. Near-flat coverage reads 0%, but that does not match the large flat background I can see, so I trust the picture. Only 20% of the dark edge pixels are neutral, so the outline is partly tinted and I call it mixed. The result looks flat and sticker-like next to the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16114
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper step tread",
+      "rows": "4-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "lower step tread",
+      "rows": "9-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12"
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Two stacked steps, each 32 px wide. The upper step has a light tread on rows 4-5 (L about 206 then 171). A dark edge or shadow line on row 6 follows, then a mid-tone riser on rows 7-8. The lower step has a light tread on rows 9-11 (3 rows), a dark edge line on row 12, and a riser on rows 13-14. Row 15 is a dark base outline. Each step therefore has a top band, an edge line and a front face, with 4 front-face rows in total, but each riser is only 2 rows. No receding side face is drawn."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a small stone-step prop, not a full 4x3 patch, so I compared it with the paving reference. It reads as a highlight rim, light and mid stone faces, a dark joint and a deep shadow, which is about 5 steps against the paving's 6-7. Measured visible tones per tile are 6, against 7 for paving and 3 for grass. Near-flat coverage is 0%, so there are no 5x5 flat fills. Only 20% of the dark edge pixels are neutral, so the outline leans toward a tinted dark stone tone rather than a uniform black sticker line. The joints and block segmentation give some stone texture, though less per-stone grain than the paving cobbles. Craft is close to the paving reference and it would sit acceptably beside it, with slightly less texture because the object is so small.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 32288
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper step tread",
+      "rows": "4-5",
+      "evidence": "a",
+      "front_edge_line_row": 6,
+      "eave_shadow_rows": "6"
+     },
+     {
+      "part": "upper step riser (front face)",
+      "rows": "7-8",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "lower step tread",
+      "rows": "9-11",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "12"
+     },
+     {
+      "part": "lower step riser (front face)",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 3,
+    "front_face_rows": 4,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Two stacked steps, 32 px wide, rows 4-15. Each step has a light tread band followed by a dark edge row and then a front riser with block joints. The upper tread is rows 4-5 (L=206 then 171), with a dark edge line at row 6 (L=76) and a riser at rows 7-8. The lower tread is rows 9-11 (L=206 then 171), with a dark edge line at row 12 and a riser at rows 13-14. Row 15 is a dark base line. Both steps show a top surface above an edge line and a front face, so the drawing reads as three-quarter view. The treads are shallow, at 2 and 3 rows."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "flat",
+    "flat_fills": true,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "By eye, most of the candidate is one flat slate-grey field with no dots, grain or variation, so it reads as large flat fills even though the measured near-flat figure is 0%. The only detail is a tiny two-step stair motif at the bottom centre, drawn with about 3 value steps (light edge, mid, dark) and a few pale and dark edge pixels. It looks like a small sticker on a plain background, not a 4x3 ground patch. The paving reference shows 7 visible tones per tile, with stones shaded one by one, mortar lines and a mix of highlights and shadows. The candidate's 6 raw tones are spread thinly across a mostly empty area. The grass reference shows only 3 visible tones per tile, but it still has tufts and clumps across the whole surface. The candidate's outline is only partly tinted (20% neutral dark edge pixels) and the stair is too small to judge it well, so I call it mixed. The candidate sits clearly below the references on structure and texture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "평면 채움 (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "평면 채움 (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 16654
+  }
+ ],
+ "decidedAt": "2026-10-22T00:26:31.298Z",
+ "cells": {
+  "16": [
+   "5d4a96954bb6a900",
+   "964cd5cf5e4b9403"
+  ],
+  "24": [
+   "266ef5ccaf173dfa",
+   "6f1b2b7f6739384d",
+   "a433653102cd43f3",
+   "a7b6adc416d97bf0",
+   "ac20dbb8731ba84e",
+   "b492c627c0b6ac91",
+   "b7248e81b9b3f762",
+   "dd95848bbc0a20c0",
+   "e1dbc2b3784beee0",
+   "eb87af84b30a2cbe",
+   "f82864da58c1f894",
+   "f86e789ce115921a"
+  ],
+  "32": [
+   "1c2b07c6c9ae95c6",
+   "b602ba4a85b70d58"
+  ],
+  "48": [
+   "0d99e4cdfdf9cd61",
+   "32242960dd6a5dd9",
+   "71a1be46484f29b0",
+   "82f9b5a3b94e4e3d",
+   "a7ff30492e817b74",
+   "d280a6a65154d201"
+  ]
+ }
+}

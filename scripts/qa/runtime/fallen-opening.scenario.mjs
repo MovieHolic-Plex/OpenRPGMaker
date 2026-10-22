@@ -8,7 +8,9 @@ export default {
   beats: [
     { id: "title", note: "타이틀", ops: [{ kind: "waitFor", testid: "title-screen", state: "present", timeoutMs: 60000 }], expect: { testidPresent: ["title-screen"] }, shot: true },
     { id: "op1a", note: "새 게임 → 컷 1", ops: [
-      { kind: "key", key: "Enter" },
+      // 타이틀 입장 연출 중의 Enter 는 연출만 건너뛴다 — 연출이 끝난 뒤 눌러 오프닝이 뜰 때까지 누른다.
+      { kind: "waitForAttr", testid: "title-screen", attr: "data-seq-state", value: "done", timeoutMs: 30000 },
+      { kind: "pressUntil", key: "Enter", testid: "cinematic-sequence", state: "present", maxPresses: 4, timeoutMs: 12000 },
       { kind: "waitFor", testid: "cinematic-sequence", state: "present", timeoutMs: 30000 },
       { kind: "hold", dir: null, ms: 2600 },
     ], shot: true },

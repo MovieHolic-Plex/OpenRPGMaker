@@ -10,7 +10,7 @@ import type { BattleBackdropLayer } from "@/project/types";
  *
  * 프리셋은 그림 파일 없이 런타임이 CSS 그라디언트로 그린다(battleBackdropLayersDom.ts). 저장은 기본값을 뺀 값만.
  */
-export const BATTLE_BACKDROP_LAYER_PRESETS = ["fog", "clouds", "mist", "rain", "snow", "embers", "stars", "lightRays"] as const;
+export const BATTLE_BACKDROP_LAYER_PRESETS = ["fog", "clouds", "mist", "rain", "snow", "embers", "stars", "lightRays", "glow"] as const;
 export type BattleBackdropLayerPreset = (typeof BATTLE_BACKDROP_LAYER_PRESETS)[number];
 
 export const BATTLE_BACKDROP_LAYER_LABELS: Record<BattleBackdropLayerPreset, string> = {
@@ -22,6 +22,7 @@ export const BATTLE_BACKDROP_LAYER_LABELS: Record<BattleBackdropLayerPreset, str
   embers: "불티",
   stars: "별",
   lightRays: "빛줄기",
+  glow: "중앙 빛무리",
 };
 
 /** 프리셋 기본값 — 저자가 값을 주지 않으면 이것으로 그린다. */
@@ -37,6 +38,7 @@ export const BATTLE_BACKDROP_LAYER_DEFAULTS: Record<
   embers: { scrollX: 8, scrollY: -50, opacity: 85, blendMode: "add" },
   stars: { scrollX: 4, scrollY: 0, opacity: 90, blendMode: "screen" },
   lightRays: { scrollX: 6, scrollY: 0, opacity: 60, blendMode: "screen" },
+  glow: { scrollX: 0, scrollY: 0, opacity: 70, blendMode: "screen" },
 };
 
 export const BATTLE_BACKDROP_LAYER_LIMIT = 4;

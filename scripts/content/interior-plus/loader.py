@@ -4,7 +4,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, 'pieces'))
 import iplib
 
-MODULES = ['structure', 'museum', 'ship', 'arena', 'puzzle']
+MODULES = ['structure', 'museum', 'ship', 'arena', 'puzzle', 'observatory', 'fallen']
 
 
 def load(mods=None):

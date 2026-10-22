@@ -1,0 +1,34 @@
+{
+ "schema": "bdg-vqa/1",
+ "judge": "claude-opus-5-5",
+ "date": "2026-10-21",
+ "batch": "fallen-rooms-r6",
+ "commit": "2dadaef22b",
+ "overall": "FAIL",
+ "criteriaNotes": {
+  "0_hash_check": "Recomputed with object_gate.pixel_sha256. star_seal = bd93f1da9bab4fa56a7c7c383aea5f1cd101c3748c3bb3bedb775534e1e40d12, star_seal_open = 33f4b2becf9a7ec573b66452a68bd7593cdb1bf7f37208cc4858e9af9e76c6c2. Both are 32x32 RGBA, with a 1px transparent border on rows 0-1, row 31 and cols 0/31.",
+  "1_topdown_view": "Both pieces are flat floor pieces seen top-down, with no side or iso faces. Closed: the lid is an inset plane, lit by a #41414c highlight on its top row 6 and left col 5 and shaded by #131317 on its right and bottom. That is correct for a flush lid. Open: the pit has no visible stairwell side walls, and every tread spans the full width x=5..26. The steps therefore show no depth perspective (no narrowing and no shrinking tread height), unlike the v5 stairs-down art.",
+  "2_style_fit": "The kerb is the same warm stone ramp in both pieces (#3a3530 / #645c54 / #8e8378 / #b9ab9d), and the frames are pixel-identical outside x4..27 / y4..27. The closed lid's #1e1e24/#2a2a32/#585866 black stone with #6a38b0/#9167ca purple and #c09020/#ead285 gold matches the seal-stone stele material. In the open pit, the steps use flat bands with vertical joints aligned at x=11 and x=19 through every step. That reads as masonry wall courses, not treads, and there is no nosing highlight like the v5 stair has.",
+  "3_readability_1x": "Closed: at 1x in the archive it reads clearly as a dark stone lid in a stone kerb with a gold and purple star, and it pairs well with the two steles. It could read as a floor plaque, but the star keyhole intent is clear. Open: at 1x and x4 it reads as a fireplace, oven or iron grate, not stairs going down. The black upper half with faint horizontal lines at rows 8, 10 and 11 looks like grate bars. The lightest band is at the bottom (rows 22-25) and is capped by a dark #1e1e24 row 26 at the near edge, so it looks like a recessed brick box.",
+  "4_placement": "Both pieces fit centred between the steles, within the 2x2 cells, with a 1-2px wood margin. Nothing overlaps or floats. The open frame exactly matches the closed frame, so the swap is seamless.",
+  "5_silhouette_outline": "Both pieces have a clean rectangular kerb with a #3a3530 outer outline and no stray pixels. The closed star is one connected gold shape with a purple core. The open state's silhouette is fine, but its interior structure is the problem (see 3)."
+ },
+ "items": [
+  {
+   "id": "star_seal",
+   "name": "별 봉인 돌뚜껑(닫힘, 2×2) (star seal)",
+   "kind": "flat",
+   "pixelSha256": "bd93f1da9bab4fa56a7c7c383aea5f1cd101c3748c3bb3bedb775534e1e40d12",
+   "verdict": "PASS",
+   "reasons": "It is a correct flat top-down lid: an inset black-stone plane with a top/left highlight and right/bottom shadow inside a lit warm stone kerb (C highlight row 3, mortar flecks). It uses the steles' black, purple and gold material. The five-point star is gold, lit pale on its upper-left arms, with a purple and lavender core, and sits inside a grey rune ring with purple dots. It reads at 1x in the room as a sealed stone hatch with a star keyhole. Minor: the ring (#585866) is slightly heavy and could pass for an octagonal groove. Optional: soften its corner pixels."
+  },
+  {
+   "id": "star_seal_open",
+   "name": "별 봉인 돌계단(열림, 2×2) (star seal open)",
+   "kind": "flat",
+   "pixelSha256": "33f4b2becf9a7ec573b66452a68bd7593cdb1bf7f37208cc4858e9af9e76c6c2",
+   "verdict": "FAIL",
+   "reasons": "The frame matches the closed state exactly, but the pit does not read as stairs going down. At 1x it reads as a hearth, oven or grate. Fixes, using pixel coordinates inside the x5..26 / y5..26 opening: (a) Give every step the v5 stair grammar: a 1-row lit nosing at the south edge (#b9ab9d on the nearest step, #8e8378 on the next, #645c54 on the next), then a tread body, then a 1-row dark shadow line at its north edge where the next step drops. Currently rows 21 (#131317) and 26 (#1e1e24) put dark lines on both edges of the lightest tread. Make row 26 the nosing highlight and keep row 27's #3a3530 as the kerb lip shadow. (b) Darken each step progressively going north: nearest tread #8e8378/#645c54, then #645c54/#3a3530, then #3a3530/#1e1e24, then #131317, then the #08080a void. The tread height should also shrink with depth (about 5, 4, 3, 2 rows from the south), not stay at the current 5/4/3 with a uniform full width. (c) Remove the vertical joints aligned at x=11 and x=19 in rows 18-20 and 23-25 (and x=13/21 in rows 18-20). Either drop them or use at most one short staggered crack per tread, so the treads stop reading as brick courses. (d) Add stairwell side walls: a 1-2px #3a3530/#645c54 inner wall face down the west and east sides of the opening (currently only the single-pixel col 4 #131317 and col 27 #08080a). Taper them so the treads get narrower toward the north; this gives the descent its perspective. (e) Remove the faint horizontal #131317/#1e1e24 lines in the black void at rows 8, 10 and 11, which read as grate bars. Keep the top 5-6 rows as a clean dark void, with at most a barely lit far step edge."
+  }
+ ]
+}

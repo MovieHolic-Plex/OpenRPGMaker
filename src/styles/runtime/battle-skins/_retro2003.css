@@ -448,12 +448,13 @@
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor > .battle-status-icons { display: none; }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy > .battle-status-icons {
   position: absolute;
-  bottom: calc(100% - var(--battle-sprite-top-pad, 0%) + 2px);
-  left: 50%;
-  transform: translateX(-50%);
+  /* 머리 위가 아니라 이름판 옆 — 머리 위에 두면 키 큰 적(발렌)의 얼굴에 걸린다(가혹 검수 r13). */
+  top: calc(100% + 8px);
+  left: calc(50% + 38px);
+  transform: none;
   /* 두 개씩 줄을 바꿔 위로 쌓는다 — 옆 적의 배지 줄과 이어 붙어 누구 것인지 흐려졌다. */
-  flex-wrap: wrap-reverse;
-  justify-content: center;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   width: max-content;
   max-width: 80px;
   gap: 2px;
@@ -461,7 +462,7 @@
   pointer-events: none;
 }
 /* 대상 선택의 ▼ 커서와 겹치지 않게 한 칸 더 올린다. */
-.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy.battle-target-selected > .battle-status-icons { bottom: calc(100% - var(--battle-sprite-top-pad, 0%) + 26px); }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy.battle-target-selected > .battle-status-icons { top: calc(100% + 8px); }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy.defeated > .battle-status-icons { display: none; }
 
 /* ---- 적 이름 창 (2026-10-01) ----------------------------------------------
@@ -513,6 +514,8 @@
   color: #fff;
   text-shadow: var(--retro-pixel) var(--retro-pixel) 0 var(--retro-shade);
 }
+/* 이름과 레벨 사이 한 칸 — 붙어서 「발렌Lv.9」로 읽혔다. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list-level { margin-left: 0.4em; }
 /* 이름이 길면 배지 앞에서 말줄임한다 — 예전엔 「꽃집 아가씨」 끝 글자가 REG 배지 밑으로 들어갔다. */
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-name {
   display: block;

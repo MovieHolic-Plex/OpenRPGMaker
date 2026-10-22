@@ -1,0 +1,304 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "480358c174ac9bb7c052170a5f9062ef6d07dc165e135c615f3f90bb27edc283",
+ "width": 16,
+ "height": 48,
+ "kind": "wall_mounted",
+ "name": "둥근 지붕 갈빗대(가운데, 1×3) (dome rib)",
+ "label": "atlas_biome_interior/plus/dome rib",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 26,
+  "nearBlackEdge": 0.53,
+  "opaqueTiles": 1
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "vertical wooden rib/pillar shaft with gold bands",
+      "rows": "0-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold bands",
+      "rows": "17-18, 30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base bracket at bottom",
+      "rows": "43-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 48,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a tall, narrow wooden rib (columns x=6-11, rows 0-42) with two gold bands and a small stone base flaring out at rows 43-47. It is drawn flat against a wall as a purely vertical face. The silhouette is 6 wide through the shaft and widens only for the bands (8) and base (10), with no ellipse or edge line plus eave shadow. There is no top surface, so it reads as a front elevation, which is acceptable for a wall-mounted flat object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a vertical 1x3 rib column with horizontal banding and a lit left edge. It shows 13 visible tones per 16x16 tile, within the reference range (hedge 9, cheese stall 17, roofed well 20). Near-flat coverage is 0%, so there are no flat fills. The wood and metal sections carry several value steps, roughly 5, and the banding reads as grain. About 40% of dark edge pixels are neutral, close to the bench (44%) and well (33%). So the outline is partly tinted and partly near-black, which I call mixed, and it is not the uniform black sticker line. Density is on par with the references, so a careful artist would accept it next to them. Texture is moderate rather than rich, since the column is a simple structural piece.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14393
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "vertical wooden rib/beam with gold bands",
+      "rows": "0-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "gold bands",
+      "rows": "17-18, 30-31",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone bracket/corbel base",
+      "rows": "43-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 48,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a tall, narrow vertical rib (6 px wide, brown wood) running from row 0 to 42, with two gold bands at rows 17-18 and 30-31 (each 2 rows, widening from 6 to 8 px). They read as front-facing strips with no eave shadow, so they are not top surfaces. The stone bracket at rows 43-47 (width 10, 8, 6, 4) tapers like a corbel and shows a light front line at row 43, but it is a 1-2 row lip, not a top surface. The rest of the sprite is a flat vertical face of a wall-mounted element with a brick wall backdrop. No ellipse, no roof and no contents. It is a front elevation, which is acceptable for a flat wall-mounted object."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a vertical wooden rib with dark banding and a grey stone base. It shows about 5 lightness steps on the wood, with grain and band variation, and no flat areas: near-flat coverage is 0%. It carries 13 visible tones per tile, which is above the hedge (9) and below the roofed well (20) and cheese stall (17). That is acceptable for a thin, simple structural piece. 40% of its dark edge pixels are near-neutral, so the outline is mixed: some tinted brown beside the wood and some neutral dark. The reference bench (44%) and well (33%) show a similar mix, so this is not the uniform black sticker outline. Overall it sits slightly below the richest references but would not look thinner or flatter next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20676
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "vertical wooden rib/beam with gold bands, flat on wall",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone base cap/bracket at bottom of rib",
+      "rows": "43-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 48,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a tall vertical wooden rib (width 6, rows 0-47) with two gold bands at rows 17-18 and 30-31, drawn flat against a dark wall background. There is no top surface, no ellipse, and no front-edge line with eave shadow. The small stone foot at rows 43-47 tapers (10,10,8,6,4) as a bracket seen face-on. It is a wall-mounted flat front elevation, which is acceptable for the wall_mounted kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a vertical 1x3 rib column, a brown shaft with banded joints and a left-side highlight. It shows about 5 lightness steps, close to the references' 5-6. It has 13 visible tones per 16x16 tile, above prop-hedge (9) and below prop-well-roofed (20) and prop-stall-cheese (17). Near-flat coverage is 0%, so there are no flat fills. The dark edge pixels are 40% near-neutral, which falls between the references (0% for the hedge, 33-44% for the well and bench). The edge looks like a dark tinted brown mixed with some near-black, so I call it mixed rather than a uniform sticker line. Texture is moderate: the bands and highlight dots give grain, but it is not as rich as the roofed well. Overall it would sit acceptably next to the references without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12688
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "vertical wooden rib/pole with gold bands",
+      "rows": "0-42",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone bracket base at bottom",
+      "rows": "43-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 43,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat, wall-mounted vertical wooden rib seen face-on, with two gold bands (rows 17-18 and 30-31) and a small stone bracket at rows 43-47. It shows no top surface, no ellipse and no roof plane. The rib is a single vertical strip that is 6 px wide, and the silhouette widens only at the bands and the bracket. The wall-mounted kind permits a flat drawing, so this reads as front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a vertical banded rib or column with a lit left edge, a mid body, dark ring bands and a grey base. It shows about 5 lightness steps on the wood and a separate stone-like ramp at the foot. It carries 13 visible tones per full tile, above prop-hedge (9) and below prop-stall-cheese (17) and prop-well-roofed (20). Near-flat coverage is 0%, so there are no flat fills of 5x5 or more. The dark edge pixels are 40% near-neutral, close to prop-bench-wood (44%) and prop-well-roofed (33%). That means about 60% of the outline leans brown, so I call the outline mixed rather than a sticker line. Texture is moderate: there is some grain and banding but fewer per-element highlights than the well or stall. It is a thin structural prop, so slightly lower density is acceptable. A careful artist would accept it next to the references without it looking flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12784
+  }
+ ],
+ "decidedAt": "2026-10-21T16:24:33.516Z",
+ "cells": {
+  "16": [
+   "154425106368af62",
+   "afc3e28c115a3f28",
+   "b6465edca18ef590"
+  ],
+  "24": [
+   "0addb90a82f6439f",
+   "4218e0f09bb95926",
+   "72cddc049b613995",
+   "829a0c6eb2cb81dd",
+   "97f990999afe2261",
+   "f354df103c35ae08"
+  ],
+  "32": [
+   "0b2bb9008e51f764",
+   "1a20927375d73130",
+   "5a3a4351dadc2b5f",
+   "6ccea6404108fbd2",
+   "6eda33912f916bfd",
+   "73e98c162d7fc920",
+   "7a770c7da7cdc6c1",
+   "7b739a3d6ac5a87b",
+   "ad91576919aa3b48",
+   "ae80bc22f1057743",
+   "b23bc7c59d5162b4",
+   "cb47d56729af8e67"
+  ],
+  "48": [
+   "6c5c182790efcb0f",
+   "7f1d3616c30a4839",
+   "816e1e7efb74bee2"
+  ]
+ }
+}

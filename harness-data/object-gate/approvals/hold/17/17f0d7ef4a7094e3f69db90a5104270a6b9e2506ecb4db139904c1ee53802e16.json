@@ -1,0 +1,14 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "17f0d7ef4a7094e3f69db90a5104270a6b9e2506ecb4db139904c1ee53802e16",
+ "profileHash": "4d8774b517f41638",
+ "kind": "low_furniture",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T07:05:27.696Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [],
+ "note": "묶음 허용: fallen-observatory-r3 lens bench — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/fallen-observatory-r3.opus-vqa-r1-pass.json",
+ "sig": "3bfc2fed4a5afd144489b0a7c84450b981993eec7030b238c5122624e5e4762d"
+}

@@ -1,0 +1,343 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a2c65f211f237e51409fc91610293a1e62d169b385a5c45233ad8e26bda587e",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "별 봉인 돌계단(열림, 2×2) (star seal open)",
+ "label": "atlas_biome_interior/plus/star seal open",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+  "화풍: 질감 없음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+   "질감 없음 (3/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 5
+ },
+ "metrics": {
+  "tileColorsMedian": 7,
+  "tileColorsP90": 8,
+  "darkV5": 10,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone frame border and floor surround",
+      "rows": "2-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark pit opening with descending steps (treads and risers drawn as stacked horizontal bands)",
+      "rows": "6-27",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a 30x29 square (rows 2-30, all 30 wide). It shows a stone frame around a dark rectangular pit with stair bands inside, seen from above like a floor plate. There is no separate south face. The bottom rows 28-30 are just the frame border and outline, so there is under 3 rows of front face. The layout is symmetric in all four directions, with the border the same on all sides. This matches the 'flat' kind, so it reads as a top-down slab with no front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small 2x2 stair with a neutral black/dark-grey frame, and the measured near-neutral share of dark edge pixels is 100%. That is the uniform sticker outline, not a dark tone of the neighbouring material. The paving reference's dark edge pixels are 80% neutral, but it is carried by many separately shaded cobbles, and the grass reference's outline is fully tinted. The steps are smooth horizontal bands in about 4 grey and beige tones with no grain, speckle or per-stone shading, and only 8 colours in total. The 7 visible tones per tile match the paving reference's 7 on paper. In the picture, though, those tones are only a few clean stripes and a black fill, not the cobble-by-cobble detail of the reference. The exact 5x5 flat-fill figure is 0% only because the bands are thin. Overall it is cleaner but flatter and more sticker-like than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 19898
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone frame and floor plate",
+      "rows": "2-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "open stairwell with descending steps and dark pit",
+      "rows": "6-28",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a 30-wide square from rows 2-30. It is a flat stone-framed plate seen from above. Inside is a dark opening (rows 6-12) with step treads and risers in alternating light and mid bands (rows 13-28). The frame is a uniform border all the way round. The bottom border (rows 29-30) is only a thin 1-2 row dark edge, not a front face of 3 or more rows. There is no eave line, no ellipse and no separate vertical south face, so it reads as a flat top-down plate."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a small stair piece: a black frame around a dark opening, with a few horizontal grey-beige step bands. The measured 7 visible tones per tile match the paving reference and the near-flat coverage is 0%, so no large flat blocks are measured. By eye, though, each step is a smooth band with no cobble speckle, grain or per-stone shading. The paving reference carries that texture, and the grass reference has tufts. The whole piece uses only 8 colours in total. The dark edge pixels are 100% near-neutral, so the outline is a uniform black or grey line, not a tinted dark tone of the neighbouring material. That is the 'sticker' look the Beodeul standard avoids, and it is clearer than in the paving reference, whose edges are 80% neutral. Shading sits at about 4 steps against 5-6 in the references. The piece is clean but reads thinner and flatter than the references, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 20014
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stone frame/border around the stairwell",
+      "rows": "2-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "open stairwell with descending steps seen from above",
+      "rows": "6-27",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 2,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a constant 30px-wide square block over rows 2-30, with no narrowing or ellipse. It is a stone frame with a dark pit, and the steps inside are stacked horizontal bands (rows 15-26, lighter treads alternating with darker risers) as in a plan view. The only front-like strip is the 2-3 row bottom border (rows 28-30), which is part of the frame rim and not a tall south face. The object reads as a flat floor plate with no real front elevation, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "flat",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a small stair block with a dark frame. It uses only 8 distinct colours in total, arranged as a few alternating light and dark step bands. That gives about 4 readable lightness steps against roughly 6 on the paving reference. The measured 7 visible tones per tile match the paving reference, and 0% near-flat coverage is also fine. But the picture shows smooth horizontal bands with no per-stone shading, speckle or grain, which the paving reference has. The dark edge pixels are 100% near-neutral, so the frame is a black sticker-style outline. The reference outlines are tinted, and the paving reference's 80% neutral share is lower than the candidate's. The numbers alone would not fail it. The banded, grainless surface and the black frame sit below the Beodeul craft level, and when in doubt it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+    "질감 없음 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)",
+     "질감 없음 (1/1)"
+    ]
+   },
+   "ms": 18701
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "outer stone frame (border ring)",
+      "rows": "2-30",
+      "evidence": "a",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark pit opening at the top of the stair",
+      "rows": "6-12",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "descending steps (light treads with darker risers)",
+      "rows": "13-27",
+      "evidence": "d",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 29,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a 30-wide square from row 2 to row 30 (width 30 throughout). It is a stone frame seen from above with a dark pit and stair treads inside. The treads widen toward the south, rows 13-17, 18-20 and 21-27, and each is separated by a thin darker riser line. All of these are horizontal bands inside one flat plate. No standing south face of 3 or more rows exists, and no side face is drawn. The object lies flat on the ground and reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "near_black",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 5,
+    "evidence": "The candidate is a stair block framed by a near-black border with a few clean grey/beige bands for the steps. The measured dark edge pixels are 100% neutral, so the outline is a near-black line, not a dark tone of the adjacent stone. That matches the 'sticker' look. The paving reference also has mostly neutral dark pixels (80%), but its stones are shaded one by one with per-stone highlights and chipped joints. The candidate's steps are smooth horizontal bands with no per-stone grain, chips or speckle. Its 7 visible tones per tile equal the paving reference's 7, and its near-flat coverage is 0%, so it is not a flat fill. But the tones are arranged as a few uniform stripes, which gives less visible information than the reference. It has about 5 lightness steps against the reference's 6, and it reads thinner and more graphic than the Beodeul ground pieces. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "윤곽이 근흑(재질 어두운 톤 아님) (1/1)"
+    ]
+   },
+   "ms": 20574
+  }
+ ],
+ "decidedAt": "2026-10-21T13:18:55.201Z",
+ "cells": {
+  "16": [
+   "135029bd98e03fed",
+   "1eb06b386634137f",
+   "49547fe1248b26c2",
+   "e1995d5d9588ab51"
+  ],
+  "24": [
+   "0019c2d0824fb01d",
+   "04a1ef2624e76680",
+   "0f1856585a5bfccc",
+   "1219de08484335dd",
+   "175fc88beac92d13",
+   "1a036acf76db9c50",
+   "2c56b38ebe20ef19",
+   "48b0654ec8a473e7",
+   "4e4b4b6cc8c4900b",
+   "5dc53cb76ed8bede",
+   "75f7fcecd1d00ad7",
+   "7e5d89c1feb2b3d9",
+   "7fdf072416164b27",
+   "84f5588eea6cf642",
+   "8c1f47fab3d085d4",
+   "a031d2bb29f50eec",
+   "ab16b29cbf2eaa06",
+   "c316cfa0aac7e355",
+   "d916734cbb8f966f",
+   "e721550bb897cf3f",
+   "f485b6362291ae2b",
+   "f502170036c0f1b3",
+   "f614d3cceafd8af9",
+   "ff5211a9879dfd57"
+  ],
+  "32": [
+   "5fc7baf7bcbba200"
+  ],
+  "48": [
+   "2d6a0d11ca337321",
+   "3840e790cf817c68",
+   "3a72f6998c2e2a8a",
+   "6c133b0383f18755",
+   "bce6ae3ef89fa076",
+   "e228d31aa0d3210b"
+  ]
+ }
+}

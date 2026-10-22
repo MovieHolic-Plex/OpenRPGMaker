@@ -44,9 +44,16 @@
 }
 
 .zone-feedback-prompt {
+  animation: zone-prompt-settle 3.4s ease-out forwards;
   bottom: var(--space-3);
   left: 50%;
   transform: translateX(-50%);
+}
+
+/* 상호작용 안내는 잠깐 또렷했다가 사라진다 — 같은 자리에 서 있는 동안 계속 떠 있지 않게(playSceneZoneFeedback.setPromptLine). 옅게 남겨도 「상시 표시」로 읽혔다(가혹 검수 r6). */
+@keyframes zone-prompt-settle {
+  0%, 70% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

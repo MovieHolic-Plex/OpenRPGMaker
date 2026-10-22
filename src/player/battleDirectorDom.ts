@@ -493,6 +493,18 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
   }
   const nextTitle = resultLine(snapshot.result);
   if (title.textContent !== nextTitle) title.textContent = nextTitle;
+  // 패배 창이 「패배 / 확인」 빈 상자뿐이었다(폴른 스타 가혹 검수 r7) — 무슨 일이 났는지 한 줄을 단다.
+  let subtitle = panel.querySelector<HTMLElement>(".battle-result-subtitle");
+  const nextSubtitle = snapshot.result === "defeat" ? "파티가 모두 쓰러졌다…" : "";
+  if (nextSubtitle && !subtitle) {
+    subtitle = document.createElement("div");
+    subtitle.className = "battle-result-subtitle";
+    title.after(subtitle);
+  }
+  if (subtitle) {
+    if (!nextSubtitle) subtitle.remove();
+    else if (subtitle.textContent !== nextSubtitle) subtitle.textContent = nextSubtitle;
+  }
 
   let cards = panel.querySelector<HTMLElement>(".battle-result-cards");
   if (!cards) {
@@ -741,7 +753,8 @@ function resultPartyCard(project: Project, context: BattleResultContext | undefi
   const levelUp = snapshot.rewards.levelUps?.find((entry) => entry.actorId === actor.recordId);
   const fromLevel = snapshot.eventState.actorLevels?.[actor.recordId] ?? actor.level ?? 1;
   const toLevel = levelUp?.toLevel ?? fromLevel;
-  const before = snapshot.eventState.actorExperience?.[actor.recordId] ?? totalExpForLevel(normalized.expCurve, fromLevel);
+  // 세션 경험치가 현재 레벨 바닥보다 낮으면(시작 레벨 > 1·중간 합류) 보상 적립과 같은 바닥에서 센다.
+  const before = Math.max(snapshot.eventState.actorExperience?.[actor.recordId] ?? 0, totalExpForLevel(normalized.expCurve, fromLevel));
   const gained = rewarded ? expForRewardActor(snapshot.rewards.exp, fromLevel, snapshot.rewards.enemyLevel, project.system.rewardPolicy) : 0;
   const after = before + gained;
   const base = totalExpForLevel(normalized.expCurve, toLevel);
@@ -763,7 +776,9 @@ function resultPartyCard(project: Project, context: BattleResultContext | undefi
         class: "battle-result-party-level",
         children: [`Lv ${fromLevel}`, ...(levelUp ? [el("span", { class: "battle-result-party-arrow", text: " → " }), el("span", { class: "battle-result-party-to", text: String(toLevel) })] : [])],
       }),
-      el("span", { class: "battle-result-party-badge", text: levelUp ? "LEVEL UP" : "", attrs: { "aria-hidden": levelUp ? "false" : "true" } }),
+      // 쓰러진 사람은 「쓰러짐」 배지로 읽히게 한다 — 회색 그림만으로는 그림이 깨진 것처럼 보였다(가혹 검수 r1).
+      // 쓰러진 사람은 레벨이 올라도 「쓰러짐」이 먼저다 — 회색 그림 아래 LEVEL UP 만 있으면 그림이 깨진 것처럼 읽혔다(r7). 오른 레벨은 위 「Lv 6 → 7」이 말한다.
+      el("span", { class: "battle-result-party-badge", text: actor.hp <= 0 ? "쓰러짐" : levelUp ? "LEVEL UP" : "", attrs: { "aria-hidden": levelUp || actor.hp <= 0 ? "false" : "true" } }),
       el("span", {
         class: "battle-result-party-track",
         children: [el("span", { class: "battle-result-party-fill", attrs: { style: `width:${fromPct}%` }, dataset: { fromPct: String(fromPct), toPct: String(toPct), shownPct: String(fromPct) } })],

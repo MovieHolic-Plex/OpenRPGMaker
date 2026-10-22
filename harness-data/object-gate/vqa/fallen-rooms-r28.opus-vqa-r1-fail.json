@@ -1,0 +1,32 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r28",
+  "commit": "2d0dd28dbc",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 of /tmp/fsrooms/gate-r28/stone_brazier.png computed with object_gate.pixel_sha256 = d9dad2597c59e522213f200895ee66bd4fe8b58362c250c62c364f65f7cf482e (16x32 RGBA).",
+    "1_topdown_view": "Pedestal, foot and bowl front face are correct 3/4 (top plane + front face, no side faces) and rows 13-31 are pixel-identical to the approved lit brazier. But the fuel does not sit in the bowl's top plane: the bowl top plane is rows 10-12 (the lit version puts flame pixels down to row 12, x5-8), while here both logs sit entirely above it (rows 5-9) with the front log's bottom outline at row 9 resting directly on the rim line at row 10. Nothing is occluded by the front lip and no back lip is visible behind the fuel, so the bowl reads as a solid flat cap with logs balanced on top, not a basin holding fuel.",
+    "2_style_fit": "Stone ramps match the lit piece and v5 stone. Log palette (26,14,6)/(154,84,53)/(109,59,21)/(99,49,11) with light cut ends is in family. However the claimed 'cold charcoal with pale ash' is effectively absent: the charcoal pixels use the stone outline colour (42,42,50) so they merge with bowl shadow, and the ash is only 3 pixels ((142,131,120) at (10,8), (100,92,84) at (11,8),(10,9)) mostly hidden beside the back log. Bark top rows (row 6 x7-11 B C B C, row 8 x4-8 B B C B B) are a single-row alternating stripe that reads as noise at 8x and as a flat brown bar at 1x.",
+    "3_readability_1x": "Improved over the bare bollard, but at 1x in mock-gate.png and at 3x in mock-gate-dais-x3.png the four cold braziers read as dark stone posts with a small brown block (book/box/log) set on top, not as a brazier bowl laid with fuel. The missing charcoal/ash bed and the perched logs are the cause.",
+    "4_placement": "Foot is grounded on the floor tile with the same soft shadow as the lit piece; no clipping with the dais. The logs themselves are not grounded in the bowl (see 1).",
+    "5_silhouette_outline": "Outer silhouette clean, no stubs. Stray single brown-black pixel (42,24,11) at (7,11) in the rim plane reads as a speck, not charcoal. Top of the logs (rows 5-9) adds a stepped brown block above a flat rim, which is what makes the silhouette read as 'post + lid object'."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/stone brazier",
+      "name": "돌 화로(꺼짐, 버들항 돌 받침 화로) (stone brazier)",
+      "kind": "other",
+      "pixelSha256": "d9dad2597c59e522213f200895ee66bd4fe8b58362c250c62c364f65f7cf482e",
+      "verdict": "FAIL",
+      "reasons": [
+        "Fuel is perched above the bowl instead of inside it: logs occupy rows 5-9 and the bowl top plane rows 10-12 is bare stone, so it reads as logs balanced on a flat-capped post. Fix: lower both logs by ~2 rows (back log to rows 7-9, front log to rows 9-11) so their lower edge disappears behind the front lip at row 12, matching how the lit flame base sits in rows 10-12.",
+        "Charcoal/ash bed is not legible. Fix: fill the bowl opening (rows 10-12, roughly x3-12) with a low charcoal heap in a dedicated warm-black ramp distinct from stone (e.g. ~(34,28,26) and ~(58,50,46)), with 2-3 small pale ash clusters of 2-3 px using (185,171,157)/(142,131,120) at e.g. (4,10)-(5,10), (11,11)-(12,11) visible beside the logs; keep a 1-px stone rim ring at row 10 x1-2 and x13-14 and the front lip at row 12-13 so the contents sit inside a visible rim.",
+        "Stray brown-black pixel (42,24,11) at (7,11): remove it or make it part of the charcoal cluster.",
+        "Bark rows alternate B/C every pixel (row 6 x7-11, row 8 x4-8), reading as noise. Fix: give each log a light bark top row of (154,84,53) with one or two dark (109,59,21) notches, and the dark (99,49,11) underside row, so each reads as a round log.",
+        "Keep rows 13-31 (bowl front face, column, foot, shadow) pixel-identical to the lit brazier as now; only rows 5-12 change."
+      ]
+    }
+  ]
+}

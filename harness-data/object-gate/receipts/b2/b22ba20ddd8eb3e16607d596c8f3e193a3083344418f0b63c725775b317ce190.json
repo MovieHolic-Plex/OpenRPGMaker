@@ -1,0 +1,357 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b22ba20ddd8eb3e16607d596c8f3e193a3083344418f0b63c725775b317ce190",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "관측 틈(별 하늘 창, 2칸) (dome slit)",
+ "label": "atlas_biome_interior/plus/dome slit",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "prop",
+  "refs": [
+   "prop-bench-wood",
+   "prop-hedge",
+   "prop-lamp-crook",
+   "prop-stall-cheese",
+   "prop-well-roofed"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 19,
+  "tileColorsP90": 20,
+  "darkV5": 26,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 4
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "window glass with night sky and moon (flat pane)",
+      "rows": "4-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right wooden shutters (vertical faces)",
+      "rows": "3-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone frame and lintel (flat strip)",
+      "rows": "2-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone sill ledge",
+      "rows": "27-29",
+      "evidence": "a",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "30-31"
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 31,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a window drawn face-on, with a stone frame, a night-sky pane at rows 4-26 and two vertical shutters. Its width profile is a constant 30 px from rows 4-26 and 32 px at the sill. Nothing in rows 2-26 is a horizontal surface: the lintel at rows 2-3 is a 1-2 row strip and the shutters are flat vertical faces. The only ledge-like part is the sill at rows 27-29, a 3-row light band with a darker 2-row face at rows 30-31. It is a minor detail, not the main body. The main body is a flat, wall-mounted front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 19 visible tones per tile, against 17 for the cheese stall and 20 for the roofed well. Its near-flat coverage is 11%, close to the stall's 13%. 0% of its dark edge pixels are neutral, so the outline is tinted, with dark blue-brown beside the frame and shutters and no uniform black sticker line. By eye, the frame and shutters step through about 5 tones with a lit edge and grain. The night sky has a gradient, scattered stars and a crescent moon, so it is not one flat fill. It is slightly simpler than the best references (the well and the stall). Even so, a careful artist would accept it next to them without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 22325
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "window glass with starry sky",
+      "rows": "3-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden shutters left and right",
+      "rows": "2-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone frame and lintel",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone sill",
+      "rows": "27-29",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 29,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "A flat wall-mounted window seen face-on. The glass (rows 4-26) and the shutters are vertical faces, and the frame is a flat outline. Only the sill at the bottom (rows 27-29) is a light strip of about 3 rows, with a darker front face at rows 30-31. That is too thin to count as a real top surface. There is no eave shadow, no ellipse and no roof plane. For a flat wall-mounted piece this reads as a front elevation, not a three-quarter volume."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 19 visible tones per 16x16 tile, close to the stall (17) and well (20) and above the hedge (9). Near-flat coverage is 11%, in line with the stall's 13%. Dark edge pixels are 0% neutral, so the outline is a tinted dark tone of the frame and sky rather than a black sticker line. The frame has about 4 steps (highlight, mid, dark, deep) with mullion and pane structure. The night sky has a moon and scattered stars, and curtain folds break up the surface, so there is no large flat fill. The material ramps are somewhat fewer than the references' 5-6, and the 24-colour total is modest, but the drawn detail holds up next to the stall and well at the same scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 24613
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "window sill (stone ledge at bottom)",
+      "rows": "27-29",
+      "evidence": "none",
+      "front_edge_line_row": 27,
+      "eave_shadow_rows": "30-31"
+     },
+     {
+      "part": "stone window frame",
+      "rows": "2-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden shutters left and right",
+      "rows": "3-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "starry sky glass with moon and stars",
+      "rows": "4-26",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The object is a flat window slit with a stone frame, wooden shutters and a starry sky pane, all drawn as vertical faces seen face-on. The only horizontal-looking element is the sill at rows 27-29, a 3-row ledge with a light edge line at row 27 and darker shadow at rows 30-31. It reads as a thin ledge and not a main top surface. The width profile is a constant 30 from rows 4-26 and 32 for the sill, with no ellipse or roof. For a wall-mounted piece this flat face-on drawing is acceptable, but it has no top surface, so it is front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 19 visible tones per 16x16 tile, which is in line with prop-stall-cheese (17) and prop-well-roofed (20) and well above prop-hedge (9). Its near-flat coverage is 11%, close to the stall's 13%, so there is no large flat fill. Its dark edge pixels are 0% neutral, so the outline is tinted and reads as dark blue-brown matching the frame and shutters, not a uniform black sticker line. The frame and shutters show about 4-5 tone steps with grain. The night sky carries a gradient, a moon and star dots, which gives real per-tile variation. It is slightly simpler than the stall and well, but a careful artist would accept it beside them without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16644
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "window glass with night sky, moon and stars",
+      "rows": "3-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "wooden shutters left and right",
+      "rows": "2-26",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone frame and lintel",
+      "rows": "1-3",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "stone sill ledge",
+      "rows": "27-29",
+      "evidence": "a",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "30-31"
+     }
+    ],
+    "main_top_rows": 2,
+    "front_face_rows": 26,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The main body is a flat, wall-mounted window seen face-on. Its frame, glass and shutters are vertical faces from rows 1-26 with no edge line or eave shadow at the top. The only horizontal hint is the stone sill at rows 27-29: a light line at row 27, a lighter band at rows 28-29, then a darker front strip at rows 30-31. That is a 2-3 row ledge and reads as a rim, not a real top surface. The body is rectangular and 30-32 px wide throughout, with no ellipse or roof plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 19 visible tones per 16x16 tile. That is above the stall (17) and close to the well (20), and well above the hedge (9). Near-flat coverage is 11%, similar to the stall's 13%, so it is not a flat-fill piece. The dark edge pixels are 0% neutral, so the outline carries a tint. By eye it is a dark blue-brown frame with wood-tone shutters, not a black sticker line. The night-sky glass has stars, a moon and a gradient, and the frame has several wood and metal steps, giving about 5 steps against the references' 5-6. The sky is the one near-flat area, but it is broken up by stars and a gradient. It would sit next to the stall and well without looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18634
+  }
+ ],
+ "decidedAt": "2026-10-21T06:30:55.566Z",
+ "cells": {
+  "16": [
+   "196ab3ee8532f6af",
+   "793b16f597f487a5",
+   "7de581e5da4a4e73",
+   "b46a1d4aae8e0937"
+  ],
+  "24": [
+   "052216f9d8d74f30",
+   "266c5f15f3040c05",
+   "4d3aab17eec605a9",
+   "4db7af6da0580733",
+   "53fbf5f0fd8a4a71",
+   "61f1182edc2449d5",
+   "63f301a4445851aa",
+   "64d1de9c6ff3456a",
+   "69d77089ef585598",
+   "6e7bfea6c7b03d0f",
+   "71425bbcef03315d",
+   "7c991cb3c1efa2a3",
+   "846605cc0e076cfc",
+   "8a4389659f80640b",
+   "903b1b68a3da6325",
+   "b51ee6cb7f938915",
+   "b7431722ae39452f",
+   "cdf373bce08bdfbc",
+   "cfc8e97136551fc6",
+   "db2e24c12ce128a2",
+   "db95bfe0c5f7a08a",
+   "e0ebcd937217a5ec",
+   "ee3a20f774396e26",
+   "fbaebaf4b76c549b"
+  ],
+  "32": [
+   "2863bcfe45c74762"
+  ],
+  "48": [
+   "151e77b57adc04a9",
+   "3bccae56dae35b00",
+   "4d5f04aefee93dc8",
+   "8304b66bea3935c5",
+   "8906687eef80612a",
+   "b94153f46018b83e"
+  ]
+ }
+}

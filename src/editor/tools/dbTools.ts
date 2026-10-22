@@ -652,7 +652,7 @@ const troopRecordSchema = objectSchema({
     paletteCycleSeconds: { type: "number", minimum: 0, maximum: 60, description: "색 순환 한 바퀴 초(0 = 끔)" },
   }, "움직이는 전투 배경(마더식) — 배경 그림 한 장을 움직인다. 0/생략 = 그 효과 끔. 도트 측면 전투(기본)에서는 겹 배경에 가려 보이지 않는다 — 몬스터 대치에서만 보인다. 도트 측면 분위기는 backdropLayers 를 쓴다"),
   backdropLayers: arrayOf(objectSchema({
-    preset: { type: "string", enum: ["fog", "clouds", "mist", "rain", "snow", "embers", "stars", "lightRays"], description: "그림 없이 그리는 겹. fog 안개 · clouds 흐르는 구름 · mist 땅안개 · rain 비 · snow 눈 · embers 불티(더하기) · stars 별 · lightRays 빛줄기" },
+    preset: { type: "string", enum: ["fog", "clouds", "mist", "rain", "snow", "embers", "stars", "lightRays", "glow"], description: "그림 없이 그리는 겹. fog 안개 · clouds 흐르는 구름 · mist 땅안개 · rain 비 · snow 눈 · embers 불티(더하기) · stars 별 · lightRays 빛줄기 · glow 중앙 빛무리(정지·화면 가운데 청백색 빛, 수정·마법진 뒤)" },
     resourceId: stringSchema("바둑판으로 깔 그림 리소스(투명 PNG). 주면 preset 보다 먼저"),
     front: booleanSchema("true = 배틀러·이펙트 앞(앞 덤불·안개 장막, 불투명도 50 이하 권장). 생략 = 배경 바로 위"),
     scrollX: { type: "number", minimum: -1200, maximum: 1200, description: "가로 흐름 px/초. 생략 = 프리셋 기본(구름 22·비 -180)" },

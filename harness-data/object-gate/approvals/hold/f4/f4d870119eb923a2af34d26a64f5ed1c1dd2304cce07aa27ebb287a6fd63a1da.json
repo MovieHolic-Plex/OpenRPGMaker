@@ -1,0 +1,17 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "f4d870119eb923a2af34d26a64f5ed1c1dd2304cce07aa27ebb287a6fd63a1da",
+ "profileHash": "4d8774b517f41638",
+ "kind": "other",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T14:41:36.177Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 판정자 fail (3/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (2/4)"
+ ],
+ "note": "묶음 허용: Fallen Star 방 — 큰 화로(꺼짐·켜짐) (r9) — fallen-rooms-r9 (great brazier · great brazier lit) — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/fallen",
+ "sig": "4b0122aea779c8460993d19ecd836e463656ae9fb3c332375312b79355635a3c"
+}

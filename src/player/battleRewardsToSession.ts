@@ -4,7 +4,7 @@ import { computeActorLevelUp, computeTechPointLearning, type BattleLevelUpResult
 import { computeApLearning } from "@/battle/battleEsperAp";
 import { effectiveActorEquipment } from "@/project/equipmentRules";
 import { effectiveActorClassId } from "@/project/sessionClass";
-import { normalizeActorRecord } from "@/project/actorModel";
+import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
 import { expForRewardActor, monsterExpPlan, rewardActorIds } from "@/battle/rewardPolicy";
 import { changeGold, type PlaySession } from "@/project/session";
 import { setRelationshipState } from "@/project/relationshipState";
@@ -87,7 +87,11 @@ export function applyBattleRewardsToSession(
     for (const actorId of rewardActorIdList) {
       const actorLevel = session.actorLevels[actorId] ?? 1;
       const actorExp = expForRewardActor(earnedExp, actorLevel, outcome.rewards.enemyLevel, project.system.rewardPolicy);
-      session.actorExperience[actorId] = (session.actorExperience[actorId] ?? 0) + actorExp;
+      // 시작 레벨이 1보다 높거나 중간에 합류한 동료는 누적 경험치가 0(또는 없음)으로 남아 있었다 — 그대로 더하면
+      // 레벨 문턱에 영영 못 닿아 Lv6 파티가 보스를 잡아도 오르지 않았다(폴른 스타 가혹 검수). 현재 레벨의 바닥으로 올린 뒤 더한다.
+      const record = project.database.actors.find((entry) => entry.id === actorId);
+      const floor = record ? totalExpForLevel(normalizeActorRecord(record).expCurve, actorLevel) : 0;
+      session.actorExperience[actorId] = Math.max(session.actorExperience[actorId] ?? 0, floor) + actorExp;
       if (processed.has(actorId)) continue;
       processed.add(actorId);
       const levelUp = applyActorLevelUp(session, project, actorId);

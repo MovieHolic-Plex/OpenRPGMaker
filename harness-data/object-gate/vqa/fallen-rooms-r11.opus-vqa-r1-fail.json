@@ -1,0 +1,58 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r11",
+  "commit": "a144f5e8ed",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed from src/harnesses/_core/object_gate on each PNG in /tmp/fsrooms/gate-r11 as delivered; verdicts bind to these hashes only.",
+    "1_topdown_view": "All five are 3/4 correct: ribs are frontal wall hangings with no side faces; braziers show the bowl top as a plane plus front faces, like the Beodeul source.",
+    "2_style_fit": "Braziers fit (copied body, v5 slate ramp, flame matches v5 fire). Ribs: wood ramp is fine on the wall segment, but the ceiling-band stub drops to unoutlined near-black and the corbel uses the brightest stone values, standing out against the v5 wall.",
+    "3_readability_1x": "Braziers: cold vs lit obvious at 1x. Ribs: at 1x the observatory reads as brown posts with gold rings at the step corners; the rise into the dome is invisible and the bend is a straight tilt, so the domed-hall reading of ref-op3 is not achieved.",
+    "4_placement": "Braziers sit on their 1x1 footprint with the source floor shadow. Ribs sit on the wall face with the foot at the floor line; no clipping.",
+    "5_silhouette_outline": "Braziers clean. Ribs: brass bands overhang asymmetrically (rows 17-18 right only, row 30 short on the left); top stub lacks outline."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/dome rib",
+      "name": "둥근 지붕 갈빗대(가운데, 1×3) (dome rib)",
+      "kind": "wall_mounted",
+      "pixelSha256": "503c9741d6d4e55f1f1a394090d387b1e80fd6adb0bab3e9e675993da7036498",
+      "verdict": "FAIL",
+      "reasons": "3/4 frontal wall hanging is correct (front face only, no side face) and the foot sits on the corbel at the wall base. (a) Rows 0-5 are a bare 4px stub of #2a180b/#3a2210 with no #1a0e06 outline and an abrupt value/hue drop from row 6 (#9a5435/#6d3b15 body): on the near-black ceiling band this top ~6px vanishes at 1x, so the rib looks cut off/burnt at the wall crown instead of rising into a dome. Fix: continue the rib ramp through rows 0-5 dimmed one step (outline #1a0e06, body #6d3b15/#63310b, 1px #9a5435 highlight on the lit side), tapering 4->3px, so it stays visible against the ceiling band. (b) Corbel rows 43-44 use #c8d0d0/#a5adb2, the brightest stone values, brighter than the v5 grey brick wall face; in mock-obs it reads as a white cap/plinth. Fix: drop one step (row 43 #a5adb2, row 44 #76808a, row 45 #49505d, row 46-47 #333942). (c) Brass bands are asymmetric: rows 17-18 run x5-11 over a body whose outline is x5-10 (1px overhang right only); rows 30-31 run x5-11 / x4-11 over a body x4-11 (row 30 under-covers left). Fix: make each band exactly 1px wider than the body on both sides (rows 17-18 -> x4-11, rows 30-31 -> x3-12) with the #fff0a0 glint at one end and #a07818 at the other. Net effect at 1x in mock-obs.png: the hall reads as light-brown posts/pilasters with gold rings at the step corners, not as dome ribs; the dome reading in ref-op3 comes from the ribs continuing visibly over the dome shell."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib west",
+      "name": "둥근 지붕 갈빗대(서쪽 벽, 가운데로 휨, 1×3) (dome rib west)",
+      "kind": "wall_mounted",
+      "pixelSha256": "8bebe98314f7f84a1fc7f6b142f043d6cdd97579a42a3364af71df13c56d8086",
+      "verdict": "FAIL",
+      "reasons": "Lean direction is correct (top bends east toward room centre). The bend is a constant 1px step at rows 5, 9, 13 (~3-4px over 17 rows) = a straight tilt, not an arc. Fix: make the offset accelerate toward the top (0px below row 16, +1 at ~row 12, +2 at ~row 8, +4 at row 0) so it reads as a curve springing from the wall. (a) Rows 0-5 are a bare 4px stub of #2a180b/#3a2210 with no #1a0e06 outline and an abrupt value/hue drop from row 6 (#9a5435/#6d3b15 body): on the near-black ceiling band this top ~6px vanishes at 1x, so the rib looks cut off/burnt at the wall crown instead of rising into a dome. Fix: continue the rib ramp through rows 0-5 dimmed one step (outline #1a0e06, body #6d3b15/#63310b, 1px #9a5435 highlight on the lit side), tapering 4->3px, so it stays visible against the ceiling band. (b) Corbel rows 43-44 use #c8d0d0/#a5adb2, the brightest stone values, brighter than the v5 grey brick wall face; in mock-obs it reads as a white cap/plinth. Fix: drop one step (row 43 #a5adb2, row 44 #76808a, row 45 #49505d, row 46-47 #333942). (c) Brass bands are asymmetric: rows 17-18 run x5-11 over a body whose outline is x5-10 (1px overhang right only); rows 30-31 run x5-11 / x4-11 over a body x4-11 (row 30 under-covers left). Fix: make each band exactly 1px wider than the body on both sides (rows 17-18 -> x4-11, rows 30-31 -> x3-12) with the #fff0a0 glint at one end and #a07818 at the other. Net effect at 1x in mock-obs.png: the hall reads as light-brown posts/pilasters with gold rings at the step corners, not as dome ribs; the dome reading in ref-op3 comes from the ribs continuing visibly over the dome shell."
+    },
+    {
+      "id": "atlas_biome_interior/plus/dome rib east",
+      "name": "둥근 지붕 갈빗대(동쪽 벽, 가운데로 휨, 1×3) (dome rib east)",
+      "kind": "wall_mounted",
+      "pixelSha256": "a77b959b205c3b1966786a5794fb43bacb6934681f87afd8df1623cb4f31d0cd",
+      "verdict": "FAIL",
+      "reasons": "Lean direction is correct (top bends west toward room centre) and the light-left shading is kept rather than naively mirrored, good. Same straight 1px-step tilt as the west rib; apply the same accelerating curve, mirrored. (a) Rows 0-5 are a bare 4px stub of #2a180b/#3a2210 with no #1a0e06 outline and an abrupt value/hue drop from row 6 (#9a5435/#6d3b15 body): on the near-black ceiling band this top ~6px vanishes at 1x, so the rib looks cut off/burnt at the wall crown instead of rising into a dome. Fix: continue the rib ramp through rows 0-5 dimmed one step (outline #1a0e06, body #6d3b15/#63310b, 1px #9a5435 highlight on the lit side), tapering 4->3px, so it stays visible against the ceiling band. (b) Corbel rows 43-44 use #c8d0d0/#a5adb2, the brightest stone values, brighter than the v5 grey brick wall face; in mock-obs it reads as a white cap/plinth. Fix: drop one step (row 43 #a5adb2, row 44 #76808a, row 45 #49505d, row 46-47 #333942). (c) Brass bands are asymmetric: rows 17-18 run x5-11 over a body whose outline is x5-10 (1px overhang right only); rows 30-31 run x5-11 / x4-11 over a body x4-11 (row 30 under-covers left). Fix: make each band exactly 1px wider than the body on both sides (rows 17-18 -> x4-11, rows 30-31 -> x3-12) with the #fff0a0 glint at one end and #a07818 at the other. Net effect at 1x in mock-obs.png: the hall reads as light-brown posts/pilasters with gold rings at the step corners, not as dome ribs; the dome reading in ref-op3 comes from the ribs continuing visibly over the dome shell."
+    },
+    {
+      "id": "atlas_biome_interior/plus/stone brazier",
+      "name": "돌 화로(꺼짐, 버들항 돌 받침 화로) (stone brazier)",
+      "kind": "other",
+      "pixelSha256": "0a58ff50e5c89e6aee599a2df2e2f6482a950051bda490642ce40cee56971170",
+      "verdict": "PASS",
+      "reasons": "Body rows 9-31 match the Beodeul brazier pixel-for-pixel up to palette snapping (#384454->#344655 etc.): top face of the bowl rows 9-12 as a plane, front face rows 13-16, stem rows 17-23, foot rows 24-30 with the same 2px floor shadow at x14-15. Cold state: bowl filled with dark ash and grey specks (#a5adb2/#606878) and a single #a84d0a ember at (7,11); smoke specks removed. At 1x in mock-gate-mixed it reads clearly as an unlit stone brazier and sits flush on the checker dais with no floating. Silhouette clean, no stray pixels. Minor: the ember is nearly invisible at 1x, acceptable as 'dying'."
+    },
+    {
+      "id": "atlas_biome_interior/plus/stone brazier lit",
+      "name": "돌 화로(켜짐, 버들항 돌 받침 화로, 불꽃) (stone brazier lit)",
+      "kind": "other",
+      "pixelSha256": "eae915cfae02d12e6eeb30f55cc4f22c72c0f65f79f7d09c6192999736729dcf",
+      "verdict": "PASS",
+      "reasons": "Same body (rows 25-47 identical to the cold piece shifted 16px) so the two swap in place. Coals rows 26-27 in ember orange/yellow, flame rows 8-24 with a #fff8b0 core, #efdd7d/#dfc24a mid, #e06a10 rim and a separate small tongue at x11-13 rows 13-24; rises into the extra tile as specified. Flame is outline-free like the v5 fire pieces and the palette fits v5 lava brazier 6441/6442 / brazier 4212. Cold vs lit is unmistakable at 1x in mock-gate-mixed.png. Grounded on its 1x1 footprint, clean silhouette."
+    }
+  ]
+}
