@@ -260,6 +260,7 @@ const GEOMETRIC_MIN_ROWS = kitValue<number>("checks", "GEOMETRIC_MIN_ROWS");
 const GEOMETRIC_MIRROR = kitValue<number>("checks", "GEOMETRIC_MIRROR");
 const GEOMETRIC_MIRROR_ROWS = kitValue<number>("checks", "GEOMETRIC_MIRROR_ROWS");
 const CROWN_SOLIDITY_MAX = kitValue<number>("checks", "CROWN_SOLIDITY_MAX");
+const MASS_SOLIDITY_MAX = kitValue<number>("checks", "MASS_SOLIDITY_MAX");
 const LEAF_MIN_PIXELS = kitValue<number>("checks", "LEAF_MIN_PIXELS");
 const LEAF_CAST_MAX = kitValue<number>("checks", "LEAF_CAST_MAX");
 const LEAF_DARK_MIN = kitValue<number>("checks", "LEAF_DARK_MIN");
@@ -451,7 +452,8 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
     if (footprintClass(item.title, item.description ?? "") === "tree" && g.rows >= GEOMETRIC_MIRROR_ROWS && g.mirror > GEOMETRIC_MIRROR) {
       hard.push({ code: "SYMMETRIC", msg: `the crown is nearly mirror-symmetric (left/right match ${g.mirror}, exemplars 0.80-0.85) - make one shoulder 3+ px higher, one side wider, lobes and notches at different heights` });
     }
-    if (footprintClass(item.title, item.description ?? "") === "tree" && g.rows >= GEOMETRIC_MIRROR_ROWS && g.solidity > CROWN_SOLIDITY_MAX) {
+    const isTree = footprintClass(item.title, item.description ?? "") === "tree";
+    if (isTree && g.rows >= GEOMETRIC_MIRROR_ROWS && g.solidity > CROWN_SOLIDITY_MAX) {
       hard.push({ code: "CROWNFULL", msg: `the crown fills its outline like an egg (solidity ${g.solidity}, exemplar oaks 0.86-0.89) - cut 1-2 deep notches (3+ px) into the rim and push one lobe out to one side` });
     }
     const shown = renderGrid(grid, palette);
@@ -462,6 +464,7 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
     const lv = leafTone(shown);
     if (lv.leafPixels >= LEAF_MIN_PIXELS) {
       if (lv.leafCast > LEAF_CAST_MAX) hard.push({ code: "LEAFHUE", msg: `the leaves are olive/yellow (red-blue ${lv.leafCast}, exemplars -9..-4, limit -1) - paint them with the listed leaf-green keys` });
+      if (!isTree && g.rows >= GEOMETRIC_MIN_ROWS && g.solidity > MASS_SOLIDITY_MAX) hard.push({ code: "BLOBBY", msg: `the leafy mass fills its outline like a ball or dome (solidity ${g.solidity}, exemplar bushes 0.89-0.91) - bite 1-2 deep notches into the outline and let one clump stick out to one side` });
       if (lv.leafLone > LEAF_LONE_MAX) hard.push({ code: "LEAFSPECK", msg: `the highlights are single sprinkled pixels (${Math.round(lv.leafLone * 100)}% of the lightest leaf tone stands alone, exemplars 0-12%) - group the lightest green into 2-4 px dashes on the upper-left lobes only` });
       if (lv.leafContrast < LEAF_CONTRAST_MIN) hard.push({ code: "LEAFFLAT", msg: `the leaves are a smooth gradient, not clumps (neighbour contrast ${lv.leafContrast}, exemplars 12-18) - build separate clumps: a 2-4 px light dash on each clump's upper left right next to dark pockets` });
       if (lv.leafBand < LEAF_BAND_MAX) hard.push({ code: "LEAFBAND", msg: `light and dark change by height (luma-height correlation ${lv.leafBand}, exemplars -0.44..-0.53) - light every clump on its own upper left, put dark pockets between clumps at every height` });
