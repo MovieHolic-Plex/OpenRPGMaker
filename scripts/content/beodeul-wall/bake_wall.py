@@ -14,7 +14,10 @@ bake_dungeon_ceiling.py(28,416~)가 시트를 다시 쓰면 이 꼬리가 사라
 
 3판 기하(beodeulTownWall.ts 의 planTownWallRing 과 같다):
   가로 성벽 = 윗면 두 줄(yw, yw+1) + 앞면 네 줄(yw+2~yw+5). 세로 성벽 = 두 열 윗면. 모서리 2×2.
-  망루 3×8·성문루 4×8 = (왼쪽 위 열, yw−1) 부터 — 윗면 플랫폼 세 줄 + 앞면 다섯 줄(성벽보다 한 줄 앞까지).
+  성문루 4×8 = (왼쪽 위 열, yw−1) 부터 — 윗면 플랫폼 세 줄 + 앞면 다섯 줄(성벽보다 한 줄 앞까지).
+  망루 3×9 = (왼쪽 위 열, yw−2) 부터 — 윗면 플랫폼 세 줄 + 앞면 여섯 줄(성벽 흉벽보다 한 줄 위에 윗면이 선다).
+  세로 성벽을 길이 지나는 곳은 쪽문 터널(덮개돌 *_pt_*, ★) + 양옆 땅에 터널 입 그늘(mo_w·mo_e). 성문루 안쪽 길 칸에는 mo_n.
+  기후 변형: 같은 이름 앞에 snow: · desert: (눈 덮인 성벽 · 사막 사암 성벽).
   땅 그림자 sh_* 는 2층(앞면 밑 줄, 세로 성벽 오른쪽 열).
 """
 import argparse, json, pathlib, sys
@@ -35,7 +38,7 @@ T = 16
 COLS = 128
 BASE = 28544          # 던전 천장 꼬리(28,416~28,543) 끝 = 성벽 시작
 BASE_ROW = BASE // COLS
-ROWS_ADDED = 2         # 3판: 조각이 128칸을 넘어 한 행 더(28,672~28,799) 덧붙인다
+ROWS_ADDED = 6         # 3판 r9: 조각 656(기본 228 + 눈 214 + 사막 214) — 여섯 행(28,544~29,311)
 COUNT = BASE + ROWS_ADDED * COLS
 GATE_KIND = "structure"
 
@@ -65,19 +68,34 @@ def hsh(x, y, salt):
 
 FACE_ROWS = A.FACE_ROWS          # 앞면 네 줄(u·m·n·l)
 NF = len(FACE_ROWS)
-GH = 2 + NF + 2                  # 성문루·망루 높이(줄): 플랫폼이 한 줄 솟고(−1), 윗면 두 줄, 앞면 NF 줄, 한 줄 앞으로 내민다
+GH = 2 + NF + 2                  # 성문루 높이(줄): 플랫폼이 한 줄 솟고(−1), 윗면 두 줄, 앞면 NF 줄, 한 줄 앞으로 내민다
+GT = GH + 1                      # 망루 높이(줄): 플랫폼이 두 줄 솟는다(−2) — 성벽 흉벽 위로 윗면이 보인다
+TOWER_VARS, GATE_VARS = 3, 2     # 윗면 소품 변형 수(망루 tower·tower1·tower2, 성문루 gate·gate1)
+
+
+def tower_name(v, cx, cy):
+    return f"tower{'' if v == 0 or cy >= 3 else v}_{cx}_{cy}"
+
+
+def gate_name(v, cx, cy, shut=False):
+    if shut and cy >= 3 and cx in (1, 2): return f"gatec_{cx}_{cy}"
+    own = cy < 3 or (cy in (3, 4) and cx in (0, 3))      # 변형 1 은 윗면 + 방패 건 앞면 기둥
+    return f"gate{v if v and own else ''}_{cx}_{cy}"
 
 
 def plan_ring(x0, y0, x1, y1, gates=(), closed=(), vgaps=(), towers=(), stairs=()):
     """통로 사각형(북 y0·남 y1·서 x0·동 x1 — 세로 성벽은 x0..x0+1, x1-1..x1)의 둘레 성벽. 반환 {(x,y): 조각} 위층 · 아래층.
-    gates: [('S'|'N', gx)] 통로 두 칸 gx·gx+1(성문루 gx-1..gx+2). closed: 닫힌 문으로 그릴 gates 원소.
-    vgaps: [('W'|'E', gy, rows)] 세로 성벽 틈. towers: [('S'|'N', tx)] 망루 tx..tx+2. stairs: [sx] 북쪽 성벽 안쪽 계단."""
+    gates: [('S'|'N', gx[, 변형])] 통로 두 칸 gx·gx+1(성문루 gx-1..gx+2). closed: 닫힌 문으로 그릴 gates 의 (side, gx).
+    vgaps: [('W'|'E', gy, rows)] 세로 성벽 쪽문 터널. towers: [('S'|'N', tx[, 변형])] 망루 tx..tx+2. stairs: [sx] 북쪽 성벽 안쪽 계단.
+    변형을 주지 않으면 편집기와 같은 해시로 고른다."""
     up, lo = {}, {}
 
     def fvar(x, town):
         # 마을 쪽(북쪽 성벽 안쪽) 앞면에는 화살 구멍 변형 c 를 쓰지 않는다. 바로 왼쪽 열과 같은 변형이면 다음 변형(같은 칸이 나란히 서지 않게)
         # 열마다 1~(n−1) 단씩 걸어가는 누적 합 — 이웃 열은 늘 다르고, 값은 x 만으로 정해진다
-        vs = "abd" if town else "abcd"
+        # 3판 r9: 변형 여덟(a b c e f g h + 드문 d 물빼기 구멍) — 넷이면 긴 앞면이 4칸 주기로 보였다
+        if hsh(x, 1, 4) % 13 == 0: return "d"
+        vs = "abefgh" if town else "abcefgh"
         n = len(vs)
         return vs[sum(1 + hsh(i, 0, 3) % (n - 1) for i in range(max(0, x) + 1)) % n]
 
@@ -96,9 +114,9 @@ def plan_ring(x0, y0, x1, y1, gates=(), closed=(), vgaps=(), towers=(), stairs=(
         for cy in range(2):
             for cx in range(2): up[(cx0 + cx, cy0 + cy)] = f"c_{k}_{cx}{cy}"
     for y in range(y0 + 2, y1):
-        r = hsh(0, y, 2) % 4
+        r = hsh(y, 0, 6) % 4
         up[(x0, y)] = f"vw{r}_0"; up[(x0 + 1, y)] = f"vw{r}_1"
-        r = hsh(1, y, 2) % 4
+        r = hsh(y, 1, 6) % 4
         up[(x1 - 1, y)] = f"ve{r}_0"; up[(x1, y)] = f"ve{r}_1"
 
     def shade_right(x, yw):
@@ -107,32 +125,36 @@ def plan_ring(x0, y0, x1, y1, gates=(), closed=(), vgaps=(), towers=(), stairs=(
         for i, k in enumerate(FACE_ROWS):
             if up.get((x, yw + 2 + i), "").startswith("f_") and not up[(x, yw + 2 + i)].endswith(("endL", "endR")): up[(x, yw + 2 + i)] = f"f_{k}_shL"
 
-    for (side, gx) in gates:
+    # 변형은 목록 순서로 돌려 쓴다(이웃 망루·성문루가 같은 윗면이 되지 않게 — r8: 해시로 고르니 세 망루가 같았다)
+    g0 = hsh(gates[0][1], 0, 6) if gates else 0
+    t0 = hsh(towers[0][1], 0, 5) if towers else 0
+    gates = [(g[0], g[1], g[2] if len(g) > 2 else (g0 + i) % GATE_VARS) for i, g in enumerate(gates)]
+    towers = [(t[0], t[1], t[2] if len(t) > 2 else (t0 + i) % TOWER_VARS) for i, t in enumerate(towers)]
+    for (side, gx, gv) in gates:
         yw = y1 if side == "S" else y0
         shut = (side, gx) in closed
         for cx in range(4):
             for cy in range(GH):
                 x, y = gx - 1 + cx, yw - 1 + cy
                 up.pop((x, y), None); lo.pop((x, y), None)
-                n = f"gatec_{cx}_{cy}" if (shut and cy >= 3 and cx in (1, 2)) else f"gate_{cx}_{cy}"
+                n = gate_name(gv, cx, cy, shut)
                 (lo if layer_of(n) == "lower" else up)[(x, y)] = n
         shade_right(gx + 3, yw)
-    for (side, tx) in towers:
+        for cx in (1, 2):
+            if not shut: lo[(gx - 1 + cx, yw - 2)] = "mo_n"      # 성문루 뒤(통로가 플랫폼 밑으로 들어가는 칸)
+    for (side, tx, tv) in towers:
         yw = y1 if side == "S" else y0
         for cx in range(3):
-            for cy in range(GH):
-                up.pop((tx + cx, yw - 1 + cy), None)
-                up[(tx + cx, yw - 1 + cy)] = f"tower_{cx}_{cy}"
+            for cy in range(GT):
+                up.pop((tx + cx, yw - 2 + cy), None)
+                up[(tx + cx, yw - 2 + cy)] = tower_name(tv, cx, cy)
         shade_right(tx + 3, yw)
-    for (side, gy, rows) in vgaps:
+    for (side, gy, rows) in vgaps:      # 쪽문 터널: 성벽 윗면은 덮개돌로 잇고, 양옆 땅에 터널 입 그늘
         xa = x0 if side == "W" else x1 - 1
         e = "vw" if side == "W" else "ve"
-        up[(xa, gy - 1 - NF)] = f"{e}_endS_0"; up[(xa + 1, gy - 1 - NF)] = f"{e}_endS_1"
-        for i, k in enumerate(FACE_ROWS):
-            up[(xa, gy - NF + i)] = f"f_{k}_endL"; up[(xa + 1, gy - NF + i)] = f"f_{k}_endR"
         for r in range(rows):
-            up.pop((xa, gy + r), None); up.pop((xa + 1, gy + r), None)
-        up[(xa, gy + rows)] = f"{e}_endN_0"; up[(xa + 1, gy + rows)] = f"{e}_endN_1"
+            up[(xa, gy + r)] = f"{e}_pt_0"; up[(xa + 1, gy + r)] = f"{e}_pt_1"
+            lo[(xa - 1, gy + r)] = "mo_w"; lo[(xa + 2, gy + r)] = "mo_e"
     for sx in stairs:   # 옆 계단 3×4: 왼쪽 아래(sx, y0+5) 땅에서 오른쪽 위(sx+2, y0+2) → 통로(sx+2, y0+1)
         up[(sx + 2, y0 + 1)] = "hn_stair"
         for i, k in enumerate(FACE_ROWS):
@@ -153,36 +175,47 @@ def plan_ring(x0, y0, x1, y1, gates=(), closed=(), vgaps=(), towers=(), stairs=(
         if ("W", y) not in gap_rows: put_sh(x0 + 2, y, "e")
     for y in range(y0, y1 + FB):
         if ("E", y) not in gap_rows: put_sh(x1 + 1, y, "e")
-    for (side, tx) in towers:
+    for (side, tx, _tv) in towers:
         yw = y1 if side == "S" else y0
         for cx in range(3): put_sh(tx + cx, yw + FB + 1, "s")
         put_sh(tx + 3, yw + FB, "se")
-    for (side, gx) in gates:
+    for (side, gx, _gv) in gates:
         yw = y1 if side == "S" else y0
         for cx in range(4): put_sh(gx - 1 + cx, yw + FB + 1, "s")
         put_sh(gx + 3, yw + FB, "se")
-    for (side, gy, rows) in vgaps:
-        xa = x0 if side == "W" else x1 - 1
-        put_sh(xa, gy, "s"); put_sh(xa + 1, gy, "s")
     for (x, y), k in sh.items(): lo[(x, y)] = f"sh_{k}"
     return up, lo
 
 
 def ring_sample():
-    """조립 예 둘레(24×21): 남문(열림)·북문(닫힘)·망루 셋·계단·서쪽 틈."""
-    return plan_ring(1, 2, 22, 13, gates=[("S", 10), ("N", 15)], closed=[("N", 15)], vgaps=[("W", 9, 2)],
-                     towers=[("S", 3), ("S", 16), ("N", 5)], stairs=[10]), 24, 21
+    """조립 예 둘레(26×23): 남문(열림)·북문(닫힘, 윗면 변형 1)·망루 셋(윗면 변형 0·1·2)·계단·서쪽 쪽문 터널."""
+    return plan_ring(2, 3, 23, 14, gates=[("S", 10, 0), ("N", 15, 1)], closed=[("N", 15)], vgaps=[("W", 10, 2)],
+                     towers=[("S", 4, 0), ("S", 17, 1), ("N", 6, 2)], stairs=[11]), 26, 23
 
 
 ROAD_TILE = 3221  # 버들항 자갈길(시트 앞쪽 원본 칸) — 조립 그림에서 성문 통로 밑 땅으로만 쓴다
 GRASS = 737
+SNOW_GROUND, SNOW_ROAD = 25839, 25859     # 설원 마을 바탕 눈·길 가운데 칸(bd-pick-snowfield-ground-*)
+SAND_GROUND, SAND_ROAD = 24548, 24538     # 사막 오아시스 마을 바탕 모래·길 가운데 칸
+SNOW_GROUND_KIT = [25864, 25865, 25866, 25867, 25839, 25868, 25839, 25839, 25869]   # bd-pick-snowfield-ground-snow 3×3
+SAND_GROUND_KIT = list(range(24543, 24552))                                          # bd-pick-desert-oasis-ground-sand 3×3
+
+
+# 3판 r8: 기후 변형 이름 — 이 조각의 snow:/desert: 판이 있으면 그것, 없으면(그림자·터널 입 그늘) 기본 조각
+def biome_name(n, biome):
+    if not biome: return n
+    b = f"{biome}:{n}"
+    return b if b in INDEX else n
+
+
+RETIRED = {f"{e}_{k}_{c}" for e in ("vw", "ve") for k in ("endS", "endN") for c in (0, 1)}   # 옛 성벽 틈 끝 마감 — 쪽문 터널로 바꾼 뒤 쓰지 않는다(칸 번호만 지킨다)
 
 
 def ring_ground():
-    """조립 예 둘레의 길: 남문 통로 두 열 · 서쪽 틈 두 줄 · 북문 앞."""
-    # 길은 그림 테두리에 닿지 않게 한 칸 안에서 끝낸다(테두리 화소는 윤곽이 아니다 — 관문 화풍 사실이 길 자갈을 윤곽으로 셌다)
-    return ([(x, y) for x in (10, 11) for y in range(9, 20)] + [(x, y) for x in range(1, 6) for y in (9, 10)]
-            + [(x, y) for x in (15, 16) for y in range(1, 3)])
+    """조립 예 둘레의 길: 서쪽 쪽문에서 동서 길(10·11행) · 남문 통로 두 열 · 닫힌 북문 안쪽 길 · 북문 밖 한 칸.
+    길은 그림 테두리에 닿지 않는다(테두리 화소는 윤곽이 아니다 — 관문 화풍 사실이 길 자갈을 윤곽으로 셌다)."""
+    return ([(x, y) for x in range(1, 17) for y in (10, 11)] + [(x, y) for x in (10, 11) for y in range(10, 22)]
+            + [(x, y) for x in (15, 16) for y in (1,)])
 
 
 def sheet_tile(n):
@@ -198,14 +231,18 @@ def _SHEET():
     return _SH[0]
 
 
-def render_plan(up, lo, W, H, bg=None, ground=()):
+def render_plan(up, lo, W, H, bg=None, ground=(), biome=None):
+    up = {k: biome_name(v, biome) for k, v in up.items()}
+    lo = {k: biome_name(v, biome) for k, v in lo.items()}
+    bg = {"snow": SNOW_GROUND_KIT, "desert": SAND_GROUND_KIT}.get(biome, bg) if bg is not None else None
+    road = {"snow": SNOW_ROAD, "desert": SAND_ROAD}.get(biome, ROAD_TILE)
     im = Image.new("RGBA", (W * T, H * T), (0, 0, 0, 0))
     if bg is not None:
-        g = sheet_tile(bg)
+        # 기후 땅은 그 마을 바탕 키트 3×3 을 돌려 깐다(가운데 한 칸만 깔면 판판한 면이 관문 「평면 채움」으로 잡혔다)
         for y in range(H):
-            for x in range(W): im.paste(g, (x * T, y * T))
+            for x in range(W): im.paste(sheet_tile(bg[(y % 3) * 3 + x % 3] if isinstance(bg, list) else bg), (x * T, y * T))
     if ground:
-        rt = sheet_tile(ROAD_TILE)
+        rt = sheet_tile(road)
         for (x, y) in ground:
             if 0 <= x < W and 0 <= y < H: im.paste(rt, (x * T, y * T))
     for (x, y), n in lo.items(): im.alpha_composite(img(n), (x * T, y * T))
@@ -214,48 +251,77 @@ def render_plan(up, lo, W, H, bg=None, ground=()):
 
 
 def parts_plan():
-    """작은 둘레 표본(14×16): 모서리 넷·동쪽 틈(끝 마감 + 끝 앞면)·계단·망루 하나. 반환 (위층, 아래층, 가로, 세로)."""
-    up, lo = plan_ring(1, 2, 12, 13, vgaps=[("E", 9, 2)], towers=[("N", 3)], stairs=[7])
-    return up, lo, 14, 21
+    """작은 둘레 표본(16×23): 모서리 넷·동쪽 쪽문 터널(덮개돌 + 터널 입 그늘)·계단·망루 하나(윗면 변형 1). 반환 (위층, 아래층, 가로, 세로)."""
+    up, lo = plan_ring(2, 3, 13, 14, vgaps=[("E", 10, 2)], towers=[("N", 4, 1)], stairs=[8])
+    return up, lo, 16, 23
+
+
+PARTS_GROUND = [(x, y) for x in range(9, 15) for y in (10, 11)]
 
 
 def gate_items():
-    """관문에 낼 조립 그림: (이름, 그림, 판정자에게 줄 이름, 덮는 조각 이름 집합). 풀밭 바탕(그림자가 보이게)."""
+    """관문에 낼 조립 그림: (이름, 그림, 판정자에게 줄 이름, 덮는 조각 이름 집합). 기본 판 바탕 = 풀(그림자가 보이게).
+    눈·사막 둘레 그림은 바탕을 투명으로 둔다 — 그 마을 땅 칸은 거의 한 색이라 관문 화풍 사실 「평면 채움」이 성벽이 아니라 땅을 셌다(r9). 길만 깐다.
+    기후 변형(눈 덮인 성벽 · 사막 사암 성벽)도 같은 다섯 그림으로 따로 낸다 — 변형 조각은 그 그림의 영수증으로만 덮인다."""
     items = []
-    (up, lo), W, H = ring_sample()
-    items.append(("wall_ring", render_plan(up, lo, W, H, bg=GRASS, ground=ring_ground()),
-                  "Roman-style stone town wall ring, 3/4 top-down (16px tiles): wall-walk tops two tiles deep seen from above (flagstone walkway with "
-                  "crenellated parapets), four-tile-high weathered ashlar front faces below the north and south walls, two-tile-wide west and east walls seen from above, "
-                  "a gatehouse with an open round arch tunnel, a gatehouse with closed wooden doors, square towers with crenellated top platforms, "
-                  "stone stairs up the inner face, a gap in the west wall, ground shadows",
-                  set(up.values()) | set(lo.values())))
-    pu, pl, PW, PH = parts_plan()
-    items.append(("wall_parts", render_plan(pu, pl, PW, PH, bg=GRASS, ground=[(x, y) for x in range(8, 13) for y in (9, 10)]),
-                  "small Roman-style stone town wall ring, 3/4 top-down: flagstone wall-walk tops with crenellated parapets, four corners, "
-                  "north wall inner face with stone stairs, south wall outer face, a gap in the east wall closed by end caps with their end faces, "
-                  "a square tower with a crenellated top platform, ground shadows",
-                  set(pu.values()) | set(pl.values())))
-    gu, gl = {}, {}
-    for cy in range(GH):
-        for cx in range(4):
-            n = f"gate_{cx}_{cy}"
-            (gl if layer_of(n) == "lower" else gu)[(cx, cy)] = n
-    items.append(("gatehouse_open", render_plan(gu, gl, 4, GH, bg=GRASS, ground=[(x, y) for x in (1, 2) for y in range(GH)]),
-                  "stone town gatehouse, 3/4 top-down: crenellated walkable top platform seen from above, corbelled front face with a deep round arch tunnel "
-                  "(vault ribs, raised portcullis, darker toward the inside, paved road through), two wall torches",
-                  set(gu.values()) | set(gl.values())))
-    cu = dict(gu)
-    for cy in range(3, GH):
-        for cx in (1, 2): cu[(cx, cy)] = f"gatec_{cx}_{cy}"
-    items.append(("gatehouse_closed", render_plan(cu, {}, 4, GH, bg=GRASS),
-                  "stone town gatehouse, 3/4 top-down: crenellated top platform seen from above, front face with a round arch closed by two iron-banded wooden doors",
-                  set(cu.values())))
-    tu = {(cx, cy): f"tower_{cx}_{cy}" for cx in range(3) for cy in range(GH)}
-    items.append(("tower", render_plan(tu, {}, 3, GH, bg=GRASS),
-                  "square stone wall tower, 3/4 top-down: crenellated top platform seen from above with a wooden trapdoor, corbel band, "
-                  "ashlar front face with corner quoins and two arrow slits, plinth",
-                  set(tu.values())))
+    for biome in (None,) + A.BIOMES:
+        sfx = "" if biome is None else f"_{biome}"
+        what = {None: "Roman-style stone", "snow": "snow-covered Roman-style stone", "desert": "sandstone (desert) Roman-style"}[biome]
+
+        def keys(*plans):
+            out = set()
+            for d in plans: out |= {biome_name(v, biome) for v in d.values()}
+            return out
+        (up, lo), W, H = ring_sample()
+        # 투명 바탕(기후 판)에서는 반투명 땅 그림자·터널 입 그늘을 빼고 낸다 — 그 조각은 기후와 무관해 기본 판 영수증이 덮는다
+        nosh = lambda d: d if biome is None else {k: v for k, v in d.items() if not v.startswith(("sh_", "mo_"))}
+        lo = nosh(lo)
+        items.append(("wall_ring" + sfx, render_plan(up, lo, W, H, bg=GRASS if biome is None else None, ground=ring_ground(), biome=biome),
+                      f"{what} town wall ring, 3/4 top-down (16px tiles): wall-walk tops two tiles deep seen from above (flagstone walkway with "
+                      "crenellated parapets), four-tile-high weathered ashlar front faces below the north and south walls, two-tile-wide west and east walls seen from above, "
+                      "a gatehouse with an open round arch tunnel, a gatehouse with closed wooden doors, square towers rising above the wall with crenellated top platforms "
+                      "(trapdoor, brazier, crates), stone stairs up the inner face, a road passing under the west wall through a postern tunnel, ground shadows",
+                      keys(up, lo)))
+        pu, pl, PW, PH = parts_plan()
+        pl = nosh(pl)
+        items.append(("wall_parts" + sfx, render_plan(pu, pl, PW, PH, bg=GRASS if biome is None else None, ground=PARTS_GROUND, biome=biome),
+                      f"small {what} town wall ring, 3/4 top-down: flagstone wall-walk tops with crenellated parapets, four corners, "
+                      "north wall inner face with stone stairs, south wall outer face, a road passing under the east wall through a postern tunnel (lintel slabs above), "
+                      "a square tower rising above the wall with a crenellated top platform, ground shadows",
+                      keys(pu, pl)))
+        gu, gl = {}, {}
+        for cy in range(GH):
+            for cx in range(4):
+                n = f"gate_{cx}_{cy}"
+                (gl if layer_of(n) == "lower" else gu)[(cx, cy)] = n
+        items.append(("gatehouse_open" + sfx, render_plan(gu, gl, 4, GH, bg=GRASS, ground=[(x, y) for x in (1, 2) for y in range(1, GH)], biome=biome),
+                      f"{what} town gatehouse, 3/4 top-down: crenellated walkable top platform seen from above (windlass drum, portcullis pit with grate, stone balls, barrel), "
+                      "corbelled front face with a deep round arch tunnel (vault ribs, raised portcullis, darker toward the inside, paved road through), two wall torches",
+                      keys(gu, gl)))
+        cu = dict(gu)
+        for cy in range(3, GH):
+            for cx in (1, 2): cu[(cx, cy)] = f"gatec_{cx}_{cy}"
+        items.append(("gatehouse_closed" + sfx, render_plan(cu, {}, 4, GH, bg=GRASS, biome=biome),
+                      f"{what} town gatehouse, 3/4 top-down: crenellated top platform seen from above (windlass drum, portcullis pit, stone balls, barrel), "
+                      "front face with a round arch closed by two iron-banded wooden doors",
+                      keys(cu)))
+        tu = {(cx, cy): f"tower_{cx}_{cy}" for cx in range(3) for cy in range(GT)}
+        items.append(("tower" + sfx, render_plan(tu, {}, 3, GT, bg=GRASS, biome=biome),
+                      f"{what} square wall tower, 3/4 top-down: crenellated top platform seen from above with a wooden trapdoor and a crate, corbel band, "
+                      "tall ashlar front face with corner quoins and three cross-shaped arrow slits, plinth",
+                      keys(tu)))
     return items
+
+
+def palette_problems():
+    """조각의 모든 불투명·반투명 색이 버들항 시트 앞 칸(성벽 꼬리 앞)에 있는지 — 팔레트 잠금."""
+    sheet = Image.open(SHEET_PATH).convert("RGBA").crop((0, 0, COLS * T, BASE_ROW * T))
+    allowed = {c for _n, c in sheet.getcolors(1 << 24)}
+    bad = {}
+    for p in PIECES:
+        for _n, c in p["img"].getcolors(1 << 16):
+            if c[3] and c not in allowed: bad.setdefault(c, []).append(p["name"])
+    return bad
 
 
 def meta(label, desc, tags, passage, layer):
@@ -290,7 +356,7 @@ def kits():
     gate_rules = ("가로 성벽(남·북) 줄에 넣는다: 성문루 0행 = 성벽 윗면 첫 줄보다 한 줄 위, 1·2행 = 성벽 윗면 두 줄, 3~6행 = 성벽 앞면 네 줄, 7행 = 그 아래 땅 줄(성문루는 한 줄 앞으로 내민다). "
                   "가운데 두 열(1·2)이 통로 — 길 두 칸을 그 열에 맞추고 문 앞뒤(위·아래 칸)에 길을 잇는다. 양옆 열(0·3)은 막힘. 성문루 오른쪽 성벽 칸은 그늘 판(hs_sh_*·f_*_shL).")
     kit("bd-wall-gatehouse", "버들항 성문루 4×8(열린 아치 터널)", gu, gl, 4, GH,
-        "버들항 마을 성벽의 성문루. 위 세 줄은 사방 흉벽을 두른 윗면 플랫폼(쇠창살 홈), 아래 다섯 줄은 받침돌 띠·마름돌 앞면·모서리 돌과 두 칸 폭 둥근 아치 터널"
+        "버들항 마을 성벽의 성문루. 위 세 줄은 사방 흉벽을 두른 윗면 플랫폼(물레·쇠창살 구덩이·돌 탄환·통), 아래 다섯 줄은 받침돌 띠·마름돌 앞면·모서리 돌과 두 칸 폭 둥근 아치 터널"
         "(궁륭 갈빗대·들어 올린 쇠창살·안으로 갈수록 어두운 바닥)·횃불 둘. 사람이 아치 밑으로 지나간다(위 네 줄은 ★).",
         gate_rules, parts=[dict(id="gate", kind="entrance", dx=1, dy=GH - 1, w=2, h=1, note="통로 두 칸(걸음). 아래 칸에 바깥 길을 잇는다")])
     cu = dict(gu)
@@ -299,11 +365,12 @@ def kits():
     kit("bd-wall-gatehouse-closed", "버들항 성문루 4×8(닫힌 문)", cu, {}, 4, GH,
         "닫힌 성문루: 같은 아치를 쇠띠 두른 널 문짝 두 짝이 막는다(막힘). 열린 성문루(bd-wall-gatehouse)와 같은 자리에 바꿔 찍어 문을 여닫는다.",
         gate_rules.replace("가운데 두 열(1·2)이 통로 — 길 두 칸을 그 열에 맞추고 문 앞뒤(위·아래 칸)에 길을 잇는다.", "가운데 두 열은 닫힌 문(막힘)."))
-    tu = {(cx, cy): f"tower_{cx}_{cy}" for cx in range(3) for cy in range(GH)}
-    kit("bd-wall-tower", "버들항 성벽 망루 3×8(흉벽 두른 윗면)", tu, {}, 3, GH,
-        "성벽 줄에 서는 네모 망루: 위 세 줄은 사방 흉벽을 두른 윗면 플랫폼(나무 들창), 아래 다섯 줄은 받침돌 띠·마름돌 앞면·모서리 돌·화살 구멍 둘·굽도리. "
-        "성벽보다 16px 높고 한 줄 앞으로 내민다. 1·2행은 성벽 통로가 망루를 지나는 ★ 칸(동서 걸음), 나머지는 막힘.",
-        "가로 성벽 줄에 넣는다: 망루 0행 = 성벽 윗면 첫 줄보다 한 줄 위, 1·2행 = 성벽 윗면 두 줄, 7행 = 성벽 앞면 아래 땅 줄. 망루 오른쪽 성벽 칸은 그늘 판. 모서리에는 쓰지 않는다.")
+    tu = {(cx, cy): f"tower_{cx}_{cy}" for cx in range(3) for cy in range(GT)}
+    kit("bd-wall-tower", "버들항 성벽 망루 3×9(흉벽 두른 윗면)", tu, {}, 3, GT,
+        "성벽 줄에 서는 네모 망루: 위 세 줄은 사방 흉벽을 두른 윗면 플랫폼(나무 들창·상자), 아래 여섯 줄은 받침돌 띠·마름돌 앞면·모서리 돌·십자 화살 구멍 셋·굽도리. "
+        "성벽보다 32px 높아 윗면이 성벽 흉벽보다 한 줄 위에 서고, 한 줄 앞으로 내민다. 2·3행은 성벽 통로가 망루 밑을 지나는 ★ 칸(동서 걸음), 나머지는 막힘. "
+        "윗면 소품 변형 tower1_*(들창 + 화로)·tower2_*(돌 탄환·상자·통)을 0~2행에 바꿔 찍을 수 있다.",
+        "가로 성벽 줄에 넣는다: 망루 0행 = 성벽 윗면 첫 줄보다 두 줄 위, 2·3행 = 성벽 윗면 두 줄, 8행 = 성벽 앞면 아래 땅 줄. 망루 오른쪽 성벽 칸은 그늘 판. 모서리에는 쓰지 않는다.")
     su = {(2, 0): "hn_stair"}
     for i, k in enumerate(FACE_ROWS):
         for cx in range(3): su[(cx, 1 + i)] = f"stair_{cx}_{k}"
@@ -332,9 +399,9 @@ def kits():
         "마을 동쪽 성벽: 두 칸 폭 통로와 바깥(동)쪽 흉벽 띠.", "세로로 이어 찍는다. 위 끝은 c_ne_*, 아래 끝은 c_se_*.")
     (up, lo), W, H = ring_sample()
     kit("bd-wall-ring-sample", f"버들항 성벽 둘레 조립 예 {W}×{H}", up, lo, W, H,
-        "둘레 성벽 조립 예: 남쪽 열린 성문루·북쪽 닫힌 성문루·망루 셋·북쪽 성벽 안쪽 계단·서쪽 성벽 틈(길).",
+        "둘레 성벽 조립 예: 남쪽 열린 성문루·북쪽 닫힌 성문루·망루 셋(윗면 변형 셋)·북쪽 성벽 안쪽 계단·서쪽 성벽 쪽문 터널(길).",
         "참고·견본용. 마을 둘레는 author_beodeul_town 의 walls:true 가 맵 크기에 맞춰 짓는다(같은 조각·같은 규칙).",
-        parts=[dict(id="gate-s", kind="entrance", dx=10, dy=20, w=2, h=1, note="남문 통로"), dict(id="gap-w", kind="entrance", dx=1, dy=9, w=2, h=2, note="서쪽 틈")])
+        parts=[dict(id="gate-s", kind="entrance", dx=10, dy=20, w=2, h=1, note="남문 통로"), dict(id="postern-w", kind="entrance", dx=2, dy=10, w=2, h=2, note="서쪽 쪽문 터널")])
     return out
 
 
@@ -355,22 +422,23 @@ def write_tables():
         desc = p["desc"] + (f". 걸음 방향: {dirs}" if p["pass_"] and not p["star"] else (". 사람 위에 그려진다(★)" if p["star"] else ". 막힘")) + f". 조각 `{p['name']}`."
         TS["tileMeta"].append(meta(f"버들항 성벽 · {p['name']}", desc, [p["name"].split("_")[0]], passage, p["layer"]))
     TS["count"] = COUNT
-    ids = lambda pred: [tid(p["name"]) for p in PIECES if pred(p["name"])]
+    ids = lambda pred: [tid(p["name"]) for p in PIECES if p["name"] not in RETIRED and pred(p["name"].split(":")[-1])]
     TS["tileGroups"] = [g for g in TS["tileGroups"] if not g["id"].startswith("beodeul:town_wall")] + [
         dict(id="beodeul:town_wall", name="버들항 마을 성벽(윗면·앞면·모서리·끝·그림자)", role="wall", source="bundled-default", defaultLayer="upper", confidence="high",
              tileIds=ids(lambda n: not n.startswith(("gate", "tower", "stair"))),
              description="3/4 시점 마을 성벽 조각. 가로 성벽 = 윗면 두 줄(판석 통로 + 흉벽, 동서 걸음) + 앞면 네 줄(마름돌, 막힘). 세로 성벽 = 두 칸 폭 윗면(남북 걸음). "
-                         "hs = 남쪽 성벽(앞 흉벽), hn = 북쪽 성벽(뒤 흉벽, 마을 쪽 앞면), vw·ve = 서·동 성벽, c_* 2×2 모서리, *_end* 틈의 끝 마감, f_* 앞면(u·m·n·l), sh_* 2층 땅 그림자.",
+                         "hs = 남쪽 성벽(앞 흉벽), hn = 북쪽 성벽(뒤 흉벽, 마을 쪽 앞면), vw·ve = 서·동 성벽, *_pt_* 쪽문 터널 덮개돌(★), c_* 2×2 모서리, f_* 앞면(u·m·n·l), "
+                         "sh_* 2층 땅 그림자, mo_* 2층 터널 입 그늘. 눈 덮인 판 snow:* · 사막 사암 판 desert:* 이 같은 이름으로 있다.",
              placementRules="마을 둘레는 author_beodeul_town walls:true 로 짓고 손으로 줄을 긋지 않는다. 손으로 고칠 때: 가로 성벽 윗면 두 줄 밑에 앞면 네 줄(f_u_* · f_m_* · f_n_* · f_l_*), "
                             "남쪽 앞면 양 끝은 f_*_endL·endR, 북쪽 앞면 맨 왼쪽은 f_*_shL. 성벽은 3층, 그림자(sh_*)는 2층 땅 칸."),
         dict(id="beodeul:town_wall_gate", name="버들항 성문루(열림·닫힘)", role="object", source="bundled-default", defaultLayer="upper", confidence="high",
              tileIds=ids(lambda n: n.startswith("gate")),
-             description="4×8 성문루. 가운데 두 열이 통로(열림: 남북 걸음, 위 네 줄 ★ + 아래 네 줄은 2층 터널 / 닫힘: 막힘). 키트 bd-wall-gatehouse · bd-wall-gatehouse-closed 로 통째로 찍는다.",
+             description="4×8 성문루(윗면 변형 gate1_*). 가운데 두 열이 통로(열림: 남북 걸음, 위 네 줄 ★ + 아래 네 줄은 2층 터널 / 닫힘: 막힘). 키트 bd-wall-gatehouse · bd-wall-gatehouse-closed 로 통째로 찍는다.",
              placementRules="가로 성벽 줄에서 성문루 0행 = 성벽 윗면 첫 줄 위 한 줄. 통로 열 위아래에 길을 잇는다."),
         dict(id="beodeul:town_wall_tower", name="버들항 성벽 망루·계단", role="object", source="bundled-default", defaultLayer="upper", confidence="high",
              tileIds=ids(lambda n: n.startswith(("tower", "stair"))),
-             description="망루 3×8(흉벽 두른 윗면, 1·2행은 통로가 지나가는 ★)과 북쪽 성벽 안쪽 계단(걸음 남북). 키트 bd-wall-tower · bd-wall-stairs.",
-             placementRules="망루는 가로 성벽 줄에(0행 = 윗면 첫 줄 위 한 줄), 계단은 북쪽 성벽 윗면 아래 줄 + 앞면 네 칸 자리에(3×4)."),
+             description="망루 3×9(흉벽 두른 윗면, 2·3행은 통로가 밑으로 지나가는 ★, 윗면 변형 tower1_*·tower2_*)과 북쪽 성벽 안쪽 계단(걸음 남북). 키트 bd-wall-tower · bd-wall-stairs.",
+             placementRules="망루는 가로 성벽 줄에(0행 = 윗면 첫 줄 위 두 줄), 계단은 북쪽 성벽 윗면 아래 줄 + 앞면 네 칸 자리에(3×4)."),
     ]
     TS["structureKits"] = [k for k in TS["structureKits"] if not k["id"].startswith("bd-wall-")] + kits()
     TS_PATH.write_text(json.dumps(TS, ensure_ascii=False, separators=(",", ":")) + "\n")
@@ -386,6 +454,10 @@ def main():
     ap.add_argument("--no-gate", action="store_true", help="관문 영수증 확인 없이 굽는다(개발 중 시험용)")
     args = ap.parse_args()
 
+    bad = palette_problems()
+    if bad:
+        for c, names in bad.items(): print("팔레트 밖 색", "#%02x%02x%02x" % c[:3], c[3], names[:4], len(names), file=sys.stderr)
+        sys.exit(3)
     if args.gate_export or args.samples:
         out = pathlib.Path(args.gate_export or args.samples); out.mkdir(parents=True, exist_ok=True)
         lines = []
@@ -404,7 +476,7 @@ def main():
             r = OG.refusal(im, kind=GATE_KIND, context="bundle")
             if r: why[name] = r
             else: covered |= keys
-        missing = sorted(set(INDEX) - covered)
+        missing = sorted(set(INDEX) - covered - RETIRED)
         if missing:
             print("3/4 관문 미통과 — 굽지 않는다:", file=sys.stderr)
             for k, v in why.items(): print("  ", k, "←", v, file=sys.stderr)

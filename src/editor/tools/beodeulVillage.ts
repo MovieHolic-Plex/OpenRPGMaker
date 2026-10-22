@@ -132,11 +132,11 @@ export interface BeodeulVillageOptions {
   roofs?: string;
   /** 살림집 상한(앵커 제외) — 「집 3~5채」 작은 마을. */
   houseLimit?: number;
-  /** 마을 둘레 성벽(버들항 성벽 꼬리 28,544~). 평지로 짓고, 길이 성벽을 지나는 곳은 성문루(가로 성벽)·틈(세로 성벽)이 된다. */
+  /** 마을 둘레 성벽(버들항 성벽 꼬리 28,544~). 평지로 짓고, 길이 성벽을 지나는 곳은 성문루(가로 성벽)·쪽문 터널(세로 성벽)이 된다. 눈·사막 마을은 눈 덮인 성벽·사암 성벽. */
   walls?: boolean;
   /** 성문 쪽(walls 일 때): S 남문 하나(기본) · N 북문 하나 · NS 남북 하나씩. 그 밖에서 성벽을 지나는 길은 성벽 안에서 끊는다. */
   wallGate?: "S" | "N" | "NS";
-  /** true 면 서·동 성벽을 지나는 길에 끝 마감 틈을 연다(기본 false — 「성문 하나」 요청에 옆 구멍이 생기지 않게). */
+  /** true 면 서·동 성벽을 지나는 길에 쪽문 터널을 낸다(기본 false — 「성문 하나」 요청에 옆 구멍이 생기지 않게). */
   wallSideGaps?: boolean;
 }
 const LEAF_TREES = ["bd-tree-03a8f7", "bd-tree-a80c85", "bd-tree-e9d9b3", "bd-tree-cc0fcb", "bd-tree-47e17a", "bd-tree-d43edd", "bd-tree-5844f6", "bd-tree-3e8732", "bd-tree-1a786c", "bd-tree-d61d7e", "bd-tree-7ecdb8", "bd-tree-1e09f0", "bd-tree-bdd36e", "bd-tree-b1d104"];
@@ -312,7 +312,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 시공 기록: 계획 구역이 끝날 때마다 격자를 남긴다(기록기가 꺼져 있으면 아무것도 안 한다).
   const planStep = (label: string) => logConstructionPlan(mapId, W, H, occ, label, PLAN_CLASSES);
   // 성벽 둘레 띠를 먼저 비워 둔다(집·나무·소품·물이 앉지 않는다). 길은 이 띠를 덮어쓸 수 있다 — 지나는 곳이 성문·틈이 된다.
-  const wallLayout = walls ? townWallLayout(W, H) : null;
+  const wallLayout = walls ? townWallLayout(W, H, seed) : null;
   if (wallLayout) for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) if (wallLayout.inBand(x, y)) occ[idx(x, y)] = WALLB;
 
   // ---------- 1. 자연 앵커 ----------
@@ -2182,7 +2182,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   }
 
   // ---------- 12d. 성벽 둘레(walls) ----------
-  // 비워 둔 띠에 성벽을 싣는다. 길이 가로 성벽(북·남)을 지나는 곳은 4×8 성문루(가운데 두 열 통로), 세로 성벽(서·동)을 지나는 곳은 끝 마감 틈.
+  // 비워 둔 띠에 성벽을 싣는다. 길이 가로 성벽(북·남)을 지나는 곳은 4×8 성문루(가운데 두 열 통로), 세로 성벽(서·동)을 지나는 곳은 쪽문 터널(덮개돌 ★ + 터널 입 그늘).
   // 망루는 성문과 겹치지 않는 후보 자리에, 계단은 북쪽 성벽 안쪽 앞면에서 아래 땅이 걸을 수 있는 자리 둘.
   let wallInfo: { gates: WallGate[]; gaps: WallGap[]; towers: WallTower[]; stairs: number[]; blockedRoads: number; southGateRoad?: { x: number; from: number } } | null = null;
   if (wallLayout) {
@@ -2243,8 +2243,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       let made = false;
       for (const cx of cols) {
         let top = -1;
-        if (side === "S") { for (let y = L.y1 - 2; y > L.y0 + 6; y -= 1) if (roadAt(cx, y) && roadAt(cx + 1, y)) { top = y; break; } }
-        else for (let y = L.y0 + 7; y < L.y1 - 2; y += 1) if (roadAt(cx, y) && roadAt(cx + 1, y)) { top = y; break; }
+        // 한 칸 폭 오솔길(설원·사막)도 잇는다 — 두 칸 모두 길이어야 하면 설원 마을 남문이 남동 모서리 곁으로 밀렸다(2026-10-22 r8)
+        if (side === "S") { for (let y = L.y1 - 3; y > L.y0 + 6; y -= 1) if (roadAt(cx, y) || roadAt(cx + 1, y)) { top = y; break; } }
+        else for (let y = L.y0 + 7; y < L.y1 - 2; y += 1) if (roadAt(cx, y) || roadAt(cx + 1, y)) { top = y; break; }
         if (top < 0) continue;
         const cells: number[] = [];
         const ys = side === "S" ? [...Array(H - top - 1).keys()].map((i) => top + 1 + i) : [...Array(top).keys()];
@@ -2377,12 +2378,14 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
     const used = (side: "N" | "S", x0: number, x1: number) => gates.some((g) => g.side === side && x1 >= g.x - 2 && x0 <= g.x + 3);
     const towers = L.towers.filter((t) => t.x >= L.x0 + 3 && t.x + 2 <= L.x1 - 3 && !used(t.side, t.x - 1, t.x + 3)
-      && [0, 1, 2].every((i) => [...Array(8).keys()].every((j) => { const y = (t.side === "S" ? L.y1 : L.y0) - 1 + j; return !roadAt(t.x + i, y) && (!inMap(t.x + i, y) || occ[idx(t.x + i, y)] === WALLB); })));
+      && [0, 1, 2].every((i) => [...Array(9).keys()].every((j) => { const y = (t.side === "S" ? L.y1 : L.y0) - 2 + j; return !roadAt(t.x + i, y) && (!inMap(t.x + i, y) || occ[idx(t.x + i, y)] === WALLB); })));
     const stairs: number[] = [];
     // 옆 계단 3×4(x..x+2, 북쪽 앞면 네 줄): 왼쪽 아래(x, y0+5)에서 땅(x, y0+6 → y0+7)으로 내려선다
     const stairOk = (x: number) => x > L.x0 + 2 && x + 2 < L.x1 - 2 && !used("N", x - 1, x + 3) && !towers.some((t) => t.side === "N" && x <= t.x + 3 && x + 2 >= t.x - 1)
       && !stairs.some((s) => Math.abs(s - x) < 6) && [FREE, ROAD, PLAZAC, CLEAR].includes(occ[idx(x, L.y0 + 7)]!) && (lv[idx(x, L.y0 + 7)] ?? 0) === 0;
-    for (const want of [Math.round(W * 0.14), Math.round(W * 0.86) - 2]) for (let d = 0; d <= 6; d += 1) { const x = want + (d % 2 ? -1 : 1) * Math.ceil(d / 2); if (stairOk(x)) { stairs.push(x); break; } }
+    // 계단 자리도 seed 로(늘 양 끝 대칭 둘이면 마을마다 같은 틀로 보였다, r8)
+    const STAIR_SETS = [[0.14, 0.86], [0.14], [0.86], [0.4, 0.86], [0.14, 0.6]];
+    for (const want of STAIR_SETS[(Math.imul(seed | 0, 2654435761) >>> 0) % STAIR_SETS.length]!.map((f) => Math.round(W * f) - (f > 0.5 ? 2 : 0))) for (let d = 0; d <= 6; d += 1) { const x = want + (d % 2 ? -1 : 1) * Math.ceil(d / 2); if (stairOk(x)) { stairs.push(x); break; } }
     const plan: TownWallPlan = { x0: L.x0, y0: L.y0, x1: L.x1, y1: L.y1, gates, gaps, towers, stairs };
     // 성문 통로 두 칸의 바닥은 길로(폭 1 길이면 옆 칸도), 성문 앞뒤 한 칸도 길에 잇는다
     const roadTile = (() => { for (let c = 0; c < W * H; c += 1) if (occ[c] === ROAD) return mw.lowerTiles[c]!; return -1; })();
@@ -2393,7 +2396,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         if (occ[c] !== ROAD && occ[c] !== PLAZAC && roadTile >= 0) { mw.lowerTiles[c] = roadTile; setLayerTileAt(mw, 2, c, -1); setLayerTileAt(mw, 3, c, -1); setLayerTileAt(mw, 4, c, -1); occ[c] = ROAD; }
       }
     }
-    stampTownWall(mw, plan);
+    stampTownWall(mw, plan, theme === "snow" ? "snow" : theme === "desert" ? "desert" : null);
     logConstructionTiles(mw, "stamp", "성벽 둘레", { major: true });
     if (blockedRoads) warnings.push(`성벽이 길 ${blockedRoads}곳을 막았다(모서리·성문 곁에 붙은 길).`);
     wallInfo = { gates, gaps, towers, stairs, blockedRoads, ...(southSpur ? { southGateRoad: southSpur } : {}) };
