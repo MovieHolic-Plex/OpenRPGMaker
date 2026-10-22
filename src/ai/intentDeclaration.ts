@@ -235,7 +235,7 @@ Rules:
 - 크로노 트리거·FF6 풍 한 장(章)(천년제 마을·나르셰 광산·오페라 하우스 사건처럼 거점 맵 + 갈래 맵 + NPC·퀘스트·사건을 한 번에) 요청은 tools 에 author_jrpg_chapter 를 적는다.
 - 맵·던전·성당·유적·광산·공장의 퍼즐·장치 기믹(레버 비밀통로 개방·2단계 순서 콘솔·파이프 오르간 조율·화로 점화 순서·석상 압력 발판·얼음/컨베이어 미끄럼·시간의 문 시대 연동 상자·다이너마이트 낙석 폭파·미믹/진실의 상자 수수께끼·수문/용암 다리 개방·경비병 유인 잠입·보스 결계 3비석 해제) 요청은 tools 에 list_puzzle_presets·author_map_puzzle 을 적는다.
 - 해리포터풍·마법 학교·호그와트풍 장소(대연회장·성채 복도·기숙사 휴게실·기숙사 침실·마법약 교실·부엉이 탑·도서관·온실·병동·퀴디치 경기장·검은 호수 보트 창고·금지된 숲 마차 승차장 등, 번들 칩셋 wizarding_world)는 손 도트 실내가 아니다 — tools 에 list_wizarding_spaces·build_wizarding_space 를 적는다.
-- 고딕 호러 장소(흉가·저택 정원·공동묘지·예배당·납골당·호러 미술관·저택 홀·서재·지하실, 번들 칩셋 gothic_manor)는 손 도트 실내·버들항 마을이 아니다 — tools 에 list_gothic_places·build_gothic_place 를 적는다. 호러·고딕·흉가 낱말이 없는 박물관·미술관 전시실, 배 안(선장실·조타실·배 주방·선원 숙소·화물칸·포 갑판), 투기장·콜로세움·검투사 방은 손 도트 실내다 — space=interior, tools 에 list_hand_interior_parts·build_hand_interior_room 을 적는다.
+- 고딕 호러 장소(흉가·저택 정원·공동묘지·예배당·납골당·호러 미술관·저택 홀·서재·지하실, 번들 칩셋 gothic_manor)는 손 도트 실내·버들항 마을이 아니다 — tools 에 list_gothic_places·build_gothic_place 를 적는다. 단 「던전」이라고 부른 지하 묘지·카타콤(묘실 여러 개·복도·보물 방·적이 있는 층)은 고딕 납골당 방 여러 장을 잇지 않는다 — author_dungeon type:'catacomb' 한 호출이다. 호러·고딕·흉가 낱말이 없는 박물관·미술관 전시실, 배 안(선장실·조타실·배 주방·선원 숙소·화물칸·포 갑판), 투기장·콜로세움·검투사 방은 손 도트 실내다 — space=interior, tools 에 list_hand_interior_parts·build_hand_interior_room 을 적는다.
 - 사용자와 같은 언어로 clarify·summary 를 쓴다.
 
 JSON schema:
