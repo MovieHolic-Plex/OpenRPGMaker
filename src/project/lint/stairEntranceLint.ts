@@ -99,7 +99,9 @@ export function checkStairEntrances(project: Project, issues: LintIssue[]): void
           const dest = project.maps[t.mapId];
           if (!dest || dest.id === map.id) continue;
           // ① 도착한 쪽 계단과 방향이 짝인가(오르는 계단 ↔ 내려가는 계단).
-          const there = stairsOf(dest).find((d) => d.contract.leads !== "same" && [...footprint(d), ...stairApproachCells(d)].some((p) => Math.abs(p.x - t.x) + Math.abs(p.y - t.y) <= 1));
+          // 도착 칸에 가장 가까운 계단(그림·앞 칸 1칸 안). 계단 둘이 나란하면 첫 계단이 아니라 바로 앞에 내린 쪽이다.
+          const gap = (d: FoundStair) => Math.min(...[...footprint(d), ...stairApproachCells(d)].map((p) => Math.abs(p.x - t.x) + Math.abs(p.y - t.y)));
+          const there = stairsOf(dest).filter((d) => d.contract.leads !== "same" && gap(d) <= 1).sort((a, b) => gap(a) - gap(b))[0];
           if (there && there.contract.leads === c.leads) {
             issues.push({ severity: "warning", code: "stair-misfacing", mapId: map.id, eventId: e.id, x: e.x, y: e.y,
               message: `${at} 로 ${dest.name || dest.id} 의 ${LEAD_KO[there.contract.leads]} 계단 ${there.kitId} 에 도착한다 — 같은 쪽 계단끼리 이었다. 위층에는 내려가는 계단, 아래층에는 오르는 계단이 짝이다.` });
