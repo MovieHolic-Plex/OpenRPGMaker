@@ -14,6 +14,7 @@
   reject <테마> <판> <항목> <후보> --why …          사람이 버린 후보와 이유
   objgate <테마>                  사람이 고른 부품으로 조립한 건물의 3/4 관문(object-gate kind structure) 영수증
   status [<테마>]                 판·관문·검수·시트·고른 것·3/4 영수증 현황
+  projection [--out <폴더>]       박공 정면 투영 안내도(회색) projection-*.png — 그리기 샌드박스 refs/ 에도 들어간다
 
 줄(line) — 테마마다 화풍이 셋이다(seed lines A·B·C). style-r1 의 후보 글자 A·B·C 가 곧 줄이고, 이후 판은 후보 키가
 <줄><번호>(A1 A2 B1 …)다. 고르기 단위는 (항목, 줄). 고른 그림은 picked/<줄>/<항목>.png.
@@ -828,6 +829,8 @@ def main(argv=None):
     p.add_argument('--all', action='store_true')
     p = sub.add_parser('status')
     p.add_argument('theme', nargs='?')
+    p = sub.add_parser('projection')
+    p.add_argument('--out', default=os.path.join(dot.RUNS, '_projection'))
     a = ap.parse_args(argv)
     if a.cmd == 'palette':
         return cmd_palette(a.theme, a.check)
@@ -875,6 +878,11 @@ def main(argv=None):
         return 0
     if a.cmd == 'status':
         return cmd_status(a.theme)
+    if a.cmd == 'projection':
+        import projection
+        for path in projection.write_guides(a.out):
+            print(path)
+        return 0
     return 2
 
 

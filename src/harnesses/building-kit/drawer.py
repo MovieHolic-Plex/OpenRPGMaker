@@ -8,7 +8,8 @@
 샌드박스(작업 폴더)에 넣는 것:
   round_module.py   판 모듈 사본(에이전트는 이번 후보의 함수들만 고친다)
   data/<테마>/      seed.json · palette.json
-  refs/             버들항 기준 건물 1배·4배(공용 시트 키트를 시트·검수와 같은 방식으로 합성), Actor1 정면 1배·4배, 팔레트 견본
+  refs/             버들항 기준 건물 1배·4배(공용 시트 키트를 시트·검수와 같은 방식으로 합성), Actor1 정면 1배·4배, 팔레트 견본,
+                    requireGableFront 판이면 projection-*.png(projection.py 가 그린 회색 투영 안내도 — 사용자 참고 그림은 넣지 않는다)
   dry.py · dry.json 샌드박스 자체 점검(테마·판·후보·모듈·미리보기 폴더). 에이전트는 `python3 dry.py` 로 돌린다
   BRIEF.md          할 일 · 3/4 지붕 지침 · 조립 목표 크기 · 쓰는 법
 
@@ -29,13 +30,17 @@ sys.path.insert(0, HERE)
 
 from PIL import Image, ImageDraw  # noqa: E402
 
+import assemble as AS  # noqa: E402
 import beodeul  # noqa: E402
 import dot  # noqa: E402
+import projection  # noqa: E402
 
 REPO = dot.REPO
 SANDBOX = os.environ.get('BUILDING_KIT_DRAWER_DIR') or os.path.join(REPO, 'qa-runs', 'harnesses', 'building-kit', 'drawer')
 DEFAULT_TIMEOUT = int(os.environ.get('BUILDING_KIT_DRAWER_TIMEOUT', '3600'))
-MODEL = os.environ.get('BUILDING_KIT_DRAWER_MODEL', 'opus')
+# 사용자 요구(2026-10-22): 타일·건물을 그리거나 까는 에이전트는 Opus 5.5 high. 환경 변수로만 바꾼다.
+MODEL = os.environ.get('BUILDING_KIT_DRAWER_MODEL', 'claude-opus-5-5')
+EFFORT = os.environ.get('BUILDING_KIT_DRAWER_EFFORT', 'high')
 MAX_ATTEMPTS = 3
 CANDIDATES_PER_LINE = 2
 BEGIN = '# >>> {name}'
@@ -143,7 +148,7 @@ def palette_swatch(theme):
             d.rectangle([x, y, x + block - 1, y + block - 1], fill=dot.hx(c) + (255,))
     return im
 
-def write_refs(path, theme, seed):
+def write_refs(path, theme, seed, rid=None):
     d = os.path.join(path, 'refs')
     os.makedirs(d, exist_ok=True)
     for ref in seed.get('refs', []):
@@ -153,15 +158,20 @@ def write_refs(path, theme, seed):
             continue
         im.save(os.path.join(d, f'{ref["kit"]}-1x.png'))
         im.resize((im.width * 4, im.height * 4), Image.NEAREST).save(os.path.join(d, f'{ref["kit"]}-4x.png'))
+    if AS.requires_gable_front(theme, rid):
+        projection.write_guides(d)
     act = beodeul.actor1_frame(1, 0, 0)
     act.save(os.path.join(d, 'actor1-front-1x.png'))
     act.resize((act.width * 4, act.height * 4), Image.NEAREST).save(os.path.join(d, 'actor1-front-4x.png'))
     palette_swatch(theme).save(os.path.join(d, 'palette.png'))
 
-def references(theme, seed):
+def references(theme, seed, rid=None):
     out = []
     for ref in seed.get('refs', []):
         out.append(f'  - refs/{ref["kit"]}-1x.png · refs/{ref["kit"]}-4x.png — {ref.get("label", "")} ({ref.get("use", "")})')
+    if AS.requires_gable_front(theme, rid):
+        for name in projection.NAMES:
+            out.append(f'  - refs/projection-{name}-1x.png · refs/projection-{name}-4x.png — 박공 정면 투영 안내도(회색 구조 도형, 화풍 기준 아님)')
     out.append('  - refs/actor1-front-1x.png · refs/actor1-front-4x.png — Actor1 정면 24×32(사람 크기 기준)')
     out.append('  - refs/palette.png — 잠긴 팔레트 램프 견본')
     return '\n'.join(out)
@@ -180,9 +190,15 @@ def round_buildings(seed, rid):
     return [by[i] for i in ids if i in by]
 
 def _mass_size(items, m):
-    rh = _piece_h(items[m['roof']], 'l')
+    kind = m.get('kind') or AS.RIDGE_SIDE
+    rh = AS.roof_rows(m, items)
     h = rh
-    desc = [f'지붕 {rh}']
+    if kind == AS.GABLE_FRONT:
+        desc = [f'박공 정면 지붕 {rh}(뒤 끝 + 사면 띠 {m["depth_rows"]}행 + 앞 박공{", 골" if m.get("back_end") == "valley" else ""})']
+    elif kind == AS.LEAN_TO:
+        desc = [f'외쪽 지붕 {rh}(낮은 쪽 {m.get("low")}, 사면 띠 {m["depth_rows"]}행)']
+    else:
+        desc = [f'지붕 {rh}']
     for s, row in enumerate(m['walls']):
         item_id = row['item'] if isinstance(row, dict) else m.get('wall')
         wh = _piece_h(items.get(item_id, {'pieces': []}), 'l')
@@ -210,8 +226,10 @@ def targets(theme, rid):
         for m in ms:
             h, desc = _mass_size(items, m)
             width = max(width, m['x'] + m['cols'])
-            height = max(height, m['depth'] + h)
-            rows.append(f'      질량 {m["id"]}: {m["cols"]}칸 폭 {m["storeys"]}층 x={m["x"]} depth={m["depth"]} → 세로 {h}칸 ({desc})')
+            height = max(height, h + max([0] + [-int(ex['at'][1]) for ex in m.get('extras') or []]))
+            rows.append(f'      질량 {m["id"]} [{m["kind"]}]: {m["cols"]}칸 폭 {m["storeys"]}층 x={m["x"]} depth={m["depth"]} → 세로 {h}칸 ({desc})'
+                        + ''.join(f' · extra {ex["part"]} at {ex["at"]}' + (' on roof' if ex.get('on') == 'roof' else '')
+                                  for ex in m.get('extras') or []))
         head = (f'  - {b["id"]} "{b.get("title", "")}" ({b.get("use", "")}): 질량 {len(ms)}개 → 가로 {width}칸 × 세로 {height}칸, '
                 + ('기단 행 있음' if any(m.get('base') for m in ms) else '기단 행 없음(벽이 땅에 닿는다)'))
         out.append(head + '\n' + '\n'.join(rows))
@@ -255,6 +273,26 @@ def item_sections(seed, items):
 - 세트 이음(맞닿는 조각 쌍): {joins or '없음'}""")
     return '\n\n'.join(out)
 
+def projection_section(theme, rid, seed):
+    """requireGableFront 판(style-r5~)의 투영 절. 다른 판은 빈 문자열."""
+    if not AS.requires_gable_front(theme, rid):
+        return ''
+    rd = seed['rounds'][rid]
+    return f"""## 투영 — 박공 정면(gable-front). 이 판은 여기서 갈린다
+{rd.get('projection') or seed['rules'].get('projection', '')}
+
+- 빛: {rd.get('light', '')}
+- 문법(조립이 이 순서로 쌓는다, 위→아래): 뒤 끝 b<폭>(또는 골 v<폭>) → 사면 띠 l·ml·k|k2·mr·r × depth_rows → 앞 박공 g<폭> → 층마다 벽.
+  용마루 띠는 질량 가운데 2px(폭 W 화소면 열 W/2-1, W/2)이다. 1칸 용마루 k 는 칸 안 7·8열, 2칸 용마루 k2 는 15·16열.
+- 조립 관문: A12 용마루가 뒤 끝 꼭대기에서 앞 박공 꼭대기까지 끊기지 않고 사면 띠 모든 행에서 양옆 사면과 밝기 6 이상 다르다 ·
+  왼쪽 사면 평균이 오른쪽보다 8 이상 밝다 / A13 골(v<폭>) 윗변 바로 위가 전부 더 뒤 본채의 지붕이고, 혼자 선 뒤 끝 위에는
+  본채 지붕이 없다 / A14 굴뚝 밑동이 그 질량 지붕 면 위 / A15 건물마다 박공 정면 질량 / A6 물러나는 지붕은 질량 높이의 50~85%.
+- 정면과 나란한 용마루 지붕(모임·망사드·박공)만 있는 건물, 지붕이 얇은 띠인 평평한 정면 입면은 이 판에서 실패다(검수 FAIL).
+- {rd.get('compare', '')}
+
+"""
+
+
 def brief(theme, rid, seed, key, items, line):
     names = ', '.join(func_name(it['id'], key) for it in items)
     return f"""# building-kit 그리기 — {seed['theme']['name']} · 판 {rid} · 후보 {key} (항목 {len(items)}개)
@@ -266,7 +304,7 @@ def brief(theme, rid, seed, key, items, line):
 ## 이번에 그릴 항목
 {item_sections(seed, items)}
 
-## 3/4 지붕 — 여기서 갈린다
+{projection_section(theme, rid, seed)}## 3/4 지붕 — 여기서 갈린다
 - 모임지붕(hip)을 3/4 탑뷰로 보면 위에서부터: ① 용마루가 위쪽 가까이 **짧고 밝은 선**으로 지나가고
   ② 그 아래 **큰 사면**이 면으로 보이며(2행 이상) 기와 줄이 가로로 흐르고 ③ 맨 아래 처마 띠는 더 어둡다.
   ④ 왼끝·오른끝 조각(각 2칸 폭) 안에 처마 모서리에서 용마루 끝으로 올라가는 **모임 사선**을 어두운 단으로 긋고
@@ -300,7 +338,7 @@ def brief(theme, rid, seed, key, items, line):
 {palette_legend(theme)}
 
 ## 샌드박스 그림 — Read 로 열어 본다 (보기·비율용, 화소 베끼기 금지)
-{references(theme, seed)}
+{references(theme, seed, rid)}
 
 ## 질량 합성 — 한 채가 여러 덩어리다
 - 레시피가 `masses` 로 여러 질량을 적으면, 앞줄(depth 0) 질량이 뒤 질량(depth 1)을 **덮는다** — 3/4 깊이.
@@ -333,12 +371,11 @@ def brief(theme, rid, seed, key, items, line):
 - 끝나면 한 줄로 무엇을 그렸고 무엇이 아직 안 읽히는지 적는다.
 """
 
-def claude_command(sandbox, model=None, effort=None):
-    cmd = [shutil.which('claude') or 'claude', '-p', '--output-format', 'text', '--strict-mcp-config',
-           '--allowedTools', 'Read,Write,Edit,Bash(python3:*)', '--add-dir', sandbox, '--model', model or MODEL]
-    if effort:
-        cmd += ['--effort', effort]
-    return cmd
+def claude_command(sandbox, model=None, effort=None, tools='Read,Write,Edit,Bash(python3:*)'):
+    """타일·건물을 그리거나 까는 에이전트 명령 — 기본 Opus 5.5 high(BUILDING_KIT_DRAWER_MODEL/EFFORT 로만 바꾼다).
+    마을에 타일을 까는 에이전트도 이 함수로 띄운다."""
+    return [shutil.which('claude') or 'claude', '-p', '--output-format', 'text', '--strict-mcp-config',
+            '--allowedTools', tools, '--add-dir', sandbox, '--model', model or MODEL, '--effort', effort or EFFORT]
 
 def subprocess_runner(cmd, prompt, cwd, timeout):
     r = subprocess.run(cmd, input=prompt, cwd=cwd, capture_output=True, text=True, timeout=timeout)
@@ -353,7 +390,7 @@ def sandbox_for(theme, rid, key):
     os.makedirs(data, exist_ok=True)
     json.dump(seed, open(os.path.join(data, 'seed.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     json.dump(dot.palette(theme), open(os.path.join(data, 'palette.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-    write_refs(path, theme, seed)
+    write_refs(path, theme, seed, rid)
     shutil.copy(os.path.join(HERE, 'dry.py'), os.path.join(path, 'dry.py'))
     out = os.path.join(path, 'preview')
     shutil.rmtree(out, ignore_errors=True)
