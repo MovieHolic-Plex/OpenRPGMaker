@@ -538,7 +538,7 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     ["a", "tex_easyrpg_charset_actor1", 3, "심문회 기사"], ["b", "tex_easyrpg_charset_people2", 1, "교단 사제"],
     ["c", "tex_easyrpg_charset_people3", 4, "교단 사제"], ["d", "tex_easyrpg_charset_actor1", 2, "심문회 기사"],
     ["e", "tex_easyrpg_charset_people2", 2, "교단 사제"], ["f", "tex_easyrpg_charset_people3", 5, "심문회 기사"],
-    ["g", "tex_easyrpg_charset_people3", 4, "교단 사제"], ["h", "tex_easyrpg_charset_people3", 6, "심문회 기사"],
+    ["g", "tex_easyrpg_charset_people2", 3, "교단 사제"], ["h", "tex_easyrpg_charset_people3", 6, "심문회 기사"],
   ].map(([k, tex, index, name]) => [`ev_${FS_PREFIX}_escort_${k}`, tex as string, index as number, name as string]);
   hub.events = hub.events.filter((e) => !escorts.some(([id]) => id === e.id));
   for (const [id, tex, index, name] of escorts) {

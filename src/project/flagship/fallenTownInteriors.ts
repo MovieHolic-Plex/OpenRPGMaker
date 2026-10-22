@@ -90,7 +90,8 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
     {
       door: { x: 31, y: 31 }, mapId: "fs_apothecary", name: "아스텔 · 약방", bgm: "cc0-bgm-rtp-cln-001",
       // 가게 앞방 + 조제실 + 약재 광 + 지하 저장고 + 서재 + 부부 침실 — 부엌은 두지 않는다(집집마다 같은 부엌이 되풀이됐다, VQA r6).
-      layout: { rooms: [{ kind: "pharmacy_shop", w: 19, h: 9 }, { kind: "alchemy", w: 9, h: 7 }, { kind: "pantry" }, { kind: "cellar" }, { kind: "master_bedroom" }, { kind: "study" }], seed: 13, variant: 0, styleVariant: "A" },
+      // 식료품 광·지하 저장고는 뺐다 — 집집마다 같은 광·저장고·부엌 묶음이 되풀이돼 「같은 저택」으로 읽혔다(VQA r11 major). 쉼터는 약재를 말리며 쉬는 작은 방.
+      layout: { rooms: [{ kind: "pharmacy_shop", w: 19, h: 9 }, { kind: "alchemy", w: 9, h: 7 }, { kind: "study" }, { kind: "master_bedroom" }, { kind: "rest" }], seed: 13, variant: 0, styleVariant: "A" },
       dress: [["table:potion+flask", 12, 15], ["herb drying rack", 26, 15], ["basket:herb", 9, 17], ["basket:mushroom", 10, 17],
         ["basket:potion+potionb+potiong", 13, 17],
         // 가게 바닥 가운데가 비었다(VQA r7 minor) — 물약 진열대 하나와 약초 바구니를 더 둔다(문에서 계산대 가는 길은 비운다).
@@ -121,7 +122,8 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
     {
       door: { x: 4, y: 20 }, mapId: "fs_stargazer_home", name: "아스텔 · 늙은 별지기의 집", bgm: "cc0-bgm-rtp-mys-002",
       // 별 지도 서고 + 관측 일지 서재 + 침실 + 지하 저장고 + 벽난로 거실(괘종시계) — 부엌·열 사람 식탁은 두지 않는다(혼자 사는 노인, VQA r6).
-      layout: { rooms: [{ kind: "library", w: 18, h: 8 }, { kind: "study", w: 9, h: 7 }, { kind: "bedroom" }, { kind: "cellar" }, { kind: "living", w: 8, h: 6 }], seed: 21, variant: 0, styleVariant: "D" },
+      // 지하 저장고 대신 별 유물 진열실(천구의·운석 진열장) — 별지기 집만의 방(VQA r11 major).
+      layout: { rooms: [{ kind: "library", w: 18, h: 8 }, { kind: "study", w: 9, h: 7 }, { kind: "bedroom" }, { kind: "museum_relics" }, { kind: "living", w: 8, h: 6 }], seed: 21, variant: 0, styleVariant: "D" },
       dress: [["orrery", 15, 15], ["globe", 13, 12], ["book pile", 18, 12], ["desk 3x1", 22, 16], ["owl perch", 27, 16], ["scroll rack", 13, 16],
         ["desk 2x2", 14, 4], ["book pile", 12, 3],
         // 서고 가운데·거실 아랫단이 빈 마루로 남았다(VQA r7 minor) — 읽는 탁자와 의자, 거실 찻상.
@@ -138,7 +140,10 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
     {
       door: { x: 32, y: 20 }, mapId: "fs_lisa_home", name: "아스텔 · 리사네 집", bgm: "cc0-bgm-rtp-emo-002",
       // 가족 집: 거실(벽난로) + 식당 + 부엌 + 침실 둘(부부·아이) + 식료품 광 + 헛간 광 + 지하 저장고(흰 도기 욕조는 중세 집에 안 맞았다, VQA r6).
-      layout: { rooms: [{ kind: "living", w: 10, h: 7 }, { kind: "dining", w: 8, h: 7 }, { kind: "kitchen", w: 6, h: 6 }, { kind: "bedroom" }, { kind: "bedroom" }, { kind: "pantry" }, { kind: "storeroom" }, { kind: "cellar" }], seed: 8, variant: 1, styleVariant: "A" },
+      // 여덟 방(여덟 자리 식탁·식료품 광·헛간·지하 저장고)은 작은 오두막에 안 맞았다(VQA r11 major) — 거실·부엌·침실 둘·바느질 방(리사의 일감).
+      layout: { rooms: [{ kind: "living", w: 12, h: 8 }, { kind: "kitchen", w: 8, h: 7 }, { kind: "bedroom", w: 8, h: 7 }, { kind: "bedroom", w: 8, h: 7 }, { kind: "tailor_work", w: 9, h: 7 }], seed: 29, variant: 0, styleVariant: "A" },
+      // 거실 아랫단·바느질 방 아랫단이 빈 마루였다 — 찻상과 의자, 옷감 상자.
+      dress: [["tea 2x2", 16, 14], ["chair E", 15, 14], ["chair W", 18, 14], ["book pile", 20, 15], ["luggage trunk", 5, 15], ["dining 2x1", 3, 13], ["chair S", 3, 12], ["chair N", 4, 14]],
       people: [
         {
           id: "ev_fs_lisa", name: "리사", query: "젊은 여성", chip: ["tex_easyrpg_charset_people3", 3],
