@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.317.0 — 2026-10-22
+
+### 기능
+
+- **ai** — assistant capability loop 1 — scene lessons suite, root-cause fixes (Sonnet stand-in 15/20 → 21/21) (#3226) (`1150b31`)
+
 ## 0.316.0 — 2026-10-22
 
 ### 기능
