@@ -211,8 +211,8 @@ def _roof_tones(line):
 def _slope_px(line, side, y):
     r = _roof_tones(line)
     if side == 'L':
-        return r[2] if y % 4 == 0 else r[3]
-    return r[0] if y % 4 == 0 else r[1]
+        return r[2] if y % 4 == 2 else r[3]
+    return r[0] if y % 4 == 2 else r[1]
 
 def _gf_row_px(line, gx, W, y):
     """박공 정면 사면 한 화소 — 전체 폭 W 안 gx. 가운데 2px(W/2-1, W/2) 는 용마루."""
@@ -306,7 +306,7 @@ def lean(line):
             return r[3]
         if role == 'lo' and x >= 14:
             return r[0]
-        return r[1] if y % 4 == 0 else r[2]
+        return r[1] if y % 4 == 2 else r[2]
     out = {role: [''.join(body(x, y, role) for x in range(16)) for y in range(16)] for role in ('hi', 'm', 'lo')}
     ramp, tone = LINE_BODY[line]
     wall_c = _let(line, ramp, tone)

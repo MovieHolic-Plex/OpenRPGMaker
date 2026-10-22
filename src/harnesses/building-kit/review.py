@@ -5,6 +5,9 @@
 보드 = 버들항 기준 건물(같은 배율 2배) + 후보 건물들(라벨은 회차마다 섞은 숫자) + **숨긴 함정**:
   roof_gap 지붕·벽 사이에 투명 한 줄 / two_doors 문 두 개 / flat 평면 채우기(두 색) / noise 잡음 /
   thin_roof 정면 입면(지붕을 한 줄 띠로) / recolor_original 버들항 원본 색만 바꾼 것.
+  requireGableFront 판(style-r5~)은 하나 더: flat_elevation — 후보 **자기 부품**(그 판의 용마루-정면 지붕 + 벽)으로
+  조립한, 용마루가 정면과 나란한 지붕 아래 평평한 정면 입면(사용자가 반려한 투영). 판정자 프롬프트의 view34 에
+  「박공 정면이 없으면 FAIL」 규칙이 붙는다.
 정답(key.json)은 판정자 폴더(work/) 밖에 둔다. 판정자는 Read 로 그림만 보고 JSON 줄로 답한다.
 함정 하나라도 PASS(두 축 모두 PASS)하거나 표본을 빠뜨리면 그 회차는 무효 — 무효는 유효 회차 수에 세지 않고 다시 돌린다.
 유효 3회 다수결(두 축 view34·quality 모두 PASS 가 과반). 영수증 review/<판>/<후보>.json = 그림 화소 해시 + 판정 원문 해시.
@@ -46,6 +49,7 @@ JUDGE_EFFORT = os.environ.get('BUILDING_KIT_JUDGE_EFFORT', 'high')
 JUDGE_TIMEOUT = int(os.environ.get('BUILDING_KIT_JUDGE_TIMEOUT', '3600'))
 REF_KITS = ('bd-house-h101_0', 'bd-house-inn', 'bd-out-cabin')
 PROBE_NAMES = ('roof_gap', 'two_doors', 'flat', 'noise', 'thin_roof', 'recolor_original')
+GABLE_FRONT_PROBES = ('flat_elevation',)
 
 
 def now():
@@ -146,7 +150,23 @@ def _second_door(im, kit, parts, recipe):
     return Image.fromarray(a, 'RGBA')
 
 
-def probes_for(base_im, kit, parts, recipe, pal, rng):
+def flat_elevation(parts, pal, theme):
+    """후보 자기 부품으로 만든 반려 투영 — 용마루가 정면과 나란한 지붕 + 평평한 정면 입면(질량 하나, 6칸 1층)."""
+    roofs = [i for i, p in parts.items() if p['item'].get('wave') == 'roof' and not p['item'].get('form')
+             and not p['item'].get('spire') and int(p['item'].get('end', AS.ROOF_END)) == AS.ROOF_END]
+    walls = [i for i, p in parts.items() if p['item'].get('wave') == 'wall'
+             and {'l', 'm', 'w', 'd', 'r'} <= {pc.get('role') for pc in p['item']['pieces']}]
+    if not roofs or not walls:
+        return None
+    roof = min(roofs, key=lambda i: (parts[i]['item']['pieces'][0]['size'][1], i))
+    recipe = {'id': 'probe.flat_elevation', 'title': '', 'use': 'probe',
+              'masses': [{'id': 'm', 'cols': 6, 'storeys': 1, 'x': 0, 'depth': 0, 'roof': roof,
+                          'walls': [{'item': sorted(walls)[0], 'letters': 'L W M D W R'}]}]}
+    res = AS.assemble(recipe, parts, pal, theme, require_gable_front=False)
+    return res['img'].img() if res['img'] is not None else None
+
+
+def probes_for(base_im, kit, parts, recipe, pal, rng, gable_front=False, theme=None):
     rh_px = kit['roofRows'] * dot.T
     out = [('roof_gap', _insert_gap(base_im, rh_px)),
            ('flat', _flat(base_im)),
@@ -159,6 +179,11 @@ def probes_for(base_im, kit, parts, recipe, pal, rng):
     if refs:
         _, rim = rng.choice(refs)
         out.append(('recolor_original', _recolor(rim)))
+    if gable_front:
+        fe = flat_elevation(parts, pal, theme)
+        if fe is None:
+            raise SystemExit('requireGableFront 판인데 flat_elevation 함정을 만들 용마루-정면 지붕·벽 부품이 없다')
+        out.append(('flat_elevation', fe))
     return out
 
 
@@ -219,7 +244,7 @@ Judge EACH sample on two axes:
 A. view34 - the 3/4 top-down building convention: the roof TOP SURFACE reads as a plane seen from above (about 30-50% of the
    building height, not a thin strip), the south front wall is visible below it, the eave overhangs or meets the wall with no
    transparent gap, no side/iso projection, no pure front elevation. FAIL for a roof strip that is 1-2 rows, a gap between
-   roof and wall, or a flat plan view.
+   roof and wall, or a flat plan view.{projection}
 B. quality vs the REFERENCE buildings:
    Q1 silhouette - reads as a building at 1x, one body, roof covers the walls, foundation sits on the ground line, exactly
       ONE door on the ground floor. A PITCHED roof must show its form the way the reference roofs do (hip end slopes cut
@@ -240,8 +265,19 @@ Output ONLY JSON lines, one per sample, nothing else:
 Samples: {ids}"""
 
 
-def judge_prompt(theme, ids, n_images):
-    return JUDGE.format(n_images=n_images, ref_scale=REF_SCALE, ids=', '.join(ids), theme=theme)
+GABLE_FRONT_RULE = """
+   GABLE-FRONT PROJECTION RULE (this round requires it; it overrides the reference row on projection - the reference row is
+   only the quality/style bar here): for pitched-roof buildings, FAIL view34 when EVERY mass is a ridge-parallel roof (ridge
+   running left-right) over a flat front elevation, however well drawn. PASS view34 needs at least one visible GABLE FRONT:
+   a triangular gable wall facing the viewer (south) above the front wall band, with the roof RECEDING NORTH (upward on
+   screen) behind it - its ridge drawn as a straight VERTICAL line from the front apex up to the back end (a ^-shaped back
+   apex, or a valley where it runs into another roof) - and BOTH roof slopes visible as tall areas left and right of that
+   ridge, the left slope lit and the right slope darker. The roof should be the majority of that mass's silhouette."""
+
+
+def judge_prompt(theme, ids, n_images, gable_front=False):
+    return JUDGE.format(n_images=n_images, ref_scale=REF_SCALE, ids=', '.join(ids), theme=theme,
+                        projection=GABLE_FRONT_RULE if gable_front else '')
 
 
 def claude_judge(prompt, images, workdir, model=None, effort=None, timeout=None):
@@ -314,7 +350,8 @@ def prepare(theme, rid, parts_by_key, runs=DEFAULT_RUNS, retries=DEFAULT_RETRIES
         raise SystemExit(f'{theme} {rid}: 조립까지 통과한 후보가 없다 — gate·assemble 을 먼저')
     rng = _rng(seed)
     base = next(iter(cands.values()))
-    probes = probes_for(base['img'], base['kit'], base['parts'], base['recipe'], pal, rng)
+    gable_front = AS.requires_gable_front(theme, rid)
+    probes = probes_for(base['img'], base['kit'], base['parts'], base['recipe'], pal, rng, gable_front, theme)
     samples = [('candidate', bid, c['img']) for bid, c in cands.items()] + [('probe', n, im) for n, im in probes]
     rng.shuffle(samples)
     k = len(_runs(rnd)) + 1
@@ -334,7 +371,7 @@ def prepare(theme, rid, parts_by_key, runs=DEFAULT_RUNS, retries=DEFAULT_RETRIES
         path = os.path.join(work, f'board-{b // PER_BOARD + 1}.png')
         _stack([_row(ref_cards), _row(scards[b:b + PER_BOARD])]).save(path)
         images.append(path)
-    prompt = judge_prompt(theme, ids, len(images))
+    prompt = judge_prompt(theme, ids, len(images), gable_front)
     open(os.path.join(run, 'prompt.txt'), 'w', encoding='utf-8').write(prompt)
     json.dump(key, open(os.path.join(run, 'key.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     return {'round': rid, 'run': k, 'dir': run, 'work': work, 'prompt': prompt, 'images': images, 'ids': ids,
