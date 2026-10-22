@@ -340,15 +340,18 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
   const office = project.maps[FL_MAP.office]!;
   const roof = project.maps[FL_MAP.rooftop]!;
   const o = a.office;
-  const taken: Cell[] = [o.elevatorOut, o.heroDesk, o.stairsOut];
+  // 서하는 승강기 문 바로 앞(elevatorOut)이 아니라 한 칸 더 나와 선다 — 문 칸 앞에서는 승강기 문틀(늘 위에 그려지는 칸)이
+  // 머리를 덮었다(#3231 리뷰). 만남 무리는 이 칸을 기준으로 선다.
+  const heroMeet: Cell = { x: o.elevatorOut.x, y: o.elevatorOut.y + 1 };
+  const taken: Cell[] = [o.elevatorOut, heroMeet, o.heroDesk, o.stairsOut];
   const minhoSpot = spot(project, FL_MAP.office, o.pantry, taken);
   const jihuSeat = o.jihuDesk;
   taken.push(jihuSeat, o.leadDesk);
   // 만남 자리: 팀장은 주인공 두 칸 앞, 지후는 팀장 옆(엘리베이터 벽 그림 밑이 아닌 트인 바닥 — 시각 담당 앵커가 있으면 그것).
   const named = o as typeof o & { meetLead?: Cell; meetJihu?: Cell };
-  const leadMeetStop = named.meetLead ?? spot(project, FL_MAP.office, { x: o.elevatorOut.x, y: o.elevatorOut.y + 2 }, taken);
+  const leadMeetStop = named.meetLead ?? spot(project, FL_MAP.office, { x: heroMeet.x, y: heroMeet.y + 2 }, taken);
   const jihuMeetStop = named.meetJihu ?? spot(project, FL_MAP.office, { x: leadMeetStop.x + 1, y: leadMeetStop.y }, taken);
-  const minhoMeetStop = spot(project, FL_MAP.office, { x: o.elevatorOut.x - 1, y: o.elevatorOut.y }, [...taken, leadMeetStop, jihuMeetStop]);
+  const minhoMeetStop = spot(project, FL_MAP.office, { x: heroMeet.x - 1, y: heroMeet.y }, [...taken, leadMeetStop, jihuMeetStop]);
   // 둘 다 자기 자리에서 걸어 나온다(빈 바닥에서 솟아나지 않는다).
   const leadSpot = o.leadDesk;
   const jihuMeet = jihuSeat;
@@ -444,30 +447,30 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     playSe(SE_ELEVATOR), wait(400),
     quiet(SE_SLIDE, 0.45), ...doorFx(elev, true, 700),
     { kind: "moveEvent", eventId: "@player", route: { moves: [
-      { kind: "setThrough", enabled: true }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }, { kind: "setThrough", enabled: false },
+      { kind: "setThrough", enabled: true }, { kind: "move", dir: "down" }, { kind: "move", dir: "down" }, { kind: "setThrough", enabled: false }, { kind: "move", dir: "down" },
     ], repeat: false, wait: true, skippable: true } } as unknown as Command,
     quiet(SE_SLIDE, 0.4), ...doorFx(elev, false, 700, false),
-    walkRoute(project, FL_MAP.office, "ev_fl_lead", leadSpot, leadMeetStop, [o.elevatorOut]),
-    face("ev_fl_lead", dirToward(leadMeetStop, o.elevatorOut)),
-    face("@player", dirToward(o.elevatorOut, leadMeetStop)),
+    walkRoute(project, FL_MAP.office, "ev_fl_lead", leadSpot, leadMeetStop, [heroMeet], true, dirToward(leadMeetStop, heroMeet)),
+    face("ev_fl_lead", dirToward(leadMeetStop, heroMeet)),
+    face("@player", dirToward(heroMeet, leadMeetStop)),
     ...sayAt("lead", "right", "base", "윤서하 씨? 오정민이에요. 프로덕트팀 팀장."),
     ...say("seoha", "happy", "안녕하세요! 오늘부터 출근하는 윤서하입니다. 잘 부탁드립니다."),
     ...sayAt("lead", "right", "happy", "긴장 풀어요. 우리 팀 다섯 명이에요. 한 명은 휴가 중이고, 한 명은 벌써 탕비실에서 간식 먹고 있고."),
     // 민호는 탕비실에서 걸어 나와 인사한다(VQA2: 「탕비실 안에서 자기소개」).
-    walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoSpot, minhoMeetStop, [o.elevatorOut, leadMeetStop]),
-    face("ev_fl_minho", dirToward(minhoMeetStop, o.elevatorOut)),
-    face("@player", dirToward(o.elevatorOut, minhoMeetStop)),
+    walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoSpot, minhoMeetStop, [heroMeet, leadMeetStop], true, dirToward(minhoMeetStop, heroMeet)),
+    face("ev_fl_minho", dirToward(minhoMeetStop, heroMeet)),
+    face("@player", dirToward(heroMeet, minhoMeetStop)),
     ...sayAt("minho", "left", "happy", "아, 들켰다. 차민호예요! 지난주에 들어온 백엔드 신입. 동기라고 해도 되죠?"),
     ...sayAt("seoha", "right", "happy", "네, 그럼요. 반가워요."),
     { kind: "changeFriendship", npcKey: "lead", delta: 60 } as Command,
     { kind: "changeFriendship", npcKey: "minho", delta: 60 } as Command,
-    face("@player", dirToward(o.elevatorOut, leadMeetStop)),
+    face("@player", dirToward(heroMeet, leadMeetStop)),
     listenTo("jihu", "base", "left"),
     ...sayAt("lead", "right", "base", "그리고 서하 씨 사수. 지후 씨, 잠깐 와 볼래요?"),
-    walkRoute(project, FL_MAP.office, "ev_fl_jihu_meet", jihuMeet, jihuMeetStop, [o.elevatorOut, leadMeetStop, minhoMeetStop]),
-    face("ev_fl_jihu_meet", dirToward(jihuMeetStop, o.elevatorOut)),
+    walkRoute(project, FL_MAP.office, "ev_fl_jihu_meet", jihuMeet, jihuMeetStop, [heroMeet, leadMeetStop, minhoMeetStop], true, dirToward(jihuMeetStop, heroMeet)),
+    face("ev_fl_jihu_meet", dirToward(jihuMeetStop, heroMeet)),
     // 지후가 서하 앞에 서면 서하도 그를 본다 — 선택지 「처음 뵙겠습니다」는 마주 선 채로 뜬다.
-    face("@player", dirToward(o.elevatorOut, jihuMeetStop)),
+    face("@player", dirToward(heroMeet, jihuMeetStop)),
     stopBgm(),
     ...emote("player", "exclamation", 1300),
     ...think("…어?", "회색 후드. 조금 길어진 앞머리. 목소리를 듣기도 전에 알았다."),
@@ -489,7 +492,7 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
         // 「대답하기 전에 눈을 피했다」 — 대답하기 전에 지후가 실제로 고개를 돌렸다가, 다시 보고 말한다.
         face("ev_fl_jihu_meet", "right"),
         wait(700),
-        face("ev_fl_jihu_meet", dirToward(jihuMeetStop, o.elevatorOut)),
+        face("ev_fl_jihu_meet", dirToward(jihuMeetStop, heroMeet)),
         ...say("jihu", "base", "…아뇨. 사람을 잘못 보신 것 같습니다."),
         ...say("seoha", "embarrassed", "아… 죄송합니다. 닮은 사람이 있어서요."),
         ...think("잘못 봤을 리가 없다. 저 사람, 대답하기 전에 눈을 피했다."),
@@ -497,15 +500,15 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
       ] },
     ]),
     bgm(BGM_OFFICE),
-    face("@player", dirToward(o.elevatorOut, leadMeetStop)),
+    face("@player", dirToward(heroMeet, leadMeetStop)),
     ...sayAt("lead", "right", "base", "서하 씨 자리는 지후 씨 맞은편이에요. 오늘 숙제는 금요일 발표 자료 읽어 두기."),
     ...sayAt("lead", "right", "base", "금요일 오후 세 시에 ‘소리결’ 박 본부장님 앞에서 리뉴얼 시안 발표가 있어요. 신입한테 미안하지만, 첫 주부터 바빠요."),
-    face("@player", dirToward(o.elevatorOut, minhoMeetStop)),
+    face("@player", dirToward(heroMeet, minhoMeetStop)),
     ...sayAt("minho", "left", "happy", "서하 씨, 이따 탕비실로 와요! 커피 머신 쓰는 법 알려 줄게요."),
-    walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoMeetStop, minhoSpot, [o.elevatorOut], false, "up"),
+    walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoMeetStop, minhoSpot, [heroMeet], false, "up"),
     // 만남 자리의 둘은 그 자리에서 사라지지 않고 각자 자리까지 걸어간다 — 자리의 지후·팀장 페이지가 같은 칸에서 이어받는다.
-    walkRoute(project, FL_MAP.office, "ev_fl_jihu_meet", jihuMeetStop, jihuSeat, [o.elevatorOut], false),
-    walkRoute(project, FL_MAP.office, "ev_fl_lead", leadMeetStop, o.leadDesk, [o.elevatorOut], false, "down"),
+    walkRoute(project, FL_MAP.office, "ev_fl_jihu_meet", jihuMeetStop, jihuSeat, [heroMeet], false),
+    walkRoute(project, FL_MAP.office, "ev_fl_lead", leadMeetStop, o.leadDesk, [heroMeet], false, "down"),
     ...think("(탕비실에서 민호 씨를 찾아보자. 자리와 화이트보드도 한번 볼까.)"),
     waitMoves(),
     stage(S.MET),
