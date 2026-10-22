@@ -46,6 +46,8 @@ const S = {
   WED: 9, WED_TALK: 10, FRI: 11, RUN: 12, PLATFORM: 13,
   /** 엔딩 C: 회식으로 — 밤거리 비 한 장면 뒤 엔딩. */
   DINNER: 20,
+  /** 엔딩 B: 열차가 떠난 뒤 혼자 지상으로 — 밤거리 지하철 출입구 앞에서 엔딩. */
+  END_B_STREET: 21,
 } as const;
 
 /** 엔딩 A 문턱 — 호감은 선택 아홉 번에서 최대 12, 정직하게 가면 6~7 이 자연스럽게 닿는다. */
@@ -1150,6 +1152,14 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   const plat = project.maps[FL_MAP.platformPm]!;
   const p = a.platform;
 
+  add(street, scene("ev_fl_end_b_street", { x: 4, y: 1 }, S.END_B_STREET, [
+    panBack(0),
+    { kind: "setWeather", weather: "none", transitionMs: 0 } as Command,
+    ...fadeIn(900),
+    wait(700),
+    stage(S.PLATFORM + 100),
+    { kind: "triggerEnding", endingId: END_B } as Command,
+  ]));
   add(street, scene("ev_fl_dinner_rain", { x: 3, y: 1 }, S.DINNER, [
     // 앞 맵에서 옮긴 카메라 좌표가 남아 빈 길을 비췄다(VQA r11) — 화면이 검을 때 서하에게 돌려 둔다.
     panBack(0),
@@ -1265,8 +1275,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...jihuBoards(),
           ...fadeOut(1200),
           stopBgm(),
-          ...endingOpenNight(),
-          { kind: "triggerEnding", endingId: END_B } as Command,
+          ...endingOpenNight(a),
         ]),
       ] },
       { text: "“…잘 가요, 선배.”", then: [
@@ -1277,8 +1286,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
         ...jihuBoards(),
         ...fadeOut(1200),
         stopBgm(),
-        ...endingOpenNight(),
-          { kind: "triggerEnding", endingId: END_B } as Command,
+        ...endingOpenNight(a),
       ] },
     ]),
   ]));
@@ -1288,11 +1296,15 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
  * 엔딩 직전 — 검게 덮은(fadeOut) 화면에서 에필로그 그림을 먼저 깔고 덮개를 걷는다. 엔딩의 에필로그 그림은 페이드의 검은 색조 아래에
  * 그려져 글이 검은 화면에 떴다(VQA r10). 같은 그림·자리(fl_epilogue)라 에필로그의 그림 명령은 그대로 이어진다.
  */
-/** 엔딩 B — 열차가 떠난 뒤 지상으로 올라와 본 밤하늘(320×256 파노라마를 화면 가득). */
-function endingOpenNight(): Command[] {
+/**
+ * 엔딩 B — 열차가 떠난 뒤 혼자 지상으로 올라온다. 밤 거리의 지하철 출입구 앞에 선 서하 위로 에필로그가 흐른다
+ * (밤하늘 파노라마를 화면 가득 깔면 형체 없는 보라 구름 결이라 「미완성 자리표시」로 읽혔다 — VQA r20).
+ */
+function endingOpenNight(a: FirstLoveAnchors): Command[] {
+  // 이동 뒤 명령은 돌지 않는다 — 도착 맵의 자동 장면(ev_fl_end_b_street, 단계 END_B_STREET)이 걷어 내고 엔딩을 연다.
   return [
-    { kind: "showPicture", pictureId: "fl_epilogue", resourceId: "oprn-pano-night", x: 0, y: -8, scale: 150, opacity: 255, waitForPicture: false } as Command,
-    ...fadeIn(900),
+    stage(S.END_B_STREET),
+    transfer(FL_MAP.streetPm, a.street.subwayOut.x, a.street.subwayOut.y, "down", "none"),
   ];
 }
 function endingOpen(resourceId: string): Command[] {

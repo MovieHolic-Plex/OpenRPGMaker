@@ -301,7 +301,7 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   const officeFri = cloneMap(project, FL_MAP.office, FL_MAP.officeFri, "스튜디오 늘봄 · 금요일");
   // 금요일 회의실은 사무층 맨 아래(y 13~20)라 카메라가 맵 끝에 걸려 다섯 사람이 흉상·대화창 사이에 끼었다(VQA r10).
   // 바깥 채움 두 줄(맨 아래 두 줄 무늬)을 FRI_PAD 줄 더 덧대 카메라가 회의실을 화면 위쪽에 둘 수 있게 한다 — 덧댄 줄은 대화창 뒤다.
-  const FRI_PAD = 2, friH = officeFri.height;
+  const FRI_PAD = 1, friH = officeFri.height;
   padMapBottom(officeFri, FRI_PAD, (y) => friH - 2 + ((y - friH) % 2));
   // 덧댄 줄은 빈 칸(맵 밖과 같은 어둠)이다 — 바깥벽 무늬를 되풀이하면 대화창이 없을 때 빈 띠가 화면 1/3을 채웠다(VQA r12).
   for (let y = friH; y < friH + FRI_PAD; y++) for (let x = 0; x < officeFri.width; x++) clearMapCellForBackground(officeFri, y * officeFri.width + x);
@@ -378,7 +378,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
     // 건너편 선로 — 승강장 아래가 검은 허공으로 끝나지 않게 선로를 한 벌 더 깐다(열차는 안 다닌다). 탈것 도구가 선로 띠를 찾은 뒤에 칠한다
     // (두 벌이 붙어 있으면 도구가 4줄 띠를 선로로 못 읽는다). 선로 칸은 막힘이라 걸을 수 있는 고립 바닥이 되지 않는다.
     const m = project.maps[id]!;
-    for (const ty of [NEAR_TRACK_Y + 2]) {
+    // 맨 아래 두 줄(덧댄 줄)도 선로를 한 벌 더 — 그대로 두면 화면 아래 1/5이 검은 띠였다(VQA r20).
+    for (const ty of [NEAR_TRACK_Y + 2, NEAR_TRACK_Y + 4]) {
       if (ty + 1 >= m.height) continue;
       for (let x = 0; x < m.width; x++) {
         m.lowerTiles[ty * m.width + x] = TRACK_TOP;
