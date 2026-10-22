@@ -21,12 +21,14 @@
 //  - scene-bust-faces-away        원래 시선을 아는 흉상·전신(현대 연애 → 그림)에 flipHorizontally 를 줘서 대화 상대가 아니라 화면 바깥을 본다
 //  - scene-seated-cannot-stand     의자·소품 칸(나가는 방향이 막힌 칸)에 앉힌 인물의 첫걸음이 통과 없이 그 칸을 나가려 한다 — 엔진이 첫걸음부터 막아 건너뛰기 경로가 통째로 사라지고 인물이 제자리에서 사라진다
 //  - scene-tint-clears-fade        화면을 검게 덮은(fadeOut) 뒤 fadeIn 전에 「Tint Screen」 으로 색조를 바꾼다 — 페이드도 같은 색조 칸이라 검은 덮개가 걷혀 다음 장면 전에 화면이 드러난다
+//  - scene-actor-head-under-upper  인물이 걸어가 선 칸 바로 위에 «항상 위» 위층 소품(★, 계산대 위 물건 등)이 있다 — 소품이 머리를 덮은 채 대화한다
 //  - scene-actor-under-furniture   보이는 인물을 «위층(upper)» 가구 칸(의자 등받이·탁자처럼 인물보다 앞에 그려지는 막힌 칸)에 세운다 — 가구가 얼굴을 덮는다
 //  - scene-route-interrupted       기다리지 않는 긴 경로(퇴장 등)가 도는 인물에게 같은 장면이 다시 이동·돌기를 시킨다 — 뒤 명령이 앞 경로를 갈아 끼워 인물이 길 한가운데 멈춘다
 
 import { nestedCommandLists } from "../authoredCommandIndex";
 import type { Command, Dir, EventPage, GameEvent, GameMap, MoveCommand, Project, TilesetDef } from "../types";
 import { canMove, isPassable } from "../collision";
+import { passageMarkForTile } from "../tilesetPassage";
 import handInteriorSpec from "@/assets/handInteriorSpec.json";
 import { sharedPortraitNativeGaze } from "@/assets/sharedPortraitAssets";
 import type { LintIssue } from "./projectLint";
@@ -1217,6 +1219,57 @@ function checkActorUnderFurniture(project: Project, issues: LintIssue[]): void {
   }
 }
 
+/**
+ * 인물 그림은 한 칸보다 키가 커서 머리가 바로 위 칸에 걸친다. 그 칸에 「항상 위」(★) 위층 소품(계산대 위 물건 등)이 있으면
+ * 소품이 머리를 덮는다(첫사랑 r15 편의점: 계산대 앞 지후). 장면 경로가 인물을 세우는 칸(시작 칸·걸음 끝 칸)마다 본다.
+ */
+function checkActorHeadUnderUpper(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    const tileset = project.tilesets?.[map.tilesetId];
+    const upper = (map as { upperTiles?: readonly number[] }).upperTiles;
+    if (!tileset || !upper) continue;
+    const covered = (c: Cell): boolean => {
+      if (c.y <= 0) return false;
+      // 막힌(×) 위층 가구는 인물과 y 정렬되어 아래 줄 인물이 앞에 그려진다. 덮는 것은 「항상 위」(★) 위층 타일뿐이다(characterDepth).
+      const at = (c.y - 1) * map.width + c.x;
+      const overlay = (map as { upperOverlayTiles?: readonly number[] }).upperOverlayTiles;
+      return [upper[at], overlay?.[at]].some((tile) => {
+        if (tile === undefined || tile < 0 || passageMarkForTile(tileset, tile) !== "star") return false;
+        const tags = tileset.tileMeta?.[tile]?.tags ?? [];
+        return !tags.some((t) => /stair|^foot-dy:/i.test(t) || t.includes("계단") || t.includes("사다리"));
+      });
+    };
+    const byId = new Map((map.events ?? []).map((e) => [e.id, e] as const));
+    const seen = new Set<string>();
+    const report = (id: string, at: Cell, host: string): void => {
+      const key = `${id}@${at.x},${at.y}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      issues.push({
+        severity: "warning", code: "scene-actor-head-under-upper", mapId: map.id, eventId: host, x: at.x, y: at.y,
+        message: `인물 ${id} 가 (${at.x},${at.y}) 에 서는데 바로 위 칸에 인물보다 항상 위에 그려지는 위층 소품(★, 계산대 위 물건 등)이 있다 — 소품이 머리를 덮는다. 위 칸이 비었거나 막힌 가구(y 정렬)인 칸에 세운다.`,
+      });
+    };
+    for (const host of map.events ?? []) {
+      for (const page of pagesOf(host)) {
+        const pos = new Map<string, Cell>();
+        for (const command of walk(page.commands)) {
+          if (command.kind === "transfer") break;
+          const routeId = routeTarget(command, host);
+          if (!routeId || command.kind !== "moveEvent" || !byId.has(routeId) || routeId === "@player") continue;
+          const target = byId.get(routeId)!;
+          if (!pagesOf(target).some((p) => visibleGraphic(p))) continue;
+          const route = simulateRoute(pos.get(routeId) ?? target, command.route?.moves, map);
+          if (route.fades) { pos.delete(routeId); continue; }
+          pos.set(routeId, route.end);
+          // 승강기·문 안으로 들어가는 걸음(지나갈 수 없는 칸에서 끝남)은 무대를 떠나는 것이다.
+          if (isPassable(project, map, route.end.x, route.end.y) && covered(route.end)) report(routeId, route.end, host.id);
+        }
+      }
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------- 흉상 시선
 
 /**
@@ -1392,6 +1445,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkSeatedCannotStand);
   guard(checkTintClearsFade);
   guard(checkActorUnderFurniture);
+  guard(checkActorHeadUnderUpper);
   guard(checkMapSmallerThanScreen);
   guard(checkLetterboxDialogue);
   guard(checkCommandsAfterTransfer);
