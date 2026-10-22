@@ -1124,14 +1124,12 @@ function checkSeatedCannotStand(project: Project, issues: LintIssue[]): void {
     const byId = new Map((map.events ?? []).map((e) => [e.id, e] as const));
     for (const host of map.events ?? []) {
       for (const page of pagesOf(host)) {
-        const at = new Map<string, Cell>();
         const reported = new Set<string>();
-        for (const command of walk(page.commands)) {
-          if (command.kind === "transfer") break;
+        const step = (command: Command, at: Map<string, Cell>): void => {
           const id = routeTarget(command, host);
-          if (!id || command.kind !== "moveEvent") continue;
+          if (!id || command.kind !== "moveEvent") return;
           const actor = byId.get(id);
-          if (!actor) continue;
+          if (!actor) return;
           let cell = at.get(id) ?? { x: actor.x, y: actor.y };
           let through = false;
           for (const move of command.route?.moves ?? []) {
@@ -1157,7 +1155,28 @@ function checkSeatedCannotStand(project: Project, issues: LintIssue[]): void {
             cell = next;
           }
           at.set(id, cell);
-        }
+        };
+        // 선택지·조건 갈래는 갈래마다 갈래 앞 자리에서 따로 걷는다 — 한 줄로 이어 읽으면 둘째 갈래의 걸음이 첫 갈래가 끝난 자리에서
+        // 출발한 것으로 잘못 계산돼 엉뚱한 칸에서 «못 일어선다»고 했다(첫사랑 수요일 두 갈래, VQA r25 작업). 갈래 뒤는 첫 갈래의 끝 자리로 잇는다.
+        // 이동(transfer) 뒤는 그 갈래(맨 위면 장면)가 끝난 것으로 본다.
+        const replay = (commands: readonly Command[] | undefined, at: Map<string, Cell>): boolean => {
+          for (const command of commands ?? []) {
+            if (!command || typeof command !== "object") continue;
+            if (command.kind === "transfer") return true;
+            step(command, at);
+            const branches = nestedCommandLists(command);
+            if (!branches.length) continue;
+            let first: Map<string, Cell> | undefined;
+            for (const branch of branches) {
+              const copy = new Map(at);
+              replay(branch, copy);
+              first ??= copy;
+            }
+            if (first) { at.clear(); for (const [k, v] of first) at.set(k, v); }
+          }
+          return false;
+        };
+        replay(page.commands, new Map());
       }
     }
   }
@@ -1218,10 +1237,18 @@ function checkActorUnderFurniture(project: Project, issues: LintIssue[]): void {
       if (isPassable(project, map, event.x, event.y) && tags.some((tag) => /stair/i.test(tag) || tag.includes("계단") || tag.includes("사다리") || /^foot-dy:/.test(tag))) continue;
       // 등을 화면 쪽으로 앉힌 인물(위를 봄)은 등받이가 등·허리만 가린다 — 얼굴은 어차피 안 보이고 «뒤에서 본 앉은 사람»으로 읽힌다
       // (첫사랑 금요일 회의: 듣는 셋이 탁자 남쪽 의자에 앉아 발표자를 본다, VQA r22).
-      if (pagesOf(event).filter((p) => visibleGraphic(p)).every((p) => (p as { graphic?: { direction?: string } }).graphic?.direction === "up")) continue;
+      // 「위 층」 쪽 인물은 가구 위에 그려진다 — 의자에 앉힌 모습(첫사랑 수요일 야근, VQA r25). 같은 이벤트에 «일어선 뒤» 쪽(스위치가 켜져야
+      // 보이는 같은 층 쪽)이 더 있으면 그 쪽은 장면이 옆 바닥으로 걸어 나온 뒤에야 켜지므로 시작 칸에서 그려지지 않는다고 본다.
+      const drawnHere = pagesOf(event).filter((p) => visibleGraphic(p)).filter((p) => {
+        if ((p as { priority?: string }).priority === "above") return false;
+        const conds = ((p as { conditions?: Array<{ kind?: string; value?: unknown }> }).conditions ?? []);
+        const seatedTwin = pagesOf(event).some((q) => q !== p && (q as { priority?: string }).priority === "above" && visibleGraphic(q));
+        return !(seatedTwin && conds.some((c) => c.kind === "switch" && c.value === true));
+      });
+      if (drawnHere.every((p) => (p as { graphic?: { direction?: string } }).graphic?.direction === "up")) continue;
       issues.push({
         severity: "warning", code: "scene-actor-under-furniture", mapId: map.id, eventId: event.id, x: event.x, y: event.y,
-        message: `인물 ${event.id} 가 (${event.x},${event.y}) 의 위층 가구(지나갈 수 없는 칸, 인물보다 앞에 그려짐) 위에 서 있다 — 등받이·탁자가 얼굴을 덮는다. 가구 옆 빈 바닥 칸에 세운다.`,
+        message: `인물 ${event.id} 가 (${event.x},${event.y}) 의 위층 가구(지나갈 수 없는 칸, 인물보다 앞에 그려짐) 위에 서 있다 — 등받이·탁자가 얼굴을 덮는다. 가구 옆 빈 바닥 칸에 세우거나, 앉힌 것이면 그 쪽을 priority \"above\"(가구 위에 그림)로 두고 일어설 때 옆 바닥으로 걸어 나온 뒤 같은 층 쪽으로 바꾼다.`,
       });
     }
   }
@@ -1517,6 +1544,29 @@ function checkEndingUnderFade(project: Project, issues: LintIssue[]): void {
   }
 }
 
+/**
+ * 엔딩 카드(presentation.backgroundResourceId)는 엔딩마다 달라야 한다. 두 엔딩이 같은 그림이면 결말이 달라도 같은 장면으로 끝나 보이고
+ * (첫사랑 VQA r23·r25: B·C 카드가 같은 서하 그림), 엔딩 여럿인 게임이 타이틀 그림을 카드로 다시 쓰면 그 그림 속 인물이 게임 속
+ * 인물과 다르게 생긴 채 결말을 대신한다(VQA r25: 엔딩 A 카드의 남자는 지후와 머리색·옷이 다르다).
+ */
+function checkEndingCardsDistinct(project: Project, issues: LintIssue[]): void {
+  const endings = project.endings ?? [];
+  if (endings.length < 2) return;
+  const title = (project.system as { titleScreen?: { backgroundResourceId?: string } } | undefined)?.titleScreen?.backgroundResourceId;
+  const seen = new Map<string, string>();
+  for (const ending of endings) {
+    const card = (ending as { presentation?: { backgroundResourceId?: string } }).presentation?.backgroundResourceId;
+    if (!card) continue;
+    const first = seen.get(card);
+    if (first) {
+      issues.push({ severity: "warning", code: "scene-ending-card-shared", message: `엔딩 ${ending.id} 의 카드 그림(${card})이 엔딩 ${first} 와 같다 — 다른 결말이 같은 장면으로 끝나 보인다. 엔딩마다 그 결말의 사람·장소·날씨가 다른 카드를 쓴다.` });
+    } else seen.set(card, ending.id);
+    if (title && card === title) {
+      issues.push({ severity: "warning", code: "scene-ending-card-title-art", message: `엔딩 ${ending.id} 가 타이틀 그림(${card})을 카드로 쓴다 — 엔딩이 여럿인 게임에서 타이틀 그림은 결말을 말하지 않고, 그 그림 속 인물이 게임 속 인물(흉상·걷기 칩)과 다르게 생기면 다른 사람이 결말을 맺는다. 게임 인물의 공용 초상으로 만든 카드를 쓴다.` });
+    }
+  }
+}
+
 export function lintScenePolish(project: Project): LintIssue[] {
   const issues: LintIssue[] = [];
   let gates: Gate[] = [];
@@ -1547,6 +1597,7 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkLetterboxDialogue);
   guard(checkCommandsAfterTransfer);
   guard(checkEndingUnderFade);
+  guard(checkEndingCardsDistinct);
   guard((p, out) => checkSceneStaging(p, out)); // 인물 연출: 화자 부재·먼 대화·서로 안 봄(sceneStagingLint.ts)
   guard((p, out) => checkStairEntrances(p, out)); // 계단 입구: 앞 칸 막힘·방향 어긋남·이동 칸 어긋남(stairEntranceLint.ts)
   return issues;

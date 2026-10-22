@@ -1,8 +1,9 @@
-"""첫사랑 엔딩 B·C 카드 그림 — 서하 혼자(VQA r22: 엔딩 B 카드가 커플 그림, 엔딩 C 카드 그림 없음).
+"""첫사랑 엔딩 A·B·C 카드 그림 (VQA r22: B 카드가 커플 그림·C 카드 없음 / VQA r25: A 카드의 남자가 지후와 다르다, B·C 가 같은 서하 그림, 밤에 밀짚모자).
 
 재료는 모두 저장소 안의 그림이다(새로 생성하지 않는다):
   - 배경: public/assets/generated/title/romance-office.jpg 의 왼쪽(사람이 없는 도시 전경)을 잘라 밤으로 색보정
-  - 인물: public/assets/shared/portraits/modern-casual-girl-lavender/full-*.png (공용 전신 초상, 서하)
+  - 인물: public/assets/shared/portraits/{modern-casual-girl-lavender, modern-casual-boy-hoodie}/full-*.png (공용 전신 초상, 서하·지후)
+A = 노을 아래 두 사람, B = 맑은 밤 서하 혼자(허리 위), C = 빗속 멀리 선 지후.
 글자(「끝」·제목)는 엔딩 카드가 가운데에 쓰므로 인물은 오른쪽 1/3, 가운데는 어둡게 비운다.
 실행: python3 scripts/content/first-love/bake_ending_cards.py  (결정적)
 """
@@ -16,7 +17,8 @@ from PIL import Image, ImageFilter
 
 ROOT = Path(__file__).resolve().parents[3]
 TITLE = ROOT / "public/assets/generated/title"
-PORTRAIT = ROOT / "public/assets/shared/portraits/modern-casual-girl-lavender"
+PORTRAITS = ROOT / "public/assets/shared/portraits"
+SEOHA, JIHU = "modern-casual-girl-lavender", "modern-casual-boy-hoodie"
 W, H = 1672, 941
 
 
@@ -63,32 +65,95 @@ def night_city(rain: bool) -> Image.Image:
     return img
 
 
-def place_seoha(bg: Image.Image, expr: str, rain: bool, left: bool = False) -> Image.Image:
-    fig = Image.open(PORTRAIT / f"full-{expr}.png").convert("RGBA")
-    if left:  # 왼쪽 1/3 에 세우고 글자(가운데) 쪽을 보게 뒤집는다
+def sunset_city() -> Image.Image:
+    """엔딩 A — 석 달 뒤 금요일 저녁: 같은 도시 전경을 노을빛으로."""
+    src = Image.open(TITLE / "romance-office.jpg").convert("RGB")
+    cw = int(src.height * 16 / 9 * 0.62)
+    ch = int(cw * 9 / 16)
+    crop = src.crop((0, src.height - ch, cw, src.height)).resize((W, H), Image.LANCZOS)
+    a = np.asarray(crop).astype(np.float32) / 255.0
+    lum = a.mean(axis=2, keepdims=True)
+    ys = np.linspace(0, 1, H, dtype=np.float32)[:, None, None]
+    sky = np.array([1.0, 0.62, 0.38], dtype=np.float32) * (1 - ys) + np.array([0.55, 0.30, 0.38], dtype=np.float32) * ys
+    out = lum * sky * 1.15 + a * 0.18
+    out *= 0.78 + 0.22 * (1 - ys)
+    return Image.fromarray(np.clip(out * 255, 0, 255).astype(np.uint8))
+
+
+def figure(who: str, expr: str, *, flip: bool, height: float, keep: float = 1.0) -> Image.Image:
+    """공용 전신 초상 — keep<1 이면 위쪽(머리부터 keep 비율)만 남긴다(엔딩 B: 밤에 든 밀짚모자가 안 보이게)."""
+    fig = Image.open(PORTRAITS / who / f"full-{expr}.png").convert("RGBA")
+    if flip:
         fig = fig.transpose(Image.FLIP_LEFT_RIGHT)
     fig = fig.crop(fig.getbbox())
-    scale = H * 1.05 / fig.height
-    fig = fig.resize((int(fig.width * scale), int(fig.height * scale)), Image.LANCZOS)
+    if keep < 1.0:
+        fig = fig.crop((0, 0, fig.width, int(fig.height * keep)))
+        # 잘린 아래 가장자리는 부드럽게 사라지게
+        alpha = np.asarray(fig.getchannel("A")).astype(np.float32)
+        fade = int(fig.height * 0.12)
+        alpha[-fade:, :] *= np.linspace(1, 0, fade, dtype=np.float32)[:, None]
+        fig.putalpha(Image.fromarray(alpha.astype(np.uint8)))
+    scale = H * height / fig.height
+    return fig.resize((int(fig.width * scale), int(fig.height * scale)), Image.LANCZOS)
+
+
+def light(fig: Image.Image, shade: tuple[float, float, float], rim_rgb: tuple[int, int, int], rim_left: bool) -> Image.Image:
     a = np.asarray(fig).astype(np.float32)
-    # 밤빛에 맞춘다: 남색으로 조금 누르고 오른쪽(가로등 쪽) 가장자리만 따뜻하게.
-    shade = np.array([0.5, 0.54, 0.72] if not rain else [0.4, 0.45, 0.6], dtype=np.float32)
-    a[..., :3] *= shade
+    a[..., :3] *= np.array(shade, dtype=np.float32)
     xs = np.arange(fig.width, dtype=np.float32) / fig.width
-    rim = np.clip(((1 - xs if left else xs) - 0.7) / 0.3, 0, 1)[None, :, None]
-    a[..., :3] += rim * np.array([60, 40, 10], dtype=np.float32) * (a[..., 3:4] / 255.0)
-    fig = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8), "RGBA")
-    out = bg.convert("RGBA")
-    out.alpha_composite(fig, (int(W * (0.27 if left else 0.70)) - fig.width // 2, H - int(fig.height * 0.9)))
+    rim = np.clip(((1 - xs if rim_left else xs) - 0.7) / 0.3, 0, 1)[None, :, None]
+    a[..., :3] += rim * np.array(rim_rgb, dtype=np.float32) * (a[..., 3:4] / 255.0)
+    return Image.fromarray(np.clip(a, 0, 255).astype(np.uint8), "RGBA")
+
+
+def rain_layer(seed: int, count: int, alpha: tuple[int, int]) -> Image.Image:
+    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    px = layer.load()
+    rng = random.Random(seed)
+    for _ in range(count):
+        x, y, ln = rng.randrange(W), rng.randrange(H), rng.randrange(18, 46)
+        al = rng.randrange(*alpha)
+        for t in range(ln):
+            xx, yy = x - t // 5, y + t
+            if 0 <= xx < W and 0 <= yy < H:
+                px[xx, yy] = (200, 215, 240, al)
+    return layer
+
+
+def card_a() -> Image.Image:
+    """엔딩 A — 노을 아래 서하(왼쪽)와 지후(오른쪽)가 서로를 본다. 게임 속 두 사람의 공용 초상 그대로(타이틀 그림의 다른 남자 대신)."""
+    out = sunset_city().convert("RGBA")
+    warm = (1.0, 0.86, 0.78)
+    seoha = light(figure(SEOHA, "happy", flip=True, height=1.0), warm, (70, 40, 0), rim_left=True)
+    jihu = light(figure(JIHU, "happy", flip=True, height=1.06), warm, (70, 40, 0), rim_left=False)
+    out.alpha_composite(seoha, (int(W * 0.22) - seoha.width // 2, H - int(seoha.height * 0.93)))
+    out.alpha_composite(jihu, (int(W * 0.79) - jihu.width // 2, H - int(jihu.height * 0.93)))
+    return out.convert("RGB")
+
+
+def card_b() -> Image.Image:
+    """엔딩 B — 맑은 밤, 혼자 올라와 하늘을 보는 서하(허리 위만, 왼쪽 1/3)."""
+    out = night_city(False).convert("RGBA")
+    seoha = light(figure(SEOHA, "base", flip=True, height=0.95, keep=0.58), (0.5, 0.54, 0.72), (60, 40, 10), rim_left=True)
+    out.alpha_composite(seoha, (int(W * 0.24) - seoha.width // 2, H - seoha.height))
+    return out.convert("RGB")
+
+
+def card_c() -> Image.Image:
+    """엔딩 C — 비 오는 밤, 떠난 사람. 멀리 작게 선 지후(오른쪽) 앞으로 굵은 비가 그어진다(B 와 다른 사람·구도)."""
+    out = night_city(True).convert("RGBA")
+    jihu = light(figure(JIHU, "sad", flip=False, height=0.72), (0.34, 0.40, 0.56), (20, 30, 50), rim_left=False)
+    jihu = jihu.filter(ImageFilter.GaussianBlur(1.6))  # 빗속 먼 데 사람 — 조금 흐리게
+    out.alpha_composite(jihu, (int(W * 0.76) - jihu.width // 2, H - int(jihu.height * 0.97)))
+    out.alpha_composite(rain_layer(97, 1400, (70, 150)))  # 인물 앞으로도 비
     return out.convert("RGB")
 
 
 def main() -> None:
-    b = place_seoha(night_city(False), "base", False, left=True)
-    b.save(TITLE / "first-love-ending-b.jpg", quality=88)
-    c = place_seoha(night_city(True), "sad", True)
-    c.save(TITLE / "first-love-ending-c.jpg", quality=88)
-    print("wrote first-love-ending-b.jpg, first-love-ending-c.jpg")
+    card_a().save(TITLE / "first-love-ending-a.jpg", quality=88)
+    card_b().save(TITLE / "first-love-ending-b.jpg", quality=88)
+    card_c().save(TITLE / "first-love-ending-c.jpg", quality=88)
+    print("wrote first-love-ending-a.jpg, first-love-ending-b.jpg, first-love-ending-c.jpg")
 
 
 if __name__ == "__main__":

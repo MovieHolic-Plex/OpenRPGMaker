@@ -229,6 +229,11 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   const konbiniRoom = project.maps[FL_MAP.konbini]!;
   const roofRoom = project.maps[FL_MAP.rooftop]!;
   const platform = project.maps[FL_MAP.platformAm]!;
+  // 편집기 예제 가게는 바깥(옆 벽돌 띠·앞 보도 두 줄)까지 그려져 있다 — 실내 장면에서는 «상자 속 상자»로 읽혔다(VQA r25).
+  // 앞면(문·유리 두 줄)까지만 남기고 옆 세 열과 보도 세 줄(화분 줄 포함)은 비운다(실내 둘레는 어둠). 비운 칸은 아무도 밟지 않는다(문은 앞면 칸).
+  for (let y = 0; y < konbiniRoom.height; y++) for (let x = 0; x < konbiniRoom.width; x++) {
+    if (x <= 2 || x >= konbiniRoom.width - 3 || y >= konbiniRoom.height - 3) clearMapCellForBackground(konbiniRoom, y * konbiniRoom.width + x);
+  }
   // 옥상(24칸)을 화면 폭 30칸으로: 옥상 줄은 바깥 벽 열을 복사한다. 아래 옥상 좌표는 모두 +ROOF_PAD.
   padMapX(roofRoom, ROOF_PAD, ROOF_PAD, (_y, side) => (side === "left" ? 0 : 23));
   // 난간 너머는 하늘이다 — 같은 크기의 길·벤치·우체통(땅에서 본 거리)을 그리면 옥상이 1층 광장으로 읽힌다(VQA r10).
@@ -253,9 +258,11 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       // 나가는 계단은 승강장 동쪽 끝 북쪽 벽에 박혀 있다(나무 계단 2칸 폭 그림, 그림 칸을 밟을 수 있다) — 왼 칸이 계단 칸, 바로 아래가 나오는 칸.
       // 사용자 r2: 「승강장이 작고 답답하다」 — 50칸 길이 승강장(양 끝 벽까지 보인다)·선로 두 줄. 계단은 동쪽 끝.
       exit: { x: 46, y: 3 }, exitOut: { x: 46, y: 4 },
-      // 막차 장면의 지후는 서 있는 열차 몸(가운데 x≈25) 앞 — 열린 문으로 걸어 들어갈 수 있는 자리.
-      jihu: nearestFree(project, platform, { x: 25, y: 8 }),
-      heroMeet: nearestFree(project, platform, { x: 23, y: 8 }),
+      // 막차 장면의 지후는 계단(동쪽 끝) 가까이, 서는 열차의 문 하나(머리 칸 x≈38.1) 바로 앞 — 열린 문으로 걸어 들어간다.
+      // 옛 자리(x≈25)는 계단에서 23칸이라 서하가 텅 빈 승강장을 한참 걸었고(VQA r25), 문 가운데와도 반 칸 어긋났다.
+      // 열차 몸은 x 10~39(정류장 머리 x=39, 길이 30), 문 가운데는 그림 기준 x≈11.8·15.0·18.1·…·38.1.
+      jihu: nearestFree(project, platform, { x: 38, y: 8 }),
+      heroMeet: nearestFree(project, platform, { x: 37, y: 8 }),
     },
     street: {
       // 문 칸 = 건물 정면의 문 그림 칸(막혀 있다 — 부딪히면 이동이 발동한다), 나오는 칸 = 그 바로 아래(바깥) 접근칸.
@@ -323,7 +330,7 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   const officeFri = cloneMap(project, FL_MAP.office, FL_MAP.officeFri, "스튜디오 늘봄 · 금요일");
   // 금요일 회의실은 사무층 맨 아래(y 13~20)라 카메라가 맵 끝에 걸려 다섯 사람이 흉상·대화창 사이에 끼었다(VQA r10).
   // 바깥 채움 두 줄(맨 아래 두 줄 무늬)을 FRI_PAD 줄 더 덧대 카메라가 회의실을 화면 위쪽에 둘 수 있게 한다 — 덧댄 줄은 대화창 뒤다.
-  const FRI_PAD = 3, friH = officeFri.height;
+  const FRI_PAD = 7, friH = officeFri.height; // r25: 3 → 7 — 회의실을 화면 위 절반에 둔다(맵 폭이 화면보다 좁아 가로로는 못 옮긴다)
   padMapBottom(officeFri, FRI_PAD, (y) => friH - 2 + ((y - friH) % 2));
   // 덧댄 줄은 빈 칸(맵 밖과 같은 어둠)이다 — 바깥벽 무늬를 되풀이하면 대화창이 없을 때 빈 띠가 화면 1/3을 채웠다(VQA r12).
   for (let y = friH; y < friH + FRI_PAD; y++) for (let x = 0; x < officeFri.width; x++) clearMapCellForBackground(officeFri, y * officeFri.width + x);
@@ -333,7 +340,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   // 좌표는 거리 맵(modern_city, 시드 5)에 찍힌 mc-prop-lamp-a 기둥 윗칸 + 1 이다.
   const lamps: LightSource[] = [];
   const streetLamps: Array<[number, number]> = [[21, 2], [1, 21], [14, 21], [41, 21], [21, 26], [21, 33], [6, 4], [13, 4]];
-  for (const [i, [x, y]] of streetLamps.entries()) lamps.push(light(`fl_lamp_${i}`, { x, y }, 5, "#ffd98a", 1));
+  // 반지름 5 는 화면 밖 가로등의 빛 웅덩이가 잔디·지붕까지 번져 «광원 없는 빛»으로 읽혔다(VQA r25) — 기둥 둘레만 밝힌다.
+  for (const [i, [x, y]] of streetLamps.entries()) lamps.push(light(`fl_lamp_${i}`, { x, y }, 3.5, "#ffd98a", 1));
   for (const [i, b] of streetData.buildings.entries()) {
     const d = b.access[0];
     if (d) lamps.push(light(`fl_shop_${i}`, d, 3, b.kind === "conv" ? "#e8fff4" : "#ffd9a0", 0.8));
@@ -342,7 +350,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   // 한 칸 건너 작은 따뜻한 빛을 둔다. 모든 창이 켜지지 않게 칸 좌표로 정한 절반만(같은 맵이면 늘 같은 창).
   for (const [i, b] of streetData.buildings.entries()) {
     const d = b.doors[0] ?? b.access[0];
-    if (!d) continue;
+    // 편의점은 문 앞 가게 불빛(fl_kb_spill)이 맡는다 — 낮은 건물이라 «앞면 아래 세 줄»이 지붕에 걸려 지붕 위에 불이 떴다(VQA r25).
+    if (!d || b.kind === "conv") continue;
     const seen = new Set<string>(), queue: Cell[] = [{ x: d.x, y: d.y - 1 }];
     const cells: Cell[] = [];
     while (queue.length && cells.length < 400) {
@@ -357,6 +366,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
     if (cells.length < 6) continue;
     const minX = Math.min(...cells.map((c) => c.x)), maxX = Math.max(...cells.map((c) => c.x));
     const bottom = Math.max(...cells.map((c) => c.y));
+    // 낮은 건물은 앞면이 두세 줄뿐이라 아래 세 줄에 지붕이 섞인다 — 키 큰 건물(여섯 줄 넘게)만 창에 불을 켠다.
+    if (bottom - Math.min(...cells.map((c) => c.y)) < 6) continue;
     for (let y = bottom - 3; y <= bottom - 1; y++) for (let x = minX + 1; x < maxX; x += 2) {
       if (x === d.x || !cells.some((c) => c.x === x && c.y === y) || ((x * 7 + y * 3 + i) % 3 === 0)) continue;
       lamps.push(light(`fl_win_${i}_${x}_${y}`, { x, y }, 1.1, "#ffc86e", 0.75));
