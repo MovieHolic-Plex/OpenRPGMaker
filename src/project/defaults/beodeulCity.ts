@@ -163,7 +163,7 @@ export function ensureBeodeulCityTileset(tileset: TilesetDef): boolean {
     // 성벽 꼬리(28,544~)도 같다: 그 자리에 이식 칸을 쓴 사본은 꼬리를 던전 천장 끝까지만 받고 성벽 키트·묶음도 받지 않는다(마을은 성벽 없이 지어진다).
     const wallBlocked = dungeonBlocked || grafts.some(graft => graft.targetTile >= BEODEUL_TOWN_WALL_BASE && graft.targetTile < sheet.count);
     const limit = dungeonBlocked ? BEODEUL_DUNGEON_CEILING_BASE : wallBlocked ? BEODEUL_TOWN_WALL_BASE : sheet.count;
-    const extended = extendPickedParts(tileset, Math.max(Math.min(tileset.count, sheet.count), limit));
+    const extended = extendPickedParts(tileset, limit);
     const farm = mergeShippedFarm(tileset, !dungeonBlocked, !wallBlocked);
     return mergeShippedKits(tileset, !wallBlocked) || extended || farm || familyFixed;
   }
@@ -191,18 +191,20 @@ function extendPickedParts(tileset: TilesetDef, limit: number = sheet.count): bo
   const shippedPass = data().passability as PassFlag[];
   const shippedMeta = data().tileMeta as TileAiMetadata[];
   const end = Math.min(limit, sheet.count);
-  const same = tileset.count === end
+  // 막힌 사본(limit < 시트 끝)은 end 뒤 칸(그 사본의 이식 칸)을 그대로 둔다 — 표를 end 까지만 번들 것으로 바꾸고 칸 수는 줄이지 않는다
+  const count = Math.max(tileset.count, end);
+  const same = tileset.count === count
     && JSON.stringify(tileset.passability.slice(base, end)) === JSON.stringify(shippedPass.slice(base, end))
     && JSON.stringify(tileset.priority.slice(base, end)) === JSON.stringify(data().priority.slice(base, end))
     && JSON.stringify((tileset.tileMeta ?? []).slice(base, end)) === JSON.stringify(shippedMeta.slice(base, end));
   const shippedStrips = data().animationStrips.filter(strip => strip.baseTile >= base && strip.baseTile < end);
   const ownStrips = (tileset.animationStrips ?? []).filter(strip => strip.baseTile >= base);
   if (same && JSON.stringify(ownStrips) === JSON.stringify(shippedStrips)) return false;
-  tileset.count = end;
-  tileset.passability = [...tileset.passability.slice(0, base), ...structuredClone(shippedPass.slice(base, end))];
-  tileset.priority = [...tileset.priority.slice(0, base), ...(data().priority.slice(base, end) as ("lower" | "upper")[])];
-  tileset.terrain = [...tileset.terrain.slice(0, base), ...data().terrain.slice(base, end)];
-  tileset.tileMeta = [...(tileset.tileMeta ?? []).slice(0, base), ...structuredClone(shippedMeta.slice(base, end))];
+  tileset.count = count;
+  tileset.passability = [...tileset.passability.slice(0, base), ...structuredClone(shippedPass.slice(base, end)), ...tileset.passability.slice(end)];
+  tileset.priority = [...tileset.priority.slice(0, base), ...(data().priority.slice(base, end) as ("lower" | "upper")[]), ...tileset.priority.slice(end)];
+  tileset.terrain = [...tileset.terrain.slice(0, base), ...data().terrain.slice(base, end), ...tileset.terrain.slice(end)];
+  tileset.tileMeta = [...(tileset.tileMeta ?? []).slice(0, base), ...structuredClone(shippedMeta.slice(base, end)), ...(tileset.tileMeta ?? []).slice(end)];
   tileset.animationStrips = [...(tileset.animationStrips ?? []).filter(strip => strip.baseTile < base), ...structuredClone(shippedStrips)];
   return true;
 }
