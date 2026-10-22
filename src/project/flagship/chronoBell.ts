@@ -734,8 +734,8 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
     if (!path) throw new Error(`[fallen-star] ${npc.id} 가 동문까지 걸어갈 길이 없다`);
     const cells = [{ x: npc.x, y: npc.y }];
     for (const dir of path) { const [dx, dy] = DIRS[dir as string]!; const last = cells[cells.length - 1]!; cells.push({ x: last.x + dx, y: last.y + dy }); }
-    // 끝 칸(성문 통로)에서 한 걸음 동안 옅어지며 머문다 — 그동안 뒷사람이 같은 칸에 들어서면 겹쳐 그려진다.
-    const posAt = (track: { x: number; y: number }[], delay: number, t: number) => (t - delay >= track.length + 1 ? undefined : track[Math.min(track.length - 1, Math.max(0, t - delay))]);
+    // 마지막 한 걸음 동안 옅어져 끝 칸(성문 통로)에 닿자마자 사라진다 — 끝 칸에 머물지 않으므로 뒷사람은 한 칸만 띄우고 따른다.
+    const posAt = (track: { x: number; y: number }[], delay: number, t: number) => (t - delay >= track.length ? undefined : track[Math.max(0, t - delay)]);
     // 한 줄 행렬 — 앞사람보다 꼭 두 걸음 뒤에 성문에 닿게 출발을 맞춘다(한 칸 띄운 세로 줄). 겹침이 없을 때까지만 더 늦춘다.
     // 겹침만 피해 가장 이른 출발을 고르면 간격이 1~5칸으로 들쭉날쭉해 발렌이 홀로 앞서 걸었다(VQA r25).
     const arriveAt = arrivals.length ? arrivals[arrivals.length - 1]! + 2 : path.length;
@@ -771,9 +771,10 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
       // 뒤 기사가 같은 세로 줄에서 발렌 위에 겹쳐 그려졌다(VQA r25 major).
       { kind: "changeSpeed", delta: 1 }, { kind: "changeFrequency", delta: 3 },
       ...Array.from({ length: delays[rank]! * 3 }, () => ({ kind: "wait" })),
-      ...path.map((dir) => ({ kind: "move", dir })),
-      // 성문 통로 안에서 한 프레임에 사라지지 않고 한 걸음(기다림 둘·셋) 동안 세 번에 걸쳐 옅어진다(VQA r25 minor).
-      { kind: "changeOpacity", delta: -85 }, { kind: "wait" },
+      ...path.slice(0, -1).map((dir) => ({ kind: "move", dir })),
+      // 성문 통로로 드는 마지막 걸음 동안 세 번에 걸쳐 옅어진다 — 한 프레임에 사라지지 않고(VQA r25 minor), 끝 칸에 머물지도 않는다.
+      { kind: "changeOpacity", delta: -85 },
+      ...path.slice(-1).map((dir) => ({ kind: "move", dir })),
       { kind: "changeOpacity", delta: -85 }, { kind: "wait" },
       { kind: "changeOpacity", delta: -85 },
       { kind: "setSwitch", switchId: switches[npc.id]!, value: true },
@@ -841,6 +842,15 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   const side: Step | undefined = sideOpen(-1) ? "left" : sideOpen(1) ? "right" : undefined;
   const faceElena: unknown[] = side ? [{ kind: "move", dir: side }, { kind: "move", dir: side }, { kind: "turn", dir: side === "left" ? "right" : "left" }] : [{ kind: "turn", dir: "up" }];
   if (elenaLine >= 0) list.splice(elenaLine, 0, { kind: "moveEvent", eventId: "@player", route: { moves: faceElena, repeat: false, wait: true, skippable: true } } as unknown as Command);
+  // 포고 넉 줄 동안 화면을 발렌과 그 아래 백성 쪽으로 옮긴다 — 주인공을 따라가는 화면에선 발렌 몸 아래가 대화 상자에 묻히고
+  // 듣는 백성(발렌 두~다섯 줄 아래)은 상자 밑이라 안 보였다(VQA r27). 상자 위 열 줄 안에 호위·발렌·가까운 백성이 함께 든다.
+  {
+    // 발렌 두 줄 아래가 화면 가운데 — 호위 두 줄이 화면 위 끝에 잘리지 않고, 가까운 백성 줄이 상자 위에 든다.
+    const cy = valen.y + 2;
+    const cx = Math.round((startX + valen.x) / 2) + 1;
+    const box = list.findIndex((c) => c.kind === "m2Command" && (c as { commandId?: string }).commandId === "m2-202-screen-effect");
+    if (box >= 0) list.splice(box + 1, 0, camera({ mode: "panTo", target: "screen", x: String(cx), y: String(cy), durationMs: "700", wait: "true" }));
+  }
 }
 
 /**
