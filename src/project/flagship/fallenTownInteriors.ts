@@ -95,13 +95,13 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       dress: [["table:potion+flask", 12, 15], ["herb drying rack", 26, 15], ["basket:herb", 9, 17], ["basket:mushroom", 10, 17],
         ["basket:potion+potionb+potiong", 13, 17],
         // 가게 바닥 가운데가 비었다(VQA r7 minor) — 물약 진열대 하나와 약초 바구니를 더 둔다(문에서 계산대 가는 길은 비운다).
-        ["table:potion+flask", 21, 14], ["basket:herb", 23, 16], ["basket:mushroom", 24, 16], ["book pile", 14, 16],
+        ["herb drying rack", 21, 14], ["basket:herb", 23, 16], ["basket:mushroom", 24, 16],
         // 위 왼쪽 조제실이 빈 마루였다(VQA r16) — 약초 건조대·조제 탁자·약초 바구니.
         ["herb drying rack", 13, 4], ["table:potion+flask", 7, 5], ["basket:herb", 10, 7], ["basket:mushroom", 11, 7], ["book pile", 9, 4],
         ["herb drying rack", 4, 7], ["basket:potion+potionb+potiong", 14, 7],
         // 가게 아랫단·조제실 가운데 줄이 아직 빈 마루였다(VQA r17) — 진열 탁자·약초 걸이·바구니(문~계산대 길은 비운다).
-        ["table:potion+flask", 16, 17], ["herb drying rack", 27, 17], ["basket:herb", 24, 18], ["basket:mushroom", 12, 18],
-        ["table:potion+flask", 8, 6], ["basket:herb", 2, 6]],
+        ["herb drying rack", 27, 17], ["basket:herb", 24, 18],
+        ["basket:herb", 2, 6]],
       people: [
         {
           id: "ev_fs_apothecary", name: "약재상 오든", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 7], behindCounter: true,
@@ -118,7 +118,7 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       dress: [["table:loaf+bun", 13, 13], ["basket:loaf", 11, 14], ["basket:bun", 12, 14], ["basket:baguette", 11, 13],
         ["roundtable", 27, 13], ["chair E", 26, 13], ["chair W", 28, 13],
         // 가게 아랫단이 빈 대리석 띠였다(VQA r20 minor) — 빵 진열 탁자 하나와 바구니(문~계산대 길 x22~24 는 비운다).
-        ["table:loaf+bun", 16, 13], ["basket:baguette", 18, 14], ["basket:loaf", 25, 12], ["basket:bun", 26, 12], ["basket:loaf", 10, 14]],
+        ["table:loaf+bun", 16, 13]],
       people: [
         {
           id: "ev_fs_baker_husband", name: "빵집 아저씨 토마", query: "중년 남성 주민", chip: ["tex_easyrpg_charset_people1", 4], behindCounter: true,
@@ -132,18 +132,19 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       // 별 지도 서고 + 관측 일지 서재 + 침실 + 지하 저장고 + 벽난로 거실(괘종시계) — 부엌·열 사람 식탁은 두지 않는다(혼자 사는 노인, VQA r6).
       // 지하 저장고 대신 별 유물 진열실(천구의·운석 진열장) — 별지기 집만의 방(VQA r11 major).
       layout: { rooms: [{ kind: "library", w: 18, h: 8 }, { kind: "study", w: 9, h: 7 }, { kind: "bedroom" }, { kind: "museum_relics" }, { kind: "living", w: 8, h: 6 }], seed: 21, variant: 0, styleVariant: "D" },
-      dress: [["orrery", 15, 15], ["globe", 13, 12], ["book pile", 18, 12], ["desk 3x1", 22, 16], ["owl perch", 27, 16], ["scroll rack", 13, 16],
-        ["desk 2x2", 14, 4], ["book pile", 12, 3],
+      // 책 더미 여섯·지구본 다섯이 고르게 흩어져 복사한 채움으로 읽혔다(VQA r22) — 지구본·책 더미는 방마다 한 묶음만 남긴다.
+      dress: [["orrery", 15, 15], ["desk 3x1", 22, 16], ["owl perch", 27, 16], ["scroll rack", 13, 16],
+        ["desk 2x2", 14, 4],
         // 서고 가운데·거실 아랫단이 빈 마루로 남았다(VQA r7 minor) — 읽는 탁자와 의자, 거실 찻상.
-        ["tea 2x2", 17, 15], ["chair E", 16, 15], ["chair W", 19, 15], ["book pile", 22, 14],
+        ["tea 2x2", 17, 15], ["chair E", 16, 15], ["chair W", 19, 15],
         ["tea 2x2", 6, 15], ["chair E", 5, 15], ["chair W", 8, 15],
         // 거실 아랫단·서고 아랫단·진열실 남쪽이 빈 마루였다(VQA r13 minor 「35~40% 빈 바닥」).
-        ["tea 2x2", 4, 7], ["chair E", 3, 7], ["chair W", 6, 7], ["globe", 24, 7], ["book pile", 27, 8], ["scroll rack", 16, 8],
-        ["tea 2x2", 27, 17], ["chair E", 26, 17], ["chair W", 29, 17], ["book pile", 21, 18],
+        ["tea 2x2", 4, 7], ["chair E", 3, 7], ["chair W", 6, 7], ["globe", 24, 7], ["scroll rack", 16, 8],
+        ["tea 2x2", 27, 17], ["chair E", 26, 17], ["chair W", 29, 17],
         // 진열실(왼쪽 아래) — 걷어 낸 갑옷 진열 대신 천구의·지구본·두루마리·관측 책상.
-        ["orrery", 3, 14], ["globe", 11, 14], ["scroll rack", 2, 17], ["desk 3x1", 6, 17], ["book pile", 11, 17], ["owl perch", 12, 18],
+        ["orrery", 3, 14], ["scroll rack", 2, 17], ["desk 3x1", 6, 17], ["book pile", 7, 16], ["owl perch", 12, 18],
         // 위 서고 한가운데가 빈 마루였다(VQA r17) — 별 지도 책상·천구의·지구본.
-        ["desk 2x2", 15, 7], ["chair N", 15, 9], ["orrery", 19, 7], ["globe", 22, 9], ["book pile", 9, 9]],
+        ["desk 2x2", 15, 7], ["chair N", 15, 9], ["orrery", 19, 7]],
       people: [
         {
           id: "ev_fs_old_stargazer", name: "늙은 별지기 오스본", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 6],
@@ -434,8 +435,10 @@ function counterSpot(project: Project, map: GameMap, exit: Cell): { counter: Cel
  */
 function dressShopFronts(project: Project, hubId: string, homes: readonly Home[]): void {
   const FRONT: Record<string, readonly string[]> = {
-    fs_inn: ["bd-prop-table_mugs", "bd-prop-sandwich_board"],
-    fs_apothecary: ["bd-pick-wizard-tower-herb-rack", "bd-prop-sandwich_board"],
+    // 세 가게가 같은 걸이 간판·입간판을 달아 거리에서 가게를 가를 수 없었다(VQA r22) — 걸이 간판은 여관만, 약방은 약초 틀·약초 이랑,
+    // 빵집은 빵 진열대·분필 입간판으로 가른다(번들 키트, 새 그림 없음).
+    fs_inn: ["bd-prop-table_mugs", "bd-prop-sword_barrel"],
+    fs_apothecary: ["bd-pick-wizard-tower-herb-rack", "bd-pick-wizard-tower-bed-herb"],
     fs_bakery_home: ["bd-prop-bread_rack", "bd-prop-sandwich_board"],
   };
   const HANGING_SIGN = 23605;
@@ -458,7 +461,7 @@ function dressShopFronts(project: Project, hubId: string, homes: readonly Home[]
     // 걸이 간판 — 문 오른쪽 벽(문 윗줄). 덧그림 층(upperOverlay)이라 벽 그림 위에 걸린다.
     const overlay = hub.upperOverlayTiles ?? (hub.upperOverlayTiles = new Array(hub.width * hub.height).fill(-1));
     const signAt = at(door.x + 1, door.y - 1);
-    if ((overlay[signAt] ?? -1) < 0) overlay[signAt] = HANGING_SIGN;
+    if (home.mapId === "fs_inn" && (overlay[signAt] ?? -1) < 0) overlay[signAt] = HANGING_SIGN;
     const tileset = project.tilesets[hub.tilesetId]!;
     const free = (x: number, y: number): boolean => {
       if (x < 1 || y < 1 || x >= hub.width - 1 || y >= hub.height - 1) return false;

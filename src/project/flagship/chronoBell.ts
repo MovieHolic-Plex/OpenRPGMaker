@@ -595,7 +595,9 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
       if (!isPassable(project, hub, tx, front) || doorCells.has(`${tx},${front}`) || standing.has(`${tx},${front}`)
         || hub.events.some((e) => !marchers.has(e.id) && e.x === tx && e.y === front)) continue;
       standing.delete(`${valen.x},${valen.y}`); valen.x = tx; valen.y = front; standing.add(`${tx},${front}`);
-      slot[1] = -1; // 행진은 동쪽(앞)부터 — 발렌은 맨 뒤에서 따라간다(앞장세우면 그 길을 피하느라 기사 모두가 수십 걸음 늦게 떠나 행렬이 멈춘 듯했다)
+      // 행진은 동쪽(앞)부터 — 발렌은 행렬 한가운데(기사 앞 다섯 뒤 넷 사이)에서 걷는다. 맨 뒤에 두면 기사가 다 떠난 뒤 홀로
+      // 6~10칸 뒤처져 걸어 「호위」로 읽히지 않았다(VQA r22). 맨 앞은 그 길을 피하느라 기사 모두가 수십 걸음 늦게 떠났다.
+      slot[1] = Math.max(...formation.filter(([e]) => e !== valen).map(([, dx]) => dx)) / 2 + 0.5;
       break;
     }
   }
@@ -646,7 +648,8 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   spots.forEach((spot, k) => {
     const [key, tex, index, name, line] = crowd[k]!;
     const dx = valen.x - spot.x, dy = valen.y - spot.y;
-    const direction = Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? "right" : "left") : (dy > 0 ? "down" : "up");
+    // 발렌이 위(북)에 서면 백성은 위를 본다 — 옆모습(좌·우)은 1배에서 카메라를 보는 것처럼 읽혔다(VQA r22). 옆으로 많이 비켜 선 사람만 옆을 본다.
+    const direction = dy < 0 && Math.abs(dx) <= 2 * Math.abs(dy) ? "up" : Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? "right" : "left") : (dy > 0 ? "down" : "up");
     const id = `ev_${FS_PREFIX}_crowd_${key}`;
     hub.events.push({
       id, name, x: spot.x, y: spot.y, trigger: { kind: "action" }, commands: [], placementRole: "npc",
@@ -682,9 +685,15 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   const tracks: { x: number; y: number }[][] = [];
   const delays: number[] = [];
   const paths: Step[][] = [];
+  // 뒤에 출발할 사람의 제자리는 막힌 칸으로 친다 — 한가운데 발렌이 바로 위 기사 칸을 지나가는 길을 고르면 그 기사는
+  // 몇 걸음을 기다려도 겹침이 풀리지 않아 뒤 다섯이 60걸음 상한에 걸렸다. 앞서 떠난 사람 칸만 비었다고 본다.
+  const departed = new Set<string>();
   for (const [npc] of order) {
-    const path = walkPath(project, hub, { x: npc.x, y: npc.y }, exit, npc.id, { allow, ignore: marchers })
+    const path = walkPath(project, hub, { x: npc.x, y: npc.y }, exit, npc.id, { allow, ignore: departed })
+      ?? walkPath(project, hub, { x: npc.x, y: npc.y }, exit, npc.id, { ignore: departed })
+      ?? walkPath(project, hub, { x: npc.x, y: npc.y }, exit, npc.id, { allow, ignore: marchers })
       ?? walkPath(project, hub, { x: npc.x, y: npc.y }, exit, npc.id, { ignore: marchers });
+    departed.add(npc.id);
     if (!path) throw new Error(`[fallen-star] ${npc.id} 가 동문까지 걸어갈 길이 없다`);
     const cells = [{ x: npc.x, y: npc.y }];
     for (const dir of path) { const [dx, dy] = DIRS[dir as string]!; const last = cells[cells.length - 1]!; cells.push({ x: last.x + dx, y: last.y + dy }); }
@@ -706,6 +715,7 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
       return false;
     });
     while (clash(delay) && delay < 60) delay += 1;
+    if (process.env.MARCH_DEBUG) console.error("march", npc.id, npc.x, npc.y, "delay", delay, "steps", path.length);
     tracks.push(cells); delays.push(delay); paths.push(path);
   }
   order.forEach(([npc], rank) => {
@@ -753,13 +763,24 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   // 포고 동안 주인공(과 동료)은 발렌 쪽을 본다 — 화면만 보고 서 있었다(VQA r6 major).
   const begin = list.findIndex((c) => c.kind === "cutsceneControl");
   const towardValen: Step = valen.x > (project.startPos?.x ?? 0) ? "right" : "left";
-  list.splice(begin + 1, 0, { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "turn", dir: towardValen }], repeat: false, wait: true, skippable: true } } as unknown as Command);
+  // 광장 둘레 붙박이 주민(할머니 등)도 포고 동안 발렌을 본다 — 카메라를 보고 서 있었다(VQA r22).
+  const listeners: Command[] = hub.events.filter((e) => !marchers.has(e.id) && !String(e.id).startsWith("ev_gate_") && !String(e.id).startsWith(`ev_${FS_PREFIX}_crowd_`)
+    && Math.abs(e.x - valen.x) <= 7 && Math.abs(e.y - valen.y) <= 5 && (e.pages?.[0]?.graphic as { sprite?: unknown } | undefined)?.sprite
+    && (e.pages?.[0]?.movement?.type ?? "fixed") === "fixed")
+    .map((e) => {
+      const ddx = valen.x - e.x, ddy = valen.y - e.y;
+      const dir: Step = ddy < 0 && Math.abs(ddx) <= 2 * Math.abs(ddy) ? "up" : Math.abs(ddx) >= Math.abs(ddy) ? (ddx > 0 ? "right" : "left") : (ddy > 0 ? "down" : "up");
+      return { kind: "moveEvent", eventId: e.id, route: { moves: [{ kind: "turn", dir }], repeat: false, wait: false, skippable: true } } as unknown as Command;
+    });
+  list.splice(begin + 1, 0, { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "turn", dir: towardValen }], repeat: false, wait: true, skippable: true } } as unknown as Command, ...listeners);
   // 엘레나가 말할 때 주인공이 화면(아래)을 보고 있었다(VQA r5) — 엘레나 쪽(위)으로 돌아선다.
   const elenaLine = list.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("들었지, 카엘"));
   // 위를 보면 RTP 주인공 칩 뒷모습(머리 뒤 흰 띠)이 얼굴처럼 읽혀 엘레나에게 등을 돌린 것으로 보였다(VQA r10 major) —
   // 주인공이 옆으로 두 걸음 비켜서면 뒤따르던 엘레나가 곁(같은 줄)으로 와 서로 옆모습으로 마주 본다.
   const startX = project.startPos?.x ?? 24, startY = project.startPos?.y ?? 23;
-  const sideOpen = (dx: number): boolean => [1, 2].every((k) => isPassable(project, hub, startX + dx * k, startY)
+  // 비켜설 두 칸에 묘목·풀 포기 같은 덧그림이 있으면 그 위에 선 것처럼 그려졌다(VQA r22) — 덧그림 없는 칸만.
+  const bareCell = (x: number, y: number): boolean => [hub.lowerOverlayTiles, hub.upperTiles, hub.upperOverlayTiles].every((l) => (l?.[y * hub.width + x] ?? -1) < 0);
+  const sideOpen = (dx: number): boolean => [1, 2].every((k) => isPassable(project, hub, startX + dx * k, startY) && bareCell(startX + dx * k, startY)
     && !hub.events.some((e) => e.x === startX + dx * k && e.y === startY && !marchers.has(e.id)));
   const side: Step | undefined = sideOpen(-1) ? "left" : sideOpen(1) ? "right" : undefined;
   const faceElena: unknown[] = side ? [{ kind: "move", dir: side }, { kind: "move", dir: side }, { kind: "turn", dir: side === "left" ? "right" : "left" }] : [{ kind: "turn", dir: "up" }];
