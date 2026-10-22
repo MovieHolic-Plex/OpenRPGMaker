@@ -21,7 +21,7 @@ import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types"
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
   approach, bgm, call, callTo, caption, CAST, choices, m2, clearTintKeepBlack, emote, event, exitVia, face, faceEachOther, faceToward, fadeIn, fadeOut, flash, hidePlayer, ifCond, page,
-  playSe, say, sayAt, sayTo, listenTo, setSw, textAtBottom, faceHero, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk, walkTo,
+  playSe, say, sayAt, sayTo, listenTo, fillListenerBusts, setSw, textAtBottom, faceHero, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk, walkTo,
 } from "./firstLoveKit";
 import { buildFirstLoveMaps, FL_MAP, FL_TRAIN_CALL, FL_TRAIN_GO, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
 import { buildFirstLoveOpening } from "./firstLoveOpening";
@@ -883,7 +883,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
         stopBgm(),
         ...caption("그리고, 금요일."),
         stage(S.WED_TALK),
-        transfer(FL_MAP.officeFri, a.office.meetingSeat.x, a.office.meetingSeat.y, "left"),
+        transfer(FL_MAP.officeFri, a.office.meetingSeat.x, a.office.meetingSeat.y, "down"),
       ], { who: "jihu", dir: "up" }),
     ]),
   );
@@ -1016,8 +1016,9 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
 function buildFriday(project: Project, a: FirstLoveAnchors): void {
   const fri = project.maps[FL_MAP.officeFri]!;
   const o = a.office;
-  // 탁자 동쪽 빈 바닥(meetSeats, 듣는 셋은 발표자와 한 줄 띄워 두 칸 거리 — scene-talk-far): [0]=주인공(동쪽 끝) [1]=지후(주인공 오른쪽 옆 — 발표자 둘이 나란히) [2]=민호(탁자 북서 모서리 바닥) [3]=팀장(서쪽 끝) [4]=본부장(탁자 북동 모서리 바닥 — 먼저 나가는 손님이 바로 옆 유리문으로 나간다).
-  // 의자 칸에는 세우지 않는다: 의자는 upper 타일이라 등받이가 얼굴을 덮고(VQA r7), 남쪽 의자 줄은 맵 맨 아래라 대화창에 가린다(VQA r5).
+  // meetSeats: [0]=주인공(탁자 북서 끝, 발표) [1]=지후(탁자 북동 끝, 발표) [2]=민호 [3]=팀장 [4]=본부장 — 듣는 셋은 남쪽 의자에 앉아 위를 본다.
+  // 남쪽 의자는 등이 화면 쪽이라 등받이가 하반신만 가린다(북쪽 의자는 얼굴을 덮었다, VQA r7). 맵 아래 덧댄 줄(FRI_PAD)로 카메라가
+  // 회의실을 화면 위쪽에 두어 남쪽 의자 줄이 대화창에 가리지 않는다(VQA r5).
   const seats = o.meetSeats;
   const jihuSpot = seats[1]!; const clientSpot = seats[4]!; const leadSpot = seats[3]!; const minhoSpot = seats[2]!;
   // 손님·지후는 두 번째 엘리베이터(주인공이 내린 칸이 아닌 문)로 나간다 — 엘리베이터 문 바로 앞에서 사라진다.
@@ -1031,10 +1032,10 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
   const clientOut = leave(project, FL_MAP.officeFri, "ev_fl_f_client", clientSpot, exit, "sw_fl_client_left", o.meetingSeat, [jihuSpot, ...presenterFront], elevatorView, meetView);
   const jihuOut = leave(project, FL_MAP.officeFri, "ev_fl_f_jihu", jihuSpot, exit, "sw_fl_jihu_left", o.meetingSeat, [], elevatorView, meetView);
   add(fri,
-    event("ev_fl_f_client", "박 본부장", clientSpot, [page("fc", [swOff("sw_fl_client_left")], [], { who: "client", dir: "down" })]),
-    event("ev_fl_f_lead", "오정민 팀장", leadSpot, [page("fl", [], [], { who: "lead", dir: "right" })]),
-    event("ev_fl_f_jihu", "강지후", jihuSpot, [page("fj", [swOff("sw_fl_jihu_left")], [], { who: "jihu", dir: "left" })]),
-    event("ev_fl_f_minho", "차민호", minhoSpot, [page("fm", [], [], { who: "minho", dir: dirToward(minhoSpot, leadSpot) })]),
+    event("ev_fl_f_client", "박 본부장", clientSpot, [page("fc", [swOff("sw_fl_client_left")], [], { who: "client", dir: "up" })]),
+    event("ev_fl_f_lead", "오정민 팀장", leadSpot, [page("fl", [], [], { who: "lead", dir: "up" })]),
+    event("ev_fl_f_jihu", "강지후", jihuSpot, [page("fj", [swOff("sw_fl_jihu_left")], [], { who: "jihu", dir: "down" })]),
+    event("ev_fl_f_minho", "차민호", minhoSpot, [page("fm", [], [], { who: "minho", dir: "up" })]),
     door("ev_fl_f_elev2", o.npcExit, [stageIs(V_STAGE, 999)], [], think("…"), "down"),
   );
   add(fri, scene("ev_fl_fri", { x: 1, y: 1 }, S.WED_TALK, [
@@ -1119,9 +1120,18 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     choices([
       { text: "역으로 간다", then: [
         ...sayAt("seoha", "right", "base", "죄송해요, 먼저 가 볼게요!"),
-        // 자리에서 사라지지 않고 유리문 쪽으로 뛰어가며 화면이 어두워진다(VQA r12).
-        walkRoute(project, FL_MAP.officeFri, "@player", o.meetingSeat, o.meeting, [leadSpot, minhoSpot], false),
-        wait(500),
+        // 회의실 유리문으로 나가 승강기까지 걸어가 타고 내려간다 — 유리문에서 바로 거리로 옮기면 7층에서 승강기를 건너뛰었다(VQA r21·r22).
+        panBack(500),
+        walkRoute(project, FL_MAP.officeFri, "@player", o.meetingSeat, o.elevatorOut, [leadSpot, minhoSpot, clientSpot], true, "up"),
+        quiet(SE_BUTTON), wait(400),
+        playSe(SE_ELEVATOR), wait(300),
+        quiet(SE_SLIDE, 0.45), ...doorFx(elevDoor(o.elevator), true, 700),
+        { kind: "moveEvent", eventId: "@player", route: { moves: [
+          { kind: "setThrough", enabled: true }, { kind: "move", dir: "up" }, { kind: "move", dir: "up" }, { kind: "turn", dir: "down" }, { kind: "setThrough", enabled: false },
+        ], repeat: false, wait: true, skippable: true } } as unknown as Command,
+        wait(250),
+        quiet(SE_SLIDE, 0.45), ...doorFx(elevDoor(o.elevator), false, 700),
+        wait(300),
         ...fadeOut(600),
         stopBgm(),
         stage(S.FRI),
@@ -1443,6 +1453,8 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
   buildWednesday(project, anchors);
   buildFriday(project, anchors);
   buildClimax(project, anchors);
+  // NPC 끼리 말하는 줄(sayTo)의 듣는 흉상 = 듣는 이벤트의 인물(흉상 좌우는 런타임이 맵 위 자리로 정한다).
+  fillListenerBusts(Object.values(project.maps));
 
   // 맵 BGM(장면이 바꾸지 않을 때의 바탕).
   const mapBgm: Record<string, string> = {

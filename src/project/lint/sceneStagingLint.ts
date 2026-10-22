@@ -357,7 +357,7 @@ function checkLine(ctx: Ctx, st: Replay, line: Extract<Command, { kind: "text" }
   const pair = [speakerId, addresseeId].sort().join("~");
   // 외침·흘림 대사(멀리서 부르기)는 거리를 보지 않는다.
   const calling = line.calling === true || line.context === "shout" || line.container === "bark";
-  if (dist > TALK_DISTANCE_LIMIT && !calling) {
+  if (dist > TALK_DISTANCE_LIMIT && !calling && !acrossFurniture(ctx, a, b, dist)) {
     report(ctx, "scene-talk-far", pair, b,
       `${where}: ${nameOf(ctx, speakerId)} 가 ${dist}칸 떨어진 ${nameOf(ctx, addresseeId)} 에게 말한다 — 말하기 전에 approach{actor,target}(곁으로 걸어가 바라봄)로 붙인다. 걸음을 손으로 늘어놓지 말 것.`);
     return;
@@ -369,6 +369,22 @@ function checkLine(ctx: Ctx, st: Replay, line: Extract<Command, { kind: "text" }
     report(ctx, "scene-talk-facing", pair, b,
       `${where}: ${nameOf(ctx, speakerId)} 와 ${nameOf(ctx, addresseeId)} 가 서로 보지 않는 채로 말한다(${nameOf(ctx, away)} 가 ${(away === speakerId ? a : b).dir} 을 본다) — faceEachOther{a,b} 또는 turnToward 를 넣는다. 손으로 고른 방향(face)은 도착 못 한 인물에게도 그대로 적용된다.`);
   }
+}
+
+/**
+ * 탁자 건너편 — 한 칸 더 먼(TALK_DISTANCE_LIMIT + 1) 두 사람 사이 곧은 줄에 막힌 가구 칸(탁자·의자)이 있으면 마주 앉은 대화로 본다.
+ * 회의 탁자(폭 2)를 사이에 둔 맞은편은 3칸이다(첫사랑 금요일 회의: 발표자는 북쪽에 서고 듣는 셋은 남쪽 의자에 앉는다).
+ * 사이가 빈 바닥이면 그냥 먼 것이다(곁으로 걸어가 말해야 한다).
+ */
+function acrossFurniture(ctx: Ctx, a: StageCell, b: StageCell, dist: number): boolean {
+  if (dist !== TALK_DISTANCE_LIMIT + 1) return false;
+  let x = a.x, y = a.y;
+  while (x !== b.x || y !== b.y) {
+    x += Math.sign(b.x - x); y += Math.sign(b.y - y);
+    if (x === b.x && y === b.y) break;
+    if (!isPassable(ctx.project, ctx.map, x, y)) return true;
+  }
+  return false;
 }
 
 function checkChoice(ctx: Ctx, st: Replay, where: string): void {
@@ -386,7 +402,7 @@ function checkChoice(ctx: Ctx, st: Replay, where: string): void {
   if (vis !== true || !st.player) return;
   const a = actorOf(ctx, st, npc)!;
   const dist = chebyshev(a, st.player);
-  if (dist > TALK_DISTANCE_LIMIT) {
+  if (dist > TALK_DISTANCE_LIMIT && !acrossFurniture(ctx, a, st.player, dist)) {
     report(ctx, "scene-talk-far", `choice:${npc}`, a,
       `${where}: 선택지가 ${dist}칸 떨어진 ${nameOf(ctx, npc)} 에게 하는 대답이다 — 선택지 앞에서 approach 로 마주 세운다.`);
   }

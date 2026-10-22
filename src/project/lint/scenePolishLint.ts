@@ -28,7 +28,7 @@
 //  - scene-actor-head-under-upper  인물이 걸어가 선 칸 바로 위에 «항상 위» 위층 소품(★, 계산대 위 물건 등)이 있다 — 소품이 머리를 덮은 채 대화한다
 //  - scene-bust-side-switch        한 장면(페이지, 장소 이동·fadeOut 사이) 안에서 같은 인물 흉상이 왼쪽·오른쪽을 오간다
 //  - scene-route-through-actor     장면 경로가 그 자리에 서 있는(움직이지 않는) 다른 인물의 칸을 지나간다 — 엔진이 그 걸음을 건너뛰어 엉뚱한 칸에서 멈춘다
-//  - scene-actor-under-furniture   보이는 인물을 «위층(upper)» 가구 칸(의자 등받이·탁자처럼 인물보다 앞에 그려지는 막힌 칸)에 세운다 — 가구가 얼굴을 덮는다
+//  - scene-actor-under-furniture   보이는 인물을 «위층(upper)» 가구 칸(의자 등받이·탁자처럼 인물보다 앞에 그려지는 막힌 칸)에 세운다 — 가구가 얼굴을 덮는다(위를 보고 앉힌 인물은 예외)
 //  - scene-route-interrupted       기다리지 않는 긴 경로(퇴장 등)가 도는 인물에게 같은 장면이 다시 이동·돌기를 시킨다 — 뒤 명령이 앞 경로를 갈아 끼워 인물이 길 한가운데 멈춘다
 
 import { nestedCommandLists } from "../authoredCommandIndex";
@@ -1210,6 +1210,9 @@ function checkActorUnderFurniture(project: Project, issues: LintIssue[]): void {
       const tile = upper[event.y * map.width + event.x];
       if (tile === undefined || tile < 0 || tileset.priority?.[tile] !== "upper") continue;
       if (isPassable(project, map, event.x, event.y)) continue;
+      // 등을 화면 쪽으로 앉힌 인물(위를 봄)은 등받이가 등·허리만 가린다 — 얼굴은 어차피 안 보이고 «뒤에서 본 앉은 사람»으로 읽힌다
+      // (첫사랑 금요일 회의: 듣는 셋이 탁자 남쪽 의자에 앉아 발표자를 본다, VQA r22).
+      if (pagesOf(event).filter((p) => visibleGraphic(p)).every((p) => (p as { graphic?: { direction?: string } }).graphic?.direction === "up")) continue;
       issues.push({
         severity: "warning", code: "scene-actor-under-furniture", mapId: map.id, eventId: event.id, x: event.x, y: event.y,
         message: `인물 ${event.id} 가 (${event.x},${event.y}) 의 위층 가구(지나갈 수 없는 칸, 인물보다 앞에 그려짐) 위에 서 있다 — 등받이·탁자가 얼굴을 덮는다. 가구 옆 빈 바닥 칸에 세운다.`,

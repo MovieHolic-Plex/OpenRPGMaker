@@ -602,6 +602,8 @@ export function executeCommand(
         ...(command.speakerActor ? { speakerActor: command.speakerActor } : {}),
         ...(command.addressee ? { addressee: command.addressee } : {}),
         ...(command.autoFace === false ? { autoFace: false } : {}),
+        ...(command.bustSide === "stage" ? { bustSide: "stage" as const } : {}),
+        ...(command.listenerBust ? { listenerBust: command.listenerBust } : {}),
         ...(command.calling === true ? { calling: true } : {}),
       });
     }

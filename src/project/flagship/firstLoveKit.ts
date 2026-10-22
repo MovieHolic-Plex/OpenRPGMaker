@@ -43,13 +43,44 @@ export function bustId(who: Who, expr: Expr): string {
 
 const CLEAR_FACE: Command = { kind: "changeFace", resourceId: "", position: "left", flipHorizontally: false };
 
-/** 인물 대사 — 흉상(표정)을 바꾸고 이름과 함께 말한다. */
+/**
+ * 인물 대사 — 흉상(표정)을 바꾸고 이름과 함께 말한다. 흉상 좌우는 맵 위 자리로 정한다(bustSide "stage": 듣는 사람보다 왼쪽에 선
+ * 화자는 왼쪽 흉상). 듣는 흉상은 듣는 인물이 화면에 있으면 늘 반대편에 — 기본 청자(주인공)면 서하 흉상(VQA r22: 좌우가 서 있는
+ * 자리와 반대, 듣는 흉상이 장면마다 들쭉날쭉). NPC 끼리(sayTo)의 듣는 흉상은 fillListenerBusts 가 그 이벤트의 인물로 채운다.
+ */
 export function say(who: Who, expr: Expr, ...lines: string[]): Command[] {
   const c = CAST[who];
+  const hero = who === "seoha" || who === "seohaYoung";
   return [
     { kind: "changeFace", resourceId: bustId(who, expr), presentation: "bust", position: c.side, flipHorizontally: false },
-    ...lines.map((body): Command => ({ kind: "text", speaker: c.name, body, position: "bottom" })),
+    ...lines.map((body): Command => ({ kind: "text", speaker: c.name, body, position: "bottom", bustSide: "stage", ...(hero ? {} : { listenerBust: bustId("seoha", "base") }) } as Command)),
   ];
+}
+
+/** 페이지 그림의 인물 — fillListenerBusts 가 이벤트 id → 인물을 찾는다(페이지 객체에 필드를 더하지 않는다). */
+const PAGE_WHO = new WeakMap<object, Who>();
+
+/** sayTo 로 NPC 끼리 말하는 줄의 듣는 흉상을 듣는 이벤트의 인물 흉상으로 채운다(데모를 다 지은 뒤 한 번). */
+export function fillListenerBusts(maps: Iterable<{ events?: GameEvent[] }>): void {
+  const visit = (cmds: unknown, whoOf: Map<string, Who>): void => {
+    if (!Array.isArray(cmds)) return;
+    for (const c of cmds as Record<string, unknown>[]) {
+      if (!c || typeof c !== "object") continue;
+      if (c.kind === "text" && c.bustSide === "stage" && typeof c.addressee === "string" && c.addressee !== "@player") {
+        const w = whoOf.get(c.addressee);
+        if (w) c.listenerBust = bustId(w, "base"); else delete c.listenerBust;
+      }
+      for (const v of Object.values(c)) {
+        if (Array.isArray(v)) visit(v, whoOf);
+        else if (v && typeof v === "object") for (const vv of Object.values(v as Record<string, unknown>)) if (Array.isArray(vv)) visit(vv, whoOf);
+      }
+    }
+  };
+  for (const m of maps) {
+    const whoOf = new Map<string, Who>();
+    for (const e of m.events ?? []) for (const pg of (e as { pages?: object[] }).pages ?? []) { const w = PAGE_WHO.get(pg); if (w) { whoOf.set(e.id, w); break; } }
+    for (const e of m.events ?? []) for (const pg of (e as { pages?: { commands?: unknown }[] }).pages ?? []) visit(pg.commands, whoOf);
+  }
 }
 
 /** 자리를 바꿔 말한다 — NPC 끼리 마주 말하는 장면에서 한쪽을 왼쪽에 앉혀 두 흉상이 서로를 보게 한다(VQA r8: 둘 다 오른쪽).
@@ -239,7 +270,7 @@ type PageOpts = {
 export function page(id: string, conditions: EventPageCondition[], commands: Command[], opts: PageOpts = {}): EventPage {
   const who = opts.who ? CAST[opts.who] : undefined;
   const dir = opts.dir ?? "down";
-  return {
+  const built = {
     id,
     name: id,
     conditions,
@@ -254,6 +285,8 @@ export function page(id: string, conditions: EventPageCondition[], commands: Com
     trigger: { kind: opts.trigger ?? "action" },
     commands,
   } as unknown as EventPage;
+  if (opts.who) PAGE_WHO.set(built, opts.who);
+  return built;
 }
 
 export function event(id: string, name: string, at: { x: number; y: number }, pages: EventPage[]): GameEvent {

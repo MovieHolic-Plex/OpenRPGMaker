@@ -106,6 +106,8 @@ export type DialogueTextRequest = DialogueSurfaceSettings & {
   readonly face?: FaceGraphic;
   /** 저작이 대사 앞에 준 듣는 사람 얼굴(화자 반대 자리). 있으면 앞 화자 대신 이 얼굴이 듣는 사람 흉상이다. */
   readonly listenerFace?: FaceGraphic;
+  /** true 면 듣는 흉상은 listenerFace 하나로만 정한다(없으면 비운다) — 「앞 화자가 남는다」 규칙을 쓰지 않는다(text.bustSide "stage"). */
+  readonly stageListener?: boolean;
   /** true 면 페이지 타이핑 종료 후 키 입력 없이 다음으로. */
   readonly autoAdvance?: boolean;
   /** 엔딩 에필로그의 글. 스킵은 이 글을 절대 건너뛰지 않는다(interpreter text 단계의 endingEpilogue). */
@@ -1023,7 +1025,7 @@ export function createDialogueUI(
             // 저작이 고른 듣는 사람(말을 다른 상대에게 돌린 줄) — 앞 화자보다 우선한다.
             if (request.listenerFace?.resourceId && (request.listenerFace.position === "right") !== (face.position === "right")) {
               listenerPortrait = { key: `listener:${request.listenerFace.resourceId}`, face: request.listenerFace };
-            }
+            } else if (request.stageListener) listenerPortrait = undefined;
             // 인물은 저작된 자기 자리(왼쪽/오른쪽)를 장면 내내 지킨다. 듣는 사람이 화자와 같은 쪽 사람이면 반대편으로 옮겨
             // 그리지 않고 비운다 — 옮기면 그 인물이 대사마다 좌우를 맞바꾼다(첫사랑 r4: 오른쪽 자리 인물끼리의 대화).
             if (listenerPortrait && (listenerPortrait.face.position === "right" ? "right" : "left") === (face.position === "right" ? "right" : "left")) {

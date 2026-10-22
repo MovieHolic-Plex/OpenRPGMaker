@@ -383,6 +383,14 @@ export type Command =
       autoFace?: boolean;
       /** 멀리서 부르는 한마디(가게 점원의 인사, 길 건너 이름 부르기). 거리 검사(scene-talk-far)를 하지 않고, 멀어도 듣는 쪽을 돌아본다. */
       calling?: boolean;
+      /**
+       * "stage" 면 흉상 좌우를 맵 위 자리로 정한다 — 말하는 인물이 듣는 인물보다 왼쪽에 서 있으면 흉상도 왼쪽, 오른쪽이면 오른쪽.
+       * 듣는 흉상(흐리게)도 «듣는 인물이 화면에 있고 그 인물의 흉상을 이미 봤으면 늘» 반대편에 세운다(앞 화자 대신 듣는 사람 기준).
+       * 같은 열(위아래로 선 둘)이면 저작한 자리를 지킨다. player/playSceneDialogueFacing.ts.
+       */
+      bustSide?: "stage";
+      /** bustSide "stage" 에서 듣는 인물의 흉상을 아직 못 봤을 때 쓸 흉상 리소스(그 인물이 한 번 말하면 그 흉상을 기억해 쓴다). */
+      listenerBust?: string;
     }
   | ({ kind: "changeFace"; appearanceId?: string } & FaceGraphic)
   | {
