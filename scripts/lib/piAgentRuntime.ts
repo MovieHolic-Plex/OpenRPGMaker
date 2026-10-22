@@ -19,7 +19,7 @@ import { normalizeBuildSpec, plannedGrowthForSpec, validateBuildSpec, type Build
 import { growthGuidanceLine } from "../../src/ai/session/buildSpecGate.ts";
 import type { ActivityVisual } from "../../src/ai/activityVisual";
 import { inspectPiLayoutQuality, piLayoutRepairPrompt, piLayoutShortfallPrompt } from "../../src/ai/piAgent/layoutQuality.ts";
-import { FEATURE_CHECKLIST_SYSTEM_PROMPT, FEATURE_REVIEW_MAX_CROPS, FEATURE_REVIEW_MAX_REBUILDS, FEATURE_REVIEW_SOFT_BUDGET_MS, PiFeatureChecklist, SET_FEATURE_CHECKLIST_DESCRIPTION, SET_FEATURE_CHECKLIST_PARAMETERS, featureChecklistSummary, featureJudgePrompt, featureRepairPrompt, featureShortfallPrompt, parseFeatureJudge, featureCriticPrompt, parseFeatureCritic, criticToVerdict, type FeatureJudgeImage, type FeatureVerdict } from "../../src/ai/piAgent/featureReview.ts";
+import { FEATURE_CHECKLIST_SYSTEM_PROMPT, FEATURE_REVIEW_MAX_CROPS, FEATURE_REVIEW_MAX_REBUILDS, FEATURE_REVIEW_SOFT_BUDGET_MS, PiFeatureChecklist, SET_FEATURE_CHECKLIST_DESCRIPTION, SET_FEATURE_CHECKLIST_PARAMETERS, featureChecklistSummary, featureJudgePrompt, featureRepairPrompt, featureShortfallPrompt, parseFeatureJudge, featureCriticPrompt, parseFeatureCritic, criticToVerdict, featurePolishSystemPrompt, type FeatureJudgeImage, type FeatureVerdict } from "../../src/ai/piAgent/featureReview.ts";
 import { roomSpecOf } from "../../src/editor/handInterior/builder.ts";
 import { INTERIOR_BARE_FLOOR_LIMIT, measureInteriorBareFloor } from "../../src/editor/handInterior/bareFloor.ts";
 import { conceptSkipsLayoutQuality } from "../../src/ai/conceptCards.ts";
@@ -764,8 +764,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   });
   // 요청 특징 확인표(featureReview.ts) — 짓기 턴에서 조수가 적고, 끝에 실행기가 1배 그림으로 항목마다 확인한다.
   // 팀 하위 실행(도구 목록 고정)·몬스터 캠페인·오프닝 제작은 각자 완료 검사가 따로 있어 뺀다.
-  const featureReviewEnabled = !request.readOnly && !options.readOnlyTools && spatialWork && !options.toolNames
-    && !monsterGameProduction.requested && !openingProduction.requested;
+  // 다듬기 모드(request.polish) — 이미 지은 맵을 1배 검토→고치기로 더 오래 다듬는다. 짓기 턴이 아니어도 켠다.
+  const polish = request.polish && !request.readOnly ? request.polish : undefined;
+  const featureReviewEnabled = (!request.readOnly && !options.readOnlyTools && spatialWork && !options.toolNames
+    && !monsterGameProduction.requested && !openingProduction.requested) || !!polish;
   const featureChecklist = new PiFeatureChecklist();
   const emitFeatureChecklist = (ok = true) => {
     const snapshot = featureChecklist.snapshot();
@@ -818,6 +820,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   if (request.readOnly) systemPrompt.push(READ_ONLY_INSTRUCTION);
   if (!request.readOnly && !options.readOnlyTools && spatialWork) systemPrompt.push("집·마을처럼 여러 영역을 시공할 때는 먼저 set_build_spec으로 실제 좌표와 buildOrder를 제출하여 사용자가 맵에서 밑그림을 보게 하라. 밑그림은 타일 배치가 아니다. 제출 후 반드시 실제 시공 도구를 실행하라. 단순 한 영역 칠하기는 도구 좌표로 작업 영역을 표시하므로 생략할 수 있다.");
   if (featureReviewEnabled) systemPrompt.push(FEATURE_CHECKLIST_SYSTEM_PROMPT);
+  if (polish) systemPrompt.push(featurePolishSystemPrompt(polish));
   if (incremental && request.applyMode === "step") systemPrompt.push("작업을 지형, 건물·길, NPC·이벤트 등 의미 있는 단계로 나누고 각 단계를 끝낼 때 반드시 finish_stage를 호출하라. 승인 결과를 받기 전 다음 단계의 쓰기 도구를 호출하지 마라. 도구 호출마다 승인받지 말고 작업 단위로 묶어라.");
   if (request.applyMode === "yolo") systemPrompt.push("YOLO: 별도 검수·승인 요청 없이 요청한 변경을 최대한 실행하라. 사용자 범위와 데이터 형식은 지켜라.");
   if (writer && tools.some(tool => tool.name === "consult_writer")) systemPrompt.push("You are Deep, responsible for careful implementation and validation. For multi-scene story, lore, or quest prose, consult_writer delegates authorship to Writer. Pass relevant context, then apply its output using project tools. For a single NPC or short greeting/shop/inn lines, write the dialogue directly in place_npc without calling consult_writer. Do not call Writer for mechanical work.");
@@ -1139,14 +1142,17 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         const map = ctx.project.maps[id];
         return !!map && !!roomSpecOf(ctx.project.tilesets[map.tilesetId]) && map.climate?.mode === "indoor";
       };
+      // 다듬기는 바뀌지 않은 맵도 본다 — 요청 범위(mapIds·지금 맵)의 맵과 항목이 가리키는 맵.
+      const polishScope = polish ? (polish.mapIds?.length ? polish.mapIds : [...request.mapIds, ...(request.currentMapId ? [request.currentMapId] : [])]).filter((id) => !!ctx.project.maps[id]) : [];
       const targetIds = (): string[] => {
-        const named = featureChecklist.judgeItems.map((i) => i.mapId).filter((id): id is string => !!id && !!ctx.project.maps[id] && mapChanged(id));
-        const interiors = Object.keys(ctx.project.maps).filter((id) => handInterior(id) && mapChanged(id));
+        const changed = (id: string) => mapChanged(id) || polishScope.includes(id);
+        const named = featureChecklist.judgeItems.map((i) => i.mapId).filter((id): id is string => !!id && !!ctx.project.maps[id] && (changed(id) || !!polish));
+        const interiors = Object.keys(ctx.project.maps).filter((id) => handInterior(id) && changed(id));
         return [...new Set([...named, ...interiors])].slice(0, 3);
       };
-      const reviewTask = request.task;
-      const maxRebuilds = FEATURE_REVIEW_MAX_REBUILDS;
-      const budgetMs = FEATURE_REVIEW_SOFT_BUDGET_MS;
+      const reviewTask = polish?.request ?? request.task;
+      const maxRebuilds = polish ? Math.max(1, Math.min(20, polish.maxRounds)) : FEATURE_REVIEW_MAX_REBUILDS;
+      const budgetMs = polish ? Math.max(60_000, polish.budgetMs) : FEATURE_REVIEW_SOFT_BUDGET_MS;
       // 그림 렌더러는 show_map_region 결과(칸 배열 포함)를 받는다 — 좌표만 넘기면 「invalid region」으로 거절한다. 읽기 도구를 그대로 돌려 그 결과를 넘긴다.
       const renderErrors: string[] = [];
       const render = async (mapId: string, x: number, y: number, w: number, h: number): Promise<string | undefined> => {
@@ -1191,8 +1197,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           featureChecklist.setMeasured({ id: itemId, text: `${map.name}: 독립 비평(축 1·2·6) major 0`, mapId: id });
           try {
             const px = pngSize(dataUrl);
-            const reply = await eventAssistChat(null, { messages: [{ role: "user", content: [{ type: "text", text: featureCriticPrompt(reviewTask, map.name, map, px) }, { type: "image_url", image_url: { url: dataUrl } }] }], ...(options.signal ? { signal: options.signal } : {}) });
-            const critic = parseFeatureCritic(typeof reply.message.content === "string" ? reply.message.content : "", id, 1);
+            const others = [...fullImages].filter(([other]) => other !== id);
+            const reply = await eventAssistChat(null, { messages: [{ role: "user", content: [
+              { type: "text", text: featureCriticPrompt(reviewTask, map.name, map, px, others.map(([other]) => ctx.project.maps[other]!.name)) },
+              { type: "image_url", image_url: { url: dataUrl } }, ...others.map(([, url]) => ({ type: "image_url", image_url: { url } }))] }], ...(options.signal ? { signal: options.signal } : {}) });
+            const critic = parseFeatureCritic(typeof reply.message.content === "string" ? reply.message.content : "", id, 1 + others.length);
             emit({ type: "execution_status", name: "feature_review.critic", ok: !critic.problem && critic.majors.length === 0, summary: `${map.name} 독립 비평 ${critic.score ?? "?"}점 · major ${critic.majors.length}${critic.problem ? ` · ${critic.problem}` : ""}`, data: critic });
             return criticToVerdict(itemId, critic);
           } catch (error) {
@@ -1259,7 +1268,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         const failingKey = failing.map((v) => v.id).sort().join("|");
         unchanged = failingKey && failingKey === previousFailing ? unchanged + 1 : 0;
         previousFailing = failingKey;
-        const stuck = unchanged >= 2;
+        const stuck = unchanged >= (polish ? 3 : 2);
         if (!failing.length || rebuild >= maxRebuilds || overBudget || stuck || turns >= maxTurns) {
           const reason = !failing.length ? "판정자가 일부 항목을 판정하지 못했다(확인 안 됨)." : rebuild >= maxRebuilds ? `고치기 ${maxRebuilds}바퀴를 다 썼다.` : stuck ? "같은 항목이 두 번 고친 뒤에도 그대로 안 읽힌다." : overBudget ? "작업 시간 한도에 닿아 더 고치지 않는다." : "턴 한도에 닿았다.";
           emit({ type: "execution_status", name: "feature_review.unresolved", ok: false, summary: `${reason} 남은 항목 ${open.length}개` });
@@ -1267,7 +1276,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           break;
         }
         const repairStarted = Date.now();
-        emit({ type: "execution_status", name: "feature_review.repair", ok: true, summary: `고치기 ${rebuild + 1}/${maxRebuilds}바퀴 · 경과 ${Math.round((Date.now() - started) / 60_000)}분`, data: { round: rebuild + 1, maxRounds: maxRebuilds, elapsedMs: Date.now() - started, budgetMs } });
+        emit({ type: "execution_status", name: "feature_review.repair", ok: true, summary: `${polish ? "다듬기" : "고치기"} ${rebuild + 1}/${maxRebuilds}바퀴 · 경과 ${Math.round((Date.now() - started) / 60_000)}분${polish ? ` / ${Math.round(budgetMs / 60_000)}분` : ""}`, data: { round: rebuild + 1, maxRounds: maxRebuilds, elapsedMs: Date.now() - started, budgetMs, polish: !!polish } });
         await promptResuming(featureRepairPrompt(rebuild + 1, maxRebuilds, featureChecklist.allItems, round.verdicts));
         longestRepair = Math.max(longestRepair, Date.now() - repairStarted);
       }
