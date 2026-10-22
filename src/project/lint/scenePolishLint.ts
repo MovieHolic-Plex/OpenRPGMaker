@@ -368,7 +368,8 @@ function heldTransitCells(map: GameMap): (c: Cell) => boolean {
     for (const st of r.stops) {
       if (!st.departSwitch) continue;
       const rect = transitPose(sim, { key: 0, routeIndex, def, pos: st.index, wait: 1, stopAt: st.index, served: [], blockedSec: 0 }).rect;
-      for (const c of transitRectCells(rect)) cells.add(`${c.x},${c.y}`);
+      // 문 앞 승강장 끝 줄(차체 바로 위·아래 칸)에서 사라지는 것도 탑승이다.
+      for (const c of transitRectCells(rect)) for (const dy of [-1, 0, 1]) cells.add(`${c.x},${c.y + dy}`);
     }
   });
   return (c) => cells.has(`${c.x},${c.y}`);

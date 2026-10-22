@@ -1094,6 +1094,8 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     jihuOut.begin,
     stopBgm(),
     face("@player", dirToward(o.meetingSeat, leadSpot)),
+    // 지후가 나간 뒤 팀장은 남은 팀(서하)에게 말한다 — 떠난 지후의 흉상이 듣는 쪽에 남지 않게(VQA r19).
+    listenTo("seoha", "base", "right"),
     ...sayAt("lead", "left", "base", "그리고… 다들 알다시피, 오늘이 지후 씨 마지막 날이에요."),
     ...emote("player", "exclamation"),
     ...sayAt("seoha", "right", "surprised", "…네?"),
@@ -1183,15 +1185,17 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   const jihuBoards = (): Command[] => [
     face("ev_fl_p_jihu", "down"),
     walk("ev_fl_p_jihu", route(project, FL_MAP.platformPm, jihuSpot, edge, [meet])),
-    { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [{ kind: "setThrough", enabled: true }, { kind: "move", dir: "down" }, { kind: "changeOpacity", delta: -255 }], repeat: false, wait: true, skippable: true } } as Command,
+    // 안전선 끝 = 열린 문 바로 앞. 한 칸 더 내려가면 3/4 시점에서 차체 지붕 뒤로 머리가 튀어나온다(VQA r19) —
+    // 제자리에서 어두운 문틈 위로 서서히 흐려져 「문 안으로 들어간다」로 읽히게 한다.
+    { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [0, 1, 2, 3].flatMap(() => [{ kind: "changeOpacity", delta: -64 }, { kind: "wait" }]), repeat: false, wait: true, skippable: true } } as Command,
     setSw("sw_fl_jihu_boarded", true),
     face("@player", "down"),
-    wait(500),
+    wait(600),
     quiet(SE_SLIDE, 0.45), // 문이 닫힌다
     setSw(FL_TRAIN_GO, true),
     wait(1500),
-    quiet(SE_TRAIN, 0.4), // 떠나는 열차
-    wait(2600),
+    quiet(SE_TRAIN, 0.4), // 떠나는 열차 — 마지막 칸이 화면 밖으로 빠질 때까지 지켜본다
+    wait(6000),
   ];
   add(plat, scene("ev_fl_platform", { x: 1, y: 1 }, S.RUN, [
     { kind: "setWeather", weather: "none", transitionMs: 0 } as Command,
