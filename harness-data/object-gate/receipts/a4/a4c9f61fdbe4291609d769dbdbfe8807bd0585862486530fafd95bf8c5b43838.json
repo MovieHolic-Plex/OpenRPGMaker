@@ -1,0 +1,376 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a4c9f61fdbe4291609d769dbdbfe8807bd0585862486530fafd95bf8c5b43838",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "Astra mart kit cell 8 (r2 c0)",
+ "label": "monster_overworld/astra-mart-kit-8 (칸 2248)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (4/4)",
+   "명암 3단 < 4 (4/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 12,
+  "tileColorsP90": 12,
+  "darkV5": 88,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "borderline",
+   "wrong",
+   "right",
+   "wrong",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top beam/header strip",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "striped awning (orange and white stripes)",
+      "rows": "3-7",
+      "evidence": "c",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8-8"
+     },
+     {
+      "part": "left wooden post",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The crop shows a striped awning plane at rows 3-7 with orange and white stripes in columns x=8 and x=12. Its front edge is lighter or scalloped at row 7, and a dark eave shadow at row 8 follows it. Below, rows 9-15 are a cream front face with banded counter or shelf detail (about 7 rows). The left post is a vertical support, and no receding side face is drawn. The awning is a sloped canopy surface of 5 rows, so the main body has a top and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is only a tiny fragment, about one tile wide and two tall, at the far right of the board. It shows a white and orange block with a dark edge. It has no roof, no walls and no door, so it is not a whole building like the two references, which have scalloped tile roofs with per-tile highlights, timber framing, plaster speckle and shaded stonework. The measured facts (12 visible tones per tile, 0% near-flat, 0% neutral dark edges) match the references, but at this size they only show that a small tile is not flat. They do not show a building's roof, wall and door structure. On sight, the roof ramp, wall texture and door detail that make up the reference's 5-6 shading steps per material are missing, so it reads as a shallow, sticker-like sprite. It does not meet the reference bar for a building.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15433
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "striped awning (orange/white stripes with a scalloped lower edge)",
+      "rows": "3-7",
+      "evidence": "c",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "8"
+     },
+     {
+      "part": "top sign band / cornice strip",
+      "rows": "1-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left orange post",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-7 are a striped awning plane (orange at x=8, white at x=12). Its scalloped lower edge is at row 7, and a dark eave-shadow line follows at row 8, which meets evidence (c). Below it, rows 9-15 are a cream shop front with shelf bands, about 7 rows tall. The row 1-2 strip and the left post are vertical faces, and the post is a minor part. The awning could be read as a front-facing valance, but the stripe block with an edge line and shadow below it is enough for a top plane."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate on the board is only a tiny fragment, roughly 14x18 source pixels, with a white/orange block and a dark outline. It does not read as a whole building. There is no visible roof, wall or door structure at the reference scale, so it doesn't match the building kind of the two references. The references show many-tile scalloped roofs with per-tile highlights, timber framing, plaster speckle and stone shaded one by one, about 5-6 steps per material. The candidate shows only about 3 steps per material and no roof-tile scallops or stone or plaster texture. The measured facts (12 visible tones, 0% near-flat, 0% neutral dark edges) are on par with the references. But the picture shows a small, simple object with far less visible structure and information than the buildings next to it, and the 12 tones probably come from a few distinct areas rather than rich shading. The outline looks tinted, not near-black. The piece fails because it is not a complete building with a roof, walls and door and has much less content than the references.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17123
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "striped awning",
+      "rows": "3-7",
+      "evidence": "c",
+      "front_edge_line_row": 7,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "top beam/trim",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "counter/shelf front with goods",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-6 are an orange and white striped awning plane. Row 7 is a darker or shadow edge line, and row 8 is a dark line below it that acts as the eave shadow. This gives about 5 rows of awning top surface. Below it, rows 9-15 form a cream front face of the stall, with a brown post at x=5 running rows 1-15. The silhouette is 13 wide from rows 1-15 with no side face. The cell is cropped at the bottom, so the front face is only partly shown. Rows 0-2 are an outline and trim band and are not counted as a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate on the board is a tiny fragment, roughly 12x20 source pixels, in the far-right corner. It does not read as a whole building with roof, walls and door. It looks like a small sign or icon, or a cropped cell, beside two full houses with 5-6 step tile roofs, timber framing, plaster speckle and stone shading. The measured facts look equal to the references (12 visible tones per tile against 12 and 10, 0% near-flat, 0% neutral dark edges, so the outline is tinted). But the piece is far too small for the tile facts to show structure. By eye it has only about 3 visible shading steps, no roof scallops, no per-stone or per-tile detail, and no wall texture. A careful artist would not accept it next to the references as a building, because it looks thinner and more sticker-like. When in doubt, fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17911
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice strip",
+      "rows": "1-1",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "striped awning (orange/white)",
+      "rows": "3-7",
+      "evidence": "c",
+      "front_edge_line_row": 8,
+      "eave_shadow_rows": "7-8"
+     },
+     {
+      "part": "left wooden post",
+      "rows": "1-15",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cream wall / counter ledge below awning",
+      "rows": "9-15",
+      "evidence": "none",
+      "front_edge_line_row": 10,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 7,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 3-7 are a striped awning plane (orange stripe at x=8, white at x=12). It ends in a darker scalloped edge at row 7 with a dark outline at row 8, which acts as the front edge and eave shadow. Below it is a cream front face at rows 9-15, with a ledge line at rows 10-11. A wooden post runs down the left side as a vertical face. The awning gives 5 rows of top surface above 7 rows of front face, so the main body is read as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny sprite, about one tile, at the far right of the board. The references are full houses several tiles wide, with a scalloped tile roof, timber-and-plaster or stone walls, and a door. The candidate does not read as a whole building with roof, walls, door and windows. It looks closer to a small sign or icon, so the kind does not match. The facts show only 12 distinct colours for the whole piece, against 185 and 66 for the references. Its 12 visible tones in one tile equal the reference tile, but that is the entire piece's palette. It is spread across a single tile and cannot carry the per-material ramps (roof highlight/light/mid/dark/deep, plaster speckle, stone-by-stone shading) that the references show. The edge pixels are 0% neutral, so the outline is tinted rather than black, which is fine. There are no flat 5x5 fills, but at this size that says little. Overall it is far thinner and less developed than the references as a building, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 26717
+  }
+ ],
+ "decidedAt": "2026-10-20T22:08:46.687Z",
+ "cells": {
+  "16": [
+   "e225379193c94f33"
+  ],
+  "24": [
+   "08e6ec44444a1bad",
+   "257fb2ad7e8716f2",
+   "5f93aa4aafabbe92",
+   "64a7085c8dc33839",
+   "ba2b8ce261ffb74a",
+   "c546d28fe5299369"
+  ],
+  "32": [
+   "2ca8a1122bd4476c",
+   "4e02c124403f0c0f",
+   "57d212393c1d7672",
+   "701278046530885a",
+   "c3b0977e93ed1077",
+   "e3b8ecca1f19c0e3"
+  ],
+  "48": [
+   "075f6ba39bdd81f7",
+   "07cbf3b53771bcce",
+   "95b4b8ab66ce08d2",
+   "9f5cec070dc1e0e3",
+   "af6d7ec2d07b7890",
+   "eb71973739ab9be7"
+  ]
+ }
+}

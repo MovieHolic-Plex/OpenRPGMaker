@@ -1,0 +1,1228 @@
+{
+ "source": "char-gen main d5f2639(MovieHolic-Plex/char-gen #7, ~/char-gen-public) 고해상 그림을 GBA 대사 초상 브리프('GBA monster RPG dialogue portrait, chunky pixel art, 2-3 tone cel shading', 상표·작품명 없음)로 그리게 한 뒤 44x46 도트로 변환(bake_astra_cast.py: mean-shift 평탄화·16색 이하·4x4 칸 다수결·선택적 윤곽·눈/눈썹/입 도장 손질 astra_cast_cleanup.json). 이미지 엔진 codex(로그인, 유료 대체 경로 없음) · 후보는 감독이 골랐다(by: supervisor, 사용자 위임)",
+ "judge": "char-gen 품질 관문(초상마다 PASS) + 눈가림 정체성·표정 판정(set judge): 기본(base) 칸은 고른 그림이 입 다문 차분한 얼굴인데도 smile/content 로 읽혀 표정 항목만 FAIL(알려진 판정 버릇, 1차와 같다). 44x46 흉상의 표정은 변환 뒤 손으로 찍은 눈·입 도장이 정한다. 판정 원본: /home/main/astra-qa/castg/<job>/judge.log, 독립 Opus 5.5 적대 VQA 4회차 PASS(주요 결함 0, r1~r3 FAIL 을 고쳐 가며): /home/main/astra-qa/castg/vqa/r1~r4.txt",
+ "cast": {
+  "hero": {
+   "from": "/home/main/astra-qa/castg/hero/out",
+   "charGen": "d5f263904ca2b671ab6d54942b9c3651aa3e9d22",
+   "palette": [
+    "#046f60",
+    "#793122",
+    "#16100f",
+    "#f0a262",
+    "#c72e25",
+    "#2e3d6c",
+    "#45251c",
+    "#fbf5d6",
+    "#03a897",
+    "#f29f15",
+    "#c0753a",
+    "#feddb1",
+    "#135956",
+    "#a0602c",
+    "#c8504a",
+    "#f8f8f0"
+   ],
+   "cleanup": {
+    "iris": "#a0602c",
+    "eyes": [
+     [
+      19,
+      21,
+      4
+     ],
+     [
+      29,
+      22,
+      3
+     ]
+    ],
+    "mouth": [
+     24,
+     31
+    ],
+    "edits": {},
+    "read": {
+     "zoom": 1.35,
+     "top": 0.06
+    },
+    "hair": [
+     "#55393b",
+     "#9b665c",
+     "#79504c"
+    ]
+   },
+   "stamps": {
+    "base": {
+     "stampedPixels": 67
+    },
+    "happy": {
+     "stampedPixels": 66
+    },
+    "sad": {
+     "stampedPixels": 65
+    },
+    "angry": {
+     "stampedPixels": 69
+    },
+    "surprised": {
+     "stampedPixels": 72
+    }
+   },
+   "pictures": {
+    "bust-base.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "f643dec039952ba9221f2d2c768449d96c7c95e2ca707772486ad0c7c2a676b4",
+     "pixelSha256": "c67eb252edaa2b0f77ea02d3daacc00672b9b50cd70487845e7742537ddccc23"
+    },
+    "full-base.png": {
+     "size": [
+      32,
+      84
+     ],
+     "sourceSha256": "2e53d63c91b51cf54dc564a87ad09f8a9822b8eaf1c1ae3361dedb59017719c8",
+     "pixelSha256": "6a889e9becbacf28f672c3accc046aae61dc22c4a6e851a518895854f17000ca"
+    },
+    "bust-happy.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "e3a0a49ec5bb2e468f3c94d8d29bafffa8a7596b0eef684e2c6de6a442e44726",
+     "pixelSha256": "55e39af13a960f2e19bf0fc9fc70ceecb3e83de349905d7df978046eefbee28f"
+    },
+    "full-happy.png": {
+     "size": [
+      32,
+      84
+     ],
+     "sourceSha256": "0a85780eca66086688a855d0ee5e063a022af9480305e264cbd6a3af0336da99",
+     "pixelSha256": "9a42b1747edb3407c74ba6b57a8135d7e1a3dcaf8e69e4f95926d26ae61df03f"
+    },
+    "bust-sad.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "baf2596c385cc9c9b053fabf308bae20e7ebf22c3302d04813ba84d8fecfb369",
+     "pixelSha256": "301afc6dd4317f2bdf50e9b51821b0785a03fa3206bd1557f2304117217403c5"
+    },
+    "full-sad.png": {
+     "size": [
+      32,
+      84
+     ],
+     "sourceSha256": "5b298f0140af7ff9b8ab9151a7c01d2e206c0b46c87f4614b153310ef1c7da13",
+     "pixelSha256": "32b2009310360cb1bd476060fdc30d52afbfd753dec98f9d8c04474bc3c199ec"
+    },
+    "bust-angry.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "57ba96a689addd3ca93df88cb6cb18543d1960e87921744d2aaa4a257740340d",
+     "pixelSha256": "3a5c95b78ab2408a2f278e1853d2e1978ba25b77f89b4cd254cb52b15ede9fb2"
+    },
+    "full-angry.png": {
+     "size": [
+      32,
+      84
+     ],
+     "sourceSha256": "62c04cb382f26b2ac5c5b3c4f38750687fbf7b86a48bf71c150b97c0395753b7",
+     "pixelSha256": "e6aaabeb00d4ed8272075f3de15d5604707d32964bf1b767b7d68b1e91efb450"
+    },
+    "bust-surprised.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "5cca3e090fabb2264addfb6816c223e5eefe9c6a9c6b678211fafb719dc3e09e",
+     "pixelSha256": "b326ea689c224438c5183240d8962849c95f018d6a40422902349ac14c3f3da4"
+    },
+    "full-surprised.png": {
+     "size": [
+      32,
+      84
+     ],
+     "sourceSha256": "e75061ff396b18ccd81e202bea3f21a48d37dc3c7400082aae5607d1b2b23eb2",
+     "pixelSha256": "1ec528238e264affc51969d13f586011370dec282cc788c6e42fed81ea6ad7c9"
+    },
+    "card-base.png": {
+     "size": [
+      88,
+      188
+     ],
+     "pixelSha256": "cbabd0fdeecb605e032b9c355027856a2ff0a4902d2a6901afead00b9ab8b096"
+    }
+   }
+  },
+  "mom": {
+   "from": "/home/main/astra-qa/castg/mom/out",
+   "charGen": "d5f263904ca2b671ab6d54942b9c3651aa3e9d22",
+   "palette": [
+    "#634129",
+    "#e4b387",
+    "#a86b3e",
+    "#f0f4fa",
+    "#26170e",
+    "#da983b",
+    "#754526",
+    "#6d388c",
+    "#d19664",
+    "#b8843e",
+    "#89786a",
+    "#298a6d",
+    "#422a19",
+    "#2aa898",
+    "#c8504a"
+   ],
+   "cleanup": {
+    "iris": "#2aa898",
+    "eyes": [
+     [
+      20,
+      22,
+      4
+     ],
+     [
+      30,
+      24,
+      3
+     ]
+    ],
+    "mouth": [
+     26,
+     32
+    ],
+    "edits": {},
+    "read": {
+     "zoom": 1.35,
+     "top": 0.06
+    },
+    "hair": [
+     "#a86b3e",
+     "#3b2110",
+     "#754526"
+    ]
+   },
+   "stamps": {
+    "base": {
+     "stampedPixels": 66
+    },
+    "happy": {
+     "stampedPixels": 65
+    },
+    "sad": {
+     "stampedPixels": 65
+    },
+    "angry": {
+     "stampedPixels": 67
+    },
+    "surprised": {
+     "stampedPixels": 71
+    }
+   },
+   "pictures": {
+    "bust-base.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "e42422b9017ea1ce9e0850d7a1b94e5e4e7a8bbe809be74cd896b54db804e294",
+     "pixelSha256": "f2a83a10a27b5fb10092d60e750599184173d482ce06524d1288af6056f1b6de"
+    },
+    "full-base.png": {
+     "size": [
+      24,
+      84
+     ],
+     "sourceSha256": "71d5a55e73747a0e7c68cf67a952f65ec9d8e11109df24e6df3079c19bdc7473",
+     "pixelSha256": "750f574fbe2ff6ddeef937726b4c22b9697269da970615d005992fc3bf104821"
+    },
+    "bust-happy.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "761d8117da2c17f81fb34b0b83a1aa357a9db1e4f028f239cbfad7e904ea998f",
+     "pixelSha256": "e3ac7c12938e7f6a1489d8bb4b69b67edc1121afd15c73cc76e9aca00229c70e"
+    },
+    "full-happy.png": {
+     "size": [
+      24,
+      84
+     ],
+     "sourceSha256": "c05fcd138b127c302d3c253c4776347472bf3fa86ade129f3fa997b548861a80",
+     "pixelSha256": "a998192818fd7d0ede7ffd3f8b5040179c7c8436f2a9c0d972702eb11eed2baa"
+    },
+    "bust-sad.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "58c39ab66dd6b78e98b6bb2b2594b0710f48cff9b430127a0c0754da1acaa00b",
+     "pixelSha256": "0cbf403f06ca09cfb838c0c2a3062ca977e38010ab31746ab16b4ffdd7991224"
+    },
+    "full-sad.png": {
+     "size": [
+      24,
+      84
+     ],
+     "sourceSha256": "b3cfe1e5eed02142a04f486d4535cf846ff446df9a4d0f4a5ee7f5058832d737",
+     "pixelSha256": "0d8389c567195106a46dc2508c191095684578f6a7bef9b115f109c6d51d2359"
+    },
+    "bust-angry.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "0c43667371a2fd3e2d88b57bbe5432adc9e18bb6da6a84a4383c9fcf0f13a31a",
+     "pixelSha256": "532f558753eb52aa668995bf397b1280d49f10e1ae1e99c7c6fe0731f2e89535"
+    },
+    "full-angry.png": {
+     "size": [
+      25,
+      84
+     ],
+     "sourceSha256": "d832d6dc4cf31ad360612ec554009f67241c94801ab7807d6fb6b3765d2d6335",
+     "pixelSha256": "5859e275d2a7b002696062bfa69004799a5370e71b69d8249b815ee404f0be99"
+    },
+    "bust-surprised.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "6846e9574c381788b715cf20b7a7d713ba0032d558098a10a4509f4849fe543b",
+     "pixelSha256": "4df08bd250baff8f769224fb0f34676b26b1c46398eaf19e12d18d81adf00955"
+    },
+    "full-surprised.png": {
+     "size": [
+      24,
+      84
+     ],
+     "sourceSha256": "0eb4e10f677ce2555bc19d123858138d5383fd6052fc2227986e18bf3e1b82c9",
+     "pixelSha256": "3d191aa83a6545d081e70a51763ed5e414fbece911ffab2dd1bc2bc9c8cc439d"
+    },
+    "card-base.png": {
+     "size": [
+      72,
+      188
+     ],
+     "pixelSha256": "86b0207301d2de8a589fd3fe3502ec73f473c5313322963df0038ea98d27b756"
+    }
+   }
+  },
+  "professor": {
+   "from": "/home/main/astra-qa/castg/professor/out",
+   "charGen": "d5f263904ca2b671ab6d54942b9c3651aa3e9d22",
+   "palette": [
+    "#f5cca3",
+    "#23262e",
+    "#874b36",
+    "#f2f6fc",
+    "#aca9a7",
+    "#23262e",
+    "#4a3022",
+    "#e4a367",
+    "#7c6d66",
+    "#5c3022",
+    "#c38365",
+    "#d6dfed",
+    "#262f52",
+    "#3a9a98",
+    "#c8504a"
+   ],
+   "cleanup": {
+    "iris": "#3a9a98",
+    "eyes": [
+     [
+      19,
+      19,
+      4
+     ],
+     [
+      28,
+      20,
+      3
+     ]
+    ],
+    "mouth": [
+     24,
+     28
+    ],
+    "glasses": "#6a4a9a",
+    "edits": {},
+    "read": {
+     "zoom": 1.35,
+     "top": 0.06
+    },
+    "hair": [
+     "#874b36",
+     "#381c14",
+     "#5c3022"
+    ]
+   },
+   "stamps": {
+    "base": {
+     "stampedPixels": 90
+    },
+    "happy": {
+     "stampedPixels": 90
+    },
+    "sad": {
+     "stampedPixels": 89
+    },
+    "angry": {
+     "stampedPixels": 92
+    },
+    "surprised": {
+     "stampedPixels": 97
+    }
+   },
+   "pictures": {
+    "bust-base.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "08e142ec02e445cde35dc104b1c6b455d72dda377334fd3fd0a6b7b9c990bef4",
+     "pixelSha256": "69d1f6319c8017ad92fe0196c330f97f0da71d3463c268103cada4e886538c2f"
+    },
+    "full-base.png": {
+     "size": [
+      28,
+      84
+     ],
+     "sourceSha256": "46274412e0dea1b381012d04efc579148df61a60e449b0e27d00e7fa1f40011f",
+     "pixelSha256": "495ab007bd93c95c956a876da2072d5eefe7d4684841fa771d494ace0fe46d98"
+    },
+    "bust-happy.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "ce8d0829e6f985fbca5053a7742568c47340aad4cbbca1be30fc02214dda4988",
+     "pixelSha256": "1af91591bec85f6d13919b2d1ff2eaac4f6590115cf42259edcf32c071aff298"
+    },
+    "full-happy.png": {
+     "size": [
+      28,
+      84
+     ],
+     "sourceSha256": "5b4439976f2693cd1b2b702cee4f9326040add0e15edd86d9a968905ba876c1b",
+     "pixelSha256": "4dab6dda73fa824ddf9ad580c13eb691d4cb942bc1cc795e54b28323b6f76e01"
+    },
+    "bust-sad.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "7f65b642dea30ca7e5f76f960cd1fd57c77f7bea35b788b1e34838be104ad857",
+     "pixelSha256": "5a3b604e0edec4c18e608019aa8b12beafa5a2651f06a68dd4d12809709a3ace"
+    },
+    "full-sad.png": {
+     "size": [
+      28,
+      84
+     ],
+     "sourceSha256": "1babc6ba9b3a17e5b544a73dda4e06fb6aa75695137b7b57d725dd3c1fe37f20",
+     "pixelSha256": "d17098abb946802e9071021b9e5df64a1267b6814e154ad0b6fec32ace415b3b"
+    },
+    "bust-angry.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "5a000720c26d7040dcea665ae49a5b07718bc41ab437006a96a0248524646df9",
+     "pixelSha256": "8d042144170e526d05a16d5dd0e20cffb1b5379448fd07b54ebb1282c33ddc26"
+    },
+    "full-angry.png": {
+     "size": [
+      28,
+      84
+     ],
+     "sourceSha256": "f15204f55981f8789ae04beec7c7f441f941b128ecb442f10edbccd41b8ec39b",
+     "pixelSha256": "38b37995c21e228bd9c56ad138caed677d46f589e8dc7322aa449308243b4c4c"
+    },
+    "bust-surprised.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "440e62d632255ad159afe8e47fdefd48a5e3c7ebaa75bdaa2c5d34e429a77509",
+     "pixelSha256": "e58279698c061d76cfc6443e2291954e3218d1d87b91e8c0060c6baf09d9aa41"
+    },
+    "full-surprised.png": {
+     "size": [
+      28,
+      84
+     ],
+     "sourceSha256": "11f6a8ac990e70172089c397c6ddbd3dce2b8672348104992b58203e0c68fe8d",
+     "pixelSha256": "234c99f0f0939d45b311d0ec27eb4e7d786f996275b92bcc94c1309a4b87b6ae"
+    },
+    "card-base.png": {
+     "size": [
+      80,
+      188
+     ],
+     "pixelSha256": "3eb8795bac04769b52e4420f3eaf2a67d000d1640a91eea7fdf5f93654209199"
+    }
+   }
+  },
+  "nurse": {
+   "from": "/home/main/astra-qa/castg/nurse/out",
+   "charGen": "d5f263904ca2b671ab6d54942b9c3651aa3e9d22",
+   "palette": [
+    "#2d4b5a",
+    "#f5cca3",
+    "#65a4c0",
+    "#94b8ae",
+    "#3c6478",
+    "#e49967",
+    "#131219",
+    "#524338",
+    "#3f4d6f",
+    "#3a5263",
+    "#e4ece8",
+    "#4a7a93",
+    "#c38365",
+    "#4a7ab0",
+    "#c8504a"
+   ],
+   "cleanup": {
+    "iris": "#4a7ab0",
+    "eyes": [
+     [
+      18,
+      21,
+      4
+     ],
+     [
+      30,
+      22,
+      3
+     ]
+    ],
+    "mouth": [
+     25,
+     32
+    ],
+    "edits": {},
+    "read": {
+     "zoom": 1.35,
+     "top": 0.06
+    },
+    "hair": [
+     "#4a7a93",
+     "#2d4b5a",
+     "#3c6478",
+     "#548ca8",
+     "#2b4856"
+    ]
+   },
+   "stamps": {
+    "base": {
+     "stampedPixels": 67
+    },
+    "happy": {
+     "stampedPixels": 69
+    },
+    "sad": {
+     "stampedPixels": 66
+    },
+    "angry": {
+     "stampedPixels": 69
+    },
+    "surprised": {
+     "stampedPixels": 72
+    }
+   },
+   "pictures": {
+    "bust-base.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "6909c3a82c197aa24d0903fc12f4d7da685880253c82132c75f096782588b77b",
+     "pixelSha256": "b6714621150e14129f76137690d690be01f6464d0c6a7fba6feb81aa4e47b182"
+    },
+    "full-base.png": {
+     "size": [
+      25,
+      84
+     ],
+     "sourceSha256": "5cef837cd116cdf04c4dfb64b817de5178a5534616776af694e74e4dd51a9ce4",
+     "pixelSha256": "a9f70344c210ab85bdf320012d51c861cf20fcc162334f13ecfdc5b9035e3635"
+    },
+    "bust-happy.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "8e6a226fca6474c307c423e4259a7435214e8dd3eb087309323ffdeb12b8e856",
+     "pixelSha256": "25f505465945d98123f1c827090771aed6113eb6cbd0e586ae265f299b8bedda"
+    },
+    "full-happy.png": {
+     "size": [
+      25,
+      84
+     ],
+     "sourceSha256": "5a06078fb578d741287365efc27ec30711678859d6271ad8901e11bb9aee81fe",
+     "pixelSha256": "858dcdbbb6217be4bb0647c88191b0216758069c30506472227263bd8efee4b1"
+    },
+    "bust-sad.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "ba78edde168679865fd2cdd4b90497888ea6929a2744e4be1a474dda8bafa544",
+     "pixelSha256": "a4d7da3182ebfddade095e4f3e8d963208f295f0a53c489e56e1c535ee988d5c"
+    },
+    "full-sad.png": {
+     "size": [
+      25,
+      84
+     ],
+     "sourceSha256": "81e0a951ea9edf34d9391ca12ddf312097c780290486074ef877713a2eb9e8f9",
+     "pixelSha256": "d3603b6fdec8703f63da8573eb7ecfeab3f9f7f0cec9473ee875680c2b409c5f"
+    },
+    "bust-angry.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "4f6a2c93610d60c790267cb33cd053ac95c174ce1ea51644a65c289b50ab618e",
+     "pixelSha256": "7a08b392060e6e37d2419b569513ef94d176f3af759d2c4e60c5bde3998c3f9c"
+    },
+    "full-angry.png": {
+     "size": [
+      25,
+      84
+     ],
+     "sourceSha256": "8e4a3d932021971b88e8daa68df9569640568436b2793374e43d0fb4dc489dbb",
+     "pixelSha256": "c9964f918c4b2a58715c492c1e6b5d18e4c0756f0d2503b4297fb0c1247520d9"
+    },
+    "bust-surprised.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "d964a65e6661bc83d38f4fe02f251e5d0c5512d74d7d404c9e787b75e8f9b629",
+     "pixelSha256": "623da2fbe441f8d2473780dc495d7f09a0d2662afb35df02e89517a30c2cb285"
+    },
+    "full-surprised.png": {
+     "size": [
+      25,
+      84
+     ],
+     "sourceSha256": "f0fe9a584360cf64e02b5a9ce7ada8c0993d929335da4570ff08f6cde7ef830d",
+     "pixelSha256": "1ff960fd0b8e4739459ad7e44d64314c55695ec25c719f54d2ef775f8c939f47"
+    },
+    "card-base.png": {
+     "size": [
+      74,
+      188
+     ],
+     "pixelSha256": "a7fea411d58e516603a879652d96024305ea991064b85238528b0a77bd45c967"
+    }
+   }
+  },
+  "naru": {
+   "from": "/home/main/astra-qa/castg/naru/out",
+   "charGen": "d5f263904ca2b671ab6d54942b9c3651aa3e9d22",
+   "palette": [
+    "#e7956f",
+    "#606297",
+    "#b75acd",
+    "#552181",
+    "#251c43",
+    "#f5cca3",
+    "#8346ab",
+    "#7b4b68",
+    "#d998e9",
+    "#198263",
+    "#160a21",
+    "#ffc0c7",
+    "#a46252",
+    "#30cfa0",
+    "#c8504a",
+    "#f8f8f0"
+   ],
+   "cleanup": {
+    "iris": "#30cfa0",
+    "eyes": [
+     [
+      19,
+      20,
+      4
+     ],
+     [
+      30,
+      22,
+      3
+     ]
+    ],
+    "mouth": [
+     25,
+     30
+    ],
+    "edits": {},
+    "read": {
+     "zoom": 1.35,
+     "top": 0.06
+    },
+    "hair": [
+     "#b675d2",
+     "#552181",
+     "#8346ab",
+     "#dd9ff0"
+    ]
+   },
+   "stamps": {
+    "base": {
+     "stampedPixels": 55
+    },
+    "happy": {
+     "stampedPixels": 58
+    },
+    "sad": {
+     "stampedPixels": 54
+    },
+    "angry": {
+     "stampedPixels": 56
+    },
+    "surprised": {
+     "stampedPixels": 61
+    }
+   },
+   "pictures": {
+    "bust-base.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "61dc7db5af6cb2fd5d7aed4c41cfd04b5d01131ca5dda27bcffd4a1869bc7118",
+     "pixelSha256": "76a450eba9f79c651bb669d2d5da41f320ec858ef9d5a309a56abca54ebb6890"
+    },
+    "full-base.png": {
+     "size": [
+      30,
+      84
+     ],
+     "sourceSha256": "d019dc20bf1a4218fa797e234637abb9424e28224848325bffba21b71901d87e",
+     "pixelSha256": "5f84c7b7af8d10c49b8fe470c48831faf75df20a7a18e8415b52ce5c7c2efb0d"
+    },
+    "bust-happy.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "89efb422c054b2946f6f37c385411107cc7afb5a36c6b6b92be894423263b88d",
+     "pixelSha256": "6f31ac748d45c1ab9badde4676479ff45cd34872a3579d849bd29805b274c180"
+    },
+    "full-happy.png": {
+     "size": [
+      30,
+      84
+     ],
+     "sourceSha256": "a8f0f14c0d75ef59c46e31bc4438550d478aa2a5399b9759a9acee1e8fa949f1",
+     "pixelSha256": "6df21f75be16f4b452fbc86d5b58bb3a551cf70a7a35242f07b1bec6ff50c1ed"
+    },
+    "bust-sad.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "6fa52793ca70c99b16a6c3922ca1969cba97245eeac2acb613e9632d08de4188",
+     "pixelSha256": "4f79f60a966797ab623e777c27a66cde19cd60ac699d2cbc6e85bf1baa047f8b"
+    },
+    "full-sad.png": {
+     "size": [
+      30,
+      84
+     ],
+     "sourceSha256": "8c5e3034e1a1ef50596fec446aecdf926f898e8672a605bbf043d35040ba7554",
+     "pixelSha256": "1a716a712a4994cec14a77622a310a7cb5d7a469de40e96674b69460cb8be2fc"
+    },
+    "bust-angry.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "b49c1d6bbecfdabe509b81ab3bca6935b7896839092001a6d03f4f05e0074be6",
+     "pixelSha256": "479698e105f6eadc02e176de0a39b11383c1162168ad0107bb49cd480d838387"
+    },
+    "full-angry.png": {
+     "size": [
+      30,
+      84
+     ],
+     "sourceSha256": "604041471fa29837ea2feab315353964b7570801a9a27bf1e97b6b41f0c36d9d",
+     "pixelSha256": "0e970d80d06ad67ffddea7a7666ecb7b1d12d9a3c489feca883f566959c7bbdb"
+    },
+    "bust-surprised.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "a1b57e77c77957c45d60313f976fcb9b491dc54ff12d93c3f5cc4e1b964a467d",
+     "pixelSha256": "b164d574b2805c3b011068fb384ddada94fd69cee015031089192a9c27e8f483"
+    },
+    "full-surprised.png": {
+     "size": [
+      30,
+      84
+     ],
+     "sourceSha256": "bc0a49bd5c19a7d610778ce2783bf575f63777be9dd2d85b81f4ebf29e4b731d",
+     "pixelSha256": "327cd79a62b0474ed68e30f85170eef4643aa028126dee9cf6b3849552b930be"
+    },
+    "card-base.png": {
+     "size": [
+      84,
+      188
+     ],
+     "pixelSha256": "b9ca6a2d6890aaea828192f66b7326a40d2c4f1b1992b4cc90179a8a01cde337"
+    }
+   }
+  },
+  "yurim": {
+   "from": "/home/main/astra-qa/castg/yurim/out",
+   "charGen": "d5f263904ca2b671ab6d54942b9c3651aa3e9d22",
+   "palette": [
+    "#ecab73",
+    "#2e7353",
+    "#247132",
+    "#68a97a",
+    "#163123",
+    "#feddb1",
+    "#247132",
+    "#86694b",
+    "#94b74e",
+    "#ceb574",
+    "#1e492f",
+    "#101616",
+    "#50982d",
+    "#3aa8a0",
+    "#c8504a",
+    "#f8f8f0"
+   ],
+   "cleanup": {
+    "iris": "#3aa8a0",
+    "eyes": [
+     [
+      19,
+      19,
+      4
+     ],
+     [
+      28,
+      20,
+      3
+     ]
+    ],
+    "mouth": [
+     24,
+     28
+    ],
+    "edits": {},
+    "read": {
+     "zoom": 1.35,
+     "top": 0.06
+    },
+    "hair": [
+     "#50982d",
+     "#13491c",
+     "#247132",
+     "#80af23"
+    ]
+   },
+   "stamps": {
+    "base": {
+     "stampedPixels": 60
+    },
+    "happy": {
+     "stampedPixels": 57
+    },
+    "sad": {
+     "stampedPixels": 58
+    },
+    "angry": {
+     "stampedPixels": 62
+    },
+    "surprised": {
+     "stampedPixels": 64
+    }
+   },
+   "pictures": {
+    "bust-base.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "d0680b7eccb218b3f2cee05e00bfa641791bb76d7ca694443434601feafbce19",
+     "pixelSha256": "e993246af819b69df1c09c46b65b8dfe98ca8b2ced6a4060b97df7519b5433ae"
+    },
+    "full-base.png": {
+     "size": [
+      29,
+      84
+     ],
+     "sourceSha256": "eb17a6ebd90736a3e79f2d5a42e44bbcc9ea43e4ccbe1b92a6e86ed4276355f6",
+     "pixelSha256": "2ebf06aeb37ad05ecaf603682993d410688f9ddce379d4cc249a0e132b6ba8a9"
+    },
+    "bust-happy.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "14638b626d342b3645819f8da30249d4fc2a1fb272ce5f9014aeb4a1b5029673",
+     "pixelSha256": "e0927981f55242a1321c96c32b7a05dc63858a889be39e9e63cd115dc711c88e"
+    },
+    "full-happy.png": {
+     "size": [
+      29,
+      84
+     ],
+     "sourceSha256": "2dd184b523825ab4ae5a869f9fc76e283bc57118e27c57642574e1e9d1eb1656",
+     "pixelSha256": "c825de6fbdf38e0209f2d132771df79683ed5a55b5540f17d6d5dc56c3773483"
+    },
+    "bust-sad.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "8ee55d34f3fb27341927376f48eebc4132b8b2bc3431bad7c1f525c949867e1e",
+     "pixelSha256": "a3500319808652fb7101cfffe2aa2d41e9c3c757c66b6fe7839cb03b58ad4c3c"
+    },
+    "full-sad.png": {
+     "size": [
+      29,
+      84
+     ],
+     "sourceSha256": "eab80783accd8ae94bf738a7bd75b93a2e6404acfef8f1d2f7186dda8ad8fb18",
+     "pixelSha256": "e85311e3556aea02d9c45a4c5292023949bef26d86979ed9140cca1b3bb5b33e"
+    },
+    "bust-angry.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "b1fa2269136e57056e7bddeace24b5878a7560b67dc19b12f9378dfe33a1a6d0",
+     "pixelSha256": "b4a82544d44f7ae907e6566cf20598d48c141d1790d38daa60b08faef23e7143"
+    },
+    "full-angry.png": {
+     "size": [
+      29,
+      84
+     ],
+     "sourceSha256": "500f7b7ba6c5fd334d54c6e93b1dacc59ccf305729e79ac37256ba46cfb01f03",
+     "pixelSha256": "db39ea301cf5e3c3a283ea3b4aafdb9be98c12efcd580fc33ab7351f6498a75c"
+    },
+    "bust-surprised.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "ba118c816323b505dc141ee641e34c5f4f6202fc4cff85d232facb026a7b9a79",
+     "pixelSha256": "7081c1f0e6266564caf87f2b99bf53bcecbfb14dde4ead3e51c5f9f77a65ca92"
+    },
+    "full-surprised.png": {
+     "size": [
+      29,
+      84
+     ],
+     "sourceSha256": "e6a4359e162fa4c6a8689ab8144a85f8a0744dcb1a8bd0b9a14595501c733305",
+     "pixelSha256": "843ff796f87aa052ad136d4fa91e077ae9048dbf0069388b0ebea8a383a52bd5"
+    },
+    "card-base.png": {
+     "size": [
+      82,
+      188
+     ],
+     "pixelSha256": "9d275ff1904ef9833da434d785b3941ac5c1fe4864bec1405d27716f7895a458"
+    }
+   }
+  },
+  "muyeong": {
+   "from": "/home/main/astra-qa/castg/muyeong/out",
+   "charGen": "d5f263904ca2b671ab6d54942b9c3651aa3e9d22",
+   "palette": [
+    "#db3838",
+    "#f5bf31",
+    "#451f1e",
+    "#c97530",
+    "#7b1c2c",
+    "#1d3340",
+    "#de982c",
+    "#e79748",
+    "#a82931",
+    "#7b1c2c",
+    "#8c4c1a",
+    "#faede2",
+    "#db3838",
+    "#c8504a"
+   ],
+   "cleanup": {
+    "iris": "#c83a30",
+    "eyes": [
+     [
+      21,
+      22,
+      3
+     ],
+     [
+      29,
+      24,
+      2
+     ]
+    ],
+    "mouth": [
+     24,
+     31
+    ],
+    "brows": false,
+    "edits": {},
+    "sclera": true,
+    "read": {
+     "zoom": 1.3,
+     "top": 0.0
+    },
+    "hair": [
+     "#db3838",
+     "#7b1c2c",
+     "#a82931",
+     "#ec6e52"
+    ],
+    "lip": "#3a1a14"
+   },
+   "stamps": {
+    "base": {
+     "stampedPixels": 30
+    },
+    "happy": {
+     "stampedPixels": 36
+    },
+    "sad": {
+     "stampedPixels": 32
+    },
+    "angry": {
+     "stampedPixels": 36
+    },
+    "surprised": {
+     "stampedPixels": 41
+    },
+    "serious": {
+     "stampedPixels": 30
+    }
+   },
+   "pictures": {
+    "bust-base.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "a423b2f392deb20dc054876593b53a2e444a0a91601475e99e340a215c5e39d1",
+     "pixelSha256": "f87b61045ed8bdf12b039ca0b548a5bc02c8ed720afdb1eca60f05a9d504600b"
+    },
+    "full-base.png": {
+     "size": [
+      33,
+      84
+     ],
+     "sourceSha256": "ba3f41bffffcc6294c9e7f75917638cecd8a6ec1bcd5ad1825a8b602b2db85db",
+     "pixelSha256": "058ab7be5acf440f73d29cbd7c6900313ce1082743a72ed1b030c1dfe855c2d1"
+    },
+    "bust-happy.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "199375fce53b0128ee0636261018356d213db86811ae4d1a705fe86e87d02d64",
+     "pixelSha256": "4da65c7d0415b5eefbb0a63cce7272b5e964fc101445b4eddac5e58ac523178f"
+    },
+    "full-happy.png": {
+     "size": [
+      33,
+      84
+     ],
+     "sourceSha256": "67d3972f80665911cbdaa01c9eb47d3765400be544493647626a5389ef076bf1",
+     "pixelSha256": "dd1c7bb46be00b7f3665117ba1c378fe376a7c991b5701319649ac46b94f5d7f"
+    },
+    "bust-sad.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "61c97506f2a228c7c090fe439b45c4edd97aaa8b6da47a799ed1a1b71bbf0857",
+     "pixelSha256": "ed66f7ae98db843cab06775139d465b9af4335b2b1be82242b0aa0590050c94d"
+    },
+    "full-sad.png": {
+     "size": [
+      33,
+      84
+     ],
+     "sourceSha256": "8a401142b5101acd5aef21c648685eff0ddd2fab4caaf1976b76235baa7ee38d",
+     "pixelSha256": "40a991eb5a0e8d4a69708034a0cc7d344e798ca3dc85fa9cce47c5899a4ac955"
+    },
+    "bust-angry.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "72777e35b5459c8585ffecc0c17e24f52adc3087b307a28d934cd11b7177f5f9",
+     "pixelSha256": "6579c14536fc67453114fde7cc48cbfebb50078c4920bc6c040d8d0379fa24f7"
+    },
+    "full-angry.png": {
+     "size": [
+      33,
+      84
+     ],
+     "sourceSha256": "a8a6eab6bbf497b8a9d7dffb44f8d8af69e5794f7a991617450bf13193803b8b",
+     "pixelSha256": "b5c712c2a24392d4f9d52e2d7a332914de2d93fa295b0878450c197fcbbab182"
+    },
+    "bust-surprised.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "22c3e88ec113725cdb8f195e1b363cafa49d1e80756c7c31fd59d95063ad1461",
+     "pixelSha256": "837dea70319ff271cfb3a86dac644dd186f9b0ef2efb30397b77dc51affacd47"
+    },
+    "full-surprised.png": {
+     "size": [
+      33,
+      84
+     ],
+     "sourceSha256": "13f5bdfdb555a1506a06916e39abd27ebc4f88f0024a670c9d5b009ed02151dd",
+     "pixelSha256": "bdaf1bfde18022edfbd4d382cae26b2d461b8771632464c0800f7f0d9ceb5c23"
+    },
+    "bust-serious.png": {
+     "size": [
+      44,
+      46
+     ],
+     "sourceSha256": "5f76eba95c130b4d8a0cd4a0c1f63d689ccc970deb7fd6350eb8dc13ba2779cf",
+     "pixelSha256": "126ebe9ea41563ce045fc8c0dc7758a69cfdcaae8902515bb057128b196fa1ff"
+    },
+    "full-serious.png": {
+     "size": [
+      33,
+      84
+     ],
+     "sourceSha256": "82b1b5c8b78c6ef3bb420c096d67d7de0b89cb7bddfbed8d74f6f01654cd2bd3",
+     "pixelSha256": "06b6ff4104c70d19e8cff878eb1b10af994bcd2daa2bedc02538882822915838"
+    },
+    "card-base.png": {
+     "size": [
+      90,
+      188
+     ],
+     "pixelSha256": "a61bb1ac1a5c6f14e71a9320467e174d2980b193d29ee7ff854f2d63da544082"
+    }
+   }
+  }
+ },
+ "trainerFronts": {
+  "muyeong": {
+   "from": "/home/main/astra-qa/cast/fronts/muyeong/front.png",
+   "size": [
+    128,
+    128
+   ],
+   "pixelSha256": "814e7da26d370b53be5475fb4df455fa4ca71b90a5b44dca2259faa60ebeda2f"
+  },
+  "naru": {
+   "from": "/home/main/astra-qa/cast/fronts/naru/front.png",
+   "size": [
+    128,
+    128
+   ],
+   "pixelSha256": "f1133fc311849d6ec5f8f11b7f85e5be1dcefa7801bbbf0eb92d191657cd8320"
+  },
+  "yurim": {
+   "from": "/home/main/astra-qa/cast/fronts/yurim/front.png",
+   "size": [
+    128,
+    128
+   ],
+   "pixelSha256": "79e4f57ecb2efad63b5c19fc746b0ac113ceb240ddb6ffe41e928716b94dc94b"
+  }
+ },
+ "judgeSummary": {
+  "hero": "4/5 PASS (base reads smile)",
+  "mom": "4/5 PASS (base reads smile)",
+  "professor": "4/5 PASS (base reads smile)",
+  "nurse": "4/5 PASS (base reads smile)",
+  "naru": "4/5 PASS (base reads content)",
+  "yurim": "5/5 PASS",
+  "muyeong": "5/6 PASS (base reads content)"
+ },
+ "picks": {
+  "hero": {
+   "letter": "A",
+   "pixelSha256": "d02043fbd0c236a9bfb85c3390ee82718e01f1e61056ea0ecf1722d45f12f5c5:18d9598e615cfe59e52965b06488b266464d0b2772d48822f7bd05585d0fb88d",
+   "at": "2026-10-22T01:52:10+09:00",
+   "via": "supervisor review of base/*/sheet.png",
+   "by": "supervisor",
+   "delegatedBy": "user (2026-10-16/10-21: generated-image candidates are picked by the supervisor)",
+   "reason": "closed-mouth calm face, brown eyes, cap star and teal/red cap match chip, flatter cel shading than B"
+  },
+  "mom": {
+   "letter": "A",
+   "pixelSha256": "eedafe96361c7fc4263571fc71a09ec3eb54cb5db1baedc6d6fd53b007b971bd:8c8191e00ddbe6953658d50cf0b942661cf59ac411262b7c344e3af58b1a4f7f",
+   "at": "2026-10-22T01:52:10+09:00",
+   "via": "supervisor review of base/*/sheet.png",
+   "by": "supervisor",
+   "delegatedBy": "user (2026-10-16/10-21: generated-image candidates are picked by the supervisor)",
+   "reason": "only passing candidate; ponytail, earrings, apron match chip; calm closed mouth"
+  },
+  "professor": {
+   "letter": "C",
+   "pixelSha256": "c9abe81dde5ac59e37b45b8bfdfa3e1b0c14e1678abc4a8c4029a1891a5c71bb:7a1873f67ff2e822fed63aad70242aa557397f8a1aa58150f14cfcab9d3e9ea8",
+   "at": "2026-10-22T01:52:10+09:00",
+   "via": "supervisor review of base/*/sheet.png",
+   "by": "supervisor",
+   "delegatedBy": "user (2026-10-16/10-21: generated-image candidates are picked by the supervisor)",
+   "reason": "only passing candidate; glasses, grey streak, lab coat with star badge match chip"
+  },
+  "nurse": {
+   "letter": "B",
+   "pixelSha256": "2b0904b9fa32f30d964a4dfab85e6a4da0e7583ed3b43c6cb77cd9ae6ca9addb:42e70d778ea701e993e1412bf4c54552c9c75694a3e86bf1eb0d8a650551db12",
+   "at": "2026-10-22T02:06:38+09:00",
+   "via": "supervisor review of base/*/sheet.png",
+   "by": "supervisor",
+   "delegatedBy": "user (2026-10-16/10-21: generated-image candidates are picked by the supervisor)",
+   "reason": "A failed the identity judge on every cell (belt missing); B has the navy waist band and centre placket from the chip, closed mouth"
+  },
+  "naru": {
+   "letter": "A",
+   "pixelSha256": "41e44d79f886348a7d27fb3b1d5e000837b7432db86febcefd58e2ff54beb6fc:bb5c9b86086cfe4bb71016c25d7de9cd826c45804120c3584d74c5c615f3b0c1",
+   "at": "2026-10-22T01:52:10+09:00",
+   "via": "supervisor review of base/*/sheet.png",
+   "by": "supervisor",
+   "delegatedBy": "user (2026-10-16/10-21: generated-image candidates are picked by the supervisor)",
+   "reason": "only passing; star on shirt, lavender waves, cheeks clear of strands"
+  },
+  "yurim": {
+   "letter": "A",
+   "pixelSha256": "b47e1c01cdc32aa1ac37e08b4de7cca9e1069afbdfa3e0da1ecd41e1968bcb5a:516aaab87c8ae8c0e0ab5c3448949a88fa04ddb680af5c94e5a1428e7a6123ba",
+   "at": "2026-10-22T01:52:10+09:00",
+   "via": "supervisor review of base/*/sheet.png",
+   "by": "supervisor",
+   "delegatedBy": "user (2026-10-16/10-21: generated-image candidates are picked by the supervisor)",
+   "reason": "only passing candidate; green hair and hoodie match chip; neutral mouth"
+  },
+  "muyeong": {
+   "letter": "B",
+   "pixelSha256": "fc2f1b7652bb59f32e501b7f88f16375c1eca160acbe537b3fd61af96ddf5753:ceaa401a7a24f4a5406134ce9d9607c462e8294878f0ece32f3996d3ad726118",
+   "at": "2026-10-22T02:12:24+09:00",
+   "via": "supervisor review of base/*/sheet.png",
+   "by": "supervisor",
+   "delegatedBy": "user (2026-10-16/10-21: generated-image candidates are picked by the supervisor)",
+   "reason": "only passing candidate of the redraw; mask, red flame hair, red/gold coat match chip; calm closed mouth"
+  }
+ }
+}

@@ -1,0 +1,390 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4bea26c3d3e7fb323b1bca75dfcfb03453f19e9fe4f8f46a8b916f4c532aafd2",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "Astra mart kit cell 15 (r3 c3)",
+ "label": "monster_overworld/astra-mart-kit-15 (칸 2255)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "fail",
+ "reasons": [
+  "3/4: 종류 불일치",
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 명암 3단 < 4 (4/4)",
+  "화풍: 칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+ ],
+ "view34": {
+  "verdict": "fail",
+  "reasons": [
+   "종류 불일치"
+  ]
+ },
+ "style": {
+  "verdict": "fail",
+  "reasons": [
+   "판정자 fail (4/4)",
+   "명암 3단 < 4 (4/4)",
+   "칸 정보량이 기준보다 훨씬 낮음 (3/4)"
+  ],
+  "styleKind": "building",
+  "refs": [
+   "house-h101_0",
+   "house-h112_0-stone"
+  ],
+  "scale": 2,
+  "score": 3
+ },
+ "metrics": {
+  "tileColorsMedian": 17,
+  "tileColorsP90": 17,
+  "darkV5": 88,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 1
+ },
+ "eye": {
+  "verdicts": [
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "left window/awning wall section (blue panes, brown bars)",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "central dark navy panel with cream pillar strip",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "right brown wooden post/panel",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cream and grey base strip (threshold/step)",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The cell is a 13x15 fragment of a larger kit. Every part is drawn as a vertical face: blue window panes, brown wood, a dark navy panel, a cream strip and a brown post. The silhouette is a constant 13 px wide on rows 0-14, so there is no ellipse or widening. The column scans show no front-edge line or eave shadow at any top band, and no roof, awning or lintel slope is visible. The cream band at rows 10-12 and the grey row 13 form a base or threshold strip of 1-3 rows, not a top surface. The whole cell is a flat front elevation with no horizontal top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 4,
+    "evidence": "The candidate is a tiny sprite of about 12x14 source pixels, smaller than one 16x16 tile. It looks like a small icon or prop with a blue and white panel, a brown post and an orange accent. It has no roof, no wall mass and no door or windows, so it is not a whole building like the references. The measured facts (17 visible tones, 0% near-flat, 0% neutral dark edges) are favourable. But they come from a few dense, busy pixels, not from material ramps. The references show 5-6 step tile-roof ramps with per-tile highlights, plaster speckle and stone shaded one by one, and the candidate shows nothing comparable. I count only about 3 lightness steps on any single material. The outline is dark and loosely tinted but not applied consistently. Since the piece cannot be compared fairly with building-scale references and is clearly thinner and simpler than them, it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 17772
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "upper wall/window area (blue panes, dark post, cream strip, brown wood panel)",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bottom beige/gray base strip",
+      "rows": "10-14",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The 13x15 tile is a fragment of a kit wall, not a whole structure. Rows 0-9 are vertical faces: blue window panes, a dark post, a cream strip and a brown wood panel. No roof, awning or eave line appears, and no ellipse or contents are visible. Rows 10-12 are a beige strip above a gray row 13 and a dark row 14. This reads as a base or sill face about 3 rows tall, with no receding top and no shadow below a front-edge line. The whole tile is therefore a flat front elevation with no top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny icon of about 12x14 source pixels, under one tile. It has no roof, walls or door, so it is not a whole building and does not match the reference kind. Its measured facts look fine (17 tones, 0% flat, 0% neutral edges), but they come from a handful of pixels covering the whole piece (17 distinct colours in total). It shows only about 3 steps per material, with no tile scallops, plaster speckle or stone shading. The references are full roofs with per-tile highlights, timber framing and stone, each at 5-6 steps. It would look thin and sticker-like beside them, so it fails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15705
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "window pane with brown awning-like strip and sky",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cream pillar and brown wood panel",
+      "rows": "0-10",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "cream sill or base strip",
+      "rows": "10-12",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "grey base and dark outline",
+      "rows": "13-14",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 15,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The silhouette is a constant 13 px wide for rows 0-14, so there is no roof, eave or lintel slope. The column scans at x=3, 6 and 9 show only vertical bands: window and sky, dark frame, cream pillar, and a brown wood panel. The scans run straight from row 0 down to row 10 with no front-edge line and no eave shadow. The cream band at rows 10-12 sits on the front face as a sill or base strip, about 3 rows tall, and does not widen or narrow like a horizontal top. The whole cell is a flat front elevation of a storefront piece with no visible top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny icon of about 12x14 source pixels, smaller than one 16x16 tile. It looks like a small shelf or sign prop and has no roof, walls or door, so it is not a whole building like the references. It has only 17 distinct colours in total, against 185 and 66 for the references. The 17 visible tones per tile look high only because the whole piece is crammed into one tile, so that figure says nothing about building-scale richness. Near-flat coverage is 0% and the dark edge pixels are tinted rather than neutral (0% near-neutral), which is fine. But the piece has no tile scallops, no plaster or stone texture, and only about 3 shading steps per material, against 5-6 in the references. Next to the references it reads as far thinner and simpler, and it does not show the building structure the kind requires.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "투영이 3/4 아님(front_elevation) (1/1)",
+    "윗면 0행 < 3 (1/1)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "투영이 3/4 아님(front_elevation) (1/1)",
+     "윗면 0행 < 3 (1/1)",
+     "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (1/1)"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15767
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": false,
+    "surfaces": [
+     {
+      "part": "window with blue sky and wood frame",
+      "rows": "0-9",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "orange-brown vertical post or panel on right",
+      "rows": "0-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "beige ledge or base strip with grey edge",
+      "rows": "10-13",
+      "evidence": "none",
+      "front_edge_line_row": 13,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": false,
+    "round_cap": null,
+    "reads_as": "front_elevation",
+    "evidence": "The tile is a 13x15 fragment of a wall seen face-on. Rows 0-9 are vertical faces: a blue window with a wood frame, a dark navy panel and an orange-brown vertical strip. Rows 10-12 are a beige band, and row 13 is a grey edge line over a dark row 14. This could be a floor or sill strip, but it is only 3 rows with no ellipse, no roof or awning plane, and no eave shadow, so I read it as a base band rather than a top surface. The width is a constant 13 for all 15 rows, so nothing narrows or widens to suggest a roof, lid or cap. The piece has no top slope or roof, so it reads as a front elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 3,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "much_lower",
+    "score": 3,
+    "evidence": "The candidate is a tiny icon-sized object, about one tile or less. It has no readable roof, walls or door, so it is not a whole building like the two references. The references are large, with per-tile roof scallops, timber framing and stone shaded stone by stone. The facts point the same way. The candidate has 17 distinct colours in total, against 185 and 66 for the references, and its 17 tones per tile come from a very small, cramped area. Its dark edge pixels are tinted (0% neutral), so the outline is not a near-black sticker line, and it has no flat 5x5 fills. But it has only about 3 shading steps per material and no roof-tile or stone texture, so it falls well short of the Beodeul building standard in structure and richness. The kind mismatch alone is enough to fail it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 fail (1/1)",
+    "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+    "명암 3단 < 4 (1/1)"
+   ],
+   "view34": {
+    "pass": false,
+    "reasons": [
+     "종류 불일치"
+    ]
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)",
+     "칸 정보량이 기준보다 훨씬 낮음 (1/1)",
+     "명암 3단 < 4 (1/1)"
+    ]
+   },
+   "ms": 15513
+  }
+ ],
+ "decidedAt": "2026-10-20T22:08:46.706Z",
+ "cells": {
+  "16": [
+   "cd3d2a0a528cd0cf"
+  ],
+  "24": [
+   "348dad270a551aa3",
+   "41565d016ac33b20",
+   "62fb092daa98c0ef",
+   "7dcf93a04a629a4f",
+   "fae0c8d4ccd3c275",
+   "fe372de1df4bf580"
+  ],
+  "32": [
+   "4507d2d8e1f6c0cc",
+   "6cd5e3ee1ac8713b",
+   "722619343891bde1",
+   "e1080969802e357b",
+   "ebb32e3782df1ecf",
+   "ff486ec6bbd296c8"
+  ],
+  "48": [
+   "194378bb74b77fb8",
+   "225627c5b49df978",
+   "637687c1a1273844",
+   "6e27e3be12f2d100",
+   "b910cc661036f3df",
+   "c4c256b224cd77c7"
+  ]
+ }
+}
