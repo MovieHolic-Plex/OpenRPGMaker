@@ -39,6 +39,7 @@ export const VILLAGE_ERA_LABEL: Record<VillageEra, string> = {
 
 export const ART_GAPS: Record<string, string> = {
   "viking-kit": "바이킹 롱십(용머리 배)·용머리 회관(설원 계열)",
+  "beodeul-quarter-yard": "버들항 쓰임 마당 바닥 조각(광산 마당·포도원 마당·신전 터 포장) — 쓰임 조각을 길과 함께 앉히는 판",
   "roman-civic-kit": "로마 공공 건물 — 신전 정면·원형극장·열주 거리·수도교(버들항 계열)",
   "beodeul-town-wall": "버들항 성벽·성문·망루(마을을 두르는 벽)",
   "murim-kit": "무림(중국 무협) 칩셋 굽기 — 객잔·문파 산문·수향 다리",
@@ -68,11 +69,11 @@ export const VILLAGE_TYPES: readonly VillageType[] = [
   T({ id: "roman-city", ko: "고대 로마 도시", era: "ancient", chipset: null, status: "needs-art",
     recipe: "그림 없음 — 버들항 블록 도시(author_beodeul_town theme:\"city\")는 목골집·성당·깃발이 섞인 중세 도시로 읽힌다(적대 검수 r4)",
     words: /로마(?:풍|식)?\s*(?:도시|마을|시가)|고대\s*(?:로마|그리스)|그리스(?:풍)?\s*(?:도시|폴리스)|폴리스|roman\s*(?:city|town)/iu,
-    gap: "로마 공공 건물(신전 정면·원형극장·열주 거리·수도교) 그림이 없다", gapId: "roman-civic-kit", nearest: ["ruins-village"] }),
-  T({ id: "ruins-village", ko: "고대 신전 폐허 마을", era: "ancient", chipset: "beodeul_city", status: "partial",
+    gap: "로마 공공 건물(신전 정면·원형극장·열주 거리·수도교) 그림이 없다", gapId: "roman-civic-kit", nearest: [] }),
+  T({ id: "ruins-village", ko: "고대 신전 폐허 마을", era: "ancient", chipset: null, status: "needs-art",
     recipe: "author_beodeul_town({theme:\"river\", water:\"none\", form:\"scatter\", roofs:\"red\", houseCount:4, width:56, height:44}) → dress_village_quarter({mapId, quarter:\"temple-ruins\"}) — 소신전·사당·기둥·무너진 벽·사이프러스",
     words: /신전\s*(?:폐허|유적)|고대\s*(?:유적|폐허)\s*(?:마을|옆)?|유적\s*마을|폐허가?\s*된\s*신전|temple\s*ruins?/iu,
-    gap: "폐허 조각이 마을 빈 땅에 흩어 놓이므로 큰 유적 단지(신전 터 전체)는 아니다" }),
+    gap: "쓰임 조각(광산·포도원·신전 폐허)은 있지만 길·마당 바닥과 함께 앉히는 «마당 조각»이 없어 마을 빈 땅에 흩어진다(적대 검수 r5)", gapId: "beodeul-quarter-yard", nearest: [] }),
   T({ id: "oasis-village", ko: "사막 오아시스 마을", era: "ancient", chipset: "desert_east", status: "ready",
     recipe: "create_map({tilesetId:\"desert_east\"}) → compose_desert_east_map({kind:\"oasis\"})",
     words: /오아시스|사막\s*(?:마을|촌)|desert\s*village|oasis/iu }),
@@ -94,7 +95,7 @@ export const VILLAGE_TYPES: readonly VillageType[] = [
     recipe: "author_beodeul_town({theme:\"river\", water:\"none\", terrain:\"highland\", form:\"scatter\", roofs:\"log\", forestType:\"conifer\"})",
     words: /산골|산촌|산\s*속\s*마을|산속\s*마을|산비탈\s*마을|고원\s*마을|mountain\s*village/iu }),
   T({ id: "market-village", ko: "장터 마을", era: "medieval", chipset: "beodeul_city", status: "ready",
-    recipe: "author_beodeul_town({theme:\"river\", form:\"plaza\"}) → dress_village_quarter({mapId, quarter:\"walled-market\"}) — 광장과 앵커 건물 + 포목 좌판·짐수레·깃발(강을 말하면 water:\"river\")",
+    recipe: "author_beodeul_town({theme:\"river\", form:\"plaza\"}) — 광장과 앵커 건물(강을 말하면 water:\"river\")",
     words: /장터\s*마을|장이\s*서는|시장\s*마을|교역\s*(?:마을|도시)|market\s*(?:village|town)/iu }),
   T({ id: "mill-village", ko: "강가 방앗간 마을", era: "medieval", chipset: "beodeul_city", status: "ready",
     recipe: "author_beodeul_town({theme:\"river\", form:\"riverbank\"})",
@@ -126,14 +127,14 @@ export const VILLAGE_TYPES: readonly VillageType[] = [
     recipe: "author_beodeul_town({theme:\"river\", water:\"none\", form:\"scatter\", roofs:\"slate\"}) → 빈 마당에 stamp_object({objectId:\"kit:beodeul_city/bd-house-village-church\"})",
     words: /수도원|수도회|교회\s*마을|성당\s*마을|abbey|monastery/iu,
     gap: "수도원 회랑·종탑 단지는 없고 마을 교회 한 채만 있다" }),
-  T({ id: "mining-town", ko: "광산촌", era: "medieval", chipset: "beodeul_city", status: "partial",
+  T({ id: "mining-town", ko: "광산촌", era: "medieval", chipset: null, status: "needs-art",
     recipe: "author_beodeul_town({theme:\"river\", water:\"none\", terrain:\"highland\", form:\"scatter\", roofs:\"log\", forestType:\"conifer\", houseCount:4, width:56, height:44}) → dress_village_quarter({mapId, quarter:\"mining\"}) — 갱구·권양탑·광재 더미·광차·용광로를 한 덩이로",
     words: /광산\s*(?:마을|촌|도시)|광산촌|탄광\s*(?:마을|촌)|광부\s*마을|mining\s*(?:town|village)/iu,
-    gap: "갱구·제련소 같은 큰 조각은 마을 안 빈 땅이 모자라면 빠진다(결과 summary 의 빠진 수)" }),
-  T({ id: "vineyard-village", ko: "포도원 마을", era: "medieval", chipset: "beodeul_city", status: "partial",
+    gap: "쓰임 조각(광산·포도원·신전 폐허)은 있지만 길·마당 바닥과 함께 앉히는 «마당 조각»이 없어 마을 빈 땅에 흩어진다(적대 검수 r5)", gapId: "beodeul-quarter-yard", nearest: ["mountain-village"] }),
+  T({ id: "vineyard-village", ko: "포도원 마을", era: "medieval", chipset: null, status: "needs-art",
     recipe: "author_beodeul_town({theme:\"river\", water:\"none\", form:\"scatter\", roofs:\"red\", houseCount:4, width:56, height:44}) → dress_village_quarter({mapId, quarter:\"vineyard\"}) — 포도주 창고·포도밭 이랑·압착기·올리브",
     words: /포도원|포도밭\s*마을|와인\s*마을|양조\s*마을|올리브\s*마을|vineyard|wine\s*village/iu,
-    gap: "포도주 창고(8×6) 같은 큰 조각은 마을 안 빈 땅이 모자라면 빠진다" }),
+    gap: "쓰임 조각(광산·포도원·신전 폐허)은 있지만 길·마당 바닥과 함께 앉히는 «마당 조각»이 없어 마을 빈 땅에 흩어진다(적대 검수 r5)", gapId: "beodeul-quarter-yard", nearest: ["farm-village"] }),
   // ── 판타지 ──
   T({ id: "sky-island-village", ko: "하늘섬 마을", era: "fantasy", chipset: "sky_island", status: "ready",
     recipe: "create_map({tilesetId:\"sky_island\"}) → compose_sky_island_map({style:\"village\"})",
@@ -155,7 +156,7 @@ export const VILLAGE_TYPES: readonly VillageType[] = [
   T({ id: "dwarf-hold", ko: "드워프 산악 마을", era: "fantasy", chipset: null, status: "needs-art",
     recipe: "그 종류로는 짓지 않는다 — 바위 문·용광로 그림이 없다. 대신 산골 마을을 짓는다",
     words: /드워프\S*\s*(?:산악\s*)?(?:마을|요새|도시)?|난쟁이\s*마을|dwarf|dwarven/iu,
-    gap: "드워프 바위 문·산속 요새 그림이 없다", gapId: "dwarf-kit", nearest: ["mining-town"] }),
+    gap: "드워프 바위 문·산속 요새 그림이 없다", gapId: "dwarf-kit", nearest: ["mountain-village"] }),
   T({ id: "wizard-village", ko: "마법사 마을(호그스미드풍)", era: "fantasy", chipset: null, status: "needs-art",
     recipe: "그 종류로는 짓지 않는다 — 마법 학교 칩셋(wizarding_world)은 공간 13종과 18×14 우체국 골목 예제뿐, 마을 거리 그림이 없다",
     words: /마법\s*(?:사\s*)?마을|호그스미드|마법사의?\s*마을|wizard\s*village|hogsmeade/iu,
@@ -265,16 +266,16 @@ export const VILLAGE_TYPES: readonly VillageType[] = [
   T({ id: "post-apocalypse", ko: "포스트아포칼립스 폐허 마을", era: "future", chipset: null, status: "needs-art",
     recipe: "그 종류로는 짓지 않는다 — 폐허 칩셋이 없다(멀쩡한 거리에 잔해를 흩뿌려 흉내 내지 않는다)",
     words: /포스트\s*아포칼립스|아포칼립스|종말\s*(?:이후|후)?\s*(?:마을|도시|세계)|핵\s*전쟁\s*(?:이후|후)|폐허\s*마을|post[-\s]?apocalyp/iu,
-    gap: "폐허(무너진 건물·녹슨 차·판잣집) 칩셋이 없다", gapId: "post-apoc-kit", nearest: ["steampunk-factory-town"] }),
+    gap: "폐허(무너진 건물·녹슨 차·판잣집) 칩셋이 없다", gapId: "post-apoc-kit", nearest: [] }),
 
   T({ id: "ruined-city", ko: "좀비 폐허 도시", era: "future", chipset: null, status: "needs-art",
     recipe: "그 종류로는 짓지 않는다 — 무너진 빌딩·녹슨 차 그림이 없다(멀쩡한 거리에 잔해를 흩뿌려 흉내 내지 않는다)",
     words: /폐허\s*(?:도시|거리)|좀비\s*(?:마을|도시|거리)|버려진\s*도시|ruined\s*city|zombie\s*(?:town|city)/iu,
-    gap: "폐허(무너진 건물·녹슨 차·판잣집) 칩셋이 없다", gapId: "post-apoc-kit", nearest: ["tokyo-downtown"] }),
+    gap: "폐허(무너진 건물·녹슨 차·판잣집) 칩셋이 없다", gapId: "post-apoc-kit", nearest: [] }),
   T({ id: "wasteland-settlement", ko: "황무지 판잣집 정착촌", era: "future", chipset: null, status: "needs-art",
     recipe: "그 종류로는 짓지 않는다 — 판잣집·고철 울타리 그림이 없다",
     words: /황무지\s*(?:마을|정착지|정착촌)|판잣집\s*(?:마을|촌)|고철\s*마을|wasteland|shanty\s*town/iu,
-    gap: "폐허(무너진 건물·녹슨 차·판잣집) 칩셋이 없다", gapId: "post-apoc-kit", nearest: ["oasis-village"] }),
+    gap: "폐허(무너진 건물·녹슨 차·판잣집) 칩셋이 없다", gapId: "post-apoc-kit", nearest: [] }),
 
   // ── 북방 ──
   T({ id: "viking-village", ko: "북방 바이킹 마을", era: "medieval", chipset: "snow_north", status: "partial",
@@ -336,6 +337,14 @@ export function formatVillageTypeNote(type: VillageType): string {
   if (type.status === "needs-art") {
     // 2026-10-22 실조수 시험: Pi 경로는 되묻지 않는다(계획 → 실행이 이어진다) — 「짓지 말고 물어라」는 계획 턴만 지키고 실행 턴이 대안을 지었다.
     // 그래서 정직한 지시는 «그 종류는 짓지 않고, 가장 가까운 대안을 대안의 이름으로 짓고, 첫 문장에 빠진 그림을 말하라»다.
+    if (!type.nearest?.length) {
+      // 가까운 대안이 없는 종류(로마 도시·폐허 마을…): 적대 검수에서 대안이 다른 종류 맵의 복사본이거나 흩뿌린 소품 마을로 읽혔다 — 짓지 않는다.
+      return [
+        head,
+        `이 종류는 그림이 없다: ${type.gap}. 가까운 대안도 없다 — 이 요청으로는 맵을 만들지도 바꾸지도 않는다(create_map·시공 도구를 부르지 않는다). 다른 칩셋 타일·평면 선·잔해 흩뿌리기로 흉내 내지 않는다.`,
+        `답의 첫 문장에 「${type.ko}은(는) 필요한 그림이 아직 없다 — ${type.gap}」라고 말하고, find_village_type 으로 같은 시대에서 지금 지을 수 있는 종류 2~3개를 이름만 알려 준 뒤 끝낸다.`,
+      ].join("\n");
+    }
     return [
       head,
       `이 종류는 그림이 없다: ${type.gap}. ${type.ko}을(를) 다른 칩셋 타일·평면 선·잔해 흩뿌리기로 흉내 내지 않는다.`,
