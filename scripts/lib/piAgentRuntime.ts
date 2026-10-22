@@ -1165,7 +1165,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       if (!mapImage) { emit({ type: 'execution_status', name: 'cutscene.review.judged', ok: false, summary: `시작 맵 그림을 얻지 못해 독립 판정을 건너뜁니다(${mapError.slice(0, 160)}) — 합격으로 보고하지 않습니다` }); openingProduction.recordCutsceneReview(fingerprint, [], { verdict: 'unjudged', scores: {}, fix: '시작 맵 그림 렌더 실패', judge: 'none' }); return; }
       let motionImage: string | undefined;
       try { const imgs = await cutscenePreviewImages(ctx.project, { mapId: start.id, eventId: event.id }, mapImage ? { mapImage } : undefined); sheetImage = imgs[0]?.dataUrl; motionImage = imgs[1]?.dataUrl; } catch { sheetImage = undefined; }
-      const critique = await critiqueCutscene({ brief: request.task, probeSummary: probe.summary, ...(mapImage ? { mapImage } : {}), ...(sheetImage ? { sheetImage } : {}), ...(motionImage ? { motionImage } : {}), ...(options.signal ? { signal: options.signal } : {}) });
+      const critique = await critiqueCutscene({ brief: request.task, probeSummary: probe.summary, ...(mapImage ? { mapImage } : {}), ...(sheetImage ? { sheetImage } : {}), ...(motionImage ? { motionImage } : {}), ...(options.signal ? { signal: options.signal } : {}),
+        fallbackChat: async (messages, signal) => { const reply = await eventAssistChat(null, { messages, ...(signal ? { signal } : {}) }); return typeof reply.message.content === 'string' ? reply.message.content : ''; } });
       openingProduction.recordCutsceneReview(fingerprint, [], critique);
       emit({ type: 'execution_status', name: 'cutscene.review.judged', ok: critique.verdict === 'accept', summary: critique.verdict === 'unjudged' ? `독립 판정 불가(${critique.fix}) — 합격으로 보고하지 않습니다` : `독립 판정자(${critique.judge}) ${critique.verdict === 'accept' ? '합격' : '불합격'}: ${Object.entries(critique.scores).map(([k, v]) => `${k} ${v}`).join(', ')}${critique.fix ? ` — ${critique.fix}` : ''}`, data: critique });
     };
