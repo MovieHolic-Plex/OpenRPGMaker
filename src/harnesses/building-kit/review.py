@@ -11,6 +11,9 @@
   깊이 땅 판(grammar r7~)은 하나 더: flat_depth — 여러 질량 후보 하나를 **질량 전부 depth 0** 으로 다시 조립한 것(사용자가
   반려한 한 땅 선 — 깊이 계단·마당 띠·그림자 없음). view34 에 「여러 질량이 한 땅 선에 서 깊이가 안 보이면 FAIL」이
   붙는다. 여러 질량 후보가 조립을 하나도 통과하지 못했으면 깊이로 판정할 표본이 없으므로 함정도 없다.
+  날개(본채 앞 박공 정면) 후보가 있으면 하나 더: detached_wing — 그 후보의 날개를 한 칸 앞(아래)으로 떼어 놓고 날개가 비운
+  자리를 땅(투명)으로 남긴 것(사용자 반려 2026-10-22 「ㅜ자 집이 한 채로 안 보인다」 — 날개와 본채 사이 땅). view34 의
+  ONE HOUSE 규칙: 날개가 따로 선 건물로 읽히면(사이에 땅이 보이거나 날개 지붕이 본채 벽 앞 자기 뒤 박공에서 끝나면) FAIL.
 정답(key.json)은 판정자 폴더(work/) 밖에 둔다. 판정자는 Read 로 그림만 보고 JSON 줄로 답한다.
 함정 하나라도 PASS(두 축 모두 PASS)하거나 표본을 빠뜨리면 그 회차는 무효 — 무효는 유효 회차 수에 세지 않고 다시 돌린다.
 유효 3회 다수결(두 축 view34·quality 모두 PASS 가 과반). 영수증 review/<판>/<후보>.json = 그림 화소 해시 + 판정 원문 해시.
@@ -56,7 +59,7 @@ JUDGE_TIMEOUT = int(os.environ.get('BUILDING_KIT_JUDGE_TIMEOUT', '3600'))
 REF_KITS = ('bd-house-h101_0', 'bd-house-inn', 'bd-out-cabin')
 PROBE_NAMES = ('roof_gap', 'two_doors', 'flat', 'noise', 'thin_roof', 'recolor_original')
 GABLE_FRONT_PROBES = ('flat_elevation',)
-DEPTH_PROBES = ('flat_depth',)
+DEPTH_PROBES = ('flat_depth', 'detached_wing')
 
 
 def now():
@@ -185,7 +188,43 @@ def flat_depth(recipe, parts, pal, theme):
     return res['img'].img() if res['img'] is not None else None
 
 
-def probes_for(base_im, kit, parts, recipe, pal, rng, gable_front=False, theme=None, depth_source=None):
+def detached_wing(recipe, parts, pal, theme):
+    """깊이 땅 판의 숨긴 함정 — 날개를 한 칸 앞으로 떼어 놓은 것(사용자가 반려한 「두 채」: 날개와 본채 사이 땅). 후보 레시피를
+    조립한 그림에서 날개 자기 화소(가려진 것 포함)를 한 칸 아래로 옮기고(그림이 한 칸 길어진다), 날개가 비운 자리는 땅(투명)으로
+    남긴다 — 날개 꼭대기(골)와 본채 지붕·벽 사이에 땅 띠가 생긴다. 날개(본채 앞 박공 정면)가 없거나 조립이 안 되면 None."""
+    wings = AS.wing_mains(AS.masses(recipe))
+    if not wings:
+        return None
+    res = AS.assemble(recipe, parts, pal, theme, depth_ground=True)
+    if res['img'] is None:
+        return None
+    ids = {w['id'] for w, _ in wings}
+    T = dot.T
+    a = np.array(res['img'].img().convert('RGBA'))
+    H, W = a.shape[:2]
+    layer = np.zeros((H, W, 4), np.uint8)
+    for p in res['pieces']:
+        if p['mass'] not in ids:
+            continue
+        c = np.array(p['crop'].convert('RGBA'))
+        x0, y0 = p['at'][0] * T, p['at'][1] * T
+        h, w = min(c.shape[0], H - y0), min(c.shape[1], W - x0)
+        if h <= 0 or w <= 0 or x0 < 0 or y0 < 0:
+            continue
+        sel = c[:h, :w, 3] > 0
+        layer[y0:y0 + h, x0:x0 + w][sel] = c[:h, :w][sel]
+    out = np.zeros((H + T, W, 4), np.uint8)
+    rest = a.copy()
+    rest[layer[:, :, 3] > 0] = 0
+    out[:H] = rest
+    moved = np.zeros_like(out)
+    moved[T:] = layer
+    sel = moved[:, :, 3] > 0
+    out[sel] = moved[sel]
+    return Image.fromarray(out, 'RGBA')
+
+
+def probes_for(base_im, kit, parts, recipe, pal, rng, gable_front=False, theme=None, depth_source=None, wing_source=None):
     rh_px = kit['roofRows'] * dot.T
     out = [('roof_gap', _insert_gap(base_im, rh_px)),
            ('flat', _flat(base_im)),
@@ -208,6 +247,11 @@ def probes_for(base_im, kit, parts, recipe, pal, rng, gable_front=False, theme=N
         if fd is None:
             raise SystemExit('깊이 땅 판인데 flat_depth 함정을 조립하지 못했다')
         out.append(('flat_depth', fd))
+    if wing_source is not None:
+        dw = detached_wing(wing_source['recipe'], wing_source['parts'], pal, theme)
+        if dw is None:
+            raise SystemExit('깊이 땅 판의 날개 후보인데 detached_wing 함정을 조립하지 못했다')
+        out.append(('detached_wing', dw))
     return out
 
 
@@ -302,10 +346,17 @@ GABLE_FRONT_RULE = """
 DEPTH_RULE = """
    DEPTH RULE (this round requires it): a building made of several masses (a wing projecting toward the viewer in front of
    a main block, a corner tower, a side shed) must show SPACE in the 3/4 view. A mass that sits further north stands HIGHER
-   on screen: the main block's wall bottom is visibly ABOVE the front wing's wall bottom, with a strip of open ground/yard
-   between them beside the wing, and the wing casts a dark translucent shadow to its right onto the main wall and that
-   yard. FAIL view34 for a multi-mass building whose masses all stand on ONE ground line with no visible depth step, no
-   yard strip and no cast shadow - the wing then reads as a flat board glued onto the main wall - however well drawn."""
+   on screen: the main block's wall bottom is visibly ABOVE the front wing's wall bottom, and the wing casts a dark
+   translucent shadow to its right onto the main block's WALL only (not onto roofs or ground). FAIL view34 for a multi-mass
+   building whose masses all stand on ONE ground line with no visible depth step and no cast shadow - the wing then reads
+   as a flat board glued onto the main wall - however well drawn.
+   ONE HOUSE RULE: a wing and its main block must read as ONE building. The wing's back edge IS the main block's front
+   wall: the wing wall touches the main wall, and the wing roof runs UP INTO the main roof, above the main eave line,
+   meeting it in a V-shaped valley (a dark fold line) - seen from above it would be one outline. FAIL view34 for a
+   multi-mass building whose wing reads as a separate building: any ground/grass visible between the wing and the main
+   block (inside their joint outline - e.g. a ground band above or behind the wing's back end, or at its back corners), or
+   a wing roof that ends in its own back gable (a ^ apex with a verge) in front of the main wall, below the main eave,
+   instead of rising into the main roof."""
 
 
 def judge_prompt(theme, ids, n_images, gable_front=False, depth=False):
@@ -394,8 +445,10 @@ def prepare(theme, rid, parts_by_key, runs=DEFAULT_RUNS, retries=DEFAULT_RETRIES
     gable_front = AS.requires_gable_front(theme, rid)
     depth = AS.depth_ground(theme, rid)
     multi = [c for c in cands.values() if len(c['recipe'].get('masses') or []) > 1]
+    winged = [c for c in multi if AS.wing_mains(AS.masses(c['recipe']))]
     probes = probes_for(base['img'], base['kit'], base['parts'], base['recipe'], pal, rng, gable_front, theme,
-                        depth_source=multi[0] if depth and multi else None)
+                        depth_source=multi[0] if depth and multi else None,
+                        wing_source=winged[0] if depth and winged else None)
     samples = [('candidate', bid, c['img']) for bid, c in cands.items()] + [('probe', n, im) for n, im in probes]
     rng.shuffle(samples)
     k = len(_runs(rnd)) + 1
