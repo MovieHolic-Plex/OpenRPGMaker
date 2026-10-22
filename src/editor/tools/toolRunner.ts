@@ -600,7 +600,8 @@ export function runToolDefinition(
     assertHouseProtection(protectedHouses, draft, builtHouses);
     // 새 프로젝트의 빈 시드 맵에 시작이 남은 채 새 맵만 지었으면 시작을 그 맵으로 옮긴다(startOnBuiltMap.ts).
     const startNote = ctx.assistantRun && tool.mode === "write" && name !== "set_start_position" ? adoptBuiltMapAsStart(before, draft) : null;
-    if (startNote) exec = { ...exec, warnings: [...(exec.warnings ?? []).filter((w) => !w.startsWith("게임 시작 위치가 아직 빈 시드 맵")), startNote] };
+    // 경고 목록 끝에만 두면 긴 요약 뒤에서 잘려 조수가 못 보고 「시작 맵은 빈 맵」이라고 잘못 보고했다(2026-10-22 성벽 마을 r3) — 요약 머리에도 둔다.
+    if (startNote) exec = { ...exec, summary: `${startNote} ${exec.summary}`, warnings: [...(exec.warnings ?? []).filter((w) => !w.startsWith("게임 시작 위치가 아직 빈 시드 맵")), startNote] };
     const seedNote = ctx.assistantRun && tool.mode === "write" ? seedMapPlacementNote(before, draft) : null;
     if (seedNote) exec = { ...exec, warnings: [...(exec.warnings ?? []), seedNote] };
 

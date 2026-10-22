@@ -86,13 +86,17 @@ export function validFrontPropApproval(approval: ObjectGateFrontPropApproval | n
 export type ObjectGateHoldDecision = {
   schema: 'oprn-object-gate-hold-decision/1'; pixelSha256: string; profileHash: string; kind: ObjectGateKind;
   decision: 'allow' | 'reject'; decidedBy: string; decidedAt: string; by: 'human' | 'delegated'; via: 'review-page'; reasons: string[]; note?: string;
-  /** by === 'delegated' 일 때만. 위임한 사람(예: 사용자 이름). */ delegatedBy?: string; /** by === 'delegated' 일 때만. 독립 검수 근거(영수증·결과 파일 경로). */ evidence?: string; sig: string;
+  /** by === 'delegated' 일 때만. 위임한 사람(예: 사용자 이름). */ delegatedBy?: string; /** by === 'delegated' 일 때만. 독립 검수 근거(영수증·결과 파일 경로). */ evidence?: string;
+  /** 그림을 다시 그려 이 해시가 물러났을 때(2026-10-22, `object-gate supersede-holds`): 새 그림 해시나 설명. 있으면 허용은 효력이 없다(거절은 그대로). */ supersededBy?: string; supersededAt?: string;
+  sig: string;
 };
 /** 서명 대상 문자열(sig 제외, 키 이름순). Python hold_payload 와 같다. */
 export function objectGateHoldPayload(d: ObjectGateHoldDecision): string {
   const keys = ['schema', 'pixelSha256', 'profileHash', 'kind', 'decision', 'decidedBy', 'decidedAt', 'by', 'via', 'reasons', 'note'] as const;
   const extra = d.by === 'delegated' ? (['delegatedBy', 'evidence'] as const) : ([] as const);
-  return JSON.stringify([...keys, ...extra].map(k => [k, (d as Record<string, unknown>)[k] ?? null]));
+  // 물러남 표시는 있을 때만 서명 대상에 더한다 — 없는 기록의 서명 문자열은 그대로다(Python hold_payload 와 같다).
+  const retired = d.supersededBy ? (['supersededBy', 'supersededAt'] as const) : ([] as const);
+  return JSON.stringify([...keys, ...extra, ...retired].map(k => [k, (d as Record<string, unknown>)[k] ?? null]));
 }
 const nonEmpty = (v: unknown) => typeof v === 'string' && v.trim().length > 0;
 /** 서명 확인을 마친 기록이 이 영수증(그림 해시·종류)에 묶인 사람 결정이면 'allow'|'reject', 아니면 null. 프로필은 보지 않는다. */
@@ -101,6 +105,8 @@ export function humanDecision(d: ObjectGateHoldDecision | null | undefined, rece
   const ok = d.schema === 'oprn-object-gate-hold-decision/1' && (d.by === 'human' || (d.by === 'delegated' && d.decision === 'allow' && nonEmpty(d.delegatedBy) && nonEmpty(d.evidence))) && d.via === 'review-page' && (d.decision === 'allow' || d.decision === 'reject')
     && d.pixelSha256 === receipt.pixelSha256 && d.kind === receipt.kind && typeof d.decidedBy === 'string' && d.decidedBy.trim().length > 0 && !!d.decidedAt
     && typeof d.profileHash === 'string' && d.profileHash.length > 0;
+  // 물러난(다시 그려 대체된) 그림의 허용은 효력이 없다. 거절은 그대로 최종이다.
+  if (ok && d.decision === 'allow' && nonEmpty(d.supersededBy)) return null;
   return ok ? d.decision : null;
 }
 export function holdAllows(d: ObjectGateHoldDecision | null | undefined, receipt: ObjectGateReceipt): boolean {

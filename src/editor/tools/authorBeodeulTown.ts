@@ -14,7 +14,7 @@ import { MAP_TOOLS } from "./mapTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { BEODEUL_FOREST_TYPES, parseBeodeulForestType, type BeodeulForestType } from "./beodeulForest";
-import { BEODEUL_ROOF_PALETTES, BEODEUL_VILLAGE_WATERS, BEODEUL_VILLAGE_WOODS, BEODEUL_VILLAGE_FORMS, BEODEUL_VILLAGE_THEMES, buildBeodeulVillage, themeDefaultSize, type BeodeulVillageTheme } from "./beodeulVillage";
+import { BEODEUL_ROOF_PALETTES, BEODEUL_VILLAGE_WATERS, BEODEUL_VILLAGE_WOODS, BEODEUL_VILLAGE_FORMS, BEODEUL_VILLAGE_THEMES, buildBeodeulVillage, resolveVillageForm, themeDefaultSize, type BeodeulVillageTheme } from "./beodeulVillage";
 import { VILLAGE_TERRAINS } from "./beodeulTerrain";
 
 import { buildSmallBeodeulVillage } from "./beodeulSmallVillage";
@@ -600,11 +600,41 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
     if (theme === "river" && water === "river") wallNotes.push("성벽 마을이라 강 없이(water none) 지었다 — 강이 성벽을 지나는 수문 그림은 없다.");
     if (theme === "river") wallWater = "none";
     if (form === "riverbank") { wallForm = "street"; wallNotes.push("성벽 마을이라 물가 띠(riverbank) 대신 길가 마을(street)로 지었다."); }
+    // form 을 생략해 seed 가 물가 띠를 고르면 강이 늘 붙어(물가 띠 = 강) 성벽을 뚫었다 — 성벽 마을은 seed 가 고른 물가 띠도 길가로
+    else if (!form && resolveVillageForm(theme, seed) === "riverbank") wallForm = "street";
     if (terrain && terrain !== "flat") { wallTerrain = "flat"; wallNotes.push(`성벽 마을이라 지형 ${terrain} 대신 평지로 지었다.`); }
     else wallTerrain = "flat";
   } else if (args.walls === true) wallNotes.push(`성벽은 강가·사막·설원 마을(theme river·desert·snow)만 두른다 — ${theme} 마을은 성벽 없이 지었다.`);
-  const r = buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { roofs, water: wallWater, woods, houseLimit: houseCount, walls,
+  const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { roofs, water: wallWater, woods, houseLimit: houseCount, walls,
     ...(args.wallGate === "N" || args.wallGate === "NS" || args.wallGate === "S" ? { wallGate: args.wallGate } : {}), ...(args.wallSideGaps === true ? { wallSideGaps: true } : {}) });
+  let r = build();
+  // 성벽 띠가 가장자리를 먹어 요청한 집 수가 다 앉지 않는다(2026-10-22 조수 시험 r3: 5채 요청 → 44×32 에서 2채, 조수가 52×38 로 다시 지어 3채).
+  // 이번 호출이 새로 만든 성벽 마을이면 맵을 넓혀 두 번까지 다시 짓고, 집이 가장 많이 앉은 크기를 남긴다(같은 seed 라 같은 크기는 같은 마을).
+  const housesOf = (x: typeof r) => Number((x.data as { houses?: number }).houses ?? 0);
+  const grown: string[] = [];
+  if (walls && houseCount !== undefined && !rebuilt && housesOf(r) < houseCount) {
+    const name = draft.maps[mapId]!.name;
+    const rebuildAt = (w: number, h: number) => {
+      requireTool(MAP_TOOLS, "remove_map").run(draft, { mapId });
+      createMapTool.run(draft, { id: mapId, name, width: w, height: h, tilesetId: BEODEUL_TILESET_ID, border: "none" });
+      return build();
+    };
+    const tried: { w: number; h: number; houses: number }[] = [{ w: draft.maps[mapId]!.width, h: draft.maps[mapId]!.height, houses: housesOf(r) }];
+    for (let step = 0; step < 2 && housesOf(r) < houseCount; step += 1) {
+      const last = tried[tried.length - 1]!;
+      const w = Math.min(VILLAGE_MAX_W, last.w + 8), h = Math.min(VILLAGE_MAX_H, last.h + 6);
+      if (w === last.w && h === last.h) break;
+      r = rebuildAt(w, h);
+      tried.push({ w, h, houses: housesOf(r) });
+    }
+    const best = tried.reduce((a, b) => (b.houses > a.houses ? b : a));
+    const now = tried[tried.length - 1]!;
+    if (best !== now) r = rebuildAt(best.w, best.h);
+    if (tried.length > 1) grown.push(`성벽 띠 때문에 ${tried[0]!.w}×${tried[0]!.h} 에는 집이 ${tried[0]!.houses}채만 앉아 ${best.w}×${best.h} 로 넓혀 다시 지었다(집 ${best.houses}채).`);
+  }
+  // 요청한 집 수에 못 미치면 요약 맨 앞에 적는다 — 경고에만 두면 「요청대로 지었다」고 보고하기 쉽다
+  if (houseCount !== undefined && housesOf(r) < houseCount) grown.push(`집 ${houseCount}채를 요청했지만 ${housesOf(r)}채만 앉았다(${walls ? "성벽 안 " : ""}자리 부족 — 맵을 넓혀 다시 짓거나 그대로 보고할 것).`);
+  if (grown.length) r = { ...r, summary: `${grown.join(" ")} ${r.summary}`, warnings: [...grown, ...r.warnings] };
   // 지형 도입(2026-10-11)으로 같은 seed 도 배치가 달라졌다 — 예전 마을 맵을 가진 사용자·조수가 알 수 있게 결과에도 짧게
   const note = rebuilt
     ? " 같은 mapId 로 다시 지어 맵 전체를 새로 깔았다(손으로 고친 부분은 사라졌다)."

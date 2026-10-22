@@ -1,0 +1,59 @@
+{
+  "reviewer": "opus fresh adversarial VQA",
+  "date": "2026-10-22",
+  "images": [
+    {
+      "path": "verify-shots/beodeul-graft-relocation/walled-villages/river-11.png",
+      "verdict": "FAIL",
+      "houses": 6,
+      "defects": [
+        "(1)/(2) Top-centre house (px x370-432, y105-192; door tile x400-416,y176-192): the cobble road from the west (x245-368, y176-208) ends at x368, flush against the house's LEFT WALL, 2 tiles short of the doorstep. Doorstep tile (x400-416,y192-208) and the tile between (x368-400,y192-208) are grass. Dead-end stub into a house side; the door is not on the road network.",
+        "No river present (street layout used) - (3) OK. No stub into the wall. Gate (x340-400,y560-610) open; road loop around the farm (x290-625,y355-575) is a closed loop, not a stub.",
+        "(4) Interior well filled with bushes/trees/farm; no padded barren area."
+      ]
+    },
+    {
+      "path": "verify-shots/beodeul-graft-relocation/walled-villages/river-33873-44x32.png",
+      "verdict": "PASS",
+      "houses": 6,
+      "defects": [
+        "None blocking. Map is 60x44 tiles (grown twice from 44x32). All checked doors (left stone house x35-95, row house x145-290, mid stone house x350-415, double house x497-640, blue house x690-768, right hall x803-925) have road directly on the doorstep tile.",
+        "Minor/cosmetic: road loop behind the double house (x320-685, y195-215) serves no door (it loops back, so not a dead end).",
+        "No river (street layout) - (3) OK. No stubs into the wall. (4) Growth area is filled with farms/pasture/market plaza; not barren."
+      ]
+    },
+    {
+      "path": "verify-shots/beodeul-graft-relocation/walled-villages/snow-77.png",
+      "verdict": "FAIL",
+      "houses": 6,
+      "defects": [
+        "(2)/(6) Cabin at x448-502,y335-400: door tile x464-480 (bottom y~397). Its doorstep tile (x464-480, y400-416) is covered by a firewood log pile prop (x448-478,y400-415); the path starts one tile to the right at x480. If the woodpile is impassable the house is unenterable; at minimum the door is blocked by a prop.",
+        "(2) minor: Left cabin x35-118,y175-255: door column x64-80, but the path below starts at x48-64 (one column left). Doorstep tile (x64-80,y256-272) is bare snow; road misses the door by one tile.",
+        "(2) minor: Cabin x128-180,y335-400: doorstep (x144-160,y400-416) is bare snow; path touches it only from the west (x112-144) and south (y416+).",
+        "(3) Frozen pond (x470-700,y110-250) is fully inside the wall - OK. No stubs into the wall.",
+        "(4) minor: bare snow fields bottom-right (x450-700,y430-570) and bottom-left (x30-140,y420-570) - looks somewhat padded."
+      ]
+    },
+    {
+      "path": "verify-shots/beodeul-graft-relocation/walled-villages/desert-5150.png",
+      "verdict": "PASS",
+      "houses": 6,
+      "defects": [
+        "None blocking. Paths reach doorsteps of all houses (x35-85, x192-275, domed x385-500, x208-262, x338-420, big house x545-628 via path ending at x592,y464-480). Gate path x352-382 runs straight up from the gate.",
+        "Oasis pond (x515-690,y110-270) is inside the wall - (3) OK. No stubs into the wall.",
+        "(4) minor: empty sand bands bottom-middle (x400-540,y480-570), bottom-left (x30-140,y500-570) and right strip (x640-700,y300-570)."
+      ]
+    },
+    {
+      "path": "verify-shots/beodeul-graft-relocation/house-entry/walled-town-1x.png",
+      "verdict": "FAIL",
+      "houses": 7,
+      "defects": [
+        "(3) River crosses the town wall at BOTH ends: enters from the map top (x150-205,y0-50), passes UNDER the north wall (wall drawn over water at x150-205,y50-95) and exits UNDER the south wall (x150-215,y570-640). This is exactly the failure change (c) is meant to prevent - either this shot predates change (c) or the riverbank layout still reaches walled towns via this path.",
+        "Otherwise roads reach all doors; gate (x355-410,y560-610) open; no stubs."
+      ]
+    }
+  ],
+  "overall": "FAIL",
+  "notes": "Change (a) growth looks fine (44x32 -> 60x44 is filled, not padded). Change (c) is contradicted by house-entry/walled-town-1x.png (river under north and south wall) - confirm whether that shot is stale; if it is current, (c) does not cover that code path. Change (b) protection of gate->door roads is incomplete: river-11 top house road ends against the house side 2 tiles short of the door; snow-77 has a woodpile prop on a doorstep and a road offset one column from a door. Wall pixel quality ignored as instructed."
+}

@@ -67,7 +67,10 @@ export function adoptBuiltMapAsStart(before: Project, draft: Project): string | 
   }
   draft.startMapId = map.id;
   draft.startPos = cell;
-  return `게임 시작 위치를 빈 시드 맵 ${SEED_START_MAP_ID} 에서 새로 지은 ${map.name ?? map.id}(${map.id}) (${cell.x},${cell.y}) 로 옮겼습니다 — 빈 풀밭에서 시작하지 않게. 다른 칸·맵에서 시작하려면 set_start_position 으로 바꾸세요.`;
+  // 2026-10-22 r3(성벽 마을): 조수가 이 안내를 「잘못 잡힌 시작 맵」으로 읽고 빈 맵으로 되돌린 뒤 맵을 지우고 다시 지었다. 다시 지을 때 또 옮겨졌는데
+  // 보고는 「지금 시작 맵은 빈 맵」이라고 했다(저장본은 새 마을). 의도한 동작이고 되돌리지 말라는 것, 다시 지을 땐 같은 mapId 로 부르라는 것을 같이 적는다.
+  return `게임 시작 위치를 빈 시드 맵 ${SEED_START_MAP_ID} 에서 새로 지은 ${map.name ?? map.id}(${map.id}) (${cell.x},${cell.y}) 로 옮겼습니다 — 빈 풀밭에서 시작하지 않게(의도한 동작, 오류 아님). `
+    + `빈 맵으로 되돌리지 마세요. 이 맵을 지우고 다시 지어도 새 맵이 다시 시작 맵으로 잡힙니다 — 보고할 때 시작 맵은 지금 ${map.id} 입니다(마지막 startMapId 기준). 다른 칸·맵에서 시작하려면 set_start_position 으로 바꾸세요.`;
 }
 
 /**

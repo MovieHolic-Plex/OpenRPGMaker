@@ -6,11 +6,13 @@
  "decision": "allow",
  "decidedBy": "supervisor (delegated by user 2026-10-21)",
  "decidedAt": "2026-10-22T06:44:42.215Z",
- "by": "human",
+ "by": "delegated",
  "via": "review-page",
  "reasons": [
   "3/4: 독립 눈이 「3/4 아님」 10/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
  ],
- "note": "town wall r4 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/beodeul-town-wall-r4/receipt.json",
- "sig": "0f737fc0f3c3d5edc6e42dbab595c5b261a04425370d2e8a56b61f0698a1fa8b"
+ "note": "town wall r4 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/beodeul-town-wall-r4/receipt.json | 기록 정정 2026-10-22: by human → delegated (위임 허용을 옛 서버가 사람 클릭으로 적었다)",
+ "delegatedBy": "user (2026-10-21, gate decisions delegated to supervisor)",
+ "evidence": "harness-data/object-gate/vqa/beodeul-town-wall-r4/receipt.json",
+ "sig": "4940e92d0ff38e093cec2f7cddd9d591aecbb1e74015fe43d8ce6c58f64f6251"
 }
