@@ -1768,6 +1768,12 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       }
       for (const c of cut) { forestSet.delete(c); carved.add(c); }
     }
+    // 남쪽 끝 줄(2층) 수관은 단 동서 끝 1px 선(relief over 띠)보다 먼저 그려져 그 선에 썰린다(VQA r14 작은 마을 B) — 동·서 이웃이 다른 단인 남쪽 끝 칸은 뺀다
+    for (let pass = 0; pass < 3; pass += 1) {
+      const drop = [...forestSet].filter((c) => { const x = c % W; return (c + W >= W * H || !forestSet.has(c + W)) && ((x > 0 && lv[c - 1] !== lv[c]) || (x < W - 1 && lv[c + 1] !== lv[c])); });
+      if (!drop.length) break;
+      for (const c of drop) forestSet.delete(c);
+    }
     shapeBeodeulCanopyMask(W, H, forestSet, { canFill: () => false, joins: sameLv, minComponent: canopyStyle === "snow" ? 12 : 16, minExtent: canopyStyle === "snow" ? 3 : 4, minInterior: 0.15, block: 2 }); // 홈이 남긴 가는 끝만 걷는다(메우지 않음)
     for (let c = 0; c < W * H; c += 1) if (occ[c] === FOREST && !forestSet.has(c)) occ[c] = FREE; // 다듬기로 빠진 산마루(summit) 칸은 풀밭으로
     for (const c of forestSet) occ[c] = FOREST;
