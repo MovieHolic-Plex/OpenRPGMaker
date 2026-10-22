@@ -172,7 +172,15 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
   const built: string[] = [];
   for (const home of homes) {
     if (!doors.some((d) => d.x === home.door.x && d.y === home.door.y)) throw new Error(`[fallen-town-interiors] 집 문이 아니다: ${home.name} (${home.door.x},${home.door.y})`);
-    const room = run(project, "build_hand_interior_room", { mapId: home.mapId, name: home.name, layout: home.layout });
+    // 천장은 나무 들보(wood) — 검은 천장·벽 속 허공이 들어서는 화면의 3할 가까이를 덮어 「빈 검은 여백」으로 읽혔다(VQA r29).
+    // 방 사이 벽 속(공허)도 같은 들보 덩이로 채워 지붕 아래 목조 뼈대로 읽히게 한다.
+    const room = run(project, "build_hand_interior_room", { mapId: home.mapId, name: home.name, layout: home.layout, ceiling: "wood" });
+    {
+      const im = project.maps[home.mapId]!;
+      const metaC = (project.tilesets[im.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+      const beam = metaC.findIndex((t) => t?.label === "천장(wood) 이웃00");
+      if (beam >= 0) for (let i = 0; i < im.lowerTiles.length; i += 1) if (/^공허/.test(metaC[im.lowerTiles[i]!]?.label ?? "")) im.lowerTiles[i] = beam;
+    }
     const exitsRaw = (room.data as { exits?: { x: number; y: number; width?: number }[] } | undefined)?.exits ?? [];
     const exit = exitsRaw[0];
     if (!exit) throw new Error(`[fallen-town-interiors] ${home.name}: 실내 출구가 없다`);
