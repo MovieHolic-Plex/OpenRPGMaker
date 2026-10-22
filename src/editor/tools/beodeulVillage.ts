@@ -118,9 +118,13 @@ export function resolveVillageWater(theme: BeodeulVillageTheme, seed: number, fo
     return form === "riverbank" ? "river" : water as "river" | "none";
   }
   if (form === "riverbank") return "river";
-  return rng(seed * 6007 + 401)() < 0.34 ? "none" : "river";
+  return rng(seed * 6007 + 401)() < 0.45 ? "none" : "river";
 }
+/** 숲(river·coast·snow 마을): edge 마을 둘레 숲 덩이(기본) · dense 숲속 빈터 — 집·길·작은 밭 사이를 숲이 메운다(숲속 마을). */
+export const BEODEUL_VILLAGE_WOODS = ["edge", "dense"] as const;
 export interface BeodeulVillageOptions {
+  /** 숲 밀도(edge·dense). 생략하면 edge. */
+  woods?: string;
   /** 강가 마을의 물(river·none). 생략하면 seed 로. */
   water?: string;
   /** 지붕 팔레트(river·coast 만). 생략하면 seed 로. */
@@ -224,6 +228,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const form = resolveVillageForm(theme, seed, formArg);
   const roofs = resolveRoofPalette(theme, seed, options.roofs);
   const water = resolveVillageWater(theme, seed, form, options.water);
+  if (options.woods !== undefined && options.woods !== "" && !(BEODEUL_VILLAGE_WOODS as readonly string[]).includes(options.woods)) throw new ToolError(`woods 는 ${BEODEUL_VILLAGE_WOODS.join("·")} 중 하나다(받은 값: ${options.woods}).`, { code: "invalid-args" });
+  const denseWoods = options.woods === "dense";
   const houseLimit = options.houseLimit !== undefined && Number.isInteger(options.houseLimit) && options.houseLimit > 0 ? options.houseLimit : Infinity;
   let terrainName: ReturnType<typeof resolveVillageTerrain>;
   let terrainNote = "";
@@ -296,7 +302,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   let riverX = -1; // 강 왼쪽 열(다리 자리)
   let riverLeft = false;
   const shoreY: number[] = new Array(W).fill(H);
-  const yMainBase = theme === "coast" ? Math.round(H * 0.4) : Math.round(H * 0.5) + ri(-2, 2);
+  // highland(산골): 큰길을 맵 아래쪽으로 내려 그 위에 비탈 세 단이 설 자리를 둔다
+  const yMainBase = theme === "coast" ? Math.round(H * 0.4) : terrainName === "highland" ? Math.round(H * 0.66) + ri(-1, 1) : Math.round(H * 0.5) + ri(-2, 2);
   if (spec.feature === "river") {
     // 강은 seed 에 따라 동쪽(0.6) 또는 서쪽(0.36) — 넓은 쪽 둑이 광장·뒷길을 갖는다
     riverLeft = rand() < 0.5;
@@ -702,6 +709,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 가장자리에 못 닿으면(양쪽이 골) 오르막을 양 끝에 하나씩 내어 고리로 만든다. 단 위의 쓰임은 마을 설정을 따른다(풀밭 = 밭, 그 밖 = 숲·덤불 덩이, 오르막 머리에 전망 의자).
   interface Climb { level: number; lanes: number[]; path: [number, number]; to: "west" | "east" | "loop"; cells: number[]; rows: Map<number, number>; use: string[]; lookout?: { x: number; y: number } }
   const climbs: Climb[] = [];
+  // 산골(highland) 맨 윗단(세 단째)은 오를 길 없이 산 숲으로 덮는다(「산골 마을인데 산이 없다」) — 마을 뒤 산비탈
+  const summit = new Set<number>();
   let lowered = 0; // 오를 길이 없어 아랫단으로 내린 칸 수
   const trackCells = new Set<number>(); // 풀밭 마을의 윗길·오르막(모랫길로 칠한다)
   // 내린 단이 다른 단과 합쳐지거나 그 위 단의 아랫단이 사라질 수 있으므로 바뀐 것이 없을 때까지 다시 센다(높이는 내려가기만 하므로 끝난다)
@@ -719,6 +728,10 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const grassy = "mat" in spec.road;
     for (const ci of comps.map((_, i) => i).sort((a, b) => comps[a]!.level - comps[b]!.level)) {
       const C = comps[ci]!, L = C.level;
+      if (terrainName === "highland" && L >= 3) {
+        if (!summit.has(C.cells[0]!)) for (const c of C.cells) if (c + W < W * H && lv[c + W] === L && !rampCells.has(c)) { summit.add(c); occ[c] = FOREST; }
+        continue;
+      }
       const trunk = streets.filter((st) => !(form === "scatter" && st.name === "갈래길"));
       if (C.cells.some((c) => trunk.some((st) => st.cells.has(c)))) continue; // 이미 길이 지나는 단
       const bot = new Int16Array(W).fill(-1), topY = new Int16Array(W).fill(H), cnt = new Int16Array(W);
@@ -729,7 +742,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       // 오를 길을 낼 수 없는 단(좁은 조각·길에 안 닿는 자리)은 아랫단으로 내린다 — 아무도 못 가는 대지를 남기지 않는다.
       // 아직 길·물 말고는 아무것도 앉지 않았으므로(3a) 키트가 두 단에 걸칠 일이 없다.
       const flatten = () => { for (const c of C.cells) lv[c] = L - 1; lowered += C.cells.length; changed = true; };
-      if (nUsable < 12) { flatten(); continue; }
+      // 작은 대지 조각(160칸 미만)도 내린다 — 동서 끝이 1px 선으로만 보이는 조각 대지가 맵 구석에 남았다(2026-10-22 독립 검수)
+      if (nUsable < 12 || C.cells.length < 160) { flatten(); continue; }
       const hStreets = trunk.filter((st) => st.horizontal);
       /** x 열에서 단 아래로 곧게 내려가 아랫단 동서 길에 닿는 오르막 자리 — 길 윗줄(없으면 null). */
       const laneAt = (x: number): { st: Street; y: number } | null => {
@@ -1567,13 +1581,15 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 풀밭 마을의 높은 단(오르막·윗길을 낸 곳)은 밭 자리 — 그 단 안에서 먼저 두 번까지 고른다(단 위의 쓰임). 나머지는 예전처럼 맵 전체에서.
     const upperTries: { cells: number[]; climb: Climb }[] = fenced ? climbs.map((cl) => ({ cells: cl.cells, climb: cl })) : [];
     let upperLeft = upperTries.length ? 40 * upperTries.length : 0;
-    for (let t = 0; t < 140 + upperLeft && fields < 5 + upperTries.length; t += 1) {
+    // 숲속 빈터 마을은 밭을 둘까지 — 나머지 땅은 숲이 맡는다
+    const fieldCap = denseWoods ? 2 : 5;
+    for (let t = 0; t < 140 + upperLeft && fields < fieldCap + upperTries.length; t += 1) {
       const fw = ri(5, 9), fh = ri(3, 5);
       const ut = upperLeft > 0 ? upperTries[upperLeft % upperTries.length]! : null;
       if (ut && ut.climb.use.filter((u) => u === "밭").length >= 2) { upperLeft -= 1; continue; }
       let x: number, y: number;
       if (ut) { upperLeft -= 1; const c = ut.cells[Math.floor(rand() * ut.cells.length)]!; x = (c % W) - Math.floor(fw / 2); y = Math.floor(c / W) - Math.floor(fh / 2); if (x < 1 || y < 1 || x + fw >= W || y + fh >= H) continue; }
-      else { if (fields >= 5) break; x = ri(1, W - fw - 1); y = ri(1, H - fh - 1); }
+      else { if (fields >= fieldCap) break; x = ri(1, W - fw - 1); y = ri(1, H - fh - 1); }
       let ok = true;
       for (let j = -1; j <= fh && ok; j += 1) for (let i = -1; i <= fw; i += 1) { const v = at(x + i, y + j); if (v !== FREE && v !== 255) { ok = false; break; } }
       if (ok && hasTerrain) { const fl: number[] = []; for (let j = -1; j <= fh; j += 1) for (let i = -1; i <= fw; i += 1) if (inMap(x + i, y + j)) fl.push(idx(x + i, y + j)); ok = flatCells(fl); }
@@ -1608,11 +1624,14 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const okCell = (c: number, L: number) => occ[c] === FREE && distRoad[c]! >= 2 && lv[c] === L && !rampCells.has(c) && (c + W >= W * H || lv[c + W] === L);
     // 침엽·혼효 마을은 숲 덩이를 크게·넓게(독립 검수 D10 「덩어리 없이 듬성듬성」) — 활엽 마을은 그대로
     const bigGroves = canopyStyle === "leaf" && forestType !== "broadleaf";
-    const goal = Math.round(W * H * (canopyStyle === "snow" ? 0.1 : bigGroves ? 0.2 : 0.14));
-    for (let t = 0; t < 90 && forestSet.size < goal; t += 1) {
+    // 숲속 빈터(woods dense): 빈 땅의 절반 가까이를 숲으로 — 씨앗은 길에서 3칸, 덩이는 더 크게, 더 여러 번
+    // 산골(highland): 윗단 비탈은 숲이 덮는다(「산골인데 산이 없다」) — 씨앗을 2단 이상에서 주로 뽑는다
+    const highWoods = terrainName === "highland";
+    const goal = Math.round(W * H * (denseWoods ? 0.5 : highWoods ? 0.3 : canopyStyle === "snow" ? 0.1 : bigGroves ? 0.2 : 0.14));
+    for (let t = 0; t < (denseWoods || highWoods ? 400 : 90) && forestSet.size < goal; t += 1) {
       const sx = ri(0, W - 1), sy = ri(0, H - 1), s = idx(sx, sy);
-      if (occ[s] !== FREE || distRoad[s]! < 4 || forestSet.has(s)) continue;
-      const L = lv[s]!, rx = bigGroves ? ri(5, 9) : ri(3, 8), ry = bigGroves ? ri(3, 6) : ri(2, 5), wob = rand() * 6.28;
+      if (occ[s] !== FREE || distRoad[s]! < (denseWoods ? 3 : 4) || forestSet.has(s)) continue;
+      const L = lv[s]!, rx = denseWoods ? ri(7, 14) : bigGroves ? ri(5, 9) : ri(3, 8), ry = denseWoods ? ri(5, 9) : bigGroves ? ri(3, 6) : ri(2, 5), wob = rand() * 6.28;
       const blob = new Set<number>([s]); const q = [s];
       for (let h = 0; h < q.length; h += 1) {
         const c = q[h]!, x = c % W, y = (c - x) / W;
@@ -1625,6 +1644,14 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         }
       }
       if (blob.size >= (bigGroves ? 24 : 10)) for (const c of blob) forestSet.add(c);
+    }
+    for (const c of summit) forestSet.add(c);
+    // 단의 동서 끝(골·맵 쪽으로 끊긴 세로 가장자리)은 3/4 시점에서 1px 선으로만 보인다(남향 절벽 면만 그린다) —
+    // 그 가장자리 위 두 줄에 숲을 둘러 선을 덮는다(2026-10-22 독립 검수 「대지 동서 이음선」). 길·문 앞은 비운다.
+    if (hasTerrain) for (let c = 0; c < W * H; c += 1) {
+      const L = lv[c]!; if (L === 0) continue; const x = c % W;
+      const edge = (x > 0 && lv[c - 1]! < L) ? 1 : (x < W - 1 && lv[c + 1]! < L) ? -1 : 0; if (!edge) continue;
+      for (const n of [c, c + edge, c + 2 * edge]) if (n >= 0 && n < W * H && Math.abs((n % W) - x) <= 2 && okCell(n, L)) forestSet.add(n);
     }
     // 다듬기: 이웃 숲이 하나 이하인 혹은 지우고, 셋 이상 숲에 둘러싸인 빈 칸(같은 단)은 메운다 — 가는 가지·바늘구멍 수관이 생기지 않게
     const n4 = (c: number) => { const x = c % W, y = (c - x) / W; let k = 0; for (const [dx, dy] of N4) if (!inMap(x + dx, y + dy) || forestSet.has(idx(x + dx, y + dy))) k += 1; return k; };
@@ -2131,7 +2158,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       `${workAt ? `, 일터 「${workAt.name}」` : ""}, 밭 ${fields}${fenceAt.size ? `(울타리 ${fenceAt.size}칸)` : ""}, 나무 ${treeCount}, ${form === "plaza" ? "광장" : "모이는 곳"} 소품 ${plazaProps}. 문 앞 ${doorFronts.length - unreached.length}/${doorFronts.length} 도달. ` +
       "다음: check_city_form·check_reachability 로 점검하고, NPC·출입구 이벤트는 문 앞 칸(data.doors)에 얹는다.",
     data: {
-      mapId, width: W, height: H, seed, theme, form, ...(roofs ? { roofs } : {}), ...(water ? { water } : {}), tilesetId: TS_ID,
+      mapId, width: W, height: H, seed, theme, form, ...(roofs ? { roofs } : {}), ...(water ? { water } : {}), ...(denseWoods ? { woods: "dense" } : {}), tilesetId: TS_ID,
       streets: streetNames, ...(form === "plaza" ? { plaza: { x: plazaX, y: Math.round(plazaCy), rx: prx, ry: pry } } : {}),
       gathering: { why: gather.why, ...(gatherDoor ? { door: gatherDoor } : {}) }, fenceCells: fenceAt.size, ...(ferry ? { ferry } : {}),
       anchors, work: workAt, ...(coastWork.length ? { coastWork } : {}), houses: placedHouses.length, distinctHouses: distinct,

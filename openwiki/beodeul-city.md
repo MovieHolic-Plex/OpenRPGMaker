@@ -93,12 +93,16 @@
   모든 키트를 찍은 뒤 빈 칸에만 놓는다. 문은 두 칸 높이라 아랫칸 기준으로 맞춘다. 팔레트 집은 키가 커 좁은 띠에 안 들어가면
   같은 자리에서 더 낮은 집을 한 번 더 본다(붉은 기와 기본 마을의 난수열은 그대로).
 - `water`(river 만): `river` 강과 다리 · `none` 강 없는 숲 빈터·언덕·성벽 안 마을(큰길이 가로지르고 일터는 타작마당). 생략하면 seed 로 셋에 하나꼴 none,
-  riverbank 형태는 늘 river. 루프 1 의 숲속·산골·장터·성벽 마을이 모두 「세로 강 + 가운데 다리」 같은 뼈대였다.
+  riverbank 형태는 늘 river(생략 시 none 확률 0.45). 루프 1 의 숲속·산골·장터·성벽 마을이 모두 「세로 강 + 가운데 다리」 같은 뼈대였다.
+- `terrain: "highland"`(river, 요청할 때만): 큰길을 맵 아래쪽(H×0.66)으로 내리고 7칸 간격 등고선 세 단. 세 단째는 오를 길 없이 산 숲(`summit`)으로 덮는다.
+  새 맵 높이는 46 이상. 독립 검수 「산골 마을인데 산이 없다」(terraces 두 단은 숲속 마을과 같은 뼈대였다).
+- `woods: "dense"`: 숲 덩이 목표 50%·씨앗 길에서 3칸·덩이 반지름 7~14, 밭 둘까지 — 숲속 빈터 마을. 「숲속 마을이 트인 풀밭」 지적.
+- 단의 동서 끝(남향 절벽 면만 그리므로 1px 선)은 그 위 두 줄에 숲을 둘러 덮고, 160칸 미만 대지 조각은 아랫단으로 내린다.
 - seed 를 생략하면 `defaultTownSeed`(시스템 설정의 무작위 오프닝 id·맵 목록·이름의 해시) — 같은 프로젝트 상태면 같은 값, 프로젝트나 맵이
   다르면 다른 값. form·terrain·roofs 를 생략하면 그 seed 로 고른다. 결과 `data.seed`·`data.roofs` 로 재현한다.
 - 경로 메모(`beodeulTownRoute.ts`)는 「마을의 정체 한 줄 → theme·form·terrain·roofs·forestType·크기」, 요청이 말하지 않은 선택과 seed 는 보내지 않기.
 - 작은 포구에서 생선 시장 좌판이 발(막힌 줄)을 물에 둬 매번 「찍기 실패」하던 것을 자리 고르기에서 거른다(`feetOnWater`).
-프로브: `bun scripts/qa/beodeul-village-forms-probe.mts --cases river:scatter:flat:5:42x32:moss:4` (6·7번째 칸 = roofs·houseCount).
+프로브: `bun scripts/qa/beodeul-village-forms-probe.mts --cases river:scatter:flat:5:42x32:moss:4` (6·7·8·9번째 칸 = roofs·houseCount·water·woods).
 결과·전후 비교: http://mdc-server:18301/village-diversity-1.html
 
 공용 참고문서에 `SMALL-VILLAGE.md`의 집 전체 배열과 `small-village-example.json`의 네 층 전체 배열,

@@ -53,8 +53,8 @@ export function formatBeodeulTownNote(target: BeodeulTownTarget, targetMap: { id
     // 2026-10-22 사용자 「마을 만들어 달라 하면 다 비슷하게 만들어 버리는 게 충격」: 이 줄이 「작은 마을 = houseCount 40×30」을 시켜
     // 늘 같은 고정 배치(같은 세 집·같은 길·같은 우물)가 나왔고, 모델은 매번 seed 7 을 보냈다. 이제 마을의 정체를 먼저 정하고 선택지로 옮긴다.
     "[마을마다 다르게] 먼저 이 마을이 무엇인지 한 줄로 정한다(무엇을 먹고 사나·왜 여기 생겼나·땅). 그 정체를 선택지로 옮긴다 — "
-      + "theme(물·기후) · water(강가 마을의 물: river 강과 다리 · none 강 없는 숲 빈터·언덕 마을) · form(마을 형태) · terrain(땅 모양) · roofs(지붕: red 붉은 기와 목골집 · slate 청회색 · moss 이끼 초가·너와 농가 · log 통나무 산골) · forestType(broadleaf·conifer·mixed) · 크기. "
-      + "예: 어촌 = coast+street(포구 길가)·slate 또는 red / 산골 = river+water none+terraces+scatter+log+conifer / 숲속 마을 = river+water none+scatter+moss+mixed / 강가 장터 = river+water river+plaza / 방앗간 마을 = river+riverbank / 성벽 안 마을 = river+water none+street. 강은 강을 말할 때만 넣는다. "
+      + "theme(물·기후) · water(강가 마을의 물: river 강과 다리 · none 강 없는 숲 빈터·언덕 마을) · form(마을 형태) · terrain(땅 모양) · roofs(지붕: red 붉은 기와 목골집 · slate 청회색 · moss 이끼 초가·너와 농가 · log 통나무 산골) · forestType(broadleaf·conifer·mixed) · woods(edge 둘레 숲 · dense 숲속 빈터) · 크기. "
+      + "예: 어촌 = coast+street(포구 길가)·slate 또는 red / 산골 = river+water none+terrain highland+scatter+log+conifer / 숲속 마을 = river+water none+woods dense+scatter+moss+mixed / 강가 장터 = river+water river+plaza / 방앗간 마을 = river+riverbank / 성벽 안 마을 = river+water none+street. 강은 강을 말할 때만 넣는다. "
       + "요청이 말하지 않은 선택(「평범한 마을」의 form·terrain·roofs 등)과 seed 는 보내지 않는다 — 도구가 프로젝트·맵마다 다르게 고르고 결과 data 에 적는다. 같은 조합을 습관처럼 다시 쓰지 않는다.",
     "집 수를 말하면(3~5채) houseCount 를 theme·form·roofs 와 함께 보낸다(크기를 생략하면 40×32 안팎). 크기는 규모에서: 작은 마을 40×32~44×36, 보통 56×44, 큰 마을 72×56 이상. church:true 는 옛 예제 마을 전용이라 쓰지 않는다.",
     where,
