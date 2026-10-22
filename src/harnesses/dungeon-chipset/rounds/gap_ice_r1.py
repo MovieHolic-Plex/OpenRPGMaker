@@ -239,15 +239,15 @@ G2_N = [3, 3, 4, 4, 3, 3, 2, 3, 3, 3, 3, 4, 4, 3, 2, 2, 3, 3, 4, 3, 3, 3, 2, 2, 
 G2_W = [2, 2, 1, 1, 2, 2, 2, 3, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 3, 2, 2, 2, 1, 2, 2, 2]
 
 # ---- 얼음 속에 언 돌 A2(얼음 안쪽 칸 덧그림).
-ICE2_FROZEN = [
-    sq(['bbbbbbbbbbbb', 'bbbbmmmmbbbb', 'bbbm2222mbbb', 'bbm234432mbb', 'bm23443321mb', 'bm2343W321mb',
-        'bm22332211mb', 'bbm122211mbb', 'bbbm1111mbbb', 'bbbbmmmmbbbb', 'bbbbbbbbbbbb', 'bbbbbbbbbbbb'], 12, 12),
-    sq(['bbbbbbbbbbbb', 'bbbbbbbbbbbb', 'bbbbbbbbbbbb', 'bbbbbmmmmbbb', 'bbbbm2344mbb', 'bbbbm3W32mbb',
-        'bbbbm2221mbb', 'bbbbbmmmmbbb', 'bbbbbbbbbbbb', 'bbbbbbbbbbbb', 'bbbbbbbbbbbb', 'bbbbbbbbbbbb'], 12, 12),
+ICE2_FROZEN = [   # 얼음 속에 흐릿하게 비치는 돌 — 고르지 않은 윤곽, 둘레는 어두운 테 대신 조금 짙은 얼음 w
+    sq(['bbbbbbbbbbbb', 'bbbbbbbbbbbb', 'bbbbwwwbbbbb', 'bbbw2343wbbb', 'bbw234432wbb', 'bbw23W432wbb',
+        'bbbw23221wbb', 'bbbbw211wbbb', 'bbbbbwwwbbbb', 'bbbbbbbbbbbb', 'bbbbbbbbbbbb', 'bbbbbbbbbbbb'], 12, 12),
+    sq(['bbbbbbbbbbbb', 'bbbbbbbbbbbb', 'bbbbbbbbbbbb', 'bbbbbbwwbbbb', 'bbbbbw343wbb', 'bbbbw23W2wbb',
+        'bbbbbw21wbbb', 'bbbbbbwbbbbb', 'bbbbbbbbbbbb', 'bbbbbbbbbbbb', 'bbbbbbbbbbbb', 'bbbbbbbbbbbb'], 12, 12),
 ]
 
 # ---- 얼음 가장자리 A2 — 평평하게: 북·서 = 1px 빛 테 P(W·c), 남·동 = 1px 어두운 턱 D(m·d 섞음 — 바닥에 앉힌다). 부풀거나 물결진 테·물방울 없음.
-P2_TEX = ['WcWWcWWWcWWcWWWc', 'cWWcWWcWWWcWWcWW', 'WWcWWWWcWcWWWWcW', 'WcWWcWWWWWWcWcWW'] * 4
+P2_TEX = ['WcbbWWcbbbWcbbbW', 'cbbWcbbbWWcbbWcb', 'bWWcbbbcWbbbWcbb', 'WcbbbWcbbbcWbbbc'] * 4   # 빛 테를 b 틈으로 끊는다
 D2_TEX = ['mdmmdmdmmdmmdmdm', 'dmmdmmdmdmmdmmdm', 'mmdmdmmdmmdmdmmd', 'dmmdmmdmmdmmmdmm'] * 4
 E2_TEX = D2_TEX
 IF2_N = ',P......'
@@ -414,49 +414,41 @@ G2_VARS = [
     [(['GG', '4j'], 11, 2)],
 ]
 
-# ---- 얼음 A2 — 짙은 얼음 청록 b(ice 2) 바탕에 고르지 않은 서리 자리 c · 드문 반짝 W. 한 장으로 이어진 각진 금 그물:
-#      이음 자리를 지나는 금 m(ice 1), 그 금의 안쪽 토막 일부만 짙은 d 로 굵게(H, 변에 닿지 않음) — 무게가 다른 금. 모든 변형의 금은 칸 변의 같은 이음 자리
-#      (위·아래 x 5·12, 왼·오른 y 3·10 — 모서리·가운데가 아님)에서만 나가므로 어느 변형끼리 붙어도 이어진다.
-#      변형마다 이음 자리를 여러 방향으로 가지 치며 잇는다 — 꺾인 각도가 섞이고, 짧은 가로지름 금, 일찍 멈추는 금, 크고 작은 판.
-#      한 방향이 주도하지 않게. 바탕엔 옅은 서리 얼룩 c 와 조금 짙은 w(water 3) 를 고르지 않게 흩는다(얼음 면 3단).
-PORTS2 = ports_of((5, 12), (3, 10))
+# ---- 얼음 A2 — 짙은 얼음 청록 b(ice 2) 바탕의 넓은 열린 판. 넓고 부드러운 서리 얼룩 c, 칸마다 2~3 개의 2~4px 흰 서리 덩이(c·W),
+#      조금 짙은 w(water 3) 얼룩. 금은 칸마다 1~2 줄의 길게 굽이치는 금 + 짧은 가지 하나 이하 — 작은 칸으로 닫히지 않는다.
+#      이음 자리는 위·아래 x 11, 왼·오른 y 5 하나씩(모서리·가운데가 아님) — 어느 변형끼리 붙어도 이어진다. 본몸통(가장자리 칸)은
+#      왼→오른 한 줄 + 위·아래 이음 자리의 짧은 멈춤 금뿐이라 칸마다 닫힌 칸이 생기지 않는다. 반짝 W 는 변형마다 한 점, 자리 제각각.
+#      금 무게: 이음 자리 쪽은 옅은 m(ice 1), 일부 안쪽 토막만 짙은 d(H), 가지 F 는 m.
+PORTS2 = ports_of((11,), (5,))
 KINDS2 = {'M': ('m', None, None), 'H': ('d', None, None), 'F': ('m', None, None)}
 ICE2_BASE = sq([
-    'bbbwbbbbcbbbcbbb',
-    'bbccbbbwwbbbbbcb',
-    'bcccbbbbbbbcbbwb',
-    'bbccbccbbbccccbw',
-    'bwbbbbbccbbccbbb',
-    'bbcbbbWbbbwbbbcb',
-    'cbbbbwwbbbcbbbbc',
-    'ccbbbbbcbbbwbbcc',
-    'bbccbbbbccbbbwbb',
-    'bbbcbwbcccbbbcbw',
-    'wbbbbbbbcbbccbbb',
-    'bcbbbbwwbbbbbWbb',
-    'bbbccbbbcbcbbwbb',
-    'bbcccbwbbbcbcbbb',
-    'bbwbbbcbbcbccbbb',
-    'bbbbbwbbbbbbccbb',
+    'bbbbbbbbbbbbbbbb',
+    'bbbbccbbbbbbwbbb',
+    'bbccccbbbbbbbbbb',
+    'bbbcbbbbbbbbbbbb',
+    'bwbbbbbbbbbbccbb',
+    'bbbbbbbbbbcccbbb',
+    'bbbbbbbbbbbbcccb',
+    'bbbbbwbbbbbbbbbb',
+    'cbbbbbbbbbbbbbbc',
+    'cbbbbbbbbbbbbbbb',
+    'bbbbbbbbccbbbwbb',
+    'bbbbbbccccbbbbbb',
+    'bwbbbbbbcbbbbbbb',
+    'bbbbbbbbbbbbbbbb',
+    'bbbbbbbbbbbbbwbb',
+    'bbbbbbbbbbbbbbbb',
 ], 16, 16, 'ICE2')
 ICE2_PATHS = [
-    [([(5, 0), (6, 4), (4, 8), (0, 10)], 'M'), ([(0, 3), (3, 4), (6, 4)], 'M'), ([(12, 0), (10, 5), (13, 8), (15, 10)], 'M'),
-     ([(15, 3), (12, 3), (10, 5)], 'M'), ([(5, 15), (7, 11), (11, 10), (13, 8)], 'M'), ([(12, 15), (11, 12)], 'M'),
-     ([(6, 4), (4, 8)], 'H'), ([(7, 11), (11, 10)], 'H'), ([(8, 6), (9, 8)], 'F'), ([(2, 12), (3, 13)], 'F')],
-    [([(0, 3), (4, 2), (5, 0)], 'M'), ([(12, 0), (9, 4), (9, 8), (5, 15)], 'M'), ([(15, 3), (9, 4)], 'M'),
-     ([(0, 10), (4, 9), (9, 8), (12, 10), (15, 10)], 'M'), ([(12, 15), (12, 10)], 'M'), ([(9, 4), (9, 8), (11, 9)], 'H'),
-     ([(3, 6), (5, 5)], 'F'), ([(13, 5), (14, 7)], 'F')],
-    [([(5, 0), (5, 5), (10, 7), (15, 3)], 'M'), ([(12, 0), (11, 3)], 'M'), ([(0, 3), (2, 6), (5, 5)], 'M'),
-     ([(0, 10), (5, 12), (5, 15)], 'M'), ([(12, 15), (10, 7)], 'M'), ([(15, 10), (12, 11)], 'M'), ([(5, 5), (10, 7)], 'H'),
-     ([(7, 10), (8, 12)], 'F'), ([(2, 9), (4, 8)], 'F')],
-    [([(0, 10), (4, 7), (8, 8)], 'M'), ([(5, 0), (7, 3), (8, 8), (5, 15)], 'M'), ([(12, 0), (14, 2), (15, 3)], 'M'),
-     ([(0, 3), (3, 3)], 'M'), ([(15, 10), (11, 9), (12, 15)], 'M'), ([(7, 3), (8, 8), (7, 12)], 'H'),
-     ([(10, 4), (12, 6)], 'F'), ([(2, 13), (3, 11)], 'F')],
-    [([(5, 0), (3, 4), (1, 3), (0, 3)], 'M'), ([(3, 4), (6, 8), (1, 10), (0, 10)], 'M'), ([(12, 0), (12, 5), (14, 8), (15, 10)], 'M'),
-     ([(15, 3), (12, 5)], 'M'), ([(5, 15), (6, 8)], 'M'), ([(12, 15), (10, 12), (13, 10)], 'M'), ([(12, 5), (14, 8)], 'H'),
-     ([(8, 4), (9, 2)], 'F'), ([(8, 12), (9, 10)], 'F')],
+    [([(0, 5), (4, 7), (9, 6), (12, 9), (15, 5)], 'M'), ([(11, 0), (10, 3)], 'M'), ([(11, 15), (12, 12)], 'M'),
+     ([(4, 7), (9, 6)], 'H')],
+    [([(0, 5), (5, 3), (11, 0)], 'M'), ([(15, 5), (10, 10), (11, 15)], 'M'), ([(6, 3), (7, 7)], 'F'), ([(13, 7), (10, 10)], 'H')],
+    [([(0, 5), (7, 8), (15, 5)], 'M'), ([(11, 0), (9, 4), (7, 8)], 'M'), ([(11, 15), (9, 11)], 'M'), ([(3, 6), (7, 8), (10, 7)], 'H')],
+    [([(11, 0), (12, 6), (9, 11), (11, 15)], 'M'), ([(0, 5), (3, 4)], 'M'), ([(15, 5), (13, 5)], 'M'), ([(12, 4), (12, 6), (10, 10)], 'H')],
+    [([(0, 5), (4, 9), (9, 12), (11, 15)], 'M'), ([(11, 0), (8, 5), (10, 8), (15, 5)], 'M'), ([(9, 6), (10, 8)], 'H'),
+     ([(4, 9), (3, 12)], 'F')],
 ]
-ICE2_FACETS = [[], [], [], [], []]
+ICE2_FACETS = [[(['W'], 3, 2)], [(['W'], 12, 5)], [(['W'], 8, 11)], [(['cW'], 5, 9)], [(['W'], 12, 4)]]
 ICE2_BODIES = [crack_body(ICE2_BASE, p, KINDS2, f, PORTS2) for p, f in zip(ICE2_PATHS, ICE2_FACETS)]
 check_ports(ICE2_BODIES, PORTS2, 'm')
 
