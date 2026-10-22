@@ -166,7 +166,7 @@ export const GENRE_LOCK_PRESETS: Readonly<Record<GenreLockPresetId, GenreLockPre
     ],
     hiddenToolPatterns: [
       /^(author|dress|harmonize|naturalize|refine|compose)_beodeul_/u,
-      /^(compose|link|build|list)_(campus|desert_east|jp_city|modern_city|pirate_isles|prehistoric|sengoku_edo|sf_station|sky_island|snow_north|steampunk|gothic|wizarding)/u,
+      /^(compose|link|build|list)_(campus|desert_east|jp_city|modern_city|pirate_isles|prehistoric|sengoku_edo|sf_station|sky_island|snow_north|steampunk|gothic|wizarding|wasteland)/u,
       /^apply_beodeul_/u,
     ],
     // 몬스터 게임 제작 도구는 숨기지 않는다(위 패턴에 안 걸린다). 전투 깊이·필드 기술은 도구 인자 한 곳에서 정해진다 — 상태·이벤트로 흉내 내지 않는다.
@@ -200,7 +200,7 @@ export const GENRE_LOCK_PRESETS: Readonly<Record<GenreLockPresetId, GenreLockPre
     hiddenToolPatterns: [
       /^(author|dress|harmonize|naturalize|refine|compose)_beodeul_/u,
       /^apply_beodeul_/u,
-      /^(compose|link|build|list)_(desert_east|pirate_isles|prehistoric|sengoku_edo|sf_station|sky_island|snow_north|steampunk|gothic|wizarding)/u,
+      /^(compose|link|build|list)_(desert_east|pirate_isles|prehistoric|sengoku_edo|sf_station|sky_island|snow_north|steampunk|gothic|wizarding|wasteland)/u,
     ],
     // 연애 마무리 4가지(2026-10-16 실제 Argon 첫 측정에서 전부 빠졌다): 제목, 인물마다 다른 칩, 호감으로 갈리는 엔딩, 자리표시 이름.
     promptExtra: "연애 게임 마무리: ① 게임 제목은 기본값(「새 게임」·「새 프로젝트」)으로 두지 말고 set_title_screen {title, logoSubtitle} 로 이 게임의 이름과 부제를 정한다 — 부제도 코드가 깔아 둔 「마음이 닿는 계절」 그대로 두지 말고 이 게임 내용에 맞게 바꾼다. "

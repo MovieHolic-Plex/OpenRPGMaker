@@ -115,6 +115,7 @@ import { SENGOKU_EDO_TOOLS } from "./sengokuEdoTools";
 import { SKY_ISLAND_TOOLS } from "./skyIslandTools";
 import { STEAMPUNK_CITY_TOOLS } from "./steampunkCityTools";
 import { SF_STATION_TOOLS } from "./sfStationTools";
+import { WASTELAND_TOOLS } from "./wastelandTools";
 import { GOTHIC_PLACE_TOOLS } from "./gothicPlaceTools";
 import { PREHISTORIC_TOOLS } from "./prehistoricTools";
 import { SNOW_NORTH_TOOLS } from "./snowNorthTools";
@@ -290,6 +291,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(JRPG_CHAPTER_TOOLS, "tile"),
   // SF 정거장·네온 거리(sf_station) 맵 구성기 — 정거장·연구 기지 실내·네온 거리·달 기지를 씨앗으로 한 장째 짠다. oprn-scifi 맵에서만 동작한다.
   ...withDomain(SF_STATION_TOOLS, "tile"),
+  // 폐허·황무지(wasteland_ruins) 구성기 — 생존자 정착지·좀비 폐허 도시·황무지 판잣집 촌을 씨앗으로 한 장째 짠다(마을 종류 표 post-apoc-kit).
+  ...withDomain(WASTELAND_TOOLS, "tile"),
   ...withDomain(GOTHIC_PLACE_TOOLS, "tile"),
   // 선사 시대 원시 세계(prehistoric) 구성기 — 부족 마을·늪지·화산 골짜기·화석 계곡·실내 넷을 한 번에 짓고(배치·통행·바닥 가장자리는 구성기), 집·동굴 문 ↔ 실내를 잇는다.
   ...withDomain(PREHISTORIC_TOOLS, "tile"),
