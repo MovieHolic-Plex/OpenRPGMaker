@@ -20,6 +20,7 @@ import skyIslandSheet from "./skyIslandSheet.json";
 import steampunkCitySheet from "./steampunkCitySheet.json";
 import modernCampusSheet from "./modernCampusSheet.json";
 import sfStationSheet from "./sfStationSheet.json";
+import wastelandRuinsSheet from "./wastelandRuinsSheet.json";
 import gothicManorSheet from "./gothicManorSheet.json";
 import prehistoricSheet from "./prehistoricSheet.json";
 import desertEastSheet from "./desertEastSheet.json";
@@ -172,6 +173,9 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // SF 정거장·네온 거리(2026-10-14) — 잠긴 팔레트 손 도트(정거장 실내·달 기지 야외·사이버 네온 거리)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/sf-station/sf_bake.py (object-gate 통과 조각만) → sf_refs.py, 정의는 project/defaults/sfStation.ts, openwiki/sf-station.md.
   {textureKey:"tex_sf_station",path:"assets/sf-station/sf-station-chipset.png",name:"SF 정거장·네온 거리 (손 도트)"},
+  // 폐허·황무지(2026-10-22) — modern_city 팔레트에 잠긴 손 도트(갈라진 아스팔트·잔해·무너진 건물·고철 판잣집·바리케이드·녹슨 차·급수탑·모닥불·장터)를 48열 16px 칸으로 구운 시트.
+  // 칸 번호는 덧붙이기 전용(자리 키 핀). 재생성: scripts/content/wasteland-ruins/wl_bake.py (object-gate 출구 통과 조각만), 정의는 project/defaults/wastelandRuins.ts, openwiki/wasteland-ruins.md.
+  {textureKey:"tex_wasteland_ruins",path:"assets/wasteland-ruins/wasteland-ruins-chipset.png",name:"폐허·황무지 (손 도트)"},
   // 고딕 저택·묘지 · 호러(2026-10) — 잠긴 고딕 팔레트 손 도트(저택·예배당·묘지·미술관 건물, 묘비·고사목·철책, 실내 벽 셋·바닥·가구·전시실)를 48열 16px 칸으로 구운 시트.
   // 3/4 관문(object-gate) 영수증이 현재 그림 해시에 PASS 인 조각만 굽는다. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/gothic-manor/bake_gm.py, 정의는 project/defaults/gothicManor.ts, openwiki/gothic-manor.md.
@@ -223,6 +227,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_steampunk_city") return steampunkCitySheet.count;
   if (key === "tex_modern_campus") return modernCampusSheet.count;
   if (key === "tex_sf_station") return sfStationSheet.count;
+  if (key === "tex_wasteland_ruins") return wastelandRuinsSheet.count;
   if (key === "tex_gothic_manor") return gothicManorSheet.count;
   if (key === "tex_prehistoric") return prehistoricSheet.count;
   if (key === "tex_desert_east") return desertEastSheet.count;

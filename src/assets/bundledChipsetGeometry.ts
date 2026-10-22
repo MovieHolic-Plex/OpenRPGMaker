@@ -11,6 +11,7 @@ import skyIslandSheet from "./skyIslandSheet.json";
 import steampunkCitySheet from "./steampunkCitySheet.json";
 import modernCampusSheet from "./modernCampusSheet.json";
 import sfStationSheet from "./sfStationSheet.json";
+import wastelandRuinsSheet from "./wastelandRuinsSheet.json";
 import gothicManorSheet from "./gothicManorSheet.json";
 import prehistoricSheet from "./prehistoricSheet.json";
 import desertEastSheet from "./desertEastSheet.json";
@@ -75,6 +76,7 @@ export function bundledChipsetTilesPerRow(key: string): number {
   if (key === "tex_steampunk_city") return steampunkCitySheet.tilesPerRow;
   if (key === "tex_modern_campus") return modernCampusSheet.tilesPerRow;
   if (key === "tex_sf_station") return sfStationSheet.tilesPerRow;
+  if (key === "tex_wasteland_ruins") return wastelandRuinsSheet.tilesPerRow;
   if (key === "tex_gothic_manor") return gothicManorSheet.tilesPerRow;
   if (key === "tex_prehistoric") return prehistoricSheet.tilesPerRow;
   if (key === "tex_desert_east") return desertEastSheet.tilesPerRow;
