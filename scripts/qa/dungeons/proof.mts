@@ -13,14 +13,16 @@ import { measureSpace } from "./space.mts";
 const out = process.argv[2] ?? "/tmp/dg-proof2";
 fs.mkdirSync(out, { recursive: true });
 const CASES: Record<string, Record<string, unknown>> = {
+  // 2026-10-23 dg2-r3 실조수 호출 인자 그대로(시드가 이름·크기에서 나오므로 같은 판이 나온다). troops 는 조수가 만든 그룹이라 뺐다.
   "small-cave": { type: "cave", size: "small", name: "작은 동굴" },
-  "tower3": { type: "castle", floors: 3, direction: "up", name: "탑" },
+  "tower3": { type: "castle", floors: 3, direction: "up", size: "medium", genre: "rpg", name: "탑" },
+  "catacomb": { type: "catacomb", name: "지하 묘지", rooms: [{ id: "entrance", kind: "entrance" }, { id: "hall", kind: "hall" }, { id: "crypt1", kind: "crypt", from: "hall" }, { id: "crypt2", kind: "crypt", from: "hall" }, { id: "crypt3", kind: "crypt", from: "crypt1" }, { id: "vault", kind: "vault", from: "crypt3" }] },
   "catacomb2": { type: "catacomb", floors: 2, name: "지하 묘지" },
-  "flooded-temple": { type: "temple", flooded: true, name: "잠긴 신전" },
+  "flooded-temple": { type: "temple", flooded: true, name: "물에 잠긴 옛 신전" },
   "lava": { type: "volcano", name: "화산 동굴" },
-  "den": { type: "cave", lair: true, name: "고블린 굴" },
-  "puzzle": { type: "catacomb", puzzle: "lever", name: "레버 던전" },
-  "boss-run": { type: "catacomb", size: "medium", name: "보스 던전" },
+  "den": { type: "cave", lair: true, genre: "rpg", size: "medium", name: "고블린 굴" },
+  "puzzle": { puzzle: "lever", name: "레버의 지하 감옥", size: "medium" },
+  "boss-run": { type: "catacomb", genre: "rpg", name: "지하 던전", size: "medium" },
 };
 const only = process.argv.slice(3);
 for (const [name, args] of Object.entries(CASES)) {

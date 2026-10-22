@@ -57,7 +57,7 @@ export function planDungeonRooms(spec: DungeonSpec): DungeonRoomInput[] {
 
 
 /**
- * 같은 방 목록을 배치 흔들기만 바꿔 여러 번 놓고, 허공(방·통로·벽 앞면이 아닌 칸)이 가장 적은 배치를 고른다(2026-10-23 assistant-dungeons-2).
+ * 같은 방 목록을 배치 흔들기만 바꿔 64번 놓고, 허공(방·통로·벽 앞면이 아닌 칸) + 가장 나쁜 카메라 창 허공이 가장 적은 배치를 고른다(2026-10-23 assistant-dungeons-2).
  * 한 번만 놓으면 십자·사슬 모양이 되어 사분면이 통째로 검은 허공이었다. 결정적이다(같은 시드 = 같은 배치).
  */
 export function layoutDungeon(spec: DungeonSpec): DungeonLayout {
@@ -66,7 +66,7 @@ export function layoutDungeon(spec: DungeonSpec): DungeonLayout {
   if (inputs.length > 12) throw new DungeonComposeError("방은 12개까지다 — 한 층을 둘로 나눠라.", "invalid-args");
   let best: { layout: DungeonLayout; score: number } | null = null;
   let lastError: unknown = null;
-  for (let salt = 0; salt < 16; salt += 1) {
+  for (let salt = 0; salt < 64; salt += 1) {
     let layout: DungeonLayout;
     try { layout = layoutOnce(spec, inputs, salt); } catch (error) { lastError = error; continue; }
     const score = voidScore(layout);
@@ -84,7 +84,20 @@ function voidScore(layout: DungeonLayout): number {
   for (const r of layout.rooms) mark(r, WALL_ROWS);
   for (const c of layout.corridors) mark(c.rect, c.dir === "E" || c.dir === "W" ? WALL_ROWS : 0);
   let n = 0; for (let i = 0; i < occ.length; i += 1) n += occ[i]!;
-  return 1 - n / (W * H);
+  // 플레이어 카메라(20×15, 맵 경계로 당김) 중 가장 나쁜 창의 허공 비율도 더한다 — 전체 비율만 보면 ㄱ자 판 구석 창이 57% 허공인 판을 골랐다
+  // (2026-10-23 dg2-r3 레버 던전·지하 묘지).
+  const SW = Math.min(20, W), SH = Math.min(15, H);
+  let worst = 0;
+  const seen = new Set<number>();
+  for (const r of layout.rooms) for (let cy = r.y; cy < r.y + r.h; cy += 2) for (let cx = r.x; cx < r.x + r.w; cx += 2) {
+    const sx = Math.max(0, Math.min(W - SW, cx - (SW >> 1))), sy = Math.max(0, Math.min(H - SH, cy - (SH >> 1)));
+    if (seen.has(sy * W + sx)) continue;
+    seen.add(sy * W + sx);
+    let v = 0;
+    for (let y = sy; y < sy + SH; y += 1) for (let x = sx; x < sx + SW; x += 1) if (!occ[y * W + x]) v += 1;
+    worst = Math.max(worst, v / (SW * SH));
+  }
+  return 1 - n / (W * H) + worst;
 }
 
 function layoutOnce(spec: DungeonSpec, inputs: readonly DungeonRoomInput[], salt: number): DungeonLayout {
@@ -97,6 +110,7 @@ function layoutOnce(spec: DungeonSpec, inputs: readonly DungeonRoomInput[], salt
   const used = new Map<string, Set<DungeonDir>>();
   const ids = new Set<string>();
   const jitter = (base: number, spread: number) => base + Math.floor(random() * (spread * 2 + 1)) - spread;
+  const wallStair = spec.entryStair === undefined || spec.entryStair === "up" || spec.entryStair === "door";
   inputs.forEach((input, index) => {
     const kind: DungeonRoomKind = input.kind ?? (index === 0 ? "entrance" : "hall");
     const [dw, dh] = DEFAULT_SIZE[kind];
@@ -121,7 +135,10 @@ function layoutOnce(spec: DungeonSpec, inputs: readonly DungeonRoomInput[], salt
     let best: Best | null = null;
     for (const [rank, parent] of list.entries()) {
     const taken = used.get(parent.id)!;
-    const dirs = (input.dir ? [input.dir, ...DUNGEON_DIRS.filter((d) => d !== input.dir)] : [...DUNGEON_DIRS]).filter((d) => !taken.has(d));
+    // 입구 방 북벽은 계단·문(바깥 출구) 자리다 — 북쪽 통로가 벽을 가르면 계단 놓을 평평한 벽이 사라졌다(2026-10-23 배치 64판에서 지하 묘지 2층).
+    // 방 목록이 북쪽을 직접 바란 경우(신전 현관→본당)만 허용한다.
+    const keepNorth = rank >= 0 && parent.kind === "entrance" && parent.depth === 0 && wallStair && input.dir !== "N";
+    const dirs = (input.dir ? [input.dir, ...DUNGEON_DIRS.filter((d) => d !== input.dir)] : [...DUNGEON_DIRS]).filter((d) => !taken.has(d) && !(keepNorth && d === "N"));
     for (const dir of dirs) {
       for (const shift of strict && input.shift !== undefined ? [input.shift] : [0, 2, -2, 4, -4, 6, -6, 9, -9]) {
         // 세로 통로는 5칸이 먼저(벽 앞면 3줄 위에 천장 두 줄 — 한 줄이면 두 방 사이 벽이 실선처럼 얇다), 가로 통로는 4칸.
