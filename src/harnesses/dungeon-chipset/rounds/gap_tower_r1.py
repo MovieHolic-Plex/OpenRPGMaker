@@ -46,6 +46,9 @@ FACE_END = 0.94    # 안벽 앞면이 보이는 범위: |sx|/Ri < 이 값(그 �
 # ------------------------------------------------------------------------------------------------ 링 모양(손 표)
 # 반지름 R 원의 행 d(중심에서 d+0.5 px 떨어진 행) 반너비. 12칸 링 = 바깥 96 · 안 85 · 판석 안 77, 8칸 링 = 64 · 53 · 45.
 TAB = {
+    80: [80, 80, 80, 80, 80, 80, 80, 80, 80, 79, 79, 79, 79, 79, 79, 78, 78, 78, 78, 78, 77, 77, 77, 76, 76, 76, 75, 75, 75, 74, 74, 74, 73, 73, 72, 72, 71, 71, 70, 70, 69, 68, 68, 67, 66, 66, 65, 64, 64, 63, 62, 61, 60, 59, 59, 58, 57, 56, 55, 53, 52, 51, 50, 49, 47, 46, 44, 43, 41, 40, 38, 36, 34, 32, 29, 26, 23, 20, 15, 9],
+    69: [69, 69, 69, 69, 69, 69, 69, 69, 68, 68, 68, 68, 68, 68, 67, 67, 67, 67, 66, 66, 66, 66, 65, 65, 65, 64, 64, 63, 63, 62, 62, 61, 61, 60, 60, 59, 59, 58, 57, 57, 56, 55, 54, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 42, 41, 40, 38, 37, 35, 33, 31, 29, 27, 25, 22, 18, 14, 8],
+    61: [61, 61, 61, 61, 61, 61, 61, 61, 60, 60, 60, 60, 60, 59, 59, 59, 59, 58, 58, 58, 57, 57, 57, 56, 56, 55, 55, 54, 54, 53, 53, 52, 52, 51, 50, 50, 49, 48, 47, 46, 46, 45, 44, 43, 42, 41, 39, 38, 37, 36, 34, 33, 31, 29, 27, 25, 23, 20, 17, 13, 8],
     96: [96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 95, 95, 95, 95, 95, 95, 95, 94, 94, 94, 94, 94, 93, 93, 93, 93, 92, 92, 92, 91, 91, 91, 90, 90, 90, 89, 89, 88, 88, 87, 87, 87, 86, 86, 85, 85, 84, 83, 83, 82, 82, 81, 80, 80, 79, 78, 78, 77, 76, 75, 75, 74, 73, 72, 71, 70, 69, 68, 67, 66, 65, 64, 63, 62, 61, 59, 58, 57, 55, 54, 52, 51, 49, 47, 46, 44, 42, 39, 37, 35, 32, 29, 26, 22, 17, 10],
     85: [85, 85, 85, 85, 85, 85, 85, 85, 85, 84, 84, 84, 84, 84, 84, 84, 83, 83, 83, 83, 82, 82, 82, 82, 81, 81, 81, 80, 80, 80, 79, 79, 79, 78, 78, 77, 77, 76, 76, 75, 75, 74, 74, 73, 72, 72, 71, 70, 70, 69, 68, 68, 67, 66, 65, 64, 64, 63, 62, 61, 60, 59, 58, 57, 55, 54, 53, 52, 50, 49, 47, 46, 44, 43, 41, 39, 37, 35, 33, 30, 27, 24, 20, 16, 9],
     77: [77, 77, 77, 77, 77, 77, 77, 77, 77, 76, 76, 76, 76, 76, 76, 75, 75, 75, 75, 74, 74, 74, 74, 73, 73, 73, 72, 72, 72, 71, 71, 70, 70, 69, 69, 68, 68, 67, 67, 66, 65, 65, 64, 64, 63, 62, 61, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 46, 45, 44, 42, 40, 39, 37, 35, 33, 31, 29, 26, 23, 19, 15, 9],
@@ -66,7 +69,7 @@ A1 = {
     'name': 'A1',
     # 띠(밝은 반점 돌): w 바깥 끝 · l 몸 · Q 밝은 반점 · g 어두운 반점 · k 안쪽 줄 · W 흰 턱
     # 앞면(벽돌): K 줄눈 · J 그늘 · B 몸 · C 밝은 반점 · D 왼 끝 빛 · X 윗줄 빛
-    'leg': legend(w=('cata', 3), l=('cata', 4), k=('cata', 5), Q=('stone', 5), g=('stone', 2), W=('rim', 6), f=('stone', 1),
+    'leg': legend(w=('cata', 3), l=('cata', 4), k=('cata', 5), Q=('stone', 5), g=('stone', 2), W=('stone', 5), f=('stone', 1),
                   K=('brick', 0), J=('brick', 1), B=('brick', 2), C=('brick', 3), D=('brick', 4), X=('brick', 5), Y=('brick', 6),
                   a=('cata', 6), h=('cata', 5), G=('cata', 4), i=('cata', 3), L=('cata', 2), m=('cata', 1), b=('stone', 1),
                   p=('rim', 6), o=('stone', 5), n=('stone', 4)),
@@ -167,9 +170,9 @@ A1 = {
     ]],
     'iface_shift': 0,
     # 디딤판: 0행 = 앞 끝 닳은 턱(밝음), 몸은 다듬은 돌 n + 닳아 밝은 자리 o + 얼룩 h·G — 판마다 다른 자리(x % 16 이 단마다 밀린다)
-    'tread': ['oooonoooooooonoo', 'nnnhnnnnonnnnnnn', 'nnnnnnGnnnnnhnnn', 'nhnnnnnnnnnnnnGn', 'nnnnnonnnnhnnnnn',
-              'nnGnnnnnnnnnnnnn', 'nnnnnnnnhnnnnonn', 'nnnnhnnnnnnnnnnn', 'nnnnnnnnnnnGnnnn', 'hnnnnnnnnnnnnnnh'],
-    'riser': ['i', 'L', 'm', 'b'],                       # 디딤판 밑 챌판 4줄(위 → 아래)
+    'tread': ['aaaanaaaaaaaanaa', 'hhhGhhhhahhhhhhh', 'hhhhhhGhhhhhihhh', 'hGhhhhhhhhhhhhGh', 'hhhhhahhhhGhhhhh',
+              'hhihhhhhhhhhhhhh', 'hhhhhhhhGhhhhahh', 'hhhhGhhhhhhhhhhh', 'hhhhhhhhhhhihhhh', 'Ghhhhhhhhhhhhhhh'],
+    'riser': ['i', 'L', 'm', 'b'],                       # 챌판 줄(위 → 아래): 디딤판 끝 바로 밑이 가장 밝다
     'support': 'L',
 }
 
@@ -479,172 +482,45 @@ def actor():
     return Cv.of(dot.actor1_frame(1, 0, 0))
 
 
-# ------------------------------------------------------------------------------------------------ 앞면 위에 파 넣는 것(창·아치)
 # 앞면 좌표(u: 둘레 길이, v: 띠 아래 깊이) 표. '.' = 앞면 결 그대로. 가운데 열 = u0. 장면에서는 그 자리 앞면 화소를 바꾼다.
-WIN = {   # 14열 × 32행(앞면 v). 상인방 Y X · 위 그늘 K · 왼 창 옆면(동쪽을 봄, 그늘) K J · 구멍 ; · 오른 창 옆면(서쪽, 빛) B C D · 창턱 윗면 Y X(3줄) · 창턱 앞 J K
+# ------------------------------------------------------------------------------------------------ 화살 구멍 창
+# 14열 × 32행(앞면 v, 0 = 띠 바로 밑). 바깥(앞) 너비 8px 의 벌어진 창 옆면이 안쪽 1px 틈으로 좁아진다(사선 구멍, 받침돌 없음).
+# 왼 옆면(동쪽을 봄 — 그늘) K J · 틈 ; · 오른 옆면(서쪽을 봄 — 빛) B C D · 위 상인방 X · 밑 비탈(창턱 비탈 윗면 3줄) · 비탈 끝 J.
+# 빛 모습: 틈 안이 바깥 하늘빛(쇠 램프의 옅은 청회색 u v) — 유리가 아니라 열린 틈, 양쪽 옆면이 빛을 받는다.
+def _win(rows):
+    assert len(rows) <= 32 and all(len(r) == 14 for r in rows), [len(r) for r in rows]
+    return rows + ['.' * 14] * (32 - len(rows))
+
+
+_E = ['..............'] * 2
+WIN = {
     'A1': {
-        'dark': [
-            '..............',
-            '..............',
-            '...YYYYYYYY...',
-            '..YXXXXXXXXJ..',
-            '..XKKKKKKKKJ..',
-            '..XKKJ;;CDXJ..',
-            '..XKJK;;BCDJ..',
-            '..XKJK;;BCDJ..',
-            '..XKJK;;BCDJ..',
-            '..XKJK;;BCDJ..',
-            '..XKJK;;BCDJ..',
-            '..XKJK;;BCDJ..',
-            '..XKJ;;;;;DJ..',
-            '..XKJ;;;;;DJ..',
-            '..XKJK;;BCDJ..',
-            '..XKJK;;BCDJ..',
-            '..XKJK;;BCDJ..',
-            '..XKJK;;BCDJ..',
-            '..XKJK;;BCDJ..',
-            '..XKJK;;BCDJ..',
-            '..XKJK;;BCDJ..',
-            '..XKJK;;BCDJ..',
-            '..XKJKK;BCDJ..',
-            '..XKJJKBCDXJ..',
-            '.YYYYYYYYYYYYK',
-            '.XXXXDXXXXXXXK',
-            '.XXXXXXXXCXXXK',
-            '.JJJJJJJJJJJJK',
-            '.KKKKKKKKKKKKK',
-            '..............',
-            '..............',
-            '..............',
-        ],
-        'lit': [
-            '..............',
-            '..............',
-            '...YYYYYYYY...',
-            '..YXXXXXXXXJ..',
-            '..XCBBBBBXYJ..',
-            '..XCBDopXYYJ..',
-            '..XCBDppXYYJ..',
-            '..XCBDppXYYJ..',
-            '..XCBDppXYYJ..',
-            '..XCBDppXYYJ..',
-            '..XCBDppXYYJ..',
-            '..XCBDppXYYJ..',
-            '..XCBoppppYJ..',
-            '..XCBoppppYJ..',
-            '..XCBDppXYYJ..',
-            '..XCBDppXYYJ..',
-            '..XCBDppXYYJ..',
-            '..XCBDppXYYJ..',
-            '..XCBDppXYYJ..',
-            '..XCBDppXYYJ..',
-            '..XCBDppXYYJ..',
-            '..XCBDppXYYJ..',
-            '..XCBDopXYYJ..',
-            '..XCDDXXYYYJ..',
-            '.YYYYYooYYYYYK',
-            '.YYYYYYoYYYYXK',
-            '.XXXXXXXXXXXXK',
-            '.JJJJJJJJJJJJK',
-            '.KKKKKKKKKKKKK',
-            '..............',
-            '..............',
-            '..............',
-        ],
+        'dark': _win(_E + ['....XXXXXX....', '...XJKKKBCJ...', '...XJK;KBCJ...']
+                     + ['...XJK;BCDJ...'] * 6 + ['...XJ;;;;DJ...', '...XK;;;;CJ...']
+                     + ['...XJK;BCDJ...'] * 8 + ['...XJJKBCDJ...', '...XDDDDDDJ...', '...XXXXXXXJ...', '...XYXXXXXJ...',
+                                                 '...JJJJJJJJ...'] + ['..............'] * 5),
+        'lit': _win(_E + ['....XXXXXX....', '...XCBBBXYJ...', '...XCBuvXYJ...']
+                    + ['...XCBvuXYJ...'] * 6 + ['...XCvuuuYJ...', '...XCuuuvXJ...']
+                    + ['...XCBvuXYJ...'] * 8 + ['...XCCvXYYJ...', '...XYYYYYYJ...', '...XYYXYYYJ...', '...XYYYYXYJ...',
+                                                '...JJJJJJJJ...'] + ['..............'] * 5),
     },
-    'A2': {   # 막돌 테 + 갓돌 상인방 f e, 곧은 틈
-        'dark': [
-            '..............',
-            '..............',
-            '..fffffffffe..',
-            '.feeeeeeeeeedA',
-            '.EAAAAAAAAAAdA',
-            '.FAABA;;DEFBA.',
-            '.EAABA;;DEFDA.',
-            '.FAABA;;DEFBA.',
-            '.EAABA;;DEFDA.',
-            '.FAABA;;DEFBA.',
-            '.EAABA;;DEFDA.',
-            '.FAABA;;DEFBA.',
-            '.EAABA;;DEFDA.',
-            '.FAABA;;DEFBA.',
-            '.EAABA;;DEFDA.',
-            '.FAABA;;DEFBA.',
-            '.EAABA;;DEFDA.',
-            '.FAABA;;DEFBA.',
-            '.EAABA;;DEFDA.',
-            '.FAABA;;DEFBA.',
-            '.EAABA;;DEFDA.',
-            '.FAABA;;DEFBA.',
-            '.EAABAA;DEFDA.',
-            '.FAABBBDEEFBA.',
-            '.dffffeffffffA',
-            '.deeeeeeeeeeeA',
-            '.ceeeedeeeeedA',
-            '.bccccccccccbA',
-            '.AAAAAAAAAAAAA',
-            '..............',
-            '..............',
-            '..............',
-        ],
-        'lit': [
-            '..............',
-            '..............',
-            '..fffffffffe..',
-            '.feeeeeeeeeedA',
-            '.EBBBBBBFGGGdA',
-            '.FBDEBopFGGBA.',
-            '.EBDEBppFGGDA.',
-            '.FBDEBppFGGBA.',
-            '.EBDEBppFGGDA.',
-            '.FBDEBppFGGBA.',
-            '.EBDEBppFGGDA.',
-            '.FBDEBppFGGBA.',
-            '.EBDEBppFGGDA.',
-            '.FBDEBppFGGBA.',
-            '.EBDEBppFGGDA.',
-            '.FBDEBppFGGBA.',
-            '.EBDEBppFGGDA.',
-            '.FBDEBppFGGBA.',
-            '.EBDEBppFGGDA.',
-            '.FBDEBppFGGBA.',
-            '.EBDEBppFGGDA.',
-            '.FBDEBppFGGBA.',
-            '.EBDEBopFGGDA.',
-            '.FBDEFFGGGGBA.',
-            '.dffffppfffffA',
-            '.deeeeepeeeeeA',
-            '.ceeeedeeeeedA',
-            '.bccccccccccbA',
-            '.AAAAAAAAAAAAA',
-            '..............',
-            '..............',
-            '..............',
-        ],
+    'A2': {
+        'dark': _win(_E + ['....ffffff....', '...fBAAADEA...', '...FBA;ADEA...']
+                     + ['...FBA;DEFA...', '...EBA;DEFB...'] * 7 + ['...FBA;DEFA...', '...EBA;DEFB...',
+                                                                   '...FBBADEFA...', '...FEEEEEEA...', '...FFFFFFFA...',
+                                                                   '...FFGFFFFA...', '...AAAAAAAA...'] + ['..............'] * 6),
+        'lit': _win(_E + ['....ffffff....', '...fDBBBFGA...', '...FDBuvFGA...']
+                    + ['...FDBvuFGA...', '...EDBvuFGB...'] * 7 + ['...FDBvuFGA...', '...EDBvuFGB...',
+                                                                  '...FDDvFGGA...', '...FGGGGGGA...', '...FGGFGGGA...',
+                                                                  '...FGGGGFGA...', '...AAAAAAAA...'] + ['..............'] * 6),
     },
 }
-SILL = {'A1': [24, 26], 'A2': [24, 26]}   # 창턱 윗면 행(3줄)
-
-
-WIN_LEG = {';': ('void', 0), ',': ('void', 2), 'p': ('rim', 6), 'o': ('stone', 5)}
-# 빛 자리: 창 밑 바닥에 엷은 빛(앞면 밑에서 아래로 넓어지는 사다리꼴, 2화소 걸러 하나 — 반투명은 그림자만 허용이라 성긴 밝은 점으로)
-LIGHT = [   # 창에서 비스듬히 떨어지는 빛 두 줄기(오른쪽 아래로 퍼짐)
-    '....po......',
-    '....op.o....',
-    '.....o.po...',
-    '.....po.o...',
-    '......o.po..',
-    '......po.o..',
-    '.......o.p..',
-    '.......p..o.',
-    '........o...',
-    '............',
-]
-ARCH = {   # 계단참 뒤 안벽에 벽 속으로 이어지는 아치(14열, v 2~23). '.' = 앞면 결
-    'A1': ['..............', '..............', '....XXXXXX....', '...XDDDDDDJ...', '..XDJ,,,,JDJ..', '..DJ,;;;;,JJ..',
-           '..DJ;;;;;;JJ..'] + ['..DJ;;;;;;JJ..'] * 17,
-    'A2': ['..............', '..............', '...fffffeee...', '..feeeeeeeedA.', '..EDB,,,,BDEA.', '..FDB;;;;BDBA.',
-           '..EDB;;;;BDEA.'] + ['..FDB;;;;BDBA.', '..EDB;;;;BDEA.'] * 8 + ['..FDB;;;;BDBA.'],
+SILL = {'A1': [22, 24], 'A2': [22, 24]}   # 창 밑 비탈 윗면 행(3줄) — 그 밑 줄이 비탈 끝(어두움)
+WIN_LEG = {';': ('void', 0), ',': ('void', 2), 'u': ('iron', 5), 'v': ('iron', 4)}
+# 계단참 뒤 안벽 문(14열): 상인방 끝 X·f, 문설주, 문 안 어둠 8px × 16줄 — 1배에서 문으로 읽히게 띠 바로 밑부터 계단참까지
+ARCH = {
+    'A1': ['.XXXXXXXXXXXX.', 'XDDDDDDDDDDDDJ', 'XJK,,,,,,,,KJJ'] + ['XJ;;;;;;;;;;JJ'] * 14 + ['XJJJJJJJJJJJJJ'],
+    'A2': ['.ffffffffffffe', 'feeeeeeeeeeedA', 'EDB,,,,,,,,BDA'] + ['FDB;;;;;;;;BBA', 'EDB;;;;;;;;BDA'] * 7 + ['FBBBBBBBBBBBBA'],
 }
 
 
@@ -654,156 +530,228 @@ def overlay_leg(c):
     return leg
 
 
-def carve(cv, kind, geo, Ro, rows, u0, leg, only='face'):
-    """앞면 좌표 표 rows 를 둘레 u0 자리에 붙인다(그 자리 앞면 화소만 바꾼다). 반환: 열 → 앞면 밑 y(빛 자리용)."""
+def carve(cv, kind, geo, Ro, rows, u0, leg, only='face', v0=0):
+    """앞면 좌표 표 rows 를 둘레 u0 자리에 붙인다(그 자리 앞면 화소만 바꾼다). v0 = 표 첫 줄이 놓이는 앞면 깊이."""
     Ri = Ro - BAND
     w = len(rows[0])
-    itop, bottom = {}, {}
+    itop = {}
     for (x, y), k in kind.items():
         if k == 'face':
             itop[x] = min(itop.get(x, y), y)
-            bottom[x] = max(bottom.get(x, y), y)
     for (x, y), k in kind.items():
         if k != only:
             continue
         sx, sy, stx, sty, north = geo[x, y]
         u = stx if stx is not None else Ri * math.asin(max(-1.0, min(1.0, sx / Ri)))
         col = int(math.floor(u - u0 + w / 2))
-        v = y - itop[x]
+        v = y - itop[x] - v0
         if 0 <= col < w and 0 <= v < len(rows) and rows[v][col] != '.':
             cv.put(x, y, leg[rows[v][col]])
-    return bottom, itop
 
 
 def window(key, c, look):
-    """한 모습 16×32 조각: 앞면 결 위에 그대로 얹는 평평한 판(0~31행 = 앞면 2단). look 'patch' = 빛 모습 밑 바닥 빛 자리 16×16."""
-    leg = overlay_leg(c)
-    if look == 'patch':
-        cv = Cv(T, T)
-        stamp(cv, LIGHT, leg, 2, 2)
-        return cv
+    """한 모습 16×32: 앞면 위에 그대로 얹는 평평한 판(0~31행 = 앞면 2단)."""
     cv = Cv(T, 32)
-    stamp(cv, WIN[key][look], leg, 1, 0)
+    stamp(cv, WIN[key][look], overlay_leg(c), 1, 0)
     return cv
 
 
 def place_window(cv, kind, geo, Ro, key, c, look, u0):
-    leg = overlay_leg(c)
-    bottom, itop = carve(cv, kind, geo, Ro, WIN[key][look], u0, leg)
-    if look == 'lit':   # 빛 자리: 창 아래 앞면 밑에서부터
-        Ri = Ro - BAND
-        xs = [x for x in bottom if abs(Ri * math.asin(max(-1, min(1, geo[x, bottom[x]][0] / Ri))) - u0) < 6]
-        if xs:
-            x0 = min(xs) + (len(xs) - 12) // 2
-            for j, row in enumerate(LIGHT):
-                for i, ch in enumerate(row):
-                    x = x0 + i
-                    if ch == '.' or x not in bottom:
-                        continue
-                    y = bottom[x] + 1 + j
-                    if kind.get((x, y)) in ('floor', 'course'):
-                        cv.put(x, y, leg[ch])
+    carve(cv, kind, geo, Ro, WIN[key][look], u0, overlay_leg(c))
 
 
-# ------------------------------------------------------------------------------------------------ 벽 계단(12칸 링 북서 안벽)
-# 벽에 박아 내민 돌 디딤판(탑 계단의 흔한 짜임). 손 표: 단마다 (디딤판 왼끝 x, 디딤판 윗줄 y, 너비, 깊이) — 12칸 링 캔버스 좌표.
-# 서쪽 안벽 밑(바닥)에서 시작해 북서 안벽 바닥선을 따라 오른쪽 위로 감아 오르고(단마다 3~7px 동쪽, 8~9px 위), 맨 위 계단참 뒤
-# 안벽에 벽 속으로 이어지는 아치를 판다. 그리는 것: 디딤판 윗면 + 남쪽 챌판(4줄)만 — 옆면 없음. 아래 단보다 동쪽으로 나간 부분 밑은
-# 바닥·벽에 지는 그림자(반투명)만 — 받침 덩어리를 그리지 않는다. 맨 아래 단은 바닥에 앉는다(챌판 밑 = 바닥).
+# ------------------------------------------------------------------------------------------------ 벽 계단(12칸 링 북서 안벽, 돌아 오르는 쐐기 디딤판)
+# 벽에 박아 내민 쐐기 디딤판. 손 표: 단마다 (벽 쪽 시작 각, 끝 각, 안쪽 반지름, 높이 px) — 각은 북쪽에서 서쪽으로 잰 도(90 = 정서).
+# 디딤판은 바닥 원(안벽 밑선, 중심 = 링 중심에서 32px 아래) 위의 쐐기 — 벽 쪽(바깥 반지름 Ri+3)이 넓고 방 쪽으로 좁아진다 —
+# 를 높이만큼 위로 올려 그린다. 서쪽(낮음)에서 북쪽(높음)으로 감아 오르므로 단마다 조금씩 돌아간다.
+# 그리는 것: 디딤판 윗면 + 아래 단 쪽 지름 변 밑 챌판(단 높이 3줄, 남서를 봄) + 방 쪽 끝 2줄 판 두께 + 바닥·벽에 지는 그림자.
+# 받침 덩어리·옆면 없음. 맨 위 계단참 뒤 안벽에 문(ARCH)을 판다 — 문 밑이 계단참 높이.
+RISE = 3
 STEPS = {
-    'A1': [(15, 92, 23, 5), (18, 83, 23, 5), (22, 75, 23, 5), (27, 67, 23, 5), (33, 59, 23, 5), (40, 52, 22, 5), (47, 41, 24, 8)],
-    'A2': [(15, 92, 24, 5), (18, 83, 24, 5), (22, 75, 23, 5), (27, 67, 24, 5), (33, 59, 23, 5), (40, 52, 23, 5), (47, 41, 25, 8)],
+    'A1': [(90, 79, 66, 3), (79, 68, 66, 6), (68, 57, 66, 9), (57, 46, 66, 12), (46, 24, 62, 15)],
+    'A2': [(90, 78, 65, 3), (78, 67, 67, 6), (67, 56, 65, 9), (56, 45, 67, 12), (45, 23, 62, 15)],
 }
 STAIR_RO = 96
-STAIR_BOX = (16, 16, 64, 96)   # 12칸 링 캔버스에서 자를 상자 4×6칸
+
+
+def _wedge(fcx, fcy, a0, a1, rin, rout, e, n=8):
+    pts = []
+    for k in range(n + 1):
+        a = math.radians(a0 + (a1 - a0) * k / n)
+        pts.append((fcx - rout * math.sin(a), fcy - rout * math.cos(a) - e))
+    for k in range(n, -1, -1):
+        a = math.radians(a0 + (a1 - a0) * k / n)
+        pts.append((fcx - rin * math.sin(a), fcy - rin * math.cos(a) - e))
+    return pts
+
+
+def _inside(pts, x, y):
+    n, ok = len(pts), False
+    for i in range(n):
+        x1, y1 = pts[i]
+        x2, y2 = pts[(i + 1) % n]
+        if (y1 > y) != (y2 > y) and x < x1 + (y - y1) * (x2 - x1) / (y2 - y1):
+            ok = not ok
+    return ok
+
+
+def _fill(pts):
+    xs = [p[0] for p in pts]
+    ys = [p[1] for p in pts]
+    out = set()
+    for y in range(int(min(ys)) - 1, int(max(ys)) + 2):
+        for x in range(int(min(xs)) - 1, int(max(xs)) + 2):
+            if _inside(pts, x + 0.5, y + 0.5):
+                out.add((x, y))
+    return out
 
 
 def stair_layer(key, c):
-    """12칸 링 좌표의 계단 그림(투명 바탕). 아치는 안벽 앞면에 파 넣은 것까지 포함."""
+    """12칸 링 좌표의 계단 그림(투명 바탕). 계단참 뒤 문은 안벽 앞면에 파 넣은 것까지 포함."""
     Ro = STAIR_RO
+    Ri = Ro - BAND
     rv, kind, geo, top = ring(c, Ro)
+    fcx, fcy = Ro, top + Ro + WALL_H
     leg = c['leg']
     cv = Cv(rv.w, rv.h)
     steps = STEPS[key]
-    # 아치: 계단참 가운데 열의 안벽 앞면
-    lx, ly, lw, ld = steps[-1]
-    xm = lx + lw // 2
-    u_arch = (Ro - BAND) * math.asin((xm + 0.5 - Ro) / (Ro - BAND))
-    carve(cv, kind, geo, Ro, ARCH[key], u_arch, overlay_leg(c))
+    a0, a1, _, e = steps[-1]
+    am = math.radians(a1 - 5)                     # 문은 계단참 동쪽 끝 바로 옆 — 앞을 가리는 디딤판이 없어 1배에서 문으로 읽힌다
+    u_door = Ri * math.asin(-math.sin(am) * (Ri + 3) / Ri if math.sin(am) * (Ri + 3) < Ri else -1)
+    carve(cv, kind, geo, Ro, ARCH[key], u_door, overlay_leg(c), v0=WALL_H - e - len(ARCH[key]))
     tread = c['tread']
-    drawn = set()
+    painted = {}
     for i in range(len(steps) - 1, -1, -1):
-        x0, y0, w, d = steps[i]
-        for y in range(y0, y0 + d + 4):
-            for x in range(x0, x0 + w):
-                if kind.get((x, y)) in ('band', 'out', None):
-                    continue
-                r = y - y0
-                if r < d:
-                    ch = tread[r][(x + 5 * i) % 16] if r < len(tread) else tread[-1][(x + 5 * i) % 16]
-                    if x == x0 + w - 1 and r:
-                        ch = c['riser'][0]
-                else:
-                    ch = c['riser'][r - d]
-                cv.put(x, y, leg[ch])
-                drawn.add((x, y))
-    # 그림자: 아래 단보다 동쪽으로 나간 디딤판 밑(바닥·벽에 지는 그늘, 단 높이만큼) + 맨 아래 단 앞 1줄
-    for i in range(1, len(steps)):
-        x0, y0, w, d = steps[i]
-        bx0, by0, bw, bd = steps[i - 1]
-        for x in range(max(x0, bx0 + bw), x0 + w):
-            for y in range(y0 + d + 4, by0 + bd + 4):
-                if (x, y) not in drawn and kind.get((x, y)) in ('floor', 'course', 'face'):
-                    if cv.a[y, x, 3] == 0:
-                        if kind[x, y] == 'floor':
-                            cv.shadow(x, y)
-                        else:   # 불투명 판석·벽 위 그늘 = 그 자리 화소를 한 단 어둡게 할 수 없으니 그림자 색 화소로 두지 않고 건너뜀
-                            pass
-    x0, y0, w, d = steps[0]
-    for x in range(x0, x0 + w + 1):
-        y = y0 + d + 4
-        if kind.get((x, y)) == 'floor' and cv.a[y, x, 3] == 0:
-            cv.shadow(x, y)
-    for i, (x0, y0, w, d) in enumerate(steps):   # 동쪽 끝 바로 옆 1열 그림자
-        for y in range(y0 + 1, y0 + d + 4):
-            if kind.get((x0 + w, y)) == 'floor' and cv.a[y, x0 + w, 3] == 0:
-                cv.shadow(x0 + w, y)
+        a0, a1, rin, e = steps[i]
+        rout = Ri + 3
+        top_px = _fill(_wedge(fcx, fcy, a0, a1, rin, rout, e))
+        # 챌판: 아래 단 쪽(a0) 지름 변을 높이 e-RISE … e 로 쓸어 내린 띠(남서를 보는 면). 위 줄일수록 밝다.
+        riser = {}
+        a = math.radians(a0)
+        for q in range(0, 81):
+            r = rin + (rout - rin) * q / 80
+            fx, fy = fcx - r * math.sin(a), fcy - r * math.cos(a)
+            for k in range(0, RISE + 1):
+                p = (int(math.floor(fx)), int(math.floor(fy - e + k)))
+                riser[p] = min(riser.get(p, 9), k)
+        # 방 쪽 판 두께 2줄(안쪽 호 밑)
+        edge = set()
+        for k in (1, 2):
+            for (x, y) in _fill(_wedge(fcx, fcy, a0, a1, rin, rin + 1.5, e - k)):
+                edge.add((x, y))
+        for (x, y) in sorted(set(riser) | edge):
+            if (x, y) in top_px or kind.get((x, y)) in ('band', 'out', None):
+                continue
+            if (x, y) in riser:
+                ch = c['riser'][min(len(c['riser']) - 1, riser[x, y])]
+            else:
+                ch = c['riser'][1]
+            cv.put(x, y, leg[ch])
+            painted[x, y] = i
+        for (x, y) in top_px:
+            if kind.get((x, y)) in ('band', 'out', None):
+                continue
+            below = (x, y + 1) not in top_px
+            ch = c['tread'][0][(x + 5 * i) % 16] if below else tread[1 + (y % (len(tread) - 1))][(x + 5 * i) % 16]
+            cv.put(x, y, leg[ch])
+            painted[x, y] = i
+    # 그림자: 디딤판 밑 바닥(디딤판 높이만큼 아래로, 방 쪽) — 반투명, 바닥 자리에만
+    for (x, y), i in list(painted.items()):
+        e = steps[i][3]
+        for d in range(1, e + 1):
+            yy = y + d
+            if (x, yy) not in painted and kind.get((x, yy)) == 'floor' and cv.a[yy, x, 3] == 0:
+                cv.shadow(x, yy)
+                break
     return cv
 
 
-def stair(key, c):
+def stair_box(key, c):
+    import numpy as np
     cv = stair_layer(key, c)
-    bx, by, bw, bh = STAIR_BOX
+    ys, xs = np.nonzero(cv.a[:, :, 3])
+    bx, by = (xs.min() // T) * T, (ys.min() // T) * T
+    bw = ((xs.max() - bx) // T + 1) * T
+    bh = ((ys.max() - by) // T + 1) * T
+    return cv, bx, by, bw, bh
+
+
+def stair(key, c):
+    cv, bx, by, bw, bh = stair_box(key, c)
     return cv.crop(bx, by, bw, bh), bx, by
 
 
-# ------------------------------------------------------------------------------------------------ 키트 조각
-DOOR_N = {   # 북 이음 가운데에 파는 아치 문(16열, 앞면 v 0~31). 문 안 어둠 10px, 문설주는 앞면 결 톤
-    'A1': ['................', '................', '..YXXXXXXXXXXJ..', '.YXDDDDDDDDDDXJ.', '.XJK,,,,,,,,KJJ.', '.XJ;;;;;;;;;;JJ.']
-          + ['.XJ;;;;;;;;;;JJ.'] * 26,
-    'A2': ['................', '................', '.ffffffffffffe..', 'feeeeeeeeeeeeedA', 'EDB,,,,,,,,,,BDA', 'FDB;;;;;;;;;;BBA']
-          + ['EDB;;;;;;;;;;BDA', 'FDB;;;;;;;;;;BBA'] * 13,
+# ------------------------------------------------------------------------------------------------ 문·통로(원 가운데 칸)
+DOOR_N = {   # 북쪽 안벽 가운데 아치 문(16열, 앞면 v 0~31). 문 안 어둠 10px
+    'A1': ['..XXXXXXXXXXXX..', '.XDDDDDDDDDDDDJ.', '.XJK,,,,,,,,KJJ.'] + ['.XJ;;;;;;;;;;JJ.'] * 29,
+    'A2': ['.fffffffffffffe.', 'feeeeeeeeeeeeedA', 'EDB,,,,,,,,,,BDA'] + ['FDB;;;;;;;;;;BBA', 'EDB;;;;;;;;;;BDA'] * 14 + ['FDB;;;;;;;;;;BBA'],
 }
-PASS_S = {   # 남 이음 띠를 끊은 통로(16열 × 띠 11줄): 양쪽 2열 = 띠 끝 마구리, 가운데 = 문턱 판석
-    'A1': ['ww..........ww..'.replace('.', 'b')] + ['lW' + 'GGGGGGGGGGGG' + 'Wl'] + ['lW' + 'ihhhhhhhhhhh' + 'Wl'] * 6
-          + ['lW' + 'iiiiiiiiiiii' + 'Wl', 'lW' + 'bbbbbbbbbbbb' + 'Wl', 'gW' + 'GGGGGGGGGGGG' + 'Wg', 'gW' + 'iiiiiiiiiiii' + 'Wg'],
-    'A2': ['cbcccccccccccbcc'.replace('c', 'o')] + ['ef' + 'mmmmmmmmmmmm' + 'fe'] + ['ef' + 'lmmmmmlmmmmm' + 'fe'] * 6
-          + ['ef' + 'mmmmmmmmmmmm' + 'fe', 'ef' + 'oooooooooooo' + 'fe', 'bf' + 'llllllllllll' + 'fb', 'cf' + 'nnnnnnnnnnnn' + 'fc'],
+PASS_HALF = 13    # 남 통로: 가운데에서 좌우 13px 띠를 끊는다(통로 26px). 끝 2px = 띠 마구리(밝은 끝)
+THRESH = {   # 통로 문턱 판석(띠 자리, 16열 × 띠 깊이 11줄, 0 = 바깥) — 띠보다 한 단 낮고 어둡게, 판석 이음
+    'A1': ['bbbbbbbbbbbbbbbb', 'biiiiiiibiiiiiii', 'bGGGGGGGbGGGiGGG', 'bGGiGGGGbGGGGGGG', 'bGGGGGGGbGGGGGGG',
+           'bGGGGGhGbGGGGGGG', 'bGGGGGGGbGGGGhGG', 'biiiiiiibiiiiiii', 'bbbbbbbbbbbbbbbb', 'aiiiiiiiaiiiiiii', 'bbbbbbbbbbbbbbbb'],
+    'A2': ['oooooooooooooooo', 'olllllllolllllll', 'ommmmmmmommmlmmm', 'ommlmmmmommmmmmm', 'ommmmmmmommmmmmm',
+           'ommmmmlmommmmmmm', 'ommmmmmmommmmlmm', 'onnnnnnnonnnnnnn', 'oooooooooooooooo', 'lnnnnnnnlnnnnnnn', 'oooooooooooooooo'],
 }
+JAMB = {'A1': 'W', 'A2': 'f'}
+
+
+def cut_door(cv, kind, geo, Ro, c):
+    carve(cv, kind, geo, Ro, DOOR_N[c['name']], 0.0, overlay_leg(c))
+
+
+def cut_passage(cv, kind, geo, Ro, c):
+    """남쪽 띠 가운데를 끊어 문턱 판석을 깐다. 끊긴 띠 끝 2px 는 밝은 마구리."""
+    leg = c['leg']
+    for (x, y), k in kind.items():
+        if k != 'band':
+            continue
+        sx, sy, stx, sty, north = geo[x, y]
+        if north or sty is not None:
+            continue
+        r = math.hypot(sx, sy) if stx is None else abs(sy)
+        s = max(0, min(BAND - 1, int(Ro - r)))
+        if abs(sx) < PASS_HALF:
+            cv.put(x, y, leg[THRESH[c['name']][s][int(x) % 16]])
+        elif abs(sx) < PASS_HALF + 2:
+            cv.put(x, y, leg[JAMB[c['name']]])
+
+
+def corridor(c, Ro, n=2):
+    """남 통로 밖으로 이어지는 복도 한 자락(장면용): 바닥 타일 2칸 폭 + 좌우 세로 띠(서·동 이음의 띠)."""
+    ry, ky, _, _ = ring(c, Ro, Ly=n * T)
+    w = 2 * Ro
+    out = Cv(w, n * T)
+    fl = floor_tiles(c)
+    for j in range(n):
+        for i in range(w // T):
+            t = fl[dot.cell_hash(i, j + 50) % len(fl)] if abs(i * T + 8 - Ro) < T else VOID
+            out.a[j * T:(j + 1) * T, i * T:(i + 1) * T] = t.a
+    wb = ry.crop(0, Ro, BAND, n * T)          # 서쪽 세로 띠(바깥 = 왼쪽)
+    eb = ry.crop(ry.w - BAND, Ro, BAND, n * T)
+    out.paste(wb, Ro - PASS_HALF - BAND + 2, 0)
+    out.paste(eb, Ro + PASS_HALF - 2, 0)
+    return out
+
+
+# ------------------------------------------------------------------------------------------------ 키트
+SIZES = ((96, '12칸'), (80, '10칸'), (64, '8칸'))
 
 
 def kit(c):
-    """조각 dict 와 키트 판 그림(12칸 링 | 8칸 링 | 이음·문 열)."""
+    """조각 dict 와 키트 판 그림(12칸 | 10칸 | 8칸 링 | 이음·문)."""
     parts = {}
-    for Ro, lab in ((96, '12칸'), (64, '8칸')):
-        rv, kind, _, top = ring(c, Ro)
+    rings = {}
+    for Ro, lab in SIZES:
+        rv, kind, geo, top = ring(c, Ro)
         _check_cells(kind)
+        rings[Ro] = rv
         mid = top + Ro
         parts[f'{lab} 북서'] = rv.crop(0, 0, Ro, mid)
         parts[f'{lab} 북동'] = rv.crop(Ro, 0, Ro, mid)
         parts[f'{lab} 남서'] = rv.crop(0, mid, Ro, rv.h - mid)
         parts[f'{lab} 남동'] = rv.crop(Ro, mid, Ro, rv.h - mid)
-    L2 = 2 * T   # 이음은 2칸 단위(16px 한 칸보다 결 반복이 덜 보이고, 두 크기 링이 같이 쓴다)
+    L2 = 2 * T   # 이음은 2칸 단위 — 세 크기 링이 같이 쓴다(가운데 열·행 단면이 띠 11 + 앞면 32 + 판석 8 로 같다)
     rx, kx, _, _ = ring(c, 64, Lx=L2)
     ry, ky, _, _ = ring(c, 64, Ly=L2)
     _check_cells(kx)
@@ -812,36 +760,45 @@ def kit(c):
     parts['남 이음(가로 반복)'] = rx.crop(64, rx.h - 32, L2, 32)
     parts['서 이음(세로 반복)'] = ry.crop(0, 64, 32, L2)
     parts['동 이음(세로 반복)'] = ry.crop(ry.w - 32, 64, 32, L2)
-    # 문: 북 이음 안벽 가운데에 아치 문 / 남 이음 띠 가운데를 끊은 통로
-    leg = overlay_leg(c)
-    pleg = c['leg']
-    nd = rx.crop(64, 0, L2, 64)
-    face_top = BAND
-    for v, row in enumerate(DOOR_N[c['name']]):
-        for i, ch in enumerate(row):
-            if ch != '.' and face_top + v < nd.h and nd.a[face_top + v, 8 + i, 3]:
-                nd.put(8 + i, face_top + v, leg[ch])
-    parts['북 문(이음 자리)'] = nd
-    sd = rx.crop(64, rx.h - 32, L2, 32)
-    for j, row in enumerate(PASS_S[c['name']]):
-        y = 32 - BAND + j
-        for i, ch in enumerate(row):
-            sd.put(8 + i, y, pleg[ch])
-    parts['남 통로(이음 자리)'] = sd
-    # 키트 판: 12칸 링(사분면 그대로 붙임) | 8칸 링 | 이음·문
-    board = Cv(12 * T + T + 8 * T + T + 4 * T, 12 * T)   # 이음 열 = 4칸
-    r12, _, _, _ = ring(c, 96)
-    r8, _, _, _ = ring(c, 64)
-    board.paste(r12, 0, 0)
-    board.paste(r8, 13 * T, 0)
-    x0 = 22 * T
-    board.paste(parts['북 이음(가로 반복)'], x0, 0)
-    board.paste(parts['북 문(이음 자리)'], x0 + 2 * T, 0)
-    board.paste(parts['남 이음(가로 반복)'], x0, 5 * T)
-    board.paste(parts['남 통로(이음 자리)'], x0 + 2 * T, 5 * T)
-    board.paste(parts['서 이음(세로 반복)'], x0, 8 * T)
-    board.paste(parts['동 이음(세로 반복)'], x0 + 2 * T, 8 * T)
+    # 문: 10칸 링 북쪽 가운데 2×4칸 / 통로: 8칸 링 남쪽 가운데 2×2칸 (다른 크기도 같은 cut_door·cut_passage 로 판다)
+    r10, k10, g10, _ = ring(c, 80)
+    cut_door(r10, k10, g10, 80, c)
+    parts['10칸 북 문(가운데 2칸)'] = r10.crop(80 - T, 0, 2 * T, 64)
+    r8, k8, g8, _ = ring(c, 64)
+    cut_passage(r8, k8, g8, 64, c)
+    parts['8칸 남 통로(가운데 2칸)'] = r8.crop(64 - T, 128 - 32, 2 * T, 32)
+    # 키트 판(조각을 칸 경계 그대로 붙인 그림): 12칸 | 10칸 | 8칸 | 이음·문 열(4칸)
+    W = (12 + 1 + 10 + 1 + 8 + 1 + 4) * T
+    board = Cv(W, 12 * T)
+    x = 0
+    for Ro, _ in SIZES:
+        board.paste(rings[Ro], x, 0)
+        x += 2 * Ro + T
+    board.paste(parts['북 이음(가로 반복)'], x, 0)
+    board.paste(parts['10칸 북 문(가운데 2칸)'], x + 2 * T, 0)
+    board.paste(parts['남 이음(가로 반복)'], x, 5 * T)
+    board.paste(parts['8칸 남 통로(가운데 2칸)'], x + 2 * T, 5 * T)
+    board.paste(parts['서 이음(세로 반복)'], x, 8 * T)
+    board.paste(parts['동 이음(세로 반복)'], x + 2 * T, 8 * T)
     return parts, board
+
+
+def exploded(cv, gap=2):
+    """16px 칸마다 gap px 띄운 그림 — 조각이 칸 단위라는 것을 보이는 격자 보기(빈 칸은 뺀다)."""
+    nx, ny = cv.w // T, cv.h // T
+    out = Cv(nx * (T + gap) + gap, ny * (T + gap) + gap)
+    out.a[:, :, :3] = dot.C('void', 2)
+    out.a[:, :, 3] = 255
+    for j in range(ny):
+        for i in range(nx):
+            cell = cv.a[j * T:(j + 1) * T, i * T:(i + 1) * T]
+            X, Y = gap + i * (T + gap), gap + j * (T + gap)
+            if cell[:, :, 3].any():
+                out.a[Y:Y + T, X:X + T, :3] = dot.C('void', 0)
+                c2 = Cv(T, T)
+                c2.a[:] = cell
+                out.paste(c2, X, Y)
+    return out
 
 
 def roof_parts(c):
@@ -852,30 +809,13 @@ def roof_parts(c):
 
 
 # ------------------------------------------------------------------------------------------------ 장면
-def room(c, Ro, Lx=0, Ly=0, roof=False, door=False, cell0=(0, 0)):
-    """링 + 아래층. door: 북 문·남 통로를 가로 이음 자리에 끼움(Lx ≥ 16)."""
-    rv, kind, geo, top = ring(c, Ro, Lx, Ly, roof)
-    sc = under(kind, rv.w, rv.h, c, *cell0)
-    if door and Lx >= 2 * T:
-        parts, _ = kit(c)
-        cx = Ro
-        # 북 문: 가운데 이음 자리 / 남 통로: 같은 자리(통로 밖은 복도 바닥이 이어질 자리)
-        nd = parts['북 문(이음 자리)']
-        rv.a[0:nd.h, cx:cx + 2 * T] = nd.a
-        sd = parts['남 통로(이음 자리)']
-        rv.a[rv.h - sd.h:rv.h, cx:cx + 2 * T] = sd.a
-    sc.paste(rv, 0, 0)
-    return sc, rv, kind, geo, top
-
-
-def hcat(cvs, gap=T, bg=True):
+def hcat(cvs, gap=T):
     w = sum(c.w for c in cvs) + gap * (len(cvs) + 1)
     h = max(c.h for c in cvs) + 2 * T
     out = Cv(w, h)
-    if bg:
-        for j in range(h // T):
-            for i in range(w // T):
-                out.a[j * T:(j + 1) * T, i * T:(i + 1) * T] = VOID.a
+    for j in range(h // T):
+        for i in range(w // T):
+            out.a[j * T:(j + 1) * T, i * T:(i + 1) * T] = VOID.a
     x = gap
     for c in cvs:
         out.paste(c, x, T)
@@ -884,28 +824,36 @@ def hcat(cvs, gap=T, bg=True):
 
 
 def tower_scene(key, c):
-    """세 항목 공통 장면: 12칸 둥근 방(계단·화살 구멍 둘·사람) | 8칸 둥근 방 | 8칸 + 세로 이음 2(세로로 긴 방, 북 문·남 통로)."""
-    sc12, rv, kind, geo, top = room(c, 96)
-    # 창 둘(어두운 / 빛) — 안벽 앞면에 둘레 좌표로 파 넣음
-    tmp = Cv(rv.w, rv.h)
-    tmp.a[:] = rv.a
-    place_window(tmp, kind, geo, 96, key, c, 'dark', -6)
-    place_window(tmp, kind, geo, 96, key, c, 'lit', 34)
-    sc12 = under(kind, rv.w, rv.h, c)
-    sc12.paste(tmp, 0, 0)
-    sc12.paste(stair_layer(key, c), 0, 0)
-    sc12.paste(actor(), 92, 104)
-    sc8, _, _, _, _ = room(c, 64, cell0=(20, 0))
-    tall, _, _, _, _ = room(c, 64, Lx=2 * T, Ly=2 * T, door=True, cell0=(40, 0))
-    tall.paste(actor(), 68, 70)
-    return hcat([sc12, sc8, tall])
+    """세 항목 공통 장면: 참 원 셋. 12칸(돌아 오르는 계단·화살 구멍 둘·사람) | 10칸(북 문) | 8칸(남 통로 + 복도)."""
+    rv, kind, geo, top = ring(c, 96)
+    place_window(rv, kind, geo, 96, key, c, 'dark', 2)
+    place_window(rv, kind, geo, 96, key, c, 'lit', 36)
+    s12 = under(kind, rv.w, rv.h, c)
+    s12.paste(rv, 0, 0)
+    s12.paste(stair_layer(key, c), 0, 0)
+    s12.paste(actor(), 100, 110)
+    r10, k10, g10, _ = ring(c, 80)
+    cut_door(r10, k10, g10, 80, c)
+    s10 = under(k10, r10.w, r10.h, c, 20, 0)
+    s10.paste(r10, 0, 0)
+    s10.paste(actor(), 76, 44)
+    r8, k8, g8, _ = ring(c, 64)
+    cut_passage(r8, k8, g8, 64, c)
+    s8 = under(k8, r8.w, r8.h, c, 40, 0)
+    s8.paste(r8, 0, 0)
+    cor = corridor(c, 64)
+    s8b = Cv(s8.w, s8.h + cor.h)
+    s8b.paste(s8, 0, 0)
+    s8b.paste(cor, 0, s8.h)
+    s8b.paste(actor(), 52, 112)
+    return hcat([s12, s10, s8b])
 
 
 def c_wall(key, c):
     def fn():
         parts, board = kit(c)
         top_rows = {'북 이음(가로 반복)': [0, BAND - 1], '남 이음(가로 반복)': [32 - BAND + 2, 32 - 3]}
-        extras = [('키트 판(12칸 링 · 8칸 링 · 이음 · 문) 2배', board, 2)]
+        extras = [('조각 격자 보기 — 16px 칸마다 띄움(12칸 · 10칸 · 8칸 링 · 이음 · 문·통로)', exploded(board), 2)]
         if key == 'A1':
             rp, rv = roof_parts(c)
             parts.update(rp)
@@ -913,7 +861,6 @@ def c_wall(key, c):
             r = under(kind, sc.w, sc.h, c)
             r.paste(sc, 0, 0)
             extras.append(('지붕층 변형(성가퀴, 8칸) 2배', r, 2))
-            # 그림에도 지붕층 링을 붙인다(키트 판 아래)
             out = Cv(board.w, board.h + T + rv.h)
             out.paste(board, 0, 0)
             out.paste(rv, 0, board.h + T)
@@ -925,31 +872,27 @@ def c_wall(key, c):
 def c_stair(key, c):
     def fn():
         s, bx, by = stair(key, c)
-        # 맨 아래 단 디딤판 윗줄(자른 조각 안)
-        y0 = STEPS[key][0][1] - by
-        return s, {'kind': 'objects', 'parts': {'계단': s}, 'vignette': tower_scene(key, c),
-                   'top_rows': {'계단': [y0, y0 + STEPS[key][0][3] - 1]}}
+        return s, {'kind': 'objects', 'parts': {'계단': s}, 'vignette': tower_scene(key, c)}
     return fn
 
 
 def c_window(key, c):
     def fn():
-        d, l, p = window(key, c, 'dark'), window(key, c, 'lit'), window(key, c, 'patch')
-        out = Cv(48, 32)
+        d, l = window(key, c, 'dark'), window(key, c, 'lit')
+        out = Cv(32, 32)
         out.paste(d, 0, 0)
         out.paste(l, 16, 0)
-        out.paste(p, 32, 0)
         tr = SILL[key]
-        return out, {'kind': 'objects', 'parts': {'어두운 구멍': d, '빛 드는 구멍': l, '빛 자리(바닥)': p}, 'vignette': tower_scene(key, c),
+        return out, {'kind': 'objects', 'parts': {'어두운 구멍': d, '빛 드는 구멍': l}, 'vignette': tower_scene(key, c),
                      'top_rows': {'어두운 구멍': tr, '빛 드는 구멍': tr}}
     return fn
 
 
 NOTES = {
-    'gap.tower_wall': {'A1': '버들항 지하묘지 결: 반점 띠 + 흰 턱, 어두운 벽돌 안벽, 둘레 판석. 8칸·12칸 사분면 + 이음 넷 + 북 문·남 통로 + 지붕층 성가퀴 변형',
+    'gap.tower_wall': {'A1': '버들항 지하묘지 결: 반점 띠 + 옅은 턱, 어두운 벽돌 안벽, 둘레 판석. 12·10·8칸 사분면 + 이음 넷 + 북 문·남 통로 + 지붕층 성가퀴 변형',
                        'A2': '거친 막돌: 갓돌 띠 + 밝은 턱, 막돌 안벽, 자갈 둘레. 같은 조각 나눔(지붕층 없음)'},
-    'gap.tower_stair': {'A1': '12칸 링 서쪽 안벽을 따라 오르는 5단 + 계단참, 벽 속 아치. 디딤판 + 챌판만', 'A2': '막돌 디딤판, 갓돌 상인방 아치'},
-    'gap.tower_window': {'A1': '벽돌에 파 넣은 십자 화살 구멍 | 낮빛 드는 같은 구멍(+바닥 빛 자리)', 'A2': '막돌 테 곧은 틈 | 낮빛'},
+    'gap.tower_stair': {'A1': '12칸 링 북서 안벽을 돌아 오르는 쐐기 디딤판 4단 + 계단참, 뒤 안벽 문. 디딤판 + 챌판 + 판 두께만', 'A2': '막돌 쐐기 디딤판, 갓돌 상인방 문'},
+    'gap.tower_window': {'A1': '벽돌에 판 사선 화살 구멍(1px 틈, 십자) | 하늘빛 드는 같은 구멍', 'A2': '막돌 테 사선 구멍 | 하늘빛'},
 }
 
 

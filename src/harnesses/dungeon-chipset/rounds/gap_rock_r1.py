@@ -40,7 +40,7 @@ LEG = {
                 w=('rim', 5), g=('moss', 3), n=('moss', 4), y=('moss', 5), e=('rim', 0), **{'0': ('cfloor', 0)}),
     # B 산속 바위굴 — 회색 화강암(crock 녹회 + stone 밝은 단). 바닥 cfloor 1(갈색) 과 색상이 갈린다.
     'B': legend(k=('stone', 0), d=('crock', 2), b=('crock', 3), c=('stone', 2), m=('crock', 4), l=('crock', 5),
-                h=('stone', 4), w=('stone', 5), g=('moss', 2), n=('moss', 3), y=('moss', 4), e=('crock', 1),
+                h=('stone', 4), w=('stone', 5), g=('moss', 2), n=('moss', 3), y=('moss', 4), e=('crock', 1), p=('stone', 1),
                 **{'0': ('cfloor', 0)}),
     # C 검푸른 심층굴 — 검푸른 화산암(vrock) + 푸른 쇠빛(iron) 결. 바닥 cata 3(차가운 회색)보다 확실히 어둡되 허공(void)은 아니다.
     'C': legend(x=('vrock', 0), k=('vrock', 1), d=('iron', 1), b=('vrock', 2), c=('iron', 2), m=('vrock', 3), l=('iron', 3),
@@ -49,9 +49,9 @@ LEG = {
 }
 
 # 테두리 층(바깥 → 안). 북·서 = 빛 쪽, 동 = 그늘 쪽, 남 = 앞면 위 앞턱(아래 줄이 가장 밝다).
-LIT = {'A': 'hlm', 'B': 'hlm', 'C': 'khl'}      # C 는 바닥(cata 3)과 밝기가 비슷해 바깥 한 줄을 어둡게 두르고 그 안을 밝힌다
+LIT = {'A': 'hlm', 'B': 'hlm', 'C': 'mcb'}      # C: 먹 테두리·안쪽 밝은 띠 없이 재질 중간 단으로 — 스티커처럼 떠 보이지 않게
 SHADE = {'A': 'kd', 'B': 'kd', 'C': 'kd'}
-LIP = {'A': 'hld', 'B': 'hmd', 'C': 'hmk'}   # 아래(앞면 닿는 줄)부터: 가장 밝은 앞턱 · 빛 · 위쪽 그늘 홈
+LIP = {'A': 'hld', 'B': 'hmd', 'C': 'mcb'}   # 아래(앞면 닿는 줄)부터: 가장 밝은 앞턱 · 빛 · 위쪽 그늘 홈
 
 
 def _layer(seq):
@@ -77,9 +77,10 @@ def _lip(seq):
 # ================================================================================================ 틀(모서리·안 모서리)
 # 기호: , 바닥 몸통 · 0 바닥 그늘 · H L M 빛 쪽 테두리 세 단 · E D 그늘 쪽 두 단 · P Q R 앞턱(아래부터).
 # 표준 깊이: 북·서 (홈 2, 테두리 끝 5) · 동 (2, 4) · 남 (0, 3). 모서리 바깥 열/행은 그 표준과 같다(사분면 경계 이음).
-NW = [',,,,,,,,', ',,,,,,,,', ',,,,,,HH', ',,,,,HLL', ',,,,HLMM', ',,,HLM..', ',,HLM...', ',,HLM...']
-NE = [',,,,,,,0', ',,,,HHE0', 'HHHHLLE0', 'LLLLMDE0', 'MMMMMDE0', '.....DE0', '....DE00', '....DE00']   # 동북 귀는 둥글게 깎지 않고 오른쪽 끝을 칸 위 1줄까지 올린다 — 동쪽 바닥 칸의 서쪽 그늘이 칸 맨 위에서 시작하므로 깎으면 그늘이 바위 위로 삐져나온다
-SW = [',,HLM...', ',,HLM...', ',,HLM...', ',HLM....', ',HLM....', ',HLRRRRR', 'HLQQQQQQ', 'PPPPPPPP']
+# 변 띠 이음점(0·7·8·15번)은 틀 규칙상 한 값(홈 2)이다. 바깥 북서 귀는 사분면을 거의 다 쓰는 반지름 5 의 둥근 귀.
+NW = [',,,,,,,,', ',,,,,,,,', ',,,,,HHH', ',,,,HLLL', ',,,HLMMM', ',,HLM...', ',,HLM...', ',,HLM...']
+NE = [',,,,,,,,', ',,,,,,,,', 'HHH,,,,,', 'LLLHE0,,', 'MMMLDE0,', '....DE00', '....DE00', '....DE00']
+SW = [',,HLM...', ',,HLM...', ',,HLM...', ',HLM....', ',HLM....', 'HLMRRRRR', 'HLQQQQQQ', 'PPPPPPPP']
 SE = ['....DE00', '....DE00', '....DE00', '.....DE0', '.....DE0', 'RRRRRDE0', 'QQQQQQDE', 'PPPPPPQD']
 # 안 모서리(대각만 끊김). 북 쪽 둘은 바닥이 둥글게 파고든 오목한 귀, 남 쪽 둘은 앞면 윗단 위로 앞턱이 꺾여 들어오는 귀.
 IN_NW = [',,HLM...', ',HHLM...', 'HHLLM...', 'LLLMM...', 'MMMM....', '........', '........', '........']
@@ -210,247 +211,114 @@ def stampl(rows, items):
     return rows
 
 
-# ================================================================================================ 줄 A — 해안 흙굴
-# A1 계단진 사암 턱: 납작하고 모난 사암 판(윗면 b·c, 위·왼 턱 끝 빛 l·m)이 겹겹이 얹혀, 판마다 남쪽 아래로
-# 앞 턱 그늘(d) 한 줄과 밑 그림자(k)가 진다 — 판 하나하나가 한 단 높은 바위로 읽힌다(마른 진흙 금·판석 바닥이 아니다).
-# 판 사이 틈 바탕은 어두운 흙(d·k). 이끼(g n)는 판 턱 그늘 쪽에 드문드문, 자리를 변형마다 달리.
-A1_GAP = [
-    'bkbbdbbbbkbbbdbb', 'bbbbbbkbbbbdbbbk', 'kbbdbbbbbbbbbbbb', 'bbbbbbdbkbbbbkbb',
-    'bdbbbbbbbbbdbbbb', 'bbbbkbbdbbbbbbdb', 'bbbbbbbbbkbbbbbb', 'dbbkbbbbbbbbkbbb',
-    'bbbbbbdbbbbdbbbb', 'bkbbbbbbbkbbbbbd', 'bbbbdbbbbbbbkbbb', 'bbbbbbbkbbdbbbbb',
-    'kbdbbbbbbbbbbkbb', 'bbbbbbkbdbbbbbbb', 'bdbbkbbbbbbkbbdb', 'bbbbbbbbkbbbbbbb']
-A1_S1 = ['...lllmm.....', '.lllmcccmm...', 'lmccccbcccmm.', 'mccbccccccccd', '.ccccccbcccdd', '.ddddcccdddk.',
-         '..kkkddddkk..']
-A1_S2 = ['.llmm....', 'lmcccmm..', 'mccbccccd', '.ccccccdd', '.dddddddk', '..kkkkkk.']
-A1_S3 = ['..lllmmm...', 'llmcccccmm.', 'mcccbcccccd', '.ddddddddk.', '..kkkkkk...']
-A1_S4 = ['.llm..', 'lmccm.', 'mcbcd.', '.ddk..', '..k...']
-A1_S5 = ['....llm....', '..llmccmm..', '.lmcccbccm.', 'lmcbccccccd', 'mccccccbcdd', '.ccbccccddk', '..dddddddk.',
-         '...kkkkkk..']
-A1_MOSS = ['gn', '.g']
-A1_XL = ['....lllmmm....', '..llmcccccmm..', '.lmcccbcccccm.', 'lmcccccccbcccd', 'mccbcccccccccd', 'mcccccccbcccdd',
-         '.cccbccccccdd.', '.dddcccccdddk.', '..kddddddddk..', '...kkkkkkkk...']
-A1_PORTS = ((A1_S4, 13, 4), (A1_S4, 13, 12))
-A1_LAYOUT = [   # 판은 1~14열 안에서만, 세로로는 감아 넘음. 크기를 칸마다 크게 섞는다. 마지막 = 본몸통
-    ((A1_XL, 1, 1), (A1_S4, 2, 11), (A1_MOSS, 9, 12)),
-    ((A1_S5, 2, 1), (A1_S2, 1, 9), (A1_S4, 9, 12), (A1_S4, 10, 0), (A1_MOSS, 8, 6)),
-    ((A1_S4, 1, 0), (A1_S4, 6, 1), (A1_S2, 2, 5), (A1_S4, 10, 6), (A1_S3, 4, 10), (A1_MOSS, 11, 3)),
-    ((A1_S2, 1, 1), (A1_XL, 1, 5), (A1_S4, 10, 1), (A1_MOSS, 5, 3)),
-    ((A1_S1, 1, 1), (A1_S2, 5, 8), (A1_S4, 10, 2), (A1_MOSS, 3, 13)),
-]
-A1_PROF = {
-    'N': [(2, 5), (2, 5), (1, 4), (1, 4), (1, 4), (2, 5), (3, 6), (2, 5), (2, 5), (3, 6), (4, 7), (4, 7), (3, 6), (2, 5), (1, 4), (2, 5)],
-    'W': [(2, 5), (3, 6), (3, 6), (2, 5), (1, 4), (1, 4), (1, 4), (2, 5), (2, 5), (2, 5), (1, 4), (0, 3), (0, 3), (1, 4), (2, 5), (2, 5)],
-    'E': [(2, 4), (1, 3), (1, 3), (2, 4), (3, 5), (4, 6), (3, 5), (2, 4), (2, 4), (2, 4), (1, 3), (1, 3), (2, 4), (3, 5), (3, 5), (2, 4)],
-    'S': [(0, 3), (0, 3), (0, 4), (0, 4), (0, 3), (0, 2), (0, 3), (0, 3), (0, 3), (0, 4), (0, 5), (0, 4), (0, 3), (0, 3), (0, 2), (0, 3)],
+# ================================================================================================ 옆선(윤곽)
+# 홈 깊이 n(바닥이 바위로 파고드는 깊이)을 칸 안에서 0~6 까지 크게 출렁이게 — 바위가 바닥으로 불룩 나오고(0) 깊게 물리는(5~6)
+# 굴곡이 칸마다 있어 방 둘레가 16px 계단으로 읽히지 않는다. 변마다 다른 표, 설계 1·2 도 다른 표.
+# (변 띠 변형을 cellHash 로 고르는 것은 dot.Autotile 이 몸통(마스크 255)에만 변형을 두므로 이 모듈만으로는 못 한다.)
+def _prof(ns, rim):
+    return [(n, min(8, n + rim)) for n in ns]
+
+
+S_PROF = [(0, 3), (0, 4), (0, 4), (0, 3), (0, 3), (0, 2), (0, 2), (0, 3), (0, 3), (0, 3), (0, 4), (0, 5), (0, 4), (0, 3), (0, 3), (0, 3)]
+PROF1 = {'N': _prof([2, 1, 0, 0, 1, 3, 5, 2, 2, 4, 6, 6, 5, 3, 1, 2], 3),
+         'W': _prof([2, 3, 5, 6, 6, 4, 3, 2, 2, 1, 0, 0, 1, 3, 4, 2], 3),
+         'E': _prof([2, 3, 5, 6, 5, 3, 1, 2, 2, 1, 0, 1, 3, 5, 4, 2], 2), 'S': S_PROF}
+PROF2 = {'N': _prof([2, 4, 5, 4, 2, 0, 0, 2, 2, 1, 1, 3, 5, 6, 4, 2], 3),
+         'W': _prof([2, 1, 0, 1, 3, 5, 4, 2, 2, 4, 6, 5, 3, 1, 1, 2], 3),
+         'E': _prof([2, 1, 0, 0, 2, 4, 5, 2, 2, 4, 5, 3, 1, 0, 1, 2], 2), 'S': S_PROF}
+
+
+# ================================================================================================ 윗면
+# 바탕 = 줄마다 손으로 찍은 잔 얼룩 암반(버들항 밀도, 4~5 단, 2~3화소 뭉치) — 조용해서 16px 되풀이가 드러나지 않는다.
+# 변형 8개(마지막 = 본몸통): 바탕을 뒤집어 돌려 쓰고, 큰 꼴(턱·금·바윗덩이·기둥 머리)은 몇 변형에만 드물게 둔다.
+# 금이 칸 끝을 건널 때는 정해진 자리(가로 변 y=4·11, 세로 변 x=5·12)에서만 — 이웃이 이으면 길게 이어지고, 안 이으면 거기서 끝난 금.
+A_MOT = [
+    'ccbbccccmcccccbc', 'cbbcccmmcccbcccc', 'cccccccmccbbcccm', 'ccmccccccccbcccc',
+    'cmmcccbccccccmcc', 'ccccbbdcccmcccbc', 'bccccbccccmmcccb', 'bbcccccmccccccbb',
+    'ccccmcccccbccccc', 'ccmmcccbcccccmcc', 'cccccccbbccccmcc', 'cbccmccccccbcccc',
+    'cbbcccccmcccccmc', 'ccccccbccccdbccc', 'cmcccbbccmccbccc', 'cccccccccmcccccb']
+B_MOT = [
+    'mmcmmllmmmcmmmcm', 'mcccmlmmmmccmmlm', 'mmcmmmmmlmmmmllm', 'lmmmmcmmllmmcmmm',
+    'llmmccmmmmmmccmm', 'mmmmcmmmcmmlmmmm', 'mcmmmmllmmmllmcm', 'cccmmmmlmmmmmmcc',
+    'mmmmlmmmmcmmmmmm', 'mmllmmmcccmmlmmm', 'mmmlmmmmcmmmllmm', 'cmmmmmlmmmmmmmmc',
+    'ccmmmllmmmcmmmmm', 'mmmcmmmmmmccmlmm', 'mlmccmmmlmmmmllm', 'mmmmmmmmllmcmmmm']
+C_MOT = [
+    'bbdbbbmbbbdbbbbb', 'bdddbbmmbbbbdbmb', 'bbdbbbbbbbbbbmmb', 'mbbbbdbbbmbbbbbb',
+    'mmbbbddbbmmbbbdb', 'bbbbbbbbbbbbbddb', 'bdbbmbbbbdbbbbbb', 'ddbbmmbbbddbbbmb',
+    'bbbbbbbcbbbbbbmm', 'bbmbbbbbbbbdbbbb', 'bbmmbdbbbbbddbbb', 'dbbbbddbbmbbbbbd',
+    'bbbbbbbbmmbbbbbb', 'bbdbbmbbbbbdbmbb', 'bmbbbbbbdbbbbbbb', 'bbbdbbbbbbmbbbdb']
+MOT = {'A': A_MOT, 'B': B_MOT, 'C': C_MOT}
+CRACK = {'A': ('d', 'b', 'm'), 'B': ('p', 'c', 'l'), 'C': ('k', 'd', 'm')}
+
+# 턱(설계 1): 위 판 끝 빛 입술 → 꺾인 앞면 → 아래 판 그늘. 길이·꺾임이 다른 둘.
+LEDGE = {
+    'A': (['..llll......', 'llddddlll...', 'dddbbbdddlll', 'bb.....bbddd', '..........bb'],
+          ['.lll....', 'lddll...', 'dbbddlll', 'b..bbddd', '......bb']),
+    'B': (['...llll.....', 'lllppppll...', 'pppcccpppll.', 'cc.....ccppl', '.........ccp'],
+          ['..ll....', 'llppl...', 'ppccppll', 'c..ccppp', '......cc']),
+    'C': (['mmmmm..mmmm.', 'kkkkkmmkkkkm', 'ddddkkkddddk', '....ddd....d'],
+          ['.mmmm...', 'mkkkkmm.', 'kddddkkm', 'd....ddk']),
 }
-
-
-def a1_bodies():
-    return [pile(A1_GAP, A1_PORTS + shift(lay, d)) for lay, d in zip(A1_LAYOUT, VSHIFT)]
-
-
-# A2 이끼 덮인 둥근 사암 덩이 무더기: 어두운 흙·자갈 틈(d k b) 위로 크기가 다른 둥근 덩이가 빽빽이 겹쳐 쌓였다
-# (위·왼 빛 h l m, 아래·오른 그늘 c b d, 밑 틈 k, 머리에 이끼 n y g). 덩이 자리·크기 섞임은 변형마다 다르다.
-A2_GRIT = [   # 덩이 사이 흙·자갈: 바탕(b) 덩어리와 어두운 흙(d) 덩어리가 2~3화소씩 — 덩이 그늘보다 밝아 칸 끝 틈이 검은 줄로 튀지 않는다
-    'bbddbbbdbbkddbbb', 'bdddbbddbbbddbbk', 'bbdbbbdkbdbbbbdd', 'kbbbddbbbddbbdbb',
-    'dbbbddbbbdbbkddb', 'ddbkbbbddbbbbddb', 'bbbbbdbbdddbbbbb', 'bddbbddbbdbbbdkb',
-    'bddbbbdbbbbddbbd', 'bbbbkbbbddbbddbb', 'dbbddbbbdbbbbbdd', 'ddbbdbbkbbddbbbd',
-    'bbbbbbddbbbdbkbb', 'bdkbbddbbddbbbbd', 'bddbbbbbbdbbddbb', 'bbbddbkbbbbbdbbb']
-A2_BIG = ['...gnnn....', '..gnyynl...', '.hlnnllmc..', 'hllllmmmcb.', 'llmmmmmccbd', 'lmmmmcccbbd',
-          '.mmcccbbbd.', '..cbbbbddk.', '....kkkk...']
-A2_MED = ['..gnn...', '.hnynl..', 'hllmmmc.', 'lmmmccbd', '.mmccbd.', '..cbbdk.', '...kkk..']
-A2_LONG = ['..gnnn....', '.hllnllmc.', 'hlmmmmccbd', '.mmcccbbd.', '...kkkk...']
-A2_SML = ['.gn..', 'hlnm.', 'lmmcb', '.cbd.', '..k..']
-A2_PEB = ['.lm.', 'lmcb', '.kk.']
-A2_HUGE = ['....gnnng....', '..gnyynnnl...', '.hlnnnllmmc..', 'hllllllmmmcb.', 'llmmmmmmmccbd', 'lmmmmmmccccbd',
-           'mmmmcccccbbbd', '.mcccccbbbbd.', '..ccbbbbbddk.', '...kbbbdddk..', '.....kkkk....']
-# 덩이 자리: 변형마다 다른 덩이는 1~14열 안에만(가로로 칸 끝을 넘지 않음 — 변형끼리 만나는 세로 변에서 덩이가 잘리지 않게),
-# 세로로는 감아 넘어도 된다. 모든 변형이 같이 갖는 「이음 조약돌」(PORTS) 둘만 가로 칸 끝을 넘는다 — 칸 끝 틈이 곧은 세로 띠로
-# 이어지지 않게 끊어 준다(모든 변형에 같은 자리라 어느 변형끼리 붙어도 잘리지 않는다). 마지막 = 본몸통.
-A2_PORTS = ((A2_PEB, 14, 3), (A2_PEB, 14, 11))
-A2_LAYOUT = [   # 크기를 칸마다 크게 섞는다 — 큰 덩이 하나 + 조약돌 / 중간 덩이 셋 / 작은 덩이 무리
-    ((A2_HUGE, 1, 1), (A2_PEB, 9, 12), (A2_SML, 1, 12)),
-    ((A2_LONG, 4, 0), (A2_MED, 1, 4), (A2_BIG, 4, 7), (A2_PEB, 11, 2)),
-    ((A2_SML, 1, 1), (A2_SML, 6, 0), (A2_PEB, 11, 1), (A2_MED, 3, 5), (A2_SML, 10, 7), (A2_PEB, 1, 10), (A2_SML, 5, 12),
-     (A2_PEB, 10, 13)),
-    ((A2_SML, 1, 0), (A2_HUGE, 2, 4), (A2_PEB, 10, 0)),
-    ((A2_MED, 1, 1), (A2_SML, 9, 0), (A2_SML, 10, 6), (A2_MED, 4, 8), (A2_PEB, 1, 11), (A2_SML, 10, 12)),
-]
-A2_PROF = {
-    'N': [(2, 5), (1, 4), (1, 4), (2, 5), (3, 6), (3, 6), (2, 5), (2, 5), (2, 5), (1, 4), (1, 4), (2, 5), (3, 6), (4, 7), (3, 6), (2, 5)],
-    'W': [(2, 5), (2, 5), (1, 4), (1, 4), (2, 5), (3, 6), (3, 6), (2, 5), (2, 5), (1, 4), (2, 5), (3, 6), (4, 7), (3, 6), (2, 5), (2, 5)],
-    'E': [(2, 4), (3, 5), (4, 6), (3, 5), (2, 4), (1, 3), (1, 3), (2, 4), (2, 4), (1, 3), (2, 4), (3, 5), (3, 5), (2, 4), (1, 3), (2, 4)],
-    'S': [(0, 3), (0, 4), (0, 4), (0, 3), (0, 3), (0, 2), (0, 3), (0, 3), (0, 3), (0, 3), (0, 4), (0, 4), (0, 3), (0, 2), (0, 2), (0, 3)],
+# 덩이(설계 2): 중간 단 윗면, 위·왼 빛, 아래 그늘 — 하얗게 튀지 않는다.
+BOULDER = {
+    'A': (['...gnm....', '.mmcccmm..', 'mccccccccb', 'cccccccbbd', '.cbbbbbdd.', '..ddddd...'],
+          ['.mgm.', 'mcccb', 'ccbbd', '.ddd.'], ['mc', 'bd']),
+    'B': (['...llll...', '.llmmmmcc.', 'lmmmmmmccp', 'mmmmmmcccp', '.cmmcccpp.', '..pppppp..'],
+          ['.ll.', 'lmmc', 'mmcp', '.pp.'], ['lm', 'cp']),
+    'C': (['..cccm....', '.cccccmcc.', 'cccccmccccm', '.mbbmcccccm', '.kkkkmbbbm.', '.....kkkk..'],
+          ['.ccm.', 'ccccm', '.mbm.', '.kkk.'], ['cm', 'bk']),
 }
-
-
-def a2_bodies():
-    return [pile(A2_GRIT, A2_PORTS + shift(lay, d)) for lay, d in zip(A2_LAYOUT, VSHIFT)]   # 틈 바탕은 한 장(돌리지 않음) — 칸 끝 틈이 그대로 이어진다
-
-
-# ================================================================================================ 줄 B — 산속 바위굴
-# B1 모난 화강암 덩이: 윗면이 평평한(m, 얼룩 b, 위·왼 턱 끝 l) 모난 바위 덩이가 겹겹이 쌓이고, 덩이마다 남쪽으로
-# 키 큰 앞면(위 끝 b · 몸 d · 세로 갈라짐 k · 그늘 e) 2~4줄이 보인다 — 칸 안의 작은 절벽들로 높이가 읽힌다(판석 바닥이 아니다).
-B1_GAP = [
-    'eddedkdeddddekde', 'ddeddddddeddddde', 'kdddedkdddeddkdd', 'ddeddddddddedddd',
-    'dddddeddkddddded', 'edkddddeddddeddd', 'dddeddddddkddddk', 'ddddddeddeddddde',
-    'kddeddddddddeddd', 'dddddkdeddddddkd', 'deddddddddedkddd', 'dddkdeddddddddde',
-    'edddddddkdddeddd', 'ddeddedddddeddkd', 'dkddddddeddddddd', 'ddddkddeddkdeddd']
-B1_K1 = ['..lllll.....', '.lmmmmmll...', 'lmmbmmmmmll.', 'lmmmmmmbmmmd', 'lmbmmmmmmmbd', 'bbbbbbbbbbbe',
-         'ddddkdddddde', 'ddddkddddded', 'eddddddkddek', '.kkkkkkkkkk.']
-B1_K2 = ['.llll...', 'lmmmmll.', 'lmmbmmmd', 'lmmmmmbd', 'bbbbbbbe', 'dddkddde', 'edddddek', '.kkkkkk.']
-B1_K3 = ['...lllll..', '.llmmmmml.', 'lmmmbmmmmd', 'bbbbbbbbbe', 'dddddkddde', '.kkkkkkkk.']
-B1_K4 = ['.lll.', 'lmmml', 'bbbbe', 'ddkde', '.kkk.']
-B1_XL = ['...llllll.....', '.llmmmmmmlll..', 'lmmmbmmmmmmml.', 'lmmmmmmmmbmmmd', 'lmbmmmmmmmmmmd', 'lmmmmmmbmmmmbd',
-         'bbbbbbbbbbbbbe', 'ddddkddddddkde', 'eddddddkdddddk', '.kkkkkkkkkkkk.']
-B1_K5 = ['....lll.....', '..llmmmlll..', '.lmmmbmmmml.', 'lmmmmmmmmbmd', 'bbbbbbbbbbbe', 'ddkddddddkde',
-         'eddddddddddk', '.kkkkkkkkkk.']
-B1_PORTS = ((B1_K4, 13, 3), (B1_K4, 13, 11))
-B1_LAYOUT = [   # 큰 덩이 하나 / 중간 둘 / 작은 덩이 무리 — 크기를 칸마다 섞는다. 마지막 = 본몸통
-    ((B1_XL, 1, 1), (B1_K4, 2, 11), (B1_K4, 9, 12)),
-    ((B1_K2, 1, 1), (B1_K5, 2, 7), (B1_K4, 9, 1)),
-    ((B1_K4, 1, 0), (B1_K4, 6, 2), (B1_K3, 1, 5), (B1_K4, 9, 8), (B1_K2, 4, 10)),
-    ((B1_K4, 1, 1), (B1_XL, 1, 5), (B1_K4, 8, 0)),
-    ((B1_K1, 1, 1), (B1_K4, 2, 11), (B1_K3, 4, 10)),
-]
-B1_PROF = {
-    'N': [(2, 5), (2, 5), (2, 5), (1, 4), (1, 4), (1, 4), (2, 5), (2, 5), (2, 5), (3, 6), (3, 6), (4, 7), (4, 6), (3, 5), (2, 5), (2, 5)],
-    'W': [(2, 5), (2, 5), (3, 6), (4, 7), (4, 6), (3, 5), (2, 5), (2, 5), (2, 5), (1, 4), (1, 4), (1, 4), (2, 5), (2, 5), (2, 5), (2, 5)],
-    'E': [(2, 4), (2, 4), (1, 3), (1, 3), (1, 3), (2, 4), (3, 5), (2, 4), (2, 4), (3, 5), (4, 6), (4, 6), (3, 5), (2, 4), (2, 4), (2, 4)],
-    'S': [(0, 3), (0, 3), (0, 3), (0, 4), (0, 5), (0, 4), (0, 3), (0, 3), (0, 3), (0, 2), (0, 2), (0, 3), (0, 4), (0, 4), (0, 3), (0, 3)],
-}
-
-
-def b1_bodies():
-    return [pile(B1_GAP, B1_PORTS + shift(lay, d)) for lay, d in zip(B1_LAYOUT, VSHIFT)]
-
-
-# B2 큰 회색 바윗덩이: 넓고 밝은 윗면(w h l)이 위로 둥글고 아래로 그늘(b d)·밑 틈(k)이 지는 큰 덩이가 빽빽이 쌓였다.
-# A2 보다 덩이가 크고 수가 적으며 모가 살짝 진다(윗면 평평한 덩이·모난 조각 섞임). 이끼 없음.
-B2_GRIT = [
-    'dddeddddddddeddd', 'ddddddedddddddde', 'deddddddddeddddd', 'dddddddkdddddedd',
-    'ddedddddddddddd' + 'd', 'dddddeddddeddddd', 'eddddddddddddkdd', 'dddddddeddddeddd',
-    'ddddeddddddddddd', 'dddddddddeddddde', 'dedddkdddddddddd', 'ddddddddddedddkd',
-    'ddddddeddddddddd', 'deddddddddddeddd', 'ddddddddeddddddd', 'dddeddddddddddde']
-B2_BIG = ['....llmm......', '..llmmmmmb....', '.lmmmmbmmmbb..', 'lmmmbmmmmmbbd.', 'lmmmmmmmbbbbdd', 'mmmbmmmbbbbddd',
-          'bmmmmmbbbbbdde', '.bbbbbbbbddde.', '..bbbbdddeee..', '...ddddeeek...', '.....kkkk.....']
-B2_MED = ['...llm....', '.llmmmbb..', 'lmmmmmbbd.', 'mmmbmbbbdd', 'bmmmbbbdde', '.bbbbddde.', '..ddeeek..', '....kk....']
-B2_FLAT = ['.llmmm...', 'lmmmmbbb.', 'mmbbbbbdd', '.bbbddde.', '...kkkk..']
-B2_SHARD = ['..lm..', '.lmmb.', 'lmmbbd', 'mbbdde', '..kk..']
-B2_CHIP = ['.lm.', 'mmbd', '.kk.']
-B2_PORTS = ((B2_CHIP, 14, 6), (B2_CHIP, 14, 13))
-B2_LAYOUT = [   # 큰 덩이 하나가 칸을 거의 채우는 칸 / 중간 둘 / 납작한 것과 조각 — 크기 섞임을 칸마다 크게
-    ((B2_BIG, 1, 1), (B2_CHIP, 3, 12)),
-    ((B2_MED, 5, 0), (B2_FLAT, 1, 4), (B2_MED, 4, 8), (B2_CHIP, 1, 13)),
-    ((B2_SHARD, 1, 0), (B2_BIG, 1, 5), (B2_CHIP, 9, 1)),
-    ((B2_FLAT, 4, 0), (B2_MED, 1, 4), (B2_SHARD, 9, 6), (B2_FLAT, 5, 11), (B2_CHIP, 11, 2)),
-    ((B2_MED, 1, 0), (B2_MED, 5, 4), (B2_SHARD, 1, 9), (B2_SHARD, 9, 12), (B2_CHIP, 11, 0)),
-]
-B2_PROF = {
-    'N': [(2, 5), (3, 6), (3, 6), (2, 5), (1, 4), (1, 4), (2, 5), (2, 5), (2, 5), (2, 5), (1, 4), (1, 4), (2, 5), (3, 6), (3, 6), (2, 5)],
-    'W': [(2, 5), (1, 4), (1, 4), (2, 5), (3, 6), (4, 7), (3, 6), (2, 5), (2, 5), (2, 5), (2, 5), (1, 4), (1, 4), (2, 5), (3, 6), (2, 5)],
-    'E': [(2, 4), (2, 4), (3, 5), (3, 5), (2, 4), (1, 3), (2, 4), (2, 4), (2, 4), (1, 3), (1, 3), (2, 4), (3, 5), (4, 6), (3, 5), (2, 4)],
-    'S': [(0, 3), (0, 2), (0, 3), (0, 4), (0, 4), (0, 3), (0, 3), (0, 3), (0, 3), (0, 4), (0, 3), (0, 2), (0, 3), (0, 4), (0, 4), (0, 3)],
-}
-
-
-def b2_bodies():
-    return [pile(B2_GRIT, B2_PORTS + shift(lay, d)) for lay, d in zip(B2_LAYOUT, VSHIFT)]
-
-
-# ================================================================================================ 줄 C — 검푸른 심층굴
-# C1 층 진 현무암 판: 검푸른 바탕(b) 에 가는 층 줄(k, 4~11칸, 조금씩 물결) 이 판마다 겹겹이 지나가고, 판 사이는 깊은 금(x)
-# + 금 아래·오른 빛 턱(m). 층 줄은 판(금으로 막힌 칸) 안에서 끝나 판마다 층 방향·간격이 다르다.
-C1_BASE = [
-    'bbbdbbbbbbbbbdbb', 'bbbbbbbcbbbbbbbb', 'bdbbbbbbbbbbbbbb', 'bbbbbbbbbdbbbcbb',
-    'bbbbcbbbbbbbbbbb', 'bbbbbbbbbbbbbbbd', 'bbdbbbbbbbcbbbbb', 'bbbbbbbbbbbbbbbb',
-    'bbbbbbdbbbbbbbbb', 'cbbbbbbbbbbbbdbb', 'bbbbbbbbbcbbbbbb', 'bbbdbbbbbbbbbbbb',
-    'bbbbbbbbbbbbdbbb', 'bbbbbcbbbbbbbbbb', 'bdbbbbbbbbbbbbbc', 'bbbbbbbbdbbbbbbb']
-C1_NETS = [
-    [[(0, 7), (6, 8), (11, 6), (15, 7)], [(6, 8), (7, 15)]],
-    [[(9, 0), (8, 5), (10, 9), (9, 15)], [(10, 9), (15, 11)]],
-    [[(0, 12), (5, 11), (12, 13), (15, 12)], [(5, 11), (4, 4), (6, 0)]],
-    [[(15, 3), (10, 4), (7, 9), (0, 10)]],
-    [[(3, 0), (4, 6)], [(15, 8), (11, 9)]],
-]
-C1_STRATA = [   # (x, y, 길이, 꺾임) — '+' 한 줄 내려감 · '-' 올라감
-    [(1, 2, 9, '0000-0000'), (2, 5, 7, '0000000'), (9, 10, 6, '00+000'), (10, 13, 5, '00000'), (1, 11, 4, '0000')],
-    [(1, 2, 6, '00+000'), (0, 6, 7, '000-000'), (1, 11, 6, '000000'), (11, 3, 4, '0000'), (11, 13, 4, '0+00')],
-    [(7, 2, 8, '00000+00'), (7, 6, 7, '0000000'), (6, 9, 8, '000-0000'), (0, 6, 3, '000'), (1, 14, 9, '0000-0000')],
-    [(1, 2, 8, '000-0000'), (2, 5, 4, '0000'), (9, 7, 6, '0-0000'), (2, 13, 10, '00000+0000')],
-    [(6, 2, 8, '0000+000'), (0, 9, 9, '000-00000'), (6, 12, 8, '00000000'), (10, 5, 5, '0+000')],
-]
-C1_PROF = {
-    'N': [(2, 5), (2, 5), (3, 6), (3, 6), (2, 5), (1, 4), (1, 4), (2, 5), (2, 5), (1, 4), (1, 4), (2, 5), (2, 5), (3, 6), (3, 6), (2, 5)],
-    'W': [(2, 5), (3, 6), (3, 6), (2, 5), (2, 5), (1, 4), (1, 4), (2, 5), (2, 5), (3, 6), (4, 7), (3, 6), (2, 5), (1, 4), (1, 4), (2, 5)],
-    'E': [(2, 4), (1, 3), (1, 3), (2, 4), (2, 4), (3, 5), (3, 5), (2, 4), (2, 4), (2, 4), (3, 5), (4, 6), (3, 5), (2, 4), (1, 3), (2, 4)],
-    'S': [(0, 3), (0, 3), (0, 4), (0, 3), (0, 2), (0, 3), (0, 4), (0, 3), (0, 3), (0, 4), (0, 4), (0, 3), (0, 3), (0, 2), (0, 3), (0, 3)],
-}
-
-
-def strata(rows, x0, y0, n, bend):
-    """층 줄 하나: 가는 그늘 줄(k) + 바로 위 한 화소 옅은 빛(c, 가운데 부분만) — 양 끝은 그늘만(가늘어짐)."""
+# 층(C1): 가는 층 줄 — 위 옅은 빛(m) + 줄(k). 가로 변은 y=4·11 에서만 건넌다.
+def strata_line(rows, pts):
     g = [list(r) for r in rows]
-    y = y0
-    for i in range(n):
-        if i:
-            y += {'+': 1, '-': -1}.get(bend[i], 0)
-        x = x0 + i
-        if 0 <= x < 16 and 0 <= y < 16 and g[y][x] not in 'xm':
+    for x, y in CR.poly(*pts):
+        if 0 <= x < 16 and 1 <= y < 16:
             g[y][x] = 'k'
-            if 1 <= i < n - 1 and 0 <= y - 1 < 16 and g[y - 1][x] not in 'xmk':
-                g[y - 1][x] = 'c'
+            if g[y - 1][x] not in 'k':
+                g[y - 1][x] = 'm'
     return [''.join(r) for r in g]
 
 
-def c1_bodies():
-    out = []
-    for i, (net, st) in enumerate(zip(C1_NETS, C1_STRATA)):
-        rows = turn(C1_BASE, i % 4)
-        rows = cut(rows, net, dark='x', shade='k', lit='m')
-        for x, y, n, bend in st:
-            rows = strata(rows, x, y, n, bend)
-        out.append(rows)
-    return out
+def _crack(line, rows, paths):
+    d, sh, li = CRACK[line]
+    return cut(rows, paths, dark=d, shade=sh, lit=li)
 
 
-# C2 육각 주상 절리: 검푸른 현무암 기둥 머리(밝은 윗면 c·b, 위·왼 끝 h l) 밑으로 기둥 옆면 1~2줄(d k)이 보이고,
-# 기둥끼리 높이가 달라(윗면 색 c / b) 어두운 절리 틈(x k)에 빽빽이 박혔다.
-C2_GAP = [   # 절리 틈: 쇠빛 어둠(d)에 더 깊은 틈(k·x) — 기둥 옆면(d k)과 이어져 칸 끝 틈이 곧은 검은 띠로 보이지 않는다
-    'dkdddkddxdddkddd', 'ddddkdddddkdddkd', 'kddxddddkddddddd', 'dddddkdddddxdkdd',
-    'ddkdddddkddddddk', 'xddddkddddkddxdd', 'dddkdddxddddkddd', 'dkddddkddddddddk',
-    'ddddxdddddkddkdd', 'kdddddkddxddddxd', 'dddkddddddddkddd', 'ddxddkdddkdddddk',
-    'kddddddkdddxdkdd', 'ddkdxdddddddddkd', 'dddddkddkddkdddd', 'dxdkdddddxddddkd']
-# 기둥 머리는 모서리를 깎은 육각: 평평한 윗면(한 톤 c) · 북서 모 빛(h l) · 남동 모 그늘(b m) · 남쪽 옆면 2~3줄(d k).
-C2_XL = ['...hhhhhhl...', '..hcccccccl..', '.hcccccccccl.', 'hccccccccccbm', 'hcccccccccbbm', 'lccccccccbbbm',
-         '.lccccccbbbm.', '..mbbbbbbbm..', '..ddddddddd..', '..dkdddddkd..', '...kkkkkkk...']   # 아주 굵은 기둥
-C2_HI = ['..hhhhl..', '.hcccccl.', 'hcccccccm', 'hccccccbm', 'lcccccbbm', '.mbbbbbm.', '.ddddddd.', '.dkdddkd.', '..kkkkk..']
-C2_WD = ['..hhhhhl...', '.hccccccl..', 'hcccccccccm', 'lccccccbbbm', '.mbbbbbbbm.', '.ddddddddd.', '..kkkkkkk..']   # 넓고 낮은
-C2_LO = ['..lmmm..', '.lbbbbm.', 'lbbbbbbd', 'mbbbbbdd', '.mbbbdd.', '.kkkkkk.']             # 낮은 기둥(어두운 윗면, 옆면 1줄)
-C2_SM = ['.hhl.', 'hcccl', 'lcbbm', '.ddd.', '.kkk.']
-C2_PORTS = ((C2_SM, 13, 2), (C2_SM, 13, 10))
-C2_LAYOUT = [   # 아주 굵은 기둥 하나 / 중간 기둥 둘 / 가는·낮은 기둥 무리 — 기둥 굵기를 칸마다 크게 섞는다. 마지막 = 본몸통
-    ((C2_XL, 1, 1), (C2_SM, 2, 12), (C2_LO, 7, 12)),
-    ((C2_HI, 1, 0), (C2_WD, 3, 8), (C2_SM, 10, 1)),
-    ((C2_SM, 1, 0), (C2_SM, 6, 1), (C2_LO, 1, 5), (C2_SM, 9, 6), (C2_HI, 4, 9), (C2_SM, 1, 12)),
-    ((C2_SM, 1, 0), (C2_XL, 1, 4), (C2_SM, 8, 0)),
-    ((C2_HI, 1, 1), (C2_WD, 4, 6), (C2_SM, 10, 0), (C2_LO, 1, 10), (C2_SM, 10, 12)),
-]
-C2_PROF = {
-    'N': [(2, 5), (1, 4), (1, 4), (2, 5), (2, 5), (3, 6), (3, 6), (2, 5), (2, 5), (2, 5), (1, 4), (1, 4), (2, 5), (3, 6), (2, 5), (2, 5)],
-    'W': [(2, 5), (2, 5), (3, 6), (4, 7), (3, 6), (2, 5), (1, 4), (2, 5), (2, 5), (1, 4), (1, 4), (2, 5), (2, 5), (3, 6), (3, 6), (2, 5)],
-    'E': [(2, 4), (3, 5), (3, 5), (2, 4), (1, 3), (1, 3), (2, 4), (2, 4), (2, 4), (3, 5), (4, 6), (3, 5), (2, 4), (2, 4), (1, 3), (2, 4)],
-    'S': [(0, 3), (0, 4), (0, 4), (0, 3), (0, 3), (0, 2), (0, 2), (0, 3), (0, 3), (0, 3), (0, 4), (0, 5), (0, 4), (0, 3), (0, 3), (0, 3)],
-}
+def tops(line, n):
+    m = MOT[line]
+    t = [turn(m, k) for k in (1, 2, 3, 0, 1, 2, 3)]
+    if n == 1:
+        big, small = LEDGE[line]
+        if line == 'C':
+            v = [strata_line(t[0], ((0, 4), (5, 5), (10, 3), (15, 4))),
+                 stampl(t[1], [(big, 2, 6)]),
+                 t[2],
+                 strata_line(strata_line(t[3], ((0, 11), (4, 10), (9, 12), (15, 11))), ((3, 4), (8, 5))),
+                 _crack(line, stampl(t[4], [(small, 7, 2)]), [((5, 15), (6, 11), (3, 8))]),
+                 t[5],
+                 _crack(line, t[6], [((12, 0), (11, 4), (13, 7))])]
+        else:
+            v = [_crack(line, t[0], [((0, 4), (4, 5), (7, 8), (12, 15))]),
+                 stampl(t[1], [(big, 2, 5)]),
+                 t[2],
+                 _crack(line, t[3], [((5, 0), (6, 4), (3, 8), (0, 11))]),
+                 _crack(line, stampl(t[4], [(small, 7, 9)]), [((2, 2), (5, 3))]),
+                 t[5],
+                 _crack(line, t[6], [((15, 11), (11, 10), (9, 6))])]
+    else:
+        b1, b2, peb = BOULDER[line]
+        v = [stampl(t[0], [(peb, 3, 4), (peb, 11, 12)]),
+             stampl(t[1], [(b1, 2, 4), (peb, 12, 13)]),
+             t[2],
+             stampl(t[3], [(peb, 9, 2)]),
+             stampl(t[4], [(b2, 9, 3), (b2, 3, 10), (peb, 12, 12)]),
+             _crack(line, t[5], [((12, 15), (11, 12), (13, 9))]),
+             stampl(t[6], [(peb, 5, 8)])]
+    main = m if n == 1 else turn(m, 1)
+    return v + [main]
 
 
-def c2_bodies():
-    return [pile(C2_GAP, C2_PORTS + shift(lay, d)) for lay, d in zip(C2_LAYOUT, VSHIFT)]
-
-
-BUILD = {('A', 1): (A1_PROF, a1_bodies), ('A', 2): (A2_PROF, a2_bodies),
-         ('B', 1): (B1_PROF, b1_bodies), ('B', 2): (B2_PROF, b2_bodies),
-         ('C', 1): (C1_PROF, c1_bodies), ('C', 2): (C2_PROF, c2_bodies)}
+BUILD = {(ln, k): ({1: PROF1, 2: PROF2}[k], (lambda ln=ln, k=k: tops(ln, k))) for ln in 'ABC' for k in (1, 2)}
 _CACHE = {}
 
 
@@ -659,21 +527,21 @@ def face_c1():
     return face_cv('C', rows, _cap('d', '.'), _cap('k', '.'))
 
 
-C2_FCOL = 'kmmbbbdkkmbbbbbd'   # 넓은 기둥 둘(7·9): 왼 면 빛 m → 몸 b → 오른 면 그늘 d·k, 틈은 k(먹 아님)
-
-
 def face_c2():
-    """주상 절리: 너비 다른 굵은 세로 기둥, 마디(가로 금)마다 기둥이 한 화소씩 어긋나 곧은 창살로 읽히지 않는다."""
-    g = _fgrid([C2_FCOL], C_FTOP, C_FBOT)
-    shift = {y: (0 if y < 11 else 1 if y < 19 else -1 if y < 24 else 0) for y in range(3, 28)}
-    for y in range(3, 28):
-        for x in range(16):
-            g[y][x] = C2_FCOL[(x - shift[y]) % 16]
-    for x0, x1, y in ((2, 5, 11), (10, 14, 19)):
-        for x in range(x0, x1 + 1):
-            g[y][x] = 'k'
-            g[y + 1][x] = 'm' if x == x0 else 'b'
-    _specks(g, [(x, y, 'd') for x, y in ((4, 6), (12, 13), (5, 15), (13, 21), (3, 22))])
+    """두꺼운 층이 턱으로 튀어나온 화산암 벽: 층마다 위 끝 빛 턱(m·c) → 몸(b) → 밑 그늘(k 두 줄, 턱 밑 오목). C1 보다 층이 두껍고
+    턱이 깊어 층층이 쌓인 바위로 읽힌다(줄 C = 깊은 층 진 바위)."""
+    g = _fgrid(['bbbbbbbbbbbbbbbb', 'bbdbbbbbbbbbbdbb', 'bbbbbbbmbbbbbbbb', 'bbbbdbbbbbbbbbbb'], C_FTOP, C_FBOT,
+               ['kbkkkkkbkkkkkkkk', 'kkkkbkkkkkkkbkkk', 'kkkkkkkkkkkkkkkk'], 16)
+    for y0, offs in ((9, '0000111222211000'), (18, '2211000000011122'), (24, '000111100000.000')):
+        for x, o in enumerate(offs):
+            if o == '.':
+                continue
+            y = y0 + int(o)
+            g[y - 2][x] = 'k'      # 위 층 밑 오목 그늘
+            g[y - 1][x] = 'k' if (x + y) % 5 else 'x'
+            g[y][x] = 'm'          # 아래 층 위 끝 빛 턱
+            g[y + 1][x] = 'c' if x % 3 else 'm'
+    _joints(g, [('55', 5), ('bbb', 13), ('3', 21)], 'k', 'k', 'd')
     _lipline(g, 'C', '0110000122000110')
     rows = [''.join(r) for r in g]
     return face_cv('C', rows, _cap('d', '.'), _cap('k', '.'))
@@ -695,12 +563,12 @@ VIGN_GRID = [
     '##############',
     '##############',
     '##############',
-    '###...########',
-    '##.....###...#',
+    '####..######.#',
+    '###....####..#',
     '##......##...#',
-    '###.....##...#',
-    '###...........',
-    '####..####...#',
+    '##.......#...#',
+    '###..........#',
+    '#####...##..##',
     '##############',
 ]
 FIELD_GRID = ['#' * 20] * 15
