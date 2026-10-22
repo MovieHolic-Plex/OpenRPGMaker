@@ -27,6 +27,10 @@ export type MoveRouteCommandContext = {
    */
   readonly hopHeightPx: number;
   readonly hopDurationMs: number;
+  /** 다가가기·쪽으로 돌기의 대상: "@player"(주인공)·이벤트 id. 비면 주인공. */
+  readonly stageTarget?: string;
+  /** 다가가기의 말 거리(칸). 1 = 바로 옆. */
+  readonly talkDistance?: number;
 };
 
 export const MOVE_ROUTE_COMMAND_ROWS: readonly (readonly MoveRouteButton[])[] = [
@@ -107,6 +111,29 @@ export const MOVE_ROUTE_COMMAND_ROWS: readonly (readonly MoveRouteButton[])[] = 
     commandButton("플레이어 쪽으로 이동", "move-toward-player", "◎", { kind: "moveTowardPlayer" }),
     commandButton("플레이어 쪽으로 향함", "turn-toward-player", "⊙", { kind: "turnTowardPlayer" }),
     commandButton("불투명도 증가", "increase-opacity", "＋", { kind: "changeOpacity", delta: 64 }),
+  ],
+  [
+    // 인물 연출 기본기 — 걸음을 늘어놓지 않고 «누구 곁으로»를 선언한다(실행 순간 위치로 길을 찾는다).
+    contextCommandButton("대상 곁으로 다가가기...", "approach-target", "⇥", (context) => ({
+      kind: "approach",
+      target: context.stageTarget?.trim() || "@player",
+      ...(context.talkDistance !== undefined && context.talkDistance !== 1 ? { distance: Math.max(0, context.talkDistance) } : {}),
+    })),
+    contextCommandButton("대상 쪽으로 향함...", "turn-toward-target", "⊚", (context) => ({
+      kind: "turnToward",
+      target: context.stageTarget?.trim() || "@player",
+    })),
+  ],
+  [
+    // 문 출입 — 문 칸 «위로» 걸어 들어가 문 소리와 함께 사라진다(대상 비우면 가장 가까운 문·이동 이벤트).
+    contextCommandButton("문으로 나가기...", "exit-via", "⇲", (context) => {
+      const target = context.stageTarget?.trim();
+      return target && target !== "@player" ? { kind: "exitVia", target } : { kind: "exitVia" };
+    }),
+    contextCommandButton("문으로 들어오기...", "enter-via", "⇱", (context) => {
+      const target = context.stageTarget?.trim();
+      return target && target !== "@player" ? { kind: "enterVia", target } : { kind: "enterVia" };
+    }),
   ],
   [
     commandButton("플레이어에게서 멀어짐", "move-away-from-player", "⇠", { kind: "moveAwayFromPlayer" }),
@@ -241,6 +268,18 @@ export function moveCommandLabel(command: MoveCommand): string {
       return "플레이어 쪽으로 향함";
     case "turnAwayFromPlayer":
       return "플레이어 반대로 향함";
+    case "approach":
+      return `${stageTargetLabel(command)} 곁으로 다가가기${command.distance === 0 ? " (그 칸으로)" : command.distance && command.distance > 1 ? ` (${command.distance}칸)` : ""}`;
+    case "turnToward":
+      return `${stageTargetLabel(command)} 쪽으로 향함`;
+    case "exitVia":
+      return `${doorLabel(command)} 문으로 나가기`;
+    case "enterVia":
+      return `${doorLabel(command)} 문으로 들어오기`;
+    case "doorCue":
+      return command.se ? `문 소리 ${command.se}` : "문 프레임";
+    case "placeAt":
+      return `(${command.x}, ${command.y}) 로 옮김`;
     case "setDirectionFix":
       return `방향 고정 ${onOff(command.enabled)}`;
     case "setThrough":
@@ -264,6 +303,21 @@ export function moveCommandLabel(command: MoveCommand): string {
     case "wait":
       return "대기";
   }
+}
+
+/** 다가가기·쪽으로 돌기 대상의 짧은 이름: 주인공 · 이벤트 id · (x, y) 칸. */
+/** 문 출입 대상 표시(비면 «가장 가까운»). */
+export function doorLabel(command: { readonly target?: string; readonly x?: number; readonly y?: number }): string {
+  if (!command.target?.trim() && command.x === undefined) return "가장 가까운";
+  return stageTargetLabel(command);
+}
+
+export function stageTargetLabel(command: { readonly target?: string; readonly x?: number; readonly y?: number }): string {
+  const target = command.target?.trim() ?? "";
+  if (target === "@player" || target === "player") return "주인공";
+  if (target === "@this" || target === "this-event") return "이 이벤트";
+  if (target) return target;
+  return `(${command.x ?? 0}, ${command.y ?? 0})`;
 }
 
 /**

@@ -52,6 +52,21 @@ export function say(who: Who, expr: Expr, ...lines: string[]): Command[] {
   ];
 }
 
+/** 듣는 사람을 못박은 대사 — 기본(NPC → 주인공)이 아닌 상대에게 말할 때. to: 이벤트 id 또는 "@player". */
+export function sayTo(who: Who, expr: Expr, to: string, ...lines: string[]): Command[] {
+  return say(who, expr, ...lines).map((c) => (c.kind === "text" ? { ...c, addressee: to } : c));
+}
+
+/** 멀리서 부르는 한마디(점원 인사·길 건너 부르기). 대화는 approach 로 붙인 뒤에 한다. */
+export function call(who: Who, expr: Expr, ...lines: string[]): Command[] {
+  return say(who, expr, ...lines).map((c) => (c.kind === "text" ? { ...c, calling: true } : c));
+}
+
+/** 멀리 있는 특정 인물을 부르는 한마디(「지후 씨, 잠깐 와 볼래요?」). */
+export function callTo(who: Who, expr: Expr, to: string, ...lines: string[]): Command[] {
+  return sayTo(who, expr, to, ...lines).map((c) => (c.kind === "text" ? { ...c, calling: true } : c));
+}
+
 /** 서하의 속마음 — 얼굴 없이 괄호 대신 흐린 독백으로. */
 export function think(...lines: string[]): Command[] {
   return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", body }))];
@@ -112,6 +127,42 @@ export function emote(target: "player" | string, kind: EmoteKind, ms = 1100): Co
 /** 이벤트(또는 주인공 "@player")를 한 칸씩 걷게 한다. */
 export function walk(eventId: string, dirs: readonly Dir[], waitDone = true): Command {
   return { kind: "moveEvent", eventId, route: { moves: dirs.map((dir) => ({ kind: "move", dir })), repeat: false, wait: waitDone, skippable: true } } as Command;
+}
+
+/**
+ * 대상 곁으로 걸어가 대상을 본다(인물 연출 기본기). 실행 순간의 실제 위치로 길을 찾고 다른 인물을 피한다 — 걸음을 늘어놓지 않는다.
+ * eventId·target: 이벤트 id 또는 "@player". distance: 말 거리(1 = 바로 옆), 0 이면 칸 대상 그 자리로.
+ */
+export function approach(eventId: string, target: string | { x: number; y: number }, distance = 1, waitDone = true): Command {
+  const to = typeof target === "string" ? { target } : { x: target.x, y: target.y };
+  return { kind: "moveEvent", eventId, route: { moves: [{ kind: "approach", ...to, ...(distance !== 1 ? { distance } : {}) }], repeat: false, wait: waitDone, skippable: true } } as Command;
+}
+
+/** 칸으로 걸어간다(길 찾기). 막혔으면 가장 가까운 칸. */
+export function walkTo(eventId: string, cell: { x: number; y: number }, waitDone = true): Command {
+  return approach(eventId, cell, 0, waitDone);
+}
+
+/**
+ * 문·출구로 나간다: 문 칸까지 걸어가 문 소리와 함께 그 칸 «위에서» 사라진다(한 칸 앞에서 사라지지 않는다).
+ * door 를 비우면 가장 가까운 문(이동 이벤트). 문 이벤트 페이지가 꺼져 있으면 칸 좌표로 준다.
+ */
+export function exitVia(eventId: string, door?: string | { x: number; y: number }, waitDone = true): Command {
+  const to = door === undefined ? {} : typeof door === "string" ? { target: door } : { x: door.x, y: door.y };
+  return { kind: "moveEvent", eventId, route: { moves: [{ kind: "exitVia", ...to }], repeat: false, wait: waitDone, skippable: true } } as Command;
+}
+
+/** 대상 쪽으로 돈다. */
+export function faceToward(eventId: string, target: string): Command {
+  return { kind: "moveEvent", eventId, route: { moves: [{ kind: "turnToward", target }], repeat: false, wait: true, skippable: true } } as Command;
+}
+
+/** 두 인물이 서로 본다. */
+export function faceEachOther(a: string, b: string): Command[] {
+  return [
+    { kind: "moveEvent", eventId: a, route: { moves: [{ kind: "turnToward", target: b }], repeat: false, wait: false, skippable: true } } as Command,
+    faceToward(b, a),
+  ];
 }
 
 export function face(eventId: string, dir: Dir): Command {

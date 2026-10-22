@@ -944,6 +944,33 @@ function validateMoveCommandShape(label: string, value: unknown): void {
     case "playSe":
       requireString(`${label}.resourceId`, command.resourceId);
       return;
+    case "approach":
+    case "turnToward":
+      // 대상은 target("@player"·이벤트 id) 또는 x,y 칸. 둘 다 없어도 형식 오류는 아니다(런타임이 건너뛴다).
+      if (command.target !== undefined) requireString(`${label}.target`, command.target);
+      if (command.x !== undefined) requireNumber(`${label}.x`, command.x);
+      if (command.y !== undefined) requireNumber(`${label}.y`, command.y);
+      if (kind === "approach" && command.distance !== undefined) requireNumber(`${label}.distance`, command.distance);
+      return;
+    case "exitVia":
+    case "enterVia":
+      if (command.target !== undefined) requireString(`${label}.target`, command.target);
+      if (command.x !== undefined) requireNumber(`${label}.x`, command.x);
+      if (command.y !== undefined) requireNumber(`${label}.y`, command.y);
+      if (command.se !== undefined) requireString(`${label}.se`, command.se);
+      if (command.closeSe !== undefined) requireString(`${label}.closeSe`, command.closeSe);
+      if (kind === "enterVia" && command.dir !== undefined) requireDir(`${label}.dir`, command.dir);
+      return;
+    case "doorCue":
+      if (command.target !== undefined) requireString(`${label}.target`, command.target);
+      if (command.frame !== undefined) requireNumber(`${label}.frame`, command.frame);
+      if (command.se !== undefined) requireString(`${label}.se`, command.se);
+      if (command.ms !== undefined) requireNumber(`${label}.ms`, command.ms);
+      return;
+    case "placeAt":
+      requireNumber(`${label}.x`, command.x);
+      requireNumber(`${label}.y`, command.y);
+      return;
     case "moveRandom":
     case "moveTowardPlayer":
     case "moveAwayFromPlayer":

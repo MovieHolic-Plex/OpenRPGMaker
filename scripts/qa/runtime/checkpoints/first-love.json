@@ -98,11 +98,11 @@
   {
    "id": "d1-meet-choice",
    "label": "첫 만남 선택",
-   "note": "STREET 2: ev_fl_meet auto in fl_office, arrive (16,4) via ev_fl_office_door",
+   "note": "STREET 2: ev_fl_meet auto in fl_office, arrive (24,15) via ev_fl_office_door (real arrival cell)",
    "mapId": "fl_office",
-   "x": 16,
-   "y": 4,
-   "facing": "down",
+   "x": 24,
+   "y": 15,
+   "facing": "up",
    "switches": {},
    "variables": {
     "var_fl_stage": 2
@@ -288,10 +288,10 @@
   {
    "id": "d1-konbini-enter",
    "label": "편의점 입장",
-   "note": "EVENING 6: ev_fl_kon_enter auto; arrive (12,13) via ev_fl_konbini_pm",
+   "note": "EVENING 6: ev_fl_kon_enter auto; arrive (14,11) via ev_fl_konbini_pm (real arrival cell)",
    "mapId": "fl_konbini",
-   "x": 12,
-   "y": 13,
+   "x": 14,
+   "y": 11,
    "facing": "up",
    "switches": {},
    "variables": {
@@ -429,10 +429,10 @@
   {
    "id": "d3-wed-choice1",
    "label": "수요일 팀장 선택",
-   "note": "FLASH 8: ev_fl_wed auto in fl_office_pm, arrive (13,9)",
+   "note": "FLASH 8: ev_fl_wed auto in fl_office_pm, arrive (13,7) = hero desk via ev_fl_flashback (real arrival cell)",
    "mapId": "fl_office_pm",
    "x": 13,
-   "y": 9,
+   "y": 7,
    "facing": "up",
    "switches": {},
    "variables": {
@@ -667,11 +667,11 @@
   {
    "id": "d4-fri-choice",
    "label": "금요일 발표 선택",
-   "note": "WED_TALK 10: ev_fl_fri auto in fl_office_fri, arrive (8,18) left",
+   "note": "WED_TALK 10: ev_fl_fri auto in fl_office_fri, arrive (8,15) = meeting seat via ev_fl_w_jihu_pantry (real arrival cell; (8,18) was Minho's cell)",
    "mapId": "fl_office_fri",
    "x": 8,
-   "y": 18,
-   "facing": "left",
+   "y": 15,
+   "facing": "up",
    "switches": {},
    "variables": {
     "var_fl_stage": 10,
@@ -813,8 +813,8 @@
    "label": "저녁 승강장 고백",
    "note": "RUN 12: ev_fl_platform auto in fl_platform_pm, arrive (8,8) up",
    "mapId": "fl_platform_pm",
-   "x": 8,
-   "y": 8,
+   "x": 7,
+   "y": 6,
    "facing": "up",
    "switches": {},
    "variables": {

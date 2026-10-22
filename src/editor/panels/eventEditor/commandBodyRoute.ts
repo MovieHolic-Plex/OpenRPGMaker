@@ -161,6 +161,18 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     dataset: { testid: "move-route-hop-duration-input" },
   });
 
+  const lastStage = [...moves].reverse().find((m) => m.kind === "approach" || m.kind === "turnToward") as Extract<MoveCommand, { kind: "approach" | "turnToward" }> | undefined;
+  const stageTargetIn = el("input", {
+    attrs: { type: "text", placeholder: "@player 또는 이벤트 id", title: "다가가기·쪽으로 향함의 대상. @player = 주인공." },
+    value: parameterDraft.stageTarget ?? lastStage?.target ?? "@player",
+    dataset: { testid: "move-route-stage-target-input" },
+  });
+  const talkDistanceIn = el("input", {
+    attrs: { type: "number", min: "0", max: "6", title: "다가가기가 대상에서 몇 칸 떨어져 설지. 1 = 바로 옆(대화), 0 = 그 칸으로." },
+    value: parameterDraft.talkDistance ?? (lastStage?.kind === "approach" ? lastStage.distance ?? 1 : 1),
+    dataset: { testid: "move-route-talk-distance-input" },
+  });
+
   const commandList = el("div", {
     class: "move-route-command-list",
     dataset: { testid: "move-route-command-list" },
@@ -200,6 +212,8 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     hopDy: parseInt(hopDy.value, 10) || 0,
     hopHeightPx: parseInt(hopHeightPx.value, 10) || 0,
     hopDurationMs: parseInt(hopDurationMs.value, 10) || 0,
+    stageTarget: stageTargetIn.value.trim() || "@player",
+    talkDistance: Math.max(0, Number.isFinite(parseInt(talkDistanceIn.value, 10)) ? parseInt(talkDistanceIn.value, 10) : 1),
   });
 
   const persistParameters = () => {
@@ -301,6 +315,8 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     hopDy,
     hopHeightPx,
     hopDurationMs,
+    stageTargetIn,
+    talkDistanceIn,
   ]) {
     input.addEventListener("input", persistParameters);
     input.addEventListener("change", persistParameters);
@@ -372,7 +388,7 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     class: "move-route-parameters-details",
     dataset: { testid: "move-route-parameters-details" },
     children: [
-      el("summary", { text: "이 단계 값 (스위치 · 모습 · 효과음 · NPC 맵 이동 · 체공)" }),
+      el("summary", { text: "이 단계 값 (스위치 · 모습 · 효과음 · NPC 맵 이동 · 체공 · 다가갈 대상)" }),
       el("div", {
         class: "move-route-parameters",
         children: [
@@ -387,6 +403,8 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
           labeledField("점프 dy", hopDy),
           labeledField("체공 높이(px)", hopHeightPx),
           labeledField("체공 시간(ms)", hopDurationMs),
+          labeledField("다가갈·바라볼 대상", stageTargetIn),
+          labeledField("말 거리(칸)", talkDistanceIn),
         ],
       }),
       el("p", {
