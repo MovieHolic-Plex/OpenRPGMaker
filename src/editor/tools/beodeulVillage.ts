@@ -2387,6 +2387,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const sh = (k: number) => (Math.imul((seed | 0) + k * 7919, 2654435761) >>> 0);
     const STAIR_SETS = [[0.1 + (sh(1) % 34) / 100, 0.56 + (sh(2) % 34) / 100], [0.1 + (sh(3) % 70) / 100]];
     for (const want of STAIR_SETS[sh(4) % 3 === 0 ? 1 : 0]!.map((f) => Math.round(W * f) - (f > 0.5 ? 2 : 0))) for (let d = 0; d <= 6; d += 1) { const x = want + (d % 2 ? -1 : 1) * Math.ceil(d / 2); if (stairOk(x)) { stairs.push(x); break; } }
+    // 원하는 자리가 다 막혔으면 가운데에서 바깥으로 훑어 하나는 둔다(성벽 위로 오를 길이 없으면 망루가 장식이 된다)
+    if (!stairs.length) for (let d = 0; d < W; d += 1) { const x = (W >> 1) + (d % 2 ? -1 : 1) * Math.ceil(d / 2); if (stairOk(x)) { stairs.push(x); break; } }
     const plan: TownWallPlan = { x0: L.x0, y0: L.y0, x1: L.x1, y1: L.y1, gates, gaps, towers, stairs };
     // 성문 통로 두 칸의 바닥은 길로(폭 1 길이면 옆 칸도), 성문 앞뒤 한 칸도 길에 잇는다
     const roadTile = (() => { for (let c = 0; c < W * H; c += 1) if (occ[c] === ROAD) return mw.lowerTiles[c]!; return -1; })();
