@@ -28,6 +28,7 @@ import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import { composeBeodeulForest, type BeodeulForestType } from "./beodeulForest";
 import { invalidateReliefSlopes, rampCode, reliefAllowsStep } from "@/project/relief/walk";
 import type { ReliefData } from "@/project/relief/types";
+import { stampTownWall, townWallAvailable, townWallLayout, type TownWallPlan, type WallGap, type WallGate, type WallTower } from "./beodeulTownWall";
 import { allowedVillageTerrains, planVillageTerrain, resolveVillageTerrain, TERRAIN_LABEL, VILLAGE_TERRAINS } from "./beodeulTerrain";
 import type { Project, StructureKitDef, TilesetDef } from "@/project/types";
 import { appendStructurePlacement, captureStructureTiles } from "@/project/structurePlacements";
@@ -131,6 +132,12 @@ export interface BeodeulVillageOptions {
   roofs?: string;
   /** 살림집 상한(앵커 제외) — 「집 3~5채」 작은 마을. */
   houseLimit?: number;
+  /** 마을 둘레 성벽(버들항 성벽 꼬리 28,544~). 평지로 짓고, 길이 성벽을 지나는 곳은 성문루(가로 성벽)·틈(세로 성벽)이 된다. */
+  walls?: boolean;
+  /** 성문 쪽(walls 일 때): S 남문 하나(기본) · N 북문 하나 · NS 남북 하나씩. 그 밖에서 성벽을 지나는 길은 성벽 안에서 끊는다. */
+  wallGate?: "S" | "N" | "NS";
+  /** true 면 서·동 성벽을 지나는 길에 끝 마감 틈을 연다(기본 false — 「성문 하나」 요청에 옆 구멍이 생기지 않게). */
+  wallSideGaps?: boolean;
 }
 const LEAF_TREES = ["bd-tree-03a8f7", "bd-tree-a80c85", "bd-tree-e9d9b3", "bd-tree-cc0fcb", "bd-tree-47e17a", "bd-tree-d43edd", "bd-tree-5844f6", "bd-tree-3e8732", "bd-tree-1a786c", "bd-tree-d61d7e", "bd-tree-7ecdb8", "bd-tree-1e09f0", "bd-tree-bdd36e", "bd-tree-b1d104"];
 // 침엽·혼효 마을(forestType, woodland r3): 낱 나무도 숲과 같은 계열로 — 둥근 활엽 덤불이 침엽 마을을 덮지 않게(독립 검수 D10).
@@ -195,8 +202,10 @@ const FREE = 0, ROAD = 1, WATERC = 2, PLAZAC = 3, BLD = 4, PROP = 5, FIELD = 6, 
 const CLEAR = 10;
 /** 숲 덩이(이어진 수관 오토타일이 덮는 막힌 칸, 2026-10-18). */
 const FOREST = 11;
+/** 성벽 둘레 띠(walls) — 집·나무·소품이 앉지 않는다. 길은 지나가도 된다(지나는 곳이 성문·틈). */
+const WALLB = 12;
 /** 시공 기록(constructionLog)에 싣는 계획 분류 이름 — 편집기가 밑그림 색을 고른다. */
-const PLAN_CLASSES: Record<number, string> = { [ROAD]: "road", [WATERC]: "water", [PLAZAC]: "plaza", [BLD]: "building", [PROP]: "prop", [FIELD]: "field", [KEEP]: "keep", [POND_RING]: "ring", [FENCE]: "prop", [FOREST]: "prop" };
+const PLAN_CLASSES: Record<number, string> = { [ROAD]: "road", [WATERC]: "water", [PLAZAC]: "plaza", [BLD]: "building", [PROP]: "prop", [FIELD]: "field", [KEEP]: "keep", [POND_RING]: "ring", [FENCE]: "prop", [FOREST]: "prop", [WALLB]: "keep" };
 const SAND_PATH = "버들항 모랫길";
 
 interface Kit { id: string; w: number; h: number; door: { dx: number; dy: number } | null; def: StructureKitDef }
@@ -232,6 +241,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const denseWoods = options.woods === "dense";
   const houseLimit = options.houseLimit !== undefined && Number.isInteger(options.houseLimit) && options.houseLimit > 0 ? options.houseLimit : Infinity;
   let terrainName: ReturnType<typeof resolveVillageTerrain>;
+  const warnings0: string[] = [];
   let terrainNote = "";
   // 요청한 지형과 실제로 지은 지형을 따로 든다 — 대체는 요약 맨 앞에 적는다(경고에만 두면 모델이 「요청대로 지었다」고 거짓 보고했다, 2026-10-11 조수 실입력창 검수)
   const requestedTerrain = terrainArg === undefined || terrainArg === "" ? null : terrainArg;
@@ -243,6 +253,10 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     terrainSwapped = true;
     terrainNote = `요청한 지형 ${terrainArg}(${TERRAIN_LABEL[terrainArg as keyof typeof TERRAIN_LABEL]}) 는 이 테마(${theme})에서 못 쓴다 → ${terrainName}(${TERRAIN_LABEL[terrainName]}) 으로 지었다(가능: ${allowedVillageTerrains(theme).join("·")}).`;
   }
+  // 성벽 마을은 평지로 — 성벽 둘레가 단을 넘지 않게(경사로·절벽 위 성벽 그림은 없다)
+  const walls = options.walls === true && townWallAvailable(draft.tilesets[TS_ID]);
+  if (options.walls === true && !walls) warnings0.push("성벽 칸이 없는 옛 버들항 사본이라 성벽 없이 지었다(타일셋을 최신 번들로 갱신하면 성벽이 생긴다).");
+  if (walls && terrainName !== "flat") { if (requestedTerrain !== null) terrainNote = `${terrainNote} 성벽 마을은 평지로 지었다(요청 지형 ${requestedTerrain} 대신 flat).`.trim(); terrainName = "flat"; }
   // 강 없는 마을(water none): 강가 마을 문법에서 물만 뺀다 — 큰길이 맵을 가로지르고, 일터는 물레방아 대신 타작마당
   const base: ThemeSpec = water === "none" ? { ...THEMES[theme], label: "숲 빈터 마을", feature: "none" } : THEMES[theme];
   // 흩어진 마을의 길은 포석이 아니라 모랫길(재료 길만 — 모래·눈·늪 표본 길은 그대로 폭 1)
@@ -259,7 +273,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const rand = rng(seed * 7919 + theme.length * 131 + 17);
   const ri = (a: number, b: number) => a + Math.floor(rand() * (b - a + 1));
   const choice = <T,>(xs: readonly T[]): T => xs[Math.floor(rand() * xs.length)]!;
-  const warnings: string[] = terrainNote ? [terrainNote] : [];
+  const warnings: string[] = [...(terrainNote ? [terrainNote] : []), ...warnings0];
   const openLand = theme === "desert" || theme === "snow"; // 모래·눈은 트인 땅이 자연 — 빈 덩이 40칸까지, 화면당 40%까지
   // 자연 덧그림(2026-10-11, beodeul_nature): 강·바다는 돌 둑 운하 대신 흙·풀 둑, 오아시스 풀밭은 모래 위에 둥근 가장자리로 얹는다
   const naturalWater = spec.feature === "river" || spec.feature === "coast";
@@ -297,6 +311,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   let ferry: { x: number; y: number } | null = null;
   // 시공 기록: 계획 구역이 끝날 때마다 격자를 남긴다(기록기가 꺼져 있으면 아무것도 안 한다).
   const planStep = (label: string) => logConstructionPlan(mapId, W, H, occ, label, PLAN_CLASSES);
+  // 성벽 둘레 띠를 먼저 비워 둔다(집·나무·소품·물이 앉지 않는다). 길은 이 띠를 덮어쓸 수 있다 — 지나는 곳이 성문·틈이 된다.
+  const wallLayout = walls ? townWallLayout(W, H) : null;
+  if (wallLayout) for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) if (wallLayout.inBand(x, y)) occ[idx(x, y)] = WALLB;
 
   // ---------- 1. 자연 앵커 ----------
   let riverX = -1; // 강 왼쪽 열(다리 자리)
@@ -2067,12 +2084,190 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     }
   }
 
+  // ---------- 12d. 성벽 둘레(walls) ----------
+  // 비워 둔 띠에 성벽을 싣는다. 길이 가로 성벽(북·남)을 지나는 곳은 4×4 성문루(가운데 두 열 통로), 세로 성벽(서·동)을 지나는 곳은 끝 마감 틈.
+  // 망루는 성문과 겹치지 않는 후보 자리에, 계단은 북쪽 성벽 안쪽 앞면에서 아래 땅이 걸을 수 있는 자리 둘.
+  let wallInfo: { gates: WallGate[]; gaps: WallGap[]; towers: WallTower[]; stairs: number[]; blockedRoads: number; southGateRoad?: { x: number; from: number } } | null = null;
+  if (wallLayout) {
+    const L = wallLayout, mw = draft.maps[mapId]!;
+    const roadAt = (x: number, y: number) => inMap(x, y) && (occ[idx(x, y)] === ROAD || occ[idx(x, y)] === PLAZAC);
+    const runs = (n: number, hit: (i: number) => boolean, lo: number, hi: number): [number, number][] => {
+      const out: [number, number][] = []; let a = -1;
+      for (let i = lo; i <= hi + 1; i += 1) { const h = i <= hi && i < n && hit(i); if (h && a < 0) a = i; if (!h && a >= 0) { out.push([a, i - 1]); a = -1; } }
+      return out;
+    };
+    let blockedRoads = 0;
+    const gates: WallGate[] = [], gaps: WallGap[] = [];
+    // 2026-10-22 조수 시험(「남쪽에 성문 하나」): 길이 성벽을 지나는 곳마다 문을 내니 동서에 틈 셋, 남문은 남동 모서리 곁에 섰다.
+    // 이제 성문 쪽(wallGate)마다 가운데에 가장 가까운 길 하나만 성문루가 되고, 나머지 성벽을 지나는 길은 성벽 안에서 끊는다(풀밭으로 되돌림).
+    // 서·동 틈은 wallSideGaps 일 때만. 성문 쪽에 지나는 길이 없으면 큰길에서 맵 끝까지 두 칸 길을 낸다(걷어 낼 수 있는 덤불·소품만 치움).
+    const gateSides: ("N" | "S")[] = options.wallGate === "N" ? ["N"] : options.wallGate === "NS" ? ["S", "N"] : ["S"];
+    const bandRows = (side: "N" | "S") => side === "N" ? [L.y0, L.y0 + 1, L.y0 + 2] : [L.y1, L.y1 + 1, L.y1 + 2];
+    const gxMin = L.x0 + 3, gxMax = L.x1 - 4;
+    const owner = new Map<number, Stamp>();
+    for (const [st, u] of undo) if (st.v === PROP) for (let j = 0; j < u.h; j += 1) for (let i = 0; i < u.w; i += 1) if (inMap(st.x + i, st.y + j)) owner.set(idx(st.x + i, st.y + j), st);
+    const open = (c: number) => occ[c] === FREE || occ[c] === CLEAR || occ[c] === WALLB || occ[c] === ROAD || occ[c] === PLAZAC || (occ[c] === PROP && owner.has(c));
+    const doorFrontsSet = new Set(doorFronts.map((d) => idx(d.x, d.y)));
+    const dropProps = (cells: number[]) => {
+      const drop = new Set<Stamp>();
+      for (const c of cells) { const o = owner.get(c); if (o) drop.add(o); }
+      for (const st of drop) {
+        const u = undo.get(st)!;
+        for (let j = 0; j < u.h; j += 1) for (let i = 0; i < u.w; i += 1) { const x = st.x + i, y = st.y + j; if (!inMap(x, y)) continue; const c = idx(x, y);
+          for (const Lr of [1, 2, 3, 4] as const) setLayerTileAt(mw, Lr, c, u.layers[Lr - 1]![j * u.w + i]!);
+          if (occ[c] === PROP) occ[c] = FREE; owner.delete(c); }
+        for (const [c, ow] of shadowOwner) if (ow === st) { setLayerTileAt(mw, 2, c, -1); shadowOwner.delete(c); }
+        undo.delete(st); stamps.splice(stamps.indexOf(st), 1); if (treeKits.has(st.kit)) treeCount -= 1;
+      }
+    };
+    // 길 재료로 칠한다(가장자리 오토타일이 이어진다) — 길 칸 하나를 복사하면 네모 판석이 줄지어 보였다(r4)
+    const paveCells = (cells: number[]) => {
+      const fresh = cells.filter((c) => occ[c] !== ROAD && occ[c] !== PLAZAC);
+      if (!fresh.length) return;
+      for (const c of fresh) { for (const Lr of [2, 3, 4] as const) setLayerTileAt(mw, Lr, c, -1); occ[c] = ROAD; }
+      paintCells(fresh, spec.road);
+    };
+    let southSpur: { x: number; from: number } | null = null;
+    for (const side of gateSides) {
+      const rows = bandRows(side);
+      const cand = runs(W, (x) => rows.some((y) => roadAt(x, y)), L.x0 + 1, L.x1 - 1)
+        .map(([a, b]) => ({ gx: Math.max(gxMin, Math.min(gxMax, b - a + 1 >= 2 ? a + Math.floor((b - a - 1) / 2) : a)), a, b }))
+        .filter((r) => r.gx <= r.b && r.gx + 1 >= r.a) // 성문 통로가 그 길에 걸쳐야 한다(모서리에 붙은 길은 성문이 못 된다)
+        .sort((p, q) => Math.abs(p.gx + 1 - W / 2) - Math.abs(q.gx + 1 - W / 2));
+      // 가운데에서 폭의 12% 안에 지나는 길이 있으면 그 길이 성문. 아니면 가운데 쪽으로 새 길을 먼저 내 보고(실측: 남동 모서리 곁 성문), 못 내면 그 길을 쓴다.
+      if (cand[0] && Math.abs(cand[0].gx + 1 - W / 2) <= W * 0.12) { gates.push({ side, x: cand[0].gx }); continue; }
+      // 가운데에서 가까운 두 열 중 안쪽 길에서 맵 끝까지 빈 곳에 길을 낸다
+      const cols = [...Array(W).keys()].filter((x) => x >= gxMin && x <= gxMax && (!cand[0] || Math.abs(x + 1 - W / 2) <= W * 0.12)).sort((p, q) => Math.abs(p + 1 - W / 2) - Math.abs(q + 1 - W / 2));
+      let made = false;
+      for (const cx of cols) {
+        let top = -1;
+        if (side === "S") { for (let y = L.y1 - 2; y > L.y0 + 3; y -= 1) if (roadAt(cx, y) && roadAt(cx + 1, y)) { top = y; break; } }
+        else for (let y = L.y0 + 3; y < L.y1 - 2; y += 1) if (roadAt(cx, y) && roadAt(cx + 1, y)) { top = y; break; }
+        if (top < 0) continue;
+        const cells: number[] = [];
+        const ys = side === "S" ? [...Array(H - top - 1).keys()].map((i) => top + 1 + i) : [...Array(top).keys()];
+        let ok = true;
+        for (const y of ys) for (const x of [cx, cx + 1]) { const c = idx(x, y); if (!open(c) || (lv[c] ?? 0) !== 0) ok = false; cells.push(c); }
+        if (!ok) continue;
+        dropProps(cells); paveCells(cells);
+        if (side === "S") southSpur = { x: cx, from: top + 1 };
+        gates.push({ side, x: cx }); made = true; break;
+      }
+      if (!made && cand[0]) { gates.push({ side, x: cand[0].gx }); made = true; }
+      if (!made) warnings.push(`${side === "S" ? "남" : "북"}쪽 성문루 자리를 못 찾았다 — 안쪽 길에서 맵 끝까지 빈 두 칸 줄이 없다.`);
+    }
+    if (options.wallSideGaps === true) for (const side of ["W", "E"] as const) {
+      const x = side === "W" ? L.x0 : L.x1;
+      for (const [a, b] of runs(H, (y) => roadAt(x, y), L.y0 + 1, L.y1 - 1)) {
+        if (a - 3 <= L.y0 || b + 1 >= L.y1) continue; // 모서리에 너무 붙은 길은 성벽이 막는다
+        if (gaps.some((g) => g.side === side && a - 3 <= g.y + g.rows)) continue;
+        gaps.push({ side, y: a, rows: b - a + 1 });
+      }
+    }
+    // 남기는 길: 성문 통로 두 열(성문 머리 한 줄 위부터 맵 끝까지), 틈 줄(성벽 열부터 맵 끝까지). 그 밖에 성벽 띠·성벽 밖의 길은 풀밭으로.
+    const keep = new Set<number>();
+    for (const g of gates) {
+      const yw = g.side === "S" ? L.y1 : L.y0;
+      const ys = g.side === "S" ? [...Array(H - (yw - 2)).keys()].map((i) => yw - 2 + i) : [...Array(yw + 4).keys()];
+      const cells = ys.filter((y) => inMap(0, y)).flatMap((y) => [idx(g.x, y), idx(g.x + 1, y)]);
+      dropProps(cells); paveCells(cells); for (const c of cells) keep.add(c);
+    }
+    for (const g of gaps) for (let y = g.y; y < g.y + g.rows; y += 1) for (let x = 0; x < W; x += 1) if (g.side === "W" ? x <= L.x0 : x >= L.x1) keep.add(idx(x, y));
+    const cut: number[] = [];
+    for (let c = 0; c < W * H; c += 1) {
+      if (occ[c] !== ROAD && occ[c] !== PLAZAC) continue;
+      const x = c % W, y = (c - x) / W;
+      if (keep.has(c) || !(x <= L.x0 || x >= L.x1 || y <= L.y0 + 2 || y >= L.y1)) continue;
+      cut.push(c);
+    }
+    if (cut.length) {
+      // 끊긴 길 수: 성벽 띠를 지나던 길 줄기
+      const seen = new Set<number>();
+      for (const c of cut) { if (seen.has(c)) continue; blockedRoads += 1; const q = [c]; seen.add(c);
+        for (let h = 0; h < q.length; h += 1) { const d = q[h]!, x = d % W; for (const n of [d - 1, d + 1, d - W, d + W]) if (n >= 0 && n < W * H && Math.abs((n % W) - x) <= 1 && !seen.has(n) && cut.includes(n)) { seen.add(n); q.push(n); } } }
+      for (const c of cut) occ[c] = WALLB;
+      // 끊긴 길이 성벽 앞에서 토막으로 끝나지 않게(2026-10-22 조수 시험 판정 「길이 성벽에 막혀 갈 곳을 잃는다」):
+      // 성벽 띠에 닿은 끊긴 줄기를 안쪽으로 따라가며, 옆으로 갈라지는 길·문 앞·광장이 나올 때까지 지운다.
+      const doorFront = new Set(doorFronts.map((d) => idx(d.x, d.y)));
+      const isRoad = (x: number, y: number) => inMap(x, y) && occ[idx(x, y)] === ROAD;
+      const trimmed: number[] = [];
+      const trimRun = (cells: (k: number) => [number, number][], side: (k: number) => [number, number][], k0: number, step: number, kEnd: number) => {
+        for (let k = k0; k !== kEnd; k += step) {
+          const line = cells(k);
+          if (!line.every(([x, y]) => isRoad(x, y) && !doorFront.has(idx(x, y)) && !keep.has(idx(x, y)))) return;
+          if (side(k).some(([x, y]) => inMap(x, y) && (occ[idx(x, y)] === ROAD || occ[idx(x, y)] === PLAZAC))) return; // 갈림목
+          const next = cells(k + step);
+          if (!next.some(([x, y]) => isRoad(x, y) || (inMap(x, y) && occ[idx(x, y)] === PLAZAC))) return; // 안쪽이 끊겼으면 손대지 않는다
+          for (const [x, y] of line) { occ[idx(x, y)] = WALLB; trimmed.push(idx(x, y)); }
+        }
+      };
+      const cutSet = new Set(cut);
+      const spans = (hit: (i: number) => boolean, lo: number, hi: number) => runs(hi + 1, hit, lo, hi);
+      for (const [a, b] of spans((y) => cutSet.has(idx(L.x0, y)), L.y0 + 1, L.y1 - 1))
+        trimRun((x) => [...Array(b - a + 1).keys()].map((i) => [x, a + i]), (x) => [[x, a - 1], [x, b + 1]], L.x0 + 1, 1, L.x1 - 1);
+      for (const [a, b] of spans((y) => cutSet.has(idx(L.x1, y)), L.y0 + 1, L.y1 - 1))
+        trimRun((x) => [...Array(b - a + 1).keys()].map((i) => [x, a + i]), (x) => [[x, a - 1], [x, b + 1]], L.x1 - 1, -1, L.x0 + 1);
+      for (const [a, b] of spans((x) => cutSet.has(idx(x, L.y0 + 2)), L.x0 + 1, L.x1 - 1))
+        trimRun((y) => [...Array(b - a + 1).keys()].map((i) => [a + i, y]), (y) => [[a - 1, y], [b + 1, y]], L.y0 + 3, 1, L.y1 - 1);
+      for (const [a, b] of spans((x) => cutSet.has(idx(x, L.y1)), L.x0 + 1, L.x1 - 1))
+        trimRun((y) => [...Array(b - a + 1).keys()].map((i) => [a + i, y]), (y) => [[a - 1, y], [b + 1, y]], L.y1 - 1, -1, L.y0 + 3);
+      const repaint = [...cut, ...trimmed];
+      if ("mat" in spec.base) for (const c of repaint) fill({ x: c % W, y: Math.floor(c / W), w: 1, h: 1 }, spec.base.mat);
+      else paintCells(repaint, spec.base);
+    }
+    // 성문 길이 마을 길망에 닿게(2026-10-22 r3: 끊긴 길을 줄기째 지우자 성문 안쪽 두 칸 길만 섬처럼 남았다):
+    // 성문 머리 위 칸에서 성벽 안쪽 길·광장까지 빈 땅으로 가장 짧은 길을 찾아 두 칸 폭으로 깐다(걷어 낼 수 있는 소품만 치움).
+    for (const g of gates) {
+      const inner = g.side === "S" ? L.y1 - 2 : L.y0 + 3, dir = g.side === "S" ? -1 : 1;
+      const target = (c: number) => (occ[c] === ROAD || occ[c] === PLAZAC) && !keep.has(c);
+      const inside = (x: number, y: number) => x > L.x0 && x < L.x1 - 1 && y > L.y0 + 2 && y < L.y1 - 1;
+      const starts = [idx(g.x, inner), idx(g.x + 1, inner)];
+      if ([g.x - 1, g.x, g.x + 1, g.x + 2].some((x) => inMap(x, inner + dir) && target(idx(x, inner + dir))) || [g.x - 1, g.x + 2].some((x) => target(idx(x, inner)))) continue;
+      const prev = new Map<number, number>(); const q = [...starts]; for (const c of starts) prev.set(c, -1);
+      let hit = -1;
+      for (let h = 0; h < q.length && hit < 0; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W;
+        for (const [dx, dy] of [[0, dir], [-1, 0], [1, 0], [0, -dir]] as const) { const nx = x + dx, ny = y + dy; if (!inside(nx, ny) || !inside(nx + 1, ny)) continue;
+          const n = idx(nx, ny); if (prev.has(n)) continue;
+          if (target(n) || target(idx(nx + 1, ny))) { prev.set(n, c); hit = n; break; }
+          if (!open(n) || !open(idx(nx + 1, ny)) || (lv[n] ?? 0) !== 0 || (lv[idx(nx + 1, ny)] ?? 0) !== 0 || doorFrontsSet.has(n)) continue;
+          prev.set(n, c); q.push(n); } }
+      if (hit < 0) { warnings.push(`${g.side === "S" ? "남" : "북"}문 안쪽 길을 마을 길에 잇지 못했다(빈 땅이 막혔다).`); continue; }
+      const path: number[] = [];
+      for (let c = prev.get(hit)!; c >= 0; c = prev.get(c)!) { path.push(c, c + 1); }
+      dropProps(path); paveCells(path);
+    }
+    const used = (side: "N" | "S", x0: number, x1: number) => gates.some((g) => g.side === side && x1 >= g.x - 2 && x0 <= g.x + 3);
+    const towers = L.towers.filter((t) => t.x > L.x0 + 1 && t.x + 1 < L.x1 - 1 && !used(t.side, t.x - 1, t.x + 2)
+      && [0, 1].every((i) => [...Array(7).keys()].every((j) => { const y = (t.side === "S" ? L.y1 : L.y0) - 3 + j; return !roadAt(t.x + i, y) && (!inMap(t.x + i, y) || occ[idx(t.x + i, y)] === WALLB); })));
+    const stairs: number[] = [];
+    const stairOk = (x: number) => x > L.x0 + 1 && x < L.x1 - 1 && !used("N", x - 1, x + 1) && !towers.some((t) => t.side === "N" && x >= t.x - 1 && x <= t.x + 2)
+      && !stairs.some((s) => Math.abs(s - x) < 4) && [FREE, ROAD, PLAZAC, CLEAR].includes(occ[idx(x, L.y0 + 3)]!) && (lv[idx(x, L.y0 + 3)] ?? 0) === 0;
+    for (const want of [Math.round(W * 0.14), Math.round(W * 0.86)]) for (let d = 0; d <= 6; d += 1) { const x = want + (d % 2 ? -1 : 1) * Math.ceil(d / 2); if (stairOk(x)) { stairs.push(x); break; } }
+    const plan: TownWallPlan = { x0: L.x0, y0: L.y0, x1: L.x1, y1: L.y1, gates, gaps, towers, stairs };
+    // 성문 통로 두 칸의 바닥은 길로(폭 1 길이면 옆 칸도), 성문 앞뒤 한 칸도 길에 잇는다
+    const roadTile = (() => { for (let c = 0; c < W * H; c += 1) if (occ[c] === ROAD) return mw.lowerTiles[c]!; return -1; })();
+    for (const g of gates) {
+      const yw = g.side === "S" ? L.y1 : L.y0;
+      for (let cy = -2; cy <= 4; cy += 1) for (const cx of [g.x, g.x + 1]) {
+        const y = yw + cy; if (!inMap(cx, y)) continue; const c = idx(cx, y);
+        if (occ[c] !== ROAD && occ[c] !== PLAZAC && roadTile >= 0) { mw.lowerTiles[c] = roadTile; setLayerTileAt(mw, 2, c, -1); setLayerTileAt(mw, 3, c, -1); setLayerTileAt(mw, 4, c, -1); occ[c] = ROAD; }
+      }
+    }
+    stampTownWall(mw, plan);
+    logConstructionTiles(mw, "stamp", "성벽 둘레", { major: true });
+    if (blockedRoads) warnings.push(`성벽이 길 ${blockedRoads}곳을 막았다(모서리·성문 곁에 붙은 길).`);
+    wallInfo = { gates, gaps, towers, stairs, blockedRoads, ...(southSpur ? { southGateRoad: southSpur } : {}) };
+  }
+
   // ---------- 13. 문 앞 도달(입구 = 큰길 서쪽 끝) ----------
   const m = draft.maps[mapId]!;
   const pass = (t: number) => { if (t < 0) return true; const p = ts.passability?.[t]; return !p || p.up || p.down || p.left || p.right; };
   const walk = (x: number, y: number) => inMap(x, y) && pass(m.lowerTiles[idx(x, y)]!) && pass(m.upperTiles[idx(x, y)]!);
   // 입구: 큰길 서쪽 끝(물가 띠 마을은 들길 동쪽 끝)
-  const entrance = form === "riverbank" && entryLane ? { x: W - 1, y: yAt(entryLane, W - 1) ?? yMainBase } : { x: 0, y: yMainAt(0) };
+  // 성벽 마을의 입구는 첫 성문루 바깥 끝(남문이면 맵 아래 끝, 북문이면 위 끝) — 다른 길은 성벽이 끊었다
+  const gate0 = wallInfo?.gates[0];
+  const entrance = gate0 ? { x: gate0.x, y: gate0.side === "S" ? H - 1 : 0 }
+    : form === "riverbank" && entryLane ? { x: W - 1, y: yAt(entryLane, W - 1) ?? yMainBase } : { x: 0, y: yMainAt(0) };
   const startY = entrance.y;
   const reachMap = (): Uint8Array => {
     const seen = new Uint8Array(W * H); const q: number[] = [];
@@ -2158,6 +2353,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     summary: `${terrainSwapped ? `${terrainNote} ` : ""}버들항 ${spec.label} · ${FORM_LABEL[form]}(form ${form}) · 지형 ${TERRAIN_LABEL[terrain.name]}(terrain ${terrain.name}${terrain.name !== terrainName ? `, 요청 ${terrainName} → ${terrain.note}` : hasTerrain ? `, ${terrain.note}, 길 경사로 ${rampCount}곳` : ""}) ${W}×${H} (맵 ${mapId}, seed ${seed}): ${skeletonText()}, 모이는 곳 = ${gather.why}${gatherDoor ? `(${gatherDoor.x},${gatherDoor.y})` : "(자리 없음)"}, ` +
       `집 ${placedHouses.length}채(${distinct}종${roofs ? `, 지붕 ${ROOF_PALETTE_LABEL[roofs]}(roofs ${roofs})` : ""})${anchors.length ? `, 앵커 ${anchors.map((a) => a.replace(/^bd-(pick-|house-)/, "")).join("·")}` : ""}` +
       `${workAt ? `, 일터 「${workAt.name}」` : ""}, 밭 ${fields}${fenceAt.size ? `(울타리 ${fenceAt.size}칸)` : ""}, 나무 ${treeCount}, ${form === "plaza" ? "광장" : "모이는 곳"} 소품 ${plazaProps}. 문 앞 ${doorFronts.length - unreached.length}/${doorFronts.length} 도달. ` +
+      (wallInfo ? `성벽 둘레: 성문루 ${wallInfo.gates.length}·틈 ${wallInfo.gaps.length}·망루 ${wallInfo.towers.length}·계단 ${wallInfo.stairs.length}(data.walls). ` : "") +
       "다음: check_city_form·check_reachability 로 점검하고, NPC·출입구 이벤트는 문 앞 칸(data.doors)에 얹는다.",
     data: {
       mapId, width: W, height: H, seed, theme, form, ...(roofs ? { roofs } : {}), ...(water ? { water } : {}), ...(denseWoods ? { woods: "dense" } : {}), tilesetId: TS_ID,
@@ -2170,7 +2366,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       terrain: terrain.name, ...(requestedTerrain !== null ? { requestedTerrain, terrainSwapped } : {}), ...(reliefInfo ? { relief: reliefInfo } : {}),
       upper: climbs.map((cl) => ({ level: cl.level, lanes: cl.lanes, path: cl.path, to: cl.to, use: cl.use, ...(cl.lookout ? { lookout: cl.lookout } : {}),
         reach: levelReach[cl.level] ? Math.round((levelReach[cl.level]!.reached / Math.max(1, levelReach[cl.level]!.walk)) * 100) : 0 })),
-      entrance,
+      entrance, ...(wallInfo ? { walls: wallInfo } : {}),
     },
     warnings,
   };

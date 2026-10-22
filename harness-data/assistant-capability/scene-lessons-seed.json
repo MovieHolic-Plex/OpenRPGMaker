@@ -433,6 +433,28 @@
     "no map content changes before the answer"
    ],
    "lint0": []
+  },
+  {
+   "id": "walled-beodeul-town",
+   "label": "버들항 성벽 마을, 남문 지나 나가기",
+   "port": 19522,
+   "lessons": [
+    "town-wall-art",
+    "gate-passable",
+    "reachability"
+   ],
+   "prompt": "성벽으로 빙 둘러싼 버들항 마을을 만들어 줘. 남쪽에 성문 하나를 두고, 성벽에는 망루도 세워 줘. 마을 안에는 집 너댓 채와 작은 광장.",
+   "requirements": [
+    "wall drawn with the bd-wall kit (3/4 wall walk + front face) around the town",
+    "south gate passable from inside to outside",
+    "all house doors reachable from the gate",
+    "towers on the wall"
+   ],
+   "lint0": [
+    "scene-transfer-off-door",
+    "scene-transfer-pair",
+    "scene-transfer-facing"
+   ]
   }
  ]
 }

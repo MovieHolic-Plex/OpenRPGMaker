@@ -1,0 +1,39 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "beodeul-town-wall-r4",
+ "title": "버들항 마을 성벽 조립 5장 (Opus VQA r4 PASS)",
+ "explainText": "버들항 마을 성벽 키트(성벽 통로·앞면·모서리·갈림목·끝 마감·성문루 열림/닫힘·망루·계단)를 조립한 그림 5장. 허용하면 버들항 시트 꼬리 28,544~ 에 굽혀 author_beodeul_town walls:true 가 마을 둘레에 쓴다.",
+ "createdAt": "2026-10-22T06:40:46.404Z",
+ "items": [
+  {
+   "sha": "f4034b02b7bb0ef872a512703616e74bc680f1272ffebc3b33b65f4dff813bba",
+   "kind": "structure",
+   "label": "beodeul_town_wall/wall_ring",
+   "source": "harness-data/object-gate/vqa/beodeul-town-wall-r4/gate/wall_ring.png"
+  },
+  {
+   "sha": "f11604f22a2f433d83a23f59690162d409be3d3018eb3fcd868cf72d17213d70",
+   "kind": "structure",
+   "label": "beodeul_town_wall/wall_parts",
+   "source": "harness-data/object-gate/vqa/beodeul-town-wall-r4/gate/wall_parts.png"
+  },
+  {
+   "sha": "29660bf2d86d90ffe5f78347faf472cc906f562555a34a365bd9589e4e35e6d0",
+   "kind": "structure",
+   "label": "beodeul_town_wall/gatehouse_open",
+   "source": "harness-data/object-gate/vqa/beodeul-town-wall-r4/gate/gatehouse_open.png"
+  },
+  {
+   "sha": "ff93eb822df0f5cbb2a16f2fce67a47dbd8755d0f8e24309517582d224c22fd4",
+   "kind": "structure",
+   "label": "beodeul_town_wall/gatehouse_closed",
+   "source": "harness-data/object-gate/vqa/beodeul-town-wall-r4/gate/gatehouse_closed.png"
+  },
+  {
+   "sha": "639097180aa76db32e04128160e5e62294764f6da1a455278b65673a06a8e7bd",
+   "kind": "structure",
+   "label": "beodeul_town_wall/tower",
+   "source": "harness-data/object-gate/vqa/beodeul-town-wall-r4/gate/tower.png"
+  }
+ ]
+}
