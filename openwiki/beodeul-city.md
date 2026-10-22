@@ -699,6 +699,26 @@ r1 시험(`verify-shots/assistant-beodeul-village/r1/fresh`)은 「마을」에 
 refine_beodeul_courtyard_vegetation({mapId})는 인식된 54×34 예제의 건물/나무 전체 배열을 확인하고 집·길·마당·시작점을 유지하며 흩어진 나무/덤불을 수관이 앞뒤로 겹친 공용 숲 8덩어리로 교체한다. 높이 있는 풀은 숲 밑동에만 겹치고 줄기의 X를 상속하는 ★다. 짧은 문틈 울타리 두 조각을 제거하고 실제 텃밭 3변을 연속 레일/수직선/모서리로 연결한다. 북쪽은 큰길에서 들어오는 면이다. stone 박공은 정면 돌벽과 같은 원본 질감으로 통일한다. 원본 지붕/알파/창문/문 개수/집 위치를 유지한다. 이벤트/높이/다른 이벤트의 전이 도착점/수정된 나무·별도 지형/기물은 거부, 반복은 no-op. source WOODLAND.md, build 하네스가 이전368칸을 보존한다. 공용 문서/정확한 4층 예제/전체 graft 규칙은 새·기존 city/ground 모두 배포하며 각 MD 12만자 이하로 분리한다. 전용 player.html과 SQLite 재로드 근거 verify-shots/beodeul-depth-fix.
 
 
+### 마을·붓 숲 = 이어진 수관 오토타일 (2026-10-22, 「숲 오토타일을 제대로 적용해야 함」)
+
+- 사용자가 village-diversity-1 마을들을 보고 지적했다. 강가·해안 마을 숲(아래 woodland 보정의 composer)이 짙은 풀 위에 낱 나무로 서서,
+  숲 덩이가 아니라 듬성듬성한 과수원·네모 짙은 풀 판으로 읽혔다. 단 경계에서 짙은 풀이 곧게 잘렸고, 산골 숲도 띄엄띄엄했다.
+- `author_beodeul_town` 의 모든 숲(둘레 숲·`woods: dense`·`terrain: highland` 산마루·단 동서 끝 덮개)은 설원과 같은 **이어진 수관 오토타일**
+  (`BEODEUL_NATURE.forestCanopy`, `append-beodeul-forest-canopy.py`)로 덮는다. 정본은 `src/editor/tools/beodeulForest.ts`:
+  - `shapeBeodeulCanopyMask` 는 칸을 다듬는다. 2×2 덩이에 못 드는 칸, 16칸 미만 덩이, 세 줄 이하 띠(단 사이 산울타리)를 지우고 구멍을 메운다.
+  - `planBeodeulCanopy` 는 이웃 비트·P×P 위상으로 수관 칸을 고른다. 숲 남쪽 바로 아래 칸에는 숲 그늘(이끼 치마)을 깐다.
+  - `writeBeodeulCanopy` 는 nature 칸을 대상 칩셋으로 옮긴다.
+- 맵 밖은 동·서·남으로만 숲이다. 북쪽 맵 밖을 숲으로 보면 맨 윗줄에 덩이 아래 반쪽(뒤집힌 듯한 꼭대기, 줄기만 남은 줄)이 그려졌다.
+- 남쪽도 숲인 수관 칸은 **3층**, 숲 남쪽 끝 줄은 2층이다. 2층은 relief 의 동서 끝 1px 선(over 띠)보다 먼저 그려져 그 선이 숲을 세로로 갈랐다.
+  남쪽이 숲인 칸 앞에는 인물이 설 수 없어 3층 상위여도 머리를 가리지 않는다.
+- 숲은 길에서 2~4칸 띄운다. 거리는 3칸 격자 값 잡음으로 물결친다. 늘 2칸이면 곧은 길 옆 숲이 자로 그은 벽이 된다.
+- 침엽·혼효 마을은 숲 덩이 남·동·서 바로 바깥에 그 마을 나무(전나무·측백)를 띄엄띄엄 세운다. **남은 것:** 수관 오토타일은 leaf(활엽+전나무 약 30%)·snow 두 벌뿐이라
+  `forestType: conifer` 숲 덩이 속은 여전히 활엽이 많다. 침엽 수관 한 벌을 굽는 일은 새 그림이라 3/4 관문(object-gate)을 거쳐야 한다.
+- 붓 경로: `place_props` 를 버들항 맵에서 material 나무·숲·활엽수·침엽수, density dense·impassable 로 부르면 `plantBeodeulCanopyArea` 가 같은 수관으로 area 안 둥근 덩이를 깐다.
+  dense 는 물결 타원, impassable 은 모서리 깎은 사각이고, 길·집·물 칸은 건너뛴다. 예전에는 「count 가 필요」로 실패했다.
+- `author_wild_route` 도로 숲 벽·공동마당은 아래 composer 그대로다(이번 변경 밖).
+- 프로브: `bun scripts/qa/beodeul-village-forest-probe.mts --out <dir>` 는 village-diversity 8건 인자로 LLM 없이 다시 짓는다. 비교 그림 http://mdc-server:18301/village-forest-1.html
+
 ### woodland 보정 (2026-10-20)
 
 - 붓으로 까는 버들항 숲은 나무 composer(`src/project/defaults/treeComposer.ts` `composeTreesInMask`, #3058 jp 숲 r4 와 같은 규칙)로 짠다:

@@ -81,7 +81,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       form: { type: "string", enum: [...BEODEUL_VILLAGE_FORMS], description: "마을 형태(theme 마을만, city 에는 없음): street 길가 · riverbank 물가 띠(river 만) · scatter 흩어진 · plaza 광장(장터일 때만). 생략하면 seed 로 고른다." },
       terrain: { type: "string", enum: [...VILLAGE_TERRAINS], description: "지형(theme 마을만) — 마을보다 먼저 정하는 땅 모양: terraces 계단식 비탈(river·coast, 큰길 북쪽 집 띠 뒤로 한두 단, 강은 곧은 골) · highland 높은 산비탈(river, 7칸 간격 세 단 — 산골, 요청할 때만) · hillside 눈 덮인 비탈(snow) · basin 오아시스 골(desert) · ridge 마른 둔덕(swamp, 북쪽 높은 마른 땅·늪물은 낮은 땅에만) · flat 평지. 생략하면 seed 로 고른다(결과 data.terrain)." },
       theme: { type: "string", enum: [...BEODEUL_VILLAGE_THEMES, "city"], description: "마을 문법(기본 river): river 강가 · coast 포구(바다) · desert 사막 오아시스 · snow 설원 · swamp 늪 · city 로마풍 블록 도시(도시를 말할 때만)" },
-      forestType: { type: "string", enum: [...BEODEUL_FOREST_TYPES], description: "숲 덩이 종류(theme river·coast 마을만): broadleaf 활엽수림(기본) · conifer 침엽수림(전나무·측백) · mixed 혼효림(큰 활엽수 사이 측백·전나무)" },
+      forestType: { type: "string", enum: [...BEODEUL_FOREST_TYPES], description: "숲 종류(theme river·coast 마을만). 숲 덩이는 늘 이어진 수관 오토타일(활엽 사이 전나무)이고, 이 값은 낱 나무·숲 둘레 나무를 고른다: broadleaf 활엽(기본) · conifer 전나무·측백(숲 둘레에도 선다) · mixed 혼효" },
       walls: { type: "boolean", description: "true 이면 마을 둘레에 성벽을 두른다(성벽·성곽·성문·요새 마을). theme river·desert·snow 마을만 — 평지로, 강가 마을은 강 없이 짓는다. 성문루·망루·계단도 함께. 결과 data.walls." },
       wallGate: { type: "string", enum: ["S", "N", "NS"], description: "walls 일 때 성문 쪽. S 남문 하나(기본) · N 북문 하나 · NS 남북에 하나씩. 사용자가 말한 쪽을 그대로." },
       wallSideGaps: { type: "boolean", description: "walls 일 때 서·동 성벽을 지나는 길에 열린 틈을 둘지(기본 false — 성문 말고는 성벽이 닫힌다). 사용자가 옆 출입구를 말할 때만 true." },
