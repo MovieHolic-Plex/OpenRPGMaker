@@ -506,9 +506,11 @@ function buildMondayOffice(project: Project, a: FirstLoveAnchors): void {
     face("@player", dirToward(heroMeet, minhoMeetStop)),
     listenTo("seoha"),
     ...sayAt("minho", "right", "happy", "서하 씨, 이따 탕비실로 와요! 커피 머신 쓰는 법 알려 줄게요."),
-    walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoMeetStop, minhoSpot, [heroMeet], false, "up"),
+    // 민호는 팀장 오른쪽에 서 있었다 — 팀장 칸을 뚫고 지나가려다 걸음이 건너뛰어져 엉뚱한 칸에 멈췄다(r40). 팀장·지후 칸을 돌아간다.
+    walkRoute(project, FL_MAP.office, "ev_fl_minho", minhoMeetStop, minhoSpot, [heroMeet, leadMeetStop, jihuMeetStop], false, "up"),
     // 만남 자리의 둘은 그 자리에서 사라지지 않고 각자 자리까지 걸어간다 — 자리의 지후·팀장 페이지가 같은 칸에서 이어받는다.
     walkRoute(project, FL_MAP.office, "ev_fl_jihu_meet", jihuMeetStop, jihuSeat, [heroMeet], false),
+    wait(700), // 민호가 팀장 앞(아래) 칸을 지나간 뒤에 팀장이 걷는다.
     walkRoute(project, FL_MAP.office, "ev_fl_lead", leadMeetStop, o.leadDesk, [heroMeet], false, "down"),
     ...think("(탕비실에서 민호 씨를 찾아보자. 자리와 화이트보드도 한번 볼까.)"),
     waitMoves(),
