@@ -1,0 +1,16 @@
+{
+ "round": 10,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "abi-stairs-v5",
+ "images": "http://mdc-server:18301/jp-stairs-1/interior-v5/r10/kits-4x.png (+ scene 1x/3x and before/)",
+ "pieces": [
+  "stairs up stone",
+  "stairs up wood",
+  "stairs down",
+  "stairwell down"
+ ],
+ "rubric": "axis 2 (style/palette/3/4 fit) + axis 6 (1x readability incl. up/down direction)",
+ "majors": 3,
+ "verdict": "FAIL",
+ "summary": "P1 up stone yes/yes: minors (upper treads/risers close in value, right jamb rail, constant width).\nP2 up wood yes/yes: minors (salmon highlight bumpy, side posts too dark).\nP3 stairs down NO / direction NO: [major] value structure identical to UP stair (lightest at south) — no void; [major] bottom tread juts below rail frame, reads as raised steps not floor-level hole. minors: stray pixel, pink rail stubs, N rail like bench back.\nP4 stairwell down yes / direction NO: [major] same — light bottom board with seams reads as flight up / sideboard; BEFORE pit read clearer. minors: stray pixels, salmon balusters merge with wainscot.\nAXIS2 7, AXIS6 5. MAJORS 3\n"
+}

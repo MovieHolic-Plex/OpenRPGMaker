@@ -1,0 +1,16 @@
+{
+ "round": 12,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "abi-stairs-v5",
+ "images": "http://mdc-server:18301/jp-stairs-1/interior-v5/r12/kits-4x.png (+ scene 1x/3x and before/)",
+ "pieces": [
+  "stairs up stone",
+  "stairs up wood",
+  "stairs down",
+  "stairwell down"
+ ],
+ "rubric": "axis 2 (style/palette/3/4 fit) + axis 6 (1x readability incl. up/down direction)",
+ "majors": 1,
+ "verdict": "FAIL",
+ "summary": "P1 up stone yes/yes: minors (uniform slat pattern, bottom step past newel caps, arch wider than run).\nP2 up wood yes/yes: minors (nosing only on 2 lowest treads, post blocks merge with floor).\nP3 stairs down yes/yes: minors (south lip line closes the box, taper style note, N balustrade shelf-like).\nP4 stairwell down NO / direction yes: [major] interior treads same value as the dark manor floor -> reads as low sideboard on 2F. minors: south frame line, abrupt post ramp.\nAXIS2 7, AXIS6 6. MAJORS 1\n"
+}

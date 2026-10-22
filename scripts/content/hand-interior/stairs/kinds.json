@@ -1,0 +1,6 @@
+{
+ "stairs up stone": "structure",
+ "stairs up wood": "structure",
+ "stairs down": "flat",
+ "stairwell down": "flat"
+}

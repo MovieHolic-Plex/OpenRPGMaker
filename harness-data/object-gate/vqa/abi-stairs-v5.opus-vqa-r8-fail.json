@@ -1,0 +1,16 @@
+{
+ "round": 8,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "abi-stairs-v5",
+ "images": "http://mdc-server:18301/jp-stairs-1/interior-v5/r8/kits-4x.png (+ scene 1x/3x and before/)",
+ "pieces": [
+  "stairs up stone",
+  "stairs up wood",
+  "stairs down",
+  "stairwell down"
+ ],
+ "rubric": "axis 2 (style/palette/3/4 fit) + axis 6 (1x readability incl. up/down direction)",
+ "majors": 1,
+ "verdict": "FAIL",
+ "summary": "P1 up stone yes: minors (mauve band, top treads taller, teeth row, plinths).\nP2 up wood yes: minors (mid band, teeth row).\nP3 stairs down yes (marginal): minors (first tread shadow at south, side rails flat, newels).\nP4 stairwell NO at 1x: [major] treads near-black on black, no value difference.\nAXIS2 7, AXIS6 6. MAJORS 1\n"
+}

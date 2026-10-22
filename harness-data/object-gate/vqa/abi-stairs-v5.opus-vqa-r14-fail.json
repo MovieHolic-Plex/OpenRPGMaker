@@ -1,0 +1,17 @@
+{
+ "round": 14,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "abi-stairs-v5",
+ "images": "http://mdc-server:18301/jp-stairs-1/interior-v5/r14/kits-4x.png (+ scene 1x/3x and before/)",
+ "pieces": [
+  "stairs up stone",
+  "stairs up wood",
+  "stairs down",
+  "stairwell down"
+ ],
+ "note": "art changed after r13 to clear object-gate style FAILs (neutral near-black outline, flat fills, lintel without top); r13 PASS no longer covers the pixels",
+ "rubric": "axis 2 (style/palette/3/4 fit) + axis 6 (1x readability incl. up/down direction)",
+ "majors": 2,
+ "verdict": "FAIL",
+ "summary": "P1 up stone NO at 1x (direction yes): [major] six equal full-width bands read as roller shutter at 1x. minors: bottom treads near-white, pale lintel cap competes.\nP2 up wood yes(weaker)/yes: minors (equal bands like shelf fronts, dotted highlight lines on jambs).\nP3 stairs down yes/yes: minors (pale south lip/outline framed-box look, W/E rails short).\nP4 stairwell down NO at 1x / direction yes: [major] almost no void, treads near floor value -> low bench/dresser. minors: E rail invisible, south lip no seams.\nAXIS2 6, AXIS6 5. MAJORS 2\n"
+}

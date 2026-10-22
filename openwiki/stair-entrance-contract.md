@@ -46,3 +46,14 @@
   남은 것: 일본 예제 JSON(`tiledata/jp-city/interior/examples/school-3f.json`·`mansion-corridor.json`)과 마법 학교 레시피(`space_recipes.py` 의 계단 `corner`·`access=False`)는
   옛 자리 그대로다 — 다시 지어 게시하면 조립기 검사(`stair-entrance-blocked`)가 먼저 막는다. 검사 ①(짝 방향)은 도착 칸에 가장 가까운 계단을 본다(나란한 두 계단에서 첫 계단을 잡던 것).
   출하 플레이어 걷기: `scripts/qa/runtime/stair-moved.scenario.mjs`(다섯 곳을 모은 픽스처, 6비트).
+
+## 칩셋별 — atlas_biome_interior(손 도트 실내 v5) 계단 다시 그림 (2026-10-22)
+사용자 「계단들이 다 씹창 … 내려가는 방향·올라가는 방향을 description 에 확실히」. 그림 `scripts/content/hand-interior/stairs/draw.py`, 굽기 `rebake.py`(같은 칸 번호 위에 덮음 — 새 칸·번호 이동·정의 변경 없음, 키트 밖 칸이 바뀌면 멈춤, 팔레트 v6 밖 색이면 멈춤, object-gate 상태가 통과가 아니면 옛 그림 유지).
+- **올라가는 계단**(`stairs up stone`·`stairs up wood`, 3칸 폭, 바닥 줄 + 벽면 두 줄): 맨 위에 윗면 2줄·밝은 앞 모서리·처마 그림자가 있는 갓돌(돌)·인방(나무)이 키트 폭 전체를 덮고, 그 밑 어두운 구멍(위층 계단이 희미하게 이어진다) 아래로 디딤판(밝은 코가 앞 모서리) 위·챌판(짙은 2줄) 아래가 번갈아 놓인다. 디딤판은 5→2줄로 짧아지고 위 두 단은 1px·2px 안으로 들어가 멀어지는 비행을 보인다(원근 사다리꼴은 아님). 위로 갈수록 어둡다. 돌 볼은 바닥 줄까지 쌓기 줄눈을 이어 받침처럼 떠 보이지 않게 한다.
+- **내려가는 계단**(`stairs down` 2×2 돌, `stairwell down` 3×2 나무): 바닥에 뚫린 구멍. 첫 디딤판이 키트 남쪽 끝까지 내려와 방 바닥과 같은 높이로 맞닿는다(남쪽 턱·띠를 그리면 상자·화덕·벤치로 읽혀 r10·r16 major). 챌판은 북쪽을 봐 안 보이고 디딤판 윗면만 — 남쪽 첫 판이 가장 밝고(나무는 바닥보다 밝아야 2층 짙은 마루에서 구멍으로 읽힌다, r12 major) 북쪽으로 한 단씩 어둡고 짧아지며, 판 사이는 1px 그림자 줄, 옆 구덩이 벽이 한 단마다 1px 넓어지고, 북쪽 끝은 검다. 북쪽 바닥 턱 3줄 위 낮은 난간(돌: 얇은 회색 갓 + 1px 난간동자, 사이로 바닥이 비친다 — 밝은 갓은 「낮은 벽·카운터」로 읽혀 r15 major), 서·동 난간에 기둥 점.
+- **3/4 관문 화풍 규칙에 맞춘 것:** 무채색 근흑 윤곽은 화풍 FAIL(윤곽 = 재질의 어두운 톤) → 돌 그림의 실루엣 둘레 근흑을 팔레트 v6 의 푸른 슬레이트로 바꾼다(`tint_edges`). 5×5 같은 색 평면도 FAIL → 디딤판·볼에 결 점. 인방·갓돌이 앞면만 있으면 3/4 FAIL(「beam drawn only as a vertical face」) → 윗면 2줄 + 앞 모서리 + 그림자. 올라가는 계단은 `structure`(화풍 비교는 `prop`), 내려가는 계단은 `flat`.
+- 검수 경로: Opus 적대 VQA 17판(`harness-data/object-gate/vqa/abi-stairs-v5.opus-vqa-r*.json`, r13 은 관문 수정 전 그림이라 무효, 최종 r17 major 0) → object-gate 묶음 `abi-stairs-v5`(올라가는 둘·돌 구멍 provisional PASS, 나무 계단통 REFER — 면제 종류 판정 2/4) → 사용자 위임 허용 4장(`by: delegated`, 근거 r17) → `rebake.py`.
+- 다시 그리지 않은 것: `spiral stair`(절차 나선은 16px 에서 「기둥에 지느러미」로 읽혀 세 판 실패 — 옛 그림 유지, 설명만 고침), `ship ladder`·`trapdoor`(위·아래가 이미 분명).
+- 설명: 키트 이름·`ai.description`(atlasBiomeInteriorTileset.json)·사양 `ko`·`desc`(handInteriorSpec.json)·overrides `why` 에 올라가는/내려가는 계단, 들어서는 쪽(남쪽 앞 칸), 오를 때·내려갈 때 보는 방향(북쪽), 도착(다른 층 짝 계단의 남쪽 앞 칸, 계단을 등지고 남쪽)을 적었다. 참고문서 사전 행에 계약 `note` 를 싣는다.
+- 예제 맵: 저택 2층 계단통 이동 이벤트가 위 줄(y 3)에, 1층에서 오는 도착이 계단통 칸 (12,4) 위였다 → 이동 칸 y 4, 도착 (12,5)(`build_tileset.py` 링크 규칙과 `v5-maps/maps.json` 둘 다).
+- 출하 플레이어 걷기: `scripts/qa/runtime/v5-stairs.scenario.mjs`(픽스처 `v5-stairs-fixture.mts` — 저택 1·2층, 지하 감옥 ↔ 돌 바닥 구멍 계단 시험 맵).

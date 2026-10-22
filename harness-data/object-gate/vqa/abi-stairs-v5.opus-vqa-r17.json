@@ -1,0 +1,22 @@
+{
+ "round": 17,
+ "judge": "Opus 5.5 (fresh adversarial reviewer agent, no prior scores)",
+ "queue": "abi-stairs-v5",
+ "images": "http://mdc-server:18301/jp-stairs-1/interior-v5/r17/kits-4x.png (+ scene 1x/3x and before/)",
+ "pieces": [
+  "stairs up stone",
+  "stairs up wood",
+  "stairs down",
+  "stairwell down"
+ ],
+ "pixelSha256": {
+  "stairs up stone": "a37cec066b5c25cb4705dda6a082c174a51930c93a1b2e6b667937fcff8b6163",
+  "stairs up wood": "d83a5423c68df2e5b15b87d5be9974e30f3c3354197e39a5f6dc97c0a6bc7a38",
+  "stairs down": "43710588c76bcf968bda39ab0d23921f8a48caf95c8366425eebac2413904c9b",
+  "stairwell down": "bc05701165e5d112a6270925f8476996900894fca0ed7a0e42533e0e4f78dab4"
+ },
+ "rubric": "axis 2 (style/palette/3/4 fit) + axis 6 (1x readability incl. up/down direction)",
+ "majors": 0,
+ "verdict": "PASS",
+ "summary": "P1 up stone yes/yes: minors (paired-width step-in, jamb inner highlight side, cool frame vs olive wall, plinth contact shadow).\nP2 up wood yes/yes: minors (paired widths, jamb highlight side, salmon corner pixels).\nP3 stairs down yes/yes(weakly): minors (N rail reads lintel-ish at 1x, no floor rim W/E, west black strip beside entry tread).\nP4 stairwell down yes/yes: minors (tan entry tread like a doormat, west black strip, rail close to wainscot). Reads clearly as a stairwell going down at 1x.\nSCENE: all AFTER pieces read better than BEFORE; no wall-face cutting.\nAXIS2 7, AXIS6 7. MAJORS 0\n"
+}
