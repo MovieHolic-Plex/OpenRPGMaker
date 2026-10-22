@@ -339,6 +339,9 @@ export interface FeaturePolishOptions {
   readonly lastBuilds?: Readonly<Record<string, { readonly tool: string; readonly args: unknown }>>;
 }
 export const FEATURE_POLISH_DEFAULT: Omit<FeaturePolishOptions, "request"> = { maxRounds: 8, budgetMs: 30 * 60_000 };
+/** 다듬기 턴에 처음 내보이는 도구. 비우면 레지스트리 전부(411개·스키마 83만 자)가 나가 로컬 CLI 세션이 문맥을 다 채우고 멈췄다(2026-10-22 실측). */
+export const FEATURE_POLISH_TOOLS: readonly string[] = ["show_map_region", "set_feature_checklist", "list_hand_interior_parts", "build_hand_interior_room",
+  "check_reachability", "list_tileset_references", "read_tileset_reference", "create_transfer_pair", "stamp_object"];
 
 export function featurePolishSystemPrompt(polish: FeaturePolishOptions): string {
   return `[다듬기 모드] 이번 실행은 이미 지은 맵을 다듬는 실행이다(최대 ${polish.maxRounds}바퀴 · ${Math.round(polish.budgetMs / 60_000)}분). `

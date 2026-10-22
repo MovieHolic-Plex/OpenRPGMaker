@@ -92,7 +92,7 @@ import { el } from "@/util/dom";
 import { mapRunQueue, type MapRunTicket } from "@/editor/aiMapRunQueue";
 import { createMapRunCard, type MapRunCard } from "./aiMapRunCard";
 import { createFeatureChecklistView } from "./aiFeatureChecklist";
-import { FEATURE_POLISH_DEFAULT } from "@/ai/piAgent/featureReview";
+import { FEATURE_POLISH_DEFAULT, FEATURE_POLISH_TOOLS } from "@/ai/piAgent/featureReview";
 import { sideThreads } from "./aiSideThreads";
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { genId } from "@/util/id";
@@ -2165,7 +2165,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       onPolish: ({ mapIds, lastBuilds }) => {
         if (disposed || turnConversation !== conversationId) return;
         void runPiTurn({ ...command, task: `[다듬기] ${polishRequest}`, ...(mapIds.length ? { mapIds } : {}) }, "다듬기 — 1배 확인·독립 비평으로 더 고칩니다(최대 30분, 중지 단추로 멈춤)", plan,
-          { polish: { ...FEATURE_POLISH_DEFAULT, request: polishRequest, mapIds, lastBuilds } });
+          { polish: { ...FEATURE_POLISH_DEFAULT, request: polishRequest, mapIds, lastBuilds },
+            initialToolNames: [...new Set([...(opts?.initialToolNames ?? []), ...FEATURE_POLISH_TOOLS, ...Object.values(lastBuilds).map((b) => b.tool)])] });
       },
     });
     try {
