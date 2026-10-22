@@ -4,6 +4,7 @@
  * 칩셋은 편집기가 WorkshopEnv.tilesetSource 로 넘겨준다 — 이 파일은 프로젝트를 모른다.
  */
 import type { RgbaImage, WorkshopTilesetSource } from "@/harnesses/_core/workshop/types";
+import { footprintClass } from "@/harnesses/_core/workshop/footprint";
 
 /** 팔레트 색 수 상한. 모델이 고를 수 있는 만큼만 — 많으면 명암 단을 못 고른다. */
 export const MAP_PALETTE_LIMIT = 48;
@@ -164,6 +165,18 @@ export function similarObjects(source: WorkshopTilesetSource, title: string, des
   for (const entry of scored) if (entry.score > 0) take(entry);
   if (matchedOnly) return out;
   for (const entry of scored) if (entry.object.layers.some((layer) => layer.length > 1 || (layer[0]?.length ?? 0) > 1)) take(entry);
+  return out;
+}
+
+/** 칩셋 물체 중 크기 사전 종류(footprintClass)가 같은 것 — 이름 낱말이 겹치지 않아도(「건초 짐마차」 ↔ 「covered wagon」) 같은 종류를 찾는다. */
+export function classObjects(source: WorkshopTilesetSource, cls: string, limit = 2): { name: string; image: RgbaImage }[] {
+  const out: { name: string; image: RgbaImage }[] = [];
+  for (const object of source.objects) {
+    if (out.length >= limit) break;
+    if (footprintClass(object.name, object.description) !== cls) continue;
+    const image = objectImage(source, object);
+    if (image) out.push({ name: object.name, image });
+  }
   return out;
 }
 

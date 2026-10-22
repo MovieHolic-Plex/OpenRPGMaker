@@ -16,7 +16,8 @@ import {
 import { parseMapObjectVerdict } from "./checks";
 import { mapItemFromDefinition, paletteFromHexes } from "./items";
 import { reviewBrief, reviewSystemPrompt } from "./prompts";
-import { dominantColor, sheetExcerpt, similarObjects } from "./sheet";
+import { classObjects, dominantColor, sheetExcerpt, similarObjects } from "./sheet";
+import { footprintClass } from "@/harnesses/_core/workshop/footprint";
 
 const FALLBACK_BACKGROUND: Rgba = [96, 96, 96, 255];
 const ANCHOR_LIMIT = 3;
@@ -129,8 +130,15 @@ export function createMapObjectRunner(): WorkshopRunner {
       const anchors = await anchorsFor(env);
       const id = item.tilesetId ?? "";
       const source = id && env.tilesetSource ? await env.tilesetSource(id) : null;
-      const own = source ? similarObjects(source, item.title, item.description, 2, true).map((object) => object.image) : [];
-      const pictures = [...own, ...(anchors?.examples.map((anchor) => anchor.image) ?? [])];
+      // 칩셋 안 같은 종류(이름이 맞거나 크기 사전 종류가 같은 것) → 없으면 칩셋의 여러 칸 물체. 실내 예시(침대·옷장)는 칩셋이 없을 때만 —
+      // 야외 짐마차·분수 견본에 침대·옷장이 붙어 비율만 흐렸다(2026-10-22 VQA).
+      const own = source ? similarObjects(source, item.title, item.description, 2, true) : [];
+      const cls = footprintClass(item.title, item.description);
+      if (source && cls && own.length < 2) {
+        for (const object of classObjects(source, cls, 2)) if (own.length < 2 && !own.some((o) => o.name === object.name)) own.push(object);
+      }
+      if (source && !own.length) own.push(...similarObjects(source, item.title, item.description, 2, false));
+      const pictures = own.length ? own.map((object) => object.image) : (anchors?.examples.map((anchor) => anchor.image) ?? []);
       if (!pictures.length) return null;
       const cells = refCells(item);
       const sheet = aspectSheet(pictures, aspectOf(cells.w, cells.h), source ? dominantColor(source.image) : FALLBACK_BACKGROUND);

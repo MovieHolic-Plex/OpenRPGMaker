@@ -11,7 +11,7 @@ import { kitConstant, objectGenKit } from "./genKits";
 import type { WorkshopStore } from "./store";
 import { perItem } from "./types";
 import type {
-  AnchorSample, ChatFn, DrawContext, Grid, RejectedSample, RgbaImage, RoundReference, Verdict, WorkshopEnv, WorkshopItem, WorkshopRound, WorkshopRun,
+  AnchorSample, ChatFn, DrawContext, Grid, Palette, PaletteEntry, ReferenceColor, RejectedSample, RgbaImage, RoundReference, Verdict, WorkshopEnv, WorkshopItem, WorkshopRound, WorkshopRun,
   WorkshopRunner, WorkshopSurface,
 } from "./types";
 
@@ -87,6 +87,31 @@ export function flattenImage(image: RgbaImage, background: readonly [number, num
 }
 
 /** 상자 평균으로 줄인다(참고 그림 보관용 — 칩셋 화소로 쓰지 않는다). */
+/**
+ * 참고 그림(회색 바탕)의 물체 화소를 가장 가까운 팔레트 색으로 옮겨 몫을 센다. 그리는 쪽은 참고 그림을 「모양만」 보라고 듣기 때문에
+ * 색을 제 마음대로 바래게 칠하곤 했다 — 실측(2026-10-22): 금빛 건초 참고 그림을 받고도 연한 베이지 덩어리로 그려 1배에서 건초로 안 읽혔다.
+ */
+export function referenceColors(image: RgbaImage, palette: Palette, background: readonly [number, number, number] = REF_BACKGROUND, limit = 8): ReferenceColor[] {
+  const entries = palette.entries.filter((e) => e.rgba[3] > 0);
+  if (!entries.length) return [];
+  const counts = new Map<string, number>();
+  let total = 0;
+  const d = image.data;
+  for (let i = 0; i < d.length; i += 4) {
+    if (d[i + 3]! < 128) continue;
+    const r = d[i]!, g = d[i + 1]!, b = d[i + 2]!;
+    if (Math.abs(r - background[0]) + Math.abs(g - background[1]) + Math.abs(b - background[2]) <= 24) continue;
+    let best = entries[0]!, bestD = Infinity;
+    for (const e of entries) { const dd = (e.rgba[0] - r) ** 2 + (e.rgba[1] - g) ** 2 + (e.rgba[2] - b) ** 2; if (dd < bestD) { bestD = dd; best = e; } }
+    counts.set(best.key, (counts.get(best.key) ?? 0) + 1);
+    total += 1;
+  }
+  if (!total) return [];
+  const hex = (e: PaletteEntry) => "#" + [e.rgba[0], e.rgba[1], e.rgba[2]].map((v) => v.toString(16).padStart(2, "0")).join("");
+  return [...counts].map(([key, n]) => ({ key, hex: hex(palette.byKey.get(key)!), share: Math.round((n / total) * 100) }))
+    .filter((c) => c.share >= 4).sort((a, b) => b.share - a.share).slice(0, limit);
+}
+
 function shrinkImage(image: RgbaImage, maxSide: number): RgbaImage {
   const factor = Math.max(image.width, image.height) / maxSide;
   if (factor <= 1) return image;
@@ -261,10 +286,11 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
     let last: RoundReference["view"];
     let source = "";
     let tries = 0;
+    let colors: ReferenceColor[] = [];
     const finish = (): string[] => {
       const [first, ...more] = accepted;
       round.reference = first
-        ? { status: "ok", dataUrl: first.dataUrl, prompt, view: first.view, tries, ...(more.length ? { more } : {}), ...(rejected.length ? { rejected } : {}), ...(anchorNote ? { anchor: anchorNote } : {}), source,
+        ? { status: "ok", dataUrl: first.dataUrl, prompt, view: first.view, tries, ...(more.length ? { more } : {}), ...(rejected.length ? { rejected } : {}), ...(anchorNote ? { anchor: anchorNote } : {}), ...(colors.length ? { colors } : {}), source,
           note: `참고 그림 ${accepted.length}장(시점 검사 통과, 윗면 ${accepted.map((a) => `${a.view.topShare}%`).join("·")}) — 참고용, 설치 안 됨` }
         : { status: "failed", prompt, view: last, tries, rejected, ...(anchorNote ? { anchor: anchorNote } : {}), source, note: `참고 그림 없이 그림 — 참고 그림 ${tries}장이 모두 시점 검사에서 떨어졌다(${last?.view ?? "?"}, 윗면 ${last?.topShare ?? 0}%)` };
       void save(round);
@@ -290,6 +316,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
         ], run, round, signal);
         last = parseRefViewCheck(viewText, minTop);
         if (last.ok) {
+          if (!accepted.length) colors = referenceColors(small, runner.palette(item));
           accepted.push({ dataUrl, view: last });
           break;
         }
@@ -392,6 +419,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       notes: feedback.map((f) => f.note).filter(Boolean).slice(-5),
       reference: reference[0] ?? null,
       references: reference,
+      ...(reference.length && round.reference?.colors?.length ? { referenceColors: round.reference.colors } : {}),
     };
   }
 

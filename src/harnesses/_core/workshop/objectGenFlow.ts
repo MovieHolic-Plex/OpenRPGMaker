@@ -356,7 +356,11 @@ export function ogDrawBrief(ctx: DrawContext, opts: { readonly hasReference: boo
     ...(opts.hasReference ? [
       "reference/ref-*.png (large, generated) = what the object looks like from this view. Use it for FORM only: which",
       "parts exist, where, their proportions, what makes it recognisable. Never downscale, trace or sample it - place every",
-      "pixel yourself with the palette keys (a REFCOPY warning means the drawing looks like a shrunken reference).", ""] : [""]),
+      "pixel yourself with the palette keys (a REFCOPY warning means the drawing looks like a shrunken reference).",
+      // 모양만 보라는 말에 색까지 버려 금빛 건초를 연한 베이지로 칠했다(2026-10-22 VQA major) — 색 몫만은 따르게 한다.
+      ...(ctx.referenceColors?.length ? [`Its main colours, mapped to the nearest palette keys (share of the object): ${ctx.referenceColors.map((c) => `${c.key} ${c.hex} ${c.share}%`).join(", ")}.`,
+        "Keep these hues for the matching parts (shade them with darker/lighter keys of the same ramp) - do not wash a saturated part out to beige or grey."] : []),
+      ""] : [""]),
     anchor === "flat" || anchor === "hang" ? `## View\n- This object ${ANCHOR_TEXT[anchor]}.\n` : `${kitValue("prompts", "VIEW")}\n`,
     kitValue("prompts", "RECIPE"),
     ...(cellsW * cellsH >= LARGE_CELLS ? ["", kitValue("prompts", "LARGE")] : []),

@@ -144,6 +144,8 @@ export type WorkshopRun = {
  * 판의 「참고 그림」(object-gen ref 단계, referencePrompt.ts). 판 임시 기록에만 있고 그리는 모델만 본다 — 칩셋·스토어로 가지 않는다.
  * none = 그림 계정이 없거나 이 기물은 참고 단계가 없다(「참고 그림 없이 그림」) · failed = 만들었지만 시점 검사를 못 넘었거나 오류.
  */
+/** 참고 그림의 주된 색 → 팔레트 키(share = 물체 화소 중 몫, %) */
+export type ReferenceColor = { readonly key: string; readonly hex: string; readonly share: number };
 export type RoundReference = {
   readonly status: "ok" | "none" | "failed";
   /** 통과한 참고 그림(줄인 PNG data URL). status ok 일 때만. */
@@ -161,6 +163,8 @@ export type RoundReference = {
   readonly more?: readonly { readonly dataUrl: string; readonly view: { readonly view: string; readonly topShare: number; readonly why: string; readonly ok: boolean; readonly minTop: number } }[];
   /** 붙인 시점·화풍 견본(작게, 기록용). 없으면 견본 없이 만들었다. */
   readonly anchor?: string;
+  /** 첫 참고 그림의 물체 색을 가장 가까운 팔레트 키로 옮긴 몫(큰 순). 그리는 쪽이 색을 바래지 않게. */
+  readonly colors?: readonly ReferenceColor[];
 };
 
 export type WorkshopRound = {
@@ -210,6 +214,8 @@ export type DrawContext = {
   readonly reference?: string | null;
   /** 참고 그림 전부(object-gen 흐름은 2장). 첫 장이 reference 와 같다. */
   readonly references?: readonly string[];
+  /** 참고 그림의 주된 색을 팔레트 키로 옮긴 것(RoundReference.colors) */
+  readonly referenceColors?: readonly ReferenceColor[];
 };
 export type ReviewContext = {
   readonly item: WorkshopItem;
