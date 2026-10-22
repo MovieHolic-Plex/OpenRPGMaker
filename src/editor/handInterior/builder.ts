@@ -250,7 +250,7 @@ export function isFlushTravelPiece(d: Pick<SpecObject, "kind" | "use" | "up" | "
   return d.kind === "wall" && !!d.use?.includes("travel") && d.h === 1 && Math.ceil(d.up / 16) + d.h <= 2;
 }
 
-interface Entry { key: number; order: number; tile: number; layer: 2 | 3; label: string }
+interface Entry { key: number; order: number; tile: number; layer: 2 | 3; label: string; /** 단 윗면 — 같은 칸의 다른 바닥 무늬(마법진·단 앞 턱)는 3층으로 올려 단 위에 얹는다 */ base?: true; /** 줄 자동 타일(깔개·난간) — 단 위로 올리지 않는다(예배당 깔개 끝이 서쪽 계단 단에 닿는 예제 그대로) */ line?: true }
 
 /** 탁자 칸으로 치는 가구: 식탁·책상·회의 탁자(id 의 table·desk 또는 태그 식탁·탁자·책상·회의). 파일 캐비닛·협탁 같은 윗면 가구는 빠진다. */
 const TABLE_ID = /(^|-)(table|desk)(-|$)/u;
@@ -437,7 +437,7 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
       if (!A.isFloor(c.x, c.y)) issues.push({ severity: "error", code: "not-on-floor", message: `${label} 칸 (${c.x},${c.y}) 이 바닥이 아니다${d.kind === "flat" ? " — 밟는 무늬가 벽·천장 위에 오면 엔진이 그 벽을 걸을 수 있게 만든다" : ""}`, x: c.x, y: c.y });
       if (d.kind !== "flat") claim(c.x, c.y, label);
       const key = d.kind === "flat" ? -1 : (c.y + 1) * 16;
-      for (const [dx, dy, tile, layer] of piece) push(c.x + dx, c.y + dy, { key, tile, layer: layer as 2 | 3, label });
+      for (const [dx, dy, tile, layer] of piece) push(c.x + dx, c.y + dy, { key, tile, layer: layer as 2 | 3, label, line: true });
     }
   }
   for (const da of daises) {
@@ -447,7 +447,7 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
       const rc = da.h === 1 ? "S" : j === 0 ? "T" : j === da.h - 1 ? "B" : "M";
       const cc = da.w === 1 ? "S" : i === 0 ? "L" : i === da.w - 1 ? "R" : "M";
       const tile = d.pieces[`${cc}${rc}${(i + j) % 2}`];
-      if (tile !== undefined) push(da.x + i, da.y + j, { key: -1, tile, layer: 2, label: `${d.ko} @(${da.x},${da.y})` });
+      if (tile !== undefined) push(da.x + i, da.y + j, { key: -1, tile, layer: 2, label: `${d.ko} @(${da.x},${da.y})`, base: true });
     }
   }
   for (const gd of input.goods ?? []) {
@@ -463,7 +463,11 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
   const L2 = new Array<number>(W * H).fill(-1), L3 = new Array<number>(W * H).fill(-1), L4 = new Array<number>(W * H).fill(-1);
   for (const [i, es] of per) {
     es.sort((a, b) => a.key - b.key || a.order - b.order);
-    const flats = es.filter((e) => e.layer === 2), rest = es.filter((e) => e.layer === 3);
+    // 단 위 바닥 무늬(마법진·별 봉인·단 앞 턱·오르는 계단)는 3층 맨 아래로 올려 단 윗면 위에 얹는다 — stamp_object 가 평평한 키트를 3층에 찍는 것과 같다.
+    // (2026-10-22 폴른 스타 시험: 조수가 단 위에 마법진을 두면 「맨 나중 것만 남는다」로 단이나 마법진이 지워졌다.)
+    const base = es.filter((e) => e.base);
+    const lifted = base.length ? es.filter((e) => e.layer === 2 && !e.base && !e.line) : [];
+    const flats = base.length ? es.filter((e) => e.layer === 2 && !lifted.includes(e)) : es.filter((e) => e.layer === 2), rest = [...lifted, ...es.filter((e) => e.layer === 3)];
     if (flats.length) {
       L2[i] = flats[flats.length - 1]!.tile;
       if (flats.length > 1) issues.push({ severity: "warning", code: "flat-stacked", message: `(${i % W},${Math.floor(i / W)}) 바닥 무늬 ${flats.map((e) => e.label).join(" · ")} — 맨 나중 것만 남는다`, x: i % W, y: Math.floor(i / W) });
