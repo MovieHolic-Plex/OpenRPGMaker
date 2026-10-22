@@ -1301,8 +1301,10 @@ def shade_biome(im):
             if not n or c[3] != 255: continue
             for r in ramps:
                 if c in r:
-                    k = max(-2, n // 2) if r is SNOW else n
-                    px[x, y] = r[max(0, min(len(r) - 1, r.index(c) + k))]
+                    if r is SNOW:       # 눈 그늘은 푸른 SNOW[0] 한 색(SNOW[1] 은 회색이라 그늘이 「회색 돌」로 읽혔다, r16)
+                        px[x, y] = SNOW[0] if (n <= -2 or r.index(c) <= 2) else SNOW[2]
+                    else:
+                        px[x, y] = r[max(0, min(len(r) - 1, r.index(c) + n))]
                     break
             else:
                 px[x, y] = step_any(c, n)
@@ -1359,8 +1361,6 @@ def biome_image(img, name, biome):
     for y in range(H):
         row = [src[x, y] for x in range(W)]
         ledge = sum(1 for c in row if c in (COOL[9], COOL[10], COOL[11])) >= 12
-        # 흉벽 그늘 줄(판석이 대부분 짙은 줄)은 고른 그늘 눈 한 색 — 줄눈·돌이 뒤집힌 무늬가 「글자 같은 낙서」로 읽혔다(r11)
-        dark_row = sum(1 for c in row if c in FLAG[:5]) > sum(1 for c in row if c in FLAG[5:]) and any(c in FLAG for c in row)
         for x in range(W):
             c = src[x, y]
             if c[3] != 255: continue
@@ -1369,18 +1369,19 @@ def biome_image(img, name, biome):
                 if c == COOL[11]: px[x, y] = SNOW[5]
                 elif c == COOL[9] and y > 0 and src[x, y - 1] in (COOL[10], COOL[11]): px[x, y] = SNOW[3]     # 톱니 머리에 두툼히 얹힌 눈
                 elif c == COOL[10]: px[x, y] = SNOW[4]
-                elif c in WARM: px[x, y] = SNOW[1] if dark_row else SNOW[2]   # 판석 물때·덧댄 돌(따뜻한 회색)도 눈 밑
-                elif c not in FLAG and c in COOL[2:9] and sum(1 for (dx, dy) in ((1, 0), (-1, 0), (0, 1), (0, -1)) if 0 <= x + dx < W and 0 <= y + dy < H and src[x + dx, y + dy] in FLAG) >= 2:
-                    px[x, y] = SNOW[1] if dark_row else SNOW[2]      # 판석 사이 금·얼룩도 눈이 덮는다(회색 낙서로 남았다, r11)
-                elif c in snow_flag and not (lintel and h("lt", x // 4, y // 3) % 3):
-                    v = SNOW[1] if dark_row else (SNOW[2] if c in (FLAG[3], FLAG[4]) else snow_flag[c])   # 밝은 줄의 판석 줄눈도 덮는다(낙서 무늬, r11)
-                    # 눈 결: 판석 격자 대신 바람에 쌓인 넓고 부드러운 덩이(3×2 칸 덩이 해시) + 드문 반짝임
-                    if v == SNOW[2]:
-                        if h("drift", name, x // 4, y // 3) % 6 == 0: v = SNOW[3]
-                        if h("spark", name, x, y) % 67 == 0: v = SNOW[3]
-                        # 밟힌 자국(2px 짙은 눈 점)과 눈이 얇아 드러난 판석 조각 — 한 색 판으로 땅 눈에 녹았다(r12 major)
-                        if h("trod", name, x // 2, y) % 9 == 0: v = SNOW[1]
-                        if h("bare", name, x // 4, y // 3) % 13 == 0: v = c
+                elif c in FLAG or c in WARM or (c in COOL[2:9] and sum(1 for (dx, dy) in ((1, 0), (-1, 0), (0, 1), (0, -1)) if 0 <= x + dx < W and 0 <= y + dy < H and src[x + dx, y + dy] in FLAG) >= 2):
+                    # 3판 r16: 통로 눈은 판석 격자와 무관한 결 — 다져진 눈(SNOW[2]) 위 4×4 덩이 바람 눈더미(밝게)·얕은 패임(짙게) + 드문 반짝임.
+                    # 예전 판석 줄 그대로 옮긴 규칙은 줄눈 행마다 짙은 줄이 생겨 「가로 주사선 + 분홍 점」(r16 major)이었다.
+                    # 흉벽 바로 밑 두 행만 그늘(위 칸이 흉벽 돌이면).
+                    above = [src[x, y - k] for k in (1, 2) if y - k >= 0]
+                    if any(a_[3] == 255 and a_ not in FLAG and a_ not in WARM and (a_ in COOL[:9] or a_ == EDGE) for a_ in above[:1]) or \
+                       (len(above) > 1 and above[0] in FLAG and above[1][3] == 255 and above[1] not in FLAG and above[1] not in WARM and above[1] in COOL[:9]):
+                        v = SNOW[0]
+                    else:
+                        r_ = h("drift", name, (x + 2 * ((y // 4) % 2)) // 4, y // 4) % 9
+                        v = SNOW[3] if r_ < 3 else SNOW[2]
+                        if v == SNOW[3] and h("drift", name, (x + 2 * (((y - 1) // 4) % 2)) // 4, (y - 1) // 4) % 9 >= 2 and y % 4 == 0: v = SNOW[4]   # 눈더미 윗가장자리 빛
+                        if h("spark", name, x, y) % 71 == 0: v = SNOW[4]
                     px[x, y] = v
             elif ledge and c in (COOL[9], COOL[10], COOL[11]):
                 px[x, y] = SNOW[5] if c != COOL[9] else SNOW[4]
