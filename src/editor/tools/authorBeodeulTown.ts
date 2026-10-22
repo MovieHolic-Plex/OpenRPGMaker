@@ -58,6 +58,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
     "mapId 없으면 버들항 새 맵을 만든다(마을 기본 56×44 안팎, 36×30~96×80 / 도시 기본 60×60). mapId 가 있으면 그 버들항 맵 전체를 비우고 다시 깐다(다른 계열 맵이면 거부, 마을 집이 이미 선 맵은 완성된 집 보호로 거부). " +
     "같은 seed·선택 = 같은 마을. 시공 뒤 check_city_form·check_reachability 로 점검한다(마을의 문 앞 칸은 결과 data.doors). " +
     "고칠 곳만 stamp_object(kit:beodeul_city/…)·fill_region 으로 손본다 — 집을 하나씩 따로 놓지 말 것. " +
+    "마을을 두르는 성벽·성곽·성문 그림은 버들항에 아직 없다 — paint_tiles·fill_region 으로 맵 테두리에 돌 줄을 그려 성벽 흉내를 내지 말 것(위에서 본 납작한 선이 되어 3/4 시점이 깨진다). 성벽 마을은 이 도구로 짓고 「성벽 그림은 아직 없다」고 사용자에게 말한다. " +
     "농가·농촌 마을은 지은 뒤 농장 키트로 쓰임을 더한다: 헛간 bd-farm-barn 6×6·닭장 bd-farm-coop 3×3 을 흙 마당에 모은 농가 덩이, 울타리 두른 밭 bd-farm-fenced-plot 7×6(문 아래 흙길), 작물 밭 bd-farm-plot-wheat·cabbage·tomato·sowing — 밭 덩이 사이·마당 길은 폭 2칸 흙길(fill_region 재료 「버들항 농장 흙길」), 넓은 풀밭을 경작지로 통째로 덮지 않는다(참고문서 beodeul-farm). 던전·필드는 이 도구가 아니다(참고문서 beodeul-picks-dungeon·field, 필드 길은 author_wild_route).",
   mode: "write",
   domains: ["map"],
@@ -584,7 +585,10 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
   const note = rebuilt
     ? " 같은 mapId 로 다시 지어 맵 전체를 새로 깔았다(손으로 고친 부분은 사라졌다)."
     : " 2026-10-11 지형 도입 이후 같은 seed 도 예전과 다른 배치다 — 기존 마을 맵에 지형을 넣으려면 다시 지어야 한다(맵 전체를 다시 깐다 — 손으로 고친 부분은 사라진다. 마을 집이 선 맵은 완성된 집 보호로 덮어 짓기가 거절되니 remove_map 후 같은 id 로).";
-  return { summary: r.summary + note, data: r.data, warnings: r.warnings.length ? r.warnings : undefined };
+  // 성벽 마을을 청하면 모델이 맵 테두리에 돌 줄을 손으로 칠해 성벽 흉내를 냈다(2026-10-22 실입력창 after4 — 납작한 선) — 결과에서 바로 막는다
+  const wallNote = /성벽|성곽|성문|요새|walled|rampart/i.test(`${args.name ?? ""}`)
+    ? " 성벽 없음: 버들항에는 마을을 두르는 성벽·성문 그림이 아직 없다. paint_tiles·fill_region 으로 테두리에 돌 줄을 그리지 말고(3/4 시점이 깨진 납작한 선이 된다) 사용자에게 「성벽 그림은 아직 없다」고 말한다." : "";
+  return { summary: r.summary + note + wallNote, data: r.data, warnings: r.warnings.length ? r.warnings : undefined };
 }
 
 function uniqueId(draft: Project, prefix: string, body: string): string {
