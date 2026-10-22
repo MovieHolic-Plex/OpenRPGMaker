@@ -739,7 +739,8 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
       const aWaiting = t < d, bWaiting = t < delays[j]!;
       if (aWaiting && bWaiting) continue;
       if (a.x === b.x && a.y === b.y) return true;
-      if (aWaiting) continue;
+      // 출발 전 대열 곁을 지나가는 것은 겹침이 아니다(같은 칸만 본다) — 이걸 막으면 짝 간격이 다섯 걸음으로 벌어졌다.
+      if (aWaiting || bWaiting) continue;
       if (a.y === b.y && Math.abs(a.x - b.x) <= 1) return true;
       if (a.x === b.x && Math.abs(a.y - b.y) <= 1 && t > 0) return true;
     }
@@ -762,10 +763,14 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   // 짝꿍의 걸음 — 앞사람 걸음 i 마다 그 옆 칸을 향해 한 걸음(앞사람 칸이면 제자리). 앞사람이 통로로 사라지면 통로 칸으로 들어가 사라진다.
   const besideSteps = (npc: GameEvent, lead: { x: number; y: number }[]): (Step | "stay")[] => {
     const at = (i: number) => lead[Math.max(0, Math.min(i, lead.length - 1))]!;
-    const free = (c: { x: number; y: number }) => isPassable(project, hub, c.x, c.y) && (allow(c.x, c.y) || Math.abs(c.x - exit.x) <= 1);
+    // 길 곁 풀밭 칸도 나란히 걷는 자리로 친다 — 포석만 보면 좁은 길에서 짝꿍이 앞사람 바로 뒤로 붙어 한 줄이 됐다.
+    const free = (c: { x: number; y: number }) => isPassable(project, hub, c.x, c.y) && !doorCells.has(`${c.x},${c.y}`);
     const side = (i: number) => {
-      const a = at(i); let dx = at(i + 1).x - a.x, dy = at(i + 1).y - a.y;
-      if (!dx && !dy) { dx = a.x - at(i - 1).x; dy = a.y - at(i - 1).y; }
+      const a = at(i);
+      let dx = 0, dy = 0;
+      for (let k = i + 1; k < lead.length && !dx && !dy; k += 1) { dx = at(k).x - a.x; dy = at(k).y - a.y; }
+      for (let k = i - 1; k >= 0 && !dx && !dy; k -= 1) { dx = a.x - at(k).x; dy = a.y - at(k).y; }
+      dx = Math.sign(dx); dy = Math.sign(dy);
       return [{ x: a.x - dy, y: a.y + dx }, { x: a.x + dy, y: a.y - dx }].find(free) ?? at(i - 1);
     };
     const steps: (Step | "stay")[] = [];
@@ -779,29 +784,81 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
       const next = dir ? { x: cur.x + DIRS[dir]![0], y: cur.y + DIRS[dir]![1] } : cur;
       if (!dir || (!gone && same(next, at(i)))) { steps.push("stay"); continue; }
       steps.push(dir); cur = next;
+      // 앞사람이 성문 통로 끝 칸에 닿는 걸음에 짝꿍도 통로 안 옆 칸에 닿으면 함께 사라진다 — 앞사람 뒤로 한 줄로 들어가면
+      // 짝꿍이 세 걸음 늦게 닿아 뒷짝의 앞사람과 통로에서 맞부딪혀 짝 간격이 다섯 걸음으로 벌어졌다.
+      if (i >= lead.length - 1 && cur.y === exit.y && Math.abs(cur.x - exit.x) === 1) break;
       if (gone && same(cur, exit)) break;
     }
     while (steps[steps.length - 1] === "stay") steps.pop();
-    if (!same(cellsOf({ x: npc.x, y: npc.y }, steps).at(-1)!, exit)) return routeOf(npc);
+    const end = cellsOf({ x: npc.x, y: npc.y }, steps).at(-1)!;
+    if (!(end.y === exit.y && Math.abs(end.x - exit.x) <= 1)) return routeOf(npc);
     return steps;
   };
+  // 짝마다 길을 먼저 다 셈한다. 처음 대열은 세 줄 지그재그라 짝꿍이 앞사람보다 한두 칸 뒤에서 출발해 끝까지 비스듬히 따라왔다 —
+  // 앞사람이 그 자리에서 짝꿍이 옆에 올 때까지 기다린 뒤(대열 정돈) 함께 걷는다.
+  type Pair = { members: GameEvent[]; paths: (Step | "stay")[][]; cells: { x: number; y: number }[][]; arrive: number };
+  const pairs: Pair[] = [];
   for (let rank = 0; rank < order.length; rank += 2) {
     const lead = order[rank]![0], mate = order[rank + 1]?.[0];
-    const leadPath = routeOf(lead);
+    let leadPath: (Step | "stay")[] = routeOf(lead);
     departed.add(lead.id);
-    const leadCells = cellsOf(lead, leadPath);
-    const matePath = mate ? besideSteps(mate, leadCells) : undefined;
-    if (mate) departed.add(mate.id);
-    const mateCells = mate && matePath ? cellsOf(mate, matePath) : undefined;
-    // 마지막 한 걸음 동안 옅어져 끝 칸(성문 통로)에 닿자마자 사라진다 — 끝 칸에 머물지 않으므로 뒷짝은 한 칸만 띄우고 따른다.
-    // 겹침만 피해 가장 이른 출발을 고르면 간격이 1~5칸으로 들쭉날쭉해 발렌이 홀로 앞서 걸었다(VQA r25).
-    const arriveAt = arrivals.length ? arrivals[arrivals.length - 1]! + 2 : leadPath.length;
-    let delay = Math.max(0, arriveAt - leadPath.length);
-    while ((clash(leadCells, delay) || (mateCells !== undefined && clash(mateCells, delay))) && delay < 60) delay += 1;
-    if (process.env.MARCH_DEBUG) console.error("march", lead.id, mate?.id, "delay", delay, "steps", leadPath.length, matePath?.length);
-    tracks.push(leadCells); delays.push(delay); paths.push(leadPath);
-    if (mate && matePath && mateCells) { tracks.push(mateCells); delays.push(delay); paths.push(matePath); }
-    arrivals.push(delay + leadPath.length);
+    let matePath: (Step | "stay")[] | undefined;
+    if (mate) {
+      for (let wait = 0; wait <= 4; wait += 1) {
+        const lp: (Step | "stay")[] = [...Array.from({ length: wait }, () => "stay" as const), ...(leadPath as Step[])];
+        const mp = besideSteps(mate, cellsOf(lead, lp));
+        matePath = mp;
+        const mc = cellsOf(mate, mp), lc = cellsOf(lead, lp);
+        // 출발 뒤 셋째 걸음에 나란히(같은 줄·이웃 칸 또는 같은 열·이웃 칸) 서면 정돈이 끝난 것이다.
+        const t = Math.min(wait + 3, lc.length - 1, mc.length - 1);
+        if (Math.abs(lc[t]!.x - mc[t]!.x) + Math.abs(lc[t]!.y - mc[t]!.y) === 1 || wait === 4) { leadPath = lp; break; }
+      }
+      departed.add(mate.id);
+    }
+    const members = mate ? [lead, mate] : [lead];
+    const pathsP = mate && matePath ? [leadPath, matePath] : [leadPath];
+    pairs.push({ members, paths: pathsP, cells: members.map((m, k) => cellsOf(m, pathsP[k]!)), arrive: leadPath.length });
+  }
+  // 짝 사이 간격은 하나로 — 성문에 닿는 걸음을 S 걸음씩 벌린다. 겹침이 없는 가장 작은 S 를 고른다(들쭉날쭉한 간격이 「느슨한 물줄기」였다).
+  const delaysFor = (S: number): number[] => {
+    const a0 = Math.max(...pairs.map((p, k) => p.arrive - k * S));
+    return pairs.map((p, k) => Math.max(0, a0 + k * S - p.arrive));
+  };
+  let chosen: number[] | undefined;
+  for (let S = 2; S <= 10 && !chosen; S += 1) {
+    const ds = delaysFor(S);
+    tracks.length = 0; delays.length = 0;
+    let ok = true;
+    pairs.forEach((p, k) => {
+      if (!ok) return;
+      if (p.cells.some((c) => clash(c, ds[k]!))) {
+        ok = false;
+        if (process.env.MARCH_DEBUG) for (const [mi, c] of p.cells.entries()) for (const [j, other] of tracks.entries()) for (let t = 0; t < c.length + ds[k]! + 2; t += 1) {
+          const a = posAt(c, ds[k]!, t), b = posAt(other, delays[j]!, t);
+          if (a && b && t >= ds[k]! && t >= delays[j]! && Math.abs(a.x - b.x) + Math.abs(a.y - b.y) <= 1) { console.error("  clash pair", k, "m", mi, "vs track", j, "t", t, JSON.stringify(a), JSON.stringify(b)); break; }
+        }
+      }
+      for (const c of p.cells) { tracks.push(c); delays.push(ds[k]!); }
+    });
+    if (ok) chosen = ds;
+    if (process.env.MARCH_DEBUG) console.error("march spacing", S, ok ? "ok" : "clash", JSON.stringify(ds));
+  }
+  if (!chosen) {
+    // 고른 간격이 없으면 예전처럼 짝마다 겹침이 풀릴 때까지 늦춘다.
+    tracks.length = 0; delays.length = 0; chosen = [];
+    let last = -Infinity;
+    for (const p of pairs) {
+      let d = Math.max(0, (Number.isFinite(last) ? last + 2 : p.arrive) - p.arrive);
+      while (p.cells.some((c) => clash(c, d)) && d < 60) d += 1;
+      for (const c of p.cells) { tracks.push(c); delays.push(d); }
+      chosen.push(d); last = d + p.arrive;
+    }
+  }
+  for (const [k, p] of pairs.entries()) {
+    for (const path of p.paths) paths.push(path);
+    arrivals.push(chosen[k]! + p.arrive);
+    if (process.env.MARCH_DEBUG) console.error("march", p.members.map((m) => m.id).join("+"), "delay", chosen[k], "steps", p.paths.map((x) => x.length).join("/"),
+      "\n   L", p.cells[0]!.map((c) => `${c.x},${c.y}`).join(" "), "\n   M", p.cells[1]?.map((c) => `${c.x},${c.y}`).join(" "));
   }
   order.forEach(([npc], rank) => {
     const path = paths[rank]!;
@@ -1244,6 +1301,9 @@ function nearFree(project: Project, map: GameMap, origin: { x: number; y: number
 
 /** 소품 발자국이 모두 걸을 수 있는 빈 바닥이고 이벤트와 붙지 않을 때만 찍는다(길·조사 칸을 막지 않는다). */
 /** 숲 맵의 맨 풀밭에 밟을 수 있는 바닥 덮개(고사리·히스·들풀·잔돌)를 덩이지게 깐다. 길 바로 곁·이벤트 곁은 비운다. */
+/** 추락 구덩이에서 뻗은 불씨 자국 줄 — 숲 풀숲 덩이가 그 위를 덮지 않게 비워 둔다(맵 id → 칸 번호). */
+const SCORCH_SWATH = new Map<string, Set<number>>();
+
 function fillForestUnderstory(project: Project, mapId: string): void {
   const map0 = project.maps[mapId];
   if (!map0) return;
@@ -1254,6 +1314,7 @@ function fillForestUnderstory(project: Project, mapId: string): void {
     if (x < 1 || y < 1 || x >= W - 1 || y >= H - 1 || !isPassable(project, m, x, y)) return false;
     if ([m.lowerOverlayTiles, m.upperTiles, m.upperOverlayTiles].some((l) => (l?.[i] ?? -1) >= 0)) return false;
     if (/모랫길|바닥 흙|절벽/.test(meta[m.lowerTiles[i]!]?.label ?? "")) return false;
+    if (SCORCH_SWATH.get(mapId)?.has(i)) return false;
     return !m.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1);
   };
   const m0 = project.maps[mapId]!;
@@ -1897,18 +1958,37 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     // 별이 날아든 쪽(오프닝 컷의 별똥은 북동에서 내려온다)으로 둑 밖 풀 위에 불씨 자국·숯더미가 줄지어 남는다 —
     // 구덩이만 있고 「하늘에서 떨어져 미끄러진」 흔적이 없었다(VQA r34). 번들 화산 동굴 불씨·숯 키트(새 그림 없음).
     {
-      const placedAt: { x: number; y: number }[] = [];
-      for (const ang of [-Math.PI / 5, -Math.PI / 4, -Math.PI / 7]) {
-        for (let r = 0.5; r <= 9 && placedAt.length < 6; r += 0.5) {
-          const x = Math.round(cx + Math.cos(ang) * (rx + r)), y = Math.round(cy + Math.sin(ang) * (ry + r * 0.55));
-          const cur = M(ids.forest), i = y * cur.width + x;
-          if (x < 1 || y < 1 || x >= cur.width - 1 || y >= cur.height - 1 || pit.has(i) || !grassFloor(i) || isSand(i) || treeAt(i)) continue;
-          if ((cur.upperTiles[i] ?? -1) >= 0 || (cur.upperOverlayTiles?.[i] ?? -1) >= 0) continue;
-          if (placedAt.some((p) => Math.hypot(p.x - x, p.y - y) < 1.5)) continue;
-          const kit = placedAt.length === 2 ? "bd-pick-volcano-cave-coal-pile" : "bd-pick-volcano-cave-ember-a";
-          if (tryStamp(project, cur, `kit:beodeul_city/${kit}`, x, y)) placedAt.push({ x, y });
+      // 숲이 둘러싼 빈터라 한 방향만 보면 나무에 막혀 하나도 못 놓았다 — 여러 방향 중 풀 칸이 가장 길게 이어지는 쪽을 고른다(동쪽 우선).
+      const cur0 = M(ids.forest);
+      const lineFor = (ang: number) => {
+        const cells: { x: number; y: number }[] = [];
+        for (let r = 0; r <= 7; r += 0.5) {
+          const x = Math.round(cx + Math.cos(ang) * (rx * 0.9 + r)), y = Math.round(cy + Math.sin(ang) * (ry * 0.9 + r * 0.55));
+          const i = y * cur0.width + x;
+          if (x < 1 || y < 1 || x >= cur0.width - 1 || y >= cur0.height - 1 || pit.has(i)) continue;
+          if (!grassFloor(i) || isSand(i) || treeAt(i)) break;
+          if ((cur0.upperTiles[i] ?? -1) >= 0 || (cur0.upperOverlayTiles?.[i] ?? -1) >= 0) continue;
+          if (cells.some((p) => Math.hypot(p.x - x, p.y - y) < 1.5)) continue;
+          cells.push({ x, y });
+        }
+        return cells;
+      };
+      const best = [-0.35, 0, 0.35, -0.7, 0.7, Math.PI - 0.35, Math.PI, Math.PI + 0.35].map(lineFor).sort((a, b) => b.length - a.length)[0] ?? [];
+      // 불씨 줄과 그 곁 한 칸은 풀숲을 두지 않는다 — 덤불 사이에 불씨가 끼어 「불탄 자국」이 아니라 화단 장식으로 읽혔다.
+      const swath = new Set<number>();
+      for (let k = 0; k < best.length; k += 1) {
+        const a = best[k]!, b = best[k + 1] ?? a;
+        for (let t = 0; t <= 4; t += 1) {
+          const x = Math.round(a.x + (b.x - a.x) * t / 4), y = Math.round(a.y + (b.y - a.y) * t / 4);
+          for (const [dx, dy] of [[0, 0], [0, -1], [0, 1]]) swath.add((y + dy!) * cur0.width + x + dx!);
         }
       }
+      SCORCH_SWATH.set(ids.forest, swath);
+      best.slice(0, 5).forEach((c, k) => {
+        const kit = k === 2 ? "bd-pick-volcano-cave-coal-pile" : "bd-pick-volcano-cave-ember-a";
+        if (!tryStamp(project, M(ids.forest), `kit:beodeul_city/${kit}`, c.x, c.y) && kit !== "bd-pick-volcano-cave-ember-a") tryStamp(project, M(ids.forest), "kit:beodeul_city/bd-pick-volcano-cave-ember-a", c.x, c.y);
+      });
+      if (process.env.MARCH_DEBUG) console.error("scorch trail", JSON.stringify(best));
     }
     // 구덩이 북쪽 위로 맵 끝까지 붙은 모랫길 토막 둘은 아무 데로도 안 갔다(VQA r6 m13) — 풀로 되돌린다.
     {
