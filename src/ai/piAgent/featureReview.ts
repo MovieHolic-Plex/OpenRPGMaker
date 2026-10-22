@@ -253,3 +253,73 @@ export function featureShortfallPrompt(items: readonly FeatureItem[], verdicts: 
   return `[1배 특징 확인 — 마지막] ${reason} 다음 항목이 1배 그림에서 아직 읽히지 않는다:\n${left.join("\n")}\n`
     + "더 고치지 마라. 사용자에게 줄 최종 보고에 확인표를 그대로 옮겨 읽히는 항목과 안 읽히는 항목을 나눠 적는다. 「모두 완성」「요청대로 지었다」라고 쓰지 마라.";
 }
+
+// ── 독립 비평가(vqa-rubric 축 1·2·6) ─────────────────────────────────────────────
+// 왜(2026-10-22): 확인표 판정자는 조수가 적은 항목만 본다 — 조수가 안 적은 결함(쓰임 없는 구역, 시점 섞임, 문 자리)은 못 잡는다.
+// 코딩 에이전트도 초반엔 스스로 판정해서 약했고, 검수 점수가 오른 건 앞 판·추론을 안 본 별도 검수자가 큰 결함을 좌표로 짚은 뒤였다.
+// 그래서 끝 검토에 별도 호출 하나를 둔다: 요청 원문과 1배 그림만 받고(짓기 추론·확인표·앞 점수 없음), 루브릭 축 1·2·6 점수와
+// 좌표 붙은 major 목록을 낸다. 조수는 그 목록으로 고친다.
+
+export interface CriticMajor { readonly axis: 1 | 2 | 6; readonly x?: number; readonly y?: number; readonly w?: number; readonly h?: number; readonly what: string; readonly fix?: string }
+export interface CriticVerdict {
+  readonly mapId: string;
+  readonly score?: number;
+  readonly axes?: { readonly composition?: number; readonly view?: number; readonly doors?: number };
+  readonly majors: readonly CriticMajor[];
+  readonly imagesSeen?: number;
+  readonly problem?: string;
+}
+/** 비평가 점수는 참고로만 적는다 — 통과는 「major 0」 하나다.
+ * 보정(2026-10-22, 같은 렌더러의 1배 그림 한 장씩): 폴른 r28 세 방(앞 Opus 검수 8.1~8.2)과 조수 #3242 3차(5~6)를
+ * 이 지시문으로 매겼더니 Sonnet 6·6·7.6 대 6·7.6·7, Opus 6·6.7·7 대 5.7·7·7.3 — 그림 한 장 절대 점수는 두 판을 가르지 못했다.
+ * 반면 major 목록(좌표·고칠 점)은 r28 성문 방 단 앞 검은 띠처럼 실제 결함을 짚었다. 그래서 점수 문턱 대신 major 0 을 통과로 본다. */
+
+export function featureCriticPrompt(task: string, mapName: string, cells: { width: number; height: number }, imagePx: { width: number; height: number } | undefined): string {
+  const scale = imagePx ? ` The image is ${imagePx.width}×${imagePx.height}px, so one cell is about ${(imagePx.width / cells.width).toFixed(1)}px; give coordinates in CELLS (x from the left, y from the top, 0-based).` : " Give coordinates in CELLS (x from the left, y from the top, 0-based).";
+  return [
+    "You are a fresh, adversarial visual QA reviewer for a 16px 3/4-view (top-down JRPG) game map. You have never seen this map, its build notes or any earlier score. Score it once, strictly.",
+    "Rubric (fixed). Severity: major = an ordinary player notices it immediately and it reads as cheap or buggy (half the room is empty floor or black void, a zone with no readable purpose, wrong-view or clashing art, a door/stair that reads wrong, a requested hero feature that does not read). minor = polish gap only seen when looking for it.",
+    "Anchors per axis: 10 commercial release · 8 commercial indie, only a few minors · 6 works but amateur, 1-2 majors · 4 several majors · 2 broken. Any major on an axis caps that axis at 6. Overall = min(lowest axis + 1, mean) — it is NOT the mean.",
+    "Axis 1 Map composition: every space has a readable purpose; empty floor or black void ≤ 15% of the screen; props make sense together and for the requested place.",
+    "Axis 2 View and palette consistency: all art shares the same 3/4 view and palette feel.",
+    "Axis 6 Doors and stairs: the exit door reads as a door in a wall; stairs face the way they lead.",
+    "Genre conventions (do NOT count these as majors): an interior is drawn as a room shape inside a black map; black OUTSIDE the room's outer wall outline is the off-screen exterior, not void — count void only for black or bare holes INSIDE the room's outline, or when the room fills only a small part of the frame. The standard interior exit is an opening or mat in the south wall at the bottom edge that leads off the map; that reads as a door. A room may be non-rectangular.",
+    `Map: ${mapName}, ${cells.width}×${cells.height} cells, rendered at about 1x.${scale}`,
+    `What the user asked for: ${task.slice(0, 1200)}`,
+    "List EVERY major with the cell rectangle it covers and ONE concrete layout fix. The builder cannot draw new art or cut holes into the void: fixes must change the room plan (shape, size, narrowing an empty strip with wall), positions, framing (walls, pillars, dais with a front riser, rugs, paired statues or lights) or swap in a larger existing piece. Do not suggest changing the request.",
+    'Reply with JSON only: {"imagesSeen": <number of images you received>, "axes": {"composition": n, "view": n, "doors": n}, "score": n, "majors": [{"axis": 1|2|6, "x": n, "y": n, "w": n, "h": n, "what": "한국어 한 줄 — 보이는 것", "fix": "한국어 한 줄"}], "minors": ["한국어 한 줄"]}',
+  ].join("\n");
+}
+
+export function parseFeatureCritic(text: string, mapId: string, imagesSent: number): CriticVerdict {
+  const match = text.match(/\{[\s\S]*\}/u)?.[0];
+  let parsed: Record<string, unknown> | null = null;
+  try { parsed = match ? JSON.parse(match) as Record<string, unknown> : null; } catch { parsed = null; }
+  if (!parsed) return { mapId, majors: [], problem: "비평 응답을 읽지 못했다" };
+  const imagesSeen = typeof parsed.imagesSeen === "number" ? parsed.imagesSeen : undefined;
+  if (imagesSeen === undefined || imagesSeen < imagesSent) return { mapId, majors: [], ...(imagesSeen !== undefined ? { imagesSeen } : {}), problem: `비평가가 그림 ${imagesSeen ?? "?"}장만 받았다(보낸 그림 ${imagesSent}장)` };
+  const num = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : undefined);
+  const axesRaw = (parsed.axes ?? {}) as Record<string, unknown>;
+  const axes = { composition: num(axesRaw.composition), view: num(axesRaw.view), doors: num(axesRaw.doors) };
+  const majors = (Array.isArray(parsed.majors) ? parsed.majors as Array<Record<string, unknown>> : []).filter((m) => typeof m.what === "string" && m.what).slice(0, 8).map((m): CriticMajor => {
+    const axis = m.axis === 2 ? 2 : m.axis === 6 ? 6 : 1;
+    const x = clampInt(m.x), y = clampInt(m.y), w = clampInt(m.w), h = clampInt(m.h);
+    return { axis, ...(x !== undefined ? { x } : {}), ...(y !== undefined ? { y } : {}), ...(w !== undefined ? { w } : {}), ...(h !== undefined ? { h } : {}), what: String(m.what).slice(0, 240), ...(typeof m.fix === "string" && m.fix ? { fix: m.fix.slice(0, 240) } : {}) };
+  });
+  const scored = [axes.composition, axes.view, axes.doors].filter((v): v is number => v !== undefined);
+  const capped = scored.length ? Math.min(Math.min(...scored) + 1, scored.reduce((a, b) => a + b, 0) / scored.length) : undefined;
+  const score = num(parsed.score) !== undefined ? Math.min(num(parsed.score)!, capped ?? 10) : capped;
+  return { mapId, ...(score !== undefined ? { score: Math.round(score * 10) / 10 } : {}), axes, majors, imagesSeen };
+}
+
+/** 비평 결과를 확인표 한 줄(critic:<mapId>)로 — 점수가 통과선 미만이거나 major 가 있으면 실패. */
+export function criticToVerdict(itemId: string, critic: CriticVerdict): FeatureVerdict {
+  if (critic.problem || critic.score === undefined) return { id: itemId, state: "unjudged", why: critic.problem ?? "점수가 없다" };
+  const where = (m: CriticMajor) => (m.x !== undefined && m.y !== undefined ? ` (${m.x},${m.y})${m.w && m.h ? ` ${m.w}×${m.h}` : ""}` : "");
+  const majors = critic.majors.map((m) => `축${m.axis}${where(m)} ${m.what}`).join(" / ");
+  const fixes = critic.majors.filter((m) => m.fix).map((m) => `${where(m).trim() || `축${m.axis}`}: ${m.fix}`).join(" / ");
+  const pass = critic.majors.length === 0;
+  return pass
+    ? { id: itemId, state: "pass", why: `독립 비평 major 0 (참고 점수 ${critic.score})` }
+    : { id: itemId, state: "fail", why: `독립 비평(참고 점수 ${critic.score}) — major ${critic.majors.length}: ${majors || "(목록 없음, 점수 미달)"}`.slice(0, 600), ...(fixes ? { fix: fixes.slice(0, 600) } : {}) };
+}

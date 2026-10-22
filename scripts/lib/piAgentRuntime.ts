@@ -19,7 +19,7 @@ import { normalizeBuildSpec, plannedGrowthForSpec, validateBuildSpec, type Build
 import { growthGuidanceLine } from "../../src/ai/session/buildSpecGate.ts";
 import type { ActivityVisual } from "../../src/ai/activityVisual";
 import { inspectPiLayoutQuality, piLayoutRepairPrompt, piLayoutShortfallPrompt } from "../../src/ai/piAgent/layoutQuality.ts";
-import { FEATURE_CHECKLIST_SYSTEM_PROMPT, FEATURE_REVIEW_MAX_CROPS, FEATURE_REVIEW_MAX_REBUILDS, FEATURE_REVIEW_SOFT_BUDGET_MS, PiFeatureChecklist, SET_FEATURE_CHECKLIST_DESCRIPTION, SET_FEATURE_CHECKLIST_PARAMETERS, featureChecklistSummary, featureJudgePrompt, featureRepairPrompt, featureShortfallPrompt, parseFeatureJudge, type FeatureJudgeImage, type FeatureVerdict } from "../../src/ai/piAgent/featureReview.ts";
+import { FEATURE_CHECKLIST_SYSTEM_PROMPT, FEATURE_REVIEW_MAX_CROPS, FEATURE_REVIEW_MAX_REBUILDS, FEATURE_REVIEW_SOFT_BUDGET_MS, PiFeatureChecklist, SET_FEATURE_CHECKLIST_DESCRIPTION, SET_FEATURE_CHECKLIST_PARAMETERS, featureChecklistSummary, featureJudgePrompt, featureRepairPrompt, featureShortfallPrompt, parseFeatureJudge, featureCriticPrompt, parseFeatureCritic, criticToVerdict, type FeatureJudgeImage, type FeatureVerdict } from "../../src/ai/piAgent/featureReview.ts";
 import { roomSpecOf } from "../../src/editor/handInterior/builder.ts";
 import { INTERIOR_BARE_FLOOR_LIMIT, measureInteriorBareFloor } from "../../src/editor/handInterior/bareFloor.ts";
 import { conceptSkipsLayoutQuality } from "../../src/ai/conceptCards.ts";
@@ -1120,6 +1120,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     }
     // 요청 특징 1배 확인 루프(featureReview.ts) — 짓기 턴의 맵을 1배로 그려 항목마다 별도 판정 호출에 묻고, 안 읽히는 항목을 고치게 한다.
     const reviewedMapIds = new Set<string>();
+    // 독립 비평가는 기본으로 켠다. OPRN_FEATURE_CRITIC=0 이면 끄고 옛 「방 전체」 확인표 항목으로 돌아간다(A/B 시험용).
+    const featureCriticEnabled = process.env.OPRN_FEATURE_CRITIC !== "0";
+    const pngSize = (dataUrl: string): { width: number; height: number } | undefined => {
+      const b64 = dataUrl.slice(dataUrl.indexOf(",") + 1, dataUrl.indexOf(",") + 1 + 44);
+      const bytes = Buffer.from(b64, "base64");
+      return bytes.length >= 24 ? { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) } : undefined;
+    };
     if (featureReviewEnabled && options.renderToolImage && !fatal && !rejected && !options.signal?.aborted) {
       const mapChanged = (id: string): boolean => {
         const now = ctx.project.maps[id], was = base.maps[id];
@@ -1168,11 +1175,28 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
             : { id: itemId, state: "fail", why: `빈 바닥 ${bare.pct}% — 큰 빈 덩이 ${where}`, fix: "그 빈 띠를 평면에서 '#' 로 들여 방을 좁히거나, 그 자리에 쓰임 하나를 정해 가구 한 벌(앵커+짝, 깔개)을 둔다" });
         }
         const images: FeatureJudgeImage[] = [];
+        const fullImages = new Map<string, string>();
         for (const id of targets) {
           const map = ctx.project.maps[id]!;
           const full = await render(id, 0, 0, map.width, map.height);
-          if (full) images.push({ label: `${map.name} (${id}) 맵 전체 ${map.width}×${map.height}칸 — 약 1배`, dataUrl: full });
+          if (full) { images.push({ label: `${map.name} (${id}) 맵 전체 ${map.width}×${map.height}칸 — 약 1배`, dataUrl: full }); fullImages.set(id, full); }
         }
+        // 독립 비평가(featureCriticPrompt) — 요청 원문과 1배 전체 그림만 받는 별도 호출. 확인표 판정과 함께 돌린다.
+        const criticRuns = featureCriticEnabled ? [...fullImages].map(async ([id, dataUrl]) => {
+          const map = ctx.project.maps[id]!;
+          const itemId = `critic:${id}`;
+          featureChecklist.setMeasured({ id: itemId, text: `${map.name}: 독립 비평(축 1·2·6) major 0`, mapId: id });
+          try {
+            const px = pngSize(dataUrl);
+            const reply = await eventAssistChat(null, { messages: [{ role: "user", content: [{ type: "text", text: featureCriticPrompt(request.task, map.name, map, px) }, { type: "image_url", image_url: { url: dataUrl } }] }], ...(options.signal ? { signal: options.signal } : {}) });
+            const critic = parseFeatureCritic(typeof reply.message.content === "string" ? reply.message.content : "", id, 1);
+            emit({ type: "execution_status", name: "feature_review.critic", ok: !critic.problem && critic.majors.length === 0, summary: `${map.name} 독립 비평 ${critic.score ?? "?"}점 · major ${critic.majors.length}${critic.problem ? ` · ${critic.problem}` : ""}`, data: critic });
+            return criticToVerdict(itemId, critic);
+          } catch (error) {
+            if (options.signal?.aborted) throw error;
+            return { id: itemId, state: "unjudged" as const, why: `비평 호출 실패: ${error instanceof Error ? error.message.slice(0, 160) : String(error)}` };
+          }
+        }) : [];
         let crops = 0;
         for (const item of featureChecklist.judgeItems) {
           if (crops >= FEATURE_REVIEW_MAX_CROPS || !item.mapId || !item.area || !targets.includes(item.mapId)) continue;
@@ -1184,7 +1208,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         }
         const derive = featureChecklist.size === 0;
         // 방 전체 구성(vqa 축 1) — 조수가 적은 항목은 이름 붙은 특징뿐이라, 쓰임 없는 구역·허공은 실행기가 항목 하나로 붙여 묻는다.
-        if (!derive) targets.forEach((id, n) => { if (handInterior(id)) featureChecklist.ensureRunnerItem(`whole-room-${n + 1}`, `${ctx.project.maps[id]!.name}: 방 전체가 요청한 장소로 한눈에 읽히고, 구역마다 쓰임이 보이며 쓰임 없는 빈 구역·검은 허공이 없다`, id); });
+        if (!derive && !featureCriticEnabled) targets.forEach((id, n) => { if (handInterior(id)) featureChecklist.ensureRunnerItem(`whole-room-${n + 1}`, `${ctx.project.maps[id]!.name}: 방 전체가 요청한 장소로 한눈에 읽히고, 구역마다 쓰임이 보이며 쓰임 없는 빈 구역·검은 허공이 없다`, id); });
         let verdicts: FeatureVerdict[] = [];
         let imagesSeen: number | undefined;
         let judge = "none";
@@ -1208,6 +1232,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         } else {
           verdicts = featureChecklist.judgeItems.map((i) => ({ id: i.id, state: "unjudged" as const, why: `1배 그림을 얻지 못했다 — ${renderErrors.slice(-1)[0] ?? "렌더 경로 없음"}` }));
         }
+        measured.push(...await Promise.all(criticRuns));
         const round = featureChecklist.record({ verdicts: [...verdicts, ...measured], imagesSent: images.length, ...(imagesSeen !== undefined ? { imagesSeen } : {}), judge, ms: Date.now() - t0 });
         emit({ type: "execution_status", name: "feature_review", ok: round.verdicts.every((v) => v.state === "pass"),
           summary: `1배 확인 ${round.round}바퀴 — 통과 ${round.verdicts.filter((v) => v.state === "pass").length} · 안 읽힘 ${round.verdicts.filter((v) => v.state === "fail").length} · 판정 불가 ${round.verdicts.filter((v) => v.state === "unjudged").length} (그림 ${images.length}장 보냄, 판정자가 받은 그림 ${imagesSeen ?? "?"}장, ${Math.round(round.ms / 1000)}초)${renderErrors.length ? ` · 렌더 실패 ${renderErrors.length}: ${renderErrors.slice(-2).join(" / ")}` : ""}`,
