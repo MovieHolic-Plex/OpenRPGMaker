@@ -72,7 +72,7 @@ const OBS_ROOM: RoomSpec = {
     "#........#............#........#",
     "#..............................#",
     "#..............................#",
-    "#..............................#",
+    "########.......................#",
     "###############.################",
   ],
   floor: "plank",
@@ -103,9 +103,7 @@ const OBS_ROOM: RoomSpec = {
     {id: "chart table", x: 18, y: 10},
     {id: "globe", x: 21, y: 10},
     {id: "stool", x: 10, y: 10},
-    {id: "desk 2x1", x: 17, y: 12},
-    {id: "chair N", x: 17, y: 13},
-    {id: "chair N", x: 18, y: 13},
+    {id: "chart table", x: 12, y: 12},
     {id: "orrery", x: 22, y: 10},
     {id: "desk 2x1", x: 24, y: 11},
     {id: "chair N", x: 25, y: 12},
@@ -118,9 +116,6 @@ const OBS_ROOM: RoomSpec = {
     {id: "seal stone", x: 2, y: 19},
     {id: "star seal", x: 3, y: 19},
     {id: "seal stone", x: 5, y: 19},
-    {id: "map case", x: 7, y: 19},
-    {id: "lectern", x: 1, y: 21},
-    {id: "chart table", x: 6, y: 21},
     {id: "notice board", x: 11, y: 15},
     {id: "round arch", x: 14, y: 15},
     {id: "star chart", x: 19, y: 15},
@@ -142,8 +137,8 @@ const OBS_ROOM: RoomSpec = {
     {id: "cabinet:book+bookb+bookg", x: 25, y: 17},
     {id: "fireplace", x: 26, y: 17},
     {id: "map rolls", x: 28, y: 17},
-    {id: "roundtable", x: 25, y: 19},
-    {id: "chair E", x: 24, y: 19},
+    {id: "roundtable", x: 23, y: 19},
+    {id: "chair N", x: 23, y: 20},
     {id: "desk 3x2", x: 27, y: 19},
     {id: "chair N", x: 28, y: 21},
     {id: "globe", x: 29, y: 17},
@@ -151,13 +146,12 @@ const OBS_ROOM: RoomSpec = {
   lines: [
     {id: "rug blue", rect: {"x0": 6, "y0": 11, "x1": 9, "y1": 12}},
     {id: "rug brown", rect: {"x0": 21, "y0": 10, "x1": 25, "y1": 12}},
-    {id: "rug red", rect: {"x0": 16, "y0": 10, "x1": 20, "y1": 13}},
-    {id: "rug red", rect: {"x0": 24, "y0": 18, "x1": 26, "y1": 20}},
+    {id: "rug red", rect: {"x0": 16, "y0": 10, "x1": 20, "y1": 12}},
+    {id: "rug red", rect: {"x0": 11, "y0": 12, "x1": 14, "y1": 13}},
+    {id: "rug red", rect: {"x0": 23, "y0": 19, "x1": 25, "y1": 21}},
     {id: "rug blue", rect: {"x0": 15, "y0": 16, "x1": 15, "y1": 21}},
   ],
   goods: [
-    {id: "openbook", x: 17, y: 12},
-    {id: "candlestick", x: 18, y: 12},
     {id: "papers", x: 18, y: 10},
     {id: "candlestick", x: 19, y: 10},
     {id: "papers", x: 24, y: 11},
@@ -186,10 +180,10 @@ const GATE_ROOM: RoomSpec = {
     "#..............................#",
     "#..............................#",
     "#########..............#########",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
-    "#..............................#",
+    "###............................#",
+    "###............................#",
+    "###............................#",
+    "###............................#",
     "#########..............#########",
     "#.........#####..#####.........#",
     "#..............................#",
@@ -238,12 +232,12 @@ const GATE_ROOM: RoomSpec = {
     {id: "wall torch", x: 14, y: 14},
     {id: "wall torch", x: 17, y: 14},
     {id: "wall torch", x: 4, y: 1},
-    {id: "mosaic panel", x: 6, y: 1},
+    {id: "star chart", x: 7, y: 1},
     {id: "moon pool", x: 3, y: 5},
     {id: "bench 2", x: 6, y: 6},
     {id: "baptismal font", x: 8, y: 5},
     {id: "star chart", x: 4, y: 8},
-    {id: "mana crystal", x: 2, y: 10},
+    {id: "mana crystal", x: 3, y: 10},
     {id: "geode stand", x: 4, y: 10},
     {id: "crystal ball", x: 5, y: 10},
     {id: "lectern", x: 7, y: 10},
@@ -279,6 +273,10 @@ const GATE_ROOM: RoomSpec = {
     {id: "rug royal", rect: {"x0": 13, "y0": 4, "x1": 18, "y1": 6}},
     {id: "rug blue", rect: {"x0": 15, "y0": 13, "x1": 16, "y1": 17}},
     {id: "rug blue", rect: {"x0": 25, "y0": 4, "x1": 27, "y1": 5}},
+    {id: "rug purple", rect: {"x0": 2, "y0": 16, "x1": 7, "y1": 16}},
+    {id: "rug purple", rect: {"x0": 3, "y0": 11, "x1": 7, "y1": 11}},
+    {id: "rug blue", rect: {"x0": 24, "y0": 11, "x1": 29, "y1": 11}},
+    {id: "rug blue", rect: {"x0": 24, "y0": 16, "x1": 29, "y1": 16}},
   ],
   goods: [
     {id: "candlestick", x: 4, y: 15},
@@ -349,6 +347,7 @@ const VAULT_ROOM: RoomSpec = {
     {id: "paschal candle", x: 20, y: 3},
     {id: "relic cabinet", x: 6, y: 3},
     {id: "geode stand", x: 8, y: 3},
+    {id: "case scroll", x: 2, y: 6},
     {id: "healing spring", x: 4, y: 8},
     {id: "lectern", x: 6, y: 8},
     {id: "paschal candle", x: 3, y: 8},
@@ -397,13 +396,13 @@ const VAULT_ROOM: RoomSpec = {
     {id: "chair N", x: 28, y: 17},
     {id: "tool wall", x: 4, y: 20},
     {id: "star chart", x: 6, y: 20},
-    {id: "shelf:vial+flask", x: 8, y: 20},
-    {id: "shelf:scroll", x: 10, y: 20},
+    {id: "celestial chart", x: 9, y: 20},
     {id: "wall torch", x: 12, y: 20},
     {id: "apothecary drawers", x: 1, y: 22},
     {id: "cabinet:vial+flask", x: 2, y: 22},
     {id: "alchemy table", x: 10, y: 22},
-    {id: "grindstone", x: 1, y: 24},
+    {id: "mana crystal", x: 1, y: 24},
+    {id: "grindstone", x: 9, y: 24},
     {id: "water jar", x: 12, y: 22},
     {id: "lens bench", x: 6, y: 23},
     {id: "stool", x: 5, y: 24},
@@ -419,8 +418,6 @@ const VAULT_ROOM: RoomSpec = {
     {id: "dining 3x1", x: 22, y: 23},
     {id: "chair E", x: 21, y: 23},
     {id: "chair W", x: 25, y: 23},
-    {id: "barrel", x: 30, y: 24},
-    {id: "water jar", x: 28, y: 24},
     {id: "rune stone", x: 13, y: 22},
     {id: "rune stone", x: 18, y: 22},
     {id: "stone brazier lit", x: 14, y: 25},
@@ -430,7 +427,7 @@ const VAULT_ROOM: RoomSpec = {
     {id: "rug royal", rect: {"x0": 11, "y0": 8, "x1": 20, "y1": 9}},
     {id: "rug blue", rect: {"x0": 15, "y0": 10, "x1": 16, "y1": 25}},
     {id: "rug purple", rect: {"x0": 2, "y0": 6, "x1": 7, "y1": 9}},
-    {id: "rug purple", rect: {"x0": 23, "y0": 7, "x1": 29, "y1": 9}},
+    {id: "rug purple", rect: {"x0": 23, "y0": 7, "x1": 29, "y1": 8}},
   ],
   goods: [
     {id: "openbook", x: 27, y: 16},
@@ -636,7 +633,7 @@ export function rebuildFallenRooms(project: Project, exec: Exec, ids: { hub: str
   riser(ids.vault, 10, 21, 7, 15);
   lightRoom(project, exec, ids.observatory, OBS_ROOM, 0.45, "#1c1830");
   // VQA r10: 0.55 는 꺼진 화로가 검은 기둥으로 묻혔다. VQA r16: 꺼진 화로가 빈 검은 항아리로 읽혔다 → 단 가운데 별 원의 옅은 빛이 장작을 비춘다.
-  lightRoom(project, exec, ids.gate, GATE_ROOM, 0.66, "#141420", [{ x: 15, y: 9, radius: 4.2, color: "#c8d4ff", intensity: 0.5 }]);
+  lightRoom(project, exec, ids.gate, GATE_ROOM, 0.72, "#141420", [{ x: 15, y: 9, radius: 4.2, color: "#c8d4ff", intensity: 0.5 }]);
   lightRoom(project, exec, ids.vault, VAULT_ROOM, 0.62, "#141c40", [{ x: 15, y: 5, radius: 4.5, color: "#a8d8f0" }, { x: 10, y: 15, radius: 2.5, color: "#88b3ca" }, { x: 27, y: 8, radius: 2.2, color: "#c8a8f0" }]);
 
   // ── 천문대 ──
@@ -700,7 +697,7 @@ export function rebuildFallenRooms(project: Project, exec: Exec, ids: { hub: str
   exit.x = 15; exit.y = 26;
   for (const rec of transfersIn(exit)) if (rec.mapId === ids.observatory || rec.mapId === ids.gate) Object.assign(rec, { mapId: ids.gate, x: 15, y: 3, direction: "down" });
   const spots: Record<string, Cell> = {
-    ev_fs_vault_foe1: { x: 27, y: 23 },   // 남쪽 곁방 식당 — 벽 가구와 식탁 사이 통로(좌우로 두 칸씩 돈다). VQA r14: 홀 한가운데 늑대는 곁방 밖을 돌았다
+    ev_fs_vault_foe1: { x: 28, y: 24 },   // 남쪽 곁방 식당 — 식탁 동쪽 빈 줄(좌우로 두 칸씩 돈다). VQA r14: 홀 한가운데 늑대는 곁방 밖을 돌았다 · VQA r23: 빵 화덕 앞(27,23)은 화덕·물독과 겹쳐 보였다
     ev_fs_vault_foe2: { x: 5, y: 18 },    // 서쪽 납골실 — 석관 앞 트인 칸(석관 뒤에 숨지 않게)
     ev_fs_vault_foe3: { x: 25, y: 18 },   // 동쪽 별지기 서고 — 책상 앞 줄(좌우로 두 칸씩 돈다). VQA r19: 책상 의자 칸에 겹쳐 서쪽으로 옮겼다
     ev_fs_vault_chest1: { x: 2, y: 17 },

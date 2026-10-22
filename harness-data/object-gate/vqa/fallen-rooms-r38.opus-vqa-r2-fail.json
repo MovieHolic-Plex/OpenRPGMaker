@@ -1,0 +1,32 @@
+{
+  "schema": "bdg-vqa/1",
+  "judge": "claude-opus-5-5",
+  "date": "2026-10-22",
+  "batch": "fallen-rooms-r38",
+  "commit": "231e64016f",
+  "overall": "FAIL",
+  "criteriaNotes": {
+    "0_hash_check": "pixel_sha256 computed from /tmp/fsrooms/gate-r38/star_seal.png = 84fee0597b115877a394dafe93b6eba702acb1a3acca463284114116a81aedae.",
+    "1_topdown_view": "Flat, seen from above, consistent with the floor plane. Minor: inner recess shading is inverted/uneven — the lid has a 2px black band on the south (rows 26-27) and east (cols 26-27) edges but only 1px on north/west (row 5, col 4); with v5's top-left light the frame should shade the north/west inner edge, not south/east.",
+    "2_style_fit": "Frame stone ramp (B/N/D/C) fits v5. Lid is built almost entirely from near-black values (19,19,23)/(30,30,36)/(42,42,50); the advertised two-tone slab and corner seams (K vs Q) are ~12 levels apart and vanish at 1x, so the lid reads as a flat black void/hole rather than dressed stone. Busy: grey ring circle + rune dots + two straps + star + pull ring all inside a 22x22 lid.",
+    "3_readability_1x": "At 1x in the archive it reads as a dark plaque with a star; the trapdoor cue is weak. The hinge straps are 10px long (rows 4-13, cols 8-9 and 22-23) and their tips diagonally touch the star's arm tips at (9,13)-(10,14) and (22,13)-(21,14), so at 1x/3x they read as two chains hanging the star from the top edge, not as hinges. Pull ring (rows 22-25, cols 13-19) does read.",
+    "4_placement": "Flush with floor, no floating. Transparent margin is asymmetric: rows 0-1 empty at top vs only row 31 at bottom (cols 0/31 empty both sides), so the slab sits 1px low in its 2x2 cell.",
+    "5_silhouette_outline": "Outer outline clean, no stray pixels outside the frame. Tangency between strap tips and star arms (see 3) is the main contour defect."
+  },
+  "items": [
+    {
+      "id": "atlas_biome_interior/plus/star seal",
+      "name": "별 봉인 돌뚜껑(닫힘, 2×2) (star seal)",
+      "kind": "flat",
+      "pixelSha256": "84fee0597b115877a394dafe93b6eba702acb1a3acca463284114116a81aedae",
+      "verdict": "FAIL",
+      "reasons": [
+        "Hinge straps (cols 8-9 and 22-23) run from row 4 to row 13 and their tips touch the star arms diagonally at (9,13)/(10,14) and (22,13)/(21,14); they read as chains suspending the star. Fix: end each strap at row 9 with a 1px point at row 10 (≈5px onto the lid), drop the rivet at row 10, keep ≥2px lid gap to the star arms and the grey ring.",
+        "Lid values too dark to show the two-tone stone and slab seams. Fix: raise the lid ramp ~+18 (Q (30,30,36)->~(48,48,58), K (42,42,50)->~(62,62,74), M ring ->~(100,100,116)), keep F (19,19,23) only as the 1px lid outline/seam lines so the corner slabs read at 1x.",
+        "Recess shading inverted: 2px black on south (rows 26-27) and east (cols 26-27) vs 1px north (row 5) / west (col 4). Fix: make north/west the 2px shadow band and south/east 1px (or equal 1px all round).",
+        "Asymmetric transparent margin (2px top, 1px bottom). Fix: shift the whole slab up 1px, or add one transparent row at the bottom by trimming one frame row, so it centres in the 2x2 cell.",
+        "Declutter: with straps shortened, either remove the grey ring circle (rows 7-22) or thin the rune dots to 4 at the diagonals so the star keyhole and pull ring are the two readable reads."
+      ]
+    }
+  ]
+}

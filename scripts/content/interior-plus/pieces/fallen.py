@@ -198,18 +198,17 @@ def star_seal(c):
     # 검은 돌 뚜껑(봉인석과 같은 black 램프) — 테두리 안쪽에 딱 맞게, 이음 한 줄
     for y in range(6, 27):
         for x in range(5, 27):
-            k = 2 if hnoise(x, y, 19) < .86 else 3
+            base = 4 if y < 11 else 3                                        # VQA r38: 위가 밝은 두 단 돌결(구멍이 아니라 판돌)
+            k = base if hnoise(x, y, 19) < .86 else base + 1
             c.p(x, y, K('black', k))
-    c.hl(5, 26, 6, K('black', 4)); c.vl(5, 6, 25, K('black', 4))
-    c.hl(5, 26, 26, K('black', 1)); c.vl(26, 6, 26, K('black', 1))
-    c.hl(4, 27, 5, K('black', 1)); c.vl(4, 5, 27, K('black', 1)); c.hl(4, 27, 27, K('linen', 0)); c.vl(27, 5, 27, K('black', 1))
+    for (x0, x1, y) in ((6, 9, 13), (22, 25, 13), (6, 9, 21), (22, 25, 21)):  # 판돌 이음(모서리)
+        c.hl(x0, x1, y, K('black', 1)); c.hl(x0, x1, y + 1, K('black', 4))
+    c.hl(5, 26, 6, K('black', 5)); c.vl(5, 6, 25, K('black', 5))             # 뚜껑 윗·왼 모서리 빛(테 그늘은 네 변 모두 1px)
+    c.hl(4, 27, 5, K('black', 1)); c.vl(4, 5, 27, K('black', 1)); c.hl(4, 27, 27, K('black', 1)); c.vl(27, 5, 27, K('black', 1))
     # 둥근 홈 테(룬 둘레)
     cx, cy = 15.5, 16
-    ring(c, cx, cy, 9, 8, K('black', 1))
-    ring(c, cx, cy - .6, 9, 8, K('black', 5))
-    for a in range(0, 360, 45):                      # 룬 점 여덟
-        r = math.radians(a + 22)
-        c.p(int(round(cx + 9 * math.cos(r))), int(round(cy + 8 * math.sin(r))), K('purple', 4))
+    for (x, y) in ((11, 11), (20, 11), (9, 20), (22, 20)):   # 룬 점 넷(좌우 대칭) — VQA r38: 홈 테·점 여덟은 뚜껑을 어지럽혔고 경첩 띠에 닿았다
+        c.p(x, y, K('purple', 4))
     # 다섯 갈래 별 홈 — 속은 보랏빛, 가장자리 금테(왼쪽 위 밝음)
     pts = []
     for i in range(10):
@@ -230,6 +229,22 @@ def star_seal(c):
         else:
             c.p(x, y, K('purple', 3 if (x + y) % 3 else 4))
     c.p(15, 16, K('purple', 6)); c.p(16, 16, K('purple', 5)); c.p(15, 17, K('purple', 5))
+    # VQA r22·r23·r38: 「바닥 별 판」으로 읽혔다 → 북쪽 이음매에 경첩 굴대 + 뚜껑으로 뻗은 뾰족한 쇠띠, 남쪽 빈 띠에 닫힌 쇠고리 — 여는 뚜껑으로.
+    for x0 in (8, 22):
+        for x in range(x0 - 1, x0 + 3):
+            c.p(x, 4, K('iron', 5)); c.p(x, 5, K('iron', 2))                 # 굴대(위 빛·아래 그늘)
+        for y in range(6, 10):
+            c.p(x0, y, K('iron', 4)); c.p(x0 + 1, y, K('iron', 3))           # 쇠띠 2px(별·룬 점과 2px 이상 떨어진다)
+        c.p(x0, 10, K('iron', 3))                                            # 뾰족한 끝
+        c.p(x0, 7, K('iron', 6))                                             # 못
+    for (x, y) in ((11, 22), (19, 22), (20, 22), (12, 22)):                 # 고리 옆 룬 점 지우기
+        if c.get(x, y) is not None and c.get(x, y)[:3] == K('purple', 4)[:3]: c.p(x, y, K('black', 3))
+    for y in range(22, 26):
+        for x in range(12, 20): c.p(x, y, K('black', 3))                     # 고리 자리 비움(룬 테와 떨어지게)
+    c.p(15, 22, K('iron', 2)); c.p(16, 22, K('iron', 2))                    # 고리 걸쇠
+    for (x, y, t) in ((14, 23, 5), (15, 23, 6), (16, 23, 5), (17, 23, 4), (13, 24, 5), (18, 24, 3), (13, 25, 4), (18, 25, 2),
+                      (14, 26, 3), (15, 26, 3), (16, 26, 2), (17, 26, 2)):
+        c.p(x, y, K('iron', t))                                              # 닫힌 쇠고리 6×4
 
 
 @REG.piece('star seal open', '별 봉인 돌계단(열림, 2×2)', 'gimmick', 'flat', 2, 2, 0, 'flat',

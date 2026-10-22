@@ -1,0 +1,17 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "e0b1674cae3e18c8a16ae025a874558ee8ccb654565d9eebf081101afc0c6875",
+ "profileHash": "4d8774b517f41638",
+ "kind": "flat",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-22T01:02:28.331Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 판정자 fail (4/4)",
+  "화풍: 윤곽이 근흑(재질 어두운 톤 아님) (4/4)"
+ ],
+ "note": "묶음 허용: fallen r38 star seal hatch — delegated by user to supervisor 2026-10-21; Opus VQA receipt vqa/fallen-rooms-r38.opus-vqa-r4-pass.json",
+ "sig": "c08a35bef130a84feb0c819969d33d03c1992f80c3cf9150afa03f9afdbaee03"
+}

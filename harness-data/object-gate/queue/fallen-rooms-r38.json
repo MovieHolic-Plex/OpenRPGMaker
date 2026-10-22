@@ -1,0 +1,14 @@
+{
+ "schema": "oprn-object-gate-queue/1",
+ "id": "fallen-rooms-r38",
+ "title": "fallen r38 star seal hatch",
+ "createdAt": "2026-10-22T00:50:44.511Z",
+ "items": [
+  {
+   "sha": "e0b1674cae3e18c8a16ae025a874558ee8ccb654565d9eebf081101afc0c6875",
+   "kind": "flat",
+   "label": "atlas_biome_interior/plus/star seal",
+   "source": "/tmp/fsrooms/gate-r38/star_seal.png"
+  }
+ ]
+}
