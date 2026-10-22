@@ -1732,15 +1732,21 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         const done = new Set<number>();
         for (let c0 = 0; c0 < W * H; c0 += 1) {
           if (done.has(c0) || !edgeIn(c0, dx, dy)) continue;
-          let sx = c0 % W, sy = (c0 - sx) / W;
-          while (inMap(sx - ax, sy - ay) && edgeIn(idx(sx - ax, sy - ay), dx, dy)) { sx -= ax; sy -= ay; }
+          // 한 칸 어긋남(계단)은 같은 변으로 잇는다 — 1칸 계단으로 끊긴 짧은 조각들이 1배에서는 곧은 벽으로 읽혔다(실제 입력창 VQA 강가 장터)
           const run: number[] = [];
-          for (let x = sx, y = sy; inMap(x, y) && edgeIn(idx(x, y), dx, dy); x += ax, y += ay) run.push(idx(x, y));
+          for (let x = c0 % W, y = Math.floor(c0 / W); ;) {
+            run.push(idx(x, y));
+            const nx = x + ax, ny = y + ay;
+            const next = [[nx, ny], [nx + dx, ny + dy], [nx - dx, ny - dy]].find(([px, py]) => inMap(px!, py!) && !done.has(idx(px!, py!)) && !run.includes(idx(px!, py!)) && edgeIn(idx(px!, py!), dx, dy));
+            if (!next) break;
+            x = next[0]!; y = next[1]!;
+          }
           for (const c of run) done.add(c);
           if (run.length < 5) continue;
-          let i = 1 + Math.floor(hv(run[0]!, dx * 3 + dy + 11) * 2);
+          // 짧은 변은 가운데 근처에(끝 쪽 홈은 모서리 깎기로만 읽혀 곧은 변이 그대로 남았다 — 실제 입력창 VQA), 7칸 이상 변은 깊이 2
+          let i = run.length < 10 ? Math.max(1, Math.floor((run.length - 3) / 2) + Math.floor(hv(run[0]!, dx * 3 + dy + 11) * 2) - 1) : 1 + Math.floor(hv(run[0]!, dx * 3 + dy + 11) * 3);
           while (i + 2 <= run.length - 1) {
-            const len = 2 + Math.floor(hv(run[i]!, 5) * 2), dep = 1 + Math.floor(hv(run[i]!, 9) * 2);
+            const len = 2 + Math.floor(hv(run[i]!, 5) * 2), dep = run.length >= 7 ? 2 : 1 + Math.floor(hv(run[i]!, 9) * 2);
             for (let k = 0; k < len && i + k < run.length - 1; k += 1) {
               const c = run[i + k]!, x = c % W, y = (c - x) / W;
               for (let d = 0; d < dep; d += 1) { const xx = x - dx * d, yy = y - dy * d; if (inMap(xx, yy)) cut.push(idx(xx, yy)); }
