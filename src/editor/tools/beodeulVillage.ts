@@ -1718,7 +1718,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         if (!open && comp.length <= 4) for (const c of comp) forestSet.add(c);
       }
     }
-    shapeBeodeulCanopyMask(W, H, forestSet, { canFill: (c) => okCell(c, lv[c]!) && !carved.has(c), joins: sameLv, minComponent: canopyStyle === "snow" ? 12 : 16, minExtent: canopyStyle === "snow" ? 3 : 4, block: 2 });
+    shapeBeodeulCanopyMask(W, H, forestSet, { canFill: (c) => okCell(c, lv[c]!) && !carved.has(c), joins: sameLv, minComponent: canopyStyle === "snow" ? 12 : 16, minExtent: canopyStyle === "snow" ? 3 : 4, minInterior: 0.15, block: 2 });
     // 곧은 변 끊기(VQA r6·r7 「자로 그은 숲 벽·평평한 윗변」): 잡음 깎기가 못 끊은 5칸 이상 곧은 숲 변에 5~8칸마다 너비 2~3·깊이 1~2칸 홈을 판다.
     // 3칸 미만 홈은 다듬기(이웃 셋 메우기)가 도로 메우므로 다듬기 뒤에 파고 너비 2 이상·깊이 방향 셀까지 함께 판다.
     {
@@ -1727,6 +1727,17 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
         return forestSet.has(c) && inMap(nx, ny) && (!forestSet.has(idx(nx, ny)) || !sameLv(c, idx(nx, ny)));
       };
       const cut: number[] = [];
+      // 작은 숲 덩이(48칸 미만)는 홈을 파지 않는다 — 파면 낱 나무 몇 그루·검은 판 조각으로 흩어졌다(VQA r13 어촌·강가 장터)
+      const compSize = new Map<number, number>();
+      for (const c0 of forestSet) {
+        if (compSize.has(c0)) continue;
+        const comp = [c0]; compSize.set(c0, 0);
+        for (let h = 0; h < comp.length; h += 1) {
+          const c = comp[h]!, x = c % W, y = (c - x) / W;
+          for (const [ddx, ddy] of N4) { const nx = x + ddx, ny = y + ddy; if (!inMap(nx, ny)) continue; const nb = idx(nx, ny); if (forestSet.has(nb) && !compSize.has(nb) && sameLv(c, nb)) { compSize.set(nb, 0); comp.push(nb); } }
+        }
+        for (const c of comp) compSize.set(c, comp.length);
+      }
       for (const [dx, dy] of N4) {
         const ax = dy === 0 ? 0 : 1, ay = dy === 0 ? 1 : 0; // 변을 따라가는 축
         const done = new Set<number>();
@@ -1742,7 +1753,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
             x = next[0]!; y = next[1]!;
           }
           for (const c of run) done.add(c);
-          if (run.length < 5) continue;
+          if (run.length < 5 || (compSize.get(run[0]!) ?? 0) < 48) continue;
           // 짧은 변은 가운데 근처에(끝 쪽 홈은 모서리 깎기로만 읽혀 곧은 변이 그대로 남았다 — 실제 입력창 VQA), 7칸 이상 변은 깊이 2
           let i = run.length < 10 ? Math.max(1, Math.floor((run.length - 3) / 2) + Math.floor(hv(run[0]!, dx * 3 + dy + 11) * 2) - 1) : 1 + Math.floor(hv(run[0]!, dx * 3 + dy + 11) * 3);
           while (i + 2 <= run.length - 1) {
@@ -1757,7 +1768,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       }
       for (const c of cut) { forestSet.delete(c); carved.add(c); }
     }
-    shapeBeodeulCanopyMask(W, H, forestSet, { canFill: () => false, joins: sameLv, minComponent: canopyStyle === "snow" ? 12 : 16, minExtent: canopyStyle === "snow" ? 3 : 4, block: 2 }); // 홈이 남긴 가는 끝만 걷는다(메우지 않음)
+    shapeBeodeulCanopyMask(W, H, forestSet, { canFill: () => false, joins: sameLv, minComponent: canopyStyle === "snow" ? 12 : 16, minExtent: canopyStyle === "snow" ? 3 : 4, minInterior: 0.15, block: 2 }); // 홈이 남긴 가는 끝만 걷는다(메우지 않음)
     for (let c = 0; c < W * H; c += 1) if (occ[c] === FOREST && !forestSet.has(c)) occ[c] = FREE; // 다듬기로 빠진 산마루(summit) 칸은 풀밭으로
     for (const c of forestSet) occ[c] = FOREST;
   }

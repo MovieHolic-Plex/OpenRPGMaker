@@ -322,6 +322,8 @@ export interface BeodeulCanopyShape {
   readonly minComponent?: number;
   /** 가로·세로 폭이 이 줄 수 미만인 덩이는 지운다 — 단 사이 2~3줄 띠는 산울타리로 읽힌다(VQA r1·r2). */
   readonly minExtent?: number;
+  /** 100칸 미만 덩이에서 속 칸(8이웃이 모두 같은 덩이·맵 밖) 비율이 이 값 미만이면 지운다 — 2~3줄 가지가 얽힌 뼈대 덩이는 수관이 듬성듬성 끊긴 조각으로 읽혔다(실제 입력창 VQA r13). */
+  readonly minInterior?: number;
   /** 오목한 ㄱ자 홈을 한 번 메운다(기본 늘). 작은 덩이(붓)는 끄는 편이 덜 네모나다. */
   readonly fillCorners?: boolean;
   /** 열기 크기(2 또는 3): 모든 숲 칸은 다 숲인 block×block 덩이에 들어야 한다. 3 이면 좁은 목·한두 칸 혹이 없어 짙은 틈 홈이 덜 생긴다. */
@@ -379,7 +381,17 @@ export function shapeBeodeulCanopyMask(W: number, H: number, forest: Set<number>
       // 두께: 열마다 평균 줄 수·줄마다 평균 칸 수 — 단을 따라 계단진 띠는 상자 크기는 커도 두께가 2~3줄이다
       const cols = new Set(comp.map((c) => c % W)).size, rows = new Set(comp.map((c) => Math.floor(c / W))).size;
       const thin = minExtent > 0 && (comp.length / cols < minExtent - 0.5 || comp.length / rows < minExtent - 0.5);
-      if (comp.length < (edge ? minComponent / 2 : minComponent) || x1 - x0 + 1 < minExtent || y1 - y0 + 1 < minExtent || thin) for (const c of comp) forest.delete(c);
+      let skeletal = false;
+      if ((opt.minInterior ?? 0) > 0 && comp.length < 100) {
+        const inComp = new Set(comp); let inner = 0;
+        for (const c of comp) {
+          const x = c % W, y = (c - x) / W; let all = true;
+          for (let dy = -1; dy <= 1 && all; dy++) for (let dx = -1; dx <= 1; dx++) { const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue; if (!inComp.has(ny * W + nx)) { all = false; break; } }
+          if (all) inner++;
+        }
+        skeletal = inner / comp.length < opt.minInterior!;
+      }
+      if (comp.length < (edge ? minComponent / 2 : minComponent) || x1 - x0 + 1 < minExtent || y1 - y0 + 1 < minExtent || thin || skeletal) for (const c of comp) forest.delete(c);
     }
   }
 }
