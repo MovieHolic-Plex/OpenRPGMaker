@@ -71,9 +71,20 @@ export const SET_FEATURE_CHECKLIST_PARAMETERS = {
   required: ["items"],
 } as const;
 
+/**
+ * 짓기 속도(2026-10-22 실측): 방 하나 6~19분 중 대부분이 첫 짓기 «전»이었다 — 부품 조회를 한두 개씩 대여섯 차례로 나눠 부르며 차례마다 30~110초 생각하고,
+ * 마지막에 모든 좌표를 머릿속에서 검산하느라 한 응답에 5~8분을 썼다(첫 짓기 467~799초). 첫 짓기 뒤는 다시 짓기 한 번이 20~60초였다.
+ * 도구가 틀린 칸을 좌표·고칠 값으로 돌려주고 끝에 1배 확인이 고칠 목록을 주므로, 초안을 빨리 내고 고치는 편이 같은 품질에 더 빠르다.
+ */
+export const FEATURE_BUILD_PACE_PROMPT =
+  "[짓기 속도] 조회는 두 차례 안에 끝낸다: 첫 차례에 참고문서 목록·조립법과, 요청의 방·특징 낱말마다 부품 찾기(list_hand_interior_parts 등)를 한 응답에 한꺼번에(병렬로) 부른다. "
+    + "둘째 차례에 모자란 것만 한꺼번에 더 부르고, 셋째 차례에는 짓는다. "
+    + "첫 짓기는 초안이다 — 가구 좌표를 하나하나 머릿속에서 검산하지 않는다. 도구가 틀린 칸을 좌표와 고칠 값으로 돌려주면 그 자리만 고쳐 바로 다시 부르고, 끝에 실행기가 1배 그림으로 확인해 고칠 목록을 준다.";
 export const FEATURE_CHECKLIST_SYSTEM_PROMPT =
   "[요청 특징 확인표] 방·건물·실내·장소를 짓는 요청이면 첫 쓰기 전에 set_feature_checklist 로 사용자가 이름 붙인 특징을 1배 그림으로 확인할 항목 3~6개로 적는다(물건 이름이 아니라 「어떻게 읽혀야 하는지」). " +
-  "지은 뒤 같은 도구로 항목마다 mapId·칸 범위를 채운다. 실행기가 끝에 1배 그림으로 항목마다 확인하고, 안 읽히는 항목은 이유와 함께 돌려준다 — 그때 그 항목만 고쳐 다시 짓는다.";
+  "지은 뒤 같은 도구로 항목마다 mapId·칸 범위를 채운다. 실행기가 끝에 1배 그림으로 항목마다 확인하고, 안 읽히는 항목은 이유와 함께 돌려준다 — 그때 그 항목만 고쳐 다시 짓는다.\n" +
+  FEATURE_BUILD_PACE_PROMPT;
+
 
 const clampInt = (v: unknown): number | undefined => (typeof v === "number" && Number.isFinite(v) ? Math.max(0, Math.round(v)) : undefined);
 const slug = (text: string, i: number) => (text.toLowerCase().replace(/[^a-z0-9]+/gu, "-").replace(/^-|-$/gu, "").slice(0, 32) || `item-${i + 1}`);

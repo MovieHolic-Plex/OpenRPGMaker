@@ -56,4 +56,6 @@ npm run harness -- space-craft status --out <실행>
 결과와 도구 수리는 `openwiki/atlas-biome-interior.md` 「조수 실력 시험 — 폴른 스타 세 방」.
 
 검수 그림은 `measure.json` 의 `render.clean`(편집기 전용 시작 위치 표시를 뺀 1배 그림)을 쓴다 — 시작 표시를 이동 칸으로 읽은 검수자가 출구 major 를 매긴 적이 있다(2026-10-22).
+2026-10-23 부터 모든 검수 그림은 시작 표시가 기본으로 빠진다 — `measure` 의 `render/<id>.png` 와 판정자 그림은 `renderReviewMapPng`(scripts/qa-game/render.mts),
+편집기 캡처(editorDriver·genreExperiment·worldmapFilm)는 `__oprnHideStartMarker`. 표시가 든 그림은 `render/<id>.marker.png` 로 따로 남는다. 표시를 켜려면 `HARNESS_START_MARKER=1`.
 `measure` 는 실내 빈 바닥(`bareFloor`, 보정된 자)도 함께 남긴다. 과제 `fantasy-magic-library`(마법 학교 도서관 — 조수가 wizarding_world 로 짓는다)를 더했다.

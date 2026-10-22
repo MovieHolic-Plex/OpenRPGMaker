@@ -619,6 +619,9 @@ function renderCollisionOverlay(context: EditSceneRenderContext, map: GameMap): 
 }
 
 function renderStartPosition(context: EditSceneRenderContext): void {
+  // 검수용 촬영(하네스)은 시작 위치 표시를 숨긴다 — 2026-10-22 적대 검수자가 초록 시작 표시를 이동 칸·출구로 읽어 점수가 기울었다.
+  // 하네스가 페이지 초기화 스크립트로 window.__oprnHideStartMarker = true 를 둔다(assistant-capability editorDriver 등).
+  if ((globalThis as { __oprnHideStartMarker?: boolean }).__oprnHideStartMarker) return;
   const project = store.getCurrent();
   if (project.startMapId !== context.mapId) return;
   const map = store.getCurrent().maps[context.mapId];

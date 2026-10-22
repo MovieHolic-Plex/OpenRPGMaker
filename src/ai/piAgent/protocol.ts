@@ -124,7 +124,13 @@ export interface PiAgentStats {
   /** CLI 가 스스로 보고한 비용(claude 만). 구독이면 한도 사용을 달러로 환산한 값이다. */
   readonly costUsd?: number;
   /** 로컬 CLI 엔진: 지시문 글자 수·마지막 도구 목록(개수·스키마 글자 수)·목록 바뀜 알림 횟수 — 토큰 절감 측정용. */
-  readonly exposure?: { readonly systemChars: number; readonly toolsListed: number; readonly listChars: number; readonly listChanged: number };
+  readonly exposure?: { readonly systemChars: number; readonly toolsListed: number; readonly listChars: number; readonly listChanged: number;
+    readonly systemSections?: readonly { readonly head: string; readonly chars: number }[];
+    readonly listTop?: readonly { readonly name: string; readonly chars: number }[];
+    readonly requests?: readonly { readonly startMs: number; readonly waitMs: number; readonly out: number; readonly cacheRead: number; readonly cacheWrite: number; readonly input: number; readonly tools: readonly string[] }[];
+    readonly results?: Readonly<Record<string, { readonly calls: number; readonly textChars: number; readonly images: number; readonly imageBytes: number }>> };
+  /** 조수 루프 밖 보조 호출(1배 판정자·독립 비평가·컷신 판정) 사용량. 실행 합계 = usage + review. */
+  readonly review?: { readonly calls: number; readonly ms: number; readonly input: number; readonly output: number; readonly cacheRead: number; readonly cacheWrite: number; readonly costUsd: number; readonly totalTokens: number };
 }
 
 /**

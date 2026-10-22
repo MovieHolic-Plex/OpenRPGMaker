@@ -56,6 +56,11 @@ export interface PiRunPlan {
   readonly routingAudit?: string;
   /** 기존 의도 선언이 확인한 단순 생성·수정. 별도 계획·시각 검토를 생략할 후보다. */
   readonly routineEdit?: boolean;
+  /**
+   * 별도 Ultrabrain 계획 턴을 건너뛴다 — 실내 짓기(space=interior)는 짓기 턴 안의 확인표 + 1배 검토 루프가 계획·검증을 한다.
+   * 2026-10-22 천문대: 의도 선언이 needsPlan 을 켜자 읽기 전용 계획 턴이 10분 동안 평면을 글로 짜고, 실행 턴이 처음부터 다시 짰다.
+   */
+  readonly skipPlanTurn?: boolean;
   /** 쓰기 툴 없이 조회·보고만 한다(읽기 전용 레벨·계획 턴). */
   readonly readOnly: boolean;
   /** 실행하지 않고 계획만 세운다. Pi 에는 세션 플래너가 없으므로 프롬프트 지시로 만들고, readOnly 와 함께 쓴다. */

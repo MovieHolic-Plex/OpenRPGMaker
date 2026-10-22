@@ -24,6 +24,8 @@ const jpeg = (dataUrl: string): Promise<string> => jpegDataUrl(dataUrl, 960, 82)
 
 export async function critiqueCutscene(input: {
   readonly brief: string; readonly probeSummary: string; readonly mapImage?: string; readonly sheetImage?: string; readonly motionImage?: string; readonly signal?: AbortSignal;
+  /** 전용 판정자(다른 계열) 키·연결이 없을 때 쓰는 이 실행의 보조 대화(방 루프의 독립 비평과 같은 경로). 없으면 판정 불가로 남는다. */
+  readonly fallbackChat?: (messages: readonly unknown[], signal?: AbortSignal) => Promise<string>;
 }): Promise<CutsceneCritique> {
   const unjudged = (why: string): CutsceneCritique => ({ verdict: 'unjudged', scores: {}, fix: why, judge: 'none' });
   if (!input.mapImage && !input.sheetImage && !input.motionImage) return unjudged('판정에 쓸 그림이 없습니다.');
@@ -31,6 +33,13 @@ export async function critiqueCutscene(input: {
   if (input.mapImage) parts.push({ type: 'text', text: 'Start map render:' }, { type: 'image_url', image_url: { url: await jpeg(input.mapImage) } });
   if (input.sheetImage) parts.push({ type: 'text', text: 'Cutscene key frames (left to right, top to bottom):' }, { type: 'image_url', image_url: { url: await jpeg(input.sheetImage) } });
   if (input.motionImage) parts.push({ type: 'text', text: 'Motion strip: 8 consecutive frames 0.35s apart over the real map with the scene tint applied. Judge whether the walkers actually animate (legs/frames change, not a static sprite sliding), whether they overlap the hero or each other, and whether the tint/night mood holds:' }, { type: 'image_url', image_url: { url: await jpeg(input.motionImage) } });
+  const judgeReply = (content: string, judge: string): CutsceneCritique | null => {
+    const parsed = JSON.parse(content.match(/\{[\s\S]*\}/)?.[0] ?? 'null') as { scores?: Record<string, number>; verdict?: string; fix?: string } | null;
+    if (!parsed?.scores || typeof parsed.verdict !== 'string') return null;
+    const values = Object.values(parsed.scores).map(Number);
+    const ok = parsed.verdict === 'accept' && values.every(v => v >= 6) && values.reduce((a, b) => a + b, 0) >= 40;
+    return { verdict: ok ? 'accept' : 'regenerate', scores: parsed.scores, fix: String(parsed.fix ?? ''), judge };
+  };
   for (const judge of JUDGES) {
     let apiKey: string | undefined;
     try { apiKey = await resolveRequestApiKey(judge.provider) as string | undefined; } catch { apiKey = undefined; }
@@ -40,11 +49,16 @@ export async function critiqueCutscene(input: {
         model: judge.model, reasoning: { effort: judge.effort },
         messages: [{ role: 'system', content: RUBRIC }, { role: 'user', content: parts }],
       }, { apiKey, signal: input.signal }) as { completion: { choices: Array<{ message: { content?: string } }> } };
-      const parsed = JSON.parse((completion.choices[0]?.message.content ?? '').match(/\{[\s\S]*\}/)?.[0] ?? 'null') as { scores?: Record<string, number>; verdict?: string; fix?: string } | null;
-      if (!parsed?.scores || typeof parsed.verdict !== 'string') continue;
-      const values = Object.values(parsed.scores).map(Number);
-      const ok = parsed.verdict === 'accept' && values.every(v => v >= 6) && values.reduce((a, b) => a + b, 0) >= 40;
-      return { verdict: ok ? 'accept' : 'regenerate', scores: parsed.scores, fix: String(parsed.fix ?? ''), judge: judge.id };
+      const critique = judgeReply(completion.choices[0]?.message.content ?? '', judge.id);
+      if (critique) return critique;
+    } catch (error) { if (input.signal?.aborted) throw error; }
+  }
+  // 전용 판정자가 없는 환경(로컬 CLI 조수 대용 등) — 2026-10-23 실측: 컷신 측정은 통과했는데 판정이 「연결 없음」으로 끝나 매번 미검증이었다.
+  // 만든 대화와 섞이지 않는 새 보조 대화로 같은 기준을 묻는다. 판정자 이름은 'session' 으로 남겨 다른 계열 판정과 구분한다.
+  if (input.fallbackChat) {
+    try {
+      const critique = judgeReply(await input.fallbackChat([{ role: 'system', content: RUBRIC }, { role: 'user', content: parts }], input.signal), 'session');
+      if (critique) return critique;
     } catch (error) { if (input.signal?.aborted) throw error; }
   }
   return unjudged('판정자를 호출하지 못했습니다(연결 없음/응답 형식 오류).');

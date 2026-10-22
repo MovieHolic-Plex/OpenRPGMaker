@@ -6,7 +6,7 @@ import { PNG } from 'pngjs';
 import { argsFor } from './matrixLive';
 import { richProject } from './matrixTools';
 import { runTool } from '../../../editor/tools/toolRunner';
-import { renderMapPng } from '../../../../scripts/qa-game/render.mts';
+import { renderReviewMapPng as renderMapPng } from '../../../../scripts/qa-game/render.mts';
 import type { Project } from '../../../project/types';
 import { CAPABILITY_MAP_ID } from './capabilityFixture';
 
