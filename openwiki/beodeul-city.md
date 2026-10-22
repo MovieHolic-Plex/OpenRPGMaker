@@ -29,6 +29,16 @@
   `build-beodeul-warm-trees.py` 는 기존 카탈로그의 칸 번호를 지킨다(빈 칸이 된 자리는 빈 칸으로 두고, 새로 그림이 생긴 칸만 뒤에 붙인다).
 - 나무·덤불 키트의 그림자(`beodeul_nature` shadows)는 키트 알파에서 잰다. 나무 모양이 바뀌면 옛 그림자가 수관 옆 초승달로 남는다(tool-village 40곳, VQA r6 반려).
   `python3 scripts/content/beodeul-redraw/reshadow_trees.py` 가 `build-beodeul-nature.py` 의 `shadow_for()` 로 새 그림자를 같은 칸에 다시 칠한다(여러 키트가 쓰는 칸은 교집합, 나무 아닌 키트와 나눠 쓰는 5칸은 그대로).
+- **숲 색 (2026-10-22 후속, 「숲이 바닥 풀과 안 갈린다」)**: 잎 색 단의 정본은 `beodeul-redraw/palette.json` 의 `leaf_ramps` 하나다
+  (`append-beodeul-forest-canopy.py` 의 `RAMP` 와 `draw_trees_b.py` 가 이 파일을 읽는다). 옛 oak 단의 넷째 단 (110,160,58) 이 잔디 737 (110,153,67) 과 같은 색이라
+  나무가 풀에 묻혔다. oak·elm·lime 을 L* 9~48 의 짙은 몸통(그늘은 청록, 빛 쪽은 황록으로 색조를 돌림) + 밝은 햇빛 단(L*≈66~72)으로 다시 잡았다.
+  첫 판(색조를 덜 돌린 차가운 단)은 object-gate 화풍 판정자가 원본 그림(art/)을 「평면 채움·단 대비 약함」으로 봐서 단 사이 색조·밝기 간격을 넓혔다.
+  Opus 적대 VQA r1·r2 PASS(`harness-data/object-gate/vqa/beodeul-forest-colour/`), 3/4 관문 7/7, 화풍은 조언 FAIL·REFER 를 위임 허용으로 기록(프로필 미보정). 모양·칸 번호는 그대로다.
+  색 단을 바꾸면 `bash scripts/content/beodeul-redraw/rebuild_colours.sh` 하나로 다시 칠한다 — 순서: restyle(자기 칸) → `recolour_city_trees.py`(restyle 밖에 놓인 나무 칸 873개,
+  orig·tint2·tint3 를 단별 Lab 차로 따라 옮김, 지금 칠한 단은 `art/city_tree_palettes.json`) → 수관 → 나무 연구 → `warm_lookup.py`(따뜻한 황록은 승인 당시 단별 Lab 색조를 지킨다) →
+  팔레트 연구 → woodland → warm. 대비는 `measure_forest_contrast.py`(잔디와 ΔE<12 인 잎 화소 비율: #3223 11~18% → 0~7%),
+  옛 계보 재유입은 `old_lineage_check.py`(옛 그림은 git 이력에서만 읽는다, 0 이어야 한다). 비교 그림 http://mdc-server:18301/beodeul-forest-colour.html.
+  참고문서 그림(`*-native.png`·농장 장면·variants render)은 다시 굽지 않았다 — 옛 #3223 색으로 남아 있다.
 - `build-beodeul-ground.py` 는 낡았다 — 돌리면 ground 시트를 112칸으로 다시 만들고 manifest 5천 줄을 지운다. 나중 덧붙이기 스크립트들이 늘린 시트를 되살리지 못하니 돌리지 마라.
 - `tiledata/beodeul-variants/` 의 만들기 스크립트(`_lib-5/bd5.py`)는 옛 워크트리 경로를 박아 두었고, 고쳐 돌려도 지금 코드로는 부품·바닥이 달라진다(구멍).
   그래서 `deep-forest-path`·`wheat-roman-road` 의 `render-1x.png` 는 화소 옮기기 뒤 남은 8×8 대조 칸 19곳을 바로 위 8px 로 덮었다. 참고 그림일 뿐 맵 데이터가 아니다.

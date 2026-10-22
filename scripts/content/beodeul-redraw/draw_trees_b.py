@@ -12,10 +12,10 @@ bottom-right. Clusters are separated by a darker leaf tone (ramp 1-2), never by 
 near-black tone; the darkest tone (0) only rims the silhouette on the shade side
 (bottom/right) and the ground contact row. Palette = oak leaf ramp (0 dark .. 5 light).
 """
-import os
+import json, os
 from PIL import Image
 
-OAK = [(12, 34, 34), (22, 58, 44), (36, 88, 50), (62, 122, 52), (110, 160, 58), (176, 204, 88)]
+OAK = [tuple(c) for c in json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'palette.json')))['leaf_ramps']['oak']]
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'art')
 LX, LY = -0.62, -0.78
 

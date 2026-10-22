@@ -1,0 +1,638 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "efa094e9d97f12ebea0af90a4941efc97429e7791be7b53c3c48fc713ff94966",
+ "width": 112,
+ "height": 144,
+ "kind": "organic",
+ "name": "woodland group west (forest colour 2026-10-22 r3)",
+ "label": "beodeul_ground/bdg-woodland-west",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "tree",
+  "refs": [
+   "tree-1a786c",
+   "tree-d43edd"
+  ],
+  "scale": 2,
+  "score": 7
+ },
+ "metrics": {
+  "tileColorsMedian": 8,
+  "tileColorsP90": 11,
+  "darkV5": 29,
+  "nearBlackEdge": 0.4,
+  "opaqueTiles": 32
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper left tree canopy",
+      "rows": "4-48",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "44-48"
+     },
+     {
+      "part": "upper right tree canopy",
+      "rows": "17-48",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "42-47"
+     },
+     {
+      "part": "middle left tree canopy",
+      "rows": "50-83",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "79-83"
+     },
+     {
+      "part": "right tree canopy",
+      "rows": "52-121",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "115-121"
+     },
+     {
+      "part": "lower left tree canopy",
+      "rows": "84-123",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "116-121"
+     },
+     {
+      "part": "tree trunks",
+      "rows": "122-139",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 30,
+    "front_face_rows": 18,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The object is a group of five round-crowned trees. Each canopy is a large mass with a width profile that widens from a narrow top (for example rows 4-26, 3 to 74 px) and narrows again toward the bottom (rows 37-48). Light highlights sit at the top and dark shadow lies on the lower rows (rows 44-49 at L~28). This reads as a rounded volume seen from above and the front, with a visible trunk below (rows 122-139). Trunks are short vertical faces with no top, but they are small details. Canopies are the main body and read as three-quarter."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a cluster of five round-canopy trees with brown trunks. Its canopies show about 5 green steps: highlight clumps, mid, dark and deep shadow notches. Leaf clumps are broken up by scalloped edges and dark gaps, and there is small grass at the trunk bases. Outlines are dark green next to the leaves and dark brown next to the trunks, with no black sticker line. This matches the 0% near-neutral edge share. Measured tones per tile are 8, versus 7 for tree-1a786c and 29 for tree-d43edd, and near-flat coverage is 0%, so there are no flat fills. Weaknesses: the canopies are fairly uniform and blobby, with less clump-by-clump leaf detail and less bright highlight variation than tree-d43edd. The trunks are simple, with little root or branch structure. Overall it is at the level of tree-1a786c and a little below the richer reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12449
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper-left tree canopy",
+      "rows": "4-48",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "44-48"
+     },
+     {
+      "part": "upper-right tree canopy",
+      "rows": "17-47",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "42-47"
+     },
+     {
+      "part": "middle-left tree canopy",
+      "rows": "49-85",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "80-84"
+     },
+     {
+      "part": "right tree canopy (stacked lobes)",
+      "rows": "52-122",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "115-121"
+     },
+     {
+      "part": "lower-left tree canopy",
+      "rows": "86-123",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "116-121"
+     },
+     {
+      "part": "trunks with root flare and grass tufts",
+      "rows": "48-72, 84-96, 122-139",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 14,
+    "front_face_rows": 30,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The object is a group of five trees, each with a rounded leaf mass. Each canopy's width profile widens and then narrows again (for example rows 4-26 widen from 3 to 74 px, and rows 48-50 narrow to 18 px). A lit light-green top (rows 4-20 on the upper-left canopy) sits over a darker mid-green body and a very dark underside, which reads as a domed top seen from above with a shaded front. Brown trunks with root flares and grass tufts at the base (rows 124-139) give a clear front face of 3+ rows. This is an organic blob with a lit top and a shaded front, not a flat top-down or front-elevation drawing."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a group of five trees with clumped canopies. The canopies show about 5 greens (highlight, light, mid, dark, deep) with leaf-clump dapples and small holes. The outline is a dark green and brown tint, not neutral, which matches the 0% near-neutral edge share. Trunks carry brown shading and small grass tufts at the base. Measured facts: 8 visible tones per tile against 7 for tree-1a786c (about equal) and 29 for tree-d43edd (well below), and 0% near-flat coverage. Compared with tree-1a786c the candidate is equal or richer. Against the richer tree-d43edd it has smoother, softer clumps and fewer distinct leaf shapes, so it is slightly lower. The same canopy shape is repeated across the five trees, and the texture is moderate rather than as rich as the best reference. No flat fills and no sticker outline, but it is a little thinner than the best reference.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 17357
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper-left tree canopy",
+      "rows": "4-48",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "43-48"
+     },
+     {
+      "part": "upper-right tree canopy",
+      "rows": "17-47",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "42-47"
+     },
+     {
+      "part": "middle-left tree canopy",
+      "rows": "49-84",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "78-84"
+     },
+     {
+      "part": "right tree upper canopy",
+      "rows": "52-98",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "88-98"
+     },
+     {
+      "part": "lower-left tree canopy",
+      "rows": "85-122",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "115-121"
+     },
+     {
+      "part": "lower-right tree canopy",
+      "rows": "85-122",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "115-121"
+     },
+     {
+      "part": "trunks with root flare",
+      "rows": "124-139",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 25,
+    "front_face_rows": 16,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Five stacked round tree canopies. Each is a rounded volume whose width grows from a narrow top (row 4: 3px) to about 76px and then narrows again (row 39: 62px, then back to 69px), so it reads as a rounded mass seen from above. The lit light-green leaf clusters sit on the upper rows. Dark green and near-black shading sits on the underside (rows 43-48, 115-121), which acts as eave shadow. Brown trunks with root flares (rows 124-139) form the visible vertical front face under the canopies. The group is seen from a raised 3/4 view, not as a flat elevation or a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate's canopies show about 5 green steps, from a highlight clump to a deep shadow, with leaf clumps and scalloped edges. Trunks have light and dark sides and tiny grass tufts at the base. Dark edge pixels are 0% neutral, so the outlines lean green or brown and are tinted. It has 8 visible tones per tile, above tree-1a786c at 7, and 0% near-flat coverage. It is well below tree-d43edd at 29 tones, and its canopies are more uniform, with fewer distinct leaf clusters and little interior variation. The result is a coherent, material-toned set that is slightly softer and less textured than the richest reference, though it is comparable to tree-1a786c, which is the closer match in scale and style.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18087
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "upper-left tree canopy (lit crown, dark underside)",
+      "rows": "4-48",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "44-48"
+     },
+     {
+      "part": "upper-right tree canopy",
+      "rows": "17-47",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "42-47"
+     },
+     {
+      "part": "middle-left tree canopy",
+      "rows": "50-83",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "79-83"
+     },
+     {
+      "part": "lower-left and lower-right tree canopies",
+      "rows": "84-122",
+      "evidence": "b",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "116-122"
+     },
+     {
+      "part": "trunks with root flare",
+      "rows": "123-139",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 22,
+    "front_face_rows": 20,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "This is a cluster of five round-crowned trees. Each canopy's silhouette widens and then narrows again, for example rows 4-48 widen from 3 to 76 px and shrink to 23 px at row 49. Each canopy is lit at the top (light #94b353 patches at rows 4-25) and shades to dark #063328 underside rows near 44-48, so it reads as a volume seen from above and in front. The trunks (rows 123-139, and visible under the other crowns) form the front face. The shapes are organic and irregular, with no edge lines. The canopy mass is read as a top surface with a shaded front underside, not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate trees have canopies in roughly 5 green steps, with clumped leaf masses, dark gaps and highlight dots, and trunks in brown with a few grass tufts at the base. Dark edge pixels are 0% neutral, so the outlines lean green or brown (dark material tone) and there is no sticker line. It has 8 visible tones per tile and 0% near-flat coverage, which is above tree-1a786c (7) and similar in structure. It is well below tree-d43edd (29 tones), which has far more leaf-clump variety, trunk and root detail and bright highlights. The candidate canopies are fairly smooth and soft, with large lobes and little per-clump definition. The trunks are simple, with little bark grain. It matches the simpler reference but not the richer one, so it is slightly lower in density overall. When in doubt this should fail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 18010
+  }
+ ],
+ "decidedAt": "2026-10-22T01:51:01.109Z",
+ "cells": {
+  "16": [
+   "016702db74068b37",
+   "13469699dded60f3",
+   "14b743d55ae4a28b",
+   "1995027604590c6a",
+   "227619f9c1af5f49",
+   "27e15b8fb3aca271",
+   "294584dc09c2b92b",
+   "2a8f3de53695ef45",
+   "2f4f57848616598c",
+   "34e0ba45ab362d84",
+   "353e9877b84c5b67",
+   "378d86e0e1fdf520",
+   "3810fd99800879a6",
+   "3bb6caf3b5bf0886",
+   "3d5fc6c9533f53c6",
+   "40e5ade5200bf775",
+   "486ca10a82c121ed",
+   "4a6d445049f7c61e",
+   "50b8f8ecaa07f706",
+   "51aac94947b899e3",
+   "5334b6be664f82f2",
+   "5c4f5be0ea093724",
+   "5fc3a35ef8542b98",
+   "807babe6adecac6f",
+   "832db8adc5e933e1",
+   "8bbde872291f2a05",
+   "8d0c9377133df9e4",
+   "8d7baffdf7ac7a4a",
+   "8f469cf7ab7b255c",
+   "902f3f0bd34ce5be",
+   "919b5889561fe306",
+   "930436a8cac44780",
+   "9fe613da0e0c0cb2",
+   "a15ac211cd2d0b21",
+   "ad3b2ac184a7d2e4",
+   "b5a7c59dba42f55a",
+   "b5be27d901f010ab",
+   "d006eedd52ced671",
+   "d133d273520f5dc4",
+   "d5f00dc731e14103",
+   "d8cbb475fe78daac",
+   "d90b3ea67ddf2156",
+   "d922ea43ced023fe",
+   "db70aa2dbea7e8a2",
+   "f34601ab73e9ab98",
+   "fdfe15449679a995",
+   "ff50c767d1ead619",
+   "ff9ef6721c620ef1"
+  ],
+  "24": [
+   "0075dbfa0b768ec2",
+   "0100614e6b11caf8",
+   "01da148c9026ad8a",
+   "07ce101d2867c6bf",
+   "0b40cb7b56b71a29",
+   "0e46181a4a482bfd",
+   "107fde996b94f916",
+   "130974daf24de08a",
+   "148d1b0e96f392b3",
+   "150d25ce43d9f5e7",
+   "159c5b80df4d3656",
+   "16a7de43c00f5a1d",
+   "1bab22f94753ed50",
+   "1c42d250f1690506",
+   "1f74765bd8fc1739",
+   "21143811db411203",
+   "290aa24d28e035ce",
+   "2ca7fea0487eaa80",
+   "30c6949a2c21bc59",
+   "31bb1e7d987fa4e3",
+   "35e59aa385402781",
+   "37f8100d8f7a0ac0",
+   "39bdd5bcb40335d7",
+   "3abf1190f3ff86b0",
+   "3e8400c829568bfd",
+   "3f9321cadd40f3bd",
+   "400af4c829d4f487",
+   "4085758052182f21",
+   "4648c6e69f6e1d71",
+   "4a27641c0e0f941d",
+   "4a89e583e90fb8ca",
+   "4ee9cd0c02ff9216",
+   "5264e2ae50af3192",
+   "539e48479d3b622a",
+   "56c193cc1e2f1cbd",
+   "591bec1ae5f810ac",
+   "595ce9e993a96abf",
+   "5beefa27ca31dae3",
+   "5df6ec72210711d8",
+   "5e1632b90b041de9",
+   "6ab8f8a689242100",
+   "726058c09ca15500",
+   "73fad6fd0aedaf03",
+   "7c01efa8c5824926",
+   "7c5c27da288a4e56",
+   "7f79949d4f4889cd",
+   "8308566e0e22dcf3",
+   "85b6b91cd176c27e",
+   "8d4c5cd970cf3783",
+   "931748600d64454c",
+   "9a288a055f20cfbf",
+   "9d3198331ea255ea",
+   "a06bbc6239fce36e",
+   "a08f4317562107a8",
+   "ad647959be8b302c",
+   "b2d8c7e9b9829d49",
+   "b4f52ef85c92259b",
+   "b755efeb96bd96af",
+   "bcc81b693aa73621",
+   "be1ebc535d0902d0",
+   "bf8ec405cb10408f",
+   "c22bf051b08b0e2e",
+   "c397428224d6b77a",
+   "c71509bf438ba423",
+   "cc1bcdbb4abb3dc6",
+   "cecb3e5cdb5f6d4d",
+   "d60c0423686fc896",
+   "d71c0d22878048e5",
+   "dbf012c5bb939c87",
+   "e4c441068ca9045d",
+   "ed390e4a300a90dd",
+   "edec0e7d1b216931",
+   "f24e9d3731b63dd6",
+   "f7af525aaa1086f5",
+   "f7fe918ea7667d8e",
+   "fbf0ad7ac6c8a14d",
+   "fdf3d078906f2ba5"
+  ],
+  "32": [
+   "01faed398c569c97",
+   "0245ba5be5c55f45",
+   "07b275c5d027962c",
+   "0942df00cbad52ad",
+   "0b99f50d3536b821",
+   "0bfc0b7cf8094a1c",
+   "1102c3b5fe66860d",
+   "12728920d0f66bd0",
+   "133ea709b0990638",
+   "1783686df5070b00",
+   "180747c4ffb3fce5",
+   "1a49e9c63a8cbe25",
+   "1cd28934a9991f09",
+   "1d5c692ef9b7594c",
+   "2135ae6897213ff6",
+   "2550983880534632",
+   "283b19a9b0056b6b",
+   "29460604bc05faa3",
+   "2d04d4f83b67c614",
+   "30c6be21ada7723d",
+   "3339900df998131c",
+   "33d01f1d88488e51",
+   "34c2a46473119007",
+   "386e212c4257dfc7",
+   "3b34acd2a3a54186",
+   "3c21fe205e7e4896",
+   "3f818ce84d3fef53",
+   "40e1b8a01b39029c",
+   "4188f94ac480a6c5",
+   "4232b84af6b6b9f6",
+   "423a3367980d0869",
+   "47d55f369622e077",
+   "4d0e6c96baec276c",
+   "4df39d792f8ab69b",
+   "54fe243a866467c1",
+   "55e1b6ca9408a5a1",
+   "5c63f70d79a0921c",
+   "5cc1d7a24b3ca276",
+   "6210c6ef778bf630",
+   "626e47c2b8f95cb2",
+   "65a2ea0544115b48",
+   "68aa2248c49d94d7",
+   "6a1b346b23360e26",
+   "732fbc373ec12f73",
+   "7423f15db2afc517",
+   "7b444fd0a1aa6e60",
+   "7f58a56eda0b2bb5",
+   "8053769bcfb10790",
+   "823f5838efcada42",
+   "83eee4503007d107",
+   "84009a083ab19b74",
+   "86ef203cf3eba893",
+   "8d147c009c92c3b4",
+   "91e7846b4d53e350",
+   "94c15430f28abc23",
+   "954d87e553ee97df",
+   "982958dc37b2f826",
+   "9af34c8db09d5463",
+   "9c1b07ce040a9afc",
+   "a147514e91a3d85e",
+   "a1b65b4169605920",
+   "a6e2e596e24d456a",
+   "a717e36ea2d47678",
+   "ac01321d61d952fa",
+   "ac4bf4e84c3ff9cf",
+   "ac96af1c51fff095",
+   "b0674b7662b5d2d2",
+   "b18b17e243118d8c",
+   "b190e2f669208610",
+   "b5be637bf1253188",
+   "b5d561b79201f5cf",
+   "b6602bc547946ba5",
+   "b69e89554c5f9553",
+   "b7a010e1d114f476",
+   "bc5d4e133d312b6b",
+   "be24f59879df1f9e",
+   "c056b133267b1f10",
+   "c20b4ee5a49f630b",
+   "c5ec14df6644546e",
+   "c63c0239c3a98d0a",
+   "c6dfb55811dc3644",
+   "cbd0329990e7db2a",
+   "cbf0c368024d82e1",
+   "cdfdf5c3e4d02829",
+   "cea404b25f0f66c4",
+   "d3dff01bce6eec12",
+   "d839534556fc6f14",
+   "db44d3aa9388bbf3",
+   "dbc94e4417b45fa8",
+   "df8b4a6d493c97ba",
+   "e0cb42a0bb9325f5",
+   "e18bb87d422bf7e1",
+   "e4e4aba2ef576d91",
+   "e53deea0d18f0f50",
+   "e9401a5fc85dfe01",
+   "ea79bb048e445d86",
+   "ed84c2fd63b3ce26",
+   "f1edb861fd8413f7",
+   "f2ca6305b497f924",
+   "f59de7fe832a3e32",
+   "ff8b6b5c000caa25"
+  ],
+  "48": [
+   "002fe39a7f149b37",
+   "1a24d1115d8ff127",
+   "220c2dfb586e48ca",
+   "307539b641008d29",
+   "6085c10f0715b6e0",
+   "69239f3c28a0cc58",
+   "6defd72b1285e696",
+   "77fc3c4365c48bb2",
+   "784d836d0c1e20f3",
+   "7dcfd340e036982b",
+   "803fa052315e4d2a",
+   "8c49cee162f73653",
+   "8c720efde5f7a220",
+   "8caaa80237f35496",
+   "900be2807d85cd3a",
+   "af007d459b7387e3",
+   "bf6caf97b97ecb02",
+   "c13e3f5f64a7fccb",
+   "cbd1478a18436add",
+   "d17daecd1e310912",
+   "d5ac70fc2582fcb5",
+   "d973202e0fce7826",
+   "f21cd7da90d6c8c3"
+  ]
+ }
+}
