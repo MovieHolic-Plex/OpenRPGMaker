@@ -93,8 +93,10 @@ export function buildFallenTownInteriors(project: Project, hubId: string, ids: {
       // 식료품 광·지하 저장고는 뺐다 — 집집마다 같은 광·저장고·부엌 묶음이 되풀이돼 「같은 저택」으로 읽혔다(VQA r11 major). 쉼터는 약재를 말리며 쉬는 작은 방.
       // 가게 19×9·조제실 9×7·늘인 서재(16×8 원형)는 빈 마루가 화면 절반 가까이 남았다(VQA r24 major) — 바구니로 메우지 않고 벽을 당긴다.
       // 방마다 원형 크기(가게 14×6·조제실 7×6·서재 8×7·부부 침실 8×7·쉼터 5×6·약재 광 5×5)로 줄이면 원형 가구가 방을 채운다.
-      layout: { rooms: [{ kind: "pharmacy_shop", w: 14, h: 6 }, { kind: "alchemy", w: 7, h: 6 }, { kind: "study", w: 8, h: 7 }, { kind: "master_bedroom", w: 8, h: 7 }, { kind: "rest", w: 5, h: 6 }, { kind: "storeroom", w: 5, h: 5 }], seed: 13, variant: 0, styleVariant: "A" },
-      dress: [],
+      // 쉼터 원형(광산 휴게실)의 동굴 바위 벽은 목조 집 안에서 튀었다(VQA r24·r25 minor) — 회벽·마루로 바꾼다.
+      layout: { rooms: [{ kind: "pharmacy_shop", w: 14, h: 6 }, { kind: "alchemy", w: 7, h: 6 }, { kind: "study", w: 8, h: 7 }, { kind: "master_bedroom", w: 8, h: 7 }, { kind: "rest", w: 5, h: 6, wall: "plaster", floor: "plank" }, { kind: "storeroom", w: 5, h: 5 }], seed: 13, variant: 0, styleVariant: "A" },
+      // 약재 광(아래 오른쪽, 바닥 x24~28·y11~14, 문 틈 (23,12))은 원형 가구가 셋뿐이라 빈 돌바닥으로 읽혔다(VQA r25) — 약재 자루·통·궤짝(문 앞 칸은 비운다).
+      dress: [["sack", 25, 11], ["sack", 26, 11], ["barrel", 27, 11], ["crate", 26, 14], ["basket:herb", 27, 14]],
       people: [
         {
           id: "ev_fs_apothecary", name: "약재상 오든", query: "노인 남성", chip: ["tex_easyrpg_charset_people5", 7], behindCounter: true,
