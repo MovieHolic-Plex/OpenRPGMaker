@@ -908,6 +908,15 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 
 **검증:** `bun scripts/content/dungeon-proof.mts <dir>` — 종류 × 어댑터 × 장르 × 시드를 `author_dungeon` 으로 실제 시공하고 `run_lint`·`check_reachability`·`check_terrain_access` 를 같이 돌려 PNG(원 해상도)와 `proof.json` 을 쓴다(2026-10-15: 42판, lint error 0, 전부 도달, check_terrain_access 전부 true). 기존 beodeul 24판 sha1 기준선: 안 건드린 5종은 전부 동일, 고친 동굴·광산·화산만 의도적으로 바뀜.
 
+**조수 던전 시험 후 고친 것(2026-10-22, assistant-dungeons, 기준 시험 9건 Opus 적대 VQA 평균 4.5):**
+- **죽은 계단** — 8맵 전부 계단이 장식뿐이었다. 이제 1층 바깥 계단은 `entrance` 를 줄 때만 그리고(`entryStair:"none"`), 마지막 층에는 내려가는 계단을 그리지 않는다(`exitStair:"none"`).
+- **여러 층** — `floors`(1~5)·`direction`(down 지하 / up 탑). 층마다 맵을 짓고 계단 칸에 이동 이벤트(`ev_<map>_stair_next/back`, 걷는 계단 priority below, 문 same)를 직접 깐다. 도착은 상대 계단 앞 칸, 계단을 등진다(계단 계약 `stairContracts.json`). 탑은 1층 입구 = 나무 문, 위층 입구 = 바닥 내려가는 계단, 깊은 방 북벽 = 오르는 계단, 꼭대기 층 = 큰 홀 → 보스방 + 보물 방(`towerRooms`, 감방·묘실 없음). 조립기 `compose.ts` 의 `entryStair`/`exitStair`/`sideDoor`.
+- **빈 방** — `populate`(rpg 기본 켜짐): 계획 자리의 순찰 적(≤4), 상자 2(보물 방 먼저 — 같은 그림 3개부터 린트 경고), 마지막 층 보스(도망 불가)·보스 앞 방 회복 세이브, 그 아래층 층 수문장. `troops:{field,midBoss,boss}` 로 요청한 적을 넘긴다. 도구가 그림을 스스로 고르므로 `choosesOwnGraphic`(없으면 Pi 의 그림 선택 검사가 세 번 거부했다). `expand_jrpg_campaign_volume`·`author_jrpg_chapter` 는 자기 채우기가 있어 `populate:false` 로 부른다.
+- **물에 잠긴 신전** — `flooded:true`: 큰 방(입구·보물 방 제외) 바닥 대부분을 물로, 굽이치는 3칸 둑길(긴 축 + 큰 방은 가로 축)을 남긴다(`mask.ts carveFlood`). 조수가 `fill_region` 으로 네모 웅덩이를 칠하던 것을 대신한다.
+- **레버 퍼즐** — `puzzle:"lever"`: 보물 방(없으면 보스방) 통로 칸에 쇠창살(object1#5), 먼 곁방에 레버(object2#0), 스위치 `sw_<map>_lever`. 손 도트 실내 퍼즐 방(다른 화풍)을 따로 잇던 것을 대신한다.
+- **작은 동굴** — `size:"small"` 동굴은 56×44 상자·방 3개(옛 64×49·방 4), 입구 굴은 네모가 아니라 잡음 타원. 기본 시드는 7 고정이 아니라 맵 id·이름·맵 수에서 뽑는다(시드를 안 준 던전이 전부 같았다).
+- 증명: `bun scripts/qa/dungeons/proof.mts <dir>`(레지스트리 경로라 중첩 도구까지 돈다), 걷기 영상 경로 `scripts/qa/dungeons/walk-route.mts` + `scripts/qa/runtime/dungeon-walk.scenario.mjs`.
+
 **없는 그림(다음 타일 작업자 몫, `capabilities.ts` `missingArt` 가 정본):**
 - beodeul: 선로 타일(가로·세로·모서리·T) / 갱목 지지대(벽 걸이 1×2·바닥 기둥 1×2) / 광석 박힌 벽·바닥 / 현무암·재 바닥 변형 · 현무암 벽 앞면 3h/2h · 용암 식은 껍질 가장자리 / 갈색 테두리 동굴 천장 오토타일 / 얼음 동굴 일체.
 - monster: catacomb·castle·sewer·mine 일체 / 마른 동굴 안 물·용암 조각 / 유적 신전 안쪽 칸막이 / 화산 제단·보스 연출 / 얼음 판 퍼즐 문.
