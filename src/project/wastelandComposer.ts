@@ -160,11 +160,17 @@ class Board {
     const interior = (g as { interiorVariants?: number[][] }).interiorVariants?.flat() ?? [];
     // 가장자리 칸 변형(마스크마다 2~3장) — 곧은 길에서 같은 16px 가장자리가 되풀이되어 «애벌레 띠»로 읽혔다(아스팔트 r44).
     const maskVariants = (g as { maskVariants?: Record<string, number[]> }).maskVariants ?? {};
+    // 위상 칸(phaseTiles): 마스크마다 P×P 칸(P = 4 → 64px 주기) — 칸 하나 안에 갇힌 얼룩·가장자리 혹이 칸마다 되풀이되어 «구슬 줄»로 읽혔다(아스팔트 r45~r47).
+    // 한 장의 64px 결을 칸 자리(x mod P, y mod P)로 잘라 깔면 얼룩·가장자리가 칸 경계를 넘어 이어진다.
+    const phase = (g as { phaseTiles?: Record<string, number[]>; phase?: number }).phaseTiles;
+    const P = (g as { phase?: number }).phase ?? 4;
     for (let y = 0; y < this.h; y++) for (let x = 0; x < this.w; x++) {
       if (!cells[this.idx(x, y)]) continue;
       const m = (conn(x, y - 1) ? N : 0) | (conn(x + 1, y) ? E : 0) | (conn(x, y + 1) ? S : 0) | (conn(x - 1, y) ? W : 0);
       if (edgesOnly && m === 15) continue;
       let t = g.variantMap[String(m)];
+      const ph = phase?.[String(m)];
+      if (ph?.length === P * P) { const pt = ph[(x % P) + (y % P) * P]; if (pt !== undefined && pt >= 0) { this.setLower(x, y, pt); continue; } }
       const mv = m !== 15 ? maskVariants[String(m)] : undefined;
       if (t !== undefined && mv?.length) { const pool = [t, ...mv]; t = pool[Math.floor(hash2(x * 3 + 1, y * 5 + 2, this.seed + 11) * pool.length)]; }
       if (m === 15 && interior.length && hash2(x, y, this.seed + 7) < 0.3) t = interior[Math.floor(hash2(y, x, this.seed) * interior.length)];
