@@ -38,6 +38,15 @@ def night_city(rain: bool) -> Image.Image:
     ys = np.linspace(0, 1, H, dtype=np.float32)[:, None, None]
     out *= 0.72 + 0.28 * ys
     img = Image.fromarray(np.clip(out * 255, 0, 255).astype(np.uint8))
+    if not rain:  # 맑은 밤 — 별(엔딩 B: 혼자 올라와 본 밤하늘)
+        px = img.load()
+        rng = random.Random(7)
+        for _ in range(260):
+            x, y = rng.randrange(W), rng.randrange(int(H * 0.45))
+            v = rng.randrange(170, 255)
+            px[x, y] = (v, v, min(255, v + 20))
+            if rng.random() < 0.15 and x + 1 < W:
+                px[x + 1, y] = (v, v, min(255, v + 20))
     if rain:
         img = img.filter(ImageFilter.GaussianBlur(1.2))
         layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
@@ -54,8 +63,10 @@ def night_city(rain: bool) -> Image.Image:
     return img
 
 
-def place_seoha(bg: Image.Image, expr: str, rain: bool) -> Image.Image:
+def place_seoha(bg: Image.Image, expr: str, rain: bool, left: bool = False) -> Image.Image:
     fig = Image.open(PORTRAIT / f"full-{expr}.png").convert("RGBA")
+    if left:  # 왼쪽 1/3 에 세우고 글자(가운데) 쪽을 보게 뒤집는다
+        fig = fig.transpose(Image.FLIP_LEFT_RIGHT)
     fig = fig.crop(fig.getbbox())
     scale = H * 1.05 / fig.height
     fig = fig.resize((int(fig.width * scale), int(fig.height * scale)), Image.LANCZOS)
@@ -63,16 +74,17 @@ def place_seoha(bg: Image.Image, expr: str, rain: bool) -> Image.Image:
     # 밤빛에 맞춘다: 남색으로 조금 누르고 오른쪽(가로등 쪽) 가장자리만 따뜻하게.
     shade = np.array([0.5, 0.54, 0.72] if not rain else [0.4, 0.45, 0.6], dtype=np.float32)
     a[..., :3] *= shade
-    rim = np.clip((np.arange(fig.width, dtype=np.float32) / fig.width - 0.7) / 0.3, 0, 1)[None, :, None]
+    xs = np.arange(fig.width, dtype=np.float32) / fig.width
+    rim = np.clip(((1 - xs if left else xs) - 0.7) / 0.3, 0, 1)[None, :, None]
     a[..., :3] += rim * np.array([60, 40, 10], dtype=np.float32) * (a[..., 3:4] / 255.0)
     fig = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8), "RGBA")
     out = bg.convert("RGBA")
-    out.alpha_composite(fig, (int(W * 0.70) - fig.width // 2, H - int(fig.height * 0.9)))
+    out.alpha_composite(fig, (int(W * (0.27 if left else 0.70)) - fig.width // 2, H - int(fig.height * 0.9)))
     return out.convert("RGB")
 
 
 def main() -> None:
-    b = place_seoha(night_city(False), "base", False)
+    b = place_seoha(night_city(False), "base", False, left=True)
     b.save(TITLE / "first-love-ending-b.jpg", quality=88)
     c = place_seoha(night_city(True), "sad", True)
     c.save(TITLE / "first-love-ending-c.jpg", quality=88)

@@ -110,6 +110,11 @@ export function callTo(who: Who, expr: Expr, to: string, ...lines: string[]): Co
   return sayTo(who, expr, to, ...lines).map((c) => (c.kind === "text" ? { ...c, calling: true } : c));
 }
 
+/** 화면 가득 그림(CG·회상 그림) 위의 대사 — 이름만, 흉상 없이. 흉상이 그림 속 두 사람을 덮었다(첫사랑 VQA r23). */
+export function sayOver(who: Who, ...lines: string[]): Command[] {
+  return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", speaker: CAST[who].name, body, position: "bottom" }))];
+}
+
 /** 서하의 속마음 — 얼굴 없이 괄호 대신 흐린 독백으로. */
 export function think(...lines: string[]): Command[] {
   return [CLEAR_FACE, ...lines.map((body): Command => ({ kind: "text", body, position: "bottom" }))];

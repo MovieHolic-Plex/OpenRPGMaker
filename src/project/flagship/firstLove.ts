@@ -21,7 +21,7 @@ import type { Command, Dir, GameEvent, GameMap, Project } from "@/project/types"
 import { FLAGSHIP_BEAT_MANIFESTS } from "./beats";
 import {
   approach, bgm, call, callTo, caption, CAST, choices, m2, clearTintKeepBlack, emote, event, exitVia, face, faceEachOther, faceToward, fadeIn, fadeOut, flash, hidePlayer, ifCond, page,
-  playSe, say, sayAt, sayTo, listenTo, fillListenerBusts, setSw, textAtBottom, faceHero, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk, walkTo,
+  playSe, say, sayAt, sayOver, sayTo, listenTo, fillListenerBusts, setSw, textAtBottom, faceHero, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk, walkTo,
 } from "./firstLoveKit";
 import { buildFirstLoveMaps, FL_MAP, FL_TRAIN_CALL, FL_TRAIN_GO, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
 import { buildFirstLoveOpening } from "./firstLoveOpening";
@@ -672,8 +672,10 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
   // 계산대 손님 쪽(점원 두 칸 아래) — 계산은 거기 가서 한다(VQA r3: 매장 건너 10칸에서 점원과 말함).
   const registerFront = nearestFree(project, kon, { x: clerkSpot.x, y: clerkSpot.y + 2 }, 1, [clerkSpot, jihuStop, coolerFront]);
   // 지후는 계산대 바로 앞 줄이 아니라 서하 오른쪽 뒤 칸 — 계산대 위 소품(상층 그림)이 머리를 덮지 않는다(VQA r4 M1).
-  // 아래 진열대 윗면(★)이 다리만 가리는 칸 — 진열대 뒤에 선 사람으로 읽힌다. 계산대 바로 앞(y10)은 계산대 위 물건(★)이 머리를 덮는다.
-  const jihuRegister = nearestFree(project, kon, { x: registerFront.x + 1, y: registerFront.y + 1 }, 1, [clerkSpot, registerFront, jihuStop, coolerFront], true);
+  // 지후는 서하 왼쪽 옆 칸(같은 줄) — 대각선 뒤 칸에 서면 둘이 빈 칸을 보며 말했다(VQA r23). 오른쪽 옆(18,10)은 계산대 위 물건(★)이 머리를 덮는다.
+  // 바로 옆 칸들(15·16,10)도 계산대 위 물건(★) 밑이라, 지후는 계산대에서 네 칸 왼쪽(위가 빈 칸)에서 기다리고 서하가 계산 뒤 그 옆으로 간다.
+  const jihuRegister = nearestFree(project, kon, { x: registerFront.x - 4, y: registerFront.y }, 0, [clerkSpot, registerFront, jihuStop, coolerFront]);
+  const heroBesideJihu = { x: jihuRegister.x + 1, y: jihuRegister.y };
   add(kon,
     event("ev_fl_clerk", "편의점 점원", clerkSpot, [page("c", [], [
       ...voice("점원", "어서 오세요~ 바나나우유 원 플러스 원이에요."),
@@ -729,7 +731,8 @@ function buildMondayNight(project: Project, a: FirstLoveAnchors): void {
           faceHero("ev_fl_clerk"),
           ...say("clerk", "happy", "원 플러스 원이라 두 개 맞으시죠?"),
           ...say("seoha", "happy", "네."),
-          face("@player", dirToward(registerFront, jihuRegister)),
+          walkRoute(project, FL_MAP.konbini, "@player", registerFront, heroBesideJihu, [jihuRegister], true, dirToward(heroBesideJihu, jihuRegister)),
+          faceHero("ev_fl_jihu_kon"),
           listenTo("jihu"),
           // 점원과 말한 뒤 지후에게 돌아선다 — 듣는 사람을 못박지 않으면 자동 돌아보기가 최근 화자(점원) 쪽으로 다시 돌렸다(VQA r22).
           ...sayTo("seoha", "happy", "ev_fl_jihu_kon", "…선임님, 하나 드세요. 모르는 사이끼리도 우유 정도는 사 줄 수 있잖아요."),
@@ -938,7 +941,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
     ...think("메일. ‘소리결’ 박 본부장님."),
     ...voice("메일", "‘윤서하 님, 보내 주신 시안이 수정 전 버전인 것 같습니다. 내일 오전 임원 보고에 써야 해서요.’"),
     shake(400),
-    ...say("seoha", "surprised", "…어? 잠깐만. 최종본 보낸 거, 아니었어?"),
+    ...think("…어? 잠깐만. 최종본 보낸 거, 아니었어?"),
     ...think("폴더 이름이 ‘최종’, ‘최종_진짜’, ‘최종_진짜_수정’.", "내가 보낸 건 ‘최종’이었다."),
     ...think("팀장님은 저쪽에서 통화 중이다. 지후 선배는 아직 자리에 있다."),
     choices([
@@ -948,7 +951,8 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
         // 팀장 책상 앞까지 걸어가 말하고, 팀장도 통화를 멈추고 서하를 본다.
         walkRoute(project, FL_MAP.officePm, "@player", o.heroDesk, leadFront, [], true, dirToward(leadFront, leadSeat)),
         faceHero("ev_fl_w_lead"),
-        ...say("seoha", "sad", "팀장님. 제가 소리결에 시안을 잘못 보냈습니다. 지난주 버전으로요."),
+        // 장면 첫마디를 서하가 연다 — 듣는 사람을 못박지 않으면 흉상이 저작한 쪽에 떴다가 팀장이 말하는 순간 반대로 바뀌었다(VQA r23 중대).
+        ...sayTo("seoha", "sad", "ev_fl_w_lead", "팀장님. 제가 소리결에 시안을 잘못 보냈습니다. 지난주 버전으로요."),
         ...say("lead", "base", "…몇 시에 보냈어요?"),
         ...say("seoha", "sad", "여섯 시 반쯤이요. 죄송합니다."),
         ...say("lead", "happy", "좋아요. 숨기지 않고 바로 말해 줘서 다행이에요. 본부장님한텐 내가 지금 전화할게요."),
@@ -971,7 +975,7 @@ function buildWednesday(project: Project, a: FirstLoveAnchors): void {
       { text: "지후 선배에게만 조용히 도움을 청한다", then: [
         face("@player", dirToward(o.heroDesk, jihuSeat)),
         faceHero("ev_fl_w_jihu"),
-        ...say("seoha", "sad", "선임님… 저 실수했어요. 시안을 잘못 보냈어요. 팀장님 아시기 전에, 어떻게 좀…"),
+        ...sayTo("seoha", "sad", "ev_fl_w_jihu", "선임님… 저 실수했어요. 시안을 잘못 보냈어요. 팀장님 아시기 전에, 어떻게 좀…"),
         ...say("jihu", "base", "…같이 고쳐요."),
         ...comeBeside(),
         ...say("jihu", "base", "근데 서하 씨. 숨기는 거, 생각보다 오래 무거워요. 나중에 꼭 말씀드려요."),
@@ -1039,7 +1043,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
   const clientOut = leave(project, FL_MAP.officeFri, "ev_fl_f_client", clientSpot, exit, "sw_fl_client_left", o.meetingSeat, [jihuSpot, ...presenterFront], elevatorView, meetView);
   const jihuOut = leave(project, FL_MAP.officeFri, "ev_fl_f_jihu", jihuSpot, exit, "sw_fl_jihu_left", o.meetingSeat, [], elevatorView, meetView);
   add(fri,
-    event("ev_fl_f_client", "박 본부장", clientSpot, [page("fc", [swOff("sw_fl_client_left")], [], { who: "client", dir: "up" })]),
+    event("ev_fl_f_client", "박 본부장", clientSpot, [page("fc", [swOff("sw_fl_client_left")], [], { who: "client", dir: "right" })]),
     event("ev_fl_f_lead", "오정민 팀장", leadSpot, [page("fl", [], [], { who: "lead", dir: "up" })]),
     event("ev_fl_f_jihu", "강지후", jihuSpot, [page("fj", [swOff("sw_fl_jihu_left")], [], { who: "jihu", dir: "down" })]),
     event("ev_fl_f_minho", "차민호", minhoSpot, [page("fm", [], [], { who: "minho", dir: "up" })]),
@@ -1056,7 +1060,7 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
     // 탁자 머리의 본부장이 말을 열면 발표자 둘(서하·지후)이 그쪽을 본다.
     face("@player", dirToward(o.meetingSeat, clientSpot)),
     face("ev_fl_f_jihu", dirToward(jihuSpot, clientSpot)),
-    face("ev_fl_f_client", dirToward(clientSpot, o.meetingSeat)),
+    face("ev_fl_f_client", "right"), // 탁자 머리에서 탁자와 발표자 쪽을 본다
     // 민호는 본부장 옆자리 — 팀장의 농담(서쪽) 뒤엔 본부장·발표자 쪽(동쪽)을 본다.
     face("ev_fl_f_minho", dirToward(minhoSpot, clientSpot)),
     ...sayAt("client", "left", "base", "그럼 시작하시죠. 이번 리뉴얼, 핵심이 뭡니까?"),
@@ -1151,6 +1155,9 @@ function buildFriday(project: Project, a: FirstLoveAnchors): void {
         ...emote("ev_fl_f_minho", "sweat"),
         face("@player", dirToward(o.meetingSeat, leadSpot)),
         ...sayAt("lead", "left", "base", "서하 씨, 첫 주 수고했어요. 가요, 다 같이."),
+        // 팀은 먼저 가고 서하는 혼자 나온다 — 「다 같이」 뒤에 팀이 한 번도 안 보이고 서하 혼자 비 속에 서 있었다(VQA r23).
+        ...sayAt("seoha", "right", "base", "먼저들 가 계세요. 정리하고 금방 따라갈게요."),
+        ...sayAt("minho", "left", "happy", "고깃집 2층이에요! 늦으면 서하 씨 몫 없어요~"),
         // 엔딩 C 의 비(VQA r8: 「비가 오기 시작했다」는 말뿐 비가 없다) — 검은 화면에서 빌딩 앞 밤거리로 옮기고, 비는 거기 장면이 내린다.
         // 실내에 비를 뿌리지 않는다. 옮긴 뒤의 명령은 이 맵 이벤트에서 돌지 않으므로 이어지는 연출은 밤거리의 ev_fl_dinner_rain 이 한다.
         ...fadeOut(700),
@@ -1278,7 +1285,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...say("jihu", "embarrassed", "…그건, 내 대사였어야 하는데."),
           flash("white", 700),
           ...memoryPictureIn(255, 1800),
-          ...say("jihu", "happy", "윤서하. 10년 늦은 답장이에요.", "나도 좋아했어. 그 금요일에도. 지금도."),
+          ...sayOver("jihu", "윤서하. 10년 늦은 답장이에요.", "나도 좋아했어. 그 금요일에도. 지금도."),
           ...memoryPictureOut(1600),
           ...emote("ev_fl_p_jihu", "heart", 1600),
           memoryPictureErase(),
@@ -1292,7 +1299,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           { kind: "triggerEnding", endingId: END_A } as Command,
         ], [
           ...memoryPictureIn(255, 1600),
-          ...say("seoha", "sad", "좋아했어요. 그 금요일에도. 지금도."),
+          ...sayOver("seoha", "좋아했어요. 그 금요일에도. 지금도."),
           ...memoryPictureOut(1400),
           ...say("jihu", "sad", "…고마워요. 정말로."),
           memoryPictureErase(),
@@ -1366,7 +1373,7 @@ function defineEndings(project: Project): void {
     presentation: { musicResourceId: BGM_HAPPY, tone: "warm", kicker: "엔딩 A · 두 사람의 이야기", credits: ENDING_CREDITS, backgroundResourceId: "oprn-title-romance-office" },
     epilogue: [
       epiloguePicture("oprn-title-romance-office"),
-      { kind: "say", text: "석 달 뒤, 금요일 밤." },
+      { kind: "say", text: "석 달 뒤, 금요일 저녁." }, // 그림이 노을 옥상이다 — 「밤」이면 글과 그림이 어긋났다(VQA r23)
       { kind: "say", text: "‘하루끝’ 오늘의 늦은 답장 — 바나나우유 님께." },
       { kind: "say", text: "‘다음 주 금요일엔 내가 서울로 갈게요. 급식 줄은 이제 안 서도 돼요.’" },
       { kind: "say", speaker: "서하", text: "…또 실명 안 썼네, 이 사람." },
@@ -1389,7 +1396,7 @@ function defineEndings(project: Project): void {
   });
   execTool(project, "define_ending", {
     id: END_C,
-    name: "우리 팀의 봄",
+    name: "비 오는 금요일", // 「우리 팀의 봄」인데 팀은 나오지 않고 서하 혼자 비 속에 섰다(VQA r23)
     conditions: [],
     presentation: { musicResourceId: BGM_END_C, tone: "warm", kicker: "엔딩 C · 첫 주의 끝", credits: ENDING_CREDITS, backgroundResourceId: "oprn-first-love-ending-c" },
     epilogue: [

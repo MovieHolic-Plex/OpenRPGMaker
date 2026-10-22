@@ -9,6 +9,7 @@
 //  - scene-speaker-absent   대사의 화자(또는 선택지를 받는 NPC)가 이 맵 인물인데 그 순간 무대에 없다(페이지가 꺼짐·지워짐·투명)
 //  - scene-talk-far         화자와 듣는 인물이 TALK_DISTANCE_LIMIT(2) 칸보다 멀다(체비쇼프)
 //  - scene-talk-facing      대사 자동 돌아보기를 적용한 뒤에도 둘이 서로를 보지 않는다
+//  - scene-bust-unstaged     무대 흉상 대사인데 듣는 사람이 안 풀린다(장면 첫마디를 주인공이 연다) — 곁에 사람이 있으면 addressee 로 못박는다
 //  - scene-turn-overridden  말하기 직전에 손으로 돌려 세운 화자를 자동 돌아보기가 다른 상대(최근 화자) 쪽으로 되돌린다 — addressee 누락
 //
 // 되짚기 규칙: 페이지 조건으로 다른 이벤트의 켜진 페이지를 고른다(스위치·변수·셀프 스위치만, 나머지 조건은 «모름» → 그 인물 검사 생략).
@@ -337,6 +338,16 @@ function checkLine(ctx: Ctx, st: Replay, line: Extract<Command, { kind: "text" }
   const addresseeId = resolveAddressee({ addressee: line.addressee, speakerActorId: speakerId, recentNpcSpeakers: st.recent, currentEventId: ctx.host.id, visibleIds: maybeIds, playerPresent: !st.playerHidden });
   if (speakerId !== PLAYER_ACTOR) st.recent = pushRecentSpeaker(st.recent, speakerId);
   st.lastSpoken = speakerId;
+  // 무대 흉상(bustSide stage)인데 듣는 사람이 풀리지 않는다 — 장면 첫마디를 주인공이 열면(앞서 말한 NPC 가 없어) 흉상이 저작한 쪽에 뜨고,
+  // 상대가 한마디 하는 순간 무대 쪽으로 바뀌어 같은 사람이 대화 도중 좌우를 오간다(첫사랑 수요일 보고, VQA r23 중대).
+  if ((line as { bustSide?: string }).bustSide === "stage" && (!addresseeId || addresseeId === speakerId)) {
+    const me = cellOf(ctx, st, speakerId);
+    const near = me ? visible.filter((v) => v.id !== speakerId).map((v) => ({ v, c: cellOf(ctx, st, v.id) })).filter((x) => x.c && chebyshev(me, x.c) <= TALK_DISTANCE_LIMIT) : [];
+    if (near.length > 0) {
+      report(ctx, "scene-bust-unstaged", `unstaged:${speakerId}:${where}`, me,
+        `${where}: ${nameOf(ctx, speakerId)} 의 대사가 듣는 사람 없이 풀린다(곁에 ${near.map((x) => nameOf(ctx, x.v.id)).join("·")}) — 흉상이 저작한 쪽에 떴다가 상대가 말하면 반대쪽으로 바뀐다. 첫마디에 addressee(sayTo)로 상대를 못박는다.`);
+    }
+  }
   if (line.addressee && addresseeId && addresseeId !== PLAYER_ACTOR) {
     const target = ctx.byId.get(addresseeId);
     if (target && visibleNow(target, st) === false) {
@@ -385,11 +396,12 @@ function checkLine(ctx: Ctx, st: Replay, line: Extract<Command, { kind: "text" }
 
 /**
  * 탁자 건너편 — 한 칸 더 먼(TALK_DISTANCE_LIMIT + 1) 두 사람 사이 곧은 줄에 막힌 가구 칸(탁자·의자)이 있으면 마주 앉은 대화로 본다.
- * 회의 탁자(폭 2)를 사이에 둔 맞은편은 3칸이다(첫사랑 금요일 회의: 발표자는 북쪽에 서고 듣는 셋은 남쪽 의자에 앉는다).
+ * 회의 탁자(폭 2)를 사이에 둔 맞은편은 3칸, 탁자 머리에서 반대쪽 끝은 4칸이다(첫사랑 금요일 회의: 발표자는 북쪽에 서고 듣는 셋은 남쪽 의자에 앉는다).
  * 사이가 빈 바닥이면 그냥 먼 것이다(곁으로 걸어가 말해야 한다).
  */
 function acrossFurniture(ctx: Ctx, a: StageCell, b: StageCell, dist: number): boolean {
-  if (dist !== TALK_DISTANCE_LIMIT + 1) return false;
+  // 탁자 길이 방향(머리 ↔ 맞은편 끝)은 네 칸까지 — 탁자 머리의 손님과 반대쪽 끝 발표자(첫사랑 금요일, VQA r23).
+  if (dist <= TALK_DISTANCE_LIMIT || dist > TALK_DISTANCE_LIMIT + 2) return false;
   let x = a.x, y = a.y;
   while (x !== b.x || y !== b.y) {
     x += Math.sign(b.x - x); y += Math.sign(b.y - y);

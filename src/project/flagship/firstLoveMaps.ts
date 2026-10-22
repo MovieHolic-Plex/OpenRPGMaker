@@ -288,7 +288,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
       // 금요일 발표(VQA r21·r22: 다섯이 탁자 옆 2×3 덩어리로 섰다): 발표자 서하·지후는 탁자 북쪽 양 끝(4,16)·(7,16)에 서서 아래를 보고,
       // 듣는 셋(팀장·민호·본부장)은 탁자 남쪽 의자(4·5·6,19)에 앉아 위를 본다 — 탁자를 사이에 둔 맞은편 3칸(scene-talk-far 의 탁자 건너편).
       meetingSeat: { x: 4, y: 16 },
-      meetSeats: [{ x: 4, y: 16 }, { x: 7, y: 16 }, { x: 5, y: 19 }, { x: 4, y: 19 }, { x: 6, y: 19 }],
+      // 본부장은 탁자 서쪽 머리(3,17)에 서서 탁자 쪽(동)을 본다 — 남쪽 의자에 팀원과 어깨를 붙여 앉히면 손님이 팀원 줄에 끼어 보였다(VQA r23).
+      meetSeats: [{ x: 4, y: 16 }, { x: 7, y: 16 }, { x: 5, y: 19 }, { x: 4, y: 19 }, { x: 3, y: 17 }],
       whiteboard: nearestFree(project, officeRoom, { x: 23, y: 10 }),
     },
     rooftop: {
@@ -376,7 +377,8 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
   };
   platformPm.defaultLighting = {
     // 지하 승강장은 형광등으로 고르게 밝다 — 바닥의 큰 빛 웅덩이 사이가 구름 그림자처럼 얼룩졌다(VQA r16). 고른 밤색만 얇게 깔고 간판 불만 둔다.
-    ambient: 0.22, color: "#121a36",
+    // 아침 승강장과 같은 밝기로 읽혔다(VQA r23) — 막차 시간의 푸른 밤색을 한 단계 더(얼룩이 생기지 않게 큰 빛은 더하지 않는다).
+    ambient: 0.32, color: "#101836",
     // 승강장에는 가로등이 없다 — 실제로 빛나는 것(발차 LED 판·자판기·매표기·벽시계·역명 간판)만 켠다.
     sources: [
       light("fl_led_a", { x: 10, y: 3 }, 4, "#bfe0ff", 0.8), light("fl_led_b", { x: 24, y: 3 }, 4, "#bfe0ff", 0.8), light("fl_led_c", { x: 38, y: 3 }, 4, "#bfe0ff", 0.8),

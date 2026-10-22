@@ -889,8 +889,9 @@
 }
 
 /* === 초상 무대 — 앞 화자는 반대쪽에 흐리게 남는다 === */
+/* 0.45 는 머리색까지 검게 바꿔 다른 사람처럼 보였다(첫사랑 VQA r23) — 듣는 쪽은 한발 물러선 정도로만 누른다. */
 .dialogue-box .dialogue-face.dialogue-portrait-listener {
-  filter: brightness(0.45) saturate(0.6);
+  filter: brightness(0.66) saturate(0.78);
   opacity: 0.9;
   z-index: 0;
 }

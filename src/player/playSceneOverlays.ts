@@ -530,6 +530,7 @@ function endingSummaryLine(scene: { session: { partyActorIds?: readonly string[]
     .filter((name): name is string => Boolean(name));
   const seconds = Math.max(0, Math.floor(scene.session.playTimeSeconds ?? 0));
   const time = `${Math.floor(seconds / 3600)}:${String(Math.floor((seconds % 3600) / 60)).padStart(2, "0")}`;
-  const parts = [names.length ? `함께한 이: ${names.join(" · ")}` : "", seconds > 0 ? `플레이 시간: ${time}` : ""].filter(Boolean);
+  // 혼자인 파티(주인공 하나)는 「함께한 이: 주인공」이 된다 — 함께한 사람이 아니라 자기 이름이다(첫사랑 VQA r23). 둘 이상일 때만 쓴다.
+  const parts = [names.length > 1 ? `함께한 이: ${names.join(" · ")}` : "", seconds > 0 ? `플레이 시간: ${time}` : ""].filter(Boolean);
   return parts.join("   ·   ");
 }
