@@ -1,0 +1,16 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "2e91b15f8bf18ca4f8c474ad6fc8748a9a60be423f1871a8ab7f5b75cc3228de",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (village-art)",
+ "decidedAt": "2026-10-22T20:48:51.565Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "/home/main/z-project/rpg-zzu-village-art/tiledata/wasteland-ruins/_review/vqa-r4",
+ "via": "review-page",
+ "reasons": [],
+ "note": "delegated by user to supervisor 2026-10-23 — wasteland_ruins/tent-tarp; gate pass; 3 fresh Opus adversarial reviewers r4 majority pass (2/3); delegated by user to supervisor 2026-10-23",
+ "sig": "d68cb11f28d0c9ba12b93f0d50352040542d7133c93b183ced1b49aac4f0330d"
+}
