@@ -91,6 +91,9 @@ def fit(im, limit=820):
     if s < 1: im = im.resize((max(1, int(im.width * s)), max(1, int(im.height * s))), Image.NEAREST)
     return im.convert("RGB").quantize(colors=128, method=Image.Quantize.MEDIANCUT)
 
+def rows_json(rows):
+    return "[\n" + ",\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n]"
+
 def caption_cells(cells):
     return " ".join(f"({x},{y})" for x, y in cells) or "-"
 
@@ -105,6 +108,7 @@ def main():
         entries = json.load(open(dump))
     by_ts = {}
     for e in entries: by_ts.setdefault(e["tileset"], []).append(e)
+    spec_objects = json.load(open(os.path.join(ROOT, "src/assets/stairContracts.json")))["objects"]
     out = {}
     for ts, kits in sorted(by_ts.items()):
         if ts not in TEX: print(f"[stair-refs] 그림 없음: {ts}", file=sys.stderr); continue
@@ -130,6 +134,29 @@ def main():
             dict_rows.append({"kit": e["id"], "name": e["name"], "size": f"{c['w']}x{c['h']}", "leads": c["leads"], "mode": c["mode"], "side": c["side"],
                               "trigger": c["trigger"], "approach": c["approach"], **({"exit": c["exit"]} if c.get("exit") else {}),
                               "arrivalFacing": FACING.get(c["side"], "앞 칸 → 계단 반대쪽"), "rows": rows, "image": f"stair-{ts}-{slug}"})
+        kit_by_id = {k["id"]: k for k in kits}
+        obj_rows = []
+        for obj_id, ref in sorted((spec_objects.get(ts) or {}).items()):
+            k = kit_by_id.get(ref["kit"])
+            if not k: continue
+            kc, lift = k["contract"], ref["lift"]
+            rel = lambda cells: [[x, y - lift] for x, y in cells]
+            obj_rows.append({"object": obj_id, "kit": ref["kit"], "leads": kc["leads"], "mode": kc["mode"], "side": kc["side"],
+                             "trigger": rel(kc["trigger"]), "approach": rel(kc["approach"]), **({"exit": rel(kc["exit"])} if kc.get("exit") else {}),
+                             "arrivalFacing": FACING.get(kc["side"], "앞 칸 → 계단 반대쪽")})
+        obj_md = ""
+        if obj_rows:
+            obj_md = f"""
+## 실내 조립기 물건 — build_hand_interior_room 의 objects id
+`build_hand_interior_room` 의 objects 에 쓰는 id(예: `{obj_rows[0]['object']}`)는 아래 표다. **좌표는 물건 좌표 (o.x, o.y) 기준**(키트 왼쪽 위가 아니다).
+앞 칸 (o.x+ax, o.y+ay) 이 방 바닥 안이어야 하고, links 의 층 이동은 이동 칸 중 하나, 다른 층에서 오는 도착은 앞 칸에 arrivalFacing 으로.
+도구가 쓰기 직후 links·도착을 이 표대로 자동 맞춤(메모 「계단」)하지만, 앞 칸을 바닥 안에 두는 것은 놓는 쪽 일이다.
+1층→지하는 오르는 그림이 아니라 내려가는 구멍(leads down), 위층에서는 내려가는 구멍이 1층으로 돌아오는 짝이다.
+
+```json
+{rows_json(obj_rows)}
+```
+"""
         ex = next((k for k in kits if k["contract"]["leads"] != "same" and k["contract"]["side"] == "S"), next((k for k in kits if k["contract"]["leads"] != "same"), kits[0]))
         c = ex["contract"]; ox, oy = 10, 4
         abs_ = lambda cells: [[ox + x, oy + y] for x, y in cells]
@@ -159,13 +186,14 @@ def main():
 - 이벤트: `{{"x": {ox + c['trigger'][0][0] if c['trigger'] else ox}, "y": {oy + c['trigger'][0][1] if c['trigger'] else oy}, "pages": [{{"trigger": {{"kind": "playerTouch"}}, {'"priority": "same", "overlapForbidden": true' if c['mode'] == 'bump' else '"priority": "below"'}, "commands": [{{"kind": "transfer", "mapId": "<짝 층>", "x": "<짝 계단 앞 칸 x>", "y": "<짝 계단 앞 칸 y>", "direction": "<짝 계단 arrivalFacing>"}}]}}]}}`
 - 짝 층에서 이 계단으로 오는 transfer: `{{"x": {abs_(c['approach'])[0][0] if c['approach'] else ox}, "y": {abs_(c['approach'])[0][1] if c['approach'] else oy}, "direction": "{FACING.get(c['side'], 'down')}"}}`.
 
+{obj_md}
 ## 하위/상위 칸 배열(정답)
 키트 rows 의 `lower` = 아래층 칸(tiles), `upper` = 위층 칸(upperTiles), -1 = 비움. 찍으면 이 배열이 그대로 맵에 들어간다.
 통행은 칩셋 칸 판정 그대로다(빨강 X 칸은 못 밟음) — 계단 그림 칸을 덮는 바닥·벽을 따로 칠하지 않는다.
 
 ## 사전
 ```json
-{json.dumps(dict_rows, ensure_ascii=False, indent=1)}
+{rows_json(dict_rows)}
 ```
 
 ## 정상 / 오류

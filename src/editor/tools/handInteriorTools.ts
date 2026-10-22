@@ -1003,7 +1003,9 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     // 엘리베이터 문·계단은 북벽 벽면에 박히고 그 앞 첫 바닥 줄이 탈 자리다 — 층 이동 출입구를 엉뚱한 칸에 두어 장식만 남은 엘리베이터가 생겼다(r4-rom-d 4대 중 3대).
     const travelSpots = [...new Map(built.travel.map((t) => [t.label, t] as const)).values()];
     const travelNote = travelSpots.length
-      ? ` — 층 이동 탈 자리(벽면에 박힌 문 앞 첫 바닥 칸, create_transfer_pair 를 여기에): ${travelSpots.slice(0, 6).map((t) => `${t.label.replace(/ @\(.*$/u, "")} (${t.x},${t.y})`).join(" · ")}`
+      ? ` — 층 이동 탈 자리(벽면에 박힌 문 앞 첫 바닥 칸, create_transfer_pair 를 여기에): ${travelSpots.slice(0, 6).map((t) => t.trigger
+        ? `${t.label.replace(/ @\(.*$/u, "")} 계단 앞 칸(도착) (${t.x},${t.y}) ${t.facing ?? ""} · 이동 칸 (${t.trigger.x},${t.trigger.y})${t.mode === "bump" ? " 부딪힘" : ""}`
+        : `${t.label.replace(/ @\(.*$/u, "")} (${t.x},${t.y})`).join(" · ")}`
       : "";
     return {
       summary: `손 도트 실내 '${name}' ${built.width}×${built.height} (${mapId}, ${tilesetId})${picked ? ` — 배치 후보 ${picked.variant + 1}/${picked.variants}(방 ${picked.c.rooms.length}개, 견본 가구 ${Object.values(furnished ?? {}).reduce((a, f) => a + f.placed, 0)}점 — data.layout.picture 로 배치를 보고, 다른 배치는 layout.variant 를 바꿔 replace:true)` : ""} — 출입구에서 닿는 칸 ${built.reachable}, 닿지 못한 빈 바닥 ${built.unreachedFloor.length}, 경고 ${warnings.length}${warnings.length ? ` — ${warnings.slice(0, 4).join(" / ")}${warnings.length > 4 ? " …" : ""}` : ""}${travelNote}`,
