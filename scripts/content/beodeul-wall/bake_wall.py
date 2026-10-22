@@ -16,7 +16,7 @@ bake_dungeon_ceiling.py(28,416~)가 시트를 다시 쓰면 이 꼬리가 사라
   가로 성벽 = 윗면 두 줄(yw, yw+1) + 앞면 네 줄(yw+2~yw+5). 세로 성벽 = 두 열 윗면. 모서리 2×2.
   성문루 4×8 = (왼쪽 위 열, yw−1) 부터 — 윗면 플랫폼 세 줄 + 앞면 다섯 줄(성벽보다 한 줄 앞까지).
   망루 3×9 = (왼쪽 위 열, yw−2) 부터 — 윗면 플랫폼 세 줄 + 앞면 여섯 줄(성벽 흉벽보다 한 줄 위에 윗면이 선다).
-  세로 성벽을 길이 지나는 곳은 쪽문 터널(덮개돌 *_pt_*, ★) + 양옆 땅에 터널 입 그늘(mo_w·mo_e). 성문루 안쪽 길 칸에는 mo_n.
+  세로 성벽을 길이 지나는 곳은 쪽문 문루(*_pg_*·*_pgw_*, ★ — 성벽 위로 한 줄 솟은 네모 문루) + 양옆 땅에 터널 입 그늘(mo_w·mo_e). 성문루 안쪽 길 칸에는 mo_n.
   기후 변형: 같은 이름 앞에 snow: · desert: (눈 덮인 성벽 · 사막 사암 성벽).
   땅 그림자 sh_* 는 2층(앞면 밑 줄, 세로 성벽 오른쪽 열).
 """
@@ -38,7 +38,7 @@ T = 16
 COLS = 128
 BASE = 28544          # 던전 천장 꼬리(28,416~28,543) 끝 = 성벽 시작
 BASE_ROW = BASE // COLS
-ROWS_ADDED = 6         # 3판 r9: 조각 656(기본 228 + 눈 214 + 사막 214) — 여섯 행(28,544~29,311)
+ROWS_ADDED = 8         # 3판 r9: 조각 656(기본 228 + 눈 214 + 사막 214) — 여섯 행(28,544~29,311)
 COUNT = BASE + ROWS_ADDED * COLS
 GATE_KIND = "structure"
 
@@ -76,7 +76,19 @@ TOWER_VARS, GATE_VARS = 3, 2     # 윗면 소품 변형 수(망루 tower·tower1
 def tower_name(v, cx, cy, corner=""):
     """corner = 'w'(서쪽 모서리 망루) · 'e'(동쪽): 바깥 열의 통로 두 줄(cy 2·3)은 바깥쪽 걸음을 막은 조각."""
     c = corner if corner and cy in (2, 3) and cx == (0 if corner == "w" else 2) else ""
-    return f"tower{'' if v == 0 or cy >= 3 else v}{c}_{cx}_{cy}"
+    return f"tower{'' if v == 0 else v}{c}_{cx}_{cy}"
+
+
+def postern_rows(e, gy, rows):
+    """쪽문 문루 줄(3판 r11): 윗면 max(2, rows) 줄(t·m…·b) + 앞면 f(마지막 길 줄). 길 줄은 pg, 길 없는 성벽 줄은 pgw. 이름의 {} 는 열(0·1)."""
+    top = max(2, rows)
+    fy = gy + rows - 1
+    out = []
+    for i in range(top + 1):
+        y = fy - top + i
+        k = "f" if i == top else "t" if i == 0 else "b" if i == top - 1 else "m"
+        out.append((y, f"{e}_{'pg' if gy <= y < gy + rows else 'pgw'}_{{}}_{k}"))
+    return out
 
 
 def gate_name(v, cx, cy, shut=False):
@@ -154,8 +166,9 @@ def plan_ring(x0, y0, x1, y1, gates=(), closed=(), vgaps=(), towers=(), stairs=(
     for (side, gy, rows) in vgaps:      # 쪽문 터널: 성벽 윗면은 덮개돌로 잇고, 양옆 땅에 터널 입 그늘
         xa = x0 if side == "W" else x1 - 1
         e = "vw" if side == "W" else "ve"
+        for (y, nm) in postern_rows(e, gy, rows):
+            up[(xa, y)] = nm.format(0); up[(xa + 1, y)] = nm.format(1)
         for r in range(rows):
-            up[(xa, gy + r)] = f"{e}_pt_0"; up[(xa + 1, gy + r)] = f"{e}_pt_1"
             lo[(xa - 1, gy + r)] = "mo_w"; lo[(xa + 2, gy + r)] = "mo_e"
     for sx in stairs:   # 옆 계단 3×4: 왼쪽 아래(sx, y0+5) 땅에서 오른쪽 위(sx+2, y0+2) → 통로(sx+2, y0+1)
         up[(sx + 2, y0 + 1)] = "hn_stair"
@@ -254,12 +267,12 @@ def render_plan(up, lo, W, H, bg=None, ground=(), biome=None):
 
 
 def parts_plan():
-    """작은 둘레 표본(16×23): 모서리 넷·동쪽 쪽문 터널(덮개돌 + 터널 입 그늘)·계단·망루 하나(윗면 변형 1). 반환 (위층, 아래층, 가로, 세로)."""
-    up, lo = plan_ring(2, 3, 13, 14, vgaps=[("E", 10, 2)], towers=[("N", 4, 1), ("N", 11, 0)], stairs=[7])
+    """작은 둘레 표본(16×23): 모서리 넷·동쪽 쪽문 문루(길 세 줄 — 문루 t·m·b·f 를 모두 보인다)·계단·망루 하나(윗면 변형 1). 반환 (위층, 아래층, 가로, 세로)."""
+    up, lo = plan_ring(2, 3, 13, 14, vgaps=[("E", 10, 3)], towers=[("N", 4, 1), ("N", 11, 0)], stairs=[7])
     return up, lo, 16, 23
 
 
-PARTS_GROUND = [(x, y) for x in range(9, 15) for y in (10, 11)]
+PARTS_GROUND = [(x, y) for x in range(9, 15) for y in (10, 11, 12)]
 
 
 def gate_items():
@@ -283,13 +296,13 @@ def gate_items():
                       f"{what} town wall ring, 3/4 top-down (16px tiles): wall-walk tops two tiles deep seen from above (flagstone walkway with "
                       "crenellated parapets), four-tile-high weathered ashlar front faces below the north and south walls, two-tile-wide west and east walls seen from above, "
                       "a gatehouse with an open round arch tunnel, a gatehouse with closed wooden doors, square towers rising above the wall with crenellated top platforms "
-                      "(trapdoor, brazier, crates), stone stairs up the inner face, a road passing under the west wall through a postern tunnel, ground shadows",
+                      "(trapdoor and pennant, brazier, stone balls and crates; each tower's face has a different arrangement of arrow slits and a barred window), stone stairs up the inner face, a road passing under the west wall through a postern gate tower, ground shadows",
                       keys(up, lo)))
         pu, pl, PW, PH = parts_plan()
         pl = nosh(pl)
         items.append(("wall_parts" + sfx, render_plan(pu, pl, PW, PH, bg=GRASS if biome is None else None, ground=PARTS_GROUND, biome=biome),
                       f"small {what} town wall ring, 3/4 top-down: flagstone wall-walk tops with crenellated parapets, four corners, "
-                      "north wall inner face with stone stairs, south wall outer face, a road passing under the east wall through a postern tunnel (lintel slabs above), "
+                      "north wall inner face with stone stairs, south wall outer face, a road passing under the east wall through a postern (a small square gate tower rising one step above the wall, crenellated top with a murder-hole grate, south face with an arched door), "
                       "a square tower rising above the wall with a crenellated top platform, ground shadows",
                       keys(pu, pl)))
         gu, gl = {}, {}
@@ -308,16 +321,19 @@ def gate_items():
                       f"{what} town gatehouse, 3/4 top-down: crenellated top platform seen from above (windlass drum, portcullis pit, stone balls, barrel), "
                       "front face with a round arch closed by two iron-banded wooden doors",
                       keys(cu)))
-        ru = {}
-        for y in range(8):
-            ru[(1, y)] = f"vw{y}_0"; ru[(2, y)] = f"vw{y}_1"; ru[(4, y)] = f"ve{y}_0"; ru[(5, y)] = f"ve{y}_1"
-        items.append(("wall_runs" + sfx, render_plan(ru, {}, 7, 8, bg=GRASS if biome is None else None, biome=biome),
-                      f"{what} town wall, 3/4 top-down: two short runs of the west and east walls (two tiles wide) seen from above — "
-                      "flagstone wall-walk with the outer crenellated parapet strip, eight walk variants each",
-                      keys(ru)))
+        # 3판 r11: 세로 성벽만 따로 내면 판정자가 「위에서 본 납작한 띠(앞면 0행)」로 읽었다 — 남북 성벽·모서리로 닫은 좁은 둘레 안에서 변형 0~7 을 보인다
+        ru, rl = plan_ring(1, 1, 6, 12)
+        for i in range(8):
+            ru[(1, 3 + i)] = f"vw{i}_0"; ru[(2, 3 + i)] = f"vw{i}_1"; ru[(5, 3 + i)] = f"ve{i}_0"; ru[(6, 3 + i)] = f"ve{i}_1"
+        rl = nosh(rl)
+        items.append(("wall_runs" + sfx, render_plan(ru, rl, 8, 19, bg=GRASS if biome is None else None, biome=biome),
+                      f"{what} narrow town wall ring, 3/4 top-down: west and east walls (two tiles wide, seen from above: flagstone wall-walk with the outer "
+                      "crenellated parapet strip, eight walk variants each) joined by corners to the north wall (walkway top and inner face) and the south wall "
+                      "(walkway top and four-tile-high ashlar outer face)",
+                      keys(ru, rl)))
         tu = {(cx, cy): f"tower_{cx}_{cy}" for cx in range(3) for cy in range(GT)}
         items.append(("tower" + sfx, render_plan(tu, {}, 3, GT, bg=GRASS, biome=biome),
-                      f"{what} square wall tower, 3/4 top-down: crenellated top platform seen from above with a wooden trapdoor and a crate, corbel band, "
+                      f"{what} square wall tower, 3/4 top-down: crenellated top platform seen from above with a wooden trapdoor and a pennant on a pole, corbel band, "
                       "tall ashlar front face with corner quoins and three cross-shaped arrow slits, plinth",
                       keys(tu)))
     return items
@@ -437,7 +453,7 @@ def write_tables():
         dict(id="beodeul:town_wall", name="버들항 마을 성벽(윗면·앞면·모서리·끝·그림자)", role="wall", source="bundled-default", defaultLayer="upper", confidence="high",
              tileIds=ids(lambda n: not n.startswith(("gate", "tower", "stair"))),
              description="3/4 시점 마을 성벽 조각. 가로 성벽 = 윗면 두 줄(판석 통로 + 흉벽, 동서 걸음) + 앞면 네 줄(마름돌, 막힘). 세로 성벽 = 두 칸 폭 윗면(남북 걸음). "
-                         "hs = 남쪽 성벽(앞 흉벽), hn = 북쪽 성벽(뒤 흉벽, 마을 쪽 앞면), vw·ve = 서·동 성벽, *_pt_* 쪽문 터널 덮개돌(★), c_* 2×2 모서리, f_* 앞면(u·m·n·l), "
+                         "hs = 남쪽 성벽(앞 흉벽), hn = 북쪽 성벽(뒤 흉벽, 마을 쪽 앞면), vw·ve = 서·동 성벽, *_pg_*·*_pgw_* 쪽문 문루(★), c_* 2×2 모서리, f_* 앞면(u·m·n·l), "
                          "sh_* 2층 땅 그림자, mo_* 2층 터널 입 그늘. 눈 덮인 판 snow:* · 사막 사암 판 desert:* 이 같은 이름으로 있다.",
              placementRules="마을 둘레는 author_beodeul_town walls:true 로 짓고 손으로 줄을 긋지 않는다. 손으로 고칠 때: 가로 성벽 윗면 두 줄 밑에 앞면 네 줄(f_u_* · f_m_* · f_n_* · f_l_*), "
                             "남쪽 앞면 양 끝은 f_*_endL·endR, 북쪽 앞면 맨 왼쪽은 f_*_shL. 성벽은 3층, 그림자(sh_*)는 2층 땅 칸."),
