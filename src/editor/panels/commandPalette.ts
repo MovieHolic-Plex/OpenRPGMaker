@@ -131,11 +131,6 @@ export function openCommandPalette(): HTMLElement {
 
   search.addEventListener("input", () => { activeIndex = 0; refresh(); });
   search.addEventListener("keydown", (event) => {
-    // aria-modal 이므로 Tab 이 배경(톱바 메뉴 등)으로 나가지 않게 입력칸에 붙잡는다.
-    if (event.key === "Tab") {
-      event.preventDefault();
-      return;
-    }
     // Escape 는 공용 모달 스택이 라우팅한다(아래 registerModal).
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
       event.preventDefault();
@@ -147,6 +142,13 @@ export function openCommandPalette(): HTMLElement {
       const entry = entries[activeIndex];
       if (entry) runEntry(entry);
     }
+  });
+  // aria-modal 이므로 Tab 이 배경(톱바 메뉴·자료집 단추 등)으로 나가지 않게 입력칸으로 되돌린다.
+  // 초점이 항목 버튼에 있어도 백드롭에서 받는다.
+  backdrop.addEventListener("keydown", (event) => {
+    if (event.key !== "Tab") return;
+    event.preventDefault();
+    search.focus();
   });
   backdrop.addEventListener("mousedown", (event) => {
     if (event.target === backdrop) close();

@@ -7,6 +7,7 @@ import { editorState, type Tool } from "@/editor/editorState";
 import { dismissLocationDrawModeForTool } from "@/editor/locationDrawMode";
 import { dockZoneHasHost, LEFT_DOCK_TASK_HOST } from "@/editor/workspace/leftDockPanels";
 import { t } from "@/i18n";
+import { withJosa } from "@/util/josa";
 import { allPanels } from "@/editor/workspace/panelRegistry";
 import { moveWorkspacePanel, toggleWorkspacePanel } from "@/editor/workspace/workspaceStore";
 import { selectEditorMap } from "@/editor/mapSelection";
@@ -101,7 +102,7 @@ export function listEditorCommands(): readonly EditorCommand[] {
       },
       ...(["left", "right"] as const).filter(dockZoneHasHost).map((zone): EditorCommand => ({
         id: `workspace-panel-${panel.id}-${zone}`,
-        label: `화면: 패널 — ${panel.title}를 ${zone === "left" ? "왼쪽" : "오른쪽"}으로`,
+        label: `화면: 패널 — ${withJosa(panel.title, "을/를")} ${zone === "left" ? "왼쪽" : "오른쪽"}으로`,
         category: "화면",
         keywords: ["panel", "dock", "move", "패널", "도크", "이동", panel.title],
         run: () => {
