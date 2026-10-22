@@ -1,3 +1,4 @@
+import type { JsonSchema } from "@/editor/tools/types";
 // build_hand_interior_room 의 «고친 곳만» 호출(edit) — 앞서 성공한 같은 mapId 짓기 인자에 덧붙이기·빼기·바꾸기를 얹어 전체 인자를 만든다.
 //
 // 왜(2026-10-22 실측): 1배 검토의 고치기·다듬기 바퀴마다 조수가 평면·가구 30~60개 전체 인자(2~5천 자)를 다시 써서 보냈다.
@@ -68,8 +69,8 @@ export function applyHandInteriorEdit(base: Readonly<Record<string, unknown>>, e
  * build_hand_interior_room 인자 스키마에 edit 를 붙인다 — 덧붙일 항목·바꿀 인자는 같은 도구의 스키마를 그대로 쓴다
  * (자유 키 객체는 Gemini 가 400 으로 거절한다).
  */
-export function withHandInteriorEdit<T extends Record<string, unknown>>(properties: T): T & { edit: unknown } {
-  const p = properties as Record<string, unknown>;
+export function withHandInteriorEdit(properties: Record<string, JsonSchema>): Record<string, JsonSchema> {
+  const p = properties;
   const pick = (keys: readonly string[]) => Object.fromEntries(keys.filter((k) => p[k]).map((k) => [k, p[k]]));
   return { ...properties, edit: {
     type: "object",
@@ -82,5 +83,5 @@ export function withHandInteriorEdit<T extends Record<string, unknown>>(properti
       set: { type: "object", properties: pick(["plan", "floor", "wall", "ceiling", "zones", "start", "exitWidth", "name"]), additionalProperties: false },
     },
     additionalProperties: false,
-  } };
+  } as JsonSchema };
 }
