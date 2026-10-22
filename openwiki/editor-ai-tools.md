@@ -215,7 +215,9 @@
 **천장 매달기(`builder.ts` `ceilingHang`).** 돔 조각의 y 는 천장 줄이다(문서 그대로). 옛 규칙은 y 가 벽면 줄이길 요구해 `dome slit tall` 이
 아홉 바퀴 내내 `hang-not-on-face` 로 거절됐다. 지금: `face-below`(dome slit tall·dome rib·rib west/east·dome cornice)는 칸 전부 비바닥·윗줄 막힘·바로 아래 줄이 벽면 1,
 `ceiling`(dome shell·rib top·dome vault)은 천장 칸이면 된다. 오류 문장은 맞는 y 를 알려 준다. 틈이 맵 꼭대기(y<2)에 붙으면 경고 `dome-slit-no-roof` —
-지붕 없이 하늘에 뜬 틈으로 읽혔다(판정자). `#` 두세 줄을 더하고 dome cornice/shell 로 지붕을 보이게 한다. dome cornice/shell 은 반복 허용(compositionLint).
+지붕 없이 벽의 창으로 읽혔다(판정자). 경고는 폴른 r28 의 짜임을 가리킨다 — plan 맨 위 `#` 4줄 + 3칸마다 한 줄씩 오르는 계단식 북벽, `dome vault`(30×8 한 장) @(왼벽 다음 칸, 0), 틈은 그 x+14, y=3.
+칸 조각 dome cornice/shell 로 지붕 띠를 둘러도 판정자는 「벽 위 말뚝」「지붕 띠가 틈을 막는다」로 읽었다(2026-10-23 다듬기 9바퀴 내내 틈 항목 ✗, 틈 거절은 0건).
+걸이 그림이 덮은 천장 칸은 compositionLint 의 「방 밖 허공」에 세지 않는다(dome vault 를 건 r28 관측 홀이 40% 로 「맵을 줄여라」를 받았다).
 
 **고친 곳만(`edit.ts` `applyHandInteriorEdit`).** `build_hand_interior_room` 에 `edit:{remove, removeLines, add, set}` — 실행기(`withHandInteriorEdits`)가
 이 대화의 마지막 인자(다듬기 판은 `polish.lastBuilds`)에 합쳐 통째 인자로 바꾼다. 도구까지 edit 가 오면 `edit-without-base` 오류. set 은 plan·ceiling·start·exitWidth·name 만(스키마 크기).
