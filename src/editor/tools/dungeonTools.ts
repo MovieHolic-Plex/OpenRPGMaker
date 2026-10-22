@@ -179,7 +179,7 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
   };
   const dressed = Object.values(composed.counts).reduce((a, b) => a + b, 0);
   return {
-    summary: `${notes.join(" ")} ${GRAMMAR[composed.type].label}(${route.adapter === "monster" ? "몬스터 키트" : "버들항"}·${GENRE_PRESETS[route.genre].label}) 던전 ${mapId} ${composed.width}×${composed.height}: 방 ${composed.rooms.length}개를 통로 ${composed.corridors.length}개로 이었다(장식 ${dressed}점, 받침 없는 물체 0${composed.liquid.kind ? `, ${composed.liquid.kind === "lava" ? "용암" : "물"} ${composed.liquid.cells}칸은 걸을 수 없고 다리 ${composed.liquid.bridges}칸` : ""}, 입구에서 모든 방 도달${composed.anchors.boss ? `, 보스방 ${composed.anchors.boss}` : ""}${composed.anchors.treasure ? `, 보물 방 ${composed.anchors.treasure}` : ""}${composed.anchors.gate ? `, 잠긴 문 자리 (${composed.anchors.gate.x},${composed.anchors.gate.y})` : ""}). 이벤트·적·상자는 data.rooms[].spots 좌표에만 두고, data.population 의 계획을 따른다.`.trim(),
+    summary: `${notes.join(" ")} ${GRAMMAR[composed.type].label}(${route.adapter === "monster" ? "몬스터 키트" : "버들항"}·${GENRE_PRESETS[route.genre].label}) 던전 ${mapId} ${composed.width}×${composed.height}: 방 ${composed.rooms.length}개를 통로 ${composed.corridors.length}개로 이었다(장식 ${dressed}점, 받침 없는 물체 0${composed.liquid.kind ? `, ${composed.liquid.kind === "lava" ? "용암" : "물"} ${composed.liquid.cells}칸은 걸을 수 없고 다리 ${composed.liquid.bridges}칸` : ""}, 입구에서 모든 방 도달${composed.anchors.boss ? `, 보스방 ${composed.anchors.boss}` : ""}${composed.anchors.treasure ? `, 보물 방 ${composed.anchors.treasure}` : ""}${composed.anchors.gate ? `, 잠긴 문을 둘 수 있는 통로 칸 (${composed.anchors.gate.x},${composed.anchors.gate.y}) — 문은 아직 없다` : ""}). 이벤트·적·상자는 data.rooms[].spots 좌표에만 두고, data.population 의 계획을 따른다.`.trim(),
     data,
     warnings: composed.warnings.length ? composed.warnings : undefined,
   };
@@ -352,7 +352,9 @@ function authorDungeon(draft: Project, args: Record<string, unknown>): ToolExecR
     if (line) filled.push(`${draft.maps[mapIds[i]!]!.name}: ${line}`);
   }
   const floorWarnings = results.flatMap((r) => r.warnings ?? []);
-  const head = results.length === 1 ? results[0]!.summary : `${results.length}층 ${direction === "up" ? "탑" : "지하"} 던전: ${results.map((r, i) => `[${i + 1}] ${r.summary}`).join(" ")}`;
+  // 이미 채웠으면 「계획대로 직접 놓아라」는 문장을 빼고 채운 결과만 알린다(조수가 같은 자리에 적·상자를 또 놓았다).
+  const sums = results.map((r) => (populate ? r.summary.replace(" 이벤트·적·상자는 data.rooms[].spots 좌표에만 두고, data.population 의 계획을 따른다.", "") : r.summary));
+  const head = results.length === 1 ? sums[0]! : `${results.length}층 ${direction === "up" ? "탑" : "지하"} 던전: ${sums.map((t, i) => `[${i + 1}] ${t}`).join(" ")}`;
   const tail = [
     links.length ? `층 계단을 이었다: ${links.join(" / ")}(도착은 계단 앞 칸, 계단을 등진다).` : "",
     filled.length ? `채움 — ${filled.join(" / ")}.` : populate ? "" : "채우기는 끔(populate:false) — data.population 계획대로 직접 놓는다.",
