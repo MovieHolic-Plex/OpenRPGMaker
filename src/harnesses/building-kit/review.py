@@ -34,8 +34,6 @@ import beodeul  # noqa: E402
 import dot  # noqa: E402
 
 REPO = dot.REPO
-DATA = dot.DATA
-RUNS = dot.RUNS
 PER_BOARD = 6
 SCALE = 2
 REF_SCALE = 2
@@ -285,7 +283,7 @@ def parse_answer(text, ids):
 
 
 def _round_dir(theme, rid):
-    return os.path.join(RUNS, theme, rid, 'review')
+    return os.path.join(dot.RUNS, theme, rid, 'review')
 
 
 def _runs(rnd):
