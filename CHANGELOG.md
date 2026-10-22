@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.317.1 — 2026-10-22
+
+### 수정
+
+- **beodeul** — forest canopy and trees separate from the lawn (darker, hue-shifted leaf ramps) (#3229) (`e5c1f3d`)
+- **battle** — battle runtime audio, tactics lifetime/clock, snapshot ownership and smoke fixture (#2586) (#3228) (`5c3769b`)
+
+### 기타
+
+- Runtime: talk across counters + natural NPC walk speed (#3231) (`6195e4d`)
+
 ## 0.317.0 — 2026-10-22
 
 ### 기능
