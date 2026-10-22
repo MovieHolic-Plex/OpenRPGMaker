@@ -415,7 +415,7 @@ def cmd_validate(theme):
     if len(lines(theme)) < 3:
         notes.append(f'줄 {len(lines(theme))}개 — style-r1 은 셋(A·B·C)을 권한다')
 
-    depth_bids = {bid for rd in s.get('rounds', {}).values() if rd.get('grammar') == AS.DEPTH_GRAMMAR
+    depth_bids = {bid for rd in s.get('rounds', {}).values() if AS.is_depth_grammar(rd.get('grammar'))
                   for bid in rd.get('buildings') or []}
     for b in s.get('buildings', []):
         bid = b.get('id')
@@ -503,11 +503,11 @@ def cmd_validate(theme):
         for bid in rd.get('buildings') or []:
             if bid not in {b['id'] for b in s.get('buildings', [])}:
                 errs.append(f'판 {rid}: buildings 의 {bid} 레시피가 시드에 없다')
-        if rd.get('grammar') in ('r4', 'r5', AS.DEPTH_GRAMMAR):
+        if rd.get('grammar') in ('r4', 'r5') or AS.is_depth_grammar(rd.get('grammar')):
             errs += _r4_grammar(s, items, rid)
         if rd.get('requireGableFront'):
             errs += _gable_front_round(s, items, rid)
-        if rd.get('grammar') == AS.DEPTH_GRAMMAR:
+        if AS.is_depth_grammar(rd.get('grammar')):
             errs += _depth_round(s, items, rid)
         reuse = rd.get('reuseParts')
         if reuse and (reuse == rid or reuse not in s.get('rounds', {})):
@@ -616,7 +616,7 @@ def _r4_grammar(s, items, rid):
         except KeyError:
             continue  # 조각 계약 오류는 _receding_problems 가 따로 적는다
         if spires and plain:
-            lift = (lambda m: int(m.get('depth') or 0)) if s['rounds'][rid].get('grammar') == AS.DEPTH_GRAMMAR \
+            lift = (lambda m: int(m.get('depth') or 0)) if AS.is_depth_grammar(s['rounds'][rid].get('grammar')) \
                 else (lambda m: 0)
             main = max(plain, key=lambda m: int(m['cols']) * int(m['storeys']))
             main_h = AS.mass_rows(main, items) + lift(main)
@@ -628,8 +628,8 @@ def _r4_grammar(s, items, rid):
 
 def _depth_round(s, items, rid):
     """깊이 땅 문법(grammar r7) 레시피 계약(부품 그림 없이): 질량이 화면에서 이어지고, 박공 정면은 폭 4~6·
-    depth_rows 2~3, 문은 가장 앞 질량, 외쪽은 옆 질량보다 낮고, 더 뒤 질량 앞 박공 날개의 뒤 끝은 (뒤 박공이면) 뒤 질량
-    처마보다 낮게 벽 앞에 서거나 (골이면) 뒤 질량 지붕 안에서 끝난다(A13 예측)."""
+    depth_rows 2~3, 문은 가장 앞 질량, 외쪽은 옆 질량보다 낮고, 박공 정면 날개는 본채 바로 앞(본채 depth = 날개 depth + 1)에
+    붙고 뒤 끝이 골(valley)이며 그 꼭대기가 본채 지붕(처마 위 ~ 용마루) 안에서 끝난다(A13·A16 예측, 사용자 판정 2026-10-22)."""
     errs = []
     by = {b['id']: b for b in s.get('buildings', [])}
     for bid in s['rounds'][rid].get('buildings') or []:
@@ -660,20 +660,15 @@ def _depth_round(s, items, rid):
         for m in ms:
             if m['kind'] == AS.LEAN_TO and int(m['storeys']) >= tallest:
                 errs.append(f'{tag}/{m["id"]}: 외쪽 {m["storeys"]}층 — 붙는 본 질량({tallest}층)보다 낮아야 한다(처마 아래)')
-        for w in ms:
-            if w['kind'] != AS.GABLE_FRONT:
-                continue
+        for w, mains in AS.wing_mains(ms):
+            errs += [f'{tag}/{why}' for why in AS.wing_problems(w, mains)]
             top = w['depth'] + rows[w['id']]
-            for b in ms:
-                if b['depth'] <= w['depth'] or min(w['x'] + w['cols'], b['x'] + b['cols']) <= max(w['x'], b['x']):
-                    continue
+            for b in mains:
                 eave = b['depth'] + rows[b['id']] - roof[b['id']]
                 btop = b['depth'] + rows[b['id']]
-                if w.get('back_end') == 'valley' and not eave < top <= btop:
-                    errs.append(f'{tag}/{w["id"]}: 골 날개 꼭대기(땅에서 {top}칸)가 {b["id"]} 지붕(처마 {eave}~용마루 {btop}) 안에 없다')
-                if w.get('back_end') != 'valley' and top >= eave:
-                    errs.append(f'{tag}/{w["id"]}: 뒤 박공 꼭대기(땅에서 {top}칸)가 {b["id"]} 처마({eave}칸)에 닿거나 넘는다 — '
-                                f'{b["id"]} depth 를 {top - (rows[b["id"]] - roof[b["id"]]) + 1} 이상으로 물리거나 골(valley)을 쓴다')
+                if not eave < top <= btop:
+                    errs.append(f'{tag}/{w["id"]}: 날개 꼭대기(땅에서 {top}칸)가 {b["id"]} 지붕(처마 {eave}~용마루 {btop}) 안에 없다 — '
+                                '날개 지붕은 본채 처마보다 올라가 본채 지붕 면 안에서 골로 끝난다')
     return errs
 
 

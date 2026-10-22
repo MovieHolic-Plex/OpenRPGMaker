@@ -7,6 +7,10 @@
                           오른쪽 어두운 사면 → 앞 박공 삼각 벽 → 벽 띠
   projection-l-combo      ㄱ자: 용마루가 정면과 나란한 2층 본채(뒤) + 앞 박공 정면 날개(3칸, 사면 2행) — 날개 지붕이 본채 지붕에 박히는
                           ^ 선이 골(valley) · 본채 지붕 위 굴뚝
+  projection-wing-depth   ㅜ자 이음(깊이 땅 문법 r7, 사용자 판정 2026-10-22 「한 채로 안 보인다」): 앞 날개(depth 0) 바로 뒤에
+                          본채(depth 1 — 날개 뒤 끝 = 본채 앞벽)가 한 칸 높이 서고, 날개 지붕이 본채 처마 위로 올라가 본채 지붕
+                          속 V자 골에서 만난다. 날개와 본채 사이에 땅이 없고, 그림자는 날개 오른쪽 본채 벽에만 진다.
+  projection-valley-widths 날개 골 조각 v4·v5·v6(날개 폭 4~6칸, 2행 = g4·g5 물매) — ^ 골 선 위로 본채 지붕이 비친다
 
 16px 칸 격자 위에 무채색(R=G=B)만 쓴다. 4배 그림 오른쪽에 회색 견본과 영어 이름표(기본 글꼴에 한글이 없다)를 단다.
 `python3 projection.py [--out <폴더>]` 또는 `npm run harness -- building-kit projection`.
@@ -25,7 +29,8 @@ import dot  # noqa: E402
 
 T = dot.T
 SCALE = 4
-NAMES = ('gable-front', 'l-combo', 'wing-depth')
+NAMES = ('gable-front', 'l-combo', 'wing-depth', 'valley-widths')
+VALLEY_WIDTHS = (4, 5, 6)
 
 BG = 58
 GRID = 66
@@ -56,9 +61,16 @@ LEGEND = {
     'l-combo': (('hip_top', 'main roof, ridge parallel to front (behind)'), ('hip_ridge', 'main ridge'),
                 ('ridge', 'wing ridge (recedes north)'), ('slope_l', 'wing left slope (lit)'), ('slope_r', 'wing right slope (shade)'),
                 ('valley', 'valley ^ = wing pixels over main roof'), ('chimney', 'chimney standing on the roof')),
-    'wing-depth': (('hip_top', 'main block set back (depth 5): stands 5 rows higher'), ('wall', 'main wall bottom visible'),
-                   ('yard', 'yard strip = open ground (transparent in kit)'), ('ridge', 'front wing (depth 0, door)'),
-                   ('shadow', 'wing shadow: right of wing on main wall + yard'), ('edge', 'wing back ^ in front of main wall')),
+    'wing-depth': (('hip_top', 'main block, depth = wing depth + 1 (wing back edge = main front wall)'),
+                   ('wall', 'main wall: bottom 1 row above wing bottom, touches the wing'),
+                   ('valley', 'valley V: wing roof runs up INTO the main roof (no back gable)'),
+                   ('ridge', 'front wing (depth 0, door), ridge recedes north'),
+                   ('shadow', 'wing shadow: on the main wall only, right of wing'),
+                   ('yard', 'open ground beside the wing only (never between)')),
+    'valley-widths': (('valley', 'v4 / v5 / v6: wing valley, width 4-6 cells, 2 rows (= g4/g5 pitch)'),
+                      ('hip_top', 'main roof shows through above the V'),
+                      ('ridge', 'wing ridge 2px at the centre, apex = top row'),
+                      ('slope_l', 'left slope (lit)'), ('slope_r', 'right slope (shade)')),
 }
 
 
@@ -103,11 +115,12 @@ def gable_front(cv, x0, y0, cols, pitch, depth, storeys, back='gable', band=0):
     return total // T
 
 
-def ridge_side(cv, x0, y0, cols, roof_rows, storeys):
-    """용마루가 정면과 나란한 모임지붕 질량(본채). 반환: 질량 높이(칸)."""
+def ridge_side(cv, x0, y0, cols, roof_rows, storeys, band=0):
+    """용마루가 정면과 나란한 모임지붕 질량(본채). band = 층 띠 행 수(층 사이마다). 반환: 질량 높이(칸)."""
     w, rh = cols * T, roof_rows * T
     X0, Y0 = x0 * T, y0 * T
-    total = rh + storeys * 2 * T
+    per = 2 * T + band * T
+    total = rh + storeys * 2 * T + band * T * max(0, storeys - 1)
     hip = 2 * T
     for x in range(w):
         for y in range(total):
@@ -124,14 +137,14 @@ def ridge_side(cv, x0, y0, cols, roof_rows, storeys):
                     tone = 'hip_r'
                 else:
                     tone = 'hip_top' if y < rh - 4 else 'edge'
-            elif (y - rh) % (2 * T) < 2:
+            elif (y - rh) % per < 2 or (y - rh) % per >= 2 * T:
                 tone = 'beam'
             else:
                 tone = 'wall'
             cv[Y0 + y, X0 + x] = TONE[tone]
     for s in range(storeys):
         for i in range(1, cols - 1, 2):
-            wy = Y0 + rh + s * 2 * T + 8
+            wy = Y0 + rh + s * per + 8
             cv[wy:wy + 12, X0 + i * T + 4:X0 + i * T + 12] = TONE['window']
     return total // T
 
@@ -183,6 +196,8 @@ def render(name):
         gable_front(cv, 3, ground - wing_h, 3, 1, 2, 1, back='valley')
     elif name == 'wing-depth':
         cv = wing_depth()
+    elif name == 'valley-widths':
+        cv = valley_widths()
     else:
         raise KeyError(f'모르는 안내도 {name!r} — {", ".join(NAMES)}')
     rgb = np.repeat(cv[:, :, None], 3, axis=2)
@@ -190,40 +205,64 @@ def render(name):
     return Image.fromarray(a, 'RGBA')
 
 
-WING_DEPTH = {'cols': 10, 'rows': 14, 'main_x': 1, 'main_cols': 8, 'main_roof': 3, 'main_storeys': 2, 'depth': 5,
-              'wing_x': 3, 'wing_cols': 4, 'pitch': 2, 'depth_rows': 2, 'eave_drop': 2}
+WING_DEPTH = {'cols': 10, 'rows': 12, 'main_x': 1, 'main_cols': 8, 'main_roof': 3, 'main_storeys': 2, 'main_band': 1,
+              'depth': 1, 'wing_x': 3, 'wing_cols': 4, 'pitch': 2, 'depth_rows': 2, 'eave_drop': 2}
 
 
 def wing_depth(geo=None):
-    """깊이 계단 안내도(깊이 땅 문법 r7): 앞 날개(depth 0) 뒤에 depth 칸 물러난 본채가 화면에서 그만큼 더 높이 서고,
-    날개 양옆에 본채 벽 밑과 마당 띠가 보이며, 날개가 오른쪽(빛은 왼쪽 위)으로 본채 벽·마당에 그림자를 드리운다.
-    날개 뒤 박공 꼭대기(땅에서 8칸)는 본채 처마(5+4 = 9칸) 아래 벽 앞에 선다. 반환: 무채색 uint8 배열."""
+    """ㅜ자 이음 안내도(깊이 땅 문법 r7): 앞 날개(depth 0) 바로 뒤에 본채(depth 1 — 날개 뒤 끝이 본채 앞벽)가 한 칸 높이 서고,
+    날개 지붕이 본채 처마보다 올라가 본채 지붕 속 V자 골(valley)에서 만난다 — 위에서 보면 한 윤곽, 날개와 본채 사이에 땅이 없다.
+    날개 그림자(빛은 왼쪽 위)는 날개 오른쪽 **본채 벽에만** 진다. 날개 옆 본채 벽 밑 한 줄만 땅(yard)이다. 반환: 무채색 uint8 배열."""
     g = dict(WING_DEPTH, **(geo or {}))
     cv = np.full((g['rows'] * T, g['cols'] * T), BG, np.uint8)
     _grid(cv)
     ground = g['rows'] - 1
     d = g['depth']
-    main_h = g['main_roof'] + g['main_storeys'] * 2
+    walls = g['main_storeys'] * 2 + g['main_band'] * max(0, g['main_storeys'] - 1)
+    main_h = g['main_roof'] + walls
     yard = np.zeros(cv.shape, bool)
     yard[(ground - d) * T:ground * T, g['main_x'] * T:(g['main_x'] + g['main_cols']) * T] = True
     cv[yard] = TONE['yard']
-    ridge_side(cv, g['main_x'], ground - d - main_h, g['main_cols'], g['main_roof'], g['main_storeys'])
+    ridge_side(cv, g['main_x'], ground - d - main_h, g['main_cols'], g['main_roof'], g['main_storeys'], g['main_band'])
     chimney(cv, g['main_x'] + g['main_cols'] - 2, ground - d - main_h - 1)
     main_wall = np.zeros(cv.shape, bool)
-    main_wall[(ground - d - g['main_storeys'] * 2) * T:(ground - d) * T, g['main_x'] * T:(g['main_x'] + g['main_cols']) * T] = True
+    main_wall[(ground - d - walls) * T:(ground - d) * T, g['main_x'] * T:(g['main_x'] + g['main_cols']) * T] = True
     wing_h = 2 * g['pitch'] + g['depth_rows'] + 2
     probe = np.full(cv.shape, 0, np.uint8)
-    gable_front(probe, g['wing_x'], ground - wing_h, g['wing_cols'], g['pitch'], g['depth_rows'], 1)
+    gable_front(probe, g['wing_x'], ground - wing_h, g['wing_cols'], g['pitch'], g['depth_rows'], 1, back='valley')
     wing = probe > 0
-    gable_front(cv, g['wing_x'], ground - wing_h, g['wing_cols'], g['pitch'], g['depth_rows'], 1)
-    overlap = ground * T - max((ground - wing_h) * T, (ground - d - g['main_storeys'] * 2) * T)
+    gable_front(cv, g['wing_x'], ground - wing_h, g['wing_cols'], g['pitch'], g['depth_rows'], 1, back='valley')
+    overlap = ground * T - max((ground - wing_h) * T, (ground - d - walls) * T)
     w = max(1, int(round(overlap / 3)))
     sh = np.zeros(cv.shape, bool)
     e = g['eave_drop']
     sh[e:, w:] = wing[:-e, :-w]
-    sh &= ~wing & (main_wall | yard)
+    sh &= ~wing & main_wall
     cv[sh] = np.round(cv[sh] * (1 - SHADOW_K) + SHADOW_GREY * SHADOW_K).astype(np.uint8)
-    wing_depth.last = {'shadow': sh, 'wing': wing, 'yard': yard, 'main_wall': main_wall, 'w': w, 'ground': ground}
+    wing_depth.last = {'shadow': sh, 'wing': wing, 'yard': yard, 'main_wall': main_wall, 'w': w, 'ground': ground,
+                       'main_eave': (ground - d - walls) * T, 'main_top': (ground - d - main_h) * T,
+                       'wing_top': (ground - wing_h) * T, 'wing_eave': (ground - 2) * T}
+    return cv
+
+
+def valley_widths():
+    """날개 골 조각 v4·v5·v6 — 본채 지붕 띠(hip_top) 위에 폭마다 하나씩, 2행(g4·g5 물매). ^ 골 선 위 귀퉁이로 본채 지붕이 비친다."""
+    pitch = 2
+    cols = 1 + sum(c + 1 for c in VALLEY_WIDTHS)
+    rows = pitch + 2
+    cv = np.full((rows * T, cols * T), BG, np.uint8)
+    _grid(cv)
+    x = 1
+    for c in VALLEY_WIDTHS:
+        cv[T // 2:(1 + pitch) * T, x * T:(x + c) * T] = TONE['hip_top']
+        w, p = c * T, pitch * T
+        mid = w // 2
+        for px in range(w):
+            e = _edge(px, w, p)
+            for y in range(e, p):
+                tone = 'valley' if y == e else ('ridge' if px in (mid - 1, mid) else ('slope_l' if px < mid else 'slope_r'))
+                cv[T + y, x * T + px] = TONE[tone]
+        x += c + 1
     return cv
 
 

@@ -60,6 +60,8 @@ band/base l·m·r. 지붕 폭 = 벽 폭 = cols, 최소 4칸(l 2 + r 2).
   A1(깊이) 문 하나 · 문 질량이 가장 앞 depth · 문 앞 칸(문 바로 아래)이 그림 밖이거나 어느 질량도 덮지 않은 땅이다
   A3·A6(깊이) 박공 정면은 폭 4~6칸, depth_rows 2~3, 지붕 비율은 projection.gable_front_band() 실측 밴드
 """
+import re
+
 import numpy as np
 
 import dot
@@ -151,9 +153,14 @@ def requires_gable_front(theme, rid):
     """시드 판의 requireGableFront(style-r5 부터) — 건물마다 gable_front 질량이 있어야 한다(A15)."""
     return bool(((dot.seed(theme).get('rounds') or {}).get(rid or '') or {}).get('requireGableFront'))
 
+def is_depth_grammar(grammar):
+    """grammar 가 깊이 땅 문법(r7 이상: r7, r8 …)이면 True."""
+    m = re.fullmatch(r'r(\d+)', str(grammar or ''))
+    return bool(m) and int(m.group(1)) >= int(DEPTH_GRAMMAR[1:])
+
 def depth_ground(theme, rid):
-    """판이 깊이 땅 문법(grammar r7)이면 True — 옛 판(r3~r6)은 A10(한 땅 행)을 그대로 둔다(영수증의 조립 해시가 바뀌지 않게)."""
-    return ((dot.seed(theme).get('rounds') or {}).get(rid or '') or {}).get('grammar') == DEPTH_GRAMMAR
+    """판이 깊이 땅 문법(grammar r7+)이면 True — 옛 판(r3~r6)은 A10(한 땅 행)을 그대로 둔다(영수증의 조립 해시가 바뀌지 않게)."""
+    return is_depth_grammar(((dot.seed(theme).get('rounds') or {}).get(rid or '') or {}).get('grammar'))
 
 def round_buildings(theme, rid=None):
     """그 판의 레시피. 판이 requireGableFront 면 사본에 `_requireGableFront` 를, 깊이 땅 문법(r7)이면 `_depthGround` 를
@@ -678,6 +685,37 @@ def mass_problems(ms, rows=None):
         if int(m.get('x') or 0) < 0:
             bad.append(f'{m["id"]} x {m["x"]} < 0')
     return bad
+
+def wing_mains(ms):
+    """깊이 땅 문법의 날개: 박공 정면 질량 W 마다, W 와 가로로 겹치는 더 뒤 질량 가운데 가장 앞(depth 최소)의 것들(본채).
+    반환 [(W, [본채…])]. 본채가 없는 박공 정면(오두막·회관)은 날개가 아니다."""
+    out = []
+    for w in ms:
+        if (w.get('kind') or RIDGE_SIDE) != GABLE_FRONT:
+            continue
+        wx0, wx1, wd = int(w.get('x') or 0), int(w.get('x') or 0) + int(w['cols']), int(w.get('depth') or 0)
+        behind = [b for b in ms if b is not w and int(b.get('depth') or 0) > wd
+                  and min(wx1, int(b.get('x') or 0) + int(b['cols'])) > max(wx0, int(b.get('x') or 0))]
+        if behind:
+            d = min(int(b.get('depth') or 0) for b in behind)
+            out.append((w, [b for b in behind if int(b.get('depth') or 0) == d]))
+    return out
+
+
+def wing_problems(w, mains):
+    """날개 이음 계약(사용자 판정 2026-10-22 「ㅜ자 집이 한 채로 안 보인다」): 날개 뒤 끝 = 본채 앞벽이라 본채 depth 는
+    날개 depth + 1 이고, 날개 지붕 뒤 끝은 언제나 본채 지붕으로 올라가 만나는 골(back_end "valley")이다."""
+    bad = []
+    wd = int(w.get('depth') or 0)
+    for b in mains:
+        if int(b.get('depth') or 0) != wd + 1:
+            bad.append(f'{w["id"]} 날개가 {b["id"]}(depth {b.get("depth")})에 붙지 않는다 — 날개 뒤 끝이 본채 앞벽이다: '
+                       f'본채 depth = 날개 depth + 1 = {wd + 1}')
+    if (w.get('back_end') or 'gable') != 'valley':
+        bad.append(f'{w["id"]} 날개 뒤 끝 {w.get("back_end") or "gable"} — 날개 지붕은 본채 지붕으로 올라가 V자 골에서 만난다'
+                   f'(back_end "valley", 골 조각 v{w["cols"]})')
+    return bad
+
 
 FORM_KIND = {'gf_slope': 'slope', 'gf_back': 'roofend', 'gable_front': 'gable', 'lean_to': None}
 
