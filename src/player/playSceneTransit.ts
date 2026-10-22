@@ -71,8 +71,10 @@ export function updateTransit(scene: PlaySceneContext, deltaMs: number): void {
   if (!sim) return;
   s.transitAccumulatorSec = Math.min(0.5, (s.transitAccumulatorSec ?? 0) + Math.max(0, deltaMs) / 1000);
   const blocked = playerBlocksCell(scene);
+  const switches = scene.session?.switches;
+  const switchOn = (id: string): boolean => switches?.[id] === true;
   while (s.transitAccumulatorSec >= STEP_SEC) {
-    stepTransitSim(sim, STEP_SEC, blocked);
+    stepTransitSim(sim, STEP_SEC, blocked, switchOn);
     s.transitAccumulatorSec -= STEP_SEC;
   }
   syncTransitSprites(scene);

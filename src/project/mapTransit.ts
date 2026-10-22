@@ -35,6 +35,11 @@ export interface MapTransitStop {
   name?: string;
   /** 있으면 서 있는 동안 탈것 옆에서 「조사」로 탄다 → 이 맵·칸으로 이동. */
   board?: { mapId: string; x: number; y: number; dir?: TransitDir };
+  /**
+   * 있으면 이 정류장에 선 차는 이 스위치가 켜질 때까지 문을 연 채 기다린다 — 장면이 사람을 태운 뒤에 떠나게 한다.
+   * 켜진 뒤로는 남은 정차 시간과 관계없이 `DEPART_DOOR_SEC`(1.5초) 안에 문을 닫고 떠난다.
+   */
+  departSwitch?: string;
 }
 
 export interface MapTransitRoute {
@@ -58,6 +63,11 @@ export interface MapTransitRoute {
   laneShift?: { ew?: number; ns?: number };
   /** false 면 이 노선을 끈다. 기본 true. */
   enabled?: boolean;
+  /**
+   * 있으면 이 스위치가 켜져 있을 때만 새 차가 나온다(열린 노선) — 장면이 「열차가 들어온다」 순간에 부르는 차.
+   * 꺼져 있는 동안은 한 대도 나오지 않고(맵에 들어올 때 미리 돌려 두는 것 포함), 켜지는 다음 걸음에 바로 한 대가 나온다.
+   */
+  callSwitch?: string;
 }
 
 export interface MapTransit {
@@ -144,6 +154,8 @@ export const TRANSIT_ROUTE_VEHICLE_KINDS: Record<TransitRouteKind, readonly Tran
 
 const DEFAULT_SPEED: Record<TransitRouteKind, number> = { road: 4, bus: 3, tram: 2.5, train: 5, subway: 5 };
 const DEFAULT_HEADWAY: Record<TransitRouteKind, number> = { road: 6, bus: 30, tram: 40, train: 60, subway: 60 };
+/** departSwitch 가 켜진 뒤 문을 닫고 떠나기까지(초). */
+export const DEPART_DOOR_SEC = 1.5;
 const DEFAULT_WAIT: Record<TransitRouteKind, number> = { road: 0, bus: 4, tram: 5, train: 6, subway: 6 };
 
 export interface NormalizedTransitRoute {
@@ -157,7 +169,8 @@ export interface NormalizedTransitRoute {
   count: number;
   headwaySec: number;
   speed: number;
-  stops: Array<{ index: number; waitSec: number; name?: string; board?: MapTransitStop["board"] }>;
+  stops: Array<{ index: number; waitSec: number; name?: string; board?: MapTransitStop["board"]; departSwitch?: string }>;
+  callSwitch?: string;
   /** 차선 가운데 맞춤(칸) — 동서 구간 y·남북 구간 x 에 더한다. */
   laneShift: { ew: number; ns: number };
 }
@@ -285,11 +298,11 @@ export function normalizeMapTransit(transit: MapTransit | undefined | null, mapS
     const headwaySec = clampNumber(raw.headwaySec, 1, 600, DEFAULT_HEADWAY[kind]);
     const stops = (Array.isArray(raw.stops) ? raw.stops : [])
       .filter((s) => s && Number.isFinite(s.index) && s.index >= 0 && s.index < cells.length)
-      .map((s) => ({ index: Math.round(s.index), waitSec: clampNumber(s.waitSec, 0, 120, DEFAULT_WAIT[kind]), ...(s.name ? { name: String(s.name) } : {}), ...(s.board ? { board: s.board } : {}) }))
+      .map((s) => ({ index: Math.round(s.index), waitSec: clampNumber(s.waitSec, 0, 120, DEFAULT_WAIT[kind]), ...(s.name ? { name: String(s.name) } : {}), ...(s.board ? { board: s.board } : {}), ...(s.departSwitch ? { departSwitch: String(s.departSwitch) } : {}) }))
       .sort((a, b) => a.index - b.index);
     const shiftOf = (v: unknown): number => clampNumber(v, 0, 0.99, 0);
     const laneShift = { ew: shiftOf(raw.laneShift?.ew), ns: shiftOf(raw.laneShift?.ns) };
-    routes.push({ id, name: raw.name ? String(raw.name) : id, kind, loop, cells, vehicles, count, headwaySec, speed, stops, laneShift });
+    routes.push({ id, name: raw.name ? String(raw.name) : id, kind, loop, cells, vehicles, count, headwaySec, speed, stops, laneShift, ...(raw.callSwitch ? { callSwitch: String(raw.callSwitch) } : {}) });
   }
   return { routes, problems };
 }
@@ -634,12 +647,14 @@ export function transitStopEase(r: Pick<NormalizedTransitRoute, "kind" | "speed"
  * 한 걸음. `isBlocked(x, y)` 는 탈것이 들어가면 안 되는 칸(주인공·서 있는 이벤트) — 다음 몸 칸에 걸리면 그 자리에 선다.
  * 앞차와는 몸 사이 1칸 이상 띄운다(같은 칸을 차지하지 않는다).
  */
-export function stepTransitSim(sim: TransitSim, dtSec: number, isBlocked: (x: number, y: number) => boolean): void {
+export function stepTransitSim(sim: TransitSim, dtSec: number, isBlocked: (x: number, y: number) => boolean, switchOn: (id: string) => boolean = () => false): void {
   sim.clockSec += dtSec;
   sim.junctions ??= buildTransitJunctions(sim.routes);
   // 열린 노선: 간격마다 시작점에 새 차(시작 자리가 비었을 때만)
   sim.routes.forEach((r, ri) => {
     if (r.loop) return;
+    // 장면이 부르는 노선: 스위치가 꺼져 있으면 나오지 않고, 켜지는 걸음에 바로 나오도록 시계를 간격에 붙여 둔다.
+    if (r.callSwitch && !switchOn(r.callSwitch)) { sim.spawnClock[ri] = r.headwaySec; return; }
     sim.spawnClock[ri] = (sim.spawnClock[ri] ?? 0) + dtSec;
     if (sim.spawnClock[ri]! < r.headwaySec) return;
     const def = r.vehicles[sim.nextDef[ri]! % r.vehicles.length]!;
@@ -656,6 +671,11 @@ export function stepTransitSim(sim: TransitSim, dtSec: number, isBlocked: (x: nu
     const r = sim.routes[v.routeIndex]!;
     const n = r.cells.length;
     if (v.wait > 0) {
+      const holdAt = v.stopAt === null ? undefined : r.stops.find((s) => s.index === v.stopAt)?.departSwitch;
+      if (holdAt) {
+        if (!switchOn(holdAt)) continue;
+        v.wait = Math.min(v.wait, DEPART_DOOR_SEC);
+      }
       v.wait = Math.max(0, v.wait - dtSec);
       if (v.wait > 0) continue;
       v.stopAt = null;

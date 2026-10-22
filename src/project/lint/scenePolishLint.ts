@@ -7,7 +7,8 @@
 //  - scene-transfer-pair           착지 칸이 돌아오는 문 앞(체비쇼프 1칸 안)이 아니다 / 착지 방향이 문을 향한다
 //  - scene-transfer-facing         transfer 에 도착 방향이 없다
 //  - scene-stair-direction         내려가는 계단 그림이 위층으로(또는 반대로) 이어진다
-//  - scene-npc-vanish              NPC 가 출구까지 걷지 않고 제자리에서 사라진다(Erase Event·투명 «떠남» 페이지·경로 속 불투명도 0·단계 변수를 바꿔 보이던 페이지가 빈 페이지로)
+//  - scene-npc-vanish              NPC 가 출구까지 걷지 않고 제자리에서 사라진다(Erase Event·투명 «떠남» 페이지·경로 속 불투명도 0·단계 변수를 바꿔 보이던 페이지가 빈 페이지로).
+//                                  장면이 붙잡아 둔 열차(정류장 departSwitch)의 몸 칸으로 들어가 사라지는 것은 출구로 본다
 //  - scene-dialogue-position-mixed 대사 위치(top·center·bottom·auto)가 한 게임 안에서 섞였다
 //  - scene-dialogue-position-jump  이어지는 두 대사(사이에 창을 닫는 명령 없이)가 서로 다른 자리를 못박아 창이 위↔아래로 뛴다
 //  - scene-dialogue-context-mixed  sign·system·letter 밖의 특수 대화창 모양을 둘 이상 섞거나 말풍선을 쓴다
@@ -31,6 +32,7 @@ import { nestedCommandLists } from "../authoredCommandIndex";
 import type { Command, Dir, EventPage, GameEvent, GameMap, MoveCommand, Project, TilesetDef } from "../types";
 import { canMove, isPassable } from "../collision";
 import { passageMarkForTile } from "../tilesetPassage";
+import { createTransitSim, transitPose, transitRectCells } from "../mapTransit";
 import handInteriorSpec from "@/assets/handInteriorSpec.json";
 import { sharedPortraitNativeGaze } from "@/assets/sharedPortraitAssets";
 import type { LintIssue } from "./projectLint";
@@ -414,9 +416,32 @@ function activePageFor(event: GameEvent, variableId: string, value: number): Eve
   return null;
 }
 
+/**
+ * 장면이 붙잡아 두는 열차(정류장 `departSwitch`)가 서는 자리의 몸 칸 — 그 문으로 들어가 사라지는 것은 «탄» 것이다.
+ * 자동 운행만 하는 열차(붙잡지 않는 정류장)는 넣지 않는다: 그 열차는 장면과 상관없이 떠나 있을 수 있다.
+ */
+function heldTransitCells(map: GameMap): (c: Cell) => boolean {
+  const routes = map.transit?.routes ?? [];
+  if (!routes.some((r) => (r.stops ?? []).some((st) => st.departSwitch))) return () => false;
+  const sim = createTransitSim(map.transit, { width: map.width, height: map.height }, 0);
+  const cells = new Set<string>();
+  sim.routes.forEach((r, routeIndex) => {
+    const def = r.vehicles[0];
+    if (!def) return;
+    for (const st of r.stops) {
+      if (!st.departSwitch) continue;
+      const rect = transitPose(sim, { key: 0, routeIndex, def, pos: st.index, wait: 1, stopAt: st.index, served: [], blockedSec: 0 }).rect;
+      for (const c of transitRectCells(rect)) cells.add(`${c.x},${c.y}`);
+    }
+  });
+  return (c) => cells.has(`${c.x},${c.y}`);
+}
+
 function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly Gate[]): void {
   for (const map of Object.values(project.maps)) {
-    const isExit = exitCells(project, map, gates);
+    const isDoorExit = exitCells(project, map, gates);
+    const isHeldTrain = heldTransitCells(map);
+    const isExit = (c: Cell): boolean => isDoorExit(c) || isHeldTrain(c);
     const byId = new Map((map.events ?? []).map((e) => [e.id, e] as const));
     const routedToExit = new Set<string>();
     const routeEnd = new Map<string, Cell>();

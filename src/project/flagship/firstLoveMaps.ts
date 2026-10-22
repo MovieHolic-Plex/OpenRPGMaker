@@ -18,6 +18,9 @@ import { mapBackgroundFromPanoramaSet } from "@/assets/oprnPanoramas";
 
 export type ExecTool = (name: string, args: Record<string, unknown>) => { data?: unknown };
 
+/** 금요일 밤 승강장: 켜면 막차가 들어온다 / 켜면 선 막차가 문을 닫고 떠난다. */
+export const FL_TRAIN_CALL = "sw_fl_train_call";
+export const FL_TRAIN_GO = "sw_fl_train_go";
 export const FL_MAP = {
   platformAm: "fl_platform_am",
   platformPm: "fl_platform_pm",
@@ -361,6 +364,13 @@ export function buildFirstLoveMaps(project: Project, exec: ExecTool): FirstLoveA
     } catch (error) {
       console.warn(`[first-love] ${id} 열차를 깔지 못했다: ${(error as Error).message}`);
     }
+  }
+  // 금요일 밤 막차는 장면이 부른다 — 대화 도중 아무 열차나 드나들면 「지후가 탈 열차가 지후를 두고 떠난다」(VQA r17).
+  // 안내 방송에서 FL_TRAIN_CALL 을 켜면 한 대가 들어와 서고, 지후가 탄 뒤 FL_TRAIN_GO 를 켜야 문을 닫고 떠난다.
+  for (const route of project.maps[FL_MAP.platformPm]?.transit?.routes ?? []) {
+    route.callSwitch = FL_TRAIN_CALL;
+    route.headwaySec = 600;
+    for (const stop of route.stops ?? []) stop.departSwitch = FL_TRAIN_GO;
   }
   return anchors;
 }

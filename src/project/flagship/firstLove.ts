@@ -23,7 +23,7 @@ import {
   bgm, caption, CAST, choices, m2, clearTintKeepBlack, emote, event, face, fadeIn, fadeOut, flash, hidePlayer, ifCond, page,
   playSe, say, sayAt, listenTo, setSw, textAtBottom, faceHero, setVar, shake, showPlayer, stopBgm, stageAtLeast, stageBelow, stageIs, swOff, swOn, memoryTint, memoryPictureIn, memoryPictureOut, memoryPictureErase, think, transfer, voice, wait, walk,
 } from "./firstLoveKit";
-import { buildFirstLoveMaps, FL_MAP, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
+import { buildFirstLoveMaps, FL_MAP, FL_TRAIN_CALL, FL_TRAIN_GO, nearestFree, type Cell, type FirstLoveAnchors } from "./firstLoveMaps";
 import { buildFirstLoveOpening } from "./firstLoveOpening";
 import type { FlagshipDemoBuildResult } from "./types";
 import { doorValue, type DoorSpec, type MapDoorDef } from "@/project/eventCommands/doorAnimation";
@@ -1167,8 +1167,23 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
   // 열차를 기다리는 사람은 선로(아래)를 본다 — 벽을 보고 서 있지 않는다.
   add(plat, event("ev_fl_p_jihu", "강지후", jihuSpot, [page("pj", [swOff("sw_fl_jihu_boarded")], [], { who: "jihu", dir: "down" })]));
   const meet = { x: jihuSpot.x - 1, y: jihuSpot.y };
+  // 지후가 탄다 — 막차는 장면이 부르고(FL_TRAIN_CALL) 문을 연 채 붙잡아 둔다(FL_TRAIN_GO 가 꺼진 동안). 지후가 안전선을 지나
+  // 열린 문으로 들어간 뒤에야 문을 닫고 떠난다(VQA r17: 「열차가 지후를 두고 떠난다」). 선로 첫 줄은 열차 몸이라 마지막 한 걸음만 통과로 딛고,
+  // 열차 그림이 그 칸의 지후를 덮는다(열차 발 줄이 한 줄 아래).
+  const edge = { x: jihuSpot.x, y: 10 };
+  const jihuBoards = (): Command[] => [
+    face("ev_fl_p_jihu", "down"),
+    walk("ev_fl_p_jihu", route(project, FL_MAP.platformPm, jihuSpot, edge, [meet])),
+    { kind: "moveEvent", eventId: "ev_fl_p_jihu", route: { moves: [{ kind: "setThrough", enabled: true }, { kind: "move", dir: "down" }, { kind: "changeOpacity", delta: -255 }], repeat: false, wait: true, skippable: true } } as Command,
+    setSw("sw_fl_jihu_boarded", true),
+    face("@player", "down"),
+    wait(500),
+    setSw(FL_TRAIN_GO, true),
+    wait(3200),
+  ];
   add(plat, scene("ev_fl_platform", { x: 1, y: 1 }, S.RUN, [
     { kind: "setWeather", weather: "none", transitionMs: 0 } as Command,
+    setSw(FL_TRAIN_CALL, true),
     ...voice("안내 방송", "‘이번 열차는 서울역행입니다. 열차가 곧 도착하오니—’"),
     // 밤엔 계단으로 뛰어 내려온다 — 계단 발치에 도착해 지후에게 걸어간다(VQA r10: 승강장 한가운데에 서서 나타남).
     walk("@player", route(project, FL_MAP.platformPm, p.exitOut, meet)),
@@ -1193,8 +1208,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
       say("jihu", "base", "그래서 계속 갖고 있었어요. 답장 못 한 사연이라, 버릴 수가 없었어요."),
     ),
     ifCond(swOn(SW_STORY), say("jihu", "embarrassed", "…발표 때 그 얘기 할 줄은 몰랐어요. 본부장님 앞에서 우는 줄 알았어요.")),
-    ...voice("안내 방송", "‘열차가 들어오고 있습니다. 안전선 뒤로 한 걸음 물러서 주십시오.’"),
-    shake(600),
+    ...voice("안내 방송", "‘서울역행 열차, 잠시 후 출발합니다. 타실 분은 서둘러 주십시오.’"),
     choices([
       { text: "“이번엔, 내가 먼저 말할게요.”", then: [
         ifCond({ kind: "variable", variableId: V_JIHU, op: ">=", value: TRUE_END_AT } as never, [
@@ -1210,6 +1224,7 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...say("jihu", "base", "부산은 가야 해요. 아버지 혼자 계시니까. 근데—"),
           ...say("jihu", "happy", "KTX로 두 시간 사십 분이에요. 금요일마다 올게요. 이번엔, 진짜 약속해요."),
           ...say("seoha", "happy", "…늦으면, 사연 보낼 거예요. 하루끝에. 실명으로."),
+          ...jihuBoards(),
           ...fadeOut(1200),
           stopBgm(),
           ...endingOpen("oprn-title-romance-office"),
@@ -1223,11 +1238,8 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
           ...say("jihu", "sad", "근데 지금 대답하면, 그건 또 도망치는 대답 같아요. 떠나는 사람이 할 말이 아니라서."),
           ...say("jihu", "base", "답장은 여기 써 뒀어요. 열차 떠나면 읽어요."),
           playSe(SE_PAPER),
-          // 지후는 제자리에서 선로(열차) 쪽으로 돌아선다 — 자동 운행 열차는 멈춤·출발을 장면이 정할 수 없어 걸어 들어가면 움직이는 열차로 들어간다(VQA r15·r16). 떠나는 건 검은 화면 뒤다.
-          face("ev_fl_p_jihu", "down"),
-          wait(900),
+          ...jihuBoards(),
           ...fadeOut(1200),
-          setSw("sw_fl_jihu_boarded", true),
           stopBgm(),
           ...endingOpenNight(),
           { kind: "triggerEnding", endingId: END_B } as Command,
@@ -1238,11 +1250,8 @@ function buildClimax(project: Project, a: FirstLoveAnchors): void {
         ...say("jihu", "sad", "…응. 잘 지내, 서하야."),
         ...say("jihu", "base", "이거. 답장이에요. 10년 늦었지만."),
         playSe(SE_PAPER),
-        // 지후는 제자리에서 선로(열차) 쪽으로 돌아선다 — 자동 운행 열차는 멈춤·출발을 장면이 정할 수 없어 걸어 들어가면 움직이는 열차로 들어간다(VQA r15·r16). 떠나는 건 검은 화면 뒤다.
-        face("ev_fl_p_jihu", "down"),
-        wait(900),
+        ...jihuBoards(),
         ...fadeOut(1200),
-        setSw("sw_fl_jihu_boarded", true),
         stopBgm(),
         ...endingOpenNight(),
           { kind: "triggerEnding", endingId: END_B } as Command,
@@ -1387,7 +1396,7 @@ export function createFirstLoveFlagshipDemo(): FlagshipDemoBuildResult {
     [SW_TOLD_MINHO, "민호에게 털어놓음"], [SW_HONEST, "실수를 팀장에게 보고함"], [SW_SAW_LETTER, "수첩 속 편지를 봄"],
     [SW_KNOWS_WHY, "지후가 떠난 이유를 들음"], [SW_COFFEE, "옥상 캔커피"], [SW_MILK, "바나나우유 두 개"], [SW_STORY, "발표에서 내 이야기를 함"],
     ["sw_fl_jihu_in_konbini", "편의점에 지후 등장"], ["sw_fl_flashback", "회상 중"], ["sw_fl_jihu_gone", "회상: 지후 퇴장"],
-    ["sw_fl_lead_left", "수요일: 팀장 퇴근"], ["sw_fl_jihu_boarded", "막차: 지후 탑승"], ["sw_fl_minho_left", "수요일: 민호 퇴근"], ["sw_fl_closed_note", "수첩을 덮어 둠"],
+    ["sw_fl_lead_left", "수요일: 팀장 퇴근"], ["sw_fl_jihu_boarded", "막차: 지후 탑승"], [FL_TRAIN_CALL, "막차: 열차 부르기"], [FL_TRAIN_GO, "막차: 문 닫고 출발"], ["sw_fl_minho_left", "수요일: 민호 퇴근"], ["sw_fl_closed_note", "수첩을 덮어 둠"],
     ["sw_fl_client_left", "금요일: 본부장 퇴장"], ["sw_fl_jihu_left", "금요일: 지후 퇴장"], ["sw_fl_admitted", "옥상: 지후가 기억한다고 말함"],
   ] as const) ensureSw(id, name);
 
