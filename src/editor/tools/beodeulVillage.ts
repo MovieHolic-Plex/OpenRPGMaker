@@ -1696,7 +1696,26 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const erode = (c: number) => Math.floor(vnoise(c, 3, 977) * (denseWoods ? 2 : 3)) - 1; // -1 깎지 않음 · 0~1 가장자리에서 그 깊이까지
       for (const c of [...forestSet]) if (dist[c]! >= 0 && dist[c]! <= erode(c)) forestSet.delete(c);
     }
-    shapeBeodeulCanopyMask(W, H, forestSet, { canFill: (c) => okCell(c, lv[c]!) , joins: sameLv, minComponent: 16, minExtent: 4, block: 2 });
+    // 숲 속 구멍(길 간격 잡음·깎기가 남긴 4칸 이하 빈 땅, 사방이 같은 단 숲)은 메운다 — 수관 속 검은 구멍으로 보였다(VQA r4)
+    {
+      const seen = new Set<number>();
+      for (let c0 = 0; c0 < W * H; c0 += 1) {
+        if (forestSet.has(c0) || seen.has(c0) || occ[c0] !== FREE || rampCells.has(c0)) continue;
+        const comp = [c0]; seen.add(c0); let open = false;
+        for (let h = 0; h < comp.length && comp.length <= 4; h += 1) {
+          const c = comp[h]!, x = c % W, y = (c - x) / W;
+          for (const [dx, dy] of N4) {
+            if (!inMap(x + dx, y + dy)) { open = true; continue; }
+            const n = idx(x + dx, y + dy);
+            if (forestSet.has(n) && lv[n] === lv[c0]) continue;
+            if (occ[n] !== FREE || lv[n] !== lv[c0] || rampCells.has(n)) { open = true; continue; }
+            if (!seen.has(n)) { seen.add(n); comp.push(n); }
+          }
+        }
+        if (!open && comp.length <= 4) for (const c of comp) forestSet.add(c);
+      }
+    }
+    shapeBeodeulCanopyMask(W, H, forestSet, { canFill: (c) => okCell(c, lv[c]!), joins: sameLv, minComponent: canopyStyle === "snow" ? 12 : 16, minExtent: canopyStyle === "snow" ? 3 : 4, block: 2 });
     for (let c = 0; c < W * H; c += 1) if (occ[c] === FOREST && !forestSet.has(c)) occ[c] = FREE; // 다듬기로 빠진 산마루(summit) 칸은 풀밭으로
     for (const c of forestSet) occ[c] = FOREST;
   }
@@ -1706,6 +1725,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const treeFits = (k: Kit, x: number, y: number, gap: number) => {
     if (!fits(k, x, y, 0, (v) => v === FREE || v === POND_RING)) return false;
     for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) if (distRoad[idx(x + i, y + j)]! < gap) return false;
+    // 나무 한 그루는 한 단 위에만 — 단 동서 끝 너머로 걸치면 두 단이 다른 높이로 그려져 수관이 선을 따라 썰린다(VQA r4)
+    const base = lv[idx(x, y + k.h - 1)]; for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) if (lv[idx(x + i, y + j)] !== base) return false;
     return true;
   };
   // 숲 둘레 나무(침엽·혼효 마을): 수관 오토타일은 활엽·전나무가 섞인 한 장이라 침엽 마을 숲도 활엽으로 읽혔다(VQA r1) —

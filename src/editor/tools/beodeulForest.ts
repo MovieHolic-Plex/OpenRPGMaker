@@ -344,9 +344,11 @@ export function shapeBeodeulCanopyMask(W: number, H: number, forest: Set<number>
     for (let c = 0; c < W * H; c++) {
       if (forest.has(c) || !canFill(c)) continue;
       const x = c % W, y = (c - x) / W;
-      let k = 0;
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) if (inside(x + dx, y + dy) && linked(c, x + dx, y + dy)) k++;
-      if (k >= 3) { forest.add(c); changed = true; }
+      const f = (dx: number, dy: number) => inside(x + dx, y + dy) && linked(c, x + dx, y + dy);
+      const k = (f(1, 0) ? 1 : 0) + (f(-1, 0) ? 1 : 0) + (f(0, 1) ? 1 : 0) + (f(0, -1) ? 1 : 0);
+      // 오목한 안쪽 모서리(ㄱ자 홈 — 두 직교 이웃과 그 사이 대각이 숲)도 메운다: 칸 계단 홈에서 아래 겹 짙은 수관이 풀밭 쪽으로 드러나 검은 홈이 됐다(VQA r4)
+      const corner = (f(0, -1) && f(-1, 0) && f(-1, -1)) || (f(0, -1) && f(1, 0) && f(1, -1)) || (f(0, 1) && f(-1, 0) && f(-1, 1)) || (f(0, 1) && f(1, 0) && f(1, 1));
+      if (k >= 3 || (corner && pass === 0)) { forest.add(c); changed = true; } // 모서리 메우기는 한 번만 — 되풀이하면 오목한 덩이가 직사각형으로 차오른다
     }
     for (const c of [...forest]) {
       const x = c % W, y = (c - x) / W;
@@ -372,7 +374,10 @@ export function shapeBeodeulCanopyMask(W: number, H: number, forest: Set<number>
           const n = ny * W + nx; if (forest.has(n) && !seen.has(n) && joins(c, n)) { seen.add(n); comp.push(n); }
         }
       }
-      if (comp.length < (edge ? minComponent / 2 : minComponent) || x1 - x0 + 1 < minExtent || y1 - y0 + 1 < minExtent) for (const c of comp) forest.delete(c);
+      // 두께: 열마다 평균 줄 수·줄마다 평균 칸 수 — 단을 따라 계단진 띠는 상자 크기는 커도 두께가 2~3줄이다
+      const cols = new Set(comp.map((c) => c % W)).size, rows = new Set(comp.map((c) => Math.floor(c / W))).size;
+      const thin = minExtent > 0 && (comp.length / cols < minExtent - 0.5 || comp.length / rows < minExtent - 0.5);
+      if (comp.length < (edge ? minComponent / 2 : minComponent) || x1 - x0 + 1 < minExtent || y1 - y0 + 1 < minExtent || thin) for (const c of comp) forest.delete(c);
     }
   }
 }
