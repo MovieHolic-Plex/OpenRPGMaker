@@ -3591,9 +3591,16 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
   - 알려진 한계: Pi 경로는 되묻지 않는다(`clarifyBypassed`). 그래서 «그림 없음»은 묻기 카드가 아니라 답 첫 문장 + 대안 시공으로 처리한다.
 - **`find_village_type`**(읽기, `villageTypeTool.ts`): query 또는 era → 종류 행(recipe·missingArt·nearest). 짓지 않는다.
 - **`dress_village_quarter`**(`villageQuarterTool.ts`): 지은 마을 위에 쓰임 덩이 하나를 앉힌다.
-  덩이는 joseon-market(조선 좌판 8, 풀밭을 개간해 13×9 흙 마당) · mining · vineyard · temple-ruins · walled-market(버들항 pick 키트)이다.
+  덩이는 joseon-market(조선 좌판 8, 풀밭을 개간해 13×9 흙 마당 + 태그 `road16/yard16/yard` 길까지 BFS 샛길) · mining · vineyard · temple-ruins · walled-market(버들항 pick 키트) · viking(설원 룬석·방패 걸이·오로라 깃발)이다.
+  - 「풀밭」은 가장 흔한 바닥과 tileMeta 태그 앞 네 개가 같은 변주까지 포함한다. 설원에서 눈밭 1번만 풀밭으로 치면 물결·발자국 변주가 길로 잡혀 자리가 없었다.
+  - 설원 작곡기는 빈 눈밭을 마당 덩이로 채운다. 그래서 장옥(7×5)·통널 교회(5×8)는 지은 마을에 들어가지 않는다.
   - 앵커 탐색은 첫 조각 3배 가중, CLUSTER 10 이다. 놓을 때마다 BFS 로 주 연결 성분을 확인하고, 길을 끊으면 되돌린다.
   - 마당 개간은 고리 1칸 + 1단계 범람만 한다. 그보다 크면 숲을 지나치게 깎는다.
   - `dress_joseon_market` 은 joseon-market 덩이를 부르는 얇은 포장이다.
   - 한계: 버들항 덩이는 큰 조각이 들어갈 빈 땅이 부족해 성기다. 그래서 그 종류는 partial 로 둔다. 조선 마당에서 큰길로 가는 2칸 샛길은 자주 못 찾는다.
+- **적대 검수(Opus, 이전 점수 없이)가 바꾼 판정:** 고대 로마 도시는 needs-art로 바꿨다. 블록 도시가 목골집·성당·깃발이 섞인 중세 도시로 읽혀서, 대안은 신전 폐허 마을이다.
+  - 바이킹은 partial이다. 롱십·용머리 회관 그림이 없다.
+  - 달 기지는 38×26으로 줄였다. 48×32는 월면이 절반 넘게 빈다.
+  - 포스트아포칼립스 대안은 스팀펑크 공장 도시다. 네온 거리는 «깨끗해서» 대안이 아니다.
+  - needs-art 대안은 seed를 1 이상으로 준다. 기본 seed 0이면 대안 맵이 그 종류를 직접 요청한 맵과 바이트까지 같았다.
 - **시험 시드:** `harness-data/assistant-capability/village-eras-seed.json`(18건, 조수 대용 Sonnet 5.5 high, 포트 19640~19657).
