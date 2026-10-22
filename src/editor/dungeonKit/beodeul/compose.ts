@@ -463,8 +463,8 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
           cluster(rs, side, my, 3, litter);
         }
         hangAlong(slots, rs, 4, () => (rs() < 0.75 ? K.torch : K.banner));
-        // 벽 장식 아치는 쇠창살 아치만 — 열린 검은 아치는 어디로도 안 가는 가짜 문으로 읽혔다(2026-10-23 VQA boss-run).
-        if (rs() < 0.5) { const a = centerFirst.find((q) => isWall(q.x + 2, q.y) && wallB[idx(q.x + 2, q.y)] === 1); if (a) put(K.archBars, a.x, a.y); }
+        // 벽 장식 아치는 두지 않는다 — 열린 아치도 쇠창살 아치도 「어디로도 안 가는 문」으로 읽혔다(2026-10-23 VQA r1·r2). 난수 한 번은 그대로 소비해 배치를 흔들지 않는다.
+        rs();
         const e = edgeCells(r, rs);
         for (let c = 0; c < 2 + Math.floor(rs() * 2); c += 1) { const p = e[c * 5]; if (p) cluster(rs, p[0], p[1], 2 + Math.floor(rs() * 2), litter); }
         break;

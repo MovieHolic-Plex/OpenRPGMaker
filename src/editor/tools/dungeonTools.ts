@@ -90,7 +90,13 @@ function buildFloor(draft: Project, args: Record<string, unknown>, floor: FloorO
     const existing = draft.maps[mapId]!;
     if (typeof args.name === "string" && args.name.trim()) existing.name = args.name.trim();
     if (existing.tilesetId !== tilesetId) throw new ToolError(`맵 ${mapId} 은 ${route.adapter === "monster" ? "이 종류가 쓰는 몬스터 시트" : "버들항"} 맵이 아니다(${existing.tilesetId}) — mapId 를 빼고 새 맵으로 짓는다.`, { code: "tileset-family-mismatch", mapId });
-    if (!isBlankMap(existing)) throw new ToolError(`맵 ${mapId} 에는 이미 내용이 있어 덮어쓰지 않는다 — mapId 를 빼고 새 맵으로 짓는다.`, { code: "map-not-blank", mapId });
+    // 다시 짓기: 이 도구가 지은 던전 맵(mapRole dungeon)만 rebuild:true 로 그 자리에서 다시 짓는다 — 거절되자 조수가 새 맵을 또 만들어
+    // 같은 이름 던전 두 장이 남았다(2026-10-23 dg-r2 puzzle). 이벤트·스택을 비우고 아래에서 타일을 통째로 덮는다.
+    if (!isBlankMap(existing) && args.rebuild === true && existing.mapRole === "dungeon") {
+      existing.events = [];
+      delete existing.lowerTileStacks; delete existing.upperTileStacks;
+      notes.push(`던전 맵 ${mapId} 을 그 자리에서 다시 지었다(rebuild).`);
+    } else if (!isBlankMap(existing)) throw new ToolError(`맵 ${mapId} 에는 이미 내용이 있어 덮어쓰지 않는다 — ${existing.mapRole === "dungeon" ? "이 도구가 지은 던전이면 같은 mapId 에 rebuild:true 를 주어 그 자리에서 다시 짓는다(새 맵을 또 만들지 않는다)" : "mapId 를 빼고 새 맵으로 짓는다"}.`, { code: "map-not-blank", mapId });
     if (existing.width !== composed.width || existing.height !== composed.height) {
       resizeMapTool.run(draft, { mapId, width: composed.width, height: composed.height });
       notes.push(`빈 맵 ${mapId} 을 ${composed.width}×${composed.height} 로 넓혀 그 자리에 지었다.`);
@@ -231,19 +237,29 @@ function placeLeverGate(draft: Project, map: GameMap, data: Record<string, unkno
   const fixed = { type: "fixed", speed: 3, frequency: 3 } as const;
   const bars = resolveGraphic({ textureKey: "tex_easyrpg_charset_object1", characterIndex: 5 } as never);
   const lever = resolveGraphic({ textureKey: "tex_easyrpg_charset_object2", characterIndex: 0 } as never);
-  const ev = (id: string, at: Pt, pages: GameEvent["pages"]): GameEvent => ({ id, x: at.x, y: at.y, trigger: { kind: "action" }, commands: [], pages } as GameEvent);
-  upsertEventIntoMap(map, ev(`ev_${map.id}_lever_gate`, gate, [
-    { id: `ev_${map.id}_lever_gate_p1`, name: "닫힌 쇠창살", conditions: [], graphic: bars, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixed,
-      commands: [{ kind: "text", body: "굳게 닫힌 쇠창살이다. 어딘가의 레버로 여는 것 같다." } as Command] },
-    { id: `ev_${map.id}_lever_gate_p2`, name: "열린 쇠창살", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", overlapForbidden: false, movement: fixed, commands: [] },
-  ] as GameEvent["pages"]));
-  upsertEventIntoMap(map, ev(`ev_${map.id}_lever`, key, [
+  // 같은 이름 = 한 물체(통로 폭만큼 놓은 창살 칸들) — 이름이 없으면 린트가 「서로 다른 조사물이 같은 그림」으로 본다.
+  const ev = (id: string, at: Pt, name: string, pages: GameEvent["pages"]): GameEvent => ({ id, name, x: at.x, y: at.y, trigger: { kind: "action" }, commands: [], pages } as GameEvent);
+  // 쇠창살은 통로 폭 전체를 막는다 — 3칸 통로 가운데 한 칸에만 두면 레버 없이 옆으로 지나갔다(2026-10-23 dg-r2 VQA).
+  const corr = list(data, "corridors").find((v) => { const x = Number(field(v, "x")), y = Number(field(v, "y")), w = Number(field(v, "w")), h = Number(field(v, "h")); return gate.x >= x && gate.x < x + w && gate.y >= y && gate.y < y + h; });
+  const across: Pt[] = !corr ? [gate] : (text(corr, "dir") === "N" || text(corr, "dir") === "S")
+    ? Array.from({ length: Number(field(corr, "w")) }, (_, k) => ({ x: Number(field(corr, "x")) + k, y: gate.y }))
+    : Array.from({ length: Number(field(corr, "h")) }, (_, k) => ({ x: gate.x, y: Number(field(corr, "y")) + k }));
+  const barCells = across.filter((c) => (c.x === gate.x && c.y === gate.y) || (isPassable(draft, map, c.x, c.y) && !map.events.some((e) => e.x === c.x && e.y === c.y)));
+  barCells.forEach((cell, k) => {
+    const gid = k === 0 && cell.x === gate.x && cell.y === gate.y ? `ev_${map.id}_lever_gate` : `ev_${map.id}_lever_gate_${cell.x}_${cell.y}`;
+    upsertEventIntoMap(map, ev(gid, cell, "쇠창살", [
+      { id: `${gid}_p1`, name: "닫힌 쇠창살", conditions: [], graphic: bars, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixed,
+        commands: [{ kind: "text", body: "굳게 닫힌 쇠창살이다. 어딘가의 레버로 여는 것 같다." } as Command] },
+      { id: `${gid}_p2`, name: "열린 쇠창살", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "below", overlapForbidden: false, movement: fixed, commands: [] },
+    ] as GameEvent["pages"]));
+  });
+  upsertEventIntoMap(map, ev(`ev_${map.id}_lever`, key, "레버", [
     { id: `ev_${map.id}_lever_p1`, name: "레버", conditions: [], graphic: { ...lever, direction: "down" }, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixed,
       commands: [{ kind: "text", body: "녹슨 레버가 있다. 힘껏 당겼다!" } as Command, { kind: "setSwitch", switchId: sw, value: true } as Command, { kind: "text", body: "어디선가 쇠창살이 올라가는 소리가 울렸다." } as Command] },
     { id: `ev_${map.id}_lever_p2`, name: "당긴 레버", conditions: [{ kind: "switch", switchId: sw, value: true }], graphic: { ...lever, direction: "up" }, trigger: { kind: "action" }, priority: "same", overlapForbidden: false, movement: fixed,
       commands: [{ kind: "text", body: "레버는 이미 당겨져 있다." } as Command] },
   ] as GameEvent["pages"]));
-  return `레버 퍼즐: 레버 (${key.x},${key.y}${key !== planKey ? ", 북쪽 벽 앞" : ""}) → 쇠창살 (${gate.x},${gate.y}) 스위치 ${sw}. 레버는 한 칸짜리 벽 레버 그림이 정상이다 — 다시 짓거나 다른 칩셋의 레버 기물을 찍지 않는다`;
+  return `레버 퍼즐: 레버 (${key.x},${key.y}${key !== planKey ? ", 북쪽 벽 앞" : ""}) → 쇠창살 ${barCells.map((c) => `(${c.x},${c.y})`).join(" ")}(통로 폭 전체) 스위치 ${sw}. 레버는 한 칸짜리 벽 레버 그림이 정상이다 — 다시 짓거나 다른 칩셋의 레버 기물을 찍지 않는다`;
 }
 
 /** 층 하나를 채운다(rpg): 계획된 자리의 보이는 적·상자, 보스방 수호자/층 수문장, 보스 앞 방의 회복 세이브 포인트. 실패한 자리는 경고로 넘긴다. */
@@ -422,6 +438,7 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
       encounterRate: { type: "integer", description: "야생 조우 확률(걸음당 %, 기본 12). encounters 를 줄 때만." },
       style: { type: "string", enum: [...DUNGEON_STYLES], description: "catacomb·castle 방 문법의 벽 양식(선택)" },
       seed: { type: "integer", description: "배치·장식 변주 시드(같은 값 = 같은 층). 생략하면 맵 id·이름으로 정한다(던전마다 다르다)" },
+      rebuild: { type: "boolean", description: "true 면 mapId 의 기존 던전 맵(이 도구가 지은 것)을 그 자리에서 다시 짓는다. 결과가 마음에 안 들 때 새 맵을 또 만들지 말고 이것을 쓴다(한 층만)." },
       floors: { type: "integer", description: "층 수 1~5(기본 1). 2 이상이면 층마다 맵을 하나씩 짓고 계단으로 잇는다(이동 이벤트는 계단 그림 칸, 도착은 상대 계단 앞 칸에서 계단을 등진다). 「3층 탑」「지하 2층까지」는 이 인자 하나로 — 층마다 author_dungeon 을 따로 부르고 create_transfer_pair 로 잇지 말 것. 버들항만." },
       direction: { type: "string", enum: ["down", "up"], description: "floors 가 2 이상일 때 층 방향: down(기본) 지하로 내려가는 던전(이름 「지하 N층」, 입구 방 북벽 오르는 계단 ↔ 깊은 방 바닥 내려가는 계단) · up 탑(이름 「N층」, 깊은 방 북벽 오르는 계단 ↔ 위층 입구 방 바닥 내려가는 계단, 꼭대기 층에 보스방·보물 방)." },
       populate: { type: "boolean", description: "rpg 장르 채우기(기본 true): 계획된 자리에 보이는 적(순찰)·상자(보물 방 먼저)·마지막 층 보스방 보스(도망 불가)·보스 앞 방 회복 세이브 포인트·그 아래층 층 수문장. 적 그룹은 troops 또는 데이터베이스에서 세기 순으로 고른다. false 면 data.population 계획만 돌려준다." },
