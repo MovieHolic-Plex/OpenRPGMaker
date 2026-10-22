@@ -166,7 +166,8 @@
 
 /* ── 5. 연결 칸 (오른쪽) ──────────────────────────────────────────────────────
    .database-modal-body 의 마지막 형제. 레코드 탭에서만 보이고(hidden 은 TS 가 건다),
-   넓은 창에서만 선다 — 1180px 미만 컨테이너에서는 편집 칸을 좁히지 않도록 접는다. */
+   넓은 창에서만 선다 — 1400px 미만 컨테이너에서는 편집 칸(레일+탭 목록+목록+상세)이 모자라
+   상세 폼이 잘리므로(1280 폭 VQA A08) 연결 칸을 먼저 접는다. */
 .database-modal-backdrop .database-modal-window .database-modal-body > .db-connections {
   background: var(--db-studio-surface);
   border-left: 1px solid var(--db-studio-border-subtle);
@@ -185,13 +186,13 @@
   display: none;
 }
 
-@container db-modal (max-width: 1179px) {
+@container db-modal (max-width: 1399px) {
   .database-modal-backdrop .database-modal-window .database-modal-body > .db-connections {
     display: none;
   }
 }
 
-@media (max-width: 1179px) {
+@media (max-width: 1399px) {
   .database-modal-backdrop .database-modal-window .database-modal-body > .db-connections {
     display: none;
   }

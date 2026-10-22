@@ -139,7 +139,7 @@ function openExperienceCurveDialog(options: ExperienceCurvePanelOptions): void {
           dialogNumberLabel("가속", accelerationInput),
         ] }),
         el("footer", { children: [
-          el("button", { class: "btn", text: "OK", dataset: { testid: `${prefix}-close` }, attrs: { type: "button" }, on: { click: () => {
+          el("button", { class: "btn", text: "확인", dataset: { testid: `${prefix}-close` }, attrs: { type: "button" }, on: { click: () => {
             commitDraft();
             close();
           } } }),
