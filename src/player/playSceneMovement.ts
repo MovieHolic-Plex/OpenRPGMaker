@@ -567,6 +567,16 @@ export function tryStartFurniturePush(scene: PlaySceneContext, event: RuntimeEve
 
 
 function advancePlayerRoute(scene: PlaySceneContext): void {
+  const facingBefore = scene.facing;
+  advancePlayerRouteCommands(scene);
+  // 제자리 회전(turn)도 동료가 다시 선다 — 장면 중 동료는 주인공이 보는 쪽을 따라 돌아선다(followers §sceneFacing).
+  if (scene.facing !== facingBefore && !scene.moving) {
+    scene.session.playerFacing = scene.facing;
+    syncFollowerSprites(scene);
+  }
+}
+
+function advancePlayerRouteCommands(scene: PlaySceneContext): void {
   // 이동을 시작하지 않는 명령(회전/스위치 등)은 같은 프레임에 연속 소비한다.
   // repeat + 이동 없는 루트의 프레임당 무한 루프를 막기 위해 상한을 둔다.
   let guard = 0;

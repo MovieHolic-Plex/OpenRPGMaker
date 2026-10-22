@@ -568,7 +568,10 @@
 }
 
 .rm-title-screen .rm-title-logo-subtitle[data-logo-style="gold"] {
-  color: rgb(255 230 170 / 92%);
+  /* 금빛 로고 부제는 키아트(성벽·창 불빛) 위에 얹힌다 — 흐린 그림자만으로는 묻혔다(폴른 스타 VQA r6). 또렷한 1px 검은 테두리. */
+  color: rgb(255 236 186);
+  font-weight: 700;
+  text-shadow: 1px 0 0 #120c06, -1px 0 0 #120c06, 0 1px 0 #120c06, 0 -1px 0 #120c06, 1px 1px 0 #120c06, -1px 1px 0 #120c06, 1px -1px 0 #120c06, -1px -1px 0 #120c06, 0 2px 6px rgb(0 0 0 / 85%);
 }
 
 @keyframes rm-title-logo-shine {

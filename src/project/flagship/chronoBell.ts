@@ -23,6 +23,13 @@ import { buildFallenStarOpening, FALLEN_STAR_TITLE_BACKGROUND } from "./fallenSt
 import { clearOrphanShadows, rimPit } from "./fallenStarMapPolish";
 import { FS_VALEN_START, FS_VAULT_LENS, rebuildFallenRooms } from "./fallenStarRooms";
 import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./fallenStarStory";
+import { reworkFallenTown } from "./fallenTown";
+import { FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX, ensureFallenValenChip } from "./fallenValenChip";
+import { buildFallenTownInteriors } from "./fallenTownInteriors";
+import { placeFallenStarVessel } from "./fallenStarVessel";
+import { dressObservatoryHall } from "./fallenObservatoryHall";
+import { isFallenRoomRebuilt } from "./fallenRoomOwnership";
+import handInteriorSpec from "@/assets/handInteriorSpec.json";
 import type { FlagshipDemoBuildResult } from "./types";
 
 const ENDING_ID = "end_fs_act1";
@@ -449,7 +456,7 @@ function setEventChip(map: GameMap | undefined, eventId: string, texture: string
     const direction = page.graphic.direction ?? "down";
     page.graphic = {
       ...page.graphic,
-      sprite: { type: "bundled", id: texture },
+      sprite: { type: texture === FS_VALEN_CHARSET_ID ? "uploaded" : "bundled", id: texture },
       direction,
       pattern: charsetFrameIndex({ characterIndex, direction, pattern: 1 }),
     };
@@ -473,10 +480,15 @@ function vanishWhen(map: GameMap | undefined, eventId: string, switchId: string)
 }
 
 const SW_VALEN_MARCHED = "sw_fs_valen_marched";
+/** 기사는 발렌보다 먼저 성문 통로에 닿는다 — 자기 스위치로 바로 지워야 투명한 채 통로 칸을 막지 않는다. */
+const SW_KNIGHT_MARCHED = "sw_fs_knight_marched";
 type Step = "up" | "down" | "left" | "right";
 /** from → to 걸음(통행 칸·다른 이벤트 칸을 피하는 BFS). 못 가면 null. */
-function walkPath(project: Project, map: GameMap, from: { x: number; y: number }, to: { x: number; y: number }, selfId: string, ignore: ReadonlySet<string> = new Set()): Step[] | null {
-  const occupied = new Set(map.events.filter((e) => e.id !== selfId && !ignore.has(e.id) && !String(e.id).startsWith("ev_gate_")).map((e) => `${e.x},${e.y}`));
+function walkPath(
+  project: Project, map: GameMap, from: { x: number; y: number }, to: { x: number; y: number }, selfId: string,
+  opt: { allow?: (x: number, y: number) => boolean; ignore?: ReadonlySet<string> } = {},
+): Step[] | null {
+  const occupied = new Set(map.events.filter((e) => e.id !== selfId && !opt.ignore?.has(e.id) && !String(e.id).startsWith("ev_gate_")).map((e) => `${e.x},${e.y}`));
   const prev = new Map<string, { key: string; dir: Step }>();
   const start = `${from.x},${from.y}`, goal = `${to.x},${to.y}`;
   const seen = new Set([start]);
@@ -488,7 +500,7 @@ function walkPath(project: Project, map: GameMap, from: { x: number; y: number }
       for (const dir of ["right", "up", "down", "left"] as const) {
         const x = cell.x + steps[dir][0], y = cell.y + steps[dir][1], key = `${x},${y}`;
         if (seen.has(key) || x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
-        if (occupied.has(key) || !isPassable(project, map, x, y)) continue;
+        if (occupied.has(key) || !isPassable(project, map, x, y) || (opt.allow && key !== goal && !opt.allow(x, y))) continue;
         seen.add(key); prev.set(key, { key: `${cell.x},${cell.y}`, dir }); next.push({ x, y });
       }
     }
@@ -501,75 +513,410 @@ function walkPath(project: Project, map: GameMap, from: { x: number; y: number }
 }
 
 /**
- * 행진 길을 막고 선 떠도는 주민(movement random)을 길 밖 빈 칸으로 비켜 세운다. 마을 배치는 버들항 구성기(seed)가 정하고
- * 동문 곁 이정표가 문 앞을 한 칸 목으로 좁힌다 — #3240 이후 seed 7 마을에서는 꼬마 토비가 그 목에 서서 기사·발렌의
- * 동문 길이 없어졌다. 떠도는 주민은 어차피 움직이므로 처음 자리만 옮긴다(고정 NPC·문·조사 칸은 건드리지 않는다).
+ * 포고가 끝나면 교단 행렬(발렌·기사·호위 둘)이 큰길을 따라 동문으로 걸어 나간다 — 예전에는 이리스 합류 때 제자리에서
+ * 페이지 전환으로 사라졌다(가혹 검수 r12 major 「NPC 가 문까지 걷지 않는다」). 오프닝 아침 컷의 행렬처럼 셋 이상이 줄지어
+ * 걷고(적대 VQA r2: 혼자 풀밭을 가로질렀다), 길은 포석(큰길·광장)만 밟는다. 대사가 이어지는 동안(기다리지 않음) 걷고,
+ * 성문 통로에 닿으면 루트 끝의 각자 스위치로 지운다(떠남 페이지).
  */
-function clearMarchRoute(project: Project, hub: GameMap, exit: { x: number; y: number }, marcherIds: readonly string[]): void {
-  const roamers = hub.events.filter((e) => !marcherIds.includes(e.id) && (e.pages ?? []).some((p) => p.movement?.type === "random"));
-  const roamerIds = new Set(roamers.map((e) => e.id));
-  for (const id of marcherIds) {
-    const npc = hub.events.find((e) => e.id === id);
-    if (!npc || walkPath(project, hub, npc, exit, id)) continue;
-    const through = walkPath(project, hub, npc, exit, id, roamerIds);
-    if (!through) continue;
-    const onPath = new Set<string>([`${npc.x},${npc.y}`]);
-    let x = npc.x, y = npc.y;
-    for (const dir of through) { x += dir === "right" ? 1 : dir === "left" ? -1 : 0; y += dir === "down" ? 1 : dir === "up" ? -1 : 0; onPath.add(`${x},${y}`); }
-    for (const roamer of roamers) {
-      if (!onPath.has(`${roamer.x},${roamer.y}`)) continue;
-      const others = hub.events.filter((e) => e !== roamer);
-      let spot: { x: number; y: number } | undefined;
-      for (let r = 2; r <= 10 && !spot; r += 1) for (let dy = -r; dy <= r && !spot; dy += 1) for (let dx = -r; dx <= r && !spot; dx += 1) {
-        if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
-        const cx = roamer.x + dx, cy = roamer.y + dy;
-        if (cx < 1 || cy < 1 || cx >= hub.width - 1 || cy >= hub.height - 1 || !isPassable(project, hub, cx, cy)) continue;
-        if (onPath.has(`${cx},${cy}`) || others.some((e) => Math.abs(e.x - cx) + Math.abs(e.y - cy) <= 1)) continue;
-        // 옮긴 자리에서 마을 본체로 이어져야 한다(나무 사이 섬에 갇히지 않게).
-        if (!walkPath(project, hub, { x: cx, y: cy }, exit, roamer.id, new Set([...marcherIds, ...roamerIds]))) continue;
-        spot = { x: cx, y: cy };
+function marchOffAfterProclamation(project: Project, hub: GameMap): void {
+  // 동문 = 숲으로 나가는 성문 통로 가운데 칸(reworkFallenTown). 일행은 통로 안까지 걸어 들어가 사라진다.
+  const gate = hub.events.find((e) => String(e.id).startsWith("ev_gate_") && JSON.stringify(e).includes('"mapId":"fs_forest"'));
+  const proclamation = hub.events.find((e) => e.id === `ev_${FS_PREFIX}_event`);
+  const list = proclamation?.pages?.[0]?.commands;
+  const after = list?.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("교단보다 먼저"));
+  if (!gate || !list || after === undefined || after < 0) throw new Error("[fallen-star] 포고·동문을 찾지 못했다");
+  const exit = { x: gate.x, y: gate.y };
+  const knight = hub.events.find((e) => e.id === `ev_${FS_PREFIX}_knight`);
+  const valen = hub.events.find((e) => e.id === `ev_${FS_PREFIX}_valen`);
+  if (!knight || !valen) throw new Error("[fallen-star] 발렌·기사가 없다");
+
+  // 호위 여덟 — 기사 이벤트를 그대로 본떠 RTP 칩만 바꾼다(기사 넷 · 흰 두건 사제 넷). 오프닝 아침 그림은 흰 옷 행렬이
+  // 두 줄로 성문을 지난다 — 셋·넷으로는 행렬이 아니라 일행으로 읽혔다(VQA r3).
+  const escorts: [string, string, number, string][] = [
+    // 흰 머리 사제·민머리 칩은 행렬 속 「백성」으로 읽혔다(VQA r12·r13 — 백성이 호위보다 먼저 성문을 나간다) — 여덟 모두 갑옷 기사.
+    ["a", "tex_easyrpg_charset_actor1", 3, "심문회 기사"], ["b", "tex_easyrpg_charset_actor1", 2, "심문회 기사"],
+    ["c", "tex_easyrpg_charset_actor1", 3, "심문회 기사"], ["d", "tex_easyrpg_charset_actor1", 2, "심문회 기사"],
+    ["e", "tex_easyrpg_charset_actor1", 3, "심문회 기사"], ["f", "tex_easyrpg_charset_actor1", 2, "심문회 기사"],
+    ["g", "tex_easyrpg_charset_actor1", 3, "심문회 기사"], ["h", "tex_easyrpg_charset_actor1", 2, "심문회 기사"],
+  ].map(([k, tex, index, name]) => [`ev_${FS_PREFIX}_escort_${k}`, tex as string, index as number, name as string]);
+  hub.events = hub.events.filter((e) => !escorts.some(([id]) => id === e.id));
+  for (const [id, tex, index, name] of escorts) {
+    const clone = JSON.parse(JSON.stringify(knight)) as GameEvent;
+    clone.id = id; clone.name = name;
+    for (const page of clone.pages ?? []) page.id = `${page.id}__${id.slice(-1)}`;
+    hub.events.push(clone);
+    setEventChip(hub, id, tex, index);
+  }
+
+  // 무대 — 천문대 문 앞 큰길 두 줄(문 바로 아래 줄부터). 주인공(시작 칸) 동쪽에 발렌이 앞장서 서쪽을 보고,
+  // 뒤로 기사·호위가 두 줄로 선다. 행렬은 앞(동쪽)부터 걷는다.
+  const door = hub.events.find((e) => String(e.id).startsWith("ev_gate_") && JSON.stringify(e).includes('"mapId":"fs_observatory"'));
+  const roadTop = (door?.y ?? 20);
+  const lead = { x: (project.startPos?.x ?? 24) + 3, y: roadTop + 1 };
+  const byId = (id: string): GameEvent => hub.events.find((e) => e.id === id)!;
+  // 발렌이 주인공 쪽에 홀로 서고, 그 뒤(동쪽)로 두 줄(큰길 두 줄)이 늘어선다 — 걸을 때는 동쪽 끝부터 성문으로 간다.
+  const formation: [GameEvent, number, number, string, number][] = [
+    [valen, 0, 0, FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX], [knight, 1, -1, "tex_easyrpg_charset_actor1", 2],
+    // 두 줄 엇갈림(체크무늬) — 같은 줄 이웃은 두 칸, 앞뒤 줄은 대각선. 한 칸씩 붙여 세우면 24px 칩이 겹쳐 덩어리로 읽혔다(VQA r5).
+    ...escorts.map(([id, tex, index], k): [GameEvent, number, number, string, number] => [byId(id), k + 2, (k + 2) % 2 === 0 ? 0 : -1, tex, index]),
+  ];
+  const marchers = new Set(formation.map(([e]) => e.id));
+  // 뒷줄이 집 벽 맨 아랫줄·문 칸에 서던 것(VQA r6 major) — 걸을 수 있고 문·다른 사람이 없는 칸만 쓴다. 위 줄이 막히면 아래 줄로.
+  const doorCells = new Set(hub.events.filter((e) => String(e.id).startsWith("ev_gate_")).map((e) => `${e.x},${e.y}`));
+  const standing = new Set<string>();
+  const free = (x: number, y: number): boolean => isPassable(project, hub, x, y) && !doorCells.has(`${x},${y}`) && !standing.has(`${x},${y}`)
+    && !hub.events.some((e) => !marchers.has(e.id) && e.x === x && e.y === y);
+  for (const slot of formation) {
+    const [, dx, dy] = slot;
+    const tries = [dy, dy === 0 ? -1 : 1, dy === 0 ? 1 : 0].map((d) => lead.y + d);
+    const y = tries.find((ty) => free(lead.x + dx, ty)) ?? lead.y + dy;
+    slot[2] = y - lead.y;
+    standing.add(`${lead.x + dx},${y}`);
+  }
+  for (const [event, dx, dy, tex, index] of formation) {
+    event.x = lead.x + dx; event.y = lead.y + dy;
+    // 포고는 남쪽(길 아래 풀밭)에 모인 백성에게 한다 — 발렌과 호위 모두 남쪽을 보고 선다. 서쪽(일행 쪽)을 보던 옆모습은
+    // 백성 쪽이 아니라 카메라를 보는 것처럼 읽혔다(VQA r8 major).
+    // r10·r12: 모두 남쪽(카메라)을 보면 말하는 이와 듣는 이가 나란히 선 줄 세우기로 읽혔다(VQA r12 major) — 발렌은 동쪽 행렬·백성을,
+    // 행렬은 서쪽 발렌을 본다(서로 마주 보는 연설). 풀밭 백성은 아래에서 발렌을 본다.
+    for (const page of event.pages ?? []) if (page.graphic?.sprite) page.graphic.direction = "down";
+    setEventChip(hub, event.id, tex, index); // 방향이 바뀌면 칩 프레임 번호도 다시 고른다
+  }
+
+  // 발렌은 호위 줄보다 한 걸음 앞(남쪽, 백성 쪽)에 홀로 선다 — 호위와 같은 줄에 서면 누가 말하는지 안 읽히고, 호위 줄이
+  // 카메라를 보는 백성으로 읽혔다(VQA r10 major).
+  // 발렌은 기사 두 줄 한가운데 앞(남쪽)에 서서 남쪽 백성을 본다 — 줄 서쪽 끝 곁길에 서면 연설의 중심이 안 읽혔다(VQA r13).
+  {
+    const xs = formation.filter(([e]) => e !== valen).map(([, dx]) => lead.x + dx);
+    const mid = Math.round((Math.min(...xs) + Math.max(...xs)) / 2);
+    const front = Math.max(...formation.filter(([e]) => e !== valen).map(([, , dy]) => lead.y + dy)) + 1;
+    const slot = formation.find(([e]) => e === valen)!;
+    for (const tx of [mid, mid - 1, mid + 1, mid - 2, mid + 2]) {
+      if (!isPassable(project, hub, tx, front) || doorCells.has(`${tx},${front}`) || standing.has(`${tx},${front}`)
+        || hub.events.some((e) => !marchers.has(e.id) && e.x === tx && e.y === front)) continue;
+      standing.delete(`${valen.x},${valen.y}`); valen.x = tx; valen.y = front; standing.add(`${tx},${front}`);
+      slot[1] = -1; // 행진은 동쪽(앞)부터 — 발렌은 맨 뒤에서 따라간다(앞장세우면 그 길을 피하느라 기사 모두가 수십 걸음 늦게 떠나 행렬이 멈춘 듯했다)
+      break;
+    }
+  }
+
+  // 포고를 듣는 백성 — 발렌이 「백성은 들어라」 하는데 듣는 사람이 일행뿐이라 누구에게 말하는지 읽히지 않았다(VQA r7 major).
+  // 발렌 서·남쪽 빈 칸에 넷이 서서 발렌을 본다. 주인공이 천문대 문으로 가는 세로 길(시작 칸 좌우 한 칸)과 문 앞은 비운다.
+  const start = { x: project.startPos?.x ?? 24, y: project.startPos?.y ?? 23 };
+  const crowd: [string, string, number, string, string][] = [
+    ["a", "tex_easyrpg_charset_people4", 0, "광장의 농부", "별이 떨어진 게 이단이라니… 우리 밭에도 불똥이 튀었는데."],
+    ["b", "tex_easyrpg_charset_people5", 1, "광장의 아낙", "심문관님이 직접 오셨어. 저 숲엔 얼씬도 말아야겠어."],
+    ["c", "tex_easyrpg_charset_people4", 2, "광장의 상인", "포고 때문에 동문 길이 막히면 장사는 다 했네."],
+    ["d", "tex_easyrpg_charset_people1", 6, "광장의 노인", "하늘에서 온 것을 함부로 부르면 화를 입는 법이야."],
+    // 오프닝 아침 그림은 길가에 백성이 늘어서 있다 — 넷은 적었다(VQA r17).
+    ["e", "tex_easyrpg_charset_people5", 3, "광장의 처녀", "기사님들 갑옷 좀 봐… 숲에 정말 뭐가 떨어졌나 봐."],
+    ["f", "tex_easyrpg_charset_people1", 1, "광장의 청년", "이단이라니. 별을 보고 소원 빈 것도 죄가 되나?"],
+  ];
+  const hubMeta = (project.tilesets[hub.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+  const near = (x: number, y: number, r: number, c: { x: number; y: number }) => Math.abs(x - c.x) <= r && Math.abs(y - c.y) <= r;
+  const spots: { x: number; y: number }[] = [];
+  const candidates: { x: number; y: number; d: number }[] = [];
+  // 백성은 발렌 남쪽(길 아래 풀밭)에 모여 위를 본다.
+  for (let y = valen.y + 2; y <= valen.y + 5; y += 1) for (let x = valen.x - 5; x <= valen.x + 4; x += 1) {
+    if (Math.abs(x - start.x) <= 1 || near(x, y, 1, valen) || !free(x, y)) continue;
+    // 엘레나 대사 때 주인공이 옆으로 두 걸음 비켜선다 — 그 두 칸 바로 아래에 서면 몸이 겹쳐 그려졌다(QA fs49).
+    if (Math.abs(x - start.x) <= 2 && y <= start.y + 1) continue;
+    // 길(포석·흙길) 칸은 비운다 — 외길에 둘이 줄지어 서서 길을 막고 아무것도 안 보는 것처럼 읽혔다(VQA r9).
+    if (!/풀밭/.test(hubMeta[hub.lowerTiles[y * hub.width + x]!]?.label ?? "")) continue;
+    // 바로 위 칸에 가로등·간판 같은 소품이 있으면 머리에서 기둥이 솟은 것처럼 그려졌다(VQA r14 minor).
+    { const t = hub.upperTiles[(y - 1) * hub.width + x] ?? -1; if (t >= 0 && !/풀|꽃|잔돌|자갈|버섯|고사리|덤불|그림자/.test(hubMeta[t]?.label ?? "")) continue; }
+    if ([...doorCells].some((k) => { const [dx, dy] = k.split(",").map(Number); return Math.abs(x - dx!) <= 2 && Math.abs(y - dy!) <= 2; })) continue;
+    candidates.push({ x, y, d: Math.hypot(x - valen.x, y - (valen.y + 2)) }); // 발렌 바로 앞(두 칸 아래)부터 — 멀면 빈 길을 보는 것처럼 읽혔다(VQA r10)
+  }
+  candidates.sort((p, q) => p.d - q.d);
+  for (const c of candidates) {
+    if (spots.length >= crowd.length) break;
+    if (spots.some((s) => near(c.x, c.y, 1, s) || (s.x === c.x && Math.abs(s.y - c.y) <= 2))) continue;
+    spots.push({ x: c.x, y: c.y }); standing.add(`${c.x},${c.y}`);
+  }
+  hub.events = hub.events.filter((e) => !String(e.id).startsWith(`ev_${FS_PREFIX}_crowd_`));
+  spots.forEach((spot, k) => {
+    const [key, tex, index, name, line] = crowd[k]!;
+    const dx = valen.x - spot.x, dy = valen.y - spot.y;
+    const direction = Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? "right" : "left") : (dy > 0 ? "down" : "up");
+    const id = `ev_${FS_PREFIX}_crowd_${key}`;
+    hub.events.push({
+      id, name, x: spot.x, y: spot.y, trigger: { kind: "action" }, commands: [], placementRole: "npc",
+      pages: [{
+        id: `${id}_p0`, name: `${name} · 기본`, conditions: [],
+        graphic: { sprite: { type: "bundled", id: tex }, direction, pattern: charsetFrameIndex({ characterIndex: index, direction, pattern: 1 }) },
+        trigger: { kind: "action" }, priority: "same", overlapForbidden: true, movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [{ kind: "text", speaker: name, body: line }],
+      }],
+    } as unknown as GameEvent);
+  });
+
+  const ts = project.tilesets[hub.tilesetId] as unknown as { autotileGroups?: { id: string; memberTileIds: number[] }[]; tileGroups?: { id: string; tileIds: number[] }[] };
+  const pavedIds = new Set<number>([
+    ...(ts.autotileGroups?.find((g) => g.id === "beodeul_road_autotile")?.memberTileIds ?? []),
+    ...(ts.tileGroups?.find((g) => g.id === "beodeul:plaza")?.tileIds ?? []),
+  ]);
+  const allow = (x: number, y: number): boolean => pavedIds.has(hub.lowerTiles[y * hub.width + x]!) || (Math.abs(x - exit.x) <= 1 && y <= exit.y + 1);
+
+  const switches: Record<string, string> = { [valen.id]: SW_VALEN_MARCHED, [knight.id]: SW_KNIGHT_MARCHED };
+  for (const [id] of escorts) switches[id] = `sw_${id.slice(3)}_marched`;
+  const order = [...formation].sort((a, b) => b[1] - a[1]); // 동쪽(앞)부터
+  const marches: Command[] = [];
+  // 모두 같은 걸음으로 걷는다 — 걸음마다 자리를 미리 셈해, 앞사람과 같은 칸·같은 줄 바로 옆 칸에 서게 되면 출발을 한 걸음씩 늦춘다.
+  // (통과 켬이라 겹쳐도 막히지 않아 성문 앞에서 행렬이 한 칸에 포개졌다 — VQA r5.)
+  const DIRS: Record<string, [number, number]> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+  const tracks: { x: number; y: number }[][] = [];
+  const delays: number[] = [];
+  const paths: Step[][] = [];
+  for (const [npc] of order) {
+    const path = walkPath(project, hub, { x: npc.x, y: npc.y }, exit, npc.id, { allow, ignore: marchers })
+      ?? walkPath(project, hub, { x: npc.x, y: npc.y }, exit, npc.id, { ignore: marchers });
+    if (!path) throw new Error(`[fallen-star] ${npc.id} 가 동문까지 걸어갈 길이 없다`);
+    const cells = [{ x: npc.x, y: npc.y }];
+    for (const dir of path) { const [dx, dy] = DIRS[dir as string]!; const last = cells[cells.length - 1]!; cells.push({ x: last.x + dx, y: last.y + dy }); }
+    const posAt = (track: { x: number; y: number }[], delay: number, t: number) => (t - delay >= track.length ? undefined : track[Math.max(0, t - delay)]);
+    let delay = 0;
+    const clash = (d: number): boolean => tracks.some((other, j) => {
+      for (let t = 0; t < cells.length + d + 2; t += 1) {
+        const a = posAt(cells, d, t), b = posAt(other, delays[j]!, t);
+        if (!a || !b) continue;
+        // 둘 다 아직 제자리(출발 전)면 처음 대열 그대로다 — 이것까지 겹침으로 치면 대열 앞줄에 선 발렌이 바로 위 기사와
+        // 「세로로 붙음」이 끝나지 않아 60걸음을 기다리다 홀로 남았다(VQA r14 major). 내가 제자리일 땐 같은 칸만 본다.
+        const aWaiting = t < d, bWaiting = t < delays[j]!;
+        if (aWaiting && bWaiting) continue;
+        if (a.x === b.x && a.y === b.y) return true;
+        if (aWaiting) continue;
+        if (a.y === b.y && Math.abs(a.x - b.x) <= 1) return true;
+        if (a.x === b.x && Math.abs(a.y - b.y) <= 1 && t > 0) return true;
       }
-      if (spot) { roamer.x = spot.x; roamer.y = spot.y; }
+      return false;
+    });
+    while (clash(delay) && delay < 60) delay += 1;
+    tracks.push(cells); delays.push(delay); paths.push(path);
+  }
+  order.forEach(([npc], rank) => {
+    const path = paths[rank]!;
+    const moves = [
+      // 처음부터 지나갈 수 있게: 주인공이 성문 통로 앞에 서 있으면 행렬이 막혀 스위치가 안 켜지고, 그동안 투명한 기사가
+      // 통로 칸을 막아 숲으로 못 나갔다(QA fallen-town to-forest). 길은 걸을 수 있는 칸으로만 짜였으니 건물은 안 뚫는다.
+      { kind: "setThrough", enabled: true },
+      // 행진 걸음 — 기본(느림·드묾)으로는 30칸 길에 30초가 넘게 걸려 대사가 끝난 뒤에도 광장에 남았다.
+      { kind: "changeSpeed", delta: 2 }, { kind: "changeFrequency", delta: 3 },
+      // 경로의 「기다림」 한 번은 걸음 간격(80ms)만 쓴다 — 한 걸음(간격 80 + 이동 240ms)은 기다림 넷이다. 한 번씩만 넣으면
+      // 출발이 4분의 1 걸음만 늦어 발렌과 기사가 한 칸에 포개져 걸었다(VQA r6 major).
+      ...Array.from({ length: delays[rank]! * 4 }, () => ({ kind: "wait" })),
+      ...path.map((dir) => ({ kind: "move", dir })),
+      { kind: "changeOpacity", delta: -255 },
+      { kind: "setSwitch", switchId: switches[npc.id]!, value: true },
+    ];
+    marches.push({ kind: "moveEvent", eventId: npc.id, route: { moves, repeat: false, wait: false, skippable: true } } as unknown as Command);
+  });
+  const names: Record<string, string> = { [SW_VALEN_MARCHED]: "발렌 일행 동문으로 떠남", [SW_KNIGHT_MARCHED]: "심문회 기사 동문으로 떠남" };
+  for (const [id, sw] of Object.entries(switches)) {
+    if (!project.switches.some((s) => s.id === sw)) project.switches.push({ id: sw, name: names[sw] ?? `${hub.events.find((e) => e.id === id)?.name ?? id} 동문으로 떠남` });
+    vanishWhen(hub, id, sw);
+  }
+  // 화면이 행렬을 따라간다 — 주인공 자리에 머물면 행렬이 곧 화면 동쪽 밖으로 나가 셋·넷만 스쳐 보였다(VQA r3).
+  // 행렬 가운데 사람을 따라 성문 통로까지 비추다가, 행렬이 통로로 사라지면 주인공에게 돌아온다.
+  const camera = (fields: Record<string, string>): Command => ({ kind: "m2Command", commandId: "m2-201-camera-control", fields } as unknown as Command);
+  const middle = order[Math.floor(order.length / 2) + 1]![0].id; // 가운데보다 한 오 뒤 — 앞줄이 통로에 들어설 때 성문루가 화면에 든다
+  const follow: Command[] = [
+    { kind: "wait", ms: 400 } as Command,
+    camera({ mode: "follow", targetEventId: middle, durationMs: "900", wait: "true" }),
+    // 따라가는 사람이 성문 통로로 사라질 때까지(벽시계 대기는 느린 기기에서 행렬보다 먼저 끝났다).
+    { kind: "loop", body: [
+      // 맨 뒤 발렌까지 성문으로 사라진 뒤에 돌아온다 — 가운데 사람 기준이면 발렌이 홀로 남은 채 엘레나 대사가 시작됐다(VQA r14 major).
+      { kind: "fork", condition: { kind: "switch", switchId: switches[order[order.length - 1]![0].id]!, value: true }, then: [{ kind: "breakLoop" }] },
+      { kind: "wait", ms: 250 },
+    ] } as unknown as Command,
+    { kind: "wait", ms: 500 } as Command,
+    camera({ mode: "return", durationMs: "1000", wait: "true" }),
+  ];
+  list.splice(after + 1, 0, ...marches, ...follow);
+  // 포고 동안 주인공(과 동료)은 발렌 쪽을 본다 — 화면만 보고 서 있었다(VQA r6 major).
+  const begin = list.findIndex((c) => c.kind === "cutsceneControl");
+  const towardValen: Step = valen.x > (project.startPos?.x ?? 0) ? "right" : "left";
+  list.splice(begin + 1, 0, { kind: "moveEvent", eventId: "@player", route: { moves: [{ kind: "turn", dir: towardValen }], repeat: false, wait: true, skippable: true } } as unknown as Command);
+  // 엘레나가 말할 때 주인공이 화면(아래)을 보고 있었다(VQA r5) — 엘레나 쪽(위)으로 돌아선다.
+  const elenaLine = list.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("들었지, 카엘"));
+  // 위를 보면 RTP 주인공 칩 뒷모습(머리 뒤 흰 띠)이 얼굴처럼 읽혀 엘레나에게 등을 돌린 것으로 보였다(VQA r10 major) —
+  // 주인공이 옆으로 두 걸음 비켜서면 뒤따르던 엘레나가 곁(같은 줄)으로 와 서로 옆모습으로 마주 본다.
+  const startX = project.startPos?.x ?? 24, startY = project.startPos?.y ?? 23;
+  const sideOpen = (dx: number): boolean => [1, 2].every((k) => isPassable(project, hub, startX + dx * k, startY)
+    && !hub.events.some((e) => e.x === startX + dx * k && e.y === startY && !marchers.has(e.id)));
+  const side: Step | undefined = sideOpen(-1) ? "left" : sideOpen(1) ? "right" : undefined;
+  const faceElena: unknown[] = side ? [{ kind: "move", dir: side }, { kind: "move", dir: side }, { kind: "turn", dir: side === "left" ? "right" : "left" }] : [{ kind: "turn", dir: "up" }];
+  if (elenaLine >= 0) list.splice(elenaLine, 0, { kind: "moveEvent", eventId: "@player", route: { moves: faceElena, repeat: false, wait: true, skippable: true } } as unknown as Command);
+}
+
+/**
+ * 문 둘레(체비쇼프 2칸)에 선 붙박이 NPC 를 떨어진 빈 칸으로 옮긴다 — 가게에서 나오면 동료가 문 옆 NPC 바로 아래 칸에 서
+ * 모자가 NPC 몸을 덮어 한 덩이로 그려졌다(VQA r7 major, 약방 앞 할머니).
+ */
+function clearDoorFronts(project: Project, map: GameMap | undefined): void {
+  if (!map) return;
+  const doors = map.events.filter((e) => String(e.id).startsWith("ev_gate_"));
+  const nearDoor = (x: number, y: number, r: number): boolean => doors.some((d) => Math.abs(d.x - x) <= r && Math.abs(d.y - y) <= r);
+  for (const npc of map.events) {
+    // 성문 문지기·포고 행렬은 문 곁이 제자리다.
+    // 바로 위 칸에 큰 소품(물레방아 등)이 있으면 그 밑에 끼어 선 것처럼 보였다(VQA r8 minor, 빵집 아주머니) — 그때도 옮긴다.
+    const metaD = (project.tilesets[map.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+    const underProp = (x: number, y: number): boolean => {
+      const t = map.upperTiles[(y - 1) * map.width + x] ?? -1;
+      return t >= 0 && !/풀|꽃|잔돌|자갈|버섯|고사리|덤불|그림자/.test(metaD[t]?.label ?? "");
+    };
+    if (String(npc.id).startsWith("ev_gate_") || /_(escort_|valen|knight|crowd_)|_gate$/.test(String(npc.id)) || (!nearDoor(npc.x, npc.y, 2) && !underProp(npc.x, npc.y))) continue;
+    const page = npc.pages?.[0];
+    // 돌아다니는 사람도 처음 선 칸이 소품 밑이면 옮긴다(빵집 아주머니가 물레방아 밑에서 시작했다 — VQA r8·r15).
+    if (!page?.graphic?.sprite || ((page.movement?.type ?? "fixed") !== "fixed" && !underProp(npc.x, npc.y))) continue;
+    let best: { x: number; y: number; d: number } | undefined;
+    for (let y = npc.y - 6; y <= npc.y + 6; y += 1) for (let x = npc.x - 6; x <= npc.x + 6; x += 1) {
+      if (x < 1 || y < 1 || x >= map.width - 1 || y >= map.height - 1 || nearDoor(x, y, 3) || underProp(x, y)) continue;
+      if (!isPassable(project, map, x, y) || map.events.some((e) => e !== npc && Math.abs(e.x - x) <= 1 && Math.abs(e.y - y) <= 1)) continue;
+      const d = Math.abs(x - npc.x) + Math.abs(y - npc.y);
+      if (!best || d < best.d) best = { x, y, d };
+    }
+    if (best) { npc.x = best.x; npc.y = best.y; }
+  }
+}
+
+/** 손 도트 실내(atlas_biome_interior): 천장(default 2~33·rock 34~65) → 천장(dark 66~97), 가장자리에서 이어진 바위벽 메움 → 공허(1). */
+/**
+ * 화로의 방 바닥 — 퍼즐 견본이 깐 「그을린 흙」 세로 띠 셋이 감옥 돌바닥 사이에서 밝은 띠(렌더 오류처럼)로 보였다(VQA r3).
+ * 같은 칸 이웃 번호를 지키려고 띠 칸을 그 방의 감옥 돌바닥 칸으로 바꾸고, 창살이 열릴 때 띠를 다시 칠하는 칸 바꾸기도 같이 바꾼다.
+ */
+function unifyPuzzleFloor(project: Project, map: GameMap | undefined): void {
+  if (!map) return;
+  const meta = (project.tilesets[map.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+  const label = (t: number): string => (t >= 0 ? meta[t]?.label ?? "" : "");
+  const stone = [...new Set(map.lowerTiles.filter((t) => label(t).startsWith("바닥 · 감옥 돌바닥")))];
+  if (!stone.length) return;
+  const swap = (t: number, x: number, y: number): number => label(t).startsWith("바닥 · 그을린 흙") ? stone[(((x * 73856093) ^ (y * 19349663)) >>> 0) % stone.length]! : t;
+  map.lowerTiles.forEach((t, i) => { map.lowerTiles[i] = swap(t, i % map.width, Math.floor(i / map.width)); });
+  for (const event of map.events) for (const list of eventCommandLists(event)) for (const cmd of list) {
+    const rec = cmd as unknown as { kind?: string; layer?: string; tile?: number; x?: number; y?: number };
+    if (rec.kind === "changeTile" && rec.layer === "lower" && typeof rec.tile === "number") rec.tile = swap(rec.tile, rec.x ?? 0, rec.y ?? 0);
+  }
+}
+
+/**
+ * 숲 오솔길이 네 토막이었다(VQA r3) — 사이의 짙은 풀숲 칸을 걷어 내며 끊긴 자리를 잇는다. 토막마다 가장 가까운 다른 토막까지
+ * 걸을 수 있는 칸으로 최단 길을 찾아 두 칸 폭 모랫길로 칠한다.
+ */
+function joinForestTrail(project: Project, forestId: string): void {
+  for (let round = 0; round < 8; round += 1) {
+    const map = project.maps[forestId];
+    if (!map) return;
+    const W = map.width, H = map.height;
+    const meta = (project.tilesets[map.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+    const isTrail = (i: number): boolean => (meta[map.lowerTiles[i]!]?.label ?? "").startsWith("버들항 · 모랫길");
+    const comp = new Int32Array(W * H).fill(-1);
+    let count = 0;
+    for (let i = 0; i < W * H; i += 1) {
+      if (!isTrail(i) || comp[i]! >= 0) continue;
+      const stack = [i]; comp[i] = count;
+      while (stack.length) {
+        const c = stack.pop()!;
+        for (const n of [c - 1, c + 1, c - W, c + W]) {
+          if (n < 0 || n >= W * H || (Math.abs((n % W) - (c % W)) > 1) || comp[n]! >= 0 || !isTrail(n)) continue;
+          comp[n] = count; stack.push(n);
+        }
+      }
+      count += 1;
+    }
+    if (count <= 1) return;
+    // 0번 토막에서 다른 토막까지 BFS.
+    const prev = new Int32Array(W * H).fill(-2);
+    const queue: number[] = [];
+    for (let i = 0; i < W * H; i += 1) if (comp[i] === 0) { prev[i] = -1; queue.push(i); }
+    let hit = -1;
+    for (let q = 0; q < queue.length && hit < 0; q += 1) {
+      const c = queue[q]!;
+      for (const n of [c - 1, c + 1, c - W, c + W]) {
+        if (n < 0 || n >= W * H || Math.abs((n % W) - (c % W)) > 1 || prev[n]! !== -2) continue;
+        const x = n % W, y = Math.floor(n / W);
+        if (comp[n]! > 0) { prev[n] = c; hit = n; break; }
+        if (x < 1 || y < 1 || x >= W - 1 || y >= H - 1 || !isPassable(project, map, x, y)) continue;
+        prev[n] = c; queue.push(n);
+      }
+    }
+    if (hit < 0) return;
+    const cells: number[] = [];
+    for (let c = prev[hit]!; c >= 0 && comp[c] !== 0; c = prev[c]!) cells.push(c);
+    // 두 칸 폭 — 길이 세로로 가면 오른쪽, 가로로 가면 아래 칸을 더한다(걸을 수 있을 때만).
+    const paint = new Set<number>(cells);
+    cells.forEach((c, k) => {
+      const next = cells[k + 1] ?? prev[c]!;
+      const vertical = next >= 0 && Math.abs(next - c) === W;
+      const side = vertical ? c + 1 : c + W;
+      if (side >= 0 && side < W * H && isPassable(project, map, side % W, Math.floor(side / W))) paint.add(side);
+    });
+    for (const c of paint) {
+      const live = project.maps[forestId]!; // fill_region 은 맵 객체를 바꿔 끼운다
+      if ((live.upperTiles[c] ?? -1) >= 0 && isPassable(project, live, c % W, Math.floor(c / W))) live.upperTiles[c] = -1;
+      execTool(project, "fill_region", { mapId: forestId, x: c % W, y: Math.floor(c / W), w: 1, h: 1, layer: "lower", material: "버들항 모랫길" });
     }
   }
 }
 
 /**
- * 포고가 끝나면 발렌과 기사가 동문으로 걸어 나간다 — 예전에는 이리스 합류 때 제자리에서 페이지 전환으로 사라졌다
- * (가혹 검수 r12 major 「NPC 가 문까지 걷지 않는다」). 대사가 이어지는 동안(기다리지 않음) 걷고, 문 앞에 닿으면
- * 루트 끝의 스위치로 지운다(떠남 페이지).
+ * 벽 걸이(액자·별자리표·거미줄·문틀…)가 걸을 수 있는 바닥 칸에 걸쳐 있으면 깃발처럼 홀로 선다(scene-hang-on-floor) —
+ * 그 걸이 한 덩이(같은 키트 칸이 이어진 것)를 통째로 걷는다. 벽면에만 걸린 걸이는 그대로 둔다.
  */
-function marchOffAfterProclamation(project: Project, hub: GameMap): void {
-  const gate = hub.events.find((e) => String(e.id).startsWith("ev_gate_") && e.x >= hub.width - 2);
-  const proclamation = hub.events.find((e) => e.id === `ev_${FS_PREFIX}_event`);
-  const list = proclamation?.pages?.[0]?.commands;
-  const after = list?.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("교단보다 먼저"));
-  if (!gate || !list || after === undefined || after < 0) throw new Error("[fallen-star] 포고·동문을 찾지 못했다");
-  const exit = { x: gate.x - 1, y: gate.y };
-  clearMarchRoute(project, hub, exit, [`ev_${FS_PREFIX}_knight`, `ev_${FS_PREFIX}_valen`]);
-  const marches: Command[] = [];
-  for (const [id, delay] of [[`ev_${FS_PREFIX}_knight`, 0], [`ev_${FS_PREFIX}_valen`, 1]] as const) {
-    const npc = hub.events.find((e) => e.id === id);
-    if (!npc) continue;
-    const path = walkPath(project, hub, { x: npc.x, y: npc.y }, exit, id);
-    if (!path) throw new Error(`[fallen-star] ${id} 가 동문까지 걸어갈 길이 없다`);
-    const moves = [
-      ...Array.from({ length: delay }, () => ({ kind: "wait" })),
-      ...path.map((dir) => ({ kind: "move", dir })),
-      { kind: "changeOpacity", delta: -255 },
-      // 사라진 뒤에도 칸을 막으면 뒤따르던 발렌이 마지막 걸음에서 멈췄다 — 지나갈 수 있게 한다.
-      { kind: "setThrough", enabled: true },
-      ...(id.endsWith("valen") ? [{ kind: "setSwitch", switchId: SW_VALEN_MARCHED, value: true }] : []),
-    ];
-    marches.push({ kind: "moveEvent", eventId: id, route: { moves, repeat: false, wait: false, skippable: true } } as unknown as Command);
+function dropFloorHangs(project: Project, map: GameMap): void {
+  const hangIds = new Set(Object.entries((handInteriorSpec as { objects: Record<string, { kind?: string }> }).objects).filter(([, o]) => o.kind === "hang").map(([id]) => id));
+  const kits = (project.tilesets[map.tilesetId] as unknown as { structureKits?: { id: string; rows?: { upperTiles?: number[] }[] }[] }).structureKits ?? [];
+  const kitOf = new Map<number, string>();
+  for (const kit of kits) if (kit.id.startsWith("hand-interior:") && hangIds.has(kit.id.slice(14))) for (const row of kit.rows ?? []) for (const t of row.upperTiles ?? []) if (t >= 0) kitOf.set(t, kit.id);
+  const W = map.width;
+  for (const layer of [map.upperTiles, map.upperOverlayTiles]) {
+    if (!layer) continue;
+    for (let i = 0; i < layer.length; i += 1) {
+      const kit = kitOf.get(layer[i]!);
+      if (!kit || !isPassable(project, map, i % W, Math.floor(i / W))) continue;
+      const stack = [i];
+      while (stack.length) {
+        const c = stack.pop()!;
+        if (kitOf.get(layer[c]!) !== kit) continue;
+        layer[c] = -1;
+        if (c % W > 0) stack.push(c - 1);
+        if (c % W < W - 1) stack.push(c + 1);
+        if (c >= W) stack.push(c - W);
+        if (c + W < layer.length) stack.push(c + W);
+      }
+    }
   }
-  if (!project.switches.some((s) => s.id === SW_VALEN_MARCHED)) project.switches.push({ id: SW_VALEN_MARCHED, name: "발렌 일행 동문으로 떠남" });
-  list.splice(after + 1, 0, ...marches);
-  vanishWhen(hub, `ev_${FS_PREFIX}_valen`, SW_VALEN_MARCHED);
-  vanishWhen(hub, `ev_${FS_PREFIX}_knight`, SW_VALEN_MARCHED);
 }
 
+function darkenInteriorMargins(map: GameMap): void {
+  const W = map.width, H = map.height;
+  const layers = [map.lowerTiles, map.lowerOverlayTiles, map.upperTiles, map.upperOverlayTiles].filter((l): l is number[] => !!l);
+  for (const layer of layers) for (let i = 0; i < layer.length; i += 1) {
+    const t = layer[i]!;
+    if (t >= 2 && t <= 33) layer[i] = t + 64;
+    else if (t >= 34 && t <= 65) layer[i] = t + 32;
+  }
+  const ROCK = new Set([3132, 3134, 3166, 3168, 3170, 3172, 3174, 3176]);
+  const VOID = 1;
+  const fill = (i: number): boolean => ROCK.has(map.lowerTiles[i]!) || map.lowerTiles[i] === VOID;
+  const seen = new Set<number>();
+  const queue: number[] = [];
+  for (let x = 0; x < W; x += 1) for (const y of [0, H - 1]) { const i = y * W + x; if (fill(i) && !seen.has(i)) { seen.add(i); queue.push(i); } }
+  for (let y = 0; y < H; y += 1) for (const x of [0, W - 1]) { const i = y * W + x; if (fill(i) && !seen.has(i)) { seen.add(i); queue.push(i); } }
+  while (queue.length) {
+    const i = queue.shift()!, x = i % W, y = Math.floor(i / W);
+    if (ROCK.has(map.lowerTiles[i]!)) { map.lowerTiles[i] = VOID; for (const layer of layers.slice(1)) layer[i] = -1; }
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = x + dx, ny = y + dy, n = ny * W + nx;
+      if (nx < 0 || ny < 0 || nx >= W || ny >= H || seen.has(n) || !fill(n)) continue;
+      seen.add(n); queue.push(n);
+    }
+  }
+}
+
+
 export const SW_VALEN_ARRIVED = "sw_fs_valen_arrived";
+const SW_VALEN_WALKING = "sw_fs_valen_walking";
 /**
  * 지하의 발렌은 처음부터 등불 앞에 서 있지 않고, 일행이 방에 들어서면 북쪽 통로에서 걸어 내려와 선다(가혹 검수 r12
  * 「발렌 보스 등장도 입구에서 걸어 들어오게」). 걷는 그림은 따로 둔 이벤트가 맡고, 닿는 순간 스위치로 진짜 보스 이벤트와
@@ -587,6 +934,9 @@ function valenWalksIn(project: Project, vault: GameMap, bossId: string, from?: {
     id: `${bossId}_unseen`, name: "아직 오지 않음", conditions: [], graphic: { transparent: true },
     movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "below", trigger: { kind: "action" }, commands: [],
   } as EventPage);
+  // 금고의 발렌도 마을의 발렌과 같은 칩(흉상에 맞춘 긴 푸른 머리·머리띠).
+  ensureFallenValenChip(project);
+  setEventChip(vault, bossId, FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX);
   const visible = boss.pages.find((p) => p.graphic?.sprite)?.graphic;
   // 북쪽 통로에서 출발: 보스 위로 6~8칸, 좌우 2칸 안의 걸을 수 있는 칸 중 보스까지 길이 가장 긴(가장 깊은) 곳.
   let start: { x: number; y: number } | undefined;
@@ -608,23 +958,26 @@ function valenWalksIn(project: Project, vault: GameMap, bossId: string, from?: {
   if (!start || !path) throw new Error("[fallen-star] 발렌이 걸어 들어올 길을 찾지 못했다");
   const walkerId = `ev_${FS_PREFIX}_valen_walk_in`;
   vault.events = vault.events.filter((e) => e.id !== walkerId && !String(e.id).startsWith(`ev_${FS_PREFIX}_valen_cue_`));
-  vault.events.push({
-    id: walkerId, name: "걸어 들어오는 발렌", x: start.x, y: start.y, trigger: { kind: "action" }, commands: [],
-    pages: [
-      { id: `${walkerId}_on`, name: "통로", conditions: [], graphic: { ...visible, direction: "down" }, movement: { type: "fixed", speed: 3, frequency: 3 },
-        priority: "same", trigger: { kind: "action" }, commands: [] },
-      { id: `${walkerId}_gone`, name: "섰다", conditions: [arrived], graphic: { transparent: true }, movement: { type: "fixed", speed: 3, frequency: 3 },
-        priority: "below", trigger: { kind: "action" }, commands: [] },
-    ],
-  } as unknown as GameEvent);
+  if (!project.switches.some((s) => s.id === SW_VALEN_WALKING)) project.switches.push({ id: SW_VALEN_WALKING, name: "발렌이 통로를 내려온다" });
+  boss.pages.splice(1, 0, {
+    id: `${bossId}_walking`, name: "통로를 내려온다", conditions: [{ kind: "switch", switchId: SW_VALEN_WALKING, value: true }],
+    graphic: { ...visible, direction: "down" }, movement: { type: "fixed", speed: 3, frequency: 3 },
+    priority: "same", trigger: { kind: "action" }, commands: [],
+  } as EventPage);
+  const placeBoss = (at: { x: number; y: number }): Command =>
+    ({ kind: "m2Command", commandId: "m2-040-set-event-location", fields: { target: bossId, mapId: vault.id, x: at.x, y: at.y } } as unknown as Command);
   const cue: Command[] = [
     { kind: "cutsceneControl", mode: "begin", skippable: true },
     narrate("어둠 저편에서 발소리가 내려온다."),
     { kind: "showEmote", target: "player", emote: "exclamation", durationMs: 700 },
     // 화면이 북쪽 통로를 비추게 들어 올린다 — 일행 자리에서는 통로가 화면 밖이라 걸어 내려오는 모습이 안 보였다.
     { kind: "m2Command", commandId: "m2-049-scroll-map", fields: { direction: "up", distance: "4", durationMs: "700", wait: "true" } },
-    { kind: "moveEvent", eventId: walkerId, route: { moves: [...path.map((dir) => ({ kind: "move", dir })), { kind: "turn", dir: "down" }], repeat: false, wait: true, skippable: true } },
+    placeBoss(start),
+    { kind: "setSwitch", switchId: SW_VALEN_WALKING, value: true },
+    { kind: "moveEvent", eventId: bossId, route: { moves: [...path.map((dir) => ({ kind: "move", dir })), { kind: "turn", dir: "down" }], repeat: false, wait: true, skippable: true } },
     { kind: "label", name: "cutscene_end" },
+    // 건너뛰면 걷다 만 자리에 선다 — 등불 앞 제자리로 붙인다.
+    placeBoss({ x: boss.x, y: boss.y }),
     { kind: "m2Command", commandId: "m2-049-scroll-map", fields: { mode: "return", durationMs: "500", wait: "true" } },
     { kind: "setSwitch", switchId: SW_VALEN_ARRIVED, value: true },
     { kind: "cutsceneControl", mode: "end" },
@@ -772,7 +1125,8 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applySpeakerPrefixes(project);
 
   // 인물 칩 — 검색어로 고른 그림 대신 정해 둔 배우를 쓴다(같은 인물이 맵마다 다른 그림이면 안 된다).
-  setEventChip(M(ids.hub), `ev_${FS_PREFIX}_valen`, "tex_easyrpg_charset_actor1", 4);
+  ensureFallenValenChip(project);
+  setEventChip(M(ids.hub), `ev_${FS_PREFIX}_valen`, FS_VALEN_CHARSET_ID, FS_VALEN_CHARSET_INDEX);
   setEventChip(M(ids.hub), `ev_${FS_PREFIX}_knight`, "tex_easyrpg_charset_actor1", 2);
   // 하넬 — 오프닝 그림의 백발 학자와 맞게 People3 #4(흰 머리·흰 수염·회색 옷)와 그 짝 얼굴 People2 #4.
   // 예전 People1 #6 칩은 대머리·녹색 옷이라 오프닝·초상화와 다른 사람으로 읽혔다(감사 VQA 2차).
@@ -785,6 +1139,11 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   setEventFace(M(ids.hub), `ev_${FS_PREFIX}_gate`, undefined);
   setEventFace(M(ids.forest), `ev_${FS_PREFIX}_bram`, undefined);
   polishLines(M(ids.observatory), M(ids.forest), M(ids.vault));
+  // 왕도를 오프닝 그림과 같은 곳으로 — 운하·아치 돌다리·둥근 돌 천문대 탑·성벽 동문·성문 광장(fallenTown.ts).
+  // 문지기는 성문 곁에 세운다. 문·출구 좌표는 여기서 정해지고, 뒤 단계(도착 칸·포고 행진)가 이 자리를 쓴다.
+  // 성벽 고리의 남 성벽(위 통로 + 앞면 두 줄)이 들어갈 자리 — 마을 남쪽 거리 밑으로 세 줄 늘린다.
+  execTool(project, "resize_map", { mapId: ids.hub, width: M(ids.hub).width, height: M(ids.hub).height + 3 });
+  reworkFallenTown(project, ids.hub, { observatory: ids.observatory, forest: ids.forest });
   // 장 구성기의 「기억의 세이브 결정」은 시스템 말투다 — 세계 안의 이름과 문장으로(감사 3차).
   for (const event of M(ids.vault).events) if (event.name === "기억의 세이브 결정") {
     event.name = "푸른 별빛 결정";
@@ -1011,61 +1370,266 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 천문대 세 방(천문대 · 네 화로의 방 · 옛 별지기의 방)을 손 도트 실내로 다시 짓고 이벤트 자리·이동을 맞춘다(fallenStarRooms.ts).
   rebuildFallenRooms(project, execTool, { hub: ids.hub, observatory: ids.observatory, gate: PUZZLE_ROOM, vault: ids.vault });
 
-  // 동문 문지기는 숲으로 나가는 출입구 곁에 세운다.
-  const forestGate = M(ids.hub).events.find((e) => JSON.stringify(e).includes(`"mapId":"${M(ids.forest).id}"`));
-  const guard = M(ids.hub).events.find((e) => e.id === `ev_${FS_PREFIX}_gate`);
-  if (forestGate && guard) {
-    const spot = nearFree(project, M(ids.hub), { x: forestGate.x - 2, y: forestGate.y - 1 }, 4, guard.id);
-    if (spot) { guard.x = spot.x; guard.y = spot.y; }
-  }
+  // 동문 문지기는 성문 곁(reworkFallenTown 이 세운 자리)에 그대로 선다.
 
   // 추락지 — 금속 알 둘레를 그을린 흙(농장 흙길 오토타일)으로 타원형으로 칠하고, 가장자리에 불씨 자국·쓰러진 나무·그루터기를 둔다.
   // 민무늬 풀 칸만 칠한다(알 그림·길은 건드리지 않는다). 알 앞 조사 칸과 숲길은 비운다.
   const pod = M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_main_inspect1`);
   if (pod) {
     const fm = M(ids.forest);
-    const cx = pod.x, cy = pod.y - 1, rx = 3.9, ry = 2.7;
+    let hadCoffin = false;
+    // 빈터 바닥 — 옛 풀(737)·「풀밭」 이름표에 더해, main 의 숲 바닥 재색칠(#3223/#3229)이 깐 이름표 없는 접목 풀 칸(30336 등)도 바닥으로 친다.
+    // 737 만 보면 구덩이가 빈 집합이 되어 관만 덩그러니 남았다.
+    const metaG = (project.tilesets[fm.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[]; passability?: ({ up?: boolean } | null)[] });
+    const grassish = (i: number): boolean => {
+      const t = fm.lowerTiles[i] ?? -1;
+      if (t < 0) return false;
+      const label = metaG.tileMeta?.[t]?.label ?? "";
+      if (t === 737 || /풀밭/.test(label)) return true;
+      return !label && metaG.passability?.[t]?.up !== false && (fm.upperTiles[i] ?? -1) < 0 && (fm.upperOverlayTiles?.[i] ?? -1) < 0;
+    };
+    // 구덩이 고르기는 바닥 칸만 본다 — main 숲 마감이 빈터에 흩뿌린 잔돌·풀 포기·꽃(위 겹)이 구덩이를 T자로 쪼갰다. 나무는 따로 뺀다.
+    const grassFloor = (i: number): boolean => {
+      const t = fm.lowerTiles[i] ?? -1;
+      if (t < 0) return false;
+      const label = metaG.tileMeta?.[t]?.label ?? "";
+      return t === 737 || /풀밭/.test(label) || (!label && metaG.passability?.[t]?.up !== false);
+    };
+    // 진짜 나무 = 「나무·덤불/전나무」 덧그림이 여섯 칸 이상 이어진 덩이. main 숲 마감은 빈터에 한두 칸짜리 덤불 포기를 흩뿌려
+    // 덤불 이름표만 보면 빈터 전체가 「나무 곁」이 되어 구덩이가 좁은 띠로 줄었다.
+    const bigTree = new Set<number>();
+    {
+      const isTree = (i: number): boolean => [fm.upperTiles, fm.upperOverlayTiles].some((layer) => {
+        const t = layer?.[i] ?? -1;
+        return t >= 0 && /^버들항 · (나무·덤불|전나무)/.test(metaG.tileMeta?.[t]?.label ?? "");
+      });
+      const seen = new Set<number>();
+      for (let i = 0; i < fm.lowerTiles.length; i += 1) {
+        if (seen.has(i) || !isTree(i)) continue;
+        const comp: number[] = [i]; seen.add(i);
+        for (let k = 0; k < comp.length; k += 1) {
+          const c = comp[k]!, cx0 = c % fm.width;
+          for (const n of [c - fm.width, c + fm.width, cx0 > 0 ? c - 1 : -1, cx0 < fm.width - 1 ? c + 1 : -1]) {
+            if (n < 0 || n >= fm.lowerTiles.length || seen.has(n) || !isTree(n)) continue;
+            seen.add(n); comp.push(n);
+          }
+        }
+        if (comp.length >= 6) for (const c of comp) bigTree.add(c);
+      }
+    }
+    const treeAt = (i: number): boolean => bigTree.has(i);
+    // 빈터에서 가장 흔한 바닥 칸 — 모랫길을 풀로 되돌릴 때 옛 풀(737)이 아니라 지금 숲 바닥 색으로 되돌린다.
+    const groundTile = (() => {
+      const count = new Map<number, number>();
+      for (let y = Math.max(0, pod.y - 6); y <= Math.min(fm.height - 1, pod.y + 8); y += 1) for (let x = Math.max(0, pod.x - 8); x <= Math.min(fm.width - 1, pod.x + 8); x += 1) {
+        const i = y * fm.width + x;
+        if (grassish(i)) count.set(fm.lowerTiles[i]!, (count.get(fm.lowerTiles[i]!) ?? 0) + 1);
+      }
+      return [...count.entries()].sort((p, q) => q[1] - p[1])[0]?.[0] ?? 737;
+    })();
+    // 관을 빈터 가운데로 두 칸 내린다 — 관이 빈터 북쪽 나무 줄 바로 밑에 붙어 구덩이 북쪽 테가 잘리고, 관이 구덩이 가운데가 아니라
+    // 북쪽 테 위에 얹힌 것으로 보였다(VQA r10 major). 조사 칸·이리스 자리도 같이 내린다.
+    {
+      const metaS = (project.tilesets[fm.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+      const ground = (x: number, y: number): boolean => {
+        const t = fm.lowerTiles[y * fm.width + x]!;
+        return grassish(y * fm.width + x) || (metaS[t]?.label ?? "").startsWith("버들항 · 모랫길");
+      };
+      // 옛 돌 관(하수도 관 2×2)은 구덩이 계산 전에 걷는다 — 남겨 두면 옛 관 자리가 「덧그림 있는 칸」으로 빠져 구덩이 북쪽에 풀 구멍이 났다.
+      fm.upperTiles.forEach((t, i) => { if (t >= 26599 && t <= 26602) { fm.upperTiles[i] = -1; hadCoffin = true; } });
+      const SHIFT = 2;
+      let ok = pod.y + SHIFT < fm.height - 4;
+      for (let y = pod.y; ok && y <= pod.y + SHIFT; y += 1) for (let x = pod.x - 1; x <= pod.x + 1; x += 1) if (!ground(x, y)) ok = false;
+      if (ok) {
+        pod.y += SHIFT;
+        const iris = fm.events.find((e) => e.id === `ev_${FS_PREFIX}_iris_field`);
+        if (iris && ground(iris.x, iris.y + SHIFT)) iris.y += SHIFT;
+      }
+    }
+    // 관(별의 배) 가운데 — 관은 pod 바로 위 두 칸 너비. 구덩이는 관을 품고 사방으로 그을린 자국이 뻗는 불규칙한 모양이다:
+    // 고른 타원(작은 칸 수)은 네모 흙 마당 + 검은 테두리로 읽혔다(VQA r6 major 「방·무덤 같다」). 각도마다 반지름을 흔들고
+    // 일곱 갈래로 그을음 줄기를 뻗는다.
+    // 구덩이가 빈터(풀 칸) 끝까지 닿으면 빈터 네모 모양을 그대로 따라 네모 흙 마당으로 읽혔다(VQA r7 major) — 빈터보다 작은
+    // 타원으로 줄이고 가운데를 반 칸 내려 위쪽 나무 줄에 잘리지 않게 한다. 그을음은 구덩이 밖 풀 위의 불씨·숯 줄기로 뻗는다.
+    const cx = pod.x + 0.5, cy = pod.y - 1, rx = 5.2, ry = 3.4; // 관(조사 칸 위 두 줄) 한가운데
     const pit = new Set<number>();
-    for (let y = Math.max(1, Math.floor(cy - ry)); y <= Math.min(fm.height - 2, Math.ceil(cy + ry)); y += 1) {
-      for (let x = Math.max(1, Math.floor(cx - rx)); x <= Math.min(fm.width - 2, Math.ceil(cx + rx)); x += 1) {
-        // 칸마다 흔든다 — 고른 타원은 공터 네모 판으로 보였다(감사 3차 「흙 마당」).
-        const wob = (((x * 73856093) ^ (y * 19349663)) >>> 0) % 7 * 0.1 - 0.25;
-        const inside = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1 - wob
-          && fm.lowerTiles[y * fm.width + x] === 737
-          // 관 그림 밑 칸도 칠한다 — 남겨 두면 관 둘레에 풀 테두리가 섰다.
-          && ((fm.upperTiles[y * fm.width + x] ?? -1) < 0 || (x === pod.x && y >= pod.y - 2 && y <= pod.y - 1));
-        if (inside) pit.add(y * fm.width + x);
+    const rays = [0.35, 1.2, 2.05, 2.75, 3.6, 4.55, 5.5];
+    const metaPit = (project.tilesets[fm.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+    const isSand = (i: number): boolean => (metaPit[fm.lowerTiles[i]!]?.label ?? "").startsWith("버들항 · 모랫길");
+    for (let y = Math.max(1, Math.floor(cy - ry * 1.6)); y <= Math.min(fm.height - 2, Math.ceil(cy + ry * 1.6)); y += 1) {
+      for (let x = Math.max(1, Math.floor(cx - rx * 1.6)); x <= Math.min(fm.width - 2, Math.ceil(cx + rx * 1.6)); x += 1) {
+        const ex = (x + 0.5 - cx) / rx, ey = (y + 0.5 - cy) / ry, theta = Math.atan2(ey, ex) + Math.PI;
+        const ray = rays.some((r) => Math.abs(Math.atan2(Math.sin(theta - r), Math.cos(theta - r))) < 0.22) ? 1.3 : 1;
+        const wob = ((((x * 73856093) ^ (y * 19349663)) >>> 0) % 5) * 0.05 - 0.1;
+        const reach = (1 + 0.2 * Math.sin(3 * theta + 0.7) + 0.12 * Math.sin(5 * theta + 2.1) + wob) * ray;
+        const inside = Math.hypot(ex, ey) <= reach
+          && (grassFloor(y * fm.width + x) || isSand(y * fm.width + x) || (Math.abs(x - pod.x) <= 1 && y >= pod.y - 2 && y <= pod.y - 1))
+          // 관 그림 밑 칸도 칠한다 — 남겨 두면 관 둘레에 풀 테두리가 섰다. 나무가 선 칸만 뺀다(잔돌·풀 포기는 아래에서 걷는다).
+          && !treeAt(y * fm.width + x);
+        // 나무(덧그림) 바로 곁 칸은 비운다 — 구덩이 테가 빈터 가장자리(네모)를 그대로 따라가지 않고 풀 한 줄을 두고 둥글게 닫힌다.
+        const treeSide = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]].some(([dx, dy]) => {
+          const nx = x + dx!, ny = y + dy!;
+          if (Math.abs(nx - pod.x) <= 1 && ny >= pod.y - 2 && ny <= pod.y - 1) return false;
+          // 숲 나무는 위 겹(upperOverlay)에도 그려진다 — 큰 덩이(진짜 나무)만 본다.
+          return treeAt(ny * fm.width + nx);
+        });
+        if (inside && !treeSide) pit.add(y * fm.width + x);
       }
     }
     // 가로·세로 이웃이 둘 미만인 삐죽 칸은 뺀다 — 둑 덧그림에 그런 모양이 없어 네모 흙 한 칸이 튀어나왔다.
     for (let changed = true; changed;) {
       changed = false;
       for (const c of [...pit]) {
-        const n = [c - fm.width, c + fm.width, c - 1, c + 1].filter((k) => pit.has(k)).length;
-        if (n < 2) { pit.delete(c); changed = true; }
+        const [u, d, l, r] = [c - fm.width, c + fm.width, c - 1, c + 1].map((k) => pit.has(k));
+        // 한 칸 폭 기둥·띠도 뺀다 — 둑 덧그림이 양쪽에서 붙어 검은 네모 한 칸으로 그려졌다(VQA r7).
+        if ([u, d, l, r].filter(Boolean).length < 2 || (!l && !r) || (!u && !d)) { pit.delete(c); changed = true; }
       }
     }
-    for (const c of [...pit].sort((p, q) => p - q)) {
-      if (pit.has(c - 1)) continue;
-      let end = c; while (pit.has(end + 1) && Math.floor((end + 1) / fm.width) === Math.floor(c / fm.width)) end += 1;
-      execTool(project, "fill_region", { mapId: fm.id, x: c % fm.width, y: Math.floor(c / fm.width), w: end - c + 1, h: 1, layer: "lower", material: "버들항 모랫길" });
+    // 바깥 모서리 한 번 깎기 — 계단처럼 꺾인 직각 모서리가 네모 구덩이로 읽혔다(VQA r17). 한 번만 깎고 다시 삐죽 칸을 고른다.
+    {
+      const corners = [...pit].filter((c) => {
+        const [u, d, l, r] = [c - fm.width, c + fm.width, c - 1, c + 1].map((k) => pit.has(k));
+        return (!u && !l) || (!u && !r) || (!d && !l) || (!d && !r);
+      });
+      for (const c of corners) if (Math.abs((c % fm.width) - pod.x) > 2 || Math.abs(Math.floor(c / fm.width) - (pod.y - 1)) > 1) pit.delete(c);
+      for (let changed = true; changed;) {
+        changed = false;
+        for (const c of [...pit]) {
+          const [u, d, l, r] = [c - fm.width, c + fm.width, c - 1, c + 1].map((k) => pit.has(k));
+          if ([u, d, l, r].filter(Boolean).length < 2 || (!l && !r) || (!u && !d)) { pit.delete(c); changed = true; }
+        }
+      }
     }
-    const debris: Array<[string, number, number]> = [
-      ["bd-pick-volcano-cave-ember-a", -2, -2], ["bd-pick-volcano-cave-ember-a", 2, 1], ["bd-pick-volcano-cave-ember-a", -3, 0],
-      ["bd-pick-deep-forest-path-log-fallen", -7, 1], ["bd-pick-deep-forest-path-log-fallen", 5, 2],
-      ["bd-pick-deep-forest-path-stump", -6, -3], ["bd-pick-deep-forest-path-stump", 6, -2], ["bd-pick-deep-forest-path-stump", -7, -1],
-      ["bd-pick-volcano-cave-ember-a", 1, -2], ["bd-pick-deep-forest-path-log-fallen", 4, -4],
-      // 그을린 구덩이 — 숯 더미를 구덩이 안쪽에 흩어 맨 흙 타원으로 읽히지 않게 한다(감사 2차).
-      ["bd-pick-volcano-cave-coal-pile", -2, 0], ["bd-pick-volcano-cave-coal-pile", 2, -1],
-      // 그을린 자리 바깥 풀밭 — 꺾인 덤불이 흩어져 공터 경계를 흐린다.
-      ["bd-pick-deep-forest-path-heath-a", -5, 2], ["bd-pick-deep-forest-path-heath-b", 5, -1], ["bd-pick-deep-forest-path-fern-c", -5, -2],
-      ["bd-pick-deep-forest-path-heath-c", 4, 3], ["bd-pick-deep-forest-path-fern-c", -4, 3], ["bd-pick-deep-forest-path-heath-b", 6, 1],
+    // 구덩이 칸의 잔돌·풀 포기·꽃 덧그림은 걷는다(관은 아직 안 놓였다) — 갓 파인 흙 위에 풀숲 장식이 남으면 안 된다.
+    for (const c of pit) for (const layer of [fm.lowerOverlayTiles, fm.upperTiles, fm.upperOverlayTiles]) if (layer && (layer[c] ?? -1) >= 0 && !treeAt(c)) layer[c] = -1;
+    // 빈터에 먼저 깔려 있던 네모 모랫길 마당(숲길 끝)이 구덩이와 합쳐져 네모 흙 마당으로 보였다(VQA r7 major) — 구덩이 아래쪽
+    // 가운데 줄보다 위에 있는, 구덩이 밖 모랫길 칸(덧그림 없는 칸)은 풀로 되돌린다. 남쪽에서 올라오는 숲길은 그대로 둔다.
+    const reverted: number[] = [];
+    for (let y = 0; y <= Math.floor(cy + ry * 0.6); y += 1) for (let x = Math.max(0, Math.floor(cx - rx * 2)); x <= Math.min(fm.width - 1, Math.ceil(cx + rx * 2)); x += 1) {
+      const i = y * fm.width + x;
+      if (pit.has(i) || !isSand(i) || (fm.upperTiles[i] ?? -1) >= 0) continue;
+      fm.lowerTiles[i] = groundTile; reverted.push(i);
+      if (fm.lowerOverlayTiles) fm.lowerOverlayTiles[i] = -1; // 옛 구덩이 둑 덧그림도 걷는다(풀 위에 검은 테 조각이 남았다)
+    }
+    // 흙은 오토타일 칠하기 도구 대신 「몸통」 칸으로 바로 깐다 — 도구가 오목한 모서리 칸을 스스로 채워 둥근 구덩이가 다시
+    // 네모 마당으로 부풀었다(VQA r7). 가장자리 모양은 아래 둑 덧그림(rimPit)이 그린다.
+    const body = metaPit.findIndex((m) => m?.label === "버들항 · 모랫길 오토타일 · 사방 이어짐(몸통)");
+    for (const c of pit) fm.lowerTiles[c] = body >= 0 ? body : 23175;
+    // 3/4 깊이: 북쪽 테 바로 아래 줄은 흙 절벽면(윗변 그늘) — 구덩이가 파여 들어간 안쪽 벽으로 읽힌다(VQA r9 major
+    // 「평평한 네모 흙 마당」). 둑은 진흙 둑(바깥 그을린 풀 테 + 안쪽 짙은 선)으로 — 흑요석 둑은 네 변 같은 검은 테였다.
+    // 바닥은 모랫길(밝은 모래)이 아니라 짙은 갈아엎인 흙(바닥 흙 26809~26811) — 밝은 모래 바닥은 숲길이 넓어진 흙 마당으로 읽혔다(VQA r10).
+    for (const c of pit) {
+      const x = c % fm.width, y = Math.floor(c / fm.width);
+      if (!pit.has(c - fm.width)) fm.lowerTiles[c] = 11646 + ((x + y) % 5);
+      else fm.lowerTiles[c] = 26809 + ((((x * 73856093) ^ (y * 19349663)) >>> 0) % 3);
+    }
+    // 구덩이 안: 불씨 자국·숯 더미(관 곁). 구덩이 밖: 쓰러진 나무·그루터기·꺾인 덤불을 둘레 바깥으로 빙 둘러 — 오프닝 crash 컷처럼
+    // 충격에 넘어간 나무가 구덩이를 에워싼다. 예전 고정 좌표는 구덩이를 키우자 덤불이 구덩이 안에 섰다(VQA r6).
+    const inside: Array<[string, number, number]> = [
+      ["bd-pick-volcano-cave-ember-a", -3, -1], ["bd-pick-volcano-cave-ember-a", 3, 0], ["bd-pick-volcano-cave-ember-a", -4, 1],
+      ["bd-pick-volcano-cave-ember-a", 2, -3], ["bd-pick-volcano-cave-coal-pile", -2, 1], ["bd-pick-volcano-cave-coal-pile", 3, -2],
+      // 관이 부딪히며 쪼갠 나무 — 쪼개진 판자 더미.
+      ["bd-pick-shipwreck-reef-plank-pile", 2, 1], ["bd-pick-shipwreck-reef-plank-pile", -4, -1],
+    ];
+    const around: Array<[string, number]> = [
+      ["bd-pick-deep-forest-path-log-fallen", 0.2], ["bd-pick-deep-forest-path-stump", 0.9], ["bd-pick-deep-forest-path-log-fallen", 2.6],
+      ["bd-pick-deep-forest-path-stump", 3.3], ["bd-pick-deep-forest-path-log-fallen", 3.9], ["bd-pick-deep-forest-path-heath-a", 1.6],
+      ["bd-pick-deep-forest-path-heath-b", 4.6], ["bd-pick-deep-forest-path-fern-c", 5.4], ["bd-pick-deep-forest-path-stump", 5.9],
+      ["bd-pick-deep-forest-path-heath-c", 2.2],
+      // (통나무를 고르게 더 둘렀더니 목재 야적장처럼 읽혔다 — VQA r13. 쓰러진 나무는 위 셋과 갈래 끝 그루터기로 충분하다.)
     ];
     // 흙길 오토타일이 오목한 모서리 칸을 스스로 채운다 — 실제로 바뀐 칸을 다시 모아 둑을 얹는다.
     const live = M(ids.forest);
     for (let c = 0; c < live.lowerTiles.length; c += 1) if (live.lowerTiles[c] !== fm.lowerTiles[c] && fm.lowerTiles[c] === 737) pit.add(c);
-    rimPit(project, live, pit, "bankLava"); // fill_region 이 맵 객체를 바꿔 끼우므로 fm 이 아니라 지금 맵에 얹는다.
-    for (const [kit, dx, dy] of debris) tryStamp(project, M(ids.forest), `kit:beodeul_city/${kit}`, pod.x + dx, pod.y + dy);
+    // 남쪽에서 이어지는 숲길 칸도 「안쪽」으로 쳐서 구덩이와 숲길 사이에 둑이 가로막지 않게 한다(숲길 자기 둑이 있는 칸은 rimPit 이 건너뛴다).
+    const rimCells = new Set(pit);
+    for (const c of pit) for (const k of [c - 1, c + 1, c - live.width, c + live.width]) {
+      if (!pit.has(k) && (metaPit[live.lowerTiles[k]!]?.label ?? "").startsWith("버들항 · 모랫길")) rimCells.add(k);
+    }
+    // 구덩이에 닿는 숲길 칸은 몸통 흙으로 — 숲길 오토타일 가장자리 칸이 제 윗변에 풀 띠를 그려 구덩이 바닥을 가로질렀다(VQA r8).
+    for (const k of rimCells) if (!pit.has(k)) live.lowerTiles[k] = body >= 0 ? body : 23175;
+    // 앞선 마감이 남긴 둑 덧그림(이름표 없는 덧붙임 칸)을 구덩이 안·윗단에서 걷는다 — 안쪽에 남으면 흙 위에 검은 테 조각이,
+    // 되돌린 풀 위에 남으면 풀밭 한가운데 네모 테가 보였다. 구덩이에 닿는 숲길 칸의 풀 둑도 걷는다 — 들머리에 풀 띠가 구덩이 바닥을
+    // 가로질렀다(VQA r8). 그 밖의 남쪽 숲길 둑은 그대로 둔다.
+    if (live.lowerOverlayTiles) {
+      const metaL = (project.tilesets[live.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+      const yTop = Math.floor(cy + ry * 0.6);
+      for (let i = 0; i < live.lowerOverlayTiles.length; i += 1) {
+        const t = live.lowerOverlayTiles[i]!, x = i % live.width, y = Math.floor(i / live.width);
+        if (t < 0 || metaL[t]?.label) continue;
+        if (rimCells.has(i) || (y <= yTop && Math.abs(x - cx) <= rx * 2)) live.lowerOverlayTiles[i] = -1;
+      }
+    }
+    rimPit(project, live, rimCells, "bankMud"); // fill_region 이 맵 객체를 바꿔 끼우므로 fm 이 아니라 지금 맵에 얹는다.
+    // 평평한 돌 관(버들항 하수도 관 2×2)을 걷고, 오프닝 crash 컷의 누운 은빛 관(손 도트 3×2, 동서로 누움)을 조사 칸 바로 위에 눕힌다.
+    {
+      const coffin = new Set([26599, 26600, 26601, 26602]);
+      let x0 = Infinity, y1 = -Infinity;
+      live.upperTiles.forEach((t, i) => { if (coffin.has(t)) { x0 = Math.min(x0, i % live.width); y1 = Math.max(y1, Math.floor(i / live.width)); live.upperTiles[i] = -1; } });
+      if (hadCoffin || (Number.isFinite(x0) && Number.isFinite(y1))) placeFallenStarVessel(project, live, pod.x - 1, pod.y - 2);
+      // 오프닝 crash 컷처럼 관 위로 연기 몇 가닥이 피어오른다 — 이리스가 깨어나기 전까지(병렬 이벤트, 투명·아래 층).
+      const smoke = (x: number, y: number, ms: number) => ({ kind: "m2Command", commandId: "m2-224-particle-effect", fields: { preset: "smoke", target: "tile", x, y, durationMs: ms, wait: false } } as unknown as Command);
+      live.events = live.events.filter((e) => e.id !== `ev_${FS_PREFIX}_crash_smoke`);
+      live.events.push({
+        id: `ev_${FS_PREFIX}_crash_smoke`, name: "추락지 연기", x: pod.x - 3, y: pod.y - 3, trigger: { kind: "parallel" }, commands: [],
+        pages: [{
+          id: `ev_${FS_PREFIX}_crash_smoke_page`, name: "연기", conditions: [], graphic: { transparent: true },
+          movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "below", trigger: { kind: "parallel" },
+          // 관 발치의 금에서 희미한 별빛이 새고(반짝임), 둘레 불씨에서 불티가 오른다.
+          // 연기 기둥 셋(관 양 끝·가운데)이 쉬지 않고 오른다 — 한두 가닥은 희미해 갓 떨어진 자리로 읽히지 않았다(VQA r10).
+          commands: [smoke(pod.x - 1, pod.y - 2, 1600), smoke(pod.x + 1, pod.y - 3, 1600), { kind: "wait", ms: 500 }, smoke(pod.x, pod.y - 2, 1600),
+            { kind: "wait", ms: 500 }, smoke(pod.x + 1, pod.y - 2, 1400), smoke(pod.x - 1, pod.y - 3, 1400),
+            { ...smoke(pod.x + 1, pod.y - 2, 900), fields: { preset: "sparkle", target: "tile", x: pod.x + 1, y: pod.y - 2, durationMs: 900, wait: false } },
+            { kind: "wait", ms: 900 }, smoke(pod.x, pod.y - 3, 1200),
+            { ...smoke(pod.x - 2, pod.y, 800), fields: { preset: "fire", target: "tile", x: pod.x - 2, y: pod.y, durationMs: 800, wait: false } },
+            { kind: "wait", ms: 1100 }] as unknown as Command[],
+        }, {
+          id: `ev_${FS_PREFIX}_crash_smoke_done`, name: "연기 걷힘", conditions: [{ kind: "switch", switchId: SW_IRIS_JOINED, value: true }], graphic: { transparent: true },
+          movement: { type: "fixed", speed: 3, frequency: 3 }, priority: "below", trigger: { kind: "action" }, commands: [],
+        }],
+      } as unknown as GameEvent);
+    }
+    // 갓 생긴 그을린 구덩이 안에 독버섯·고사리·들꽃이 그대로 서 있었다 — 구덩이 칸의 풀숲 덧그림은 걷는다.
+    {
+      const fz = M(ids.forest);
+      for (const c of pit) for (const layer of [fz.lowerOverlayTiles, fz.upperTiles, fz.upperOverlayTiles]) {
+        const t = layer?.[c] ?? -1;
+        if (t >= 0 && /버섯|고사리|들꽃|헤더|징검돌|풀 포기|풀덩이/.test(metaPit[t]?.label ?? "")) layer![c] = -1;
+      }
+    }
+    for (const [kit, dx, dy] of inside) if (pit.has((pod.y + dy) * live.width + pod.x + dx)) tryStamp(project, M(ids.forest), `kit:beodeul_city/${kit}`, pod.x + dx, pod.y + dy);
+    for (const [kit, angle] of around) {
+      for (let r = 1; r < 10; r += 0.25) {
+        const x = Math.round(cx + Math.cos(angle) * rx * r * 0.75), y = Math.round(cy + Math.sin(angle) * ry * r * 0.75);
+        if (pit.has(y * live.width + x) || pit.has(y * live.width + x + 1)) continue;
+        // 숲길(흙 칸) 위에는 통나무·덤불을 두지 않는다 — 길을 막았다.
+        if (live.lowerTiles[y * live.width + x] !== fm.lowerTiles[y * live.width + x] || !grassish(y * live.width + x) || !grassish(y * live.width + x + 1)) continue;
+        if (tryStamp(project, M(ids.forest), `kit:beodeul_city/${kit}`, x, y)) break;
+        if (r > 3.2) break;
+      }
+    }
+    // 그을음 줄기 — 일곱 갈래 끝마다 구덩이 둑 바로 밖 풀 위에 불씨·숯 자국을 하나씩(충격이 사방으로 튄 자리).
+    for (const [k, r0] of rays.entries()) {
+      const angle = r0 - Math.PI;
+      for (let r = 1; r < 3; r += 0.2) {
+        const x = Math.round(cx + Math.cos(angle) * rx * r), y = Math.round(cy + Math.sin(angle) * ry * r);
+        if (x < 1 || y < 1 || x >= live.width - 1 || y >= live.height - 1 || pit.has(y * live.width + x)) continue;
+        // 불씨 자국은 풀 위에서 검은 돌무더기로 읽혔다(VQA r10) — 충격에 꺾인 나무(그루터기·쓰러진 통나무)로 바꾼다.
+        // 동서로 뻗은 갈래 끝엔 바깥으로 누운 통나무(쓰러진 나무), 남북 갈래 끝엔 그루터기 — 그루터기만 고르게 두르면 벌목지로 읽혔다(VQA r17).
+        if (tryStamp(project, M(ids.forest), `kit:beodeul_city/${Math.abs(Math.cos(angle)) > 0.6 ? "bd-pick-deep-forest-path-log-fallen" : k % 2 ? "bd-pick-deep-forest-path-heath-b" : "bd-pick-deep-forest-path-stump"}`, x, y)) break;
+      }
+    }
+    // 구덩이 북쪽 위로 맵 끝까지 붙은 모랫길 토막 둘은 아무 데로도 안 갔다(VQA r6 m13) — 풀로 되돌린다.
+    {
+      const fz = M(ids.forest);
+      // 구덩이가 비면 Math.min() 이 Infinity 라 아래 줄 돌기가 끝나지 않았다(main 숲 바닥 재색칠 뒤 fixture 무한 루프).
+      const top = pit.size ? Math.min(...[...pit].map((c) => Math.floor(c / fz.width))) : 0;
+      const metaF = (project.tilesets[fz.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+      for (let y = 0; y < top; y += 1) for (let x = Math.floor(cx - rx * 1.6); x <= Math.ceil(cx + rx * 1.6); x += 1) {
+        const i = y * fz.width + x;
+        if (x >= 0 && x < fz.width && (metaF[fz.lowerTiles[i]!]?.label ?? "").startsWith("버들항 · 모랫길")) fz.lowerTiles[i] = groundTile;
+      }
+    }
   }
   // 선포하는 발렌이 광장 가장자리 수정 기둥에 겹쳐 서 몸이 가렸다(감사 VQA) — 광장 포석 쪽 빈 칸으로 옮긴다.
   const herald = M(ids.hub).events.find((e) => e.id === `ev_${FS_PREFIX}_valen`);
@@ -1073,23 +1637,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     const spot = nearFree(project, M(ids.hub), { x: herald.x + 2, y: herald.y }, 3, herald.id);
     if (spot) { herald.x = spot.x; herald.y = spot.y; }
   }
-  // 천문대 입구가 재단사 가게집(가위 간판·차양)이라 천문대로 읽히지 않았다(감사 VQA) — 간판·차양 칸을 같은 집의 민벽·창으로 바꾸고
-  // 집 곁에 놋쇠 혼천의를 세운다. 그림 칸 번호는 버들항 집 키트 bd-house-h123_1(재단사)과 민가 행(같은 지붕·벽)에서 가져왔다.
-  const obsDoor = M(ids.hub).events.find((e) => JSON.stringify(e).includes(`"mapId":"${M(ids.observatory).id}"`));
-  if (obsDoor) {
-    const hub: GameMap = M(ids.hub);
-    const swap: Record<number, number> = { 10287: 2652, 6046: 6041, 10596: 757, 10597: 2493, 10711: 5742, 10712: 2656 };
-    const ox: number = obsDoor.x, oy: number = obsDoor.y;
-    for (let y: number = oy - 4; y <= oy - 1; y += 1) for (let x: number = ox - 3; x <= ox + 3; x += 1) {
-      if (x < 0 || y < 0 || x >= hub.width || y >= hub.height) continue;
-      const i: number = y * hub.width + x;
-      const t: number = hub.upperTiles[i] ?? -1;
-      if (swap[t] !== undefined) hub.upperTiles[i] = swap[t]!;
-    }
-    for (const [dx, dy] of [[3, -3], [-4, -3], [3, 1], [-3, 1]] as const) {
-      if (tryStamp(project, hub, "kit:beodeul_city/bd-pick-wizard-tower-armillary", obsDoor.x + dx, obsDoor.y + dy)) break;
-    }
-  }
+  // 천문대 입구는 reworkFallenTown 이 둥근 돌 탑(마법사의 탑 키트)과 곁의 놋쇠 망원경으로 바꿨다 — 예전 재단사 집 간판 바꾸기·혼천의는 걷었다.
   // 풀숲 가장자리에 풀 둑 덧그림을 얹던 마감은 걷어 냈다 — 흙 입술(진흙 못 가장자리)로 읽혔다(감사 라운드 2).
   // 맵 마감(감사 3차) — 주인 없는 그림자, 화로의 방 긴 화덕 띠.
   for (const map of [M(ids.hub), M(ids.forest)]) clearOrphanShadows(project, map);
@@ -1116,7 +1664,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     land(hub, obs, "up", "up");
     land(obs, hub, "down", "down");
     land(hub, forest, "up", "up");
-    land(forest, hub, "left", "left");
+    land(forest, hub, "down", "down"); // 성문 통로(북쪽) 앞 광장에 내려 성문을 등진다
 
     // 보이지 않는 터치 칸이던 두 출구에 문 그림을 세운다(VQA r12). 터치 칸과 도착 칸은 비워 둔다(발자국이 겹쳐도 통행 칸은 그림에 안 막힌다).
     const stampKit = (map: GameMap, kitId: string, x: number, y: number): void => {
@@ -1125,16 +1673,12 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     // 숲 남쪽 입구: 길 양옆에 이정표를 세운다(마을 문 kit 는 숲 지도에서 거절된다 — settlement-prop-on-route).
     const forestDoor = transfersTo(forest, hub.id)[0]?.event;
     if (forestDoor) {
-      stampKit(M(ids.forest), "bd-pick-mountain-pass-brazier", forestDoor.x - 2, forestDoor.y - 2);
-      stampKit(M(ids.forest), "bd-pick-mountain-pass-brazier", forestDoor.x + 2, forestDoor.y - 2);
+      // 화로는 길에서 세 칸 — 두 칸이면 숲에 들어선 동료가 화로 바로 아래 칸에 서 모자가 화로 받침을 덮었다(VQA r7).
+      stampKit(M(ids.forest), "bd-pick-mountain-pass-brazier", forestDoor.x - 3, forestDoor.y - 2);
+      stampKit(M(ids.forest), "bd-pick-mountain-pass-brazier", forestDoor.x + 3, forestDoor.y - 2);
       stampKit(M(ids.forest), "bd-pick-mountain-pass-wayside-cross", forestDoor.x - 2, forestDoor.y - 4);
     }
-    const hubDoor = transfersTo(hub, forest.id)[0]?.event;
-    if (hubDoor) {
-      stampKit(M(ids.hub), "bd-pick-coast-cliff-road-milestone", hubDoor.x - 1, hubDoor.y - 2);
-      stampKit(M(ids.hub), "bd-pick-coast-cliff-road-milestone", hubDoor.x - 1, hubDoor.y + 1);
-      stampKit(M(ids.hub), "bd-mpart-lamp-post", hubDoor.x, hubDoor.y - 3);
-    }
+    // 마을 쪽 숲 출구는 성벽 성문 통로다(성문루·깃발·통행세 초소가 이미 문으로 읽힌다) — 이정표를 따로 세우지 않는다.
   }
   // 숲지기 곁 모닥불.
   const bram = M(ids.forest).events.find((e) => e.id === `ev_${FS_PREFIX}_bram`);
@@ -1145,10 +1689,13 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 숲길 밀도(VQA r7 맵) — 흙길 둘레 풀밭에 덤불·고사리·돌·버섯을 성기게 흩는다. 길(흙 칸)과 이벤트 곁 3칸은 건드리지 않는다.
   {
     const fm = M(ids.forest);
-    const kits = ["heath-a", "fern-a", "stones-a", "fern-b", "heath-b", "toadstools-a", "wild-a", "heath-c", "stones-b", "fern-c", "wild-b", "toadstools-b"];
+    // 헤더 덤불(꽃 핀 둥근 덤불)·네모 고사리 덤불(fern-a·b)은 촘촘히 모이면 몬스터 게임의 풀숲 판처럼 읽혔다(사용자 지적) — 낮은 고사리·들꽃·버섯·돌만.
+    const kits = ["fern-c", "stones-a", "toadstools-a", "wild-a", "stones-b", "fern-c", "wild-b", "toadstools-b", "wild-c", "stones-c"];
     const placed: Array<[number, number]> = [];
     for (let y = 3; y < fm.height - 3; y += 1) for (let x = 2; x < fm.width - 2; x += 1) {
       if (fm.lowerTiles[y * fm.width + x] === 737) continue;
+      // 추락 구덩이(몸통 흙 칸) 안에는 버섯·들꽃을 두지 않는다 — 갓 그을린 구덩이에 독버섯이 섰다(VQA r7).
+      { const t = fm.lowerTiles[y * fm.width + x]!; if (t === 23175 || (t >= 11646 && t <= 11650) || (t >= 26809 && t <= 26811)) continue; }
       let nearPath = false;
       for (let dy = -2; dy <= 2 && !nearPath; dy += 1) for (let dx = -2; dx <= 2; dx += 1) {
         if (fm.lowerTiles[(y + dy) * fm.width + (x + dx)] === 737) { nearPath = true; break; }
@@ -1183,7 +1730,7 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   };
 
   // 타이틀·오프닝 — 게임 안 맵을 1:1 로 구운 그림 위에 같은 배우 칩을 1배로 세운다(fallenStarOpening.ts).
-  // 키아트는 생성 그림(타이틀 후보 3, by: supervisor)을 화면 1배 64색 도트로 누른 것. 효과 좌표는 그 그림의 비율 좌표다 —
+  // 키아트는 생성 그림(새 왕도 렌더를 참고로 다시 뽑은 후보 2, by: supervisor)을 화면 1배 64색 도트로 누른 것. 효과 좌표는 그 그림의 비율 좌표다 —
   // 별똥별 꼬리를 따라 흐르는 반사광, 별 머리·탑 등불·다리 등불의 빛, 운하 물결, 하늘의 빛 알갱이.
   execTool(project, "set_title_screen", {
     title: "폴른 스타",
@@ -1192,13 +1739,13 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     openingPreset: "moonlitCastle",
     effects: [
       { kind: "camera", intensity: 0.5 },
-      { kind: "glint", line: [[0.2, 0.03], [0.596, 0.263]], color: "#e8f4ff" },
-      { kind: "glow", source: [0.596, 0.263], spread: 0.06, color: "#d8f4ff" },
-      { kind: "glow", source: [0.883, 0.546], spread: 0.03, speed: 1.3 },
-      { kind: "glow", source: [0.352, 0.726], spread: 0.025, speed: 0.9 },
-      { kind: "glow", source: [0.538, 0.726], spread: 0.025, speed: 1.1 },
-      { kind: "water", region: [[0.29, 0.62], [0.58, 0.62], [0.62, 1], [0.27, 1]], color: "#cfe0ff" },
-      { kind: "motes", region: [[0, 0], [1, 0], [1, 0.36], [0, 0.36]], count: 24, color: "#e6eeff", intensity: 0.4, speed: 0.3 },
+      { kind: "glint", line: [[0.90, 0.04], [0.73, 0.167]], color: "#e8f4ff" },
+      { kind: "glow", source: [0.73, 0.167], spread: 0.06, color: "#d8f4ff" },
+      { kind: "glow", source: [0.683, 0.574], spread: 0.03, speed: 1.3 },
+      { kind: "glow", source: [0.125, 0.685], spread: 0.025, speed: 0.9 },
+      { kind: "glow", source: [0.658, 0.86], spread: 0.025, speed: 1.1 },
+      { kind: "water", region: [[0.38, 0.40], [0.48, 0.40], [0.48, 1], [0.38, 1]], color: "#cfe0ff" },
+      { kind: "motes", region: [[0, 0], [1, 0], [1, 0.3], [0, 0.3]], count: 24, color: "#e6eeff", intensity: 0.4, speed: 0.3 },
     ],
   });
   if (project.system.titleScreen) {
@@ -1220,8 +1767,44 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   stageTalk(bossEvent ? M(ids.vault).events.find((e) => e.id === bossEvent.id) : undefined);
   if (bossEvent) valenWalksIn(project, M(ids.vault), bossEvent.id, FS_VALEN_START);
   applyFallenSoundtrack(project, { hub: M(ids.hub), observatory: M(ids.observatory), forest: M(ids.forest), vault: M(ids.vault) }, bossEvent?.id);
+  // 마을 집 안 — 여관·약방·집 셋을 손 도트 실내로 짓고 부딪힘 문으로 잇는다. 나머지 집 문은 잠겼다고 말한다(사용자 「집에 들어갈 수 없다」).
+  // 행렬보다 먼저 짓는다 — 행렬(열 명)이 큰길 두 줄에 서면 리사네 문 앞이 막혀 문 잇기가 거절됐다.
+  buildFallenTownInteriors(project, ids.hub, { irisJoined: SW_IRIS_JOINED, valenMarched: SW_VALEN_MARCHED });
   // 길은 모든 소품·표지를 찍은 뒤에 잰다 — 앞에서 재면 뒤에 선 표지·자리 옮김이 길을 막았다.
   marchOffAfterProclamation(project, M(ids.hub));
+  clearDoorFronts(project, M(ids.hub));
+  // 실내 맵의 방 밖은 전부 어둠(game-scene-polish 3-7·11-6, 사용자 지적 「방 사이가 회색 바닥 띠로 읽힌다」) — 회색 디더·바위 천장은
+  // 같은 이웃 번호의 어두운 천장으로, 여백을 메운 바위벽 조각은 공허 칸으로.
+  // 천문대 윗 홀 — 오프닝 컷처럼 둥근 단 위 큰 망원경·혼천의·태양계의·별 지도 탁자(VQA r3 「집처럼 보인다」).
+  const roomsOwned = (id: string): boolean => isFallenRoomRebuilt(project, M(id)?.id ?? id);
+  if (!roomsOwned(ids.observatory)) dressObservatoryHall(project, M(ids.observatory), "ev_fs_scope");
+  if (!roomsOwned("fs_vault_gate")) unifyPuzzleFloor(project, M("fs_vault_gate"));
+  joinForestTrail(project, ids.forest);
+  for (const map of Object.values(project.maps)) if (map.tilesetId === "atlas_biome_interior" && !isFallenRoomRebuilt(project, map.id)) { darkenInteriorMargins(map); dropFloorHangs(project, map); }
+  // 둘레를 덧댄 실내(천문대·화로의 방)는 남쪽 출구가 맵 가장자리가 아니라 벽 틈 맨바닥이었다(scene-transfer-off-door) —
+  // 틈에 열린 쇠창살 문틀 윗칸(상인방)을 세워(아랫칸 기둥은 바깥 천장 칸이라 얹지 않는다) 출구로 읽히게 한다.
+  for (const [mapId, target] of [[ids.observatory, ids.hub], ["fs_vault_gate", ids.observatory]] as const) {
+    const map = M(mapId);
+    if (isFallenRoomRebuilt(project, map.id)) continue;
+    const exit = map.events.find((e) => eventCommandLists(e).some((l) => l.some((c) => c.kind === "transfer" && (c as { mapId?: string }).mapId === target)));
+    if (!exit) continue;
+    const i = exit.y * map.width + exit.x;
+    map.upperTiles[i] = 6423;
+  }
+  // 천문대 문 — 탑 문 그림 칸(문 앞 큰길 한 칸 위)에서 부딪혀 들어가고, 나오면 그 문 바로 앞에 문을 등지고 선다(scene-transfer-off-door·pair).
+  {
+    const hub = M(ids.hub);
+    const door = hub.events.find((e) => String(e.id).startsWith("ev_gate_") && JSON.stringify(e).includes(`"mapId":"${ids.observatory}"`));
+    if (door) {
+      const front = { x: door.x, y: door.y };
+      door.y -= 1;
+      for (const page of door.pages ?? []) { page.priority = "same"; (page as { overlapForbidden?: boolean }).overlapForbidden = true; }
+      for (const event of M(ids.observatory).events) for (const list of eventCommandLists(event)) for (const cmd of list) {
+        const rec = cmd as unknown as Record<string, unknown>;
+        if (rec.kind === "transfer" && rec.mapId === ids.hub) { rec.x = front.x; rec.y = front.y; rec.direction = "down"; }
+      }
+    }
+  }
   applySpeakerFaces(project, {
     [FS_NAMES.hero]: actorFace(DEFAULT_ACTOR_ID),
     엘레나: actorFace("actor_fs_elena"),

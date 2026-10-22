@@ -1,0 +1,17 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "9555f67a83b41b8754e79d105688ffe3d8fb2309e98f4101873a24d6439223bc",
+ "profileHash": "4d8774b517f41638",
+ "kind": "box",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated by user 2026-10-21)",
+ "decidedAt": "2026-10-21T20:39:36.030Z",
+ "by": "human",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "note": "Independent Opus VQA PASS on this exact pixel hash after 3 rejected rounds: harness-data/object-gate/vqa/fallen-town-r9.opus-vqa-r6.json (prior: r6/r7 fail, r8 pass). Gate advisory: 3/4 ok, style spli",
+ "sig": "c24355e70ebd77a8a9979293138a20b4de4de13603982ed7b3b23c48b4d916e3"
+}

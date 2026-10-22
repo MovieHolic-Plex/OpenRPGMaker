@@ -6,7 +6,7 @@ export default {
   projectFixture: process.env.RES_FIXTURE ?? ".omo/fs/v9.json",
   viewport: { width: vw, height: vh },
   beats: [
-    { id: "title", note: "타이틀", ops: [{ kind: "waitFor", testid: "title-screen", state: "present", timeoutMs: 60000 }], expect: { testidPresent: ["title-screen"] }, shot: true },
+    { id: "title", note: "타이틀", ops: [{ kind: "waitFor", testid: "title-screen", state: "present", timeoutMs: 60000 }, { kind: "waitForAttr", testid: "title-screen", attr: "data-seq-state", value: "done", timeoutMs: 30000 }], expect: { testidPresent: ["title-screen"] }, shot: true },
     { id: "op1a", note: "새 게임 → 컷 1", ops: [
       // 타이틀 입장 연출 중의 Enter 는 연출만 건너뛴다 — 연출이 끝난 뒤 눌러 오프닝이 뜰 때까지 누른다.
       { kind: "waitForAttr", testid: "title-screen", attr: "data-seq-state", value: "done", timeoutMs: 30000 },
