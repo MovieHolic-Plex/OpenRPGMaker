@@ -1,0 +1,328 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "42e6f52f561a318897867759e498b0dd75ad69df1f0ccb6fedeca5461b3b4241",
+ "width": 64,
+ "height": 48,
+ "kind": "flat",
+ "name": "a bent rusty metal sheet, broken concrete lumps, glass shards and a torn cable lying on an oil-stained patch of earth",
+ "label": "wasteland_ruins/rubble-c",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 29,
+  "darkV5": 55,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "oil-stained earth patch with scattered debris (rusty sheet, concrete lumps, glass shards, cable)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 64px-wide by 48-row rectangle of ground texture. Column scans show mottled earth tones with no front-edge line, eave shadow, or vertical face at the bottom. The debris clusters at rows 0-15, 17-31 and 33-47 are small details lying on the earth and are drawn from above. There is no front face of 3 or more rows, so this is a flat ground decal seen from above, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The earth is a mottled brown with about 4-5 visible lightness steps and speckled grain. It has no large flat areas (near-flat coverage 1%, against 0% for both references). Visible tones per tile are 5, above the grass reference (3) and below the paving reference (7), so density is comparable to the grass kind. Dark edge pixels are only 2% neutral, so the debris outlines lean brown/rust and not black, which is a dark material tone and not the sticker look. Weak points: the debris pieces are small and sparse, each with only 3-4 tones, and the oil stain barely reads. The soil grain is closer to random dither than to clumped soil texture. These keep it slightly below the references, but it does not look flat or sticker-like beside them, so it passes narrowly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 12905
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "oil-stained earth patch (ground)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "debris cluster (rusty sheet, concrete, glass, cable) upper right",
+      "rows": "1-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "debris cluster middle right",
+      "rows": "17-31",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "debris cluster lower left",
+      "rows": "33-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 64x48 rectangle of mottled earth, and the column scans show only mottled earth tones with no front-edge line, eave shadow or south face. The debris clusters at rows 1-15, 17-31 and 33-47 are small items lying on the ground, so I count them as decor. They add small highlights and dark spots but no vertical face for the ground itself. The whole object is a flat plate seen from above with no front face, which is the expected look for a flat decal."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate's soil is a mottled brown with grain dots and several tones, with no large flat areas (1% near-flat coverage against 0% for both references). It has 5 visible tones per tile, between the grass reference (3) and the paving reference (7). Only 2% of its dark edge pixels are neutral, so the dark edges lean brown or rust rather than black. This matches the Beodeul habit of using the adjacent material's dark tone, not the sticker look of the near-black paving edges (80% neutral). The debris pieces (rusty sheet, grey concrete lumps, glass glints) have a few ramp steps and light highlights, but they are small and sparse. The soil ramp is about 4 steps against the references' 5-6, so it is a little shallower. The overall look is consistent with the references and does not read as flat or sticker-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18846
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "oil-stained earth patch (ground base, full 64x48 tile)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "bent rusty sheet, concrete lumps, glass shards and cable (small debris clusters on the patch)",
+      "rows": "0-15, 17-33, 34-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full-width 64 px rectangle on every row from 0 to 47. It is a mottled brown earth texture, and the column scans show only noise-like color runs with no front-edge line, eave shadow or vertical face. The debris clusters (rust-red and teal-grey sheet, grey shards, dark cable) are a few pixels tall and drawn as flat top-down clutter on the ground. They show no receding side or south face. The object is a flat ground decal seen from above with no front face, which fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a mottled brown soil patch with grain dots and small debris clusters (rusty sheet, concrete lumps) outlined in dark brown and rust tones, not black. The measured facts back this up: 5 visible tones per tile is above the reference grass (3) and below the paving (7), near-flat coverage is only 1%, and just 2% of dark edge pixels are neutral, so the outlines are tinted. The soil carries about 4 lightness steps against the references' 5-6, and the debris is sparse, with a few small objects across the 4x3 patch. It is a little lighter than the paving reference but is not a sticker-style or flat-fill piece. The surface is varied enough to sit next to the references as a ground tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14438
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "oil-stained earth patch (full-tile ground plane)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "debris cluster top (rusty sheet, concrete, glass, cable)",
+      "rows": "0-14",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "debris cluster middle right",
+      "rows": "17-32",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "debris cluster bottom left",
+      "rows": "32-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 64x48 rectangle of mottled earth, as the width profile shows (rows 0-47 are all 64 wide). The column scan at x=16 shows only similar brown tones from row 0 to 47, with no front-edge line, eave shadow or vertical south face. The three debris clusters (rows 0-14, 17-32 and 32-47) sit on the patch as small decor items viewed from above. As a flat ground decal, the main body is a top-down plane with no front face, so it reads as a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a brown soil patch with speckled grain and a few small debris clusters of grey concrete, rusty red metal and pale shards. Measured facts: 5 visible tones per tile, which is above the grass reference (3) and below the paving reference (7). Near-flat coverage is 1%, so there are no flat fills, and only 2% of dark edge pixels are neutral, so the outlines lean brown/red rather than black. The soil ramp has about 4 steps against roughly 5 on the references. The debris is sparse and small, and the oil stain barely reads, which keeps texture at 'some' and density slightly below the references. It is still structurally acceptable next to the grass and paving, with tinted edges and varied grain rather than a sticker look.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 14230
+  }
+ ],
+ "decidedAt": "2026-10-22T18:45:55.922Z",
+ "cells": {
+  "16": [
+   "10dda35add9f83f5",
+   "2e86348e5caa7cd4",
+   "342c1a17b0273ad6",
+   "4d46b661c11fd2b1",
+   "53bbd11fc49dd284",
+   "61b3fce443eb982e",
+   "776b4302d8c0b59d",
+   "7d13a16249e58949",
+   "7e49597343020b4b",
+   "91369b86e4ae5da8",
+   "939e21eb878879b9",
+   "b9632658d413cde3"
+  ],
+  "24": [
+   "00e6a7dad7c0b623",
+   "07f4933c111ca65a",
+   "22d9514029a51a9b",
+   "4a4d24c206317b54",
+   "654765300da9f751",
+   "79acdc09b28974ad",
+   "9385b814b6256196",
+   "abd5a0ec1fd12da4",
+   "aff2e2f42c4f454c",
+   "b7fc4ef4754b3c8a",
+   "b7feaf14ba2cd861",
+   "d694c982294a2f4f",
+   "d74f34e36f6e2a24",
+   "dea103b26acbd9b2",
+   "dff8f1dae2e48172",
+   "eb562141a9c35287",
+   "f5d45fc3db50fb04",
+   "f8fc7728060759c2"
+  ],
+  "32": [
+   "07c0d7dcfe8392e1",
+   "351d0d7a35115799",
+   "44c0bc19264ef188",
+   "755067cf649d1e95",
+   "7dda8e604e4da066",
+   "90f7f77001e454d2",
+   "f72716262d85c91a",
+   "fd9eeb674476e029"
+  ],
+  "48": [
+   "7b31a7799932d601",
+   "85abf3c4bb90dbd9",
+   "8f22740f7de14ee8",
+   "931e6d60253e114a",
+   "9b9b6f20bed872fc",
+   "e0e1f51e1fb6a326"
+  ]
+ }
+}

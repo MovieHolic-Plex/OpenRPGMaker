@@ -1,0 +1,321 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bca1eebefbffc0825ba20f9f71f7a2994b48e05f7c8983c71e0f301e9ff9f357",
+ "width": 64,
+ "height": 48,
+ "kind": "flat",
+ "name": "scattered small tufts of green weeds and two broad-leaved rosettes growing from bare earth",
+ "label": "wasteland_ruins/weeds-a",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "refer",
+  "reasons": [
+   "화풍 판정이 갈림(걸린 판정 2/4)",
+   "판정자 fail (2/4)"
+  ],
+  "styleKind": "ground",
+  "refs": [
+   "grass",
+   "paving"
+  ],
+  "scale": 2,
+  "score": 6
+ },
+ "metrics": {
+  "tileColorsMedian": 5,
+  "tileColorsP90": 19,
+  "darkV5": 62,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 12
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bare earth ground patch (full tile)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "weed tufts and broad-leaved rosettes",
+      "rows": "2-15",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "weed tufts and rosettes lower and right",
+      "rows": "17-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 64-wide rectangle across rows 0-47, a ground patch of bare earth with scattered green tufts and rosettes. There is no front-edge line, eave shadow, ellipse or vertical front face. The column scans show only mottled earth tones with no distinct face band. It is a flat decal seen from above, so there is no front face (0 rows)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a brown soil patch with small green weed tufts and rosettes. It shows about 5 visible tones per tile, above the reference grass (3) and below the paving (7), with 0% near-flat coverage and 0% neutral dark edge pixels. The few dark edge pixels lean brown or green, so the outline reads as dark material tone and not a sticker line. The soil has grain dots in 3-4 browns, and the weeds carry 2-3 greens each. Shading is shallower than Beodeul's 5-6 steps per material: the soil ramp is only about 4 steps, and the weed tufts are small and sparse with little clump variation. At this scale it reads a little thinner than the reference grass tiles, which have layered tufts and speckle. It is acceptable but not clearly at the reference level, so the call is borderline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 10378
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bare earth ground patch with scattered weed tufts and two rosettes, drawn as a flat top-down ground texture",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The whole 64x48 sprite is opaque with a uniform width of 64 on every row. It is mottled brown earth with small green weed tufts, a few specks and grey pebbles, with no front face, no edge line, no eave shadow and no vertical face. The column scans show only noisy texture variation, so it is a flat ground decal seen from above. This matches the flat kind, and with no front face it is a top-down slab."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "none",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a brown soil ground with small green weed tufts and two rosettes. It has about 5 visible tones per tile, above the grass reference (3) and below the paving reference (7), with 0% near-flat coverage and 0% neutral dark edge pixels, so there is no sticker outline. The soil has some grain and speckle, and the tufts have 2-3 greens with dark green accents, so it is not flat. It is still thinner than the references: the soil is mostly one or two browns with sparse dots, and the tufts are small, uniform and repeated. They lack the layered clumps and per-element shading of the Beodeul grass. The soil ramp is shallow at roughly 3-4 steps against 5-6 in Beodeul, and the rosettes are small with little leaf shading. This reads as a competent but simpler piece that a careful artist would see as flatter than the reference, so I fail it when in doubt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 fail (1/1)"
+   ],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": false,
+    "reasons": [
+     "판정자 fail (1/1)"
+    ]
+   },
+   "ms": 11511
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "unclear",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bare earth ground fill, full 64x48 tile, seen from above",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "green weed tufts and broad-leaved rosettes scattered on the ground",
+      "rows": "2-47",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 0,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 64-wide, 48-row rectangle of textured brown earth that fills the whole canvas, with small green weed tufts and rosettes scattered over it. There is no front edge line, no eave shadow, no ellipse, and no vertical south face. The column scans show only mottled earth tones (L about 60-109) with small green and grey flecks. It is a flat ground decal seen from above, with no front face (0 rows), so it reads as a top-down slab. That fits the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 4,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 6,
+    "evidence": "The candidate is a brown soil patch with sparse green weed tufts and a few rosettes. The soil carries grain dots and mottling in about 4 browns, and the plants have 3-4 greens with dark green edges that lean toward the leaf colour. Measured facts: 5 visible tones per tile, above the grass reference (3) and below the paving (7). Near-flat coverage is 0% and the dark edge pixels are 0% neutral, so the outlines are tinted and the piece is not a sticker. Weaknesses: the soil ramp is only about 4 steps against the 5-6 of the reference. The weeds are small and sparse, so the plant clumps are not shaded one by one with several greens the way the reference leaf clumps are. Stone and soil grain is fine but a little uniform, with no larger clod or pebble shapes. Overall it is close to the reference but slightly thinner. With 5 visible tones per tile, 0% flat fill and tinted outlines, it is acceptable beside the reference grass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 10357
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "north",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bare earth ground tile (full 64x48 dirt field seen from above)",
+      "rows": "0-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "weed tufts and broad-leaved rosettes scattered on the ground",
+      "rows": "2-46",
+      "evidence": "decor",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 48,
+    "front_face_rows": 0,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "top_down_slab",
+    "evidence": "The silhouette is a full 64-wide rectangle across rows 0-47, filled with mottled brown earth texture. There is no front-edge line, no eave shadow, no ellipse and no vertical face. Green weed tufts and rosettes (rows ~2-8, 9-15, 18-24, 26-32, 34-40, 42-46) are scattered over it, and the column scan shows only dirt tones changing without any structural edge. This is a flat ground decal seen from above with no front face, which matches the flat kind."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a brown soil ground with small green weed tufts and rosettes. It shows 5 visible tones per 16x16 tile against 3 for the reference grass and 7 for the paving, so it sits between the two. Near-flat coverage is 0%, with no 5x5 flat fills; the soil carries grain dots and lighter and darker speckle. Dark edge pixels are 0% neutral, so the outlines lean brown or green and follow the adjacent material rather than forming a black sticker line. The soil has about 4-5 steps (light, mid, dark, speckle) and the weeds have about 3-4 greens, which is close to the reference ramps. The weeds are sparse and small, but the surface is not flat and does not look thinner than the grass reference.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 9385
+  }
+ ],
+ "decidedAt": "2026-10-22T18:24:38.058Z",
+ "cells": {
+  "16": [
+   "0432334bd291276d",
+   "1ac958fbdfd5fe61",
+   "35fcfc64f8ff0065",
+   "48b3b45ed0467d40",
+   "4aa2f579948701a8",
+   "4e4e5a1aa702afcc",
+   "8eddf2e0ecf7fd7c",
+   "9fac9be0a7208d62",
+   "cb161577f16830b3",
+   "dbcd3e62e5356e21",
+   "e1f8825d33845d1b",
+   "ea8e9d213e44e076"
+  ],
+  "24": [
+   "01f74514e996257a",
+   "1f15cf9af6a3b80e",
+   "1f4f707bc3919882",
+   "39bb70f170dc3273",
+   "4cee11bea0cfa498",
+   "5529db22ad0010a4",
+   "7fbca4adbf93ed37",
+   "8b766a5d135aefb8",
+   "8ca5aae384dafb4c",
+   "a4b9607baa5a96e8",
+   "a4edd78f742f7ea2",
+   "b16acd58e23f66ff",
+   "bf309690e7b9f93c",
+   "bf4d20e9b25e9c0b",
+   "c9ff56f7523f8f65",
+   "e7e807ea0761c6cf",
+   "fc775f1c99d0ce53",
+   "fde0b3bf9221fe25"
+  ],
+  "32": [
+   "02bff009cb8d7e73",
+   "4503c37fc8e7d7db",
+   "6555bb3f7be4f603",
+   "a0288bba8b4fa36d",
+   "ac25adcc5a0424de",
+   "d3e8b18f00fe52d5",
+   "e20e1d1f717f6fc7",
+   "ec90964f2ecb4eac"
+  ],
+  "48": [
+   "135f6e403536f580",
+   "6bc369e88fe33893",
+   "9d6f53e3ef06cfdd",
+   "cd33e8d51296599d",
+   "e3d098431efda809",
+   "e758cf35cc183467"
+  ]
+ }
+}
