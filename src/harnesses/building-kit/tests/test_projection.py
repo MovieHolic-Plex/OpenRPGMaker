@@ -344,6 +344,7 @@ class ProjectionGuideTest(unittest.TestCase):
         names = sorted(os.path.basename(p) for p in paths)
         self.assertEqual(names, ['projection-gable-front-1x.png', 'projection-gable-front-4x.png',
                                  'projection-l-combo-1x.png', 'projection-l-combo-4x.png',
+                                 'projection-valley-widths-1x.png', 'projection-valley-widths-4x.png',
                                  'projection-wing-depth-1x.png', 'projection-wing-depth-4x.png'])
         for p in paths:
             a = np.array(Image.open(p).convert('RGB')).astype(int)

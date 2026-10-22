@@ -100,7 +100,11 @@ class DepthGroundTest(unittest.TestCase):
 
     def test_same_recipe_under_the_old_one_ground_rule_is_rejected(self):
         res = AS.assemble(r7('thouse.r7'), self.parts, PAL, H.THEME, depth_ground=False)
-        self.assertIn('A7', fails(res), '옛 규칙(depth 차 ≤ 1)에서는 물러난 본채가 통과하지 못한다')
+        self.assertIn('A13', fails(res), '옛 한 땅 규칙에서는 본채가 올라서지 않아 날개 골이 본채 지붕에 닿지 못한다')
+        far = json.loads(json.dumps(r7('thouse.r7')))
+        far['masses'][0]['depth'] = 4
+        self.assertIn('A7', fails(AS.assemble(far, self.parts, PAL, H.THEME, depth_ground=False)),
+                      '옛 규칙(depth 차 ≤ 1)에서는 물러난 본채가 통과하지 못한다')
 
     def test_masses_must_touch_on_screen(self):
         ms = AS.masses(r7('thouse.r7'))
@@ -138,7 +142,7 @@ class ShadowTest(unittest.TestCase):
     def setUp(self):
         self.parts = r7_parts()
 
-    def test_shadow_falls_only_on_the_back_mass_and_its_yard(self):
+    def test_shadow_falls_only_on_the_main_wall(self):
         res = AS.assemble(r7('thouse.r7'), self.parts, PAL, H.THEME)
         sh = res['shadow']
         self.assertGreater(int(sh.sum()), 0)
@@ -153,15 +157,10 @@ class ShadowTest(unittest.TestCase):
         wall_top = (main['ground'] - MAIN_WALL_ROWS) * T
         self.assertGreaterEqual(int(ys.min()), wall_top, '본채 지붕에는 그림자가 없다')
         a = np.array(res['img'].img())
-        yard = sh.copy()
-        yard[:main['ground'] * T] = False
-        self.assertTrue(yard.any(), '날개 오른쪽 마당 띠에도 그림자')
-        self.assertTrue((a[yard][:, 3] == AS.SHADOW_ALPHA).all())
-        self.assertTrue((a[yard][:, :3] == AS.SHADOW_RGB).all())
-        on_wall = sh.copy()
-        on_wall[main['ground'] * T:] = False
-        self.assertTrue(on_wall.any(), '본채 벽에도 그림자')
-        self.assertTrue((a[on_wall][:, 3] == 255).all())
+        self.assertFalse(sh[main['ground'] * T:].any(), '날개 옆 땅(마당)에는 그림자가 없다 — 본채 벽에만')
+        self.assertTrue((a[sh][:, 3] == 255).all(), '그림자 화소는 불투명 본채 벽 위')
+        self.assertTrue(set(res['owner_kind'][sh]) <= {'wall', 'band', 'base'}, '지붕에는 그림자가 없다')
+        self.assertFalse(((a[:, :, 3] > 0) & (a[:, :, 3] < 255)).any(), '반투명 땅 그림자 화소가 없다')
 
     def test_band_width_is_a_third_of_the_overlap(self):
         res = AS.assemble(r7('thouse.r7'), self.parts, PAL, H.THEME)
@@ -170,7 +169,7 @@ class ShadowTest(unittest.TestCase):
         want = int(round(overlap / 3))
         right = (wing['x'] + wing['cols']) * T
         room = (main['x'] + main['cols']) * T - right
-        for row in ((main['ground'] - 1) * T + 4, main['ground'] * T + 4):
+        for row in ((main['ground'] - 1) * T + 4, (main['ground'] - 2) * T + 4):
             xs = np.nonzero(res['shadow'][row])[0]
             self.assertEqual(int(xs.min()), right)
             self.assertEqual(int(xs.max() - xs.min() + 1), min(want, room), '띠 폭 = 겹친 높이/3, 본채 오른쪽 끝에서 잘린다')
@@ -263,7 +262,7 @@ class ShortGableFrontTest(unittest.TestCase):
         import harness
         s = json.loads(json.dumps(dot.seed(H.THEME)))
         wing = next(b for b in s['buildings'] if b['id'] == 'thouse.r7')['masses'][1]
-        wing.update(cols=3, back_end='valley', walls=[{'item': 'wall.timber', 'letters': 'L D R'}])
+        wing.update(cols=3, back='roof.gf.back', back_end='valley', walls=[{'item': 'wall.timber', 'letters': 'L D R'}])
         errs = harness._depth_round(s, {it['id']: it for it in s['items']}, R7)
         self.assertTrue(any('4~6칸' in e for e in errs), errs)
 
@@ -401,9 +400,12 @@ class FlatDepthProbeTest(unittest.TestCase):
         key = json.load(open(os.path.join(prep['dir'], 'key.json'), encoding='utf-8'))
         names = {v['name'] for v in key.values() if v['kind'] == 'probe'}
         self.assertIn('flat_depth', names)
+        self.assertIn('detached_wing', names)
         self.assertIn('flat_elevation', names)
         self.assertIn('DEPTH RULE', prep['prompt'])
         self.assertIn('ONE ground line', prep['prompt'])
+        self.assertIn('ONE HOUSE RULE', prep['prompt'])
+        self.assertIn('V-shaped valley', prep['prompt'])
 
     def test_passing_flat_depth_voids_the_run(self):
         prep = self.review.prepare(H.THEME, R7, {'A': r7_parts('A')}, seed=6)
@@ -426,7 +428,7 @@ class FlatDepthProbeTest(unittest.TestCase):
 
 
 class WingDepthGuideTest(unittest.TestCase):
-    def test_guide_shows_depth_step_yard_and_shadow(self):
+    def test_guide_shows_the_joined_wing_and_wall_only_shadow(self):
         a = np.array(projection.render('wing-depth').convert('L')).astype(int)
         L = projection.wing_depth.last
         g = projection.WING_DEPTH
@@ -439,8 +441,16 @@ class WingDepthGuideTest(unittest.TestCase):
         self.assertTrue(sh.any())
         self.assertFalse((sh & L['wing']).any())
         self.assertTrue(shifted_from(L['wing'], sh, L['w'], g['eave_drop']), '그림자는 날개 실루엣을 오른쪽·아래로 민 자리')
-        self.assertTrue((sh & L['yard']).any() and (sh & L['main_wall']).any())
-        self.assertLess(int(wing_rows.min()), int(wall_rows.min()) + g['main_storeys'] * 2 * T)
+        self.assertEqual(g['depth'], 1, '날개 뒤 끝 = 본채 앞벽')
+        self.assertFalse((sh & L['yard']).any(), '그림자는 땅에 없다')
+        self.assertTrue((sh & L['main_wall']).any() and not (sh & ~L['main_wall']).any(), '그림자는 본채 벽에만')
+        self.assertLess(L['wing_top'], L['main_eave'], '날개 지붕이 본채 처마보다 올라간다(본채 지붕 속 골)')
+        self.assertGreater(L['wing_top'], L['main_top'])
+        self.assertGreater(int((a == projection.TONE['valley']).sum()), 0, '골 선')
+        x0, x1 = g['wing_x'] * T, (g['wing_x'] + g['wing_cols']) * T
+        between = a[L['main_eave']:L['wing_eave'], x0:x1]
+        self.assertFalse((between == projection.TONE['yard']).any() or (between == projection.BG).any(),
+                         '날개와 본채 사이(날개 열 × 본채 처마~날개 처마)에 땅이 없다')
 
     def test_guide_files_are_grey(self):
         tmp = tempfile.mkdtemp(prefix='bk-guide-')

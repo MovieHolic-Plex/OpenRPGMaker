@@ -297,6 +297,10 @@ def gable_set(line, item_id):
 def gf_back(line):
     return {'b4': _back_rows(line, 4, 2), 'v3': _back_rows(line, 3, 1)}
 
+def gf_valley(line):
+    """날개 골 v4·v5·v6(2행) — ^ 선 위는 투명(본채 지붕이 비친다), 선 아래는 사면 띠 위쪽 끝과 가운데 용마루."""
+    return {f'v{c}': _back_rows(line, c, 2) for c in (4, 5, 6)}
+
 def lean(line):
     """외쪽(오른쪽이 낮다) — 그늘 쪽이라 중간·어두운 단. 뒤·앞 끝 빗선은 왼쪽(높음)→오른쪽(낮음)."""
     r = _roof_tones(line)

@@ -41,6 +41,8 @@ def piece_rows(item_id, line):
         return F.gf_slope(line)
     if item_id == 'roof.gf.back':
         return F.gf_back(line)
+    if item_id == 'roof.gf.valley':
+        return F.gf_valley(line)
     if item_id == 'roof.lean.side':
         return F.lean(line)
     if item_id == 'roof.lean.left':
