@@ -3,7 +3,7 @@
 조수는 지금 버들항 칩셋으로 얼음 동굴을 아예 못 짓는다(거부한다). 이 판의 두 조각 + 얼음굴 바닥(얼음 바닥 오토타일의 바깥,
 meta 'autotiles' 의 ground)으로 얼음 동굴 한 벌이 된다. 얼음은 세 줄 어디에도 속하지 않는 별도 재료라 후보는 A1·A2 두 벌.
 
-  A1 「빙하」 — 버들항 설원 얼음판 말씨(tiledata/beodeul-variants/snowfield). 바닥 = 다져진 눈(rim 6, 드문 서리 그늘·눈 모자 잔돌).
+  A1 「빙하」 — 버들항 설원 얼음판 말씨(tiledata/beodeul-variants/snowfield). 바닥 = 찬 청회색(vrock 2~4) + 바람에 쓸린 눈 결(iron 5).
                 얼음 = 옅은 청록(ice 2) + 밝은 면(ice 3·4) + 푸른 금 그물(ice 0, 칸 경계는 정한 자리에서만 건넘).
                 가장자리 = 북·서 가는 푸른 선 + 빛 받는 턱, 남 얼음판 두께 두 줄, 동 그늘 한 줄(비대칭, 끊김).
                 벽 윗면 = 크기 다른 회색 바윗덩이(stone)에 눈 모자, 사이 찬 청회색 그늘(iron 4).
@@ -313,25 +313,22 @@ G2_N = [3, 3, 4, 4, 3, 3, 2, 3, 3, 3, 3, 4, 4, 3, 2, 2, 3, 3, 4, 3, 3, 3, 2, 2, 
 G2_W = [2, 2, 1, 1, 2, 2, 2, 3, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 3, 2, 2, 2, 1, 2, 2, 2]
 
 # ---- 얼음 몸통 A2 — 맑은 푸른 얼음(m 바탕) 속 깊은 자리 d · 얕은 면 b. 하얀 균열(c, 굵은 것) · 가는 균열(b, 칸 안에서만).
-#   굵은 균열은 위·아래 열 3·12, 왼·오른 행 7 에서만 칸을 건넌다. 변형마다 다각형 크기·모양이 크게 다르다(긴 가로 금, V 자, 세로 금 …).
-PORTS2 = ports_of((3, 12), (7,))
+#   굵은 균열은 위·아래 열 12, 왼·오른 행 7 에서만 칸을 건넌다. 변형마다 다각형 크기·모양이 크게 다르다(긴 가로 금, V 자, 세로 금 …).
+PORTS2 = ports_of((12,), (7,))
 KINDS2 = {'M': ('c', None, None), 'F': ('b', None, None)}
 ICE2_BASE = sq([
-    'mmmmmmdmmmmmmmmm', 'mmmmmddmmmmbmmmm', 'mmbmmmmmmmmbbmmm', 'mbbmmmmmmmmmmmmm',
-    'mmmmmmmmmddmmmmm', 'mmmmmmmmdddmmmmm', 'dmmmmmmmmdmmmmmd', 'mmmmbmmmmmmmmmdd',
-    'mmmbbmmmmmmmmmmm', 'mmmmmmmmmmmmbmmm', 'mmmmmmmdmmmbbmmm', 'mmmmmmddmmmmmmmm',
-    'mmdmmmmmmmmmmmmm', 'mddmmmmmmmmmmmdm', 'mmmmmmmmbmmmmmmm', 'mmmmmmmbbmmmmmmm'], name='ICE2')
+    'mmmmmmmmmmmmmmmm', 'mmmmmmmmmmmbmmmm', 'mmbbmmmmmmmmmmmm', 'mmmmmmmmmmmmmmmm',
+    'mmmmmmmmmmmmmmmm', 'mmmmmmmmdddmmmmm', 'mmmmmmmddddmmmmm', 'mmmmmmmmddmmmmmm',
+    'mmmmmmmmmmmmmmmm', 'mmmmmmmmmmmmmbbm', 'mmmmmmmmmmmmmmmm', 'mmdmmmmmmmmmmmmm',
+    'mddmmmmmmmmmmmmm', 'mmmmmmmmmmmmmmmm', 'mmmmmmbmmmmmmmmm', 'mmmmmmmmmmmmmmmm'], name='ICE2')
 ICE2_PATHS = [
-    [([(3, 0), (4, 5), (0, 7)], 'M'), ([(12, 0), (10, 6), (4, 5)], 'M'), ([(10, 6), (15, 7)], 'M'),
-     ([(3, 15), (5, 11), (10, 6)], 'M'), ([(12, 15), (13, 11), (14, 9)], 'M'), ([(7, 9), (8, 12)], 'F')],
-    [([(3, 0), (2, 5), (4, 10), (3, 15)], 'M'), ([(0, 7), (3, 7)], 'M'), ([(12, 0), (11, 6), (15, 7)], 'M'),
-     ([(11, 6), (9, 11), (12, 15)], 'M'), ([(5, 10), (8, 11)], 'F')],
-    [([(0, 7), (6, 8), (15, 7)], 'M'), ([(3, 0), (5, 4), (8, 3), (12, 0)], 'M'), ([(6, 8), (3, 15)], 'M'),
-     ([(12, 15), (11, 11)], 'M'), ([(9, 11), (10, 13)], 'F')],
-    [([(3, 0), (7, 3), (12, 0)], 'M'), ([(7, 3), (9, 9), (15, 7)], 'M'), ([(0, 7), (4, 9), (3, 15)], 'M'),
-     ([(9, 9), (12, 15)], 'M'), ([(4, 9), (7, 10)], 'F')],
-    [([(12, 0), (13, 4), (15, 7)], 'M'), ([(3, 0), (6, 6), (0, 7)], 'M'), ([(6, 6), (8, 12), (12, 15)], 'M'),
-     ([(8, 12), (3, 15)], 'M'), ([(9, 4), (11, 5)], 'F')],
+    [([(12, 0), (10, 5), (0, 7)], 'M'), ([(10, 5), (13, 10), (12, 15)], 'M'), ([(13, 10), (15, 7)], 'M'),
+     ([(3, 10), (6, 12)], 'F')],
+    [([(0, 7), (7, 9), (15, 7)], 'M'), ([(12, 0), (11, 4), (7, 9)], 'M'), ([(12, 15), (10, 12)], 'M'), ([(3, 3), (6, 4)], 'F')],
+    [([(12, 0), (10, 6), (12, 11), (12, 15)], 'M'), ([(0, 7), (5, 6), (10, 6)], 'M'), ([(12, 11), (15, 7)], 'M'),
+     ([(4, 10), (6, 12)], 'F')],
+    [([(12, 0), (14, 4), (14, 6), (15, 7)], 'M'), ([(0, 7), (4, 11), (9, 12), (12, 15)], 'M'), ([(5, 3), (8, 5)], 'F')],
+    [([(0, 7), (3, 3), (11, 1), (12, 0)], 'M'), ([(15, 7), (9, 10), (12, 15)], 'M'), ([(4, 10), (6, 13)], 'F')],
 ]
 SHEEN = ['..bb', '.bb.', 'bb..']
 ICE2_FACETS = [
@@ -378,21 +375,21 @@ WOB_ICE2 = check_wob({
 PORTS_T2 = ports_of((10,), (5,))
 KINDS_T2 = {'M': ('G', None, 'S'), 'K': ('2', 'G', 'S')}
 TOP2_BASE = sq([
-    'FFFFFFFFFFFFFFFF', 'FFFSSFFFFFFFFFFF', 'FFSSSFFFFFFFGFFF', 'FFFFFFFFFFFGGFFF',
-    'FFFFFFFFFFFFFFFF', 'FFFFFFFFFFFFFFFF', 'FFFFFFGFFFFFFFSF', 'FFFFFGGFFFFFFSSF',
-    'FFFFFFFFFFFFFFFF', 'FSFFFFFFFFFFFFFF', 'SSFFFFFFFFGFFFFF', 'FFFFFFFFFGGFFFFF',
-    'FFFFFFFFFFFFFFFF', 'FFFFFSSFFFFFFFFF', 'FFFFSSSFFFFFFFGF', 'FFFFFFFFFFFFFFFF'], name='TOP2')
+    'FFFFFFFFFFFFFFFF', 'FFFSSFFFFFFFFFFF', 'FFSSSFFFFFFFFFFF', 'FFFFFFFFFFFFFFFF',
+    'FFFFFFFFFFFFFFFF', 'FFFFFFFFFFFFFFFF', 'FFFFFFFFFFFFFFSF', 'FFFFFFFFFFFFFSSF',
+    'FFFFFFFFFFFFFFFF', 'FSFFFFFFFFFFFFFF', 'SSFFFFFFFFFFFFFF', 'FFFFFFFFFFGFFFFF',
+    'FFFFFFFFFFFFFFFF', 'FFFFFSSFFFFFFFFF', 'FFFFSSSFFFFFFFFF', 'FFFFFFFFFFFFFFFF'], name='TOP2')
 TOP2_PATHS = [
-    [([(10, 0), (8, 4), (0, 5)], 'M'), ([(8, 4), (15, 5)], 'M'), ([(10, 15), (11, 11)], 'M'), ([(3, 9), (6, 11)], 'K')],
+    [([(10, 0), (8, 4), (0, 5)], 'M'), ([(8, 4), (15, 5)], 'M'), ([(10, 15), (11, 11)], 'M'), ([(3, 9), (5, 11)], 'M')],
     [([(10, 0), (11, 6), (10, 15)], 'M'), ([(0, 5), (4, 6), (11, 6)], 'M'), ([(15, 5), (13, 5)], 'M'),
-     ([(4, 10), (6, 12)], 'K')],
+     ([(4, 10), (5, 12)], 'M')],
     [([(0, 5), (7, 7), (15, 5)], 'M'), ([(10, 0), (9, 2)], 'M'), ([(10, 15), (8, 12), (7, 7)], 'M'),
-     ([(11, 10), (13, 12)], 'K')],
-    [([(10, 0), (12, 3), (15, 5)], 'M'), ([(0, 5), (5, 9), (10, 15)], 'M'), ([(6, 2), (8, 3)], 'K')],
-    [([(10, 0), (10, 4), (0, 5)], 'M'), ([(15, 5), (12, 8), (10, 15)], 'M'), ([(3, 11), (5, 12), (6, 13)], 'K')],
+     ([(12, 10), (13, 12)], 'M')],
+    [([(10, 0), (12, 3), (15, 5)], 'M'), ([(0, 5), (5, 9), (10, 15)], 'M'), ([(6, 2), (7, 4)], 'M')],
+    [([(10, 0), (10, 4), (0, 5)], 'M'), ([(15, 5), (12, 8), (10, 15)], 'M'), ([(3, 11), (5, 12)], 'M')],
 ]
-CHUNK2 = ['.SS.', 'S443', '4332', '.21.']
-TOP2_FACETS = [[], [], [(CHUNK2, 2, 9)], [(CHUNK2, 10, 8)], [(['.SS', 'S43', '432'], 3, 2)]]
+CHUNK2 = ['.SSS.', 'SS443', 'S4433', '.333.']
+TOP2_FACETS = [[], [], [(CHUNK2, 2, 9)], [(CHUNK2, 10, 8)], [(['.SS', 'S44', '433'], 3, 2)]]
 TOP2_BODIES = [crack_body(TOP2_BASE, p, KINDS_T2, f, PORTS_T2) for p, f in zip(TOP2_PATHS, TOP2_FACETS)]
 check_ports(TOP2_BODIES, PORTS_T2, 'G')
 R2_TEX = ['SFSWSSFSSWSFSSFS', 'FSSWSFSSFSWSSFSS', 'SWSFSSSFSWSSFSSW', 'SSFSWSSFSSFSWSSF'] * 4
@@ -416,7 +413,7 @@ WOB_TOP2 = check_wob({
 # ---- 앞면 A2 — 밝고 찬 화산암(4 바탕, 아랫단 3), 덩이(왼·위 서리 F · 그늘 2·3), 처마에서 흘러내린 서리 줄(G·F).
 #   0행 서리 처마(F S), 1행 처마 밑. 굵은 고드름: 열 2~6 다섯 겹으로 시작해 17행까지(아랫단으로 내려옴), 열 10~12 세 겹 10행, 열 14 짧게 4.
 #   흰 빛 면 W · c · 청록 그늘 m. 30~31행 접지 그늘. 결정 무리는 왼끝 마구리에만 하나.
-FACE2_BASE = (['FFSFSFFSFFFSFSFF', 'GFFGFGFFGFGFFGFF'] + ['4' * 16] * 14 + ['3' * 16] * 14 + ['3223222322232232', '2222122222212222'])
+FACE2_BASE = (['FFSFSFFSFFFSFSFF', 'GFFGFGFFGFGFFGFF'] + ['4' * 16] * 28 + ['3433343334433343', '3332333233323333'])
 FACE2_MID = sq(stamp(FACE2_BASE, [
     (['.F4.', 'F443', '4433', '.33.'], 7, 11), (['F4', '43'], 13, 13), (['.F4.', 'F443', '4433', '.33.'], 1, 20),
     (['.43.', '4332', '3322', '.22.'], 9, 19), (['43', '32'], 5, 25), (['.43.', '4332', '3322', '.22.'], 12, 25),
@@ -535,8 +532,8 @@ def scene(n, actor=True):
 
 # ================================================================================================ 후보
 NOTES = {
-    'A1': '「빙하」 — 버들항 설원 얼음판 말씨: 옅은 청록 얼음 + 푸른 금 그물 + 밝은 면, 비대칭 가장자리 · 다져진 눈 바닥 · '
-          '눈 모자 바윗덩이 윗면 + 찬 청회색 바위 앞면(서리 막·얼음 줄기·길이 제각각 고드름)',
+    'A1': '「빙하」 — 버들항 설원 얼음판 말씨: 옅은 청록 얼음 + 푸른 금 그물 + 밝은 면, 선 없는 비대칭 가장자리(서리 번짐 · 남 두께) · 찬 청회색 바닥 + 바람 눈 결 · '
+          '서리 모자 회색 바위 덩이(칸을 넘는 틈) 윗면 + 가로 결·서리 줄 청회색 앞면(고드름 무리 + 긴 것 하나)',
     'A2': '「청빙」 — 맑은 푸른 얼음 + 하얀 균열 그물(금 밑 그늘) · 어두운 화산암 바닥 · '
           '밝은 서리 껍질 윗면(각진 금·드러난 덩이) + 중간 밝기 바위 앞면(굵은 고드름, 결정은 줄 왼끝에만)',
 }
