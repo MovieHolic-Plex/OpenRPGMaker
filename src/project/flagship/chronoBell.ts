@@ -1173,6 +1173,59 @@ function nearFree(project: Project, map: GameMap, origin: { x: number; y: number
 }
 
 /** 소품 발자국이 모두 걸을 수 있는 빈 바닥이고 이벤트와 붙지 않을 때만 찍는다(길·조사 칸을 막지 않는다). */
+/** 숲 맵의 맨 풀밭에 밟을 수 있는 바닥 덮개(고사리·히스·들풀·잔돌)를 덩이지게 깐다. 길 바로 곁·이벤트 곁은 비운다. */
+function fillForestUnderstory(project: Project, mapId: string): void {
+  const map0 = project.maps[mapId];
+  if (!map0) return;
+  const W = map0.width, H = map0.height;
+  const meta = (project.tilesets[map0.tilesetId] as unknown as { tileMeta?: ({ label?: string } | null)[] }).tileMeta ?? [];
+  const isOpen = (m: GameMap, i: number): boolean => {
+    const x = i % W, y = Math.floor(i / W);
+    if (x < 1 || y < 1 || x >= W - 1 || y >= H - 1 || !isPassable(project, m, x, y)) return false;
+    if ([m.lowerOverlayTiles, m.upperTiles, m.upperOverlayTiles].some((l) => (l?.[i] ?? -1) >= 0)) return false;
+    if (/모랫길|바닥 흙|절벽/.test(meta[m.lowerTiles[i]!]?.label ?? "")) return false;
+    return !m.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1);
+  };
+  const m0 = project.maps[mapId]!;
+  // 열린 정도 = 가장 가까운 「열리지 않은 칸」까지의 체스판 거리.
+  const dist = new Int16Array(W * H).fill(-1);
+  const q: number[] = [];
+  for (let i = 0; i < W * H; i += 1) if (!isOpen(m0, i)) { dist[i] = 0; q.push(i); }
+  for (let k = 0; k < q.length; k += 1) {
+    const i = q[k]!, x = i % W, y = Math.floor(i / W);
+    for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) {
+      const nx = x + dx, ny = y + dy, j = ny * W + nx;
+      if ((dx || dy) && nx >= 0 && ny >= 0 && nx < W && ny < H && dist[j]! < 0) { dist[j] = dist[i]! + 1; q.push(j); }
+    }
+  }
+  const covers = ["fern-a", "fern-b", "fern-c", "heath-a", "heath-b", "heath-c", "wild-a", "wild-b", "wild-c", "fern-b", "heath-a", "stones-a", "toadstools-b"];
+  const hash = (x: number, y: number, k: number): number => (Math.imul(x + 31 * k, 73856093) ^ Math.imul(y + 17 * k, 19349663)) >>> 0;
+  // 덩이: 칸마다 근처 「씨앗」 칸과의 거리로 정한다 — 고르게 흩지 않는다.
+  const seeds: { x: number; y: number }[] = [];
+  for (let y = 1; y < H - 1; y += 3) for (let x = 1; x < W - 1; x += 3) if (hash(x, y, 1) % 100 < 55) seeds.push({ x: x + (hash(x, y, 2) % 3), y: y + (hash(x, y, 3) % 3) });
+  const pathAt = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < W && y < H && /모랫길|바닥 흙/.test(meta[m0.lowerTiles[y * W + x]!]?.label ?? "");
+  for (let i = 0; i < W * H; i += 1) {
+    if (dist[i]! < 1) continue;
+    const x = i % W, y = Math.floor(i / W);
+    // 길 바로 곁(상하좌우 한 칸)은 덩이 씨앗 곁일 때만 — 길섶이 한 줄로 고르게 덮이면 심은 화단처럼 읽힌다.
+    const verge = pathAt(x - 1, y) || pathAt(x + 1, y) || pathAt(x, y - 1) || pathAt(x, y + 1);
+    const near = seeds.some((sd) => Math.max(Math.abs(sd.x - x), Math.abs(sd.y - y)) <= 1);
+    if (!near && hash(x, y, 4) % 100 >= 12) continue;
+    if (verge && hash(x, y, 6) % 100 >= 45) continue;
+    const before = project.maps[mapId]!;
+    if (!isOpen(before, i)) continue;
+    const snap = { up: [...before.upperTiles], uo: before.upperOverlayTiles ? [...before.upperOverlayTiles] : undefined, lo: before.lowerOverlayTiles ? [...before.lowerOverlayTiles] : undefined };
+    const kit = covers[hash(Math.floor(x / 2), Math.floor(y / 2), 5) % covers.length]!;
+    if (!tryStamp(project, before, `kit:beodeul_city/bd-pick-deep-forest-path-${kit}`, x, y)) continue;
+    const after = project.maps[mapId]!;
+    if (!isPassable(project, after, x, y)) {
+      after.upperTiles.splice(0, after.upperTiles.length, ...snap.up);
+      if (snap.uo && after.upperOverlayTiles) after.upperOverlayTiles.splice(0, after.upperOverlayTiles.length, ...snap.uo);
+      if (snap.lo && after.lowerOverlayTiles) after.lowerOverlayTiles.splice(0, after.lowerOverlayTiles.length, ...snap.lo);
+    }
+  }
+}
+
 function tryStamp(project: Project, map: GameMap, objectId: string, x: number, y: number): boolean {
   const m = /^kit:([^/]+)\/(.+)$/u.exec(objectId);
   const kit = m ? project.tilesets[m[1]!]?.structureKits?.find((k) => k.id === m[2]) : undefined;
@@ -1792,6 +1845,9 @@ export function createChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   // 천문대 입구는 reworkFallenTown 이 둥근 돌 탑(마법사의 탑 키트)과 곁의 놋쇠 망원경으로 바꿨다 — 예전 재단사 집 간판 바꾸기·혼천의는 걷었다.
   // 풀숲 가장자리에 풀 둑 덧그림을 얹던 마감은 걷어 냈다 — 흙 입술(진흙 못 가장자리)로 읽혔다(감사 라운드 2).
   // 맵 마감(감사 3차) — 주인 없는 그림자, 화로의 방 긴 화덕 띠.
+  // 숲 들머리·추락지 둘레의 맨 풀밭(화면 4분의 1)이 잔디밭처럼 비어 보였다(VQA r26) — 길 바로 곁을 뺀
+  // 빈 풀 칸에 고사리·히스·들풀·잔돌을 덩이지게 깐다. 밟고 지나가는 바닥 덮개만 쓰고, 통행이 바뀌면 되돌린다(장면 경로를 막지 않게).
+  fillForestUnderstory(project, ids.forest);
   for (const map of [M(ids.hub), M(ids.forest)]) clearOrphanShadows(project, map);
   // 모든 이동은 맞은편 문 바로 앞 칸에 내리고, 문을 등진 방향(direction)을 명시한다(VQA r12).
   // 패딩이 끝난 최종 좌표 기준이라 여기서 한 번에 맞춘다.
