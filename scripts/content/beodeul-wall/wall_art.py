@@ -15,6 +15,7 @@
 import math
 
 from PIL import Image
+import re
 
 T = 16
 
@@ -1167,16 +1168,17 @@ def gatehouse(closed=False, var=0):
 def shadow(kind):
     """s = 앞면 밑(칸 위쪽 7행), e = 세로 성벽·망루 오른쪽(칸 왼쪽 7열), se = 둘 다."""
     cv = Canvas(16, 16)
-    ramp = (SH1, SH1, SH1, SH2, SH2, SH3, SH3)
+    # 3판 r14: 12행 — 네 줄 높이 성벽이 7행 옅은 띠만 드리우니 어두운 풀 위에서 「포장길 연석」으로 읽혔다
+    ramp = (SH0, SH0, SH0, SH1, SH1, SH1, SH1, SH2, SH2, SH3, SH3, SH3)
     if kind in ("s", "se"):
         for x in range(16):
             for i, c in enumerate(ramp):
-                if i == 6 and x % 2: continue
+                if i == len(ramp) - 1 and x % 2: continue
                 cv.set(x, i, c)
     if kind in ("e", "se"):
         for y in range(16):
             for i, c in enumerate(ramp):
-                if i == 6 and y % 2: continue
+                if i == len(ramp) - 1 and y % 2: continue
                 old = cv.get(i, y)
                 if old[3] < c[3]: cv.set(i, y, c)
     return cv
@@ -1188,8 +1190,14 @@ def postern_block(side):
     r11 판은 윗면이 길 줄에 걸쳐 「길이 지붕으로 들어간다」로 읽혔다(r12 major).
     반환 (윗면 32×32, 앞면 32×48 — 길 한 줄이면 f1, 두 줄 이상이면 fu · fm… · fl)."""
     top = Canvas(32, 32)
+    # 문루 밑은 세로 성벽 통로 — 흉벽 톱니 사이로 풀이 비쳤다(r14 major): 성벽 윗면을 먼저 깔고 플랫폼을 얹는다
+    for yy in (0, 16): top.paste(vert_wall(side, 0, 1), 0, yy)
     pf = platform(32, ("pg",), hatch=False)
-    top.paste(pf.crop(0, 0, 32, 16), 0, 0); top.paste(pf.crop(0, 32, 32, 16), 0, 16)
+    for (sy, dy) in ((0, 0), (32, 16)):
+        for y in range(16):
+            for x in range(32):
+                c = pf.get(x, sy + y)
+                if c[3] == 255: top.set(x, dy + y, c)
     # 살인구멍 쇠창살(길 바로 위 문루 바닥)
     for y in range(11, 21):
         for x in range(10, 22):
@@ -1216,26 +1224,38 @@ def postern_block(side):
         for y in range(h_):
             for x in (28, 29, 30): f.shade(x, y, -1)
         return f
-    def arch(f, y_spring, y_bot, half=8, cx=16):
-        """길이 밑으로 지나는 아치 구멍(3판 r13 — 막힌 돌 앞면에 화살 구멍만 있어 「길이 벽에 막혔다」): 둥근 머리 홍예 + 안쪽으로 짙어지는 터널 + 바닥은 길로 이어지게 투명."""
-        r = half
-        for y in range(y_spring - r, y_bot + 1):
+    def arch(f, y_spring, y_bot, half=8, cx=16, ring=2):
+        """길이 밑으로 지나는 아치 구멍(r13·r14): 반원 머리 + 홍예석 테(ring px, 돌마다 빛·그늘 번갈아) + 이맛돌 +
+        안은 위가 가장 짙고 아래로 갈수록 바닥 빛(밑의 길이 비친다) + 쇠살 이빨 — 납작한 검은 네모로 읽혔다(r14 major)."""
+        R = half + ring
+        for y in range(y_spring - R, y_bot + 1):
             dy = y_spring - y
-            w = half if dy <= 0 else int((r * r - dy * dy) ** 0.5 + 0.5)
-            if w <= 0: continue
-            for x in range(cx - w, cx + w):
-                depth = y - (y_spring - r)
-                c = OUT if depth < 6 else OUT2
-                if y >= y_bot - 3: c = CLEAR                    # 바닥 몇 줄은 비워 밑의 길이 보인다
+            for x in range(cx - R, cx + R):
+                dx = x - cx + 0.5
+                rr = (dx * dx + dy * dy) ** 0.5 if dy > 0 else abs(dx)
+                if rr >= R: continue
+                if rr >= half:                                   # 홍예석 테
+                    import math
+                    seg = int((math.atan2(max(dy, 0) + 0.01, dx) / math.pi) * 7)
+                    c = (COOL[10] if dx < 0 else COOL[8]) if seg % 2 == 0 else (COOL[9] if dx < 0 else COOL[6])
+                    if rr >= R - 0.6: c = OUT2
+                    f.set(x, y, c)
+                    continue
+                depth = y - (y_spring - half)
+                if y >= y_bot - 2: c = CLEAR                     # 바닥: 밑의 길
+                elif depth < 3: c = OUT
+                elif y < y_bot - 3: c = OUT2                    # 터널 안은 바닥 바로 위까지 짙게(밝은 줄눈 색이면 1배에서 회색 네모, r15)
+                else: c = MORT
+                if abs(dx) > half - 1.6 and c not in (CLEAR,): c = OUT       # 문설주 안쪽 그늘
                 f.set(x, y, c)
-            # 홍예석 테(왼쪽 빛·오른쪽 그늘)
-            if dy > 0 or y < y_bot - 3:
-                f.set(cx - w - 1, y, COOL[10] if dy > 0 else COOL[9]); f.set(cx + w, y, COOL[5] if dy > 0 else COOL[6])
-        for x in range(cx - 3, cx + 3): f.set(x, y_spring - r - 1, COOL[10] if x < cx else COOL[8])   # 이맛돌
+        # 쇠살 이빨(올려 둔 내림창살 끝)
+        for x in range(cx - half + 2, cx + half - 1, 3):
+            for i in range(3): f.set(x, y_spring - half + 3 + i, IRON[2] if i < 2 else IRON[1])
+        for x in range(cx - 2, cx + 2): f.set(x, y_spring - R - 1, COOL[10] if x < cx else COOL[8])   # 이맛돌
     f1 = face(16, 1)
-    arch(f1, 9, 15, half=6)
+    arch(f1, 10, 15, half=5, ring=2)
     tall = face(48, 2, slit=(4, 7), torches=True)
-    arch(tall, 24, 47, half=8)
+    arch(tall, 26, 47, half=7, ring=3)
     return top, f1, tall
 
 
@@ -1266,6 +1286,25 @@ def _desert_map():
     for src, dst in ((FLAG, SAND_FLAG), (WARM, SAND_WARM), (COOL, SAND_COOL), (MOSS, DRY)):
         for a, b in zip(src, dst): m[a] = b
     return m
+
+
+def shade_biome(im):
+    """기후 판 위에 왼쪽 물체 그늘(SHADOW_PROFILE)을 그 색이 속한 램프 안에서 드리운다. 눈 램프는 두 단까지만(눈 그늘은 옅은 파랑)."""
+    im = im.copy(); px = im.load()
+    ramps = [SNOW, SAND_FLAG, SAND_COOL, SAND_WARM, COOL, WARM, FLAG]
+    for y in range(im.height):
+        for x in range(im.width):
+            n = SHADOW_PROFILE(x, y)
+            c = px[x, y]
+            if not n or c[3] != 255: continue
+            for r in ramps:
+                if c in r:
+                    k = max(-2, n // 2) if r is SNOW else n
+                    px[x, y] = r[max(0, min(len(r) - 1, r.index(c) + k))]
+                    break
+            else:
+                px[x, y] = step_any(c, n)
+    return im
 
 
 def is_top_piece(name):
@@ -1339,7 +1378,7 @@ def biome_image(img, name, biome):
                         if h("spark", name, x, y) % 67 == 0: v = SNOW[3]
                         # 밟힌 자국(2px 짙은 눈 점)과 눈이 얇아 드러난 판석 조각 — 한 색 판으로 땅 눈에 녹았다(r12 major)
                         if h("trod", name, x // 2, y) % 9 == 0: v = SNOW[1]
-                        if h("bare", name, x // 4, y // 3) % 7 == 0: v = c
+                        if h("bare", name, x // 4, y // 3) % 13 == 0: v = c
                     px[x, y] = v
             elif ledge and c in (COOL[9], COOL[10], COOL[11]):
                 px[x, y] = SNOW[5] if c != COOL[9] else SNOW[4]
@@ -1539,11 +1578,19 @@ def pieces():
     P("hn_sh_b", cut(n, 0, 1), "LRU", "북쪽 성벽 윗면 아래 줄 — 왼쪽 그늘")
     # --- 3판 r8: 기후 변형 — 눈 덮인 성벽(snow:) · 사막 사암 성벽(desert:). 그림자·터널 입 그늘은 기후와 무관해 복사하지 않는다
     base = list(out)
+    by_name = {p["name"]: p for p in base}
     for biome in BIOMES:
         tag = {"snow": "눈 덮인 ", "desert": "사막 사암 "}[biome]
         for p in base:
             if p["name"].startswith(("sh_", "mo_")) or "_endS_" in p["name"] or "_endN_" in p["name"]: continue   # 옛 틈 끝 마감은 쓰지 않는다
-            out.append(dict(p, name=f"{biome}:{p['name']}", img=biome_image(p["img"], p["name"], biome), desc=tag + p["desc"]))
+            m = re.fullmatch(r"(h[sn])_sh_([ab])", p["name"])
+            if m:
+                # 통로 그늘은 그늘 없는 판을 기후로 옮긴 뒤 그 기후 램프 안에서 어둡게 — 먼저 어둡게 하고 옮기면 눈이 한 색 회색 판이 됐다(r14 major)
+                src = by_name[f"{m.group(1)}0_{m.group(2)}"]
+                im = shade_biome(biome_image(src["img"], src["name"], biome))
+            else:
+                im = biome_image(p["img"], p["name"], biome)
+            out.append(dict(p, name=f"{biome}:{p['name']}", img=im, desc=tag + p["desc"]))
     return out
 
 
