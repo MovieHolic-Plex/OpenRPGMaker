@@ -103,6 +103,12 @@ function collectKindShapeFailures(label: string, value: unknown): string[] {
     if (raw.kind === "text" && typeof raw.body !== "string") {
       failures.push(`${path}.body: 대사는 string body가 필요합니다. 예: {kind:"text",body:"안녕하세요"}`);
     }
+    if (raw.kind === "moveEvent" && (raw.route === null || typeof raw.route !== "object" || Array.isArray(raw.route) || !Array.isArray((raw.route as RecordValue).moves))) {
+      failures.push(`${path}.route: 이동 경로는 route 객체 하나입니다 — 실제 ${describeValue(raw.route)}. `
+        + `예: {kind:"moveEvent",eventId:"npc_a",route:{moves:[{kind:"move",dir:"down"},{kind:"turn",dir:"left"}],repeat:false,wait:true}} `
+        + `(방향 문자열 "down"·"turn_left" 목록도 받는다. 점프·투명도 같은 다른 걸음은 MoveCommand 객체로).`);
+      continue;
+    }
     if (raw.kind === "changeParty" && raw.action !== "add" && raw.action !== "remove" && raw.action !== "lead") {
       failures.push(`${path}.action: 파티 편성은 action:"add"(합류)·"remove"(이탈)·"lead"(선두 교대)입니다 — op 는 쓰지 않습니다. 실제 값 ${describeValue(raw.action)}. 예: {kind:"changeParty",actorId:"actor_x",action:"add"}`);
     }

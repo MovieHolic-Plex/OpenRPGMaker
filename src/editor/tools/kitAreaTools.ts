@@ -84,6 +84,13 @@ export const KIT_AREA_TOOLS: readonly ToolDefinition[] = [{
   run(project, args) {
     const map = project.maps[String(args.mapId)];
     if (!map) throw new ToolError(`맵을 찾을 수 없습니다: ${String(args.mapId)}`, { code: "map-not-found" });
+    // 버들항(beodeul_city)은 이 도구의 지역 바닥 팔레트가 없다 — 2026-10-22 장면 교훈 시험에서 4건(성벽 마을·여관/상점·밤 마을·꾸미기)이
+    // 「알려진 지역 바닥이 아닙니다」로 2~3번씩 거부된 뒤 나무를 한 그루씩 찍다 겹침 오류를 냈다. 처음부터 맞는 도구로 보낸다.
+    if (map.tilesetId === "beodeul_city") {
+      throw new ToolError(`버들항(beodeul_city) 맵은 furnish_outdoor_area 로 꾸미지 않는다 — 풀·꽃 군락·잔돌·화단·통·장작 덧그림은 dress_beodeul_ground({mapId:"${map.id}"}) 한 번, `
+        + `나무·가로등·벤치 같은 기물은 stamp_object({mapId:"${map.id}", objectId:"kit:beodeul_city/bd-tree-…"|"kit:beodeul_city/bd-prop-…", x, y}) — 키트 id 는 list_spatial_designs({kind:"object", query:"tree"|"lamp"|"bench"}) 로 찾는다. stamp_object 가 겹친다고 하면 그 오류의 「가장 가까운 빈 바닥 자리」로 다시 찍는다.`,
+        { code: "wrong-tileset-family", mapId: map.id });
+    }
     const given = args.area as Rect | undefined;
     if (given !== undefined && ![given?.x, given?.y, given?.w, given?.h].every(Number.isInteger)) throw new ToolError("area 는 정수 {x,y,w,h} 입니다.", { code: "invalid-args", mapId: map.id });
     const region = (REGIONS as readonly string[]).includes(String(args.region)) ? args.region as Region : "all";

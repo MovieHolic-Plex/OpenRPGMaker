@@ -47,7 +47,9 @@ export function requestsFullGameOpeningProduction(rawTask: string): boolean {
   if (/오프닝(?:\s*기능)?(?:을|은|만)?\s*(?:끄|꺼|비활성|삭제)|(?:disable|remove)\s+(?:the\s+)?opening/iu.test(task)) return false;
   if (/포켓몬|pokemon|몬스터\s*(?:수집|도감|포획|키트|토너먼트|대회)/iu.test(task)) return false;
   if (/(?:맵|마을|던전|방|실내|집|전투|스킬|아이템|이벤트|대화창|폰트)(?:만|하나만)\s*(?:만들|추가|수정|고쳐)/iu.test(task)) return false;
-  const hasGenreOrGame = /jrpg|제이\s*알\s*피\s*지|알피지|\brpg\b|크로노\s*트리거|chrono\s*trigger|파이널\s*판타지|final\s*fantasy|\bff\s*6\b|드래곤\s*퀘스트|dragon\s*quest|연애(?:\s*물|\s*시뮬|\s*게임)?|미연시|로맨스(?:\s*물|\s*게임)?|오토메(?:\s*물|\s*게임)?|비주얼\s*노벨|visual\s*novel|dating\s*sim|otome|(?:게임|작품)(?:을|를)?\s*(?:하나\s*)?(?:만들|제작|완성|개발)/iu.test(task);
+  // 「연애」「로맨스」 낱말 하나는 게임 제작 요청이 아니다 — 「연애 이야기의 첫 만남 장면에 쓸 골목 맵을 만들어 줘」가 새 게임 오프닝 6샷·타이틀·
+  // 연애 엔딩 3개 완료 검사까지 끌고 왔다(2026-10-22 장면 교훈 r2 quiet-modern-street, Sonnet 5.5 high). 장르 낱말은 물·시뮬·게임이 붙을 때만 센다.
+  const hasGenreOrGame = /jrpg|제이\s*알\s*피\s*지|알피지|\brpg\b|크로노\s*트리거|chrono\s*trigger|파이널\s*판타지|final\s*fantasy|\bff\s*6\b|드래곤\s*퀘스트|dragon\s*quest|연애\s*(?:물|시뮬|게임|겜)|미연시|로맨스\s*(?:물|게임|겜)|오토메(?:\s*물|\s*게임)?|비주얼\s*노벨|visual\s*novel|dating\s*sim|otome|(?:게임|작품)(?:을|를)?\s*(?:하나\s*)?(?:만들|제작|완성|개발)/iu.test(task);
   const hasCreateVerb = /만들|제작|짜\s*줘|구현|완성|기획|개발|시작해|부탁|싶어|싶습니다|build|create|make\b/iu.test(task);
   return hasGenreOrGame && hasCreateVerb;
 }

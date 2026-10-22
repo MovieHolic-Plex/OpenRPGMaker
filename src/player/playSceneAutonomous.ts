@@ -3,7 +3,7 @@ import { actionFieldSlow } from "./actionFieldSlow";
 import { isDetectionEmoting } from "./npcDetectionEncounter";
 import { pursuitTarget } from "./horrorRuntime";
 import { pursuitPass, pursuitState } from "./pursuitNavigation";
-import { canMoveFootprint } from "@/project/collision";
+import { canMoveFootprint, isPassableLanding } from "@/project/collision";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import { yieldingLivingMovers, routeForLivingMovement } from "@/player/npcLivingTravel";
 import { passageBounds, rectsOverlap } from "@/project/footprint";
@@ -24,6 +24,8 @@ import {
   nextMoveCommandForScene,
 } from "@/player/playSceneAutonomousCommands";
 import { canNpcMove, isPlayerOccupyingTile } from "@/player/playSceneAutonomousMapActions";
+import { detourAroundPlayer, sidestepForPlayer } from "@/player/commandRouteDetour";
+import { startPlayerRoute } from "@/player/playerRouteState";
 import { applySpriteAlpha, setNpcIdleFrame, setNpcWalkFrame } from "@/player/playSceneAutonomousSprites";
 import { nextChaseDecision } from "@/player/chaseAi";
 import type { AutonomousNpcSceneContext } from "@/player/playSceneAutonomousTypes";
@@ -107,6 +109,29 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
       livingBlockers.delete(mover);
       fireEventTouch(scene, eventId, view.trigger.kind);
       setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
+      // 명령 경로(moveEvent)는 주인공을 비켜 같은 끝 칸으로 간다 — 말을 건 주인공이 옆에 서 있어 걸음이 다 버려지고
+      // 인물이 제자리에서 사라지던 결함(commandRouteDetour 머리말).
+      if (!mover.repeat && !mover.stopOnBlocked && scene.commandMoveRouteEventIds?.has(eventId)) {
+        const detour = detourAroundPlayer({
+          moves: mover.moves, blockedIndex: mover.step - 1, from: position, width: scene.map.width, height: scene.map.height,
+          isPlayerAt: (x, y) => isPlayerOccupyingTile(scene, x, y),
+          canStep: (from, to, dir) => canNpcMove({ project, scene, mover, eventId, from, to }, { x: to.x - from.x, y: to.y - from.y, face: dir }),
+        });
+        if (detour) { mover.moves = detour; mover.step -= 1; mover.blockedSteps = 0; continue; }
+        // 주인공이 비켜 서는 중이면 같은 걸음을 다시 시도한다(버리지 않는다).
+        if (mover.playerSidestepped && "playerSlide" in scene && (scene.playerRoute || scene.moving)) { mover.step -= 1; continue; }
+        // 비켜 갈 길이 없으면(한 칸 틈·한 칸 폭 통로) 주인공이 인물의 남은 경로 밖 가장 가까운 칸으로 비켜 선다 — 한 번만(되풀이하면 둘이 춤춘다).
+        if (!mover.playerSidestepped && "playerSlide" in scene && !scene.playerRoute && !scene.moving) {
+          const steps = sidestepForPlayer({ moves: mover.moves, blockedIndex: mover.step - 1, from: position, player: { x: scene.tileX, y: scene.tileY },
+            canPlayerStand: (x, y) => x >= 0 && y >= 0 && x < scene.map.width && y < scene.map.height && isPassableLanding(project, scene.map, x, y)
+              && !findBlockingEventOverlappingRect(project, scene.map, scene.session, scene.eventPositions, passageBounds(x, y, UNIT_FOOTPRINT, 1)) });
+          if (steps?.length) {
+            mover.playerSidestepped = true;
+            startPlayerRoute(scene as Parameters<typeof startPlayerRoute>[0], steps.map(dir => ({ kind: "move" as const, dir })), false);
+            mover.step -= 1; mover.blockedSteps = 0; continue;
+          }
+        }
+      }
       if (mover.stopOnBlocked) {
         scene.autonomousNPCs.delete(eventId);
         scene.commandMoveRouteEventIds?.delete(eventId);

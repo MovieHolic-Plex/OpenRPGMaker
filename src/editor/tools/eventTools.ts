@@ -2335,7 +2335,10 @@ export function resolveTransferEndpoint(
   const fixed = requested.doorAt !== undefined;
   if (requested.doorAt && (!inMapBounds(map, requested.doorAt.x, requested.doorAt.y)
     || requested.x !== requested.doorAt.x || requested.y !== requested.doorAt.y + 1)) {
-    throw new ToolError('doorAt은 문 하단 칸이며 출입구는 바로 남쪽 문앞(x=doorAt.x, y=doorAt.y+1)이어야 합니다.', { code: 'transfer-door-mismatch', mapId: map.id });
+    // 실측(2026-10-22 여관·상점 문): 조수가 x,y 와 doorAt 에 같은 칸을 넣어 두 번 거부됐다 — 받은 값과 고친 두 가지 모양을 그대로 보여 준다.
+    const door = requested.doorAt;
+    throw new ToolError(`${label}: doorAt은 문 하단 칸이며 출입구(x,y)는 바로 남쪽 문앞(x=doorAt.x, y=doorAt.y+1)이어야 합니다 — 받은 값 x,y=(${requested.x},${requested.y}), doorAt=(${door.x},${door.y}). `
+      + `문이 (${door.x},${door.y}) 이면 {x:${door.x},y:${door.y + 1},doorAt:{x:${door.x},y:${door.y}}}, 문앞이 (${requested.x},${requested.y}) 이면 {x:${requested.x},y:${requested.y},doorAt:{x:${requested.x},y:${requested.y - 1}}}. 문 그림이 없으면 doorAt 을 빼세요.`, { code: 'transfer-door-mismatch', mapId: map.id });
   }
   const localNotes: string[] = [];
   const endpoint = transferEndpoint(project, map, requested.x, requested.y, fixed ? 0 : 3, localNotes, fixed);
@@ -2815,8 +2818,13 @@ const createTransferPair: ToolDefinition = {
     // 문앞 칸(원래 출입구 자리)은 반대쪽에서 오는 착지가 된다 — 문을 등지고 선다.
     const onDoorCell = (map: GameMap, req: { x: number; y: number; doorAt?: Point }, endpoint: { gate: Point; landing: Point }): { gate: Point; landing: Point; bump: boolean } => {
       if (!onDoor) return { ...endpoint, bump: false };
+      // 실내 벽에 박힌 엘리베이터·계단은 그림 칸 바로 아래가 「탈 자리」(build_hand_interior_room 이 알려 주는 칸)다 —
+      // 조수가 그 탈 자리를 x,y 로 주면 트리거가 그림 아래 바닥에 남았다(2026-10-22 r3 office-elevator 2층 쪽).
+      const above = !isDoorArtCell(draft, map, req.x, req.y) && endpoint.gate.x === req.x && endpoint.gate.y === req.y
+        && isDoorArtCell(draft, map, req.x, req.y - 1) ? { x: req.x, y: req.y - 1 } : null;
       const door = req.doorAt
-        ?? (isDoorArtCell(draft, map, req.x, req.y) && Math.abs(req.x - endpoint.gate.x) + Math.abs(req.y - endpoint.gate.y) === 1 ? { x: req.x, y: req.y } : null);
+        ?? (isDoorArtCell(draft, map, req.x, req.y) && Math.abs(req.x - endpoint.gate.x) + Math.abs(req.y - endpoint.gate.y) === 1 ? { x: req.x, y: req.y } : null)
+        ?? above;
       if (!door || (door.x === endpoint.gate.x && door.y === endpoint.gate.y)) return { ...endpoint, bump: false };
       if (map.events.some((event) => event.x === door.x && event.y === door.y)) return { ...endpoint, bump: false };
       return { gate: door, landing: endpoint.gate, bump: !isPassable(draft, map, door.x, door.y) };
@@ -3273,6 +3281,7 @@ export const placeChest: ToolDefinition = {
     "장식용 박스·나무상자·나무박스·과일박스는 place_props(harness-combined-town-wood-box / fruit-box) — place_chest 금지. " +
     "벽 위(문·벽감)여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 물 위는 거부한다 — 지면이나 통행 가능한 다리 위 좌표를 선택하라.",
   mode: "write",
+  choosesOwnGraphic: true,
   parameters: {
     type: "object",
     properties: {
@@ -3475,6 +3484,7 @@ const placeSavepoint: ToolDefinition = {
   name: "place_savepoint",
   description: "세이브 포인트 이벤트를 배치한다(크리스탈 외형). 조사하면 mode 에 따라 동작한다 — both(기본): 사망 재시도용 체크포인트를 기록하고 **저장 칸 메뉴(openSaveMenu)** 도 연다(크로노 트리거식: 크리스탈에서 3칸 중 골라 저장) · slot: 저장 칸 메뉴만 · checkpoint: 체크포인트만(저장 칸 안 염, 새로고침하면 사라진다 — 호러·사망 재시도용). 플레이어가 새로고침 뒤에도 이어 하려면 slot 이나 both 다. 맵이 저장 금지(set_map_properties disableSave)면 경고한다. 벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 세이브 포인트는 반드시 이 툴 — place_npc/upsert_event 흉내 금지.",
   mode: "write",
+  choosesOwnGraphic: true,
   parameters: {
     type: "object",
     properties: {
