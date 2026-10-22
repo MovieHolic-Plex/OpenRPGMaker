@@ -2180,8 +2180,34 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       for (const c of cut) { if (seen.has(c)) continue; blockedRoads += 1; const q = [c]; seen.add(c);
         for (let h = 0; h < q.length; h += 1) { const d = q[h]!, x = d % W; for (const n of [d - 1, d + 1, d - W, d + W]) if (n >= 0 && n < W * H && Math.abs((n % W) - x) <= 1 && !seen.has(n) && cut.includes(n)) { seen.add(n); q.push(n); } } }
       for (const c of cut) occ[c] = WALLB;
-      if ("mat" in spec.base) for (const c of cut) fill({ x: c % W, y: Math.floor(c / W), w: 1, h: 1 }, spec.base.mat);
-      else paintCells(cut, spec.base);
+      // 끊긴 길이 성벽 앞에서 토막으로 끝나지 않게(2026-10-22 조수 시험 판정 「길이 성벽에 막혀 갈 곳을 잃는다」):
+      // 성벽 띠에 닿은 끊긴 줄기를 안쪽으로 따라가며, 옆으로 갈라지는 길·문 앞·광장이 나올 때까지 지운다.
+      const doorFront = new Set(doorFronts.map((d) => idx(d.x, d.y)));
+      const isRoad = (x: number, y: number) => inMap(x, y) && occ[idx(x, y)] === ROAD;
+      const trimmed: number[] = [];
+      const trimRun = (cells: (k: number) => [number, number][], side: (k: number) => [number, number][], k0: number, step: number, kEnd: number) => {
+        for (let k = k0; k !== kEnd; k += step) {
+          const line = cells(k);
+          if (!line.every(([x, y]) => isRoad(x, y) && !doorFront.has(idx(x, y)) && !keep.has(idx(x, y)))) return;
+          if (side(k).some(([x, y]) => inMap(x, y) && (occ[idx(x, y)] === ROAD || occ[idx(x, y)] === PLAZAC))) return; // 갈림목
+          const next = cells(k + step);
+          if (!next.some(([x, y]) => isRoad(x, y) || (inMap(x, y) && occ[idx(x, y)] === PLAZAC))) return; // 안쪽이 끊겼으면 손대지 않는다
+          for (const [x, y] of line) { occ[idx(x, y)] = WALLB; trimmed.push(idx(x, y)); }
+        }
+      };
+      const cutSet = new Set(cut);
+      const spans = (hit: (i: number) => boolean, lo: number, hi: number) => runs(hi + 1, hit, lo, hi);
+      for (const [a, b] of spans((y) => cutSet.has(idx(L.x0, y)), L.y0 + 1, L.y1 - 1))
+        trimRun((x) => [...Array(b - a + 1).keys()].map((i) => [x, a + i]), (x) => [[x, a - 1], [x, b + 1]], L.x0 + 1, 1, L.x1 - 1);
+      for (const [a, b] of spans((y) => cutSet.has(idx(L.x1, y)), L.y0 + 1, L.y1 - 1))
+        trimRun((x) => [...Array(b - a + 1).keys()].map((i) => [x, a + i]), (x) => [[x, a - 1], [x, b + 1]], L.x1 - 1, -1, L.x0 + 1);
+      for (const [a, b] of spans((x) => cutSet.has(idx(x, L.y0 + 2)), L.x0 + 1, L.x1 - 1))
+        trimRun((y) => [...Array(b - a + 1).keys()].map((i) => [a + i, y]), (y) => [[a - 1, y], [b + 1, y]], L.y0 + 3, 1, L.y1 - 1);
+      for (const [a, b] of spans((x) => cutSet.has(idx(x, L.y1)), L.x0 + 1, L.x1 - 1))
+        trimRun((y) => [...Array(b - a + 1).keys()].map((i) => [a + i, y]), (y) => [[a - 1, y], [b + 1, y]], L.y1 - 1, -1, L.y0 + 3);
+      const repaint = [...cut, ...trimmed];
+      if ("mat" in spec.base) for (const c of repaint) fill({ x: c % W, y: Math.floor(c / W), w: 1, h: 1 }, spec.base.mat);
+      else paintCells(repaint, spec.base);
     }
     const used = (side: "N" | "S", x0: number, x1: number) => gates.some((g) => g.side === side && x1 >= g.x - 2 && x0 <= g.x + 3);
     const towers = L.towers.filter((t) => t.x > L.x0 + 1 && t.x + 1 < L.x1 - 1 && !used(t.side, t.x - 1, t.x + 2)
