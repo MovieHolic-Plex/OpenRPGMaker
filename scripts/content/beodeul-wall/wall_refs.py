@@ -195,7 +195,7 @@ def main():
 3. 북쪽 성벽: x0+2..x1−2 의 y0 줄 `hn?_a`, y0+1 줄 `hn?_b`, 그 아래 네 줄 앞면(`f_u_*`·`f_m_*`·`f_n_*`·`f_l_*`, 맨 왼쪽 x0+2 는 `_shL`). 남쪽 성벽: y1 줄 `hs?_a`, y1+1 줄 `hs?_b`, 그 아래 네 줄 앞면은 x0..x1 전체(x0 = `_endL`, x1 = `_endR`).
 4. 세로 성벽: x0·x0+1 열 y0+2~y1−1 은 `vw?_0`·`vw?_1`, x1−1·x1 열은 `ve?_0`·`ve?_1`. 앞면 없음(3/4 에서 위만 보인다).
 5. 길이 가로 성벽을 지나는 곳 = 성문루 4×8: 왼쪽 위 = (gx−1, yw−1), yw = 그 성벽 윗면 첫 줄. 통로 = gx·gx+1 두 열(위 네 줄 ★, 아래 네 줄 2층 터널). 성문루 오른쪽 성벽 칸은 그늘 판(`hs_sh_*` + `f_*_shL`). 열린 성문루 뒤(yw−2 줄) 길 두 칸에 2층 `mo_n`.
-6. 길이 세로 성벽을 지나는 곳 = 쪽문 문루(성벽 위로 솟은 네모 문루, 아치 앞면은 늘 두 줄 이상). 길 줄 gy..gy+r−1 에 대해 — r=1: gy−3 `*_pgw_{{열}}_t` · gy−2 `*_pgw_{{열}}_b` · gy−1 `*_pgw_{{열}}_f2u` · gy `*_pg_{{열}}_f2l`. r=2: gy−2 `pgw_t` · gy−1 `pgw_b` · gy `pg_f2u` · gy+1 `pg_f2l`. r≥3: gy−2 `pgw_t` · gy−1 `pgw_b` · gy `pg_fu` · 사이 `pg_fm` · 끝 `pg_fl`. 양옆 땅 길 줄마다 2층 `mo_w`(성벽 왼쪽 칸)·`mo_e`(오른쪽 칸). 1층은 길.
+6. 길이 세로 성벽을 지나는 곳 = 쪽문 문루(성벽 위로 솟은 네모 문루, 아치 앞면은 늘 두 줄 이상). 길 줄 gy..gy+r−1 에 대해 — r=1: gy−3 `*_pgw_{{열}}_t` · gy−2 `*_pgw_{{열}}_b` · gy−1 `*_pgw_{{열}}_f2u` · gy `*_pg_{{열}}_f2l`. r=2: gy−2 `pgw_t` · gy−1 `pgw_b` · gy `pg_f2u` · gy+1 `pg_f2l`. r≥3: gy−2 `pgw_t` · gy−1 `pgw_b` · gy `pg_fu` · 사이 `pg_fm` · 끝 `pg_fl`. 양옆 땅 길 줄마다 2층 `mo_w`(성벽 왼쪽 칸)·`mo_e`(오른쪽 칸). 1층은 길. 문루는 모서리 망루와 겹치면 안 된다 — 길 첫 줄 ≥ y0+10, 끝 줄 ≤ y1−3.
 7. 망루 3×9: 왼쪽 위 = (tx, yw−2). 성문루와 한 칸 이상 떨어뜨린다. 모서리 망루는 tx = x0(서쪽) 또는 x1−2(동쪽) — 모서리 2×2·세로 성벽 끝·앞면 끝을 덮는다. 성벽 통로가 망루 cy 2·3 줄(★) 밑으로 지나간다. 남쪽 망루 윗면 첫 줄(y1−2)은 마을 안 땅 칸이다 — 집·나무를 붙이지 않는다.
 8. 계단은 북쪽 성벽에만, 3×4 옆 계단(왼쪽 아래 땅에서 오른쪽 위 통로로 오른다): (sx..sx+2, y0+2..y0+5) = `stair_0_u`…`stair_2_l`(줄 u·m·n·l), 머리 (sx+2, y0+1) = `hn_stair`. 발치 땅 칸(sx, y0+6)은 걸을 수 있어야 한다.
 9. 땅 그림자(2층): 북쪽 앞면 밑 줄 y0+6 · 남쪽 앞면 밑 줄 y1+6 에 `sh_s`, 서쪽 성벽 오른쪽 열 x0+2 와 동쪽 성벽 오른쪽 열 x1+1 에 `sh_e`, 겹치는 칸은 `sh_se`. 이미 2·3층에 무엇이 있는 칸에는 두지 않는다.
@@ -206,7 +206,7 @@ def main():
 
 ## 3. 완전 조립 예제
 - **둘레 {W}×{H}**(키트 `bd-wall-ring-sample`과 같다): 남쪽 열린 성문루(통로 x 10·11), 북쪽 닫힌 성문루(x 15·16, 윗면 변형 1), 망루 셋(남서 모서리 2·남 17·북 6 — 윗면 변형 0·1·2), 북쪽 계단 x 11, 서쪽 쪽문 문루(길 줄 10·11, 윗면 8·9)·동쪽 쪽문 문루(길 줄 10, 윗면 7·8, 앞면 9·10). 전체 1·2·3층 배열은 문서 「성벽 조립 예제 배열」과 tiledata/beodeul-town-wall/example.json, 원본 그림 `/assets/beodeul-town-wall/ring.png`.
-- **작은 둘레**(모서리 넷·동쪽 쪽문 문루·계단·망루): `/assets/beodeul-town-wall/parts.png`.
+- **작은 둘레**(모서리 넷·서쪽 쪽문 문루·계단·망루): `/assets/beodeul-town-wall/parts.png`.
 - 키트: {" · ".join(f"`{k['id']}` {k['width']}×{k['height']}" for k in B.kits())}.
 
 ## 4. 자동 검사 범위
@@ -233,7 +233,7 @@ scripts/content/beodeul-wall/wall_refs.py 의 `check`: wrong-layer · face-missi
                      caption=f"3배 최근접 확대, 한 줄 {half}칸씩 접음(칸 번호 = {B.BASE} + 줄×{half} + 열). 순서: 남·북 윗면, 모서리 2×2, 세로 성벽·옛 끝, 앞면, 계단, 성문루, 닫힌 문, 망루, 그림자, 통로 변형, 넷째 줄, 망루 아홉째 줄·윗면 변형, 쪽문, 터널 입 그늘. 눈·사막 변형은 그 뒤 같은 순서.",
                      dataUrl="/assets/beodeul-town-wall/atlas.png"),
                 dict(id="bd-wall-ring", name=f"조립 장면 · 둘레 {W}×{H}", caption=f"원본 해상도 {W * T}×{H * T}, 시트 칸 그대로. 구조 검사 결함 0.", dataUrl="/assets/beodeul-town-wall/ring.png"),
-                dict(id="bd-wall-parts", name="조립 장면 · 작은 둘레(모서리·동쪽 쪽문·계단·망루)", caption=f"원본 해상도 {PW * T}×{PH * T}. 구조 검사 결함 0.", dataUrl="/assets/beodeul-town-wall/parts.png"),
+                dict(id="bd-wall-parts", name="조립 장면 · 작은 둘레(모서리·서쪽 쪽문·계단·망루)", caption=f"원본 해상도 {PW * T}×{PH * T}. 구조 검사 결함 0.", dataUrl="/assets/beodeul-town-wall/parts.png"),
                 *images])
     refs = json.loads(REFS.read_text())
     i = next((k for k, c in enumerate(refs) if c["id"] == category["id"]), -1)

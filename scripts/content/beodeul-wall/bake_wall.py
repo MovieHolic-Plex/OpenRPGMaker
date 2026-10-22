@@ -270,12 +270,12 @@ def render_plan(up, lo, W, H, bg=None, ground=(), biome=None):
 
 
 def parts_plan():
-    """작은 둘레 표본(16×23): 모서리 넷·동쪽 쪽문 문루(길 세 줄 — 문루 t·m·b·f 를 모두 보인다)·계단·망루 하나(윗면 변형 1). 반환 (위층, 아래층, 가로, 세로)."""
-    up, lo = plan_ring(2, 3, 13, 14, vgaps=[("E", 10, 3)], towers=[("N", 4, 1), ("N", 11, 0)], stairs=[7])
+    """작은 둘레 표본(16×23): 모서리 넷·서쪽 쪽문 문루(길 세 줄 — fu·fm·fl 앞면, r18: 동쪽은 모서리 망루와 겹쳤다)·계단·망루 하나(윗면 변형 1). 반환 (위층, 아래층, 가로, 세로)."""
+    up, lo = plan_ring(2, 3, 13, 14, vgaps=[("W", 10, 3)], towers=[("N", 4, 1), ("N", 11, 0)], stairs=[7])
     return up, lo, 16, 23
 
 
-PARTS_GROUND = [(x, y) for x in range(9, 15) for y in (10, 11, 12)]
+PARTS_GROUND = [(x, y) for x in range(1, 9) for y in (10, 11, 12)]
 
 
 def gate_items():
@@ -305,7 +305,7 @@ def gate_items():
         pl = nosh(pl)
         items.append(("wall_parts" + sfx, render_plan(pu, pl, PW, PH, bg=GRASS if biome is None else None, ground=PARTS_GROUND, biome=biome),
                       f"small {what} town wall ring, 3/4 top-down: flagstone wall-walk tops with crenellated parapets, four corners, "
-                      "north wall inner face with stone stairs, south wall outer face, a road passing under the east wall through a postern (a small square gate tower rising one step above the wall, crenellated top with a murder-hole grate, south face with an arched door), "
+                      "north wall inner face with stone stairs, south wall outer face, a road passing under the west wall through a postern (a small square gate tower rising one step above the wall, crenellated top with a murder-hole grate, south face with an arched door), "
                       "a square tower rising above the wall with a crenellated top platform, ground shadows",
                       keys(pu, pl)))
         gu, gl = {}, {}
