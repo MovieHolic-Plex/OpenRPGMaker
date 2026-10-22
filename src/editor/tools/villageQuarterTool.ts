@@ -330,7 +330,7 @@ export const DRESS_VILLAGE_QUARTER_TOOL: ToolDefinition = {
   description:
     "지은 마을 맵의 트인 땅에 마을의 쓰임 한 덩이를 번들 조각 그대로 한 번에 앉힌다 — 마을 종류 표(find_village_type)의 recipe 가 부른다. "
     + "quarter: mining 광산 갱구 마당(갱구·권양탑·제련소·광재 더미·광차 — 광산촌) · vineyard 포도원(포도주 창고·포도밭 이랑·압착기·올리브 — 포도원 마을) · temple-ruins 신전 폐허(소신전·기둥·무너진 벽 — 고대 유적 마을) · "
-    + walled-market 장터 좌판·짐수레·통행세 초소(중세 장터) — 버들항(beodeul_city) 맵 · joseon-market 조선 장터 좌판 — 조선(joseon_baram) 맵. "
+    + "walled-market 장터 좌판·짐수레·통행세 초소(중세 장터) — 버들항(beodeul_city) 맵 · joseon-market 조선 장터 좌판 — 조선(joseon_baram) 맵. "
     + "조각 칸은 빈 풀밭·트인 흙 마당에만, 길을 덮지 않고, 조각 사이 1칸·앞줄 통행을 지키며, 찍을 때마다 통행을 다시 재서 길·문 앞을 끊는 자리는 되돌린다. near 를 주면 그 둘레, 생략하면 덩이가 가장 크게 들어가는 자리. "
     + "조각을 stamp_object 로 하나씩 흩어 찍지 말 것. 자리가 모자라면 마을을 더 크게 짓는다.",
   parameters: {
