@@ -21,6 +21,7 @@ import type { ActivityVisual } from "../../src/ai/activityVisual";
 import { inspectPiLayoutQuality, piLayoutRepairPrompt, piLayoutShortfallPrompt } from "../../src/ai/piAgent/layoutQuality.ts";
 import { FEATURE_CHECKLIST_SYSTEM_PROMPT, FEATURE_REVIEW_MAX_CROPS, FEATURE_REVIEW_MAX_REBUILDS, FEATURE_REVIEW_SOFT_BUDGET_MS, PiFeatureChecklist, SET_FEATURE_CHECKLIST_DESCRIPTION, SET_FEATURE_CHECKLIST_PARAMETERS, featureChecklistSummary, featureJudgePrompt, featureRepairPrompt, featureShortfallPrompt, parseFeatureJudge, featureCriticPrompt, parseFeatureCritic, criticToVerdict, featurePolishSystemPrompt, type FeatureJudgeImage, type FeatureVerdict } from "../../src/ai/piAgent/featureReview.ts";
 import { roomSpecOf } from "../../src/editor/handInterior/builder.ts";
+import { applyHandInteriorEdit, type HandInteriorEdit } from "../../src/editor/handInterior/edit.ts";
 import { INTERIOR_BARE_FLOOR_LIMIT, measureInteriorBareFloor } from "../../src/editor/handInterior/bareFloor.ts";
 import { conceptSkipsLayoutQuality } from "../../src/ai/conceptCards.ts";
 import { PiRepeatBreaker } from "../../src/ai/piAgent/repeatBreaker.ts";
@@ -114,7 +115,7 @@ interface PiLoopDriver {
 }
 
 /** 로컬 CLI 제공자(`local-cli:claude|codex|gemini`)의 한 번짜리 글 생성 — 내부 보조 호출(event_command_assist·도트 글)용. */
-function localCliChat(cli: NonNullable<ReturnType<typeof localCliIdOf>>, model: string | undefined) {
+function localCliChat(cli: NonNullable<ReturnType<typeof localCliIdOf>>, model: string | undefined, onUsage?: (usage: { input: number; output: number; cacheRead: number; cacheWrite: number; calls: number }, costUsd?: number) => void) {
   return async (messages: readonly unknown[], signal?: AbortSignal): Promise<string> => {
     const images: { mimeType: string; data: string }[] = [];
     const text = messages.map((message) => {
@@ -128,7 +129,7 @@ function localCliChat(cli: NonNullable<ReturnType<typeof localCliIdOf>>, model: 
       }).join("\n") : "";
       return `[${m.role ?? "user"}]\n${body}`;
     }).join("\n\n");
-    return LOCAL_CLI_ADAPTERS[cli].complete(text, { binary: localCliBinary(cli), ...(model ? { model } : {}), ...(signal ? { signal } : {}), ...(images.length ? { images } : {}) });
+    return LOCAL_CLI_ADAPTERS[cli].complete(text, { binary: localCliBinary(cli), ...(model ? { model } : {}), ...(signal ? { signal } : {}), ...(images.length ? { images } : {}), ...(onUsage ? { onUsage } : {}) });
   };
 }
 
@@ -262,6 +263,19 @@ function createWebSearchTool(options: {
 export const resolvePiModel = resolveOhMyPiModel;
 
 /** pi-agent-core 가 실패한 도구 결과에 싣는 첫 텍스트(인자 검증 오류·throw 메시지). */
+/**
+ * 맵 한 영역을 그림으로 — show_map_region 을 읽기로 돌려 그 결과(칸 배열 포함)를 렌더러에 넘긴다.
+ * 렌더러(toolImageRenderer.renderPiMapImage)는 칸 배열을 받는다. 좌표만 넘기면 「map-rendering-unavailable: invalid region」으로 거절한다 —
+ * 1배 확인 루프(#3258)에서 고친 것과 같은 실패가 컷신 검토·inspect_interior_layout 그림에도 남아 있었다(2026-10-22).
+ */
+export async function renderMapRegionImage(project: Project, region: { mapId: string; x: number; y: number; w: number; h: number },
+  renderToolImage: NonNullable<RunPiAgentOptions["renderToolImage"]>, signal?: AbortSignal): Promise<string> {
+  const copy = cloneProjectSharingSharedDictionaries(project);
+  const shown = runTool({ project: copy, assistantRun: false }, "show_map_region", region, { dryRun: true });
+  if (!shown.ok) throw new Error(shown.summary);
+  return renderToolImage(copy, "show_map_region", shown.data, signal);
+}
+
 function toolErrorText(result: unknown): string {
   const content = (result as { content?: unknown } | undefined)?.content;
   if (!Array.isArray(content)) return "";
@@ -349,14 +363,26 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   });
   const findToolsCallable = (name: string): boolean => allowedNames.has(name);
   // event_command_assist 는 안에서 LLM 을 한 번 더 부른다 — 워커에는 편집기 동반 서비스가 없으니 이 실행의 제공자로 보낸다.
+  // 내부 보조 호출(1배 확인표 판정자·독립 비평가·컷신 판정 등)의 사용량 — 조수 루프 사용량과 따로 모아 done 통계에 넣는다(2026-10-22: 판정 토큰이 합계에서 빠져 있었다).
+  const sideUsage = { calls: 0, ms: 0, input: 0, output: 0, cacheRead: 0, cacheWrite: 0, costUsd: 0 };
+  const addSideUsage = (u: { input?: number; output?: number; cacheRead?: number; cacheWrite?: number }, costUsd?: number) => {
+    sideUsage.input += u.input ?? 0; sideUsage.output += u.output ?? 0; sideUsage.cacheRead += u.cacheRead ?? 0; sideUsage.cacheWrite += u.cacheWrite ?? 0;
+    if (costUsd) sideUsage.costUsd += costUsd;
+  };
   const eventAssistChat = async (_config: unknown, chat: { messages: readonly unknown[]; signal?: AbortSignal }) => {
-    if (localCli) return { message: { role: "assistant" as const, content: await localCliChat(localCli, request.model)(chat.messages, chat.signal) }, finishReason: "stop" };
+    const t0 = Date.now();
+    sideUsage.calls += 1;
+    try {
+    if (localCli) return { message: { role: "assistant" as const, content: await localCliChat(localCli, request.model, addSideUsage)(chat.messages, chat.signal) }, finishReason: "stop" };
     const key = (options.providerApiKeys ? options.providerApiKeys[request.provider] : undefined) ?? options.apiKey;
     const result = await completeProvider(request.provider, {
       model: String((model as { id?: string }).id ?? request.model ?? ""), max_tokens: 8192, messages: chat.messages,
     }, { ...(key ? { apiKey: key } : {}), ...(chat.signal ? { signal: chat.signal } : {}) });
+    const reported = (result.completion as { usage?: { prompt_tokens?: number; completion_tokens?: number } }).usage;
+    if (reported) addSideUsage({ input: reported.prompt_tokens ?? 0, output: reported.completion_tokens ?? 0 });
     const choice = result.completion.choices[0];
     return { message: { role: "assistant" as const, content: typeof choice?.message.content === "string" ? choice.message.content : "" }, finishReason: choice?.finish_reason ?? null };
+    } finally { sideUsage.ms += Date.now() - t0; }
   };
   const shapeFor = (name: string): PiToolShape | undefined => {
     if (PI_PRESENTATION_GENERATORS.some(generator => generator === name)) {
@@ -480,8 +506,29 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 읽고 쓰기 도구도 없는 팀장에게 수리를 시키지 않게. 읽기 도구는 겹쳐 돌 수 있어 마지막 것이 끝날 때 되돌린다.
   let liveDepth = 0;
   let ownProject = ctx.project;
+  // 실내 짓기 «고친 곳만»(edit) — mapId 마다 마지막으로 성공한 build_hand_interior_room 전체 인자. 다듬기는 앞 턴의 마지막 짓기 호출에서 시작한다.
+  const lastHandInteriorArgs = new Map<string, Record<string, unknown>>(Object.entries(request.polish?.lastBuilds ?? {})
+    .filter(([, b]) => b.tool === "build_hand_interior_room" && !!b.args && typeof b.args === "object")
+    .map(([mapId, b]) => [mapId, { ...(b.args as Record<string, unknown>), mapId }]));
+  const withHandInteriorEdits = (tool: PiToolShape): PiToolShape => tool.name !== "build_hand_interior_room" ? tool : ({ ...tool,
+    async execute(id, params, signal) {
+      const raw = (params ?? {}) as Record<string, unknown>;
+      const mapId = typeof raw.mapId === "string" ? raw.mapId : undefined;
+      let args = raw, note = "";
+      if (raw.edit && typeof raw.edit === "object") {
+        const base = mapId ? lastHandInteriorArgs.get(mapId) : undefined;
+        if (!base) throw new Error(`edit(고친 곳만)는 이 실행에서 같은 mapId 로 성공한 짓기가 있어야 쓴다${mapId ? ` — ${mapId} 의 앞선 짓기가 없다` : " — mapId 가 없다"}. 이번에는 전체 인자(plan·objects…)로 부른다.`);
+        const merged = applyHandInteriorEdit(base, raw.edit as HandInteriorEdit);
+        args = merged.args;
+        note = merged.summary;
+      }
+      const result = await tool.execute(id, args as typeof params, signal);
+      if (mapId) lastHandInteriorArgs.set(mapId, { ...args, mapId });
+      if (note) result.content.unshift({ type: "text", text: `[${note}]` });
+      return result;
+    } });
   const wrapTool = (tool: PiToolShape): PiToolShape => {
-    const wrapped = wrapCoreTool(tool);
+    const wrapped = wrapCoreTool(withHandInteriorEdits(tool));
     const live = options.liveProject;
     return live ? { ...wrapped, async execute(id, params, signal) {
       if (liveDepth++ === 0) ownProject = ctx.project;
@@ -644,7 +691,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         if (!options.renderToolImage) throw new Error("맵 이미지 전달 경로가 없습니다. 배열만으로 시각 검토를 완료할 수 없습니다.");
         const inspectedMap = tool.name === 'inspect_interior_layout' ? ctx.project.maps[String((params as { mapId?: unknown }).mapId)] : undefined;
         const data = inspectedMap ? { mapId: inspectedMap.id, x: 0, y: 0, w: inspectedMap.width, h: inspectedMap.height } : (result.details as { data?: unknown } | undefined)?.data;
-        const png = await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, data, signal ?? options.signal);
+        // inspect_interior_layout 은 좌표만 있다 — 칸 배열을 붙여 그린다(좌표만 넘기면 렌더러가 거절한다).
+        const png = inspectedMap
+          ? await renderMapRegionImage(ctx.project, { mapId: inspectedMap.id, x: 0, y: 0, w: inspectedMap.width, h: inspectedMap.height }, options.renderToolImage, signal ?? options.signal)
+          : await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, data, signal ?? options.signal);
         result.content.push({ type: "image", mimeType: "image/png", data: png });
         if (png && data && typeof data === "object") interiorCompletion.recordPreview(ctx.project, data);
         const region = data && typeof data === 'object' ? data as Record<string, unknown> : {};
@@ -1089,7 +1139,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         if (mapImage) break;
         const w = Math.min(win.w, start.width), h = Math.min(win.h, start.height);
         const x = Math.max(0, Math.min(start.width - w, Math.round(((event as { x?: number }).x ?? start.width / 2) - w / 2))), y = Math.max(0, Math.min(start.height - h, Math.round(((event as { y?: number }).y ?? start.height / 2) - h / 2)));
-        try { mapImage = `data:image/png;base64,${await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), 'show_map_region', { mapId: start.id, x, y, w, h }, options.signal)}`; } catch (error) { mapImage = undefined; mapError = error instanceof Error ? error.message : String(error); if (options.signal?.aborted) return; }
+        try { mapImage = `data:image/png;base64,${await renderMapRegionImage(ctx.project, { mapId: start.id, x, y, w, h }, options.renderToolImage, options.signal)}`; } catch (error) { mapImage = undefined; mapError = error instanceof Error ? error.message : String(error); if (options.signal?.aborted) return; }
       }
       if (!mapImage) { emit({ type: 'execution_status', name: 'cutscene.review.judged', ok: false, summary: `시작 맵 그림을 얻지 못해 독립 판정을 건너뜁니다(${mapError.slice(0, 160)}) — 합격으로 보고하지 않습니다` }); openingProduction.recordCutsceneReview(fingerprint, [], { verdict: 'unjudged', scores: {}, fix: '시작 맵 그림 렌더 실패', judge: 'none' }); return; }
       let motionImage: string | undefined;
@@ -1157,10 +1207,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const renderErrors: string[] = [];
       const render = async (mapId: string, x: number, y: number, w: number, h: number): Promise<string | undefined> => {
         try {
-          const project = cloneProjectSharingSharedDictionaries(ctx.project);
-          const shown = runTool({ project, assistantRun: false }, "show_map_region", { mapId, x, y, w, h }, { dryRun: true });
-          if (!shown.ok) throw new Error(shown.summary);
-          return `data:image/png;base64,${await options.renderToolImage!(project, "show_map_region", shown.data, options.signal)}`;
+          return `data:image/png;base64,${await renderMapRegionImage(ctx.project, { mapId, x, y, w, h }, options.renderToolImage!, options.signal)}`;
         } catch (error) {
           if (options.signal?.aborted) throw error;
           renderErrors.push(`${mapId} (${x},${y}) ${w}×${h}: ${error instanceof Error ? error.message.slice(0, 160) : String(error)}`);
@@ -1344,7 +1391,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(fatal ? { stoppedEarly: fatal } : {}),
     project: ctx.project,
     stats: { ms: Date.now() - started, turns, toolCalls, toolErrors, ...(usage ? { usage } : {}), ...(localLoop ? (() => { const local = localLoop.stats(); return { engine: local.engine, billing: local.billing, ...(local.costUsd !== undefined ? { costUsd: local.costUsd } : {}),
-      exposure: { systemChars: local.weight.systemChars, toolsListed: local.weight.listCount, listChars: local.weight.listChars, listChanged: local.listChanged } }; })() : {}) },
+      exposure: { systemChars: local.weight.systemChars, toolsListed: local.weight.listCount, listChars: local.weight.listChars, listChanged: local.listChanged,
+        ...(local.weight.systemSections ? { systemSections: local.weight.systemSections } : {}), ...(local.weight.listTop ? { listTop: local.weight.listTop } : {}),
+        ...(local.weight.requests ? { requests: local.weight.requests } : {}), results: local.weight.results } }; })() : {}),
+      ...(sideUsage.calls ? { review: { ...sideUsage, totalTokens: sideUsage.input + sideUsage.output + sideUsage.cacheRead + sideUsage.cacheWrite } } : {}) },
     changedKeys: changedProjectKeys(base, ctx.project),
     // 정본 증거는 이 프로세스 안에만 살아 있다 — 브라우저 수용 게이트가 쓸 수 있게 다이제스트로 내보낸다.
     spatialProof: exportSpatialToolProof(ctx.project),

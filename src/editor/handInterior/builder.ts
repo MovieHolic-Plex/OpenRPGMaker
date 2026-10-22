@@ -260,6 +260,17 @@ const SEATS = ["chair", "stool", "bar stool", "armchair", "sofa", "bench", "pew"
 export function isSeatId(id: string, d?: Pick<SpecObject, "use">): boolean { return SEATS.some((s) => id.startsWith(s)) || !!d?.use?.includes("sit"); }
 
 /**
+ * 천장 줄에 거는 걸이(천문대 둥근 지붕 조각, 폴른 스타 #3234). 좌표 y 가 벽면 윗줄이 아니라 그 위 천장 줄(막힌 칸)이다.
+ * 일반 걸이 규칙(y = 벽면 윗줄)으로 검사하면 문서대로 놓은 관측 틈이 늘 거부됐다 — 2026-10-22 다듬기 9바퀴 동안 「관측 틈」 확인 항목이 한 번도 못 짓고 끝났다.
+ * "face-below": 맨 윗줄이 천장 줄이고 바로 아랫줄부터 벽면(관측 틈·갈빗대·처마). "ceiling": 천장 띠 안에만 놓인다(지붕 면·갈빗대 끝·둥근 지붕 전체).
+ */
+export function ceilingHang(id: string): "face-below" | "ceiling" | undefined {
+  if (id === "dome slit tall" || id === "dome rib" || id === "dome rib west" || id === "dome rib east" || id === "dome cornice") return "face-below";
+  if (id === "dome shell" || id === "dome rib top west" || id === "dome rib top east" || id === "dome vault") return "ceiling";
+  return undefined;
+}
+
+/**
  * 벽면에 박는 탈것(엘리베이터 문·벽 속 계단) 중 그림이 벽면 두 줄 높이뿐인 것. 첫 바닥 줄에 세우면 벽면 아랫줄과 바닥 줄에 반씩 걸쳐
  * 벽면 윗줄이 비고 문이 바닥으로 튀어나왔다(2026-10-17 r4-rom-d 로비: modern_city mci-elevator·mci-stairs-up, up=16).
  * 이런 조각은 벽면 두 줄에 딱 맞춰 그리고, 준 칸(첫 바닥 줄)은 그림 없이 비워 탈 자리로 둔다. up=32 탈것(다른 칩셋)은 벽면 두 줄 + 바닥 줄을 이미 덮는다.
@@ -405,8 +416,23 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
       }
     } else if (d.kind === "hang") {
       const cols = Array.from({ length: Math.max(1, d.w) }, (_, dx) => o.x + dx);
-      const ok = o.id === "round arch" ? cols.some((x) => A.face[o.y]?.[x] === 1) : cols.every((x) => A.face[o.y]?.[x] === 1);
-      if (!ok) issues.push({ severity: "error", code: "hang-not-on-face", message: `${label} 는 걸이 — 벽면 두 줄 중 윗줄(막힌 칸 바로 아래 줄)에 건다`, x: o.x, y: o.y });
+      // 벽면 윗줄이 있는 줄(이 열에서 처음 face 1 인 y) — 오류 문구에 맞는 y 를 알려 준다.
+      const faceTop = (x: number) => { for (let y = 0; y < H; y++) if (A.face[y]?.[x] === 1) return y; return -1; };
+      const ceil = ceilingHang(o.id);
+      if (ceil) {
+        // 천장 걸이(천문대 둥근 지붕 조각): 좌표 y = 천장 줄. 모든 조각이 바닥 아닌 칸, 맨 윗줄은 막힌 칸(천장),
+        // 벽면까지 내려오는 조각(관측 틈·갈빗대·처마)은 바로 아랫줄이 벽면 윗줄이어야 한다.
+        const top = Math.min(...d.cells.map(([, dy]) => dy));
+        const bad = d.cells.some(([dx, dy]) => { const x = o.x + dx, y = o.y + dy; return !inBounds(x, y) || A.isFloor(x, y) || (dy === top && A.inn(x, y)); })
+          || (ceil === "face-below" && !cols.every((x) => A.face[o.y + 1]?.[x] === 1));
+        if (bad) {
+          const ft = faceTop(o.x);
+          issues.push({ severity: "error", code: "hang-not-on-face", message: `${label} 는 천장 걸이 — y 는 벽면 윗줄 바로 위 천장 줄(막힌 칸)${ceil === "face-below" ? ", 아래 두 줄이 벽면" : ""}${ft > 0 ? ` — 이 열(x=${o.x})은 y=${ft - 1}` : ""}`, x: o.x, y: o.y });
+        }
+      } else {
+        const ok = o.id === "round arch" ? cols.some((x) => A.face[o.y]?.[x] === 1) : cols.every((x) => A.face[o.y]?.[x] === 1);
+        if (!ok) { const ft = faceTop(o.x); issues.push({ severity: "error", code: "hang-not-on-face", message: `${label} 는 걸이 — 벽면 두 줄 중 윗줄(막힌 칸 바로 아래 줄)에 건다${ft >= 0 ? ` — 이 열(x=${o.x})은 y=${ft}` : ""}`, x: o.x, y: o.y }); }
+      }
     } else if (d.kind === "door") {
       // 가로 칸막이(막힌 줄)의 1칸 틈: 좌우가 막혔고, 위(북쪽 방)와 아래 두 줄이 걸을 수 있는 바닥이며, 아래 두 줄 좌우는 벽면·막힘.
       const solid = (x: number, y: number) => !A.inn(x, y);

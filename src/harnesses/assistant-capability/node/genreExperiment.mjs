@@ -121,7 +121,7 @@ export async function runGenreTrial(rootArg, caseId, options = {}) {
       page = activePage;
       page.on('pageerror', error => errors.push(error.message));
       // This is the editor-input experiment; the concept feed is not part of the task.
-      await page.addInitScript(() => localStorage.setItem('oprn:editor-welcome-dismissed', '1'));
+      await page.addInitScript((hide) => { localStorage.setItem('oprn:editor-welcome-dismissed', '1'); if (hide) window.__oprnHideStartMarker = true; }, process.env.HARNESS_START_MARKER !== '1');
       page.on('request', request => {
         if (request.method() !== 'POST' || !/\/v1\/(agent\/run|chat\/completions)/.test(request.url())) return;
         try {

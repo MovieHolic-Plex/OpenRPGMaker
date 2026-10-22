@@ -3,6 +3,7 @@
 //   build_hand_interior_room : 평면 문자열 → 벽·천장 자동, 가구는 v5 물건 id → atlas_biome_interior 새 맵(또는 같은 칩셋 맵 다시 짓기)
 //   두 도구 모두 tileset:"jp_city" 이면 일본 실내(jp_city 번들 안, 화실·LDK·욕실·현관)를 같은 규칙으로 짓는다.
 // 조립 규칙은 src/editor/handInterior/builder.ts, 칸 사전은 src/assets/handInteriorSpec.json · jpInteriorSpec.json.
+import { withHandInteriorEdit } from "@/editor/handInterior/edit";
 import { fitStairTransfers } from "@/project/stairs/fit";
 import { describeSpecStairEntrance } from "@/project/stairs/contract";
 import { buildHandInteriorLayers, roomSpecOf, HAND_INTERIOR_SPEC, HAND_INTERIOR_SPECS, HAND_INTERIOR_TILESET_ID, JP_INTERIOR_SPEC, JP_INTERIOR_TILESET_ID, WIZARDING_INTERIOR_SPEC, WIZARDING_INTERIOR_TILESET_ID, SENGOKU_INTERIOR_SPEC, SENGOKU_INTERIOR_TILESET_ID, CAMPUS_INTERIOR_SPEC, MODERN_CITY_INTERIOR_SPEC, MODERN_CITY_INTERIOR_TILESET_ID, HandInteriorError, type HandInteriorInput, type HandInteriorLayers, type HandInteriorSpec } from "@/editor/handInterior/builder";
@@ -679,7 +680,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     + "칸막이 규칙: 세로 칸막이('#' 한 열) 틈 1칸 = 문, 가로 칸막이('#' 한 줄) 틈은 그 아래 벽면 두 줄까지 통로가 된다. 맨 아래 줄의 '.' 틈이 실제 출구이며 결과 exits[].x,y로 반환한다. start는 통행 검사 출발점이다. "
     + "거리 문에 연결할 남쪽 출구 폭은 기본 1칸이다. 한 칸 문이면 마지막 줄을 '####.#####'처럼 한 칸만 연다. '..'로 두 칸을 열면 거부한다. start를 한 칸 지정해도 실제 열린 폭은 줄지 않는다. 넓은 외부 문·대문에 맞출 때만 exitWidth를 명시하며 실제 문 폭과 같아야 한다. "
     + "floor·wall = list_hand_interior_parts 의 바닥·벽면 id, zones 로 방마다 바꾼다(찬 창고·손질터=wetstone, 가게=plank/terra, 부엌=ktile, 작업장=earth, 침실=dplank+깔개). "
-    + "objects[].id = v5 가구 id(좌표 = 발밑 왼쪽 위 칸; wall 종류는 북쪽 벽면 바로 아래 첫 바닥 줄, hang 은 벽면 윗줄 y). tables = 탁자 자동 타일(dining·work·desk·display·counter·kcounter·sideboard·tea·felt), "
+    + "objects[].id = v5 가구 id(좌표 = 발밑 왼쪽 위 칸; wall 종류는 북쪽 벽면 바로 아래 첫 바닥 줄, hang 은 벽면 윗줄 y — 천문대 dome 조각(dome slit tall·dome rib·dome cornice·dome vault)은 그 위 천장 줄 y). tables = 탁자 자동 타일(dining·work·desk·display·counter·kcounter·sideboard·tea·felt), "
     + "lines = 깔개·울타리·창살·선로·제단 난간(칸 목록 또는 rect), daises = 밟는 단, goods = 탁상 물건(윗면 있는 가구 칸 위). "
     + "천문대·의식실·성소처럼 주인공 물건이 있는 큰 방: 주인공은 하나(작은 것을 여러 개 흩뿌려 크기를 대신하지 않는다) — 큰 그림을 먼저 쓴다: great telescope + 북벽 dome slit tall, great stone brazier(+ lit), star lens, star seal; 큰 그림이 없으면 단 위 하나 + 마법진/깔개 축 + 양옆 짝으로 키운다. 돌 단 맨 아랫줄에 dais riser stone L/가운데/R + dais steps stone(단 위 바닥 무늬는 빌더가 단 위에 얹는다), 지붕 틈·천창을 평면 홈으로 흉내 내지 않는다, 알코브마다 쓰임 하나 + 그 가구 세 점 이상, 한 건물 = 벽면 재질 하나 — 참고문서 hand-interior-v5-rules 「주인공 물건이 있는 큰 방」. "
     + "결과는 통행 BFS(출입구에서 모든 바닥·가구 옆 칸)와 오류를 돌려준다 — error 가 있으면 맵을 만들지 않는다. 층 사이 계단은 links 로 이동 이벤트를 단다. 외부 집 문과 연결하는 작업은 exits의 실제 좌표에 playerTouch 이동을 연결한다. 출구 그림만으로는 이동 이벤트가 생기지 않는다. "
@@ -689,7 +690,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     + "jp_city 방문(door 종류: 열린 양식 문·화장실 문·후스마·쇼지)은 objects 에 넣되 좌표 = 가로 칸막이('#' 줄)의 1칸 틈 칸 — 틈 위 인방과 아래 벽면 높이 문틀을 그리고 통로는 막지 않는다. 세로 칸막이('#' 열) 3줄 틈에는 옆문(sidedoor 종류)을 그 통로 칸(셋째 줄)에 단다.",
   parameters: {
     type: "object",
-    properties: {
+    properties: withHandInteriorEdit({
       tileset: TILESET_PARAM,
       mapId: { type: "string", description: "새 맵 id(생략 시 자동). 이미 있는 같은 칩셋 실내 맵이면 replace:true 로 다시 짓는다." },
       name: { type: "string", description: "맵 이름" },
@@ -734,13 +735,15 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       links: { type: "array", description: "이동 이벤트(계단·문): 이 맵의 x,y 에 닿으면 toMapId 의 toX,toY 로", items: { type: "object", properties: {
         x: { type: "integer" }, y: { type: "integer" }, toMapId: { type: "string" }, toX: { type: "integer" }, toY: { type: "integer" }, direction: { type: "string", enum: ["up", "down", "left", "right"] },
       }, required: ["x", "y", "toMapId", "toX", "toY"], additionalProperties: false } },
-    },
+    }),
     // floor·wall 은 layout 없이 plan·rooms 로 직접 지을 때만 필수다 — 도구가 run() 에서 확인한다(layout 이면 방 견본이 정한다).
     required: [],
     additionalProperties: false,
   },
   invalidArgsExample: { name: "빵집", plan: ["##########", "#....#####", "#....#####", "#....#####", "#........#", "#........#", "####.#####"], floor: "plank", wall: "plaster", objects: [{ id: "bread oven", x: 1, y: 3 }] },
   run(draft, rawArgs): ToolExecResult {
+    // edit(고친 곳만)는 조수 실행기가 앞선 짓기 인자에 얹어 전체 인자로 바꿔 넘긴다(editor/handInterior/edit.ts). 여기까지 왔으면 얹을 짓기가 없었다.
+    if ((rawArgs as { edit?: unknown }).edit) throw new ToolError("edit(고친 곳만)는 이 실행에서 같은 mapId 로 성공한 짓기가 있어야 쓴다 — 이번에는 전체 인자(plan·objects…)로 부른다.", { code: "edit-without-base" });
     const trimmed = trimPlanMargin(rawArgs);
     let args = trimmed.args;
     const tilesetId = pickTileset(draft, args);

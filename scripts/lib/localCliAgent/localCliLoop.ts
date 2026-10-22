@@ -50,6 +50,15 @@ export interface LocalCliWeight {
   listChars: number;
   listCount: number;
   results: Record<string, { calls: number; textChars: number; images: number; imageBytes: number }>;
+  /** 지시문 조각별 글자 수(앞 40자로 이름) — 어느 지시가 무거운지. */
+  systemSections?: { head: string; chars: number }[];
+  /** 마지막 tools/list 에서 설명+스키마가 가장 긴 도구 12개. */
+  listTop?: { name: string; chars: number }[];
+  /**
+   * 모델 요청마다: 실행 시작부터 첫 응답 줄까지(startMs), 직전 도구 끝·차례 시작부터 기다린 시간(waitMs = 모델 생각·생성),
+   * 그 요청의 출력·캐시 토큰과 부른 도구. 시간 대부분이 어디서 가는지(생각 대 도구) 재는 근거.
+   */
+  requests?: { startMs: number; waitMs: number; out: number; cacheRead: number; cacheWrite: number; input: number; tools: string[] }[];
 }
 
 export interface LocalCliLoop {
@@ -105,7 +114,11 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
   const signature = () => setup.tools.map((tool) => tool.name).join("\n");
   let listed = signature();
   let mcp: LocalMcpServer | undefined;
-  const weight: LocalCliWeight = { systemChars: setup.systemPrompt.join("\n\n").length, listChars: 0, listCount: 0, results: {} };
+  const weight: LocalCliWeight = { systemChars: setup.systemPrompt.join("\n\n").length, listChars: 0, listCount: 0, results: {},
+    systemSections: setup.systemPrompt.map((part) => ({ head: part.slice(0, 40).replace(/\s+/gu, " "), chars: part.length })).sort((a, b) => b.chars - a.chars).slice(0, 12),
+    requests: [] };
+  const loopStarted = Date.now();
+  let lastActivity = loopStarted;
   const weigh = (name: string, content: readonly { type: string; text?: string; data?: string }[]) => {
     const row = weight.results[name] ??= { calls: 0, textChars: 0, images: 0, imageBytes: 0 };
     row.calls += 1;
@@ -131,6 +144,7 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
       const list = setup.tools.map(mcpToolOf);
       weight.listChars = JSON.stringify(list).length;
       weight.listCount = list.length;
+      weight.listTop = list.map((tool) => ({ name: tool.name, chars: JSON.stringify(tool).length })).sort((a, b) => b.chars - a.chars).slice(0, 12);
       return list;
     },
     async callTool(name, args) {
@@ -152,6 +166,7 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
         sentResults.push({ name, content: [{ type: "text", text }], isError: true });
         return { content: [{ type: "text", text }], isError: true };
       } finally {
+        lastActivity = Date.now();
         release();
         // find_tools 수확·폴백 선언으로 도구가 늘었으면 CLI 에 목록이 바뀌었다고 알린다.
         announceToolChanges();
@@ -197,6 +212,16 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
     }
     if (event.kind === "stderr") { stderrTail = (stderrTail + event.text).slice(-2000); return; }
     if (event.kind === "assistant") {
+      if (event.newRequest) {
+        const now = Date.now();
+        weight.requests!.push({ startMs: now - loopStarted, waitMs: now - lastActivity, out: 0, cacheRead: 0, cacheWrite: 0, input: 0, tools: [] });
+        lastActivity = now;
+      }
+      const current = weight.requests!.at(-1);
+      if (current) {
+        if (event.usage) { current.out = Math.max(current.out, event.usage.output); current.cacheRead = Math.max(current.cacheRead, event.usage.cacheRead); current.cacheWrite = Math.max(current.cacheWrite, event.usage.cacheWrite); current.input = Math.max(current.input, event.usage.input); }
+        for (const block of event.blocks) if (block.type === "tool_use") current.tools.push(block.name.replace(/^mcp__[^_]+__/u, ""));
+      }
       if (event.newRequest) emit({ type: "turn_start" });
       // 이 응답은 직전 도구 결과를 받은 모델이 낸 것이다 — 관문에 «실제로 넘어간 것»을 보여 준 뒤 완료로 친다.
       if (pendingDelivered.length) { setup.onPayload({ messages: [{ role: "user", content: pendingDelivered }] }); pendingDelivered = []; }
@@ -225,6 +250,7 @@ export async function createLocalCliLoop(setup: LocalCliLoopSetup): Promise<Loca
     subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); },
     async prompt(text) {
       if (aborted) return;
+      lastActivity = Date.now();
       await open().prompt(text);
     },
     steer(message) {

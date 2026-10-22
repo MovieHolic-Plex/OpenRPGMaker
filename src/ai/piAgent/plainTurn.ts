@@ -278,7 +278,10 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     plan = { ...plan, routineEdit: !declared.error && declared.intent.source === "llm"
       && (declared.intent.mode === "create" || declared.intent.mode === "modify")
       && declared.intent.needsPlan === false
-      && declared.intent.clarify === null };
+      && declared.intent.clarify === null,
+      // 실내 한 건물 짓기는 계획 턴 없이 바로 짓는다(PiRunPlan.skipPlanTurn) — 확인표·1배 검토 루프가 계획과 검증을 맡는다.
+      skipPlanTurn: !declared.error && declared.intent.space === "interior"
+      && (declared.intent.mode === "create" || declared.intent.mode === "modify") && declared.intent.clarify === null };
     // 숲마을 author_village 의 「마을 계약」은 2026-10-07 저작권 정리로 시공기와 함께 지웠다 — 마을은 author_beodeul_town 이 짓는다.
     routingAudit = `${formatIntentAudit(declared.intent, declared.elapsedMs)}${declared.error ? ` — 선언 오류: ${declared.error}` : ""}`
       + (sengoku ? " → 전국·에도 맵" : steampunk ? " → 스팀펑크 도시 맵" : sfStation ? " → SF 맵" : prehistoric ? " → 선사 원시 세계 맵" : desertEast ? " → 사막·동양풍 맵" : snowNorth ? ` → 북방 설원 맵(${snowNorth.room ?? snowNorth.outdoor})`

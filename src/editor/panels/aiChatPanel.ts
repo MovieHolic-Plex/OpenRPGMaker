@@ -2100,6 +2100,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     viewNavigation: plan.viewNavigation === true,
     readOnly: plan.readOnly,
     routineEdit: plan.routineEdit,
+    ...(plan.skipPlanTurn ? { skipPlanTurn: true } : {}),
     ...(plan.routingAudit ? { routingAudit: plan.routingAudit } : {}),
     planOnly: plan.planOnly,
     maxTurns: plan.maxTurns,

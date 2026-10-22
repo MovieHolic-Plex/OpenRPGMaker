@@ -70,7 +70,7 @@ export interface LocalCliUsage {
  * - result: 한 번의 prompt 가 끝남(성공·실패). 사용량·비용·세션 id.
  */
 export type LocalCliEvent =
-  | { readonly kind: "assistant"; readonly messageId: string; readonly newRequest: boolean; readonly blocks: readonly LocalCliBlock[] }
+  | { readonly kind: "assistant"; readonly messageId: string; readonly newRequest: boolean; readonly blocks: readonly LocalCliBlock[]; /** 이 응답(모델 요청 하나)의 사용량 — CLI 가 줄마다 실어 준다(claude). */ readonly usage?: LocalCliUsage }
   | { readonly kind: "delivered"; readonly payload: readonly unknown[] }
   /**
    * 결과 원문을 되돌려 주지 않는 CLI(gemini stream-json 은 글 output 만, 그림은 안 준다)의 «받았다» 신호.
@@ -122,5 +122,5 @@ export interface LocalCliAdapter {
   openSession(options: LocalCliSessionOptions): LocalCliSession;
   /** 도구 없는 한 번짜리 글 생성(event_command_assist·도트 글 저작 같은 내부 보조 호출). */
   /** 그림을 못 받는 CLI(gemini 비대화 모드)는 images 가 있으면 오류를 낸다 — 그림 없이 「봤다」고 답하게 두지 않는다. */
-  complete(prompt: string, options?: { readonly model?: string; readonly signal?: AbortSignal; readonly binary?: string; readonly images?: readonly LocalCliImage[] }): Promise<string>;
+  complete(prompt: string, options?: { readonly model?: string; readonly signal?: AbortSignal; readonly binary?: string; readonly images?: readonly LocalCliImage[]; /** 이 호출의 사용량(판정자·비평가 토큰을 실행 합계에 넣는다). 보고하는 CLI 만 부른다. */ readonly onUsage?: (usage: LocalCliUsage, costUsd?: number) => void }): Promise<string>;
 }

@@ -186,6 +186,8 @@ export interface PiRunOptions {
   readonly viewNavigation?: boolean;
   /** 기존 의도 판정이 확인한 단순 생성·수정. 단독·단일 맵일 때만 별도 모델 단계를 줄인다. */
   readonly routineEdit?: boolean;
+  /** 계획 턴을 건너뛴다(PiRunPlan.skipPlanTurn — 실내 짓기). */
+  readonly skipPlanTurn?: boolean;
   /** 쓰기 툴 미제공 — 질문(읽기 전용) 턴. */
   readonly readOnly?: boolean;
   /** 실행하지 않고 계획만. readOnly 와 함께 켜진다(자율성 「확인」). */
@@ -662,7 +664,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   try {
     // 모델이 읽는 지시문 = 사용자 문장 + 의도 노트. 계획 턴도 같은 것을 읽어야 계획에 author_village 같은
     // 이름이 남고, 실행 턴이 그 이름을 따라간다(노트 없이는 산문 계획 → paint_road 손작업으로 흘렀다).
-    if (!options.polish && needsUltrabrainPlanTurn({ readOnly, team, routineEdit, applyMode })) {
+    if (!options.polish && !(options.skipPlanTurn && !readOnly && !team) && needsUltrabrainPlanTurn({ readOnly, team, routineEdit, applyMode })) {
       surface.setStatus("어떻게 바꿀지 정리하고 있어요.");
       let plan = "";
       let planError = "";

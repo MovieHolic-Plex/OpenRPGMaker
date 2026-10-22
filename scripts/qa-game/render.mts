@@ -296,6 +296,15 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1, sunSourc
 }
 
 
+/**
+ * 검수용 맵 그림 — 편집기 전용 시작 위치 표시(초록 테두리)를 뺀다. 하네스 검수 그림의 기본(space-craft·assistant-capability).
+ * 2026-10-22 적대 검수자가 시작 표시를 이동 칸·출구로 읽어 점수가 기울었다. HARNESS_START_MARKER=1 이면 표시를 둔다.
+ */
+export function renderReviewMapPng(project: Project, map: GameMap, scale = 1): { png: Buffer; note?: string } {
+  return renderMapPng(process.env.HARNESS_START_MARKER === "1" ? project : { ...project, startMapId: "" } as Project, map, scale);
+}
+
+
 function drawEventCharset(context: PngContext, project: Project, event: GameMap["events"][number], ex: number, ey: number, size: number): boolean {
   const evName = `${event.name ?? ""} ${event.pages?.[0]?.name ?? ""}`;
   const pageGraphic = event.pages?.[0]?.graphic;
