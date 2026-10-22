@@ -123,8 +123,13 @@ const renameNpc: Family = {
       const texts = (after.pages ?? []).flatMap((page: any) => page.commands ?? []).filter((command: any) => command.kind === 'text');
       const stale = texts.filter((command: any) => command.speaker && command.speaker === oldName);
       if (stale.length) return fail(`${label}: 대사 ${stale.length}개의 화자가 옛 이름(「${oldName}」) 그대로다`);
-      const strip = (event: any) => (event.pages ?? []).map((page: any) => ({ ...page, commands: (page.commands ?? []).map(speakerless) }));
-      if (!isDeepStrictEqual(strip(after), strip(before))) return fail(`${label}: 화자 표시 밖의 명령·페이지가 바뀌었다`);
+      // Renaming may also relabel pages: a page name that became the new name is part of the rename (measured: DeepSeek renames every page label).
+      const strip = (event: any, reference: any) => (event.pages ?? []).map((page: any, index: number) => ({
+        ...page,
+        name: page.name === want ? reference.pages?.[index]?.name : page.name,
+        commands: (page.commands ?? []).map(speakerless),
+      }));
+      if (!isDeepStrictEqual(strip(after, before), strip(before, before))) return fail(`${label}: 화자 표시 밖의 명령·페이지가 바뀌었다`);
       return pass(`${label}: 이름 변경, 대사 화자 갱신`);
     });
   },
@@ -143,7 +148,9 @@ const renameNpc: Family = {
     const pageIndex = Math.max(0, (eventOf(full, eventId).pages ?? []).length - 1);
     const commands = eventOf(full, eventId).pages[pageIndex].commands as any[];
     const damaged = runOn(full, 'patch_event_page', { mapId: MAP, eventId, pageIndex, set: { commands: [{ ...commands[0], ...(commands[0].kind === 'text' ? { body: `${commands[0].body ?? ''} (수정)` } : {}) }, ...commands.slice(1)] } });
-    const wrongs: FamilyOutcome[] = [otherTarget, renamed(project, eventId, `${want}님`), damaged];
+    const firstPage = eventOf(full, eventId).pages[0];
+    const relabelledWrong = runOn(full, 'patch_event_page', { mapId: MAP, eventId, pageIndex: 0, set: { name: `${want} (임시)`, commands: firstPage.commands } });
+    const wrongs: FamilyOutcome[] = [otherTarget, renamed(project, eventId, `${want}님`), damaged, relabelledWrong];
     // The name players see is the speaker; a rename that skips it is the failure visual review caught, but only when a line speaks under the old name.
     if (speaksUnderOldName) wrongs.push(runOn(project, 'upsert_event', { mapId: MAP, event: { id: eventId, name: want } }));
     else wrongs.push(runOn(otherTarget, 'upsert_event', { mapId: MAP, event: { id: eventId, name: want } }));
