@@ -242,6 +242,7 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
   // 가장자리 안쪽으로 강제
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) if (x < MARGIN || y < MARGIN + 4 || x >= W - MARGIN || y >= H - MARGIN) { g.floor[g.idx(x, y)] = 0; g.roomAt[g.idx(x, y)] = -1; }
   smooth(g, 2, (x, y) => x >= entX - 2 && x < entX + ENT_W + 2 && y >= stubTop - 1 && y < entY + ENT_H + 2);
+  fillWallIslands(g, 30);
 
   // ---- 액체(호수·용암 못): 방 안쪽, 가장자리 두 칸은 걸을 수 있게 ----
   if (profile.liquid) {
@@ -289,15 +290,22 @@ export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayo
         const s0 = g.idx(a.cx, a.cy), t0 = g.idx(b.cx, b.cy);
         const okCell = (i: number) => g.floor[i] && g.roomAt[i] !== 0 && !ban.has(g.roomAt[i]!) && ((i / g.W) | 0) < entY - 6;
         if (!okCell(s0) || !okCell(t0)) return false;
+        // 가중 최단 길(칸 비용 1~4, 잡음): 그냥 BFS 는 자로 그은 직선 줄기가 됐다(2026-10-23 VQA). 비용 바구니 큐로 굽이치게 한다.
         const prev = new Int32Array(g.W * g.H).fill(-2); prev[s0] = -1;
-        const q = [s0];
-        for (let h = 0; h < q.length && prev[t0] === -2; h += 1) {
-          const c = q[h]!, x = c % g.W, y = (c / g.W) | 0;
-          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
-            if (!g.inb(x + dx, y + dy)) continue;
-            const n = g.idx(x + dx, y + dy);
-            if (prev[n] !== -2 || !okCell(n)) continue;
-            prev[n] = c; q.push(n);
+        const dist = new Int32Array(g.W * g.H).fill(1 << 30); dist[s0] = 0;
+        const buckets: number[][] = [[s0]];
+        for (let d = 0; d < buckets.length && prev[t0] === -2; d += 1) {
+          for (const c of buckets[d] ?? []) {
+            if (dist[c] !== d) continue;
+            const x = c % g.W, y = (c / g.W) | 0;
+            for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+              if (!g.inb(x + dx, y + dy)) continue;
+              const n = g.idx(x + dx, y + dy);
+              if (!okCell(n)) continue;
+              const nd = d + 1 + Math.floor(vnoise(x + dx, y + dy, 4, seed + 77) * 4);
+              if (nd >= dist[n]!) continue;
+              dist[n] = nd; prev[n] = c; (buckets[nd] ??= []).push(n);
+            }
           }
         }
         if (prev[t0] === -2) return false;
@@ -404,4 +412,39 @@ export function addCrossings(g: Grid, rooms: readonly PlacedRoom[], seed: number
     }
   });
   return placed;
+}
+
+
+/**
+ * 방 안에 홀로 남은 작은 벽 덩어리(바깥 벽과 안 이어진 막힌 칸 무리, 넓이 maxArea 이하)를 바닥으로 메운다.
+ * 작은 덩어리는 벽 앞면 3줄을 다 못 세워 「벽돌 기둥 위에 검은 구멍」으로 그려졌다(2026-10-23 dg-r2 VQA 화산 동굴).
+ */
+export function fillWallIslands(g: Grid, maxArea: number): number {
+  const seen = new Uint8Array(g.W * g.H);
+  let filled = 0;
+  for (let y0 = 0; y0 < g.H; y0 += 1) for (let x0 = 0; x0 < g.W; x0 += 1) {
+    const i0 = g.idx(x0, y0);
+    if (g.floor[i0] || seen[i0]) continue;
+    const comp: number[] = [i0]; seen[i0] = 1;
+    let border = false;
+    for (let k = 0; k < comp.length; k += 1) {
+      const i = comp[k]!, x = i % g.W, y = (i - x) / g.W;
+      if (x === 0 || y === 0 || x === g.W - 1 || y === g.H - 1) border = true;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const nx = x + dx, ny = y + dy;
+        if (!g.inb(nx, ny)) continue;
+        const j = g.idx(nx, ny);
+        if (g.floor[j] || seen[j]) continue;
+        seen[j] = 1; comp.push(j);
+      }
+    }
+    if (border || comp.length > maxArea) continue;
+    for (const i of comp) {
+      const x = i % g.W, y = (i - x) / g.W;
+      let room = -1;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const r = g.inb(x + dx, y + dy) ? g.roomAt[g.idx(x + dx, y + dy)]! : -1; if (r >= 0) { room = r; break; } }
+      g.floor[i] = 1; g.roomAt[i] = room; filled += 1;
+    }
+  }
+  return filled;
 }
