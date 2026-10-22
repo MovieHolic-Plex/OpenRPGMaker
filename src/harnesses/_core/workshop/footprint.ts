@@ -122,8 +122,9 @@ export function decideFootprint(name: string, brief: string, ask: { readonly w?:
   const total = Math.min(foot + over, ask.maxH ?? 6);
   foot = Math.min(foot, total);
   over = total - foot;
-  // 실내 사전값(침대 6px·옷장 16px·카운터 8px): 위 줄이 1줄 이하일 때만 px 로 정밀하게.
-  const risePx = ask.interior && c?.rise_px !== undefined && over <= 1 ? c.rise_px : over * 16;
+  // 사전값(침대 6px·옷장 16px·카운터 8px·벤치 등받이 8px): 위 줄이 1줄 이하일 때만 px 로 정밀하게(object-gen decide 의 rise_px, 8979bbc).
+  // 실측: 2×1 등받이 벤치를 16px 한 줄에 넣었더니 후보 4개 모두 판자 더미로 읽혀 시점 검사에서 떨어졌다(2026-10-22).
+  const risePx = c?.rise_px !== undefined && over <= 1 ? c.rise_px : over * 16;
   const passage = [...Array.from({ length: over }, () => "*".repeat(w)), ...Array.from({ length: foot }, () => "X".repeat(w))];
   return {
     building: false, cls, w, foot, over, risePx, passage, top: c?.top ?? null, adjusted, measured: c?.measured.slice(0, 3) ?? [], reference: c?.reference ?? true,

@@ -186,15 +186,17 @@ const generateMissingObject: ToolDefinition = {
     const overRows = flatKind ? 0 : decided.foot + decided.over - tilesH;
     // 위 줄 px: 조수가 rise 를 줬고 같은 줄 수면 그 px(정밀), 아니면 결정값.
     const rise = flatKind ? 0 : Math.min(limits.maxRise, askRise !== undefined && Math.ceil(askRise / TILE) === overRows ? askRise : overRows === decided.over ? decided.risePx : overRows * TILE);
+    // 위 줄이 없어도 사전 px(벤치 등받이 8px)가 있으면 그 줄은 캐릭터 위에 그려지는 줄로 굽힌다.
+    const drawnOver = flatKind ? 0 : Math.max(overRows, Math.ceil(rise / TILE));
     const passage = flatKind ? Array.from({ length: tilesH }, () => ".".repeat(tilesW))
-      : [...Array.from({ length: overRows }, () => "*".repeat(tilesW)), ...Array.from({ length: tilesH }, () => "X".repeat(tilesW))];
+      : [...Array.from({ length: drawnOver }, () => "*".repeat(tilesW)), ...Array.from({ length: tilesH }, () => "X".repeat(tilesW))];
     const baseArg = args.base as { x?: unknown; y?: unknown } | undefined;
     let base: ObjectGenRequest["base"] = null;
     if (baseArg !== undefined) {
       const x = intArg(baseArg.x, "base.x", 0, map.width - 1, 0), y = intArg(baseArg.y, "base.y", 0, map.height - 1, 0);
       // 위로 솟은 줄까지 맵 안이어야 한다(잘린 나무 꼭대기는 굽기 후에야 보인다).
-      if (x + tilesW > map.width || y - (tilesH + overRows - 1) < 0) {
-        throw new ToolError(`${tilesW}×${tilesH + overRows}칸 기물(발밑 ${tilesH}줄)이 base (${x},${y}) 에서 맵(${map.width}×${map.height})을 벗어난다.`, { code: "out-of-bounds", mapId: map.id, x, y });
+      if (x + tilesW > map.width || y - (tilesH + drawnOver - 1) < 0) {
+        throw new ToolError(`${tilesW}×${tilesH + drawnOver}칸 기물(발밑 ${tilesH}줄)이 base (${x},${y}) 에서 맵(${map.width}×${map.height})을 벗어난다.`, { code: "out-of-bounds", mapId: map.id, x, y });
       }
       base = { x, y };
     }
@@ -215,7 +217,7 @@ const generateMissingObject: ToolDefinition = {
       ...(gateKind ? { gateKind } : {}),
       footprint: { cls: decided.cls, passage, top: decided.top, reason: decided.reason, adjusted: decided.adjusted, ...(decided.reference ? {} : { reference: false }) },
     };
-    const sizeLine = `크기 ${tilesW}×${tilesH + overRows}칸 = 발밑 ${tilesH}줄(막힘)${overRows ? ` + 위 ${overRows}줄(캐릭터 위에 그려짐${rise !== overRows * TILE ? `, ${rise}px` : ""})` : ""}`
+    const sizeLine = `크기 ${tilesW}×${tilesH + drawnOver}칸 = 발밑 ${tilesH}줄(막힘)${drawnOver ? ` + 위 ${drawnOver}줄(캐릭터 위에 그려짐${rise !== drawnOver * TILE ? `, ${rise}px` : ""})` : ""}`
       + `${decided.adjusted.length ? ` — 조정: ${decided.adjusted.join(", ")}` : ""}. 이유: ${decided.reason}`;
     return {
       summary: `「${title}」 그리기 카드를 띄운다(${sizeLine}; 칩셋 ${tileset.id}, 배경 ${request.setting}). 공방 작업 줄에 서서 다른 요청과 함께 그려진다. 후보를 사용자가 고르면 물체 id 가 후속 요청으로 온다 — 없는 물건이 더 있으면 지금 이어서 부르고, 그 밖에는 더 칠하지 말고 그렸다고 말하지 말고 이 턴을 끝내라.`,
