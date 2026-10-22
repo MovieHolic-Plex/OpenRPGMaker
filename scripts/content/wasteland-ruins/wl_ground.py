@@ -778,38 +778,62 @@ BAYER2 = ((0.0, 0.5), (0.75, 0.25))
 
 
 def _ap_tex():
-    """64×64 이음 결 T: 넓은 얼룩(주기 64 값 잡음 두 겹, 칸 경계를 넘는 덩이) → 524b49 바탕 / 68605e 닳은 자리 / 7b7270 성긴 디더, 단 경계는 2×2 차례 디더.
-    드문 밝은 알, 칸 경계를 넘어 구불구불 이어지는 흙 메운 2화소 금 3줄(dirt 1 속 + dirt 2 그늘 + 드문 빛 턱, 그늘 속에만 3d4b51 몇 화소)."""
+    """64×64 이음 결 T(r49): 가까운 세 단(524b49 · 68605e · 성긴 7b7270)을 넓은 얼룩 장 + 덩이(2~3화소) 잡음 디더로 섞는다 — 한 색이 넓게 평평하지 않다(5×5 같은 색 거의 없음).
+    주기 안 지형지물 4개(닳은 얼룩·덧씌운 땜질 자리·포트홀 고리·바퀴 닳은 띠 조각), 구불구불 갈래 진 흙 메운 금 3줄(따뜻한 흙 단만), 낱 밝은 알 8개(포아송)."""
+    B2 = blobs(AP, 1631, 2)
+    def fval(x, y):
+        f = 0.55 * vnoise(x, y, 1601, 32, AP) + 0.45 * vnoise(x, y, 1603, 16, AP)
+        k = B2[(x, y)][0]
+        f += (hsh(k[0] % 32, k[1] % 32, 1633) / 65535.0 - 0.5) * 0.36           # 덩이 디더(2~3화소 무리)
+        f += (h2(x, y, 1635) % 100 / 100.0 - 0.5) * 0.10                        # 낱화소 잡음(조금)
+        return f
+    def tor(x, y, cx, cy):
+        dx = min((x - cx) % AP, (cx - x) % AP); dy = min((y - cy) % AP, (cy - y) % AP); return dx, dy
     T = {}
     for y in range(AP):
         for x in range(AP):
-            f = 0.62 * vnoise(x, y, 1601, 32, AP) + 0.38 * vnoise(x, y, 1603, 16, AP)
-            f += (BAYER2[y % 2][x % 2] - 0.375) * 0.07
-            if f < 0.572: col = TAR
-            elif f < 0.60: col = TAR_HI if (x + y) % 2 == 0 else TAR
-            elif f < 0.665: col = TAR_HI
-            elif f < 0.69: col = K('asph', 6) if (x + y) % 2 == 0 and (x // 2 + y) % 2 else TAR_HI
-            else: col = K('asph', 6) if (x + y) % 2 == 0 else TAR_HI
+            f = fval(x, y)
+            dx, dy = tor(x, y, 13, 41); e = (dx / 9.0) ** 2 + (dy / 5.5) ** 2      # 닳은 얼룩(밝게, 비스듬하지 않은 길쭉한 덩이)
+            if e < 1: f += 0.16 * (1 - e)
+            dx, dy = tor(x, y, 46, 14); e = (dx / 7.0) ** 2 + (dy / 6.0) ** 2       # 땜질 자리(어둡고 고른 편 — 잡음 폭을 줄인다)
+            if e < 1: f = 0.5 * f + 0.5 * (0.40 + (h2(x, y, 1637) % 100 / 100.0 - 0.5) * 0.25)
+            dx, dy = tor(x, y, 52, 50); r = (dx * dx + dy * dy) ** 0.5               # 바퀴 닳은 띠 조각은 아래 따로, 여기선 포트홀 둘레 밝은 테
+            if 3.2 < r < 5.0: f += 0.14
+            col = TAR if f < 0.505 else TAR_HI if f < 0.72 else K('asph', 6)
             T[(x, y)] = col
-    for i in range(14):                                   # 드문 밝은 알(64×64 에 14개 — 칸당 1개 남짓, 자리 고르지 않음)
-        x = h2(i, 1, 1605) % AP; y = h2(i, 2, 1605) % AP
-        T[(x, y)] = K('conc', 4) if i % 3 == 0 else K('asph', 6)
-    def crack(pts, seed):
-        core = []
-        for (p0, p1) in zip(pts, pts[1:]):
-            n = max(abs(p1[0] - p0[0]), abs(p1[1] - p0[1]), 1)
-            for i in range(n + 1):
-                core.append((round(p0[0] + (p1[0] - p0[0]) * i / n), round(p0[1] + (p1[1] - p0[1]) * i / n), abs(p1[0] - p0[0]) >= abs(p1[1] - p0[1])))
-        cs = {(x % AP, y % AP) for x, y, _ in core}
-        for k, (x, y, hz) in enumerate(core):
-            q = ((x, y + 1) if hz else (x + 1, y)); q = (q[0] % AP, q[1] % AP)
-            if q not in cs: T[q] = K('asph', 2) if h2(k, seed, 1607) % 9 == 0 else K('dirt', 2)
-            q2 = ((x, y - 1) if hz else (x - 1, y)); q2 = (q2[0] % AP, q2[1] % AP)
-            if q2 not in cs and h2(k, seed, 1609) % 3 == 0: T[q2] = TAR_HI
-        for x, y, _ in core: T[(x % AP, y % AP)] = K('dirt', 1)
-    crack([(5, 9), (9, 11), (12, 11), (15, 14), (19, 15), (22, 18)], 1)                       # 칸 경계(16)를 넘어 비스듬히
-    crack([(38, 30), (40, 34), (39, 38), (42, 42), (44, 45)], 2)                              # 세로로 짧게, 경계(32·48) 근처
-    crack([(50, 56), (54, 55), (57, 58), (61, 58), (66, 61), (70, 61)], 3)                   # 64 경계를 넘어 감싼다(이음)
+    for y in range(AP):                                   # 바퀴 닳은 띠 조각: 완만히 휘는 2화소 밝은 띠 두 줄(짧게, 64 안 한 곳)
+        for x in range(AP):
+            dx, dy = tor(x, y, 30, 22)
+            if dx < 10 and dy < 9:
+                yc = 22 + 2.2 * math.sin((x - 20) / 6.0)
+                for off in (-3, 3):
+                    if abs((y - (yc + off))) < 0.9 and h2(x, y, 1639) % 4: T[(x, y)] = K('asph', 6) if h2(x, y, 1641) % 3 == 0 else TAR_HI
+    cx, cy = 52, 50                                       # 포트홀: 흙이 찬 우묵한 자리(dirt 1·2, 아래쪽 안 벽 그늘, 위쪽 깨진 턱)
+    for y in range(cy - 4, cy + 5):
+        for x in range(cx - 4, cx + 5):
+            d = ((x - cx) ** 2 + ((y - cy) * 1.2) ** 2) ** 0.5 + (h2(x, y, 1643) % 3 - 1) * 0.3
+            if d < 2.6: T[(x % AP, y % AP)] = K('dirt', 2) if (y > cy and h2(x, y, 1645) % 2) else K('dirt', 1)
+            elif d < 3.4 and y <= cy: T[(x % AP, y % AP)] = K('dirt', 1)
+    def hairline(x0, y0, ang, n, seed, depth=0):
+        x, y = float(x0), float(y0); pts = []
+        for i in range(n):
+            ang += ((h2(i, seed, 1647) % 100) / 100.0 - 0.5) * 0.7
+            x += math.cos(ang); y += math.sin(ang); pts.append((int(round(x)) % AP, int(round(y)) % AP))
+            if depth == 0 and i in (n // 3, 2 * n // 3) and h2(i, seed, 1649) % 2:
+                hairline(x, y, ang + (0.9 if h2(i, seed, 1651) % 2 else -0.9), n // 3, seed * 7 + i, 1)
+        for i, (px, py) in enumerate(pts):
+            T[(px, py)] = K('dirt', 1)
+            if depth == 0 and n // 4 < i < 3 * n // 4 and h2(i, seed, 1653) % 3 == 0:      # 벌어진 자리만 2화소 흙
+                T[(px, (py + 1) % AP)] = K('dirt', 2)
+    hairline(2, 8, 0.35, 26, 11)
+    hairline(36, 33, 1.9, 20, 12)
+    hairline(55, 27, 2.8, 18, 13)
+    pts = []                                              # 낱 밝은 알: 포아송(서로 12 이상), 8개
+    for k in range(400):
+        if len(pts) >= 8: break
+        x = h2(k, 1, 1655) % AP; y = h2(k, 2, 1655) % AP
+        if all(min(abs(x - a), AP - abs(x - a)) ** 2 + min(abs(y - b), AP - abs(y - b)) ** 2 >= 144 for a, b in pts): pts.append((x, y))
+    for x, y in pts: T[(x, y)] = K('conc', 4)
     return T
 
 
@@ -848,12 +872,12 @@ def at_asphalt_phase(c, m, ph, ox, oy):
             if (0 in miss and y < dN[x]) or (2 in miss and y > 15 - dS[x]) or (3 in miss and x < dW[y]) or (1 in miss and x > 15 - dE[y]): S[y][x] = True
     for (sa, sb), (cx, cy) in (((0, 3), (0, 0)), ((0, 1), (15, 0)), ((2, 3), (0, 15)), ((2, 1), (15, 15))):
         if sa in miss and sb in miss:
-            r = 5 + (h2(m, ph * 4 + sa + sb, 1621) % 2)
+            r = (7 + h2(m, ph * 4 + sa + sb, 1621) % 2) if m in (0, 1, 2, 4, 8) else (5 + h2(m, ph * 4 + sa + sb, 1621) % 2)   # 외딴 칸·막다른 끝은 거의 반원(7~8), 바깥 모서리 5~6
             px0 = r + 1 if cx == 0 else 14 - r; py0 = r + 1 if cy == 0 else 14 - r
             for y in range(16):
                 for x in range(16):
                     if ((cx == 0 and x < px0) or (cx == 15 and x > px0)) and ((cy == 0 and y < py0) or (cy == 15 and y > py0)):
-                        if (x - px0) ** 2 + (y - py0) ** 2 > (r + (h2(gx0 + x, gy0 + y, 1623) % 3 - 1) * 0.35) ** 2: S[y][x] = True
+                        if (x - px0) ** 2 + (y - py0) ** 2 > (r + (h2(gx0 + x, gy0 + y, 1623) % 3 - 1) * 0.3) ** 2: S[y][x] = True
     for _ in range(2):
         for y in range(16):
             for x in range(16):
