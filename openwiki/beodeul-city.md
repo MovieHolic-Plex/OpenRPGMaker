@@ -703,20 +703,26 @@ refine_beodeul_courtyard_vegetation({mapId})는 인식된 54×34 예제의 건�
 
 - 사용자가 village-diversity-1 마을들을 보고 지적했다. 강가·해안 마을 숲(아래 woodland 보정의 composer)이 짙은 풀 위에 낱 나무로 서서,
   숲 덩이가 아니라 듬성듬성한 과수원·네모 짙은 풀 판으로 읽혔다. 단 경계에서 짙은 풀이 곧게 잘렸고, 산골 숲도 띄엄띄엄했다.
-- `author_beodeul_town` 의 모든 숲(둘레 숲·`woods: dense`·`terrain: highland` 산마루·단 동서 끝 덮개)은 설원과 같은 **이어진 수관 오토타일**
+- `author_beodeul_town` 의 모든 숲(둘레 숲·`woods: dense`·`terrain: highland` 산마루)은 설원과 같은 **이어진 수관 오토타일**
   (`BEODEUL_NATURE.forestCanopy`, `append-beodeul-forest-canopy.py`)로 덮는다. 정본은 `src/editor/tools/beodeulForest.ts`:
-  - `shapeBeodeulCanopyMask` 는 칸을 다듬는다. 2×2 덩이에 못 드는 칸, 16칸 미만 덩이, 세 줄 이하 띠(단 사이 산울타리)를 지우고 구멍을 메운다.
+  - `shapeBeodeulCanopyMask` 는 칸을 다듬는다. 이웃 셋 이상이 숲인 칸과 오목한 ㄱ자 홈(첫 바퀴만, 붓은 끔)을 메우고,
+    2×2 덩이에 못 드는 칸, 마을 16칸(설원 12칸)·붓 9칸 미만 덩이, 평균 두께가 minExtent 미만인 띠(단 사이 산울타리)를 지운다.
+    덩이 크기 기준은 동·서·남 맵 끝에 걸친 덩이만 절반으로 봐 준다(북쪽 끝 작은 덩이는 맵 위에 뜬 조각으로 읽힌다).
+  - 마을은 그 전에 칸 격자 값 잡음으로 숲 가장자리를 0~1칸(dense 는 0칸) 깎고, 4칸 이하 닫힌 구멍을 메운다. 네모 숲 판을 막는다.
+  - 수관은 같은 높이(relief `lv`) 칸끼리만 잇는다. 단 경계를 가로질러 이으면 단마다 들림이 달라 수관이 가로로 썰려 보인다.
+    예전 「단 동서 끝 덮개」(단 끝 1px 선을 숲으로 가리기)는 이 썰림을 만들어 없앴다.
   - `planBeodeulCanopy` 는 이웃 비트·P×P 위상으로 수관 칸을 고른다. 숲 남쪽 바로 아래 칸에는 숲 그늘(이끼 치마)을 깐다.
   - `writeBeodeulCanopy` 는 nature 칸을 대상 칩셋으로 옮긴다.
 - 맵 밖은 동·서·남으로만 숲이다. 북쪽 맵 밖을 숲으로 보면 맨 윗줄에 덩이 아래 반쪽(뒤집힌 듯한 꼭대기, 줄기만 남은 줄)이 그려졌다.
 - 남쪽도 숲인 수관 칸은 **3층**, 숲 남쪽 끝 줄은 2층이다. 2층은 relief 의 동서 끝 1px 선(over 띠)보다 먼저 그려져 그 선이 숲을 세로로 갈랐다.
   남쪽이 숲인 칸 앞에는 인물이 설 수 없어 3층 상위여도 머리를 가리지 않는다.
 - 숲은 길에서 2~4칸 띄운다. 거리는 3칸 격자 값 잡음으로 물결친다. 늘 2칸이면 곧은 길 옆 숲이 자로 그은 벽이 된다.
-- 침엽·혼효 마을은 숲 덩이 남·동·서 바로 바깥에 그 마을 나무(전나무·측백)를 띄엄띄엄 세운다. **남은 것:** 수관 오토타일은 leaf(활엽+전나무 약 30%)·snow 두 벌뿐이라
+- 침엽·혼효 마을은 숲 덩이 남·동·서 바로 바깥에 그 마을 나무(전나무·측백)를 띄엄띄엄 세운다. 낱 나무는 자기 칸과 좌우 한 칸이 모두 같은 높이일 때만 선다(단 선에 썰린 나무 방지). **남은 것:** 수관 오토타일은 leaf(활엽+전나무 약 30%)·snow 두 벌뿐이라
   `forestType: conifer` 숲 덩이 속은 여전히 활엽이 많다. 침엽 수관 한 벌을 굽는 일은 새 그림이라 3/4 관문(object-gate)을 거쳐야 한다.
 - 붓 경로: `place_props` 를 버들항 맵에서 material 나무·숲·활엽수·침엽수, density dense·impassable 로 부르면 `plantBeodeulCanopyArea` 가 같은 수관으로 area 안 둥근 덩이를 깐다.
-  dense 는 물결 타원, impassable 은 모서리 깎은 사각이고, 길·집·물 칸은 건너뛴다. 예전에는 「count 가 필요」로 실패했다.
-- `author_wild_route` 도로 숲 벽·공동마당은 아래 composer 그대로다(이번 변경 밖).
+  dense 는 각도 물결 타원, impassable 은 초타원(거듭제곱 3)에 물결·칸 흔들림을 더한 덩이이고, 길·집·물·2~4층에 무엇이 있는 칸은 건너뛴다. 예전에는 「count 가 필요」로 실패했다.
+- `author_wild_route` 도로 숲 벽·이야기 산책·공동마당은 아래 composer 그대로다(이번 변경 밖).
+- 수관 그림 자체의 성질: 덩이 속 수관 사이 어두운 그늘과 가장자리 수관 사이 작은 검은 틈은 원본 수관 칸 그림이다(배치 결함 아님). 칸별 지표로 골라내려 했으나 구별이 안 됐다.
 - 프로브: `bun scripts/qa/beodeul-village-forest-probe.mts --out <dir>` 는 village-diversity 8건 인자로 LLM 없이 다시 짓는다. 비교 그림 http://mdc-server:18301/village-forest-1.html
 
 ### woodland 보정 (2026-10-20)
