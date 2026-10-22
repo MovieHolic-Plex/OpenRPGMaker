@@ -224,11 +224,15 @@ def cmd_gate(rid, quiet=False):
     polish = [{'item': i, 'key': K, 'code': r['code'], 'msg': r['msg']} for i, K, r in warns if r['code'] in POLISH_CODES]
     if not quiet:
         print(f'외곽선 규칙 경고(굽기 전에 다듬을 것): OUTLINE {by_code.get("OUTLINE", 0)} · CONTRAST {by_code.get("CONTRAST", 0)}')
+    import fcntl   # 판을 여러 작업자가 동시에 관문에 돌려도 실행 기록이 덮이지 않게(읽기-덧붙이기-쓰기를 잠근다)
+    lock = open(LEDGER + '.lock', 'w')
+    fcntl.flock(lock, fcntl.LOCK_EX)
     L = ledger()
     L['runs'].append({'round': rid, 'at': now(), 'fail': len(fails), 'warn': len(warns), 'warnByCode': by_code, 'polish': polish,
                       'hashes': {i: {k: v['sha256'] for k, v in c.items()} for i, c in man['items'].items()}})
     L['runs'] = L['runs'][-40:]
     save_ledger(L)
+    lock.close()
     return mod, rendered, man, res, fails
 
 
