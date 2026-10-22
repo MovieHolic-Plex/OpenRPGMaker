@@ -74,9 +74,15 @@ def plan_ring(x0, y0, x1, y1, gates=(), closed=(), vgaps=(), towers=(), stairs=(
     vgaps: [('W'|'E', gy, rows)] 세로 성벽 틈. towers: [('S'|'N', tx)] 망루 tx..tx+2. stairs: [sx] 북쪽 성벽 안쪽 계단."""
     up, lo = {}, {}
 
+    def fvar(x, town):
+        # 마을 쪽(북쪽 성벽 안쪽) 앞면에는 화살 구멍 변형 c 를 쓰지 않는다. 바로 왼쪽 열과 같은 변형이면 다음 변형(같은 칸이 나란히 서지 않게)
+        # 열마다 1~(n−1) 단씩 걸어가는 누적 합 — 이웃 열은 늘 다르고, 값은 x 만으로 정해진다
+        vs = "abd" if town else "abcd"
+        n = len(vs)
+        return vs[sum(1 + hsh(i, 0, 3) % (n - 1) for i in range(max(0, x) + 1)) % n]
+
     def face(x, y, k, kind="", town=False):
-        # 마을 쪽(북쪽 성벽 안쪽) 앞면에는 화살 구멍 변형 c 를 쓰지 않는다
-        up[(x, y)] = f"f_{k}_{kind}" if kind else (f"f_{k}_{'abd'[hsh(x, 0, 3) % 3]}" if town else f"f_{k}_{'abcd'[hsh(x, 0, 3) % 4]}")
+        up[(x, y)] = f"f_{k}_{kind}" if kind else f"f_{k}_{fvar(x, town)}"
 
     for x in range(x0, x1 + 1):
         if x0 + 1 < x < x1 - 1:
@@ -174,8 +180,9 @@ GRASS = 737
 
 def ring_ground():
     """조립 예 둘레의 길: 남문 통로 두 열 · 서쪽 틈 두 줄 · 북문 앞."""
-    return ([(x, y) for x in (10, 11) for y in range(9, 21)] + [(x, y) for x in range(0, 6) for y in (9, 10)]
-            + [(x, y) for x in (15, 16) for y in range(0, 3)])
+    # 길은 그림 테두리에 닿지 않게 한 칸 안에서 끝낸다(테두리 화소는 윤곽이 아니다 — 관문 화풍 사실이 길 자갈을 윤곽으로 셌다)
+    return ([(x, y) for x in (10, 11) for y in range(9, 20)] + [(x, y) for x in range(1, 6) for y in (9, 10)]
+            + [(x, y) for x in (15, 16) for y in range(1, 3)])
 
 
 def sheet_tile(n):
@@ -223,7 +230,7 @@ def gate_items():
                   "stone stairs up the inner face, a gap in the west wall, ground shadows",
                   set(up.values()) | set(lo.values())))
     pu, pl, PW, PH = parts_plan()
-    items.append(("wall_parts", render_plan(pu, pl, PW, PH, bg=GRASS, ground=[(x, y) for x in range(8, 14) for y in (9, 10)]),
+    items.append(("wall_parts", render_plan(pu, pl, PW, PH, bg=GRASS, ground=[(x, y) for x in range(8, 13) for y in (9, 10)]),
                   "small Roman-style stone town wall ring, 3/4 top-down: flagstone wall-walk tops with crenellated parapets, four corners, "
                   "north wall inner face with stone stairs, south wall outer face, a gap in the east wall closed by end caps with their end faces, "
                   "a square tower with a crenellated top platform, ground shadows",

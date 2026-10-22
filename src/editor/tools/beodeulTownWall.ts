@@ -44,9 +44,15 @@ const NF = FACE_ROWS.length, GH = 2 + NF + 2, FB = 2 + NF;
 export function planTownWallRing(p: TownWallPlan): { up: Cells; lo: Cells } {
   const up: Cells = new Map(), lo: Cells = new Map();
   const { x0, y0, x1, y1 } = p;
-  // 마을 쪽(북쪽 성벽 안쪽) 앞면에는 화살 구멍 변형 c 를 쓰지 않는다
-  const face = (x: number, y: number, k: string, kind = "", town = false) =>
-    up.set(key(x, y), kind ? `f_${k}_${kind}` : town ? `f_${k}_${"abd"[hsh(x, 0, 3) % 3]}` : `f_${k}_${"abcd"[hsh(x, 0, 3) % 4]}`);
+  // 마을 쪽(북쪽 성벽 안쪽) 앞면에는 화살 구멍 변형 c 를 쓰지 않는다. 바로 왼쪽 열과 같은 변형이면 다음 변형(같은 칸이 나란히 서지 않게)
+  const fvar = (x: number, town: boolean) => {
+    // 열마다 1~(n−1) 단씩 걸어가는 누적 합 — 이웃 열은 늘 다르고, 값은 x 만으로 정해진다(bake_wall.py 와 같다)
+    const vs = town ? "abd" : "abcd", n = vs.length;
+    let acc = 0;
+    for (let i = 0; i <= Math.max(0, x); i += 1) acc += 1 + (hsh(i, 0, 3) % (n - 1));
+    return vs[acc % n]!;
+  };
+  const face = (x: number, y: number, k: string, kind = "", town = false) => up.set(key(x, y), kind ? `f_${k}_${kind}` : `f_${k}_${fvar(x, town)}`);
   for (let x = x0; x <= x1; x += 1) {
     if (x0 + 1 < x && x < x1 - 1) {
       let v = hsh(x, y0, 1) % 4;
