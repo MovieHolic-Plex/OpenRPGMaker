@@ -125,6 +125,12 @@ export class PiFeatureChecklist {
     return `확인표 ${this.size}항목을 적었다. 짓기가 끝나면 실행기가 1배 그림으로 항목마다 확인한다.\n${list}${notes.length ? `\n참고: ${notes.join(" / ")}` : ""}`;
   }
 
+  /** 실행기가 붙이는 그림 판정 항목(방 전체가 읽히는가) — 조수가 낮추거나 뺄 수 없다. */
+  ensureRunnerItem(id: string, text: string, mapId?: string): void {
+    if (this.items.some((i) => i.id === id)) return;
+    this.items.push({ id, text, kind: "judge", ...(mapId ? { mapId } : {}) });
+  }
+
   /** 실행기가 잰 항목(빈 바닥 등)을 붙이거나 갱신한다. */
   setMeasured(item: Omit<FeatureItem, "kind">): void {
     const next: FeatureItem = { ...item, kind: "measure" };
@@ -163,6 +169,7 @@ export function featureJudgePrompt(task: string, items: readonly FeatureItem[], 
     "You are a strict, independent visual reviewer for a 16px top-down (3/4 view) RPG map editor. You did NOT build these maps and you owe the builder nothing.",
     "Judge only whether each feature visibly reads. Ignore claims about walkability, reachability or bare-floor percentages inside an item — the runner measures those separately.",
     "Judge ONLY from the attached images (the real map rendered at about 1x; some are crops of one feature at 2x). There are no labels in the game — a feature that only exists in a name, a plan or a description does not count.",
+    "Be adversarial: builders over-claim, and a lenient pass here ships a room that a strict reviewer scores 5/10. When in doubt, fail.",
     "For each checklist item decide: would a first-time player looking at the 1x full-map image recognise it without being told? Pass only if it clearly reads. A tiny 1-tile stand-in for a big hero object, a shape that reads as a square when 'round' was asked, a 'shrine' that reads as an entrance or corridor, a 'large hall' no larger than side rooms, or a feature hidden in a dark corner: fail.",
     "For each failing item give why (what is actually visible, with tile coordinates if you can) and ONE concrete layout fix the builder can make. The builder cannot draw new art or cut holes into the void: fixes must change the room plan shape or size, positions, framing (walls, pillars, dais with front riser, rugs, paired statues/lights) or swap in a larger existing piece. Do not suggest changing the request.",
     derive ? "No checklist was written. FIRST derive 3-6 checklist items from the user's request (things the user explicitly named, phrased as how they must read at 1x, in Korean), then judge them." : "",

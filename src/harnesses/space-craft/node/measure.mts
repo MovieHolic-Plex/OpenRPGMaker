@@ -9,6 +9,7 @@ import { loadHeadlessProject } from '../../../headless/index';
 import { addRenderAssetRoot, renderMapPng } from '../../../../scripts/qa-game/render.mts';
 import { store } from '../../../project/store';
 import { measureLayoutQuality } from '../../../ai/piAgent/layoutQuality';
+import { measureInteriorBareFloor } from '../../../editor/handInterior/bareFloor';
 import { computeReachableCells } from '../../../project/lint/reachability';
 import { isPassable } from '../../../project/collision';
 import { tilesetFamily } from '../../../project/tilesetFamily';
@@ -107,6 +108,8 @@ for (const attempt of attempts) {
     const map = current.maps[mapId]!;
     const family = tilesetFamily(current, map.tilesetId);
     const layout = measureLayoutQuality(current, map);
+    // 실내 빈 바닥(1배 눈 기준 자, bareFloor.ts) — 기록만. 옛 empty 와 나란히 둔다.
+    const bareFloor = measureInteriorBareFloor(current, map);
     const reach = reachability(current, map);
     const { png } = renderMapPng(current, map, 1);
     const file = `render/${mapId}.png`;
@@ -133,7 +136,7 @@ for (const attempt of attempts) {
       ] : []),
     ];
     return { mapId, name: map.name, tilesetId: map.tilesetId, family, size: [map.width, map.height], events: map.events.length, npcs,
-      layout, reach, render: { file, sha256: sha(png), width: decoded.width, height: decoded.height }, quadrants, checks,
+      layout, ...(bareFloor ? { bareFloor } : {}), reach, render: { file, sha256: sha(png), width: decoded.width, height: decoded.height }, quadrants, checks,
       pass: checks.every(check => check.ok || ('advisory' in check && check.advisory)) };
   });
   const measure = { schemaVersion: 1, attempt, caseId: result.caseId, category: result.category, measuredAt: new Date().toISOString(),
