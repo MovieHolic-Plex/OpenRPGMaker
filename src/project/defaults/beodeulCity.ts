@@ -45,9 +45,9 @@ export const BEODEUL_FARM_AUTOTILE_IDS: readonly string[] = ["farmland", "farmla
 export const BEODEUL_DUNGEON_CEILING_BASE = 28416;
 export const BEODEUL_DUNGEON_AUTOTILE_IDS: readonly string[] = ["beodeul_dungeon_ceiling", "beodeul_dungeon_ceiling_b"];
 /**
- * 마을 성벽(2026-10-22, scripts/content/beodeul-wall/bake_wall.py · wall_art.py): 던전 천장 꼬리(~28,543) 바로 뒤 한 행 128칸(조각 88).
- * 3/4 성벽 통로·앞면·모서리·갈림목·끝 마감, 4×4 성문루(열림·닫힘), 2×6 망루, 계단. 키트 `bd-wall-*`, 칸 묶음 `beodeul:town_wall*`.
- * author_beodeul_town walls:"ring" 이 마을 둘레에 쓴다(beodeulTownWall.ts). 번들 소유, 덧붙이기 전용.
+ * 마을 성벽(2026-10-22 3판, scripts/content/beodeul-wall/bake_wall.py · wall_art.py): 던전 천장 꼬리(~28,543) 바로 뒤 두 행 256칸.
+ * 3/4 성벽 윗면 두 줄·앞면 세 줄·2×2 모서리·두 열 세로 성벽·틈 끝 마감, 4×7 성문루(아치 터널·닫힌 문), 3×7 망루, 3×3 옆 계단, 2층 땅 그림자.
+ * 키트 `bd-wall-*`, 칸 묶음 `beodeul:town_wall*`. author_beodeul_town walls:true 가 마을 둘레에 쓴다(beodeulTownWall.ts). 번들 소유, 덧붙이기 전용.
  */
 export const BEODEUL_TOWN_WALL_BASE = 28544;
 export const BEODEUL_WALL_KIT_PREFIX = "bd-wall-";

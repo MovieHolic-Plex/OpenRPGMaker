@@ -3,17 +3,17 @@
   "id": "face-missing",
   "code": "face-missing",
   "at": [
-   5,
-   13
+   7,
+   16
   ],
   "caption": "남쪽 성벽 앞면 위 칸(f_u_*) 하나를 뺐다",
   "detected": true,
   "defects": [
    {
     "code": "face-missing",
-    "x": 5,
-    "y": 13,
-    "note": "hs_shL 밑에 앞면 두 칸(f_u_*, f_l_*)이 없다(빈칸, f_l_shL)"
+    "x": 7,
+    "y": 16,
+    "note": "hs1_b 밑에 앞면 네 칸(f_u_* · f_m_* · f_n_* · f_l_*)이 없다(빈칸, f_m_h, f_n_h, f_l_h)"
    }
   ]
  },
@@ -21,23 +21,29 @@
   "id": "wall-gap",
   "code": "wall-gap",
   "at": [
-   16,
-   6
+   23,
+   8
   ],
-  "caption": "동쪽 성벽 통로 한 칸을 뺐다(끝 마감 없이 끊김)",
+  "caption": "동쪽 성벽 통로 한 칸을 뺐다(통로가 끊김)",
   "detected": true,
   "defects": [
    {
     "code": "wall-gap",
-    "x": 16,
-    "y": 6,
-    "note": "ve 의 통로가 D 쪽에서 끊겼다(빈칸) — 끝 마감 조각(_end*)으로 닫아야 한다"
+    "x": 23,
+    "y": 8,
+    "note": "ve_pgw_1_t 의 통로가 D 쪽에서 끊겼다(빈칸) — 성벽 윗면을 잇거나, 길이 지나면 쪽문 문루(*_pg_*·*_pgw_*)로 잇는다"
    },
    {
     "code": "wall-gap",
-    "x": 16,
-    "y": 6,
-    "note": "ve 의 통로가 U 쪽에서 끊겼다(빈칸) — 끝 마감 조각(_end*)으로 닫아야 한다"
+    "x": 23,
+    "y": 8,
+    "note": "ve_pgw_0_b 의 통로가 R 쪽에서 끊겼다(빈칸) — 성벽 윗면을 잇거나, 길이 지나면 쪽문 문루(*_pg_*·*_pgw_*)로 잇는다"
+   },
+   {
+    "code": "wall-gap",
+    "x": 23,
+    "y": 8,
+    "note": "ve_pgw_1_f2u 의 통로가 U 쪽에서 끊겼다(빈칸) — 성벽 윗면을 잇거나, 길이 지나면 쪽문 문루(*_pg_*·*_pgw_*)로 잇는다"
    }
   ]
  },
@@ -45,17 +51,17 @@
   "id": "wrong-layer",
   "code": "wrong-layer",
   "at": [
-   7,
-   13
+   10,
+   18
   ],
-  "caption": "열린 성문 통로 칸(gate_1_2, 아래층 조각)을 위층에 놓았다",
+  "caption": "열린 성문 터널 칸(gate_1_5, 아래층 조각)을 위층에 놓았다",
   "detected": true,
   "defects": [
    {
     "code": "wrong-layer",
-    "x": 7,
-    "y": 13,
-    "note": "gate_1_2 은 lower 층 조각인데 upper 층에 있다"
+    "x": 10,
+    "y": 18,
+    "note": "gate_1_5 은 lower 층 조각인데 upper 층에 있다"
    }
   ]
  },
@@ -63,16 +69,16 @@
   "id": "gate-blocked",
   "code": "gate-blocked",
   "at": [
-   8,
-   14
+   11,
+   20
   ],
   "caption": "열린 성문 통로 맨 아래 칸에 앞면 조각을 놓았다",
   "detected": true,
   "defects": [
    {
     "code": "gate-blocked",
-    "x": 8,
-    "y": 14,
+    "x": 11,
+    "y": 20,
     "note": "열린 성문 통로 칸에 막힌 조각 f_l_a"
    }
   ]
