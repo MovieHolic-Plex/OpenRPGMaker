@@ -15,10 +15,10 @@
  * 판정은 후보 한 장 + 숨긴 반려 표본으로 한다(원본은 그 판 후보 전부를 한 판에).
  */
 import type { ChatMessage, ContentPart } from "@/ai/llmClient";
-import { isOrganicObject } from "./footprint";
+import { footprintClass, isOrganicObject } from "./footprint";
 import { kitConstant, kitFile, objectGenKit } from "./genKits";
 import { gridToAnswer, onBackground, renderGrid, scaleImage } from "./grid";
-import type { DrawContext, Grid, Palette, Rgba, RgbaImage, ReviewContext, Verdict, WorkshopEnv, WorkshopItem } from "./types";
+import type { DrawContext, Grid, Palette, PaletteEntry, Rgba, RgbaImage, ReviewContext, Verdict, WorkshopEnv, WorkshopItem } from "./types";
 
 type KitSection = "prompts" | "reference" | "picker" | "vqa" | "drawer" | "exemplars" | "footprint" | "checks";
 type AnchorSet = { examples?: { file: string; label: string }[]; good: { file: string; label: string; why?: string }[]; bad: { file: string; label: string; why?: string }[]; rejects?: { file: string }[] };
@@ -257,19 +257,57 @@ export function topPlaneRows(image: RgbaImage): number {
 const GEOMETRIC_TURNS = kitValue<number>("checks", "GEOMETRIC_TURNS");
 const GEOMETRIC_ELLIPSE = kitValue<number>("checks", "GEOMETRIC_ELLIPSE");
 const GEOMETRIC_MIN_ROWS = kitValue<number>("checks", "GEOMETRIC_MIN_ROWS");
+const GEOMETRIC_MIRROR = kitValue<number>("checks", "GEOMETRIC_MIRROR");
+const GEOMETRIC_MIRROR_ROWS = kitValue<number>("checks", "GEOMETRIC_MIRROR_ROWS");
+const LEAF_MIN_PIXELS = kitValue<number>("checks", "LEAF_MIN_PIXELS");
+const LEAF_CAST_MAX = kitValue<number>("checks", "LEAF_CAST_MAX");
+const LEAF_DARK_MIN = kitValue<number>("checks", "LEAF_DARK_MIN");
+const ORGANIC_LEAF_RAMP = kitValue<readonly string[]>("prompts", "ORGANIC_LEAF_RAMP");
+const ORGANIC_LEAF_SHARES = kitValue<readonly number[]>("prompts", "ORGANIC_LEAF_SHARES");
+
+/**
+ * 원본 prompts.leaf_ramp_line: 견본 나무 잎 단에 가장 가까운 팔레트 키를 이름으로 준다. 팔레트 단만 주면 네 판 내리 잔디·올리브 키로
+ * 잎을 칠했다(2026-10-23 Opus VQA major 「다른 세트에서 붙여 넣은 것 같다」).
+ */
+export function leafRampLine(palette: Palette): string {
+  const nearest = (hex: string) => {
+    const v = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+    let best = palette.entries[0]!, bd = Infinity;
+    for (const e of palette.entries) { const d = Math.hypot(e.rgba[0] - v[0]!, e.rgba[1] - v[1]!, e.rgba[2] - v[2]!); if (d < bd) { bd = d; best = e; } }
+    return best;
+  };
+  const hex = (e: PaletteEntry) => `#${[0, 1, 2].map((i) => e.rgba[i]!.toString(16).padStart(2, "0")).join("")}`;
+  const pairs = ORGANIC_LEAF_RAMP.map((h, i) => { const e = nearest(h); return `${e.key} ${hex(e)} ~${ORGANIC_LEAF_SHARES[i]}%`; }).join(", ");
+  return [
+    "## Leaf greens (from the exemplar trees, darkest to lightest, with their share of the leaf pixels)",
+    `- Paint leaves ONLY with these keys: ${pairs}. Other greens of the palette are grass, moss or olive keys -`,
+    "  a crown in them looks lighter and yellower than the town's trees (failed review four times). Fruit, flowers and",
+    "  bark use their own ramps.",
+  ].join("\n");
+}
+
+/** 원본 checks.leaves: 잎 초록(초록이 빨강보다 10+ 크고 파랑 이상) 화소 수, 평균(빨강-파랑), 명도 60 미만 몫. */
+export function leafTone(image: RgbaImage): { leafPixels: number; leafCast: number; leafDark: number } {
+  let n = 0, cast = 0, dark = 0;
+  for (let i = 0; i < image.data.length; i += 4) {
+    const r = image.data[i]!, g = image.data[i + 1]!, b = image.data[i + 2]!;
+    if (image.data[i + 3]! > 0 && g >= r + 10 && g >= b) { n++; cast += r - b; if (0.299 * r + 0.587 * g + 0.114 * b < 60) dark++; }
+  }
+  return n ? { leafPixels: n, leafCast: Math.round((cast / n) * 10) / 10, leafDark: Math.round((dark / n) * 1000) / 1000 } : { leafPixels: 0, leafCast: 0, leafDark: 0 };
+}
 /**
  * 원본 checks.geometry: 윤곽이 도형인가. turns = 왼/오른 가장자리가 들어갔다 나왔다 꺾이는 횟수(줄당) — 손으로 뭉친 수관은 자주 꺾이고
  * 타원·돔은 한 번 꺾인다. ellipse = 가장 넓은 줄의 절반 이상인 띠와 거기 맞춘 타원의 IoU. 실측: 버들항 나무·덤불 0.25~0.45 / 0.82~0.87,
  * 반려된 달걀 사과나무 0.085 / 0.92.
  */
-export function silhouetteGeometry(image: RgbaImage): { rows: number; turns: number; ellipse: number } {
+export function silhouetteGeometry(image: RgbaImage): { rows: number; turns: number; ellipse: number; mirror: number } {
   const rows: [number, number, number, number][] = [];
   for (let y = 0; y < image.height; y++) {
     let first = -1, last = -1, n = 0;
     for (let x = 0; x < image.width; x++) if (image.data[(y * image.width + x) * 4 + 3]! > 0) { if (first < 0) first = x; last = x; n++; }
     if (n) rows.push([y, first, last, n]);
   }
-  if (rows.length < 4) return { rows: rows.length, turns: 1, ellipse: 0 };
+  if (rows.length < 4) return { rows: rows.length, turns: 1, ellipse: 0, mirror: 0 };
   const turns = (seq: number[]) => {
     const d: number[] = [];
     for (let i = 1; i < seq.length; i++) if (seq[i] !== seq[i - 1]) d.push(seq[i]! - seq[i - 1]!);
@@ -290,8 +328,17 @@ export function silhouetteGeometry(image: RgbaImage): { rows: number; turns: num
     if (e && f) inter++;
     if (e || f) union++;
   }
+  // 좌우 거울 IoU(원본 geometry 의 mirror) — 버들항 나무 0.80~0.85, 대칭 클로버로 반려된 수관 0.91~0.93.
+  let mi = 0, mu = 0;
+  const s2 = bx0 + bx1;
+  for (let y = by0; y <= by1; y++) for (let x = bx0; x <= bx1; x++) {
+    const p = image.data[(y * image.width + x) * 4 + 3]! > 0;
+    const q = s2 - x >= 0 && s2 - x < image.width && image.data[(y * image.width + s2 - x) * 4 + 3]! > 0;
+    if (p && q) mi++;
+    if (p || q) mu++;
+  }
   const round3 = (v: number) => Math.round(v * 1000) / 1000;
-  return { rows: rows.length, turns: round3(t), ellipse: union ? round3(inter / union) : 0 };
+  return { rows: rows.length, turns: round3(t), ellipse: union ? round3(inter / union) : 0, mirror: mu ? round3(mi / mu) : 0 };
 }
 
 export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgCheck {
@@ -347,6 +394,14 @@ export function ogCheck(item: WorkshopItem, grid: Grid, palette: Palette): OgChe
     if (g.turns < GEOMETRIC_TURNS && g.ellipse > GEOMETRIC_ELLIPSE) {
       const issue = { code: "GEOMETRIC", msg: `the silhouette is a smooth primitive (edge turn-backs ${g.turns}/row, ellipse match ${g.ellipse}) - break it into irregular leaf clumps / lumps with notches, as in the exemplars` };
       (g.rows >= GEOMETRIC_MIN_ROWS ? hard : warn).push(issue);
+    }
+    if (footprintClass(item.title, item.description ?? "") === "tree" && g.rows >= GEOMETRIC_MIRROR_ROWS && g.mirror > GEOMETRIC_MIRROR) {
+      hard.push({ code: "SYMMETRIC", msg: `the crown is nearly mirror-symmetric (left/right match ${g.mirror}, exemplars 0.80-0.85) - make one shoulder 3+ px higher, one side wider, lobes and notches at different heights` });
+    }
+    const lv = leafTone(renderGrid(grid, palette));
+    if (lv.leafPixels >= LEAF_MIN_PIXELS) {
+      if (lv.leafCast > LEAF_CAST_MAX) hard.push({ code: "LEAFHUE", msg: `the leaves are olive/yellow (red-blue ${lv.leafCast}, exemplars -9..-4) - paint them with the listed leaf-green keys` });
+      if (lv.leafDark < LEAF_DARK_MIN) hard.push({ code: "LEAFLIGHT", msg: `the crown is too light (${Math.round(lv.leafDark * 100)}% dark leaf pixels, exemplars 28-38%) - more dark interior, shadow under lobes, darker lower right` });
     }
   } else if (TOP_KINDS.has(item.gateKind ?? "") && STANDING.has(anchor) && topRows < 3) warn.push({ code: "TOP", msg: `measured top plane is ${topRows} row(s) (column scan) - a 3/4 top needs >= 3 lit rows above the front` });
   return { ok: hard.length === 0, hard, warn, topRows };
@@ -424,6 +479,7 @@ export function ogDrawBrief(ctx: DrawContext, opts: { readonly hasReference: boo
       ""] : [""]),
     anchor === "flat" || anchor === "hang" ? `## View\n- This object ${ANCHOR_TEXT[anchor]}.\n` : `${kitValue("prompts", organic ? "VIEW_ORGANIC" : "VIEW")}\n`,
     kitValue("prompts", organic ? "RECIPE_ORGANIC" : "RECIPE"),
+    ...(organic ? ["", leafRampLine(ctx.palette)] : []),
     // 큰 물건 지시(윗면 25~35%·받침)는 가구용이다 — 자연물에는 넣지 않는다(원본 draw_brief 와 같다).
     ...(cellsW * cellsH >= LARGE_CELLS && !organic ? ["", kitValue("prompts", "LARGE")] : []),
     "",
