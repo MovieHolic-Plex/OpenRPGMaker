@@ -87,7 +87,7 @@ export type ApproachPlan = {
  * 다가가기 계획. 후보 칸을 단계(tier)로 나눠 앞 단계부터 찾는다:
  *  ① 대상과 같은 가로줄로 distance 칸 옆(3/4 시점에서 둘이 나란히 읽힌다),
  *  ② 대각(체비쇼프 distance 안),
- *  ③ 같은 세로줄로 distance 칸 위·아래 — distance 1 이면 맨 뒤로: 24×32 인물은 두 칸 높이라 바로 위아래에 서면
+ *  ③ (distance 1 만) 같은 가로줄 두 칸 옆, 그다음 바로 위·아래 — 맨 뒤로: 24×32 인물은 두 칸 높이라 바로 위아래에 서면
  *     아래 인물 머리가 위 인물 발·몸을 덮는다(2026-10-22 승강장, 장면 다듬기 SKILL 3장 2),
  *  ④ 거리 distance+1 ~ distance+3 의 칸(대상이 벽에 둘러싸였을 때 — fallback).
  * distance 2 이상이면 ①③ 을 한 단계로 합친다(겹치지 않는다).
@@ -120,7 +120,8 @@ export function planApproach(world: ApproachWorld, from: StageCell, target: Stag
         inner.push(c);
       }
     }
-    if (d === 1) tiers.push(horizontal, inner, vertical);
+    // 거리 1: 바로 위·아래(겹쳐 보임)보다 같은 줄 두 칸 옆이 낫다(2026-10-22 VQA: 팀장이 의자에 앉은 주인공 바로 위에 서서 한 덩어리로 보였다).
+    if (d === 1) tiers.push(horizontal, inner, [{ x: target.x - 2, y: target.y }, { x: target.x + 2, y: target.y }], vertical);
     else tiers.push([...horizontal, ...vertical], inner);
   }
   const talkTiers = tiers.length; // 여기까지가 «말 거리 안»

@@ -81,6 +81,24 @@ function standableFor(scene: DoorScene, actorId: string) {
   };
 }
 
+/**
+ * 문 칸(이동 트리거) 바로 옆에 그려진 문 그림 칸 — 트리거가 문 «앞» 바닥에 있고 문짝은 벽에 그려진 꼴(엘리베이터·벽 문).
+ * 그 칸으로 한 걸음 더 들어가야 문 «안으로» 사라져 보인다(2026-10-22 VQA: 민호가 엘리베이터 문 앞에서 사라졌다).
+ * 트리거 칸 자체가 문지방(걸을 수 있는 문 그림 아랫줄)이어도 같다. 위 → 왼쪽 → 오른쪽 → 아래 순, 막힌 문 그림 칸만.
+ */
+function doorArtBeyond(scene: DoorScene, door: Doorway, actorId: string): Dir | null {
+  const project = store.getCurrent();
+  const standable = standableFor(scene, actorId);
+  for (const d of ["up", "left", "right", "down"] as const) {
+    const c = { x: door.cell.x + DIR_DELTA[d].x, y: door.cell.y + DIR_DELTA[d].y };
+    if (!inBounds(scene.map, c.x, c.y)) continue;
+    if (isDoorArtCell(project, scene.map, c.x, c.y) && !canMove(project, scene.map, door.cell.x, door.cell.y, c.x, c.y) && !standable(c)) return d;
+  }
+  return null;
+}
+
+const OPPOSITE: Readonly<Record<Dir, Dir>> = { up: "down", down: "up", left: "right", right: "left" };
+
 function doorFrames(door: Doorway, opening: boolean, se: string): MoveCommand[] {
   const target = door.doorEventId ?? undefined;
   if (!door.framed || !target) return [{ kind: "doorCue", se, ms: se ? 160 : 0 }];
@@ -118,6 +136,7 @@ export function expandExitVia(scene: DoorScene, actorId: string, from: StageCell
   const reached = Boolean(plan && isDoorCell(plan.goal));
   const walk = steps.map((dir): MoveCommand => ({ kind: "move", dir }));
   const last = reached && walk.length > 0 ? walk.pop()! : null;
+  const beyond = reached ? doorArtBeyond(scene, door, actorId) : null;
   const openSe = soundFor(door, command.se, DOOR_OPEN_SE);
   const closeSe = soundFor(door, command.closeSe, DOOR_CLOSE_SE);
   return [
@@ -125,6 +144,7 @@ export function expandExitVia(scene: DoorScene, actorId: string, from: StageCell
     ...(reached ? doorFrames(door, true, openSe) : []),
     { kind: "setThrough", enabled: true },
     ...(last ? [last] : []),
+    ...(beyond ? [{ kind: "move", dir: beyond } as MoveCommand] : []),
     // 사라진 인물은 투명·통과로 남는다 — 문 칸을 막지 않는다. 이어서 지우기(Erase)나 «떠남» 스위치.
     { kind: "changeOpacity", delta: -255 },
     ...(reached ? doorFrames(door, false, closeSe) : []),
@@ -140,15 +160,19 @@ export function expandEnterVia(scene: DoorScene, actorId: string, from: StageCel
   }
   const standable = standableFor(scene, actorId);
   const dir = command.dir ?? STEP_IN_ORDER.find((d) => standable({ x: door.cell.x + DIR_DELTA[d].x, y: door.cell.y + DIR_DELTA[d].y })) ?? "down";
+  // 문짝이 벽에 그려져 있으면 그 칸에서 나타나 트리거 칸을 지나 들어온다.
+  const beyond = doorArtBeyond(scene, door, actorId);
+  const origin = beyond ? { x: door.cell.x + DIR_DELTA[beyond].x, y: door.cell.y + DIR_DELTA[beyond].y } : door.cell;
   const openSe = soundFor(door, command.se, DOOR_OPEN_SE);
   const closeSe = soundFor(door, command.closeSe, DOOR_CLOSE_SE);
   return [
     { kind: "changeOpacity", delta: -255 },
     { kind: "setThrough", enabled: true },
-    { kind: "placeAt", x: door.cell.x, y: door.cell.y },
-    { kind: "turn", dir },
+    { kind: "placeAt", x: origin.x, y: origin.y },
+    { kind: "turn", dir: beyond ? OPPOSITE[beyond] : dir },
     ...doorFrames(door, true, openSe),
     { kind: "changeOpacity", delta: 255 },
+    ...(beyond ? [{ kind: "move", dir: OPPOSITE[beyond] } as MoveCommand] : []),
     { kind: "move", dir },
     { kind: "setThrough", enabled: false },
     ...doorFrames(door, false, closeSe),

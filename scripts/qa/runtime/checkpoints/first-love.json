@@ -98,11 +98,11 @@
   {
    "id": "d1-meet-choice",
    "label": "첫 만남 선택",
-   "note": "STREET 2: ev_fl_meet auto in fl_office, arrive (16,4) via ev_fl_office_door",
+   "note": "STREET 2: ev_fl_meet auto in fl_office, arrive (24,15) via ev_fl_office_door (real arrival cell)",
    "mapId": "fl_office",
-   "x": 16,
-   "y": 4,
-   "facing": "down",
+   "x": 24,
+   "y": 15,
+   "facing": "up",
    "switches": {},
    "variables": {
     "var_fl_stage": 2
@@ -288,10 +288,10 @@
   {
    "id": "d1-konbini-enter",
    "label": "편의점 입장",
-   "note": "EVENING 6: ev_fl_kon_enter auto; arrive (12,13) via ev_fl_konbini_pm",
+   "note": "EVENING 6: ev_fl_kon_enter auto; arrive (14,11) via ev_fl_konbini_pm (real arrival cell)",
    "mapId": "fl_konbini",
-   "x": 12,
-   "y": 13,
+   "x": 14,
+   "y": 11,
    "facing": "up",
    "switches": {},
    "variables": {
@@ -813,8 +813,8 @@
    "label": "저녁 승강장 고백",
    "note": "RUN 12: ev_fl_platform auto in fl_platform_pm, arrive (8,8) up",
    "mapId": "fl_platform_pm",
-   "x": 8,
-   "y": 8,
+   "x": 7,
+   "y": 6,
    "facing": "up",
    "switches": {},
    "variables": {
