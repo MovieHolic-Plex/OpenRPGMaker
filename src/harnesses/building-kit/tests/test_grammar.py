@@ -264,7 +264,7 @@ class SeedGrammarTest(unittest.TestCase):
         for theme in dot.THEMES:
             rounds = dot.seed(theme)['rounds']
             for rid, rd in rounds.items():
-                if rid in ('style-r3', 'style-r4', 'style-r5', 'style-r6', 'style-r7'):
+                if rid in ('style-r3', 'style-r4', 'style-r5', 'style-r6', 'style-r7', 'style-r8'):
                     continue
                 with self.subTest(theme=theme, round=rid):
                     self.assertEqual(rd.get('superseded'), 'style-r3')
@@ -311,7 +311,7 @@ class SeedGrammarTest(unittest.TestCase):
     def test_old_rounds_are_marked_superseded(self):
         for theme in dot.THEMES:
             for rid, rd in dot.seed(theme)['rounds'].items():
-                if rid in ('style-r3', 'style-r4', 'style-r5', 'style-r6', 'style-r7'):
+                if rid in ('style-r3', 'style-r4', 'style-r5', 'style-r6', 'style-r7', 'style-r8'):
                     continue
                 with self.subTest(theme=theme, round=rid):
                     self.assertEqual(rd.get('superseded'), 'style-r3')
