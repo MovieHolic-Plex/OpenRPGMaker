@@ -4,6 +4,7 @@
 //   두 도구 모두 tileset:"jp_city" 이면 일본 실내(jp_city 번들 안, 화실·LDK·욕실·현관)를 같은 규칙으로 짓는다.
 // 조립 규칙은 src/editor/handInterior/builder.ts, 칸 사전은 src/assets/handInteriorSpec.json · jpInteriorSpec.json.
 import { fitStairTransfers } from "@/project/stairs/fit";
+import { describeSpecStairEntrance } from "@/project/stairs/contract";
 import { buildHandInteriorLayers, roomSpecOf, HAND_INTERIOR_SPEC, HAND_INTERIOR_SPECS, HAND_INTERIOR_TILESET_ID, JP_INTERIOR_SPEC, JP_INTERIOR_TILESET_ID, WIZARDING_INTERIOR_SPEC, WIZARDING_INTERIOR_TILESET_ID, SENGOKU_INTERIOR_SPEC, SENGOKU_INTERIOR_TILESET_ID, CAMPUS_INTERIOR_SPEC, MODERN_CITY_INTERIOR_SPEC, MODERN_CITY_INTERIOR_TILESET_ID, HandInteriorError, type HandInteriorInput, type HandInteriorLayers, type HandInteriorSpec } from "@/editor/handInterior/builder";
 import { roomIndex, roomParts, searchParts, fullRow, shortRow } from "@/editor/handInterior/parts";
 import { handInteriorShapeFromPlan, nearestOpening, PLAIN_BOX_MIN_CELLS, type HandInteriorShape } from "@/editor/handInterior/shape";
@@ -228,7 +229,8 @@ export const LIST_HAND_INTERIOR_PARTS_TOOL: ToolDefinition = {
     const multi = found.tokens.length > 1;
     const rows = shown.map((id) => {
       const hit = multi ? `${found.hits.get(id)}/${found.tokens.length}` : undefined;
-      return full ? fullRow(id, S.objects[id]!, hit) : shortRow(id, S.objects[id]!, hit);
+      const entrance = describeSpecStairEntrance(project.tilesets[tilesetId]?.roomKit?.builtin ?? tilesetId, id, S.objects[id]!.cells);
+      return full ? fullRow(id, S.objects[id]!, hit, entrance) : shortRow(id, S.objects[id]!, hit, entrance);
     });
     const total = found.ids.length;
     const which = !multi ? "" : found.allMatch ? ` — 모든 낱말이 맞는 것만(일부만 맞는 ${found.partial}종은 뺐다)` : ` — 모든 낱말이 맞는 것이 없어 가장 많이 맞는 것부터`;

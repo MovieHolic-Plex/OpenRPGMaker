@@ -20,6 +20,8 @@ export interface PartRow {
   readonly desc?: string; readonly overhangPx?: number; readonly tags?: readonly string[]; readonly place?: string; readonly pair?: readonly string[];
   readonly surface?: true; readonly stairs?: string; readonly animated?: true; readonly hit?: string;
   readonly use?: readonly string[]; readonly facing?: string; readonly states?: Obj["states"];
+  /** 계단 입구 계약(project/stairs/contract.ts) — 앞 칸·이동 칸·도착 방향을 물건 좌표 기준으로. */
+  readonly entrance?: string;
 }
 
 /** 쓰임 id → 검색 낱말(「앉는」「상자」「스위치」로도 찾게). */
@@ -41,16 +43,16 @@ function fields(id: string, o: Obj): readonly (readonly [string, number])[] {
   ];
 }
 
-export function fullRow(id: string, o: Obj, hit?: string): PartRow {
+export function fullRow(id: string, o: Obj, hit?: string, entrance?: string): PartRow {
   return { id, ko: o.ko, kind: o.kind, w: o.w, h: o.h, ...(o.up ? { overhangPx: o.up } : {}), ...(o.desc ? { desc: o.desc } : {}),
     ...(o.tags?.length ? { tags: o.tags } : {}), ...(o.place ? { place: o.place } : {}), ...(o.pair?.length ? { pair: o.pair } : {}),
     ...(o.surface ? { surface: true as const } : {}), ...(o.stairs ? { stairs: o.stairs } : {}), ...(o.animated ? { animated: true as const } : {}),
     ...(o.use?.length ? { use: o.use } : {}), ...(o.facing ? { facing: o.facing } : {}), ...(o.states ? { states: o.states } : {}),
-    ...(hit ? { hit } : {}) };
+    ...(hit ? { hit } : {}), ...(entrance ? { entrance } : {}) };
 }
-export function shortRow(id: string, o: Obj, hit?: string): PartRow {
+export function shortRow(id: string, o: Obj, hit?: string, entrance?: string): PartRow {
   return { id, ko: o.ko, kind: o.kind, w: o.w, h: o.h, ...(o.desc ? { desc: o.desc } : {}),
-    ...(o.use?.length && !(o.use.length === 1 && o.use[0] === "block") ? { use: o.use } : {}), ...(o.facing ? { facing: o.facing } : {}), ...(hit ? { hit } : {}) };
+    ...(o.use?.length && !(o.use.length === 1 && o.use[0] === "block") ? { use: o.use } : {}), ...(o.facing ? { facing: o.facing } : {}), ...(hit ? { hit } : {}), ...(entrance ? { entrance } : {}) };
 }
 
 export interface SearchResult {

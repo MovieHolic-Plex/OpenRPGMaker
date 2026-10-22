@@ -17,7 +17,7 @@ import campusSpec from "@/assets/modernCampusRoomSpec.json";
 import gothicSpec from "@/assets/gothicManorRoomSpec.json";
 import modernCitySpec from "@/assets/modernCityRoomSpec.json";
 import { passabilityOf } from "@/project/collision";
-import { stairArrivalFacing, stairContractForSpecObject, type StairContract } from "@/project/stairs/contract";
+import { stairArrivalFacing, stairContractForKit, stairContractForSpecObject, type StairContract } from "@/project/stairs/contract";
 import type { TilesetDef } from "@/project/types";
 
 export const HAND_INTERIOR_TILESET_ID = "atlas_biome_interior";
@@ -354,14 +354,16 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
   const flushFace = new Map<number, string>();
   const landings: { i: number; label: string; trigger?: number; facing?: HandInteriorTravelSpot["facing"]; leads?: StairContract["leads"]; mode?: StairContract["mode"]; stair?: string }[] = [];
   const stairLabels = new Map<string, { approach: string }>();
-  const specTs = specTilesetId(S);
+  const specTs = tileset ? (tileset.roomKit?.builtin ?? tileset.id) : specTilesetId(S);
   for (const o of objects) {
     const d = S.objects[o.id];
     if (!d) { issues.push({ severity: "error", code: "unknown-object", message: `물건 "${o.id}" 이 없다 — list_hand_interior_parts 로 id 를 찾는다`, x: o.x, y: o.y }); continue; }
     const label = `${d.ko}(${o.id}) @(${o.x},${o.y})`;
     const flush = isFlushTravelPiece(d);
     // 계단 입구 계약: 앞 칸(들어서는 쪽)이 바닥이어야 하고, 탈 자리는 그 앞 칸, 이동 칸은 계단 그림 칸이다(추측하지 않는다).
-    const stair = specTs ? stairContractForSpecObject(specTs, o.id) : undefined;
+    // 사양 물건 표에 없고 칩셋 조립 부품에서 온 가구(kitHandObjects: 마법 학교 등)는 키트 계약을 그대로 쓴다 — 키트 원점은 맨 위 칸 줄.
+    const kitStair = specTs && !stairContractForSpecObject(specTs, o.id) ? stairContractForKit(specTs, o.id) : undefined;
+    const stair = specTs ? (stairContractForSpecObject(specTs, o.id) ?? (kitStair ? { contract: kitStair, kit: o.id, lift: -Math.min(0, ...d.cells.map((c) => c[1])) } : undefined)) : undefined;
     if (stair && stair.contract.leads !== "same") {
       const c = stair.contract, ox = o.x, oy = o.y - stair.lift;
       const approach = c.approach.map(([dx, dy]) => ({ x: ox + dx, y: oy + dy }));

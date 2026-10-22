@@ -109,3 +109,22 @@ export function describeStairContract(c: StairContract): string {
   return `계단 입구: ${lead} · 들어서는 쪽 ${SIDE_KO[c.side]} · 앞 칸(비워 둘 바닥) ${cells(c.approach)} · 이동 칸 ${cells(c.trigger)} — ${how}${exit} · `
     + `도착은 앞 칸에 내려 계단을 등지고(${c.side === "any" ? "앞 칸 쪽" : SIDE_FACING[c.side]}) 선다. 좌표는 키트 왼쪽 위 기준.`;
 }
+
+/**
+ * 조립기 물건 좌표(o.x,o.y) 기준으로 쓴 계단 입구 한 줄 — list_hand_interior_parts 행의 entrance.
+ * 키트 원점은 물건 좌표에서 lift 줄 위이므로 좌표를 그만큼 내려 적는다.
+ */
+export function describeSpecStairEntrance(specTilesetId: string, objectId: string, cells?: readonly (readonly number[])[]): string | undefined {
+  const kit = !FILE.objects[specTilesetId]?.[objectId] && cells ? stairContractForKit(specTilesetId, objectId) : undefined;
+  const hit = stairContractForSpecObject(specTilesetId, objectId)
+    ?? (kit ? { contract: kit, kit: objectId, lift: -Math.min(0, ...cells!.map((c) => c[1] ?? 0)) } : undefined);
+  if (!hit) return undefined;
+  const { contract: c, lift } = hit;
+  const off = (v: number) => (v > 0 ? `+${v}` : v < 0 ? `${v}` : "");
+  const rel = (list: readonly Rel[]) => list.map(([x, y]) => `(x${off(x)},y${off(y - lift)})`).join(" ");
+  if (c.leads === "same") return `같은 맵 안의 단: 앞 칸 ${rel(c.approach)} 에서 올라서 위 끝 ${rel(c.exit ?? [])} 로 이어진다 — 두 끝을 바닥과 잇는다.`;
+  const lead = c.leads === "up" ? "위층으로 오르는" : "아래층으로 내려가는";
+  return `${lead} 계단. 들어서는 쪽 ${SIDE_KO[c.side]}: 앞 칸 ${rel(c.approach)} 은 방과 이어진 빈 바닥이어야 한다(가구·벽 금지). `
+    + `층 이동 이벤트(links)는 이동 칸 ${rel(c.trigger)}${c.mode === "bump" ? "(막힌 그림 — 부딪혀 탄다)" : ""} 에 두고, 다른 층에서 오는 도착은 앞 칸에 `
+    + `${c.side === "any" ? "계단을 등지게" : `direction "${SIDE_FACING[c.side]}"(계단을 등짐)`}. 짝: ${c.leads === "up" ? "위층에는 내려가는 계단" : "아래층에는 오르는 계단"}.`;
+}
