@@ -78,6 +78,7 @@ function mountOverlay(mode: "menu" | "welcome", resolve: (result: ConceptFeedOve
       if (blankBusy || feed.busy()) return;
       void openBuiltinDemoFromOverlay(demoId, action, () => finish("closed")).catch((error: unknown) => {
         console.error("[welcome] 기본 데모를 열지 못했습니다:", error);
+        toast("데모를 열지 못했습니다. 잠시 뒤 다시 시도해 주세요.", "error");
       });
     },
     onBlank: mode === "menu"

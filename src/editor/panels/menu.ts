@@ -945,7 +945,15 @@ async function newScarloxyDemoProject(): Promise<void> {
 async function loadFlagshipDemoInEditor(id: FlagshipDemoId, playNow = false): Promise<void> {
   // 데모 빌더는 예제 그림 수십 MB 를 끌고 온다 — 편집기 첫 화면 번들에 넣지 않고 누를 때 받는다.
   const { createFlagshipDemoProject } = await import("@/project/flagship");
-  const demo = createFlagshipDemoProject(id);
+  let demo: ReturnType<typeof createFlagshipDemoProject>;
+  try {
+    demo = createFlagshipDemoProject(id);
+  } catch (error) {
+    // 빌드 예외를 삼키면 아무 반응이 없어 보인다 — 알리고 끝낸다.
+    console.error("[demo] 데모를 만들지 못했습니다:", error);
+    toast("데모를 열지 못했습니다. 잠시 뒤 다시 시도해 주세요.", "error");
+    return;
+  }
   store.replaceProject(demo.project, { label: `${demo.manifest.title} 데모 열기`, origin: "human" });
   focusLoadedProjectStartMap();
   toast(t(`${demo.manifest.title} 데모를 불러왔습니다`), "ok");

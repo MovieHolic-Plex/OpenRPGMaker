@@ -512,6 +512,27 @@ function marchOffAfterProclamation(project: Project, hub: GameMap): void {
   const after = list?.findIndex((c) => c.kind === "text" && String((c as { body?: string }).body).includes("교단보다 먼저"));
   if (!gate || !list || after === undefined || after < 0) throw new Error("[fallen-star] 포고·동문을 찾지 못했다");
   const exit = { x: gate.x - 1, y: gate.y };
+  // 동문 앞이 한 칸 통로인 방 배치에서는 떠돌이 주민(꼬마 등)이 그 길목에 서 있으면 기사가 못 지나간다
+  // (rooms 개편 뒤 ev_fs_kid 가 (52,22) 에서 길을 막아 데모 빌드가 통째로 실패했다) — 길목의 주민은 비켜 세운다.
+  const marchers = new Set([`ev_${FS_PREFIX}_knight`, `ev_${FS_PREFIX}_valen`]);
+  const keep = (e: { id: string }): boolean => marchers.has(e.id) || String(e.id).startsWith("ev_gate_") || e.id === `ev_${FS_PREFIX}_event` || e.id === `ev_${FS_PREFIX}_gate`;
+  const taken = new Set(hub.events.map((e) => `${e.x},${e.y}`));
+  for (const blocker of hub.events.filter((e) => !keep(e) && Math.abs(e.x - exit.x) <= 2 && Math.abs(e.y - exit.y) <= 2)) {
+    let moved = false;
+    for (let radius = 3; radius <= 8 && !moved; radius += 1) {
+      for (let dy = -radius; dy <= radius && !moved; dy += 1) {
+        for (let dx = -radius; dx <= radius && !moved; dx += 1) {
+          if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+          const x = exit.x + dx, y = exit.y + dy;
+          if (x < 0 || y < 0 || x >= hub.width || y >= hub.height || taken.has(`${x},${y}`) || !isPassable(project, hub, x, y)) continue;
+          taken.delete(`${blocker.x},${blocker.y}`);
+          blocker.x = x; blocker.y = y;
+          taken.add(`${x},${y}`);
+          moved = true;
+        }
+      }
+    }
+  }
   const marches: Command[] = [];
   for (const [id, delay] of [[`ev_${FS_PREFIX}_knight`, 0], [`ev_${FS_PREFIX}_valen`, 1]] as const) {
     const npc = hub.events.find((e) => e.id === id);
