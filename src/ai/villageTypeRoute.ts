@@ -34,7 +34,7 @@ const CHIPSET_TOOLS: Record<string, readonly string[]> = {
   modern_campus: CAMPUS_EXPOSED_TOOLS,
   modern_city: MODERN_CITY_EXPOSED_TOOLS,
   joseon_baram: JOSEON_TOOLS,
-  beodeul_city: ["author_beodeul_town", "stamp_object", "check_city_form", "check_reachability", "show_map_region"],
+  beodeul_city: ["author_beodeul_town", "dress_village_quarter", "stamp_object", "check_city_form", "check_reachability", "show_map_region"],
 };
 
 /** 이 턴이 마을·도시 «새로 짓기» 요청이고 종류가 표에 있으면 그 종류. */

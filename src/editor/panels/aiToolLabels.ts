@@ -354,6 +354,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   list_jp_regions: inspect("일본 지역 30종 찾기", "map"),
   find_village_type: inspect("마을 종류 찾기", "map"),
   dress_joseon_market: build("조선 장터 좌판 놓기", "map"),
+  dress_village_quarter: build("마을 쓰임 덩이 놓기", "map"),
   compose_jp_region: build("일본 지역 맵 짜기", "map"),
   paint_jp_forest: build("일본 숲 칠하기", "map"),
   compose_campus_grounds: build("캠퍼스 야외 짜기", "map"),

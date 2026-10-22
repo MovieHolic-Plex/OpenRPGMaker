@@ -119,7 +119,7 @@ import { GOTHIC_PLACE_TOOLS } from "./gothicPlaceTools";
 import { PREHISTORIC_TOOLS } from "./prehistoricTools";
 import { SNOW_NORTH_TOOLS } from "./snowNorthTools";
 import { FIND_VILLAGE_TYPE_TOOL } from "./villageTypeTool";
-import { DRESS_JOSEON_MARKET_TOOL } from "./joseonMarketTool";
+import { DRESS_JOSEON_MARKET_TOOL, DRESS_VILLAGE_QUARTER_TOOL } from "./villageQuarterTool";
 import { TRANSIT_TOOLS } from "./transitTools";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
@@ -297,7 +297,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(SNOW_NORTH_TOOLS, "tile"),
   // 마을 종류 표(시대·세계별 60여 종 → 칩셋·시공 도구·선택지, 그림 없는 종류는 «없다») — src/ai/villageTypeCatalog.ts.
   FIND_VILLAGE_TYPE_TOOL,
-  // 조선 마을 맵에 장터 좌판 덩이(통행 유지) — 「조선 장터 마을」.
+  // 지은 마을에 쓰임 한 덩이(광산·포도원·신전 폐허·마법사의 탑·장터·조선 장터)를 번들 조각으로(통행 유지).
+  DRESS_VILLAGE_QUARTER_TOOL,
   DRESS_JOSEON_MARKET_TOOL,
   // 맵 위 탈것(차 흐름·버스·노면전차·전철·지하철) — 길 그림에서 자동으로 또는 칸 경로로 노선을 깐다. 런타임이 실제로 움직인다.
   ...withDomain(TRANSIT_TOOLS, "map"),
