@@ -9,6 +9,7 @@ import { passageBounds, UNIT_FOOTPRINT } from "@/project/footprint";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import { findBlockingEventOverlappingRect, runtimeEventViewById } from "@/project/runtimeEventState";
 import { store } from "@/project/store";
+import { isAlwaysAboveCharacterUpperTile } from "@/player/characterDepth";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { dirToward, planApproach, type StageCell } from "@/project/staging/approach";
 import type { Dir, MoveCommand } from "@/project/types";
@@ -55,6 +56,17 @@ export function expandApproach(scene: StageScene, actor: string, from: StageCell
   const actorIsPlayer = actor === PLAYER_MOVE_TARGET;
   const targetId = command.target?.trim() ?? "";
   const player = playerCell(scene);
+  const tileset = project.tilesets[map.tilesetId];
+  const upperLayers = [map.upperTiles, map.upperOverlayTiles].filter((l): l is number[] => Array.isArray(l));
+  // 인물 그림은 발 칸과 머리 칸(한 줄 위)을 덮는다 — 둘 중 하나에 늘 위에 그려지는 ★ 타일(기둥·수관)이 있으면 가려진다.
+  const coveredRow = (x: number, y: number): boolean => {
+    if (!tileset || y < 0 || !inBounds(map, x, y)) return false;
+    const i = y * map.width + x;
+    return upperLayers.some((layer) => {
+      const t = layer[i];
+      return typeof t === "number" && t >= 0 && isAlwaysAboveCharacterUpperTile(tileset, t);
+    });
+  };
   const plan = planApproach({
     width: map.width,
     height: map.height,
@@ -67,6 +79,7 @@ export function expandApproach(scene: StageScene, actor: string, from: StageCell
       if (!actorIsPlayer && c.x === player.x && c.y === player.y) return false;
       return true;
     },
+    hidden: (c) => coveredRow(c.x, c.y) || coveredRow(c.x, c.y - 1),
   }, from, target, command.distance);
   const turn: MoveCommand = { kind: "turnToward", ...(targetId ? { target: targetId } : { x: target.x, y: target.y }) };
   if (!plan) {

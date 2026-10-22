@@ -65,6 +65,11 @@ export type ApproachWorld = {
   readonly canStep: (from: StageCell, to: StageCell) => boolean;
   /** 이 칸에 설 수 있는가(다른 인물·배치물이 없다). 출발 칸은 묻지 않는다. */
   readonly canStand: (cell: StageCell) => boolean;
+  /**
+   * 이 칸에 선 인물이 위에 그려지는 타일(기둥·수관 ★)에 가려지는가. 있으면 가려지지 않는 칸을 먼저 고른다
+   * (2026-10-22 막차 승강장: 주인공이 지후 왼쪽 기둥 뒤에 서서 대화 내내 보이지 않았다).
+   */
+  readonly hidden?: (cell: StageCell) => boolean;
 };
 
 export type ApproachPlan = {
@@ -112,25 +117,32 @@ export function planApproach(world: ApproachWorld, from: StageCell, target: Stag
       }
     }
   }
-  // 이미 같은 줄 말 거리에 섰으면 그대로. 대각(말 거리 안)이면 한 걸음으로 같은 줄에 설 수 있을 때만 옮긴다.
-  const stay: ApproachPlan = { goal: from, steps: [], face: dirToward(from, target), fallback: false };
-  if (tiers[0]!.some((t) => t.x === from.x && t.y === from.y)) return d === 0 ? { ...stay, face: null } : stay;
-  const nearAlready = d > 0 && !isTarget(from) && chebyshev(from, target) <= d;
-  for (let tier = 0; tier < tiers.length; tier += 1) {
-    if (nearAlready && tier > 0) return stay;
-    let best: { cell: StageCell; cost: number; rank: number } | null = null;
-    for (const c of tiers[tier]!) {
-      if (!inBounds(c) || isTarget(c) || !standable(c)) continue;
-      const cost = reach.dist.get(key(c));
-      if (cost === undefined) continue;
-      const side = c.y === target.y ? 0 : 1; // 가로 옆 우선
-      const toward = Math.abs(c.x - from.x) + Math.abs(c.y - from.y); // 출발 쪽
-      const rank = cost * 1000 + side * 100 + Math.min(99, toward);
-      if (!best || rank < best.rank) best = { cell: c, cost, rank };
-    }
-    if (best && nearAlready && best.cost > 1) return stay;
-    if (best) {
-      return { goal: best.cell, steps: pathTo(reach, world.width, from, best.cell), face: d === 0 ? null : dirToward(best.cell, target), fallback: tier > 0 };
+  // 가려지는 칸(기둥 뒤 등)은 먼저 빼고 찾는다. 가려지지 않는 칸이 하나도 없을 때만 가려지는 칸을 쓴다.
+  // 칸 대상(distance 0)은 저자가 그 칸을 골랐으니 그대로 간다.
+  const hiddenAt = (c: StageCell) => d > 0 && Boolean(world.hidden?.(c));
+  for (const allowHidden of [false, true]) {
+    if (allowHidden && !world.hidden) break;
+    const ok = (c: StageCell) => allowHidden || !hiddenAt(c);
+    // 이미 같은 줄 말 거리에 섰으면 그대로. 대각(말 거리 안)이면 한 걸음으로 같은 줄에 설 수 있을 때만 옮긴다.
+    const stay: ApproachPlan = { goal: from, steps: [], face: dirToward(from, target), fallback: false };
+    if (ok(from) && tiers[0]!.some((t) => t.x === from.x && t.y === from.y)) return d === 0 ? { ...stay, face: null } : stay;
+    const nearAlready = d > 0 && ok(from) && !isTarget(from) && chebyshev(from, target) <= d;
+    for (let tier = 0; tier < tiers.length; tier += 1) {
+      if (nearAlready && tier > 0) return stay;
+      let best: { cell: StageCell; cost: number; rank: number } | null = null;
+      for (const c of tiers[tier]!) {
+        if (!inBounds(c) || isTarget(c) || !standable(c) || !ok(c)) continue;
+        const cost = reach.dist.get(key(c));
+        if (cost === undefined) continue;
+        const side = c.y === target.y ? 0 : 1; // 가로 옆 우선
+        const toward = Math.abs(c.x - from.x) + Math.abs(c.y - from.y); // 출발 쪽
+        const rank = cost * 1000 + side * 100 + Math.min(99, toward);
+        if (!best || rank < best.rank) best = { cell: c, cost, rank };
+      }
+      if (best && nearAlready && best.cost > 1) return stay;
+      if (best) {
+        return { goal: best.cell, steps: pathTo(reach, world.width, from, best.cell), face: d === 0 ? null : dirToward(best.cell, target), fallback: tier > 0 || allowHidden };
+      }
     }
   }
   return null;
