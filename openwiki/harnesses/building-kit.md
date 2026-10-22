@@ -360,7 +360,7 @@ python3 src/harnesses/building-kit/harness.py village northern-snow style-r3 --l
 
 ### 명령
 
-`npm run harness -- building-kit palette|validate|list|draw|dry|gate|assemble|review|sheet|pick|reject|objgate|village|status`
+`npm run harness -- building-kit palette|validate|list|draw|dry|gate|assemble|finish|review|sheet|pick|reject|objgate|village|status`
 
 | 단계 | 하는 일 |
 |---|---|
@@ -372,9 +372,10 @@ python3 src/harnesses/building-kit/harness.py village northern-snow style-r3 --l
 | `gate <테마> <판>` | 기계 관문. FAIL 이면 종료코드 1 |
 | `assemble <테마> <판> [--line A] [--key A1]` | 부품을 레시피대로 붙이고 조립 관문 A1~A11(질량 포함) |
 | `village <테마> <판> --line A [--seed N] [--size 52x40] [--all]` | 그 줄의 조립 건물(기본은 검수 PASS 만)을 길·마당·광장·나무가 있는 마을로 놓고 1배·2배 PNG + HTML |
-| `review <테마> <판> [--runs 3]` | 독립 Opus 검수(숨긴 함정·무효 회차·다수결·영수증) |
-| `sheet <테마> <판> [--show-failed]` | 검수 PASS 후보만 자체완결 고르기 시트 |
-| `pick` / `reject` | 사람만 — 시트 해시와 현재 그림 해시가 맞을 때만 기록 |
+| `finish <테마> <판> --line A [--building id] [--jobs N]` | 조립 관문을 모두 통과한 건물마다 Opus 5.5 high 손 마감 → `finished/<후보>.<건물>.png·.json` (아래 「마감 단계」) |
+| `review <테마> <판> [--runs 3] [--finished]` | 독립 Opus 검수(숨긴 함정·무효 회차·다수결·영수증). `--finished` 는 마감 그림 → `review-finished/` |
+| `sheet <테마> <판> [--show-failed] [--finished]` | 검수 PASS 후보만 자체완결 고르기 시트. `--finished` 는 `bk-<테마>-<판>-finished.html` |
+| `pick` / `reject` | 사람만 — 시트 해시와 현재 그림 해시가 맞을 때만 기록. `pick <테마> <판> <건물> <후보> --sha … --finished` 는 마감 해시 |
 | `objgate <테마>` | 사람이 고른 부품으로 조립한 건물의 object-gate 영수증(kind `structure`) |
 | `status [<테마>]` | 판·관문·검수·시트·고른 것·영수증 현황 |
 
@@ -685,3 +686,90 @@ A10(깊이) 뜬 질량·어긋난 땅 행·층 2칸 · 그림자(날개 위 없�
 짧은 박공(안내도 실측 밴드·1층 사면 3행 A6 FAIL 은 r7 만·depth_rows/폭 한계·r7 레시피 무결·회관 외쪽) · 세 테마 r7 시드 계약 ·
 reuseParts(임시 폴더: 같은 id 는 옛 판 그림·해시와 pick 해시 일치·이 판 그림이 (항목,키)마다 이김·관문이 재사용 그림도 봄·모르는 판 거절) ·
 flat_depth(한 땅 선·그림자 없음·자기 화소·질량 하나는 없음·r7 보드에 함정과 규칙·통과 시 무효·r5 보드엔 없음) · 깊이 안내도(땅 계단·마당·그림자).
+
+## 사용자 판정과 마감 단계 (2026-10-22, style-r7 → `finish`)
+
+### 사용자 판정
+
+style-r7 ㅜ자 집(fantasy-kingdom 줄 A)을 버들항 광장 여관 옆에 같은 배율로 놓고(`/tmp/detail-cmp.png`): **「전보다 훨씬 낫다. 그래도 버들항
+수준은 아니다」.** 차이를 어떻게 메울지 묻자 사용자는 **조립 뒤 마감 단계**를 골랐다 — 조립된 건물 한 채씩 Opus 5.5 high 가 손으로 질감과
+디테일을 더한다. 본 차이:
+
+| 버들항 | 우리(r7) |
+|---|---|
+| 기와가 낱장마다 모양·밝기가 다르고 빛 받는 모임 사선에 밝은 선 | 16px 마다 같은 기와 도장 반복 |
+| 회벽에 고운 점묘 | 평평한 면 |
+| 1층이 불규칙한 막돌 | 같은 벽돌 도장 반복 |
+| 창에 꽃상자·하늘색 유리 반짝임 | 짙은 남색 네모 |
+| 아치 문에 징, 걸린 간판 | 판자 문 |
+| 윤곽이 재질의 어두운 단 | 무거운 검은 윤곽 |
+
+### 마감 단계 (`finish.py`, `finish_kit/`)
+
+`finish <테마> <판> --line X [--building id] [--jobs N] [--cmd "…"]` — 그 줄 후보 키마다 판 레시피를 조립해 **조립 관문(A1~A15)을 모두 통과한
+건물만** 마감한다. 건물마다 새 샌드박스 `qa-runs/harnesses/building-kit/finisher/<테마>/<판>/<후보>.<건물>/`:
+
+- `base.png`(조립 건물, 앞 질량 그림자 포함) · `mask.png`(그 알파)
+- `pixels.txt` — 글자 하나 = 화소 하나. 범례 `legend.json` 은 잠긴 테마 팔레트 색마다 글자 하나(같은 색이 여러 램프에 있으면 글자 하나에 이름
+  여럿) + `.` 투명 + `~` 바닥 그림자. 그림자가 얹힌 벽은 **그림자를 걷어 낸 원래 색 글자**로 적고(`shade.png`), `save()` 가 조립과 같은 식
+  (`round(c·(1-α)+S·α)`)으로 다시 얹는다 — 그림자 밑 벽도 글자로 고칠 수 있다.
+- `regions.png`(1 지붕 조각 · 2 벽·층 띠·기단 · 3 그 밖) · `regions.json`(문 칸 화소 사각형, 문 재질·문턱 램프, 지붕 글자 집합, 하한값)
+- `refs/` — 테마 seed `refs` 의 버들항 기준 그림 1배·4배, 팔레트 견본, `compare.png`(쓰임이 같은 기준 | 이 건물, 4배, 풀 땅 위 바닥 맞춤 =
+  detail-cmp 형식), 쓰임 기준이 여관이 아니면 `compare-inn.png`(사용자가 본 비교)
+- `finish_lib.py` — `load · L(램프, 단) · put · row · block · get · names · save`. 투명·그림자 자리에 찍으면 거절(윤곽 보존).
+  참고 그림 화소를 돌려주는 함수는 없다(트레이스 금지). `save` 는 `finished.png` · `preview/finished-4x.png` · `preview/compare.png`
+  (기준 | 바탕 | 마감, 4배)를 쓰고 `preview/iterations.jsonl` 에 한 줄 남긴다.
+- `check.py` · `BRIEF.md`(위 차이 표를 이 테마·줄·건물 쓰임에 맞춘 할 일: 기와 낱장 변화·빛 받는 사선 밝은 선·용마루 덮개, 회벽 점묘·나뭇결·
+  막돌, 창턱·덧문·꽃상자·유리 반짝임, 아치·징·문턱, 쓰임별 소품(글자 없는 간판 받침·등불·벽에 붙은 통·담쟁이, 북방은 눈 덩이),
+  굴뚝 그을음, 빛은 왼쪽 위, 테마 팔레트만, 최소 4번 되풀이)
+
+에이전트: `claude -p --model claude-opus-5-5 --effort high`(`BUILDING_KIT_FINISH_MODEL/EFFORT`), 도구 `Read,Write,Edit,Bash(python3:*)`,
+작업 폴더 = 샌드박스, 시간 `BUILDING_KIT_FINISH_TIMEOUT`(기본 5400s), 게이트웨이 5xx 재시도는 그리기 실행기(`drawer.subprocess_runner`)를 쓴다.
+에이전트는 `finish_draw.py` 를 쓰고 `python3 finish_draw.py && python3 check.py` 를 되풀이하며 고칠 때마다 preview PNG 를 Read 로 연다.
+
+### `check.py` (a)~(g)
+
+| | 검사 | 기준 |
+|---|---|---|
+| a | 윤곽 | `finished.png` 알파 = `mask.png` (한 화소도 다르면 FAIL) |
+| b | 문 | 문 칸(조립 `role d` 조각 자리) 화소는 원래 그 칸에 있던 램프 ∪ wood·timber·iron(맨 아래 3행은 stone·cobble·ashlar 문턱도). 원래 문짝 램프(wood·timber·iron) 화소의 **90% 이상**이 문짝 램프로 남는다 |
+| c | 팔레트 | 불투명 = 잠긴 팔레트 색(그림자 자리는 그 색에 그림자를 얹은 값), 반투명 = 그림자 하나 |
+| d | 처마 선 | 바탕의 지붕→벽 경계 화소(지붕 글자 바로 아래 지붕 아닌 불투명)가 열마다 **±1px 안**에 남는다 — 투영이 밀리지 않는다 |
+| e | 코드 | `finish_draw.py` AST: import 는 `finish_lib` 만(random·numpy·noise·math·os 금지), finish_lib 공개 함수만, while·lambda·`%`·비트 연산·`open`/`eval`/`getattr` 금지, 반복은 한 겹이고 명시 좌표 목록 또는 길이 16 이하 상수 `range` 만, 반복 안에서 반복 함수 호출 금지, 문자열 반복은 상수 16 이하, `load()`·`save()` 호출 필수 |
+| f | 변화량 | 불투명 화소의 **12% 이상**이 바뀐다(아무것도 안 한 마감은 통과 못 한다) |
+| g | 16px 반복 | 지붕(1)·벽(2) 영역 밝기의 16px 자기상관(가로·세로 평균)이 **바탕보다 낮다** — 바탕·마감 수치를 찍는다 |
+
+pixels.txt 가 바뀌었으면(해시 `pixelsSha256`) 그것도 실패로 적는다 — 고침은 finish_draw.py 안에서만.
+
+### 하네스 재검사 — 에이전트 말을 믿지 않는다
+
+끝나면 하네스가 **지금 조립에서 새로 만든 깨끗한 입력 + 원본 `finish_kit/check.py`·`finish_lib.py`** 가 든 임시 폴더에 에이전트의
+`finish_draw.py` 만 복사해 다시 돌리고, ① 그 출력이 에이전트의 `finished.png` 와 화소까지 같은지(`reproduced` — 다른 방법으로 쓴 PNG 는
+FAIL) ② 원본 check.py 결과를 본다. 샌드박스의 check.py·pixels.txt 를 고쳐도 소용없다. 결과:
+
+`qa-runs/harnesses/building-kit/<테마>/<판>/finished/<후보>.<건물>.png`(재실행 출력) · `-x4.png` · `.finish_draw.py` · `.json`
+(`schema oprn-building-kit-finish/1`, `baseSha256`·`finishedSha256`·`agentFinishedSha256`·`reproduced`·`check`·`pass`·`iterations`·`exit`).
+`iterations < 4` 는 경고로 찍는다(눈으로 열었는지는 기계가 못 잰다). **마감 검사 통과는 합격이 아니다.**
+
+### `--finished` — 마감 그림으로 같은 길을 다시 간다
+
+`finish.finished_candidates` = 마감 `pass` · 마감 PNG 해시 = 기록 · **바탕 조립 해시 = 지금 부품 조립**(부품이 바뀌면 마감은 버려지고 finish 를
+다시). 이것만 아래 단계의 후보다. 플래그가 없으면 모든 단계가 예전 그대로다.
+
+- `review --finished`: 후보 = 마감 건물, 그림 함정(roof_gap·flat·noise·thin_roof·two_doors)은 **마감 그림에서** 만든다(flat_elevation·
+  flat_depth 는 부품 재조립이라 그대로). 회차·영수증은 `review-finished/` 에 따로, 영수증은 마감 화소 해시에 묶이고 `finished: true`.
+- `sheet --finished`: `~/claude-viz/bk-<테마>-<판>-finished.html` — 버들항 기준 · 바탕 · 마감(1·2·4배), 마감 수치(바뀐 %·16px 자기상관
+  전후), 마감 검수 PASS 건물만 `pick … --finished` 명령. 보인 해시는 `finished/sheet.json`(원장에는 쓰지 않는다).
+- `pick <테마> <판> <건물> <후보> --sha <앞 8자리> --finished`: 사람만. 시트에 보인 마감 해시 = 지금 마감 PNG = 마감 검수 PASS 영수증 해시일
+  때만 `picked/<줄>/finished/<건물>.png` 와 원장 `finishedPicks`(마감 해시 + 바탕 해시)에 적는다.
+- `village --finished`: 마감 검수 PASS 마감 건물로 마을을 놓는다(`--all` 은 마감본 전부). 결과 이름에 `-finished`.
+
+### 시험 (`tests/test_finish.py`)
+
+임시 폴더 + 가짜 에이전트(runner 주입), 시험용 r7 판 모듈(줄 A, `reuseParts` 뺌): 샌드박스 내용(파일·알파·격자 크기·범례·그림자 글자·
+브리프 낱말) · 손대지 않은 격자가 바탕과 화소까지 같게 돌아옴 · 아무것도 안 한 마감은 f·g 만 FAIL · 손으로 쓴 꼴(명시 행 문자열)의 정상
+마감은 전부 PASS · 윤곽 바꿈 a FAIL · `put` 이 투명 자리 거절 · 팔레트 밖 색 c FAIL · 난수/넓은 면 반복/`%`/finish_lib 내부/numpy e FAIL ·
+문짝 덮기 b FAIL · 처마 선 밀기 d FAIL · 하네스 재실행 기록·해시 · finish_draw.py 가 만들지 않은 finished.png 거절 · 샌드박스 check.py 를
+고쳐도 원본 검사가 거절 · review --finished 가 마감 해시를 보고 함정이 마감 그림에서 나옴·영수증 분리 · sheet --finished 해시·pick 바인딩
+(틀린 해시·대리 선택 거절) · 검수 없는 마감은 시트에 없음 · village --finished 가 마감 화소를 놓음 · 바탕이 바뀌면 마감 탈락.
+
