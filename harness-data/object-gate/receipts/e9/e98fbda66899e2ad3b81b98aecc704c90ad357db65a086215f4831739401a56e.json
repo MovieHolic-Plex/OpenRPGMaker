@@ -1,0 +1,436 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e98fbda66899e2ad3b81b98aecc704c90ad357db65a086215f4831739401a56e",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "wz-clock-stair",
+ "label": "wizarding_world stairs wz-clock-stair (UP)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "wall",
+  "refs": [
+   "castle-door2-closed",
+   "castle-wall-n-window2"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "wizarding_world",
+   "chipset": "wizarding_world",
+   "fallback": false,
+   "hash": "1a0f54905a7352a0"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 15,
+  "darkV5": 35,
+  "nearBlackEdge": 0.56,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "borderline"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "bottom step tread",
+      "rows": "39-44",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-47"
+     },
+     {
+      "part": "lower-middle step tread",
+      "rows": "29-35",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36-37"
+     },
+     {
+      "part": "upper-middle step tread",
+      "rows": "22-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "upper step tread",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "top landing",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "arched frame / top lintel",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a staircase in a frame. Each step is a brown tread band (for example rows 29-34 and 39-43) that ends in a light front-edge line (rows 18, 26, 35, 44). Each line is followed by 2 rows of dark shadow or riser (rows 19-20, 27-28, 36-37, 45-47), so the steps show top surfaces over front faces. The grey side walls (rows 10-25) are drawn flat, with no receding side face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate has 13 visible tones per 16x16 tile, against 15 for castle-door2-closed and 7 for castle-wall-n-window2, so it sits between the two references and well above the window wall. Near-flat coverage is 14%, slightly above the references' 1% and 9%. The picture shows no large flat fills: the stair treads, the studded frame and the wood grain all carry several steps and dot detail. The dark edge pixels are 68% near-neutral, which is lower than the references' 100%, so the outline is a mix of tinted and neutral tones, not a uniform black sticker line. The shading ramps on the wood treads and stone frame run about 5 steps, matching the references. The piece is a little small and simple, but it is not thinner or flatter than the shipped art beside it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18016
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel / frame band",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": "3-7"
+     },
+     {
+      "part": "upper step (tread with gold nosing)",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "second step",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "third step",
+      "rows": "21-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "main lower step (large tread)",
+      "rows": "29-35",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36-37"
+     },
+     {
+      "part": "bottom step",
+      "rows": "38-44",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-47"
+     },
+     {
+      "part": "flanking side walls",
+      "rows": "6-30",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The staircase is drawn as stacked steps. Each step has a light nosing line (rows 12, 18, 26, 35, 44) followed by 2-3 rows of dark shadow (rows 13-14, 19-20, 27-28, 36-37, 45-47). The brown tread bands between them are 4-5 rows tall (e.g. rows 30-34), so they read as horizontal surfaces seen from above. The stairs sit in a frame with gray flanking walls, and the bottom step has a dark front face below it (rows 45-47). The structure has both top surfaces and a front face."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small framed stair/clock panel with a stone frame, studs and wooden steps. It has 13 visible tones per tile, against 15 for castle-door2-closed and 7 for castle-wall-n-window2, so it sits within the reference range. Near-flat coverage is 14%, slightly above the references (1% and 9%) but not a flat-fill problem. The wood steps show about 4-5 value steps with highlighted edges, and the stone frame has stud dots and grain. 68% of dark edge pixels are near-neutral, but both shipped references are at 100%, so the outline is no more sticker-like than accepted art in this chipset. The outline is read as mixed: dark brown beside the wood, darker neutral on the frame. Overall it would sit acceptably next to the references and is not thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 16430
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice strip with gold studs",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper stair tread band (gold/brown top step)",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "stair tread band 2",
+      "rows": "15-17",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "stair tread band 3",
+      "rows": "21-25",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "stair tread band 4 (largest)",
+      "rows": "29-34",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36-37"
+     },
+     {
+      "part": "stair tread band 5",
+      "rows": "38-43",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-47"
+     },
+     {
+      "part": "dark side walls of the stair shaft",
+      "rows": "3-47",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 10,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a staircase in a framed shaft. Each step is a brown tread band 5-6 rows tall (rows 21-25, 29-34, 38-43). Each band ends in a 1-row light front-edge line (rows 18, 26, 35, 44) followed by 2 rows of dark shadow, which is evidence (a). The shaft frame and walls form the front face below the steps and the dark risers. The top rows 0-2 are only a front-facing cornice, but the stair treads carry the top-surface evidence."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a stone-framed stair/clock face with wooden steps. It measures 13 visible tones per 16x16 tile against 15 for the door and 7 for the window wall, so it sits inside the reference range and well above the window wall. Near-flat coverage is 14%, slightly above the references' 1% and 9%. The picture shows the cause: a few small flat areas on the stone frame and the dark interior, not large blank fills. The steps carry several wood tones with highlight edges, the stone frame has studs and block variation, and the wood has 4-5 steps of shading. The dark edge pixels are 68% neutral, which is less than the references' 100%, so the outline is mixed and not a uniform black sticker line. Both shipped references use the same neutral dark edges, so this treatment matches the chipset standard. Overall it reads as comparable to the shipped art in craft and density.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18463
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top stone lintel/frame band",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper landing and tread (small, far)",
+      "rows": "8-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "tread 2",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "tread 3",
+      "rows": "21-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-28"
+     },
+     {
+      "part": "tread 4 (main, wide)",
+      "rows": "29-35",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36-37"
+     },
+     {
+      "part": "tread 5 (near)",
+      "rows": "38-44",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-47"
+     }
+    ],
+    "main_top_rows": 7,
+    "front_face_rows": 3,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The staircase is made of repeated brown tread bands, each 5-7 rows tall, such as rows 29-34 and 38-43. Each ends in a light nosing line (rows 18, 26, 35, 44) followed by 2 rows of dark riser/shadow, which is evidence (a). The dark risers and the base rows 45-47 give a front face of about 3 rows. Grey side walls at rows 4-26 recede on both sides. The top lintel at rows 0-2 is only a thin rim, but the steps carry the main top surfaces."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "mixed",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "Measured facts put the candidate at 13 visible tones per tile. That is close to the door reference (15) and well above the window wall (7). Near-flat coverage is 14%, slightly above the references (1% and 9%) but still low. By eye, the stair has a stone frame with rivets, a dark recess, and wooden steps with several lightness steps and grain, so the shading is comparable to the references. The dark edge pixels are 68% neutral, lower than the references' 100%, so the outline is partly tinted and I call it mixed rather than a uniform black sticker line. Both shipped references are 100% neutral, so this outline treatment is consistent with the chipset's accepted art. The piece is small and clean, and a careful artist would accept it next to the references without it looking thinner or flatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 17909
+  }
+ ],
+ "decidedAt": "2026-10-22T16:19:54.841Z",
+ "cells": {
+  "16": [
+   "2f88fcd7a4a47c9e",
+   "364b632b3cd26451",
+   "6e324aa5f943ddb9",
+   "7ee413fe0da54ea0",
+   "95304dea6abcbfbf",
+   "f6f2e05c5aee0051"
+  ],
+  "24": [
+   "00086de91462f554",
+   "04e6e926cc61ecd4",
+   "055e0b50f4eeea0d",
+   "3d04f80172e1fc04",
+   "4a43298c2178dac7",
+   "55741b801c4adf02",
+   "74837c66f8729eef",
+   "8f96a19c782341dc",
+   "ad54cdd452a50eb9",
+   "b9dbb6d36a3ceec6",
+   "d22fdc3e0e3bc5e7",
+   "f1be97b1c0305b0c"
+  ],
+  "32": [
+   "b62d628adb2646b9",
+   "b753c2c1c1594acd",
+   "caea951508a7501f",
+   "d075f9348a94adbb"
+  ],
+  "48": [
+   "2b15688d913b8890",
+   "cf768ff9db79a92c",
+   "dfcfe9b4ecadc0a7"
+  ]
+ }
+}

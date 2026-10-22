@@ -1,0 +1,34 @@
+{
+ "a": {"verdict": "PASS", "majors": [],
+  "minors": [
+   "Postern towers are exactly the vertical wall's 2-tile width and do not project on either side (scene-1x x16-46,y113-175; village-river-11-1x x15-45,y490-545 and y640-690; x912-945,y290-320 and y515-545). They read as a wall segment with an arch cut into it, not as a 'small square gate tower'.",
+   "The postern's arched opening faces the camera (south) while the road runs east-west through it. A picky viewer reads it as a door leading south into the wall rather than a tunnel the road passes through. The contract asks for this, so it is noted only.",
+   "Tower bodies are flat front rectangles with no corner or edge shading, so they have little volume compared with the wall planes (kit-tower-3x full; scene-3x x433-575,y965-1248)."
+  ],
+  "notes": "Walls show 2 walk rows over 4 face rows, vertical walls are top only, towers are 3 wide by 9 tall with the platform raised 2 rows and the base projecting 1 row, the gatehouse is 4 wide and the stairs are 3x4. Snow and desert copies keep the same geometry. No view-contract breaks found."},
+ "b": {"verdict": "PASS", "majors": [],
+  "minors": [
+   "The stair mass's south-facing side under the treads is drawn in deep-shade dark bricks (scene-3x x145-330,y195-380 and x575-720,y195-380; village-snow-77-1x x480-530,y60-128). That side is parallel to the lit wall face, so this dark is a lighting inconsistency. At 1x it reads as a dark diagonal smudge.",
+   "In the snow and desert copies the ground shadows are hard-edged flat lilac or brown bands of constant width with stepped corners (kit-wall_ring_snow-3x x1150-1185,y150-960 and y1000-1045 under the towers and gate; kit-wall_ring_desert-3x same positions). They are cruder than the green-ground version.",
+   "The snow walkway texture is blotchy light-blue rectangles with sparse dots and no packed or trodden variation (kit-wall_ring_snow-3x x100-290,y180-240 and x240-430,y680-740). It is weak next to the stone. Snow caps on the merlons are barely legible.",
+   "The front faces have almost no vertical value gradient or grime toward the base apart from the bottom course, so long runs look clean and new (scene-3x x50-430,y1010-1195; x870-1055,y1010-1195)."
+  ],
+  "notes": "Light from the upper-left is respected. Towers, gatehouses and stairs cast darker bands on the wall to their right (scene-3x x480-510, x575-600, x862-880, x1295-1310). The walls cast ground shadow right and down, and posterns have tunnel-mouth darkening on the inner road side. Brick texture is mottled per stone with a hue split between the paved walk and the face. The quality is comparable to the existing Beodeul castle wall."},
+ "c": {"verdict": "PASS", "majors": [],
+  "minors": [
+   "Tunnel-mouth shading appears only on the east side of the west posterns. The outside road west of them has none (scene-3x x0-50,y430-525; village-river-11-1x x0-15,y510-540).",
+   "In kit-wall_parts the postern top block overlaps the lower right part of the 3-wide tower body (kit-wall_parts-3x x578-670,y385-470), so the tower base course is cut off under it. This is an awkward join if it is used that way in maps.",
+   "The arch interior is a flat dark-grey fill with a few grate pixels, with no depth or light at the far end (scene-3x x75-120,y465-520)."
+  ],
+  "notes": "Corners are clean 2x2 blocks where the crenels on the outer vertical edge meet the front crenel row (scene-3x x50-140,y100-180; x1395-1485,y940-1010; snow SW). The gatehouse has an arch, a portcullis, banners, torches, machicolation dents and a top platform with props. Stairs land correctly on the walk edge, and posterns have a crenellated grate top and a south face of 2 or more rows with torches."},
+ "d": {"verdict": "PASS", "majors": [],
+  "minors": [
+   "The same ivy sprig is stamped in several places (scene-3x x885-900,y265-370 and x1415-1430,y1085-1185; kit-wall_parts-3x x550-565,y845-945).",
+   "Arrow slits use the same cross glyph at regular spacing on every tower and run, and tower-top props repeat (banner flag, barrel or crate, round shield) across all towers in all villages."
+  ],
+  "notes": "No placeholder look. Brick variation is per stone and not an obviously tiled 1-tile pattern."},
+ "e": {"verdict": "BELIEVABLE", "score": 7,
+  "notes": "At 1x the rings read as solid stone town walls with real depth: the walk-top versus face split, raised towers with cast shadows and a convincing gatehouse. What still pulls toward toy-like is how clean and uniform everything is: no weathering gradient, flat tower bodies, snow and desert shadows as hard flat bands, and stair sides that read as dark holes. None of these breaks the contract."},
+ "overall": "PASS",
+ "summary": "No majors. The view contract is met in all three palettes. Minors are the postern width and arch facing, the dark stair side, crude snow and desert shadow bands, the weak snow walkway texture, stamped ivy and repeated props. Score 7/10, believable but somewhat clean or sterile."
+}

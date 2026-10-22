@@ -1,0 +1,19 @@
+{
+ "schema": "oprn-object-gate-hold-decision/1",
+ "pixelSha256": "5d8f98a2868809e7a40af30c7edf5cdb6bee8c0c7ad62abfb7def035c599b802",
+ "profileHash": "4d8774b517f41638",
+ "kind": "structure",
+ "decision": "allow",
+ "decidedBy": "supervisor (delegated)",
+ "decidedAt": "2026-10-22T17:04:00.794Z",
+ "by": "delegated",
+ "delegatedBy": "user",
+ "evidence": "/home/main/z-project/rpg-zzu-object-gate-holds/harness-data/object-gate/vqa/beodeul-town-wall-3e-r21/argon-recheck-gate18.json",
+ "via": "review-page",
+ "reasons": [
+  "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
+  "화풍: 판정자 fail (2/4)"
+ ],
+ "note": "delegated by user to supervisor 2026-10-23; gate REFER re-checked by fresh independent Argon reviewer: PASS (view34/style/structure)",
+ "sig": "39d40c908e92ebae1646843820ff0823ebda33f0217ea753eaf29cdee514395f"
+}

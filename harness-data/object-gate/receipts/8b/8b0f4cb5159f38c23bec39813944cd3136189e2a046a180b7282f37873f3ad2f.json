@@ -1,0 +1,391 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8b0f4cb5159f38c23bec39813944cd3136189e2a046a180b7282f37873f3ad2f",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "wz-castle-stair-up",
+ "label": "wizarding_world stairs wz-castle-stair-up (UP)",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "refer",
+ "reasons": [
+  "3/4: 독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+ ],
+ "view34": {
+  "verdict": "refer",
+  "reasons": [
+   "독립 눈이 「3/4 아님」 4/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+  ]
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "wall",
+  "refs": [
+   "castle-door2-closed",
+   "castle-wall-n-window2"
+  ],
+  "scale": 2,
+  "score": 7,
+  "refSet": {
+   "id": "wizarding_world",
+   "chipset": "wizarding_world",
+   "fallback": false,
+   "hash": "1a0f54905a7352a0"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 11,
+  "tileColorsP90": 13,
+  "darkV5": 43,
+  "nearBlackEdge": 0,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "borderline",
+   "borderline",
+   "right",
+   "right",
+   "wrong",
+   "wrong",
+   "borderline",
+   "wrong",
+   "right",
+   "right",
+   "wrong"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top lintel / wall cap",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper stair tread",
+      "rows": "22-25",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-29"
+     },
+     {
+      "part": "middle stair tread",
+      "rows": "30-34",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36-38"
+     },
+     {
+      "part": "lower stair tread",
+      "rows": "39-43",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-46"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 5,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stair flight repeats a pattern of a tread band (rows 22-25, 30-34, 39-43) that ends in a light front-edge line (rows 26, 35, 44). Dark shadow rows follow each edge line (27-29, 36-38, 45-46), and a vertical riser/front face sits below. The treads are 4-5 rows deep and the red carpet runs over them. The dark arch at the top (rows 3-14) is a recess rather than a main volume. The steps therefore read as top surfaces with front faces, which is three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a stone-arch stair niche with a red carpet runner. It has about 5 stone steps (highlight, light, mid, dark, deep) with brick-like block edges and stepped risers, which is comparable to the references' 5 steps. Its 11 visible tones per tile sit between window2 (7) and door2 (15). Near-flat coverage is 19%, higher than the references' 1% and 9%, but the candidate is small and the flat areas are the dark interior and the carpet, not large stone faces. Its dark edge pixels are only 13% neutral, so the outlines lean toward the tint of the adjacent material (brown and red-brown), whereas the references are fully neutral. That is the opposite of the sticker look. Texture is moderate: stone block lines and carpet bands are present, but there is less grain than on the door. Overall it would sit acceptably next to the references, though it is slightly lower in density than the door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 15351
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top cornice band",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper landing with gold glow inside dark arch",
+      "rows": "10-12",
+      "evidence": "d",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "stair tread 1",
+      "rows": "19-25",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-29"
+     },
+     {
+      "part": "stair tread 2",
+      "rows": "30-34",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36-38"
+     },
+     {
+      "part": "stair tread 3 (lowest)",
+      "rows": "39-43",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-47"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The staircase repeats a tread band of 4-5 rows (rows 22-25, 30-34, 39-43). Each tread ends in a light 1-row front-edge line (rows 26, 35, 44) followed by 2-3 rows of dark shadow (rows 27-29, 36-38, 45-47). That is evidence (a). A red carpet runs down the middle. Dark side walls frame the stairs. Rows 10-12 show a gold lit surface inside the dark arch. The beige strip at rows 0-2 is a front-facing cornice with no edge line, so it does not count as a top surface. The treads read as horizontal surfaces seen from above, each with a front riser below it, so the stair is three-quarter view."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate carries 11 visible tones per 16x16 tile, between castle-wall-n-window2 (7) and castle-door2-closed (15), so its density is in the same range as the shipped references. Only 13% of its dark edge pixels are neutral, so the outlines lean toward the tint of the adjacent stone and brick. The references are 100% neutral, so the candidate is less sticker-like than they are. Its stone arch has about 4-5 grey steps, the carpet has about 3 reds, and the stair risers are stepped. The surround shows brick and stone grain like the reference wall faces. Near-flat coverage is 19% against 1% and 9% for the references, from the dark niche interior and some steps, but there is no large flat block that stands out. A careful artist would accept it next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 18203
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top step tread band",
+      "rows": "22-25",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-29"
+     },
+     {
+      "part": "middle step tread band",
+      "rows": "30-34",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36-38"
+     },
+     {
+      "part": "lower step tread band",
+      "rows": "39-43",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-47"
+     },
+     {
+      "part": "upper landing and arch opening",
+      "rows": "10-12",
+      "evidence": "a",
+      "front_edge_line_row": 12,
+      "eave_shadow_rows": "13-14"
+     },
+     {
+      "part": "top wall cornice",
+      "rows": "0-2",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 8,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stair is a stack of steps. Each step has a 4-5 row tread band (rows 22-25, 30-34, 39-43) that ends in a light gold front-edge line (rows 26, 35, 44). Each line is followed by 2-3 rows of darker shadow (rows 27-29, 36-38, 45-47) over the front face. The pattern repeats with a flat carpet band between edges, so the top surfaces are shown by evidence (a). The side walls are dark vertical faces with a few lighter stone courses. The cornice at rows 0-2 is a front-facing strip with no edge line, so it does not count as a top surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate shows 11 visible tones per tile, between the window reference (7) and the door reference (15), so it is at least as dense as the window wall. Its dark edge pixels are only 13% neutral, so the outlines lean brown or grey-brown beside the stone. That is tinted, not the uniform near-black line the references use, so this is the better outline treatment, not a sticker look. The stone arch frame, stepped treads and striped red carpet each carry about 4-5 distinct value steps, with block seams and highlight edges on the stone. Near-flat coverage is 19%, higher than the references (1% and 9%), mainly in the dark recess and carpet areas. These are small, shaded regions, not large single-colour fills across the wall face, and the piece is a small, simple prop. A careful artist would accept it next to the references. It is slightly sparser than the door, but not thinner or flatter overall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 19614
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top landing arch/lintel band",
+      "rows": "0-4",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "upper step tread (stair 1)",
+      "rows": "15-18",
+      "evidence": "a",
+      "front_edge_line_row": 18,
+      "eave_shadow_rows": "19-20"
+     },
+     {
+      "part": "step tread 2",
+      "rows": "22-26",
+      "evidence": "a",
+      "front_edge_line_row": 26,
+      "eave_shadow_rows": "27-29"
+     },
+     {
+      "part": "step tread 3",
+      "rows": "30-35",
+      "evidence": "a",
+      "front_edge_line_row": 35,
+      "eave_shadow_rows": "36-38"
+     },
+     {
+      "part": "step tread 4",
+      "rows": "39-44",
+      "evidence": "a",
+      "front_edge_line_row": 44,
+      "eave_shadow_rows": "45-46"
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "A staircase with a red carpet. Each step is a beige tread band 4-5 rows tall (rows 22-25, 30-34, 39-43) that ends in a light front-edge line (rows 26, 35, 44). Each edge line is followed by 2-3 rows of dark shadow (rows 27-29, 36-38), and the next step's face sits below that. This is evidence (a) repeated per step. The riser/shadow faces are about 3 rows. The dark walls on either side taper inward toward the top, so receding side faces are visible. The silhouette is a constant 32 wide, with no column cap."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 5,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "slightly_lower",
+    "score": 7,
+    "evidence": "The candidate is a stone wall face with an arched stair niche and a red carpet, so it matches the wall kind. It has 11 visible tones per tile, between the window wall (7) and the door (15). Near-flat coverage is 19%, higher than the references (1% and 9%) but still modest. It comes mostly from the dark niche interior and the carpet band, which carry stepped shading rather than being truly flat. Only 13% of its dark edge pixels are neutral, so the outlines lean toward a tint of the neighbouring stone or wood. That is a better outline treatment than the references' 100% neutral edges. The stone blocks, cornice band and stair treads show about 5 lightness steps with block-by-block shading and speckle, comparable to the window wall. It is slightly less dense than the door, but at least as rich as the window wall, so a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21598
+  }
+ ],
+ "decidedAt": "2026-10-22T16:19:54.853Z",
+ "cells": {
+  "16": [
+   "1dc2c6a34efccf9f",
+   "4c50b296e037318e",
+   "b363e934044a02e2",
+   "c279ef78d573a390",
+   "c35a91d11d050a97",
+   "dd4d5e6adc444b2a"
+  ],
+  "24": [
+   "3661c4e1e077a300",
+   "506a0cf7ea443ecf",
+   "5a7bbe7f799eb6da",
+   "74f5d5c82308ae3a",
+   "97203d23182d2e9d",
+   "a363075344278937",
+   "b58e7a6094396947",
+   "b86f0ced0830a669",
+   "d709806600167bb2",
+   "e4b2408679d10579",
+   "ea6fd51ff100ec00",
+   "f5b614a29499d38b"
+  ],
+  "32": [
+   "3a6a0e74ae4f2a07",
+   "9987d863b525d019",
+   "c76b1833b9d88d7e",
+   "f7f8a3e9e19d7d96"
+  ],
+  "48": [
+   "18c6a4846bb86521",
+   "806208f458839d94",
+   "f0191dcc1c4489c3"
+  ]
+ }
+}

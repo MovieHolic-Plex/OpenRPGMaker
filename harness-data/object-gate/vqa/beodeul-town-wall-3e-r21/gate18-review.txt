@@ -1,0 +1,20 @@
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/wall_ring              a4862d7b8cb8  
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/wall_parts             76fab5416554  
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/gatehouse_open         02139eb18bfa  
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/gatehouse_closed       a8f78ffa66cf  
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/wall_runs              4b96d6a94711  
+FAIL  3/4:ok 화풍:NO structure      beodeul_town_wall/tower                  ceedcf1362bd  화풍: 판정자 fail (3/4)
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/wall_ring_snow         a9d6cd89ccfd  
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/wall_parts_snow        fba3651e9d7e  
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/gatehouse_open_snow    f410414e1d3f  
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/gatehouse_closed_snow  a728feeb6066  
+REFER  3/4:ok 화풍:?? structure      beodeul_town_wall/wall_runs_snow         a5299f52dd6c  화풍: 화풍 판정이 갈림(걸린 판정 2/4) · 화풍: 판정자 fail (2/4)
+REFER  3/4:ok 화풍:?? structure      beodeul_town_wall/tower_snow             5d8f98a28688  화풍: 화풍 판정이 갈림(걸린 판정 2/4) · 화풍: 판정자 fail (2/4)
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/wall_ring_desert       13d167c9e0a1  
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/wall_parts_desert      4a34a803def8  
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/gatehouse_open_desert  7caf58ac606c  
+REFER  3/4:?? 화풍:ok structure      beodeul_town_wall/gatehouse_closed_desert 150759fc1ae3  3/4: 독립 눈이 「3/4 아님」 2/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면
+REFER  3/4:?? 화풍:ok structure      beodeul_town_wall/wall_runs_desert       dc7916e7ba56  3/4: 독립 눈이 「3/4 아님」 9/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면
+PASS  3/4:ok 화풍:ok structure      beodeul_town_wall/tower_desert           ec49e5f45078  
+현재 프로필은 보정되지 않았다 — 아래 숫자는 AI 조언이다. 최종 통과는 검토 화면(serve-holds, 18323)의 사람 허용이다.
+13/18 통과(보류 4 — 사람 확인 전에는 굽기·게시 불가; 3/4 통과 16, 화풍 통과 15) · 영수증 /home/main/z-project/rpg-zzu-beodeul-wall-3/harness-data/object-gate/receipts
