@@ -9,7 +9,8 @@ import { createBeodeulGroundTileset, ensureBeodeulGroundReferences } from "@/pro
 import { translateTiles } from "@/project/objectStamp";
 import type { AutotileGroup, GameMap, Project, TilesetDef, TreeComposerDef, TreeComposerSprite } from "@/project/types";
 import { composeTreesPlaced, treeComposerOwnTiles, treeHash, type TreePlacement } from "@/project/defaults/treeComposer";
-import { layerTileAt } from "@/project/mapLayers";
+import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
+import { BEODEUL_NATURE, BEODEUL_NATURE_ID, createBeodeulNatureTileset } from "@/project/defaults/beodeulNature";
 
 export const BEODEUL_FOREST_TYPES = ["broadleaf", "conifer", "mixed"] as const;
 export type BeodeulForestType = (typeof BEODEUL_FOREST_TYPES)[number];
@@ -287,4 +288,156 @@ export function composeBeodeulForest(project: Project, map: GameMap, target: Til
   composeTreesPlaced(map, def, plan.placements, plan.shade, forest, hold, write);
   paintBeodeulDarkGrass(project, map, target, family, plan.dark, write);
   return def;
+}
+
+// ---------- 이어진 숲 수관 오토타일(BEODEUL_NATURE.forestCanopy) ----------
+// 2026-10-22 사용자 「숲 오토타일을 제대로 적용해야 함」(village-diversity-1): 마을 숲이 짙은 풀 위 낱 나무(composer)로 서서
+// 숲 덩이가 아니라 듬성듬성한 과수원·네모 짙은 풀 판으로 읽혔다. 마을·붓 숲 덩이는 다시 수관 오토타일 한 장으로 덮는다 —
+// 수관은 칸 2×2 덩이 안에서만 그려져 칸 경계에서 잘리지 않고(append-beodeul-forest-canopy.py), 남쪽 끝 칸엔 줄기·뿌리,
+// 그 아래 빈 칸엔 물결치는 숲 그늘(이끼 치마) 띠가 붙는다. 이 함수 둘이 그 칸 고르기의 정본이다.
+
+export type BeodeulCanopyStyle = "leaf" | "snow";
+
+/** 8이웃 비트(북서1 북2 북동4 서8 동16 남서32 남64 남동128) — 맵 밖은 숲으로 본다(숲이 맵 밖으로 이어진다). */
+export function beodeulCanopyMask(W: number, H: number, c: number, isForest: (c: number) => boolean): number {
+  const x = c % W, y = (c - x) / W; let mask = 0, b = 0;
+  for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+    if (!dx && !dy) continue;
+    const nx = x + dx, ny = y + dy;
+    if (nx < 0 || ny < 0 || nx >= W || ny >= H || isForest(ny * W + nx)) mask |= 1 << b;
+    b++;
+  }
+  return mask;
+}
+
+/**
+ * 숲 칸 집합을 수관 오토타일이 받아 줄 모양으로 다듬는다(제자리). 수관은 «네 칸이 다 숲인 2×2 덩이» 에만 서므로,
+ * 어떤 2×2 덩이에도 들지 못한 칸(한 칸 폭 띠·뾰족한 끝·외톨이)은 수관 없이 덤불 낱칸으로 남아 숲 끝이 칸 계단으로 보인다 —
+ * 그런 칸은 지운다. 4이웃 셋 이상이 숲인 구멍은 canFill 이 허락하면 메운다. 맵 밖은 숲으로 본다.
+ */
+export function shapeBeodeulCanopyMask(W: number, H: number, forest: Set<number>, canFill: (c: number) => boolean = () => false, minComponent = 0): void {
+  const inside = (x: number, y: number) => x < 0 || y < 0 || x >= W || y >= H || forest.has(y * W + x);
+  for (let pass = 0; pass < 4; pass++) {
+    let changed = false;
+    for (let c = 0; c < W * H; c++) {
+      if (forest.has(c) || !canFill(c)) continue;
+      const x = c % W, y = (c - x) / W;
+      if ((inside(x - 1, y) ? 1 : 0) + (inside(x + 1, y) ? 1 : 0) + (inside(x, y - 1) ? 1 : 0) + (inside(x, y + 1) ? 1 : 0) >= 3) { forest.add(c); changed = true; }
+    }
+    for (const c of [...forest]) {
+      const x = c % W, y = (c - x) / W;
+      let ok = false;
+      for (const [ox, oy] of [[0, 0], [-1, 0], [0, -1], [-1, -1]] as const) {
+        const bx = x + ox, by = y + oy;
+        if (inside(bx, by) && inside(bx + 1, by) && inside(bx, by + 1) && inside(bx + 1, by + 1)) { ok = true; break; }
+      }
+      if (!ok) { forest.delete(c); changed = true; }
+    }
+    if (!changed) break;
+  }
+  // 작은 덩이(minComponent 칸 미만, 맵 가장자리에 닿으면 절반까지 봐 준다 — 맵 밖으로 이어지는 숲)는 숲이 아니라 덤불 뭉치로 읽힌다 — 지운다
+  if (minComponent > 0) {
+    const seen = new Set<number>();
+    for (const c0 of [...forest]) {
+      if (seen.has(c0)) continue;
+      const comp = [c0]; seen.add(c0); let edge = false;
+      for (let h = 0; h < comp.length; h++) {
+        const c = comp[h]!, x = c % W, y = (c - x) / W;
+        if (x === 0 || y === 0 || x === W - 1 || y === H - 1) edge = true;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+          const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
+          const n = ny * W + nx; if (forest.has(n) && !seen.has(n)) { seen.add(n); comp.push(n); }
+        }
+      }
+      if (comp.length < (edge ? minComponent / 2 : minComponent)) for (const c of comp) forest.delete(c);
+    }
+  }
+}
+
+export interface BeodeulCanopyPlan {
+  /** 숲 칸 → beodeul_nature 수관 칸(막힘). */
+  readonly canopy: Map<number, number>;
+  /** 숲 바로 남쪽 빈 칸 → beodeul_nature 숲 그늘(이끼 치마) 칸(통행). */
+  readonly shade: Map<number, number>;
+}
+
+/**
+ * 숲 칸마다 이웃 비트·P×P 위상으로 수관 칸을, 숲 남쪽 바로 아래 칸(shadeOk 가 허락한 칸)에는 물결치는 숲 그늘을 고른다.
+ * 칸 번호는 beodeul_nature 원본 번호 — 대상 칩셋으로는 writeBeodeulCanopy 가 옮긴다.
+ */
+export function planBeodeulCanopy(W: number, H: number, style: BeodeulCanopyStyle, forest: ReadonlySet<number>,
+  shadeOk: (c: number) => boolean = () => true): BeodeulCanopyPlan {
+  const phases = BEODEUL_NATURE.forestCanopy[style], P = BEODEUL_NATURE.forestPeriod[style], shades = BEODEUL_NATURE.forestShade[style];
+  const isF = (n: number) => forest.has(n);
+  const canopy = new Map<number, number>(), shade = new Map<number, number>();
+  for (const c of forest) {
+    const x = c % W, y = (c - x) / W;
+    const t = phases[(x % P) + P * (y % P)]![beodeulCanopyMask(W, H, c, isF)]!;
+    if (t >= 0) canopy.set(c, t);
+    const s = c + W;
+    if (y + 1 < H && !isF(s) && shadeOk(s)) {
+      const nw = x > 0 && isF(c - 1), ne = x + 1 < W && isF(c + 1);
+      const sh = shades[(x % P) * 4 + (nw ? 2 : 0) + (ne ? 1 : 0)]!;
+      if (sh >= 0) shade.set(s, sh);
+    }
+  }
+  return { canopy, shade };
+}
+
+/** beodeul_nature 를 프로젝트에 (최신으로) 두고 돌려준다. */
+export function beodeulNatureTileset(project: Project): TilesetDef {
+  const t = project.tilesets[BEODEUL_NATURE_ID];
+  return t && t.count >= BEODEUL_NATURE.count ? t : (project.tilesets[BEODEUL_NATURE_ID] = createBeodeulNatureTileset());
+}
+
+/**
+ * 수관·그늘 계획을 대상 칩셋으로 옮겨 2층에 쓴다(상위 — 3/4 시점에서 인물 뒤 수관이 앞으로 나오지 않게 2층 묶음).
+ * 수관 칸은 막힘, 그늘 칸은 통행. 이미 2층에 무언가 있는 칸은 건너뛴다. 쓴 칸 수.
+ */
+export function writeBeodeulCanopy(project: Project, map: GameMap, target: TilesetDef, plan: BeodeulCanopyPlan): number {
+  if (!plan.canopy.size && !plan.shade.size) return 0;
+  const tr = translateTiles(beodeulNatureTileset(project), target, new Set([...plan.canopy.values(), ...plan.shade.values()]));
+  const blocked = new Set(plan.canopy.values());
+  for (const [from, to] of tr.map) {
+    target.priority[to] = "upper";
+    target.passability[to] = blocked.has(from) ? { up: false, down: false, left: false, right: false } : { up: true, down: true, left: true, right: true };
+  }
+  let n = 0;
+  for (const src of [plan.shade, plan.canopy]) for (const [c, t] of src) { setLayerTileAt(map, 2, c, tr.map.get(t)!); n++; }
+  return n;
+}
+
+/**
+ * 붓·조수 범용 숲(place_props density dense·impassable)을 버들항 맵에 깔 때 — 사각형 area 안에 둥근 숲 덩이(dense: 물결진 타원,
+ * impassable: 모서리를 깎은 사각) 를 잡고 수관 오토타일로 덮는다. 길·물·건물(2~4층에 무언가 있는 칸)·막힌 바닥은 건너뛴다.
+ */
+export function plantBeodeulCanopyArea(project: Project, map: GameMap, target: TilesetDef,
+  area: { x: number; y: number; w: number; h: number }, density: "dense" | "impassable", seed: number, style: BeodeulCanopyStyle = "leaf"):
+  { forestCells: number; shadeCells: number } {
+  const W = map.width, H = map.height;
+  const lowerAuto = new Set<number>();
+  const darkGroups = new Set(Object.values(BEODEUL_DARK_GRASS_GROUP));
+  for (const g of target.autotileGroups ?? []) if ((g.layer ?? "lower") === "lower" && !darkGroups.has(g.id)) for (const t of g.memberTileIds) lowerAuto.add(t);
+  const groundOk = (c: number) => {
+    const lt = map.lowerTiles[c]!; const ps = target.passability[lt];
+    if (lowerAuto.has(lt) && lt !== 737) return false; // 길·물·모랫길 같은 오토타일 바닥
+    if (ps && !ps.up && !ps.down && !ps.left && !ps.right) return false;
+    return ([2, 3, 4] as const).every((L) => layerTileAt(map, L, c) < 0);
+  };
+  const cx = area.x + (area.w - 1) / 2, cy = area.y + (area.h - 1) / 2, rx = Math.max(1, area.w / 2), ry = Math.max(1, area.h / 2);
+  const wob = (treeHash(area.x, area.y, seed) % 628) / 100;
+  const forest = new Set<number>();
+  for (let y = area.y; y < area.y + area.h; y++) for (let x = area.x; x < area.x + area.w; x++) {
+    if (x < 0 || y < 0 || x >= W || y >= H) continue;
+    const c = y * W + x; if (!groundOk(c)) continue;
+    const ex = (x - cx) / rx, ey = (y - cy) / ry;
+    if (density === "dense") { if (ex * ex + ey * ey > 1.05 + 0.25 * Math.sin(Math.atan2(ey, ex) * 3 + wob)) continue; }
+    else if (Math.abs(ex) + Math.abs(ey) > 1.6) continue;
+    forest.add(c);
+  }
+  const inArea = (c: number) => { const x = c % W, y = (c - x) / W; return x >= area.x && y >= area.y && x < area.x + area.w && y < area.y + area.h && groundOk(c); };
+  shapeBeodeulCanopyMask(W, H, forest, inArea, 6);
+  const plan = planBeodeulCanopy(W, H, style, forest, (s) => !forest.has(s) && groundOk(s));
+  writeBeodeulCanopy(project, map, target, plan);
+  return { forestCells: plan.canopy.size, shadeCells: plan.shade.size };
 }

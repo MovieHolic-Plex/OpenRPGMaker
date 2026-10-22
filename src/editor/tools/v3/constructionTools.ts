@@ -23,6 +23,9 @@ import {
 } from "@/project/tileVocabulary";
 import type { AutotileGroup, GameMap, Project, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { forestCompositionApplies, measureForestArea, plantForestComposition } from "../forestComposition";
+import { plantBeodeulCanopyArea } from "../beodeulForest";
+import { logConstructionTiles } from "../constructionLog";
+import { BEODEUL_CITY_ID } from "@/project/defaults/beodeulCity";
 import { protectedHouseCells } from "../houseProtection";
 import {
   forestPackingFor,
@@ -797,7 +800,7 @@ function bareBoardWarnings(map: GameMap, filledCells: number, layer: string): st
 const placeProps: ToolDefinition = {
   name: "place_props",
   description:
-    "소품을 area 안에 산포한다(v3). material=타일 라벨/설명(예: \"침엽수\", \"나무 상자\", \"과일박스\"). 그룹 id·vocabId 금지. 물·길·통행 불가·upper 점유 칸 스킵. 면 채우기는 fill_region.  밀도는 enum 으로 직접: 숲=density:\"dense\", 울창·빽빽·통행 불가=\"impassable\", 드문드문·가로수=\"sparse\"(코드가 문장을 읽지 않는다). 숲마을 칩(forest_harmony)에서 dense·impassable 은 침엽수 산포가 아니라 굽이숲 수관과 3줄 밑동을 깐다. 같은 area 에 place_props 는 1회. 물·호수 칸 위 금지 — area 는 호수 바깥 육지만, 호수를 채운 뒤 둘레에 깔 것. 장식 박스·나무상자·나무박스는 material:\"나무 상자\"(count:N), 과일박스는 material:\"과일박스\" — small-props 가방이나 place_chest 로 대체 금지. 마을 규모 숲은 author_village({forestDensity}). 등불·장식 소품도 이 툴."
+    "소품을 area 안에 산포한다(v3). material=타일 라벨/설명(예: \"침엽수\", \"나무 상자\", \"과일박스\"). 그룹 id·vocabId 금지. 물·길·통행 불가·upper 점유 칸 스킵. 면 채우기는 fill_region.  밀도는 enum 으로 직접: 숲=density:\"dense\", 울창·빽빽·통행 불가=\"impassable\", 드문드문·가로수=\"sparse\"(코드가 문장을 읽지 않는다). 숲마을 칩(forest_harmony)에서 dense·impassable 은 침엽수 산포가 아니라 굽이숲 수관과 3줄 밑동을 깐다. 버들항(beodeul_city) 맵에서 material 나무·숲·활엽수·침엽수 + dense·impassable 은 area 안 둥근 숲 덩이를 이어진 수관 오토타일로 덮는다(길·집·물 칸은 건너뜀, area 는 4×4 이상 빈 풀밭). 같은 area 에 place_props 는 1회. 물·호수 칸 위 금지 — area 는 호수 바깥 육지만, 호수를 채운 뒤 둘레에 깔 것. 장식 박스·나무상자·나무박스는 material:\"나무 상자\"(count:N), 과일박스는 material:\"과일박스\" — small-props 가방이나 place_chest 로 대체 금지. 마을 규모 숲은 author_village({forestDensity}). 등불·장식 소품도 이 툴."
     + "숲은 모델이 density:sparse|normal|dense|impassable 을 넣으면 count·packing을 면적에서 자동 계산한다"
     + "(sparse=15%, normal=40%, 숲=dense 80%, 울창/빽빽/통행 불가=impassable 100%). "
     + "사용자 문장을 코드가 읽지 않는다 — 밀도 enum을 생략하면 일반 산포(count 필수). "
@@ -854,6 +857,18 @@ const placeProps: ToolDefinition = {
         ...(resolved.kind === "group" ? { groupId: resolved.group.id, groupName: resolved.group.name } : {}),
         matchedLabel: resolved.matchedLabel,
       });
+    // 버들항 맵(2026-10-22 「숲 오토타일을 제대로」): 숲은 낱 나무 산포가 아니라 이어진 수관 오토타일 덩이 — 마을 숲과 같은 정본(beodeulForest.ts).
+    if (density && forestCompositionApplies(density) && args.count === undefined && map.tilesetId === BEODEUL_CITY_ID
+      && /나무|숲|수풀|활엽|침엽|전나무|소나무|tree|forest|wood/iu.test(material)) {
+      const seed = args.seed === undefined ? 11 : coerceInt(args.seed, "seed", PROPS_EXAMPLE);
+      const r = plantBeodeulCanopyArea(draft, map, tileset, area, density, seed, /눈|설원|snow/iu.test(material) ? "snow" : "leaf");
+      logConstructionTiles(map, "stamp", "숲 수관", { major: false });
+      return {
+        summary: `${map.name} (${area.x},${area.y}) ${area.w}×${area.h} 버들항 숲 덩이(density=${density}) — 이어진 수관 ${r.forestCells}칸(통행 막힘), 남쪽 숲 그늘 ${r.shadeCells}칸.`
+          + (r.forestCells ? "" : " 깔 수 있는 빈 풀밭이 없거나 2×2 덩이가 서지 않는 area 다 — 길·건물 밖 더 넓은 area 로 다시."),
+        data: { placed: r.forestCells, packing: "dense", density, forestCells: r.forestCells, shadeCells: r.shadeCells, canopy: "beodeul_nature.forestCanopy" },
+      };
+    }
     if (density && resolved.status !== "missing" && !forestMaterial) {
       failWithExample("density는 침엽수/활엽수 material에만 쓸 수 있습니다", PROPS_EXAMPLE);
     }
