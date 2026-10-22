@@ -75,12 +75,13 @@ export function withHandInteriorEdit(properties: Record<string, JsonSchema>): Re
   return { ...properties, edit: {
     type: "object",
     description: "고친 곳만 보내기 — 이 실행에서 같은 mapId 로 성공한 마지막 짓기(다듬기면 「마지막 짓기 호출」) 인자에 얹는다. 고치기·다듬기에서는 mapId 와 edit 만 준다(plan·objects 전체를 다시 쓰지 않는다). "
-      + "remove = 그 칸(발밑 왼쪽 위)의 가구·탁자·탁상 물건·단 빼기(id 를 주면 그 id 만), removeLines = 그 id 의 깔개·줄 빼기, add = 덧붙이기, set = 통째로 바꿀 인자(plan·floor·wall·zones…). 앞선 짓기가 없으면 거부한다.",
+      + "remove = 그 칸(발밑 왼쪽 위)의 가구·탁자·탁상 물건·단 빼기(id 를 주면 그 id 만), removeLines = 그 id 의 깔개·줄 빼기, add = 덧붙이기, set = 통째로 바꿀 인자(plan·start·exitWidth·ceiling·name — 바닥·벽면·구역을 바꿀 때는 전체 인자로). 앞선 짓기가 없으면 거부한다.",
     properties: {
       remove: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, id: { type: "string" } }, required: ["x", "y"], additionalProperties: false } },
       removeLines: { type: "array", items: { type: "string" } },
       add: { type: "object", properties: pick(["objects", "tables", "lines", "goods", "daises", "links"]), additionalProperties: false },
-      set: { type: "object", properties: pick(["plan", "floor", "wall", "ceiling", "zones", "start", "exitWidth", "name"]), additionalProperties: false },
+      // 바닥·벽면·구역은 enum 이 길어(7천 자) 넣지 않는다 — 그것을 바꿀 때는 전체 인자로 부른다.
+      set: { type: "object", properties: pick(["plan", "ceiling", "start", "exitWidth", "name"]), additionalProperties: false },
     },
     additionalProperties: false,
   } as JsonSchema };

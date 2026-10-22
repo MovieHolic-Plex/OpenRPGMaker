@@ -696,6 +696,21 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           ? await renderMapRegionImage(ctx.project, { mapId: inspectedMap.id, x: 0, y: 0, w: inspectedMap.width, h: inspectedMap.height }, options.renderToolImage, signal ?? options.signal)
           : await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, data, signal ?? options.signal);
         result.content.push({ type: "image", mimeType: "image/png", data: png });
+        // 손 도트 실내(방 짓기 역할표 칩셋)는 칸 번호로 고치지 않는다(평면·가구 인자로 다시 짓는다) — 그림을 함께 보냈으면 칸 번호 배열(맵 하나 7천 자 안팎)을 뺀다.
+        // 2026-10-22 다듬기 실행: show_map_region 18번 결과 글 13만 자가 대부분 이 배열이었다.
+        const shownMap = tool.name === "show_map_region" && data && typeof data === "object" ? ctx.project.maps[String((data as { mapId?: unknown }).mapId)] : undefined;
+        if (png && shownMap && roomSpecOf(ctx.project.tilesets[shownMap.tilesetId])) {
+          for (const part of result.content) {
+            if (part.type !== "text") continue;
+            try {
+              const parsed = JSON.parse(part.text) as { data?: Record<string, unknown> };
+              if (!parsed.data || !Array.isArray(parsed.data.lower)) continue;
+              const { lower: _l, upper: _u, layer2: _2, layer4: _4, shadow: _s, blockedCells, ...rest } = parsed.data;
+              parsed.data = { ...rest, blockedCount: Array.isArray(blockedCells) ? blockedCells.length : 0, note: "손 도트 실내 — 칸 번호 배열은 뺐다(그림을 본다). 고칠 때는 build_hand_interior_room 인자로." };
+              part.text = JSON.stringify(parsed);
+            } catch { /* JSON 이 아니면 그대로 */ }
+          }
+        }
         if (png && data && typeof data === "object") interiorCompletion.recordPreview(ctx.project, data);
         const region = data && typeof data === 'object' ? data as Record<string, unknown> : {};
         options.onEvent?.({ type: "execution_status", name: "map.image.delivered", ok: true, summary: "현재 초안 이미지를 모델 도구 응답에 포함했습니다.", data: { toolCallId: id, base64Length: png.length,
