@@ -864,5 +864,42 @@ save 되풀이 7회, exit 0. 바탕 `0b9e645e` → 마감 `4eb598be`. 바뀐 불
 마감은 전부 PASS · 윤곽 바꿈 a FAIL · `put` 이 투명 자리 거절 · 팔레트 밖 색 c FAIL · 난수/넓은 면 반복/`%`/finish_lib 내부/numpy e FAIL ·
 문짝 덮기 b FAIL · 처마 선 밀기 d FAIL · 하네스 재실행 기록·해시 · finish_draw.py 가 만들지 않은 finished.png 거절 · 샌드박스 check.py 를
 고쳐도 원본 검사가 거절 · review --finished 가 마감 해시를 보고 함정이 마감 그림에서 나옴·영수증 분리 · sheet --finished 해시·pick 바인딩
-(틀린 해시·대리 선택 거절) · 검수 없는 마감은 시트에 없음 · village --finished 가 마감 화소를 놓음 · 바탕이 바뀌면 마감 탈락.
+(틀린 해시·대리 선택 거절) · 검수 없는 마감은 시트에 없음 · village --finished 가 마감 화소를 놓음 · 바탕이 바뀌면 마감 탈락 ·
+북방 91색 팔레트의 범례 글자.
+
+## style-r8 — 날개 골 `roof.gf.valley` 그리기 (2026-10-22)
+
+### 판
+
+세 테마(fantasy-kingdom · northern-snow · beodeul-noble)에 `style-r8`: `reuseParts: style-r7`(연쇄로 r5/r6 그림까지), `grammar: r7`,
+`items` = 그 판 건물이 쓰는 항목만(r7 순서), `buildings` = `thouse.r7`(귀족은 + `townhouse.r7`). 새로 그린 것은 골 v4·v5·v6 하나뿐이다.
+도시 계획(`building-kit-city-plan.md`)의 「r8 원소 판」은 이 판에 항목을 더해 이어 간다.
+
+### drawer — reuseParts 판은 빠진 항목만 그린다 (고침)
+
+예전 `ensure_module` 은 판의 모든 항목 × 후보 키에 빈 함수(`NotImplementedError`)를 만들었고, `round_module` 은 이 판 함수가 옛 판을
+이기므로 reuseParts 판을 그리면 빈 함수가 옛 그림을 가렸다(항목 전부를 다시 그려야 했다). 이제 `drawer.draw_items(테마, 판, 키)` 는
+옛 판(연쇄 포함)에 그 키 함수가 있는 항목을 빼고, 뼈대·`CANDIDATES`·BRIEF 가 그 항목만 다룬다. BRIEF 에는
+「옛 판에서 그대로 가져오는 부품 — 그리지 않는다」 목록(`항목 ← 원본 판`)이 붙고, `dry.py` 미리보기는 두 쪽을 함께 조립한다.
+그릴 항목이 없는 키는 건너뛴다. 시험 `test_wing_join.ReuseFallbackTest.test_drawer_draws_only_the_item_the_reused_round_lacks`.
+
+### 결과 (실측)
+
+그리기 = `draw <테마> style-r8 --agent --jobs 3`(Opus 5.5 high). 관문 FAIL 0(세 테마, WARN 은 재사용 굴뚝·덩굴 벽뿐),
+조립 12채 모두 A1~A16 통과. 독립 검수(`review --runs 3`, 판정자 opus high, 무효 0회, 함정 `detached_wing` 포함):
+
+| 테마 | A | B | C |
+|---|---|---|---|
+| fantasy-kingdom `thouse.r7` | PASS 3/3 | FAIL 0/3 (본채 지붕 모임 끝 없는 판) | FAIL 1/3 (지붕·벽 같은 갈색) |
+| northern-snow `thouse.r7` | PASS 3/3 | FAIL 1/3 (날개 지붕 가장자리 벽돌 기둥·고드름 띠) | PASS 2/3 |
+| beodeul-noble `thouse.r7` | PASS 3/3 | PASS 3/3 | PASS 2/3 |
+| beodeul-noble `townhouse.r7` | FAIL 0/3 | FAIL 0/3 | FAIL 0/3 |
+
+귀족 타운하우스의 major 는 모두 **재사용한 r5 모통이 탑·첨탑**(창 없는 회색 띠, 화폭 끝에 잘림, 바늘 같은 첨탑)이다 — 골이 아니다.
+시트는 부품 번호의 **모든** 판 건물이 PASS 일 때만 카드를 내므로 귀족 r8 시트는 PASS 카드 0(실패 카드는 `--show-failed`).
+시트: `bk-fantasy-kingdom-style-r8.html` · `bk-northern-snow-style-r8.html` · `bk-beodeul-noble-style-r8.html`(http://mdc-server:18301/).
+사람 고르기는 아직 없다.
+
+**실행 사고(기록):** 감독 쉘의 실행 도우미가 명령을 두 번 불러 r8 그리기가 키마다 두 프로세스로 같은 샌드박스에서
+돌았다(두 Opus 가 같은 `round_module.py` 를 고침). 저장소로 옮겨진 함수는 둘 중 나중에 끝난 쪽의 블록이고, 관문·조립·검수는 그 최종 그림으로 돌았다.
 
