@@ -57,3 +57,26 @@
 - 설명: 키트 이름·`ai.description`(atlasBiomeInteriorTileset.json)·사양 `ko`·`desc`(handInteriorSpec.json)·overrides `why` 에 올라가는/내려가는 계단, 들어서는 쪽(남쪽 앞 칸), 오를 때·내려갈 때 보는 방향(북쪽), 도착(다른 층 짝 계단의 남쪽 앞 칸, 계단을 등지고 남쪽)을 적었다. 참고문서 사전 행에 계약 `note` 를 싣는다.
 - 예제 맵: 저택 2층 계단통 이동 이벤트가 위 줄(y 3)에, 1층에서 오는 도착이 계단통 칸 (12,4) 위였다 → 이동 칸 y 4, 도착 (12,5)(`build_tileset.py` 링크 규칙과 `v5-maps/maps.json` 둘 다).
 - 출하 플레이어 걷기: `scripts/qa/runtime/v5-stairs.scenario.mjs`(픽스처 `v5-stairs-fixture.mts` — 저택 1·2층, 지하 감옥 ↔ 돌 바닥 구멍 계단 시험 맵).
+
+## jp_city 실내 계단 다시 그리기 (2026-10-22)
+사용자: 「계단을 보고 다시 그려라. 내려가는 방향·올라가는 방향을 description 에 확실히 넣어서 잡아라.」
+- 그림 13종(`jp-in-stairs-up-wood`·`-wide`·`stairwell-down-wood`·`sc-*`·`mc-*`·`of-*`·`as-*`·`cs-*`)은 공용 모듈
+  `scripts/content/jp-city/interior/stairart.py` 하나에서 그린다. 블록(`interior_entry`·`interior_school`·`interior_post`·`interior_office`·
+  `dungeon_school`·`dungeon_construction`)은 재질만 고르고 덧칠(녹·잔해·라바콘)만 얹는다.
+  - **올라가는 계단:** 단마다 넓고 밝은 디딤판 윗면(결·뒤쪽 그늘 한 줄) + 1px 코 + 1px 더 어두운 챌판 + 그늘 한 줄. 디딤판이 챌판보다 훨씬 넓어야
+    「정면 입면」이 아니라 윗면이 보이는 3/4 로 읽힌다. 먼 단일수록 낮고 어둡고 맨 위는 위층 바닥 밑 어둠. 옆판은 원근 톱니(코 줄은 밝게, 챌판 줄은 어둡게).
+    벽 쪽 옆판·트인 쪽 난간(1칸 폭은 가는 손잡이)·아래 기둥. 공사장(cs)은 난간 대신 양쪽 콘크리트 옆벽.
+  - **내려가는 계단통:** 바닥 2×2 구멍. 디딤판 윗면 일곱 단(2·2·3·3·3·4·5px, 남쪽일수록 크다)이 북벽 바로 밑까지 차고 북쪽 근흑은 2px 뿐이다.
+    값은 남쪽(바닥 값) → 북쪽(근흑)으로 단마다 내려가고, 안쪽 구덩이 벽이 북쪽으로 넓어진다(나무 1→5px, 회색 1→3px). 회색 단의 낙차 줄은 두 단만 어둡게
+    — 검은 줄 = 그릴 살·오븐·라디에이터(VQA r23~r29 다수). 큰 검은 판 위 줄무늬 몇 개도 같은 오독. 나무는 같은 짜임에 따뜻한 갈색 램프.
+    구멍 옆 가장자리는 1px 어두운 절단선(나무는 바깥에 판자 밝은 결 1px 더), 남쪽 입구는 투명(방 바닥이 이어진다). 난간은 가는 손잡이 1px + 그늘 1px +
+    4px 간격 동자(굵은 머리대 = 히터 앞판). 회색 옆 손잡이는 중간 쇠색의 납작한 띠(밝은 세로줄 둘 = 가전 틀), 나무 옆 기둥은 남쪽 끝보다 앞에서 끝난다.
+  - **공사장 오르는 계단(cs):** 단 다섯(10·9·7·6·5px), 챌판 두 줄(중간·어둠), 서쪽 벽 = 빛 받는 윗면, 동쪽 벽 = 그늘 + 디딤판에 그늘 1px.
+    고른 얇은 줄 + 같은 밝은 기둥 둘 = 셔터(VQA r26·r28).
+- 이름·설명은 모두 「올라가는/내려가는」을 앞에 두고, 설명 끝에 들어서는 쪽(남쪽 앞 칸)·오를/내려갈 때 보는 방향(북쪽)·도착(짝 계단 남쪽 앞 칸, 남쪽을 보고 선다)을 적는다.
+  같은 문장이 `tiledata/stairs/overrides.json` 의 `why` 로 계약·참고문서에 들어간다.
+- **벽면 파고듦 수정:** 계단통은 바닥 세 줄(구멍·밟는 줄·앞 칸)이 필요한데 단독주택 2층·맨션 외복도·학교 3층 복도는 두 줄이라 #3256 이 계단통을 벽면으로 한 줄 올렸었다.
+  `scripts/content/stairs/widen-jp-stair-corridors.mts --write` 가 세 복도에 바닥 한 줄을 더하고 계단통을 첫 바닥 줄로 내린다(이벤트·이동·시작 위치도 한 줄 내림, 두 번 돌려도 같다).
+  이어 `fit-bundled-places.mts --write`. 예제 JSON(`mansion-corridor`·`school-3f`·`school-2f`·`mansion-lobby`)도 같이 고쳤다. `lint-bundled-stairs` 공용 장소 경고 0.
+- 출하 플레이어 걷기: `scripts/qa/runtime/jp-stairs-redraw.scenario.mjs`(단독주택 2F↔1F · 맨션 외복도↔로비 · 학교 2F↔3F).
+- 검수: Opus 적대 VQA 영수증 `harness-data/object-gate/vqa/jp-in-stairs-13.opus-vqa-r*.json`, object-gate 묶음 `jp-in-stairs-13`.

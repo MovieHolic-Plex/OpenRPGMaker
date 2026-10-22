@@ -1,0 +1,34 @@
+{
+ "queue": "jp-in-stairs-13",
+ "round": 26,
+ "judges": "3x claude-opus-5.5 fresh subagents in parallel, no prior scores; a major counts only if >=2 of 3 raise it",
+ "date": "2026-10-22",
+ "verdict": "fail",
+ "perReviewer": {
+  "A": {
+   "majors": 2,
+   "axis2": 7,
+   "axis6": 6
+  },
+  "B": {
+   "majors": 5,
+   "axis2": 6,
+   "axis6": 5
+  },
+  "C": {
+   "majors": 1,
+   "axis2": 7,
+   "axis6": 6
+  }
+ },
+ "majorityMajors": [
+  "cs-stairs-up-bare (A+C): light segmented side strips + even treads -> ladder / rolling shutter",
+  "mc-stairwell-down (A+B): solid grey rail header over the dark box -> heater/fireplace/cart"
+ ],
+ "minorityMajors": [
+  "sc/of/as stairwell-down and wood well (B only)"
+ ],
+ "upStairs": "other up stairs: no major",
+ "majoritycount": 2,
+ "action": "cs up: solid concrete side walls (no light rail-like line, no sawtooth, no formwork marks); all railed wells: thin 1px handrail + shadow + balusters every 4px (same as wood)"
+}

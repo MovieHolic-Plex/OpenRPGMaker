@@ -19,6 +19,7 @@ import importlib.util, math, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', 'interior'))
 from ikit import Registry, K, OL, run_block, ROOT, RAMPS   # noqa: E402
+import stairart as SA   # noqa: E402
 
 BLOCK = 'dungeon_school'
 R = Registry(BLOCK, '폐교')
@@ -529,32 +530,40 @@ def _debris(c):
     hl(c, 0, 31, 16, K('sumi', 0))
 
 
-@R.obj('as-stairs-up-broken', '부서진 콘크리트 계단(위)', w=2, h=1, up=32, kind='wall', walk=[(0, 0), (1, 0)], stairs='up', use=('travel',),
+@R.obj('as-stairs-up-broken', '부서진 콘크리트 계단(올라가는)', w=2, h=1, up=32, kind='wall', walk=[(0, 0), (1, 0)], stairs='up', use=('travel',),
        tags=('계단', '폐교', '階段'),
        place='폐교 복도 북쪽 벽 바로 아래(벽 가구 자리) — 위층 계단통과 같은 x',
-       desc='버려진 학교의 2칸 폭 콘크리트 계단 — 북쪽 벽 속으로 오르는 디딤판은 이가 빠지고 잔해·낙엽이 얹혔으며, 쇠 손잡이와 난간은 녹슬었다. 발칸 두 칸에서 위층으로 이동.')
+       desc='버려진 학교의 2칸 폭 콘크리트 계단 — 북쪽 벽 앞에서 천장 구멍으로 오르고, 디딤판은 이가 빠지고 잔해·낙엽이 얹혔으며 손잡이·난간은 녹슬었다. 올라가는 계단 — 들어서는 쪽: 남쪽 앞 칸(발칸 바로 아래 바닥). 오를 때 보는 방향: 북쪽(화면 위). 발칸에서 북쪽으로 걸으면 위층으로 이동하고, 위층 as-stairwell-down(부서진 내려가는 계단통) 남쪽 앞 칸에 계단을 등지고 남쪽(아래)을 보고 선다.')
 def _stairs_broken(c):
     SC._conc_stairs(c, 2)
     age(c, -1, (0, 0, 32, 48))
-    for (x, y, w) in ((6, 37, 3), (17, 27, 4), (9, 17, 3)):                                # 이 빠진 디딤판 끝
-        rc(c, x, y, w, 2, K('yoru', -2)); px(c, x, y - 1, K('conc', -3))
-    for (x, y) in ((12, 41), (20, 36), (8, 26), (22, 20)): rc(c, x, y, 2, 1, K('conc', 0)); px(c, x, y + 1, K('conc', -3))   # 잔해 조각
-    for (x, y) in ((5, 42), (24, 31), (14, 12)): leaf(c, x, y, -1, 'daidai')
-    speck(c, 86, 90, (K('daidai', -2),), (26, 6, 32, 30))
-    ivy(c, 2, 20, 47, 87, dense=45, up=True)
+    for y in range(1, 10):                                          # 바랜 뒤에도 위층 바닥 밑 어둠에 얼룩이 남게(한 단 내리면 가장 어두운 두 단이 한 색이 된다)
+        for x in range(1, 31):
+            if SA._h(x, y, 77) < 30: px(c, x, y, K('sumi', 1))
+    # 이 빠진 디딤판 코(원근 계단의 코 줄을 따른다 — SA.persp_noses): 코가 떨어져 나가 챌판 어둠이 위로 먹어 들고, 깨진 뒤 모서리만 밝다
+    noses = SA.persp_noses(2)
+    for (k, off, w) in ((0, 3, 4), (1, 12, 4), (3, 2, 3)):
+        yn, x0, x1 = noses[k]; x = x0 + off
+        rc(c, x, yn - 1, w, 2, K('yoru', 0))
+        for j in range(w): px(c, x + j, yn - 2 - (j % 2), K('conc', 0))
+    # 잔해: 맨 아래 단 위 콘크리트 덩이 둘 + 낙엽 하나(적게, 어두운 톤 — 흰 점은 1x 에서 반짝이로 읽혔다)
+    for (x, y) in ((13, 41), (20, 42)): rc(c, x, y, 2, 1, K('conc', -1)); px(c, x, y + 1, K('conc', -3))
+    leaf(c, 6, 43, -1, 'daidai')
+    for (x, y) in ((27, 33), (25, 22)): px(c, x, y, K('daidai', -2))   # 녹 점(손잡이)
+    ivy(c, 2, 30, 47, 87, dense=30, up=True)
 
 
 @R.obj('as-stairwell-down', '부서진 내려가는 계단통', w=2, h=2, up=16, kind='floor', use=('travel',), stairs='down', walk=((0, 1), (1, 1)),
        tags=('계단', '폐교', '階段', '난간'),
        place='폐교 위층 복도 한쪽 — 아래층 올라가는 계단과 같은 x',
-       desc='버려진 학교 위층 바닥에 뚫린 내려가는 콘크리트 계단통 2×2 — 녹슬어 휜 쇠 난간(북·동·서), 남쪽이 열린 입구, 계단에 잔해와 낙엽. 윗줄 난간은 막히고 아랫줄 두 칸은 밟는다 — 그 칸에 아래층으로 가는 이동.')
+       desc='버려진 학교 위층 바닥에 뚫린 2×2 계단통 — 녹슬어 휜 쇠 난간(북·동·서), 남쪽만 열린 입구, 계단에 잔해와 낙엽, 북쪽으로 한 단씩 낮아지며 어두워진다. 윗줄(구멍)은 막히고 아랫줄 두 칸을 밟는다. 내려가는 계단 — 들어서는 쪽: 남쪽 앞 칸(키트 바로 아래 바닥, 북·동·서는 난간·턱으로 막힘). 내려갈 때 보는 방향: 북쪽(화면 위, 구멍 속 어둠 쪽). 아랫줄 두 칸(밟는 칸)에 들어서면 아래층으로 이동하고, 아래층 as-stairs-up-broken(부서진 올라가는 계단) 남쪽 앞 칸에 계단을 등지고 남쪽(아래)을 보고 선다. 바닥 세 줄(구멍 줄·밟는 줄·앞 칸)이 필요하다 — 벽면 아랫줄 바로 아래 첫 바닥 줄부터 놓는다(난간 윗부분이 벽면 아랫줄 위로 솟는다).')
 def _well_broken(c):
     SC.R.objs['sc-stairwell-down']['draw'](c)
     age(c, -1, (0, 0, 32, 48))
-    for x in range(12, 18): px(c, x, 16 + (x - 12) // 2, ST(-1)); px(c, x, 17 + (x - 12) // 2, ST(-3))   # 휜 난간
-    for (x, y) in ((8, 27), (20, 31), (14, 35)): rc(c, x, y, 2, 1, K('conc', -1))
-    for (x, y) in ((24, 23), (6, 38)): leaf(c, x, y, -1, 'daidai')
-    speck(c, 88, 120, (K('daidai', -2), K('soil', -1)), (0, 4, 32, 20))
+    for x in range(11, 20): px(c, x, 7 + (1 if 13 <= x <= 17 else 0) + (1 if x == 15 else 0), ST(1)); px(c, x, 9 + (1 if 13 <= x <= 17 else 0), ST(-3))   # 가운데가 처진 북쪽 손잡이
+    for (x, y) in ((8, 26), (20, 31), (14, 36)): rc(c, x, y, 2, 1, K('conc', -1))      # 디딤판 위 잔해
+    for (x, y) in ((24, 24), (6, 40)): leaf(c, x, y, -1, 'daidai')
+    for (x, y) in ((1, 12), (30, 20), (6, 8), (26, 8)): px(c, x, y, K('daidai', -2))   # 녹 점(손잡이 이음매)
 
 
 @R.obj('as-door-locked', '쇠사슬 감긴 문(잠긴 문)', kind='door', use=('travel', 'key'), tags=('폐교', '문', '잠긴 문', '과학실', '음악실'),

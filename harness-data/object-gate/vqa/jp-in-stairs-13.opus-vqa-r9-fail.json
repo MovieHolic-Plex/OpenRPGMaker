@@ -1,0 +1,4 @@
+{"queue":"jp-in-stairs-13","round":9,"judge":"claude-opus-5.5 (fresh subagent, no prior scores)","date":"2026-10-22","verdict":"fail","majors":7,"axis2":6,"axis6":5,
+ "majorFindings":["all 6 stairwells: closed rectangle (north rail + full-height side posts + pale south tread) around flat black fill reads as hearth/cabinet/oven/hatch","cs-stairwell-down: grey side lips read as rails","scene: stairwells read as front-view furniture against the wall"],
+ "minorFindings":["pit near-black darker than any jp_city fill","up stairs: uneven bottom treads, no west stringer, dotted rail","sc/of even stripe rhythm","as debris single pixels","cs up no side walls"],
+ "action":"pit uses dark-purple yoru steps not sumi; tread ramp floor-1 -> mid -> dark; side newels stop 5px short of the hole's south edge; cs lip 1px chipped, no full-height lip"}

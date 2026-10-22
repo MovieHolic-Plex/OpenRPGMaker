@@ -1,0 +1,219 @@
+{
+ "round": 31,
+ "date": "2026-10-23",
+ "reviewers": "3 fresh Opus 5.5, parallel; a major counts only if 2 of 3 raise it",
+ "evidence": "/tmp/gatechk/r34 (6x strip, 4x same-scale with shipped jp counters, 1x/3x map scenes)",
+ "majorityMajors": 0,
+ "kits": {},
+ "reviews": {
+  "jp-in-stairs-up-wood": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "Tread edges zigzag left/right row to row (left outline jagged, step widths alternate) so at 6x it reads a little like stacked wooden crates/tiered shelf; reads fine as stairs in house-1f at 1x/3x",
+     "Low contrast between lit tread band and riser in the wood palette; steps blur together at 1x",
+     "Strong one-point taper toward north conflicts with the parallel-sided down stairwells and orthographic furniture of the set"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "In house-1f it sits beside the tall wardrobe at the same dark-wood value, so at 1x the two blend into one dark brown column and the stair reads weaker than the furniture",
+     "Sides taper inward toward the top (one-point perspective), while the jp stairwell-down pieces have straight sides, so the projection is inconsistent within the set"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "1-wide treads are almost uniform width, little narrowing toward the hole, so the climb reads flatter than the 2-wide versions",
+     "in the house-1f scene at 3x the dark brown on the dark floor blends into the corridor and reads mainly as a dark chute; tread highlight bands are faint"
+    ]
+   }
+  ],
+  "jp-in-mc-stairs-up": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "Only the left side has a light stringer/rail; right edge just stops against the dark recess, asymmetric",
+     "At 1x in mansion-lobby the pale narrow column could pass for a locker/shelf at a glance; context (recess under ceiling hole) saves it",
+     "Perspective taper inconsistent with set projection"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "At 1x in mansion-lobby the 1-wide pale treads with bright left edge read close to a stacked shelf/rack in a wall niche; the tread/riser contrast is fine at 3x but marginal at 1x",
+     "Top-tapered sides (perspective convergence) unlike straight-sided stairwells"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "at 1x in the mansion lobby the grey 1-wide stair beside the corkboard can briefly pass for a metal shelving unit; it reads as stairs at 3x",
+     "the left stringer outline is a lighter grey than the right one, so the stringers look asymmetric"
+    ]
+   }
+  ],
+  "jp-in-of-stairs-up": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "Same pixels as mc-stairs-up: only left stringer, right side open",
+     "Perspective taper inconsistent with set projection"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "Same pixels as mc: weak at 1x, it reads a bit like a small shelf in the dark recess of office-1f",
+     "Tapered sides"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "same pixels as mc-stairs-up; in office-1f it sits in a pale room with little contrast and the bottom tread merges with the floor"
+    ]
+   }
+  ],
+  "jp-in-sc-stairs-up": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "Dashed dark diagonal rails read more like stitching than a handrail",
+     "Right rail drops into a short light vertical post at bottom right while the left side has no matching post; asymmetric",
+     "In school-2f it sits directly beside the parallel-sided sc-stairwell-down; the strong one-point convergence of the up stair clashes with the orthographic down stair and the rest of the set"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "Diagonal side rails are drawn as jagged, dashed 1px lines (stair-stepped aliasing with dots) instead of a clean stringer; at 3x they look broken",
+     "Strong taper toward the top is one-point perspective, which disagrees with the straight-sided sc-stairwell-down right next to it in school-2f"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "strong trapezoid convergence (vanishing-point look) is steeper than the set's oblique 3/4 furniture, but it still reads correctly",
+     "the right-side vertical rail stub at the bottom right ends abruptly without a matching left post"
+    ]
+   }
+  ],
+  "jp-in-stairs-up-wood-wide": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "Rail only on right side, ends in a vertical post at the bottom; left side has no stringer",
+     "Perspective taper inconsistent with set projection"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "Same jagged dashed diagonal rails as sc",
+     "Tapered perspective"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "the dark red-brown backing wall around the stair is a different hue from the shipped wood floors and makes the piece look boxed in"
+    ]
+   }
+  ],
+  "jp-in-as-stairs-up-broken": [
+   {
+    "reviewer": "A",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "Orange/red cross cluster on the bottom-left tread reads as a stray object (flower/sparkle) rather than debris",
+     "Isolated dark-red pixels on the right stringer read as stray noise/blood",
+     "Ivy strand hangs on the far left edge outside the stair, touching the tile boundary"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "Orange plus-shaped cluster on the bottom-left tread reads like a pickup sparkle or flame, not debris",
+     "Red dots on the right stringer read as stray pixels rather than rust",
+     "Ivy is limited to the left frame edge and looks pasted on"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "the ivy strand at the far left spills outside the stair frame along the edge and looks pasted on",
+     "the orange/red speck cluster at the lower left reads as a small flower or object, not debris",
+     "the dark rubble blocks on the middle treads look like small boxes"
+    ]
+   }
+  ],
+  "jp-in-cs-stairs-up-bare": [
+   {
+    "reviewer": "A",
+    "verdict": "major",
+    "majors": [
+     "No stringers/side walls at all and every tread steps out 1px on both sides, so the silhouette is a stepped ziggurat/tiered dais (wedding-cake outline) rather than a flight of stairs climbing north"
+    ],
+    "minors": [
+     "Background behind the flight is split (darker left, lighter right panel), making the piece look off-center",
+     "Perspective taper inconsistent with set projection"
+    ]
+   },
+   {
+    "reviewer": "B",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "No left stringer: tread ends step diagonally into the background, so the left edge looks unfinished",
+     "Scattered dark speckles on treads read as noise"
+    ]
+   },
+   {
+    "reviewer": "C",
+    "verdict": "ok",
+    "majors": [],
+    "minors": [
+     "the right third is a flat darker wall panel with no stringer edge, so the piece looks lopsided next to the symmetric others"
+    ]
+   }
+  ]
+ },
+ "note": "0 majority majors on jp kits, but the up-stair art changed afterwards (gate flat-fill); superseded by r32."
+}

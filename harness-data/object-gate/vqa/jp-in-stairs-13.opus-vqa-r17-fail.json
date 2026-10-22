@@ -1,0 +1,5 @@
+{"queue":"jp-in-stairs-13","round":17,"judge":"claude-opus-5.5 (fresh subagent, no prior scores)","date":"2026-10-22","verdict":"fail","majors":6,"axis2":7,"axis6":5,
+ "majorFindings":["stairwell-down-wood/sc/mc/of/as: black slot at the top centre + bright south lip past the posts read as hearth/oven/cage","cs-stairs-up-bare: even stripes between flat pale strips read as a rolling shutter","scene school: down well reads as a locker/vending box"],
+ "minorFindings":["newel notches the bottom treads","cool dark opening in the wood house","as damage noise","no nosing highlight vs reference"],
+ "note":"r16 judged all six wells readable; r17 judged all six not readable on nearly the same art (only grey treads one step darker). Reviewer variance is large.",
+ "action":"pit wall full width graded (no black slot corners), side posts end at the hole's south corners without feet, cs stair restored contrast (tr conc 1 / nose 2 / riser -2) + projecting front lip"}

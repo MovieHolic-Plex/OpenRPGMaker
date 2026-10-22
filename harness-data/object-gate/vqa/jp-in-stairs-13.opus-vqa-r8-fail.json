@@ -1,0 +1,5 @@
+{"queue":"jp-in-stairs-13","round":8,"judge":"claude-opus-5.5 (fresh subagent, no prior scores)","date":"2026-10-22","verdict":"fail","majors":5,"axis2":7,"axis6":5,
+ "note":"r8 = r7 art + tread grain/speckle (added for the object-gate style axis). The speckle on dark well treads turned the wells into gravel boxes.",
+ "majorFindings":["stairwell-down-wood reads as fireplace (beige solid north rail = mantel, red-brown slats)","sc/mc/of/as stairwells: near-black speckled treads read as grated bin/cage, descent not legible","scene: down stairwells not obviously descending at 1x"],
+ "minorFindings":["even tread spacing on up stairs","1-cell up stairs thin rail","cs side walls thin","cs well frame closed on south","as damage reads as stains"],
+ "action":"no speckle in wells; tread ramp floor-value -> mid -> dark -> near-black with light tread tops and dark north drop lines; wood well on yuka->yoru ramp (no red-brown); darker wood banister"}

@@ -1,0 +1,422 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a50d2e7e5691b87b46a94461242330c2ef309c438bce00fdaf31d774bc48cfe6",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-in-sc-stairs-up",
+ "label": "jp_city/interior/jp-in-sc-stairs-up",
+ "profileHash": "4d8774b517f41638",
+ "verdict": "pass",
+ "reasons": [],
+ "view34": {
+  "verdict": "pass",
+  "reasons": []
+ },
+ "style": {
+  "verdict": "pass",
+  "reasons": [],
+  "styleKind": "building",
+  "refs": [
+   "house-hip2",
+   "house-machiya"
+  ],
+  "scale": 2,
+  "score": 8,
+  "refSet": {
+   "id": "jp_city",
+   "chipset": "jp_city",
+   "fallback": false,
+   "hash": "f038fa1d934bb87c"
+  }
+ },
+ "metrics": {
+  "tileColorsMedian": 13,
+  "tileColorsP90": 13,
+  "darkV5": 26,
+  "nearBlackEdge": 0.81,
+  "opaqueTiles": 6
+ },
+ "eye": {
+  "verdicts": [
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right",
+   "right"
+  ]
+ },
+ "runs": [
+  {
+   "judge": "sonnet",
+   "run": 1,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "dark opening/ceiling void above stairs",
+      "rows": "0-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "top step tread",
+      "rows": "12-16",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "17-18"
+     },
+     {
+      "part": "second step tread",
+      "rows": "19-22",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "third step tread",
+      "rows": "24-28",
+      "evidence": "a",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "29-30"
+     },
+     {
+      "part": "fourth step tread",
+      "rows": "31-36",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "37-38"
+     },
+     {
+      "part": "bottom step tread",
+      "rows": "39-45",
+      "evidence": "a",
+      "front_edge_line_row": 46,
+      "eave_shadow_rows": "46-47"
+     }
+    ],
+    "main_top_rows": 6,
+    "front_face_rows": 3,
+    "side_face_visible": false,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The stairs are a stack of light tread bands, each 4-7 rows, with a darker 1-row front-edge line and 1-2 rows of shadow riser beneath (rows 17-18, 23, 29-30, 37-38, 46-47). The treads widen toward the bottom, so each step shows a horizontal top surface with a thin front riser, which is evidence (a). Rows 0-11 are a dark void or backdrop. The risers are thin (about 2-3 rows), so this is a borderline case, but the repeated tread, edge line and shadow structure reads as a 3/4 view, not a flat elevation."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small staircase inside a dark recess, not a full house, but the brief names the jp_city houses as the standard, so I compared against them. Each step reads as a light tread over a mid-to-dark riser, with a dark tinted recess above. That gives about 5 lightness steps on the stone ramp, slightly fewer than the roughly 6 on the reference roofs. The edges lean cool blue-grey rather than neutral black, and the measured near-neutral share of dark edge pixels is 0%, matching house-machiya. There is speckle grain on the treads and walls. Near-flat coverage is 0% against 2% for both references. Visible tones per tile are 11 against 9 for both references. Nothing looks like a sticker or a flat fill, so it holds up next to the references.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20356
+  },
+  {
+   "judge": "sonnet",
+   "run": 2,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "stair tread 1 (top step)",
+      "rows": "12-17",
+      "evidence": "a",
+      "front_edge_line_row": 16,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "stair tread 2",
+      "rows": "18-23",
+      "evidence": "a",
+      "front_edge_line_row": 22,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "stair tread 3",
+      "rows": "24-30",
+      "evidence": "a",
+      "front_edge_line_row": 28,
+      "eave_shadow_rows": "29-30"
+     },
+     {
+      "part": "stair tread 4",
+      "rows": "31-38",
+      "evidence": "a",
+      "front_edge_line_row": 36,
+      "eave_shadow_rows": "37-38"
+     },
+     {
+      "part": "stair tread 5 (bottom step)",
+      "rows": "39-46",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right flanking walls",
+      "rows": "12-46",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 3,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The main body is a flight of five steps. Each tread is a lighter band, roughly 5-6 rows tall, that brightens toward a light front-edge line (rows 16, 22, 28, 36, 45) and is followed by a darker shadow row (rows 17, 23, 29-30, 37-38). This is evidence (a). The risers are thin, 1-3 rows each, and form the front face. The tapering dark walls on the left and right read as receding side faces. Rows 0-11 are a dark backdrop or void and are not a surface."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The references are whole buildings (roof, walls, doors), but the candidate is a small stair-run prop about 2x3 tiles, so the kind does not match exactly. I judged craft only. The steps show about 5 lightness levels, from a bright lit tread edge through mid grey-blue to a deep shadowed riser and a dark top recess. Treads are speckled with grain dots, and the dark surround leans blue-grey with no neutral black line. That fits the cool slate of the jp_city roofs. The measured facts support this: 11 visible tones per tile against 9 and 9 for the references, 0% near-flat coverage against 2%, and 0% neutral dark edges. There are no flat fills, and the rail and wall edges are separated by value. Density is at or above the references, so a careful artist would accept it next to them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 20638
+  },
+  {
+   "judge": "sonnet",
+   "run": 3,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top step tread",
+      "rows": "12-16",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "second step tread",
+      "rows": "18-22",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "third step tread",
+      "rows": "24-28",
+      "evidence": "a",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "29-30"
+     },
+     {
+      "part": "fourth step tread",
+      "rows": "31-36",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "37-38"
+     },
+     {
+      "part": "bottom step tread",
+      "rows": "39-45",
+      "evidence": "a",
+      "front_edge_line_row": 46,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "left and right side walls (stringers)",
+      "rows": "12-45",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 34,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "Rows 0-9 are a dark backdrop. The stair run starts at row 12. Each step is a lighter, gradient-shaded tread band of about 5-6 rows, with a dark front-edge line below it (rows 17, 23, 29-30, 37-38). This repeats down the run, so the treads read as horizontal surfaces stepping down toward the viewer. The darker side walls on the left and right narrow toward the top, giving a slight receding side face. The overall stair body is about 34 rows tall."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": true,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "some",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 7,
+    "evidence": "The candidate is a small stone stairway rising into a dark opening, not a full roofed building, so I judged craft only and did not penalise its size or simplicity. It shows about 5 lightness steps from pale step-edge highlights through grey-lilac mids to deep shadow in the opening, close to the references' 5-6 on the roofs and plaster. Dark edge pixels carry a blue-violet tint, with 0% near-neutral against 0-2% for the references, so the edges follow the dark tone of the neighbouring material and are not a black sticker outline. Speckle and grain on the treads and walls give some texture. The measured facts support this: 11 visible tones per tile against 9 for both references, and 0% near-flat coverage against 2%. Density is at or above the references, with no flat fills, so a careful artist would accept it beside house-hip2 and house-machiya.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21328
+  },
+  {
+   "judge": "sonnet",
+   "run": 4,
+   "answer": {
+    "facing": "south",
+    "kind_matches": true,
+    "surfaces": [
+     {
+      "part": "top step (tread band)",
+      "rows": "12-16",
+      "evidence": "a",
+      "front_edge_line_row": 17,
+      "eave_shadow_rows": "17"
+     },
+     {
+      "part": "second step tread",
+      "rows": "18-22",
+      "evidence": "a",
+      "front_edge_line_row": 23,
+      "eave_shadow_rows": "23"
+     },
+     {
+      "part": "third step tread",
+      "rows": "24-28",
+      "evidence": "a",
+      "front_edge_line_row": 29,
+      "eave_shadow_rows": "29-30"
+     },
+     {
+      "part": "fourth step tread",
+      "rows": "31-36",
+      "evidence": "a",
+      "front_edge_line_row": 37,
+      "eave_shadow_rows": "37-38"
+     },
+     {
+      "part": "bottom step tread",
+      "rows": "39-45",
+      "evidence": "a",
+      "front_edge_line_row": 45,
+      "eave_shadow_rows": null
+     },
+     {
+      "part": "dark lintel/back wall",
+      "rows": "0-11",
+      "evidence": "none",
+      "front_edge_line_row": null,
+      "eave_shadow_rows": null
+     }
+    ],
+    "main_top_rows": 5,
+    "front_face_rows": 6,
+    "side_face_visible": true,
+    "all_major_parts_have_top": true,
+    "round_cap": null,
+    "reads_as": "three_quarter",
+    "evidence": "The staircase is drawn as a stack of light horizontal tread bands. Each band is about 5-7 rows tall and ends in a 1-row darker edge line (rows 17, 23, 29-30, 37-38), which acts as a shadow below the step edge. The treads widen toward the bottom and get lighter, which gives perspective. Dark wedge-shaped side walls flank the steps on the left and right. Risers are thin, but the stepped edges and side walls give a front face of 3+ rows. The step bands and their edge lines count as evidence (a)."
+   },
+   "styleAnswer": {
+    "ref_kind_matches": false,
+    "shading_steps": 5,
+    "reference_steps": 6,
+    "outline": "dark_material_tone",
+    "texture": "rich",
+    "flat_fills": false,
+    "density": "equal_or_richer",
+    "score": 8,
+    "evidence": "The candidate is a small stairwell entrance (dark opening above a flight of pale stone steps), not a roofed building, so the house references are only a loose match in kind. On style it holds up. It has 11 visible tones per tile against 9 for both references. Near-flat coverage is 0% against 2%. The dark edge pixels are 0% neutral, so the outline is tinted rather than black. By eye, the steps show about 5 lightness steps: bright tread highlights, mid-grey risers, darker cool shadow bands, and a deep top recess. Speckle grain on the treads is similar to the plaster and tile dots on the references. The dark top and side edges lean blue-grey like the adjacent stone, with no uniform black sticker line. Density and texture are at least equal to the references, and no large flat fills appear.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "view34": {
+    "pass": true,
+    "reasons": []
+   },
+   "style": {
+    "pass": true,
+    "reasons": []
+   },
+   "ms": 21446
+  }
+ ],
+ "decidedAt": "2026-10-22T16:40:43.751Z",
+ "cells": {
+  "16": [
+   "6b437b3af569d2df",
+   "8018acf5482bd154",
+   "c6079ce207ad330e",
+   "ca26eb1802f3de62",
+   "e53b3426e7d90388",
+   "ecc2d7a29f1b8059"
+  ],
+  "24": [
+   "21e3120d4bd95935",
+   "2d2f16339c38c3ad",
+   "31393188aac066b4",
+   "38eab18604a84cc1",
+   "446d1ba5520bb28a",
+   "50782641a51127ef",
+   "5aa097d4d396ee3c",
+   "5b012a23d1468aeb",
+   "67bd4ae17b98c281",
+   "7bf8a5b12a892f52",
+   "7c967a28716fde75",
+   "8b86f8f8d479f0ca"
+  ],
+  "32": [
+   "22c46cfc6facbf68",
+   "398e4ae084dae164",
+   "789b8e230b4b5dae",
+   "a0cc4a2d2b18512e"
+  ],
+  "48": [
+   "1f434fe4878e4dc3",
+   "2c03e23433369799",
+   "6dbce53022256192"
+  ]
+ }
+}

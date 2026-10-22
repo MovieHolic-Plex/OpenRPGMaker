@@ -1,0 +1,35 @@
+{
+ "queue": "jp-in-stairs-13",
+ "round": 22,
+ "judges": "3x claude-opus-5.5 fresh subagents in parallel, no prior scores; a major counts only if >=2 of 3 raise it",
+ "date": "2026-10-22",
+ "verdict": "fail",
+ "perReviewer": {
+  "A": {
+   "majors": 5,
+   "axis2": 7,
+   "axis6": 5
+  },
+  "B": {
+   "majors": 1,
+   "axis2": 7,
+   "axis6": 6
+  },
+  "C": {
+   "majors": 2,
+   "axis2": 6,
+   "axis6": 6
+  }
+ },
+ "majorityMajors": [
+  "stairwell-down-wood (A+C): nearest treads equal the house floor value (ita 0) and the dark north half is large -> reads as a dark cabinet at 1x"
+ ],
+ "minorityMajors": [
+  "sc/mc/of stairwells read as radiator/cage at 1x (A only)",
+  "mc-stairs-up reads as shelf/ladder in lobby (C only)",
+  "cs-stairs-up-bare reads as shutter (B only)"
+ ],
+ "upStairs": "no majority major on any up stair",
+ "majoritycount": 1,
+ "action": "wood well: nearest tread one step lighter than the floor (ita 1, nose ita 2), ramp ita 1 -> -3, near-black north wall cut to 3px, near treads taller"
+}
