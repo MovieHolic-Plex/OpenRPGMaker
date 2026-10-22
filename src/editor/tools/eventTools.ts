@@ -1,4 +1,5 @@
 import { jsonEqual } from "@/util/structuralJson";
+import { npcMoveDurationMs, npcMoveIntervalMs, PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
 import { passageBlockWarning } from "../../project/eventPassageBlock";
 import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horrorBehaviorTools";
 // editor/tools/eventTools.ts
@@ -1340,6 +1341,7 @@ const placeNpc: ToolDefinition = {
     + "한 줄 인사만 놓고 끝내지 마라. graphic은 {query} 또는 {textureKey,characterIndex}. query는 기존 별칭(villager|people|npc|human|사람|주민|actor|hero|animal|monster)과 자유 질의를 허용한다: 예 '할머니', 'old woman', '노인 남성'. "
     + "pages는 SimplePage로 EventPage로 컴파일된다. 페이지마다 name/graphic/conditions 를 줄 수 있다. 호감/선물은 characterId 를 명시. "
     + "**대사가 있으면 charset에 대응하는 faceset changeFace를 자동 삽입**한다(page.face로 덮어쓰기 가능). page.conditions 단수 객체/null, page.commands 단수 객체, command→kind alias는 warning과 함께 정규화한다. 통행 불가/점유 칸이면 근처 통행 가능 칸으로 자동 착지한다. "
+    + "상점·여관 주인은 카운터 뒤 칸(카운터 윗면 칸)에 세워라: 카운터·탁자 칸은 카운터 속성(set_tile_rules counter, 손 도트 실내·버들항의 카운터/탁자/책상 칸은 기본으로 켜짐)이라 주인공이 카운터 앞에서 마주 보고 조사하면 너머 사람에게 말이 걸린다(연속 카운터 2칸까지). 카운터 앞 칸이 주인공이 설 수 있는 바닥인지 확인하라. "
     + "guide:'action-controls'는 예외: pages 없이 실제 키 계약의 조작 안내 한 페이지만 만든다. 맵마다 같은 안내를 재사용하며 재시도 시 기존 위치를 유지한다. 명시 id가 우선한다.",
   mode: "write",
   parameters: {
@@ -3037,14 +3039,11 @@ const placeTrap: ToolDefinition = {
   },
 };
 
-/** 주인공 걷기 한 칸(PlayScene.moveDurationMs). */
-const PLAYER_WALK_STEP_MS = 160;
 const CHASER_FREQUENCY = 8;
 
-/** 런타임 추격 한 칸 = npcMoveDurationMs(speed) + npcMoveIntervalMs(frequency) (playScenePageMoveRoutes.ts 와 같은 식). */
+/** 런타임 추격 한 칸 = npcMoveDurationMs(speed) + npcMoveIntervalMs(frequency) (정본 표 @/project/characterMotion). */
 function chaseStepMs(speed: number, frequency: number): number {
-  const rank = (value: number) => Math.min(8, Math.max(1, Math.trunc(value)));
-  return Math.max(80, 640 - rank(speed) * 80) + Math.max(80, 1040 - rank(frequency) * 160);
+  return npcMoveDurationMs(speed) + npcMoveIntervalMs(frequency);
 }
 
 /**

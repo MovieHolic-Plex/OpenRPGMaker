@@ -8,6 +8,7 @@
 //   - 금고 암호 선택지에 「(서재 쪽지의 암호)」 라고 정답이 적혀 있었다.
 //   - 「어둡고 긴장감 있게」 인데 조명이 기본(밝음)이었다.
 
+import { npcMoveDurationMs, npcPageMoveIntervalMs, PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
 import { canMove, isPassable } from "@/project/collision";
 import type { EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { runSceneTest, type SceneStep } from "@/testing/sceneTestRunner";
@@ -19,20 +20,11 @@ const HIDE_BRIEF = /숨(?:기|어|는|을|을 곳)|옷장|은신|hide|hiding|clo
 const DARK_BRIEF = /어둡|어두운|암흑|dark/iu;
 const CODE_BRIEF = /암호|비밀번호|자물쇠 번호|다이얼|code|password/iu;
 const ANSWER_LEAK = /[(（][^)）]*(정답|암호|쪽지|힌트|진범|올바른|맞는)[^)）]*[)）]/u;
-/** 주인공 걷기 한 칸(PlayScene.moveDurationMs). */
-const PLAYER_STEP_MS = 160;
+const PLAYER_STEP_MS = PLAYER_WALK_STEP_MS;
 
-function rank(value: number | undefined): number {
-  return Number.isFinite(value) ? Math.min(8, Math.max(1, Math.trunc(value!))) : 3;
-}
-
-/** 런타임 추격 한 칸 = npcMoveDurationMs(speed) + 이동 간격(moveIntervalMs 또는 frequency). */
+/** 런타임 추격 한 칸 = npcMoveDurationMs(speed) + 이동 간격(moveIntervalMs 또는 frequency). 정본 표 @/project/characterMotion. */
 export function chaserStepMs(movement: EventPage["movement"]): number {
-  const tween = Math.max(80, 640 - rank(movement.speed) * 80);
-  const interval = movement.moveIntervalMs !== undefined
-    ? Math.max(80, Math.min(10000, Math.round(movement.moveIntervalMs)))
-    : Math.max(80, 1040 - rank(movement.frequency) * 160);
-  return tween + interval;
+  return npcMoveDurationMs(movement.speed ?? 3) + npcPageMoveIntervalMs({ moveIntervalMs: movement.moveIntervalMs, frequency: movement.frequency ?? 3 });
 }
 
 interface ChaserRef { readonly map: GameMap; readonly event: GameEvent; readonly page: EventPage; readonly pageIndex: number }
