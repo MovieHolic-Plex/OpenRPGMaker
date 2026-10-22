@@ -58,7 +58,7 @@ export function readHoldDecision(sha: string): ObjectGateHoldDecision | null {
   const want = Buffer.from(holdSignature(key, d), 'hex'), got = Buffer.from(d.sig, 'hex');
   return got.length === want.length && timingSafeEqual(got, want) ? d : null;
 }
-/** 검토 화면 서버 전용. 다른 곳에서 부르지 않는다. */
+/** 검토 화면 서버 전용. 예외는 기록을 좁히기만 하는 CLI 정정 단계 redelegate-holds·supersede-holds(cli.ts) — 새 허용은 만들지 못한다. */
 export function writeHoldDecision(d: Omit<ObjectGateHoldDecision, 'sig'>): string {
   const key = holdKey(true)!;
   const signed = { ...d, sig: '' } as ObjectGateHoldDecision;

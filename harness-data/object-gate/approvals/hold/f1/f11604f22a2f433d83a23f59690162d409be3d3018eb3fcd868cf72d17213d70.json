@@ -6,12 +6,14 @@
  "decision": "allow",
  "decidedBy": "supervisor (delegated by user 2026-10-21)",
  "decidedAt": "2026-10-22T06:44:42.183Z",
- "by": "human",
+ "by": "delegated",
  "via": "review-page",
  "reasons": [
   "화풍: 화풍 판정이 갈림(걸린 판정 2/4)",
   "화풍: 판정자 fail (2/4)"
  ],
- "note": "town wall r4 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/beodeul-town-wall-r4/receipt.json",
- "sig": "147ef2a82b089aa9e2a80382c3d3f909e93c018d00ca7a7f14ba8ac4dad5d959"
+ "note": "town wall r4 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/beodeul-town-wall-r4/receipt.json | 기록 정정 2026-10-22: by human → delegated (위임 허용을 옛 서버가 사람 클릭으로 적었다)",
+ "delegatedBy": "user (2026-10-21, gate decisions delegated to supervisor)",
+ "evidence": "harness-data/object-gate/vqa/beodeul-town-wall-r4/receipt.json",
+ "sig": "9c973425bf58a4d745365899e509145c179e47d6acea27696f4617b6f6bbc67d"
 }

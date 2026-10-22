@@ -64,12 +64,14 @@ function buildQueue(fresh = false): { entries: Map<string, Entry>; batches: Batc
   return { entries, batches };
 }
 
-type Status = 'no-receipt' | 'auto-pass' | 'allowed' | 'rejected' | 'waiting' | 'opus-pass' | 'opus-fail';
+type Status = 'no-receipt' | 'auto-pass' | 'allowed' | 'rejected' | 'waiting' | 'opus-pass' | 'opus-fail' | 'superseded';
 let finalCalibrated = new Set<string>();
 /** 이 그림의 Opus 최종 기록(종류가 같은 것만). 효력(보정된 프로필)은 finalApplies 로 따로 본다. */
 function finalOf(e: Entry): ObjectGateFinal | null { const f = readFinal(e.sha); return f && f.kind === e.kind ? f : null; }
 function statusOf(e: Entry, calibrated: Set<string>): { status: Status; decision: ObjectGateHoldDecision | null } {
   const d = readHoldDecision(e.sha);
+  // 다시 그려 물러난 그림(supersede-holds)은 대기열에 다시 올리지 않는다 — 결정이 끝난 것으로 본다.
+  if (d?.supersededBy && d.decision === 'allow') return { status: 'superseded', decision: d };
   const f = finalOf(e);
   if (f && finalApplies(f, e.sha, finalCalibrated)) {
     // Opus 최종 판정이 있으면 그것이 상태다. 사람 거절만 그 위에 있다.
@@ -134,12 +136,12 @@ export async function serveHolds({ host, port }: { host: string; port: number })
         const statusCache = new Map<string, ReturnType<typeof statusOf>>();
         const st = (sha: string) => statusCache.get(sha) ?? statusCache.set(sha, statusOf(entries.get(sha)!, calibrated)).get(sha)!;
         const summary = batches.map(b => {
-          const c = { total: b.shas.length, waiting: 0, allowed: 0, rejected: 0, autoPass: 0, noReceipt: 0, withImage: 0, ai: { pass: 0, refer: 0, fail: 0 }, opusPass: 0, opusFail: 0 };
+          const c = { total: b.shas.length, waiting: 0, allowed: 0, rejected: 0, superseded: 0, autoPass: 0, noReceipt: 0, withImage: 0, ai: { pass: 0, refer: 0, fail: 0 }, opusPass: 0, opusFail: 0 };
           for (const sha of b.shas) {
             const s = st(sha).status, r = entries.get(sha)!.receipt;
             if (s === 'opus-pass') c.opusPass++; else if (s === 'opus-fail') c.opusFail++;
             else if (s === 'waiting') { c.waiting++; if (existsSync(heldImagePath(sha))) c.withImage++; if (r) c.ai[r.verdict]++; }
-            else if (s === 'allowed') c.allowed++; else if (s === 'rejected') c.rejected++; else if (s === 'auto-pass') c.autoPass++; else c.noReceipt++;
+            else if (s === 'allowed') c.allowed++; else if (s === 'rejected') c.rejected++; else if (s === 'superseded') c.superseded++; else if (s === 'auto-pass') c.autoPass++; else c.noReceipt++;
           }
           return { id: b.id, title: b.title, note: b.note ?? '', explainText: b.explainText ?? '', hasExplainImage: !!queueExplainImagePath(b.explainImage), auto: b.auto, ...c };
         });
@@ -151,17 +153,17 @@ export async function serveHolds({ host, port }: { host: string; port: number })
         const batch = batches.find(b => b.id === pick);
         const items = batch ? batch.shas.flatMap(sha => {
           const e = entries.get(sha)!, { status, decision } = st(sha), r = e.receipt;
-          if (status === 'auto-pass' || (!showDecided && (status === 'allowed' || status === 'rejected' || status === 'opus-pass'))) return [];
+          if (status === 'auto-pass' || (!showDecided && (status === 'allowed' || status === 'rejected' || status === 'opus-pass' || status === 'superseded'))) return [];
           const f = finalOf(e);
           return [{
             opus: f ? { verdict: f.verdict, reasons: f.reasons, view34: f.view34, style: f.style, kindOk: f.kindOk, sure: f.sure, profileHash: f.profileHash, calibrated: finalCalibrated.has(f.profileHash), decidedAt: f.decidedAt } : null,
             sha, label: e.label, name: r?.name ?? e.label, kind: e.kind, kindMeaning: OBJECT_GATE_KINDS[e.kind as keyof typeof OBJECT_GATE_KINDS]?.meaning ?? '', width: r?.width ?? 0, height: r?.height ?? 0,
             status, aiVerdict: r?.verdict ?? null, profileHash: r?.profileHash ?? null, calibrated: !!r && calibrated.has(r.profileHash), reasons: r?.reasons ?? [],
             view34: r?.view34?.verdict ?? null, style: r?.style?.verdict ?? null, styleKind: r?.style?.styleKind ?? null, refs: r?.style?.refs ?? [],
-            hasImage: existsSync(heldImagePath(sha)), decision: decision ? { decision: decision.decision, decidedBy: decision.decidedBy, decidedAt: decision.decidedAt, note: decision.note } : null,
+            hasImage: existsSync(heldImagePath(sha)), decision: decision ? { decision: decision.decision, by: decision.by, ...(decision.by === 'delegated' ? { delegatedBy: decision.delegatedBy, evidence: decision.evidence } : {}), ...(decision.supersededBy ? { supersededBy: decision.supersededBy, supersededAt: decision.supersededAt } : {}), decidedBy: decision.decidedBy, decidedAt: decision.decidedAt, note: decision.note } : null,
           }];
         }) : [];
-        const order: Record<string, number> = { 'opus-fail': 0, waiting: 1, 'no-receipt': 2, 'opus-pass': 3, allowed: 4, rejected: 5 };
+        const order: Record<string, number> = { 'opus-fail': 0, waiting: 1, 'no-receipt': 2, 'opus-pass': 3, allowed: 4, rejected: 5, superseded: 6 };
         items.sort((a, b) => order[a.status]! - order[b.status]! || a.label.localeCompare(b.label));
         json(200, { currentProfile: current, profileStatus: profile?.status ?? 'uncalibrated', finalProfiles: [...finalCalibrated], totals, batches: summary, batch: pick, items }); return;
       }
@@ -192,6 +194,7 @@ export async function serveHolds({ host, port }: { host: string; port: number })
         // AI 가 한 번도 판정하지 않은 그림은 결정할 수 없다(조언 없이 허용하는 길을 막는다).
         if (!receipt) throw Error('이 해시의 판정 영수증이 없다 — object-gate enqueue/review 로 AI 조언을 먼저 받아라');
         if (typeof q.kind === 'string' && q.kind !== receipt.kind) throw Error(`화면의 종류(${q.kind})와 영수증 종류(${receipt.kind})가 다르다. 새로고침하세요`);
+        if (readHoldDecision(sha)?.supersededBy) throw Error('다시 그려 물러난 그림이다 — 새 그림의 해시로 결정하라');
         const prev = humanDecision(readHoldDecision(sha), receipt);
         if (prev === 'reject') throw Error('이미 거절된 그림이다 — 거절은 최종이다. 다시 그려 새 해시로 받아라');
         if (prev === 'allow' && q.decision === 'allow') throw Error('이미 허용된 그림이다');

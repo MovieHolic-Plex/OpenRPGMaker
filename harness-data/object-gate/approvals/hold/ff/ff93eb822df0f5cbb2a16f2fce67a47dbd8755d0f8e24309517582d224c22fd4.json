@@ -6,9 +6,11 @@
  "decision": "allow",
  "decidedBy": "supervisor (delegated by user 2026-10-21)",
  "decidedAt": "2026-10-22T06:44:42.236Z",
- "by": "human",
+ "by": "delegated",
  "via": "review-page",
  "reasons": [],
- "note": "town wall r4 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/beodeul-town-wall-r4/receipt.json",
- "sig": "df0f98508e460f90e1e82cc064e3daeb8599931a0ad06adc0cb773c5a2d0258e"
+ "note": "town wall r4 — delegated by user to supervisor 2026-10-21; Opus VQA receipt harness-data/object-gate/vqa/beodeul-town-wall-r4/receipt.json | 기록 정정 2026-10-22: by human → delegated (위임 허용을 옛 서버가 사람 클릭으로 적었다)",
+ "delegatedBy": "user (2026-10-21, gate decisions delegated to supervisor)",
+ "evidence": "harness-data/object-gate/vqa/beodeul-town-wall-r4/receipt.json",
+ "sig": "e30f8013e464f4faedfd323aa6919cf1fdbd1df2e637538d52417f6409ba622e"
 }

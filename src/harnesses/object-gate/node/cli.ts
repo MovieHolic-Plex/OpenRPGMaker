@@ -3,8 +3,8 @@ import { dirname, resolve } from 'node:path';
 import { OBJECT_GATE_PROFILE, objectGateRefusal, type ObjectGateContext, type ObjectGateKind } from '../../_core/objectGate';
 import { createInterface } from 'node:readline/promises';
 import { humanDecision, validFrontPropApproval } from '../../_core/objectGate';
-import { readFileSync } from 'node:fs';
-import { exitInputs, calibratedProfiles, gateProfileHash, listApprovals, listQueueBatches, listReceipts, pngPixelSha256, readApproval, readHoldDecision, readProfiles, readReceipt, removeApproval, writeApproval, writeQueueBatch } from './store';
+import { existsSync, readFileSync } from 'node:fs';
+import { exitInputs, calibratedProfiles, gateProfileHash, listApprovals, listQueueBatches, listReceipts, pngPixelSha256, readApproval, readHoldDecision, readProfiles, readReceipt, removeApproval, writeApproval, writeHoldDecision, writeQueueBatch } from './store';
 
 const spawnBun = (argv: string[]): Promise<number> => new Promise((done, reject) => {
   const child = spawn('bun', [resolve('src/harnesses/object-gate/node/judge.mts'), ...argv], { stdio: 'inherit', cwd: process.cwd() });
@@ -61,6 +61,41 @@ export async function run(argv: string[]): Promise<number> {
     const fp = receipts.filter(r => r.kind === 'front_prop');
     console.log(`front_prop 영수증 ${fp.length}장 — 승인됨 ${fp.filter(r => validFrontPropApproval(readApproval(r.pixelSha256), r.pixelSha256)).length}, 승인 기록 ${approvals.length}건`);
     for (const a of approvals) console.log(`  ${a.pixelSha256.slice(0, 12)} ${a.approvedBy} ${a.approvedAt}${a.note ? ` — ${a.note}` : ''}`);
+    return 0;
+  }
+  // 기록 정정(2026-10-22) — 새 허용을 만들지 못하고, 이미 서명된 기록의 표기만 좁힌다.
+  // redelegate-holds: 감독자가 위임받아 넣었는데 옛 서버가 by:"human" 으로 적은 허용(서명된 note 에 「delegated by user to supervisor」)을
+  //   by:"delegated" + delegatedBy + evidence 로 고쳐 다시 서명한다. 사람 클릭으로 오인되는 것을 바로잡는 것이다.
+  // supersede-holds: 그림을 다시 그려 해시가 물러난 기록에 supersededBy(새 해시·설명)를 남긴다. 물러난 허용은 효력이 없다(거절은 그대로).
+  if (stage === 'redelegate-holds' || stage === 'supersede-holds') {
+    const shas = (option('sha') ?? '').split(',').map(x => x.trim()).filter(Boolean);
+    if (!shas.length || shas.some(x => !/^[0-9a-f]{64}$/.test(x))) throw Error(`${stage} --sha <해시,해시…> …`);
+    const plans: Array<Parameters<typeof writeHoldDecision>[0]> = [];
+    for (const sha of shas) {
+      const d = readHoldDecision(sha);
+      if (!d) throw Error(`${sha.slice(0, 12)}: 서명이 맞는 기록이 없다`);
+      const { sig: _sig, ...rest } = d;
+      if (stage === 'redelegate-holds') {
+        const delegatedBy = option('delegated-by')?.trim(), evidence = option('evidence')?.trim();
+        if (!delegatedBy || !evidence) throw Error('redelegate-holds --sha … --delegated-by <위임한 사람> --evidence <근거 파일>');
+        if (!existsSync(resolve(evidence))) throw Error(`evidence 파일이 없다: ${evidence}`);
+        if (d.by !== 'human' || d.decision !== 'allow') throw Error(`${sha.slice(0, 12)}: by:human 허용만 고친다(지금 ${d.by}/${d.decision})`);
+        if (!/delegated by user to supervisor/i.test(d.note ?? '') && !/delegated by user/i.test(d.decidedBy)) throw Error(`${sha.slice(0, 12)}: 서명된 기록에 위임 표기가 없다 — 사람 클릭 기록은 고치지 않는다`);
+        plans.push({ ...rest, by: 'delegated', delegatedBy: delegatedBy.slice(0, 60), evidence: evidence.slice(0, 300),
+          note: `${d.note ?? ''} | 기록 정정 2026-10-22: by human → delegated (위임 허용을 옛 서버가 사람 클릭으로 적었다)`.slice(0, 400) });
+      } else {
+        const by = option('by')?.trim();
+        if (!by) throw Error('supersede-holds --sha … --by <새 그림 해시나 설명> [--at ISO시각]');
+        if (d.supersededBy) throw Error(`${sha.slice(0, 12)}: 이미 물러났다(${d.supersededBy})`);
+        plans.push({ ...rest, supersededBy: by.slice(0, 200), supersededAt: option('at') ?? new Date().toISOString() });
+      }
+    }
+    for (const plan of plans) {
+      writeHoldDecision(plan);
+      const back = readHoldDecision(plan.pixelSha256);
+      if (!back || back.by !== plan.by || back.supersededBy !== plan.supersededBy) throw Error(`${plan.pixelSha256.slice(0, 12)}: 저장 확인 실패`);
+      console.log(`${stage === 'redelegate-holds' ? '위임 표기' : '물러남'} ${plan.pixelSha256.slice(0, 12)} ${plan.kind} — by:${back.by}${back.supersededBy ? ` supersededBy:${back.supersededBy}` : ''}`);
+    }
     return 0;
   }
   // 보류 판정 사람 검토 화면. 결정 기록은 이 서버만 쓴다(서명). 감독·에이전트는 띄울 수는 있어도 대신 누르지 않는다.
@@ -122,5 +157,5 @@ export async function run(argv: string[]): Promise<number> {
     console.log(`  현재 프로필 영수증 ${now.length}장 — 통과 ${now.filter(r => r.verdict === 'pass').length}, 보류 ${now.filter(r => r.verdict === 'refer').length} (3/4 통과 ${now.filter(r => r.view34?.verdict === 'pass').length}, 화풍 통과 ${now.filter(r => r.style?.verdict === 'pass').length}) · 옛 프로필 ${receipts.length - now.length}장은 무효(재검수 필요: rereview)`);
     return 0;
   }
-  throw Error('단계: review | calibrate | rereview | check | status | audit | preview | approve-front-prop | revoke-front-prop | approvals | enqueue | serve-holds | holds | selftest-holds');
+  throw Error('단계: review | calibrate | rereview | check | status | audit | preview | approve-front-prop | revoke-front-prop | approvals | enqueue | serve-holds | holds | selftest-holds | redelegate-holds | supersede-holds');
 }
