@@ -3,7 +3,7 @@
 //   voidPct    : 천장(검은 허공) 칸 / 전체
 //   bareFloorPct: 걸을 수 있는 바닥 중 8 이웃까지 물건·이벤트가 없는 칸 / 전체
 //   maxBareRect: 물건·이벤트 없는 걸을 수 있는 바닥으로만 된 직사각형(짧은 변 ≥ 3) 중 가장 넓은 것
-//   worstScreenVoidPct: 20×15 화면 창(바닥이 한 칸이라도 보이는 창)의 허공 비율 최댓값
+//   worstScreenVoidPct: 플레이어 카메라(걸을 수 있는 칸 중심, 맵 경계로 당긴 20×15) 창의 깊은 허공 비율 최댓값
 import type { GameMap, Project } from "../../../src/project/types.ts";
 
 export interface SpaceMeasure { w: number; h: number; voidPct: number; bareFloorPct: number; maxBareRect: { w: number; h: number; x: number; y: number; area: number }; worstScreenVoidPct: number; meanScreenVoidPct: number }
@@ -53,12 +53,18 @@ export function measureSpace(project: Project, map: GameMap): SpaceMeasure {
       }
     }
   }
+  // 화면 창은 플레이어가 실제로 보는 창이다: 걸을 수 있는 칸을 가운데 두고 맵 경계에 맞춰 당긴 20×15 카메라.
   const SW = Math.min(20, W), SH = Math.min(15, H);
   let worst = 0, sum = 0, n = 0;
-  for (let y0 = 0; y0 + SH <= H; y0 += 3) for (let x0 = 0; x0 + SW <= W; x0 += 3) {
-    let v = 0, fl = 0;
-    for (let y = y0; y < y0 + SH; y += 1) for (let x = x0; x < x0 + SW; x += 1) { if (isVoid[y * W + x]) v += 1; else if (walk[y * W + x]) fl += 1; }
-    if (!fl) continue;
+  const seen = new Set<number>();
+  for (let cy = 0; cy < H; cy += 1) for (let cx = 0; cx < W; cx += 1) {
+    if (!walk[cy * W + cx]) continue;
+    const x0 = Math.max(0, Math.min(W - SW, cx - (SW >> 1))), y0 = Math.max(0, Math.min(H - SH, cy - (SH >> 1)));
+    const key = y0 * W + x0;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    let v = 0;
+    for (let y = y0; y < y0 + SH; y += 1) for (let x = x0; x < x0 + SW; x += 1) if (isVoid[y * W + x]) v += 1;
     const p = v / (SW * SH); worst = Math.max(worst, p); sum += p; n += 1;
   }
   const r = (v: number) => Math.round(v * 1000) / 10;

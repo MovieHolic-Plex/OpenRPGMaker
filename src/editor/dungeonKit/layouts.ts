@@ -143,21 +143,51 @@ interface Chamber { cx: number; cy: number; rx: number; ry: number; kind: Dungeo
 export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayout & { grid: Grid } {
   let best: { layout: DungeonLayout & { grid: Grid }; score: number } | null = null;
   let lastError: unknown = null;
-  for (let salt = 0; salt < 10; salt += 1) {
+  for (let salt = 0; salt < 16; salt += 1) {
     let layout: DungeonLayout & { grid: Grid };
     try { layout = layoutBlobOnce(spec, profile, salt); } catch (error) { lastError = error; continue; }
-    const g = layout.grid;
-    let used = 0;
-    for (let x = 0; x < g.W; x += 1) for (let y = 0; y < g.H; y += 1) {
-      if (g.floor[g.idx(x, y)]) { used += 1; continue; }
-      // 벽 앞면 3줄(바닥 바로 위)은 허공이 아니다
-      for (let k = 1; k <= 3; k += 1) if (y + k < g.H && g.floor[g.idx(x, y + k)]) { used += 1; break; }
-    }
-    const score = 1 - used / (g.W * g.H);
+    const score = blobVoidScore(layout.grid);
     if (!best || score < best.score - 1e-9) best = { layout, score };
   }
   if (!best) throw lastError;
   return best.layout;
+}
+
+/**
+ * 덩이 판 점수(작을수록 좋다): 잘라 낸 판(바닥 상자+둘레 2칸) 안의 허공 비율 + 플레이어 카메라(20×15) 창 중 가장 나쁜 허공 비율의 절반.
+ * 전체 판 비율만 보면 잘라 낸 뒤 한 구석이 90% 허공인 판을 골랐다(2026-10-23 dg2-r1 고블린 굴) — 실제로 보이는 창을 같이 잰다.
+ */
+function blobVoidScore(g: Grid): number {
+  let x0 = g.W, y0 = g.H, x1 = -1, y1 = -1;
+  for (let y = 0; y < g.H; y += 1) for (let x = 0; x < g.W; x += 1) if (g.floor[g.idx(x, y)]) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  if (x1 < 0) return 1;
+  x0 = Math.max(0, x0 - 2); x1 = Math.min(g.W - 1, x1 + 2); y0 = Math.max(0, y0 - 5); y1 = Math.min(g.H - 1, y1 + 2);
+  const W = x1 - x0 + 1, H = y1 - y0 + 1;
+  const used = new Uint8Array(W * H);
+  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+    const gx = x + x0, gy = y + y0;
+    // 바닥, 그 위 벽 앞면 3줄, 바닥에 닿는 테두리는 허공이 아니다
+    let u = 0;
+    for (let dy = -1; dy <= 3 && !u; dy += 1) for (let dx = -1; dx <= 1; dx += 1) {
+      if (dy <= 1 || dx === 0) { const X = gx + dx, Y = gy + dy; if (g.inb(X, Y) && g.floor[g.idx(X, Y)]) { u = 1; break; } }
+    }
+    used[y * W + x] = u;
+  }
+  let voids = 0;
+  for (let i = 0; i < used.length; i += 1) if (!used[i]) voids += 1;
+  const SW = Math.min(20, W), SH = Math.min(15, H);
+  let worst = 0;
+  const seen = new Set<number>();
+  for (let cy = 0; cy < H; cy += 2) for (let cx = 0; cx < W; cx += 2) {
+    if (!g.floor[g.idx(cx + x0, cy + y0)]) continue;
+    const sx = Math.max(0, Math.min(W - SW, cx - (SW >> 1))), sy = Math.max(0, Math.min(H - SH, cy - (SH >> 1)));
+    if (seen.has(sy * W + sx)) continue;
+    seen.add(sy * W + sx);
+    let v = 0;
+    for (let y = sy; y < sy + SH; y += 1) for (let x = sx; x < sx + SW; x += 1) if (!used[y * W + x]) v += 1;
+    worst = Math.max(worst, v / (SW * SH));
+  }
+  return voids / (W * H) + 0.5 * worst;
 }
 
 function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): DungeonLayout & { grid: Grid } {
@@ -175,7 +205,7 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
 
   // ---- 방 자리(타원) ----
   const chambers: Chamber[] = [];
-  const yLo = MARGIN + 6, yHi = entY - 7;
+  const yLo = MARGIN + 6, yHi = entY + 2;
   // 덩이로 모은다: 새 방은 이미 놓은 방(첫 방은 입구 굴) 곁에 2~5칸 틈을 두고 붙는다 — 상자 안 아무 데나 흩으면 방 사이가 검은 허공이었다.
   const seedNode = { cx: entX + 6, cy: entY - 4, rx: 4, ry: 3 };
   // 방마다 후보 자리 여럿 중 덩이 바깥 상자가 가장 덜 커지는 자리를 고른다(방+통로 문법의 점수와 같은 생각) — 한 자리만 뽑으면 덩이가 사방으로 뻗어
@@ -289,6 +319,12 @@ function layoutBlobOnce(spec: DungeonSpec, profile: GrammarInfo, salt: number): 
   // 가장자리 안쪽으로 강제
   for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) if (x < MARGIN || y < MARGIN + 4 || x >= W - MARGIN || y >= H - MARGIN) { g.floor[g.idx(x, y)] = 0; g.roomAt[g.idx(x, y)] = -1; }
   smooth(g, 2, (x, y) => x >= entX - 2 && x < entX + ENT_W + 2 && y >= stubTop - 1 && y < entY + ENT_H + 2);
+  // 입구 굴 북쪽 벽(계단·출구 자리)은 지킨다: 옆 방이 입구 곁까지 내려오면(허공을 줄이려고 허용) 옆으로 가는 통로가 이 벽을 뚫어
+  // 계단 놓을 평평한 벽이 사라졌다. 목(stub) 세 칸만 뚫린 채로 둔다.
+  for (let y = entY - 4; y < entY - 1; y += 1) for (let x = entX - 1; x < entX + ENT_W + 1; x += 1) {
+    if (x >= entX + 5 && x < entX + 8) continue;
+    g.floor[g.idx(x, y)] = 0; g.roomAt[g.idx(x, y)] = -1;
+  }
   fillWallIslands(g, 30);
 
   // ---- 액체(호수·용암 못): 방 안쪽, 가장자리 두 칸은 걸을 수 있게 ----
